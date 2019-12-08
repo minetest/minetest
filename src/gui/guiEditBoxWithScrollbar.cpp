@@ -13,7 +13,6 @@
 #include "porting.h"
 #include "Keycodes.h"
 
-
 /*
 todo:
 optional scrollbars [done]
@@ -76,7 +75,8 @@ GUIEditBoxWithScrollBar::~GUIEditBoxWithScrollBar()
 	if (m_operator)
 		m_operator->drop();
 
-	m_vscrollbar->remove();
+	if (m_vscrollbar)
+		m_vscrollbar->drop();
 }
 
 
@@ -148,7 +148,6 @@ void GUIEditBoxWithScrollBar::enableOverrideColor(bool enable)
 
 bool GUIEditBoxWithScrollBar::isOverrideColorEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_override_color_enabled;
 }
 
@@ -174,7 +173,6 @@ void GUIEditBoxWithScrollBar::updateAbsolutePosition()
 //! Checks if word wrap is enabled
 bool GUIEditBoxWithScrollBar::isWordWrapEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_word_wrap;
 }
 
@@ -189,7 +187,6 @@ void GUIEditBoxWithScrollBar::setMultiLine(bool enable)
 //! Checks if multi line editing is enabled
 bool GUIEditBoxWithScrollBar::isMultiLineEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_multiline;
 }
 
@@ -208,7 +205,6 @@ void GUIEditBoxWithScrollBar::setPasswordBox(bool password_box, wchar_t password
 
 bool GUIEditBoxWithScrollBar::isPasswordBox() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_passwordbox;
 }
 
@@ -866,7 +862,6 @@ void GUIEditBoxWithScrollBar::setAutoScroll(bool enable)
 //! \return true if automatic scrolling is enabled, false if not
 bool GUIEditBoxWithScrollBar::isAutoScrollEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return m_autoscroll;
 }
 
@@ -1114,10 +1109,13 @@ void GUIEditBoxWithScrollBar::breakText()
 	m_broken_text_positions.push_back(last_line_start);
 }
 
-// TODO: that function does interpret VAlign according to line-index (indexed line is placed on top-center-bottom)
-// but HAlign according to line-width (pixels) and not by row.
-// Intuitively I suppose HAlign handling is better as VScrollPos should handle the line-scrolling.
-// But please no one change this without also rewriting (and this time fucking testing!!!) autoscrolling (I noticed this when fixing the old autoscrolling).
+// TODO: that function does interpret VAlign according to line-index (indexed
+// line is placed on top-center-bottom) but HAlign according to line-width
+// (pixels) and not by row.
+// Intuitively I suppose HAlign handling is better as VScrollPos should handle
+// the line-scrolling.
+// But please no one change this without also rewriting (and this time
+// testing!!!) autoscrolling (I noticed this when fixing the old autoscrolling).
 void GUIEditBoxWithScrollBar::setTextRect(s32 line)
 {
 	if (line < 0)
@@ -1401,9 +1399,13 @@ void GUIEditBoxWithScrollBar::createVScrollBar()
 
 	m_scrollbar_width = skin ? skin->getSize(gui::EGDS_SCROLLBAR_SIZE) : 16;
 
+	RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
+
 	irr::core::rect<s32> scrollbarrect = m_frame_rect;
 	scrollbarrect.UpperLeftCorner.X += m_frame_rect.getWidth() - m_scrollbar_width;
-	m_vscrollbar = Environment->addScrollBar(false, scrollbarrect, getParent(), getID());
+	m_vscrollbar = new GUIScrollBar(Environment, getParent(), -1,
+			scrollbarrect, false, true);
+
 	m_vscrollbar->setVisible(false);
 	m_vscrollbar->setSmallStep(1);
 	m_vscrollbar->setLargeStep(1);
@@ -1425,6 +1427,7 @@ void GUIEditBoxWithScrollBar::updateVScrollBar()
 		if (scrollymax != m_vscrollbar->getMax()) {
 			// manage a newline or a deleted line
 			m_vscrollbar->setMax(scrollymax);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 			calculateScrollPos();
 		} else {
 			// manage a newline or a deleted line
@@ -1439,6 +1442,7 @@ void GUIEditBoxWithScrollBar::updateVScrollBar()
 		s32 scrollymax = getTextDimension().Height - m_frame_rect.getHeight();
 		if (scrollymax != m_vscrollbar->getMax()) {
 			m_vscrollbar->setMax(scrollymax);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 		}
 
 		if (!m_vscrollbar->isVisible()) {
@@ -1451,9 +1455,9 @@ void GUIEditBoxWithScrollBar::updateVScrollBar()
 			m_vscroll_pos = 0;
 			m_vscrollbar->setPos(0);
 			m_vscrollbar->setMax(1);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 		}
 	}
-
 
 }
 

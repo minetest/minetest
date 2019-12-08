@@ -41,12 +41,14 @@ struct ItemStack
 
 	// Serialization
 	void serialize(std::ostream &os) const;
-	// Deserialization.  Pass itemdef unless you don't want aliases resolved.
+	// Deserialization. Pass itemdef unless you don't want aliases resolved.
 	void deSerialize(std::istream &is, IItemDefManager *itemdef = NULL);
 	void deSerialize(const std::string &s, IItemDefManager *itemdef = NULL);
 
 	// Returns the string used for inventory
 	std::string getItemString() const;
+	// Returns the tooltip
+	std::string getDescription(IItemDefManager *itemdef) const;
 
 	/*
 		Quantity methods
@@ -161,6 +163,19 @@ struct ItemStack
 	// Similar to takeItem, but keeps this ItemStack intact.
 	ItemStack peekItem(u32 peekcount) const;
 
+	bool operator ==(const ItemStack &s) const
+	{
+		return (this->name     == s.name &&
+				this->count    == s.count &&
+				this->wear     == s.wear &&
+				this->metadata == s.metadata);
+	}
+
+	bool operator !=(const ItemStack &s) const
+	{
+		return !(*this == s);
+	}
+
 	/*
 		Properties
 	*/
@@ -179,7 +194,7 @@ public:
 	void setSize(u32 newsize);
 	void setWidth(u32 newWidth);
 	void setName(const std::string &name);
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, bool incremental) const;
 	void deSerialize(std::istream &is);
 
 	InventoryList(const InventoryList &other);
@@ -250,12 +265,16 @@ public:
 	// also with optional rollback recording
 	void moveItemSomewhere(u32 i, InventoryList *dest, u32 count);
 
+	inline bool checkModified() const { return m_dirty; }
+	inline void setModified(bool dirty = true) { m_dirty = dirty; }
+
 private:
 	std::vector<ItemStack> m_items;
 	std::string m_name;
 	u32 m_size;
 	u32 m_width = 0;
 	IItemDefManager *m_itemdef;
+	bool m_dirty = true;
 };
 
 class Inventory
@@ -264,7 +283,6 @@ public:
 	~Inventory();
 
 	void clear();
-	void clearContents();
 
 	Inventory(IItemDefManager *itemdef);
 	Inventory(const Inventory &other);
@@ -275,7 +293,8 @@ public:
 		return !(*this == other);
 	}
 
-	void serialize(std::ostream &os) const;
+	// Never ever serialize to disk using "incremental"!
+	void serialize(std::ostream &os, bool incremental = false) const;
 	void deSerialize(std::istream &is);
 
 	InventoryList * addList(const std::string &name, u32 size);
@@ -286,28 +305,38 @@ public:
 	// A shorthand for adding items. Returns leftover item (possibly empty).
 	ItemStack addItem(const std::string &listname, const ItemStack &newitem)
 	{
-		m_dirty = true;
 		InventoryList *list = getList(listname);
 		if(list == NULL)
 			return newitem;
 		return list->addItem(newitem);
 	}
 
-	bool checkModified() const
+	inline bool checkModified() const
 	{
-		return m_dirty;
+		if (m_dirty)
+			return true;
+
+		for (const auto &list : m_lists)
+			if (list->checkModified())
+				return true;
+
+		return false;
 	}
 
-	void setModified(const bool x)
+	inline void setModified(bool dirty = true)
 	{
-		m_dirty = x;
+		m_dirty = dirty;
+		// Set all as handled
+		if (!dirty) {
+			for (const auto &list : m_lists)
+				list->setModified(dirty);
+		}
 	}
-
 private:
 	// -1 if not found
 	const s32 getListIndex(const std::string &name) const;
 
 	std::vector<InventoryList*> m_lists;
 	IItemDefManager *m_itemdef;
-	bool m_dirty = false;
+	bool m_dirty = true;
 };

@@ -31,7 +31,7 @@ local group_format_template = [[
 #    octaves     = %s,
 #    persistence = %s,
 #    lacunarity  = %s,
-#    flags       = "%s"
+#    flags       = %s
 # }
 
 ]]
@@ -121,6 +121,9 @@ file:write(create_minetest_conf_example())
 file:close()
 
 file = assert(io.open("src/settings_translation_file.cpp", "w"))
+-- If 'minetest.conf.example' appears in the 'bin' folder, the line below may have to be
+-- used instead. The file will also appear in the 'bin' folder.
+--file = assert(io.open("settings_translation_file.cpp", "w"))
 file:write(create_translation_file())
 file:close()
 

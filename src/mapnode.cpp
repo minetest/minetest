@@ -44,18 +44,6 @@ static const u8 rot_to_wallmounted[] = {
 	MapNode
 */
 
-// Create directly from a nodename
-// If name is unknown, sets CONTENT_IGNORE
-MapNode::MapNode(const NodeDefManager *ndef, const std::string &name,
-		u8 a_param1, u8 a_param2)
-{
-	content_t id = CONTENT_IGNORE;
-	ndef->getId(name, id);
-	param0 = id;
-	param1 = a_param1;
-	param2 = a_param2;
-}
-
 void MapNode::getColor(const ContentFeatures &f, video::SColor *color) const
 {
 	if (f.palette) {
@@ -65,7 +53,7 @@ void MapNode::getColor(const ContentFeatures &f, video::SColor *color) const
 	*color = f.color;
 }
 
-void MapNode::setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f)
+void MapNode::setLight(LightBank bank, u8 a_light, const ContentFeatures &f) noexcept
 {
 	// If node doesn't contain light data, ignore this
 	if(f.param_type != CPT_LIGHT)
@@ -84,8 +72,7 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f
 		assert("Invalid light bank" == NULL);
 }
 
-void MapNode::setLight(enum LightBank bank, u8 a_light,
-	const NodeDefManager *nodemgr)
+void MapNode::setLight(LightBank bank, u8 a_light, const NodeDefManager *nodemgr)
 {
 	setLight(bank, a_light, nodemgr->get(*this));
 }
@@ -106,7 +93,7 @@ bool MapNode::isLightDayNightEq(const NodeDefManager *nodemgr) const
 	return isEqual;
 }
 
-u8 MapNode::getLight(enum LightBank bank, const NodeDefManager *nodemgr) const
+u8 MapNode::getLight(LightBank bank, const NodeDefManager *nodemgr) const
 {
 	// Select the brightest of [light source, propagated light]
 	const ContentFeatures &f = nodemgr->get(*this);
@@ -120,14 +107,14 @@ u8 MapNode::getLight(enum LightBank bank, const NodeDefManager *nodemgr) const
 	return MYMAX(f.light_source, light);
 }
 
-u8 MapNode::getLightRaw(enum LightBank bank, const ContentFeatures &f) const
+u8 MapNode::getLightRaw(LightBank bank, const ContentFeatures &f) const noexcept
 {
 	if(f.param_type == CPT_LIGHT)
 		return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
 	return 0;
 }
 
-u8 MapNode::getLightNoChecks(enum LightBank bank, const ContentFeatures *f) const
+u8 MapNode::getLightNoChecks(LightBank bank, const ContentFeatures *f) const noexcept
 {
 	return MYMAX(f->light_source,
 	             bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f);
@@ -525,12 +512,12 @@ static inline void getNeighborConnectingFace(
 	const v3s16 &p, const NodeDefManager *nodedef,
 	Map *map, MapNode n, u8 bitmask, u8 *neighbors)
 {
-	MapNode n2 = map->getNodeNoEx(p);
+	MapNode n2 = map->getNode(p);
 	if (nodedef->nodeboxConnects(n, n2, bitmask))
 		*neighbors |= bitmask;
 }
 
-u8 MapNode::getNeighbors(v3s16 p, Map *map)
+u8 MapNode::getNeighbors(v3s16 p, Map *map) const
 {
 	const NodeDefManager *nodedef = map->getNodeDefManager();
 	u8 neighbors = 0;
@@ -567,14 +554,14 @@ u8 MapNode::getNeighbors(v3s16 p, Map *map)
 }
 
 void MapNode::getNodeBoxes(const NodeDefManager *nodemgr,
-	std::vector<aabb3f> *boxes, u8 neighbors)
+	std::vector<aabb3f> *boxes, u8 neighbors) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	transformNodeBox(*this, f.node_box, nodemgr, boxes, neighbors);
 }
 
 void MapNode::getCollisionBoxes(const NodeDefManager *nodemgr,
-	std::vector<aabb3f> *boxes, u8 neighbors)
+	std::vector<aabb3f> *boxes, u8 neighbors) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.collision_box.fixed.empty())
@@ -584,7 +571,7 @@ void MapNode::getCollisionBoxes(const NodeDefManager *nodemgr,
 }
 
 void MapNode::getSelectionBoxes(const NodeDefManager *nodemgr,
-	std::vector<aabb3f> *boxes, u8 neighbors)
+	std::vector<aabb3f> *boxes, u8 neighbors) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	transformNodeBox(*this, f.selection_box, nodemgr, boxes, neighbors);
@@ -611,41 +598,44 @@ u8 MapNode::getLevel(const NodeDefManager *nodemgr) const
 		return getParam2() & LIQUID_LEVEL_MASK;
 	if(f.liquid_type == LIQUID_FLOWING) // can remove if all param_type_2 setted
 		return getParam2() & LIQUID_LEVEL_MASK;
-	if(f.leveled || f.param_type_2 == CPT2_LEVELED) {
-		 u8 level = getParam2() & LEVELED_MASK;
-		 if(level)
+	if (f.param_type_2 == CPT2_LEVELED) {
+		u8 level = getParam2() & LEVELED_MASK;
+		if (level)
 			return level;
-		 if(f.leveled > LEVELED_MAX)
-		 	return LEVELED_MAX;
-		 return f.leveled; //default
 	}
-	return 0;
+	if (f.leveled > LEVELED_MAX)
+		return LEVELED_MAX;
+	return f.leveled;
 }
 
 u8 MapNode::setLevel(const NodeDefManager *nodemgr, s8 level)
 {
 	u8 rest = 0;
-	if (level < 1) {
-		setContent(CONTENT_AIR);
-		return 0;
-	}
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type_2 == CPT2_FLOWINGLIQUID
-		|| f.liquid_type == LIQUID_FLOWING
-		|| f.liquid_type == LIQUID_SOURCE) {
+			|| f.liquid_type == LIQUID_FLOWING
+			|| f.liquid_type == LIQUID_SOURCE) {
+		if (level <= 0) { // liquid can’t exist with zero level
+			setContent(CONTENT_AIR);
+			return 0;
+		}
 		if (level >= LIQUID_LEVEL_SOURCE) {
 			rest = level - LIQUID_LEVEL_SOURCE;
 			setContent(nodemgr->getId(f.liquid_alternative_source));
+			setParam2(0);
 		} else {
 			setContent(nodemgr->getId(f.liquid_alternative_flowing));
-			setParam2(level & LIQUID_LEVEL_MASK);
+			setParam2((level & LIQUID_LEVEL_MASK) | (getParam2() & ~LIQUID_LEVEL_MASK));
 		}
-	} else if (f.leveled || f.param_type_2 == CPT2_LEVELED) {
-		if (level > LEVELED_MAX) {
+	} else if (f.param_type_2 == CPT2_LEVELED) {
+		if (level < 0) { // zero means default for a leveled nodebox
+			rest = level;
+			level = 0;
+		} else if (level > LEVELED_MAX) {
 			rest = level - LEVELED_MAX;
 			level = LEVELED_MAX;
 		}
-		setParam2(level & LEVELED_MASK);
+		setParam2((level & LEVELED_MASK) | (getParam2() & ~LEVELED_MASK));
 	}
 	return rest;
 }
@@ -653,7 +643,6 @@ u8 MapNode::setLevel(const NodeDefManager *nodemgr, s8 level)
 u8 MapNode::addLevel(const NodeDefManager *nodemgr, s8 add)
 {
 	s8 level = getLevel(nodemgr);
-	if (add == 0) level = 1;
 	level += add;
 	return setLevel(nodemgr, level);
 }
@@ -674,7 +663,7 @@ u32 MapNode::serializedLength(u8 version)
 
 	return 4;
 }
-void MapNode::serialize(u8 *dest, u8 version)
+void MapNode::serialize(u8 *dest, u8 version) const
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
@@ -857,7 +846,7 @@ void MapNode::deSerialize_pre22(const u8 *source, u8 version)
 	{
 		// In these versions, CONTENT_IGNORE and CONTENT_AIR
 		// are 255 and 254
-		// Version 19 is fucked up with sometimes the old values and sometimes not
+		// Version 19 is messed up with sometimes the old values and sometimes not
 		if(param0 == 255)
 			param0 = CONTENT_IGNORE;
 		else if(param0 == 254)

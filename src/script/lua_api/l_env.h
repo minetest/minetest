@@ -135,6 +135,9 @@ private:
 	// fix_light(p1, p2) -> true/false
 	static int l_fix_light(lua_State *L);
 
+	// load_area(p1)
+	static int l_load_area(lua_State *L);
+
 	// emerge_area(p1, p2)
 	static int l_emerge_area(lua_State *L);
 

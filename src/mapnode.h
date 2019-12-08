@@ -139,18 +139,13 @@ struct MapNode
 
 	MapNode() = default;
 
-	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0)
+	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0) noexcept
 		: param0(content),
 		  param1(a_param1),
 		  param2(a_param2)
 	{ }
 
-	// Create directly from a nodename
-	// If name is unknown, sets CONTENT_IGNORE
-	MapNode(const NodeDefManager *ndef, const std::string &name,
-			u8 a_param1=0, u8 a_param2=0);
-
-	bool operator==(const MapNode &other)
+	bool operator==(const MapNode &other) const noexcept
 	{
 		return (param0 == other.param0
 				&& param1 == other.param1
@@ -158,27 +153,27 @@ struct MapNode
 	}
 
 	// To be used everywhere
-	content_t getContent() const
+	content_t getContent() const noexcept
 	{
 		return param0;
 	}
-	void setContent(content_t c)
+	void setContent(content_t c) noexcept
 	{
 		param0 = c;
 	}
-	u8 getParam1() const
+	u8 getParam1() const noexcept
 	{
 		return param1;
 	}
-	void setParam1(u8 p)
+	void setParam1(u8 p) noexcept
 	{
 		param1 = p;
 	}
-	u8 getParam2() const
+	u8 getParam2() const noexcept
 	{
 		return param2;
 	}
-	void setParam2(u8 p)
+	void setParam2(u8 p) noexcept
 	{
 		param2 = p;
 	}
@@ -191,10 +186,9 @@ struct MapNode
 	 */
 	void getColor(const ContentFeatures &f, video::SColor *color) const;
 
-	void setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f);
+	void setLight(LightBank bank, u8 a_light, const ContentFeatures &f) noexcept;
 
-	void setLight(enum LightBank bank, u8 a_light,
-		const NodeDefManager *nodemgr);
+	void setLight(LightBank bank, u8 a_light, const NodeDefManager *nodemgr);
 
 	/**
 	 * Check if the light value for night differs from the light value for day.
@@ -203,17 +197,17 @@ struct MapNode
 	 */
 	bool isLightDayNightEq(const NodeDefManager *nodemgr) const;
 
-	u8 getLight(enum LightBank bank, const NodeDefManager *nodemgr) const;
+	u8 getLight(LightBank bank, const NodeDefManager *nodemgr) const;
 
 	/*!
 	 * Returns the node's light level from param1.
 	 * If the node emits light, it is ignored.
 	 * \param f the ContentFeatures of this node.
 	 */
-	u8 getLightRaw(enum LightBank bank, const ContentFeatures &f) const;
+	u8 getLightRaw(LightBank bank, const ContentFeatures &f) const noexcept;
 
 	/**
-	 * This function differs from getLight(enum LightBank bank, NodeDefManager *nodemgr)
+	 * This function differs from getLight(LightBank bank, NodeDefManager *nodemgr)
 	 * in that the ContentFeatures of the node in question are not retrieved by
 	 * the function itself.  Thus, if you have already called nodemgr->get() to
 	 * get the ContentFeatures you pass it to this function instead of the
@@ -227,7 +221,7 @@ struct MapNode
 	 * @pre f != NULL
 	 * @pre f->param_type == CPT_LIGHT
 	 */
-	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f) const;
+	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f) const noexcept;
 
 	bool getLightBanks(u8 &lightday, u8 &lightnight,
 		const NodeDefManager *nodemgr) const;
@@ -242,8 +236,7 @@ struct MapNode
 		return blend_light(daylight_factor, lightday, lightnight);
 	}
 
-	u8 getFaceDir(const NodeDefManager *nodemgr,
-		bool allow_wallmounted = false) const;
+	u8 getFaceDir(const NodeDefManager *nodemgr, bool allow_wallmounted = false) const;
 	u8 getWallMounted(const NodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(const NodeDefManager *nodemgr) const;
 
@@ -254,25 +247,25 @@ struct MapNode
 	 *
 	 * \param p coordinates of the node
 	 */
-	u8 getNeighbors(v3s16 p, Map *map);
+	u8 getNeighbors(v3s16 p, Map *map) const;
 
 	/*
 		Gets list of node boxes (used for rendering (NDT_NODEBOX))
 	*/
 	void getNodeBoxes(const NodeDefManager *nodemgr, std::vector<aabb3f> *boxes,
-		u8 neighbors = 0);
+		u8 neighbors = 0) const;
 
 	/*
 		Gets list of selection boxes
 	*/
 	void getSelectionBoxes(const NodeDefManager *nodemg,
-		std::vector<aabb3f> *boxes, u8 neighbors = 0);
+		std::vector<aabb3f> *boxes, u8 neighbors = 0) const;
 
 	/*
 		Gets list of collision boxes
 	*/
 	void getCollisionBoxes(const NodeDefManager *nodemgr,
-		std::vector<aabb3f> *boxes, u8 neighbors = 0);
+		std::vector<aabb3f> *boxes, u8 neighbors = 0) const;
 
 	/*
 		Liquid helpers
@@ -287,7 +280,7 @@ struct MapNode
 	*/
 
 	static u32 serializedLength(u8 version);
-	void serialize(u8 *dest, u8 version);
+	void serialize(u8 *dest, u8 version) const;
 	void deSerialize(u8 *source, u8 version);
 
 	// Serializes or deserializes a list of nodes in bulk format (first the

@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
 #include "chat_interface.h"
@@ -25,11 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "filesys.h"
 #include "version.h"
-#include "game.h"
+#include "client/game.h"
 #include "defaultsettings.h"
 #include "gettext.h"
 #include "log.h"
-#include "quicktune.h"
+#include "util/quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
 #include "database/database.h"
@@ -79,7 +80,7 @@ static void print_modified_quicktune_values();
 
 static void list_game_ids();
 static void list_worlds(bool print_name, bool print_path);
-static void setup_log_params(const Settings &cmd_args);
+static bool setup_log_params(const Settings &cmd_args);
 static bool create_userdata_path();
 static bool init_common(const Settings &cmd_args, int argc, char *argv[]);
 static void startup_message();
@@ -135,7 +136,8 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	setup_log_params(cmd_args);
+	if (!setup_log_params(cmd_args))
+		return 1;
 
 	porting::signal_handler_init();
 
@@ -166,8 +168,12 @@ int main(int argc, char *argv[])
 			list_worlds(true, false);
 		} else if (cmd_args.get("worldlist") == "path") {
 			list_worlds(false, true);
-		} else {
+		} else if (cmd_args.get("worldlist") == "both") {
 			list_worlds(true, true);
+		} else {
+			errorstream << "Invalid --worldlist value: "
+				<< cmd_args.get("worldlist") << std::endl;
+			return 1;
 		}
 		return 0;
 	}
@@ -258,23 +264,17 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
-			_("Set world path (implies local game)"))));
+			_("Set world path (implies local game if used with option --go)"))));
 	allowed_options->insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
-			_("Set world by name (implies local game)"))));
+			_("Set world by name (implies local game if used with option --go)"))));
 	allowed_options->insert(std::make_pair("worldlist", ValueSpec(VALUETYPE_STRING,
-			_("Get list of worlds (implies local game) ('path' lists paths, "
+			_("Get list of worlds ('path' lists paths, "
 			"'name' lists names, 'both' lists both)"))));
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
-#if !defined(_WIN32)
 	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
 			_("Coloured logs ('always', 'never' or 'auto'), defaults to 'auto'"
 			))));
-#else
-	allowed_options->insert(std::make_pair("color", ValueSpec(VALUETYPE_STRING,
-			_("Coloured logs ('always' or 'never'), defaults to 'never'"
-			))));
-#endif
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
 			_("Print more information to console"))));
 	allowed_options->insert(std::make_pair("verbose",  ValueSpec(VALUETYPE_FLAG,
@@ -308,6 +308,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Set player name"))));
 	allowed_options->insert(std::make_pair("password", ValueSpec(VALUETYPE_STRING,
 			_("Set password"))));
+	allowed_options->insert(std::make_pair("password-file", ValueSpec(VALUETYPE_STRING,
+			_("Set password from contents of file"))));
 	allowed_options->insert(std::make_pair("go", ValueSpec(VALUETYPE_FLAG,
 			_("Disable main menu"))));
 	allowed_options->insert(std::make_pair("console", ValueSpec(VALUETYPE_FLAG,
@@ -396,7 +398,7 @@ static void print_modified_quicktune_values()
 	}
 }
 
-static void setup_log_params(const Settings &cmd_args)
+static bool setup_log_params(const Settings &cmd_args)
 {
 	// Quiet mode, print errors only
 	if (cmd_args.getFlag("quiet")) {
@@ -405,14 +407,27 @@ static void setup_log_params(const Settings &cmd_args)
 	}
 
 	// Coloured log messages (see log.h)
+	std::string color_mode;
 	if (cmd_args.exists("color")) {
-		std::string mode = cmd_args.get("color");
-		if (mode == "auto")
+		color_mode = cmd_args.get("color");
+#if !defined(_WIN32)
+	} else {
+		char *color_mode_env = getenv("MT_LOGCOLOR");
+		if (color_mode_env)
+			color_mode = color_mode_env;
+#endif
+	}
+	if (color_mode != "") {
+		if (color_mode == "auto") {
 			Logger::color_mode = LOG_COLOR_AUTO;
-		else if (mode == "always")
+		} else if (color_mode == "always") {
 			Logger::color_mode = LOG_COLOR_ALWAYS;
-		else
+		} else if (color_mode == "never") {
 			Logger::color_mode = LOG_COLOR_NEVER;
+		} else {
+			errorstream << "Invalid color mode: " << color_mode << std::endl;
+			return false;
+		}
 	}
 
 	// If trace is enabled, enable logging of certain things
@@ -431,6 +446,8 @@ static void setup_log_params(const Settings &cmd_args)
 	// In certain cases, output verbose level on stderr
 	if (cmd_args.getFlag("verbose") || cmd_args.getFlag("trace"))
 		g_logger.addOutput(&stderr_output, LL_VERBOSE);
+
+	return true;
 }
 
 static bool create_userdata_path()
@@ -564,9 +581,8 @@ static void init_log_streams(const Settings &cmd_args)
 			"using maximum." << std::endl;
 	}
 
-	verbosestream << "log_filename = " << log_filename << std::endl;
-
-	file_log_output.open(log_filename);
+	file_log_output.setFile(log_filename,
+		g_settings->getU64("debug_log_size_max") * 1000000);
 	g_logger.addOutputMaxLevel(&file_log_output, log_level);
 }
 

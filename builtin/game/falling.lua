@@ -22,7 +22,18 @@ core.register_entity(":__builtin:falling_node", {
 
 	set_node = function(self, node, meta)
 		self.node = node
-		self.meta = meta or {}
+		meta = meta or {}
+		if type(meta.to_table) == "function" then
+			meta = meta:to_table()
+		end
+		for _, list in pairs(meta.inventory or {}) do
+			for i, stack in pairs(list) do
+				if type(stack) == "userdata" then
+					list[i] = stack:to_string()
+				end
+			end
+		end
+		self.meta = meta
 		self.object:set_properties({
 			is_visible = true,
 			textures = {node.name},
@@ -116,7 +127,7 @@ core.register_entity(":__builtin:falling_node", {
 					local meta = core.get_meta(np)
 					meta:from_table(self.meta)
 				end
-				if def.sounds and def.sounds.place and def.sounds.place.name then
+				if def.sounds and def.sounds.place then
 					core.sound_play(def.sounds.place, {pos = np})
 				end
 			end
@@ -140,6 +151,11 @@ local function convert_to_falling_node(pos, node)
 	node.level = core.get_node_level(pos)
 	local meta = core.get_meta(pos)
 	local metatable = meta and meta:to_table() or {}
+
+	local def = core.registered_nodes[node.name]
+	if def and def.sounds and def.sounds.fall then
+		core.sound_play(def.sounds.fall, {pos = pos})
+	end
 
 	obj:get_luaentity():set_node(node, metatable)
 	core.remove_node(pos)
@@ -169,6 +185,9 @@ local function drop_attached_node(p)
 		end
 		drops = drop_stacks
 		def.preserve_metadata(pos_copy, node_copy, oldmeta, drops)
+	end
+	if def and def.sounds and def.sounds.fall then
+		core.sound_play(def.sounds.fall, {pos = p})
 	end
 	core.remove_node(p)
 	for _, item in pairs(drops) do

@@ -133,22 +133,22 @@ public:
 	{return true;}
 
 	// Returns tool wear
-	virtual int punch(v3f dir,
-			const ToolCapabilities *toolcap=NULL,
-			ServerActiveObject *puncher=NULL,
-			float time_from_last_punch=1000000)
+	virtual u16 punch(v3f dir,
+			const ToolCapabilities *toolcap = nullptr,
+			ServerActiveObject *puncher = nullptr,
+			float time_from_last_punch = 1000000.0f)
 	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}
-	virtual void setHP(s16 hp, const PlayerHPChangeReason &reason)
+	virtual void setHP(s32 hp, const PlayerHPChangeReason &reason)
 	{}
-	virtual s16 getHP() const
+	virtual u16 getHP() const
 	{ return 0; }
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
-	virtual const ItemGroupList &getArmorGroups()
-	{ static const ItemGroupList rv; return rv; }
+	virtual const ItemGroupList &getArmorGroups() const
+	{ static ItemGroupList rv; return rv; }
 	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
 	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
@@ -161,18 +161,8 @@ public:
 	{}
 	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
 	{}
-	virtual void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
-	{}
-	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation)
-	{}
-	virtual void clearChildAttachments() {}
-	virtual void clearParentAttachment() {}
-	virtual void addAttachmentChild(int child_id)
-	{}
-	virtual void removeAttachmentChild(int child_id)
-	{}
-	virtual const std::unordered_set<int> &getAttachmentChildIds()
-	{ static const std::unordered_set<int> rv; return rv; }
+	virtual const std::unordered_set<int> &getAttachmentChildIds() const
+	{ static std::unordered_set<int> rv; return rv; }
 	virtual ServerActiveObject *getParent() const { return nullptr; }
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }
@@ -180,9 +170,7 @@ public:
 	{}
 
 	// Inventory and wielded item
-	virtual Inventory* getInventory()
-	{ return NULL; }
-	virtual const Inventory* getInventory() const
+	virtual Inventory *getInventory() const
 	{ return NULL; }
 	virtual InventoryLocation getInventoryLocation() const
 	{ return InventoryLocation(); }
@@ -190,9 +178,10 @@ public:
 	{}
 	virtual std::string getWieldList() const
 	{ return ""; }
-	virtual int getWieldIndex() const
+	virtual u16 getWieldIndex() const
 	{ return 0; }
-	virtual ItemStack getWieldedItem() const;
+	virtual ItemStack getWieldedItem(ItemStack *selected,
+			ItemStack *hand = nullptr) const;
 	virtual bool setWieldedItem(const ItemStack &item);
 	inline void attachParticleSpawner(u32 id)
 	{

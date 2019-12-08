@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2015-2018 paramat
-Copyright (C) 2015-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2019 paramat
+Copyright (C) 2015-2016 kwolekr, Ryan Kwolek
 
 Fractal formulas from http://www.bugman123.com/Hypercomplex/index.html
 by Paul Nylander, and from http://www.fractalforums.com, thank you.
@@ -25,16 +25,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
+///////////// Mapgen Fractal flags
+#define MGFRACTAL_TERRAIN     0x01
+
 class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_fractal[];
 
+
 struct MapgenFractalParams : public MapgenParams
 {
-	u32 spflags = 0;
+	u32 spflags = MGFRACTAL_TERRAIN;
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
-	s16 lava_depth = -256;
+	u16 small_cave_num_min = 0;
+	u16 small_cave_num_max = 0;
+	u16 large_cave_num_min = 0;
+	u16 large_cave_num_max = 2;
+	float large_cave_flooded = 0.5f;
 	s16 dungeon_ymin = -31000;
 	s16 dungeon_ymax = 31000;
 	u16 fractal = 1;
@@ -51,6 +59,7 @@ struct MapgenFractalParams : public MapgenParams
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
+	NoiseParams np_dungeons;
 
 	MapgenFractalParams();
 	~MapgenFractalParams() = default;
@@ -59,10 +68,11 @@ struct MapgenFractalParams : public MapgenParams
 	void writeParams(Settings *settings) const;
 };
 
+
 class MapgenFractal : public MapgenBasic
 {
 public:
-	MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeManager *emerge);
+	MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge);
 	~MapgenFractal();
 
 	virtual MapgenType getType() const { return MAPGEN_FRACTAL; }
@@ -75,10 +85,6 @@ public:
 private:
 	u16 formula;
 	bool julia;
-
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
 	u16 fractal;
 	u16 iterations;
 	v3f scale;
@@ -88,5 +94,5 @@ private:
 	float julia_y;
 	float julia_z;
 	float julia_w;
-	Noise *noise_seabed;
+	Noise *noise_seabed = nullptr;
 };

@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_object.h"
-#include "particles.h"
-#include "client.h"
+#include "client/particles.h"
+#include "client/client.h"
 #include "client/clientevent.h"
 
 int ModApiParticlesLocal::l_add_particle(lua_State *L)
@@ -154,9 +154,9 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	texture = getstringfield_default(L, 1, "texture", "");
 	glow = getintfield_default(L, 1, "glow", 0);
 
-	u32 id = getClient(L)->getParticleManager()->getSpawnerId();
+	u64 id = getClient(L)->getParticleManager()->generateSpawnerId();
 
-	ClientEvent *event = new ClientEvent();
+	auto event = new ClientEvent();
 	event->type                                   = CE_ADD_PARTICLESPAWNER;
 	event->add_particlespawner.amount             = amount;
 	event->add_particlespawner.spawntime          = time;

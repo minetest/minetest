@@ -62,21 +62,7 @@ public:
 	virtual void deletingMenu(gui::IGUIElement *menu)
 	{
 		// Remove all entries if there are duplicates
-		bool removed_entry;
-		do{
-			removed_entry = false;
-			for(std::list<gui::IGUIElement*>::iterator
-					i = m_stack.begin();
-					i != m_stack.end(); ++i)
-			{
-				if(*i == menu)
-				{
-					m_stack.erase(i);
-					removed_entry = true;
-					break;
-				}
-			}
-		}while(removed_entry);
+		m_stack.remove(menu);
 
 		/*core::list<GUIModalMenu*>::Iterator i = m_stack.getLast();
 		assert(*i == menu);

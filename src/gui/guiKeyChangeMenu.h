@@ -24,7 +24,7 @@
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
 #include "gettext.h"
-#include "keycode.h"
+#include "client/keycode.h"
 #include <string>
 #include <vector>
 
@@ -57,6 +57,10 @@ public:
 	bool OnEvent(const SEvent &event);
 
 	bool pausesGame() { return true; }
+
+protected:
+	std::wstring getLabelByID(s32 id) { return L""; }
+	std::string getNameByID(s32 id) { return ""; }
 
 private:
 	void init_keys();

@@ -122,7 +122,7 @@ int MetaDataRef::l_set_string(lua_State *L)
 		return 0;
 
 	meta->setString(name, str);
-	ref->reportMetadataChange();
+	ref->reportMetadataChange(&name);
 	return 0;
 }
 
@@ -160,7 +160,7 @@ int MetaDataRef::l_set_int(lua_State *L)
 		return 0;
 
 	meta->setString(name, str);
-	ref->reportMetadataChange();
+	ref->reportMetadataChange(&name);
 	return 0;
 }
 
@@ -198,7 +198,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 		return 0;
 
 	meta->setString(name, str);
-	ref->reportMetadataChange();
+	ref->reportMetadataChange(&name);
 	return 0;
 }
 

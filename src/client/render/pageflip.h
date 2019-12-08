@@ -21,6 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "stereo.h"
 
+// The support is absent in 1.9.0 (dropped in r5068)
+#if (IRRLICHT_VERSION_MAJOR == 1) && (IRRLICHT_VERSION_MINOR <= 8)
+#define STEREO_PAGEFLIP_SUPPORTED
+
 class RenderingCorePageflip : public RenderingCoreStereo
 {
 protected:
@@ -35,3 +39,5 @@ public:
 	using RenderingCoreStereo::RenderingCoreStereo;
 	void drawAll() override;
 };
+
+#endif

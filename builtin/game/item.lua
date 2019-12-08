@@ -206,7 +206,6 @@ function core.get_node_drops(node, toolname)
 	-- Extended drop table
 	local got_items = {}
 	local got_count = 0
-	local _, item, tool
 	for _, item in ipairs(drop.items) do
 		local good_rarity = true
 		local good_tool = true
@@ -249,11 +248,6 @@ end
 
 local function user_name(user)
 	return user and user:get_player_name() or ""
-end
-
-local function is_protected(pos, name)
-	return core.is_protected(pos, name) and
-		not minetest.check_player_privs(name, "protection_bypass")
 end
 
 -- Returns a logging function. For empty names, does not log.
@@ -302,7 +296,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		place_to = {x = under.x, y = under.y, z = under.z}
 	end
 
-	if is_protected(place_to, playername) then
+	if core.is_protected(place_to, playername) then
 		log("action", playername
 				.. " tried to place " .. def.name
 				.. " at protected position "
@@ -469,6 +463,11 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 	if itemstack:take_item() ~= nil then
 		user:set_hp(user:get_hp() + hp_change)
 
+		local def = itemstack:get_definition()
+		if def and def.sound and def.sound.eat then
+			minetest.sound_play(def.sound.eat, { pos = user:get_pos(), max_hear_distance = 16 })
+		end
+
 		if replace_with_item then
 			if itemstack:is_empty() then
 				itemstack:add_item(replace_with_item)
@@ -547,7 +546,7 @@ function core.node_dig(pos, node, digger)
 		return
 	end
 
-	if is_protected(pos, diggername) then
+	if core.is_protected(pos, diggername) then
 		log("action", diggername
 				.. " tried to dig " .. node.name
 				.. " at protected position "
@@ -614,15 +613,10 @@ function core.node_dig(pos, node, digger)
 	end
 
 	-- Run script hook
-	local _, callback
 	for _, callback in ipairs(core.registered_on_dignodes) do
 		local origin = core.callback_origins[callback]
 		if origin then
 			core.set_last_run_mod(origin.mod)
-			--print("Running " .. tostring(callback) ..
-			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
-		else
-			--print("No data associated with callback")
 		end
 
 		-- Copy pos and node because callback can modify them

@@ -32,7 +32,7 @@ public:
 	GUIConfirmRegistration(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
 			s32 id, IMenuManager *menumgr, Client *client,
 			const std::string &playername, const std::string &password,
-			const std::string &address, bool *aborted);
+			bool *aborted);
 	~GUIConfirmRegistration();
 
 	void removeChildren();
@@ -50,12 +50,17 @@ public:
 	bool processInput();
 
 	bool OnEvent(const SEvent &event);
+#ifdef __ANDROID__
+	bool getAndroidUIInput();
+#endif
 
 private:
+	std::wstring getLabelByID(s32 id) { return L""; }
+	std::string getNameByID(s32 id) { return "password"; }
+
 	Client *m_client = nullptr;
 	const std::string &m_playername;
 	const std::string &m_password;
-	const std::string &m_address;
 	bool *m_aborted = nullptr;
 	std::wstring m_pass_confirm = L"";
 };

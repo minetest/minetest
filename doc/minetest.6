@@ -1,4 +1,4 @@
-.TH minetest 6 "10 September 2013" "" ""
+.TH minetest 6 "2 February 2019" "" ""
 
 .SH NAME
 minetest, minetestserver \- Multiplayer infinite-world block sandbox
@@ -15,10 +15,12 @@ minetest, minetestserver \- Multiplayer infinite-world block sandbox
 [\fBWORLD PATH\fR]
 
 .SH DESCRIPTION
-.B Minetest
-is one of the first InfiniMiner/Minecraft(/whatever) inspired games (started October 2010), with a goal of taking the survival multiplayer gameplay to a slightly different direction.
+.B Minetest is one of the first InfiniMiner/Minecraft(/whatever) inspired games
+(started October 2010), with a goal of taking the survival multiplayer gameplay
+in a slightly different direction.
 .PP
-The main design philosophy is to keep it technically simple, stable and portable. It will be kept lightweight enough to run on fairly old hardware.
+The main design philosophy is to keep it technically simple, stable and
+portable. It will be kept lightweight enough to run on fairly old hardware.
 
 .SH COMMON OPTIONS
 .TP
@@ -32,7 +34,7 @@ Print version information and exit
 Load configuration from specified file
 .TP
 .B \-\-logfile <value>
-Set logfile path (debug.txt)
+Set logfile path ('' for no logging)
 .TP
 .B \-\-info
 Print more information to console
@@ -43,14 +45,23 @@ Print even more information to console
 .B \-\-trace
 Print enormous amounts of information to console
 .TP
-.B \-\-gameid <value>
-Set gameid
+.B \-\-quiet
+Print only errors to console
+.TP
+.B \-\-color <value>
+Colorize the logs ('always', 'never' or 'auto'), defaults to 'auto'
+.TP
+.B \-\-gameid <value> | list
+Set gameid or list available ones
 .TP
 .B \-\-worldname <value>
 Set world path by name
 .TP
-.B \-\-world <value> | list
-Set world path or list worlds
+.B \-\-world <value>
+Set world path
+.TP
+.B \-\-worldlist path | name | both
+Get list of worlds ('path' lists paths, 'name' lists names, 'both' lists both)
 .TP
 .B \-\-map\-dir <value>
 Same as \-\-world (deprecated)
@@ -75,6 +86,9 @@ Set player name
 .B \-\-password <value>
 Set password
 .TP
+.B \-\-password\-file <value>
+Set password from contents of file
+.TP
 .B \-\-random\-input
 Enable random user input, for testing (client only)
 .TP
@@ -88,7 +102,15 @@ Run speed tests
 .TP
 .B \-\-migrate <value>
 Migrate from current map backend to another. Possible values are sqlite3,
-leveldb, redis, and dummy.
+leveldb, redis, postgresql, and dummy.
+.TP
+.B \-\-migrate-auth <value>
+Migrate from current auth backend to another. Possible values are sqlite3 and
+files.
+.TP
+.B \-\-migrate-players <value>
+Migrate from current players backend to another. Possible values are sqlite3,
+postgresql, dummy, and files.
 .TP
 .B \-\-terminal
 Display an interactive terminal over ncurses during execution.
@@ -99,16 +121,14 @@ Display an interactive terminal over ncurses during execution.
 Colon delimited list of directories to search for games.
 
 .SH BUGS
-Please report all bugs to Perttu Ahola <celeron55@gmail.com>.
+Please report all bugs at https://github.com/minetest/minetest/issues.
 
 .SH AUTHOR
 .PP
-Perttu Ahola <celeron55@gmail.com>
-and contributors.
+Perttu Ahola <celeron55@gmail.com> and contributors.
 .PP
 This man page was originally written by
 Juhani Numminen <juhaninumminen0@gmail.com>.
 
 .SH WWW
 http://www.minetest.net/
-

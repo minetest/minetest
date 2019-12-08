@@ -35,6 +35,9 @@ class Client;
 #include "constants.h" // BS
 #include "tileanimation.h"
 
+// PROTOCOL_VERSION >= 37
+static const u8 CONTENTFEATURES_VERSION = 13;
+
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;
@@ -664,6 +667,14 @@ private:
 	 * @param name a node name
 	 */
 	void addNameIdMapping(content_t i, std::string name);
+
+	/*!
+	 * Removes a content ID from all groups.
+	 * Erases content IDs from vectors in \ref m_group_to_items and
+	 * removes empty vectors.
+	 * @param id Content ID
+	 */
+	void eraseIdFromGroups(content_t id);
 
 	/*!
 	 * Recalculates m_selection_box_int_union based on

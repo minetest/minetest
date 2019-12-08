@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class PlayerDatabaseFiles : public PlayerDatabase
 {
 public:
-	PlayerDatabaseFiles(const std::string &savedir) : m_savedir(savedir) {}
+	PlayerDatabaseFiles(const std::string &savedir);
 	virtual ~PlayerDatabaseFiles() = default;
 
 	void savePlayer(RemotePlayer *player);

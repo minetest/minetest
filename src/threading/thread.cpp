@@ -31,7 +31,7 @@ DEALINGS IN THE SOFTWARE.
 // for setName
 #if defined(__linux__)
 	#include <sys/prctl.h>
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 	#include <pthread_np.h>
 #elif defined(_MSC_VER)
 	struct THREADNAME_INFO {
@@ -213,7 +213,7 @@ void Thread::setName(const std::string &name)
 	// distributions are still runing 2.11 and previous versions.
 	prctl(PR_SET_NAME, name.c_str());
 
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 
 	pthread_set_name_np(pthread_self(), name.c_str());
 
@@ -273,7 +273,7 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 
 	return SetThreadAffinityMask(pthread_gethandle(getThreadHandle()), 1 << proc_number);
 
-#elif __FreeBSD_version >= 702106 || defined(__linux__)
+#elif __FreeBSD_version >= 702106 || defined(__linux__) || defined(__DragonFly__)
 
 	cpu_set_t cpuset;
 

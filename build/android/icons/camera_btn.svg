@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="512"
+   height="512"
+   viewBox="0 0 135.46666 135.46667"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="camera_btn.svg"
+   inkscape:export-filename="/home/stu/Desktop/icons/png/camera_btn.png"
+   inkscape:export-xdpi="24"
+   inkscape:export-ydpi="24">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#404040"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.56808712"
+     inkscape:cx="108.02318"
+     inkscape:cy="100.37635"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1023"
+     inkscape:window-x="0"
+     inkscape:window-y="34"
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid16"
+       spacingx="0.52916666"
+       spacingy="0.52916666"
+       empspacing="4"
+       color="#40ff40"
+       opacity="0.1254902"
+       empcolor="#40ff40"
+       empopacity="0.25098039" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-161.53332)">
+    <path
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:5.70848799;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 67.733332,254.66665 c 0,0 -8.668881,0 -18.300771,-3.15268 -9.631892,-3.1527 -18.2943,-9.47798 -24.078829,-22.06889 5.706713,-9.81112 13.792733,-18.56809 24.089264,-22.0987 9.587884,-3.28767 18.290339,-3.12291 18.290339,-3.12291 0,0 7.735344,-0.0794 18.31234,3.12292 9.690806,2.93407 18.313585,9.42827 24.067265,22.09869 -5.76759,12.59091 -14.445437,18.91619 -24.0777,22.06889 -9.63227,3.15268 -18.301908,3.15268 -18.301908,3.15268 z"
+       id="path58-3-6"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cscscscsc" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.73025268;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 64.488929,217.53903 c -0.857939,0.17659 0.965211,0.45252 1.127737,0.80919 3.74151,2.22182 4.135021,8.10158 0.722172,10.79555 -2.788479,2.49816 -7.570549,1.85517 -9.647324,-1.24231 -0.478813,6.23671 4.305402,12.62817 10.72756,13.07655 5.379142,0.53291 10.304075,-3.82096 11.146917,-9.02134 1.316631,-6.22759 -2.756791,-13.29903 -9.184051,-14.59275 -1.613453,-0.33844 -3.308229,-0.28143 -4.893011,0.17511 z"
+       id="path4487"
+       inkscape:connector-curvature="0" />
+    <ellipse
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4489"
+       cx="68.000587"
+       cy="229.40236"
+       rx="24.328558"
+       ry="24.538925" />
+  </g>
+</svg>

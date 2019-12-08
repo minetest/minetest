@@ -23,8 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "mapnode.h"
 #include "settings.h"
+#include "server/activeobjectmgr.h"
 #include "util/numeric.h"
 #include <set>
+#include <random>
 
 class IGameDef;
 class ServerMap;
@@ -220,7 +222,7 @@ public:
 	void kickAllPlayers(AccessDeniedCode reason,
 		const std::string &str_reason, bool reconnect);
 	// Save players
-	void saveLoadedPlayers();
+	void saveLoadedPlayers(bool force = false);
 	void savePlayer(RemotePlayer *player);
 	PlayerSAO *loadPlayer(RemotePlayer *player, bool *new_player, session_t peer_id,
 		bool is_singleplayer);
@@ -243,7 +245,10 @@ public:
 		-------------------------------------------
 	*/
 
-	ServerActiveObject* getActiveObject(u16 id);
+	ServerActiveObject* getActiveObject(u16 id)
+	{
+		return m_ao_manager.getActiveObject(id);
+	}
 
 	/*
 		Add an active object to the environment.
@@ -254,19 +259,6 @@ public:
 		Returns 0 if not added and thus deleted.
 	*/
 	u16 addActiveObject(ServerActiveObject *object);
-
-	/**
-	 * Verify if id is a free active object id
-	 * @param id
-	 * @return true if slot is free
-	 */
-	bool isFreeServerActiveObjectId(u16 id) const;
-
-	/**
-	 * Retrieve the first free ActiveObject ID
-	 * @return free activeobject ID or 0 if none was found
-	 */
-	u16 getFreeServerActiveObjectId();
 
 	/*
 		Add an active object as a static object to the corresponding
@@ -331,7 +323,10 @@ public:
 	bool swapNode(v3s16 p, const MapNode &n);
 
 	// Find all active objects inside a radius around a point
-	void getObjectsInsideRadius(std::vector<u16> &objects, v3f pos, float radius);
+	void getObjectsInsideRadius(std::vector<u16> &objects, const v3f &pos, float radius)
+	{
+		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects);
+	}
 
 	// Clear objects, loading and going through every MapBlock
 	void clearObjects(ClearObjectsMode mode);
@@ -438,10 +433,10 @@ private:
 	ServerScripting* m_script;
 	// Server definition
 	Server *m_server;
+	// Active Object Manager
+	server::ActiveObjectMgr m_ao_manager;
 	// World path
 	const std::string m_path_world;
-	// Active object list
-	ServerActiveObjectMap m_active_objects;
 	// Outgoing network message buffer for active objects
 	std::queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
@@ -452,7 +447,6 @@ private:
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
-	int m_active_block_interval_overload_skip = 0;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time = 0;
@@ -475,6 +469,9 @@ private:
 
 	PlayerDatabase *m_player_database = nullptr;
 	AuthDatabase *m_auth_database = nullptr;
+
+	// Pseudo random generator for shuffling, etc.
+	std::mt19937 m_rgen;
 
 	// Particles
 	IntervalLimiter m_particle_management_interval;

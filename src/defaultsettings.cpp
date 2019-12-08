@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <IrrCompileConfig.h>
 #include "settings.h"
 #include "porting.h"
 #include "filesys.h"
@@ -43,6 +44,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("meshgen_block_cache_size", "20");
 	settings->setDefault("enable_vbo", "true");
 	settings->setDefault("free_move", "false");
+	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("noclip", "false");
 	settings->setDefault("screenshot_path", ".");
@@ -59,6 +61,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_client_modding", "false");
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
+	settings->setDefault("enable_register_confirmation", "true");
 
 	// Keymap
 	settings->setDefault("remote_port", "30000");
@@ -80,6 +83,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_console", "KEY_F10");
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
+	settings->setDefault("keymap_pitchmove", "KEY_KEY_P");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
 	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
@@ -125,6 +129,15 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_slot21", "");
 	settings->setDefault("keymap_slot22", "");
 	settings->setDefault("keymap_slot23", "");
+	settings->setDefault("keymap_slot24", "");
+	settings->setDefault("keymap_slot25", "");
+	settings->setDefault("keymap_slot26", "");
+	settings->setDefault("keymap_slot27", "");
+	settings->setDefault("keymap_slot28", "");
+	settings->setDefault("keymap_slot29", "");
+	settings->setDefault("keymap_slot30", "");
+	settings->setDefault("keymap_slot31", "");
+	settings->setDefault("keymap_slot32", "");
 
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
@@ -170,13 +183,21 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("lighting_boost_spread", "0.2");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
+#if ENABLE_GLES
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+	settings->setDefault("video_driver", "ogles1");
+#else
+	settings->setDefault("video_driver", "ogles2");
+#endif
+#else
 	settings->setDefault("video_driver", "opengl");
+#endif
 	settings->setDefault("cinematic", "false");
 	settings->setDefault("camera_smoothing", "0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");
-	settings->setDefault("fall_bobbing_amount", "0.0");
+	settings->setDefault("fall_bobbing_amount", "0.03");
 	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
@@ -205,7 +226,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "2.2");
+#if ENABLE_GLES
+	settings->setDefault("enable_shaders", "false");
+#else
 	settings->setDefault("enable_shaders", "true");
+#endif
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 
@@ -247,6 +272,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
+#ifdef __ANDROID__
+	settings->setDefault("autojump", "true");
+#else
+	settings->setDefault("autojump", "false");
+#endif
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
 	settings->setDefault("joystick_id", "0");
@@ -255,18 +285,24 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 
 	// Main menu
-	settings->setDefault("main_menu_style", "auto");
+	settings->setDefault("main_menu_style", "full");
 	settings->setDefault("main_menu_path", "");
-	settings->setDefault("main_menu_mod_mgr", "1");
-	settings->setDefault("main_menu_game_mgr", "0");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
 
 #if USE_FREETYPE
 	settings->setDefault("freetype", "true");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
+	settings->setDefault("font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-Italic.ttf"));
+	settings->setDefault("font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Arimo-Bold.ttf"));
+	settings->setDefault("font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-BoldItalic.ttf"));
+	settings->setDefault("font_bold", "false");
+	settings->setDefault("font_italic", "false");
 	settings->setDefault("font_shadow", "1");
 	settings->setDefault("font_shadow_alpha", "127");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "Cousine-Regular.ttf"));
+	settings->setDefault("mono_font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-Italic.ttf"));
+	settings->setDefault("mono_font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Cousine-Bold.ttf"));
+	settings->setDefault("mono_font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-BoldItalic.ttf"));
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
 
 	settings->setDefault("fallback_font_shadow", "1");
@@ -285,6 +321,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
+#ifdef __ANDROID__
+	settings->setDefault("contentdb_flag_blacklist", "nonfree, android_default");
+#else
+	settings->setDefault("contentdb_flag_blacklist", "nonfree, desktop_default");
+#endif
 
 
 	// Server
@@ -323,19 +364,20 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("kick_msg_crash", "This server has experienced an internal error. You will now be disconnected.");
 	settings->setDefault("ask_reconnect_on_crash", "false");
 
+	settings->setDefault("chat_message_format", "<@name> @message");
 	settings->setDefault("profiler_print_interval", "0");
-	settings->setDefault("active_object_send_range_blocks", "3");
+	settings->setDefault("active_object_send_range_blocks", "4");
 	settings->setDefault("active_block_range", "3");
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
-	settings->setDefault("max_block_send_distance", "9");
+	settings->setDefault("max_block_send_distance", "10");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
-	settings->setDefault("csm_restriction_flags", "30");
+	settings->setDefault("csm_restriction_flags", "62");
 	settings->setDefault("csm_restriction_noderange", "0");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
-	settings->setDefault("world_start_time", "5250");
+	settings->setDefault("world_start_time", "6125");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
 	settings->setDefault("max_objects_per_block", "64");
 	settings->setDefault("server_map_save_interval", "5.3");
@@ -351,10 +393,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
+	settings->setDefault("debug_log_size_max", "50");
 	settings->setDefault("emergequeue_limit_total", "512");
 	settings->setDefault("emergequeue_limit_diskonly", "64");
 	settings->setDefault("emergequeue_limit_generate", "64");
-	settings->setDefault("num_emerge_threads", "0");
+	settings->setDefault("num_emerge_threads", "1");
 	settings->setDefault("secure.enable_security", "true");
 	settings->setDefault("secure.trusted_mods", "");
 	settings->setDefault("secure.http_mods", "");
@@ -383,10 +426,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_level", "1");
 	settings->setDefault("mapgen_limit", "31000");
 	settings->setDefault("chunksize", "5");
-	settings->setDefault("mg_flags", "dungeons");
+	settings->setDefault("mg_flags", "caves,dungeons,light,decorations,biomes");
 	settings->setDefault("fixed_map_seed", "");
-	settings->setDefault("max_block_generate_distance", "7");
-	settings->setDefault("projecting_dungeons", "true");
+	settings->setDefault("max_block_generate_distance", "8");
 	settings->setDefault("enable_mapgen_debug_info", "false");
 
 	// Server list announcing
@@ -399,14 +441,19 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("high_precision_fpu", "true");
 	settings->setDefault("enable_console", "false");
 
+	// Altered settings for macOS
+#if defined(__MACH__) && defined(__APPLE__)
+	settings->setDefault("keymap_sneak", "KEY_SHIFT");
+	settings->setDefault("fps_max", "0");
+#endif
+
+	// Altered settings for Android
 #ifdef __ANDROID__
 	settings->setDefault("screen_w", "0");
 	settings->setDefault("screen_h", "0");
-	settings->setDefault("enable_shaders", "false");
 	settings->setDefault("fullscreen", "true");
-	settings->setDefault("video_driver", "ogles1");
 	settings->setDefault("touchtarget", "true");
-	settings->setDefault("TMPFolder","/sdcard/" PROJECT_NAME_C "/tmp/");
+	settings->setDefault("TMPFolder", porting::getDataPath("tmp" DIR_DELIM));
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux", "false");
@@ -420,24 +467,31 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("pause_fps_max", "10");
 	settings->setDefault("max_objects_per_block", "20");
 	settings->setDefault("sqlite_synchronous", "1");
-	settings->setDefault("gui_scaling", "1.1");
 	settings->setDefault("server_map_save_interval", "15");
 	settings->setDefault("client_mapblock_limit", "1000");
 	settings->setDefault("active_block_range", "2");
-	settings->setDefault("chunksize", "5");
-
 	settings->setDefault("viewing_range", "50");
-	settings->setDefault("inventory_image_hack", "false");
+	settings->setDefault("leaves_style", "simple");
+	settings->setDefault("curl_verify_cert","false");
 
-	// Check for a device with a small screen
+	// Apply settings according to screen size
 	float x_inches = ((double) porting::getDisplaySize().X /
 			(160 * porting::getDisplayDensity()));
-	if (x_inches  < 3.5) {
+
+	if (x_inches < 3.7f) {
 		settings->setDefault("hud_scaling", "0.6");
-	} else if (x_inches < 4.5) {
+		settings->setDefault("font_size", "14");
+		settings->setDefault("mono_font_size", "14");
+	} else if (x_inches < 4.5f) {
 		settings->setDefault("hud_scaling", "0.7");
+		settings->setDefault("font_size", "14");
+		settings->setDefault("mono_font_size", "14");
+	} else if (x_inches < 6.0f) {
+		settings->setDefault("hud_scaling", "0.85");
+		settings->setDefault("font_size", "14");
+		settings->setDefault("mono_font_size", "14");
 	}
-	settings->setDefault("curl_verify_cert","false");
+	// Tablets >= 6.0 use non-Android defaults for these settings
 #else
 	settings->setDefault("screen_dpi", "72");
 #endif

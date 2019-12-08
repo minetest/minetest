@@ -456,8 +456,8 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 	if (!playerDataExists(player->getName())) {
 		beginSave();
 		str_to_sqlite(m_stmt_player_add, 1, player->getName());
-		double_to_sqlite(m_stmt_player_add, 2, sao->getPitch());
-		double_to_sqlite(m_stmt_player_add, 3, sao->getYaw());
+		double_to_sqlite(m_stmt_player_add, 2, sao->getLookPitch());
+		double_to_sqlite(m_stmt_player_add, 3, sao->getRotation().Y);
 		double_to_sqlite(m_stmt_player_add, 4, pos.X);
 		double_to_sqlite(m_stmt_player_add, 5, pos.Y);
 		double_to_sqlite(m_stmt_player_add, 6, pos.Z);
@@ -468,8 +468,8 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 		sqlite3_reset(m_stmt_player_add);
 	} else {
 		beginSave();
-		double_to_sqlite(m_stmt_player_update, 1, sao->getPitch());
-		double_to_sqlite(m_stmt_player_update, 2, sao->getYaw());
+		double_to_sqlite(m_stmt_player_update, 1, sao->getLookPitch());
+		double_to_sqlite(m_stmt_player_update, 2, sao->getRotation().Y);
 		double_to_sqlite(m_stmt_player_update, 3, pos.X);
 		double_to_sqlite(m_stmt_player_update, 4, pos.Y);
 		double_to_sqlite(m_stmt_player_update, 5, pos.Z);
@@ -528,9 +528,10 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 		sqlite3_vrfy(sqlite3_step(m_stmt_player_metadata_add), SQLITE_DONE);
 		sqlite3_reset(m_stmt_player_metadata_add);
 	}
-	sao->getMeta().setModified(false);
 
 	endSave();
+
+	player->onSuccessfulSave();
 }
 
 bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
@@ -542,10 +543,10 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		sqlite3_reset(m_stmt_player_load);
 		return false;
 	}
-	sao->setPitch(sqlite_to_float(m_stmt_player_load, 0));
-	sao->setYaw(sqlite_to_float(m_stmt_player_load, 1));
+	sao->setLookPitch(sqlite_to_float(m_stmt_player_load, 0));
+	sao->setPlayerYaw(sqlite_to_float(m_stmt_player_load, 1));
 	sao->setBasePosition(sqlite_to_v3f(m_stmt_player_load, 2));
-	sao->setHPRaw((s16) MYMIN(sqlite_to_int(m_stmt_player_load, 5), S16_MAX));
+	sao->setHPRaw((u16) MYMIN(sqlite_to_int(m_stmt_player_load, 5), U16_MAX));
 	sao->setBreath((u16) MYMIN(sqlite_to_int(m_stmt_player_load, 6), U16_MAX), false);
 	sqlite3_reset(m_stmt_player_load);
 

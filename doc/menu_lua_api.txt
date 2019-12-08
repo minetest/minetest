@@ -1,4 +1,4 @@
-Minetest Lua Mainmenu API Reference 5.0.0
+Minetest Lua Mainmenu API Reference 5.2.0
 =========================================
 
 Introduction
@@ -65,6 +65,7 @@ core.get_video_drivers()
 ^ first element of returned list is guaranteed to be the NULL driver
 core.get_mapgen_names([include_hidden=false]) -> table of map generator algorithms
     registered in the core (possible in async calls)
+core.get_cache_path() -> path of cache
 
 Formspec:
 core.update_formspec(formspec)
@@ -78,6 +79,8 @@ core.explode_table_event(string) -> table
 core.explode_textlist_event(string) -> table
 ^ returns e.g. {type="CHG", index=1}
 ^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)
+core.set_formspec_prepend(formspec)
+^ string to be added to every mainmenu formspec, to be used for theming.
 
 GUI:
 core.set_background(type, texturepath,[tile],[minsize])
@@ -88,13 +91,14 @@ core.set_background(type, texturepath,[tile],[minsize])
 core.set_clouds(<true/false>)
 core.set_topleft_text(text)
 core.show_keys_menu()
-core.file_open_dialog(formname,caption)
-^ shows a file open dialog
+core.show_path_select_dialog(formname, caption, is_file_select)
+^ shows a path select dialog
 ^ formname is base name of dialog response returned in fields
 ^     -if dialog was accepted "_accepted"
-^^       will be added to fieldname containing the path
+^        will be added to fieldname containing the path
 ^     -if dialog was canceled "_cancelled"
 ^        will be added to fieldname value is set to formname itself
+^ if `is_file_select` is `true`, a file and not a folder will be selected
 ^ returns nil or selected file/folder
 core.get_screen_info()
 ^ returns {
@@ -146,17 +150,6 @@ Package - content which is downloadable from the content db, may or may not be i
 			optional_depends = {"mod", "names"}, -- mods only
 		}
 
-* core.get_package_list() -> downloads package list from content db
-	* returns a list of:
-
-		{
-			name = "basename",
-			title = "human readable title",
-			author = "username",
-			type = "", -- mod, game, txp
-			short_description = "description",
-			url = "",
-		}
 
 Favorites:
 core.get_favorites(location) -> list of favorites (possible in async calls)
@@ -250,4 +243,4 @@ Limitations of Async operations
  -No access to global lua variables, don't even try
  -Limited set of available functions
 	e.g. No access to functions modifying menu like core.start,core.close,
-	core.file_open_dialog
+	core.show_path_select_dialog

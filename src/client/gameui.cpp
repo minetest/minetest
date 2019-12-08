@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <irrlicht_changes/static_text.h>
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
+#include "gui/guiChatConsole.h"
 #include "util/pointedthing.h"
 #include "client.h"
 #include "clientmap.h"
@@ -33,7 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 inline static const char *yawToDirectionString(int yaw)
 {
-	static const char *direction[4] = {"N +Z", "W -X", "S -Z", "E +X"};
+	static const char *direction[4] =
+		{"North +Z", "West -X", "South -Z", "East +X"};
 
 	yaw = wrapDegrees_0_360(yaw);
 	yaw = (yaw + 45) % 360 / 90;
@@ -78,13 +80,15 @@ void GameUI::init()
 	// Profiler text (size is updated when text is updated)
 	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
+	m_guitext_profiler->setOverrideFont(g_fontengine->getFont(
+		g_fontengine->getDefaultFontSize() * 0.9f, FM_Mono));
 	m_guitext_profiler->setBackgroundColor(video::SColor(120, 0, 0, 0));
 	m_guitext_profiler->setVisible(false);
-	m_guitext_profiler->setWordWrap(true);
 }
 
 void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
-	const CameraOrientation &cam, const PointedThing &pointed_old, float dtime)
+	const CameraOrientation &cam, const PointedThing &pointed_old,
+	const GUIChatConsole *chat_console, float dtime)
 {
 	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
 
@@ -96,17 +100,17 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
 			<< PROJECT_NAME_C " " << g_version_hash
-			<< ", FPS: " << fps
+			<< " | FPS: " << fps
 			<< std::setprecision(0)
-			<< ", drawtime: " << drawtime_avg << "ms"
+			<< " | drawtime: " << drawtime_avg << "ms"
 			<< std::setprecision(1)
-			<< ", dtime jitter: "
+			<< " | dtime jitter: "
 			<< (stats.dtime_jitter.max_fraction * 100.0) << "%"
 			<< std::setprecision(1)
-			<< ", view range: "
+			<< " | view range: "
 			<< (draw_control->range_all ? "All" : itos(draw_control->wanted_range))
 			<< std::setprecision(3)
-			<< ", RTT: " << client->getRTT() << "s";
+			<< " | RTT: " << client->getRTT() << "s";
 		setStaticText(m_guitext, utf8_to_wide(os.str()).c_str());
 
 		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X,
@@ -125,14 +129,15 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< "pos: (" << (player_position.X / BS)
 			<< ", " << (player_position.Y / BS)
 			<< ", " << (player_position.Z / BS)
-			<< "), yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
+			<< ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
 			<< yawToDirectionString(cam.camera_yaw)
-			<< ", seed: " << ((u64)client->getMapSeed());
+			<< " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "°"
+			<< " | seed: " << ((u64)client->getMapSeed());
 
 		if (pointed_old.type == POINTEDTHING_NODE) {
 			ClientMap &map = client->getEnv().getClientMap();
 			const NodeDefManager *nodedef = client->getNodeDefManager();
-			MapNode n = map.getNodeNoEx(pointed_old.node_undersurface);
+			MapNode n = map.getNode(pointed_old.node_undersurface);
 
 			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
 				os << ", pointed: " << nodedef->get(n).name
@@ -184,6 +189,9 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		m_guitext_status->setOverrideColor(fade_color);
 		m_guitext_status->enableOverrideColor(true);
 	}
+
+	// Hide chat when console is visible
+	m_guitext_chat->setVisible(isChatVisible() && !chat_console->isVisible());
 }
 
 void GameUI::initFlags()
@@ -225,38 +233,28 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 	m_guitext_chat->setRelativePosition(core::rect<s32>(10, chat_y, width,
 		chat_y + m_guitext_chat->getTextHeight()));
 
-	// Don't show chat if disabled or empty or profiler is enabled
-	m_guitext_chat->setVisible(m_flags.show_chat &&
-		recent_chat_count != 0 && m_profiler_current_page == 0);
+	m_recent_chat_count = recent_chat_count;
 }
 
 void GameUI::updateProfiler()
 {
 	if (m_profiler_current_page != 0) {
 		std::ostringstream os(std::ios_base::binary);
-		g_profiler->printPage(os, m_profiler_current_page, m_profiler_max_page);
+		os << "   Profiler page " << (int)m_profiler_current_page <<
+				", elapsed: " << g_profiler->getElapsedMs() << " ms)" << std::endl;
 
-		std::wstring text = translate_string(utf8_to_wide(os.str()));
+		int lines = g_profiler->print(os, m_profiler_current_page, m_profiler_max_page);
+		++lines;
+
+		std::wstring text = utf8_to_wide(os.str());
 		setStaticText(m_guitext_profiler, text.c_str());
 
-		s32 w = g_fontengine->getTextWidth(text);
-
-		if (w < 400)
-			w = 400;
-
-		u32 text_height = g_fontengine->getTextHeight();
-
-		core::position2di upper_left, lower_right;
-
-		upper_left.X  = 6;
-		upper_left.Y  = (text_height + 5) * 2;
-		lower_right.X = 12 + w;
-		lower_right.Y = upper_left.Y + (text_height + 1) * MAX_PROFILER_TEXT_ROWS;
-
-		s32 screen_height = RenderingEngine::get_video_driver()->getScreenSize().Height;
-
-		if (lower_right.Y > screen_height * 2 / 3)
-			lower_right.Y = screen_height * 2 / 3;
+		core::dimension2d<u32> size = m_guitext_profiler->getOverrideFont()->
+				getDimension(text.c_str());
+		core::position2di upper_left(6, 50);
+		core::position2di lower_right = upper_left;
+		lower_right.X += size.Width + 10;
+		lower_right.Y += size.Height; 
 
 		m_guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
 	}
@@ -299,4 +297,15 @@ void GameUI::toggleProfiler()
 	} else {
 		showTranslatedStatusText("Profiler hidden");
 	}
+}
+
+
+void GameUI::deleteFormspec()
+{
+	if (m_formspec) {
+		m_formspec->drop();
+		m_formspec = nullptr;
+	}
+
+	m_formname.clear();
 }

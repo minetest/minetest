@@ -117,7 +117,7 @@ public:
 	~EmergeManager();
 	DISABLE_CLASS_COPY(EmergeManager);
 
-	bool initMapgens(MapgenParams *mgparams);
+	void initMapgens(MapgenParams *mgparams);
 
 	void startThreads();
 	void stopThreads();

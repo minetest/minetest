@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct ObjectProperties
 {
-	s16 hp_max = 1;
+	u16 hp_max = 1;
 	u16 breath_max = 0;
 	bool physical = false;
 	bool collideWithObjects = true;
@@ -38,7 +38,7 @@ struct ObjectProperties
 	bool pointable = true;
 	std::string visual = "sprite";
 	std::string mesh = "";
-	v2f visual_size = v2f(1, 1);
+	v3f visual_size = v3f(1, 1, 1);
 	std::vector<std::string> textures;
 	std::vector<video::SColor> colors;
 	v2s16 spritediv = v2s16(1, 1);

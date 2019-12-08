@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "server.h"
 #ifndef SERVER
-#include "client.h"
+#include "client/client.h"
 #endif
 
 
@@ -197,18 +197,22 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 {
 	ModNameStorer mod_name_storer(getStack(), mod_name);
 
-	const std::string *init_filename = getClient()->getModFile(mod_name + ":init.lua");
-	const std::string display_filename = mod_name + ":init.lua";
-	if(init_filename == NULL)
-		throw ModError("Mod:\"" + mod_name + "\" lacks init.lua");
+	sanity_check(m_type == ScriptingType::Client);
 
-	verbosestream << "Loading and running script " << display_filename << std::endl;
+	const std::string init_filename = mod_name + ":init.lua";
+	const std::string chunk_name = "@" + init_filename;
+
+	const std::string *contents = getClient()->getModFile(init_filename);
+	if (!contents)
+		throw ModError("Mod \"" + mod_name + "\" lacks init.lua");
+
+	verbosestream << "Loading and running script " << chunk_name << std::endl;
 
 	lua_State *L = getStack();
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	bool ok = ScriptApiSecurity::safeLoadFile(L, init_filename->c_str(), display_filename.c_str());
+	bool ok = ScriptApiSecurity::safeLoadString(L, *contents, chunk_name.c_str());
 	if (ok)
 		ok = !lua_pcall(L, 0, 0, error_handler);
 	if (!ok) {
@@ -232,6 +236,13 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 void ScriptApiBase::runCallbacksRaw(int nargs,
 		RunCallbacksMode mode, const char *fxn)
 {
+#ifndef SERVER
+	// Hard fail for bad guarded callbacks
+	// Only run callbacks when the scripting enviroment is loaded
+	FATAL_ERROR_IF(m_type == ScriptingType::Client &&
+			!getClient()->modsLoaded(), fxn);
+#endif
+
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	assert(m_lock_recursion_count > 0);
 #endif
@@ -384,14 +395,18 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 
 void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason)
 {
-	if (reason.lua_reference >= 0) {
+	if (reason.hasLuaReference())
 		lua_rawgeti(L, LUA_REGISTRYINDEX, reason.lua_reference);
-		luaL_unref(L, LUA_REGISTRYINDEX, reason.lua_reference);
-	} else
+	else
 		lua_newtable(L);
 
-	lua_pushstring(L, reason.getTypeAsString().c_str());
-	lua_setfield(L, -2, "type");
+	lua_getfield(L, -1, "type");
+	bool has_type = (bool)lua_isstring(L, -1);
+	lua_pop(L, 1);
+	if (!has_type) {
+		lua_pushstring(L, reason.getTypeAsString().c_str());
+		lua_setfield(L, -2, "type");
+	}
 
 	lua_pushstring(L, reason.from_mod ? "mod" : "engine");
 	lua_setfield(L, -2, "from");
@@ -399,6 +414,10 @@ void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeR
 	if (reason.object) {
 		objectrefGetOrCreate(L, reason.object);
 		lua_setfield(L, -2, "object");
+	}
+	if (!reason.node.empty()) {
+		lua_pushstring(L, reason.node.c_str());
+		lua_setfield(L, -2, "node");
 	}
 }
 

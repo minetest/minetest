@@ -44,6 +44,10 @@ public:
 
 	void setTextDest(TextDest *dest) { m_text_dst = dest; }
 
+protected:
+	std::wstring getLabelByID(s32 id) { return L""; }
+	std::string getNameByID(s32 id) { return ""; }
+
 private:
 	void acceptInput();
 

@@ -22,6 +22,7 @@ local function delete_content_formspec(dialogdata)
 		"size[11.5,4.5,true]" ..
 		"label[2,2;" ..
 		fgettext("Are you sure you want to delete \"$1\"?", dialogdata.content.name) .. "]"..
+		"style[dlg_delete_content_confirm;bgcolor=red]" ..
 		"button[3.25,3.5;2.5,0.5;dlg_delete_content_confirm;" .. fgettext("Delete") .. "]" ..
 		"button[5.75,3.5;2.5,0.5;dlg_delete_content_cancel;" .. fgettext("Cancel") .. "]"
 
@@ -40,7 +41,12 @@ local function delete_content_buttonhandler(this, fields)
 			if not core.delete_dir(this.data.content.path) then
 				gamedata.errormessage = fgettext("pkgmgr: failed to delete \"$1\"", this.data.content.path)
 			end
-			pkgmgr.refresh_globals()
+
+			if this.data.content.type == "game" then
+				pkgmgr.update_gamelist()
+			else
+				pkgmgr.refresh_globals()
+			end
 		else
 			gamedata.errormessage = fgettext("pkgmgr: invalid path \"$1\"", this.data.content.path)
 		end

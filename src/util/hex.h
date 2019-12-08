@@ -26,6 +26,8 @@ static const char hex_chars[] = "0123456789abcdef";
 static inline std::string hex_encode(const char *data, unsigned int data_size)
 {
 	std::string ret;
+	ret.reserve(data_size * 2);
+
 	char buf2[3];
 	buf2[2] = '\0';
 

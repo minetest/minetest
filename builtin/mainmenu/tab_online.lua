@@ -20,7 +20,7 @@ local function get_formspec(tabview, name, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
 	common_update_cached_supp_proto()
-	local fav_selected = nil
+	local fav_selected
 	if menudata.search_result then
 		fav_selected = menudata.search_result[tabdata.fav_selected]
 	else
@@ -36,7 +36,7 @@ local function get_formspec(tabview, name, tabdata)
 		"field[0.15,0.075;5.91,1;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
 		"button[5.62,-0.25;1.5,1;btn_mp_search;" .. fgettext("Search") .. "]" ..
 		"image_button[6.97,-.165;.83,.83;" .. core.formspec_escape(defaulttexturedir .. "refresh.png")
-			.. ";btn_mp_refresh;" .. fgettext("") .. "]" ..
+			.. ";btn_mp_refresh;]" ..
 
 		-- Address / Port
 		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
@@ -256,6 +256,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		-- setup the keyword list
 		local keywords = {}
 		for word in input:gmatch("%S+") do
+			word = word:gsub("(%W)", "%%%1")
 			table.insert(keywords, word)
 		end
 
@@ -272,8 +273,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			for k = 1, #keywords do
 				local keyword = keywords[k]
 				if server.name then
-					local name = server.name:lower()
-					local _, count = name:gsub(keyword, keyword)
+					local sername = server.name:lower()
+					local _, count = sername:gsub(keyword, keyword)
 					found = found + count * 4
 				end
 

@@ -536,8 +536,18 @@ int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 	return 1;
 }
 
+// remove_detached_inventory_raw(name)
+int ModApiInventory::l_remove_detached_inventory_raw(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const std::string &name = luaL_checkstring(L, 1);
+	lua_pushboolean(L, getServer(L)->removeDetachedInventory(name));
+	return 1;
+}
+
 void ModApiInventory::Initialize(lua_State *L, int top)
 {
 	API_FCT(create_detached_inventory_raw);
+	API_FCT(remove_detached_inventory_raw);
 	API_FCT(get_inventory);
 }

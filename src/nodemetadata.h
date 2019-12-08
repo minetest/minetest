@@ -70,13 +70,21 @@ private:
 	List of metadata of all the nodes of a block
 */
 
+typedef std::map<v3s16, NodeMetadata *> NodeMetadataMap;
+
 class NodeMetadataList
 {
 public:
+	NodeMetadataList(bool is_metadata_owner = true) :
+		m_is_metadata_owner(is_metadata_owner)
+	{}
+
 	~NodeMetadataList();
 
-	void serialize(std::ostream &os, u8 blockver, bool disk=true) const;
-	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr);
+	void serialize(std::ostream &os, u8 blockver, bool disk = true,
+		bool absolute_pos = false) const;
+	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr,
+		bool absolute_pos = false);
 
 	// Add all keys in this list to the vector keys
 	std::vector<v3s16> getAllKeys();
@@ -89,8 +97,21 @@ public:
 	// Deletes all
 	void clear();
 
+	size_t size() const { return m_data.size(); }
+
+	NodeMetadataMap::const_iterator begin()
+	{
+		return m_data.begin();
+	}
+
+	NodeMetadataMap::const_iterator end()
+	{
+		return m_data.end();
+	}
+
 private:
 	int countNonEmpty() const;
 
-	std::map<v3s16, NodeMetadata *> m_data;
+	bool m_is_metadata_owner;
+	NodeMetadataMap m_data;
 };

@@ -340,8 +340,8 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 		// only do this if this would add blocks
 		if (player_ao_range > active_block_range) {
 			v3f camera_dir = v3f(0,0,1);
-			camera_dir.rotateYZBy(playersao->getPitch());
-			camera_dir.rotateXZBy(playersao->getYaw());
+			camera_dir.rotateYZBy(playersao->getLookPitch());
+			camera_dir.rotateXZBy(playersao->getRotation().Y);
 			fillViewConeBlock(pos,
 				player_ao_range,
 				playersao->getEyePosition(),
@@ -384,6 +384,9 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	ServerEnvironment
 */
 
+// Random device to seed pseudo random generators.
+static std::random_device seed;
+
 ServerEnvironment::ServerEnvironment(ServerMap *map,
 	ServerScripting *scriptIface, Server *server,
 	const std::string &path_world):
@@ -391,41 +394,68 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_map(map),
 	m_script(scriptIface),
 	m_server(server),
-	m_path_world(path_world)
+	m_path_world(path_world),
+	m_rgen(seed())
 {
 	// Determine which database backend to use
 	std::string conf_path = path_world + DIR_DELIM + "world.mt";
 	Settings conf;
+
+	std::string player_backend_name = "sqlite3";
+	std::string auth_backend_name = "sqlite3";
+
 	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if (!succeeded || !conf.exists("player_backend")) {
-		// fall back to files
-		conf.set("player_backend", "files");
+
+	// If we open world.mt read the backend configurations.
+	if (succeeded) {
+		// Read those values before setting defaults
+		bool player_backend_exists = conf.exists("player_backend");
+		bool auth_backend_exists = conf.exists("auth_backend");
+
+		// player backend is not set, assume it's legacy file backend.
+		if (!player_backend_exists) {
+			// fall back to files
+			conf.set("player_backend", "files");
+			player_backend_name = "files";
+
+			if (!conf.updateConfigFile(conf_path.c_str())) {
+				errorstream << "ServerEnvironment::ServerEnvironment(): "
+						<< "Failed to update world.mt!" << std::endl;
+			}
+		} else {
+			conf.getNoEx("player_backend", player_backend_name);
+		}
+
+		// auth backend is not set, assume it's legacy file backend.
+		if (!auth_backend_exists) {
+			conf.set("auth_backend", "files");
+			auth_backend_name = "files";
+
+			if (!conf.updateConfigFile(conf_path.c_str())) {
+				errorstream << "ServerEnvironment::ServerEnvironment(): "
+						<< "Failed to update world.mt!" << std::endl;
+			}
+		} else {
+			conf.getNoEx("auth_backend", auth_backend_name);
+		}
+	}
+
+	if (player_backend_name == "files") {
 		warningstream << "/!\\ You are using old player file backend. "
-				<< "This backend is deprecated and will be removed in next release /!\\"
+				<< "This backend is deprecated and will be removed in a future release /!\\"
 				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
-
-		if (!conf.updateConfigFile(conf_path.c_str())) {
-			errorstream << "ServerEnvironment::ServerEnvironment(): "
-				<< "Failed to update world.mt!" << std::endl;
-		}
 	}
 
-	std::string name;
-	conf.getNoEx("player_backend", name);
-	m_player_database = openPlayerDatabase(name, path_world, conf);
-
-	std::string auth_name = "files";
-	if (conf.exists("auth_backend")) {
-		conf.getNoEx("auth_backend", auth_name);
-	} else {
-		conf.set("auth_backend", "files");
-		if (!conf.updateConfigFile(conf_path.c_str())) {
-			errorstream << "ServerEnvironment::ServerEnvironment(): "
-					<< "Failed to update world.mt!" << std::endl;
-		}
+	if (auth_backend_name == "files") {
+		warningstream << "/!\\ You are using old auth file backend. "
+				<< "This backend is deprecated and will be removed in a future release /!\\"
+				<< std::endl << "Switching to SQLite3 is advised, "
+				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
-	m_auth_database = openAuthDatabase(auth_name, path_world, conf);
+
+	m_player_database = openPlayerDatabase(player_backend_name, path_world, conf);
+	m_auth_database = openAuthDatabase(auth_backend_name, path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -520,7 +550,7 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
 	// Iterate trough nodes on the line
 	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
 	do {
-		MapNode n = getMap().getNodeNoEx(iterator.m_current_node_pos);
+		MapNode n = getMap().getNode(iterator.m_current_node_pos);
 
 		// Return non-air
 		if (n.param0 != CONTENT_AIR) {
@@ -542,13 +572,10 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	}
 }
 
-void ServerEnvironment::saveLoadedPlayers()
+void ServerEnvironment::saveLoadedPlayers(bool force)
 {
-	std::string players_path = m_path_world + DIR_DELIM + "players";
-	fs::CreateDir(players_path);
-
 	for (RemotePlayer *player : m_players) {
-		if (player->checkModified() || (player->getPlayerSAO() &&
+		if (force || player->checkModified() || (player->getPlayerSAO() &&
 				player->getPlayerSAO()->getMeta().isModified())) {
 			try {
 				m_player_database->savePlayer(player);
@@ -887,7 +914,7 @@ public:
 							c = n.getContent();
 						} else {
 							// otherwise consult the map
-							MapNode n = map->getNodeNoEx(p1 + block->getPosRelative());
+							MapNode n = map->getNode(p1 + block->getPosRelative());
 							c = n.getContent();
 						}
 						if (CONTAINS(aabm.required_neighbors, c))
@@ -981,7 +1008,7 @@ void ServerEnvironment::addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm)
 bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
 	const NodeDefManager *ndef = m_server->ndef();
-	MapNode n_old = m_map->getNodeNoEx(p);
+	MapNode n_old = m_map->getNode(p);
 
 	const ContentFeatures &cf_old = ndef->get(n_old);
 
@@ -1014,7 +1041,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 bool ServerEnvironment::removeNode(v3s16 p)
 {
 	const NodeDefManager *ndef = m_server->ndef();
-	MapNode n_old = m_map->getNodeNoEx(p);
+	MapNode n_old = m_map->getNode(p);
 
 	// Call destructor
 	if (ndef->get(n_old).has_on_destruct)
@@ -1047,29 +1074,13 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
-void ServerEnvironment::getObjectsInsideRadius(std::vector<u16> &objects, v3f pos,
-	float radius)
-{
-	for (auto &activeObject : m_active_objects) {
-		ServerActiveObject* obj = activeObject.second;
-		u16 id = activeObject.first;
-		v3f objectpos = obj->getBasePosition();
-		if (objectpos.getDistanceFrom(pos) > radius)
-			continue;
-		objects.push_back(id);
-	}
-}
-
 void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 {
 	infostream << "ServerEnvironment::clearObjects(): "
 		<< "Removing all active objects" << std::endl;
-	std::vector<u16> objects_to_remove;
-	for (auto &it : m_active_objects) {
-		u16 id = it.first;
-		ServerActiveObject* obj = it.second;
+	auto cb_removal = [this] (ServerActiveObject *obj, u16 id) {
 		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-			continue;
+			return false;
 
 		// Delete static object if block is loaded
 		deleteStaticFromBlock(obj, id, MOD_REASON_CLEAR_ALL_OBJECTS, true);
@@ -1077,7 +1088,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		// If known by some client, don't delete immediately
 		if (obj->m_known_by_count > 0) {
 			obj->m_pending_removal = true;
-			continue;
+			return false;
 		}
 
 		// Tell the object about removal
@@ -1088,14 +1099,11 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		// Delete active object
 		if (obj->environmentDeletes())
 			delete obj;
-		// Id to be removed from m_active_objects
-		objects_to_remove.push_back(id);
-	}
 
-	// Remove references from m_active_objects
-	for (u16 i : objects_to_remove) {
-		m_active_objects.erase(i);
-	}
+		return true;
+	};
+
+	m_ao_manager.clear(cb_removal);
 
 	// Get list of loaded blocks
 	std::vector<v3s16> loaded_blocks;
@@ -1192,6 +1200,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 void ServerEnvironment::step(float dtime)
 {
+	ScopeProfiler sp2(g_profiler, "ServerEnv::step()", SPT_AVG);
 	/* Step time of day */
 	stepTimeOfDay(dtime);
 
@@ -1216,7 +1225,7 @@ void ServerEnvironment::step(float dtime)
 		Handle players
 	*/
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: handle players avg", SPT_AVG);
+		ScopeProfiler sp(g_profiler, "ServerEnv: move players", SPT_AVG);
 		for (RemotePlayer *player : m_players) {
 			// Ignore disconnected players
 			if (player->getPeerId() == PEER_ID_INEXISTENT)
@@ -1231,7 +1240,7 @@ void ServerEnvironment::step(float dtime)
 		Manage active block list
 	*/
 	if (m_active_blocks_management_interval.step(dtime, m_cache_active_block_mgmt_interval)) {
-		ScopeProfiler sp(g_profiler, "SEnv: manage act. block list avg per interval", SPT_AVG);
+		ScopeProfiler sp(g_profiler, "ServerEnv: update active blocks", SPT_AVG);
 		/*
 			Get player block positions
 		*/
@@ -1297,7 +1306,7 @@ void ServerEnvironment::step(float dtime)
 		Mess around in active blocks
 	*/
 	if (m_active_blocks_nodemetadata_interval.step(dtime, m_cache_nodetimer_interval)) {
-		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg per interval", SPT_AVG);
+		ScopeProfiler sp(g_profiler, "ServerEnv: Run node timers", SPT_AVG);
 
 		float dtime = m_cache_nodetimer_interval;
 
@@ -1334,47 +1343,56 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
-	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval))
-		do { // breakable
-			if (m_active_block_interval_overload_skip > 0) {
-				ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
-				m_active_block_interval_overload_skip--;
+	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval)) {
+		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
+		TimeTaker timer("modify in active blocks per interval");
+
+		// Initialize handling of ActiveBlockModifiers
+		ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
+
+		int blocks_scanned = 0;
+		int abms_run = 0;
+		int blocks_cached = 0;
+
+		std::vector<v3s16> output(m_active_blocks.m_abm_list.size());
+
+		// Shuffle the active blocks so that each block gets an equal chance
+		// of having its ABMs run.
+		std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
+		std::shuffle(output.begin(), output.end(), m_rgen);
+
+		int i = 0;
+		// The time budget for ABMs is 20%.
+		u32 max_time_ms = m_cache_abm_interval * 1000 / 5;
+		for (const v3s16 &p : output) {
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if (!block)
+				continue;
+
+			i++;
+
+			// Set current time as timestamp
+			block->setTimestampNoChangedFlag(m_game_time);
+
+			/* Handle ActiveBlockModifiers */
+			abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
+
+			u32 time_ms = timer.getTimerTime();
+
+			if (time_ms > max_time_ms) {
+				warningstream << "active block modifiers took "
+					  << time_ms << "ms (processed " << i << " of "
+					  << output.size() << " active blocks)" << std::endl;
 				break;
 			}
-			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
-			TimeTaker timer("modify in active blocks per interval");
+		}
+		g_profiler->avg("ServerEnv: active blocks", m_active_blocks.m_abm_list.size());
+		g_profiler->avg("ServerEnv: active blocks cached", blocks_cached);
+		g_profiler->avg("ServerEnv: active blocks scanned for ABMs", blocks_scanned);
+		g_profiler->avg("ServerEnv: ABMs run", abms_run);
 
-			// Initialize handling of ActiveBlockModifiers
-			ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
-
-			int blocks_scanned = 0;
-			int abms_run = 0;
-			int blocks_cached = 0;
-			for (const v3s16 &p : m_active_blocks.m_abm_list) {
-				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-				if (!block)
-					continue;
-
-				// Set current time as timestamp
-				block->setTimestampNoChangedFlag(m_game_time);
-
-				/* Handle ActiveBlockModifiers */
-				abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
-			}
-			g_profiler->avg("SEnv: active blocks", m_active_blocks.m_abm_list.size());
-			g_profiler->avg("SEnv: active blocks cached", blocks_cached);
-			g_profiler->avg("SEnv: active blocks scanned for ABMs", blocks_scanned);
-			g_profiler->avg("SEnv: ABMs run", abms_run);
-
-			u32 time_ms = timer.stop(true);
-			u32 max_time_ms = 200;
-			if (time_ms > max_time_ms) {
-				warningstream<<"active block modifiers took "
-					<<time_ms<<"ms (longer than "
-					<<max_time_ms<<"ms)"<<std::endl;
-				m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
-			}
-		}while(0);
+		timer.stop(true);
+	}
 
 	/*
 		Step script environment (run global on_step())
@@ -1385,40 +1403,35 @@ void ServerEnvironment::step(float dtime)
 		Step active objects
 	*/
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_AVG);
-		//TimeTaker timer("Step active objects");
-
-		g_profiler->avg("SEnv: num of objects", m_active_objects.size());
+		ScopeProfiler sp(g_profiler, "ServerEnv: Run SAO::step()", SPT_AVG);
 
 		// This helps the objects to send data at the same time
 		bool send_recommended = false;
 		m_send_recommended_timer += dtime;
-		if(m_send_recommended_timer > getSendRecommendedInterval())
-		{
+		if (m_send_recommended_timer > getSendRecommendedInterval()) {
 			m_send_recommended_timer -= getSendRecommendedInterval();
 			send_recommended = true;
 		}
 
-		for (auto &ao_it : m_active_objects) {
-			ServerActiveObject* obj = ao_it.second;
+		auto cb_state = [this, dtime, send_recommended] (ServerActiveObject *obj) {
 			if (obj->isGone())
-				continue;
+				return;
 
 			// Step object
 			obj->step(dtime, send_recommended);
 			// Read messages from object
 			while (!obj->m_messages_out.empty()) {
-				m_active_object_messages.push(obj->m_messages_out.front());
+				this->m_active_object_messages.push(obj->m_messages_out.front());
 				obj->m_messages_out.pop();
 			}
-		}
+		};
+		m_ao_manager.step(dtime, cb_state);
 	}
 
 	/*
 		Manage active objects
 	*/
 	if (m_object_management_interval.step(dtime, 0.5)) {
-		ScopeProfiler sp(g_profiler, "SEnv: remove removed objs avg /.5s", SPT_AVG);
 		removeRemovedObjects();
 	}
 
@@ -1441,6 +1454,19 @@ void ServerEnvironment::step(float dtime)
 				++i;
 		}
 	}
+
+	// Send outdated player inventories
+	for (RemotePlayer *player : m_players) {
+		if (player->getPeerId() == PEER_ID_INEXISTENT)
+			continue;
+
+		PlayerSAO *sao = player->getPlayerSAO();
+		if (sao && player->inventory.checkModified())
+			m_server->SendInventory(sao, true);
+	}
+
+	// Send outdated detached inventories
+	m_server->sendDetachedInventories(PEER_ID_INEXISTENT, true);
 }
 
 u32 ServerEnvironment::addParticleSpawner(float exptime)
@@ -1484,44 +1510,6 @@ void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 	}
 }
 
-ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)
-{
-	ServerActiveObjectMap::const_iterator n = m_active_objects.find(id);
-	return (n != m_active_objects.end() ? n->second : NULL);
-}
-
-/**
- * Verify if id is a free active object id
- * @param id
- * @return true if slot is free
- */
-bool ServerEnvironment::isFreeServerActiveObjectId(u16 id) const
-{
-	if (id == 0)
-		return false;
-
-	return m_active_objects.find(id) == m_active_objects.end();
-}
-
-/**
- * Retrieve the first free ActiveObject ID
- * @return free activeobject ID or 0 if none was found
- */
-u16 ServerEnvironment::getFreeServerActiveObjectId()
-{
-	// try to reuse id's as late as possible
-	static u16 last_used_id = 0;
-	u16 startid = last_used_id;
-	for (;;) {
-		last_used_id++;
-		if (isFreeServerActiveObjectId(last_used_id))
-			return last_used_id;
-
-		if (last_used_id == startid)
-			return 0;
-	}
-}
-
 u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 {
 	assert(object);	// Pre-condition
@@ -1542,43 +1530,11 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 	f32 radius_f = radius * BS;
 	f32 player_radius_f = player_radius * BS;
 
-	if (player_radius_f < 0)
-		player_radius_f = 0;
-	/*
-		Go through the object list,
-		- discard removed/deactivated objects,
-		- discard objects that are too far away,
-		- discard objects that are found in current_objects.
-		- add remaining objects to added_objects
-	*/
-	for (auto &ao_it : m_active_objects) {
-		u16 id = ao_it.first;
+	if (player_radius_f < 0.0f)
+		player_radius_f = 0.0f;
 
-		// Get object
-		ServerActiveObject *object = ao_it.second;
-		if (object == NULL)
-			continue;
-
-		if (object->isGone())
-			continue;
-
-		f32 distance_f = object->getBasePosition().
-			getDistanceFrom(playersao->getBasePosition());
-		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			// Discard if too far
-			if (distance_f > player_radius_f && player_radius_f != 0)
-				continue;
-		} else if (distance_f > radius_f)
-			continue;
-
-		// Discard if already on current_objects
-		std::set<u16>::iterator n;
-		n = current_objects.find(id);
-		if(n != current_objects.end())
-			continue;
-		// Add to added_objects
-		added_objects.push(id);
-	}
+	m_ao_manager.getAddedActiveObjectsAroundPos(playersao->getBasePosition(), radius_f,
+		player_radius_f, current_objects, added_objects);
 }
 
 /*
@@ -1639,8 +1595,8 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 
 	for (auto &so_it : block->m_static_objects.m_active) {
 		// Get the ServerActiveObject counterpart to this StaticObject
-		ServerActiveObjectMap::const_iterator ao_it = m_active_objects.find(so_it.first);
-		if (ao_it == m_active_objects.end()) {
+		ServerActiveObject *sao = m_ao_manager.getActiveObject(so_it.first);
+		if (!sao) {
 			// If this ever happens, there must be some kind of nasty bug.
 			errorstream << "ServerEnvironment::setStaticForObjectsInBlock(): "
 				"Object from MapBlock::m_static_objects::m_active not found "
@@ -1648,7 +1604,6 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 			continue;
 		}
 
-		ServerActiveObject *sao = ao_it->second;
 		sao->m_static_exists = static_exists;
 		sao->m_static_block  = static_block;
 	}
@@ -1703,51 +1658,9 @@ void ServerEnvironment::getSelectedActiveObjects(
 u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	bool set_changed, u32 dtime_s)
 {
-	assert(object); // Pre-condition
-	if(object->getId() == 0){
-		u16 new_id = getFreeServerActiveObjectId();
-		if(new_id == 0)
-		{
-			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
-				<<"no free ids available"<<std::endl;
-			if(object->environmentDeletes())
-				delete object;
-			return 0;
-		}
-		object->setId(new_id);
-	}
-	else{
-		verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
-			<<"supplied with id "<<object->getId()<<std::endl;
-	}
-
-	if(!isFreeServerActiveObjectId(object->getId())) {
-		errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
-			<<"id is not free ("<<object->getId()<<")"<<std::endl;
-		if(object->environmentDeletes())
-			delete object;
+	if (!m_ao_manager.registerObject(object)) {
 		return 0;
 	}
-
-	if (objectpos_over_limit(object->getBasePosition())) {
-		v3f p = object->getBasePosition();
-		warningstream << "ServerEnvironment::addActiveObjectRaw(): "
-			<< "object position (" << p.X << "," << p.Y << "," << p.Z
-			<< ") outside maximum range" << std::endl;
-		if (object->environmentDeletes())
-			delete object;
-		return 0;
-	}
-
-	/*infostream<<"ServerEnvironment::addActiveObjectRaw(): "
-			<<"added (id="<<object->getId()<<")"<<std::endl;*/
-
-	m_active_objects[object->getId()] = object;
-
-	verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
-		<<"Added id="<<object->getId()<<"; there are now "
-		<<m_active_objects.size()<<" active objects."
-		<<std::endl;
 
 	// Register reference in scripting api (must be done before post-init)
 	m_script->addObjectReference(object);
@@ -1755,8 +1668,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	object->addedToEnvironment(dtime_s);
 
 	// Add static data to block
-	if(object->isStaticAllowed())
-	{
+	if (object->isStaticAllowed()) {
 		// Add static object to active static list of the block
 		v3f objectpos = object->getBasePosition();
 		StaticObject s_obj(object, objectpos);
@@ -1787,24 +1699,21 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 */
 void ServerEnvironment::removeRemovedObjects()
 {
-	std::vector<u16> objects_to_remove;
-	for (auto &ao_it : m_active_objects) {
-		u16 id = ao_it.first;
-		ServerActiveObject* obj = ao_it.second;
+	ScopeProfiler sp(g_profiler, "ServerEnvironment::removeRemovedObjects()", SPT_AVG);
 
+	auto clear_cb = [this] (ServerActiveObject *obj, u16 id) {
 		// This shouldn't happen but check it
 		if (!obj) {
 			errorstream << "ServerEnvironment::removeRemovedObjects(): "
 					<< "NULL object found. id=" << id << std::endl;
-			objects_to_remove.push_back(id);
-			continue;
+			return true;
 		}
 
 		/*
 			We will handle objects marked for removal or deactivation
 		*/
 		if (!obj->isGone())
-			continue;
+			return false;
 
 		/*
 			Delete static data from block if removed
@@ -1815,7 +1724,7 @@ void ServerEnvironment::removeRemovedObjects()
 		// If still known by clients, don't actually remove. On some future
 		// invocation this will be 0, which is when removal will continue.
 		if(obj->m_known_by_count > 0)
-			continue;
+			return false;
 
 		/*
 			Move static data from active to stored if deactivated
@@ -1823,8 +1732,7 @@ void ServerEnvironment::removeRemovedObjects()
 		if (!obj->m_pending_removal && obj->m_static_exists) {
 			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
 			if (block) {
-				std::map<u16, StaticObject>::iterator i =
-					block->m_static_objects.m_active.find(id);
+				const auto i = block->m_static_objects.m_active.find(id);
 				if (i != block->m_static_objects.m_active.end()) {
 					block->m_static_objects.m_stored.push_back(i->second);
 					block->m_static_objects.m_active.erase(id);
@@ -1848,15 +1756,13 @@ void ServerEnvironment::removeRemovedObjects()
 		m_script->removeObjectReference(obj);
 
 		// Delete
-		if(obj->environmentDeletes())
+		if (obj->environmentDeletes())
 			delete obj;
 
-		objects_to_remove.push_back(id);
-	}
-	// Remove references from m_active_objects
-	for (u16 i : objects_to_remove) {
-		m_active_objects.erase(i);
-	}
+		return true;
+	};
+
+	m_ao_manager.clear(clear_cb);
 }
 
 static void print_hexdump(std::ostream &o, const std::string &data)
@@ -1976,24 +1882,19 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 */
 void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
-	std::vector<u16> objects_to_remove;
-	for (auto &ao_it : m_active_objects) {
+	auto cb_deactivate = [this, _force_delete] (ServerActiveObject *obj, u16 id) {
 		// force_delete might be overriden per object
 		bool force_delete = _force_delete;
 
-		ServerActiveObject* obj = ao_it.second;
-		assert(obj);
-
 		// Do not deactivate if static data creation not allowed
-		if(!force_delete && !obj->isStaticAllowed())
-			continue;
+		if (!force_delete && !obj->isStaticAllowed())
+			return false;
 
 		// removeRemovedObjects() is responsible for these
-		if(!force_delete && obj->isGone())
-			continue;
+		if (!force_delete && obj->isGone())
+			return false;
 
-		u16 id = ao_it.first;
-		v3f objectpos = obj->getBasePosition();
+		const v3f &objectpos = obj->getBasePosition();
 
 		// The block in which the object resides in
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
@@ -2001,11 +1902,9 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		// If object's static data is stored in a deactivated block and object
 		// is actually located in an active block, re-save to the block in
 		// which the object is actually located in.
-		if(!force_delete &&
-			obj->m_static_exists &&
-			!m_active_blocks.contains(obj->m_static_block) &&
-			m_active_blocks.contains(blockpos_o))
-		{
+		if (!force_delete && obj->m_static_exists &&
+		   !m_active_blocks.contains(obj->m_static_block) &&
+		   m_active_blocks.contains(blockpos_o)) {
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
 
@@ -2013,16 +1912,16 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 			// Save to block where object is located
 			saveStaticToBlock(blockpos_o, id, obj, s_obj, MOD_REASON_STATIC_DATA_ADDED);
 
-			continue;
+			return false;
 		}
 
 		// If block is still active, don't remove
-		if(!force_delete && m_active_blocks.contains(blockpos_o))
-			continue;
+		if (!force_delete && m_active_blocks.contains(blockpos_o))
+			return false;
 
 		verbosestream << "ServerEnvironment::deactivateFarObjects(): "
-				<< "deactivating object id=" << id << " on inactive block "
-				<< PP(blockpos_o) << std::endl;
+					  << "deactivating object id=" << id << " on inactive block "
+					  << PP(blockpos_o) << std::endl;
 
 		// If known by some client, don't immediately delete.
 		bool pending_delete = (obj->m_known_by_count > 0 && !force_delete);
@@ -2045,8 +1944,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
 
 				if (block) {
-					std::map<u16, StaticObject>::iterator n =
-						block->m_static_objects.m_active.find(id);
+					const auto n = block->m_static_objects.m_active.find(id);
 					if (n != block->m_static_objects.m_active.end()) {
 						StaticObject static_old = n->second;
 
@@ -2085,18 +1983,18 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 			If known by some client, set pending deactivation.
 			Otherwise delete it immediately.
 		*/
-		if(pending_delete && !force_delete)
-		{
+		if (pending_delete && !force_delete) {
 			verbosestream << "ServerEnvironment::deactivateFarObjects(): "
-					<< "object id=" << id << " is known by clients"
-					<< "; not deleting yet" << std::endl;
+						  << "object id=" << id << " is known by clients"
+						  << "; not deleting yet" << std::endl;
 
 			obj->m_pending_deactivation = true;
-			continue;
+			return false;
 		}
+
 		verbosestream << "ServerEnvironment::deactivateFarObjects(): "
-				<< "object id=" << id << " is not known by clients"
-				<< "; deleting" << std::endl;
+					  << "object id=" << id << " is not known by clients"
+					  << "; deleting" << std::endl;
 
 		// Tell the object about removal
 		obj->removingFromEnvironment();
@@ -2104,16 +2002,13 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		m_script->removeObjectReference(obj);
 
 		// Delete active object
-		if(obj->environmentDeletes())
+		if (obj->environmentDeletes())
 			delete obj;
-		// Id to be removed from m_active_objects
-		objects_to_remove.push_back(id);
-	}
 
-	// Remove references from m_active_objects
-	for (u16 i : objects_to_remove) {
-		m_active_objects.erase(i);
-	}
+		return true;
+	};
+
+	m_ao_manager.clear(cb_deactivate);
 }
 
 void ServerEnvironment::deleteStaticFromBlock(
@@ -2282,7 +2177,7 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 		delete dstdb;
 
 	} catch (BaseException &e) {
-		errorstream << "An error occured during migration: " << e.what() << std::endl;
+		errorstream << "An error occurred during migration: " << e.what() << std::endl;
 		return false;
 	}
 	return true;
@@ -2369,7 +2264,7 @@ bool ServerEnvironment::migrateAuthDatabase(
 		}
 
 	} catch (BaseException &e) {
-		errorstream << "An error occured during migration: " << e.what()
+		errorstream << "An error occurred during migration: " << e.what()
 			    << std::endl;
 		return false;
 	}

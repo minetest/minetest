@@ -25,9 +25,6 @@ mt_color_dark_green = "#25C191"
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
 local menustyle = core.settings:get("main_menu_style")
-if menustyle == "auto" then
-	menustyle = PLATFORM == "Android" and "simple" or "full"
-end
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 					DIR_DELIM .. "pack" .. DIR_DELIM
 
@@ -147,7 +144,10 @@ local function init_globals()
 	tv_main:set_fixed_size(false)
 
 	if menustyle ~= "simple" then
-		tv_main:set_tab(core.settings:get("maintab_LAST"))
+		local last_tab = core.settings:get("maintab_LAST")
+		if last_tab and tv_main.current_tab ~= last_tab then
+			tv_main:set_tab(last_tab)
+		end
 	end
 	ui.set_default("maintab")
 	tv_main:show()

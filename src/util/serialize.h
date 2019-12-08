@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h" // for SerializationError
 #include "debug.h" // for assert
+#include "ieee_float.h"
 
 #include "config.h"
 #if HAVE_ENDIAN_H
@@ -31,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		#define __BIG_ENDIAN 1
 	#elif defined(__MACH__) && defined(__APPLE__)
 		#include <machine/endian.h>
-	#elif defined(__FreeBSD__)
+	#elif defined(__FreeBSD__) || defined(__DragonFly__)
 		#include <sys/endian.h>
 	#else
 		#include <endian.h>
@@ -59,6 +60,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // 64 MB ought to be enough for anybody - Billy G.
 #define LONG_STRING_MAX_LEN (64 * 1024 * 1024)
 
+
+extern FloatType g_serialize_f32_type;
 
 #if HAVE_ENDIAN_H
 // use machine native byte swapping routines
@@ -188,6 +191,25 @@ inline f32 readF1000(const u8 *data)
 	return (f32)readS32(data) / FIXEDPOINT_FACTOR;
 }
 
+inline f32 readF32(const u8 *data)
+{
+	u32 u = readU32(data);
+
+	switch (g_serialize_f32_type) {
+	case FLOATTYPE_SYSTEM: {
+			f32 f;
+			memcpy(&f, &u, 4);
+			return f;
+		}
+	case FLOATTYPE_SLOW:
+		return u32Tof32Slow(u);
+	case FLOATTYPE_UNKNOWN: // First initialization
+		g_serialize_f32_type = getFloatSerializationType();
+		return readF32(data);
+	}
+	throw SerializationError("readF32: Unreachable code");
+}
+
 inline video::SColor readARGB8(const u8 *data)
 {
 	video::SColor p(readU32(data));
@@ -228,20 +250,29 @@ inline v3s32 readV3S32(const u8 *data)
 	return p;
 }
 
-inline v2f readV2F1000(const u8 *data)
-{
-	v2f p;
-	p.X = (float)readF1000(&data[0]);
-	p.Y = (float)readF1000(&data[4]);
-	return p;
-}
-
 inline v3f readV3F1000(const u8 *data)
 {
 	v3f p;
-	p.X = (float)readF1000(&data[0]);
-	p.Y = (float)readF1000(&data[4]);
-	p.Z = (float)readF1000(&data[8]);
+	p.X = readF1000(&data[0]);
+	p.Y = readF1000(&data[4]);
+	p.Z = readF1000(&data[8]);
+	return p;
+}
+
+inline v2f readV2F32(const u8 *data)
+{
+	v2f p;
+	p.X = readF32(&data[0]);
+	p.Y = readF32(&data[4]);
+	return p;
+}
+
+inline v3f readV3F32(const u8 *data)
+{
+	v3f p;
+	p.X = readF32(&data[0]);
+	p.Y = readF32(&data[4]);
+	p.Z = readF32(&data[8]);
 	return p;
 }
 
@@ -259,7 +290,7 @@ inline void writeS8(u8 *data, s8 i)
 
 inline void writeS16(u8 *data, s16 i)
 {
-	writeU16(data, (u16)i);
+	writeU16(data, (u16)i); 
 }
 
 inline void writeS32(u8 *data, s32 i)
@@ -276,6 +307,23 @@ inline void writeF1000(u8 *data, f32 i)
 {
 	assert(i >= F1000_MIN && i <= F1000_MAX);
 	writeS32(data, i * FIXEDPOINT_FACTOR);
+}
+
+inline void writeF32(u8 *data, f32 i)
+{
+	switch (g_serialize_f32_type) {
+	case FLOATTYPE_SYSTEM: {
+			u32 u;
+			memcpy(&u, &i, 4);
+			return writeU32(data, u);
+		}
+	case FLOATTYPE_SLOW:
+		return writeU32(data, f32Tou32Slow(i));
+	case FLOATTYPE_UNKNOWN: // First initialization
+		g_serialize_f32_type = getFloatSerializationType();
+		return writeF32(data, i);
+	}
+	throw SerializationError("writeF32: Unreachable code");
 }
 
 inline void writeARGB8(u8 *data, video::SColor p)
@@ -309,17 +357,24 @@ inline void writeV3S32(u8 *data, v3s32 p)
 	writeS32(&data[8], p.Z);
 }
 
-inline void writeV2F1000(u8 *data, v2f p)
-{
-	writeF1000(&data[0], p.X);
-	writeF1000(&data[4], p.Y);
-}
-
 inline void writeV3F1000(u8 *data, v3f p)
 {
 	writeF1000(&data[0], p.X);
 	writeF1000(&data[4], p.Y);
 	writeF1000(&data[8], p.Z);
+}
+
+inline void writeV2F32(u8 *data, v2f p)
+{
+	writeF32(&data[0], p.X);
+	writeF32(&data[4], p.Y);
+}
+
+inline void writeV3F32(u8 *data, v3f p)
+{
+	writeF32(&data[0], p.X);
+	writeF32(&data[4], p.Y);
+	writeF32(&data[8], p.Z);
 }
 
 ////
@@ -351,12 +406,14 @@ MAKE_STREAM_READ_FXN(s16,   S16,      2);
 MAKE_STREAM_READ_FXN(s32,   S32,      4);
 MAKE_STREAM_READ_FXN(s64,   S64,      8);
 MAKE_STREAM_READ_FXN(f32,   F1000,    4);
+MAKE_STREAM_READ_FXN(f32,   F32,      4);
 MAKE_STREAM_READ_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_READ_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_READ_FXN(v2s32, V2S32,    8);
 MAKE_STREAM_READ_FXN(v3s32, V3S32,   12);
-MAKE_STREAM_READ_FXN(v2f,   V2F1000,  8);
 MAKE_STREAM_READ_FXN(v3f,   V3F1000, 12);
+MAKE_STREAM_READ_FXN(v2f,   V2F32,    8);
+MAKE_STREAM_READ_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_READ_FXN(video::SColor, ARGB8, 4);
 
 MAKE_STREAM_WRITE_FXN(u8,    U8,       1);
@@ -368,12 +425,14 @@ MAKE_STREAM_WRITE_FXN(s16,   S16,      2);
 MAKE_STREAM_WRITE_FXN(s32,   S32,      4);
 MAKE_STREAM_WRITE_FXN(s64,   S64,      8);
 MAKE_STREAM_WRITE_FXN(f32,   F1000,    4);
+MAKE_STREAM_WRITE_FXN(f32,   F32,      4);
 MAKE_STREAM_WRITE_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_WRITE_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_WRITE_FXN(v2s32, V2S32,    8);
 MAKE_STREAM_WRITE_FXN(v3s32, V3S32,   12);
-MAKE_STREAM_WRITE_FXN(v2f,   V2F1000,  8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F1000, 12);
+MAKE_STREAM_WRITE_FXN(v2f,   V2F32,    8);
+MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 
 ////
@@ -468,7 +527,6 @@ public:
 	MAKE_BUFREADER_GETNOEX_FXN(v3s16, V3S16,    6);
 	MAKE_BUFREADER_GETNOEX_FXN(v2s32, V2S32,    8);
 	MAKE_BUFREADER_GETNOEX_FXN(v3s32, V3S32,   12);
-	MAKE_BUFREADER_GETNOEX_FXN(v2f,   V2F1000,  8);
 	MAKE_BUFREADER_GETNOEX_FXN(v3f,   V3F1000, 12);
 	MAKE_BUFREADER_GETNOEX_FXN(video::SColor, ARGB8, 4);
 
@@ -490,7 +548,6 @@ public:
 	MAKE_BUFREADER_GET_FXN(v3s16,         V3S16);
 	MAKE_BUFREADER_GET_FXN(v2s32,         V2S32);
 	MAKE_BUFREADER_GET_FXN(v3s32,         V3S32);
-	MAKE_BUFREADER_GET_FXN(v2f,           V2F1000);
 	MAKE_BUFREADER_GET_FXN(v3f,           V3F1000);
 	MAKE_BUFREADER_GET_FXN(video::SColor, ARGB8);
 	MAKE_BUFREADER_GET_FXN(std::string,   String);
@@ -602,12 +659,6 @@ inline void putV3S32(std::vector<u8> *dest, v3s32 val)
 	putS32(dest, val.X);
 	putS32(dest, val.Y);
 	putS32(dest, val.Z);
-}
-
-inline void putV2F1000(std::vector<u8> *dest, v2f val)
-{
-	putF1000(dest, val.X);
-	putF1000(dest, val.Y);
 }
 
 inline void putV3F1000(std::vector<u8> *dest, v3f val)

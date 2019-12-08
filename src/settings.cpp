@@ -69,7 +69,9 @@ Settings & Settings::operator = (const Settings &other)
 bool Settings::checkNameValid(const std::string &name)
 {
 	bool valid = name.find_first_of("=\"{}#") == std::string::npos;
-	if (valid) valid = trim(name) == name;
+	if (valid)
+		valid = std::find_if(name.begin(), name.end(), ::isspace) == name.end();
+
 	if (!valid) {
 		errorstream << "Invalid setting name \"" << name << "\""
 			<< std::endl;
@@ -225,9 +227,13 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 		case SPE_KVPAIR:
 			it = m_settings.find(name);
 			if (it != m_settings.end() &&
-				(it->second.is_group || it->second.value != value)) {
+					(it->second.is_group || it->second.value != value)) {
 				printEntry(os, name, it->second, tab_depth);
 				was_modified = true;
+			} else if (it == m_settings.end()) {
+				// Remove by skipping
+				was_modified = true;
+				break;
 			} else {
 				os << line << "\n";
 				if (event == SPE_MULTILINE)
@@ -242,6 +248,13 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 				sanity_check(it->second.group != NULL);
 				was_modified |= it->second.group->updateConfigObject(is, os,
 					"}", tab_depth + 1);
+			} else if (it == m_settings.end()) {
+				// Remove by skipping
+				was_modified = true;
+				Settings removed_group; // Move 'is' to group end
+				std::stringstream ss;
+				removed_group.updateConfigObject(is, ss, "}", tab_depth + 1);
+				break;
 			} else {
 				printEntry(os, name, it->second, tab_depth);
 				was_modified = true;
@@ -895,15 +908,20 @@ bool Settings::setNoiseParams(const std::string &name,
 
 bool Settings::remove(const std::string &name)
 {
-	MutexAutoLock lock(m_mutex);
+	// Lock as short as possible, unlock before doCallbacks()
+	m_mutex.lock();
 
 	SettingEntries::iterator it = m_settings.find(name);
 	if (it != m_settings.end()) {
 		delete it->second.group;
 		m_settings.erase(it);
+		m_mutex.unlock();
+
+		doCallbacks(name);
 		return true;
 	}
 
+	m_mutex.unlock();
 	return false;
 }
 

@@ -43,16 +43,19 @@ const struct EnumString es_HudElementStat[] =
 	{HUD_STAT_ALIGN,  "alignment"},
 	{HUD_STAT_OFFSET, "offset"},
 	{HUD_STAT_WORLD_POS, "world_pos"},
+	{HUD_STAT_SIZE,    "size"},
+	{HUD_STAT_Z_INDEX, "z_index"},
 	{0, NULL},
 };
 
 const struct EnumString es_HudBuiltinElement[] =
 {
-	{HUD_FLAG_HOTBAR_VISIBLE,    "hotbar"},
-	{HUD_FLAG_HEALTHBAR_VISIBLE, "healthbar"},
-	{HUD_FLAG_CROSSHAIR_VISIBLE, "crosshair"},
-	{HUD_FLAG_WIELDITEM_VISIBLE, "wielditem"},
-	{HUD_FLAG_BREATHBAR_VISIBLE, "breathbar"},
-	{HUD_FLAG_MINIMAP_VISIBLE,   "minimap"},
+	{HUD_FLAG_HOTBAR_VISIBLE,        "hotbar"},
+	{HUD_FLAG_HEALTHBAR_VISIBLE,     "healthbar"},
+	{HUD_FLAG_CROSSHAIR_VISIBLE,     "crosshair"},
+	{HUD_FLAG_WIELDITEM_VISIBLE,     "wielditem"},
+	{HUD_FLAG_BREATHBAR_VISIBLE,     "breathbar"},
+	{HUD_FLAG_MINIMAP_VISIBLE,       "minimap"},
+	{HUD_FLAG_MINIMAP_RADAR_VISIBLE, "minimap_radar"},
 	{0, NULL},
 };

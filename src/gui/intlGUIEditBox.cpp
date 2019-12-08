@@ -32,8 +32,6 @@
 #include <util/numeric.h>
 #include "intlGUIEditBox.h"
 
-#if defined(_IRR_COMPILE_WITH_GUI_) && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9 || defined(__ANDROID__)
-
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IGUIFont.h"
@@ -115,6 +113,9 @@ intlGUIEditBox::~intlGUIEditBox()
 
 	if (Operator)
 		Operator->drop();
+
+	if (m_vscrollbar)
+		m_vscrollbar->drop();
 }
 
 
@@ -182,7 +183,6 @@ void intlGUIEditBox::enableOverrideColor(bool enable)
 
 bool intlGUIEditBox::isOverrideColorEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return OverrideColorEnabled;
 }
 
@@ -208,7 +208,6 @@ void intlGUIEditBox::updateAbsolutePosition()
 //! Checks if word wrap is enabled
 bool intlGUIEditBox::isWordWrapEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return WordWrap;
 }
 
@@ -223,7 +222,6 @@ void intlGUIEditBox::setMultiLine(bool enable)
 //! Checks if multi line editing is enabled
 bool intlGUIEditBox::isMultiLineEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return MultiLine;
 }
 
@@ -243,7 +241,6 @@ void intlGUIEditBox::setPasswordBox(bool passwordBox, wchar_t passwordChar)
 
 bool intlGUIEditBox::isPasswordBox() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return PasswordBox;
 }
 
@@ -276,7 +273,7 @@ bool intlGUIEditBox::OnEvent(const SEvent& event)
 			break;
 		case EET_KEY_INPUT_EVENT:
         {
-#if (defined(__linux__) || defined(__FreeBSD__))
+#if (defined(__linux__) || defined(__FreeBSD__)) || defined(__DragonFly__)
             // ################################################################
 			// ValkaTR:
             // This part is the difference from the original intlGUIEditBox
@@ -980,7 +977,6 @@ void intlGUIEditBox::setAutoScroll(bool enable)
 //! \return true if automatic scrolling is enabled, false if not
 bool intlGUIEditBox::isAutoScrollEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return AutoScroll;
 }
 
@@ -1482,9 +1478,13 @@ void intlGUIEditBox::createVScrollBar()
 		}
 	}
 
+	RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
+
 	irr::core::rect<s32> scrollbarrect = FrameRect;
 	scrollbarrect.UpperLeftCorner.X += FrameRect.getWidth() - m_scrollbar_width;
-	m_vscrollbar = Environment->addScrollBar(false, scrollbarrect, getParent(), getID());
+	m_vscrollbar = new GUIScrollBar(Environment, getParent(), -1,
+			scrollbarrect, false, true);
+
 	m_vscrollbar->setVisible(false);
 	m_vscrollbar->setSmallStep(3 * fontHeight);
 	m_vscrollbar->setLargeStep(10 * fontHeight);
@@ -1506,6 +1506,7 @@ void intlGUIEditBox::updateVScrollBar()
 		if (scrollymax != m_vscrollbar->getMax()) {
 			// manage a newline or a deleted line
 			m_vscrollbar->setMax(scrollymax);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 			calculateScrollPos();
 		} else {
 			// manage a newline or a deleted line
@@ -1518,6 +1519,7 @@ void intlGUIEditBox::updateVScrollBar()
 		s32 scrollymax = getTextDimension().Height - FrameRect.getHeight();
 		if (scrollymax != m_vscrollbar->getMax()) {
 			m_vscrollbar->setMax(scrollymax);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 		}
 
 		if (!m_vscrollbar->isVisible() && MultiLine) {
@@ -1532,6 +1534,7 @@ void intlGUIEditBox::updateVScrollBar()
 			VScrollPos = 0;
 			m_vscrollbar->setPos(0);
 			m_vscrollbar->setMax(1);
+			m_vscrollbar->setPageSize(s32(getTextDimension().Height));
 			m_vscrollbar->setVisible(false);
 		}
 	}
@@ -1594,5 +1597,3 @@ void intlGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 
 } // end namespace gui
 } // end namespace irr
-
-#endif // _IRR_COMPILE_WITH_GUI_

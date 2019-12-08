@@ -25,11 +25,11 @@ void TileAnimationParams::serialize(std::ostream &os, u8 tiledef_version) const
 	if (type == TAT_VERTICAL_FRAMES) {
 		writeU16(os, vertical_frames.aspect_w);
 		writeU16(os, vertical_frames.aspect_h);
-		writeF1000(os, vertical_frames.length);
+		writeF32(os, vertical_frames.length);
 	} else if (type == TAT_SHEET_2D) {
 		writeU8(os, sheet_2d.frames_w);
 		writeU8(os, sheet_2d.frames_h);
-		writeF1000(os, sheet_2d.frame_length);
+		writeF32(os, sheet_2d.frame_length);
 	}
 }
 
@@ -40,11 +40,11 @@ void TileAnimationParams::deSerialize(std::istream &is, u8 tiledef_version)
 	if (type == TAT_VERTICAL_FRAMES) {
 		vertical_frames.aspect_w = readU16(is);
 		vertical_frames.aspect_h = readU16(is);
-		vertical_frames.length = readF1000(is);
+		vertical_frames.length = readF32(is);
 	} else if (type == TAT_SHEET_2D) {
 		sheet_2d.frames_w = readU8(is);
 		sheet_2d.frames_h = readU8(is);
-		sheet_2d.frame_length = readF1000(is);
+		sheet_2d.frame_length = readF32(is);
 	}
 }
 

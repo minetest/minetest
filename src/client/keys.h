@@ -47,6 +47,7 @@ public:
 		CONSOLE,
 		MINIMAP,
 		FREEMOVE,
+		PITCHMOVE,
 		FASTMOVE,
 		NOCLIP,
 		HOTBAR_PREV,
@@ -97,6 +98,15 @@ public:
 		SLOT_21,
 		SLOT_22,
 		SLOT_23,
+		SLOT_24,
+		SLOT_25,
+		SLOT_26,
+		SLOT_27,
+		SLOT_28,
+		SLOT_29,
+		SLOT_30,
+		SLOT_31,
+		SLOT_32,
 
 		// joystick specific keys
 		MOUSE_L,

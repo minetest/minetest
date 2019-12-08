@@ -48,7 +48,7 @@ std::string gob_cmd_update_position(
 	v3f position,
 	v3f velocity,
 	v3f acceleration,
-	f32 yaw,
+	v3f rotation,
 	bool do_interpolate,
 	bool is_movement_end,
 	f32 update_interval
@@ -63,7 +63,7 @@ std::string gob_cmd_set_sprite(
 	bool select_horiz_by_yawpitch
 );
 
-std::string gob_cmd_punched(s16 damage, s16 result_hp);
+std::string gob_cmd_punched(u16 result_hp);
 
 std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups);
 

@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_nodemeta.h" // For legacy deserialization
 #include "serialization.h"
 #ifndef SERVER
-#include "mapblock_mesh.h"
+#include "client/mapblock_mesh.h"
 #endif
 #include "porting.h"
 #include "util/string.h"
@@ -100,7 +100,7 @@ bool MapBlock::isValidPositionParent(v3s16 p)
 MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
 {
 	if (!isValidPosition(p))
-		return m_parent->getNodeNoEx(getPosRelative() + p, is_valid_position);
+		return m_parent->getNode(getPosRelative() + p, is_valid_position);
 
 	if (!data) {
 		if (is_valid_position)
@@ -446,9 +446,7 @@ void MapBlock::serializeNetworkSpecific(std::ostream &os)
 		throw SerializationError("ERROR: Not writing dummy block.");
 	}
 
-	writeU8(os, 1); // version
-	writeF1000(os, 0); // deprecated heat
-	writeF1000(os, 0); // deprecated humidity
+	writeU8(os, 2); // version
 }
 
 void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
@@ -559,16 +557,12 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 void MapBlock::deSerializeNetworkSpecific(std::istream &is)
 {
 	try {
-		int version = readU8(is);
-		//if(version != 1)
-		//	throw SerializationError("unsupported MapBlock version");
-		if(version >= 1) {
-			readF1000(is); // deprecated heat
-			readF1000(is); // deprecated humidity
-		}
-	}
-	catch(SerializationError &e)
-	{
+		readU8(is);
+		//const u8 version = readU8(is);
+		//if (version != 1)
+			//throw SerializationError("unsupported MapBlock version");
+
+	} catch(SerializationError &e) {
 		warningstream<<"MapBlock::deSerializeNetworkSpecific(): Ignoring an error"
 				<<": "<<e.what()<<std::endl;
 	}

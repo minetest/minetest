@@ -128,6 +128,7 @@ function dump(o, indent, nested, level)
 	if t ~= "table" then
 		return basic_dump(o)
 	end
+
 	-- Contains table -> true/nil of currently nested tables
 	nested = nested or {}
 	if nested[o] then
@@ -136,10 +137,11 @@ function dump(o, indent, nested, level)
 	nested[o] = true
 	indent = indent or "\t"
 	level = level or 1
-	local t = {}
+
+	local ret = {}
 	local dumped_indexes = {}
 	for i, v in ipairs(o) do
-		t[#t + 1] = dump(v, indent, nested, level + 1)
+		ret[#ret + 1] = dump(v, indent, nested, level + 1)
 		dumped_indexes[i] = true
 	end
 	for k, v in pairs(o) do
@@ -148,7 +150,7 @@ function dump(o, indent, nested, level)
 				k = "["..dump(k, indent, nested, level + 1).."]"
 			end
 			v = dump(v, indent, nested, level + 1)
-			t[#t + 1] = k.." = "..v
+			ret[#ret + 1] = k.." = "..v
 		end
 	end
 	nested[o] = nil
@@ -157,18 +159,18 @@ function dump(o, indent, nested, level)
 		local end_indent_str = "\n"..string.rep(indent, level - 1)
 		return string.format("{%s%s%s}",
 				indent_str,
-				table.concat(t, ","..indent_str),
+				table.concat(ret, ","..indent_str),
 				end_indent_str)
 	end
-	return "{"..table.concat(t, ", ").."}"
+	return "{"..table.concat(ret, ", ").."}"
 end
 
 --------------------------------------------------------------------------------
 function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	delim = delim or ","
-	max_splits = max_splits or -1
+	max_splits = max_splits or -2
 	local items = {}
-	local pos, len, seplen = 1, #str, #delim
+	local pos, len = 1, #str
 	local plain = not sep_is_pattern
 	max_splits = max_splits + 1
 	repeat
@@ -241,6 +243,20 @@ function math.sign(x, tolerance)
 		return -1
 	end
 	return 0
+end
+
+--------------------------------------------------------------------------------
+function math.factorial(x)
+	assert(x % 1 == 0 and x >= 0, "factorial expects a non-negative integer")
+	if x >= 171 then
+		-- 171! is greater than the biggest double, no need to calculate
+		return math.huge
+	end
+	local v = 1
+	for k = 2, x do
+		v = v * k
+	end
+	return v
 end
 
 --------------------------------------------------------------------------------
@@ -400,7 +416,7 @@ if INIT == "game" then
 			param2 = dirs1[fdir + 1]
 		elseif isceiling then
 			if orient_flags.force_facedir then
-				cparam2 = 20
+				param2 = 20
 			else
 				param2 = dirs2[fdir + 1]
 			end
@@ -411,9 +427,8 @@ if INIT == "game" then
 		end
 
 		local old_itemstack = ItemStack(itemstack)
-		local new_itemstack, removed = core.item_place_node(
-			itemstack, placer, pointed_thing, param2, prevent_after_place
-		)
+		local new_itemstack = core.item_place_node(itemstack, placer,
+				pointed_thing, param2, prevent_after_place)
 		return infinitestacks and old_itemstack or new_itemstack
 	end
 
@@ -431,10 +446,9 @@ if INIT == "game" then
 	core.rotate_node = function(itemstack, placer, pointed_thing)
 		local name = placer and placer:get_player_name() or ""
 		local invert_wall = placer and placer:get_player_control().sneak or false
-		core.rotate_and_place(itemstack, placer, pointed_thing,
+		return core.rotate_and_place(itemstack, placer, pointed_thing,
 				is_creative(name),
 				{invert_wall = invert_wall}, true)
-		return itemstack
 	end
 end
 
@@ -513,7 +527,7 @@ function core.string_to_pos(value)
 		p.z = tonumber(p.z)
 		return p
 	end
-	local p = {}
+	p = {}
 	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
 	if p.x and p.y and p.z then
 		p.x = tonumber(p.x)

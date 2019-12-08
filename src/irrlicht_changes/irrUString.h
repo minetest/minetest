@@ -48,7 +48,7 @@
 #define __BIG_ENDIAN 1
 #elif defined(__MACH__) && defined(__APPLE__)
 #include <machine/endian.h>
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
 #include <sys/endian.h>
 #else
 #include <endian.h>
@@ -2916,13 +2916,13 @@ public:
 				ret[0] = unicode::BOM;
 			else if (endian == unicode::EUTFEE_LITTLE)
 			{
-				uchar8_t* ptr8 = reinterpret_cast<uchar8_t*>(ret.c_str());
+				uchar8_t* ptr8 = reinterpret_cast<uchar8_t*>(&ret[0]);
 				*ptr8++ = unicode::BOM_ENCODE_UTF16_LE[0];
 				*ptr8 = unicode::BOM_ENCODE_UTF16_LE[1];
 			}
 			else
 			{
-				uchar8_t* ptr8 = reinterpret_cast<uchar8_t*>(ret.c_str());
+				uchar8_t* ptr8 = reinterpret_cast<uchar8_t*>(&ret[0]);
 				*ptr8++ = unicode::BOM_ENCODE_UTF16_BE[0];
 				*ptr8 = unicode::BOM_ENCODE_UTF16_BE[1];
 			}

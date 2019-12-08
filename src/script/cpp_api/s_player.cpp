@@ -77,8 +77,8 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 	return readParam<bool>(L, -1);
 }
 
-s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
-	s16 hp_change, const PlayerHPChangeReason &reason)
+s32 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
+	s32 hp_change, const PlayerHPChangeReason &reason)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -195,7 +195,7 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_chat_messages
+	// Get core.registered_on_player_receive_fields
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_player_receive_fields");
 	// Call callbacks

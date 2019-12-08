@@ -118,16 +118,16 @@ public:
 		m_stream(stream)
 	{
 #if !defined(_WIN32)
-		colored = (Logger::color_mode == LOG_COLOR_ALWAYS) ||
-			(Logger::color_mode == LOG_COLOR_AUTO && isatty(fileno(stdout)));
+		is_tty = isatty(fileno(stdout));
 #else
-		colored = Logger::color_mode == LOG_COLOR_ALWAYS;
+		is_tty = false;
 #endif
 	}
 
 	void logRaw(LogLevel lev, const std::string &line)
 	{
-		bool colored_message = colored;
+		bool colored_message = (Logger::color_mode == LOG_COLOR_ALWAYS) ||
+			(Logger::color_mode == LOG_COLOR_AUTO && is_tty);
 		if (colored_message)
 			switch (lev) {
 			case LL_ERROR:
@@ -160,12 +160,12 @@ public:
 
 private:
 	std::ostream &m_stream;
-	bool colored;
+	bool is_tty;
 };
 
 class FileLogOutput : public ICombinedLogOutput {
 public:
-	void open(const std::string &filename);
+	void setFile(const std::string &filename, s64 file_size_max);
 
 	void logRaw(LogLevel lev, const std::string &line)
 	{

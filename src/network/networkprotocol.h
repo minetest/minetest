@@ -188,19 +188,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Nodebox version 5
 		Add disconnected nodeboxes
 		Add TOCLIENT_FORMSPEC_PREPEND
+	PROTOCOL VERSION 37:
+		Redo detached inventory sending
+		Add TOCLIENT_NODEMETA_CHANGED
+		New network float format
+		ContentFeatures version 13
+		Add full Euler rotations instead of just yaw
+		Add TOCLIENT_PLAYER_SPEED
+	PROTOCOL VERSION 38:
+		Incremental inventory sending mode
+		Unknown inventory serialization fields no longer throw an error
+		Mod-specific formspec version
+		Player FOV override API
 */
 
-#define LATEST_PROTOCOL_VERSION 36
+#define LATEST_PROTOCOL_VERSION 38
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
-#define SERVER_PROTOCOL_VERSION_MIN 36
+#define SERVER_PROTOCOL_VERSION_MIN 37
 #define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Client's supported network protocol range
 // The minimal version depends on whether
 // send_pre_v25_init is enabled or not
-#define CLIENT_PROTOCOL_VERSION_MIN 36
+#define CLIENT_PROTOCOL_VERSION_MIN 37
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Constant that differentiates the protocol from random data and other protocols
@@ -209,8 +221,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
                                // base64-encoded SHA-1 (27+\0).
 
-#define FORMSPEC_API_VERSION 1
-#define FORMSPEC_VERSION_STRING "formspec_version[" TOSTRING(FORMSPEC_API_VERSION) "]"
+/*
+	Changes by FORMSPEC_API_VERSION:
+
+	FORMSPEC VERSION 1:
+		(too much)
+	FORMSPEC VERSION 2:
+		Forced real coordinates
+		background9[]: 9-slice scaling parameters
+	FORMSPEC VERSION 3:
+		Formspec elements are drawn in the order of definition
+*/
+#define FORMSPEC_API_VERSION 3
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -289,6 +311,11 @@ enum ToClientCommand
 		u32 CSMRestrictionFlags byteflag
 	 */
 
+	TOCLIENT_PLAYER_SPEED = 0x2B,
+	/*
+		v3f added_vel
+	 */
+
 	// (oops, there is some gap here)
 
 	TOCLIENT_CHAT_MESSAGE = 0x2F,
@@ -346,7 +373,13 @@ enum ToClientCommand
 		wstring reason
 	*/
 
-	TOCLIENT_PLAYERITEM = 0x36, // Obsolete
+	TOCLIENT_FOV = 0x36,
+	/*
+		Sends an FOV override/multiplier to client.
+
+		float fov
+		bool is_multiplier
+	*/
 
 	TOCLIENT_DEATHSCREEN = 0x37,
 	/*
@@ -530,6 +563,7 @@ enum ToClientCommand
 		v2f1000 offset
 		v3f1000 world_pos
 		v2s32 size
+		s16 z_index
 	*/
 
 	TOCLIENT_HUDRM = 0x4a,
@@ -636,13 +670,19 @@ enum ToClientCommand
 	 	std::string channel name
 	 	u16 message length
 	 	std::string message
-	 */
+	*/
+
 	TOCLIENT_MODCHANNEL_SIGNAL = 0x58,
 	/*
 		u8 signal id
 	 	u16 channel name length
 	 	std::string channel name
-	 */
+	*/
+
+	TOCLIENT_NODEMETA_CHANGED = 0x59,
+	/*
+		serialized and compressed node metadata
+	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
@@ -937,10 +977,25 @@ enum PlayerListModifer: u8
 
 enum CSMRestrictionFlags : u64 {
 	CSM_RF_NONE = 0x00000000,
-	CSM_RF_LOAD_CLIENT_MODS = 0x00000001, // Disable mods provided by clients
-	CSM_RF_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
-	CSM_RF_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
-	CSM_RF_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
-	CSM_RF_LOOKUP_NODES = 0x00000010, // Limit node lookups
+	// Until server-sent CSM and verifying of builtin are complete,
+	// 'CSM_RF_LOAD_CLIENT_MODS' also disables loading 'builtin'.
+	// When those are complete, this should return to only being a restriction on the
+	// loading of client mods.
+	CSM_RF_LOAD_CLIENT_MODS = 0x00000001, // Don't load client-provided mods or 'builtin'
+	CSM_RF_CHAT_MESSAGES = 0x00000002,    // Disable chat message sending from CSM
+	CSM_RF_READ_ITEMDEFS = 0x00000004,    // Disable itemdef lookups
+	CSM_RF_READ_NODEDEFS = 0x00000008,    // Disable nodedef lookups
+	CSM_RF_LOOKUP_NODES = 0x00000010,     // Limit node lookups
+	CSM_RF_READ_PLAYERINFO = 0x00000020,  // Disable player info lookups
 	CSM_RF_ALL = 0xFFFFFFFF,
+};
+
+enum InteractAction : u8
+{
+	INTERACT_START_DIGGING,     // 0: start digging (from undersurface) or use
+	INTERACT_STOP_DIGGING,      // 1: stop digging (all parameters ignored)
+	INTERACT_DIGGING_COMPLETED, // 2: digging completed
+	INTERACT_PLACE,             // 3: place block or item (to abovesurface)
+	INTERACT_USE,               // 4: use item
+	INTERACT_ACTIVATE           // 5: rightclick air ("activate")
 };

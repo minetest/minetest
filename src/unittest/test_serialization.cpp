@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/string.h"
 #include "util/serialize.h"
+#include <cmath>
 
 class TestSerialization : public TestBase {
 public:
@@ -43,12 +44,13 @@ public:
 	void testVecPut();
 	void testStringLengthLimits();
 	void testBufReader();
+	void testFloatFormat();
 
 	std::string teststring2;
 	std::wstring teststring2_w;
 	std::string teststring2_w_encoded;
 
-	static const u8 test_serialized_data[12 * 13];
+	static const u8 test_serialized_data[12 * 13 - 8];
 };
 
 static TestSerialization g_test_instance;
@@ -70,6 +72,7 @@ void TestSerialization::runTests(IGameDef *gamedef)
 	TEST(testVecPut);
 	TEST(testStringLengthLimits);
 	TEST(testBufReader);
+	TEST(testFloatFormat);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -313,7 +316,6 @@ void TestSerialization::testStreamRead()
 	UASSERT(readV3S16(is) == v3s16(4207, 604, -30));
 	UASSERT(readV2S32(is) == v2s32(1920, 1080));
 	UASSERT(readV3S32(is) == v3s32(-400, 6400054, 290549855));
-	UASSERT(readV2F1000(is) == v2f(500.656f, 350.345f));
 
 	UASSERT(deSerializeWideString(is) == L"\x02~woof~\x5455");
 
@@ -358,7 +360,6 @@ void TestSerialization::testStreamWrite()
 	writeV3S16(os, v3s16(4207, 604, -30));
 	writeV2S32(os, v2s32(1920, 1080));
 	writeV3S32(os, v3s32(-400, 6400054, 290549855));
-	writeV2F1000(os, v2f(500.65661f, 350.34567f));
 
 	os << serializeWideString(L"\x02~woof~\x5455");
 
@@ -400,7 +401,6 @@ void TestSerialization::testVecPut()
 	putV3S16(&buf, v3s16(4207, 604, -30));
 	putV2S32(&buf, v2s32(1920, 1080));
 	putV3S32(&buf, v3s32(-400, 6400054, 290549855));
-	putV2F1000(&buf, v2f(500.65661f, 350.34567f));
 
 	putWideString(&buf, L"\x02~woof~\x5455");
 
@@ -451,7 +451,6 @@ void TestSerialization::testBufReader()
 	v3s16 v3s16_data;
 	v2s32 v2s32_data;
 	v3s32 v3s32_data;
-	v2f v2f_data;
 	v3f v3f_data;
 	std::string string_data;
 	std::wstring widestring_data;
@@ -478,7 +477,6 @@ void TestSerialization::testBufReader()
 	UASSERT(buf.getV3S16() == v3s16(4207, 604, -30));
 	UASSERT(buf.getV2S32() == v2s32(1920, 1080));
 	UASSERT(buf.getV3S32() == v3s32(-400, 6400054, 290549855));
-	UASSERT(buf.getV2F1000() == v2f(500.656f, 350.345f));
 	UASSERT(buf.getWideString() == L"\x02~woof~\x5455");
 	UASSERT(buf.getV3F1000() == v3f(500, 10024.2f, -192.54f));
 	UASSERT(buf.getARGB8() == video::SColor(255, 128, 50, 128));
@@ -523,7 +521,6 @@ void TestSerialization::testBufReader()
 	EXCEPTION_CHECK(SerializationError, buf.getV3S16());
 	EXCEPTION_CHECK(SerializationError, buf.getV2S32());
 	EXCEPTION_CHECK(SerializationError, buf.getV3S32());
-	EXCEPTION_CHECK(SerializationError, buf.getV2F1000());
 	EXCEPTION_CHECK(SerializationError, buf.getV3F1000());
 
 	EXCEPTION_CHECK(SerializationError, buf.getString());
@@ -565,7 +562,6 @@ void TestSerialization::testBufReader()
 	UASSERT(buf.getV3S16NoEx(&v3s16_data));
 	UASSERT(buf.getV2S32NoEx(&v2s32_data));
 	UASSERT(buf.getV3S32NoEx(&v3s32_data));
-	UASSERT(buf.getV2F1000NoEx(&v2f_data));
 	UASSERT(buf.getWideStringNoEx(&widestring_data));
 	UASSERT(buf.getV3F1000NoEx(&v3f_data));
 	UASSERT(buf.getARGB8NoEx(&scolor_data));
@@ -590,7 +586,6 @@ void TestSerialization::testBufReader()
 	UASSERT(v3s16_data == v3s16(4207, 604, -30));
 	UASSERT(v2s32_data == v2s32(1920, 1080));
 	UASSERT(v3s32_data == v3s32(-400, 6400054, 290549855));
-	UASSERT(v2f_data == v2f(500.656f, 350.345f));
 	UASSERT(widestring_data == L"\x02~woof~\x5455");
 	UASSERT(v3f_data == v3f(500, 10024.2f, -192.54f));
 	UASSERT(scolor_data == video::SColor(255, 128, 50, 128));
@@ -622,7 +617,6 @@ void TestSerialization::testBufReader()
 	UASSERT(!buf.getV3S16NoEx(&v3s16_data));
 	UASSERT(!buf.getV2S32NoEx(&v2s32_data));
 	UASSERT(!buf.getV3S32NoEx(&v3s32_data));
-	UASSERT(!buf.getV2F1000NoEx(&v2f_data));
 	UASSERT(!buf.getV3F1000NoEx(&v3f_data));
 
 	UASSERT(!buf.getStringNoEx(&string_data));
@@ -631,8 +625,90 @@ void TestSerialization::testBufReader()
 	UASSERT(!buf.getRawDataNoEx(raw_data, sizeof(raw_data)));
 }
 
+void TestSerialization::testFloatFormat()
+{
+	FloatType type = getFloatSerializationType();
+	u32 i;
+	f32 fs, fm;
 
-const u8 TestSerialization::test_serialized_data[12 * 13] = {
+	// Check precision of float calculations on this platform
+	const std::unordered_map<f32, u32> float_results = {
+		{  0.0f, 0x00000000UL },
+		{  1.0f, 0x3F800000UL },
+		{ -1.0f, 0xBF800000UL },
+		{  0.1f, 0x3DCCCCCDUL },
+		{ -0.1f, 0xBDCCCCCDUL },
+		{ 1945329.25f, 0x49ED778AUL },
+		{ -23298764.f, 0xCBB1C166UL },
+		{  0.5f, 0x3F000000UL },
+		{ -0.5f, 0xBF000000UL }
+	};
+	for (const auto &v : float_results) {
+		i = f32Tou32Slow(v.first);
+		if (std::abs((s64)v.second - i) > 32) {
+			printf("Inaccurate float values on %.9g, expected 0x%X, actual 0x%X\n",
+				v.first, v.second, i);
+			UASSERT(false);
+		}
+
+		fs = u32Tof32Slow(v.second);
+		if (std::fabs(v.first - fs) > std::fabs(v.first * 0.000005f)) {
+			printf("Inaccurate float values on 0x%X, expected %.9g, actual 0x%.9g\n",
+				v.second, v.first, fs);
+			UASSERT(false);
+		}
+	}
+
+	if (type == FLOATTYPE_SLOW) {
+		// conversion using memcpy is not possible
+		// Skip exact float comparison checks below
+		return;
+	}
+
+	// The code below compares the IEEE conversion functions with a
+	// known good IEC559/IEEE754 implementation. This test neeeds
+	// IEC559 compliance in the compiler.
+#if defined(__GNUC__) && (!defined(__STDC_IEC_559__) || defined(__FAST_MATH__))
+	// GNU C++ lies about its IEC559 support when -ffast-math is active.
+	// https://gcc.gnu.org/bugzilla//show_bug.cgi?id=84949
+	bool is_iec559 = false;
+#else
+	bool is_iec559 = std::numeric_limits<f32>::is_iec559;
+#endif
+	if (!is_iec559)
+		return;
+
+	auto test_single = [&fs, &fm](const u32 &i) -> bool {
+		memcpy(&fm, &i, 4);
+		fs = u32Tof32Slow(i);
+		if (fm != fs) {
+			printf("u32Tof32Slow failed on 0x%X, expected %.9g, actual %.9g\n",
+				i, fm, fs);
+			return false;
+		}
+		if (f32Tou32Slow(fs) != i) {
+			printf("f32Tou32Slow failed on %.9g, expected 0x%X, actual 0x%X\n",
+				fs, i, f32Tou32Slow(fs));
+			return false;
+		}
+		return true;
+	};
+
+	// Use step of prime 277 to speed things up from 3 minutes to a few seconds
+	// Test from 0 to 0xFF800000UL (positive)
+	for (i = 0x00000000UL; i <= 0x7F800000UL; i += 277)
+		UASSERT(test_single(i));
+
+	// Ensure +inf and -inf are tested
+	UASSERT(test_single(0x7F800000UL));
+	UASSERT(test_single(0xFF800000UL));
+
+	// Test from 0x80000000UL to 0xFF800000UL (negative)
+	for (i = 0x80000000UL; i <= 0xFF800000UL; i += 277)
+		UASSERT(test_single(i));
+}
+
+const u8 TestSerialization::test_serialized_data[12 * 13 - 8] = {
 	0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc,
 	0xdd, 0xee, 0xff, 0x80, 0x75, 0x30, 0xff, 0xff, 0xff, 0xfa, 0xff, 0xff,
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xd5, 0x00, 0x00, 0xd1, 0x1e, 0xee, 0x1e,
@@ -640,8 +716,8 @@ const u8 TestSerialization::test_serialized_data[12 * 13] = {
 	0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, 0x21, 0x01, 0xf4, 0x01, 0xf4, 0x10,
 	0x6f, 0x02, 0x5c, 0xff, 0xe2, 0x00, 0x00, 0x07, 0x80, 0x00, 0x00, 0x04,
 	0x38, 0xff, 0xff, 0xfe, 0x70, 0x00, 0x61, 0xa8, 0x36, 0x11, 0x51, 0x70,
-	0x5f, 0x00, 0x07, 0xa3, 0xb0, 0x00, 0x05, 0x58, 0x89, 0x00, 0x08, 0x00,
-	0x02, 0x00, 0x7e, 0x00, 0x77, 0x00, 0x6f, 0x00, 0x6f, 0x00, 0x66, 0x00,
+	0x5f, 0x00, 0x08, 0x00,
+	0x02, 0x00, 0x7e, 0x00,  'w', 0x00,  'o', 0x00,  'o', 0x00,  'f', 0x00, // \x02~woof~\x5455
 	0x7e, 0x54, 0x55, 0x00, 0x07, 0xa1, 0x20, 0x00, 0x98, 0xf5, 0x08, 0xff,
 	0xfd, 0x0f, 0xe4, 0xff, 0x80, 0x32, 0x80, 0x00, 0x00, 0x00, 0x17, 0x73,
 	0x6f, 0x6d, 0x65, 0x20, 0x6c, 0x6f, 0x6e, 0x67, 0x65, 0x72, 0x20, 0x73,

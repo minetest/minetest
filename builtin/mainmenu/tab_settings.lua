@@ -148,11 +148,9 @@ local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
 
 		core.create_world("singleplayerworld", 1)
 		worldlist = core.get_worlds()
-		found_singleplayerworld = false
 
 		for i = 1, #worldlist do
 			if worldlist[i].name == "singleplayerworld" then
-				found_singleplayerworld = true
 				gamedata.worldindex = i
 			end
 		end
@@ -220,7 +218,8 @@ local function formspec(tabview, name, tabdata)
 					fgettext("Shaders (unavailable)")) .. "]"
 	end
 
-	if PLATFORM == "Android" then
+	if core.settings:get("main_menu_style") == "simple" then
+		-- 'Reset singleplayer world' only functions with simple menu
 		tab_string = tab_string ..
 			"button[8,4.75;3.95,1;btn_reset_singleplayer;"
 			.. fgettext("Reset singleplayer world") .. "]"
@@ -232,14 +231,15 @@ local function formspec(tabview, name, tabdata)
 
 	tab_string = tab_string ..
 		"button[0,4.75;3.95,1;btn_advanced_settings;"
-		.. fgettext("Advanced Settings") .. "]"
+		.. fgettext("All Settings") .. "]"
 
 
 	if core.settings:get("touchscreen_threshold") ~= nil then
 		tab_string = tab_string ..
-			"label[4.3,4.1;" .. fgettext("Touchthreshold (px)") .. "]" ..
-			"dropdown[3.85,4.55;3.85;dd_touchthreshold;0,10,20,30,40,50;" ..
-			((tonumber(core.settings:get("touchscreen_threshold")) / 10) + 1) .. "]"
+			"label[4.3,4.2;" .. fgettext("Touchthreshold: (px)") .. "]" ..
+			"dropdown[4.25,4.65;3.5;dd_touchthreshold;0,10,20,30,40,50;" ..
+			((tonumber(core.settings:get("touchscreen_threshold")) / 10) + 1) ..
+			"]box[4.0,4.5;3.75,1.0;#999999]"
 	end
 
 	if shaders_enabled then
@@ -252,7 +252,7 @@ local function formspec(tabview, name, tabdata)
 					.. dump(core.settings:get_bool("generate_normalmaps")) .. "]" ..
 			"checkbox[8.25,2;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
 					.. dump(core.settings:get_bool("enable_parallax_occlusion")) .. "]" ..
-			"checkbox[8.25,2.5;cb_waving_water;" .. fgettext("Waving Water") .. ";"
+			"checkbox[8.25,2.5;cb_waving_water;" .. fgettext("Waving Liquids") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_water")) .. "]" ..
 			"checkbox[8.25,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
@@ -269,7 +269,7 @@ local function formspec(tabview, name, tabdata)
 			"label[8.38,2.2;" .. core.colorize("#888888",
 					fgettext("Parallax Occlusion")) .. "]" ..
 			"label[8.38,2.7;" .. core.colorize("#888888",
-					fgettext("Waving Water")) .. "]" ..
+					fgettext("Waving Liquids")) .. "]" ..
 			"label[8.38,3.2;" .. core.colorize("#888888",
 					fgettext("Waving Leaves")) .. "]" ..
 			"label[8.38,3.7;" .. core.colorize("#888888",

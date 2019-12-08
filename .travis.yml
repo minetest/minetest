@@ -10,49 +10,53 @@ matrix:
   fast_finish: true
   include:
 
-    - env: LINT=1
+    - env: CLANG_FORMAT=clang-format-7
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['clang-format-5.0']
+          packages: ['clang-format-7']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
 
-    - env: CLANG_TIDY=1
+    - name: "Builtin Luacheck"
+      language: generic
+      compiler: null
+      os: linux
+      sudo: false
+      addons:
+        apt:
+          packages:
+          - luarocks
+      before_install:
+        - luarocks install --local luacheck
+      script:
+        - $HOME/.luarocks/bin/luacheck builtin
+
+    - env: CLANG_TIDY=clang-tidy-7
       compiler: clang
       os: linux
       script: ./util/travis/clangtidy.sh
       addons:
         apt:
-          packages: ['clang-tidy-5.0']
+          packages: ['clang-7', 'clang++-7', 'clang-tools-7', 'clang-tidy-7']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
 
     - env: PLATFORM=Win32
       compiler: gcc
       os: linux
-      addons:
-        apt:
-          packages: ['gcc-mingw-w64-i686', 'g++-mingw-w64-i686', 'binutils-mingw-w64-i686']
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - sourceline: 'deb http://mirrors.kernel.org/ubuntu xenial main universe'
 
     - env: PLATFORM=Win64
       compiler: gcc
       os: linux
-      addons:
-        apt:
-          packages: ['gcc-mingw-w64-x86-64', 'g++-mingw-w64-x86-64', 'binutils-mingw-w64-x86-64']
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - sourceline: 'deb http://mirrors.kernel.org/ubuntu xenial main universe'
 
-    - env: PLATFORM=Unix
-      compiler: clang
-      os: osx
-      osx_image: xcode8
+#    - env: PLATFORM=Unix
+#      compiler: clang
+#      os: osx
+#      osx_image: xcode8
 
     - env: PLATFORM=Unix COMPILER=gcc-6
       compiler: gcc
@@ -63,12 +67,12 @@ matrix:
           sources: &sources
             - ubuntu-toolchain-r-test
 
-    - env: PLATFORM=Unix COMPILER=gcc-7
+    - env: PLATFORM=Unix COMPILER=gcc-8
       compiler: gcc
       os: linux
       addons:
         apt:
-          packages: ['gcc-7', 'g++-7']
+          packages: ['gcc-8', 'g++-8']
           sources: &sources
             - ubuntu-toolchain-r-test
 
@@ -81,29 +85,32 @@ matrix:
           sources: &sources
             - llvm-toolchain-trusty-3.6
 
-    - env: PLATFORM=Unix COMPILER=clang-5.0
+    - env: PLATFORM=Unix COMPILER=clang-7
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['clang-5.0', 'clang++-5.0']
+          packages: ['clang-7', 'clang++-7']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
 
-    - env: PLATFORM=Unix COMPILER=clang-5.0 FREETYPE=0
+    - env: PLATFORM=Unix COMPILER=clang-7 FREETYPE=0
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['clang-5.0', 'clang++-5.0']
+          packages: ['clang-7', 'clang++-7']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
 
-    - env: PLATFORM=Unix COMPILER=clang-5.0 VALGRIND=1
+    - env: PLATFORM=Unix COMPILER=clang-7 VALGRIND=1
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['valgrind', 'clang-5.0', 'clang++-5.0']
+          packages: ['valgrind', 'clang-7', 'clang++-7']
           sources: &sources
-            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7

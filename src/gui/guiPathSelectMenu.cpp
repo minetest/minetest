@@ -41,7 +41,7 @@ void GUIFileSelectMenu::regenerateGui(v2u32 screensize)
 	removeChildren();
 	m_fileOpenDialog = 0;
 
-	core::dimension2du size(600, 400);
+	core::dimension2du size(600 * m_gui_scale, 400 * m_gui_scale);
 	core::rect<s32> rect(0, 0, screensize.X, screensize.Y);
 
 	DesiredRect = rect;

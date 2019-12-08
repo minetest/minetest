@@ -68,25 +68,16 @@ float ServerActiveObject::getMinimumSavedMovement()
 	return 2.0*BS;
 }
 
-ItemStack ServerActiveObject::getWieldedItem() const
+ItemStack ServerActiveObject::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 {
-	const Inventory *inv = getInventory();
-	if(inv)
-	{
-		const InventoryList *list = inv->getList(getWieldList());
-		if(list && (getWieldIndex() < (s32)list->getSize()))
-			return list->getItem(getWieldIndex());
-	}
+	*selected = ItemStack();
+	if (hand)
+		*hand = ItemStack();
+
 	return ItemStack();
 }
 
 bool ServerActiveObject::setWieldedItem(const ItemStack &item)
 {
-	if(Inventory *inv = getInventory()) {
-		if (InventoryList *list = inv->getList(getWieldList())) {
-			list->changeItem(getWieldIndex(), item);
-			return true;
-		}
-	}
 	return false;
 }

@@ -36,7 +36,6 @@ Player::Player(const char *name, IItemDefManager *idef):
 
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
-	inventory.addList("hand", 1);
 	InventoryList *craft = inventory.addList("craft", 9);
 	craft->setWidth(3);
 	inventory.addList("craftpreview", 1);
@@ -91,6 +90,29 @@ Player::~Player()
 	clearHud();
 }
 
+void Player::setWieldIndex(u16 index)
+{
+	const InventoryList *mlist = inventory.getList("main");
+	m_wield_index = MYMIN(index, mlist ? mlist->getSize() : 0);
+}
+
+ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
+{
+	assert(selected);
+
+	const InventoryList *mlist = inventory.getList("main"); // TODO: Make this generic
+	const InventoryList *hlist = inventory.getList("hand");
+
+	if (mlist && m_wield_index < mlist->getSize())
+		*selected = mlist->getItem(m_wield_index);
+
+	if (hand && hlist)
+		*hand = hlist->getItem(0);
+
+	// Return effective tool item
+	return (hand && selected->name.empty()) ? *hand : *selected;
+}
+
 u32 Player::addHud(HudElement *toadd)
 {
 	MutexAutoLock lock(m_mutex);
@@ -140,11 +162,13 @@ void Player::clearHud()
 void PlayerSettings::readGlobalSettings()
 {
 	free_move = g_settings->getBool("free_move");
+	pitch_move = g_settings->getBool("pitch_move");
 	fast_move = g_settings->getBool("fast_move");
 	continuous_forward = g_settings->getBool("continuous_forward");
 	always_fly_fast = g_settings->getBool("always_fly_fast");
 	aux1_descends = g_settings->getBool("aux1_descends");
 	noclip = g_settings->getBool("noclip");
+	autojump = g_settings->getBool("autojump");
 }
 
 void Player::settingsChangedCallback(const std::string &name, void *data)

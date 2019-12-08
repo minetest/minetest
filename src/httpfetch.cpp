@@ -253,6 +253,10 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		curl_easy_setopt(curl, CURLOPT_INTERFACE, bind_address.c_str());
 	}
 
+	if (!g_settings->getBool("enable_ipv6")) {
+		curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+	}
+
 #if LIBCURL_VERSION_NUM >= 0x071304
 	// Restrict protocols so that curl vulnerabilities in
 	// other protocols don't affect us.

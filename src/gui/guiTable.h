@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 
 #include "irrlichttypes_extrabloated.h"
+#include "guiScrollBar.h"
 
 class ISimpleTextureSource;
 
@@ -198,7 +199,7 @@ protected:
 	video::SColor m_highlight_text = video::SColor(255, 255, 255, 255);
 	s32 m_rowheight = 1;
 	gui::IGUIFont *m_font = nullptr;
-	gui::IGUIScrollBar *m_scrollbar = nullptr;
+	GUIScrollBar *m_scrollbar = nullptr;
 
 	// Allocated strings and images
 	std::vector<core::stringw> m_strings;

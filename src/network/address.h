@@ -66,6 +66,7 @@ public:
 	void setPort(unsigned short port);
 	void print(std::ostream *s) const;
 	std::string serializeString() const;
+	bool isLocalhost() const;
 
 private:
 	unsigned int m_addr_family = 0;

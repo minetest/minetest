@@ -27,13 +27,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 
 #include "client/tile.h"
-#include "game.h"
+#include "client/game.h"
 
 using namespace irr;
 using namespace irr::core;
 using namespace irr::gui;
 
-typedef enum {
+typedef enum
+{
 	jump_id = 0,
 	crunch_id,
 	zoom_id,
@@ -61,7 +62,8 @@ typedef enum {
 	joystick_center_id
 } touch_gui_button_id;
 
-typedef enum {
+typedef enum
+{
 	j_forward = 0,
 	j_backward,
 	j_left,
@@ -69,7 +71,8 @@ typedef enum {
 	j_special1
 } touch_gui_joystick_move_id;
 
-typedef enum {
+typedef enum
+{
 	AHBB_Dir_Top_Bottom,
 	AHBB_Dir_Bottom_Top,
 	AHBB_Dir_Left_Right,
@@ -81,7 +84,7 @@ typedef enum {
 #define BUTTON_REPEAT_DELAY 0.2f
 
 #define SETTINGS_BAR_Y_OFFSET 5
-#define RARE_CONTROLS_BAR_Y_OFFSET 4
+#define RARE_CONTROLS_BAR_Y_OFFSET 5
 
 extern const char **touchgui_button_imagenames;
 extern const char **touchgui_joystick_imagenames;
@@ -227,7 +230,7 @@ private:
 
 	int m_move_id = -1;
 	bool m_move_has_really_moved = false;
-	s64 m_move_downtime = 0;
+	u64 m_move_downtime = 0;
 	bool m_move_sent_as_mouse_event = false;
 	v2s32 m_move_downlocation = v2s32(-10000, -10000);
 
@@ -293,7 +296,7 @@ private:
 	// doubleclick detection variables
 	struct key_event
 	{
-		unsigned int down_time;
+		u64 down_time;
 		s32 x;
 		s32 y;
 	};

@@ -155,6 +155,16 @@ std::vector<ServerListSpec> deSerialize(const std::string &liststring)
 			server["address"] = tmp;
 			std::getline(stream, tmp);
 			server["port"] = tmp;
+			bool unique = true;
+			for (const ServerListSpec &added : serverlist) {
+				if (server["name"] == added["name"]
+						&& server["port"] == added["port"]) {
+					unique = false;
+					break;
+				}
+			}
+			if (!unique)
+				continue;
 			std::getline(stream, tmp);
 			server["description"] = tmp;
 			serverlist.push_back(server);

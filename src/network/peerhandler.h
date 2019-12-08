@@ -24,14 +24,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace con
 {
 
-typedef enum {
+typedef enum
+{
 	MIN_RTT,
 	MAX_RTT,
 	AVG_RTT,
 	MIN_JITTER,
 	MAX_JITTER,
-	AVG_JITTER,
-	TIMEOUT_COUNTER
+	AVG_JITTER
 } rtt_stat_type;
 
 class Peer;

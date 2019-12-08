@@ -45,11 +45,6 @@ LOCAL_SRC_FILES := deps/libvorbis-libogg-android/libs/$(TARGET_LIBDIR)/libvorbis
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := gmp
-LOCAL_SRC_FILES := deps/gmp/usr/lib/libgmp.so
-include $(PREBUILT_SHARED_LIBRARY)
-
-include $(CLEAR_VARS)
 LOCAL_MODULE := ssl
 LOCAL_SRC_FILES := deps/openssl/libssl.a
 include $(PREBUILT_STATIC_LIBRARY)
@@ -70,6 +65,7 @@ endif
 
 LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
 		-DHAVE_TOUCHSCREENGUI         \
+		-DENABLE_GLES=1               \
 		-DUSE_CURL=1                  \
 		-DUSE_SOUND=1                 \
 		-DUSE_FREETYPE=1              \
@@ -98,6 +94,7 @@ endif
 LOCAL_C_INCLUDES := \
 		jni/src                                   \
 		jni/src/script                            \
+		jni/lib/gmp                               \
 		jni/lib/lua/src                           \
 		jni/lib/jsoncpp                           \
 		jni/src/cguittfont                        \
@@ -107,84 +104,118 @@ LOCAL_C_INCLUDES := \
 		deps/curl/include                         \
 		deps/openal-soft/jni/OpenAL/include       \
 		deps/libvorbis-libogg-android/jni/include \
-		deps/gmp/usr/include                      \
 		deps/leveldb/include                      \
 		deps/sqlite/
 
 LOCAL_SRC_FILES := \
 		jni/src/ban.cpp                           \
-		jni/src/camera.cpp                        \
-		jni/src/mapgen/cavegen.cpp                \
 		jni/src/chat.cpp                          \
-		jni/src/client.cpp                        \
-		jni/src/clientenvironment.cpp             \
+		jni/src/client/activeobjectmgr.cpp        \
+		jni/src/client/camera.cpp                 \
+		jni/src/client/client.cpp                 \
+		jni/src/client/clientenvironment.cpp      \
+		jni/src/client/clientlauncher.cpp         \
+		jni/src/client/clientmap.cpp              \
+		jni/src/client/clientmedia.cpp            \
+		jni/src/client/clientobject.cpp           \
+		jni/src/client/clouds.cpp                 \
+		jni/src/client/content_cao.cpp            \
+		jni/src/client/content_cso.cpp            \
+		jni/src/client/content_mapblock.cpp       \
+		jni/src/client/filecache.cpp              \
+		jni/src/client/fontengine.cpp             \
+		jni/src/client/game.cpp                   \
+		jni/src/client/gameui.cpp                 \
+		jni/src/client/guiscalingfilter.cpp       \
+		jni/src/client/hud.cpp                    \
 		jni/src/clientiface.cpp                   \
-		jni/src/clientmap.cpp                     \
-		jni/src/clientmedia.cpp                   \
-		jni/src/clientobject.cpp                  \
-		jni/src/clouds.cpp                        \
+		jni/src/client/imagefilters.cpp           \
+		jni/src/client/inputhandler.cpp           \
+		jni/src/client/joystick_controller.cpp    \
+		jni/src/client/keycode.cpp                \
+		jni/src/client/localplayer.cpp            \
+		jni/src/client/mapblock_mesh.cpp          \
+		jni/src/client/mesh.cpp                   \
+		jni/src/client/meshgen/collector.cpp      \
+		jni/src/client/mesh_generator_thread.cpp  \
+		jni/src/client/minimap.cpp                \
+		jni/src/client/particles.cpp              \
+		jni/src/client/render/anaglyph.cpp        \
+		jni/src/client/render/core.cpp            \
+		jni/src/client/render/factory.cpp         \
+		jni/src/client/renderingengine.cpp        \
+		jni/src/client/render/interlaced.cpp      \
+		jni/src/client/render/pageflip.cpp        \
+		jni/src/client/render/plain.cpp           \
+		jni/src/client/render/sidebyside.cpp      \
+		jni/src/client/render/stereo.cpp          \
+		jni/src/client/shader.cpp                 \
+		jni/src/client/sky.cpp                    \
+		jni/src/client/sound.cpp                  \
+		jni/src/client/sound_openal.cpp           \
+		jni/src/client/tile.cpp                   \
+		jni/src/client/wieldmesh.cpp              \
 		jni/src/collision.cpp                     \
-		jni/src/content_cao.cpp                   \
-		jni/src/content_cso.cpp                   \
-		jni/src/content_mapblock.cpp              \
-		jni/src/content_mapnode.cpp               \
-		jni/src/content_nodemeta.cpp              \
-		jni/src/content_sao.cpp                   \
 		jni/src/content/content.cpp               \
+		jni/src/content_mapnode.cpp               \
 		jni/src/content/mods.cpp                  \
+		jni/src/content_nodemeta.cpp              \
 		jni/src/content/packages.cpp              \
+		jni/src/content_sao.cpp                   \
 		jni/src/content/subgames.cpp              \
 		jni/src/convert_json.cpp                  \
 		jni/src/craftdef.cpp                      \
+		jni/src/database/database.cpp             \
 		jni/src/database/database-dummy.cpp       \
 		jni/src/database/database-files.cpp       \
 		jni/src/database/database-leveldb.cpp     \
 		jni/src/database/database-sqlite3.cpp     \
-		jni/src/database/database.cpp             \
 		jni/src/debug.cpp                         \
 		jni/src/defaultsettings.cpp               \
-		jni/src/mapgen/dungeongen.cpp             \
 		jni/src/emerge.cpp                        \
 		jni/src/environment.cpp                   \
 		jni/src/face_position_cache.cpp           \
-		jni/src/filecache.cpp                     \
 		jni/src/filesys.cpp                       \
-		jni/src/fontengine.cpp                    \
-		jni/src/game.cpp                          \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
+		jni/src/gui/guiBackgroundImage.cpp        \
+		jni/src/gui/guiBox.cpp                    \
+		jni/src/gui/guiButton.cpp                 \
 		jni/src/gui/guiChatConsole.cpp            \
 		jni/src/gui/guiConfirmRegistration.cpp    \
 		jni/src/gui/guiEditBoxWithScrollbar.cpp   \
 		jni/src/gui/guiEngine.cpp                 \
-		jni/src/gui/guiPathSelectMenu.cpp         \
 		jni/src/gui/guiFormSpecMenu.cpp           \
+		jni/src/gui/guiHyperText.cpp              \
+		jni/src/gui/guiItemImage.cpp              \
 		jni/src/gui/guiKeyChangeMenu.cpp          \
 		jni/src/gui/guiPasswordChange.cpp         \
+		jni/src/gui/guiPathSelectMenu.cpp         \
+		jni/src/gui/guiScrollBar.cpp              \
+		jni/src/gui/guiSkin.cpp                   \
 		jni/src/gui/guiTable.cpp                  \
-		jni/src/guiscalingfilter.cpp              \
 		jni/src/gui/guiVolumeChange.cpp           \
 		jni/src/gui/intlGUIEditBox.cpp            \
+		jni/src/gui/modalMenu.cpp                 \
 		jni/src/gui/profilergraph.cpp             \
 		jni/src/gui/touchscreengui.cpp            \
 		jni/src/httpfetch.cpp                     \
 		jni/src/hud.cpp                           \
-		jni/src/imagefilters.cpp                  \
 		jni/src/inventory.cpp                     \
 		jni/src/inventorymanager.cpp              \
+		jni/src/irrlicht_changes/CGUITTFont.cpp   \
+		jni/src/irrlicht_changes/static_text.cpp  \
 		jni/src/itemdef.cpp                       \
 		jni/src/itemstackmetadata.cpp             \
-		jni/src/keycode.cpp                       \
 		jni/src/light.cpp                         \
-		jni/src/localplayer.cpp                   \
 		jni/src/log.cpp                           \
 		jni/src/main.cpp                          \
-		jni/src/map.cpp                           \
-		jni/src/map_settings_manager.cpp          \
 		jni/src/mapblock.cpp                      \
-		jni/src/mapblock_mesh.cpp                 \
-		jni/src/mapgen/mapgen.cpp                 \
+		jni/src/map.cpp                           \
+		jni/src/mapgen/cavegen.cpp                \
+		jni/src/mapgen/dungeongen.cpp             \
 		jni/src/mapgen/mapgen_carpathian.cpp      \
+		jni/src/mapgen/mapgen.cpp                 \
 		jni/src/mapgen/mapgen_flat.cpp            \
 		jni/src/mapgen/mapgen_fractal.cpp         \
 		jni/src/mapgen/mapgen_singlenode.cpp      \
@@ -192,16 +223,15 @@ LOCAL_SRC_FILES := \
 		jni/src/mapgen/mapgen_v6.cpp              \
 		jni/src/mapgen/mapgen_v7.cpp              \
 		jni/src/mapgen/mapgen_valleys.cpp         \
-		jni/src/mapnode.cpp                       \
-		jni/src/mapsector.cpp                     \
-		jni/src/mesh.cpp                          \
-		jni/src/mesh_generator_thread.cpp         \
-		jni/src/metadata.cpp                      \
 		jni/src/mapgen/mg_biome.cpp               \
 		jni/src/mapgen/mg_decoration.cpp          \
 		jni/src/mapgen/mg_ore.cpp                 \
 		jni/src/mapgen/mg_schematic.cpp           \
-		jni/src/minimap.cpp                       \
+		jni/src/mapgen/treegen.cpp                \
+		jni/src/mapnode.cpp                       \
+		jni/src/mapsector.cpp                     \
+		jni/src/map_settings_manager.cpp          \
+		jni/src/metadata.cpp                      \
 		jni/src/modchannels.cpp                   \
 		jni/src/nameidmapping.cpp                 \
 		jni/src/nodedef.cpp                       \
@@ -210,56 +240,38 @@ LOCAL_SRC_FILES := \
 		jni/src/noise.cpp                         \
 		jni/src/objdef.cpp                        \
 		jni/src/object_properties.cpp             \
-		jni/src/particles.cpp                     \
 		jni/src/pathfinder.cpp                    \
 		jni/src/player.cpp                        \
 		jni/src/porting_android.cpp               \
 		jni/src/porting.cpp                       \
 		jni/src/profiler.cpp                      \
-		jni/src/quicktune.cpp                     \
 		jni/src/raycast.cpp                       \
 		jni/src/reflowscan.cpp                    \
 		jni/src/remoteplayer.cpp                  \
 		jni/src/rollback.cpp                      \
 		jni/src/rollback_interface.cpp            \
 		jni/src/serialization.cpp                 \
-		jni/src/server/mods.cpp                   \
+		jni/src/server/activeobjectmgr.cpp        \
 		jni/src/server.cpp                        \
 		jni/src/serverenvironment.cpp             \
 		jni/src/serverlist.cpp                    \
+		jni/src/server/mods.cpp                   \
 		jni/src/serverobject.cpp                  \
-		jni/src/shader.cpp                        \
-		jni/src/sky.cpp                           \
+		jni/src/settings.cpp                      \
 		jni/src/staticobject.cpp                  \
 		jni/src/tileanimation.cpp                 \
-		jni/src/translation.cpp                   \
 		jni/src/tool.cpp                          \
-		jni/src/mapgen/treegen.cpp                \
-		jni/src/version.cpp                       \
-		jni/src/voxel.cpp                         \
-		jni/src/voxelalgorithms.cpp               \
-		jni/src/util/areastore.cpp                \
-		jni/src/util/auth.cpp                     \
-		jni/src/util/base64.cpp                   \
-		jni/src/util/directiontables.cpp          \
-		jni/src/util/enriched_string.cpp          \
-		jni/src/util/numeric.cpp                  \
-		jni/src/util/pointedthing.cpp             \
-		jni/src/util/serialize.cpp                \
-		jni/src/util/sha1.cpp                     \
-		jni/src/util/string.cpp                   \
-		jni/src/util/srp.cpp                      \
-		jni/src/util/timetaker.cpp                \
-		jni/src/unittest/test.cpp                 \
+		jni/src/translation.cpp                   \
 		jni/src/unittest/test_authdatabase.cpp    \
 		jni/src/unittest/test_collision.cpp       \
 		jni/src/unittest/test_compression.cpp     \
 		jni/src/unittest/test_connection.cpp      \
+		jni/src/unittest/test.cpp                 \
 		jni/src/unittest/test_filepath.cpp        \
 		jni/src/unittest/test_gameui.cpp          \
 		jni/src/unittest/test_inventory.cpp       \
-		jni/src/unittest/test_map_settings_manager.cpp \
 		jni/src/unittest/test_mapnode.cpp         \
+		jni/src/unittest/test_map_settings_manager.cpp \
 		jni/src/unittest/test_nodedef.cpp         \
 		jni/src/unittest/test_noderesolver.cpp    \
 		jni/src/unittest/test_noise.cpp           \
@@ -273,28 +285,24 @@ LOCAL_SRC_FILES := \
 		jni/src/unittest/test_utilities.cpp       \
 		jni/src/unittest/test_voxelalgorithms.cpp \
 		jni/src/unittest/test_voxelmanipulator.cpp \
-		jni/src/settings.cpp                      \
-		jni/src/wieldmesh.cpp                     \
-		jni/src/client/meshgen/collector.cpp      \
-		jni/src/client/clientlauncher.cpp         \
-		jni/src/client/gameui.cpp                 \
-		jni/src/client/hud.cpp                    \
-		jni/src/client/inputhandler.cpp           \
-		jni/src/client/renderingengine.cpp        \
-		jni/src/client/sound.cpp                  \
-		jni/src/client/sound_openal.cpp           \
-		jni/src/client/tile.cpp                   \
-		jni/src/client/joystick_controller.cpp    \
-		jni/src/client/render/factory.cpp         \
-		jni/src/client/render/pageflip.cpp        \
-		jni/src/client/render/sidebyside.cpp      \
-		jni/src/client/render/plain.cpp           \
-		jni/src/client/render/anaglyph.cpp        \
-		jni/src/client/render/interlaced.cpp      \
-		jni/src/client/render/core.cpp            \
-		jni/src/client/render/stereo.cpp          \
-		jni/src/irrlicht_changes/static_text.cpp  \
-		jni/src/irrlicht_changes/CGUITTFont.cpp
+		jni/src/util/areastore.cpp                \
+		jni/src/util/auth.cpp                     \
+		jni/src/util/base64.cpp                   \
+		jni/src/util/directiontables.cpp          \
+		jni/src/util/enriched_string.cpp          \
+		jni/src/util/ieee_float.cpp               \
+		jni/src/util/numeric.cpp                  \
+		jni/src/util/pointedthing.cpp             \
+		jni/src/util/quicktune.cpp                \
+		jni/src/util/serialize.cpp                \
+		jni/src/util/sha1.cpp                     \
+		jni/src/util/srp.cpp                      \
+		jni/src/util/string.cpp                   \
+		jni/src/util/timetaker.cpp                \
+		jni/src/version.cpp                       \
+		jni/src/voxelalgorithms.cpp               \
+		jni/src/voxel.cpp
+
 
 # intentionally kept out (we already build openssl itself): jni/src/util/sha256.c
 
@@ -369,6 +377,9 @@ LOCAL_SRC_FILES += \
 #freetype2 support
 #LOCAL_SRC_FILES += jni/src/cguittfont/xCGUITTFont.cpp
 
+# GMP
+LOCAL_SRC_FILES += jni/lib/gmp/mini-gmp.c
+
 # Lua
 LOCAL_SRC_FILES += \
 		jni/lib/lua/src/lapi.c                    \
@@ -414,7 +425,7 @@ LOCAL_SRC_FILES += \
 # JSONCPP
 LOCAL_SRC_FILES += jni/lib/jsoncpp/jsoncpp.cpp
 
-LOCAL_SHARED_LIBRARIES := iconv openal ogg vorbis gmp
+LOCAL_SHARED_LIBRARIES := iconv openal ogg vorbis
 LOCAL_STATIC_LIBRARIES := Irrlicht freetype curl ssl crypto android_native_app_glue $(PROFILER_LIBS)
 
 ifeq ($(HAVE_LEVELDB), 1)

@@ -21,31 +21,55 @@ function get_mods(path,retval,modpack)
 
 	for _, name in ipairs(mods) do
 		if name:sub(1, 1) ~= "." then
-			local prefix = path .. DIR_DELIM .. name .. DIR_DELIM
-			local toadd = {}
+			local prefix = path .. DIR_DELIM .. name
+			local toadd = {
+				dir_name = name,
+				parent_dir = path,
+			}
 			retval[#retval + 1] = toadd
 
-			local mod_conf = Settings(prefix .. "mod.conf"):to_table()
-			if mod_conf.name then
-				name = mod_conf.name
+			-- Get config file
+			local mod_conf
+			local modpack_conf = io.open(prefix .. DIR_DELIM .. "modpack.conf")
+			if modpack_conf then
+				toadd.is_modpack = true
+				modpack_conf:close()
+
+				mod_conf = Settings(prefix .. DIR_DELIM .. "modpack.conf"):to_table()
+				if mod_conf.name then
+					name = mod_conf.name
+					toadd.is_name_explicit = true
+				end
+			else
+				mod_conf = Settings(prefix .. DIR_DELIM .. "mod.conf"):to_table()
+				if mod_conf.name then
+					name = mod_conf.name
+					toadd.is_name_explicit = true
+				end
 			end
 
+			-- Read from config
 			toadd.name = name
 			toadd.author = mod_conf.author
 			toadd.release = tonumber(mod_conf.release or "0")
 			toadd.path = prefix
 			toadd.type = "mod"
 
-			if modpack ~= nil and modpack ~= "" then
+			-- Check modpack.txt
+			--  Note: modpack.conf is already checked above
+			local modpackfile = io.open(prefix .. DIR_DELIM .. "modpack.txt")
+			if modpackfile then
+				modpackfile:close()
+				toadd.is_modpack = true
+			end
+
+			-- Deal with modpack contents
+			if modpack and modpack ~= "" then
 				toadd.modpack = modpack
-			else
-				local modpackfile = io.open(prefix .. "modpack.txt")
-				if modpackfile then
-					modpackfile:close()
-					toadd.type = "modpack"
-					toadd.is_modpack = true
-					get_mods(prefix, retval, name)
-				end
+			elseif toadd.is_modpack then
+				toadd.type = "modpack"
+				toadd.is_modpack = true
+				get_mods(prefix, retval, name)
 			end
 		end
 	end
@@ -112,6 +136,12 @@ function pkgmgr.get_folder_type(path)
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "mod", path = path }
+	end
+
+	testfile = io.open(path .. DIR_DELIM .. "modpack.conf","r")
+	if testfile ~= nil then
+		testfile:close()
+		return { type = "modpack", path = path }
 	end
 
 	testfile = io.open(path .. DIR_DELIM .. "modpack.txt","r")
@@ -255,17 +285,14 @@ function pkgmgr.identify_modname(modpath,filename)
 end
 --------------------------------------------------------------------------------
 function pkgmgr.render_packagelist(render_list)
-	local retval = ""
-
-	if render_list == nil then
-		if pkgmgr.global_mods == nil then
+	if not render_list then
+		if not pkgmgr.global_mods then
 			pkgmgr.refresh_globals()
 		end
 		render_list = pkgmgr.global_mods
 	end
 
 	local list = render_list:get_list()
-	local last_modpack = nil
 	local retval = {}
 	for i, v in ipairs(list) do
 		local color = ""
@@ -275,7 +302,7 @@ function pkgmgr.render_packagelist(render_list)
 
 			for j = 1, #rawlist, 1 do
 				if rawlist[j].modpack == list[i].name and
-						rawlist[j].enabled ~= true then
+						not rawlist[j].enabled then
 					-- Modpack not entirely enabled so showing as grey
 					color = mt_color_grey
 					break
@@ -302,11 +329,11 @@ end
 --------------------------------------------------------------------------------
 function pkgmgr.get_dependencies(path)
 	if path == nil then
-		return "", ""
+		return {}, {}
 	end
 
 	local info = core.get_content_info(path)
-	return table.concat(info.depends or {}, ","), table.concat(info.optional_depends or {}, ",")
+	return info.depends or {}, info.optional_depends or {}
 end
 
 ----------- tests whether all of the mods in the modpack are enabled -----------
@@ -320,35 +347,113 @@ function pkgmgr.is_modpack_entirely_enabled(data, name)
 	return true
 end
 
----------- toggles or en/disables a mod or modpack -----------------------------
+---------- toggles or en/disables a mod or modpack and its dependencies --------
 function pkgmgr.enable_mod(this, toset)
-	local mod = this.data.list:get_list()[this.data.selected_mod]
+	local list = this.data.list:get_list()
+	local mod = list[this.data.selected_mod]
 
-	-- game mods can't be enabled or disabled
+	-- Game mods can't be enabled or disabled
 	if mod.is_game_content then
 		return
 	end
 
-	-- toggle or en/disable the mod
+	local toggled_mods = {}
+
+	local enabled_mods = {}
 	if not mod.is_modpack then
+		-- Toggle or en/disable the mod
 		if toset == nil then
-			mod.enabled = not mod.enabled
-		else
-			mod.enabled = toset
+			toset = not mod.enabled
 		end
+		if mod.enabled ~= toset then
+			mod.enabled = toset
+			toggled_mods[#toggled_mods+1] = mod.name
+		end
+		if toset then
+			-- Mark this mod for recursive dependency traversal
+			enabled_mods[mod.name] = true
+		end
+	else
+		-- Toggle or en/disable every mod in the modpack,
+		-- interleaved unsupported
+		for i = 1, #list do
+			if list[i].modpack == mod.name then
+				if toset == nil then
+					toset = not list[i].enabled
+				end
+				if list[i].enabled ~= toset then
+					list[i].enabled = toset
+					toggled_mods[#toggled_mods+1] = list[i].name
+				end
+				if toset then
+					enabled_mods[list[i].name] = true
+				end
+			end
+		end
+	end
+	if not toset then
+		-- Mod(s) were disabled, so no dependencies need to be enabled
+		table.sort(toggled_mods)
+		minetest.log("info", "Following mods were disabled: " ..
+			table.concat(toggled_mods, ", "))
 		return
 	end
 
-	-- toggle or en/disable every mod in the modpack, interleaved unsupported
-	local list = this.data.list:get_raw_list()
-	for i = 1, #list do
-		if list[i].modpack == mod.name then
-			if toset == nil then
-				toset = not list[i].enabled
-			end
-			list[i].enabled = toset
+	-- Enable mods' depends after activation
+
+	-- Make a list of mod ids indexed by their names
+	local mod_ids = {}
+	for id, mod2 in pairs(list) do
+		if mod2.type == "mod" and not mod2.is_modpack then
+			mod_ids[mod2.name] = id
 		end
 	end
+
+	-- to_enable is used as a DFS stack with sp as stack pointer
+	local to_enable = {}
+	local sp = 0
+	for name in pairs(enabled_mods) do
+		local depends = pkgmgr.get_dependencies(list[mod_ids[name]].path)
+		for i = 1, #depends do
+			local dependency_name = depends[i]
+			if not enabled_mods[dependency_name] then
+				sp = sp+1
+				to_enable[sp] = dependency_name
+			end
+		end
+	end
+	-- If sp is 0, every dependency is already activated
+	while sp > 0 do
+		local name = to_enable[sp]
+		sp = sp-1
+
+		if not enabled_mods[name] then
+			enabled_mods[name] = true
+			local mod_to_enable = list[mod_ids[name]]
+			if not mod_to_enable then
+				minetest.log("warning", "Mod dependency \"" .. name ..
+					"\" not found!")
+			else
+				if mod_to_enable.enabled == false then
+					mod_to_enable.enabled = true
+					toggled_mods[#toggled_mods+1] = mod_to_enable.name
+				end
+				-- Push the dependencies of the dependency onto the stack
+				local depends = pkgmgr.get_dependencies(mod_to_enable.path)
+				for i = 1, #depends do
+					if not enabled_mods[name] then
+						sp = sp+1
+						to_enable[sp] = depends[i]
+					end
+				end
+			end
+		end
+	end
+
+	-- Log the list of enabled mods
+	table.sort(toggled_mods)
+	minetest.log("info", "Following mods were enabled: " ..
+		table.concat(toggled_mods, ", "))
 end
 
 --------------------------------------------------------------------------------
@@ -366,7 +471,10 @@ function pkgmgr.get_worldconfig(worldpath)
 		if key == "gameid" then
 			worldconfig.id = value
 		elseif key:sub(0, 9) == "load_mod_" then
-			worldconfig.global_mods[key] = core.is_yes(value)
+			-- Compatibility: Check against "nil" which was erroneously used
+			-- as value for fresh configured worlds
+			worldconfig.global_mods[key] = value ~= "false" and value ~= "nil"
+				and value
 		else
 			worldconfig[key] = value
 		end
@@ -422,7 +530,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		else
 			local clean_path = nil
 			if basename ~= nil then
-				clean_path = "mp_" .. basename
+				clean_path = basename
 			end
 			if not clean_path then
 				clean_path = get_last_folder(cleanup_path(basefolder.path))
@@ -431,8 +539,8 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 				targetpath = core.get_modpath() .. DIR_DELIM .. clean_path
 			else
 				return nil,
-					fgettext("Install Mod: unable to find suitable foldername for modpack $1",
-					modfilename)
+					fgettext("Install Mod: Unable to find suitable folder name for modpack $1",
+					path)
 			end
 		end
 	elseif basefolder.type == "mod" then
@@ -457,7 +565,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 			if targetfolder ~= nil and pkgmgr.isValidModname(targetfolder) then
 				targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
 			else
-				return nil, fgettext("Install Mod: unable to find real modname for: $1", modfilename)
+				return nil, fgettext("Install Mod: Unable to find real mod name for: $1", path)
 			end
 		end
 
@@ -480,7 +588,11 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 			fgettext("Failed to install $1 to $2", basename, targetpath)
 	end
 
-	pkgmgr.refresh_globals()
+	if basefolder.type == "game" then
+		pkgmgr.update_gamelist()
+	else
+		pkgmgr.refresh_globals()
+	end
 
 	return targetpath, nil
 end
@@ -493,7 +605,7 @@ function pkgmgr.install(type, modfilename, basename, dest)
 	if path == nil then
 		return nil,
 			fgettext("Install: file: \"$1\"", archive_info.name) .. "\n" ..
-			fgettext("Install: unsupported filetype \"$1\" or broken archive",
+			fgettext("Install: Unsupported file type \"$1\" or broken archive",
 				archive_info.type)
 	end
 
@@ -532,7 +644,8 @@ function pkgmgr.preparemodlist(data)
 		retval[#retval + 1] = {
 			type = "game",
 			is_game_content = true,
-			name = fgettext("Subgame Mods")
+			name = fgettext("$1 mods", gamespec.name),
+			path = gamespec.path
 		}
 	end
 
@@ -565,7 +678,7 @@ function pkgmgr.preparemodlist(data)
 				end
 			end
 			if element ~= nil then
-				element.enabled = core.is_yes(value)
+				element.enabled = value ~= "false" and value ~= "nil" and value
 			else
 				core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
 			end

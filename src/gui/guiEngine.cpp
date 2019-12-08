@@ -32,16 +32,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMainMenu.h"
 #include "sound.h"
 #include "client/sound_openal.h"
-#include "clouds.h"
+#include "client/clouds.h"
 #include "httpfetch.h"
 #include "log.h"
-#include "fontengine.h"
-#include "guiscalingfilter.h"
+#include "client/fontengine.h"
+#include "client/guiscalingfilter.h"
 #include "irrlicht_changes/static_text.h"
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
 #include "client/tile.h"
-#include <GLES/gl.h>
 #endif
 
 
@@ -70,22 +69,30 @@ MenuTextureSource::~MenuTextureSource()
 /******************************************************************************/
 video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 {
-	if(id)
+	if (id)
 		*id = 0;
-	if(name.empty())
+
+	if (name.empty())
 		return NULL;
+
 	m_to_delete.insert(name);
 
-#ifdef __ANDROID__
-	video::IImage *image = m_driver->createImageFromFile(name.c_str());
-	if (image) {
-		image = Align2Npot2(image, m_driver);
-		video::ITexture* retval = m_driver->addTexture(name.c_str(), image);
-		image->drop();
+#if ENABLE_GLES
+	video::ITexture *retval = m_driver->findTexture(name.c_str());
+	if (retval)
 		return retval;
-	}
-#endif
+
+	video::IImage *image = m_driver->createImageFromFile(name.c_str());
+	if (!image)
+		return NULL;
+
+	image = Align2Npot2(image, m_driver);
+	retval = m_driver->addTexture(name.c_str(), image);
+	image->drop();
+	return retval;
+#else
 	return m_driver->getTexture(name.c_str());
+#endif
 }
 
 /******************************************************************************/
@@ -234,6 +241,24 @@ void GUIEngine::run()
 	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
 
+	static const video::SColor sky_color(255, 140, 186, 250);
+
+	// Reset fog color
+	{
+		video::SColor fog_color;
+		video::E_FOG_TYPE fog_type = video::EFT_FOG_LINEAR;
+		f32 fog_start = 0;
+		f32 fog_end = 0;
+		f32 fog_density = 0;
+		bool fog_pixelfog = false;
+		bool fog_rangefog = false;
+		driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density,
+				fog_pixelfog, fog_rangefog);
+
+		driver->setFog(sky_color, fog_type, fog_start, fog_end, fog_density,
+				fog_pixelfog, fog_rangefog);
+	}
+
 	while (RenderingEngine::run() && (!m_startgame) && (!m_kill)) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
@@ -255,7 +280,7 @@ void GUIEngine::run()
 			text_height = g_fontengine->getTextHeight();
 		}
 
-		driver->beginScene(true, true, video::SColor(255,140,186,250));
+		driver->beginScene(true, true, sky_color);
 
 		if (m_clouds_enabled)
 		{
@@ -315,7 +340,7 @@ void GUIEngine::cloudInit()
 {
 	m_cloud.clouds = new Clouds(m_smgr, -1, rand());
 	m_cloud.clouds->setHeight(100.0f);
-	m_cloud.clouds->update(v3f(0, 0, 0), video::SColor(255,200,200,255));
+	m_cloud.clouds->update(v3f(0, 0, 0), video::SColor(255,240,240,255));
 
 	m_cloud.camera = m_smgr->addCameraSceneNode(0,
 				v3f(0,0,0), v3f(0, 60, 100));
@@ -363,6 +388,15 @@ void GUIEngine::cloudPostProcess()
 		RenderingEngine::get_raw_device()->sleep(sleeptime);
 	}
 }
+
+/******************************************************************************/
+void GUIEngine::setFormspecPrepend(const std::string &fs)
+{
+	if (m_menu) {
+		m_menu->setFormspecPrepend(fs);
+	}
+}
+
 
 /******************************************************************************/
 void GUIEngine::drawBackground(video::IVideoDriver *driver)
@@ -492,7 +526,7 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 }
 
 /******************************************************************************/
-bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
+bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 		bool tile_image, unsigned int minsize)
 {
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
@@ -522,7 +556,6 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 {
 #if USE_CURL
 	std::ofstream target_file(target.c_str(), std::ios::out | std::ios::binary);
-
 	if (!target_file.good()) {
 		return false;
 	}
@@ -535,6 +568,8 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 	httpfetch_sync(fetch_request, fetch_result);
 
 	if (!fetch_result.succeeded) {
+		target_file.close();
+		fs::DeleteSingleFileOrEmptyDirectory(target);
 		return false;
 	}
 	target_file << fetch_result.data;
@@ -566,7 +601,7 @@ void GUIEngine::updateTopLeftTextSize()
 }
 
 /******************************************************************************/
-s32 GUIEngine::playSound(SimpleSoundSpec spec, bool looped)
+s32 GUIEngine::playSound(const SimpleSoundSpec &spec, bool looped)
 {
 	s32 handle = m_sound_manager->playSound(spec, looped);
 	return handle;
@@ -584,4 +619,3 @@ unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
 {
 	return m_script->queueAsync(serialized_func, serialized_params);
 }
-

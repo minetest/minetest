@@ -108,7 +108,7 @@ struct ClientEvent
 			u16 attached_id;
 			bool vertical;
 			std::string *texture;
-			u32 id;
+			u64 id;
 			struct TileAnimationParams animation;
 			u8 glow;
 		} add_particlespawner;
@@ -131,6 +131,7 @@ struct ClientEvent
 			v2f *offset;
 			v3f *world_pos;
 			v2s32 *size;
+			s16 z_index;
 		} hudadd;
 		struct
 		{

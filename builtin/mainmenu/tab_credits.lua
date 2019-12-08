@@ -24,23 +24,47 @@ local core_developers = {
 	"Nathanaël Courant (Nore/Ekdohibs) <nore@mesecons.net>",
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
 	"paramat",
-	"Zeno",
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
 	"rubenwardy <rw@rubenwardy.com>",
 	"Krock/SmallJoker <mk939@ymail.com>",
+	"Lars Hofhansl <larsh@apache.org>",
 }
 
 local active_contributors = {
-	"red-001 <red-001@outlook.ie> [CSM & Menu fixes]",
-	"Dániel Juhász (juhdanad) <juhdanad@gmail.com> [Audiovisuals: lighting]",
 	"numberZero [Audiovisuals: meshgen]",
-	"Lars Hofhansl <larsh@apache.org> [Occulusion culling, fixes]",
+	"stujones11 [Android UX improvements]",
+	"red-001 <red-001@outlook.ie> [CSM & Menu fixes]",
+	"Paul Ouellette (pauloue) [Docs, fixes]",
+	"Dániel Juhász (juhdanad) <juhdanad@gmail.com> [Audiovisuals: lighting]",
+	"Hybrid Dog [API]",
+	"srifqi [Android]",
+	"Vincent Glize (Dumbeldor) [Cleanups, CSM APIs]",
+	"Ben Deutsch [Rendering, Fixes, SQLite auth]",
+	"Wuzzy [Translation, Slippery]",
+	"ANAND (ClobberXD) [Docs, Fixes]",
+	"Shara/Ezhh [Docs, Game API]",
+	"DTA7 [Fixes, mute key]",
+	"Thomas-S [Disconnected, Formspecs]",
+	"Raymoo [Tool Capabilities]",
+	"Elijah Duffy (octacian) [Mainmenu]",
+	"noob3167 [Fixes]",
+	"adelcoding1 [Formspecs]",
+	"adrido [Windows Installer, Formspecs]",
+	"Rui [Sound Pitch]",
 	"Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com> [Audiovisuals]",
-	"Vincent Glize (Dumbeldor) <vincent.glize@live.fr> [CSM]",
-	"bigfoot547 [CSM]",
-	"Rogier <rogier777@gmail.com> [Fixes]",
-	"Wuzzy [Audiovisuals]",
-	"Shara/Ezhh [Settings]",
+	"Esteban (EXio4) [Cleanups]",
+	"Vaughan Lapsley (vlapsley) [Carpathian mapgen]",
+	"CoderForTheBetter [Add set_rotation]",
+	"Quentin Bazin (Unarelith) [Cleanups]",
+	"Maksim (MoNTE48) [Android]",
+	"Gaël-de-Sailly [Mapgen, pitch fly]",
+	"zeuner [Docs, Fixes]",
+	"ThomasMonroe314 (tre) [Fixes]",
+	"Rob Blanckaert (basicer) [Fixes]",
+	"Jozef Behran (osjc) [Fixes]",
+	"random-geek [Fixes]",
+	"Pedro Gimeno (pgimeno) [Fixes]",
+	"lisacvuk [Fixes]",
 }
 
 local previous_core_developers = {
@@ -54,6 +78,7 @@ local previous_core_developers = {
 	"kahrl <kahrl@gmx.net>",
 	"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
 	"sapier",
+	"Zeno",
 }
 
 local previous_contributors = {
@@ -61,7 +86,6 @@ local previous_contributors = {
 	"Diego Martínez (kaeza) <kaeza@users.sf.net>",
 	"T4im [Profiler]",
 	"TeTpaAka [Hand overriding, nametag colors]",
-	"HybridDog [Fixes]",
 	"Duane Robertson <duane@duanerobertson.com> [MGValleys]",
 	"neoascetic [OS X Fixes]",
 	"TriBlade9 <triblade9@mail.com> [Audiovisuals]",
@@ -71,6 +95,8 @@ local previous_contributors = {
 	"matttpt <matttpt@gmail.com> [Fixes]",
 	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest Logo]",
 	"Jeija <jeija@mesecons.net> [HTTP, particles]",
+	"bigfoot547 [CSM]",
+	"Rogier <rogier777@gmail.com> [Fixes]",
 }
 
 local function buildCreditList(source)

@@ -30,6 +30,9 @@ private:
 	// get_current_modname()
 	static int l_get_current_modname(lua_State *L);
 
+	// get_modpath(modname)
+	static int l_get_modpath(lua_State *L);
+
 	// print(text)
 	static int l_print(lua_State *L);
 
@@ -92,6 +95,9 @@ private:
 
 	// get_builtin_path()
 	static int l_get_builtin_path(lua_State *L);
+
+	// get_csm_restrictions()
+	static int l_get_csm_restrictions(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

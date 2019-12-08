@@ -38,6 +38,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_SOUND
 	#include "sound_openal.h"
 #endif
+#ifdef __ANDROID__
+	#include "porting.h"
+#endif
 
 /* mainmenumanager.h
  */
@@ -127,7 +130,30 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255, 0, 0, 0));
 	skin->setColor(gui::EGDC_HIGH_LIGHT, video::SColor(255, 70, 120, 50));
 	skin->setColor(gui::EGDC_HIGH_LIGHT_TEXT, video::SColor(255, 255, 255, 255));
-
+#ifdef __ANDROID__
+	float density = porting::getDisplayDensity();
+	skin->setSize(gui::EGDS_CHECK_BOX_WIDTH, (s32)(17.0f * density));
+	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(14.0f * density));
+	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));
+	if (density > 1.5f) {
+		std::string sprite_path = porting::path_user + "/textures/base/pack/";
+		if (density > 3.5f)
+			sprite_path.append("checkbox_64.png");
+		else if (density > 2.0f)
+			sprite_path.append("checkbox_32.png");
+		else
+			sprite_path.append("checkbox_16.png");
+		// Texture dimensions should be a power of 2
+		gui::IGUISpriteBank *sprites = skin->getSpriteBank();
+		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+		video::ITexture *sprite_texture = driver->getTexture(sprite_path.c_str());
+		if (sprite_texture) {
+			s32 sprite_id = sprites->addTextureAsSprite(sprite_texture);
+			if (sprite_id != -1)
+				skin->setIcon(gui::EGDI_CHECK_BOX_CHECKED, sprite_id);
+		}
+	}
+#endif
 	g_fontengine = new FontEngine(g_settings, guienv);
 	FATAL_ERROR_IF(g_fontengine == NULL, "Font engine creation failed.");
 
@@ -143,7 +169,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	if (!g_menuclouds)
 		g_menuclouds = new Clouds(g_menucloudsmgr, -1, rand());
 	g_menuclouds->setHeight(100.0f);
-	g_menuclouds->update(v3f(0, 0, 0), video::SColor(255, 200, 200, 255));
+	g_menuclouds->update(v3f(0, 0, 0), video::SColor(255, 240, 240, 255));
 	scene::ICameraSceneNode* camera;
 	camera = g_menucloudsmgr->addCameraSceneNode(NULL, v3f(0, 0, 0), v3f(0, 60, 100));
 	camera->setFarValue(10000);
@@ -365,6 +391,20 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 	if (cmd_args.exists("password"))
 		menudata.password = cmd_args.get("password");
+
+
+	if (cmd_args.exists("password-file")) {
+		std::ifstream passfile(cmd_args.get("password-file"));
+		if (passfile.good()) {
+			getline(passfile, menudata.password);
+		} else {
+			error_message = gettext("Provided password file "
+					"failed to open: ")
+					+ cmd_args.get("password-file");
+			errorstream << error_message << std::endl;
+			return false;
+		}
+	}
 
 	// If a world was commanded, append and select it
 	if (!game_params.world_path.empty()) {

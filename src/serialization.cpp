@@ -20,9 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 
 #include "util/serialize.h"
-#if defined(_WIN32) && !defined(WIN32_NO_ZLIB_WINAPI)
-	#define ZLIB_WINAPI
-#endif
+
 #include "zlib.h"
 
 /* report a zlib or i/o error */

@@ -27,8 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SMaterial.h>
 #include <memory>
 #include "util/numeric.h"
+#include "config.h"
 
-#if __ANDROID__
+#if ENABLE_GLES
 #include <IVideoDriver.h>
 #endif
 
@@ -63,28 +64,9 @@ std::string getImagePath(std::string path);
 
 	Utilizes a thread-safe cache.
 */
-std::string getTexturePath(const std::string &filename);
+std::string getTexturePath(const std::string &filename, bool *is_base_pack = nullptr);
 
 void clearTextureNameCache();
-
-/*
-	ITextureSource::generateTextureFromMesh parameters
-*/
-namespace irr {namespace scene {class IMesh;}}
-struct TextureFromMeshParams
-{
-	scene::IMesh *mesh = nullptr;
-	core::dimension2d<u32> dim;
-	std::string rtt_texture_name;
-	bool delete_texture_on_shutdown;
-	v3f camera_position;
-	v3f camera_lookat;
-	core::CMatrix4<f32> camera_projection_matrix;
-	video::SColorf ambient_light;
-	v3f light_position;
-	video::SColorf light_color;
-	f32 light_radius;
-};
 
 /*
 	TextureSource creates and caches textures.
@@ -123,8 +105,6 @@ public:
 	 */
 	virtual Palette* getPalette(const std::string &name) = 0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
-	virtual video::ITexture* generateTextureFromMesh(
-			const TextureFromMeshParams &params)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
@@ -143,8 +123,6 @@ public:
 	virtual video::ITexture* getTexture(
 			const std::string &name, u32 *id = nullptr)=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
-	virtual video::ITexture* generateTextureFromMesh(
-			const TextureFromMeshParams &params)=0;
 
 	virtual void processQueue()=0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
@@ -156,7 +134,8 @@ public:
 
 IWritableTextureSource *createTextureSource();
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
+bool hasNPotSupport();
 video::IImage * Align2Npot2(video::IImage * image, irr::video::IVideoDriver* driver);
 #endif
 
@@ -167,7 +146,10 @@ enum MaterialType{
 	TILE_MATERIAL_LIQUID_OPAQUE,
 	TILE_MATERIAL_WAVING_LEAVES,
 	TILE_MATERIAL_WAVING_PLANTS,
-	TILE_MATERIAL_OPAQUE
+	TILE_MATERIAL_OPAQUE,
+	TILE_MATERIAL_WAVING_LIQUID_BASIC,
+	TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT,
+	TILE_MATERIAL_WAVING_LIQUID_OPAQUE,
 };
 
 // Material flags
@@ -231,16 +213,19 @@ struct TileLayer
 		switch (material_type) {
 		case TILE_MATERIAL_OPAQUE:
 		case TILE_MATERIAL_LIQUID_OPAQUE:
+		case TILE_MATERIAL_WAVING_LIQUID_OPAQUE:
 			material.MaterialType = video::EMT_SOLID;
 			break;
 		case TILE_MATERIAL_BASIC:
 		case TILE_MATERIAL_WAVING_LEAVES:
 		case TILE_MATERIAL_WAVING_PLANTS:
+		case TILE_MATERIAL_WAVING_LIQUID_BASIC:
 			material.MaterialTypeParam = 0.5;
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
 		case TILE_MATERIAL_ALPHA:
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+		case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		default:

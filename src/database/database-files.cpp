@@ -31,6 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // This backend is intended to be used on Minetest 0.4.16 only for the transition backend
 // for player files
 
+PlayerDatabaseFiles::PlayerDatabaseFiles(const std::string &savedir) : m_savedir(savedir)
+{
+	fs::CreateDir(m_savedir);
+}
+
 void PlayerDatabaseFiles::serialize(std::ostringstream &os, RemotePlayer *player)
 {
 	// Utilize a Settings object for storing values
@@ -39,11 +44,11 @@ void PlayerDatabaseFiles::serialize(std::ostringstream &os, RemotePlayer *player
 	args.set("name", player->getName());
 
 	sanity_check(player->getPlayerSAO());
-	args.setS32("hp", player->getPlayerSAO()->getHP());
+	args.setU16("hp", player->getPlayerSAO()->getHP());
 	args.setV3F("position", player->getPlayerSAO()->getBasePosition());
-	args.setFloat("pitch", player->getPlayerSAO()->getPitch());
-	args.setFloat("yaw", player->getPlayerSAO()->getYaw());
-	args.setS32("breath", player->getPlayerSAO()->getBreath());
+	args.setFloat("pitch", player->getPlayerSAO()->getLookPitch());
+	args.setFloat("yaw", player->getPlayerSAO()->getRotation().Y);
+	args.setU16("breath", player->getPlayerSAO()->getBreath());
 
 	std::string extended_attrs;
 	player->serializeExtraAttributes(extended_attrs);
@@ -58,6 +63,8 @@ void PlayerDatabaseFiles::serialize(std::ostringstream &os, RemotePlayer *player
 
 void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 {
+	fs::CreateDir(m_savedir);
+
 	std::string savedir = m_savedir + DIR_DELIM;
 	std::string path = savedir + player->getName();
 	bool path_found = false;
@@ -98,7 +105,8 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 	if (!fs::safeWriteToFile(path, ss.str())) {
 		infostream << "Failed to write " << path << std::endl;
 	}
-	player->setModified(false);
+
+	player->onSuccessfulSave();
 }
 
 bool PlayerDatabaseFiles::removePlayer(const std::string &name)

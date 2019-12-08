@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "inputhandler.h"
 #include "gui/mainmenumanager.h"
+#include "hud.h"
 
 void KeyCache::populate_nonchanging()
 {
@@ -47,6 +48,7 @@ void KeyCache::populate()
 	key[KeyType::CONSOLE] = getKeySetting("keymap_console");
 	key[KeyType::MINIMAP] = getKeySetting("keymap_minimap");
 	key[KeyType::FREEMOVE] = getKeySetting("keymap_freemove");
+	key[KeyType::PITCHMOVE] = getKeySetting("keymap_pitchmove");
 	key[KeyType::FASTMOVE] = getKeySetting("keymap_fastmove");
 	key[KeyType::NOCLIP] = getKeySetting("keymap_noclip");
 	key[KeyType::HOTBAR_PREV] = getKeySetting("keymap_hotbar_previous");
@@ -75,7 +77,7 @@ void KeyCache::populate()
 	key[KeyType::QUICKTUNE_INC] = getKeySetting("keymap_quicktune_inc");
 	key[KeyType::QUICKTUNE_DEC] = getKeySetting("keymap_quicktune_dec");
 
-	for (int i = 0; i < 23; i++) {
+	for (int i = 0; i < HUD_HOTBAR_ITEMCOUNT_MAX; i++) {
 		std::string slot_key_name = "keymap_slot" + std::to_string(i + 1);
 		key[KeyType::SLOT_1 + i] = getKeySetting(slot_key_name.c_str());
 	}
