@@ -2107,9 +2107,9 @@ Elements
 ### `bgcolor[<bgcolor>;<fullscreen>;<fbgcolor>]`
 
 * Sets background color of formspec.
-* `bgcolor` and `fbgcolor` are `ColorString`s, they define the color of the
-  non-fullscreen and the fullscreen background.
-* `fullscreen` can be one of the following:
+* `bgcolor` and `fbgcolor` (optional) are `ColorString`s, they define the color
+  of the non-fullscreen and the fullscreen background.
+* `fullscreen` (optional) can be one of the following:
   * `false`: Only the non-fullscreen background color is drawn. (default)
   * `true`: Only the fullscreen background color is drawn.
   * `both`: The non-fullscreen and the fullscreen background color are drawn.
