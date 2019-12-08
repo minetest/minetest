@@ -57,7 +57,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiBox.h"
 #include "guiButton.h"
 #include "guiButtonImage.h"
-#include "guiButtonItem.h"
+#include "guiButtonItemImage.h"
 #include "guiEditBoxWithScrollbar.h"
 #include "guiItemImage.h"
 #include "guiScrollBar.h"
@@ -1983,7 +1983,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 			2
 		);
 
-		GUIButtonItem *e_btn = GUIButtonItem::addButton(Environment, rect, this, spec_btn.fid, spec_btn.flabel.c_str(), item_name, m_client);
+		GUIButtonItemImage *e_btn = GUIButtonItemImage::addButton(Environment, rect, this, spec_btn.fid, spec_btn.flabel.c_str(), item_name, m_client);
 
 		auto style = getStyleForElement("item_image_button", spec_btn.fname, "image_button");
 		e_btn->setFromStyle(style, m_tsrc);

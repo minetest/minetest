@@ -43,8 +43,8 @@ bool GUIButtonImage::OnEvent(const SEvent& event)
 {
 	bool result = GUIButton::OnEvent(event);
 
-	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), ButtonForegroundImages);
-	video::ITexture *texture = ButtonForegroundImages[(u32)imageState].Texture;
+	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), m_foreground_images);
+	video::ITexture *texture = m_foreground_images[(u32)imageState].Texture;
 	if (texture != nullptr)
 		m_image->setImage(texture);
 
@@ -61,13 +61,13 @@ void GUIButtonImage::setForegroundImage(EGUI_BUTTON_IMAGE_STATE state,
 		image->grab();
 
 	u32 stateIdx = (u32)state;
-	if (ButtonForegroundImages[stateIdx].Texture)
-		ButtonForegroundImages[stateIdx].Texture->drop();
+	if (m_foreground_images[stateIdx].Texture)
+		m_foreground_images[stateIdx].Texture->drop();
 
-	ButtonForegroundImages[stateIdx].Texture = image;
-	ButtonForegroundImages[stateIdx].SourceRect = sourceRect;
+	m_foreground_images[stateIdx].Texture = image;
+	m_foreground_images[stateIdx].SourceRect = sourceRect;
 
-	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), ButtonForegroundImages);
+	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), m_foreground_images);
 	if (imageState == stateIdx)
 		m_image->setImage(image);
 }

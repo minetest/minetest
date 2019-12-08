@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "guiButtonItem.h"
+#include "guiButtonItemImage.h"
 
 #include "client/client.h"
 #include "client/hud.h" // drawItemStack
@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 using namespace irr;
 using namespace gui;
 
-GUIButtonItem::GUIButtonItem(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
+GUIButtonItemImage::GUIButtonItemImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
 		s32 id, core::rect<s32> rectangle, std::string item, Client *client, bool noclip)
 		: GUIButton (environment, parent, id, rectangle, noclip)
 {
@@ -41,11 +41,11 @@ GUIButtonItem::GUIButtonItem(gui::IGUIEnvironment *environment, gui::IGUIElement
 	m_client = client;
 }
 
-GUIButtonItem *GUIButtonItem::addButton(IGUIEnvironment *environment,
+GUIButtonItemImage *GUIButtonItemImage::addButton(IGUIEnvironment *environment,
 		const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
 		const wchar_t *text, std::string item, Client *client)
 {
-	GUIButtonItem *button = new GUIButtonItem(environment,
+	GUIButtonItemImage *button = new GUIButtonItemImage(environment,
 			parent ? parent : environment->getRootGUIElement(),
 			id, rectangle, item, client);
 
