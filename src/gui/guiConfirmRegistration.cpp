@@ -33,8 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Continuing from guiPasswordChange.cpp
 const int ID_confirmPassword = 262;
 const int ID_confirm = 263;
-const int ID_message = 264;
+const int ID_intotext = 264;
 const int ID_cancel = 265;
+const int ID_message = 266;
 
 GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr, Client *client,
@@ -106,7 +107,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 
 		wchar_t *info_text_buf_wide = utf8_to_wide_c(info_text_buf);
 		gui::IGUIEditBox *e = new gui::intlGUIEditBox(info_text_buf_wide, true,
-				Environment, this, ID_message, rect2, false, true);
+				Environment, this, ID_intotext, rect2, false, true);
 		delete[] info_text_buf_wide;
 		e->drop();
 		e->setMultiLine(true);
@@ -114,7 +115,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 	}
 
-	ypos += 210 * s;
+	ypos += 200 * s;
 	{
 		core::rect<s32> rect2(0, 0, 540 * s, 30 * s);
 		rect2 += topleft_client + v2s32(30 * s, ypos);
@@ -124,7 +125,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		Environment->setFocus(e);
 	}
 
-	ypos += 60 * s;
+	ypos += 50 * s;
 	{
 		core::rect<s32> rect2(0, 0, 230 * s, 35 * s);
 		rect2 = rect2 + v2s32(size.X / 2 - 220 * s, ypos);
@@ -140,8 +141,8 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		delete[] text;
 	}
 	{
-		core::rect<s32> rect2(0, 0, 200 * s, 20 * s);
-		rect2 += topleft_client + v2s32(30 * s, ypos - 40 * s);
+		core::rect<s32> rect2(0, 0, 500 * s, 40 * s);
+		rect2 += topleft_client + v2s32(30 * s, ypos + 40 * s);
 		text = wgettext("Passwords do not match!");
 		IGUIElement *e = Environment->addStaticText(
 				text, rect2, false, true, this, ID_message);
