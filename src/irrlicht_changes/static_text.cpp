@@ -112,7 +112,7 @@ void StaticText::draw()
 #if USE_FREETYPE
 				if (font->getType() == irr::gui::EGFT_CUSTOM) {
 					irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
-					tmp->draw(cText, frameRect,
+					tmp->draw(Text, frameRect,
 						OverrideColorEnabled ? OverrideColor :
 							skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
 						HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,

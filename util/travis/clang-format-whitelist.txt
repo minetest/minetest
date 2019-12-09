@@ -161,6 +161,10 @@ src/gui/guiBox.cpp
 src/gui/guiBox.h
 src/gui/guiButton.cpp
 src/gui/guiButton.h
+src/gui/guiButtonImage.cpp
+src/gui/guiButtonImage.h
+src/gui/guiButtonItemImage.cpp
+src/gui/guiButtonItemImage.h
 src/gui/guiChatConsole.cpp
 src/gui/guiChatConsole.h
 src/gui/guiConfirmRegistration.cpp

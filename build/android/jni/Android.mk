@@ -181,6 +181,8 @@ LOCAL_SRC_FILES := \
 		jni/src/gui/guiBackgroundImage.cpp        \
 		jni/src/gui/guiBox.cpp                    \
 		jni/src/gui/guiButton.cpp                 \
+		jni/src/gui/guiButtonImage.cpp            \
+		jni/src/gui/guiButtonItemImage.cpp        \
 		jni/src/gui/guiChatConsole.cpp            \
 		jni/src/gui/guiConfirmRegistration.cpp    \
 		jni/src/gui/guiEditBoxWithScrollbar.cpp   \

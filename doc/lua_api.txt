@@ -2541,20 +2541,20 @@ Some types may inherit styles from parent types.
 * label
 * vertlabel, inherits from field
 * image_button
-* item_image_button, inherits from image_button
+* item_image_button
 * tabheader
 
 
 ### Valid Properties
 
-* button, button_exit
+* button, button_exit, image_button, item_image_button
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
     * bgcolor_hovered - color when hovered. Defaults to a lighter bgcolor when not provided.
     * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
-    * bgimg - standard image. Defaults to none.
-    * bgimg_hovered - image when hovered. Defaults to bgimg when not provided.
-    * bgimg_pressed - image when pressed. Defaults to bgimg when not provided.
+    * bgimg - standard background image. Defaults to none.
+    * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+    * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color, default white.
@@ -2572,13 +2572,11 @@ Some types may inherit styles from parent types.
     * textcolor - color. Default white.
 * label, vertlabel
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* image_button
-    * alpha - boolean, whether to draw alpha in bgimg. Default true.
-    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* item_image_button
-    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* image_button (additional properties)
+    * fgimg - standard image. Defaults to none.
+    * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
+    * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
+    * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.

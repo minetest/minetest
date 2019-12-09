@@ -17,7 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "client/tile.h" // ITextureSource
 #include "irrlichttypes_extrabloated.h"
+#include "util/string.h"
 #include <array>
 
 #pragma once
@@ -36,6 +38,9 @@ public:
 		BGIMG,
 		BGIMG_HOVERED,
 		BGIMG_PRESSED,
+		FGIMG,
+		FGIMG_HOVERED,
+		FGIMG_PRESSED,
 		ALPHA,
 		NUM_PROPERTIES,
 		NONE
@@ -66,6 +71,12 @@ public:
 			return BGIMG_HOVERED;
 		} else if (name == "bgimg_pressed") {
 			return BGIMG_PRESSED;
+		} else if (name == "fgimg") {
+			return FGIMG;
+		} else if (name == "fgimg_hovered") {
+			return FGIMG_HOVERED;
+		} else if (name == "fgimg_pressed") {
+			return FGIMG_PRESSED;
 		} else if (name == "alpha") {
 			return ALPHA;
 		} else {
@@ -104,6 +115,29 @@ public:
 		video::SColor color;
 		parseColorString(val, color, false, 0xFF);
 		return color;
+	}
+
+	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc,
+			video::ITexture *def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty()) {
+			return def;
+		}
+
+		video::ITexture *texture = tsrc->getTexture(val);
+
+		return texture;
+	}
+
+	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc) const
+	{
+		const auto &val = properties[prop];
+		FATAL_ERROR_IF(val.empty(), "Unexpected missing property");
+
+		video::ITexture *texture = tsrc->getTexture(val);
+
+		return texture;
 	}
 
 	bool getBool(Property prop, bool def) const

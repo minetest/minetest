@@ -58,6 +58,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiBackgroundImage.h"
 #include "guiBox.h"
 #include "guiButton.h"
+#include "guiButtonImage.h"
+#include "guiButtonItemImage.h"
 #include "guiEditBoxWithScrollbar.h"
 #include "guiItemImage.h"
 #include "guiScrollBar.h"
@@ -879,49 +881,7 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		GUIButton *e = GUIButton::addButton(Environment, rect, this, spec.fid, spec.flabel.c_str());
 
 		auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
-		if (style.isNotDefault(StyleSpec::BGCOLOR)) {
-			e->setColor(style.getColor(StyleSpec::BGCOLOR));
-		}
-		if (style.isNotDefault(StyleSpec::BGCOLOR_HOVERED)) {
-			e->setHoveredColor(style.getColor(StyleSpec::BGCOLOR_HOVERED));
-		}
-		if (style.isNotDefault(StyleSpec::BGCOLOR_PRESSED)) {
-			e->setPressedColor(style.getColor(StyleSpec::BGCOLOR_PRESSED));
-		}
-
-		if (style.isNotDefault(StyleSpec::TEXTCOLOR)) {
-			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR));
-		}
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
-
-		if (style.isNotDefault(StyleSpec::BGIMG)) {
-			std::string image_name = style.get(StyleSpec::BGIMG, "");
-			std::string hovered_image_name = style.get(StyleSpec::BGIMG_HOVERED, "");
-			std::string pressed_image_name = style.get(StyleSpec::BGIMG_PRESSED, "");
-
-			video::ITexture *texture = 0;
-			video::ITexture *hovered_texture = 0;
-			video::ITexture *pressed_texture = 0;
-			texture = m_tsrc->getTexture(image_name);
-			if (!hovered_image_name.empty())
-				hovered_texture = m_tsrc->getTexture(hovered_image_name);
-			else
-				hovered_texture = texture;
-			if (!pressed_image_name.empty())
-				pressed_texture = m_tsrc->getTexture(pressed_image_name);
-			else
-				pressed_texture = texture;
-
-			e->setUseAlphaChannel(style.getBool(StyleSpec::ALPHA, true));
-			e->setImage(guiScalingImageButton(
-					Environment->getVideoDriver(), texture, geom.X, geom.Y));
-			e->setHoveredImage(guiScalingImageButton(
-					Environment->getVideoDriver(), hovered_texture, geom.X, geom.Y));
-			e->setPressedImage(guiScalingImageButton(
-					Environment->getVideoDriver(), pressed_texture, geom.X, geom.Y));
-			e->setScaleImage(true);
-		}
+		e->setFromStyle(style, m_tsrc);
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -1876,33 +1836,31 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 			spec.is_exit = true;
 
 		video::ITexture *texture = 0;
-		video::ITexture *pressed_texture = 0;
 		texture = m_tsrc->getTexture(image_name);
-		if (!pressed_image_name.empty())
-			pressed_texture = m_tsrc->getTexture(pressed_image_name);
-		else
-			pressed_texture = texture;
 
-		GUIButton *e = GUIButton::addButton(Environment, rect, this, spec.fid, spec.flabel.c_str());
+		GUIButtonImage *e = GUIButtonImage::addButton(Environment, rect, this, spec.fid, spec.flabel.c_str());
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
 
 		auto style = getStyleForElement("image_button", spec.fname);
+		e->setFromStyle(style, m_tsrc);
 
-		e->setUseAlphaChannel(style.getBool(StyleSpec::ALPHA, true));
-		e->setImage(guiScalingImageButton(
+		// We explicitly handle these arguments *after* the style properties in
+		// order to override them if they are provided
+		e->setForegroundImage(guiScalingImageButton(
 			Environment->getVideoDriver(), texture, geom.X, geom.Y));
-		e->setPressedImage(guiScalingImageButton(
-			Environment->getVideoDriver(), pressed_texture, geom.X, geom.Y));
+		if (!pressed_image_name.empty()) {
+			video::ITexture *pressed_texture = m_tsrc->getTexture(pressed_image_name);
+			e->setPressedForegroundImage(guiScalingImageButton(
+						Environment->getVideoDriver(), pressed_texture, geom.X, geom.Y));
+		}
 		e->setScaleImage(true);
+
 		if (parts.size() >= 7) {
 			e->setNotClipped(noclip);
 			e->setDrawBorder(drawborder);
-		} else {
-			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-			e->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
 		}
 
 		m_fields.push_back(spec);
@@ -2083,11 +2041,10 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 			2
 		);
 
-		gui::IGUIButton *e_btn = GUIButton::addButton(Environment, rect, this, spec_btn.fid, L"");
+		GUIButtonItemImage *e_btn = GUIButtonItemImage::addButton(Environment, rect, this, spec_btn.fid, spec_btn.flabel.c_str(), item_name, m_client);
 
 		auto style = getStyleForElement("item_image_button", spec_btn.fname, "image_button");
-		e_btn->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e_btn->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
+		e_btn->setFromStyle(style, m_tsrc);
 
 		if (spec_btn.fname == data->focused_fieldname) {
 			Environment->setFocus(e_btn);
@@ -2097,24 +2054,6 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 		rect += data->basepos-padding;
 		spec_btn.rect = rect;
 		m_fields.push_back(spec_btn);
-
-		// the spec for the item-image
-		FieldSpec spec_img(
-			name,
-			L"",
-			L"",
-			258 + m_fields.size(),
-			2
-		);
-
-		GUIItemImage *e_img = new GUIItemImage(Environment, e_btn, spec_img.fid,
-				core::rect<s32>(0, 0, geom.X, geom.Y), item_name, m_font, m_client);
-
-		e_img->setText(utf8_to_wide(label).c_str());
-
-		e_img->drop();
-
-		m_fields.push_back(spec_img);
 		return;
 	}
 	errorstream<< "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
