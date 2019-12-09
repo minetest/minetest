@@ -2262,7 +2262,7 @@ bool GUIFormSpecMenu::parseVersionDirect(const std::string &data)
 		return false;
 	}
 
-	if (parts[0] != "formspec_version") {
+	if (trim(parts[0]) != "formspec_version") {
 		return false;
 	}
 
