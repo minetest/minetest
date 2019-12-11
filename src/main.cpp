@@ -261,6 +261,14 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Set network port (UDP)"))));
 	allowed_options->insert(std::make_pair("run-unittests", ValueSpec(VALUETYPE_FLAG,
 			_("Run the unit tests and exit"))));
+#ifndef __ANDROID__
+	allowed_options->insert(std::make_pair("render-formspec", ValueSpec(VALUETYPE_FLAG,
+			_("Batch task: render a formspec in file given by --flag, and ouput a screenshot to the path given -o, then exit"))));
+	allowed_options->insert(std::make_pair("file", ValueSpec(VALUETYPE_STRING,
+			_("Input file for batch tasks"))));
+	allowed_options->insert(std::make_pair("o", ValueSpec(VALUETYPE_STRING,
+			_("Output file for batch tasks"))));
+#endif
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,

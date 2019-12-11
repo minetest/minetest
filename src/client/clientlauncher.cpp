@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #ifdef __ANDROID__
 	#include "porting.h"
+#else
+	#include "gui/StandaloneFormspecRenderer.h"
 #endif
 
 /* mainmenumanager.h
@@ -105,7 +107,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	}
 
 	RenderingEngine::get_instance()->setupTopLevelWindow(PROJECT_NAME_C);
-	
+
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
 		Default is 500.
@@ -161,6 +163,14 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	// Irrlicht 1.8 input colours
 	skin->setColor(gui::EGDC_EDITABLE, video::SColor(255, 128, 128, 128));
 	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255, 96, 134, 49));
+#endif
+
+#ifndef __ANDROID__
+	// Run formspec integration tests
+	if (cmd_args.getFlag("render-formspec")) {
+		StandaloneFormspecRenderer renderer;
+		return renderer.renderPath(cmd_args.get("file"), cmd_args.get("o"));
+	}
 #endif
 
 	// Create the menu clouds
