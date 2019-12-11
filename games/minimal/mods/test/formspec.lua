@@ -1,3 +1,5 @@
+local color = minetest.colorize
+
 local clip_fs = [[
 	style_type[label;noclip=%c]
 	style_type[button;noclip=%c]
@@ -31,8 +33,8 @@ local style_fs = [[
 		bgcolor_pressed=purple]
 	button[0,0;2.5,0.8;one_btn1;Button]
 
-	style[one_btn2;border=false;textcolor=cyan]
-	button[0,1.05;2.5,0.8;one_btn2;Text Button]
+	style[one_btn2;border=false;textcolor=cyan] ]]..
+	"button[0,1.05;2.5,0.8;one_btn2;Text " .. color("#FF0", "Yellow") .. [[]
 
 	style[one_btn3;bgimg=bubble.png;bgimg_hovered=default_apple.png;
 		bgimg_pressed=heart.png]
@@ -144,16 +146,18 @@ local pages = {
 		list[current_player;main;6,8;3,2;1]
 		button[9,0;2.5,1;name;]
 		button[9,1;2.5,1;name;]
-		button[9,2;2.5,1;name;]
-		label[9,0;This is a label.\nLine\nLine\nLine\nEnd]
-		button[9,3;1,1;name;]
+		button[9,2;2.5,1;name;] ]]..
+		"label[9,0.5;This is a label.\nLine\nLine\nLine\nEnd]"..
+		[[button[9,3;1,1;name;]
 		vertlabel[9,4;VERT]
 		label[10,3;HORIZ]
 		tabheader[6.5,0;6,0.65;name;Tab 1,Tab 2,Tab 3,Secrets;1;false;false]
 	]],
 
 		"size[12,12]real_coordinates[true]" ..
-		"label[0.375,0.375;Styled]" ..
+		("label[0.375,0.375;Styled - %s %s]"):format(
+			color("#F00", "red text"),
+			color("#77FF00CC", "green text")) ..
 		"label[6.375,0.375;Unstyled]" ..
 		"box[0,0.75;12,0.1;#999]" ..
 		"box[6,0.85;0.1,11.15;#999]" ..
