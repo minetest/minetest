@@ -1666,6 +1666,7 @@ to games.
     * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
     * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
+  or if their feet are in the node. Note: not supported for `new_move = false`
 * `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids
