@@ -379,12 +379,6 @@ private:
 			GUIScrollBar::ArrowVisibility arrow_visiblity = GUIScrollBar::DEFAULT;
 		} scrollbar_options;
 
-		struct {
-			std::vector<irr::video::SColor> colors;
-			std::vector<irr::video::SColor> bordercolors;
-			std::vector<s32> borders;
-		} boxOptions;
-
 		// used to restore table selection/scroll/treeview state
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 	} parserData;

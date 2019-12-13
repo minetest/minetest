@@ -50,6 +50,9 @@ public:
 		PADDING,
 		FONT,
 		FONT_SIZE,
+		COLORS,
+		BORDERCOLORS,
+		BORDERWIDTHS,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -106,6 +109,12 @@ public:
 			return FONT;
 		} else if (name == "font_size") {
 			return FONT_SIZE;
+		} else if (name == "colors") {
+			return COLORS;
+		} else if (name == "bordercolors") {
+			return BORDERCOLORS;
+		} else if (name == "borderwidths") {
+			return BORDERWIDTHS;
 		} else {
 			return NONE;
 		}

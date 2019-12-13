@@ -2207,93 +2207,6 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 	errorstream<< "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-// All completely temporary, of course.
-void GUIFormSpecMenu::parseBoxOptions(parserData* data, const std::string &element)
-{
-	std::vector<std::string> parts = split(element, ';');
-
-	if ((parts.size() == 3) ||
-		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::vector<std::string> colors       = split(parts[0], ',');
-		std::vector<std::string> bordercolors = split(parts[1], ',');
-		std::vector<std::string> borders      = split(parts[2], ',');
-
-		if (colors.size() == 1)
-			for (unsigned int i = 1; i <= 3; i++)
-				colors.emplace_back(colors[0]);
-
-		if (bordercolors.size() == 1)
-			for (unsigned int i = 1; i <= 3; i++)
-				bordercolors.emplace_back(bordercolors[0]);
-
-		if (borders.size() == 1)
-			for (unsigned int i = 1; i <= 3; i++)
-				borders.emplace_back(borders[0]);
-
-		// Colors
-		if (colors.size() == 4) {
-			std::vector<video::SColor> parsed_colors;
-
-			bool success = true;
-			for (unsigned int i = 0; i <= 3; i++) {
-				std::string temp_colorstring = colors[i];
-				video::SColor temp_color;
-
-				if (parseColorString(temp_colorstring, temp_color, false))
-					parsed_colors.emplace_back(temp_color);
-				else {
-					warningstream << "Bad boxoptions color!" << std::endl;
-					success = false;
-					break;
-				}
-			}
-
-			if (success == true)
-				data->boxOptions.colors = parsed_colors;
-		} else
-			warningstream << "Bad boxoptions color args!" << std::endl;
-
-		// Bordercolors
-		if (bordercolors.size() == 4) {
-			std::vector<video::SColor> parsed_bordercolors;
-
-			bool success = true;
-			for (unsigned int i = 0; i <= 3; i++) {
-				std::string temp_colorstring = bordercolors[i];
-				video::SColor temp_color;
-
-				if (parseColorString(temp_colorstring, temp_color, false))
-					parsed_bordercolors.emplace_back(temp_color);
-				else {
-					warningstream << "Bad boxoptions bordercolor!" << std::endl;
-					success = false;
-					break;
-				}
-			}
-
-			if (success == true)
-				data->boxOptions.bordercolors = parsed_bordercolors;
-		} else
-			warningstream << "Bad boxoptions bordercolor args!" << std::endl;
-
-		// Borders
-		if (borders.size() == 4) {
-			std::vector<s32> parsed_borders;
-
-			for (unsigned int i = 0; i <= 3; i++)
-				parsed_borders.emplace_back(stoi(borders[i]));
-
-			data->boxOptions.borders = parsed_borders;
-		} else
-			warningstream << "Bad boxoptions borders args!" << std::endl;
-
-		return;
-	}
-	warningstream << "Invalid boxoptions element(" << parts.size() << "): '" << element <<
-		"'" << std::endl;
-}
-
 void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
@@ -2319,12 +2232,6 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 			geom.Y = stof(v_geom[1]) * spacing.Y;
 		}
 
-		video::SColor tmp_color;
-		std::vector<video::SColor> colors = data->boxOptions.colors;
-
-		if (parseColorString(parts[2], tmp_color, true, 0x8C))
-			colors = {tmp_color, tmp_color, tmp_color, tmp_color};
-
 		FieldSpec spec(
 			"",
 			L"",
@@ -2334,9 +2241,78 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 		);
 		spec.ftype = f_Box;
 
+		auto style = getStyleForElement("box", spec.fname);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
+
+		video::SColor tmp_color;
+		std::vector<video::SColor> colors;
+		std::vector<video::SColor> bordercolors;
+		std::vector<s32> borderwidths;
+
+		// Colors
+		if (parseColorString(parts[2], tmp_color, true, 0x8C))
+			colors = {tmp_color, tmp_color, tmp_color, tmp_color};
+		else {
+			std::vector<std::string> str_style = split(style.get(StyleSpec::COLORS, "#0000"), ',');
+
+			if (str_style.size() == 1)
+				str_style = {str_style[0], str_style[0], str_style[0], str_style[0]};
+
+			if (str_style.size() == 4) {
+				for (unsigned int i = 0; i <= 3; i++) {
+					video::SColor temp_style;
+
+					if (parseColorString(str_style[i], temp_style, false, 0xFF))
+						colors.emplace_back(temp_style);
+					else {
+						colors.emplace_back(0x0);
+						break;
+					}
+				}
+			} else
+				colors = {0x0, 0x0, 0x0, 0x0};
+		}
+
+		// Bordercolors
+		{
+			std::vector<std::string> str_style = split(style.get(StyleSpec::BORDERCOLORS, "#0000"), ',');
+
+			if (str_style.size() == 1)
+				str_style = {str_style[0], str_style[0], str_style[0], str_style[0]};
+
+			if (str_style.size() == 4) {
+				for (unsigned int i = 0; i <= 3; i++) {
+					video::SColor temp_style;
+
+					if (parseColorString(str_style[i], temp_style, false, 0xFF))
+						bordercolors.emplace_back(temp_style);
+					else {
+						bordercolors.emplace_back(0x0);
+						break;
+					}
+				}
+			} else
+				bordercolors = {0x0, 0x0, 0x0, 0x0};
+		}
+
+		// Borderwidths
+		{
+			std::vector<std::string> str_style = split(style.get(StyleSpec::BORDERWIDTHS, "0"), ',');
+
+			if (str_style.size() == 1)
+				str_style = {str_style[0], str_style[0], str_style[0], str_style[0]};
+
+			if (str_style.size() == 4) {
+				for (unsigned int i = 0; i <= 3; i++)
+					borderwidths.emplace_back(stoi(str_style[i]));
+			} else
+				borderwidths = {0, 0, 0, 0};
+		}
+
 		core::rect<s32> rect(pos, pos + geom);
 
-		GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid, rect, tmp_color);
+		GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid, rect,
+			colors, bordercolors, borderwidths);
 		e->setNotClipped(true);
 		e->drop();
 
@@ -2909,11 +2885,6 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
-	if (type == "boxoptions") {
-		parseBoxOptions(data,description);
-		return;
-	}
-
 	if (type == "bgcolor") {
 		parseBackgroundColor(data,description);
 		return;
@@ -3158,18 +3129,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			break; // Invalid format
 
 		mydata.real_coordinates = is_yes(trim(parts[1]));
-	}
-
-	{
-		// Set default box values
-		video::SColor box_color;
-		parseColorString("#FFFFFF", box_color, false, 0x8C);
-
-		mydata.boxOptions.colors = {box_color, box_color, box_color, box_color};
-
-		parseColorString("#000000", box_color, false, 0x8C);
-		mydata.boxOptions.bordercolors = {box_color, box_color, box_color, box_color};
-		mydata.boxOptions.borders = {0, 0, 0, 0};
 	}
 
 	if (mydata.explicit_size) {
@@ -3571,86 +3530,6 @@ void GUIFormSpecMenu::drawMenu()
 	// Some elements are only visible while being drawn
 	for (gui::IGUIElement *e : m_clickthrough_elements)
 		e->setVisible(true);
-
-	/*
-		Draw Boxes
-	*/
-	for (const GUIFormSpecMenu::BoxDrawSpec &spec : m_boxes) {
-
-		std::vector<s32> inner_bd = {0, 0, 0, 0};
-		std::vector<s32> outer_bd = {0, 0, 0, 0};
-
-		for (unsigned int i = 0; i <= 3; i++) {
-			if (spec.borders[i] > 0)
-				outer_bd[i] = spec.borders[i];
-			else
-				inner_bd[i] = spec.borders[i];
-		}
-
-		v2s32 bd_pos = {
-			spec.pos.X - outer_bd[3],
-			spec.pos.Y - outer_bd[0]
-		};
-
-		v2s32 rect_pos = {
-			spec.pos.X - inner_bd[3],
-			spec.pos.Y - inner_bd[0]
-		};
-
-		v2s32 geom = spec.pos + spec.geom;
-
-		v2s32 bd_geom = {
-			geom.X + outer_bd[1],
-			geom.Y + outer_bd[2]
-		};
-		v2s32 rect_geom = {
-			geom.X + inner_bd[1],
-			geom.Y + inner_bd[2]
-		};
-
-		core::rect<s32> main_rect(
-			rect_pos.X,
-			rect_pos.Y,
-			rect_geom.X,
-			rect_geom.Y
-		);
-
-		std::vector<core::rect<s32>> border_rects(4);
-
-		border_rects[0] = core::rect<s32>(
-			bd_pos.X,
-			bd_pos.Y,
-			bd_geom.X,
-			rect_pos.Y
-		);
-
-		border_rects[1] = core::rect<s32>(
-			bd_pos.X,
-			rect_geom.Y,
-			bd_geom.X,
-			bd_geom.Y
-		);
-
-		border_rects[2] = core::rect<s32>(
-			rect_geom.X,
-			rect_pos.Y,
-			bd_geom.X,
-			rect_geom.Y
-		);
-
-		border_rects[3] = core::rect<s32>(
-			bd_pos.X,
-			rect_pos.Y,
-			rect_pos.X,
-			rect_geom.Y
-		);
-
-		driver->draw2DRectangle(main_rect, spec.colors[0], spec.colors[1],
-			spec.colors[3], spec.colors[2], 0);
-
-		for (unsigned int i = 0; i <= 3; i++)
-			driver->draw2DRectangle(spec.bordercolors[i], border_rects[i], 0);
-	}
 
 	/*
 		Call base class

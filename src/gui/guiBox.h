@@ -19,16 +19,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <vector>
 #include "irrlichttypes_extrabloated.h"
 
 class GUIBox : public gui::IGUIElement
 {
 public:
 	GUIBox(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-		const core::rect<s32> &rectangle, const video::SColor &color);
+		const core::rect<s32> &rectangle, const std::vector<video::SColor> &colors,
+		const std::vector<video::SColor> &bordercolors, const std::vector<s32> &borderwidths);
 
 	virtual void draw() override;
 
 private:
-	video::SColor m_color;
+	std::vector<video::SColor> m_colors;
+	std::vector<video::SColor> m_bordercolors;
+	std::vector<s32> m_borderwidths;
 };
