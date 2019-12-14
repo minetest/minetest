@@ -778,18 +778,25 @@ void GUIButton::setFromStyle(const StyleSpec& style, ISimpleTextureSource *tsrc)
 	setDrawBorder(style.getBool(StyleSpec::BORDER, DrawBorder));
 	setUseAlphaChannel(style.getBool(StyleSpec::ALPHA, true));
 
+	const core::position2di buttonCenter(AbsoluteRect.getCenter());
+	core::position2d<s32> geom(buttonCenter);
 	if (style.isNotDefault(StyleSpec::BGIMG)) {
 		video::ITexture *texture = style.getTexture(StyleSpec::BGIMG, tsrc);
-		video::ITexture *hovered_texture = style.getTexture(StyleSpec::BGIMG_HOVERED, tsrc, texture);
-		video::ITexture *pressed_texture = style.getTexture(StyleSpec::BGIMG_PRESSED, tsrc, texture);
-
-		const core::position2di buttonCenter(AbsoluteRect.getCenter());
-		core::position2d<s32> geom(buttonCenter);
 
 		setImage(guiScalingImageButton(
 					Environment->getVideoDriver(), texture, geom.X, geom.Y));
+		setScaleImage(true);
+	}
+	if (style.isNotDefault(StyleSpec::BGIMG_HOVERED)) {
+		video::ITexture *hovered_texture = style.getTexture(StyleSpec::BGIMG_HOVERED, tsrc);
+
 		setHoveredImage(guiScalingImageButton(
 					Environment->getVideoDriver(), hovered_texture, geom.X, geom.Y));
+		setScaleImage(true);
+	}
+	if (style.isNotDefault(StyleSpec::BGIMG_PRESSED)) {
+		video::ITexture *pressed_texture = style.getTexture(StyleSpec::BGIMG_PRESSED, tsrc);
+
 		setPressedImage(guiScalingImageButton(
 					Environment->getVideoDriver(), pressed_texture, geom.X, geom.Y));
 		setScaleImage(true);
