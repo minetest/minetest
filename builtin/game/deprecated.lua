@@ -27,7 +27,6 @@ end
 -- EnvRef
 --
 core.env = {}
-local envref_deprecation_message_printed = false
 setmetatable(core.env, {
 	__index = function(table, key)
 		core.log("deprecated", "core.env:[...] is deprecated and "
