@@ -33,10 +33,16 @@ core.register_entity(":__builtin:falling_node", {
 				end
 			end
 		end
+		local def = core.registered_nodes[node.name]
+		local glow
+		if def then
+			glow = def.light_source
+		end
 		self.meta = meta
 		self.object:set_properties({
 			is_visible = true,
 			textures = {node.name},
+			glow = glow,
 		})
 	end,
 
