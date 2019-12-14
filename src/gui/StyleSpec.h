@@ -47,7 +47,7 @@ public:
 	};
 
 private:
-	std::array<bool, NUM_PROPERTIES> property_set;
+	std::array<bool, NUM_PROPERTIES> property_set{};
 	std::array<std::string, NUM_PROPERTIES> properties;
 
 public:
