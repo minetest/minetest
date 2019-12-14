@@ -46,7 +46,11 @@ bool GUIButtonImage::OnEvent(const SEvent& event)
 	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(isPressed(), m_foreground_images);
 	video::ITexture *texture = m_foreground_images[(u32)imageState].Texture;
 	if (texture != nullptr)
+	{
 		m_image->setImage(texture);
+	}
+
+	m_image->setVisible(texture != nullptr);
 
 	return result;
 }
@@ -110,16 +114,23 @@ void GUIButtonImage::setFromStyle(const StyleSpec &style, ISimpleTextureSource *
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 
+	const core::position2di buttonCenter(AbsoluteRect.getCenter());
+	core::position2d<s32> geom(buttonCenter);
 	if (style.isNotDefault(StyleSpec::FGIMG)) {
 		video::ITexture *texture = style.getTexture(StyleSpec::FGIMG, tsrc);
-		video::ITexture *hovered_texture = style.getTexture(StyleSpec::FGIMG_HOVERED, tsrc, texture);
-		video::ITexture *pressed_texture = style.getTexture(StyleSpec::FGIMG_PRESSED, tsrc, texture);
-
-		const core::position2di buttonCenter(AbsoluteRect.getCenter());
-		core::position2d<s32> geom(buttonCenter);
 
 		setForegroundImage(guiScalingImageButton(driver, texture, geom.X, geom.Y));
+		setScaleImage(true);
+	}
+	if (style.isNotDefault(StyleSpec::FGIMG_HOVERED)) {
+		video::ITexture *hovered_texture = style.getTexture(StyleSpec::FGIMG_HOVERED, tsrc);
+
 		setHoveredForegroundImage(guiScalingImageButton(driver, hovered_texture, geom.X, geom.Y));
+		setScaleImage(true);
+	}
+	if (style.isNotDefault(StyleSpec::FGIMG_PRESSED)) {
+		video::ITexture *pressed_texture = style.getTexture(StyleSpec::FGIMG_PRESSED, tsrc);
+
 		setPressedForegroundImage(guiScalingImageButton(driver, pressed_texture, geom.X, geom.Y));
 		setScaleImage(true);
 	}
