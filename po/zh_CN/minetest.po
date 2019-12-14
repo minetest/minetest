@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-11-10 15:04+0000\n"
-"Last-Translator: Krock <mk939@ymail.com>\n"
+"PO-Revision-Date: 2019-12-16 22:21+0000\n"
+"Last-Translator: Yangjun Wang <yangjunw50@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -25,7 +25,7 @@ msgstr "您已死亡"
 #: builtin/fstk/ui.lua
 #, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Lua 脚本发生错误，如一个 mod："
+msgstr "Lua 脚本发生错误："
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -118,7 +118,7 @@ msgstr "Mod："
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
 msgid "No (optional) dependencies"
-msgstr "可选依赖："
+msgstr "可选依赖项："
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
@@ -127,7 +127,7 @@ msgstr "未提供游戏描述。"
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
 msgid "No hard dependencies"
-msgstr "无依赖关系."
+msgstr "无依赖项."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -136,7 +136,7 @@ msgstr "未提供mod 包描述。"
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
 msgid "No optional dependencies"
-msgstr "可选依赖："
+msgstr "可选依赖项："
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -676,9 +676,8 @@ msgid "Fancy Leaves"
 msgstr "华丽的树叶"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Generate Normal Maps"
-msgstr "生成一般地图"
+msgstr "生成普通地图"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1744,6 +1743,8 @@ msgid ""
 "(Android) Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
+"（Android）修复虚拟操纵杆的位置。\n"
+"如果禁用，虚拟操纵杆将居中至第一次触摸的位置。"
 
 #: src/settings_translation_file.cpp
 msgid ""
