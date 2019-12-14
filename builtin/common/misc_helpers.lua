@@ -575,6 +575,15 @@ function table.insert_all(t, other)
 end
 
 
+function table.invert(t)
+	local ti = {}
+	for k,v in pairs(t) do
+		ti[v] = k
+	end
+	return ti
+end
+
+
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
