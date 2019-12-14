@@ -3031,7 +3031,7 @@ void GUIFormSpecMenu::legacySortElements(core::list<IGUIElement *>::Iterator fro
 		elements.emplace_back(*it);
 
 	// 2: Sort the container
-	std::sort(elements.begin(), elements.end(),
+	std::stable_sort(elements.begin(), elements.end(),
 			[this] (const IGUIElement *a, const IGUIElement *b) -> bool {
 		const FieldSpec *spec_a = getSpecByID(a->getID());
 		const FieldSpec *spec_b = getSpecByID(b->getID());
