@@ -75,7 +75,7 @@ core.register_entity(":__builtin:falling_node", {
 		-- Rotate entity
 		if def.drawtype == "torchlike" then
 			self.object:set_yaw(math.pi*0.25)
-		elseif (node.param2 ~= 0 and def.wield_image == nil) or def.drawtype == "signlike" then
+		elseif (node.param2 ~= 0 and (def.wield_image == "" or def.wield_image == nil)) or def.drawtype == "signlike" then
 			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
 				local fdir = node.param2 % 32
 				local face = fdir % 4
