@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-12-11 13:36+0000\n"
+"PO-Revision-Date: 2019-12-16 22:21+0000\n"
 "Last-Translator: Tirifto <tirifto@posteo.cz>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
@@ -2587,7 +2587,8 @@ msgstr "Difinas la profundecon de la rivera akvovojo."
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
-"Difinas maksimuman distancon de ludanta moviĝo en monderoj (0 = senlima)."
+"Difinas plejgrandan distancon por transsendo de ludantoj, en monderoj (0 = "
+"senlima)."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -2985,7 +2986,7 @@ msgstr "Fiksa mapa greno"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
-msgstr ""
+msgstr "Fiksita virtuala stirstango"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland base height noise"
@@ -3264,7 +3265,7 @@ msgstr "Varmeca bruo"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
-msgstr "Alteca parto de la komenca grando de la fenestro."
+msgstr "Alteco de la fenestro je ĝia komenca grando."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
@@ -3599,6 +3600,9 @@ msgid ""
 "limited\n"
 "to this distance from the player to the node."
 msgstr ""
+"Se la limigo de klient-flankaj modifaĵoj por mondera distanco ŝaltiĝas, "
+"vokoj\n"
+"al get_node limiĝas al ĉi tiu distanco inter la ludanto kaj la mondero."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4569,6 +4573,9 @@ msgid ""
 "updated over\n"
 "network."
 msgstr ""
+"Longeco de servila agociklo, kaj la intervalo dum kiu objektoj ĝenerale "
+"ĝisdatiĝas\n"
+"trans la reto."
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between Active Block Modifier (ABM) execution cycles"
@@ -4580,7 +4587,7 @@ msgstr "Tempodaŭro inter rulaj cikloj de NodeTimer"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between active block management cycles"
-msgstr ""
+msgstr "Daŭro inter cikloj de aktiva administrado de monderoj"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4620,11 +4627,11 @@ msgstr "Akreco de heleco"
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues on disk"
-msgstr ""
+msgstr "Limo de viceroj enlegotaj de disko"
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues to generate"
-msgstr ""
+msgstr "Limo de viceroj estigotaj"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4660,11 +4667,11 @@ msgstr "Glatigo de fluida flueco"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
-msgstr ""
+msgstr "Plejgrando de fluaĵa ciklo"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
-msgstr ""
+msgstr "Tempo antaŭ vakigo de fluaĵa atendovico"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sinking"
@@ -4676,7 +4683,7 @@ msgstr "Intervalo inter ĝisdatigoj de fluaĵoj (en sekundoj)."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
-msgstr ""
+msgstr "Longeco de fluaĵa agociklo"
 
 #: src/settings_translation_file.cpp
 msgid "Load the game profiler"
@@ -4892,11 +4899,11 @@ msgstr "Senda distanco de mondopecoj"
 
 #: src/settings_translation_file.cpp
 msgid "Max liquids processed per step."
-msgstr ""
+msgstr "Plejmulto da fluaĵoj traktataj en unu paŝo."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr ""
+msgstr "Plejgrando da ekstraj mondopecoj por «clearobjects»"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
@@ -4958,7 +4965,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr ""
+msgstr "Plejgranda nombro de perforte enlegitaj mondopecoj."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5069,7 +5076,7 @@ msgstr "Etmapigo"
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
-msgstr ""
+msgstr "Kanaloj por modifaĵoj"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
@@ -5190,7 +5197,7 @@ msgstr "Emfazado de monderoj"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
-msgstr ""
+msgstr "Intervalo de NodeTimer"
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
@@ -5224,6 +5231,22 @@ msgid ""
 "processes, especially in singleplayer and/or when running Lua code in\n"
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
+"Nombro de uzotaj fadenoj enlegontaj.\n"
+"AVERTO: Nun ekzistas pluraj eraroj, kiuj povus estigi kolapson kiam\n"
+"«num_emerge_threads» pli grandas ol 1. Ĝis ĉi tiu averto foriĝos, ni\n"
+"forte rekomendas ke ĉi tiu valoro restu je la norma «1».\n"
+"Valoro 0:\n"
+"-    Memaga elekto. La nombro de fadenoj enlegontaj estos\n"
+"-    'nombro de datentraktiloj - 2', kun suba limo de 1.\n"
+"Ĉiu alia valoro:\n"
+"-    Precizigas la nombron de fadenoj enlegontaj, kun suba limo de 1.\n"
+"AVERTO: Pligrandigo de la nombro de fadenoj enlegontaj plirapidigas "
+"mondestigon,\n"
+"sed povas malrapidigi la ludon per ĝenado de aliaj programoj, precipe en "
+"reĝimo\n"
+"por unu ludanto, kaj/aŭ dum rulado de Lua-kodo en «on_generated». Por "
+"multaj\n"
+"uzantoj, la optimuma agordo eble estos «1»."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5270,9 +5293,8 @@ msgid "Parallax occlusion"
 msgstr "Paralaksa ombrigo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Parallax occlusion bias"
-msgstr "Paralaksa Okludo"
+msgstr "Ekarto de paralaksa okludo"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion iterations"
@@ -5338,7 +5360,7 @@ msgstr "Nomo de ludanto"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
-msgstr ""
+msgstr "Distanco por transsendo de ludantoj"
 
 #: src/settings_translation_file.cpp
 msgid "Player versus player"
@@ -5928,7 +5950,7 @@ msgstr "Alternativo bruo de tereno"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain base noise"
-msgstr ""
+msgstr "Bruo de terena bazo"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain height"
@@ -6005,7 +6027,7 @@ msgstr "La profundeco de tero aŭ alia surfaca klimata plenigilo."
 #: src/settings_translation_file.cpp
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved to."
-msgstr ""
+msgstr "La dosierindiko relativa al via mondoindiko, kien konserviĝos profiloj."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
@@ -6017,7 +6039,7 @@ msgstr "Longeco (en bilderoj) necesa por komenco de interago kun tuŝekrano."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
-msgstr ""
+msgstr "La reta interfaco kie la servilo aŭskultas."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6082,6 +6104,9 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
+"Tempo (en sekundoj) dum kiu atendovico de fluaĵoj povas superkreski\n"
+"la datentraktan kapablon, ĝis oni provos ĝin malgrandigi per forĵeto de\n"
+"malnovaj viceroj.  Nula valoro malŝaltas la funkcion."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6136,7 +6161,7 @@ msgstr "Tagtempo kiam nova mondo ekas, en hormilonoj (0–23999)."
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
-msgstr ""
+msgstr "Intervalo de sendado de tempaj informoj"
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
@@ -6219,7 +6244,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
-msgstr ""
+msgstr "Senlima distanco por transsendo de ludantoj"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
@@ -6362,7 +6387,7 @@ msgstr "Vidodistanco"
 
 #: src/settings_translation_file.cpp
 msgid "Virtual joystick triggers aux button"
-msgstr ""
+msgstr "Virtuala stirstango premas specialan klavon"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
@@ -6376,6 +6401,11 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"W-koordinato de la estigita 3D-tranĉo de la 4D-fraktalo.\n"
+"Determinas kiu 3D-tranĉo de la 4D-formo estiĝas.\n"
+"ŝanĝas la formon de la fraktalo.\n"
+"Neniel efikas sur 3D-fraktaloj.\n"
+"Ampleksa proksimume de -2 ĝis 2."
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
@@ -6512,7 +6542,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
-msgstr ""
+msgstr "Larĝeco de la fenestro je ĝia komenca grando."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
@@ -6532,6 +6562,8 @@ msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"Monda dosierujo (ĉio en la mondo konserviĝos ĉi tie).\n"
+"Ne necesas dum komenco el la ĉefmenuo."
 
 #: src/settings_translation_file.cpp
 msgid "World start time"
@@ -6566,6 +6598,8 @@ msgid ""
 "Y of mountain density gradient zero level. Used to shift mountains "
 "vertically."
 msgstr ""
+"Y de nula nivelo de la transiro de monta denseco. Uzata por movi montojn "
+"vertikale."
 
 #: src/settings_translation_file.cpp
 msgid "Y of upper limit of large caves."
@@ -6589,7 +6623,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of higher terrain that creates cliffs."
-msgstr ""
+msgstr "Y-nivelo de pli alta tereno, kiu estigas krutaĵojn."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of lower terrain and seabed."
