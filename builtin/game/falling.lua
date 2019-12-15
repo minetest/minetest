@@ -44,14 +44,30 @@ core.register_entity(":__builtin:falling_node", {
 			if def then
 				glow = def.light_source
 			end
-			self.object:set_properties({
-				is_visible = true,
-				textures = {node.name},
-				glow = glow,
-			})
+			if def.drawtype == "torchlike" then
+				local textures
+				if def.tiles and def.tiles[1] then
+					textures = { "("..def.tiles[1]..")^[transformFX", def.tiles[1] }
+				end
+				self.object:set_properties({
+					is_visible = true,
+					visual = "upright_sprite",
+					visual_size = { x=1, y=1 },
+					textures = textures,
+					glow = glow,
+				})
+			else
+				self.object:set_properties({
+					is_visible = true,
+					textures = {node.name},
+					glow = glow,
+				})
+			end
 		end
 		-- Rotate entity
-		if node.param2 ~= 0 then
+		if def.drawtype == "torchlike" then
+			self.object:set_yaw(math.pi*0.25)
+		elseif node.param2 ~= 0 then
 			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
 				-- TODO: Also colorize entity if paramtype2=colorfacedir
 				local fdir = node.param2 % 32
