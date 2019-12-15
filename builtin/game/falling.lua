@@ -44,6 +44,56 @@ core.register_entity(":__builtin:falling_node", {
 			textures = {node.name},
 			glow = glow,
 		})
+		-- Rotate entity
+		if node.param2 ~= 0 then
+			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
+				-- TODO: Also colorize entity if paramtype2=colorfacedir
+				local fdir = node.param2 % 32
+				local face = fdir % 4
+				local axis = fdir - face
+				local pitch, yaw, roll
+				if axis == 4 then
+					pitch = (4 - face) * (math.pi/2) - math.pi/2
+					yaw = math.pi/2
+					roll = math.pi/2
+				elseif axis == 8 then
+					pitch = (4 - face) * (math.pi/2) - math.pi*1.5
+					yaw = math.pi*1.5
+					roll = math.pi/2
+				elseif axis == 12 then
+					pitch = (4 - face) * (math.pi/2)
+					yaw = 0
+					roll = math.pi/2
+				elseif axis == 16 then
+					pitch = (4 - face) * (math.pi/2) + math.pi
+					yaw = math.pi
+					roll = math.pi/2
+				elseif axis == 20 then
+					pitch = math.pi
+					yaw = face * (math.pi/2) + math.pi
+					roll = 0
+				else
+					pitch = 0
+					yaw = (4 - face) * (math.pi/2)
+					roll = 0
+				end
+				self.object:set_rotation({x=pitch, y=yaw, z=roll})
+			elseif (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted") then
+				-- TODO: Also colorize entity if paramtype2=colorwallmounted
+				local rot = node.param2 % 8
+				if rot == 1 then
+					self.object:set_rotation({x=-math.pi, y=-math.pi, z=0})
+				elseif rot == 2 then
+					self.object:set_rotation({x=math.pi/2, y=math.pi/2, z=0})
+				elseif rot == 3 then
+					self.object:set_rotation({x=math.pi/2, y=math.pi*1.5, z=0})
+				elseif rot == 4 then
+					self.object:set_rotation({x=math.pi/2, y=math.pi, z=0})
+				elseif rot == 5 then
+					self.object:set_rotation({x=math.pi/2, y=0, z=0})
+				end
+			end
+		end
 	end,
 
 	get_staticdata = function(self)
