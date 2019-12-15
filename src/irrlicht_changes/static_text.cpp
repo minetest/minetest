@@ -562,9 +562,12 @@ s32 StaticText::getTextHeight() const
 	if (!font)
 		return 0;
 
-	s32 height = font->getDimension(L"A").Height + font->getKerningHeight();
-
-	return height * BrokenText.size();
+	if (WordWrap) {
+		s32 height = font->getDimension(L"A").Height + font->getKerningHeight();
+		return height * BrokenText.size();
+	}
+	// There may be intentional new lines without WordWrap
+	return font->getDimension(BrokenText[0].c_str()).Height;
 }
 
 
