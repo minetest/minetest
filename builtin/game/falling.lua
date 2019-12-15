@@ -44,10 +44,14 @@ core.register_entity(":__builtin:falling_node", {
 			if def then
 				glow = def.light_source
 			end
-			if def.drawtype == "torchlike" then
+			if def.drawtype == "torchlike" or def.drawtype == "signlike" then
 				local textures
 				if def.tiles and def.tiles[1] then
-					textures = { "("..def.tiles[1]..")^[transformFX", def.tiles[1] }
+					if def.drawtype == "torchlike" then
+						textures = { "("..def.tiles[1]..")^[transformFX", def.tiles[1] }
+					else
+						textures = { def.tiles[1] }
+					end
 				end
 				self.object:set_properties({
 					is_visible = true,
@@ -67,7 +71,7 @@ core.register_entity(":__builtin:falling_node", {
 		-- Rotate entity
 		if def.drawtype == "torchlike" then
 			self.object:set_yaw(math.pi*0.25)
-		elseif node.param2 ~= 0 then
+		elseif node.param2 ~= 0 or def.drawtype == "signlike" then
 			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
 				-- TODO: Also colorize entity if paramtype2=colorfacedir
 				local fdir = node.param2 % 32
@@ -103,17 +107,25 @@ core.register_entity(":__builtin:falling_node", {
 			elseif (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted") then
 				-- TODO: Also colorize entity if paramtype2=colorwallmounted
 				local rot = node.param2 % 8
+				local pitch, yaw, roll = 0, 0, 0
 				if rot == 1 then
-					self.object:set_rotation({x=-math.pi, y=-math.pi, z=0})
+					pitch, yaw = -math.pi, -math.pi
 				elseif rot == 2 then
-					self.object:set_rotation({x=math.pi/2, y=math.pi/2, z=0})
+					pitch, yaw = math.pi/2, math.pi/2
 				elseif rot == 3 then
-					self.object:set_rotation({x=math.pi/2, y=math.pi*1.5, z=0})
+					pitch, yaw = math.pi/2, math.pi*1.5
 				elseif rot == 4 then
-					self.object:set_rotation({x=math.pi/2, y=math.pi, z=0})
+					pitch, yaw = math.pi/2, math.pi
 				elseif rot == 5 then
-					self.object:set_rotation({x=math.pi/2, y=0, z=0})
+					pitch, yaw = math.pi/2, 0
 				end
+				if def.drawtype == "signlike" then
+					pitch = pitch - math.pi/2
+					if rot >= 0 and rot <= 1 then
+						roll = roll - math.pi/2
+					end
+				end
+				self.object:set_rotation({x=pitch, y=yaw, z=roll})
 			end
 		end
 	end,
