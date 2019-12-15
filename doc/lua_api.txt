@@ -5623,6 +5623,9 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
     * See reason in register_on_player_hpchange
+    * Is limited to the range of 0 ... 65535 (2^16 - 1)
+    * For players: HP are also limited by `hp_max` specified in the player's
+      object properties
 * `get_inventory()`: returns an `InvRef` for players, otherwise returns `nil`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
@@ -5743,6 +5746,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `0`: player is drowning
         * max: bubbles bar is not shown
         * See [Object properties] for more information
+    * Is limited to range 0 ... 65535 (2^16 - 1)
 * `set_fov(fov, is_multiplier)`: Sets player's FOV
     * `fov`: FOV value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
@@ -6432,6 +6436,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
                          uses = 20, maxlevel = 2},
             },
             damage_groups = {groupname = damage},
+            -- Damage values must be between -32768 and 32767 (2^15)
 
             punch_attack_uses = nil,
             -- Amount of uses this tool has for attacking players and entities
