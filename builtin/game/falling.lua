@@ -61,9 +61,13 @@ core.register_entity(":__builtin:falling_node", {
 					glow = glow,
 				})
 			else
+				local itemstring = node.name
+				if core.is_colored_paramtype(def.paramtype2) then
+					itemstring = core.itemstring_with_palette(itemstring, node.param2)
+				end
 				self.object:set_properties({
 					is_visible = true,
-					textures = {node.name},
+					wield_item = itemstring,
 					glow = glow,
 				})
 			end
@@ -73,7 +77,6 @@ core.register_entity(":__builtin:falling_node", {
 			self.object:set_yaw(math.pi*0.25)
 		elseif (node.param2 ~= 0 and def.wield_image == nil) or def.drawtype == "signlike" then
 			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
-				-- TODO: Also colorize entity if paramtype2=colorfacedir
 				local fdir = node.param2 % 32
 				local face = fdir % 4
 				local axis = fdir - face
@@ -105,7 +108,6 @@ core.register_entity(":__builtin:falling_node", {
 				end
 				self.object:set_rotation({x=pitch, y=yaw, z=roll})
 			elseif (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted") then
-				-- TODO: Also colorize entity if paramtype2=colorwallmounted
 				local rot = node.param2 % 8
 				local pitch, yaw, roll = 0, 0, 0
 				if rot == 1 then
