@@ -124,7 +124,7 @@ void StaticText::draw()
 			{
 				// Draw non-colored text
 				font->draw(str.c_str(),
-					r, skin->getColor(EGDC_BUTTON_TEXT),
+					r, str.getDefaultColor(), // TODO: Implement colorization
 					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
 					(RestrainTextInside ? &AbsoluteClippingRect : NULL));
 			}

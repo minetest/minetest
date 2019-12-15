@@ -160,21 +160,20 @@ void EnrichedString::operator+=(const EnrichedString &other)
 
 EnrichedString EnrichedString::substr(size_t pos, size_t len) const
 {
-	if (pos == m_string.length()) {
+	if (pos >= m_string.length())
 		return EnrichedString();
-	}
-	if (len == std::string::npos || pos + len > m_string.length()) {
-		return EnrichedString(
-			m_string.substr(pos, std::string::npos),
-			std::vector<SColor>(m_colors.begin() + pos, m_colors.end())
-		);
-	}
 
-	return EnrichedString(
+	if (len == std::string::npos || pos + len > m_string.length())
+		len = m_string.length() - pos;
+
+	EnrichedString str(
 		m_string.substr(pos, len),
 		std::vector<SColor>(m_colors.begin() + pos, m_colors.begin() + pos + len)
 	);
-
+	if (pos < m_default_length)
+		str.m_default_length = m_default_length - pos;
+	str.setDefaultColor(m_default_color);
+	return str;
 }
 
 const wchar_t *EnrichedString::c_str() const
