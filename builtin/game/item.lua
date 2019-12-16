@@ -398,6 +398,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	return itemstack, true
 end
 
+-- deprecated, item_place does not call this
 function core.item_place_object(itemstack, placer, pointed_thing)
 	local pos = core.get_pointed_thing_position(pointed_thing, true)
 	if pos ~= nil then
@@ -419,6 +420,7 @@ function core.item_place(itemstack, placer, pointed_thing, param2)
 		end
 	end
 
+	-- Place if node, otherwise do nothing
 	if itemstack:get_definition().type == "node" then
 		return core.item_place_node(itemstack, placer, pointed_thing, param2)
 	end
