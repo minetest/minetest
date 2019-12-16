@@ -29,6 +29,7 @@ def run_minetest(testfile, outputfile):
 		f.write("""
 			screen_w = 1024
 			screen_h = 600
+			video_driver = burningsvideo
 		""")
 
 	subprocess.run([minetestpath,
