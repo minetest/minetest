@@ -4851,10 +4851,8 @@ Rollback
     * Revert latest actions of someone
     * `actor`: `"player:<name>"`, also `"liquid"`.
 
-Defaults for the `on_*` item definition functions
--------------------------------------------------
-
-These functions return the leftover itemstack.
+Defaults for the `on_place` and `on_drop` item definition functions
+-------------------------------------------------------------------
 
 * `minetest.item_place_node(itemstack, placer, pointed_thing[, param2, prevent_after_place])`
     * Place item as a node
@@ -4864,20 +4862,23 @@ These functions return the leftover itemstack.
     * returns `itemstack, success`
 * `minetest.item_place_object(itemstack, placer, pointed_thing)`
     * Place item as-is
-* `minetest.item_place(itemstack, placer, pointed_thing, param2)`
-    * Use one of the above based on what the item is.
+    * returns the leftover itemstack
+    * **Note**: This function is deprecated and will never be called.
+* `minetest.item_place(itemstack, placer, pointed_thing[, param2])`
+    * Wrapper that calls `minetest.item_place_node` if appropriate
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
     * **Note**: is not called when wielded item overrides `on_place`
-    * `param2` overrides `facedir` and wallmounted `param2`
+    * `param2` overrides facedir and wallmounted `param2`
     * returns `itemstack, success`
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
-* `minetest.item_eat(hp_change, replace_with_item)`
-    * Eat the item.
+    * returns the leftover itemstack
+* `minetest.item_eat(hp_change[, replace_with_item])`
+    * Returns `function(itemstack, user, pointed_thing)` as a
+      function wrapper for `minetest.do_item_eat`.
     * `replace_with_item` is the itemstring which is added to the inventory.
       If the player is eating a stack, then replace_with_item goes to a
-      different spot. Can be `nil`
-    * See `minetest.do_item_eat`
+      different spot.
 
 Defaults for the `on_punch` and `on_dig` node definition callbacks
 ------------------------------------------------------------------
