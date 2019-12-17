@@ -2442,6 +2442,7 @@ Elements
 * Simple colored box
 * `color` is color specified as a `ColorString`.
   If the alpha component is left blank, the box will be semitransparent.
+  If the color is not specified, the box will use the color specified by `style_type`.
 
 ### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
@@ -2723,6 +2724,7 @@ Some types may inherit styles from parent types.
 * image_button
 * item_image_button
 * tabheader
+* box
 
 
 ### Valid Properties
@@ -2800,6 +2802,15 @@ Some types may inherit styles from parent types.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+* box
+    * **Note**: All box properties can either be a single color/number (i.e. `red`) or an array of
+      four colors/numbers (i.e. `red,orange,yellow,green`).
+    * colors - color (optionally array). Sets the color(s) of the box. Array starts at top
+      left and goes clockwise.
+    * bordercolors - color (optionally array). Sets the color(s) of the borders. Array starts
+      at the top border and goes clockwise.
+    * borderwidths - integer (optionally array). Sets the width(s) of the borders in pixels.
+      Array starts at the top border and goes clockwise.
 
 ### Valid States
 
