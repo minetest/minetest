@@ -4859,7 +4859,8 @@ Defaults for the `on_place` and `on_drop` item definition functions
     * `param2` overrides `facedir` and wallmounted `param2`
     * `prevent_after_place`: if set to `true`, `after_place_node` is not called
       for the newly placed node to prevent a callback and placement loop
-    * returns `itemstack, success`
+    * returns `itemstack, position`
+      * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_place_object(itemstack, placer, pointed_thing)`
     * Place item as-is
     * returns the leftover itemstack
@@ -4869,7 +4870,8 @@ Defaults for the `on_place` and `on_drop` item definition functions
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
     * **Note**: is not called when wielded item overrides `on_place`
     * `param2` overrides facedir and wallmounted `param2`
-    * returns `itemstack, success`
+    * returns `itemstack, position`
+      * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
     * returns the leftover itemstack
