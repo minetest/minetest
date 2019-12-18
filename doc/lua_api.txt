@@ -4564,7 +4564,8 @@ These functions return the leftover itemstack.
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
     * **Note**: is not called when wielded item overrides `on_place`
     * `param2` overrides `facedir` and wallmounted `param2`
-    * returns `itemstack, success`
+    * returns `itemstack, position`
+      * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
 * `minetest.item_eat(hp_change, replace_with_item)`

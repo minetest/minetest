@@ -416,14 +416,14 @@ function core.item_place(itemstack, placer, pointed_thing, param2)
 		local nn = n.name
 		if core.registered_nodes[nn] and core.registered_nodes[nn].on_rightclick then
 			return core.registered_nodes[nn].on_rightclick(pointed_thing.under, n,
-					placer, itemstack, pointed_thing) or itemstack, false
+					placer, itemstack, pointed_thing) or itemstack, nil
 		end
 	end
 
 	if itemstack:get_definition().type == "node" then
 		return core.item_place_node(itemstack, placer, pointed_thing, param2)
 	end
-	return itemstack
+	return itemstack, nil
 end
 
 function core.item_secondary_use(itemstack, placer)
