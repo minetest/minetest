@@ -2803,8 +2803,8 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 * box
-    * **Note**: All box properties can either be a single color/number (i.e. `red`) or an array of
-      four colors/numbers (i.e. `red,orange,yellow,green`).
+    * **Note**: All box properties can either be a single color/number (e.g. `red`) or an array of
+      four colors/numbers (e.g. `red,orange,yellow,green`).
     * colors - color (optionally array). Sets the color(s) of the box. Array starts at top
       left and goes clockwise.
     * bordercolors - color (optionally array). Sets the color(s) of the borders. Array starts
