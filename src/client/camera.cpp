@@ -430,37 +430,41 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 				break; // POINTEDTHING_OBJECT is unavailable, skip
 
 			MapNode n = map.getNode(pointed.node_real_undersurface);
-			if (nodemgr->get(n).walkable) {
-				if (pointed.distanceSq < 0.001f)
-					break; // Head in node
+			if (!nodemgr->get(n).walkable)
+				continue;
 
-				my_cp = pointed.intersection_point;
+			if (pointed.distanceSq < 0.001f)
+				break; // Head in node
 
-				float distance = std::sqrt(pointed.distanceSq);
-				if (!near_offset && distance < near_distance) {
-					// Collision is too near to the head: Start Raycast above head
-					near_offset = true;
-					shootline_end = my_cp - m_camera_direction * near_distance;
-					ray = RaycastState(core::line3d<f32>(m_camera_position +
-						v3f(0.0f, 0.4f * (near_distance - distance), 0.0f), shootline_end),
-						false, false);
-				} else {
-					// Calculate intersection angle to clip "propery" with walls
-					float collision_d = m_camera_direction.dotProduct(
-						intToFloat(pointed.intersection_normal, 1.0f));
-					collision_d = std::acos(collision_d) / M_PI; // -0.5 ... 0.5
-					collision_d = std::abs(collision_d) * distance + 0.1f * BS;
+			// First best camera position
+			my_cp = pointed.intersection_point;
 
-					if (collision_d > distance)
-						my_cp = m_camera_position;
-					else if (distance - collision_d > shootline_d)
-						my_cp = shootline_end; // Outside of shootline_d
-					else
-						my_cp += m_camera_direction * collision_d;
-
-					break;
-				}
+			float distance = std::sqrt(pointed.distanceSq);
+			if (!near_offset && distance < near_distance) {
+				// Collision is too near to the head: Start Raycast above head
+				near_offset = true;
+				shootline_end = my_cp - m_camera_direction * near_distance;
+				ray = RaycastState(core::line3d<f32>(m_camera_position +
+					v3f(0.0f, 0.4f * (near_distance - distance), 0.0f), shootline_end),
+					false, false);
+				continue;
 			}
+
+			// Final node collision
+			// Calculate intersection angle to clip "propery" with walls
+			float collision_d = m_camera_direction.dotProduct(
+				intToFloat(pointed.intersection_normal, 1.0f));
+			collision_d = std::acos(collision_d) / M_PI; // -0.5 ... 0.5
+			collision_d = std::abs(collision_d) * distance + 0.1f * BS;
+
+			if (collision_d > distance)
+				my_cp = m_camera_position;
+			else if (distance - collision_d > shootline_d)
+				my_cp = shootline_end; // Outside of shootline_d
+			else
+				my_cp += m_camera_direction * collision_d;
+
+			break;
 		}
 	}
 
