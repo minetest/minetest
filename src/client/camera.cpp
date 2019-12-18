@@ -404,17 +404,20 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 			m_camera_direction *= -1;
 
-		v3f shootline_end = my_cp - m_camera_direction * 2.75f * BS;
-		v3f shootline_extended = shootline_end - m_camera_direction * BS;
+		const float shootline_d = 2.75f * BS;
+		const float near_distance = 1.5f * BS;
+		v3f shootline_end = my_cp - m_camera_direction * shootline_d;
+		v3f shootline_extended = shootline_end - m_camera_direction * 2.0f * BS;
 
 		RaycastState ray(core::line3d<f32>(m_camera_position, shootline_extended),
-			true, false);
+			false, false);
 		PointedThing pointed;
 
 		const NodeDefManager *nodemgr = m_client->ndef();
 		ClientMap &map = m_client->getEnv().getClientMap();
 
 		// Prevent camera positioned inside nodes or objects
+		bool near_offset = false;
 		while (true) {
 			m_client->getEnv().continueRaycast(&ray, &pointed);
 
@@ -422,17 +425,41 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 				my_cp = shootline_end;
 				break;
 			}
-			if (pointed.type == POINTEDTHING_OBJECT) {
-				my_cp = pointed.intersection_point + m_camera_direction * BS;
-				break;
-			}
+
 			if (pointed.type != POINTEDTHING_NODE)
-				break; // Cannot be anything else here but - Safety first!
+				break; // POINTEDTHING_OBJECT is unavailable, skip
 
 			MapNode n = map.getNode(pointed.node_real_undersurface);
 			if (nodemgr->get(n).walkable) {
-				my_cp = pointed.intersection_point + m_camera_direction * BS;
-				break;
+				if (pointed.distanceSq < 0.001f)
+					break; // Head in node
+
+				my_cp = pointed.intersection_point;
+
+				float distance = std::sqrt(pointed.distanceSq);
+				if (!near_offset && distance < near_distance) {
+					// Collision is too near to the head: Start Raycast above head
+					near_offset = true;
+					shootline_end = my_cp - m_camera_direction * near_distance;
+					ray = RaycastState(core::line3d<f32>(m_camera_position +
+						v3f(0.0f, 0.4f * (near_distance - distance), 0.0f), shootline_end),
+						false, false);
+				} else {
+					// Calculate intersection angle to clip "propery" with walls
+					float collision_d = m_camera_direction.dotProduct(
+						intToFloat(pointed.intersection_normal, 1.0f));
+					collision_d = std::acos(collision_d) / M_PI; // -0.5 ... 0.5
+					collision_d = std::abs(collision_d) * distance + 0.1f * BS;
+
+					if (collision_d > distance)
+						my_cp = m_camera_position;
+					else if (distance - collision_d > shootline_d)
+						my_cp = shootline_end; // Outside of shootline_d
+					else
+						my_cp += m_camera_direction * collision_d;
+
+					break;
+				}
 			}
 		}
 	}
