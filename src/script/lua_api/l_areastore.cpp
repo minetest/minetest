@@ -185,6 +185,7 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 	if (lua_isnumber(L, 5))
 		a.id = lua_tonumber(L, 5);
 
+	// Insert & assign a new ID if necessary
 	if (!ast->insertArea(&a))
 		return 0;
 

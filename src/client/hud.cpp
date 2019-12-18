@@ -283,10 +283,24 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 {
 	u32 text_height = g_fontengine->getTextHeight();
 	irr::gui::IGUIFont* font = g_fontengine->getFont();
+
+	// Reorder elements by z_index
+	std::vector<size_t> ids;
+
 	for (size_t i = 0; i != player->maxHudId(); i++) {
 		HudElement *e = player->getHud(i);
 		if (!e)
 			continue;
+
+		auto it = ids.begin();
+		while (it != ids.end() && player->getHud(*it)->z_index <= e->z_index)
+			++it;
+
+		ids.insert(it, i);
+	}
+
+	for (size_t i : ids) {
+		HudElement *e = player->getHud(i);
 
 		v2s32 pos(floor(e->pos.X * (float) m_screensize.X + 0.5),
 				floor(e->pos.Y * (float) m_screensize.Y + 0.5));
@@ -608,23 +622,24 @@ void Hud::resizeHotbar() {
 
 struct MeshTimeInfo {
 	u64 time;
-	scene::IMesh *mesh;
+	scene::IMesh *mesh = nullptr;
 };
 
-void drawItemStack(video::IVideoDriver *driver,
+void drawItemStack(
+		video::IVideoDriver *driver,
 		gui::IGUIFont *font,
 		const ItemStack &item,
 		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
 		Client *client,
-		ItemRotationKind rotation_kind)
+		ItemRotationKind rotation_kind,
+		const v3s16 &angle,
+		const v3s16 &rotation_speed)
 {
 	static MeshTimeInfo rotation_time_infos[IT_ROT_NONE];
-	static thread_local bool enable_animations =
-		g_settings->getBool("inventory_items_animations");
 
 	if (item.empty()) {
-		if (rotation_kind < IT_ROT_NONE) {
+		if (rotation_kind < IT_ROT_NONE && rotation_kind != IT_ROT_OTHER) {
 			rotation_time_infos[rotation_kind].mesh = NULL;
 		}
 		return;
@@ -639,7 +654,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		s32 delta = 0;
 		if (rotation_kind < IT_ROT_NONE) {
 			MeshTimeInfo &ti = rotation_time_infos[rotation_kind];
-			if (mesh != ti.mesh) {
+			if (mesh != ti.mesh && rotation_kind != IT_ROT_OTHER) {
 				ti.mesh = mesh;
 				ti.time = porting::getTimeMs();
 			} else {
@@ -677,9 +692,16 @@ void drawItemStack(video::IVideoDriver *driver,
 		core::matrix4 matrix;
 		matrix.makeIdentity();
 
+		static thread_local bool enable_animations =
+			g_settings->getBool("inventory_items_animations");
+
 		if (enable_animations) {
-			float timer_f = (float) delta / 5000.0;
-			matrix.setRotationDegrees(core::vector3df(0, 360 * timer_f, 0));
+			float timer_f = (float) delta / 5000.f;
+			matrix.setRotationDegrees(v3f(
+				angle.X + rotation_speed.X * 3.60f * timer_f,
+				angle.Y + rotation_speed.Y * 3.60f * timer_f,
+				angle.Z + rotation_speed.Z * 3.60f * timer_f)
+			);
 		}
 
 		driver->setTransform(video::ETS_WORLD, matrix);
@@ -695,15 +717,18 @@ void drawItemStack(video::IVideoDriver *driver,
 			// because these meshes are not buffered.
 			assert(buf->getHardwareMappingHint_Vertex() == scene::EHM_NEVER);
 			video::SColor c = basecolor;
+
 			if (imesh->buffer_colors.size() > j) {
 				ItemPartColor *p = &imesh->buffer_colors[j];
 				if (p->override_base)
 					c = p->color;
 			}
+
 			if (imesh->needs_shading)
 				colorizeMeshBuffer(buf, &c);
 			else
 				setMeshBufferColor(buf, c);
+
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			material.Lighting = false;
@@ -714,14 +739,24 @@ void drawItemStack(video::IVideoDriver *driver,
 		driver->setTransform(video::ETS_VIEW, oldViewMat);
 		driver->setTransform(video::ETS_PROJECTION, oldProjMat);
 		driver->setViewPort(oldViewPort);
+
+		// draw the inventory_overlay
+		if (def.type == ITEM_NODE && def.inventory_image.empty() &&
+				!def.inventory_overlay.empty()) {
+			ITextureSource *tsrc = client->getTextureSource();
+			video::ITexture *overlay_texture = tsrc->getTexture(def.inventory_overlay);
+			core::dimension2d<u32> dimens = overlay_texture->getOriginalSize();
+			core::rect<s32> srcrect(0, 0, dimens.Width, dimens.Height);
+			draw2DImageFilterScaled(driver, overlay_texture, rect, srcrect, clip, 0, true);
+		}
 	}
 
-	if(def.type == ITEM_TOOL && item.wear != 0)
-	{
+	if (def.type == ITEM_TOOL && item.wear != 0) {
 		// Draw a progressbar
-		float barheight = rect.getHeight()/16;
-		float barpad_x = rect.getWidth()/16;
-		float barpad_y = rect.getHeight()/16;
+		float barheight = rect.getHeight() / 16;
+		float barpad_x = rect.getWidth() / 16;
+		float barpad_y = rect.getHeight() / 16;
+
 		core::rect<s32> progressrect(
 			rect.UpperLeftCorner.X + barpad_x,
 			rect.LowerRightCorner.Y - barpad_y - barheight,
@@ -729,18 +764,19 @@ void drawItemStack(video::IVideoDriver *driver,
 			rect.LowerRightCorner.Y - barpad_y);
 
 		// Shrink progressrect by amount of tool damage
-		float wear = item.wear / 65535.0;
+		float wear = item.wear / 65535.0f;
 		int progressmid =
 			wear * progressrect.UpperLeftCorner.X +
-			(1-wear) * progressrect.LowerRightCorner.X;
+			(1 - wear) * progressrect.LowerRightCorner.X;
 
 		// Compute progressbar color
 		//   wear = 0.0: green
 		//   wear = 0.5: yellow
 		//   wear = 1.0: red
-		video::SColor color(255,255,255,255);
+		video::SColor color(255, 255, 255, 255);
 		int wear_i = MYMIN(std::floor(wear * 600), 511);
 		wear_i = MYMIN(wear_i + 10, 511);
+
 		if (wear_i <= 255)
 			color.set(255, wear_i, 255, 0);
 		else
@@ -750,18 +786,17 @@ void drawItemStack(video::IVideoDriver *driver,
 		progressrect2.LowerRightCorner.X = progressmid;
 		driver->draw2DRectangle(color, progressrect2, clip);
 
-		color = video::SColor(255,0,0,0);
+		color = video::SColor(255, 0, 0, 0);
 		progressrect2 = progressrect;
 		progressrect2.UpperLeftCorner.X = progressmid;
 		driver->draw2DRectangle(color, progressrect2, clip);
 	}
 
-	if(font != NULL && item.count >= 2)
-	{
+	if (font != NULL && item.count >= 2) {
 		// Get the item count as a string
 		std::string text = itos(item.count);
 		v2u32 dim = font->getDimension(utf8_to_wide(text).c_str());
-		v2s32 sdim(dim.X,dim.Y);
+		v2s32 sdim(dim.X, dim.Y);
 
 		core::rect<s32> rect2(
 			/*rect.UpperLeftCorner,
@@ -770,10 +805,23 @@ void drawItemStack(video::IVideoDriver *driver,
 			sdim
 		);
 
-		video::SColor bgcolor(128,0,0,0);
+		video::SColor bgcolor(128, 0, 0, 0);
 		driver->draw2DRectangle(bgcolor, rect2, clip);
 
-		video::SColor color(255,255,255,255);
+		video::SColor color(255, 255, 255, 255);
 		font->draw(text.c_str(), rect2, color, false, false, clip);
 	}
+}
+
+void drawItemStack(
+		video::IVideoDriver *driver,
+		gui::IGUIFont *font,
+		const ItemStack &item,
+		const core::rect<s32> &rect,
+		const core::rect<s32> *clip,
+		Client *client,
+		ItemRotationKind rotation_kind)
+{
+	drawItemStack(driver, font, item, rect, clip, client, rotation_kind,
+		v3s16(0, 0, 0), v3s16(0, 100, 0));
 }

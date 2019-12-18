@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include <cstdio>
 #include "client/renderingengine.h"
+#include "client/tile.h" // hasNPotSupport()
 
 /* Maintain a static cache to store the images that correspond to textures
  * in a format that's manipulable by code.  Some platforms exhibit issues
@@ -113,17 +114,18 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 			(u32)destrect.getHeight()));
 	imageScaleNNAA(srcimg, srcrect, destimg);
 
-#ifdef __ANDROID__
-	// Android is very picky about textures being powers of 2, so expand
-	// the image dimensions to the next power of 2, if necessary, for
-	// that platform.
-	video::IImage *po2img = driver->createImage(src->getColorFormat(),
-			core::dimension2d<u32>(npot2((u32)destrect.getWidth()),
-			npot2((u32)destrect.getHeight())));
-	po2img->fill(video::SColor(0, 0, 0, 0));
-	destimg->copyTo(po2img);
-	destimg->drop();
-	destimg = po2img;
+#if ENABLE_GLES
+	// Some platforms are picky about textures being powers of 2, so expand
+	// the image dimensions to the next power of 2, if necessary.
+	if (!hasNPotSupport()) {
+		video::IImage *po2img = driver->createImage(src->getColorFormat(),
+				core::dimension2d<u32>(npot2((u32)destrect.getWidth()),
+				npot2((u32)destrect.getHeight())));
+		po2img->fill(video::SColor(0, 0, 0, 0));
+		destimg->copyTo(po2img);
+		destimg->drop();
+		destimg = po2img;
+	}
 #endif
 
 	// Convert the scaled image back into a texture.
@@ -169,7 +171,8 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 }
 
 void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
-		const core::rect<s32> &rect, const core::rect<s32> &middle)
+		const core::rect<s32> &rect, const core::rect<s32> &middle,
+		const core::rect<s32> *cliprect)
 {
 	const video::SColor color(255,255,255,255);
 	const video::SColor colors[] = {color,color,color,color};
@@ -220,9 +223,7 @@ void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
 				break;
 			}
 
-			draw2DImageFilterScaled(driver, texture, dest,
-					src,
-					NULL/*&AbsoluteClippingRect*/, colors, true);
+			draw2DImageFilterScaled(driver, texture, dest, src, cliprect, colors, true);
 		}
 	}
 }

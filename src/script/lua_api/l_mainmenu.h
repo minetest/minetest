@@ -104,6 +104,8 @@ private:
 
 	static int l_update_formspec(lua_State *L);
 
+	static int l_set_formspec_prepend(lua_State *L);
+
 	static int l_get_screen_info(lua_State *L);
 
 	//filesystem

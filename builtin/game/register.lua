@@ -256,6 +256,18 @@ function core.register_tool(name, tooldef)
 	end
 	-- END Legacy stuff
 
+	-- This isn't just legacy, but more of a convenience feature
+	local toolcaps = tooldef.tool_capabilities
+	if toolcaps and toolcaps.punch_attack_uses == nil then
+		for _, cap in pairs(toolcaps.groupcaps or {}) do
+			local level = (cap.maxlevel or 0) - 1
+			if (cap.uses or 0) ~= 0 and level >= 0 then
+				toolcaps.punch_attack_uses = cap.uses * (3 ^ level)
+				break
+			end
+		end
+	end
+
 	core.register_item(name, tooldef)
 end
 
@@ -303,18 +315,17 @@ end
 
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
-local name
 for name in pairs(forbidden_item_names) do
 	core.registered_aliases[name] = ""
 	register_alias_raw(name, "")
 end
 
 
--- Deprecated:
+-- Obsolete:
 -- Aliases for core.register_alias (how ironic...)
---core.alias_node = core.register_alias
---core.alias_tool = core.register_alias
---core.alias_craftitem = core.register_alias
+-- core.alias_node = core.register_alias
+-- core.alias_tool = core.register_alias
+-- core.alias_craftitem = core.register_alias
 
 --
 -- Built-in node definitions. Also defined in C.
@@ -363,9 +374,9 @@ core.register_node(":ignore", {
 	drop = "",
 	groups = {not_in_creative_inventory=1},
 	on_place = function(itemstack, placer, pointed_thing)
-		minetest.chat_send_player(
+		core.chat_send_player(
 				placer:get_player_name(),
-				minetest.colorize("#FF0000",
+				core.colorize("#FF0000",
 				"You can't place 'ignore' nodes!"))
 		return ""
 	end,
@@ -374,6 +385,7 @@ core.register_node(":ignore", {
 -- The hand (bare definition)
 core.register_item(":", {
 	type = "none",
+	wield_image = "wieldhand.png",
 	groups = {not_in_creative_inventory=1},
 })
 
@@ -413,10 +425,6 @@ function core.run_callbacks(callbacks, mode, ...)
 		local origin = core.callback_origins[callbacks[i]]
 		if origin then
 			core.set_last_run_mod(origin.mod)
-			--print("Running " .. tostring(callbacks[i]) ..
-			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
-		else
-			--print("No data associated with callback")
 		end
 		local cb_ret = callbacks[i](...)
 
@@ -537,7 +545,7 @@ end
 core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
 
 function core.registered_on_player_hpchange(player, hp_change, reason)
-	local last = false
+	local last
 	for i = #core.registered_on_player_hpchanges.modifiers, 1, -1 do
 		local func = core.registered_on_player_hpchanges.modifiers[i]
 		hp_change, last = func(player, hp_change, reason)

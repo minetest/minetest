@@ -99,7 +99,7 @@ void Clouds::render()
 	//if(SceneManager->getSceneNodeRenderPass() != scene::ESNRP_SOLID)
 		return;
 
-	ScopeProfiler sp(g_profiler, "Rendering of clouds, avg", SPT_AVG);
+	ScopeProfiler sp(g_profiler, "Clouds::render()", SPT_AVG);
 
 	int num_faces_to_draw = m_enable_3d ? 6 : 1;
 

@@ -64,9 +64,9 @@ function ui.update()
 		formspec = {
 			"size[14,8]",
 			"real_coordinates[true]",
+			"box[0.5,1.2;13,5;#000]",
 			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
 				fgettext("The server has requested a reconnect:"), error_message),
-			"box[0.5,1.2;13,5;#000]",
 			"button[2,6.6;4,1;btn_reconnect_yes;" .. fgettext("Reconnect") .. "]",
 			"button[8,6.6;4,1;btn_reconnect_no;" .. fgettext("Main menu") .. "]"
 		}
@@ -82,9 +82,9 @@ function ui.update()
 		formspec = {
 			"size[14,8]",
 			"real_coordinates[true]",
+			"box[0.5,1.2;13,5;#000]",
 			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
 				error_title, error_message),
-			"box[0.5,1.2;13,5;#000]",
 			"button[5,6.6;4,1;btn_error_confirm;" .. fgettext("Ok") .. "]"
 		}
 	else

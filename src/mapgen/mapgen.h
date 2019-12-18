@@ -30,10 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGEN_DEFAULT_NAME "v7"
 
 /////////////////// Mapgen flags
-#define MG_TREES       0x01  // Deprecated. Moved into mgv6 flags
+#define MG_TREES       0x01  // Obsolete. Moved into mgv6 flags
 #define MG_CAVES       0x02
 #define MG_DUNGEONS    0x04
-#define MG_FLAT        0x08  // Deprecated. Moved into mgv6 flags
+#define MG_FLAT        0x08  // Obsolete. Moved into mgv6 flags
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
 #define MG_BIOMES      0x40
@@ -190,11 +190,12 @@ public:
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 
 	void setLighting(u8 light, v3s16 nmin, v3s16 nmax);
-	void lightSpread(VoxelArea &a, v3s16 p, u8 light);
+	void lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
+		const v3s16 &p, u8 light);
 	void calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nmax,
 		bool propagate_shadow = true);
 	void propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow);
-	void spreadLight(v3s16 nmin, v3s16 nmax);
+	void spreadLight(const v3s16 &nmin, const v3s16 &nmax);
 
 	virtual void makeChunk(BlockMakeData *data) {}
 	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
@@ -243,7 +244,7 @@ public:
 	virtual void generateBiomes();
 	virtual void dustTopNodes();
 	virtual void generateCavesNoiseIntersection(s16 max_stone_y);
-	virtual void generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth);
+	virtual void generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_ymax);
 	virtual bool generateCavernsNoise(s16 max_stone_y);
 	virtual void generateDungeons(s16 max_stone_y);
 
@@ -279,7 +280,12 @@ protected:
 	float cavern_limit;
 	float cavern_taper;
 	float cavern_threshold;
-	// TODO 'lava_depth' is deprecated and should be removed. Cave liquids are
-	// now defined and located using biome definitions.
-	int lava_depth;
+	int small_cave_num_min;
+	int small_cave_num_max;
+	int large_cave_num_min;
+	int large_cave_num_max;
+	float large_cave_flooded;
+	s16 large_cave_depth;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
 };

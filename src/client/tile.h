@@ -27,8 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SMaterial.h>
 #include <memory>
 #include "util/numeric.h"
+#include "config.h"
 
-#if __ANDROID__
+#if ENABLE_GLES
 #include <IVideoDriver.h>
 #endif
 
@@ -63,7 +64,7 @@ std::string getImagePath(std::string path);
 
 	Utilizes a thread-safe cache.
 */
-std::string getTexturePath(const std::string &filename);
+std::string getTexturePath(const std::string &filename, bool *is_base_pack = nullptr);
 
 void clearTextureNameCache();
 
@@ -133,7 +134,8 @@ public:
 
 IWritableTextureSource *createTextureSource();
 
-#ifdef __ANDROID__
+#if ENABLE_GLES
+bool hasNPotSupport();
 video::IImage * Align2Npot2(video::IImage * image, irr::video::IVideoDriver* driver);
 #endif
 

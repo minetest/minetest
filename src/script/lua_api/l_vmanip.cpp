@@ -126,7 +126,7 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 	for (const auto &modified_block : o->modified_blocks)
 		event.modified_blocks.insert(modified_block.first);
 
-	map->dispatchEvent(&event);
+	map->dispatchEvent(event);
 
 	o->modified_blocks.clear();
 	return 0;

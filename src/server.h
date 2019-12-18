@@ -189,13 +189,13 @@ public:
 		This is accessed by the map, which is inside the environment,
 		so it shouldn't be a problem.
 	*/
-	void onMapEditEvent(MapEditEvent *event);
+	void onMapEditEvent(const MapEditEvent &event);
 
 	/*
 		Shall be called with the environment and the connection locked.
 	*/
 	Inventory* getInventory(const InventoryLocation &loc);
-	void setInventoryModified(const InventoryLocation &loc, bool playerSend = true);
+	void setInventoryModified(const InventoryLocation &loc);
 
 	// Connection must be locked when called
 	std::wstring getStatusString();
@@ -333,8 +333,12 @@ public:
 
 	void SendPlayerHPOrDie(PlayerSAO *player, const PlayerHPChangeReason &reason);
 	void SendPlayerBreath(PlayerSAO *sao);
-	void SendInventory(PlayerSAO* playerSAO);
+	void SendInventory(PlayerSAO *playerSAO, bool incremental);
 	void SendMovePlayer(session_t peer_id);
+	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
+	void SendPlayerFov(session_t peer_id);
+
+	void sendDetachedInventories(session_t peer_id, bool incremental);
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
@@ -442,7 +446,6 @@ private:
 			const std::vector<std::string> &tosend);
 
 	void sendDetachedInventory(const std::string &name, session_t peer_id);
-	void sendDetachedInventories(session_t peer_id);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
@@ -467,7 +470,7 @@ private:
 		bool vertical, const std::string &texture,
 		const struct TileAnimationParams &animation, u8 glow);
 
-	u32 SendActiveObjectRemoveAdd(session_t peer_id, const std::string &datas);
+	void SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersao);
 	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
 		bool reliable = true);
 	void SendCSMRestrictionFlags(session_t peer_id);
@@ -513,7 +516,6 @@ private:
 	/*
 		Variables
 	*/
-
 	// World directory
 	std::string m_path_world;
 	// Subgame specification
@@ -573,7 +575,6 @@ private:
 	/*
 		Threads
 	*/
-
 	// A buffer for time steps
 	// step() increments and AsyncRunStep() run by m_thread reads it.
 	float m_step_dtime = 0.0f;
@@ -588,14 +589,14 @@ private:
 	/*
 		Time related stuff
 	*/
-
 	// Timer for sending time of day over network
 	float m_time_of_day_send_timer = 0.0f;
 	// Uptime of server in seconds
 	MutexedVariable<double> m_uptime;
+
 	/*
-	 Client interface
-	 */
+	 	Client interface
+	*/
 	ClientInterface m_clients;
 
 	/*

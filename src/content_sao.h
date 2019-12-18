@@ -122,10 +122,10 @@ public:
 	bool isStaticAllowed() const
 	{ return m_prop.static_save; }
 	void getStaticData(std::string *result) const;
-	int punch(v3f dir,
+	u16 punch(v3f dir,
 		const ToolCapabilities *toolcap = nullptr,
 		ServerActiveObject *puncher = nullptr,
-		float time_from_last_punch = 1000000);
+		float time_from_last_punch = 1000000.0f);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
@@ -219,7 +219,7 @@ class PlayerSAO : public UnitSAO
 public:
 	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
 			bool is_singleplayer);
-	~PlayerSAO();
+
 	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_PLAYER; }
 	ActiveObjectType getSendType() const
@@ -258,7 +258,7 @@ public:
 		Interaction interface
 	*/
 
-	int punch(v3f dir,
+	u16 punch(v3f dir,
 		const ToolCapabilities *toolcap,
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
@@ -272,16 +272,13 @@ public:
 	/*
 		Inventory interface
 	*/
-
-	Inventory* getInventory();
-	const Inventory* getInventory() const;
+	Inventory *getInventory() const;
 	InventoryLocation getInventoryLocation() const;
-	std::string getWieldList() const;
-	ItemStack getWieldedItem() const;
-	ItemStack getWieldedItemOrHand() const;
+	void setInventoryModified() {}
+	std::string getWieldList() const { return "main"; }
+	u16 getWieldIndex() const;
+	ItemStack getWieldedItem(ItemStack *selected, ItemStack *hand = nullptr) const;
 	bool setWieldedItem(const ItemStack &item);
-	int getWieldIndex() const;
-	void setWieldIndex(int i);
 
 	/*
 		PlayerSAO-specific
@@ -325,6 +322,7 @@ public:
 	{
 		return m_dig_pool;
 	}
+	void setMaxSpeedOverride(const v3f &vel);
 	// Returns true if cheated
 	bool checkMovementCheat();
 
@@ -355,7 +353,6 @@ private:
 
 	RemotePlayer *m_player = nullptr;
 	session_t m_peer_id = 0;
-	Inventory *m_inventory = nullptr;
 
 	// Cheat prevention
 	LagPool m_dig_pool;
@@ -365,13 +362,14 @@ private:
 	float m_time_from_last_punch = 0.0f;
 	v3s16 m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
 	float m_nocheat_dig_time = 0.0f;
+	float m_max_speed_override_time = 0.0f;
+	v3f m_max_speed_override = v3f(0.0f, 0.0f, 0.0f);
 
 	// Timers
 	IntervalLimiter m_breathing_interval;
 	IntervalLimiter m_drowning_interval;
 	IntervalLimiter m_node_hurt_interval;
 
-	int m_wield_index = 0;
 	bool m_position_not_sent = false;
 
 	// Cached privileges for enforcement

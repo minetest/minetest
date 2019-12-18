@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
 #include "chat_interface.h"
@@ -29,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "defaultsettings.h"
 #include "gettext.h"
 #include "log.h"
-#include "quicktune.h"
+#include "util/quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
 #include "database/database.h"
@@ -172,7 +173,7 @@ int main(int argc, char *argv[])
 		} else {
 			errorstream << "Invalid --worldlist value: "
 				<< cmd_args.get("worldlist") << std::endl;
-			return 1; 
+			return 1;
 		}
 		return 0;
 	}
@@ -426,7 +427,7 @@ static bool setup_log_params(const Settings &cmd_args)
 		} else {
 			errorstream << "Invalid color mode: " << color_mode << std::endl;
 			return false;
-		}			
+		}
 	}
 
 	// If trace is enabled, enable logging of certain things
@@ -580,9 +581,8 @@ static void init_log_streams(const Settings &cmd_args)
 			"using maximum." << std::endl;
 	}
 
-	verbosestream << "log_filename = " << log_filename << std::endl;
-
-	file_log_output.open(log_filename);
+	file_log_output.setFile(log_filename,
+		g_settings->getU64("debug_log_size_max") * 1000000);
 	g_logger.addOutputMaxLevel(&file_log_output, log_level);
 }
 

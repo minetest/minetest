@@ -50,6 +50,8 @@ public:
 	void initializeSecurityClient();
 	// Checks if the Lua state has been secured
 	static bool isSecure(lua_State *L);
+	// Loads a string as Lua code safely (doesn't allow bytecode).
+	static bool safeLoadString(lua_State *L, const std::string &code, const char *chunk_name);
 	// Loads a file as Lua code safely (doesn't allow bytecode).
 	static bool safeLoadFile(lua_State *L, const char *path, const char *display_name = NULL);
 	// Checks if mods are allowed to read (and optionally write) to the path

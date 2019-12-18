@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-01-30 22:28+0000\n"
-"Last-Translator: Nore <nore@mesecons.net>\n"
+"POT-Creation-Date: 2019-10-09 22:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -12,24 +12,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "重生"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr "您已經死亡。"
+msgstr "您已經死亡"
 
 #: builtin/fstk/ui.lua
 #, fuzzy
-msgid "An error occurred in a Lua script, such as a mod:"
+msgid "An error occurred in a Lua script:"
 msgstr "在 Lua 指令稿中發生錯誤，如 mod："
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred:"
 msgstr "發生錯誤："
 
@@ -96,18 +94,16 @@ msgid "Disable all"
 msgstr "停用全部"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "已停用"
+msgstr "已停用 Mod包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
 msgstr "啟用全部"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "重新命名 Mod 包："
+msgstr "重新命名 Mod 包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -124,17 +120,30 @@ msgstr "Mod："
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
+msgid "No (optional) dependencies"
+msgstr "選用的相依元件:"
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "找不到 mod 描述"
+msgstr "找不到 mod 描述。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
+msgid "No hard dependencies"
+msgstr "無相依元件。"
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "找不到 mod 描述"
+msgstr "找不到 mod 描述。"
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No optional dependencies"
+msgstr "選用的相依元件:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "可選依賴："
+msgstr "選用的相依元件:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -151,21 +160,19 @@ msgstr "已啟用"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "所有套件"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
 msgstr "Back"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Back to Main Menu"
 msgstr "主選單"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading and installing $1, please wait..."
-msgstr "正在下載 $1，請稍候..."
+msgstr "正在下載 $1，請稍候……"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -188,11 +195,11 @@ msgstr "Mods"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "無法取得任何套件"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "沒有搜尋到任何項目"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
@@ -211,7 +218,7 @@ msgstr "安裝"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "更新"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -298,6 +305,8 @@ msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"這個Mod包有給定一個明確的名稱在它所屬的 modpack.conf 之中，可以在該檔案中複寫"
+"Mod包的名稱。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -508,7 +517,7 @@ msgstr "已安裝的 Mod："
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr "無相依。"
+msgstr "無相依元件。"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -518,11 +527,6 @@ msgstr "找不到 mod 描述"
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
 msgstr "重新命名"
-
-#: builtin/mainmenu/tab_content.lua
-#, fuzzy
-msgid "Select Package File:"
-msgstr "選取 Mod 檔案："
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -817,12 +821,13 @@ msgid "Waving Leaves"
 msgstr "葉子擺動"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "植物擺動"
+#, fuzzy
+msgid "Waving Liquids"
+msgstr "擺動節點"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Water"
-msgstr "波動的水"
+msgid "Waving Plants"
+msgstr "植物擺動"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -890,7 +895,7 @@ msgstr "玩家名稱太長。"
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr "請選擇名稱！"
+msgstr "請選擇名字!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
@@ -1089,28 +1094,24 @@ msgid "Exit to OS"
 msgstr "離開到作業系統"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode disabled"
-msgstr "快速模式速度"
+msgstr "已停用快速模式"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode enabled"
-msgstr "快速模式速度"
+msgstr "已啟用快速模式"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode disabled"
-msgstr "快速模式速度"
+msgstr "已停用飛行模式"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode enabled"
-msgstr "已啟用傷害"
+msgstr "已啟用飛行模式"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
@@ -1585,11 +1586,11 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
-"You are about to join the server at %1$s with the name \"%2$s\" for the "
-"first time. If you proceed, a new account using your credentials will be "
-"created on this server.\n"
-"Please retype your password and click Register and Join to confirm account "
-"creation or click Cancel to abort."
+"You are about to join this server with the name \"%s\" for the first time.\n"
+"If you proceed, a new account using your credentials will be created on this "
+"server.\n"
+"Please retype your password and click 'Register and Join' to confirm account "
+"creation, or click 'Cancel' to abort."
 msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -1710,10 +1711,6 @@ msgid "Special"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Toggle Cinematic"
-msgstr "切換過場動畫"
-
-#: src/gui/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Toggle HUD"
 msgstr "切換飛行"
@@ -1744,6 +1741,11 @@ msgstr "切換無省略"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr "切換無省略"
+
+#: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle pitchmove"
+msgstr "切換快速"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1860,6 +1862,10 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "2D noise that locates the river valleys and channels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "3D 雲朵"
 
@@ -1890,6 +1896,10 @@ msgstr "產生大型洞穴時用的雜訊值。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1943,6 +1953,10 @@ msgstr "發生佇列的絕對限制"
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
 msgstr "在空氣中的加速"
+
+#: src/settings_translation_file.cpp
+msgid "Acceleration of gravity, in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2172,7 +2186,7 @@ msgstr "映射貼圖"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera near plane distance in nodes, between 0 and 0.5\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
@@ -2256,6 +2270,11 @@ msgstr "聊天按鍵"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Chat message count limit"
+msgstr "連線時的狀態訊息"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat message format"
 msgstr "連線時的狀態訊息"
 
 #: src/settings_translation_file.cpp
@@ -2425,6 +2444,10 @@ msgstr ""
 "範例：72 = 20分鐘，360 = 4分鐘，1 = 24小時，0 = 日／夜／一切保持不變。"
 
 #: src/settings_translation_file.cpp
+msgid "Controls sinking speed in liquid."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
 msgstr "控制湖泊窪地的陡度／深度。"
 
@@ -2487,12 +2510,21 @@ msgid "Debug info toggle key"
 msgstr "除錯資訊切換按鍵"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Debug log file size threshold"
+msgstr "沙漠噪音閾值"
+
+#: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr "除錯記錄等級"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
 msgstr "音量減少鍵"
+
+#: src/settings_translation_file.cpp
+msgid "Decrease this to increase liquid resistence to movement."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2586,8 +2618,23 @@ msgid "Defines the base ground level."
 msgstr "定義樹木區與樹木密度。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the depth of the river channel."
+msgstr "定義樹木區與樹木密度。"
+
+#: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr "定義玩家最大可傳送的距離，以方塊計（0 = 不限制）。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the width of the river channel."
+msgstr "定義大型河道結構。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the width of the river valley."
+msgstr "定義樹上有蘋果的區域。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2614,6 +2661,12 @@ msgid "Deprecated Lua API handling"
 msgstr "不推薦使用 Lua API 處理"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Deprecated, define and locate cave liquids using biome definitions instead.\n"
+"Y of upper limit of lava in large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Depth below which you'll find giant caverns."
 msgstr "您會發現大型洞穴的深度。"
@@ -2633,9 +2686,10 @@ msgid "Desert noise threshold"
 msgstr "沙漠噪音閾值"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
-"When the new biome system is enabled, this is ignored."
+"When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 "當 np_biome 超過此值時，會產生沙漠。\n"
 "當啟用新的生物群系統時，這個將會被忽略。"
@@ -2684,6 +2738,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dungeon noise"
+msgstr "山噪音"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3038,6 +3097,13 @@ msgid "Font size"
 msgstr "字型大小"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Format of screenshots."
 msgstr "螢幕截圖的格式。"
 
@@ -3286,6 +3352,24 @@ msgstr "坡度噪音"
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
 msgstr "伺服器的首頁，會在伺服器清單中顯示。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal acceleration in air when jumping or falling,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration in fast mode,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration on ground or when climbing,\n"
+"in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3590,6 +3674,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr "如果設定了這個，玩家將會總是在指定的位置重生。"
 
@@ -3616,6 +3708,10 @@ msgstr "遊戲中的聊天終端機高度，介於 0.1 (10%) 至 1.0 (100%) 間�
 #: src/settings_translation_file.cpp
 msgid "Inc. volume key"
 msgstr "提高音量鍵"
+
+#: src/settings_translation_file.cpp
+msgid "Initial vertical speed when jumping, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4673,7 +4769,7 @@ msgstr "液體佇列清除時間"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Liquid sinking speed"
+msgid "Liquid sinking"
 msgstr "液體下沉"
 
 #: src/settings_translation_file.cpp
@@ -4750,6 +4846,18 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
+"'terrain' enables the generation of non-fractal terrain:\n"
+"ocean, islands and underground."
+msgstr ""
+"專用於 Mapgen flat 的地圖生成屬性。\n"
+"可能會有少數的湖泊或是丘陵會在扁平的世界中生成。\n"
+"未在旗標字串中指定的旗標將不會自預設值修改。\n"
+"以「no」開頭的旗標字串將會用於明確的停用它們。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 "專用於 Mapgen flat 的地圖生成屬性。\n"
@@ -4766,7 +4874,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
-"When the new biome system is enabled jungles are automatically enabled and\n"
+"When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
 "專用於 Mapgen v6 的地圖生成屬性。\n"
@@ -4831,6 +4939,11 @@ msgstr "Mapgen flat 特別旗標"
 #, fuzzy
 msgid "Mapgen Fractal"
 msgstr "地圖產生器分形"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen Fractal specific flags"
+msgstr "Mapgen flat 特別旗標"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4918,6 +5031,12 @@ msgstr "強制載入區塊的最大值"
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
 msgstr "快捷列最大寬度"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum liquid resistence. Controls deceleration when entering liquid at\n"
+"high speed."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5123,10 +5242,8 @@ msgstr ""
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
-"Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), singlenode.\n"
-"'stable' means the terrain shape in an existing world will not be changed\n"
-"in the future. Note that biomes are defined by games and may still change."
+"Current mapgens in a highly unstable state:\n"
+"-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5145,7 +5262,7 @@ msgid ""
 msgstr "伺服器名稱，當玩家加入時會顯示，也會顯示在伺服器清單中。"
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
+msgid "Near clipping plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5199,16 +5316,18 @@ msgstr "出現的執行緒數"
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Empty or 0 value:\n"
+"WARNING: Currently there are multiple bugs that may cause crashes when\n"
+"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
+"strongly recommended this value is set to the default '1'.\n"
+"Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
 "Any other value:\n"
 "-    Specifies the number of emerge threads, with a lower limit of 1.\n"
-"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"WARNING: Increasing the number of emerge threads increases engine mapgen\n"
 "speed, but this may harm game performance by interfering with other\n"
 "processes, especially in singleplayer and/or when running Lua code in\n"
-"'on_generated'.\n"
-"For many users the optimum setting may be '1'."
+"'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5371,10 +5490,6 @@ msgid "Profiling"
 msgstr "分析"
 
 #: src/settings_translation_file.cpp
-msgid "Projecting dungeons"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -5464,6 +5579,16 @@ msgstr "右鍵點擊重覆間隔"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "River channel depth"
+msgstr "河流深度"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River channel width"
+msgstr "河流深度"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "River depth"
 msgstr "河流深度"
 
@@ -5476,6 +5601,11 @@ msgstr "河流噪音"
 #, fuzzy
 msgid "River size"
 msgstr "河流大小"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River valley width"
+msgstr "河流深度"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5808,6 +5938,10 @@ msgstr "潛行按鍵"
 #, fuzzy
 msgid "Sneaking speed"
 msgstr "走路速度"
+
+#: src/settings_translation_file.cpp
+msgid "Sneaking speed, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -6160,11 +6294,13 @@ msgid "Undersampling"
 msgstr "Undersampling"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Undersampling is similar to using lower screen resolution, but it applies\n"
+"Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
-"It should give significant performance boost at the cost of less detailed "
-"image."
+"It should give a significant performance boost at the cost of less detailed "
+"image.\n"
+"Higher values result in a less detailed image."
 msgstr ""
 "Undersampling 類似於較低的螢幕解析度，但其\n"
 "僅適用於遊戲世界，保持圖形使用者介面完好無損。\n"
@@ -6279,6 +6415,10 @@ msgid "Varies steepness of cliffs."
 msgstr "懸崖坡度變化。"
 
 #: src/settings_translation_file.cpp
+msgid "Vertical climbing speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr "垂直螢幕同步。"
 
@@ -6333,8 +6473,16 @@ msgstr ""
 "範圍約在 -2 至 2 間。"
 
 #: src/settings_translation_file.cpp
+msgid "Walking and flying speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
 msgstr "走路速度"
+
+#: src/settings_translation_file.cpp
+msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -6361,16 +6509,19 @@ msgid "Waving water"
 msgstr "波動的水"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water height"
+#, fuzzy
+msgid "Waving water wave height"
 msgstr "波動的水高度"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water length"
-msgstr "波動的水長度"
+#, fuzzy
+msgid "Waving water wave speed"
+msgstr "波動的水速度"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water speed"
-msgstr "波動的水速度"
+#, fuzzy
+msgid "Waving water wavelength"
+msgstr "波動的水長度"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6420,10 +6571,6 @@ msgstr ""
 msgid ""
 "Whether FreeType fonts are used, requires FreeType support to be compiled in."
 msgstr "是否使用 freetype 字型，需要將 freetype 支援編譯進來。"
-
-#: src/settings_translation_file.cpp
-msgid "Whether dungeons occasionally project from the terrain."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
@@ -6519,11 +6666,6 @@ msgid "Y of upper limit of large caves."
 msgstr "大型偽隨機洞穴的 Y 上限。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Y of upper limit of lava in large caves."
-msgstr "大型偽隨機洞穴的 Y 上限。"
-
-#: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr "洞穴拓展至全尺寸的 Y 距離。"
 
@@ -6569,735 +6711,16 @@ msgstr "cURL 並行限制"
 msgid "cURL timeout"
 msgstr "cURL 逾時"
 
-#, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "關閉商店"
+#~ msgid "Waving Water"
+#~ msgstr "波動的水"
 
 #, fuzzy
-#~ msgid ""
-#~ "Number of emerge threads to use.\n"
-#~ "Make this field blank or 0, or increase this number to use multiple "
-#~ "threads.\n"
-#~ "On multiprocessor systems, this will improve mapgen speed greatly at the "
-#~ "cost\n"
-#~ "of slightly buggy caves."
-#~ msgstr ""
-#~ "要使用的出現的執行緒數。讓這個欄位留空，或是增大這個數字\n"
-#~ "來使用多執行緒。在多處理器的系統上，這將會大大地改善mapgen 的速度\n"
-#~ "在稍有臭蟲的洞穴中的耗費資源。"
-
-#~ msgid "Advanced Settings"
-#~ msgstr "進階設定"
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "大型偽隨機洞穴的 Y 上限。"
 
 #, fuzzy
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen flat.\n"
-#~ "Occasional lakes and hills can be added to the flat world.\n"
-#~ "The default flags set in the engine are: none\n"
-#~ "The flags string modifies the engine defaults.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "專用於 Mapgen flat 的地圖生成屬性。\n"
-#~ "偶而會在平坦的世界中加入湖泊與山丘。\n"
-#~ "未在旗標字串中指定的旗標將不會自預設值修改。\n"
-#~ "以「no」開頭的旗標字串將會用於明確的停用它們。"
-
-#, fuzzy
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag controls the rivers.\n"
-#~ "The default flags set in the engine are: mountains, ridges\n"
-#~ "The flags string modifies the engine defaults.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "專用於 Mapgen v6 的地圖生成屬性。\n"
-#~ "當 snowbiomes 與叢林都啟用時，叢林旗標會被忽略。\n"
-#~ "未在旗標字串中指定的旗標將不會自預設值修改。\n"
-#~ "以「no」開頭的旗標字串將會用於明確的停用它們。"
-
-#~ msgid ""
-#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
-#~ "completely.\n"
-#~ "Note that this is not quite optimized and that smooth lighting on the\n"
-#~ "water surface doesn't work with this."
-#~ msgstr ""
-#~ "啟用略低的的水面，所以它就不會完全「填滿」節點。\n"
-#~ "注意，這個功能並未最佳化完成，水面的\n"
-#~ "柔和光功能無法與此功能一同運作。"
-
-#~ msgid "Enable selection highlighting for nodes (disables selectionbox)."
-#~ msgstr "啟用節點選擇突顯（停用選取框）。"
-
-#~ msgid "Preload inventory textures"
-#~ msgstr "預先載入物品欄材質"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "套用在選單元素的縮放係數： "
-
-#~ msgid "Touch free target"
-#~ msgstr "碰觸自由目標"
-
-#~ msgid "If enabled, "
-#~ msgstr "若啟用， "
-
-#~ msgid "Enable a bit lower water surface, so it doesn't "
-#~ msgstr "啟用較低的水面，所以它不會 "
-
-#~ msgid "\""
-#~ msgstr "\""
-
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen Valleys.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with \"no\" are used to explicitly disable them.\n"
-#~ "\"altitude_chill\" makes higher elevations colder, which may cause biome "
-#~ "issues.\n"
-#~ "\"humid_rivers\" modifies the humidity around rivers and in areas where "
-#~ "water would tend to pool. It may interfere with delicately adjusted "
-#~ "biomes."
-#~ msgstr ""
-#~ "專用於 Mapgen 山谷的地圖生成屬性。\n"
-#~ "未在旗標字串中指定的旗標將不會自預設值修改。\n"
-#~ "以「no」開頭的旗標字串將會用於明確的停用它們。\n"
-#~ "「altitude_chill」會讓較高的地方更寒冷，可能會造成生物群落的問題。\n"
-#~ "「humid_rivers」會修改在河流附近的濕度，在那些區域附近水將會傾向變為一池。"
-#~ "這可能會對微妙調整過的生物群落造成干擾。"
-
-#~ msgid "No!!!"
-#~ msgstr "否！！！"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "公共伺服器清單"
-
-#~ msgid "No of course not!"
-#~ msgstr "不，絕對不是！"
-
-#~ msgid "Useful for mod developers."
-#~ msgstr "對 mod 開發者很有用。"
-
-#~ msgid "How many blocks are flying in the wire simultaneously per client."
-#~ msgstr "每個客戶端有多少個區塊同時以線性方式飛行。"
-
-#~ msgid ""
-#~ "How many blocks are flying in the wire simultaneously for the whole "
-#~ "server."
-#~ msgstr "整個伺服器有多少個區塊同時以線性方式飛行。"
-
-#~ msgid "Detailed mod profiling"
-#~ msgstr "詳細的 mod 檔案"
-
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr "詳細的 mod 檔案資料。對 mod 開發者很有用。"
-
-#~ msgid ""
-#~ "Where the map generator stops.\n"
-#~ "Please note:\n"
-#~ "-    Limited to 31000 (setting above has no effect)\n"
-#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
-#~ "MapBlocks).\n"
-#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
-#~ "-    Only groups which are within the map_generation_limit are generated"
-#~ msgstr ""
-#~ "地圖產生器要在哪裡停止。\n"
-#~ "請注意：\n"
-#~ "-    限制為 31000（上面的設定沒有影響）\n"
-#~ "-    地圖產生器以 80x80x80 個節點為一組的方式運作（5x5x5 地圖區塊）。\n"
-#~ "-    這些群組有 -32 的偏移，從原點偏移 -32 節點。\n"
-#~ "-    只有在 map_generation_limit 內的群組會被生成"
-
-#~ msgid ""
-#~ "Noise parameters for biome API temperature, humidity and biome blend."
-#~ msgstr "噪音參數供生物群落 API 溫度、濕度與生物混合使用。"
-
-#~ msgid "Mapgen v7 terrain persistation noise parameters"
-#~ msgstr "Mapgen v7 地形 持久 噪音 參數"
-
-#~ msgid "Mapgen v7 terrain base noise parameters"
-#~ msgstr "Mapgen v7 地形 基礎 噪音 參數"
-
-#~ msgid "Mapgen v7 terrain altitude noise parameters"
-#~ msgstr "Mapgen v7 地形 海拔 噪音 參數"
-
-#~ msgid "Mapgen v7 ridge water noise parameters"
-#~ msgstr "Mapgen v7 ridge 水 噪音 參數"
-
-#~ msgid "Mapgen v7 ridge noise parameters"
-#~ msgstr "Mapgen v7 ridge 噪音 參數"
-
-#~ msgid "Mapgen v7 mountain noise parameters"
-#~ msgstr "Mapgen v7 山 噪音 參數"
-
-#~ msgid "Mapgen v7 height select noise parameters"
-#~ msgstr "Mapgen v7 高度 選擇 噪音 參數"
-
-#~ msgid "Mapgen v7 filler depth noise parameters"
-#~ msgstr "Mapgen v7 填充器 深度 噪音 參數"
-
-#~ msgid "Mapgen v7 cave2 noise parameters"
-#~ msgstr "Mapgen v7 洞穴2 噪音 參數"
-
-#~ msgid "Mapgen v7 cave1 noise parameters"
-#~ msgstr "Mapgen v7 洞穴1 噪音 參數"
-
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Mapgen v7 洞穴寬度"
-
-#~ msgid "Mapgen v6 trees noise parameters"
-#~ msgstr "Mapgen v6 樹 噪音 參數"
-
-#~ msgid "Mapgen v6 terrain base noise parameters"
-#~ msgstr "Mapgen v6 地形 基礎 噪音 參數"
-
-#~ msgid "Mapgen v6 terrain altitude noise parameters"
-#~ msgstr "Mapgen v6 地形 海拔 噪音 參數"
-
-#~ msgid "Mapgen v6 steepness noise parameters"
-#~ msgstr "Mapgen v6 坡度 噪音 參數"
-
-#~ msgid "Mapgen v6 mud noise parameters"
-#~ msgstr "Mapgen v6 泥土 噪音 參數"
-
-#~ msgid "Mapgen v6 desert frequency"
-#~ msgstr "Mapgen v6 沙漠頻率"
-
-#~ msgid "Mapgen v6 cave noise parameters"
-#~ msgstr "Mapgen v6 洞穴 噪音 參數"
-
-#~ msgid "Mapgen v6 biome noise parameters"
-#~ msgstr "Mapgen v6 生物群落 噪音 參數"
-
-#~ msgid "Mapgen v6 beach noise parameters"
-#~ msgstr "Mapgen v6 海灘 噪音 參數"
-
-#~ msgid "Mapgen v6 beach frequency"
-#~ msgstr "Mapgen v6 海灘頻率"
-
-#~ msgid "Mapgen v6 apple trees noise parameters"
-#~ msgstr "Mapgen v6 蘋果樹 噪音 參數"
-
-#~ msgid "Mapgen v5 height noise parameters"
-#~ msgstr "Mapgen v5 高度 噪音 參數"
-
-#~ msgid "Mapgen v5 filler depth noise parameters"
-#~ msgstr "Mapgen v5 填充器 深度 噪音 參數"
-
-#~ msgid "Mapgen v5 factor noise parameters"
-#~ msgstr "Mapgen v5 因子 噪音 參數"
-
-#~ msgid "Mapgen v5 cave2 noise parameters"
-#~ msgstr "Mapgen v5 洞穴2 噪音 參數"
-
-#~ msgid "Mapgen v5 cave1 noise parameters"
-#~ msgstr "Mapgen v5 洞穴1 噪音 參數"
-
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Mapgen v5 洞穴寬度"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Mapgen fractal slice w"
-
-#~ msgid "Mapgen fractal seabed noise parameters"
-#~ msgstr "Mapgen fractal 海床 噪音 參數"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mapgen fractal 規模"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mapgen fractal 偏移"
-
-#~ msgid "Mapgen fractal julia z"
-#~ msgstr "Mapgen fractal 朱利亞 z"
-
-#~ msgid "Mapgen fractal julia y"
-#~ msgstr "Mapgen fractal 朱利亞 y"
-
-#~ msgid "Mapgen fractal julia x"
-#~ msgstr "Mapgen fractal 朱利亞 x"
-
-#~ msgid "Mapgen fractal julia w"
-#~ msgstr "Mapgen fractal 朱利亞 w"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Mapgen fractal 迭代"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mapgen fractal fractal"
-
-#~ msgid "Mapgen fractal filler depth noise parameters"
-#~ msgstr "Mapgen fractal 填充器 深度 噪音 參數"
-
-#~ msgid "Mapgen fractal cave2 noise parameters"
-#~ msgstr "Mapgen fractal 洞穴2 噪音 參數"
-
-#~ msgid "Mapgen fractal cave1 noise parameters"
-#~ msgstr "Mapgen fractal 洞穴1 噪音 參數"
-
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mapgen 分形洞穴寬度"
-
-#~ msgid "Mapgen flat terrain noise parameters"
-#~ msgstr "Mapgen flat 地形 噪音 參數"
-
-#~ msgid "Mapgen flat large cave depth"
-#~ msgstr "Mapgen flat 大型洞穴深度"
-
-#~ msgid "Mapgen flat filler depth noise parameters"
-#~ msgstr "Mapgen flat 填充器 深度 噪音 參數"
-
-#~ msgid "Mapgen flat cave2 noise parameters"
-#~ msgstr "Mapgen flat 洞穴2 噪音 參數"
-
-#~ msgid "Mapgen flat cave1 noise parameters"
-#~ msgstr "Mapgen flat 洞穴1 噪音 參數"
-
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mapgen flat 洞穴寬度"
-
-#~ msgid "Mapgen biome humidity noise parameters"
-#~ msgstr "Mapgen 生物群落 濕度 噪音 參數"
-
-#~ msgid "Mapgen biome humidity blend noise parameters"
-#~ msgstr "Mapgen 生物群落 濕度 混合 噪音 參數"
-
-#~ msgid "Mapgen biome heat noise parameters"
-#~ msgstr "Mapgen 生物群落 熱 噪音 參數"
-
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "決定地形的形狀。\n"
-#~ "在括號中的 3 個數字控制著\n"
-#~ "地形的規模，那三個數字應該要是相同的。"
-
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "控制在 Mapgen v6 中的沙漠與沙灘大小。\n"
-#~ "當 snowbiomes 啟用時「mgv6_freq_desert」會被忽略。"
-
-#~ msgid "Plus"
-#~ msgstr "加號"
-
-#~ msgid "Period"
-#~ msgstr "句號"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "減號"
-
-#~ msgid "Kanji"
-#~ msgstr "日文漢字"
-
-#~ msgid "Kana"
-#~ msgstr "假名"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Final"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "逗號"
-
-#~ msgid "Capital"
-#~ msgstr "大寫"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Hide mp content"
-#~ msgstr "隱藏 mp 內容"
-
-#~ msgid "Y-level of higher (cliff-top) terrain."
-#~ msgstr "較高（懸崖頂部）的 Y 高度。"
-
-#~ msgid ""
-#~ "Whether to support older servers before protocol version 25.\n"
-#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
-#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
-#~ "Disabling this option will protect your password better."
-#~ msgstr ""
-#~ "是否支援在協議版本 25 前的舊伺服器。\n"
-#~ "若您想要連線到 0.4.12 版或更舊的伺服器就啟用。\n"
-#~ "自 0.4.13 起的伺服器將可以正常運作，0.4.12-dev 版的伺服器可能可以正常運"
-#~ "作。\n"
-#~ "停用這個選項可以將您的密碼保護的比較好一點。"
-
-#~ msgid "Water Features"
-#~ msgstr "水的特徵"
-
-#~ msgid "Valleys C Flags"
-#~ msgstr "山谷 C 旗標"
-
-#~ msgid ""
-#~ "Use mip mapping to scale textures. May slightly increase performance."
-#~ msgstr "使用多重材質貼圖來縮放材質。可能會稍稍地增加效能。"
-
-#~ msgid "Use key"
-#~ msgstr "使用按鍵"
-
-#~ msgid "The rendering back-end for Irrlicht."
-#~ msgstr "Irrlicht 的成像後端。"
-
-#~ msgid "The altitude at which temperature drops by 20C"
-#~ msgstr "會降低攝氏 20 度的高度"
-
-#~ msgid "Support older servers"
-#~ msgstr "支援較舊版本的伺服器"
-
-#~ msgid ""
-#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
-#~ "nodes)."
-#~ msgstr "要由 mapgen 生成的區塊大小，以地圖區塊（16 個節電）。"
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "河流噪音 -- 會在接近河流最低點的地方遇到"
-
-#~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
-#~ msgstr ""
-#~ "要用來建立新世界的地圖產生器的名稱。\n"
-#~ "在主選單中建立世界將會覆蓋它。"
-
-#~ msgid "Modstore mods list URL"
-#~ msgstr "Modstore mod 清單 URL"
-
-#~ msgid "Modstore download URL"
-#~ msgstr "Modstore 下載 URL"
-
-#~ msgid "Modstore details URL"
-#~ msgstr "Modstore 詳細資訊 URL"
-
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "總和最大同時傳送區塊數"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr "每個客戶端可同時傳送的最大區塊數量。"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent in total."
-#~ msgstr "最大同時總傳送的區塊數量。"
-
-#~ msgid "Massive caves form here."
-#~ msgstr "這裡的大規模洞穴結構。"
-
-#~ msgid "Massive cave noise"
-#~ msgstr "大規模洞穴噪音"
-
-#~ msgid "Massive cave depth"
-#~ msgstr "大規模洞穴深度"
-
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag enables the rivers.\n"
-#~ "Floatlands are currently experimental and subject to change.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "專用於 Mapgen v7 的地圖生成屬性。\n"
-#~ "「ridges」旗標會啟用河流。\n"
-#~ "浮地目前是實驗性的，可能會發生變化。\n"
-#~ "未在旗標字串中指定的旗標將不會自預設值修改。\n"
-#~ "以「no」開頭的旗標字串將會用於明確的停用它們。"
-
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen Valleys.\n"
-#~ "'altitude_chill' makes higher elevations colder, which may cause biome "
-#~ "issues.\n"
-#~ "'humid_rivers' modifies the humidity around rivers and in areas where "
-#~ "water would tend to pool,\n"
-#~ "it may interfere with delicately adjusted biomes.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "專用於 Mapgen Valleys 的地圖生成屬性。\n"
-#~ "'altitude_chill' 讓高海拔處更冷，這可能會導致一些與生物群落相關的問題。\n"
-#~ "'humid_rivers' 修改了河流周圍的濕度，該處的水會傾向形成池子。\n"
-#~ "這可能會干擾經過微秒調整的生物群落。\n"
-#~ "未在旗標字串中指定的旗標不會自預設值修改。\n"
-#~ "以 'no' 開頭的旗標會用於明確地停用它們。"
-
-#~ msgid "Main menu mod manager"
-#~ msgstr "主選單 mod 管理員"
-
-#~ msgid "Main menu game manager"
-#~ msgstr "主選單遊戲管理員"
-
-#~ msgid "Lava Features"
-#~ msgstr "岩漿功能"
-
-#~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "印出除錯堆疊的按鍵。對開發來說很有用。\n"
-#~ "請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "開啟聊天視窗的按鍵。\n"
-#~ "請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
-#~ msgstr ""
-#~ "遞迴函數的迭代。\n"
-#~ "控制細節的品質。"
-
-#~ msgid "Inventory image hack"
-#~ msgstr "物品欄圖片 hack"
-
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr "若啟用，在玩家連線時顯示伺服器狀態訊息。"
-
-#~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
-#~ msgstr ""
-#~ "活躍的區塊要遵循多大的區域，以地圖區塊（16 個節點）計。\n"
-#~ "活動區塊物件將會被載入，而 ABM 會執行。"
-
-#~ msgid "Height on which clouds are appearing."
-#~ msgstr "雲朵要出現的高度。"
-
-#~ msgid "General"
-#~ msgstr "一般"
-
-#~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
-#~ msgstr "客戶端上知道多遠的區塊上的物件，以地圖區塊計算（16 個節點）。"
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "縮放視野。\n"
-#~ "這需要伺服器上的「縮放」特權。"
-
-#~ msgid "Field of view for zoom"
-#~ msgstr "放大后的視野"
-
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "啟用當走路時視野晃動。"
-
-#~ msgid "Enable view bobbing"
-#~ msgstr "啟用視野晃動"
-
-#~ msgid ""
-#~ "Disable escape sequences, e.g. chat coloring.\n"
-#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
-#~ "to disable\n"
-#~ "the escape sequences generated by mods."
-#~ msgstr ""
-#~ "停用逃脫字元。例如聊天訊息的顏色。\n"
-#~ "如果您想要與早於 0.4.14 的客戶端一同執行伺服器並且您也想要停用\n"
-#~ "由 mod 所生成的逃脫字元的話就用這個。"
-
-#~ msgid "Disable escape sequences"
-#~ msgstr "停用逃脫字元"
-
-#~ msgid "Descending speed"
-#~ msgstr "遞減速度"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "您會發現大量洞穴的深度。"
-
-#~ msgid "Crouch speed"
-#~ msgstr "蹲伏速度"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "在洞穴中建立無法預測的水功能。\n"
-#~ "這些會讓挖礦變得困難。設為零以停用。 (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "在洞穴中建立無法預測的岩漿功能。\n"
-#~ "這些會讓挖礦變得困難。設為零以停用。 (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "連續前進移動（僅供測試使用）。"
-
-#~ msgid "Console key"
-#~ msgstr "終端機按鍵"
-
-#~ msgid "Cloud height"
-#~ msgstr "雲朵高度"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "洞穴與隧道形成兩種噪音的交集"
-
-#~ msgid "Autorun key"
-#~ msgstr "自動奔跑按鍵"
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "大約 (X,Y,Z) 的節點碎形規模。"
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "公佈到這個伺服器列表。\n"
-#~ "若您想要公佈您的 IPv6 地址，使用 serverlist_url = v6.servers.minetest."
-#~ "net。"
-
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "僅 Android 系統：當找不到支援的彩現器時\n"
-#~ "嘗試從網格建立物品紋理。"
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "活動方塊調整間隔"
-
-#~ msgid "Prior"
-#~ msgstr "上一個"
-
-#~ msgid "Next"
-#~ msgstr "下一個"
-
-#~ msgid "Use"
-#~ msgstr "使用"
-
-#~ msgid "Print stacks"
-#~ msgstr "印出堆疊"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "音量已調整為100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "音量已調整為0%"
-
-#~ msgid "No information available"
-#~ msgstr "不提供資訊"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "法線貼圖"
-
-#~ msgid "Play Online"
-#~ msgstr "線上遊玩"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "解除安裝已選取的 mod 包"
-
-#~ msgid "Local Game"
-#~ msgstr "本機遊戲"
-
-#~ msgid "re-Install"
-#~ msgstr "重新安裝"
-
-#~ msgid "Unsorted"
-#~ msgstr "未分類"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "已成功安裝："
-
-#~ msgid "Shortname:"
-#~ msgstr "短名稱："
-
-#~ msgid "Rating"
-#~ msgstr "評分"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "$2 的第 $1 頁"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "附屬遊戲的 Mod"
-
-#~ msgid "Select path"
-#~ msgstr "選取路徑"
-
-#~ msgid "Possible values are: "
-#~ msgstr "可能的值為： "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "請輸入逗號以分離各項旗標。"
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "選擇性的空隙度可以以一個逗號開頭附加。"
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "格式：<偏移>, <尺寸>, (<寬度 X>, <寬度 Y>, <寬度 Z>), <種子>, <八進位>, <"
-#~ "持續性>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "格式為 3 個在括號內的以逗號分離的數字。"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "「$1」不是一個有效的旗標。"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "未給予世界遊戲或是未選取遊戲"
-
-#~ msgid "Enable MP"
-#~ msgstr "啟用 MP"
-
-#~ msgid "Disable MP"
-#~ msgstr "停用 MP"
-
-#, fuzzy
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "'ridges' enables the rivers.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "專用於 Mapgen v5 的地圖生成屬性。\n"
-#~ "未在旗標字串中指定的旗標將不會自預設值修改。\n"
-#~ "以「no」開頭的旗標字串將會用於明確的停用它們。"
-
-#, fuzzy
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen v5.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "專用於 Mapgen v5 的地圖生成屬性。\n"
-#~ "未在旗標字串中指定的旗標將不會自預設值修改。\n"
-#~ "以「no」開頭的旗標字串將會用於明確的停用它們。"
-
-#, fuzzy
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen Carpathian.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "專用於 Mapgen v5 的地圖生成屬性。\n"
-#~ "未在旗標字串中指定的旗標將不會自預設值修改。\n"
-#~ "以「no」開頭的旗標字串將會用於明確的停用它們。"
+#~ msgid "Select Package File:"
+#~ msgstr "選取 Mod 檔案："
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "切換過場動畫"

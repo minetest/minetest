@@ -135,7 +135,7 @@ treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
 	event.type = MEET_OTHER;
 	for (auto &modified_block : modified_blocks)
 		event.modified_blocks.insert(modified_block.first);
-	map->dispatchEvent(&event);
+	map->dispatchEvent(event);
 	return SUCCESS;
 }
 

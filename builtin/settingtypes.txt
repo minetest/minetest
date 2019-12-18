@@ -112,7 +112,7 @@ always_fly_fast (Always fly and fast) bool true
 
 #    The time in seconds it takes between repeated right clicks when holding the right
 #    mouse button.
-repeat_rightclick_time (Rightclick repetition interval) float 0.25
+repeat_rightclick_time (Rightclick repetition interval) float 0.25 0.001
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -150,7 +150,7 @@ joystick_type (Joystick type) enum auto auto,generic,xbox
 
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
-repeat_joystick_button_time (Joystick button repetition interval) float 0.17
+repeat_joystick_button_time (Joystick button repetition interval) float 0.17 0.001
 
 #    The sensitivity of the joystick axes for moving the
 #    ingame view frustum around.
@@ -440,7 +440,8 @@ keymap_decrease_viewing_range_min (View range decrease key) key -
 
 [**Basic]
 
-#    Enable VBO
+#    Enable vertex buffer objects.
+#    This should greatly improve graphics performance.
 enable_vbo (VBO) bool true
 
 #    Whether to fog out the end of the visible area.
@@ -508,10 +509,11 @@ texture_min_size (Minimum texture size) int 64
 #    when set to higher number than 0.
 fsaa (FSAA) enum 0 0,1,2,4,8,16
 
-#    Undersampling is similar to using lower screen resolution, but it applies
+#    Undersampling is similar to using a lower screen resolution, but it applies
 #    to the game world only, keeping the GUI intact.
-#    It should give significant performance boost at the cost of less detailed image.
-undersampling (Undersampling) enum 0 0,2,3,4
+#    It should give a significant performance boost at the cost of less detailed image.
+#    Higher values result in a less detailed image.
+undersampling (Undersampling) int 1 1 8
 
 [**Shaders]
 
@@ -525,7 +527,10 @@ shader_path (Shader path) path
 
 [***Tone Mapping]
 
-#    Enables filmic tone mapping
+#    Enables Hable's 'Uncharted 2' filmic tone mapping.
+#    Simulates the tone curve of photographic film and how this approximates the
+#    appearance of high dynamic range images. Mid-range contrast is slightly
+#    enhanced, highlights and shadows are gradually compressed.
 tone_mapping (Filmic tone mapping) bool false
 
 [***Bumpmapping]
@@ -570,21 +575,30 @@ parallax_occlusion_bias (Parallax occlusion bias) float 0.04
 
 [***Waving Nodes]
 
-#    Set to true enables waving water.
+#    Set to true to enable waving liquids (like water).
 #    Requires shaders to be enabled.
-enable_waving_water (Waving water) bool false
+enable_waving_water (Waving liquids) bool false
 
-water_wave_height (Waving water height) float 1.0
+#    The maximum height of the surface of waving liquids.
+#    1.0 = Wave reaches the top of blocks.
+#    0.0 = Wave doesn't move at all.
+#    Requires waving liquids to be enabled.
+water_wave_height (Waving liquids wave height) float 1.0 0.0 1.0
 
-water_wave_length (Waving water length) float 20.0
+#    Length of liquid waves.
+#    Requires waving liquids to be enabled.
+water_wave_length (Waving liquids wavelength) float 20.0 0.1
 
-water_wave_speed (Waving water speed) float 5.0
+#    How fast liquid waves will move. Higher = faster.
+#    If negative, liquid waves will move backwards.
+#    Requires waving liquids to be enabled.
+water_wave_speed (Waving liquids wave speed) float 5.0
 
-#    Set to true enables waving leaves.
+#    Set to true to enable waving leaves.
 #    Requires shaders to be enabled.
 enable_waving_leaves (Waving leaves) bool false
 
-#    Set to true enables waving plants.
+#    Set to true to enable waving plants.
 #    Requires shaders to be enabled.
 enable_waving_plants (Waving plants) bool false
 
@@ -596,10 +610,10 @@ arm_inertia (Arm inertia) bool true
 
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
-fps_max (Maximum FPS) int 60
+fps_max (Maximum FPS) int 60 1
 
 #    Maximum FPS when game is paused.
-pause_fps_max (FPS in pause menu) int 20
+pause_fps_max (FPS in pause menu) int 20 1
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
 #    open.
@@ -608,17 +622,17 @@ pause_on_lost_focus (Pause on lost window focus) bool false
 #    View distance in nodes.
 viewing_range (Viewing range) int 100 20 4000
 
-#   Camera near plane distance in nodes, between 0 and 0.5
+#   Camera 'near clipping plane' distance in nodes, between 0 and 0.5.
 #   Most users will not need to change this.
 #   Increasing can reduce artifacting on weaker GPUs.
 #   0.1 = Default, 0.25 = Good value for weaker tablets.
-near_plane (Near plane) float 0.1 0 0.5
+near_plane (Near clipping plane) float 0.1 0 0.5
 
 #    Width component of the initial window size.
-screen_w (Screen width) int 1024
+screen_w (Screen width) int 1024 1
 
 #    Height component of the initial window size.
-screen_h (Screen height) int 600
+screen_h (Screen height) int 600 1
 
 #    Save window size automatically when modified.
 autosave_screensize (Autosave screen size) bool true
@@ -635,25 +649,34 @@ vsync (VSync) bool false
 #    Field of view in degrees.
 fov (Field of view) int 72 45 160
 
-#    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
-#    This setting is for the client only and is ignored by the server.
-display_gamma (Gamma) float 1.0 0.5 10.0
+#    Alters the light curve by applying 'gamma correction' to it.
+#    Higher values make middle and lower light levels brighter.
+#    Value '1.0' leaves the light curve unaltered.
+#    This only has significant effect on daylight and artificial
+#    light, it has very little effect on natural night light.
+display_gamma (Light curve gamma) float 1.0 0.33 3.0
 
 #    Gradient of light curve at minimum light level.
-lighting_alpha (Darkness sharpness) float 0.0 0.0 4.0
+#    Controls the contrast of the lowest light levels.
+lighting_alpha (Light curve low gradient) float 0.0 0.0 3.0
 
 #    Gradient of light curve at maximum light level.
-lighting_beta (Lightness sharpness) float 1.5 0.0 4.0
+#    Controls the contrast of the highest light levels.
+lighting_beta (Light curve high gradient) float 1.5 0.0 3.0
 
-#    Strength of light curve mid-boost.
-lighting_boost (Light curve mid boost) float 0.2 0.0 1.0
+#    Strength of light curve boost.
+#    The 3 'boost' parameters define a range of the light
+#    curve that is boosted in brightness.
+lighting_boost (Light curve boost) float 0.2 0.0 0.4
 
-#    Center of light curve mid-boost.
-lighting_boost_center (Light curve mid boost center) float 0.5 0.0 1.0
+#    Center of light curve boost range.
+#    Where 0.0 is minimum light level, 1.0 is maximum light level.
+lighting_boost_center (Light curve boost center) float 0.5 0.0 1.0
 
-#    Spread of light curve mid-boost.
-#    Standard deviation of the mid-boost gaussian.
-lighting_boost_spread (Light curve mid boost spread) float 0.2 0.0 1.0
+#    Spread of light curve boost range.
+#    Controls the width of the range to be boosted.
+#    Standard deviation of the light curve boost Gaussian.
+lighting_boost_spread (Light curve boost spread) float 0.2 0.0 0.4
 
 #    Path to texture directory. All textures are first searched from here.
 texture_path (Texture path) path
@@ -755,7 +778,7 @@ minimap_shape_round (Round minimap) bool true
 
 #    True = 256
 #    False = 128
-#    Useable to make minimap smoother on slower machines.
+#    Usable to make minimap smoother on slower machines.
 minimap_double_scan_height (Minimap scan height) bool true
 
 #    Make fog and sky colors depend on daytime (dawn/sunset) and view direction.
@@ -805,7 +828,7 @@ menu_clouds (Clouds in menu) bool true
 #    This will smooth over some of the rough edges, and blend
 #    pixels when scaling down, at the cost of blurring some
 #    edge pixels when images are scaled by non-integer sizes.
-gui_scaling (GUI scaling) float 1.0
+gui_scaling (GUI scaling) float 1.0 0.001
 
 #    When gui_scaling_filter is true, all GUI images need to be
 #    filtered in software, but some images are generated directly
@@ -825,28 +848,59 @@ tooltip_show_delay (Tooltip delay) int 400
 tooltip_append_itemname (Append item name) bool false
 
 #    Whether FreeType fonts are used, requires FreeType support to be compiled in.
+#    If disabled, bitmap and XML vectors fonts are used instead.
 freetype (FreeType fonts) bool true
 
-#    Path to TrueTypeFont or bitmap.
-font_path (Font path) filepath fonts/liberationsans.ttf
+font_bold (Font bold by default) bool false
 
-font_size (Font size) int 16
+font_italic (Font italic by default) bool false
 
-#    Font shadow offset, if 0 then shadow will not be drawn.
+#    Shadow offset (in pixels) of the default font. If 0, then shadow will not be drawn.
 font_shadow (Font shadow) int 1
 
-#    Font shadow alpha (opaqueness, between 0 and 255).
+#    Opaqueness (alpha) of the shadow behind the default font, between 0 and 255.
 font_shadow_alpha (Font shadow alpha) int 127 0 255
 
-mono_font_path (Monospace font path) filepath fonts/liberationmono.ttf
+#    Font size of the default font in point (pt).
+font_size (Font size) int 16 1
 
-mono_font_size (Monospace font size) int 15
+#    Path to the default font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    The fallback font will be used if the font cannot be loaded.
+font_path (Regular font path) filepath fonts/Arimo-Regular.ttf
 
-#    This font will be used for certain languages.
-fallback_font_path (Fallback font) filepath fonts/DroidSansFallbackFull.ttf
-fallback_font_size (Fallback font size) int 15
+font_path_bold (Bold font path) filepath fonts/Arimo-Bold.ttf
+font_path_italic (Italic font path) filepath fonts/Arimo-Italic.ttf
+font_path_bolditalic (Bold and italic font path) filepath fonts/Arimo-BoldItalic.ttf
+
+#    Font size of the monospace font in point (pt).
+mono_font_size (Monospace font size) int 15 1
+
+#    Path to the monospace font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    This font is used for e.g. the console and profiler screen.
+mono_font_path (Monospace font path) filepath fonts/Cousine-Regular.ttf
+
+mono_font_path_bold (Bold monospace font path) filepath fonts/Cousine-Bold.ttf
+mono_font_path_italic (Italic monospace font path) filepath fonts/Cousine-Italic.ttf
+mono_font_path_bolditalic (Bold and italic monospace font path) filepath fonts/Cousine-BoldItalic.ttf
+
+#    Font size of the fallback font in point (pt).
+fallback_font_size (Fallback font size) int 15 1
+
+#    Shadow offset (in pixels) of the fallback font. If 0, then shadow will not be drawn.
 fallback_font_shadow (Fallback font shadow) int 1
+
+#    Opaqueness (alpha) of the shadow behind the fallback font, between 0 and 255.
 fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
+
+#    Path of the fallback font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    This font will be used for certain languages or if the default font is unavailable.
+fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
 
 #    Path to save screenshots at.
 screenshot_path (Screenshot folder) path
@@ -862,7 +916,7 @@ screenshot_quality (Screenshot quality) int 0 0 100
 [*Advanced]
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
-screen_dpi (DPI) int 72
+screen_dpi (DPI) int 72 1
 
 #    Windows systems only: Start Minetest with the command line window in the background.
 #    Contains the same information as the file debug.txt (default name).
@@ -870,10 +924,20 @@ enable_console (Enable console window) bool false
 
 [Sound]
 
+#    Enables the sound system.
+#    If disabled, this completely disables all sounds everywhere and the in-game
+#    sound controls will be non-functional.
+#    Changing this setting requires a restart.
 enable_sound (Sound) bool true
 
+#    Volume of all sounds.
+#    Requires the sound system to be enabled.
 sound_volume (Volume) float 0.7 0.0 1.0
 
+#    Whether to mute sounds. You can unmute sounds at any time, unless the
+#    sound system is disabled (enable_sound=false).
+#    In-game, you can toggle the mute state with the mute key or by using the
+#    pause menu.
 mute_sound (Mute sound) bool false
 
 [Client]
@@ -974,6 +1038,7 @@ remote_media (Remote media) string
 
 #    Enable/disable running an IPv6 server.
 #    Ignored if bind_address is set.
+#    Needs enable_ipv6 to be enabled.
 ipv6_server (IPv6 server) bool false
 
 [**Advanced]
@@ -1058,6 +1123,10 @@ disable_anticheat (Disable anticheat) bool false
 #    This option is only read when server starts.
 enable_rollback_recording (Rollback recording) bool false
 
+#    Format of player chat messages. The following strings are valid placeholders:
+#    @name, @message, @timestamp (optional)
+chat_message_format (Chat message format) string <@name> @message
+
 #    A message to be displayed to all clients when the server shuts down.
 kick_msg_shutdown (Shutdown message) string Server shutting down.
 
@@ -1113,22 +1182,49 @@ chat_message_limit_trigger_kick (Chat message kick threshold) int 50
 
 [**Physics]
 
+#    Horizontal and vertical acceleration on ground or when climbing,
+#    in nodes per second per second.
 movement_acceleration_default (Default acceleration) float 3
+
+#    Horizontal acceleration in air when jumping or falling,
+#    in nodes per second per second.
 movement_acceleration_air (Acceleration in air) float 2
+
+#    Horizontal and vertical acceleration in fast mode,
+#    in nodes per second per second.
 movement_acceleration_fast (Fast mode acceleration) float 10
+
+#    Walking and flying speed, in nodes per second.
 movement_speed_walk (Walking speed) float 4
+
+#    Sneaking speed, in nodes per second.
 movement_speed_crouch (Sneaking speed) float 1.35
+
+#    Walking, flying and climbing speed in fast mode, in nodes per second.
 movement_speed_fast (Fast mode speed) float 20
+
+#    Vertical climbing speed, in nodes per second.
 movement_speed_climb (Climbing speed) float 3
+
+#    Initial vertical speed when jumping, in nodes per second.
 movement_speed_jump (Jumping speed) float 6.5
+
+#    Decrease this to increase liquid resistance to movement.
 movement_liquid_fluidity (Liquid fluidity) float 1
+
+#    Maximum liquid resistance. Controls deceleration when entering liquid at
+#    high speed.
 movement_liquid_fluidity_smooth (Liquid fluidity smoothing) float 0.5
-movement_liquid_sink (Liquid sinking speed) float 10
+
+#    Controls sinking speed in liquid.
+movement_liquid_sink (Liquid sinking) float 10
+
+#    Acceleration of gravity, in nodes per second per second.
 movement_gravity (Gravity) float 9.81
 
 [**Advanced]
 
-#    Handling for deprecated lua api calls:
+#    Handling for deprecated Lua API calls:
 #    -    legacy: (try to) mimic old behaviour (default for release).
 #    -    log: mimic and log backtrace of deprecated call (default for debug).
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
@@ -1288,7 +1384,14 @@ language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,
 #    -    verbose
 debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose
 
-#    IPv6 support.
+#    If the file size of debug.txt exceeds the number of megabytes specified in
+#    this setting when it is opened, the file is moved to debug.txt.1,
+#    deleting an older debug.txt.1 if it exists.
+#    debug.txt is only moved if this setting is positive.
+debug_log_size_max (Debug log file size threshold) int 50
+
+#    Enable IPv6 support (for both client and server).
+#    Required for IPv6 connections to work at all.
 enable_ipv6 (IPv6) bool true
 
 [*Advanced]
@@ -1347,9 +1450,6 @@ mapgen_limit (Map generation limit) int 31000 0 31000
 #    and junglegrass, in all other mapgens this flag controls all decorations.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes caves,dungeons,light,decorations,biomes,nocaves,nodungeons,nolight,nodecorations,nobiomes
 
-#    Whether dungeons occasionally project from the terrain.
-projecting_dungeons (Projecting dungeons) bool true
-
 [*Biome API temperature and humidity noise parameters]
 
 #    Temperature variation for biomes.
@@ -1370,14 +1470,27 @@ mg_biome_np_humidity_blend (Humidity blend noise) noise_params_2d 0, 1.5, (8, 8,
 mgv5_spflags (Mapgen V5 specific flags) flags caverns caverns,nocaverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgv5_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
 mgv5_large_cave_depth (Large cave depth) int -256
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgv5_lava_depth (Lava depth) int -256
+#    Minimum limit of random number of small caves per mapchunk.
+mgv5_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgv5_small_cave_num_max (Small cave maximum number) int 0 0 256
+
+#    Minimum limit of random number of large caves per mapchunk.
+mgv5_large_cave_num_min (Large cave minimum number) int 0 0 64
+
+#    Maximum limit of random number of large caves per mapchunk.
+mgv5_large_cave_num_max (Large cave maximum number) int 2 0 64
+
+#    Proportion of large caves that contain liquid.
+mgv5_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Y-level of cavern upper limit.
 mgv5_cavern_limit (Cavern limit) int -256
@@ -1425,12 +1538,12 @@ mgv5_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 
 #    Map generation attributes specific to Mapgen v6.
 #    The 'snowbiomes' flag enables the new 5 biome system.
-#    When the new biome system is enabled jungles are automatically enabled and
+#    When the 'snowbiomes' flag is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
-mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
+mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
 
 #    Deserts occur when np_biome exceeds this value.
-#    When the new biome system is enabled, this is ignored.
+#    When the 'snowbiomes' flag is enabled, this is ignored.
 mgv6_freq_desert (Desert noise threshold) float 0.45
 
 #    Sandy beaches occur when np_beach exceeds this value.
@@ -1487,14 +1600,27 @@ mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,cave
 mgv7_mount_zero_level (Mountain zero level) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgv7_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
 mgv7_large_cave_depth (Large cave depth) int -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgv7_lava_depth (Lava depth) int -256
+#    Minimum limit of random number of small caves per mapchunk.
+mgv7_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgv7_small_cave_num_max (Small cave maximum number) int 0 0 256
+
+#    Minimum limit of random number of large caves per mapchunk.
+mgv7_large_cave_num_min (Large cave minimum number) int 0 0 64
+
+#    Maximum limit of random number of large caves per mapchunk.
+mgv7_large_cave_num_max (Large cave maximum number) int 2 0 64
+
+#    Proportion of large caves that contain liquid.
+mgv7_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Controls the density of mountain-type floatlands.
 #    Is a noise offset added to the 'mgv7_np_mountain' noise value.
@@ -1580,7 +1706,7 @@ mgv7_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 [*Mapgen Carpathian]
 
 #    Map generation attributes specific to Mapgen Carpathian.
-mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns,norivers caverns,nocaverns,rivers,norivers
+mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns,norivers caverns,rivers,nocaverns,norivers
 
 #    Defines the base ground level.
 mgcarpathian_base_level (Base ground level) float 12.0
@@ -1595,14 +1721,27 @@ mgcarpathian_river_depth (River channel depth) float 24.0
 mgcarpathian_valley_width (River valley width) float 0.25
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgcarpathian_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
 mgcarpathian_large_cave_depth (Large cave depth) int -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgcarpathian_lava_depth (Lava depth) int -256
+#    Minimum limit of random number of small caves per mapchunk.
+mgcarpathian_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgcarpathian_small_cave_num_max (Small cave maximum number) int 0 0 256
+
+#    Minimum limit of random number of large caves per mapchunk.
+mgcarpathian_large_cave_num_min (Large cave minimum number) int 0 0 64
+
+#    Maximum limit of random number of large caves per mapchunk.
+mgcarpathian_large_cave_num_max (Large cave maximum number) int 2 0 64
+
+#    Proportion of large caves that contain liquid.
+mgcarpathian_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Y-level of cavern upper limit.
 mgcarpathian_cavern_limit (Cavern limit) int -256
@@ -1674,7 +1813,7 @@ mgcarpathian_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 50
 
 [*Mapgen Flat]
 
-#    Map generation attributes specific to Mapgen flat.
+#    Map generation attributes specific to Mapgen Flat.
 #    Occasional lakes and hills can be added to the flat world.
 mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills lakes,hills,nolakes,nohills
 
@@ -1684,11 +1823,24 @@ mgflat_ground_level (Ground level) int 8
 #    Y of upper limit of large caves.
 mgflat_large_cave_depth (Large cave depth) int -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgflat_lava_depth (Lava depth) int -256
+#    Minimum limit of random number of small caves per mapchunk.
+mgflat_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgflat_small_cave_num_max (Small cave maximum number) int 0 0 256
+
+#    Minimum limit of random number of large caves per mapchunk.
+mgflat_large_cave_num_min (Large cave minimum number) int 0 0 64
+
+#    Maximum limit of random number of large caves per mapchunk.
+mgflat_large_cave_num_max (Large cave maximum number) int 2 0 64
+
+#    Proportion of large caves that contain liquid.
+mgflat_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgflat_cave_width (Cave width) float 0.09
 
 #    Terrain noise threshold for lakes.
@@ -1732,20 +1884,33 @@ mgflat_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0,
 
 [*Mapgen Fractal]
 
-#    Map generation attributes specific to Mapgen flat.
+#    Map generation attributes specific to Mapgen Fractal.
 #    'terrain' enables the generation of non-fractal terrain:
 #    ocean, islands and underground.
 mgfractal_spflags (Mapgen Fractal specific flags) flags terrain terrain,noterrain
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgfractal_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
 mgfractal_large_cave_depth (Large cave depth) int -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgfractal_lava_depth (Lava depth) int -256
+#    Minimum limit of random number of small caves per mapchunk.
+mgfractal_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgfractal_small_cave_num_max (Small cave maximum number) int 0 0 256
+
+#    Minimum limit of random number of large caves per mapchunk.
+mgfractal_large_cave_num_min (Large cave minimum number) int 0 0 64
+
+#    Maximum limit of random number of large caves per mapchunk.
+mgfractal_large_cave_num_max (Large cave maximum number) int 2 0 64
+
+#    Proportion of large caves that contain liquid.
+mgfractal_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Lower Y limit of dungeons.
 mgfractal_dungeon_ymin (Dungeon minimum Y) int -31000
@@ -1754,24 +1919,24 @@ mgfractal_dungeon_ymin (Dungeon minimum Y) int -31000
 mgfractal_dungeon_ymax (Dungeon maximum Y) int 31000
 
 #    Selects one of 18 fractal types.
-#    1 = 4D "Roundy" mandelbrot set.
-#    2 = 4D "Roundy" julia set.
-#    3 = 4D "Squarry" mandelbrot set.
-#    4 = 4D "Squarry" julia set.
-#    5 = 4D "Mandy Cousin" mandelbrot set.
-#    6 = 4D "Mandy Cousin" julia set.
-#    7 = 4D "Variation" mandelbrot set.
-#    8 = 4D "Variation" julia set.
-#    9 = 3D "Mandelbrot/Mandelbar" mandelbrot set.
-#    10 = 3D "Mandelbrot/Mandelbar" julia set.
-#    11 = 3D "Christmas Tree" mandelbrot set.
-#    12 = 3D "Christmas Tree" julia set.
-#    13 = 3D "Mandelbulb" mandelbrot set.
-#    14 = 3D "Mandelbulb" julia set.
-#    15 = 3D "Cosine Mandelbulb" mandelbrot set.
-#    16 = 3D "Cosine Mandelbulb" julia set.
-#    17 = 4D "Mandelbulb" mandelbrot set.
-#    18 = 4D "Mandelbulb" julia set.
+#    1 = 4D "Roundy" Mandelbrot set.
+#    2 = 4D "Roundy" Julia set.
+#    3 = 4D "Squarry" Mandelbrot set.
+#    4 = 4D "Squarry" Julia set.
+#    5 = 4D "Mandy Cousin" Mandelbrot set.
+#    6 = 4D "Mandy Cousin" Julia set.
+#    7 = 4D "Variation" Mandelbrot set.
+#    8 = 4D "Variation" Julia set.
+#    9 = 3D "Mandelbrot/Mandelbar" Mandelbrot set.
+#    10 = 3D "Mandelbrot/Mandelbar" Julia set.
+#    11 = 3D "Christmas Tree" Mandelbrot set.
+#    12 = 3D "Christmas Tree" Julia set.
+#    13 = 3D "Mandelbulb" Mandelbrot set.
+#    14 = 3D "Mandelbulb" Julia set.
+#    15 = 3D "Cosine Mandelbulb" Mandelbrot set.
+#    16 = 3D "Cosine Mandelbulb" Julia set.
+#    17 = 4D "Mandelbulb" Mandelbrot set.
+#    18 = 4D "Mandelbulb" Julia set.
 mgfractal_fractal (Fractal type) int 1 1 18
 
 #    Iterations of the recursive function.
@@ -1793,7 +1958,7 @@ mgfractal_scale (Scale) v3f (4096.0, 1024.0, 4096.0)
 #    Can be used to move a desired point to (0, 0) to create a
 #    suitable spawn point, or to allow 'zooming in' on a desired
 #    point by increasing 'scale'.
-#    The default is tuned for a suitable spawn point for mandelbrot
+#    The default is tuned for a suitable spawn point for Mandelbrot
 #    sets with default parameters, it may need altering in other
 #    situations.
 #    Range roughly -2 to 2. Multiply by 'scale' for offset in nodes.
@@ -1856,7 +2021,7 @@ mgfractal_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500),
 #    'vary_river_depth': If enabled, low humidity and high heat causes rivers
 #    to become shallower and occasionally dry.
 #    'altitude_dry': Reduces humidity with altitude.
-mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers,vary_river_depth,novary_river_depth,altitude_dry,noaltitude_dry
+mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry altitude_chill,humid_rivers,vary_river_depth,altitude_dry,noaltitude_chill,nohumid_rivers,novary_river_depth,noaltitude_dry
 
 #    The vertical distance over which heat drops by 20 if 'altitude_chill' is
 #    enabled. Also the vertical distance over which humidity drops by 10 if
@@ -1866,9 +2031,20 @@ mgvalleys_altitude_chill (Altitude chill) int 90
 #    Depth below which you'll find large caves.
 mgvalleys_large_cave_depth (Large cave depth) int -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgvalleys_lava_depth (Lava depth) int 1
+#    Minimum limit of random number of small caves per mapchunk.
+mgvalleys_small_cave_num_min (Small cave minimum number) int 0 0 256
+
+#    Maximum limit of random number of small caves per mapchunk.
+mgvalleys_small_cave_num_max (Small cave maximum number) int 0 0 256
+
+#    Minimum limit of random number of large caves per mapchunk.
+mgvalleys_large_cave_num_min (Large cave minimum number) int 0 0 64
+
+#    Maximum limit of random number of large caves per mapchunk.
+mgvalleys_large_cave_num_max (Large cave maximum number) int 2 0 64
+
+#    Proportion of large caves that contain liquid.
+mgvalleys_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
 
 #    Depth below which you'll find giant caverns.
 mgvalleys_cavern_limit (Cavern upper limit) int -256
@@ -1886,6 +2062,8 @@ mgvalleys_river_depth (River depth) int 4
 mgvalleys_river_size (River size) int 5
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 mgvalleys_cave_width (Cave width) float 0.09
 
 #    Lower Y limit of dungeons.

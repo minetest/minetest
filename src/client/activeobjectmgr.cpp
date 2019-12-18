@@ -29,14 +29,16 @@ void ActiveObjectMgr::clear()
 	// delete active objects
 	for (auto &active_object : m_active_objects) {
 		delete active_object.second;
+		// Object must be marked as gone when children try to detach
+		active_object.second = nullptr;
 	}
+	m_active_objects.clear();
 }
 
 void ActiveObjectMgr::step(
 		float dtime, const std::function<void(ClientActiveObject *)> &f)
 {
-	g_profiler->avg("Client::ActiveObjectMgr: num of objects",
-			m_active_objects.size());
+	g_profiler->avg("ActiveObjectMgr: CAO count [#]", m_active_objects.size());
 	for (auto &ao_it : m_active_objects) {
 		f(ao_it.second);
 	}

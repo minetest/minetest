@@ -24,10 +24,11 @@ local function create_world_formspec(dialogdata)
 	local current_mg   = core.settings:get("mg_name")
 	local gameid = core.settings:get("menu_last_game")
 
-	local game, gameidx = nil , 0
+	local gameidx = 0
 	if gameid ~= nil then
-		game, gameidx = pkgmgr.find_by_gameid(gameid)
-		
+		local _
+		_, gameidx = pkgmgr.find_by_gameid(gameid)
+
 		if gameidx == nil then
 			gameidx = 0
 		end
@@ -82,7 +83,7 @@ local function create_world_formspec(dialogdata)
 
 		"button[3.25,6;2.5,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
 		"button[5.75,6;2.5,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
-		
+
 	if #pkgmgr.games == 0 then
 		retval = retval .. "box[2,4;8,1;#ff8800]label[2.25,4;" ..
 				fgettext("You have no games installed.") .. "]label[2.25,4.4;" ..
@@ -111,10 +112,10 @@ local function create_world_buttonhandler(this, fields)
 				local random_world_name = "Unnamed" .. random_number
 				worldname = random_world_name
 			end
-			local message = nil
 
 			core.settings:set("fixed_map_seed", fields["te_seed"])
 
+			local message
 			if not menudata.worldlist:uid_exists_raw(worldname) then
 				core.settings:set("mg_name",fields["dd_mapgen"])
 				message = core.create_world(worldname,gameindex)
@@ -165,6 +166,6 @@ function create_create_world_dlg(update_worldlistfilter)
 					create_world_buttonhandler,
 					nil)
 	retval.update_worldlist_filter = update_worldlistfilter
-	
+
 	return retval
 end

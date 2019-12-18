@@ -121,16 +121,20 @@ struct IncomingSplitPacket
 
 	IncomingSplitPacket() = delete;
 
-	// Key is chunk number, value is data without headers
-	std::map<u16, SharedBuffer<u8>> chunks;
-	u32 chunk_count;
 	float time = 0.0f; // Seconds from adding
-	bool reliable = false; // If true, isn't deleted on timeout
+	u32 chunk_count;
+	bool reliable; // If true, isn't deleted on timeout
 
 	bool allReceived() const
 	{
 		return (chunks.size() == chunk_count);
 	}
+	bool insert(u32 chunk_num, SharedBuffer<u8> &chunkdata);
+	SharedBuffer<u8> reassemble();
+
+private:
+	// Key is chunk number, value is data without headers
+	std::map<u16, SharedBuffer<u8>> chunks;
 };
 
 /*
@@ -240,7 +244,7 @@ public:
 
 	BufferedPacket popFirst();
 	BufferedPacket popSeqnum(u16 seqnum);
-	void insert(BufferedPacket &p,u16 next_expected);
+	void insert(BufferedPacket &p, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
 	std::list<BufferedPacket> getTimedOuts(float timeout,
@@ -248,16 +252,14 @@ public:
 
 	void print();
 	bool empty();
-	bool containsPacket(u16 seqnum);
 	RPBSearchResult notFound();
 	u32 size();
 
 
 private:
-	RPBSearchResult findPacket(u16 seqnum);
+	RPBSearchResult findPacket(u16 seqnum); // does not perform locking
 
 	std::list<BufferedPacket> m_list;
-	u32 m_list_size = 0;
 
 	u16 m_oldest_non_answered_ack;
 
@@ -769,6 +771,7 @@ public:
 	bool Connected();
 	void Disconnect();
 	void Receive(NetworkPacket* pkt);
+	bool TryReceive(NetworkPacket *pkt);
 	void Send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
 	session_t GetPeerID() const { return m_peer_id; }
 	Address GetPeerAddress(session_t peer_id);
@@ -800,6 +803,8 @@ protected:
 
 	UDPSocket m_udpSocket;
 	MutexedQueue<ConnectionCommand> m_command_queue;
+
+	bool Receive(NetworkPacket *pkt, u32 timeout);
 
 	void putEvent(ConnectionEvent &e);
 

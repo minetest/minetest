@@ -22,7 +22,18 @@ core.register_entity(":__builtin:falling_node", {
 
 	set_node = function(self, node, meta)
 		self.node = node
-		self.meta = meta or {}
+		meta = meta or {}
+		if type(meta.to_table) == "function" then
+			meta = meta:to_table()
+		end
+		for _, list in pairs(meta.inventory or {}) do
+			for i, stack in pairs(list) do
+				if type(stack) == "userdata" then
+					list[i] = stack:to_string()
+				end
+			end
+		end
+		self.meta = meta
 		self.object:set_properties({
 			is_visible = true,
 			textures = {node.name},

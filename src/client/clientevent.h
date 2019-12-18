@@ -131,6 +131,7 @@ struct ClientEvent
 			v2f *offset;
 			v3f *world_pos;
 			v2s32 *size;
+			s16 z_index;
 		} hudadd;
 		struct
 		{

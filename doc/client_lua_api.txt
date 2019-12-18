@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.1.0
+Minetest Lua Client Modding API Reference 5.2.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -30,17 +30,23 @@ Startup
 Mods are loaded during client startup from the mod load paths by running
 the `init.lua` scripts in a shared environment.
 
+In order to load client-side mods, the following conditions need to be satisfied:
+
+1) `$path_user/minetest.conf` contains the setting `enable_client_modding = true`
+
+2) The client-side mod located in `$path_user/clientmods/<modname>` is added to
+    `$path_user/clientmods/mods.conf` as `load_mod_<modname> = true`.
+
+Note: Depending on the remote server's settings, client-side mods might not
+be loaded or have limited functionality. See setting `csm_restriction_flags` for reference.
+
 Paths
 -----
 * `RUN_IN_PLACE=1` (Windows release, local build)
-    *  `$path_user`:
-        * Linux: `<build directory>`
-        * Windows: `<build directory>`
-    * `$path_share`
-        * Linux: `<build directory>`
-        * Windows:  `<build directory>`
+    * `$path_user`: `<build directory>`
+    * `$path_share`: `<build directory>`
 * `RUN_IN_PLACE=0`: (Linux release)
-    * `$path_share`
+    * `$path_share`:
         * Linux: `/usr/share/minetest`
         * Windows: `<install directory>/minetest-0.4.x`
     * `$path_user`:
@@ -65,7 +71,6 @@ On an installed version on Linux:
 
 Modpack support
 ----------------
-**NOTE: Not implemented yet.**
 
 Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
@@ -80,33 +85,36 @@ Mod directory structure
 
     clientmods
     ├── modname
-    |   ├── depends.txt
-    |   ├── init.lua
+    │   ├── mod.conf
+    │   ├── init.lua
     └── another
 
 ### modname
+
 The location of this directory.
 
-### depends.txt
-List of mods that have to be loaded before loading this mod.
+### mod.conf
 
-A single line contains a single modname.
+An (optional) settings file that provides meta information about the mod.
 
-Optional dependencies can be defined by appending a question mark
-to a single modname. Their meaning is that if the specified mod
-is missing, that does not prevent this mod from being loaded.
+* `name`: The mod name. Allows Minetest to determine the mod name even if the
+          folder is wrongly named.
+* `description`: Description of mod to be shown in the Mods tab of the main
+                 menu.
+* `depends`: A comma separated list of dependencies. These are mods that must be
+             loaded before this mod.
+* `optional_depends`: A comma separated list of optional dependencies.
+                      Like a dependency, but no error if the mod doesn't exist.
 
-### init.lua
+### `init.lua`
+
 The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
-`minetest.setting_get(name)` and `minetest.setting_getbool(name)` can be used
-to read custom or existing settings at load time, if necessary.
-
-### `sounds`
-Media files (sounds) that will be transferred to the
-client and will be available for use by the mod.
+**NOTE**: Client mods currently can't provide and textures, sounds or models by
+themselves. Any media referenced in function calls must already be loaded
+(provided by mods that exist on the server).
 
 Naming convention for registered textual names
 ----------------------------------------------
@@ -135,7 +143,7 @@ The `:` prefix can also be used for maintaining backwards compatibility.
 
 Sounds
 ------
-**NOTE: max_hear_distance and connecting to objects is not implemented.**
+**NOTE: Connecting sounds to objects is not implemented.**
 
 Only Ogg Vorbis files are supported.
 
@@ -175,13 +183,11 @@ Examples of sound parameter tables:
     {
         pos = {x = 1, y = 2, z = 3},
         gain = 1.0, -- default
-        max_hear_distance = 32, -- default, uses an euclidean metric
     }
     -- Play connected to an object, looped
     {
         object = <an ObjectRef>,
         gain = 1.0, -- default
-        max_hear_distance = 32, -- default, uses an euclidean metric
         loop = true,
     }
 
@@ -624,7 +630,13 @@ Minetest namespace reference
 ### Utilities
 
 * `minetest.get_current_modname()`: returns the currently loading mod's name, when we are loading a mod
-* `minetest.get_language()`: returns the currently set gettext language.
+* `minetest.get_modpath(modname)`: returns virtual path of given mod including
+   the trailing separator. This is useful to load additional Lua files
+   contained in your mod:
+   e.g. `dofile(minetest.get_modpath(minetest.get_current_modname()) .. "stuff.lua")`
+* `minetest.get_language()`: returns two strings
+   * the current gettext locale
+   * the current language code (the same as used for client-side translations)
 * `minetest.get_version()`: returns a table containing components of the
    engine version.  Components:
     * `project`: Name of the project, eg, "Minetest"
@@ -639,6 +651,11 @@ Minetest namespace reference
 * `minetest.sha1(data, [raw])`: returns the sha1 hash of data
     * `data`: string of data to hash
     * `raw`: return raw bytes instead of hex digits, default: false
+* `minetest.get_csm_restrictions()`: returns a table of `Flags` indicating the
+   restrictions applied to the current mod.
+   * If a flag in this table is set to true, the feature is RESTRICTED.
+   * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
+                   `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
 
 ### Logging
 * `minetest.debug(...)`
@@ -724,8 +741,6 @@ Call these functions only at load time!
     * Optional: Variable number of arguments that are passed to `func`
 * `minetest.get_us_time()`
     * Returns time with microsecond precision. May not return wall time.
-* `minetest.get_day_count()`
-    * Returns number days elapsed since world was created, accounting for time changes.
 * `minetest.get_timeofday()`
     * Returns the time of day: `0` for midnight, `0.5` for midday
 
@@ -734,11 +749,46 @@ Call these functions only at load time!
     * Returns the node at the given position as table in the format
       `{name="node_name", param1=0, param2=0}`, returns `nil`
       for unloaded areas or flavor limited areas.
+* `minetest.get_node_light(pos, timeofday)`
+    * Gets the light value at the given position. Note that the light value
+      "inside" the node at the given position is returned, so you usually want
+      to get the light value of a neighbor.
+    * `pos`: The position where to measure the light.
+    * `timeofday`: `nil` for current time, `0` for night, `0.5` for day
+    * Returns a number between `0` and `15` or `nil`
 * `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
     * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * `search_center` is an optional boolean (default: `false`)
       If true `pos` is also checked for the nodes
+* `minetest.find_nodes_in_area(pos1, pos2, nodenames)`: returns a list of
+  positions.
+    * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * First return value: Table with all node positions
+    * Second return value: Table with the count of each node with the node name
+      as index.
+    * Area volume is limited to 4,096,000 nodes
+* `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a
+  list of positions.
+    * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * Return value: Table with all node positions with a node air above
+    * Area volume is limited to 4,096,000 nodes
+* `minetest.line_of_sight(pos1, pos2)`: returns `boolean, pos`
+    * Checks if there is anything other than air between pos1 and pos2.
+    * Returns false if something is blocking the sight.
+    * Returns the position of the blocking node when `false`
+    * `pos1`: First position
+    * `pos2`: Second position
+* `minetest.raycast(pos1, pos2, objects, liquids)`: returns `Raycast`
+    * Creates a `Raycast` object.
+    * `pos1`: start of the ray
+    * `pos2`: end of the ray
+    * `objects`: if false, only nodes will be returned. Default is `true`.
+    * `liquids`: if false, liquid nodes won't be returned. Default is `false`.
+
+* `minetest.find_nodes_with_meta(pos1, pos2)`
+    * Get a table of positions of nodes that have metadata within a region
+      {pos1, pos2}.
 * `minetest.get_meta(pos)`
     * Get a `NodeMetaRef` at that position
 * `minetest.get_node_level(pos)`
@@ -1064,6 +1114,32 @@ Can be obtained via `minetest.get_meta(pos)`.
 * `to_table()`: returns `nil` or a table with keys:
     * `fields`: key-value storage
     * `inventory`: `{list1 = {}, ...}}`
+
+### `Raycast`
+
+A raycast on the map. It works with selection boxes.
+Can be used as an iterator in a for loop as:
+
+    local ray = Raycast(...)
+    for pointed_thing in ray do
+        ...
+    end
+
+The map is loaded as the ray advances. If the map is modified after the
+`Raycast` is created, the changes may or may not have an effect on the object.
+
+It can be created via `Raycast(pos1, pos2, objects, liquids)` or
+`minetest.raycast(pos1, pos2, objects, liquids)` where:
+
+* `pos1`: start of the ray
+* `pos2`: end of the ray
+* `objects`: if false, only nodes will be returned. Default is true.
+* `liquids`: if false, liquid nodes won't be returned. Default is false.
+
+#### Methods
+
+* `next()`: returns a `pointed_thing` with exact pointing location
+    * Returns the next thing pointed by the ray or nil.
 
 -----------------
 ### Definitions

@@ -18,6 +18,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "guiPasswordChange.h"
 #include "client/client.h"
+#include "guiButton.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
 #include <IGUIButton.h>
@@ -145,14 +146,14 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 		rect = rect + v2s32(size.X / 4 + 56 * s, ypos);
 		text = wgettext("Change");
-		Environment->addButton(rect, this, ID_change, text);
+		GUIButton::addButton(Environment, rect, this, ID_change, text);
 		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 		rect = rect + v2s32(size.X / 4 + 185 * s, ypos);
 		text = wgettext("Cancel");
-		Environment->addButton(rect, this, ID_cancel, text);
+		GUIButton::addButton(Environment, rect, this, ID_cancel, text);
 		delete[] text;
 	}
 

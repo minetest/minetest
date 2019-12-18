@@ -247,7 +247,7 @@ s32 GUIScrollBar::getPosFromMousePos(const core::position2di &pos) const
 		w = RelativeRect.getHeight() - border_size * 2 - thumb_size;
 		p = pos.Y - AbsoluteRect.UpperLeftCorner.Y - border_size - offset;
 	}
-	return core::isnotzero(range()) ? s32(f32(p) / f32(w) * range()) + min_pos : 0;
+	return core::isnotzero(range()) ? s32(f32(p) / f32(w) * range() + 0.5f) + min_pos : 0;
 }
 
 void GUIScrollBar::setPos(const s32 &pos)
@@ -272,7 +272,8 @@ void GUIScrollBar::setPos(const s32 &pos)
 
 	f32 f = core::isnotzero(range()) ? (f32(thumb_area) - f32(thumb_size)) / range()
 					 : 1.0f;
-	draw_center = s32((f32(scroll_pos) * f) + (f32(thumb_size) * 0.5f)) + border_size;
+	draw_center = s32((f32(scroll_pos - min_pos) * f) + (f32(thumb_size) * 0.5f)) +
+		border_size;
 }
 
 void GUIScrollBar::setSmallStep(const s32 &step)
@@ -313,6 +314,12 @@ void GUIScrollBar::setPageSize(const s32 &size)
 {
 	page_size = size;
 	setPos(scroll_pos);
+}
+
+void GUIScrollBar::setArrowsVisible(ArrowVisibility visible)
+{
+	arrow_visibility = visible;
+	refreshControls();
 }
 
 s32 GUIScrollBar::getPos() const
@@ -419,7 +426,21 @@ void GUIScrollBar::refreshControls()
 		down_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT,
 				EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 	}
-	bool visible = (border_size != 0);
+
+	bool visible;
+	if (arrow_visibility == DEFAULT)
+		visible = (border_size != 0);
+	else if (arrow_visibility == HIDE) {
+		visible = false;
+		border_size = 0;
+	} else {
+		visible = true;
+		if (is_horizontal)
+			border_size = RelativeRect.getHeight();
+		else
+			border_size = RelativeRect.getWidth();
+	}
+
 	up_button->setVisible(visible);
 	down_button->setVisible(visible);
 }

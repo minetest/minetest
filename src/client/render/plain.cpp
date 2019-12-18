@@ -35,7 +35,7 @@ RenderingCorePlain::RenderingCorePlain(
 
 void RenderingCorePlain::initTextures()
 {
-	if (!scale)
+	if (scale <= 1)
 		return;
 	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
 	lowres = driver->addRenderTargetTexture(
@@ -44,21 +44,21 @@ void RenderingCorePlain::initTextures()
 
 void RenderingCorePlain::clearTextures()
 {
-	if (!scale)
+	if (scale <= 1)
 		return;
 	driver->removeTexture(lowres);
 }
 
 void RenderingCorePlain::beforeDraw()
 {
-	if (!scale)
+	if (scale <= 1)
 		return;
 	driver->setRenderTarget(lowres, true, true, skycolor);
 }
 
 void RenderingCorePlain::upscale()
 {
-	if (!scale)
+	if (scale <= 1)
 		return;
 	driver->setRenderTarget(0, true, true);
 	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};

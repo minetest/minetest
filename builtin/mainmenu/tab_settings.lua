@@ -148,11 +148,9 @@ local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
 
 		core.create_world("singleplayerworld", 1)
 		worldlist = core.get_worlds()
-		found_singleplayerworld = false
 
 		for i = 1, #worldlist do
 			if worldlist[i].name == "singleplayerworld" then
-				found_singleplayerworld = true
 				gamedata.worldindex = i
 			end
 		end

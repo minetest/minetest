@@ -333,7 +333,7 @@ void Client::handleCommand_Inventory(NetworkPacket* pkt)
 
 	player->inventory.deSerialize(is);
 
-	m_inventory_updated = true;
+	m_update_wielded_item = true;
 
 	delete m_inventory_from_server;
 	m_inventory_from_server = new Inventory(player->inventory);
@@ -415,7 +415,7 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 	chatMessage->type = (ChatMessageType) message_type;
 
 	// @TODO send this to CSM using ChatMessage object
-	if (moddingEnabled() && m_script->on_receiving_message(
+	if (modsLoaded() && m_script->on_receiving_message(
 			wide_to_utf8(chatMessage->message))) {
 		// Message was consumed by CSM and should not be handled by client
 		delete chatMessage;
@@ -463,6 +463,10 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 		infostream << "handleCommand_ActiveObjectRemoveAdd: " << e.what()
 				<< ". The packet is unreliable, ignoring" << std::endl;
 	}
+
+	// m_activeobjects_received is false before the first
+	// TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD packet is received
+	m_activeobjects_received = true;
 }
 
 void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
@@ -519,22 +523,30 @@ void Client::handleCommand_Movement(NetworkPacket* pkt)
 	player->movement_gravity                = g * BS;
 }
 
-void Client::handleCommand_HP(NetworkPacket* pkt)
+void Client::handleCommand_Fov(NetworkPacket *pkt)
 {
+	f32 fov;
+	bool is_multiplier;
+	*pkt >> fov >> is_multiplier;
 
+	LocalPlayer *player = m_env.getLocalPlayer();
+	player->setFov({ fov, is_multiplier });
+}
+
+void Client::handleCommand_HP(NetworkPacket *pkt)
+{
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	u16 oldhp   = player->hp;
+	u16 oldhp = player->hp;
 
 	u16 hp;
 	*pkt >> hp;
 
 	player->hp = hp;
 
-	if (moddingEnabled()) {
+	if (modsLoaded())
 		m_script->on_hp_modification(hp);
-	}
 
 	if (hp < oldhp) {
 		// Add to ClientEvent queue
@@ -900,7 +912,7 @@ void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
 	u16 ignore;
 	*pkt >> ignore; // this used to be the length of the following string, ignore it
 
-	std::string contents = pkt->getRemainingString();
+	std::string contents(pkt->getRemainingString(), pkt->getRemainingBytes());
 	std::istringstream is(contents, std::ios::binary);
 	inv->deSerialize(is);
 }
@@ -1069,6 +1081,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	v2f offset;
 	v3f world_pos;
 	v2s32 size;
+	s16 z_index = 0;
 
 	*pkt >> server_id >> type >> pos >> name >> scale >> text >> number >> item
 		>> dir >> align >> offset;
@@ -1080,6 +1093,11 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	try {
 		*pkt >> size;
 	} catch(SerializationError &e) {};
+
+	try {
+		*pkt >> z_index;
+	}
+	catch(PacketError &e) {}
 
 	ClientEvent *event = new ClientEvent();
 	event->type             = CE_HUDADD;
@@ -1096,6 +1114,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	event->hudadd.offset    = new v2f(offset);
 	event->hudadd.world_pos = new v3f(world_pos);
 	event->hudadd.size      = new v2s32(size);
+	event->hudadd.z_index   = z_index;
 	m_client_event_queue.push(event);
 }
 
@@ -1381,6 +1400,17 @@ void Client::handleCommand_CSMRestrictionFlags(NetworkPacket *pkt)
 	// Restrictions were received -> load mods if it's enabled
 	// Note: this should be moved after mods receptions from server instead
 	loadMods();
+}
+
+void Client::handleCommand_PlayerSpeed(NetworkPacket *pkt)
+{
+	v3f added_vel;
+
+	*pkt >> added_vel;
+
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	player->addVelocity(added_vel);
 }
 
 /*

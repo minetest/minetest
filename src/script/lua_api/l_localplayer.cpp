@@ -30,20 +30,24 @@ LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m) : m_localplayer(m)
 
 void LuaLocalPlayer::create(lua_State *L, LocalPlayer *m)
 {
+	lua_getglobal(L, "core");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int objectstable = lua_gettop(L);
+	lua_getfield(L, -1, "localplayer");
+
+	// Duplication check
+	if (lua_type(L, -1) == LUA_TUSERDATA) {
+		lua_pop(L, 1);
+		return;
+	}
+
 	LuaLocalPlayer *o = new LuaLocalPlayer(m);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 
-	// Keep localplayer object stack id
-	int localplayer_object = lua_gettop(L);
-
-	lua_getglobal(L, "core");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int coretable = lua_gettop(L);
-
-	lua_pushvalue(L, localplayer_object);
-	lua_setfield(L, coretable, "localplayer");
+	lua_pushvalue(L, lua_gettop(L));
+	lua_setfield(L, objectstable, "localplayer");
 }
 
 int LuaLocalPlayer::l_get_velocity(lua_State *L)
@@ -74,7 +78,7 @@ int LuaLocalPlayer::l_is_attached(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
-	lua_pushboolean(L, player->isAttached);
+	lua_pushboolean(L, player->getParent() != nullptr);
 	return 1;
 }
 
@@ -153,7 +157,7 @@ int LuaLocalPlayer::l_get_override_pos(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
-	push_v3f(L, player->overridePosition);
+	push_v3f(L, player->getPosition());
 	return 1;
 }
 

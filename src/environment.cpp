@@ -159,7 +159,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			v3s16 np(x, y, z);
 			bool is_valid_position;
 
-			n = map.getNodeNoEx(np, &is_valid_position);
+			n = map.getNode(np, &is_valid_position);
 			if (!(is_valid_position && isPointableNode(n, nodedef,
 					state->m_liquids_pointable))) {
 				continue;

@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "util/serialize.h"
 #include "util/numeric.h"
+#include "util/directiontables.h"
 #include "filesys.h"
 #include "log.h"
 #include "mapgen_carpathian.h"
@@ -422,7 +423,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 
 void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
 {
-	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
+	ScopeProfiler sp(g_profiler, "EmergeThread: update lighting", SPT_AVG);
 	VoxelArea a(nmin, nmax);
 
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
@@ -435,7 +436,8 @@ void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
 }
 
 
-void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
+void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
+	const v3s16 &p, u8 light)
 {
 	if (light <= 1 || !a.contains(p))
 		return;
@@ -455,8 +457,8 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 	// Bail out only if we have no more light from either bank to propogate, or
 	// we hit a solid block that light cannot pass through.
 	if ((light_day  <= (n.param1 & 0x0F) &&
-		light_night <= (n.param1 & 0xF0)) ||
-		!ndef->get(n).light_propagates)
+			light_night <= (n.param1 & 0xF0)) ||
+			!ndef->get(n).light_propagates)
 		return;
 
 	// Since this recursive function only terminates when there is no light from
@@ -467,19 +469,15 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 
 	n.param1 = light;
 
-	lightSpread(a, p + v3s16(0, 0, 1), light);
-	lightSpread(a, p + v3s16(0, 1, 0), light);
-	lightSpread(a, p + v3s16(1, 0, 0), light);
-	lightSpread(a, p - v3s16(0, 0, 1), light);
-	lightSpread(a, p - v3s16(0, 1, 0), light);
-	lightSpread(a, p - v3s16(1, 0, 0), light);
+	// add to queue
+	queue.emplace(p, light);
 }
 
 
 void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nmax,
 	bool propagate_shadow)
 {
-	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
+	ScopeProfiler sp(g_profiler, "EmergeThread: update lighting", SPT_AVG);
 	//TimeTaker t("updateLighting");
 
 	propagateSunlight(nmin, nmax, propagate_shadow);
@@ -525,9 +523,10 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 }
 
 
-void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
+void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 {
 	//TimeTaker t("spreadLight");
+	std::queue<std::pair<v3s16, u8>> queue;
 	VoxelArea a(nmin, nmax);
 
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
@@ -551,18 +550,24 @@ void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 
 				u8 light = n.param1;
 				if (light) {
-					lightSpread(a, v3s16(x,     y,     z + 1), light);
-					lightSpread(a, v3s16(x,     y + 1, z    ), light);
-					lightSpread(a, v3s16(x + 1, y,     z    ), light);
-					lightSpread(a, v3s16(x,     y,     z - 1), light);
-					lightSpread(a, v3s16(x,     y - 1, z    ), light);
-					lightSpread(a, v3s16(x - 1, y,     z    ), light);
+					const v3s16 p(x, y, z);
+					// spread to all 6 neighbor nodes
+					for (const auto &dir : g_6dirs)
+						lightSpread(a, queue, p + dir, light);
 				}
 			}
 		}
 	}
 
-	//printf("spreadLight: %dms\n", t.stop());
+	while (!queue.empty()) {
+		const auto &i = queue.front();
+		// spread to all 6 neighbor nodes
+		for (const auto &dir : g_6dirs)
+			lightSpread(a, queue, i.first + dir, i.second);
+		queue.pop();
+	}
+
+	//printf("spreadLight: %lums\n", t.stop());
 }
 
 
@@ -826,7 +831,9 @@ void MapgenBasic::dustTopNodes()
 
 void MapgenBasic::generateCavesNoiseIntersection(s16 max_stone_y)
 {
-	if (node_min.Y > max_stone_y)
+	// cave_width >= 10 is used to disable generation and avoid the intensive
+	// 3D noise calculations. Tunnels already have zero width when cave_width > 1.
+	if (node_min.Y > max_stone_y || cave_width >= 10.0f)
 		return;
 
 	CavesNoiseIntersection caves_noise(ndef, m_bmgr, csize,
@@ -836,20 +843,33 @@ void MapgenBasic::generateCavesNoiseIntersection(s16 max_stone_y)
 }
 
 
-void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth)
+void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_ymax)
 {
-	if (node_min.Y > max_stone_y || node_max.Y > large_cave_depth)
+	if (node_min.Y > max_stone_y)
 		return;
 
 	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = ps.range(0, 2);
+	// Small randomwalk caves
+	u32 num_small_caves = ps.range(small_cave_num_min, small_cave_num_max);
 
-	for (u32 i = 0; i < bruises_count; i++) {
+	for (u32 i = 0; i < num_small_caves; i++) {
 		CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
-			c_water_source, c_lava_source, lava_depth, biomegen);
+			c_water_source, c_lava_source, large_cave_flooded, biomegen);
+		cave.makeCave(vm, node_min, node_max, &ps, false, max_stone_y, heightmap);
+	}
 
-		cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y,
-			heightmap);
+	if (node_max.Y > large_cave_ymax)
+		return;
+
+	// Large randomwalk caves below 'large_cave_ymax'.
+	// 'large_cave_ymax' can differ from the 'large_cave_depth' mapgen parameter,
+	// it is set to world base to disable large caves in or near caverns.
+	u32 num_large_caves = ps.range(large_cave_num_min, large_cave_num_max);
+
+	for (u32 i = 0; i < num_large_caves; i++) {
+		CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
+			c_water_source, c_lava_source, large_cave_flooded, biomegen);
+		cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y, heightmap);
 	}
 }
 
@@ -868,7 +888,8 @@ bool MapgenBasic::generateCavernsNoise(s16 max_stone_y)
 
 void MapgenBasic::generateDungeons(s16 max_stone_y)
 {
-	if (max_stone_y < node_min.Y)
+	if (node_min.Y > max_stone_y || node_min.Y > dungeon_ymax ||
+			node_max.Y < dungeon_ymin)
 		return;
 
 	u16 num_dungeons = std::fmax(std::floor(
@@ -877,26 +898,28 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 		return;
 
 	PseudoRandom ps(blockseed + 70033);
-	
+
 	DungeonParams dp;
 
 	dp.np_alt_wall =
 		NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
 
 	dp.seed                = seed;
-	dp.num_dungeons        = num_dungeons;
 	dp.only_in_ground      = true;
+	dp.num_dungeons        = num_dungeons;
+	dp.notifytype          = GENNOTIFY_DUNGEON;
 	dp.num_rooms           = ps.range(2, 16);
-	dp.room_size_min       = v3s16(6, 5, 6);
-	dp.room_size_max       = v3s16(10, 6, 10);
-	dp.room_size_large_min = v3s16(10, 8, 10);
-	dp.room_size_large_max = v3s16(18, 16, 18);
-	dp.large_room_chance   = (ps.range(1, 4) == 1) ? 1 : 0;
-	dp.holesize            = v3s16(2, 3, 2);
+	dp.room_size_min       = v3s16(5, 5, 5);
+	dp.room_size_max       = v3s16(12, 6, 12);
+	dp.room_size_large_min = v3s16(12, 6, 12);
+	dp.room_size_large_max = v3s16(16, 16, 16);
+	dp.large_room_chance   = (ps.range(1, 4) == 1) ? 8 : 0;
+	dp.diagonal_dirs       = ps.range(1, 8) == 1;
+	// Diagonal corridors must have 'hole' width >=2 to be passable
+	u8 holewidth           = (dp.diagonal_dirs) ? 2 : ps.range(1, 2);
+	dp.holesize            = v3s16(holewidth, 3, holewidth);
 	dp.corridor_len_min    = 1;
 	dp.corridor_len_max    = 13;
-	dp.diagonal_dirs       = ps.range(1, 12) == 1;
-	dp.notifytype          = GENNOTIFY_DUNGEON;
 
 	// Get biome at mapchunk midpoint
 	v3s16 chunk_mid = node_min + (node_max - node_min) / v3s16(2, 2, 2);

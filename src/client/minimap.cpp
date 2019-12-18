@@ -569,7 +569,7 @@ void Minimap::updateActiveMarkers()
 	m_active_markers.clear();
 
 	for (Nametag *nametag : nametags) {
-		v3s16 pos = floatToInt(nametag->parent_node->getPosition() +
+		v3s16 pos = floatToInt(nametag->parent_node->getAbsolutePosition() +
 			intToFloat(client->getCamera()->getOffset(), BS), BS);
 		pos -= data->pos - v3s16(data->map_size / 2,
 				data->scan_height / 2,

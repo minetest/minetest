@@ -83,7 +83,7 @@ void read_item_definition(lua_State* L, int index,
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
 
 	warn_if_field_exists(L, index, "tool_digging_properties",
-			"Deprecated; use tool_capabilities");
+			"Obsolete; use tool_capabilities");
 
 	lua_getfield(L, index, "tool_capabilities");
 	if(lua_istable(L, -1)){
@@ -164,11 +164,7 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_pushboolean(L, i.liquids_pointable);
 	lua_setfield(L, -2, "liquids_pointable");
 	if (i.type == ITEM_TOOL) {
-		push_tool_capabilities(L, ToolCapabilities(
-			i.tool_capabilities->full_punch_interval,
-			i.tool_capabilities->max_drop_level,
-			i.tool_capabilities->groupcaps,
-			i.tool_capabilities->damageGroups));
+		push_tool_capabilities(L, *i.tool_capabilities);
 		lua_setfield(L, -2, "tool_capabilities");
 	}
 	push_groups(L, i.groups);
@@ -647,19 +643,19 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		warningstream << "Node " << f.name.c_str()
 			<< " has a palette, but not a suitable paramtype2." << std::endl;
 
-	// Warn about some deprecated fields
+	// Warn about some obsolete fields
 	warn_if_field_exists(L, index, "wall_mounted",
-			"Deprecated; use paramtype2 = 'wallmounted'");
+			"Obsolete; use paramtype2 = 'wallmounted'");
 	warn_if_field_exists(L, index, "light_propagates",
-			"Deprecated; determined from paramtype");
+			"Obsolete; determined from paramtype");
 	warn_if_field_exists(L, index, "dug_item",
-			"Deprecated; use 'drop' field");
+			"Obsolete; use 'drop' field");
 	warn_if_field_exists(L, index, "extra_dug_item",
-			"Deprecated; use 'drop' field");
+			"Obsolete; use 'drop' field");
 	warn_if_field_exists(L, index, "extra_dug_item_rarity",
-			"Deprecated; use 'drop' field");
+			"Obsolete; use 'drop' field");
 	warn_if_field_exists(L, index, "metadata_name",
-			"Deprecated; use on_add and metadata callbacks");
+			"Obsolete; use on_add and metadata callbacks");
 
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, index, "is_ground_content", f.is_ground_content);
@@ -1253,7 +1249,8 @@ void push_tool_capabilities(lua_State *L,
 {
 	lua_newtable(L);
 	setfloatfield(L, -1, "full_punch_interval", toolcap.full_punch_interval);
-		setintfield(L, -1, "max_drop_level", toolcap.max_drop_level);
+	setintfield(L, -1, "max_drop_level", toolcap.max_drop_level);
+	setintfield(L, -1, "punch_attack_uses", toolcap.punch_attack_uses);
 		// Create groupcaps table
 		lua_newtable(L);
 		// For each groupcap
@@ -1375,6 +1372,7 @@ ToolCapabilities read_tool_capabilities(
 	ToolCapabilities toolcap;
 	getfloatfield(L, table, "full_punch_interval", toolcap.full_punch_interval);
 	getintfield(L, table, "max_drop_level", toolcap.max_drop_level);
+	getintfield(L, table, "punch_attack_uses", toolcap.punch_attack_uses);
 	lua_getfield(L, table, "groupcaps");
 	if(lua_istable(L, -1)){
 		int table_groupcaps = lua_gettop(L);
@@ -1529,13 +1527,15 @@ void read_groups(lua_State *L, int index, ItemGroupList &result)
 		return;
 	result.clear();
 	lua_pushnil(L);
-	if(index < 0)
+	if (index < 0)
 		index -= 1;
-	while(lua_next(L, index) != 0){
+	while (lua_next(L, index) != 0) {
 		// key at index -2 and value at index -1
 		std::string name = luaL_checkstring(L, -2);
 		int rating = luaL_checkinteger(L, -1);
-		result[name] = rating;
+		// zero rating indicates not in the group
+		if (rating != 0)
+			result[name] = rating;
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
 	}
@@ -1851,11 +1851,13 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->size = lua_istable(L, -1) ? read_v2s32(L, -1) : v2s32();
 	lua_pop(L, 1);
 
-	elem->name   = getstringfield_default(L, 2, "name", "");
-	elem->text   = getstringfield_default(L, 2, "text", "");
-	elem->number = getintfield_default(L, 2, "number", 0);
-	elem->item   = getintfield_default(L, 2, "item", 0);
-	elem->dir    = getintfield_default(L, 2, "direction", 0);
+	elem->name    = getstringfield_default(L, 2, "name", "");
+	elem->text    = getstringfield_default(L, 2, "text", "");
+	elem->number  = getintfield_default(L, 2, "number", 0);
+	elem->item    = getintfield_default(L, 2, "item", 0);
+	elem->dir     = getintfield_default(L, 2, "direction", 0);
+	elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX,
+			getintfield_default(L, 2, "z_index", 0)));
 
 	// Deprecated, only for compatibility's sake
 	if (elem->dir == 0)
@@ -1921,6 +1923,9 @@ void push_hud_element(lua_State *L, HudElement *elem)
 
 	push_v3f(L, elem->world_pos);
 	lua_setfield(L, -2, "world_pos");
+
+	lua_pushnumber(L, elem->z_index);
+	lua_setfield(L, -2, "z_index");
 }
 
 HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
@@ -1977,6 +1982,10 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 		case HUD_STAT_SIZE:
 			elem->size = read_v2s32(L, 4);
 			*value = &elem->size;
+			break;
+		case HUD_STAT_Z_INDEX:
+			elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX, luaL_checknumber(L, 4)));
+			*value = &elem->z_index;
 			break;
 	}
 	return stat;
