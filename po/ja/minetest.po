@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-08 09:20+0200\n"
-"PO-Revision-Date: 2019-03-12 01:04+0000\n"
-"Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
+"POT-Creation-Date: 2019-10-09 22:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
 "Language: ja\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.5.1\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -5399,10 +5399,6 @@ msgid "Profiling"
 msgstr "プロファイリング"
 
 #: src/settings_translation_file.cpp
-msgid "Projecting dungeons"
-msgstr "突出するダンジョン"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -6225,11 +6221,13 @@ msgid "Undersampling"
 msgstr "アンダーサンプリング"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Undersampling is similar to using lower screen resolution, but it applies\n"
+"Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
-"It should give significant performance boost at the cost of less detailed "
-"image."
+"It should give a significant performance boost at the cost of less detailed "
+"image.\n"
+"Higher values result in a less detailed image."
 msgstr ""
 "アンダーサンプリングは低い画面解像度を使用するのと似ていますが、\n"
 "GUIをそのままにしてゲームの世界にのみ適用されます。\n"
@@ -6506,10 +6504,6 @@ msgstr ""
 "コンパイルされている必要があります。"
 
 #: src/settings_translation_file.cpp
-msgid "Whether dungeons occasionally project from the terrain."
-msgstr "ダンジョンが時折地形から突出するかどうか。"
-
-#: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr ""
 "ノードのテクスチャのアニメーションをマップブロックごとに非同期に\n"
@@ -6659,412 +6653,20 @@ msgstr "cURL並行処理制限"
 msgid "cURL timeout"
 msgstr "cURLタイムアウト"
 
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen Carpathian.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "マップジェネレータ Carpathian に固有のマップ生成属性。\n"
-#~ "有効にされていないフラグはデフォルトから変更されません。\n"
-#~ "'no'で始まるフラグは明示的に無効にするために使用されます。"
-
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen v5.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "マップジェネレータ v5 に固有のマップ生成属性。\n"
-#~ "有効にされていないフラグはデフォルトから変更されません。\n"
-#~ "'no'で始まるフラグは明示的に無効にするために使用されます。"
-
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "'ridges' enables the rivers.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "マップジェネレータ v7 に固有のマップ生成属性。\n"
-#~ "'ridges' は川ができるようにします。\n"
-#~ "有効にされていないフラグはデフォルトから変更されません。\n"
-#~ "'no'で始まるフラグは明示的に無効にするために使用されます。"
-
-#~ msgid "View"
-#~ msgstr "見る"
-
-#~ msgid "Advanced Settings"
-#~ msgstr "詳細設定"
-
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "テクスチャ読み込み中..."
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "メニューの大きさとして設定されている数値: "
-
-#~ msgid "Touch free target"
-#~ msgstr "タッチ位置を自由にする"
-
-#~ msgid " KB/s"
-#~ msgstr " KB/秒"
-
-#~ msgid " MB/s"
-#~ msgstr " MB/秒"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "ドライバーを変更するためMinetestを再起動します"
-
-#~ msgid "If enabled, "
-#~ msgstr "有効化の場合 "
-
-#~ msgid "No!!!"
-#~ msgstr "いいえ！！！"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "公開サーバ一覧"
-
-#~ msgid "No of course not!"
-#~ msgstr "いいえ！"
-
-#~ msgid "Useful for mod developers."
-#~ msgstr "Mod開発に便利。"
-
-#, fuzzy
-#~ msgid "Detailed mod profiling"
-#~ msgstr "詳細なModのプロファイル化"
-
-#, fuzzy
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr "詳細なModのプロファイルデータです。Mod開発者に便利です。"
-
-#~ msgid ""
-#~ "Where the map generator stops.\n"
-#~ "Please note:\n"
-#~ "-    Limited to 31000 (setting above has no effect)\n"
-#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
-#~ "MapBlocks).\n"
-#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
-#~ "-    Only groups which are within the map_generation_limit are generated"
-#~ msgstr ""
-#~ "どこでマップ生成を停止するかの設定です。\n"
-#~ "注意:\n"
-#~ "-    最大で31000です(これ以上に設定しても効果はありません)。\n"
-#~ "-    マップ生成は80x80x80ノードのグループで動作します (5x5x5マップブロッ"
-#~ "ク)。\n"
-#~ "-    このグループは原点から-32、-32ノードのオフセットがあります。\n"
-#~ "-    グループはmap_generation_limit内で生成されたものに限ります。"
-
-#, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "ワールドタイプ"
-
-#, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "ワールドタイプ"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "マップ生成フラグ"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "マップ生成フラグ"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "マップ生成フラグ"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "視差遮蔽マッピング"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "マップ生成フラグ"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "マップ生成フラグ"
-
-#, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "マップ生成フラグ"
-
-#, fuzzy
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "地形形を決定します。\n"
-#~ "ブラケットの3番号は地形の目盛りを制御します、\n"
-#~ "3番号は同一でなければなりません。"
-
-#, fuzzy
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "砂漠の規制サイズとMapgen v6のビーチ。\n"
-#~ "snowbiomesが許可されるとき、『mgv6_freq_desert』は無視されます。"
-
-#~ msgid "Plus"
-#~ msgstr "プラス"
-
-#~ msgid "Period"
-#~ msgstr "ピリオド"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "マイナス"
-
-#~ msgid "Kanji"
-#~ msgstr "漢字"
-
-#~ msgid "Kana"
-#~ msgstr "かな"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Final"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "カンマ"
-
-#~ msgid "Capital"
-#~ msgstr "Capital"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Modパックの内容を非表示"
-
-#~ msgid "Water Features"
-#~ msgstr "テクスチャを設定中"
-
-#~ msgid "Use key"
-#~ msgstr "使用キー"
-
-#~ msgid "Main menu mod manager"
-#~ msgstr "メインメニューMod管理"
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "インベントリキー"
-
-#~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
-#~ msgstr ""
-#~ "Mapblock (16ノード) 数でオブジェクトのロードやABMの実効等の有効エリアを指"
-#~ "定。"
-
-#, fuzzy
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "高速移動 (使用キー)。\n"
-#~ "サーバによる「fast」権限が必要です。"
-
-#, fuzzy
-#~ msgid "Field of view for zoom"
-#~ msgstr "視野"
-
-#, fuzzy
-#~ msgid "Enable view bobbing"
-#~ msgstr "落下による上下の揺れ"
-
-#, fuzzy
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "あなたが大きい洞穴を見つける深さ。"
-
-#, fuzzy
-#~ msgid "Crouch speed"
-#~ msgstr "しゃがみ状態の速度"
-
-#, fuzzy
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "洞窟に予測不可能な水を生成します。\n"
-#~ "これによって採掘を難しくできます。ゼロを指定すると無効になります。(0-10)"
-
-#, fuzzy
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "洞窟に予測不可能な溶岩を生成します。\n"
-#~ "これによって採掘を難しくできます。ゼロを指定すると無効になります。(0-10)"
-
-#, fuzzy
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "オートラン (テスト用)。"
-
-#~ msgid "Console key"
-#~ msgstr "コンソールキー"
-
-#~ msgid "Cloud height"
-#~ msgstr "雲の高さ"
-
-#, fuzzy
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "洞窟やトンネルは2つのノイズの交差部分に形成されます"
-
-#~ msgid "Autorun key"
-#~ msgstr "オートランキー"
-
-#, fuzzy
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "ノードにおけるフラクタルのおおよその(X,Y,Z)の大きさ。"
-
-#, fuzzy
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "公開サーバの通知先のサーバ一覧です。\n"
-#~ "IPv6アドレスを通知したい場合は、serverlist_url = v6.servers.minetest.netを"
-#~ "使用してください。"
-
-#~ msgid "Prior"
-#~ msgstr "Page Up"
-
-#~ msgid "Next"
-#~ msgstr "PageDown"
-
-#~ msgid "Use"
-#~ msgstr "使用"
-
-#~ msgid "Print stacks"
-#~ msgstr "スタックの出力"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "音量を 100% に変更"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "音量を 0% に変更"
-
-#~ msgid "No information available"
-#~ msgstr "情報がありません"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "法線マッピング"
-
-#~ msgid "Play Online"
-#~ msgstr "オンラインプレイ"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "選択したModパックを削除"
-
-#~ msgid "Local Game"
-#~ msgstr "ローカルゲーム"
-
-#~ msgid "re-Install"
-#~ msgstr "再インストール"
-
-#~ msgid "Unsorted"
-#~ msgstr "未分類"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "インストールが完了しました:"
-
-#~ msgid "Shortname:"
-#~ msgstr "省略名:"
-
-#~ msgid "Rating"
-#~ msgstr "評価"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "ページ $1 / $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "サブゲームのMod"
-
-#~ msgid "Select path"
-#~ msgstr "場所を選択"
-
-#~ msgid "Possible values are: "
-#~ msgstr "可能な値: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "フラグはカンマ区切りのリスト形式で入力してください。"
-
-#, fuzzy
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "空隙性の値は、必要に応じ読みやすくカンマを付けることができます。"
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "書式: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "括弧内に3つの数字をカンマで区切って入力してください。"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "「$1」は有効なフラグではありません。"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "ワールド名が入力されていないか、ゲームが選択されていません"
-
-#~ msgid "Enable MP"
-#~ msgstr "Modパックを有効化"
-
-#~ msgid "Disable MP"
-#~ msgstr "Modパック無効化"
-
-#~ msgid ""
-#~ "Show packages in the content store that do not qualify as 'free "
-#~ "software'\n"
-#~ "as defined by the Free Software Foundation."
-#~ msgstr ""
-#~ "フリーソフトウェア財団によって定義されている ’フリーソフトウェア' として\n"
-#~ "認定されていないコンテンツストア内のパッケージを表示します。"
-
-#~ msgid "Show non-free packages"
-#~ msgstr "非フリーパッケージを表示"
-
-#~ msgid "Pitch fly mode"
-#~ msgstr "ピッチ飛行モード"
-
-#~ msgid ""
-#~ "Number of emerge threads to use.\n"
-#~ "Make this field blank or 0, or increase this number to use multiple "
-#~ "threads.\n"
-#~ "On multiprocessor systems, this will improve mapgen speed greatly at the "
-#~ "cost\n"
-#~ "of slightly buggy caves."
-#~ msgstr ""
-#~ "使用する出現するスレッドの数。\n"
-#~ "このフィールドを空白または0にするか、この数を増やしてマルチスレッドを使用"
-#~ "します。\n"
-#~ "マルチプロセッサシステムでは、少しバグの多い洞窟を犠牲にしてマップジェネ"
-#~ "レータの\n"
-#~ "速度を大幅に改善します。"
-
-#~ msgid "Content Store"
-#~ msgstr "コンテンツストア"
-
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "大きな洞窟内の溶岩のY高さ上限。"
-
-#~ msgid "Toggle Cinematic"
-#~ msgstr "映画風モード切替"
+#~ msgid "Projecting dungeons"
+#~ msgstr "突出するダンジョン"
+
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "ダンジョンが時折地形から突出するかどうか。"
 
 #~ msgid "Waving Water"
 #~ msgstr "揺れる水"
 
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "大きな洞窟内の溶岩のY高さ上限。"
+
 #~ msgid "Select Package File:"
 #~ msgstr "パッケージファイルを選択:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "映画風モード切替"

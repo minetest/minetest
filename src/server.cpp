@@ -93,6 +93,15 @@ void *ServerThread::run()
 {
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
+	/*
+	 * The real business of the server happens on the ServerThread.
+	 * How this works:
+	 * AsyncRunStep() runs an actual server step as soon as enough time has
+	 * passed (dedicated_server_loop keeps track of that).
+	 * Receive() blocks at least(!) 30ms waiting for a packet (so this loop
+	 * doesn't busy wait) and will process any remaining packets.
+	 */
+
 	m_server->AsyncRunStep(true);
 
 	while (!stopRequested()) {
@@ -101,7 +110,6 @@ void *ServerThread::run()
 
 			m_server->Receive();
 
-		} catch (con::NoIncomingDataException &e) {
 		} catch (con::PeerNotFoundException &e) {
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
 		} catch (ClientNotFoundException &e) {
@@ -305,6 +313,11 @@ Server::~Server()
 	// Delete detached inventories
 	for (auto &detached_inventory : m_detached_inventories) {
 		delete detached_inventory.second;
+	}
+
+	while (!m_unsent_map_edit_queue.empty()) {
+		delete m_unsent_map_edit_queue.front();
+		m_unsent_map_edit_queue.pop();
 	}
 }
 
@@ -689,19 +702,33 @@ void Server::AsyncRunStep(bool initial_step)
 		// Route data to every client
 		for (const auto &client_it : clients) {
 			RemoteClient *client = client_it.second;
+			PlayerSAO *player = getPlayerSAO(client->peer_id);
 			std::string reliable_data;
 			std::string unreliable_data;
 			// Go through all objects in message buffer
 			for (const auto &buffered_message : buffered_messages) {
-				// If object is not known by client, skip it
+				// If object does not exist or is not known by client, skip it
 				u16 id = buffered_message.first;
-				if (client->m_known_objects.find(id) == client->m_known_objects.end())
+				ServerActiveObject *sao = m_env->getActiveObject(id);
+				if (!sao || client->m_known_objects.find(id) == client->m_known_objects.end())
 					continue;
 
 				// Get message list of object
 				std::vector<ActiveObjectMessage>* list = buffered_message.second;
 				// Go through every message
 				for (const ActiveObjectMessage &aom : *list) {
+					// Send position updates to players who do not see the attachment
+					if (aom.datastring[0] == GENERIC_CMD_UPDATE_POSITION) {
+						if (sao->getId() == player->getId())
+							continue;
+
+						// Do not send position updates for attached players
+						// as long the parent is known to the client
+						ServerActiveObject *parent = sao->getParent();
+						if (parent && client->m_known_objects.find(parent->getId()) !=
+								client->m_known_objects.end())
+							continue;
+					}
 					// Compose the full new data with header
 					std::string new_data;
 					// Add object id
@@ -892,24 +919,43 @@ void Server::AsyncRunStep(bool initial_step)
 
 void Server::Receive()
 {
-	session_t peer_id = 0;
-	try {
-		NetworkPacket pkt;
-		m_con->Receive(&pkt);
-		peer_id = pkt.getPeerId();
-		ProcessData(&pkt);
-	} catch (const con::InvalidIncomingDataException &e) {
-		infostream << "Server::Receive(): InvalidIncomingDataException: what()="
-				<< e.what() << std::endl;
-	} catch (const SerializationError &e) {
-		infostream << "Server::Receive(): SerializationError: what()="
-				<< e.what() << std::endl;
-	} catch (const ClientStateError &e) {
-		errorstream << "ProcessData: peer=" << peer_id << e.what() << std::endl;
-		DenyAccess_Legacy(peer_id, L"Your client sent something server didn't expect."
-				L"Try reconnecting or updating your client");
-	} catch (const con::PeerNotFoundException &e) {
-		// Do nothing
+	NetworkPacket pkt;
+	session_t peer_id;
+	bool first = true;
+	for (;;) {
+		pkt.clear();
+		peer_id = 0;
+		try {
+			/*
+				In the first iteration *wait* for a packet, afterwards process
+				all packets that are immediately available (no waiting).
+			*/
+			if (first) {
+				m_con->Receive(&pkt);
+				first = false;
+			} else {
+				if (!m_con->TryReceive(&pkt))
+					return;
+			}
+
+			peer_id = pkt.getPeerId();
+			ProcessData(&pkt);
+		} catch (const con::InvalidIncomingDataException &e) {
+			infostream << "Server::Receive(): InvalidIncomingDataException: what()="
+					<< e.what() << std::endl;
+		} catch (const SerializationError &e) {
+			infostream << "Server::Receive(): SerializationError: what()="
+					<< e.what() << std::endl;
+		} catch (const ClientStateError &e) {
+			errorstream << "ProcessData: peer=" << peer_id << " what()="
+					 << e.what() << std::endl;
+			DenyAccess_Legacy(peer_id, L"Your client sent something server didn't expect."
+					L"Try reconnecting or updating your client");
+		} catch (const con::PeerNotFoundException &e) {
+			// Do nothing
+		} catch (const con::NoIncomingDataException &e) {
+			return;
+		}
 	}
 }
 
@@ -1090,12 +1136,12 @@ void Server::setTimeOfDay(u32 time)
 	m_time_of_day_send_timer = 0;
 }
 
-void Server::onMapEditEvent(MapEditEvent *event)
+void Server::onMapEditEvent(const MapEditEvent &event)
 {
-	if (m_ignore_map_edit_events_area.contains(event->getArea()))
+	if (m_ignore_map_edit_events_area.contains(event.getArea()))
 		return;
-	MapEditEvent *e = event->clone();
-	m_unsent_map_edit_queue.push(e);
+
+	m_unsent_map_edit_queue.push(new MapEditEvent(event));
 }
 
 Inventory* Server::getInventory(const InventoryLocation &loc)
@@ -1160,7 +1206,7 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 		MapEditEvent event;
 		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
 		event.p = loc.p;
-		m_env->getMap().dispatchEvent(&event);
+		m_env->getMap().dispatchEvent(event);
 	}
 		break;
 	case InventoryLocation::DETACHED:
@@ -1608,7 +1654,8 @@ void Server::SendHUDAdd(session_t peer_id, u32 id, HudElement *form)
 
 	pkt << id << (u8) form->type << form->pos << form->name << form->scale
 			<< form->text << form->number << form->item << form->dir
-			<< form->align << form->offset << form->world_pos << form->size;
+			<< form->align << form->offset << form->world_pos << form->size
+			<< form->z_index;
 
 	Send(&pkt);
 }
@@ -1953,14 +2000,17 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 	while (!added_objects.empty()) {
 		// Get object
 		u16 id = added_objects.front();
-		ServerActiveObject* obj = m_env->getActiveObject(id);
+		ServerActiveObject *obj = m_env->getActiveObject(id);
+		added_objects.pop();
+
+		if (!obj) {
+			warningstream << FUNCTION_NAME << ": NULL object id="
+				<< (int)id << std::endl;
+			continue;
+		}
 
 		// Get object type
-		u8 type = ACTIVEOBJECT_TYPE_INVALID;
-		if (!obj)
-			warningstream << FUNCTION_NAME << ": NULL object" << std::endl;
-		else
-			type = obj->getSendType();
+		u8 type = obj->getSendType();
 
 		// Add to data buffer for sending
 		writeU16((u8*)buf, id);
@@ -1968,19 +2018,13 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 		writeU8((u8*)buf, type);
 		data.append(buf, 1);
 
-		if (obj)
-			data.append(serializeLongString(
-				obj->getClientInitializationData(client->net_proto_version)));
-		else
-			data.append(serializeLongString(""));
+		data.append(serializeLongString(
+			obj->getClientInitializationData(client->net_proto_version)));
 
 		// Add to known objects
 		client->m_known_objects.insert(id);
 
-		if (obj)
-			obj->m_known_by_count++;
-
-		added_objects.pop();
+		obj->m_known_by_count++;
 	}
 
 	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD, data.size(), client->peer_id);
@@ -3781,6 +3825,11 @@ void dedicated_server_loop(Server &server, bool &kill)
 			g_settings->getFloat("dedicated_server_step");
 	static thread_local const float profiler_print_interval =
 			g_settings->getFloat("profiler_print_interval");
+
+	/*
+	 * The dedicated server loop only does time-keeping (in Server::step) and
+	 * provides a way to main.cpp to kill the server externally (bool &kill).
+	 */
 
 	for(;;) {
 		// This is kind of a hack but can be done like this

@@ -30,10 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGEN_DEFAULT_NAME "v7"
 
 /////////////////// Mapgen flags
-#define MG_TREES       0x01  // Deprecated. Moved into mgv6 flags
+#define MG_TREES       0x01  // Obsolete. Moved into mgv6 flags
 #define MG_CAVES       0x02
 #define MG_DUNGEONS    0x04
-#define MG_FLAT        0x08  // Deprecated. Moved into mgv6 flags
+#define MG_FLAT        0x08  // Obsolete. Moved into mgv6 flags
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
 #define MG_BIOMES      0x40
@@ -244,7 +244,7 @@ public:
 	virtual void generateBiomes();
 	virtual void dustTopNodes();
 	virtual void generateCavesNoiseIntersection(s16 max_stone_y);
-	virtual void generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth);
+	virtual void generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_ymax);
 	virtual bool generateCavernsNoise(s16 max_stone_y);
 	virtual void generateDungeons(s16 max_stone_y);
 
@@ -280,7 +280,12 @@ protected:
 	float cavern_limit;
 	float cavern_taper;
 	float cavern_threshold;
-	// TODO 'lava_depth' is deprecated and should be removed. Cave liquids are
-	// now defined and located using biome definitions.
-	int lava_depth;
+	int small_cave_num_min;
+	int small_cave_num_max;
+	int large_cave_num_min;
+	int large_cave_num_max;
+	float large_cave_flooded;
+	s16 large_cave_depth;
+	s16 dungeon_ymin;
+	s16 dungeon_ymax;
 };

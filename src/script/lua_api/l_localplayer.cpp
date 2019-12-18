@@ -78,7 +78,7 @@ int LuaLocalPlayer::l_is_attached(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
-	lua_pushboolean(L, player->isAttached);
+	lua_pushboolean(L, player->getParent() != nullptr);
 	return 1;
 }
 
@@ -157,7 +157,7 @@ int LuaLocalPlayer::l_get_override_pos(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
-	push_v3f(L, player->overridePosition);
+	push_v3f(L, player->getPosition());
 	return 1;
 }
 

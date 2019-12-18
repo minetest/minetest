@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-08 09:20+0200\n"
-"PO-Revision-Date: 2019-08-17 09:22+0000\n"
-"Last-Translator: tuxayo/Victor Grousset <victor@tuxayo.net>\n"
+"POT-Creation-Date: 2019-10-09 22:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -5060,8 +5060,12 @@ msgid ""
 "Current mapgens in a highly unstable state:\n"
 "-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
-"Nomo de map-estigilo uzota kreante novan mondon.\n"
-"Kreante mondon de ĉefmenuo oni transpasos ĉi tion."
+"Nomo de mapestigilo uzota por krei novan mondon.\n"
+"Kreo de nova mondo en la ĉefmenuo transpasos ĉi tiun agordon.\n"
+"Nunaj stabilaj mapestigiloj estas:\n"
+"v5, v6, v7 (krom « floatlands »), singlenode.\n"
+"« Stabilaj » signifas, ke formo de tereno en jamaj mondoj ne ŝanĝiĝos\n"
+"ose. Klimatoj tamen povus ŝanĝiĝi, ĉar ilin difinas ludoj."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5304,10 +5308,6 @@ msgstr "Profilila baskula klavo"
 #: src/settings_translation_file.cpp
 msgid "Profiling"
 msgstr "Profilado"
-
-#: src/settings_translation_file.cpp
-msgid "Projecting dungeons"
-msgstr "Planante forgeskelojn"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6063,11 +6063,13 @@ msgid "Undersampling"
 msgstr "Subspecimenado"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Undersampling is similar to using lower screen resolution, but it applies\n"
+"Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
-"It should give significant performance boost at the cost of less detailed "
-"image."
+"It should give a significant performance boost at the cost of less detailed "
+"image.\n"
+"Higher values result in a less detailed image."
 msgstr ""
 "Subspecimenado similas uzon de malgranda ekrandistingivo, sed ĝi nur\n"
 "efektivas en la ludo, lasante la fasadon senŝanĝa.\n"
@@ -6313,10 +6315,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Whether dungeons occasionally project from the terrain."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr ""
 
@@ -6443,371 +6441,18 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "cURL tempolimo"
 
-#~ msgid "Advanced Settings"
-#~ msgstr "Pliaj Agordoj"
-
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Ŝargi teksturojn…"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Skala faktoro por menuoj "
-
-#~ msgid "Touch free target"
-#~ msgstr "Sentuŝa celo"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "ŝaltita"
-
-#~ msgid "No!!!"
-#~ msgstr "Ne!!!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Publika servilolisto"
-
-#~ msgid "No of course not!"
-#~ msgstr "Ne, memkompreneble!"
-
-#, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Eksaj kernprogramistoj"
-
-#, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Paralaksa Okludo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mondogenerilo"
-
-#~ msgid "Plus"
-#~ msgstr "Pluso"
-
-#~ msgid "Period"
-#~ msgstr "Punkto"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "Minuso"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Finalo"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "Komo"
-
-#~ msgid "Capital"
-#~ msgstr "Fiksiĝema klavo"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Kaŝu modifarojn"
-
-#, fuzzy
-#~ msgid "Water Features"
-#~ msgstr "Aĵaj teksturoj…"
-
-#, fuzzy
-#~ msgid "Use key"
-#~ msgstr "premi klavon"
-
-#~ msgid "Support older servers"
-#~ msgstr "Subteno por malnovaj serviloj"
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Rivera bruo -- riveroj okazas preskaŭ neniam"
-
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "Maksimumaj samtempaj sendoj de mondopecoj entute"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr "Maksimuma nombro da mondopecoj sendataj po unu kliento."
-
-#, fuzzy
-#~ msgid "Main menu mod manager"
-#~ msgstr "Ĉefmenuo"
-
-#~ msgid "Lava Features"
-#~ msgstr "Atributoj de lafo"
-
-#~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Klavo por malfermi la babilan konzolon.\n"
-#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
-#~ msgstr ""
-#~ "Ripetoj de la rikura funkcio.\n"
-#~ "Regas la kvanton da detaletoj."
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Inventaro"
-
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr "Montras al ludantoj konektitaj mesaĝon pri stato de la servilo."
-
-#~ msgid "General"
-#~ msgstr "Ĝenerala"
-
-#~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
-#~ msgstr ""
-#~ "De kiu distanco klientoj scias pri objektoj, mapbloke (po 16 monderoj)."
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Vidokampo zomante en gradoj.\n"
-#~ "Ĉi tio postulas la rajton «zomi» en la servilo."
-
-#~ msgid "Field of view for zoom"
-#~ msgstr "Vidokampo zome"
-
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "Ŝaltas balanciĝon dum irado."
-
-#~ msgid "Enable view bobbing"
-#~ msgstr "Ŝalti vidan balancadon"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Profundo sub kiu troveblos grandegaj kavernoj."
-
-#~ msgid "Crouch speed"
-#~ msgstr "Singardira rapido"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Kreas neantaŭvideblaj akvejoj en kavernoj.\n"
-#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Kreas neantaŭvideblaj lafejoj en kavernoj.\n"
-#~ "Tiuj povas malfaciligi fosadon. Nulo ilin malpermesas. (0-10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Senĉesa moviĝo antaŭen (nur por testado)."
-
-#~ msgid "Console key"
-#~ msgstr "Konzola klavo"
-
-#~ msgid "Cloud height"
-#~ msgstr "Alteco de nuboj"
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Enlistigi en ĉi tiun liston de serviloj.\n"
-#~ "Se vi volas enlistigi vian IPv6 adreson, uzu  serverlist_url = v6.servers."
-#~ "minetest.net."
-
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Nur por Android: Provos krei objektujajn teksturojn de maŝaro,\n"
-#~ "ne trovinte alian kongruan bildon."
-
-#, fuzzy
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Aktivblokmodifila Intervalo"
-
-#~ msgid "Prior"
-#~ msgstr "Antaŭe"
-
-#~ msgid "Next"
-#~ msgstr "Sekvanto"
-
-#~ msgid "Use"
-#~ msgstr "Uzi"
-
-#~ msgid "Print stacks"
-#~ msgstr "Presi stakojn"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Laŭteco agorditas al 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Laŭteco agorditas al 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Neniu informoj disponeblas"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normalmapado"
-
-#~ msgid "Play Online"
-#~ msgstr "Ludi enrete"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Malinstali selektan modifaron"
-
-#~ msgid "Local Game"
-#~ msgstr "Loka ludo"
-
-#~ msgid "re-Install"
-#~ msgstr "Instali denove"
-
-#~ msgid "Unsorted"
-#~ msgstr "Neordigita"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Instalis sukcese:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Konciza nomo:"
-
-#~ msgid "Rating"
-#~ msgstr "Takso"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Paĝo $1 de $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Subludaj modifoj"
-
-#~ msgid "Select path"
-#~ msgstr "Elektu indikon"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Eblaj valoroj estas: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Bonvolu enigi diskoman liston de parametroj."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Mankopleneco aldoneblas kun antaŭa komo."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Formato: <deŝovo>, <skalo>, (<sternoX>, <sternoY>, <sternoZ>), "
-#~ "<mondfonto>, <oktavoj>, <daŭreco>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formato estas 3 diskomaj nombroj inter krampoj."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" ne estas valida parametro."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Neniu mondnomo donitis aŭ neniu ludon elektitis"
-
-#~ msgid "Enable MP"
-#~ msgstr "Ŝaltu modifaron"
-
-#~ msgid "Disable MP"
-#~ msgstr "Malŝaltu modifaron"
-
-#, fuzzy
-#~ msgid ""
-#~ "Number of emerge threads to use.\n"
-#~ "Make this field blank or 0, or increase this number to use multiple "
-#~ "threads.\n"
-#~ "On multiprocessor systems, this will improve mapgen speed greatly at the "
-#~ "cost\n"
-#~ "of slightly buggy caves."
-#~ msgstr ""
-#~ "Kiom da mondo-estigaj fadenoj uzi. Vakigu aŭ kreskigu la nombrod por uzi\n"
-#~ "plurajn fadenojn. Je plur-procesoraj sistemoj, tio rapidigos estigon de "
-#~ "la mapo,\n"
-#~ "kontraŭ iom cimaj kavernoj."
-
-#, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Fermi"
+#~ msgid "Projecting dungeons"
+#~ msgstr "Planante forgeskelojn"
+
+#~ msgid "Waving Water"
+#~ msgstr "Ondanta akvo"
 
 #, fuzzy
 #~ msgid "Y of upper limit of lava in large caves."
 #~ msgstr "Y de supera limo de grandaj kvazaŭ-hazardaj kavernoj."
 
-#~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this.\n"
-#~ "Current stable mapgens:\n"
-#~ "v5, v6, v7 (except floatlands), singlenode.\n"
-#~ "'stable' means the terrain shape in an existing world will not be "
-#~ "changed\n"
-#~ "in the future. Note that biomes are defined by games and may still change."
-#~ msgstr ""
-#~ "Nomo de mapestigilo uzota por krei novan mondon.\n"
-#~ "Kreo de nova mondo en la ĉefmenuo transpasos ĉi tiun agordon.\n"
-#~ "Nunaj stabilaj mapestigiloj estas:\n"
-#~ "v5, v6, v7 (krom « floatlands »), singlenode.\n"
-#~ "« Stabilaj » signifas, ke formo de tereno en jamaj mondoj ne ŝanĝiĝos\n"
-#~ "ose. Klimatoj tamen povus ŝanĝiĝi, ĉar ilin difinas ludoj."
+#~ msgid "Select Package File:"
+#~ msgstr "Elekti pakaĵan dosieron:"
 
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Baskuligi glitan vidpunkton"
-
-#~ msgid "Waving Water"
-#~ msgstr "Ondanta akvo"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Elekti pakaĵan dosieron:"

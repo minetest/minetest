@@ -14,6 +14,7 @@ core.features = {
 	object_independent_selectionbox = true,
 	httpfetch_binary_data = true,
 	formspec_version_element = true,
+	area_store_persistent_ids = true,
 }
 
 function core.has_feature(arg)

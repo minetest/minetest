@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	package="net.minetest.minetest"
 	android:installLocation="auto">
 
@@ -11,14 +12,14 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 	<application
-		android:allowBackup="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="${project}"
-		android:resizeableActivity="false">
+		android:resizeableActivity="false"
+		tools:targetApi="n">
 
 		<meta-data
 			android:name="android.max_aspect"
-			android:value="2.1" />
+			android:value="2.4" />
 
 		<activity
 			android:name=".MainActivity"
@@ -50,10 +51,10 @@
 			android:name=".MinetestTextEntry"
 			android:configChanges="keyboardHidden|orientation|screenSize"
 			android:theme="@style/Theme.Dialog"
-			android:windowSoftInputMode="stateAlwaysHidden"/>
+			android:windowSoftInputMode="stateAlwaysHidden" />
 		<activity
 			android:name=".MinetestAssetCopy"
 			android:screenOrientation="sensorLandscape"
-			android:theme="@style/AppTheme"/>
+			android:theme="@style/AppTheme" />
 	</application>
 </manifest>

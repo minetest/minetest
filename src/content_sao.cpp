@@ -624,7 +624,7 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	*result = os.str();
 }
 
-int LuaEntitySAO::punch(v3f dir,
+u16 LuaEntitySAO::punch(v3f dir,
 		const ToolCapabilities *toolcap,
 		ServerActiveObject *puncher,
 		float time_from_last_punch)
@@ -638,12 +638,13 @@ int LuaEntitySAO::punch(v3f dir,
 	FATAL_ERROR_IF(!puncher, "Punch action called without SAO");
 
 	s32 old_hp = getHP();
-	const ItemStack &punchitem = puncher->getWieldedItem();
+	ItemStack selected_item, hand_item;
+	ItemStack tool_item = puncher->getWieldedItem(&selected_item, &hand_item);
 
 	PunchDamageResult result = getPunchDamage(
 			m_armor_groups,
 			toolcap,
-			&punchitem,
+			&tool_item,
 			time_from_last_punch);
 
 	bool damage_handled = m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
@@ -984,7 +985,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 
 void PlayerSAO::getStaticData(std::string * result) const
 {
-	FATAL_ERROR("Deprecated function");
+	FATAL_ERROR("Obsolete function");
 }
 
 void PlayerSAO::step(float dtime, bool send_recommended)
@@ -1106,14 +1107,14 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if (!send_recommended)
 		return;
 
-	// If the object is attached client-side, don't waste bandwidth sending its
-	// position or rotation to clients.
-	if (m_position_not_sent && !isAttached()) {
+	if (m_position_not_sent) {
 		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		v3f pos;
-		if (isAttached()) // Just in case we ever do send attachment position too
-			pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
+		// When attached, the position is only sent to clients where the
+		// parent isn't known
+		if (isAttached())
+			pos = m_last_good_position;
 		else
 			pos = m_base_position;
 
@@ -1272,7 +1273,7 @@ void PlayerSAO::setLookPitchAndSend(const float pitch)
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
-int PlayerSAO::punch(v3f dir,
+u16 PlayerSAO::punch(v3f dir,
 	const ToolCapabilities *toolcap,
 	ServerActiveObject *puncher,
 	float time_from_last_punch)
@@ -1376,10 +1377,9 @@ u16 PlayerSAO::getWieldIndex() const
 	return m_player->getWieldIndex();
 }
 
-ItemStack PlayerSAO::getWieldedItem() const
+ItemStack PlayerSAO::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 {
-	ItemStack selected_item, hand_item;
-	return m_player->getWieldedItem(&selected_item, &hand_item);
+	return m_player->getWieldedItem(selected, hand);
 }
 
 bool PlayerSAO::setWieldedItem(const ItemStack &item)

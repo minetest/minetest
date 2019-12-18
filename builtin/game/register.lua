@@ -256,6 +256,18 @@ function core.register_tool(name, tooldef)
 	end
 	-- END Legacy stuff
 
+	-- This isn't just legacy, but more of a convenience feature
+	local toolcaps = tooldef.tool_capabilities
+	if toolcaps and toolcaps.punch_attack_uses == nil then
+		for _, cap in pairs(toolcaps.groupcaps or {}) do
+			local level = (cap.maxlevel or 0) - 1
+			if (cap.uses or 0) ~= 0 and level >= 0 then
+				toolcaps.punch_attack_uses = cap.uses * (3 ^ level)
+				break
+			end
+		end
+	end
+
 	core.register_item(name, tooldef)
 end
 
@@ -309,11 +321,11 @@ for name in pairs(forbidden_item_names) do
 end
 
 
--- Deprecated:
+-- Obsolete:
 -- Aliases for core.register_alias (how ironic...)
---core.alias_node = core.register_alias
---core.alias_tool = core.register_alias
---core.alias_craftitem = core.register_alias
+-- core.alias_node = core.register_alias
+-- core.alias_tool = core.register_alias
+-- core.alias_craftitem = core.register_alias
 
 --
 -- Built-in node definitions. Also defined in C.

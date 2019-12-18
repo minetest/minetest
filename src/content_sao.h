@@ -122,10 +122,10 @@ public:
 	bool isStaticAllowed() const
 	{ return m_prop.static_save; }
 	void getStaticData(std::string *result) const;
-	int punch(v3f dir,
+	u16 punch(v3f dir,
 		const ToolCapabilities *toolcap = nullptr,
 		ServerActiveObject *puncher = nullptr,
-		float time_from_last_punch = 1000000);
+		float time_from_last_punch = 1000000.0f);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
@@ -258,7 +258,7 @@ public:
 		Interaction interface
 	*/
 
-	int punch(v3f dir,
+	u16 punch(v3f dir,
 		const ToolCapabilities *toolcap,
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
@@ -277,7 +277,7 @@ public:
 	void setInventoryModified() {}
 	std::string getWieldList() const { return "main"; }
 	u16 getWieldIndex() const;
-	ItemStack getWieldedItem() const;
+	ItemStack getWieldedItem(ItemStack *selected, ItemStack *hand = nullptr) const;
 	bool setWieldedItem(const ItemStack &item);
 
 	/*

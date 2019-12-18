@@ -15,8 +15,8 @@ public class MinetestTextEntry extends Activity {
 	private final int MultiLineTextInput = 1;
 	private final int SingleLineTextInput = 2;
 	private final int SingleLinePasswordInput = 3;
-	public AlertDialog mTextInputDialog;
-	public EditText mTextInputWidget;
+	private AlertDialog mTextInputDialog;
+	private EditText mTextInputWidget;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,7 @@ public class MinetestTextEntry extends Activity {
 		mTextInputDialog.show();
 	}
 
-	public void pushResult(String text) {
+	private void pushResult(String text) {
 		Intent resultData = new Intent();
 		resultData.putExtra("text", text);
 		setResult(Activity.RESULT_OK, resultData);
@@ -79,7 +79,7 @@ public class MinetestTextEntry extends Activity {
 		finish();
 	}
 
-	public void cancelDialog() {
+	private void cancelDialog() {
 		setResult(Activity.RESULT_CANCELED);
 		mTextInputDialog.dismiss();
 		finish();

@@ -197,18 +197,22 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 {
 	ModNameStorer mod_name_storer(getStack(), mod_name);
 
-	const std::string *init_filename = getClient()->getModFile(mod_name + ":init.lua");
-	const std::string display_filename = mod_name + ":init.lua";
-	if(init_filename == NULL)
-		throw ModError("Mod:\"" + mod_name + "\" lacks init.lua");
+	sanity_check(m_type == ScriptingType::Client);
 
-	verbosestream << "Loading and running script " << display_filename << std::endl;
+	const std::string init_filename = mod_name + ":init.lua";
+	const std::string chunk_name = "@" + init_filename;
+
+	const std::string *contents = getClient()->getModFile(init_filename);
+	if (!contents)
+		throw ModError("Mod \"" + mod_name + "\" lacks init.lua");
+
+	verbosestream << "Loading and running script " << chunk_name << std::endl;
 
 	lua_State *L = getStack();
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	bool ok = ScriptApiSecurity::safeLoadFile(L, init_filename->c_str(), display_filename.c_str());
+	bool ok = ScriptApiSecurity::safeLoadString(L, *contents, chunk_name.c_str());
 	if (ok)
 		ok = !lua_pcall(L, 0, 0, error_handler);
 	if (!ok) {

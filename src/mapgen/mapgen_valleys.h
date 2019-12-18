@@ -49,7 +49,11 @@ struct MapgenValleysParams : public MapgenParams {
 
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
-	s16 lava_depth = 1;
+	u16 small_cave_num_min = 0;
+	u16 small_cave_num_max = 0;
+	u16 large_cave_num_min = 0;
+	u16 large_cave_num_max = 2;
+	float large_cave_flooded = 0.5f;
 	s16 cavern_limit = -256;
 	s16 cavern_taper = 192;
 	float cavern_threshold = 0.6f;
@@ -95,10 +99,6 @@ private:
 	float altitude_chill;
 	float river_depth_bed;
 	float river_size_factor;
-
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
 
 	Noise *noise_inter_valley_fill;
 	Noise *noise_inter_valley_slope;

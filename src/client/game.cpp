@@ -55,7 +55,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include "porting.h"
 #include "profiler.h"
-#include "quicktune_shortcutter.h"
 #include "raycast.h"
 #include "server.h"
 #include "settings.h"
@@ -65,6 +64,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
+#include "util/quicktune_shortcutter.h"
 #include "irrlicht_changes/static_text.h"
 #include "version.h"
 #include "script/scripting_client.h"
@@ -413,6 +413,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel;
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex;
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
+	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel;
+	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
 	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
@@ -445,6 +447,8 @@ public:
 		m_eye_position_pixel("eyePosition"),
 		m_eye_position_vertex("eyePosition"),
 		m_minimap_yaw("yawVec"),
+		m_camera_offset_pixel("cameraOffset"),
+		m_camera_offset_vertex("cameraOffset"),
 		m_base_texture("baseTexture"),
 		m_normal_texture("normalTexture"),
 		m_texture_flags("textureFlags"),
@@ -493,7 +497,7 @@ public:
 			sunlight.b };
 		m_day_light.set(dnc, services);
 
-		u32 animation_timer = porting::getTimeMs() % 100000;
+		u32 animation_timer = porting::getTimeMs() % 1000000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
 		m_animation_timer_vertex.set(&animation_timer_f, services);
 		m_animation_timer_pixel.set(&animation_timer_f, services);
@@ -522,6 +526,18 @@ public:
 #endif
 			m_minimap_yaw.set(minimap_yaw_array, services);
 		}
+
+		float camera_offset_array[3];
+		v3f offset = intToFloat(m_client->getCamera()->getOffset(), BS);
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+		camera_offset_array[0] = offset.X;
+		camera_offset_array[1] = offset.Y;
+		camera_offset_array[2] = offset.Z;
+#else
+		offset.getAs3Values(camera_offset_array);
+#endif
+		m_camera_offset_pixel.set(camera_offset_array, services);
+		m_camera_offset_vertex.set(camera_offset_array, services);
 
 		SamplerLayer_t base_tex = 0,
 				normal_tex = 1,
@@ -805,7 +821,8 @@ private:
 	void updateChat(f32 dtime, const v2u32 &screensize);
 
 	bool nodePlacement(const ItemDefinition &selected_def, const ItemStack &selected_item,
-		const v3s16 &nodepos, const v3s16 &neighbourpos, const PointedThing &pointed);
+		const v3s16 &nodepos, const v3s16 &neighbourpos, const PointedThing &pointed,
+		const NodeMetadata *meta);
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	InputHandler *input = nullptr;
@@ -2467,7 +2484,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	}
 
 	// autoforward if set: simulate "up" key
-	if (player->getPlayerSettings().continuous_forward && !player->isDead()) {
+	if (player->getPlayerSettings().continuous_forward &&
+			client->activeObjectsReceived() && !player->isDead()) {
 		control.up = true;
 		keypress_bits |= 1U << 0;
 	}
@@ -2638,6 +2656,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->offset = *event->hudadd.offset;
 	e->world_pos = *event->hudadd.world_pos;
 	e->size = *event->hudadd.size;
+	e->z_index = event->hudadd.z_index;
 	hud_server_to_client[server_id] = player->addHud(e);
 
 	delete event->hudadd.pos;
@@ -2715,6 +2734,10 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 
 		case HUD_STAT_SIZE:
 			e->size = *event->hudchange.v2s32data;
+			break;
+
+		case HUD_STAT_Z_INDEX:
+			e->z_index = event->hudchange.data;
 			break;
 	}
 
@@ -3122,6 +3145,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	} else if (input->getLeftState()) {
 		// When button is held down in air, show continuous animation
 		runData.left_punch = true;
+		// Run callback even though item is not usable
+		if (input->getLeftClicked() && client->modsLoaded())
+			client->getScript()->on_item_use(selected_item, pointed);
 	} else if (input->getRightClicked()) {
 		handlePointingAtNothing(selected_item);
 	}
@@ -3278,50 +3304,26 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		runData.repeat_rightclick_timer = 0;
 		infostream << "Ground right-clicked" << std::endl;
 
-		if (meta && !meta->getString("formspec").empty() && !random_input
-				&& !isKeyDown(KeyType::SNEAK)) {
-			// Report right click to server
-			if (nodedef_manager->get(map.getNode(nodepos)).rightclickable) {
-				client->interact(INTERACT_PLACE, pointed);
-			}
+		camera->setDigging(1);  // right click animation (always shown for feedback)
 
-			infostream << "Launching custom inventory view" << std::endl;
+		soundmaker->m_player_rightpunch_sound = SimpleSoundSpec();
 
-			InventoryLocation inventoryloc;
-			inventoryloc.setNodeMeta(nodepos);
+		// If the wielded item has node placement prediction,
+		// make that happen
+		// And also set the sound and send the interact
+		// But first check for meta formspec and rightclickable
+		auto &def = selected_item.getDefinition(itemdef_manager);
+		bool placed = nodePlacement(def, selected_item, nodepos, neighbourpos,
+			pointed, meta);
 
-			NodeMetadataFormSource *fs_src = new NodeMetadataFormSource(
-				&client->getEnv().getClientMap(), nodepos);
-			TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
-
-			auto *&formspec = m_game_ui->updateFormspec("");
-			GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,
-				txt_dst, client->getFormspecPrepend());
-
-			formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
-		} else {
-			// Report right click to server
-
-			camera->setDigging(1);  // right click animation (always shown for feedback)
-
-			soundmaker->m_player_rightpunch_sound = SimpleSoundSpec();
-
-			// If the wielded item has node placement prediction,
-			// make that happen
-			// And also set the sound and send the interact
-			auto &def = selected_item.getDefinition(itemdef_manager);
-			bool placed = nodePlacement(def, selected_item, nodepos, neighbourpos,
-				pointed);
-
-			if (placed && client->modsLoaded())
-				client->getScript()->on_placenode(pointed, def);
-		}
+		if (placed && client->modsLoaded())
+			client->getScript()->on_placenode(pointed, def);
 	}
 }
 
 bool Game::nodePlacement(const ItemDefinition &selected_def,
 	const ItemStack &selected_item, const v3s16 &nodepos, const v3s16 &neighbourpos,
-	const PointedThing &pointed)
+	const PointedThing &pointed, const NodeMetadata *meta)
 {
 	std::string prediction = selected_def.node_placement_prediction;
 	const NodeDefManager *nodedef = client->ndef();
@@ -3335,6 +3337,31 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		return false;
 	}
 
+	// formspec in meta
+	if (meta && !meta->getString("formspec").empty() && !random_input
+			&& !isKeyDown(KeyType::SNEAK)) {
+		// on_rightclick callbacks are called anyway
+		if (nodedef_manager->get(map.getNode(nodepos)).rightclickable)
+			client->interact(INTERACT_PLACE, pointed);
+
+		infostream << "Launching custom inventory view" << std::endl;
+
+		InventoryLocation inventoryloc;
+		inventoryloc.setNodeMeta(nodepos);
+
+		NodeMetadataFormSource *fs_src = new NodeMetadataFormSource(
+			&client->getEnv().getClientMap(), nodepos);
+		TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
+
+		auto *&formspec = m_game_ui->updateFormspec("");
+		GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,
+			txt_dst, client->getFormspecPrepend());
+
+		formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
+		return false;
+	}
+
+	// on_rightclick callback
 	if (prediction.empty() || (nodedef->get(node).rightclickable &&
 			!isKeyDown(KeyType::SNEAK))) {
 		// Report to server

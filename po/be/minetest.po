@@ -1,19 +1,19 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Belarusian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 07:46+0100\n"
-"PO-Revision-Date: 2019-03-12 01:03+0000\n"
-"Last-Translator: Zmicer Turok <zmicerturok@gmail.com>\n"
+"POT-Creation-Date: 2019-10-09 22:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Belarusian <https://hosted.weblate.org/projects/minetest/"
 "minetest/be/>\n"
 "Language: be\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.5.1\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,7 +24,8 @@ msgid "You died"
 msgstr "Вы загінулі"
 
 #: builtin/fstk/ui.lua
-msgid "An error occurred in a Lua script, such as a mod:"
+#, fuzzy
+msgid "An error occurred in a Lua script:"
 msgstr "Памылка ў скрыпце Lua, такая як у мадыфікацыі:"
 
 #: builtin/fstk/ui.lua
@@ -120,12 +121,27 @@ msgid "Mod:"
 msgstr "Мадыфікацыя:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No (optional) dependencies"
+msgstr "Неабавязковыя залежнасці:"
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Апісанне гульні адсутнічае."
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No hard dependencies"
+msgstr "Залежнасці адсутнічаюць."
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "Апісанне мадыфікацыі адсутнічае."
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No optional dependencies"
+msgstr "Неабавязковыя залежнасці:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -487,10 +503,6 @@ msgid "Rename"
 msgstr "Змяніць назву"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Select Package File:"
-msgstr "Абраць файл пакунка:"
-
-#: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
 msgstr "Выдаліць пакунак"
 
@@ -775,12 +787,13 @@ msgid "Waving Leaves"
 msgstr "Дрыготкае лісце"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "Дрыготкія расліны"
+#, fuzzy
+msgid "Waving Liquids"
+msgstr "Калыханне блокаў"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Water"
-msgstr "Хваляванне вады"
+msgid "Waving Plants"
+msgstr "Дрыготкія расліны"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -903,11 +916,13 @@ msgid "- Server Name: "
 msgstr "- Назва сервера: "
 
 #: src/client/game.cpp
-msgid "Automatic forwards disabled"
+#, fuzzy
+msgid "Automatic forward disabled"
 msgstr "Аўтаматычны рух адключаны"
 
 #: src/client/game.cpp
-msgid "Automatic forwards enabled"
+#, fuzzy
+msgid "Automatic forward enabled"
 msgstr "Аўтаматычны рух уключаны"
 
 #: src/client/game.cpp
@@ -1521,13 +1536,13 @@ msgid "Register and Join"
 msgstr "Зарэгістравацца і далучыцца"
 
 #: src/gui/guiConfirmRegistration.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"You are about to join the server at %1$s with the name \"%2$s\" for the "
-"first time. If you proceed, a new account using your credentials will be "
-"created on this server.\n"
-"Please retype your password and click Register and Join to confirm account "
-"creation or click Cancel to abort."
+"You are about to join this server with the name \"%s\" for the first time.\n"
+"If you proceed, a new account using your credentials will be created on this "
+"server.\n"
+"Please retype your password and click 'Register and Join' to confirm account "
+"creation, or click 'Cancel' to abort."
 msgstr ""
 "Вы хочаце першы раз увайсці на сервер %1$s як \"%2$s\". Калі вы працягнеце, "
 "то на серверы будзе створаны новы акаўнт з уведзенымі данымі. Калі ласка, "
@@ -1648,10 +1663,6 @@ msgid "Special"
 msgstr "Адмысловая"
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Toggle Cinematic"
-msgstr "Кінематаграфічнасць"
-
-#: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
 msgstr "HUD"
 
@@ -1678,6 +1689,11 @@ msgstr "Мінімапа"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr "Рух скрозь сцены"
+
+#: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle pitchmove"
+msgstr "Размова"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1750,8 +1766,8 @@ msgid ""
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
 "(X, Y, Z) зрух фрактала ад цэнтру свету ў адзінках шкалы маштабу.\n"
-"Выкарыстоўваецца для перамяшчэння вобласці адраджэння бліжэй да зямлі (0, 0)."
-"\n"
+"Выкарыстоўваецца для перамяшчэння вобласці адраджэння бліжэй да зямлі (0, "
+"0).\n"
 "Прадвызначанае значэнне падыходзіць для мностваў Мандэльброта, але для "
 "мностваў Жулія яго неабходна падладзіць.\n"
 "Дыяпазон прыкладна ад −2 да 2. Памножце на адзінку шкалы маштабу, каб "
@@ -1769,8 +1785,8 @@ msgid ""
 msgstr ""
 "(Х,Y,Z) шкала фрактала ў блоках.\n"
 "Фактычны фрактальны памер будзе ў 2-3 разы больш.\n"
-"Гэтыя ліку могуць быць вельмі вялікімі, фракталу няма патрэбы запаўняць свет."
-"\n"
+"Гэтыя ліку могуць быць вельмі вялікімі, фракталу няма патрэбы запаўняць "
+"свет.\n"
 "Павялічце іх, каб павялічыць маштаб дэталі фрактала.\n"
 "Для вертыкальна сціснутай фігуры, што падыходзіць\n"
 "востраву, зрабіце ўсе 3 лікі роўнымі для неапрацаванай формы."
@@ -1796,15 +1812,23 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr "2D-шум, што кіруе формай/памерам сталовых гор."
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of ridged mountain ranges."
+#, fuzzy
+msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
 msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем горных ланцугоў."
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of rolling hills."
+#, fuzzy
+msgid "2D noise that controls the size/occurrence of rolling hills."
 msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем пагоркаў."
 
 #: src/settings_translation_file.cpp
-msgid "2D noise that controls the size/occurance of step mountain ranges."
+#, fuzzy
+msgid "2D noise that controls the size/occurrence of step mountain ranges."
+msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем горных ланцугоў."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "2D noise that locates the river valleys and channels."
 msgstr "2D-шум, што кіруе памерам/месцазнаходжаннем горных ланцугоў."
 
 #: src/settings_translation_file.cpp
@@ -1839,6 +1863,10 @@ msgstr "3D-шум, што вызначае гіганцкія гроты."
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
 msgstr ""
 "3D-шум, што вызначае горныя выступы, скалы і т. п. Звычайна няшмат варыяцый."
+
+#: src/settings_translation_file.cpp
+msgid "3D noise that determines number of dungeons per mapchunk."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1891,6 +1919,10 @@ msgstr "Абсалютны ліміт чаргі запытаў"
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
 msgstr "Паскарэнне ў паветры"
+
+#: src/settings_translation_file.cpp
+msgid "Acceleration of gravity, in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2034,7 +2066,8 @@ msgstr ""
 "Прызначаецца ў блоках мапы (16 вузлоў)."
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forwards key"
+#, fuzzy
+msgid "Automatic forward key"
 msgstr "Клавіша ўперад"
 
 #: src/settings_translation_file.cpp
@@ -2118,8 +2151,9 @@ msgid "Bumpmapping"
 msgstr "Рэльефнае тэкстураванне"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Camera near plane distance in nodes, between 0 and 0.5\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
@@ -2201,8 +2235,8 @@ msgstr ""
 "Змена інтэрфейсу галоўнага меню:\n"
 "-   full: выбар свету для адзіночнай альбо сеткавай гульні, асобны спіс "
 "чужых сервераў.\n"
-"-   simple: адзін свет для адзіночнай гульні ў меню, дзе спіс чужых сервераў;"
-" можа быць карысна для невелічкіх экранаў.\n"
+"-   simple: адзін свет для адзіночнай гульні ў меню, дзе спіс чужых "
+"сервераў; можа быць карысна для невелічкіх экранаў.\n"
 "Прадвызначана: simple для Android, full для ўсіх астатніх."
 
 #: src/settings_translation_file.cpp
@@ -2212,6 +2246,11 @@ msgstr "Клавіша размовы"
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
 msgstr "Максімальная колькасць паведамленняў у размове"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat message format"
+msgstr "Максімальная працягласць паведамлення ў размове"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2353,8 +2392,13 @@ msgid "Console height"
 msgstr "Вышыня кансолі"
 
 #: src/settings_translation_file.cpp
-msgid "Content Store"
-msgstr "Крама дадаткаў"
+msgid "ContentDB Flag Blacklist"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "ContentDB URL"
+msgstr "Змесціва"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2380,6 +2424,10 @@ msgid ""
 msgstr ""
 "Кіруе працягласцю цыкла дня/ночы.\n"
 "Прыклады: 72 = 20 мін, 360 = 4 мін, 1 = 24 г, 0 — дзень і ноч не змяняюцца."
+
+#: src/settings_translation_file.cpp
+msgid "Controls sinking speed in liquid."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2442,12 +2490,21 @@ msgid "Debug info toggle key"
 msgstr "Клавіша пераключэння адладачных даных"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Debug log file size threshold"
+msgstr "Парог шуму пустынь"
+
+#: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr "Узровень журнала адладкі"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
 msgstr "Кнопка памяншэння гучнасці"
+
+#: src/settings_translation_file.cpp
+msgid "Decrease this to increase liquid resistence to movement."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2539,10 +2596,25 @@ msgid "Defines the base ground level."
 msgstr "Вызначае базавы ўзровень зямлі."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the depth of the river channel."
+msgstr "Вызначае базавы ўзровень зямлі."
+
+#: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
 "Вызначае максімальную адлегласць перадачы даных гульца ў блоках\n"
 "(0 — неабмежаваная)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the width of the river channel."
+msgstr "Вызначае буйнамаштабную структуру рэчышч."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Defines the width of the river valley."
+msgstr "Вызначае вобласці, дзе на дрэвах ёсць яблыкі."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2571,6 +2643,12 @@ msgid "Deprecated Lua API handling"
 msgstr "Апрацоўка састарэлых выклікаў Lua API"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Deprecated, define and locate cave liquids using biome definitions instead.\n"
+"Y of upper limit of lava in large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
 msgstr "Глыбіня, ніжэй якой трапляюцца вялікія пячоры."
 
@@ -2590,9 +2668,10 @@ msgid "Desert noise threshold"
 msgstr "Парог шуму пустынь"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
-"When the new biome system is enabled, this is ignored."
+"When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 "Пустыні з'яўляюцца, калі np_biome перавысіць гэтае значэнне.\n"
 "Ігнаруецца, калі ўключаная новая сістэма біёмаў."
@@ -2639,6 +2718,11 @@ msgstr "Максімальная Y падзямелля"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
+msgstr "Мінімальная Y падзямелля"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dungeon noise"
 msgstr "Мінімальная Y падзямелля"
 
 #: src/settings_translation_file.cpp
@@ -2989,6 +3073,13 @@ msgid "Font size"
 msgstr "Памер шрыфту"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Format of screenshots."
 msgstr "Фармат здымкаў экрана."
 
@@ -3111,12 +3202,11 @@ msgid "Global callbacks"
 msgstr "Глабальныя зваротныя выклікі"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
-"and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "Глабальныя параметры генерацыі мапы.\n"
 "У генератары мапы 6 параметр \"decorations\" кіруе ўсімі дэкарацыямі,\n"
@@ -3240,6 +3330,24 @@ msgstr "Шум крутасці 4"
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
 msgstr "Хатняя старонка сервера, якая будзе паказвацца ў спісе сервераў."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal acceleration in air when jumping or falling,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration in fast mode,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration on ground or when climbing,\n"
+"in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
@@ -3450,14 +3558,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled together with fly mode, makes move directions relative to the "
-"player's pitch."
-msgstr ""
-"Калі ўключана адначасова з рэжымам палёту, то вызначае напрамак руху адносна "
-"кроку гульца."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
@@ -3472,8 +3572,8 @@ msgid ""
 "down and\n"
 "descending."
 msgstr ""
-"Калі ўключана, то для спускання і апускання будзе выкарыстоўвацца клавіша \""
-"special\" замест \"sneak\"."
+"Калі ўключана, то для спускання і апускання будзе выкарыстоўвацца клавіша "
+"\"special\" замест \"sneak\"."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3528,6 +3628,14 @@ msgstr ""
 "абмяжоўваюцца на гэтую адлегласць ад гульца да блока."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr "Калі вызначана, гульцы заўсёды адраджаюцца ў абраным месцы."
 
@@ -3554,6 +3662,10 @@ msgstr "Вышыня гульнявой кансолі, паміж 0,1 (10 %) і
 #: src/settings_translation_file.cpp
 msgid "Inc. volume key"
 msgstr "Клавіша павелічэння гучнасці"
+
+#: src/settings_translation_file.cpp
+msgid "Initial vertical speed when jumping, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3734,8 +3846,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша памяншэння дыяпазону бачнасці.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3744,8 +3856,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша памяншэння гучнасці.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3754,8 +3866,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выкідання абранага прадмета.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3764,8 +3876,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша павелічэння дыяпазону бачнасці.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3774,8 +3886,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка павелічэння гучнасці.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3784,8 +3896,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша скока.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3794,8 +3906,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша паскарэння руху ў шпаркім рэжыме.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3806,8 +3918,8 @@ msgid ""
 msgstr ""
 "Клавіша для руху назад.\n"
 "Таксама выключае аўтабег, калі той актыўны.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3816,8 +3928,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша руху ўперад.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3826,8 +3938,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша руху ўлева.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3836,8 +3948,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша руху ўправа.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3846,8 +3958,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выключэння гуку.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3856,8 +3968,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша адкрыцця акна размовы для ўводу загадаў.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3866,8 +3978,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка адкрыцця акна размовы для ўводу лакальных загадаў.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3876,8 +3988,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша адкрыцця акна размовы.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3886,8 +3998,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша адкрыцця інвентару.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3896,8 +4008,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 11 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3906,8 +4018,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 12 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3916,8 +4028,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 13 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3926,8 +4038,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 14 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3936,8 +4048,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 15 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3946,8 +4058,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 16 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3956,8 +4068,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 17 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3966,8 +4078,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 18 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3976,8 +4088,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 19 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3986,8 +4098,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 20 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3996,8 +4108,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 21 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4006,8 +4118,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 22 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4016,8 +4128,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 23 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4026,8 +4138,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 24 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4036,8 +4148,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 25 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4046,8 +4158,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 26 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4056,8 +4168,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 27 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4066,8 +4178,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 28 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4076,8 +4188,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 29 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4086,8 +4198,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 30 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4096,8 +4208,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 31 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4106,8 +4218,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 32 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4116,8 +4228,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 8 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4126,8 +4238,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 5 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4136,8 +4248,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 1 прадмета панэлі хуткага доступу..\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4146,8 +4258,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 4 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4156,8 +4268,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару наступнага прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4166,8 +4278,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 9 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4176,8 +4288,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару папярэдняга прадмета панэлі хуткага доступу..\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4186,8 +4298,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 2 прадмета панэлі хуткага доступу..\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4196,8 +4308,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 7 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4206,8 +4318,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 6 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4216,8 +4328,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 10 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4226,8 +4338,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выбару 3 прадмета панэлі хуткага доступу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4240,8 +4352,8 @@ msgstr ""
 "Клавіша \"красціся\".\n"
 "Таксама выкарыстоўваецца для спускання і апускання ў ваду, калі "
 "aux1_descends выключана.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4250,8 +4362,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння паміж камерамі ад першай асобы і ад трэцяй асобы.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4260,8 +4372,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша стварэння здымкаў экрана.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4270,8 +4382,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння аўтабегу.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4280,8 +4392,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння кінематаграфічнага рэжыму.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4290,8 +4402,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння адлюстравання мінімапы.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4300,8 +4412,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння шпаркага рэжыму.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4310,8 +4422,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння рэжыму палёту.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4320,8 +4432,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння рэжыму руху скрозь сцены.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4330,8 +4442,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша для пераключэння рэжыму нахілення руху.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4341,8 +4453,8 @@ msgid ""
 msgstr ""
 "Клавіша пераключэння абнаўлення камеры. Выкарыстоўваецца толькі для "
 "распрацоўкі.\n"
-"See http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4351,8 +4463,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння адлюстравання размовы.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4361,8 +4473,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння адлюстравання адладачных даных.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4371,8 +4483,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння адлюстравання туману.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4381,8 +4493,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння адлюстравання HUD.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4391,8 +4503,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння адлюстравання буйной размовы.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4402,8 +4514,8 @@ msgid ""
 msgstr ""
 "Клавіша пераключэння адлюстравання прафіліроўшчыка. Выкарыстоўваецца для "
 "распрацоўкі.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4412,8 +4524,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша пераключэння абмежавання дыяпазону бачнасці.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4422,8 +4534,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Клавіша выкарыстання набліжэння калі гэта магчыма.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
@@ -4559,8 +4671,8 @@ msgid ""
 "Only has an effect if compiled with cURL."
 msgstr ""
 "Абмяжоўвае колькасць паралельных HTTP-запытаў. Уплывае на:\n"
-"-    Спампоўванне медыяданых калі сервер выкарыстоўвае параметр remote_media."
-"\n"
+"-    Спампоўванне медыяданых калі сервер выкарыстоўвае параметр "
+"remote_media.\n"
 "-    Спампоўванне спіса сервераў і аб'яў сервера.\n"
 "-    Спампоўванні праз галоўнае меню (напрыклад кіраўнік мадыфікацый).\n"
 "Дзейнічае толькі пры кампіляцыі з cURL."
@@ -4582,7 +4694,8 @@ msgid "Liquid queue purge time"
 msgstr "Час ачышчэння чаргі вадкасцяў"
 
 #: src/settings_translation_file.cpp
-msgid "Liquid sinking speed"
+#, fuzzy
+msgid "Liquid sinking"
 msgstr "Хуткасць апускання ў вадкасць"
 
 #: src/settings_translation_file.cpp
@@ -4644,14 +4757,8 @@ msgid "Map directory"
 msgstr "Каталог мапаў"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen Carpathian.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
-"Атрыбуты генерацыі мапы для генератара мапы \"Карпаты\".\n"
-"Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
-"Атрыбуты, што пачынаюцца з \"no\", выкарыстоўваюцца для іх выключэння."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4672,9 +4779,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills can be added to the flat world.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'terrain' enables the generation of non-fractal terrain:\n"
+"ocean, islands and underground."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
+"Occasional lakes and hills can be added to the flat world."
 msgstr ""
 "Атрыбуты генерацыі мапы для генератара плоскасці.\n"
 "Выпадковыя азёры і пагоркі могуць дадавацца на плоскасць свету.\n"
@@ -4682,23 +4795,16 @@ msgstr ""
 "Атрыбуты, што пачынаюцца з 'no' выкарыстоўваюцца для іх выключэння."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen v5.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+msgid "Map generation attributes specific to Mapgen v5."
 msgstr ""
-"Атрыбуты генерацыі мапы для генератара мапы 5.\n"
-"Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
-"Атрыбуты, што пачынаюцца з 'no' выкарыстоўваюцца для іх выключэння."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
-"When the new biome system is enabled jungles are automatically enabled and\n"
-"the 'jungles' flag is ignored.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
+"the 'jungles' flag is ignored."
 msgstr ""
 "Атрыбуты генерацыі мапы для генератара мапы 6.\n"
 "Параметр «snowbiomes» (снежныя біёмы) ўключае новую сістэму з 5 біёмамі.\n"
@@ -4710,14 +4816,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers.\n"
-"Flags that are not enabled are not modified from the default.\n"
-"Flags starting with 'no' are used to explicitly disable them."
+"'ridges' enables the rivers."
 msgstr ""
-"Атрыбуты генерацыі мапы для генератара мапы 7.\n"
-"Параметр \"ridges\" (хрыбты)  ўключае рэкі.\n"
-"Нявызначаныя параметры прадвызначана не змяняюцца.\n"
-"Параметры, што пачынаюцца з \"no\", выкарыстоўваюцца для выключэння."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -4762,6 +4862,11 @@ msgstr "Адмысловыя параметры генератара плоск�
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal"
 msgstr "Генератар мапы: фракталы"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen Fractal specific flags"
+msgstr "Адмысловыя параметры генератара плоскасці мапы"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
@@ -4842,6 +4947,12 @@ msgstr "Максімальная колькасць прымусова загр�
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
 msgstr "Максімальная шырыня панэлі хуткага доступу"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum liquid resistence. Controls deceleration when entering liquid at\n"
+"high speed."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5048,16 +5159,15 @@ msgid "Mute sound"
 msgstr "Выключыць гук"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
-"Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), flat, singlenode.\n"
-"'stable' means the terrain shape in an existing world will not be changed\n"
-"in the future. Note that biomes are defined by games and may still change."
+"Current mapgens in a highly unstable state:\n"
+"-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
-"Назва генератара мапы, што будзе выкарыстоўвацца для стварэння новага свету."
-"\n"
+"Назва генератара мапы, што будзе выкарыстоўвацца для стварэння новага "
+"свету.\n"
 "Пры стварэнні свету ў галоўным меню гэта можна змяніць.\n"
 "Бягучыя стабільныя генератары:\n"
 "V5, V6, V7 (за выключэннем лятучых астравоў (floatlands)), плоскасці (flat), "
@@ -5082,7 +5192,8 @@ msgid ""
 msgstr "Назва сервера, што будзе паказвацца пры падлучэнні і ў спісе сервераў."
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
+#, fuzzy
+msgid "Near clipping plane"
 msgstr "Адлегласць да плоскасці"
 
 #: src/settings_translation_file.cpp
@@ -5134,18 +5245,21 @@ msgid "Number of emerge threads"
 msgstr "Колькасць узнікаючых патокаў"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
-"Empty or 0 value:\n"
+"WARNING: Currently there are multiple bugs that may cause crashes when\n"
+"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
+"strongly recommended this value is set to the default '1'.\n"
+"Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
 "Any other value:\n"
 "-    Specifies the number of emerge threads, with a lower limit of 1.\n"
-"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"WARNING: Increasing the number of emerge threads increases engine mapgen\n"
 "speed, but this may harm game performance by interfering with other\n"
 "processes, especially in singleplayer and/or when running Lua code in\n"
-"'on_generated'.\n"
-"For many users the optimum setting may be '1'."
+"'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 "Колькасць узнікаючых патокаў.\n"
 "Пуста альбо 0:\n"
@@ -5166,8 +5280,8 @@ msgid ""
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
-"Колькасць дадатковых блокаў, што могуць адначасова загружацца загадам "
-"/clearobjects.\n"
+"Колькасць дадатковых блокаў, што могуць адначасова загружацца загадам /"
+"clearobjects.\n"
 "Гэта кампраміс паміж дадатковымі выдаткамі на транзакцыю sqlite\n"
 "і спажываннем памяці (4096 = 100 МБ, як правіла)."
 
@@ -5293,8 +5407,8 @@ msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
 msgstr ""
-"Прадухіляе паўтарэнне капання і размяшчэння блокаў пры ўтрыманні кнопкі мышы."
-"\n"
+"Прадухіляе паўтарэнне капання і размяшчэння блокаў пры ўтрыманні кнопкі "
+"мышы.\n"
 "Уключыце гэты параметр, калі  занадта часта выпадкова капаеце або будуеце."
 
 #: src/settings_translation_file.cpp
@@ -5327,10 +5441,6 @@ msgstr "Клавіша пераключэння прафіліроўшчыка"
 #: src/settings_translation_file.cpp
 msgid "Profiling"
 msgstr "Прафіляванне"
-
-#: src/settings_translation_file.cpp
-msgid "Projecting dungeons"
-msgstr "Праектаванне падзямелляў"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5430,6 +5540,16 @@ msgid "Rightclick repetition interval"
 msgstr "Інтэрвал паўторнай пстрычкі правай кнопкі мышы"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River channel depth"
+msgstr "Глыбіня рэк"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River channel width"
+msgstr "Глыбіня рэк"
+
+#: src/settings_translation_file.cpp
 msgid "River depth"
 msgstr "Глыбіня рэк"
 
@@ -5440,6 +5560,11 @@ msgstr "Шум рэк"
 #: src/settings_translation_file.cpp
 msgid "River size"
 msgstr "Памер рэк"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "River valley width"
+msgstr "Глыбіня рэк"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5780,6 +5905,10 @@ msgid "Sneaking speed"
 msgstr "Хуткасць хады ўпотай"
 
 #: src/settings_translation_file.cpp
+msgid "Sneaking speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Sound"
 msgstr "Гук"
 
@@ -5978,8 +6107,8 @@ msgstr ""
 "Радыус аб'ёму блокаў вакол кожнага гульца, у якім дзейнічаюць\n"
 "актыўныя блокі, вызначаны ў блоках мапы (16 блокаў).\n"
 "У актыўных блоках загружаюцца аб'екты і працуе ABM.\n"
-"Таксама гэта мінімальны дыяпазон, у якім апрацоўваюцца актыўныя аб'екты ("
-"жывыя істоты).\n"
+"Таксама гэта мінімальны дыяпазон, у якім апрацоўваюцца актыўныя аб'екты "
+"(жывыя істоты).\n"
 "Неабходна наладжваць разам з active_object_range."
 
 #: src/settings_translation_file.cpp
@@ -6041,7 +6170,8 @@ msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right\n"
 "mouse button."
-msgstr "Час у секундах паміж паўторамі падзей пры ўтрыманні правай кнопкі мышы."
+msgstr ""
+"Час у секундах паміж паўторамі падзей пры ўтрыманні правай кнопкі мышы."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6152,11 +6282,13 @@ msgid "Undersampling"
 msgstr "Субдыскрэтызацыя"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Undersampling is similar to using lower screen resolution, but it applies\n"
+"Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
-"It should give significant performance boost at the cost of less detailed "
-"image."
+"It should give a significant performance boost at the cost of less detailed "
+"image.\n"
+"Higher values result in a less detailed image."
 msgstr ""
 "Субдыскрэтызацыя падобная на выкарыстанне нізкай раздзяляльнай здольнасці "
 "экрана,\n"
@@ -6274,6 +6406,10 @@ msgid "Varies steepness of cliffs."
 msgstr "Кіруе крутасцю гор."
 
 #: src/settings_translation_file.cpp
+msgid "Vertical climbing speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr "Вертыкальная сінхранізацыя."
 
@@ -6328,8 +6464,16 @@ msgstr ""
 "Дыяпазон прыкладна ад −2 да 2."
 
 #: src/settings_translation_file.cpp
+msgid "Walking and flying speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
 msgstr "Хуткасць хады"
+
+#: src/settings_translation_file.cpp
+msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -6356,16 +6500,19 @@ msgid "Waving water"
 msgstr "Хваляванне вады"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water height"
+#, fuzzy
+msgid "Waving water wave height"
 msgstr "Вышыня водных хваляў"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water length"
-msgstr "Даўжыня водных хваляў"
+#, fuzzy
+msgid "Waving water wave speed"
+msgstr "Хуткасць водных хваляў"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water speed"
-msgstr "Хуткасць водных хваляў"
+#, fuzzy
+msgid "Waving water wavelength"
+msgstr "Даўжыня водных хваляў"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6374,8 +6521,8 @@ msgid ""
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
 "Пры ўключэнні gui_scaling_filter усе выявы графічнага інтэрфейсу павінны "
-"быць адфільтраваныя праграмна, але некаторыя выявы генеруюцца апаратна ("
-"напрыклад, рэндэрынг у тэкстуру для элементаў інвентару)."
+"быць адфільтраваныя праграмна, але некаторыя выявы генеруюцца апаратна "
+"(напрыклад, рэндэрынг у тэкстуру для элементаў інвентару)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6419,10 +6566,6 @@ msgid ""
 msgstr ""
 "Выкарыстанне шрыфтоў FreeType. Падтрымка FreeType мусіць быць уключаная "
 "падчас кампіляцыі."
-
-#: src/settings_translation_file.cpp
-msgid "Whether dungeons occasionally project from the terrain."
-msgstr "Выступ падзямелляў па-над рэльефам."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
@@ -6472,8 +6615,8 @@ msgid ""
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
-"Толькі для Windows-сістэм: запускае Minetest з акном загаднага радка ў фоне."
-"\n"
+"Толькі для Windows-сістэм: запускае Minetest з акном загаднага радка ў "
+"фоне.\n"
 "Змяшчае тую ж інфармацыю, што і файл debug.txt (прадвызначаная назва)."
 
 #: src/settings_translation_file.cpp
@@ -6526,10 +6669,6 @@ msgid "Y of upper limit of large caves."
 msgstr "Y верхняга ліміту шырокіх пячор."
 
 #: src/settings_translation_file.cpp
-msgid "Y of upper limit of lava in large caves."
-msgstr "Y верхняга ліміту лавы ў шырокіх пячорах."
-
-#: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr "Y-адлегласць, на якой пячора пашырыцца да поўнага памеру."
 
@@ -6573,624 +6712,59 @@ msgstr "Ліміт адначасовых злучэнняў cURL"
 msgid "cURL timeout"
 msgstr "Таймаўт cURL"
 
-#~ msgid "View"
-#~ msgstr "Прагляд"
-
-#~ msgid "Advanced Settings"
-#~ msgstr "Пашыраныя налады"
-
 #~ msgid ""
-#~ "Where the map generator stops.\n"
-#~ "Please note:\n"
-#~ "-    Limited to 31000 (setting above has no effect)\n"
-#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
-#~ "MapBlocks).\n"
-#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
-#~ "-    Only groups which are within the map_generation_limit are generated"
+#~ "If enabled together with fly mode, makes move directions relative to the "
+#~ "player's pitch."
 #~ msgstr ""
-#~ "Дзе генератар мапы спыняецца.\n"
-#~ "Майце на ўвазе:\n"
-#~ "-    Абмежаваны 31000 (устаноўка вышэй не мае ніякага эфекту).\n"
-#~ "-    Генератар мапы працуе групамі па 80x80x80 вузлоў (5x5x5 блокаў "
-#~ "мапы).\n"
-#~ "-    Гэтыя групы маюць зрух -32, -32 вузлоў ад пачатку.\n"
-#~ "-    Генеруюцца толькі групы, якія знаходзяцца ў межах "
-#~ "map_generation_limit."
-
-#~ msgid ""
-#~ "Noise parameters for biome API temperature, humidity and biome blend."
-#~ msgstr "Шумавыя параметры для тэмпературы, вільготнасці і змяшэння біёму."
-
-#~ msgid "Mapgen v7 terrain persistation noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры ўстойлівасці мясцовасці"
-
-#~ msgid "Mapgen v7 terrain base noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры асноўнай мясцовасці"
-
-#~ msgid "Mapgen v7 terrain altitude noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры вышыні мясцовасці"
-
-#~ msgid "Mapgen v7 ridge water noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры водных хрыбтоў"
-
-#~ msgid "Mapgen v7 ridge noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры хрыбтоў"
-
-#~ msgid "Mapgen v7 mountain noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры гор"
-
-#~ msgid "Mapgen v7 height select noise parameters"
-#~ msgstr "Генератар мапы 7: высокаселектыўныя шумавыя параметры"
-
-#~ msgid "Mapgen v7 filler depth noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры глыбіні запаўняльніка"
-
-#~ msgid "Mapgen v7 cave2 noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры пячоры2"
-
-#~ msgid "Mapgen v7 cave1 noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры пячоры1"
-
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Генератар мапы 7: шырыня пячор"
-
-#~ msgid "Mapgen v6 trees noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры дрэў"
-
-#~ msgid "Mapgen v6 terrain base noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры асноўнай мясцовасці"
-
-#~ msgid "Mapgen v6 terrain altitude noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры вышыні мясцовасці"
-
-#~ msgid "Mapgen v6 steepness noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры крутасці"
-
-#~ msgid "Mapgen v6 mud noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры бруду"
-
-#~ msgid "Mapgen v6 desert frequency"
-#~ msgstr "Генератар мапы 6: частата пустыні"
-
-#~ msgid "Mapgen v6 cave noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры пячоры"
-
-#~ msgid "Mapgen v6 biome noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры біёму"
-
-#~ msgid "Mapgen v6 beach noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры пляжу"
-
-#~ msgid "Mapgen v6 beach frequency"
-#~ msgstr "Генератар мапы 6: частата пляжу"
-
-#~ msgid "Mapgen v6 apple trees noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры яблынь"
-
-#~ msgid "Mapgen v5 height noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры вышыні"
-
-#~ msgid "Mapgen v5 filler depth noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры глыбіні запаўняльніка"
-
-#~ msgid "Mapgen v5 factor noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры каэфіцыента"
-
-#~ msgid "Mapgen v5 cave2 noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры пячоры2"
-
-#~ msgid "Mapgen v5 cave1 noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры пячоры1"
-
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Генератар мапы 5: шырыня пячор"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Генератар фрактальнай мапы: плоскасць W"
-
-#~ msgid "Mapgen fractal seabed noise parameters"
-#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры марскога дна"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Генератар фрактальнай мапы: маштаб"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Генератар фрактальнай мапы: зрух"
-
-#~ msgid "Mapgen fractal julia z"
-#~ msgstr "Генератар фрактальнай мапы: Жулія Z"
-
-#~ msgid "Mapgen fractal julia y"
-#~ msgstr "Генератар фрактальнай мапы: Жулія Y"
-
-#~ msgid "Mapgen fractal julia x"
-#~ msgstr "Генератар фрактальнай мапы: Жулія X"
-
-#~ msgid "Mapgen fractal julia w"
-#~ msgstr "Генератар фрактальнай мапы: Жулія W"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Генератар фрактальнай мапы: ітэрацыі"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Генератар фрактальнай мапы: фрактал"
-
-#~ msgid "Mapgen fractal filler depth noise parameters"
-#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры глыбіні запаўняльніка"
-
-#~ msgid "Mapgen fractal cave2 noise parameters"
-#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры пячоры2"
-
-#~ msgid "Mapgen fractal cave1 noise parameters"
-#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры пячоры1"
-
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Генератар фрактальнай мапы: шырыня пячор"
-
-#~ msgid "Mapgen flat terrain noise parameters"
-#~ msgstr "Генератар плоскай мапы: шумавыя параметры мясцовасці"
-
-#~ msgid "Mapgen flat large cave depth"
-#~ msgstr "Генератар плоскай мапы: глыбіня вялікай пячоры"
-
-#~ msgid "Mapgen flat filler depth noise parameters"
-#~ msgstr "Генератар плоскай мапы: шумавыя параметры глыбіні запаўняльніка"
-
-#~ msgid "Mapgen flat cave2 noise parameters"
-#~ msgstr "Генератар плоскай мапы: шумавыя параметры пячоры2"
-
-#~ msgid "Mapgen flat cave1 noise parameters"
-#~ msgstr "Генератар плоскай мапы: шумавыя параметры пячоры1"
-
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Генератар плоскай мапы: шырыня пячоры"
-
-#~ msgid "Mapgen biome humidity noise parameters"
-#~ msgstr "Генератар мапы: шумавыя параметры вільготнасці біёма"
-
-#~ msgid "Mapgen biome humidity blend noise parameters"
-#~ msgstr "Генератар мапы: шумавыя параметры змяшэння вільготнасці біёма"
-
-#~ msgid "Mapgen biome heat noise parameters"
-#~ msgstr "Генератар мапы: шумавыя параметры цеплыні біёму"
-
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "Вызначае форму мясцовасці.\n"
-#~ "Тры лікі ў дужках кантралююць маштаб рэльефу і павінны быць аднолькавымі."
-
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "Кіруе памерам пустынь і пляжаў у генератары мапаў 6.\n"
-#~ "Калі параметр «snowbiomes» уключаны, то «mgv6_freq_desert» ігнаруецца."
-
-#~ msgid "Plus"
-#~ msgstr "Плюс"
-
-#~ msgid "Period"
-#~ msgstr "Перыяд"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Minus"
-#~ msgstr "Мінус"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Kana"
-#~ msgstr "Кана"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Final"
-#~ msgstr "Канец"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "Comma"
-#~ msgstr "Коска"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Attn"
-#~ msgstr "Увага"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Схаваць змест пакета модаў"
-
-#~ msgid "Y-level of higher (cliff-top) terrain."
-#~ msgstr "Y-узровень вышэйшага (на вяршыні скалы) рэльефу."
-
-#~ msgid ""
-#~ "Whether to support older servers before protocol version 25.\n"
-#~ "Enable if you want to connect to 0.4.12 servers and before.\n"
-#~ "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
-#~ "Disabling this option will protect your password better."
-#~ msgstr ""
-#~ "Ці падтрымліваць старыя серверы з пратаколам да 25.\n"
-#~ "Уключыце, калі хочаце злучыцца з серверамі 0.4.12 і старэй.\n"
-#~ "Серверы пачынаючы з 0.4.13 будуць працаваць, серверы 0.4.12-dev магчыма "
-#~ "будуць.\n"
-#~ "Адключэнне гэтага лепш абароніць ваш пароль."
-
-#~ msgid "Water Features"
-#~ msgstr "Асаблівасці вады"
-
-#~ msgid "Valleys C Flags"
-#~ msgstr "Параметры даліны"
-
-#~ msgid ""
-#~ "Use mip mapping to scale textures. May slightly increase performance."
-#~ msgstr ""
-#~ "Выкарыстоўвае MIP-тэкстураванне для маштабавання тэкстур. Можа трохі "
-#~ "павялічыць прадукцыйнасць."
-
-#~ msgid "Use key"
-#~ msgstr "Клавіша ўжывання"
-
-#~ msgid "The rendering back-end for Irrlicht."
-#~ msgstr "Драйвер рэндэрынга для Irrlicht."
-
-#~ msgid "The altitude at which temperature drops by 20C"
-#~ msgstr "Вышыня, пры якой тэмпература паніжаецца на 20 °C"
-
-#~ msgid "Support older servers"
-#~ msgstr "Падтрымка старых сервераў"
-
-#~ msgid ""
-#~ "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
-#~ "nodes)."
-#~ msgstr ""
-#~ "Памер кавалка, які будзе згенераваны за раз, зададзены у блоках мапы (16 "
-#~ "вузлоў)."
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Шум ракі. Рэкі размешчаны блізка да нуля"
-
-#~ msgid ""
-#~ "Name of map generator to be used when creating a new world.\n"
-#~ "Creating a world in the main menu will override this."
-#~ msgstr ""
-#~ "Назва генератара мапы, які будзе выкарыстоўвацца пры стварэнні новага "
-#~ "свету.\n"
-#~ "Гэта можна пераазначыць пры стварэнні свету ў галоўным меню."
-
-#~ msgid "Modstore mods list URL"
-#~ msgstr "URL спісу модаў ў краме"
-
-#~ msgid "Modstore download URL"
-#~ msgstr "URL спампоўкі модаў ў краме"
-
-#~ msgid "Modstore details URL"
-#~ msgstr "URL дэталізацыі модаў ў краме"
-
-#~ msgid "Maximum simultaneous block sends total"
-#~ msgstr "Максімум адначасовай адпраўкі блокаў у цэлым"
-
-#~ msgid "Maximum number of blocks that are simultaneously sent per client."
-#~ msgstr ""
-#~ "Максімальная колькасць блокаў, якія могуць адпраўлены адначасова, на "
-#~ "аднаго кліента."
-
-#~ msgid "Maximum number of blocks that are simultaneously sent in total."
-#~ msgstr ""
-#~ "Максімальная колькасць блокаў, якія могуць адпраўлены адначасова, у цэлым."
-
-#~ msgid "Massive caves form here."
-#~ msgstr "Масіўныя пячоры ўтвараюцца тут."
-
-#~ msgid "Massive cave noise"
-#~ msgstr "Шум масіўнай пячоры"
-
-#~ msgid "Massive cave depth"
-#~ msgstr "Глыбіня масіўнай пячоры"
+#~ "Калі ўключана адначасова з рэжымам палёту, то вызначае напрамак руху "
+#~ "адносна кроку гульца."
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Праектаванне падзямелляў"
 
 #~ msgid ""
 #~ "Map generation attributes specific to Mapgen v7.\n"
-#~ "The 'ridges' flag enables the rivers.\n"
-#~ "Floatlands are currently experimental and subject to change.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
+#~ "'ridges' enables the rivers.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
 #~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Адмысловыя параметры для генератара мапы 7.\n"
-#~ "Параметр «ridges» (грэбені) уключае рэкі.\n"
-#~ "Выспы, што ляцяць, эксперыментальныя ў цяперашні час і могуць змяніцца.\n"
-#~ "Параметры, якія не пазначаны ў радку, не адрозніваюцца ад агаданых "
-#~ "значэнняў.\n"
-#~ "Параметры, якія пачынаюцца з «no», выкарыстоўваюцца для яўнага адключэння."
+#~ "Атрыбуты генерацыі мапы для генератара мапы 7.\n"
+#~ "Параметр \"ridges\" (хрыбты)  ўключае рэкі.\n"
+#~ "Нявызначаныя параметры прадвызначана не змяняюцца.\n"
+#~ "Параметры, што пачынаюцца з \"no\", выкарыстоўваюцца для выключэння."
 
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen Valleys.\n"
-#~ "'altitude_chill' makes higher elevations colder, which may cause biome "
-#~ "issues.\n"
-#~ "'humid_rivers' modifies the humidity around rivers and in areas where "
-#~ "water would tend to pool,\n"
-#~ "it may interfere with delicately adjusted biomes.\n"
-#~ "Flags that are not specified in the flag string are not modified from the "
-#~ "default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
-#~ msgstr ""
-#~ "Адмысловыя параметры для генератара далін.\n"
-#~ "«altitude_chill» робіць больш высокія узвышшы больш халоднымі, што можа\n"
-#~ "выклікаць складанасці для біёму.\n"
-#~ "«humid_rivers» змяняе вільготнасць вакол рэк і ў раёнах, дзе вада мае\n"
-#~ "тэндэнцыю збірацца, што можа перашкодзіць далікатным біёмам.\n"
-#~ "Параметры, якія не пазначаны ў радку, не адрозніваюцца ад агаданых "
-#~ "значэнняў.\n"
-#~ "Параметры, якія пачынаюцца з «no», выкарыстоўваюцца для яўнага адключэння."
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "Выступ падзямелляў па-над рэльефам."
 
-#~ msgid "Main menu mod manager"
-#~ msgstr "Менеджар модаў у галоўным меню"
+#~ msgid "Waving Water"
+#~ msgstr "Хваляванне вады"
 
-#~ msgid "Main menu game manager"
-#~ msgstr "Менеджар гульняў у галоўным меню"
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y верхняга ліміту лавы ў шырокіх пячорах."
 
-#~ msgid "Lava Features"
-#~ msgstr "Асаблівасці лавы"
+#~ msgid "Select Package File:"
+#~ msgstr "Абраць файл пакунка:"
 
-#~ msgid ""
-#~ "Key for printing debug stacks. Used for development.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Клавіша для друкавання стэкаў адладкі. Выкарыстоўваецца для распрацоўкі.\n"
-#~ "Глядзі http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for opening the chat console.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Клавіша для адкрыцця кансолі чату.\n"
-#~ "Глядзі http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Iterations of the recursive function.\n"
-#~ "Controls the amount of fine detail."
-#~ msgstr ""
-#~ "Ітэрацыі рэкурсіўнай функцыі.\n"
-#~ "Кантралюе колькасць дробных дэталяў."
-
-#~ msgid "Inventory image hack"
-#~ msgstr "Хак для выяў інвентару"
-
-#~ msgid "If enabled, show the server status message on player connection."
-#~ msgstr ""
-#~ "Калі ўключанае, паказаць паведамленне стану сервера для гульцоў, якія "
-#~ "падлучаюцца."
-
-#~ msgid ""
-#~ "How large area of blocks are subject to the active block stuff, stated in "
-#~ "mapblocks (16 nodes).\n"
-#~ "In active blocks objects are loaded and ABMs run."
-#~ msgstr ""
-#~ "Наколькі вялікая плошча блокаў, якая падлягае актыўнаму ўздзеянню,\n"
-#~ "зададзеная ў блоках мапы (16 вузлоў).\n"
-#~ "Для актыўных блокаў загружаюцца аб'екты і запускаюцца ABM'ы."
-
-#~ msgid "Height on which clouds are appearing."
-#~ msgstr "Вышыня, на якой з'яўляюцца аблокі."
-
-#~ msgid "General"
-#~ msgstr "Асноўныя"
-
-#~ msgid ""
-#~ "From how far clients know about objects, stated in mapblocks (16 nodes)."
-#~ msgstr ""
-#~ "Як далёка кліент даведваецца аб аб'ектах. Задаецца ў блоках мапы (16 "
-#~ "вузлоў)."
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Поле зроку пры павелічэнні ў градусах.\n"
-#~ "Неабходна прывілея «zoom» на серверы."
-
-#~ msgid "Field of view for zoom"
-#~ msgstr "Поле зроку пры павелічэнні"
-
-#~ msgid "Enables view bobbing when walking."
-#~ msgstr "Уключае калыханне пра хадзьбе."
-
-#~ msgid "Enable view bobbing"
-#~ msgstr "Уключыць калыханне прагляду"
-
-#~ msgid ""
-#~ "Disable escape sequences, e.g. chat coloring.\n"
-#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
-#~ "to disable\n"
-#~ "the escape sequences generated by mods."
-#~ msgstr ""
-#~ "Адключыць escape-паслядоўнасці, напрыклад, размалёўку чату.\n"
-#~ "Выкарыстоўвайце гэта, калі вы хочаце запусціць сервер з pre-0.4.14 "
-#~ "кліентамі і калі вы хочаце адключыць escape-паслядоўнасці, якія "
-#~ "генеруюцца модамі."
-
-#~ msgid "Disable escape sequences"
-#~ msgstr "Адключыць escape-паслядоўнасці"
-
-#~ msgid "Descending speed"
-#~ msgstr "Хуткасць апускання"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Глыбіня, ніжэй якой вы знойдзеце масіўныя пячоры."
-
-#~ msgid "Crouch speed"
-#~ msgstr "Хуткасць поўзання"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Стварае непрадказальныя патокі вады ў пячорах.\n"
-#~ "Гэта можа зрабіць цяжкім здабычу карысных выкапняў.\n"
-#~ "Нуль адключае гэта. (0–10)"
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Стварае непрадказальныя патокі лавы ў пячорах.\n"
-#~ "Гэта можа зрабіць цяжкім здабычу карысных выкапняў.\n"
-#~ "Нуль адключае гэта. (0–10)"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Бесперапынны рух ўперад (толькі для тэставання)."
-
-#~ msgid "Console key"
-#~ msgstr "Клавіша кансолі"
-
-#~ msgid "Cloud height"
-#~ msgstr "Вышыня ніжняй мяжы аблокаў"
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Пячоры і тунэлі ўтвараюцца на скрыжаванні двух шумаў"
-
-#~ msgid "Autorun key"
-#~ msgstr "Клавіша аўтабегу"
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Прыблізны (X,Y,Z) маштаб фракталаў у вузлах."
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Калі вы хочаце анансаваць свой IPv6 адрас, выкарыстоўвайце\n"
-#~ "serverlist_url = v6.servers.minetest.net."
-
-#~ msgid ""
-#~ "Android systems only: Tries to create inventory textures from meshes\n"
-#~ "when no supported render was found."
-#~ msgstr ""
-#~ "Толькі для Андроід-сістэм: Спрабуе стварыць тэкстуры інвентара з сетак,\n"
-#~ "калі знойдзены візуалізатар, што не падтрымліваецца."
-
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Далёкасць дзеяння мадыфікатара актыўных блокаў"
-
-#~ msgid "Prior"
-#~ msgstr "Папярэдні"
-
-#~ msgid "Next"
-#~ msgstr "Наступны"
-
-#~ msgid "Use"
-#~ msgstr "Ужыць"
-
-#~ msgid "Print stacks"
-#~ msgstr "Друкаваць стэк"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Гучнасць 100 %"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Гучнасць 0 %"
-
-#~ msgid "No information available"
-#~ msgstr "Няма звестак"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Тэкстураванне нармалямі"
-
-#~ msgid "Play Online"
-#~ msgstr "Граць анлайн"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Выдаліць абраны модпак"
-
-#~ msgid "Local Game"
-#~ msgstr "Лакальная гульня"
-
-#~ msgid "re-Install"
-#~ msgstr "пераўсталяваць"
-
-#~ msgid "Unsorted"
-#~ msgstr "Без сартавання"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Паспяхова ўсталяваны:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Кароткая назва:"
-
-#~ msgid "Rating"
-#~ msgstr "Рэйтынг"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Старонка $1 з $2"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Падгульнявыя моды"
-
-#~ msgid "Select path"
-#~ msgstr "Абраць шлях"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Магчымыя значэнні: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Калі ласка, увядзіце спіс параметраў, падзеленых коскамі."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Пры жаданні можа быць дабаўлена лакунарнасць праз коску."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Фармат: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Фармат: у дужках 3 лікі праз коску."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "«$1» — некарэктны параметр."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Дадзены свет без назвы або не абрана гульня"
-
-#~ msgid "Enable MP"
-#~ msgstr "Уключыць МП"
-
-#~ msgid "Disable MP"
-#~ msgstr "Адключыць МП"
-
-#, fuzzy
-#~ msgid ""
-#~ "Number of emerge threads to use.\n"
-#~ "Make this field blank or 0, or increase this number to use multiple "
-#~ "threads.\n"
-#~ "On multiprocessor systems, this will improve mapgen speed greatly at the "
-#~ "cost\n"
-#~ "of slightly buggy caves."
-#~ msgstr ""
-#~ "Колькасць патокаў, якія выкарыстоўваюцца для вытворчасці.\n"
-#~ "Пакіньце пустым або павялічце гэта значэнне для выкарыстання некалькіх "
-#~ "патокаў.\n"
-#~ "На мультыпрацэсарных сістэмах гэта значна палепшыць хуткасць генерацыі "
-#~ "мапы,\n"
-#~ "але за кошт злёгку памылковых пячор."
-
-#, fuzzy
 #~ msgid "Content Store"
-#~ msgstr "Закрыць краму"
+#~ msgstr "Крама дадаткаў"
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen Carpathian.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Атрыбуты генерацыі мапы для генератара мапы \"Карпаты\".\n"
+#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
+#~ "Атрыбуты, што пачынаюцца з \"no\", выкарыстоўваюцца для іх выключэння."
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Кінематаграфічнасць"
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v5.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ msgstr ""
+#~ "Атрыбуты генерацыі мапы для генератара мапы 5.\n"
+#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
+#~ "Атрыбуты, што пачынаюцца з 'no' выкарыстоўваюцца для іх выключэння."

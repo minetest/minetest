@@ -228,9 +228,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		(too much)
 	FORMSPEC VERSION 2:
 		Forced real coordinates
-		background[]: 9-slice scaling parameters
+		background9[]: 9-slice scaling parameters
+	FORMSPEC VERSION 3:
+		Formspec elements are drawn in the order of definition
+		bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
 */
-#define FORMSPEC_API_VERSION 2
+#define FORMSPEC_API_VERSION 3
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -561,6 +564,7 @@ enum ToClientCommand
 		v2f1000 offset
 		v3f1000 world_pos
 		v2s32 size
+		s16 z_index
 	*/
 
 	TOCLIENT_HUDRM = 0x4a,

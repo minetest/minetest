@@ -193,7 +193,7 @@ public:
 		This is accessed by the map, which is inside the environment,
 		so it shouldn't be a problem.
 	*/
-	void onMapEditEvent(MapEditEvent *event);
+	void onMapEditEvent(const MapEditEvent &event);
 
 	/*
 		Shall be called with the environment and the connection locked.

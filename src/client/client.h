@@ -264,14 +264,11 @@ public:
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
 
-	/**
-	 * Helper function for Client Side Modding
-	 * CSM restrictions are applied there, this should not be used for core engine
-	 * @param p
-	 * @param is_valid_position
-	 * @return
-	 */
-	MapNode getNode(v3s16 p, bool *is_valid_position);
+	// helpers to enforce CSM restrictions
+	MapNode CSMGetNode(v3s16 p, bool *is_valid_position);
+	int CSMClampRadius(v3s16 pos, int radius);
+	v3s16 CSMClampPos(v3s16 pos);
+
 	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
 
 	void setPlayerControl(PlayerControl &control);
@@ -381,7 +378,7 @@ public:
 	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
-	const std::string* getModFile(const std::string &filename);
+	const std::string* getModFile(std::string filename);
 
 	std::string getModStoragePath() const override;
 	bool registerModStorage(ModMetadata *meta) override;
@@ -414,6 +411,11 @@ public:
 	const std::string &getAddressName() const
 	{
 		return m_address_name;
+	}
+
+	inline u64 getCSMRestrictionFlags() const
+	{
+		return m_csm_restriction_flags;
 	}
 
 	inline bool checkCSMRestrictionFlag(CSMRestrictionFlags flag) const
@@ -454,7 +456,6 @@ private:
 			bool is_local_server);
 
 	void ReceiveAll();
-	void Receive();
 
 	void sendPlayerPos();
 
@@ -579,8 +580,6 @@ private:
 	// Storage for mesh data for creating multiple instances of the same mesh
 	StringMap m_mesh_data;
 
-	StringMap m_mod_files;
-
 	// own state
 	LocalClientState m_state;
 
@@ -591,11 +590,13 @@ private:
 	IntervalLimiter m_localdb_save_interval;
 	u16 m_cache_save_interval;
 
+	// Client modding
 	ClientScripting *m_script = nullptr;
 	bool m_modding_enabled;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
+	StringMap m_mod_vfs;
 
 	bool m_shutdown = false;
 

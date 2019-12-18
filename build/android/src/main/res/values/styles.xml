@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<style name="AppTheme" parent="@android:style/android:Theme.Holo.Light.NoActionBar.Fullscreen">
+	<style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen">
 		<item name="android:windowNoTitle">true</item>
-		<item name="android:windowAnimationStyle">@null</item>
 		<item name="android:windowBackground">@drawable/bg</item>
 	</style>
 
-	<style name="Theme.Dialog" parent="@android:style/android:Theme.Holo.Light.Dialog.NoActionBar"/>
+	<style name="Theme.Dialog" parent="android:Theme.Holo.Light.Dialog.NoActionBar">
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+	</style>
 
 </resources>

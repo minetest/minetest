@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-08 09:20+0200\n"
-"PO-Revision-Date: 2019-08-11 06:23+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"POT-Creation-Date: 2019-10-09 22:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -5072,10 +5072,6 @@ msgid "Profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Projecting dungeons"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -5787,10 +5783,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Undersampling is similar to using lower screen resolution, but it applies\n"
+"Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
-"It should give significant performance boost at the cost of less detailed "
-"image."
+"It should give a significant performance boost at the cost of less detailed "
+"image.\n"
+"Higher values result in a less detailed image."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6030,10 +6027,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Whether dungeons occasionally project from the terrain."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr ""
 
@@ -6159,140 +6152,6 @@ msgstr "Maksimal parallellisering i cURL"
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
 msgstr "cURL-tidsgrense"
-
-#~ msgid "View"
-#~ msgstr "Vis"
-
-#~ msgid "Advanced Settings"
-#~ msgstr "Avanserte innstillinger"
-
-#~ msgid "is required by:"
-#~ msgstr "trengs av:"
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Konfigurasjon lagret. "
-
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Advarsel: Noen konfigurerte modifikasjoner mangler. \n"
-#~ "Instillingene deres vil bli fjernet når du lagrer konfigurasjonen."
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Advarsel: Noen modifikasjoner er ikke konfigurert enda. \n"
-#~ "De vil bli aktivert som standard når du lagrer konfigurasjonen."
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "aktivert"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Skjul mp-innhold"
-
-#~ msgid "River noise -- rivers occur close to zero"
-#~ msgstr "Elvestøy -- elver dukker opp for verdier nær null"
-
-#~ msgid "General"
-#~ msgstr "Generelt"
-
-#~ msgid "Crouch speed"
-#~ msgstr "Smygehastighet"
-
-#~ msgid "Console key"
-#~ msgstr "Konsolltast"
-
-#~ msgid "Cloud height"
-#~ msgstr "Skyhøyde"
-
-#~ msgid "Prior"
-#~ msgstr "Foregående"
-
-#~ msgid "Next"
-#~ msgstr "Neste"
-
-#~ msgid "Use"
-#~ msgstr "Bruk"
-
-#~ msgid "Volume changed to 100%"
-#~ msgstr "Lydstyrke endret til 100%"
-
-#~ msgid "Volume changed to 0%"
-#~ msgstr "Lydstyrke endret til 0%"
-
-#~ msgid "No information available"
-#~ msgstr "Ingen informasjon tilgjengelig"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Normal tilknytning"
-
-#~ msgid "Play Online"
-#~ msgstr "Spill på nett"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Avinstaller valgt modpakke"
-
-#~ msgid "Local Game"
-#~ msgstr "Lokalt spill"
-
-#~ msgid "re-Install"
-#~ msgstr "Reinstaller"
-
-#~ msgid "Unsorted"
-#~ msgstr "Usortert"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Installasjonen lyktes:"
-
-#~ msgid "Shortname:"
-#~ msgstr "Kortnavnet:"
-
-#~ msgid "Rating"
-#~ msgstr "Vurdering"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Side $1 av $2"
-
-#~ msgid "Select path"
-#~ msgstr "Vis sti"
-
-#~ msgid "Possible values are: "
-#~ msgstr "Mulige verdier er: "
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Vennligst angi et komma separert liste av flagg."
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr "Lacunarity kan eventuelt legges med ledende komma."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Formattet: <forskyvning>, <skala>, (<spreX>, <spreY>, <spreZ>), <seed>, "
-#~ "<oktaver>, <utholdenhet>"
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr "Formatet er 3 tall atskilt med komma og innenfor hakeparentesene."
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" er ikke en gyldig flagge."
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "Mangler verdensnavn eller intet spill valgt"
-
-#~ msgid "Enable MP"
-#~ msgstr "Aktiver MP"
-
-#~ msgid "Disable MP"
-#~ msgstr "Fjern MP"
-
-#, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Lukk butikk"
 
 #~ msgid "Y of upper limit of lava in large caves."
 #~ msgstr "Y-verdi for øvre grense for lava i store grotter."

@@ -122,9 +122,14 @@ std::string getImagePath(std::string path)
 
 	Utilizes a thread-safe cache.
 */
-std::string getTexturePath(const std::string &filename)
+std::string getTexturePath(const std::string &filename, bool *is_base_pack)
 {
 	std::string fullpath;
+
+	// This can set a wrong value on cached textures, but is irrelevant because
+	// is_base_pack is only passed when initializing the textures the first time
+	if (is_base_pack)
+		*is_base_pack = false;
 	/*
 		Check from cache
 	*/
@@ -154,6 +159,8 @@ std::string getTexturePath(const std::string &filename)
 		std::string testpath = base_path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
+		if (is_base_pack && !fullpath.empty())
+			*is_base_pack = true;
 	}
 
 	// Add to cache (also an empty result is cached)
@@ -215,9 +222,11 @@ public:
 		bool need_to_grab = true;
 
 		// Try to use local texture instead if asked to
-		if (prefer_local){
-			std::string path = getTexturePath(name);
-			if (!path.empty()) {
+		if (prefer_local) {
+			bool is_base_pack;
+			std::string path = getTexturePath(name, &is_base_pack);
+			// Ignore base pack
+			if (!path.empty() && !is_base_pack) {
 				video::IImage *img2 = RenderingEngine::get_video_driver()->
 					createImageFromFile(path.c_str());
 				if (img2){
@@ -1803,6 +1812,24 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 }
 
 /*
+	Calculate the color of a single pixel drawn on top of another pixel.
+
+	This is a little more complicated than just video::SColor::getInterpolated
+	because getInterpolated does not handle alpha correctly.  For example, a
+	pixel with alpha=64 drawn atop a pixel with alpha=128 should yield a
+	pixel with alpha=160, while getInterpolated would yield alpha=96.
+*/
+static inline video::SColor blitPixel(const video::SColor &src_c, const video::SColor &dst_c, u32 ratio)
+{
+	if (dst_c.getAlpha() == 0)
+		return src_c;
+	video::SColor out_c = src_c.getInterpolated(dst_c, (float)ratio / 255.0f);
+	out_c.setAlpha(dst_c.getAlpha() + (255 - dst_c.getAlpha()) *
+		src_c.getAlpha() * ratio / (255 * 255));
+	return out_c;
+}
+
+/*
 	Draw an image on top of an another one, using the alpha channel of the
 	source image
 
@@ -1821,7 +1848,7 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		s32 dst_y = dst_pos.Y + y0;
 		video::SColor src_c = src->getPixel(src_x, src_y);
 		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
-		dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
+		dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
 		dst->setPixel(dst_x, dst_y, dst_c);
 	}
 }
@@ -1844,7 +1871,7 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
 		if (dst_c.getAlpha() == 255 && src_c.getAlpha() != 0)
 		{
-			dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
+			dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
 			dst->setPixel(dst_x, dst_y, dst_c);
 		}
 	}

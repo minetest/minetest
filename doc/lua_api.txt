@@ -1260,6 +1260,11 @@ precisely positioned items in the HUD.
 **Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
 factor!
 
+The `z_index` field specifies the order of HUD elements from back to front.
+Lower z-index elements are displayed behind higher z-index elements. Elements
+with same z-index are displayed in an arbitrary order. Default 0.
+Supports negative values.
+
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
 
@@ -1923,6 +1928,11 @@ When displaying text which can contain formspec code, e.g. text set by a player,
 use `minetest.formspec_escape`.
 For coloured text you can use `minetest.colorize`.
 
+Since formspec version 3, elements drawn in the order they are defined. All
+background elements are drawn before all other elements.
+`list` elements are an exception here. They are drawn last. This, however, might
+be changed at any time.
+
 **WARNING**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
 
@@ -2032,6 +2042,7 @@ Elements
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot.
+* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
@@ -2039,6 +2050,7 @@ Elements
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot.
+* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2092,15 +2104,19 @@ Elements
 
 * Show an inventory image of registered item/node
 
-### `bgcolor[<color>]`
+### `bgcolor[<bgcolor>;<fullscreen>;<fbgcolor>]`
 
-* Sets background color of formspec as `ColorString`
-
-### `bgcolor[<color>;<fullscreen>]`
-
-* If `color` is a valid `ColorString`, the fullscreen background color
-  is set to `color`.
-* If `fullscreen` is a true value, the fullscreen background color is drawn.
+* Sets background color of formspec.
+* `bgcolor` and `fbgcolor` (optional) are `ColorString`s, they define the color
+  of the non-fullscreen and the fullscreen background.
+* `fullscreen` (optional) can be one of the following:
+  * `false`: Only the non-fullscreen background color is drawn. (default)
+  * `true`: Only the fullscreen background color is drawn.
+  * `both`: The non-fullscreen and the fullscreen background color are drawn.
+  * `neither`: No background color is drawn.
+* Note: Leave a parameter empty to not modify the value.
+* Note: `fbgcolor`, leaving parameters empty and values for `fullscreen` that
+  are not bools are only available since formspec version 3.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
@@ -2114,7 +2130,7 @@ Elements
 * If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 
-### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>;<middle>]`
+### `background9[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>;<middle>]`
 
 * 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
 * Middle is a rect which defines the middle of the 9-slice.
@@ -2193,8 +2209,13 @@ Elements
   half a coordinate.  With the old system, newlines are spaced 2/5 of
   an inventory slot.
 
-### `vertlabel[<X>,<Y>;<label>]`
+### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
+* Displays a static formated text with hyperlinks.
+* `x`, `y`, `w` and `h` work as per field
+* `name` is the name of the field as returned in fields to `on_receive_fields` in case of action in text.
+* `text` is the formatted text using `markup language` described below.
 
+### `vertlabel[<X>,<Y>;<label>]`
 * Textual label drawn vertically
 * `label` is the text on the label
 * **Note**: If the new coordinate system is enabled, vertlabels are
@@ -2338,15 +2359,39 @@ Elements
 
 ### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 
-* Show a scrollbar
+* Show a scrollbar using options defined by the previous `scrollbaroptions[]`
 * There are two ways to use it:
     1. handle the changed event (only changed scrollbar is available)
     2. read the value on pressing a button (all scrollbars are available)
 * `orientation`:  `vertical`/`horizontal`
 * Fieldname data is transferred to Lua
-* Value this trackbar is set to (`0`-`1000`)
+* Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
   (main menu: `core.explode_scrollbar_event`).
+
+### `scrollbaroptions[opt1;opt2;...]`
+* Sets options for all following `scrollbar[]` elements
+* `min=<int>`
+    * Sets scrollbar minimum value, defaults to `0`.
+* `max=<int>`
+    * Sets scrollbar maximum value, defaults to `1000`.
+      If the max is equal to the min, the scrollbar will be disabled.
+* `smallstep=<int>`
+    * Sets scrollbar step value when the arrows are clicked or the mouse wheel is
+      scrolled.
+    * If this is set to a negative number, the value will be reset to `10`.
+* `largestep=<int>`
+    * Sets scrollbar step value used by page up and page down.
+    * If this is set to a negative number, the value will be reset to `100`.
+* `thumbsize=<int>`
+    * Sets size of the thumb on the scrollbar. Size is calculated in the number of
+      units the thumb spans out of the range of the scrollbar values.
+    * Example: If a scrollbar has a `min` of 1 and a `max` of 100, a thumbsize of 10
+      would span a tenth of the scrollbar space.
+    * If this is set to zero or less, the value will be reset to `1`.
+* `arrows=<show/hide/default>`
+    * Whether to show the arrow buttons on the scrollbar. `default` hides the arrows
+      when the scrollbar gets too small, but shows them otherwise.
 
 ### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 
@@ -2496,17 +2541,20 @@ Some types may inherit styles from parent types.
 * label
 * vertlabel, inherits from field
 * image_button
-* item_image_button, inherits from image_button
+* item_image_button
 * tabheader
 
 
 ### Valid Properties
 
-* button, button_exit
+* button, button_exit, image_button, item_image_button
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
-    * bgimg - standard image. Defaults to none.
-    * bgimg_pressed - image when pressed. Defaults to bgimg when not provided.
+    * bgcolor_hovered - color when hovered. Defaults to a lighter bgcolor when not provided.
+    * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
+    * bgimg - standard background image. Defaults to none.
+    * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+    * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color, default white.
@@ -2524,16 +2572,118 @@ Some types may inherit styles from parent types.
     * textcolor - color. Default white.
 * label, vertlabel
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* image_button
-    * alpha - boolean, whether to draw alpha in bgimg. Default true.
-    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* item_image_button
-    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* image_button (additional properties)
+    * fgimg - standard image. Defaults to none.
+    * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
+    * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
+    * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+
+Markup language
+---------------
+
+Markup language used in `hypertext[]` elements uses tag that look like HTML tags. Some
+tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
+Tags can have attributes, in that case, attributes are in the opening tag in
+form of a key/value separated with equal signs. Attribute values should not be quoted.
+
+These are the technically basic tags but see below for usual tags. Base tags are:
+
+`<style color=... font=... size=...>...</style>`
+
+Changes the style of the text.
+
+* `color`: Text color. Given color is a `colorspec`.
+* `size`: Text size.
+* `font`: Text font (`mono` or `normal`).
+
+`<global background=... margin=... valign=... color=... hovercolor=... size=... font=... halign=... >`
+
+Sets global style.
+
+Global only styles:
+* `background`: Text background, a `colorspec` or `none`.
+* `margin`: Page margins in pixel.
+* `valign`: Text vertical alignment (`top`, `middle`, `bottom`).
+
+Inheriting styles (affects child elements):
+* `color`: Default text color. Given color is a `colorspec`.
+* `hovercolor`: Color of <action> tags when mouse is over.
+* `size`: Default text size.
+* `font`: Default text font (`mono` or `normal`).
+* `halign`: Default text horizontal alignment (`left`, `right`, `center`, `justify`).
+
+This tag needs to be placed only once as it changes the global settings of the
+text. Anyway, if several tags are placed, each changed will be made in the order
+tags appear.
+
+`<tag name=... color=... hovercolor=... font=... size=...>`
+
+Defines or redefines tag style. This can be used to define new tags.
+* `name`: Name of the tag to define or change.
+* `color`: Text color. Given color is a `colorspec`.
+* `hovercolor`: Text color when element hovered (only for `action` tags). Given color is a `colorspec`.
+* `size`: Text size.
+* `font`: Text font (`mono` or `normal`).
+
+Following tags are the usual tags for text layout. They are defined by default.
+Other tags can be added using `<tag ...>` tag.
+
+`<normal>...</normal>`: Normal size text
+
+`<big>...</big>`: Big text
+
+`<bigger>...</bigger>`: Bigger text
+
+`<center>...</center>`: Centered text
+
+`<left>...</left>`: Left-aligned text
+
+`<right>...</right>`: Right-aligned text
+
+`<justify>...</justify>`: Justified text
+
+`<mono>...</mono>`: Monospaced font
+
+`<b>...</b>`, `<i>...</i>`, `<u>...</u>`: Bold, italic, underline styles.
+
+`<action name=...>...</action>`
+
+Make that text a clickable text triggering an action.
+
+* `name`: Name of the action (mandatory).
+
+When clicked, the formspec is send to the server. The value of the text field
+sent to `on_player_receive_fields` will be "action:" concatenated to the action
+name.
+
+`<img name=... float=... width=... height=...>`
+
+Draws an image which is present in the client media cache.
+
+* `name`: Name of the texture (mandatory).
+* `float`: If present, makes the image floating (`left` or `right`).
+* `width`: Force image width instead of taking texture width.
+* `height`: Force image height instead of taking texture height.
+
+If only width or height given, texture aspect is kept.
+
+`<item name=... float=... width=... height=... rotate=...>`
+
+Draws an item image.
+
+* `name`: Item string of the item to draw (mandatory).
+* `float`: If present, makes the image floating (`left` or `right`).
+* `width`: Item image width.
+* `height`: Item image height.
+* `rotate`: Rotate item image if set to `yes` or `X,Y,Z`. X, Y and Z being
+rotation speeds in percent of standard speed (-1000 to 1000). Works only if
+`inventory_items_animations` is set to true.
+* `angle`: Angle in which the item image is shown. Value has `X,Y,Z` form.
+X, Y and Z being angles around each three axes. Works only if
+`inventory_items_animations` is set to true.
 
 Inventory
 =========
@@ -2556,9 +2706,7 @@ Player Inventory lists
 * `craftresult`: list containing the crafted output
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
-
-
-
+    * Is only used to enhance the empty hand's tool capabilities
 
 Colors
 ======
@@ -3805,6 +3953,8 @@ Utilities
           httpfetch_binary_data = true,
           -- Whether formspec_version[<version>] may be used (5.1.0)
           formspec_version_element = true,
+          -- Whether AreaStore's IDs are kept on save/load (5.1.0)
+          area_store_persistent_ids = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4638,8 +4788,9 @@ Item handling
       `{stack1, stack2, stack3, stack4, stack 5, stack 6, stack 7, stack 8, stack 9}`
     * `output.item` = `ItemStack`, if unsuccessful: empty `ItemStack`
     * `output.time` = a number, if unsuccessful: `0`
-    * `output.replacements` = list of `ItemStack`s that couldn't be placed in
-      `decremented_input.items`
+    * `output.replacements` = List of replacement `ItemStack`s that couldn't be
+      placed in `decremented_input.items`. Replacements can be placed in
+      `decremented_input` if the stack of the replaced item has a count of 1.
     * `decremented_input` = like `input`
 * `minetest.get_craft_recipe(output)`: returns input
     * returns last registered recipe for output item (node)
@@ -4700,33 +4851,36 @@ Rollback
     * Revert latest actions of someone
     * `actor`: `"player:<name>"`, also `"liquid"`.
 
-Defaults for the `on_*` item definition functions
--------------------------------------------------
-
-These functions return the leftover itemstack.
+Defaults for the `on_place` and `on_drop` item definition functions
+-------------------------------------------------------------------
 
 * `minetest.item_place_node(itemstack, placer, pointed_thing[, param2, prevent_after_place])`
     * Place item as a node
     * `param2` overrides `facedir` and wallmounted `param2`
     * `prevent_after_place`: if set to `true`, `after_place_node` is not called
       for the newly placed node to prevent a callback and placement loop
-    * returns `itemstack, success`
+    * returns `itemstack, position`
+      * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_place_object(itemstack, placer, pointed_thing)`
     * Place item as-is
-* `minetest.item_place(itemstack, placer, pointed_thing, param2)`
-    * Use one of the above based on what the item is.
+    * returns the leftover itemstack
+    * **Note**: This function is deprecated and will never be called.
+* `minetest.item_place(itemstack, placer, pointed_thing[, param2])`
+    * Wrapper that calls `minetest.item_place_node` if appropriate
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
     * **Note**: is not called when wielded item overrides `on_place`
-    * `param2` overrides `facedir` and wallmounted `param2`
-    * returns `itemstack, success`
+    * `param2` overrides facedir and wallmounted `param2`
+    * returns `itemstack, position`
+      * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
-* `minetest.item_eat(hp_change, replace_with_item)`
-    * Eat the item.
+    * returns the leftover itemstack
+* `minetest.item_eat(hp_change[, replace_with_item])`
+    * Returns `function(itemstack, user, pointed_thing)` as a
+      function wrapper for `minetest.do_item_eat`.
     * `replace_with_item` is the itemstring which is added to the inventory.
       If the player is eating a stack, then replace_with_item goes to a
-      different spot. Can be `nil`
-    * See `minetest.do_item_eat`
+      different spot.
 
 Defaults for the `on_punch` and `on_dig` node definition callbacks
 ------------------------------------------------------------------
@@ -4788,13 +4942,16 @@ Server
 Bans
 ----
 
-* `minetest.get_ban_list()`: returns the ban list
-  (same as `minetest.get_ban_description("")`).
-* `minetest.get_ban_description(ip_or_name)`: returns ban description (string)
-* `minetest.ban_player(name)`: ban a player
-* `minetest.unban_player_or_ip(name)`: unban player or IP address
-* `minetest.kick_player(name, [reason])`: disconnect a player with a optional
+* `minetest.get_ban_list()`: returns a list of all bans formatted as string
+* `minetest.get_ban_description(ip_or_name)`: returns list of bans matching
+  IP address or name formatted as string
+* `minetest.ban_player(name)`: ban the IP of a currently connected player
+    * Returns boolean indicating success
+* `minetest.unban_player_or_ip(ip_or_name)`: remove ban record matching
+  IP address or name
+* `minetest.kick_player(name, [reason])`: disconnect a player with an optional
   reason.
+    * Returns boolean indicating success (false if player nonexistant)
 
 Particles
 ---------
@@ -5198,35 +5355,38 @@ A fast access data structure to store areas, and find areas near a given
 position or area.
 Every area has a `data` string attribute to store additional information.
 You can create an empty `AreaStore` by calling `AreaStore()`, or
-`AreaStore(type_name)`.
+`AreaStore(type_name)`. The mod decides where to save and load AreaStore.
 If you chose the parameter-less constructor, a fast implementation will be
 automatically chosen for you.
 
 ### Methods
 
-* `get_area(id, include_borders, include_data)`: returns the area with the id
-  `id`.
-  (optional) Boolean values `include_borders` and `include_data` control what's
-  copied.
-  Returns nil if specified area id does not exist.
-* `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas
-  that contain the position `pos`.
-  (optional) Boolean values `include_borders` and `include_data` control what's
-  copied.
-* `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`:
-  returns all areas that contain all nodes inside the area specified by `edge1`
-  and `edge2` (inclusive).
-  If `accept_overlap` is true, also areas are returned that have nodes in
-  common with the specified area.
-  (optional) Boolean values `include_borders` and `include_data` control what's
-  copied.
+* `get_area(id, include_borders, include_data)`
+    * Returns the area information about the specified ID.
+    * Returned values are either of these:
+
+            nil  -- Area not found
+            true -- Without `include_borders` and `include_data`
+            {
+                min = pos, max = pos -- `include_borders == true`
+                data = string        -- `include_data == true`
+            }
+
+* `get_areas_for_pos(pos, include_borders, include_data)`
+    * Returns all areas as table, indexed by the area ID.
+    * Table values: see `get_area`.
+* `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`
+    * Returns all areas that contain all nodes inside the area specified by `edge1`
+      and `edge2` (inclusive).
+    * `accept_overlap`: if `true`, areas are returned that have nodes in
+      common (intersect) with the specified area.
+    * Returns the same values as `get_areas_for_pos`.
 * `insert_area(edge1, edge2, data, [id])`: inserts an area into the store.
-  Returns the new area's ID, or nil if the insertion failed.
-  The (inclusive) positions `edge1` and `edge2` describe the area.
-  `data` is a string stored with the area.  If passed, `id` will be used as the
-  internal area ID, it must be a unique number between 0 and 2^32-2. If you use
-  the `id` parameter you must always use it, or insertions are likely to fail
-  due to conflicts.
+    * Returns the new area's ID, or nil if the insertion failed.
+    * The (inclusive) positions `edge1` and `edge2` describe the area.
+    * `data` is a string stored with the area.
+    * `id` (optional): will be used as the internal area ID if it is an unique
+      number between 0 and 2^32-2.
 * `reserve(count)`: reserves resources for at most `count` many contained
   areas.
   Only needed for efficiency, and only some implementations profit.
@@ -5466,6 +5626,9 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
     * See reason in register_on_player_hpchange
+    * Is limited to the range of 0 ... 65535 (2^16 - 1)
+    * For players: HP are also limited by `hp_max` specified in the player's
+      object properties
 * `get_inventory()`: returns an `InvRef` for players, otherwise returns `nil`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
@@ -5586,6 +5749,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `0`: player is drowning
         * max: bubbles bar is not shown
         * See [Object properties] for more information
+    * Is limited to range 0 ... 65535 (2^16 - 1)
 * `set_fov(fov, is_multiplier)`: Sets player's FOV
     * `fov`: FOV value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
@@ -6338,7 +6502,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         liquids_pointable = false,
 
-        -- See "Tools" section
+        -- See "Tools" section for an example including explanation
         tool_capabilities = {
             full_punch_interval = 1.0,
             max_drop_level = 0,
@@ -6348,6 +6512,15 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
                          uses = 20, maxlevel = 2},
             },
             damage_groups = {groupname = damage},
+            -- Damage values must be between -32768 and 32767 (2^15)
+
+            punch_attack_uses = nil,
+            -- Amount of uses this tool has for attacking players and entities
+            -- by punching them (0 = infinite uses).
+            -- For compatibility, this is automatically set from the first
+            -- suitable groupcap using the forumla "uses * 3^(maxlevel - 1)".
+            -- It is recommend to set this explicitly instead of relying on the
+            -- fallback behavior.
         },
 
         node_placement_prediction = nil,
@@ -6376,9 +6549,9 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- default: minetest.item_place
 
         on_secondary_use = function(itemstack, user, pointed_thing),
-        -- Same as on_place but called when pointing at nothing.
+        -- Same as on_place but called when not pointing at a node.
         -- The user may be any ObjectRef or nil.
-        -- pointed_thing: always { type = "nothing" }
+        -- default: nil
 
         on_drop = function(itemstack, dropper, pos),
         -- Shall drop item and return the leftover itemstack.
@@ -6587,7 +6760,9 @@ Used by `minetest.register_node`.
         drop = "",
         -- Name of dropped item when dug.
         -- Default dropped item is the node itself.
-        -- Using a table allows multiple items, drop chances and tool filtering:
+        -- Using a table allows multiple items, drop chances and tool filtering.
+        -- Tool filtering was undocumented until recently, tool filtering by string
+        -- matching is deprecated.
         drop = {
             max_items = 1,
             -- Maximum number of item lists to drop.
@@ -6618,7 +6793,8 @@ Used by `minetest.register_node`.
                 },
                 {
                     -- Only drop if using a tool whose name contains
-                    -- "default:shovel_".
+                    -- "default:shovel_" (this tool filtering by string matching
+                    -- is deprecated).
                     tools = {"~default:shovel_"},
                     rarity = 2,
                     -- The item list dropped.
@@ -7263,6 +7439,9 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
         size = { x=100, y=100 },
         -- Size of element in pixels
+
+        z_index = 0,
+        -- Z index : lower z-index HUDs are displayed behind higher z-index HUDs
     }
 
 Particle definition

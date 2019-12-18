@@ -156,13 +156,18 @@ public:
 
 	const v3f getPosition() const;
 
+	void setPosition(const v3f &pos)
+	{
+		pos_translator.val_current = pos;
+	}
+
 	inline const v3f &getRotation() const { return m_rotation; }
 
 	const bool isImmortal();
 
-	scene::ISceneNode *getSceneNode();
+	scene::ISceneNode *getSceneNode() const;
 
-	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
+	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;
 
 	// m_matrixnode controls the position and rotation of the child node
 	// for all scene nodes, as a workaround for an Irrlicht problem with

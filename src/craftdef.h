@@ -113,9 +113,6 @@ struct CraftOutput
 	Example: If ("bucket:bucket_water", "bucket:bucket_empty") is a
 	replacement pair, the crafting input slot that contained a water
 	bucket will contain an empty bucket after crafting.
-
-	Note: replacements only work correctly when stack_max of the item
-	to be replaced is 1. It is up to the mod writer to ensure this.
 */
 struct CraftReplacements
 {
@@ -410,10 +407,22 @@ public:
 	ICraftDefManager() = default;
 	virtual ~ICraftDefManager() = default;
 
-	// The main crafting function
+	/**
+	 * The main crafting function.
+	 *
+	 * @param input The input grid.
+	 * @param output CraftOutput where the result is placed.
+	 * @param output_replacements A vector of ItemStacks where replacements are
+	 * placed if they cannot be placed in the input. Replacements can be placed
+	 * in the input if the stack of the replaced item has a count of 1.
+	 * @param decrementInput If true, consume or replace input items.
+	 * @param gamedef
+	 * @return true if a result was found, otherwise false.
+	 */
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			std::vector<ItemStack> &output_replacements,
 			bool decrementInput, IGameDef *gamedef) const=0;
+
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
 

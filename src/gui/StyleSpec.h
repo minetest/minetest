@@ -17,7 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "client/tile.h" // ITextureSource
 #include "irrlichttypes_extrabloated.h"
+#include "util/string.h"
 #include <array>
 
 #pragma once
@@ -29,17 +31,23 @@ public:
 	{
 		TEXTCOLOR,
 		BGCOLOR,
+		BGCOLOR_HOVERED,
+		BGCOLOR_PRESSED,
 		NOCLIP,
 		BORDER,
 		BGIMG,
+		BGIMG_HOVERED,
 		BGIMG_PRESSED,
+		FGIMG,
+		FGIMG_HOVERED,
+		FGIMG_PRESSED,
 		ALPHA,
 		NUM_PROPERTIES,
 		NONE
 	};
 
 private:
-	std::array<bool, NUM_PROPERTIES> property_set;
+	std::array<bool, NUM_PROPERTIES> property_set{};
 	std::array<std::string, NUM_PROPERTIES> properties;
 
 public:
@@ -49,14 +57,26 @@ public:
 			return TEXTCOLOR;
 		} else if (name == "bgcolor") {
 			return BGCOLOR;
+		} else if (name == "bgcolor_hovered") {
+			return BGCOLOR_HOVERED;
+		} else if (name == "bgcolor_pressed") {
+			return BGCOLOR_PRESSED;
 		} else if (name == "noclip") {
 			return NOCLIP;
 		} else if (name == "border") {
 			return BORDER;
 		} else if (name == "bgimg") {
 			return BGIMG;
+		} else if (name == "bgimg_hovered") {
+			return BGIMG_HOVERED;
 		} else if (name == "bgimg_pressed") {
 			return BGIMG_PRESSED;
+		} else if (name == "fgimg") {
+			return FGIMG;
+		} else if (name == "fgimg_hovered") {
+			return FGIMG_HOVERED;
+		} else if (name == "fgimg_pressed") {
+			return FGIMG_PRESSED;
 		} else if (name == "alpha") {
 			return ALPHA;
 		} else {
@@ -95,6 +115,29 @@ public:
 		video::SColor color;
 		parseColorString(val, color, false, 0xFF);
 		return color;
+	}
+
+	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc,
+			video::ITexture *def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty()) {
+			return def;
+		}
+
+		video::ITexture *texture = tsrc->getTexture(val);
+
+		return texture;
+	}
+
+	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc) const
+	{
+		const auto &val = properties[prop];
+		FATAL_ERROR_IF(val.empty(), "Unexpected missing property");
+
+		video::ITexture *texture = tsrc->getTexture(val);
+
+		return texture;
 	}
 
 	bool getBool(Property prop, bool def) const
