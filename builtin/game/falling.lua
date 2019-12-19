@@ -40,10 +40,7 @@ core.register_entity(":__builtin:falling_node", {
 				is_visible = false,
 			})
 		else
-			local glow
-			if def then
-				glow = def.light_source
-			end
+			local glow = def and def.light_source
 			if def.drawtype == "torchlike" or def.drawtype == "signlike" then
 				local textures
 				if def.tiles and def.tiles[1] then
