@@ -83,18 +83,15 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	m_sun_params.visible = true;
 	m_sun_params.tonemap = "sun_tonemap.png";
 	m_sun_params.sunrise = "sunrisebg.png";
-	m_sun_params.rotation = 90;
 	m_sun_params.scale = 1;
 
 	m_moon_params.visible = true;
 	m_moon_params.tonemap = "moon_tonemap.png";
-	m_moon_params.rotation = 270;
 	m_moon_params.scale = 1;
 
 	m_star_params.visible = true;
 	m_star_params.count = 200;
 	m_star_params.starcolor = video::SColor(105, 235, 235, 255);
-	m_star_params.rotation = 0;
 	m_star_params.scale = 1;
 }
 

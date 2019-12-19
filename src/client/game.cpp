@@ -2829,7 +2829,6 @@ void Game::handleClientEvent_SetSun(ClientEvent *event, CameraOrientation *cam)
 	sky->setSunVisible(event->sun_params.visible);
 	sky->setSunTexture(*event->sun_params.texture, 
 		*event->sun_params.tonemap, texture_src);
-	sky->setSunYaw(event->sun_params.rotation);
 	sky->setSunScale(event->sun_params.scale);
 	sky->setSunriseVisible(event->sun_params.sunrise_visible);
 	sky->setSunriseTexture(*event->sun_params.sunrise, texture_src);
@@ -2844,7 +2843,6 @@ void Game::handleClientEvent_SetMoon(ClientEvent *event, CameraOrientation *cam)
 	sky->setMoonVisible(event->moon_params.visible);
 	sky->setMoonTexture(*event->moon_params.texture,
 		*event->moon_params.tonemap, texture_src);
-	sky->setMoonYaw(event->moon_params.rotation);
 	sky->setMoonScale(event->moon_params.scale);
 	// Clean up related data:
 	delete event->moon_params.texture;
@@ -2856,7 +2854,6 @@ void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam
 	sky->setStarsVisible(event->star_params.visible);
 	sky->setStarCount(event->star_params.count);
 	sky->setStarColor(event->star_params.starcolor);
-	sky->setStarYaw(event->star_params.rotation);
 	sky->setStarScale(event->star_params.scale);
 }
 

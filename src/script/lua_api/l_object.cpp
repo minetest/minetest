@@ -1709,7 +1709,15 @@ int ObjectRef::l_set_sky(lua_State *L)
 	RemotePlayer *player = getplayer(ref);
 	if (!player)
 		return 0;
+
+	// Check for ColorSpec tables:
+	bool is_colorspec = false;
 	if (lua_istable(L, 2)) {
+		lua_getfield(L, 2, "r");
+		is_colorspec = lua_isnil(L, -1) ? false : true;
+	}
+	
+	if (lua_istable(L, 2) && !is_colorspec) {
 		SkyboxParams skybox_params = player->getSkyParams();
 
 		lua_getfield(L, 2, "base_color");
@@ -1751,52 +1759,52 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 		lua_getfield(L, 2, "sky_color");	
 		if (lua_istable(L, -1)) {
-			lua_getfield(L, 3, "day_sky");
+			lua_getfield(L, 2, "day_sky");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.day_sky);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 3, "day_horizon");
+			lua_getfield(L, 2, "day_horizon");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.day_horizon);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 3, "dawn_sky");
+			lua_getfield(L, 2, "dawn_sky");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.dawn_sky);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 3, "dawn_horizon");
+			lua_getfield(L, 2, "dawn_horizon");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.dawn_horizon);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 3, "night_sky");
+			lua_getfield(L, 2, "night_sky");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.night_sky);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 3, "night_horizon");
+			lua_getfield(L, 2, "night_horizon");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.night_horizon);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 3, "indoors");
+			lua_getfield(L, 2, "indoors");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.indoors);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 3, "sun_tint");
+			lua_getfield(L, 2, "sun_tint");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.sun_tint);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 3, "moon_tint");
+			lua_getfield(L, 2, "moon_tint");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.moon_tint);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 3, "tint_type");
+			lua_getfield(L, 2, "tint_type");
 			if (!lua_isnil(L, -1)) {
 				skybox_params.tint_type = luaL_checkstring(L, -1);
 				lua_pop(L, 1);
@@ -1804,9 +1812,9 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 			// Because we need to leave the "sky_color" table.
 			lua_pop(L, 1);
-			getServer(L)->setSky(player, skybox_params);
-			lua_pushboolean(L, true);
 		}
+		getServer(L)->setSky(player, skybox_params);
+		lua_pushboolean(L, true);
 	} else {
 		// Handle old set_sky calls, and log deprecated:
 		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.txt");
@@ -1820,7 +1828,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		// Prevent erroneous background colors
 		skybox_params.bgcolor = video::SColor(255, 255, 255, 255);
 		read_color(L, 2, &skybox_params.bgcolor);
-
+		
 		skybox_params.type = luaL_checkstring(L, 3);
 
 		// Preserve old behaviour of the sun, moon and stars
@@ -1959,9 +1967,6 @@ int ObjectRef::l_set_sun(lua_State *L)
 
 	sun_params.sunrise_visible = getboolfield_default(L, 2,
 		"sunrise_visible", sun_params.sunrise_visible);
-
-	sun_params.rotation = getfloatfield_default(L, 2,
-		"rotation", sun_params.rotation);
 	
 	sun_params.scale = getfloatfield_default(L, 2,
 		"scale", sun_params.scale);
@@ -1992,8 +1997,6 @@ int ObjectRef::l_get_sun(lua_State *L)
 	lua_setfield(L, -2, "sunrise");
 	lua_pushboolean(L, sun_params.sunrise_visible);
 	lua_setfield(L, -2, "sunrise_visible");
-	lua_pushnumber(L, sun_params.rotation);
-	lua_setfield(L, -2, "rotation");
 	lua_pushnumber(L, sun_params.scale);
 	lua_setfield(L, -2, "scale");
 
@@ -2021,9 +2024,6 @@ int ObjectRef::l_set_moon(lua_State *L)
 
 	moon_params.tonemap = getstringfield_default(L, 2,
 		"tonemap", moon_params.tonemap);
-		
-	moon_params.rotation = getfloatfield_default(L, 2,
-		"rotation", moon_params.rotation);
 
 	moon_params.scale = getfloatfield_default(L, 2,
 		"scale", moon_params.scale);
@@ -2049,8 +2049,6 @@ int ObjectRef::l_get_moon(lua_State *L)
 	lua_setfield(L, -2, "texture");
 	lua_pushstring(L, moon_params.tonemap.c_str());
 	lua_setfield(L, -2, "tonemap");
-	lua_pushnumber(L, moon_params.rotation);
-	lua_setfield(L, -2, "rotation");
 	lua_pushnumber(L, moon_params.scale);
 	lua_setfield(L, -2, "scale");
 
@@ -2080,9 +2078,6 @@ int ObjectRef::l_set_stars(lua_State *L)
 	if (!lua_isnil(L, -1))
 		read_color(L, -1, &star_params.starcolor);
 	lua_pop(L, 1);
-
-	star_params.rotation = getfloatfield_default(L, 2,
-		"rotation", star_params.rotation);
 		
 	star_params.scale = getfloatfield_default(L, 2,
 		"size", star_params.scale);
@@ -2108,8 +2103,6 @@ int ObjectRef::l_get_stars(lua_State *L)
 	lua_setfield(L, -2, "count");
 	push_ARGB8(L, star_params.starcolor);
 	lua_setfield(L, -2, "star_color");
-	lua_pushnumber(L, star_params.rotation);
-	lua_setfield(L, -2, "rotation");
 	lua_pushnumber(L, star_params.scale);
 	lua_setfield(L, -2, "scale");
 

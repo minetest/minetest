@@ -64,7 +64,6 @@ public:
 	void setSunVisible(bool sun_visible) { m_sun_visible = sun_visible; }
 	void setSunTexture(std::string sun_texture, 
 		std::string sun_tonemap, ITextureSource *tsrc);
-	void setSunYaw(f32 sun_yaw) { m_sun_rotation = sun_yaw; }
 	void setSunScale(f32 sun_scale) { m_sun_scale = sun_scale; }
 	void setSunriseVisible(bool glow_visible) { m_sunglow_visible = glow_visible; }
 	void setSunriseTexture(std::string sunglow_texture, ITextureSource* tsrc);
@@ -72,13 +71,11 @@ public:
 	void setMoonVisible(bool moon_visible) { m_moon_visible = moon_visible; }
 	void setMoonTexture(std::string moon_texture, 
 		std::string moon_tonemap, ITextureSource *tsrc);
-	void setMoonYaw(f32 moon_yaw) { m_moon_rotation = moon_yaw; }
 	void setMoonScale(f32 moon_scale) { m_moon_scale = moon_scale; }
 
 	void setStarsVisible(bool stars_visible) { m_stars_visible = stars_visible; }
 	void setStarCount(u16 star_count);
 	void setStarColor(video::SColor star_color) { m_starcolor = star_color; }
-	void setStarYaw(f32 star_yaw) { m_star_rotation = star_yaw; }
 	void setStarScale(f32 star_scale) { m_star_scale = star_scale; }
 
 	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
@@ -195,20 +192,17 @@ private:
 	std::string m_sunrise_name = "sunrisebg.png";
 	video::SColorf m_pointcolor_sun_f;
 	float m_sun_scale = 1;
-	f32 m_sun_rotation = 90;
 
 	bool m_moon_visible = true;
 	std::string m_moon_name = "moon.png";
 	std::string m_moon_tonemap_name = "moon_tonemap.png";
 	video::SColorf m_pointcolor_moon_f;
 	float m_moon_scale = 1;
-	f32 m_moon_rotation = -90;
 
 	bool m_stars_visible = true;
 	std::vector<v3f> m_stars;
 	float m_star_scale = 1;
 	video::SColor m_starcolor = video::SColor(105, 235, 235, 255);
-	f32 m_star_rotation = 0;
 	u32 m_star_count = 0;
 
 	video::ITexture *m_sun_texture;

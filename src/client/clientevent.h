@@ -189,7 +189,6 @@ struct ClientEvent
 			std::string *tonemap;
 			std::string *sunrise;
 			bool sunrise_visible;
-			f32 rotation;
 			f32 scale;
 		} sun_params;
 		struct
@@ -197,7 +196,6 @@ struct ClientEvent
 			bool visible;
 			std::string *texture;
 			std::string *tonemap;
-			f32 rotation;
 			f32 scale;
 		} moon_params;
 		struct
@@ -205,7 +203,6 @@ struct ClientEvent
 			bool visible;
 			u32 count;
 			u32 starcolor;
-			f32 rotation;
 			f32 scale;
 		} star_params;
 	};

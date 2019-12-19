@@ -321,10 +321,10 @@ void Sky::render()
 			for (video::S3DVertex &vertex : vertices) {
 				if (wicked_time_of_day < 0.5)
 					// Switch from -Z (south) to +X (east)
-					vertex.Pos.rotateXZBy(m_sun_rotation);
+					vertex.Pos.rotateXZBy(90);
 				else
 					// Switch from -Z (south) to -X (west)
-					vertex.Pos.rotateXZBy(m_sun_rotation - 180);
+					vertex.Pos.rotateXZBy(-90);
 			}
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
@@ -632,7 +632,7 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SCol
 		const video::SColor colors[4] = {c1, c2, suncolor, suncolor2};
 		for (int i = 0; i < 4; i++) {
 			draw_sky_body(vertices, -sunsizes[i], sunsizes[i], colors[i]);
-			place_sky_body(vertices, m_sun_rotation, wicked_time_of_day * 360 - 90);
+			place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 	} else {
@@ -644,7 +644,7 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SCol
 		else
 			c = video::SColor(255, 255, 255, 255);
 		draw_sky_body(vertices, -d, d, c);
-		place_sky_body(vertices, m_sun_rotation, wicked_time_of_day * 360 - 90);
+		place_sky_body(vertices, 90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
 }
@@ -685,7 +685,7 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 		const video::SColor colors[4] = {c1, c2, mooncolor, mooncolor2};
 		for (int i = 0; i < 4; i++) {
 			draw_sky_body(vertices, moonsizes_1[i], moonsizes_2[i], colors[i]);
-			place_sky_body(vertices, m_moon_rotation, wicked_time_of_day * 360 - 90);
+			place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 	} else {
@@ -697,7 +697,7 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 		else
 			c = video::SColor(255, 255, 255, 255);
 		draw_sky_body(vertices, -d, d, c);
-		place_sky_body(vertices, m_moon_rotation, wicked_time_of_day * 360 - 90);
+		place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 	}
 }
@@ -741,11 +741,8 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 				a.rotateVect(p1);
 				a.rotateVect(p2);
 				p.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p.rotateXZBy(m_star_rotation);
 				p1.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p1.rotateXZBy(m_star_rotation);
 				p2.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p2.rotateXZBy(m_star_rotation);
 				vertices[i * 3 + 0].Pos = p;
 				vertices[i * 3 + 0].Color = starcolor;
 				vertices[i * 3 + 1].Pos = p1;
@@ -778,13 +775,9 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 				a.rotateVect(p2);
 				a.rotateVect(p3);
 				p.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p.rotateXZBy(m_star_rotation);
 				p1.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p1.rotateXZBy(m_star_rotation);
 				p2.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p2.rotateXZBy(m_star_rotation);
 				p3.rotateXYBy(wicked_time_of_day * 360 - 90);
-				p3.rotateXZBy(m_star_rotation);
 				vertices[i * 4 + 0].Pos = p;
 				vertices[i * 4 + 0].Color = starcolor;
 				vertices[i * 4 + 1].Pos = p1;

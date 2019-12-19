@@ -1758,8 +1758,7 @@ void Server::SendSetSun(session_t peer_id, const SunParams &params)
 	NetworkPacket pkt(TOCLIENT_SET_SUN, 0, peer_id);
 	pkt << params.visible << params.texture
 		<< params.tonemap << params.sunrise
-		<< params.sunrise_visible << params.rotation
-		<< params.scale;
+		<< params.sunrise_visible << params.scale;
 
 	Send(&pkt);
 }
@@ -1768,8 +1767,7 @@ void Server::SendSetMoon(session_t peer_id, const MoonParams &params)
 	NetworkPacket pkt(TOCLIENT_SET_MOON, 0, peer_id);
 
 	pkt << params.visible << params.texture
-		<< params.tonemap << params.rotation
-		<< params.scale;
+		<< params.tonemap << params.scale;
 		
 	Send(&pkt);
 }
@@ -1778,8 +1776,7 @@ void Server::SendSetStars(session_t peer_id, const StarParams &params)
 	NetworkPacket pkt(TOCLIENT_SET_STARS, 0, peer_id);
 
 	pkt << params.visible << params.count
-		<< params.starcolor << params.rotation
-		<< params.scale;
+		<< params.starcolor << params.scale;
 
 	Send(&pkt);
 }

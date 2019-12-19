@@ -1303,11 +1303,10 @@ void Client::handleCommand_HudSetSun(NetworkPacket *pkt)
 	std::string tonemap;
 	std::string sunrise;
 	bool sunrise_visible;
-	f32 rotation;
 	f32 scale;
 
 	*pkt >> visible >> texture >> tonemap >> sunrise
-		>> sunrise_visible >> rotation >> scale;
+		>> sunrise_visible >> scale;
 
 	ClientEvent *event = new ClientEvent();
 	event->type                       = CE_SET_SUN;
@@ -1317,7 +1316,6 @@ void Client::handleCommand_HudSetSun(NetworkPacket *pkt)
 	event->sun_params.sunrise         = new std::string(sunrise);
 	event->sun_params.sunrise_visible = sunrise_visible;
 	event->sun_params.scale           = scale;
-	event->sun_params.rotation        = rotation;
 	m_client_event_queue.push(event);
 }
 
@@ -1326,18 +1324,15 @@ void Client::handleCommand_HudSetMoon(NetworkPacket *pkt)
 	bool visible;
 	std::string texture;
 	std::string tonemap;
-	f32 rotation;
 	f32 scale;
 
-	*pkt >> visible >> texture >> tonemap
-		>> rotation >> scale;
+	*pkt >> visible >> texture >> tonemap >> scale;
 
 	ClientEvent *event = new ClientEvent();
 	event->type = CE_SET_MOON;
 	event->moon_params.visible   = visible;
 	event->moon_params.texture   = new std::string(texture);
 	event->moon_params.tonemap   = new std::string(tonemap);
-	event->moon_params.rotation  = rotation;
 	event->moon_params.scale     = scale;
 
 	m_client_event_queue.push(event);
@@ -1348,17 +1343,15 @@ void Client::handleCommand_HudSetStars(NetworkPacket *pkt)
 	bool visible;
 	u32 count;
 	video::SColor starcolor;
-	f32 rotation;
 	f32 scale;
 
-	*pkt >> visible >> count >> starcolor >> rotation >> scale;
+	*pkt >> visible >> count >> starcolor >> scale;
 
 	ClientEvent *event = new ClientEvent();
 	event->type                  = CE_SET_STARS;
 	event->star_params.visible   = visible;
 	event->star_params.count     = count;
 	event->star_params.starcolor = starcolor.color;
-	event->star_params.rotation  = rotation;
 	event->star_params.scale     = scale;
 
 	m_client_event_queue.push(event);
