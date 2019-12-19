@@ -2815,17 +2815,24 @@ void Game::processClientEvents(CameraOrientation *cam)
 void Game::updateChat(f32 dtime, const v2u32 &screensize)
 {
 	// Add chat log output for errors to be shown in chat
-	static LogOutputBuffer chat_log_error_buf(g_logger, LL_ERROR);
+	static LogOutputBuffer chat_log_buf(g_logger);
+	static bool logger_initialized = false;
+
+	if (!logger_initialized) {
+		std::string conf_loglev = g_settings->get("chat_log_level");
+		LogLevel log_level = Logger::stringToLevel(conf_loglev);
+		if (log_level == LL_MAX) {
+			warningstream << "Supplied unrecognized chat_log_level; "
+				"showing none." << std::endl;
+			log_level = LL_NONE;
+		}
+		chat_log_buf.setLogLevel(log_level);
+		logger_initialized = true;
+	}
 
 	// Get new messages from error log buffer
-	while (!chat_log_error_buf.empty()) {
-		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
-		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message.insert(0, L"\x1b(c@red)");
-			error_message.append(L"\x1b(c@white)");
-		}
-		chat_backend->addMessage(L"", error_message);
-	}
+	while (!chat_log_buf.empty())
+		chat_backend->addMessage(L"", utf8_to_wide(chat_log_buf.get()));
 
 	// Get new messages from client
 	std::wstring message;
