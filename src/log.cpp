@@ -369,9 +369,10 @@ void StreamLogOutput::logRaw(LogLevel lev, const std::string &line)
 
 	m_stream << line << std::endl;
 
-	if (colored_message)
+	if (colored_message) {
 		// reset to white color
 		m_stream << "\033[0m";
+	}
 }
 
 void LogOutputBuffer::logRaw(LogLevel lev, const std::string &line)
