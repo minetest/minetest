@@ -99,6 +99,12 @@ cinematic_camera_smoothing (Camera smoothing in cinematic mode) float 0.7 0.0 0.
 #    This is helpful when working with nodeboxes in small areas.
 enable_build_where_you_stand (Build inside player) bool false
 
+#    Turn speed with the keyboard in degree per second.
+key_look_sensitivity_horizontal (Keyboard look horizontal sensitivity) float 100.0
+
+#    Look up/down speed with the keyboard in degree per second.
+key_look_sensitivity_vertical (Keyboard look vertical sensitivity) float 75.0
+
 #    If enabled, "Aux1" key instead of "Sneak" key is used for climbing down and
 #    descending.
 aux1_descends (Aux1 key for climbing/descending) bool false
