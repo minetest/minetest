@@ -34,13 +34,18 @@ core.register_entity(":__builtin:falling_node", {
 			end
 		end
 		local def = core.registered_nodes[node.name]
+		if not def then
+			-- Don't allow unknown nodes to fall
+			minetest.log("warning", "Unknown falling node removed at "..minetest.pos_to_string(self.object:get_pos()))
+			self.object:remove()
+			return
+		end
 		self.meta = meta
 		if def.drawtype == "airlike" then
 			self.object:set_properties({
 				is_visible = false,
 			})
 		else
-			local glow = def and def.light_source
 			if def.drawtype == "torchlike" or def.drawtype == "signlike" then
 				local textures
 				if def.tiles and def.tiles[1] then
@@ -55,7 +60,7 @@ core.register_entity(":__builtin:falling_node", {
 					visual = "upright_sprite",
 					visual_size = { x=1, y=1 },
 					textures = textures,
-					glow = glow,
+					glow = def.light_source,
 				})
 			else
 				local itemstring = node.name
@@ -65,7 +70,7 @@ core.register_entity(":__builtin:falling_node", {
 				self.object:set_properties({
 					is_visible = true,
 					wield_item = itemstring,
-					glow = glow,
+					glow = def.light_source,
 				})
 			end
 		end
