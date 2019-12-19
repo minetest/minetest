@@ -36,7 +36,9 @@ core.register_entity(":__builtin:falling_node", {
 		local def = core.registered_nodes[node.name]
 		if not def then
 			-- Don't allow unknown nodes to fall
-			minetest.log("warning", "Unknown falling node removed at "..minetest.pos_to_string(self.object:get_pos()))
+			core.log("warning",
+				"Unknown falling node removed at "..
+				core.pos_to_string(self.object:get_pos()))
 			self.object:remove()
 			return
 		end
@@ -45,39 +47,39 @@ core.register_entity(":__builtin:falling_node", {
 			self.object:set_properties({
 				is_visible = false,
 			})
-		else
-			if def.drawtype == "torchlike" or def.drawtype == "signlike" then
-				local textures
-				if def.tiles and def.tiles[1] then
-					if def.drawtype == "torchlike" then
-						textures = { "("..def.tiles[1]..")^[transformFX", def.tiles[1] }
-					else
-						textures = { def.tiles[1] }
-					end
+		elseif def.drawtype == "torchlike" or def.drawtype == "signlike" then
+			local textures
+			if def.tiles and def.tiles[1] then
+				if def.drawtype == "torchlike" then
+					textures = { "("..def.tiles[1]..")^[transformFX", def.tiles[1] }
+				else
+					textures = { def.tiles[1] }
 				end
-				self.object:set_properties({
-					is_visible = true,
-					visual = "upright_sprite",
-					visual_size = { x=1, y=1 },
-					textures = textures,
-					glow = def.light_source,
-				})
-			else
-				local itemstring = node.name
-				if core.is_colored_paramtype(def.paramtype2) then
-					itemstring = core.itemstring_with_palette(itemstring, node.param2)
-				end
-				self.object:set_properties({
-					is_visible = true,
-					wield_item = itemstring,
-					glow = def.light_source,
-				})
 			end
+			self.object:set_properties({
+				is_visible = true,
+				visual = "upright_sprite",
+				visual_size = { x=1, y=1 },
+				textures = textures,
+				glow = def.light_source,
+			})
+		else
+			local itemstring = node.name
+			if core.is_colored_paramtype(def.paramtype2) then
+				itemstring = core.itemstring_with_palette(itemstring, node.param2)
+			end
+			self.object:set_properties({
+				is_visible = true,
+				wield_item = itemstring,
+				glow = def.light_source,
+			})
 		end
 		-- Rotate entity
 		if def.drawtype == "torchlike" then
 			self.object:set_yaw(math.pi*0.25)
-		elseif (node.param2 ~= 0 and (def.wield_image == "" or def.wield_image == nil)) or def.drawtype == "signlike" then
+		elseif (node.param2 ~= 0 and (def.wield_image == ""
+				or def.wield_image == nil))
+				or def.drawtype == "signlike" then
 			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
 				local fdir = node.param2 % 32
 				local face = fdir % 4
