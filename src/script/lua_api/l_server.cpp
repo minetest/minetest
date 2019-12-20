@@ -233,7 +233,6 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushnumber(L, prot_vers);
 	lua_settable(L, table);
 
-
 	lua_pushstring(L, "formspec_version");
 	lua_pushnumber(L, player->formspec_version);
 	lua_settable(L, table);
@@ -243,7 +242,6 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushnumber(L, ser_vers);
 	lua_settable(L, table);
 
-#ifndef NDEBUG
 	lua_pushstring(L,"major");
 	lua_pushnumber(L, major);
 	lua_settable(L, table);
