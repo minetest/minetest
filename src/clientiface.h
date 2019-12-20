@@ -338,6 +338,7 @@ public:
 	u8 getMajor() const { return m_version_major; }
 	u8 getMinor() const { return m_version_minor; }
 	u8 getPatch() const { return m_version_patch; }
+	const std::string &getFull() const { return m_full_version; }
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version = SER_FMT_VER_INVALID;
