@@ -29,14 +29,16 @@ void ActiveObjectMgr::clear()
 	// delete active objects
 	for (auto &active_object : m_active_objects) {
 		delete active_object.second;
+		// Object must be marked as gone when children try to detach
+		active_object.second = nullptr;
 	}
+	m_active_objects.clear();
 }
 
 void ActiveObjectMgr::step(
 		float dtime, const std::function<void(ClientActiveObject *)> &f)
 {
-	g_profiler->avg("Client::ActiveObjectMgr: num of objects",
-			m_active_objects.size());
+	g_profiler->avg("ActiveObjectMgr: CAO count [#]", m_active_objects.size());
 	for (auto &ao_it : m_active_objects) {
 		f(ao_it.second);
 	}
@@ -91,15 +93,16 @@ void ActiveObjectMgr::removeObject(u16 id)
 void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest)
 {
+	f32 max_d2 = max_d * max_d;
 	for (auto &ao_it : m_active_objects) {
 		ClientActiveObject *obj = ao_it.second;
 
-		f32 d = (obj->getPosition() - origin).getLength();
+		f32 d2 = (obj->getPosition() - origin).getLengthSQ();
 
-		if (d > max_d)
+		if (d2 > max_d2)
 			continue;
 
-		dest.emplace_back(obj, d);
+		dest.emplace_back(obj, d2);
 	}
 }
 

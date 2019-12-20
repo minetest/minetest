@@ -31,8 +31,6 @@ struct MapDrawControl
 	bool range_all = false;
 	// Wanted drawing range
 	float wanted_range = 0.0f;
-	// Maximum number of blocks to draw
-	u32 wanted_max_blocks = 0;
 	// show a wire frame for debugging
 	bool show_wireframe = false;
 };

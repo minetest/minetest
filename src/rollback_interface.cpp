@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 RollbackNode::RollbackNode(Map *map, v3s16 p, IGameDef *gamedef)
 {
 	const NodeDefManager *ndef = gamedef->ndef();
-	MapNode n = map->getNodeNoEx(p);
+	MapNode n = map->getNode(p);
 	name = ndef->get(n).name;
 	param1 = n.param1;
 	param2 = n.param2;
@@ -132,7 +132,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 			// Make sure position is loaded from disk
 			map->emergeBlock(getContainerPos(p, MAP_BLOCKSIZE), false);
 			// Check current node
-			MapNode current_node = map->getNodeNoEx(p);
+			MapNode current_node = map->getNode(p);
 			std::string current_name = ndef->get(current_node).name;
 			// If current node not the new node, it's bad
 			if (current_name != n_new.name) {
@@ -176,7 +176,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				MapEditEvent event;
 				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
 				event.p = p;
-				map->dispatchEvent(&event);
+				map->dispatchEvent(event);
 			} catch (InvalidPositionException &e) {
 				infostream << "RollbackAction::applyRevert(): "
 					<< "InvalidPositionException: " << e.what()

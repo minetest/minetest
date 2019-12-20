@@ -151,6 +151,10 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		bool simple_catch_up = true;
 		getboolfield(L, current_abm, "catch_up", simple_catch_up);
 
+		lua_getfield(L, current_abm, "action");
+		luaL_checktype(L, current_abm + 1, LUA_TFUNCTION);
+		lua_pop(L, 1);
+
 		LuaABM *abm = new LuaABM(L, id, trigger_contents, required_neighbors,
 			trigger_interval, trigger_chance, simple_catch_up);
 
@@ -199,6 +203,10 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 
 		bool run_at_every_load = getboolfield_default(L, current_lbm,
 			"run_at_every_load", false);
+
+		lua_getfield(L, current_lbm, "action");
+		luaL_checktype(L, current_lbm + 1, LUA_TFUNCTION);
+		lua_pop(L, 1);
 
 		LuaLBM *lbm = new LuaLBM(L, id, trigger_contents, name,
 			run_at_every_load);

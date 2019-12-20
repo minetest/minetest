@@ -498,8 +498,8 @@ void GridNodeContainer::initNode(v3s16 ipos, PathGridnode *p_node)
 
 	v3s16 realpos = m_pathf->getRealPos(ipos);
 
-	MapNode current = m_pathf->m_env->getMap().getNodeNoEx(realpos);
-	MapNode below   = m_pathf->m_env->getMap().getNodeNoEx(realpos + v3s16(0, -1, 0));
+	MapNode current = m_pathf->m_env->getMap().getNode(realpos);
+	MapNode below   = m_pathf->m_env->getMap().getNode(realpos + v3s16(0, -1, 0));
 
 
 	if ((current.param0 == CONTENT_IGNORE) ||
@@ -769,7 +769,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 		return retval;
 	}
 
-	MapNode node_at_pos2 = m_env->getMap().getNodeNoEx(pos2);
+	MapNode node_at_pos2 = m_env->getMap().getNode(pos2);
 
 	//did we get information about node?
 	if (node_at_pos2.param0 == CONTENT_IGNORE ) {
@@ -780,7 +780,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 
 	if (!ndef->get(node_at_pos2).walkable) {
 		MapNode node_below_pos2 =
-							m_env->getMap().getNodeNoEx(pos2 + v3s16(0, -1, 0));
+			m_env->getMap().getNode(pos2 + v3s16(0, -1, 0));
 
 		//did we get information about node?
 		if (node_below_pos2.param0 == CONTENT_IGNORE ) {
@@ -798,13 +798,13 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 		}
 		else {
 			v3s16 testpos = pos2 - v3s16(0, -1, 0);
-			MapNode node_at_pos = m_env->getMap().getNodeNoEx(testpos);
+			MapNode node_at_pos = m_env->getMap().getNode(testpos);
 
 			while ((node_at_pos.param0 != CONTENT_IGNORE) &&
 					(!ndef->get(node_at_pos).walkable) &&
 					(testpos.Y > m_limits.MinEdge.Y)) {
 				testpos += v3s16(0, -1, 0);
-				node_at_pos = m_env->getMap().getNodeNoEx(testpos);
+				node_at_pos = m_env->getMap().getNode(testpos);
 			}
 
 			//did we find surface?
@@ -832,13 +832,13 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 	}
 	else {
 		v3s16 testpos = pos2;
-		MapNode node_at_pos = m_env->getMap().getNodeNoEx(testpos);
+		MapNode node_at_pos = m_env->getMap().getNode(testpos);
 
 		while ((node_at_pos.param0 != CONTENT_IGNORE) &&
 				(ndef->get(node_at_pos).walkable) &&
 				(testpos.Y < m_limits.MaxEdge.Y)) {
 			testpos += v3s16(0, 1, 0);
-			node_at_pos = m_env->getMap().getNodeNoEx(testpos);
+			node_at_pos = m_env->getMap().getNode(testpos);
 		}
 
 		//did we find surface?

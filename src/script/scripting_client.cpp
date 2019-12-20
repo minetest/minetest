@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_client.h"
 #include "lua_api/l_env.h"
 #include "lua_api/l_item.h"
+#include "lua_api/l_itemstackmeta.h"
 #include "lua_api/l_minimap.h"
 #include "lua_api/l_modchannels.h"
 #include "lua_api/l_particles_local.h"
@@ -67,6 +68,8 @@ ClientScripting::ClientScripting(Client *client):
 void ClientScripting::InitializeModApi(lua_State *L, int top)
 {
 	LuaItemStack::Register(L);
+	ItemStackMetaRef::Register(L);
+	LuaRaycast::Register(L);
 	StorageRef::Register(L);
 	LuaMinimap::Register(L);
 	NodeMetaRef::RegisterClient(L);
@@ -84,8 +87,7 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 
 void ClientScripting::on_client_ready(LocalPlayer *localplayer)
 {
-	lua_State *L = getStack();
-	LuaLocalPlayer::create(L, localplayer);
+	LuaLocalPlayer::create(getStack(), localplayer);
 }
 
 void ClientScripting::on_camera_ready(Camera *camera)

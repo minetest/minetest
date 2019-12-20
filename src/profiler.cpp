@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "profiler.h"
+#include "porting.h"
 
 static Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
@@ -26,8 +27,9 @@ ScopeProfiler::ScopeProfiler(
 		m_profiler(profiler),
 		m_name(name), m_type(type)
 {
+	m_name.append(" [ms]");
 	if (m_profiler)
-		m_timer = new TimeTaker(m_name);
+		m_timer = new TimeTaker(m_name, nullptr, PRECISION_MILLI);
 }
 
 ScopeProfiler::~ScopeProfiler()
@@ -51,4 +53,130 @@ ScopeProfiler::~ScopeProfiler()
 		}
 	}
 	delete m_timer;
+}
+
+Profiler::Profiler()
+{
+	m_start_time = porting::getTimeMs();
+}
+
+void Profiler::add(const std::string &name, float value)
+{
+	MutexAutoLock lock(m_mutex);
+	{
+		/* No average shall have been used; mark add used as -2 */
+		std::map<std::string, int>::iterator n = m_avgcounts.find(name);
+		if (n == m_avgcounts.end()) {
+			m_avgcounts[name] = -2;
+		} else {
+			if (n->second == -1)
+				n->second = -2;
+			assert(n->second == -2);
+		}
+	}
+	{
+		std::map<std::string, float>::iterator n = m_data.find(name);
+		if (n == m_data.end())
+			m_data[name] = value;
+		else
+			n->second += value;
+	}
+}
+
+void Profiler::avg(const std::string &name, float value)
+{
+	MutexAutoLock lock(m_mutex);
+	int &count = m_avgcounts[name];
+
+	assert(count != -2);
+	count = MYMAX(count, 0) + 1;
+	m_data[name] += value;
+}
+
+void Profiler::clear()
+{
+	MutexAutoLock lock(m_mutex);
+	for (auto &it : m_data) {
+		it.second = 0;
+	}
+	m_avgcounts.clear();
+	m_start_time = porting::getTimeMs();
+}
+
+float Profiler::getValue(const std::string &name) const
+{
+	auto numerator = m_data.find(name);
+	if (numerator == m_data.end())
+		return 0.f;
+
+	auto denominator = m_avgcounts.find(name);
+	if (denominator != m_avgcounts.end()) {
+		if (denominator->second >= 1)
+			return numerator->second / denominator->second;
+	}
+
+	return numerator->second;
+}
+
+int Profiler::getAvgCount(const std::string &name) const
+{
+	auto n = m_avgcounts.find(name);
+
+	if (n != m_avgcounts.end() && n->second >= 1)
+		return n->second;
+
+	return 1;
+}
+
+u64 Profiler::getElapsedMs() const
+{
+	return porting::getTimeMs() - m_start_time;
+}
+
+int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
+{
+	GraphValues values;
+	getPage(values, page, pagecount);
+	char num_buf[50];
+
+	for (const auto &i : values) {
+		o << "  " << i.first << " ";
+		if (i.second == 0) {
+			o << std::endl;
+			continue;
+		}
+
+		s32 space = 44 - i.first.size();
+		for (s32 j = 0; j < space; j++) {
+			if ((j & 1) && j < space - 1)
+				o << ".";
+			else
+				o << " ";
+		}
+		porting::mt_snprintf(num_buf, sizeof(num_buf), "% 4ix % 3g",
+				getAvgCount(i.first), i.second);
+		o << num_buf << std::endl;
+	}
+	return values.size();
+}
+
+void Profiler::getPage(GraphValues &o, u32 page, u32 pagecount)
+{
+	MutexAutoLock lock(m_mutex);
+
+	u32 minindex, maxindex;
+	paging(m_data.size(), page, pagecount, minindex, maxindex);
+
+	for (const auto &i : m_data) {
+		if (maxindex == 0)
+			break;
+		maxindex--;
+
+		if (minindex != 0) {
+			minindex--;
+			continue;
+		}
+
+		o[i.first] = i.second / getAvgCount(i.first);
+	}
 }

@@ -18,7 +18,7 @@ function core.register_privilege(name, param)
 			def.description = "(no description)"
 		end
 	end
-	local def = {}
+	local def
 	if type(param) == "table" then
 		def = param
 	else

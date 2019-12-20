@@ -1,8 +1,7 @@
 -- cache setting
 local enable_damage = core.settings:get_bool("enable_damage")
 
-local health_bar_definition =
-{
+local health_bar_definition = {
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "heart.png",
@@ -12,8 +11,7 @@ local health_bar_definition =
 	offset = { x=(-10*24)-25, y=-(48+24+16)},
 }
 
-local breath_bar_definition =
-{
+local breath_bar_definition = {
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "bubble.png",
@@ -30,8 +28,8 @@ local function scaleToDefault(player, field)
 	local current = player["get_" .. field](player)
 	local nominal = core["PLAYER_MAX_".. field:upper() .. "_DEFAULT"]
 	local max_display = math.max(nominal,
- 		math.max(player:get_properties()[field .. "_max"], current))
- 	return current / max_display * nominal 
+		math.max(player:get_properties()[field .. "_max"], current))
+	return current / max_display * nominal
 end
 
 local function update_builtin_statbars(player)
@@ -50,10 +48,11 @@ local function update_builtin_statbars(player)
 	end
 	local hud = hud_ids[name]
 
-	if flags.healthbar and enable_damage then
+	local immortal = player:get_armor_groups().immortal == 1
+	if flags.healthbar and enable_damage and not immortal then
 		local number = scaleToDefault(player, "hp")
- 		if hud.id_healthbar == nil then
- 			local hud_def = table.copy(health_bar_definition)
+		if hud.id_healthbar == nil then
+			local hud_def = table.copy(health_bar_definition)
 			hud_def.number = number
 			hud.id_healthbar = player:hud_add(hud_def)
 		else
@@ -65,11 +64,11 @@ local function update_builtin_statbars(player)
 	end
 
 	local breath_max = player:get_properties().breath_max
-	if flags.breathbar and enable_damage and
+	if flags.breathbar and enable_damage and not immortal and
 			player:get_breath() < breath_max then
 		local number = 2 * scaleToDefault(player, "breath")
 		if hud.id_breathbar == nil then
- 			local hud_def = table.copy(breath_bar_definition)
+			local hud_def = table.copy(breath_bar_definition)
 			hud_def.number = number
 			hud.id_breathbar = player:hud_add(hud_def)
 		else
@@ -116,7 +115,7 @@ local function player_event_handler(player,eventname)
 		end
 	end
 
-	if eventname == "hud_changed" then
+	if eventname == "hud_changed" or eventname == "properties_changed" then
 		update_builtin_statbars(player)
 		return true
 	end
@@ -124,14 +123,14 @@ local function player_event_handler(player,eventname)
 	return false
 end
 
-function core.hud_replace_builtin(name, definition)
+function core.hud_replace_builtin(hud_name, definition)
 
 	if type(definition) ~= "table" or
 			definition.hud_elem_type ~= "statbar" then
 		return false
 	end
 
-	if name == "health" then
+	if hud_name == "health" then
 		health_bar_definition = definition
 
 		for name, ids in pairs(hud_ids) do
@@ -145,7 +144,7 @@ function core.hud_replace_builtin(name, definition)
 		return true
 	end
 
-	if name == "breath" then
+	if hud_name == "breath" then
 		breath_bar_definition = definition
 
 		for name, ids in pairs(hud_ids) do

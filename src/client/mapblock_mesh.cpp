@@ -795,6 +795,7 @@ static void getTileInfo(
 		v3s16 &p_corrected,
 		v3s16 &face_dir_corrected,
 		u16 *lights,
+		u8 &waving,
 		TileSpec &tile
 	)
 {
@@ -842,6 +843,7 @@ static void getTileInfo(
 
 	getNodeTile(n, p_corrected, face_dir_corrected, data, tile);
 	const ContentFeatures &f = ndef->get(n);
+	waving = f.waving;
 	tile.emissive_light = f.light_source;
 
 	// eg. water and glass
@@ -876,6 +878,10 @@ static void updateFastFaceRow(
 		const v3s16 &&face_dir,
 		std::vector<FastFace> &dest)
 {
+	static thread_local const bool waving_liquids =
+		g_settings->getBool("enable_shaders") &&
+		g_settings->getBool("enable_waving_water");
+
 	v3s16 p = startpos;
 
 	u16 continuous_tiles_count = 1;
@@ -884,10 +890,11 @@ static void updateFastFaceRow(
 	v3s16 p_corrected;
 	v3s16 face_dir_corrected;
 	u16 lights[4] = {0, 0, 0, 0};
+	u8 waving;
 	TileSpec tile;
 	getTileInfo(data, p, face_dir,
 			makes_face, p_corrected, face_dir_corrected,
-			lights, tile);
+			lights, waving, tile);
 
 	// Unroll this variable which has a significant build cost
 	TileSpec next_tile;
@@ -910,12 +917,15 @@ static void updateFastFaceRow(
 			getTileInfo(data, p_next, face_dir,
 					next_makes_face, next_p_corrected,
 					next_face_dir_corrected, next_lights,
+					waving,
 					next_tile);
 
 			if (next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
 					&& memcmp(next_lights, lights, ARRLEN(lights) * sizeof(u16)) == 0
+					// Don't apply fast faces to waving water.
+					&& (waving != 3 || !waving_liquids)
 					&& next_tile.isTileable(tile)) {
 				next_is_different = false;
 				continuous_tiles_count++;
@@ -942,10 +952,7 @@ static void updateFastFaceRow(
 
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
 						pf, sp, face_dir_corrected, scale, dest);
-
-				g_profiler->avg("Meshgen: faces drawn by tiling", 0);
-				for (int i = 1; i < continuous_tiles_count; i++)
-					g_profiler->avg("Meshgen: faces drawn by tiling", 1);
+				g_profiler->avg("Meshgen: Tiles per face [#]", continuous_tiles_count);
 			}
 
 			continuous_tiles_count = 1;

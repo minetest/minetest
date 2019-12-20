@@ -14,15 +14,14 @@ the arrow buttons where there is insufficient space.
 #include <IGUIButton.h>
 #include <IGUISkin.h>
 
-guiScrollBar::guiScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
+GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
 		core::rect<s32> rectangle, bool horizontal, bool auto_scale) :
 		IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
 		up_button(nullptr), down_button(nullptr), is_dragging(false),
 		is_horizontal(horizontal), is_auto_scaling(auto_scale),
 		dragged_by_slider(false), tray_clicked(false), scroll_pos(0),
 		draw_center(0), thumb_size(0), min_pos(0), max_pos(100), small_step(10),
-		large_step(50), desired_pos(0), last_change(0), drag_offset(0),
-		page_size(100), border_size(0)
+		large_step(50), last_change(0), drag_offset(0), page_size(100), border_size(0)
 {
 	refreshControls();
 	setNotClipped(false);
@@ -31,7 +30,7 @@ guiScrollBar::guiScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s3
 	setPos(0);
 }
 
-bool guiScrollBar::OnEvent(const SEvent &event)
+bool GUIScrollBar::OnEvent(const SEvent &event)
 {
 	if (isEnabled()) {
 		switch (event.EventType) {
@@ -116,12 +115,25 @@ bool guiScrollBar::OnEvent(const SEvent &event)
 				if (is_inside) {
 					is_dragging = true;
 					dragged_by_slider = slider_rect.isPointInside(p);
-					core::vector2di corner =
-							slider_rect.UpperLeftCorner;
-					drag_offset = is_horizontal ? p.X - corner.X
-								    : p.Y - corner.Y;
+					core::vector2di corner = slider_rect.UpperLeftCorner;
+					drag_offset = is_horizontal ? p.X - corner.X : p.Y - corner.Y;
 					tray_clicked = !dragged_by_slider;
-					desired_pos = getPosFromMousePos(p);
+					if (tray_clicked) {
+						const s32 new_pos = getPosFromMousePos(p);
+						const s32 old_pos = scroll_pos;
+						setPos(new_pos);
+						// drag in the middle
+						drag_offset = thumb_size / 2;
+						// report the scroll event
+						if (scroll_pos != old_pos && Parent) {
+							SEvent e;
+							e.EventType = EET_GUI_EVENT;
+							e.GUIEvent.Caller = this;
+							e.GUIEvent.Element = nullptr;
+							e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+							Parent->OnEvent(e);
+						}
+					}
 					Environment->setFocus(this);
 					return true;
 				}
@@ -158,10 +170,7 @@ bool guiScrollBar::OnEvent(const SEvent &event)
 				const s32 new_pos = getPosFromMousePos(p);
 				const s32 old_pos = scroll_pos;
 
-				if (dragged_by_slider)
-					setPos(new_pos);
-				else
-					desired_pos = new_pos;
+				setPos(new_pos);
 
 				if (scroll_pos != old_pos && Parent) {
 					SEvent e;
@@ -184,33 +193,7 @@ bool guiScrollBar::OnEvent(const SEvent &event)
 	return IGUIElement::OnEvent(event);
 }
 
-void guiScrollBar::OnPostRender(u32 timeMs)
-{
-	if (is_dragging && !dragged_by_slider && tray_clicked &&
-			timeMs > last_change + 200) {
-		last_change = timeMs;
-		const s32 old_pos = scroll_pos;
-
-		if (desired_pos >= scroll_pos + large_step)
-			setPos(scroll_pos + large_step);
-		else if (desired_pos <= scroll_pos - large_step)
-			setPos(scroll_pos - large_step);
-		else if (desired_pos >= scroll_pos - large_step &&
-				desired_pos <= scroll_pos + large_step)
-			setPos(desired_pos);
-
-		if (scroll_pos != old_pos && Parent) {
-			SEvent e;
-			e.EventType = EET_GUI_EVENT;
-			e.GUIEvent.Caller = this;
-			e.GUIEvent.Element = nullptr;
-			e.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-			Parent->OnEvent(e);
-		}
-	}
-}
-
-void guiScrollBar::draw()
+void GUIScrollBar::draw()
 {
 	if (!IsVisible)
 		return;
@@ -245,14 +228,14 @@ void guiScrollBar::draw()
 	IGUIElement::draw();
 }
 
-void guiScrollBar::updateAbsolutePosition()
+void GUIScrollBar::updateAbsolutePosition()
 {
 	IGUIElement::updateAbsolutePosition();
 	refreshControls();
 	setPos(scroll_pos);
 }
 
-s32 guiScrollBar::getPosFromMousePos(const core::position2di &pos) const
+s32 GUIScrollBar::getPosFromMousePos(const core::position2di &pos) const
 {
 	s32 w, p;
 	s32 offset = dragged_by_slider ? drag_offset : thumb_size / 2;
@@ -264,10 +247,10 @@ s32 guiScrollBar::getPosFromMousePos(const core::position2di &pos) const
 		w = RelativeRect.getHeight() - border_size * 2 - thumb_size;
 		p = pos.Y - AbsoluteRect.UpperLeftCorner.Y - border_size - offset;
 	}
-	return core::isnotzero(range()) ? s32(f32(p) / f32(w) * range()) + min_pos : 0;
+	return core::isnotzero(range()) ? s32(f32(p) / f32(w) * range() + 0.5f) + min_pos : 0;
 }
 
-void guiScrollBar::setPos(const s32 &pos)
+void GUIScrollBar::setPos(const s32 &pos)
 {
 	s32 thumb_area = 0;
 	s32 thumb_min = 0;
@@ -289,20 +272,21 @@ void guiScrollBar::setPos(const s32 &pos)
 
 	f32 f = core::isnotzero(range()) ? (f32(thumb_area) - f32(thumb_size)) / range()
 					 : 1.0f;
-	draw_center = s32((f32(scroll_pos) * f) + (f32(thumb_size) * 0.5f)) + border_size;
+	draw_center = s32((f32(scroll_pos - min_pos) * f) + (f32(thumb_size) * 0.5f)) +
+		border_size;
 }
 
-void guiScrollBar::setSmallStep(const s32 &step)
+void GUIScrollBar::setSmallStep(const s32 &step)
 {
 	small_step = step > 0 ? step : 10;
 }
 
-void guiScrollBar::setLargeStep(const s32 &step)
+void GUIScrollBar::setLargeStep(const s32 &step)
 {
 	large_step = step > 0 ? step : 50;
 }
 
-void guiScrollBar::setMax(const s32 &max)
+void GUIScrollBar::setMax(const s32 &max)
 {
 	max_pos = max;
 	if (min_pos > max_pos)
@@ -314,7 +298,7 @@ void guiScrollBar::setMax(const s32 &max)
 	setPos(scroll_pos);
 }
 
-void guiScrollBar::setMin(const s32 &min)
+void GUIScrollBar::setMin(const s32 &min)
 {
 	min_pos = min;
 	if (max_pos < min_pos)
@@ -326,18 +310,24 @@ void guiScrollBar::setMin(const s32 &min)
 	setPos(scroll_pos);
 }
 
-void guiScrollBar::setPageSize(const s32 &size)
+void GUIScrollBar::setPageSize(const s32 &size)
 {
 	page_size = size;
 	setPos(scroll_pos);
 }
 
-s32 guiScrollBar::getPos() const
+void GUIScrollBar::setArrowsVisible(ArrowVisibility visible)
+{
+	arrow_visibility = visible;
+	refreshControls();
+}
+
+s32 GUIScrollBar::getPos() const
 {
 	return scroll_pos;
 }
 
-void guiScrollBar::refreshControls()
+void GUIScrollBar::refreshControls()
 {
 	IGUISkin *skin = Environment->getSkin();
 	IGUISpriteBank *sprites = nullptr;
@@ -436,7 +426,21 @@ void guiScrollBar::refreshControls()
 		down_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT,
 				EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 	}
-	bool visible = (border_size != 0);
+
+	bool visible;
+	if (arrow_visibility == DEFAULT)
+		visible = (border_size != 0);
+	else if (arrow_visibility == HIDE) {
+		visible = false;
+		border_size = 0;
+	} else {
+		visible = true;
+		if (is_horizontal)
+			border_size = RelativeRect.getHeight();
+		else
+			border_size = RelativeRect.getWidth();
+	}
+
 	up_button->setVisible(visible);
 	down_button->setVisible(visible);
 }

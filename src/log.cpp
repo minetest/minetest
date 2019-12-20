@@ -310,16 +310,32 @@ void Logger::logToOutputs(LogLevel lev, const std::string &combined,
 //// *LogOutput methods
 ////
 
-void FileLogOutput::open(const std::string &filename)
+void FileLogOutput::setFile(const std::string &filename, s64 file_size_max)
 {
-	m_stream.open(filename.c_str(), std::ios::app | std::ios::ate);
+	// Only move debug.txt if there is a valid maximum file size
+	bool is_too_large = false;
+	if (file_size_max > 0) {
+		std::ifstream ifile(filename, std::ios::binary | std::ios::ate);
+		is_too_large = ifile.tellg() > file_size_max;
+		ifile.close();
+	}
+
+	if (is_too_large) {
+		std::string filename_secondary = filename + ".1";
+		actionstream << "The log file grew too big; it is moved to " <<
+			filename_secondary << std::endl;
+		remove(filename_secondary.c_str());
+		rename(filename.c_str(), filename_secondary.c_str());
+	}
+	m_stream.open(filename, std::ios::app | std::ios::ate);
+
 	if (!m_stream.good())
 		throw FileNotGoodException("Failed to open log file " +
 			filename + ": " + strerror(errno));
 	m_stream << "\n\n"
-		   "-------------" << std::endl
-		<< "  Separator" << std::endl
-		<< "-------------\n" << std::endl;
+		"-------------" << std::endl <<
+		"  Separator" << std::endl <<
+		"-------------\n" << std::endl;
 }
 
 

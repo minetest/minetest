@@ -31,19 +31,24 @@ LuaCamera::LuaCamera(Camera *m) : m_camera(m)
 
 void LuaCamera::create(lua_State *L, Camera *m)
 {
+	lua_getglobal(L, "core");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int objectstable = lua_gettop(L);
+	lua_getfield(L, -1, "camera");
+
+	// Duplication check
+	if (lua_type(L, -1) == LUA_TUSERDATA) {
+		lua_pop(L, 1);
+		return;
+	}
+
 	LuaCamera *o = new LuaCamera(m);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 
-	int camera_object = lua_gettop(L);
-
-	lua_getglobal(L, "core");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int coretable = lua_gettop(L);
-
-	lua_pushvalue(L, camera_object);
-	lua_setfield(L, coretable, "camera");
+	lua_pushvalue(L, lua_gettop(L));
+	lua_setfield(L, objectstable, "camera");
 }
 
 int LuaCamera::l_set_camera_mode(lua_State *L)
@@ -103,11 +108,10 @@ int LuaCamera::l_get_pos(lua_State *L)
 
 int LuaCamera::l_get_offset(lua_State *L)
 {
-	Camera *camera = getobject(L, 1);
-	if (!camera)
-		return 0;
+	LocalPlayer *player = getClient(L)->getEnv().getLocalPlayer();
+	sanity_check(player);
 
-	push_v3s16(L, camera->getOffset());
+	push_v3f(L, player->getEyeOffset() / BS);
 	return 1;
 }
 

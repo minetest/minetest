@@ -187,7 +187,8 @@ int ObjectRef::l_punch(lua_State *L)
 	u16 dst_origin_hp = puncher->getHP();
 
 	// Do it
-	co->punch(dir, &toolcap, puncher, time_from_last_punch);
+	u16 wear = co->punch(dir, &toolcap, puncher, time_from_last_punch);
+	lua_pushnumber(L, wear);
 
 	// If the punched is a player, and its HP changed
 	if (src_original_hp != co->getHP() &&
@@ -202,7 +203,7 @@ int ObjectRef::l_punch(lua_State *L)
 		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)puncher,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, co));
 	}
-	return 0;
+	return 1;
 }
 
 // right_click(self, clicker); clicker = an another ObjectRef
@@ -308,8 +309,9 @@ int ObjectRef::l_get_wield_list(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if (co == NULL) return 0;
-	// Do it
+	if (!co)
+		return 0;
+
 	lua_pushstring(L, co->getWieldList().c_str());
 	return 1;
 }
@@ -320,8 +322,9 @@ int ObjectRef::l_get_wield_index(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if (co == NULL) return 0;
-	// Do it
+	if (!co)
+		return 0;
+
 	lua_pushinteger(L, co->getWieldIndex() + 1);
 	return 1;
 }
@@ -332,13 +335,15 @@ int ObjectRef::l_get_wielded_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if (co == NULL) {
+	if (!co) {
 		// Empty ItemStack
 		LuaItemStack::create(L, ItemStack());
 		return 1;
 	}
-	// Do it
-	LuaItemStack::create(L, co->getWieldedItem());
+
+	ItemStack selected_item;
+	co->getWieldedItem(&selected_item, nullptr);
+	LuaItemStack::create(L, selected_item);
 	return 1;
 }
 
@@ -353,7 +358,7 @@ int ObjectRef::l_set_wielded_item(lua_State *L)
 	ItemStack item = read_item(L, 2, getServer(L)->idef());
 	bool success = co->setWieldedItem(item);
 	if (success && co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendInventory(((PlayerSAO*)co));
+		getServer(L)->SendInventory((PlayerSAO *)co, true);
 	}
 	lua_pushboolean(L, success);
 	return 1;
@@ -757,20 +762,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 	if (!prop)
 		return 0;
 
-	read_object_properties(L, 2, prop, getServer(L)->idef());
-
-	PlayerSAO *player = getplayersao(ref);
-
-	if (prop->hp_max < co->getHP()) {
-		PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
-		co->setHP(prop->hp_max, reason);
-		if (player)
-			getServer(L)->SendPlayerHPOrDie(player, reason);
-	}
-
-	if (player && prop->breath_max < player->getBreath())
-		player->setBreath(prop->breath_max);
-
+	read_object_properties(L, 2, co, prop, getServer(L)->idef());
 	co->notifyObjectPropertiesModified();
 	return 0;
 }
@@ -1103,6 +1095,27 @@ int ObjectRef::l_get_player_velocity(lua_State *L)
 	return 1;
 }
 
+// add_player_velocity(self, {x=num, y=num, z=num})
+int ObjectRef::l_add_player_velocity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	v3f vel = checkFloatPos(L, 2);
+
+	RemotePlayer *player = getplayer(ref);
+	PlayerSAO *co = getplayersao(ref);
+	if (!player || !co)
+		return 0;
+
+	session_t peer_id = player->getPeerId();
+	if (peer_id == PEER_ID_INEXISTENT)
+		return 0;
+	// Do it
+	co->setMaxSpeedOverride(vel);
+	getServer(L)->SendPlayerSpeed(peer_id, vel);
+	return 0;
+}
+
 // get_look_dir(self)
 int ObjectRef::l_get_look_dir(lua_State *L)
 {
@@ -1237,6 +1250,37 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	// Do it
 	co->setPlayerYawAndSend(yaw);
 	return 1;
+}
+
+// set_fov(self, degrees[, is_multiplier])
+int ObjectRef::l_set_fov(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+
+	player->setFov({ static_cast<f32>(luaL_checknumber(L, 2)), readParam<bool>(L, 3) });
+	getServer(L)->SendPlayerFov(player->getPeerId());
+
+	return 0;
+}
+
+// get_fov(self)
+int ObjectRef::l_get_fov(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+
+	PlayerFovSpec fov_spec = player->getFov();
+	lua_pushnumber(L, fov_spec.fov);
+	lua_pushboolean(L, fov_spec.is_multiplier);
+
+	return 2;
 }
 
 // set_breath(self, breath)
@@ -1942,6 +1986,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, is_player_connected),
 	luamethod(ObjectRef, get_player_name),
 	luamethod(ObjectRef, get_player_velocity),
+	luamethod(ObjectRef, add_player_velocity),
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),
@@ -1951,6 +1996,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_look_vertical),
 	luamethod(ObjectRef, set_look_yaw),
 	luamethod(ObjectRef, set_look_pitch),
+	luamethod(ObjectRef, get_fov),
+	luamethod(ObjectRef, set_fov),
 	luamethod(ObjectRef, get_breath),
 	luamethod(ObjectRef, set_breath),
 	luamethod(ObjectRef, get_attribute),

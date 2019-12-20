@@ -35,7 +35,12 @@ core.register_entity(":__builtin:item", {
 	itemstring = "",
 	moving_state = true,
 	slippery_state = false,
+	physical_state = true,
+	-- Item expiry
 	age = 0,
+	-- Pushing item out of solid nodes
+	force_out = nil,
+	force_out_start = nil,
 
 	set_item = function(self, item)
 		local stack = ItemStack(item or self.itemstring)
@@ -53,6 +58,8 @@ core.register_entity(":__builtin:item", {
 		local count = math.min(stack:get_count(), max_count)
 		local size = 0.2 + 0.1 * (count / max_count) ^ (1 / 3)
 		local coll_height = size * 0.75
+		local def = core.registered_nodes[itemname]
+		local glow = def and def.light_source
 
 		self.object:set_properties({
 			is_visible = true,
@@ -64,6 +71,7 @@ core.register_entity(":__builtin:item", {
 			selectionbox = {-size, -size, -size, size, size, size},
 			automatic_rotate = math.pi * 0.5 * 0.2 / size,
 			wield_item = self.itemstring,
+			glow = glow,
 		})
 
 	end,
@@ -131,6 +139,24 @@ core.register_entity(":__builtin:item", {
 		return true
 	end,
 
+	enable_physics = function(self)
+		if not self.physical_state then
+			self.physical_state = true
+			self.object:set_properties({physical = true})
+			self.object:set_velocity({x=0, y=0, z=0})
+			self.object:set_acceleration({x=0, y=-gravity, z=0})
+		end
+	end,
+
+	disable_physics = function(self)
+		if self.physical_state then
+			self.physical_state = false
+			self.object:set_properties({physical = false})
+			self.object:set_velocity({x=0, y=0, z=0})
+			self.object:set_acceleration({x=0, y=0, z=0})
+		end
+	end,
+
 	on_step = function(self, dtime)
 		self.age = self.age + dtime
 		if time_to_live > 0 and self.age > time_to_live then
@@ -152,6 +178,74 @@ core.register_entity(":__builtin:item", {
 			return
 		end
 
+		local is_stuck = false
+		local snode = core.get_node_or_nil(pos)
+		if snode then
+			local sdef = core.registered_nodes[snode.name] or {}
+			is_stuck = (sdef.walkable == nil or sdef.walkable == true)
+				and (sdef.collision_box == nil or sdef.collision_box.type == "regular")
+				and (sdef.node_box == nil or sdef.node_box.type == "regular")
+		end
+
+		-- Push item out when stuck inside solid node
+		if is_stuck then
+			local shootdir
+			local order = {
+				{x=1, y=0, z=0}, {x=-1, y=0, z= 0},
+				{x=0, y=0, z=1}, {x= 0, y=0, z=-1},
+			}
+
+			-- Check which one of the 4 sides is free
+			for o = 1, #order do
+				local cnode = core.get_node(vector.add(pos, order[o])).name
+				local cdef = core.registered_nodes[cnode] or {}
+				if cnode ~= "ignore" and cdef.walkable == false then
+					shootdir = order[o]
+					break
+				end
+			end
+			-- If none of the 4 sides is free, check upwards
+			if not shootdir then
+				shootdir = {x=0, y=1, z=0}
+				local cnode = core.get_node(vector.add(pos, shootdir)).name
+				if cnode == "ignore" then
+					shootdir = nil -- Do not push into ignore
+				end
+			end
+
+			if shootdir then
+				-- Set new item moving speed accordingly
+				local newv = vector.multiply(shootdir, 3)
+				self:disable_physics()
+				self.object:set_velocity(newv)
+
+				self.force_out = newv
+				self.force_out_start = vector.round(pos)
+				return
+			end
+		elseif self.force_out then
+			-- This code runs after the entity got a push from the above code.
+			-- It makes sure the entity is entirely outside the solid node
+			local c = self.object:get_properties().collisionbox
+			local s = self.force_out_start
+			local f = self.force_out
+			local ok = (f.x > 0 and pos.x + c[1] > s.x + 0.5) or
+				(f.y > 0 and pos.y + c[2] > s.y + 0.5) or
+				(f.z > 0 and pos.z + c[3] > s.z + 0.5) or
+				(f.x < 0 and pos.x + c[4] < s.x - 0.5) or
+				(f.z < 0 and pos.z + c[6] < s.z - 0.5)
+			if ok then
+				-- Item was successfully forced out
+				self.force_out = nil
+				self:enable_physics()
+			end
+		end
+
+		if not self.physical_state then
+			return -- Don't do anything
+		end
+
+		-- Slide on slippery nodes
 		local vel = self.object:get_velocity()
 		local def = node and core.registered_nodes[node.name]
 		local is_moving = (def and not def.walkable) or

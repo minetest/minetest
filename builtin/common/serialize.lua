@@ -218,4 +218,3 @@ test_in = {escape_chars="\n\r\t\v\\\"\'", non_european="θשׁ٩∂"}
 test_out = core.deserialize(core.serialize(test_in))
 assert(test_in.escape_chars == test_out.escape_chars)
 assert(test_in.non_european == test_out.non_european)
-

@@ -38,10 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 
-#ifdef __ANDROID__
-#include <GLES/gl.h>
-#endif
-
 /*
 	ItemDefinition
 */

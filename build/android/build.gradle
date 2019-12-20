@@ -1,16 +1,16 @@
 buildscript {
 	repositories {
-		maven { url 'https://maven.google.com' }
+		google()
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.1.3'
+		classpath 'com.android.tools.build:gradle:3.5.1'
 	}
 }
 
 allprojects {
 	repositories {
-		maven { url 'https://maven.google.com' }
+		google()
 		jcenter()
 	}
 }
@@ -24,22 +24,27 @@ def sqlite3_version = "3240000"
 apply plugin: "com.android.application"
 
 android {
-	compileSdkVersion 28
-	buildToolsVersion "28.0.3"
+	compileSdkVersion 29
+	buildToolsVersion '29.0.2'
 
 	defaultConfig {
-		versionCode 23
+		versionCode 25
 		versionName "${System.env.VERSION_STR}.${versionCode}"
 		minSdkVersion 14
-		targetSdkVersion 28
+		targetSdkVersion 29
 		applicationId "net.minetest.minetest"
 		manifestPlaceholders = [package: "net.minetest.minetest", project: project.name]
 		ndk {
 			// Specifies the ABI configurations of your native
 			// libraries Gradle should build and package with your APK.
 			// abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-			abiFilters 'armeabi-v7a', 'x86'
+			abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'
 		}
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
 	}
 
 	lintOptions {
@@ -166,5 +171,5 @@ task cleanAll(type: Delete, dependsOn: [clean, cleanAssets, cleanIconv,
 }
 
 dependencies {
-	implementation 'com.android.support:support-v4:28.0.0'
+	implementation 'androidx.core:core:1.1.0'
 }

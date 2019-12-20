@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-	<style name="AppTheme" parent="@android:style/android:Theme.Material.Light.NoActionBar.Fullscreen">
+	<style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar.Fullscreen">
 		<item name="android:windowNoTitle">true</item>
-		<item name="android:windowAnimationStyle">@null</item>
 		<item name="android:windowBackground">@drawable/bg</item>
+		<item name="android:windowLayoutInDisplayCutoutMode" tools:ignore="NewApi" tools:targetApi="o_mr1">
+			shortEdges
+		</item>
 	</style>
 
-	<style name="Theme.Dialog" parent="@android:style/Theme.Material.Light.Dialog.NoActionBar"/>
+	<style name="Theme.Dialog" parent="@android:style/Theme.Material.Light.Dialog.NoActionBar">
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+	</style>
 
 </resources>

@@ -270,7 +270,6 @@ function store.load()
 	assert(core.create_dir(tmpdir))
 
 	local base_url     = core.settings:get("contentdb_url")
-	local show_nonfree = core.settings:get_bool("show_nonfree_packages")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
 		core.get_max_supp_proto()

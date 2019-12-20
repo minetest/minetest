@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Catalan (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 18:43+0100\n"
-"PO-Revision-Date: 2019-01-24 00:05+0000\n"
-"Last-Translator: Nore <nore@mesecons.net>\n"
+"POT-Creation-Date: 2019-10-09 22:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
 "minetest/ca/>\n"
 "Language: ca\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -25,7 +25,7 @@ msgstr "Has mort."
 
 #: builtin/fstk/ui.lua
 #, fuzzy
-msgid "An error occurred in a Lua script, such as a mod:"
+msgid "An error occurred in a Lua script:"
 msgstr "S'ha produït un error en un script Lua, com per exemple un mod."
 
 #: builtin/fstk/ui.lua
@@ -127,13 +127,28 @@ msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
+msgid "No (optional) dependencies"
+msgstr "Dependències opcionals:"
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "No game description provided."
 msgstr "Cap descripció del mod disponible"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
+msgid "No hard dependencies"
+msgstr "Sense dependències."
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "No modpack description provided."
 msgstr "Cap descripció del mod disponible"
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "No optional dependencies"
+msgstr "Dependències opcionals:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -529,11 +544,6 @@ msgstr "Reanomenar"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
-msgid "Select Package File:"
-msgstr "Selecciona el fitxer del mod:"
-
-#: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Uninstall Package"
 msgstr "Desinstal·lar el mod seleccionat"
 
@@ -828,12 +838,13 @@ msgid "Waving Leaves"
 msgstr "Moviment de les Fulles"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "Moviment de Plantes"
+#, fuzzy
+msgid "Waving Liquids"
+msgstr "Moviment de les Fulles"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Waving Water"
-msgstr "Onatge"
+msgid "Waving Plants"
+msgstr "Moviment de Plantes"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -1604,11 +1615,11 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
 msgid ""
-"You are about to join the server at %1$s with the name \"%2$s\" for the "
-"first time. If you proceed, a new account using your credentials will be "
-"created on this server.\n"
-"Please retype your password and click Register and Join to confirm account "
-"creation or click Cancel to abort."
+"You are about to join this server with the name \"%s\" for the first time.\n"
+"If you proceed, a new account using your credentials will be created on this "
+"server.\n"
+"Please retype your password and click 'Register and Join' to confirm account "
+"creation, or click 'Cancel' to abort."
 msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
@@ -1732,10 +1743,6 @@ msgid "Special"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Toggle Cinematic"
-msgstr "Activar Cinematogràfic"
-
-#: src/gui/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Toggle HUD"
 msgstr "Activar volar"
@@ -1766,6 +1773,11 @@ msgstr "Activar noclip"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr "Activar noclip"
+
+#: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle pitchmove"
+msgstr "Activar ràpid"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1884,6 +1896,10 @@ msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "2D noise that locates the river valleys and channels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "Núvols 3D"
 
@@ -1911,6 +1927,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1965,6 +1985,10 @@ msgstr "Límit absolut de cues emergents"
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
 msgstr "Acceleració en l'aire"
+
+#: src/settings_translation_file.cpp
+msgid "Acceleration of gravity, in nodes per second per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2192,7 +2216,7 @@ msgstr "Mapat de relleu"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera near plane distance in nodes, between 0 and 0.5\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
 "Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
@@ -2281,6 +2305,11 @@ msgstr "Tecla del xat"
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat message format"
+msgstr "Missatge d'error"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
@@ -2455,6 +2484,10 @@ msgstr ""
 "queda inalterat."
 
 #: src/settings_translation_file.cpp
+msgid "Controls sinking speed in liquid."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
 msgstr "Controla el pendent o la profunditat de les depressions de llac."
 
@@ -2515,11 +2548,20 @@ msgid "Debug info toggle key"
 msgstr "Tecla alternativa per a la informació de la depuració"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Debug log file size threshold"
+msgstr "Nivell de registre de depuració"
+
+#: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr "Nivell de registre de depuració"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Decrease this to increase liquid resistence to movement."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2607,7 +2649,19 @@ msgid "Defines the base ground level."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Defines the depth of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the width of the river valley."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2633,6 +2687,12 @@ msgid "Deprecated Lua API handling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Deprecated, define and locate cave liquids using biome definitions instead.\n"
+"Y of upper limit of lava in large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Depth below which you'll find giant caverns."
 msgstr "Profunditat davall la qual trobaràs grans coves."
@@ -2654,7 +2714,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
-"When the new biome system is enabled, this is ignored."
+"When the 'snowbiomes' flag is enabled, this is ignored."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2701,6 +2761,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dungeon noise"
+msgstr "Soroll de cova #1"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3016,6 +3081,13 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Format of screenshots."
 msgstr ""
 
@@ -3245,6 +3317,24 @@ msgstr "Soroll de cova #1"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal acceleration in air when jumping or falling,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration in fast mode,\n"
+"in nodes per second per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Horizontal and vertical acceleration on ground or when climbing,\n"
+"in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3498,6 +3588,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
 
@@ -3525,6 +3623,10 @@ msgstr ""
 #, fuzzy
 msgid "Inc. volume key"
 msgstr "Tecla de la consola"
+
+#: src/settings_translation_file.cpp
+msgid "Initial vertical speed when jumping, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4503,7 +4605,7 @@ msgid "Liquid queue purge time"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Liquid sinking speed"
+msgid "Liquid sinking"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4577,6 +4679,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
+"'terrain' enables the generation of non-fractal terrain:\n"
+"ocean, islands and underground."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 
@@ -4588,7 +4697,7 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
-"When the new biome system is enabled jungles are automatically enabled and\n"
+"When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
 
@@ -4644,6 +4753,11 @@ msgstr ""
 #, fuzzy
 msgid "Mapgen Fractal"
 msgstr "Generador de mapes plans"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen Fractal specific flags"
+msgstr "Generador de mapes"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4728,6 +4842,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum liquid resistence. Controls deceleration when entering liquid at\n"
+"high speed."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4917,10 +5037,8 @@ msgstr ""
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this.\n"
-"Current stable mapgens:\n"
-"v5, v6, v7 (except floatlands), singlenode.\n"
-"'stable' means the terrain shape in an existing world will not be changed\n"
-"in the future. Note that biomes are defined by games and may still change."
+"Current mapgens in a highly unstable state:\n"
+"-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4936,7 +5054,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
+msgid "Near clipping plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4988,16 +5106,18 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"Empty or 0 value:\n"
+"WARNING: Currently there are multiple bugs that may cause crashes when\n"
+"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
+"strongly recommended this value is set to the default '1'.\n"
+"Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
 "Any other value:\n"
 "-    Specifies the number of emerge threads, with a lower limit of 1.\n"
-"Warning: Increasing the number of emerge threads increases engine mapgen\n"
+"WARNING: Increasing the number of emerge threads increases engine mapgen\n"
 "speed, but this may harm game performance by interfering with other\n"
 "processes, especially in singleplayer and/or when running Lua code in\n"
-"'on_generated'.\n"
-"For many users the optimum setting may be '1'."
+"'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5151,10 +5271,6 @@ msgid "Profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Projecting dungeons"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
@@ -5239,6 +5355,14 @@ msgid "Rightclick repetition interval"
 msgstr "Interval de repetició del click dret"
 
 #: src/settings_translation_file.cpp
+msgid "River channel depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River channel width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "River depth"
 msgstr ""
 
@@ -5249,6 +5373,10 @@ msgstr "Soroll de cova #1"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River valley width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5558,6 +5686,10 @@ msgstr "Tecla sigil"
 #, fuzzy
 msgid "Sneaking speed"
 msgstr "Velocitat d'escalada"
+
+#: src/settings_translation_file.cpp
+msgid "Sneaking speed, in nodes per second."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -5878,10 +6010,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Undersampling is similar to using lower screen resolution, but it applies\n"
+"Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
-"It should give significant performance boost at the cost of less detailed "
-"image."
+"It should give a significant performance boost at the cost of less detailed "
+"image.\n"
+"Higher values result in a less detailed image."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5985,6 +6118,10 @@ msgid "Varies steepness of cliffs."
 msgstr "Controla la pendent i alçada dels turons."
 
 #: src/settings_translation_file.cpp
+msgid "Vertical climbing speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr ""
 
@@ -6034,7 +6171,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Walking and flying speed, in nodes per second."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6062,16 +6207,19 @@ msgid "Waving water"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Waving water height"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave height"
+msgstr "Onatge"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water length"
-msgstr ""
+#, fuzzy
+msgid "Waving water wave speed"
+msgstr "Moviment de les Fulles"
 
 #: src/settings_translation_file.cpp
-msgid "Waving water speed"
-msgstr ""
+#, fuzzy
+msgid "Waving water wavelength"
+msgstr "Onatge"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6104,10 +6252,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether FreeType fonts are used, requires FreeType support to be compiled in."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Whether dungeons occasionally project from the terrain."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6197,10 +6341,6 @@ msgid "Y of upper limit of large caves."
 msgstr "Límit absolut de cues emergents"
 
 #: src/settings_translation_file.cpp
-msgid "Y of upper limit of lava in large caves."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr ""
 
@@ -6245,231 +6385,8 @@ msgid "cURL timeout"
 msgstr ""
 
 #, fuzzy
-#~ msgid "Content Store"
-#~ msgstr "Tancar repositori"
+#~ msgid "Select Package File:"
+#~ msgstr "Selecciona el fitxer del mod:"
 
-#~ msgid "Disable MP"
-#~ msgstr "Desactivar MP"
-
-#~ msgid "Enable MP"
-#~ msgstr "Activar MP"
-
-#~ msgid "No worldname given or no game selected"
-#~ msgstr "No s'ha donat un nom al món o no s'ha seleccionat ningun"
-
-#~ msgid "\"$1\" is not a valid flag."
-#~ msgstr "\"$1\" no és un indicador vàlid."
-
-#~ msgid "Format is 3 numbers separated by commas and inside brackets."
-#~ msgstr ""
-#~ "El format és 3 números separats per comes i aquests dins de parèntesis."
-
-#~ msgid ""
-#~ "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-#~ "<octaves>, <persistence>"
-#~ msgstr ""
-#~ "Format:  <offset> <escala> (<extensió X>, <extensió Y> , <extensión Z>), "
-#~ "<llavor>, <octaves>, <persistència>"
-
-#~ msgid "Optionally the lacunarity can be appended with a leading comma."
-#~ msgstr ""
-#~ "Opcionalment, el paràmetre \"lacunarity\" pot ser annexat separant "
-#~ "mitjançant una coma."
-
-#~ msgid "Please enter a comma seperated list of flags."
-#~ msgstr "Si us plau, introduïu una llista d'indicadors separada per comes."
-
-#~ msgid "Possible values are: "
-#~ msgstr "Els possibles valors són: "
-
-#~ msgid "Select path"
-#~ msgstr "Seleccioneu la ruta"
-
-#~ msgid "Subgame Mods"
-#~ msgstr "Mods del subjoc"
-
-#~ msgid "Page $1 of $2"
-#~ msgstr "Pàgina $1 de $2"
-
-#~ msgid "Rating"
-#~ msgstr "Classificació"
-
-#~ msgid "Shortname:"
-#~ msgstr "Nom curt:"
-
-#~ msgid "Successfully installed:"
-#~ msgstr "Instal·lat amb èxit:"
-
-#~ msgid "Unsorted"
-#~ msgstr "Sense ordenar"
-
-#~ msgid "re-Install"
-#~ msgstr "Reinstal·lar"
-
-#~ msgid "Local Game"
-#~ msgstr "Joc local"
-
-#~ msgid "Uninstall selected modpack"
-#~ msgstr "Desinstal·lar el paquet de mods seleccionat"
-
-#~ msgid "Play Online"
-#~ msgstr "Jugar en línia"
-
-#~ msgid "Normal Mapping"
-#~ msgstr "Mapping normal."
-
-#~ msgid "No information available"
-#~ msgstr "Sense informació disponible"
-
-#~ msgid "Print stacks"
-#~ msgstr "Imprimir piles"
-
-#~ msgid "Use"
-#~ msgstr "Utilitzar"
-
-#~ msgid "Next"
-#~ msgstr "Següent"
-
-#~ msgid "Prior"
-#~ msgstr "Anterior"
-
-#, fuzzy
-#~ msgid "Active Block Modifier interval"
-#~ msgstr "Rang del bloc actiu"
-
-#~ msgid ""
-#~ "Announce to this serverlist.\n"
-#~ "If you want to announce your ipv6 address, use  serverlist_url = v6."
-#~ "servers.minetest.net."
-#~ msgstr ""
-#~ "Anunciar a aquesta llista de servidors.\n"
-#~ "Si vols anunciar el teu direcció ipv6, fes servir serverlist_url = v6."
-#~ "servers.minetest.net."
-
-#~ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-#~ msgstr "Aproximar (X, Y, Z) escala del fractal en els nodes."
-
-#~ msgid "Caves and tunnels form at the intersection of the two noises"
-#~ msgstr "Coves i túnels es formen en la intersecció dels dos sorolls"
-
-#~ msgid "Cloud height"
-#~ msgstr "Alçada del núvol"
-
-#~ msgid "Console key"
-#~ msgstr "Tecla de la consola"
-
-#~ msgid "Continuous forward movement (only used for testing)."
-#~ msgstr "Avanç continu (sols utilitzat per a testing)."
-
-#~ msgid ""
-#~ "Creates unpredictable lava features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Crea característiques imprevisibles de la lava en coves.\n"
-#~ "Aquestes poden fer difícil minar. Zero els inhabilita (0-10)"
-
-#~ msgid ""
-#~ "Creates unpredictable water features in caves.\n"
-#~ "These can make mining difficult. Zero disables them. (0-10)"
-#~ msgstr ""
-#~ "Crea característiques imprevisibles de l'aigua en coves.\n"
-#~ "Aquestes poden fer difícil minar. Zero els inhabilita (0-10)"
-
-#~ msgid "Crouch speed"
-#~ msgstr "Velocitat al ajupir-se"
-
-#~ msgid "Depth below which you'll find massive caves."
-#~ msgstr "Profunditat davall la qual podràs trobar coves gegants."
-
-#~ msgid ""
-#~ "Field of view while zooming in degrees.\n"
-#~ "This requires the \"zoom\" privilege on the server."
-#~ msgstr ""
-#~ "Camp de visió mentre s'usa el zoom (en graus)\n"
-#~ "Això requereix el privilegi \"zoom\" en el servidor."
-
-#, fuzzy
-#~ msgid "Inventory image hack"
-#~ msgstr "Tecla Inventari"
-
-#~ msgid "Main menu mod manager"
-#~ msgstr "Menú principal del gestor de mods"
-
-#~ msgid "Use key"
-#~ msgstr "Utilitza la tecla"
-
-#~ msgid "Water Features"
-#~ msgstr "Característiques de l'aigua"
-
-#~ msgid "Hide mp content"
-#~ msgstr "Ocultar contingut MP"
-
-#~ msgid "Attn"
-#~ msgstr "Atentament"
-
-#~ msgid "Capital"
-#~ msgstr "Bloq Maj"
-
-#~ msgid "Comma"
-#~ msgstr "Coma"
-
-#, fuzzy
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Fi"
-
-#, fuzzy
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#, fuzzy
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#, fuzzy
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Menys"
-
-#, fuzzy
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Període"
-
-#~ msgid "Plus"
-#~ msgstr "Més"
-
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "Controla la mida dels deserts i platges a Mapgen v6.\n"
-#~ "Quan \"snowbiomes\" estan activats 'mgv6_freq_desert' és ignorat."
-
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Amplada de les coves del generador de mapes plans"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Generador de mapes"
-
-#~ msgid "No of course not!"
-#~ msgstr "No, per descomptat que no!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Llista de servidors públics"
-
-#~ msgid "No!!!"
-#~ msgstr "No!!!"
-
-#~ msgid "Advanced Settings"
-#~ msgstr "Configuració avançada"
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Activar Cinematogràfic"

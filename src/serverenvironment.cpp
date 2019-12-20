@@ -384,6 +384,9 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	ServerEnvironment
 */
 
+// Random device to seed pseudo random generators.
+static std::random_device seed;
+
 ServerEnvironment::ServerEnvironment(ServerMap *map,
 	ServerScripting *scriptIface, Server *server,
 	const std::string &path_world):
@@ -391,7 +394,8 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_map(map),
 	m_script(scriptIface),
 	m_server(server),
-	m_path_world(path_world)
+	m_path_world(path_world),
+	m_rgen(seed())
 {
 	// Determine which database backend to use
 	std::string conf_path = path_world + DIR_DELIM + "world.mt";
@@ -546,7 +550,7 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
 	// Iterate trough nodes on the line
 	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
 	do {
-		MapNode n = getMap().getNodeNoEx(iterator.m_current_node_pos);
+		MapNode n = getMap().getNode(iterator.m_current_node_pos);
 
 		// Return non-air
 		if (n.param0 != CONTENT_AIR) {
@@ -910,7 +914,7 @@ public:
 							c = n.getContent();
 						} else {
 							// otherwise consult the map
-							MapNode n = map->getNodeNoEx(p1 + block->getPosRelative());
+							MapNode n = map->getNode(p1 + block->getPosRelative());
 							c = n.getContent();
 						}
 						if (CONTAINS(aabm.required_neighbors, c))
@@ -1004,7 +1008,7 @@ void ServerEnvironment::addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm)
 bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
 	const NodeDefManager *ndef = m_server->ndef();
-	MapNode n_old = m_map->getNodeNoEx(p);
+	MapNode n_old = m_map->getNode(p);
 
 	const ContentFeatures &cf_old = ndef->get(n_old);
 
@@ -1037,7 +1041,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 bool ServerEnvironment::removeNode(v3s16 p)
 {
 	const NodeDefManager *ndef = m_server->ndef();
-	MapNode n_old = m_map->getNodeNoEx(p);
+	MapNode n_old = m_map->getNode(p);
 
 	// Call destructor
 	if (ndef->get(n_old).has_on_destruct)
@@ -1196,6 +1200,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 void ServerEnvironment::step(float dtime)
 {
+	ScopeProfiler sp2(g_profiler, "ServerEnv::step()", SPT_AVG);
 	/* Step time of day */
 	stepTimeOfDay(dtime);
 
@@ -1220,7 +1225,7 @@ void ServerEnvironment::step(float dtime)
 		Handle players
 	*/
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: handle players avg", SPT_AVG);
+		ScopeProfiler sp(g_profiler, "ServerEnv: move players", SPT_AVG);
 		for (RemotePlayer *player : m_players) {
 			// Ignore disconnected players
 			if (player->getPeerId() == PEER_ID_INEXISTENT)
@@ -1235,7 +1240,7 @@ void ServerEnvironment::step(float dtime)
 		Manage active block list
 	*/
 	if (m_active_blocks_management_interval.step(dtime, m_cache_active_block_mgmt_interval)) {
-		ScopeProfiler sp(g_profiler, "SEnv: manage act. block list avg per interval", SPT_AVG);
+		ScopeProfiler sp(g_profiler, "ServerEnv: update active blocks", SPT_AVG);
 		/*
 			Get player block positions
 		*/
@@ -1301,7 +1306,7 @@ void ServerEnvironment::step(float dtime)
 		Mess around in active blocks
 	*/
 	if (m_active_blocks_nodemetadata_interval.step(dtime, m_cache_nodetimer_interval)) {
-		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg per interval", SPT_AVG);
+		ScopeProfiler sp(g_profiler, "ServerEnv: Run node timers", SPT_AVG);
 
 		float dtime = m_cache_nodetimer_interval;
 
@@ -1338,47 +1343,56 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
-	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval))
-		do { // breakable
-			if (m_active_block_interval_overload_skip > 0) {
-				ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
-				m_active_block_interval_overload_skip--;
+	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval)) {
+		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
+		TimeTaker timer("modify in active blocks per interval");
+
+		// Initialize handling of ActiveBlockModifiers
+		ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
+
+		int blocks_scanned = 0;
+		int abms_run = 0;
+		int blocks_cached = 0;
+
+		std::vector<v3s16> output(m_active_blocks.m_abm_list.size());
+
+		// Shuffle the active blocks so that each block gets an equal chance
+		// of having its ABMs run.
+		std::copy(m_active_blocks.m_abm_list.begin(), m_active_blocks.m_abm_list.end(), output.begin());
+		std::shuffle(output.begin(), output.end(), m_rgen);
+
+		int i = 0;
+		// The time budget for ABMs is 20%.
+		u32 max_time_ms = m_cache_abm_interval * 1000 / 5;
+		for (const v3s16 &p : output) {
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if (!block)
+				continue;
+
+			i++;
+
+			// Set current time as timestamp
+			block->setTimestampNoChangedFlag(m_game_time);
+
+			/* Handle ActiveBlockModifiers */
+			abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
+
+			u32 time_ms = timer.getTimerTime();
+
+			if (time_ms > max_time_ms) {
+				warningstream << "active block modifiers took "
+					  << time_ms << "ms (processed " << i << " of "
+					  << output.size() << " active blocks)" << std::endl;
 				break;
 			}
-			ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
-			TimeTaker timer("modify in active blocks per interval");
+		}
+		g_profiler->avg("ServerEnv: active blocks", m_active_blocks.m_abm_list.size());
+		g_profiler->avg("ServerEnv: active blocks cached", blocks_cached);
+		g_profiler->avg("ServerEnv: active blocks scanned for ABMs", blocks_scanned);
+		g_profiler->avg("ServerEnv: ABMs run", abms_run);
 
-			// Initialize handling of ActiveBlockModifiers
-			ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
-
-			int blocks_scanned = 0;
-			int abms_run = 0;
-			int blocks_cached = 0;
-			for (const v3s16 &p : m_active_blocks.m_abm_list) {
-				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-				if (!block)
-					continue;
-
-				// Set current time as timestamp
-				block->setTimestampNoChangedFlag(m_game_time);
-
-				/* Handle ActiveBlockModifiers */
-				abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
-			}
-			g_profiler->avg("SEnv: active blocks", m_active_blocks.m_abm_list.size());
-			g_profiler->avg("SEnv: active blocks cached", blocks_cached);
-			g_profiler->avg("SEnv: active blocks scanned for ABMs", blocks_scanned);
-			g_profiler->avg("SEnv: ABMs run", abms_run);
-
-			u32 time_ms = timer.stop(true);
-			u32 max_time_ms = 200;
-			if (time_ms > max_time_ms) {
-				warningstream<<"active block modifiers took "
-					<<time_ms<<"ms (longer than "
-					<<max_time_ms<<"ms)"<<std::endl;
-				m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
-			}
-		}while(0);
+		timer.stop(true);
+	}
 
 	/*
 		Step script environment (run global on_step())
@@ -1389,7 +1403,7 @@ void ServerEnvironment::step(float dtime)
 		Step active objects
 	*/
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_AVG);
+		ScopeProfiler sp(g_profiler, "ServerEnv: Run SAO::step()", SPT_AVG);
 
 		// This helps the objects to send data at the same time
 		bool send_recommended = false;
@@ -1418,7 +1432,6 @@ void ServerEnvironment::step(float dtime)
 		Manage active objects
 	*/
 	if (m_object_management_interval.step(dtime, 0.5)) {
-		ScopeProfiler sp(g_profiler, "SEnv: remove removed objs avg /.5s", SPT_AVG);
 		removeRemovedObjects();
 	}
 
@@ -1441,6 +1454,19 @@ void ServerEnvironment::step(float dtime)
 				++i;
 		}
 	}
+
+	// Send outdated player inventories
+	for (RemotePlayer *player : m_players) {
+		if (player->getPeerId() == PEER_ID_INEXISTENT)
+			continue;
+
+		PlayerSAO *sao = player->getPlayerSAO();
+		if (sao && player->inventory.checkModified())
+			m_server->SendInventory(sao, true);
+	}
+
+	// Send outdated detached inventories
+	m_server->sendDetachedInventories(PEER_ID_INEXISTENT, true);
 }
 
 u32 ServerEnvironment::addParticleSpawner(float exptime)
@@ -1673,6 +1699,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 */
 void ServerEnvironment::removeRemovedObjects()
 {
+	ScopeProfiler sp(g_profiler, "ServerEnvironment::removeRemovedObjects()", SPT_AVG);
+
 	auto clear_cb = [this] (ServerActiveObject *obj, u16 id) {
 		// This shouldn't happen but check it
 		if (!obj) {

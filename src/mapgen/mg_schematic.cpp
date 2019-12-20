@@ -246,7 +246,7 @@ void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	for (it = modified_blocks.begin(); it != modified_blocks.end(); ++it)
 		event.modified_blocks.insert(it->first);
 
-	map->dispatchEvent(&event);
+	map->dispatchEvent(event);
 }
 
 

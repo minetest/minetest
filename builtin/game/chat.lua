@@ -1,4 +1,43 @@
--- Minetest: builtin/game/chatcommands.lua
+-- Minetest: builtin/game/chat.lua
+
+-- Helper function that implements search and replace without pattern matching
+-- Returns the string and a boolean indicating whether or not the string was modified
+local function safe_gsub(s, replace, with)
+	local i1, i2 = s:find(replace, 1, true)
+	if not i1 then
+		return s, false
+	end
+
+	return s:sub(1, i1 - 1) .. with .. s:sub(i2 + 1), true
+end
+
+--
+-- Chat message formatter
+--
+
+-- Implemented in Lua to allow redefinition
+function core.format_chat_message(name, message)
+	local error_str = "Invalid chat message format - missing %s"
+	local str = core.settings:get("chat_message_format")
+	local replaced
+
+	-- Name
+	str, replaced = safe_gsub(str, "@name", name)
+	if not replaced then
+		error(error_str:format("@name"), 2)
+	end
+
+	-- Timestamp
+	str = safe_gsub(str, "@timestamp", os.date("%H:%M:%S", os.time()))
+
+	-- Insert the message into the string only after finishing all other processing
+	str, replaced = safe_gsub(str, "@message", message)
+	if not replaced then
+		error(error_str:format("@message"), 2)
+	end
+
+	return str
+end
 
 --
 -- Chat command handler
@@ -27,9 +66,9 @@ core.register_on_chat_message(function(name, message)
 	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
 	if has_privs then
 		core.set_last_run_mod(cmd_def.mod_origin)
-		local success, message = cmd_def.func(name, param)
-		if message then
-			core.chat_send_player(name, message)
+		local _, result = cmd_def.func(name, param)
+		if result then
+			core.chat_send_player(name, result)
 		end
 	else
 		core.chat_send_player(name, "You don't have permission"
@@ -125,10 +164,10 @@ core.register_chatcommand("haspriv", {
 			if core.check_player_privs(player_name, privs) then
 				table.insert(players_with_priv, player_name)
 			end
-		end	
+		end
 		return true, "Players online with the \"" .. param .. "\" privilege: " ..
 			table.concat(players_with_priv, ", ")
-	end	
+	end
 })
 
 local function handle_grant_command(caller, grantname, grantprivstr)
@@ -161,6 +200,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 		return false, privs_unknown
 	end
 	for priv, _ in pairs(grantprivs) do
+		-- call the on_grant callbacks
 		core.run_priv_callbacks(grantname, priv, caller, "grant")
 	end
 	core.set_player_privs(grantname, privs)
@@ -233,6 +273,7 @@ core.register_chatcommand("revoke", {
 		end
 
 		for priv, _ in pairs(revoke_privs) do
+			-- call the on_revoke callbacks
 			core.run_priv_callbacks(revoke_name, priv, name, "revoke")
 		end
 
@@ -261,11 +302,12 @@ core.register_chatcommand("setpassword", {
 			toname = param:match("^([^ ]+) *$")
 			raw_password = nil
 		end
+
 		if not toname then
 			return false, "Name field required"
 		end
-		local act_str_past = "?"
-		local act_str_pres = "?"
+
+		local act_str_past, act_str_pres
 		if not raw_password then
 			core.set_player_password(toname, "")
 			act_str_past = "cleared"
@@ -277,13 +319,14 @@ core.register_chatcommand("setpassword", {
 			act_str_past = "set"
 			act_str_pres = "sets"
 		end
+
 		if toname ~= name then
 			core.chat_send_player(toname, "Your password was "
 					.. act_str_past .. " by " .. name)
 		end
 
-		core.log("action", name .. " " .. act_str_pres
-		.. " password of " .. toname .. ".")
+		core.log("action", name .. " " .. act_str_pres ..
+				" password of " .. toname .. ".")
 
 		return true, "Password of player \"" .. toname .. "\" " .. act_str_past
 	end,
@@ -367,35 +410,35 @@ core.register_chatcommand("teleport", {
 			return pos, false
 		end
 
-		local teleportee = nil
 		local p = {}
 		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 		p.x = tonumber(p.x)
 		p.y = tonumber(p.y)
 		p.z = tonumber(p.z)
 		if p.x and p.y and p.z then
+
 			local lm = 31000
 			if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm or p.z < -lm or p.z > lm then
 				return false, "Cannot teleport out of map bounds!"
 			end
-			teleportee = core.get_player_by_name(name)
+			local teleportee = core.get_player_by_name(name)
 			if teleportee then
 				teleportee:set_pos(p)
 				return true, "Teleporting to "..core.pos_to_string(p)
 			end
 		end
 
-		local teleportee = nil
-		local p = nil
-		local target_name = nil
-		target_name = param:match("^([^ ]+)$")
-		teleportee = core.get_player_by_name(name)
+		local target_name = param:match("^([^ ]+)$")
+		local teleportee = core.get_player_by_name(name)
+
+		p = nil
 		if target_name then
 			local target = core.get_player_by_name(target_name)
 			if target then
 				p = target:get_pos()
 			end
 		end
+
 		if teleportee and p then
 			p = find_free_position_near(p)
 			teleportee:set_pos(p)
@@ -407,9 +450,9 @@ core.register_chatcommand("teleport", {
 			return false, "You don't have permission to teleport other players (missing bring privilege)"
 		end
 
-		local teleportee = nil
-		local p = {}
-		local teleportee_name = nil
+		teleportee = nil
+		p = {}
+		local teleportee_name
 		teleportee_name, p.x, p.y, p.z = param:match(
 				"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 		p.x, p.y, p.z = tonumber(p.x), tonumber(p.y), tonumber(p.z)
@@ -422,10 +465,8 @@ core.register_chatcommand("teleport", {
 					.. " to " .. core.pos_to_string(p)
 		end
 
-		local teleportee = nil
-		local p = nil
-		local teleportee_name = nil
-		local target_name = nil
+		teleportee = nil
+		p = nil
 		teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
 		if teleportee_name then
 			teleportee = core.get_player_by_name(teleportee_name)
@@ -459,7 +500,8 @@ core.register_chatcommand("set", {
 			core.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
-		local setname, setvalue = string.match(param, "([^ ]+) (.+)")
+
+		setname, setvalue = string.match(param, "([^ ]+) (.+)")
 		if setname and setvalue then
 			if not core.settings:get(setname) then
 				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
@@ -467,14 +509,16 @@ core.register_chatcommand("set", {
 			core.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
-		local setname = string.match(param, "([^ ]+)")
+
+		setname = string.match(param, "([^ ]+)")
 		if setname then
-			local setvalue = core.settings:get(setname)
+			setvalue = core.settings:get(setname)
 			if not setvalue then
 				setvalue = "<not set>"
 			end
 			return true, setname .. " = " .. setvalue
 		end
+
 		return false, "Invalid parameters (see /help set)."
 	end,
 })
@@ -692,7 +736,7 @@ core.register_chatcommand("pulverize", {
 		end
 		core.log("action", name .. " pulverized \"" ..
 			wielded_item:get_name() .. " " .. wielded_item:get_count() .. "\"")
-		player:set_wielded_item(nil)			
+		player:set_wielded_item(nil)
 		return true, "An item was pulverized."
 	end,
 })
@@ -771,7 +815,7 @@ core.register_chatcommand("rollback", {
 		end
 		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
 		if not target_name then
-			local player_name = nil
+			local player_name
 			player_name, seconds = string.match(param, "([^ ]+) *(%d*)")
 			if not player_name then
 				return false, "Invalid parameters. See /help rollback"
@@ -879,8 +923,8 @@ core.register_chatcommand("shutdown", {
 })
 
 core.register_chatcommand("ban", {
-	params = "[<name> | <IP_address>]",
-	description = "Ban player or show ban list",
+	params = "[<name>]",
+	description = "Ban the IP of a player or show the ban list",
 	privs = {ban=true},
 	func = function(name, param)
 		if param == "" then
@@ -892,7 +936,7 @@ core.register_chatcommand("ban", {
 			end
 		end
 		if not core.get_player_by_name(param) then
-			return false, "No such player."
+			return false, "Player is not online."
 		end
 		if not core.ban_player(param) then
 			return false, "Failed to ban player."
@@ -905,7 +949,7 @@ core.register_chatcommand("ban", {
 
 core.register_chatcommand("unban", {
 	params = "<name> | <IP_address>",
-	description = "Remove player ban",
+	description = "Remove IP ban belonging to a player/IP",
 	privs = {ban=true},
 	func = function(name, param)
 		if not core.unban_player_or_ip(param) then
@@ -951,8 +995,8 @@ core.register_chatcommand("clearobjects", {
 
 		core.log("action", name .. " clears all objects ("
 				.. options.mode .. " mode).")
-		core.chat_send_all("Clearing all objects.  This may take long."
-				.. "  You may experience a timeout.  (by "
+		core.chat_send_all("Clearing all objects. This may take a long time."
+				.. " You may experience a timeout. (by "
 				.. name .. ")")
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
@@ -962,7 +1006,7 @@ core.register_chatcommand("clearobjects", {
 
 core.register_chatcommand("msg", {
 	params = "<name> <message>",
-	description = "Send a private message",
+	description = "Send a direct message to a player",
 	privs = {shout=true},
 	func = function(name, param)
 		local sendto, message = param:match("^(%S+)%s(.+)$")
@@ -973,9 +1017,9 @@ core.register_chatcommand("msg", {
 			return false, "The player " .. sendto
 					.. " is not online."
 		end
-		core.log("action", "PM from " .. name .. " to " .. sendto
+		core.log("action", "DM from " .. name .. " to " .. sendto
 				.. ": " .. message)
-		core.chat_send_player(sendto, "PM from " .. name .. ": "
+		core.chat_send_player(sendto, "DM from " .. name .. ": "
 				.. message)
 		return true, "Message sent."
 	end,

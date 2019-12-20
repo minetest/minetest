@@ -148,9 +148,9 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		local values = {}
 		local ti = 1
 		local index = 1
-		for line in default:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
-			index = default:find("[+-]?[%d.-e]+", index) + line:len()
-			table.insert(values, line)
+		for match in default:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
+			index = default:find("[+-]?[%d.-e]+", index) + match:len()
+			table.insert(values, match)
 			ti = ti + 1
 			if ti > 9 then
 				break
@@ -322,17 +322,20 @@ end
 -- read_all: whether to ignore certain setting types for GUI or not
 -- parse_mods: whether to parse settingtypes.txt in mods and games
 local function parse_config_file(read_all, parse_mods)
-	local builtin_path = core.get_builtin_path() .. FILENAME
-	local file = io.open(builtin_path, "r")
 	local settings = {}
-	if not file then
-		core.log("error", "Can't load " .. FILENAME)
-		return settings
+
+	do
+		local builtin_path = core.get_builtin_path() .. FILENAME
+		local file = io.open(builtin_path, "r")
+		if not file then
+			core.log("error", "Can't load " .. FILENAME)
+			return settings
+		end
+
+		parse_single_file(file, builtin_path, read_all, settings, 0, true)
+
+		file:close()
 	end
-
-	parse_single_file(file, builtin_path, read_all, settings, 0, true)
-
-	file:close()
 
 	if parse_mods then
 		-- Parse games
@@ -344,7 +347,7 @@ local function parse_config_file(read_all, parse_mods)
 			local file = io.open(path, "r")
 			if file then
 				if not games_category_initialized then
-					local translation = fgettext_ne("Games"), -- not used, but needed for xgettext
+					fgettext_ne("Games") -- not used, but needed for xgettext
 					table.insert(settings, {
 						name = "Games",
 						level = 0,
@@ -377,7 +380,7 @@ local function parse_config_file(read_all, parse_mods)
 			local file = io.open(path, "r")
 			if file then
 				if not mods_category_initialized then
-					local translation = fgettext_ne("Mods"), -- not used, but needed for xgettext
+					fgettext_ne("Mods") -- not used, but needed for xgettext
 					table.insert(settings, {
 						name = "Mods",
 						level = 0,
@@ -667,34 +670,42 @@ local function create_change_setting_formspec(dialogdata)
 		height = height + 1.1
 
 	elseif setting.type == "flags" then
-		local enabled_flags = flags_to_table(get_current_value(setting))
+		local current_flags = flags_to_table(get_current_value(setting))
 		local flags = {}
-		for _, name in ipairs(enabled_flags) do
+		for _, name in ipairs(current_flags) do
 			-- Index by name, to avoid iterating over all enabled_flags for every possible flag.
-			flags[name] = true
+			if name:sub(1, 2) == "no" then
+				flags[name:sub(3)] = false
+			else
+				flags[name] = true
+			end
 		end
-		local flags_count = #setting.possible
-		local max_height = flags_count / 4
+		local flags_count = #setting.possible / 2
+		local max_height = math.ceil(flags_count / 2) / 2
 
 		-- More space for flags
 		description_height = description_height - 1
 		height = height - 1
 
 		local fields = {} -- To build formspec
-		for i, name in ipairs(setting.possible) do
-			local x = 0.5
-			local y = height + i / 2 - 0.75
-			if i - 1 >= flags_count / 2 then -- 2nd column
-				x = 5
-				y = y - max_height
-			end
-			local checkbox_name = "cb_" .. name
-			local is_enabled = flags[name] == true -- to get false if nil
-			checkboxes[checkbox_name] = is_enabled
+		local j = 1
+		for _, name in ipairs(setting.possible) do
+			if name:sub(1, 2) ~= "no" then
+				local x = 0.5
+				local y = height + j / 2 - 0.75
+				if j - 1 >= flags_count / 2 then -- 2nd column
+					x = 5
+					y = y - max_height
+				end
+				j = j + 1;
+				local checkbox_name = "cb_" .. name
+				local is_enabled = flags[name] == true -- to get false if nil
+				checkboxes[checkbox_name] = is_enabled
 
-			fields[#fields + 1] = ("checkbox[%f,%f;%s;%s;%s]"):format(
-				x, y, checkbox_name, name, tostring(is_enabled)
-			)
+				fields[#fields + 1] = ("checkbox[%f,%f;%s;%s;%s]"):format(
+					x, y, checkbox_name, name, tostring(is_enabled)
+				)
+			end
 		end
 		formspec = table.concat(fields)
 		height = height + max_height + 0.25
@@ -753,7 +764,7 @@ local function create_change_setting_formspec(dialogdata)
 			" (" .. setting.name .. ")"
 	end
 
-	local comment_text = ""
+	local comment_text
 	if setting.comment == "" then
 		comment_text = fgettext_ne("(No description of setting given)")
 	else
@@ -830,8 +841,12 @@ local function handle_change_setting_buttons(this, fields)
 		elseif setting.type == "flags" then
 			local values = {}
 			for _, name in ipairs(setting.possible) do
-				if checkboxes["cb_" .. name] then
-					table.insert(values, name)
+				if name:sub(1, 2) ~= "no" then
+					if checkboxes["cb_" .. name] then
+						table.insert(values, name)
+					else
+						table.insert(values, "no" .. name)
+					end
 				end
 			end
 
@@ -918,7 +933,7 @@ local function handle_change_setting_buttons(this, fields)
 	return false
 end
 
-local function create_settings_formspec(tabview, name, tabdata)
+local function create_settings_formspec(tabview, _, tabdata)
 	local formspec = "size[12,5.4;true]" ..
 			"tablecolumns[color;tree;text,width=28;text]" ..
 			"tableoptions[background=#00000000;border=false]" ..
@@ -950,7 +965,7 @@ local function create_settings_formspec(tabview, name, tabdata)
 			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
 					.. value .. ","
 
-		elseif entry.type == "key" then
+		elseif entry.type == "key" then --luacheck: ignore
 			-- ignore key settings, since we have a special dialog for them
 
 		elseif entry.type == "noise_params_2d" or entry.type == "noise_params_3d" then
@@ -1029,8 +1044,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["btn_edit"] or list_enter then
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
-			local edit_dialog = dialog_create("change_setting", create_change_setting_formspec,
-					handle_change_setting_buttons)
+			local edit_dialog = dialog_create("change_setting",
+					create_change_setting_formspec, handle_change_setting_buttons)
 			edit_dialog:set_parent(this)
 			this:hide()
 			edit_dialog:show()
@@ -1076,4 +1091,5 @@ end
 -- For RUN_IN_PLACE the generated files may appear in the 'bin' folder.
 -- See comment and alternative line at the end of 'generate_from_settingtypes.lua'.
 
---assert(loadfile(core.get_builtin_path().."mainmenu"..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))
+--assert(loadfile(core.get_builtin_path().."mainmenu"..DIR_DELIM..
+--		"generate_from_settingtypes.lua"))(parse_config_file(true, false))

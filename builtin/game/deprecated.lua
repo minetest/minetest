@@ -20,7 +20,7 @@ function core.node_metadata_inventory_move_allow_all()
 end
 
 function core.add_to_creative_inventory(itemstring)
-	core.log("deprecated", "core.add_to_creative_inventory: This function is deprecated and does nothing.")
+	core.log("deprecated", "core.add_to_creative_inventory is obsolete and does nothing.")
 end
 
 --

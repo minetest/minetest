@@ -3,6 +3,7 @@ Minetest Lua Modding API Reference
 
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
+* (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
 
 Introduction
 ------------
@@ -153,7 +154,7 @@ The location of this directory can be fetched by using
 
 ### mod.conf
 
-A key-value store of mod details.
+A `Settings` file that provides meta information about the mod.
 
 * `name`: The mod name. Allows Minetest to determine the mod name even if the
           folder is wrongly named.
@@ -195,8 +196,9 @@ A file containing a description to be shown in the Mods tab of the main menu.
 
 ### `settingtypes.txt`
 
-A file in the same format as the one in builtin. It will be parsed by the
-settings menu and the settings will be displayed in the "Mods" category.
+The format is documented in `builtin/settingtypes.txt`.
+It is parsed by the main menu settings dialogue to list mod-specific
+settings in the "Mods" category.
 
 ### `init.lua`
 
@@ -282,40 +284,35 @@ Mapgen aliases
 --------------
 
 In a game, a certain number of these must be set to tell core mapgens which
-of the game's nodes are to be used by the core mapgens. For example:
+of the game's nodes are to be used for core mapgen generation. For example:
 
     minetest.register_alias("mapgen_stone", "default:stone")
 
-### Aliases needed for all mapgens except Mapgen V6
+### Aliases for non-V6 mapgens
 
-#### Base terrain
+#### Essential aliases
 
 * mapgen_stone
 * mapgen_water_source
 * mapgen_river_water_source
 
-#### Caves
+`mapgen_river_water_source` is required for mapgens with sloping rivers where
+it is necessary to have a river liquid node with a short `liquid_range` and
+`liquid_renewable = false` to avoid flooding.
 
-Not required if cave liquid nodes are set in biome definitions.
+#### Optional aliases
 
 * mapgen_lava_source
 
-#### Dungeons
-
-Not required if dungeon nodes are set in biome definitions.
+Fallback lava node used if cave liquids are not defined in biome definitions.
+Deprecated for non-V6 mapgens, define cave liquids in biome definitions instead.
 
 * mapgen_cobble
-* mapgen_stair_cobble
-* mapgen_mossycobble
-* mapgen_desert_stone
-* mapgen_stair_desert_stone
-* mapgen_sandstone
-* mapgen_sandstonebrick
-* mapgen_stair_sandstone_block
+
+Fallback node used if dungeon nodes are not defined in biome definitions.
+Deprecated for non-V6 mapgens, define dungeon nodes in biome definitions instead.
 
 ### Aliases needed for Mapgen V6
-
-#### Terrain and biomes
 
 * mapgen_stone
 * mapgen_water_source
@@ -331,8 +328,6 @@ Not required if dungeon nodes are set in biome definitions.
 * mapgen_snow
 * mapgen_ice
 
-#### Flora
-
 * mapgen_tree
 * mapgen_leaves
 * mapgen_apple
@@ -341,8 +336,6 @@ Not required if dungeon nodes are set in biome definitions.
 * mapgen_junglegrass
 * mapgen_pine_tree
 * mapgen_pine_needles
-
-#### Dungeons
 
 * mapgen_cobble
 * mapgen_stair_cobble
@@ -864,6 +857,15 @@ A positional sound will only be heard by players that are within
 * e.g. `{name = "default_place_node", gain = 1.0, pitch = 1.0}`
 
 
+Special sound files
+-------------------
+
+These sound files are played back by the engine if provided.
+
+ * `main_menu`: Looped sound in the main menu (gain = 1.0)
+ * `player_damage`: Played when the local player takes damage (gain = 0.5)
+ * `player_falling_damage`: Played when the local player takes
+   damage by falling (gain = 0.5)
 
 
 Registered definitions
@@ -1258,6 +1260,11 @@ precisely positioned items in the HUD.
 **Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
 factor!
 
+The `z_index` field specifies the order of HUD elements from back to front.
+Lower z-index elements are displayed behind higher z-index elements. Elements
+with same z-index are displayed in an arbitrary order. Default 0.
+Supports negative values.
+
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
 
@@ -1333,6 +1340,9 @@ For helper functions see [Spatial Vectors].
 
 * `{type="nothing"}`
 * `{type="node", under=pos, above=pos}`
+    * Indicates a pointed node selection box.
+    * `under` refers to the node position behind the pointed face.
+    * `above` refers to the node position in front of the pointed face.
 * `{type="object", ref=ObjectRef}`
 
 Exact pointing location (currently only `Raycast` supports these fields):
@@ -1542,33 +1552,58 @@ Another example: Make red wool from white wool and red dye:
 Special groups
 --------------
 
-* `immortal`: Disables the group damage system for an entity
-* `punch_operable`: For entities; disables the regular damage mechanism for
-  players punching it by hand or a non-tool item, so that it can do something
-  else than take damage.
+The asterisk `(*)` after a group name describes that there is no engine
+functionality bound to it, and implementation is left up as a suggestion
+to games.
+
+### Node, item and tool groups
+
+* `not_in_creative_inventory`: (*) Special group for inventory mods to indicate
+  that the item should be hidden in item lists.
+
+
+### Node-only groups
+
+* `attached_node`: if the node under it is not a walkable block the node will be
+  dropped as an item. If the node is wallmounted the wallmounted direction is
+  checked.
+* `bouncy`: value is bounce speed in percent
+* `connect_to_raillike`: makes nodes of raillike drawtype with same group value
+  connect to each other
+* `dig_immediate`: Player can always pick up node without reducing tool wear
+    * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
+    * `3`: the node always gets the digging time 0 seconds (torch)
+* `disable_jump`: Player (and possibly other things) cannot jump from node
+* `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
+* `falling_node`: if there is no walkable block under the node it will fall
+* `float`: the node will not fall through liquids
 * `level`: Can be used to give an additional sense of progression in the game.
      * A larger level will cause e.g. a weapon of a lower level make much less
        damage, and get worn out much faster, or not be able to get drops
        from destroyed nodes.
      * `0` is something that is directly accessible at the start of gameplay
      * There is no upper limit
-* `dig_immediate`: Player can always pick up node without reducing tool wear
-    * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
-    * `3`: the node always gets the digging time 0 seconds (torch)
-* `disable_jump`: Player (and possibly other things) cannot jump from node
-* `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
-* `bouncy`: value is bounce speed in percent
-* `falling_node`: if there is no walkable block under the node it will fall
-* `float`: the node will not fall through liquids
-* `attached_node`: if the node under it is not a walkable block the node will be
-  dropped as an item. If the node is wallmounted the wallmounted direction is
-  checked.
-* `connect_to_raillike`: makes nodes of raillike drawtype with same group value
-  connect to each other
+     * See also: `leveldiff` in [Tools]
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
+
+
+### Tool-only groups
+
 * `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
   `"toolrepair"` crafting recipe
+
+
+### `ObjectRef` groups
+
+* `immortal`: Skips all damage and breath handling for an object. This group
+  will also hide the integrated HUD status bars for players, and is
+  automatically set to all players when damage is disabled on the server.
+* `punch_operable`: For entities; disables the regular damage mechanism for
+  players punching it by hand or a non-tool item, so that it can do something
+  else than take damage.
+
+
 
 Known damage and digging time defining groups
 ---------------------------------------------
@@ -1659,6 +1694,8 @@ to implement this.
 Determines how many uses the tool has when it is used for digging a node,
 of this group, of the maximum level. For lower leveled nodes, the use count
 is multiplied by `3^leveldiff`.
+`leveldiff` is the difference of the tool's `maxlevel` `groupcaps` and the
+node's `level` group. The node cannot be dug if `leveldiff` is less than zero.
 
 * `uses=10, leveldiff=0`: actual uses: 10
 * `uses=10, leveldiff=1`: actual uses: 30
@@ -1875,9 +1912,15 @@ is used when the server receives user input. You must not use the name
 Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
 
-Position and size units are inventory slots, `X` and `Y` position the formspec
-element relative to the top left of the menu or container. `W` and `H` are its
-width and height values.
+Position and size units are inventory slots unless the new coordinate system
+is enabled. `X` and `Y` position the formspec element relative to the top left
+of the menu or container. `W` and `H` are its width and height values.
+
+If the new system is enabled, all elements have unified coordinates for all
+elements with no padding or spacing in between. This is highly recommended
+for new forms. See `real_coordinates[<bool>]` and `Migrating to Real
+Coordinates`.
+
 Inventories with a `player:<name>` inventory location are only sent to the
 player named `<name>`.
 
@@ -1885,9 +1928,18 @@ When displaying text which can contain formspec code, e.g. text set by a player,
 use `minetest.formspec_escape`.
 For coloured text you can use `minetest.colorize`.
 
-WARNING: Minetest allows you to add elements to every single formspec instance
+Since formspec version 3, elements drawn in the order they are defined. All
+background elements are drawn before all other elements.
+`list` elements are an exception here. They are drawn last. This, however, might
+be changed at any time.
+
+**WARNING**: do _not_ use a element name starting with `key_`; those names are
+reserved to pass key press events to formspec!
+
+**WARNING**: Minetest allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
-appearing when you don't expect them to. See [`no_prepend[]`].
+appearing when you don't expect them to, or why things are styled differently
+to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 Examples
 --------
@@ -1916,6 +1968,15 @@ Examples
 
 Elements
 --------
+
+### `formspec_version[<version>]`
+
+* Set the formspec version to a certain number. If not specified,
+  version 1 is assumed.
+* Must be specified before `size` element.
+* Clients older than this version can neither show newer elements nor display
+  elements with new arguments correctly.
+* Available since feature `formspec_version_element`.
 
 ### `size[<W>,<H>,<fixed_size>]`
 
@@ -1951,6 +2012,17 @@ Elements
 * Must be used after the `size`, `position`, and `anchor` elements (if present).
 * Disables player:set_formspec_prepend() from applying to this formspec.
 
+### `real_coordinates[<bool>]`
+
+* INFORMATION: Enable it automatically using `formspec_version` version 2 or newer.
+* When set to true, all following formspec elements will use the new coordinate system.
+* If used immediately after `size`, `position`, `anchor`, and `no_prepend` elements
+  (if present), the form size will use the new coordinate system.
+* **Note**: Formspec prepends are not affected by the coordinates in the main form.
+  They must enable it explicitly.
+* For information on converting forms to the new coordinate system, see `Migrating
+  to Real Coordinates`.
+
 ### `container[<X>,<Y>]`
 
 * Start of a container block, moves all physical elements in the container by
@@ -1968,11 +2040,17 @@ Elements
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
+* **Note**: With the new coordinate system, the spacing between inventory
+  slots is one-fourth the size of an inventory slot.
+* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
+* **Note**: With the new coordinate system, the spacing between inventory
+  slots is one-fourth the size of an inventory slot.
+* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2026,32 +2104,55 @@ Elements
 
 * Show an inventory image of registered item/node
 
-### `bgcolor[<color>;<fullscreen>]`
+### `bgcolor[<bgcolor>;<fullscreen>;<fbgcolor>]`
 
-* Sets background color of formspec as `ColorString`
-* If `true`, the background color is drawn fullscreen (does not affect the size
-  of the formspec).
+* Sets background color of formspec.
+* `bgcolor` and `fbgcolor` (optional) are `ColorString`s, they define the color
+  of the non-fullscreen and the fullscreen background.
+* `fullscreen` (optional) can be one of the following:
+  * `false`: Only the non-fullscreen background color is drawn. (default)
+  * `true`: Only the fullscreen background color is drawn.
+  * `both`: The non-fullscreen and the fullscreen background color are drawn.
+  * `neither`: No background color is drawn.
+* Note: Leave a parameter empty to not modify the value.
+* Note: `fbgcolor`, leaving parameters empty and values for `fullscreen` that
+  are not bools are only available since formspec version 3.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
-* Use a background. Inventory rectangles are not drawn then.
 * Example for formspec 8x4 in 16x resolution: image shall be sized
   8 times 16px  times  4 times 16px.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]`
 
-* Use a background. Inventory rectangles are not drawn then.
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
+
+### `background9[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>;<middle>]`
+
+* 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
+* Middle is a rect which defines the middle of the 9-slice.
+	* `x` - The middle will be x pixels from all sides.
+	* `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
+	* `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
+		will be added to the width and height of the texture, allowing it to be used as the
+		distance from the far end.
+	* All numbers in middle are integers.
+* Example for formspec 8x4 in 16x resolution:
+  image shall be sized 8 times 16px  times  4 times 16px
+* If `auto_clip` is `true`, the background is clipped to the formspec size
+  (`x` and `y` are used as offset values, `w` and `h` are ignored)
+* Available since formspec version 2
 
 ### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * Textual password style field; will be sent to server when a button is clicked
 * When enter is pressed in field, fields.key_enter_field will be sent with the
   name of this field.
-* Fields are a set height, but will be vertically centred on `H`
+* With the old coordinate system, fields are a set height, but will be vertically
+  centred on `H`. With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * See `field_close_on_enter` to stop enter closing the formspec
@@ -2061,7 +2162,8 @@ Elements
 * Textual field; will be sent to server when a button is clicked
 * When enter is pressed in field, `fields.key_enter_field` will be sent with
   the name of this field.
-* Fields are a set height, but will be vertically centred on `H`
+* With the old coordinate system, fields are a set height, but will be vertically
+  centred on `H`. With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * `default` is the default value of the field
@@ -2098,23 +2200,39 @@ Elements
 
 * The label formspec element displays the text set in `label`
   at the specified position.
+* **Note**: If the new coordinate system is enabled, labels are
+  positioned from the center of the text, not the top.
 * The text is displayed directly without automatic line breaking,
-  so label should not be used for big text chunks.
+  so label should not be used for big text chunks.  Newlines can be
+  used to make labels multiline.
+* **Note**: With the new coordinate system, newlines are spaced with
+  half a coordinate.  With the old system, newlines are spaced 2/5 of
+  an inventory slot.
+
+### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
+* Displays a static formated text with hyperlinks.
+* `x`, `y`, `w` and `h` work as per field
+* `name` is the name of the field as returned in fields to `on_receive_fields` in case of action in text.
+* `text` is the formatted text using `markup language` described below.
 
 ### `vertlabel[<X>,<Y>;<label>]`
-
 * Textual label drawn vertically
 * `label` is the text on the label
+* **Note**: If the new coordinate system is enabled, vertlabels are
+  positioned from the center of the text, not the left.
 
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * Clickable button. When clicked, fields will be sent.
-* Fixed button height. It will be vertically centred on `H`
+* With the old coordinate system, buttons are a set height, but will be vertically
+  centred on `H`. With the new coordinate system, `H` will modify the height.
 * `label` is the text on the button
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * `texture name` is the filename of an image
+* **Note**: Height is supported on both the old and new coordinate systems
+  for image_buttons.
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
 
@@ -2133,10 +2251,12 @@ Elements
 ### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * When clicked, fields will be sent and the form will quit.
+* Same as `button` in all other respects.
 
 ### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * When clicked, fields will be sent and the form will quit.
+* Same as `image_button` in all other respects.
 
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 
@@ -2162,6 +2282,34 @@ Elements
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab**header** at specific position (ignores formsize)
+* `X` and `Y`: position of the tabheader
+* *Note*: Width and height are automatically chosen with this syntax
+* `name` fieldname data is transferred to Lua
+* `caption 1`...: name shown on top of tab
+* `current_tab`: index of selected tab 1...
+* `transparent` (optional): show transparent
+* `draw_border` (optional): draw border
+
+### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
+
+* Show a tab**header** at specific position (ignores formsize)
+* **Important note**: This syntax for tabheaders can only be used with the
+  new coordinate system.
+* `X` and `Y`: position of the tabheader
+* `H`: height of the tabheader. Width is automatically determined with this syntax.
+* `name` fieldname data is transferred to Lua
+* `caption 1`...: name shown on top of tab
+* `current_tab`: index of selected tab 1...
+* `transparent` (optional): show transparent
+* `draw_border` (optional): draw border
+
+### `tabheader[<X>,<Y>;<W>,<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
+
+* Show a tab**header** at specific position (ignores formsize)
+* **Important note**: This syntax for tabheaders can only be used with the
+  new coordinate system.
+* `X` and `Y`: position of the tabheader
+* `W` and `H`: width and height of the tabheader
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
@@ -2180,8 +2328,22 @@ Elements
 * **Important note**: There are two different operation modes:
     1. handle directly on change (only changed dropdown is submitted)
     2. read the value on pressing a button (all dropdown values are available)
-* `x` and `y` position of dropdown
-* Width of dropdown
+* `X` and `Y`: position of the dropdown
+* `W`: width of the dropdown. Height is automatically chosen with this syntax.
+* Fieldname data is transferred to Lua
+* Items to be shown in dropdown
+* Index of currently selected dropdown item
+
+### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+
+* Show a dropdown field
+* **Important note**: This syntax for dropdowns can only be used with the
+  new coordinate system.
+* **Important note**: There are two different operation modes:
+    1. handle directly on change (only changed dropdown is submitted)
+    2. read the value on pressing a button (all dropdown values are available)
+* `X` and `Y`: position of the dropdown
+* `W` and `H`: width and height of the dropdown
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
@@ -2192,18 +2354,44 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `label` to be shown left of checkbox
 * `selected` (optional): `true`/`false`
+* **Note**: If the new coordinate system is enabled, checkboxes are
+  positioned from the center of the checkbox, not the top.
 
 ### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 
-* Show a scrollbar
+* Show a scrollbar using options defined by the previous `scrollbaroptions[]`
 * There are two ways to use it:
     1. handle the changed event (only changed scrollbar is available)
     2. read the value on pressing a button (all scrollbars are available)
 * `orientation`:  `vertical`/`horizontal`
 * Fieldname data is transferred to Lua
-* Value this trackbar is set to (`0`-`1000`)
+* Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
   (main menu: `core.explode_scrollbar_event`).
+
+### `scrollbaroptions[opt1;opt2;...]`
+* Sets options for all following `scrollbar[]` elements
+* `min=<int>`
+    * Sets scrollbar minimum value, defaults to `0`.
+* `max=<int>`
+    * Sets scrollbar maximum value, defaults to `1000`.
+      If the max is equal to the min, the scrollbar will be disabled.
+* `smallstep=<int>`
+    * Sets scrollbar step value when the arrows are clicked or the mouse wheel is
+      scrolled.
+    * If this is set to a negative number, the value will be reset to `10`.
+* `largestep=<int>`
+    * Sets scrollbar step value used by page up and page down.
+    * If this is set to a negative number, the value will be reset to `100`.
+* `thumbsize=<int>`
+    * Sets size of the thumb on the scrollbar. Size is calculated in the number of
+      units the thumb spans out of the range of the scrollbar values.
+    * Example: If a scrollbar has a `min` of 1 and a `max` of 100, a thumbsize of 10
+      would span a tenth of the scrollbar space.
+    * If this is set to zero or less, the value will be reset to `1`.
+* `arrows=<show/hide/default>`
+    * Whether to show the arrow buttons on the scrollbar. `default` hides the arrows
+      when the scrollbar gets too small, but shows them otherwise.
 
 ### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 
@@ -2265,11 +2453,237 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-**Note**: do _not_ use a element name starting with `key_`; those names are
-reserved to pass key press events to formspec!
+### `style[<name>;<prop1>;<prop2>;...]`
+
+* Set the style for the named element `name`.
+* Note: this **must** be before the element is defined.
+* See [Styling Formspecs].
 
 
+### `style_type[<type>;<prop1>;<prop2>;...]`
 
+* Sets the style for all elements of type `type` which appear after this element.
+* See [Styling Formspecs].
+
+Migrating to Real Coordinates
+-----------------------------
+
+In the old system, positions included padding and spacing. Padding is a gap between
+the formspec window edges and content, and spacing is the gaps between items. For
+example, two `1x1` elements at `0,0` and `1,1` would have a spacing of `5/4` between them,
+and a padding of `3/8` from the formspec edge. It may be easiest to recreate old layouts
+in the new coordinate system from scratch.
+
+To recreate an old layout with padding, you'll need to pass the positions and sizes
+through the following formula to re-introduce padding:
+
+```
+pos = (oldpos + 1)*spacing + padding
+where
+    padding = 3/8
+    spacing = 5/4
+```
+
+You'll need to change the `size[]` tag like this:
+
+```
+size = (oldsize-1)*spacing + padding*2 + 1
+```
+
+A few elements had random offsets in the old system. Here is a table which shows these
+offsets when migrating:
+
+| Element |  Position  |  Size   | Notes
+|---------|------------|---------|-------
+| box     | +0.3, +0.1 | 0, -0.4 |
+| button  |            |         | Buttons now support height, so set h = 2 * 15/13 * 0.35, and reposition if h ~= 15/13 * 0.35 before
+| list    |            |         | Spacing is now 0.25 for both directions, meaning lists will be taller in height
+| label   | 0, +0.3    |         | The first line of text is now positioned centered exactly at the position specified
+
+Styling Formspecs
+-----------------
+
+Formspec elements can be themed using the style elements:
+
+    style[<name>;<prop1>;<prop2>;...]
+    style_type[<type>;<prop1>;<prop2>;...]
+
+Where a prop is:
+
+    property_name=property_value
+
+For example:
+
+    style_type[button;bgcolor=#006699]
+    style[world_delete;bgcolor=red;textcolor=yellow]
+    button[4,3.95;2.6,1;world_delete;Delete]
+
+Setting a property to nothing will reset it to the default value. For example:
+
+    style_type[button;bgimg=button.png;bgimg_pressed=button_pressed.png;border=false]
+    style[btn_exit;bgimg=;bgimg_pressed=;border=;bgcolor=red]
+
+
+### Supported Element Types
+
+Some types may inherit styles from parent types.
+
+* button
+* button_exit, inherits from button
+* checkbox
+* scrollbar
+* table
+* textlist
+* dropdown
+* field
+* pwdfield, inherits from field
+* textarea
+* label
+* vertlabel, inherits from field
+* image_button
+* item_image_button
+* tabheader
+
+
+### Valid Properties
+
+* button, button_exit, image_button, item_image_button
+    * alpha - boolean, whether to draw alpha in bgimg. Default true.
+    * bgcolor - color, sets button tint.
+    * bgcolor_hovered - color when hovered. Defaults to a lighter bgcolor when not provided.
+    * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
+    * bgimg - standard background image. Defaults to none.
+    * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+    * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
+    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * textcolor - color, default white.
+* checkbox
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* scrollbar
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* table, textlist
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* dropdown
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* field, pwdfield, textarea
+    * border - set to false to hide the textbox background and border. Default true.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * textcolor - color. Default white.
+* label, vertlabel
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* image_button (additional properties)
+    * fgimg - standard image. Defaults to none.
+    * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
+    * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
+    * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
+* tabheader
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * textcolor - color. Default white.
+
+Markup language
+---------------
+
+Markup language used in `hypertext[]` elements uses tag that look like HTML tags. Some
+tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
+Tags can have attributes, in that case, attributes are in the opening tag in
+form of a key/value separated with equal signs. Attribute values should not be quoted.
+
+These are the technically basic tags but see below for usual tags. Base tags are:
+
+`<style color=... font=... size=...>...</style>`
+
+Changes the style of the text.
+
+* `color`: Text color. Given color is a `colorspec`.
+* `size`: Text size.
+* `font`: Text font (`mono` or `normal`).
+
+`<global background=... margin=... valign=... color=... hovercolor=... size=... font=... halign=... >`
+
+Sets global style.
+
+Global only styles:
+* `background`: Text background, a `colorspec` or `none`.
+* `margin`: Page margins in pixel.
+* `valign`: Text vertical alignment (`top`, `middle`, `bottom`).
+
+Inheriting styles (affects child elements):
+* `color`: Default text color. Given color is a `colorspec`.
+* `hovercolor`: Color of <action> tags when mouse is over.
+* `size`: Default text size.
+* `font`: Default text font (`mono` or `normal`).
+* `halign`: Default text horizontal alignment (`left`, `right`, `center`, `justify`).
+
+This tag needs to be placed only once as it changes the global settings of the
+text. Anyway, if several tags are placed, each changed will be made in the order
+tags appear.
+
+`<tag name=... color=... hovercolor=... font=... size=...>`
+
+Defines or redefines tag style. This can be used to define new tags.
+* `name`: Name of the tag to define or change.
+* `color`: Text color. Given color is a `colorspec`.
+* `hovercolor`: Text color when element hovered (only for `action` tags). Given color is a `colorspec`.
+* `size`: Text size.
+* `font`: Text font (`mono` or `normal`).
+
+Following tags are the usual tags for text layout. They are defined by default.
+Other tags can be added using `<tag ...>` tag.
+
+`<normal>...</normal>`: Normal size text
+
+`<big>...</big>`: Big text
+
+`<bigger>...</bigger>`: Bigger text
+
+`<center>...</center>`: Centered text
+
+`<left>...</left>`: Left-aligned text
+
+`<right>...</right>`: Right-aligned text
+
+`<justify>...</justify>`: Justified text
+
+`<mono>...</mono>`: Monospaced font
+
+`<b>...</b>`, `<i>...</i>`, `<u>...</u>`: Bold, italic, underline styles.
+
+`<action name=...>...</action>`
+
+Make that text a clickable text triggering an action.
+
+* `name`: Name of the action (mandatory).
+
+When clicked, the formspec is send to the server. The value of the text field
+sent to `on_player_receive_fields` will be "action:" concatenated to the action
+name.
+
+`<img name=... float=... width=... height=...>`
+
+Draws an image which is present in the client media cache.
+
+* `name`: Name of the texture (mandatory).
+* `float`: If present, makes the image floating (`left` or `right`).
+* `width`: Force image width instead of taking texture width.
+* `height`: Force image height instead of taking texture height.
+
+If only width or height given, texture aspect is kept.
+
+`<item name=... float=... width=... height=... rotate=...>`
+
+Draws an item image.
+
+* `name`: Item string of the item to draw (mandatory).
+* `float`: If present, makes the image floating (`left` or `right`).
+* `width`: Item image width.
+* `height`: Item image height.
+* `rotate`: Rotate item image if set to `yes` or `X,Y,Z`. X, Y and Z being
+rotation speeds in percent of standard speed (-1000 to 1000). Works only if
+`inventory_items_animations` is set to true.
+* `angle`: Angle in which the item image is shown. Value has `X,Y,Z` form.
+X, Y and Z being angles around each three axes. Works only if
+`inventory_items_animations` is set to true.
 
 Inventory
 =========
@@ -2292,9 +2706,7 @@ Player Inventory lists
 * `craftresult`: list containing the crafted output
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
-
-
-
+    * Is only used to enhance the empty hand's tool capabilities
 
 Colors
 ======
@@ -2400,6 +2812,10 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns in order minp, maxp vectors of the cuboid defined by `v1`, `v2`.
 * `vector.angle(v1, v2)`:
     * Returns the angle between `v1` and `v2` in radians.
+* `vector.dot(v1, v2)`
+    * Returns the dot product of `v1` and `v2`
+* `vector.cross(v1, v2)`
+    * Returns the cross product of `v1` and `v2`
 
 For the following functions `x` can be either a vector or a number:
 
@@ -3359,7 +3775,7 @@ Possible fields of the table returned are:
 * `decoration`
 
 Decorations have a key in the format of `"decoration#id"`, where `id` is the
-numeric unique decoration ID.
+numeric unique decoration ID as returned by `minetest.get_decoration_id`.
 
 
 
@@ -3535,6 +3951,10 @@ Utilities
           -- Specifies whether binary data can be uploaded or downloaded using
           -- the HTTP API (5.1.0)
           httpfetch_binary_data = true,
+          -- Whether formspec_version[<version>] may be used (5.1.0)
+          formspec_version_element = true,
+          -- Whether AreaStore's IDs are kept on save/load (5.1.0)
+          area_store_persistent_ids = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -3629,21 +4049,24 @@ Call these functions only at load time!
       mapgens. See [Mapgen aliases] section above.
 * `minetest.register_alias_force(alias, original_name)`
 * `minetest.register_ore(ore definition)`
-    * Returns an integer uniquely identifying the registered ore on success.
+    * Returns an integer object handle uniquely identifying the registered
+      ore on success.
     * The order of ore registrations determines the order of ore generation.
 * `minetest.register_biome(biome definition)`
-    * Returns an integer uniquely identifying the registered biome on success.
+    * Returns an integer object handle uniquely identifying the registered
+      biome on success. To get the biome ID, use `minetest.get_biome_id`.
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
 * `minetest.register_decoration(decoration definition)`
-    * Returns an integer uniquely identifying the registered decoration on
-      success.
+    * Returns an integer object handle uniquely identifying the registered
+      decoration on success. To get the decoration ID, use
+      `minetest.get_decoration_id`.
     * The order of decoration registrations determines the order of decoration
       generation.
 * `minetest.register_schematic(schematic definition)`
-    * Returns an integer uniquely identifying the registered schematic on
-      success.
+    * Returns an integer object handle uniquely identifying the registered
+      schematic on success.
     * If the schematic is loaded from a file, the `name` field is set to the
       filename.
     * If the function is called when loading the mod, and `name` is a relative
@@ -3859,8 +4282,7 @@ Call these functions only at load time!
       allow for multiple protection mods.
 * `minetest.register_on_item_eat(function(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
-    * Return `true` or `itemstack` to cancel the default item eat response
-      (i.e.: hp increase).
+    * Return `itemstack` to cancel the default item eat response (i.e.: hp increase).
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player,
@@ -3940,6 +4362,12 @@ Chat
 
 * `minetest.chat_send_all(text)`
 * `minetest.chat_send_player(name, text)`
+* `minetest.format_chat_message(name, message)`
+    * Used by the server to format a chat message, based on the setting `chat_message_format`.
+      Refer to the documentation of the setting for a list of valid placeholders.
+    * Takes player name and message, and returns the formatted string to be sent to players.
+    * Can be redefined by mods if required, for things like colored names or messages.
+    * **Only** the first occurrence of each placeholder will be replaced.
 
 Environment access
 ------------------
@@ -4320,7 +4748,10 @@ Item handling
 * `minetest.inventorycube(img1, img2, img3)`
     * Returns a string for making an image of a cube (useful as an item image)
 * `minetest.get_pointed_thing_position(pointed_thing, above)`
-    * Get position of a `pointed_thing` (that you can get from somewhere)
+    * Returns the position of a `pointed_thing` or `nil` if the `pointed_thing`
+      does not refer to a node or entity.
+    * If the optional `above` parameter is true and the `pointed_thing` refers
+      to a node, then it will return the `above` position of the `pointed_thing`.
 * `minetest.dir_to_facedir(dir, is6d)`
     * Convert a vector to a facedir value, used in `param2` for
       `paramtype2="facedir"`.
@@ -4357,8 +4788,9 @@ Item handling
       `{stack1, stack2, stack3, stack4, stack 5, stack 6, stack 7, stack 8, stack 9}`
     * `output.item` = `ItemStack`, if unsuccessful: empty `ItemStack`
     * `output.time` = a number, if unsuccessful: `0`
-    * `output.replacements` = list of `ItemStack`s that couldn't be placed in
-      `decremented_input.items`
+    * `output.replacements` = List of replacement `ItemStack`s that couldn't be
+      placed in `decremented_input.items`. Replacements can be placed in
+      `decremented_input` if the stack of the replaced item has a count of 1.
     * `decremented_input` = like `input`
 * `minetest.get_craft_recipe(output)`: returns input
     * returns last registered recipe for output item (node)
@@ -4419,33 +4851,36 @@ Rollback
     * Revert latest actions of someone
     * `actor`: `"player:<name>"`, also `"liquid"`.
 
-Defaults for the `on_*` item definition functions
--------------------------------------------------
-
-These functions return the leftover itemstack.
+Defaults for the `on_place` and `on_drop` item definition functions
+-------------------------------------------------------------------
 
 * `minetest.item_place_node(itemstack, placer, pointed_thing[, param2, prevent_after_place])`
     * Place item as a node
     * `param2` overrides `facedir` and wallmounted `param2`
     * `prevent_after_place`: if set to `true`, `after_place_node` is not called
       for the newly placed node to prevent a callback and placement loop
-    * returns `itemstack, success`
+    * returns `itemstack, position`
+      * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_place_object(itemstack, placer, pointed_thing)`
     * Place item as-is
-* `minetest.item_place(itemstack, placer, pointed_thing, param2)`
-    * Use one of the above based on what the item is.
+    * returns the leftover itemstack
+    * **Note**: This function is deprecated and will never be called.
+* `minetest.item_place(itemstack, placer, pointed_thing[, param2])`
+    * Wrapper that calls `minetest.item_place_node` if appropriate
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
     * **Note**: is not called when wielded item overrides `on_place`
-    * `param2` overrides `facedir` and wallmounted `param2`
-    * returns `itemstack, success`
+    * `param2` overrides facedir and wallmounted `param2`
+    * returns `itemstack, position`
+      * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
-* `minetest.item_eat(hp_change, replace_with_item)`
-    * Eat the item.
+    * returns the leftover itemstack
+* `minetest.item_eat(hp_change[, replace_with_item])`
+    * Returns `function(itemstack, user, pointed_thing)` as a
+      function wrapper for `minetest.do_item_eat`.
     * `replace_with_item` is the itemstring which is added to the inventory.
       If the player is eating a stack, then replace_with_item goes to a
-      different spot. Can be `nil`
-    * See `minetest.do_item_eat`
+      different spot.
 
 Defaults for the `on_punch` and `on_dig` node definition callbacks
 ------------------------------------------------------------------
@@ -4507,13 +4942,16 @@ Server
 Bans
 ----
 
-* `minetest.get_ban_list()`: returns the ban list
-  (same as `minetest.get_ban_description("")`).
-* `minetest.get_ban_description(ip_or_name)`: returns ban description (string)
-* `minetest.ban_player(name)`: ban a player
-* `minetest.unban_player_or_ip(name)`: unban player or IP address
-* `minetest.kick_player(name, [reason])`: disconnect a player with a optional
+* `minetest.get_ban_list()`: returns a list of all bans formatted as string
+* `minetest.get_ban_description(ip_or_name)`: returns list of bans matching
+  IP address or name formatted as string
+* `minetest.ban_player(name)`: ban the IP of a currently connected player
+    * Returns boolean indicating success
+* `minetest.unban_player_or_ip(ip_or_name)`: remove ban record matching
+  IP address or name
+* `minetest.kick_player(name, [reason])`: disconnect a player with an optional
   reason.
+    * Returns boolean indicating success (false if player nonexistant)
 
 Particles
 ---------
@@ -4621,6 +5059,18 @@ Schematics
         * If `lua_num_indent_spaces` is a nonzero number and `format` is "lua",
           the Lua code generated will use that number of spaces as indentation
           instead of a tab character.
+
+* `minetest.read_schematic(schematic, options)`
+    * Returns a Lua table representing the schematic (see: [Schematic specifier])
+    * `schematic` is the schematic to read (see: [Schematic specifier])
+    * `options` is a table containing the following optional parameters:
+        * `write_yslice_prob`: string value:
+            * `none`: no `write_yslice_prob` table is inserted,
+            * `low`: only probabilities that are not 254 or 255 are written in
+              the `write_ylisce_prob` table,
+            * `all`: write all probabilities to the `write_yslice_prob` table.
+            * The default for this option is `all`.
+            * Any invalid value will be interpreted as `all`.
 
 HTTP Requests
 -------------
@@ -4740,15 +5190,13 @@ Misc.
 * `minetest.decode_base64(string)`: returns string
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
-    * Returns true, if player `name` shouldn't be able to dig at `pos` or do
-      other actions, definable by mods, due to some mod-defined ownership-like
-      concept.
-    * Returns false or nil, if the player is allowed to do such actions.
-    * `name` will be "" for non-players or unknown players.
-    * This function should be overridden by protection mods and should be used
-      to check if a player can interact at a position.
-    * This function should call the old version of itself if the position is
-      not protected by the mod.
+    * Returning `true` restricts the player `name` from modifying (i.e. digging,
+       placing) the node at position `pos`.
+    * `name` will be `""` for non-players or unknown players.
+    * This function should be overridden by protection mods. It is highly
+      recommended to grant access to players with the `protection_bypass` privilege.
+    * Cache and call the old version of this function if the position is
+      not protected by the mod. This will allow using multiple protection mods.
     * Example:
 
           local old_is_protected = minetest.is_protected
@@ -4798,6 +5246,15 @@ Misc.
     * calls `rotate_and_place()` with `infinitestacks` set according to the state
       of the creative mode setting, checks for "sneak" to set the `invert_wall`
       parameter and `prevent_after_place` set to `true`.
+
+* `minetest.calculate_knockback(player, hitter, time_from_last_punch,
+  tool_capabilities, dir, distance, damage)`
+    * Returns the amount of knockback applied on the punched player.
+    * Arguments are equivalent to `register_on_punchplayer`, except the following:
+        * `distance`: distance between puncher and punched player
+    * This function can be overriden by mods that wish to modify this behaviour.
+    * You may want to cache and call the old function to allow multiple mods to
+      change knockback behaviour.
 
 * `minetest.forceload_block(pos[, transient])`
     * forceloads the position `pos`.
@@ -4859,17 +5316,19 @@ Global tables
     * Map of registered aliases, indexed by name
 * `minetest.registered_ores`
     * Map of registered ore definitions, indexed by the `name` field.
-    * If `name` is nil, the key is the ID returned by `minetest.register_ore`.
+    * If `name` is nil, the key is the object handle returned by
+      `minetest.register_ore`.
 * `minetest.registered_biomes`
     * Map of registered biome definitions, indexed by the `name` field.
-    * If `name` is nil, the key is the ID returned by `minetest.register_biome`.
+    * If `name` is nil, the key is the object handle returned by
+      `minetest.register_biome`.
 * `minetest.registered_decorations`
     * Map of registered decoration definitions, indexed by the `name` field.
-    * If `name` is nil, the key is the ID returned by
+    * If `name` is nil, the key is the object handle returned by
       `minetest.register_decoration`.
 * `minetest.registered_schematics`
     * Map of registered schematic definitions, indexed by the `name` field.
-    * If `name` is nil, the key is the ID returned by
+    * If `name` is nil, the key is the object handle returned by
       `minetest.register_schematic`.
 * `minetest.registered_chatcommands`
     * Map of registered chat command definitions, indexed by name
@@ -4896,35 +5355,38 @@ A fast access data structure to store areas, and find areas near a given
 position or area.
 Every area has a `data` string attribute to store additional information.
 You can create an empty `AreaStore` by calling `AreaStore()`, or
-`AreaStore(type_name)`.
+`AreaStore(type_name)`. The mod decides where to save and load AreaStore.
 If you chose the parameter-less constructor, a fast implementation will be
 automatically chosen for you.
 
 ### Methods
 
-* `get_area(id, include_borders, include_data)`: returns the area with the id
-  `id`.
-  (optional) Boolean values `include_borders` and `include_data` control what's
-  copied.
-  Returns nil if specified area id does not exist.
-* `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas
-  that contain the position `pos`.
-  (optional) Boolean values `include_borders` and `include_data` control what's
-  copied.
-* `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`:
-  returns all areas that contain all nodes inside the area specified by `edge1`
-  and `edge2` (inclusive).
-  If `accept_overlap` is true, also areas are returned that have nodes in
-  common with the specified area.
-  (optional) Boolean values `include_borders` and `include_data` control what's
-  copied.
+* `get_area(id, include_borders, include_data)`
+    * Returns the area information about the specified ID.
+    * Returned values are either of these:
+
+            nil  -- Area not found
+            true -- Without `include_borders` and `include_data`
+            {
+                min = pos, max = pos -- `include_borders == true`
+                data = string        -- `include_data == true`
+            }
+
+* `get_areas_for_pos(pos, include_borders, include_data)`
+    * Returns all areas as table, indexed by the area ID.
+    * Table values: see `get_area`.
+* `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`
+    * Returns all areas that contain all nodes inside the area specified by `edge1`
+      and `edge2` (inclusive).
+    * `accept_overlap`: if `true`, areas are returned that have nodes in
+      common (intersect) with the specified area.
+    * Returns the same values as `get_areas_for_pos`.
 * `insert_area(edge1, edge2, data, [id])`: inserts an area into the store.
-  Returns the new area's ID, or nil if the insertion failed.
-  The (inclusive) positions `edge1` and `edge2` describe the area.
-  `data` is a string stored with the area.  If passed, `id` will be used as the
-  internal area ID, it must be a unique number between 0 and 2^32-2. If you use
-  the `id` parameter you must always use it, or insertions are likely to fail
-  due to conflicts.
+    * Returns the new area's ID, or nil if the insertion failed.
+    * The (inclusive) positions `edge1` and `edge2` describe the area.
+    * `data` is a string stored with the area.
+    * `id` (optional): will be used as the internal area ID if it is an unique
+      number between 0 and 2^32-2.
 * `reserve(count)`: reserves resources for at most `count` many contained
   areas.
   Only needed for efficiency, and only some implementations profit.
@@ -5010,6 +5472,7 @@ an itemstring, a table or `nil`.
 * `get_metadata()`: (DEPRECATED) Returns metadata (a string attached to an item
   stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
+* `get_description()`: returns the description shown in inventory list tooltips.
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
@@ -5053,7 +5516,8 @@ Can be obtained via `item:get_meta()`.
 `MetaDataRef`
 -------------
 
-See [`StorageRef`], [`NodeMetaRef`], [`ItemStackMetaRef`], and [`PlayerMetaRef`].
+Base class used by [`StorageRef`], [`NodeMetaRef`], [`ItemStackMetaRef`],
+and [`PlayerMetaRef`].
 
 ### Methods
 
@@ -5147,11 +5611,13 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 ### Methods
 
-* `remove()`: remove object (after returning from Lua)
-    * Note: Doesn't work on players, use `minetest.kick_player` instead
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
-* `move_to(pos, continuous=false)`: interpolated move
+* `move_to(pos, continuous=false)`
+    * Does an interpolated move for Lua entities for visually smooth transitions.
+    * If `continuous` is true, the Lua entity will not be moved to the current
+      position before starting the interpolated move.
+    * For players this does the same as `set_pos`,`continuous` is ignored.
 * `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
     * `puncher` = another `ObjectRef`,
     * `time_from_last_punch` = time since last punch action of the puncher
@@ -5160,7 +5626,10 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
     * See reason in register_on_player_hpchange
-* `get_inventory()`: returns an `InvRef`
+    * Is limited to the range of 0 ... 65535 (2^16 - 1)
+    * For players: HP are also limited by `hp_max` specified in the player's
+      object properties
+* `get_inventory()`: returns an `InvRef` for players, otherwise returns `nil`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
 * `get_wield_index()`: returns the index of the wielded item
@@ -5207,8 +5676,9 @@ This is basically a reference to a C++ `ServerActiveObject`
         text = "My Nametag",
       }
 
-#### LuaEntitySAO-only (no-op for other objects)
+#### Lua entity only (no-op for other objects)
 
+* `remove()`: remove object (after returning from Lua)
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `add_velocity(vel)`
@@ -5239,11 +5709,19 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 
-#### Player-only (no-op for other objects)
+#### Player only (no-op for other objects)
 
 * `get_player_name()`: returns `""` if is not a player
 * `get_player_velocity()`: returns `nil` if is not a player, otherwise a
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
+* `add_player_velocity(vel)`
+    * Adds to player velocity, this happens client-side and only once.
+    * Does not apply during free_move.
+    * Note that since the player speed is normalized at each move step,
+      increasing e.g. Y velocity beyond what would usually be achieved
+      (see: physics overrides) will cause existing X/Z velocity to be reduced.
+    * Example: `add_player_velocity({x=0, y=6.5, z=0})` is equivalent to
+      pressing the jump key (assuming default settings)
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_vertical()`: pitch in radians
     * Angle ranges between -pi/2 and pi/2, which are straight up and down
@@ -5265,12 +5743,22 @@ This is basically a reference to a C++ `ServerActiveObject`
   `set_look_vertical`.
 * `set_look_yaw(radians)`: sets look yaw - Deprecated. Use
   `set_look_horizontal`.
-* `get_breath()`: returns players breath
-* `set_breath(value)`: sets players breath
+* `get_breath()`: returns player's breath
+* `set_breath(value)`: sets player's breath
     * values:
         * `0`: player is drowning
         * max: bubbles bar is not shown
         * See [Object properties] for more information
+    * Is limited to range 0 ... 65535 (2^16 - 1)
+* `set_fov(fov, is_multiplier)`: Sets player's FOV
+    * `fov`: FOV value.
+    * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
+      Defaults to `false`.
+    * Set to 0 to clear FOV override.
+* `get_fov()`:
+    * Returns player's FOV override in degrees, and a boolean depending on whether
+      the value is a multiplier.
+    * Returns 0 as first value if player's FOV hasn't been overridden.
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a
@@ -5567,11 +6055,25 @@ It can be created via `Settings(filename)`.
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
 
+### Format
+
+The settings have the format `key = value`. Example:
+
+    foo = example text
+    bar = """
+    Multiline
+    value
+    """
+
+
 `StorageRef`
 ------------
 
 Mod metadata: per mod metadata, saved automatically.
 Can be obtained via `minetest.get_mod_storage()` during load time.
+
+WARNING: This storage backend is incaptable to save raw binary data due
+to restrictions of JSON.
 
 ### Methods
 
@@ -5587,6 +6089,9 @@ Object properties
 -----------------
 
 Used by `ObjectRef` methods. Part of an Entity definition.
+These properties are not persistent, but are applied automatically to the
+corresponding Lua entity using the given registration fields.
+Player properties need to be saved manually.
 
     {
         hp_max = 1,
@@ -5630,7 +6135,7 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         -- "mesh" uses the defined mesh model.
         -- "wielditem" is used for dropped items.
         --   (see builtin/game/item_entity.lua).
-        --   For this use 'textures = {itemname}'.
+        --   For this use 'wield_item = itemname' (Deprecated: 'textures = {itemname}').
         --   If the item has a 'wield_image' the object will be an extrusion of
         --   that, otherwise:
         --   If 'itemname' is a cubic node or nodebox the object will appear
@@ -5639,6 +6144,8 @@ Used by `ObjectRef` methods. Part of an Entity definition.
         --   of its texture.
         --   Otherwise for non-node items, the object will be an extrusion of
         --   'inventory_image'.
+        --   If 'itemname' contains a ColorString or palette index (e.g. from
+        --   `minetest.itemstring_with_palette()`), the entity will inherit the color.
         -- "item" is similar to "wielditem" but ignores the 'wield_image' parameter.
 
         visual_size = {x = 1, y = 1, z = 1},
@@ -5798,6 +6305,10 @@ LBM (LoadingBlockModifier) definition
 
 Used by `minetest.register_lbm`.
 
+A loading block modifier (LBM) is used to define a function that is called for
+specific nodes (defined by `nodenames`) when a mapblock which contains such nodes
+gets loaded.
+
     {
         label = "Upgrade legacy doors",
         -- Descriptive label for profiling purposes (optional).
@@ -5812,8 +6323,8 @@ Used by `minetest.register_lbm`.
 
         run_at_every_load = false,
         -- Whether to run the LBM's action every time a block gets loaded,
-        -- and not just for blocks that were saved last time before LBMs were
-        -- introduced to the world.
+        -- and not only the first time the block gets loaded after the LBM
+        -- was introduced.
 
         action = function(pos, node),
     }
@@ -5918,7 +6429,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         liquids_pointable = false,
 
-        -- See "Tools" section
+        -- See "Tools" section for an example including explanation
         tool_capabilities = {
             full_punch_interval = 1.0,
             max_drop_level = 0,
@@ -5928,6 +6439,15 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
                          uses = 20, maxlevel = 2},
             },
             damage_groups = {groupname = damage},
+            -- Damage values must be between -32768 and 32767 (2^15)
+
+            punch_attack_uses = nil,
+            -- Amount of uses this tool has for attacking players and entities
+            -- by punching them (0 = infinite uses).
+            -- For compatibility, this is automatically set from the first
+            -- suitable groupcap using the forumla "uses * 3^(maxlevel - 1)".
+            -- It is recommend to set this explicitly instead of relying on the
+            -- fallback behavior.
         },
 
         node_placement_prediction = nil,
@@ -5956,9 +6476,9 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- default: minetest.item_place
 
         on_secondary_use = function(itemstack, user, pointed_thing),
-        -- Same as on_place but called when pointing at nothing.
+        -- Same as on_place but called when not pointing at a node.
         -- The user may be any ObjectRef or nil.
-        -- pointed_thing: always { type = "nothing" }
+        -- default: nil
 
         on_drop = function(itemstack, dropper, pos),
         -- Shall drop item and return the leftover itemstack.
@@ -6167,7 +6687,9 @@ Used by `minetest.register_node`.
         drop = "",
         -- Name of dropped item when dug.
         -- Default dropped item is the node itself.
-        -- Using a table allows multiple items, drop chances and tool filtering:
+        -- Using a table allows multiple items, drop chances and tool filtering.
+        -- Tool filtering was undocumented until recently, tool filtering by string
+        -- matching is deprecated.
         drop = {
             max_items = 1,
             -- Maximum number of item lists to drop.
@@ -6198,7 +6720,8 @@ Used by `minetest.register_node`.
                 },
                 {
                     -- Only drop if using a tool whose name contains
-                    -- "default:shovel_".
+                    -- "default:shovel_" (this tool filtering by string matching
+                    -- is deprecated).
                     tools = {"~default:shovel_"},
                     rarity = 2,
                     -- The item list dropped.
@@ -6256,10 +6779,10 @@ Used by `minetest.register_node`.
         -- default: nil
 
         can_dig = function(pos, [player]),
-
-        on_punch = function(pos, node, puncher, pointed_thing),
         -- Returns true if node can be dug, or false if not.
         -- default: nil
+
+        on_punch = function(pos, node, puncher, pointed_thing),
         -- default: minetest.node_punch
         -- By default calls minetest.register_on_punchnode callbacks.
 
@@ -6525,7 +7048,9 @@ Used by `minetest.register_biome`.
 
         node_dungeon = "default:cobble",
         -- Node used for primary dungeon structure.
-        -- If absent, dungeon materials fall back to classic behaviour.
+        -- If absent, dungeon nodes fall back to the 'mapgen_cobble' mapgen
+        -- alias, if that is also absent, dungeon nodes fall back to the biome
+        -- 'node_stone'.
         -- If present, the following two nodes are also used.
 
         node_dungeon_alt = "default:mossycobble",
@@ -6754,10 +7279,11 @@ Privilege definition
 Used by `minetest.register_privilege`.
 
     {
-        description = "Can teleport",  -- Privilege description
+        description = "",
+        -- Privilege description
 
-        give_to_singleplayer = false,
-        -- Whether to grant the privilege to singleplayer (default true).
+        give_to_singleplayer = true,
+        -- Whether to grant the privilege to singleplayer.
 
         give_to_admin = true,
         -- Whether to grant the privilege to the server admin.
@@ -6840,6 +7366,9 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
         size = { x=100, y=100 },
         -- Size of element in pixels
+
+        z_index = 0,
+        -- Z index : lower z-index HUDs are displayed behind higher z-index HUDs
     }
 
 Particle definition
