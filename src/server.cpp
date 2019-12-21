@@ -149,22 +149,24 @@ v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
 
 void Server::ShutdownState::reset()
 {
-	m_timer = 0.0f;
-	message.clear();
-	should_reconnect = false;
+	info.delay = 0.0f;
+	info.message.clear();
+	info.countdown_message.clear();
+	info.should_reconnect = false;
 	is_requested = false;
 }
 
-void Server::ShutdownState::trigger(float delay, const std::string &msg, bool reconnect)
+void Server::ShutdownState::trigger(const Server::ShutdownInformation &infomation)
 {
-	m_timer = delay;
-	message = msg;
-	should_reconnect = reconnect;
+	info.delay = infomation.delay;
+	info.message = infomation.message;
+	info.should_reconnect = infomation.should_reconnect;
+	info.countdown_message = infomation.countdown_message;
 }
 
 void Server::ShutdownState::tick(float dtime, Server *server)
 {
-	if (m_timer <= 0.0f)
+	if (info.delay <= 0.0f)
 		return;
 
 	// Timed shutdown
@@ -174,10 +176,10 @@ void Server::ShutdownState::tick(float dtime, Server *server)
 	};
 
 	// Automated messages
-	if (m_timer < shutdown_msg_times[ARRLEN(shutdown_msg_times) - 1]) {
+	if (info.delay < shutdown_msg_times[ARRLEN(shutdown_msg_times) - 1]) {
 		for (float t : shutdown_msg_times) {
 			// If shutdown timer matches an automessage, shot it
-			if (m_timer > t && m_timer - dtime < t) {
+			if (info.delay > t && info.delay - dtime < t) {
 				std::wstring periodicMsg = getShutdownTimerMessage();
 
 				infostream << wide_to_utf8(periodicMsg).c_str() << std::endl;
@@ -187,9 +189,9 @@ void Server::ShutdownState::tick(float dtime, Server *server)
 		}
 	}
 
-	m_timer -= dtime;
-	if (m_timer < 0.0f) {
-		m_timer = 0.0f;
+	info.delay -= dtime;
+	if (info.delay < 0.0f) {
+		info.delay = 0.0f;
 		is_requested = true;
 	}
 }
@@ -197,8 +199,10 @@ void Server::ShutdownState::tick(float dtime, Server *server)
 std::wstring Server::ShutdownState::getShutdownTimerMessage() const
 {
 	std::wstringstream ws;
-	ws << L"*** Server shutting down in "
-		<< duration_to_string(myround(m_timer)).c_str() << ".";
+	std::string str (info.countdown_message);
+	str_replace(str, "@1", duration_to_string(myround(info.delay)));
+	str_replace(str, "@@", "@");
+	ws << str.c_str();
 	return ws.str();
 }
 
@@ -260,8 +264,8 @@ Server::~Server()
 		std::string kick_msg;
 		bool reconnect = false;
 		if (isShutdownRequested()) {
-			reconnect = m_shutdown_state.should_reconnect;
-			kick_msg = m_shutdown_state.message;
+			reconnect = m_shutdown_state.info.should_reconnect;
+			kick_msg = m_shutdown_state.info.message;
 		}
 		if (kick_msg.empty()) {
 			kick_msg = g_settings->get("kick_msg_shutdown");
@@ -3646,15 +3650,16 @@ v3f Server::findSpawnPos()
 	return v3f(0.0f, 0.0f, 0.0f);
 }
 
-void Server::requestShutdown(const std::string &msg, bool reconnect, float delay)
+void Server::requestShutdown(const Server::ShutdownInformation &info)
 {
-	if (delay == 0.0f) {
+	if (info.delay == 0.0f) {
 	// No delay, shutdown immediately
 		m_shutdown_state.is_requested = true;
 		// only print to the infostream, a chat message saying
 		// "Server Shutting Down" is sent when the server destructs.
 		infostream << "*** Immediate Server shutdown requested." << std::endl;
-	} else if (delay < 0.0f && m_shutdown_state.isTimerRunning()) {
+		m_shutdown_state.trigger(info);
+	} else if (info.delay < 0.0f && m_shutdown_state.isTimerRunning()) {
 		// Negative delay, cancel shutdown if requested
 		m_shutdown_state.reset();
 		std::wstringstream ws;
@@ -3665,19 +3670,16 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 		SendChatMessage(PEER_ID_INEXISTENT, ws.str());
 		// m_shutdown_* are already handled, skip.
 		return;
-	} else if (delay > 0.0f) {
+	} else if (info.delay > 0.0f) {
 	// Positive delay, tell the clients when the server will shut down
+		m_shutdown_state.trigger(info);
 		std::wstringstream ws;
 
-		ws << L"*** Server shutting down in "
-				<< duration_to_string(myround(delay)).c_str()
-				<< ".";
+		ws << m_shutdown_state.getShutdownTimerMessage();
 
 		infostream << wide_to_utf8(ws.str()).c_str() << std::endl;
 		SendChatMessage(PEER_ID_INEXISTENT, ws.str());
 	}
-
-	m_shutdown_state.trigger(delay, msg, reconnect);
 }
 
 PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_version)

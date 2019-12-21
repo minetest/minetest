@@ -4915,12 +4915,13 @@ Timing
 Server
 ------
 
-* `minetest.request_shutdown([message],[reconnect],[delay])`: request for
+* `minetest.request_shutdown([message],[reconnect],[delay],[countdown_msg])`: request for
   server shutdown. Will display `message` to clients.
     * `reconnect` == true displays a reconnect button
     * `delay` adds an optional delay (in seconds) before shutdown.
       Negative delay cancels the current active shutdown.
       Zero delay triggers an immediate shutdown.
+    * `countdown_msg` message displayed during countdown
 * `minetest.cancel_shutdown_requests()`: cancel current delayed shutdown
 * `minetest.get_server_status(name, joined)`
     * Returns the server status string when a player joins or when the command

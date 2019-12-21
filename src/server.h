@@ -204,8 +204,14 @@ public:
 	// read shutdown state
 	inline bool isShutdownRequested() const { return m_shutdown_state.is_requested; }
 
+	struct ShutdownInformation {
+		bool should_reconnect;
+		std::string countdown_message;
+		std::string message;
+		float delay;
+	};
 	// request server to shutdown
-	void requestShutdown(const std::string &msg, bool reconnect, float delay = 0.0f);
+	void requestShutdown(const ShutdownInformation &info);
 
 	// Returns -1 if failed, sound handle on success
 	// Envlock
@@ -366,16 +372,13 @@ private:
 		friend class TestServerShutdownState;
 		public:
 			bool is_requested = false;
-			bool should_reconnect = false;
-			std::string message;
+			ShutdownInformation info{.should_reconnect = false};
 
 			void reset();
-			void trigger(float delay, const std::string &msg, bool reconnect);
+			void trigger(const ShutdownInformation &info);
 			void tick(float dtime, Server *server);
 			std::wstring getShutdownTimerMessage() const;
-			bool isTimerRunning() const { return m_timer > 0.0f; }
-		private:
-			float m_timer = 0.0f;
+			bool isTimerRunning() const { return info.delay > 0.0f; }
 	};
 
 	void SendMovement(session_t peer_id);

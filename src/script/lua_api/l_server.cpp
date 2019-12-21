@@ -35,7 +35,14 @@ int ModApiServer::l_request_shutdown(lua_State *L)
 	const char *msg = lua_tolstring(L, 1, NULL);
 	bool reconnect = readParam<bool>(L, 2);
 	float seconds_before_shutdown = lua_tonumber(L, 3);
-	getServer(L)->requestShutdown(msg ? msg : "", reconnect, seconds_before_shutdown);
+	const char *countdown_msg = lua_tolstring(L, 4, NULL);
+	Server::ShutdownInformation info {
+		.should_reconnect = reconnect,
+		.countdown_message = countdown_msg ? countdown_msg : "*** Server shutting down in @1.",
+		.message = msg ? msg : "",
+		.delay = seconds_before_shutdown
+	};
+	getServer(L)->requestShutdown(info);
 	return 0;
 }
 

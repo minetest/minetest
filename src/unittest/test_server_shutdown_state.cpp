@@ -68,9 +68,10 @@ void TestServerShutdownState::testInit()
 {
 	Server::ShutdownState ss;
 	UASSERT(!ss.is_requested);
-	UASSERT(!ss.should_reconnect);
-	UASSERT(ss.message.empty());
-	UASSERT(ss.m_timer == 0.0f);
+	UASSERT(!ss.info.should_reconnect);
+	UASSERT(ss.info.message.empty());
+	UASSERT(ss.info.countdown_message.empty());
+	UASSERT(ss.info.delay == 0.0f);
 }
 
 void TestServerShutdownState::testReset()
@@ -78,45 +79,54 @@ void TestServerShutdownState::testReset()
 	Server::ShutdownState ss;
 	ss.reset();
 	UASSERT(!ss.is_requested);
-	UASSERT(!ss.should_reconnect);
-	UASSERT(ss.message.empty());
-	UASSERT(ss.m_timer == 0.0f);
+	UASSERT(!ss.info.should_reconnect);
+	UASSERT(ss.info.message.empty());
+	UASSERT(ss.info.countdown_message.empty());
+	UASSERT(ss.info.delay == 0.0f);
 }
 
 void TestServerShutdownState::testTrigger()
 {
 	Server::ShutdownState ss;
-	ss.trigger(3.0f, "testtrigger", true);
+	Server::ShutdownInformation info{.should_reconnect = true,
+			.countdown_message = "testcountdown @1.",
+			.message = "testtrigger",
+			.delay = 3.0f};
+	ss.trigger(info);
 	UASSERT(!ss.is_requested);
-	UASSERT(ss.should_reconnect);
-	UASSERT(ss.message == "testtrigger");
-	UASSERT(ss.m_timer == 3.0f);
+	UASSERT(ss.info.should_reconnect);
+	UASSERT(ss.info.message == "testtrigger");
+	UASSERT(ss.info.delay == 3.0f);
 }
 
 void TestServerShutdownState::testTick()
 {
 	std::unique_ptr<FakeServer> fakeServer(new FakeServer());
 	Server::ShutdownState ss;
-	ss.trigger(28.0f, "testtrigger", true);
+	Server::ShutdownInformation info{.should_reconnect = true,
+			.countdown_message = "testcountdown @1.",
+			.message = "testtrigger",
+			.delay = 28.0f};
+	ss.trigger(info);
 	ss.tick(0.0f, fakeServer.get());
 
 	// Tick with no time should not change anything
 	UASSERT(!ss.is_requested);
-	UASSERT(ss.should_reconnect);
-	UASSERT(ss.message == "testtrigger");
-	UASSERT(ss.m_timer == 28.0f);
+	UASSERT(ss.info.should_reconnect);
+	UASSERT(ss.info.message == "testtrigger");
+	UASSERT(ss.info.delay == 28.0f);
 
 	// Tick 2 seconds
 	ss.tick(2.0f, fakeServer.get());
 	UASSERT(!ss.is_requested);
-	UASSERT(ss.should_reconnect);
-	UASSERT(ss.message == "testtrigger");
-	UASSERT(ss.m_timer == 26.0f);
+	UASSERT(ss.info.should_reconnect);
+	UASSERT(ss.info.message == "testtrigger");
+	UASSERT(ss.info.delay == 26.0f);
 
 	// Tick remaining seconds + additional expire
 	ss.tick(26.1f, fakeServer.get());
 	UASSERT(ss.is_requested);
-	UASSERT(ss.should_reconnect);
-	UASSERT(ss.message == "testtrigger");
-	UASSERT(ss.m_timer == 0.0f);
+	UASSERT(ss.info.should_reconnect);
+	UASSERT(ss.info.message == "testtrigger");
+	UASSERT(ss.info.delay == 0.0f);
 }
