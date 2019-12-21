@@ -372,7 +372,7 @@ private:
 		friend class TestServerShutdownState;
 		public:
 			bool is_requested = false;
-			ShutdownInformation info{.should_reconnect = false};
+			ShutdownInformation info {.should_reconnect = false};
 
 			void reset();
 			void trigger(const ShutdownInformation &info);
