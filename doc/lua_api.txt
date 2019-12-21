@@ -4922,6 +4922,7 @@ Server
       Negative delay cancels the current active shutdown.
       Zero delay triggers an immediate shutdown.
     * `countdown_msg` message displayed during countdown
+      The placeholder `@1` will be replaced by the countdown time.
 * `minetest.cancel_shutdown_requests()`: cancel current delayed shutdown
 * `minetest.get_server_status(name, joined)`
     * Returns the server status string when a player joins or when the command
