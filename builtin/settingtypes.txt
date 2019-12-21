@@ -580,10 +580,11 @@ parallax_occlusion_bias (Parallax occlusion bias) float 0.04
 enable_waving_water (Waving liquids) bool false
 
 #    The maximum height of the surface of waving liquids.
-#    1.0 = Wave reaches the top of blocks.
+#    4.0 = Wave height is two nodes.
 #    0.0 = Wave doesn't move at all.
+#    Default is 1.0 (1/2 node).
 #    Requires waving liquids to be enabled.
-water_wave_height (Waving liquids wave height) float 1.0 0.0 1.0
+water_wave_height (Waving liquids wave height) float 1.0 0.0 4.0
 
 #    Length of liquid waves.
 #    Requires waving liquids to be enabled.
