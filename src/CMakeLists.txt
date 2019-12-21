@@ -646,8 +646,6 @@ set(GETTEXT_BLACKLISTED_LOCALES
 	he
 	ko
 	ky
-	zh_CN
-	zh_TW
 )
 
 option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid broken locales" TRUE)
