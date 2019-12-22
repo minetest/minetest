@@ -611,7 +611,8 @@ minetest.registered_can_bypass_userlimit, minetest.register_can_bypass_userlimit
 minetest.registered_on_modchannel_message, minetest.register_on_modchannel_message = make_registration()
 minetest.registered_on_auth_fail, minetest.register_on_auth_fail = make_registration()
 minetest.registered_on_player_inventory_actions, minetest.register_on_player_inventory_action = make_registration()
-minetest.registered_allow_player_inventory_actions, minetest.register_allow_player_inventory_action = make_registration()
+minetest.registered_allow_player_inventory_actions,
+	minetest.register_allow_player_inventory_action = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()
