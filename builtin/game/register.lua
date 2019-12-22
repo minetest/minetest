@@ -456,7 +456,7 @@ function minetest.run_priv_callbacks(name, priv, caller, method)
 	local def = minetest.registered_privileges[priv]
 	if not def or not def["on_" .. method] or
 			not def["on_" .. method](name, caller) then
-		for _, func in ipairs(core["registered_on_priv_" .. method]) do
+		for _, func in ipairs(minetest["registered_on_priv_" .. method]) do
 			if not func(name, caller, priv) then
 				break
 			end
@@ -499,8 +499,8 @@ end
 local function make_registration_wrap(reg_fn_name, clear_fn_name)
 	local list = {}
 
-	local orig_reg_fn = core[reg_fn_name]
-	core[reg_fn_name] = function(def)
+	local orig_reg_fn = minetest[reg_fn_name]
+	minetest[reg_fn_name] = function(def)
 		local retval = orig_reg_fn(def)
 		if retval ~= nil then
 			if def.name ~= nil then
@@ -512,8 +512,8 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 		return retval
 	end
 
-	local orig_clear_fn = core[clear_fn_name]
-	core[clear_fn_name] = function()
+	local orig_clear_fn = minetest[clear_fn_name]
+	minetest[clear_fn_name] = function()
 		for k in pairs(list) do
 			list[k] = nil
 		end
