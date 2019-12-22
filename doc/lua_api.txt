@@ -2277,7 +2277,6 @@ Elements
 * Index to be selected within textlist
 * `true`/`false`: draw transparent background
 * See also `minetest.explode_textlist_event`
-  (main menu: `core.explode_textlist_event`).
 
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
@@ -2367,7 +2366,6 @@ Elements
 * Fieldname data is transferred to Lua
 * Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
-  (main menu: `core.explode_scrollbar_event`).
 
 ### `scrollbaroptions[opt1;opt2;...]`
 * Sets options for all following `scrollbar[]` elements
@@ -2401,7 +2399,6 @@ Elements
 * `cell 1`...`cell n`: cell contents given in row-major order
 * `selected idx`: index of row to be selected within table (first row = `1`)
 * See also `minetest.explode_table_event`
-  (main menu: `core.explode_table_event`).
 
 ### `tableoptions[<opt 1>;<opt 2>;...]`
 
