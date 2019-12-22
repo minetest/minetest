@@ -30,7 +30,7 @@ LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m) : m_localplayer(m)
 
 void LuaLocalPlayer::create(lua_State *L, LocalPlayer *m)
 {
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);
 	lua_getfield(L, -1, "localplayer");

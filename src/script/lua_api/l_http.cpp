@@ -166,7 +166,7 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 		return 1;
 	}
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "http_add_fetch");
 
 	lua_newtable(L);

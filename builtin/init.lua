@@ -6,9 +6,9 @@
 --
 
 -- Initialize some very basic things
-function core.debug(...) core.log(table.concat({...}, "\t")) end
-if core.print then
-	local core_print = core.print
+function minetest.debug(...) minetest.log(table.concat({...}, "\t")) end
+if minetest.print then
+	local core_print = minetest.print
 	-- Override native print and use
 	-- terminal if that's turned on
 	function print(...)
@@ -18,13 +18,12 @@ if core.print then
 		end
 		core_print(table.concat(t, "\t"))
 	end
-	core.print = nil -- don't pollute our namespace
+	minetest.print = nil -- don't pollute our namespace
 end
 math.randomseed(os.time())
-minetest = core
 
 -- Load other files
-local scriptdir = core.get_builtin_path()
+local scriptdir = minetest.get_builtin_path()
 local gamepath = scriptdir .. "game" .. DIR_DELIM
 local clientpath = scriptdir .. "client" .. DIR_DELIM
 local commonpath = scriptdir .. "common" .. DIR_DELIM
@@ -37,11 +36,11 @@ dofile(commonpath .. "misc_helpers.lua")
 if INIT == "game" then
 	dofile(gamepath .. "init.lua")
 elseif INIT == "mainmenu" then
-	local mm_script = core.settings:get("main_menu_script")
+	local mm_script = minetest.settings:get("main_menu_script")
 	if mm_script and mm_script ~= "" then
 		dofile(mm_script)
 	else
-		dofile(core.get_mainmenu_path() .. DIR_DELIM .. "init.lua")
+		dofile(minetest.get_mainmenu_path() .. DIR_DELIM .. "init.lua")
 	end
 elseif INIT == "async" then
 	dofile(asyncpath .. "init.lua")

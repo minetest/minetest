@@ -41,7 +41,7 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine):
 
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	int top = lua_gettop(L);
 
 	lua_newtable(L);

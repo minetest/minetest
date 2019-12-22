@@ -39,7 +39,7 @@ void LuaMinimap::create(lua_State *L, Minimap *m)
 	// Keep minimap object stack id
 	int minimap_object = lua_gettop(L);
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "ui");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int uitable = lua_gettop(L);

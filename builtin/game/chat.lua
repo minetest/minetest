@@ -16,9 +16,9 @@ end
 --
 
 -- Implemented in Lua to allow redefinition
-function core.format_chat_message(name, message)
+function minetest.format_chat_message(name, message)
 	local error_str = "Invalid chat message format - missing %s"
-	local str = core.settings:get("chat_message_format")
+	local str = minetest.settings:get("chat_message_format")
 	local replaced
 
 	-- Name
@@ -43,42 +43,42 @@ end
 -- Chat command handler
 --
 
-core.chatcommands = core.registered_chatcommands -- BACKWARDS COMPATIBILITY
+minetest.chatcommands = minetest.registered_chatcommands -- BACKWARDS COMPATIBILITY
 
-core.register_on_chat_message(function(name, message)
+minetest.register_on_chat_message(function(name, message)
 	if message:sub(1,1) ~= "/" then
 		return
 	end
 
 	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
 	if not cmd then
-		core.chat_send_player(name, "-!- Empty command")
+		minetest.chat_send_player(name, "-!- Empty command")
 		return true
 	end
 
 	param = param or ""
 
-	local cmd_def = core.registered_chatcommands[cmd]
+	local cmd_def = minetest.registered_chatcommands[cmd]
 	if not cmd_def then
-		core.chat_send_player(name, "-!- Invalid command: " .. cmd)
+		minetest.chat_send_player(name, "-!- Invalid command: " .. cmd)
 		return true
 	end
-	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
+	local has_privs, missing_privs = minetest.check_player_privs(name, cmd_def.privs)
 	if has_privs then
-		core.set_last_run_mod(cmd_def.mod_origin)
+		minetest.set_last_run_mod(cmd_def.mod_origin)
 		local _, result = cmd_def.func(name, param)
 		if result then
-			core.chat_send_player(name, result)
+			minetest.chat_send_player(name, result)
 		end
 	else
-		core.chat_send_player(name, "You don't have permission"
+		minetest.chat_send_player(name, "You don't have permission"
 				.. " to run this command (missing privileges: "
 				.. table.concat(missing_privs, ", ") .. ")")
 	end
 	return true  -- Handled chat message
 end)
 
-if core.settings:get_bool("profiler.load") then
+if minetest.settings:get_bool("profiler.load") then
 	-- Run after register_chatcommand and its register_on_chat_message
 	-- Before any chatcommands that should be profiled
 	profiler.init_chatcommand()
@@ -91,12 +91,12 @@ local function parse_range_str(player_name, str)
 	local args = str:split(" ")
 
 	if args[1] == "here" then
-		p1, p2 = core.get_player_radius_area(player_name, tonumber(args[2]))
+		p1, p2 = minetest.get_player_radius_area(player_name, tonumber(args[2]))
 		if p1 == nil then
 			return false, "Unable to get player " .. player_name .. " position"
 		end
 	else
-		p1, p2 = core.string_to_area(str)
+		p1, p2 = minetest.string_to_area(str)
 		if p1 == nil then
 			return false, "Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)"
 		end
@@ -108,20 +108,20 @@ end
 --
 -- Chat commands
 --
-core.register_chatcommand("me", {
+minetest.register_chatcommand("me", {
 	params = "<action>",
 	description = "Show chat action (e.g., '/me orders a pizza' displays"
 			.. " '<player name> orders a pizza')",
 	privs = {shout=true},
 	func = function(name, param)
-		core.chat_send_all("* " .. name .. " " .. param)
+		minetest.chat_send_all("* " .. name .. " " .. param)
 	end,
 })
 
-core.register_chatcommand("admin", {
+minetest.register_chatcommand("admin", {
 	description = "Show the name of the server owner",
 	func = function(name)
-		local admin = core.settings:get("name")
+		local admin = minetest.settings:get("name")
 		if admin then
 			return true, "The administrator of this server is " .. admin .. "."
 		else
@@ -130,22 +130,22 @@ core.register_chatcommand("admin", {
 	end,
 })
 
-core.register_chatcommand("privs", {
+minetest.register_chatcommand("privs", {
 	params = "[<name>]",
 	description = "Show privileges of yourself or another player",
 	func = function(caller, param)
 		param = param:trim()
 		local name = (param ~= "" and param or caller)
-		if not core.player_exists(name) then
+		if not minetest.player_exists(name) then
 			return false, "Player " .. name .. " does not exist."
 		end
 		return true, "Privileges of " .. name .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(name), ", ")
+			.. minetest.privs_to_string(
+				minetest.get_player_privs(name), ", ")
 	end,
 })
 
-core.register_chatcommand("haspriv", {
+minetest.register_chatcommand("haspriv", {
 	params = "<privilege>",
 	description = "Return list of all online players with privilege.",
 	privs = {basic_privs = true},
@@ -154,14 +154,14 @@ core.register_chatcommand("haspriv", {
 		if param == "" then
 			return false, "Invalid parameters (see /help haspriv)"
 		end
-		if not core.registered_privileges[param] then
+		if not minetest.registered_privileges[param] then
 			return false, "Unknown privilege!"
 		end
-		local privs = core.string_to_privs(param)
+		local privs = minetest.string_to_privs(param)
 		local players_with_priv = {}
-		for _, player in pairs(core.get_connected_players()) do
+		for _, player in pairs(minetest.get_connected_players()) do
 			local player_name = player:get_player_name()
-			if core.check_player_privs(player_name, privs) then
+			if minetest.check_player_privs(player_name, privs) then
 				table.insert(players_with_priv, player_name)
 			end
 		end
@@ -171,27 +171,27 @@ core.register_chatcommand("haspriv", {
 })
 
 local function handle_grant_command(caller, grantname, grantprivstr)
-	local caller_privs = core.get_player_privs(caller)
+	local caller_privs = minetest.get_player_privs(caller)
 	if not (caller_privs.privs or caller_privs.basic_privs) then
 		return false, "Your privileges are insufficient."
 	end
 
-	if not core.get_auth_handler().get_auth(grantname) then
+	if not minetest.get_auth_handler().get_auth(grantname) then
 		return false, "Player " .. grantname .. " does not exist."
 	end
-	local grantprivs = core.string_to_privs(grantprivstr)
+	local grantprivs = minetest.string_to_privs(grantprivstr)
 	if grantprivstr == "all" then
-		grantprivs = core.registered_privileges
+		grantprivs = minetest.registered_privileges
 	end
-	local privs = core.get_player_privs(grantname)
+	local privs = minetest.get_player_privs(grantname)
 	local privs_unknown = ""
 	local basic_privs =
-		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
+		minetest.string_to_privs(minetest.settings:get("basic_privs") or "interact,shout")
 	for priv, _ in pairs(grantprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
 			return false, "Your privileges are insufficient."
 		end
-		if not core.registered_privileges[priv] then
+		if not minetest.registered_privileges[priv] then
 			privs_unknown = privs_unknown .. "Unknown privilege: " .. priv .. "\n"
 		end
 		privs[priv] = true
@@ -201,21 +201,21 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	end
 	for priv, _ in pairs(grantprivs) do
 		-- call the on_grant callbacks
-		core.run_priv_callbacks(grantname, priv, caller, "grant")
+		minetest.run_priv_callbacks(grantname, priv, caller, "grant")
 	end
-	core.set_player_privs(grantname, privs)
-	core.log("action", caller..' granted ('..core.privs_to_string(grantprivs, ', ')..') privileges to '..grantname)
+	minetest.set_player_privs(grantname, privs)
+	minetest.log("action", caller..' granted ('..minetest.privs_to_string(grantprivs, ', ')..') privileges to '..grantname)
 	if grantname ~= caller then
-		core.chat_send_player(grantname, caller
+		minetest.chat_send_player(grantname, caller
 				.. " granted you privileges: "
-				.. core.privs_to_string(grantprivs, ' '))
+				.. minetest.privs_to_string(grantprivs, ' '))
 	end
 	return true, "Privileges of " .. grantname .. ": "
-		.. core.privs_to_string(
-			core.get_player_privs(grantname), ' ')
+		.. minetest.privs_to_string(
+			minetest.get_player_privs(grantname), ' ')
 end
 
-core.register_chatcommand("grant", {
+minetest.register_chatcommand("grant", {
 	params = "<name> (<privilege> | all)",
 	description = "Give privileges to player",
 	func = function(name, param)
@@ -227,7 +227,7 @@ core.register_chatcommand("grant", {
 	end,
 })
 
-core.register_chatcommand("grantme", {
+minetest.register_chatcommand("grantme", {
 	params = "<privilege> | all",
 	description = "Grant privileges to yourself",
 	func = function(name, param)
@@ -238,28 +238,28 @@ core.register_chatcommand("grantme", {
 	end,
 })
 
-core.register_chatcommand("revoke", {
+minetest.register_chatcommand("revoke", {
 	params = "<name> (<privilege> | all)",
 	description = "Remove privileges from player",
 	privs = {},
 	func = function(name, param)
-		if not core.check_player_privs(name, {privs=true}) and
-				not core.check_player_privs(name, {basic_privs=true}) then
+		if not minetest.check_player_privs(name, {privs=true}) and
+				not minetest.check_player_privs(name, {basic_privs=true}) then
 			return false, "Your privileges are insufficient."
 		end
 		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
 		if not revoke_name or not revoke_priv_str then
 			return false, "Invalid parameters (see /help revoke)"
-		elseif not core.get_auth_handler().get_auth(revoke_name) then
+		elseif not minetest.get_auth_handler().get_auth(revoke_name) then
 			return false, "Player " .. revoke_name .. " does not exist."
 		end
-		local revoke_privs = core.string_to_privs(revoke_priv_str)
-		local privs = core.get_player_privs(revoke_name)
+		local revoke_privs = minetest.string_to_privs(revoke_priv_str)
+		local privs = minetest.get_player_privs(revoke_name)
 		local basic_privs =
-			core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
+			minetest.string_to_privs(minetest.settings:get("basic_privs") or "interact,shout")
 		for priv, _ in pairs(revoke_privs) do
 			if not basic_privs[priv] and
-					not core.check_player_privs(name, {privs=true}) then
+					not minetest.check_player_privs(name, {privs=true}) then
 				return false, "Your privileges are insufficient."
 			end
 		end
@@ -274,25 +274,25 @@ core.register_chatcommand("revoke", {
 
 		for priv, _ in pairs(revoke_privs) do
 			-- call the on_revoke callbacks
-			core.run_priv_callbacks(revoke_name, priv, name, "revoke")
+			minetest.run_priv_callbacks(revoke_name, priv, name, "revoke")
 		end
 
-		core.set_player_privs(revoke_name, privs)
-		core.log("action", name..' revoked ('
-				..core.privs_to_string(revoke_privs, ', ')
+		minetest.set_player_privs(revoke_name, privs)
+		minetest.log("action", name..' revoked ('
+				..minetest.privs_to_string(revoke_privs, ', ')
 				..') privileges from '..revoke_name)
 		if revoke_name ~= name then
-			core.chat_send_player(revoke_name, name
+			minetest.chat_send_player(revoke_name, name
 					.. " revoked privileges from you: "
-					.. core.privs_to_string(revoke_privs, ' '))
+					.. minetest.privs_to_string(revoke_privs, ' '))
 		end
 		return true, "Privileges of " .. revoke_name .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(revoke_name), ' ')
+			.. minetest.privs_to_string(
+				minetest.get_player_privs(revoke_name), ' ')
 	end,
 })
 
-core.register_chatcommand("setpassword", {
+minetest.register_chatcommand("setpassword", {
 	params = "<name> <password>",
 	description = "Set player's password",
 	privs = {password=true},
@@ -309,30 +309,30 @@ core.register_chatcommand("setpassword", {
 
 		local act_str_past, act_str_pres
 		if not raw_password then
-			core.set_player_password(toname, "")
+			minetest.set_player_password(toname, "")
 			act_str_past = "cleared"
 			act_str_pres = "clears"
 		else
-			core.set_player_password(toname,
-					core.get_password_hash(toname,
+			minetest.set_player_password(toname,
+					minetest.get_password_hash(toname,
 							raw_password))
 			act_str_past = "set"
 			act_str_pres = "sets"
 		end
 
 		if toname ~= name then
-			core.chat_send_player(toname, "Your password was "
+			minetest.chat_send_player(toname, "Your password was "
 					.. act_str_past .. " by " .. name)
 		end
 
-		core.log("action", name .. " " .. act_str_pres ..
+		minetest.log("action", name .. " " .. act_str_pres ..
 				" password of " .. toname .. ".")
 
 		return true, "Password of player \"" .. toname .. "\" " .. act_str_past
 	end,
 })
 
-core.register_chatcommand("clearpassword", {
+minetest.register_chatcommand("clearpassword", {
 	params = "<name>",
 	description = "Set empty password for a player",
 	privs = {password=true},
@@ -341,25 +341,25 @@ core.register_chatcommand("clearpassword", {
 		if toname == "" then
 			return false, "Name field required"
 		end
-		core.set_player_password(toname, '')
+		minetest.set_player_password(toname, '')
 
-		core.log("action", name .. " clears password of " .. toname .. ".")
+		minetest.log("action", name .. " clears password of " .. toname .. ".")
 
 		return true, "Password of player \"" .. toname .. "\" cleared"
 	end,
 })
 
-core.register_chatcommand("auth_reload", {
+minetest.register_chatcommand("auth_reload", {
 	params = "",
 	description = "Reload authentication data",
 	privs = {server=true},
 	func = function(name, param)
-		local done = core.auth_reload()
+		local done = minetest.auth_reload()
 		return done, (done and "Done." or "Failed.")
 	end,
 })
 
-core.register_chatcommand("remove_player", {
+minetest.register_chatcommand("remove_player", {
 	params = "<name>",
 	description = "Remove a player's data",
 	privs = {server=true},
@@ -369,10 +369,10 @@ core.register_chatcommand("remove_player", {
 			return false, "Name field required"
 		end
 
-		local rc = core.remove_player(toname)
+		local rc = minetest.remove_player(toname)
 
 		if rc == 0 then
-			core.log("action", name .. " removed player data of " .. toname .. ".")
+			minetest.log("action", name .. " removed player data of " .. toname .. ".")
 			return true, "Player \"" .. toname .. "\" removed."
 		elseif rc == 1 then
 			return true, "No such player \"" .. toname .. "\" to remove."
@@ -384,7 +384,7 @@ core.register_chatcommand("remove_player", {
 	end,
 })
 
-core.register_chatcommand("teleport", {
+minetest.register_chatcommand("teleport", {
 	params = "<X>,<Y>,<Z> | <to_name> | (<name> <X>,<Y>,<Z>) | (<name> <to_name>)",
 	description = "Teleport to position or player",
 	privs = {teleport=true},
@@ -399,9 +399,9 @@ core.register_chatcommand("teleport", {
 			}
 			for _, d in ipairs(tries) do
 				local p = {x = pos.x+d.x, y = pos.y+d.y, z = pos.z+d.z}
-				local n = core.get_node_or_nil(p)
+				local n = minetest.get_node_or_nil(p)
 				if n and n.name then
-					local def = core.registered_nodes[n.name]
+					local def = minetest.registered_nodes[n.name]
 					if def and not def.walkable then
 						return p, true
 					end
@@ -421,19 +421,19 @@ core.register_chatcommand("teleport", {
 			if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm or p.z < -lm or p.z > lm then
 				return false, "Cannot teleport out of map bounds!"
 			end
-			local teleportee = core.get_player_by_name(name)
+			local teleportee = minetest.get_player_by_name(name)
 			if teleportee then
 				teleportee:set_pos(p)
-				return true, "Teleporting to "..core.pos_to_string(p)
+				return true, "Teleporting to "..minetest.pos_to_string(p)
 			end
 		end
 
 		local target_name = param:match("^([^ ]+)$")
-		local teleportee = core.get_player_by_name(name)
+		local teleportee = minetest.get_player_by_name(name)
 
 		p = nil
 		if target_name then
-			local target = core.get_player_by_name(target_name)
+			local target = minetest.get_player_by_name(target_name)
 			if target then
 				p = target:get_pos()
 			end
@@ -443,10 +443,10 @@ core.register_chatcommand("teleport", {
 			p = find_free_position_near(p)
 			teleportee:set_pos(p)
 			return true, "Teleporting to " .. target_name
-					.. " at "..core.pos_to_string(p)
+					.. " at "..minetest.pos_to_string(p)
 		end
 
-		if not core.check_player_privs(name, {bring=true}) then
+		if not minetest.check_player_privs(name, {bring=true}) then
 			return false, "You don't have permission to teleport other players (missing bring privilege)"
 		end
 
@@ -457,22 +457,22 @@ core.register_chatcommand("teleport", {
 				"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 		p.x, p.y, p.z = tonumber(p.x), tonumber(p.y), tonumber(p.z)
 		if teleportee_name then
-			teleportee = core.get_player_by_name(teleportee_name)
+			teleportee = minetest.get_player_by_name(teleportee_name)
 		end
 		if teleportee and p.x and p.y and p.z then
 			teleportee:set_pos(p)
 			return true, "Teleporting " .. teleportee_name
-					.. " to " .. core.pos_to_string(p)
+					.. " to " .. minetest.pos_to_string(p)
 		end
 
 		teleportee = nil
 		p = nil
 		teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
 		if teleportee_name then
-			teleportee = core.get_player_by_name(teleportee_name)
+			teleportee = minetest.get_player_by_name(teleportee_name)
 		end
 		if target_name then
-			local target = core.get_player_by_name(target_name)
+			local target = minetest.get_player_by_name(target_name)
 			if target then
 				p = target:get_pos()
 			end
@@ -482,7 +482,7 @@ core.register_chatcommand("teleport", {
 			teleportee:set_pos(p)
 			return true, "Teleporting " .. teleportee_name
 					.. " to " .. target_name
-					.. " at " .. core.pos_to_string(p)
+					.. " at " .. minetest.pos_to_string(p)
 		end
 
 		return false, 'Invalid parameters ("' .. param
@@ -490,29 +490,29 @@ core.register_chatcommand("teleport", {
 	end,
 })
 
-core.register_chatcommand("set", {
+minetest.register_chatcommand("set", {
 	params = "([-n] <name> <value>) | <name>",
 	description = "Set or read server configuration setting",
 	privs = {server=true},
 	func = function(name, param)
 		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
 		if arg and arg == "-n" and setname and setvalue then
-			core.settings:set(setname, setvalue)
+			minetest.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
 
 		setname, setvalue = string.match(param, "([^ ]+) (.+)")
 		if setname and setvalue then
-			if not core.settings:get(setname) then
+			if not minetest.settings:get(setname) then
 				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
 			end
-			core.settings:set(setname, setvalue)
+			minetest.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
 
 		setname = string.match(param, "([^ ]+)")
 		if setname then
-			setvalue = core.settings:get(setname)
+			setvalue = minetest.settings:get(setname)
 			if not setvalue then
 				setvalue = "<not set>"
 			end
@@ -531,7 +531,7 @@ local function emergeblocks_callback(pos, action, num_calls_remaining, ctx)
 	ctx.current_blocks = ctx.current_blocks + 1
 
 	if ctx.current_blocks == ctx.total_blocks then
-		core.chat_send_player(ctx.requestor_name,
+		minetest.chat_send_player(ctx.requestor_name,
 			string.format("Finished emerging %d blocks in %.2fms.",
 			ctx.total_blocks, (os.clock() - ctx.start_time) * 1000))
 	end
@@ -539,16 +539,16 @@ end
 
 local function emergeblocks_progress_update(ctx)
 	if ctx.current_blocks ~= ctx.total_blocks then
-		core.chat_send_player(ctx.requestor_name,
+		minetest.chat_send_player(ctx.requestor_name,
 			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
 			ctx.current_blocks, ctx.total_blocks,
 			(ctx.current_blocks / ctx.total_blocks) * 100))
 
-		core.after(2, emergeblocks_progress_update, ctx)
+		minetest.after(2, emergeblocks_progress_update, ctx)
 	end
 end
 
-core.register_chatcommand("emergeblocks", {
+minetest.register_chatcommand("emergeblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Load (or, if nonexistent, generate) map blocks "
 		.. "contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)",
@@ -566,15 +566,15 @@ core.register_chatcommand("emergeblocks", {
 			requestor_name = name
 		}
 
-		core.emerge_area(p1, p2, emergeblocks_callback, context)
-		core.after(2, emergeblocks_progress_update, context)
+		minetest.emerge_area(p1, p2, emergeblocks_callback, context)
+		minetest.after(2, emergeblocks_progress_update, context)
 
 		return true, "Started emerge of area ranging from " ..
-			core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
+			minetest.pos_to_string(p1, 1) .. " to " .. minetest.pos_to_string(p2, 1)
 	end,
 })
 
-core.register_chatcommand("deleteblocks", {
+minetest.register_chatcommand("deleteblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Delete map blocks contained in area pos1 to pos2 "
 		.. "(<pos1> and <pos2> must be in parentheses)",
@@ -585,16 +585,16 @@ core.register_chatcommand("deleteblocks", {
 			return false, p2
 		end
 
-		if core.delete_area(p1, p2) then
+		if minetest.delete_area(p1, p2) then
 			return true, "Successfully cleared area ranging from " ..
-				core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
+				minetest.pos_to_string(p1, 1) .. " to " .. minetest.pos_to_string(p2, 1)
 		else
 			return false, "Failed to clear one or more blocks in area"
 		end
 	end,
 })
 
-core.register_chatcommand("fixlight", {
+minetest.register_chatcommand("fixlight", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Resets lighting in the area between pos1 and pos2 "
 		.. "(<pos1> and <pos2> must be in parentheses)",
@@ -605,26 +605,26 @@ core.register_chatcommand("fixlight", {
 			return false, p2
 		end
 
-		if core.fix_light(p1, p2) then
+		if minetest.fix_light(p1, p2) then
 			return true, "Successfully reset light in the area ranging from " ..
-				core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
+				minetest.pos_to_string(p1, 1) .. " to " .. minetest.pos_to_string(p2, 1)
 		else
 			return false, "Failed to load one or more blocks in area"
 		end
 	end,
 })
 
-core.register_chatcommand("mods", {
+minetest.register_chatcommand("mods", {
 	params = "",
 	description = "List mods installed on the server",
 	privs = {},
 	func = function(name, param)
-		return true, table.concat(core.get_modnames(), ", ")
+		return true, table.concat(minetest.get_modnames(), ", ")
 	end,
 })
 
 local function handle_give_command(cmd, giver, receiver, stackstring)
-	core.log("action", giver .. " invoked " .. cmd
+	minetest.log("action", giver .. " invoked " .. cmd
 			.. ', stackstring="' .. stackstring .. '"')
 	local itemstack = ItemStack(stackstring)
 	if itemstack:is_empty() then
@@ -635,7 +635,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	elseif itemstack:get_name() == "ignore" then
 		return false, "Giving 'ignore' is not allowed"
 	end
-	local receiverref = core.get_player_by_name(receiver)
+	local receiverref = minetest.get_player_by_name(receiver)
 	if receiverref == nil then
 		return false, receiver .. " is not a known player"
 	end
@@ -655,14 +655,14 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 		local msg = "%q %sadded to inventory."
 		return true, msg:format(stackstring, partiality)
 	else
-		core.chat_send_player(receiver, ("%q %sadded to inventory.")
+		minetest.chat_send_player(receiver, ("%q %sadded to inventory.")
 				:format(stackstring, partiality))
 		local msg = "%q %sadded to %s's inventory."
 		return true, msg:format(stackstring, partiality, receiver)
 	end
 end
 
-core.register_chatcommand("give", {
+minetest.register_chatcommand("give", {
 	params = "<name> <ItemString> [<count> [<wear>]]",
 	description = "Give item to player",
 	privs = {give=true},
@@ -675,7 +675,7 @@ core.register_chatcommand("give", {
 	end,
 })
 
-core.register_chatcommand("giveme", {
+minetest.register_chatcommand("giveme", {
 	params = "<ItemString> [<count> [<wear>]]",
 	description = "Give item to yourself",
 	privs = {give=true},
@@ -688,7 +688,7 @@ core.register_chatcommand("giveme", {
 	end,
 })
 
-core.register_chatcommand("spawnentity", {
+minetest.register_chatcommand("spawnentity", {
 	params = "<EntityName> [<X>,<Y>,<Z>]",
 	description = "Spawn entity at given (or your) position",
 	privs = {give=true, interact=true},
@@ -697,44 +697,44 @@ core.register_chatcommand("spawnentity", {
 		if not entityname then
 			return false, "EntityName required"
 		end
-		core.log("action", ("%s invokes /spawnentity, entityname=%q")
+		minetest.log("action", ("%s invokes /spawnentity, entityname=%q")
 				:format(name, entityname))
-		local player = core.get_player_by_name(name)
+		local player = minetest.get_player_by_name(name)
 		if player == nil then
-			core.log("error", "Unable to spawn entity, player is nil")
+			minetest.log("error", "Unable to spawn entity, player is nil")
 			return false, "Unable to spawn entity, player is nil"
 		end
-		if not core.registered_entities[entityname] then
+		if not minetest.registered_entities[entityname] then
 			return false, "Cannot spawn an unknown entity"
 		end
 		if p == "" then
 			p = player:get_pos()
 		else
-			p = core.string_to_pos(p)
+			p = minetest.string_to_pos(p)
 			if p == nil then
 				return false, "Invalid parameters ('" .. param .. "')"
 			end
 		end
 		p.y = p.y + 1
-		core.add_entity(p, entityname)
+		minetest.add_entity(p, entityname)
 		return true, ("%q spawned."):format(entityname)
 	end,
 })
 
-core.register_chatcommand("pulverize", {
+minetest.register_chatcommand("pulverize", {
 	params = "",
 	description = "Destroy item in hand",
 	func = function(name, param)
-		local player = core.get_player_by_name(name)
+		local player = minetest.get_player_by_name(name)
 		if not player then
-			core.log("error", "Unable to pulverize, no player.")
+			minetest.log("error", "Unable to pulverize, no player.")
 			return false, "Unable to pulverize, no player."
 		end
 		local wielded_item = player:get_wielded_item()
 		if wielded_item:is_empty() then
 			return false, "Unable to pulverize, no item in hand."
 		end
-		core.log("action", name .. " pulverized \"" ..
+		minetest.log("action", name .. " pulverized \"" ..
 			wielded_item:get_name() .. " " .. wielded_item:get_count() .. "\"")
 		player:set_wielded_item(nil)
 		return true, "An item was pulverized."
@@ -742,24 +742,24 @@ core.register_chatcommand("pulverize", {
 })
 
 -- Key = player name
-core.rollback_punch_callbacks = {}
+minetest.rollback_punch_callbacks = {}
 
-core.register_on_punchnode(function(pos, node, puncher)
+minetest.register_on_punchnode(function(pos, node, puncher)
 	local name = puncher and puncher:get_player_name()
-	if name and core.rollback_punch_callbacks[name] then
-		core.rollback_punch_callbacks[name](pos, node, puncher)
-		core.rollback_punch_callbacks[name] = nil
+	if name and minetest.rollback_punch_callbacks[name] then
+		minetest.rollback_punch_callbacks[name](pos, node, puncher)
+		minetest.rollback_punch_callbacks[name] = nil
 	end
 end)
 
-core.register_chatcommand("rollback_check", {
+minetest.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
 			.. " within the time specified by <seconds>. Default: range = 0,"
 			.. " seconds = 86400 = 24h, limit = 5",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.settings:get_bool("enable_rollback_recording") then
+		if not minetest.settings:get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
 		local range, seconds, limit =
@@ -771,17 +771,17 @@ core.register_chatcommand("rollback_check", {
 			return false, "That limit is too high!"
 		end
 
-		core.rollback_punch_callbacks[name] = function(pos, node, puncher)
+		minetest.rollback_punch_callbacks[name] = function(pos, node, puncher)
 			local name = puncher:get_player_name()
-			core.chat_send_player(name, "Checking " .. core.pos_to_string(pos) .. "...")
-			local actions = core.rollback_get_node_actions(pos, range, seconds, limit)
+			minetest.chat_send_player(name, "Checking " .. minetest.pos_to_string(pos) .. "...")
+			local actions = minetest.rollback_get_node_actions(pos, range, seconds, limit)
 			if not actions then
-				core.chat_send_player(name, "Rollback functions are disabled")
+				minetest.chat_send_player(name, "Rollback functions are disabled")
 				return
 			end
 			local num_actions = #actions
 			if num_actions == 0 then
-				core.chat_send_player(name, "Nobody has touched"
+				minetest.chat_send_player(name, "Nobody has touched"
 						.. " the specified location in "
 						.. seconds .. " seconds")
 				return
@@ -789,10 +789,10 @@ core.register_chatcommand("rollback_check", {
 			local time = os.time()
 			for i = num_actions, 1, -1 do
 				local action = actions[i]
-				core.chat_send_player(name,
+				minetest.chat_send_player(name,
 					("%s %s %s -> %s %d seconds ago.")
 						:format(
-							core.pos_to_string(action.pos),
+							minetest.pos_to_string(action.pos),
 							action.actor,
 							action.oldnode.name,
 							action.newnode.name,
@@ -805,12 +805,12 @@ core.register_chatcommand("rollback_check", {
 	end,
 })
 
-core.register_chatcommand("rollback", {
+minetest.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
 	description = "Revert actions of a player. Default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.settings:get_bool("enable_rollback_recording") then
+		if not minetest.settings:get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
 		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
@@ -824,10 +824,10 @@ core.register_chatcommand("rollback", {
 			target_name = "player:"..player_name
 		end
 		seconds = tonumber(seconds) or 60
-		core.chat_send_player(name, "Reverting actions of "
+		minetest.chat_send_player(name, "Reverting actions of "
 				.. target_name .. " since "
 				.. seconds .. " seconds.")
-		local success, log = core.rollback_revert_actions_by(
+		local success, log = minetest.rollback_revert_actions_by(
 				target_name, seconds)
 		local response = ""
 		if #log > 100 then
@@ -843,10 +843,10 @@ core.register_chatcommand("rollback", {
 	end,
 })
 
-core.register_chatcommand("status", {
+minetest.register_chatcommand("status", {
 	description = "Show server status",
 	func = function(name, param)
-		local status = core.get_server_status(name, false)
+		local status = minetest.get_server_status(name, false)
 		if status and status ~= "" then
 			return true, status
 		end
@@ -854,18 +854,18 @@ core.register_chatcommand("status", {
 	end,
 })
 
-core.register_chatcommand("time", {
+minetest.register_chatcommand("time", {
 	params = "[<0..23>:<0..59> | <0..24000>]",
 	description = "Show or set time of day",
 	privs = {},
 	func = function(name, param)
 		if param == "" then
-			local current_time = math.floor(core.get_timeofday() * 1440)
+			local current_time = math.floor(minetest.get_timeofday() * 1440)
 			local minutes = current_time % 60
 			local hour = (current_time - minutes) / 60
 			return true, ("Current time is %d:%02d"):format(hour, minutes)
 		end
-		local player_privs = core.get_player_privs(name)
+		local player_privs = minetest.get_player_privs(name)
 		if not player_privs.settime then
 			return false, "You don't have permission to run this command " ..
 				"(missing privilege: settime)."
@@ -877,8 +877,8 @@ core.register_chatcommand("time", {
 				return false, "Invalid time."
 			end
 			-- Backward compatibility.
-			core.set_timeofday((new_time % 24000) / 24000)
-			core.log("action", name .. " sets time to " .. new_time)
+			minetest.set_timeofday((new_time % 24000) / 24000)
+			minetest.log("action", name .. " sets time to " .. new_time)
 			return true, "Time of day changed."
 		end
 		hour = tonumber(hour)
@@ -888,20 +888,20 @@ core.register_chatcommand("time", {
 		elseif minute < 0 or minute > 59 then
 			return false, "Invalid minute (must be between 0 and 59 inclusive)."
 		end
-		core.set_timeofday((hour * 60 + minute) / 1440)
-		core.log("action", ("%s sets time to %d:%02d"):format(name, hour, minute))
+		minetest.set_timeofday((hour * 60 + minute) / 1440)
+		minetest.log("action", ("%s sets time to %d:%02d"):format(name, hour, minute))
 		return true, "Time of day changed."
 	end,
 })
 
-core.register_chatcommand("days", {
+minetest.register_chatcommand("days", {
 	description = "Show day count since world creation",
 	func = function(name, param)
-		return true, "Current day is " .. core.get_day_count()
+		return true, "Current day is " .. minetest.get_day_count()
 	end
 })
 
-core.register_chatcommand("shutdown", {
+minetest.register_chatcommand("shutdown", {
 	params = "[<delay_in_seconds> | -1] [reconnect] [<message>]",
 	description = "Shutdown server (-1 cancels a delayed shutdown)",
 	privs = {server=true},
@@ -915,71 +915,71 @@ core.register_chatcommand("shutdown", {
 		delay = tonumber(delay) or 0
 
 		if delay == 0 then
-			core.log("action", name .. " shuts down server")
-			core.chat_send_all("*** Server shutting down (operator request).")
+			minetest.log("action", name .. " shuts down server")
+			minetest.chat_send_all("*** Server shutting down (operator request).")
 		end
-		core.request_shutdown(message:trim(), core.is_yes(reconnect), delay)
+		minetest.request_shutdown(message:trim(), minetest.is_yes(reconnect), delay)
 	end,
 })
 
-core.register_chatcommand("ban", {
+minetest.register_chatcommand("ban", {
 	params = "[<name>]",
 	description = "Ban the IP of a player or show the ban list",
 	privs = {ban=true},
 	func = function(name, param)
 		if param == "" then
-			local ban_list = core.get_ban_list()
+			local ban_list = minetest.get_ban_list()
 			if ban_list == "" then
 				return true, "The ban list is empty."
 			else
 				return true, "Ban list: " .. ban_list
 			end
 		end
-		if not core.get_player_by_name(param) then
+		if not minetest.get_player_by_name(param) then
 			return false, "Player is not online."
 		end
-		if not core.ban_player(param) then
+		if not minetest.ban_player(param) then
 			return false, "Failed to ban player."
 		end
-		local desc = core.get_ban_description(param)
-		core.log("action", name .. " bans " .. desc .. ".")
+		local desc = minetest.get_ban_description(param)
+		minetest.log("action", name .. " bans " .. desc .. ".")
 		return true, "Banned " .. desc .. "."
 	end,
 })
 
-core.register_chatcommand("unban", {
+minetest.register_chatcommand("unban", {
 	params = "<name> | <IP_address>",
 	description = "Remove IP ban belonging to a player/IP",
 	privs = {ban=true},
 	func = function(name, param)
-		if not core.unban_player_or_ip(param) then
+		if not minetest.unban_player_or_ip(param) then
 			return false, "Failed to unban player/IP."
 		end
-		core.log("action", name .. " unbans " .. param)
+		minetest.log("action", name .. " unbans " .. param)
 		return true, "Unbanned " .. param
 	end,
 })
 
-core.register_chatcommand("kick", {
+minetest.register_chatcommand("kick", {
 	params = "<name> [<reason>]",
 	description = "Kick a player",
 	privs = {kick=true},
 	func = function(name, param)
 		local tokick, reason = param:match("([^ ]+) (.+)")
 		tokick = tokick or param
-		if not core.kick_player(tokick, reason) then
+		if not minetest.kick_player(tokick, reason) then
 			return false, "Failed to kick player " .. tokick
 		end
 		local log_reason = ""
 		if reason then
 			log_reason = " with reason \"" .. reason .. "\""
 		end
-		core.log("action", name .. " kicks " .. tokick .. log_reason)
+		minetest.log("action", name .. " kicks " .. tokick .. log_reason)
 		return true, "Kicked " .. tokick
 	end,
 })
 
-core.register_chatcommand("clearobjects", {
+minetest.register_chatcommand("clearobjects", {
 	params = "[full | quick]",
 	description = "Clear all objects in world",
 	privs = {server=true},
@@ -993,18 +993,18 @@ core.register_chatcommand("clearobjects", {
 			return false, "Invalid usage, see /help clearobjects."
 		end
 
-		core.log("action", name .. " clears all objects ("
+		minetest.log("action", name .. " clears all objects ("
 				.. options.mode .. " mode).")
-		core.chat_send_all("Clearing all objects. This may take a long time."
+		minetest.chat_send_all("Clearing all objects. This may take a long time."
 				.. " You may experience a timeout. (by "
 				.. name .. ")")
-		core.clear_objects(options)
-		core.log("action", "Object clearing done.")
-		core.chat_send_all("*** Cleared all objects.")
+		minetest.clear_objects(options)
+		minetest.log("action", "Object clearing done.")
+		minetest.chat_send_all("*** Cleared all objects.")
 	end,
 })
 
-core.register_chatcommand("msg", {
+minetest.register_chatcommand("msg", {
 	params = "<name> <message>",
 	description = "Send a direct message to a player",
 	privs = {shout=true},
@@ -1013,26 +1013,26 @@ core.register_chatcommand("msg", {
 		if not sendto then
 			return false, "Invalid usage, see /help msg."
 		end
-		if not core.get_player_by_name(sendto) then
+		if not minetest.get_player_by_name(sendto) then
 			return false, "The player " .. sendto
 					.. " is not online."
 		end
-		core.log("action", "DM from " .. name .. " to " .. sendto
+		minetest.log("action", "DM from " .. name .. " to " .. sendto
 				.. ": " .. message)
-		core.chat_send_player(sendto, "DM from " .. name .. ": "
+		minetest.chat_send_player(sendto, "DM from " .. name .. ": "
 				.. message)
 		return true, "Message sent."
 	end,
 })
 
-core.register_chatcommand("last-login", {
+minetest.register_chatcommand("last-login", {
 	params = "[<name>]",
 	description = "Get the last login time of a player or yourself",
 	func = function(name, param)
 		if param == "" then
 			param = name
 		end
-		local pauth = core.get_auth_handler().get_auth(param)
+		local pauth = minetest.get_auth_handler().get_auth(param)
 		if pauth and pauth.last_login then
 			-- Time in UTC, ISO 8601 format
 			return true, "Last login time was " ..
@@ -1042,27 +1042,27 @@ core.register_chatcommand("last-login", {
 	end,
 })
 
-core.register_chatcommand("clearinv", {
+minetest.register_chatcommand("clearinv", {
 	params = "[<name>]",
 	description = "Clear the inventory of yourself or another player",
 	func = function(name, param)
 		local player
 		if param and param ~= "" and param ~= name then
-			if not core.check_player_privs(name, {server=true}) then
+			if not minetest.check_player_privs(name, {server=true}) then
 				return false, "You don't have permission"
 						.. " to clear another player's inventory (missing privilege: server)"
 			end
-			player = core.get_player_by_name(param)
-			core.chat_send_player(param, name.." cleared your inventory.")
+			player = minetest.get_player_by_name(param)
+			minetest.chat_send_player(param, name.." cleared your inventory.")
 		else
-			player = core.get_player_by_name(name)
+			player = minetest.get_player_by_name(name)
 		end
 
 		if player then
 			player:get_inventory():set_list("main", {})
 			player:get_inventory():set_list("craft", {})
 			player:get_inventory():set_list("craftpreview", {})
-			core.log("action", name.." clears "..player:get_player_name().."'s inventory")
+			minetest.log("action", name.." clears "..player:get_player_name().."'s inventory")
 			return true, "Cleared "..player:get_player_name().."'s inventory."
 		else
 			return false, "Player must be online to clear inventory!"
@@ -1071,10 +1071,10 @@ core.register_chatcommand("clearinv", {
 })
 
 local function handle_kill_command(killer, victim)
-	if core.settings:get_bool("enable_damage") == false then
+	if minetest.settings:get_bool("enable_damage") == false then
 		return false, "Players can't be killed, damage has been disabled."
 	end
-	local victimref = core.get_player_by_name(victim)
+	local victimref = minetest.get_player_by_name(victim)
 	if victimref == nil then
 		return false, string.format("Player %s is not online.", victim)
 	elseif victimref:get_hp() <= 0 then
@@ -1085,14 +1085,14 @@ local function handle_kill_command(killer, victim)
 		end
 	end
 	if not killer == victim then
-		core.log("action", string.format("%s killed %s", killer, victim))
+		minetest.log("action", string.format("%s killed %s", killer, victim))
 	end
 	-- Kill victim
 	victimref:set_hp(0)
 	return true, string.format("%s has been killed.", victim)
 end
 
-core.register_chatcommand("kill", {
+minetest.register_chatcommand("kill", {
 	params = "[<name>]",
 	description = "Kill player or yourself",
 	privs = {server=true},

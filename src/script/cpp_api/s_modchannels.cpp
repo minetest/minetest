@@ -26,7 +26,7 @@ void ScriptApiModChannels::on_modchannel_message(const std::string &channel,
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_generateds
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_modchannel_message");
 	// Call callbacks
 	lua_pushstring(L, channel.c_str());
@@ -41,7 +41,7 @@ void ScriptApiModChannels::on_modchannel_signal(
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_generateds
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_modchannel_signal");
 	// Call callbacks
 	lua_pushstring(L, channel.c_str());

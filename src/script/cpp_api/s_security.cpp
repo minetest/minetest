@@ -60,7 +60,7 @@ void ScriptApiSecurity::initializeSecurity()
 {
 	static const char *whitelist[] = {
 		"assert",
-		"core",
+		"minetest",
 		"collectgarbage",
 		"DIR_DELIM",
 		"error",
@@ -228,7 +228,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 {
 	static const char *whitelist[] = {
 		"assert",
-		"core",
+		"minetest",
 		"collectgarbage",
 		"DIR_DELIM",
 		"error",

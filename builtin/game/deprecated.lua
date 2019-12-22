@@ -4,34 +4,34 @@
 -- Default material types
 --
 local function digprop_err()
-	core.log("deprecated", "The core.digprop_* functions are obsolete and need to be replaced by item groups.")
+	minetest.log("deprecated", "The minetest.digprop_* functions are obsolete and need to be replaced by item groups.")
 end
 
-core.digprop_constanttime = digprop_err
-core.digprop_stonelike = digprop_err
-core.digprop_dirtlike = digprop_err
-core.digprop_gravellike = digprop_err
-core.digprop_woodlike = digprop_err
-core.digprop_leaveslike = digprop_err
-core.digprop_glasslike = digprop_err
+minetest.digprop_constanttime = digprop_err
+minetest.digprop_stonelike = digprop_err
+minetest.digprop_dirtlike = digprop_err
+minetest.digprop_gravellike = digprop_err
+minetest.digprop_woodlike = digprop_err
+minetest.digprop_leaveslike = digprop_err
+minetest.digprop_glasslike = digprop_err
 
-function core.node_metadata_inventory_move_allow_all()
-	core.log("deprecated", "core.node_metadata_inventory_move_allow_all is obsolete and does nothing.")
+function minetest.node_metadata_inventory_move_allow_all()
+	minetest.log("deprecated", "minetest.node_metadata_inventory_move_allow_all is obsolete and does nothing.")
 end
 
-function core.add_to_creative_inventory(itemstring)
-	core.log("deprecated", "core.add_to_creative_inventory is obsolete and does nothing.")
+function minetest.add_to_creative_inventory(itemstring)
+	minetest.log("deprecated", "minetest.add_to_creative_inventory is obsolete and does nothing.")
 end
 
 --
 -- EnvRef
 --
-core.env = {}
+minetest.env = {}
 local envref_deprecation_message_printed = false
-setmetatable(core.env, {
+setmetatable(minetest.env, {
 	__index = function(table, key)
 		if not envref_deprecation_message_printed then
-			core.log("deprecated", "core.env:[...] is deprecated and should be replaced with core.[...]")
+			minetest.log("deprecated", "minetest.env:[...] is deprecated and should be replaced with minetest.[...]")
 			envref_deprecation_message_printed = true
 		end
 		local func = core[key]
@@ -46,27 +46,27 @@ setmetatable(core.env, {
 	end
 })
 
-function core.rollback_get_last_node_actor(pos, range, seconds)
-	return core.rollback_get_node_actions(pos, range, seconds, 1)[1]
+function minetest.rollback_get_last_node_actor(pos, range, seconds)
+	return minetest.rollback_get_node_actions(pos, range, seconds, 1)[1]
 end
 
 --
--- core.setting_*
+-- minetest.setting_*
 --
 
-local settings = core.settings
+local settings = minetest.settings
 
 local function setting_proxy(name)
 	return function(...)
-		core.log("deprecated", "WARNING: minetest.setting_* "..
+		minetest.log("deprecated", "WARNING: minetest.setting_* "..
 			"functions are deprecated.  "..
 			"Use methods on the minetest.settings object.")
 		return settings[name](settings, ...)
 	end
 end
 
-core.setting_set = setting_proxy("set")
-core.setting_get = setting_proxy("get")
-core.setting_setbool = setting_proxy("set_bool")
-core.setting_getbool = setting_proxy("get_bool")
-core.setting_save = setting_proxy("write")
+minetest.setting_set = setting_proxy("set")
+minetest.setting_get = setting_proxy("get")
+minetest.setting_setbool = setting_proxy("set_bool")
+minetest.setting_getbool = setting_proxy("get_bool")
+minetest.setting_save = setting_proxy("write")

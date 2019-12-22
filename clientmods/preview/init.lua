@@ -1,37 +1,37 @@
-local modname = assert(core.get_current_modname())
-local modstorage = core.get_mod_storage()
+local modname = assert(minetest.get_current_modname())
+local modstorage = minetest.get_mod_storage()
 local mod_channel
 
-dofile(core.get_modpath(modname) .. "example.lua")
+dofile(minetest.get_modpath(modname) .. "example.lua")
 
-core.register_on_shutdown(function()
+minetest.register_on_shutdown(function()
 	print("[PREVIEW] shutdown client")
 end)
 local id = nil
 
 do
-	local server_info = core.get_server_info()
+	local server_info = minetest.get_server_info()
 	print("Server version: " .. server_info.protocol_version)
 	print("Server ip: " .. server_info.ip)
 	print("Server address: " .. server_info.address)
 	print("Server port: " .. server_info.port)
 
-	print("CSM restrictions: " .. dump(core.get_csm_restrictions()))
+	print("CSM restrictions: " .. dump(minetest.get_csm_restrictions()))
 
-	local l1, l2 = core.get_language()
+	local l1, l2 = minetest.get_language()
 	print("Configured language: " .. l1 .. " / " .. l2)
 end
 
-mod_channel = core.mod_channel_join("experimental_preview")
+mod_channel = minetest.mod_channel_join("experimental_preview")
 
-core.after(4, function()
+minetest.after(4, function()
 	if mod_channel:is_writeable() then
 		mod_channel:send_all("preview talk to experimental")
 	end
 end)
 
-core.after(1, function()
-	id = core.localplayer:hud_add({
+minetest.after(1, function()
+	id = minetest.localplayer:hud_add({
 			hud_elem_type = "text",
 			name = "example",
 			number = 0xff0000,
@@ -43,33 +43,33 @@ core.after(1, function()
 	})
 end)
 
-core.register_on_modchannel_message(function(channel, sender, message)
+minetest.register_on_modchannel_message(function(channel, sender, message)
 	print("[PREVIEW][modchannels] Received message `" .. message .. "` on channel `"
 			.. channel .. "` from sender `" .. sender .. "`")
-	core.after(1, function()
+	minetest.after(1, function()
 		mod_channel:send_all("CSM preview received " .. message)
 	end)
 end)
 
-core.register_on_modchannel_signal(function(channel, signal)
+minetest.register_on_modchannel_signal(function(channel, signal)
 	print("[PREVIEW][modchannels] Received signal id `" .. signal .. "` on channel `"
 			.. channel)
 end)
 
-core.register_on_inventory_open(function(inventory)
+minetest.register_on_inventory_open(function(inventory)
 	print("INVENTORY OPEN")
 	print(dump(inventory))
 	return false
 end)
 
-core.register_on_placenode(function(pointed_thing, node)
+minetest.register_on_placenode(function(pointed_thing, node)
 	print("The local player place a node!")
 	print("pointed_thing :" .. dump(pointed_thing))
 	print("node placed :" .. dump(node))
 	return false
 end)
 
-core.register_on_item_use(function(itemstack, pointed_thing)
+minetest.register_on_item_use(function(itemstack, pointed_thing)
 	print("The local player used an item!")
 	print("pointed_thing :" .. dump(pointed_thing))
 	print("item = " .. itemstack:get_name())
@@ -78,17 +78,17 @@ core.register_on_item_use(function(itemstack, pointed_thing)
 		return false
 	end
 
-	local pos = vector.add(core.localplayer:get_pos(), core.camera:get_offset())
-	local pos2 = vector.add(pos, vector.multiply(core.camera:get_look_dir(), 100))
+	local pos = vector.add(minetest.localplayer:get_pos(), minetest.camera:get_offset())
+	local pos2 = vector.add(pos, vector.multiply(minetest.camera:get_look_dir(), 100))
 
-	local rc = core.raycast(pos, pos2)
+	local rc = minetest.raycast(pos, pos2)
 	local i = rc:next()
 	print("[PREVIEW] raycast next: " .. dump(i))
 	if i then
-		print("[PREVIEW] line of sight: " .. (core.line_of_sight(pos, i.above) and "yes" or "no"))
+		print("[PREVIEW] line of sight: " .. (minetest.line_of_sight(pos, i.above) and "yes" or "no"))
 
-		local n1 = core.find_nodes_in_area(pos, i.under, {"default:stone"})
-		local n2 = core.find_nodes_in_area_under_air(pos, i.under, {"default:stone"})
+		local n1 = minetest.find_nodes_in_area(pos, i.under, {"default:stone"})
+		local n2 = minetest.find_nodes_in_area_under_air(pos, i.under, {"default:stone"})
 		print(("[PREVIEW] found %s nodes, %s nodes under air"):format(
 				n1 and #n1 or "?", n2 and #n2 or "?"))
 	end
@@ -97,49 +97,49 @@ core.register_on_item_use(function(itemstack, pointed_thing)
 end)
 
 -- This is an example function to ensure it's working properly, should be removed before merge
-core.register_on_receiving_chat_message(function(message)
+minetest.register_on_receiving_chat_message(function(message)
 	print("[PREVIEW] Received message " .. message)
 	return false
 end)
 
 -- This is an example function to ensure it's working properly, should be removed before merge
-core.register_on_sending_chat_message(function(message)
+minetest.register_on_sending_chat_message(function(message)
 	print("[PREVIEW] Sending message " .. message)
 	return false
 end)
 
 -- This is an example function to ensure it's working properly, should be removed before merge
-core.register_on_hp_modification(function(hp)
+minetest.register_on_hp_modification(function(hp)
 	print("[PREVIEW] HP modified " .. hp)
 end)
 
 -- This is an example function to ensure it's working properly, should be removed before merge
-core.register_on_damage_taken(function(hp)
+minetest.register_on_damage_taken(function(hp)
 	print("[PREVIEW] Damage taken " .. hp)
 end)
 
 -- This is an example function to ensure it's working properly, should be removed before merge
-core.register_chatcommand("dump", {
+minetest.register_chatcommand("dump", {
 	func = function(param)
 		return true, dump(_G)
 	end,
 })
 
-core.register_chatcommand("colorize_test", {
+minetest.register_chatcommand("colorize_test", {
 	func = function(param)
-		return true, core.colorize("red", param)
+		return true, minetest.colorize("red", param)
 	end,
 })
 
-core.register_chatcommand("test_node", {
+minetest.register_chatcommand("test_node", {
 	func = function(param)
-		core.display_chat_message(dump(core.get_node({x=0, y=0, z=0})))
-		core.display_chat_message(dump(core.get_node_or_nil({x=0, y=0, z=0})))
+		minetest.display_chat_message(dump(minetest.get_node({x=0, y=0, z=0})))
+		minetest.display_chat_message(dump(minetest.get_node_or_nil({x=0, y=0, z=0})))
 	end,
 })
 
 local function preview_minimap()
-	local minimap = core.ui.minimap
+	local minimap = minetest.ui.minimap
 	if not minimap then
 		print("[PREVIEW] Minimap is disabled. Skipping.")
 		return
@@ -154,37 +154,37 @@ local function preview_minimap()
 			" angle => " .. dump(minimap:get_angle()))
 end
 
-core.after(2, function()
+minetest.after(2, function()
 	print("[PREVIEW] loaded " .. modname .. " mod")
 	modstorage:set_string("current_mod", modname)
 	print(modstorage:get_string("current_mod"))
 	preview_minimap()
 end)
 
-core.after(5, function()
-	if core.ui.minimap then
-		core.ui.minimap:show()
+minetest.after(5, function()
+	if minetest.ui.minimap then
+		minetest.ui.minimap:show()
 	end
 
-	print("[PREVIEW] Time of day " .. core.get_timeofday())
+	print("[PREVIEW] Time of day " .. minetest.get_timeofday())
 
-	print("[PREVIEW] Node level: " .. core.get_node_level({x=0, y=20, z=0}) ..
-		" max level " .. core.get_node_max_level({x=0, y=20, z=0}))
+	print("[PREVIEW] Node level: " .. minetest.get_node_level({x=0, y=20, z=0}) ..
+		" max level " .. minetest.get_node_max_level({x=0, y=20, z=0}))
 
-	print("[PREVIEW] Find node near: " .. dump(core.find_node_near({x=0, y=20, z=0}, 10,
+	print("[PREVIEW] Find node near: " .. dump(minetest.find_node_near({x=0, y=20, z=0}, 10,
 		{"group:tree", "default:dirt", "default:stone"})))
 end)
 
-core.register_on_dignode(function(pos, node)
+minetest.register_on_dignode(function(pos, node)
 	print("The local player dug a node!")
 	print("pos:" .. dump(pos))
 	print("node:" .. dump(node))
 	return false
 end)
 
-core.register_on_punchnode(function(pos, node)
+minetest.register_on_punchnode(function(pos, node)
 	print("The local player punched a node!")
-	local itemstack = core.get_wielded_item()
+	local itemstack = minetest.get_wielded_item()
 	--[[
 	-- getters
 	print(dump(itemstack:is_empty()))
@@ -211,19 +211,19 @@ core.register_on_punchnode(function(pos, node)
 	return false
 end)
 
-core.register_chatcommand("privs", {
+minetest.register_chatcommand("privs", {
 	func = function(param)
-		return true, core.privs_to_string(minetest.get_privilege_list())
+		return true, minetest.privs_to_string(minetest.get_privilege_list())
 	end,
 })
 
-core.register_chatcommand("text", {
+minetest.register_chatcommand("text", {
 	func = function(param)
-		return core.localplayer:hud_change(id, "text", param)
+		return minetest.localplayer:hud_change(id, "text", param)
 	end,
 })
 
 
-core.register_on_mods_loaded(function()
-	core.log("Yeah preview mod is loaded with other CSM mods.")
+minetest.register_on_mods_loaded(function()
+	minetest.log("Yeah preview mod is loaded with other CSM mods.")
 end)

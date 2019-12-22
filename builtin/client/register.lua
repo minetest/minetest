@@ -1,10 +1,10 @@
 
-core.callback_origins = {}
+minetest.callback_origins = {}
 
 local getinfo = debug.getinfo
 debug.getinfo = nil
 
-function core.run_callbacks(callbacks, mode, ...)
+function minetest.run_callbacks(callbacks, mode, ...)
 	assert(type(callbacks) == "table")
 	local cb_len = #callbacks
 	if cb_len == 0 then
@@ -48,29 +48,29 @@ local function make_registration()
 	local t = {}
 	local registerfunc = function(func)
 		t[#t + 1] = func
-		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
+		minetest.callback_origins[func] = {
+			mod = minetest.get_current_modname() or "??",
 			name = getinfo(1, "n").name or "??"
 		}
-		--local origin = core.callback_origins[func]
+		--local origin = minetest.callback_origins[func]
 		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))
 	end
 	return t, registerfunc
 end
 
-core.registered_globalsteps, core.register_globalstep = make_registration()
-core.registered_on_mods_loaded, core.register_on_mods_loaded = make_registration()
-core.registered_on_shutdown, core.register_on_shutdown = make_registration()
-core.registered_on_receiving_chat_message, core.register_on_receiving_chat_message = make_registration()
-core.registered_on_sending_chat_message, core.register_on_sending_chat_message = make_registration()
-core.registered_on_death, core.register_on_death = make_registration()
-core.registered_on_hp_modification, core.register_on_hp_modification = make_registration()
-core.registered_on_damage_taken, core.register_on_damage_taken = make_registration()
-core.registered_on_formspec_input, core.register_on_formspec_input = make_registration()
-core.registered_on_dignode, core.register_on_dignode = make_registration()
-core.registered_on_punchnode, core.register_on_punchnode = make_registration()
-core.registered_on_placenode, core.register_on_placenode = make_registration()
-core.registered_on_item_use, core.register_on_item_use = make_registration()
-core.registered_on_modchannel_message, core.register_on_modchannel_message = make_registration()
-core.registered_on_modchannel_signal, core.register_on_modchannel_signal = make_registration()
-core.registered_on_inventory_open, core.register_on_inventory_open = make_registration()
+minetest.registered_globalsteps, minetest.register_globalstep = make_registration()
+minetest.registered_on_mods_loaded, minetest.register_on_mods_loaded = make_registration()
+minetest.registered_on_shutdown, minetest.register_on_shutdown = make_registration()
+minetest.registered_on_receiving_chat_message, minetest.register_on_receiving_chat_message = make_registration()
+minetest.registered_on_sending_chat_message, minetest.register_on_sending_chat_message = make_registration()
+minetest.registered_on_death, minetest.register_on_death = make_registration()
+minetest.registered_on_hp_modification, minetest.register_on_hp_modification = make_registration()
+minetest.registered_on_damage_taken, minetest.register_on_damage_taken = make_registration()
+minetest.registered_on_formspec_input, minetest.register_on_formspec_input = make_registration()
+minetest.registered_on_dignode, minetest.register_on_dignode = make_registration()
+minetest.registered_on_punchnode, minetest.register_on_punchnode = make_registration()
+minetest.registered_on_placenode, minetest.register_on_placenode = make_registration()
+minetest.registered_on_item_use, minetest.register_on_item_use = make_registration()
+minetest.registered_on_modchannel_message, minetest.register_on_modchannel_message = make_registration()
+minetest.registered_on_modchannel_signal, minetest.register_on_modchannel_signal = make_registration()
+minetest.registered_on_inventory_open, minetest.register_on_inventory_open = make_registration()

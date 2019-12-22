@@ -32,7 +32,7 @@ void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_newplayers
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_newplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
@@ -44,7 +44,7 @@ void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player, const PlayerHPCha
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get callback table
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_dieplayers");
 
 	// Push arguments
@@ -64,7 +64,7 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 {
 	SCRIPTAPI_PRECHECKHEADER
 	// Get core.registered_on_punchplayers
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_punchplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
@@ -85,7 +85,7 @@ s32 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get core.registered_on_player_hpchange
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_player_hpchange");
 	lua_remove(L, -2);
 
@@ -106,7 +106,7 @@ bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_respawnplayers
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_respawnplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
@@ -122,7 +122,7 @@ bool ScriptApiPlayer::on_prejoinplayer(
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_prejoinplayers
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_prejoinplayers");
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
@@ -139,7 +139,7 @@ bool ScriptApiPlayer::can_bypass_userlimit(const std::string &name, const std::s
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_prejoinplayers
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_can_bypass_userlimit");
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
@@ -152,7 +152,7 @@ void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_joinplayers
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_joinplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
@@ -165,7 +165,7 @@ void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player,
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_leaveplayers
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_leaveplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
@@ -179,7 +179,7 @@ void ScriptApiPlayer::on_cheat(ServerActiveObject *player,
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_cheats
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_cheats");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
@@ -196,7 +196,7 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_player_receive_fields
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_player_receive_fields");
 	// Call callbacks
 	// param 1
@@ -221,7 +221,7 @@ void ScriptApiPlayer::on_auth_failure(const std::string &name, const std::string
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_auth_failure
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_auth_fail");
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
@@ -284,7 +284,7 @@ int ScriptApiPlayer::player_inventory_AllowMove(
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_allow_player_inventory_actions");
 	pushMoveArguments(ma, count, player);
 	runCallbacks(4, RUN_CALLBACKS_MODE_OR_SC);
@@ -299,7 +299,7 @@ int ScriptApiPlayer::player_inventory_AllowPut(
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_allow_player_inventory_actions");
 	pushPutTakeArguments("put", ma.to_inv, ma.to_list, ma.to_i, stack, player);
 	runCallbacks(4, RUN_CALLBACKS_MODE_OR_SC);
@@ -314,7 +314,7 @@ int ScriptApiPlayer::player_inventory_AllowTake(
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_allow_player_inventory_actions");
 	pushPutTakeArguments("take", ma.from_inv, ma.from_list, ma.from_i, stack, player);
 	runCallbacks(4, RUN_CALLBACKS_MODE_OR_SC);
@@ -329,7 +329,7 @@ void ScriptApiPlayer::player_inventory_OnMove(
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_player_inventory_actions");
 	pushMoveArguments(ma, count, player);
 	runCallbacks(4, RUN_CALLBACKS_MODE_FIRST);
@@ -342,7 +342,7 @@ void ScriptApiPlayer::player_inventory_OnPut(
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_player_inventory_actions");
 	pushPutTakeArguments("put", ma.to_inv, ma.to_list, ma.to_i, stack, player);
 	runCallbacks(4, RUN_CALLBACKS_MODE_FIRST);
@@ -355,7 +355,7 @@ void ScriptApiPlayer::player_inventory_OnTake(
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_player_inventory_actions");
 	pushPutTakeArguments("take", ma.from_inv, ma.from_list, ma.from_i, stack, player);
 	runCallbacks(4, RUN_CALLBACKS_MODE_FIRST);

@@ -109,7 +109,7 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 
 	// Add basic globals
 	lua_newtable(m_luastack);
-	lua_setglobal(m_luastack, "core");
+	lua_setglobal(m_luastack, "minetest");
 
 	if (m_type == ScriptingType::Client)
 		lua_pushstring(m_luastack, "/");
@@ -255,7 +255,7 @@ void ScriptApiBase::runCallbacksRaw(int nargs,
 	lua_insert(L, error_handler);
 
 	// Insert run_callbacks between error handler and table
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "run_callbacks");
 	lua_remove(L, -2);
 	lua_insert(L, error_handler + 1);
@@ -343,7 +343,7 @@ void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 	int object = lua_gettop(L);
 
 	// Get core.object_refs table
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);
@@ -360,7 +360,7 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 	//infostream<<"scriptapi_rm_object_reference: id="<<cobj->getId()<<std::endl;
 
 	// Get core.object_refs table
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);

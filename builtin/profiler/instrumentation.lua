@@ -16,7 +16,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local format, pairs, type = string.format, pairs, type
-local core, get_current_modname = core, core.get_current_modname
+local core, get_current_modname = core, minetest.get_current_modname
 local profiler, sampler, get_bool_default = ...
 
 local instrument_builtin = get_bool_default("instrument.builtin", false)
@@ -71,7 +71,7 @@ end
 -- Keep `measure` and the closure in `instrument` lean, as these, and their
 -- directly called functions are the overhead that is caused by instrumentation.
 --
-local time, log = core.get_us_time, sampler.log
+local time, log = minetest.get_us_time, sampler.log
 local function measure(modname, instrument_name, start, ...)
 	log(modname, instrument_name, time() - start)
 	return ...
@@ -140,8 +140,8 @@ end
 
 local function init_chatcommand()
 	if get_bool_default("instrument.chatcommand", true) then
-		local orig_register_chatcommand = core.register_chatcommand
-		core.register_chatcommand = function(cmd, def)
+		local orig_register_chatcommand = minetest.register_chatcommand
+		minetest.register_chatcommand = function(cmd, def)
 			def.func = instrument {
 				func = def.func,
 				label = "/" .. cmd,
@@ -166,8 +166,8 @@ local function init()
 			"get_staticdata",
 		}
 		-- Wrap register_entity() to instrument them on registration.
-		local orig_register_entity = core.register_entity
-		core.register_entity = function(name, prototype)
+		local orig_register_entity = minetest.register_entity
+		minetest.register_entity = function(name, prototype)
 			local modname = get_current_modname()
 			for _, func_name in pairs(entity_instrumentation) do
 				prototype[func_name] = instrument {
@@ -183,8 +183,8 @@ local function init()
 
 	if get_bool_default("instrument.abm", true) then
 		-- Wrap register_abm() to automatically instrument abms.
-		local orig_register_abm = core.register_abm
-		core.register_abm = function(spec)
+		local orig_register_abm = minetest.register_abm
+		minetest.register_abm = function(spec)
 			spec.action = instrument {
 				func = spec.action,
 				class = "ABM",
@@ -196,8 +196,8 @@ local function init()
 
 	if get_bool_default("instrument.lbm", true) then
 		-- Wrap register_lbm() to automatically instrument lbms.
-		local orig_register_lbm = core.register_lbm
-		core.register_lbm = function(spec)
+		local orig_register_lbm = minetest.register_lbm
+		minetest.register_lbm = function(spec)
 			spec.action = instrument {
 				func = spec.action,
 				class = "LBM",

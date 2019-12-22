@@ -1,5 +1,5 @@
 
-local scriptpath = core.get_builtin_path()
+local scriptpath = minetest.get_builtin_path()
 local commonpath = scriptpath .. "common" .. DIR_DELIM
 local gamepath   = scriptpath .. "game".. DIR_DELIM
 
@@ -13,7 +13,7 @@ dofile(gamepath .. "constants.lua")
 assert(loadfile(gamepath .. "item.lua"))(builtin_shared)
 dofile(gamepath .. "register.lua")
 
-if core.settings:get_bool("profiler.load") then
+if minetest.settings:get_bool("profiler.load") then
 	profiler = dofile(scriptpath .. "profiler" .. DIR_DELIM .. "init.lua")
 end
 

@@ -102,7 +102,7 @@ local previous_contributors = {
 local function buildCreditList(source)
 	local ret = {}
 	for i = 1, #source do
-		ret[i] = core.formspec_escape(source[i])
+		ret[i] = minetest.formspec_escape(source[i])
 	end
 	return table.concat(ret, ",,")
 end
@@ -112,8 +112,8 @@ return {
 	caption = fgettext("Credits"),
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"
-		local version = core.get_version()
-		return "image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
+		local version = minetest.get_version()
+		return "image[0.5,1;" .. minetest.formspec_escape(logofile) .. "]" ..
 			"label[0.5,3.2;" .. version.project .. " " .. version.string .. "]" ..
 			"label[0.5,3.5;http://minetest.net]" ..
 			"tablecolumns[color;text]" ..

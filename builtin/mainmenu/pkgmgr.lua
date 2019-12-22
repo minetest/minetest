@@ -17,7 +17,7 @@
 
 --------------------------------------------------------------------------------
 function get_mods(path,retval,modpack)
-	local mods = core.get_dir_list(path, true)
+	local mods = minetest.get_dir_list(path, true)
 
 	for _, name in ipairs(mods) do
 		if name:sub(1, 1) ~= "." then
@@ -79,11 +79,11 @@ end
 pkgmgr = {}
 
 function pkgmgr.get_texture_packs()
-	local txtpath = core.get_texturepath()
-	local list = core.get_dir_list(txtpath, true)
+	local txtpath = minetest.get_texturepath()
+	local list = minetest.get_dir_list(txtpath, true)
 	local retval = {}
 
-	local current_texture_path = core.settings:get("texture_path")
+	local current_texture_path = minetest.settings:get("texture_path")
 
 	for _, item in ipairs(list) do
 		if item ~= "base" then
@@ -122,8 +122,8 @@ function pkgmgr.extract(modfile)
 
 		if tempfolder ~= nil and
 			tempfolder ~= "" then
-			core.create_dir(tempfolder)
-			if core.extract_zip(modfile.name,tempfolder) then
+			minetest.create_dir(tempfolder)
+			if minetest.extract_zip(modfile.name,tempfolder) then
 				return tempfolder
 			end
 		end
@@ -176,7 +176,7 @@ function pkgmgr.get_base_folder(temppath)
 		return ret
 	end
 
-	local subdirs = core.get_dir_list(temppath, true)
+	local subdirs = minetest.get_dir_list(temppath, true)
 	if #subdirs == 1 then
 		ret = pkgmgr.get_folder_type(temppath .. DIR_DELIM .. subdirs[1])
 		if ret then
@@ -320,7 +320,7 @@ function pkgmgr.render_packagelist(render_list)
 		else
 			retval[#retval + 1] = "0"
 		end
-		retval[#retval + 1] = core.formspec_escape(v.list_name or v.name)
+		retval[#retval + 1] = minetest.formspec_escape(v.list_name or v.name)
 	end
 
 	return table.concat(retval, ",")
@@ -332,7 +332,7 @@ function pkgmgr.get_dependencies(path)
 		return {}, {}
 	end
 
-	local info = core.get_content_info(path)
+	local info = minetest.get_content_info(path)
 	return info.depends or {}, info.optional_depends or {}
 end
 
@@ -500,12 +500,12 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 
 		local from = basefolder and basefolder.path or path
 		if targetpath then
-			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
+			minetest.delete_dir(targetpath)
+			minetest.create_dir(targetpath)
 		else
-			targetpath = core.get_texturepath() .. DIR_DELIM .. basename
+			targetpath = minetest.get_texturepath() .. DIR_DELIM .. basename
 		end
-		if not core.copy_dir(from, targetpath) then
+		if not minetest.copy_dir(from, targetpath) then
 			return nil,
 				fgettext("Failed to install $1 to $2", basename, targetpath)
 		end
@@ -525,8 +525,8 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 
 		-- Get destination name for modpack
 		if targetpath then
-			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
+			minetest.delete_dir(targetpath)
+			minetest.create_dir(targetpath)
 		else
 			local clean_path = nil
 			if basename ~= nil then
@@ -536,7 +536,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 				clean_path = get_last_folder(cleanup_path(basefolder.path))
 			end
 			if clean_path then
-				targetpath = core.get_modpath() .. DIR_DELIM .. clean_path
+				targetpath = minetest.get_modpath() .. DIR_DELIM .. clean_path
 			else
 				return nil,
 					fgettext("Install Mod: Unable to find suitable folder name for modpack $1",
@@ -549,8 +549,8 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		end
 
 		if targetpath then
-			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
+			minetest.delete_dir(targetpath)
+			minetest.create_dir(targetpath)
 		else
 			local targetfolder = basename
 			if targetfolder == nil then
@@ -563,7 +563,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 			end
 
 			if targetfolder ~= nil and pkgmgr.isValidModname(targetfolder) then
-				targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
+				targetpath = minetest.get_modpath() .. DIR_DELIM .. targetfolder
 			else
 				return nil, fgettext("Install Mod: Unable to find real mod name for: $1", path)
 			end
@@ -575,15 +575,15 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		end
 
 		if targetpath then
-			core.delete_dir(targetpath)
-			core.create_dir(targetpath)
+			minetest.delete_dir(targetpath)
+			minetest.create_dir(targetpath)
 		else
-			targetpath = core.get_gamepath() .. DIR_DELIM .. basename
+			targetpath = minetest.get_gamepath() .. DIR_DELIM .. basename
 		end
 	end
 
 	-- Copy it
-	if not core.copy_dir(basefolder.path, targetpath) then
+	if not minetest.copy_dir(basefolder.path, targetpath) then
 		return nil,
 			fgettext("Failed to install $1 to $2", basename, targetpath)
 	end
@@ -610,7 +610,7 @@ function pkgmgr.install(type, modfilename, basename, dest)
 	end
 
 	local targetpath, msg = pkgmgr.install_dir(type, path, basename, dest)
-	core.delete_dir(path)
+	minetest.delete_dir(path)
 	return targetpath, msg
 end
 
@@ -622,7 +622,7 @@ function pkgmgr.preparemodlist(data)
 	local game_mods = {}
 
 	--read global mods
-	local modpath = core.get_modpath()
+	local modpath = minetest.get_modpath()
 
 	if modpath ~= nil and
 		modpath ~= "" then
@@ -680,7 +680,7 @@ function pkgmgr.preparemodlist(data)
 			if element ~= nil then
 				element.enabled = value ~= "false" and value ~= "nil" and value
 			else
-				core.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
+				minetest.log("info", "Mod: " .. key .. " " .. dump(value) .. " but not found")
 			end
 		end
 	end
@@ -842,17 +842,17 @@ end
 
 --------------------------------------------------------------------------------
 function pkgmgr.update_gamelist()
-	pkgmgr.games = core.get_games()
+	pkgmgr.games = minetest.get_games()
 end
 
 --------------------------------------------------------------------------------
 function pkgmgr.gamelist()
 	local retval = ""
 	if #pkgmgr.games > 0 then
-		retval = retval .. core.formspec_escape(pkgmgr.games[1].name)
+		retval = retval .. minetest.formspec_escape(pkgmgr.games[1].name)
 
 		for i=2,#pkgmgr.games,1 do
-			retval = retval .. "," .. core.formspec_escape(pkgmgr.games[i].name)
+			retval = retval .. "," .. minetest.formspec_escape(pkgmgr.games[i].name)
 		end
 	end
 	return retval

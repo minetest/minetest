@@ -19,8 +19,8 @@ local store = { packages = {}, packages_full = {} }
 local package_dialog = {}
 
 -- Screenshot
-local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
-assert(core.create_dir(screenshot_dir))
+local screenshot_dir = minetest.get_cache_path() .. DIR_DELIM .. "cdb"
+assert(minetest.create_dir(screenshot_dir))
 local screenshot_downloading = {}
 local screenshot_downloaded = {}
 
@@ -47,14 +47,14 @@ local filter_types_type = {
 
 
 local function download_package(param)
-	if core.download_file(param.package.url, param.filename) then
+	if minetest.download_file(param.package.url, param.filename) then
 		return {
 			package = param.package,
 			filename = param.filename,
 			successful = true,
 		}
 	else
-		core.log("error", "downloading " .. dump(param.package.url) .. " failed")
+		minetest.log("error", "downloading " .. dump(param.package.url) .. " failed")
 		return {
 			package = param.package,
 			successful = false,
@@ -76,7 +76,7 @@ local function start_install(calling_dialog, package)
 			if not path then
 				gamedata.errormessage = msg
 			else
-				core.log("action", "Installed package to " .. path)
+				minetest.log("action", "Installed package to " .. path)
 
 				local conf_path
 				local name_is_title = false
@@ -116,14 +116,14 @@ local function start_install(calling_dialog, package)
 		end
 
 		if gamedata.errormessage == nil then
-			core.button_handler({btn_hidden_close_download=result})
+			minetest.button_handler({btn_hidden_close_download=result})
 		else
-			core.button_handler({btn_hidden_close_download={successful=false}})
+			minetest.button_handler({btn_hidden_close_download={successful=false}})
 		end
 	end
 
-	if not core.handle_async(download_package, params, callback) then
-		core.log("error", "ERROR: async event failed")
+	if not minetest.handle_async(download_package, params, callback) then
+		minetest.log("error", "ERROR: async event failed")
 		gamedata.errormessage = fgettext("Failed to download $1", package.name)
 	end
 
@@ -174,21 +174,21 @@ local function get_screenshot(package)
 	-- Download
 
 	local function download_screenshot(params)
-		return core.download_file(params.url, params.dest)
+		return minetest.download_file(params.url, params.dest)
 	end
 	local function callback(success)
 		screenshot_downloading[package.thumbnail] = nil
 		screenshot_downloaded[package.thumbnail] = true
 		if not success then
-			core.log("warning", "Screenshot download failed for some reason")
+			minetest.log("warning", "Screenshot download failed for some reason")
 		end
 		ui.update()
 	end
-	if core.handle_async(download_screenshot,
+	if minetest.handle_async(download_screenshot,
 			{ dest = filepath, url = package.thumbnail }, callback) then
 		screenshot_downloading[package.thumbnail] = true
 	else
-		core.log("error", "ERROR: async event failed")
+		minetest.log("error", "ERROR: async event failed")
 		return defaulttexturedir .. "error_screenshot.png"
 	end
 
@@ -204,11 +204,11 @@ function package_dialog.get_formspec()
 
 	local formspec = {
 		"size[9,4;true]",
-		"image[0,1;4.5,3;", core.formspec_escape(get_screenshot(package)), ']',
+		"image[0,1;4.5,3;", minetest.formspec_escape(get_screenshot(package)), ']',
 		"label[3.8,1;",
-		minetest.colorize(mt_color_green, core.formspec_escape(package.title)), "\n",
-		minetest.colorize('#BFBFBF', "by " .. core.formspec_escape(package.author)), "]",
-		"textarea[4,2;5.3,2;;;", core.formspec_escape(package.short_description), "]",
+		minetest.colorize(mt_color_green, minetest.formspec_escape(package.title)), "\n",
+		minetest.colorize('#BFBFBF', "by " .. minetest.formspec_escape(package.author)), "]",
+		"textarea[4,2;5.3,2;;;", minetest.formspec_escape(package.short_description), "]",
 		"button[0,0;2,1;back;", fgettext("Back"), "]",
 	}
 
@@ -267,25 +267,25 @@ function store.load()
 	local tmpdir = os.tempfolder()
 	local target = tmpdir .. DIR_DELIM .. "packages.json"
 
-	assert(core.create_dir(tmpdir))
+	assert(minetest.create_dir(tmpdir))
 
-	local base_url     = core.settings:get("contentdb_url")
+	local base_url     = minetest.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto()
+		minetest.get_max_supp_proto()
 
-	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
+	for _, item in pairs(minetest.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
 			url = url .. "&hide=" .. item
 		end
 	end
 
-	core.download_file(url, target)
+	minetest.download_file(url, target)
 
 	local file = io.open(target, "r")
 	if file then
-		store.packages_full = core.parse_json(file:read("*all")) or {}
+		store.packages_full = minetest.parse_json(file:read("*all")) or {}
 		file:close()
 
 		for _, package in pairs(store.packages_full) do
@@ -305,7 +305,7 @@ function store.load()
 		store.loaded = true
 	end
 
-	core.delete_dir(tmpdir)
+	minetest.delete_dir(tmpdir)
 end
 
 function store.update_paths()
@@ -401,7 +401,7 @@ function store.get_formspec(dlgdata)
 			"size[12,7;true]",
 			"position[0.5,0.55]",
 			"field[0.2,0.1;7.8,1;search_string;;",
-			core.formspec_escape(search_string), "]",
+			minetest.formspec_escape(search_string), "]",
 			"field_close_on_enter[search_string;false]",
 			"button[7.7,-0.2;2,1;search;",
 			fgettext("Search"), "]",
@@ -452,12 +452,12 @@ function store.get_formspec(dlgdata)
 
 		-- image
 		formspec[#formspec + 1] = "image[-0.4,0;1.5,1;"
-		formspec[#formspec + 1] = core.formspec_escape(get_screenshot(package))
+		formspec[#formspec + 1] = minetest.formspec_escape(get_screenshot(package))
 		formspec[#formspec + 1] = "]"
 
 		-- title
 		formspec[#formspec + 1] = "label[1,-0.1;"
-		formspec[#formspec + 1] = core.formspec_escape(
+		formspec[#formspec + 1] = minetest.formspec_escape(
 				minetest.colorize(mt_color_green, package.title) ..
 				minetest.colorize("#BFBFBF", " by " .. package.author))
 		formspec[#formspec + 1] = "]"
@@ -468,7 +468,7 @@ function store.get_formspec(dlgdata)
 		else
 			formspec[#formspec + 1] = "textarea[1.25,0.3;9,1;;;"
 		end
-		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
+		formspec[#formspec + 1] = minetest.formspec_escape(package.short_description)
 		formspec[#formspec + 1] = "]"
 
 		-- buttons

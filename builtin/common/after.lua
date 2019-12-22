@@ -2,7 +2,7 @@ local jobs = {}
 local time = 0.0
 local time_next = math.huge
 
-core.register_globalstep(function(dtime)
+minetest.register_globalstep(function(dtime)
 	time = time + dtime
 
 	if time < time_next then
@@ -16,7 +16,7 @@ core.register_globalstep(function(dtime)
 	for i = #jobs, 1, -1 do
 		local job = jobs[i]
 		if time >= job.expire then
-			core.set_last_run_mod(job.mod_origin)
+			minetest.set_last_run_mod(job.mod_origin)
 			job.func(unpack(job.arg))
 			local jobs_l = #jobs
 			jobs[i] = jobs[jobs_l]
@@ -27,7 +27,7 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
-function core.after(after, func, ...)
+function minetest.after(after, func, ...)
 	assert(tonumber(after) and type(func) == "function",
 		"Invalid minetest.after invocation")
 	local expire = time + after
@@ -35,7 +35,7 @@ function core.after(after, func, ...)
 		func = func,
 		expire = expire,
 		arg = {...},
-		mod_origin = core.get_last_run_mod()
+		mod_origin = minetest.get_last_run_mod()
 	}
 	time_next = math.min(time_next, expire)
 end

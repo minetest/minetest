@@ -20,7 +20,7 @@ local enable_gamebar = PLATFORM ~= "Android"
 local current_game, singleplayer_refresh_gamebar
 if enable_gamebar then
 	function current_game()
-		local last_game_id = core.settings:get("menu_last_game")
+		local last_game_id = minetest.settings:get("menu_last_game")
 		local game = pkgmgr.find_by_gameid(last_game_id)
 
 		return game
@@ -39,13 +39,13 @@ if enable_gamebar then
 				for j=1,#pkgmgr.games,1 do
 					if ("game_btnbar_" .. pkgmgr.games[j].id == key) then
 						mm_texture.update("singleplayer", pkgmgr.games[j])
-						core.set_topleft_text(pkgmgr.games[j].name)
-						core.settings:set("menu_last_game",pkgmgr.games[j].id)
+						minetest.set_topleft_text(pkgmgr.games[j].name)
+						minetest.settings:set("menu_last_game",pkgmgr.games[j].id)
 						menudata.worldlist:set_filtercriteria(pkgmgr.games[j].id)
 						local index = filterlist.get_current_index(menudata.worldlist,
-							tonumber(core.settings:get("mainmenu_last_selected_world")))
+							tonumber(minetest.settings:get("mainmenu_last_selected_world")))
 						if not index or index < 1 then
-							local selected = core.get_textlist_index("sp_worlds")
+							local selected = minetest.get_textlist_index("sp_worlds")
 							if selected ~= nil and selected < #menudata.worldlist:get_list() then
 								index = selected
 							else
@@ -68,11 +68,11 @@ if enable_gamebar then
 
 			local image = nil
 			local text = nil
-			local tooltip = core.formspec_escape(pkgmgr.games[i].name)
+			local tooltip = minetest.formspec_escape(pkgmgr.games[i].name)
 
 			if pkgmgr.games[i].menuicon_path ~= nil and
 				pkgmgr.games[i].menuicon_path ~= "" then
-				image = core.formspec_escape(pkgmgr.games[i].menuicon_path)
+				image = minetest.formspec_escape(pkgmgr.games[i].menuicon_path)
 			else
 
 				local part1 = pkgmgr.games[i].id:sub(1,5)
@@ -98,7 +98,7 @@ local function get_formspec(tabview, name, tabdata)
 	local retval = ""
 
 	local index = filterlist.get_current_index(menudata.worldlist,
-				tonumber(core.settings:get("mainmenu_last_selected_world"))
+				tonumber(minetest.settings:get("mainmenu_last_selected_world"))
 				)
 
 	retval = retval ..
@@ -107,36 +107,36 @@ local function get_formspec(tabview, name, tabdata)
 			"button[9.2,3.95;2.5,1;world_create;".. fgettext("New") .. "]" ..
 			"label[4,-0.25;".. fgettext("Select World:") .. "]"..
 			"checkbox[0.25,0.25;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
-			dump(core.settings:get_bool("creative_mode")) .. "]"..
+			dump(minetest.settings:get_bool("creative_mode")) .. "]"..
 			"checkbox[0.25,0.7;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
-			dump(core.settings:get_bool("enable_damage")) .. "]"..
+			dump(minetest.settings:get_bool("enable_damage")) .. "]"..
 			"checkbox[0.25,1.15;cb_server;".. fgettext("Host Server") ..";" ..
-			dump(core.settings:get_bool("enable_server")) .. "]" ..
+			dump(minetest.settings:get_bool("enable_server")) .. "]" ..
 			"textlist[4,0.25;7.5,3.7;sp_worlds;" ..
 			menu_render_worldlist() ..
 			";" .. index .. "]"
 
-	if core.settings:get_bool("enable_server") then
+	if minetest.settings:get_bool("enable_server") then
 		retval = retval ..
 				"button[8.5,4.8;3.2,1;play;".. fgettext("Host Game") .. "]" ..
 				"checkbox[0.25,1.6;cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
-				dump(core.settings:get_bool("server_announce")) .. "]" ..
+				dump(minetest.settings:get_bool("server_announce")) .. "]" ..
 				"label[0.25,2.2;" .. fgettext("Name/Password") .. "]" ..
 				"field[0.55,3.2;3.5,0.5;te_playername;;" ..
-				core.formspec_escape(core.settings:get("name")) .. "]" ..
+				minetest.formspec_escape(minetest.settings:get("name")) .. "]" ..
 				"pwdfield[0.55,4;3.5,0.5;te_passwd;]"
 
-		local bind_addr = core.settings:get("bind_address")
+		local bind_addr = minetest.settings:get("bind_address")
 		if bind_addr ~= nil and bind_addr ~= "" then
 			retval = retval ..
 				"field[0.55,5.2;2.25,0.5;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
-				core.formspec_escape(core.settings:get("bind_address")) .. "]" ..
+				minetest.formspec_escape(minetest.settings:get("bind_address")) .. "]" ..
 				"field[2.8,5.2;1.25,0.5;te_serverport;" .. fgettext("Port") .. ";" ..
-				core.formspec_escape(core.settings:get("port")) .. "]"
+				minetest.formspec_escape(minetest.settings:get("port")) .. "]"
 		else
 			retval = retval ..
 				"field[0.55,5.2;3.5,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
-				core.formspec_escape(core.settings:get("port")) .. "]"
+				minetest.formspec_escape(minetest.settings:get("port")) .. "]"
 		end
 	else
 		retval = retval ..
@@ -153,8 +153,8 @@ local function main_button_handler(this, fields, name, tabdata)
 	local world_doubleclick = false
 
 	if fields["sp_worlds"] ~= nil then
-		local event = core.explode_textlist_event(fields["sp_worlds"])
-		local selected = core.get_textlist_index("sp_worlds")
+		local event = minetest.explode_textlist_event(fields["sp_worlds"])
+		local selected = minetest.get_textlist_index("sp_worlds")
 
 		menu_worldmt_legacy(selected)
 
@@ -163,7 +163,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		end
 
 		if event.type == "CHG" and selected ~= nil then
-			core.settings:set("mainmenu_last_selected_world",
+			minetest.settings:set("mainmenu_last_selected_world",
 				menudata.worldlist:get_raw_index(selected))
 			return true
 		end
@@ -174,59 +174,59 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["cb_creative_mode"] then
-		core.settings:set("creative_mode", fields["cb_creative_mode"])
-		local selected = core.get_textlist_index("sp_worlds")
+		minetest.settings:set("creative_mode", fields["cb_creative_mode"])
+		local selected = minetest.get_textlist_index("sp_worlds")
 		menu_worldmt(selected, "creative_mode", fields["cb_creative_mode"])
 
 		return true
 	end
 
 	if fields["cb_enable_damage"] then
-		core.settings:set("enable_damage", fields["cb_enable_damage"])
-		local selected = core.get_textlist_index("sp_worlds")
+		minetest.settings:set("enable_damage", fields["cb_enable_damage"])
+		local selected = minetest.get_textlist_index("sp_worlds")
 		menu_worldmt(selected, "enable_damage", fields["cb_enable_damage"])
 
 		return true
 	end
 
 	if fields["cb_server"] then
-		core.settings:set("enable_server", fields["cb_server"])
+		minetest.settings:set("enable_server", fields["cb_server"])
 
 		return true
 	end
 
 	if fields["cb_server_announce"] then
-		core.settings:set("server_announce", fields["cb_server_announce"])
-		local selected = core.get_textlist_index("srv_worlds")
+		minetest.settings:set("server_announce", fields["cb_server_announce"])
+		local selected = minetest.get_textlist_index("srv_worlds")
 		menu_worldmt(selected, "server_announce", fields["cb_server_announce"])
 
 		return true
 	end
 
 	if fields["play"] ~= nil or world_doubleclick or fields["key_enter"] then
-		local selected = core.get_textlist_index("sp_worlds")
+		local selected = minetest.get_textlist_index("sp_worlds")
 		gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
 
-		if core.settings:get_bool("enable_server") then
+		if minetest.settings:get_bool("enable_server") then
 			if selected ~= nil and gamedata.selected_world ~= 0 then
 				gamedata.playername = fields["te_playername"]
 				gamedata.password   = fields["te_passwd"]
 				gamedata.port       = fields["te_serverport"]
 				gamedata.address    = ""
 
-				core.settings:set("port",gamedata.port)
+				minetest.settings:set("port",gamedata.port)
 				if fields["te_serveraddr"] ~= nil then
-					core.settings:set("bind_address",fields["te_serveraddr"])
+					minetest.settings:set("bind_address",fields["te_serveraddr"])
 				end
 
 				--update last game
 				local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
 				if world then
 					local game = pkgmgr.find_by_gameid(world.gameid)
-					core.settings:set("menu_last_game", game.id)
+					minetest.settings:set("menu_last_game", game.id)
 				end
 
-				core.start()
+				minetest.start()
 			else
 				gamedata.errormessage =
 					fgettext("No world created or selected!")
@@ -234,7 +234,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		else
 			if selected ~= nil and gamedata.selected_world ~= 0 then
 				gamedata.singleplayer = true
-				core.start()
+				minetest.start()
 			else
 				gamedata.errormessage =
 					fgettext("No world created or selected!")
@@ -253,7 +253,7 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["world_delete"] ~= nil then
-		local selected = core.get_textlist_index("sp_worlds")
+		local selected = minetest.get_textlist_index("sp_worlds")
 		if selected ~= nil and
 			selected <= menudata.worldlist:size() then
 			local world = menudata.worldlist:get_list()[selected]
@@ -273,7 +273,7 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["world_configure"] ~= nil then
-		local selected = core.get_textlist_index("sp_worlds")
+		local selected = minetest.get_textlist_index("sp_worlds")
 		if selected ~= nil then
 			local configdialog =
 				create_configure_world_dlg(
@@ -299,7 +299,7 @@ if enable_gamebar then
 
 			if game then
 				menudata.worldlist:set_filtercriteria(game.id)
-				core.set_topleft_text(game.name)
+				minetest.set_topleft_text(game.name)
 				mm_texture.update("singleplayer",game)
 			end
 
@@ -311,7 +311,7 @@ if enable_gamebar then
 			if gamebar then
 				gamebar:hide()
 			end
-			core.set_topleft_text("")
+			minetest.set_topleft_text("")
 			mm_texture.update(new_tab,nil)
 		end
 	end

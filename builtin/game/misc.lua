@@ -4,16 +4,16 @@
 -- Misc. API functions
 --
 
-function core.check_player_privs(name, ...)
-	if core.is_player(name) then
+function minetest.check_player_privs(name, ...)
+	if minetest.is_player(name) then
 		name = name:get_player_name()
 	elseif type(name) ~= "string" then
-		error("core.check_player_privs expects a player or playername as " ..
+		error("minetest.check_player_privs expects a player or playername as " ..
 			"argument.", 2)
 	end
 
 	local requested_privs = {...}
-	local player_privs = core.get_player_privs(name)
+	local player_privs = minetest.get_player_privs(name)
 	local missing_privileges = {}
 
 	if type(requested_privs[1]) == "table" then
@@ -43,43 +43,43 @@ end
 local player_list = {}
 
 
-function core.send_join_message(player_name)
-	if not core.is_singleplayer() then
-		core.chat_send_all("*** " .. player_name .. " joined the game.")
+function minetest.send_join_message(player_name)
+	if not minetest.is_singleplayer() then
+		minetest.chat_send_all("*** " .. player_name .. " joined the game.")
 	end
 end
 
 
-function core.send_leave_message(player_name, timed_out)
+function minetest.send_leave_message(player_name, timed_out)
 	local announcement = "*** " ..  player_name .. " left the game."
 	if timed_out then
 		announcement = announcement .. " (timed out)"
 	end
-	core.chat_send_all(announcement)
+	minetest.chat_send_all(announcement)
 end
 
 
-core.register_on_joinplayer(function(player)
+minetest.register_on_joinplayer(function(player)
 	local player_name = player:get_player_name()
 	player_list[player_name] = player
-	if not core.is_singleplayer() then
-		local status = core.get_server_status(player_name, true)
+	if not minetest.is_singleplayer() then
+		local status = minetest.get_server_status(player_name, true)
 		if status and status ~= "" then
-			core.chat_send_player(player_name, status)
+			minetest.chat_send_player(player_name, status)
 		end
 	end
-	core.send_join_message(player_name)
+	minetest.send_join_message(player_name)
 end)
 
 
-core.register_on_leaveplayer(function(player, timed_out)
+minetest.register_on_leaveplayer(function(player, timed_out)
 	local player_name = player:get_player_name()
 	player_list[player_name] = nil
-	core.send_leave_message(player_name, timed_out)
+	minetest.send_leave_message(player_name, timed_out)
 end)
 
 
-function core.get_connected_players()
+function minetest.get_connected_players()
 	local temp_table = {}
 	for index, value in pairs(player_list) do
 		if value:is_player_connected() then
@@ -90,7 +90,7 @@ function core.get_connected_players()
 end
 
 
-function core.is_player(player)
+function minetest.is_player(player)
 	-- a table being a player is also supported because it quacks sufficiently
 	-- like a player if it has the is_player function
 	local t = type(player)
@@ -99,16 +99,16 @@ function core.is_player(player)
 end
 
 
-function core.player_exists(name)
-	return core.get_auth_handler().get_auth(name) ~= nil
+function minetest.player_exists(name)
+	return minetest.get_auth_handler().get_auth(name) ~= nil
 end
 
 
 -- Returns two position vectors representing a box of `radius` in each
 -- direction centered around the player corresponding to `player_name`
 
-function core.get_player_radius_area(player_name, radius)
-	local player = core.get_player_by_name(player_name)
+function minetest.get_player_radius_area(player_name, radius)
+	local player = minetest.get_player_by_name(player_name)
 	if player == nil then
 		return nil
 	end
@@ -125,14 +125,14 @@ function core.get_player_radius_area(player_name, radius)
 end
 
 
-function core.hash_node_position(pos)
+function minetest.hash_node_position(pos)
 	return (pos.z + 32768) * 65536 * 65536
 		 + (pos.y + 32768) * 65536
 		 +  pos.x + 32768
 end
 
 
-function core.get_position_from_hash(hash)
+function minetest.get_position_from_hash(hash)
 	local pos = {}
 	pos.x = (hash % 65536) - 32768
 	hash  = math.floor(hash / 65536)
@@ -143,39 +143,39 @@ function core.get_position_from_hash(hash)
 end
 
 
-function core.get_item_group(name, group)
-	if not core.registered_items[name] or not
-			core.registered_items[name].groups[group] then
+function minetest.get_item_group(name, group)
+	if not minetest.registered_items[name] or not
+			minetest.registered_items[name].groups[group] then
 		return 0
 	end
-	return core.registered_items[name].groups[group]
+	return minetest.registered_items[name].groups[group]
 end
 
 
-function core.get_node_group(name, group)
-	core.log("deprecated", "Deprecated usage of get_node_group, use get_item_group instead")
-	return core.get_item_group(name, group)
+function minetest.get_node_group(name, group)
+	minetest.log("deprecated", "Deprecated usage of get_node_group, use get_item_group instead")
+	return minetest.get_item_group(name, group)
 end
 
 
-function core.setting_get_pos(name)
-	local value = core.settings:get(name)
+function minetest.setting_get_pos(name)
+	local value = minetest.settings:get(name)
 	if not value then
 		return nil
 	end
-	return core.string_to_pos(value)
+	return minetest.string_to_pos(value)
 end
 
 
 -- To be overriden by protection mods
 
-function core.is_protected(pos, name)
+function minetest.is_protected(pos, name)
 	return false
 end
 
 
-function core.record_protection_violation(pos, name)
-	for _, func in pairs(core.registered_on_protection_violation) do
+function minetest.record_protection_violation(pos, name)
+	for _, func in pairs(minetest.registered_on_protection_violation) do
 		func(pos, name)
 	end
 end
@@ -183,7 +183,7 @@ end
 
 -- Checks if specified volume intersects a protected volume
 
-function core.is_area_protected(minp, maxp, player_name, interval)
+function minetest.is_area_protected(minp, maxp, player_name, interval)
 	-- 'interval' is the largest allowed interval for the 3D lattice of checks.
 
 	-- Compute the optimal float step 'd' for each axis so that all corners and
@@ -218,7 +218,7 @@ function core.is_area_protected(minp, maxp, player_name, interval)
 			for xf = minp.x, maxp.x, d.x do
 				local x = math.floor(xf + 0.5)
 				local pos = {x = x, y = y, z = z}
-				if core.is_protected(pos, player_name) then
+				if minetest.is_protected(pos, player_name) then
 					return pos
 				end
 			end
@@ -230,7 +230,7 @@ end
 
 local raillike_ids = {}
 local raillike_cur_id = 0
-function core.raillike_group(name)
+function minetest.raillike_group(name)
 	local id = raillike_ids[name]
 	if not id then
 		raillike_cur_id = raillike_cur_id + 1
@@ -243,7 +243,7 @@ end
 
 -- HTTP callback interface
 
-function core.http_add_fetch(httpenv)
+function minetest.http_add_fetch(httpenv)
 	httpenv.fetch = function(req, callback)
 		local handle = httpenv.fetch_async(req)
 
@@ -252,21 +252,21 @@ function core.http_add_fetch(httpenv)
 			if res.completed then
 				callback(res)
 			else
-				core.after(0, update_http_status)
+				minetest.after(0, update_http_status)
 			end
 		end
-		core.after(0, update_http_status)
+		minetest.after(0, update_http_status)
 	end
 
 	return httpenv
 end
 
 
-function core.close_formspec(player_name, formname)
-	return core.show_formspec(player_name, formname, "")
+function minetest.close_formspec(player_name, formname)
+	return minetest.show_formspec(player_name, formname, "")
 end
 
 
-function core.cancel_shutdown_requests()
-	core.request_shutdown("", false, -1)
+function minetest.cancel_shutdown_requests()
+	minetest.request_shutdown("", false, -1)
 end

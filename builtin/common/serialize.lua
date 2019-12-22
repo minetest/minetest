@@ -17,7 +17,7 @@
 --   2. Recursively dump the value into a string.
 -- @param x Value to serialize (nil is allowed).
 -- @return load()able string containing the value.
-function core.serialize(x)
+function minetest.serialize(x)
 	local local_index  = 1  -- Top index of the "_" local table in the dump
 	-- table->nil/1/2 set of tables seen.
 	-- nil = not seen, 1 = seen once, 2 = seen multiple times.
@@ -185,7 +185,7 @@ local safe_env = {
 	loadstring = function() end,
 }
 
-function core.deserialize(str, safe)
+function minetest.deserialize(str, safe)
 	if type(str) ~= "string" then
 		return nil, "Cannot deserialize type '"..type(str)
 			.."'. Argument must be a string."
@@ -208,13 +208,13 @@ end
 
 -- Unit tests
 local test_in = {cat={sound="nyan", speed=400}, dog={sound="woof"}}
-local test_out = core.deserialize(core.serialize(test_in))
+local test_out = minetest.deserialize(minetest.serialize(test_in))
 
 assert(test_in.cat.sound == test_out.cat.sound)
 assert(test_in.cat.speed == test_out.cat.speed)
 assert(test_in.dog.sound == test_out.dog.sound)
 
 test_in = {escape_chars="\n\r\t\v\\\"\'", non_european="θשׁ٩∂"}
-test_out = core.deserialize(core.serialize(test_in))
+test_out = minetest.deserialize(minetest.serialize(test_in))
 assert(test_in.escape_chars == test_out.escape_chars)
 assert(test_in.non_european == test_out.non_european)

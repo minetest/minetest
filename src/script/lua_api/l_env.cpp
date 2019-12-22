@@ -66,7 +66,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get registered_abms
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_abms");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_remove(L, -2); // Remove core
@@ -109,7 +109,7 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get registered_lbms
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_lbms");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_remove(L, -2); // Remove core
@@ -626,7 +626,7 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Use spawn_item to spawn a __builtin:item
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "spawn_item");
 	lua_remove(L, -2); // Remove core
 	if(lua_isnil(L, -1))

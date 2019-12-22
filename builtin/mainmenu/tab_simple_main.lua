@@ -25,12 +25,12 @@ local function get_formspec(tabview, name, tabdata)
 	local retval =
 		"label[9.5,0;".. fgettext("Name / Password") .. "]" ..
 		"field[0.25,3.35;5.5,0.5;te_address;;" ..
-			core.formspec_escape(core.settings:get("address")) .."]" ..
+			minetest.formspec_escape(minetest.settings:get("address")) .."]" ..
 		"field[5.75,3.35;2.25,0.5;te_port;;" ..
-			core.formspec_escape(core.settings:get("remote_port")) .."]" ..
+			minetest.formspec_escape(minetest.settings:get("remote_port")) .."]" ..
 		"button[10,2.6;2,1.5;btn_mp_connect;".. fgettext("Connect") .. "]" ..
 		"field[9.8,1;2.6,0.5;te_name;;" ..
-			core.formspec_escape(core.settings:get("name")) .."]" ..
+			minetest.formspec_escape(minetest.settings:get("name")) .."]" ..
 		"pwdfield[9.8,2;2.6,0.5;te_pwd;]"
 
 
@@ -56,7 +56,7 @@ local function get_formspec(tabview, name, tabdata)
 		"table[-0.05,0;9.2,2.75;favourites;"
 
 	if #menudata.favorites > 0 then
-		local favs = core.get_favorites("local")
+		local favs = minetest.get_favorites("local")
 		if #favs > 0 then
 			for i = 1, #favs do
 				for j = 1, #menudata.favorites do
@@ -89,9 +89,9 @@ local function get_formspec(tabview, name, tabdata)
 	-- checkboxes
 	retval = retval ..
 		"checkbox[8.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
-			dump(core.settings:get_bool("creative_mode")) .. "]"..
+			dump(minetest.settings:get_bool("creative_mode")) .. "]"..
 		"checkbox[8.0,4.4;cb_damage;".. fgettext("Enable Damage") .. ";" ..
-			dump(core.settings:get_bool("enable_damage")) .. "]"
+			dump(minetest.settings:get_bool("enable_damage")) .. "]"
 	-- buttons
 	retval = retval ..
 		"button[0,3.7;8,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
@@ -105,16 +105,16 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	if fields.btn_start_singleplayer then
 		gamedata.selected_world	= gamedata.worldindex
 		gamedata.singleplayer	= true
-		core.start()
+		minetest.start()
 		return true
 	end
 
 	if fields.favourites then
-		local event = core.explode_table_event(fields.favourites)
+		local event = minetest.explode_table_event(fields.favourites)
 		if event.type == "CHG" then
 			if event.row <= #menudata.favorites then
 				gamedata.fav = false
-				local favs = core.get_favorites("local")
+				local favs = minetest.get_favorites("local")
 				local fav = menudata.favorites[event.row]
 				local address = fav.address
 				local port    = fav.port
@@ -128,8 +128,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				end
 
 				if address and port then
-					core.settings:set("address", address)
-					core.settings:set("remote_port", port)
+					minetest.settings:set("address", address)
+					minetest.settings:set("remote_port", port)
 				end
 				tabdata.fav_selected = event.row
 			end
@@ -138,25 +138,25 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_delete_favorite then
-		local current_favourite = core.get_table_index("favourites")
+		local current_favourite = minetest.get_table_index("favourites")
 		if not current_favourite then return end
 
-		core.delete_favorite(current_favourite)
+		minetest.delete_favorite(current_favourite)
 		asyncOnlineFavourites()
 		tabdata.fav_selected = nil
 
-		core.settings:set("address", "")
-		core.settings:set("remote_port", "30000")
+		minetest.settings:set("address", "")
+		minetest.settings:set("remote_port", "30000")
 		return true
 	end
 
 	if fields.cb_creative then
-		core.settings:set("creative_mode", fields.cb_creative)
+		minetest.settings:set("creative_mode", fields.cb_creative)
 		return true
 	end
 
 	if fields.cb_damage then
-		core.settings:set("enable_damage", fields.cb_damage)
+		minetest.settings:set("enable_damage", fields.cb_damage)
 		return true
 	end
 
@@ -165,7 +165,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		gamedata.password   = fields.te_pwd
 		gamedata.address    = fields.te_address
 		gamedata.port	    = fields.te_port
-		local fav_idx = core.get_textlist_index("favourites")
+		local fav_idx = minetest.get_textlist_index("favourites")
 
 		if fav_idx and fav_idx <= #menudata.favorites and
 				menudata.favorites[fav_idx].address == fields.te_address and
@@ -186,10 +186,10 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		gamedata.selected_world = 0
 
-		core.settings:set("address", fields.te_address)
-		core.settings:set("remote_port", fields.te_port)
+		minetest.settings:set("address", fields.te_address)
+		minetest.settings:set("remote_port", fields.te_port)
 
-		core.start()
+		minetest.start()
 		return true
 	end
 

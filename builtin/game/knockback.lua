@@ -1,5 +1,5 @@
 -- can be overriden by mods
-function core.calculate_knockback(player, hitter, time_from_last_punch, tool_capabilities, dir, distance, damage)
+function minetest.calculate_knockback(player, hitter, time_from_last_punch, tool_capabilities, dir, distance, damage)
 	if damage == 0 or player:get_armor_groups().immortal then
 		return 0.0
 	end
@@ -22,7 +22,7 @@ local function vector_absmax(v)
 	return max(max(abs(v.x), abs(v.y)), abs(v.z))
 end
 
-core.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, unused_dir, damage)
+minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, unused_dir, damage)
 	if player:get_hp() == 0 then
 		return -- RIP
 	end
@@ -35,7 +35,7 @@ core.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool
 		dir = vector.divide(dir, d)
 	end
 
-	local k = core.calculate_knockback(player, hitter, time_from_last_punch, tool_capabilities, dir, d, damage)
+	local k = minetest.calculate_knockback(player, hitter, time_from_last_punch, tool_capabilities, dir, d, damage)
 
 	local kdir = vector.multiply(dir, k)
 	if vector_absmax(kdir) < 1.0 then

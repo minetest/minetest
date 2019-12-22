@@ -18,11 +18,11 @@
 local worldname = ""
 
 local function create_world_formspec(dialogdata)
-	local mapgens = core.get_mapgen_names()
+	local mapgens = minetest.get_mapgen_names()
 
-	local current_seed = core.settings:get("fixed_map_seed") or ""
-	local current_mg   = core.settings:get("mg_name")
-	local gameid = core.settings:get("menu_last_game")
+	local current_seed = minetest.settings:get("fixed_map_seed") or ""
+	local current_mg   = minetest.settings:get("mg_name")
+	local gameid = minetest.settings:get("menu_last_game")
 
 	local gameidx = 0
 	if gameid ~= nil then
@@ -34,7 +34,7 @@ local function create_world_formspec(dialogdata)
 		end
 	end
 
-	local game_by_gameidx = core.get_game(gameidx)
+	local game_by_gameidx = minetest.get_game(gameidx)
 	if game_by_gameidx ~= nil then
 		local gamepath = game_by_gameidx.path
 		local gameconfig = Settings(gamepath.."/game.conf")
@@ -65,7 +65,7 @@ local function create_world_formspec(dialogdata)
 	end
 	mglist = mglist:sub(1, -2)
 
-	current_seed = core.formspec_escape(current_seed)
+	current_seed = minetest.formspec_escape(current_seed)
 	local retval =
 		"size[11.5,6.5,true]" ..
 		"label[2,0;" .. fgettext("World name") .. "]"..
@@ -104,7 +104,7 @@ local function create_world_buttonhandler(this, fields)
 		fields["key_enter"] then
 
 		local worldname = fields["te_world_name"]
-		local gameindex = core.get_textlist_index("games")
+		local gameindex = minetest.get_textlist_index("games")
 
 		if gameindex ~= nil then
 			if worldname == "" then
@@ -113,12 +113,12 @@ local function create_world_buttonhandler(this, fields)
 				worldname = random_world_name
 			end
 
-			core.settings:set("fixed_map_seed", fields["te_seed"])
+			minetest.settings:set("fixed_map_seed", fields["te_seed"])
 
 			local message
 			if not menudata.worldlist:uid_exists_raw(worldname) then
-				core.settings:set("mg_name",fields["dd_mapgen"])
-				message = core.create_world(worldname,gameindex)
+				minetest.settings:set("mg_name",fields["dd_mapgen"])
+				message = minetest.create_world(worldname,gameindex)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
 			end
@@ -126,13 +126,13 @@ local function create_world_buttonhandler(this, fields)
 			if message ~= nil then
 				gamedata.errormessage = message
 			else
-				core.settings:set("menu_last_game",pkgmgr.games[gameindex].id)
+				minetest.settings:set("menu_last_game",pkgmgr.games[gameindex].id)
 				if this.data.update_worldlist_filter then
 					menudata.worldlist:set_filtercriteria(pkgmgr.games[gameindex].id)
 					mm_texture.update("singleplayer", pkgmgr.games[gameindex].id)
 				end
 				menudata.worldlist:refresh()
-				core.settings:set("mainmenu_last_selected_world",
+				minetest.settings:set("mainmenu_last_selected_world",
 									menudata.worldlist:raw_index_by_uid(worldname))
 			end
 		else
@@ -145,8 +145,8 @@ local function create_world_buttonhandler(this, fields)
 	worldname = fields.te_world_name
 
 	if fields["games"] then
-		local gameindex = core.get_textlist_index("games")
-		core.settings:set("menu_last_game", pkgmgr.games[gameindex].id)
+		local gameindex = minetest.get_textlist_index("games")
+		minetest.settings:set("menu_last_game", pkgmgr.games[gameindex].id)
 		return true
 	end
 

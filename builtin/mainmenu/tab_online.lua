@@ -33,22 +33,22 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		-- Search
-		"field[0.15,0.075;5.91,1;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
+		"field[0.15,0.075;5.91,1;te_search;;" .. minetest.formspec_escape(tabdata.search_for) .. "]" ..
 		"button[5.62,-0.25;1.5,1;btn_mp_search;" .. fgettext("Search") .. "]" ..
-		"image_button[6.97,-.165;.83,.83;" .. core.formspec_escape(defaulttexturedir .. "refresh.png")
+		"image_button[6.97,-.165;.83,.83;" .. minetest.formspec_escape(defaulttexturedir .. "refresh.png")
 			.. ";btn_mp_refresh;]" ..
 
 		-- Address / Port
 		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
 		"field[8,0.65;3.25,0.5;te_address;;" ..
-			core.formspec_escape(core.settings:get("address")) .. "]" ..
+			minetest.formspec_escape(minetest.settings:get("address")) .. "]" ..
 		"field[11.1,0.65;1.4,0.5;te_port;;" ..
-			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
+			minetest.formspec_escape(minetest.settings:get("remote_port")) .. "]" ..
 
 		-- Name / Password
 		"label[7.75,0.95;" .. fgettext("Name / Password") .. "]" ..
 		"field[8,1.85;2.9,0.5;te_name;;" ..
-			core.formspec_escape(core.settings:get("name")) .. "]" ..
+			minetest.formspec_escape(minetest.settings:get("name")) .. "]" ..
 		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
 
 		-- Description Background
@@ -64,7 +64,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 		if fav_selected.description then
 			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
-				core.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
+				minetest.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
 		end
 	end
 
@@ -85,7 +85,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	if menudata.search_result then
 		for i = 1, #menudata.search_result do
-			local favs = core.get_favorites("local")
+			local favs = minetest.get_favorites("local")
 			local server = menudata.search_result[i]
 
 			for fav_id = 1, #favs do
@@ -102,7 +102,7 @@ local function get_formspec(tabview, name, tabdata)
 			retval = retval .. render_serverlist_row(server, server.is_favorite)
 		end
 	elseif #menudata.favorites > 0 then
-		local favs = core.get_favorites("local")
+		local favs = minetest.get_favorites("local")
 		if #favs > 0 then
 			for i = 1, #favs do
 			for j = 1, #menudata.favorites do
@@ -137,11 +137,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields.te_name then
 		gamedata.playername = fields.te_name
-		core.settings:set("name", fields.te_name)
+		minetest.settings:set("name", fields.te_name)
 	end
 
 	if fields.favourites then
-		local event = core.explode_table_event(fields.favourites)
+		local event = minetest.explode_table_event(fields.favourites)
 		local fav = serverlist[event.row]
 
 		if event.type == "DCL" then
@@ -165,9 +165,9 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				gamedata.serverdescription = fav.description
 
 				if gamedata.address and gamedata.port then
-					core.settings:set("address", gamedata.address)
-					core.settings:set("remote_port", gamedata.port)
-					core.start()
+					minetest.settings:set("address", gamedata.address)
+					minetest.settings:set("remote_port", gamedata.port)
+					minetest.start()
 				end
 			end
 			return true
@@ -176,7 +176,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		if event.type == "CHG" then
 			if event.row <= #serverlist then
 				gamedata.fav = false
-				local favs = core.get_favorites("local")
+				local favs = minetest.get_favorites("local")
 				local address = fav.address
 				local port    = fav.port
 				gamedata.serverdescription = fav.description
@@ -189,8 +189,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				end
 
 				if address and port then
-					core.settings:set("address", address)
-					core.settings:set("remote_port", port)
+					minetest.settings:set("address", address)
+					minetest.settings:set("remote_port", port)
 				end
 				tabdata.fav_selected = event.row
 			end
@@ -199,7 +199,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.key_up or fields.key_down then
-		local fav_idx = core.get_table_index("favourites")
+		local fav_idx = minetest.get_table_index("favourites")
 		local fav = serverlist[fav_idx]
 
 		if fav_idx then
@@ -221,8 +221,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		local port    = fav.port
 		gamedata.serverdescription = fav.description
 		if address and port then
-			core.settings:set("address", address)
-			core.settings:set("remote_port", port)
+			minetest.settings:set("address", address)
+			minetest.settings:set("remote_port", port)
 		end
 
 		tabdata.fav_selected = fav_idx
@@ -230,15 +230,15 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_delete_favorite then
-		local current_favourite = core.get_table_index("favourites")
+		local current_favourite = minetest.get_table_index("favourites")
 		if not current_favourite then return end
 
-		core.delete_favorite(current_favourite)
+		minetest.delete_favorite(current_favourite)
 		asyncOnlineFavourites()
 		tabdata.fav_selected = nil
 
-		core.settings:set("address", "")
-		core.settings:set("remote_port", "30000")
+		minetest.settings:set("address", "")
+		minetest.settings:set("remote_port", "30000")
 		return true
 	end
 
@@ -296,8 +296,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			end)
 			menudata.search_result = search_result
 			local first_server = search_result[1]
-			core.settings:set("address",     first_server.address)
-			core.settings:set("remote_port", first_server.port)
+			minetest.settings:set("address",     first_server.address)
+			minetest.settings:set("remote_port", first_server.port)
 			gamedata.serverdescription = first_server.description
 		end
 		return true
@@ -315,7 +315,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		gamedata.address    = fields.te_address
 		gamedata.port       = fields.te_port
 		gamedata.selected_world = 0
-		local fav_idx = core.get_table_index("favourites")
+		local fav_idx = minetest.get_table_index("favourites")
 		local fav = serverlist[fav_idx]
 
 		if fav_idx and fav_idx <= #serverlist and
@@ -335,10 +335,10 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			gamedata.serverdescription = ""
 		end
 
-		core.settings:set("address",     fields.te_address)
-		core.settings:set("remote_port", fields.te_port)
+		minetest.settings:set("address",     fields.te_address)
+		minetest.settings:set("remote_port", fields.te_port)
 
-		core.start()
+		minetest.start()
 		return true
 	end
 	return false

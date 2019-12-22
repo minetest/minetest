@@ -25,8 +25,8 @@ menudata = {}
 local min_supp_proto, max_supp_proto
 
 function common_update_cached_supp_proto()
-	min_supp_proto = core.get_min_supp_proto()
-	max_supp_proto = core.get_max_supp_proto()
+	min_supp_proto = minetest.get_min_supp_proto()
+	max_supp_proto = minetest.get_max_supp_proto()
 end
 common_update_cached_supp_proto()
 --------------------------------------------------------------------------------
@@ -43,23 +43,23 @@ end
 local function configure_selected_world_params(idx)
 	local worldconfig = pkgmgr.get_worldconfig(menudata.worldlist:get_list()[idx].path)
 	if worldconfig.creative_mode then
-		core.settings:set("creative_mode", worldconfig.creative_mode)
+		minetest.settings:set("creative_mode", worldconfig.creative_mode)
 	end
 	if worldconfig.enable_damage then
-		core.settings:set("enable_damage", worldconfig.enable_damage)
+		minetest.settings:set("enable_damage", worldconfig.enable_damage)
 	end
 end
 
 --------------------------------------------------------------------------------
 function image_column(tooltip, flagname)
-	return "image,tooltip=" .. core.formspec_escape(tooltip) .. "," ..
-		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
-		"1=" .. core.formspec_escape(defaulttexturedir ..
+	return "image,tooltip=" .. minetest.formspec_escape(tooltip) .. "," ..
+		"0=" .. minetest.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
+		"1=" .. minetest.formspec_escape(defaulttexturedir ..
 			(flagname and "server_flags_" .. flagname .. ".png" or "blank.png")) .. "," ..
-		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
-		"3=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
-		"4=" .. core.formspec_escape(defaulttexturedir .. "server_ping_2.png") .. "," ..
-		"5=" .. core.formspec_escape(defaulttexturedir .. "server_ping_1.png")
+		"2=" .. minetest.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
+		"3=" .. minetest.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
+		"4=" .. minetest.formspec_escape(defaulttexturedir .. "server_ping_2.png") .. "," ..
+		"5=" .. minetest.formspec_escape(defaulttexturedir .. "server_ping_1.png")
 end
 
 --------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ end
 function render_serverlist_row(spec, is_favorite)
 	local text = ""
 	if spec.name then
-		text = text .. core.formspec_escape(spec.name:trim())
+		text = text .. minetest.formspec_escape(spec.name:trim())
 	elseif spec.address then
 		text = text .. spec.address:trim()
 		if spec.port then
@@ -164,8 +164,8 @@ end
 
 --------------------------------------------------------------------------------
 os.tempfolder = function()
-	if core.settings:get("TMPFolder") then
-		return core.settings:get("TMPFolder") .. DIR_DELIM .. "MT_" .. math.random(0,10000)
+	if minetest.settings:get("TMPFolder") then
+		return minetest.settings:get("TMPFolder") .. DIR_DELIM .. "MT_" .. math.random(0,10000)
 	end
 
 	local filetocheck = os.tmpname()
@@ -202,8 +202,8 @@ function menu_render_worldlist()
 
 	for i, v in ipairs(current_worldlist) do
 		if retval ~= "" then retval = retval .. "," end
-		retval = retval .. core.formspec_escape(v.name) ..
-				" \\[" .. core.formspec_escape(v.gameid) .. "\\]"
+		retval = retval .. minetest.formspec_escape(v.name) ..
+				" \\[" .. minetest.formspec_escape(v.gameid) .. "\\]"
 	end
 
 	return retval
@@ -211,7 +211,7 @@ end
 
 --------------------------------------------------------------------------------
 function menu_handle_key_up_down(fields, textlist, settingname)
-	local oldidx, newidx = core.get_textlist_index(textlist), 1
+	local oldidx, newidx = minetest.get_textlist_index(textlist), 1
 	if fields.key_up or fields.key_down then
 		if fields.key_up and oldidx and oldidx > 1 then
 			newidx = oldidx - 1
@@ -219,7 +219,7 @@ function menu_handle_key_up_down(fields, textlist, settingname)
 				oldidx < menudata.worldlist:size() then
 			newidx = oldidx + 1
 		end
-		core.settings:set(settingname, menudata.worldlist:get_raw_index(newidx))
+		minetest.settings:set(settingname, menudata.worldlist:get_raw_index(newidx))
 		configure_selected_world_params(newidx)
 		return true
 	end
@@ -243,9 +243,9 @@ function asyncOnlineFavourites()
 		return
 	end
 
-	core.handle_async(
+	minetest.handle_async(
 		function(param)
-			return core.get_favorites("online")
+			return minetest.get_favorites("online")
 		end,
 		nil,
 		function(result)
@@ -256,20 +256,20 @@ function asyncOnlineFavourites()
 				menudata.favorites = menudata.public_known
 				menudata.favorites_is_public = true
 			end
-			core.event_handler("Refresh")
+			minetest.event_handler("Refresh")
 		end
 	)
 end
 
 --------------------------------------------------------------------------------
 function text2textlist(xpos, ypos, width, height, tl_name, textlen, text, transparency)
-	local textlines = core.wrap_text(text, textlen, true)
+	local textlines = minetest.wrap_text(text, textlen, true)
 	local retval = "textlist[" .. xpos .. "," .. ypos .. ";" .. width ..
 			"," .. height .. ";" .. tl_name .. ";"
 
 	for i = 1, #textlines do
 		textlines[i] = textlines[i]:gsub("\r", "")
-		retval = retval .. core.formspec_escape(textlines[i]) .. ","
+		retval = retval .. minetest.formspec_escape(textlines[i]) .. ","
 	end
 
 	retval = retval .. ";0;"
@@ -324,7 +324,7 @@ function menu_worldmt(selected, setting, value)
 
 		if value then
 			if not world_conf:write() then
-				core.log("error", "Failed to write world config file")
+				minetest.log("error", "Failed to write world config file")
 			end
 			world_conf:set(setting, value)
 			world_conf:write()
@@ -341,9 +341,9 @@ function menu_worldmt_legacy(selected)
 	for _, mode_name in pairs(modes_names) do
 		local mode_val = menu_worldmt(selected, mode_name)
 		if mode_val then
-			core.settings:set(mode_name, mode_val)
+			minetest.settings:set(mode_name, mode_val)
 		else
-			menu_worldmt(selected, mode_name, core.settings:get(mode_name))
+			menu_worldmt(selected, mode_name, minetest.settings:get(mode_name))
 		end
 	end
 end

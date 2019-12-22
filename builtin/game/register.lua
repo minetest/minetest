@@ -4,39 +4,39 @@
 -- Make raw registration functions inaccessible to anyone except this file
 --
 
-local register_item_raw = core.register_item_raw
-core.register_item_raw = nil
+local register_item_raw = minetest.register_item_raw
+minetest.register_item_raw = nil
 
-local unregister_item_raw = core.unregister_item_raw
-core.unregister_item_raw = nil
+local unregister_item_raw = minetest.unregister_item_raw
+minetest.unregister_item_raw = nil
 
-local register_alias_raw = core.register_alias_raw
-core.register_alias_raw = nil
+local register_alias_raw = minetest.register_alias_raw
+minetest.register_alias_raw = nil
 
 --
 -- Item / entity / ABM / LBM registration functions
 --
 
-core.registered_abms = {}
-core.registered_lbms = {}
-core.registered_entities = {}
-core.registered_items = {}
-core.registered_nodes = {}
-core.registered_craftitems = {}
-core.registered_tools = {}
-core.registered_aliases = {}
+minetest.registered_abms = {}
+minetest.registered_lbms = {}
+minetest.registered_entities = {}
+minetest.registered_items = {}
+minetest.registered_nodes = {}
+minetest.registered_craftitems = {}
+minetest.registered_tools = {}
+minetest.registered_aliases = {}
 
 -- For tables that are indexed by item name:
--- If table[X] does not exist, default to table[core.registered_aliases[X]]
+-- If table[X] does not exist, default to table[minetest.registered_aliases[X]]
 local alias_metatable = {
 	__index = function(t, name)
-		return rawget(t, core.registered_aliases[name])
+		return rawget(t, minetest.registered_aliases[name])
 	end
 }
-setmetatable(core.registered_items, alias_metatable)
-setmetatable(core.registered_nodes, alias_metatable)
-setmetatable(core.registered_craftitems, alias_metatable)
-setmetatable(core.registered_tools, alias_metatable)
+setmetatable(minetest.registered_items, alias_metatable)
+setmetatable(minetest.registered_nodes, alias_metatable)
+setmetatable(minetest.registered_craftitems, alias_metatable)
+setmetatable(minetest.registered_tools, alias_metatable)
 
 -- These item names may not be used because they would interfere
 -- with legacy itemstrings
@@ -60,7 +60,7 @@ local function check_modname_prefix(name)
 		return name:sub(2)
 	else
 		-- Enforce that the name starts with the correct mod name.
-		local expected_prefix = core.get_current_modname() .. ":"
+		local expected_prefix = minetest.get_current_modname() .. ":"
 		if name:sub(1, #expected_prefix) ~= expected_prefix then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"\"" .. expected_prefix .. "\" or \":\" prefix required")
@@ -77,22 +77,22 @@ local function check_modname_prefix(name)
 	end
 end
 
-function core.register_abm(spec)
-	-- Add to core.registered_abms
+function minetest.register_abm(spec)
+	-- Add to minetest.registered_abms
 	assert(type(spec.action) == "function", "Required field 'action' of type function")
-	core.registered_abms[#core.registered_abms + 1] = spec
-	spec.mod_origin = core.get_current_modname() or "??"
+	minetest.registered_abms[#minetest.registered_abms + 1] = spec
+	spec.mod_origin = minetest.get_current_modname() or "??"
 end
 
-function core.register_lbm(spec)
-	-- Add to core.registered_lbms
+function minetest.register_lbm(spec)
+	-- Add to minetest.registered_lbms
 	check_modname_prefix(spec.name)
 	assert(type(spec.action) == "function", "Required field 'action' of type function")
-	core.registered_lbms[#core.registered_lbms + 1] = spec
-	spec.mod_origin = core.get_current_modname() or "??"
+	minetest.registered_lbms[#minetest.registered_lbms + 1] = spec
+	spec.mod_origin = minetest.get_current_modname() or "??"
 end
 
-function core.register_entity(name, prototype)
+function minetest.register_entity(name, prototype)
 	-- Check name
 	if name == nil then
 		error("Unable to register entity: Name is nil")
@@ -102,12 +102,12 @@ function core.register_entity(name, prototype)
 	prototype.name = name
 	prototype.__index = prototype  -- so that it can be used as a metatable
 
-	-- Add to core.registered_entities
-	core.registered_entities[name] = prototype
-	prototype.mod_origin = core.get_current_modname() or "??"
+	-- Add to minetest.registered_entities
+	minetest.registered_entities[name] = prototype
+	prototype.mod_origin = minetest.get_current_modname() or "??"
 end
 
-function core.register_item(name, itemdef)
+function minetest.register_item(name, itemdef)
 	-- Check name
 	if name == nil then
 		error("Unable to register item: Name is nil")
@@ -129,21 +129,21 @@ function core.register_item(name, itemdef)
 				fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
 			}
 		end
-		if itemdef.light_source and itemdef.light_source > core.LIGHT_MAX then
-			itemdef.light_source = core.LIGHT_MAX
-			core.log("warning", "Node 'light_source' value exceeds maximum," ..
+		if itemdef.light_source and itemdef.light_source > minetest.LIGHT_MAX then
+			itemdef.light_source = minetest.LIGHT_MAX
+			minetest.log("warning", "Node 'light_source' value exceeds maximum," ..
 				" limiting to maximum: " ..name)
 		end
-		setmetatable(itemdef, {__index = core.nodedef_default})
-		core.registered_nodes[itemdef.name] = itemdef
+		setmetatable(itemdef, {__index = minetest.nodedef_default})
+		minetest.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
-		setmetatable(itemdef, {__index = core.craftitemdef_default})
-		core.registered_craftitems[itemdef.name] = itemdef
+		setmetatable(itemdef, {__index = minetest.craftitemdef_default})
+		minetest.registered_craftitems[itemdef.name] = itemdef
 	elseif itemdef.type == "tool" then
-		setmetatable(itemdef, {__index = core.tooldef_default})
-		core.registered_tools[itemdef.name] = itemdef
+		setmetatable(itemdef, {__index = minetest.tooldef_default})
+		minetest.registered_tools[itemdef.name] = itemdef
 	elseif itemdef.type == "none" then
-		setmetatable(itemdef, {__index = core.noneitemdef_default})
+		setmetatable(itemdef, {__index = minetest.noneitemdef_default})
 	else
 		error("Unable to register item: Type is invalid: " .. dump(itemdef))
 	end
@@ -155,7 +155,7 @@ function core.register_item(name, itemdef)
 
 	-- BEGIN Legacy stuff
 	if itemdef.cookresult_itemstring ~= nil and itemdef.cookresult_itemstring ~= "" then
-		core.register_craft({
+		minetest.register_craft({
 			type="cooking",
 			output=itemdef.cookresult_itemstring,
 			recipe=itemdef.name,
@@ -163,7 +163,7 @@ function core.register_item(name, itemdef)
 		})
 	end
 	if itemdef.furnace_burntime ~= nil and itemdef.furnace_burntime >= 0 then
-		core.register_craft({
+		minetest.register_craft({
 			type="fuel",
 			recipe=itemdef.name,
 			burntime=itemdef.furnace_burntime
@@ -171,44 +171,44 @@ function core.register_item(name, itemdef)
 	end
 	-- END Legacy stuff
 
-	itemdef.mod_origin = core.get_current_modname() or "??"
+	itemdef.mod_origin = minetest.get_current_modname() or "??"
 
 	-- Disable all further modifications
 	getmetatable(itemdef).__newindex = {}
 
-	--core.log("Registering item: " .. itemdef.name)
-	core.registered_items[itemdef.name] = itemdef
-	core.registered_aliases[itemdef.name] = nil
+	--minetest.log("Registering item: " .. itemdef.name)
+	minetest.registered_items[itemdef.name] = itemdef
+	minetest.registered_aliases[itemdef.name] = nil
 	register_item_raw(itemdef)
 end
 
-function core.unregister_item(name)
-	if not core.registered_items[name] then
-		core.log("warning", "Not unregistering item " ..name..
+function minetest.unregister_item(name)
+	if not minetest.registered_items[name] then
+		minetest.log("warning", "Not unregistering item " ..name..
 			" because it doesn't exist.")
 		return
 	end
 	-- Erase from registered_* table
-	local type = core.registered_items[name].type
+	local type = minetest.registered_items[name].type
 	if type == "node" then
-		core.registered_nodes[name] = nil
+		minetest.registered_nodes[name] = nil
 	elseif type == "craft" then
-		core.registered_craftitems[name] = nil
+		minetest.registered_craftitems[name] = nil
 	elseif type == "tool" then
-		core.registered_tools[name] = nil
+		minetest.registered_tools[name] = nil
 	end
-	core.registered_items[name] = nil
+	minetest.registered_items[name] = nil
 
 
 	unregister_item_raw(name)
 end
 
-function core.register_node(name, nodedef)
+function minetest.register_node(name, nodedef)
 	nodedef.type = "node"
-	core.register_item(name, nodedef)
+	minetest.register_item(name, nodedef)
 end
 
-function core.register_craftitem(name, craftitemdef)
+function minetest.register_craftitem(name, craftitemdef)
 	craftitemdef.type = "craft"
 
 	-- BEGIN Legacy stuff
@@ -217,10 +217,10 @@ function core.register_craftitem(name, craftitemdef)
 	end
 	-- END Legacy stuff
 
-	core.register_item(name, craftitemdef)
+	minetest.register_item(name, craftitemdef)
 end
 
-function core.register_tool(name, tooldef)
+function minetest.register_tool(name, tooldef)
 	tooldef.type = "tool"
 	tooldef.stack_max = 1
 
@@ -268,46 +268,46 @@ function core.register_tool(name, tooldef)
 		end
 	end
 
-	core.register_item(name, tooldef)
+	minetest.register_item(name, tooldef)
 end
 
-function core.register_alias(name, convert_to)
+function minetest.register_alias(name, convert_to)
 	if forbidden_item_names[name] then
 		error("Unable to register alias: Name is forbidden: " .. name)
 	end
-	if core.registered_items[name] ~= nil then
-		core.log("warning", "Not registering alias, item with same name" ..
+	if minetest.registered_items[name] ~= nil then
+		minetest.log("warning", "Not registering alias, item with same name" ..
 			" is already defined: " .. name .. " -> " .. convert_to)
 	else
-		--core.log("Registering alias: " .. name .. " -> " .. convert_to)
-		core.registered_aliases[name] = convert_to
+		--minetest.log("Registering alias: " .. name .. " -> " .. convert_to)
+		minetest.registered_aliases[name] = convert_to
 		register_alias_raw(name, convert_to)
 	end
 end
 
-function core.register_alias_force(name, convert_to)
+function minetest.register_alias_force(name, convert_to)
 	if forbidden_item_names[name] then
 		error("Unable to register alias: Name is forbidden: " .. name)
 	end
-	if core.registered_items[name] ~= nil then
-		core.unregister_item(name)
-		core.log("info", "Removed item " ..name..
+	if minetest.registered_items[name] ~= nil then
+		minetest.unregister_item(name)
+		minetest.log("info", "Removed item " ..name..
 			" while attempting to force add an alias")
 	end
-	--core.log("Registering alias: " .. name .. " -> " .. convert_to)
-	core.registered_aliases[name] = convert_to
+	--minetest.log("Registering alias: " .. name .. " -> " .. convert_to)
+	minetest.registered_aliases[name] = convert_to
 	register_alias_raw(name, convert_to)
 end
 
-function core.on_craft(itemstack, player, old_craft_list, craft_inv)
-	for _, func in ipairs(core.registered_on_crafts) do
+function minetest.on_craft(itemstack, player, old_craft_list, craft_inv)
+	for _, func in ipairs(minetest.registered_on_crafts) do
 		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
 	end
 	return itemstack
 end
 
-function core.craft_predict(itemstack, player, old_craft_list, craft_inv)
-	for _, func in ipairs(core.registered_craft_predicts) do
+function minetest.craft_predict(itemstack, player, old_craft_list, craft_inv)
+	for _, func in ipairs(minetest.registered_craft_predicts) do
 		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
 	end
 	return itemstack
@@ -316,33 +316,33 @@ end
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
 for name in pairs(forbidden_item_names) do
-	core.registered_aliases[name] = ""
+	minetest.registered_aliases[name] = ""
 	register_alias_raw(name, "")
 end
 
 
 -- Obsolete:
--- Aliases for core.register_alias (how ironic...)
--- core.alias_node = core.register_alias
--- core.alias_tool = core.register_alias
--- core.alias_craftitem = core.register_alias
+-- Aliases for minetest.register_alias (how ironic...)
+-- minetest.alias_node = minetest.register_alias
+-- minetest.alias_tool = minetest.register_alias
+-- minetest.alias_craftitem = minetest.register_alias
 
 --
 -- Built-in node definitions. Also defined in C.
 --
 
-core.register_item(":unknown", {
+minetest.register_item(":unknown", {
 	type = "none",
 	description = "Unknown Item",
 	inventory_image = "unknown_item.png",
-	on_place = core.item_place,
-	on_secondary_use = core.item_secondary_use,
-	on_drop = core.item_drop,
+	on_place = minetest.item_place,
+	on_secondary_use = minetest.item_secondary_use,
+	on_drop = minetest.item_drop,
 	groups = {not_in_creative_inventory=1},
 	diggable = true,
 })
 
-core.register_node(":air", {
+minetest.register_node(":air", {
 	description = "Air",
 	inventory_image = "air.png",
 	wield_image = "air.png",
@@ -359,7 +359,7 @@ core.register_node(":air", {
 	groups = {not_in_creative_inventory=1},
 })
 
-core.register_node(":ignore", {
+minetest.register_node(":ignore", {
 	description = "Ignore",
 	inventory_image = "ignore.png",
 	wield_image = "ignore.png",
@@ -374,30 +374,30 @@ core.register_node(":ignore", {
 	drop = "",
 	groups = {not_in_creative_inventory=1},
 	on_place = function(itemstack, placer, pointed_thing)
-		core.chat_send_player(
+		minetest.chat_send_player(
 				placer:get_player_name(),
-				core.colorize("#FF0000",
+				minetest.colorize("#FF0000",
 				"You can't place 'ignore' nodes!"))
 		return ""
 	end,
 })
 
 -- The hand (bare definition)
-core.register_item(":", {
+minetest.register_item(":", {
 	type = "none",
 	wield_image = "wieldhand.png",
 	groups = {not_in_creative_inventory=1},
 })
 
 
-function core.override_item(name, redefinition)
+function minetest.override_item(name, redefinition)
 	if redefinition.name ~= nil then
 		error("Attempt to redefine name of "..name.." to "..dump(redefinition.name), 2)
 	end
 	if redefinition.type ~= nil then
 		error("Attempt to redefine type of "..name.." to "..dump(redefinition.type), 2)
 	end
-	local item = core.registered_items[name]
+	local item = minetest.registered_items[name]
 	if not item then
 		error("Attempt to override non-existent item "..name, 2)
 	end
@@ -408,9 +408,9 @@ function core.override_item(name, redefinition)
 end
 
 
-core.callback_origins = {}
+minetest.callback_origins = {}
 
-function core.run_callbacks(callbacks, mode, ...)
+function minetest.run_callbacks(callbacks, mode, ...)
 	assert(type(callbacks) == "table")
 	local cb_len = #callbacks
 	if cb_len == 0 then
@@ -422,9 +422,9 @@ function core.run_callbacks(callbacks, mode, ...)
 	end
 	local ret = nil
 	for i = 1, cb_len do
-		local origin = core.callback_origins[callbacks[i]]
+		local origin = minetest.callback_origins[callbacks[i]]
 		if origin then
-			core.set_last_run_mod(origin.mod)
+			minetest.set_last_run_mod(origin.mod)
 		end
 		local cb_ret = callbacks[i](...)
 
@@ -452,8 +452,8 @@ function core.run_callbacks(callbacks, mode, ...)
 	return ret
 end
 
-function core.run_priv_callbacks(name, priv, caller, method)
-	local def = core.registered_privileges[priv]
+function minetest.run_priv_callbacks(name, priv, caller, method)
+	local def = minetest.registered_privileges[priv]
 	if not def or not def["on_" .. method] or
 			not def["on_" .. method](name, caller) then
 		for _, func in ipairs(core["registered_on_priv_" .. method]) do
@@ -472,11 +472,11 @@ local function make_registration()
 	local t = {}
 	local registerfunc = function(func)
 		t[#t + 1] = func
-		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
+		minetest.callback_origins[func] = {
+			mod = minetest.get_current_modname() or "??",
 			name = debug.getinfo(1, "n").name or "??"
 		}
-		--local origin = core.callback_origins[func]
+		--local origin = minetest.callback_origins[func]
 		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))
 	end
 	return t, registerfunc
@@ -486,11 +486,11 @@ local function make_registration_reverse()
 	local t = {}
 	local registerfunc = function(func)
 		table.insert(t, 1, func)
-		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
+		minetest.callback_origins[func] = {
+			mod = minetest.get_current_modname() or "??",
 			name = debug.getinfo(1, "n").name or "??"
 		}
-		--local origin = core.callback_origins[func]
+		--local origin = minetest.callback_origins[func]
 		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))
 	end
 	return t, registerfunc
@@ -542,12 +542,12 @@ local function make_wrap_deregistration(reg_fn, clear_fn, list)
 	return unregister
 end
 
-core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
+minetest.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
 
-function core.registered_on_player_hpchange(player, hp_change, reason)
+function minetest.registered_on_player_hpchange(player, hp_change, reason)
 	local last
-	for i = #core.registered_on_player_hpchanges.modifiers, 1, -1 do
-		local func = core.registered_on_player_hpchanges.modifiers[i]
+	for i = #minetest.registered_on_player_hpchanges.modifiers, 1, -1 do
+		local func = minetest.registered_on_player_hpchanges.modifiers[i]
 		hp_change, last = func(player, hp_change, reason)
 		if type(hp_change) ~= "number" then
 			local debuginfo = debug.getinfo(func)
@@ -558,63 +558,63 @@ function core.registered_on_player_hpchange(player, hp_change, reason)
 			break
 		end
 	end
-	for i, func in ipairs(core.registered_on_player_hpchanges.loggers) do
+	for i, func in ipairs(minetest.registered_on_player_hpchanges.loggers) do
 		func(player, hp_change, reason)
 	end
 	return hp_change
 end
 
-function core.register_on_player_hpchange(func, modifier)
+function minetest.register_on_player_hpchange(func, modifier)
 	if modifier then
-		core.registered_on_player_hpchanges.modifiers[#core.registered_on_player_hpchanges.modifiers + 1] = func
+		minetest.registered_on_player_hpchanges.modifiers[#minetest.registered_on_player_hpchanges.modifiers + 1] = func
 	else
-		core.registered_on_player_hpchanges.loggers[#core.registered_on_player_hpchanges.loggers + 1] = func
+		minetest.registered_on_player_hpchanges.loggers[#minetest.registered_on_player_hpchanges.loggers + 1] = func
 	end
-	core.callback_origins[func] = {
-		mod = core.get_current_modname() or "??",
+	minetest.callback_origins[func] = {
+		mod = minetest.get_current_modname() or "??",
 		name = debug.getinfo(1, "n").name or "??"
 	}
 end
 
-core.registered_biomes      = make_registration_wrap("register_biome",      "clear_registered_biomes")
-core.registered_ores        = make_registration_wrap("register_ore",        "clear_registered_ores")
-core.registered_decorations = make_registration_wrap("register_decoration", "clear_registered_decorations")
+minetest.registered_biomes      = make_registration_wrap("register_biome",      "clear_registered_biomes")
+minetest.registered_ores        = make_registration_wrap("register_ore",        "clear_registered_ores")
+minetest.registered_decorations = make_registration_wrap("register_decoration", "clear_registered_decorations")
 
-core.unregister_biome = make_wrap_deregistration(core.register_biome,
-		core.clear_registered_biomes, core.registered_biomes)
+minetest.unregister_biome = make_wrap_deregistration(minetest.register_biome,
+		minetest.clear_registered_biomes, minetest.registered_biomes)
 
-core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
-core.registered_globalsteps, core.register_globalstep = make_registration()
-core.registered_playerevents, core.register_playerevent = make_registration()
-core.registered_on_mods_loaded, core.register_on_mods_loaded = make_registration()
-core.registered_on_shutdown, core.register_on_shutdown = make_registration()
-core.registered_on_punchnodes, core.register_on_punchnode = make_registration()
-core.registered_on_placenodes, core.register_on_placenode = make_registration()
-core.registered_on_dignodes, core.register_on_dignode = make_registration()
-core.registered_on_generateds, core.register_on_generated = make_registration()
-core.registered_on_newplayers, core.register_on_newplayer = make_registration()
-core.registered_on_dieplayers, core.register_on_dieplayer = make_registration()
-core.registered_on_respawnplayers, core.register_on_respawnplayer = make_registration()
-core.registered_on_prejoinplayers, core.register_on_prejoinplayer = make_registration()
-core.registered_on_joinplayers, core.register_on_joinplayer = make_registration()
-core.registered_on_leaveplayers, core.register_on_leaveplayer = make_registration()
-core.registered_on_player_receive_fields, core.register_on_player_receive_fields = make_registration_reverse()
-core.registered_on_cheats, core.register_on_cheat = make_registration()
-core.registered_on_crafts, core.register_on_craft = make_registration()
-core.registered_craft_predicts, core.register_craft_predict = make_registration()
-core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
-core.registered_on_item_eats, core.register_on_item_eat = make_registration()
-core.registered_on_punchplayers, core.register_on_punchplayer = make_registration()
-core.registered_on_priv_grant, core.register_on_priv_grant = make_registration()
-core.registered_on_priv_revoke, core.register_on_priv_revoke = make_registration()
-core.registered_can_bypass_userlimit, core.register_can_bypass_userlimit = make_registration()
-core.registered_on_modchannel_message, core.register_on_modchannel_message = make_registration()
-core.registered_on_auth_fail, core.register_on_auth_fail = make_registration()
-core.registered_on_player_inventory_actions, core.register_on_player_inventory_action = make_registration()
-core.registered_allow_player_inventory_actions, core.register_allow_player_inventory_action = make_registration()
+minetest.registered_on_chat_messages, minetest.register_on_chat_message = make_registration()
+minetest.registered_globalsteps, minetest.register_globalstep = make_registration()
+minetest.registered_playerevents, minetest.register_playerevent = make_registration()
+minetest.registered_on_mods_loaded, minetest.register_on_mods_loaded = make_registration()
+minetest.registered_on_shutdown, minetest.register_on_shutdown = make_registration()
+minetest.registered_on_punchnodes, minetest.register_on_punchnode = make_registration()
+minetest.registered_on_placenodes, minetest.register_on_placenode = make_registration()
+minetest.registered_on_dignodes, minetest.register_on_dignode = make_registration()
+minetest.registered_on_generateds, minetest.register_on_generated = make_registration()
+minetest.registered_on_newplayers, minetest.register_on_newplayer = make_registration()
+minetest.registered_on_dieplayers, minetest.register_on_dieplayer = make_registration()
+minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make_registration()
+minetest.registered_on_prejoinplayers, minetest.register_on_prejoinplayer = make_registration()
+minetest.registered_on_joinplayers, minetest.register_on_joinplayer = make_registration()
+minetest.registered_on_leaveplayers, minetest.register_on_leaveplayer = make_registration()
+minetest.registered_on_player_receive_fields, minetest.register_on_player_receive_fields = make_registration_reverse()
+minetest.registered_on_cheats, minetest.register_on_cheat = make_registration()
+minetest.registered_on_crafts, minetest.register_on_craft = make_registration()
+minetest.registered_craft_predicts, minetest.register_craft_predict = make_registration()
+minetest.registered_on_protection_violation, minetest.register_on_protection_violation = make_registration()
+minetest.registered_on_item_eats, minetest.register_on_item_eat = make_registration()
+minetest.registered_on_punchplayers, minetest.register_on_punchplayer = make_registration()
+minetest.registered_on_priv_grant, minetest.register_on_priv_grant = make_registration()
+minetest.registered_on_priv_revoke, minetest.register_on_priv_revoke = make_registration()
+minetest.registered_can_bypass_userlimit, minetest.register_can_bypass_userlimit = make_registration()
+minetest.registered_on_modchannel_message, minetest.register_on_modchannel_message = make_registration()
+minetest.registered_on_auth_fail, minetest.register_on_auth_fail = make_registration()
+minetest.registered_on_player_inventory_actions, minetest.register_on_player_inventory_action = make_registration()
+minetest.registered_allow_player_inventory_actions, minetest.register_allow_player_inventory_action = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()
 --
 
-core.register_on_mapgen_init = function(func) func(core.get_mapgen_params()) end
+minetest.register_on_mapgen_init = function(func) func(minetest.get_mapgen_params()) end

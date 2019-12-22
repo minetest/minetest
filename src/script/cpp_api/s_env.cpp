@@ -32,7 +32,7 @@ void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_generateds
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_generateds");
 	// Call callbacks
 	push_v3s16(L, minp);
@@ -47,7 +47,7 @@ void ScriptApiEnv::environment_Step(float dtime)
 	//infostream << "scriptapi_environment_step" << std::endl;
 
 	// Get core.registered_globalsteps
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_globalsteps");
 	// Call callbacks
 	lua_pushnumber(L, dtime);
@@ -94,7 +94,7 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 	*/
 
 	// Get core.registered_abms
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_abms");
 	int registered_abms = lua_gettop(L);
 
@@ -166,7 +166,7 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 	lua_pop(L, 1);
 
 	// Get core.registered_lbms
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_lbms");
 	int registered_lbms = lua_gettop(L);
 

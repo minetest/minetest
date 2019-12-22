@@ -81,15 +81,15 @@ local function get_formspec(tabview, name, tabdata)
 				modscreenshot = defaulttexturedir .. "no_screenshot.png"
 		end
 
-		local info = core.get_content_info(selected_pkg.path)
+		local info = minetest.get_content_info(selected_pkg.path)
 		local desc = fgettext("No package description available")
 		if info.description and info.description:trim() ~= "" then
 			desc = info.description
 		end
 
 		retval = retval ..
-				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
-				"label[8.25,0.6;" .. core.formspec_escape(selected_pkg.name) .. "]" ..
+				"image[5.5,0;3,2;" .. minetest.formspec_escape(modscreenshot) .. "]" ..
+				"label[8.25,0.6;" .. minetest.formspec_escape(selected_pkg.name) .. "]" ..
 				"box[5.5,2.2;6.15,2.35;#000]"
 
 		if selected_pkg.type == "mod" then
@@ -136,7 +136,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. "textarea[5.85,2.2;6.35,2.9;;" ..
 			fgettext("Information:") .. ";" .. desc .. "]"
 
-		if core.may_modify_path(selected_pkg.path) then
+		if minetest.may_modify_path(selected_pkg.path) then
 			retval = retval ..
 				"button[5.5,4.65;3.25,1;btn_mod_mgr_delete_mod;" ..
 				fgettext("Uninstall Package") .. "]"
@@ -148,7 +148,7 @@ end
 --------------------------------------------------------------------------------
 local function handle_buttons(tabview, fields, tabname, tabdata)
 	if fields["pkglist"] ~= nil then
-		local event = core.explode_table_event(fields["pkglist"])
+		local event = minetest.explode_table_event(fields["pkglist"])
 		tabdata.selected_pkg = event.row
 		return true
 	end
@@ -184,14 +184,14 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 
 	if fields.btn_mod_mgr_use_txp then
 		local txp = packages:get_list()[tabdata.selected_pkg]
-		core.settings:set("texture_path", txp.path)
+		minetest.settings:set("texture_path", txp.path)
 		packages = nil
 		return true
 	end
 
 
 	if fields.btn_mod_mgr_disable_txp then
-		core.settings:set("texture_path", "")
+		minetest.settings:set("texture_path", "")
 		packages = nil
 		return true
 	end

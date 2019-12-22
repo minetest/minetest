@@ -815,8 +815,8 @@ minetest.log("info", "experimental modpath="..dump(minetest.get_modpath("experim
 minetest.log("info", "experimental worldpath="..dump(minetest.get_worldpath()))
 
 
-core.register_on_mods_loaded(function()
-	core.log("action", "Yeah experimental loaded mods.")
+minetest.register_on_mods_loaded(function()
+	minetest.log("action", "Yeah experimental loaded mods.")
 end)
 
 -- END

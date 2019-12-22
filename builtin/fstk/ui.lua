@@ -59,7 +59,7 @@ function ui.update()
 
 	-- handle errors
 	if gamedata ~= nil and gamedata.reconnect_requested then
-		local error_message = core.formspec_escape(
+		local error_message = minetest.formspec_escape(
 				gamedata.errormessage or "<none available>")
 		formspec = {
 			"size[14,8]",
@@ -71,7 +71,7 @@ function ui.update()
 			"button[8,6.6;4,1;btn_reconnect_no;" .. fgettext("Main menu") .. "]"
 		}
 	elseif gamedata ~= nil and gamedata.errormessage ~= nil then
-		local error_message = core.formspec_escape(gamedata.errormessage)
+		local error_message = minetest.formspec_escape(gamedata.errormessage)
 
 		local error_title
 		if string.find(gamedata.errormessage, "ModError") then
@@ -114,18 +114,18 @@ function ui.update()
 		end
 
 		if (active_toplevel_ui_elements > 1) then
-			core.log("warning", "more than one active ui "..
+			minetest.log("warning", "more than one active ui "..
 				"element, self most likely isn't intended")
 		end
 
 		if (active_toplevel_ui_elements == 0) then
-			core.log("warning", "no toplevel ui element "..
+			minetest.log("warning", "no toplevel ui element "..
 					"active; switching to default")
 			ui.childlist[ui.default]:show()
 			formspec = {ui.childlist[ui.default]:get_formspec()}
 		end
 	end
-	core.update_formspec(table.concat(formspec))
+	minetest.update_formspec(table.concat(formspec))
 end
 
 --------------------------------------------------------------------------------
@@ -162,12 +162,12 @@ end
 -- initialize callbacks
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-core.button_handler = function(fields)
+minetest.button_handler = function(fields)
 	if fields["btn_reconnect_yes"] then
 		gamedata.reconnect_requested = false
 		gamedata.errormessage = nil
 		gamedata.do_reconnect = true
-		core.start()
+		minetest.start()
 		return
 	elseif fields["btn_reconnect_no"] or fields["btn_error_confirm"] then
 		gamedata.errormessage = nil
@@ -182,7 +182,7 @@ core.button_handler = function(fields)
 end
 
 --------------------------------------------------------------------------------
-core.event_handler = function(event)
+minetest.event_handler = function(event)
 	if ui.handle_events(event) then
 		ui.update()
 		return

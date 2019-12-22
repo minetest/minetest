@@ -1,11 +1,11 @@
 -- cache setting
-local enable_damage = core.settings:get_bool("enable_damage")
+local enable_damage = minetest.settings:get_bool("enable_damage")
 
 local health_bar_definition = {
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "heart.png",
-	number = core.PLAYER_MAX_HP_DEFAULT,
+	number = minetest.PLAYER_MAX_HP_DEFAULT,
 	direction = 0,
 	size = { x=24, y=24 },
 	offset = { x=(-10*24)-25, y=-(48+24+16)},
@@ -15,7 +15,7 @@ local breath_bar_definition = {
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "bubble.png",
-	number = core.PLAYER_MAX_BREATH_DEFAULT,
+	number = minetest.PLAYER_MAX_BREATH_DEFAULT,
 	direction = 0,
 	size = { x=24, y=24 },
 	offset = {x=25,y=-(48+24+16)},
@@ -123,7 +123,7 @@ local function player_event_handler(player,eventname)
 	return false
 end
 
-function core.hud_replace_builtin(hud_name, definition)
+function minetest.hud_replace_builtin(hud_name, definition)
 
 	if type(definition) ~= "table" or
 			definition.hud_elem_type ~= "statbar" then
@@ -134,7 +134,7 @@ function core.hud_replace_builtin(hud_name, definition)
 		health_bar_definition = definition
 
 		for name, ids in pairs(hud_ids) do
-			local player = core.get_player_by_name(name)
+			local player = minetest.get_player_by_name(name)
 			if player and ids.id_healthbar then
 				player:hud_remove(ids.id_healthbar)
 				ids.id_healthbar = nil
@@ -148,7 +148,7 @@ function core.hud_replace_builtin(hud_name, definition)
 		breath_bar_definition = definition
 
 		for name, ids in pairs(hud_ids) do
-			local player = core.get_player_by_name(name)
+			local player = minetest.get_player_by_name(name)
 			if player and ids.id_breathbar then
 				player:hud_remove(ids.id_breathbar)
 				ids.id_breathbar = nil
@@ -163,8 +163,8 @@ end
 
 -- Append "update_builtin_statbars" as late as possible
 -- This ensures that the HUD is hidden when the flags are updated in this callback
-core.register_on_mods_loaded(function()
-	core.register_on_joinplayer(update_builtin_statbars)
+minetest.register_on_mods_loaded(function()
+	minetest.register_on_joinplayer(update_builtin_statbars)
 end)
-core.register_on_leaveplayer(cleanup_builtin_statbars)
-core.register_playerevent(player_event_handler)
+minetest.register_on_leaveplayer(cleanup_builtin_statbars)
+minetest.register_playerevent(player_event_handler)

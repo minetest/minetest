@@ -33,7 +33,7 @@ bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 			<<name<<"\""<<std::endl;
 
 	// Get core.registered_entities[name]
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_entities");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_pushstring(L, name);
@@ -64,7 +64,7 @@ bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 	lua_setfield(L, -2, "object");
 
 	// core.luaentities[id] = object
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "luaentities");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_pushnumber(L, id); // Push id
@@ -110,7 +110,7 @@ void ScriptApiEntity::luaentity_Remove(u16 id)
 	verbosestream << "scriptapi_luaentity_rm: id=" << id << std::endl;
 
 	// Get core.luaentities table
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "luaentities");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);

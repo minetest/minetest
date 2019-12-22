@@ -22,10 +22,10 @@ mt_color_dark_green = "#25C191"
 
 --for all other colors ask sfan5 to complete his work!
 
-local menupath = core.get_mainmenu_path()
-local basepath = core.get_builtin_path()
-local menustyle = core.settings:get("main_menu_style")
-defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
+local menupath = minetest.get_mainmenu_path()
+local basepath = minetest.get_builtin_path()
+local menustyle = minetest.settings:get("main_menu_style")
+defaulttexturedir = minetest.get_texturepath_share() .. DIR_DELIM .. "base" ..
 					DIR_DELIM .. "pack" .. DIR_DELIM
 
 dofile(basepath .. "common" .. DIR_DELIM .. "async_event.lua")
@@ -63,7 +63,7 @@ end
 --------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
 	if event == "MenuQuit" then
-		core.close()
+		minetest.close()
 	end
 	return true
 end
@@ -74,7 +74,7 @@ local function init_globals()
 	gamedata.worldindex = 0
 
 	if menustyle == "simple" then
-		local world_list = core.get_worlds()
+		local world_list = minetest.get_worlds()
 		local world_index
 
 		local found_singleplayerworld = false
@@ -87,9 +87,9 @@ local function init_globals()
 		end
 
 		if not found_singleplayerworld then
-			core.create_world("singleplayerworld", 1)
+			minetest.create_world("singleplayerworld", 1)
 
-			world_list = core.get_worlds()
+			world_list = minetest.get_worlds()
 
 			for i, world in ipairs(world_list) do
 				if world.name == "singleplayerworld" then
@@ -102,7 +102,7 @@ local function init_globals()
 		gamedata.worldindex = world_index
 	else
 		menudata.worldlist = filterlist.create(
-			core.get_worlds,
+			minetest.get_worlds,
 			compare_worlds,
 			-- Unique id comparison function
 			function(element, uid)
@@ -117,9 +117,9 @@ local function init_globals()
 		menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
 		menudata.worldlist:set_sortmode("alphabetic")
 
-		if not core.settings:get("menu_last_game") then
-			local default_game = core.settings:get("default_game") or "minetest"
-			core.settings:set("menu_last_game", default_game)
+		if not minetest.settings:get("menu_last_game") then
+			local default_game = minetest.settings:get("default_game") or "minetest"
+			minetest.settings:set("menu_last_game", default_game)
 		end
 
 		mm_texture.init()
@@ -144,7 +144,7 @@ local function init_globals()
 	tv_main:set_fixed_size(false)
 
 	if menustyle ~= "simple" then
-		local last_tab = core.settings:get("maintab_LAST")
+		local last_tab = minetest.settings:get("maintab_LAST")
 		if last_tab and tv_main.current_tab ~= last_tab then
 			tv_main:set_tab(last_tab)
 		end
@@ -154,7 +154,7 @@ local function init_globals()
 
 	ui.update()
 
-	core.sound_play("main_menu", true)
+	minetest.sound_play("main_menu", true)
 end
 
 init_globals()

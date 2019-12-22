@@ -33,7 +33,7 @@ local function get_formspec(data)
 
 	if mod.is_modpack or mod.type == "game" then
 		local info = minetest.formspec_escape(
-			core.get_content_info(mod.path).description)
+			minetest.get_content_info(mod.path).description)
 		if info == "" then
 			if mod.is_modpack then
 				info = fgettext("No modpack description provided.")
@@ -126,9 +126,9 @@ end
 
 local function handle_buttons(this, fields)
 	if fields.world_config_modlist then
-		local event = core.explode_table_event(fields.world_config_modlist)
+		local event = minetest.explode_table_event(fields.world_config_modlist)
 		this.data.selected_mod = event.row
-		core.settings:set("world_config_selected_mod", event.row)
+		minetest.settings:set("world_config_selected_mod", event.row)
 
 		if event.type == "DCL" then
 			pkgmgr.enable_mod(this)
@@ -143,7 +143,7 @@ local function handle_buttons(this, fields)
 	end
 
 	if fields.cb_mod_enable ~= nil then
-		pkgmgr.enable_mod(this, core.is_yes(fields.cb_mod_enable))
+		pkgmgr.enable_mod(this, minetest.is_yes(fields.cb_mod_enable))
 		return true
 	end
 
@@ -186,7 +186,7 @@ local function handle_buttons(this, fields)
 		end
 
 		if not worldfile:write() then
-			core.log("error", "Failed to write world config file")
+			minetest.log("error", "Failed to write world config file")
 		end
 
 		this:delete()
@@ -231,9 +231,9 @@ function create_configure_world_dlg(worldidx)
 	local dlg = dialog_create("sp_config_world", get_formspec, handle_buttons)
 
 	dlg.data.selected_mod = tonumber(
-			core.settings:get("world_config_selected_mod")) or 0
+			minetest.settings:get("world_config_selected_mod")) or 0
 
-	dlg.data.worldspec = core.get_worlds()[worldidx]
+	dlg.data.worldspec = minetest.get_worlds()[worldidx]
 	if not dlg.data.worldspec then
 		dlg:delete()
 		return

@@ -45,7 +45,7 @@ void ScriptApiMainMenu::handleMainMenuEvent(std::string text)
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get handler function
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "event_handler");
 	lua_remove(L, -2); // Remove core
 	if (lua_isnil(L, -1)) {
@@ -67,7 +67,7 @@ void ScriptApiMainMenu::handleMainMenuButtons(const StringMap &fields)
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get handler function
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "button_handler");
 	lua_remove(L, -2); // Remove core
 	if (lua_isnil(L, -1)) {

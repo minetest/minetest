@@ -6,7 +6,7 @@ local builtin_shared = ...
 -- Falling stuff
 --
 
-core.register_entity(":__builtin:falling_node", {
+minetest.register_entity(":__builtin:falling_node", {
 	initial_properties = {
 		visual = "wielditem",
 		visual_size = {x = 0.667, y = 0.667},
@@ -45,13 +45,13 @@ core.register_entity(":__builtin:falling_node", {
 			node = self.node,
 			meta = self.meta,
 		}
-		return core.serialize(ds)
+		return minetest.serialize(ds)
 	end,
 
 	on_activate = function(self, staticdata)
 		self.object:set_armor_groups({immortal = 1})
 
-		local ds = core.deserialize(staticdata)
+		local ds = minetest.deserialize(staticdata)
 		if ds and ds.node then
 			self:set_node(ds.node, ds.meta)
 		elseif ds then
@@ -72,16 +72,16 @@ core.register_entity(":__builtin:falling_node", {
 		-- Position of bottom center point
 		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
 		-- 'bcn' is nil for unloaded nodes
-		local bcn = core.get_node_or_nil(bcp)
+		local bcn = minetest.get_node_or_nil(bcp)
 		-- Delete on contact with ignore at world edges
 		if bcn and bcn.name == "ignore" then
 			self.object:remove()
 			return
 		end
-		local bcd = bcn and core.registered_nodes[bcn.name]
+		local bcd = bcn and minetest.registered_nodes[bcn.name]
 		if bcn and
 				(not bcd or bcd.walkable or
-				(core.get_item_group(self.node.name, "float") ~= 0 and
+				(minetest.get_item_group(self.node.name, "float") ~= 0 and
 				bcd.liquidtype ~= "none")) then
 			if bcd and bcd.leveled and
 					bcn.name == self.node.name then
@@ -89,50 +89,50 @@ core.register_entity(":__builtin:falling_node", {
 				if not addlevel or addlevel <= 0 then
 					addlevel = bcd.leveled
 				end
-				if core.add_node_level(bcp, addlevel) == 0 then
+				if minetest.add_node_level(bcp, addlevel) == 0 then
 					self.object:remove()
 					return
 				end
 			elseif bcd and bcd.buildable_to and
-					(core.get_item_group(self.node.name, "float") == 0 or
+					(minetest.get_item_group(self.node.name, "float") == 0 or
 					bcd.liquidtype == "none") then
-				core.remove_node(bcp)
+				minetest.remove_node(bcp)
 				return
 			end
 			local np = {x = bcp.x, y = bcp.y + 1, z = bcp.z}
 			-- Check what's here
-			local n2 = core.get_node(np)
-			local nd = core.registered_nodes[n2.name]
+			local n2 = minetest.get_node(np)
+			local nd = minetest.registered_nodes[n2.name]
 			-- If it's not air or liquid, remove node and replace it with
 			-- it's drops
 			if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
-				core.remove_node(np)
+				minetest.remove_node(np)
 				if nd and nd.buildable_to == false then
 					-- Add dropped items
-					local drops = core.get_node_drops(n2, "")
+					local drops = minetest.get_node_drops(n2, "")
 					for _, dropped_item in pairs(drops) do
-						core.add_item(np, dropped_item)
+						minetest.add_item(np, dropped_item)
 					end
 				end
 				-- Run script hook
-				for _, callback in pairs(core.registered_on_dignodes) do
+				for _, callback in pairs(minetest.registered_on_dignodes) do
 					callback(np, n2)
 				end
 			end
 			-- Create node and remove entity
-			local def = core.registered_nodes[self.node.name]
+			local def = minetest.registered_nodes[self.node.name]
 			if def then
-				core.add_node(np, self.node)
+				minetest.add_node(np, self.node)
 				if self.meta then
-					local meta = core.get_meta(np)
+					local meta = minetest.get_meta(np)
 					meta:from_table(self.meta)
 				end
 				if def.sounds and def.sounds.place then
-					core.sound_play(def.sounds.place, {pos = np})
+					minetest.sound_play(def.sounds.place, {pos = np})
 				end
 			end
 			self.object:remove()
-			core.check_for_falling(np)
+			minetest.check_for_falling(np)
 			return
 		end
 		local vel = self.object:get_velocity()
@@ -144,26 +144,26 @@ core.register_entity(":__builtin:falling_node", {
 })
 
 local function convert_to_falling_node(pos, node)
-	local obj = core.add_entity(pos, "__builtin:falling_node")
+	local obj = minetest.add_entity(pos, "__builtin:falling_node")
 	if not obj then
 		return false
 	end
-	node.level = core.get_node_level(pos)
-	local meta = core.get_meta(pos)
+	node.level = minetest.get_node_level(pos)
+	local meta = minetest.get_meta(pos)
 	local metatable = meta and meta:to_table() or {}
 
-	local def = core.registered_nodes[node.name]
+	local def = minetest.registered_nodes[node.name]
 	if def and def.sounds and def.sounds.fall then
-		core.sound_play(def.sounds.fall, {pos = pos})
+		minetest.sound_play(def.sounds.fall, {pos = pos})
 	end
 
 	obj:get_luaentity():set_node(node, metatable)
-	core.remove_node(pos)
+	minetest.remove_node(pos)
 	return true
 end
 
-function core.spawn_falling_node(pos)
-	local node = core.get_node(pos)
+function minetest.spawn_falling_node(pos)
+	local node = minetest.get_node(pos)
 	if node.name == "air" or node.name == "ignore" then
 		return false
 	end
@@ -171,11 +171,11 @@ function core.spawn_falling_node(pos)
 end
 
 local function drop_attached_node(p)
-	local n = core.get_node(p)
-	local drops = core.get_node_drops(n, "")
-	local def = core.registered_items[n.name]
+	local n = minetest.get_node(p)
+	local drops = minetest.get_node_drops(n, "")
+	local def = minetest.registered_items[n.name]
 	if def and def.preserve_metadata then
-		local oldmeta = core.get_meta(p):to_table().fields
+		local oldmeta = minetest.get_meta(p):to_table().fields
 		-- Copy pos and node because the callback can modify them.
 		local pos_copy = {x=p.x, y=p.y, z=p.z}
 		local node_copy = {name=n.name, param1=n.param1, param2=n.param2}
@@ -187,21 +187,21 @@ local function drop_attached_node(p)
 		def.preserve_metadata(pos_copy, node_copy, oldmeta, drops)
 	end
 	if def and def.sounds and def.sounds.fall then
-		core.sound_play(def.sounds.fall, {pos = p})
+		minetest.sound_play(def.sounds.fall, {pos = p})
 	end
-	core.remove_node(p)
+	minetest.remove_node(p)
 	for _, item in pairs(drops) do
 		local pos = {
 			x = p.x + math.random()/2 - 0.25,
 			y = p.y + math.random()/2 - 0.25,
 			z = p.z + math.random()/2 - 0.25,
 		}
-		core.add_item(pos, item)
+		minetest.add_item(pos, item)
 	end
 end
 
 function builtin_shared.check_attached_node(p, n)
-	local def = core.registered_nodes[n.name]
+	local def = minetest.registered_nodes[n.name]
 	local d = {x = 0, y = 0, z = 0}
 	if def.paramtype2 == "wallmounted" or
 			def.paramtype2 == "colorwallmounted" then
@@ -209,13 +209,13 @@ function builtin_shared.check_attached_node(p, n)
 		-- to voxelmanip placing a wallmounted node without resetting a
 		-- pre-existing param2 value that is out-of-range for wallmounted.
 		-- The fallback vector corresponds to param2 = 0.
-		d = core.wallmounted_to_dir(n.param2) or {x = 0, y = 1, z = 0}
+		d = minetest.wallmounted_to_dir(n.param2) or {x = 0, y = 1, z = 0}
 	else
 		d.y = -1
 	end
 	local p2 = vector.add(p, d)
-	local nn = core.get_node(p2).name
-	local def2 = core.registered_nodes[nn]
+	local nn = minetest.get_node(p2).name
+	local def2 = minetest.registered_nodes[nn]
 	if def2 and not def2.walkable then
 		return false
 	end
@@ -226,21 +226,21 @@ end
 -- Some common functions
 --
 
-function core.check_single_for_falling(p)
-	local n = core.get_node(p)
-	if core.get_item_group(n.name, "falling_node") ~= 0 then
+function minetest.check_single_for_falling(p)
+	local n = minetest.get_node(p)
+	if minetest.get_item_group(n.name, "falling_node") ~= 0 then
 		local p_bottom = {x = p.x, y = p.y - 1, z = p.z}
 		-- Only spawn falling node if node below is loaded
-		local n_bottom = core.get_node_or_nil(p_bottom)
-		local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
+		local n_bottom = minetest.get_node_or_nil(p_bottom)
+		local d_bottom = n_bottom and minetest.registered_nodes[n_bottom.name]
 		if d_bottom and
 
-				(core.get_item_group(n.name, "float") == 0 or
+				(minetest.get_item_group(n.name, "float") == 0 or
 				d_bottom.liquidtype == "none") and
 
 				(n.name ~= n_bottom.name or (d_bottom.leveled and
-				core.get_node_level(p_bottom) <
-				core.get_node_max_level(p_bottom))) and
+				minetest.get_node_level(p_bottom) <
+				minetest.get_node_max_level(p_bottom))) and
 
 				(not d_bottom.walkable or d_bottom.buildable_to) then
 			convert_to_falling_node(p, n)
@@ -248,7 +248,7 @@ function core.check_single_for_falling(p)
 		end
 	end
 
-	if core.get_item_group(n.name, "attached_node") ~= 0 then
+	if minetest.get_item_group(n.name, "attached_node") ~= 0 then
 		if not builtin_shared.check_attached_node(p, n) then
 			drop_attached_node(p)
 			return true
@@ -276,7 +276,7 @@ local check_for_falling_neighbors = {
 	{x = 0, y = 1, z = 0},
 }
 
-function core.check_for_falling(p)
+function minetest.check_for_falling(p)
 	-- Round p to prevent falling entities to get stuck.
 	p = vector.round(p)
 
@@ -298,7 +298,7 @@ function core.check_for_falling(p)
 		p = vector.add(p, check_for_falling_neighbors[v])
 		-- Now we check out the node. If it is in need of an update,
 		-- it will let us know in the return value (true = updated).
-		if not core.check_single_for_falling(p) then
+		if not minetest.check_single_for_falling(p) then
 			-- If we don't need to "recurse" (walk) to it then pop
 			-- our previous pos off the stack and continue from there,
 			-- with the v value we were at when we last were at that
@@ -331,16 +331,16 @@ end
 --
 
 local function on_placenode(p, node)
-	core.check_for_falling(p)
+	minetest.check_for_falling(p)
 end
-core.register_on_placenode(on_placenode)
+minetest.register_on_placenode(on_placenode)
 
 local function on_dignode(p, node)
-	core.check_for_falling(p)
+	minetest.check_for_falling(p)
 end
-core.register_on_dignode(on_dignode)
+minetest.register_on_dignode(on_dignode)
 
 local function on_punchnode(p, node)
-	core.check_for_falling(p)
+	minetest.check_for_falling(p)
 end
-core.register_on_punchnode(on_punchnode)
+minetest.register_on_punchnode(on_punchnode)

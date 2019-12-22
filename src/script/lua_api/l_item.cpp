@@ -297,7 +297,7 @@ int LuaItemStack::l_get_definition(lua_State *L)
 	ItemStack &item = o->m_stack;
 
 	// Get registered_items[name]
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_items");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_getfield(L, -1, item.name.c_str());

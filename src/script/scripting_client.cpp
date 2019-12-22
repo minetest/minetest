@@ -46,7 +46,7 @@ ClientScripting::ClientScripting(Client *client):
 	// Security is mandatory client side
 	initializeSecurityClient();
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	int top = lua_gettop(L);
 
 	lua_newtable(L);

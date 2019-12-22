@@ -20,8 +20,8 @@ local LIST_FORMSPEC_DESCRIPTION = [[
 		button_exit[5,7;3,1;quit;%s]
 	]]
 
-local formspec_escape = core.formspec_escape
-local check_player_privs = core.check_player_privs
+local formspec_escape = minetest.formspec_escape
+local check_player_privs = minetest.check_player_privs
 
 
 -- CHAT COMMANDS FORMSPEC
@@ -31,7 +31,7 @@ local mod_cmds = {}
 local function load_mod_command_tree()
 	mod_cmds = {}
 
-	for name, def in pairs(core.registered_chatcommands) do
+	for name, def in pairs(minetest.registered_chatcommands) do
 		mod_cmds[def.mod_origin] = mod_cmds[def.mod_origin] or {}
 		local cmds = mod_cmds[def.mod_origin]
 
@@ -47,7 +47,7 @@ local function load_mod_command_tree()
 	mod_cmds = sorted_mod_cmds
 end
 
-core.after(0, load_mod_command_tree)
+minetest.after(0, load_mod_command_tree)
 
 local function build_chatcommands_formspec(name, sel, copy)
 	local rows = {}
@@ -66,8 +66,8 @@ local function build_chatcommands_formspec(name, sel, copy)
 			if sel == #rows then
 				description = cmds[2].description
 				if copy then
-					core.chat_send_player(name, ("Command: %s %s"):format(
-						core.colorize("#0FF", "/" .. cmds[1]), cmds[2].params))
+					minetest.chat_send_player(name, ("Command: %s %s"):format(
+						minetest.colorize("#0FF", "/" .. cmds[1]), cmds[2].params))
 				end
 			end
 		end
@@ -85,7 +85,7 @@ end
 
 local function build_privs_formspec(name)
 	local privs = {}
-	for priv_name, def in pairs(core.registered_privileges) do
+	for priv_name, def in pairs(minetest.registered_privileges) do
 		privs[#privs + 1] = { priv_name, def }
 	end
 	table.sort(privs, function(a, b) return a[1] < b[1] end)
@@ -93,7 +93,7 @@ local function build_privs_formspec(name)
 	local rows = {}
 	rows[1] = "#FFF,0,Privilege,Description"
 
-	local player_privs = core.get_player_privs(name)
+	local player_privs = minetest.get_player_privs(name)
 	for i, data in ipairs(privs) do
 		rows[#rows + 1] = ("%s,0,%s,%s"):format(
 			player_privs[data[1]] and COLOR_GREEN or COLOR_GRAY,
@@ -110,7 +110,7 @@ end
 
 -- DETAILED CHAT COMMAND INFORMATION
 
-core.register_on_player_receive_fields(function(player, formname, fields)
+minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= "__builtin:help_cmds" or fields.quit then
 		return
 	end
@@ -118,29 +118,29 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local event = minetest.explode_table_event(fields.list)
 	if event.type ~= "INV" then
 		local name = player:get_player_name()
-		core.show_formspec(name, "__builtin:help_cmds",
+		minetest.show_formspec(name, "__builtin:help_cmds",
 			build_chatcommands_formspec(name, event.row, event.type == "DCL"))
 	end
 end)
 
 
-local help_command = core.registered_chatcommands["help"]
+local help_command = minetest.registered_chatcommands["help"]
 local old_help_func = help_command.func
 
 help_command.func = function(name, param)
-	local admin = core.settings:get("name")
+	local admin = minetest.settings:get("name")
 
 	-- If the admin ran help, put the output in the chat buffer as well to
 	-- work with the server terminal
 	if param == "privs" then
-		core.show_formspec(name, "__builtin:help_privs",
+		minetest.show_formspec(name, "__builtin:help_privs",
 			build_privs_formspec(name))
 		if name ~= admin then
 			return
 		end
 	end
 	if param == "" or param == "all" then
-		core.show_formspec(name, "__builtin:help_cmds",
+		minetest.show_formspec(name, "__builtin:help_cmds",
 			build_chatcommands_formspec(name))
 		if name ~= admin then
 			return

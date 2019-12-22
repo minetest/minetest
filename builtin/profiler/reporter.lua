@@ -18,7 +18,7 @@
 local DIR_DELIM, LINE_DELIM = DIR_DELIM, "\n"
 local table, unpack, string, pairs, io, os = table, unpack, string, pairs, io, os
 local rep, sprintf, tonumber = string.rep, string.format, tonumber
-local core, settings = core, core.settings
+local core, settings = core, minetest.settings
 local reporter = {}
 
 ---
@@ -216,22 +216,22 @@ local function serialize_profile(profile, format, filter)
 			end
 		end
 		if format == "lua" then
-			return core.serialize(stats)
+			return minetest.serialize(stats)
 		elseif format == "json" then
-			return core.write_json(stats)
+			return minetest.write_json(stats)
 		elseif format == "json_pretty" then
-			return core.write_json(stats, true)
+			return minetest.write_json(stats, true)
 		end
 	end
 	-- Fall back to textual formats.
 	return format_statistics(profile, format, filter)
 end
 
-local worldpath = core.get_worldpath()
+local worldpath = minetest.get_worldpath()
 local function get_save_path(format, filter)
 	local report_path = settings:get("profiler.report_path") or ""
 	if report_path ~= "" then
-		core.mkdir(sprintf("%s%s%s", worldpath, DIR_DELIM, report_path))
+		minetest.mkdir(sprintf("%s%s%s", worldpath, DIR_DELIM, report_path))
 	end
 	return (sprintf(
 		"%s/%s/profile-%s%s.%s",
@@ -270,7 +270,7 @@ function reporter.save(profile, format, filter)
 	output:close()
 
 	local logmessage = "Profile saved to " .. path
-	core.log("action", logmessage)
+	minetest.log("action", logmessage)
 	return true, logmessage
 end
 

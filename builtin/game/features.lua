@@ -1,6 +1,6 @@
 -- Minetest: builtin/features.lua
 
-core.features = {
+minetest.features = {
 	glasslike_framed = true,
 	nodebox_as_selectionbox = true,
 	get_all_craft_recipes_works = true,
@@ -17,19 +17,19 @@ core.features = {
 	area_store_persistent_ids = true,
 }
 
-function core.has_feature(arg)
+function minetest.has_feature(arg)
 	if type(arg) == "table" then
 		local missing_features = {}
 		local result = true
 		for ftr in pairs(arg) do
-			if not core.features[ftr] then
+			if not minetest.features[ftr] then
 				missing_features[ftr] = true
 				result = false
 			end
 		end
 		return result, missing_features
 	elseif type(arg) == "string" then
-		if not core.features[arg] then
+		if not minetest.features[arg] then
 			return false, {[arg]=true}
 		end
 		return true, {}

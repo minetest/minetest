@@ -191,7 +191,7 @@ bool ScriptApiDetached::getDetachedInventoryCallback(
 {
 	lua_State *L = getStack();
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "detached_inventories");
 	lua_remove(L, -2);
 	luaL_checktype(L, -1, LUA_TTABLE);

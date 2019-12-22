@@ -1588,7 +1588,7 @@ std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
 void luaentity_get(lua_State *L, u16 id)
 {
 	// Get luaentities[i]
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "luaentities");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_pushnumber(L, id);
@@ -1825,7 +1825,7 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 void push_objectRef(lua_State *L, const u16 id)
 {
 	// Get core.object_refs[i]
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_pushnumber(L, id);

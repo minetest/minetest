@@ -1,8 +1,8 @@
 -- Prevent anyone else accessing those functions
-local forceload_block = core.forceload_block
-local forceload_free_block = core.forceload_free_block
-core.forceload_block = nil
-core.forceload_free_block = nil
+local forceload_block = minetest.forceload_block
+local forceload_free_block = minetest.forceload_free_block
+minetest.forceload_block = nil
+minetest.forceload_free_block = nil
 
 local blocks_forceloaded
 local blocks_temploaded = {}
@@ -11,7 +11,7 @@ local total_forceloaded = 0
 -- true, if the forceloaded blocks got changed (flag for persistence on-disk)
 local forceload_blocks_changed = false
 
-local BLOCKSIZE = core.MAP_BLOCKSIZE
+local BLOCKSIZE = minetest.MAP_BLOCKSIZE
 local function get_blockpos(pos)
 	return {
 		x = math.floor(pos.x/BLOCKSIZE),
@@ -33,12 +33,12 @@ local function get_relevant_tables(transient)
 	end
 end
 
-function core.forceload_block(pos, transient)
+function minetest.forceload_block(pos, transient)
 	-- set changed flag
 	forceload_blocks_changed = true
 
 	local blockpos = get_blockpos(pos)
-	local hash = core.hash_node_position(blockpos)
+	local hash = minetest.hash_node_position(blockpos)
 	local relevant_table, other_table = get_relevant_tables(transient)
 	if relevant_table[hash] ~= nil then
 		relevant_table[hash] = relevant_table[hash] + 1
@@ -46,7 +46,7 @@ function core.forceload_block(pos, transient)
 	elseif other_table[hash] ~= nil then
 		relevant_table[hash] = 1
 	else
-		if total_forceloaded >= (tonumber(core.settings:get("max_forceloaded_blocks")) or 16) then
+		if total_forceloaded >= (tonumber(minetest.settings:get("max_forceloaded_blocks")) or 16) then
 			return false
 		end
 		total_forceloaded = total_forceloaded+1
@@ -56,12 +56,12 @@ function core.forceload_block(pos, transient)
 	end
 end
 
-function core.forceload_free_block(pos, transient)
+function minetest.forceload_free_block(pos, transient)
 	-- set changed flag
 	forceload_blocks_changed = true
 
 	local blockpos = get_blockpos(pos)
-	local hash = core.hash_node_position(blockpos)
+	local hash = minetest.hash_node_position(blockpos)
 	local relevant_table, other_table = get_relevant_tables(transient)
 	if relevant_table[hash] == nil then return end
 	if relevant_table[hash] > 1 then
@@ -76,19 +76,19 @@ function core.forceload_free_block(pos, transient)
 end
 
 -- Keep the forceloaded areas after restart
-local wpath = core.get_worldpath()
+local wpath = minetest.get_worldpath()
 local function read_file(filename)
 	local f = io.open(filename, "r")
 	if f==nil then return {} end
 	local t = f:read("*all")
 	f:close()
 	if t=="" or t==nil then return {} end
-	return core.deserialize(t) or {}
+	return minetest.deserialize(t) or {}
 end
 
 local function write_file(filename, table)
 	local f = io.open(filename, "w")
-	f:write(core.serialize(table))
+	f:write(minetest.serialize(table))
 	f:close()
 end
 
@@ -97,9 +97,9 @@ for _, __ in pairs(blocks_forceloaded) do
 	total_forceloaded = total_forceloaded + 1
 end
 
-core.after(5, function()
+minetest.after(5, function()
 	for hash, _ in pairs(blocks_forceloaded) do
-		local blockpos = core.get_position_from_hash(hash)
+		local blockpos = minetest.get_position_from_hash(hash)
 		forceload_block(blockpos)
 	end
 end)
@@ -121,11 +121,11 @@ local function periodically_persist_forceloaded_blocks()
 	end
 
 	-- recheck after some time
-	core.after(10, periodically_persist_forceloaded_blocks)
+	minetest.after(10, periodically_persist_forceloaded_blocks)
 end
 
 -- persist periodically
-core.after(5, periodically_persist_forceloaded_blocks)
+minetest.after(5, periodically_persist_forceloaded_blocks)
 
 -- persist on shutdown
-core.register_on_shutdown(persist_forceloaded_blocks)
+minetest.register_on_shutdown(persist_forceloaded_blocks)

@@ -317,7 +317,7 @@ function cleanup_path(temppath)
 	return temppath
 end
 
-function core.formspec_escape(text)
+function minetest.formspec_escape(text)
 	if text ~= nil then
 		text = string.gsub(text,"\\","\\\\")
 		text = string.gsub(text,"%]","\\]")
@@ -329,7 +329,7 @@ function core.formspec_escape(text)
 end
 
 
-function core.wrap_text(text, max_length, as_table)
+function minetest.wrap_text(text, max_length, as_table)
 	local result = {}
 	local line = {}
 	if #text <= max_length then
@@ -356,20 +356,20 @@ if INIT == "game" then
 	local dirs1 = {9, 18, 7, 12}
 	local dirs2 = {20, 23, 22, 21}
 
-	function core.rotate_and_place(itemstack, placer, pointed_thing,
+	function minetest.rotate_and_place(itemstack, placer, pointed_thing,
 			infinitestacks, orient_flags, prevent_after_place)
 		orient_flags = orient_flags or {}
 
-		local unode = core.get_node_or_nil(pointed_thing.under)
+		local unode = minetest.get_node_or_nil(pointed_thing.under)
 		if not unode then
 			return
 		end
-		local undef = core.registered_nodes[unode.name]
+		local undef = minetest.registered_nodes[unode.name]
 		if undef and undef.on_rightclick then
 			return undef.on_rightclick(pointed_thing.under, unode, placer,
 					itemstack, pointed_thing)
 		end
-		local fdir = placer and core.dir_to_facedir(placer:get_look_dir()) or 0
+		local fdir = placer and minetest.dir_to_facedir(placer:get_look_dir()) or 0
 
 		local above = pointed_thing.above
 		local under = pointed_thing.under
@@ -409,7 +409,7 @@ if INIT == "game" then
 		end
 
 		local old_itemstack = ItemStack(itemstack)
-		local new_itemstack = core.item_place_node(itemstack, placer,
+		local new_itemstack = minetest.item_place_node(itemstack, placer,
 				pointed_thing, param2, prevent_after_place)
 		return infinitestacks and old_itemstack or new_itemstack
 	end
@@ -419,23 +419,23 @@ if INIT == "game" then
 --Wrapper for rotate_and_place() to check for sneak and assume Creative mode
 --implies infinite stacks when performing a 6d rotation.
 --------------------------------------------------------------------------------
-	local creative_mode_cache = core.settings:get_bool("creative_mode")
+	local creative_mode_cache = minetest.settings:get_bool("creative_mode")
 	local function is_creative(name)
 		return creative_mode_cache or
-				core.check_player_privs(name, {creative = true})
+				minetest.check_player_privs(name, {creative = true})
 	end
 
-	core.rotate_node = function(itemstack, placer, pointed_thing)
+	minetest.rotate_node = function(itemstack, placer, pointed_thing)
 		local name = placer and placer:get_player_name() or ""
 		local invert_wall = placer and placer:get_player_control().sneak or false
-		return core.rotate_and_place(itemstack, placer, pointed_thing,
+		return minetest.rotate_and_place(itemstack, placer, pointed_thing,
 				is_creative(name),
 				{invert_wall = invert_wall}, true)
 	end
 end
 
 --------------------------------------------------------------------------------
-function core.explode_table_event(evt)
+function minetest.explode_table_event(evt)
 	if evt ~= nil then
 		local parts = evt:split(":")
 		if #parts == 3 then
@@ -452,7 +452,7 @@ function core.explode_table_event(evt)
 end
 
 --------------------------------------------------------------------------------
-function core.explode_textlist_event(evt)
+function minetest.explode_textlist_event(evt)
 	if evt ~= nil then
 		local parts = evt:split(":")
 		if #parts == 2 then
@@ -467,8 +467,8 @@ function core.explode_textlist_event(evt)
 end
 
 --------------------------------------------------------------------------------
-function core.explode_scrollbar_event(evt)
-	local retval = core.explode_textlist_event(evt)
+function minetest.explode_scrollbar_event(evt)
+	local retval = minetest.explode_textlist_event(evt)
 
 	retval.value = retval.index
 	retval.index = nil
@@ -477,13 +477,13 @@ function core.explode_scrollbar_event(evt)
 end
 
 --------------------------------------------------------------------------------
-function core.rgba(r, g, b, a)
+function minetest.rgba(r, g, b, a)
 	return a and string.format("#%02X%02X%02X%02X", r, g, b, a) or
 			string.format("#%02X%02X%02X", r, g, b)
 end
 
 --------------------------------------------------------------------------------
-function core.pos_to_string(pos, decimal_places)
+function minetest.pos_to_string(pos, decimal_places)
 	local x = pos.x
 	local y = pos.y
 	local z = pos.z
@@ -496,7 +496,7 @@ function core.pos_to_string(pos, decimal_places)
 end
 
 --------------------------------------------------------------------------------
-function core.string_to_pos(value)
+function minetest.string_to_pos(value)
 	if value == nil then
 		return nil
 	end
@@ -520,19 +520,19 @@ function core.string_to_pos(value)
 	return nil
 end
 
-assert(core.string_to_pos("10.0, 5, -2").x == 10)
-assert(core.string_to_pos("( 10.0, 5, -2)").z == -2)
-assert(core.string_to_pos("asd, 5, -2)") == nil)
+assert(minetest.string_to_pos("10.0, 5, -2").x == 10)
+assert(minetest.string_to_pos("( 10.0, 5, -2)").z == -2)
+assert(minetest.string_to_pos("asd, 5, -2)") == nil)
 
 --------------------------------------------------------------------------------
-function core.string_to_area(value)
+function minetest.string_to_area(value)
 	local p1, p2 = unpack(value:split(") ("))
 	if p1 == nil or p2 == nil then
 		return nil
 	end
 
-	p1 = core.string_to_pos(p1 .. ")")
-	p2 = core.string_to_pos("(" .. p2)
+	p1 = minetest.string_to_pos(p1 .. ")")
+	p2 = minetest.string_to_pos("(" .. p2)
 	if p1 == nil or p2 == nil then
 		return nil
 	end
@@ -541,14 +541,14 @@ function core.string_to_area(value)
 end
 
 local function test_string_to_area()
-	local p1, p2 = core.string_to_area("(10.0, 5, -2) (  30.2,   4, -12.53)")
+	local p1, p2 = minetest.string_to_area("(10.0, 5, -2) (  30.2,   4, -12.53)")
 	assert(p1.x == 10.0 and p1.y == 5 and p1.z == -2)
 	assert(p2.x == 30.2 and p2.y == 4 and p2.z == -12.53)
 
-	p1, p2 = core.string_to_area("(10.0, 5, -2  30.2,   4, -12.53")
+	p1, p2 = minetest.string_to_area("(10.0, 5, -2  30.2,   4, -12.53")
 	assert(p1 == nil and p2 == nil)
 
-	p1, p2 = core.string_to_area("(10.0, 5,) -2  fgdf2,   4, -12.53")
+	p1, p2 = minetest.string_to_area("(10.0, 5,) -2  fgdf2,   4, -12.53")
 	assert(p1 == nil and p2 == nil)
 end
 
@@ -579,8 +579,8 @@ end
 -- mainmenu only functions
 --------------------------------------------------------------------------------
 if INIT == "mainmenu" then
-	function core.get_game(index)
-		local games = core.get_games()
+	function minetest.get_game(index)
+		local games = minetest.get_games()
 
 		if index > 0 and index <= #games then
 			return games[index]
@@ -592,7 +592,7 @@ end
 
 if INIT == "client" or INIT == "mainmenu" then
 	function fgettext_ne(text, ...)
-		text = core.gettext(text)
+		text = minetest.gettext(text)
 		local arg = {n=select('#', ...), ...}
 		if arg.n >= 1 then
 			-- Insert positional parameters ($1, $2, ...)
@@ -617,45 +617,45 @@ if INIT == "client" or INIT == "mainmenu" then
 	end
 
 	function fgettext(text, ...)
-		return core.formspec_escape(fgettext_ne(text, ...))
+		return minetest.formspec_escape(fgettext_ne(text, ...))
 	end
 end
 
 local ESCAPE_CHAR = string.char(0x1b)
 
-function core.get_color_escape_sequence(color)
+function minetest.get_color_escape_sequence(color)
 	return ESCAPE_CHAR .. "(c@" .. color .. ")"
 end
 
-function core.get_background_escape_sequence(color)
+function minetest.get_background_escape_sequence(color)
 	return ESCAPE_CHAR .. "(b@" .. color .. ")"
 end
 
-function core.colorize(color, message)
+function minetest.colorize(color, message)
 	local lines = tostring(message):split("\n", true)
-	local color_code = core.get_color_escape_sequence(color)
+	local color_code = minetest.get_color_escape_sequence(color)
 
 	for i, line in ipairs(lines) do
 		lines[i] = color_code .. line
 	end
 
-	return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
+	return table.concat(lines, "\n") .. minetest.get_color_escape_sequence("#ffffff")
 end
 
 
-function core.strip_foreground_colors(str)
+function minetest.strip_foreground_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%(c@[^)]+%)", ""))
 end
 
-function core.strip_background_colors(str)
+function minetest.strip_background_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%(b@[^)]+%)", ""))
 end
 
-function core.strip_colors(str)
+function minetest.strip_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%([bc]@[^)]+%)", ""))
 end
 
-function core.translate(textdomain, str, ...)
+function minetest.translate(textdomain, str, ...)
 	local start_seq
 	if textdomain == "" then
 		start_seq = ESCAPE_CHAR .. "T"
@@ -670,12 +670,12 @@ function core.translate(textdomain, str, ...)
 		if string.byte("1") <= c and c <= string.byte("9") then
 			local a = c - string.byte("0")
 			if a ~= arg_index then
-				error("Escape sequences in string given to core.translate " ..
+				error("Escape sequences in string given to minetest.translate " ..
 					"are not in the correct order: got @" .. matched ..
 					"but expected @" .. tostring(arg_index))
 			end
 			if a > arg.n then
-				error("Not enough arguments provided to core.translate")
+				error("Not enough arguments provided to minetest.translate")
 			end
 			arg_index = arg_index + 1
 			return ESCAPE_CHAR .. "F" .. arg[a] .. ESCAPE_CHAR .. "E"
@@ -686,19 +686,19 @@ function core.translate(textdomain, str, ...)
 		end
 	end)
 	if arg_index < arg.n + 1 then
-		error("Too many arguments provided to core.translate")
+		error("Too many arguments provided to minetest.translate")
 	end
 	return start_seq .. translated .. end_seq
 end
 
-function core.get_translator(textdomain)
-	return function(str, ...) return core.translate(textdomain or "", str, ...) end
+function minetest.get_translator(textdomain)
+	return function(str, ...) return minetest.translate(textdomain or "", str, ...) end
 end
 
 --------------------------------------------------------------------------------
 -- Returns the exact coordinate of a pointed surface
 --------------------------------------------------------------------------------
-function core.pointed_thing_to_face_pos(placer, pointed_thing)
+function minetest.pointed_thing_to_face_pos(placer, pointed_thing)
 	-- Avoid crash in some situations when player is inside a node, causing
 	-- 'above' to equal 'under'.
 	if vector.equals(pointed_thing.above, pointed_thing.under) then
@@ -734,7 +734,7 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	return fine_pos
 end
 
-function core.string_to_privs(str, delim)
+function minetest.string_to_privs(str, delim)
 	assert(type(str) == "string")
 	delim = delim or ','
 	local privs = {}
@@ -744,7 +744,7 @@ function core.string_to_privs(str, delim)
 	return privs
 end
 
-function core.privs_to_string(privs, delim)
+function minetest.privs_to_string(privs, delim)
 	assert(type(privs) == "table")
 	delim = delim or ','
 	local list = {}
@@ -756,5 +756,5 @@ function core.privs_to_string(privs, delim)
 	return table.concat(list, delim)
 end
 
-assert(core.string_to_privs("a,b").b == true)
-assert(core.privs_to_string({a=true,b=true}) == "a,b")
+assert(minetest.string_to_privs("a,b").b == true)
+assert(minetest.privs_to_string({a=true,b=true}) == "a,b")

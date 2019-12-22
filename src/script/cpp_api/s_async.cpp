@@ -133,7 +133,7 @@ void AsyncEngine::putJobResult(const LuaJobInfo &result)
 void AsyncEngine::step(lua_State *L)
 {
 	int error_handler = PUSH_ERROR_HANDLER(L);
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	resultQueueMutex.lock();
 	while (!resultQueue.empty()) {
 		LuaJobInfo jobDone = resultQueue.front();
@@ -204,7 +204,7 @@ AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 	lua_State *L = getStack();
 
 	// Prepare job lua environment
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	int top = lua_gettop(L);
 
 	// Push builtin initialization type
@@ -236,7 +236,7 @@ void* AsyncWorkerThread::run()
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	if (lua_isnil(L, -1)) {
 		FATAL_ERROR("Unable to find core within async environment!");
 	}

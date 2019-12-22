@@ -147,7 +147,7 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "on_craft");
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, user);
@@ -179,7 +179,7 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 	sanity_check(old_craft_grid);
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "craft_predict");
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, user);
@@ -215,7 +215,7 @@ bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname,
 {
 	lua_State* L = getStack();
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_items");
 	lua_remove(L, -2); // Remove core
 	luaL_checktype(L, -1, LUA_TTABLE);
@@ -231,7 +231,7 @@ bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname,
 		lua_pop(L, 1);
 
 		// Try core.nodedef_default instead
-		lua_getglobal(L, "core");
+		lua_getglobal(L, "minetest");
 		lua_getfield(L, -1, "nodedef_default");
 		lua_remove(L, -2);
 		luaL_checktype(L, -1, LUA_TTABLE);

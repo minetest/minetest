@@ -64,7 +64,7 @@ ServerScripting::ServerScripting(Server* server):
 		initializeSecurity();
 	}
 
-	lua_getglobal(L, "core");
+	lua_getglobal(L, "minetest");
 	int top = lua_gettop(L);
 
 	lua_newtable(L);

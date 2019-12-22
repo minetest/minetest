@@ -311,7 +311,7 @@ local function parse_single_file(file, filepath, read_all, result, base_level, a
 	while line do
 		local error_msg = parse_setting_line(result, line, read_all, base_level, allow_secure)
 		if error_msg then
-			core.log("error", error_msg .. " in " .. filepath .. " \"" .. line .. "\"")
+			minetest.log("error", error_msg .. " in " .. filepath .. " \"" .. line .. "\"")
 		end
 		line = file:read("*line")
 	end
@@ -325,10 +325,10 @@ local function parse_config_file(read_all, parse_mods)
 	local settings = {}
 
 	do
-		local builtin_path = core.get_builtin_path() .. FILENAME
+		local builtin_path = minetest.get_builtin_path() .. FILENAME
 		local file = io.open(builtin_path, "r")
 		if not file then
-			core.log("error", "Can't load " .. FILENAME)
+			minetest.log("error", "Can't load " .. FILENAME)
 			return settings
 		end
 
@@ -374,7 +374,7 @@ local function parse_config_file(read_all, parse_mods)
 		-- Parse mods
 		local mods_category_initialized = false
 		local mods = {}
-		get_mods(core.get_modpath(), mods)
+		get_mods(minetest.get_modpath(), mods)
 		for _, mod in ipairs(mods) do
 			local path = mod.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")
@@ -484,7 +484,7 @@ local settings = full_settings
 local selected_setting = 1
 
 local function get_current_value(setting)
-	local value = core.settings:get(setting.name)
+	local value = minetest.settings:get(setting.name)
 	if value == nil then
 		value = setting.default
 	end
@@ -492,7 +492,7 @@ local function get_current_value(setting)
 end
 
 local function get_current_np_group(setting)
-	local value = core.settings:get_np_group(setting.name)
+	local value = minetest.settings:get_np_group(setting.name)
 	local t = {}
 	if value == nil then
 		t = setting.values
@@ -512,7 +512,7 @@ local function get_current_np_group(setting)
 end
 
 local function get_current_np_group_as_string(setting)
-	local value = core.settings:get_np_group(setting.name)
+	local value = minetest.settings:get_np_group(setting.name)
 	local t
 	if value == nil then
 		t = setting.default
@@ -547,7 +547,7 @@ local function create_change_setting_formspec(dialogdata)
 	-- Setting-specific formspec elements
 	if setting.type == "bool" then
 		local selected_index = 1
-		if core.is_yes(get_current_value(setting)) then
+		if minetest.is_yes(get_current_value(setting)) then
 			selected_index = 2
 		end
 		formspec = "dropdown[3," .. height .. ";4,1;dd_setting_value;"
@@ -561,7 +561,7 @@ local function create_change_setting_formspec(dialogdata)
 		for index, value in ipairs(setting.values) do
 			-- translating value is not possible, since it's the value
 			--  that we set the setting to
-			formspec = formspec ..  core.formspec_escape(value) .. ","
+			formspec = formspec ..  minetest.formspec_escape(value) .. ","
 			if get_current_value(setting) == value then
 				selected_index = index
 			end
@@ -578,7 +578,7 @@ local function create_change_setting_formspec(dialogdata)
 			current_value = get_current_value(setting)
 		end
 		formspec = "field[0.28," .. height + 0.15 .. ";8,1;te_setting_value;;"
-				.. core.formspec_escape(current_value) .. "]"
+				.. minetest.formspec_escape(current_value) .. "]"
 				.. "button[8," .. height - 0.15 .. ";2,1;btn_browser_"
 				.. setting.type .. ";" .. fgettext("Browse") .. "]"
 		height = height + 1.15
@@ -597,7 +597,7 @@ local function create_change_setting_formspec(dialogdata)
 		local fields = {}
 		local function add_field(x, name, label, value)
 			fields[#fields + 1] = ("field[%f,%f;3.3,1;%s;%s;%s]"):format(
-				x, height, name, label, core.formspec_escape(value or "")
+				x, height, name, label, minetest.formspec_escape(value or "")
 			)
 		end
 		-- First row
@@ -660,13 +660,13 @@ local function create_change_setting_formspec(dialogdata)
 		formspec = formspec
 				.. "field[0.3," .. height .. ";3.3,1;te_x;"
 				.. fgettext("X") .. ";" -- X
-				.. core.formspec_escape(v3f[1] or "") .. "]"
+				.. minetest.formspec_escape(v3f[1] or "") .. "]"
 				.. "field[3.6," .. height .. ";3.3,1;te_y;"
 				.. fgettext("Y") .. ";" -- Y
-				.. core.formspec_escape(v3f[2] or "") .. "]"
+				.. minetest.formspec_escape(v3f[2] or "") .. "]"
 				.. "field[6.9," .. height .. ";3.3,1;te_z;"
 				.. fgettext("Z") .. ";" -- Z
-				.. core.formspec_escape(v3f[3] or "") .. "]"
+				.. minetest.formspec_escape(v3f[3] or "") .. "]"
 		height = height + 1.1
 
 	elseif setting.type == "flags" then
@@ -717,7 +717,7 @@ local function create_change_setting_formspec(dialogdata)
 			text = dialogdata.entered_text
 		end
 		formspec = "field[0.28," .. height + 0.15 .. ";" .. width .. ",1;te_setting_value;;"
-				.. core.formspec_escape(text) .. "]"
+				.. minetest.formspec_escape(text) .. "]"
 		height = height + 1.15
 	end
 
@@ -732,7 +732,7 @@ local function create_change_setting_formspec(dialogdata)
 		return ("box[%f,%f;%f,%f;%s]textarea[%f,%f;%f,%f;;%s;%s]"):format(
 			size.x, size.y, size.w, size.h, bg_color or "#000",
 			textarea.x, textarea.y, textarea.w, textarea.h,
-			core.formspec_escape(label), core.formspec_escape(text)
+			minetest.formspec_escape(label), minetest.formspec_escape(text)
 		)
 
 	end
@@ -788,55 +788,55 @@ local function handle_change_setting_buttons(this, fields)
 		if setting.type == "bool" then
 			local new_value = fields["dd_setting_value"]
 			-- Note: new_value is the actual (translated) value shown in the dropdown
-			core.settings:set_bool(setting.name, new_value == fgettext("Enabled"))
+			minetest.settings:set_bool(setting.name, new_value == fgettext("Enabled"))
 
 		elseif setting.type == "enum" then
 			local new_value = fields["dd_setting_value"]
-			core.settings:set(setting.name, new_value)
+			minetest.settings:set(setting.name, new_value)
 
 		elseif setting.type == "int" then
 			local new_value = tonumber(fields["te_setting_value"])
 			if not new_value or math.floor(new_value) ~= new_value then
 				this.data.error_message = fgettext_ne("Please enter a valid integer.")
 				this.data.entered_text = fields["te_setting_value"]
-				core.update_formspec(this:get_formspec())
+				minetest.update_formspec(this:get_formspec())
 				return true
 			end
 			if setting.min and new_value < setting.min then
 				this.data.error_message = fgettext_ne("The value must be at least $1.", setting.min)
 				this.data.entered_text = fields["te_setting_value"]
-				core.update_formspec(this:get_formspec())
+				minetest.update_formspec(this:get_formspec())
 				return true
 			end
 			if setting.max and new_value > setting.max then
 				this.data.error_message = fgettext_ne("The value must not be larger than $1.", setting.max)
 				this.data.entered_text = fields["te_setting_value"]
-				core.update_formspec(this:get_formspec())
+				minetest.update_formspec(this:get_formspec())
 				return true
 			end
-			core.settings:set(setting.name, new_value)
+			minetest.settings:set(setting.name, new_value)
 
 		elseif setting.type == "float" then
 			local new_value = tonumber(fields["te_setting_value"])
 			if not new_value then
 				this.data.error_message = fgettext_ne("Please enter a valid number.")
 				this.data.entered_text = fields["te_setting_value"]
-				core.update_formspec(this:get_formspec())
+				minetest.update_formspec(this:get_formspec())
 				return true
 			end
 			if setting.min and new_value < setting.min then
 				this.data.error_message = fgettext_ne("The value must be at least $1.", setting.min)
 				this.data.entered_text = fields["te_setting_value"]
-				core.update_formspec(this:get_formspec())
+				minetest.update_formspec(this:get_formspec())
 				return true
 			end
 			if setting.max and new_value > setting.max then
 				this.data.error_message = fgettext_ne("The value must not be larger than $1.", setting.max)
 				this.data.entered_text = fields["te_setting_value"]
-				core.update_formspec(this:get_formspec())
+				minetest.update_formspec(this:get_formspec())
 				return true
 			end
-			core.settings:set(setting.name, new_value)
+			minetest.settings:set(setting.name, new_value)
 
 		elseif setting.type == "flags" then
 			local values = {}
@@ -853,7 +853,7 @@ local function handle_change_setting_buttons(this, fields)
 			checkboxes = {}
 
 			local new_value = table.concat(values, ", ")
-			core.settings:set(setting.name, new_value)
+			minetest.settings:set(setting.name, new_value)
 
 		elseif setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
 			local np_flags = {}
@@ -882,20 +882,20 @@ local function handle_change_setting_buttons(this, fields)
 				lacunarity = fields["te_lacun"],
 				flags = table.concat(np_flags, ", ")
 			}
-			core.settings:set_np_group(setting.name, new_value)
+			minetest.settings:set_np_group(setting.name, new_value)
 
 		elseif setting.type == "v3f" then
 			local new_value = "("
 					.. fields["te_x"] .. ", "
 					.. fields["te_y"] .. ", "
 					.. fields["te_z"] .. ")"
-			core.settings:set(setting.name, new_value)
+			minetest.settings:set(setting.name, new_value)
 
 		else
 			local new_value = fields["te_setting_value"]
-			core.settings:set(setting.name, new_value)
+			minetest.settings:set(setting.name, new_value)
 		end
-		core.settings:write()
+		minetest.settings:write()
 		this:delete()
 		return true
 	end
@@ -906,18 +906,18 @@ local function handle_change_setting_buttons(this, fields)
 	end
 
 	if fields["btn_browser_path"] then
-		core.show_path_select_dialog("dlg_browse_path",
+		minetest.show_path_select_dialog("dlg_browse_path",
 			fgettext_ne("Select directory"), false)
 	end
 
 	if fields["btn_browser_filepath"] then
-		core.show_path_select_dialog("dlg_browse_path",
+		minetest.show_path_select_dialog("dlg_browse_path",
 			fgettext_ne("Select file"), true)
 	end
 
 	if fields["dlg_browse_path_accepted"] then
 		this.data.selected_path = fields["dlg_browse_path_accepted"]
-		core.update_formspec(this:get_formspec())
+		minetest.update_formspec(this:get_formspec())
 	end
 
 	if setting.type == "flags"
@@ -937,7 +937,7 @@ local function create_settings_formspec(tabview, _, tabdata)
 	local formspec = "size[12,5.4;true]" ..
 			"tablecolumns[color;tree;text,width=28;text]" ..
 			"tableoptions[background=#00000000;border=false]" ..
-			"field[0.3,0.1;10.2,1;search_string;;" .. core.formspec_escape(search_string) .. "]" ..
+			"field[0.3,0.1;10.2,1;search_string;;" .. minetest.formspec_escape(search_string) .. "]" ..
 			"field_close_on_enter[search_string;false]" ..
 			"button[10.2,-0.2;2,1;search;" .. fgettext("Search") .. "]" ..
 			"table[0,0.8;12,3.5;list_settings;"
@@ -945,7 +945,7 @@ local function create_settings_formspec(tabview, _, tabdata)
 	local current_level = 0
 	for _, entry in ipairs(settings) do
 		local name
-		if not core.settings:get_bool("main_menu_technical_settings") and entry.readable_name then
+		if not minetest.settings:get_bool("main_menu_technical_settings") and entry.readable_name then
 			name = fgettext_ne(entry.readable_name)
 		else
 			name = entry.name
@@ -957,24 +957,24 @@ local function create_settings_formspec(tabview, _, tabdata)
 
 		elseif entry.type == "bool" then
 			local value = get_current_value(entry)
-			if core.is_yes(value) then
+			if minetest.is_yes(value) then
 				value = fgettext("Enabled")
 			else
 				value = fgettext("Disabled")
 			end
-			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
+			formspec = formspec .. "," .. (current_level + 1) .. "," .. minetest.formspec_escape(name) .. ","
 					.. value .. ","
 
 		elseif entry.type == "key" then --luacheck: ignore
 			-- ignore key settings, since we have a special dialog for them
 
 		elseif entry.type == "noise_params_2d" or entry.type == "noise_params_3d" then
-			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
-					.. core.formspec_escape(get_current_np_group_as_string(entry)) .. ","
+			formspec = formspec .. "," .. (current_level + 1) .. "," .. minetest.formspec_escape(name) .. ","
+					.. minetest.formspec_escape(get_current_np_group_as_string(entry)) .. ","
 
 		else
-			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
-					.. core.formspec_escape(get_current_value(entry)) .. ","
+			formspec = formspec .. "," .. (current_level + 1) .. "," .. minetest.formspec_escape(name) .. ","
+					.. minetest.formspec_escape(get_current_value(entry)) .. ","
 		end
 	end
 
@@ -986,7 +986,7 @@ local function create_settings_formspec(tabview, _, tabdata)
 			"button[10,4.9;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
 			"button[7,4.9;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
 			"checkbox[0,4.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
-					.. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
+					.. dump(minetest.settings:get_bool("main_menu_technical_settings")) .. "]"
 
 	return formspec
 end
@@ -994,14 +994,14 @@ end
 local function handle_settings_buttons(this, fields, tabname, tabdata)
 	local list_enter = false
 	if fields["list_settings"] then
-		selected_setting = core.get_table_index("list_settings")
-		if core.explode_table_event(fields["list_settings"]).type == "DCL" then
+		selected_setting = minetest.get_table_index("list_settings")
+		if minetest.explode_table_event(fields["list_settings"]).type == "DCL" then
 			-- Directly toggle booleans
 			local setting = settings[selected_setting]
 			if setting and setting.type == "bool" then
 				local current_value = get_current_value(setting)
-				core.settings:set_bool(setting.name, not core.is_yes(current_value))
-				core.settings:write()
+				minetest.settings:set_bool(setting.name, not minetest.is_yes(current_value))
+				minetest.settings:write()
 				return true
 			else
 				list_enter = true
@@ -1029,14 +1029,14 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 					end
 				end
 				selected_setting = i
-				core.update_formspec(this:get_formspec())
+				minetest.update_formspec(this:get_formspec())
 				return true
 			end
 		else
 			-- Search for setting
 			search_string = fields.search_string
 			settings, selected_setting = filter_settings(full_settings, search_string)
-			core.update_formspec(this:get_formspec())
+			minetest.update_formspec(this:get_formspec())
 		end
 		return true
 	end
@@ -1056,9 +1056,9 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["btn_restore"] then
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
-			core.settings:remove(setting.name)
-			core.settings:write()
-			core.update_formspec(this:get_formspec())
+			minetest.settings:remove(setting.name)
+			minetest.settings:write()
+			minetest.update_formspec(this:get_formspec())
 		end
 		return true
 	end
@@ -1069,9 +1069,9 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 
 	if fields["cb_tech_settings"] then
-		core.settings:set("main_menu_technical_settings", fields["cb_tech_settings"])
-		core.settings:write()
-		core.update_formspec(this:get_formspec())
+		minetest.settings:set("main_menu_technical_settings", fields["cb_tech_settings"])
+		minetest.settings:write()
+		minetest.update_formspec(this:get_formspec())
 		return true
 	end
 
@@ -1091,5 +1091,5 @@ end
 -- For RUN_IN_PLACE the generated files may appear in the 'bin' folder.
 -- See comment and alternative line at the end of 'generate_from_settingtypes.lua'.
 
---assert(loadfile(core.get_builtin_path().."mainmenu"..DIR_DELIM..
+--assert(loadfile(minetest.get_builtin_path().."mainmenu"..DIR_DELIM..
 --		"generate_from_settingtypes.lua"))(parse_config_file(true, false))

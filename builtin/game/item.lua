@@ -15,7 +15,7 @@ end
 -- Item definition helpers
 --
 
-function core.inventorycube(img1, img2, img3)
+function minetest.inventorycube(img1, img2, img3)
 	img2 = img2 or img1
 	img3 = img3 or img1
 	return "[inventorycube"
@@ -24,7 +24,7 @@ function core.inventorycube(img1, img2, img3)
 			.. "{" .. img3:gsub("%^", "&")
 end
 
-function core.get_pointed_thing_position(pointed_thing, above)
+function minetest.get_pointed_thing_position(pointed_thing, above)
 	if pointed_thing.type == "node" then
 		if above then
 			-- The position where a node would be placed
@@ -37,7 +37,7 @@ function core.get_pointed_thing_position(pointed_thing, above)
 	end
 end
 
-function core.dir_to_facedir(dir, is6d)
+function minetest.dir_to_facedir(dir, is6d)
 	--account for y if requested
 	if is6d and math.abs(dir.y) > math.abs(dir.x) and math.abs(dir.y) > math.abs(dir.z) then
 
@@ -108,11 +108,11 @@ local facedir_to_dir_map = {
 	1, 6, 3, 5,
 	1, 4, 3, 2,
 }
-function core.facedir_to_dir(facedir)
+function minetest.facedir_to_dir(facedir)
 	return facedir_to_dir[facedir_to_dir_map[facedir % 32]]
 end
 
-function core.dir_to_wallmounted(dir)
+function minetest.dir_to_wallmounted(dir)
 	if math.abs(dir.y) > math.max(math.abs(dir.x), math.abs(dir.z)) then
 		if dir.y < 0 then
 			return 1
@@ -143,25 +143,25 @@ local wallmounted_to_dir = {
 	{x =  0, y =  0, z =  1},
 	{x =  0, y =  0, z = -1},
 }
-function core.wallmounted_to_dir(wallmounted)
+function minetest.wallmounted_to_dir(wallmounted)
 	return wallmounted_to_dir[wallmounted % 8]
 end
 
-function core.dir_to_yaw(dir)
+function minetest.dir_to_yaw(dir)
 	return -math.atan2(dir.x, dir.z)
 end
 
-function core.yaw_to_dir(yaw)
+function minetest.yaw_to_dir(yaw)
 	return {x = -math.sin(yaw), y = 0, z = math.cos(yaw)}
 end
 
-function core.is_colored_paramtype(ptype)
+function minetest.is_colored_paramtype(ptype)
 	return (ptype == "color") or (ptype == "colorfacedir") or
 		(ptype == "colorwallmounted")
 end
 
-function core.strip_param2_color(param2, paramtype2)
-	if not core.is_colored_paramtype(paramtype2) then
+function minetest.strip_param2_color(param2, paramtype2)
+	if not minetest.is_colored_paramtype(paramtype2) then
 		return nil
 	end
 	if paramtype2 == "colorfacedir" then
@@ -173,7 +173,7 @@ function core.strip_param2_color(param2, paramtype2)
 	return param2
 end
 
-function core.get_node_drops(node, toolname)
+function minetest.get_node_drops(node, toolname)
 	-- Compatibility, if node is string
 	local nodename = node
 	local param2 = 0
@@ -182,11 +182,11 @@ function core.get_node_drops(node, toolname)
 		nodename = node.name
 		param2 = node.param2
 	end
-	local def = core.registered_nodes[nodename]
+	local def = minetest.registered_nodes[nodename]
 	local drop = def and def.drop
 	local ptype = def and def.paramtype2
 	-- get color, if there is color (otherwise nil)
-	local palette_index = core.strip_param2_color(param2, ptype)
+	local palette_index = minetest.strip_param2_color(param2, ptype)
 	if drop == nil then
 		-- default drop
 		if palette_index then
@@ -252,10 +252,10 @@ end
 
 -- Returns a logging function. For empty names, does not log.
 local function make_log(name)
-	return name ~= "" and core.log or function() end
+	return name ~= "" and minetest.log or function() end
 end
 
-function core.item_place_node(itemstack, placer, pointed_thing, param2,
+function minetest.item_place_node(itemstack, placer, pointed_thing, param2,
 		prevent_after_place)
 	local def = itemstack:get_definition()
 	if def.type ~= "node" or pointed_thing.type ~= "node" then
@@ -263,26 +263,26 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	end
 
 	local under = pointed_thing.under
-	local oldnode_under = core.get_node_or_nil(under)
+	local oldnode_under = minetest.get_node_or_nil(under)
 	local above = pointed_thing.above
-	local oldnode_above = core.get_node_or_nil(above)
+	local oldnode_above = minetest.get_node_or_nil(above)
 	local playername = user_name(placer)
 	local log = make_log(playername)
 
 	if not oldnode_under or not oldnode_above then
 		log("info", playername .. " tried to place"
-			.. " node in unloaded position " .. core.pos_to_string(above))
+			.. " node in unloaded position " .. minetest.pos_to_string(above))
 		return itemstack, nil
 	end
 
-	local olddef_under = core.registered_nodes[oldnode_under.name]
-	olddef_under = olddef_under or core.nodedef_default
-	local olddef_above = core.registered_nodes[oldnode_above.name]
-	olddef_above = olddef_above or core.nodedef_default
+	local olddef_under = minetest.registered_nodes[oldnode_under.name]
+	olddef_under = olddef_under or minetest.nodedef_default
+	local olddef_above = minetest.registered_nodes[oldnode_above.name]
+	olddef_above = olddef_above or minetest.nodedef_default
 
 	if not olddef_above.buildable_to and not olddef_under.buildable_to then
 		log("info", playername .. " tried to place"
-			.. " node in invalid position " .. core.pos_to_string(above)
+			.. " node in invalid position " .. minetest.pos_to_string(above)
 			.. ", replacing " .. oldnode_above.name)
 		return itemstack, nil
 	end
@@ -296,19 +296,19 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		place_to = {x = under.x, y = under.y, z = under.z}
 	end
 
-	if core.is_protected(place_to, playername) then
+	if minetest.is_protected(place_to, playername) then
 		log("action", playername
 				.. " tried to place " .. def.name
 				.. " at protected position "
-				.. core.pos_to_string(place_to))
-		core.record_protection_violation(place_to, playername)
+				.. minetest.pos_to_string(place_to))
+		minetest.record_protection_violation(place_to, playername)
 		return itemstack, nil
 	end
 
 	log("action", playername .. " places node "
-		.. def.name .. " at " .. core.pos_to_string(place_to))
+		.. def.name .. " at " .. minetest.pos_to_string(place_to))
 
-	local oldnode = core.get_node(place_to)
+	local oldnode = minetest.get_node(place_to)
 	local newnode = {name = def.name, param1 = 0, param2 = param2 or 0}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
@@ -321,7 +321,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 			y = under.y - above.y,
 			z = under.z - above.z
 		}
-		newnode.param2 = core.dir_to_wallmounted(dir)
+		newnode.param2 = minetest.dir_to_wallmounted(dir)
 	-- Calculate the direction for furnaces and chests and stuff
 	elseif (def.paramtype2 == "facedir" or
 			def.paramtype2 == "colorfacedir") and not param2 then
@@ -332,7 +332,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 				y = above.y - placer_pos.y,
 				z = above.z - placer_pos.z
 			}
-			newnode.param2 = core.dir_to_facedir(dir)
+			newnode.param2 = minetest.dir_to_facedir(dir)
 			log("action", "facedir: " .. newnode.param2)
 		end
 	end
@@ -357,15 +357,15 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	end
 
 	-- Check if the node is attached and if it can be placed there
-	if core.get_item_group(def.name, "attached_node") ~= 0 and
+	if minetest.get_item_group(def.name, "attached_node") ~= 0 and
 		not builtin_shared.check_attached_node(place_to, newnode) then
 		log("action", "attached node " .. def.name ..
-			" can not be placed at " .. core.pos_to_string(place_to))
+			" can not be placed at " .. minetest.pos_to_string(place_to))
 		return itemstack, nil
 	end
 
 	-- Add node and update
-	core.add_node(place_to, newnode)
+	minetest.add_node(place_to, newnode)
 
 	local take_item = true
 
@@ -381,7 +381,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	end
 
 	-- Run script hook
-	for _, callback in ipairs(core.registered_on_placenodes) do
+	for _, callback in ipairs(minetest.registered_on_placenodes) do
 		-- Deepcopy pos, node and pointed_thing because callback can modify them
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
 		local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
@@ -399,39 +399,39 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 end
 
 -- deprecated, item_place does not call this
-function core.item_place_object(itemstack, placer, pointed_thing)
-	local pos = core.get_pointed_thing_position(pointed_thing, true)
+function minetest.item_place_object(itemstack, placer, pointed_thing)
+	local pos = minetest.get_pointed_thing_position(pointed_thing, true)
 	if pos ~= nil then
 		local item = itemstack:take_item()
-		core.add_item(pos, item)
+		minetest.add_item(pos, item)
 	end
 	return itemstack
 end
 
-function core.item_place(itemstack, placer, pointed_thing, param2)
+function minetest.item_place(itemstack, placer, pointed_thing, param2)
 	-- Call on_rightclick if the pointed node defines it
 	if pointed_thing.type == "node" and placer and
 			not placer:get_player_control().sneak then
-		local n = core.get_node(pointed_thing.under)
+		local n = minetest.get_node(pointed_thing.under)
 		local nn = n.name
-		if core.registered_nodes[nn] and core.registered_nodes[nn].on_rightclick then
-			return core.registered_nodes[nn].on_rightclick(pointed_thing.under, n,
+		if minetest.registered_nodes[nn] and minetest.registered_nodes[nn].on_rightclick then
+			return minetest.registered_nodes[nn].on_rightclick(pointed_thing.under, n,
 					placer, itemstack, pointed_thing) or itemstack, nil
 		end
 	end
 
 	-- Place if node, otherwise do nothing
 	if itemstack:get_definition().type == "node" then
-		return core.item_place_node(itemstack, placer, pointed_thing, param2)
+		return minetest.item_place_node(itemstack, placer, pointed_thing, param2)
 	end
 	return itemstack, nil
 end
 
-function core.item_secondary_use(itemstack, placer)
+function minetest.item_secondary_use(itemstack, placer)
 	return itemstack
 end
 
-function core.item_drop(itemstack, dropper, pos)
+function minetest.item_drop(itemstack, dropper, pos)
 	local dropper_is_player = dropper and dropper:is_player()
 	local p = table.copy(pos)
 	local cnt = itemstack:get_count()
@@ -439,7 +439,7 @@ function core.item_drop(itemstack, dropper, pos)
 		p.y = p.y + 1.2
 	end
 	local item = itemstack:take_item(cnt)
-	local obj = core.add_item(p, item)
+	local obj = minetest.add_item(p, item)
 	if obj then
 		if dropper_is_player then
 			local dir = dropper:get_look_dir()
@@ -455,8 +455,8 @@ function core.item_drop(itemstack, dropper, pos)
 	-- environment failed
 end
 
-function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
-	for _, callback in pairs(core.registered_on_item_eats) do
+function minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+	for _, callback in pairs(minetest.registered_on_item_eats) do
 		local result = callback(hp_change, replace_with_item, itemstack, user, pointed_thing)
 		if result then
 			return result
@@ -481,7 +481,7 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 				else
 					local pos = user:get_pos()
 					pos.y = math.floor(pos.y + 0.5)
-					core.add_item(pos, replace_with_item)
+					minetest.add_item(pos, replace_with_item)
 				end
 			end
 		end
@@ -489,17 +489,17 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 	return itemstack
 end
 
-function core.item_eat(hp_change, replace_with_item)
+function minetest.item_eat(hp_change, replace_with_item)
 	return function(itemstack, user, pointed_thing)  -- closure
 		if user then
-			return core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+			return minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
 		end
 	end
 end
 
-function core.node_punch(pos, node, puncher, pointed_thing)
+function minetest.node_punch(pos, node, puncher, pointed_thing)
 	-- Run script hook
-	for _, callback in ipairs(core.registered_on_punchnodes) do
+	for _, callback in ipairs(minetest.registered_on_punchnodes) do
 		-- Copy pos and node because callback can modify them
 		local pos_copy = vector.new(pos)
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
@@ -508,7 +508,7 @@ function core.node_punch(pos, node, puncher, pointed_thing)
 	end
 end
 
-function core.handle_node_drops(pos, drops, digger)
+function minetest.handle_node_drops(pos, drops, digger)
 	-- Add dropped items to object's inventory
 	local inv = digger and digger:get_inventory()
 	local give_item
@@ -531,50 +531,50 @@ function core.handle_node_drops(pos, drops, digger)
 				y = pos.y + math.random()/2-0.25,
 				z = pos.z + math.random()/2-0.25,
 			}
-			core.add_item(p, left)
+			minetest.add_item(p, left)
 		end
 	end
 end
 
-function core.node_dig(pos, node, digger)
+function minetest.node_dig(pos, node, digger)
 	local diggername = user_name(digger)
 	local log = make_log(diggername)
-	local def = core.registered_nodes[node.name]
+	local def = minetest.registered_nodes[node.name]
 	if def and (not def.diggable or
 			(def.can_dig and not def.can_dig(pos, digger))) then
 		log("info", diggername .. " tried to dig "
 			.. node.name .. " which is not diggable "
-			.. core.pos_to_string(pos))
+			.. minetest.pos_to_string(pos))
 		return
 	end
 
-	if core.is_protected(pos, diggername) then
+	if minetest.is_protected(pos, diggername) then
 		log("action", diggername
 				.. " tried to dig " .. node.name
 				.. " at protected position "
-				.. core.pos_to_string(pos))
-		core.record_protection_violation(pos, diggername)
+				.. minetest.pos_to_string(pos))
+		minetest.record_protection_violation(pos, diggername)
 		return
 	end
 
 	log('action', diggername .. " digs "
-		.. node.name .. " at " .. core.pos_to_string(pos))
+		.. node.name .. " at " .. minetest.pos_to_string(pos))
 
 	local wielded = digger and digger:get_wielded_item()
-	local drops = core.get_node_drops(node, wielded and wielded:get_name())
+	local drops = minetest.get_node_drops(node, wielded and wielded:get_name())
 
 	if wielded then
 		local wdef = wielded:get_definition()
 		local tp = wielded:get_tool_capabilities()
-		local dp = core.get_dig_params(def and def.groups, tp)
+		local dp = minetest.get_dig_params(def and def.groups, tp)
 		if wdef and wdef.after_use then
 			wielded = wdef.after_use(wielded, digger, node, dp) or wielded
 		else
 			-- Wear out tool
-			if not core.settings:get_bool("creative_mode") then
+			if not minetest.settings:get_bool("creative_mode") then
 				wielded:add_wear(dp.wear)
 				if wielded:get_count() == 0 and wdef.sound and wdef.sound.breaks then
-					core.sound_play(wdef.sound.breaks, {pos = pos, gain = 0.5})
+					minetest.sound_play(wdef.sound.breaks, {pos = pos, gain = 0.5})
 				end
 			end
 		end
@@ -583,7 +583,7 @@ function core.node_dig(pos, node, digger)
 
 	-- Check to see if metadata should be preserved.
 	if def and def.preserve_metadata then
-		local oldmeta = core.get_meta(pos):to_table().fields
+		local oldmeta = minetest.get_meta(pos):to_table().fields
 		-- Copy pos and node because the callback can modify them.
 		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
@@ -596,15 +596,15 @@ function core.node_dig(pos, node, digger)
 	end
 
 	-- Handle drops
-	core.handle_node_drops(pos, drops, digger)
+	minetest.handle_node_drops(pos, drops, digger)
 
 	local oldmetadata = nil
 	if def and def.after_dig_node then
-		oldmetadata = core.get_meta(pos):to_table()
+		oldmetadata = minetest.get_meta(pos):to_table()
 	end
 
 	-- Remove node and update
-	core.remove_node(pos)
+	minetest.remove_node(pos)
 
 	-- Run callback
 	if def and def.after_dig_node then
@@ -615,10 +615,10 @@ function core.node_dig(pos, node, digger)
 	end
 
 	-- Run script hook
-	for _, callback in ipairs(core.registered_on_dignodes) do
-		local origin = core.callback_origins[callback]
+	for _, callback in ipairs(minetest.registered_on_dignodes) do
+		local origin = minetest.callback_origins[callback]
 		if origin then
-			core.set_last_run_mod(origin.mod)
+			minetest.set_last_run_mod(origin.mod)
 		end
 
 		-- Copy pos and node because callback can modify them
@@ -628,19 +628,19 @@ function core.node_dig(pos, node, digger)
 	end
 end
 
-function core.itemstring_with_palette(item, palette_index)
+function minetest.itemstring_with_palette(item, palette_index)
 	local stack = ItemStack(item) -- convert to ItemStack
 	stack:get_meta():set_int("palette_index", palette_index)
 	return stack:to_string()
 end
 
-function core.itemstring_with_color(item, colorstring)
+function minetest.itemstring_with_color(item, colorstring)
 	local stack = ItemStack(item) -- convert to ItemStack
 	stack:get_meta():set_string("color", colorstring)
 	return stack:to_string()
 end
 
--- This is used to allow mods to redefine core.item_place and so on
+-- This is used to allow mods to redefine minetest.item_place and so on
 -- NOTE: This is not the preferred way. Preferred way is to provide enough
 --       callbacks to not require redefining global functions. -celeron55
 local function redef_wrapper(table, name)
@@ -653,7 +653,7 @@ end
 -- Item definition defaults
 --
 
-core.nodedef_default = {
+minetest.nodedef_default = {
 	-- Item properties
 	type="node",
 	-- name intentionally not defined here
@@ -669,20 +669,20 @@ core.nodedef_default = {
 	node_placement_prediction = nil,
 
 	-- Interaction callbacks
-	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
-	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
+	on_place = redef_wrapper(core, 'item_place'), -- minetest.item_place
+	on_drop = redef_wrapper(core, 'item_drop'), -- minetest.item_drop
 	on_use = nil,
 	can_dig = nil,
 
-	on_punch = redef_wrapper(core, 'node_punch'), -- core.node_punch
+	on_punch = redef_wrapper(core, 'node_punch'), -- minetest.node_punch
 	on_rightclick = nil,
-	on_dig = redef_wrapper(core, 'node_dig'), -- core.node_dig
+	on_dig = redef_wrapper(core, 'node_dig'), -- minetest.node_dig
 
 	on_receive_fields = nil,
 
-	on_metadata_inventory_move = core.node_metadata_inventory_move_allow_all,
-	on_metadata_inventory_offer = core.node_metadata_inventory_offer_allow_all,
-	on_metadata_inventory_take = core.node_metadata_inventory_take_allow_all,
+	on_metadata_inventory_move = minetest.node_metadata_inventory_move_allow_all,
+	on_metadata_inventory_offer = minetest.node_metadata_inventory_offer_allow_all,
+	on_metadata_inventory_take = minetest.node_metadata_inventory_take_allow_all,
 
 	-- Node properties
 	drawtype = "normal",
@@ -718,7 +718,7 @@ core.nodedef_default = {
 	legacy_wallmounted = false,
 }
 
-core.craftitemdef_default = {
+minetest.craftitemdef_default = {
 	type="craft",
 	-- name intentionally not defined here
 	description = "",
@@ -731,13 +731,13 @@ core.craftitemdef_default = {
 	tool_capabilities = nil,
 
 	-- Interaction callbacks
-	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
-	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
+	on_place = redef_wrapper(core, 'item_place'), -- minetest.item_place
+	on_drop = redef_wrapper(core, 'item_drop'), -- minetest.item_drop
 	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
 	on_use = nil,
 }
 
-core.tooldef_default = {
+minetest.tooldef_default = {
 	type="tool",
 	-- name intentionally not defined here
 	description = "",
@@ -750,13 +750,13 @@ core.tooldef_default = {
 	tool_capabilities = nil,
 
 	-- Interaction callbacks
-	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
+	on_place = redef_wrapper(core, 'item_place'), -- minetest.item_place
 	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
-	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
+	on_drop = redef_wrapper(core, 'item_drop'), -- minetest.item_drop
 	on_use = nil,
 }
 
-core.noneitemdef_default = {  -- This is used for the hand and unknown items
+minetest.noneitemdef_default = {  -- This is used for the hand and unknown items
 	type="none",
 	-- name intentionally not defined here
 	description = "",

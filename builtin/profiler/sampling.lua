@@ -76,7 +76,7 @@ function sampler.log(modname, instrument_name, time_diff)
 		if time_diff < 0 then
 			-- This **might** have happened on a semi-regular basis with huge mods,
 			-- resulting in negative statistics (perhaps midnight time jumps or ntp corrections?).
-			core.log("warning", format(
+			minetest.log("warning", format(
 					"Time travel of %s::%s by %dµs.",
 					modname, instrument_name, time_diff
 			))
@@ -185,21 +185,21 @@ end
 function sampler.init()
 	sampler.reset()
 
-	if core.settings:get_bool("instrument.profiler") then
-		core.register_globalstep(function()
+	if minetest.settings:get_bool("instrument.profiler") then
+		minetest.register_globalstep(function()
 			if logged_time == 0 then
 				return
 			end
 			return profiler.empty_instrument()
 		end)
-		core.register_globalstep(profiler.instrument {
+		minetest.register_globalstep(profiler.instrument {
 			func = sample,
 			mod = "*profiler*",
 			class = "Sampler (update stats)",
 			label = false,
 		})
 	else
-		core.register_globalstep(sample)
+		minetest.register_globalstep(sample)
 	end
 end
 
