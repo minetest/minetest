@@ -16,7 +16,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local format, pairs, type = string.format, pairs, type
-local core, get_current_modname = core, minetest.get_current_modname
+local minetest, get_current_modname = minetest, minetest.get_current_modname
 local profiler, sampler, get_bool_default = ...
 
 local instrument_builtin = get_bool_default("instrument.builtin", false)

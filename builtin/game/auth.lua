@@ -5,13 +5,13 @@
 --
 
 -- Make the auth object private, deny access to mods
-local core_auth = minetest.auth
+local minetest_auth = minetest.auth
 minetest.auth = nil
 
 minetest.builtin_auth_handler = {
 	get_auth = function(name)
 		assert(type(name) == "string")
-		local auth_entry = core_auth.read(name)
+		local auth_entry = minetest_auth.read(name)
 		-- If no such auth found, return nil
 		if not auth_entry then
 			return nil
@@ -49,7 +49,7 @@ minetest.builtin_auth_handler = {
 		assert(type(name) == "string")
 		assert(type(password) == "string")
 		minetest.log('info', "Built-in authentication handler adding player '"..name.."'")
-		return core_auth.create({
+		return minetest_auth.create({
 			name = name,
 			password = password,
 			privileges = minetest.string_to_privs(minetest.settings:get("default_privs")),
@@ -58,30 +58,30 @@ minetest.builtin_auth_handler = {
 	end,
 	delete_auth = function(name)
 		assert(type(name) == "string")
-		local auth_entry = core_auth.read(name)
+		local auth_entry = minetest_auth.read(name)
 		if not auth_entry then
 			return false
 		end
 		minetest.log('info', "Built-in authentication handler deleting player '"..name.."'")
-		return core_auth.delete(name)
+		return minetest_auth.delete(name)
 	end,
 	set_password = function(name, password)
 		assert(type(name) == "string")
 		assert(type(password) == "string")
-		local auth_entry = core_auth.read(name)
+		local auth_entry = minetest_auth.read(name)
 		if not auth_entry then
 			minetest.builtin_auth_handler.create_auth(name, password)
 		else
 			minetest.log('info', "Built-in authentication handler setting password of player '"..name.."'")
 			auth_entry.password = password
-			core_auth.save(auth_entry)
+			minetest_auth.save(auth_entry)
 		end
 		return true
 	end,
 	set_privileges = function(name, privileges)
 		assert(type(name) == "string")
 		assert(type(privileges) == "table")
-		local auth_entry = core_auth.read(name)
+		local auth_entry = minetest_auth.read(name)
 		if not auth_entry then
 			auth_entry = minetest.builtin_auth_handler.create_auth(name,
 				minetest.get_password_hash(name,
@@ -103,23 +103,23 @@ minetest.builtin_auth_handler = {
 		end
 
 		auth_entry.privileges = privileges
-		core_auth.save(auth_entry)
+		minetest_auth.save(auth_entry)
 		minetest.notify_authentication_modified(name)
 	end,
 	reload = function()
-		core_auth.reload()
+		minetest_auth.reload()
 		return true
 	end,
 	record_login = function(name)
 		assert(type(name) == "string")
-		local auth_entry = core_auth.read(name)
+		local auth_entry = minetest_auth.read(name)
 		assert(auth_entry)
 		auth_entry.last_login = os.time()
-		core_auth.save(auth_entry)
+		minetest_auth.save(auth_entry)
 	end,
 	iterate = function()
 		local names = {}
-		local nameslist = core_auth.list_names()
+		local nameslist = minetest_auth.list_names()
 		for k,v in pairs(nameslist) do
 			names[v] = true
 		end
@@ -131,7 +131,7 @@ minetest.register_on_prejoinplayer(function(name, ip)
 	if minetest.registered_auth_handler ~= nil then
 		return -- Don't do anything if custom auth handler registered
 	end
-	local auth_entry = core_auth.read(name)
+	local auth_entry = minetest_auth.read(name)
 	if auth_entry ~= nil then
 		return
 	end

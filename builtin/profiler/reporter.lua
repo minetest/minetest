@@ -18,7 +18,7 @@
 local DIR_DELIM, LINE_DELIM = DIR_DELIM, "\n"
 local table, unpack, string, pairs, io, os = table, unpack, string, pairs, io, os
 local rep, sprintf, tonumber = string.rep, string.format, tonumber
-local core, settings = core, minetest.settings
+local minetest, settings = minetest, minetest.settings
 local reporter = {}
 
 ---

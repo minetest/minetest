@@ -17,7 +17,7 @@
 local setmetatable = setmetatable
 local pairs, format = pairs, string.format
 local min, max, huge = math.min, math.max, math.huge
-local core = core
+local minetest = minetest
 
 local profiler = ...
 -- Split sampler and profile up, to possibly allow for rotation later.

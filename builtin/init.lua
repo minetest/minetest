@@ -8,7 +8,7 @@
 -- Initialize some very basic things
 function minetest.debug(...) minetest.log(table.concat({...}, "\t")) end
 if minetest.print then
-	local core_print = minetest.print
+	local minetest_print = minetest.print
 	-- Override native print and use
 	-- terminal if that's turned on
 	function print(...)
@@ -16,7 +16,7 @@ if minetest.print then
 		for i = 1, n do
 			t[i] = tostring(t[i])
 		end
-		core_print(table.concat(t, "\t"))
+		minetest_print(table.concat(t, "\t"))
 	end
 	minetest.print = nil -- don't pollute our namespace
 end
