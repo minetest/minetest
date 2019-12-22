@@ -782,10 +782,13 @@ void Client::initLocalMapSaving(const Address &address,
 		return;
 	}
 
+	std::string hostname_escaped = hostname;
+	str_replace(hostname_escaped, ':', '_');
+
 	const std::string world_path = porting::path_user
 		+ DIR_DELIM + "worlds"
 		+ DIR_DELIM + "server_"
-		+ hostname + "_" + std::to_string(address.getPort());
+		+ hostname_escaped + "_" + std::to_string(address.getPort());
 
 	fs::CreateAllDirs(world_path);
 
