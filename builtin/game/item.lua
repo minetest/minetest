@@ -669,14 +669,14 @@ minetest.nodedef_default = {
 	node_placement_prediction = nil,
 
 	-- Interaction callbacks
-	on_place = redef_wrapper(core, 'item_place'), -- minetest.item_place
-	on_drop = redef_wrapper(core, 'item_drop'), -- minetest.item_drop
+	on_place = redef_wrapper(minetest, 'item_place'), -- minetest.item_place
+	on_drop = redef_wrapper(minetest, 'item_drop'), -- minetest.item_drop
 	on_use = nil,
 	can_dig = nil,
 
-	on_punch = redef_wrapper(core, 'node_punch'), -- minetest.node_punch
+	on_punch = redef_wrapper(minetest, 'node_punch'), -- minetest.node_punch
 	on_rightclick = nil,
-	on_dig = redef_wrapper(core, 'node_dig'), -- minetest.node_dig
+	on_dig = redef_wrapper(minetest, 'node_dig'), -- minetest.node_dig
 
 	on_receive_fields = nil,
 
@@ -731,9 +731,9 @@ minetest.craftitemdef_default = {
 	tool_capabilities = nil,
 
 	-- Interaction callbacks
-	on_place = redef_wrapper(core, 'item_place'), -- minetest.item_place
-	on_drop = redef_wrapper(core, 'item_drop'), -- minetest.item_drop
-	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
+	on_place = redef_wrapper(minetest, 'item_place'), -- minetest.item_place
+	on_drop = redef_wrapper(minetest, 'item_drop'), -- minetest.item_drop
+	on_secondary_use = redef_wrapper(minetest, 'item_secondary_use'),
 	on_use = nil,
 }
 
@@ -750,9 +750,9 @@ minetest.tooldef_default = {
 	tool_capabilities = nil,
 
 	-- Interaction callbacks
-	on_place = redef_wrapper(core, 'item_place'), -- minetest.item_place
-	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
-	on_drop = redef_wrapper(core, 'item_drop'), -- minetest.item_drop
+	on_place = redef_wrapper(minetest, 'item_place'), -- minetest.item_place
+	on_secondary_use = redef_wrapper(minetest, 'item_secondary_use'),
+	on_drop = redef_wrapper(minetest, 'item_drop'), -- minetest.item_drop
 	on_use = nil,
 }
 
@@ -769,8 +769,8 @@ minetest.noneitemdef_default = {  -- This is used for the hand and unknown items
 	tool_capabilities = nil,
 
 	-- Interaction callbacks
-	on_place = redef_wrapper(core, 'item_place'),
-	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
+	on_place = redef_wrapper(minetest, 'item_place'),
+	on_secondary_use = redef_wrapper(minetest, 'item_secondary_use'),
 	on_drop = nil,
 	on_use = nil,
 }
