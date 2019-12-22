@@ -34,7 +34,7 @@ setmetatable(minetest.env, {
 			minetest.log("deprecated", "minetest.env:[...] is deprecated and should be replaced with minetest.[...]")
 			envref_deprecation_message_printed = true
 		end
-		local func = core[key]
+		local func = minetest[key]
 		if type(func) == "function" then
 			rawset(table, key, function(self, ...)
 				return func(...)

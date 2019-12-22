@@ -26,7 +26,7 @@ local hud_ids = {}
 local function scaleToDefault(player, field)
 	-- Scale "hp" or "breath" to the default dimensions
 	local current = player["get_" .. field](player)
-	local nominal = core["PLAYER_MAX_".. field:upper() .. "_DEFAULT"]
+	local nominal = minetest["PLAYER_MAX_".. field:upper() .. "_DEFAULT"]
 	local max_display = math.max(nominal,
 		math.max(player:get_properties()[field .. "_max"], current))
 	return current / max_display * nominal

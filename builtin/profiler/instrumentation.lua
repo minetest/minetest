@@ -209,7 +209,7 @@ local function init()
 
 	if get_bool_default("instrument.global_callback", true) then
 		for func_name, _ in pairs(register_functions) do
-			core[func_name] = instrument_register(core[func_name], func_name)
+			minetest[func_name] = instrument_register(minetest[func_name], func_name)
 		end
 	end
 
