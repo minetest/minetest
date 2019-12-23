@@ -1391,8 +1391,7 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 #    debug.txt is only moved if this setting is positive.
 debug_log_size_max (Debug log file size threshold) int 50
 
-#    Like "Debug log level" but shows log messages in the chat.
-#    Restart Minetest to apply changes.
+#    Minimal level of logging to be written to chat.
 chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose
 
 #    Enable IPv6 support (for both client and server).

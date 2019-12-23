@@ -840,6 +840,7 @@ private:
 	SoundMaker *soundmaker = nullptr;
 
 	ChatBackend *chat_backend = nullptr;
+	LogOutputBuffer m_chat_log_buf;
 
 	EventManager *eventmgr = nullptr;
 	QuicktuneShortcutter *quicktune = nullptr;
@@ -911,6 +912,7 @@ private:
 };
 
 Game::Game() :
+	m_chat_log_buf(g_logger),
 	m_game_ui(new GameUI())
 {
 	g_settings->registerChangedCallback("doubletap_jump",
@@ -1177,6 +1179,7 @@ void Game::shutdown()
 
 	chat_backend->addMessage(L"", L"# Disconnected.");
 	chat_backend->addMessage(L"", L"");
+	m_chat_log_buf.clear();
 
 	if (client) {
 		client->Stop();
@@ -2814,25 +2817,9 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 void Game::updateChat(f32 dtime, const v2u32 &screensize)
 {
-	// Add chat log output for errors to be shown in chat
-	static LogOutputBuffer chat_log_buf(g_logger);
-	static bool logger_initialized = false;
-
-	if (!logger_initialized) {
-		std::string conf_loglev = g_settings->get("chat_log_level");
-		LogLevel log_level = Logger::stringToLevel(conf_loglev);
-		if (log_level == LL_MAX) {
-			warningstream << "Supplied unrecognized chat_log_level; "
-				"showing none." << std::endl;
-			log_level = LL_NONE;
-		}
-		chat_log_buf.setLogLevel(log_level);
-		logger_initialized = true;
-	}
-
 	// Get new messages from error log buffer
-	while (!chat_log_buf.empty())
-		chat_backend->addMessage(L"", utf8_to_wide(chat_log_buf.get()));
+	while (!m_chat_log_buf.empty())
+		chat_backend->addMessage(L"", utf8_to_wide(m_chat_log_buf.get()));
 
 	// Get new messages from client
 	std::wstring message;

@@ -147,22 +147,26 @@ private:
 class LogOutputBuffer : public ICombinedLogOutput {
 public:
 	LogOutputBuffer(Logger &logger) :
-		m_logger(logger) {};
+		m_logger(logger)
+	{
+		updateLogLevel();
+	};
 
-	~LogOutputBuffer()
+	virtual ~LogOutputBuffer()
 	{
 		m_logger.removeOutput(this);
 	}
 
-	void setLogLevel(LogLevel lev)
-	{
-		m_logger.removeOutput(this);
-		m_logger.addOutputMaxLevel(this, lev);
-	}
+	void updateLogLevel();
 
 	void logRaw(LogLevel lev, const std::string &line);
 
-	bool empty()
+	void clear()
+	{
+		m_buffer = std::queue<std::string>();
+	}
+
+	bool empty() const
 	{
 		return m_buffer.empty();
 	}

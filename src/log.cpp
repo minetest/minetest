@@ -375,6 +375,20 @@ void StreamLogOutput::logRaw(LogLevel lev, const std::string &line)
 	}
 }
 
+void LogOutputBuffer::updateLogLevel()
+{
+	const std::string &conf_loglev = g_settings->get("chat_log_level");
+	LogLevel log_level = Logger::stringToLevel(conf_loglev);
+	if (log_level == LL_MAX) {
+		warningstream << "Supplied unrecognized chat_log_level; "
+			"showing none." << std::endl;
+		log_level = LL_NONE;
+	}
+
+	m_logger.removeOutput(this);
+	m_logger.addOutputMaxLevel(this, log_level);
+}
+
 void LogOutputBuffer::logRaw(LogLevel lev, const std::string &line)
 {
 	std::string color;
@@ -397,7 +411,7 @@ void LogOutputBuffer::logRaw(LogLevel lev, const std::string &line)
 		}
 	}
 
- 	m_buffer.push(color.append(line));
+	m_buffer.push(color.append(line));
 }
 
 ////
