@@ -63,6 +63,7 @@ by texture packs. All existing fallback textures can be found in the directory
 ### Gameplay textures
 
 * `bubble.png`: the bubble texture when the player is drowning
+                (default size: 12×12)
 
 * `crack_anylength.png`: node overlay texture when digging
 
@@ -74,6 +75,7 @@ by texture packs. All existing fallback textures can be found in the directory
 * `halo.png`: used for the node highlighting mesh
 
 * `heart.png`: used to display the health points of the player
+               (default size: 12×12)
 
 * `minimap_mask_round.png`: round minimap mask, white gets replaced by the map
 * `minimap_mask_square.png`: mask used for the square minimap
@@ -101,6 +103,9 @@ by texture packs. All existing fallback textures can be found in the directory
 * `unknown_object.png`: shown texture when an entity definition was not found
 
 * `wieldhand.png`: texture of the wieldhand
+
+Note: The default textures of `player.png`, `player_back.png` and `wieldhand.png`
+are placeholders intended to be overwritten by the game.
 
 ### Mainmenu textures
 
