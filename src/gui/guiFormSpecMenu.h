@@ -83,11 +83,14 @@ class GUIFormSpecMenu : public GUIModalMenu
 		ItemSpec() = default;
 
 		ItemSpec(const InventoryLocation &a_inventoryloc,
-				const std::string &a_listname,
-				s32 a_i) :
+				const std::string &a_listname, s32 a_i,
+				const v2s32 &a_spacing, const v2s32 &a_imgsize, s32 a_border) :
 			inventoryloc(a_inventoryloc),
 			listname(a_listname),
-			i(a_i)
+			i(a_i),
+			spacing(a_spacing),
+			imgsize(a_imgsize),
+			border(a_border)
 		{
 		}
 
@@ -96,6 +99,11 @@ class GUIFormSpecMenu : public GUIModalMenu
 		InventoryLocation inventoryloc;
 		std::string listname;
 		s32 i = -1;
+
+		// listoptions
+		v2s32 spacing;
+		v2s32 imgsize;
+		s32 border = 1;
 	};
 
 	struct ListDrawSpec
@@ -105,13 +113,16 @@ class GUIFormSpecMenu : public GUIModalMenu
 		ListDrawSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
 				IGUIElement *elem, v2s32 a_geom, s32 a_start_item_i,
-				bool a_real_coordinates):
+				bool a_real_coordinates, v2s32 a_spacing, v2s32 a_imgsize, s32 a_border):
 			inventoryloc(a_inventoryloc),
 			listname(a_listname),
 			e(elem),
 			geom(a_geom),
 			start_item_i(a_start_item_i),
-			real_coordinates(a_real_coordinates)
+			real_coordinates(a_real_coordinates),
+			spacing(a_spacing),
+			imgsize(a_imgsize),
+			border(a_border)
 		{
 		}
 
@@ -121,6 +132,11 @@ class GUIFormSpecMenu : public GUIModalMenu
 		v2s32 geom;
 		s32 start_item_i;
 		bool real_coordinates;
+
+		// listoptions
+		v2s32 spacing;
+		v2s32 imgsize;
+		s32 border = 1;
 	};
 
 	struct ListRingSpec
@@ -414,6 +430,11 @@ private:
 
 		// used to restore table selection/scroll/treeview state
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
+
+		// listoptions
+		v2s32 list_imgsize;
+		v2s32 list_spacing;
+		s32 list_border = 1;
 	} parserData;
 
 	typedef struct {
@@ -462,6 +483,7 @@ private:
 	void parseBox(parserData* data, const std::string &element);
 	void parseBackgroundColor(parserData* data, const std::string &element);
 	void parseListColors(parserData* data, const std::string &element);
+	void parseListOptions(parserData* data, const std::string &element);
 	void parseTooltip(parserData* data, const std::string &element);
 	bool parseVersionDirect(const std::string &data);
 	bool parseSizeDirect(parserData* data, const std::string &element);
