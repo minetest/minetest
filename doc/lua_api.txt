@@ -1481,7 +1481,8 @@ Usage
 -----
 
 Groups are stored in a table, having the group names with keys and the
-group ratings as values. For example:
+group ratings as values. Group ratings are integer values within the
+range [-32767, 32767]. For example:
 
     -- Default dirt
     groups = {crumbly=3, soil=1}
