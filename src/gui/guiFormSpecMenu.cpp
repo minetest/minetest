@@ -2250,9 +2250,9 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 		std::vector<s32> borderwidths;
 
 		// Colors
-		if (parseColorString(parts[2], tmp_color, true, 0x8C))
+		if (parseColorString(parts[2], tmp_color, true, 0x8C)) {
 			colors = {tmp_color, tmp_color, tmp_color, tmp_color};
-		else {
+		} else {
 			std::vector<std::string> str_style = split(style.get(StyleSpec::COLORS, "#0000"), ',');
 
 			if (str_style.size() == 1)
@@ -2262,15 +2262,16 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 				for (unsigned int i = 0; i <= 3; i++) {
 					video::SColor temp_style;
 
-					if (parseColorString(str_style[i], temp_style, false, 0xFF))
+					if (parseColorString(str_style[i], temp_style, false, 0xFF)) {
 						colors.emplace_back(temp_style);
-					else {
+					} else {
 						colors.emplace_back(0x0);
 						break;
 					}
 				}
-			} else
+			} else {
 				colors = {0x0, 0x0, 0x0, 0x0};
+			}
 		}
 
 		// Bordercolors
@@ -2284,15 +2285,16 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 				for (unsigned int i = 0; i <= 3; i++) {
 					video::SColor temp_style;
 
-					if (parseColorString(str_style[i], temp_style, false, 0xFF))
+					if (parseColorString(str_style[i], temp_style, false, 0xFF)) {
 						bordercolors.emplace_back(temp_style);
-					else {
+					} else {
 						bordercolors.emplace_back(0x0);
 						break;
 					}
 				}
-			} else
+			} else {
 				bordercolors = {0x0, 0x0, 0x0, 0x0};
+			}
 		}
 
 		// Borderwidths
@@ -2305,8 +2307,9 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 			if (str_style.size() == 4) {
 				for (unsigned int i = 0; i <= 3; i++)
 					borderwidths.emplace_back(stoi(str_style[i]));
-			} else
+			} else {
 				borderwidths = {0, 0, 0, 0};
+			}
 		}
 
 		core::rect<s32> rect(pos, pos + geom);
