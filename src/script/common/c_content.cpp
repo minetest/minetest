@@ -326,6 +326,7 @@ void read_object_properties(lua_State *L, int index,
 
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
+	getboolfield(L, -1, "show_selection_box", prop->show_selection_box);
 }
 
 /******************************************************************************/
@@ -410,6 +411,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "zoom_fov");
 	lua_pushboolean(L, prop->use_texture_alpha);
 	lua_setfield(L, -2, "use_texture_alpha");
+	lua_pushboolean(L, prop->show_selection_box);
+	lua_setfield(L, -2, "show_selection_box");
 }
 
 /******************************************************************************/

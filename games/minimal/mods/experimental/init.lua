@@ -810,6 +810,35 @@ minetest.register_chatcommand("test_formspec", {
 	end
 })
 
+--
+-- Test entity without selection box
+--
+
+minetest.register_entity("experimental:testentity_nobox", {
+	initial_properties = {
+		visual = "wielditem",
+		textures = {"default:dirt"},
+		show_selection_box = false,
+		visual_size = {x = 0.666 / 2, y = 0.666 / 2},
+	},
+
+	on_punch = function(self, hitter)
+		self.object:remove()
+	end,
+})
+
+minetest.register_chatcommand("test_entity_nobox", {
+	params = "",
+	description = "Test: Hide entity selection box",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return
+		end
+		minetest.add_entity(player:get_pos(), "experimental:testentity_nobox")
+	end,
+})
+
 minetest.log("info", "experimental modname="..dump(minetest.get_current_modname()))
 minetest.log("info", "experimental modpath="..dump(minetest.get_modpath("experimental")))
 minetest.log("info", "experimental worldpath="..dump(minetest.get_worldpath()))
