@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-10-29 11:53+0000\n"
-"Last-Translator: Wuzzy <almikes@aol.com>\n"
+"PO-Revision-Date: 2019-12-26 12:21+0000\n"
+"Last-Translator: Stas Kies <stask85@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9.1\n"
+"X-Generator: Weblate 3.10\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -20,7 +20,7 @@ msgstr "Wiederbeleben"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "Sie sind gestorben"
+msgstr "Du bist gestorben!"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -132,7 +132,7 @@ msgstr "Keine harten Abhängigkeiten"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "Keine Modpackbeschreibung verfügbar."
+msgstr "Keine Modpack-Beschreibung verfügbar."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
@@ -173,7 +173,7 @@ msgstr "$1 wird heruntergeladen und installiert, bitte warten …"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr "$1 konnte nicht heruntergeladen werden"
+msgstr "Fehler beim Download von $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -275,7 +275,7 @@ msgstr "pkgmgr: Fehler beim Löschen von „$1“"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "pkgmgr: Unzulässiger Pfad „$1“"
+msgstr "pkgmgr: Ungültiger Pfad „$1“"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -351,7 +351,7 @@ msgstr "Bitte geben Sie eine gültige Zahl ein."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "Standardwert"
+msgstr "Zurücksetzen"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -359,7 +359,7 @@ msgstr "Skalierung"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr "Verzeichnis wählen"
+msgstr "Verzeichnis auswählen"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
@@ -442,11 +442,11 @@ msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr "Installieren: Datei: „$1“"
+msgstr "Installation: Datei: „$1“"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr "Gültige Mod oder gültiges Modpack konnte nicht gefunden werden"
+msgstr "Keine gültige Mod oder Modpack gefunden"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -654,7 +654,7 @@ msgstr "Sind Sie sicher, dass Sie die Einzelspielerwelt löschen wollen?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr "Monitorgröße merken"
+msgstr "Monitorgröße automatisch merken"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -858,7 +858,7 @@ msgstr "Bitte wählen Sie einen Namen!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr "Angegebene Passwortdatei konnte nicht geöffnet werden: "
+msgstr "Fehler beim öffnen der ausgewählten Passwort-Datei: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
