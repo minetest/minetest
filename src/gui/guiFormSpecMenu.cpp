@@ -440,8 +440,8 @@ void GUIFormSpecMenu::parseList(parserData* data, const std::string &element)
 		} else {
 			pos = getElementBasePos(&v_pos);
 			rect = core::rect<s32>(pos.X, pos.Y,
-					pos.X + (geom.X - 1) * spacing.X + imgsize.X,
-					pos.Y + (geom.Y - 1) * spacing.Y + imgsize.Y);
+					pos.X + (geom.X - 1) * data->list_spacing.X + data->list_imgsize.X,
+					pos.Y + (geom.Y - 1) * data->list_spacing.Y + data->list_imgsize.Y);
 		}
 
 		gui::IGUIElement *e = new gui::IGUIElement(EGUIET_ELEMENT, Environment,
