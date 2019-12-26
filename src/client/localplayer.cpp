@@ -1123,10 +1123,11 @@ float LocalPlayer::getSpeedFactor(Environment *env)
 			pos + v3s16(0, 2, 0)));
 		speed_above = itemgroup_get(f3.groups, "speed");
 	}
+
 	int speed = speed_below + speed_above;
-	if (speed != 0) {
-		return core::clamp(1.0f + f32(speed) / 10.f, 0.1f, 1.5f);
-	}
+	if (speed != 0)
+		return core::clamp(1.0f + f32(speed) / 100.f, 0.01f, 1.f);
+
 	return 1.0f;
 }
 
