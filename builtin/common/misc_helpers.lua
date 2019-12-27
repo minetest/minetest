@@ -575,7 +575,7 @@ function table.insert_all(t, other)
 end
 
 
-function table.invert(t)
+function table.key_value_swap(t)
 	local ti = {}
 	for k,v in pairs(t) do
 		ti[v] = k
