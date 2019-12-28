@@ -2576,6 +2576,8 @@ Some types may inherit styles from parent types.
 
 ### Valid Properties
 
+* animated_image
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * box
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher
