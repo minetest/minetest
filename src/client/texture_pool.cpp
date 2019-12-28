@@ -45,8 +45,8 @@ s32 TexturePool::getTextureIndex(const std::string &name)
 		if (textures[i].name == name)
 			return i + 1;
 
-	std::string::size_type colon_position = name.find(":", 0);
-	std::string::size_type comma_position = name.find(",", 0);
+	std::string::size_type colon_position = name.find(':', 0);
+	std::string::size_type comma_position = name.find(',', 0);
 
 	if (comma_position > colon_position && comma_position < name.size()) {
 		std::string base_name = name.substr(0, colon_position);
