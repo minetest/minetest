@@ -29,7 +29,7 @@ void Texture::set(const std::string &_name, const std::string &base_name,
 	m_frame_names.resize(m_frame_count);
 
 	for (s32 i = 0; i < m_frame_count; ++i)
-		m_frame_names[i] = base_name + "_" + (char)(i + 1 + '0') + ".png";
+		m_frame_names[i] = base_name + "_" + std::to_string(i + 1) + ".png";
 }
 
 void Texture::set(const std::string &_name)

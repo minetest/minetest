@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "texture.h"
 #include <string>
 #include <vector>
-#include <iostream>
 
 class TexturePool {
 public:
