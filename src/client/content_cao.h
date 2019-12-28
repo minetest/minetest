@@ -21,14 +21,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <map>
 #include "irrlichttypes_extrabloated.h"
+#include "client.h"
 #include "clientobject.h"
+#include "gameui.h"
 #include "object_properties.h"
 #include "itemgroup.h"
 #include "constants.h"
 #include <cassert>
 
 class Camera;
-class Client;
 struct Nametag;
 
 /*
@@ -266,6 +267,9 @@ public:
 
 	bool doShowSelectionBox() override
 	{
-		return m_prop.show_selection_box;
+		if (m_client && m_client->getGameUI())
+			return m_client->getGameUI()->getFlags().show_debug || m_prop.show_selection_box;
+		else
+			return m_prop.show_selection_box;
 	}
 };

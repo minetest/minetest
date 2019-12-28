@@ -440,6 +440,9 @@ public:
 	{
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}
+
+	const GameUI *getGameUI() const { return m_game_ui; }
+
 private:
 	void loadMods();
 	bool checkBuiltinIntegrity();
