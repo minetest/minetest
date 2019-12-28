@@ -823,6 +823,8 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 
 		GUIItemImage *e = new GUIItemImage(Environment, this, spec.fid,
 				core::rect<s32>(pos, pos + geom), name,	m_font, m_client);
+		auto style = getStyleForElement("item_image", spec.fname);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->drop();
 
 		m_fields.push_back(spec);
