@@ -5,9 +5,9 @@
 #include "client/texture_pool.h"
 #include "log.h"
 
-GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env,
-		gui::IGUIElement *parent, s32 id, const core::rect<s32> &rectangle,
-		const std::string &name, ISimpleTextureSource *tsrc, TexturePool* pool) :
+GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
+		s32 id, const core::rect<s32> &rectangle, const std::string &name,
+		ISimpleTextureSource *tsrc, TexturePool *pool) :
 		gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
 		m_name(name), m_texture_idx(0), m_texture_pool(pool), m_tsrc(tsrc)
 {
@@ -24,7 +24,7 @@ void GUIAnimatedImage::draw()
 		const video::SColor colors[] = {color, color, color, color};
 
 		draw2DImageFilterScaled( driver, texture, AbsoluteRect,
-				core::rect<s32>(core::position2d<s32>(0,0), texture->getOriginalSize()),
+				core::rect<s32>(core::position2d<s32>(0, 0), texture->getOriginalSize()),
 				NULL, colors, true);
 	} else {
 		errorstream << "GUIAnimatedImage::draw() unable to load texture:" << std::endl;

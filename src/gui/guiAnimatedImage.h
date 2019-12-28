@@ -10,7 +10,7 @@ class GUIAnimatedImage : public gui::IGUIElement {
 public:
 	GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 			const core::rect<s32> &rectangle, const std::string &name,
-			ISimpleTextureSource *tsrc, TexturePool* pool);
+			ISimpleTextureSource *tsrc, TexturePool *pool);
 
 	virtual void draw() override;
 
