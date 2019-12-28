@@ -785,8 +785,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	std::vector<std::string> parts = split(element, ';');
 
 	if ((parts.size() == 3) ||
-		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
+		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION))) {
 		std::vector<std::string> v_pos   = split(parts[0], ',');
 		std::vector<std::string> v_geom  = split(parts[1], ',');
 		std::string name = unescape_string(parts[2]);
@@ -807,10 +806,10 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 		}
 
 		if (!data->explicit_size)
-			warningstream << "invalid use of image without a size[] element" << std::endl;
+			warningstream << "invalid use of animated_image without a size[] element" << std::endl;
 
 		FieldSpec spec(
-			L"",
+			"",
 			L"",
 			L"",
 			258 + m_fields.size()
@@ -823,6 +822,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 		auto style = getStyleForElement("animated_image", spec.fname);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+		e->drop();
 
 		m_fields.push_back(spec);
 		return;
