@@ -55,6 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h" // for parseColorString()
 #include "irrlicht_changes/static_text.h"
 #include "client/guiscalingfilter.h"
+#include "guiAnimatedImage.h"
 #include "guiBackgroundImage.h"
 #include "guiBox.h"
 #include "guiButton.h"
@@ -797,10 +798,10 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 		v2s32 geom;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos) + AbsoluteRect.UpperLeftCorner;
+			pos = getRealCoordinateBasePos(v_pos);
 			geom = getRealCoordinateGeometry(v_geom);
 		} else {
-			pos = getElementBasePos(&v_pos) + AbsoluteRect.UpperLeftCorner;
+			pos = getElementBasePos(&v_pos);
 			geom.X = stof(v_geom[0]) * (float)imgsize.X;
 			geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 		}
@@ -808,9 +809,19 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 		if (!data->explicit_size)
 			warningstream << "invalid use of image without a size[] element" << std::endl;
 
-		s32 texture_idx = 0;
+		FieldSpec spec(
+			name,
+			L"",
+			L"",
+			258 + m_fields.size()
+		);
 
-		m_animated_images.emplace_back(name, pos, geom, texture_idx);
+		core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
+
+		gui::IGUIElement *e = new GUIAnimatedImage(Environment, this, spec.fid,
+				rect, name, m_tsrc, &m_texture_pool);
+		e->setNotClipped(true);
+		m_fields.push_back(spec);
 		return;
 	}
 
@@ -2738,7 +2749,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	mydata.basepos = getBasePos();
 
 	m_inventorylists.clear();
-	m_animated_images.clear();
 	m_backgrounds.clear();
 	m_tables.clear();
 	m_checkboxes.clear();
@@ -3232,45 +3242,15 @@ void GUIFormSpecMenu::drawMenu()
 	}
 
 	/*
+		Update animated images
+	*/
+	m_texture_pool.step();
+
+	/*
 		Call base class
 		(This is where all the drawing happens.)
 	*/
 	gui::IGUIElement::draw();
-
-	/*
-		Draw animated images
-	*/
-	m_texture_pool.step();
-
-	for (const GUIFormSpecMenu::ImageDrawSpec &spec : m_animated_images) {
-		s32 idx = spec.texture_idx;
-		video::ITexture *texture = m_texture_pool.getTexture(
-				spec.name, m_tsrc, idx);
-
-		if (texture) {
-			const core::dimension2d<u32> &img_origsize = texture->getOriginalSize();
-			// Image size on screen
-			core::rect<s32> imgrect;
-
-			if (spec.scale)
-				imgrect = core::rect<s32>(0,0, spec.geom.X, spec.geom.Y);
-			else
-				imgrect = core::rect<s32>(0,0, img_origsize.Width, img_origsize.Height);
-
-			// Image rectangle on screen
-			core::rect<s32> rect = imgrect + spec.pos;
-			const video::SColor color(255,255,255,255);
-			const video::SColor colors[] = {color,color,color,color};
-
-			draw2DImageFilterScaled(
-				driver, texture, rect,
-				core::rect<s32>(core::position2d<s32>(0,0), img_origsize),
-				NULL, colors, true);
-		} else {
-			errorstream << "GUIFormSpecMenu::drawMenu() Draw images unable to load texture:" << std::endl;
-			errorstream << "\t" << spec.name << std::endl;
-		}
-	}
 
 	// Draw hovered item tooltips
 	for (const std::string &tooltip : m_hovered_item_tooltips) {
