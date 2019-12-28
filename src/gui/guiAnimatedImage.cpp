@@ -26,8 +26,5 @@ void GUIAnimatedImage::draw()
 		draw2DImageFilterScaled( driver, texture, AbsoluteRect,
 				core::rect<s32>(core::position2d<s32>(0, 0), texture->getOriginalSize()),
 				NULL, colors, true);
-	} else {
-		errorstream << "GUIAnimatedImage::draw() unable to load texture:" << std::endl;
-		errorstream << "\t" << m_name << std::endl;
 	}
 }
