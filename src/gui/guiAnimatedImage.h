@@ -6,8 +6,7 @@
 class ISimpleTextureSource;
 class TexturePool;
 
-class GUIAnimatedImage : public gui::IGUIElement
-{
+class GUIAnimatedImage : public gui::IGUIElement {
 public:
 	GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 			const core::rect<s32> &rectangle, const std::string &name,

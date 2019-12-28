@@ -22,8 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <iostream>
 
-class TexturePool
-{
+class TexturePool {
 	TexturePool() = default;
 
 	TexturePool(const TexturePool &texture_pool) :

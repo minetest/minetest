@@ -23,8 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 
 //! Animated texture object managed by TexturePool
-class Texture
-{
+class Texture {
 	Texture() = default;
 
 	Texture(const Texture &texture) :
