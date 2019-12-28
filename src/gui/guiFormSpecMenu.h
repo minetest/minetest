@@ -33,12 +33,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
-#include "client/texture_pool.h"
 
 class InventoryManager;
 class ISimpleTextureSource;
 class Client;
 class GUIScrollBar;
+class TexturePool;
 
 typedef enum {
 	f_Button,
@@ -293,7 +293,7 @@ protected:
 	std::string m_formspec_string;
 	std::string m_formspec_prepend;
 	InventoryLocation m_current_inventory_location;
-	TexturePool       m_texture_pool;
+	TexturePool *m_texture_pool;
 
 	std::vector<GUIInventoryList *> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
