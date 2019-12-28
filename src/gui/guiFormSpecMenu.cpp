@@ -741,7 +741,8 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		gui::IGUIImage *e = Environment->addImage(rect, this, spec.fid, 0, true);
 		e->setImage(texture);
 		e->setScaleImage(true);
-		e->setNotClipped(true);
+		auto style = getStyleForElement("image", spec.fname);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		m_fields.push_back(spec);
 
 		return;
@@ -773,7 +774,8 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		);
 		gui::IGUIImage *e = Environment->addImage(texture, pos, true, this,
 				spec.fid, 0);
-		e->setNotClipped(true);
+		auto style = getStyleForElement("image", spec.fname);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		m_fields.push_back(spec);
 
 		return;
