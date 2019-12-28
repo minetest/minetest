@@ -22,7 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <vector>
 
-struct Texture
+//! Animated texture object managed by TexturePool
+class Texture
 {
 	Texture() = default;
 

@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <iostream>
 
-struct TexturePool
+class TexturePool
 {
 	TexturePool() = default;
 
