@@ -23,12 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 
 class TexturePool {
+public:
 	TexturePool() = default;
 
 	TexturePool(const TexturePool &texture_pool) :
-		textures(texture_pool.textures),
-		animations(texture_pool.animations),
-		global_time(texture_pool.global_time)
+		m_textures(texture_pool.m_textures),
+		m_animations(texture_pool.m_animations),
+		m_global_time(texture_pool.m_global_time)
 	{
 	}
 
@@ -47,8 +48,9 @@ class TexturePool {
 
 	void step();
 
-	std::vector<Texture> textures;
-	std::vector<s32> animations;
-	u64 global_time = 0;
+private:
+	std::vector<Texture> m_textures;
+	std::vector<s32> m_animations;
+	u64 m_global_time = 0;
 	u64 m_texture_idx = 0;
 };

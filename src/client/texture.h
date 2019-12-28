@@ -24,15 +24,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 //! Animated texture object managed by TexturePool
 class Texture {
+public:
 	Texture() = default;
 
 	Texture(const Texture &texture) :
-		name(texture.name),
-		frame_count(texture.frame_count),
-		frame_idx(texture.frame_idx),
-		frame_duration(texture.frame_duration),
-		frame_time(texture.frame_time),
-		frame_names(texture.frame_names)
+		m_name(texture.m_name),
+		m_frame_count(texture.m_frame_count),
+		m_frame_idx(texture.m_frame_idx),
+		m_frame_duration(texture.m_frame_duration),
+		m_frame_time(texture.m_frame_time),
+		m_frame_names(texture.m_frame_names)
 	{
 	}
 
@@ -43,14 +44,17 @@ class Texture {
 
 	void set(const std::string &_name);
 
+	std::string getName() const;
+
 	video::ITexture *getTexture(ISimpleTextureSource *tsrc);
 
 	void step(u64 step_duration);
 
-	std::string name;
-	s32 frame_count = 0;
-	s32 frame_idx = 0;
-	u64 frame_duration = 0;
-	u64 frame_time = 0;
-	std::vector<std::string> frame_names;
+private:
+	std::string m_name;
+	s32 m_frame_count = 0;
+	s32 m_frame_idx = 0;
+	u64 m_frame_duration = 0;
+	u64 m_frame_time = 0;
+	std::vector<std::string> m_frame_names;
 };

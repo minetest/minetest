@@ -22,27 +22,27 @@ s32 TexturePool::addTexture(const std::string &name,
 		const std::string &base_name, s32 frame_count,
 		u64 frame_duration)
 {
-	s32 texture_idx = textures.size() + 1;
-	textures.resize(texture_idx);
-	textures[texture_idx - 1].set(name, base_name, frame_count, frame_duration);
-	animations.push_back(texture_idx - 1);
+	s32 texture_idx = m_textures.size() + 1;
+	m_textures.resize(texture_idx);
+	m_textures[texture_idx - 1].set(name, base_name, frame_count, frame_duration);
+	m_animations.push_back(texture_idx - 1);
 
 	return texture_idx;
 }
 
 s32 TexturePool::addTexture(const std::string &name)
 {
-	s32 texture_idx = textures.size() + 1;
-	textures.resize(texture_idx);
-	textures[texture_idx - 1].set(name);
+	s32 texture_idx = m_textures.size() + 1;
+	m_textures.resize(texture_idx);
+	m_textures[texture_idx - 1].set(name);
 
 	return texture_idx;
 }
 
 s32 TexturePool::getTextureIndex(const std::string &name)
 {
-	for (int i = 0, c = textures.size(); i < c; ++i)
-		if (textures[i].name == name)
+	for (int i = 0, c = m_textures.size(); i < c; ++i)
+		if (m_textures[i].getName() == name)
 			return i + 1;
 
 	std::string::size_type colon_position = name.find(':', 0);
@@ -72,7 +72,7 @@ video::ITexture *TexturePool::getTexture(const std::string &name,
 	if (texture_idx == 0)
 		texture_idx = getTextureIndex(name);
 
-	return textures[texture_idx - 1].getTexture(tsrc);
+	return m_textures[texture_idx - 1].getTexture(tsrc);
 }
 
 void TexturePool::step()
@@ -80,13 +80,13 @@ void TexturePool::step()
 	u64 new_global_time = porting::getTimeMs();
 	u64 step_duration;
 
-	if (global_time == 0)
+	if (m_global_time == 0)
 		step_duration = 0;
 	else
-		step_duration = new_global_time - global_time;
+		step_duration = new_global_time - m_global_time;
 
-	global_time = new_global_time;
+	m_global_time = new_global_time;
 
-	for (int i = 0, c = animations.size(); i < c; ++i)
-		textures[animations[i]].step(step_duration);
+	for (int i = 0, c = m_animations.size(); i < c; ++i)
+		m_textures[m_animations[i]].step(step_duration);
 }
