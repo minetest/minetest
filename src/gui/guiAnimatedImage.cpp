@@ -25,6 +25,6 @@ void GUIAnimatedImage::draw()
 
 		draw2DImageFilterScaled( driver, texture, AbsoluteRect,
 				core::rect<s32>(core::position2d<s32>(0, 0), texture->getOriginalSize()),
-				NULL, colors, true);
+				NoClip ? nullptr : &AbsoluteClippingRect, colors, true);
 	}
 }

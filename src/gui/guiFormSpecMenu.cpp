@@ -810,7 +810,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 			warningstream << "invalid use of image without a size[] element" << std::endl;
 
 		FieldSpec spec(
-			name,
+			L"",
 			L"",
 			L"",
 			258 + m_fields.size()
@@ -820,7 +820,10 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 		gui::IGUIElement *e = new GUIAnimatedImage(Environment, this, spec.fid,
 				rect, name, m_tsrc, &m_texture_pool);
-		e->setNotClipped(true);
+
+		auto style = getStyleForElement("animated_image", spec.fname);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+
 		m_fields.push_back(spec);
 		return;
 	}
