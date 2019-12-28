@@ -2105,7 +2105,8 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 
 			GUIBox *e = new GUIBox(Environment, this, spec.fid, rect, tmp_color);
 
-			e->setNotClipped(true);
+			auto style = getStyleForElement("box", spec.fname);
+			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
 			e->drop();
 
