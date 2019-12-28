@@ -264,7 +264,8 @@ public:
 		return m_prop.infotext;
 	}
 
-	bool doShowSelectionBox() override {
+	bool doShowSelectionBox() override
+	{
 		return m_prop.show_selection_box;
 	}
 };

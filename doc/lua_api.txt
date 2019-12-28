@@ -6168,6 +6168,9 @@ Player properties need to be saved manually.
         -- Note: currently causes visual issues when viewed through other
         -- semi-transparent materials such as water.
 
+        show_selection_box = true,
+        -- Show the selection box when a player looks at this object
+
         spritediv = {x = 1, y = 1},
         -- Used with spritesheet textures for animation and/or frame selection
         -- according to position relative to player.

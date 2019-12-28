@@ -169,5 +169,8 @@ void ObjectProperties::deSerialize(std::istream &is)
 	eye_height = readF32(is);
 	zoom_fov = readF32(is);
 	use_texture_alpha = readU8(is);
-	show_selection_box = readU8(is);
+
+	// Condition needed for compatibility with older versions
+	if (is.peek() != EOF)
+		show_selection_box = readU8(is);
 }
