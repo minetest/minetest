@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-12-21 23:18+0000\n"
-"Last-Translator: zaoqi <zaomir@outlook.com>\n"
+"PO-Revision-Date: 2019-12-29 06:49+0000\n"
+"Last-Translator: Hotower <271700283@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -335,7 +335,7 @@ msgstr "补偿"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "Persistance"
-msgstr "玩家转移距离"
+msgstr "碰撞箱"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -1726,11 +1726,12 @@ msgstr ""
 "如果禁用，虚拟操纵杆将居中至第一次触摸的位置。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "(Android) Use virtual joystick to trigger \"aux\" button.\n"
 "If enabled, virtual joystick will also tap \"aux\" button when out of main "
 "circle."
-msgstr ""
+msgstr "（安卓）使用虚拟操纵杆触发\"aux\"按钮。 如果启用，虚拟操纵杆在主圆圈外会点击\"aux\"按钮。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
