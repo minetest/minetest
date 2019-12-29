@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-11-02 23:03+0000\n"
-"Last-Translator: Vicente Carrasco Alvarez <vicente.carrasco@usach.cl>\n"
+"PO-Revision-Date: 2019-12-30 20:21+0000\n"
+"Last-Translator: universales <universales@protonmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.10\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -23,9 +23,8 @@ msgid "You died"
 msgstr "Has muerto"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Un error ha ocurrido en un script de Lua, tal como en un mod:"
+msgstr "Ha ocurrido un error en un script de Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -120,27 +119,24 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "Dependencias opcionales:"
+msgstr "Sin dependencias opcionales"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "La descripción del juego no está disponible"
+msgstr "La descripción del juego no está disponible."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Sin depenencias."
+msgstr "Sin dependencias importantes"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "La descripción del mod no está disponible."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "Dependencias opcionales:"
+msgstr "Sin dependencias opcionales"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -1940,7 +1936,7 @@ msgstr "Aceleración en el aire"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "Aceleración de gravedad, en nodos por segundo por segundo."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2419,7 +2415,7 @@ msgstr "Altura de consola"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
-msgstr ""
+msgstr "Lista negra de banderas de ContentDB"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
