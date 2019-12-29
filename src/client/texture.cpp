@@ -32,6 +32,7 @@ void Texture::set(const std::string &_name, const std::string &base_name,
 		m_frame_names[i] = base_name + "_" + std::to_string(i + 1) + ".png";
 }
 
+//! Set animation data to display a static texture
 void Texture::set(const std::string &_name)
 {
 	m_name = _name;
@@ -47,6 +48,7 @@ std::string Texture::getName() const
 	return m_name;
 }
 
+//! Get the texture corresponding to the current frame
 video::ITexture *Texture::getTexture(ISimpleTextureSource *tsrc)
 {
 	if (m_frame_count > 0)
@@ -55,10 +57,16 @@ video::ITexture *Texture::getTexture(ISimpleTextureSource *tsrc)
 		return tsrc->getTexture(m_name);
 }
 
+//! Advance the animation by the given duration
 void Texture::step(u64 step_duration)
 {
 	m_frame_time += step_duration;
+
+	// Advance by the number of elapsed frames, looping if necessary
 	m_frame_idx += u32(m_frame_time / m_frame_duration);
 	m_frame_idx %= m_frame_count;
+
+	// If 1 or more frames have elapsed, reset the frame time counter with
+	// the remainder
 	m_frame_time %= m_frame_duration;
 }

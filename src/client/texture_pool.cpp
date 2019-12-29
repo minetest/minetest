@@ -25,6 +25,8 @@ s32 TexturePool::addTexture(const std::string &name,
 	s32 texture_idx = m_textures.size() + 1;
 	m_textures.resize(texture_idx);
 	m_textures[texture_idx - 1].set(name, base_name, frame_count, frame_duration);
+
+	// Add this animation to the list
 	m_animations.push_back(texture_idx - 1);
 
 	return texture_idx;
@@ -36,14 +38,22 @@ s32 TexturePool::addTexture(const std::string &name)
 	m_textures.resize(texture_idx);
 	m_textures[texture_idx - 1].set(name);
 
+	// Since this is a static texture, we *don't* add it to the list of
+	// animations to update
+
 	return texture_idx;
 }
 
+//! Get the texture index of the named texture, creating it if necessary
 s32 TexturePool::getTextureIndex(const std::string &name)
 {
+	// Check if the texture was already loaded
 	for (int i = 0, c = m_textures.size(); i < c; ++i)
 		if (m_textures[i].getName() == name)
 			return i + 1;
+
+	// Expected format: "texture_name:frame_count,frame_duration"
+	// If this format is not met, the string will be loaded as a normal texture
 
 	std::string::size_type colon_position = name.find(':', 0);
 	std::string::size_type comma_position = name.find(',', 0);
@@ -63,18 +73,21 @@ s32 TexturePool::getTextureIndex(const std::string &name)
 	return addTexture(name);
 }
 
+//! Get a handle to the named texture, creating it and setting texture_index if necessary
 video::ITexture *TexturePool::getTexture(const std::string &name,
 	ISimpleTextureSource *tsrc, s32 &texture_idx)
 {
 	if (name.size() == 0)
 		return tsrc->getTexture(name);
 
+	// If there's no texture id, we look it up or create a new one to pas back
 	if (texture_idx == 0)
 		texture_idx = getTextureIndex(name);
 
 	return m_textures[texture_idx - 1].getTexture(tsrc);
 }
 
+//! Advance all animations by the elapsed time
 void TexturePool::step()
 {
 	u64 new_global_time = porting::getTimeMs();

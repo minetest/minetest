@@ -42,12 +42,15 @@ public:
 	void set(const std::string &_name, const std::string &base_name,
 		s32 _frame_count, u64 _frame_duration);
 
+	//! Set animation data to display a static texture
 	void set(const std::string &_name);
 
 	std::string getName() const;
 
+	//! Get the texture corresponding to the current frame
 	video::ITexture *getTexture(ISimpleTextureSource *tsrc);
 
+	//! Advance the animation by the given duration
 	void step(u64 step_duration);
 
 private:

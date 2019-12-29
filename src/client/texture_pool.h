@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <vector>
 
+//! Object responsible for loading/updating animated textures
 class TexturePool {
 public:
 	TexturePool() = default;
@@ -40,11 +41,14 @@ public:
 
 	s32 addTexture(const std::string &name);
 
+	//! Get the texture index of the named texture, creating it if necessary
 	s32 getTextureIndex(const std::string &name);
 
+	//! Get a handle to the named texture, creating it and setting texture_index if necessary
 	video::ITexture *getTexture(const std::string &name,
 			ISimpleTextureSource *tsrc, s32 &texture_idx);
 
+	//! Advance all animations by the elapsed time
 	void step();
 
 private:
