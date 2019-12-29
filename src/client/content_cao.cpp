@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
 #include "client/client.h"
+#include "client/gameui.h"
 #include "client/renderingengine.h"
 #include "client/sound.h"
 #include "client/tile.h"
@@ -1655,6 +1656,12 @@ std::string GenericCAO::debugInfoText()
 	}
 	os<<"}";
 	return os.str();
+}
+
+bool GenericCAO::doShowSelectionBox()
+{
+	return m_prop.show_selection_box
+		|| (m_client && m_client->getGameUI()->getFlags().show_debug);
 }
 
 // Prototype
