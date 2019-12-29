@@ -46,7 +46,7 @@ public:
 
 	//! Get a handle to the named texture, creating it and setting texture_index if necessary
 	video::ITexture *getTexture(const std::string &name,
-			ISimpleTextureSource *tsrc, s32 &texture_idx);
+			ISimpleTextureSource *tsrc, s32 *texture_idx);
 
 	//! Advance all animations by the elapsed time
 	void step();

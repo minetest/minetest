@@ -15,7 +15,7 @@ GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *
 
 void GUIAnimatedImage::draw()
 {
-	video::ITexture *texture = m_texture_pool->getTexture(m_name, m_tsrc, m_texture_idx);
+	video::ITexture *texture = m_texture_pool->getTexture(m_name, m_tsrc, &m_texture_idx);
 
 	if (texture) {
 		video::IVideoDriver *driver = Environment->getVideoDriver();

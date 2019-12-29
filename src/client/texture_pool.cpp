@@ -75,16 +75,23 @@ s32 TexturePool::getTextureIndex(const std::string &name)
 
 //! Get a handle to the named texture, creating it and setting texture_index if necessary
 video::ITexture *TexturePool::getTexture(const std::string &name,
-	ISimpleTextureSource *tsrc, s32 &texture_idx)
+	ISimpleTextureSource *tsrc, s32 *texture_idx)
 {
 	if (name.size() == 0)
 		return tsrc->getTexture(name);
 
-	// If there's no texture id, we look it up or create a new one to pas back
-	if (texture_idx == 0)
-		texture_idx = getTextureIndex(name);
+	// If there's no texture id, we look it up or create a new one to pass back
+	s32 idx;
+	if (texture_idx == nullptr) {
+		idx = getTextureIndex(name);
+	} else if (*texture_idx == 0) {
+		idx = getTextureIndex(name);
+		*texture_idx = idx;
+	} else {
+		idx = *texture_idx;
+	}
 
-	return m_textures[texture_idx - 1].getTexture(tsrc);
+	return m_textures[idx - 1].getTexture(tsrc);
 }
 
 //! Advance all animations by the elapsed time
