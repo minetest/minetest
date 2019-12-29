@@ -145,6 +145,7 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 		tooltip_rect_it.first->drop();
 
 	delete m_selected_item;
+    delete m_texture_pool;
 	delete m_form_src;
 	delete m_text_dst;
 }
