@@ -244,3 +244,11 @@ Limitations of Async operations
  -Limited set of available functions
 	e.g. No access to functions modifying menu like core.start,core.close,
 	core.show_path_select_dialog
+
+Background music
+----------------
+The main menu supports background music.
+It looks for a `main_menu` sound in `$USER_PATH/sounds`. The same naming
+conventions as for normal sounds apply.
+This means the player can add a custom sound.
+It will be played in the main menu (gain = 1.0), looped.
