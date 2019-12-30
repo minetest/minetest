@@ -2550,7 +2550,7 @@ Some types may inherit styles from parent types.
 
 * box
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-        * Default to true in formspec_version version 3 or higher
+        * Default to false in formspec_version version 3 or higher
 * button, button_exit, image_button, item_image_button
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
@@ -2576,9 +2576,9 @@ Some types may inherit styles from parent types.
     * textcolor - color. Default white.
 * image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-        * Default to true in formspec_version version 3 or higher
+        * Default to false in formspec_version version 3 or higher
 * item_image
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to true.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to false.
 * label, vertlabel
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * image_button (additional properties)
