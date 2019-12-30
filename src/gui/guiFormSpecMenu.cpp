@@ -447,6 +447,9 @@ void GUIFormSpecMenu::parseList(parserData* data, const std::string &element)
 		gui::IGUIElement *e = new gui::IGUIElement(EGUIET_ELEMENT, Environment,
 				this, spec.fid, rect);
 
+		// the element the list is bound to should not block mouse-clicks
+		e->setVisible(false);
+
 		m_inventorylists.emplace_back(loc, listname, e, geom, start_i,
 				data->real_coordinates);
 		m_fields.push_back(spec);
@@ -2242,6 +2245,9 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
 
 		gui::IGUIElement *e = new gui::IGUIElement(EGUIET_ELEMENT, Environment,
 				this, fieldspec.fid, rect);
+
+		// the element the rect tooltip is bound to should not block mouse-clicks
+		e->setVisible(false);
 
 		m_fields.push_back(fieldspec);
 		m_tooltip_rects.emplace_back(e, spec);
