@@ -37,7 +37,7 @@ local group_format_template = [[
 ]]
 
 local function create_minetest_conf_example()
-	local result = { minetest_example_header }
+	local result = {minetest_example_header}
 	for _, entry in ipairs(settings) do
 		if entry.type == "category" then
 			if entry.level == 0 then
@@ -74,9 +74,9 @@ local function create_minetest_conf_example()
 			insert(result, "\n")
 			if group_format == true then
 				insert(result, sprintf(group_format_template, entry.name, entry.values[1],
-						entry.values[2], entry.values[3], entry.values[4], entry.values[5],
-						entry.values[6], entry.values[7], entry.values[8], entry.values[9],
-						entry.values[10]))
+					entry.values[2], entry.values[3], entry.values[4], entry.values[5],
+					entry.values[6], entry.values[7], entry.values[8], entry.values[9],
+					entry.values[10]))
 			else
 				local append
 				if entry.default ~= "" then
@@ -97,7 +97,7 @@ local translation_file_header = [[
 fake_function() {]]
 
 local function create_translation_file()
-	local result = { translation_file_header }
+	local result = {translation_file_header}
 	for _, entry in ipairs(settings) do
 		if entry.type == "category" then
 			insert(result, sprintf("\tgettext(%q);", entry.name))
@@ -126,4 +126,3 @@ file = assert(io.open("src/settings_translation_file.cpp", "w"))
 --file = assert(io.open("settings_translation_file.cpp", "w"))
 file:write(create_translation_file())
 file:close()
-

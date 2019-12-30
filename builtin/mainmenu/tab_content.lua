@@ -20,7 +20,7 @@ local packages_raw
 local packages
 
 --------------------------------------------------------------------------------
-local function get_formspec(tabview, name, tabdata)
+local function get_formspec(_, _, tabdata)
 	if pkgmgr.global_mods == nil then
 		pkgmgr.refresh_globals()
 	end
@@ -53,12 +53,12 @@ local function get_formspec(tabview, name, tabdata)
 
 
 	local retval =
-		"label[0.05,-0.25;".. fgettext("Installed Packages:") .. "]" ..
+		"label[0.05,-0.25;" .. fgettext("Installed Packages:") .. "]" ..
 		"tablecolumns[color;tree;text]" ..
 		"table[0,0.25;5.1,4.3;pkglist;" ..
 		pkgmgr.render_packagelist(packages) ..
 		";" .. tabdata.selected_pkg .. "]" ..
-		"button[0,4.85;5.25,0.5;btn_contentdb;".. fgettext("Browse online content") .. "]"
+		"button[0,4.85;5.25,0.5;btn_contentdb;" .. fgettext("Browse online content") .. "]"
 
 
 	local selected_pkg
@@ -67,7 +67,7 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	if selected_pkg ~= nil then
-		--check for screenshot beeing available
+		-- check for screenshot beeing available
 		local screenshotfilename = selected_pkg.path .. DIR_DELIM .. "screenshot.png"
 		local screenshotfile, error = io.open(screenshotfilename, "r")
 
@@ -78,7 +78,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 
 		if modscreenshot == nil then
-				modscreenshot = defaulttexturedir .. "no_screenshot.png"
+			modscreenshot = defaulttexturedir .. "no_screenshot.png"
 		end
 
 		local info = core.get_content_info(selected_pkg.path)
@@ -88,9 +88,9 @@ local function get_formspec(tabview, name, tabdata)
 		end
 
 		retval = retval ..
-				"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
-				"label[8.25,0.6;" .. core.formspec_escape(selected_pkg.name) .. "]" ..
-				"box[5.5,2.2;6.15,2.35;#000]"
+			"image[5.5,0;3,2;" .. core.formspec_escape(modscreenshot) .. "]" ..
+			"label[8.25,0.6;" .. core.formspec_escape(selected_pkg.name) .. "]" ..
+			"box[5.5,2.2;6.15,2.35;#000]"
 
 		if selected_pkg.type == "mod" then
 			if selected_pkg.is_modpack then
@@ -106,19 +106,18 @@ local function get_formspec(tabview, name, tabdata)
 					desc = desc .. fgettext("No dependencies.")
 				else
 					if toadd_hard ~= "" then
-						desc = desc ..fgettext("Dependencies:") ..
-							"\n" .. toadd_hard
+						desc = desc .. fgettext("Dependencies:") ..
+								"\n" .. toadd_hard
 					end
 					if toadd_soft ~= "" then
 						if toadd_hard ~= "" then
 							desc = desc .. "\n\n"
 						end
 						desc = desc .. fgettext("Optional dependencies:") ..
-							"\n" .. toadd_soft
+								"\n" .. toadd_soft
 					end
 				end
 			end
-
 		else
 			if selected_pkg.type == "txp" then
 				if selected_pkg.enabled then
@@ -146,7 +145,7 @@ local function get_formspec(tabview, name, tabdata)
 end
 
 --------------------------------------------------------------------------------
-local function handle_buttons(tabview, fields, tabname, tabdata)
+local function handle_buttons(tabview, fields, _, tabdata)
 	if fields["pkglist"] ~= nil then
 		local event = core.explode_table_event(fields["pkglist"])
 		tabdata.selected_pkg = event.row

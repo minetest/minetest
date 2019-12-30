@@ -15,14 +15,14 @@ function core.unregister_chatcommand(name)
 	if core.registered_chatcommands[name] then
 		core.registered_chatcommands[name] = nil
 	else
-		core.log("warning", "Not unregistering chatcommand " ..name..
+		core.log("warning", "Not unregistering chatcommand " .. name ..
 			" because it doesn't exist.")
 	end
 end
 
 function core.override_chatcommand(name, redefinition)
 	local chatcommand = core.registered_chatcommands[name]
-	assert(chatcommand, "Attempt to override non-existent chatcommand "..name)
+	assert(chatcommand, "Attempt to override non-existent chatcommand " .. name)
 	for k, v in pairs(redefinition) do
 		rawset(chatcommand, k, v)
 	end
@@ -57,6 +57,7 @@ local function do_help_cmd(name, param)
 		end
 		return msg
 	end
+
 	if param == "" then
 		local cmds = {}
 		for cmd, def in pairs(core.registered_chatcommands) do
@@ -76,19 +77,19 @@ local function do_help_cmd(name, param)
 			end
 		end
 		table.sort(cmds)
-		return true, gettext("Available commands:").."\n"..table.concat(cmds, "\n")
+		return true, gettext("Available commands:") .. "\n" .. table.concat(cmds, "\n")
 	elseif INIT == "game" and param == "privs" then
 		local privs = {}
 		for priv, def in pairs(core.registered_privileges) do
 			privs[#privs + 1] = priv .. ": " .. def.description
 		end
 		table.sort(privs)
-		return true, "Available privileges:\n"..table.concat(privs, "\n")
+		return true, "Available privileges:\n" .. table.concat(privs, "\n")
 	else
 		local cmd = param
 		local def = core.registered_chatcommands[cmd]
 		if not def then
-			return false, gettext("Command not available: ")..cmd
+			return false, gettext("Command not available: ") .. cmd
 		else
 			return true, format_help_line(cmd, def)
 		end
@@ -107,6 +108,6 @@ else
 	core.register_chatcommand("help", {
 		params = "[all | privs | <cmd>]",
 		description = "Get help for commands or list privileges",
-		func = do_help_cmd,
+		func = do_help_cmd
 	})
 end

@@ -1,4 +1,3 @@
-
 core.callback_origins = {}
 
 local getinfo = debug.getinfo

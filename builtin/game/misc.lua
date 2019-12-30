@@ -17,7 +17,7 @@ function core.check_player_privs(name, ...)
 	local missing_privileges = {}
 
 	if type(requested_privs[1]) == "table" then
-		-- We were provided with a table like { privA = true, privB = true }.
+		-- We were provided with a table like {privA = true, privB = true}.
 		for priv, value in pairs(requested_privs[1]) do
 			if value and not player_privs[priv] then
 				missing_privileges[#missing_privileges + 1] = priv
@@ -25,7 +25,7 @@ function core.check_player_privs(name, ...)
 		end
 	else
 		-- Only a list, we can process it directly.
-		for key, priv in pairs(requested_privs) do
+		for _, priv in pairs(requested_privs) do
 			if not player_privs[priv] then
 				missing_privileges[#missing_privileges + 1] = priv
 			end
@@ -51,7 +51,7 @@ end
 
 
 function core.send_leave_message(player_name, timed_out)
-	local announcement = "*** " ..  player_name .. " left the game."
+	local announcement = "*** " .. player_name .. " left the game."
 	if timed_out then
 		announcement = announcement .. " (timed out)"
 	end
@@ -81,7 +81,7 @@ end)
 
 function core.get_connected_players()
 	local temp_table = {}
-	for index, value in pairs(player_list) do
+	for _, value in pairs(player_list) do
 		if value:is_player_connected() then
 			temp_table[#temp_table + 1] = value
 		end
@@ -127,8 +127,8 @@ end
 
 function core.hash_node_position(pos)
 	return (pos.z + 32768) * 65536 * 65536
-		 + (pos.y + 32768) * 65536
-		 +  pos.x + 32768
+			+ (pos.y + 32768) * 65536
+			+  pos.x + 32768
 end
 
 
@@ -169,7 +169,7 @@ end
 
 -- To be overriden by protection mods
 
-function core.is_protected(pos, name)
+function core.is_protected()
 	return false
 end
 
@@ -255,6 +255,7 @@ function core.http_add_fetch(httpenv)
 				core.after(0, update_http_status)
 			end
 		end
+
 		core.after(0, update_http_status)
 	end
 

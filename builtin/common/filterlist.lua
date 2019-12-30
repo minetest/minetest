@@ -20,8 +20,8 @@
 -- TODO code cleanup                                                          --
 -- Generic implementation of a filter/sortable list                           --
 -- Usage:                                                                     --
--- Filterlist needs to be initialized on creation. To achieve this you need to --
--- pass following functions:                                                  --
+-- Filterlist needs to be initialized on creation. To achieve this you need   --
+-- to pass following functions:                                               --
 -- raw_fct() (mandatory):                                                     --
 --     function returning a table containing the elements to be filtered      --
 -- compare_fct(element1,element2) (mandatory):                                --
@@ -43,8 +43,7 @@ function filterlist.refresh(self)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct,fetch_param)
-
+function filterlist.create(raw_fct, compare_fct, uid_match_fct, filter_fct, fetch_param)
 	assert((raw_fct ~= nil) and (type(raw_fct) == "function"))
 	assert((compare_fct ~= nil) and (type(compare_fct) == "function"))
 
@@ -84,14 +83,13 @@ function filterlist.create(raw_fct,compare_fct,uid_match_fct,filter_fct,fetch_pa
 end
 
 --------------------------------------------------------------------------------
-function filterlist.add_sort_mechanism(self,name,fct)
+function filterlist.add_sort_mechanism(self, name, fct)
 	self.m_sort_list[name] = fct
 end
 
 --------------------------------------------------------------------------------
-function filterlist.set_filtercriteria(self,criteria)
-	if criteria == self.m_filtercriteria and
-		type(criteria) ~= "table" then
+function filterlist.set_filtercriteria(self, criteria)
+	if criteria == self.m_filtercriteria and type(criteria) ~= "table" then
 		return
 	end
 	self.m_filtercriteria = criteria
@@ -104,9 +102,9 @@ function filterlist.get_filtercriteria(self)
 end
 
 --------------------------------------------------------------------------------
---supported sort mode "alphabetic|none"
-function filterlist.set_sortmode(self,mode)
-	if (mode == self.m_sortmode) then
+-- supported sort mode "alphabetic|none"
+function filterlist.set_sortmode(self, mode)
+	if mode == self.m_sortmode then
 		return
 	end
 	self.m_sortmode = mode
@@ -124,7 +122,7 @@ function filterlist.get_raw_list(self)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_raw_element(self,idx)
+function filterlist.get_raw_element(self, idx)
 	if type(idx) ~= "number" then
 		idx = tonumber(idx)
 	end
@@ -137,16 +135,16 @@ function filterlist.get_raw_element(self,idx)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_raw_index(self,listindex)
+function filterlist.get_raw_index(self, listindex)
 	assert(self.m_processed_list ~= nil)
 
 	if listindex ~= nil and listindex > 0 and
-		listindex <= #self.m_processed_list then
+			listindex <= #self.m_processed_list then
 		local entry = self.m_processed_list[listindex]
 
-		for i,v in ipairs(self.m_raw_list) do
+		for i, v in ipairs(self.m_raw_list) do
 
-			if self.m_compare_fct(v,entry) then
+			if self.m_compare_fct(v, entry) then
 				return i
 			end
 		end
@@ -156,16 +154,15 @@ function filterlist.get_raw_index(self,listindex)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.get_current_index(self,listindex)
+function filterlist.get_current_index(self, listindex)
 	assert(self.m_processed_list ~= nil)
 
 	if listindex ~= nil and listindex > 0 and
-		listindex <= #self.m_raw_list then
+			listindex <= #self.m_raw_list then
 		local entry = self.m_raw_list[listindex]
 
-		for i,v in ipairs(self.m_processed_list) do
-
-			if self.m_compare_fct(v,entry) then
+		for i, v in ipairs(self.m_processed_list) do
+			if self.m_compare_fct(v, entry) then
 				return i
 			end
 		end
@@ -179,16 +176,16 @@ function filterlist.process(self)
 	assert(self.m_raw_list ~= nil)
 
 	if self.m_sortmode == "none" and
-		self.m_filtercriteria == nil then
+			self.m_filtercriteria == nil then
 		self.m_processed_list = self.m_raw_list
 		return
 	end
 
 	self.m_processed_list = {}
 
-	for k,v in pairs(self.m_raw_list) do
+	for _, v in pairs(self.m_raw_list) do
 		if self.m_filtercriteria == nil or
-			self.m_filter_fct(v,self.m_filtercriteria) then
+				self.m_filter_fct(v, self.m_filtercriteria) then
 			self.m_processed_list[#self.m_processed_list + 1] = v
 		end
 	end
@@ -198,8 +195,7 @@ function filterlist.process(self)
 	end
 
 	if self.m_sort_list[self.m_sortmode] ~= nil and
-		type(self.m_sort_list[self.m_sortmode]) == "function" then
-
+			type(self.m_sort_list[self.m_sortmode]) == "function" then
 		self.m_sort_list[self.m_sortmode](self)
 	end
 end
@@ -214,9 +210,9 @@ function filterlist.size(self)
 end
 
 --------------------------------------------------------------------------------
-function filterlist.uid_exists_raw(self,uid)
-	for i,v in ipairs(self.m_raw_list) do
-		if self.m_uid_match_fct(v,uid) then
+function filterlist.uid_exists_raw(self, uid)
+	for _, v in ipairs(self.m_raw_list) do
+		if self.m_uid_match_fct(v, uid) then
 			return true
 		end
 	end
@@ -227,9 +223,9 @@ end
 function filterlist.raw_index_by_uid(self, uid)
 	local elementcount = 0
 	local elementidx = 0
-	for i,v in ipairs(self.m_raw_list) do
-		if self.m_uid_match_fct(v,uid) then
-			elementcount = elementcount +1
+	for i, v in ipairs(self.m_raw_list) do
+		if self.m_uid_match_fct(v, uid) then
+			elementcount = elementcount + 1
 			elementidx = i
 		end
 	end
@@ -238,7 +234,7 @@ function filterlist.raw_index_by_uid(self, uid)
 	-- If there are more elements than one with same name uid can't decide which
 	-- one is meant. self shouldn't be possible but just for sure.
 	if elementcount > 1 then
-		elementidx=0
+		elementidx = 0
 	end
 
 	return elementidx
@@ -249,7 +245,7 @@ end
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
-function compare_worlds(world1,world2)
+function compare_worlds(world1, world2)
 	if world1.path ~= world2.path then
 		return false
 	end
@@ -299,7 +295,7 @@ function sort_mod_list(self)
 				return a.name < b.name
 			end
 			return a.name:lower() < b.name:lower()
-		-- Else compare name to modpack name
+			-- Else compare name to modpack name
 		else
 			-- Always show modpack pseudo-mod on top of modpack mod list
 			if a.name == b.modpack then
@@ -311,7 +307,7 @@ function sort_mod_list(self)
 			local name_a = a.modpack or a.name
 			local name_b = b.modpack or b.name
 			if name_a:lower() == name_b:lower() then
-				return  name_a < name_b
+				return name_a < name_b
 			end
 			return name_a:lower() < name_b:lower()
 		end

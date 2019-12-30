@@ -1,7 +1,6 @@
-
 local scriptpath = core.get_builtin_path()
 local commonpath = scriptpath .. "common" .. DIR_DELIM
-local gamepath   = scriptpath .. "game".. DIR_DELIM
+local gamepath   = scriptpath .. "game" .. DIR_DELIM
 
 -- Shared between builtin files, but
 -- not exposed to outer context

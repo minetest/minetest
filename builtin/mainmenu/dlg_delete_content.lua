@@ -16,15 +16,16 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
-
 local function delete_content_formspec(dialogdata)
 	local retval =
 		"size[11.5,4.5,true]" ..
-		"label[2,2;" ..
-		fgettext("Are you sure you want to delete \"$1\"?", dialogdata.content.name) .. "]"..
+		"label[2,2;" .. fgettext("Are you sure you want to delete \"$1\"?",
+				dialogdata.content.name) .. "]" ..
 		"style[dlg_delete_content_confirm;bgcolor=red]" ..
-		"button[3.25,3.5;2.5,0.5;dlg_delete_content_confirm;" .. fgettext("Delete") .. "]" ..
-		"button[5.75,3.5;2.5,0.5;dlg_delete_content_cancel;" .. fgettext("Cancel") .. "]"
+		"button[3.25,3.5;2.5,0.5;dlg_delete_content_confirm;" ..
+				fgettext("Delete") .. "]" ..
+		"button[5.75,3.5;2.5,0.5;dlg_delete_content_cancel;" ..
+				fgettext("Cancel") .. "]"
 
 	return retval
 end
@@ -39,7 +40,8 @@ local function delete_content_buttonhandler(this, fields)
 				this.data.content.path ~= core.get_gamepath() and
 				this.data.content.path ~= core.get_texturepath() then
 			if not core.delete_dir(this.data.content.path) then
-				gamedata.errormessage = fgettext("pkgmgr: failed to delete \"$1\"", this.data.content.path)
+				gamedata.errormessage = fgettext("pkgmgr: failed to delete \"$1\"",
+						this.data.content.path)
 			end
 
 			if this.data.content.type == "game" then
@@ -48,7 +50,8 @@ local function delete_content_buttonhandler(this, fields)
 				pkgmgr.refresh_globals()
 			end
 		else
-			gamedata.errormessage = fgettext("pkgmgr: invalid path \"$1\"", this.data.content.path)
+			gamedata.errormessage = fgettext("pkgmgr: invalid path \"$1\"",
+					this.data.content.path)
 		end
 		this:delete()
 		return true
@@ -67,9 +70,9 @@ function create_delete_content_dlg(content)
 	assert(content.name)
 
 	local retval = dialog_create("dlg_delete_content",
-					delete_content_formspec,
-					delete_content_buttonhandler,
-					nil)
+		delete_content_formspec,
+		delete_content_buttonhandler,
+		nil)
 	retval.data.content = content
 	return retval
 end

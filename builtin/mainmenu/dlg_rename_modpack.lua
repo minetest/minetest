@@ -16,20 +16,19 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
-
 local function rename_modpack_formspec(dialogdata)
 	local retval =
 		"size[11.5,4.5,true]" ..
-		"button[3.25,3.5;2.5,0.5;dlg_rename_modpack_confirm;"..
-				fgettext("Accept") .. "]" ..
-		"button[5.75,3.5;2.5,0.5;dlg_rename_modpack_cancel;"..
-				fgettext("Cancel") .. "]"
+		"button[3.25,3.5;2.5,0.5;dlg_rename_modpack_confirm;" ..
+			fgettext("Accept") .. "]" ..
+		"button[5.75,3.5;2.5,0.5;dlg_rename_modpack_cancel;" ..
+			fgettext("Cancel") .. "]"
 
 	local input_y = 2
 	if dialogdata.mod.is_name_explicit then
 		retval = retval .. "textarea[1,0.2;10,2;;;" ..
-				fgettext("This modpack has an explicit name given in its modpack.conf " ..
-						"which will override any renaming here.") .. "]"
+			fgettext("This modpack has an explicit name given in its modpack.conf " ..
+					"which will override any renaming here.") .. "]"
 		input_y = 2.5
 	end
 	retval = retval ..
@@ -65,9 +64,9 @@ end
 function create_rename_modpack_dlg(modpack)
 
 	local retval = dialog_create("dlg_delete_mod",
-					rename_modpack_formspec,
-					rename_modpack_buttonhandler,
-					nil)
+		rename_modpack_formspec,
+		rename_modpack_buttonhandler,
+		nil)
 	retval.data.mod = modpack
 	return retval
 end

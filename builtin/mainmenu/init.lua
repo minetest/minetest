@@ -26,7 +26,7 @@ local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
 local menustyle = core.settings:get("main_menu_style")
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
-					DIR_DELIM .. "pack" .. DIR_DELIM
+		DIR_DELIM .. "pack" .. DIR_DELIM
 
 dofile(basepath .. "common" .. DIR_DELIM .. "async_event.lua")
 dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
@@ -56,12 +56,12 @@ tabs.credits  = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
 if menustyle == "simple" then
 	tabs.simple_main = dofile(menupath .. DIR_DELIM .. "tab_simple_main.lua")
 else
-	tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
+	tabs.local_game  = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
 	tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
 end
 
 --------------------------------------------------------------------------------
-local function main_event_handler(tabview, event)
+local function main_event_handler(_, event)
 	if event == "MenuQuit" then
 		core.close()
 	end
@@ -101,8 +101,7 @@ local function init_globals()
 
 		gamedata.worldindex = world_index
 	else
-		menudata.worldlist = filterlist.create(
-			core.get_worlds,
+		menudata.worldlist = filterlist.create(core.get_worlds,
 			compare_worlds,
 			-- Unique id comparison function
 			function(element, uid)
@@ -111,8 +110,7 @@ local function init_globals()
 			-- Filter function
 			function(element, gameid)
 				return element.gameid == gameid
-			end
-		)
+			end)
 
 		menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
 		menudata.worldlist:set_sortmode("alphabetic")

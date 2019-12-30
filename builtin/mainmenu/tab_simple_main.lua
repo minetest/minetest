@@ -16,23 +16,22 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
-local function get_formspec(tabview, name, tabdata)
+local function get_formspec(_, _, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
 	common_update_cached_supp_proto()
 	local fav_selected = menudata.favorites[tabdata.fav_selected]
 
 	local retval =
-		"label[9.5,0;".. fgettext("Name / Password") .. "]" ..
+		"label[9.5,0;" .. fgettext("Name / Password") .. "]" ..
 		"field[0.25,3.35;5.5,0.5;te_address;;" ..
-			core.formspec_escape(core.settings:get("address")) .."]" ..
+			core.formspec_escape(core.settings:get("address")) .. "]" ..
 		"field[5.75,3.35;2.25,0.5;te_port;;" ..
-			core.formspec_escape(core.settings:get("remote_port")) .."]" ..
-		"button[10,2.6;2,1.5;btn_mp_connect;".. fgettext("Connect") .. "]" ..
+			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
+		"button[10,2.6;2,1.5;btn_mp_connect;" .. fgettext("Connect") .. "]" ..
 		"field[9.8,1;2.6,0.5;te_name;;" ..
-			core.formspec_escape(core.settings:get("name")) .."]" ..
+			core.formspec_escape(core.settings:get("name")) .. "]" ..
 		"pwdfield[9.8,2;2.6,0.5;te_pwd;]"
-
 
 	if tabdata.fav_selected and fav_selected then
 		if gamedata.fav then
@@ -88,23 +87,24 @@ local function get_formspec(tabview, name, tabdata)
 
 	-- checkboxes
 	retval = retval ..
-		"checkbox[8.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
-			dump(core.settings:get_bool("creative_mode")) .. "]"..
-		"checkbox[8.0,4.4;cb_damage;".. fgettext("Enable Damage") .. ";" ..
-			dump(core.settings:get_bool("enable_damage")) .. "]"
+		"checkbox[8.0,3.9;cb_creative;" .. fgettext("Creative Mode") .. ";" ..
+		dump(core.settings:get_bool("creative_mode")) .. "]" ..
+		"checkbox[8.0,4.4;cb_damage;" .. fgettext("Enable Damage") .. ";" ..
+		dump(core.settings:get_bool("enable_damage")) .. "]"
 	-- buttons
 	retval = retval ..
-		"button[0,3.7;8,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
+		"button[0,3.7;8,1.5;btn_start_singleplayer;" ..
+				fgettext("Start Singleplayer") .. "]" ..
 		"button[0,4.5;8,1.5;btn_config_sp_world;" .. fgettext("Config mods") .. "]"
 
 	return retval
 end
 
 --------------------------------------------------------------------------------
-local function main_button_handler(tabview, fields, name, tabdata)
+local function main_button_handler(tabview, fields, _, tabdata)
 	if fields.btn_start_singleplayer then
-		gamedata.selected_world	= gamedata.worldindex
-		gamedata.singleplayer	= true
+		gamedata.selected_world = gamedata.worldindex
+		gamedata.singleplayer = true
 		core.start()
 		return true
 	end
@@ -164,8 +164,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		gamedata.playername = fields.te_name
 		gamedata.password   = fields.te_pwd
 		gamedata.address    = fields.te_address
-		gamedata.port	    = fields.te_port
-		local fav_idx = core.get_textlist_index("favourites")
+		gamedata.port       = fields.te_port
+		local fav_idx       = core.get_textlist_index("favourites")
 
 		if fav_idx and fav_idx <= #menudata.favorites and
 				menudata.favorites[fav_idx].address == fields.te_address and
@@ -175,12 +175,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			gamedata.serverdescription = fav.description
 
 			if menudata.favorites_is_public and
-					not is_server_protocol_compat_or_error(
-						fav.proto_min, fav.proto_max) then
+					not is_server_protocol_compat_or_error(fav.proto_min, fav.proto_max) then
 				return true
 			end
 		else
-			gamedata.servername	   = ""
+			gamedata.servername        = ""
 			gamedata.serverdescription = ""
 		end
 
@@ -205,7 +204,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 end
 
 --------------------------------------------------------------------------------
-local function on_activate(type,old_tab,new_tab)
+local function on_activate(type)
 	if type == "LEAVE" then return end
 	asyncOnlineFavourites()
 end

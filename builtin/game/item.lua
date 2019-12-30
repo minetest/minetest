@@ -7,7 +7,7 @@ local function copy_pointed_thing(pointed_thing)
 		type  = pointed_thing.type,
 		above = vector.new(pointed_thing.above),
 		under = vector.new(pointed_thing.under),
-		ref   = pointed_thing.ref,
+		ref   = pointed_thing.ref
 	}
 end
 
@@ -38,10 +38,10 @@ function core.get_pointed_thing_position(pointed_thing, above)
 end
 
 function core.dir_to_facedir(dir, is6d)
-	--account for y if requested
+	-- account for y if requested
 	if is6d and math.abs(dir.y) > math.abs(dir.x) and math.abs(dir.y) > math.abs(dir.z) then
 
-		--from above
+		-- from above
 		if dir.y < 0 then
 			if math.abs(dir.x) > math.abs(dir.z) then
 				if dir.x < 0 then
@@ -57,7 +57,7 @@ function core.dir_to_facedir(dir, is6d)
 				end
 			end
 
-		--from below
+		-- from below
 		else
 			if math.abs(dir.x) > math.abs(dir.z) then
 				if dir.x < 0 then
@@ -74,7 +74,7 @@ function core.dir_to_facedir(dir, is6d)
 			end
 		end
 
-	--otherwise, place horizontally
+	-- otherwise, place horizontally
 	elseif math.abs(dir.x) > math.abs(dir.z) then
 		if dir.x < 0 then
 			return 3
@@ -92,21 +92,21 @@ end
 
 -- Table of possible dirs
 local facedir_to_dir = {
-	{x= 0, y=0,  z= 1},
-	{x= 1, y=0,  z= 0},
-	{x= 0, y=0,  z=-1},
-	{x=-1, y=0,  z= 0},
-	{x= 0, y=-1, z= 0},
-	{x= 0, y=1,  z= 0},
+	{x = 0, y = 0, z = 1},
+	{x = 1, y = 0, z = 0},
+	{x = 0, y = 0, z = -1},
+	{x = -1, y = 0, z = 0},
+	{x = 0, y = -1, z = 0},
+	{x = 0, y = 1, z = 0}
 }
 -- Mapping from facedir value to index in facedir_to_dir.
 local facedir_to_dir_map = {
-	[0]=1, 2, 3, 4,
+	[0] = 1, 2, 3, 4,
 	5, 2, 6, 4,
 	6, 2, 5, 4,
 	1, 5, 3, 6,
 	1, 6, 3, 5,
-	1, 4, 3, 2,
+	1, 4, 3, 2
 }
 function core.facedir_to_dir(facedir)
 	return facedir_to_dir[facedir_to_dir_map[facedir % 32]]
@@ -141,7 +141,7 @@ local wallmounted_to_dir = {
 	{x =  1, y =  0, z =  0},
 	{x = -1, y =  0, z =  0},
 	{x =  0, y =  0, z =  1},
-	{x =  0, y =  0, z = -1},
+	{x =  0, y =  0, z = -1}
 }
 function core.wallmounted_to_dir(wallmounted)
 	return wallmounted_to_dir[wallmounted % 8]
@@ -217,7 +217,7 @@ function core.get_node_drops(node, toolname)
 		end
 		if item.tools ~= nil and toolname then
 			for _, tool in ipairs(item.tools) do
-				if tool:sub(1, 1) == '~' then
+				if tool:sub(1, 1) == "~" then
 					good_tool = toolname:find(tool:sub(2)) ~= nil
 				else
 					good_tool = toolname == tool
@@ -236,7 +236,7 @@ function core.get_node_drops(node, toolname)
 					stack:get_meta():set_int("palette_index", palette_index)
 					add_item = stack:to_string()
 				end
-				got_items[#got_items+1] = add_item
+				got_items[#got_items + 1] = add_item
 			end
 			if drop.max_items ~= nil and got_count == drop.max_items then
 				break
@@ -271,7 +271,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 
 	if not oldnode_under or not oldnode_above then
 		log("info", playername .. " tried to place"
-			.. " node in unloaded position " .. core.pos_to_string(above))
+				.. " node in unloaded position " .. core.pos_to_string(above))
 		return itemstack, nil
 	end
 
@@ -341,7 +341,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 
 	-- Transfer color information
 	if metatable.palette_index and not def.place_param2 then
-		local color_divisor = nil
+		local color_divisor
 		if def.paramtype2 == "color" then
 			color_divisor = 1
 		elseif def.paramtype2 == "colorwallmounted" then
@@ -358,9 +358,9 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 
 	-- Check if the node is attached and if it can be placed there
 	if core.get_item_group(def.name, "attached_node") ~= 0 and
-		not builtin_shared.check_attached_node(place_to, newnode) then
+			not builtin_shared.check_attached_node(place_to, newnode) then
 		log("action", "attached node " .. def.name ..
-			" can not be placed at " .. core.pos_to_string(place_to))
+				" can not be placed at " .. core.pos_to_string(place_to))
 		return itemstack, nil
 	end
 
@@ -372,10 +372,10 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	-- Run callback
 	if def.after_place_node and not prevent_after_place then
 		-- Deepcopy place_to and pointed_thing because callback can modify it
-		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
+		local place_to_copy = {x = place_to.x, y = place_to.y, z = place_to.z}
 		local pointed_thing_copy = copy_pointed_thing(pointed_thing)
 		if def.after_place_node(place_to_copy, placer, itemstack,
-				pointed_thing_copy) then
+			pointed_thing_copy) then
 			take_item = false
 		end
 	end
@@ -383,9 +383,9 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	-- Run script hook
 	for _, callback in ipairs(core.registered_on_placenodes) do
 		-- Deepcopy pos, node and pointed_thing because callback can modify them
-		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
-		local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
-		local oldnode_copy = {name=oldnode.name, param1=oldnode.param1, param2=oldnode.param2}
+		local place_to_copy = {x = place_to.x, y = place_to.y, z = place_to.z}
+		local newnode_copy = {name = newnode.name, param1 = newnode.param1, param2 = newnode.param2}
+		local oldnode_copy = {name = oldnode.name, param1 = oldnode.param1, param2 = oldnode.param2}
 		local pointed_thing_copy = copy_pointed_thing(pointed_thing)
 		if callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack, pointed_thing_copy) then
 			take_item = false
@@ -416,7 +416,7 @@ function core.item_place(itemstack, placer, pointed_thing, param2)
 		local nn = n.name
 		if core.registered_nodes[nn] and core.registered_nodes[nn].on_rightclick then
 			return core.registered_nodes[nn].on_rightclick(pointed_thing.under, n,
-					placer, itemstack, pointed_thing) or itemstack, nil
+				placer, itemstack, pointed_thing) or itemstack, nil
 		end
 	end
 
@@ -467,7 +467,7 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 		user:set_hp(user:get_hp() + hp_change)
 
 		if def and def.sound and def.sound.eat then
-			minetest.sound_play(def.sound.eat, { pos = user:get_pos(), max_hear_distance = 16 })
+			minetest.sound_play(def.sound.eat, {pos = user:get_pos(), max_hear_distance = 16})
 		end
 
 		if replace_with_item then
@@ -476,7 +476,7 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 			else
 				local inv = user:get_inventory()
 				-- Check if inv is null, since non-players don't have one
-				if inv and inv:room_for_item("main", {name=replace_with_item}) then
+				if inv and inv:room_for_item("main", {name = replace_with_item}) then
 					inv:add_item("main", replace_with_item)
 				else
 					local pos = user:get_pos()
@@ -490,7 +490,7 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 end
 
 function core.item_eat(hp_change, replace_with_item)
-	return function(itemstack, user, pointed_thing)  -- closure
+	return function(itemstack, user, pointed_thing) -- closure
 		if user then
 			return core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
 		end
@@ -502,7 +502,7 @@ function core.node_punch(pos, node, puncher, pointed_thing)
 	for _, callback in ipairs(core.registered_on_punchnodes) do
 		-- Copy pos and node because callback can modify them
 		local pos_copy = vector.new(pos)
-		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
+		local node_copy = {name = node.name, param1 = node.param1, param2 = node.param2}
 		local pointed_thing_copy = pointed_thing and copy_pointed_thing(pointed_thing) or nil
 		callback(pos_copy, node_copy, puncher, pointed_thing_copy)
 	end
@@ -529,7 +529,7 @@ function core.handle_node_drops(pos, drops, digger)
 			local p = {
 				x = pos.x + math.random()/2-0.25,
 				y = pos.y + math.random()/2-0.25,
-				z = pos.z + math.random()/2-0.25,
+				z = pos.z + math.random()/2-0.25
 			}
 			core.add_item(p, left)
 		end
@@ -557,7 +557,7 @@ function core.node_dig(pos, node, digger)
 		return
 	end
 
-	log('action', diggername .. " digs "
+	log("action", diggername .. " digs "
 		.. node.name .. " at " .. core.pos_to_string(pos))
 
 	local wielded = digger and digger:get_wielded_item()
@@ -585,8 +585,8 @@ function core.node_dig(pos, node, digger)
 	if def and def.preserve_metadata then
 		local oldmeta = core.get_meta(pos):to_table().fields
 		-- Copy pos and node because the callback can modify them.
-		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
-		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
+		local pos_copy = {x = pos.x, y = pos.y, z = pos.z}
+		local node_copy = {name = node.name, param1 = node.param1, param2 = node.param2}
 		local drop_stacks = {}
 		for k, v in pairs(drops) do
 			drop_stacks[k] = ItemStack(v)
@@ -598,7 +598,7 @@ function core.node_dig(pos, node, digger)
 	-- Handle drops
 	core.handle_node_drops(pos, drops, digger)
 
-	local oldmetadata = nil
+	local oldmetadata
 	if def and def.after_dig_node then
 		oldmetadata = core.get_meta(pos):to_table()
 	end
@@ -609,8 +609,8 @@ function core.node_dig(pos, node, digger)
 	-- Run callback
 	if def and def.after_dig_node then
 		-- Copy pos and node because callback can modify them
-		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
-		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
+		local pos_copy = {x = pos.x, y = pos.y, z = pos.z}
+		local node_copy = {name = node.name, param1 = node.param1, param2 = node.param2}
 		def.after_dig_node(pos_copy, node_copy, oldmetadata, digger)
 	end
 
@@ -622,8 +622,8 @@ function core.node_dig(pos, node, digger)
 		end
 
 		-- Copy pos and node because callback can modify them
-		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
-		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
+		local pos_copy = {x = pos.x, y = pos.y, z = pos.z}
+		local node_copy = {name = node.name, param1 = node.param1, param2 = node.param2}
 		callback(pos_copy, node_copy, digger)
 	end
 end
@@ -655,13 +655,13 @@ end
 
 core.nodedef_default = {
 	-- Item properties
-	type="node",
+	type = "node",
 	-- name intentionally not defined here
 	description = "",
 	groups = {},
 	inventory_image = "",
 	wield_image = "",
-	wield_scale = {x=1,y=1,z=1},
+	wield_scale = {x = 1, y = 1, z = 1},
 	stack_max = 99,
 	usable = false,
 	liquids_pointable = false,
@@ -692,10 +692,10 @@ core.nodedef_default = {
 	--tiles ={""},
 	--special_tiles = {
 	--	{name="", backface_culling=true},
-	--	{name="", backface_culling=true},
+	--	{name="", backface_culling=true}
 	--},
 	alpha = 255,
-	post_effect_color = {a=0, r=0, g=0, b=0},
+	post_effect_color = {a = 0, r = 0, g = 0, b = 0},
 	paramtype = "none",
 	paramtype2 = "none",
 	is_ground_content = true,
@@ -713,19 +713,19 @@ core.nodedef_default = {
 	drowning = 0,
 	light_source = 0,
 	damage_per_second = 0,
-	selection_box = {type="regular"},
+	selection_box = {type = "regular"},
 	legacy_facedir_simple = false,
-	legacy_wallmounted = false,
+	legacy_wallmounted = false
 }
 
 core.craftitemdef_default = {
-	type="craft",
+	type = "craft",
 	-- name intentionally not defined here
 	description = "",
 	groups = {},
 	inventory_image = "",
 	wield_image = "",
-	wield_scale = {x=1,y=1,z=1},
+	wield_scale = {x = 1, y = 1, z = 1},
 	stack_max = 99,
 	liquids_pointable = false,
 	tool_capabilities = nil,
@@ -734,17 +734,17 @@ core.craftitemdef_default = {
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
 	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
 	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
-	on_use = nil,
+	on_use = nil
 }
 
 core.tooldef_default = {
-	type="tool",
+	type = "tool",
 	-- name intentionally not defined here
 	description = "",
 	groups = {},
 	inventory_image = "",
 	wield_image = "",
-	wield_scale = {x=1,y=1,z=1},
+	wield_scale = {x = 1, y = 1, z = 1},
 	stack_max = 1,
 	liquids_pointable = false,
 	tool_capabilities = nil,
@@ -753,17 +753,17 @@ core.tooldef_default = {
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
 	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
 	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
-	on_use = nil,
+	on_use = nil
 }
 
-core.noneitemdef_default = {  -- This is used for the hand and unknown items
-	type="none",
+core.noneitemdef_default = { -- This is used for the hand and unknown items
+	type = "none",
 	-- name intentionally not defined here
 	description = "",
 	groups = {},
 	inventory_image = "",
 	wield_image = "",
-	wield_scale = {x=1,y=1,z=1},
+	wield_scale = {x = 1, y = 1, z = 1},
 	stack_max = 99,
 	liquids_pointable = false,
 	tool_capabilities = nil,
@@ -772,5 +772,5 @@ core.noneitemdef_default = {  -- This is used for the hand and unknown items
 	on_place = redef_wrapper(core, 'item_place'),
 	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
 	on_drop = nil,
-	on_use = nil,
+	on_use = nil
 }

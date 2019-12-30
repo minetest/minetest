@@ -32,8 +32,7 @@ local function get_formspec(data)
 		"label[1.75,0;" .. data.worldspec.name .. "]"
 
 	if mod.is_modpack or mod.type == "game" then
-		local info = minetest.formspec_escape(
-			core.get_content_info(mod.path).description)
+		local info = minetest.formspec_escape(core.get_content_info(mod.path).description)
 		if info == "" then
 			if mod.is_modpack then
 				info = fgettext("No modpack description provided.")
@@ -59,10 +58,8 @@ local function get_formspec(data)
 					fgettext("No (optional) dependencies") .. "]"
 			else
 				retval = retval ..
-					"label[0,1.25;" .. fgettext("No hard dependencies") ..
-					"]" ..
-					"label[0,1.75;" .. fgettext("Optional dependencies:") ..
-					"]" ..
+					"label[0,1.25;" .. fgettext("No hard dependencies") .. "]" ..
+					"label[0,1.75;" .. fgettext("Optional dependencies:") .. "]" ..
 					"textlist[0,2.25;5,4;world_config_optdepends;" ..
 					soft_deps_str .. ";0]"
 			end
@@ -78,8 +75,7 @@ local function get_formspec(data)
 					"label[0,1.25;" .. fgettext("Dependencies:") .. "]" ..
 					"textlist[0,1.75;5,2.125;world_config_depends;" ..
 					hard_deps_str .. ";0]" ..
-					"label[0,3.9;" .. fgettext("Optional dependencies:") ..
-					"]" ..
+					"label[0,3.9;" .. fgettext("Optional dependencies:") ..	"]" ..
 					"textlist[0,4.375;5,1.8;world_config_optdepends;" ..
 					soft_deps_str .. ";0]"
 			end
@@ -121,7 +117,7 @@ local function get_formspec(data)
 	return retval ..
 		"tablecolumns[color;tree;text]" ..
 		"table[5.5,0.75;5.75,6;world_config_modlist;" ..
-		pkgmgr.render_packagelist(data.list) .. ";" .. data.selected_mod .."]"
+		pkgmgr.render_packagelist(data.list) .. ";" .. data.selected_mod .. "]"
 end
 
 local function handle_buttons(this, fields)
@@ -230,8 +226,7 @@ end
 function create_configure_world_dlg(worldidx)
 	local dlg = dialog_create("sp_config_world", get_formspec, handle_buttons)
 
-	dlg.data.selected_mod = tonumber(
-			core.settings:get("world_config_selected_mod")) or 0
+	dlg.data.selected_mod = tonumber(core.settings:get("world_config_selected_mod")) or 0
 
 	dlg.data.worldspec = core.get_worlds()[worldidx]
 	if not dlg.data.worldspec then
@@ -247,8 +242,7 @@ function create_configure_world_dlg(worldidx)
 		return
 	end
 
-	dlg.data.list = filterlist.create(
-		pkgmgr.preparemodlist,
+	dlg.data.list = filterlist.create(pkgmgr.preparemodlist,
 		pkgmgr.comparemod,
 		function(element, uid)
 			if element.name == uid then

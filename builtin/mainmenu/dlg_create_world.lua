@@ -17,12 +17,12 @@
 
 local worldname = ""
 
-local function create_world_formspec(dialogdata)
+local function create_world_formspec()
 	local mapgens = core.get_mapgen_names()
 
 	local current_seed = core.settings:get("fixed_map_seed") or ""
 	local current_mg   = core.settings:get("mg_name")
-	local gameid = core.settings:get("menu_last_game")
+	local gameid       = core.settings:get("menu_last_game")
 
 	local gameidx = 0
 	if gameid ~= nil then
@@ -37,7 +37,7 @@ local function create_world_formspec(dialogdata)
 	local game_by_gameidx = core.get_game(gameidx)
 	if game_by_gameidx ~= nil then
 		local gamepath = game_by_gameidx.path
-		local gameconfig = Settings(gamepath.."/game.conf")
+		local gameconfig = Settings(gamepath .. "/game.conf")
 
 		local disallowed_mapgens = (gameconfig:get("disallowed_mapgens") or ""):split()
 		for key, value in pairs(disallowed_mapgens) do
@@ -56,7 +56,7 @@ local function create_world_formspec(dialogdata)
 	local mglist = ""
 	local selindex = 1
 	local i = 1
-	for k,v in pairs(mapgens) do
+	for _, v in pairs(mapgens) do
 		if current_mg == v then
 			selindex = i
 		end
@@ -68,16 +68,17 @@ local function create_world_formspec(dialogdata)
 	current_seed = core.formspec_escape(current_seed)
 	local retval =
 		"size[11.5,6.5,true]" ..
-		"label[2,0;" .. fgettext("World name") .. "]"..
-		"field[4.5,0.4;6,0.5;te_world_name;;" .. minetest.formspec_escape(worldname) .. "]" ..
+		"label[2,0;" .. fgettext("World name") .. "]" ..
+		"field[4.5,0.4;6,0.5;te_world_name;;" ..
+			minetest.formspec_escape(worldname) .. "]" ..
 
-		"label[2,1;" .. fgettext("Seed") .. "]"..
-		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
+		"label[2,1;" .. fgettext("Seed") .. "]" ..
+		"field[4.5,1.4;6,0.5;te_seed;;" .. current_seed .. "]" ..
 
-		"label[2,2;" .. fgettext("Mapgen") .. "]"..
+		"label[2,2;" .. fgettext("Mapgen") .. "]" ..
 		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
 
-		"label[2,3;" .. fgettext("Game") .. "]"..
+		"label[2,3;" .. fgettext("Game") .. "]" ..
 		"textlist[4.2,3;5.8,2.3;games;" .. pkgmgr.gamelist() ..
 		";" .. gameidx .. ";true]" ..
 
@@ -90,18 +91,16 @@ local function create_world_formspec(dialogdata)
 				fgettext("Download one from minetest.net") .. "]"
 	elseif #pkgmgr.games == 1 and pkgmgr.games[1].id == "minimal" then
 		retval = retval .. "box[1.75,4;8.7,1;#ff8800]label[2,4;" ..
-				fgettext("Warning: The minimal development test is meant for developers.") .. "]label[2,4.4;" ..
+				fgettext("Warning: The minimal development test is meant for developers.") ..
+						"]label[2,4.4;" ..
 				fgettext("Download a game, such as Minetest Game, from minetest.net") .. "]"
 	end
 
 	return retval
-
 end
 
 local function create_world_buttonhandler(this, fields)
-
-	if fields["world_create_confirm"] or
-		fields["key_enter"] then
+	if fields["world_create_confirm"] or fields["key_enter"] then
 
 		local worldname = fields["te_world_name"]
 		local gameindex = core.get_textlist_index("games")
@@ -117,8 +116,8 @@ local function create_world_buttonhandler(this, fields)
 
 			local message
 			if not menudata.worldlist:uid_exists_raw(worldname) then
-				core.settings:set("mg_name",fields["dd_mapgen"])
-				message = core.create_world(worldname,gameindex)
+				core.settings:set("mg_name", fields["dd_mapgen"])
+				message = core.create_world(worldname, gameindex)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
 			end
@@ -126,14 +125,14 @@ local function create_world_buttonhandler(this, fields)
 			if message ~= nil then
 				gamedata.errormessage = message
 			else
-				core.settings:set("menu_last_game",pkgmgr.games[gameindex].id)
+				core.settings:set("menu_last_game", pkgmgr.games[gameindex].id)
 				if this.data.update_worldlist_filter then
 					menudata.worldlist:set_filtercriteria(pkgmgr.games[gameindex].id)
 					mm_texture.update("singleplayer", pkgmgr.games[gameindex].id)
 				end
 				menudata.worldlist:refresh()
 				core.settings:set("mainmenu_last_selected_world",
-									menudata.worldlist:raw_index_by_uid(worldname))
+					menudata.worldlist:raw_index_by_uid(worldname))
 			end
 		else
 			gamedata.errormessage = fgettext("No game selected")
@@ -162,9 +161,9 @@ end
 function create_create_world_dlg(update_worldlistfilter)
 	worldname = ""
 	local retval = dialog_create("sp_create_world",
-					create_world_formspec,
-					create_world_buttonhandler,
-					nil)
+		create_world_formspec,
+		create_world_buttonhandler,
+		nil)
 	retval.update_worldlist_filter = update_worldlistfilter
 
 	return retval

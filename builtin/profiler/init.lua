@@ -23,10 +23,11 @@ local function get_bool_default(name, default)
 	return val
 end
 
-local profiler_path = core.get_builtin_path().."profiler"..DIR_DELIM
+local profiler_path = core.get_builtin_path() .. "profiler" .. DIR_DELIM
 local profiler = {}
 local sampler = assert(loadfile(profiler_path .. "sampling.lua"))(profiler)
-local instrumentation  = assert(loadfile(profiler_path .. "instrumentation.lua"))(profiler, sampler, get_bool_default)
+local instrumentation = assert(loadfile(profiler_path ..
+		"instrumentation.lua"))(profiler, sampler, get_bool_default)
 local reporter = dofile(profiler_path .. "reporter.lua")
 profiler.instrument = instrumentation.instrument
 
@@ -44,8 +45,8 @@ function profiler.init_chatcommand()
 	core.register_chatcommand("profiler", {
 		description = "handle the profiler and profiling data",
 		params = param_usage,
-		privs = { server=true },
-		func = function(name, param)
+		privs = {server = true},
+		func = function(_, param)
 			local command, arg0 = string.match(param, "([^ ]+) ?(.*)")
 			local args = arg0 and string.split(arg0, " ")
 
@@ -61,11 +62,9 @@ function profiler.init_chatcommand()
 				return true, "Statistics were reset"
 			end
 
-			return false, string.format(
-				"Usage: %s\n" ..
+			return false, string.format("Usage: %s\n" ..
 				"Format can be one of txt, csv, lua, json, json_pretty (structures may be subject to change).",
-				param_usage
-			)
+				param_usage)
 		end
 	})
 

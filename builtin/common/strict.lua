@@ -1,4 +1,3 @@
-
 -- Always warn when creating a global variable, even outside of a function.
 -- This ignores mod namespaces (variables with the same name as the current mod).
 local WARN_INIT = false
@@ -22,13 +21,11 @@ function meta:__newindex(name, value)
 	local info = getinfo(2, "Sl")
 	local desc = ("%s:%d"):format(info.short_src, info.currentline)
 	if not declared[name] then
-		local warn_key = ("%s\0%d\0%s"):format(info.source,
-				info.currentline, name)
+		local warn_key = ("%s\0%d\0%s"):format(info.source, info.currentline, name)
 		if not warned[warn_key] and info.what ~= "main" and
 				info.what ~= "C" then
-			core.log("warning", ("Assignment to undeclared "..
-					"global %q inside a function at %s.")
-				:format(name, desc))
+			core.log("warning", ("Assignment to undeclared " ..
+					"global %q inside a function at %s."):format(name, desc))
 			warned[warn_key] = true
 		end
 		declared[name] = true
@@ -54,4 +51,3 @@ function meta:__index(name)
 end
 
 setmetatable(_G, meta)
-

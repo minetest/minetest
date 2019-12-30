@@ -27,7 +27,7 @@ local core_developers = {
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
 	"rubenwardy <rw@rubenwardy.com>",
 	"Krock/SmallJoker <mk939@ymail.com>",
-	"Lars Hofhansl <larsh@apache.org>",
+	"Lars Hofhansl <larsh@apache.org>"
 }
 
 local active_contributors = {
@@ -64,7 +64,7 @@ local active_contributors = {
 	"Jozef Behran (osjc) [Fixes]",
 	"random-geek [Fixes]",
 	"Pedro Gimeno (pgimeno) [Fixes]",
-	"lisacvuk [Fixes]",
+	"lisacvuk [Fixes]"
 }
 
 local previous_core_developers = {
@@ -78,7 +78,7 @@ local previous_core_developers = {
 	"kahrl <kahrl@gmx.net>",
 	"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
 	"sapier",
-	"Zeno",
+	"Zeno"
 }
 
 local previous_contributors = {
@@ -96,7 +96,7 @@ local previous_contributors = {
 	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest Logo]",
 	"Jeija <jeija@mesecons.net> [HTTP, particles]",
 	"bigfoot547 [CSM]",
-	"Rogier <rogier777@gmail.com> [Fixes]",
+	"Rogier <rogier777@gmail.com> [Fixes]"
 }
 
 local function buildCreditList(source)
@@ -110,7 +110,7 @@ end
 return {
 	name = "credits",
 	caption = fgettext("Credits"),
-	cbf_formspec = function(tabview, name, tabdata)
+	cbf_formspec = function()
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
 		return "image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
@@ -123,7 +123,7 @@ return {
 			buildCreditList(core_developers) .. ",,," ..
 			"#FFFF00," .. fgettext("Active Contributors") .. ",," ..
 			buildCreditList(active_contributors) .. ",,," ..
-			"#FFFF00," .. fgettext("Previous Core Developers") ..",," ..
+			"#FFFF00," .. fgettext("Previous Core Developers") .. ",," ..
 			buildCreditList(previous_core_developers) .. ",,," ..
 			"#FFFF00," .. fgettext("Previous Contributors") .. ",," ..
 			buildCreditList(previous_contributors) .. "," ..

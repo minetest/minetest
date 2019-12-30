@@ -3,22 +3,22 @@ local enable_damage = core.settings:get_bool("enable_damage")
 
 local health_bar_definition = {
 	hud_elem_type = "statbar",
-	position = { x=0.5, y=1 },
+	position = {x = 0.5, y = 1},
 	text = "heart.png",
 	number = core.PLAYER_MAX_HP_DEFAULT,
 	direction = 0,
-	size = { x=24, y=24 },
-	offset = { x=(-10*24)-25, y=-(48+24+16)},
+	size = {x = 24, y = 24},
+	offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)}
 }
 
 local breath_bar_definition = {
 	hud_elem_type = "statbar",
-	position = { x=0.5, y=1 },
+	position = {x = 0.5, y = 1},
 	text = "bubble.png",
 	number = core.PLAYER_MAX_BREATH_DEFAULT,
 	direction = 0,
-	size = { x=24, y=24 },
-	offset = {x=25,y=-(48+24+16)},
+	size = {x = 24, y = 24},
+	offset = {x = 25, y = -(48 + 24 + 16)}
 }
 
 local hud_ids = {}
@@ -26,7 +26,7 @@ local hud_ids = {}
 local function scaleToDefault(player, field)
 	-- Scale "hp" or "breath" to the default dimensions
 	local current = player["get_" .. field](player)
-	local nominal = core["PLAYER_MAX_".. field:upper() .. "_DEFAULT"]
+	local nominal = core["PLAYER_MAX_" .. field:upper() .. "_DEFAULT"]
 	local max_display = math.max(nominal,
 		math.max(player:get_properties()[field .. "_max"], current))
 	return current / max_display * nominal
@@ -90,7 +90,7 @@ local function cleanup_builtin_statbars(player)
 	hud_ids[name] = nil
 end
 
-local function player_event_handler(player,eventname)
+local function player_event_handler(player, eventname)
 	assert(player:is_player())
 
 	local name = player:get_player_name()
@@ -124,7 +124,6 @@ local function player_event_handler(player,eventname)
 end
 
 function core.hud_replace_builtin(hud_name, definition)
-
 	if type(definition) ~= "table" or
 			definition.hud_elem_type ~= "statbar" then
 		return false

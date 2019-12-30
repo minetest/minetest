@@ -46,7 +46,7 @@ end
 core.chatcommands = core.registered_chatcommands -- BACKWARDS COMPATIBILITY
 
 core.register_on_chat_message(function(name, message)
-	if message:sub(1,1) ~= "/" then
+	if message:sub(1, 1) ~= "/" then
 		return
 	end
 
@@ -75,7 +75,7 @@ core.register_on_chat_message(function(name, message)
 				.. " to run this command (missing privileges: "
 				.. table.concat(missing_privs, ", ") .. ")")
 	end
-	return true  -- Handled chat message
+	return true -- Handled chat message
 end)
 
 if core.settings:get_bool("profiler.load") then
@@ -112,10 +112,10 @@ core.register_chatcommand("me", {
 	params = "<action>",
 	description = "Show chat action (e.g., '/me orders a pizza' displays"
 			.. " '<player name> orders a pizza')",
-	privs = {shout=true},
+	privs = {shout = true},
 	func = function(name, param)
 		core.chat_send_all("* " .. name .. " " .. param)
-	end,
+	end
 })
 
 core.register_chatcommand("admin", {
@@ -127,7 +127,7 @@ core.register_chatcommand("admin", {
 		else
 			return false, "There's no administrator named in the config file."
 		end
-	end,
+	end
 })
 
 core.register_chatcommand("privs", {
@@ -140,9 +140,8 @@ core.register_chatcommand("privs", {
 			return false, "Player " .. name .. " does not exist."
 		end
 		return true, "Privileges of " .. name .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(name), ", ")
-	end,
+				.. core.privs_to_string(core.get_player_privs(name), ", ")
+	end
 })
 
 core.register_chatcommand("haspriv", {
@@ -186,7 +185,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	local privs = core.get_player_privs(grantname)
 	local privs_unknown = ""
 	local basic_privs =
-		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
+	core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
 	for priv, _ in pairs(grantprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
 			return false, "Your privileges are insufficient."
@@ -204,15 +203,15 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 		core.run_priv_callbacks(grantname, priv, caller, "grant")
 	end
 	core.set_player_privs(grantname, privs)
-	core.log("action", caller..' granted ('..core.privs_to_string(grantprivs, ', ')..') privileges to '..grantname)
+	core.log("action", caller .. ' granted (' ..
+		core.privs_to_string(grantprivs, ', ') .. ') privileges to ' .. grantname)
 	if grantname ~= caller then
 		core.chat_send_player(grantname, caller
-				.. " granted you privileges: "
-				.. core.privs_to_string(grantprivs, ' '))
+			.. " granted you privileges: "
+			.. core.privs_to_string(grantprivs, ' '))
 	end
 	return true, "Privileges of " .. grantname .. ": "
-		.. core.privs_to_string(
-			core.get_player_privs(grantname), ' ')
+			.. core.privs_to_string(core.get_player_privs(grantname), ' ')
 end
 
 core.register_chatcommand("grant", {
@@ -224,7 +223,7 @@ core.register_chatcommand("grant", {
 			return false, "Invalid parameters (see /help grant)"
 		end
 		return handle_grant_command(name, grantname, grantprivstr)
-	end,
+	end
 })
 
 core.register_chatcommand("grantme", {
@@ -235,7 +234,7 @@ core.register_chatcommand("grantme", {
 			return false, "Invalid parameters (see /help grantme)"
 		end
 		return handle_grant_command(name, name, param)
-	end,
+	end
 })
 
 core.register_chatcommand("revoke", {
@@ -243,8 +242,8 @@ core.register_chatcommand("revoke", {
 	description = "Remove privileges from player",
 	privs = {},
 	func = function(name, param)
-		if not core.check_player_privs(name, {privs=true}) and
-				not core.check_player_privs(name, {basic_privs=true}) then
+		if not core.check_player_privs(name, {privs = true}) and
+				not core.check_player_privs(name, {basic_privs = true}) then
 			return false, "Your privileges are insufficient."
 		end
 		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
@@ -256,10 +255,10 @@ core.register_chatcommand("revoke", {
 		local revoke_privs = core.string_to_privs(revoke_priv_str)
 		local privs = core.get_player_privs(revoke_name)
 		local basic_privs =
-			core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
+		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
 		for priv, _ in pairs(revoke_privs) do
 			if not basic_privs[priv] and
-					not core.check_player_privs(name, {privs=true}) then
+					not core.check_player_privs(name, {privs = true}) then
 				return false, "Your privileges are insufficient."
 			end
 		end
@@ -278,24 +277,23 @@ core.register_chatcommand("revoke", {
 		end
 
 		core.set_player_privs(revoke_name, privs)
-		core.log("action", name..' revoked ('
-				..core.privs_to_string(revoke_privs, ', ')
-				..') privileges from '..revoke_name)
+		core.log("action", name .. ' revoked ('
+				.. core.privs_to_string(revoke_privs, ', ')
+				.. ') privileges from ' .. revoke_name)
 		if revoke_name ~= name then
 			core.chat_send_player(revoke_name, name
 					.. " revoked privileges from you: "
 					.. core.privs_to_string(revoke_privs, ' '))
 		end
 		return true, "Privileges of " .. revoke_name .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(revoke_name), ' ')
-	end,
+				.. core.privs_to_string(core.get_player_privs(revoke_name), ' ')
+	end
 })
 
 core.register_chatcommand("setpassword", {
 	params = "<name> <password>",
 	description = "Set player's password",
-	privs = {password=true},
+	privs = {password = true},
 	func = function(name, param)
 		local toname, raw_password = string.match(param, "^([^ ]+) +(.+)$")
 		if not toname then
@@ -314,8 +312,8 @@ core.register_chatcommand("setpassword", {
 			act_str_pres = "clears"
 		else
 			core.set_player_password(toname,
-					core.get_password_hash(toname,
-							raw_password))
+				core.get_password_hash(toname,
+					raw_password))
 			act_str_past = "set"
 			act_str_pres = "sets"
 		end
@@ -329,13 +327,13 @@ core.register_chatcommand("setpassword", {
 				" password of " .. toname .. ".")
 
 		return true, "Password of player \"" .. toname .. "\" " .. act_str_past
-	end,
+	end
 })
 
 core.register_chatcommand("clearpassword", {
 	params = "<name>",
 	description = "Set empty password for a player",
-	privs = {password=true},
+	privs = {password = true},
 	func = function(name, param)
 		local toname = param
 		if toname == "" then
@@ -346,23 +344,23 @@ core.register_chatcommand("clearpassword", {
 		core.log("action", name .. " clears password of " .. toname .. ".")
 
 		return true, "Password of player \"" .. toname .. "\" cleared"
-	end,
+	end
 })
 
 core.register_chatcommand("auth_reload", {
 	params = "",
 	description = "Reload authentication data",
-	privs = {server=true},
+	privs = {server = true},
 	func = function(name, param)
 		local done = core.auth_reload()
 		return done, (done and "Done." or "Failed.")
-	end,
+	end
 })
 
 core.register_chatcommand("remove_player", {
 	params = "<name>",
 	description = "Remove a player's data",
-	privs = {server=true},
+	privs = {server = true},
 	func = function(name, param)
 		local toname = param
 		if toname == "" then
@@ -381,24 +379,24 @@ core.register_chatcommand("remove_player", {
 		end
 
 		return false, "Unhandled remove_player return code " .. rc .. ""
-	end,
+	end
 })
 
 core.register_chatcommand("teleport", {
 	params = "<X>,<Y>,<Z> | <to_name> | (<name> <X>,<Y>,<Z>) | (<name> <to_name>)",
 	description = "Teleport to position or player",
-	privs = {teleport=true},
+	privs = {teleport = true},
 	func = function(name, param)
 		-- Returns (pos, true) if found, otherwise (pos, false)
 		local function find_free_position_near(pos)
 			local tries = {
-				{x=1,y=0,z=0},
-				{x=-1,y=0,z=0},
-				{x=0,y=0,z=1},
-				{x=0,y=0,z=-1},
+				{x = 1, y = 0, z = 0},
+				{x = -1, y = 0, z = 0},
+				{x = 0, y = 0, z = 1},
+				{x = 0, y = 0, z = -1}
 			}
 			for _, d in ipairs(tries) do
-				local p = {x = pos.x+d.x, y = pos.y+d.y, z = pos.z+d.z}
+				local p = {x = pos.x + d.x, y = pos.y + d.y, z = pos.z + d.z}
 				local n = core.get_node_or_nil(p)
 				if n and n.name then
 					local def = core.registered_nodes[n.name]
@@ -424,7 +422,7 @@ core.register_chatcommand("teleport", {
 			local teleportee = core.get_player_by_name(name)
 			if teleportee then
 				teleportee:set_pos(p)
-				return true, "Teleporting to "..core.pos_to_string(p)
+				return true, "Teleporting to " .. core.pos_to_string(p)
 			end
 		end
 
@@ -443,18 +441,18 @@ core.register_chatcommand("teleport", {
 			p = find_free_position_near(p)
 			teleportee:set_pos(p)
 			return true, "Teleporting to " .. target_name
-					.. " at "..core.pos_to_string(p)
+					.. " at " .. core.pos_to_string(p)
 		end
 
-		if not core.check_player_privs(name, {bring=true}) then
-			return false, "You don't have permission to teleport other players (missing bring privilege)"
+		if not core.check_player_privs(name, {bring = true}) then
+			return false, "You don't have permission to run this command " ..
+				"(missing privilege: bring)."
 		end
 
 		teleportee = nil
 		p = {}
 		local teleportee_name
-		teleportee_name, p.x, p.y, p.z = param:match(
-				"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+		teleportee_name, p.x, p.y, p.z = param:match("^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 		p.x, p.y, p.z = tonumber(p.x), tonumber(p.y), tonumber(p.z)
 		if teleportee_name then
 			teleportee = core.get_player_by_name(teleportee_name)
@@ -487,13 +485,13 @@ core.register_chatcommand("teleport", {
 
 		return false, 'Invalid parameters ("' .. param
 				.. '") or player not found (see /help teleport)'
-	end,
+	end
 })
 
 core.register_chatcommand("set", {
 	params = "([-n] <name> <value>) | <name>",
 	description = "Set or read server configuration setting",
-	privs = {server=true},
+	privs = {server = true},
 	func = function(name, param)
 		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
 		if arg and arg == "-n" and setname and setvalue then
@@ -520,7 +518,7 @@ core.register_chatcommand("set", {
 		end
 
 		return false, "Invalid parameters (see /help set)."
-	end,
+	end
 })
 
 local function emergeblocks_callback(pos, action, num_calls_remaining, ctx)
@@ -551,8 +549,8 @@ end
 core.register_chatcommand("emergeblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Load (or, if nonexistent, generate) map blocks "
-		.. "contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)",
-	privs = {server=true},
+			.. "contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)",
+	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
 		if p1 == false then
@@ -571,14 +569,14 @@ core.register_chatcommand("emergeblocks", {
 
 		return true, "Started emerge of area ranging from " ..
 			core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
-	end,
+	end
 })
 
 core.register_chatcommand("deleteblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Delete map blocks contained in area pos1 to pos2 "
 		.. "(<pos1> and <pos2> must be in parentheses)",
-	privs = {server=true},
+	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
 		if p1 == false then
@@ -591,7 +589,7 @@ core.register_chatcommand("deleteblocks", {
 		else
 			return false, "Failed to clear one or more blocks in area"
 		end
-	end,
+	end
 })
 
 core.register_chatcommand("fixlight", {
@@ -611,7 +609,7 @@ core.register_chatcommand("fixlight", {
 		else
 			return false, "Failed to load one or more blocks in area"
 		end
-	end,
+	end
 })
 
 core.register_chatcommand("mods", {
@@ -620,7 +618,7 @@ core.register_chatcommand("mods", {
 	privs = {},
 	func = function(name, param)
 		return true, table.concat(core.get_modnames(), ", ")
-	end,
+	end
 })
 
 local function handle_give_command(cmd, giver, receiver, stackstring)
@@ -629,7 +627,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	local itemstack = ItemStack(stackstring)
 	if itemstack:is_empty() then
 		return false, "Cannot give an empty item"
-	elseif (not itemstack:is_known()) or (itemstack:get_name() == "unknown") then
+	elseif not itemstack:is_known() or itemstack:get_name() == "unknown" then
 		return false, "Cannot give an unknown item"
 	-- Forbid giving 'ignore' due to unwanted side effects
 	elseif itemstack:get_name() == "ignore" then
@@ -655,8 +653,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 		local msg = "%q %sadded to inventory."
 		return true, msg:format(stackstring, partiality)
 	else
-		core.chat_send_player(receiver, ("%q %sadded to inventory.")
-				:format(stackstring, partiality))
+		core.chat_send_player(receiver, ("%q %sadded to inventory."):format(stackstring, partiality))
 		local msg = "%q %sadded to %s's inventory."
 		return true, msg:format(stackstring, partiality, receiver)
 	end
@@ -665,40 +662,39 @@ end
 core.register_chatcommand("give", {
 	params = "<name> <ItemString> [<count> [<wear>]]",
 	description = "Give item to player",
-	privs = {give=true},
+	privs = {give = true},
 	func = function(name, param)
 		local toname, itemstring = string.match(param, "^([^ ]+) +(.+)$")
 		if not toname or not itemstring then
 			return false, "Name and ItemString required"
 		end
 		return handle_give_command("/give", name, toname, itemstring)
-	end,
+	end
 })
 
 core.register_chatcommand("giveme", {
 	params = "<ItemString> [<count> [<wear>]]",
 	description = "Give item to yourself",
-	privs = {give=true},
+	privs = {give = true},
 	func = function(name, param)
 		local itemstring = string.match(param, "(.+)$")
 		if not itemstring then
 			return false, "ItemString required"
 		end
 		return handle_give_command("/giveme", name, name, itemstring)
-	end,
+	end
 })
 
 core.register_chatcommand("spawnentity", {
 	params = "<EntityName> [<X>,<Y>,<Z>]",
 	description = "Spawn entity at given (or your) position",
-	privs = {give=true, interact=true},
+	privs = {give = true, interact = true},
 	func = function(name, param)
 		local entityname, p = string.match(param, "^([^ ]+) *(.*)$")
 		if not entityname then
 			return false, "EntityName required"
 		end
-		core.log("action", ("%s invokes /spawnentity, entityname=%q")
-				:format(name, entityname))
+		core.log("action", ("%s invokes /spawnentity, entityname=%q"):format(name, entityname))
 		local player = core.get_player_by_name(name)
 		if player == nil then
 			core.log("error", "Unable to spawn entity, player is nil")
@@ -738,7 +734,7 @@ core.register_chatcommand("pulverize", {
 			wielded_item:get_name() .. " " .. wielded_item:get_count() .. "\"")
 		player:set_wielded_item(nil)
 		return true, "An item was pulverized."
-	end,
+	end
 })
 
 -- Key = player name
@@ -757,13 +753,12 @@ core.register_chatcommand("rollback_check", {
 	description = "Check who last touched a node or a node near it"
 			.. " within the time specified by <seconds>. Default: range = 0,"
 			.. " seconds = 86400 = 24h, limit = 5",
-	privs = {rollback=true},
+	privs = {rollback = true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
-		local range, seconds, limit =
-			param:match("(%d+) *(%d*) *(%d*)")
+		local range, seconds, limit = param:match("(%d+) *(%d*) *(%d*)")
 		range = tonumber(range) or 0
 		seconds = tonumber(seconds) or 86400
 		limit = tonumber(limit) or 5
@@ -790,25 +785,23 @@ core.register_chatcommand("rollback_check", {
 			for i = num_actions, 1, -1 do
 				local action = actions[i]
 				core.chat_send_player(name,
-					("%s %s %s -> %s %d seconds ago.")
-						:format(
-							core.pos_to_string(action.pos),
-							action.actor,
-							action.oldnode.name,
-							action.newnode.name,
-							time - action.time))
+					("%s %s %s -> %s %d seconds ago."):format(core.pos_to_string(action.pos),
+						action.actor,
+						action.oldnode.name,
+						action.newnode.name,
+						time - action.time))
 			end
 		end
 
 		return true, "Punch a node (range=" .. range .. ", seconds="
 				.. seconds .. "s, limit=" .. limit .. ")"
-	end,
+	end
 })
 
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
 	description = "Revert actions of a player. Default for <seconds> is 60",
-	privs = {rollback=true},
+	privs = {rollback = true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
@@ -821,14 +814,13 @@ core.register_chatcommand("rollback", {
 				return false, "Invalid parameters. See /help rollback"
 						.. " and /help rollback_check."
 			end
-			target_name = "player:"..player_name
+			target_name = "player:" .. player_name
 		end
 		seconds = tonumber(seconds) or 60
 		core.chat_send_player(name, "Reverting actions of "
 				.. target_name .. " since "
 				.. seconds .. " seconds.")
-		local success, log = core.rollback_revert_actions_by(
-				target_name, seconds)
+		local success, log = core.rollback_revert_actions_by(target_name, seconds)
 		local response = ""
 		if #log > 100 then
 			response = "(log is too long to show)\n"
@@ -840,7 +832,7 @@ core.register_chatcommand("rollback", {
 		response = response .. "Reverting actions "
 				.. (success and "succeeded." or "FAILED.")
 		return success, response
-	end,
+	end
 })
 
 core.register_chatcommand("status", {
@@ -851,7 +843,7 @@ core.register_chatcommand("status", {
 			return true, status
 		end
 		return false, "This command was disabled by a mod or game"
-	end,
+	end
 })
 
 core.register_chatcommand("time", {
@@ -891,7 +883,7 @@ core.register_chatcommand("time", {
 		core.set_timeofday((hour * 60 + minute) / 1440)
 		core.log("action", ("%s sets time to %d:%02d"):format(name, hour, minute))
 		return true, "Time of day changed."
-	end,
+	end
 })
 
 core.register_chatcommand("days", {
@@ -904,7 +896,7 @@ core.register_chatcommand("days", {
 core.register_chatcommand("shutdown", {
 	params = "[<delay_in_seconds> | -1] [reconnect] [<message>]",
 	description = "Shutdown server (-1 cancels a delayed shutdown)",
-	privs = {server=true},
+	privs = {server = true},
 	func = function(name, param)
 		local delay, reconnect, message
 		delay, param = param:match("^%s*(%S+)(.*)")
@@ -919,13 +911,13 @@ core.register_chatcommand("shutdown", {
 			core.chat_send_all("*** Server shutting down (operator request).")
 		end
 		core.request_shutdown(message:trim(), core.is_yes(reconnect), delay)
-	end,
+	end
 })
 
 core.register_chatcommand("ban", {
 	params = "[<name>]",
 	description = "Ban the IP of a player or show the ban list",
-	privs = {ban=true},
+	privs = {ban = true},
 	func = function(name, param)
 		if param == "" then
 			local ban_list = core.get_ban_list()
@@ -950,20 +942,20 @@ core.register_chatcommand("ban", {
 core.register_chatcommand("unban", {
 	params = "<name> | <IP_address>",
 	description = "Remove IP ban belonging to a player/IP",
-	privs = {ban=true},
+	privs = {ban = true},
 	func = function(name, param)
 		if not core.unban_player_or_ip(param) then
 			return false, "Failed to unban player/IP."
 		end
 		core.log("action", name .. " unbans " .. param)
 		return true, "Unbanned " .. param
-	end,
+	end
 })
 
 core.register_chatcommand("kick", {
 	params = "<name> [<reason>]",
 	description = "Kick a player",
-	privs = {kick=true},
+	privs = {kick = true},
 	func = function(name, param)
 		local tokick, reason = param:match("([^ ]+) (.+)")
 		tokick = tokick or param
@@ -976,13 +968,13 @@ core.register_chatcommand("kick", {
 		end
 		core.log("action", name .. " kicks " .. tokick .. log_reason)
 		return true, "Kicked " .. tokick
-	end,
+	end
 })
 
 core.register_chatcommand("clearobjects", {
 	params = "[full | quick]",
 	description = "Clear all objects in world",
-	privs = {server=true},
+	privs = {server = true},
 	func = function(name, param)
 		local options = {}
 		if param == "" or param == "quick" then
@@ -1001,13 +993,13 @@ core.register_chatcommand("clearobjects", {
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
 		core.chat_send_all("*** Cleared all objects.")
-	end,
+	end
 })
 
 core.register_chatcommand("msg", {
 	params = "<name> <message>",
 	description = "Send a direct message to a player",
-	privs = {shout=true},
+	privs = {shout = true},
 	func = function(name, param)
 		local sendto, message = param:match("^(%S+)%s(.+)$")
 		if not sendto then
@@ -1022,7 +1014,7 @@ core.register_chatcommand("msg", {
 		core.chat_send_player(sendto, "DM from " .. name .. ": "
 				.. message)
 		return true, "Message sent."
-	end,
+	end
 })
 
 core.register_chatcommand("last-login", {
@@ -1039,7 +1031,7 @@ core.register_chatcommand("last-login", {
 				os.date("!%Y-%m-%dT%H:%M:%SZ", pauth.last_login)
 		end
 		return false, "Last login time is unknown"
-	end,
+	end
 })
 
 core.register_chatcommand("clearinv", {
@@ -1048,12 +1040,12 @@ core.register_chatcommand("clearinv", {
 	func = function(name, param)
 		local player
 		if param and param ~= "" and param ~= name then
-			if not core.check_player_privs(name, {server=true}) then
+			if not core.check_player_privs(name, {server = true}) then
 				return false, "You don't have permission"
-						.. " to clear another player's inventory (missing privilege: server)"
+					.. " to clear another player's inventory (missing privilege: server)"
 			end
 			player = core.get_player_by_name(param)
-			core.chat_send_player(param, name.." cleared your inventory.")
+			core.chat_send_player(param, name .. " cleared your inventory.")
 		else
 			player = core.get_player_by_name(name)
 		end
@@ -1062,12 +1054,12 @@ core.register_chatcommand("clearinv", {
 			player:get_inventory():set_list("main", {})
 			player:get_inventory():set_list("craft", {})
 			player:get_inventory():set_list("craftpreview", {})
-			core.log("action", name.." clears "..player:get_player_name().."'s inventory")
-			return true, "Cleared "..player:get_player_name().."'s inventory."
+			core.log("action", name .. " clears " .. player:get_player_name() .. "'s inventory")
+			return true, "Cleared " .. player:get_player_name() .. "'s inventory."
 		else
 			return false, "Player must be online to clear inventory!"
 		end
-	end,
+	end
 })
 
 local function handle_kill_command(killer, victim)
@@ -1095,8 +1087,8 @@ end
 core.register_chatcommand("kill", {
 	params = "[<name>]",
 	description = "Kill player or yourself",
-	privs = {server=true},
+	privs = {server = true},
 	func = function(name, param)
 		return handle_kill_command(name, param == "" and name or param)
-	end,
+	end
 })

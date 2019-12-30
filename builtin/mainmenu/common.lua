@@ -28,6 +28,7 @@ function common_update_cached_supp_proto()
 	min_supp_proto = core.get_min_supp_proto()
 	max_supp_proto = core.get_max_supp_proto()
 end
+
 common_update_cached_supp_proto()
 --------------------------------------------------------------------------------
 -- Menu helper functions
@@ -65,7 +66,7 @@ end
 --------------------------------------------------------------------------------
 function order_favorite_list(list)
 	local res = {}
-	--orders the favorite list after support
+	-- orders the favorite list after support
 	for i = 1, #list do
 		local fav = list[i]
 		if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
@@ -123,12 +124,12 @@ function render_serverlist_row(spec, is_favorite)
 		-- Choose a color depending on how many clients are connected
 		-- (relatively to clients_max)
 		local clients_color
-		if     grey_out		      then clients_color = '#aaaaaa'
-		elseif spec.clients == 0      then clients_color = ''        -- 0 players: default/white
+		if     grey_out               then clients_color = '#aaaaaa'
+		elseif spec.clients    == 0   then clients_color = '' -- 0 players: default/white
 		elseif clients_percent <= 60  then clients_color = '#a1e587' -- 0-60%: green
 		elseif clients_percent <= 90  then clients_color = '#ffdc97' -- 60-90%: yellow
 		elseif clients_percent == 100 then clients_color = '#dd5b5b' -- full server: red (darker)
-		else				   clients_color = '#ffba97' -- 90-100%: orange
+		else                               clients_color = '#ffba97' -- 90-100%: orange
 		end
 
 		details = details .. clients_color .. ',' ..
@@ -165,7 +166,7 @@ end
 --------------------------------------------------------------------------------
 os.tempfolder = function()
 	if core.settings:get("TMPFolder") then
-		return core.settings:get("TMPFolder") .. DIR_DELIM .. "MT_" .. math.random(0,10000)
+		return core.settings:get("TMPFolder") .. DIR_DELIM .. "MT_" .. math.random(0, 10000)
 	end
 
 	local filetocheck = os.tmpname()
@@ -189,7 +190,7 @@ os.tempfolder = function()
 		return tempfolder .. filetocheck
 	end
 
-	local randname = "MTTempModFolder_" .. math.random(0,10000)
+	local randname = "MTTempModFolder_" .. math.random(0, 10000)
 	local backstring = filetocheck:reverse()
 	return filetocheck:sub(0, filetocheck:len() - backstring:find(DIR_DELIM) + 1) ..
 		randname
@@ -200,7 +201,7 @@ function menu_render_worldlist()
 	local retval = ""
 	local current_worldlist = menudata.worldlist:get_list()
 
-	for i, v in ipairs(current_worldlist) do
+	for _, v in ipairs(current_worldlist) do
 		if retval ~= "" then retval = retval .. "," end
 		retval = retval .. core.formspec_escape(v.name) ..
 				" \\[" .. core.formspec_escape(v.gameid) .. "\\]"
@@ -243,10 +244,9 @@ function asyncOnlineFavourites()
 		return
 	end
 
-	core.handle_async(
-		function(param)
-			return core.get_favorites("online")
-		end,
+	core.handle_async(function()
+		return core.get_favorites("online")
+	end,
 		nil,
 		function(result)
 			menudata.public_downloading = nil
@@ -257,8 +257,7 @@ function asyncOnlineFavourites()
 				menudata.favorites_is_public = true
 			end
 			core.event_handler("Refresh")
-		end
-	)
+		end)
 end
 
 --------------------------------------------------------------------------------
@@ -281,12 +280,13 @@ end
 
 --------------------------------------------------------------------------------
 function is_server_protocol_compat(server_proto_min, server_proto_max)
-	if (not server_proto_min) or (not server_proto_max) then
+	if not server_proto_min or not server_proto_max then
 		-- There is no info. Assume the best and act as if we would be compatible.
 		return true
 	end
 	return min_supp_proto <= server_proto_max and max_supp_proto >= server_proto_min
 end
+
 --------------------------------------------------------------------------------
 function is_server_protocol_compat_or_error(server_proto_min, server_proto_max)
 	if not is_server_protocol_compat(server_proto_min, server_proto_max) then
@@ -302,7 +302,7 @@ function is_server_protocol_compat_or_error(server_proto_min, server_proto_max)
 				s_p_min)
 		end
 		if min_supp_proto ~= max_supp_proto then
-			client_prot_ver_info= fgettext_ne("We support protocol versions between version $1 and $2.",
+			client_prot_ver_info = fgettext_ne("We support protocol versions between version $1 and $2.",
 				min_supp_proto, max_supp_proto)
 		else
 			client_prot_ver_info = fgettext_ne("We only support protocol version $1.", min_supp_proto)
@@ -315,6 +315,7 @@ function is_server_protocol_compat_or_error(server_proto_min, server_proto_max)
 
 	return true
 end
+
 --------------------------------------------------------------------------------
 function menu_worldmt(selected, setting, value)
 	local world = menudata.worldlist:get_list()[selected]

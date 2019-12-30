@@ -15,7 +15,7 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local store = { packages = {}, packages_full = {} }
+local store = {packages = {}, packages_full = {}}
 local package_dialog = {}
 
 -- Screenshot
@@ -33,17 +33,15 @@ local filter_types_titles = {
 	fgettext("All packages"),
 	fgettext("Games"),
 	fgettext("Mods"),
-	fgettext("Texture packs"),
+	fgettext("Texture packs")
 }
 
 local filter_types_type = {
 	nil,
 	"game",
 	"mod",
-	"txp",
+	"txp"
 }
-
-
 
 
 local function download_package(param)
@@ -71,8 +69,8 @@ local function start_install(calling_dialog, package)
 	local function callback(result)
 		if result.successful then
 			local path, msg = pkgmgr.install(result.package.type,
-					result.filename, result.package.name,
-					result.package.path)
+				result.filename, result.package.name,
+				result.package.path)
 			if not path then
 				gamedata.errormessage = msg
 			else
@@ -116,9 +114,9 @@ local function start_install(calling_dialog, package)
 		end
 
 		if gamedata.errormessage == nil then
-			core.button_handler({btn_hidden_close_download=result})
+			core.button_handler({btn_hidden_close_download = result})
 		else
-			core.button_handler({btn_hidden_close_download={successful=false}})
+			core.button_handler({btn_hidden_close_download = {successful = false}})
 		end
 	end
 
@@ -132,7 +130,7 @@ local function start_install(calling_dialog, package)
 			return "size[7,2]label[0.25,0.75;" ..
 				fgettext("Downloading and installing $1, please wait...", data.title) .. "]"
 		end,
-		function(this,fields)
+		function(this, fields)
 			if fields["btn_hidden_close_download"] ~= nil then
 				this:delete()
 				return true
@@ -157,7 +155,7 @@ local function get_screenshot(package)
 
 	-- Get tmp screenshot path
 	local filepath = screenshot_dir .. DIR_DELIM ..
-		package.type .. "-" .. package.author .. "-" .. package.name .. ".png"
+			package.type .. "-" .. package.author .. "-" .. package.name .. ".png"
 
 	-- Return if already downloaded
 	local file = io.open(filepath, "r")
@@ -172,10 +170,10 @@ local function get_screenshot(package)
 	end
 
 	-- Download
-
 	local function download_screenshot(params)
 		return core.download_file(params.url, params.dest)
 	end
+
 	local function callback(success)
 		screenshot_downloading[package.thumbnail] = nil
 		screenshot_downloaded[package.thumbnail] = true
@@ -184,8 +182,9 @@ local function get_screenshot(package)
 		end
 		ui.update()
 	end
+
 	if core.handle_async(download_screenshot,
-			{ dest = filepath, url = package.thumbnail }, callback) then
+		{dest = filepath, url = package.thumbnail}, callback) then
 		screenshot_downloading[package.thumbnail] = true
 	else
 		core.log("error", "ERROR: async event failed")
@@ -194,7 +193,6 @@ local function get_screenshot(package)
 
 	return defaulttexturedir .. "loading_screenshot.png"
 end
-
 
 
 function package_dialog.get_formspec()
@@ -209,7 +207,7 @@ function package_dialog.get_formspec()
 		minetest.colorize(mt_color_green, core.formspec_escape(package.title)), "\n",
 		minetest.colorize('#BFBFBF', "by " .. core.formspec_escape(package.author)), "]",
 		"textarea[4,2;5.3,2;;;", core.formspec_escape(package.short_description), "]",
-		"button[0,0;2,1;back;", fgettext("Back"), "]",
+		"button[0,0;2,1;back;", fgettext("Back"), "]"
 	}
 
 	if not package.path then
@@ -269,7 +267,7 @@ function store.load()
 
 	assert(core.create_dir(tmpdir))
 
-	local base_url     = core.settings:get("contentdb_url")
+	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
 		core.get_max_supp_proto()
@@ -384,7 +382,6 @@ function store.filter_packages(query)
 			store.packages[#store.packages + 1] = package
 		end
 	end
-
 end
 
 function store.get_formspec(dlgdata)
@@ -423,7 +420,7 @@ function store.get_formspec(dlgdata)
 			tonumber(dlgdata.pagemax), "]",
 			"button[10.1,0;1,1;pnext;>]",
 			"button[11.1,0;1,1;pend;>>]",
-			"container_end[]",
+			"container_end[]"
 		}
 
 		if #store.packages == 0 then
@@ -439,12 +436,12 @@ function store.get_formspec(dlgdata)
 			"button[-0.1,",
 			num_per_page + 1.5,
 			";3,1;back;",
-			fgettext("Back to Main Menu"), "]",
+			fgettext("Back to Main Menu"), "]"
 		}
 	end
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
-	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
+	for i = start_idx, math.min(#store.packages, start_idx + num_per_page - 1) do
 		local package = store.packages[i]
 		formspec[#formspec + 1] = "container[0.5,"
 		formspec[#formspec + 1] = (i - start_idx) * 1.1 + 1
@@ -558,7 +555,7 @@ function store.handle_submit(this, fields)
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	assert(start_idx ~= nil)
-	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
+	for i = start_idx, math.min(#store.packages, start_idx + num_per_page - 1) do
 		local package = store.packages[i]
 		assert(package)
 
@@ -596,8 +593,5 @@ function create_store_dlg(type)
 	cur_page = 1
 	store.filter_packages(search_string)
 
-	return dialog_create("store",
-			store.get_formspec,
-			store.handle_submit,
-			nil)
+	return dialog_create("store", store.get_formspec, store.handle_submit, nil)
 end

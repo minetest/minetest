@@ -50,11 +50,11 @@ local forbidden_item_names = {
 	craft = true,
 	MBOItem = true,
 	ToolItem = true,
-	tool = true,
+	tool = true
 }
 
 local function check_modname_prefix(name)
-	if name:sub(1,1) == ":" then
+	if name:sub(1, 1) == ":" then
 		-- If the name starts with a colon, we can skip the modname prefix
 		-- mechanism.
 		return name:sub(2)
@@ -67,7 +67,7 @@ local function check_modname_prefix(name)
 		end
 
 		-- Enforce that the name only contains letters, numbers and underscores.
-		local subname = name:sub(#expected_prefix+1)
+		local subname = name:sub(#expected_prefix + 1)
 		if subname:find("[^%w_]") then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"contains unallowed characters")
@@ -100,7 +100,7 @@ function core.register_entity(name, prototype)
 	name = check_modname_prefix(tostring(name))
 
 	prototype.name = name
-	prototype.__index = prototype  -- so that it can be used as a metatable
+	prototype.__index = prototype -- so that it can be used as a metatable
 
 	-- Add to core.registered_entities
 	core.registered_entities[name] = prototype
@@ -126,13 +126,13 @@ function core.register_item(name, itemdef)
 		elseif itemdef.drawtype == "fencelike" and not itemdef.selection_box then
 			itemdef.selection_box = {
 				type = "fixed",
-				fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
+				fixed = {-1 / 8, -1 / 2, -1 / 8, 1 / 8, 1 / 2, 1 / 8}
 			}
 		end
 		if itemdef.light_source and itemdef.light_source > core.LIGHT_MAX then
 			itemdef.light_source = core.LIGHT_MAX
 			core.log("warning", "Node 'light_source' value exceeds maximum," ..
-				" limiting to maximum: " ..name)
+				" limiting to maximum: " .. name)
 		end
 		setmetatable(itemdef, {__index = core.nodedef_default})
 		core.registered_nodes[itemdef.name] = itemdef
@@ -156,17 +156,17 @@ function core.register_item(name, itemdef)
 	-- BEGIN Legacy stuff
 	if itemdef.cookresult_itemstring ~= nil and itemdef.cookresult_itemstring ~= "" then
 		core.register_craft({
-			type="cooking",
-			output=itemdef.cookresult_itemstring,
-			recipe=itemdef.name,
-			cooktime=itemdef.furnace_cooktime
+			type = "cooking",
+			output = itemdef.cookresult_itemstring,
+			recipe = itemdef.name,
+			cooktime = itemdef.furnace_cooktime
 		})
 	end
 	if itemdef.furnace_burntime ~= nil and itemdef.furnace_burntime >= 0 then
 		core.register_craft({
-			type="fuel",
-			recipe=itemdef.name,
-			burntime=itemdef.furnace_burntime
+			type = "fuel",
+			recipe = itemdef.name,
+			burntime = itemdef.furnace_burntime
 		})
 	end
 	-- END Legacy stuff
@@ -184,7 +184,7 @@ end
 
 function core.unregister_item(name)
 	if not core.registered_items[name] then
-		core.log("warning", "Not unregistering item " ..name..
+		core.log("warning", "Not unregistering item " .. name ..
 			" because it doesn't exist.")
 		return
 	end
@@ -251,7 +251,7 @@ function core.register_tool(name, tooldef)
 			dd_weight = tooldef.dd_weight,
 			dd_crackiness = tooldef.dd_crackiness,
 			dd_crumbliness = tooldef.dd_crumbliness,
-			dd_cuttability = tooldef.dd_cuttability,
+			dd_cuttability = tooldef.dd_cuttability
 		}
 	end
 	-- END Legacy stuff
@@ -291,7 +291,7 @@ function core.register_alias_force(name, convert_to)
 	end
 	if core.registered_items[name] ~= nil then
 		core.unregister_item(name)
-		core.log("info", "Removed item " ..name..
+		core.log("info", "Removed item " .. name ..
 			" while attempting to force add an alias")
 	end
 	--core.log("Registering alias: " .. name .. " -> " .. convert_to)
@@ -338,8 +338,8 @@ core.register_item(":unknown", {
 	on_place = core.item_place,
 	on_secondary_use = core.item_secondary_use,
 	on_drop = core.item_drop,
-	groups = {not_in_creative_inventory=1},
-	diggable = true,
+	groups = {not_in_creative_inventory = 1},
+	diggable = true
 })
 
 core.register_node(":air", {
@@ -356,7 +356,7 @@ core.register_node(":air", {
 	floodable = true,
 	air_equivalent = true,
 	drop = "",
-	groups = {not_in_creative_inventory=1},
+	groups = {not_in_creative_inventory = 1}
 })
 
 core.register_node(":ignore", {
@@ -372,34 +372,33 @@ core.register_node(":ignore", {
 	buildable_to = true, -- A way to remove accidentally placed ignores
 	air_equivalent = true,
 	drop = "",
-	groups = {not_in_creative_inventory=1},
+	groups = {not_in_creative_inventory = 1},
 	on_place = function(itemstack, placer, pointed_thing)
-		core.chat_send_player(
-				placer:get_player_name(),
-				core.colorize("#FF0000",
+		core.chat_send_player(placer:get_player_name(),
+			core.colorize("#FF0000",
 				"You can't place 'ignore' nodes!"))
 		return ""
-	end,
+	end
 })
 
 -- The hand (bare definition)
 core.register_item(":", {
 	type = "none",
 	wield_image = "wieldhand.png",
-	groups = {not_in_creative_inventory=1},
+	groups = {not_in_creative_inventory = 1}
 })
 
 
 function core.override_item(name, redefinition)
 	if redefinition.name ~= nil then
-		error("Attempt to redefine name of "..name.." to "..dump(redefinition.name), 2)
+		error("Attempt to redefine name of " .. name .. " to " .. dump(redefinition.name), 2)
 	end
 	if redefinition.type ~= nil then
-		error("Attempt to redefine type of "..name.." to "..dump(redefinition.type), 2)
+		error("Attempt to redefine type of " .. name .. " to " .. dump(redefinition.type), 2)
 	end
 	local item = core.registered_items[name]
 	if not item then
-		error("Attempt to override non-existent item "..name, 2)
+		error("Attempt to override non-existent item " .. name, 2)
 	end
 	for k, v in pairs(redefinition) do
 		rawset(item, k, v)
@@ -420,7 +419,7 @@ function core.run_callbacks(callbacks, mode, ...)
 			return false
 		end
 	end
-	local ret = nil
+	local ret
 	for i = 1, cb_len do
 		local origin = core.callback_origins[callbacks[i]]
 		if origin then
@@ -524,7 +523,7 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 end
 
 local function make_wrap_deregistration(reg_fn, clear_fn, list)
-	local unregister = function (key)
+	local unregister = function(key)
 		if type(key) ~= "string" then
 			error("key is not a string", 2)
 		end
@@ -533,7 +532,7 @@ local function make_wrap_deregistration(reg_fn, clear_fn, list)
 		end
 		local temporary_list = table.copy(list)
 		clear_fn()
-		for k,v in pairs(temporary_list) do
+		for k, v in pairs(temporary_list) do
 			if key ~= k then
 				reg_fn(v)
 			end
@@ -542,7 +541,7 @@ local function make_wrap_deregistration(reg_fn, clear_fn, list)
 	return unregister
 end
 
-core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
+core.registered_on_player_hpchanges = {modifiers = {}, loggers = {}}
 
 function core.registered_on_player_hpchange(player, hp_change, reason)
 	local last
@@ -558,7 +557,7 @@ function core.registered_on_player_hpchange(player, hp_change, reason)
 			break
 		end
 	end
-	for i, func in ipairs(core.registered_on_player_hpchanges.loggers) do
+	for _, func in ipairs(core.registered_on_player_hpchanges.loggers) do
 		func(player, hp_change, reason)
 	end
 	return hp_change

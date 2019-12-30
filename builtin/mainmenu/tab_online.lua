@@ -16,7 +16,7 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
-local function get_formspec(tabview, name, tabdata)
+local function get_formspec(_, _, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
 	common_update_cached_supp_proto()
@@ -36,23 +36,23 @@ local function get_formspec(tabview, name, tabdata)
 		"field[0.15,0.075;5.91,1;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
 		"button[5.62,-0.25;1.5,1;btn_mp_search;" .. fgettext("Search") .. "]" ..
 		"image_button[6.97,-.165;.83,.83;" .. core.formspec_escape(defaulttexturedir .. "refresh.png")
-			.. ";btn_mp_refresh;]" ..
+		.. ";btn_mp_refresh;]" ..
 
 		-- Address / Port
 		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
 		"field[8,0.65;3.25,0.5;te_address;;" ..
-			core.formspec_escape(core.settings:get("address")) .. "]" ..
+		core.formspec_escape(core.settings:get("address")) .. "]" ..
 		"field[11.1,0.65;1.4,0.5;te_port;;" ..
-			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
+		core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
 
 		-- Name / Password
 		"label[7.75,0.95;" .. fgettext("Name / Password") .. "]" ..
 		"field[8,1.85;2.9,0.5;te_name;;" ..
-			core.formspec_escape(core.settings:get("name")) .. "]" ..
+		core.formspec_escape(core.settings:get("name")) .. "]" ..
 		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
 
 		-- Description Background
-		"box[7.73,2.25;4.25,2.6;#999999]"..
+		"box[7.73,2.25;4.25,2.6;#999999]" ..
 
 		-- Connect
 		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
@@ -68,14 +68,14 @@ local function get_formspec(tabview, name, tabdata)
 		end
 	end
 
-	--favourites
+	-- favourites
 	retval = retval .. "tablecolumns[" ..
 		image_column(fgettext("Favorite"), "favorite") .. ";" ..
 		image_column(fgettext("Ping")) .. ",padding=0.25;" ..
 		"color,span=3;" ..
-		"text,align=right;" ..                -- clients
-		"text,align=center,padding=0.25;" ..  -- "/"
-		"text,align=right,padding=0.25;" ..   -- clients_max
+		"text,align=right;" ..               -- clients
+		"text,align=center,padding=0.25;" .. -- "/"
+		"text,align=right,padding=0.25;" ..  -- clients_max
 		image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
 		image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
 		image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
@@ -132,7 +132,7 @@ local function get_formspec(tabview, name, tabdata)
 end
 
 --------------------------------------------------------------------------------
-local function main_button_handler(tabview, fields, name, tabdata)
+local function main_button_handler(_, fields, _, tabdata)
 	local serverlist = menudata.search_result or menudata.favorites
 
 	if fields.te_name then
@@ -344,7 +344,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	return false
 end
 
-local function on_change(type, old_tab, new_tab)
+local function on_change(type)
 	if type == "LEAVE" then return end
 	asyncOnlineFavourites()
 end

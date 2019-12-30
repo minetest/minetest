@@ -29,7 +29,7 @@ core.register_entity(":__builtin:item", {
 		textures = {""},
 		spritediv = {x = 1, y = 1},
 		initial_sprite_basepos = {x = 0, y = 0},
-		is_visible = false,
+		is_visible = false
 	},
 
 	itemstring = "",
@@ -66,14 +66,15 @@ core.register_entity(":__builtin:item", {
 			visual = "wielditem",
 			textures = {itemname},
 			visual_size = {x = size, y = size},
-			collisionbox = {-size, -coll_height, -size,
-				size, coll_height, size},
+			collisionbox = {
+				-size, -coll_height, -size,
+				size, coll_height, size
+			},
 			selectionbox = {-size, -size, -size, size, size, size},
 			automatic_rotate = math.pi * 0.5 * 0.2 / size,
 			wield_item = self.itemstring,
-			glow = glow,
+			glow = glow
 		})
-
 	end,
 
 	get_staticdata = function(self)
@@ -143,8 +144,8 @@ core.register_entity(":__builtin:item", {
 		if not self.physical_state then
 			self.physical_state = true
 			self.object:set_properties({physical = true})
-			self.object:set_velocity({x=0, y=0, z=0})
-			self.object:set_acceleration({x=0, y=-gravity, z=0})
+			self.object:set_velocity({x = 0, y = 0, z = 0})
+			self.object:set_acceleration({x = 0, y = -gravity, z = 0})
 		end
 	end,
 
@@ -152,8 +153,8 @@ core.register_entity(":__builtin:item", {
 		if self.physical_state then
 			self.physical_state = false
 			self.object:set_properties({physical = false})
-			self.object:set_velocity({x=0, y=0, z=0})
-			self.object:set_acceleration({x=0, y=0, z=0})
+			self.object:set_velocity({x = 0, y = 0, z = 0})
+			self.object:set_acceleration({x = 0, y = 0, z = 0})
 		end
 	end,
 
@@ -191,8 +192,8 @@ core.register_entity(":__builtin:item", {
 		if is_stuck then
 			local shootdir
 			local order = {
-				{x=1, y=0, z=0}, {x=-1, y=0, z= 0},
-				{x=0, y=0, z=1}, {x= 0, y=0, z=-1},
+				{x = 1, y = 0, z = 0}, {x = -1, y = 0, z = 0},
+				{x = 0, y = 0, z = 1}, {x = 0, y = 0, z = -1}
 			}
 
 			-- Check which one of the 4 sides is free
@@ -206,7 +207,7 @@ core.register_entity(":__builtin:item", {
 			end
 			-- If none of the 4 sides is free, check upwards
 			if not shootdir then
-				shootdir = {x=0, y=1, z=0}
+				shootdir = {x = 0, y = 1, z = 0}
 				local cnode = core.get_node(vector.add(pos, shootdir)).name
 				if cnode == "ignore" then
 					shootdir = nil -- Do not push into ignore
@@ -284,7 +285,7 @@ core.register_entity(":__builtin:item", {
 			self.object:set_velocity({x = 0, y = 0, z = 0})
 		end
 
-		--Only collect items if not moving
+		-- Only collect items if not moving
 		if is_moving then
 			return
 		end
@@ -294,7 +295,7 @@ core.register_entity(":__builtin:item", {
 			return
 		end
 		local objects = core.get_objects_inside_radius(pos, 1.0)
-		for k, obj in pairs(objects) do
+		for _, obj in pairs(objects) do
 			local entity = obj:get_luaentity()
 			if entity and entity.name == "__builtin:item" then
 				if self:try_merge_with(own_stack, obj, entity) then
@@ -318,5 +319,5 @@ core.register_entity(":__builtin:item", {
 		end
 		self.itemstring = ""
 		self.object:remove()
-	end,
+	end
 })

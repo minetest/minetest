@@ -19,7 +19,7 @@ function core.node_metadata_inventory_move_allow_all()
 	core.log("deprecated", "core.node_metadata_inventory_move_allow_all is obsolete and does nothing.")
 end
 
-function core.add_to_creative_inventory(itemstring)
+function core.add_to_creative_inventory()
 	core.log("deprecated", "core.add_to_creative_inventory is obsolete and does nothing.")
 end
 
@@ -36,7 +36,7 @@ setmetatable(core.env, {
 		end
 		local func = core[key]
 		if type(func) == "function" then
-			rawset(table, key, function(self, ...)
+			rawset(table, key, function(_, ...)
 				return func(...)
 			end)
 		else
@@ -58,8 +58,8 @@ local settings = core.settings
 
 local function setting_proxy(name)
 	return function(...)
-		core.log("deprecated", "WARNING: minetest.setting_* "..
-			"functions are deprecated.  "..
+		core.log("deprecated", "WARNING: minetest.setting_* " ..
+			"functions are deprecated. " ..
 			"Use methods on the minetest.settings object.")
 		return settings[name](settings, ...)
 	end

@@ -1,8 +1,8 @@
 VoxelArea = {
-	MinEdge = {x=1, y=1, z=1},
-	MaxEdge = {x=0, y=0, z=0},
+	MinEdge = {x = 1, y = 1, z = 1},
+	MaxEdge = {x = 0, y = 0, z = 0},
 	ystride = 0,
-	zstride = 0,
+	zstride = 0
 }
 
 function VoxelArea:new(o)
@@ -22,7 +22,7 @@ function VoxelArea:getExtent()
 	return {
 		x = MaxEdge.x - MinEdge.x + 1,
 		y = MaxEdge.y - MinEdge.y + 1,
-		z = MaxEdge.z - MinEdge.z + 1,
+		z = MaxEdge.z - MinEdge.z + 1
 	}
 end
 

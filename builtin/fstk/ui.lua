@@ -21,7 +21,7 @@ ui.default = nil
 
 --------------------------------------------------------------------------------
 function ui.add(child)
-	--TODO check child
+	-- TODO check child
 	ui.childlist[child.name] = child
 
 	return child.name
@@ -29,7 +29,6 @@ end
 
 --------------------------------------------------------------------------------
 function ui.delete(child)
-
 	if ui.childlist[child.name] == nil then
 		return false
 	end
@@ -53,20 +52,18 @@ end
 -- Internal functions not to be called from user
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
 function ui.update()
 	local formspec = {}
 
 	-- handle errors
 	if gamedata ~= nil and gamedata.reconnect_requested then
-		local error_message = core.formspec_escape(
-				gamedata.errormessage or "<none available>")
+		local error_message = core.formspec_escape(gamedata.errormessage or "<none available>")
 		formspec = {
 			"size[14,8]",
 			"real_coordinates[true]",
 			"box[0.5,1.2;13,5;#000]",
 			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
-				fgettext("The server has requested a reconnect:"), error_message),
+					fgettext("The server has requested a reconnect:"), error_message),
 			"button[2,6.6;4,1;btn_reconnect_yes;" .. fgettext("Reconnect") .. "]",
 			"button[8,6.6;4,1;btn_reconnect_no;" .. fgettext("Main menu") .. "]"
 		}
@@ -83,15 +80,14 @@ function ui.update()
 			"size[14,8]",
 			"real_coordinates[true]",
 			"box[0.5,1.2;13,5;#000]",
-			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
-				error_title, error_message),
+			("textarea[0.5,1.2;13,5;;%s;%s]"):format(error_title, error_message),
 			"button[5,6.6;4,1;btn_error_confirm;" .. fgettext("Ok") .. "]"
 		}
 	else
 		local active_toplevel_ui_elements = 0
-		for key,value in pairs(ui.childlist) do
-			if (value.type == "toplevel") then
-				local retval = value:get_formspec()
+		for _, v in pairs(ui.childlist) do
+			if v.type == "toplevel" then
+				local retval = v:get_formspec()
 
 				if retval ~= nil and retval ~= "" then
 					active_toplevel_ui_elements = active_toplevel_ui_elements + 1
@@ -101,10 +97,10 @@ function ui.update()
 		end
 
 		-- no need to show addons if there ain't a toplevel element
-		if (active_toplevel_ui_elements > 0) then
-			for key,value in pairs(ui.childlist) do
-				if (value.type == "addon") then
-					local retval = value:get_formspec()
+		if active_toplevel_ui_elements > 0 then
+			for _, v in pairs(ui.childlist) do
+				if v.type == "addon" then
+					local retval = v:get_formspec()
 
 					if retval ~= nil and retval ~= "" then
 						table.insert(formspec, retval)
@@ -113,13 +109,13 @@ function ui.update()
 			end
 		end
 
-		if (active_toplevel_ui_elements > 1) then
-			core.log("warning", "more than one active ui "..
+		if active_toplevel_ui_elements > 1 then
+			core.log("warning", "more than one active ui " ..
 				"element, self most likely isn't intended")
 		end
 
-		if (active_toplevel_ui_elements == 0) then
-			core.log("warning", "no toplevel ui element "..
+		if active_toplevel_ui_elements == 0 then
+			core.log("warning", "no toplevel ui element " ..
 					"active; switching to default")
 			ui.childlist[ui.default]:show()
 			formspec = {ui.childlist[ui.default]:get_formspec()}
@@ -130,9 +126,8 @@ end
 
 --------------------------------------------------------------------------------
 function ui.handle_buttons(fields)
-	for key,value in pairs(ui.childlist) do
-
-		local retval = value:handle_buttons(fields)
+	for _, v in pairs(ui.childlist) do
+		local retval = v:handle_buttons(fields)
 
 		if retval then
 			ui.update()
@@ -144,11 +139,9 @@ end
 
 --------------------------------------------------------------------------------
 function ui.handle_events(event)
-
-	for key,value in pairs(ui.childlist) do
-
-		if value.handle_events ~= nil then
-			local retval = value:handle_events(event)
+	for _, v in pairs(ui.childlist) do
+		if v.handle_events ~= nil then
+			local retval = v:handle_events(event)
 
 			if retval then
 				return retval

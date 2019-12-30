@@ -26,7 +26,7 @@ local reporter = {}
 --
 local function shorten(str, length)
 	if str and str:len() > length then
-		return "..." .. str:sub(-(length-3))
+		return "..." .. str:sub(-(length - 3))
 	end
 	return str
 end
@@ -50,7 +50,7 @@ local Formatter = {
 		self.__index = self
 		return setmetatable(object, self)
 	end,
-	__tostring = function (self)
+	__tostring = function(self)
 		return table.concat(self.out, LINE_DELIM)
 	end,
 	print = function(self, text, ...)
@@ -73,12 +73,12 @@ local Formatter = {
 	end
 }
 
-local widths = { 55, 9, 9, 9, 5, 5, 5 }
+local widths = {55, 9, 9, 9, 5, 5, 5}
 local txt_row_format = sprintf(" %%-%ds | %%%ds | %%%ds | %%%ds | %%%ds | %%%ds | %%%ds", unpack(widths))
 
 local HR = {}
-for i=1, #widths do
-	HR[i]= rep("-", widths[i])
+for i = 1, #widths do
+	HR[i] = rep("-", widths[i])
 end
 -- ' | ' should break less with github than '-+-', when people are pasting there
 HR = sprintf("-%s-", table.concat(HR, " | "))
@@ -99,8 +99,7 @@ local TxtFormatter = Formatter:new {
 			format_number(statistics:get_time_avg()),
 			format_number(statistics.part_min, "%.1f"),
 			format_number(statistics.part_max, "%.1f"),
-			format_number(statistics:get_part_avg(), "%.1f")
-		)
+			format_number(statistics:get_part_avg(), "%.1f"))
 	end,
 	format = function(self, filter)
 		local profile = self.profile
@@ -112,12 +111,10 @@ local TxtFormatter = Formatter:new {
 		end
 
 		self:print()
-		self:print(
-			txt_row_format,
-			"instrumentation", "min Ms", "max Ms", "avg Ms", "min %", "max %", "avg %"
-		)
+		self:print(txt_row_format,
+			"instrumentation", "min Ms", "max Ms", "avg Ms", "min %", "max %", "avg %")
 		self:print(HR)
-		for modname,mod_stats in pairs(profile.stats) do
+		for modname, mod_stats in pairs(profile.stats) do
 			if filter_matches(filter, modname) then
 				self:format_row(modname, nil, mod_stats)
 
@@ -137,8 +134,7 @@ local TxtFormatter = Formatter:new {
 
 local CsvFormatter = Formatter:new {
 	format_row = function(self, modname, instrument_name, statistics)
-		self:print(
-			"%q,%q,%d,%d,%d,%d,%d,%f,%f,%f",
+		self:print("%q,%q,%d,%d,%d,%d,%d,%f,%f,%f",
 			modname, instrument_name,
 			statistics.samples,
 			statistics.time_min,
@@ -147,12 +143,10 @@ local CsvFormatter = Formatter:new {
 			statistics.time_all,
 			statistics.part_min,
 			statistics.part_max,
-			statistics:get_part_avg()
-		)
+			statistics:get_part_avg())
 	end,
 	format = function(self, filter)
-		self:print(
-			"%q,%q,%q,%q,%q,%q,%q,%q,%q,%q",
+		self:print("%q,%q,%q,%q,%q,%q,%q,%q,%q,%q",
 			"modname", "instrumentation",
 			"samples",
 			"time min µs",
@@ -161,8 +155,7 @@ local CsvFormatter = Formatter:new {
 			"time all µs",
 			"part min %",
 			"part max %",
-			"part avg %"
-		)
+			"part avg %")
 		for modname, mod_stats in pairs(self.profile.stats) do
 			if filter_matches(filter, modname) then
 				self:format_row(modname, "*", mod_stats)
@@ -233,14 +226,12 @@ local function get_save_path(format, filter)
 	if report_path ~= "" then
 		core.mkdir(sprintf("%s%s%s", worldpath, DIR_DELIM, report_path))
 	end
-	return (sprintf(
-		"%s/%s/profile-%s%s.%s",
+	return (sprintf("%s/%s/profile-%s%s.%s",
 		worldpath,
 		report_path,
 		os.date("%Y%m%dT%H%M%S"),
 		filter and ("-" .. filter) or "",
-		format
-	):gsub("[/\\]+", DIR_DELIM))-- Clean up delims
+		format):gsub("[/\\]+", DIR_DELIM)) -- Clean up delims
 end
 
 ---

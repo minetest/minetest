@@ -22,7 +22,7 @@ local CHAR_CLASSES = {
 	VARIABLE = "[%w_%-%.]",
 	INTEGER = "[+-]?[%d]",
 	FLOAT = "[+-]?[%d%.]",
-	FLAGS = "[%w_%-%.,]",
+	FLAGS = "[%w_%-%.,]"
 }
 
 local function flags_to_table(flags)
@@ -58,7 +58,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		table.insert(settings, {
 			name = category,
 			level = stars:len() + base_level,
-			type = "category",
+			type = "category"
 		})
 		return
 	end
@@ -66,14 +66,14 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	-- settings
 	local first_part, name, readable_name, setting_type = line:match("^"
 			-- this first capture group matches the whole first part,
-			--  so we can later strip it from the rest of the line
+			-- so we can later strip it from the rest of the line
 			.. "("
-				.. "([" .. CHAR_CLASSES.VARIABLE .. "+)" -- variable name
-				.. CHAR_CLASSES.SPACE .. "*"
-				.. "%(([^%)]*)%)"  -- readable name
-				.. CHAR_CLASSES.SPACE .. "*"
-				.. "(" .. CHAR_CLASSES.VARIABLE .. "+)" -- type
-				.. CHAR_CLASSES.SPACE .. "*"
+			.. "([" .. CHAR_CLASSES.VARIABLE .. "+)" -- variable name
+			.. CHAR_CLASSES.SPACE .. "*"
+			.. "%(([^%)]*)%)" -- readable name
+			.. CHAR_CLASSES.SPACE .. "*"
+			.. "(" .. CHAR_CLASSES.VARIABLE .. "+)" -- type
+			.. CHAR_CLASSES.SPACE .. "*"
 			.. ")")
 
 	if not first_part then
@@ -110,7 +110,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			default = default,
 			min = min,
 			max = max,
-			comment = current_comment,
+			comment = current_comment
 		})
 		return
 	end
@@ -132,7 +132,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = setting_type,
 			default = default,
-			comment = current_comment,
+			comment = current_comment
 		})
 		return
 	end
@@ -201,7 +201,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = "bool",
 			default = remaining_line,
-			comment = current_comment,
+			comment = current_comment
 		})
 		return
 	end
@@ -212,7 +212,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "*"
 				.. "(" .. CHAR_CLASSES.FLOAT .. "*)" .. CHAR_CLASSES.SPACE .. "*"
 				.. "(" .. CHAR_CLASSES.FLOAT .. "*)"
-				.."$")
+				.. "$")
 
 		if not default or not tonumber(default) then
 			return "Invalid float setting"
@@ -227,7 +227,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			default = default,
 			min = min,
 			max = max,
-			comment = current_comment,
+			comment = current_comment
 		})
 		return
 	end
@@ -249,7 +249,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			type = "enum",
 			default = default,
 			values = values:split(",", true),
-			comment = current_comment,
+			comment = current_comment
 		})
 		return
 	end
@@ -266,7 +266,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = setting_type,
 			default = default,
-			comment = current_comment,
+			comment = current_comment
 		})
 		return
 	end
@@ -295,7 +295,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			type = "flags",
 			default = default,
 			possible = flags_to_table(possible),
-			comment = current_comment,
+			comment = current_comment
 		})
 		return
 	end
@@ -351,7 +351,7 @@ local function parse_config_file(read_all, parse_mods)
 					table.insert(settings, {
 						name = "Games",
 						level = 0,
-						type = "category",
+						type = "category"
 					})
 					games_category_initialized = true
 				end
@@ -359,7 +359,7 @@ local function parse_config_file(read_all, parse_mods)
 				table.insert(settings, {
 					name = game.name,
 					level = 1,
-					type = "category",
+					type = "category"
 				})
 
 				parse_single_file(file, path, read_all, settings, 2, false)
@@ -384,7 +384,7 @@ local function parse_config_file(read_all, parse_mods)
 					table.insert(settings, {
 						name = "Mods",
 						level = 0,
-						type = "category",
+						type = "category"
 					})
 					mods_category_initialized = true
 				end
@@ -392,7 +392,7 @@ local function parse_config_file(read_all, parse_mods)
 				table.insert(settings, {
 					name = mod.name,
 					level = 1,
-					type = "category",
+					type = "category"
 				})
 
 				parse_single_file(file, path, read_all, settings, 2, false)
@@ -419,7 +419,7 @@ local function filter_settings(settings, searchstring)
 	local result = {}
 	local category_stack = {}
 	local current_level = 0
-	local best_setting = nil
+	local best_setting
 	for _, entry in pairs(settings) do
 		if entry.type == "category" then
 			-- Remove all settingless categories
@@ -518,14 +518,14 @@ local function get_current_np_group_as_string(setting)
 		t = setting.default
 	else
 		t = value.offset .. ", " ..
-			value.scale .. ", (" ..
-			value.spread.x .. ", " ..
-			value.spread.y .. ", " ..
-			value.spread.z .. "), " ..
-			value.seed .. ", " ..
-			value.octaves .. ", " ..
-			value.persistence .. ", " ..
-			value.lacunarity
+				value.scale .. ", (" ..
+				value.spread.x .. ", " ..
+				value.spread.y .. ", " ..
+				value.spread.z .. "), " ..
+				value.seed .. ", " ..
+				value.octaves .. ", " ..
+				value.persistence .. ", " ..
+				value.lacunarity
 		if value.flags ~= "" then
 			t = t .. ", " .. value.flags
 		end
@@ -560,8 +560,8 @@ local function create_change_setting_formspec(dialogdata)
 		formspec = "dropdown[3," .. height .. ";4,1;dd_setting_value;"
 		for index, value in ipairs(setting.values) do
 			-- translating value is not possible, since it's the value
-			--  that we set the setting to
-			formspec = formspec ..  core.formspec_escape(value) .. ","
+			-- that we set the setting to
+			formspec = formspec .. core.formspec_escape(value) .. ","
 			if get_current_value(setting) == value then
 				selected_index = index
 			end
@@ -596,15 +596,15 @@ local function create_change_setting_formspec(dialogdata)
 
 		local fields = {}
 		local function add_field(x, name, label, value)
-			fields[#fields + 1] = ("field[%f,%f;3.3,1;%s;%s;%s]"):format(
-				x, height, name, label, core.formspec_escape(value or "")
-			)
+			fields[#fields + 1] = ("field[%f,%f;3.3,1;%s;%s;%s]")
+					:format(x, height, name, label, core.formspec_escape(value or ""))
 		end
+
 		-- First row
 		height = height + 0.3
 		add_field(0.3, "te_offset", fgettext("Offset"), t[1])
-		add_field(3.6, "te_scale",  fgettext("Scale"),  t[2])
-		add_field(6.9, "te_seed",   fgettext("Seed"),   t[6])
+		add_field(3.6, "te_scale",  fgettext("Scale"), t[2])
+		add_field(6.9, "te_seed",   fgettext("Seed"), t[6])
 		height = height + 1.1
 
 		-- Second row
@@ -729,12 +729,10 @@ local function create_change_setting_formspec(dialogdata)
 			w = size.w + 0.25,
 			h = size.h * 1.16 + 0.12
 		}
-		return ("box[%f,%f;%f,%f;%s]textarea[%f,%f;%f,%f;;%s;%s]"):format(
-			size.x, size.y, size.w, size.h, bg_color or "#000",
+		return ("box[%f,%f;%f,%f;%s]textarea[%f,%f;%f,%f;;%s;%s]")
+				:format(size.x, size.y, size.w, size.h, bg_color or "#000",
 			textarea.x, textarea.y, textarea.w, textarea.h,
-			core.formspec_escape(label), core.formspec_escape(text)
-		)
-
+			core.formspec_escape(label), core.formspec_escape(text))
 	end
 
 	-- When there's an error: Shrink description textarea and add error below
@@ -771,15 +769,13 @@ local function create_change_setting_formspec(dialogdata)
 		comment_text = fgettext_ne(setting.comment)
 	end
 
-	return (
-		"size[" .. width .. "," .. height + 0.25 .. ",true]" ..
-		create_textfield(description_box, setting_name, comment_text) ..
-		formspec ..
-		"button[" .. width / 2 - 2.5 .. "," .. height - 0.4 .. ";2.5,1;btn_done;" ..
+	return ("size[" .. width .. "," .. height + 0.25 .. ",true]" ..
+			create_textfield(description_box, setting_name, comment_text) ..
+			formspec ..
+			"button[" .. width / 2 - 2.5 .. "," .. height - 0.4 .. ";2.5,1;btn_done;" ..
 			fgettext("Save") .. "]" ..
-		"button[" .. width / 2 .. "," .. height - 0.4 .. ";2.5,1;btn_cancel;" ..
-			fgettext("Cancel") .. "]"
-	)
+			"button[" .. width / 2 .. "," .. height - 0.4 .. ";2.5,1;btn_cancel;" ..
+			fgettext("Cancel") .. "]")
 end
 
 local function handle_change_setting_buttons(this, fields)
@@ -803,13 +799,15 @@ local function handle_change_setting_buttons(this, fields)
 				return true
 			end
 			if setting.min and new_value < setting.min then
-				this.data.error_message = fgettext_ne("The value must be at least $1.", setting.min)
+				this.data.error_message = fgettext_ne(
+					"The value must be at least $1.", setting.min)
 				this.data.entered_text = fields["te_setting_value"]
 				core.update_formspec(this:get_formspec())
 				return true
 			end
 			if setting.max and new_value > setting.max then
-				this.data.error_message = fgettext_ne("The value must not be larger than $1.", setting.max)
+				this.data.error_message = fgettext_ne(
+					"The value must not be larger than $1.", setting.max)
 				this.data.entered_text = fields["te_setting_value"]
 				core.update_formspec(this:get_formspec())
 				return true
@@ -825,13 +823,15 @@ local function handle_change_setting_buttons(this, fields)
 				return true
 			end
 			if setting.min and new_value < setting.min then
-				this.data.error_message = fgettext_ne("The value must be at least $1.", setting.min)
+				this.data.error_message = fgettext_ne(
+					"The value must be at least $1.", setting.min)
 				this.data.entered_text = fields["te_setting_value"]
 				core.update_formspec(this:get_formspec())
 				return true
 			end
 			if setting.max and new_value > setting.max then
-				this.data.error_message = fgettext_ne("The value must not be larger than $1.", setting.max)
+				this.data.error_message = fgettext_ne(
+					"The value must not be larger than $1.", setting.max)
 				this.data.entered_text = fields["te_setting_value"]
 				core.update_formspec(this:get_formspec())
 				return true
@@ -866,7 +866,7 @@ local function handle_change_setting_buttons(this, fields)
 			checkboxes = {}
 
 			if setting.type == "noise_params_2d" then
-				 fields["te_spready"] = fields["te_spreadz"]
+				fields["te_spready"] = fields["te_spreadz"]
 			end
 			local new_value = {
 				offset = fields["te_offset"],
@@ -937,7 +937,8 @@ local function create_settings_formspec(tabview, _, tabdata)
 	local formspec = "size[12,5.4;true]" ..
 			"tablecolumns[color;tree;text,width=28;text]" ..
 			"tableoptions[background=#00000000;border=false]" ..
-			"field[0.3,0.1;10.2,1;search_string;;" .. core.formspec_escape(search_string) .. "]" ..
+			"field[0.3,0.1;10.2,1;search_string;;" ..
+				core.formspec_escape(search_string) .. "]" ..
 			"field_close_on_enter[search_string;false]" ..
 			"button[10.2,-0.2;2,1;search;" .. fgettext("Search") .. "]" ..
 			"table[0,0.8;12,3.5;list_settings;"
@@ -962,19 +963,21 @@ local function create_settings_formspec(tabview, _, tabdata)
 			else
 				value = fgettext("Disabled")
 			end
-			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
-					.. value .. ","
+			formspec = formspec .. "," .. (current_level + 1) .. "," ..
+				core.formspec_escape(name) .. ",".. value .. ","
 
 		elseif entry.type == "key" then --luacheck: ignore
 			-- ignore key settings, since we have a special dialog for them
 
 		elseif entry.type == "noise_params_2d" or entry.type == "noise_params_3d" then
-			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
-					.. core.formspec_escape(get_current_np_group_as_string(entry)) .. ","
+			formspec = formspec .. "," .. (current_level + 1) .. "," ..
+				core.formspec_escape(name) .. "," ..
+				core.formspec_escape(get_current_np_group_as_string(entry)) .. ","
 
 		else
-			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
-					.. core.formspec_escape(get_current_value(entry)) .. ","
+			formspec = formspec .. "," .. (current_level + 1) .. "," ..
+				core.formspec_escape(name) .. "," ..
+				core.formspec_escape(get_current_value(entry)) .. ","
 		end
 	end
 
@@ -982,11 +985,11 @@ local function create_settings_formspec(tabview, _, tabdata)
 		formspec = formspec:sub(1, -2) -- remove trailing comma
 	end
 	formspec = formspec .. ";" .. selected_setting .. "]" ..
-			"button[0,4.9;4,1;btn_back;".. fgettext("< Back to Settings page") .. "]" ..
+			"button[0,4.9;4,1;btn_back;" .. fgettext("< Back to Settings page") .. "]" ..
 			"button[10,4.9;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
 			"button[7,4.9;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
-			"checkbox[0,4.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
-					.. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
+			"checkbox[0,4.3;cb_tech_settings;" .. fgettext("Show technical names") ..
+					";" .. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
 
 	return formspec
 end
@@ -1045,7 +1048,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
 			local edit_dialog = dialog_create("change_setting",
-					create_change_setting_formspec, handle_change_setting_buttons)
+				create_change_setting_formspec, handle_change_setting_buttons)
 			edit_dialog:set_parent(this)
 			this:hide()
 			edit_dialog:show()
@@ -1080,11 +1083,11 @@ end
 
 function create_adv_settings_dlg()
 	local dlg = dialog_create("settings_advanced",
-				create_settings_formspec,
-				handle_settings_buttons,
-				nil)
+		create_settings_formspec,
+		handle_settings_buttons,
+		nil)
 
-				return dlg
+	return dlg
 end
 
 -- Uncomment to generate 'minetest.conf.example' and 'settings_translation_file.cpp'.

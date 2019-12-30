@@ -14,9 +14,8 @@ core.register_entity(":__builtin:falling_node", {
 		physical = true,
 		is_visible = false,
 		collide_with_objects = false,
-		collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+		collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
 	},
-
 	node = {},
 	meta = {},
 
@@ -36,14 +35,14 @@ core.register_entity(":__builtin:falling_node", {
 		self.meta = meta
 		self.object:set_properties({
 			is_visible = true,
-			textures = {node.name},
+			textures = {node.name}
 		})
 	end,
 
 	get_staticdata = function(self)
 		local ds = {
 			node = self.node,
-			meta = self.meta,
+			meta = self.meta
 		}
 		return core.serialize(ds)
 	end,
@@ -61,7 +60,7 @@ core.register_entity(":__builtin:falling_node", {
 		end
 	end,
 
-	on_step = function(self, dtime)
+	on_step = function(self)
 		-- Set gravity
 		local acceleration = self.object:get_acceleration()
 		if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
@@ -81,8 +80,8 @@ core.register_entity(":__builtin:falling_node", {
 		local bcd = bcn and core.registered_nodes[bcn.name]
 		if bcn and
 				(not bcd or bcd.walkable or
-				(core.get_item_group(self.node.name, "float") ~= 0 and
-				bcd.liquidtype ~= "none")) then
+						(core.get_item_group(self.node.name, "float") ~= 0 and
+								bcd.liquidtype ~= "none")) then
 			if bcd and bcd.leveled and
 					bcn.name == self.node.name then
 				local addlevel = self.node.level
@@ -95,7 +94,7 @@ core.register_entity(":__builtin:falling_node", {
 				end
 			elseif bcd and bcd.buildable_to and
 					(core.get_item_group(self.node.name, "float") == 0 or
-					bcd.liquidtype == "none") then
+							bcd.liquidtype == "none") then
 				core.remove_node(bcp)
 				return
 			end
@@ -177,8 +176,8 @@ local function drop_attached_node(p)
 	if def and def.preserve_metadata then
 		local oldmeta = core.get_meta(p):to_table().fields
 		-- Copy pos and node because the callback can modify them.
-		local pos_copy = {x=p.x, y=p.y, z=p.z}
-		local node_copy = {name=n.name, param1=n.param1, param2=n.param2}
+		local pos_copy = {x = p.x, y = p.y, z = p.z}
+		local node_copy = {name = n.name, param1 = n.param1, param2 = n.param2}
 		local drop_stacks = {}
 		for k, v in pairs(drops) do
 			drop_stacks[k] = ItemStack(v)
@@ -192,9 +191,9 @@ local function drop_attached_node(p)
 	core.remove_node(p)
 	for _, item in pairs(drops) do
 		local pos = {
-			x = p.x + math.random()/2 - 0.25,
-			y = p.y + math.random()/2 - 0.25,
-			z = p.z + math.random()/2 - 0.25,
+			x = p.x + math.random() / 2 - 0.25,
+			y = p.y + math.random() / 2 - 0.25,
+			z = p.z + math.random() / 2 - 0.25
 		}
 		core.add_item(pos, item)
 	end
@@ -234,14 +233,11 @@ function core.check_single_for_falling(p)
 		local n_bottom = core.get_node_or_nil(p_bottom)
 		local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
 		if d_bottom and
-
 				(core.get_item_group(n.name, "float") == 0 or
-				d_bottom.liquidtype == "none") and
-
+						d_bottom.liquidtype == "none") and
 				(n.name ~= n_bottom.name or (d_bottom.leveled and
-				core.get_node_level(p_bottom) <
-				core.get_node_max_level(p_bottom))) and
-
+						core.get_node_level(p_bottom) <
+						core.get_node_max_level(p_bottom))) and
 				(not d_bottom.walkable or d_bottom.buildable_to) then
 			convert_to_falling_node(p, n)
 			return true
@@ -273,7 +269,7 @@ local check_for_falling_neighbors = {
 	{x = 0, y = 0, z = 1},
 	{x = 0, y = 0, z = -1},
 	{x = 0, y = 0, z = 0},
-	{x = 0, y = 1, z = 0},
+	{x = 0, y = 1, z = 0}
 }
 
 function core.check_for_falling(p)
@@ -330,17 +326,17 @@ end
 -- Global callbacks
 --
 
-local function on_placenode(p, node)
+local function on_placenode(p)
 	core.check_for_falling(p)
 end
 core.register_on_placenode(on_placenode)
 
-local function on_dignode(p, node)
+local function on_dignode(p)
 	core.check_for_falling(p)
 end
 core.register_on_dignode(on_dignode)
 
-local function on_punchnode(p, node)
+local function on_punchnode(p)
 	core.check_for_falling(p)
 end
 core.register_on_punchnode(on_punchnode)

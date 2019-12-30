@@ -77,6 +77,7 @@ local getSettingIndex = {
 		end
 		return 1
 	end,
+
 	NodeHighlighting = function()
 		local style = core.settings:get("node_highlighting")
 		for idx, name in pairs(dd_options.node_highlighting[2]) do
@@ -84,6 +85,7 @@ local getSettingIndex = {
 		end
 		return 1
 	end,
+
 	Filter = function()
 		if core.settings:get(dd_options.filters[2][3]) == "true" then
 			return 3
@@ -93,6 +95,7 @@ local getSettingIndex = {
 		end
 		return 1
 	end,
+
 	Mipmap = function()
 		if core.settings:get(dd_options.mipmap[2][3]) == "true" then
 			return 3
@@ -102,6 +105,7 @@ local getSettingIndex = {
 		end
 		return 1
 	end,
+
 	Antialiasing = function()
 		local antialiasing_setting = core.settings:get("fsaa")
 		for i = 1, #dd_options.antialiasing[2] do
@@ -122,14 +126,14 @@ local function antialiasing_fname_to_name(fname)
 	return 0
 end
 
-local function dlg_confirm_reset_formspec(data)
-	return  "size[8,3]" ..
-		"label[1,1;" .. fgettext("Are you sure to reset your singleplayer world?") .. "]" ..
+local function dlg_confirm_reset_formspec()
+	return "size[8,3]" ..
+		"label[1,1;" .. fgettext( "Are you sure to reset your singleplayer world?") .. "]" ..
 		"button[1,2;2.6,0.5;dlg_reset_singleplayer_confirm;" .. fgettext("Yes") .. "]" ..
 		"button[4,2;2.8,0.5;dlg_reset_singleplayer_cancel;" .. fgettext("No") .. "]"
 end
 
-local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
+local function dlg_confirm_reset_btnhandler(this, fields)
 
 	if fields["dlg_reset_singleplayer_confirm"] ~= nil then
 		local worldlist = core.get_worlds()
@@ -172,7 +176,7 @@ local function showconfirm_reset(tabview)
 	new_dlg:show()
 end
 
-local function formspec(tabview, name, tabdata)
+local function formspec()
 	local tab_string =
 		"box[0,0;3.75,4.5;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;" .. fgettext("Smooth Lighting") .. ";"
@@ -210,12 +214,12 @@ local function formspec(tabview, name, tabdata)
 		shaders_enabled = core.settings:get_bool("enable_shaders")
 		tab_string = tab_string ..
 			"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
-					.. tostring(shaders_enabled) .. "]"
+			.. tostring(shaders_enabled) .. "]"
 	else
 		core.settings:set_bool("enable_shaders", false)
 		tab_string = tab_string ..
 			"label[8.38,0.2;" .. core.colorize("#888888",
-					fgettext("Shaders (unavailable)")) .. "]"
+			fgettext("Shaders (unavailable)")) .. "]"
 	end
 
 	if core.settings:get("main_menu_style") == "simple" then
@@ -280,7 +284,7 @@ local function formspec(tabview, name, tabdata)
 end
 
 --------------------------------------------------------------------------------
-local function handle_settings_buttons(this, fields, tabname, tabdata)
+local function handle_settings_buttons(this, fields)
 
 	if fields["btn_advanced_settings"] ~= nil then
 		local adv_settings_dlg = create_adv_settings_dlg()
@@ -315,8 +319,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		return true
 	end
 	if fields["cb_shaders"] then
-		if (core.settings:get("video_driver") == "direct3d8" or
-				core.settings:get("video_driver") == "direct3d9") then
+		if core.settings:get("video_driver") == "direct3d8" or
+				core.settings:get("video_driver") == "direct3d9" then
 			core.settings:set("enable_shaders", "false")
 			gamedata.errormessage = fgettext("To enable shaders the OpenGL driver needs to be used.")
 		else
@@ -364,7 +368,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		return true
 	end
 
-	--Note dropdowns have to be handled LAST!
+	-- Note dropdowns have to be handled LAST!
 	local ddhandled = false
 
 	for i = 1, #labels.leaves do

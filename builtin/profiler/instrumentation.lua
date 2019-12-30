@@ -42,7 +42,7 @@ local register_functions = {
 	register_on_protection_violation = 0,
 	register_on_item_eat = 0,
 	register_on_punchplayer = 0,
-	register_on_player_hpchange = 0,
+	register_on_player_hpchange = 0
 }
 
 ---
@@ -76,6 +76,7 @@ local function measure(modname, instrument_name, start, ...)
 	log(modname, instrument_name, time() - start)
 	return ...
 end
+
 --- Automatically instrument a function to measure and log to the sampler.
 -- def = {
 -- 		mod = "",
@@ -110,15 +111,15 @@ end
 local function can_be_called(func)
 	-- It has to be a function or callable table
 	return type(func) == "function" or
-		((type(func) == "table" or type(func) == "userdata") and
-		getmetatable(func) and getmetatable(func).__call)
+			((type(func) == "table" or type(func) == "userdata") and
+			getmetatable(func) and getmetatable(func).__call)
 end
 
 local function assert_can_be_called(func, func_name, level)
 	if not can_be_called(func) then
 		-- Then throw an *helpful* error, by pointing on our caller instead of us.
 		error(format("Invalid argument to %s. Expected function-like type instead of '%s'.",
-				func_name, type(func)), level + 1)
+			func_name, type(func)), level + 1)
 	end
 end
 
@@ -144,7 +145,7 @@ local function init_chatcommand()
 		core.register_chatcommand = function(cmd, def)
 			def.func = instrument {
 				func = def.func,
-				label = "/" .. cmd,
+				label = "/" .. cmd
 			}
 			orig_register_chatcommand(cmd, def)
 		end
@@ -163,7 +164,7 @@ local function init()
 			"on_step",
 			"on_punch",
 			"rightclick",
-			"get_staticdata",
+			"get_staticdata"
 		}
 		-- Wrap register_entity() to instrument them on registration.
 		local orig_register_entity = core.register_entity
@@ -174,10 +175,10 @@ local function init()
 					func = prototype[func_name],
 					mod = modname,
 					func_name = func_name,
-					label = prototype.label,
+					label = prototype.label
 				}
 			end
-			orig_register_entity(name,prototype)
+			orig_register_entity(name, prototype)
 		end
 	end
 
@@ -188,7 +189,7 @@ local function init()
 			spec.action = instrument {
 				func = spec.action,
 				class = "ABM",
-				label = spec.label,
+				label = spec.label
 			}
 			orig_register_abm(spec)
 		end
@@ -201,7 +202,7 @@ local function init()
 			spec.action = instrument {
 				func = spec.action,
 				class = "LBM",
-				label = spec.label or spec.name,
+				label = spec.label or spec.name
 			}
 			orig_register_lbm(spec)
 		end
@@ -220,7 +221,7 @@ local function init()
 			func = function() return end,
 			mod = "*profiler*",
 			class = "Instrumentation overhead",
-			label = false,
+			label = false
 		}
 	end
 end
@@ -229,5 +230,5 @@ return {
 	register_functions = register_functions,
 	instrument = instrument,
 	init = init,
-	init_chatcommand = init_chatcommand,
+	init_chatcommand = init_chatcommand
 }

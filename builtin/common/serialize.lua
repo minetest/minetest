@@ -8,7 +8,7 @@
 
 --- Serialize an object into a source code string. This string, when passed as
 -- an argument to deserialize(), returns an object structurally identical to
--- the original one.  The following are currently supported:
+-- the original one. The following are currently supported:
 --   * Booleans, numbers, strings, and nil.
 --   * Functions; uses interpreter-dependent (and sometimes platform-dependent) bytecode!
 --   * Tables; they can cantain multiple references and can be recursive, but metatables aren't saved.
@@ -18,7 +18,7 @@
 -- @param x Value to serialize (nil is allowed).
 -- @return load()able string containing the value.
 function core.serialize(x)
-	local local_index  = 1  -- Top index of the "_" local table in the dump
+	local local_index = 1 -- Top index of the "_" local table in the dump
 	-- table->nil/1/2 set of tables seen.
 	-- nil = not seen, 1 = seen once, 2 = seen multiple times.
 	local seen = {}
@@ -31,15 +31,15 @@ function core.serialize(x)
 	-- * nested - Transient set of tables being currently traversed.
 	--   Used for detecting nested tables.
 	-- * nest_points - parent->{key=value, ...} table cantaining the nested
-	--   keys and values in the parent.  They're all dumped after all the
+	--   keys and values in the parent. They're all dumped after all the
 	--   other table operations have been performed.
 	--
 	-- mark_nest_point(p, k, v) fills nest_points with information required
-	-- to remember that key/value (k, v) creates a nest point  in table
+	-- to remember that key/value (k, v) creates a nest point in table
 	-- parent. It also marks "parent" and the nested item(s) as occuring
 	-- multiple times, since several references to it will be required in
 	-- order to patch the nest points.
-	local nest_points  = {}
+	local nest_points = {}
 	local nested = {}
 	local function mark_nest_point(parent, k, v)
 		local nk, nv = nested[k], nested[v]
@@ -82,8 +82,8 @@ function core.serialize(x)
 		end
 	end
 
-	local dumped     = {}  -- object->varname set
-	local local_defs = {}  -- Dumped local definitions as source code lines
+	local dumped     = {} -- object->varname set
+	local local_defs = {} -- Dumped local definitions as source code lines
 
 	-- Mutually recursive local functions:
 	local dump_val, dump_or_ref_val
@@ -96,22 +96,22 @@ function core.serialize(x)
 			return dump_val(x)
 		end
 		local var = dumped[x]
-		if var then  -- Already referenced
+		if var then -- Already referenced
 			return var
 		end
 		-- First occurence, create and register reference
 		local val = dump_val(x)
 		local i = local_index
 		local_index = local_index + 1
-		var = "_["..i.."]"
-		local_defs[#local_defs + 1] = var.." = "..val
+		var = "_[" .. i .. "]"
+		local_defs[#local_defs + 1] = var .. " = " .. val
 		dumped[x] = var
 		return var
 	end
 
-	-- Second phase.  Dump the object; subparts occuring multiple times
+	-- Second phase. Dump the object; subparts occuring multiple times
 	-- are dumped in local variables which can be referenced multiple
-	-- times.  Care is taken to dump local vars in a sensible order.
+	-- times. Care is taken to dump local vars in a sensible order.
 	function dump_val(x)
 		local  tp = type(x)
 		if     x  == nil        then return "nil"
@@ -123,7 +123,7 @@ function core.serialize(x)
 			-- Serialize integers with string.format to prevent
 			-- scientific notation, which doesn't preserve
 			-- precision and breaks things like node position
-			-- hashes.  Serialize floats normally.
+			-- hashes. Serialize floats normally.
 			if math.floor(x) == x then
 				return string.format("%d", x)
 			else
@@ -142,13 +142,13 @@ function core.serialize(x)
 			for k, v in pairs(x) do
 				if (not np or not np[k]) and
 						not idx_dumped[k] then
-					vals[#vals + 1] = "["..dump_or_ref_val(k).."] = "
-						..dump_or_ref_val(v)
+					vals[#vals + 1] = "[" .. dump_or_ref_val(k) .. "] = "
+							.. dump_or_ref_val(v)
 				end
 			end
-			return "{"..table.concat(vals, ", ").."}"
+			return "{" .. table.concat(vals, ", ") .. "}"
 		else
-			error("Can't serialize data of type "..tp)
+			error("Can't serialize data of type " .. tp)
 		end
 	end
 
@@ -156,8 +156,8 @@ function core.serialize(x)
 		for parent, vals in pairs(nest_points) do
 			for k, v in pairs(vals) do
 				local_defs[#local_defs + 1] = dump_or_ref_val(parent)
-					.."["..dump_or_ref_val(k).."] = "
-					..dump_or_ref_val(v)
+					.. "[" .. dump_or_ref_val(k) .. "] = "
+					.. dump_or_ref_val(v)
 			end
 		end
 	end
@@ -168,10 +168,10 @@ function core.serialize(x)
 
 	if next(local_defs) then
 		return "local _ = {}\n"
-			..table.concat(local_defs, "\n")
-			.."\nreturn "..top_level
+			.. table.concat(local_defs, "\n")
+			.. "\nreturn " .. top_level
 	else
-		return "return "..top_level
+		return "return " .. top_level
 	end
 end
 
@@ -187,8 +187,8 @@ local safe_env = {
 
 function core.deserialize(str, safe)
 	if type(str) ~= "string" then
-		return nil, "Cannot deserialize type '"..type(str)
-			.."'. Argument must be a string."
+		return nil, "Cannot deserialize type '" .. type(str)
+			.. "'. Argument must be a string."
 	end
 	if str:byte(1) == 0x1B then
 		return nil, "Bytecode prohibited"
@@ -207,14 +207,14 @@ end
 
 
 -- Unit tests
-local test_in = {cat={sound="nyan", speed=400}, dog={sound="woof"}}
+local test_in = {cat = {sound = "nyan", speed = 400}, dog = {sound = "woof"}}
 local test_out = core.deserialize(core.serialize(test_in))
 
 assert(test_in.cat.sound == test_out.cat.sound)
 assert(test_in.cat.speed == test_out.cat.speed)
 assert(test_in.dog.sound == test_out.dog.sound)
 
-test_in = {escape_chars="\n\r\t\v\\\"\'", non_european="θשׁ٩∂"}
+test_in = {escape_chars = "\n\r\t\v\\\"\'", non_european = "θשׁ٩∂"}
 test_out = core.deserialize(core.serialize(test_in))
 assert(test_in.escape_chars == test_out.escape_chars)
 assert(test_in.non_european == test_out.non_european)

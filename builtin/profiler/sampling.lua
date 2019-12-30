@@ -28,14 +28,14 @@ local logged_time, logged_data
 
 local _stat_mt = {
 	get_time_avg = function(self)
-		return self.time_all/self.samples
+		return self.time_all / self.samples
 	end,
 	get_part_avg = function(self)
 		if not self.part_all then
 			return 100 -- Extra handling for "total"
 		end
-		return self.part_all/self.samples
-	end,
+		return self.part_all / self.samples
+	end
 }
 _stat_mt.__index = _stat_mt
 
@@ -76,10 +76,8 @@ function sampler.log(modname, instrument_name, time_diff)
 		if time_diff < 0 then
 			-- This **might** have happened on a semi-regular basis with huge mods,
 			-- resulting in negative statistics (perhaps midnight time jumps or ntp corrections?).
-			core.log("warning", format(
-					"Time travel of %s::%s by %dµs.",
-					modname, instrument_name, time_diff
-			))
+			core.log("warning", format("Time travel of %s::%s by %dµs.",
+				modname, instrument_name, time_diff))
 		end
 		-- Throwing these away is better, than having them mess with the overall result.
 		return
@@ -129,7 +127,7 @@ local function update_statistic(stats_table, time)
 	stats_table.time_all = stats_table.time_all + time
 
 	-- Update relative time (%) of this sample spend by the subject
-	local current_part = (time/logged_time) * 100
+	local current_part = (time / logged_time) * 100
 	stats_table.part_min = min(stats_table.part_min, current_part)
 	stats_table.part_max = max(stats_table.part_max, current_part)
 	stats_table.part_all = stats_table.part_all + current_part
@@ -140,7 +138,7 @@ end
 -- Like any globalstep function, this should not be too heavy,
 -- but does not add to the instrumentation overhead.
 --
-local function sample(dtime)
+local function sample()
 	-- Rare, but happens and is currently of no informational value.
 	if logged_time == 0 then
 		return
@@ -196,7 +194,7 @@ function sampler.init()
 			func = sample,
 			mod = "*profiler*",
 			class = "Sampler (update stats)",
-			label = false,
+			label = false
 		})
 	else
 		core.register_globalstep(sample)

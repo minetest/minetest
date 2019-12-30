@@ -21,7 +21,7 @@ mm_texture = {}
 --------------------------------------------------------------------------------
 function mm_texture.init()
 	mm_texture.defaulttexturedir = core.get_texturepath() .. DIR_DELIM .. "base" ..
-						DIR_DELIM .. "pack" .. DIR_DELIM
+			DIR_DELIM .. "pack" .. DIR_DELIM
 	mm_texture.basetexturedir = mm_texture.defaulttexturedir
 
 	mm_texture.texturepack = core.settings:get("texture_path")
@@ -30,7 +30,7 @@ function mm_texture.init()
 end
 
 --------------------------------------------------------------------------------
-function mm_texture.update(tab,gamedetails)
+function mm_texture.update(tab, gamedetails)
 	if tab ~= "singleplayer" then
 		mm_texture.reset()
 		return
@@ -76,10 +76,10 @@ function mm_texture.update_game(gamedetails)
 	end
 
 	local have_bg      = false
-	local have_overlay = mm_texture.set_game("overlay",gamedetails)
+	local have_overlay = mm_texture.set_game("overlay", gamedetails)
 
 	if not have_overlay then
-		have_bg = mm_texture.set_game("background",gamedetails)
+		have_bg = mm_texture.set_game("background", gamedetails)
 	end
 
 	mm_texture.clear("header")
@@ -95,32 +95,32 @@ function mm_texture.update_game(gamedetails)
 		end
 	end
 
-	mm_texture.set_game("footer",gamedetails)
-	mm_texture.set_game("header",gamedetails)
+	mm_texture.set_game("footer", gamedetails)
+	mm_texture.set_game("header", gamedetails)
 
 	mm_texture.gameid = gamedetails.id
 end
 
 --------------------------------------------------------------------------------
 function mm_texture.clear(identifier)
-	core.set_background(identifier,"")
+	core.set_background(identifier, "")
 end
 
 --------------------------------------------------------------------------------
 function mm_texture.set_generic(identifier)
 	--try texture pack first
 	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.texturepack .. DIR_DELIM .."menu_" ..
-										identifier .. ".png"
-		if core.set_background(identifier,path) then
+		local path = mm_texture.texturepack .. DIR_DELIM .. "menu_" ..
+				identifier .. ".png"
+		if core.set_background(identifier, path) then
 			return true
 		end
 	end
 
 	if mm_texture.defaulttexturedir ~= nil then
-		local path = mm_texture.defaulttexturedir .. DIR_DELIM .."menu_" ..
-										identifier .. ".png"
-		if core.set_background(identifier,path) then
+		local path = mm_texture.defaulttexturedir .. DIR_DELIM .. "menu_" ..
+				identifier .. ".png"
+		if core.set_background(identifier, path) then
 			return true
 		end
 	end
@@ -163,7 +163,7 @@ function mm_texture.set_game(identifier, gamedetails)
 	end
 
 	local path = gamedetails.path .. DIR_DELIM .. "menu" ..
-		DIR_DELIM .. filename
+			DIR_DELIM .. filename
 	if core.set_background(identifier, path) then
 		return true
 	end
@@ -173,7 +173,7 @@ end
 
 function mm_texture.set_dirt_bg()
 	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.texturepack .. DIR_DELIM .."default_dirt.png"
+		local path = mm_texture.texturepack .. DIR_DELIM .. "default_dirt.png"
 		if core.set_background("background", path, true, 128) then
 			return true
 		end

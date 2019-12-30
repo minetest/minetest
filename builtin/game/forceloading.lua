@@ -49,7 +49,7 @@ function core.forceload_block(pos, transient)
 		if total_forceloaded >= (tonumber(core.settings:get("max_forceloaded_blocks")) or 16) then
 			return false
 		end
-		total_forceloaded = total_forceloaded+1
+		total_forceloaded = total_forceloaded + 1
 		relevant_table[hash] = 1
 		forceload_block(blockpos)
 		return true
@@ -69,7 +69,7 @@ function core.forceload_free_block(pos, transient)
 	elseif other_table[hash] ~= nil then
 		relevant_table[hash] = nil
 	else
-		total_forceloaded = total_forceloaded-1
+		total_forceloaded = total_forceloaded - 1
 		relevant_table[hash] = nil
 		forceload_free_block(blockpos)
 	end
@@ -79,10 +79,10 @@ end
 local wpath = core.get_worldpath()
 local function read_file(filename)
 	local f = io.open(filename, "r")
-	if f==nil then return {} end
+	if f == nil then return {} end
 	local t = f:read("*all")
 	f:close()
-	if t=="" or t==nil then return {} end
+	if t == "" or t == nil then return {} end
 	return core.deserialize(t) or {}
 end
 
@@ -92,8 +92,8 @@ local function write_file(filename, table)
 	f:close()
 end
 
-blocks_forceloaded = read_file(wpath.."/force_loaded.txt")
-for _, __ in pairs(blocks_forceloaded) do
+blocks_forceloaded = read_file(wpath .. "/force_loaded.txt")
+for _, _ in pairs(blocks_forceloaded) do
 	total_forceloaded = total_forceloaded + 1
 end
 
@@ -106,7 +106,7 @@ end)
 
 -- persists the currently forceloaded blocks to disk
 local function persist_forceloaded_blocks()
-	write_file(wpath.."/force_loaded.txt", blocks_forceloaded)
+	write_file(wpath .. "/force_loaded.txt", blocks_forceloaded)
 end
 
 -- periodical forceload persistence

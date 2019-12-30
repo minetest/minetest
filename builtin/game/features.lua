@@ -14,7 +14,7 @@ core.features = {
 	object_independent_selectionbox = true,
 	httpfetch_binary_data = true,
 	formspec_version_element = true,
-	area_store_persistent_ids = true,
+	area_store_persistent_ids = true
 }
 
 function core.has_feature(arg)
@@ -30,7 +30,7 @@ function core.has_feature(arg)
 		return result, missing_features
 	elseif type(arg) == "string" then
 		if not core.features[arg] then
-			return false, {[arg]=true}
+			return false, {[arg] = true}
 		end
 		return true, {}
 	end

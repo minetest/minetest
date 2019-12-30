@@ -1,15 +1,14 @@
-
 vector = {}
 
 function vector.new(a, b, c)
 	if type(a) == "table" then
 		assert(a.x and a.y and a.z, "Invalid vector passed to vector.new()")
-		return {x=a.x, y=a.y, z=a.z}
+		return {x = a.x, y = a.y, z = a.z}
 	elseif a then
 		assert(b and c, "Invalid arguments for vector.new()")
-		return {x=a, y=b, z=c}
+		return {x = a, y = b, z = c}
 	end
-	return {x=0, y=0, z=0}
+	return {x = 0, y = 0, z = 0}
 end
 
 function vector.equals(a, b)
@@ -25,7 +24,7 @@ end
 function vector.normalize(v)
 	local len = vector.length(v)
 	if len == 0 then
-		return {x=0, y=0, z=0}
+		return {x = 0, y = 0, z = 0}
 	else
 		return vector.divide(v, len)
 	end
@@ -91,49 +90,65 @@ end
 
 function vector.add(a, b)
 	if type(b) == "table" then
-		return {x = a.x + b.x,
+		return {
+			x = a.x + b.x,
 			y = a.y + b.y,
-			z = a.z + b.z}
+			z = a.z + b.z
+		}
 	else
-		return {x = a.x + b,
+		return {
+			x = a.x + b,
 			y = a.y + b,
-			z = a.z + b}
+			z = a.z + b
+		}
 	end
 end
 
 function vector.subtract(a, b)
 	if type(b) == "table" then
-		return {x = a.x - b.x,
+		return {
+			x = a.x - b.x,
 			y = a.y - b.y,
-			z = a.z - b.z}
+			z = a.z - b.z
+		}
 	else
-		return {x = a.x - b,
+		return {
+			x = a.x - b,
 			y = a.y - b,
-			z = a.z - b}
+			z = a.z - b
+		}
 	end
 end
 
 function vector.multiply(a, b)
 	if type(b) == "table" then
-		return {x = a.x * b.x,
+		return {
+			x = a.x * b.x,
 			y = a.y * b.y,
-			z = a.z * b.z}
+			z = a.z * b.z
+		}
 	else
-		return {x = a.x * b,
+		return {
+			x = a.x * b,
 			y = a.y * b,
-			z = a.z * b}
+			z = a.z * b
+		}
 	end
 end
 
 function vector.divide(a, b)
 	if type(b) == "table" then
-		return {x = a.x / b.x,
+		return {
+			x = a.x / b.x,
 			y = a.y / b.y,
-			z = a.z / b.z}
+			z = a.z / b.z
+		}
 	else
-		return {x = a.x / b,
+		return {
+			x = a.x / b,
 			y = a.y / b,
-			z = a.z / b}
+			z = a.z / b
+		}
 	end
 end
 

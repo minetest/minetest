@@ -1,12 +1,11 @@
 -- Minetest: builtin/client/chatcommands.lua
 
-
 core.register_on_sending_chat_message(function(message)
-	if message:sub(1,2) == ".." then
+	if message:sub(1, 2) == ".." then
 		return false
 	end
 
-	local first_char = message:sub(1,1)
+	local first_char = message:sub(1, 1)
 	if first_char == "/" or first_char == "." then
 		core.display_chat_message(core.gettext("issued command: ") .. message)
 	end
@@ -39,7 +38,7 @@ end)
 
 core.register_chatcommand("list_players", {
 	description = core.gettext("List online players"),
-	func = function(param)
+	func = function()
 		local player_names = core.get_player_names()
 		if not player_names then
 			return false, core.gettext("This command is disabled by server.")
@@ -52,17 +51,17 @@ core.register_chatcommand("list_players", {
 
 core.register_chatcommand("disconnect", {
 	description = core.gettext("Exit to main menu"),
-	func = function(param)
+	func = function()
 		core.disconnect()
-	end,
+	end
 })
 
 core.register_chatcommand("clear_chat_queue", {
 	description = core.gettext("Clear the out chat queue"),
-	func = function(param)
+	func = function()
 		core.clear_out_chat_queue()
 		return true, core.gettext("The out chat queue is now empty")
-	end,
+	end
 })
 
 function core.run_server_chatcommand(cmd, param)

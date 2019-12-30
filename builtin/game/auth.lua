@@ -16,12 +16,14 @@ core.builtin_auth_handler = {
 		if not auth_entry then
 			return nil
 		end
+
 		-- Figure out what privileges the player should have.
 		-- Take a copy of the privilege table
 		local privileges = {}
 		for priv, _ in pairs(auth_entry.privileges) do
 			privileges[priv] = true
 		end
+
 		-- If singleplayer, give all privileges except those marked as give_to_singleplayer = false
 		if core.is_singleplayer() then
 			for priv, def in pairs(core.registered_privileges) do
@@ -37,18 +39,20 @@ core.builtin_auth_handler = {
 				end
 			end
 		end
+
 		-- All done
 		return {
 			password = auth_entry.password,
 			privileges = privileges,
 			-- Is set to nil if unknown
-			last_login = auth_entry.last_login,
+			last_login = auth_entry.last_login
 		}
 	end,
+
 	create_auth = function(name, password)
 		assert(type(name) == "string")
 		assert(type(password) == "string")
-		core.log('info', "Built-in authentication handler adding player '"..name.."'")
+		core.log("info", "Built-in authentication handler adding player '" .. name .. "'")
 		return core_auth.create({
 			name = name,
 			password = password,
@@ -56,15 +60,17 @@ core.builtin_auth_handler = {
 			last_login = os.time(),
 		})
 	end,
+
 	delete_auth = function(name)
 		assert(type(name) == "string")
 		local auth_entry = core_auth.read(name)
 		if not auth_entry then
 			return false
 		end
-		core.log('info', "Built-in authentication handler deleting player '"..name.."'")
+		core.log("info", "Built-in authentication handler deleting player '" .. name .. "'")
 		return core_auth.delete(name)
 	end,
+
 	set_password = function(name, password)
 		assert(type(name) == "string")
 		assert(type(password) == "string")
@@ -72,12 +78,13 @@ core.builtin_auth_handler = {
 		if not auth_entry then
 			core.builtin_auth_handler.create_auth(name, password)
 		else
-			core.log('info', "Built-in authentication handler setting password of player '"..name.."'")
+			core.log("info", "Built-in authentication handler setting password of player '" .. name .. "'")
 			auth_entry.password = password
 			core_auth.save(auth_entry)
 		end
 		return true
 	end,
+
 	set_privileges = function(name, privileges)
 		assert(type(name) == "string")
 		assert(type(privileges) == "table")
@@ -103,13 +110,15 @@ core.builtin_auth_handler = {
 		end
 
 		auth_entry.privileges = privileges
-		core_auth.save(auth_entry)
-		core.notify_authentication_modified(name)
+			core_auth.save(auth_entry)
+			core.notify_authentication_modified(name)
 	end,
+
 	reload = function()
 		core_auth.reload()
 		return true
 	end,
+
 	record_login = function(name)
 		assert(type(name) == "string")
 		local auth_entry = core_auth.read(name)
@@ -117,17 +126,18 @@ core.builtin_auth_handler = {
 		auth_entry.last_login = os.time()
 		core_auth.save(auth_entry)
 	end,
+
 	iterate = function()
 		local names = {}
 		local nameslist = core_auth.list_names()
-		for k,v in pairs(nameslist) do
+		for _, v in pairs(nameslist) do
 			names[v] = true
 		end
 		return pairs(names)
-	end,
+	end
 }
 
-core.register_on_prejoinplayer(function(name, ip)
+core.register_on_prejoinplayer(function(name)
 	if core.registered_auth_handler ~= nil then
 		return -- Don't do anything if custom auth handler registered
 	end
@@ -139,9 +149,9 @@ core.register_on_prejoinplayer(function(name, ip)
 	local name_lower = name:lower()
 	for k in core.builtin_auth_handler.iterate() do
 		if k:lower() == name_lower then
-			return string.format("\nCannot create new player called '%s'. "..
-					"Another account called '%s' is already registered. "..
-					"Please check the spelling if it's your account "..
+			return string.format("\nCannot create new player called '%s'. " ..
+					"Another account called '%s' is already registered. " ..
+					"Please check the spelling if it's your account " ..
 					"or use a different nickname.", name, k)
 		end
 	end
@@ -153,7 +163,7 @@ end)
 
 function core.register_authentication_handler(handler)
 	if core.registered_auth_handler then
-		error("Add-on authentication handler already registered by "..core.registered_auth_handler_modname)
+		error("Add-on authentication handler already registered by " .. core.registered_auth_handler_modname)
 	end
 	core.registered_auth_handler = handler
 	core.registered_auth_handler_modname = core.get_current_modname()

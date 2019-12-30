@@ -35,7 +35,7 @@ local keywords = {
 	["false"] = true,
 	["for"] = true,
 	["function"] = true,
-	["goto"] = true,  -- Lua 5.2
+	["goto"] = true, -- Lua 5.2
 	["if"] = true,
 	["in"] = true,
 	["local"] = true,
@@ -47,7 +47,7 @@ local keywords = {
 	["then"] = true,
 	["true"] = true,
 	["until"] = true,
-	["while"] = true,
+	["while"] = true
 }
 local function is_valid_identifier(str)
 	if not str:find("^[a-zA-Z_][a-zA-Z0-9_]*$") or keywords[str] then
@@ -64,12 +64,11 @@ end
 -- This handles tables as keys and circular references properly.
 -- It also handles multiple references well, writing the table only once.
 -- The dumped argument is internal-only.
-
 function dump2(o, name, dumped)
 	name = name or "_"
 	-- "dumped" is used to keep track of serialized tables to handle
 	-- multiple references and circular tables properly.
-	-- It only contains tables as keys.  The value is the name that
+	-- It only contains tables as keys. The value is the name that
 	-- the table has in the dump, eg:
 	-- {x = {"y"}} -> dumped[{"y"}] = '_["x"]'
 	dumped = dumped or {}
@@ -118,7 +117,6 @@ end
 -- The indent field specifies a indentation string, it defaults to a tab.
 -- Use the empty string to disable indentation.
 -- The dumped and level arguments are internal-only.
-
 function dump(o, indent, nested, level)
 	local t = type(o)
 	if not level and t == "userdata" then
@@ -147,10 +145,10 @@ function dump(o, indent, nested, level)
 	for k, v in pairs(o) do
 		if not dumped_indexes[k] then
 			if type(k) ~= "string" or not is_valid_identifier(k) then
-				k = "["..dump(k, indent, nested, level + 1).."]"
+				k = "[" .. dump(k, indent, nested, level + 1) .. "]"
 			end
 			v = dump(v, indent, nested, level + 1)
-			ret[#ret + 1] = k.." = "..v
+			ret[#ret + 1] = k .. " = " .. v
 		end
 	end
 	nested[o] = nil
@@ -159,10 +157,10 @@ function dump(o, indent, nested, level)
 		local end_indent_str = "\n"..string.rep(indent, level - 1)
 		return string.format("{%s%s%s}",
 				indent_str,
-				table.concat(ret, ","..indent_str),
+				table.concat(ret, "," .. indent_str),
 				end_indent_str)
 	end
-	return "{"..table.concat(ret, ", ").."}"
+	return "{" .. table.concat(ret, ", ") .. "}"
 end
 
 --------------------------------------------------------------------------------
@@ -175,8 +173,8 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	max_splits = max_splits + 1
 	repeat
 		local np, npe = string_find(str, delim, pos, plain)
-		np, npe = (np or (len+1)), (npe or (len+1))
-		if (not np) or (max_splits == 1) then
+		np, npe = (np or (len + 1)), (npe or (len + 1))
+		if not np or max_splits == 1 then
 			np = len + 1
 			npe = np
 		end
@@ -260,7 +258,7 @@ function math.factorial(x)
 end
 
 --------------------------------------------------------------------------------
-function get_last_folder(text,count)
+function get_last_folder(text, count)
 	local parts = text:split(DIR_DELIM)
 
 	if count == nil then
@@ -268,8 +266,8 @@ function get_last_folder(text,count)
 	end
 
 	local retval = ""
-	for i=1,count,1 do
-		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
+	for i = 1, count do
+		retval = retval .. parts[#parts - (count - i)] .. DIR_DELIM
 	end
 
 	return retval
@@ -280,7 +278,7 @@ function cleanup_path(temppath)
 
 	local parts = temppath:split("-")
 	temppath = ""
-	for i=1,#parts,1 do
+	for i = 1, #parts do
 		if temppath ~= "" then
 			temppath = temppath .. "_"
 		end
@@ -289,7 +287,7 @@ function cleanup_path(temppath)
 
 	parts = temppath:split(".")
 	temppath = ""
-	for i=1,#parts,1 do
+	for i = 1, #parts do
 		if temppath ~= "" then
 			temppath = temppath .. "_"
 		end
@@ -298,7 +296,7 @@ function cleanup_path(temppath)
 
 	parts = temppath:split("'")
 	temppath = ""
-	for i=1,#parts,1 do
+	for i = 1, #parts do
 		if temppath ~= "" then
 			temppath = temppath .. ""
 		end
@@ -307,7 +305,7 @@ function cleanup_path(temppath)
 
 	parts = temppath:split(" ")
 	temppath = ""
-	for i=1,#parts,1 do
+	for i = 1, #parts do
 		if temppath ~= "" then
 			temppath = temppath
 		end
@@ -416,8 +414,8 @@ if INIT == "game" then
 
 
 --------------------------------------------------------------------------------
---Wrapper for rotate_and_place() to check for sneak and assume Creative mode
---implies infinite stacks when performing a 6d rotation.
+-- Wrapper for rotate_and_place() to check for sneak and assume Creative mode
+-- implies infinite stacks when performing a 6d rotation.
 --------------------------------------------------------------------------------
 	local creative_mode_cache = core.settings:get_bool("creative_mode")
 	local function is_creative(name)
@@ -444,11 +442,11 @@ function core.explode_table_event(evt)
 			local c = tonumber(parts[3]:trim())
 			if type(r) == "number" and type(c) == "number"
 					and t ~= "INV" then
-				return {type=t, row=r, column=c}
+				return {type = t, row = r, column = c}
 			end
 		end
 	end
-	return {type="INV", row=0, column=0}
+	return {type = "INV", row = 0, column = 0}
 end
 
 --------------------------------------------------------------------------------
@@ -459,11 +457,11 @@ function core.explode_textlist_event(evt)
 			local t = parts[1]:trim()
 			local r = tonumber(parts[2]:trim())
 			if type(r) == "number" and t ~= "INV" then
-				return {type=t, index=r}
+				return {type = t, index = r}
 			end
 		end
 	end
-	return {type="INV", index=0}
+	return {type = "INV", index = 0}
 end
 
 --------------------------------------------------------------------------------
@@ -568,7 +566,7 @@ end
 
 
 function table.insert_all(t, other)
-	for i=1, #other do
+	for i = 1, #other do
 		t[#t + 1] = other[i]
 	end
 	return t
@@ -593,7 +591,7 @@ end
 if INIT == "client" or INIT == "mainmenu" then
 	function fgettext_ne(text, ...)
 		text = core.gettext(text)
-		local arg = {n=select('#', ...), ...}
+		local arg = {n = select('#', ...), ...}
 		if arg.n >= 1 then
 			-- Insert positional parameters ($1, $2, ...)
 			local result = ''
@@ -604,10 +602,9 @@ if INIT == "client" or INIT == "mainmenu" then
 					result = result .. text:sub(pos)
 					pos = text:len() + 1
 				else
-					local paramindex =
-						tonumber(text:sub(newpos+1, newpos+1))
-					result = result .. text:sub(pos, newpos-1)
-						.. tostring(arg[paramindex])
+					local paramindex = tonumber(text:sub(newpos + 1, newpos + 1))
+					result = result .. text:sub(pos, newpos - 1) ..
+						tostring(arg[paramindex])
 					pos = newpos + 2
 				end
 			end
@@ -662,7 +659,7 @@ function core.translate(textdomain, str, ...)
 	else
 		start_seq = ESCAPE_CHAR .. "(T@" .. textdomain .. ")"
 	end
-	local arg = {n=select('#', ...), ...}
+	local arg = {n = select('#', ...), ...}
 	local end_seq = ESCAPE_CHAR .. "E"
 	local arg_index = 1
 	local translated = str:gsub("@(.)", function(matched)
@@ -757,4 +754,4 @@ function core.privs_to_string(privs, delim)
 end
 
 assert(core.string_to_privs("a,b").b == true)
-assert(core.privs_to_string({a=true,b=true}) == "a,b")
+assert(core.privs_to_string({a = true, b = true}) == "a,b")
