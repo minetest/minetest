@@ -22,6 +22,29 @@ const vec3 artificialLightDirection = normalize(vec3(0.2, 1.0, -0.5));
 const float e = 2.718281828459;
 const float BS = 10.0;
 
+// These methods apply a gamma value to approximately convert a value from/to
+// sRGB colourspace
+float from_sRGB(float x)
+{
+	if (x < 0.0 || x > 1.0)
+		return x;
+	return pow(x, 2.2);
+}
+float to_sRGB(float x)
+{
+	if (x < 0.0 || x > 1.0)
+		return x;
+	return pow(x, 1.0 / 2.2);
+}
+vec3 from_sRGB_vec(vec3 v)
+{
+	return vec3(from_sRGB(v.r), from_sRGB(v.g), from_sRGB(v.b));
+}
+vec3 to_sRGB_vec(vec3 v)
+{
+	return vec3(to_sRGB(v.r), to_sRGB(v.g), to_sRGB(v.b));
+}
+
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
@@ -49,17 +72,36 @@ void main(void)
 		gl_Color.a * artificialLight.rgb);
 
 #if defined(ENABLE_DIRECTIONAL_SHADING) && !LIGHT_EMISSIVE
-	vec3 norm = normalize((mWorld * vec4(gl_Normal, 0.0)).xyz);
+	vec3 norm = normalize((mWorld * vec4(gl_Normal, 1.0)).xyz);
+
+	vec3 fakeLightDirection = lightDirection;
+	fakeLightDirection.y *= mix(0.5, 3, clamp(dot(lightDirection, vec3(0.0, 1.0, 0.0)) * 3, 0, 1));
+	fakeLightDirection = normalize(fakeLightDirection);
+
+	vec3 dir = fakeLightDirection;
+
+	float factor = clamp((dot(lightDirection, vec3(0.0, -1.0, 0.0)) - 0.3) * 5, 0, 1);
+	dir = mix(dir, vec3(0, 1, 0), factor);
 
 	// Lighting color
-	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + outdoorsRatio);
+	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + clamp(outdoorsRatio, 0.4f,1.0f));
+	resultLightColor = from_sRGB_vec(resultLightColor);
 
-	// ((resultLightColor * ((max(dot(normal, lightDirection), -0.2) + 0.2) / 1.2)* 0.6)) + 0.4;
-	resultLightColor = (resultLightColor * ((max(dot(norm, lightDirection), -0.2) + 0.2) * 0.5)) + 0.4;
+	float ambient_light = 0.3;
+	float directional_boost = 0.5 - abs(dot(norm, vec3(1,0,0))) * 0.5;
+	float directional_light = dot(norm, dir);
 
-	float artificialLightShading = ((dot(norm, artificialLightDirection) + 1.0) * 0.25) + 0.5;
+	directional_light = max(directional_light + directional_boost, 0.0);
+	directional_light *= (1.0 - ambient_light) / (1 + directional_boost);
+	resultLightColor = resultLightColor * directional_light + ambient_light;
 
-	color.rgb *= mix(gl_Color.rgb * artificialLightShading, resultLightColor, outdoorsRatio);
+	directional_light = dot(norm, artificialLightDirection);
+	directional_light = max(directional_light + 0.5, 0.0);
+	directional_light *= (1.0 - ambient_light) / 1.5;
+	float artificialLightShading = directional_light + ambient_light;
+
+	color.rgb *= to_sRGB_vec(mix(resultLightColor,
+			from_sRGB_vec(artificialLight.rgb) * artificialLightShading, outdoorsRatio));
 #endif
 
         // Emphase blue a bit in darker places

@@ -224,24 +224,34 @@ float disp_z;
 	color.a = 1;
 
 #if defined(ENABLE_DIRECTIONAL_SHADING) && !LIGHT_EMISSIVE
+	vec3 fakeLightDirection = lightDirection;
+	fakeLightDirection.y *= mix(0.5, 3, clamp(dot(lightDirection, vec3(0.0, 1.0, 0.0)) * 3, 0, 1));
+	fakeLightDirection = normalize(fakeLightDirection);
+
+	vec3 dir = fakeLightDirection;
+
+	float factor = clamp((dot(lightDirection, vec3(0.0, -1.0, 0.0)) - 0.3) * 5, 0, 1);
+	dir = mix(dir, vec3(0, 1, 0), factor);
+
 	// Lighting color
-	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio);
+	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + clamp(nightRatio, 0.4f,1.0f));
 	resultLightColor = from_sRGB_vec(resultLightColor);
 
-	// ((resultLightColor * ((max(dot(normal, lightDirection), -0.2) + 0.2) / 1.2)* 0.6)) + 0.4;
 	float ambient_light = 0.3;
-	float directional_light = dot(alwaysNormal, lightDirection);
-	directional_light = max(directional_light + 0.2, 0.0);
-	directional_light *= (1.0 - ambient_light) / 1.2;
+	float directional_boost = 0.5 - abs(dot(alwaysNormal, vec3(1,0,0))) * 0.5;
+	float directional_light = dot(alwaysNormal, dir);
+
+	directional_light = max(directional_light + directional_boost, 0.0);
+	directional_light *= (1.0 - ambient_light) / (1 + directional_boost);
 	resultLightColor = resultLightColor * directional_light + ambient_light;
 
 	directional_light = dot(alwaysNormal, artificialLightDirection);
 	directional_light = max(directional_light + 0.5, 0.0);
-	directional_light *= (1.0 - 0.3) / 1.5;
-	float artificialLightShading = directional_light + 0.3;
+	directional_light *= (1.0 - ambient_light) / 1.5;
+	float artificialLightShading = directional_light + ambient_light;
 
 	color.rgb *= to_sRGB_vec(mix(resultLightColor,
-		from_sRGB_vec(artificialLight.rgb) * artificialLightShading, nightRatio));
+			from_sRGB_vec(artificialLight.rgb) * artificialLightShading, nightRatio));
 #endif
 
 	// Emphase blue a bit in darker places
@@ -249,5 +259,6 @@ float disp_z;
 	float brightness = (color.r + color.g + color.b) / 3;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
+
 	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
 }

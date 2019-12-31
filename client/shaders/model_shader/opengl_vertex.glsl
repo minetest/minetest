@@ -74,30 +74,39 @@ void main(void)
 		ambientColor.a * artificialLight.rgb);
 
 #if defined(ENABLE_DIRECTIONAL_SHADING) && !LIGHT_EMISSIVE
-	vec3 norm = normalize((mWorld * vec4(gl_Normal, 0.0)).xyz);
-
-	// Lighting color
-	vec3 resultLightColor = ((lightColor.rgb * ambientColor.a) + outdoorsRatio);
-	resultLightColor = from_sRGB_vec(resultLightColor);
-
 	vec3 alwaysNormal = gl_Normal;
 	if (alwaysNormal.x * alwaysNormal.x + alwaysNormal.y * alwaysNormal.y + alwaysNormal.z * alwaysNormal.z < 0.01) {
 		alwaysNormal = vec3(0.0, 1.0, 0.0);
 	}
 
+	vec3 fakeLightDirection = lightDirection;
+	fakeLightDirection.y *= mix(0.5, 3, clamp(dot(lightDirection, vec3(0.0, 1.0, 0.0)) * 3, 0, 1));
+	fakeLightDirection = normalize(fakeLightDirection);
+
+	vec3 dir = fakeLightDirection;
+
+	float factor = clamp((dot(lightDirection, vec3(0.0, -1.0, 0.0)) - 0.3) * 5, 0, 1);
+	dir = mix(dir, vec3(0, 1, 0), factor);
+
+	// Lighting color
+	vec3 resultLightColor = ((lightColor.rgb * ambientColor.a) + clamp(outdoorsRatio, 0.4f,1.0f));
+	resultLightColor = from_sRGB_vec(resultLightColor);
+
 	float ambient_light = 0.3;
-	float directional_light = dot(alwaysNormal, lightDirection);
-	directional_light = max(directional_light + 0.2, 0.0);
-	directional_light *= (1.0 - ambient_light) / 1.2;
+	float directional_boost = 0.5 - abs(dot(alwaysNormal, vec3(1,0,0))) * 0.5;
+	float directional_light = dot(alwaysNormal, dir);
+
+	directional_light = max(directional_light + directional_boost, 0.0);
+	directional_light *= (1.0 - ambient_light) / (1 + directional_boost);
 	resultLightColor = resultLightColor * directional_light + ambient_light;
 
 	directional_light = dot(alwaysNormal, artificialLightDirection);
 	directional_light = max(directional_light + 0.5, 0.0);
-	directional_light *= (1.0 - 0.3) / 1.5;
-	float artificialLightShading = directional_light + 0.3;
+	directional_light *= (1.0 - ambient_light) / 1.5;
+	float artificialLightShading = directional_light + ambient_light;
 
 	color.rgb *= to_sRGB_vec(mix(resultLightColor,
-		from_sRGB_vec(artificialLight.rgb) * artificialLightShading, nightRatio));
+			from_sRGB_vec(artificialLight.rgb) * artificialLightShading, outdoorsRatio));
 #endif
 
         // Emphase blue a bit in darker places

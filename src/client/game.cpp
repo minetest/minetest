@@ -520,12 +520,10 @@ public:
  			1.0f };
 		light_color[3] = 1.0f - (time_of_day / 1000.0f);
 		if (daynight_ratio > 320 && daynight_ratio < 470) { // Moon light
-			sun_angle -= M_PI * (1.0f - ((daynight_ratio - 320) / 150.0f));
 
 			light_color[1] *= 0.8f; // Reduced green and blue
 			light_color[2] *= 0.9f;
 		} else if (daynight_ratio <= 320) {
-			sun_angle -= M_PI;
 
 			light_color[0] *= 0.8f; // Reduced red and green
 			light_color[1] *= 0.9f;
