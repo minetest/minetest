@@ -68,6 +68,8 @@ public:
 	virtual ~IShaderConstantSetter() = default;
 	virtual void onSetConstants(video::IMaterialRendererServices *services,
 			bool is_highlevel) = 0;
+	virtual void onSetMaterial(const video::SMaterial& material)
+	{ }
 };
 
 

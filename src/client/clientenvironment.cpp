@@ -32,9 +32,65 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "voxelalgorithms.h"
 #include "settings.h"
+#include "shader.h"
 #include "content_cao.h"
 #include <algorithm>
 #include "client/renderingengine.h"
+
+/*
+	CAOShaderConstantSetter
+*/
+
+//! Shader constant setter for passing material ambient color to the CAO model_shader
+class CAOShaderConstantSetter : public IShaderConstantSetter
+{
+public:
+
+	CAOShaderConstantSetter() :
+		m_ambient_color_setting("ambientColor")
+	{}
+
+	~CAOShaderConstantSetter()
+	{}
+
+	virtual void onSetConstants(video::IMaterialRendererServices *services,
+			bool is_highlevel) override
+	{
+		if (!is_highlevel)
+			return;
+
+		// Ambient color
+		video::SColorf ambient_colorf(m_ambient_color);
+		float ambientcolorfa[4] = {
+			ambient_colorf.r,
+			ambient_colorf.g,
+			ambient_colorf.b,
+			ambient_colorf.a,
+		};
+		m_ambient_color_setting.set(ambientcolorfa, services);
+	}
+
+	virtual void onSetMaterial(const video::SMaterial& material) override
+	{
+		m_ambient_color = material.AmbientColor;
+	}
+
+private:
+	video::SColor m_ambient_color;
+	CachedPixelShaderSetting<float, 4> m_ambient_color_setting;
+};
+
+class CAOShaderConstantSetterFactory : public IShaderConstantSetterFactory
+{
+public:
+	CAOShaderConstantSetterFactory()
+	{}
+
+	virtual IShaderConstantSetter* create()
+	{
+		return new CAOShaderConstantSetter();
+	}
+};
 
 /*
 	ClientEnvironment
@@ -47,6 +103,8 @@ ClientEnvironment::ClientEnvironment(ClientMap *map,
 	m_texturesource(texturesource),
 	m_client(client)
 {
+	IWritableShaderSource *shdrsrc = (IWritableShaderSource *)m_client->getShaderSource();
+	shdrsrc->addShaderConstantSetterFactory(new CAOShaderConstantSetterFactory());
 }
 
 ClientEnvironment::~ClientEnvironment()
@@ -288,19 +346,22 @@ void ClientEnvironment::step(float dtime)
 		if (update_lighting) {
 			// Update lighting
 			u8 light = 0;
+			u8 ratio = 0; // No artificial light
 			bool pos_ok;
 
 			// Get node at head
 			v3s16 p = cao->getLightPosition();
 			MapNode n = this->m_map->getNode(p, &pos_ok);
-			if (pos_ok)
+			if (pos_ok) {
 				light = n.getLightBlend(day_night_ratio, m_client->ndef());
-			else
+
+				const ContentFeatures &f = m_client->ndef()->get(n);
+				ratio = get_artificial_light_ratio(n, f);
+			} else {
 				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
+			}
 
-			const ContentFeatures &f = m_client->ndef()->get(n);
-
-			cao->updateLight(light, get_artificial_light_ratio(n, f));
+			cao->updateLight(light, ratio);
 		}
 	};
 
@@ -370,17 +431,23 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 
 	// Update lighting immediately
 	u8 light = 0;
+	u8 ratio = 0; // No artificial light
 	bool pos_ok;
 
+	u32 day_night_ratio = getDayNightRatio();
 	// Get node at head
 	v3s16 p = object->getLightPosition();
 	MapNode n = m_map->getNode(p, &pos_ok);
-	if (pos_ok)
-		light = n.getLightBlend(getDayNightRatio(), m_client->ndef());
-	else
-		light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+	if (pos_ok) {
+		light = n.getLightBlend(day_night_ratio, m_client->ndef());
 
-	object->updateLight(light, 255);
+		const ContentFeatures &f = m_client->ndef()->get(n);
+		ratio = get_artificial_light_ratio(n, f);
+	} else {
+		light = blend_light(day_night_ratio, LIGHT_SUN, 0);
+	}
+
+	object->updateLight(light, ratio);
 
 	return object->getId();
 }

@@ -188,7 +188,7 @@ public:
 			delete setter;
 	}
 
-	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData)
+	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData) override
 	{
 		video::IVideoDriver *driver = services->getVideoDriver();
 		sanity_check(driver != NULL);
@@ -197,6 +197,12 @@ public:
 
 		for (IShaderConstantSetter *setter : m_setters)
 			setter->onSetConstants(services, is_highlevel);
+	}
+
+	virtual void OnSetMaterial(const video::SMaterial& material) override
+	{
+		for (IShaderConstantSetter *setter : m_setters)
+			setter->onSetMaterial(material);
 	}
 };
 

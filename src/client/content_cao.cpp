@@ -625,7 +625,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		setSceneNodeMaterial(m_spritenode, material_type);
 
 		u8 li = m_last_light;
-		m_spritenode->setColor(video::SColor(255,li,li,li));
+		m_spritenode->setColor(video::SColor(0, li, li, li));
 		m_spritenode->setSize(v2f(m_prop.visual_size.X,
 				m_prop.visual_size.Y) * BS);
 		{
@@ -640,7 +640,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		double dx = BS * m_prop.visual_size.X / 2;
 		double dy = BS * m_prop.visual_size.Y / 2;
 		u8 li = m_last_light;
-		video::SColor c(255, li, li, li);
+		video::SColor c(0, li, li, li);
 
 		{ // Front
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
@@ -723,7 +723,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 		m_meshnode->setScale(m_prop.visual_size);
 		u8 li = m_last_light;
-		setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
+		setMeshColor(m_meshnode->getMesh(), video::SColor(0, li, li, li));
 
 		setSceneNodeMaterial(m_meshnode, material_type);
 	} else if (m_prop.visual == "mesh") {
@@ -739,9 +739,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			u8 li = m_last_light;
 
 			// set vertex colors to ensure alpha is set
-			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(0, li, li, li));
 
-			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
+			setAnimatedMeshColor(m_animated_meshnode, video::SColor(0, li, li, li));
 
 			setSceneNodeMaterial(m_animated_meshnode, material_type);
 
@@ -772,7 +772,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 		m_wield_meshnode->setScale(m_prop.visual_size / 2.0f);
 		u8 li = m_last_light;
-		m_wield_meshnode->setColor(video::SColor(255, li, li, li));
+		m_wield_meshnode->setColor(video::SColor(0, li, li, li));
 	} else {
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 				<<"\" not supported"<<std::endl;
@@ -837,13 +837,41 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos, u8 artificial_light_ratio)
 		m_last_artificial_light_ratio = artificial_light_ratio;
 		video::SColor color(artificial_light_ratio,li,li,li);
 		if (m_meshnode) {
-			setMeshColor(m_meshnode->getMesh(), color);
+			if (m_enable_shaders) {
+				for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
+					video::SMaterial& material = m_meshnode->getMaterial(i);
+					material.AmbientColor = color;
+				}
+			} else {
+				setMeshColor(m_meshnode->getMesh(), color);
+			}
 		} else if (m_animated_meshnode) {
-			setAnimatedMeshColor(m_animated_meshnode, color);
+			if (m_enable_shaders) {
+				for (u32 i = 0; i < m_animated_meshnode->getMaterialCount(); ++i) {
+					video::SMaterial& material = m_animated_meshnode->getMaterial(i);
+					material.AmbientColor = color;
+				}
+			} else {
+				setAnimatedMeshColor(m_animated_meshnode, color);
+			}
 		} else if (m_wield_meshnode) {
-			m_wield_meshnode->setColor(color);
+			if (m_enable_shaders) {
+				for (u32 i = 0; i < m_wield_meshnode->getMaterialCount(); ++i) {
+					video::SMaterial& material = m_wield_meshnode->getMaterial(i);
+					material.AmbientColor = color;
+				}
+			} else {
+				m_wield_meshnode->setColor(color);
+			}
 		} else if (m_spritenode) {
-			m_spritenode->setColor(color);
+			if (m_enable_shaders) {
+				for (u32 i = 0; i < m_wield_meshnode->getMaterialCount(); ++i) {
+					video::SMaterial& material = m_wield_meshnode->getMaterial(i);
+					material.AmbientColor = color;
+				}
+			} else {
+				m_spritenode->setColor(color);
+			}
 		}
 	}
 }
@@ -1147,6 +1175,10 @@ void GenericCAO::updateTextures(std::string mod)
 
 	video::E_MATERIAL_TYPE material_type = (m_prop.use_texture_alpha) ?
 		video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+
+	if (m_enable_shaders) {
+		material_type = m_material_type;
+	}
 
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {
