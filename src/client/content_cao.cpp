@@ -567,9 +567,10 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 }
 
-void GenericCAO::setSceneNodeMaterial(scene::ISceneNode *node,
-		video::E_MATERIAL_TYPE material_type)
+void GenericCAO::setSceneNodeMaterial(video::E_MATERIAL_TYPE material_type)
 {
+	scene::ISceneNode *node = getSceneNode();
+
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 	node->setMaterialFlag(video::EMF_FOG_ENABLE, true);
@@ -622,7 +623,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_spritenode->setMaterialTexture(0,
 				tsrc->getTextureForMesh("unknown_node.png"));
 
-		setSceneNodeMaterial(m_spritenode, material_type);
+		setSceneNodeMaterial(material_type);
 
 		u8 li = m_last_light;
 		m_spritenode->setColor(video::SColor(0, li, li, li));
@@ -725,7 +726,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		u8 li = m_last_light;
 		setMeshColor(m_meshnode->getMesh(), video::SColor(0, li, li, li));
 
-		setSceneNodeMaterial(m_meshnode, material_type);
+		setSceneNodeMaterial(material_type);
 	} else if (m_prop.visual == "mesh") {
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
@@ -743,7 +744,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 			setAnimatedMeshColor(m_animated_meshnode, video::SColor(0, li, li, li));
 
-			setSceneNodeMaterial(m_animated_meshnode, material_type);
+			setSceneNodeMaterial(material_type);
 
 			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 				m_prop.backface_culling);
@@ -836,40 +837,20 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos, u8 artificial_light_ratio)
 		m_last_light = li;
 		m_last_artificial_light_ratio = artificial_light_ratio;
 		video::SColor color(artificial_light_ratio,li,li,li);
-		if (m_meshnode) {
-			if (m_enable_shaders) {
-				for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
-					video::SMaterial& material = m_meshnode->getMaterial(i);
-					material.AmbientColor = color;
-				}
-			} else {
+		if (m_enable_shaders) {
+			scene::ISceneNode *node = getSceneNode();
+			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
+				video::SMaterial& material = node->getMaterial(i);
+				material.AmbientColor = color;
+			}
+		} else {
+			if (m_meshnode) {
 				setMeshColor(m_meshnode->getMesh(), color);
-			}
-		} else if (m_animated_meshnode) {
-			if (m_enable_shaders) {
-				for (u32 i = 0; i < m_animated_meshnode->getMaterialCount(); ++i) {
-					video::SMaterial& material = m_animated_meshnode->getMaterial(i);
-					material.AmbientColor = color;
-				}
-			} else {
+			} else if (m_animated_meshnode) {
 				setAnimatedMeshColor(m_animated_meshnode, color);
-			}
-		} else if (m_wield_meshnode) {
-			if (m_enable_shaders) {
-				for (u32 i = 0; i < m_wield_meshnode->getMaterialCount(); ++i) {
-					video::SMaterial& material = m_wield_meshnode->getMaterial(i);
-					material.AmbientColor = color;
-				}
-			} else {
+			} else if (m_wield_meshnode) {
 				m_wield_meshnode->setColor(color);
-			}
-		} else if (m_spritenode) {
-			if (m_enable_shaders) {
-				for (u32 i = 0; i < m_wield_meshnode->getMaterialCount(); ++i) {
-					video::SMaterial& material = m_wield_meshnode->getMaterial(i);
-					material.AmbientColor = color;
-				}
-			} else {
+			} else if (m_spritenode) {
 				m_spritenode->setColor(color);
 			}
 		}
