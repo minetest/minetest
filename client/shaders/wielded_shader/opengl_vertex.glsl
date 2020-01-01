@@ -84,7 +84,7 @@ void main(void)
 	dir = mix(dir, vec3(0, 1, 0), factor);
 
 	// Lighting color
-	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + clamp(outdoorsRatio, 0.4f,1.0f));
+	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + clamp(outdoorsRatio, 0.4f * factor,1.0f));
 	resultLightColor = from_sRGB_vec(resultLightColor);
 
 	float ambient_light = 0.3;
@@ -100,8 +100,8 @@ void main(void)
 	directional_light *= (1.0 - ambient_light) / 1.5;
 	float artificialLightShading = directional_light + ambient_light;
 
-	color.rgb *= to_sRGB_vec(mix(resultLightColor,
-			from_sRGB_vec(artificialLight.rgb) * artificialLightShading, outdoorsRatio));
+	color.rgb *= to_sRGB_vec(max(resultLightColor,
+			from_sRGB_vec(artificialLight.rgb) * artificialLightShading * outdoorsRatio));
 #endif
 
         // Emphase blue a bit in darker places
