@@ -5781,14 +5781,24 @@ object you are working with still exists.
 * `set_texture_mod(mod)`
 * `get_texture_mod()` returns current texture modifier
 * `set_sprite(p, num_frames, framelength, select_horiz_by_yawpitch)`
-    * Select sprite from spritesheet with optional animation and Dungeon Master
-      style texture selection based on yaw relative to camera
-    * `p`: {x=number, y=number}, the coordinate of the first frame
-      (x: column, y: row), default: `{x=0, y=0}`
-    * `num_frames`: number, default: `1`
+    * Select sprite from spritesheet with optional animation.
+      Used only when visual = "sprite" and used along textures to set the
+      spritesheet to use and spritediv to get the size of each frame.
+      A spritesheet is animated from top to bottom and may use multiple columns
+      to show different faces when `select_horiz_by_yawpitch` is `true`.
+    * `p`: {x=number, y=number}, the coordinate of the first frame to use for
+      this sprite (x: column, y: row), default: `{x=0, y=0}`
+    * `num_frames`: number, default: `1`, the number of frames (rows) used by
+       the animation.
     * `framelength`: number, default: `0.2`
-    * `select_horiz_by_yawpitch`: boolean, this was once used for the Dungeon
-      Master mob, default: `false`
+    * `select_horiz_by_yawpitch`: when `false` (default), only the first column
+      is used no matter the viewing angle. When `true` 6 columns are used:
+        * First column:  subject looking to the right
+        * Second column: subject facing the camera
+        * Third column:  subject looking to the left
+        * Fourth column: subject backing the camera
+        * Fifth column:  subject viewed from above
+        * Sixth column:  subject viewed from below
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
     * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
     * `frame_speed`: number, default: `15.0`
