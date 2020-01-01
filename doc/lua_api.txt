@@ -5778,6 +5778,17 @@ object you are working with still exists.
   successful.
 * `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
+* `set_texture_mod(mod)`
+* `get_texture_mod()` returns current texture modifier
+* `set_sprite(p, num_frames, framelength, select_horiz_by_yawpitch)`
+    * Select sprite from spritesheet with optional animation and Dungeon Master
+      style texture selection based on yaw relative to camera
+    * `p`: {x=number, y=number}, the coordinate of the first frame
+      (x: column, y: row), default: `{x=0, y=0}`
+    * `num_frames`: number, default: `1`
+    * `framelength`: number, default: `0.2`
+    * `select_horiz_by_yawpitch`: boolean, this was once used for the Dungeon
+      Master mob, default: `false`
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
     * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
     * `frame_speed`: number, default: `15.0`
@@ -5838,17 +5849,6 @@ object you are working with still exists.
 * `get_rotation()`: returns the rotation, a vector (radians)
 * `set_yaw(radians)`: sets the yaw (heading).
 * `get_yaw()`: returns number in radians
-* `set_texture_mod(mod)`
-* `get_texture_mod()` returns current texture modifier
-* `set_sprite(p, num_frames, framelength, select_horiz_by_yawpitch)`
-    * Select sprite from spritesheet with optional animation and Dungeon Master
-      style texture selection based on yaw relative to camera
-    * `p`: {x=number, y=number}, the coordinate of the first frame
-      (x: column, y: row), default: `{x=0, y=0}`
-    * `num_frames`: number, default: `1`
-    * `framelength`: number, default: `0.2`
-    * `select_horiz_by_yawpitch`: boolean, this was once used for the Dungeon
-      Master mob, default: `false`
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 

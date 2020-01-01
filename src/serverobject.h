@@ -151,6 +151,12 @@ public:
 	{ static ItemGroupList rv; return rv; }
 	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
 	{}
+	virtual void setTextureMod(std::string &mod)
+	{}
+	virtual std::string getTextureMod()
+	{ return ""; }
+	virtual void setSprite(v2s16 p, int num_frames, float framelength, bool select_horiz_by_yawpitch)
+	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
 	{}
 	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop)

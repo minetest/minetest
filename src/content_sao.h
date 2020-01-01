@@ -51,6 +51,10 @@ public:
 
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	const ItemGroupList &getArmorGroups() const;
+	void setTextureMod(const std::string &mod);
+	std::string getTextureMod() const;
+	void setSprite(v2s16 p, int num_frames, float framelength,
+			bool select_horiz_by_yawpitch);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
 	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
 	void setAnimationSpeed(float frame_speed);
@@ -78,6 +82,7 @@ protected:
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent = false;
 
+	std::string m_current_texture_modifier = "";
 	v2f m_animation_range;
 	float m_animation_speed = 0.0f;
 	float m_animation_blend = 0.0f;
@@ -144,10 +149,6 @@ public:
 	void setAcceleration(v3f acceleration);
 	v3f getAcceleration();
 
-	void setTextureMod(const std::string &mod);
-	std::string getTextureMod() const;
-	void setSprite(v2s16 p, int num_frames, float framelength,
-			bool select_horiz_by_yawpitch);
 	std::string getName();
 	bool getCollisionBox(aabb3f *toset) const;
 	bool getSelectionBox(aabb3f *toset) const;
@@ -168,7 +169,6 @@ private:
 	v3f m_last_sent_rotation;
 	float m_last_sent_position_timer = 0.0f;
 	float m_last_sent_move_precision = 0.0f;
-	std::string m_current_texture_modifier = "";
 };
 
 /*

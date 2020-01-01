@@ -139,6 +139,34 @@ const ItemGroupList &UnitSAO::getArmorGroups() const
 	return m_armor_groups;
 }
 
+void UnitSAO::setTextureMod(const std::string &mod)
+{
+	std::string str = gob_cmd_set_texture_mod(mod);
+	m_current_texture_modifier = mod;
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), true, str);
+	m_messages_out.push(aom);
+}
+
+std::string UnitSAO::getTextureMod() const
+{
+	return m_current_texture_modifier;
+}
+
+void UnitSAO::setSprite(v2s16 p, int num_frames, float framelength,
+		bool select_horiz_by_yawpitch)
+{
+	std::string str = gob_cmd_set_sprite(
+		p,
+		num_frames,
+		framelength,
+		select_horiz_by_yawpitch
+	);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), true, str);
+	m_messages_out.push(aom);
+}
+
 void UnitSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
 {
 	// store these so they can be updated to clients
@@ -748,34 +776,6 @@ void LuaEntitySAO::setAcceleration(v3f acceleration)
 v3f LuaEntitySAO::getAcceleration()
 {
 	return m_acceleration;
-}
-
-void LuaEntitySAO::setTextureMod(const std::string &mod)
-{
-	std::string str = gob_cmd_set_texture_mod(mod);
-	m_current_texture_modifier = mod;
-	// create message and add to list
-	ActiveObjectMessage aom(getId(), true, str);
-	m_messages_out.push(aom);
-}
-
-std::string LuaEntitySAO::getTextureMod() const
-{
-	return m_current_texture_modifier;
-}
-
-void LuaEntitySAO::setSprite(v2s16 p, int num_frames, float framelength,
-		bool select_horiz_by_yawpitch)
-{
-	std::string str = gob_cmd_set_sprite(
-		p,
-		num_frames,
-		framelength,
-		select_horiz_by_yawpitch
-	);
-	// create message and add to list
-	ActiveObjectMessage aom(getId(), true, str);
-	m_messages_out.push(aom);
 }
 
 std::string LuaEntitySAO::getName()

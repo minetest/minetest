@@ -461,6 +461,57 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	return 1;
 }
 
+// set_texture_mod(self, mod)
+int ObjectRef::l_set_texture_mod(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL) return 0;
+	// Do it
+	std::string mod = luaL_checkstring(L, 2);
+	co->setTextureMod(mod);
+	return 0;
+}
+
+// get_texture_mod(self)
+int ObjectRef::l_get_texture_mod(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL) return 0;
+	// Do it
+	std::string mod = co->getTextureMod();
+	lua_pushstring(L, mod.c_str());
+	return 1;
+}
+
+// set_sprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
+//           select_horiz_by_yawpitch=false)
+int ObjectRef::l_set_sprite(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL) return 0;
+	// Do it
+	v2s16 p(0,0);
+	if (!lua_isnil(L, 2))
+		p = readParam<v2s16>(L, 2);
+	int num_frames = 1;
+	if (!lua_isnil(L, 3))
+		num_frames = lua_tonumber(L, 3);
+	float framelength = 0.2;
+	if (!lua_isnil(L, 4))
+		framelength = lua_tonumber(L, 4);
+	bool select_horiz_by_yawpitch = false;
+	if (!lua_isnil(L, 5))
+		select_horiz_by_yawpitch = readParam<bool>(L, 5);
+	co->setSprite(p, num_frames, framelength, select_horiz_by_yawpitch);
+	return 0;
+}
+
 // set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
 int ObjectRef::l_set_animation(lua_State *L)
 {
@@ -977,57 +1028,6 @@ int ObjectRef::l_get_yaw(lua_State *L)
 	float yaw = co->getRotation().Y * core::DEGTORAD;
 	lua_pushnumber(L, yaw);
 	return 1;
-}
-
-// set_texture_mod(self, mod)
-int ObjectRef::l_set_texture_mod(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
-	// Do it
-	std::string mod = luaL_checkstring(L, 2);
-	co->setTextureMod(mod);
-	return 0;
-}
-
-// get_texture_mod(self)
-int ObjectRef::l_get_texture_mod(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
-	// Do it
-	std::string mod = co->getTextureMod();
-	lua_pushstring(L, mod.c_str());
-	return 1;
-}
-
-// set_sprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
-//           select_horiz_by_yawpitch=false)
-int ObjectRef::l_set_sprite(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
-	// Do it
-	v2s16 p(0,0);
-	if (!lua_isnil(L, 2))
-		p = readParam<v2s16>(L, 2);
-	int num_frames = 1;
-	if (!lua_isnil(L, 3))
-		num_frames = lua_tonumber(L, 3);
-	float framelength = 0.2;
-	if (!lua_isnil(L, 4))
-		framelength = lua_tonumber(L, 4);
-	bool select_horiz_by_yawpitch = false;
-	if (!lua_isnil(L, 5))
-		select_horiz_by_yawpitch = readParam<bool>(L, 5);
-	co->setSprite(p, num_frames, framelength, select_horiz_by_yawpitch);
-	return 0;
 }
 
 // DEPRECATED
