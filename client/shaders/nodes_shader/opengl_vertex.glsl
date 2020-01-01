@@ -234,24 +234,26 @@ float disp_z;
 	dir = mix(dir, vec3(0, 1, 0), factor);
 
 	// Lighting color
-	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + clamp(nightRatio, 0.4f,1.0f));
+	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + clamp(nightRatio, 0.4f * factor, 1.0f));
 	resultLightColor = from_sRGB_vec(resultLightColor);
 
 	float ambient_light = 0.3;
 	float directional_boost = 0.5 - abs(dot(alwaysNormal, vec3(1,0,0))) * 0.5;
-	float directional_light = dot(alwaysNormal, dir);
 
+	float directional_light = dot(alwaysNormal, dir);
 	directional_light = max(directional_light + directional_boost, 0.0);
 	directional_light *= (1.0 - ambient_light) / (1 + directional_boost);
 	resultLightColor = resultLightColor * directional_light + ambient_light;
 
+	ambient_light = 0.3;
+	directional_boost = 0.5;
 	directional_light = dot(alwaysNormal, artificialLightDirection);
-	directional_light = max(directional_light + 0.5, 0.0);
-	directional_light *= (1.0 - ambient_light) / 1.5;
+	directional_light = max(directional_light + directional_boost, 0.0);
+	directional_light *= (1.0 - ambient_light) / (1 + directional_boost);
 	float artificialLightShading = directional_light + ambient_light;
 
-	color.rgb *= to_sRGB_vec(mix(resultLightColor,
-			from_sRGB_vec(artificialLight.rgb) * artificialLightShading, nightRatio));
+	color.rgb *= to_sRGB_vec(max(resultLightColor,
+			from_sRGB_vec(artificialLight.rgb) * artificialLightShading * nightRatio));
 #endif
 
 	// Emphase blue a bit in darker places
