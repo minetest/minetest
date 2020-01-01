@@ -68,9 +68,12 @@ The game directory can contain the following files:
       e.g. `allowed_mapgens = v5,v6,flat`
       Mapgens not in this list are removed from the list of mapgens for
       the game.
+      If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
       These mapgens are removed from the list of mapgens for the game.
+      When both `allowed_mapgens` and `disallowed_mapgens` are both
+      specified, `allowed` is applied before `disallowed'.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
