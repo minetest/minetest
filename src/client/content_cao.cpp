@@ -425,6 +425,7 @@ const bool GenericCAO::isImmortal()
 	return itemgroup_get(getGroups(), "immortal");
 }
 
+//! Get a pointer to the ISceneNode used for rendering this object, or nullptr
 scene::ISceneNode *GenericCAO::getSceneNode() const
 {
 	if (m_meshnode) {
@@ -442,7 +443,8 @@ scene::ISceneNode *GenericCAO::getSceneNode() const
 	if (m_spritenode) {
 		return m_spritenode;
 	}
-	return NULL;
+
+	return nullptr;
 }
 
 scene::IAnimatedMeshSceneNode *GenericCAO::getAnimatedMeshSceneNode() const

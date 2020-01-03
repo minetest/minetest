@@ -170,6 +170,7 @@ public:
 
 	const bool isImmortal();
 
+	//! Get a pointer to the ISceneNode used for rendering this object, or nullptr
 	scene::ISceneNode *getSceneNode() const;
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;
