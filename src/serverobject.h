@@ -153,7 +153,7 @@ public:
 	{}
 	virtual void setTextureMod(const std::string &mod)
 	{}
-	virtual std::string getTextureMod()
+	virtual std::string getTextureMod() const
 	{ return ""; }
 	virtual void setSprite(v2s16 p, int num_frames, float framelength, bool select_horiz_by_yawpitch)
 	{}

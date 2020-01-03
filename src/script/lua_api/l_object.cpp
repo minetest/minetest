@@ -2294,6 +2294,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_armor_groups),
 	luamethod(ObjectRef, get_armor_groups),
 	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
+	luamethod(ObjectRef, get_texture_mod),
 	luamethod_aliased(ObjectRef, set_sprite, setsprite),
 	luamethod(ObjectRef, set_sprite_framelength),
 	luamethod(ObjectRef, set_animation),
