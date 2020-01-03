@@ -37,7 +37,8 @@ enum GenericCMD {
 	GENERIC_CMD_SET_PHYSICS_OVERRIDE,
 	GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES,
 	GENERIC_CMD_SPAWN_INFANT,
-	GENERIC_CMD_SET_ANIMATION_SPEED
+	GENERIC_CMD_SET_ANIMATION_SPEED,
+	GENERIC_CMD_SET_SPRITE_FRAMELENGTH
 };
 
 #include "object_properties.h"
@@ -62,6 +63,8 @@ std::string gob_cmd_set_sprite(
 	f32 framelength,
 	bool select_horiz_by_yawpitch
 );
+
+std::string gob_cmd_set_sprite_framelength(float framelength);
 
 std::string gob_cmd_punched(u16 result_hp);
 

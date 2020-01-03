@@ -1515,6 +1515,12 @@ void GenericCAO::processMessage(const std::string &data)
 		m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
 
 		updateTexturePos();
+	} else if (cmd == GENERIC_CMD_SET_SPRITE_FRAMELENGTH) {
+		float frame_length = readF32(is);
+		// When reducing length, ignore extra time to prevent skipping a frame
+		if (m_anim_timer > frame_length)
+			m_anim_timer = frame_length;
+		m_anim_framelength = frame_length;
 	} else if (cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE) {
 		float override_speed = readF32(is);
 		float override_jump = readF32(is);

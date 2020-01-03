@@ -132,6 +132,9 @@ private:
 	//           select_horiz_by_yawpitch=false)
 	static int l_set_sprite(lua_State *L);
 
+	// set_sprite_framelength(self, framelength)
+	static int l_set_sprite_framelength(lua_State *L);
+
 	// set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
 	static int l_set_animation(lua_State *L);
 

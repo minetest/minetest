@@ -167,6 +167,14 @@ void UnitSAO::setSprite(v2s16 p, int num_frames, float framelength,
 	m_messages_out.push(aom);
 }
 
+void UnitSAO::setSpriteFramelength(float framelength)
+{
+	std::string str = gob_cmd_set_sprite_framelength(framelength);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), true, str);
+	m_messages_out.push(aom);
+}
+
 void UnitSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
 {
 	// store these so they can be updated to clients

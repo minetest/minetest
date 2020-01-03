@@ -92,6 +92,16 @@ std::string gob_cmd_set_sprite(
 	return os.str();
 }
 
+std::string gob_cmd_set_sprite_framelength(float frame_length)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, GENERIC_CMD_SET_SPRITE_FRAMELENGTH);
+	// parameters
+	writeF32(os, frame_length);
+	return os.str();
+}
+
 std::string gob_cmd_punched(u16 result_hp)
 {
 	std::ostringstream os(std::ios::binary);

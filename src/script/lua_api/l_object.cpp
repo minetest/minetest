@@ -512,6 +512,24 @@ int ObjectRef::l_set_sprite(lua_State *L)
 	return 0;
 }
 
+// set_sprite_framelength(self, framelength)
+int ObjectRef::l_set_sprite_framelength(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL) return 0;
+	// Do it
+	if (!lua_isnil(L, 2)) {
+		float framelength = lua_tonumber(L, 2);
+		co->setSpriteFramelength(framelength);
+		lua_pushboolean(L, true);
+	} else {
+		lua_pushboolean(L, false);
+	}
+	return 1;
+}
+
 // set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
 int ObjectRef::l_set_animation(lua_State *L)
 {
@@ -2275,6 +2293,9 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_wielded_item),
 	luamethod(ObjectRef, set_armor_groups),
 	luamethod(ObjectRef, get_armor_groups),
+	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
+	luamethod_aliased(ObjectRef, set_sprite, setsprite),
+	luamethod(ObjectRef, set_sprite_framelength),
 	luamethod(ObjectRef, set_animation),
 	luamethod(ObjectRef, get_animation),
 	luamethod(ObjectRef, set_animation_frame_speed),
@@ -2297,8 +2318,6 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod_aliased(ObjectRef, get_yaw, getyaw),
 	luamethod(ObjectRef, set_rotation),
 	luamethod(ObjectRef, get_rotation),
-	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
-	luamethod_aliased(ObjectRef, set_sprite, setsprite),
 	luamethod(ObjectRef, get_entity_name),
 	luamethod(ObjectRef, get_luaentity),
 	// Player-only

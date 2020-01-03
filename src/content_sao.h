@@ -55,6 +55,7 @@ public:
 	std::string getTextureMod() const;
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
+	void setSpriteFramelength(float framelength);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
 	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
 	void setAnimationSpeed(float frame_speed);

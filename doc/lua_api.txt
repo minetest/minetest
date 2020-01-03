@@ -5799,6 +5799,8 @@ object you are working with still exists.
         * Fourth column: subject backing the camera
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
+* `set_sprite_framelength(framelength)`
+    * `framelength`: number, update the duration of each frame of the sprite.
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
     * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
     * `frame_speed`: number, default: `15.0`
