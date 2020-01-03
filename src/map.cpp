@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "rollback_interface.h"
 #include "environment.h"
-#include "reflowscan.h"
 #include "emerge.h"
 #include "mapgen/mapgen_v6.h"
 #include "mapgen/mg_biome.h"
@@ -45,6 +44,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-dummy.h"
 #include "database/database-sqlite3.h"
 #include "script/scripting_server.h"
+#include "liquidlogic.h"
+#include "liquidlogicclassic.h"
 #include <deque>
 #include <queue>
 #if USE_LEVELDB
@@ -67,6 +68,7 @@ Map::Map(std::ostream &dout, IGameDef *gamedef):
 	m_gamedef(gamedef),
 	m_nodedef(gamedef->ndef())
 {
+	m_liquid_logic = new LiquidLogicClassic(this, gamedef);
 }
 
 Map::~Map()
@@ -77,6 +79,8 @@ Map::~Map()
 	for (auto &sector : m_sectors) {
 		delete sector.second;
 	}
+
+	delete m_liquid_logic;
 }
 
 void Map::addEventReceiver(MapEventReceiver *event_receiver)
@@ -144,7 +148,7 @@ bool Map::isNodeUnderground(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	return block && block->getIsUnderground(); 
+	return block && block->getIsUnderground();
 }
 
 bool Map::isValidPosition(v3s16 p)
@@ -243,7 +247,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		if(is_valid_position &&
 				(m_nodedef->get(n2).isLiquid() ||
 				n2.getContent() == CONTENT_AIR))
-			m_transforming_liquid.push_back(p2);
+			transforming_liquid_add(p2);
 	}
 }
 
@@ -476,413 +480,14 @@ void Map::PrintInfo(std::ostream &out)
 	out<<"Map: ";
 }
 
-#define WATER_DROP_BOOST 4
-
-enum NeighborType : u8 {
-	NEIGHBOR_UPPER,
-	NEIGHBOR_SAME_LEVEL,
-	NEIGHBOR_LOWER
-};
-
-struct NodeNeighbor {
-	MapNode n;
-	NeighborType t;
-	v3s16 p;
-
-	NodeNeighbor()
-		: n(CONTENT_AIR), t(NEIGHBOR_SAME_LEVEL)
-	{ }
-
-	NodeNeighbor(const MapNode &node, NeighborType n_type, const v3s16 &pos)
-		: n(node),
-		  t(n_type),
-		  p(pos)
-	{ }
-};
-
 void Map::transforming_liquid_add(v3s16 p) {
-        m_transforming_liquid.push_back(p);
+	m_liquid_logic->addTransforming(p);
 }
 
 void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		ServerEnvironment *env)
 {
-	u32 loopcount = 0;
-	u32 initial_size = m_transforming_liquid.size();
-
-	/*if(initial_size != 0)
-		infostream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;*/
-
-	// list of nodes that due to viscosity have not reached their max level height
-	std::deque<v3s16> must_reflow;
-
-	std::vector<std::pair<v3s16, MapNode> > changed_nodes;
-
-	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
-	u32 loop_max = liquid_loop_max;
-
-#if 0
-
-	/* If liquid_loop_max is not keeping up with the queue size increase
-	 * loop_max up to a maximum of liquid_loop_max * dedicated_server_step.
-	 */
-	if (m_transforming_liquid.size() > loop_max * 2) {
-		// "Burst" mode
-		float server_step = g_settings->getFloat("dedicated_server_step");
-		if (m_transforming_liquid_loop_count_multiplier - 1.0 < server_step)
-			m_transforming_liquid_loop_count_multiplier *= 1.0 + server_step / 10;
-	} else {
-		m_transforming_liquid_loop_count_multiplier = 1.0;
-	}
-
-	loop_max *= m_transforming_liquid_loop_count_multiplier;
-#endif
-
-	while (m_transforming_liquid.size() != 0)
-	{
-		// This should be done here so that it is done when continue is used
-		if (loopcount >= initial_size || loopcount >= loop_max)
-			break;
-		loopcount++;
-
-		/*
-			Get a queued transforming liquid node
-		*/
-		v3s16 p0 = m_transforming_liquid.front();
-		m_transforming_liquid.pop_front();
-
-		MapNode n0 = getNode(p0);
-
-		/*
-			Collect information about current node
-		 */
-		s8 liquid_level = -1;
-		// The liquid node which will be placed there if
-		// the liquid flows into this node.
-		content_t liquid_kind = CONTENT_IGNORE;
-		// The node which will be placed there if liquid
-		// can't flow into this node.
-		content_t floodable_node = CONTENT_AIR;
-		const ContentFeatures &cf = m_nodedef->get(n0);
-		LiquidType liquid_type = cf.liquid_type;
-		switch (liquid_type) {
-			case LIQUID_SOURCE:
-				liquid_level = LIQUID_LEVEL_SOURCE;
-				liquid_kind = m_nodedef->getId(cf.liquid_alternative_flowing);
-				break;
-			case LIQUID_FLOWING:
-				liquid_level = (n0.param2 & LIQUID_LEVEL_MASK);
-				liquid_kind = n0.getContent();
-				break;
-			case LIQUID_NONE:
-				// if this node is 'floodable', it *could* be transformed
-				// into a liquid, otherwise, continue with the next node.
-				if (!cf.floodable)
-					continue;
-				floodable_node = n0.getContent();
-				liquid_kind = CONTENT_AIR;
-				break;
-		}
-
-		/*
-			Collect information about the environment
-		 */
-		const v3s16 *dirs = g_6dirs;
-		NodeNeighbor sources[6]; // surrounding sources
-		int num_sources = 0;
-		NodeNeighbor flows[6]; // surrounding flowing liquid nodes
-		int num_flows = 0;
-		NodeNeighbor airs[6]; // surrounding air
-		int num_airs = 0;
-		NodeNeighbor neutrals[6]; // nodes that are solid or another kind of liquid
-		int num_neutrals = 0;
-		bool flowing_down = false;
-		bool ignored_sources = false;
-		for (u16 i = 0; i < 6; i++) {
-			NeighborType nt = NEIGHBOR_SAME_LEVEL;
-			switch (i) {
-				case 1:
-					nt = NEIGHBOR_UPPER;
-					break;
-				case 4:
-					nt = NEIGHBOR_LOWER;
-					break;
-				default:
-					break;
-			}
-			v3s16 npos = p0 + dirs[i];
-			NodeNeighbor nb(getNode(npos), nt, npos);
-			const ContentFeatures &cfnb = m_nodedef->get(nb.n);
-			switch (m_nodedef->get(nb.n.getContent()).liquid_type) {
-				case LIQUID_NONE:
-					if (cfnb.floodable) {
-						airs[num_airs++] = nb;
-						// if the current node is a water source the neighbor
-						// should be enqueded for transformation regardless of whether the
-						// current node changes or not.
-						if (nb.t != NEIGHBOR_UPPER && liquid_type != LIQUID_NONE)
-							m_transforming_liquid.push_back(npos);
-						// if the current node happens to be a flowing node, it will start to flow down here.
-						if (nb.t == NEIGHBOR_LOWER)
-							flowing_down = true;
-					} else {
-						neutrals[num_neutrals++] = nb;
-						if (nb.n.getContent() == CONTENT_IGNORE) {
-							// If node below is ignore prevent water from
-							// spreading outwards and otherwise prevent from
-							// flowing away as ignore node might be the source
-							if (nb.t == NEIGHBOR_LOWER)
-								flowing_down = true;
-							else
-								ignored_sources = true;
-						}
-					}
-					break;
-				case LIQUID_SOURCE:
-					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
-					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = m_nodedef->getId(cfnb.liquid_alternative_flowing);
-					if (m_nodedef->getId(cfnb.liquid_alternative_flowing) != liquid_kind) {
-						neutrals[num_neutrals++] = nb;
-					} else {
-						// Do not count bottom source, it will screw things up
-						if(dirs[i].Y != -1)
-							sources[num_sources++] = nb;
-					}
-					break;
-				case LIQUID_FLOWING:
-					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
-					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = m_nodedef->getId(cfnb.liquid_alternative_flowing);
-					if (m_nodedef->getId(cfnb.liquid_alternative_flowing) != liquid_kind) {
-						neutrals[num_neutrals++] = nb;
-					} else {
-						flows[num_flows++] = nb;
-						if (nb.t == NEIGHBOR_LOWER)
-							flowing_down = true;
-					}
-					break;
-			}
-		}
-
-		/*
-			decide on the type (and possibly level) of the current node
-		 */
-		content_t new_node_content;
-		s8 new_node_level = -1;
-		s8 max_node_level = -1;
-
-		u8 range = m_nodedef->get(liquid_kind).liquid_range;
-		if (range > LIQUID_LEVEL_MAX + 1)
-			range = LIQUID_LEVEL_MAX + 1;
-
-		if ((num_sources >= 2 && m_nodedef->get(liquid_kind).liquid_renewable) || liquid_type == LIQUID_SOURCE) {
-			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
-			// or the flowing alternative of the first of the surrounding sources (if it's air), so
-			// it's perfectly safe to use liquid_kind here to determine the new node content.
-			new_node_content = m_nodedef->getId(m_nodedef->get(liquid_kind).liquid_alternative_source);
-		} else if (num_sources >= 1 && sources[0].t != NEIGHBOR_LOWER) {
-			// liquid_kind is set properly, see above
-			max_node_level = new_node_level = LIQUID_LEVEL_MAX;
-			if (new_node_level >= (LIQUID_LEVEL_MAX + 1 - range))
-				new_node_content = liquid_kind;
-			else
-				new_node_content = floodable_node;
-		} else if (ignored_sources && liquid_level >= 0) {
-			// Maybe there are neighbouring sources that aren't loaded yet
-			// so prevent flowing away.
-			new_node_level = liquid_level;
-			new_node_content = liquid_kind;
-		} else {
-			// no surrounding sources, so get the maximum level that can flow into this node
-			for (u16 i = 0; i < num_flows; i++) {
-				u8 nb_liquid_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
-				switch (flows[i].t) {
-					case NEIGHBOR_UPPER:
-						if (nb_liquid_level + WATER_DROP_BOOST > max_node_level) {
-							max_node_level = LIQUID_LEVEL_MAX;
-							if (nb_liquid_level + WATER_DROP_BOOST < LIQUID_LEVEL_MAX)
-								max_node_level = nb_liquid_level + WATER_DROP_BOOST;
-						} else if (nb_liquid_level > max_node_level) {
-							max_node_level = nb_liquid_level;
-						}
-						break;
-					case NEIGHBOR_LOWER:
-						break;
-					case NEIGHBOR_SAME_LEVEL:
-						if ((flows[i].n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK &&
-								nb_liquid_level > 0 && nb_liquid_level - 1 > max_node_level)
-							max_node_level = nb_liquid_level - 1;
-						break;
-				}
-			}
-
-			u8 viscosity = m_nodedef->get(liquid_kind).liquid_viscosity;
-			if (viscosity > 1 && max_node_level != liquid_level) {
-				// amount to gain, limited by viscosity
-				// must be at least 1 in absolute value
-				s8 level_inc = max_node_level - liquid_level;
-				if (level_inc < -viscosity || level_inc > viscosity)
-					new_node_level = liquid_level + level_inc/viscosity;
-				else if (level_inc < 0)
-					new_node_level = liquid_level - 1;
-				else if (level_inc > 0)
-					new_node_level = liquid_level + 1;
-				if (new_node_level != max_node_level)
-					must_reflow.push_back(p0);
-			} else {
-				new_node_level = max_node_level;
-			}
-
-			if (max_node_level >= (LIQUID_LEVEL_MAX + 1 - range))
-				new_node_content = liquid_kind;
-			else
-				new_node_content = floodable_node;
-
-		}
-
-		/*
-			check if anything has changed. if not, just continue with the next node.
-		 */
-		if (new_node_content == n0.getContent() &&
-				(m_nodedef->get(n0.getContent()).liquid_type != LIQUID_FLOWING ||
-				((n0.param2 & LIQUID_LEVEL_MASK) == (u8)new_node_level &&
-				((n0.param2 & LIQUID_FLOW_DOWN_MASK) == LIQUID_FLOW_DOWN_MASK)
-				== flowing_down)))
-			continue;
-
-
-		/*
-			update the current node
-		 */
-		MapNode n00 = n0;
-		//bool flow_down_enabled = (flowing_down && ((n0.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK));
-		if (m_nodedef->get(new_node_content).liquid_type == LIQUID_FLOWING) {
-			// set level to last 3 bits, flowing down bit to 4th bit
-			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
-		} else {
-			// set the liquid level and flow bit to 0
-			n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
-		}
-
-		// change the node.
-		n0.setContent(new_node_content);
-
-		// on_flood() the node
-		if (floodable_node != CONTENT_AIR) {
-			if (env->getScriptIface()->node_on_flood(p0, n00, n0))
-				continue;
-		}
-
-		// Ignore light (because calling voxalgo::update_lighting_nodes)
-		n0.setLight(LIGHTBANK_DAY, 0, m_nodedef);
-		n0.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
-
-		// Find out whether there is a suspect for this action
-		std::string suspect;
-		if (m_gamedef->rollback())
-			suspect = m_gamedef->rollback()->getSuspect(p0, 83, 1);
-
-		if (m_gamedef->rollback() && !suspect.empty()) {
-			// Blame suspect
-			RollbackScopeActor rollback_scope(m_gamedef->rollback(), suspect, true);
-			// Get old node for rollback
-			RollbackNode rollback_oldnode(this, p0, m_gamedef);
-			// Set node
-			setNode(p0, n0);
-			// Report
-			RollbackNode rollback_newnode(this, p0, m_gamedef);
-			RollbackAction action;
-			action.setSetNode(p0, rollback_oldnode, rollback_newnode);
-			m_gamedef->rollback()->reportAction(action);
-		} else {
-			// Set node
-			setNode(p0, n0);
-		}
-
-		v3s16 blockpos = getNodeBlockPos(p0);
-		MapBlock *block = getBlockNoCreateNoEx(blockpos);
-		if (block != NULL) {
-			modified_blocks[blockpos] =  block;
-			changed_nodes.emplace_back(p0, n00);
-		}
-
-		/*
-			enqueue neighbors for update if neccessary
-		 */
-		switch (m_nodedef->get(n0.getContent()).liquid_type) {
-			case LIQUID_SOURCE:
-			case LIQUID_FLOWING:
-				// make sure source flows into all neighboring nodes
-				for (u16 i = 0; i < num_flows; i++)
-					if (flows[i].t != NEIGHBOR_UPPER)
-						m_transforming_liquid.push_back(flows[i].p);
-				for (u16 i = 0; i < num_airs; i++)
-					if (airs[i].t != NEIGHBOR_UPPER)
-						m_transforming_liquid.push_back(airs[i].p);
-				break;
-			case LIQUID_NONE:
-				// this flow has turned to air; neighboring flows might need to do the same
-				for (u16 i = 0; i < num_flows; i++)
-					m_transforming_liquid.push_back(flows[i].p);
-				break;
-		}
-	}
-	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
-
-	for (auto &iter : must_reflow)
-		m_transforming_liquid.push_back(iter);
-
-	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);
-
-
-	/* ----------------------------------------------------------------------
-	 * Manage the queue so that it does not grow indefinately
-	 */
-	u16 time_until_purge = g_settings->getU16("liquid_queue_purge_time");
-
-	if (time_until_purge == 0)
-		return; // Feature disabled
-
-	time_until_purge *= 1000;	// seconds -> milliseconds
-
-	u64 curr_time = porting::getTimeMs();
-	u32 prev_unprocessed = m_unprocessed_count;
-	m_unprocessed_count = m_transforming_liquid.size();
-
-	// if unprocessed block count is decreasing or stable
-	if (m_unprocessed_count <= prev_unprocessed) {
-		m_queue_size_timer_started = false;
-	} else {
-		if (!m_queue_size_timer_started)
-			m_inc_trending_up_start_time = curr_time;
-		m_queue_size_timer_started = true;
-	}
-
-	// Account for curr_time overflowing
-	if (m_queue_size_timer_started && m_inc_trending_up_start_time > curr_time)
-		m_queue_size_timer_started = false;
-
-	/* If the queue has been growing for more than liquid_queue_purge_time seconds
-	 * and the number of unprocessed blocks is still > liquid_loop_max then we
-	 * cannot keep up; dump the oldest blocks from the queue so that the queue
-	 * has liquid_loop_max items in it
-	 */
-	if (m_queue_size_timer_started
-			&& curr_time - m_inc_trending_up_start_time > time_until_purge
-			&& m_unprocessed_count > liquid_loop_max) {
-
-		size_t dump_qty = m_unprocessed_count - liquid_loop_max;
-
-		infostream << "transformLiquids(): DUMPING " << dump_qty
-		           << " blocks from the queue" << std::endl;
-
-		while (dump_qty--)
-			m_transforming_liquid.pop_front();
-
-		m_queue_size_timer_started = false; // optimistically assume we can keep up now
-		m_unprocessed_count = m_transforming_liquid.size();
-	}
+	m_liquid_logic->transform(modified_blocks, env);
 }
 
 std::vector<v3s16> Map::findNodesWithMetadata(v3s16 p1, v3s16 p2)
@@ -1436,10 +1041,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	/*
 		Copy transforming liquid information
 	*/
-	while (data->transforming_liquid.size()) {
-		m_transforming_liquid.push_back(data->transforming_liquid.front());
-		data->transforming_liquid.pop_front();
-	}
+	m_liquid_logic->addTransformingFromData(data);
 
 	for (auto &changed_block : *changed_blocks) {
 		MapBlock *block = changed_block.second;
@@ -1960,8 +1562,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		// If it's a new block, insert it to the map
 		if (created_new) {
 			sector->insertBlock(block);
-			ReflowScan scanner(this, m_emerge->ndef);
-			scanner.scan(block, &m_transforming_liquid);
+			m_liquid_logic->scanBlock(block);
 		}
 
 		/*

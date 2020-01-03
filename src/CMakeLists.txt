@@ -386,6 +386,8 @@ set(common_SRCS
 	itemdef.cpp
 	itemstackmetadata.cpp
 	light.cpp
+	liquidlogic.cpp
+	liquidlogicclassic.cpp
 	log.cpp
 	main.cpp
 	map.cpp
@@ -407,7 +409,6 @@ set(common_SRCS
 	porting.cpp
 	profiler.cpp
 	raycast.cpp
-	reflowscan.cpp
 	remoteplayer.cpp
 	rollback.cpp
 	rollback_interface.cpp

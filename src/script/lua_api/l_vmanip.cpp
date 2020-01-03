@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "mapgen/mapgen.h"
 #include "voxelalgorithms.h"
+#include "liquidlogic.h"
 
 // garbage collector
 int LuaVoxelManip::gc_object(lua_State *L)
@@ -167,15 +168,9 @@ int LuaVoxelManip::l_update_liquids(lua_State *L)
 	LuaVoxelManip *o = checkobject(L, 1);
 
 	Map *map = &(env->getMap());
-	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	MMVManip *vm = o->vm;
-
-	Mapgen mg;
-	mg.vm   = vm;
-	mg.ndef = ndef;
-
-	mg.updateLiquid(&map->m_transforming_liquid,
-			vm->m_area.MinEdge, vm->m_area.MaxEdge);
+	map->getLiquidLogic()->scanVoxelManip(vm, vm->m_area.MinEdge,
+			vm->m_area.MaxEdge);
 
 	return 0;
 }

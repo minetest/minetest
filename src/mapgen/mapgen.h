@@ -214,12 +214,6 @@ public:
 		EmergeManager *emerge);
 	static MapgenParams *createMapgenParams(MapgenType mgtype);
 	static void getMapgenNames(std::vector<const char *> *mgnames, bool include_hidden);
-
-private:
-	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()
-	// that checks whether there are floodable nodes without liquid beneath
-	// the node at index vi.
-	inline bool isLiquidHorizontallyFlowable(u32 vi, v3s16 em);
 };
 
 /*
