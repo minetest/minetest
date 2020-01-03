@@ -5779,6 +5779,9 @@ object you are working with still exists.
 * `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
 * `set_texture_mod(mod)`
+    * Add a texture modifier to the base texture, for sprites and meshes.
+    * When calling `set_texture_mod` again, the previous one is discarded.
+    * `mod` the texture modifier. See [Texture modifiers].
 * `get_texture_mod()` returns current texture modifier
 * `set_sprite(p, num_frames, framelength, select_horiz_by_yawpitch)`
     * Select sprite from spritesheet with optional animation.

@@ -151,7 +151,7 @@ public:
 	{ static ItemGroupList rv; return rv; }
 	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
 	{}
-	virtual void setTextureMod(std::string &mod)
+	virtual void setTextureMod(const std::string &mod)
 	{}
 	virtual std::string getTextureMod()
 	{ return ""; }
