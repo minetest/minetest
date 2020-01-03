@@ -839,9 +839,12 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos, u8 artificial_light_ratio)
 		video::SColor color(artificial_light_ratio,li,li,li);
 		if (m_enable_shaders) {
 			scene::ISceneNode *node = getSceneNode();
-			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
-				video::SMaterial& material = node->getMaterial(i);
-				material.AmbientColor = color;
+
+			if (node != nullptr) {
+				for (u32 i = 0; i < node->getMaterialCount(); ++i) {
+					video::SMaterial& material = node->getMaterial(i);
+					material.AmbientColor = color;
+				}
 			}
 		} else {
 			if (m_meshnode) {
