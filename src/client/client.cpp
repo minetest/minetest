@@ -710,13 +710,13 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	}
 
 	const char *translate_ext[] = {
-		".tr", NULL
+		".tr", ".po", ".mo", NULL
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
 		verbosestream << "Client: Loading translation: "
 				<< "\"" << filename << "\"" << std::endl;
-		g_translations->loadTranslation(data);
+		g_translations->loadTranslation(filename, data);
 		return true;
 	}
 
