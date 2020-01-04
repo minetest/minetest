@@ -2902,6 +2902,8 @@ Helper functions
 * `table.insert_all(table, other_table)`:
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
+* `table.key_value_swap(t)`: returns a table with keys and values swapped
+    * If multiple keys in `t` map to the same value, the result is undefined.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
