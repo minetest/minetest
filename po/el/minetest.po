@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Greek (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-11-10 15:04+0000\n"
-"Last-Translator: Krock <mk939@ymail.com>\n"
+"PO-Revision-Date: 2020-01-06 03:21+0000\n"
+"Last-Translator: THANOS SIOURDAKIS <siourdakisthanos@gmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/minetest/minetest/"
 "el/>\n"
 "Language: el\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.10\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -23,9 +23,8 @@ msgid "You died"
 msgstr "Πέθανες"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Ένα σφάλμα προέκυψε σε ένα σενάριο Lua, όπως ένα mod:"
+msgstr "Ένα σφάλμα προέκυψε σε ένα σενάριο Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -85,11 +84,11 @@ msgstr "Υποστηρίζουμε τις εκδόσεις πρωτοκόλλω�
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "Ματαίωση"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr ""
+msgstr "Εξαρτήσεις:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
