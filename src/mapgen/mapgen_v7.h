@@ -37,11 +37,6 @@ extern FlagDesc flagdesc_mapgen_v7[];
 struct MapgenV7Params : public MapgenParams {
 	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS;
 	s16 mount_zero_level = 0;
-	float float_mount_density = 0.6f;
-	float float_mount_height = 128.0f;
-	float float_mount_exponent = 0.75f;
-	s16 floatland_level = 1280;
-	s16 shadow_limit = 1024;
 
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
@@ -63,8 +58,6 @@ struct MapgenV7Params : public MapgenParams {
 	NoiseParams np_filler_depth;
 	NoiseParams np_mount_height;
 	NoiseParams np_ridge_uwater;
-	NoiseParams np_floatland_base;
-	NoiseParams np_float_base_height;
 	NoiseParams np_mountain;
 	NoiseParams np_ridge;
 	NoiseParams np_cavern;
@@ -94,19 +87,12 @@ public:
 	float baseTerrainLevelFromMap(int index);
 	bool getMountainTerrainAtPoint(s16 x, s16 y, s16 z);
 	bool getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y);
-	bool getFloatlandMountainFromMap(int idx_xyz, int idx_xz, s16 y);
-	void floatBaseExtentFromMap(s16 *float_base_min, s16 *float_base_max, int idx_xz);
 
 	int generateTerrain();
 	void generateRidgeTerrain();
 
 private:
 	s16 mount_zero_level;
-	float float_mount_density;
-	float float_mount_height;
-	float float_mount_exponent;
-	s16 floatland_level;
-	s16 shadow_limit;
 
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;
@@ -114,8 +100,6 @@ private:
 	Noise *noise_height_select;
 	Noise *noise_mount_height;
 	Noise *noise_ridge_uwater;
-	Noise *noise_floatland_base;
-	Noise *noise_float_base_height;
 	Noise *noise_mountain;
 	Noise *noise_ridge;
 };
