@@ -215,6 +215,25 @@ void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hid
 	}
 }
 
+void Mapgen::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mg_flags", flagdesc_mapgen,
+		 "caves,dungeons,light,decorations,biomes");
+	settings->setDefault("mgv5_spflags", flagdesc_mapgen_v5,
+		"caverns");
+	settings->setDefault("mgv6_spflags", flagdesc_mapgen_v6,
+		"jungles,biomeblend,mudflow,snowbiomes,noflat,trees");
+	settings->setDefault("mgv7_spflags", flagdesc_mapgen_v7,
+		"mountains,ridges,nofloatlands,caverns");
+	settings->setDefault("mgcarpathian_spflags", flagdesc_mapgen_carpathian,
+		"caverns,norivers");
+	settings->setDefault("mgflat_spflags", flagdesc_mapgen_flat,
+		"nolakes,nohills");
+	settings->setDefault("mgfractal_spflags", flagdesc_mapgen_fractal,
+		"terrain");
+	settings->setDefault("mgvalleys_spflags", flagdesc_mapgen_valleys,
+		"altitude_chill,humid_rivers,vary_river_depth,altitude_dry");
+}
 
 u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
 {

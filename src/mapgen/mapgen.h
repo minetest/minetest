@@ -125,6 +125,9 @@ struct MapgenParams {
 	s16 water_level = 1;
 	s16 mapgen_limit = MAX_MAP_GENERATION_LIMIT;
 	u32 flags = MG_CAVES | MG_LIGHT | MG_DECORATIONS | MG_BIOMES;
+	// TODO: Remove the default "spflags" values from the mapgens
+	// They are now overwritten by Settings::getFlagStr
+	//u32 spflags = 0;
 
 	BiomeParams *bparams = nullptr;
 
@@ -214,6 +217,7 @@ public:
 		EmergeManager *emerge);
 	static MapgenParams *createMapgenParams(MapgenType mgtype);
 	static void getMapgenNames(std::vector<const char *> *mgnames, bool include_hidden);
+	static void setDefaultSettings(Settings *settings);
 
 private:
 	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()

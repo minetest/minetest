@@ -174,10 +174,12 @@ public:
 	bool getFloatNoEx(const std::string &name, float &val) const;
 	bool getV2FNoEx(const std::string &name, v2f &val) const;
 	bool getV3FNoEx(const std::string &name, v3f &val) const;
-	// N.B. getFlagStrNoEx() does not set val, but merely modifies it.  Thus,
-	// val must be initialized before using getFlagStrNoEx().  The intention of
-	// this is to simplify modifying a flags field from a default value.
-	bool getFlagStrNoEx(const std::string &name, u32 &val, FlagDesc *flagdesc) const;
+
+	// Like other getters, but handling each flag individualy:
+	// 1) Read default flags (or 0)
+	// 2) Override using user-defined flags
+	bool getFlagStrNoEx(const std::string &name, u32 &val,
+		const FlagDesc *flagdesc) const;
 
 
 	/***********
@@ -215,6 +217,14 @@ public:
 	void updateValue(const Settings &other, const std::string &name);
 	void update(const Settings &other);
 
+	/**************
+	 * Miscellany *
+	 **************/
+
+	void setDefault(const std::string &name, const FlagDesc *flagdesc,
+		const std::string &value);
+	const FlagDesc *getFlagDescFallback(const std::string &name) const;
+
 	void registerChangedCallback(const std::string &name,
 		SettingsChangedCallback cbf, void *userdata = NULL);
 	void deregisterChangedCallback(const std::string &name,
@@ -229,6 +239,7 @@ private:
 
 	SettingEntries m_settings;
 	SettingEntries m_defaults;
+	std::unordered_map<std::string, const FlagDesc *> m_flags;
 
 	SettingsCallbackMap m_callbacks;
 
