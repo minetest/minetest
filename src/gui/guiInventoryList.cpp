@@ -52,7 +52,8 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	m_slotbg_h(slotbg_h),
 	m_slotborder(slotborder),
 	m_slotbordercolor(slotbordercolor),
-	m_font(font)
+	m_font(font),
+	m_hovered_i(-1)
 {
 }
 
@@ -101,8 +102,7 @@ void GUIInventoryList::draw()
 			&& selected_item->i == item_i;
 		core::rect<s32> clipped_rect(rect);
 		clipped_rect.clipAgainst(AbsoluteClippingRect);
-		bool hovering = clipped_rect.getArea() > 0 &&
-				clipped_rect.isPointInside(m_fs_menu->getPointer());
+		bool hovering = m_hovered_i == item_i;
 		ItemRotationKind rotation_kind = selected ? IT_ROT_SELECTED :
 			(hovering ? IT_ROT_HOVERED : IT_ROT_NONE);
 
@@ -160,8 +160,18 @@ void GUIInventoryList::draw()
 
 bool GUIInventoryList::OnEvent(const SEvent &event)
 {
-	if (event.EventType != EET_MOUSE_INPUT_EVENT ||
-			getItemIndexAtPos(v2s32(event.MouseInput.X, event.MouseInput.Y)) != -1)
+	if (event.EventType != EET_MOUSE_INPUT_EVENT) {
+		if (event.EventType == EET_GUI_EVENT &&
+				event.GUIEvent.EventType == EGET_ELEMENT_LEFT) {
+			// element is no longer hovered
+			m_hovered_i = -1;
+		}
+		return IGUIElement::OnEvent(event);
+	}
+
+	m_hovered_i = getItemIndexAtPos(v2s32(event.MouseInput.X, event.MouseInput.Y));
+
+	if (getItemIndexAtPos(v2s32(event.MouseInput.X, event.MouseInput.Y)) != -1)
 		return IGUIElement::OnEvent(event);
 
 	// no item slot at pos of mouse event => allow clicking through
@@ -189,8 +199,6 @@ s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 	s32 i = (p.X - base_pos.X) / (s32)m_slot_spacing.X
 			+ m_geom.X * ((p.Y - base_pos.Y) / (s32)m_slot_spacing.Y);
 
-	s32 item_i = i + m_start_item_i;
-
 	v2s32 p0((i % m_geom.X) * m_slot_spacing.X,
 			(i / m_geom.X) * m_slot_spacing.Y);
 
@@ -199,7 +207,7 @@ s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 	rect.clipAgainst(AbsoluteClippingRect);
 
 	if (rect.getArea() > 0 && rect.isPointInside(p))
-		return item_i;
+		return i + m_start_item_i;
 
 	return -1;
 }

@@ -123,4 +123,7 @@ private:
 
 	// the font
 	gui::IGUIFont *m_font;
+
+	// the index of the hovered item; -1 if no item is hovered
+	s32 m_hovered_i;
 };

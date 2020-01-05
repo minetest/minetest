@@ -222,11 +222,6 @@ public:
 		return m_selected_amount;
 	}
 
-	const v2s32 &getPointer() const
-	{
-		return m_pointer;
-	}
-
 	bool doTooltipAppendItemname() const
 	{
 		return m_tooltip_append_itemname;
