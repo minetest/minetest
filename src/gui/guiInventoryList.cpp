@@ -1,0 +1,184 @@
+/*
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
+#include "guiInventoryList.h"
+#include "guiFormSpecMenu.h"
+#include "client/hud.h"
+#include "client/client.h"
+
+GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
+	gui::IGUIElement *parent,
+	s32 id,
+	const core::rect<s32> &rectangle,
+	InventoryManager *invmgr,
+	const InventoryLocation &inventoryloc,
+	const std::string &listname,
+	const v2s32 &geom,
+	const s32 start_item_i,
+	const v2s32 &slot_size,
+	const v2f32 &slot_spacing,
+	GUIFormSpecMenu *fs_menu,
+	const video::SColor &slotbg_n,
+	const video::SColor &slotbg_h,
+	bool slotborder,
+	const video::SColor &slotbordercolor,
+	gui::IGUIFont *font) :
+	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
+	m_invmgr(invmgr),
+	m_inventoryloc(inventoryloc),
+	m_listname(listname),
+	m_geom(geom),
+	m_start_item_i(start_item_i),
+	m_slot_size(slot_size),
+	m_slot_spacing(slot_spacing),
+	m_fs_menu(fs_menu),
+	m_slotbg_n(slotbg_n),
+	m_slotbg_h(slotbg_h),
+	m_slotborder(slotborder),
+	m_slotbordercolor(slotbordercolor),
+	m_font(font)
+{
+}
+
+void GUIInventoryList::draw()
+{
+	if (!IsVisible)
+		return;
+
+	Inventory *inv = m_invmgr->getInventory(m_inventoryloc);
+	if (!inv) {
+		warningstream << "GUIInventoryList::draw(): "
+				<< "The inventory location "
+				<< "\"" << m_inventoryloc.dump() << "\" doesn't exist anymore"
+				<< std::endl;
+		return;
+	}
+	InventoryList *ilist = inv->getList(m_listname);
+	if (!ilist) {
+		warningstream << "GUIInventoryList::draw(): "
+				<< "The inventory list \"" << m_listname << "\" @ \""
+				<< m_inventoryloc.dump() << "\" doesn't exist anymore"
+				<< std::endl;
+		return;
+	}
+
+	video::IVideoDriver *driver = Environment->getVideoDriver();
+	Client *client = m_fs_menu->getClient();
+	const ItemSpec *selected_item = m_fs_menu->getSelectedItem();
+
+	core::rect<s32> imgrect(0, 0, m_slot_size.X, m_slot_size.Y);
+	v2s32 base_pos = AbsoluteRect.UpperLeftCorner;
+
+	for (s32 i = 0; i < m_geom.X * m_geom.Y; i++) {
+		s32 item_i = i + m_start_item_i;
+		if (item_i >= (s32)ilist->getSize())
+			break;
+
+		v2s32 p((i % m_geom.X) * m_slot_spacing.X,
+				(i / m_geom.X) * m_slot_spacing.Y);
+		core::rect<s32> rect = imgrect + base_pos + p;
+		ItemStack item = ilist->getItem(item_i);
+
+		bool selected = selected_item
+			&& m_invmgr->getInventory(selected_item->inventoryloc) == inv
+			&& selected_item->listname == m_listname
+			&& selected_item->i == item_i;
+		core::rect<s32> clipped_rect(rect);
+		clipped_rect.clipAgainst(AbsoluteClippingRect);
+		bool hovering = clipped_rect.getArea() > 0 &&
+				clipped_rect.isPointInside(m_fs_menu->getPointer());
+		ItemRotationKind rotation_kind = selected ? IT_ROT_SELECTED :
+			(hovering ? IT_ROT_HOVERED : IT_ROT_NONE);
+
+		// layer 0
+		if (hovering) {
+			driver->draw2DRectangle(m_slotbg_h, rect, &AbsoluteClippingRect);
+		} else {
+			driver->draw2DRectangle(m_slotbg_n, rect, &AbsoluteClippingRect);
+		}
+
+		// Draw inv slot borders
+		if (m_slotborder) {
+			s32 x1 = rect.UpperLeftCorner.X;
+			s32 y1 = rect.UpperLeftCorner.Y;
+			s32 x2 = rect.LowerRightCorner.X;
+			s32 y2 = rect.LowerRightCorner.Y;
+			s32 border = 1;
+			driver->draw2DRectangle(m_slotbordercolor,
+				core::rect<s32>(v2s32(x1 - border, y1 - border),
+								v2s32(x2 + border, y1)), &AbsoluteClippingRect);
+			driver->draw2DRectangle(m_slotbordercolor,
+				core::rect<s32>(v2s32(x1 - border, y2),
+								v2s32(x2 + border, y2 + border)), &AbsoluteClippingRect);
+			driver->draw2DRectangle(m_slotbordercolor,
+				core::rect<s32>(v2s32(x1 - border, y1),
+								v2s32(x1, y2)), &AbsoluteClippingRect);
+			driver->draw2DRectangle(m_slotbordercolor,
+				core::rect<s32>(v2s32(x2, y1),
+								v2s32(x2 + border, y2)), &AbsoluteClippingRect);
+		}
+
+		// layer 1
+		if (selected)
+			item.takeItem(m_fs_menu->getSelectedAmount());
+
+		if (!item.empty()) {
+			// Draw item stack
+			drawItemStack(driver, m_font, item, rect, &AbsoluteClippingRect,
+					client, rotation_kind);
+			// Add hovering tooltip
+			if (hovering && !selected_item) {
+				std::string tooltip = item.getDescription(client->idef());
+				if (m_fs_menu->doTooltipAppendItemname())
+					tooltip += "\n[" + item.name + "]";
+				m_fs_menu->addHoveredItemTooltip(tooltip);
+			}
+		}
+	}
+
+	IGUIElement::draw();
+}
+
+s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
+{
+	if (!IsVisible || AbsoluteClippingRect.getArea() <= 0 ||
+			!AbsoluteClippingRect.isPointInside(p))
+		return -1;
+
+	core::rect<s32> imgrect(0, 0, m_slot_size.X, m_slot_size.Y);
+	v2s32 base_pos = AbsoluteRect.UpperLeftCorner;
+
+	// instead of looping through each slot, we look where p would be in the grid
+	s32 i = (p.X - base_pos.X) / (s32)m_slot_spacing.X
+			+ m_geom.X * ((p.Y - base_pos.Y) / (s32)m_slot_spacing.Y);
+
+	s32 item_i = i + m_start_item_i;
+
+	v2s32 p0((i % m_geom.X) * m_slot_spacing.X,
+			(i / m_geom.X) * m_slot_spacing.Y);
+
+	core::rect<s32> rect = imgrect + base_pos + p0;
+
+	rect.clipAgainst(AbsoluteClippingRect);
+
+	if (rect.getArea() > 0 && rect.isPointInside(p))
+		return item_i;
+
+	return -1;
+}

@@ -189,6 +189,7 @@ LOCAL_SRC_FILES := \
 		jni/src/gui/guiEngine.cpp                 \
 		jni/src/gui/guiFormSpecMenu.cpp           \
 		jni/src/gui/guiHyperText.cpp              \
+		jni/src/gui/guiInventoryList.cpp          \
 		jni/src/gui/guiItemImage.cpp              \
 		jni/src/gui/guiKeyChangeMenu.cpp          \
 		jni/src/gui/guiPasswordChange.cpp         \
