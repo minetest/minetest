@@ -158,6 +158,25 @@ void GUIInventoryList::draw()
 	IGUIElement::draw();
 }
 
+bool GUIInventoryList::OnEvent(const SEvent &event)
+{
+	if (event.EventType != EET_MOUSE_INPUT_EVENT)
+		return IGUIElement::OnEvent(event);
+
+	bool was_visible = IsVisible;
+	IsVisible = false;
+
+	IGUIElement *hovered =
+		Environment->getRootGUIElement()->getElementFromPoint(
+			core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+
+	bool ret = hovered && hovered->OnEvent(event);
+
+	IsVisible = was_visible;
+
+	return ret || IGUIElement::OnEvent(event);
+}
+
 s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 {
 	if (!IsVisible || AbsoluteClippingRect.getArea() <= 0 ||

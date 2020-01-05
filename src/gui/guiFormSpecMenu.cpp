@@ -447,9 +447,6 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 				data->inventorylist_options.slotborder,
 				data->inventorylist_options.slotbordercolor, m_font);
 
-		//~ // the element the list is bound to should not block mouse-clicks (todo)
-		//~ e->setVisible(false);
-
 		m_inventorylists.push_back(e);
 		m_fields.push_back(spec);
 		return;
@@ -3303,7 +3300,7 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 	bringToFront(m_tooltip_element);
 }
 
-void GUIFormSpecMenu::updateSelectedItem()//todo
+void GUIFormSpecMenu::updateSelectedItem()
 {
 	verifySelectedItem();
 
@@ -3349,7 +3346,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	// If the selected stack has become smaller, adjust m_selected_amount.
 	// Return the selected stack.
 
-	if(m_selected_item) {
+	if (m_selected_item) {
 		if (m_selected_item->isValid()) {
 			Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
 			if (inv) {
@@ -3512,9 +3509,9 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 	}
 }
 
-static bool isChild(gui::IGUIElement * tocheck, gui::IGUIElement * parent)
+static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 {
-	while(tocheck != NULL) {
+	while (tocheck) {
 		if (tocheck == parent) {
 			return true;
 		}
@@ -3551,8 +3548,8 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	}
 
 	// Fix Esc/Return key being eaten by checkboxen and tables
-	if(event.EventType==EET_KEY_INPUT_EVENT) {
-		KeyPress kp(event.KeyInput);
+	if (event.EventType == EET_KEY_INPUT_EVENT) {
+			KeyPress kp(event.KeyInput);
 		if (kp == EscapeKey || kp == CancelKey
 				|| kp == getKeySetting("keymap_inventory")
 				|| event.KeyInput.Key==KEY_RETURN) {
@@ -3591,7 +3588,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 			m_old_tooltip_id = -1;
 		}
-		if (!isChild(hovered,this)) {
+		if (!isChild(hovered, this)) {
 			if (DoubleClickDetection(event)) {
 				return true;
 			}
