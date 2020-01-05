@@ -84,6 +84,12 @@ public:
 		m_slotbg_h = slotbg_h;
 	}
 
+	void setSlotBorders(bool slotborder, const video::SColor &slotbordercolor)
+	{
+		m_slotborder = slotborder;
+		m_slotbordercolor = slotbordercolor;
+	}
+
 	// returns -1 if not item is at pos p
 	s32 getItemIndexAtPos(v2s32 p) const;
 

@@ -442,7 +442,10 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 
 		GUIInventoryList *e = new GUIInventoryList(Environment, this, spec.fid,
 				rect, m_invmgr, loc, listname, geom, start_i, imgsize, slot_spacing,
-				this, m_slotbg_n, m_slotbg_h, m_slotborder, m_slotbordercolor, m_font);
+				this, data->inventorylist_options.slotbg_n,
+				data->inventorylist_options.slotbg_h,
+				data->inventorylist_options.slotborder,
+				data->inventorylist_options.slotbordercolor, m_font);
 
 		//~ // the element the list is bound to should not block mouse-clicks (todo)
 		//~ e->setVisible(false);
@@ -2156,13 +2159,13 @@ void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &eleme
 	if (((parts.size() == 2) || (parts.size() == 3) || (parts.size() == 5)) ||
 		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		// todo: update all m_inventorylists
-		parseColorString(parts[0], m_slotbg_n, false);
-		parseColorString(parts[1], m_slotbg_h, false);
+		parseColorString(parts[0], data->inventorylist_options.slotbg_n, false);
+		parseColorString(parts[1], data->inventorylist_options.slotbg_h, false);
 
 		if (parts.size() >= 3) {
-			if (parseColorString(parts[2], m_slotbordercolor, false)) {
-				m_slotborder = true;
+			if (parseColorString(parts[2], data->inventorylist_options.slotbordercolor,
+					false)) {
+				data->inventorylist_options.slotborder = true;
 			}
 		}
 		if (parts.size() == 5) {
@@ -2172,6 +2175,14 @@ void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &eleme
 				m_default_tooltip_bgcolor = tmp_color;
 			if (parseColorString(parts[4], tmp_color, false))
 				m_default_tooltip_color = tmp_color;
+		}
+
+		// update all already parsed inventorylists
+		for (GUIInventoryList *e : m_inventorylists) {
+			e->setSlotBGColors(data->inventorylist_options.slotbg_n,
+					data->inventorylist_options.slotbg_h);
+			e->setSlotBorders(data->inventorylist_options.slotborder,
+					data->inventorylist_options.slotbordercolor);
 		}
 		return;
 	}
@@ -2718,14 +2729,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		);
 	}
 
-	m_slotbg_n = video::SColor(255,128,128,128);
-	m_slotbg_h = video::SColor(255,192,192,192);
-
 	m_default_tooltip_bgcolor = video::SColor(255,110,130,60);
 	m_default_tooltip_color = video::SColor(255,255,255,255);
-
-	m_slotbordercolor = video::SColor(200,0,0,0);
-	m_slotborder = false;
 
 	// Add tooltip
 	{

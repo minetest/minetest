@@ -327,12 +327,8 @@ protected:
 
 	bool m_bgnonfullscreen;
 	bool m_bgfullscreen;
-	bool m_slotborder;
 	video::SColor m_bgcolor;
 	video::SColor m_fullscreen_bgcolor;
-	video::SColor m_slotbg_n;//todo:remove from here
-	video::SColor m_slotbg_h;
-	video::SColor m_slotbordercolor;
 	video::SColor m_default_tooltip_bgcolor;
 	video::SColor m_default_tooltip_color;
 
@@ -358,6 +354,13 @@ private:
 		std::string focused_fieldname;
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
+
+		struct {
+			bool slotborder = false;
+			video::SColor slotbg_n = video::SColor(255, 128, 128, 128);
+			video::SColor slotbg_h = video::SColor(255, 192, 192, 192);
+			video::SColor slotbordercolor = video::SColor(200, 0, 0, 0);
+		} inventorylist_options;
 
 		struct {
 			s32 max = 1000;
