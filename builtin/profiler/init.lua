@@ -47,7 +47,7 @@ function profiler.init_chatcommand()
 		params = param_usage,
 		privs = {server = true},
 		func = function(_, param)
-			local command, arg0 = string.match(param, "([^ ]+) ?(.*)")
+			local command, arg0 = param:match("([^ ]+) ?(.*)")
 			local args = arg0 and string.split(arg0, " ")
 
 			if command == "dump" then

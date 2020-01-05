@@ -20,8 +20,9 @@ local function buttonbar_formspec(self)
 	if self.hidden then
 		return ""
 	end
+	local string_format = string.format
 
-	local formspec = string.format("box[%f,%f;%f,%f;%s]",
+	local formspec = string_format("box[%f,%f;%f,%f;%s]",
 			self.pos.x, self.pos.y, self.size.x, self.size.y, self.bgcolor)
 
 	for i = self.startbutton, #self.buttons do
@@ -55,8 +56,8 @@ local function buttonbar_formspec(self)
 				borders = "false"
 			end
 
-		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;%s;%s;%s;true;%s]tooltip[%s;%s]",
+			formspec = formspec ..
+				string_format("image_button[%f,%f;%f,%f;%s;%s;%s;true;%s]tooltip[%s;%s]",
 					btn_pos.x, btn_pos.y, self.btn_size, self.btn_size,
 					self.buttons[i].image, btn_name, self.buttons[i].caption,
 					borders, btn_name, self.buttons[i].tooltip)
@@ -95,12 +96,12 @@ local function buttonbar_formspec(self)
 		end
 
 		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;;btnbar_dec_%s;%s;true;true]",
+			string_format("image_button[%f,%f;%f,%f;;btnbar_dec_%s;%s;true;true]",
 					btn_dec_pos.x, btn_dec_pos.y, btn_size.x, btn_size.y,
 					self.name, text_dec)
 
 		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;;btnbar_inc_%s;%s;true;true]",
+			string_format("image_button[%f,%f;%f,%f;;btnbar_inc_%s;%s;true;true]",
 					btn_inc_pos.x, btn_inc_pos.y, btn_size.x, btn_size.y,
 					self.name, text_inc)
 	end

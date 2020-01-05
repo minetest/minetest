@@ -363,11 +363,12 @@ function store.filter_packages(query)
 	local function matches_keywords(package, keywords)
 		for k = 1, #keywords do
 			local keyword = keywords[k]
+			local string_find = string.find
 
-			if string.find(package.name:lower(), keyword, 1, true) or
-					string.find(package.title:lower(), keyword, 1, true) or
-					string.find(package.author:lower(), keyword, 1, true) or
-					string.find(package.short_description:lower(), keyword, 1, true) then
+			if string_find(package.name:lower(), keyword, 1, true) or
+					string_find(package.title:lower(), keyword, 1, true) or
+					string_find(package.author:lower(), keyword, 1, true) or
+					string_find(package.short_description:lower(), keyword, 1, true) then
 				return true
 			end
 		end

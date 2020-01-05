@@ -2,7 +2,10 @@
 
 --------------------------------------------------------------------------------
 -- Localize functions to avoid table lookups (better performance).
-local string_sub, string_find = string.sub, string.find
+local string_byte = string.byte
+local string_gsub = string.gsub
+local string_find = string.find
+local string_format = string.format
 
 --------------------------------------------------------------------------------
 function basic_dump(o)
@@ -10,7 +13,7 @@ function basic_dump(o)
 	if tp == "number" then
 		return tostring(o)
 	elseif tp == "string" then
-		return string.format("%q", o)
+		return string_format("%q", o)
 	elseif tp == "boolean" then
 		return tostring(o)
 	elseif tp == "nil" then
@@ -19,9 +22,9 @@ function basic_dump(o)
 	-- Not currently enabled because bytecode isn't very human-readable and
 	-- dump's output is intended for humans.
 	--elseif tp == "function" then
-	--	return string.format("loadstring(%q)", string.dump(o))
+	--	return string_format("loadstring(%q)", string.dump(o))
 	else
-		return string.format("<%s>", tp)
+		return string_format("<%s>", tp)
 	end
 end
 
@@ -73,10 +76,10 @@ function dump2(o, name, dumped)
 	-- {x = {"y"}} -> dumped[{"y"}] = '_["x"]'
 	dumped = dumped or {}
 	if type(o) ~= "table" then
-		return string.format("%s = %s\n", name, basic_dump(o))
+		return string_format("%s = %s\n", name, basic_dump(o))
 	end
 	if dumped[o] then
-		return string.format("%s = %s\n", name, dumped[o])
+		return string_format("%s = %s\n", name, dumped[o])
 	end
 	dumped[o] = name
 	-- This contains a list of strings to be concatenated later (because
@@ -90,17 +93,17 @@ function dump2(o, name, dumped)
 			else
 				-- Key tables don't have a name, so use one of
 				-- the form _G["table: 0xFFFFFFF"]
-				keyStr = string.format("_G[%q]", tostring(k))
+				keyStr = string_format("_G[%q]", tostring(k))
 				-- Dump key table
 				t[#t + 1] = dump2(k, keyStr, dumped)
 			end
 		else
 			keyStr = basic_dump(k)
 		end
-		local vname = string.format("%s[%s]", name, keyStr)
+		local vname = string_format("%s[%s]", name, keyStr)
 		t[#t + 1] = dump2(v, vname, dumped)
 	end
-	return string.format("%s = {}\n%s", name, table.concat(t))
+	return string_format("%s = {}\n%s", name, table.concat(t))
 end
 
 --------------------------------------------------------------------------------
@@ -153,9 +156,9 @@ function dump(o, indent, nested, level)
 	end
 	nested[o] = nil
 	if indent ~= "" then
-		local indent_str = "\n"..string.rep(indent, level)
-		local end_indent_str = "\n"..string.rep(indent, level - 1)
-		return string.format("{%s%s%s}",
+		local indent_str = "\n" .. indent:rep(level)
+		local end_indent_str = "\n" .. indent:rep(level - 1)
+		return string_format("{%s%s%s}",
 				indent_str,
 				table.concat(ret, "," .. indent_str),
 				end_indent_str)
@@ -178,7 +181,7 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 			np = len + 1
 			npe = np
 		end
-		local s = string_sub(str, pos, np - 1)
+		local s = str:sub(pos, np - 1)
 		if include_empty or (s ~= "") then
 			max_splits = max_splits - 1
 			items[#items + 1] = s
@@ -317,11 +320,11 @@ end
 
 function core.formspec_escape(text)
 	if text ~= nil then
-		text = string.gsub(text,"\\","\\\\")
-		text = string.gsub(text,"%]","\\]")
-		text = string.gsub(text,"%[","\\[")
-		text = string.gsub(text,";","\\;")
-		text = string.gsub(text,",","\\,")
+		text = string_gsub(text, "\\", "\\\\")
+		text = string_gsub(text, "%]", "\\]")
+		text = string_gsub(text, "%[", "\\[")
+		text = string_gsub(text, ";", "\\;")
+		text = string_gsub(text, ",", "\\,")
 	end
 	return text
 end
@@ -476,8 +479,8 @@ end
 
 --------------------------------------------------------------------------------
 function core.rgba(r, g, b, a)
-	return a and string.format("#%02X%02X%02X%02X", r, g, b, a) or
-			string.format("#%02X%02X%02X", r, g, b)
+	return a and string_format("#%02X%02X%02X%02X", r, g, b, a) or
+			string_format("#%02X%02X%02X", r, g, b)
 end
 
 --------------------------------------------------------------------------------
@@ -486,9 +489,9 @@ function core.pos_to_string(pos, decimal_places)
 	local y = pos.y
 	local z = pos.z
 	if decimal_places ~= nil then
-		x = string.format("%." .. decimal_places .. "f", x)
-		y = string.format("%." .. decimal_places .. "f", y)
-		z = string.format("%." .. decimal_places .. "f", z)
+		x = string_format("%." .. decimal_places .. "f", x)
+		y = string_format("%." .. decimal_places .. "f", y)
+		z = string_format("%." .. decimal_places .. "f", z)
 	end
 	return "(" .. x .. "," .. y .. "," .. z .. ")"
 end
@@ -500,7 +503,7 @@ function core.string_to_pos(value)
 	end
 
 	local p = {}
-	p.x, p.y, p.z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+	p.x, p.y, p.z = value:match("^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 	if p.x and p.y and p.z then
 		p.x = tonumber(p.x)
 		p.y = tonumber(p.y)
@@ -508,7 +511,7 @@ function core.string_to_pos(value)
 		return p
 	end
 	p = {}
-	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
+	p.x, p.y, p.z = value:match("^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
 	if p.x and p.y and p.z then
 		p.x = tonumber(p.x)
 		p.y = tonumber(p.y)
@@ -663,9 +666,9 @@ function core.translate(textdomain, str, ...)
 	local end_seq = ESCAPE_CHAR .. "E"
 	local arg_index = 1
 	local translated = str:gsub("@(.)", function(matched)
-		local c = string.byte(matched)
-		if string.byte("1") <= c and c <= string.byte("9") then
-			local a = c - string.byte("0")
+		local c = string_byte(matched)
+		if string_byte("1") <= c and c <= string_byte("9") then
+			local a = c - string_byte("0")
 			if a ~= arg_index then
 				error("Escape sequences in string given to core.translate " ..
 					"are not in the correct order: got @" .. matched ..

@@ -1,5 +1,7 @@
 -- Minetest: builtin/game/chat.lua
 
+local string_format = string.format
+
 -- Helper function that implements search and replace without pattern matching
 -- Returns the string and a boolean indicating whether or not the string was modified
 local function safe_gsub(s, replace, with)
@@ -50,7 +52,7 @@ core.register_on_chat_message(function(name, message)
 		return
 	end
 
-	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
+	local cmd, param = message:match("^/([^ ]+) *(.*)")
 	if not cmd then
 		core.chat_send_player(name, "-!- Empty command")
 		return true
@@ -218,7 +220,7 @@ core.register_chatcommand("grant", {
 	params = "<name> (<privilege> | all)",
 	description = "Give privileges to player",
 	func = function(name, param)
-		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
+		local grantname, grantprivstr = param:match("([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
 			return false, "Invalid parameters (see /help grant)"
 		end
@@ -246,7 +248,7 @@ core.register_chatcommand("revoke", {
 				not core.check_player_privs(name, {basic_privs = true}) then
 			return false, "Your privileges are insufficient."
 		end
-		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
+		local revoke_name, revoke_priv_str = param:match("([^ ]+) (.+)")
 		if not revoke_name or not revoke_priv_str then
 			return false, "Invalid parameters (see /help revoke)"
 		elseif not core.get_auth_handler().get_auth(revoke_name) then
@@ -295,7 +297,7 @@ core.register_chatcommand("setpassword", {
 	description = "Set player's password",
 	privs = {password = true},
 	func = function(name, param)
-		local toname, raw_password = string.match(param, "^([^ ]+) +(.+)$")
+		local toname, raw_password = param:match("^([^ ]+) +(.+)$")
 		if not toname then
 			toname = param:match("^([^ ]+) *$")
 			raw_password = nil
@@ -409,7 +411,7 @@ core.register_chatcommand("teleport", {
 		end
 
 		local p = {}
-		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+		p.x, p.y, p.z = param:match("^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 		p.x = tonumber(p.x)
 		p.y = tonumber(p.y)
 		p.z = tonumber(p.z)
@@ -465,7 +467,7 @@ core.register_chatcommand("teleport", {
 
 		teleportee = nil
 		p = nil
-		teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
+		teleportee_name, target_name = param:match("^([^ ]+) +([^ ]+)$")
 		if teleportee_name then
 			teleportee = core.get_player_by_name(teleportee_name)
 		end
@@ -493,13 +495,13 @@ core.register_chatcommand("set", {
 	description = "Set or read server configuration setting",
 	privs = {server = true},
 	func = function(name, param)
-		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
+		local arg, setname, setvalue = param:match("(-[n]) ([^ ]+) (.+)")
 		if arg and arg == "-n" and setname and setvalue then
 			core.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
 
-		setname, setvalue = string.match(param, "([^ ]+) (.+)")
+		setname, setvalue = param:match("([^ ]+) (.+)")
 		if setname and setvalue then
 			if not core.settings:get(setname) then
 				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
@@ -508,7 +510,7 @@ core.register_chatcommand("set", {
 			return true, setname .. " = " .. setvalue
 		end
 
-		setname = string.match(param, "([^ ]+)")
+		setname = param:match("([^ ]+)")
 		if setname then
 			setvalue = core.settings:get(setname)
 			if not setvalue then
@@ -530,17 +532,17 @@ local function emergeblocks_callback(pos, action, num_calls_remaining, ctx)
 
 	if ctx.current_blocks == ctx.total_blocks then
 		core.chat_send_player(ctx.requestor_name,
-			string.format("Finished emerging %d blocks in %.2fms.",
-			ctx.total_blocks, (os.clock() - ctx.start_time) * 1000))
+			string_format("Finished emerging %d blocks in %.2fms.",
+				ctx.total_blocks, (os.clock() - ctx.start_time) * 1000))
 	end
 end
 
 local function emergeblocks_progress_update(ctx)
 	if ctx.current_blocks ~= ctx.total_blocks then
 		core.chat_send_player(ctx.requestor_name,
-			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
-			ctx.current_blocks, ctx.total_blocks,
-			(ctx.current_blocks / ctx.total_blocks) * 100))
+			string_format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
+				ctx.current_blocks, ctx.total_blocks,
+				(ctx.current_blocks / ctx.total_blocks) * 100))
 
 		core.after(2, emergeblocks_progress_update, ctx)
 	end
@@ -664,7 +666,7 @@ core.register_chatcommand("give", {
 	description = "Give item to player",
 	privs = {give = true},
 	func = function(name, param)
-		local toname, itemstring = string.match(param, "^([^ ]+) +(.+)$")
+		local toname, itemstring = param:match("^([^ ]+) +(.+)$")
 		if not toname or not itemstring then
 			return false, "Name and ItemString required"
 		end
@@ -677,7 +679,7 @@ core.register_chatcommand("giveme", {
 	description = "Give item to yourself",
 	privs = {give = true},
 	func = function(name, param)
-		local itemstring = string.match(param, "(.+)$")
+		local itemstring = param:match("(.+)$")
 		if not itemstring then
 			return false, "ItemString required"
 		end
@@ -690,7 +692,7 @@ core.register_chatcommand("spawnentity", {
 	description = "Spawn entity at given (or your) position",
 	privs = {give = true, interact = true},
 	func = function(name, param)
-		local entityname, p = string.match(param, "^([^ ]+) *(.*)$")
+		local entityname, p = param:match("^([^ ]+) *(.*)$")
 		if not entityname then
 			return false, "EntityName required"
 		end
@@ -806,10 +808,10 @@ core.register_chatcommand("rollback", {
 		if not core.settings:get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
-		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
+		local target_name, seconds = param:match(":([^ ]+) *(%d*)")
 		if not target_name then
 			local player_name
-			player_name, seconds = string.match(param, "([^ ]+) *(%d*)")
+			player_name, seconds = param:match("([^ ]+) *(%d*)")
 			if not player_name then
 				return false, "Invalid parameters. See /help rollback"
 						.. " and /help rollback_check."
@@ -1068,20 +1070,20 @@ local function handle_kill_command(killer, victim)
 	end
 	local victimref = core.get_player_by_name(victim)
 	if victimref == nil then
-		return false, string.format("Player %s is not online.", victim)
+		return false, string_format("Player %s is not online.", victim)
 	elseif victimref:get_hp() <= 0 then
 		if killer == victim then
 			return false, "You are already dead."
 		else
-			return false, string.format("%s is already dead.", victim)
+			return false, string_format("%s is already dead.", victim)
 		end
 	end
 	if not killer == victim then
-		core.log("action", string.format("%s killed %s", killer, victim))
+		core.log("action", string_format("%s killed %s", killer, victim))
 	end
 	-- Kill victim
 	victimref:set_hp(0)
-	return true, string.format("%s has been killed.", victim)
+	return true, string_format("%s has been killed.", victim)
 end
 
 core.register_chatcommand("kill", {

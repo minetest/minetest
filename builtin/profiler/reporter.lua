@@ -32,7 +32,7 @@ local function shorten(str, length)
 end
 
 local function filter_matches(filter, text)
-	return not filter or string.match(text, filter)
+	return not filter or text:match(filter)
 end
 
 local function format_number(number, fmt)

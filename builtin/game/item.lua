@@ -1,5 +1,8 @@
 -- Minetest: builtin/item.lua
 
+local abs, atan2, floor, random, max = math.abs, math.atan2, math.floor, math.random, math.max
+local cos, sin = math.cos, math.sin
+
 local builtin_shared = ...
 
 local function copy_pointed_thing(pointed_thing)
@@ -39,11 +42,11 @@ end
 
 function core.dir_to_facedir(dir, is6d)
 	-- account for y if requested
-	if is6d and math.abs(dir.y) > math.abs(dir.x) and math.abs(dir.y) > math.abs(dir.z) then
+	if is6d and abs(dir.y) > abs(dir.x) and abs(dir.y) > abs(dir.z) then
 
 		-- from above
 		if dir.y < 0 then
-			if math.abs(dir.x) > math.abs(dir.z) then
+			if abs(dir.x) > abs(dir.z) then
 				if dir.x < 0 then
 					return 19
 				else
@@ -59,7 +62,7 @@ function core.dir_to_facedir(dir, is6d)
 
 		-- from below
 		else
-			if math.abs(dir.x) > math.abs(dir.z) then
+			if abs(dir.x) > abs(dir.z) then
 				if dir.x < 0 then
 					return 15
 				else
@@ -75,7 +78,7 @@ function core.dir_to_facedir(dir, is6d)
 		end
 
 	-- otherwise, place horizontally
-	elseif math.abs(dir.x) > math.abs(dir.z) then
+	elseif abs(dir.x) > abs(dir.z) then
 		if dir.x < 0 then
 			return 3
 		else
@@ -113,13 +116,13 @@ function core.facedir_to_dir(facedir)
 end
 
 function core.dir_to_wallmounted(dir)
-	if math.abs(dir.y) > math.max(math.abs(dir.x), math.abs(dir.z)) then
+	if abs(dir.y) > max(abs(dir.x), abs(dir.z)) then
 		if dir.y < 0 then
 			return 1
 		else
 			return 0
 		end
-	elseif math.abs(dir.x) > math.abs(dir.z) then
+	elseif abs(dir.x) > abs(dir.z) then
 		if dir.x < 0 then
 			return 3
 		else
@@ -148,11 +151,11 @@ function core.wallmounted_to_dir(wallmounted)
 end
 
 function core.dir_to_yaw(dir)
-	return -math.atan2(dir.x, dir.z)
+	return -atan2(dir.x, dir.z)
 end
 
 function core.yaw_to_dir(yaw)
-	return {x = -math.sin(yaw), y = 0, z = math.cos(yaw)}
+	return {x = -sin(yaw), y = 0, z = cos(yaw)}
 end
 
 function core.is_colored_paramtype(ptype)
@@ -165,9 +168,9 @@ function core.strip_param2_color(param2, paramtype2)
 		return nil
 	end
 	if paramtype2 == "colorfacedir" then
-		param2 = math.floor(param2 / 32) * 32
+		param2 = floor(param2 / 32) * 32
 	elseif paramtype2 == "colorwallmounted" then
-		param2 = math.floor(param2 / 8) * 8
+		param2 = floor(param2 / 8) * 8
 	end
 	-- paramtype2 == "color" requires no modification.
 	return param2
@@ -210,7 +213,7 @@ function core.get_node_drops(node, toolname)
 		local good_rarity = true
 		local good_tool = true
 		if item.rarity ~= nil then
-			good_rarity = item.rarity < 1 or math.random(item.rarity) == 1
+			good_rarity = item.rarity < 1 or random(item.rarity) == 1
 		end
 		if item.tools ~= nil then
 			good_tool = false
@@ -350,7 +353,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 			color_divisor = 32
 		end
 		if color_divisor then
-			local color = math.floor(metatable.palette_index / color_divisor)
+			local color = floor(metatable.palette_index / color_divisor)
 			local other = newnode.param2 % color_divisor
 			newnode.param2 = color * color_divisor + other
 		end
@@ -480,7 +483,7 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 					inv:add_item("main", replace_with_item)
 				else
 					local pos = user:get_pos()
-					pos.y = math.floor(pos.y + 0.5)
+					pos.y = floor(pos.y + 0.5)
 					core.add_item(pos, replace_with_item)
 				end
 			end
@@ -527,9 +530,9 @@ function core.handle_node_drops(pos, drops, digger)
 		local left = give_item(dropped_item)
 		if not left:is_empty() then
 			local p = {
-				x = pos.x + math.random()/2-0.25,
-				y = pos.y + math.random()/2-0.25,
-				z = pos.z + math.random()/2-0.25
+				x = pos.x + random() / 2 - 0.25,
+				y = pos.y + random() / 2 - 0.25,
+				z = pos.z + random() / 2 - 0.25
 			}
 			core.add_item(p, left)
 		end

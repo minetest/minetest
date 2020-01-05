@@ -71,7 +71,7 @@ function ui.update()
 		local error_message = core.formspec_escape(gamedata.errormessage)
 
 		local error_title
-		if string.find(gamedata.errormessage, "ModError") then
+		if gamedata.errormessage:find("ModError") then
 			error_title = fgettext("An error occurred in a Lua script:")
 		else
 			error_title = fgettext("An error occurred:")

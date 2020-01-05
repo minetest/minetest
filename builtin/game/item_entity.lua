@@ -1,5 +1,7 @@
 -- Minetest: builtin/item_entity.lua
 
+local abs, min = math.abs, math.min
+
 function core.spawn_item(pos, item)
 	-- Take item in any format
 	local stack = ItemStack(item)
@@ -55,7 +57,7 @@ core.register_entity(":__builtin:item", {
 		local itemname = stack:is_known() and stack:get_name() or "unknown"
 
 		local max_count = stack:get_stack_max()
-		local count = math.min(stack:get_count(), max_count)
+		local count = min(stack:get_count(), max_count)
 		local size = 0.2 + 0.1 * (count / max_count) ^ (1 / 3)
 		local coll_height = size * 0.75
 		local def = core.registered_nodes[itemname]
@@ -86,7 +88,7 @@ core.register_entity(":__builtin:item", {
 	end,
 
 	on_activate = function(self, staticdata, dtime_s)
-		if string.sub(staticdata, 1, string.len("return")) == "return" then
+		if staticdata:sub(1, 6) == "return" then
 			local data = core.deserialize(staticdata)
 			if data and type(data) == "table" then
 				self.itemstring = data.itemstring
@@ -256,7 +258,7 @@ core.register_entity(":__builtin:item", {
 		if def and def.walkable then
 			local slippery = core.get_item_group(node.name, "slippery")
 			is_slippery = slippery ~= 0
-			if is_slippery and (math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2) then
+			if is_slippery and (abs(vel.x) > 0.2 or abs(vel.z) > 0.2) then
 				-- Horizontal deceleration
 				local slip_factor = 4.0 / (slippery + 4)
 				self.object:set_acceleration({

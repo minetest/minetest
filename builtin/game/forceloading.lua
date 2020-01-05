@@ -12,11 +12,13 @@ local total_forceloaded = 0
 local forceload_blocks_changed = false
 
 local BLOCKSIZE = core.MAP_BLOCKSIZE
+local floor = math.floor
 local function get_blockpos(pos)
 	return {
-		x = math.floor(pos.x/BLOCKSIZE),
-		y = math.floor(pos.y/BLOCKSIZE),
-		z = math.floor(pos.z/BLOCKSIZE)}
+		x = floor(pos.x / BLOCKSIZE),
+		y = floor(pos.y / BLOCKSIZE),
+		z = floor(pos.z / BLOCKSIZE)
+	}
 end
 
 -- When we create/free a forceload, it's either transient or persistent. We want

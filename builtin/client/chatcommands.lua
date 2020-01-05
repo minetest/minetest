@@ -14,7 +14,7 @@ core.register_on_sending_chat_message(function(message)
 		return false
 	end
 
-	local cmd, param = string.match(message, "^%.([^ ]+) *(.*)")
+	local cmd, param = message:match("^%.([^ ]+) *(.*)")
 	param = param or ""
 
 	if not cmd then

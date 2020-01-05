@@ -1,3 +1,5 @@
+local abs, exp, max = math.abs, math.exp, math.max
+
 -- can be overriden by mods
 function core.calculate_knockback(player, _, _, _, _, distance, damage)
 	if damage == 0 or player:get_armor_groups().immortal then
@@ -7,7 +9,7 @@ function core.calculate_knockback(player, _, _, _, _, distance, damage)
 	local m = 8
 	-- solve m - m*e^(k*4) = 4 for k
 	local k = -0.17328
-	local res = m - m * math.exp(k * damage)
+	local res = m - m * exp(k * damage)
 
 	if distance < 2.0 then
 		res = res * 1.1 -- more knockback when closer
@@ -18,7 +20,6 @@ function core.calculate_knockback(player, _, _, _, _, distance, damage)
 end
 
 local function vector_absmax(v)
-	local max, abs = math.max, math.abs
 	return max(max(abs(v.x), abs(v.y)), abs(v.z))
 end
 

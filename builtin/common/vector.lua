@@ -1,5 +1,8 @@
 vector = {}
 
+local floor, hypot = math.floor, math.hypot
+local min, max = math.min, math.max
+
 function vector.new(a, b, c)
 	if type(a) == "table" then
 		assert(a.x and a.y and a.z, "Invalid vector passed to vector.new()")
@@ -18,7 +21,7 @@ function vector.equals(a, b)
 end
 
 function vector.length(v)
-	return math.hypot(v.x, math.hypot(v.y, v.z))
+	return hypot(v.x, hypot(v.y, v.z))
 end
 
 function vector.normalize(v)
@@ -32,17 +35,17 @@ end
 
 function vector.floor(v)
 	return {
-		x = math.floor(v.x),
-		y = math.floor(v.y),
-		z = math.floor(v.z)
+		x = floor(v.x),
+		y = floor(v.y),
+		z = floor(v.z)
 	}
 end
 
 function vector.round(v)
 	return {
-		x = math.floor(v.x + 0.5),
-		y = math.floor(v.y + 0.5),
-		z = math.floor(v.z + 0.5)
+		x = floor(v.x + 0.5),
+		y = floor(v.y + 0.5),
+		z = floor(v.z + 0.5)
 	}
 end
 
@@ -58,7 +61,7 @@ function vector.distance(a, b)
 	local x = a.x - b.x
 	local y = a.y - b.y
 	local z = a.z - b.z
-	return math.hypot(x, math.hypot(y, z))
+	return hypot(x, hypot(y, z))
 end
 
 function vector.direction(pos1, pos2)
@@ -153,6 +156,6 @@ function vector.divide(a, b)
 end
 
 function vector.sort(a, b)
-	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},
-		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
+	return {x = min(a.x, b.x), y = min(a.y, b.y), z = min(a.z, b.z)},
+	       {x = max(a.x, b.x), y = max(a.y, b.y), z = max(a.z, b.z)}
 end

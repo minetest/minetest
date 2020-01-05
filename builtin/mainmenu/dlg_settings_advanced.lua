@@ -15,6 +15,8 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local table_insert = table.insert
+
 local FILENAME = "settingtypes.txt"
 
 local CHAR_CLASSES = {
@@ -55,7 +57,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	-- category
 	local stars, category = line:match("^%[([%*]*)([^%]]+)%]$")
 	if category then
-		table.insert(settings, {
+		table_insert(settings, {
 			name = category,
 			level = stars:len() + base_level,
 			type = "category"
@@ -103,7 +105,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 
 		min = tonumber(min)
 		max = tonumber(max)
-		table.insert(settings, {
+		table_insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = "int",
@@ -127,7 +129,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			return
 		end
 
-		table.insert(settings, {
+		table_insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = setting_type,
@@ -150,7 +152,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		local index = 1
 		for match in default:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
 			index = default:find("[+-]?[%d.-e]+", index) + match:len()
-			table.insert(values, match)
+			table_insert(values, match)
 			ti = ti + 1
 			if ti > 9 then
 				break
@@ -162,9 +164,9 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			flags = default:sub(index)
 			default = default:sub(1, index - 3) -- Make sure no flags in single-line format
 		end
-		table.insert(values, flags)
+		table_insert(values, flags)
 
-		table.insert(settings, {
+		table_insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = setting_type,
@@ -196,7 +198,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			return "Invalid boolean setting"
 		end
 
-		table.insert(settings, {
+		table_insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = "bool",
@@ -220,7 +222,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 
 		min = tonumber(min)
 		max = tonumber(max)
-		table.insert(settings, {
+		table_insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = "float",
@@ -243,7 +245,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			return "Invalid enum setting"
 		end
 
-		table.insert(settings, {
+		table_insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = "enum",
@@ -261,7 +263,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			return "Invalid path setting"
 		end
 
-		table.insert(settings, {
+		table_insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = setting_type,
@@ -289,7 +291,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			default = ""
 		end
 
-		table.insert(settings, {
+		table_insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = "flags",
@@ -348,7 +350,7 @@ local function parse_config_file(read_all, parse_mods)
 			if file then
 				if not games_category_initialized then
 					fgettext_ne("Games") -- not used, but needed for xgettext
-					table.insert(settings, {
+					table_insert(settings, {
 						name = "Games",
 						level = 0,
 						type = "category"
@@ -356,7 +358,7 @@ local function parse_config_file(read_all, parse_mods)
 					games_category_initialized = true
 				end
 
-				table.insert(settings, {
+				table_insert(settings, {
 					name = game.name,
 					level = 1,
 					type = "category"
@@ -381,7 +383,7 @@ local function parse_config_file(read_all, parse_mods)
 			if file then
 				if not mods_category_initialized then
 					fgettext_ne("Mods") -- not used, but needed for xgettext
-					table.insert(settings, {
+					table_insert(settings, {
 						name = "Mods",
 						level = 0,
 						type = "category"
@@ -389,7 +391,7 @@ local function parse_config_file(read_all, parse_mods)
 					mods_category_initialized = true
 				end
 
-				table.insert(settings, {
+				table_insert(settings, {
 					name = mod.name,
 					level = 1,
 					type = "category"
@@ -413,7 +415,7 @@ local function filter_settings(settings, searchstring)
 	-- Setup the keyword list
 	local keywords = {}
 	for word in searchstring:lower():gmatch("%S+") do
-		table.insert(keywords, word)
+		table_insert(keywords, word)
 	end
 
 	local result = {}
@@ -440,18 +442,19 @@ local function filter_settings(settings, searchstring)
 			local setting_score = 0
 			for k = 1, #keywords do
 				local keyword = keywords[k]
+				local string_find = string.find
 
-				if string.find(entry.name:lower(), keyword, 1, true) then
+				if string_find(entry.name:lower(), keyword, 1, true) then
 					setting_score = setting_score + 1
 				end
 
 				if entry.readable_name and
-						string.find(fgettext(entry.readable_name):lower(), keyword, 1, true) then
+						string_find(fgettext(entry.readable_name):lower(), keyword, 1, true) then
 					setting_score = setting_score + 1
 				end
 
 				if entry.comment and
-						string.find(fgettext_ne(entry.comment):lower(), keyword, 1, true) then
+						string_find(fgettext_ne(entry.comment):lower(), keyword, 1, true) then
 					setting_score = setting_score + 1
 				end
 			end
@@ -497,16 +500,16 @@ local function get_current_np_group(setting)
 	if value == nil then
 		t = setting.values
 	else
-		table.insert(t, value.offset)
-		table.insert(t, value.scale)
-		table.insert(t, value.spread.x)
-		table.insert(t, value.spread.y)
-		table.insert(t, value.spread.z)
-		table.insert(t, value.seed)
-		table.insert(t, value.octaves)
-		table.insert(t, value.persistence)
-		table.insert(t, value.lacunarity)
-		table.insert(t, value.flags)
+		table_insert(t, value.offset)
+		table_insert(t, value.scale)
+		table_insert(t, value.spread.x)
+		table_insert(t, value.spread.y)
+		table_insert(t, value.spread.z)
+		table_insert(t, value.seed)
+		table_insert(t, value.octaves)
+		table_insert(t, value.persistence)
+		table_insert(t, value.lacunarity)
+		table_insert(t, value.flags)
 	end
 	return t
 end
@@ -653,7 +656,7 @@ local function create_change_setting_formspec(dialogdata)
 		local val = get_current_value(setting)
 		local v3f = {}
 		for line in val:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
-			table.insert(v3f, line)
+			table_insert(v3f, line)
 		end
 
 		height = height + 0.3
@@ -843,9 +846,9 @@ local function handle_change_setting_buttons(this, fields)
 			for _, name in ipairs(setting.possible) do
 				if name:sub(1, 2) ~= "no" then
 					if checkboxes["cb_" .. name] then
-						table.insert(values, name)
+						table_insert(values, name)
 					else
-						table.insert(values, "no" .. name)
+						table_insert(values, "no" .. name)
 					end
 				end
 			end
@@ -859,7 +862,7 @@ local function handle_change_setting_buttons(this, fields)
 			local np_flags = {}
 			for _, name in ipairs(setting.flags) do
 				if checkboxes["cb_" .. name] then
-					table.insert(np_flags, name)
+					table_insert(np_flags, name)
 				end
 			end
 
