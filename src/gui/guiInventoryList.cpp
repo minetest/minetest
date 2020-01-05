@@ -160,21 +160,20 @@ void GUIInventoryList::draw()
 
 bool GUIInventoryList::OnEvent(const SEvent &event)
 {
-	if (event.EventType != EET_MOUSE_INPUT_EVENT)
+	if (event.EventType != EET_MOUSE_INPUT_EVENT ||
+			getItemIndexAtPos(v2s32(event.MouseInput.X, event.MouseInput.Y)) != -1)
 		return IGUIElement::OnEvent(event);
 
+	// no item slot at pos of mouse event => allow clicking through
+	// find the element that would be hovered if this inventorylist was invisible
 	bool was_visible = IsVisible;
 	IsVisible = false;
-
 	IGUIElement *hovered =
 		Environment->getRootGUIElement()->getElementFromPoint(
 			core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
-
-	bool ret = hovered && hovered->OnEvent(event);
-
 	IsVisible = was_visible;
 
-	return ret || IGUIElement::OnEvent(event);
+	return hovered && hovered->OnEvent(event);
 }
 
 s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
