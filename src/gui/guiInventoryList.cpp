@@ -120,18 +120,21 @@ void GUIInventoryList::draw()
 			s32 x2 = rect.LowerRightCorner.X;
 			s32 y2 = rect.LowerRightCorner.Y;
 			s32 border = 1;
+			core::rect<s32> clipping_rect = Parent ? Parent->getAbsoluteClippingRect()
+					: core::rect<s32>();
+			core::rect<s32> *clipping_rect_ptr = Parent ? &clipping_rect : nullptr;
 			driver->draw2DRectangle(m_slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y1 - border),
-								v2s32(x2 + border, y1)), &AbsoluteClippingRect);
+								v2s32(x2 + border, y1)), clipping_rect_ptr);
 			driver->draw2DRectangle(m_slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y2),
-								v2s32(x2 + border, y2 + border)), &AbsoluteClippingRect);
+								v2s32(x2 + border, y2 + border)), clipping_rect_ptr);
 			driver->draw2DRectangle(m_slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y1),
-								v2s32(x1, y2)), &AbsoluteClippingRect);
+								v2s32(x1, y2)), clipping_rect_ptr);
 			driver->draw2DRectangle(m_slotbordercolor,
 				core::rect<s32>(v2s32(x2, y1),
-								v2s32(x2 + border, y2)), &AbsoluteClippingRect);
+								v2s32(x2 + border, y2)), clipping_rect_ptr);
 		}
 
 		// layer 1
