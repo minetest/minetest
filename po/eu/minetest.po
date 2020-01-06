@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-12-30 20:21+0000\n"
+"PO-Revision-Date: 2020-01-07 07:21+0000\n"
 "Last-Translator: Osoitz <oelkoro@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/minetest/minetest/"
 "eu/>\n"
@@ -1231,23 +1231,23 @@ msgstr "Profilaria ezkutatuta"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "Ezkerreko botoia"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "Eskuineko botoia"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
-msgstr ""
+msgstr "Erdiko botoia"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
-msgstr ""
+msgstr "1. X botoia"
 
 #: src/client/keycode.cpp
 msgid "X Button 2"
-msgstr ""
+msgstr "2. X botoia"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
@@ -1255,7 +1255,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "Tabuladorea"
 
 #: src/client/keycode.cpp
 msgid "Clear"
@@ -1267,11 +1267,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Shift"
-msgstr ""
+msgstr "Maius."
 
 #: src/client/keycode.cpp
 msgid "Control"
-msgstr ""
+msgstr "Ctrl"
 
 #: src/client/keycode.cpp
 msgid "Menu"
@@ -1291,11 +1291,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "Orrialdea gora"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "Orrialdea behera"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1307,51 +1307,51 @@ msgstr ""
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr ""
+msgstr "Ezkerra"
 
 #: src/client/keycode.cpp
 msgid "Up"
-msgstr ""
+msgstr "Gora"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr ""
+msgstr "Eskuina"
 
 #: src/client/keycode.cpp
 msgid "Down"
-msgstr ""
+msgstr "Behera"
 
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr ""
+msgstr "Hautatu"
 
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr ""
+msgstr "Inprimatu"
 
 #: src/client/keycode.cpp
 msgid "Execute"
-msgstr ""
+msgstr "Exekutatu"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
-msgstr ""
+msgstr "Pantaila-argazkia"
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Txertatu"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "Laguntza"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr ""
+msgstr "Ezkerreko leihoa"
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr ""
+msgstr "Eskuineko leihoa"
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
@@ -1423,27 +1423,27 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Shift"
-msgstr ""
+msgstr "Ezkerreko maius."
 
 #: src/client/keycode.cpp
 msgid "Right Shift"
-msgstr ""
+msgstr "Eskuineko maius."
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "Ezkerreko ctrl"
 
 #: src/client/keycode.cpp
 msgid "Right Control"
-msgstr ""
+msgstr "Eskuineko ctrl"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
-msgstr ""
+msgstr "Ezkerreko menua"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
-msgstr ""
+msgstr "Eskuineko menua"
 
 #: src/client/keycode.cpp
 msgid "IME Escape"
@@ -1467,11 +1467,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "Aplikazioak"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "Lokartu"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
@@ -1501,15 +1501,15 @@ msgstr ""
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr ""
+msgstr "Eman izena eta hasi saioa"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Pasahitzak ez datoz bat!"
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr ""
+msgstr "Jarraitu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -1533,55 +1533,55 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "sakatu tekla"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "Aurrera"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "Atzera"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Special"
-msgstr ""
+msgstr "Berezia"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "Jauzi"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "isilean mugitu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "Laga"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr ""
+msgstr "Inbentarioa"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
-msgstr ""
+msgstr "Aurreko elementua"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
-msgstr ""
+msgstr "Hurrengoa elementua"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
-msgstr ""
+msgstr "Aldatu kamera"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle minimap"
-msgstr ""
+msgstr "Txandakatu minimapa"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr ""
+msgstr "Txandakatu hegaz egitea"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
@@ -1589,7 +1589,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr ""
+msgstr "Txandakatu azkar"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
@@ -1597,23 +1597,23 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "Isilarazi"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
-msgstr ""
+msgstr "Jaitsi bolumena"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
-msgstr ""
+msgstr "Igo bolumena"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
-msgstr ""
+msgstr "Aurrera automatikoki"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr ""
+msgstr "Txata"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Screenshot"
@@ -1625,23 +1625,23 @@ msgstr "Barruti hautaketa"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr "Barrutia"
+msgstr "Txikitu barrutia"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr ""
+msgstr "Handitu barrutia"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "Kontsola"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "Agindua"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
-msgstr "Komando lokala"
+msgstr "Agindu lokala"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
@@ -1905,11 +1905,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
-msgstr ""
+msgstr "Joystick mota"
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
-msgstr ""
+msgstr "Joystick mota"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
@@ -1933,7 +1933,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
-msgstr ""
+msgstr "Aurrera tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1944,7 +1944,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
-msgstr ""
+msgstr "Atzera tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1956,7 +1956,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
-msgstr ""
+msgstr "Ezkerrera tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1967,7 +1967,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
-msgstr ""
+msgstr "Eskuinera tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1978,7 +1978,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
-msgstr ""
+msgstr "Jauzi tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1989,7 +1989,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sneak key"
-msgstr ""
+msgstr "Isilean mugitu tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2002,7 +2002,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
-msgstr ""
+msgstr "Inbentarioa tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2013,7 +2013,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Special key"
-msgstr ""
+msgstr "Berezia tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2024,7 +2024,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
-msgstr ""
+msgstr "Txat tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2035,7 +2035,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
-msgstr ""
+msgstr "Agindua tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2070,7 +2070,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "Hegaz egin tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2092,7 +2092,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr ""
+msgstr "Azkar tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
