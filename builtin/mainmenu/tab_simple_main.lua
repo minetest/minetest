@@ -104,7 +104,7 @@ end
 local function main_button_handler(tabview, fields, _, tabdata)
 	if fields.btn_start_singleplayer then
 		gamedata.selected_world = gamedata.worldindex
-		gamedata.singleplayer = true
+		gamedata.singleplayer   = true
 		core.start()
 		return true
 	end

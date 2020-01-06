@@ -606,8 +606,8 @@ local function create_change_setting_formspec(dialogdata)
 		-- First row
 		height = height + 0.3
 		add_field(0.3, "te_offset", fgettext("Offset"), t[1])
-		add_field(3.6, "te_scale",  fgettext("Scale"), t[2])
-		add_field(6.9, "te_seed",   fgettext("Seed"), t[6])
+		add_field(3.6, "te_scale",  fgettext("Scale"),  t[2])
+		add_field(6.9, "te_seed",   fgettext("Seed"),   t[6])
 		height = height + 1.1
 
 		-- Second row
@@ -732,8 +732,8 @@ local function create_change_setting_formspec(dialogdata)
 			w = size.w + 0.25,
 			h = size.h * 1.16 + 0.12
 		}
-		return ("box[%f,%f;%f,%f;%s]textarea[%f,%f;%f,%f;;%s;%s]")
-				:format(size.x, size.y, size.w, size.h, bg_color or "#000",
+		return ("box[%f,%f;%f,%f;%s]textarea[%f,%f;%f,%f;;%s;%s]"):format(
+				size.x, size.y, size.w, size.h, bg_color or "#000",
 			textarea.x, textarea.y, textarea.w, textarea.h,
 			core.formspec_escape(label), core.formspec_escape(text))
 	end

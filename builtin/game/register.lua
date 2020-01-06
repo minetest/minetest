@@ -126,7 +126,7 @@ function core.register_item(name, itemdef)
 		elseif itemdef.drawtype == "fencelike" and not itemdef.selection_box then
 			itemdef.selection_box = {
 				type = "fixed",
-				fixed = {-1 / 8, -1 / 2, -1 / 8, 1 / 8, 1 / 2, 1 / 8}
+				fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8}
 			}
 		end
 		if itemdef.light_source and itemdef.light_source > core.LIGHT_MAX then

@@ -274,7 +274,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 
 	if not oldnode_under or not oldnode_above then
 		log("info", playername .. " tried to place"
-				.. " node in unloaded position " .. core.pos_to_string(above))
+			.. " node in unloaded position " .. core.pos_to_string(above))
 		return itemstack, nil
 	end
 
@@ -363,7 +363,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	if core.get_item_group(def.name, "attached_node") ~= 0 and
 			not builtin_shared.check_attached_node(place_to, newnode) then
 		log("action", "attached node " .. def.name ..
-				" can not be placed at " .. core.pos_to_string(place_to))
+			" can not be placed at " .. core.pos_to_string(place_to))
 		return itemstack, nil
 	end
 
@@ -692,7 +692,7 @@ core.nodedef_default = {
 	visual_scale = 1.0,
 	-- Don't define these because otherwise the old tile_images and
 	-- special_materials wouldn't be read
-	--tiles ={""},
+	--tiles = {""},
 	--special_tiles = {
 	--	{name="", backface_culling=true},
 	--	{name="", backface_culling=true}

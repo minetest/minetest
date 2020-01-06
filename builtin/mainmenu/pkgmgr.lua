@@ -214,8 +214,7 @@ function pkgmgr.parse_register_line(line)
 
 			if pos3 ~= nil then
 				local retval = item:sub(1, pos3 - 1)
-				if retval ~= nil and
-						retval ~= "" then
+				if retval ~= nil and retval ~= "" then
 					return retval
 				end
 			end
@@ -395,7 +394,7 @@ function pkgmgr.enable_mod(this, toset)
 		-- Mod(s) were disabled, so no dependencies need to be enabled
 		table.sort(toggled_mods)
 		minetest.log("info", "Following mods were disabled: " ..
-				table.concat(toggled_mods, ", "))
+			table.concat(toggled_mods, ", "))
 		return
 	end
 
@@ -432,7 +431,7 @@ function pkgmgr.enable_mod(this, toset)
 			local mod_to_enable = list[mod_ids[name]]
 			if not mod_to_enable then
 				minetest.log("warning", "Mod dependency \"" .. name ..
-						"\" not found!")
+					"\" not found!")
 			else
 				if mod_to_enable.enabled == false then
 					mod_to_enable.enabled = true
@@ -453,7 +452,7 @@ function pkgmgr.enable_mod(this, toset)
 	-- Log the list of enabled mods
 	table.sort(toggled_mods)
 	minetest.log("info", "Following mods were enabled: " ..
-			table.concat(toggled_mods, ", "))
+		table.concat(toggled_mods, ", "))
 end
 
 --------------------------------------------------------------------------------
@@ -506,8 +505,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 			targetpath = core.get_texturepath() .. DIR_DELIM .. basename
 		end
 		if not core.copy_dir(from, targetpath) then
-			return nil,
-				fgettext("Failed to install $1 to $2", basename, targetpath)
+			return nil, fgettext("Failed to install $1 to $2", basename, targetpath)
 		end
 		return targetpath, nil
 
@@ -585,8 +583,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 
 	-- Copy it
 	if not core.copy_dir(basefolder.path, targetpath) then
-		return nil,
-		fgettext("Failed to install $1 to $2", basename, targetpath)
+		return nil, fgettext("Failed to install $1 to $2", basename, targetpath)
 	end
 
 	if basefolder.type == "game" then
@@ -737,8 +734,7 @@ function pkgmgr.get_global_mod(idx)
 		return nil
 	end
 
-	if idx == nil or idx < 1 or
-			idx > pkgmgr.global_mods:size() then
+	if idx == nil or idx < 1 or idx > pkgmgr.global_mods:size() then
 		return nil
 	end
 

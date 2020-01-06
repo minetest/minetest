@@ -104,36 +104,35 @@ local function get_formspec()
 			"button[9.2,3.95;2.5,1;world_create;" .. fgettext("New") .. "]" ..
 			"label[4,-0.25;" .. fgettext("Select World:") .. "]" ..
 			"checkbox[0.25,0.25;cb_creative_mode;" .. fgettext("Creative Mode") .. ";" ..
-			dump(core.settings:get_bool("creative_mode")) .. "]" ..
+				dump(core.settings:get_bool("creative_mode")) .. "]" ..
 			"checkbox[0.25,0.7;cb_enable_damage;" .. fgettext("Enable Damage") .. ";" ..
-			dump(core.settings:get_bool("enable_damage")) .. "]" ..
+				dump(core.settings:get_bool("enable_damage")) .. "]" ..
 			"checkbox[0.25,1.15;cb_server;" .. fgettext("Host Server") .. ";" ..
-			dump(core.settings:get_bool("enable_server")) .. "]" ..
-			"textlist[4,0.25;7.5,3.7;sp_worlds;" ..
-			menu_render_worldlist() ..
+				dump(core.settings:get_bool("enable_server")) .. "]" ..
+			"textlist[4,0.25;7.5,3.7;sp_worlds;" .. menu_render_worldlist() ..
 			";" .. index .. "]"
 
 	if core.settings:get_bool("enable_server") then
 		retval = retval ..
 				"button[8.5,4.8;3.2,1;play;" .. fgettext("Host Game") .. "]" ..
 				"checkbox[0.25,1.6;cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
-				dump(core.settings:get_bool("server_announce")) .. "]" ..
+					dump(core.settings:get_bool("server_announce")) .. "]" ..
 				"label[0.25,2.2;" .. fgettext("Name/Password") .. "]" ..
 				"field[0.55,3.2;3.5,0.5;te_playername;;" ..
-				core.formspec_escape(core.settings:get("name")) .. "]" ..
+					core.formspec_escape(core.settings:get("name")) .. "]" ..
 				"pwdfield[0.55,4;3.5,0.5;te_passwd;]"
 
 		local bind_addr = core.settings:get("bind_address")
 		if bind_addr ~= nil and bind_addr ~= "" then
 			retval = retval ..
 					"field[0.55,5.2;2.25,0.5;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
-					core.formspec_escape(core.settings:get("bind_address")) .. "]" ..
+						core.formspec_escape(core.settings:get("bind_address")) .. "]" ..
 					"field[2.8,5.2;1.25,0.5;te_serverport;" .. fgettext("Port") .. ";" ..
-					core.formspec_escape(core.settings:get("port")) .. "]"
+						core.formspec_escape(core.settings:get("port")) .. "]"
 		else
 			retval = retval ..
 					"field[0.55,5.2;3.5,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
-					core.formspec_escape(core.settings:get("port")) .. "]"
+						core.formspec_escape(core.settings:get("port")) .. "]"
 		end
 	else
 		retval = retval ..

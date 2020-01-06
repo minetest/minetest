@@ -127,8 +127,8 @@ end
 
 function core.hash_node_position(pos)
 	return (pos.z + 32768) * 65536 * 65536
-			+ (pos.y + 32768) * 65536
-			+  pos.x + 32768
+	     + (pos.y + 32768) * 65536
+	     +  pos.x + 32768
 end
 
 

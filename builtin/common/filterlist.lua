@@ -295,7 +295,7 @@ function sort_mod_list(self)
 				return a.name < b.name
 			end
 			return a.name:lower() < b.name:lower()
-			-- Else compare name to modpack name
+		-- Else compare name to modpack name
 		else
 			-- Always show modpack pseudo-mod on top of modpack mod list
 			if a.name == b.modpack then

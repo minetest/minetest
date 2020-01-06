@@ -133,9 +133,12 @@ local buttonbar_metatable = {
 	handle_buttons = buttonbar_buttonhandler,
 	handle_events  = function() end,
 	get_formspec   = buttonbar_formspec,
+
 	hide = function(self) self.hidden = true end,
 	show = function(self) self.hidden = false end,
+
 	delete = function(self) ui.delete(self) end,
+
 	add_button = function(self, name, caption, image, tooltip)
 		if caption == nil then caption = "" end
 		if image == nil then image = "" end
@@ -161,6 +164,7 @@ local buttonbar_metatable = {
 			end
 		end
 	end,
+
 	set_bgparams = function(self, bgcolor)
 		if (type(bgcolor) == "string") then
 			self.bgcolor = bgcolor

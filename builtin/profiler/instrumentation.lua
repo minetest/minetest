@@ -111,8 +111,8 @@ end
 local function can_be_called(func)
 	-- It has to be a function or callable table
 	return type(func) == "function" or
-			((type(func) == "table" or type(func) == "userdata") and
-			getmetatable(func) and getmetatable(func).__call)
+		((type(func) == "table" or type(func) == "userdata") and
+		getmetatable(func) and getmetatable(func).__call)
 end
 
 local function assert_can_be_called(func, func_name, level)

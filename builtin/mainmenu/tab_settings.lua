@@ -214,12 +214,12 @@ local function formspec()
 		shaders_enabled = core.settings:get_bool("enable_shaders")
 		tab_string = tab_string ..
 			"checkbox[8.25,0;cb_shaders;" .. fgettext("Shaders") .. ";"
-			.. tostring(shaders_enabled) .. "]"
+				.. tostring(shaders_enabled) .. "]"
 	else
 		core.settings:set_bool("enable_shaders", false)
 		tab_string = tab_string ..
 			"label[8.38,0.2;" .. core.colorize("#888888",
-			fgettext("Shaders (unavailable)")) .. "]"
+				fgettext("Shaders (unavailable)")) .. "]"
 	end
 
 	if core.settings:get("main_menu_style") == "simple" then

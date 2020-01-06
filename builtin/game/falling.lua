@@ -80,8 +80,8 @@ core.register_entity(":__builtin:falling_node", {
 		local bcd = bcn and core.registered_nodes[bcn.name]
 		if bcn and
 				(not bcd or bcd.walkable or
-						(core.get_item_group(self.node.name, "float") ~= 0 and
-								bcd.liquidtype ~= "none")) then
+				(core.get_item_group(self.node.name, "float") ~= 0 and
+				bcd.liquidtype ~= "none")) then
 			if bcd and bcd.leveled and
 					bcn.name == self.node.name then
 				local addlevel = self.node.level
@@ -94,7 +94,7 @@ core.register_entity(":__builtin:falling_node", {
 				end
 			elseif bcd and bcd.buildable_to and
 					(core.get_item_group(self.node.name, "float") == 0 or
-							bcd.liquidtype == "none") then
+					bcd.liquidtype == "none") then
 				core.remove_node(bcp)
 				return
 			end
@@ -234,10 +234,10 @@ function core.check_single_for_falling(p)
 		local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
 		if d_bottom and
 				(core.get_item_group(n.name, "float") == 0 or
-						d_bottom.liquidtype == "none") and
+				d_bottom.liquidtype == "none") and
 				(n.name ~= n_bottom.name or (d_bottom.leveled and
-						core.get_node_level(p_bottom) <
-						core.get_node_max_level(p_bottom))) and
+				core.get_node_level(p_bottom) <
+				core.get_node_max_level(p_bottom))) and
 				(not d_bottom.walkable or d_bottom.buildable_to) then
 			convert_to_falling_node(p, n)
 			return true

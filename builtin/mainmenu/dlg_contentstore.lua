@@ -155,7 +155,7 @@ local function get_screenshot(package)
 
 	-- Get tmp screenshot path
 	local filepath = screenshot_dir .. DIR_DELIM ..
-			package.type .. "-" .. package.author .. "-" .. package.name .. ".png"
+		package.type .. "-" .. package.author .. "-" .. package.name .. ".png"
 
 	-- Return if already downloaded
 	local file = io.open(filepath, "r")

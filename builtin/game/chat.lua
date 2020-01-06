@@ -142,7 +142,7 @@ core.register_chatcommand("privs", {
 			return false, "Player " .. name .. " does not exist."
 		end
 		return true, "Privileges of " .. name .. ": "
-				.. core.privs_to_string(core.get_player_privs(name), ", ")
+			.. core.privs_to_string(core.get_player_privs(name), ", ")
 	end
 })
 
@@ -541,8 +541,8 @@ local function emergeblocks_progress_update(ctx)
 	if ctx.current_blocks ~= ctx.total_blocks then
 		core.chat_send_player(ctx.requestor_name,
 			string_format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
-				ctx.current_blocks, ctx.total_blocks,
-				(ctx.current_blocks / ctx.total_blocks) * 100))
+			ctx.current_blocks, ctx.total_blocks,
+			(ctx.current_blocks / ctx.total_blocks) * 100))
 
 		core.after(2, emergeblocks_progress_update, ctx)
 	end
@@ -551,7 +551,7 @@ end
 core.register_chatcommand("emergeblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Load (or, if nonexistent, generate) map blocks "
-			.. "contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)",
+		.. "contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)",
 	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)

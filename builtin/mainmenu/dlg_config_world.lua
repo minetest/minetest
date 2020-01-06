@@ -242,7 +242,8 @@ function create_configure_world_dlg(worldidx)
 		return
 	end
 
-	dlg.data.list = filterlist.create(pkgmgr.preparemodlist,
+	dlg.data.list = filterlist.create(
+		pkgmgr.preparemodlist,
 		pkgmgr.comparemod,
 		function(element, uid)
 			if element.name == uid then

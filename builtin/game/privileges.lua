@@ -12,7 +12,7 @@ function core.register_privilege(name, param)
 		if def.give_to_admin == nil then
 			def.give_to_admin = def.give_to_singleplayer
 		end
-		if not def.description then
+		if def.description == nil then
 			def.description = "(no description)"
 		end
 	end

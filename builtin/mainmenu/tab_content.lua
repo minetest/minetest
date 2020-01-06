@@ -107,14 +107,14 @@ local function get_formspec(_, _, tabdata)
 				else
 					if toadd_hard ~= "" then
 						desc = desc .. fgettext("Dependencies:") ..
-								"\n" .. toadd_hard
+							"\n" .. toadd_hard
 					end
 					if toadd_soft ~= "" then
 						if toadd_hard ~= "" then
 							desc = desc .. "\n\n"
 						end
 						desc = desc .. fgettext("Optional dependencies:") ..
-								"\n" .. toadd_soft
+							"\n" .. toadd_soft
 					end
 				end
 			end

@@ -60,21 +60,21 @@ local function build_chatcommands_formspec(name, sel, copy)
 		rows[#rows + 1] = COLOR_BLUE .. ",0," .. formspec_escape(data[1]) .. ","
 		for _, cmds in ipairs(data[2]) do
 			local has_priv = check_player_privs(name, cmds[2].privs)
-			rows[#rows + 1] = ("%s,1,%s,%s")
-					:format(has_priv and COLOR_GREEN or COLOR_GRAY,
+			rows[#rows + 1] = ("%s,1,%s,%s"):format(
+					has_priv and COLOR_GREEN or COLOR_GRAY,
 				cmds[1], formspec_escape(cmds[2].params))
 			if sel == #rows then
 				description = cmds[2].description
 				if copy then
-					core.chat_send_player(name, ("Command: %s %s")
-							:format(core.colorize("#0FF", "/" .. cmds[1]), cmds[2].params))
+					core.chat_send_player(name, ("Command: %s %s"):format(
+							core.colorize("#0FF", "/" .. cmds[1]), cmds[2].params))
 				end
 			end
 		end
 	end
 
-	return LIST_FORMSPEC_DESCRIPTION
-			:format("Available commands: (see also: /help <cmd>)",
+	return LIST_FORMSPEC_DESCRIPTION:format(
+			"Available commands: (see also: /help <cmd>)",
 		table.concat(rows, ","), sel or 0,
 		description, "Close")
 end
@@ -94,8 +94,8 @@ local function build_privs_formspec(name)
 
 	local player_privs = core.get_player_privs(name)
 	for _, data in ipairs(privs) do
-		rows[#rows + 1] = ("%s,0,%s,%s")
-				:format(player_privs[data[1]] and COLOR_GREEN or COLOR_GRAY,
+		rows[#rows + 1] = ("%s,0,%s,%s"):format(
+			player_privs[data[1]] and COLOR_GREEN or COLOR_GRAY,
 			data[1], formspec_escape(data[2].description))
 	end
 

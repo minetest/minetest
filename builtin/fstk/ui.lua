@@ -63,7 +63,7 @@ function ui.update()
 			"real_coordinates[true]",
 			"box[0.5,1.2;13,5;#000]",
 			("textarea[0.5,1.2;13,5;;%s;%s]"):format(
-					fgettext("The server has requested a reconnect:"), error_message),
+				fgettext("The server has requested a reconnect:"), error_message),
 			"button[2,6.6;4,1;btn_reconnect_yes;" .. fgettext("Reconnect") .. "]",
 			"button[8,6.6;4,1;btn_reconnect_no;" .. fgettext("Main menu") .. "]"
 		}

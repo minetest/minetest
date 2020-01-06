@@ -62,7 +62,8 @@ function profiler.init_chatcommand()
 				return true, "Statistics were reset"
 			end
 
-			return false, string.format("Usage: %s\n" ..
+			return false, string.format(
+				"Usage: %s\n" ..
 				"Format can be one of txt, csv, lua, json, json_pretty (structures may be subject to change).",
 				param_usage)
 		end

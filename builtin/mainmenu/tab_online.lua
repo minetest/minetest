@@ -41,14 +41,14 @@ local function get_formspec(_, _, tabdata)
 		-- Address / Port
 		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
 		"field[8,0.65;3.25,0.5;te_address;;" ..
-		core.formspec_escape(core.settings:get("address")) .. "]" ..
+			core.formspec_escape(core.settings:get("address")) .. "]" ..
 		"field[11.1,0.65;1.4,0.5;te_port;;" ..
-		core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
+			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
 
 		-- Name / Password
 		"label[7.75,0.95;" .. fgettext("Name / Password") .. "]" ..
 		"field[8,1.85;2.9,0.5;te_name;;" ..
-		core.formspec_escape(core.settings:get("name")) .. "]" ..
+			core.formspec_escape(core.settings:get("name")) .. "]" ..
 		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
 
 		-- Description Background
