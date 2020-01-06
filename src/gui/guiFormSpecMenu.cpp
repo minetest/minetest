@@ -2683,8 +2683,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// Base position of contents of form
 	mydata.basepos = getBasePos();
 
-	/* Convert m_init_draw_spec to m_inventorylists (todo: what does that mean?) */
-
 	m_inventorylists.clear();
 	m_backgrounds.clear();
 	m_tables.clear();
