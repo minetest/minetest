@@ -34,10 +34,7 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	const v2s32 &slot_size,
 	const v2f32 &slot_spacing,
 	GUIFormSpecMenu *fs_menu,
-	const video::SColor &slotbg_n,
-	const video::SColor &slotbg_h,
-	bool slotborder,
-	const video::SColor &slotbordercolor,
+	const Options &options,
 	gui::IGUIFont *font) :
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
 	m_invmgr(invmgr),
@@ -48,10 +45,7 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	m_slot_size(slot_size),
 	m_slot_spacing(slot_spacing),
 	m_fs_menu(fs_menu),
-	m_slotbg_n(slotbg_n),
-	m_slotbg_h(slotbg_h),
-	m_slotborder(slotborder),
-	m_slotbordercolor(slotbordercolor),
+	m_options(options),
 	m_font(font),
 	m_hovered_i(-1)
 {
@@ -108,13 +102,13 @@ void GUIInventoryList::draw()
 
 		// layer 0
 		if (hovering) {
-			driver->draw2DRectangle(m_slotbg_h, rect, &AbsoluteClippingRect);
+			driver->draw2DRectangle(m_options.slotbg_h, rect, &AbsoluteClippingRect);
 		} else {
-			driver->draw2DRectangle(m_slotbg_n, rect, &AbsoluteClippingRect);
+			driver->draw2DRectangle(m_options.slotbg_n, rect, &AbsoluteClippingRect);
 		}
 
 		// Draw inv slot borders
-		if (m_slotborder) {
+		if (m_options.slotborder) {
 			s32 x1 = rect.UpperLeftCorner.X;
 			s32 y1 = rect.UpperLeftCorner.Y;
 			s32 x2 = rect.LowerRightCorner.X;
@@ -123,16 +117,16 @@ void GUIInventoryList::draw()
 			core::rect<s32> clipping_rect = Parent ? Parent->getAbsoluteClippingRect()
 					: core::rect<s32>();
 			core::rect<s32> *clipping_rect_ptr = Parent ? &clipping_rect : nullptr;
-			driver->draw2DRectangle(m_slotbordercolor,
+			driver->draw2DRectangle(m_options.slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y1 - border),
 								v2s32(x2 + border, y1)), clipping_rect_ptr);
-			driver->draw2DRectangle(m_slotbordercolor,
+			driver->draw2DRectangle(m_options.slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y2),
 								v2s32(x2 + border, y2 + border)), clipping_rect_ptr);
-			driver->draw2DRectangle(m_slotbordercolor,
+			driver->draw2DRectangle(m_options.slotbordercolor,
 				core::rect<s32>(v2s32(x1 - border, y1),
 								v2s32(x1, y2)), clipping_rect_ptr);
-			driver->draw2DRectangle(m_slotbordercolor,
+			driver->draw2DRectangle(m_options.slotbordercolor,
 				core::rect<s32>(v2s32(x2, y1),
 								v2s32(x2 + border, y2)), clipping_rect_ptr);
 		}

@@ -442,10 +442,7 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 
 		GUIInventoryList *e = new GUIInventoryList(Environment, this, spec.fid,
 				rect, m_invmgr, loc, listname, geom, start_i, imgsize, slot_spacing,
-				this, data->inventorylist_options.slotbg_n,
-				data->inventorylist_options.slotbg_h,
-				data->inventorylist_options.slotborder,
-				data->inventorylist_options.slotbordercolor, m_font);
+				this, data->inventorylist_options, m_font);
 
 		m_inventorylists.push_back(e);
 		m_fields.push_back(spec);

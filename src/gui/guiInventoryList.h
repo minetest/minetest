@@ -48,6 +48,16 @@ public:
 		s32 i = -1;
 	};
 
+	// options for inventorylists that are setable with the lua api
+	struct Options {
+		// whether a one-pixel border for the slots should be drawn and its color
+		bool slotborder = false;
+		video::SColor slotbordercolor = video::SColor(200, 0, 0, 0);
+		// colors for normal and highlighted slot background
+		video::SColor slotbg_n = video::SColor(255, 128, 128, 128);
+		video::SColor slotbg_h = video::SColor(255, 192, 192, 192);
+	};
+
 	GUIInventoryList(gui::IGUIEnvironment *env,
 		gui::IGUIElement *parent,
 		s32 id,
@@ -60,10 +70,7 @@ public:
 		const v2s32 &slot_size,
 		const v2f32 &slot_spacing,
 		GUIFormSpecMenu *fs_menu,
-		const video::SColor &slotbg_n,
-		const video::SColor &slotbg_h,
-		bool slotborder,
-		const video::SColor &slotbordercolor,
+		const Options &options,
 		gui::IGUIFont *font);
 
 	virtual void draw() override;
@@ -82,14 +89,14 @@ public:
 
 	void setSlotBGColors(const video::SColor &slotbg_n, const video::SColor &slotbg_h)
 	{
-		m_slotbg_n = slotbg_n;
-		m_slotbg_h = slotbg_h;
+		m_options.slotbg_n = slotbg_n;
+		m_options.slotbg_h = slotbg_h;
 	}
 
 	void setSlotBorders(bool slotborder, const video::SColor &slotbordercolor)
 	{
-		m_slotborder = slotborder;
-		m_slotbordercolor = slotbordercolor;
+		m_options.slotborder = slotborder;
+		m_options.slotbordercolor = slotbordercolor;
 	}
 
 	// returns -1 if not item is at pos p
@@ -113,13 +120,7 @@ private:
 	// the GUIFormSpecMenu can have an item selected and co.
 	GUIFormSpecMenu *m_fs_menu;
 
-	// normal and highlighted background color
-	video::SColor m_slotbg_n;
-	video::SColor m_slotbg_h;
-
-	// slotboarder
-	bool m_slotborder;
-	video::SColor m_slotbordercolor;
+	Options m_options;
 
 	// the font
 	gui::IGUIFont *m_font;

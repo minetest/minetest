@@ -350,12 +350,7 @@ private:
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
 
-		struct {
-			bool slotborder = false;
-			video::SColor slotbg_n = video::SColor(255, 128, 128, 128);
-			video::SColor slotbg_h = video::SColor(255, 192, 192, 192);
-			video::SColor slotbordercolor = video::SColor(200, 0, 0, 0);
-		} inventorylist_options;
+		GUIInventoryList::Options inventorylist_options;
 
 		struct {
 			s32 max = 1000;
