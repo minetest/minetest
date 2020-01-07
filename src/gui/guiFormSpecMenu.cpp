@@ -787,42 +787,42 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 {
 	std::vector<std::string> parts = split(element, ';');
 
-	if ((parts.size() == 3) ||
-		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION))) {
-		std::vector<std::string> v_pos   = split(parts[0], ',');
-		std::vector<std::string> v_geom  = split(parts[1], ',');
-		std::string name = unescape_string(parts[2]);
+	if (parts.size() != 3 &&
+			(parts.size() < 3 || m_formspec_version <= FORMSPEC_API_VERSION)) {
+		errorstream << "Invalid animated image element(" << parts.size() << "): '" << element << "'"  << std::endl;
+		return;
+	}
 
-		MY_CHECKPOS("animated_image", 0);
-		MY_CHECKGEOM("animated_image", 1);
+	std::vector<std::string> v_pos   = split(parts[0], ',');
+	std::vector<std::string> v_geom  = split(parts[1], ',');
+	std::string name = unescape_string(parts[2]);
 
-		v2s32 pos = getRealCoordinateBasePos(v_pos);
-		v2s32 geom = getRealCoordinateGeometry(v_geom);
+	MY_CHECKPOS("animated_image", 0);
+	MY_CHECKGEOM("animated_image", 1);
 
-		if (!data->explicit_size)
-			warningstream << "invalid use of animated_image without a size[] element" << std::endl;
+	v2s32 pos = getRealCoordinateBasePos(v_pos);
+	v2s32 geom = getRealCoordinateGeometry(v_geom);
 
-		FieldSpec spec(
+	if (!data->explicit_size)
+		warningstream << "invalid use of animated_image without a size[] element" << std::endl;
+
+	FieldSpec spec(
 			"",
 			L"",
 			L"",
 			258 + m_fields.size()
-		);
+			);
 
-		core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
+	core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
 
-		gui::IGUIElement *e = new GUIAnimatedImage(Environment, this, spec.fid,
-				rect, name, m_tsrc, m_texture_pool);
+	gui::IGUIElement *e = new GUIAnimatedImage(Environment, this, spec.fid,
+			rect, name, m_tsrc, m_texture_pool);
 
-		auto style = getStyleForElement("animated_image", spec.fname);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->drop();
+	auto style = getStyleForElement("animated_image", spec.fname);
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	e->drop();
 
-		m_fields.push_back(spec);
-		return;
-	}
-
-	errorstream << "Invalid animated image element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &element)
