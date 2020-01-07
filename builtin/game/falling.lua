@@ -1,6 +1,7 @@
 -- Minetest: builtin/item.lua
 
 local builtin_shared = ...
+local SCALE = 0.667
 
 --
 -- Falling stuff
@@ -9,7 +10,7 @@ local builtin_shared = ...
 core.register_entity(":__builtin:falling_node", {
 	initial_properties = {
 		visual = "wielditem",
-		visual_size = {x = 0.667, y = 0.667},
+		visual_size = { x = SCALE, y = SCALE, z = SCALE },
 		textures = {},
 		physical = true,
 		is_visible = false,
@@ -56,10 +57,14 @@ core.register_entity(":__builtin:falling_node", {
 					textures = { def.tiles[1] }
 				end
 			end
+			local vsize
+			if def.visual_scale then
+				vsize = { x = def.visual_scale, y = def.visual_scale, z = def.visual_scale }
+			end
 			self.object:set_properties({
 				is_visible = true,
 				visual = "upright_sprite",
-				visual_size = { x=1, y=1 },
+				visual_size = vsize,
 				textures = textures,
 				glow = def.light_source,
 			})
@@ -68,9 +73,14 @@ core.register_entity(":__builtin:falling_node", {
 			if core.is_colored_paramtype(def.paramtype2) then
 				itemstring = core.itemstring_with_palette(itemstring, node.param2)
 			end
+			local vsize
+			if def.visual_scale then
+				vsize = { x = def.visual_scale * SCALE, y = def.visual_scale * SCALE, z = def.visual_scale * SCALE }
+			end
 			self.object:set_properties({
 				is_visible = true,
 				wield_item = itemstring,
+				visual_size = vsize,
 				glow = def.light_source,
 			})
 		end
