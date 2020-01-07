@@ -761,12 +761,8 @@ bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
 	const FlagDesc *flagdesc) const
 {
 	if (!flagdesc) {
-		// Fallback
-		auto it = m_flags.find(name);
-		if (it == m_flags.end())
-			return false;
-
-		flagdesc = it->second;
+		if (!(flagdesc = getFlagDescFallback(name)))
+			return false; // Not found
 	}
 
 	try {
@@ -895,6 +891,11 @@ bool Settings::setV3F(const std::string &name, v3f value)
 bool Settings::setFlagStr(const std::string &name, u32 flags,
 	const FlagDesc *flagdesc, u32 flagmask)
 {
+	if (!flagdesc) {
+		if (!(flagdesc = getFlagDescFallback(name)))
+			return false; // Not found
+	}
+
 	return set(name, writeFlagString(flags, flagdesc, flagmask));
 }
 
@@ -1041,10 +1042,10 @@ void Settings::clearDefaultsNoLock()
 }
 
 void Settings::setDefault(const std::string &name, const FlagDesc *flagdesc,
-		const std::string &value)
+	u32 flags)
 {
 	m_flags[name] = flagdesc;
-	setDefault(name, value);
+	setDefault(name, writeFlagString(flags, flagdesc, U32_MAX));
 }
 
 const FlagDesc *Settings::getFlagDescFallback(const std::string &name) const

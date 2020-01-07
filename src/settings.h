@@ -203,7 +203,7 @@ public:
 	bool setV2F(const std::string &name, v2f value);
 	bool setV3F(const std::string &name, v3f value);
 	bool setFlagStr(const std::string &name, u32 flags,
-		const FlagDesc *flagdesc, u32 flagmask);
+		const FlagDesc *flagdesc = nullptr, u32 flagmask = U32_MAX);
 	bool setNoiseParams(const std::string &name, const NoiseParams &np,
 		bool set_default=false);
 	// N.B. if setStruct() is used to write a non-POD aggregate type,
@@ -221,8 +221,7 @@ public:
 	 * Miscellany *
 	 **************/
 
-	void setDefault(const std::string &name, const FlagDesc *flagdesc,
-		const std::string &value);
+	void setDefault(const std::string &name, const FlagDesc *flagdesc, u32 flags);
 	const FlagDesc *getFlagDescFallback(const std::string &name) const;
 
 	void registerChangedCallback(const std::string &name,

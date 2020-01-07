@@ -35,7 +35,6 @@ extern FlagDesc flagdesc_mapgen_v7[];
 
 
 struct MapgenV7Params : public MapgenParams {
-	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS;
 	s16 mount_zero_level = 0;
 
 	float cave_width = 0.09f;
@@ -70,6 +69,7 @@ struct MapgenV7Params : public MapgenParams {
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
+	void setDefaultSettings(Settings *settings);
 };
 
 

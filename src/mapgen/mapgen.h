@@ -124,10 +124,9 @@ struct MapgenParams {
 	u64 seed = 0;
 	s16 water_level = 1;
 	s16 mapgen_limit = MAX_MAP_GENERATION_LIMIT;
-	u32 flags = MG_CAVES | MG_LIGHT | MG_DECORATIONS | MG_BIOMES;
-	// TODO: Remove the default "spflags" values from the mapgens
-	// They are now overwritten by Settings::getFlagStr
-	//u32 spflags = 0;
+	// Flags set in readParams
+	u32 flags = 0;
+	u32 spflags = 0;
 
 	BiomeParams *bparams = nullptr;
 
@@ -136,6 +135,8 @@ struct MapgenParams {
 
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
+	// Default settings for g_settings such as flags
+	virtual void setDefaultSettings(Settings *settings) {};
 
 	s32 getSpawnRangeMax();
 

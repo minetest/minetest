@@ -217,22 +217,18 @@ void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hid
 
 void Mapgen::setDefaultSettings(Settings *settings)
 {
+	// Option 1: List all defaults here as an overview
+	// Option 2: Each mapgen contains its own default setter function
+	// This is option 2.
+
 	settings->setDefault("mg_flags", flagdesc_mapgen,
-		 "caves,dungeons,light,decorations,biomes");
-	settings->setDefault("mgv5_spflags", flagdesc_mapgen_v5,
-		"caverns");
-	settings->setDefault("mgv6_spflags", flagdesc_mapgen_v6,
-		"jungles,biomeblend,mudflow,snowbiomes,noflat,trees");
-	settings->setDefault("mgv7_spflags", flagdesc_mapgen_v7,
-		"mountains,ridges,nofloatlands,caverns");
-	settings->setDefault("mgcarpathian_spflags", flagdesc_mapgen_carpathian,
-		"caverns,norivers");
-	settings->setDefault("mgflat_spflags", flagdesc_mapgen_flat,
-		"nolakes,nohills");
-	settings->setDefault("mgfractal_spflags", flagdesc_mapgen_fractal,
-		"terrain");
-	settings->setDefault("mgvalleys_spflags", flagdesc_mapgen_valleys,
-		"altitude_chill,humid_rivers,vary_river_depth,altitude_dry");
+		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES);
+
+	for (int i = 0; i < (int)MAPGEN_INVALID; ++i) {
+		MapgenParams *params = createMapgenParams((MapgenType)i);
+		params->setDefaultSettings(settings);
+		delete params;
+	}
 }
 
 u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
@@ -1087,7 +1083,7 @@ void MapgenParams::writeParams(Settings *settings) const
 	settings->setS16("water_level", water_level);
 	settings->setS16("mapgen_limit", mapgen_limit);
 	settings->setS16("chunksize", chunksize);
-	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
+	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen);
 
 	if (bparams)
 		bparams->writeParams(settings);

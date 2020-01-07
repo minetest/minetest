@@ -222,7 +222,8 @@ void TestSettings::testFlagDesc()
 	};
 
 	// Enabled: biomes, jungles, oranges (default)
-	s.setDefault("test_desc", flagdesc, "biomes,notrees,jungles,oranges");
+	s.setDefault("test_desc", flagdesc, readFlagString(
+		"biomes,notrees,jungles,oranges", flagdesc, nullptr));
 	UASSERT(s.getFlagStr("test_desc", flagdesc, nullptr) == (0x01 | 0x04 | 0x08));
 
 	// Enabled: jungles, oranges, tables
@@ -235,7 +236,7 @@ void TestSettings::testFlagDesc()
 
 	// Numeric flag tests (override)
 	// Enabled: trees, tables
-	s.setDefault("test_flags", flagdesc, "18");
+	s.setDefault("test_flags", flagdesc, 0x02 | 0x10);
 	UASSERT(s.getFlagStr("test_flags", flagdesc, nullptr) == (0x02 | 0x10));
 
 	// Enabled: tables

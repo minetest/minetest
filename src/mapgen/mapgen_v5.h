@@ -31,7 +31,6 @@ extern FlagDesc flagdesc_mapgen_v5[];
 
 struct MapgenV5Params : public MapgenParams
 {
-	u32 spflags = MGV5_CAVERNS;
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -256;
 	u16 small_cave_num_min = 0;
@@ -59,6 +58,7 @@ struct MapgenV5Params : public MapgenParams
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
+	void setDefaultSettings(Settings *settings);
 };
 
 class MapgenV5 : public MapgenBasic
