@@ -204,7 +204,7 @@ public:
 	}
 
 private:
-	bool parseRect(const std::string& value, irr::core::rect<s32> *parsed_rect) const
+	bool parseRect(const std::string &value, irr::core::rect<s32> *parsed_rect) const
 	{
 		irr::core::rect<s32> rect;
 		std::vector<std::string> v_rect = split(value, ',');
@@ -220,10 +220,13 @@ private:
 			rect.LowerRightCorner = irr::core::vector2di(-x, -y);
 			// `-x` is interpreted as `w - x`
 		} else if (v_rect.size() == 4) {
-			rect.UpperLeftCorner = irr::core::vector2di(stoi(v_rect[0]), stoi(v_rect[1]));
-			rect.LowerRightCorner = irr::core::vector2di(stoi(v_rect[2]), stoi(v_rect[3]));
+			rect.UpperLeftCorner =
+				irr::core::vector2di(stoi(v_rect[0]), stoi(v_rect[1]));
+			rect.LowerRightCorner =
+				irr::core::vector2di(stoi(v_rect[2]), stoi(v_rect[3]));
 		} else {
-			warningstream << "Invalid rectangle string format: \"" << value << "\"" << std::endl;
+			warningstream << "Invalid rectangle string format: \"" << value
+				<< "\"" << std::endl;
 			return false;
 		}
 
