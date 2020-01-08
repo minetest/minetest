@@ -37,7 +37,7 @@ core.register_entity(":__builtin:falling_node", {
 		local def = core.registered_nodes[node.name]
 		if not def then
 			-- Don't allow unknown nodes to fall
-			core.log("warning",
+			core.log("info",
 				"Unknown falling node removed at "..
 				core.pos_to_string(self.object:get_pos()))
 			self.object:remove()
