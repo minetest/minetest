@@ -86,7 +86,8 @@ core.register_entity(":__builtin:falling_node", {
 			end
 			local vsize
 			if def.visual_scale then
-				vsize = { x = def.visual_scale, y = def.visual_scale, z = def.visual_scale }
+				local s = def.visual_scale
+				vsize = { x = s, y = s, z = s }
 			end
 			self.object:set_properties({
 				is_visible = true,
@@ -102,7 +103,8 @@ core.register_entity(":__builtin:falling_node", {
 			end
 			local vsize
 			if def.visual_scale then
-				vsize = { x = def.visual_scale * SCALE, y = def.visual_scale * SCALE, z = def.visual_scale * SCALE }
+				local s = def.visual_scale * SCALE
+				vsize = { x = s, y = s, z = s }
 			end
 			self.object:set_properties({
 				is_visible = true,
