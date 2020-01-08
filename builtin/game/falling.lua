@@ -116,7 +116,9 @@ core.register_entity(":__builtin:falling_node", {
 			self.object:set_yaw(math.pi*0.25)
 		elseif (node.param2 ~= 0 and (def.wield_image == ""
 				or def.wield_image == nil))
-				or def.drawtype == "signlike" then
+				or def.drawtype == "signlike"
+				or def.drawtype == "mesh"
+				or def.drawtype == "nodebox" then
 			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
 				local fdir = node.param2 % 32
 				-- Get rotation from a precalculated lookup table
@@ -142,6 +144,12 @@ core.register_entity(":__builtin:falling_node", {
 					pitch = pitch - math.pi/2
 					if rot >= 0 and rot <= 1 then
 						roll = roll - math.pi/2
+					end
+				elseif def.drawtype == "mesh" then
+					if rot >= 0 and rot <= 1 then
+						roll = roll + math.pi
+					else
+						yaw = yaw + math.pi
 					end
 				end
 				self.object:set_rotation({x=pitch, y=yaw, z=roll})
