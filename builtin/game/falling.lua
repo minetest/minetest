@@ -3,6 +3,33 @@
 local builtin_shared = ...
 local SCALE = 0.667
 
+local facedir_to_euler = {
+	{y = 0, x = 0, z = 0},
+	{y = -math.pi/2, x = 0, z = 0},
+	{y = math.pi, x = 0, z = 0},
+	{y = math.pi/2, x = 0, z = 0},
+	{y = math.pi/2, x = -math.pi/2, z = math.pi/2},
+	{y = math.pi/2, x = math.pi, z = math.pi/2},
+	{y = math.pi/2, x = math.pi/2, z = math.pi/2},
+	{y = math.pi/2, x = 0, z = math.pi/2},
+	{y = -math.pi/2, x = math.pi/2, z = math.pi/2},
+	{y = -math.pi/2, x = 0, z = math.pi/2},
+	{y = -math.pi/2, x = -math.pi/2, z = math.pi/2},
+	{y = -math.pi/2, x = math.pi, z = math.pi/2},
+	{y = 0, x = 0, z = math.pi/2},
+	{y = 0, x = -math.pi/2, z = math.pi/2},
+	{y = 0, x = math.pi, z = math.pi/2},
+	{y = 0, x = math.pi/2, z = math.pi/2},
+	{y = math.pi, x = math.pi, z = math.pi/2},
+	{y = math.pi, x = math.pi/2, z = math.pi/2},
+	{y = math.pi, x = 0, z = math.pi/2},
+	{y = math.pi, x = -math.pi/2, z = math.pi/2},
+	{y = math.pi, x = math.pi, z = 0},
+	{y = -math.pi/2, x = math.pi, z = 0},
+	{y = 0, x = math.pi, z = 0},
+	{y = math.pi/2, x = math.pi, z = 0}
+}
+
 --
 -- Falling stuff
 --
@@ -92,35 +119,11 @@ core.register_entity(":__builtin:falling_node", {
 				or def.drawtype == "signlike" then
 			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
 				local fdir = node.param2 % 32
-				local face = fdir % 4
-				local axis = fdir - face
-				local pitch, yaw, roll
-				if axis == 4 then
-					pitch = (4 - face) * (math.pi/2) - math.pi/2
-					yaw = math.pi/2
-					roll = math.pi/2
-				elseif axis == 8 then
-					pitch = (4 - face) * (math.pi/2) - math.pi*1.5
-					yaw = math.pi*1.5
-					roll = math.pi/2
-				elseif axis == 12 then
-					pitch = (4 - face) * (math.pi/2)
-					yaw = 0
-					roll = math.pi/2
-				elseif axis == 16 then
-					pitch = (4 - face) * (math.pi/2) + math.pi
-					yaw = math.pi
-					roll = math.pi/2
-				elseif axis == 20 then
-					pitch = math.pi
-					yaw = face * (math.pi/2) + math.pi
-					roll = 0
-				else
-					pitch = 0
-					yaw = (4 - face) * (math.pi/2)
-					roll = 0
+				-- Get rotation from a precalculated lookup table
+				local euler = facedir_to_euler[fdir + 1]
+				if euler then
+					self.object:set_rotation(euler)
 				end
-				self.object:set_rotation({x=pitch, y=yaw, z=roll})
 			elseif (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted") then
 				local rot = node.param2 % 8
 				local pitch, yaw, roll = 0, 0, 0
@@ -129,7 +132,7 @@ core.register_entity(":__builtin:falling_node", {
 				elseif rot == 2 then
 					pitch, yaw = math.pi/2, math.pi/2
 				elseif rot == 3 then
-					pitch, yaw = math.pi/2, math.pi*1.5
+					pitch, yaw = math.pi/2, -math.pi/2
 				elseif rot == 4 then
 					pitch, yaw = math.pi/2, math.pi
 				elseif rot == 5 then
