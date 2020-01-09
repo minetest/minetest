@@ -303,13 +303,22 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	}
 }
 
-scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<ItemPartColor> *colors)
+scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
 	MeshMakeData mesh_make_data(client, false, false);
 	MeshCollector collector;
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);
-	gen.renderSingle(id);
+	u8 param2 = 0;
+	if (f.drawtype == NDT_TORCHLIKE)
+		param2 = 1;
+	else if (f.drawtype == NDT_SIGNLIKE)
+		param2 = 4;
+	else if ((f.drawtype == NDT_PLANTLIKE ||
+		  f.drawtype == NDT_PLANTLIKE_ROOTED)
+		&& f.param_type_2 == CPT2_LEVELED)
+		param2 = 8;
+	gen.renderSingle(id, param2);
 	colors->clear();
 	scene::SMesh *mesh = new scene::SMesh();
 	for (auto &prebuffers : collector.prebuffers)
@@ -319,8 +328,11 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 				p.layer.texture = frame.texture;
 				p.layer.normal_texture = frame.normal_texture;
 			}
-			for (video::S3DVertex &v : p.vertices)
+			for (video::S3DVertex &v : p.vertices) {
 				v.Color.setAlpha(255);
+				if (f.drawtype == NDT_PLANTLIKE_ROOTED)
+					v.Pos.Y -= 10.0;
+			}
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material.setTexture(0, p.layer.texture);
 			p.layer.applyMaterialOptions(buf->Material);
@@ -385,7 +397,10 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 					changeToMesh(nullptr);
 					break;
 				}
-				case NDT_PLANTLIKE: {
+				case NDT_SIGNLIKE:
+				case NDT_TORCHLIKE:
+				case NDT_RAILLIKE:
+				{
 					setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
 						tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
 						def.wield_scale, tsrc,
@@ -397,15 +412,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 					m_colors.emplace_back(l1.has_color, l1.color);
 					break;
 				}
-				case NDT_PLANTLIKE_ROOTED: {
-					setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
-						"", def.wield_scale, tsrc,
-						f.special_tiles[0].layers[0].animation_frame_count);
-					// Add color
-					const TileLayer &l0 = f.special_tiles[0].layers[0];
-					m_colors.emplace_back(l0.has_color, l0.color);
-					break;
-				}
+
 				case NDT_NORMAL:
 				case NDT_ALLFACES:
 				case NDT_LIQUID:
@@ -414,7 +421,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 					break;
 				}
 				default: {
-					mesh = createSpecialNodeMesh(client, id, &m_colors);
+					mesh = createSpecialNodeMesh(client, id, &m_colors, f);
 					changeToMesh(mesh);
 					mesh->drop();
 					m_meshnode->setScale(
@@ -428,7 +435,14 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.MaterialType = m_material_type;
 			material.MaterialTypeParam = 0.5f;
-			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			if (f.drawtype != NDT_TORCHLIKE &&
+					f.drawtype != NDT_SIGNLIKE &&
+					f.drawtype != NDT_FIRELIKE &&
+					f.drawtype != NDT_RAILLIKE &&
+					f.drawtype != NDT_PLANTLIKE &&
+					f.drawtype != NDT_PLANTLIKE_ROOTED) {
+				material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			}
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 		}
@@ -527,25 +541,6 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 				&result->buffer_colors);
 		} else {
 			switch (f.drawtype) {
-				case NDT_PLANTLIKE: {
-					mesh = getExtrudedMesh(tsrc,
-						tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-						tsrc->getTextureName(f.tiles[0].layers[1].texture_id));
-					// Add color
-					const TileLayer &l0 = f.tiles[0].layers[0];
-					result->buffer_colors.emplace_back(l0.has_color, l0.color);
-					const TileLayer &l1 = f.tiles[0].layers[1];
-					result->buffer_colors.emplace_back(l1.has_color, l1.color);
-					break;
-				}
-				case NDT_PLANTLIKE_ROOTED: {
-					mesh = getExtrudedMesh(tsrc,
-						tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id), "");
-					// Add color
-					const TileLayer &l0 = f.special_tiles[0].layers[0];
-					result->buffer_colors.emplace_back(l0.has_color, l0.color);
-					break;
-				}
 				case NDT_NORMAL:
 				case NDT_ALLFACES:
 				case NDT_LIQUID:
@@ -560,7 +555,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 					break;
 				}
 				default: {
-					mesh = createSpecialNodeMesh(client, id, &result->buffer_colors);
+					mesh = createSpecialNodeMesh(client, id, &result->buffer_colors, f);
 					scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
 				}
 			}
@@ -574,7 +569,14 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			material.MaterialTypeParam = 0.5f;
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
-			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			if (f.drawtype != NDT_TORCHLIKE &&
+					f.drawtype != NDT_SIGNLIKE &&
+					f.drawtype != NDT_FIRELIKE &&
+					f.drawtype != NDT_RAILLIKE &&
+					f.drawtype != NDT_PLANTLIKE &&
+					f.drawtype != NDT_PLANTLIKE_ROOTED) {
+				material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			}
 			material.setFlag(video::EMF_LIGHTING, false);
 		}
 
