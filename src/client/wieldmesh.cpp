@@ -314,14 +314,13 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 	    f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		if (f.drawtype == NDT_TORCHLIKE)
 			param2 = 1;
-		else if (f.drawtype == NDT_SIGNLIKE)
-			param2 = 4;
-		else if (f.drawtype == NDT_NODEBOX ||
-			f.drawtype == NDT_MESH)
+		else if (f.drawtype == NDT_SIGNLIKE ||
+				f.drawtype == NDT_NODEBOX ||
+				f.drawtype == NDT_MESH)
 			param2 = 4;
 	} else if (f.param_type_2 == CPT2_LEVELED) {
 		if (f.drawtype == NDT_PLANTLIKE ||
-		    f.drawtype == NDT_PLANTLIKE_ROOTED)
+				f.drawtype == NDT_PLANTLIKE_ROOTED)
 			param2 = 8;
 	}
 	gen.renderSingle(id, param2);
@@ -386,56 +385,43 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	// Handle nodes
 	// See also CItemDefManager::createClientCached()
 	if (def.type == ITEM_NODE) {
-		if (f.mesh_ptr[0]) {
-			// e.g. mesh nodes and nodeboxes
-			mesh = cloneMesh(f.mesh_ptr[0]);
-			postProcessNodeMesh(mesh, f, m_enable_shaders, true,
-				&m_material_type, &m_colors);
-			changeToMesh(mesh);
-			mesh->drop();
-			// mesh is pre-scaled by BS * f->visual_scale
-			m_meshnode->setScale(
-					def.wield_scale * WIELD_SCALE_FACTOR
-					/ (BS * f.visual_scale));
-		} else {
-			switch (f.drawtype) {
-				case NDT_AIRLIKE: {
-					setExtruded(
-						"no_texture_airlike.png", "",
-						v3f(1.0, 1.0, 1.0), tsrc, 1);
-					break;
-				}
-				case NDT_SIGNLIKE:
-				case NDT_TORCHLIKE:
-				case NDT_RAILLIKE:
-				{
-					setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-						tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
-						def.wield_scale, tsrc,
-						f.tiles[0].layers[0].animation_frame_count);
-					// Add color
-					const TileLayer &l0 = f.tiles[0].layers[0];
-					m_colors.emplace_back(l0.has_color, l0.color);
-					const TileLayer &l1 = f.tiles[0].layers[1];
-					m_colors.emplace_back(l1.has_color, l1.color);
-					break;
-				}
+		switch (f.drawtype) {
+			case NDT_AIRLIKE: {
+				setExtruded(
+					"no_texture_airlike.png", "",
+					v3f(1.0, 1.0, 1.0), tsrc, 1);
+				break;
+			}
+			case NDT_SIGNLIKE:
+			case NDT_TORCHLIKE:
+			case NDT_RAILLIKE:
+			{
+				setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
+					tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
+					def.wield_scale, tsrc,
+					f.tiles[0].layers[0].animation_frame_count);
+				// Add color
+				const TileLayer &l0 = f.tiles[0].layers[0];
+				m_colors.emplace_back(l0.has_color, l0.color);
+				const TileLayer &l1 = f.tiles[0].layers[1];
+				m_colors.emplace_back(l1.has_color, l1.color);
+				break;
+			}
 
-				case NDT_NORMAL:
-				case NDT_ALLFACES:
-				case NDT_LIQUID:
-				case NDT_FLOWINGLIQUID: {
-					setCube(f, def.wield_scale);
-					break;
-				}
-				default: {
-					mesh = createSpecialNodeMesh(client, id, &m_colors, f);
-					changeToMesh(mesh);
-					mesh->drop();
-					m_meshnode->setScale(
-							def.wield_scale * WIELD_SCALE_FACTOR
-							/ (BS * f.visual_scale));
-				}
+			case NDT_NORMAL:
+			case NDT_ALLFACES:
+			case NDT_LIQUID:
+			case NDT_FLOWINGLIQUID: {
+				setCube(f, def.wield_scale);
+				break;
+			}
+			default: {
+				mesh = createSpecialNodeMesh(client, id, &m_colors, f);
+				changeToMesh(mesh);
+				mesh->drop();
+				m_meshnode->setScale(
+						def.wield_scale * WIELD_SCALE_FACTOR
+						/ (BS * f.visual_scale));
 			}
 		}
 		u32 material_count = m_meshnode->getMaterialCount();
@@ -448,7 +434,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 					f.drawtype != NDT_FIRELIKE &&
 					f.drawtype != NDT_RAILLIKE &&
 					f.drawtype != NDT_PLANTLIKE &&
-					f.drawtype != NDT_PLANTLIKE_ROOTED) {
+					f.drawtype != NDT_PLANTLIKE_ROOTED &&
+					f.drawtype != NDT_MESH) {
 				material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			}
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
@@ -547,30 +534,23 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			def.inventory_overlay);
 		result->needs_shading = false;
 	} else if (def.type == ITEM_NODE) {
-		if (f.mesh_ptr[0]) {
-			mesh = cloneMesh(f.mesh_ptr[0]);
-			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-			postProcessNodeMesh(mesh, f, false, false, nullptr,
-				&result->buffer_colors);
-		} else {
-			switch (f.drawtype) {
-				case NDT_NORMAL:
-				case NDT_ALLFACES:
-				case NDT_LIQUID:
-				case NDT_FLOWINGLIQUID: {
-					scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
-					mesh = cloneMesh(cube);
-					cube->drop();
-					scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
-					// add overlays
-					postProcessNodeMesh(mesh, f, false, false, nullptr,
-						&result->buffer_colors);
-					break;
-				}
-				default: {
-					mesh = createSpecialNodeMesh(client, id, &result->buffer_colors, f);
-					scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-				}
+		switch (f.drawtype) {
+			case NDT_NORMAL:
+			case NDT_ALLFACES:
+			case NDT_LIQUID:
+			case NDT_FLOWINGLIQUID: {
+				scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
+				mesh = cloneMesh(cube);
+				cube->drop();
+				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
+				// add overlays
+				postProcessNodeMesh(mesh, f, false, false, nullptr,
+					&result->buffer_colors);
+				break;
+			}
+			default: {
+				mesh = createSpecialNodeMesh(client, id, &result->buffer_colors, f);
+				scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
 			}
 		}
 
