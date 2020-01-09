@@ -1050,6 +1050,7 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 		vertex.Z += offset_h;
 		vertex.rotateXZBy(rotation);
 		vertex.Y += offset_v;
+		vertex += offset;
 	}
 	drawQuad(vertices);
 }
@@ -1075,6 +1076,11 @@ void MapblockMeshGenerator::drawFirelikeNode()
 	bool drawBasicFire = neighbor[D6D_YN] || !neighbors;
 	bool drawBottomFire = neighbor[D6D_YP];
 
+	// Tiny X/Z offset to prevent z-fighting
+	offset = v3f(0, 0, 0);
+	offset.X = BS * ((p.Z % 4 + p.Y % 4) * 0.001 - 0.004);
+	offset.Z = BS * ((p.X % 4 + p.Y % 4) * 0.001 - 0.004);
+
 	if (drawBasicFire || neighbor[D6D_ZP])
 		drawFirelikeQuad(0, -10, 0.4 * BS);
 	else if (drawBottomFire)
@@ -1096,8 +1102,13 @@ void MapblockMeshGenerator::drawFirelikeNode()
 		drawFirelikeQuad(270, 70, 0.47 * BS, 0.484 * BS);
 
 	if (drawBasicFire) {
-		drawFirelikeQuad(45, 0, 0.0);
-		drawFirelikeQuad(-45, 0, 0.0);
+		if (p.Y % 2 == 0) {
+			drawFirelikeQuad(46, 0, 0.0);
+			drawFirelikeQuad(-44, 0, 0.0);
+		} else {
+			drawFirelikeQuad(44, 0, 0.0);
+			drawFirelikeQuad(-46, 0, 0.0);
+		}
 	}
 }
 
