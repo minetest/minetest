@@ -310,14 +310,20 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 	u8 param2 = 0;
-	if (f.drawtype == NDT_TORCHLIKE)
-		param2 = 1;
-	else if (f.drawtype == NDT_SIGNLIKE)
-		param2 = 4;
-	else if ((f.drawtype == NDT_PLANTLIKE ||
-		  f.drawtype == NDT_PLANTLIKE_ROOTED)
-		&& f.param_type_2 == CPT2_LEVELED)
-		param2 = 8;
+	if (f.param_type_2 == CPT2_WALLMOUNTED ||
+	    f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
+		if (f.drawtype == NDT_TORCHLIKE)
+			param2 = 1;
+		else if (f.drawtype == NDT_SIGNLIKE)
+			param2 = 4;
+		else if (f.drawtype == NDT_NODEBOX ||
+			f.drawtype == NDT_MESH)
+			param2 = 4;
+	} else if (f.param_type_2 == CPT2_LEVELED) {
+		if (f.drawtype == NDT_PLANTLIKE ||
+		    f.drawtype == NDT_PLANTLIKE_ROOTED)
+			param2 = 8;
+	}
 	gen.renderSingle(id, param2);
 	colors->clear();
 	scene::SMesh *mesh = new scene::SMesh();
