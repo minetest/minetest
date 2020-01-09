@@ -892,14 +892,25 @@ void MapblockMeshGenerator::drawSignlikeNode()
 {
 	u8 wall = n.getWallMounted(nodedef);
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
-	static const float offset = BS / 16;
+	static const float wall_offset = BS / 16;
 	float size = BS / 2 * f->visual_scale;
+
+	// Anti-z-fighting offset
+	int o;
+	if (p.Z % 2 == 0) {
+		o = p.X % 4;
+	} else {
+		o = p.X % 4 + 2;
+	}
+	o = (o + (p.Y % 4)) % 4;
+	float azf_offset = (o * 0.01 - 0.04);
+
 	// Wall at X+ of node
 	v3f vertices[4] = {
-		v3f(BS / 2 - offset,  size,  size),
-		v3f(BS / 2 - offset,  size, -size),
-		v3f(BS / 2 - offset, -size, -size),
-		v3f(BS / 2 - offset, -size,  size),
+		v3f(BS / 2 - wall_offset + azf_offset,  size,  size),
+		v3f(BS / 2 - wall_offset + azf_offset,  size, -size),
+		v3f(BS / 2 - wall_offset + azf_offset, -size, -size),
+		v3f(BS / 2 - wall_offset + azf_offset, -size,  size),
 	};
 
 	for (v3f &vertex : vertices) {
