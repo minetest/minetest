@@ -573,7 +573,8 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 					f.drawtype != NDT_FIRELIKE &&
 					f.drawtype != NDT_RAILLIKE &&
 					f.drawtype != NDT_PLANTLIKE &&
-					f.drawtype != NDT_PLANTLIKE_ROOTED) {
+					f.drawtype != NDT_PLANTLIKE_ROOTED &&
+					f.drawtype != NDT_MESH) {
 				material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			}
 			material.setFlag(video::EMF_LIGHTING, false);
