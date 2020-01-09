@@ -6131,11 +6131,13 @@ Player properties need to be saved manually.
         -- Defaults to 1.625.
 
         physical = true,
+        -- Collide with `walkable` nodes.
 
         collide_with_objects = true,
         -- Collide with other objects if physical = true
 
         weight = 5,
+        -- Unused.
 
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},  -- Default
         selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
@@ -6170,7 +6172,8 @@ Player properties need to be saved manually.
         -- Multipliers for the visual size. If `z` is not specified, `x` will be used
         -- to scale the entity along both horizontal axes.
 
-        mesh = "model",
+        mesh = "model.obj",
+        -- File name of mesh when using "mesh" visual
 
         textures = {},
         -- Number of required textures depends on visual.
@@ -6200,14 +6203,20 @@ Player properties need to be saved manually.
         -- spritesheet.
 
         is_visible = true,
+        -- If false, object is invisible and can't be pointed.
 
         makes_footstep_sound = false,
+        -- If true, is able to make footstep sounds of nodes
+        -- (see node sound definition for details).
 
         automatic_rotate = 0,
         -- Set constant rotation in radians per second, positive or negative.
         -- Set to 0 to disable constant rotation.
 
         stepheight = 0,
+        -- If positive number, object will climb upwards when it moves
+        -- horizontally against a `walkable` node, if the height difference
+        -- is within `stepheight`.
 
         automatic_face_movement_dir = 0.0,
         -- Automatically set yaw to movement direction, offset in degrees.
@@ -6659,7 +6668,8 @@ Used by `minetest.register_node`.
         -- Tells connected nodebox nodes to connect only to these sides of this
         -- node
 
-        mesh = "model",
+        mesh = "model.obj",
+        -- File name of mesh when using "mesh" drawtype
 
         selection_box = {
             type = "fixed",
