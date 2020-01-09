@@ -860,9 +860,9 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 	// Tiny offset to fix z-fighting
 	offset = v3f(0, 0, 0);
 	if (wall == DWM_YP) {
-		offset.X = BS * (p.Y % 4) * 0.001 - 0.004;
+		offset.X = BS * (p.Y % 4) * 0.01 - 0.04;
 	} else if (wall == DWM_YN) {
-		offset.Z = BS * (p.Y % 4) * 0.001 - 0.004;
+		offset.Z = BS * (p.Y % 4) * 0.01 - 0.04;
 	} else {
 		offset.X = BS * ((p.Z % 4 + p.Y % 4) * 0.001 - 0.004);
 		offset.Z = BS * ((p.X % 4 + p.Y % 4) * 0.001 - 0.004);
