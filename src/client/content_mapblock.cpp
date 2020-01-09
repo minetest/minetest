@@ -857,12 +857,23 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 		v3f(-size, -size, 0),
 	};
 
+	// Tiny offset to fix z-fighting
+	offset = v3f(0, 0, 0);
+	if (wall == DWM_YP) {
+		offset.X = BS * (p.Y % 4) * 0.001 - 0.004;
+	} else if (wall == DWM_YN) {
+		offset.Z = BS * (p.Y % 4) * 0.001 - 0.004;
+	} else {
+		offset.X = BS * ((p.Z % 4 + p.Y % 4) * 0.001 - 0.004);
+		offset.Z = BS * ((p.X % 4 + p.Y % 4) * 0.001 - 0.004);
+	}
+
 	for (v3f &vertex : vertices) {
 		switch (wall) {
 			case DWM_YP:
-				vertex.rotateXZBy(-45); break;
+				vertex.rotateXZBy(-44); break;
 			case DWM_YN:
-				vertex.rotateXZBy( 45); break;
+				vertex.rotateXZBy( 46); break;
 			case DWM_XP:
 				vertex.rotateXZBy(  0); break;
 			case DWM_XN:
@@ -872,6 +883,7 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 			case DWM_ZN:
 				vertex.rotateXZBy(-90); break;
 		}
+		vertex += offset;
 	}
 	drawQuad(vertices);
 }
