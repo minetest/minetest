@@ -138,7 +138,6 @@ public:
 
 // plantlike-specific
 	PlantlikeStyle draw_style;
-	v3f offset;
 	int rotate_degree;
 	bool random_offset_Y;
 	int face_num;
@@ -168,6 +167,7 @@ public:
 	void drawMeshNode();
 
 // common
+	v3f offset;
 	void errorUnknownDrawtype();
 	void drawNode();
 
