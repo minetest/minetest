@@ -395,10 +395,14 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			case NDT_SIGNLIKE:
 			case NDT_TORCHLIKE:
 			case NDT_RAILLIKE:
+			case NDT_FLOWINGLIQUID:
 			{
+				v3f wscale = def.wield_scale;
+				if (f.drawtype == NDT_FLOWINGLIQUID)
+					wscale *= v3f(1.0, 1.0, 0.1);
 				setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
 					tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
-					def.wield_scale, tsrc,
+					wscale, tsrc,
 					f.tiles[0].layers[0].animation_frame_count);
 				// Add color
 				const TileLayer &l0 = f.tiles[0].layers[0];
@@ -407,11 +411,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 				m_colors.emplace_back(l1.has_color, l1.color);
 				break;
 			}
-
 			case NDT_NORMAL:
 			case NDT_ALLFACES:
-			case NDT_LIQUID:
-			case NDT_FLOWINGLIQUID: {
+			case NDT_LIQUID: {
 				setCube(f, def.wield_scale);
 				break;
 			}
@@ -542,7 +544,11 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 				scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
 				mesh = cloneMesh(cube);
 				cube->drop();
-				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
+				if (f.drawtype == NDT_FLOWINGLIQUID) {
+					scaleMesh(mesh, v3f(1.2, 0.03, 1.2));
+					translateMesh(mesh, v3f(0, -0.57, 0));
+				} else
+					scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 				// add overlays
 				postProcessNodeMesh(mesh, f, false, false, nullptr,
 					&result->buffer_colors);
