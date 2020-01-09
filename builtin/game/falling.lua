@@ -37,7 +37,7 @@ local facedir_to_euler = {
 core.register_entity(":__builtin:falling_node", {
 	initial_properties = {
 		visual = "wielditem",
-		visual_size = { x = SCALE, y = SCALE, z = SCALE },
+		visual_size = {x = SCALE, y = SCALE, z = SCALE},
 		textures = {},
 		physical = true,
 		is_visible = false,
@@ -87,7 +87,7 @@ core.register_entity(":__builtin:falling_node", {
 			local vsize
 			if def.visual_scale then
 				local s = def.visual_scale
-				vsize = { x = s, y = s, z = s }
+				vsize = {x = s, y = s, z = s}
 			end
 			self.object:set_properties({
 				is_visible = true,
@@ -104,7 +104,7 @@ core.register_entity(":__builtin:falling_node", {
 			local vsize
 			if def.visual_scale then
 				local s = def.visual_scale * SCALE
-				vsize = { x = s, y = s, z = s }
+				vsize = {x = s, y = s, z = s}
 			end
 			self.object:set_properties({
 				is_visible = true,
