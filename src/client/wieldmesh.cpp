@@ -318,10 +318,6 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 				f.drawtype == NDT_NODEBOX ||
 				f.drawtype == NDT_MESH)
 			param2 = 4;
-	} else if (f.param_type_2 == CPT2_LEVELED) {
-		if (f.drawtype == NDT_PLANTLIKE ||
-				f.drawtype == NDT_PLANTLIKE_ROOTED)
-			param2 = 8;
 	}
 	gen.renderSingle(id, param2);
 	colors->clear();
@@ -335,8 +331,6 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 			}
 			for (video::S3DVertex &v : p.vertices) {
 				v.Color.setAlpha(255);
-				if (f.drawtype == NDT_PLANTLIKE_ROOTED)
-					v.Pos.Y -= 10.0;
 			}
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			buf->Material.setTexture(0, p.layer.texture);
@@ -395,6 +389,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			case NDT_SIGNLIKE:
 			case NDT_TORCHLIKE:
 			case NDT_RAILLIKE:
+			case NDT_PLANTLIKE:
+			case NDT_PLANTLIKE_ROOTED:
 			case NDT_FLOWINGLIQUID:
 			{
 				v3f wscale = def.wield_scale;
@@ -552,6 +548,25 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 				// add overlays
 				postProcessNodeMesh(mesh, f, false, false, nullptr,
 					&result->buffer_colors, true);
+				break;
+			}
+			case NDT_PLANTLIKE: {
+				mesh = getExtrudedMesh(tsrc,
+				tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
+				tsrc->getTextureName(f.tiles[0].layers[1].texture_id));
+				// Add color
+				const TileLayer &l0 = f.tiles[0].layers[0];
+				result->buffer_colors.emplace_back(l0.has_color, l0.color);
+				const TileLayer &l1 = f.tiles[0].layers[1];
+				result->buffer_colors.emplace_back(l1.has_color, l1.color);
+				break;
+			}
+			case NDT_PLANTLIKE_ROOTED: {
+				mesh = getExtrudedMesh(tsrc,
+				tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id), "");
+				// Add color
+				const TileLayer &l0 = f.special_tiles[0].layers[0];
+				result->buffer_colors.emplace_back(l0.has_color, l0.color);
 				break;
 			}
 			default: {
