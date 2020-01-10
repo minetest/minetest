@@ -120,6 +120,7 @@ core.register_entity(":__builtin:falling_node", {
 				or def.wield_image == nil))
 				or def.drawtype == "signlike"
 				or def.drawtype == "mesh"
+				or def.drawtype == "normal"
 				or def.drawtype == "nodebox" then
 			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
 				local fdir = node.param2 % 32
@@ -147,7 +148,7 @@ core.register_entity(":__builtin:falling_node", {
 					if rot >= 0 and rot <= 1 then
 						roll = roll - math.pi/2
 					end
-				elseif def.drawtype == "mesh" then
+				elseif def.drawtype == "mesh" or def.drawtype == "normal" then
 					if rot >= 0 and rot <= 1 then
 						roll = roll + math.pi
 					else
