@@ -551,7 +551,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 					scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 				// add overlays
 				postProcessNodeMesh(mesh, f, false, false, nullptr,
-					&result->buffer_colors);
+					&result->buffer_colors, true);
 				break;
 			}
 			default: {
