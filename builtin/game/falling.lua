@@ -81,7 +81,7 @@ core.register_entity(":__builtin:falling_node", {
 				if def.drawtype == "torchlike" then
 					textures = { "("..def.tiles[1]..")^[transformFX", def.tiles[1] }
 				else
-					textures = { def.tiles[1] }
+					textures = { def.tiles[1], "("..def.tiles[1]..")^[transformFX" }
 				end
 			end
 			local vsize
@@ -133,7 +133,7 @@ core.register_entity(":__builtin:falling_node", {
 				local rot = node.param2 % 8
 				local pitch, yaw, roll = 0, 0, 0
 				if rot == 1 then
-					pitch, yaw = -math.pi, -math.pi
+					pitch, yaw = math.pi, math.pi
 				elseif rot == 2 then
 					pitch, yaw = math.pi/2, math.pi/2
 				elseif rot == 3 then
@@ -145,8 +145,10 @@ core.register_entity(":__builtin:falling_node", {
 				end
 				if def.drawtype == "signlike" then
 					pitch = pitch - math.pi/2
-					if rot >= 0 and rot <= 1 then
-						roll = roll - math.pi/2
+					if rot == 0 then
+						yaw = yaw + math.pi/2
+					elseif rot == 1 then
+						yaw = yaw - math.pi/2
 					end
 				elseif def.drawtype == "mesh" or def.drawtype == "normal" then
 					if rot >= 0 and rot <= 1 then
