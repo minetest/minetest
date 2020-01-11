@@ -1100,3 +1100,36 @@ core.register_chatcommand("kill", {
 		return handle_kill_command(name, param == "" and name or param)
 	end,
 })
+
+core.register_chatcommand("spawn", {
+	description = "Teleport to the spawn point",
+	privs  = {spawn = true},
+	func = function(name, param)
+		local player = core.get_player_by_name(name)
+		if not player then
+			return false
+		end
+		local spawnpoint = core.setting_get_pos("static_spawnpoint")
+		if spawnpoint then
+			player:set_pos(spawnpoint)
+			return true, "Teleporting to spawn..."
+		else
+			return false, "The spawn point is not set!"
+		end
+	end
+})
+
+core.register_chatcommand("setspawn", {
+	description = "Sets the spawn point to your current position",
+	privs = {server = true},
+	func = function(name, param)
+		local player = core.get_player_by_name(name)
+		if not player then
+			return false
+		end
+		local pos = vector.round(player:get_pos())
+		local pos_to_string = pos.x .. "," .. pos.y .. "," .. pos.z
+		core.settings:set("static_spawnpoint", pos_to_string)
+		return true, "Setting spawn point to (" .. pos_to_string .. ")"
+	end
+})

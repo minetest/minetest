@@ -41,6 +41,10 @@ core.register_privilege("bring", {
 	description = "Can teleport other players",
 	give_to_singleplayer = false,
 })
+core.register_privilege("spawn", {
+	description = "Can teleport self to spawn",
+	give_to_singleplayer = false,
+})
 core.register_privilege("settime", {
 	description = "Can set the time of day using /time",
 	give_to_singleplayer = false,
