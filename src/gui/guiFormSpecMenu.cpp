@@ -1304,7 +1304,9 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 			name,
 			wlabel,
 			L"",
-			258 + m_fields.size()
+			258 + m_fields.size(),
+			0,
+			ECI_IBEAM
 			);
 
 		spec.send = true;
@@ -1463,7 +1465,9 @@ void GUIFormSpecMenu::parseSimpleField(parserData *data,
 		name,
 		wlabel,
 		utf8_to_wide(unescape_string(default_val)),
-		258 + m_fields.size()
+		258 + m_fields.size(),
+		0,
+		ECI_IBEAM
 	);
 
 	createTextField(data, spec, rect, false);
@@ -1525,7 +1529,9 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 		name,
 		wlabel,
 		utf8_to_wide(unescape_string(default_val)),
-		258 + m_fields.size()
+		258 + m_fields.size(),
+		0,
+		ECI_IBEAM
 	);
 
 	createTextField(data, spec, rect, type == "textarea");
@@ -3331,10 +3337,17 @@ void GUIFormSpecMenu::drawMenu()
 #endif
 
 	/*
-		Draw fields/buttons tooltips
+		Draw fields/buttons tooltips and update the mouse cursor
 	*/
 	gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
+
+#ifndef HAVE_TOUCHSCREENGUI
+	gui::ICursorControl *cursor_control = RenderingEngine::get_raw_device()->
+			getCursorControl();
+	gui::ECURSOR_ICON current_cursor_icon = cursor_control->getActiveIcon();
+#endif
+	bool hovered_element_found = false;
 
 	if (hovered != NULL) {
 		s32 id = hovered->getID();
@@ -3351,21 +3364,38 @@ void GUIFormSpecMenu::drawMenu()
 			}
 		}
 
-		// Find and update the current tooltip
-		if (id != -1 && delta >= m_tooltip_show_delay) {
+		// Find and update the current tooltip and cursor icon
+		if (id != -1) {
 			for (const FieldSpec &field : m_fields) {
 
 				if (field.fid != id)
 					continue;
 
-				const std::wstring &text = m_tooltips[field.fname].tooltip;
-				if (!text.empty())
-					showTooltip(text, m_tooltips[field.fname].color,
-						m_tooltips[field.fname].bgcolor);
+				if (delta >= m_tooltip_show_delay) {
+					const std::wstring &text = m_tooltips[field.fname].tooltip;
+					if (!text.empty())
+						showTooltip(text, m_tooltips[field.fname].color,
+							m_tooltips[field.fname].bgcolor);
+				}
+
+#ifndef HAVE_TOUCHSCREENGUI
+				if (current_cursor_icon != field.fcursor_icon)
+					cursor_control->setActiveIcon(field.fcursor_icon);
+#endif
+
+				hovered_element_found = true;
 
 				break;
 			}
 		}
+	}
+
+	if (!hovered_element_found) {
+		// no element is hovered
+#ifndef HAVE_TOUCHSCREENGUI
+		if (current_cursor_icon != ECI_NORMAL)
+			cursor_control->setActiveIcon(ECI_NORMAL);
+#endif
 	}
 
 	m_tooltip_element->draw();
