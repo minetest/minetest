@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Japanese (Kansai) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-11-10 15:04+0000\n"
-"Last-Translator: Krock <mk939@ymail.com>\n"
+"PO-Revision-Date: 2020-01-11 18:26+0000\n"
+"Last-Translator: rubenwardy <rubenwardy@gmail.com>\n"
 "Language-Team: Japanese (Kansai) <https://hosted.weblate.org/projects/"
 "minetest/minetest/ja_KS/>\n"
 "Language: ja_KS\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.10.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -1681,7 +1681,7 @@ msgstr ""
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "ja_KS"
 
 #: src/settings_translation_file.cpp
 msgid ""
