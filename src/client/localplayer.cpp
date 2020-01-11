@@ -1107,7 +1107,7 @@ float LocalPlayer::getSpeedFactor(Environment *env)
 {
 	int speed_below = 0, speed_above = 0;
 	v3s16 pos = getStandingNodePos();
-	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
+	const NodeDefManager *nodemgr = env->getGameDef()->ndef();
 	Map *map = &env->getMap();
 
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(pos));
