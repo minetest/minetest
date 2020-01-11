@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Estonian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-11-10 15:04+0000\n"
-"Last-Translator: Krock <mk939@ymail.com>\n"
+"PO-Revision-Date: 2020-01-13 12:21+0000\n"
+"Last-Translator: Evert Prants <evert@lunasqu.ee>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/minetest/"
 "minetest/et/>\n"
 "Language: et\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.10.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -23,9 +23,8 @@ msgid "You died"
 msgstr "Said surma"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Lue skriptis ilmnes viga; näiteks MOD-is:"
+msgstr "Lua skriptis ilmnes viga:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -120,27 +119,24 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "Valikulised sõltuvused:"
+msgstr "(Valikulised) sõltuvused puuduvad"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
 msgstr "Mängule pole kirjeldust saadaval."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Valikulised sõltuvused:"
+msgstr "Vajalikud sõltuvused puuduvad"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
 msgstr "MOD-i pakile pole kirjeldust saadaval."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "Valikulised sõltuvused:"
+msgstr "Valikulised sõltuvused puuduvad"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -331,104 +327,99 @@ msgstr "Lubatud"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
-msgstr ""
+msgstr "Lakunaarsus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Oktaavid"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "Nihe"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "Püsivus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Palun sisesta korrektne täisarv."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Palun sisesta korrektne arv."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Taasta vaikeväärtus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Ulatus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select directory"
-msgstr "Vali modifikatsiooni fail:"
+msgstr "Vali kataloog"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select file"
-msgstr "Vali modifikatsiooni fail:"
+msgstr "Vali fail"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Kuva tehnilised nimetused"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "Väärtus peab olema vähemalt $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "Väärtus ei tohi olla suurem kui $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "X levitus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Y levitus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Z levitus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "absoluutväärtus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "defaults"
-msgstr "Muuda mängu"
+msgstr "vaikesätted"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 (Enabled)"
-msgstr "Sisse lülitatud"
+msgstr "$1 (Lubatud)"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr "Konfigureeri"
+msgstr "$1 mod-i"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
@@ -436,87 +427,80 @@ msgstr "$1 paigaldamine $2 nurjus"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr ""
+msgstr "Paigalda mod: Tegeliku nime leidmine ebaõnnestus mod-ile: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
+"Paigalda mod: Sobiva katalooginime leidmine ebaõnnestus mod-komplektile $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr ""
+msgstr "Paigaldus: Toetamata failitüüp \"$1\" või katkine arhiiv"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr ""
+msgstr "Paigaldus: fail: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr ""
+msgstr "Ei leitud sobivat mod-i ega mod-komplekti"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a texture pack"
-msgstr "$1 paigaldamine $2 nurjus"
+msgstr "$1 paigaldamine tekstuurikomplektiks nurjus"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a game as a $1"
-msgstr "$1 paigaldamine $2 nurjus"
+msgstr "Mängu nimega $1 paigaldamine nurjus"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a mod as a $1"
-msgstr "$1 paigaldamine $2 nurjus"
+msgstr "Mod nimega $1 paigaldamine nurjus"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a modpack as a $1"
-msgstr "$1 paigaldamine $2 nurjus"
+msgstr "Mod-komplekt nimega $1 paigaldamine nurjus"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "Sirvi veebist sisu"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content"
-msgstr "Jätka"
+msgstr "Sisu"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Disable Texture Pack"
-msgstr "Vali graafika:"
+msgstr "Keela tekstuurikomplekt"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "Teave:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "Paigaldatud paketid:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "Sõltuvused puuduvad."
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "No package description available"
-msgstr "Informatsioon ei ole kättesaadav"
+msgstr "Paketil puudub kirjeldus"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "Nimeta ümber"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr ""
+msgstr "Eemalda pakett"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Use Texture Pack"
-msgstr "Vali graafika:"
+msgstr "Vali tekstuurikomplekt"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -540,11 +524,11 @@ msgstr "Eelmised põhilised arendajad"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr ""
+msgstr "Kuuluta serverist"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr ""
+msgstr "Aadress"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
@@ -559,13 +543,12 @@ msgid "Enable Damage"
 msgstr "Lülita valu sisse"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Game"
-msgstr "Peida mäng"
+msgstr "Majuta mäng"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr ""
+msgstr "Majuta server"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -576,18 +559,16 @@ msgid "New"
 msgstr "Uus"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "No nimi või no mäng valitud"
+msgstr "Ühtegi maailma pole loodud ega valitud!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Play Game"
-msgstr "Alusta mängu"
+msgstr "Mängi"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -595,17 +576,15 @@ msgstr "Vali maailm:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr ""
+msgstr "Serveri port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Start Game"
-msgstr "Peida mäng"
+msgstr "Alusta mäng"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Aadress / Port:"
+msgstr "Aadress / Port"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
@@ -620,102 +599,88 @@ msgid "Damage enabled"
 msgstr "Kahjustamine lubatud"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Del. Favorite"
-msgstr "Lemmikud:"
+msgstr "Eemalda lemmik"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
-msgstr "Lemmikud:"
+msgstr "Lisa lemmikuks"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Join Game"
-msgstr "Peida mäng"
+msgstr "Liitu mänguga"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Nimi / Parool:"
+msgstr "Nimi / Salasõna"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Ping"
-msgstr ""
+msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "PvP enabled"
-msgstr "Sisse lülitatud"
+msgstr "PvP lubatud"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "3D Clouds"
 msgstr "3D pilved"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "Sätted"
+msgstr "Kõik sätted"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Üksikmäng"
+msgstr "Olete kindel, et lähtestate oma üksikmängija maailma?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr ""
+msgstr "Salvesta ekraani suurus"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bilinear Filter"
-msgstr "Bi-lineaarsed Filtreerimine"
+msgstr "Bi-lineaarne filtreerimine"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bump Mapping"
-msgstr "Väga hea kvaliteet"
+msgstr "Muhkkaardistamine"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
-#, fuzzy
 msgid "Change Keys"
-msgstr "Vaheta nuppe"
+msgstr "Vaheta klahve"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Liitu"
+msgstr "Ühendatud klaas"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Läbipaistmatu vesi"
+msgstr "Uhked lehed"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normal Maps"
-msgstr ""
+msgstr "Loo normaalkaardistusi"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Mipmap"
-msgstr "Väga hea kvaliteet"
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
@@ -726,36 +691,30 @@ msgid "No"
 msgstr "Ei"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Filter"
-msgstr "Anisotroopne Filtreerimine"
+msgstr "Filtrita"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Mipmap"
-msgstr "Väga hea kvaliteet"
+msgstr "Mipmapita"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Highlighting"
-msgstr "Ilus valgustus"
+msgstr "Blokkide esiletõstmine"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "Ilus valgustus"
+msgstr "Blokkide kontuur"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr ""
+msgstr "Puudub"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Läbipaistmatu vesi"
+msgstr "Läbipaistmatud lehed"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Water"
 msgstr "Läbipaistmatu vesi"
 
@@ -764,19 +723,16 @@ msgid "Parallax Occlusion"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Luba kõik"
+msgstr "Osakesed"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Üksikmäng"
+msgstr "Lähtesta üksikmängija maailm"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Screen:"
-msgstr "Mängupilt"
+msgstr "Ekraan:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -788,98 +744,87 @@ msgstr "Varjutajad"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr ""
+msgstr "Varjutajad (pole saadaval)"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Läbipaistmatu vesi"
+msgstr "Lihtsad lehed"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Smooth Lighting"
-msgstr "Ilus valgustus"
+msgstr "Sujuv valgustus"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Tekstureerimine:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "Aktiveerimiseks varjud, nad vajavad OpenGL draiver."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Tone Mapping"
-msgstr "Väga hea kvaliteet"
+msgstr "Tooni kaardistamine"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
-msgstr ""
+msgstr "Puutelävi: (px)"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Trilinear Filter"
-msgstr "Tri-Linear Filtreerimine"
+msgstr "Tri-lineaar filtreerimine"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
-msgstr "Uhked puud"
+msgstr "Lehvivad lehed"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Uhked puud"
+msgstr "Lainetavad vedelikud"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
-msgstr "Uhked puud"
+msgstr "Lehvivad taimed"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
 msgstr "Jah"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Config mods"
-msgstr "Konfigureeri"
+msgstr "Seadista mod-e"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Main"
-msgstr "Menüü"
+msgstr "Peamine"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Üksikmäng"
+msgstr "Alusta üksikmängu"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "Ühenduse viga (Aeg otsas?)"
+msgstr "Ühendus aegus."
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Valmis!"
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Blokkide häälestamine"
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Blokkide häälestamine..."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Tekstuuride laadimine ..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Varjutajate taasloomine..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -903,19 +848,19 @@ msgstr "Pole valitud ei maailma ega IP aadressi. Pole midagi teha."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Mängija nimi on liiga pikk."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "Palun vali nimi!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "Salasõnafaili avamine ebaõnnestus: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Maailma failiteed pole olemas: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
@@ -930,81 +875,72 @@ msgstr ""
 "Vaata debug.txt info jaoks."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Address: "
-msgstr "Aadress / Port:"
+msgstr "- Aadress: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Creative Mode: "
-msgstr "Kujunduslik mängumood"
+msgstr "- Kujunduslik mängumood: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Damage: "
-msgstr "Lülita valu sisse"
+msgstr "- Valu: "
 
 #: src/client/game.cpp
 msgid "- Mode: "
-msgstr ""
+msgstr "- Režiim: "
 
 #: src/client/game.cpp
 msgid "- Port: "
-msgstr ""
+msgstr "- Port: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Public: "
-msgstr "Avalik"
+msgstr "- Avalik: "
 
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "- PvP: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr ""
+msgstr "- Serveri nimi: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
-msgstr "Edasi"
+msgstr "Automaatne edastus keelatud"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward enabled"
-msgstr "Edasi"
+msgstr "Automaatne edastus lubatud"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
-msgstr ""
+msgstr "Kaamera värskendamine on keelatud"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update enabled"
-msgstr "Kahjustamine lubatud"
+msgstr "Kaamera värskendamine on lubatud"
 
 #: src/client/game.cpp
 msgid "Change Password"
 msgstr "Vaheta parooli"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode disabled"
-msgstr "Kujunduslik mängumood"
+msgstr "Filmirežiim on keelatud"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode enabled"
-msgstr "Kujunduslik mängumood"
+msgstr "Filmirežiim on lubatud"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr ""
+msgstr "Kliendipoolne skriptimine on keelatud"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Serveriga ühenduse loomine..."
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1028,26 +964,40 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"Klahvid:\n"
+"- %s: liigu edasi\n"
+"- %s: liigu tagasi\n"
+"- %s: liigu vasakule\n"
+"- %s: liigu paremale\n"
+"- %s: hüppa/roni\n"
+"- %s: hiili/mine alla\n"
+"- %s: viska ese\n"
+"- %s: seljakott\n"
+"- Hiir: keera/vaata\n"
+"- Hiire vasakklõps: kaeva/viruta\n"
+"- Hiire paremklõps: paigalda/kasuta\n"
+"- Hiireratas: vali ese\n"
+"- %s: vestlus\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "Kliendi loomine..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "Serveri loomine..."
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "Siluri info ja profiileri graafik peidetud"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
-msgstr ""
+msgstr "Silumisteave kuvatud"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
+msgstr "Siluri info, profiileri graafik ja sõrestik peidetud"
 
 #: src/client/game.cpp
 msgid ""
@@ -1067,11 +1017,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "Piiramatu vaatamisulatus keelatud"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "Piiramatu vaatamisulatus lubatud"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1082,59 +1032,52 @@ msgid "Exit to OS"
 msgstr "Välju mängust"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode disabled"
-msgstr "Lülita kõik välja"
+msgstr "Kiirrežiim on keelatud"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode enabled"
-msgstr "Kahjustamine lubatud"
+msgstr "Kiirrežiim on lubatud"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr ""
+msgstr "Kiirrežiim on lubatud (hoiatus: 'fast' privileeg puudub)"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode disabled"
-msgstr "Lülita kõik välja"
+msgstr "Lennurežiim on keelatud"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode enabled"
-msgstr "Kahjustamine lubatud"
+msgstr "Lennurežiim lubatud"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr ""
+msgstr "Lennurežiim lubatud (hoiatus: 'fly' privileeg puudub)"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog disabled"
-msgstr "Lülita kõik välja"
+msgstr "Udu keelatud"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled"
-msgstr "Sisse lülitatud"
+msgstr "Udu lubatud"
 
 #: src/client/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "Mängu teave:"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Game paused"
-msgstr "Mäng"
+msgstr "Mäng pausil"
 
 #: src/client/game.cpp
 msgid "Hosting server"
-msgstr ""
+msgstr "Majutan serverit"
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "Esemete määratlused..."
 
 #: src/client/game.cpp
 msgid "KiB/s"
@@ -1142,7 +1085,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "Meedia..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1185,9 +1128,8 @@ msgid "Noclip mode disabled"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Noclip mode enabled"
-msgstr "Kahjustamine lubatud"
+msgstr "Noclip režiim lubatud"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
@@ -1238,14 +1180,12 @@ msgid "Sound Volume"
 msgstr "Hääle volüüm"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound muted"
-msgstr "Hääle volüüm"
+msgstr "Heli vaigistatud"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound unmuted"
-msgstr "Hääle volüüm"
+msgstr "Heli taastatud"
 
 #: src/client/game.cpp
 #, c-format
@@ -1280,9 +1220,8 @@ msgid "ok"
 msgstr ""
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat hidden"
-msgstr "Vaheta nuppe"
+msgstr "Vestlus peidetud"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
@@ -1335,9 +1274,8 @@ msgid "End"
 msgstr "Lõpeta"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Erase EOF"
-msgstr "Kustuta OEF"
+msgstr "Kustuta EOF"
 
 #: src/client/keycode.cpp
 msgid "Execute"
@@ -1429,9 +1367,8 @@ msgid "Numpad -"
 msgstr "Numbrilaual -"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad ."
-msgstr "Numbrilaual *"
+msgstr "Numbrilaual ."
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
@@ -1596,14 +1533,13 @@ msgid "Proceed"
 msgstr "Jätka"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Special\" = climb down"
-msgstr "\"Tegevus\" = Roni alla"
+msgstr "\"Eriline\" = roni alla"
 
 #: src/gui/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Autoforward"
-msgstr "Edasi"
+msgstr "Automaatedasiliikumine"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
@@ -1614,9 +1550,8 @@ msgid "Backward"
 msgstr "Tagasi"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Change camera"
-msgstr "Vaheta nuppe"
+msgstr "Muuda kaamerat"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1655,9 +1590,8 @@ msgid "Inc. range"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Inc. volume"
-msgstr "Hääle volüüm"
+msgstr "Helitugevus üles"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -1678,18 +1612,16 @@ msgstr ""
 "conf)"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Local command"
-msgstr "Käsklus"
+msgstr "Kohalik käsk"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Next item"
-msgstr "Järgmine"
+msgstr "Järgmine üksus"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
@@ -1700,9 +1632,8 @@ msgid "Range select"
 msgstr "Kauguse valik"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot"
-msgstr "Mängupilt"
+msgstr "Kuvatõmmis"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
@@ -1713,14 +1644,12 @@ msgid "Special"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle HUD"
-msgstr "Lülita lendamine sisse"
+msgstr "Lülita HUD sisse/välja"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle chat log"
-msgstr "Lülita kiirus sisse"
+msgstr "Lülita vestluslogi sisse/välja"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1731,23 +1660,20 @@ msgid "Toggle fly"
 msgstr "Lülita lendamine sisse"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle fog"
-msgstr "Lülita lendamine sisse"
+msgstr "Lülita udu sisse/välja"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle minimap"
-msgstr "Lülita läbi seinte minek sisse"
+msgstr "Lülita minikaart sisse/välja"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr "Lülita läbi seinte minek sisse"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Lülita kiirus sisse"
+msgstr "Lülita pitchmove sisse/välja"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1774,9 +1700,8 @@ msgid "Exit"
 msgstr "Välju"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy
 msgid "Muted"
-msgstr "Vajuta nuppu"
+msgstr "Vaigistatud"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
@@ -1861,7 +1786,6 @@ msgid "2D noise that locates the river valleys and channels."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
 msgstr "3D pilved"
 
@@ -2008,9 +1932,8 @@ msgid "Amplifies the valleys."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anisotropic filtering"
-msgstr "Anisotroopne Filtreerimine"
+msgstr "Anisotroopne filtreerimine"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
@@ -2062,9 +1985,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatic forward key"
-msgstr "Edasi"
+msgstr "Automaatse edasiliikumise klahv"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2083,14 +2005,12 @@ msgid "Autoscaling mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Backward key"
-msgstr "Tagasi"
+msgstr "Tagasi liikumise klahv"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base ground level"
-msgstr "Põlvkonna kaardid"
+msgstr "Baas maapinna tase"
 
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
@@ -2113,9 +2033,8 @@ msgid "Beach noise threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bilinear filtering"
-msgstr "Bi-lineaarsed Filtreerimine"
+msgstr "Bilineaarne filtreerimine"
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
@@ -2138,18 +2057,16 @@ msgid "Block send optimize distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Build inside player"
-msgstr "Mitmikmäng"
+msgstr "Ehitamine mängija sisse"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bumpmapping"
-msgstr "Väga hea kvaliteet"
+msgstr "Muhkkaardistamine"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2208,9 +2125,8 @@ msgid "Cavern taper"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cavern threshold"
-msgstr "Põlvkonna kaardid"
+msgstr "Koobaste läve"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern upper limit"
@@ -2231,51 +2147,45 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat key"
-msgstr "Vaheta nuppe"
+msgstr "Vestlusklahv"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message format"
-msgstr "Põlvkonna kaardid"
+msgstr "Vestluse sõnumi formaat"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Chat message kick threshold"
-msgstr "Põlvkonna kaardid"
+msgstr "Vestlussõnumi kick läve"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat toggle key"
-msgstr "Vaheta nuppe"
+msgstr "Vestluse lülitusklahv"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chatcommands"
-msgstr "Käsklus"
+msgstr "Käsklused"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode"
-msgstr "Kujunduslik mängumood"
+msgstr "Filmirežiim"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode key"
-msgstr "Kujunduslik mängumood"
+msgstr "Filmirežiimi klahv"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -2310,18 +2220,16 @@ msgid "Cloud radius"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds"
-msgstr "3D pilved"
+msgstr "Pilved"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds in menu"
-msgstr "Menüü"
+msgstr "Pilved menüüs"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -2351,14 +2259,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Command key"
-msgstr "Käsklus"
+msgstr "Käsuklahv"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect glass"
-msgstr "Liitu"
+msgstr "Ühenda klaasi"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
@@ -2369,28 +2275,24 @@ msgid "Connects glass if supported by node."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console alpha"
-msgstr "Konsool"
+msgstr "Konsooli läbipaistvus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console color"
-msgstr "Konsool"
+msgstr "Konsooli värv"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console height"
-msgstr "Konsool"
+msgstr "Konsooli kõrgus"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ContentDB URL"
-msgstr "Jätka"
+msgstr "ContentDB URL"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2403,9 +2305,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Controls"
-msgstr "CTRL"
+msgstr "Juhtklahvid"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2441,9 +2342,8 @@ msgid "Crash message"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Creative"
-msgstr "Loo"
+msgstr "Loominguline"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -2468,12 +2368,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Damage"
-msgstr "Lülita valu sisse"
+msgstr "Damage"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Darkness sharpness"
-msgstr "Põlvkonna kaardid"
+msgstr "Pimeduse teravus"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2504,9 +2403,8 @@ msgid "Default acceleration"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default game"
-msgstr "Muuda mängu"
+msgstr "Vaikemäng"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2515,9 +2413,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default password"
-msgstr "Uus parool"
+msgstr "Vaikimisi salasõna"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
@@ -2650,14 +2547,12 @@ msgid "Desynchronize block animation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Digging particles"
-msgstr "Luba kõik"
+msgstr "Kaevamisel tekkivad osakesed"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Disable anticheat"
-msgstr "Lülita osakesed sisse"
+msgstr "Lülita sohituvastus välja"
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2668,14 +2563,12 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Double tap jump for fly"
-msgstr "Topeltklõpsa \"Hüppamist\" et sisse lülitada lendamine"
+msgstr "Topeltklõpsa \"hüppamist\" lendamiseks"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr "Topeltklõpsa \"Hüppamist\" et sisse lülitada lendamine"
+msgstr "Topeltklõpsates \"hüppamist\" lülitatakse lennurežiim sisse/välja."
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
@@ -2696,7 +2589,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Dungeon noise"
-msgstr "Põlvkonna kaardid"
+msgstr "Dungeon noise"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2705,9 +2598,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable VBO"
-msgstr "Luba MP"
+msgstr "Luba VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -2801,12 +2693,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enables filmic tone mapping"
-msgstr "Lülita valu sisse"
+msgstr "Lubab filmic tone mapping"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables minimap."
-msgstr "Lülita valu sisse"
+msgstr "Lubab minikaarti."
 
 #: src/settings_translation_file.cpp
 msgid ""
