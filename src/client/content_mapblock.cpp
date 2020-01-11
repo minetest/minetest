@@ -969,35 +969,42 @@ void MapblockMeshGenerator::drawPlantlike()
 		break;
 	}
 
+	int o;
+	if ((p.Y & 1) == 0) {
+		o = 1;
+	} else {
+		o = -1;
+	}
+
 	switch (draw_style) {
 	case PLANT_STYLE_CROSS:
-		drawPlantlikeQuad(46);
-		drawPlantlikeQuad(-44);
+		drawPlantlikeQuad( 45 + o);
+		drawPlantlikeQuad(-45 + o);
 		break;
 
 	case PLANT_STYLE_CROSS2:
-		drawPlantlikeQuad(91);
-		drawPlantlikeQuad(1);
+		drawPlantlikeQuad(90 + o);
+		drawPlantlikeQuad(o);
 		break;
 
 	case PLANT_STYLE_STAR:
-		drawPlantlikeQuad(121);
-		drawPlantlikeQuad(241);
-		drawPlantlikeQuad(1);
+		drawPlantlikeQuad(120 + o);
+		drawPlantlikeQuad(240 + o);
+		drawPlantlikeQuad(o);
 		break;
 
 	case PLANT_STYLE_HASH:
-		drawPlantlikeQuad(  1, BS / 4);
-		drawPlantlikeQuad( 91, BS / 4);
-		drawPlantlikeQuad(181, BS / 4);
-		drawPlantlikeQuad(271, BS / 4);
+		drawPlantlikeQuad(      o, BS / 4);
+		drawPlantlikeQuad( 90 + o, BS / 4);
+		drawPlantlikeQuad(180 + o, BS / 4);
+		drawPlantlikeQuad(270 + o, BS / 4);
 		break;
 
 	case PLANT_STYLE_HASH2:
-		drawPlantlikeQuad(  1, -BS / 2, true);
-		drawPlantlikeQuad( 91, -BS / 2, true);
-		drawPlantlikeQuad(181, -BS / 2, true);
-		drawPlantlikeQuad(271, -BS / 2, true);
+		drawPlantlikeQuad(      o, -BS / 2, true);
+		drawPlantlikeQuad( 90 + o, -BS / 2, true);
+		drawPlantlikeQuad(180 + o, -BS / 2, true);
+		drawPlantlikeQuad(270 + o, -BS / 2, true);
 		break;
 	}
 }
