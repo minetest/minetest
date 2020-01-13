@@ -20,10 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "config.h"
 
-#if defined(__ANDROID__)
-	#include "android_version.h"
-	#include "android_version_githash.h"
-#elif defined(USE_CMAKE_CONFIG_H)
+#if USE_CMAKE_CONFIG_H
 	#include "cmake_config_githash.h"
 #endif
 

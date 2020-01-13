@@ -1,10 +1,24 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+project.ext.set("versionMajor", 5)      // Version Major
+project.ext.set("versionMinor", 3)      // Version Minor
+project.ext.set("versionPatch", 0)      // Version Patch
+project.ext.set("versionExtra", "-dev") // Version Extra
+project.ext.set("versionCode", 26)      // Android Version Code
+// NOTE: +2 after each release!
+// +1 for ARM and +1 for ARM64 APK's, because
+// each APK must have a larger `versionCode` than the previous
+
 buildscript {
 	repositories {
 		google()
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:3.5.1'
+		classpath 'com.android.tools.build:gradle:3.6.2'
+		classpath 'org.ajoberstar.grgit:grgit-gradle:4.0.2'
+		// NOTE: Do not place your application dependencies here; they belong
+		// in the individual module build.gradle files
 	}
 }
 
@@ -15,161 +29,6 @@ allprojects {
 	}
 }
 
-def curl_version = "7.60.0"
-def irrlicht_revision = "5150"
-def openal_version = "1.18.2"
-def openssl_version = "1.0.2n"
-def sqlite3_version = "3240000"
-
-apply plugin: "com.android.application"
-
-android {
-	compileSdkVersion 29
-	buildToolsVersion '29.0.2'
-
-	defaultConfig {
-		versionCode 26
-		versionName "${System.env.VERSION_STR}.${versionCode}"
-		minSdkVersion 14
-		targetSdkVersion 29
-		applicationId "net.minetest.minetest"
-		manifestPlaceholders = [package: "net.minetest.minetest", project: project.name]
-		ndk {
-			// Specifies the ABI configurations of your native
-			// libraries Gradle should build and package with your APK.
-			// abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-			abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'
-		}
-	}
-
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
-	}
-
-	lintOptions {
-		disable "OldTargetApi", "GoogleAppIndexingWarning"
-	}
-
-	Properties props = new Properties()
-	props.load(new FileInputStream(file("local.properties")))
-
-	if (props.getProperty("keystore") != null) {
-		signingConfigs {
-			release {
-				storeFile file(props["keystore"])
-				storePassword props["keystore.password"]
-				keyAlias props["key"]
-				keyPassword props["key.password"]
-			}
-		}
-
-		buildTypes {
-			release {
-				signingConfig signingConfigs.release
-			}
-		}
-	}
-}
-
-task cleanAssets(type: Delete) {
-	delete 'src/main/assets'
-}
-
-task copyAssets {
-	dependsOn 'cleanAssets'
-	mkdir "src/main/assets"
-
-	def mtAssetsFolder = "src/main/assets/Minetest"
-	def projRoot = "../.."
-	def gameToCopy = "minetest_game"
-
-	doLast {
-		mkdir "${mtAssetsFolder}"
-		mkdir "${mtAssetsFolder}/client"
-		mkdir "${mtAssetsFolder}/fonts"
-		mkdir "${mtAssetsFolder}/games"
-		mkdir "${mtAssetsFolder}/media"
-
-		copy {
-			from "${projRoot}/minetest.conf.example", "${projRoot}/README.md" into mtAssetsFolder
-		}
-		copy {
-			from "${projRoot}/doc/lgpl-2.1.txt" into "${mtAssetsFolder}/LICENSE.txt"
-		}
-		copy {
-			from "${projRoot}/builtin" into "${mtAssetsFolder}/builtin"
-		}
-		copy {
-			from "${projRoot}/client/shaders" into "${mtAssetsFolder}/client/shaders"
-		}
-		copy {
-			from "${projRoot}/fonts" include "*.ttf" into "${mtAssetsFolder}/fonts"
-		}
-		copy {
-			from "${projRoot}/games/${gameToCopy}" into "${mtAssetsFolder}/games/${gameToCopy}"
-		}
-		copy {
-			from "${projRoot}/po" into "${mtAssetsFolder}/po"
-		}
-		copy {
-			from "${projRoot}/textures" into "${mtAssetsFolder}/textures"
-		}
-	}
-}
-
-task cleanIconv(type: Delete) {
-	delete 'deps/libiconv'
-}
-
-task cleanIrrlicht(type: Delete) {
-	delete 'deps/irrlicht'
-}
-
-task cleanLevelDB(type: Delete) {
-	delete 'deps/leveldb'
-}
-
-task cleanCURL(type: Delete) {
-	delete 'deps/curl'
-	delete 'deps/curl-' + curl_version
-}
-
-task cleanOpenSSL(type: Delete) {
-	delete 'deps/openssl'
-	delete 'deps/openssl-' + openssl_version
-	delete 'deps/openssl-' + openssl_version + '.tar.gz'
-}
-
-task cleanOpenAL(type: Delete) {
-	delete 'deps/openal-soft'
-}
-
-task cleanFreetype(type: Delete) {
-	delete 'deps/freetype2-android'
-}
-
-task cleanOgg(type: Delete) {
-	delete 'deps/libvorbis-libogg-android'
-}
-
-task cleanSQLite3(type: Delete) {
-	delete 'deps/sqlite-amalgamation-' + sqlite3_version
-	delete 'deps/sqlite-amalgamation-' + sqlite3_version + '.zip'
-}
-
-task cleanAll(type: Delete, dependsOn: [clean, cleanAssets, cleanIconv,
-		cleanFreetype, cleanIrrlicht, cleanLevelDB, cleanSQLite3, cleanCURL,
-		cleanOpenSSL, cleanOpenAL, cleanOgg]) {
-	delete 'deps'
-	delete 'gen'
-	delete 'libs'
-	delete 'obj'
-	delete 'bin'
-	delete 'Debug'
-	delete 'and_env'
-}
-
-dependencies {
-	implementation 'androidx.core:core:1.1.0'
+task clean(type: Delete) {
+	delete rootProject.buildDir
 }
