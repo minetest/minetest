@@ -1713,8 +1713,17 @@ int ObjectRef::l_set_sky(lua_State *L)
 	// Check for ColorSpec tables:
 	bool is_colorspec = false;
 	if (lua_istable(L, 2)) {
+		// Iterate over the whole table in case of missing ColorSpec keys:
+		// Only update the value if we know we have a valid ColorSpec table.
 		lua_getfield(L, 2, "r");
-		is_colorspec = lua_isnil(L, -1) ? false : true;
+		if (!is_colorspec) 
+			is_colorspec = lua_isnumber(L, -1);
+		lua_getfield(L, 2, "g");
+		if (!is_colorspec)
+			is_colorspec = lua_isnumber(L, -1);
+		lua_getfield(L, 2, "b");
+		if (!is_colorspec)
+			is_colorspec = lua_isnumber(L, -1);
 	}
 	
 	if (lua_istable(L, 2) && !is_colorspec) {
@@ -1845,6 +1854,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 			star_params.visible = false;
 		}
 
+		skybox_params.params.clear();
 		if (lua_istable(L, 4)) {
 			lua_pushnil(L);
 			while (lua_next(L, 4) != 0) {
@@ -1857,7 +1867,6 @@ int ObjectRef::l_set_sky(lua_State *L)
 				lua_pop(L, 1);
 			}
 		}
-
 		if (skybox_params.type == "skybox" && skybox_params.params.size() != 6)
 			throw LuaError("Skybox expects 6 textures.");
 
