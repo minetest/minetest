@@ -279,6 +279,17 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 }
 
+bool Hud::hasElementOfType(HudElementType type)
+{
+	for (size_t i = 0; i != player->maxHudId(); i++) {
+		HudElement *e = player->getHud(i);
+		if (!e)
+			continue;
+		if (e->type == type)
+			return true;
+	}
+	return false;
+}
 
 void Hud::drawLuaElements(const v3s16 &camera_offset)
 {

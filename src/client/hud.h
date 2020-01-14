@@ -78,6 +78,8 @@ public:
 		m_selected_face_normal = face_normal;
 	}
 
+	bool hasElementOfType(HudElementType type);
+
 	void drawLuaElements(const v3s16 &camera_offset);
 
 private:
