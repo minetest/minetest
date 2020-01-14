@@ -46,6 +46,9 @@ public:
 		ALPHA,
 		CONTENT_OFFSET,
 		PADDING,
+		HALIGN,
+		VALIGN,
+		NEWLINE_SPACING,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -98,6 +101,12 @@ public:
 			return CONTENT_OFFSET;
 		} else if (name == "padding") {
 			return PADDING;
+		} else if (name == "halign") {
+			return HALIGN;
+		} else if (name == "valign") {
+			return VALIGN;
+		} else if (name == "newline_spacing") {
+			return NEWLINE_SPACING;
 		} else {
 			return NONE;
 		}

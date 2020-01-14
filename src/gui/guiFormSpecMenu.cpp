@@ -1756,40 +1756,6 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseLabelOptions(parserData* data, const std::string &element)
-{
-	std::vector<std::string> parts = split(element, ';');
-
-	if ((parts.size() == 3) ||
-		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::string x_align = trim(parts[0]);
-		std::string y_align = trim(parts[1]);
-		f32 spacing = stof(parts[2]);
-
-		EGUI_ALIGNMENT x = gui::EGUIA_UPPERLEFT;
-		EGUI_ALIGNMENT y = gui::EGUIA_CENTER;
-
-		if (x_align == "right")
-			x = gui::EGUIA_LOWERRIGHT;
-		if (x_align == "center")
-			x = gui::EGUIA_CENTER;
-
-		if (y_align == "top")
-			y = gui::EGUIA_UPPERLEFT;
-		if (y_align == "bottom")
-			y = gui::EGUIA_LOWERRIGHT;
-
-		data->labelOptions.spacing = spacing;
-
-		data->labelOptions.X = x;
-		data->labelOptions.Y = y;
-		return;
-	}
-	warningstream << "Invalid labeloptions element(" << parts.size() << "): '" << element
-		<< "'" << std::endl;
-}
-
 void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
@@ -1800,12 +1766,28 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		std::vector<std::string> v_pos = split(parts[0], ',');
 		std::string text = parts[1];
 
-		MY_CHECKPOS("label",0);
+		MY_CHECKPOS("label", 0);
 
-		if(!data->explicit_size)
-			warningstream<<"invalid use of label without a size[] element"<<std::endl;
+		if (!data->explicit_size)
+			warningstream << "Invalid use of label without a size[] element" << std::endl;
 
 		std::vector<std::string> lines = split(text, '\n');
+		auto style = getStyleForElement("label", "");
+
+		EGUI_ALIGNMENT halign = gui::EGUIA_UPPERLEFT;
+		EGUI_ALIGNMENT valign = gui::EGUIA_CENTER;
+		std::string str_halign = style.get(StyleSpec::HALIGN, "");
+		std::string str_valign = style.get(StyleSpec::VALIGN, "");
+
+		if (str_halign == "right")
+			halign = gui::EGUIA_LOWERRIGHT;
+		if (str_halign == "center")
+			halign = gui::EGUIA_CENTER;
+
+		if (str_valign == "top")
+			valign = gui::EGUIA_UPPERLEFT;
+		if (str_valign == "bottom")
+			valign = gui::EGUIA_LOWERRIGHT;
 
 		for (unsigned int i = 0; i != lines.size(); i++) {
 			std::wstring wlabel_colors = translate_string(
@@ -1824,19 +1806,19 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				v2s32 pos = getRealCoordinateBasePos(v_pos);
 
 				// Add newline spacing
-				pos.Y += (((float) imgsize.Y) * data->labelOptions.spacing * i);
+				pos.Y += (((float) imgsize.Y) * stof(style.get(StyleSpec::NEWLINE_SPACING, "0.5")) * i);
 
-				f32 font_width = m_font->getDimension(wlabel.c_str()).Width;
+				f32 font_width = m_font->getDimension(wlabel_plain.c_str()).Width;
 				f32 font_height = font_line_height(m_font);
 
-				if (data->labelOptions.X == gui::EGUIA_CENTER)
+				if (halign == gui::EGUIA_CENTER)
 					pos.X -= font_width / 2;
-				if (data->labelOptions.X == gui::EGUIA_LOWERRIGHT)
+				if (halign == gui::EGUIA_LOWERRIGHT)
 					pos.X -= font_width;
 
-				if (data->labelOptions.Y == gui::EGUIA_UPPERLEFT)
+				if (valign == gui::EGUIA_UPPERLEFT)
 					pos.Y -= font_height;
-				if (data->labelOptions.Y == gui::EGUIA_CENTER)
+				if (valign == gui::EGUIA_CENTER)
 					pos.Y -= font_height / 2;
 
 				rect = core::rect<s32>(
@@ -1877,11 +1859,10 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 			gui::IGUIStaticText *e = gui::StaticText::add(Environment,
 					spec.flabel.c_str(), rect, false, false, data->current_parent,
 					spec.fid);
-			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 
-			auto style = getDefaultStyleForElement("label", spec.fname);
 			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 
 			m_fields.push_back(spec);
 
@@ -2821,11 +2802,6 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	if (type == "label") {
 		parseLabel(data, description);
-		return;
-	}
-
-	if (type == "labeloptions") {
-		parseLabelOptions(data, description);
 		return;
 	}
 
