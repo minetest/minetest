@@ -25,7 +25,7 @@ msgstr "您已死亡"
 #: builtin/fstk/ui.lua
 #, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Lua 脚本发生错误，如一个 mod："
+msgstr "Lua 脚本发生错误，在一个Lua里面："
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -477,7 +477,7 @@ msgstr "禁用材质包"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr "MOD信息："
+msgstr "信息："
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
@@ -489,7 +489,7 @@ msgstr "无依赖关系."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr "该MOD没有描述信息"
+msgstr "该包没有描述信息"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
@@ -497,11 +497,11 @@ msgstr "改名"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr "删除选中的MOD"
+msgstr "删除选中的包"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr "使用材质包"
+msgstr "使用纹理包"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -804,7 +804,7 @@ msgstr "主要"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr "单人游戏"
+msgstr "开始单人游戏"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
