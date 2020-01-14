@@ -61,6 +61,7 @@ enum HudElementType {
 	HUD_ELEM_STATBAR   = 2,
 	HUD_ELEM_INVENTORY = 3,
 	HUD_ELEM_WAYPOINT  = 4,
+	HUD_ELEM_COMPASS   = 6,
 };
 
 enum HudElementStat {
@@ -76,6 +77,13 @@ enum HudElementStat {
 	HUD_STAT_WORLD_POS,
 	HUD_STAT_SIZE,
 	HUD_STAT_Z_INDEX,
+};
+
+enum HudCompassDir {
+	HUD_COMPASS_ROTATE = 0,
+	HUD_COMPASS_ROTATE_REVERSE,
+	HUD_COMPASS_TRANSLATE,
+	HUD_COMPASS_TRANSLATE_REVERSE,
 };
 
 struct HudElement {
