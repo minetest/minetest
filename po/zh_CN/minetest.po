@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-09 22:02+0200\n"
-"PO-Revision-Date: 2019-12-29 06:49+0000\n"
-"Last-Translator: Hotower <271700283@qq.com>\n"
+"PO-Revision-Date: 2020-01-16 05:21+0000\n"
+"Last-Translator: IFRFSX <1079092922@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.10\n"
+"X-Generator: Weblate 3.11-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -466,8 +466,9 @@ msgid "Content"
 msgstr "内容"
 
 #: builtin/mainmenu/tab_content.lua
+#, fuzzy
 msgid "Disable Texture Pack"
-msgstr "禁用材质包"
+msgstr "禁用纹理包"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
@@ -1997,7 +1998,7 @@ msgstr ""
 msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
-msgstr ""
+msgstr "手臂惯性，使摄像机移动时手臂更真实地运动。"
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
