@@ -3835,7 +3835,7 @@ void Server::SendMinimapModes(session_t peer_id,
 	pkt << (u16)modes.size() << (u16)wanted_mode;
 
 	for (auto &mode : modes)
-		pkt << (u16)mode.type << mode.label << mode.size << mode.extra;
+		pkt << mode.type << mode.label << mode.size << mode.texture << mode.scale;
 
 	Send(&pkt);
 }

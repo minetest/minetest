@@ -1521,12 +1521,13 @@ void Client::handleCommand_MinimapModes(NetworkPacket *pkt)
 		u16 type;
 		std::string label;
 		u16 size;
-		std::string extra;
+		std::string texture;
+		u16 scale;
 
-		*pkt >> type >> label >> size >> extra;
+		*pkt >> type >> label >> size >> texture >> scale;
 
 		if (m_minimap)
-			m_minimap->addMode(MinimapType(type), size, label, extra);
+			m_minimap->addMode(MinimapType(type), size, label, texture, scale);
 	}
 
 	if (m_minimap)

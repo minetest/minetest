@@ -312,13 +312,16 @@ void Minimap::addMode(MinimapModeDef mode)
 {
 	// Check validity
 	if (mode.type == MINIMAP_TYPE_TEXTURE) {
-		if (mode.extra.empty())
+		if (mode.texture.empty())
 			return;
+		if (mode.scale < 1)
+			mode.scale = 1;
 	}
 
 	int zoom = -1;
 
-	if (mode.label == "")
+	// Build a default standard label
+	if (mode.label == "") {
 		switch (mode.type) {
 			case MINIMAP_TYPE_OFF:
 				mode.label = N_("Minimap hidden");
@@ -339,6 +342,7 @@ void Minimap::addMode(MinimapModeDef mode)
 			default:
 				break;
 		}
+	}
 
 	if (zoom >= 0) {
 		char label_buf[1024];
@@ -351,13 +355,14 @@ void Minimap::addMode(MinimapModeDef mode)
 }
 
 void Minimap::addMode(MinimapType type, u16 size, std::string label,
-		std::string extra)
+		std::string texture, u16 scale)
 {
 	MinimapModeDef mode;
 	mode.type = type;
 	mode.label = label;
 	mode.map_size = size;
-	mode.extra = extra;
+	mode.texture = texture;
+	mode.scale = scale;
 	switch (type) {
 		case MINIMAP_TYPE_SURFACE:
 			mode.scan_height = m_surface_mode_scan_height;
@@ -477,7 +482,7 @@ video::ITexture *Minimap::getMinimapTexture()
 		break;
 	case MINIMAP_TYPE_TEXTURE:
 		// Want to use texture source, to : 1 find texture, 2 cache it
-		video::ITexture* texture = m_tsrc->getTexture(data->mode.extra);
+		video::ITexture* texture = m_tsrc->getTexture(data->mode.texture);
 		video::IImage* image = driver->createImageFromData(
 			 texture->getColorFormat(), texture->getSize(), texture->lock(), true, false);
 		texture->unlock();
@@ -488,8 +493,11 @@ video::ITexture *Minimap::getMinimapTexture()
 
 		image->copyTo(map_image,
 			irr::core::vector2d<int> {
-				(data->mode.map_size - data->pos.X - static_cast<int>(dim.Width))>>1,
-				(data->mode.map_size + data->pos.Z - static_cast<int>(dim.Height))>>1});
+				((data->mode.map_size - (static_cast<int>(dim.Width))) >> 1)
+					- data->pos.X / data->mode.scale,
+				((data->mode.map_size - (static_cast<int>(dim.Height))) >> 1)
+					+ data->pos.Z / data->mode.scale
+			});
 		image->drop();
 	}
 

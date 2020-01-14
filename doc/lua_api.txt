@@ -5685,10 +5685,13 @@ This is basically a reference to a C++ `ServerActiveObject`
       * `off`: Minimap off
       * `surface`: Minimap in surface mode
       * `radar`: Minimap in radar mode
-      * `texture`: Texture to be displayed instead of terrain map
+      * `texture`: Texture to be displayed instead of terrain map (texture is
+	    centered around 0,0 and can be scaled)
     * `label`: Label associated with this mode (displayed on minimap mode toggle)
     * `size`: Size of the terrain displayed in minimap (in map nodes)
     * `texture`: Only for texture type, name of the texture to display
+    * `scale`: Only for texture type, scale of the texture map in nodes per pixels
+       (for example a `scale` of 2 means each pixel represents a 2x2 nodes square)
   `selected_mode` is the mode index to be selected after modes have been changed
   (0 is the fist mode).
 * `set_sky(bgcolor, type, {texture names}, clouds)`

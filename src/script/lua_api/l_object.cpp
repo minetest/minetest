@@ -1920,7 +1920,8 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 				mode.type = 2;
 			else if (type == "texture") {
 				mode.type = 3;
-				mode.extra = getstringfield_default(L, -1, "texture", "");
+				mode.texture = getstringfield_default(L, -1, "texture", "");
+				mode.scale = getintfield_default(L, -1, "scale", 1);
 			} else {
 				mode.type = -1;
 			}

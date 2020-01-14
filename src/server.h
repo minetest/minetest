@@ -110,10 +110,11 @@ struct ServerPlayingSound
 };
 
 struct MinimapMode {
-	u16 type;
-	std::string label;
-	u16 size;
-	std::string extra;
+	u16 type = 0;
+	std::string label = "";
+	u16 size = 0;
+	std::string texture = "";
+	u16 scale = 1;
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
