@@ -1724,10 +1724,10 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 
 	// Handle prior clients here
 	if (m_clients.getProtocolVersion(peer_id) < 38) {
-		pkt << params.bgcolor << params.type << (u16) params.params.size();
+		pkt << params.bgcolor << params.type << (u16) params.textures.size();
 
-		for(size_t i=0; i<params.params.size(); i++)
-			pkt << params.params[i];
+		for(size_t i=0; i<params.textures.size(); i++)
+			pkt << params.textures[i];
 
 		pkt << params.clouds;
 
@@ -1738,8 +1738,8 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 		<< params.moon_tint << params.tint_type;
 	
 		if (params.type == "skybox") {
-			pkt << (u16) params.params.size();
-			for (const std::string &texture : params.params)
+			pkt << (u16) params.textures.size();
+			for (const std::string &texture : params.textures)
 				pkt << texture;
 		} else if (params.type == "regular") {
 			pkt << params.day_sky << params.day_horizon
@@ -1747,7 +1747,6 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 				<< params.night_sky << params.night_horizon
 				<< params.indoors;
 		}
-	
 	}
 
 	Send(&pkt);

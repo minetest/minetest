@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <array>
 #include "camera.h"
 #include "irrlichttypes_extrabloated.h"
+#include "skyparams.h"
 
 #pragma once
 
@@ -61,22 +62,22 @@ public:
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
 	
-	void setSunVisible(bool sun_visible) { m_sun_visible = sun_visible; }
+	void setSunVisible(bool sun_visible) { m_sun_params.visible = sun_visible; }
 	void setSunTexture(std::string sun_texture, 
 		std::string sun_tonemap, ITextureSource *tsrc);
-	void setSunScale(f32 sun_scale) { m_sun_scale = sun_scale; }
-	void setSunriseVisible(bool glow_visible) { m_sunglow_visible = glow_visible; }
+	void setSunScale(f32 sun_scale) { m_sun_params.scale = sun_scale; }
+	void setSunriseVisible(bool glow_visible) { m_sun_params.sunrise_visible = glow_visible; }
 	void setSunriseTexture(std::string sunglow_texture, ITextureSource* tsrc);
 
-	void setMoonVisible(bool moon_visible) { m_moon_visible = moon_visible; }
+	void setMoonVisible(bool moon_visible) { m_moon_params.visible = moon_visible; }
 	void setMoonTexture(std::string moon_texture, 
 		std::string moon_tonemap, ITextureSource *tsrc);
-	void setMoonScale(f32 moon_scale) { m_moon_scale = moon_scale; }
+	void setMoonScale(f32 moon_scale) { m_moon_params.scale = moon_scale; }
 
-	void setStarsVisible(bool stars_visible) { m_stars_visible = stars_visible; }
+	void setStarsVisible(bool stars_visible) { m_star_params.visible = stars_visible; }
 	void setStarCount(u16 star_count);
-	void setStarColor(video::SColor star_color) { m_starcolor = star_color; }
-	void setStarScale(f32 star_scale) { m_star_scale = star_scale; }
+	void setStarColor(video::SColor star_color) { m_star_params.starcolor = star_color; }
+	void setStarScale(f32 star_scale) { m_star_params.scale = star_scale; }
 
 	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
 	const video::SColorf &getCloudColor() const { return m_cloudcolor_f; }
@@ -100,7 +101,7 @@ public:
 	void setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,
 		std::string use_sun_tint);
 	void setInClouds(bool clouds) { m_in_clouds = clouds; }
-	void clearSkyboxTextures() { m_skybox_textures.clear(); }
+	void clearSkyboxTextures() { m_sky_params.textures.clear(); }
 	void addTextureToSkybox(std::string texture, int material_id,
 		ITextureSource *tsrc);
 private:
@@ -163,16 +164,6 @@ private:
 	video::SColor m_bgcolor;
 	video::SColor m_skycolor;
 	video::SColorf m_cloudcolor_f;
-	
-	// Horizon colors
-	video::SColorf m_bgcolor_day_f = video::SColor(255, 155, 193, 240);
-	video::SColorf m_bgcolor_indoor_f = video::SColor(255, 100, 100, 100);
-	video::SColorf m_bgcolor_dawn_f = video::SColor(255, 186, 193, 240);
-	video::SColorf m_bgcolor_night_f = video::SColor(255, 64, 144, 255);
-	// Sky colors
-	video::SColorf m_skycolor_day_f = video::SColor(255, 140, 186, 250);
-	video::SColorf m_skycolor_dawn_f = video::SColor(255, 180, 186, 250);
-	video::SColorf m_skycolor_night_f = video::SColor(255, 0, 107, 255);
 
 	// pure white: becomes "diffuse light component" for clouds
 	video::SColorf m_cloudcolor_day_f = video::SColorf(1, 1, 1, 1);
@@ -183,40 +174,19 @@ private:
 		191.0f/255.0f
 	);
 
+	SkyboxParams m_sky_params;
+	SunParams m_sun_params;
+	MoonParams m_moon_params;
+	StarParams m_star_params;
+
 	bool m_default_tint = true;
-	
-	bool m_sun_visible = true;
-	bool m_sunglow_visible = true;
-	std::string m_sun_name = "sun.png";
-	std::string m_sun_tonemap_name = "sun_tonemap.png";
-	std::string m_sunrise_name = "sunrisebg.png";
-	video::SColorf m_pointcolor_sun_f;
-	float m_sun_scale = 1;
 
-	bool m_moon_visible = true;
-	std::string m_moon_name = "moon.png";
-	std::string m_moon_tonemap_name = "moon_tonemap.png";
-	video::SColorf m_pointcolor_moon_f;
-	float m_moon_scale = 1;
-
-	bool m_stars_visible = true;
 	std::vector<v3f> m_stars;
-	float m_star_scale = 1;
-	video::SColor m_starcolor = video::SColor(105, 235, 235, 255);
-	u32 m_star_count = 0;
 
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
-
-	std::vector<std::string> m_skybox_textures;
-	video::ITexture *m_skybox_top;
-	video::ITexture *m_skybox_bottom;
-	video::ITexture *m_skybox_left;
-	video::ITexture *m_skybox_right;
-	video::ITexture *m_skybox_front;
-	video::ITexture *m_skybox_back;
 
 	void draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor &suncolor,
 		const video::SColor &suncolor2, float wicked_time_of_day);
@@ -227,4 +197,5 @@ private:
 	void draw_stars(video::IVideoDriver *driver, float wicked_time_of_day);
 	void place_sky_body(std::array<video::S3DVertex, 4> &vertices,
 		float horizon_position,	float day_position);
+	void setSkyDefaults();
 };

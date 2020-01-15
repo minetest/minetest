@@ -1740,14 +1740,13 @@ int ObjectRef::l_set_sky(lua_State *L)
 		lua_pop(L, 1);
 
 		lua_getfield(L, 2, "textures");
-		skybox_params.params.clear();
+		skybox_params.textures.clear();
 		if (!lua_istable(L, -1)) {
-			//skybox_params.params.emplace_back("");
 		} else {
 			lua_pushnil(L);
 			while (lua_next(L, -2) != 0) {
 				// Key is at index -2 and value at index -1
-				skybox_params.params.emplace_back(readParam<std::string>(L, -1));
+				skybox_params.textures.emplace_back(readParam<std::string>(L, -1));
 				// Removes the value, but keeps the key for iteration
 				lua_pop(L, 1);
 			}
@@ -1760,7 +1759,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		using "regular" or "plain" skybox modes as textures aren't needed.
 		*/
 
-		if (skybox_params.params.size() != 6 && skybox_params.params.size() > 0)
+		if (skybox_params.textures.size() != 6 && skybox_params.textures.size() > 0)
 			throw LuaError("Skybox expects 6 textures!");
 
 		skybox_params.clouds = getboolfield_default(L, 2,
@@ -1768,56 +1767,55 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 		lua_getfield(L, 2, "sky_color");	
 		if (lua_istable(L, -1)) {
-			lua_getfield(L, 2, "day_sky");
+			lua_getfield(L, -1, "day_sky");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.day_sky);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 2, "day_horizon");
+			lua_getfield(L, -1, "day_horizon");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.day_horizon);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 2, "dawn_sky");
+			lua_getfield(L, -1, "dawn_sky");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.dawn_sky);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 2, "dawn_horizon");
+			lua_getfield(L, -1, "dawn_horizon");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.dawn_horizon);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 2, "night_sky");
+			lua_getfield(L, -1, "night_sky");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.night_sky);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 2, "night_horizon");
+			lua_getfield(L, -1, "night_horizon");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.night_horizon);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 2, "indoors");
+			lua_getfield(L, -1, "indoors");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.indoors);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 2, "sun_tint");
+			lua_getfield(L, -1, "sun_tint");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.sun_tint);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 2, "moon_tint");
+			lua_getfield(L, -1, "moon_tint");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.moon_tint);
 			lua_pop(L, 1);
 
-			lua_getfield(L, 2, "tint_type");
-			if (!lua_isnil(L, -1)) {
+			lua_getfield(L, -1, "tint_type");
+			if (!lua_isnil(L, -1))
 				skybox_params.tint_type = luaL_checkstring(L, -1);
-				lua_pop(L, 1);
-			}
+			lua_pop(L, 1);
 
 			// Because we need to leave the "sky_color" table.
 			lua_pop(L, 1);
@@ -1854,20 +1852,20 @@ int ObjectRef::l_set_sky(lua_State *L)
 			star_params.visible = false;
 		}
 
-		skybox_params.params.clear();
+		skybox_params.textures.clear();
 		if (lua_istable(L, 4)) {
 			lua_pushnil(L);
 			while (lua_next(L, 4) != 0) {
 			// Key at index -2, and value at index -1
 				if (lua_isstring(L, -1))
-					skybox_params.params.emplace_back(readParam<std::string>(L, -1));
+					skybox_params.textures.emplace_back(readParam<std::string>(L, -1));
 				else
-					skybox_params.params.emplace_back("");
+					skybox_params.textures.emplace_back("");
 				// Remove the value, keep the key for the next iteration
 				lua_pop(L, 1);
 			}
 		}
-		if (skybox_params.type == "skybox" && skybox_params.params.size() != 6)
+		if (skybox_params.type == "skybox" && skybox_params.textures.size() != 6)
 			throw LuaError("Skybox expects 6 textures.");
 
 		skybox_params.clouds = true;
@@ -1902,13 +1900,13 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	// Add textures to a numerically indexed table for clean dump() prints
 	// We also don't want to show it when we're not using the textured skybox
-	if (skybox_params.params.size() != 6 || skybox_params.type != "skybox") {
+	if (skybox_params.textures.size() != 6 || skybox_params.type != "skybox") {
 	} else {
 		lua_newtable(L);
 		for (int i = 0; i < 6; i++) {
 			// Create table key
 			lua_pushnumber(L, i+1);
-			lua_pushstring(L, skybox_params.params[i].c_str());
+			lua_pushstring(L, skybox_params.textures[i].c_str());
 			lua_settable(L, -3);
 		}
 		lua_setfield(L, -2, "textures");
@@ -1920,7 +1918,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 	// Create table containing modified default skybox color
 	// and sun, moon sun[rise/set] tints.
 	lua_newtable(L);
-	if (skybox_params.tint_type == "regular") {
+	if (skybox_params.type == "regular") {
 		push_ARGB8(L, skybox_params.day_sky);
 		lua_setfield(L, -2, "day_sky");
 		push_ARGB8(L, skybox_params.day_horizon);

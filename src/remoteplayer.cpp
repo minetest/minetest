@@ -69,12 +69,12 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 
 	m_skybox_params.type = "regular";
 	m_skybox_params.clouds = true;
-	m_skybox_params.day_sky = video::SColor(255, 155, 193, 240);
-	m_skybox_params.day_horizon = video::SColor(255, 140, 186, 250);
-	m_skybox_params.dawn_sky = video::SColor(255, 186, 193, 240);
-	m_skybox_params.dawn_horizon = video::SColor(255, 180, 186, 250);
-	m_skybox_params.night_sky = video::SColor(255, 0, 107, 255);
-	m_skybox_params.night_horizon = video::SColor(255, 64, 144, 255);
+	m_skybox_params.day_sky = video::SColor(255, 140, 186, 250);
+	m_skybox_params.day_horizon = video::SColor(255, 155, 193, 240);
+	m_skybox_params.dawn_sky = video::SColor(255, 180, 186, 250);
+	m_skybox_params.dawn_horizon = video::SColor(255, 186, 193, 240);
+	m_skybox_params.night_sky = video::SColor(255, 64, 144, 255);
+	m_skybox_params.night_horizon = video::SColor(255, 0, 107, 255);
 	m_skybox_params.indoors = video::SColor(255, 100, 100, 100);
 	m_skybox_params.sun_tint = video::SColor(255, 244, 125, 29);
 	m_skybox_params.moon_tint = video::SColorf(0.5, 0.6, 0.8, 1).toSColor();

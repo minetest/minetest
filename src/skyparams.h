@@ -20,7 +20,7 @@ struct SkyboxParams
 {
     video::SColor bgcolor;
     std::string type;
-    std::vector<std::string> params;
+    std::vector<std::string> textures;
     bool clouds;
     video::SColor day_sky;
     video::SColor day_horizon;

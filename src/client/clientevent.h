@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "irrlichttypes_bloated.h"
 #include "hud.h"
+#include "skyparams.h"
 
 enum ClientEventType : u8
 {
@@ -150,23 +151,7 @@ struct ClientEvent
 			v3f *v3fdata;
 			v2s32 *v2s32data;
 		} hudchange;
-		struct
-		{
-			video::SColor *bgcolor;
-			std::string *type;
-			std::vector<std::string> *params;
-			bool clouds;
-			video::SColor *day_sky;
-			video::SColor *day_horizon;
-			video::SColor *dawn_sky;
-			video::SColor *dawn_horizon;
-			video::SColor *night_sky;
-			video::SColor *night_horizon;
-			video::SColor *indoors;
-			video::SColor *sun_tint;
-			video::SColor *moon_tint;
-			std::string *tint_type;
-		} set_sky;
+		SkyboxParams *set_sky;
 		struct
 		{
 			bool do_override;
@@ -182,28 +167,8 @@ struct ClientEvent
 			f32 speed_x;
 			f32 speed_y;
 		} cloud_params;
-		struct
-		{
-			bool visible;
-			std::string *texture;
-			std::string *tonemap;
-			std::string *sunrise;
-			bool sunrise_visible;
-			f32 scale;
-		} sun_params;
-		struct
-		{
-			bool visible;
-			std::string *texture;
-			std::string *tonemap;
-			f32 scale;
-		} moon_params;
-		struct
-		{
-			bool visible;
-			u32 count;
-			u32 starcolor;
-			f32 scale;
-		} star_params;
+		SunParams *sun_params;
+		MoonParams *moon_params;
+		StarParams *star_params;
 	};
 };
