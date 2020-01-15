@@ -2124,7 +2124,8 @@ Elements
 ### `animated_image[<X>,<Y>;<W>,<H>;<texture name>:<frame count>,<frame duration>]`
 
 * Show an animated image
-* `<texture name>` is the sole name without the file extension (`.png` is expected)
+* `<texture name>` is the sole name without a frame number, for instance `image.png` will look for
+  frames like `image_1.png` and so on. If you don't supply a file extension, PNG is assumed.
 * `<frame count>` is the number of frames animating the image
   (ex.: `3` successively show `image_1.png`, `image_2.png`, `image_3.png`)
 * `<frame duration>` is in milliseconds

@@ -28,8 +28,17 @@ void Texture::set(const std::string &_name, const std::string &base_name,
 	m_frame_time = 0;
 	m_frame_names.resize(m_frame_count);
 
+	std::string::size_type extension_position = base_name.rfind('.');
+	std::string filename = base_name;
+	std::string extension = ".png";
+
+	if (extension_position != std::string::npos) {
+		filename = base_name.substr(0, extension_position);
+		extension = base_name.substr(extension_position);
+	}
+
 	for (s32 i = 0; i < m_frame_count; ++i)
-		m_frame_names[i] = base_name + "_" + std::to_string(i + 1) + ".png";
+		m_frame_names[i] = filename + "_" + std::to_string(i + 1) + extension;
 }
 
 //! Set animation data to display a static texture
