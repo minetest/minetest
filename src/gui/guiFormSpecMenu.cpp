@@ -1769,7 +1769,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		MY_CHECKPOS("label", 0);
 
 		if (!data->explicit_size)
-			warningstream << "Invalid use of label without a size[] element" << std::endl;
+			warningstream << "Invalid use of label without a size[] element." << std::endl;
 
 		std::vector<std::string> lines = split(text, '\n');
 		auto style = getStyleForElement("label", "");
@@ -1779,14 +1779,14 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		std::string str_halign = style.get(StyleSpec::HALIGN, "");
 		std::string str_valign = style.get(StyleSpec::VALIGN, "");
 
-		if (str_halign == "right")
+		if (str_halign == "left")
 			halign = gui::EGUIA_LOWERRIGHT;
-		if (str_halign == "center")
+		else if (str_halign == "center")
 			halign = gui::EGUIA_CENTER;
 
 		if (str_valign == "top")
 			valign = gui::EGUIA_UPPERLEFT;
-		if (str_valign == "bottom")
+		else if (str_valign == "bottom")
 			valign = gui::EGUIA_LOWERRIGHT;
 
 		for (unsigned int i = 0; i != lines.size(); i++) {
@@ -1808,17 +1808,18 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				// Add newline spacing
 				pos.Y += (((float) imgsize.Y) * stof(style.get(StyleSpec::NEWLINE_SPACING, "0.5")) * i);
 
-				f32 font_width = m_font->getDimension(wlabel_plain.c_str()).Width;
-				f32 font_height = font_line_height(m_font);
+				// Move the label around for alignment
+				s32 font_width = m_font->getDimension(wlabel_plain.c_str()).Width;
+				s32 font_height = font_line_height(m_font);
 
 				if (halign == gui::EGUIA_CENTER)
 					pos.X -= font_width / 2;
-				if (halign == gui::EGUIA_LOWERRIGHT)
+				else if (halign == gui::EGUIA_LOWERRIGHT)
 					pos.X -= font_width;
 
 				if (valign == gui::EGUIA_UPPERLEFT)
 					pos.Y -= font_height;
-				if (valign == gui::EGUIA_CENTER)
+				else if (valign == gui::EGUIA_CENTER)
 					pos.Y -= font_height / 2;
 
 				rect = core::rect<s32>(
@@ -1856,6 +1857,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				258 + m_fields.size(),
 				4
 			);
+
 			gui::IGUIStaticText *e = gui::StaticText::add(Environment,
 					spec.flabel.c_str(), rect, false, false, data->current_parent,
 					spec.fid);
@@ -1879,79 +1881,130 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
 	if ((parts.size() == 2) ||
 		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::wstring text = unescape_translate(
-			unescape_string(utf8_to_wide(parts[1])));
+		std::vector<std::string> v_pos = split(parts[0], ',');
+		std::string text = parts[1];
 
-		MY_CHECKPOS("vertlabel",1);
+		MY_CHECKPOS("vertlabel", 1);
 
-		v2s32 pos;
-		core::rect<s32> rect;
+		if (!data->explicit_size)
+			warningstream << "Invalid use of vertlabel without a size[] element." << std::endl;
+
+		std::vector<std::string> lines = split(text, '\n');
+		auto style = getStyleForElement("vertlabel", "", "label");
+
+		EGUI_ALIGNMENT halign = gui::EGUIA_CENTER;
+		EGUI_ALIGNMENT valign = gui::EGUIA_UPPERLEFT;
+		// For some reason, Irrlicht doesn't understand the height of
+		// newlines, so we always set it to align to the top and manually
+		// change it with the rect position.
+		EGUI_ALIGNMENT final_valign = gui::EGUIA_UPPERLEFT;
 
 		if (data->real_coordinates) {
-			pos = getRealCoordinateBasePos(v_pos);
+			std::string str_halign = style.get(StyleSpec::HALIGN, "");
+			std::string str_valign = style.get(StyleSpec::VALIGN, "");
 
-			// Vertlabels are positioned by center, not left.
-			pos.X -= imgsize.X / 2;
+			if (str_halign == "left")
+				halign = gui::EGUIA_LOWERRIGHT;
+			if (str_halign == "right")
+				halign = gui::EGUIA_UPPERLEFT;
 
-			// We use text.length + 1 because without it, the rect
-			// isn't quite tall enough and cuts off the text.
-			rect = core::rect<s32>(pos.X, pos.Y,
-				pos.X + imgsize.X,
-				pos.Y + font_line_height(m_font) *
-				(text.length() + 1));
-
+			if (str_valign == "center")
+				valign = gui::EGUIA_CENTER;
+			if (str_valign == "bottom")
+				valign = gui::EGUIA_LOWERRIGHT;
 		} else {
-			pos = getElementBasePos(&v_pos);
-
-			// As above, the length must be one longer. The width of
-			// the rect (15 pixels) seems rather arbitrary, but
-			// changing it might break something.
-			rect = core::rect<s32>(
-				pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
-				pos.X+15, pos.Y +
-					font_line_height(m_font) *
-					(text.length() + 1) +
-					((imgsize.Y/2) - m_btn_height));
+			// Patch for old behavior
+			final_valign = gui::EGUIA_CENTER;
 		}
 
-		if(!data->explicit_size)
-			warningstream<<"invalid use of label without a size[] element"<<std::endl;
+		v2s32 pos;
 
-		std::wstring label;
+		for (unsigned int i = 0; i != lines.size(); i++) {
+			std::wstring wlabel_colors = translate_string(
+				utf8_to_wide(unescape_string(lines[i])));
+			// Without color escapes to get the font dimensions
+			std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
 
-		for (wchar_t i : text) {
-			label += i;
-			label += L"\n";
-		}
+			std::wstring label;
+			for (wchar_t i : lines[i]) {
+				label += i;
+				label += L"\n";
+			}
 
-		FieldSpec spec(
-			"",
-			label,
-			L"",
-			258 + m_fields.size()
-		);
-		gui::IGUIStaticText *e = gui::StaticText::add(Environment, spec.flabel.c_str(),
+			core::rect<s32> rect;
+
+			if (data->real_coordinates) {
+				pos = getRealCoordinateBasePos(v_pos);
+
+				// Add newline spacing
+				pos.X += (((float) imgsize.X) * stof(style.get(StyleSpec::NEWLINE_SPACING, "0.5")) * i);
+
+				// Move the label around for alignment
+				s32 font_width = m_font->getDimension(wlabel_plain.c_str()).Width;
+				s32 font_height = m_font->getDimension(wlabel_plain.c_str()).Height *
+					(label.length() / 2);
+
+				if (halign == gui::EGUIA_CENTER)
+					pos.X -= font_width / 2;
+				else if (halign == gui::EGUIA_LOWERRIGHT)
+					pos.X -= font_width;
+
+				if (valign == gui::EGUIA_CENTER)
+					pos.Y -= font_height / 2;
+				else if (valign == gui::EGUIA_UPPERLEFT)
+					pos.Y -= font_height;
+
+				rect = core::rect<s32>(
+					pos.X, pos.Y,
+					pos.X + font_width,
+					pos.Y + font_height);
+			} else {
+				pos = getElementBasePos(&v_pos);
+
+				// Add newline spacing. Just some necessary patching, so no styling
+				pos.X += (((float) imgsize.X) * 0.5 * i);
+
+				// The length must be one longer to fit the text. The
+				// width of the rect (15 pixels) seems rather arbitrary,
+				// but changing it might break something.
+				rect = core::rect<s32>(
+					pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
+					pos.X+15, pos.Y +
+						font_line_height(m_font) *
+						(lines[i].length() + 1) +
+						((imgsize.Y/2) - m_btn_height));
+			}
+
+			FieldSpec spec(
+				"",
+				label,
+				L"",
+				258 + m_fields.size()
+			);
+
+			gui::IGUIStaticText *e = gui::StaticText::add(Environment, spec.flabel.c_str(),
 				rect, false, false, data->current_parent, spec.fid);
-		e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 
-		auto style = getDefaultStyleForElement("vertlabel", spec.fname, "label");
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+			e->setTextAlignment(halign, final_valign);
 
-		m_fields.push_back(spec);
+			m_fields.push_back(spec);
 
-		// vertlabels should let events through
-		e->grab();
-		m_clickthrough_elements.push_back(e);
+			// vertlabels should let events through
+			e->grab();
+			m_clickthrough_elements.push_back(e);
+		}
+
 		return;
 	}
-	errorstream<< "Invalid vertlabel element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid vertlabel element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &element,

@@ -2312,7 +2312,7 @@ Elements
 * **Note**: If the new coordinate system is enabled, labels are
   positioned from the center of the text by default, not the top.
 * The text is displayed directly without automatic line breaking,
-  so label should not be used for big text chunks.  Newlines can be
+  so label should not be used for big text chunks. Newlines can be
   used to make labels multiline.
 * **Note**: With the new coordinate system, newlines are defaultly spaced
   with half a coordinate. With the old system, newlines are spaced 2/5 of
@@ -2330,7 +2330,7 @@ Elements
 * `label` is the text on the label
 * **Note**: If the new coordinate system is enabled, vertlabels are positioned
   from the center of the text by default, not the left.
-* Newlines in a vertlabel will be displayed to the right of the starting text.
+* Newlines in a vertlabel are displayed to the right of the starting text.
 
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
@@ -2726,8 +2726,10 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to false.
 * label, vertlabel
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * halign - left/center/right, sets text horizontal alignment in respect to position. Default left.
-    * valign - top/center/bottom, sets text vertical alignment in respect to position. Default center.
+    * halign - left/center/right, sets text horizontal alignment in respect to position.
+      Default right for label and center for vertlabel.
+    * valign - top/center/bottom, sets text vertical alignment in respect to position.
+      Default center for label and bottom for vertlabel.
     * newline_spacing - number, sets space in coordinates between lines of text. Default 0.5.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
