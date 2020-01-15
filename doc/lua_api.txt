@@ -5898,7 +5898,7 @@ This is basically a reference to a C++ `ServerActiveObject`
     * `parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
-        * `count`: Interger number to set the number of stars in 
+        * `count`: Integer number to set the number of stars in 
             the skybox. Only applies to `"skybox"` and `"regular"` skyboxes.
             (default: `1000`)
         * `star_color`: ColorSpec, sets the colors of the stars,
