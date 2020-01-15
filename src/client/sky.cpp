@@ -103,7 +103,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 			m_materials[4].Lighting = true;
 	}
 
-	setStarCount(200);
+	setStarCount(1000);
 	for (int i = 5; i < 11; i++) {
 		m_materials[i] = mat;
 		m_materials[i].Lighting = true;
@@ -715,7 +715,7 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 			float starbrightness = clamp((0.25f - fabs(tod)) * 20.0f, 0.0f, 1.0f);
 			
 			float f = starbrightness;
-			float d = (0.007 / 2) * m_star_params.scale;
+			float d = (0.006 / 2) * m_star_params.scale;
 			
 			video::SColor starcolor(f * m_star_params.starcolor.getAlpha(),
 				m_star_params.starcolor.getRed(),

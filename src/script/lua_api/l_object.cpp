@@ -1802,17 +1802,17 @@ int ObjectRef::l_set_sky(lua_State *L)
 				read_color(L, -1, &skybox_params.indoors);
 			lua_pop(L, 1);
 
-			lua_getfield(L, -1, "sun_tint");
+			lua_getfield(L, -1, "fog_sun_tint");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.sun_tint);
 			lua_pop(L, 1);
 
-			lua_getfield(L, -1, "moon_tint");
+			lua_getfield(L, -1, "fog_moon_tint");
 			if (!lua_isnil(L, -1))
 				read_color(L, -1, &skybox_params.moon_tint);
 			lua_pop(L, 1);
 
-			lua_getfield(L, -1, "tint_type");
+			lua_getfield(L, -1, "fog_tint_type");
 			if (!lua_isnil(L, -1))
 				skybox_params.tint_type = luaL_checkstring(L, -1);
 			lua_pop(L, 1);

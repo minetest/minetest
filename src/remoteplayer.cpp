@@ -90,7 +90,7 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	m_moon_params.scale = 1;
 
 	m_star_params.visible = true;
-	m_star_params.count = 200;
+	m_star_params.count = 1000;
 	m_star_params.starcolor = video::SColor(105, 235, 235, 255);
 	m_star_params.scale = 1;
 }

@@ -1730,8 +1730,6 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 			pkt << params.textures[i];
 
 		pkt << params.clouds;
-
-		Send(&pkt);	
 	} else { // Handle current clients and future clients
 		pkt << params.bgcolor << params.type
 		<< params.clouds << params.sun_tint
@@ -1748,7 +1746,7 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 				<< params.indoors;
 		}
 	}
-
+	
 	Send(&pkt);
 }
 

@@ -92,7 +92,7 @@ public:
 
 	const SunParams &getSunParams() const { return m_sun_params; }
 
-	void setMoon(const MoonParams &moon_params) {m_moon_params = moon_params; }
+	void setMoon(const MoonParams &moon_params) { m_moon_params = moon_params; }
 
 	const MoonParams &getMoonParams() const { return m_moon_params; }
 
