@@ -269,7 +269,7 @@ void Sky::render()
 				(0.25 - fabs(wicked_time_of_day < 0.5 ?
 				wicked_time_of_day : (1.0 - wicked_time_of_day))) * 20));
 			float f = starbrightness;
-			float d = 0.007 / 2;
+			float d = 0.006f / 2.0f;
 			video::SColor starcolor(255, f * 90, f * 90, f * 90);
 			// Stars are only drawn when brighter than skycolor
 			if (starcolor.getBlue() < m_skycolor.getBlue())
