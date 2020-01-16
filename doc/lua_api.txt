@@ -5678,22 +5678,23 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
-* `set_minimap_modes({modes}, selected_mode)`: Sets available minimap modes and
-  selected mode number (existing modes are replaced). Modes is a table of mode
-  descriptions. Mode description is a table with four fields :
+* `set_minimap_modes({mode, mode, ...}, selected_mode)`
+    * Overrides the available minimap modes and changes the selected mode.
+      `mode` is a table consisting of up to four fields:
     * `type`: Available type:
       * `off`: Minimap off
       * `surface`: Minimap in surface mode
       * `radar`: Minimap in radar mode
       * `texture`: Texture to be displayed instead of terrain map (texture is
-	    centered around 0,0 and can be scaled)
-    * `label`: Label associated with this mode (displayed on minimap mode toggle)
-    * `size`: Size of the terrain displayed in minimap (in map nodes)
+        centered around 0,0 and can be scaled)
+    * `label`: Optional label to display on minimap mode toggle
+      The translation must be handled within the mod.
+    * `size`: Size of the terrain displayed in minimap (in nodes)
     * `texture`: Only for texture type, name of the texture to display
-    * `scale`: Only for texture type, scale of the texture map in nodes per pixels
+    * `scale`: Only for texture type, scale of the texture map in nodes per pixel
        (for example a `scale` of 2 means each pixel represents a 2x2 nodes square)
   `selected_mode` is the mode index to be selected after modes have been changed
-  (0 is the fist mode).
+  (0 is the first mode).
 * `set_sky(bgcolor, type, {texture names}, clouds)`
     * `bgcolor`: ColorSpec, defaults to white
     * `type`: Available types:
