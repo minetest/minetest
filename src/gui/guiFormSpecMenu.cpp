@@ -744,7 +744,8 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		gui::IGUIImage *e = Environment->addImage(rect, this, spec.fid, 0, true);
 		e->setImage(texture);
 		e->setScaleImage(true);
-		e->setNotClipped(true);
+		auto style = getStyleForElement("image", spec.fname);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
 
 		return;
@@ -776,7 +777,8 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		);
 		gui::IGUIImage *e = Environment->addImage(texture, pos, true, this,
 				spec.fid, 0);
-		e->setNotClipped(true);
+		auto style = getStyleForElement("image", spec.fname);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
 
 		return;
@@ -824,6 +826,8 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 
 		GUIItemImage *e = new GUIItemImage(Environment, this, spec.fid,
 				core::rect<s32>(pos, pos + geom), name,	m_font, m_client);
+		auto style = getStyleForElement("item_image", spec.fname);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->drop();
 
 		m_fields.push_back(spec);
@@ -2110,7 +2114,8 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 
 			GUIBox *e = new GUIBox(Environment, this, spec.fid, rect, tmp_color);
 
-			e->setNotClipped(true);
+			auto style = getStyleForElement("box", spec.fname);
+			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 
 			e->drop();
 
