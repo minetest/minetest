@@ -102,6 +102,10 @@ core.register_privilege("debug", {
 	give_to_singleplayer = false,
 	give_to_admin = true,
 })
+core.register_privilege("wireframe", {
+	description = "Can enable wireframe",
+	give_to_singleplayer = false,
+})
 
 core.register_can_bypass_userlimit(function(name, ip)
 	local privs = core.get_player_privs(name)

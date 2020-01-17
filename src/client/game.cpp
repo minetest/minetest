@@ -2239,7 +2239,7 @@ void Game::toggleDebug()
 	// Initial: No debug info
 	// 1x toggle: Debug text
 	// 2x toggle: Debug text with profiler graph
-	// 3x toggle: Debug text and wireframe (needs "debug" priv)
+	// 3x toggle: Debug text and wireframe (needs "wireframe" priv)
 	// Next toggle: Back to initial
 	//
 	// The debug text can be in 2 modes: minimal and basic.
@@ -2261,7 +2261,7 @@ void Game::toggleDebug()
 		}
 		m_game_ui->m_flags.show_profiler_graph = true;
 		m_game_ui->showTranslatedStatusText("Profiler graph shown");
-	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
+	} else if (!draw_control->show_wireframe && client->checkPrivilege("wireframe")) {
 		m_game_ui->m_flags.show_basic_debug = true;
 		m_game_ui->m_flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
