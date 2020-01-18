@@ -489,7 +489,8 @@
 
 ### Basic
 
-#    Enable VBO
+#    Enable vertex buffer objects.
+#    This should greatly improve graphics performance.
 #    type: bool
 # enable_vbo = true
 
@@ -594,7 +595,10 @@
 
 #### Tone Mapping
 
-#    Enables filmic tone mapping
+#    Enables Hable's 'Uncharted 2' filmic tone mapping.
+#    Simulates the tone curve of photographic film and how this approximates the
+#    appearance of high dynamic range images. Mid-range contrast is slightly
+#    enhanced, highlights and shadows are gradually compressed.
 #    type: bool
 # tone_mapping = false
 
@@ -650,26 +654,36 @@
 
 #### Waving Nodes
 
-#    Set to true enables waving water.
+#    Set to true to enable waving liquids (like water).
 #    Requires shaders to be enabled.
 #    type: bool
 # enable_waving_water = false
 
-#    type: float
+#    The maximum height of the surface of waving liquids.
+#    4.0 = Wave height is two nodes.
+#    0.0 = Wave doesn't move at all.
+#    Default is 1.0 (1/2 node).
+#    Requires waving liquids to be enabled.
+#    type: float min: 0 max: 4
 # water_wave_height = 1.0
 
-#    type: float
+#    Length of liquid waves.
+#    Requires waving liquids to be enabled.
+#    type: float min: 0.1
 # water_wave_length = 20.0
 
+#    How fast liquid waves will move. Higher = faster.
+#    If negative, liquid waves will move backwards.
+#    Requires waving liquids to be enabled.
 #    type: float
 # water_wave_speed = 5.0
 
-#    Set to true enables waving leaves.
+#    Set to true to enable waving leaves.
 #    Requires shaders to be enabled.
 #    type: bool
 # enable_waving_leaves = false
 
-#    Set to true enables waving plants.
+#    Set to true to enable waving plants.
 #    Requires shaders to be enabled.
 #    type: bool
 # enable_waving_plants = false
@@ -734,30 +748,39 @@
 #    type: int min: 45 max: 160
 # fov = 72
 
-#    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
-#    This setting is for the client only and is ignored by the server.
-#    type: float min: 0.5 max: 10
+#    Alters the light curve by applying 'gamma correction' to it.
+#    Higher values make middle and lower light levels brighter.
+#    Value '1.0' leaves the light curve unaltered.
+#    This only has significant effect on daylight and artificial
+#    light, it has very little effect on natural night light.
+#    type: float min: 0.33 max: 3
 # display_gamma = 1.0
 
 #    Gradient of light curve at minimum light level.
-#    type: float min: 0 max: 4
+#    Controls the contrast of the lowest light levels.
+#    type: float min: 0 max: 3
 # lighting_alpha = 0.0
 
 #    Gradient of light curve at maximum light level.
-#    type: float min: 0 max: 4
+#    Controls the contrast of the highest light levels.
+#    type: float min: 0 max: 3
 # lighting_beta = 1.5
 
-#    Strength of light curve mid-boost.
-#    type: float min: 0 max: 1
+#    Strength of light curve boost.
+#    The 3 'boost' parameters define a range of the light
+#    curve that is boosted in brightness.
+#    type: float min: 0 max: 0.4
 # lighting_boost = 0.2
 
-#    Center of light curve mid-boost.
+#    Center of light curve boost range.
+#    Where 0.0 is minimum light level, 1.0 is maximum light level.
 #    type: float min: 0 max: 1
 # lighting_boost_center = 0.5
 
-#    Spread of light curve mid-boost.
-#    Standard deviation of the mid-boost gaussian.
-#    type: float min: 0 max: 1
+#    Spread of light curve boost range.
+#    Controls the width of the range to be boosted.
+#    Standard deviation of the light curve boost Gaussian.
+#    type: float min: 0 max: 0.4
 # lighting_boost_spread = 0.2
 
 #    Path to texture directory. All textures are first searched from here.
@@ -886,7 +909,7 @@
 
 #    True = 256
 #    False = 128
-#    Useable to make minimap smoother on slower machines.
+#    Usable to make minimap smoother on slower machines.
 #    type: bool
 # minimap_double_scan_height = true
 
@@ -971,42 +994,82 @@
 # tooltip_append_itemname = false
 
 #    Whether FreeType fonts are used, requires FreeType support to be compiled in.
+#    If disabled, bitmap and XML vectors fonts are used instead.
 #    type: bool
 # freetype = true
 
-#    Path to TrueTypeFont or bitmap.
-#    type: filepath
-# font_path = fonts/liberationsans.ttf
+#    type: bool
+# font_bold = false
 
-#    type: int min: 1
-# font_size = 16
+#    type: bool
+# font_italic = false
 
-#    Font shadow offset, if 0 then shadow will not be drawn.
+#    Shadow offset (in pixels) of the default font. If 0, then shadow will not be drawn.
 #    type: int
 # font_shadow = 1
 
-#    Font shadow alpha (opaqueness, between 0 and 255).
+#    Opaqueness (alpha) of the shadow behind the default font, between 0 and 255.
 #    type: int min: 0 max: 255
 # font_shadow_alpha = 127
 
-#    type: filepath
-# mono_font_path = fonts/liberationmono.ttf
+#    Font size of the default font in point (pt).
+#    type: int min: 1
+# font_size = 16
 
+#    Path to the default font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    The fallback font will be used if the font cannot be loaded.
+#    type: filepath
+# font_path = fonts/Arimo-Regular.ttf
+
+#    type: filepath
+# font_path_bold = fonts/Arimo-Bold.ttf
+
+#    type: filepath
+# font_path_italic = fonts/Arimo-Italic.ttf
+
+#    type: filepath
+# font_path_bolditalic = fonts/Arimo-BoldItalic.ttf
+
+#    Font size of the monospace font in point (pt).
 #    type: int min: 1
 # mono_font_size = 15
 
-#    This font will be used for certain languages.
+#    Path to the monospace font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    This font is used for e.g. the console and profiler screen.
 #    type: filepath
-# fallback_font_path = fonts/DroidSansFallbackFull.ttf
+# mono_font_path = fonts/Cousine-Regular.ttf
 
+#    type: filepath
+# mono_font_path_bold = fonts/Cousine-Bold.ttf
+
+#    type: filepath
+# mono_font_path_italic = fonts/Cousine-Italic.ttf
+
+#    type: filepath
+# mono_font_path_bolditalic = fonts/Cousine-BoldItalic.ttf
+
+#    Font size of the fallback font in point (pt).
 #    type: int min: 1
 # fallback_font_size = 15
 
+#    Shadow offset (in pixels) of the fallback font. If 0, then shadow will not be drawn.
 #    type: int
 # fallback_font_shadow = 1
 
+#    Opaqueness (alpha) of the shadow behind the fallback font, between 0 and 255.
 #    type: int min: 0 max: 255
 # fallback_font_shadow_alpha = 128
+
+#    Path of the fallback font.
+#    If “freetype” setting is enabled: Must be a TrueType font.
+#    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
+#    This font will be used for certain languages or if the default font is unavailable.
+#    type: filepath
+# fallback_font_path = fonts/DroidSansFallbackFull.ttf
 
 #    Path to save screenshots at.
 #    type: path
@@ -1037,12 +1100,22 @@
 # Sound
 #
 
+#    Enables the sound system.
+#    If disabled, this completely disables all sounds everywhere and the in-game
+#    sound controls will be non-functional.
+#    Changing this setting requires a restart.
 #    type: bool
 # enable_sound = true
 
+#    Volume of all sounds.
+#    Requires the sound system to be enabled.
 #    type: float min: 0 max: 1
 # sound_volume = 0.7
 
+#    Whether to mute sounds. You can unmute sounds at any time, unless the
+#    sound system is disabled (enable_sound=false).
+#    In-game, you can toggle the mute state with the mute key or by using the
+#    pause menu.
 #    type: bool
 # mute_sound = false
 
@@ -1171,6 +1244,7 @@
 
 #    Enable/disable running an IPv6 server.
 #    Ignored if bind_address is set.
+#    Needs enable_ipv6 to be enabled.
 #    type: bool
 # ipv6_server = false
 
@@ -1297,7 +1371,7 @@
 # ask_reconnect_on_crash = false
 
 #    From how far clients know about objects, stated in mapblocks (16 nodes).
-#
+#    
 #    Setting this larger than active_block_range will also cause the server
 #    to maintain active objects up to this distance in the direction the
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
@@ -1387,11 +1461,11 @@
 #    type: float
 # movement_speed_jump = 6.5
 
-#    Decrease this to increase liquid resistence to movement.
+#    Decrease this to increase liquid resistance to movement.
 #    type: float
 # movement_liquid_fluidity = 1
 
-#    Maximum liquid resistence. Controls deceleration when entering liquid at
+#    Maximum liquid resistance. Controls deceleration when entering liquid at
 #    high speed.
 #    type: float
 # movement_liquid_fluidity_smooth = 0.5
@@ -1406,7 +1480,7 @@
 
 ### Advanced
 
-#    Handling for deprecated lua api calls:
+#    Handling for deprecated Lua API calls:
 #    -    legacy: (try to) mimic old behaviour (default for release).
 #    -    log: mimic and log backtrace of deprecated call (default for debug).
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
@@ -1609,7 +1683,8 @@
 #    type: int
 # debug_log_size_max = 50
 
-#    IPv6 support.
+#    Enable IPv6 support (for both client and server).
+#    Required for IPv6 connections to work at all.
 #    type: bool
 # enable_ipv6 = true
 
@@ -1744,6 +1819,8 @@
 # mgv5_spflags = caverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 #    type: float
 # mgv5_cave_width = 0.09
 
@@ -1751,10 +1828,25 @@
 #    type: int
 # mgv5_large_cave_depth = -256
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgv5_lava_depth = -256
+#    Minimum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgv5_small_cave_num_min = 0
+
+#    Maximum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgv5_small_cave_num_max = 0
+
+#    Minimum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgv5_large_cave_num_min = 0
+
+#    Maximum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgv5_large_cave_num_max = 2
+
+#    Proportion of large caves that contain liquid.
+#    type: float min: 0 max: 1
+# mgv5_large_cave_flooded = 0.5
 
 #    Y-level of cavern upper limit.
 #    type: int
@@ -1828,7 +1920,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -1841,7 +1933,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining giant caverns.
@@ -1854,7 +1946,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining terrain.
@@ -1880,7 +1972,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 ## Mapgen V6
@@ -2066,6 +2158,8 @@
 # mgv7_mount_zero_level = 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 #    type: float
 # mgv7_cave_width = 0.09
 
@@ -2073,31 +2167,25 @@
 #    type: int
 # mgv7_large_cave_depth = -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgv7_lava_depth = -256
+#    Minimum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgv7_small_cave_num_min = 0
 
-#    Controls the density of mountain-type floatlands.
-#    Is a noise offset added to the 'mgv7_np_mountain' noise value.
-#    type: float
-# mgv7_float_mount_density = 0.6
+#    Maximum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgv7_small_cave_num_max = 0
 
-#    Typical maximum height, above and below midpoint, of floatland mountains.
-#    type: float
-# mgv7_float_mount_height = 128.0
+#    Minimum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgv7_large_cave_num_min = 0
 
-#    Alters how mountain-type floatlands taper above and below midpoint.
-#    type: float
-# mgv7_float_mount_exponent = 0.75
+#    Maximum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgv7_large_cave_num_max = 2
 
-#    Y-level of floatland midpoint and lake surface.
-#    type: int
-# mgv7_floatland_level = 1280
-
-#    Y-level to which floatland shadows extend.
-#    type: int
-# mgv7_shadow_limit = 1024
+#    Proportion of large caves that contain liquid.
+#    type: float min: 0 max: 1
+# mgv7_large_cave_flooded = 0.5
 
 #    Y-level of cavern upper limit.
 #    type: int
@@ -2213,33 +2301,6 @@
 #    flags       = eased
 # }
 
-#    Defines areas of floatland smooth terrain.
-#    Smooth floatlands occur when noise > 0.
-#    type: noise_params_2d
-# mgv7_np_floatland_base = {
-#    offset      = -0.6,
-#    scale       = 1.5,
-#    spread      = (600, 600, 600),
-#    seed        = 114,
-#    octaves     = 5,
-#    persistence = 0.6,
-#    lacunarity  = 2.0,
-#    flags       = eased
-# }
-
-#    Variation of hill height and lake depth on floatland smooth terrain.
-#    type: noise_params_2d
-# mgv7_np_float_base_height = {
-#    offset      = 48,
-#    scale       = 24,
-#    spread      = (300, 300, 300),
-#    seed        = 907,
-#    octaves     = 4,
-#    persistence = 0.7,
-#    lacunarity  = 2.0,
-#    flags       = eased
-# }
-
 #    3D noise defining mountain structure and height.
 #    Also defines structure of floatland mountain terrain.
 #    type: noise_params_3d
@@ -2251,7 +2312,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining structure of river canyon walls.
@@ -2264,7 +2325,7 @@
 #    octaves     = 4,
 #    persistence = 0.75,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining giant caverns.
@@ -2277,7 +2338,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    First of two 3D noises that together define tunnels.
@@ -2290,7 +2351,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2303,7 +2364,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise that determines number of dungeons per mapchunk.
@@ -2316,7 +2377,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 ## Mapgen Carpathian
@@ -2342,6 +2403,8 @@
 # mgcarpathian_valley_width = 0.25
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 #    type: float
 # mgcarpathian_cave_width = 0.09
 
@@ -2349,10 +2412,25 @@
 #    type: int
 # mgcarpathian_large_cave_depth = -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgcarpathian_lava_depth = -256
+#    Minimum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgcarpathian_small_cave_num_min = 0
+
+#    Maximum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgcarpathian_small_cave_num_max = 0
+
+#    Minimum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgcarpathian_large_cave_num_min = 0
+
+#    Maximum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgcarpathian_large_cave_num_max = 2
+
+#    Proportion of large caves that contain liquid.
+#    type: float min: 0 max: 1
+# mgcarpathian_large_cave_flooded = 0.5
 
 #    Y-level of cavern upper limit.
 #    type: int
@@ -2542,7 +2620,7 @@
 #    octaves     = 5,
 #    persistence = 0.55,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    First of two 3D noises that together define tunnels.
@@ -2555,7 +2633,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2568,7 +2646,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise defining giant caverns.
@@ -2581,7 +2659,7 @@
 #    octaves     = 5,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise that determines number of dungeons per mapchunk.
@@ -2594,12 +2672,12 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 ## Mapgen Flat
 
-#    Map generation attributes specific to Mapgen flat.
+#    Map generation attributes specific to Mapgen Flat.
 #    Occasional lakes and hills can be added to the flat world.
 #    type: flags possible values: lakes, hills, nolakes, nohills
 # mgflat_spflags = nolakes,nohills
@@ -2612,12 +2690,29 @@
 #    type: int
 # mgflat_large_cave_depth = -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgflat_lava_depth = -256
+#    Minimum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgflat_small_cave_num_min = 0
+
+#    Maximum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgflat_small_cave_num_max = 0
+
+#    Minimum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgflat_large_cave_num_min = 0
+
+#    Maximum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgflat_large_cave_num_max = 2
+
+#    Proportion of large caves that contain liquid.
+#    type: float min: 0 max: 1
+# mgflat_large_cave_flooded = 0.5
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 #    type: float
 # mgflat_cave_width = 0.09
 
@@ -2687,7 +2782,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2700,7 +2795,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise that determines number of dungeons per mapchunk.
@@ -2713,18 +2808,20 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 ## Mapgen Fractal
 
-#    Map generation attributes specific to Mapgen flat.
+#    Map generation attributes specific to Mapgen Fractal.
 #    'terrain' enables the generation of non-fractal terrain:
 #    ocean, islands and underground.
 #    type: flags possible values: terrain, noterrain
 # mgfractal_spflags = terrain
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 #    type: float
 # mgfractal_cave_width = 0.09
 
@@ -2732,10 +2829,25 @@
 #    type: int
 # mgfractal_large_cave_depth = -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgfractal_lava_depth = -256
+#    Minimum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgfractal_small_cave_num_min = 0
+
+#    Maximum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgfractal_small_cave_num_max = 0
+
+#    Minimum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgfractal_large_cave_num_min = 0
+
+#    Maximum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgfractal_large_cave_num_max = 2
+
+#    Proportion of large caves that contain liquid.
+#    type: float min: 0 max: 1
+# mgfractal_large_cave_flooded = 0.5
 
 #    Lower Y limit of dungeons.
 #    type: int
@@ -2746,24 +2858,24 @@
 # mgfractal_dungeon_ymax = 31000
 
 #    Selects one of 18 fractal types.
-#    1 = 4D "Roundy" mandelbrot set.
-#    2 = 4D "Roundy" julia set.
-#    3 = 4D "Squarry" mandelbrot set.
-#    4 = 4D "Squarry" julia set.
-#    5 = 4D "Mandy Cousin" mandelbrot set.
-#    6 = 4D "Mandy Cousin" julia set.
-#    7 = 4D "Variation" mandelbrot set.
-#    8 = 4D "Variation" julia set.
-#    9 = 3D "Mandelbrot/Mandelbar" mandelbrot set.
-#    10 = 3D "Mandelbrot/Mandelbar" julia set.
-#    11 = 3D "Christmas Tree" mandelbrot set.
-#    12 = 3D "Christmas Tree" julia set.
-#    13 = 3D "Mandelbulb" mandelbrot set.
-#    14 = 3D "Mandelbulb" julia set.
-#    15 = 3D "Cosine Mandelbulb" mandelbrot set.
-#    16 = 3D "Cosine Mandelbulb" julia set.
-#    17 = 4D "Mandelbulb" mandelbrot set.
-#    18 = 4D "Mandelbulb" julia set.
+#    1 = 4D "Roundy" Mandelbrot set.
+#    2 = 4D "Roundy" Julia set.
+#    3 = 4D "Squarry" Mandelbrot set.
+#    4 = 4D "Squarry" Julia set.
+#    5 = 4D "Mandy Cousin" Mandelbrot set.
+#    6 = 4D "Mandy Cousin" Julia set.
+#    7 = 4D "Variation" Mandelbrot set.
+#    8 = 4D "Variation" Julia set.
+#    9 = 3D "Mandelbrot/Mandelbar" Mandelbrot set.
+#    10 = 3D "Mandelbrot/Mandelbar" Julia set.
+#    11 = 3D "Christmas Tree" Mandelbrot set.
+#    12 = 3D "Christmas Tree" Julia set.
+#    13 = 3D "Mandelbulb" Mandelbrot set.
+#    14 = 3D "Mandelbulb" Julia set.
+#    15 = 3D "Cosine Mandelbulb" Mandelbrot set.
+#    16 = 3D "Cosine Mandelbulb" Julia set.
+#    17 = 4D "Mandelbulb" Mandelbrot set.
+#    18 = 4D "Mandelbulb" Julia set.
 #    type: int min: 1 max: 18
 # mgfractal_fractal = 1
 
@@ -2788,7 +2900,7 @@
 #    Can be used to move a desired point to (0, 0) to create a
 #    suitable spawn point, or to allow 'zooming in' on a desired
 #    point by increasing 'scale'.
-#    The default is tuned for a suitable spawn point for mandelbrot
+#    The default is tuned for a suitable spawn point for Mandelbrot
 #    sets with default parameters, it may need altering in other
 #    situations.
 #    Range roughly -2 to 2. Multiply by 'scale' for offset in nodes.
@@ -2870,7 +2982,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2883,7 +2995,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    3D noise that determines number of dungeons per mapchunk.
@@ -2896,7 +3008,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 ## Mapgen Valleys
@@ -2920,10 +3032,25 @@
 #    type: int
 # mgvalleys_large_cave_depth = -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgvalleys_lava_depth = 1
+#    Minimum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgvalleys_small_cave_num_min = 0
+
+#    Maximum limit of random number of small caves per mapchunk.
+#    type: int min: 0 max: 256
+# mgvalleys_small_cave_num_max = 0
+
+#    Minimum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgvalleys_large_cave_num_min = 0
+
+#    Maximum limit of random number of large caves per mapchunk.
+#    type: int min: 0 max: 64
+# mgvalleys_large_cave_num_max = 2
+
+#    Proportion of large caves that contain liquid.
+#    type: float min: 0 max: 1
+# mgvalleys_large_cave_flooded = 0.5
 
 #    Depth below which you'll find giant caverns.
 #    type: int
@@ -2946,6 +3073,8 @@
 # mgvalleys_river_size = 5
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
+#    Value >= 10.0 completely disables generation of tunnels and avoids the
+#    intensive noise calculations.
 #    type: float
 # mgvalleys_cave_width = 0.09
 
@@ -2969,7 +3098,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Second of two 3D noises that together define tunnels.
@@ -2982,7 +3111,7 @@
 #    octaves     = 3,
 #    persistence = 0.5,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    The depth of dirt or other biome filler node.
@@ -3008,7 +3137,7 @@
 #    octaves     = 6,
 #    persistence = 0.63,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Defines large-scale river channel structure.
@@ -3060,7 +3189,7 @@
 #    octaves     = 6,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 #    Amplifies the valleys.
@@ -3099,7 +3228,7 @@
 #    octaves     = 2,
 #    persistence = 0.8,
 #    lacunarity  = 2.0,
-#    flags       =
+#    flags       = 
 # }
 
 ## Advanced
