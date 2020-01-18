@@ -20,7 +20,7 @@ matrix:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-trusty-7
 
-    - name: "Builtin Luacheck"
+    - name: "Builtin Luacheck and Unit Tests"
       language: generic
       compiler: null
       os: linux
@@ -31,8 +31,10 @@ matrix:
           - luarocks
       before_install:
         - luarocks install --local luacheck
+        - luarocks install --local busted
       script:
         - $HOME/.luarocks/bin/luacheck builtin
+        - $HOME/.luarocks/bin/busted builtin
 
     - env: CLANG_TIDY=clang-tidy-7
       compiler: clang
