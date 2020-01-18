@@ -1806,7 +1806,8 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				v2s32 pos = getRealCoordinateBasePos(v_pos);
 
 				// Add newline spacing
-				pos.Y += (((float) imgsize.Y) * stof(style.get(StyleSpec::NEWLINE_SPACING, "0.5")) * i);
+				pos.Y += (float)imgsize.Y * stof(style.get(StyleSpec::NEWLINE_SPACING,
+					"0.5")) * i;
 
 				// Move the label around for alignment
 				s32 font_width = m_font->getDimension(wlabel_plain.c_str()).Width;
@@ -1842,7 +1843,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				pos.X += stof(v_pos[0]) * spacing.X;
 				pos.Y += (stof(v_pos[1]) + 7.0f / 30.0f) * spacing.Y;
 
-				pos.Y += ((float) i) * spacing.Y * 2.0 / 5.0;
+				pos.Y += (float)i * spacing.Y * 2.0 / 5.0;
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y - m_btn_height,
@@ -1942,7 +1943,8 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 				pos = getRealCoordinateBasePos(v_pos);
 
 				// Add newline spacing
-				pos.X += (((float) imgsize.X) * stof(style.get(StyleSpec::NEWLINE_SPACING, "0.5")) * i);
+				pos.X += (float)imgsize.X * stof(style.get(StyleSpec::NEWLINE_SPACING,
+					"0.5")) * i;
 
 				// Move the label around for alignment
 				s32 font_width = m_font->getDimension(wlabel_plain.c_str()).Width;
@@ -1967,7 +1969,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 				pos = getElementBasePos(&v_pos);
 
 				// Add newline spacing. Just some necessary patching, so no styling
-				pos.X += (((float) imgsize.X) * 0.5 * i);
+				pos.X += (float)imgsize.X * 0.5 * i;
 
 				// The length must be one longer to fit the text. The
 				// width of the rect (15 pixels) seems rather arbitrary,

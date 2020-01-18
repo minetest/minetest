@@ -2330,7 +2330,7 @@ Elements
 * `label` is the text on the label
 * **Note**: If the new coordinate system is enabled, vertlabels are positioned
   from the center of the text by default, not the left.
-* Newlines in a vertlabel are displayed to the right of the starting text.
+* Newlines in a vertlabel add columns to the right of the starting text.
 
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
