@@ -4336,9 +4336,13 @@ Setting-related
 Authentication
 --------------
 
-* `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
-* `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
-    * Convert between two privilege representations
+* `minetest.string_to_privs(str[, delim])`:
+    * Converts string representation of privs into table form
+    * `delim`: String separating the privs. Defaults to `","`.
+    * Returns `{ priv1 = true, ... }`
+* `minetest.privs_to_string(privs[, delim])`:
+    * Returns the string representation of `privs`
+    * `delim`: String to delimit privs. Defaults to `","`.
 * `minetest.get_player_privs(name) -> {priv1=true,...}`
 * `minetest.check_player_privs(player_or_name, ...)`:
   returns `bool, missing_privs`
