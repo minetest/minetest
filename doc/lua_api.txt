@@ -6148,9 +6148,6 @@ Player properties need to be saved manually.
         collide_with_objects = true,
         -- Collide with other objects if physical = true
 
-        weight = 5,
-        -- Unused.
-
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},  -- Default
         selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
         -- Selection box uses collision box dimensions when not set.

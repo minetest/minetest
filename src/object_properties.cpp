@@ -37,7 +37,6 @@ std::string ObjectProperties::dump()
 	os << ", breath_max=" << breath_max;
 	os << ", physical=" << physical;
 	os << ", collideWithObjects=" << collideWithObjects;
-	os << ", weight=" << weight;
 	os << ", collisionbox=" << PP(collisionbox.MinEdge) << "," << PP(collisionbox.MaxEdge);
 	os << ", visual=" << visual;
 	os << ", mesh=" << mesh;
@@ -77,7 +76,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU8(os, 4); // PROTOCOL_VERSION >= 37
 	writeU16(os, hp_max);
 	writeU8(os, physical);
-	writeF32(os, weight);
+	writeF32(os, 0.f); // Removed property (weight)
 	writeV3F32(os, collisionbox.MinEdge);
 	writeV3F32(os, collisionbox.MaxEdge);
 	writeV3F32(os, selectionbox.MinEdge);
@@ -128,7 +127,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 
 	hp_max = readU16(is);
 	physical = readU8(is);
-	weight = readF32(is);
+	readU32(is); // removed property (weight)
 	collisionbox.MinEdge = readV3F32(is);
 	collisionbox.MaxEdge = readV3F32(is);
 	selectionbox.MinEdge = readV3F32(is);
