@@ -212,7 +212,7 @@ static inline void getNeighborConnectingFace(const v3s16 &p,
 }
 
 collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
-		f32 pos_max_d, const aabb3f &box_0,		//TODO: get rid of pos_max_d parm as soon as collision algorithm fixed
+		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f *pos_f, v3f *speed_f,
 		v3f accel_f, ActiveObject *self,
@@ -419,7 +419,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	f32 d = 0.01f;	// Temporary fix, any nonzero d causes collision glitches, the more the greater it is.
 	// ultimately it has to be determined if any uncertainty is involved, and if it is, eliminated
-	// and the d param removed from function calls.
+	// and d & pos_max_d params removed from function calls.
 
 	int loopcount = 0;
 
