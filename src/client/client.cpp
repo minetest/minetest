@@ -1887,6 +1887,9 @@ void Client::toggle360Video()
 			sstr << "Leaving 360 video mode";
 		if (g_settings->getBool("360video_save"))
 			sstr << " (save to file)";
+		std::wstring msg = L"/v360 ";
+		msg += (m_is_360_video_mode ? L"1" : L"0");
+		sendChatMessage(msg);
 	}
 	pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
 			narrow_to_wide(sstr.str())));

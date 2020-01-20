@@ -141,6 +141,8 @@ public:
 
 	void onSuccessfulSave();
 
+	bool m_is_360_video_mode = false;
+
 private:
 	PlayerSAO *m_sao = nullptr;
 	bool m_dirty = false;

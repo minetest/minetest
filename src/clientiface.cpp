@@ -278,7 +278,7 @@ void RemoteClient::GetNextBlocks (
 			bool generate = d <= d_max_gen;
 
 			/*
-				Don't generate or send if not in sight
+				Don't generate or send if not in sight, except in 360 video mode
 				FIXME This only works if the client uses a small enough
 				FOV setting. The default of 72 degrees is fine.
 				Also retrieve a smaller view cone in the direction of the player's
@@ -290,7 +290,12 @@ void RemoteClient::GetNextBlocks (
 						d_blocks_in_sight, &dist) ||
 					(playerspeed.getLength() > 1.0f * BS &&
 					isBlockInSight(p, camera_pos, playerspeeddir, 0.1f,
-						d_blocks_in_sight)))) {
+						d_blocks_in_sight)) ||
+					(player->m_is_360_video_mode &&
+					(isBlockInSight(p, camera_pos, camera_dir, 3.15f,
+						d_blocks_in_sight) ||
+					isBlockInSight(p, camera_pos, camera_dir * -1, 3.15f,
+						d_blocks_in_sight))))) {
 				continue;
 			}
 

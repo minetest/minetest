@@ -3002,6 +3002,12 @@ std::wstring Server::handleChat(const std::string &name,
 		return L"Newlines are not permitted in chat messages";
 	}
 
+	// Check for /v360 command
+	if (message.find("/v360 ") != std::wstring::npos) {
+		player->m_is_360_video_mode = message[6] == L'1' ? true : false;
+		return L"";
+	}
+
 	// Run script hook, exit if script ate the chat message
 	if (m_script->on_chat_message(name, message))
 		return L"";
