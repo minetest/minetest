@@ -38,7 +38,7 @@ void Texture::set(const std::string &_name, const std::string &base_name,
 	}
 
 	for (s32 i = 0; i < m_frame_count; ++i)
-		m_frame_names[i] = filename + "_" + std::to_string(i + 1) + extension;
+		m_frame_names[i] = filename + "." + std::to_string(i + 1) + extension;
 }
 
 //! Set animation data to display a static texture
