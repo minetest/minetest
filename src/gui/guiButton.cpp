@@ -203,8 +203,12 @@ bool GUIButton::OnEvent(const SEvent& event)
 	case EET_MOUSE_INPUT_EVENT:
 		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 		{
-			if (!IsPushButton)
+			// Sometimes formspec elements can receive mouse events when the
+			// mouse is outside of the formspec. Thus, we test the position here.
+			if ( !IsPushButton && AbsoluteClippingRect.isPointInside(
+						core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ))) {
 				setPressed(true);
+			}
 
 			return true;
 		}
