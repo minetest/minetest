@@ -108,7 +108,8 @@ if(BUILD_CLIENT)
 	if(ENABLE_GLES)
 		find_package(OpenGLES2 REQUIRED)
 	else()
-		if(NOT WIN32) # Unix probably
+		# transitive dependency from Irrlicht (see longer explanation below)
+		if(NOT WIN32)
 			set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
 				"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
 			set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
@@ -281,17 +282,28 @@ if(WIN32)
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
-		if(NOT HAIKU)
+		if(NOT HAIKU AND NOT APPLE)
 			find_package(X11 REQUIRED)
-		endif(NOT HAIKU)
+		endif(NOT HAIKU AND NOT APPLE)
+
+		##
+		# The following dependencies are transitive dependencies from Irrlicht.
+		# Minetest itself does not use them, but we link them so that statically
+		# linking Irrlicht works.
+		if(NOT HAIKU AND NOT APPLE)
+			# This way Xxf86vm is found on OpenBSD too
+			find_library(XXF86VM_LIBRARY Xxf86vm)
+			mark_as_advanced(XXF86VM_LIBRARY)
+			set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
+		endif(NOT HAIKU AND NOT APPLE)
 
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
 		if(APPLE)
-			find_library(CARBON_LIB Carbon)
-			find_library(COCOA_LIB Cocoa)
-			find_library(IOKIT_LIB IOKit)
+			find_library(CARBON_LIB Carbon REQUIRED)
+			find_library(COCOA_LIB Cocoa REQUIRED)
+			find_library(IOKIT_LIB IOKit REQUIRED)
 			mark_as_advanced(
 				CARBON_LIB
 				COCOA_LIB
@@ -299,7 +311,9 @@ else()
 			)
 			SET(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${CARBON_LIB} ${COCOA_LIB} ${IOKIT_LIB})
 		endif(APPLE)
+		##
 	endif(BUILD_CLIENT)
+
 	find_package(ZLIB REQUIRED)
 	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
 	if(APPLE)
@@ -310,13 +324,6 @@ else()
 			set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
 		endif(HAVE_LIBRT)
 	endif(APPLE)
-
-	if(NOT HAIKU AND NOT APPLE)
-	# This way Xxf86vm is found on OpenBSD too
-		find_library(XXF86VM_LIBRARY Xxf86vm)
-		mark_as_advanced(XXF86VM_LIBRARY)
-		set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
-	endif(NOT HAIKU AND NOT APPLE)
 
 	# Prefer local iconv if installed
 	find_library(ICONV_LIBRARY iconv)
