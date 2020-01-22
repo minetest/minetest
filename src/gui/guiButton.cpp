@@ -53,7 +53,6 @@ GUIButton::GUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 			core::clamp<u32>(Colors[i].getGreen() * COLOR_PRESSED_MOD, 0, 255),
 			core::clamp<u32>(Colors[i].getBlue() * COLOR_PRESSED_MOD, 0, 255));
 	}
-	
 	StaticText = gui::StaticText::add(Environment, Text.c_str(), core::rect<s32>(0,0,rectangle.getWidth(),rectangle.getHeight()), false, false, this, id);
 	StaticText->setTextAlignment(EGUIA_CENTER, EGUIA_CENTER);
 	// END PATCH

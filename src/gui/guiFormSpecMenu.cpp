@@ -3417,19 +3417,16 @@ void GUIFormSpecMenu::drawMenu()
 void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 	const irr::video::SColor &color, const irr::video::SColor &bgcolor)
 {
-	const std::wstring ntext = translate_string(text);
-	m_tooltip_element->setOverrideColor(color);
-	m_tooltip_element->setBackgroundColor(bgcolor);
-	setStaticText(m_tooltip_element, ntext.c_str());
+	EnrichedString ntext(text);
+	ntext.setDefaultColor(color);
+	ntext.setBackground(bgcolor);
+
+	setStaticText(m_tooltip_element, ntext);
 
 	// Tooltip size and offset
 	s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-#if (IRRLICHT_VERSION_MAJOR <= 1 && IRRLICHT_VERSION_MINOR <= 8 && IRRLICHT_VERSION_REVISION < 2) || USE_FREETYPE == 1
-	std::vector<std::wstring> text_rows = str_split(ntext, L'\n');
-	s32 tooltip_height = m_tooltip_element->getTextHeight() * text_rows.size() + 5;
-#else
 	s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
-#endif
+
 	v2u32 screenSize = Environment->getVideoDriver()->getScreenSize();
 	int tooltip_offset_x = m_btn_height;
 	int tooltip_offset_y = m_btn_height;

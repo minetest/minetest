@@ -155,7 +155,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 
 	m_guitext2->setVisible(m_flags.show_debug);
 
-	setStaticText(m_guitext_info, translate_string(m_infotext).c_str());
+	setStaticText(m_guitext_info, m_infotext.c_str());
 	m_guitext_info->setVisible(m_flags.show_hud && g_menumgr.menuCount() == 0);
 
 	static const float statustext_time_max = 1.5f;
@@ -169,7 +169,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		}
 	}
 
-	setStaticText(m_guitext_status, translate_string(m_statustext).c_str());
+	setStaticText(m_guitext_status, m_statustext.c_str());
 	m_guitext_status->setVisible(!m_statustext.empty());
 
 	if (!m_statustext.empty()) {
