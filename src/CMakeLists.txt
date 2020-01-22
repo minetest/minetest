@@ -275,7 +275,7 @@ if(WIN32)
 			set(VORBISFILE_DLL "" CACHE FILEPATH "Path to libvorbisfile.dll for installation (optional)")
 		endif()
 		if(USE_LUAJIT)
-			set(LUA_DLL "" CACHE FILEPATH "Path to lua51.dll for installation (optional)")
+			set(LUA_DLL "" CACHE FILEPATH "Path to luajit-5.1.dll for installation (optional)")
 		endif()
 	endif()
 
@@ -496,7 +496,6 @@ include_directories(
 	${PROJECT_SOURCE_DIR}
 	${IRRLICHT_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIR}
-	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	${SOUND_INCLUDE_DIRS}
 	${SQLITE3_INCLUDE_DIR}
@@ -542,16 +541,9 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
-	if(APPLE)
-		target_link_libraries(
-			${client_LIBS}
-			${ICONV_LIBRARY}
-		)
-	else()
-		target_link_libraries(
-			${client_LIBS}
-		)
-	endif()
+	target_link_libraries(
+		${client_LIBS}
+	)
 	if(ENABLE_GLES)
 		target_link_libraries(
 			${PROJECT_NAME}
@@ -696,11 +688,8 @@ if(MSVC)
 	# /MD = dynamically link to MSVCRxxx.dll
 	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MD")
 else()
+	# GCC or compatible compilers such as Clang
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	# Probably GCC
-	if(APPLE)
-		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000" )
-	endif()
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
 	else()
@@ -708,9 +697,11 @@ else()
 	endif()
 
 	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-		# clang does not understand __extern_always_inline but libc headers use it
-		set(OTHER_FLAGS "${OTHER_FLAGS} \"-D__extern_always_inline=extern __always_inline\"")
-		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare")
+		set(WARNING_FLAGS "${WARNING_FLAGS} -Wsign-compare")
+	endif()
+	if(APPLE AND USE_LUAJIT)
+		# required per http://luajit.org/install.html
+		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000")
 	endif()
 
 	if(MINGW)
@@ -756,7 +747,7 @@ if(WIN32)
 				FILES_MATCHING PATTERN "*.dll")
 		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/MinSizeRel/
 				DESTINATION ${BINDIR}
-				CONFIGURATIONS RelWithDebInfo
+				CONFIGURATIONS MinSizeRel
 				FILES_MATCHING PATTERN "*.dll")
 	else()
 		# Use the old-style way to install dll's
