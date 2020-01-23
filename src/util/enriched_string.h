@@ -98,5 +98,5 @@ private:
 	irr::video::SColor m_background;
 	// This variable defines the length of the default-colored text.
 	// Change this to a std::vector if an "end coloring" tag is wanted.
-	size_t m_default_length;
+	size_t m_default_length = 0;
 };
