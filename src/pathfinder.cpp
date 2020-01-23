@@ -650,6 +650,39 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 	printYdir();
 #endif
 
+	//Simulate a drop of source pos to first walkable node.
+	//All algorithms expect the source pos to be *directly* above
+	//a walkable node.
+	v3s16 true_source = v3s16(source);
+	v3s16 testpos = v3s16(source);
+
+	MapNode node_at_pos = m_env->getMap().getNode(testpos);
+	const NodeDefManager *ndef = m_env->getGameDef()->ndef();
+	while ((node_at_pos.param0 != CONTENT_IGNORE) &&
+			(!ndef->get(node_at_pos).walkable) &&
+			(testpos.Y > m_limits.MinEdge.Y)) {
+		testpos += v3s16(0, -1, 0);
+		node_at_pos = m_env->getMap().getNode(testpos);
+	}
+	//did we find surface?
+	if ((testpos.Y >= m_limits.MinEdge.Y) &&
+			(node_at_pos.param0 != CONTENT_IGNORE) &&
+			(ndef->get(node_at_pos).walkable)) {
+		if ((source.Y - testpos.Y - 1) <= m_maxdrop) {
+			//difference of y-pos +1 (target node is ABOVE solid node)
+			testpos += v3s16(0, 1, 0);
+			source = testpos;
+		}
+		else {
+			VERBOSE_TARGET << "source pos too far above ground: " <<
+				"Index: " << PP(getIndexPos(testpos)) <<
+				"Realpos: " << PP(getRealPos(getIndexPos(testpos))) << std::endl;
+			return retval;
+		}
+	} else {
+		DEBUG_OUT("Pathfinder: no surface found below source pos" << std::endl);
+	}
+
 	//validate and mark start and end pos
 	v3s16 StartIndex  = getIndexPos(source);
 	v3s16 EndIndex    = getIndexPos(destination);
@@ -708,6 +741,10 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 		//finalize path
 		std::vector<v3s16> full_path;
 		full_path.reserve(path.size());
+		//add original source node to start if it was modified
+		if (source != true_source) {
+			full_path.push_back(true_source);
+		}
 		for (const v3s16 &i : path) {
 			full_path.push_back(getIndexElement(i).pos);
 		}
