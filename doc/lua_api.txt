@@ -4639,9 +4639,14 @@ Environment access
     * `objects`: if false, only nodes will be returned. Default is `true`.
     * `liquids`: if false, liquid nodes won't be returned. Default is `false`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
-    * returns table containing path
+    * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
-      `nil`.
+      `nil` on failure.
+    * Reasons for failure:
+        * No path exists
+        * End pos out of `searchdistance` range
+        * End pos is not directly above walkable node
+        * Start or end pos is buried in land
     * `pos1`: start position
     * `pos2`: end position
     * `searchdistance`: number of blocks to search in each direction using a
