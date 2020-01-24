@@ -227,8 +227,8 @@ private:
 	PathGridnode &getIdxElem(s16 x, s16 y, s16 z);
 
 	/**
-	 * invert a 3d position
-	 * @param pos 3d position
+	 * invert a 3D position (change sign of coordinates)
+	 * @param pos 3D position
 	 * @return pos *-1
 	 */
 	v3s16          invert(v3s16 pos);
@@ -240,28 +240,15 @@ private:
 	 */
 	bool           isValidIndex(v3s16 index);
 
-	/**
-	 * translate position to float position
-	 * @param pos integer position
-	 * @return float position
-	 */
-	v3f            tov3f(v3s16 pos);
-
 
 	/* algorithm functions */
 
 	/**
-	 * calculate 2d manahttan distance to target
+	 * calculate 2D Manhattan distance to target
 	 * @param pos position to calc distance
 	 * @return integer distance
 	 */
 	int           getXZManhattanDist(v3s16 pos);
-
-	/**
-	 * build internal data representation of search area
-	 * @return true/false if costmap creation was successfull
-	 */
-	bool          buildCostmap();
 
 	/**
 	 * calculate cost of movement
@@ -282,7 +269,8 @@ private:
 	bool          updateAllCosts(v3s16 ipos, v3s16 srcdir, int current_cost, int level);
 
 	/**
-	 * try to find a path to destination
+	 * try to find a path to destination using a heuristic function
+	 * to estimate distance to target (A* search algorithm)
 	 * @param ipos1 start position (index pos)
 	 * @param ipos2 end position (index pos)
 	 * @return true/false path to destination has been found
@@ -591,7 +579,7 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 
 	//check parameters
 	if (env == 0) {
-		ERROR_TARGET << "missing environment pointer" << std::endl;
+		ERROR_TARGET << "Missing environment pointer" << std::endl;
 		return retval;
 	}
 
@@ -667,7 +655,7 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 			source = testpos;
 		}
 		else {
-			VERBOSE_TARGET << "source pos too far above ground: " <<
+			VERBOSE_TARGET << "Source pos too far above ground: " <<
 				"Index: " << PP(getIndexPos(testpos)) <<
 				"Realpos: " << PP(getRealPos(getIndexPos(testpos))) << std::endl;
 			return retval;
@@ -684,13 +672,13 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 	PathGridnode &endpos   = getIndexElement(EndIndex);
 
 	if (!startpos.valid) {
-		VERBOSE_TARGET << "invalid startpos" <<
+		VERBOSE_TARGET << "Invalid startpos " <<
 				"Index: " << PP(StartIndex) <<
 				"Realpos: " << PP(getRealPos(StartIndex)) << std::endl;
 		return retval;
 	}
 	if (!endpos.valid) {
-		VERBOSE_TARGET << "invalid stoppos" <<
+		VERBOSE_TARGET << "Invalid stoppos " <<
 				"Index: " << PP(EndIndex) <<
 				"Realpos: " << PP(getRealPos(EndIndex)) << std::endl;
 		return retval;
@@ -711,7 +699,7 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 			update_cost_retval = updateCostHeuristic(StartIndex, EndIndex);
 			break;
 		default:
-			ERROR_TARGET << "missing PathAlgorithm"<< std::endl;
+			ERROR_TARGET << "Missing PathAlgorithm" << std::endl;
 			break;
 	}
 
@@ -743,7 +731,7 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 		}
 
 #ifdef PATHFINDER_DEBUG
-		std::cout << "full path:" << std::endl;
+		std::cout << "Full path:" << std::endl;
 		printPath(full_path);
 #endif
 #ifdef PATHFINDER_CALC_TIME
@@ -764,7 +752,7 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 #ifdef PATHFINDER_DEBUG
 		printPathLen();
 #endif
-		ERROR_TARGET << "failed to update cost map"<< std::endl;
+		INFO_TARGET << "No path found" << std::endl;
 	}
 
 
@@ -1125,14 +1113,14 @@ void Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 pos, int level)
 	level ++;
 	if (level > 700) {
 		ERROR_TARGET
-			<< LVL "Pathfinder: path is too long aborting" << std::endl;
+			<< LVL "Pathfinder: buildPath: path is too long, aborting" << std::endl;
 		return;
 	}
 
 	PathGridnode &g_pos = getIndexElement(pos);
 	if (!g_pos.valid) {
 		ERROR_TARGET
-			<< LVL "Pathfinder: invalid next pos detected aborting" << std::endl;
+			<< LVL "Pathfinder: buildPath: invalid next pos detected, aborting" << std::endl;
 		return;
 	}
 
@@ -1146,12 +1134,6 @@ void Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 pos, int level)
 
 	buildPath(path, pos + g_pos.sourcedir, level);
 	path.push_back(pos);
-}
-
-/******************************************************************************/
-v3f Pathfinder::tov3f(v3s16 pos)
-{
-	return v3f(BS * pos.X, BS * pos.Y, BS * pos.Z);
 }
 
 #ifdef PATHFINDER_DEBUG
