@@ -19,7 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "enriched_string.h"
 #include "util/string.h"
+#include "debug.h"
 #include "log.h"
+
 using namespace irr::video;
 
 EnrichedString::EnrichedString()
@@ -28,10 +30,12 @@ EnrichedString::EnrichedString()
 }
 
 EnrichedString::EnrichedString(const std::wstring &string,
-		const std::vector<SColor> &colors):
-	m_string(string),
-	m_colors(colors)
-{}
+		const std::vector<SColor> &colors)
+{
+	clear();
+	m_string = string;
+	m_colors = colors;
+}
 
 EnrichedString::EnrichedString(const std::wstring &s, const SColor &color)
 {
@@ -52,6 +56,7 @@ void EnrichedString::clear()
 	m_has_background = false;
 	m_default_length = 0;
 	m_default_color = irr::video::SColor(255, 255, 255, 255);
+	m_background = irr::video::SColor(0, 0, 0, 0);
 }
 
 void EnrichedString::operator=(const wchar_t *str)
@@ -170,8 +175,12 @@ EnrichedString EnrichedString::substr(size_t pos, size_t len) const
 		m_string.substr(pos, len),
 		std::vector<SColor>(m_colors.begin() + pos, m_colors.begin() + pos + len)
 	);
+
+	str.m_has_background = m_has_background;
+	str.m_background = m_background;
+
 	if (pos < m_default_length)
-		str.m_default_length = m_default_length - pos;
+		str.m_default_length = std::min(m_default_length - pos, str.size());
 	str.setDefaultColor(m_default_color);
 	return str;
 }
@@ -199,6 +208,8 @@ void EnrichedString::setDefaultColor(const irr::video::SColor &color)
 
 void EnrichedString::updateDefaultColor()
 {
+	sanity_check(m_default_length <= m_colors.size());
+
 	for (size_t i = 0; i < m_default_length; ++i)
 		m_colors[i] = m_default_color;
 }
