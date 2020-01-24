@@ -58,6 +58,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ERROR_TARGET     warningstream << "Pathfinder: "
 #endif
 
+#define PATHFINDER_MAX_WAYPOINTS 700
+
 /******************************************************************************/
 /* Class definitions                                                          */
 /******************************************************************************/
@@ -278,12 +280,13 @@ private:
 	bool          updateCostHeuristic(v3s16 ipos1, v3s16 ipos2);
 
 	/**
-	 * recursive build a vector containing all nodes from source to destination
+	 * build a vector containing all nodes from destination to source;
+	 * to be called after the node costs have been processed
 	 * @param path vector to add nodes to
-	 * @param pos pos to check next
-	 * @param level recursion depth
+	 * @param ipos initial pos to check (index pos)
+	 * @return true/false path has been fully built
 	 */
-	void          buildPath(std::vector<v3s16> &path, v3s16 pos, int level);
+	bool          buildPath(std::vector<v3s16> &path, v3s16 ipos);
 
 	/* variables */
 	int m_max_index_x = 0;            /**< max index of search area in x direction  */
@@ -711,23 +714,25 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 #endif
 
 		//find path
-		std::vector<v3s16> path;
-		buildPath(path, EndIndex, 0);
+		std::vector<v3s16> index_path;
+		buildPath(index_path, EndIndex);
 
 #ifdef PATHFINDER_DEBUG
-		std::cout << "Full index path:" << std::endl;
-		printPath(path);
+		std::cout << "Index path:" << std::endl;
+		printPath(index_path);
 #endif
-
-		//finalize path
+		// convert index pos path to pos path
 		std::vector<v3s16> full_path;
-		full_path.reserve(path.size());
-		//add original source node to start if it was modified
 		if (source != true_source) {
+			// add original source node to start if it was modified
+			full_path.reserve(index_path.size()+1);
 			full_path.push_back(true_source);
+		} else {
+			full_path.reserve(index_path.size());
 		}
-		for (const v3s16 &i : path) {
-			full_path.push_back(getIndexElement(i).pos);
+		std::vector<v3s16>::reverse_iterator rit = index_path.rbegin();
+		for (; rit != index_path.rend(); ++rit) {
+			full_path.push_back(getIndexElement(*rit).pos);
 		}
 
 #ifdef PATHFINDER_DEBUG
@@ -1108,32 +1113,28 @@ bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
 }
 
 /******************************************************************************/
-void Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 pos, int level)
+bool Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 ipos)
 {
-	level ++;
-	if (level > 700) {
-		ERROR_TARGET
-			<< LVL "Pathfinder: buildPath: path is too long, aborting" << std::endl;
-		return;
+	unsigned int waypoints = 0;
+	while (true) {
+		waypoints++;
+		if (waypoints > PATHFINDER_MAX_WAYPOINTS) {
+			ERROR_TARGET << "Pathfinder: buildPath: path is too long (too many waypoints), aborting" << std::endl;
+			return false;
+		}
+		PathGridnode &g_pos = getIndexElement(ipos);
+		if (!g_pos.valid) {
+			ERROR_TARGET << "Pathfinder: buildPath: invalid next pos detected, aborting" << std::endl;
+			return false;
+		}
+
+		g_pos.is_element = true;
+		path.push_back(ipos);
+		if (g_pos.source)
+			return true;
+
+		ipos += g_pos.sourcedir;
 	}
-
-	PathGridnode &g_pos = getIndexElement(pos);
-	if (!g_pos.valid) {
-		ERROR_TARGET
-			<< LVL "Pathfinder: buildPath: invalid next pos detected, aborting" << std::endl;
-		return;
-	}
-
-	g_pos.is_element = true;
-
-	//check if source reached
-	if (g_pos.source) {
-		path.push_back(pos);
-		return;
-	}
-
-	buildPath(path, pos + g_pos.sourcedir, level);
-	path.push_back(pos);
 }
 
 #ifdef PATHFINDER_DEBUG
