@@ -4643,17 +4643,22 @@ Environment access
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
       `nil` on failure.
     * Reasons for failure:
-        * No path exists
-        * End pos out of `searchdistance` range
+        * No path exists at all
+        * No path exists within `searchdistance` (see below)
         * End pos is not directly above walkable node
         * Start or end pos is buried in land
     * `pos1`: start position
     * `pos2`: end position
-    * `searchdistance`: number of blocks to search in each direction using a
-      maximum metric.
+    * `searchdistance`: maximum distance from the search positions to search in.
+      In detail: Path must be completely inside a cuboid. The minimum
+      `searchdistance` of 1 will confine search between `pos1` and `pos2`.
+      Larger values will increase the size of this cuboid in all directions
     * `max_jump`: maximum height difference to consider walkable
     * `max_drop`: maximum height difference to consider droppable
-    * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`
+    * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`.
+      Difference between `"A*"` and `"A*_noprefetch"` is that
+      `"A*"` will pre-calculate the cost-data, the other will calculate it
+      on-the-fly
 * `minetest.spawn_tree (pos, {treedef})`
     * spawns L-system tree at given `pos` with definition in `treedef` table
 * `minetest.transforming_liquid_add(pos)`
