@@ -217,10 +217,6 @@ void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hid
 
 void Mapgen::setDefaultSettings(Settings *settings)
 {
-	// Option 1: List all defaults here as an overview
-	// Option 2: Each mapgen contains its own default setter function
-	// This is option 2.
-
 	settings->setDefault("mg_flags", flagdesc_mapgen,
 		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES);
 
