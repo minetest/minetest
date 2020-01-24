@@ -812,7 +812,9 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 				return retval;
 		}
 
+		//test if the same-height neighbor is suitable
 		if (ndef->get(node_below_pos2).walkable) {
+			//SUCCESS!
 			retval.valid = true;
 			retval.value = 1;
 			retval.direction = 0;
@@ -820,6 +822,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 					<< " cost same height found" << std::endl);
 		}
 		else {
+			//test if we can fall a couple of nodes (m_maxdrop)
 			v3s16 testpos = pos2 - v3s16(0, -1, 0);
 			MapNode node_at_pos = m_env->getMap().getNode(testpos);
 
@@ -835,6 +838,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 					(node_at_pos.param0 != CONTENT_IGNORE) &&
 					(ndef->get(node_at_pos).walkable)) {
 				if ((pos2.Y - testpos.Y - 1) <= m_maxdrop) {
+					//SUCCESS!
 					retval.valid = true;
 					retval.value = 2;
 					//difference of y-pos +1 (target node is ABOVE solid node)
@@ -854,29 +858,49 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 		}
 	}
 	else {
-		v3s16 testpos = pos2;
-		MapNode node_at_pos = m_env->getMap().getNode(testpos);
+		//test if we can jump upwards (m_maxjump)
 
-		while ((node_at_pos.param0 != CONTENT_IGNORE) &&
-				(ndef->get(node_at_pos).walkable) &&
-				(testpos.Y < m_limits.MaxEdge.Y)) {
-			testpos += v3s16(0, 1, 0);
-			node_at_pos = m_env->getMap().getNode(testpos);
+		v3s16 targetpos = pos2; // position for jump target
+		v3s16 jumppos = pos; // position for checking if jumping space is free
+		MapNode node_target = m_env->getMap().getNode(targetpos);
+		MapNode node_jump = m_env->getMap().getNode(jumppos);
+		bool headbanger = false; // true if anything blocks jumppath
+
+		while ((node_target.param0 != CONTENT_IGNORE) &&
+				(ndef->get(node_target).walkable) &&
+				(targetpos.Y < m_limits.MaxEdge.Y)) {
+			//if the jump would hit any solid node, discard
+			if ((node_jump.param0 == CONTENT_IGNORE) ||
+				(ndef->get(node_jump).walkable)) {
+				headbanger = true;
+				break;
+			}
+			targetpos += v3s16(0, 1, 0);
+			jumppos   += v3s16(0, 1, 0);
+			node_target = m_env->getMap().getNode(targetpos);
+			node_jump   = m_env->getMap().getNode(jumppos);
+
+		}
+		//check headbanger one last time
+		if ((node_jump.param0 == CONTENT_IGNORE) ||
+			(ndef->get(node_jump).walkable)) {
+			headbanger = true;
 		}
 
-		//did we find surface?
-		if ((testpos.Y <= m_limits.MaxEdge.Y) &&
-				(!ndef->get(node_at_pos).walkable)) {
+		//did we find surface without banging our head?
+		if ((!headbanger) && (targetpos.Y <= m_limits.MaxEdge.Y) &&
+				(!ndef->get(node_target).walkable)) {
 
-			if (testpos.Y - pos2.Y <= m_maxjump) {
+			if (targetpos.Y - pos2.Y <= m_maxjump) {
+				//SUCCESS!
 				retval.valid = true;
 				retval.value = 2;
-				retval.direction = (testpos.Y - pos2.Y);
+				retval.direction = (targetpos.Y - pos2.Y);
 				DEBUG_OUT("Pathfinder cost above found" << std::endl);
 			}
 			else {
 				DEBUG_OUT("Pathfinder: distance to surface above to big: "
-						<< (testpos.Y - pos2.Y) << " max: " << m_maxjump
+						<< (targetpos.Y - pos2.Y) << " max: " << m_maxjump
 						<< std::endl);
 			}
 		}
