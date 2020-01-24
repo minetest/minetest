@@ -823,7 +823,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 		}
 		else {
 			//test if we can fall a couple of nodes (m_maxdrop)
-			v3s16 testpos = pos2 - v3s16(0, -1, 0);
+			v3s16 testpos = pos2 + v3s16(0, -1, 0);
 			MapNode node_at_pos = m_env->getMap().getNode(testpos);
 
 			while ((node_at_pos.param0 != CONTENT_IGNORE) &&
