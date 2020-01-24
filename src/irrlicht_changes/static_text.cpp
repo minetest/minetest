@@ -308,9 +308,10 @@ void StaticText::updateText()
 	const EnrichedString &cText = ColoredText;
 	BrokenText.clear();
 
-	if (cText.hasBackground()) {
+	if (cText.hasBackground())
 		setBackgroundColor(cText.getBackground());
-	}
+	else
+		setDrawBackground(false);
 
 	if (!WordWrap) {
 		BrokenText.push_back(cText);
