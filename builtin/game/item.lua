@@ -305,9 +305,6 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		return itemstack, nil
 	end
 
-	log("action", playername .. " places node "
-		.. def.name .. " at " .. core.pos_to_string(place_to))
-
 	local oldnode = core.get_node(place_to)
 	local newnode = {name = def.name, param1 = 0, param2 = param2 or 0}
 
@@ -333,7 +330,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 				z = above.z - placer_pos.z
 			}
 			newnode.param2 = core.dir_to_facedir(dir)
-			log("action", "facedir: " .. newnode.param2)
+			log("info", "facedir: " .. newnode.param2)
 		end
 	end
 
@@ -364,8 +361,19 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		return itemstack, nil
 	end
 
+	log("action", playername .. " places node "
+		.. def.name .. " at " .. core.pos_to_string(place_to))
+
 	-- Add node and update
 	core.add_node(place_to, newnode)
+
+	-- Play sound if it was done by a player
+	if playername ~= "" and def.sounds and def.sounds.place then
+		core.sound_play(def.sounds.place, {
+			pos = place_to,
+			exclude_player = playername,
+		}, true)
+	end
 
 	local take_item = true
 
@@ -605,6 +613,14 @@ function core.node_dig(pos, node, digger)
 
 	-- Remove node and update
 	core.remove_node(pos)
+
+	-- Play sound if it was done by a player
+	if diggername ~= "" and def.sounds and def.sounds.dug then
+		core.sound_play(def.sounds.dug, {
+			pos = pos,
+			exclude_player = diggername,
+		}, true)
+	end
 
 	-- Run callback
 	if def and def.after_dig_node then
