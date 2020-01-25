@@ -974,7 +974,7 @@ screenshot_quality (Screenshot quality) int 0 0 100
 360video_quality (360 video image quality) int 0 0 100
 
 #    360 video image size. The output will be
-#    <size> px in width and 2 * <size> px in height.
+#    2 * <size> px in width and <size> px in height.
 360video_size (360 video image size) int 1080
 
 #    Save equirectangular projection (360 video
