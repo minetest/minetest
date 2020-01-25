@@ -826,7 +826,7 @@ Examples of sound parameter tables:
         gain = 1.0,  -- default
         loop = true,
     }
-    -- Play in a location
+    -- Play at a location
     {
         pos = {x = 1, y = 2, z = 3},
         gain = 1.0,  -- default
@@ -839,12 +839,21 @@ Examples of sound parameter tables:
         max_hear_distance = 32,  -- default, uses an euclidean metric
         loop = true,
     }
+    -- Play at a location, heard by anyone *but* the given player
+    {
+        pos = {x = 32, y = 0, z = 100},
+        max_hear_distance = 40,
+        exclude_player = name,
+    }
 
 Looped sounds must either be connected to an object or played locationless to
-one player using `to_player = name,`.
+one player using `to_player = name`.
 
 A positional sound will only be heard by players that are within
 `max_hear_distance` of the sound position, at the start of the sound.
+
+`exclude_player = name` can be applied to locationless, positional and object-
+bound sounds to exclude a single player from hearing them.
 
 `SimpleSoundSpec`
 -----------------
@@ -4929,10 +4938,15 @@ Defaults for the `on_punch` and `on_dig` node definition callbacks
 Sounds
 ------
 
-* `minetest.sound_play(spec, parameters)`: returns a handle
+* `minetest.sound_play(spec, parameters, [ephemeral])`: returns a handle
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
+    * `ephemeral` is a boolean (default: false)
+      Ephemeral sounds will not return a handle and can't be stopped or faded.
+      It is recommend to use this for short sounds that happen in response to
+      player actions (e.g. door closing).
 * `minetest.sound_stop(handle)`
+    * `handle` is a handle returned by `minetest.sound_play`
 * `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.

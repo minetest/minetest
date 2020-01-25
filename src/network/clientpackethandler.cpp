@@ -778,6 +778,7 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 		[25 + len] bool loop
 		[26 + len] f32 fade
 		[30 + len] f32 pitch
+		[34 + len] bool ephemeral
 	*/
 
 	s32 server_id;
@@ -790,12 +791,14 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	bool loop;
 	float fade = 0.0f;
 	float pitch = 1.0f;
+	bool ephemeral = false;
 
 	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
 
 	try {
 		*pkt >> fade;
 		*pkt >> pitch;
+		*pkt >> ephemeral;
 	} catch (PacketError &e) {};
 
 	// Start playing
@@ -813,7 +816,6 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 			if (cao)
 				pos = cao->getPosition();
 			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
-			// TODO: Set up sound to move with object
 			break;
 		}
 		default:
@@ -821,8 +823,11 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	}
 
 	if (client_id != -1) {
-		m_sounds_server_to_client[server_id] = client_id;
-		m_sounds_client_to_server[client_id] = server_id;
+		// for ephemeral sounds, server_id is not meaningful
+		if (!ephemeral) {
+			m_sounds_server_to_client[server_id] = client_id;
+			m_sounds_client_to_server[client_id] = server_id;
+		}
 		if (object_id != 0)
 			m_sounds_to_objects[client_id] = object_id;
 	}
