@@ -128,7 +128,7 @@ core.register_entity(":__builtin:falling_node", {
 					meta:from_table(self.meta)
 				end
 				if def.sounds and def.sounds.place then
-					core.sound_play(def.sounds.place, {pos = np})
+					core.sound_play(def.sounds.place, {pos = np}, true)
 				end
 			end
 			self.object:remove()
@@ -154,7 +154,7 @@ local function convert_to_falling_node(pos, node)
 
 	local def = core.registered_nodes[node.name]
 	if def and def.sounds and def.sounds.fall then
-		core.sound_play(def.sounds.fall, {pos = pos})
+		core.sound_play(def.sounds.fall, {pos = pos}, true)
 	end
 
 	obj:get_luaentity():set_node(node, metatable)
@@ -187,7 +187,7 @@ local function drop_attached_node(p)
 		def.preserve_metadata(pos_copy, node_copy, oldmeta, drops)
 	end
 	if def and def.sounds and def.sounds.fall then
-		core.sound_play(def.sounds.fall, {pos = p})
+		core.sound_play(def.sounds.fall, {pos = p}, true)
 	end
 	core.remove_node(p)
 	for _, item in pairs(drops) do
