@@ -475,7 +475,10 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 		user:set_hp(user:get_hp() + hp_change)
 
 		if def and def.sound and def.sound.eat then
-			minetest.sound_play(def.sound.eat, { pos = user:get_pos(), max_hear_distance = 16 })
+			core.sound_play(def.sound.eat, {
+				pos = user:get_pos(),
+				max_hear_distance = 16
+			}, true)
 		end
 
 		if replace_with_item then
@@ -582,7 +585,10 @@ function core.node_dig(pos, node, digger)
 			if not core.settings:get_bool("creative_mode") then
 				wielded:add_wear(dp.wear)
 				if wielded:get_count() == 0 and wdef.sound and wdef.sound.breaks then
-					core.sound_play(wdef.sound.breaks, {pos = pos, gain = 0.5})
+					core.sound_play(wdef.sound.breaks, {
+						pos = pos,
+						gain = 0.5
+					}, true)
 				end
 			end
 		end
