@@ -19,12 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "equirectangular.h"
-#include <time.h>
 #include <ICameraSceneNode.h>
 #include "client/client.h"
 #include "client/camera.h"
 #include "client/hud.h"
 #include "filesys.h"
+#include "porting.h"
 #include "settings.h"
 
 RenderingCoreEquirectangular::RenderingCoreEquirectangular(
@@ -159,14 +159,13 @@ void RenderingCoreEquirectangular::drawAll()
 
 		time_t t = time(NULL);
 		struct tm *tm = localtime(&t);
+		char timetstamp_c[17]; // YYYYMMDD_HHMMSS_ + '\0'
+		strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S_", tm);
 
-		char timetstamp_c[32];
-		strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
-
-		std::string filename_base = g_settings->get("360video_path")
-				+ DIR_DELIM
-				+ std::string("360shot_")
-				+ std::string(timetstamp_c);
+		std::string filename_base = g_settings->get("360video_path") +
+				DIR_DELIM + "360shot_" +
+				std::string(timetstamp_c) +
+				std::to_string(porting::getTimeMs() % 1000);
 		std::string filename_ext = "." + g_settings->get("360video_format");
 		std::string filename;
 
