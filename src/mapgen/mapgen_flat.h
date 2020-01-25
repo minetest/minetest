@@ -32,7 +32,6 @@ extern FlagDesc flagdesc_mapgen_flat[];
 
 struct MapgenFlatParams : public MapgenParams
 {
-	u32 spflags = 0;
 	s16 ground_level = 8;
 	s16 large_cave_depth = -33;
 	u16 small_cave_num_min = 0;
@@ -59,6 +58,7 @@ struct MapgenFlatParams : public MapgenParams
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
+	void setDefaultSettings(Settings *settings);
 };
 
 class MapgenFlat : public MapgenBasic

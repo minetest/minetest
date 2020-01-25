@@ -6069,6 +6069,10 @@ It can be created via `Settings(filename)`.
     * `default` is the value returned if `key` is not found.
     * Returns `nil` if `key` is not found and `default` not specified.
 * `get_np_group(key)`: returns a NoiseParams table
+* `get_flags(key)`:
+    * Returns `{flag = true/false, ...}` according to the set flags.
+    * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
+      flags like `mgv5_spflags`.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.

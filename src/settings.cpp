@@ -484,12 +484,33 @@ v3f Settings::getV3F(const std::string &name) const
 u32 Settings::getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 	u32 *flagmask) const
 {
-	std::string val = get(name);
-	return std::isdigit(val[0])
-		? stoi(val)
-		: readFlagString(val, flagdesc, flagmask);
-}
+	u32 flags = 0;
+	u32 mask_default = 0;
 
+	std::string value;
+	// Read default value (if there is any)
+	if (getDefaultNoEx(name, value)) {
+		flags = std::isdigit(value[0])
+			? stoi(value)
+			: readFlagString(value, flagdesc, &mask_default);
+	}
+
+	// Apply custom flags "on top"
+	value = get(name);
+	u32 flags_user;
+	u32 mask_user = U32_MAX;
+	flags_user = std::isdigit(value[0])
+		? stoi(value) // Override default
+		: readFlagString(value, flagdesc, &mask_user);
+
+	flags &= ~mask_user;
+	flags |=  flags_user;
+
+	if (flagmask)
+		*flagmask = mask_default | mask_user;
+
+	return flags;
+}
 
 // N.B. if getStruct() is used to read a non-POD aggregate type,
 // the behavior is undefined.
@@ -736,19 +757,16 @@ bool Settings::getV3FNoEx(const std::string &name, v3f &val) const
 }
 
 
-// N.B. getFlagStrNoEx() does not set val, but merely modifies it.  Thus,
-// val must be initialized before using getFlagStrNoEx().  The intention of
-// this is to simplify modifying a flags field from a default value.
 bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
-	FlagDesc *flagdesc) const
+	const FlagDesc *flagdesc) const
 {
+	if (!flagdesc) {
+		if (!(flagdesc = getFlagDescFallback(name)))
+			return false; // Not found
+	}
+
 	try {
-		u32 flags, flagmask;
-
-		flags = getFlagStr(name, flagdesc, &flagmask);
-
-		val &= ~flagmask;
-		val |=  flags;
+		val = getFlagStr(name, flagdesc, nullptr);
 
 		return true;
 	} catch (SettingNotFoundException &e) {
@@ -873,6 +891,11 @@ bool Settings::setV3F(const std::string &name, v3f value)
 bool Settings::setFlagStr(const std::string &name, u32 flags,
 	const FlagDesc *flagdesc, u32 flagmask)
 {
+	if (!flagdesc) {
+		if (!(flagdesc = getFlagDescFallback(name)))
+			return false; // Not found
+	}
+
 	return set(name, writeFlagString(flags, flagdesc, flagmask));
 }
 
@@ -1018,6 +1041,18 @@ void Settings::clearDefaultsNoLock()
 	m_defaults.clear();
 }
 
+void Settings::setDefault(const std::string &name, const FlagDesc *flagdesc,
+	u32 flags)
+{
+	m_flags[name] = flagdesc;
+	setDefault(name, writeFlagString(flags, flagdesc, U32_MAX));
+}
+
+const FlagDesc *Settings::getFlagDescFallback(const std::string &name) const
+{
+	auto it = m_flags.find(name);
+	return it == m_flags.end() ? nullptr : it->second;
+}
 
 void Settings::registerChangedCallback(const std::string &name,
 	SettingsChangedCallback cbf, void *userdata)

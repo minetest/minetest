@@ -183,7 +183,7 @@ void MapgenV7Params::readParams(const Settings *settings)
 
 void MapgenV7Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7, U32_MAX);
+	settings->setFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7);
 	settings->setS16("mgv7_mount_zero_level",           mount_zero_level);
 	settings->setFloat("mgv7_cave_width",               cave_width);
 	settings->setS16("mgv7_large_cave_depth",           large_cave_depth);
@@ -211,6 +211,13 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgv7_np_cave1",           np_cave1);
 	settings->setNoiseParams("mgv7_np_cave2",           np_cave2);
 	settings->setNoiseParams("mgv7_np_dungeons",        np_dungeons);
+}
+
+
+void MapgenV7Params::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgv7_spflags", flagdesc_mapgen_v7,
+		MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS);
 }
 
 
