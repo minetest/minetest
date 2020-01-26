@@ -123,9 +123,8 @@ public:
 	irr::core::rect<s32> getRect(Property prop, irr::core::rect<s32> def) const
 	{
 		const auto &val = properties[prop];
-		if (val.empty()) {
+		if (val.empty())
 			return def;
-		}
 
 		irr::core::rect<s32> rect;
 		if (!parseRect(val, &rect))
