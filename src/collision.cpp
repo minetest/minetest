@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #ifndef SERVER
 #include "client/clientenvironment.h"
+#include "client/localplayer.h"
 #endif
 #include "serverenvironment.h"
 #include "serverobject.h"
@@ -405,6 +406,18 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				}
 			}
 		}
+#ifndef SERVER
+		if (c_env != 0) {
+			LocalPlayer *lplayer = c_env->getLocalPlayer();
+			if (lplayer->getParent() == nullptr) {
+				aabb3f lplayer_collisionbox = lplayer->getCollisionbox();
+				v3f lplayer_pos = lplayer->getPosition();
+				lplayer_collisionbox.MinEdge += lplayer_pos;
+				lplayer_collisionbox.MaxEdge += lplayer_pos;
+				cinfo.emplace_back(false, true, 0, v3s16(), lplayer_collisionbox);
+			}
+		}
+#endif
 	} //tt3
 
 	/*
@@ -415,12 +428,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		Collision uncertainty radius
 		Make it a bit larger than the maximum distance of movement
 	*/
-	f32 d = pos_max_d * 1.1f;
-	// A fairly large value in here makes moving smoother
-	//f32 d = 0.15*BS;
-
-	// This should always apply, otherwise there are glitches
-	assert(d > pos_max_d);	// invariant
+	//f32 d = pos_max_d * 1.1f;
+#ifndef SERVER
+	f32 d = 0.5f;
+#else
+	f32 d = 0.0f;	// Temporary fix, any nonzero d causes collision glitches, the more the greater it is.
+	// ultimately it has to be determined if any uncertainty is involved, and if it is, eliminated
+	// and d & pos_max_d params removed from function calls.
+#endif
 
 	int loopcount = 0;
 
@@ -493,7 +508,16 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 						pos_f->Z += speed_f->Z * nearest_dtime;
 				}
 			} else {
-				*pos_f += *speed_f * nearest_dtime;
+				//*pos_f += *speed_f * nearest_dtime;
+				pos_f->X += speed_f->X >= 0
+					? MYMAX(speed_f->X * nearest_dtime - 0.1f, 0.0f)
+					: MYMIN(speed_f->X * nearest_dtime + 0.1f, 0.0f);
+				pos_f->Y += speed_f->Y >= 0
+					? MYMAX(speed_f->Y * nearest_dtime - 0.1f, 0.0f)
+					: MYMIN(speed_f->Y * nearest_dtime + 0.1f, 0.0f);
+				pos_f->Z += speed_f->Z >= 0
+					? MYMAX(speed_f->Z * nearest_dtime - 0.1f, 0.0f)
+					: MYMIN(speed_f->Z * nearest_dtime + 0.1f, 0.0f);
 				dtime -= nearest_dtime;
 			}
 
