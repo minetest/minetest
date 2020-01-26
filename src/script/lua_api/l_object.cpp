@@ -1876,6 +1876,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		getServer(L)->setSun(player, sun_params);
 		getServer(L)->setMoon(player, moon_params);
 		getServer(L)->setStars(player, star_params);
+		lua_pushboolean(L, true);
 	}
 	return 1;
 }
@@ -1900,8 +1901,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	// Add textures to a numerically indexed table for clean dump() prints
 	// We also don't want to show it when we're not using the textured skybox
-	if (skybox_params.textures.size() != 6 || skybox_params.type != "skybox") {
-	} else {
+	if (skybox_params.textures.size() == 6 && skybox_params.type == "skybox") {
 		lua_newtable(L);
 		for (int i = 0; i < 6; i++) {
 			// Create table key
@@ -2036,6 +2036,7 @@ int ObjectRef::l_set_moon(lua_State *L)
 		"scale", moon_params.scale);
 		
 	getServer(L)->setMoon(player, moon_params);
+	lua_pushboolean(L, true);
 	return 1;
 }
 
@@ -2090,6 +2091,7 @@ int ObjectRef::l_set_stars(lua_State *L)
 		"size", star_params.scale);
 
 	getServer(L)->setStars(player, star_params);
+	lua_pushboolean(L, true);
 	return 1;
 }
 

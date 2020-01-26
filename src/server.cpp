@@ -1723,7 +1723,7 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 	NetworkPacket pkt(TOCLIENT_SET_SKY, 0, peer_id);
 
 	// Handle prior clients here
-	if (m_clients.getProtocolVersion(peer_id) < 38) {
+	if (m_clients.getProtocolVersion(peer_id) < 39) {
 		pkt << params.bgcolor << params.type << (u16) params.textures.size();
 
 		for(size_t i=0; i<params.textures.size(); i++)

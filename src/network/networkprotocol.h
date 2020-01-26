@@ -200,9 +200,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Unknown inventory serialization fields no longer throw an error
 		Mod-specific formspec version
 		Player FOV override API
+	PROTOCOL VERSION 39:
+		Updated set_sky packet
+		Adds new sun, moon and stars packets
 */
 
-#define LATEST_PROTOCOL_VERSION 38
+#define LATEST_PROTOCOL_VERSION 39
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
