@@ -40,14 +40,14 @@ void RenderingCoreCubeMap::initTextures(core::dimension2du size)
 	image_size = {screensize.X, screensize.Y};
 	render_size = size;
 
-	for (int i = 0; i < 6; i ++)
+	for (int i = 0; i < face_count; i ++)
 		faces[i] = driver->addRenderTargetTexture(
 				render_size, "3d_render_f" + i, video::ECF_A8R8G8B8);
 }
 
 void RenderingCoreCubeMap::clearTextures()
 {
-	for (int i = 0; i < 6; i ++)
+	for (int i = 0; i < face_count; i ++)
 		driver->removeTexture(faces[i]);
 }
 

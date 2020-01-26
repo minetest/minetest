@@ -23,9 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class RenderingCoreCubeMap : public RenderingCore
 {
+private:
+	static const int face_count = 6;
+
 protected:
 	scene::ICameraSceneNode *cam;
-	video::ITexture *faces[6];
+	video::ITexture *faces[face_count];
 	core::dimension2du image_size;
 	core::dimension2du render_size;
 
