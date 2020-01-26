@@ -2573,6 +2573,8 @@ Some types may inherit styles from parent types.
     * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
     * bgimg - standard background image. Defaults to none.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+    * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
+                     See background9[] documentation for more details
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.

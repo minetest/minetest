@@ -307,10 +307,25 @@ void GUIButton::draw()
 			}
 		}
 
-		driver->draw2DImage(ButtonImages[(u32)imageState].Texture,
-				ScaleImage? AbsoluteRect : core::rect<s32>(pos, sourceRect.getSize()),
-				sourceRect, &AbsoluteClippingRect,
-				0, UseAlphaChannel);
+		// PATCH
+		video::ITexture* texture = ButtonImages[(u32)imageState].Texture;
+		if (BgMiddle.getArea() == 0) {
+			driver->draw2DImage(texture,
+					ScaleImage? AbsoluteRect : core::rect<s32>(pos, sourceRect.getSize()),
+					sourceRect, &AbsoluteClippingRect,
+					0, UseAlphaChannel);
+		} else {
+			core::rect<s32> middle = BgMiddle;
+			// `-x` is interpreted as `w - x`
+			if (middle.LowerRightCorner.X < 0)
+				middle.LowerRightCorner.X += texture->getOriginalSize().Width;
+			if (middle.LowerRightCorner.Y < 0)
+				middle.LowerRightCorner.Y += texture->getOriginalSize().Height;
+			draw2DImage9Slice(driver, texture,
+					ScaleImage ? AbsoluteRect : core::rect<s32>(pos, sourceRect.getSize()),
+					middle, &AbsoluteClippingRect);
+		}
+		// END PATCH
 	}
 
 	if (SpriteBank)
@@ -804,5 +819,6 @@ void GUIButton::setFromStyle(const StyleSpec& style, ISimpleTextureSource *tsrc)
 					Environment->getVideoDriver(), pressed_texture, geom.X, geom.Y));
 		setScaleImage(true);
 	}
+	BgMiddle = style.getRect(StyleSpec::BGIMG_MIDDLE, BgMiddle);
 }
 // END PATCH

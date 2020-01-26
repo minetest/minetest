@@ -78,6 +78,9 @@ local style_fs = [[
 	style[one_btn15;border=false;bgimg=test_bg.png;bgimg_hovered=test_bg_hovered.png;bgimg_pressed=test_bg_pressed.png]
 	item_image_button[1.25,9.6;1,1;default:sword_steel;one_btn15;Bg]
 
+	style[one_btn16;border=false;bgimg=test_bg_9slice.png;bgimg_hovered=test_bg_9slice_hovered.png;bgimg_pressed=test_bg_9slice_pressed.png;bgimg_middle=4,6]
+	button[2.5,9.6;2,1;one_btn16;9-Slice Bg]
+
 
 
 	container[2.75,0]
