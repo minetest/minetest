@@ -190,7 +190,7 @@ void MapgenV6Params::readParams(const Settings *settings)
 
 void MapgenV6Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv6_spflags", spflags, flagdesc_mapgen_v6, U32_MAX);
+	settings->setFlagStr("mgv6_spflags", spflags, flagdesc_mapgen_v6);
 	settings->setFloat("mgv6_freq_desert", freq_desert);
 	settings->setFloat("mgv6_freq_beach",  freq_beach);
 	settings->setS16("mgv6_dungeon_ymin",  dungeon_ymin);
@@ -210,7 +210,15 @@ void MapgenV6Params::writeParams(Settings *settings) const
 }
 
 
+void MapgenV6Params::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgv6_spflags", flagdesc_mapgen_v6, MGV6_JUNGLES |
+		MGV6_SNOWBIOMES | MGV6_TREES | MGV6_BIOMEBLEND | MGV6_MUDFLOW);
+}
+
+
 //////////////////////// Some helper functions for the map generator
+
 
 // Returns Y one under area minimum if not found
 s16 MapgenV6::find_stone_level(v2s16 p2d)

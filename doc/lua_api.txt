@@ -2573,6 +2573,8 @@ Some types may inherit styles from parent types.
     * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
     * bgimg - standard background image. Defaults to none.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+    * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
+                     See background9[] documentation for more details
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -6069,6 +6071,10 @@ It can be created via `Settings(filename)`.
     * `default` is the value returned if `key` is not found.
     * Returns `nil` if `key` is not found and `default` not specified.
 * `get_np_group(key)`: returns a NoiseParams table
+* `get_flags(key)`:
+    * Returns `{flag = true/false, ...}` according to the set flags.
+    * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
+      flags like `mgv5_spflags`.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
@@ -6147,9 +6153,6 @@ Player properties need to be saved manually.
 
         collide_with_objects = true,
         -- Collide with other objects if physical = true
-
-        weight = 5,
-        -- Unused.
 
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},  -- Default
         selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
@@ -6569,8 +6572,9 @@ Used by `minetest.register_node`.
         -- Supported for drawtypes "plantlike", "signlike", "torchlike",
         -- "firelike", "mesh".
         -- For plantlike and firelike, the image will start at the bottom of the
-        -- node, for the other drawtypes the image will be centered on the node.
-        -- Note that positioning for "torchlike" may still change.
+        -- node. For torchlike, the image will start at the surface to which the
+        -- node "attaches". For the other drawtypes the image will be centered
+        -- on the node.
 
         tiles = {tile definition 1, def2, def3, def4, def5, def6},
         -- Textures of node; +Y, -Y, +X, -X, +Z, -Z

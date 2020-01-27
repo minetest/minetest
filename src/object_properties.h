@@ -31,7 +31,6 @@ struct ObjectProperties
 	u16 breath_max = 0;
 	bool physical = false;
 	bool collideWithObjects = true;
-	float weight = 5.0f;
 	// Values are BS=1
 	aabb3f collisionbox = aabb3f(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
 	aabb3f selectionbox = aabb3f(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);

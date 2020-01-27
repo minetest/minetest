@@ -1,81 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the minetest package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Kyrgyz (Minetest)\n"
+"Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2019-11-10 15:04+0000\n"
-"Last-Translator: Krock <mk939@ymail.com>\n"
-"Language-Team: Kyrgyz <https://hosted.weblate.org/projects/minetest/minetest/"
-"ky/>\n"
-"Language: ky\n"
+"PO-Revision-Date: 2020-01-11 18:26+0000\n"
+"Last-Translator: rubenwardy <rubenwardy@gmail.com>\n"
+"Language-Team: Basque <https://hosted.weblate.org/projects/minetest/minetest/"
+"eu/>\n"
+"Language: eu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.10.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Кайтадан жаралуу"
+msgstr "Birsortu"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr "Сиз өлдүңүз."
+msgstr "Hil zara"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Errore bat gertatu da Lua script batean:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "Errore bat gertatu da:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
-msgstr "Башкы меню"
+msgstr "Menu nagusia"
 
 #: builtin/fstk/ui.lua
 msgid "Ok"
-msgstr ""
+msgstr "Ados"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "Туташуу"
+msgstr "Birkonektatu"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Zerbitzariak birkonexioa eskatu du:"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "Жүктөлүүдө..."
+msgstr "Kargatzen..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Protokoloaren bertsioen desadostasuna. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Zerbitzariak $1 protokolo bertsioa darabil. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Zerbitzariak $1 eta $2 arteko protokolo bertsioak onartzen ditu. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Saia zaitez zerbitzari publikoen zerrenda birgaitzen eta egiazta ezazu zure "
+"internet konexioa."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "$1 bertsioa soilik onartzen dugu."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "$1 eta $2 arteko protokolo bertsioak onartzen ditugu."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
@@ -85,32 +89,27 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr "Жокко чыгаруу"
+msgstr "Utzi"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Dependencies:"
-msgstr "көз карандылыктары:"
+msgstr "Mendekotasunak:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable all"
-msgstr "Баарын өчүрүү"
+msgstr "Desgaitu denak"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable modpack"
-msgstr "Баарын өчүрүү"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable all"
-msgstr "Баарын күйгүзүү"
+msgstr "Gaitu denak"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "Баарын күйгүзүү"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -120,20 +119,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "(Aukerako) mendekotasunik ez"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "Ez da jolasaren deskripziorik eman."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "көз карандылыктары:"
+msgstr "Mendekotasun zorrotzik ez"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -141,75 +139,71 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "Aukerako mendekotasunik ez"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Aukerako mendekotasunak:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr "Сактоо"
+msgstr "Gorde"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "World:"
-msgstr "Дүйнөнү тандаңыз:"
+msgstr "Mundua:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "күйгүзүлгөн"
+msgstr "gaituta"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Pakete guztiak"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
-msgstr "Артка"
+msgstr "Atzera"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Back to Main Menu"
-msgstr "Башкы меню"
+msgstr "Itzuli menu nagusira"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading and installing $1, please wait..."
-msgstr ""
+msgstr "$1 deskargatu eta instalatzen, itxaron mesedez..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download $1"
-msgstr "Дүйнөнү инициалдаштыруу катасы"
+msgstr "Huts egin du $1 deskargatzean"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Games"
-msgstr "Оюн"
+msgstr "Jolasak"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "Instalatu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr ""
+msgstr "Mod-ak"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Ezin izan da paketerik eskuratu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Emaitzarik ez"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "Bilatu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -217,66 +211,67 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "Desinstalatu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Eguneratu"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "Badago \"$1\" izeneko mundu bat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "Жаратуу"
+msgstr "Sortu"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
 msgstr ""
+"Deskargatu jolasen bat, esaterako Minetest Game, minetest.net zerbitzaritik"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Deskargatu minetest.net zerbitzaritik"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr "Оюн"
+msgstr "Jolasa"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "Mapa sortzailea"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "Ez da jolasik aukeratu"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr ""
+msgstr "Hazia"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Abisua: \"Minimal development test\" garatzaileentzako da."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr "Дүйнө аты"
+msgstr "Munduaren izena"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "Ez duzu jolasik instalatuta."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Ziur \"$1\" ezabatu nahi duzula?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr "Өчүрүү"
+msgstr "Ezabatu"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -287,13 +282,12 @@ msgid "pkgmgr: invalid path \"$1\""
 msgstr ""
 
 #: builtin/mainmenu/dlg_delete_world.lua
-#, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "Дүйнөнү өчүрүү"
+msgstr "Ezabatu \"$1\" mundua?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr "Кабыл алуу"
+msgstr "Onartu"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
@@ -307,33 +301,31 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Ez da ezarpenaren deskripziorik eman)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr ""
+msgstr "2D Zarata"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Itzuli ezarpenen orrira"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "Arakatu"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "Баарын өчүрүү"
+msgstr "Desgaituta"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "Editatu"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Enabled"
-msgstr "күйгүзүлгөн"
+msgstr "Gaituta"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
@@ -349,49 +341,47 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "Iraunkortasuna"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Sartu baliozko zenbaki oso bat."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Sartu baliozko zenbaki bat."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Berrezarri lehenespena"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Eskala"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select directory"
-msgstr "Дүйнөнү тандаңыз:"
+msgstr "Hautatu direktorioa"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select file"
-msgstr "Дүйнөнү тандаңыз:"
+msgstr "Hautatu fitxategia"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Erakutsi izen teknikoak"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "Balioa gutxienez $1 izan behar da."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "Balioa ezin da $1 baino handiagoa izan."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
@@ -399,7 +389,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
@@ -407,7 +397,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
@@ -419,26 +409,23 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr ""
+msgstr "lehenespenak"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 (Enabled)"
-msgstr "күйгүзүлгөн"
+msgstr "$1 (Gaituta)"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr "Ырастоо"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "Дүйнөнү инициалдаштыруу катасы"
+msgstr "Huts egin du $1 %2-n instalatzean"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
@@ -461,38 +448,32 @@ msgid "Unable to find a valid mod or modpack"
 msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a texture pack"
-msgstr "Дүйнөнү инициалдаштыруу катасы"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a game as a $1"
-msgstr "Дүйнөнү инициалдаштыруу катасы"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a mod as a $1"
-msgstr "Дүйнөнү инициалдаштыруу катасы"
+msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a modpack as a $1"
-msgstr "Дүйнөнү инициалдаштыруу катасы"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content"
-msgstr "Улантуу"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Disable Texture Pack"
-msgstr "Баарын өчүрүү"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
@@ -532,7 +513,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr "Алкыштар"
+msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -552,20 +533,19 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
-msgstr "Ырастоо"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
-msgstr "Жаратуу режими"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Enable Damage"
-msgstr "Убалды күйгүзүү"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Game"
-msgstr "Оюн"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
@@ -573,20 +553,19 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
-msgstr "Аты/сырсөзү"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr "Жаңы"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Play Game"
-msgstr "Оюнду баштоо/туташуу"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
@@ -594,73 +573,63 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr "Дүйнөнү тандаңыз:"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
 msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Start Game"
-msgstr "Оюн"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Дареги/порту"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr "Туташуу"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Creative mode"
-msgstr "Жаратуу режими"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Damage enabled"
-msgstr "күйгүзүлгөн"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Del. Favorite"
-msgstr "Тандалмалар:"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
-msgstr "Тандалмалар:"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Join Game"
-msgstr "Оюн"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Аты/сырсөзү"
+msgstr ""
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Ping"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "PvP enabled"
-msgstr "күйгүзүлгөн"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "3D Clouds"
-msgstr "3D-булуттар"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
@@ -671,56 +640,48 @@ msgid "8x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "Ырастоолор"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Бир кишилик"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bilinear Filter"
-msgstr "Экисызык чыпкалоосу"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bump Mapping"
-msgstr "Mip-текстуралоо"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
-#, fuzzy
 msgid "Change Keys"
-msgstr "Баскычтарды өзгөртүү"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Туташуу"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Күңүрт суу"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normal Maps"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Mipmap"
-msgstr "Mip-текстуралоо"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
@@ -728,82 +689,71 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
-msgstr "Жок"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Filter"
-msgstr "Анизатропия чыпкалоосу"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Mipmap"
-msgstr "Mip-текстуралоо"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Highlighting"
-msgstr "Тегиз жарык"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "Тегиз жарык"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Күңүрт суу"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Water"
-msgstr "Күңүрт суу"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Баарын күйгүзүү"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Бир кишилик"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Screen:"
-msgstr "Тез сүрөт"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr "Ырастоолор"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr "Көлөкөлөгүчтөр"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Күңүрт суу"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Smooth Lighting"
-msgstr "Тегиз жарык"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
@@ -814,57 +764,48 @@ msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Tone Mapping"
-msgstr "Mip-текстуралоо"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Trilinear Filter"
-msgstr "Үчсызык чыпкалоосу"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
-msgstr "Кооз бактар"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Кооз бактар"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
-msgstr "Кооз бактар"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
-msgstr "Ооба"
+msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Config mods"
-msgstr "Ырастоо"
+msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Main"
-msgstr "Башкы меню"
+msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Бир кишилик"
+msgstr ""
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "Туташтыруу катасы (убактыңыз өтүп кеттиби?)"
+msgstr ""
 
 #: src/client/client.cpp
 msgid "Done!"
@@ -879,22 +820,20 @@ msgid "Initializing nodes..."
 msgstr ""
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Loading textures..."
-msgstr "Жүктөлүүдө..."
+msgstr ""
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "Дареги чечилүүдө..."
+msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr "Туташтыруу катасы (убактыңыз өтүп кеттиби?)"
+msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr "Оюнду табуу же жүктөө мүмкүн эмес \""
+msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -902,11 +841,11 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr "Башкы меню"
+msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Дүйнө тандалган жок жана дареги киргизилген жок. Кылууга эч нерсе жок."
+msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
@@ -926,30 +865,25 @@ msgstr ""
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "yes"
+msgstr ""
 
 #: src/client/game.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
-"\n"
-"Толугураак маалымат үчүн, debug.txt'ти текшериңиз."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Address: "
-msgstr "Дареги/порту"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Creative Mode: "
-msgstr "Жаратуу режими"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Damage: "
-msgstr "Убалды күйгүзүү"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "- Mode: "
@@ -960,9 +894,8 @@ msgid "- Port: "
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Public: "
-msgstr "Жалпылык"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "- PvP: "
@@ -973,37 +906,32 @@ msgid "- Server Name: "
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
-msgstr "Алга"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward enabled"
-msgstr "Алга"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update enabled"
-msgstr "күйгүзүлгөн"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Сырсөздү өзгөртүү"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode disabled"
-msgstr "Жаратуу режими"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode enabled"
-msgstr "Жаратуу режими"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1011,14 +939,14 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
-msgstr "Серверге туташтырылууда..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr "Улантуу"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1035,30 +963,18 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
-"Жарыяланбас башкаруу:\n"
-"- WASD: басуу\n"
-"- Боштугу: секирүү/өйдө чыгуу\n"
-"- Shift: уурданып басуу/ылдый түшүү\n"
-"- Q: буюмду таштоо\n"
-"- I: мүлк-шайман\n"
-"- Чычканы: бурулуу/кароо\n"
-"- Сол чычкан баскычы: казуу/согуу\n"
-"- Оң чычкан баскычы: коюу/колдонуу\n"
-"- Чычкан дөңгөлөгү: буюмду тандоо\n"
-"- T: маек\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr "Клиент жаратылууда..."
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Creating server..."
-msgstr "Сервер жаратылууда...."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "Arazte informazioa eta profilariaren grafikoa ezkutatuta"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
@@ -1066,7 +982,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
+msgstr "Arazte informazioa, profilariaren grafikoa, eta hari-sareta ezkutatuta"
 
 #: src/client/game.cpp
 msgid ""
@@ -1086,76 +1002,67 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "Desgaitu mugagabeko ikusmen barrutia"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "Gaitu mugagabeko ikusmen barrutia"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr "Менюга чыгуу"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr "Оюндан чыгуу"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode disabled"
-msgstr "Баарын өчүрүү"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode enabled"
-msgstr "күйгүзүлгөн"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode disabled"
-msgstr "Баарын өчүрүү"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode enabled"
-msgstr "күйгүзүлгөн"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog disabled"
-msgstr "Баарын өчүрүү"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled"
-msgstr "күйгүзүлгөн"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Game info:"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Game paused"
-msgstr "Оюн"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Hosting server"
-msgstr "Сервер жаратылууда...."
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Item definitions..."
-msgstr "Буюм текстуралары..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "KiB/s"
@@ -1163,7 +1070,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "Multimedia..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
@@ -1206,9 +1113,8 @@ msgid "Noclip mode disabled"
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Noclip mode enabled"
-msgstr "күйгүзүлгөн"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
@@ -1236,7 +1142,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
-msgstr ""
+msgstr "Profilariaren grafikoa ikusigai"
 
 #: src/client/game.cpp
 msgid "Remote server"
@@ -1244,45 +1150,42 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Resolving address..."
-msgstr "Дареги чечилүүдө..."
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Shutting down..."
-msgstr "Оюн өчүрүлүүдө..."
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Singleplayer"
-msgstr "Бир кишилик"
+msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr "Үн көлөмү"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound muted"
-msgstr "Үн көлөмү"
+msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound unmuted"
-msgstr "Үн көлөмү"
+msgstr ""
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
-msgstr ""
+msgstr "Ikusmen barrutia aldatu da: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "Ikusmen barrutia maximoan dago: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr ""
+msgstr "Ikusmen barrutia minimoan dago: %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -1302,9 +1205,8 @@ msgid "ok"
 msgstr ""
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat hidden"
-msgstr "Баскычтарды өзгөртүү"
+msgstr ""
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
@@ -1320,21 +1222,20 @@ msgstr ""
 
 #: src/client/gameui.cpp
 msgid "Profiler hidden"
-msgstr ""
+msgstr "Profilaria ezkutatuta"
 
 #: src/client/gameui.cpp
 #, c-format
 msgid "Profiler shown (page %d of %d)"
-msgstr ""
+msgstr "Profilaria ikusgai (%d/%d orria)"
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr "Тиркемелер"
+msgstr "Aplikazioak"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Backspace"
-msgstr "Артка"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
@@ -1342,7 +1243,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Clear"
-msgstr "Тазалоо"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Control"
@@ -1350,11 +1251,11 @@ msgstr "Ctrl"
 
 #: src/client/keycode.cpp
 msgid "Down"
-msgstr "Ылдый"
+msgstr "Behera"
 
 #: src/client/keycode.cpp
 msgid "End"
-msgstr "Аягы"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
@@ -1362,34 +1263,31 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Execute"
-msgstr "Аткаруу"
+msgstr "Exekutatu"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr "Жардам"
+msgstr "Laguntza"
 
 #: src/client/keycode.cpp
 msgid "Home"
-msgstr "Home"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Accept"
-msgstr "Кабыл алуу"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "IME Convert"
 msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Escape"
-msgstr "Esc"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "IME Mode Change"
-msgstr "Режимди өзгөртүү"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "IME Nonconvert"
@@ -1397,104 +1295,103 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr "Insert"
+msgstr "Txertatu"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr "Солго"
+msgstr "Ezkerra"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
-msgstr "Сол баскыч"
+msgstr "Ezkerreko botoia"
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr "Сол Ctrl"
+msgstr "Ezkerreko ctrl"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
-msgstr "Сол меню"
+msgstr "Ezkerreko menua"
 
 #: src/client/keycode.cpp
 msgid "Left Shift"
-msgstr "Сол Shift"
+msgstr "Ezkerreko maius."
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr "Сол Windows"
+msgstr "Ezkerreko leihoa"
 
 #: src/client/keycode.cpp
 msgid "Menu"
-msgstr "Меню"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
-msgstr "Ортоңку баскыч"
+msgstr "Erdiko botoia"
 
 #: src/client/keycode.cpp
 msgid "Num Lock"
-msgstr "Num Lock"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr "Кош. клав. *"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr "Кош. клав. +"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr "Кош. клав. -"
+msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Numpad ."
-msgstr "Кош. клав. *"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr "Кош. клав. /"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr "Кош. клав. 0"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr "Кош. клав. 1"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr "Кош. клав. 2"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr "Кош. клав. 3"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr "Кош. клав. 4"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr "Кош. клав. 5"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr "Кош. клав. 6"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr "Кош. клав. 7"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr "Кош. клав. 8"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr "Кош. клав. 9"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
@@ -1502,23 +1399,23 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "Orrialdea behera"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "Orrialdea gora"
 
 #: src/client/keycode.cpp
 msgid "Pause"
-msgstr "Пауза"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr "Ойноо"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr "Басма"
+msgstr "Inprimatu"
 
 #: src/client/keycode.cpp
 msgid "Return"
@@ -1526,79 +1423,79 @@ msgstr ""
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr "Оңго"
+msgstr "Eskuina"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr "Оң баскыч"
+msgstr "Eskuineko botoia"
 
 #: src/client/keycode.cpp
 msgid "Right Control"
-msgstr "Оң Ctrl"
+msgstr "Eskuineko ctrl"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
-msgstr "Оң меню"
+msgstr "Eskuineko menua"
 
 #: src/client/keycode.cpp
 msgid "Right Shift"
-msgstr "Оң Shift"
+msgstr "Eskuineko maius."
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr "Оң Windows"
+msgstr "Eskuineko leihoa"
 
 #: src/client/keycode.cpp
 msgid "Scroll Lock"
-msgstr "Scroll Lock"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr "Тандоо"
+msgstr "Hautatu"
 
 #: src/client/keycode.cpp
 msgid "Shift"
-msgstr "Shift"
+msgstr "Maius."
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr "Уйку"
+msgstr "Lokartu"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
-msgstr "Тез сүрөт"
+msgstr "Pantaila-argazkia"
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr "Боштук"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Tab"
-msgstr "Tab"
+msgstr "Tabuladorea"
 
 #: src/client/keycode.cpp
 msgid "Up"
-msgstr "Өйдө"
+msgstr "Gora"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
-msgstr ""
+msgstr "1. X botoia"
 
 #: src/client/keycode.cpp
 msgid "X Button 2"
-msgstr ""
+msgstr "2. X botoia"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Zoom"
-msgstr "Масштаб"
+msgstr ""
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr "Сырсөздөр дал келген жок!"
+msgstr "Pasahitzak ez datoz bat!"
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr ""
+msgstr "Eman izena eta hasi saioa"
 
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
@@ -1612,16 +1509,15 @@ msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr "Улантуу"
+msgstr "Jarraitu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "\"Special\" = climb down"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Autoforward"
-msgstr "Алга"
+msgstr "Aurrera automatikoki"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
@@ -1629,32 +1525,31 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr "Артка"
+msgstr "Atzera"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Change camera"
-msgstr "Баскычтарды өзгөртүү"
+msgstr "Aldatu kamera"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr "Маек"
+msgstr "Txata"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr "Команда"
+msgstr "Agindua"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr "Консоль"
+msgstr "Kontsola"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr ""
+msgstr "Txikitu barrutia"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
-msgstr ""
+msgstr "Jaitsi bolumena"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
@@ -1662,28 +1557,27 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr "Ыргытуу"
+msgstr "Laga"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr "Алга"
+msgstr "Aurrera"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr ""
+msgstr "Handitu barrutia"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Inc. volume"
-msgstr "Үн көлөмү"
+msgstr "Igo bolumena"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr "Мүлк-шайман"
+msgstr "Inbentarioa"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr "Секирүү"
+msgstr "Jauzi"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
@@ -1694,109 +1588,100 @@ msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Local command"
-msgstr "Команда"
+msgstr "Agindu lokala"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "Isilarazi"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Next item"
-msgstr "Кийинки"
+msgstr "Hurrengoa elementua"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
-msgstr ""
+msgstr "Aurreko elementua"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr ""
+msgstr "Barruti hautaketa"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot"
-msgstr "Тез сүрөт"
+msgstr "Pantaila-argazkia"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr "Уурданып басуу"
+msgstr "isilean mugitu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Special"
+msgstr "Berezia"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Toggle HUD"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
-msgid "Toggle HUD"
-msgstr "Учууга которуу"
-
-#: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle chat log"
-msgstr "Тез басууга которуу"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "Тез басууга которуу"
+msgstr "Txandakatu azkar"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr "Учууга которуу"
+msgstr "Txandakatu hegaz egitea"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle fog"
-msgstr "Учууга которуу"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle minimap"
-msgstr "Тез басууга которуу"
+msgstr "Txandakatu minimapa"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Тез басууга которуу"
+msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr "баскычты басыңыз"
+msgstr "sakatu tekla"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
-msgstr "Өзгөртүү"
+msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr "Сырсөздү аныктоо"
+msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr "Жаңы сырсөз"
+msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr "Эски сырсөз"
+msgstr ""
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
-msgstr "Чыгуу"
+msgstr ""
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy
 msgid "Muted"
-msgstr "баскычты басыңыз"
+msgstr ""
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr "Үн көлөмү: "
+msgstr ""
 
 #: src/gui/modalMenu.cpp
 msgid "Enter "
@@ -1804,7 +1689,7 @@ msgstr ""
 
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr "ky"
+msgstr "eu"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1877,9 +1762,8 @@ msgid "2D noise that locates the river valleys and channels."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
-msgstr "3D-булуттар"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
@@ -1965,11 +1849,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "Bloke aktiboaren barrutia"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr ""
+msgstr "Objektu aktiboak bidaltzeko barrutia"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1990,7 +1874,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr "Кошумча"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2022,9 +1906,8 @@ msgid "Amplifies the valleys."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anisotropic filtering"
-msgstr "Анизатропия чыпкалоосу"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
@@ -2076,9 +1959,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automatic forward key"
-msgstr "Алга"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2097,9 +1979,8 @@ msgid "Autoscaling mode"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Backward key"
-msgstr "Артка"
+msgstr "Atzera tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2126,14 +2007,12 @@ msgid "Beach noise threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bilinear filtering"
-msgstr "Экисызык чыпкалоосу"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bind address"
-msgstr "Дареги чечилүүдө..."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Biome API temperature and humidity noise parameters"
@@ -2168,18 +2047,16 @@ msgid "Bold monospace font path"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Build inside player"
-msgstr "Көп кишилик"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-текстуралоо"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2199,7 +2076,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Kameraren eguneraketa txandakatzeko tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
@@ -2262,9 +2139,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat key"
-msgstr "Баскычтарды өзгөртүү"
+msgstr "Txat tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2283,28 +2159,24 @@ msgid "Chat message max length"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat toggle key"
-msgstr "Баскычтарды өзгөртүү"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chatcommands"
-msgstr "Команда"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode"
-msgstr "Жаратуу режими"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode key"
-msgstr "Жаратуу режими"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -2339,18 +2211,16 @@ msgid "Cloud radius"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds"
-msgstr "3D-булуттар"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds in menu"
-msgstr "Башкы меню"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -2380,47 +2250,40 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Command key"
-msgstr "Команда"
+msgstr "Agindua tekla"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect glass"
-msgstr "Туташуу"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect to external media server"
-msgstr "Серверге туташтырылууда..."
+msgstr "Konektatu kanpo multimedia zerbitzari batera"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console alpha"
-msgstr "Консоль"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console color"
-msgstr "Консоль"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console height"
-msgstr "Консоль"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ContentDB URL"
-msgstr "Улантуу"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -2433,9 +2296,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Controls"
-msgstr "Ctrl"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2468,9 +2330,8 @@ msgid "Crash message"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Creative"
-msgstr "Жаратуу"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -2493,13 +2354,12 @@ msgid "DPI"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Damage"
-msgstr "Убалды күйгүзүү"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "Arazte informazioa txandakatzeko tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -2536,9 +2396,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default password"
-msgstr "Жаңы сырсөз"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
@@ -2599,6 +2458,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+"Jokalari transferentziaren distantzia maximoa blokeetan definitzen du (0 = "
+"mugagabea)."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -2659,14 +2520,12 @@ msgid "Desynchronize block animation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Digging particles"
-msgstr "Баарын күйгүзүү"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Disable anticheat"
-msgstr "Бөлүкчөлөрдү күйгүзүү"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2776,6 +2635,10 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
+"Gaitu urruneko multimedia zerbitzariaren erabilera (zerbitzariak ematen "
+"badu),\n"
+"Urruneko zerbitzariek deskarga azkarragoa eskaini dezakete multimedia "
+"deskargatzeko (adib. testurak)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2821,9 +2684,8 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables minimap."
-msgstr "Убалды күйгүзүү"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2893,7 +2755,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr ""
+msgstr "Azkar tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -2949,9 +2811,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filtering"
-msgstr "Анизатропия чыпкалоосу"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
@@ -2971,7 +2832,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "Hegaz egin tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
@@ -3065,9 +2926,8 @@ msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Forward key"
-msgstr "Алга"
+msgstr "Aurrera tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3104,6 +2964,12 @@ msgid ""
 "to maintain active objects up to this distance in the direction the\n"
 "player is looking. (This can avoid mobs suddenly disappearing from view)"
 msgstr ""
+"Zein distantziatik dakite bezeroek objektuei buruz, mapa blokeetan (16 nodo) "
+"adierazita.\n"
+"\n"
+"Hau active_block_range baino handiagoa ezarriz gero zerbitzariak jokalariak\n"
+"begiratzen duen norabidean objektu aktiboak distantzia honetara arte\n"
+"mantentzea eragingo du. (Honek gauzak bat batean desagertzea saihestu dezake)"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -3214,9 +3080,8 @@ msgid "Height component of the initial window size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Height noise"
-msgstr "Оң Windows"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
@@ -3542,9 +3407,8 @@ msgid "Ignore world errors"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "In-Game"
-msgstr "Оюн"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
@@ -3559,9 +3423,8 @@ msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Inc. volume key"
-msgstr "Консоль"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
@@ -3614,9 +3477,8 @@ msgid "Inventory items animations"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Inventory key"
-msgstr "Мүлк-шайман"
+msgstr "Inbentarioa tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -3664,7 +3526,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
-msgstr ""
+msgstr "Joystick mota"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3716,9 +3578,8 @@ msgid "Julia z"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Jump key"
-msgstr "Секирүү"
+msgstr "Jauzi tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
@@ -3730,6 +3591,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Ikusmen barrutia txikitzeko tekla.\n"
+"Ikusi http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3751,6 +3615,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Ikusmen barrutia handitzeko tekla.\n"
+"Ikusi http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3822,6 +3689,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Komando lokalak idazteko txat leihoa irekitzeko tekla.\n"
+"Ikusi http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4153,6 +4023,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kameraren eguneraketa txandakatzeko tekla. Garapenerako soilik erabilia\n"
+"Ikusi http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4167,6 +4040,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Arazte informazioa txandakatzeko tekla\n"
+"Ikusi http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4195,6 +4071,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Profilaria txandakatzeko tekla. Garapenerako soilik erabilia.\n"
+"Ikusi http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4202,6 +4081,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Ikusmen barruti mugagabea txandakatzeko tekla.\n"
+"Ikusi http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4243,9 +4125,8 @@ msgid "Large cave proportion flooded"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Large chat console key"
-msgstr "Консоль"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -4260,9 +4141,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Left key"
-msgstr "Сол меню"
+msgstr "Ezkerrera tekla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4379,7 +4259,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Load the game profiler"
-msgstr ""
+msgstr "Kargatu jolasaren profilaria"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4387,6 +4267,9 @@ msgid ""
 "Provides a /profiler command to access the compiled profile.\n"
 "Useful for mod developers and server operators."
 msgstr ""
+"Kargatu jolasaren profilaria jolasaren profil datuak jasotzeko.\n"
+"/profiler komandoa eskaintzen du jasotako profila atzitzeko.\n"
+"Mod garatzaileentzat eta zerbitzari jabeentzat erabilgarria."
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
@@ -4397,14 +4280,12 @@ msgid "Lower Y limit of dungeons."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Main menu script"
-msgstr "Башкы меню"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Main menu style"
-msgstr "Башкы меню"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4695,9 +4576,8 @@ msgid "Maximum users"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Menus"
-msgstr "Меню"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
@@ -4740,9 +4620,8 @@ msgid "Minimum texture size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mipmapping"
-msgstr "Mip-текстуралоо"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
@@ -4795,9 +4674,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mute key"
-msgstr "баскычты басыңыз"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mute sound"
@@ -5006,9 +4884,8 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Pitch move key"
-msgstr "Жаратуу режими"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
@@ -5026,7 +4903,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
-msgstr ""
+msgstr "Jokalariaren transferentzia distantzia"
 
 #: src/settings_translation_file.cpp
 msgid "Player versus player"
@@ -5060,11 +4937,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr ""
+msgstr "Profilaria"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
-msgstr ""
+msgstr "Profilaria txandakatzeko tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Profiling"
@@ -5091,20 +4968,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
-msgstr ""
+msgstr "Ikusmen barrutia hautatzeko tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Regular font path"
-msgstr "Тандоо"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
-msgstr ""
+msgstr "Urruneko multimedia"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
@@ -5121,9 +4997,8 @@ msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Report path"
-msgstr "Тандоо"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5156,9 +5031,8 @@ msgid "Ridged mountain size noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Right key"
-msgstr "Оң меню"
+msgstr "Eskuinera tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
@@ -5177,9 +5051,8 @@ msgid "River depth"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise"
-msgstr "Оң Windows"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River size"
@@ -5247,14 +5120,12 @@ msgid "Screenshot folder"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "Тез сүрөт"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "Тез сүрөт"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5319,9 +5190,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server / Singleplayer"
-msgstr "Бир кишилик"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
@@ -5348,14 +5218,12 @@ msgid "Server side occlusion culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist URL"
-msgstr "Жалпылык серверлердин тизмеси:"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist file"
-msgstr "Жалпылык серверлердин тизмеси:"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5386,9 +5254,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shader path"
-msgstr "Көлөкөлөгүчтөр"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5468,9 +5335,8 @@ msgid "Small-scale temperature variation for blending biomes on borders."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth lighting"
-msgstr "Тегиз жарык"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5487,14 +5353,12 @@ msgid "Smooths rotation of camera. 0 to disable."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneak key"
-msgstr "Уурданып басуу"
+msgstr "Isilean mugitu tekla"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneaking speed"
-msgstr "Уурданып басуу"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
@@ -5505,9 +5369,8 @@ msgid "Sound"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Special key"
-msgstr "Уурданып басуу"
+msgstr "Berezia tekla"
 
 #: src/settings_translation_file.cpp
 msgid "Special key for climbing/descending"
@@ -5636,6 +5499,8 @@ msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
+"Profilak gordetzeko lehenetsitako formatua,\n"
+"`/profiler save [format]` formaturik gabe deitzean erabilia."
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other biome filler node."
@@ -5730,7 +5595,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
-msgstr ""
+msgstr "Joystick mota"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5772,6 +5637,9 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"Atzerapena murrizteko, blokeen transferentziak moteldu egiten dira jokalari "
+"bat zerbait eraikitzen ari denean.\n"
+"Honek nodo bat jarri edo kendu ondoren zenbat motelduko diren zehazten du."
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -5790,9 +5658,8 @@ msgid "Trees noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trilinear filtering"
-msgstr "Үчсызык чыпкалоосу"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5824,7 +5691,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
-msgstr ""
+msgstr "Jokalari transferentzia distantzia mugagabea"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
@@ -5939,11 +5806,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
-msgstr ""
+msgstr "Ikusmen barrutia txikitzeko tekla"
 
 #: src/settings_translation_file.cpp
 msgid "View range increase key"
-msgstr ""
+msgstr "Ikusmen barrutia handitzeko tekla"
 
 #: src/settings_translation_file.cpp
 msgid "View zoom key"
@@ -5951,16 +5818,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
-msgstr ""
+msgstr "Ikusmen barrutia"
 
 #: src/settings_translation_file.cpp
 msgid "Virtual joystick triggers aux button"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volume"
-msgstr "Үн көлөмү"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6002,29 +5868,24 @@ msgid "Waving Nodes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving leaves"
-msgstr "Кооз бактар"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids"
-msgstr "Кооз бактар"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave height"
-msgstr "Кооз бактар"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave speed"
-msgstr "Кооз бактар"
+msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wavelength"
-msgstr "Кооз бактар"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
@@ -6074,6 +5935,8 @@ msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
+"Jokalariak bezeroei barruti mugarik gabe erakutsiko al zaizkien.\n"
+"Zaharkitua, erabili player_transfer_distance ezarpena honen ordez."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
@@ -6124,9 +5987,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "World start time"
-msgstr "Дүйнө аты"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6191,19 +6053,3 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Тез басууга которуу"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Дүйнөнү тандаңыз:"
-
-#, fuzzy
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Убалды күйгүзүү"
-
-#, fuzzy
-#~ msgid "Enable VBO"
-#~ msgstr "Баарын күйгүзүү"

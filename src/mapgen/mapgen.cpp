@@ -215,6 +215,17 @@ void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hid
 	}
 }
 
+void Mapgen::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mg_flags", flagdesc_mapgen,
+		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES);
+
+	for (int i = 0; i < (int)MAPGEN_INVALID; ++i) {
+		MapgenParams *params = createMapgenParams((MapgenType)i);
+		params->setDefaultSettings(settings);
+		delete params;
+	}
+}
 
 u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
 {
@@ -1068,7 +1079,7 @@ void MapgenParams::writeParams(Settings *settings) const
 	settings->setS16("water_level", water_level);
 	settings->setS16("mapgen_limit", mapgen_limit);
 	settings->setS16("chunksize", chunksize);
-	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
+	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen);
 
 	if (bparams)
 		bparams->writeParams(settings);

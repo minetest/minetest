@@ -32,21 +32,15 @@ StaticText::StaticText(const EnrichedString &text, bool border,
 			bool background)
 : IGUIStaticText(environment, parent, id, rectangle),
 	HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_UPPERLEFT),
-	Border(border), OverrideColorEnabled(false), OverrideBGColorEnabled(false), WordWrap(false), Background(background),
+	Border(border), WordWrap(false), Background(background),
 	RestrainTextInside(true), RightToLeft(false),
-	OverrideColor(video::SColor(101,255,255,255)), BGColor(video::SColor(101,210,210,210)),
 	OverrideFont(0), LastBreakFont(0)
 {
 	#ifdef _DEBUG
 	setDebugName("StaticText");
 	#endif
 
-	Text = text.c_str();
-	cText = text;
-	if (environment && environment->getSkin())
-	{
-		BGColor = environment->getSkin()->getColor(gui::EGDC_3D_FACE);
-	}
+	setText(text);
 }
 
 
@@ -73,12 +67,7 @@ void StaticText::draw()
 	// draw background
 
 	if (Background)
-	{
-		if ( !OverrideBGColorEnabled )	// skin-colors can change
-			BGColor = skin->getColor(gui::EGDC_3D_FACE);
-
-		driver->draw2DRectangle(BGColor, frameRect, &AbsoluteClippingRect);
-	}
+		driver->draw2DRectangle(getBackgroundColor(), frameRect, &AbsoluteClippingRect);
 
 	// draw the border
 
@@ -89,97 +78,60 @@ void StaticText::draw()
 	}
 
 	// draw the text
-	if (cText.size())
-	{
-		IGUIFont* font = getActiveFont();
+	IGUIFont *font = getActiveFont();
+	if (font && BrokenText.size()) {
+		if (font != LastBreakFont)
+			updateText();
 
-		if (font)
+		core::rect<s32> r = frameRect;
+		s32 height_line = font->getDimension(L"A").Height + font->getKerningHeight();
+		s32 height_total = height_line * BrokenText.size();
+		if (VAlign == EGUIA_CENTER && WordWrap)
 		{
-			if (!WordWrap)
+			r.UpperLeftCorner.Y = r.getCenter().Y - (height_total / 2);
+		}
+		else if (VAlign == EGUIA_LOWERRIGHT)
+		{
+			r.UpperLeftCorner.Y = r.LowerRightCorner.Y - height_total;
+		}
+		if (HAlign == EGUIA_LOWERRIGHT)
+		{
+			r.UpperLeftCorner.X = r.LowerRightCorner.X -
+				getTextWidth();
+		}
+
+		irr::video::SColor previous_color(255, 255, 255, 255);
+		for (const EnrichedString &str : BrokenText) {
+			if (HAlign == EGUIA_LOWERRIGHT)
 			{
-				// TODO: add colors here
-				if (VAlign == EGUIA_LOWERRIGHT)
-				{
-					frameRect.UpperLeftCorner.Y = frameRect.LowerRightCorner.Y -
-						font->getDimension(L"A").Height - font->getKerningHeight();
-				}
-				if (HAlign == EGUIA_LOWERRIGHT)
-				{
-					frameRect.UpperLeftCorner.X = frameRect.LowerRightCorner.X -
-						font->getDimension(cText.c_str()).Width;
-				}
+				r.UpperLeftCorner.X = frameRect.LowerRightCorner.X -
+					font->getDimension(str.c_str()).Width;
+			}
+
+			//str = colorizeText(BrokenText[i].c_str(), colors, previous_color);
+			//if (!colors.empty())
+			//	previous_color = colors[colors.size() - 1];
 
 #if USE_FREETYPE
-				if (font->getType() == irr::gui::EGFT_CUSTOM) {
-					irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
-					tmp->draw(Text, frameRect,
-						OverrideColorEnabled ? OverrideColor :
-							skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
-						HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
-						(RestrainTextInside ? &AbsoluteClippingRect : NULL));
-				} else
+			if (font->getType() == irr::gui::EGFT_CUSTOM) {
+				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
+				tmp->draw(str,
+					r, previous_color, // FIXME
+					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
+					(RestrainTextInside ? &AbsoluteClippingRect : NULL));
+			} else
 #endif
-				{
-					font->draw(Text.c_str(), frameRect,
-						skin->getColor(EGDC_BUTTON_TEXT),
-						HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
-						(RestrainTextInside ? &AbsoluteClippingRect : NULL));
-				}
-			}
-			else
 			{
-				if (font != LastBreakFont)
-					breakText();
-
-				core::rect<s32> r = frameRect;
-				s32 height = font->getDimension(L"A").Height + font->getKerningHeight();
-				s32 totalHeight = height * BrokenText.size();
-				if (VAlign == EGUIA_CENTER)
-				{
-					r.UpperLeftCorner.Y = r.getCenter().Y - (totalHeight / 2);
-				}
-				else if (VAlign == EGUIA_LOWERRIGHT)
-				{
-					r.UpperLeftCorner.Y = r.LowerRightCorner.Y - totalHeight;
-				}
-
-				irr::video::SColor previous_color(255, 255, 255, 255);
-				for (u32 i=0; i<BrokenText.size(); ++i)
-				{
-					if (HAlign == EGUIA_LOWERRIGHT)
-					{
-						r.UpperLeftCorner.X = frameRect.LowerRightCorner.X -
-							font->getDimension(BrokenText[i].c_str()).Width;
-					}
-
-					EnrichedString str = BrokenText[i];
-
-					//str = colorizeText(BrokenText[i].c_str(), colors, previous_color);
-					//if (!colors.empty())
-					//	previous_color = colors[colors.size() - 1];
-
-#if USE_FREETYPE
-					if (font->getType() == irr::gui::EGFT_CUSTOM) {
-						irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
-						tmp->draw(str,
-							r, previous_color, // FIXME
-							HAlign == EGUIA_CENTER, false,
-							(RestrainTextInside ? &AbsoluteClippingRect : NULL));
-					} else
-#endif
-					{
-						// Draw non-colored text
-						font->draw(str.c_str(),
-							r, skin->getColor(EGDC_BUTTON_TEXT),
-							HAlign == EGUIA_CENTER, false,
-							(RestrainTextInside ? &AbsoluteClippingRect : NULL));
-					}
-
-
-					r.LowerRightCorner.Y += height;
-					r.UpperLeftCorner.Y += height;
-				}
+				// Draw non-colored text
+				font->draw(str.c_str(),
+					r, str.getDefaultColor(), // TODO: Implement colorization
+					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER,
+					(RestrainTextInside ? &AbsoluteClippingRect : NULL));
 			}
+
+
+			r.LowerRightCorner.Y += height_line;
+			r.UpperLeftCorner.Y += height_line;
 		}
 	}
 
@@ -201,7 +153,7 @@ void StaticText::setOverrideFont(IGUIFont* font)
 	if (OverrideFont)
 		OverrideFont->grab();
 
-	breakText();
+	updateText();
 }
 
 //! Gets the override font (if any)
@@ -224,16 +176,15 @@ IGUIFont* StaticText::getActiveFont() const
 //! Sets another color for the text.
 void StaticText::setOverrideColor(video::SColor color)
 {
-	OverrideColor = color;
-	OverrideColorEnabled = true;
+	ColoredText.setDefaultColor(color);
+	updateText();
 }
 
 
 //! Sets another color for the text.
 void StaticText::setBackgroundColor(video::SColor color)
 {
-	BGColor = color;
-	OverrideBGColorEnabled = true;
+	ColoredText.setBackground(color);
 	Background = true;
 }
 
@@ -248,7 +199,10 @@ void StaticText::setDrawBackground(bool draw)
 //! Gets the background color
 video::SColor StaticText::getBackgroundColor() const
 {
-	return BGColor;
+	IGUISkin *skin = Environment->getSkin();
+
+	return (ColoredText.hasBackground() || !skin) ?
+		ColoredText.getBackground() : skin->getColor(gui::EGDC_3D_FACE);
 }
 
 
@@ -298,7 +252,7 @@ const video::SColor& StaticText::getOverrideColor() const
 video::SColor StaticText::getOverrideColor() const
 #endif
 {
-	return OverrideColor;
+	return ColoredText.getDefaultColor();
 }
 
 
@@ -306,13 +260,13 @@ video::SColor StaticText::getOverrideColor() const
 //! color in the gui skin.
 void StaticText::enableOverrideColor(bool enable)
 {
-	OverrideColorEnabled = enable;
+	// TODO
 }
 
 
 bool StaticText::isOverrideColorEnabled() const
 {
-	return OverrideColorEnabled;
+	return true;
 }
 
 
@@ -321,7 +275,7 @@ bool StaticText::isOverrideColorEnabled() const
 void StaticText::setWordWrap(bool enable)
 {
 	WordWrap = enable;
-	breakText();
+	updateText();
 }
 
 
@@ -336,7 +290,7 @@ void StaticText::setRightToLeft(bool rtl)
 	if (RightToLeft != rtl)
 	{
 		RightToLeft = rtl;
-		breakText();
+		updateText();
 	}
 }
 
@@ -348,12 +302,22 @@ bool StaticText::isRightToLeft() const
 
 
 //! Breaks the single text line.
-void StaticText::breakText()
+// Updates the font colors
+void StaticText::updateText()
 {
-	if (!WordWrap)
-		return;
-
+	const EnrichedString &cText = ColoredText;
 	BrokenText.clear();
+
+	if (cText.hasBackground()) {
+		setBackgroundColor(cText.getBackground());
+	}
+
+	if (!WordWrap) {
+		BrokenText.push_back(cText);
+		return;
+	}
+
+	// Update word wrap
 
 	IGUISkin* skin = Environment->getSkin();
 	IGUIFont* font = getActiveFont();
@@ -574,25 +538,20 @@ void StaticText::breakText()
 //! Sets the new caption of this element.
 void StaticText::setText(const wchar_t* text)
 {
-	setText(EnrichedString(text));
+	setText(EnrichedString(text, getOverrideColor()));
 }
 
-//! Sets the new caption of this element.
 void StaticText::setText(const EnrichedString &text)
 {
-	IGUIElement::setText(text.c_str());
-	cText = text;
-	if (text.hasBackground()) {
-		setBackgroundColor(text.getBackground());
-	}
-	breakText();
+	ColoredText = text;
+	IGUIElement::setText(ColoredText.c_str());
+	updateText();
 }
-
 
 void StaticText::updateAbsolutePosition()
 {
 	IGUIElement::updateAbsolutePosition();
-	breakText();
+	updateText();
 }
 
 
@@ -603,39 +562,31 @@ s32 StaticText::getTextHeight() const
 	if (!font)
 		return 0;
 
-	s32 height = font->getDimension(L"A").Height + font->getKerningHeight();
-
-	if (WordWrap)
-		height *= BrokenText.size();
-
-	return height;
+	if (WordWrap) {
+		s32 height = font->getDimension(L"A").Height + font->getKerningHeight();
+		return height * BrokenText.size();
+	}
+	// There may be intentional new lines without WordWrap
+	return font->getDimension(BrokenText[0].c_str()).Height;
 }
 
 
 s32 StaticText::getTextWidth() const
 {
-	IGUIFont * font = getActiveFont();
-	if(!font)
+	IGUIFont *font = getActiveFont();
+	if (!font)
 		return 0;
 
-	if(WordWrap)
-	{
-		s32 widest = 0;
+	s32 widest = 0;
 
-		for(u32 line = 0; line < BrokenText.size(); ++line)
-		{
-			s32 width = font->getDimension(BrokenText[line].c_str()).Width;
+	for (const EnrichedString &line : BrokenText) {
+		s32 width = font->getDimension(line.c_str()).Width;
 
-			if(width > widest)
-				widest = width;
-		}
-
-		return widest;
+		if (width > widest)
+			widest = width;
 	}
-	else
-	{
-		return font->getDimension(cText.c_str()).Width;
-	}
+
+	return widest;
 }
 
 
@@ -647,14 +598,14 @@ void StaticText::serializeAttributes(io::IAttributes* out, io::SAttributeReadWri
 	IGUIStaticText::serializeAttributes(out,options);
 
 	out->addBool	("Border",              Border);
-	out->addBool	("OverrideColorEnabled",OverrideColorEnabled);
-	out->addBool	("OverrideBGColorEnabled",OverrideBGColorEnabled);
+	out->addBool	("OverrideColorEnabled",true);
+	out->addBool	("OverrideBGColorEnabled",ColoredText.hasBackground());
 	out->addBool	("WordWrap",		WordWrap);
 	out->addBool	("Background",          Background);
 	out->addBool	("RightToLeft",         RightToLeft);
 	out->addBool	("RestrainTextInside",  RestrainTextInside);
-	out->addColor	("OverrideColor",       OverrideColor);
-	out->addColor	("BGColor",       	BGColor);
+	out->addColor	("OverrideColor",       ColoredText.getDefaultColor());
+	out->addColor	("BGColor",       	ColoredText.getBackground());
 	out->addEnum	("HTextAlign",          HAlign, GUIAlignmentNames);
 	out->addEnum	("VTextAlign",          VAlign, GUIAlignmentNames);
 
@@ -668,14 +619,14 @@ void StaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWr
 	IGUIStaticText::deserializeAttributes(in,options);
 
 	Border = in->getAttributeAsBool("Border");
-	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled"));
-	OverrideBGColorEnabled = in->getAttributeAsBool("OverrideBGColorEnabled");
 	setWordWrap(in->getAttributeAsBool("WordWrap"));
 	Background = in->getAttributeAsBool("Background");
 	RightToLeft = in->getAttributeAsBool("RightToLeft");
 	RestrainTextInside = in->getAttributeAsBool("RestrainTextInside");
-	OverrideColor = in->getAttributeAsColor("OverrideColor");
-	BGColor = in->getAttributeAsColor("BGColor");
+	if (in->getAttributeAsBool("OverrideColorEnabled"))
+		ColoredText.setDefaultColor(in->getAttributeAsColor("OverrideColor"));
+	if (in->getAttributeAsBool("OverrideBGColorEnabled"))
+		ColoredText.setBackground(in->getAttributeAsColor("BGColor"));
 
 	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
                       (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));

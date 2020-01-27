@@ -196,6 +196,7 @@ src/gui/mainmenumanager.h
 src/gui/modalMenu.h
 src/guiscalingfilter.cpp
 src/guiscalingfilter.h
+src/gui/StyleSpec.h
 src/gui/touchscreengui.cpp
 src/httpfetch.cpp
 src/hud.cpp
