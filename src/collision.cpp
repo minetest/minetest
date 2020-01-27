@@ -415,12 +415,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		Collision uncertainty radius
 		Make it a bit larger than the maximum distance of movement
 	*/
-	f32 d = pos_max_d * 1.1f;
-	// A fairly large value in here makes moving smoother
-	//f32 d = 0.15*BS;
+	//f32 d = pos_max_d * 1.1f;
 
-	// This should always apply, otherwise there are glitches
-	assert(d > pos_max_d);	// invariant
+	f32 d = 0.01f;	// Temporary fix, any nonzero d causes collision glitches, the more the greater it is.
+	// ultimately it has to be determined if any uncertainty is involved, and if it is, eliminated
+	// and d & pos_max_d params removed from function calls.
 
 	int loopcount = 0;
 
