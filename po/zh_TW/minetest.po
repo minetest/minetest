@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2020-01-29 13:50+0000\n"
+"Last-Translator: pan93412 <pan93412@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.11-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -20,12 +20,11 @@ msgstr "重生"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "您已經死亡"
+msgstr "您已死亡"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "在 Lua 指令稿中發生錯誤，如 mod："
+msgstr "Lua 指令稿發生錯誤："
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -61,11 +60,11 @@ msgstr "伺服器強制協定版本 $1。 "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "伺服器支援協定版本 $1 到 $2 "
+msgstr "伺服器支援協定版本 $1 到 $2。 "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr "嘗試重新啟用公共伺服器清單並檢查您的網際網路連線。"
+msgstr "請嘗試重新啟用公共伺服器清單並檢查您的網際網路連線。"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -87,63 +86,57 @@ msgstr "取消"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr "依賴："
+msgstr "相依元件："
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "停用全部"
+msgstr "全部停用"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "已停用 Mod包"
+msgstr "停用 Mod 包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "啟用全部"
+msgstr "全部啟用"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "重新命名 Mod 包"
+msgstr "啟用 Mod 包"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
-msgstr ""
-"啟用 mod 「$1」 失敗，因為其包含了不合法的字元。只有 字元 [a-z0-9_] 才是可用"
-"的。"
+msgstr "無法啟用 Mod「$1」，因為其包含了不允許的字元。只能有 [a-z0-9_] 字元。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Mod："
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "選用的相依元件:"
+msgstr "沒有 (選用的) 相依元件"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "找不到 mod 描述。"
+msgstr "未提供遊戲描述。"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "無相依元件。"
+msgstr "沒有強制相依元件"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "找不到 mod 描述。"
+msgstr "未提供 Mod 包描述。"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "選用的相依元件:"
+msgstr "沒有可選相依元件"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "選用的相依元件:"
+msgstr "可選相依元件："
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -164,20 +157,19 @@ msgstr "所有套件"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
-msgstr "Back"
+msgstr "返回"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "主選單"
+msgstr "返回主選單"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading and installing $1, please wait..."
-msgstr "正在下載 $1，請稍候……"
+msgstr "正在下載並安裝 $1，請稍候……"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download $1"
-msgstr "安裝 $1 到 $2 失敗"
+msgstr "無法下載 $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -191,15 +183,15 @@ msgstr "安裝"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "Mods"
+msgstr "Mod"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr "無法取得任何套件"
+msgstr "無法取得套件"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr "沒有搜尋到任何項目"
+msgstr "無結果"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
@@ -207,14 +199,12 @@ msgid "Search"
 msgstr "搜尋"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Texture packs"
 msgstr "材質包"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Uninstall"
-msgstr "安裝"
+msgstr "解除安裝"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
@@ -229,9 +219,8 @@ msgid "Create"
 msgstr "建立"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "從 minetest.net 下載一個子遊戲，像是 minetest_game"
+msgstr "從 minetest.net 下載遊戲，例如 Minetest Game"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -246,9 +235,8 @@ msgid "Mapgen"
 msgstr "地圖產生器"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "No game selected"
-msgstr "選擇範圍"
+msgstr "未選擇遊戲"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -261,16 +249,15 @@ msgstr "警告：最小化的開發測試僅供開發者使用。"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr "世界遊戲"
+msgstr "世界名稱"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "You have no games installed."
-msgstr "您沒有安裝子遊戲。"
+msgstr "您未安裝遊戲。"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "您確定您要刪除「$1」嗎？"
+msgstr "您確定要刪除「$1」嗎？"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
@@ -279,18 +266,16 @@ msgid "Delete"
 msgstr "刪除"
 
 #: builtin/mainmenu/dlg_delete_content.lua
-#, fuzzy
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "Mod 管理員：刪除「$1」失敗"
+msgstr "pkgmgr：無法刪除「$1」"
 
 #: builtin/mainmenu/dlg_delete_content.lua
-#, fuzzy
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "Mod 管理員：無效的 mod 路徑「$1」"
+msgstr "pkgmgr：「%1」路徑無效"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "刪除世界「$1」？"
+msgstr "刪除「$1」世界？"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -304,18 +289,15 @@ msgstr "重新命名 Mod 包："
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
-msgstr ""
-"這個Mod包有給定一個明確的名稱在它所屬的 modpack.conf 之中，可以在該檔案中複寫"
-"Mod包的名稱。"
+msgstr "這個 Mod 包有在其 modpack.conf 提供明確的名稱，會覆蓋此處的重新命名。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr "（這個設定沒有描述可用）"
+msgstr "（未提供設定描述）"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "2D Noise"
-msgstr "噪音"
+msgstr "2D 雜訊值"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -340,11 +322,12 @@ msgstr "已啟用"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "Lacunarity"
-msgstr "安全"
+msgstr "Lacunarity"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Octaves"
-msgstr ""
+msgstr "倍頻程"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
@@ -353,7 +336,7 @@ msgstr "補償"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "Persistance"
-msgstr "玩家傳送距離"
+msgstr "暫留"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -365,21 +348,19 @@ msgstr "請輸入有效的數字。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "恢復預設值"
+msgstr "還原至預設值"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
 msgstr "規模"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select directory"
-msgstr "地圖目錄"
+msgstr "選擇目錄"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select file"
-msgstr "選取 Mod 檔案："
+msgstr "選擇檔案"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -387,156 +368,135 @@ msgstr "顯示技術名稱"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr "值必須大於 $1。"
+msgstr "數值必須大於 $1。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr "值必須小於 $1。"
+msgstr "數值必須小於 $1。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "X 點差"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Y 點差"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Z 點差"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "絕對值"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "defaults"
-msgstr "預設遊戲"
+msgstr "預設值"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "緩解 (eased)"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 (Enabled)"
-msgstr "已啟用"
+msgstr "$1（已啟用）"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr "3D 模式"
+msgstr "$1 個 Mod"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr "安裝 $1 到 $2 失敗"
+msgstr "無法安裝 $1 至 $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "安裝 Mod：找不到 $1 的真實 mod 名稱"
+msgstr "安裝 Mod：找不到下述項目的真實 Mod 名稱：$1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
-msgstr "安裝 Mod：找不到 mod 包 $1 適合的資料夾名稱"
+msgstr "安裝 Mod：找不到 $1 Mod 包適合的資料夾名稱"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr ""
-"\n"
-"安裝 Mod：不支援的檔案類型「$1」或是損毀的壓縮檔"
+msgstr "安裝：「%1」檔案類型不支援，或是封存檔損壞"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: file: \"$1\""
-msgstr "安裝 Mod：檔案「$1」"
+msgstr "安裝：檔案：「$1」"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod or modpack"
-msgstr "安裝 Mod：找不到 mod 包 $1 適合的資料夾名稱"
+msgstr "找不到有效的 Mod 或 Mod 包"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a texture pack"
-msgstr "安裝 $1 到 $2 失敗"
+msgstr "無法將 $1 安裝為材質包"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a game as a $1"
-msgstr "安裝 $1 到 $2 失敗"
+msgstr "無法將遊戲安裝為 $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a mod as a $1"
-msgstr "安裝 $1 到 $2 失敗"
+msgstr "無法將 Mod 安裝為 $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a modpack as a $1"
-msgstr "安裝 $1 到 $2 失敗"
+msgstr "無法將 Mod 包安裝為 $1"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "瀏覽線上內容"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content"
-msgstr "繼續"
+msgstr "內容"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Disable Texture Pack"
-msgstr "選取材質包："
+msgstr "停用材質包"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Information:"
-msgstr "Mod 資訊："
+msgstr "資訊："
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Installed Packages:"
-msgstr "已安裝的 Mod："
+msgstr "已安裝套件："
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
 msgstr "無相依元件。"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "No package description available"
-msgstr "找不到 mod 描述"
+msgstr "沒有可用的套件描述"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
 msgstr "重新命名"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Uninstall Package"
-msgstr "解除安裝已選取的 mod"
+msgstr "解除安裝套件"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Use Texture Pack"
-msgstr "材質包"
+msgstr "使用材質包"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -592,19 +552,19 @@ msgstr "名稱／密碼"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr "新"
+msgstr "新增"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr "未有已建立或已選取的世界！"
+msgstr "未建立或選取世界！"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr "玩遊戲"
+msgstr "遊玩遊戲"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
-msgstr "埠"
+msgstr "連線埠"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -615,13 +575,12 @@ msgid "Server Port"
 msgstr "伺服器埠"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Start Game"
-msgstr "主持遊戲"
+msgstr "開始遊戲"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr "地址／埠"
+msgstr "地址／連線埠"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
@@ -641,12 +600,11 @@ msgstr "刪除收藏"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
-msgstr "最愛"
+msgstr "收藏"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Join Game"
-msgstr "主持遊戲"
+msgstr "加入遊戲"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
@@ -677,9 +635,8 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "設定"
+msgstr "所有設定"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -687,12 +644,11 @@ msgstr "反鋸齒："
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "您確定要要重置您的單人遊戲世界嗎？"
+msgstr "您確定要重設您的單人遊戲世界嗎？"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Autosave Screen Size"
-msgstr "自動儲存視窗大小"
+msgstr "自動儲存螢幕大小"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -715,9 +671,8 @@ msgid "Fancy Leaves"
 msgstr "華麗葉子"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Generate Normal Maps"
-msgstr "生成一般地圖"
+msgstr "產生一般地圖"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -733,11 +688,11 @@ msgstr "否"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr "無過濾器"
+msgstr "沒有過濾器"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr "無 Mip 貼圖"
+msgstr "沒有 Mip 貼圖"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
@@ -745,7 +700,7 @@ msgstr "突顯節點"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr "突顯節點"
+msgstr "加入節點外框"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
@@ -769,7 +724,7 @@ msgstr "粒子"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Reset singleplayer world"
-msgstr "重置單人遊戲世界"
+msgstr "重設單人遊戲世界"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
@@ -785,7 +740,7 @@ msgstr "著色器"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr ""
+msgstr "著色器（無法使用）"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
@@ -808,9 +763,8 @@ msgid "Tone Mapping"
 msgstr "色調映射"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touchthreshold: (px)"
-msgstr "碰觸限值（像素）"
+msgstr "觸控閾值：（像素）"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -821,9 +775,8 @@ msgid "Waving Leaves"
 msgstr "葉子擺動"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "擺動節點"
+msgstr "擺動液體"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -835,7 +788,7 @@ msgstr "是"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr "設定 mod"
+msgstr "設定 Mod"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
@@ -867,7 +820,7 @@ msgstr "正在載入材質..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "正在重新構建著色器..."
+msgstr "正在重新組建著色器..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -879,7 +832,7 @@ msgstr "找不到或無法載入遊戲 \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr "無效的遊戲規格。"
+msgstr "遊戲規格無效。"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -895,11 +848,11 @@ msgstr "玩家名稱太長。"
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr "請選擇名字!"
+msgstr "請選擇名稱！"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "無法開啟提供的密碼檔案： "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -935,7 +888,7 @@ msgstr "- 模式： "
 
 #: src/client/game.cpp
 msgid "- Port: "
-msgstr "- 埠： "
+msgstr "- 連線埠： "
 
 #: src/client/game.cpp
 msgid "- Public: "
@@ -950,42 +903,36 @@ msgid "- Server Name: "
 msgstr "- 伺服器名稱： "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
-msgstr "前進鍵"
+msgstr "已停用自動前進"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward enabled"
-msgstr "前進鍵"
+msgstr "已啟用自動前進"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update disabled"
-msgstr "攝影機切換更新按鍵"
+msgstr "已停用相機更新"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update enabled"
-msgstr "攝影機切換更新按鍵"
+msgstr "已啟用相機更新"
 
 #: src/client/game.cpp
 msgid "Change Password"
 msgstr "變更密碼"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode disabled"
-msgstr "電影模式按鍵"
+msgstr "已停用電影模式"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode enabled"
-msgstr "電影模式按鍵"
+msgstr "已啟用電影模式"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr ""
+msgstr "已停用用戶端指令稿"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
@@ -1030,7 +977,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr "正在建立客戶端..."
+msgstr "正在建立用戶端..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
@@ -1038,16 +985,15 @@ msgstr "正在建立伺服器..."
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "已隱藏除錯資訊及分析圖"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Debug info shown"
-msgstr "除錯資訊切換按鍵"
+msgstr "已顯示除錯資訊"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
+msgstr "已隱藏除錯資訊、分析圖及線框"
 
 #: src/client/game.cpp
 msgid ""
@@ -1079,19 +1025,19 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "已停用無限視野"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "已啟用無限視野"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr "離開到選單"
+msgstr "離開，回到選單"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr "離開到作業系統"
+msgstr "離開，回到作業系統"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
@@ -1103,7 +1049,7 @@ msgstr "已啟用快速模式"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr ""
+msgstr "已啟用快速模式（註：沒有「fast」權限）"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
@@ -1115,17 +1061,15 @@ msgstr "已啟用飛行模式"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr ""
+msgstr "已啟用飛行模式（註：沒有「fly」權限）"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog disabled"
-msgstr "若停用 "
+msgstr "已停用霧氣"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled"
-msgstr "已啟用"
+msgstr "已啟用霧氣"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1141,11 +1085,11 @@ msgstr "正在主持伺服器"
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr "物品定義..."
+msgstr "定義物品..."
 
 #: src/client/game.cpp
 msgid "KiB/s"
-msgstr "KiB/s"
+msgstr "KiB/秒"
 
 #: src/client/game.cpp
 msgid "Media..."
@@ -1153,53 +1097,51 @@ msgstr "媒體..."
 
 #: src/client/game.cpp
 msgid "MiB/s"
-msgstr "MiB/s"
+msgstr "MiB/秒"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
+msgstr "迷你地圖目前已被遊戲或 Mod 停用"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Minimap hidden"
-msgstr "迷你地圖按鍵"
+msgstr "已隱藏迷你地圖"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
+msgstr "雷達模式的迷你地圖，放大 1 倍"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
+msgstr "雷達模式的迷你地圖，放大 2 倍"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
+msgstr "雷達模式的迷你地圖，放大 4 倍"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
+msgstr "表面模式的迷你地圖，放大 1 倍"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
+msgstr "表面模式的迷你地圖，放大 2 倍"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x4"
-msgstr ""
+msgstr "表面模式的迷你地圖，放大 4 倍"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "已停用穿牆模式"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Noclip mode enabled"
-msgstr "已啟用傷害"
+msgstr "已啟用穿牆模式"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
+msgstr "已啟用穿牆模式（註：沒有「noclip」權限）"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1215,15 +1157,15 @@ msgstr "開啟"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr ""
+msgstr "已停用 Pitch 移動模式"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr ""
+msgstr "已啟用 Pitch 移動模式"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
-msgstr ""
+msgstr "已顯示分析圖"
 
 #: src/client/game.cpp
 msgid "Remote server"
@@ -1235,7 +1177,7 @@ msgstr "正在解析地址……"
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr "關閉..."
+msgstr "正在關閉..."
 
 #: src/client/game.cpp
 msgid "Singleplayer"
@@ -1246,86 +1188,81 @@ msgid "Sound Volume"
 msgstr "音量"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound muted"
-msgstr "音量"
+msgstr "已靜音"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound unmuted"
-msgstr "音量"
+msgstr "已取消靜音"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d"
-msgstr "音量已調整為%d%%"
+msgstr "已調整視野至 %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "視野已為最大值：%d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr ""
+msgstr "視野已為最小值：%d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Volume changed to %d%%"
-msgstr "音量已調整為%d%%"
+msgstr "音量已調整為 %d%%"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr ""
+msgstr "已顯示線框"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr ""
+msgstr "遠近調整目前已被遊戲或模組停用"
 
 #: src/client/game.cpp src/gui/modalMenu.cpp
 msgid "ok"
 msgstr "確定"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat hidden"
-msgstr "聊天按鍵"
+msgstr "隱藏聊天室"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "顯示聊天室"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
-msgstr ""
+msgstr "已隱藏 HUD"
 
 #: src/client/gameui.cpp
 msgid "HUD shown"
-msgstr ""
+msgstr "已顯示 HUD"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Profiler hidden"
-msgstr "分析器"
+msgstr "已隱藏分析器"
 
 #: src/client/gameui.cpp
 #, c-format
 msgid "Profiler shown (page %d of %d)"
-msgstr ""
+msgstr "已顯示分析器（第 %d 頁，共 %d 頁）"
 
 #: src/client/keycode.cpp
 msgid "Apps"
 msgstr "應用程式"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Backspace"
-msgstr "Back"
+msgstr "退格鍵"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
-msgstr "Caps Lock"
+msgstr "大寫鎖定鍵"
 
 #: src/client/keycode.cpp
 msgid "Clear"
@@ -1369,7 +1306,7 @@ msgstr "轉換 IME"
 
 #: src/client/keycode.cpp
 msgid "IME Escape"
-msgstr "逃脫 IME"
+msgstr "跳脫 IME"
 
 #: src/client/keycode.cpp
 msgid "IME Mode Change"
@@ -1393,19 +1330,19 @@ msgstr "左鍵"
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr "左邊 Control"
+msgstr "左 Control"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
-msgstr "左邊選單鍵"
+msgstr "左選單鍵"
 
 #: src/client/keycode.cpp
 msgid "Left Shift"
-msgstr "左邊 Shift"
+msgstr "左 Shift"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr "左方視窗"
+msgstr "左 Windows 鍵"
 
 #: src/client/keycode.cpp
 msgid "Menu"
@@ -1417,7 +1354,7 @@ msgstr "中鍵"
 
 #: src/client/keycode.cpp
 msgid "Num Lock"
-msgstr "Num Lock"
+msgstr "數字鎖定鍵"
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
@@ -1433,7 +1370,7 @@ msgstr "數字鍵 -"
 
 #: src/client/keycode.cpp
 msgid "Numpad ."
-msgstr "數字鍵臺。"
+msgstr "數字鍵 ."
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
@@ -1485,11 +1422,11 @@ msgstr "OEM 清除"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "Page down"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "Page up"
 
 #: src/client/keycode.cpp
 msgid "Pause"
@@ -1497,7 +1434,7 @@ msgstr "暫停"
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr "玩"
+msgstr "遊玩"
 
 #: src/client/keycode.cpp
 msgid "Print"
@@ -1517,23 +1454,23 @@ msgstr "右鍵"
 
 #: src/client/keycode.cpp
 msgid "Right Control"
-msgstr "右邊 Control"
+msgstr "右 Control"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
-msgstr "右邊選單鍵"
+msgstr "右選單鍵"
 
 #: src/client/keycode.cpp
 msgid "Right Shift"
-msgstr "右邊 Shift"
+msgstr "右 Shift"
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr "右方視窗"
+msgstr "右 Windows 鍵"
 
 #: src/client/keycode.cpp
 msgid "Scroll Lock"
-msgstr "Scroll Lock"
+msgstr "捲動鎖定鍵"
 
 #: src/client/keycode.cpp
 msgid "Select"
@@ -1549,11 +1486,11 @@ msgstr "睡眠"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
-msgstr "螢幕截圖"
+msgstr "快照"
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr "Space"
+msgstr "空白鍵"
 
 #: src/client/keycode.cpp
 msgid "Tab"
@@ -1573,7 +1510,7 @@ msgstr "X 按鈕 2"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Zoom"
-msgstr "縮放"
+msgstr "遠近調整"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -1581,7 +1518,7 @@ msgstr "密碼不符合！"
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr ""
+msgstr "註冊並加入"
 
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
@@ -1592,33 +1529,33 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
+"您第一次使用「%s」名稱加入這個伺服器。\n"
+"如您繼續，即會在這台伺服器使用你的憑證建立新帳戶。\n"
+"請重新輸入您的密碼，後按下「註冊並加入」確認帳戶建立，或按「取消」中止。"
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr "開始"
+msgstr "繼續"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Special\" = climb down"
-msgstr "「使用」=向下攀爬"
+msgstr "\"Special\" = 向下攀爬"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Autoforward"
-msgstr "前進"
+msgstr "自動前進"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
-msgstr ""
+msgstr "自動跳躍"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "後退"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Change camera"
-msgstr "變更按鍵"
+msgstr "變更相機"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1633,9 +1570,8 @@ msgid "Console"
 msgstr "終端機"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Dec. range"
-msgstr "視野"
+msgstr "降低視野"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1654,9 +1590,8 @@ msgid "Forward"
 msgstr "前進"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Inc. range"
-msgstr "視野"
+msgstr "提高視野"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
@@ -1672,7 +1607,7 @@ msgstr "跳躍"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr "此按鍵已被使用"
+msgstr "已使用此按鍵"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -1688,7 +1623,7 @@ msgstr "靜音"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
-msgstr "下一個項目"
+msgstr "下一個物品"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
@@ -1700,7 +1635,7 @@ msgstr "選擇範圍"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Screenshot"
-msgstr "螢幕截圖"
+msgstr "螢幕擷取"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
@@ -1708,44 +1643,39 @@ msgstr "潛行"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Special"
-msgstr ""
+msgstr "特殊"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle HUD"
-msgstr "切換飛行"
+msgstr "切換 HUD"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle chat log"
-msgstr "切換快速"
+msgstr "切換聊天記錄"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "切換快速"
+msgstr "切換快速模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr "切換飛行"
+msgstr "切換飛行模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle fog"
-msgstr "切換飛行"
+msgstr "切換霧氣"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle minimap"
-msgstr "切換無省略"
+msgstr "切換迷你地圖"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "切換無省略"
+msgstr "切換穿牆模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "切換快速"
+msgstr "切換 Pitch 移動模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1772,9 +1702,8 @@ msgid "Exit"
 msgstr "離開"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy
 msgid "Muted"
-msgstr "靜音"
+msgstr "已靜音"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
@@ -1793,13 +1722,16 @@ msgid ""
 "(Android) Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
+"(Android) 修正虛擬搖桿的位置。\n"
+"如停用，虛擬搖桿將會置中於第一個觸碰的位置。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "(Android) Use virtual joystick to trigger \"aux\" button.\n"
 "If enabled, virtual joystick will also tap \"aux\" button when out of main "
 "circle."
-msgstr ""
+msgstr "(Android) 使用虛擬搖桿觸發 \"aux\" 按鍵。\n"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1839,31 +1771,33 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
-msgstr ""
+msgstr "控制山脊之形狀或大小的 2D 雜訊值。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr ""
+msgstr "控制波狀丘陵地之形狀或大小的 2D 雜訊值。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "2D noise that controls the shape/size of step mountains."
-msgstr ""
+msgstr "控制 Step mountains 之形狀或大小的 2D 雜訊值。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr ""
+msgstr "控制山脊範圍之大小或產狀的 2D 雜訊值。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of rolling hills."
-msgstr ""
+msgstr "控制波狀丘陵地之大小或產狀的 2D 雜訊值。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
-msgstr ""
+msgstr "控制 Step mountains 範圍之形狀或大小的 2D 雜訊值。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that locates the river valleys and channels."
-msgstr ""
+msgstr "定位河谷及河道的 2D 雜訊值。"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1875,35 +1809,33 @@ msgstr "3D 模式"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
-msgstr "產生大型洞穴時用的雜訊值。"
+msgstr "定義大型洞穴時用的雜訊值。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "3D noise defining mountain structure and height.\n"
 "Also defines structure of floatland mountain terrain."
 msgstr ""
-"產生高山結構與高度時用的雜訊值。\n"
-"同時用來產生空島山地形結構。"
+"定義高山結構與高度所用的 3D 雜訊值。\n"
+"同時用來定義空島山地形結構。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
-msgstr "產生河流峽谷時用的雜訊值。"
+msgstr "定義河流峽谷結構所用的 3D 雜訊值。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D noise defining terrain."
-msgstr "產生大型洞穴時用的雜訊值。"
+msgstr "定義地形所用的 3D 雜訊值。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
-msgstr ""
+msgstr "懸空、懸崖等山丘的 3D 雜訊值。通常是小變異。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr ""
+msgstr "決定每個地圖區塊中地城數量的 3D 雜訊值。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1918,12 +1850,14 @@ msgid ""
 msgstr ""
 "3D 支援。\n"
 "目前已支援：\n"
-"-    無：無 3D 輸出。\n"
-"-    浮雕：青色／品紅色彩色 3D。\n"
-"-    交錯的：基於偏振螢幕的奇／偶行支援。\n"
-"-    頂底：將螢幕分離為頂部／底部。\n"
-"-    一邊一個：將螢幕分離為一邊一個。\n"
-"-    翻頁：基於四重緩衝的 3D。"
+"-    none：無 3D 輸出。\n"
+"-    anaglyph：青色／品紅色彩色 3D。\n"
+"-    interlaced：基於偏振螢幕的奇／偶行支援。\n"
+"-    topbottom：將螢幕分成頂／底部。\n"
+"-    sidebyside：將螢幕分離為一邊一個。\n"
+"-    crossview: 鬥雞眼式 3D\n"
+"-    pageflip：基於四重緩衝的 3D。\n"
+"註：interlaced 模式需要啟用著色器。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1935,16 +1869,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr "當伺服器當機時要顯示在所有客戶端上的訊息。"
+msgstr "當伺服器當機時要顯示在所有用戶端上的訊息。"
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr "當伺服器關機時要顯示在所有客戶端上的訊息。"
+msgstr "當伺服器關機時要顯示在所有用戶端上的訊息。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ABM interval"
-msgstr "地圖儲存間隔"
+msgstr "ABM 間隔"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
@@ -1952,18 +1885,17 @@ msgstr "發生佇列的絕對限制"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr "在空氣中的加速"
+msgstr "空氣中的加速度"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "每秒中每秒節點的重力加速度。"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
 msgstr "活動區塊調整器"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active block management interval"
 msgstr "活動區塊管理間隔"
 
@@ -1973,7 +1905,7 @@ msgstr "活動區塊範圍"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr "活動目標發送範圍"
+msgstr "活動目標傳送範圍"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2009,13 +1941,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Altitude chill"
-msgstr "高度寒冷"
+msgstr "寒冷海拔"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr "總是啟用飛行與快速"
+msgstr "總是啟用飛行與快速模式"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2023,12 +1954,11 @@ msgstr "環境遮蔽光"
 
 #: src/settings_translation_file.cpp
 msgid "Amount of messages a player may send per 10 seconds."
-msgstr ""
+msgstr "玩家每 10 秒能傳送的訊息量"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Amplifies the valleys."
-msgstr "放大山谷"
+msgstr "放大山谷。"
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -2039,31 +1969,32 @@ msgid "Announce server"
 msgstr "公佈伺服器"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Announce to this serverlist."
-msgstr "公佈伺服器"
+msgstr "公佈至此伺服器清單。"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
-msgstr ""
+msgstr "將物品名稱加至末尾"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name to tooltip."
-msgstr ""
+msgstr "將物品名稱加至工具提示的末尾。"
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
-msgstr "蘋果樹噪音"
+msgstr "蘋果樹雜訊"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Arm inertia"
-msgstr ""
+msgstr "慣性手臂"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
-msgstr ""
+msgstr "慣性手臂，當相機移動時提供更加真實的手臂運動。"
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -2084,7 +2015,7 @@ msgid ""
 "optimization.\n"
 "Stated in mapblocks (16 nodes)."
 msgstr ""
-"在這樣的距離下，伺服器將積極最佳化那些要傳送給客戶端的方塊。\n"
+"在這樣的距離下，伺服器將積極最佳化那些要傳送給用戶端的方塊。\n"
 "較小的值可能會提升效能，但代價是一些可見的彩現問題。\n"
 "（有一些在水中與洞穴中的方塊將不會被彩現，以及有時在陸地上）\n"
 "將此值設定為大於 max_block_send_distance 將會停用這個最佳化。\n"
@@ -2137,11 +2068,11 @@ msgstr "基礎特權"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise"
-msgstr "海灘噪音"
+msgstr "海灘雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise threshold"
-msgstr "海灘噪音閾值"
+msgstr "海灘雜訊閾值"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -2153,11 +2084,11 @@ msgstr "綁定地址"
 
 #: src/settings_translation_file.cpp
 msgid "Biome API temperature and humidity noise parameters"
-msgstr "Biome API 溫度與濕度 噪音 參數"
+msgstr "Biome API 溫度與濕度 雜訊 參數"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
-msgstr "生物噪音"
+msgstr "生物雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
@@ -2222,15 +2153,15 @@ msgstr "攝影機切換更新按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
-msgstr "洞穴噪音"
+msgstr "洞穴雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr "洞穴噪音 #1"
+msgstr "洞穴雜訊 #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr "洞穴噪音 #2"
+msgstr "洞穴雜訊 #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
@@ -2238,11 +2169,11 @@ msgstr "洞穴寬度"
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
-msgstr "洞穴1噪音"
+msgstr "洞穴1 雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Cave2 noise"
-msgstr "洞穴2噪音"
+msgstr "洞穴2 雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern limit"
@@ -2250,7 +2181,7 @@ msgstr "洞穴極限"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr "洞穴噪音"
+msgstr "洞穴雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
@@ -2286,23 +2217,20 @@ msgid "Chat key"
 msgstr "聊天按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message count limit"
-msgstr "連線時的狀態訊息"
+msgstr "聊天訊息數上限"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message format"
-msgstr "連線時的狀態訊息"
+msgstr "聊天訊息格式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat message kick threshold"
-msgstr "沙漠噪音閾值"
+msgstr "聊天訊息踢出閾值"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
-msgstr ""
+msgstr "聊天訊息長度上限"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
@@ -2330,20 +2258,20 @@ msgstr "清除透明材質"
 
 #: src/settings_translation_file.cpp
 msgid "Client"
-msgstr "客戶端"
+msgstr "用戶端"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr "客戶端與伺服器"
+msgstr "用戶端與伺服器"
 
 #: src/settings_translation_file.cpp
 msgid "Client modding"
-msgstr "客戶端修改"
+msgstr "用戶端修改"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Client side modding restrictions"
-msgstr "客戶端修改"
+msgstr "用戶端修改"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
@@ -2363,7 +2291,7 @@ msgstr "雲朵"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr "雲朵是客戶端的特效。"
+msgstr "雲朵是用戶端的特效。"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -2519,7 +2447,7 @@ msgstr "除錯資訊切換按鍵"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Debug log file size threshold"
-msgstr "沙漠噪音閾值"
+msgstr "沙漠雜訊閾值"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -2644,12 +2572,12 @@ msgid ""
 "Delay between mesh updates on the client in ms. Increasing this will slow\n"
 "down the rate of mesh updates, thus reducing jitter on slower clients."
 msgstr ""
-"在客戶端上的網格間更新延遲，以毫秒為單位。增加它就會減慢\n"
-"網格更新速率，從而減少在較慢客戶端上的抖動。"
+"在用戶端上的網格間更新延遲，以毫秒為單位。增加它就會減慢\n"
+"網格更新速率，從而減少在較慢用戶端上的抖動。"
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr "建造后發送區塊前延遲的時間"
+msgstr "建造后傳送區塊前延遲的時間"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -2676,7 +2604,7 @@ msgstr "伺服器的描述，會在玩家加入時顯示，也會顯示在伺服
 
 #: src/settings_translation_file.cpp
 msgid "Desert noise threshold"
-msgstr "沙漠噪音閾值"
+msgstr "沙漠雜訊閾值"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2733,9 +2661,8 @@ msgid "Dungeon minimum Y"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "山噪音"
+msgstr "地城雜訊"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2748,7 +2675,7 @@ msgid ""
 "Enable Lua modding support on client.\n"
 "This support is experimental and API can change."
 msgstr ""
-"在客戶端上啟用 Lua 修改支援。\n"
+"在用戶端上啟用 Lua 修改支援。\n"
 "這個支援是實驗性的，且 API 可能會變動。"
 
 #: src/settings_translation_file.cpp
@@ -2807,8 +2734,8 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
-"啟用以讓舊的客戶端無法連線。\n"
-"較舊的客戶端在這個意義上相容，它們不會在連線至\n"
+"啟用以讓舊的用戶端無法連線。\n"
+"較舊的用戶端在這個意義上相容，它們不會在連線至\n"
 "新伺服器時當掉，但它們可能會不支援一些您預期會有的新功能。"
 
 #: src/settings_translation_file.cpp
@@ -2844,7 +2771,7 @@ msgid ""
 "Needs enable_ipv6 to be enabled."
 msgstr ""
 "啟用／停用執行 IPv6 伺服器。IPv6 伺服器可能會限制只有\n"
-"IPv6 客戶端才能連線，取決於系統設定。\n"
+"IPv6 用戶端才能連線，取決於系統設定。\n"
 "當 bind_address 被設定時將會被忽略。"
 
 #: src/settings_translation_file.cpp
@@ -2928,7 +2855,7 @@ msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
-msgstr "噪音係數"
+msgstr "雜訊係數"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing factor"
@@ -2990,8 +2917,7 @@ msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the\n"
 "Multiplayer Tab."
-msgstr ""
-"在 客戶端/伺服器清單/ 中的檔案包含了顯示在多人遊戲分頁中您最愛的伺服器。"
+msgstr "在 用戶端/伺服器清單/ 中的檔案包含了顯示在多人遊戲分頁中您最愛的伺服器。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3000,7 +2926,7 @@ msgstr "填充深度"
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth noise"
-msgstr "填充深度噪音"
+msgstr "填充深度雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
@@ -3024,14 +2950,12 @@ msgid "Filtering"
 msgstr "過濾器"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "First of 4 2D noises that together define hill/mountain range height."
-msgstr "二之一 一同定義隧道的 3D 噪音。"
+msgstr "四之一 一同定義山丘範圍高度的 2D 雜訊。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "First of two 3D noises that together define tunnels."
-msgstr "二之一 一同定義隧道的 3D 噪音。"
+msgstr "二之一 一同定義隧道的 3D 雜訊。"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
@@ -3054,13 +2978,12 @@ msgid "Fog"
 msgstr "霧"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fog start"
-msgstr "霧開始"
+msgstr "霧氣開始"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr "霧切換鍵"
+msgstr "霧氣切換鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -3100,6 +3023,8 @@ msgid ""
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
+"玩家聊天訊息的格式，以下字串皆是有效的佔位符號：\n"
+"@name、@message、@timestamp（可選）"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -3146,9 +3071,8 @@ msgid "Forward key"
 msgstr "前進鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
-msgstr "二之一 一同定義隧道的 3D 噪音。"
+msgstr "四之四 一同定義山丘範圍高度的 2D 雜訊。"
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -3156,7 +3080,7 @@ msgstr "碎形類型"
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr "霧開始呈現的可見距離分數"
+msgstr "開始呈現霧氣的可見距離分數"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3167,12 +3091,12 @@ msgstr "Freetype 字型"
 msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
-msgstr "要在客戶端上從多遠的區塊開始生成，以地圖區塊計算（16 個節點）。"
+msgstr "要在用戶端上從多遠的區塊開始生成，以地圖區塊計算（16 個節點）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
-msgstr "要把多遠的區塊送到客戶端，以地圖區塊計算（16 個節點）。"
+msgstr "要把多遠的區塊送到用戶端，以地圖區塊計算（16 個節點）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3253,9 +3177,8 @@ msgid "Ground level"
 msgstr "地面高度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ground noise"
-msgstr "泥土噪音"
+msgstr "地面雜訊"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3298,11 +3221,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
-msgstr "熱 混合 噪音"
+msgstr "熱 混合 雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Heat noise"
-msgstr "熱 噪音"
+msgstr "熱 雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
@@ -3310,11 +3233,11 @@ msgstr "初始視窗大小的高度組件。"
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
-msgstr "高度噪音"
+msgstr "高度雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
-msgstr "高度 選擇 噪音"
+msgstr "高度 選擇 雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
@@ -3329,24 +3252,20 @@ msgid "Hill threshold"
 msgstr "山丘閾值"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness1 noise"
-msgstr "坡度噪音"
+msgstr "多丘陵1 雜訊"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness2 noise"
-msgstr "坡度噪音"
+msgstr "多丘陵2 雜訊"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness3 noise"
-msgstr "坡度噪音"
+msgstr "多丘陵3 雜訊"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness4 noise"
-msgstr "坡度噪音"
+msgstr "多丘陵4 雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -3372,171 +3291,139 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列下一個鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar previous key"
-msgstr "Hotbar 上一個鍵"
+msgstr "快捷列上一個鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 1 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 1 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 10 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 10 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 11 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 11 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 12 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 12 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 13 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 13 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 14 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 14 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 15 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 15 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 16 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 16 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 17 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 17 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 18 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 18 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 19 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 19 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 2 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 2 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 20 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 20 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 21 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 21 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 22 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 22 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 23 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 23 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 24 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 24 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 25 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 25 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 26 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 26 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 27 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 27 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 28 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 28 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 29 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 29 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 3 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 3 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 30 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 30 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 31 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 31 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 32 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 32 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 4 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 4 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 5 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 5 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 6 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 6 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 7 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 7 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 8 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 8 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar slot 9 key"
-msgstr "Hotbar 下一個鍵"
+msgstr "快捷列第 9 個槽的按鍵"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3565,11 +3452,11 @@ msgstr "河流多寬"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
-msgstr "溼度 混合 噪音"
+msgstr "溼度 混合 雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity noise"
-msgstr "溼度 噪音"
+msgstr "溼度 雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity variation for biomes."
@@ -3608,9 +3495,9 @@ msgid ""
 "so that the utility of noclip mode is reduced."
 msgstr ""
 "若啟用，伺服器將會執行基於玩家眼睛位置的\n"
-"地圖區塊阻擋剔除。這樣可以減少向客戶端發\n"
-"送 50-80% 的區塊數。客戶端將不會收到最\n"
-"不可能看見的內容，而使 noclip 模式的效用降低。"
+"地圖區塊阻擋剔除。這樣可以減少向用戶端發\n"
+"送 50-80% 的區塊數。用戶端將不會收到最\n"
+"不可能看見的內容，而使穿牆模式的效用降低。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3619,7 +3506,7 @@ msgid ""
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
 "若與飛行模式一同啟用，玩家就可以飛過固體節點。\n"
-"這需要在伺服器上的「noclip」特權。"
+"這需要在伺服器上的「noclip」權限。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3759,7 +3646,7 @@ msgstr "儲存世界中的重要變更的間隔，以秒計。"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
-msgstr "發送當日時間至客戶端的間隔。"
+msgstr "傳送當日時間至用戶端的間隔。"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
@@ -4056,290 +3943,264 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 11th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 11 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 12th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 12 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 13th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 13 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 14th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 14 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 15th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 15 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 16th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 16 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 17th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 17 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 18th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 18 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 19th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 19 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 20th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 20 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 21st hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 21 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 22nd hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 22 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 23rd hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 23 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 24th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 24 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 25th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 25 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 26th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 26 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 27th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 27 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 28th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 28 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 29th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 29 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 30th hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 30 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 31st hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 31 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the 32nd hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 32 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the eighth hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 8 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the fifth hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 5 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the first hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 1 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the fourth hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取上一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 4 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4347,20 +4208,19 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"在快捷列選取下一個物品的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the ninth hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 9 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4368,64 +4228,59 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取上一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"在快捷列選取上一個物品的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the second hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 2 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the seventh hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 7 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the sixth hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 6 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the tenth hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 10 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for selecting the third hotbar slot.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"在 hotbar 選取下一個物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"選取快捷列中第 3 個槽的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4517,20 +4372,19 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"切換 noclip 模式的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"切換穿牆模式的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for toggling pitch move mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"切換 noclip 模式的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"切換 Pitch Move 模式的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4543,15 +4397,14 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for toggling the display of chat.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"切換顯示聊天的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"用來切換聊天顯示的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4564,15 +4417,14 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for toggling the display of fog.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"切換顯示霧的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"切換顯示霧氣的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5118,7 +4970,7 @@ msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
-"要保留在記憶體中的客戶端地圖區塊最大值。\n"
+"要保留在記憶體中的用戶端地圖區塊最大值。\n"
 "設定為 -1 則不限制數量。"
 
 #: src/settings_translation_file.cpp
@@ -5129,7 +4981,7 @@ msgid ""
 msgstr ""
 "每個傳送步驟要傳送的最大封包數，若您的網路連線緩慢\n"
 "請試著降低它，但請不要降低到低於兩倍的目標\n"
-"客戶端數。"
+"用戶端數。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5137,9 +4989,8 @@ msgid "Maximum number of players that can be connected simultaneously."
 msgstr "最大可同時連線的玩家數。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum number of recent chat messages to show"
-msgstr "強制載入地圖區塊的最大數量。"
+msgstr "最多顯示幾個最近聊天訊息"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
@@ -5159,7 +5010,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends per client"
-msgstr "每個客戶端最大同時傳送區塊數"
+msgstr "每個用戶端最大同時傳送區塊數"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum size of the out chat queue"
@@ -5246,21 +5097,20 @@ msgstr "等寬字型大小"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
-msgstr "山高度 噪音"
+msgstr "山高度 雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain noise"
-msgstr "山噪音"
+msgstr "山雜訊"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mountain variation noise"
-msgstr "山高度 噪音"
+msgstr "山變異 雜訊"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mountain zero level"
-msgstr "山噪音"
+msgstr "山雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
@@ -5272,7 +5122,7 @@ msgstr "滑鼠靈敏度倍數。"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
-msgstr "泥土噪音"
+msgstr "泥土雜訊"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5305,7 +5155,7 @@ msgid ""
 "When starting from the main menu, this is overridden."
 msgstr ""
 "玩家名稱。\n"
-"當執行伺服器時，以此名稱連線的客戶端即為管理員。\n"
+"當執行伺服器時，以此名稱連線的用戶端即為管理員。\n"
 "當從主選單啟動時，這個將會被覆寫。"
 
 #: src/settings_translation_file.cpp
@@ -5335,11 +5185,11 @@ msgstr "新使用這需要輸入這個密碼。"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr "Noclip"
+msgstr "穿牆"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
-msgstr "Noclip 按鍵"
+msgstr "穿牆按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -5351,7 +5201,7 @@ msgstr "NodeTimer 間隔"
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
-msgstr "噪音"
+msgstr "雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
@@ -5600,7 +5450,7 @@ msgstr "範圍選擇鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
-msgstr ""
+msgstr "最近聊天訊息"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5620,6 +5470,8 @@ msgid ""
 "Remove color codes from incoming chat messages\n"
 "Use this to stop players from being able to use color in their messages"
 msgstr ""
+"移除傳入聊天訊息的色彩碼\n"
+"使用這個能防止玩家在訊息中使用色彩"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
@@ -5644,22 +5496,20 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ridge mountain spread noise"
-msgstr "水下山脊噪音"
+msgstr "山脊展開雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge noise"
-msgstr "山脊噪音"
+msgstr "山脊雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge underwater noise"
-msgstr "水下山脊噪音"
+msgstr "水下山脊雜訊"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ridged mountain size noise"
-msgstr "水下山脊噪音"
+msgstr "山脊大小雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -5685,9 +5535,8 @@ msgid "River depth"
 msgstr "河流深度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise"
-msgstr "河流噪音"
+msgstr "河流雜訊"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5705,11 +5554,11 @@ msgstr "返回記錄"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hill size noise"
-msgstr ""
+msgstr "波狀丘陵地大小雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
-msgstr ""
+msgstr "波狀丘陵地展開雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
@@ -5725,7 +5574,7 @@ msgstr "當 np_beach 超過此值時，會生成沙灘。"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
-msgstr "由客戶端儲存接收到的地圖到磁碟上。"
+msgstr "由用戶端儲存接收到的地圖到磁碟上。"
 
 #: src/settings_translation_file.cpp
 msgid "Save window size automatically when modified."
@@ -5782,17 +5631,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
-msgstr "海底噪音"
+msgstr "海底雜訊"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Second of 4 2D noises that together define hill/mountain range height."
-msgstr "二之二 一同定義隧道的 3D 噪音。"
+msgstr "四之二 一同定義山丘範圍高度的 2D 雜訊。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Second of two 3D noises that together define tunnels."
-msgstr "二之二 一同定義隧道的 3D 噪音。"
+msgstr "二之二 一同定義隧道的 3D 雜訊。"
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -5904,7 +5751,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Set the maximum character length of a chat message sent by clients."
-msgstr ""
+msgstr "設定用戶端傳送之聊天訊息的最大字元長度。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6077,7 +5924,7 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
-"客戶端從指定的 URL 而不是使用 UDP 抓取媒體。\n"
+"用戶端從指定的 URL 而不是使用 UDP 抓取媒體。\n"
 "$filename 應該可以透過 cURL 從 $remote_media$filename 存取。\n"
 "（當然，remote_media 部份應以斜線結束）。\n"
 "沒有在其中的檔案將會以平常的方式抓取。"
@@ -6095,17 +5942,17 @@ msgstr "靜態重生點"
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
-msgstr "坡度噪音"
+msgstr "坡度雜訊"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Step mountain size noise"
-msgstr "山噪音"
+msgstr "山雜訊"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Step mountain spread noise"
-msgstr "山噪音"
+msgstr "山雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -6139,9 +5986,8 @@ msgid "Temperature variation for biomes."
 msgstr "生態的溫度變化。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain alternative noise"
-msgstr "地形高度噪音"
+msgstr "地形替代雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain base noise"
@@ -6154,11 +6000,11 @@ msgstr "地形高度"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain higher noise"
-msgstr "地形高處噪音"
+msgstr "地形高處雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain noise"
-msgstr "地形噪音"
+msgstr "地形雜訊"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6166,7 +6012,7 @@ msgid ""
 "Controls proportion of world area covered by hills.\n"
 "Adjust towards 0.0 for a larger proportion."
 msgstr ""
-"山丘的地形噪音閾值。\n"
+"山丘的地形雜訊閾值。\n"
 "控制山丘覆蓋世界的比例。\n"
 "往 0.0 調整一取得較大的比例。"
 
@@ -6176,13 +6022,13 @@ msgid ""
 "Controls proportion of world area covered by lakes.\n"
 "Adjust towards 0.0 for a larger proportion."
 msgstr ""
-"湖泊的地形噪音閾值。\n"
+"湖泊的地形雜訊閾值。\n"
 "控制湖泊覆蓋世界的比例。\n"
 "往 0.0 調整一取得較大的比例。"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain persistence noise"
-msgstr "地形持續性噪音"
+msgstr "地形持續性雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
@@ -6328,9 +6174,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Third of 4 2D noises that together define hill/mountain range height."
-msgstr "二之一 一同定義隧道的 3D 噪音。"
+msgstr "四之三 一同定義山丘範圍高度的 2D 雜訊。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6354,7 +6199,7 @@ msgstr "時間速度"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
-msgstr "客戶端從記憶體移除未使用的地圖資料的逾時時間。"
+msgstr "用戶端從記憶體移除未使用的地圖資料的逾時時間。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6377,11 +6222,11 @@ msgstr "工具提示延遲"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Touch screen threshold"
-msgstr "海灘噪音閾值"
+msgstr "海灘雜訊閾值"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
-msgstr "樹林噪音"
+msgstr "樹林雜訊"
 
 #: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
@@ -6509,7 +6354,7 @@ msgid ""
 "When noise is < -0.55 terrain is near-flat."
 msgstr ""
 "垂直地形大小的變化。\n"
-"當噪音 < -0.55 則地形近乎平坦。"
+"當雜訊 < -0.55 則地形近乎平坦。"
 
 #: src/settings_translation_file.cpp
 msgid "Varies depth of biome surface nodes."
@@ -6521,7 +6366,7 @@ msgid ""
 "Defines the 'persistence' value for terrain_base and terrain_alt noises."
 msgstr ""
 "地形粗糙度變化。\n"
-"為 terrain_base 與 terrain_alt 噪音定義 'persistence' 值。"
+"為 terrain_base 與 terrain_alt 雜訊定義 'persistence' 值。"
 
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
@@ -6706,7 +6551,7 @@ msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
-"玩家是否應該在客戶端無距離限制地顯示。\n"
+"玩家是否應該在用戶端無距離限制地顯示。\n"
 "已棄用，請用 setting player_transfer_distance 代替。"
 
 #: src/settings_translation_file.cpp
@@ -6718,7 +6563,7 @@ msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
-"是否要在 (Lua) 當掉後詢問客戶端是否重新連線。\n"
+"是否要在 (Lua) 當掉後詢問用戶端是否重新連線。\n"
 "如果您的伺服器被設定為會自動重新開啟，將這個設定為真。"
 
 #: src/settings_translation_file.cpp
@@ -6736,7 +6581,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
-msgstr "是否顯示客戶端除錯資訊（與按下 F5 有同樣的效果）。"
+msgstr "是否顯示用戶端除錯資訊（與按下 F5 有同樣的效果）。"
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
