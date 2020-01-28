@@ -1726,8 +1726,8 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 	if (m_clients.getProtocolVersion(peer_id) < 39) {
 		pkt << params.bgcolor << params.type << (u16) params.textures.size();
 
-		for(size_t i=0; i<params.textures.size(); i++)
-			pkt << params.textures[i];
+		for (const std::string& texture : params.textures)
+			pkt << texture;
 
 		pkt << params.clouds;
 	} else { // Handle current clients and future clients
