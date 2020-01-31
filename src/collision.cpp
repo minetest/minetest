@@ -407,7 +407,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 		}
 #ifndef SERVER
-		if (c_env != 0) {
+		if (c_env) {
 			LocalPlayer *lplayer = c_env->getLocalPlayer();
 			if (lplayer->getParent() == nullptr) {
 				aabb3f lplayer_collisionbox = lplayer->getCollisionbox();
