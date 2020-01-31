@@ -2889,6 +2889,11 @@ Helper functions
     * `sep_is_pattern`: boolean, it specifies whether separator is a plain
       string or a pattern (regex), default: `false`
     * e.g. `"a,b":split","` returns `{"a","b"}`
+* `string.is_match(str, pattern)`: returns a boolean
+    * Returns true if the pattern matches.
+    * The list of captures is stored in the global `_` variable.
+    * The number of captures can be obtained from `#_`.
+    * For non-matching patterns, `_` will be set to an empty list.
 * `string:trim()`: returns the string without whitespace pre- and suffixes
     * e.g. `"\n \t\tfoo bar\t ":trim()` returns `"foo bar"`
 * `minetest.wrap_text(str, limit, as_table)`: returns a string or table

@@ -191,6 +191,15 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 end
 
 --------------------------------------------------------------------------------
+function string.is_match(str, pattern)
+     -- Use underscore variable to preserve captures
+     _ = {string.match(str, pattern)}
+     return #_ > 0
+end
+
+_ = nil	 -- Suppress warning of undeclared global variable
+
+--------------------------------------------------------------------------------
 function table.indexof(list, val)
 	for i, v in ipairs(list) do
 		if v == val then
@@ -496,25 +505,16 @@ function core.string_to_pos(value)
 		return nil
 	end
 
-	local p = {}
-	p.x, p.y, p.z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-	if p.x and p.y and p.z then
-		p.x = tonumber(p.x)
-		p.y = tonumber(p.y)
-		p.z = tonumber(p.z)
-		return p
-	end
-	p = {}
-	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
-	if p.x and p.y and p.z then
-		p.x = tonumber(p.x)
-		p.y = tonumber(p.y)
-		p.z = tonumber(p.z)
-		return p
+	if string.is_match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$") or
+			string.is_match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$") then
+		return {
+			x = tonumber(_[1]),
+			y = tonumber(_[2]),
+			z = tonumber(_[3])
+		}
 	end
 	return nil
 end
-
 
 --------------------------------------------------------------------------------
 function core.string_to_area(value)
