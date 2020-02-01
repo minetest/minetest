@@ -55,3 +55,10 @@ end
 
 setmetatable(_G, meta)
 
+--------------------------------------------------------------------------------
+-- Workaround for bug https://www.lua.org/bugs.html#5.2.3-1
+local actual_unpack = unpack
+function unpack(t, a, b)
+	assert(not b or b < 2^30)
+	return actual_unpack(t, a, b)
+end
