@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "inventorymanager.h"
 #include "modalMenu.h"
+#include "guiInventoryList.h"
 #include "guiTable.h"
 #include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
@@ -78,51 +79,6 @@ public:
 
 class GUIFormSpecMenu : public GUIModalMenu
 {
-	struct ItemSpec
-	{
-		ItemSpec() = default;
-
-		ItemSpec(const InventoryLocation &a_inventoryloc,
-				const std::string &a_listname,
-				s32 a_i) :
-			inventoryloc(a_inventoryloc),
-			listname(a_listname),
-			i(a_i)
-		{
-		}
-
-		bool isValid() const { return i != -1; }
-
-		InventoryLocation inventoryloc;
-		std::string listname;
-		s32 i = -1;
-	};
-
-	struct ListDrawSpec
-	{
-		ListDrawSpec() = default;
-
-		ListDrawSpec(const InventoryLocation &a_inventoryloc,
-				const std::string &a_listname,
-				IGUIElement *elem, v2s32 a_geom, s32 a_start_item_i,
-				bool a_real_coordinates):
-			inventoryloc(a_inventoryloc),
-			listname(a_listname),
-			e(elem),
-			geom(a_geom),
-			start_item_i(a_start_item_i),
-			real_coordinates(a_real_coordinates)
-		{
-		}
-
-		InventoryLocation inventoryloc;
-		std::string listname;
-		IGUIElement *e;
-		v2s32 geom;
-		s32 start_item_i;
-		bool real_coordinates;
-	};
-
 	struct ListRingSpec
 	{
 		ListRingSpec() = default;
@@ -184,35 +140,6 @@ class GUIFormSpecMenu : public GUIModalMenu
 		std::wstring tooltip;
 		irr::video::SColor bgcolor;
 		irr::video::SColor color;
-	};
-
-	struct StaticTextSpec
-	{
-		StaticTextSpec():
-			parent_button(NULL)
-		{
-		}
-
-		StaticTextSpec(const std::wstring &a_text,
-				const core::rect<s32> &a_rect):
-			text(a_text),
-			rect(a_rect),
-			parent_button(NULL)
-		{
-		}
-
-		StaticTextSpec(const std::wstring &a_text,
-				const core::rect<s32> &a_rect,
-				gui::IGUIButton *a_parent_button):
-			text(a_text),
-			rect(a_rect),
-			parent_button(a_parent_button)
-		{
-		}
-
-		std::wstring text;
-		core::rect<s32> rect;
-		gui::IGUIButton *parent_button;
 	};
 
 public:
@@ -283,13 +210,37 @@ public:
 		m_focused_element = elementname;
 	}
 
+	Client *getClient() const
+	{
+		return m_client;
+	}
+
+	const GUIInventoryList::ItemSpec *getSelectedItem() const
+	{
+		return m_selected_item;
+	}
+
+	const u16 getSelectedAmount() const
+	{
+		return m_selected_amount;
+	}
+
+	bool doTooltipAppendItemname() const
+	{
+		return m_tooltip_append_itemname;
+	}
+
+	void addHoveredItemTooltip(const std::string &name)
+	{
+		m_hovered_item_tooltips.emplace_back(name);
+	}
+
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
 	void regenerateGui(v2u32 screensize);
 
-	ItemSpec getItemAtPos(v2s32 p) const;
-	void drawList(const ListDrawSpec &s, int layer,	bool &item_hovered);
+	GUIInventoryList::ItemSpec getItemAtPos(v2s32 p) const;
 	void drawSelectedItem();
 	void drawMenu();
 	void updateSelectedItem();
@@ -342,7 +293,7 @@ protected:
 	std::string m_formspec_prepend;
 	InventoryLocation m_current_inventory_location;
 
-	std::vector<ListDrawSpec> m_inventorylists;
+	std::vector<GUIInventoryList *> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
 	std::vector<gui::IGUIElement *> m_backgrounds;
 	std::unordered_map<std::string, bool> field_close_on_enter;
@@ -354,7 +305,7 @@ protected:
 	std::vector<std::pair<FieldSpec, GUIScrollBar *>> m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string>>> m_dropdowns;
 
-	ItemSpec *m_selected_item = nullptr;
+	GUIInventoryList::ItemSpec *m_selected_item = nullptr;
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
@@ -374,12 +325,8 @@ protected:
 
 	bool m_bgnonfullscreen;
 	bool m_bgfullscreen;
-	bool m_slotborder;
 	video::SColor m_bgcolor;
 	video::SColor m_fullscreen_bgcolor;
-	video::SColor m_slotbg_n;
-	video::SColor m_slotbg_h;
-	video::SColor m_slotbordercolor;
 	video::SColor m_default_tooltip_bgcolor;
 	video::SColor m_default_tooltip_color;
 
@@ -406,6 +353,8 @@ private:
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
 
+		GUIInventoryList::Options inventorylist_options;
+
 		struct {
 			s32 max = 1000;
 			s32 min = 0;
@@ -428,6 +377,7 @@ private:
 
 	fs_key_pendig current_keys_pending;
 	std::string current_field_enter_pending = "";
+	std::vector<std::string> m_hovered_item_tooltips;
 
 	void parseElement(parserData* data, const std::string &element);
 
