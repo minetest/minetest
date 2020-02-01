@@ -2925,6 +2925,13 @@ Helper functions
       find new indices.
 * `table.key_value_swap(t)`: returns a table with keys and values swapped
     * If multiple keys in `t` map to the same value, the result is undefined.
+* `table.shuffle(table, [from], [to], [random_func])`:
+    * Shuffles elements `from` to `to` in `table` in place
+    * `from` defaults to `1`
+    * `to` defaults to `#table`
+    * `random_func` defaults to `math.random`. This function receives two
+      integers as arguments and should return a random integer inclusively
+      between them.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
