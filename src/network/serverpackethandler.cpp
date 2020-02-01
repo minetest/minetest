@@ -1050,10 +1050,9 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	RollbackScopeActor rollback_scope(m_rollback,
 			std::string("player:")+player->getName());
 
-	/*
-		0: start digging or punch object
-	*/
-	if (action == INTERACT_START_DIGGING) {
+	switch (action) {
+	// Start digging or punch object
+	case INTERACT_START_DIGGING: {
 		if (pointed.type == POINTEDTHING_NODE) {
 			MapNode n(CONTENT_IGNORE);
 			bool pos_ok;
@@ -1072,158 +1071,155 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 			// Cheat prevention
 			playersao->noCheatDigStart(p_under);
-		}
-		else if (pointed.type == POINTEDTHING_OBJECT) {
-			// Skip if object can't be interacted with anymore
-			if (pointed_object->isGone())
-				return;
 
-			ItemStack selected_item, hand_item;
-			ItemStack tool_item = playersao->getWieldedItem(&selected_item, &hand_item);
-			ToolCapabilities toolcap =
-					tool_item.getToolCapabilities(m_itemdef);
-			v3f dir = (pointed_object->getBasePosition() -
-					(playersao->getBasePosition() + playersao->getEyeOffset())
-						).normalize();
-			float time_from_last_punch =
-				playersao->resetTimeFromLastPunch();
-
-			u16 src_original_hp = pointed_object->getHP();
-			u16 dst_origin_hp = playersao->getHP();
-
-			u16 wear = pointed_object->punch(dir, &toolcap, playersao,
-					time_from_last_punch);
-
-			// Callback may have changed item, so get it again
-			playersao->getWieldedItem(&selected_item);
-			bool changed = selected_item.addWear(wear, m_itemdef);
-			if (changed)
-				playersao->setWieldedItem(selected_item);
-
-			// If the object is a player and its HP changed
-			if (src_original_hp != pointed_object->getHP() &&
-					pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-				SendPlayerHPOrDie((PlayerSAO *)pointed_object,
-						PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, playersao));
-			}
-
-			// If the puncher is a player and its HP changed
-			if (dst_origin_hp != playersao->getHP())
-				SendPlayerHPOrDie(playersao,
-						PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, pointed_object));
+			return;
 		}
 
+		// Skip if the object can't be interacted with anymore
+		if (pointed.type != POINTEDTHING_OBJECT || pointed_object->isGone())
+			return;
+
+		ItemStack selected_item, hand_item;
+		ItemStack tool_item = playersao->getWieldedItem(&selected_item, &hand_item);
+		ToolCapabilities toolcap =
+				tool_item.getToolCapabilities(m_itemdef);
+		v3f dir = (pointed_object->getBasePosition() -
+				(playersao->getBasePosition() + playersao->getEyeOffset())
+					).normalize();
+		float time_from_last_punch =
+			playersao->resetTimeFromLastPunch();
+
+		u16 src_original_hp = pointed_object->getHP();
+		u16 dst_origin_hp = playersao->getHP();
+
+		u16 wear = pointed_object->punch(dir, &toolcap, playersao,
+				time_from_last_punch);
+
+		// Callback may have changed item, so get it again
+		playersao->getWieldedItem(&selected_item);
+		bool changed = selected_item.addWear(wear, m_itemdef);
+		if (changed)
+			playersao->setWieldedItem(selected_item);
+
+		// If the object is a player and its HP changed
+		if (src_original_hp != pointed_object->getHP() &&
+				pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+			SendPlayerHPOrDie((PlayerSAO *)pointed_object,
+					PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, playersao));
+		}
+
+		// If the puncher is a player and its HP changed
+		if (dst_origin_hp != playersao->getHP())
+			SendPlayerHPOrDie(playersao,
+					PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, pointed_object));
+
+		return;
 	} // action == INTERACT_START_DIGGING
 
-	/*
-		1: stop digging
-	*/
-	else if (action == INTERACT_STOP_DIGGING) {
-	} // action == INTERACT_STOP_DIGGING
+	case INTERACT_STOP_DIGGING:
+		// Nothing to do
+		return;
 
-	/*
-		2: Digging completed
-	*/
-	else if (action == INTERACT_DIGGING_COMPLETED) {
+	case INTERACT_DIGGING_COMPLETED: {
 		// Only digging of nodes
-		if (pointed.type == POINTEDTHING_NODE) {
-			bool pos_ok;
-			v3s16 p_under = pointed.node_undersurface;
-			MapNode n = m_env->getMap().getNode(p_under, &pos_ok);
-			if (!pos_ok) {
-				infostream << "Server: Not finishing digging: Node not found. "
-					"Adding block to emerge queue." << std::endl;
-				m_emerge->enqueueBlockEmerge(peer_id,
-					getNodeBlockPos(pointed.node_abovesurface), false);
-			}
-
-			/* Cheat prevention */
-			bool is_valid_dig = true;
-			if (enable_anticheat && !isSingleplayer()) {
-				v3s16 nocheat_p = playersao->getNoCheatDigPos();
-				float nocheat_t = playersao->getNoCheatDigTime();
-				playersao->noCheatDigEnd();
-				// If player didn't start digging this, ignore dig
-				if (nocheat_p != p_under) {
-					infostream << "Server: " << player->getName()
-							<< " started digging "
-							<< PP(nocheat_p) << " and completed digging "
-							<< PP(p_under) << "; not digging." << std::endl;
-					is_valid_dig = false;
-					// Call callbacks
-					m_script->on_cheat(playersao, "finished_unknown_dig");
-				}
-
-				// Get player's wielded item
-				// See also: Game::handleDigging
-				ItemStack selected_item, hand_item;
-				playersao->getPlayer()->getWieldedItem(&selected_item, &hand_item);
-
-				// Get diggability and expected digging time
-				DigParams params = getDigParams(m_nodedef->get(n).groups,
-						&selected_item.getToolCapabilities(m_itemdef));
-				// If can't dig, try hand
-				if (!params.diggable) {
-					params = getDigParams(m_nodedef->get(n).groups,
-						&hand_item.getToolCapabilities(m_itemdef));
-				}
-				// If can't dig, ignore dig
-				if (!params.diggable) {
-					infostream << "Server: " << player->getName()
-							<< " completed digging " << PP(p_under)
-							<< ", which is not diggable with tool; not digging."
-							<< std::endl;
-					is_valid_dig = false;
-					// Call callbacks
-					m_script->on_cheat(playersao, "dug_unbreakable");
-				}
-				// Check digging time
-				// If already invalidated, we don't have to
-				if (!is_valid_dig) {
-					// Well not our problem then
-				}
-				// Clean and long dig
-				else if (params.time > 2.0 && nocheat_t * 1.2 > params.time) {
-					// All is good, but grab time from pool; don't care if
-					// it's actually available
-					playersao->getDigPool().grab(params.time);
-				}
-				// Short or laggy dig
-				// Try getting the time from pool
-				else if (playersao->getDigPool().grab(params.time)) {
-					// All is good
-				}
-				// Dig not possible
-				else {
-					infostream << "Server: " << player->getName()
-							<< " completed digging " << PP(p_under)
-							<< "too fast; not digging." << std::endl;
-					is_valid_dig = false;
-					// Call callbacks
-					m_script->on_cheat(playersao, "dug_too_fast");
-				}
-			}
-
-			/* Actually dig node */
-
-			if (is_valid_dig && n.getContent() != CONTENT_IGNORE)
-				m_script->node_on_dig(p_under, n, playersao);
-
-			v3s16 blockpos = getNodeBlockPos(p_under);
-			RemoteClient *client = getClient(peer_id);
-			// Send unusual result (that is, node not being removed)
-			if (m_env->getMap().getNode(p_under).getContent() != CONTENT_AIR)
-				// Re-send block to revert change on client-side
-				client->SetBlockNotSent(blockpos);
-			else
-				client->ResendBlockIfOnWire(blockpos);
+		if (pointed.type != POINTEDTHING_NODE)
+			return;
+		bool pos_ok;
+		v3s16 p_under = pointed.node_undersurface;
+		MapNode n = m_env->getMap().getNode(p_under, &pos_ok);
+		if (!pos_ok) {
+			infostream << "Server: Not finishing digging: Node not found. "
+				"Adding block to emerge queue." << std::endl;
+			m_emerge->enqueueBlockEmerge(peer_id,
+				getNodeBlockPos(pointed.node_abovesurface), false);
 		}
+
+		/* Cheat prevention */
+		bool is_valid_dig = true;
+		if (enable_anticheat && !isSingleplayer()) {
+			v3s16 nocheat_p = playersao->getNoCheatDigPos();
+			float nocheat_t = playersao->getNoCheatDigTime();
+			playersao->noCheatDigEnd();
+			// If player didn't start digging this, ignore dig
+			if (nocheat_p != p_under) {
+				infostream << "Server: " << player->getName()
+						<< " started digging "
+						<< PP(nocheat_p) << " and completed digging "
+						<< PP(p_under) << "; not digging." << std::endl;
+				is_valid_dig = false;
+				// Call callbacks
+				m_script->on_cheat(playersao, "finished_unknown_dig");
+			}
+
+			// Get player's wielded item
+			// See also: Game::handleDigging
+			ItemStack selected_item, hand_item;
+			playersao->getPlayer()->getWieldedItem(&selected_item, &hand_item);
+
+			// Get diggability and expected digging time
+			DigParams params = getDigParams(m_nodedef->get(n).groups,
+					&selected_item.getToolCapabilities(m_itemdef));
+			// If can't dig, try hand
+			if (!params.diggable) {
+				params = getDigParams(m_nodedef->get(n).groups,
+					&hand_item.getToolCapabilities(m_itemdef));
+			}
+			// If can't dig, ignore dig
+			if (!params.diggable) {
+				infostream << "Server: " << player->getName()
+						<< " completed digging " << PP(p_under)
+						<< ", which is not diggable with tool; not digging."
+						<< std::endl;
+				is_valid_dig = false;
+				// Call callbacks
+				m_script->on_cheat(playersao, "dug_unbreakable");
+			}
+			// Check digging time
+			// If already invalidated, we don't have to
+			if (!is_valid_dig) {
+				// Well not our problem then
+			}
+			// Clean and long dig
+			else if (params.time > 2.0 && nocheat_t * 1.2 > params.time) {
+				// All is good, but grab time from pool; don't care if
+				// it's actually available
+				playersao->getDigPool().grab(params.time);
+			}
+			// Short or laggy dig
+			// Try getting the time from pool
+			else if (playersao->getDigPool().grab(params.time)) {
+				// All is good
+			}
+			// Dig not possible
+			else {
+				infostream << "Server: " << player->getName()
+						<< " completed digging " << PP(p_under)
+						<< "too fast; not digging." << std::endl;
+				is_valid_dig = false;
+				// Call callbacks
+				m_script->on_cheat(playersao, "dug_too_fast");
+			}
+		}
+
+		/* Actually dig node */
+
+		if (is_valid_dig && n.getContent() != CONTENT_IGNORE)
+			m_script->node_on_dig(p_under, n, playersao);
+
+		v3s16 blockpos = getNodeBlockPos(p_under);
+		RemoteClient *client = getClient(peer_id);
+		// Send unusual result (that is, node not being removed)
+		if (m_env->getMap().getNode(p_under).getContent() != CONTENT_AIR)
+			// Re-send block to revert change on client-side
+			client->SetBlockNotSent(blockpos);
+		else
+			client->ResendBlockIfOnWire(blockpos);
+
+		return;
 	} // action == INTERACT_DIGGING_COMPLETED
 
-	/*
-		3: place block or right-click object
-	*/
-	else if (action == INTERACT_PLACE) {
+	// Place block or right-click object
+	case INTERACT_PLACE: {
 		ItemStack selected_item;
 		playersao->getWieldedItem(&selected_item, nullptr);
 
@@ -1260,29 +1256,29 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				SendInventory(playersao, true);
 		}
 
-		if (pointed.type == POINTEDTHING_NODE) {
-			// If item has node placement prediction, always send the
-			// blocks to make sure the client knows what exactly happened
-			RemoteClient *client = getClient(peer_id);
-			v3s16 blockpos = getNodeBlockPos(pointed.node_abovesurface);
-			v3s16 blockpos2 = getNodeBlockPos(pointed.node_undersurface);
-			if (!selected_item.getDefinition(m_itemdef
-					).node_placement_prediction.empty()) {
-				client->SetBlockNotSent(blockpos);
-				if (blockpos2 != blockpos)
-					client->SetBlockNotSent(blockpos2);
-			} else {
-				client->ResendBlockIfOnWire(blockpos);
-				if (blockpos2 != blockpos)
-					client->ResendBlockIfOnWire(blockpos2);
-			}
+		if (pointed.type != POINTEDTHING_NODE)
+			return;
+
+		// If item has node placement prediction, always send the
+		// blocks to make sure the client knows what exactly happened
+		RemoteClient *client = getClient(peer_id);
+		v3s16 blockpos = getNodeBlockPos(pointed.node_abovesurface);
+		v3s16 blockpos2 = getNodeBlockPos(pointed.node_undersurface);
+		if (!selected_item.getDefinition(m_itemdef
+				).node_placement_prediction.empty()) {
+			client->SetBlockNotSent(blockpos);
+			if (blockpos2 != blockpos)
+				client->SetBlockNotSent(blockpos2);
+		} else {
+			client->ResendBlockIfOnWire(blockpos);
+			if (blockpos2 != blockpos)
+				client->ResendBlockIfOnWire(blockpos2);
 		}
+
+		return;
 	} // action == INTERACT_PLACE
 
-	/*
-		4: use
-	*/
-	else if (action == INTERACT_USE) {
+	case INTERACT_USE: {
 		ItemStack selected_item;
 		playersao->getWieldedItem(&selected_item, nullptr);
 
@@ -1295,12 +1291,11 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				SendInventory(playersao, true);
 		}
 
-	} // action == INTERACT_USE
+		return;
+	}
 
-	/*
-		5: rightclick air
-	*/
-	else if (action == INTERACT_ACTIVATE) {
+	// Rightclick air
+	case INTERACT_ACTIVATE: {
 		ItemStack selected_item;
 		playersao->getWieldedItem(&selected_item, nullptr);
 
@@ -1313,14 +1308,13 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			if (playersao->setWieldedItem(selected_item))
 				SendInventory(playersao, true);
 		}
-	} // action == INTERACT_ACTIVATE
 
+		return;
+	}
 
-	/*
-		Catch invalid actions
-	*/
-	else {
+	default:
 		warningstream << "Server: Invalid action " << action << std::endl;
+
 	}
 }
 
