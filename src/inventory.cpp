@@ -247,6 +247,15 @@ std::string ItemStack::getItemString() const
 	return os.str();
 }
 
+std::string ItemStack::getTexture(IItemDefManager *itemdef) const
+{
+	std::string texture = metadata.getString("texture");
+	if (texture.empty())
+		texture = getDefinition(itemdef).inventory_image;
+
+	return texture;
+}
+
 std::string ItemStack::getDescription(IItemDefManager *itemdef) const
 {
 	std::string desc = metadata.getString("description");

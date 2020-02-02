@@ -306,7 +306,7 @@ public:
 #ifndef SERVER
 public:
 	ClientCached* createClientCachedDirect(const std::string &name,
-			Client *client) const
+			const std::string &custom_texture, Client *client) const
 	{
 		infostream<<"Lazily creating item texture and mesh for \""
 				<<name<<"\""<<std::endl;
@@ -314,9 +314,13 @@ public:
 		// This is not thread-safe
 		sanity_check(std::this_thread::get_id() == m_main_thread);
 
+		std::string cached_name = name;
+		if (!custom_texture.empty())
+			cached_name = name + ":" + custom_texture;
+		
 		// Skip if already in cache
 		ClientCached *cc = NULL;
-		m_clientcached.get(name, &cc);
+		m_clientcached.get(cached_name, &cc);
 		if(cc)
 			return cc;
 
@@ -328,68 +332,76 @@ public:
 
 		// Create an inventory texture
 		cc->inventory_texture = NULL;
-		if (!def.inventory_image.empty())
+		if (!custom_texture.empty())
+			cc->inventory_texture = tsrc->getTexture(custom_texture);
+		else if (!def.inventory_image.empty()) 
 			cc->inventory_texture = tsrc->getTexture(def.inventory_image);
+		
 
 		ItemStack item = ItemStack();
 		item.name = def.name;
+		item.metadata.setString("texture", custom_texture);
 
 		getItemMesh(client, item, &(cc->wield_mesh));
 
 		cc->palette = tsrc->getPalette(def.palette_image);
 
 		// Put in cache
-		m_clientcached.set(name, cc);
+		m_clientcached.set(cached_name, cc);
 
 		return cc;
 	}
 	ClientCached* getClientCached(const std::string &name,
-			Client *client) const
+			const std::string &custom_texture, Client *client) const
 	{
 		ClientCached *cc = NULL;
-		m_clientcached.get(name, &cc);
+		std::string cached_name = name;
+		if (!custom_texture.empty())
+			cached_name = name + ":" + custom_texture;
+
+		m_clientcached.get(cached_name, &cc);
 		if (cc)
 			return cc;
 
 		if (std::this_thread::get_id() == m_main_thread) {
-			return createClientCachedDirect(name, client);
+			return createClientCachedDirect(name, custom_texture, client);
 		}
 
 		// We're gonna ask the result to be put into here
 		static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
 
 		// Throw a request in
-		m_get_clientcached_queue.add(name, 0, 0, &result_queue);
+		m_get_clientcached_queue.add(cached_name, 0, 0, &result_queue);
 		try {
 			while(true) {
 				// Wait result for a second
 				GetResult<std::string, ClientCached*, u8, u8>
 					result = result_queue.pop_front(1000);
 
-				if (result.key == name) {
+				if (result.key == cached_name) {
 					return result.item;
 				}
 			}
 		} catch(ItemNotFoundException &e) {
-			errorstream << "Waiting for clientcached " << name
+			errorstream << "Waiting for clientcached " << cached_name
 				<< " timed out." << std::endl;
 			return &m_dummy_clientcached;
 		}
 	}
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			Client *client) const
+			Client *client, ItemStack &item) const
 	{
-		ClientCached *cc = getClientCached(name, client);
+		ClientCached *cc = getClientCached(name, item.metadata.getString("texture"), client);
 		if(!cc)
 			return NULL;
 		return cc->inventory_texture;
 	}
 	// Get item wield mesh
 	virtual ItemMesh* getWieldMesh(const std::string &name,
-			Client *client) const
+			Client *client, const ItemStack &item) const
 	{
-		ClientCached *cc = getClientCached(name, client);
+		ClientCached *cc = getClientCached(name, item.metadata.getString("texture"), client);
 		if(!cc)
 			return NULL;
 		return &(cc->wield_mesh);
@@ -399,7 +411,7 @@ public:
 	virtual Palette* getPalette(const std::string &name,
 			Client *client) const
 	{
-		ClientCached *cc = getClientCached(name, client);
+		ClientCached *cc = getClientCached(name, "", client);
 		if(!cc)
 			return NULL;
 		return cc->palette;
@@ -556,7 +568,7 @@ public:
 					request = m_get_clientcached_queue.pop();
 
 			m_get_clientcached_queue.pushResult(request,
-					createClientCachedDirect(request.key, (Client *)gamedef));
+					createClientCachedDirect(request.key, "", (Client *)gamedef));
 		}
 #endif
 	}

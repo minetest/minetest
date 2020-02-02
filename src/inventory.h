@@ -49,7 +49,9 @@ struct ItemStack
 	std::string getItemString() const;
 	// Returns the tooltip
 	std::string getDescription(IItemDefManager *itemdef) const;
-
+	// Returns the item texture from either definition or metadata
+	std::string getTexture(IItemDefManager *itemdef) const;
+	
 	/*
 		Quantity methods
 	*/

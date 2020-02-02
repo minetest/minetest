@@ -117,10 +117,10 @@ public:
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			Client *client) const=0;
+			Client *client, const ItemStack &item) const=0;
 	// Get item wield mesh
 	virtual ItemMesh* getWieldMesh(const std::string &name,
-		Client *client) const=0;
+		Client *client, const ItemStack &item) const=0;
 	// Get item palette
 	virtual Palette* getPalette(const std::string &name,
 		Client *client) const = 0;
@@ -151,10 +151,10 @@ public:
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			Client *client) const=0;
+			Client *client, const ItemStack &item) const=0;
 	// Get item wield mesh
 	virtual ItemMesh* getWieldMesh(const std::string &name,
-		Client *client) const=0;
+		Client *client, const ItemStack &item) const=0;
 #endif
 
 	// Remove all registered item and node definitions and aliases

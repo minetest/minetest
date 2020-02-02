@@ -367,7 +367,16 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 	// Handle nodes
 	// See also CItemDefManager::createClientCached()
-	if (def.type == ITEM_NODE) {
+
+	// If texture is overriden in stack metadata, ignore all else
+	if (!item.metadata.getString("texture").empty()){
+		setExtruded(item.metadata.getString("texture"), def.inventory_overlay, def.wield_scale,
+			tsrc, 1);
+		m_colors.emplace_back();
+		// overlay is white, if present
+		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
+		return;
+	} else if (def.type == ITEM_NODE) {
 		if (f.mesh_ptr[0]) {
 			// e.g. mesh nodes and nodeboxes
 			mesh = cloneMesh(f.mesh_ptr[0]);
@@ -511,8 +520,8 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	result->needs_shading = true;
 
 	// If inventory_image is defined, it overrides everything else
-	if (!def.inventory_image.empty()) {
-		mesh = getExtrudedMesh(tsrc, def.inventory_image,
+	if (!item.getTexture(idef).empty()) {
+		mesh = getExtrudedMesh(tsrc, item.getTexture(idef),
 			def.inventory_overlay);
 		result->buffer_colors.emplace_back();
 		// overlay is white, if present
