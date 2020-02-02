@@ -116,14 +116,14 @@ public:
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			Client *client, const ItemStack &item) const=0;
+	virtual video::ITexture* getInventoryTexture(Client *client, 
+			const ItemStack &item) const=0;
 	// Get item wield mesh
-	virtual ItemMesh* getWieldMesh(const std::string &name,
-		Client *client, const ItemStack &item) const=0;
+	virtual ItemMesh* getWieldMesh(Client *client, 
+			const ItemStack &item) const=0;
 	// Get item palette
-	virtual Palette* getPalette(const std::string &name,
-		Client *client) const = 0;
+	virtual Palette* getPalette(Client *client, 
+			const ItemStack &item) const = 0;
 	// Returns the base color of an item stack: the color of all
 	// tiles that do not define their own color.
 	virtual video::SColor getItemstackColor(const ItemStack &stack,
@@ -150,11 +150,11 @@ public:
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			Client *client, const ItemStack &item) const=0;
+	virtual video::ITexture* getInventoryTexture(Client *client, 
+			const ItemStack &item) const=0;
 	// Get item wield mesh
-	virtual ItemMesh* getWieldMesh(const std::string &name,
-		Client *client, const ItemStack &item) const=0;
+	virtual ItemMesh* getWieldMesh(Client *client,
+			const ItemStack &item) const=0;
 #endif
 
 	// Remove all registered item and node definitions and aliases

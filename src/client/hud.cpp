@@ -646,7 +646,7 @@ void drawItemStack(
 	}
 
 	const ItemDefinition &def = item.getDefinition(client->idef());
-	ItemMesh *imesh = client->idef()->getWieldMesh(def.name, client, item);
+	ItemMesh *imesh = client->idef()->getWieldMesh(client, item);
 
 	if (imesh && imesh->mesh) {
 		scene::IMesh *mesh = imesh->mesh;
