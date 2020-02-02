@@ -4098,6 +4098,9 @@ Call these functions only at load time!
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
+    * Warning: This alters the biome to biome ID correspondences, so any
+      decorations or ores using the 'biomes' field must afterwards be cleared
+      and re-registered.
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer object handle uniquely identifying the registered
       decoration on success. To get the decoration ID, use
@@ -4112,12 +4115,15 @@ Call these functions only at load time!
     * If the function is called when loading the mod, and `name` is a relative
       path, then the current mod path will be prepended to the schematic
       filename.
-* `minetest.clear_registered_ores()`
-    * Clears all ores currently registered.
 * `minetest.clear_registered_biomes()`
     * Clears all biomes currently registered.
+    * Warning: Clearing and re-registering biomes alters the biome to biome ID
+      correspondences, so any decorations or ores using the 'biomes' field must
+      afterwards be cleared and re-registered.
 * `minetest.clear_registered_decorations()`
     * Clears all decorations currently registered.
+* `minetest.clear_registered_ores()`
+    * Clears all ores currently registered.
 * `minetest.clear_registered_schematics()`
     * Clears all schematics currently registered.
 
