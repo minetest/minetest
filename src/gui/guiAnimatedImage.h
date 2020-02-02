@@ -4,19 +4,23 @@
 #include "util/string.h"
 
 class ISimpleTextureSource;
-class TexturePool;
 
 class GUIAnimatedImage : public gui::IGUIElement {
 public:
 	GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 			const core::rect<s32> &rectangle, const std::string &name,
-			ISimpleTextureSource *tsrc, TexturePool *pool);
+			ISimpleTextureSource *tsrc);
 
 	virtual void draw() override;
 
 private:
 	std::string m_name;
-	s32 m_texture_idx;
-	TexturePool *m_texture_pool;
 	ISimpleTextureSource *m_tsrc;
+
+	video::ITexture *m_texture;
+	u64 m_global_time = 0;
+	s32 m_frame_idx;
+	s32 m_frame_count = 0;
+	u64 m_frame_duration = 0;
+	u64 m_frame_time = 0;
 };

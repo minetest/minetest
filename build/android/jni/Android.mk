@@ -153,8 +153,6 @@ LOCAL_SRC_FILES := \
 		jni/src/client/sky.cpp                    \
 		jni/src/client/sound.cpp                  \
 		jni/src/client/sound_openal.cpp           \
-		jni/src/client/texture.cpp                \
-		jni/src/client/texture_pool.cpp           \
 		jni/src/client/tile.cpp                   \
 		jni/src/client/wieldmesh.cpp              \
 		jni/src/collision.cpp                     \

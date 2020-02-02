@@ -38,7 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIFont.h>
 #include <IGUITabControl.h>
 #include "client/renderingengine.h"
-#include "client/texture_pool.h"
 #include "log.h"
 #include "client/tile.h" // ITextureSource
 #include "client/hud.h" // drawItemStack
@@ -106,7 +105,6 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 	m_tsrc(tsrc),
 	m_client(client),
 	m_formspec_prepend(formspecPrepend),
-	m_texture_pool(new TexturePool()),
 	m_form_src(fsrc),
 	m_text_dst(tdst),
 	m_joystick(joystick),
@@ -145,7 +143,6 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 		tooltip_rect_it.first->drop();
 
 	delete m_selected_item;
-	delete m_texture_pool;
 	delete m_form_src;
 	delete m_text_dst;
 }
@@ -816,7 +813,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
 
 	gui::IGUIElement *e = new GUIAnimatedImage(Environment, this, spec.fid,
-			rect, name, m_tsrc, m_texture_pool);
+			rect, name, m_tsrc);
 
 	auto style = getStyleForElement("animated_image", spec.fname);
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -3197,11 +3194,6 @@ void GUIFormSpecMenu::drawMenu()
 	skin->setFont(m_font);
 
 	m_hovered_item_tooltips.clear();
-
-	/*
-		Update animated images
-	*/
-	m_texture_pool->step();
 
 	updateSelectedItem();
 

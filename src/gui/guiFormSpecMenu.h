@@ -293,7 +293,6 @@ protected:
 	std::string m_formspec_string;
 	std::string m_formspec_prepend;
 	InventoryLocation m_current_inventory_location;
-	TexturePool *m_texture_pool;
 
 	std::vector<GUIInventoryList *> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
