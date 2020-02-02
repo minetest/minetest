@@ -2396,8 +2396,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
-* `transparent` (optional): show transparent
-* `draw_border` (optional): draw border
+* `transparent`: show transparent
+* `draw_border`: draw border
 
 ### `tabheader[<X>,<Y>;<W>,<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
@@ -2409,8 +2409,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
-* `transparent` (optional): show transparent
-* `draw_border` (optional): draw border
+* `transparent`: show transparent
+* `draw_border`: draw border
 
 ### `box[<X>,<Y>;<W>,<H>;<color>]`
 
@@ -2459,7 +2459,7 @@ Elements
 * There are two ways to use it:
     1. handle the changed event (only changed scrollbar is available)
     2. read the value on pressing a button (all scrollbars are available)
-* `orientation`:  `vertical`/`horizontal`
+* `orientation`: `vertical`/`horizontal`. Default horizontal.
 * Fieldname data is transferred to Lua
 * Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
@@ -2572,6 +2572,31 @@ Elements
     * If a state is provided, the style will only take effect when the element is in that state.
     * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
+
+### `set_focus[<name>;<always set>]`
+
+* Sets the focus to the element with the same `name` parameter.
+* **Note**: This element must be placed before the element it focuses.
+* `always set` (optional, default `false`): If false, this sets the focus to the
+  element specified only if the formspec is not being reshown. For instance, if
+  the formspec with the name "test:example" is shown, the focus will be set, but
+  if the same formspec is shown again consecutively, the focus will be set to
+  the last thing the user focused before reshowing. If true, the focus will always
+  be set in any circumstance.
+* The following elements have the ability to be focused:
+    * checkbox
+    * button
+    * button_exit
+    * image_button
+    * image_button_exit
+    * item_image_button
+    * table
+    * textlist
+    * dropdown
+    * field
+    * pwdfield
+    * textarea
+    * scrollbar
 
 Migrating to Real Coordinates
 -----------------------------
@@ -4400,7 +4425,7 @@ Call these functions only at load time!
           * a button was pressed,
           * Enter was pressed while the focus was on a text field
           * a checkbox was toggled,
-          * something was selecteed in a drop-down list,
+          * something was selected in a dropdown list,
           * a different tab was selected,
           * selection was changed in a textlist or table,
           * an entry was double-clicked in a textlist or table,
