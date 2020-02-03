@@ -22,7 +22,7 @@ local function render_button(fs, game, w, h)
 
 	local info = core.get_content_info(game.path)
 
-	fs[#fs + 1] = ("box[0,0;%f,%f;#333]"):format(w, h)
+	fs[#fs + 1] = ("button[0,0;%f,%f;bg;]"):format(w, h)
 
 	--fs[#fs + 1] = ("box[%f,%f;%f,%f;#f00]"):format(0.25, 0.25, h - 0.5, h - 0.5, icon)
 	fs[#fs + 1] = ("image[%f,%f;%f,%f;%s]"):format(0.25, 0.25, h - 0.5, h - 0.5, icon)
@@ -71,7 +71,7 @@ local function change_game_formspec(dialogdata)
 	fs[#fs + 1] = "container_end[]"
 
 	if #games <= 1 then
-		fs[#fs + 1] = "container[0,9]"
+		fs[#fs + 1] = "container[0,7.575]"
 		fs[#fs + 1] = "box[0,0;11,1;#53AC56CC]"
 		fs[#fs + 1] = "label[0.3,0.5;"
 		fs[#fs + 1] = fgettext("You can install more games from the content repository")
