@@ -125,7 +125,7 @@ local function init_globals()
 	end
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0}, tabview_layouts.vertical)
+	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0}, tabview_layouts.mainmenu)
 	if menustyle == "simple" then
 		tv_main:add(tabs.simple_main)
 	else

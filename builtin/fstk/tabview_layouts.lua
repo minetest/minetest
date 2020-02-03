@@ -206,7 +206,7 @@ tabview_layouts.mainmenu = {
 			local tsize = tab.tabsize or
 					{width=view.width, height=view.height}
 			formspec = formspec ..
-					string.format("size[%f,%f,%s]real_coordinates[true]",tsize.width,tsize.height,
+					string.format("size[%f,%f,%s]",tsize.width,tsize.height,
 							dump(view.fixed_size))
 		end
 		formspec = formspec ..
@@ -227,23 +227,44 @@ tabview_layouts.mainmenu = {
 		local tsize = { width = 3, height = #view.tablist - 0.2}
 
 		local fs = {
+			"formspec_version[3]",
 			("size[%f,%f]"):format(tsize.width, tsize.height),
-			"real_coordinates[true]",
+			"position[0.05,0.5]",
+			"anchor[0,0.5]",
+			"no_prepend[]",
 			"bgcolor[#00000000]",
-			("box[%f,%f;%f,%f;%s]"):format(0, 0, 3, tsize.height, bgcolor)
-		}
+			"style_type[button;border=false;bgimg=",
+				defaulttexturedir, "blank.png;bgimg_hovered=",
+				defaulttexturedir, "highlight.png;bgimg_pressed=",
+				defaulttexturedir, "highlight.png]"
+			}
 
 		for i = 1, #view.tablist do
 			local tab = view.tablist[i]
 			local name = "tab_" .. tab.name
 			local y = i - 1
 
+			--fs[#fs + 1] = "background9[0,"
+			--fs[#fs + 1] = tonumber(y)
+			--fs[#fs + 1] = ";3,0.8;"
+			--fs[#fs + 1] = defaulttexturedir
+			--fs[#fs + 1] = "blur.png^[opacity:127;20]"
+
+			fs[#fs + 1] = "box[0,"
+			fs[#fs + 1] = tonumber(y)
+			fs[#fs + 1] = ";3,0.8;#333]"
+
+			fs[#fs + 1] = "label[0.25,"
+			fs[#fs + 1] = tonumber(y + 0.4)
+			fs[#fs + 1] = ";"
+			fs[#fs + 1] = minetest.formspec_escape(tab.caption)
+			fs[#fs + 1] = "]"
+
 			fs[#fs + 1] = "button[0,"
 			fs[#fs + 1] = tonumber(y)
 			fs[#fs + 1] = ";3,0.8;"
 			fs[#fs + 1] = name
 			fs[#fs + 1] = ";"
-			fs[#fs + 1] = minetest.formspec_escape(tab.caption)
 			fs[#fs + 1] ="]"
 		end
 
