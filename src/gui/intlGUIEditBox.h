@@ -11,6 +11,8 @@
 #include "irrArray.h"
 #include "IOSOperator.h"
 #include "guiScrollBar.h"
+#include "guiEditBoxWithScrollbar.h"
+
 
 namespace irr
 {
@@ -126,6 +128,10 @@ namespace gui
 
 		//! set true if this EditBox is writable
 		virtual void setWritable(bool can_write_text);
+
+		virtual GUIEditBoxWithScrollBar::DynamicData getDynamicData();
+		virtual void setDynamicData(
+			const GUIEditBoxWithScrollBar::DynamicData &dyndata);
 
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;

@@ -1047,6 +1047,17 @@ void GUIHyperText::checkHover(s32 X, s32 Y)
 				gui::ECI_NORMAL);
 }
 
+core::position2d<s32> GUIHyperText::getScrollPosition()
+{
+	return m_text_scrollpos;
+}
+
+void GUIHyperText::setScrollPosition(const core::position2d<s32> &scrollpos)
+{
+	m_text_scrollpos = scrollpos;
+	m_vscrollbar->setPos(-m_text_scrollpos.Y);
+}
+
 bool GUIHyperText::OnEvent(const SEvent &event)
 {
 	// Scroll bar

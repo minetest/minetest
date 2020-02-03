@@ -2295,7 +2295,8 @@ Elements
   element.
 * `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
     * if you want a listelement to start with "#" write "##"
-* Index to be selected within textlist
+* `selected idx`: index of row to be selected within textlist (first row = `1`).
+  If set to `0`, no item will be selected.
 * `true`/`false`: draw transparent background
 * See also `minetest.explode_textlist_event`
   (main menu: `core.explode_textlist_event`).
@@ -2353,7 +2354,8 @@ Elements
 * `W`: width of the dropdown. Height is automatically chosen with this syntax.
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
-* Index of currently selected dropdown item
+* `selected idx`: index of currently selected dropdown item (first row = `1`).
+  If set to `0`, no item will be selected.
 
 ### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
 
@@ -2367,7 +2369,8 @@ Elements
 * `W` and `H`: width and height of the dropdown
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
-* Index of currently selected dropdown item
+* `selected idx`: index of currently selected dropdown item (first row = `1`).
+  If set to `0`, no item will be selected.
 
 ### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
 
@@ -2420,7 +2423,8 @@ Elements
 * Displays cells as defined by the previous `tablecolumns[]`
 * `name`: fieldname sent to server on row select or doubleclick
 * `cell 1`...`cell n`: cell contents given in row-major order
-* `selected idx`: index of row to be selected within table (first row = `1`)
+* `selected idx`: index of row to be selected within table (first row = `1`).
+  If set to `0`, no item will be selected.
 * See also `minetest.explode_table_event`
   (main menu: `core.explode_table_event`).
 
@@ -4275,7 +4279,7 @@ Call these functions only at load time!
         * `button` and variants: If pressed, contains the user-facing button
           text as value. If not pressed, is `nil`
         * `field`, `textarea` and variants: Text in the field
-        * `dropdown`: Text of selected item
+        * `dropdown`: Text of selected item or `""` if no item is selected.
         * `tabheader`: Tab index, starting with `"1"` (only if tab changed)
         * `checkbox`: `"true"` if checked, `"false"` if unchecked
         * `textlist`: See `minetest.explode_textlist_event`

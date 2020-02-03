@@ -1474,6 +1474,28 @@ void GUIEditBoxWithScrollBar::setBackgroundColor(const video::SColor &bg_color)
 	m_bg_color_used = true;
 }
 
+GUIEditBoxWithScrollBar::DynamicData GUIEditBoxWithScrollBar::getDynamicData()
+{
+	return {
+		Text,
+		{m_hscroll_pos, m_vscroll_pos},
+		m_cursor_pos,
+		m_mark_begin,
+		m_mark_end
+	};
+}
+
+void GUIEditBoxWithScrollBar::setDynamicData(
+	const GUIEditBoxWithScrollBar::DynamicData &dyndata)
+{
+	Text =          dyndata.text;
+	m_hscroll_pos = dyndata.scroll_pos.X;
+	m_vscroll_pos = dyndata.scroll_pos.Y;
+	m_cursor_pos  = dyndata.cursor_pos;
+	m_mark_begin  = dyndata.mark_begin;
+	m_mark_end    = dyndata.mark_end;
+}
+
 //! Writes attributes of the element.
 void GUIEditBoxWithScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options = 0) const
 {

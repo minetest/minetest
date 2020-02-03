@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #include <cstdlib>
 #include <algorithm>
 #include <iterator>
@@ -311,7 +310,7 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 		lockSize(false);
 #ifndef __ANDROID__
 		if (parts.size() == 3) {
-			if (parts[2] == "true") {
+			if (is_yes(parts[2])) {
 				lockSize(true,v2u32(800,600));
 			}
 		}
@@ -491,12 +490,12 @@ void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element
 
 void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
 	if (((parts.size() >= 3) && (parts.size() <= 4)) ||
 		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
 		std::string name = parts[1];
 		std::string label = parts[2];
 		std::string selected;
@@ -504,11 +503,10 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		if (parts.size() >= 4)
 			selected = parts[3];
 
-		MY_CHECKPOS("checkbox",0);
+		MY_CHECKPOS("checkbox", 0);
 
 		bool fselected = false;
-
-		if (selected == "true")
+		if (is_yes(selected))
 			fselected = true;
 
 		std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
@@ -539,13 +537,18 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		}
 
 		FieldSpec spec(
-				name,
-				wlabel, //Needed for displaying text on MSVC
-				wlabel,
-				258+m_fields.size()
-			);
-
+			name,
+			wlabel, // Needed for displaying text on MSVC
+			wlabel,
+			258+m_fields.size()
+		);
 		spec.ftype = f_CheckBox;
+
+		if (m_is_form_regenerated &&
+			data->preserved_etc.find(spec.fid) != data->preserved_etc.end())
+		{
+			fselected = data->preserved_etc[spec.fid];
+		}
 
 		gui::IGUICheckBox *e = Environment->addCheckBox(fselected, rect, this,
 					spec.fid, spec.flabel.c_str());
@@ -567,16 +570,16 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 
 void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
 	if (parts.size() >= 5) {
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
+		std::vector<std::string> v_geom = split(parts[1], ',');
 		std::string name = parts[3];
 		std::string value = parts[4];
 
-		MY_CHECKPOS("scrollbar",0);
-		MY_CHECKGEOM("scrollbar",1);
+		MY_CHECKPOS("scrollbar", 0);
+		MY_CHECKGEOM("scrollbar", 1);
 
 		v2s32 pos;
 		v2s32 dim;
@@ -620,7 +623,13 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		e->setMax(max);
 		e->setMin(min);
 
-		e->setPos(stoi(parts[4]));
+		if (m_is_form_regenerated &&
+			data->preserved_etc.find(spec.fid) != data->preserved_etc.end())
+		{
+			e->setPos(data->preserved_etc[spec.fid]);
+		} else {
+			e->setPos(stoi(parts[4]));
+		}
 
 		e->setSmallStep(data->scrollbar_options.small_step);
 		e->setLargeStep(data->scrollbar_options.large_step);
@@ -1068,7 +1077,6 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 			item = wide_to_utf8(unescape_translate(utf8_to_wide(unescape_string(item))));
 		}
 
-		//now really show table
 		GUITable *e = new GUITable(Environment, this, spec.fid, rect, m_tsrc);
 
 		if (spec.fname == data->focused_fieldname) {
@@ -1077,12 +1085,9 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 
 		e->setTable(data->table_options, data->table_columns, items);
 
-		if (data->table_dyndata.find(name) != data->table_dyndata.end()) {
+		e->setSelected(stoi(str_initial_selection));
+		if (data->table_dyndata.find(name) != data->table_dyndata.end())
 			e->setDynamicData(data->table_dyndata[name]);
-		}
-
-		if (!str_initial_selection.empty() && str_initial_selection != "0")
-			e->setSelected(stoi(str_initial_selection));
 
 		auto style = getStyleForElement("table", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -1144,7 +1149,6 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 			item = wide_to_utf8(unescape_translate(utf8_to_wide(unescape_string(item))));
 		}
 
-		//now really show list
 		GUITable *e = new GUITable(Environment, this, spec.fid, rect, m_tsrc);
 
 		if (spec.fname == data->focused_fieldname) {
@@ -1153,12 +1157,9 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 
 		e->setTextList(items, is_yes(str_transparent));
 
-		if (data->table_dyndata.find(name) != data->table_dyndata.end()) {
+		e->setSelected(stoi(str_initial_selection));
+		if (data->table_dyndata.find(name) != data->table_dyndata.end())
 			e->setDynamicData(data->table_dyndata[name]);
-		}
-
-		if (!str_initial_selection.empty() && str_initial_selection != "0")
-			e->setSelected(stoi(str_initial_selection));
 
 		auto style = getStyleForElement("textlist", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -1173,30 +1174,29 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 
 void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
 	if ((parts.size() == 5) ||
 		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
 		std::string name = parts[2];
-		std::vector<std::string> items = split(parts[3],',');
-		std::string str_initial_selection;
-		str_initial_selection = parts[4];
+		std::vector<std::string> items = split(parts[3], ',');
+		std::string str_initial_selection = parts[4];
 
-		MY_CHECKPOS("dropdown",0);
+		MY_CHECKPOS("dropdown", 0);
 
 		v2s32 pos;
 		v2s32 geom;
 		core::rect<s32> rect;
 
 		if (data->real_coordinates) {
-			std::vector<std::string> v_geom = split(parts[1],',');
+			std::vector<std::string> v_geom = split(parts[1], ',');
 
 			if (v_geom.size() == 1)
 				v_geom.emplace_back("1");
 
-			MY_CHECKGEOM("dropdown",1);
+			MY_CHECKGEOM("dropdown", 1);
 
 			pos = getRealCoordinateBasePos(v_pos);
 			geom = getRealCoordinateGeometry(v_geom);
@@ -1232,8 +1232,13 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 				utf8_to_wide(item))).c_str());
 		}
 
-		if (!str_initial_selection.empty())
-			e->setSelected(stoi(str_initial_selection)-1);
+		if (m_is_form_regenerated &&
+			data->preserved_etc.find(spec.fid) != data->preserved_etc.end())
+		{
+			e->setSelected(data->preserved_etc[spec.fid]);
+		} else {
+			e->setSelected(stoi(str_initial_selection) - 1);
+		}
 
 		auto style = getStyleForElement("dropdown", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -1304,10 +1309,18 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 			258 + m_fields.size(),
 			0,
 			ECI_IBEAM
-			);
+		);
+		spec.ftype = f_PwdField;
 
 		spec.send = true;
-		gui::IGUIEditBox * e = Environment->addEditBox(0, rect, true, this, spec.fid);
+		GUIEditBoxWithScrollBar *e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(),
+			true, Environment, this, spec.fid, rect, true, false);
+
+		if (m_is_form_regenerated &&
+			data->field_dyndata.find(spec.fid) != data->field_dyndata.end())
+		{
+			e->setDynamicData(data->field_dyndata[spec.fid]);
+		}
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -1375,14 +1388,15 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 
 	if (use_intl_edit_box && g_settings->getBool("freetype")) {
 		e = new gui::intlGUIEditBox(spec.fdefault.c_str(), true, Environment,
-				this, spec.fid, rect, is_editable, is_multiline);
+			this, spec.fid, rect, is_editable, is_multiline);
+		spec.ftype = f_IntlTextArea;
 	} else {
 		if (is_multiline) {
 			e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true,
-					Environment, this, spec.fid, rect, is_editable, true);
+				Environment, this, spec.fid, rect, is_editable, true);
 		} else if (is_editable) {
-			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this,
-					spec.fid);
+			e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true,
+				Environment, this, spec.fid, rect, true, false);
 			e->grab();
 		}
 	}
@@ -1392,6 +1406,19 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 	if (e) {
 		if (is_editable && spec.fname == data->focused_fieldname)
 			Environment->setFocus(e);
+
+		if (m_is_form_regenerated &&
+			data->field_dyndata.find(spec.fid) != data->field_dyndata.end())
+		{
+			if (spec.ftype == f_IntlTextArea) {
+				gui::intlGUIEditBox *elem = static_cast<gui::intlGUIEditBox *>(e);
+				elem->setDynamicData(data->field_dyndata[spec.fid]);
+			} else {
+				GUIEditBoxWithScrollBar *elem =
+					static_cast<GUIEditBoxWithScrollBar *>(e);
+				elem->setDynamicData(data->field_dyndata[spec.fid]);
+			}
+		}
 
 		if (is_multiline) {
 			e->setMultiLine(true);
@@ -1451,10 +1478,8 @@ void GUIFormSpecMenu::parseSimpleField(parserData *data,
 			size.X / 2 - 150 + 300, pos.Y + m_btn_height * 2
 	);
 
-
 	if (m_form_src)
 		default_val = m_form_src->resolveText(default_val);
-
 
 	std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
 
@@ -1466,6 +1491,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData *data,
 		0,
 		ECI_IBEAM
 	);
+	spec.ftype = f_Field;
 
 	createTextField(data, spec, rect, false);
 
@@ -1519,7 +1545,6 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 	if(m_form_src)
 		default_val = m_form_src->resolveText(default_val);
 
-
 	std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(label)));
 
 	FieldSpec spec(
@@ -1530,6 +1555,11 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 		0,
 		ECI_IBEAM
 	);
+
+	if (type == "textarea")
+		spec.ftype = f_TextArea;
+	else
+		spec.ftype = f_Field;
 
 	createTextField(data, spec, rect, type == "textarea");
 
@@ -1607,10 +1637,16 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 		L"",
 		258 + m_fields.size()
 	);
+	spec.ftype = f_HyperText;
 
-	spec.ftype = f_Unknown;
-	new GUIHyperText(
+	GUIHyperText *e = new GUIHyperText(
 		spec.flabel.c_str(), Environment, this, spec.fid, rect, m_client, m_tsrc);
+
+	if (m_is_form_regenerated &&
+		data->preserved_scrolling.find(spec.fid) != data->preserved_scrolling.end())
+	{
+		e->setScrollPosition(data->preserved_scrolling[spec.fid]);
+	}
 
 	m_fields.push_back(spec);
 }
@@ -1798,9 +1834,9 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 		std::string pressed_image_name;
 
 		if (parts.size() >= 7) {
-			if (parts[5] == "true")
+			if (is_yes(parts[5]))
 				noclip = true;
-			if (parts[6] == "false")
+			if (!is_yes(parts[6]))
 				drawborder = false;
 		}
 
@@ -1887,9 +1923,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 
-		// If we're using real coordinates, add an extra field for height.
-		// Width is not here because tabs are the width of the text, and
-		// there's no reason to change that.
+		// If we're using real coordinates, add an extra field for geometry.
 		unsigned int i = 0;
 		std::vector<std::string> v_geom = {"1", "0.75"}; // Dummy width and default height
 		bool auto_width = true;
@@ -1913,9 +1947,9 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		MY_CHECKPOS("tabheader", 0);
 
 		if (parts.size() == 6 + i) {
-			if (parts[4+i] == "true")
+			if (is_yes(parts[4+i]))
 				show_background = false;
-			if (parts[5+i] == "false")
+			if (!is_yes(parts[5+i]))
 				show_border = false;
 		}
 
@@ -1975,10 +2009,18 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 			tab->setTextColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 		}
 
-		if ((tab_index >= 0) &&
+		if (m_is_form_regenerated &&
+			data->preserved_etc.find(spec.fid) != data->preserved_etc.end())
+		{
+			e->setActiveTab(data->preserved_etc[spec.fid]);
+		} else {
+			if ((tab_index >= 0) &&
 				(buttons.size() < INT_MAX) &&
 				(tab_index < (int) buttons.size()))
-			e->setActiveTab(tab_index);
+			{
+				e->setActiveTab(tab_index);
+			}
+		}
 
 		m_fields.push_back(spec);
 		return;
@@ -2649,6 +2691,10 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		std::string tablename = m_table.first.fname;
 		GUITable *table = m_table.second;
 		mydata.table_dyndata[tablename] = table->getDynamicData();
+		if (!m_is_form_regenerated) {
+			// Don't preserve selection because this is a new form
+			mydata.table_dyndata[tablename].selected = -1;
+		}
 	}
 
 	//set focus
@@ -2664,6 +2710,46 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				if (field.fid == focused_id) {
 					mydata.focused_fieldname = field.fname;
 					break;
+				}
+			}
+		}
+	}
+
+	if (m_is_form_regenerated) {
+		// Preserve values of elements
+		for (auto &field : m_fields) {
+			IGUIElement *elem = getElementFromId(field.fid, true);
+			if (elem) {
+				if (field.ftype == f_Field || field.ftype == f_PwdField ||
+					field.ftype == f_TextArea)
+				{
+					GUIEditBoxWithScrollBar *e =
+						static_cast<GUIEditBoxWithScrollBar *>(elem);
+					mydata.field_dyndata[field.fid] = e->getDynamicData();
+
+				} else if (field.ftype == f_IntlTextArea) {
+					gui::intlGUIEditBox *e = static_cast<gui::intlGUIEditBox *>(elem);
+					mydata.field_dyndata[field.fid] = e->getDynamicData();
+
+				} else if (field.ftype == f_DropDown) {
+					gui::IGUIComboBox *e = static_cast<gui::IGUIComboBox *>(elem);
+					mydata.preserved_etc[field.fid] = e->getSelected();
+
+				} else if (field.ftype == f_ScrollBar) {
+					GUIScrollBar *e = static_cast<GUIScrollBar *>(elem);
+					mydata.preserved_etc[field.fid] = e->getPos();
+
+				} else if (field.ftype == f_CheckBox) {
+					gui::IGUICheckBox *e = static_cast<gui::IGUICheckBox *>(elem);
+					mydata.preserved_etc[field.fid] = e->isChecked();
+
+				} else if (field.ftype == f_TabHeader) {
+					gui::IGUITabControl *e = static_cast<gui::IGUITabControl *>(elem);
+					mydata.preserved_etc[field.fid] = e->getActiveTab();
+
+				} else if (field.ftype == f_HyperText) {
+					GUIHyperText *e = static_cast<GUIHyperText *>(elem);
+					mydata.preserved_scrolling[field.fid] = e->getScrollPosition();
 				}
 			}
 		}
@@ -3015,6 +3101,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// legacy sorting
 	if (m_formspec_version < 3)
 		legacySortElements(legacy_sort_start);
+
+	m_is_form_regenerated = true;
 }
 
 void GUIFormSpecMenu::legacySortElements(core::list<IGUIElement *>::Iterator from)
@@ -3136,6 +3224,7 @@ void GUIFormSpecMenu::drawMenu()
 		const std::string &newform = m_form_src->getForm();
 		if (newform != m_formspec_string) {
 			m_formspec_string = newform;
+			m_is_form_regenerated = false;
 			regenerateGui(m_screensize_old);
 		}
 	}
@@ -3474,6 +3563,8 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						if (dropdown_values && selected < (s32)dropdown_values->size()) {
 							fields[name] = (*dropdown_values)[selected];
 						}
+					} else {
+						fields[name] = "";
 					}
 				}
 				else if (s.ftype == f_TabHeader) {

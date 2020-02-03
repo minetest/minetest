@@ -122,6 +122,16 @@ public:
 	//! Change the background color
 	virtual void setBackgroundColor(const video::SColor &bg_color);
 
+	struct DynamicData {
+		core::stringw text;
+		core::position2d<s32> scroll_pos;
+		s32 cursor_pos;
+		s32 mark_begin, mark_end;
+	};
+
+	virtual DynamicData getDynamicData();
+	virtual void setDynamicData(const DynamicData &dyndata);
+
 	//! Writes attributes of the element.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modalMenu.h"
 #include "guiInventoryList.h"
 #include "guiTable.h"
+#include "guiEditBoxWithScrollbar.h"
 #include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
 #include "util/string.h"
@@ -48,6 +49,11 @@ typedef enum {
 	f_ScrollBar,
 	f_Box,
 	f_ItemImage,
+	f_PwdField,
+	f_Field,
+	f_TextArea,
+	f_IntlTextArea,
+	f_HyperText,
 	f_Unknown
 } FormspecFieldType;
 
@@ -164,6 +170,7 @@ public:
 	{
 		m_formspec_string = formspec_string;
 		m_current_inventory_location = current_inventory_location;
+		m_is_form_regenerated = false;
 		regenerateGui(m_screensize_old);
 	}
 
@@ -293,6 +300,10 @@ protected:
 	std::string m_formspec_prepend;
 	InventoryLocation m_current_inventory_location;
 
+	// Default true because we can't control regeneration on resizing, but
+	// we can control cases when the formspec is shown intentionally.
+	bool m_is_form_regenerated = true;
+
 	std::vector<GUIInventoryList *> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
 	std::vector<gui::IGUIElement *> m_backgrounds;
@@ -364,8 +375,11 @@ private:
 			GUIScrollBar::ArrowVisibility arrow_visiblity = GUIScrollBar::DEFAULT;
 		} scrollbar_options;
 
-		// used to restore table selection/scroll/treeview state
+		// Preservation of formspec elements
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
+		std::unordered_map<s32, GUIEditBoxWithScrollBar::DynamicData> field_dyndata;
+		std::unordered_map<s32, core::position2d<s32>> preserved_scrolling;
+		std::unordered_map<s32, s32> preserved_etc;
 	} parserData;
 
 	typedef struct {

@@ -205,6 +205,9 @@ public:
 	//! draws the element and its children
 	virtual void draw();
 
+	virtual core::position2d<s32> getScrollPosition();
+	virtual void setScrollPosition(const core::position2d<s32> &scrollpos);
+
 	core::dimension2du getTextDimension();
 
 	bool OnEvent(const SEvent &event);

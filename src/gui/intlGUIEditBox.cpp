@@ -1545,6 +1545,27 @@ void intlGUIEditBox::setWritable(bool can_write_text)
 	m_writable = can_write_text;
 }
 
+GUIEditBoxWithScrollBar::DynamicData intlGUIEditBox::getDynamicData()
+{
+	return {
+		Text,
+		{HScrollPos, VScrollPos},
+		CursorPos,
+		MarkBegin,
+		MarkEnd
+	};
+}
+
+void intlGUIEditBox::setDynamicData(
+	const GUIEditBoxWithScrollBar::DynamicData &dyndata)
+{
+	HScrollPos = dyndata.scroll_pos.X;
+	VScrollPos = dyndata.scroll_pos.Y;
+	CursorPos  = dyndata.cursor_pos;
+	MarkBegin  = dyndata.mark_begin;
+	MarkEnd    = dyndata.mark_end;
+}
+
 //! Writes attributes of the element.
 void intlGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {

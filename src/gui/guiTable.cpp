@@ -606,7 +606,8 @@ void GUITable::setDynamicData(const DynamicData &dyndata)
 	m_keynav_time = dyndata.keynav_time;
 	m_keynav_buffer = dyndata.keynav_buffer;
 
-	setSelected(dyndata.selected);
+	if (dyndata.selected > -1)
+		setSelected(dyndata.selected);
 	m_sel_column = 0;
 	m_sel_doubleclick = false;
 
