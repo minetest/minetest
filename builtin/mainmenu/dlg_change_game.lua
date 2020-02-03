@@ -16,15 +16,44 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+local function render_button(fs, game, w, h)
+	local icon = game.menuicon_path or ""
+	local key = "game_" .. game.id
+
+	local info = core.get_content_info(game.path)
+
+	fs[#fs + 1] = ("box[0,0;%f,%f;#333]"):format(w, h)
+
+	--fs[#fs + 1] = ("box[%f,%f;%f,%f;#f00]"):format(0.25, 0.25, h - 0.5, h - 0.5, icon)
+	fs[#fs + 1] = ("image[%f,%f;%f,%f;%s]"):format(0.25, 0.25, h - 0.5, h - 0.5, icon)
+
+	fs[#fs + 1] = "label["
+	fs[#fs + 1] = tostring(h)
+	fs[#fs + 1] = ",0.4;"
+	fs[#fs + 1] = minetest.formspec_escape(game.name)
+	fs[#fs + 1] = "]"
+
+	--fs[#fs + 1] = ("box[%f,%f;%f,%f;#f00]"):format(h, 0.65, w - h - 0.25, h - 0.9)
+	fs[#fs + 1] = ("textarea[%f,%f;%f,%f;;;%s]"):format(h, 0.65, w - h - 0.25, h - 0.9, info.description or "")
+
+	fs[#fs + 1] = "style["
+	fs[#fs + 1] = key
+	fs[#fs + 1] = (";border=false;bgimg=%s;bgimg_hovered=%s;bgimg_pressed=%s]"):format(
+			defaulttexturedir .. "blank.png",
+			defaulttexturedir .. "highlight.png",
+			defaulttexturedir .. "highlight.png")
+
+	fs[#fs + 1] = ("button[0,0;%f,%f;%s;]"):format(w, h, key)
+end
+
 local function change_game_formspec(dialogdata)
 	gamemenu.set_game(nil)
 
 	local fs = {
-		"size[11,11]real_coordinates[true]",
-		"style_type[button;border=false]",
-		"style_type[image_button;border=false]",
+		"formspec_version[3]size[13,11]",
 		"bgcolor[#00000000]",
-		"button[0,0;11,1;;", fgettext("Select a Game"), "]",
+		"style[title;border=false]",
+		"button[0,0;13,1;title;", fgettext("Select a Game"), "]",
 		"container[0,1]", -- TODO: convert to scroll_container when added
 	}
 
@@ -33,26 +62,11 @@ local function change_game_formspec(dialogdata)
 
 	local games = pkgmgr.games
 	for i=1, #games do
-		local game = games[i]
-		fs[#fs + 1] = ("container[%f,%f]"):format(x * 2.25, y * 3.05)
-
-		local icon = game.menuicon_path or ""
-
-		fs[#fs + 1] = "image_button[0,0;2,2;"
-		fs[#fs + 1] = icon
-		fs[#fs + 1] = ";game_"
-		fs[#fs + 1] = game.id
-		fs[#fs + 1] = ";]"
-
-		fs[#fs + 1] = "button[0,2;2,0.8;game_"
-		fs[#fs + 1] = game.id
-		fs[#fs + 1] = ";"
-		fs[#fs + 1] = minetest.formspec_escape(game.name)
-		fs[#fs + 1] = "]"
-
+		fs[#fs + 1] = ("container[%f,%f]"):format(x * 6.625, y * 2)
+		render_button(fs, games[i], 6.375, 1.75)
 		fs[#fs + 1] = "container_end[]"
 
-		if x < 4 then
+		if x < 1 then
 			x = x + 1
 		else
 			x = 0
@@ -66,11 +80,11 @@ local function change_game_formspec(dialogdata)
 
 	fs[#fs + 1] = "container_end[]"
 
-	fs[#fs + 1] = "container[0,9]"
-	fs[#fs + 1] = "box[0,0;11,1;#53AC56CC]"
-	fs[#fs + 1] = "label[0.3,0.5;"
-	fs[#fs + 1] = fgettext("You can install more games from the content repository")
-	fs[#fs + 1] = "]container_end[]"
+	--fs[#fs + 1] = "container[0,9]"
+	--fs[#fs + 1] = "box[0,0;11,1;#53AC56CC]"
+	--fs[#fs + 1] = "label[0.3,0.5;"
+	--fs[#fs + 1] = fgettext("You can install more games from the content repository")
+	--fs[#fs + 1] = "]container_end[]"
 
 
 	fs[#fs + 1] = "container[0,10.2]style_type[button;border=true]"

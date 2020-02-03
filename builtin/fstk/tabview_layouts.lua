@@ -85,6 +85,9 @@ tabview_layouts.vertical = {
 	mainbgcolor = "#0000008c",
 
 	get = function(self, view)
+		local formspec = ""
+		local tab = view.tablist[view.last_tab_index]
+
 		local tsize
 		if view.real_coordinates then
 			tsize = tab and tab.tabsize or { width = view.width, height = view.height }
@@ -95,8 +98,6 @@ tabview_layouts.vertical = {
 			}
 		end
 
-		local formspec = ""
-		local tab = view.tablist[view.last_tab_index]
 		if view.parent == nil then
 			formspec = formspec ..
 					string.format("formspec_version[3]size[%f,%f,%s]bgcolor[#00000000]",tsize.width+3,tsize.height,
