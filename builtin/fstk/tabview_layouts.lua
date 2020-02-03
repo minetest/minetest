@@ -85,26 +85,44 @@ tabview_layouts.vertical = {
 	mainbgcolor = "#0000008c",
 
 	get = function(self, view)
+		local tsize
+		if view.real_coordinates then
+			tsize = tab and tab.tabsize or { width = view.width, height = view.height }
+		else
+			tsize = tab and tab.tabsize or {
+				width = view.width * 5/4 + 2 * 0.375,
+				height = view.height * 15/13 + 2 * 0.375 + 0.2
+			}
+		end
+
 		local formspec = ""
 		local tab = view.tablist[view.last_tab_index]
 		if view.parent == nil then
-			local tsize = tab and tab.tabsize or {width=view.width, height=view.height}
 			formspec = formspec ..
 					string.format("formspec_version[3]size[%f,%f,%s]bgcolor[#00000000]",tsize.width+3,tsize.height,
 							dump(view.fixed_size))
 		end
-		formspec = formspec .. self:get_header(view)
+		formspec = formspec .. self:get_header(view, tsize)
 
 		if tab then
 			formspec = formspec .. "container[3,0]"
 
 			local mainbgcolor = view.mainbgcolor or self.mainbgcolor
-			formspec = formspec .. ("box[0,0;%f,%f;%s]"):format(view.width, view.height, mainbgcolor)
+			formspec = formspec .. ("box[0,0;%f,%f;%s]"):format(tsize.width, tsize.height, mainbgcolor)
+
+			if not view.real_coordinates then
+				formspec = formspec .. "formspec_version[1]real_coordinates[false]container[-0.525,0]"
+			end
+
 			formspec = formspec .. view.tablist[view.last_tab_index].get_formspec(
 				view,
 				view.tablist[view.last_tab_index].name,
 				view.tablist[view.last_tab_index].tabdata,
 				view.tablist[view.last_tab_index].tabsize)
+
+			if not view.real_coordinates then
+				formspec = formspec .. "container_end[]"
+			end
 
 			formspec = formspec .. "container_end[]"
 		end
@@ -112,13 +130,12 @@ tabview_layouts.vertical = {
 		return formspec
 	end,
 
-	get_header = function(self, view)
+	get_header = function(self, view, tsize)
 		local bgcolor  = view.bgcolor or self.bgcolor
 		local selcolor = view.selcolor or self.selcolor
 		local mainbgcolor = view.mainbgcolor or self.mainbgcolor
 
 		local last_tab = view.tablist[view.last_tab_index]
-		local tsize = last_tab and last_tab.tabsize or {width=view.width, height=view.height}
 
 		local fs = {
 			("box[%f,%f;%f,%f;%s]"):format(0, 0, 3, tsize.height, mainbgcolor),

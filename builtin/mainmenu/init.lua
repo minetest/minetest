@@ -146,6 +146,18 @@ local function init_globals()
 		end
 	end
 	ui.set_default("maintab")
+
+	tv_main:add({
+		name = "change_game",
+		caption = fgettext("Change Game"),
+		show = function(tabview, name, tabdata)
+			local change_game_dlg = change_game_dlg()
+			change_game_dlg:set_parent(tabdata)
+			tabdata:hide()
+			change_game_dlg:show()
+		end
+	})
+
 	tv_main:show()
 
 	ui.update()
