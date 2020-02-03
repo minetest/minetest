@@ -229,7 +229,7 @@ tabview_layouts.mainmenu = {
 		local fs = {
 			"formspec_version[3]",
 			("size[%f,%f]"):format(tsize.width, tsize.height),
-			"position[0.05,0.5]",
+			"position[0,0.5]",
 			"anchor[0,0.5]",
 			"no_prepend[]",
 			"bgcolor[#00000000]",
@@ -252,9 +252,9 @@ tabview_layouts.mainmenu = {
 
 			fs[#fs + 1] = "box[0,"
 			fs[#fs + 1] = tonumber(y)
-			fs[#fs + 1] = ";3,0.8;#333]"
+			fs[#fs + 1] = ";3.25,0.8;#333]"
 
-			fs[#fs + 1] = "label[0.25,"
+			fs[#fs + 1] = "label[0.5,"
 			fs[#fs + 1] = tonumber(y + 0.4)
 			fs[#fs + 1] = ";"
 			fs[#fs + 1] = minetest.formspec_escape(tab.caption)
@@ -262,7 +262,7 @@ tabview_layouts.mainmenu = {
 
 			fs[#fs + 1] = "button[0,"
 			fs[#fs + 1] = tonumber(y)
-			fs[#fs + 1] = ";3,0.8;"
+			fs[#fs + 1] = ";3.25,0.8;"
 			fs[#fs + 1] = name
 			fs[#fs + 1] = ";"
 			fs[#fs + 1] ="]"
