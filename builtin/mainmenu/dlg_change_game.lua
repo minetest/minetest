@@ -50,54 +50,58 @@ local function change_game_formspec(dialogdata)
 	gamemenu.set_game(nil)
 
 	local fs = {
-		"formspec_version[3]size[13,11]",
-		"bgcolor[#00000000]",
+		"formspec_version[3]",
+		"size[9.75,10]",
 		"style[title;border=false]",
-		"button[0,0;13,1;title;", fgettext("Select a Game"), "]",
-		"container[0,1]", -- TODO: convert to scroll_container when added
+		"button[0,0;9.75,1;title;", fgettext("Select a Game"), "]",
+		"scrollbar[8.875,1;0.5,7.625;vertical;scrollbar;0]",
+		"container[0.375,1]",
 	}
 
-	local x = 0
-	local y = 0
+	-- TODO: convert to scroll_container when added
+	-- this will also allow removing the game limit below
 
 	local games = pkgmgr.games
-	for i=1, #games do
-		fs[#fs + 1] = ("container[%f,%f]"):format(x * 6.625, y * 2)
-		render_button(fs, games[i], 6.375, 1.75)
+	for i=1, math.min(4, #games) do
+		fs[#fs + 1] = ("container[%f,%f]"):format(0, (i - 1) * 1.75)
+		render_button(fs, games[i], 8.25, 1.5)
 		fs[#fs + 1] = "container_end[]"
-
-		if x < 1 then
-			x = x + 1
-		else
-			x = 0
-			y = y + 1
-		end
-
-		if y > 2 then
-			break
-		end
 	end
 
 	fs[#fs + 1] = "container_end[]"
 
-	--fs[#fs + 1] = "container[0,9]"
-	--fs[#fs + 1] = "box[0,0;11,1;#53AC56CC]"
-	--fs[#fs + 1] = "label[0.3,0.5;"
-	--fs[#fs + 1] = fgettext("You can install more games from the content repository")
-	--fs[#fs + 1] = "]container_end[]"
+	if #games <= 1 then
+		fs[#fs + 1] = "container[0,9]"
+		fs[#fs + 1] = "box[0,0;11,1;#53AC56CC]"
+		fs[#fs + 1] = "label[0.3,0.5;"
+		fs[#fs + 1] = fgettext("You can install more games from the content repository")
+		fs[#fs + 1] = "]container_end[]"
+	end
 
+	fs[#fs + 1] = "container[0.375,8.825]style_type[button;border=true]"
 
-	fs[#fs + 1] = "container[0,10.2]style_type[button;border=true]"
+	local num_buttons = 3
+	local w = (9.75 - 2*0.375 - (num_buttons - 1) * 0.25) / num_buttons
 
-	fs[#fs + 1] = "button[0,0;3,0.8;play_online;"
+	fs[#fs + 1] = "button[0,0;"
+	fs[#fs + 1] = tostring(w)
+	fs[#fs + 1] = ",0.8;play_online;"
 	fs[#fs + 1] = fgettext("Play Online")
 	fs[#fs + 1] = "]"
 
-	fs[#fs + 1] = "button[4,0;3,0.8;content;"
+	fs[#fs + 1] = "button["
+	fs[#fs + 1] = tostring(w + 0.25)
+	fs[#fs + 1] = ",0;"
+	fs[#fs + 1] = tostring(w)
+	fs[#fs + 1] = ",0.8;content;"
 	fs[#fs + 1] = fgettext("Content")
 	fs[#fs + 1] = "]"
 
-	fs[#fs + 1] = "button[8,0;3,0.8;settings;"
+	fs[#fs + 1] = "button["
+	fs[#fs + 1] = tostring(2 *(w + 0.25))
+	fs[#fs + 1] = ",0;"
+	fs[#fs + 1] = tostring(w)
+	fs[#fs + 1] =",0.8;settings;"
 	fs[#fs + 1] = fgettext("Settings")
 	fs[#fs + 1] = "]"
 
