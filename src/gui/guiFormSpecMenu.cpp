@@ -786,7 +786,8 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 	if (parts.size() != 3 &&
 			(parts.size() < 3 || m_formspec_version <= FORMSPEC_API_VERSION)) {
-		errorstream << "Invalid animated image element(" << parts.size() << "): '" << element << "'"  << std::endl;
+		errorstream << "Invalid animated image element(" << parts.size()
+				<< "): '" << element << "'"  << std::endl;
 		return;
 	}
 
@@ -808,7 +809,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 			L"",
 			L"",
 			258 + m_fields.size()
-			);
+	);
 
 	core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
 

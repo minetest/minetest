@@ -31,6 +31,7 @@ GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *
 	} else {
 		// Leave the count/duration and display a static image
 		m_texture = m_tsrc->getTexture(name);
+		errorstream << "Invalid texture format " << name << ". Expected format: texture_name:frame_count,frame_duration" << std::endl;
 	}
 
 	if (m_texture != nullptr) {
@@ -39,7 +40,7 @@ GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *
 			m_frame_count = size.Height;
 		}
 	} else {
-        // No need to step an animation if we have nothing to draw
+		// No need to step an animation if we have nothing to draw
 		m_frame_count = 1;
 	}
 }
@@ -63,16 +64,12 @@ void GUIAnimatedImage::draw()
 
 	// Step the animation
 	if (m_frame_count > 1) {
-        // Determine the delta time to step
-		u64 step_duration;
+		// Determine the delta time to step
 		u64 new_global_time = porting::getTimeMs();
-		if (m_global_time == 0)
-			step_duration = 0;
-		else
-			step_duration = new_global_time - m_global_time;
-		m_global_time = new_global_time;
+		if (m_global_time > 0)
+			m_frame_time += new_global_time - m_global_time;
 
-		m_frame_time += step_duration;
+		m_global_time = new_global_time;
 
 		// Advance by the number of elapsed frames, looping if necessary
 		m_frame_idx += u32(m_frame_time / m_frame_duration);
