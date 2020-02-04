@@ -330,5 +330,7 @@ private:
 	video::SColor PressedColors[4];
 
 	gui::IGUIStaticText *StaticText;
+
+	core::rect<s32> BgMiddle;
 	// END PATCH
 };

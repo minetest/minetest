@@ -41,8 +41,6 @@ extern FlagDesc flagdesc_mapgen_valleys[];
 
 
 struct MapgenValleysParams : public MapgenParams {
-	u32 spflags = MGVALLEYS_ALT_CHILL | MGVALLEYS_HUMID_RIVERS |
-		MGVALLEYS_VARY_RIVER_DEPTH | MGVALLEYS_ALT_DRY;
 	u16 altitude_chill = 90;
 	u16 river_depth = 4;
 	u16 river_size = 5;
@@ -78,6 +76,7 @@ struct MapgenValleysParams : public MapgenParams {
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
+	void setDefaultSettings(Settings *settings);
 };
 
 

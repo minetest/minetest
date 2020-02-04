@@ -98,6 +98,7 @@ struct ServerSoundParams
 	v3f pos;
 	u16 object = 0;
 	std::string to_player = "";
+	std::string exclude_player = "";
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 };
@@ -209,7 +210,8 @@ public:
 
 	// Returns -1 if failed, sound handle on success
 	// Envlock
-	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
+	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params,
+			bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 
@@ -646,7 +648,8 @@ private:
 		Sounds
 	*/
 	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
-	s32 m_next_sound_id = 0;
+	s32 m_next_sound_id = 0; // positive values only
+	s32 nextSoundId();
 
 	/*
 		Detached inventories (behind m_env_mutex)

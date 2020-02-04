@@ -177,6 +177,8 @@ src/gui/guiFormSpecMenu.h
 src/gui/guiKeyChangeMenu.cpp
 src/gui/guiHyperText.cpp
 src/gui/guiHyperText.h
+src/gui/guiInventoryList.cpp
+src/gui/guiInventoryList.h
 src/gui/guiItemImage.cpp
 src/gui/guiItemImage.h
 src/gui/guiMainMenu.h
@@ -196,6 +198,7 @@ src/gui/mainmenumanager.h
 src/gui/modalMenu.h
 src/guiscalingfilter.cpp
 src/guiscalingfilter.h
+src/gui/StyleSpec.h
 src/gui/touchscreengui.cpp
 src/httpfetch.cpp
 src/hud.cpp

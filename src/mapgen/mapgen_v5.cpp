@@ -129,7 +129,7 @@ void MapgenV5Params::readParams(const Settings *settings)
 
 void MapgenV5Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv5_spflags", spflags, flagdesc_mapgen_v5, U32_MAX);
+	settings->setFlagStr("mgv5_spflags", spflags, flagdesc_mapgen_v5);
 	settings->setFloat("mgv5_cave_width",         cave_width);
 	settings->setS16("mgv5_large_cave_depth",     large_cave_depth);
 	settings->setU16("mgv5_small_cave_num_min",   small_cave_num_min);
@@ -152,6 +152,15 @@ void MapgenV5Params::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgv5_np_cavern",       np_cavern);
 	settings->setNoiseParams("mgv5_np_dungeons",     np_dungeons);
 }
+
+
+void MapgenV5Params::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgv5_spflags", flagdesc_mapgen_v5, MGV5_CAVERNS);
+}
+
+
+/////////////////////////////////////////////////////////////////
 
 
 int MapgenV5::getSpawnLevelAtPoint(v2s16 p)

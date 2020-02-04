@@ -826,7 +826,7 @@ Examples of sound parameter tables:
         gain = 1.0,  -- default
         loop = true,
     }
-    -- Play in a location
+    -- Play at a location
     {
         pos = {x = 1, y = 2, z = 3},
         gain = 1.0,  -- default
@@ -839,12 +839,21 @@ Examples of sound parameter tables:
         max_hear_distance = 32,  -- default, uses an euclidean metric
         loop = true,
     }
+    -- Play at a location, heard by anyone *but* the given player
+    {
+        pos = {x = 32, y = 0, z = 100},
+        max_hear_distance = 40,
+        exclude_player = name,
+    }
 
 Looped sounds must either be connected to an object or played locationless to
-one player using `to_player = name,`.
+one player using `to_player = name`.
 
 A positional sound will only be heard by players that are within
 `max_hear_distance` of the sound position, at the start of the sound.
+
+`exclude_player = name` can be applied to locationless, positional and object-
+bound sounds to exclude a single player from hearing them.
 
 `SimpleSoundSpec`
 -----------------
@@ -1946,8 +1955,6 @@ For coloured text you can use `minetest.colorize`.
 
 Since formspec version 3, elements drawn in the order they are defined. All
 background elements are drawn before all other elements.
-`list` elements are an exception here. They are drawn last. This, however, might
-be changed at any time.
 
 **WARNING**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
@@ -2058,7 +2065,6 @@ Elements
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot.
-* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
@@ -2066,7 +2072,6 @@ Elements
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot.
-* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2573,6 +2578,8 @@ Some types may inherit styles from parent types.
     * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
     * bgimg - standard background image. Defaults to none.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+    * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
+                     See background9[] documentation for more details
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -2927,6 +2934,13 @@ Helper functions
       find new indices.
 * `table.key_value_swap(t)`: returns a table with keys and values swapped
     * If multiple keys in `t` map to the same value, the result is undefined.
+* `table.shuffle(table, [from], [to], [random_func])`:
+    * Shuffles elements `from` to `to` in `table` in place
+    * `from` defaults to `1`
+    * `to` defaults to `#table`
+    * `random_func` defaults to `math.random`. This function receives two
+      integers as arguments and should return a random integer inclusively
+      between them.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
@@ -4084,6 +4098,9 @@ Call these functions only at load time!
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
+    * Warning: This alters the biome to biome ID correspondences, so any
+      decorations or ores using the 'biomes' field must afterwards be cleared
+      and re-registered.
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer object handle uniquely identifying the registered
       decoration on success. To get the decoration ID, use
@@ -4098,12 +4115,15 @@ Call these functions only at load time!
     * If the function is called when loading the mod, and `name` is a relative
       path, then the current mod path will be prepended to the schematic
       filename.
-* `minetest.clear_registered_ores()`
-    * Clears all ores currently registered.
 * `minetest.clear_registered_biomes()`
     * Clears all biomes currently registered.
+    * Warning: Clearing and re-registering biomes alters the biome to biome ID
+      correspondences, so any decorations or ores using the 'biomes' field must
+      afterwards be cleared and re-registered.
 * `minetest.clear_registered_decorations()`
     * Clears all decorations currently registered.
+* `minetest.clear_registered_ores()`
+    * Clears all ores currently registered.
 * `minetest.clear_registered_schematics()`
     * Clears all schematics currently registered.
 
@@ -4924,10 +4944,15 @@ Defaults for the `on_punch` and `on_dig` node definition callbacks
 Sounds
 ------
 
-* `minetest.sound_play(spec, parameters)`: returns a handle
+* `minetest.sound_play(spec, parameters, [ephemeral])`: returns a handle
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
+    * `ephemeral` is a boolean (default: false)
+      Ephemeral sounds will not return a handle and can't be stopped or faded.
+      It is recommend to use this for short sounds that happen in response to
+      player actions (e.g. door closing).
 * `minetest.sound_stop(handle)`
+    * `handle` is a handle returned by `minetest.sound_play`
 * `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
@@ -6069,6 +6094,10 @@ It can be created via `Settings(filename)`.
     * `default` is the value returned if `key` is not found.
     * Returns `nil` if `key` is not found and `default` not specified.
 * `get_np_group(key)`: returns a NoiseParams table
+* `get_flags(key)`:
+    * Returns `{flag = true/false, ...}` according to the set flags.
+    * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
+      flags like `mgv5_spflags`.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
@@ -6147,9 +6176,6 @@ Player properties need to be saved manually.
 
         collide_with_objects = true,
         -- Collide with other objects if physical = true
-
-        weight = 5,
-        -- Unused.
 
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},  -- Default
         selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
@@ -6569,8 +6595,9 @@ Used by `minetest.register_node`.
         -- Supported for drawtypes "plantlike", "signlike", "torchlike",
         -- "firelike", "mesh".
         -- For plantlike and firelike, the image will start at the bottom of the
-        -- node, for the other drawtypes the image will be centered on the node.
-        -- Note that positioning for "torchlike" may still change.
+        -- node. For torchlike, the image will start at the surface to which the
+        -- node "attaches". For the other drawtypes the image will be centered
+        -- on the node.
 
         tiles = {tile definition 1, def2, def3, def4, def5, def6},
         -- Textures of node; +Y, -Y, +X, -X, +Z, -Z

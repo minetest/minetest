@@ -860,17 +860,27 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 	for (v3f &vertex : vertices) {
 		switch (wall) {
 			case DWM_YP:
-				vertex.rotateXZBy(-45); break;
+				vertex.Y += -size + BS/2;
+				vertex.rotateXZBy(-45);
+				break;
 			case DWM_YN:
-				vertex.rotateXZBy( 45); break;
+				vertex.Y += size - BS/2;
+				vertex.rotateXZBy(45);
+				break;
 			case DWM_XP:
-				vertex.rotateXZBy(  0); break;
+				vertex.X += -size + BS/2;
+				break;
 			case DWM_XN:
-				vertex.rotateXZBy(180); break;
+				vertex.X += -size + BS/2;
+				vertex.rotateXZBy(180);
+				break;
 			case DWM_ZP:
-				vertex.rotateXZBy( 90); break;
+				vertex.X += -size + BS/2;
+				vertex.rotateXZBy(90);
+				break;
 			case DWM_ZN:
-				vertex.rotateXZBy(-90); break;
+				vertex.X += -size + BS/2;
+				vertex.rotateXZBy(-90);
 		}
 	}
 	drawQuad(vertices);

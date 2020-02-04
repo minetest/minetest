@@ -561,7 +561,7 @@ private:
 	std::unordered_map<s32, int> m_sounds_server_to_client;
 	// And the other way!
 	std::unordered_map<int, s32> m_sounds_client_to_server;
-	// And relations to objects
+	// Relation of client id to object id
 	std::unordered_map<int, u16> m_sounds_to_objects;
 
 	// Map server hud ids to client hud ids

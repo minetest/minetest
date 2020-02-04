@@ -208,8 +208,6 @@ void read_object_properties(lua_State *L, int index,
 	getboolfield(L, -1, "physical", prop->physical);
 	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
 
-	getfloatfield(L, -1, "weight", prop->weight);
-
 	lua_getfield(L, -1, "collisionbox");
 	bool collisionbox_defined = lua_istable(L, -1);
 	if (collisionbox_defined)
@@ -340,8 +338,6 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "physical");
 	lua_pushboolean(L, prop->collideWithObjects);
 	lua_setfield(L, -2, "collide_with_objects");
-	lua_pushnumber(L, prop->weight);
-	lua_setfield(L, -2, "weight");
 	push_aabb3f(L, prop->collisionbox);
 	lua_setfield(L, -2, "collisionbox");
 	push_aabb3f(L, prop->selectionbox);
@@ -1023,6 +1019,7 @@ void read_server_sound_params(lua_State *L, int index,
 		params.max_hear_distance = BS*getfloatfield_default(L, index,
 				"max_hear_distance", params.max_hear_distance/BS);
 		getboolfield(L, index, "loop", params.loop);
+		getstringfield(L, index, "exclude_player", params.exclude_player);
 	}
 }
 

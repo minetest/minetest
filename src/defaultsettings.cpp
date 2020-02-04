@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "constants.h"
 #include "porting.h"
+#include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
 
 void set_default_settings(Settings *settings)
@@ -426,10 +427,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_level", "1");
 	settings->setDefault("mapgen_limit", "31000");
 	settings->setDefault("chunksize", "5");
-	settings->setDefault("mg_flags", "caves,dungeons,light,decorations,biomes");
 	settings->setDefault("fixed_map_seed", "");
 	settings->setDefault("max_block_generate_distance", "8");
 	settings->setDefault("enable_mapgen_debug_info", "false");
+	Mapgen::setDefaultSettings(settings);
 
 	// Server list announcing
 	settings->setDefault("server_announce", "false");

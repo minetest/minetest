@@ -869,7 +869,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
 	m_prop.breath_max = PLAYER_MAX_BREATH_DEFAULT;
 	m_prop.physical = false;
-	m_prop.weight = 75;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.selectionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.pointable = true;
