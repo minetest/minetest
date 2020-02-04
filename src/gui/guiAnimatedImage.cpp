@@ -31,7 +31,8 @@ GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *
 	} else {
 		// Leave the count/duration and display a static image
 		m_texture = m_tsrc->getTexture(name);
-		errorstream << "Invalid texture format " << name << ". Expected format: texture_name:frame_count,frame_duration" << std::endl;
+		errorstream << "animated_image[]: Invalid texture format " << name <<
+			". Expected format: texture_name:frame_count,frame_duration" << std::endl;
 	}
 
 	if (m_texture != nullptr) {
