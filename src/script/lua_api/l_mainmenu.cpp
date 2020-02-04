@@ -573,7 +573,8 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(RenderingEngine::get_gui_env(),
 								engine->m_parent,
 								-1,
-								engine->m_menumanager);
+								engine->m_menumanager,
+								engine->m_texture_source);
 	kmenu->drop();
 	return 0;
 }
