@@ -5219,7 +5219,8 @@ Misc.
     * `string` is loaded in an empty sandbox environment.
     * Will load functions if safe is false or omitted. Although these functions
       cannot directly access the global environment, they could bypass this
-      restriction with maliciously crafted Lua bytecode.
+      restriction with maliciously crafted Lua bytecode if mod security is
+      disabled.
     * This function should not be used on untrusted data, regardless of the
       value of safe.
     * Example: `deserialize('return { ["foo"] = "bar" }')`,
