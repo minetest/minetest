@@ -178,11 +178,14 @@ end
 -- Deserialization
 
 local env = {
-	loadstring = loadstring,
-}
-
-local safe_env = {
-	loadstring = function() end,
+	loadstring = function(...)
+		local func, err = loadstring(...)
+		if func then
+			setfenv(func, {})
+			return func
+		end
+		return nil, err
+	end,
 }
 
 function core.deserialize(str, safe)
@@ -195,7 +198,7 @@ function core.deserialize(str, safe)
 	end
 	local f, err = loadstring(str)
 	if not f then return nil, err end
-	setfenv(f, safe and safe_env or env)
+	setfenv(f, safe and {loadstring = function() end} or env)
 
 	local good, data = pcall(f)
 	if good then
