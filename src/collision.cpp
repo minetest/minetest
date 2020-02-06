@@ -62,118 +62,83 @@ struct NearbyCollisionInfo {
 // The time after which the collision occurs is stored in dtime.
 CollisionAxis axisAlignedCollision(
 		const aabb3f &staticbox, const aabb3f &movingbox,
-		const v3f &speed, f32 d, f32 *dtime)
+		const v3f &speed, const f32 &dtime_max, f32 *dtime)
 {
 	//TimeTaker tt("axisAlignedCollision");
 
-	f32 xsize = (staticbox.MaxEdge.X - staticbox.MinEdge.X) - COLL_ZERO;     // reduce box size for solve collision stuck (flying sand)
-	f32 ysize = (staticbox.MaxEdge.Y - staticbox.MinEdge.Y); // - COLL_ZERO; // Y - no sense for falling, but maybe try later
-	f32 zsize = (staticbox.MaxEdge.Z - staticbox.MinEdge.Z) - COLL_ZERO;
-
 	aabb3f relbox(
-			movingbox.MinEdge.X - staticbox.MinEdge.X,
-			movingbox.MinEdge.Y - staticbox.MinEdge.Y,
-			movingbox.MinEdge.Z - staticbox.MinEdge.Z,
-			movingbox.MaxEdge.X - staticbox.MinEdge.X,
-			movingbox.MaxEdge.Y - staticbox.MinEdge.Y,
-			movingbox.MaxEdge.Z - staticbox.MinEdge.Z
+			movingbox.MaxEdge.X - movingbox.MinEdge.X + staticbox.MaxEdge.X - staticbox.MinEdge.X,						// sum of the widths
+			movingbox.MaxEdge.Y - movingbox.MinEdge.Y + staticbox.MaxEdge.Y - staticbox.MinEdge.Y,
+			movingbox.MaxEdge.Z - movingbox.MinEdge.Z + staticbox.MaxEdge.Z - staticbox.MinEdge.Z,
+			std::max(movingbox.MaxEdge.X, staticbox.MaxEdge.X) - std::min(movingbox.MinEdge.X, staticbox.MinEdge.X),	//outer bounding 'box' dimensions
+			std::max(movingbox.MaxEdge.Y, staticbox.MaxEdge.Y) - std::min(movingbox.MinEdge.Y, staticbox.MinEdge.Y),
+			std::max(movingbox.MaxEdge.Z, staticbox.MaxEdge.Z) - std::min(movingbox.MinEdge.Z, staticbox.MinEdge.Z)
 	);
 
-	if(speed.X > 0) // Check for collision with X- plane
-	{
-		if (relbox.MaxEdge.X <= d) {
-			*dtime = -relbox.MaxEdge.X / speed.X;
-			if ((relbox.MinEdge.Y + speed.Y * (*dtime) < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * (*dtime) > COLL_ZERO) &&
-					(relbox.MinEdge.Z + speed.Z * (*dtime) < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * (*dtime) > COLL_ZERO))
-				return COLLISION_AXIS_X;
+	f32 distance;
+	f32 time;
+
+	if (speed.X) {
+		distance = relbox.MaxEdge.X - relbox.MinEdge.X - 0.03f;
+
+		*dtime = distance>=0 ? std::abs(distance / speed.X) : -std::abs(distance / speed.X);
+		time = std::max(*dtime, 0.0f);
+
+		if (*dtime < dtime_max) {
+			if (((speed.X > 0) && (staticbox.MaxEdge.X > movingbox.MaxEdge.X)) ||
+				((speed.X < 0) && (staticbox.MinEdge.X < movingbox.MinEdge.X)))		
+			{
+
+				if (
+					(relbox.MaxEdge.Y - relbox.MinEdge.Y + speed.Y * time < 0) &&
+					(relbox.MaxEdge.Z - relbox.MinEdge.Z + speed.Z * time < 0)
+					) return COLLISION_AXIS_X;
+			}
 		}
-		else if(relbox.MinEdge.X > xsize)
-		{
-			return COLLISION_AXIS_NONE;
-		}
-	}
-	else if(speed.X < 0) // Check for collision with X+ plane
-	{
-		if (relbox.MinEdge.X >= xsize - d) {
-			*dtime = (xsize - relbox.MinEdge.X) / speed.X;
-			if ((relbox.MinEdge.Y + speed.Y * (*dtime) < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * (*dtime) > COLL_ZERO) &&
-					(relbox.MinEdge.Z + speed.Z * (*dtime) < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * (*dtime) > COLL_ZERO))
-				return COLLISION_AXIS_X;
-		}
-		else if(relbox.MaxEdge.X < 0)
-		{
-			return COLLISION_AXIS_NONE;
-		}
+		else return COLLISION_AXIS_NONE;
 	}
 
 	// NO else if here
 
-	if(speed.Y > 0) // Check for collision with Y- plane
-	{
-		if (relbox.MaxEdge.Y <= d) {
-			*dtime = -relbox.MaxEdge.Y / speed.Y;
-			if ((relbox.MinEdge.X + speed.X * (*dtime) < xsize) &&
-					(relbox.MaxEdge.X + speed.X * (*dtime) > COLL_ZERO) &&
-					(relbox.MinEdge.Z + speed.Z * (*dtime) < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * (*dtime) > COLL_ZERO))
-				return COLLISION_AXIS_Y;
+	if (speed.Y) {
+		distance = relbox.MaxEdge.Y - relbox.MinEdge.Y - 0.03f;
+
+		*dtime = distance>=0 ? std::abs(distance / speed.Y) : -std::abs(distance / speed.Y);
+		time = std::max(*dtime, 0.0f);
+
+		if (*dtime < dtime_max) {
+			if (((speed.Y > 0) && (staticbox.MaxEdge.Y > movingbox.MaxEdge.Y)) ||
+				((speed.Y < 0) && (staticbox.MinEdge.Y < movingbox.MinEdge.Y)))
+			{
+
+				if (
+					(relbox.MaxEdge.X - relbox.MinEdge.X + speed.X * time < 0) &&
+					(relbox.MaxEdge.Z - relbox.MinEdge.Z + speed.Z * time < 0)
+					) return COLLISION_AXIS_Y;
+			}
 		}
-		else if(relbox.MinEdge.Y > ysize)
-		{
-			return COLLISION_AXIS_NONE;
-		}
-	}
-	else if(speed.Y < 0) // Check for collision with Y+ plane
-	{
-		if (relbox.MinEdge.Y >= ysize - d) {
-			*dtime = (ysize - relbox.MinEdge.Y) / speed.Y;
-			if ((relbox.MinEdge.X + speed.X * (*dtime) < xsize) &&
-					(relbox.MaxEdge.X + speed.X * (*dtime) > COLL_ZERO) &&
-					(relbox.MinEdge.Z + speed.Z * (*dtime) < zsize) &&
-					(relbox.MaxEdge.Z + speed.Z * (*dtime) > COLL_ZERO))
-				return COLLISION_AXIS_Y;
-		}
-		else if(relbox.MaxEdge.Y < 0)
-		{
-			return COLLISION_AXIS_NONE;
-		}
+		else return COLLISION_AXIS_NONE;
 	}
 
 	// NO else if here
 
-	if(speed.Z > 0) // Check for collision with Z- plane
-	{
-		if (relbox.MaxEdge.Z <= d) {
-			*dtime = -relbox.MaxEdge.Z / speed.Z;
-			if ((relbox.MinEdge.X + speed.X * (*dtime) < xsize) &&
-					(relbox.MaxEdge.X + speed.X * (*dtime) > COLL_ZERO) &&
-					(relbox.MinEdge.Y + speed.Y * (*dtime) < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * (*dtime) > COLL_ZERO))
-				return COLLISION_AXIS_Z;
+	if (speed.Z) {
+		distance = relbox.MaxEdge.Z - relbox.MinEdge.Z - 0.03f;
+
+		*dtime = distance>=0 ? std::abs(distance / speed.Z) : -std::abs(distance / speed.Z);
+		time = std::max(*dtime, 0.0f);
+
+		if (*dtime < dtime_max) {
+			if (((speed.Z > 0) && (staticbox.MaxEdge.Z > movingbox.MaxEdge.Z)) ||
+				((speed.Z < 0) && (staticbox.MinEdge.Z < movingbox.MinEdge.Z)))
+			{
+
+				if (
+					(relbox.MaxEdge.X - relbox.MinEdge.X + speed.X * time < 0) &&
+					(relbox.MaxEdge.Y - relbox.MinEdge.Y + speed.Y * time < 0)
+					) return COLLISION_AXIS_Z;
+			}
 		}
-		//else if(relbox.MinEdge.Z > zsize)
-		//{
-		//	return COLLISION_AXIS_NONE;
-		//}
-	}
-	else if(speed.Z < 0) // Check for collision with Z+ plane
-	{
-		if (relbox.MinEdge.Z >= zsize - d) {
-			*dtime = (zsize - relbox.MinEdge.Z) / speed.Z;
-			if ((relbox.MinEdge.X + speed.X * (*dtime) < xsize) &&
-					(relbox.MaxEdge.X + speed.X * (*dtime) > COLL_ZERO) &&
-					(relbox.MinEdge.Y + speed.Y * (*dtime) < ysize) &&
-					(relbox.MaxEdge.Y + speed.Y * (*dtime) > COLL_ZERO))
-				return COLLISION_AXIS_Z;
-		}
-		//else if(relbox.MaxEdge.Z < 0)
-		//{
-		//	return COLLISION_AXIS_NONE;
-		//}
 	}
 
 	return COLLISION_AXIS_NONE;
@@ -407,7 +372,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 		}
 #ifndef SERVER
-		if (c_env) {
+		if (self && c_env) {
 			LocalPlayer *lplayer = c_env->getLocalPlayer();
 			if (lplayer->getParent() == nullptr) {
 				aabb3f lplayer_collisionbox = lplayer->getCollisionbox();
@@ -429,13 +394,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		Make it a bit larger than the maximum distance of movement
 	*/
 	//f32 d = pos_max_d * 1.1f;
-#ifndef SERVER
-	f32 d = 0.5f;
-#else
+
 	f32 d = 0.0f;	// Temporary fix, any nonzero d causes collision glitches, the more the greater it is.
 	// ultimately it has to be determined if any uncertainty is involved, and if it is, eliminated
 	// and d & pos_max_d params removed from function calls.
-#endif
+
 
 	int loopcount = 0;
 
@@ -467,7 +430,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			// Find nearest collision of the two boxes (raytracing-like)
 			f32 dtime_tmp;
 			CollisionAxis collided = axisAlignedCollision(box_info.box,
-					movingbox, *speed_f, d, &dtime_tmp);
+					movingbox, *speed_f, dtime, &dtime_tmp);
 
 			if (collided == -1 || dtime_tmp >= nearest_dtime)
 				continue;
@@ -498,7 +461,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 			// Move to the point of collision and reduce dtime by nearest_dtime
 			if (nearest_dtime < 0) {
-				// Handle negative nearest_dtime (can be caused by the d allowance)
+				// Handle negative nearest_dtime
 				if (!step_up) {
 					if (nearest_collided == COLLISION_AXIS_X)
 						pos_f->X += speed_f->X * nearest_dtime;
@@ -508,7 +471,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 						pos_f->Z += speed_f->Z * nearest_dtime;
 				}
 			} else {
-				//*pos_f += *speed_f * nearest_dtime;
+				*pos_f += *speed_f * nearest_dtime;
+				/*
 				pos_f->X += speed_f->X >= 0
 					? MYMAX(speed_f->X * nearest_dtime - 0.1f, 0.0f)
 					: MYMIN(speed_f->X * nearest_dtime + 0.1f, 0.0f);
@@ -518,7 +482,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				pos_f->Z += speed_f->Z >= 0
 					? MYMAX(speed_f->Z * nearest_dtime - 0.1f, 0.0f)
 					: MYMIN(speed_f->Z * nearest_dtime + 0.1f, 0.0f);
-				dtime -= nearest_dtime;
+				dtime -= nearest_dtime;		*/
 			}
 
 			bool is_collision = true;
