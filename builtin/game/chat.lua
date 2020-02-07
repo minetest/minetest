@@ -143,7 +143,7 @@ core.register_chatcommand("privs", {
 			return false, "Player " .. name .. " does not exist."
 		end
 		return true, "Privileges of " .. name .. ": "
-		.. format_player_privs(name)
+			.. format_player_privs(name)
 	end,
 })
 
@@ -213,7 +213,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 				.. format_privs(grantprivs))
 	end
 	return true, "Privileges of " .. grantname .. ": "
-	.. format_player_privs(grantname)
+		.. format_player_privs(grantname)
 end
 
 core.register_chatcommand("grant", {
@@ -932,7 +932,8 @@ core.register_chatcommand("days", {
 
 core.register_chatcommand("shutdown", {
 	params = "[<delay_in_seconds> | -1] [reconnect] [<message>]",
-	description = "Shutdown server ("..core.colorize(core.COLOR_PARAM, "-1") .." cancels a delayed shutdown)",
+	description = "Shutdown server ("..core.colorize(core.COLOR_PARAM, "-1") ..
+	" cancels a delayed shutdown)",
 	privs = {server=true},
 	func = function(name, param)
 		local delay, reconnect, message

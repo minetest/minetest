@@ -53,12 +53,12 @@ end
 
 local function do_help_cmd(name, param)
 	local function format_help_line(cmd, def, is_privilege)
-			local msg
-			if is_privilege then
-				msg = core.colorize(core.COLOR_PRIV, cmd)
-			else
-				cmd = cmd_marker .. cmd
-				msg = core.colorize_chatcommand(cmd, def.params)
+		local msg
+		if is_privilege then
+			msg = core.colorize(core.COLOR_PRIV, cmd)
+		else
+			cmd = cmd_marker .. cmd
+			msg = core.colorize_chatcommand(cmd, def.params)
 		end
 		if def.description and def.description ~= "" then
 			msg = msg .. ": " .. def.description
@@ -79,8 +79,7 @@ local function do_help_cmd(name, param)
 		local help_all = core.colorize_chatcommand(
 				string.format("%shelp", cmd_marker), "all")
 		-- List available commands
-		return true, gettext("Available commands: ")
-				.. core.colorize(core.COLOR_COMMAND, table.concat(cmds, " "))
+		return true, gettext("Available commands: ") .. core.colorize(core.COLOR_COMMAND, table.concat(cmds, " "))
 				.. "\n"
 				.. gettext_replace("Use '$1' to get more information,"
 				.. " or '$2' to list everything.", help_cmd, help_all)

@@ -645,7 +645,8 @@ end
 
 function core.colorize_chatcommand(cmd, param)
 	if param ~= nil and param ~= "" then
-		return core.colorize(core.COLOR_COMMAND, cmd) .. " " .. core.colorize(core.COLOR_PARAM, param)
+		return core.colorize(core.COLOR_COMMAND, cmd) .. " " 
+		.. core.colorize(core.COLOR_PARAM, param)
 	else
 		return core.colorize(core.COLOR_COMMAND, cmd)
 	end

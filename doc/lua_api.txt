@@ -4009,7 +4009,7 @@ Call these functions only at load time!
 * `minetest.override_item(name, redefinition)`
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
-    * Example: `minetest.override_item("default:mese", 
+    * Example: `minetest.override_item("default:mese",
       {light_source=minetest.LIGHT_MAX})`
 * `minetest.unregister_item(name)`
     * Unregisters the item from the engine, and deletes the entry with key
