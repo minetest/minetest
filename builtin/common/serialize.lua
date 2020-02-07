@@ -198,6 +198,9 @@ function core.deserialize(str, safe)
 	end
 	local f, err = loadstring(str)
 	if not f then return nil, err end
+
+	-- The safe environment is recreated every time so deseralized code cannot
+	-- pollute the safe environment with permanent references.
 	setfenv(f, safe and {loadstring = function() end} or env)
 
 	local good, data = pcall(f)
