@@ -294,7 +294,7 @@ core.register_chatcommand("revoke", {
 					.. format_privs(revoke_privs))
 		end
 		return true, "Privileges of " .. revoke_name .. ": "
-		.. format_player_privs(revoke_name))
+			.. format_player_privs(revoke_name))
 	end,
 })
 
@@ -493,9 +493,9 @@ core.register_chatcommand("teleport", {
 		end
 
 		return false, 'Invalid parameters ("' .. param
-		.. "') or player not found (see "
-		.. core.colorize_chatcommand("/help", "teleport")
-		.. ")"
+			.. "') or player not found (see "
+			.. core.colorize_chatcommand("/help", "teleport")
+			.. ")"
 	end,
 })
 
@@ -562,11 +562,11 @@ end
 core.register_chatcommand("emergeblocks", {
 	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Load (or, if nonexistent, generate) map blocks "
-	.. "contained in area from "
-	.. core.colorize(core.COLOR_PARAM, "<pos1>").." to "
-	.. core.colorize(core.COLOR_PARAM, "<pos2>").." "
-	.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>").. " and "
-	.. core.colorize(core.COLOR_PARAM, "<pos2>").." must be in parentheses)",
+		.. "contained in area from "
+		.. core.colorize(core.COLOR_PARAM, "<pos1>").." to "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." "
+		.. "(" .. core.colorize(core.COLOR_PARAM, "<pos1>").. " and "
+		.. core.colorize(core.COLOR_PARAM, "<pos2>").." must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -776,11 +776,11 @@ end)
 core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
-	.. " within the time specified by "..core.colorize(core.COLOR_PARAM, "<seconds>") .. ". "
-	.. "Defaults: "
-	.. core.colorize(core.COLOR_PARAM, "<range>") .. " = 0, "
-	.. core.colorize(core.COLOR_PARAM, "<seconds>") .. " = 86400, "
-	.. core.colorize(core.COLOR_PARAM, "<limit>") .. " = 5",
+		.. " within the time specified by "..core.colorize(core.COLOR_PARAM, "<seconds>") .. ". "
+		.. "Defaults: "
+		.. core.colorize(core.COLOR_PARAM, "<range>") .. " = 0, "
+		.. core.colorize(core.COLOR_PARAM, "<seconds>") .. " = 86400, "
+		.. core.colorize(core.COLOR_PARAM, "<limit>") .. " = 5",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
