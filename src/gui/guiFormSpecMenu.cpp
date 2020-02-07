@@ -798,8 +798,17 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	MY_CHECKPOS("animated_image", 0);
 	MY_CHECKGEOM("animated_image", 1);
 
-	v2s32 pos = getRealCoordinateBasePos(v_pos);
-	v2s32 geom = getRealCoordinateGeometry(v_geom);
+    v2s32 pos;
+    v2s32 geom;
+
+    if (data->real_coordinates) {
+        pos = getRealCoordinateBasePos(v_pos);
+        geom = getRealCoordinateGeometry(v_geom);
+    } else {
+        pos = getElementBasePos(&v_pos);
+        geom.X = stof(v_geom[0]) * (float)imgsize.X;
+        geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
+    }
 
 	if (!data->explicit_size)
 		warningstream << "invalid use of animated_image without a size[] element" << std::endl;
