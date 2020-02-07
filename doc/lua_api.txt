@@ -5222,7 +5222,8 @@ Misc.
       restriction with maliciously crafted Lua bytecode if mod security is
       disabled.
     * This function should not be used on untrusted data, regardless of the
-      value of safe.
+     value of `safe`. It is fine to serialize then deserialize user-provided
+     data, but directly providing user-input to deserialize is not safe.
     * Example: `deserialize('return { ["foo"] = "bar" }')`,
       returns `{foo='bar'}`
     * Example: `deserialize('print("foo")')`, returns `nil`
