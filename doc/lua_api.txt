@@ -5223,7 +5223,7 @@ Misc.
       disabled.
     * This function should not be used on untrusted data, regardless of the
      value of `safe`. It is fine to serialize then deserialize user-provided
-     data, but directly providing user-input to deserialize is not safe.
+     data, but directly providing user input to deserialize is always unsafe.
     * Example: `deserialize('return { ["foo"] = "bar" }')`,
       returns `{foo='bar'}`
     * Example: `deserialize('print("foo")')`, returns `nil`
