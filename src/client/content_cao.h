@@ -125,6 +125,10 @@ private:
 	u8 m_last_light = 255;
 	bool m_is_visible = false;
 	s8 m_glow = 0;
+	// Material
+	video::E_MATERIAL_TYPE m_material_type;
+	// Settings
+	bool m_enable_shaders = false;
 
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
@@ -222,6 +226,8 @@ public:
 	void updateAttachments();
 
 	void removeFromScene(bool permanent);
+
+	void setSceneNodeMaterial(video::E_MATERIAL_TYPE material_type);
 
 	void addToScene(ITextureSource *tsrc);
 
