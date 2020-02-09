@@ -566,7 +566,9 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 }
 
-void GenericCAO::setSceneNodeMaterial(video::E_MATERIAL_TYPE material_type)
+void GenericCAO::setSceneNodeMaterial(
+		video::E_MATERIAL_TYPE fallback_material_type,
+		video::E_MATERIAL_TYPE shader_material_type)
 {
 	scene::ISceneNode *node = getSceneNode();
 
@@ -575,11 +577,11 @@ void GenericCAO::setSceneNodeMaterial(video::E_MATERIAL_TYPE material_type)
 	node->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 
 	if (m_enable_shaders) {
-		node->setMaterialType(m_material_type);
+		node->setMaterialType(shader_material_type);
 		node->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
 		node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 	} else {
-		node->setMaterialType(material_type);
+		node->setMaterialType(fallback_material_type);
 	}
 }
 
@@ -622,7 +624,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_spritenode->setMaterialTexture(0,
 				tsrc->getTextureForMesh("unknown_node.png"));
 
-		setSceneNodeMaterial(material_type);
+		setSceneNodeMaterial(material_type, m_material_type);
 
 		u8 li = m_last_light;
 		m_spritenode->setColor(video::SColor(255,li,li,li));
@@ -725,7 +727,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		u8 li = m_last_light;
 		setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
 
-		setSceneNodeMaterial(material_type);
+		setSceneNodeMaterial(material_type, m_material_type);
 	} else if (m_prop.visual == "mesh") {
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
@@ -743,7 +745,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
 
-			setSceneNodeMaterial(material_type);
+			setSceneNodeMaterial(material_type, m_material_type);
 
 			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 				m_prop.backface_culling);
