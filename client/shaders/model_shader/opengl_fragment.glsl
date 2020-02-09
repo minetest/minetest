@@ -13,6 +13,7 @@ varying vec3 worldPosition;
 
 varying vec3 eyeVec;
 varying vec3 lightVec;
+varying float vIDiff;
 
 bool normalTexturePresent = false;
 bool texTileableHorizontal = false;
@@ -111,11 +112,8 @@ void main(void)
 #endif
 
 	vec4 col = vec4(color.rgb, base.a);
-	float diffuseIntensity = dot(vNormal, vec3(0.0, 1.0, 0.2));
-	vec3 diffuseColor = vec3(1.0) * clamp(diffuseIntensity, -0.3, 1.0);
-	vec3 lightColor = emissiveColor.rgb;
 
-	col.rgb *= lightColor * 0.8 + (lightColor + 0.1) * diffuseColor * 0.3;
+	col.rgb *= emissiveColor.rgb * vIDiff;
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
 	// the fog will only be rendered correctly if the last operation before the
 	// clamp() is an addition. Else, the clamp() seems to be ignored.
