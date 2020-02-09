@@ -102,7 +102,7 @@ ClientEnvironment::ClientEnvironment(ClientMap *map,
 	m_texturesource(texturesource),
 	m_client(client)
 {
-	auto *shdrsrc = (IWritableShaderSource *)m_client->getShaderSource();
+	auto *shdrsrc = m_client->getShaderSource();
 	shdrsrc->addShaderConstantSetterFactory(new CAOShaderConstantSetterFactory());
 }
 
