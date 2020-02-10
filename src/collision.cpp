@@ -79,7 +79,8 @@ CollisionAxis axisAlignedCollision(
 	f32 time;
 
 	if (speed.X) {
-		distance = relbox.MaxEdge.X - relbox.MinEdge.X - 0.03f;
+		distance = relbox.MaxEdge.X - relbox.MinEdge.X;
+		distance = distance >= 0.03f ? distance - 0.03f : distance;
 
 		*dtime = distance>=0 ? std::abs(distance / speed.X) : -std::abs(distance / speed.X);
 		time = std::max(*dtime, 0.0f);
@@ -101,7 +102,8 @@ CollisionAxis axisAlignedCollision(
 	// NO else if here
 
 	if (speed.Y) {
-		distance = relbox.MaxEdge.Y - relbox.MinEdge.Y - 0.03f;
+		distance = relbox.MaxEdge.Y - relbox.MinEdge.Y;
+		distance = distance >= 0.03f ? distance - 0.03f : distance;
 
 		*dtime = distance>=0 ? std::abs(distance / speed.Y) : -std::abs(distance / speed.Y);
 		time = std::max(*dtime, 0.0f);
@@ -123,7 +125,8 @@ CollisionAxis axisAlignedCollision(
 	// NO else if here
 
 	if (speed.Z) {
-		distance = relbox.MaxEdge.Z - relbox.MinEdge.Z - 0.03f;
+		distance = relbox.MaxEdge.Z - relbox.MinEdge.Z;
+		distance = distance >= 0.03f ? distance - 0.03f : distance;
 
 		*dtime = distance>=0 ? std::abs(distance / speed.Z) : -std::abs(distance / speed.Z);
 		time = std::max(*dtime, 0.0f);
@@ -562,7 +565,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				box.MinEdge += *pos_f;
 				box.MaxEdge += *pos_f;
 			}
-			if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.15f * BS) {
+			//if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.15f * BS) {
+			if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.05f) {					//TheTermos make it less stupid after step-up fix
 				result.touching_ground = true;
 
 				if (box_info.is_object)
