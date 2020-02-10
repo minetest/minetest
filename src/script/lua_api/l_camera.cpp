@@ -61,9 +61,23 @@ int LuaCamera::l_set_camera_mode(lua_State *L)
 	if (!lua_isnumber(L, 2))
 		return 0;
 
-	camera->setCameraMode((CameraMode)((int)lua_tonumber(L, 2)));
+	CameraMode mode = (CameraMode)((int)lua_tonumber(L, 2));
+
+	if ((mode == CAMERA_MODE_CUSTOM) && getClient(L)->checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_CAMERA_CONTROL))
+		return 0;
+
+	camera->setCameraMode(mode);
 	playercao->setVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
+	return 0;
+}
+
+int LuaCamera::l_set_camera_custom_state(lua_State *L)
+{
+	Camera *camera = getobject(L, 1);
+	if (!camera)
+		return 0;
+	camera->setCameraCustomState(read_v3f(L, 2), read_v3f(L, 3), read_v3f(L, 4));
 	return 0;
 }
 
@@ -217,6 +231,7 @@ void LuaCamera::Register(lua_State *L)
 
 const char LuaCamera::className[] = "Camera";
 const luaL_Reg LuaCamera::methods[] = {luamethod(LuaCamera, set_camera_mode),
+		luamethod(LuaCamera, set_camera_custom_state),
 		luamethod(LuaCamera, get_camera_mode), luamethod(LuaCamera, get_fov),
 		luamethod(LuaCamera, get_pos), luamethod(LuaCamera, get_offset),
 		luamethod(LuaCamera, get_look_dir),

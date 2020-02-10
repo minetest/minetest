@@ -48,7 +48,7 @@ struct Nametag {
 	v3f nametag_pos;
 };
 
-enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
+enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT, CAMERA_MODE_CUSTOM};
 
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
@@ -138,8 +138,9 @@ public:
 			m_camera_mode = CAMERA_MODE_THIRD;
 		else if (m_camera_mode == CAMERA_MODE_THIRD)
 			m_camera_mode = CAMERA_MODE_THIRD_FRONT;
-		else
+		else if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 			m_camera_mode = CAMERA_MODE_FIRST;
+		// CUSTOM is a CSM-controlled mode; do not enter or leave it
 	}
 
 	// Set the current camera mode
@@ -149,9 +150,17 @@ public:
 	}
 
 	//read the current camera mode
-	inline CameraMode getCameraMode()
+	inline CameraMode getCameraMode() const
 	{
 		return m_camera_mode;
+	}
+
+	// Set the current CUSTOM camera position
+	inline void setCameraCustomState(v3f position, v3f direction, v3f up)
+	{
+		m_camera_custom_position = position;
+		m_camera_custom_direction = direction;
+		m_camera_custom_up = up;
 	}
 
 	Nametag *addNametag(scene::ISceneNode *parent_node,
@@ -221,6 +230,9 @@ private:
 	ItemStack m_wield_item_next;
 
 	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
+	v3f m_camera_custom_position = v3f(0.0, 0.0, 0.0);
+	v3f m_camera_custom_direction = v3f(0.0, 0.0, 1.0);
+	v3f m_camera_custom_up = v3f(0.0, 1.0, 0.0);
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;

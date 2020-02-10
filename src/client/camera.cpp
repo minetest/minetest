@@ -311,7 +311,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 	// Fall bobbing animation
 	float fall_bobbing = 0;
-	if(player->camera_impact >= 1 && m_camera_mode < CAMERA_MODE_THIRD)
+	if(player->camera_impact >= 1 && m_camera_mode == CAMERA_MODE_FIRST)
 	{
 		if(m_view_bobbing_fall == -1) // Effect took place and has finished
 			player->camera_impact = m_view_bobbing_fall = 0;
@@ -346,7 +346,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	v3f rel_cam_up = v3f(0,1,0);
 
 	if (m_cache_view_bobbing_amount != 0.0f && m_view_bobbing_anim != 0.0f &&
-		m_camera_mode < CAMERA_MODE_THIRD) {
+		m_camera_mode == CAMERA_MODE_FIRST) {
 		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
 		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
@@ -397,8 +397,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	// Seperate camera position for calculation
 	v3f my_cp = m_camera_position;
 
-	// Reposition the camera for third person view
-	if (m_camera_mode > CAMERA_MODE_FIRST)
+	// Reposition the camera for special (non-firstperson) view modes
+	if ((m_camera_mode == CAMERA_MODE_THIRD_FRONT) || (m_camera_mode == CAMERA_MODE_THIRD))
 	{
 		if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 			m_camera_direction *= -1;
@@ -431,6 +431,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		// If node blocks camera position don't move y to heigh
 		if (abort && my_cp.Y > player_position.Y+BS*2)
 			my_cp.Y = player_position.Y+BS*2;
+	} else if (m_camera_mode == CAMERA_MODE_CUSTOM) {
+		my_cp = m_camera_custom_position;
+		m_camera_direction = m_camera_custom_direction;
 	}
 
 	// Update offset if too far away from the center of the map
@@ -443,7 +446,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 	// Set camera node transformation
 	m_cameranode->setPosition(my_cp-intToFloat(m_camera_offset, BS));
-	m_cameranode->setUpVector(abs_cam_up);
+	m_cameranode->setUpVector(m_camera_mode == CAMERA_MODE_CUSTOM ? m_camera_custom_up : abs_cam_up);
 	// *100.0 helps in large map coordinates
 	m_cameranode->setTarget(my_cp-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
 

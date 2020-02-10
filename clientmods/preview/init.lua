@@ -223,6 +223,18 @@ core.register_chatcommand("text", {
 	end,
 })
 
+core.register_chatcommand("cam_lock", {
+	func = function(param)
+		core.camera:set_camera_custom_state(core.camera:get_pos(), core.camera:get_look_dir(), vector.new(0,1,0))
+		core.camera:set_camera_mode(3)
+	end
+})
+
+core.register_chatcommand("cam_unlock", {
+	func = function(param)
+		core.camera:set_camera_mode(0)
+	end
+})
 
 core.register_on_mods_loaded(function()
 	core.log("Yeah preview mod is loaded with other CSM mods.")

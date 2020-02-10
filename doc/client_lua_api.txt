@@ -655,7 +655,8 @@ Minetest namespace reference
    restrictions applied to the current mod.
    * If a flag in this table is set to true, the feature is RESTRICTED.
    * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
-                   `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
+                   `read_nodedefs`, `lookup_nodes`, `read_playerinfo`,
+                   `camera_control`
 
 ### Logging
 * `minetest.debug(...)`
@@ -958,9 +959,12 @@ Please do not try to access the reference until the camera is initialized, other
 
 #### Methods
 * `set_camera_mode(mode)`
-    * Pass `0` for first-person, `1` for third person, and `2` for third person front
+    * Pass `0` for first-person, `1` for third person, `2` for third person front, and `3` for custom
+    * Note that CUSTOM cannot be set if camera_control is restricted.
 * `get_camera_mode()`
-    * Returns 0, 1, or 2 as described above
+    * Returns 0, 1, 2, or 3 as described above
+* `set_camera_custom_state(pos, look_dir, up)`
+    * Sets the state of the camera in custom mode; takes 3 vectors.
 * `get_fov()`
     * Returns:
 

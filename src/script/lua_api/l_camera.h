@@ -33,6 +33,7 @@ private:
 	static int gc_object(lua_State *L);
 
 	static int l_set_camera_mode(lua_State *L);
+	static int l_set_camera_custom_state(lua_State *L);
 	static int l_get_camera_mode(lua_State *L);
 
 	static int l_get_fov(lua_State *L);

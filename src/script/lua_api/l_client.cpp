@@ -57,6 +57,7 @@ const static CSMFlagDesc flagdesc_csm_restriction[] = {
 	{"read_nodedefs",     CSM_RF_READ_NODEDEFS},
 	{"lookup_nodes",      CSM_RF_LOOKUP_NODES},
 	{"read_playerinfo",   CSM_RF_READ_PLAYERINFO},
+	{"camera_control",    CSM_RF_CAMERA_CONTROL},
 	{NULL,      0}
 };
 
