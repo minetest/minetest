@@ -58,110 +58,61 @@ static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	const v3f &sneak_max)
 {
-	static const v3s16 dir9_center[9] = {
-		v3s16( 0, 0,  0),
-		v3s16( 1, 0,  0),
-		v3s16(-1, 0,  0),
-		v3s16( 0, 0,  1),
-		v3s16( 0, 0, -1),
-		v3s16( 1, 0,  1),
-		v3s16(-1, 0,  1),
-		v3s16( 1, 0, -1),
-		v3s16(-1, 0, -1)
-	};
-
 	const NodeDefManager *nodemgr = m_client->ndef();
 	MapNode node;
-	bool is_valid_position;
-	bool new_sneak_node_exists = m_sneak_node_exists;
 
-	// We want the top of the sneak node to be below the players feet
-	f32 position_y_mod = 0.05f * BS;
-	if (m_sneak_node_exists)
-		position_y_mod = m_sneak_node_bb_top.MaxEdge.Y - position_y_mod;
+	const v3s16 current_node = floatToInt(v3f(position.X, position.Y-0.1f, position.Z), BS);
 
-	// Get position of current standing node
-	const v3s16 current_node = floatToInt(position - v3f(0.0f, position_y_mod, 0.0f), BS);
+	if (touching_ground && current_node != m_sneak_node) {
+		v3s16 min_corner = floatToInt(m_collisionbox.MinEdge + position, BS);
+		v3s16 max_corner = floatToInt(m_collisionbox.MaxEdge + position, BS);
+		f32 distance=3.0f * BS, dist_tmp;
+		v3f diff;
+		v3s16 new_sneak_node, nodetmp;
+		std::vector<aabb3f> nodeboxes;
 
-	if (current_node != m_sneak_node) {
-		new_sneak_node_exists = false;
-	} else {
-		node = map->getNode(current_node, &is_valid_position);
-		if (!is_valid_position || !nodemgr->get(node).walkable)
-			new_sneak_node_exists = false;
-	}
-
-	// Keep old sneak node
-	if (new_sneak_node_exists)
-		return true;
-
-	// Get new sneak node
-	m_sneak_ladder_detected = false;
-	f32 min_distance_f = 100000.0f * BS;
-
-	for (const auto &d : dir9_center) {
-		const v3s16 p = current_node + d;
-		const v3f pf = intToFloat(p, BS);
-		const v2f diff(position.X - pf.X, position.Z - pf.Z);
-		f32 distance_f = diff.getLength();
-
-		if (distance_f > min_distance_f ||
-				fabs(diff.X) > (0.5f + 0.1f) * BS + sneak_max.X ||
-				fabs(diff.Y) > (0.5f + 0.1f) * BS + sneak_max.Z)
-			continue;
-
-
-		// The node to be sneaked on has to be walkable
-		node = map->getNode(p, &is_valid_position);
-		if (!is_valid_position || !nodemgr->get(node).walkable)
-			continue;
-		// And the node(s) above have to be nonwalkable
-		bool ok = true;
-		if (!physics_override_sneak_glitch) {
-			u16 height =
-				ceilf((m_collisionbox.MaxEdge.Y - m_collisionbox.MinEdge.Y) / BS);
-			for (u16 y = 1; y <= height; y++) {
-				node = map->getNode(p + v3s16(0, y, 0), &is_valid_position);
-				if (!is_valid_position || nodemgr->get(node).walkable) {
-					ok = false;
-					break;
+		//get all nodes under player's feet (upto 4)
+		for (s16 x = min_corner.X; x <= max_corner.X; x++)
+		{
+			for (s16 z = min_corner.Z; z <= max_corner.Z; z++)
+			{
+				diff = position - v3f(x * BS, position.Y, z * BS);
+				dist_tmp = diff.getLength();
+				if (dist_tmp < distance)
+				{
+					nodetmp = floatToInt(v3f(x * BS, position.Y - 0.1f, z * BS), BS);
+					node = map->getNode(nodetmp);
+					if (nodemgr->get(node).walkable) {
+						distance = dist_tmp;
+						new_sneak_node = nodetmp;
+					}
+					else {													// see if can step down
+						nodetmp = nodetmp + v3s16(0,-1,0);
+						node = map->getNode(nodetmp);
+						if (nodemgr->get(node).walkable) {
+							node.getCollisionBoxes(nodemgr, &nodeboxes);
+							if (position.Y - (nodetmp.Y * BS + getNodeBoundingBox(nodeboxes).MaxEdge.Y) < 0.6f * BS) {
+								distance = dist_tmp;
+								new_sneak_node = nodetmp;
+							}
+						}
+					}
 				}
 			}
-		} else {
-			// legacy behaviour: check just one node
-			node = map->getNode(p + v3s16(0, 1, 0), &is_valid_position);
-			ok = is_valid_position && !nodemgr->get(node).walkable;
 		}
-		if (!ok)
-			continue;
 
-		min_distance_f = distance_f;
-		m_sneak_node = p;
-		new_sneak_node_exists = true;
-	}
 
-	if (!new_sneak_node_exists)
-		return false;
-
-	// Update saved top bounding box of sneak node
-	node = map->getNode(m_sneak_node);
-	std::vector<aabb3f> nodeboxes;
-	node.getCollisionBoxes(nodemgr, &nodeboxes);
-	m_sneak_node_bb_top = getNodeBoundingBox(nodeboxes);
-
-	if (physics_override_sneak_glitch) {
-		// Detect sneak ladder:
-		// Node two meters above sneak node must be solid
-		node = map->getNode(m_sneak_node + v3s16(0, 2, 0),
-			&is_valid_position);
-		if (is_valid_position && nodemgr->get(node).walkable) {
-			// Node three meters above: must be non-solid
-			node = map->getNode(m_sneak_node + v3s16(0, 3, 0),
-				&is_valid_position);
-			m_sneak_ladder_detected = is_valid_position &&
-				!nodemgr->get(node).walkable;
+		if (distance < 3.0f * BS)
+		{
+			m_sneak_node = new_sneak_node;
+			//todo: scratch below when possible
+			node = map->getNode(new_sneak_node);
+			node.getCollisionBoxes(nodemgr, &nodeboxes);
+			m_sneak_node_bb_top = getNodeBoundingBox(nodeboxes);
 		}
 	}
+	else return m_sneak_node_exists;
+	
 	return true;
 }
 
@@ -298,6 +249,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	bool could_sneak = control.sneak && !free_move && !in_liquid &&
 		!is_climbing && physics_override_sneak;
+	if (!could_sneak) m_sneak_node_exists = false;						//TheTermos
 
 	// Add new collisions to the vector
 	if (collision_info && !free_move) {
@@ -371,7 +323,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 				m_speed.Z = 0.0f;
 		}
 
-		if (y_diff > 0 && m_speed.Y <= 0.0f &&
+		/*if (y_diff > 0 && m_speed.Y <= 0.0f &&
 				(physics_override_sneak_glitch || y_diff < BS * 0.6f)) {
 			// Move player to the maximal height when falling or when
 			// the ledge is climbed on the next step.
@@ -380,7 +332,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			position.Y += y_diff * dtime * 22.0f + BS * 0.01f;
 			position.Y = std::min(position.Y, bmax.Y);
 			m_speed.Y = 0.0f;
-		}
+		}*/
 
 		// Allow jumping on node edges while sneaking
 		if (m_speed.Y == 0.0f || m_sneak_ladder_detected)
