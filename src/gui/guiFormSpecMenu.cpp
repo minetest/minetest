@@ -2484,7 +2484,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 		std::string selector = trim(selectors[sel]);
 
 		if (selector.empty()) {
-			errorstream << "Invalid style element (Selector required): '" << element
+			errorstream << "Invalid style element (Empty selector): '" << element
 				<< "'" << std::endl;
 			continue;
 		}
