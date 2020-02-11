@@ -1768,10 +1768,7 @@ void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 void Server::SendPlayerHP(session_t peer_id)
 {
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	// In some rare case if the player is disconnected
-	// while Lua call l_punch, for example, this can be NULL
-	if (!playersao)
-		return;
+	assert(playersao);
 
 	SendHP(peer_id, playersao->getHP());
 	m_script->player_event(playersao,"health_changed");
@@ -2701,10 +2698,7 @@ void Server::sendDetachedInventories(session_t peer_id, bool incremental)
 void Server::DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason)
 {
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	// In some rare cases this can be NULL -- if the player is disconnected
-	// when a Lua function modifies l_punch, for example
-	if (!playersao)
-		return;
+	assert(playersao);
 
 	infostream << "Server::DiePlayer(): Player "
 			<< playersao->getPlayer()->getName()
