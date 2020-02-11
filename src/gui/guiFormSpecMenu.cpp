@@ -4181,9 +4181,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				(event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED) ||
 				(event.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED) ||
 				(event.GUIEvent.EventType == gui::EGET_SCROLL_BAR_CHANGED)) {
-			unsigned int btn_id = event.GUIEvent.Caller->getID();
+			s32 caller_id = event.GUIEvent.Caller->getID();
 
-			if (btn_id == 257) {
+			if (caller_id == 257) {
 				if (m_allowclose) {
 					acceptInput(quit_mode_accept);
 					quitMenu();
@@ -4199,8 +4199,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
 				// if its a button, set the send field so
 				// lua knows which button was pressed
-				if ((s.ftype == f_Button || s.ftype == f_CheckBox) &&
-						s.fid == event.GUIEvent.Caller->getID()) {
+
+				if (caller_id != s.fid)
+					continue;
+
+				if (s.ftype == f_Button || s.ftype == f_CheckBox) {
 					s.send = true;
 					if (s.is_exit) {
 						if (m_allowclose) {
@@ -4216,8 +4219,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.send = false;
 					return true;
 
-				} else if ((s.ftype == f_DropDown) &&
-						(s.fid == event.GUIEvent.Caller->getID())) {
+				} else if (s.ftype == f_DropDown) {
 					// only send the changed dropdown
 					for (GUIFormSpecMenu::FieldSpec &s2 : m_fields) {
 						if (s2.ftype == f_DropDown) {
@@ -4235,13 +4237,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 					}
 					return true;
-				} else if ((s.ftype == f_ScrollBar) &&
-						(s.fid == event.GUIEvent.Caller->getID())) {
+				} else if (s.ftype == f_ScrollBar) {
 					s.fdefault = L"Changed";
 					acceptInput(quit_mode_no);
 					s.fdefault = L"";
-				} else if ((s.ftype == f_Unknown || s.ftype == f_HyperText) &&
-						(s.fid == event.GUIEvent.Caller->getID())) {
+				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
 					s.send = true;
 					acceptInput();
 					s.send = false;
