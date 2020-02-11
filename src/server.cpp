@@ -1794,6 +1794,10 @@ void Server::SendMovePlayer(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 	assert(player);
+	if (player == NULL)
+		// player with peer vanished
+		return;
+
 	PlayerSAO *sao = player->getPlayerSAO();
 	assert(sao);
 
