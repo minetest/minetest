@@ -132,6 +132,7 @@ public:
 };
 
 class Pathfinder;
+class PathfinderCompareHeuristic;
 
 /** Abstract class to manage the map data */
 class GridNodeContainer {
@@ -313,6 +314,8 @@ private:
 
 	ServerEnvironment *m_env = 0;     /**< minetest environment pointer             */
 
+	friend class PathfinderCompareHeuristic;
+
 #ifdef PATHFINDER_DEBUG
 
 	/**
@@ -360,6 +363,29 @@ private:
 	 */
 	std::string dirToName(PathDirections dir);
 #endif
+};
+
+class PathfinderCompareHeuristic
+{
+	private:
+		Pathfinder* myPathfinder;
+	public:
+		PathfinderCompareHeuristic(Pathfinder* pf) {
+			myPathfinder = pf;
+		}
+		bool operator() (v3s16 pos1, v3s16 pos2) {
+			v3s16 ipos1 = myPathfinder->getIndexPos(pos1);
+			v3s16 ipos2 = myPathfinder->getIndexPos(pos2);
+			PathGridnode& g_pos1 = myPathfinder->getIndexElement(ipos1);
+			PathGridnode& g_pos2 = myPathfinder->getIndexElement(ipos2);
+			if (!g_pos1.valid) {
+				return false;
+			}
+			if (!g_pos2.valid) {
+				return false;
+			}
+			return g_pos1.estimated_cost > g_pos2.estimated_cost;
+		}
 };
 
 /******************************************************************************/
@@ -1105,13 +1131,15 @@ int Pathfinder::getXZManhattanDist(v3s16 pos)
 	return (max_x - min_x) + (max_z - min_z);
 }
 
+
+
 /******************************************************************************/
 bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
 {
-	std::set<v3s16> openList;
+	std::priority_queue<v3s16, std::vector<v3s16>, PathfinderCompareHeuristic> openList(PathfinderCompareHeuristic(this));
 	v3s16 pos1 = getRealPos(ipos1);
 	v3s16 pos2 = getRealPos(ipos2);
-	openList.insert(pos1);
+	openList.push(pos1);
 
 	std::vector<v3s16> directions;
 	directions.emplace_back(1,0, 0);
@@ -1126,21 +1154,10 @@ bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
 	int cur_manhattan = getXZManhattanDist(pos2);
 	s_pos.estimated_cost = cur_manhattan;
 
-	int lowest_cost;
 	while (!openList.empty()) {
 		// pick node with lowest fCost
-		lowest_cost = -1;
-		v3s16 lowest_cost_pos;
-		for (v3s16 checkpos : openList) {
-			v3s16 icheckpos = getIndexPos(checkpos);
-			PathGridnode& c_pos = getIndexElement(icheckpos);
-			if (lowest_cost < 0 || c_pos.estimated_cost < lowest_cost) {
-				lowest_cost = c_pos.estimated_cost;
-				lowest_cost_pos = checkpos;
-			}
-		}
-		openList.erase(current_pos);
-		current_pos = lowest_cost_pos;
+		current_pos = openList.top();
+		openList.pop();
 		v3s16 ipos = getIndexPos(current_pos);
 		if (!isValidIndex(ipos)) {
 			DEBUG_OUT(LVL " Pathfinder: " << PP(current_pos) <<
@@ -1163,6 +1180,10 @@ bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
 			int current_totalcost = g_pos.totalcost;
 
 			PathCost cost = g_pos.getCost(direction_flat);
+			if (!cost.updated) {
+				cost = calcCost(current_pos, direction_flat);
+				g_pos.setCost(direction_flat, cost);
+			}
 			v3s16 direction_3d = v3s16(direction_flat);
 			direction_3d.Y = cost.direction;
 
@@ -1170,10 +1191,6 @@ bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
 			v3s16 ineighbor = getIndexPos(neighbor);
 			PathGridnode& n_pos = getIndexElement(ineighbor);
 
-			if (!cost.updated) {
-				cost = calcCost(current_pos, direction_flat);
-				g_pos.setCost(direction_flat, cost);
-			}
 			if (cost.valid && (!n_pos.is_closed && !n_pos.is_open)) {
 				cur_manhattan = getXZManhattanDist(neighbor);
 
@@ -1181,7 +1198,7 @@ bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
 				n_pos.totalcost = current_totalcost + cost.value;
 				n_pos.estimated_cost = current_totalcost + cost.value + cur_manhattan;
 				n_pos.is_open = true;
-				openList.insert(neighbor);
+				openList.push(neighbor);
 			}
 		}
 	}
