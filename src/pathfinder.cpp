@@ -295,6 +295,16 @@ private:
 	 */
 	bool          buildPath(std::vector<v3s16> &path, v3s16 ipos);
 
+        /**
+         * go downwards from a position until some barrier
+         * is hit.
+         * @param pos position from which to go downwards
+         * @param max_down maximum distance to go downwards
+         * @return new position after movement; if too far down,
+                   pos is returned
+         */
+        v3s16         walkDownwards(v3s16 pos, unsigned int max_down);
+
 	/* variables */
 	int m_max_index_x = 0;            /**< max index of search area in x direction  */
 	int m_max_index_y = 0;            /**< max index of search area in y direction  */
@@ -691,65 +701,14 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 	//All algorithms expect the source pos to be *directly* above
 	//a walkable node.
 	v3s16 true_source = v3s16(source);
-	v3s16 testpos = v3s16(source);
-
-	node_at_pos = m_env->getMap().getNode(testpos);
-	while ((node_at_pos.param0 != CONTENT_IGNORE) &&
-			(!ndef->get(node_at_pos).walkable) &&
-			(testpos.Y > m_limits.MinEdge.Y)) {
-		testpos += v3s16(0, -1, 0);
-		node_at_pos = m_env->getMap().getNode(testpos);
-	}
-	//did we find surface?
-	if ((testpos.Y >= m_limits.MinEdge.Y) &&
-			(node_at_pos.param0 != CONTENT_IGNORE) &&
-			(ndef->get(node_at_pos).walkable)) {
-		if ((source.Y - testpos.Y - 1) <= m_maxdrop) {
-			//difference of y-pos +1 (target node is ABOVE solid node)
-			testpos += v3s16(0, 1, 0);
-			source = testpos;
-		}
-		else {
-			VERBOSE_TARGET << "Source pos too far above ground: " <<
-				"Index: " << PP(getIndexPos(testpos)) <<
-				"Realpos: " << PP(getRealPos(getIndexPos(testpos))) << std::endl;
-			return retval;
-		}
-	} else {
-		DEBUG_OUT("Pathfinder: no surface found below source pos" << std::endl);
-	}
+	source = walkDownwards(source, m_maxdrop);
 
 	//If destination pos is hovering above air, go downwards
 	//to the first walkable node (up to m_maxjump).
 	//This means a hovering destination pos could be reached
 	//by a final upwards jump.
 	v3s16 true_destination = v3s16(destination);
-	testpos = v3s16(destination);
-	node_at_pos = m_env->getMap().getNode(testpos);
-	while ((node_at_pos.param0 != CONTENT_IGNORE) &&
-			(!ndef->get(node_at_pos).walkable) &&
-			(testpos.Y > m_limits.MinEdge.Y)) {
-		testpos += v3s16(0, -1, 0);
-		node_at_pos = m_env->getMap().getNode(testpos);
-	}
-	//did we find surface?
-	if ((testpos.Y >= m_limits.MinEdge.Y) &&
-			(node_at_pos.param0 != CONTENT_IGNORE) &&
-			(ndef->get(node_at_pos).walkable)) {
-		if ((destination.Y - testpos.Y - 1) <= m_maxjump) {
-			//difference of y-pos +1 (target node is ABOVE solid node)
-			testpos += v3s16(0, 1, 0);
-			destination = testpos;
-		}
-		else {
-			VERBOSE_TARGET << "Destination pos too far above ground: " <<
-				"Index: " << PP(getIndexPos(testpos)) <<
-				"Realpos: " << PP(getRealPos(getIndexPos(testpos))) << std::endl;
-			return retval;
-		}
-	} else {
-		DEBUG_OUT("Pathfinder: no surface found below destination pos" << std::endl);
-	}
+	destination = walkDownwards(destination, m_maxjump);
 
 	//validate and mark start and end pos
 
@@ -1284,6 +1243,42 @@ bool Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 ipos)
 		// go to the node from which the pathfinder came
 		ipos += g_pos.sourcedir;
 	}
+}
+
+/******************************************************************************/
+v3s16 Pathfinder::walkDownwards(v3s16 pos, unsigned int max_down) {
+	if (max_down == 0)
+		return pos;
+	v3s16 testpos = v3s16(pos);
+	MapNode node_at_pos = m_env->getMap().getNode(testpos);
+	const NodeDefManager *ndef = m_env->getGameDef()->ndef();
+	unsigned int down = 0;
+	while ((node_at_pos.param0 != CONTENT_IGNORE) &&
+			(!ndef->get(node_at_pos).walkable) &&
+			(testpos.Y > m_limits.MinEdge.Y) &&
+			(down <= max_down)) {
+		testpos += v3s16(0, -1, 0);
+		down++;
+		node_at_pos = m_env->getMap().getNode(testpos);
+	}
+	//did we find surface?
+	if ((testpos.Y >= m_limits.MinEdge.Y) &&
+			(node_at_pos.param0 != CONTENT_IGNORE) &&
+			(ndef->get(node_at_pos).walkable)) {
+		if ((down - 1) <= max_down) {
+			//difference of y-pos +1 (target node is ABOVE solid node)
+			testpos += v3s16(0, 1, 0);
+			pos = testpos;
+		}
+		else {
+			VERBOSE_TARGET << "Pos too far above ground: " <<
+				"Index: " << PP(getIndexPos(pos)) <<
+				"Realpos: " << PP(getRealPos(getIndexPos(pos))) << std::endl;
+		}
+	} else {
+		DEBUG_OUT("Pathfinder: no surface found below pos" << std::endl);
+	}
+	return pos;
 }
 
 #ifdef PATHFINDER_DEBUG
