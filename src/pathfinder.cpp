@@ -80,7 +80,7 @@ public:
 
 	bool valid = false;              /**< movement is possible         */
 	int  value = 0;                  /**< cost of movement             */
-	int  direction = 0;              /**< y-direction of movement      */
+	int  y_change = 0;               /**< change of y position of movement */
 	bool updated = false;            /**< this cost has ben calculated */
 
 };
@@ -128,7 +128,13 @@ public:
 
 	/* debug values */
 	bool      is_element = false;          /**< node is element of path detected      */
-	char      type = 'u';                  /**< type of node                          */
+	char      type = 'u';                  /**< Type of pathfinding node.
+	                                        * u = unknown
+	                                        * i = invalid
+	                                        * s = surface (walkable node)
+	                                        * - = non-walkable node (e.g. air) above surface
+	                                        * g = other non-walkable node
+                                                */
 };
 
 class Pathfinder;
@@ -274,11 +280,11 @@ private:
 	/**
 	 * try to find a path to destination using a heuristic function
 	 * to estimate distance to target (A* search algorithm)
-	 * @param ipos1 start position (index pos)
-	 * @param ipos2 end position (index pos)
+	 * @param isource start position (index pos)
+	 * @param idestination end position (index pos)
 	 * @return true/false path to destination has been found
 	 */
-	bool          updateCostHeuristic(v3s16 ipos1, v3s16 ipos2);
+	bool          updateCostHeuristic(v3s16 isource, v3s16 idestination);
 
 	/**
 	 * build a vector containing all nodes from destination to source;
@@ -365,6 +371,9 @@ private:
 #endif
 };
 
+/** Helper class for the open list priority queue in the A* pathfinder
+ *  to sort the pathfinder nodes by cost.
+ */
 class PathfinderCompareHeuristic
 {
 	private:
@@ -411,7 +420,7 @@ std::vector<v3s16> get_path(ServerEnvironment* env,
 PathCost::PathCost(const PathCost &b)
 {
 	valid     = b.valid;
-	direction = b.direction;
+	y_change  = b.y_change;
 	value     = b.value;
 	updated   = b.updated;
 }
@@ -420,7 +429,7 @@ PathCost::PathCost(const PathCost &b)
 PathCost &PathCost::operator= (const PathCost &b)
 {
 	valid     = b.valid;
-	direction = b.direction;
+	y_change  = b.y_change;
 	value     = b.value;
 	updated   = b.updated;
 
@@ -612,6 +621,7 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 		return retval;
 	}
 
+	//initialization
 	m_searchdistance = searchdistance;
 	m_env = env;
 	m_maxjump = max_jump;
@@ -625,6 +635,7 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 		m_prefetch = false;
 	}
 
+	//calculate boundaries within we're allowed to search
 	int min_x = MYMIN(source.X, destination.X);
 	int max_x = MYMAX(source.X, destination.X);
 
@@ -675,7 +686,8 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 		return retval;
 	}
 
-	//Simulate a drop of source pos to first walkable node.
+	//If source pos is hovering above air, drop
+	//to the first walkable node (up to m_maxdrop).
 	//All algorithms expect the source pos to be *directly* above
 	//a walkable node.
 	v3s16 true_source = v3s16(source);
@@ -707,7 +719,10 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 		DEBUG_OUT("Pathfinder: no surface found below source pos" << std::endl);
 	}
 
-	//same for destination, but we use maxjump as limit instead
+	//If destination pos is hovering above air, go downwards
+	//to the first walkable node (up to m_maxjump).
+	//This means a hovering destination pos could be reached
+	//by a final upwards jump.
 	v3s16 true_destination = v3s16(destination);
 	testpos = v3s16(destination);
 	node_at_pos = m_env->getMap().getNode(testpos);
@@ -763,6 +778,7 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 
 	bool update_cost_retval = false;
 
+	//calculate node costs
 	switch (algo) {
 		case PA_DIJKSTRA:
 			update_cost_retval = updateAllCosts(StartIndex, v3s16(0, 0, 0), 0, 0);
@@ -786,13 +802,19 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 		//find path
 		std::vector<v3s16> index_path;
 		buildPath(index_path, EndIndex);
+		//Now we have a path of index positions,
+		//and it's in reverse.
+		//The "true" start or end position might be missing
+		//since those have been given special treatment.
 
 #ifdef PATHFINDER_DEBUG
 		std::cout << "Index path:" << std::endl;
 		printPath(index_path);
 #endif
-		// convert index pos path to pos path
+		//from here we'll make the final changes to the path
 		std::vector<v3s16> full_path;
+
+		//calculate required size
 		int full_path_size = index_path.size();
 		if (source != true_source) {
 			full_path_size++;
@@ -801,16 +823,23 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 			full_path_size++;
 		}
 		full_path.reserve(full_path_size);
+
+		//manually add true_source to start of path, if needed
 		if (source != true_source) {
 			full_path.push_back(true_source);
 		}
+		//convert all index positions to "normal" positions and insert
+		//them into full_path in reverse
 		std::vector<v3s16>::reverse_iterator rit = index_path.rbegin();
 		for (; rit != index_path.rend(); ++rit) {
 			full_path.push_back(getIndexElement(*rit).pos);
 		}
+		//manually add true_destination to end of path, if needed
 		if (destination != true_destination) {
 			full_path.push_back(true_destination);
 		}
+
+		//Done! We now have a complete path of normal positions.
 
 
 #ifdef PATHFINDER_DEBUG
@@ -885,7 +914,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 
 		//did we get information about node?
 		if (node_below_pos2.param0 == CONTENT_IGNORE ) {
-				ERROR_TARGET << "Pathfinder: (2) area at pos: "
+				VERBOSE_TARGET << "Pathfinder: (2) area at pos: "
 					<< PP((pos2 + v3s16(0, -1, 0))) << " not loaded";
 				return retval;
 		}
@@ -895,7 +924,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 			//SUCCESS!
 			retval.valid = true;
 			retval.value = 1;
-			retval.direction = 0;
+			retval.y_change = 0;
 			DEBUG_OUT("Pathfinder: "<< PP(pos)
 					<< " cost same height found" << std::endl);
 		}
@@ -920,12 +949,12 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 					retval.valid = true;
 					retval.value = 2;
 					//difference of y-pos +1 (target node is ABOVE solid node)
-					retval.direction = ((testpos.Y - pos2.Y) +1);
+					retval.y_change = ((testpos.Y - pos2.Y) +1);
 					DEBUG_OUT("Pathfinder cost below height found" << std::endl);
 				}
 				else {
 					INFO_TARGET << "Pathfinder:"
-							" distance to surface below to big: "
+							" distance to surface below too big: "
 							<< (testpos.Y - pos2.Y) << " max: " << m_maxdrop
 							<< std::endl;
 				}
@@ -973,11 +1002,11 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 				//SUCCESS!
 				retval.valid = true;
 				retval.value = 2;
-				retval.direction = (targetpos.Y - pos2.Y);
+				retval.y_change = (targetpos.Y - pos2.Y);
 				DEBUG_OUT("Pathfinder cost above found" << std::endl);
 			}
 			else {
-				DEBUG_OUT("Pathfinder: distance to surface above to big: "
+				DEBUG_OUT("Pathfinder: distance to surface above too big: "
 						<< (targetpos.Y - pos2.Y) << " max: " << m_maxjump
 						<< std::endl);
 			}
@@ -1066,7 +1095,7 @@ bool Pathfinder::updateAllCosts(v3s16 ipos,
 			PathCost cost = g_pos.getCost(direction);
 
 			if (cost.valid) {
-				direction.Y = cost.direction;
+				direction.Y = cost.y_change;
 
 				v3s16 ipos2 = ipos + direction;
 
@@ -1134,13 +1163,21 @@ int Pathfinder::getXZManhattanDist(v3s16 pos)
 
 
 /******************************************************************************/
-bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
+bool Pathfinder::updateCostHeuristic(v3s16 isource, v3s16 idestination)
 {
-	std::priority_queue<v3s16, std::vector<v3s16>, PathfinderCompareHeuristic> openList(PathfinderCompareHeuristic(this));
-	v3s16 pos1 = getRealPos(ipos1);
-	v3s16 pos2 = getRealPos(ipos2);
-	openList.push(pos1);
+	// A* search algorithm.
 
+	// The open list contains the pathfinder nodes that still need to be checked.
+	// The priority queue sorts the pathfinder nodes by estimated cost, with lowest cost on the top.
+	std::priority_queue<v3s16, std::vector<v3s16>, PathfinderCompareHeuristic> openList(PathfinderCompareHeuristic(this));
+
+	v3s16 source = getRealPos(isource);
+	v3s16 destination = getRealPos(idestination);
+
+	// initial position
+	openList.push(source);
+
+	// the 4 cardinal directions
 	std::vector<v3s16> directions;
 	directions.emplace_back(1,0, 0);
 	directions.emplace_back(-1,0, 0);
@@ -1148,20 +1185,25 @@ bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
 	directions.emplace_back(0,0,-1);
 
 	v3s16 current_pos;
-	PathGridnode& s_pos = getIndexElement(ipos1);
+	PathGridnode& s_pos = getIndexElement(isource);
 	s_pos.source = true;
 	s_pos.totalcost = 0;
-	int cur_manhattan = getXZManhattanDist(pos2);
+
+	// estimated cost from start to finish
+	int cur_manhattan = getXZManhattanDist(destination);
 	s_pos.estimated_cost = cur_manhattan;
 
 	while (!openList.empty()) {
-		// pick node with lowest fCost
+		// Pick node with lowest total cost estimate.
+		// The "cheapest" node is always on top.
 		current_pos = openList.top();
 		openList.pop();
 		v3s16 ipos = getIndexPos(current_pos);
+
+		// check if node is inside searchdistance and valid
 		if (!isValidIndex(ipos)) {
 			DEBUG_OUT(LVL " Pathfinder: " << PP(current_pos) <<
-				" out of range, max=" << PP(m_limits.MaxEdge) << std::endl);
+				" out of search distance, max=" << PP(m_limits.MaxEdge) << std::endl);
 			continue;
 		}
 
@@ -1172,28 +1214,36 @@ bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
 			continue;
 		}
 
-		if (current_pos == pos2) {
+		if (current_pos == destination) {
+			// destination found, terminate
 			g_pos.target = true;
 			return true;
 		}
+
+		// for this node, check the 4 cardinal directions
 		for (v3s16 &direction_flat : directions) {
 			int current_totalcost = g_pos.totalcost;
 
+			// get cost from current node to currently checked direction
 			PathCost cost = g_pos.getCost(direction_flat);
 			if (!cost.updated) {
 				cost = calcCost(current_pos, direction_flat);
 				g_pos.setCost(direction_flat, cost);
 			}
+			// update Y component of direction if neighbor requires jump or fall
 			v3s16 direction_3d = v3s16(direction_flat);
-			direction_3d.Y = cost.direction;
+			direction_3d.Y = cost.y_change;
 
+			// get position of true neighbor
 			v3s16 neighbor = current_pos + direction_3d;
 			v3s16 ineighbor = getIndexPos(neighbor);
 			PathGridnode& n_pos = getIndexElement(ineighbor);
 
 			if (cost.valid && (!n_pos.is_closed && !n_pos.is_open)) {
+				// heuristic function; estimate cost from neighbor to destination
 				cur_manhattan = getXZManhattanDist(neighbor);
 
+				// add neighbor to open list
 				n_pos.sourcedir = invert(direction_3d);
 				n_pos.totalcost = current_totalcost + cost.value;
 				n_pos.estimated_cost = current_totalcost + cost.value + cur_manhattan;
@@ -1202,12 +1252,15 @@ bool Pathfinder::updateCostHeuristic(v3s16 ipos1, v3s16 ipos2)
 			}
 		}
 	}
+	// no path found; all possible nodes within searchdistance have been exhausted
 	return false;
 }
 
 /******************************************************************************/
 bool Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 ipos)
 {
+	// The cost calculation should have set a source direction for all relevant nodes.
+	// To build the path, we go backwards from the destination until we reach the start.
 	unsigned int waypoints = 0;
 	while (true) {
 		waypoints++;
@@ -1215,6 +1268,7 @@ bool Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 ipos)
 			ERROR_TARGET << "Pathfinder: buildPath: path is too long (too many waypoints), aborting" << std::endl;
 			return false;
 		}
+		// Insert node into path
 		PathGridnode &g_pos = getIndexElement(ipos);
 		if (!g_pos.valid) {
 			ERROR_TARGET << "Pathfinder: buildPath: invalid next pos detected, aborting" << std::endl;
@@ -1224,8 +1278,10 @@ bool Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 ipos)
 		g_pos.is_element = true;
 		path.push_back(ipos);
 		if (g_pos.source)
+			// start node found, terminate
 			return true;
 
+		// go to the node from which the pathfinder came
 		ipos += g_pos.sourcedir;
 	}
 }
@@ -1302,7 +1358,7 @@ void Pathfinder::printYdir(PathDirections dir)
 			for (int x = 0; x < m_max_index_x; x++) {
 				if (getIdxElem(x, y, z).directions[dir].valid)
 					std::cout << std::setw(4)
-						<< getIdxElem(x, y, z).directions[dir].direction;
+						<< getIdxElem(x, y, z).directions[dir].y_change;
 				else
 					std::cout << std::setw(4) << "-";
 				}
