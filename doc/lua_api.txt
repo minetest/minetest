@@ -2803,14 +2803,15 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 * box
-    * **Note**: All box properties can either be a single color/number (e.g. `red`) or an array of
-      four colors/numbers (e.g. `red,orange,yellow,green`).
-    * colors - color (optionally array). Sets the color(s) of the box. Array starts at top
-      left and goes clockwise.
-    * bordercolors - color (optionally array). Sets the color(s) of the borders. Array starts
-      at the top border and goes clockwise.
+    * **Note**: All box properties can either be a single value like `red`, an array of two
+      like `red,yellow` (applies to the top/bottom and right/left or top-left/bottom-right
+      and top-right/bottom-left), or an array of four like `red,yellow,green,blue` (applies
+      to the top or top-left and rotates around clockwise). This works the same as CSS borders.
+    * colors - `ColorString` (optionally array). Sets the color(s) of the box corners.
+    * bordercolors - `ColorString` (optionally array). Sets the color(s) of the borders.
     * borderwidths - integer (optionally array). Sets the width(s) of the borders in pixels.
-      Array starts at the top border and goes clockwise.
+      If the width is negative, the border will extend inside the box, whereas positive extends
+      outside the box. A width of zero results in no border; this is default.
 
 ### Valid States
 

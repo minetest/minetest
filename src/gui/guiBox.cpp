@@ -82,17 +82,17 @@ void GUIBox::draw()
 	);
 
 	border_rects[1] = core::rect<s32>(
-		topleft_border.X,
-		lowerright_rect.Y,
-		lowerright_border.X,
-		lowerright_border.Y
-	);
-
-	border_rects[2] = core::rect<s32>(
 		lowerright_rect.X,
 		topleft_rect.Y,
 		lowerright_border.X,
 		lowerright_rect.Y
+	);
+
+	border_rects[2] = core::rect<s32>(
+		topleft_border.X,
+		lowerright_rect.Y,
+		lowerright_border.X,
+		lowerright_border.Y
 	);
 
 	border_rects[3] = core::rect<s32>(

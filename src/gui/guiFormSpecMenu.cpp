@@ -2242,7 +2242,6 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 		spec.ftype = f_Box;
 
 		auto style = getStyleForElement("box", spec.fname);
-		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 
 		video::SColor tmp_color;
 		std::vector<video::SColor> colors;
@@ -2257,6 +2256,8 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 
 			if (str_style.size() == 1)
 				str_style = {str_style[0], str_style[0], str_style[0], str_style[0]};
+			else if (str_style.size() == 2)
+				str_style = {str_style[0], str_style[1], str_style[0], str_style[1]};
 
 			if (str_style.size() == 4) {
 				for (unsigned int i = 0; i <= 3; i++) {
@@ -2280,6 +2281,8 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 
 			if (str_style.size() == 1)
 				str_style = {str_style[0], str_style[0], str_style[0], str_style[0]};
+			else if (str_style.size() == 2)
+				str_style = {str_style[0], str_style[1], str_style[0], str_style[1]};
 
 			if (str_style.size() == 4) {
 				for (unsigned int i = 0; i <= 3; i++) {
@@ -2303,6 +2306,8 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 
 			if (str_style.size() == 1)
 				str_style = {str_style[0], str_style[0], str_style[0], str_style[0]};
+			else if (str_style.size() == 2)
+				str_style = {str_style[0], str_style[1], str_style[0], str_style[1]};
 
 			if (str_style.size() == 4) {
 				for (unsigned int i = 0; i <= 3; i++)
@@ -2316,7 +2321,7 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 
 		GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid, rect,
 			colors, bordercolors, borderwidths);
-		e->setNotClipped(true);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		e->drop();
 
 		m_fields.push_back(spec);
