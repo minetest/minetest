@@ -1608,7 +1608,7 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 		258 + m_fields.size()
 	);
 
-	spec.ftype = f_Unknown;
+	spec.ftype = f_HyperText;
 	new GUIHyperText(
 		spec.flabel.c_str(), Environment, this, spec.fid, rect, m_client, m_tsrc);
 
@@ -3254,7 +3254,8 @@ void GUIFormSpecMenu::drawMenu()
 				}
 
 #ifndef HAVE_TOUCHSCREENGUI
-				if (current_cursor_icon != field.fcursor_icon)
+				if (field.ftype != f_HyperText && // Handled directly in guiHyperText
+						current_cursor_icon != field.fcursor_icon)
 					cursor_control->setActiveIcon(field.fcursor_icon);
 #endif
 
@@ -4239,7 +4240,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.fdefault = L"Changed";
 					acceptInput(quit_mode_no);
 					s.fdefault = L"";
-				} else if ((s.ftype == f_Unknown) &&
+				} else if ((s.ftype == f_Unknown || s.ftype == f_HyperText) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
 					s.send = true;
 					acceptInput();
