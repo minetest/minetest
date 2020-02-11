@@ -864,7 +864,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_peer_id(peer_id_),
 	m_is_singleplayer(is_singleplayer)
 {
-	assert(m_peer_id != 0);	// pre-condition
+	SANITY_CHECK(m_peer_id != PEER_ID_INEXISTENT);
 
 	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
 	m_prop.breath_max = PLAYER_MAX_BREATH_DEFAULT;
@@ -1393,7 +1393,7 @@ bool PlayerSAO::setWieldedItem(const ItemStack &item)
 
 void PlayerSAO::disconnected()
 {
-	m_peer_id = 0;
+	m_peer_id = PEER_ID_INEXISTENT;
 	m_pending_removal = true;
 }
 
