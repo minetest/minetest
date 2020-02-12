@@ -640,6 +640,23 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	return 1;
 }
 
+// get_connected_players()
+int ModApiEnvMod::l_get_connected_players(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	lua_createtable(L, env->getPlayerCount(), 0);
+	u32 i = 0;
+	for (RemotePlayer *player : env->getPlayers()) {
+		PlayerSAO *sao = player->getPlayerSAO();
+		if (sao) {
+			getScriptApiBase(L)->objectrefGetOrCreate(L, sao);
+			lua_rawseti(L, -2, ++i);
+		}
+	}
+	return 1;
+}
+
 // get_player_by_name(name)
 int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 {
@@ -647,7 +664,7 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 
 	// Do it
 	const char *name = luaL_checkstring(L, 1);
-	RemotePlayer *player = dynamic_cast<RemotePlayer *>(env->getPlayer(name));
+	RemotePlayer *player = env->getPlayer(name);
 	if (player == NULL){
 		lua_pushnil(L);
 		return 1;
@@ -1319,6 +1336,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(find_nodes_with_meta);
 	API_FCT(get_meta);
 	API_FCT(get_node_timer);
+	API_FCT(get_connected_players);
 	API_FCT(get_player_by_name);
 	API_FCT(get_objects_inside_radius);
 	API_FCT(set_timeofday);

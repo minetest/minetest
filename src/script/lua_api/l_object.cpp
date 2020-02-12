@@ -1063,6 +1063,9 @@ int ObjectRef::l_get_luaentity(lua_State *L)
 int ObjectRef::l_is_player_connected(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+	// This method was once added for a bugfix, but never documented
+	log_deprecated(L, "is_player_connected is undocumented and "
+		"will be removed in a future release");
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	lua_pushboolean(L, (player != NULL && player->getPeerId() != PEER_ID_INEXISTENT));
