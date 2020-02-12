@@ -5778,7 +5778,10 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 #### Lua entity only (no-op for other objects)
 
-* `remove()`: remove object (after returning from Lua)
+* `remove()`: remove object
+    * The object is removed after returning from Lua. However the `ObjectRef`
+      itself instantly becomes unusable with all further method calls having
+      no effect and returning `nil`.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `add_velocity(vel)`
