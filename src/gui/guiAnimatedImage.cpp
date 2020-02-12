@@ -16,12 +16,12 @@ GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *
 	// Expected format: "texture_name:frame_count,frame_duration"
 	// If this format is not met, the string will be loaded as a normal texture
 
-	m_frame_idx = 0;
-
 	std::string::size_type colon_position = name.find(':', 0);
 	std::string::size_type comma_position = name.find(',', 0);
 
-	if (comma_position > colon_position && comma_position < name.size()) {
+	if (comma_position != std::string::npos &&
+			colon_position != std::string::npos &&
+			comma_position < name.size()) {
 		m_texture = m_tsrc->getTexture(name.substr(0, colon_position));
 
 		m_frame_count = std::max(stoi(name.substr(

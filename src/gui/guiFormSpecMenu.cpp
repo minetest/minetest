@@ -785,7 +785,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	std::vector<std::string> parts = split(element, ';');
 
 	if (parts.size() != 3 &&
-			(parts.size() < 3 || m_formspec_version <= FORMSPEC_API_VERSION)) {
+			!(parts.size() > 3 && m_formspec_version > FORMSPEC_API_VERSION)) {
 		errorstream << "Invalid animated image element(" << parts.size()
 				<< "): '" << element << "'"  << std::endl;
 		return;

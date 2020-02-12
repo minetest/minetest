@@ -18,9 +18,9 @@ private:
 	ISimpleTextureSource *m_tsrc;
 
 	video::ITexture *m_texture;
-	u64 m_global_time = 0;
+	u64 m_global_time;
 	s32 m_frame_idx;
-	s32 m_frame_count = 0;
-	u64 m_frame_duration = 0;
-	u64 m_frame_time = 0;
+	s32 m_frame_count;
+	u64 m_frame_duration;
+	u64 m_frame_time;
 };
