@@ -2311,7 +2311,7 @@ bool GUIFormSpecMenu::parseSizeDirect(parserData* data, const std::string &eleme
 		return false;
 
 	if (type == "invsize")
-		log_deprecated("Deprecated formspec element \"invsize\" is used");
+		warningstream << "Deprecated formspec element \"invsize\" is used" << std::endl;
 
 	parseSize(data, description);
 

@@ -59,7 +59,7 @@ int ModApiUtil::l_log(lua_State *L)
 		std::string name = luaL_checkstring(L, 1);
 		text = luaL_checkstring(L, 2);
 		if (name == "deprecated") {
-			log_deprecated(L, text);
+			log_deprecated(L, text, 2);
 			return 0;
 		}
 		level = Logger::stringToLevel(name);
