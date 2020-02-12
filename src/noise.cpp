@@ -503,22 +503,31 @@ void Noise::setOctaves(int octaves)
 
 void Noise::resizeNoiseBuf(bool is3d)
 {
-	//maximum possible spread value factor
+	// Maximum possible spread value factor
 	float ofactor = (np.lacunarity > 1.0) ?
 		pow(np.lacunarity, np.octaves - 1) :
 		np.lacunarity;
 
-	// noise lattice point count
+	// Noise lattice point count
 	// (int)(sz * spread * ofactor) is # of lattice points crossed due to length
 	float num_noise_points_x = sx * ofactor / np.spread.X;
 	float num_noise_points_y = sy * ofactor / np.spread.Y;
 	float num_noise_points_z = sz * ofactor / np.spread.Z;
 
-	// protect against obviously invalid parameters
+	// Protect against obviously invalid parameters
 	if (num_noise_points_x > 1000000000.f ||
-		num_noise_points_y > 1000000000.f ||
-		num_noise_points_z > 1000000000.f)
+			num_noise_points_y > 1000000000.f ||
+			num_noise_points_z > 1000000000.f)
 		throw InvalidNoiseParamsException();
+
+	// Protect against an octave having a spread < 1, causing broken noise values
+	if (np.spread.X / ofactor < 1.0f ||
+			np.spread.Y / ofactor < 1.0f ||
+			np.spread.Z / ofactor < 1.0f) {
+		errorstream << "A noise parameter has too many octaves: "
+			<< np.octaves << " octaves" << std::endl;
+		throw InvalidNoiseParamsException("A noise parameter has too many octaves");
+	}
 
 	// + 2 for the two initial endpoints
 	// + 1 for potentially crossing a boundary due to offset
