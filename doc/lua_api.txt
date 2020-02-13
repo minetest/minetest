@@ -948,7 +948,8 @@ Node paramtypes
 The functions of `param1` and `param2` are determined by certain fields in the
 node definition.
 
-`param1` is reserved for the engine when `paramtype != "none"`:
+The function of `param1` is determined by `paramtype` in node definition.
+`param1` is reserved for the engine when `paramtype != "none"`.
 
 * `paramtype = "light"`
     * The value stores light with and without sun in its upper and lower 4 bits
@@ -965,19 +966,27 @@ node definition.
         * mesh
         * plantlike
         * plantlike_rooted
+* `paramtype = "none"`
+    * `param1` will not be used by the engine and can be used to store
+      an arbitrary value
 
-`param2` is reserved for the engine when any of these are used:
+The function of `param2` is determined by `paramtype2` in node definition.
+`param2` is reserved for the engine when `paramtype2 != "none"`.
 
-* `liquidtype = "flowing"`
-    * The level and some flags of the liquid is stored in `param2`
-* `drawtype = "flowingliquid"`
-    * The drawn liquid level is read from `param2`
-* `drawtype = "torchlike"`
-* `drawtype = "signlike"`
+* `paramtype2 = "flowingliquid"`
+    * Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
+    * The liquid level and a flag of the liquid are stored in `param2`
+    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node
+    * Bit 3: If set, liquid is flowing downwards (no graphical effect)
 * `paramtype2 = "wallmounted"`
-    * The rotation of the node is stored in `param2`. You can make this value
-      by using `minetest.dir_to_wallmounted()`.
+    * Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
+    * The rotation of the node is stored in `param2`
+    * You can make this value by using `minetest.dir_to_wallmounted()`
+    * Values range 0 - 5
+    * The value denotes at which direction the node is "mounted":
+      0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
 * `paramtype2 = "facedir"`
+    * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`. Furnaces and chests are
       rotated this way. Can be made by using `minetest.dir_to_facedir()`.
     * Values range 0 - 23
@@ -996,13 +1005,13 @@ node definition.
             * The height of the 'plantlike' section is stored in `param2`.
             * The height is (`param2` / 16) nodes.
 * `paramtype2 = "degrotate"`
-    * Only valid for "plantlike". The rotation of the node is stored in
+    * Only valid for "plantlike" drawtype. The rotation of the node is stored in
       `param2`.
     * Values range 0 - 179. The value stored in `param2` is multiplied by two to
       get the actual rotation in degrees of the node.
 * `paramtype2 = "meshoptions"`
-    * Only valid for "plantlike". The value of `param2` becomes a bitfield which
-      can be used to change how the client draws plantlike nodes.
+    * Only valid for "plantlike" drawtype. The value of `param2` becomes a
+      bitfield which can be used to change how the client draws plantlike nodes.
     * Bits 0, 1 and 2 form a mesh selector.
       Currently the following meshes are choosable:
         * 0 = a "x" shaped plant (ordinary plant)
@@ -1034,6 +1043,9 @@ node definition.
     * `param2` values 0-63 define 64 levels of internal liquid, 0 being empty
       and 63 being full.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
+* `paramtype2 = "none"`
+    * `param2` will not be used by the engine and can be used to store
+      an arbitrary value
 
 Nodes can also contain extra data. See [Node Metadata].
 
