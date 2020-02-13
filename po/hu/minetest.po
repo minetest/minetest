@@ -875,7 +875,7 @@ msgstr "A megadott útvonalon nem létezik világ: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "yes"
+msgstr "no"
 
 #: src/client/game.cpp
 msgid ""
