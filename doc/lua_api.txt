@@ -5706,8 +5706,21 @@ Can be gotten via `minetest.get_node_timer(pos)`.
 -----------
 
 Moving things in the game are generally these.
+This is basically a reference to a C++ `ServerActiveObject`.
 
-This is basically a reference to a C++ `ServerActiveObject`
+### Advice on handling `ObjectRefs`
+
+When you receive an `ObjectRef` as a callback argument or from another API
+function, it is possible to store the reference somewhere and keep it around.
+It will keep functioning until the object is unloaded or removed.
+
+However, doing this is **NOT** recommended as there is (intentionally) no method
+to test if a previously acquired `ObjectRef` is still valid.
+Instead, `ObjectRefs` should be "let go" of as soon as control is returned from
+Lua back to the engine.
+Doing so is much less error-prone and you will never need to wonder if the
+object you are working with still exists.
+
 
 ### Methods
 
