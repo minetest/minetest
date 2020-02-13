@@ -82,7 +82,6 @@ void GameUI::init()
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 	m_guitext_profiler->setOverrideFont(g_fontengine->getFont(
 		g_fontengine->getDefaultFontSize() * 0.9f, FM_Mono));
-	m_guitext_profiler->setBackgroundColor(video::SColor(120, 0, 0, 0));
 	m_guitext_profiler->setVisible(false);
 }
 
@@ -246,11 +245,12 @@ void GameUI::updateProfiler()
 		int lines = g_profiler->print(os, m_profiler_current_page, m_profiler_max_page);
 		++lines;
 
-		std::wstring text = utf8_to_wide(os.str());
-		setStaticText(m_guitext_profiler, text.c_str());
+		EnrichedString str(utf8_to_wide(os.str()));
+		str.setBackground(video::SColor(120, 0, 0, 0));
+		setStaticText(m_guitext_profiler, str);
 
 		core::dimension2d<u32> size = m_guitext_profiler->getOverrideFont()->
-				getDimension(text.c_str());
+				getDimension(str.c_str());
 		core::position2di upper_left(6, 50);
 		core::position2di lower_right = upper_left;
 		lower_right.X += size.Width + 10;

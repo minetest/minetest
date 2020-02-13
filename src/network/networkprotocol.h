@@ -200,6 +200,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Unknown inventory serialization fields no longer throw an error
 		Mod-specific formspec version
 		Player FOV override API
+		"ephemeral" added to TOCLIENT_PLAY_SOUND
 */
 
 #define LATEST_PROTOCOL_VERSION 38
@@ -450,6 +451,7 @@ enum ToClientCommand
 		s32[3] pos_nodes*10000
 		u16 object_id
 		u8 loop (bool)
+		u8 ephemeral (bool)
 	*/
 
 	TOCLIENT_STOP_SOUND = 0x40,

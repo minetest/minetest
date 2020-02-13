@@ -398,6 +398,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	*/
 	//f32 d = pos_max_d * 1.1f;
 
+
 	f32 d = 0.0f;	// Temporary fix, any nonzero d causes collision glitches, the more the greater it is.
 	// ultimately it has to be determined if any uncertainty is involved, and if it is, eliminated
 	// and d & pos_max_d params removed from function calls.

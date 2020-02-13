@@ -60,6 +60,8 @@ LuaEntitySAO* ObjectRef::getluaobject(ObjectRef *ref)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
 		return NULL;
+	if (obj->isGone())
+		return NULL;
 	return (LuaEntitySAO*)obj;
 }
 
@@ -69,6 +71,8 @@ PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
 	if (obj == NULL)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
+		return NULL;
+	if (obj->isGone())
 		return NULL;
 	return (PlayerSAO*)obj;
 }
