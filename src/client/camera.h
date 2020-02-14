@@ -230,9 +230,9 @@ private:
 	ItemStack m_wield_item_next;
 
 	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
-	v3f m_camera_custom_position = v3f(0.0, 0.0, 0.0);
-	v3f m_camera_custom_direction = v3f(0.0, 0.0, 1.0);
-	v3f m_camera_custom_up = v3f(0.0, 1.0, 0.0);
+	v3f m_camera_custom_position = v3f(0.0f, 0.0f, 0.0f);
+	v3f m_camera_custom_direction = v3f(0.0f, 0.0f, 1.0f);
+	v3f m_camera_custom_up = v3f(0.0f, 1.0f, 0.0f);
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;

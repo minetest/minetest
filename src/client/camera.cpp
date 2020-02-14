@@ -311,7 +311,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 	// Fall bobbing animation
 	float fall_bobbing = 0;
-	if(player->camera_impact >= 1 && m_camera_mode == CAMERA_MODE_FIRST)
+	if (player->camera_impact >= 1 && m_camera_mode == CAMERA_MODE_FIRST)
 	{
 		if(m_view_bobbing_fall == -1) // Effect took place and has finished
 			player->camera_impact = m_view_bobbing_fall = 0;
