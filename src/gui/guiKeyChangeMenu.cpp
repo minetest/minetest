@@ -86,8 +86,6 @@ GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
 GUIModalMenu(env, parent, id, menumgr)
 {
 	init_keys();
-	for (key_setting *ks : key_settings)
-		key_used.push_back(ks->key);
 }
 
 GUIKeyChangeMenu::~GUIKeyChangeMenu()
@@ -112,6 +110,7 @@ void GUIKeyChangeMenu::removeChildren()
 	for (gui::IGUIElement *i : children_copy) {
 		i->remove();
 	}
+	key_used_text = nullptr;
 }
 
 void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
@@ -246,7 +245,13 @@ void GUIKeyChangeMenu::drawMenu()
 bool GUIKeyChangeMenu::acceptInput()
 {
 	for (key_setting *k : key_settings) {
-		g_settings->set(k->setting_name, k->key.sym());
+		std::string default_key;
+		g_settings->getDefaultNoEx(k->setting_name, default_key);
+
+		if (k->key.sym() != default_key)
+			g_settings->set(k->setting_name, k->key.sym());
+		else
+			g_settings->remove(k->setting_name);
 	}
 
 	{
@@ -274,28 +279,27 @@ bool GUIKeyChangeMenu::acceptInput()
 
 bool GUIKeyChangeMenu::resetMenu()
 {
-	if (activeKey >= 0)
-	{
-		for (key_setting *k : key_settings) {
-			if (k->id == activeKey) {
-				const wchar_t *text = wgettext(k->key.name());
-				k->button->setText(text);
-				delete[] text;
-				break;
-			}
-		}
-		activeKey = -1;
+	if (active_key) {
+		const wchar_t *text = wgettext(active_key->key.name());
+		active_key->button->setText(text);
+		delete[] text;
+		active_key = nullptr;
 		return false;
 	}
 	return true;
 }
 bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 {
-	if (event.EventType == EET_KEY_INPUT_EVENT && activeKey >= 0
+	if (event.EventType == EET_KEY_INPUT_EVENT && active_key
 			&& event.KeyInput.PressedDown) {
 
 		bool prefer_character = shift_down;
 		KeyPress kp(event.KeyInput, prefer_character);
+
+		if (event.KeyInput.Key == irr::KEY_DELETE)
+			kp = KeyPress(""); // To erase key settings
+		else if (event.KeyInput.Key == irr::KEY_ESCAPE)
+			kp = active_key->key; // Cancel
 
 		bool shift_went_down = false;
 		if(!shift_down &&
@@ -304,51 +308,46 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 				event.KeyInput.Key == irr::KEY_RSHIFT))
 			shift_went_down = true;
 
-		// Remove Key already in use message
-		if(this->key_used_text)
-		{
-			this->key_used_text->remove();
-			this->key_used_text = NULL;
-		}
 		// Display Key already in use message
-		if (std::find(this->key_used.begin(), this->key_used.end(), kp) != this->key_used.end())
-		{
-			core::rect < s32 > rect(0, 0, 600, 40);
+		bool key_in_use = false;
+		if (strcmp(kp.sym(), "") != 0) {
+			for (key_setting *ks : key_settings) {
+				if (ks != active_key && ks->key == kp) {
+					key_in_use = true;
+					break;
+				}
+			}
+		}
+
+		if (key_in_use && !this->key_used_text) {
+			core::rect<s32> rect(0, 0, 600, 40);
 			rect += v2s32(0, 0) + v2s32(25, 30);
 			const wchar_t *text = wgettext("Key already in use");
 			this->key_used_text = Environment->addStaticText(text,
 					rect, false, true, this, -1);
 			delete[] text;
-			//infostream << "Key already in use" << std::endl;
+		} else if (!key_in_use && this->key_used_text) {
+			this->key_used_text->remove();
+			this->key_used_text = nullptr;
 		}
 
 		// But go on
 		{
-			key_setting *k = NULL;
-			for (key_setting *ks : key_settings) {
-				if (ks->id == activeKey) {
-					k = ks;
-					break;
-				}
-			}
-			FATAL_ERROR_IF(k == NULL, "Key setting not found");
-			k->key = kp;
-			const wchar_t *text = wgettext(k->key.name());
-			k->button->setText(text);
+			active_key->key = kp;
+			const wchar_t *text = wgettext(kp.name());
+			active_key->button->setText(text);
 			delete[] text;
 
-			this->key_used.push_back(kp);
-
 			// Allow characters made with shift
-			if(shift_went_down){
+			if (shift_went_down){
 				shift_down = true;
 				return false;
 			}
 
-			activeKey = -1;
+			active_key = nullptr;
 			return true;
 		}
-	} else if (event.EventType == EET_KEY_INPUT_EVENT && activeKey < 0
+	} else if (event.EventType == EET_KEY_INPUT_EVENT && !active_key
 			&& event.KeyInput.PressedDown
 			&& event.KeyInput.Key == irr::KEY_ESCAPE) {
 		quitMenu();
@@ -377,24 +376,19 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					quitMenu();
 					return true;
 				default:
-					key_setting *k = NULL;
-
+					resetMenu();
 					for (key_setting *ks : key_settings) {
 						if (ks->id == event.GUIEvent.Caller->getID()) {
-							k = ks;
+							active_key = ks;
 							break;
 						}
 					}
-					FATAL_ERROR_IF(k == NULL, "Key setting not found");
+					FATAL_ERROR_IF(!active_key, "Key setting not found");
 
-					resetMenu();
 					shift_down = false;
-					activeKey = event.GUIEvent.Caller->getID();
 					const wchar_t *text = wgettext("press key");
-					k->button->setText(text);
+					active_key->button->setText(text);
 					delete[] text;
-					this->key_used.erase(std::remove(this->key_used.begin(),
-							this->key_used.end(), k->key), this->key_used.end());
 					break;
 			}
 			Environment->setFocus(this);
