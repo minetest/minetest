@@ -2133,6 +2133,15 @@ Elements
 
 * Show an image
 
+### `animated_image[<X>,<Y>;<W>,<H>;<texture name>:<frame count>,<frame duration>]`
+
+* Show an animated image. The image is drawn like a "vertical_frames" tile
+    animation (See Tile animation definition), but uses a frame count/duration
+    for simplicity
+* `<texture name>` is the image to use
+* `<frame count>` is the number of frames animating the image
+* `<frame duration>` is in milliseconds
+
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
 * Show an inventory image of registered item/node
@@ -2580,6 +2589,8 @@ Some types may inherit styles from parent types.
 
 ### Valid Properties
 
+* animated_image
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * box
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher

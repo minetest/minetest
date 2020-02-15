@@ -155,6 +155,8 @@ src/genericobject.cpp
 src/genericobject.h
 src/gettext.cpp
 src/gettext.h
+src/gui/guiAnimatedImage.cpp
+src/gui/guiAnimatedImage.h
 src/gui/guiBackgroundImage.cpp
 src/gui/guiBackgroundImage.h
 src/gui/guiBox.cpp
