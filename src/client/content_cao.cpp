@@ -645,10 +645,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		{ // Front
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 			video::S3DVertex vertices[4] = {
-				video::S3DVertex(-dx, -dy, 0, 0,0,0, c, 1,1),
-				video::S3DVertex( dx, -dy, 0, 0,0,0, c, 0,1),
-				video::S3DVertex( dx,  dy, 0, 0,0,0, c, 0,0),
-				video::S3DVertex(-dx,  dy, 0, 0,0,0, c, 1,0),
+				video::S3DVertex(-dx, -dy, 0, 0,0,1, c, 1,1),
+				video::S3DVertex( dx, -dy, 0, 0,0,1, c, 0,1),
+				video::S3DVertex( dx,  dy, 0, 0,0,1, c, 0,0),
+				video::S3DVertex(-dx,  dy, 0, 0,0,1, c, 1,0),
 			};
 			if (m_is_player) {
 				// Move minimal Y position to 0 (feet position)
@@ -664,6 +664,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			buf->getMaterial().MaterialType = m_material_type;
 
 			if (m_enable_shaders) {
+				buf->getMaterial().EmissiveColor = c;
 				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING, false);
 				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
 			}
@@ -675,10 +676,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		{ // Back
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 			video::S3DVertex vertices[4] = {
-				video::S3DVertex( dx,-dy, 0, 0,0,0, c, 1,1),
-				video::S3DVertex(-dx,-dy, 0, 0,0,0, c, 0,1),
-				video::S3DVertex(-dx, dy, 0, 0,0,0, c, 0,0),
-				video::S3DVertex( dx, dy, 0, 0,0,0, c, 1,0),
+				video::S3DVertex( dx,-dy, 0, 0,0,-1, c, 1,1),
+				video::S3DVertex(-dx,-dy, 0, 0,0,-1, c, 0,1),
+				video::S3DVertex(-dx, dy, 0, 0,0,-1, c, 0,0),
+				video::S3DVertex( dx, dy, 0, 0,0,-1, c, 1,0),
 			};
 			if (m_is_player) {
 				// Move minimal Y position to 0 (feet position)
@@ -694,6 +695,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			buf->getMaterial().MaterialType = m_material_type;
 
 			if (m_enable_shaders) {
+				buf->getMaterial().EmissiveColor = c;
 				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING, false);
 				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
 			}
@@ -830,7 +832,18 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 		if (m_enable_shaders) {
 			scene::ISceneNode *node = getSceneNode();
 
-			if (node != nullptr) {
+			if (node == nullptr) {
+				return;
+			}
+
+			if (m_prop.visual == "upright_sprite") {
+				scene::IMesh *mesh = m_meshnode->getMesh();
+				for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
+					scene::IMeshBuffer* buf = mesh->getMeshBuffer(i);
+					video::SMaterial& material = buf->getMaterial();
+					material.EmissiveColor = color;
+				}
+			} else {
 				for (u32 i = 0; i < node->getMaterialCount(); ++i) {
 					video::SMaterial& material = node->getMaterial(i);
 					material.EmissiveColor = color;
