@@ -566,21 +566,6 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 }
 
-void GenericCAO::setSceneNodeMaterial()
-{
-	scene::ISceneNode *node = getSceneNode();
-
-	node->setMaterialFlag(video::EMF_LIGHTING, false);
-	node->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-	node->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-	node->setMaterialType(m_material_type);
-
-	if (m_enable_shaders) {
-		node->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
-		node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
-	}
-}
-
 void GenericCAO::addToScene(ITextureSource *tsrc)
 {
 	m_smgr = RenderingEngine::get_scene_manager();
@@ -614,6 +599,18 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_matrixnode->grab();
 	};
 
+	auto setSceneNodeMaterial = [this] (scene::ISceneNode *node) {
+		node->setMaterialFlag(video::EMF_LIGHTING, false);
+		node->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+		node->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		node->setMaterialType(m_material_type);
+
+		if (m_enable_shaders) {
+			node->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
+			node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+		}
+	};
+
 	if (m_prop.visual == "sprite") {
 		grabMatrixNode();
 		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
@@ -622,7 +619,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_spritenode->setMaterialTexture(0,
 				tsrc->getTextureForMesh("unknown_node.png"));
 
-		setSceneNodeMaterial();
+		setSceneNodeMaterial(m_spritenode);
 
 		u8 li = m_last_light;
 		m_spritenode->setColor(video::SColor(255,li,li,li));
@@ -723,7 +720,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		u8 li = m_last_light;
 		setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
 
-		setSceneNodeMaterial();
+		setSceneNodeMaterial(m_meshnode);
 	} else if (m_prop.visual == "mesh") {
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
@@ -741,7 +738,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
 
-			setSceneNodeMaterial();
+			setSceneNodeMaterial(m_animated_meshnode);
 
 			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 				m_prop.backface_culling);

@@ -227,8 +227,6 @@ public:
 
 	void removeFromScene(bool permanent);
 
-	void setSceneNodeMaterial();
-
 	void addToScene(ITextureSource *tsrc);
 
 	inline void expireVisuals()
