@@ -227,9 +227,7 @@ public:
 
 	void removeFromScene(bool permanent);
 
-	void setSceneNodeMaterial(
-			video::E_MATERIAL_TYPE fallback_material_type,
-			video::E_MATERIAL_TYPE shader_material_type);
+	void setSceneNodeMaterial();
 
 	void addToScene(ITextureSource *tsrc);
 

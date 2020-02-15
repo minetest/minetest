@@ -41,7 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	CAOShaderConstantSetter
 */
 
-//! Shader constant setter for passing material emissive color to the CAO model_shader
+//! Shader constant setter for passing material emissive color to the CAO object_shader
 class CAOShaderConstantSetter : public IShaderConstantSetter
 {
 public:
