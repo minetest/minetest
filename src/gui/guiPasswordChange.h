@@ -29,7 +29,8 @@ class GUIPasswordChange : public GUIModalMenu
 {
 public:
 	GUIPasswordChange(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-			IMenuManager *menumgr, Client *client, ISimpleTextureSource *tsrc);
+			IMenuManager *menumgr, Client *client,
+			ISimpleTextureSource *tsrc);
 	~GUIPasswordChange();
 
 	void removeChildren();
