@@ -621,7 +621,7 @@ function core.node_dig(pos, node, digger)
 	core.remove_node(pos)
 
 	-- Play sound if it was done by a player
-	if diggername ~= "" and def.sounds and def.sounds.dug then
+	if diggername ~= "" and def and def.sounds and def.sounds.dug then
 		core.sound_play(def.sounds.dug, {
 			pos = pos,
 			exclude_player = diggername,
