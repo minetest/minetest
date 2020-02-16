@@ -32,6 +32,7 @@ MapSettingsManager::MapSettingsManager(Settings *user_settings,
 	m_user_settings(user_settings)
 {
 	assert(m_user_settings != NULL);
+	Mapgen::setDefaultSettings(m_map_settings);
 }
 
 
