@@ -78,10 +78,16 @@ core.register_entity(":__builtin:falling_node", {
 		elseif def.drawtype == "torchlike" or def.drawtype == "signlike" then
 			local textures
 			if def.tiles and def.tiles[1] then
-				if def.drawtype == "torchlike" then
-					textures = { "("..def.tiles[1]..")^[transformFX", def.tiles[1] }
+				local tile
+				if type(def.tiles[1]) == "table" then
+					tile = def.tiles[1].name
 				else
-					textures = { def.tiles[1], "("..def.tiles[1]..")^[transformFX" }
+					tile = def.tiles[1]
+				end
+				if def.drawtype == "torchlike" then
+					textures = { "("..tile..")^[transformFX", tile }
+				else
+					textures = { tile, "("..tile..")^[transformFX" }
 				end
 			end
 			local vsize
