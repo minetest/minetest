@@ -72,9 +72,7 @@ core.register_entity(":__builtin:falling_node", {
 		end
 		self.meta = meta
 		if def.drawtype == "airlike" then
-			self.object:set_properties({
-				is_visible = false,
-			})
+			-- Do nothing
 		elseif def.drawtype == "torchlike" or def.drawtype == "signlike" then
 			local textures
 			if def.tiles and def.tiles[1] then
