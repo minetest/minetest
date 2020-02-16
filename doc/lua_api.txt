@@ -2729,11 +2729,6 @@ Some types may inherit styles from parent types.
 
 ### Valid Properties
 
-* animated_image
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* box
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-        * Default to false in formspec_version version 3 or higher
 * button, button_exit, image_button, item_image_button
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
@@ -2786,6 +2781,8 @@ Some types may inherit styles from parent types.
 * image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher
+* animated_image
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * item_image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to false.
 * label, vertlabel
@@ -2803,10 +2800,13 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 * box
-    * **Note**: All box properties can either be a single value like `red`, an array of two
-      like `red,yellow` (applies to the top/bottom and right/left or top-left/bottom-right
-      and top-right/bottom-left), or an array of four like `red,yellow,green,blue` (applies
-      to the top or top-left and rotates around clockwise). This works the same as CSS borders.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+        * Defaults to false in formspec_version version 3 or higher
+    * **Note**: `colors`, `bordercolors`, and `borderwidths` can either be a single value
+      like `red`, an array of two like `red,yellow` (applies to the top/bottom and
+      right/left or top-left/bottom-right and top-right/bottom-left), or an array of four
+      like `red,yellow,green,blue` (applies to the top or top-left and rotates around
+      clockwise). This works the same as CSS borders.
     * colors - `ColorString` (optionally array). Sets the color(s) of the box corners.
     * bordercolors - `ColorString` (optionally array). Sets the color(s) of the borders.
     * borderwidths - integer (optionally array). Sets the width(s) of the borders in pixels.

@@ -27,13 +27,15 @@ class GUIBox : public gui::IGUIElement
 {
 public:
 	GUIBox(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-		const core::rect<s32> &rectangle, const std::vector<video::SColor> &colors,
-		const std::vector<video::SColor> &bordercolors, const std::vector<s32> &borderwidths);
+		const core::rect<s32> &rectangle,
+		const std::array<video::SColor, 4> &colors,
+		const std::array<video::SColor, 4> &bordercolors,
+		const std::array<s32, 4> &borderwidths);
 
 	virtual void draw() override;
 
 private:
-	std::vector<video::SColor> m_colors;
-	std::vector<video::SColor> m_bordercolors;
-	std::vector<s32> m_borderwidths;
+	std::array<video::SColor, 4> m_colors;
+	std::array<video::SColor, 4> m_bordercolors;
+	std::array<s32, 4> m_borderwidths;
 };

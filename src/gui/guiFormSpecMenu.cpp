@@ -2244,78 +2244,17 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 		auto style = getStyleForElement("box", spec.fname);
 
 		video::SColor tmp_color;
-		std::vector<video::SColor> colors;
-		std::vector<video::SColor> bordercolors;
-		std::vector<s32> borderwidths;
+		std::array<video::SColor, 4> colors;
 
-		// Colors
 		if (parseColorString(parts[2], tmp_color, true, 0x8C)) {
 			colors = {tmp_color, tmp_color, tmp_color, tmp_color};
 		} else {
-			std::vector<std::string> str_style = split(style.get(StyleSpec::COLORS, "#0000"), ',');
-
-			if (str_style.size() == 1)
-				str_style = {str_style[0], str_style[0], str_style[0], str_style[0]};
-			else if (str_style.size() == 2)
-				str_style = {str_style[0], str_style[1], str_style[0], str_style[1]};
-
-			if (str_style.size() == 4) {
-				for (unsigned int i = 0; i <= 3; i++) {
-					video::SColor temp_style;
-
-					if (parseColorString(str_style[i], temp_style, false, 0xFF)) {
-						colors.emplace_back(temp_style);
-					} else {
-						colors.emplace_back(0x0);
-						break;
-					}
-				}
-			} else {
-				colors = {0x0, 0x0, 0x0, 0x0};
-			}
+			colors = style.getColorArray(StyleSpec::COLORS, {0x0, 0x0, 0x0, 0x0});
 		}
-
-		// Bordercolors
-		{
-			std::vector<std::string> str_style = split(style.get(StyleSpec::BORDERCOLORS, "#0000"), ',');
-
-			if (str_style.size() == 1)
-				str_style = {str_style[0], str_style[0], str_style[0], str_style[0]};
-			else if (str_style.size() == 2)
-				str_style = {str_style[0], str_style[1], str_style[0], str_style[1]};
-
-			if (str_style.size() == 4) {
-				for (unsigned int i = 0; i <= 3; i++) {
-					video::SColor temp_style;
-
-					if (parseColorString(str_style[i], temp_style, false, 0xFF)) {
-						bordercolors.emplace_back(temp_style);
-					} else {
-						bordercolors.emplace_back(0x0);
-						break;
-					}
-				}
-			} else {
-				bordercolors = {0x0, 0x0, 0x0, 0x0};
-			}
-		}
-
-		// Borderwidths
-		{
-			std::vector<std::string> str_style = split(style.get(StyleSpec::BORDERWIDTHS, "0"), ',');
-
-			if (str_style.size() == 1)
-				str_style = {str_style[0], str_style[0], str_style[0], str_style[0]};
-			else if (str_style.size() == 2)
-				str_style = {str_style[0], str_style[1], str_style[0], str_style[1]};
-
-			if (str_style.size() == 4) {
-				for (unsigned int i = 0; i <= 3; i++)
-					borderwidths.emplace_back(stoi(str_style[i]));
-			} else {
-				borderwidths = {0, 0, 0, 0};
-			}
-		}
+		std::array<video::SColor, 4> bordercolors = style.getColorArray(StyleSpec::BORDERCOLORS,
+			{0x0, 0x0, 0x0, 0x0});
+		std::array<s32, 4> borderwidths = style.getIntArray(StyleSpec::BORDERWIDTHS,
+			{0x0, 0x0, 0x0, 0x0});
 
 		core::rect<s32> rect(pos, pos + geom);
 
@@ -2327,7 +2266,8 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid Box element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)
