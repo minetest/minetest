@@ -38,7 +38,7 @@ void main(void)
 
 	lightVec = sunPosition - worldPosition;
 	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
-	vIDiff = directional_ambient(gl_Normal);
+	vIDiff = directional_ambient(normalize(gl_Normal));
 
 	gl_FrontColor = gl_BackColor = gl_Color;
 }
