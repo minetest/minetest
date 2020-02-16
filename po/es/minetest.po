@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2020-01-31 02:50+0000\n"
-"Last-Translator: universales <universales@protonmail.com>\n"
+"PO-Revision-Date: 2020-02-18 06:32+0000\n"
+"Last-Translator: JDiaz <runspect@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 3.11\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -671,7 +671,7 @@ msgstr "Configurar teclas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
-msgstr "Vidrio Conectado"
+msgstr "Vidrio conectado"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -695,7 +695,7 @@ msgstr "No"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr "Sin Filtrado"
+msgstr "Sin filtrado"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -755,7 +755,7 @@ msgstr "Hojas simples"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr "Iluminación Suave"
+msgstr "Iluminación suave"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
@@ -775,19 +775,19 @@ msgstr "Umbral táctil: (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr "Filtrado Trilineal"
+msgstr "Filtrado trilineal"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
-msgstr "Movimiento de Hojas"
+msgstr "Movimiento de hojas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr "Movimiento de Líquidos"
+msgstr "Movimiento de líquidos"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr "Movimiento de Plantas"
+msgstr "Movimiento de plantas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -1687,9 +1687,8 @@ msgid "Toggle noclip"
 msgstr "Activar noclip"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Alternar el registro del chat"
+msgstr "Alternar inclinación"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1721,7 +1720,7 @@ msgstr "Silenciado"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr "Volúmen del sonido: "
+msgstr "Volumen del sonido: "
 
 #: src/gui/modalMenu.cpp
 msgid "Enter "
@@ -3720,7 +3719,7 @@ msgstr "Ignora los errores del mundo"
 
 #: src/settings_translation_file.cpp
 msgid "In-Game"
-msgstr "Dentro del Juego"
+msgstr "Dentro del juego"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
@@ -5772,7 +5771,7 @@ msgstr "Primero de 2 ruidos 3D que juntos definen túneles."
 
 #: src/settings_translation_file.cpp
 msgid "Security"
-msgstr ""
+msgstr "Seguridad"
 
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
@@ -6023,7 +6022,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "Sonido"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
