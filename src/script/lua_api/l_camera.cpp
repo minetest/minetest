@@ -74,10 +74,13 @@ int LuaCamera::l_set_camera_mode(lua_State *L)
 
 int LuaCamera::l_set_camera_custom_state(lua_State *L)
 {
+	v3f a = check_v3f(L, 2);
+	v3f b = check_v3f(L, 3);
+	v3f c = check_v3f(L, 4);
 	Camera *camera = getobject(L, 1);
 	if (!camera)
 		return 0;
-	camera->setCameraCustomState(read_v3f(L, 2), read_v3f(L, 3), read_v3f(L, 4));
+	camera->setCameraCustomState(a, b, c);
 	return 0;
 }
 
