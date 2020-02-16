@@ -92,6 +92,7 @@ function core.register_lbm(spec)
 	spec.mod_origin = core.get_current_modname() or "??"
 end
 
+local deprecated_index_warned
 function core.register_entity(name, prototype)
 	-- Check name
 	if name == nil then
@@ -100,7 +101,19 @@ function core.register_entity(name, prototype)
 	name = check_modname_prefix(tostring(name))
 
 	prototype.name = name
-	prototype.__index = prototype  -- so that it can be used as a metatable
+
+	-- Backward compatibility to deprecated 'prototype.__index = prototype'
+	prototype.__index = function(entity, key)
+		local mod_origin = rawget(entity, "mod_origin")
+		if mod_origin and not (deprecated_index_warned and deprecated_index_warned[name]) then
+			core.log("warning", "Entity "..name.. " from mod "..mod_origin..
+					" uses deprecated setmetatable(item, builtin_item) method")
+			core.log("warning", "See https://github.com/minetest/minetest_game/pull/2328/ for details")
+			deprecated_index_warned = deprecated_index_warned or {}
+			deprecated_index_warned[name] = true
+		end
+		return rawget(entity, key) or prototype[key]
+	end
 
 	-- Add to core.registered_entities
 	core.registered_entities[name] = prototype
