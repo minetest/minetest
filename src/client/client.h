@@ -367,7 +367,7 @@ public:
 	const NodeDefManager* getNodeDefManager() override;
 	ICraftDefManager* getCraftDefManager() override;
 	ITextureSource* getTextureSource();
-	virtual IShaderSource* getShaderSource();
+	virtual IWritableShaderSource* getShaderSource();
 	u16 allocateUnknownNodeId(const std::string &name) override;
 	virtual ISoundManager* getSoundManager();
 	MtEventManager* getEventManager();
