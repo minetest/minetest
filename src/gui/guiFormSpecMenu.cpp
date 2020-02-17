@@ -2241,20 +2241,21 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 		);
 		spec.ftype = f_Box;
 
-		auto style = getStyleForElement("box", spec.fname);
+		auto style = getDefaultStyleForElement("box", spec.fname);
 
 		video::SColor tmp_color;
 		std::array<video::SColor, 4> colors;
+		std::array<video::SColor, 4> bordercolors = {0x0, 0x0, 0x0, 0x0};
+		std::array<s32, 4> borderwidths = {0, 0, 0, 0};
 
 		if (parseColorString(parts[2], tmp_color, true, 0x8C)) {
 			colors = {tmp_color, tmp_color, tmp_color, tmp_color};
 		} else {
 			colors = style.getColorArray(StyleSpec::COLORS, {0x0, 0x0, 0x0, 0x0});
+			bordercolors = style.getColorArray(StyleSpec::BORDERCOLORS,
+				{0x0, 0x0, 0x0, 0x0});
+			borderwidths = style.getIntArray(StyleSpec::BORDERWIDTHS, {0, 0, 0, 0});
 		}
-		std::array<video::SColor, 4> bordercolors = style.getColorArray(StyleSpec::BORDERCOLORS,
-			{0x0, 0x0, 0x0, 0x0});
-		std::array<s32, 4> borderwidths = style.getIntArray(StyleSpec::BORDERWIDTHS,
-			{0x0, 0x0, 0x0, 0x0});
 
 		core::rect<s32> rect(pos, pos + geom);
 

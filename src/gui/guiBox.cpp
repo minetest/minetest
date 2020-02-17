@@ -39,7 +39,7 @@ void GUIBox::draw()
 	std::array<s32, 4> negative_borders = {0, 0, 0, 0};
 	std::array<s32, 4> positive_borders = {0, 0, 0, 0};
 
-	for (unsigned int i = 0; i <= 3; i++) {
+	for (size_t i = 0; i <= 3; i++) {
 		if (m_borderwidths[i] > 0)
 			positive_borders[i] = m_borderwidths[i];
 		else
@@ -109,7 +109,7 @@ void GUIBox::draw()
 	driver->draw2DRectangle(main_rect, m_colors[0], m_colors[1], m_colors[3],
 		m_colors[2], nullptr);
 
-	for (unsigned int i = 0; i <= 3; i++)
+	for (size_t i = 0; i <= 3; i++)
 		driver->draw2DRectangle(m_bordercolors[i], border_rects[i], nullptr);
 
 	IGUIElement::draw();
