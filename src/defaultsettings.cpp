@@ -498,10 +498,3 @@ void set_default_settings(Settings *settings)
 #endif
 }
 
-void override_default_settings(Settings *settings, Settings *from)
-{
-	std::vector<std::string> names = from->getNames();
-	for (const auto &name : names) {
-		settings->setDefault(name, from->get(name));
-	}
-}

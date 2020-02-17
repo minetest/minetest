@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "util/strfnd.h"
-#include "defaultsettings.h" // for override_default_settings
+#include "defaultsettings.h" // for set_default_settings
 #include "mapgen/mapgen.h"   // for MapgenParams
 #include "util/string.h"
 
@@ -298,7 +298,7 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 	set_default_settings(g_settings);
 	Settings game_defaults;
 	getGameMinetestConfig(gamespec.path, game_defaults);
-	override_default_settings(g_settings, &game_defaults);
+	g_settings->overrideDefaults(&game_defaults);
 
 	infostream << "Initializing world at " << path << std::endl;
 
