@@ -16,12 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-struct SkyboxParams
+struct skycolor
 {
-	video::SColor bgcolor;
-	std::string type;
-	std::vector<std::string> textures;
-	bool clouds;
 	video::SColor day_sky;
 	video::SColor day_horizon;
 	video::SColor dawn_sky;
@@ -29,6 +25,15 @@ struct SkyboxParams
 	video::SColor night_sky;
 	video::SColor night_horizon;
 	video::SColor indoors;
+};
+
+struct SkyboxParams
+{
+	video::SColor bgcolor;
+	std::string type;
+	std::vector<std::string> textures;
+	bool clouds;
+	skycolor sky_color;
 	video::SColor sun_tint;
 	video::SColor moon_tint;
 	std::string tint_type;
@@ -59,3 +64,51 @@ struct StarParams
 	video::SColor starcolor;
 	f32 scale;
 };
+
+// Utility class for setting default sky, sun, moon, stars values:
+class SkyboxDefaults
+{
+public:
+	const skycolor getSkyColorDefaults() {
+		skycolor sky;
+		// Horizon colors
+		sky.day_horizon = video::SColor(255, 155, 193, 240);
+		sky.indoors = video::SColor(255, 100, 100, 100);
+		sky.dawn_horizon = video::SColor(255, 186, 193, 240);
+		sky.night_horizon = video::SColor(255, 64, 144, 255);
+		// Sky colors
+		sky.day_sky = video::SColor(255, 140, 186, 250);
+		sky.dawn_sky = video::SColor(255, 180, 186, 250);
+		sky.night_sky = video::SColor(255, 0, 107, 255);
+		return sky;
+	}
+
+	const SunParams getSunDefaults() {
+		SunParams sun;
+		sun.visible = true;
+		sun.sunrise_visible = true;
+		sun.texture = "sun.png";
+		sun.tonemap = "sun_tonemap.png";
+		sun.sunrise = "sunrisebg.png";
+		sun.scale = 1;
+		return sun;
+	}
+
+	const MoonParams getMoonDefaults() {
+		MoonParams moon;
+		moon.visible = true;
+		moon.texture = "moon.png";
+		moon.tonemap = "moon_tonemap.png";
+		moon.scale = 1;
+		return moon;
+	}
+
+	const StarParams getStarDefaults() {
+		StarParams stars;
+		stars.count = 1000;
+		stars.starcolor = video::SColor(105, 235, 235, 255);
+		stars.scale = 1;
+		return stars;
+	}
+};
+

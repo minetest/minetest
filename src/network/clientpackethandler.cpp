@@ -1241,30 +1241,91 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 
 void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 {
-	SkyboxParams skybox;
-	u16 texture_count;
-	std::string texture;
+	if (m_proto_ver < 39) {
+		// Handle Protocol 38 and below servers with old set_sky,
+		// ensuring the classic look is kept.
+		std::string datastring(pkt->getString(0), pkt->getSize());
+		std::istringstream is(datastring, std::ios_base::binary);
 
-	*pkt >> skybox.bgcolor >> skybox.type >> skybox.clouds >>
-		skybox.sun_tint >> skybox.moon_tint >> skybox.tint_type;
+		SkyboxParams skybox;
+		skybox.bgcolor = video::SColor(readARGB8(is));
+		skybox.type = std::string(deSerializeString(is));
+		u16 count = readU16(is);
+		std::vector<std::string>* params = new std::vector<std::string>;
 
-	if (skybox.type == "skybox") {
-		*pkt >> texture_count;
-		for (int i = 0; i < texture_count; i++) {
-			*pkt >> texture;
-			skybox.textures.emplace_back(texture);
+		for (size_t i = 0; i < count; i++)
+			skybox.textures.emplace_back(deSerializeString(is));
+
+		bool clouds = true;
+		try {
+			skybox.clouds = readU8(is);
 		}
-	} else if (skybox.type == "regular") {
-		*pkt >> skybox.day_sky >> skybox.day_horizon
-			>> skybox.dawn_sky >> skybox.dawn_horizon
-			>> skybox.night_sky >> skybox.night_horizon
-			>> skybox.indoors;
+		catch (...) {}
+
+		// Use default skybox settings:
+		SkyboxDefaults sky_defaults;
+		SunParams sun = sky_defaults.getSunDefaults();
+		MoonParams moon = sky_defaults.getMoonDefaults();
+		StarParams stars = sky_defaults.getStarDefaults();
+
+		// Fix for "regular" skies, as color isn't kept:
+		if (skybox.type == "regular") {
+			skybox.sky_color = sky_defaults.getSkyColorDefaults();
+		}
+		else {
+			sun.visible = false;
+			sun.sunrise_visible = false;
+			moon.visible = false;
+			stars.visible = false;
+		}
+
+		// Skybox, sun, moon and stars ClientEvents:
+		ClientEvent* sky_event = new ClientEvent();
+		sky_event->type = CE_SET_SKY;
+		sky_event->set_sky = new SkyboxParams(skybox);
+		m_client_event_queue.push(sky_event);
+
+		ClientEvent* sun_event = new ClientEvent();
+		sun_event->type = CE_SET_SUN;
+		sun_event->sun_params = new SunParams(sun);
+		m_client_event_queue.push(sun_event);
+
+		ClientEvent* moon_event = new ClientEvent();
+		moon_event->type = CE_SET_MOON;
+		moon_event->moon_params = new MoonParams(moon);
+		m_client_event_queue.push(moon_event);
+
+		ClientEvent* star_event = new ClientEvent();
+		star_event->type = CE_SET_STARS;
+		star_event->star_params = new StarParams(stars);
+		m_client_event_queue.push(star_event);
+	} else {
+		SkyboxParams skybox;
+		u16 texture_count;
+		std::string texture;
+
+		*pkt >> skybox.bgcolor >> skybox.type >> skybox.clouds >>
+			skybox.sun_tint >> skybox.moon_tint >> skybox.tint_type;
+
+		if (skybox.type == "skybox") {
+			*pkt >> texture_count;
+			for (int i = 0; i < texture_count; i++) {
+				*pkt >> texture;
+				skybox.textures.emplace_back(texture);
+			}
+		}
+		else if (skybox.type == "regular") {
+			*pkt >> skybox.sky_color.day_sky >> skybox.sky_color.day_horizon
+				>> skybox.sky_color.dawn_sky >> skybox.sky_color.dawn_horizon
+				>> skybox.sky_color.night_sky >> skybox.sky_color.night_horizon
+				>> skybox.sky_color.indoors;
+		}
+
+		ClientEvent* event = new ClientEvent();
+		event->type = CE_SET_SKY;
+		event->set_sky = new SkyboxParams(skybox);
+		m_client_event_queue.push(event);
 	}
-	
-	ClientEvent *event = new ClientEvent();
-	event->type    = CE_SET_SKY;
-	event->set_sky = new SkyboxParams(skybox);
-	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_HudSetSun(NetworkPacket *pkt)
@@ -1275,8 +1336,8 @@ void Client::handleCommand_HudSetSun(NetworkPacket *pkt)
 		>> sun.sunrise >> sun.sunrise_visible >> sun.scale;
 
 	ClientEvent *event = new ClientEvent();
-	event->type       = CE_SET_SUN;
-	event->sun_params = new SunParams(sun);
+	event->type        = CE_SET_SUN;
+	event->sun_params  = new SunParams(sun);
 	m_client_event_queue.push(event);
 }
 

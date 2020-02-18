@@ -619,7 +619,7 @@ enum ToClientCommand
 		u8[4] night_horizon (ARGB)
 		u8[4] indoors (ARGB)
 		u8[4] sun_tint (ARGB)
-		u8[4] moon_tint (ARGB)		
+		u8[4] moon_tint (ARGB)
 		std::string tint_type
 	*/
 
@@ -702,7 +702,6 @@ enum ToClientCommand
 		std::string texture
 		std::string tonemap
 		std::string sunrise
-		f32 rotation
 		f32 scale
 	*/
 
@@ -711,7 +710,6 @@ enum ToClientCommand
 		bool visible
 		std::string texture
 		std::string tonemap
-		f32 rotation
 		f32 scale
 	*/
 
@@ -720,7 +718,6 @@ enum ToClientCommand
 		bool visible
 		u32 count
 		u8[4] starcolor (ARGB)
-		f32 rotation
 		f32 scale
 	*/
 

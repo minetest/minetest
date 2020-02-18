@@ -2764,15 +2764,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		// Shows the mesh skybox
 		sky->setVisible(true);
 		// Update mesh based skybox colours if applicable.
-		sky->setSkyColors(
-			event->set_sky->day_sky,
-			event->set_sky->dawn_sky,
-			event->set_sky->night_sky,
-			event->set_sky->day_horizon,
-			event->set_sky->dawn_horizon,
-			event->set_sky->night_horizon,
-			event->set_sky->indoors
-		);
+		sky->setSkyColors(*event->set_sky);
 		sky->setHorizonTint(
 			event->set_sky->sun_tint,
 			event->set_sky->moon_tint,
@@ -2813,7 +2805,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 void Game::handleClientEvent_SetSun(ClientEvent *event, CameraOrientation *cam)
 {
 	sky->setSunVisible(event->sun_params->visible);
-	sky->setSunTexture(event->sun_params->texture, 
+	sky->setSunTexture(event->sun_params->texture,
 		event->sun_params->tonemap, texture_src);
 	sky->setSunScale(event->sun_params->scale);
 	sky->setSunriseVisible(event->sun_params->sunrise_visible);
@@ -3757,7 +3749,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
 			camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
 			clouds->update(camera_node_position,
-			sky->getCloudColor());
+					sky->getCloudColor());
 			if (clouds->isCameraInsideCloud() && m_cache_enable_fog) {
 				// if inside clouds, and fog enabled, use that as sky
 				// color(s)

@@ -1734,19 +1734,19 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 		pkt << params.bgcolor << params.type
 		<< params.clouds << params.sun_tint
 		<< params.moon_tint << params.tint_type;
-	
+
 		if (params.type == "skybox") {
 			pkt << (u16) params.textures.size();
 			for (const std::string &texture : params.textures)
 				pkt << texture;
 		} else if (params.type == "regular") {
-			pkt << params.day_sky << params.day_horizon
-				<< params.dawn_sky << params.dawn_horizon
-				<< params.night_sky << params.night_horizon
-				<< params.indoors;
+			pkt << params.sky_color.day_sky << params.sky_color.day_horizon
+				<< params.sky_color.dawn_sky << params.sky_color.dawn_horizon
+				<< params.sky_color.night_sky << params.sky_color.night_horizon
+				<< params.sky_color.indoors;
 		}
 	}
-	
+
 	Send(&pkt);
 }
 
@@ -1765,7 +1765,7 @@ void Server::SendSetMoon(session_t peer_id, const MoonParams &params)
 
 	pkt << params.visible << params.texture
 		<< params.tonemap << params.scale;
-		
+
 	Send(&pkt);
 }
 void Server::SendSetStars(session_t peer_id, const StarParams &params)

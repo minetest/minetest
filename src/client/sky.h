@@ -61,16 +61,16 @@ public:
 	{
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
-	
+
 	void setSunVisible(bool sun_visible) { m_sun_params.visible = sun_visible; }
-	void setSunTexture(std::string sun_texture, 
+	void setSunTexture(std::string sun_texture,
 		std::string sun_tonemap, ITextureSource *tsrc);
 	void setSunScale(f32 sun_scale) { m_sun_params.scale = sun_scale; }
 	void setSunriseVisible(bool glow_visible) { m_sun_params.sunrise_visible = glow_visible; }
 	void setSunriseTexture(std::string sunglow_texture, ITextureSource* tsrc);
 
 	void setMoonVisible(bool moon_visible) { m_moon_params.visible = moon_visible; }
-	void setMoonTexture(std::string moon_texture, 
+	void setMoonTexture(std::string moon_texture,
 		std::string moon_tonemap, ITextureSource *tsrc);
 	void setMoonScale(f32 moon_scale) { m_moon_params.scale = moon_scale; }
 
@@ -94,10 +94,7 @@ public:
 		m_bgcolor = bgcolor;
 		m_skycolor = skycolor;
 	}
-	void setSkyColors(video::SColor bg_day, video::SColor bg_dawn,
-		video::SColor bg_night, video::SColor sky_day,
-		video::SColor sky_dawn, video::SColor sky_night,
-		video::SColor bg_indoor);
+	void setSkyColors(const SkyboxParams sky);
 	void setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,
 		std::string use_sun_tint);
 	void setInClouds(bool clouds) { m_in_clouds = clouds; }
