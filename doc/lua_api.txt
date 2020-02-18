@@ -3746,7 +3746,7 @@ Methods
 -----------
 
 A helper class for voxel areas.
-It can be created via `VoxelArea:new{MinEdge=pmin, MaxEdge=pmax}`.
+It can be created via `VoxelArea:new{MinEdge = pmin, MaxEdge = pmax}`.
 The coordinates are *inclusive*, like most other things in Minetest.
 
 ### Methods
@@ -3776,6 +3776,28 @@ The coordinates are *inclusive*, like most other things in Minetest.
     * from (`minx`,`miny`,`minz`) to (`maxx`,`maxy`,`maxz`) in the order of
       `[z [y [x]]]`.
 * `iterp(minp, maxp)`: same as above, except takes a vector
+
+### Y stride and z stride of a flat array
+
+For a particular position in a voxel area, whose flat array index is known,
+it is often useful to know the index of a neighboring or nearby position.
+The table below shows the changes of index required for 1 node movements along
+the axes in a voxel area:
+
+    Movement    Change of index
+    +x          +1
+    -x          -1
+    +y          +ystride
+    -y          -ystride
+    +z          +zstride
+    -z          -zstride
+
+If, for example:
+
+    local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
+
+The values of `ystride` and `zstride` can be obtained using `area.ystride` and
+`area.zstride`.
 
 
 
