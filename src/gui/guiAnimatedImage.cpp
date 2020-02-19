@@ -9,33 +9,14 @@
 #include <vector>
 
 GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
-	s32 id, const core::rect<s32> &rectangle, const std::string &name,
-	ISimpleTextureSource *tsrc) :
-	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
-	m_tsrc(tsrc)
+	s32 id, const core::rect<s32> &rectangle, const std::string &texture_name,
+	s32 frame_count, s32 frame_duration, ISimpleTextureSource *tsrc) :
+	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle), m_tsrc(tsrc)
 {
-	// Expected format: "texture_name,frame_count,frame_duration[,frame_start]"
-	// If this format is not met, the string will be loaded as a normal texture
+	m_texture = m_tsrc->getTexture(texture_name);
 
-	std::vector<std::string> parts = split(name, ',');
-	if (parts.size() >= 3) {
-		m_texture = m_tsrc->getTexture(parts[0]);
-
-		m_frame_count    = std::max(stoi(parts[1]), 1);
-		m_frame_duration = std::max(stoi(parts[2]), 0);
-
-		if (parts.size() == 4) {
-			s32 idx = std::max(stoi(parts[3]) - 1, 0);
-			if (idx > 0 && idx < m_frame_count)
-				m_frame_idx = idx;
-		}
-	} else {
-		// Leave the count/duration and display a static image
-		m_texture = m_tsrc->getTexture(name);
-		errorstream << "animated_image[]: Invalid texture format \"" << name <<
-			"\". Expected format: \"texture_name,frame_count,frame_duration"
-			"[,frame_start]\"." << std::endl;
-	}
+	m_frame_count    = std::max(frame_count,    1);
+	m_frame_duration = std::max(frame_duration, 0);
 
 	if (m_texture != nullptr) {
 		core::dimension2d<u32> size = m_texture->getOriginalSize();
@@ -81,4 +62,12 @@ void GUIAnimatedImage::draw()
 		// the remainder
 		m_frame_time %= m_frame_duration;
 	}
+}
+
+
+void GUIAnimatedImage::setFrameIndex(s32 frame)
+{
+	s32 idx = std::max(frame, 0);
+	if (idx > 0 && idx < m_frame_count)
+		m_frame_idx = idx;
 }
