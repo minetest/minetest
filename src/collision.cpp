@@ -88,7 +88,7 @@ CollisionAxis axisAlignedCollision(
 		time = std::max(*dtime, 0.0f);
 
 		if (distance > inner_margin) {
-			if (*dtime < dtime_max) {
+			if (*dtime <= dtime_max) {
 				if (((speed.X > 0) && (staticbox.MaxEdge.X > movingbox.MaxEdge.X)) ||
 					((speed.X < 0) && (staticbox.MinEdge.X < movingbox.MinEdge.X)))
 				{
@@ -113,7 +113,7 @@ CollisionAxis axisAlignedCollision(
 		time = std::max(*dtime, 0.0f);
 
 		if (distance > inner_margin) {
-			if (*dtime < dtime_max) {
+			if (*dtime <= dtime_max) {
 				if (((speed.Y > 0) && (staticbox.MaxEdge.Y > movingbox.MaxEdge.Y)) ||
 					((speed.Y < 0) && (staticbox.MinEdge.Y < movingbox.MinEdge.Y)))
 				{
@@ -138,7 +138,7 @@ CollisionAxis axisAlignedCollision(
 		time = std::max(*dtime, 0.0f);
 
 		if (distance > inner_margin) {
-			if (*dtime < dtime_max) {
+			if (*dtime <= dtime_max) {
 				if (((speed.Z > 0) && (staticbox.MaxEdge.Z > movingbox.MaxEdge.Z)) ||
 					((speed.Z < 0) && (staticbox.MinEdge.Z < movingbox.MinEdge.Z)))
 				{
