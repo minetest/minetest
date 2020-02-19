@@ -549,9 +549,9 @@ void Sky::update(float time_of_day, float time_brightness,
 				);
 			} else {
 				pointcolor_moon_f = video::SColorf(
-					m_sky_params.moon_tint.getRed() * pointcolor_light,
-					m_sky_params.moon_tint.getGreen() * pointcolor_light,
-					m_sky_params.moon_tint.getBlue() * pointcolor_light,
+					(m_sky_params.moon_tint.getRed() / 255) * pointcolor_light,
+					(m_sky_params.moon_tint.getGreen() / 255) * pointcolor_light,
+					(m_sky_params.moon_tint.getBlue() / 255) * pointcolor_light,
 					1
 				);
 			}

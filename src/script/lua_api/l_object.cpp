@@ -1726,7 +1726,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 		lua_getfield(L, 2, "textures");
 		skybox_params.textures.clear();
-		if (lua_istable(L, -1 && skybox_params.type == "skybox")) {
+		if (lua_istable(L, -1) && skybox_params.type == "skybox") {
 			lua_pushnil(L);
 			while (lua_next(L, -2) != 0) {
 				// Key is at index -2 and value at index -1
@@ -1779,10 +1779,13 @@ int ObjectRef::l_set_sky(lua_State *L)
 			read_color(L, -1, &skybox_params.sky_color.indoors);
 			lua_pop(L, 1);
 
+			// Prevent flickering clouds at dawn/dusk:
+			skybox_params.sun_tint = video::SColor(255, 255, 255, 255);
 			lua_getfield(L, -1, "fog_sun_tint");
 			read_color(L, -1, &skybox_params.sun_tint);
 			lua_pop(L, 1);
 
+			skybox_params.moon_tint = video::SColor(255, 255, 255, 255);
 			lua_getfield(L, -1, "fog_moon_tint");
 			read_color(L, -1, &skybox_params.moon_tint);
 			lua_pop(L, 1);
