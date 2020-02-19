@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2019-11-13 16:04+0000\n"
-"Last-Translator: Julien Maulny <julien.maulny@protonmail.com>\n"
+"PO-Revision-Date: 2020-02-19 22:31+0000\n"
+"Last-Translator: Hugo Locurcio <hugo.locurcio@hugo.pro>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.11\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -136,9 +136,8 @@ msgid "No modpack description provided."
 msgstr "Aucune description fournie pour le pack de mods."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "Pas de dépendances optionnelles"
+msgstr "Pas de dépendances facultatives"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -1686,9 +1685,8 @@ msgid "Toggle noclip"
 msgstr "Mode sans collision"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Afficher/retirer le canal de discussion"
+msgstr "Activer/désactiver vol vertical"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
