@@ -45,4 +45,22 @@ private:
 	leveldb::DB *m_database;
 };
 
+class AuthDatabaseLevelDB : public AuthDatabase
+{
+public:
+	AuthDatabaseLevelDB(const std::string &savedir);
+	virtual ~AuthDatabaseLevelDB();
+
+	virtual bool getAuth(const std::string &name, AuthEntry &res);
+	virtual bool saveAuth(const AuthEntry &authEntry);
+	virtual bool createAuth(AuthEntry &authEntry);
+	virtual bool deleteAuth(const std::string &name);
+	virtual void listNames(std::vector<std::string> &res);
+	virtual void reload();
+
+private:
+	leveldb::DB *m_database;
+	std::string m_savedir;
+};
+
 #endif // USE_LEVELDB
