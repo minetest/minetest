@@ -827,6 +827,8 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 		setImage(guiScalingImageButton(
 				Environment->getVideoDriver(), texture, geom.X, geom.Y));
 		setScaleImage(true);
+	} else {
+		setImage(nullptr);
 	}
 	BgMiddle = style.getRect(StyleSpec::BGIMG_MIDDLE, BgMiddle);
 }
