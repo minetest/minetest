@@ -784,7 +784,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 {
 	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() != 3 && parts.size() != 4 &&
+	if (parts.size() != 4 && parts.size() != 5 &&
 		!(parts.size() > 4 && m_formspec_version > FORMSPEC_API_VERSION))
 	{
 		warningstream << "Invalid animated_image element(" << parts.size()
@@ -794,8 +794,9 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 	std::vector<std::string> v_pos  = split(parts[0], ',');
 	std::vector<std::string> v_geom = split(parts[1], ',');
+	std::string name = parts[2];
 
-	std::string texture_string = unescape_string(parts[2]);
+	std::string texture_string = unescape_string(parts[3]);
 	std::vector<std::string> texture = split(texture_string, ',');
 
 	std::string texture_name = texture[0];
@@ -832,19 +833,21 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 		warningstream << "Invalid use of animated_image without a size[] element" << std::endl;
 
 	FieldSpec spec(
-		"",
+		name,
 		L"",
 		L"",
 		258 + m_fields.size()
 	);
+	spec.ftype = f_AnimatedImage;
+	spec.send = true;
 
 	core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
 
 	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, this, spec.fid,
 		rect, texture_name, frame_count, frame_duration, m_tsrc);
 
-	if (parts.size() == 4)
-		e->setFrameIndex(stoi(parts[3]) - 1);
+	if (parts.size() == 5)
+		e->setFrameIndex(stoi(parts[4]) - 1);
 
 	auto style = getStyleForElement("animated_image", spec.fname, "image");
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -3520,7 +3523,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 		}
 
 		for (const GUIFormSpecMenu::FieldSpec &s : m_fields) {
-			if(s.send) {
+			if (s.send) {
 				std::string name = s.fname;
 				if (s.ftype == f_Button) {
 					fields[name] = wide_to_utf8(s.flabel);
@@ -3529,14 +3532,13 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					if (table) {
 						fields[name] = table->checkEvent();
 					}
-				}
-				else if(s.ftype == f_DropDown) {
-					// no dynamic cast possible due to some distributions shipped
-					// without rtti support in irrlicht
+				// No dynamic cast possible for any element due to some
+				// distributions shipped without rtti support in Irrlicht.
+				} else if (s.ftype == f_DropDown) {
 					IGUIElement *element = getElementFromId(s.fid, true);
 					gui::IGUIComboBox *e = NULL;
 					if ((element) && (element->getType() == gui::EGUIET_COMBO_BOX)) {
-						e = static_cast<gui::IGUIComboBox*>(element);
+						e = static_cast<gui::IGUIComboBox *>(element);
 					} else {
 						warningstream << "GUIFormSpecMenu::acceptInput: dropdown "
 								<< "field without dropdown element" << std::endl;
@@ -3550,10 +3552,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 							fields[name] = (*dropdown_values)[selected];
 						}
 					}
-				}
-				else if (s.ftype == f_TabHeader) {
-					// no dynamic cast possible due to some distributions shipped
-					// without rttzi support in irrlicht
+				} else if (s.ftype == f_TabHeader) {
 					IGUIElement *element = getElementFromId(s.fid, true);
 					gui::IGUITabControl *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_TAB_CONTROL)) {
@@ -3565,10 +3564,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						ss << (e->getActiveTab() +1);
 						fields[name] = ss.str();
 					}
-				}
-				else if (s.ftype == f_CheckBox) {
-					// no dynamic cast possible due to some distributions shipped
-					// without rtti support in irrlicht
+				} else if (s.ftype == f_CheckBox) {
 					IGUIElement *element = getElementFromId(s.fid, true);
 					gui::IGUICheckBox *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_CHECK_BOX)) {
@@ -3581,10 +3577,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						else
 							fields[name] = "false";
 					}
-				}
-				else if (s.ftype == f_ScrollBar) {
-					// no dynamic cast possible due to some distributions shipped
-					// without rtti support in irrlicht
+				} else if (s.ftype == f_ScrollBar) {
 					IGUIElement *element = getElementFromId(s.fid, true);
 					GUIScrollBar *e = nullptr;
 					if (element && element->getType() == gui::EGUIET_ELEMENT)
@@ -3598,8 +3591,15 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						else
 							fields[name] = "VAL:" + os.str();
  					}
-				}
-				else {
+				} else if (s.ftype == f_AnimatedImage) {
+					IGUIElement *element = getElementFromId(s.fid, true);
+					GUIAnimatedImage *e = nullptr;
+					if (element && element->getType() == gui::EGUIET_ELEMENT)
+						e = static_cast<GUIAnimatedImage *>(element);
+
+					if (e)
+						fields[name] = std::to_string(e->getFrameIndex() + 1);
+				} else {
 					IGUIElement *e = getElementFromId(s.fid, true);
 					if (e)
 						fields[name] = wide_to_utf8(e->getText());

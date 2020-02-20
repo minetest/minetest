@@ -172,15 +172,19 @@ local pages = {
 		[[
 			formspec_version[3]
 			size[12,12]
-			animated_image[0.5,0.5;1,1;test_animation.png,4,100]
-			animated_image[0.5,1.75;1,1;test_animation.jpg,4,100]
-			animated_image[1.75,0.5;1,1;test_animation.png,100,100]
-			animated_image[3,0.5;1,1;test_animation.png,4,1000]
-			animated_image[3,1.75;1,1;test_animation.png,4,1000;2]
-			animated_image[3,3;1,1;test_animation.png,4,0]
-			animated_image[3,4.25;1,1;test_animation.png,4,0;3]
-			animated_image[4.25,0.5;5,2;test_animation.png,4,100]
-			animated_image[4.25,2.75;5,2;test_animation.jpg,4,100]
+			animated_image[0.5,0.5;1,1;;test_animation.png,4,100]
+			animated_image[0.5,1.75;1,1;;test_animation.jpg,4,100]
+			animated_image[1.75,0.5;1,1;;test_animation.png,100,100]
+			animated_image[3,0.5;1,1;ani_image;test_animation.png,4,1000]
+			button[4.25,0.5;1,1;;Current
+Number]
+			animated_image[3,1.75;1,1;;test_animation.png,4,1000;2]
+			button[4.25,1.75;1,1;;Current
+Number]
+			animated_image[3,3;1,1;;test_animation.png,4,0]
+			animated_image[3,4.25;1,1;;test_animation.png,4,0;3]
+			animated_image[5.5,0.5;5,2;;test_animation.png,4,100]
+			animated_image[5.5,2.75;5,2;;test_animation.jpg,4,100]
 		]]
 }
 
@@ -202,6 +206,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 
+	if fields.ani_image then
+		minetest.chat_send_all(fields.ani_image)
+	end
 end)
 
 minetest.register_node("test:node", {
