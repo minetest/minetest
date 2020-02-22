@@ -14,6 +14,7 @@
 #include "irrlicht_changes/static_text.h"
 #include "porting.h"
 #include "StyleSpec.h"
+#include "util/numeric.h"
 
 using namespace irr;
 using namespace gui;
@@ -776,15 +777,9 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 		if (!Styles[style.getState()].isNotDefault(StyleSpec::BGCOLOR)) {
 			for (size_t i = 0; i < 4; i++) {
 				if (pressed) {
-					Colors[i] = irr::video::SColor(Colors[i].getAlpha(),
-							core::clamp<u32>(Colors[i].getRed() * COLOR_PRESSED_MOD, 0, 255),
-							core::clamp<u32>(Colors[i].getGreen() * COLOR_PRESSED_MOD, 0, 255),
-							core::clamp<u32>(Colors[i].getBlue() * COLOR_PRESSED_MOD, 0, 255));
+					Colors[i] = multiplyColorValue(Colors[i], COLOR_PRESSED_MOD);
 				} else if (hovered) {
-					Colors[i] = irr::video::SColor(Colors[i].getAlpha(),
-							core::clamp<u32>(Colors[i].getRed() * COLOR_HOVERED_MOD, 0, 255),
-							core::clamp<u32>(Colors[i].getGreen() * COLOR_HOVERED_MOD, 0, 255),
-							core::clamp<u32>(Colors[i].getBlue() * COLOR_HOVERED_MOD, 0, 255));
+					Colors[i] = multiplyColorValue(Colors[i], COLOR_HOVERED_MOD);
 				}
 			}
 		}
@@ -794,15 +789,9 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 			video::SColor base =
 					Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
 			if (pressed) {
-				Colors[i] = irr::video::SColor(base.getAlpha(),
-						core::clamp<u32>(base.getRed() * COLOR_PRESSED_MOD, 0, 255),
-						core::clamp<u32>(base.getGreen() * COLOR_PRESSED_MOD, 0, 255),
-						core::clamp<u32>(base.getBlue() * COLOR_PRESSED_MOD, 0, 255));
+				Colors[i] = multiplyColorValue(base, COLOR_PRESSED_MOD);
 			} else if (hovered) {
-				Colors[i] = irr::video::SColor(base.getAlpha(),
-						core::clamp<u32>(base.getRed() * COLOR_HOVERED_MOD, 0, 255),
-						core::clamp<u32>(base.getGreen() * COLOR_HOVERED_MOD, 0, 255),
-						core::clamp<u32>(base.getBlue() * COLOR_HOVERED_MOD, 0, 255));
+				Colors[i] = multiplyColorValue(base, COLOR_HOVERED_MOD);
 			} else {
 				Colors[i] = base;
 			}
