@@ -71,9 +71,7 @@ core.register_entity(":__builtin:falling_node", {
 			return
 		end
 		self.meta = meta
-		if def.drawtype == "airlike" then
-			-- Do nothing
-		elseif def.drawtype == "torchlike" or def.drawtype == "signlike" then
+		if def.drawtype == "torchlike" or def.drawtype == "signlike" then
 			local textures
 			if def.tiles and def.tiles[1] then
 				local tile = def.tiles[1]
@@ -98,7 +96,7 @@ core.register_entity(":__builtin:falling_node", {
 				textures = textures,
 				glow = def.light_source,
 			})
-		else
+		elseif def.drawtype ~= "airlike" then
 			local itemstring = node.name
 			if core.is_colored_paramtype(def.paramtype2) then
 				itemstring = core.itemstring_with_palette(itemstring, node.param2)
