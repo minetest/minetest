@@ -746,3 +746,8 @@ inline irr::core::stringw utf8_to_stringw(const std::string &input)
 	std::wstring str = utf8_to_wide(input);
 	return irr::core::stringw(str.c_str());
 }
+
+/**
+ * Remove 'unsafe' characters from a directory name by replacing them with '_'
+ */
+std::string sanitizeDirName(const std::string &str);

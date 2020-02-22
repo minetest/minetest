@@ -213,6 +213,21 @@ bool getWorldExists(const std::string &world_path)
 			fs::PathExists(world_path + DIR_DELIM + "world.mt"));
 }
 
+//! Try to get the displayed name of a world
+std::string getWorldName(const std::string &world_path, const std::string &default_name)
+{
+	std::string conf_path = world_path + DIR_DELIM + "world.mt";
+	Settings conf;
+	bool succeeded = conf.readConfigFile(conf_path.c_str());
+	if (!succeeded) {
+		return default_name;
+	}
+
+	if (!conf.exists("world_name"))
+		return default_name;
+	return conf.get("world_name");
+}
+
 std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 {
 	std::string conf_path = world_path + DIR_DELIM + "world.mt";
@@ -259,7 +274,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 			if (!dln.dir)
 				continue;
 			std::string fullpath = worldspath + DIR_DELIM + dln.name;
-			std::string name = dln.name;
+			std::string name = getWorldName(fullpath, dln.name);
 			// Just allow filling in the gameid always for now
 			bool can_be_legacy = true;
 			std::string gameid = getWorldGameId(fullpath, can_be_legacy);
@@ -288,8 +303,19 @@ std::vector<WorldSpec> getAvailableWorlds()
 	return worlds;
 }
 
-bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamespec)
+bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
+		const SubgameSpec &gamespec, bool mustCreateNew)
 {
+	std::string final_path = path;
+
+	// If we're creating a new world, ensure that the path isn't already taken
+	int counter = 1;
+	while(mustCreateNew && fs::PathExists(final_path) && counter < 100)
+	{
+		final_path = path + "_" + std::to_string(counter);
+		counter++;
+	}
+
 	// Override defaults with those provided by the game.
 	// We clear and reload the defaults because the defaults
 	// might have been overridden by other subgame config
@@ -300,15 +326,16 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 	getGameMinetestConfig(gamespec.path, game_defaults);
 	g_settings->overrideDefaults(&game_defaults);
 
-	infostream << "Initializing world at " << path << std::endl;
+	infostream << "Initializing world at " << final_path << std::endl;
 
-	fs::CreateAllDirs(path);
+	fs::CreateAllDirs(final_path);
 
 	// Create world.mt if does not already exist
-	std::string worldmt_path = path + DIR_DELIM "world.mt";
+	std::string worldmt_path = final_path + DIR_DELIM "world.mt";
 	if (!fs::PathExists(worldmt_path)) {
 		Settings conf;
 
+		conf.set("world_name", name);
 		conf.set("gameid", gamespec.id);
 		conf.set("backend", "sqlite3");
 		conf.set("player_backend", "sqlite3");
@@ -321,11 +348,10 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 	}
 
 	// Create map_meta.txt if does not already exist
-	std::string map_meta_path = path + DIR_DELIM + "map_meta.txt";
+	std::string map_meta_path = final_path + DIR_DELIM + "map_meta.txt";
 	if (!fs::PathExists(map_meta_path)) {
 		verbosestream << "Creating map_meta.txt (" << map_meta_path << ")"
 			      << std::endl;
-		fs::CreateAllDirs(path);
 		std::ostringstream oss(std::ios_base::binary);
 
 		Settings conf;

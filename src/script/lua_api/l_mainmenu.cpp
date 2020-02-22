@@ -618,7 +618,7 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 
 	std::string path = porting::path_user + DIR_DELIM
 			"worlds" + DIR_DELIM
-			+ name;
+			+ "world_" + sanitizeDirName(name);
 
 	std::vector<SubgameSpec> games = getAvailableGames();
 
@@ -626,7 +626,7 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 			(gameidx < (int) games.size())) {
 
 		// Create world if it doesn't exist
-		if (!loadGameConfAndInitWorld(path, games[gameidx])) {
+		if (!loadGameConfAndInitWorld(path, name, games[gameidx], true)) {
 			lua_pushstring(L, "Failed to initialize world");
 		} else {
 			lua_pushnil(L);

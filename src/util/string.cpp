@@ -889,3 +889,21 @@ std::wstring translate_string(const std::wstring &s)
 	return translate_string(s, g_client_translations);
 #endif
 }
+
+/**
+ * Remove 'unsafe' characters from a directory name by replacing them with '_'
+ */
+std::string sanitizeDirName(const std::string &str)
+{
+	std::string tmp = str;
+	for(ulong i = 0; i < str.length(); i++) {
+		if (tmp[i] < '0'
+				|| (tmp[i] > '9' && tmp[i] < 'A')
+				|| (tmp[i] > 'Z' && tmp[i] < 'a')
+				|| (tmp[i] > 'z')) {
+			tmp[i] = '_';
+		}
+	}
+
+	return tmp;
+}
