@@ -45,7 +45,7 @@ void cleanupAndroid();
  * Initializes path_* variables for Android
  * @param env Android JNI environment
  */
-void initializePathsAndroid();
+void initializePathsAndroid(const std::string &userdata);
 
 /**
  * show text input dialog in java

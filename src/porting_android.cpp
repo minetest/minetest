@@ -152,7 +152,7 @@ static std::string javaStringToUTF8(jstring js)
 	return str;
 }
 
-void initializePathsAndroid()
+void initializePathsAndroid(const std::string &userdata)
 {
 	// Set user and share paths
 	{
@@ -162,7 +162,10 @@ void initializePathsAndroid()
 				"porting::initializePathsAndroid unable to find Java getUserDataPath method");
 		jobject result = jnienv->CallObjectMethod(app_global->activity->clazz, getUserDataPath);
 		const char *javachars = jnienv->GetStringUTFChars((jstring) result, nullptr);
-		path_user = javachars;
+		if (userdata.empty())
+			path_user = javachars;
+		else
+			path_user = userdata;
 		path_share = javachars;
 		path_locale  = path_share + DIR_DELIM + "locale";
 		jnienv->ReleaseStringUTFChars((jstring) result, javachars);

@@ -158,11 +158,15 @@ int main(int argc, char *argv[])
 
 	porting::signal_handler_init();
 
+	std::string userdata;
+	if (cmd_args.exists("userdata"))
+		userdata = cmd_args.get("userdata");
+
 #ifdef __ANDROID__
 	porting::initAndroid();
-	porting::initializePathsAndroid();
+	porting::initializePathsAndroid(userdata);
 #else
-	porting::initializePaths();
+	porting::initializePaths(userdata);
 #endif
 
 	if (!create_userdata_path()) {
@@ -328,6 +332,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Feature an interactive terminal (Only works when using minetestserver or with --server)"))));
 	allowed_options->insert(std::make_pair("recompress", ValueSpec(VALUETYPE_FLAG,
 			_("Recompress the blocks of the given map database."))));
+	allowed_options->insert(std::make_pair("userdata", ValueSpec(VALUETYPE_STRING,
+			_("Set directory for storing user data"))));
 #ifndef SERVER
 	allowed_options->insert(std::make_pair("speedtests", ValueSpec(VALUETYPE_FLAG,
 			_("Run speed tests"))));

@@ -170,7 +170,7 @@ void migrateCachePath();
 /*
 	Initialize path_*.
 */
-void initializePaths();
+void initializePaths(const std::string &userdata);
 
 /*
 	Return system information

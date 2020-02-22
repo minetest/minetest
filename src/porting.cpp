@@ -403,7 +403,7 @@ const char *getHomeOrFail()
 //// Windows
 #if defined(_WIN32)
 
-bool setSystemPaths()
+bool setSystemPaths(const std::string &userdata)
 {
 	char buf[BUFSIZ];
 
@@ -426,7 +426,10 @@ bool setSystemPaths()
 	DWORD len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
 	FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
 
-	path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME_C;
+	if (userdata.empty())
+		path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME_C;
+	else
+		path_user = userdata;
 	return true;
 }
 
@@ -434,7 +437,7 @@ bool setSystemPaths()
 //// Linux
 #elif defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
 
-bool setSystemPaths()
+bool setSystemPaths(const std::string &userdata)
 {
 	char buf[BUFSIZ];
 
@@ -486,8 +489,11 @@ bool setSystemPaths()
 	}
 
 #ifndef __ANDROID__
-	path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
-		+ PROJECT_NAME;
+	if (userdata.empty())
+		path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
+			+ PROJECT_NAME;
+	else
+		path_user = userdata;
 #endif
 
 	return true;
@@ -497,7 +503,7 @@ bool setSystemPaths()
 //// Mac OS X
 #elif defined(__APPLE__)
 
-bool setSystemPaths()
+bool setSystemPaths(const std::string &userdata)
 {
 	CFBundleRef main_bundle = CFBundleGetMainBundle();
 	CFURLRef resources_url = CFBundleCopyResourcesDirectoryURL(main_bundle);
@@ -510,20 +516,26 @@ bool setSystemPaths()
 	}
 	CFRelease(resources_url);
 
-	path_user = std::string(getHomeOrFail())
-		+ "/Library/Application Support/"
-		+ PROJECT_NAME;
+	if (userdata.empty())
+		path_user = std::string(getHomeOrFail())
+			+ "/Library/Application Support/"
+			+ PROJECT_NAME;
+	else
+		path_user = userdata;
 	return true;
 }
 
 
 #else
 
-bool setSystemPaths()
+bool setSystemPaths(const std::string &userdata)
 {
 	path_share = STATIC_SHAREDIR;
-	path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
-		+ lowercase(PROJECT_NAME);
+	if (userdata.empty())
+		path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
+			+ lowercase(PROJECT_NAME);
+	else
+		path_user = userdata;
 	return true;
 }
 
@@ -550,7 +562,7 @@ void migrateCachePath()
 	}
 }
 
-void initializePaths()
+void initializePaths(const std::string &userdata)
 {
 #if RUN_IN_PLACE
 	char buf[BUFSIZ];
@@ -597,7 +609,7 @@ void initializePaths()
 #else
 	infostream << "Using system-wide paths (NOT RUN_IN_PLACE)" << std::endl;
 
-	if (!setSystemPaths())
+	if (!setSystemPaths(userdata))
 		errorstream << "Failed to get one or more system-wide path" << std::endl;
 
 
