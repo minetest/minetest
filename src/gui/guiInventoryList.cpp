@@ -176,7 +176,10 @@ bool GUIInventoryList::OnEvent(const SEvent &event)
 		Environment->getRootGUIElement()->getElementFromPoint(
 			core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
 
-	bool ret = hovered && hovered->OnEvent(event);
+	if (!hovered || hovered->getID() == -1)
+		hovered = m_fs_menu;
+
+	bool ret = hovered->OnEvent(event);
 
 	IsVisible = was_visible;
 
