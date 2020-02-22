@@ -351,8 +351,6 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 			case HUD_ELEM_WAYPOINT: {
 				v3f p_pos = player->getPosition() / BS;
 				v3f w_pos = e->world_pos * BS;
-				float distance = std::floor(10 * p_pos.getDistanceFrom(e->world_pos)) /
-					10.0f;
 				scene::ICameraSceneNode* camera =
 					RenderingEngine::get_scene_manager()->getActiveCamera();
 				w_pos -= intToFloat(camera_offset, BS);
@@ -372,11 +370,23 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				core::rect<s32> size(0, 0, 200, 2 * text_height);
 				std::wstring text = unescape_translate(utf8_to_wide(e->name));
 				font->draw(text.c_str(), size + pos, color);
-				std::ostringstream os;
-				os << distance << e->text;
-				text = unescape_translate(utf8_to_wide(os.str()));
-				pos.Y += text_height;
-				font->draw(text.c_str(), size + pos, color);
+				// item = precision + 1
+				float precision;
+				u32 item = e->item;
+				if (item == 0) {
+					precision = 10.0f;
+				} else {
+					precision = item - 1;
+				}
+
+				if (precision > 0) {
+					std::ostringstream os;
+					float distance = std::floor(precision * p_pos.getDistanceFrom(e->world_pos)) / precision;
+					os << distance << e->text;
+					text = unescape_translate(utf8_to_wide(os.str()));
+					pos.Y += text_height;
+					font->draw(text.c_str(), size + pos, color);
+				}
 				break; }
 			default:
 				infostream << "Hud::drawLuaElements: ignoring drawform " << e->type <<

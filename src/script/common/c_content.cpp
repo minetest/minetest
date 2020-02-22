@@ -1852,6 +1852,9 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->text    = getstringfield_default(L, 2, "text", "");
 	elem->number  = getintfield_default(L, 2, "number", 0);
 	elem->item    = getintfield_default(L, 2, "item", 0);
+	if (elem->type == HUD_ELEM_WAYPOINT) {
+		elem->item = getintfield_default(L, 2, "item", -1) + 1;
+	}
 	elem->dir     = getintfield_default(L, 2, "direction", 0);
 	elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX,
 			getintfield_default(L, 2, "z_index", 0)));
