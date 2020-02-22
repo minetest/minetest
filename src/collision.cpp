@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "util/timetaker.h"
 #include "profiler.h"
+#include <iomanip>
 
 // float error is 10 - 9.96875 = 0.03125
 //#define COLL_ZERO 0.032 // broken unit tests
@@ -76,7 +77,6 @@ CollisionAxis axisAlignedCollision(
 	);
 
 	const f32 inner_margin = -1.5f;
-	const f32 outer_margin = 0.03;
 	f32 distance;
 	f32 time;
 
@@ -92,10 +92,13 @@ CollisionAxis axisAlignedCollision(
 				if (((speed.X > 0) && (staticbox.MaxEdge.X > movingbox.MaxEdge.X)) ||
 					((speed.X < 0) && (staticbox.MinEdge.X < movingbox.MinEdge.X)))
 				{
-
 					if (
-						(relbox.MaxEdge.Y - relbox.MinEdge.Y + speed.Y * time < 0) &&
-						(relbox.MaxEdge.Z - relbox.MinEdge.Z + speed.Z * time < 0)
+						(std::max(movingbox.MaxEdge.Y + speed.Y * time, staticbox.MaxEdge.Y) 
+							- std::min(movingbox.MinEdge.Y + speed.Y * time, staticbox.MinEdge.Y) 
+							- relbox.MinEdge.Y < 0) &&
+						(std::max(movingbox.MaxEdge.Z + speed.Z * time, staticbox.MaxEdge.Z)
+							- std::min(movingbox.MinEdge.Z + speed.Z * time, staticbox.MinEdge.Z)
+							- relbox.MinEdge.Z < 0)
 						) return COLLISION_AXIS_X;
 				}
 			}
@@ -119,8 +122,12 @@ CollisionAxis axisAlignedCollision(
 				{
 
 					if (
-						(relbox.MaxEdge.X - relbox.MinEdge.X + speed.X * time < 0) &&
-						(relbox.MaxEdge.Z - relbox.MinEdge.Z + speed.Z * time < 0)
+						(std::max(movingbox.MaxEdge.X + speed.X * time, staticbox.MaxEdge.X)
+							- std::min(movingbox.MinEdge.X + speed.X * time, staticbox.MinEdge.X)
+							- relbox.MinEdge.X < 0) &&
+						(std::max(movingbox.MaxEdge.Z + speed.Z * time, staticbox.MaxEdge.Z)
+							- std::min(movingbox.MinEdge.Z + speed.Z * time, staticbox.MinEdge.Z)
+							- relbox.MinEdge.Z < 0)
 						) return COLLISION_AXIS_Y;
 				}
 			}
@@ -144,8 +151,12 @@ CollisionAxis axisAlignedCollision(
 				{
 
 					if (
-						(relbox.MaxEdge.X - relbox.MinEdge.X + speed.X * time < 0) &&
-						(relbox.MaxEdge.Y - relbox.MinEdge.Y + speed.Y * time < 0)
+						(std::max(movingbox.MaxEdge.X + speed.X * time, staticbox.MaxEdge.X)
+							- std::min(movingbox.MinEdge.X + speed.X * time, staticbox.MinEdge.X)
+							- relbox.MinEdge.X < 0) &&
+						(std::max(movingbox.MaxEdge.Y + speed.Y * time, staticbox.MaxEdge.Y)
+							- std::min(movingbox.MinEdge.Y + speed.Y * time, staticbox.MinEdge.Y)
+							- relbox.MinEdge.Y < 0)
 						) return COLLISION_AXIS_Z;
 				}
 			}
@@ -459,11 +470,18 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			// Otherwise, a collision occurred.
 			NearbyCollisionInfo &nearest_info = cinfo[nearest_boxindex];
 			const aabb3f& cbox = nearest_info.box;
+
+			//movingbox except moved to the horizontal position it would be after step up
+			aabb3f stepbox = movingbox;
+			stepbox.MinEdge.X += speed_f->X * dtime;
+			stepbox.MinEdge.Z += speed_f->Z * dtime;
+			stepbox.MaxEdge.X += speed_f->X * dtime;
+			stepbox.MaxEdge.Z += speed_f->Z * dtime;
 			// Check for stairs.
 			bool step_up = (nearest_collided != COLLISION_AXIS_Y) && // must not be Y direction
 					(movingbox.MinEdge.Y < cbox.MaxEdge.Y) &&
-					(std::min(movingbox.MinEdge.Y + stepheight, movingbox.MaxEdge.Y) > cbox.MaxEdge.Y) &&
-					(!wouldCollideWithCeiling(cinfo, movingbox,
+					(movingbox.MinEdge.Y + stepheight > cbox.MaxEdge.Y) &&
+					(!wouldCollideWithCeiling(cinfo, stepbox,
 							cbox.MaxEdge.Y - movingbox.MinEdge.Y,
 							d));
 
