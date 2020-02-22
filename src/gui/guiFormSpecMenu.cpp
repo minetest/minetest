@@ -2545,7 +2545,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 		}
 
 		// Backwards-compatibility for existing _hovered/_pressed properties
-		if(selector_spec.hasProperty(StyleSpec::BGCOLOR_HOVERED)
+		if (selector_spec.hasProperty(StyleSpec::BGCOLOR_HOVERED)
 				|| selector_spec.hasProperty(StyleSpec::BGIMG_HOVERED)
 				|| selector_spec.hasProperty(StyleSpec::FGIMG_HOVERED)) {
 			StyleSpec hover_spec;
@@ -2567,7 +2567,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 				theme_by_name[selector].push_back(hover_spec);
 			}
 		}
-		if(selector_spec.hasProperty(StyleSpec::BGCOLOR_PRESSED)
+		if (selector_spec.hasProperty(StyleSpec::BGCOLOR_PRESSED)
 				|| selector_spec.hasProperty(StyleSpec::BGIMG_PRESSED)
 				|| selector_spec.hasProperty(StyleSpec::FGIMG_PRESSED)) {
 			StyleSpec press_spec;
