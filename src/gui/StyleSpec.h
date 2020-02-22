@@ -32,17 +32,17 @@ public:
 	{
 		TEXTCOLOR,
 		BGCOLOR,
-		BGCOLOR_HOVERED,
-		BGCOLOR_PRESSED,
+		BGCOLOR_HOVERED, // Note: Deprecated property
+		BGCOLOR_PRESSED, // Note: Deprecated property
 		NOCLIP,
 		BORDER,
 		BGIMG,
-		BGIMG_HOVERED,
+		BGIMG_HOVERED, // Note: Deprecated property
 		BGIMG_MIDDLE,
-		BGIMG_PRESSED,
+		BGIMG_PRESSED, // Note: Deprecated property
 		FGIMG,
-		FGIMG_HOVERED,
-		FGIMG_PRESSED,
+		FGIMG_HOVERED, // Note: Deprecated property
+		FGIMG_PRESSED, // Note: Deprecated property
 		ALPHA,
 		NUM_PROPERTIES,
 		NONE
@@ -139,7 +139,7 @@ public:
 
 	//! Using a list of styles mapped to state values, calculate the final
 	//  combined style for a state by propagating values in its component states
-	static StyleSpec getStyleFromStatePropagation(const std::array<StyleSpec, NUM_STATES>& styles, State state)
+	static StyleSpec getStyleFromStatePropagation(const std::array<StyleSpec, NUM_STATES> &styles, State state)
 	{
 		StyleSpec temp = styles[StyleSpec::STATE_DEFAULT];
 		temp.state_map = state;

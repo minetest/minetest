@@ -1937,7 +1937,9 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 		e->setStyles(style);
 		e->setScaleImage(true);
 
-		theme_by_name[spec.fname].erase(theme_by_name[spec.fname].end() - styles_to_pop, theme_by_name[spec.fname].end());
+		theme_by_name[spec.fname].erase(
+				theme_by_name[spec.fname].end() - styles_to_pop,
+				theme_by_name[spec.fname].end());
 
 		m_fields.push_back(spec);
 		return;
@@ -2522,7 +2524,6 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 					if (converted == StyleSpec::STATE_INVALID) {
 						infostream << "Unknown style state " << state <<
 							" in element '" << element << "'" << std::endl;
-						
 						state_valid = false;
 						break;
 					}
@@ -2544,7 +2545,9 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 		}
 
 		// Backwards-compatibility for existing _hovered/_pressed properties
-		if(selector_spec.hasProperty(StyleSpec::BGCOLOR_HOVERED) || selector_spec.hasProperty(StyleSpec::BGIMG_HOVERED) || selector_spec.hasProperty(StyleSpec::FGIMG_HOVERED)) {
+		if(selector_spec.hasProperty(StyleSpec::BGCOLOR_HOVERED)
+				|| selector_spec.hasProperty(StyleSpec::BGIMG_HOVERED)
+				|| selector_spec.hasProperty(StyleSpec::FGIMG_HOVERED)) {
 			StyleSpec hover_spec;
 			hover_spec.addState(StyleSpec::STATE_HOVERED);
 
@@ -2564,7 +2567,9 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 				theme_by_name[selector].push_back(hover_spec);
 			}
 		}
-		if(selector_spec.hasProperty(StyleSpec::BGCOLOR_PRESSED) || selector_spec.hasProperty(StyleSpec::BGIMG_PRESSED) || selector_spec.hasProperty(StyleSpec::FGIMG_PRESSED)) {
+		if(selector_spec.hasProperty(StyleSpec::BGCOLOR_PRESSED)
+				|| selector_spec.hasProperty(StyleSpec::BGIMG_PRESSED)
+				|| selector_spec.hasProperty(StyleSpec::FGIMG_PRESSED)) {
 			StyleSpec press_spec;
 			press_spec.addState(StyleSpec::STATE_PRESSED);
 
@@ -4517,7 +4522,7 @@ std::array<StyleSpec, StyleSpec::NUM_STATES> GUIFormSpecMenu::getStyleForElement
 	if (!parent_type.empty()) {
 		auto it = theme_by_type.find(parent_type);
 		if (it != theme_by_type.end()) {
-			for(const StyleSpec& spec : it->second) {
+			for(const StyleSpec &spec : it->second) {
 				ret[(u32)spec.getState()] |= spec;
 			}
 		}
@@ -4525,14 +4530,14 @@ std::array<StyleSpec, StyleSpec::NUM_STATES> GUIFormSpecMenu::getStyleForElement
 
 	auto it = theme_by_type.find(type);
 	if (it != theme_by_type.end()) {
-		for(const StyleSpec& spec : it->second) {
+		for(const StyleSpec &spec : it->second) {
 			ret[(u32)spec.getState()] |= spec;
 		}
 	}
 
 	it = theme_by_name.find(name);
 	if (it != theme_by_name.end()) {
-		for(const StyleSpec& spec : it->second) {
+		for(const StyleSpec &spec : it->second) {
 			ret[(u32)spec.getState()] |= spec;
 		}
 	}
