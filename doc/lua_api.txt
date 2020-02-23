@@ -5840,7 +5840,7 @@ This is basically a reference to a C++ `ServerActiveObject`
             * `"skybox"`: Uses 6 textures, `base_color` used as fog.
             * `"plain"`: Uses 0 textures, `base_color` used as both fog and sky.
         * `textures`: A table containing up to six textures in the following
-            order: top, bottom, left, right, front, back.
+            order: Y+ (top), Y- (bottom), X- (west), X+ (east), Z+ (north), Z- (south).
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
         * `sky_color`: A table containing the following values, alpha is ignored:
             * `day_sky`: ColorSpec, for the top half of the `"regular"`
