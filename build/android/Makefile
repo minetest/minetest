@@ -112,7 +112,7 @@ FREETYPE_TIMESTAMP = $(FREETYPE_DIR)timestamp
 FREETYPE_TIMESTAMP_INT = $(ANDR_ROOT)/deps/freetype_timestamp
 FREETYPE_URL_GIT = https://github.com/cdave1/freetype2-android
 
-ICONV_VERSION = 1.14
+ICONV_VERSION = 1.16
 ICONV_DIR = $(ANDR_ROOT)/deps/libiconv/
 ICONV_LIB = $(ICONV_DIR)/lib/.libs/libiconv.so
 ICONV_TIMESTAMP = $(ICONV_DIR)timestamp
@@ -445,9 +445,6 @@ iconv_download :
 		tar -xzf libiconv-${ICONV_VERSION}.tar.gz || exit 1;               \
 		rm libiconv-${ICONV_VERSION}.tar.gz;                               \
 		ln -s libiconv-${ICONV_VERSION} libiconv;                          \
-		cd ${ICONV_DIR};                                                   \
-		patch -p1 < ${ANDR_ROOT}/patches/libiconv_android.patch;           \
-		patch -p1 < ${ANDR_ROOT}/patches/libiconv_stdio.patch;             \
 	fi
 
 iconv : $(ICONV_LIB)

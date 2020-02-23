@@ -162,7 +162,7 @@ void MapgenValleysParams::readParams(const Settings *settings)
 
 void MapgenValleysParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgvalleys_spflags", spflags, flagdesc_mapgen_valleys, U32_MAX);
+	settings->setFlagStr("mgvalleys_spflags", spflags, flagdesc_mapgen_valleys);
 	settings->setU16("mgvalleys_altitude_chill",       altitude_chill);
 	settings->setS16("mgvalleys_large_cave_depth",     large_cave_depth);
 	settings->setU16("mgvalleys_small_cave_num_min",   small_cave_num_min);
@@ -192,6 +192,17 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgvalleys_np_cavern",             np_cavern);
 	settings->setNoiseParams("mgvalleys_np_dungeons",           np_dungeons);
 }
+
+
+void MapgenValleysParams::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgvalleys_spflags", flagdesc_mapgen_valleys,
+		MGVALLEYS_ALT_CHILL | MGVALLEYS_HUMID_RIVERS |
+		MGVALLEYS_VARY_RIVER_DEPTH | MGVALLEYS_ALT_DRY);
+}
+
+
+/////////////////////////////////////////////////////////////////
 
 
 void MapgenValleys::makeChunk(BlockMakeData *data)

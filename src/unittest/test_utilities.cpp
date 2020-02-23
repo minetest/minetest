@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 
 #include <cmath>
+#include "util/enriched_string.h"
 #include "util/numeric.h"
 #include "util/string.h"
 
@@ -49,6 +50,7 @@ public:
 	void testUTF8();
 	void testRemoveEscapes();
 	void testWrapRows();
+	void testEnrichedString();
 	void testIsNumber();
 	void testIsPowerOfTwo();
 	void testMyround();
@@ -79,6 +81,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testUTF8);
 	TEST(testRemoveEscapes);
 	TEST(testWrapRows);
+	TEST(testEnrichedString);
 	TEST(testIsNumber);
 	TEST(testIsPowerOfTwo);
 	TEST(testMyround);
@@ -344,6 +347,23 @@ void TestUtilities::testWrapRows()
 	}
 }
 
+void TestUtilities::testEnrichedString()
+{
+	EnrichedString str(L"Test bar");
+	irr::video::SColor color(0xFF, 0, 0, 0xFF);
+
+	UASSERT(str.substr(1, 3).getString() == L"est");
+	str += L" BUZZ";
+	UASSERT(str.substr(9, std::string::npos).getString() == L"BUZZ");
+	str.setDefaultColor(color); // Blue foreground
+	UASSERT(str.getColors()[5] == color);
+	// Green background, then white and yellow text
+	str = L"\x1b(b@#0F0)Regular \x1b(c@#FF0)yellow";
+	UASSERT(str.getColors()[2] == 0xFFFFFFFF);
+	str.setDefaultColor(color); // Blue foreground
+	UASSERT(str.getColors()[13] == 0xFFFFFF00); // Still yellow text
+	UASSERT(str.getBackground() == 0xFF00FF00); // Green background
+}
 
 void TestUtilities::testIsNumber()
 {

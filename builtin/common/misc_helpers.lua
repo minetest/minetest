@@ -200,9 +200,6 @@ function table.indexof(list, val)
 	return -1
 end
 
-assert(table.indexof({"foo", "bar"}, "foo") == 1)
-assert(table.indexof({"foo", "bar"}, "baz") == -1)
-
 --------------------------------------------------------------------------------
 if INIT ~= "client" then
 	function file_exists(filename)
@@ -219,8 +216,6 @@ end
 function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
-
-assert(string.trim("\n \t\tfoo bar\t ") == "foo bar")
 
 --------------------------------------------------------------------------------
 function math.hypot(x, y)
@@ -520,9 +515,6 @@ function core.string_to_pos(value)
 	return nil
 end
 
-assert(core.string_to_pos("10.0, 5, -2").x == 10)
-assert(core.string_to_pos("( 10.0, 5, -2)").z == -2)
-assert(core.string_to_pos("asd, 5, -2)") == nil)
 
 --------------------------------------------------------------------------------
 function core.string_to_area(value)
@@ -572,6 +564,29 @@ function table.insert_all(t, other)
 		t[#t + 1] = other[i]
 	end
 	return t
+end
+
+
+function table.key_value_swap(t)
+	local ti = {}
+	for k,v in pairs(t) do
+		ti[v] = k
+	end
+	return ti
+end
+
+
+function table.shuffle(t, from, to, random)
+	from = from or 1
+	to = to or #t
+	random = random or math.random
+	local n = to - from + 1
+	while n > 1 do
+		local r = from + n-1
+		local l = from + random(0, n-1)
+		t[l], t[r] = t[r], t[l]
+		n = n-1
+	end
 end
 
 
@@ -755,6 +770,3 @@ function core.privs_to_string(privs, delim)
 	end
 	return table.concat(list, delim)
 end
-
-assert(core.string_to_privs("a,b").b == true)
-assert(core.privs_to_string({a=true,b=true}) == "a,b")

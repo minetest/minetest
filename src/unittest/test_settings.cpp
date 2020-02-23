@@ -31,6 +31,7 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testAllSettings();
+	void testFlagDesc();
 
 	static const char *config_text_before;
 	static const std::string config_text_after;
@@ -41,6 +42,7 @@ static TestSettings g_test_instance;
 void TestSettings::runTests(IGameDef *gamedef)
 {
 	TEST(testAllSettings);
+	TEST(testFlagDesc);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -205,4 +207,39 @@ void TestSettings::testAllSettings()
 	} catch (SettingNotFoundException &e) {
 		UASSERT(!"Setting not found!");
 	}
+}
+
+void TestSettings::testFlagDesc()
+{
+	Settings s;
+	FlagDesc flagdesc[] = {
+		{ "biomes",  0x01 },
+		{ "trees",   0x02 },
+		{ "jungles", 0x04 },
+		{ "oranges", 0x08 },
+		{ "tables",  0x10 },
+		{ nullptr,      0 }
+	};
+
+	// Enabled: biomes, jungles, oranges (default)
+	s.setDefault("test_desc", flagdesc, readFlagString(
+		"biomes,notrees,jungles,oranges", flagdesc, nullptr));
+	UASSERT(s.getFlagStr("test_desc", flagdesc, nullptr) == (0x01 | 0x04 | 0x08));
+
+	// Enabled: jungles, oranges, tables
+	s.set("test_desc", "nobiomes,tables");
+	UASSERT(s.getFlagStr("test_desc", flagdesc, nullptr) == (0x04 | 0x08 | 0x10));
+
+	// Enabled: (nothing)
+	s.set("test_desc", "nobiomes,nojungles,nooranges,notables");
+	UASSERT(s.getFlagStr("test_desc", flagdesc, nullptr) == 0x00);
+
+	// Numeric flag tests (override)
+	// Enabled: trees, tables
+	s.setDefault("test_flags", flagdesc, 0x02 | 0x10);
+	UASSERT(s.getFlagStr("test_flags", flagdesc, nullptr) == (0x02 | 0x10));
+
+	// Enabled: tables
+	s.set("test_flags", "16");
+	UASSERT(s.getFlagStr("test_flags", flagdesc, nullptr) == 0x10);
 }

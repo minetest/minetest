@@ -1,6 +1,34 @@
 -- Minetest: builtin/item.lua
 
 local builtin_shared = ...
+local SCALE = 0.667
+
+local facedir_to_euler = {
+	{y = 0, x = 0, z = 0},
+	{y = -math.pi/2, x = 0, z = 0},
+	{y = math.pi, x = 0, z = 0},
+	{y = math.pi/2, x = 0, z = 0},
+	{y = math.pi/2, x = -math.pi/2, z = math.pi/2},
+	{y = math.pi/2, x = math.pi, z = math.pi/2},
+	{y = math.pi/2, x = math.pi/2, z = math.pi/2},
+	{y = math.pi/2, x = 0, z = math.pi/2},
+	{y = -math.pi/2, x = math.pi/2, z = math.pi/2},
+	{y = -math.pi/2, x = 0, z = math.pi/2},
+	{y = -math.pi/2, x = -math.pi/2, z = math.pi/2},
+	{y = -math.pi/2, x = math.pi, z = math.pi/2},
+	{y = 0, x = 0, z = math.pi/2},
+	{y = 0, x = -math.pi/2, z = math.pi/2},
+	{y = 0, x = math.pi, z = math.pi/2},
+	{y = 0, x = math.pi/2, z = math.pi/2},
+	{y = math.pi, x = math.pi, z = math.pi/2},
+	{y = math.pi, x = math.pi/2, z = math.pi/2},
+	{y = math.pi, x = 0, z = math.pi/2},
+	{y = math.pi, x = -math.pi/2, z = math.pi/2},
+	{y = math.pi, x = math.pi, z = 0},
+	{y = -math.pi/2, x = math.pi, z = 0},
+	{y = 0, x = math.pi, z = 0},
+	{y = math.pi/2, x = math.pi, z = 0}
+}
 
 --
 -- Falling stuff
@@ -8,8 +36,8 @@ local builtin_shared = ...
 
 core.register_entity(":__builtin:falling_node", {
 	initial_properties = {
-		visual = "wielditem",
-		visual_size = {x = 0.667, y = 0.667},
+		visual = "item",
+		visual_size = {x = SCALE, y = SCALE, z = SCALE},
 		textures = {},
 		physical = true,
 		is_visible = false,
@@ -33,11 +61,105 @@ core.register_entity(":__builtin:falling_node", {
 				end
 			end
 		end
+		local def = core.registered_nodes[node.name]
+		if not def then
+			-- Don't allow unknown nodes to fall
+			core.log("info",
+				"Unknown falling node removed at "..
+				core.pos_to_string(self.object:get_pos()))
+			self.object:remove()
+			return
+		end
 		self.meta = meta
-		self.object:set_properties({
-			is_visible = true,
-			textures = {node.name},
-		})
+		if def.drawtype == "torchlike" or def.drawtype == "signlike" then
+			local textures
+			if def.tiles and def.tiles[1] then
+				local tile = def.tiles[1]
+				if type(tile) == "table" then
+					tile = tile.name
+				end
+				if def.drawtype == "torchlike" then
+					textures = { "("..tile..")^[transformFX", tile }
+				else
+					textures = { tile, "("..tile..")^[transformFX" }
+				end
+			end
+			local vsize
+			if def.visual_scale then
+				local s = def.visual_scale
+				vsize = {x = s, y = s, z = s}
+			end
+			self.object:set_properties({
+				is_visible = true,
+				visual = "upright_sprite",
+				visual_size = vsize,
+				textures = textures,
+				glow = def.light_source,
+			})
+		elseif def.drawtype ~= "airlike" then
+			local itemstring = node.name
+			if core.is_colored_paramtype(def.paramtype2) then
+				itemstring = core.itemstring_with_palette(itemstring, node.param2)
+			end
+			local vsize
+			if def.visual_scale then
+				local s = def.visual_scale * SCALE
+				vsize = {x = s, y = s, z = s}
+			end
+			self.object:set_properties({
+				is_visible = true,
+				wield_item = itemstring,
+				visual_size = vsize,
+				glow = def.light_source,
+			})
+		end
+		-- Rotate entity
+		if def.drawtype == "torchlike" then
+			self.object:set_yaw(math.pi*0.25)
+		elseif (node.param2 ~= 0 and (def.wield_image == ""
+				or def.wield_image == nil))
+				or def.drawtype == "signlike"
+				or def.drawtype == "mesh"
+				or def.drawtype == "normal"
+				or def.drawtype == "nodebox" then
+			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
+				local fdir = node.param2 % 32
+				-- Get rotation from a precalculated lookup table
+				local euler = facedir_to_euler[fdir + 1]
+				if euler then
+					self.object:set_rotation(euler)
+				end
+			elseif (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted") then
+				local rot = node.param2 % 8
+				local pitch, yaw, roll = 0, 0, 0
+				if rot == 1 then
+					pitch, yaw = math.pi, math.pi
+				elseif rot == 2 then
+					pitch, yaw = math.pi/2, math.pi/2
+				elseif rot == 3 then
+					pitch, yaw = math.pi/2, -math.pi/2
+				elseif rot == 4 then
+					pitch, yaw = math.pi/2, math.pi
+				elseif rot == 5 then
+					pitch, yaw = math.pi/2, 0
+				end
+				if def.drawtype == "signlike" then
+					pitch = pitch - math.pi/2
+					if rot == 0 then
+						yaw = yaw + math.pi/2
+					elseif rot == 1 then
+						yaw = yaw - math.pi/2
+					end
+				elseif def.drawtype == "mesh" or def.drawtype == "normal" then
+					if rot >= 0 and rot <= 1 then
+						roll = roll + math.pi
+					else
+						yaw = yaw + math.pi
+					end
+				end
+				self.object:set_rotation({x=pitch, y=yaw, z=roll})
+			end
+		end
 	end,
 
 	get_staticdata = function(self)
@@ -128,7 +250,7 @@ core.register_entity(":__builtin:falling_node", {
 					meta:from_table(self.meta)
 				end
 				if def.sounds and def.sounds.place then
-					core.sound_play(def.sounds.place, {pos = np})
+					core.sound_play(def.sounds.place, {pos = np}, true)
 				end
 			end
 			self.object:remove()
@@ -154,7 +276,7 @@ local function convert_to_falling_node(pos, node)
 
 	local def = core.registered_nodes[node.name]
 	if def and def.sounds and def.sounds.fall then
-		core.sound_play(def.sounds.fall, {pos = pos})
+		core.sound_play(def.sounds.fall, {pos = pos}, true)
 	end
 
 	obj:get_luaentity():set_node(node, metatable)
@@ -187,7 +309,7 @@ local function drop_attached_node(p)
 		def.preserve_metadata(pos_copy, node_copy, oldmeta, drops)
 	end
 	if def and def.sounds and def.sounds.fall then
-		core.sound_play(def.sounds.fall, {pos = p})
+		core.sound_play(def.sounds.fall, {pos = p}, true)
 	end
 	core.remove_node(p)
 	for _, item in pairs(drops) do

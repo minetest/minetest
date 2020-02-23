@@ -15,7 +15,7 @@ RUN	mkdir -p /usr/src/minetest/cmakebuild && cd /usr/src/minetest/cmakebuild && 
 		.. && \
 		make -j2 && \
 		rm -Rf ../games/minetest_game && git clone --depth 1 https://github.com/minetest/minetest_game ../games/minetest_game && \
-		rm -Rf ../games/minetest_game/.git
+		rm -Rf ../games/minetest_game/.git && \
 		make install
 
 FROM debian:stretch

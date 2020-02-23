@@ -187,7 +187,7 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 
 void MapgenCarpathianParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian, U32_MAX);
+	settings->setFlagStr("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian);
 
 	settings->setFloat("mgcarpathian_base_level",   base_level);
 	settings->setFloat("mgcarpathian_river_width",  river_width);
@@ -226,6 +226,12 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgcarpathian_np_dungeons",      np_dungeons);
 }
 
+
+void MapgenCarpathianParams::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgcarpathian_spflags", flagdesc_mapgen_carpathian,
+		MGCARPATHIAN_CAVERNS);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

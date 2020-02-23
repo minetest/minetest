@@ -782,11 +782,20 @@ void Client::initLocalMapSaving(const Address &address,
 		return;
 	}
 
-	const std::string world_path = porting::path_user
-		+ DIR_DELIM + "worlds"
-		+ DIR_DELIM + "server_"
+	std::string world_path;
+#define set_world_path(hostname) \
+	world_path = porting::path_user \
+		+ DIR_DELIM + "worlds" \
+		+ DIR_DELIM + "server_" \
 		+ hostname + "_" + std::to_string(address.getPort());
 
+	set_world_path(hostname);
+	if (!fs::IsDir(world_path)) {
+		std::string hostname_escaped = hostname;
+		str_replace(hostname_escaped, ':', '_');
+		set_world_path(hostname_escaped);
+	}
+#undef set_world_path
 	fs::CreateAllDirs(world_path);
 
 	m_localdb = new MapDatabaseSQLite3(world_path);
@@ -1097,7 +1106,7 @@ void Client::sendRemovedSounds(std::vector<s32> &soundList)
 
 	pkt << (u16) (server_ids & 0xFFFF);
 
-	for (int sound_id : soundList)
+	for (s32 sound_id : soundList)
 		pkt << sound_id;
 
 	Send(&pkt);
@@ -1851,7 +1860,7 @@ ITextureSource* Client::getTextureSource()
 {
 	return m_tsrc;
 }
-IShaderSource* Client::getShaderSource()
+IWritableShaderSource* Client::getShaderSource()
 {
 	return m_shsrc;
 }

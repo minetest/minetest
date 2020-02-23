@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "wieldmesh.h"
 #include <algorithm>
 #include <cmath>
+#include "client/shader.h"
 
 class Settings;
 struct ToolCapabilities;
@@ -352,6 +353,8 @@ void GenericCAO::initialize(const std::string &data)
 			player->setCAO(this);
 		}
 	}
+
+	m_enable_shaders = g_settings->getBool("enable_shaders");
 }
 
 void GenericCAO::processInitData(const std::string &data)
@@ -577,14 +580,35 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		return;
 	}
 
-	video::E_MATERIAL_TYPE material_type = (m_prop.use_texture_alpha) ?
-		video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	if (m_enable_shaders) {
+		IShaderSource *shader_source = m_client->getShaderSource();
+		u32 shader_id = shader_source->getShader(
+				"object_shader",
+				TILE_MATERIAL_BASIC,
+				NDT_NORMAL);
+		m_material_type = shader_source->getShaderInfo(shader_id).material;
+	} else {
+		m_material_type = (m_prop.use_texture_alpha) ?
+			video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	}
 
 	auto grabMatrixNode = [this] {
 		infostream << "GenericCAO::addToScene(): " << m_prop.visual << std::endl;
 		m_matrixnode = RenderingEngine::get_scene_manager()->
 				addDummyTransformationSceneNode();
 		m_matrixnode->grab();
+	};
+
+	auto setSceneNodeMaterial = [this] (scene::ISceneNode *node) {
+		node->setMaterialFlag(video::EMF_LIGHTING, false);
+		node->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+		node->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		node->setMaterialType(m_material_type);
+
+		if (m_enable_shaders) {
+			node->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
+			node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+		}
 	};
 
 	if (m_prop.visual == "sprite") {
@@ -594,10 +618,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
 				tsrc->getTextureForMesh("unknown_node.png"));
-		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
-		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		m_spritenode->setMaterialType(material_type);
-		m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+
+		setSceneNodeMaterial(m_spritenode);
+
 		u8 li = m_last_light;
 		m_spritenode->setColor(video::SColor(255,li,li,li));
 		m_spritenode->setSize(v2f(m_prop.visual_size.X,
@@ -619,10 +642,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		{ // Front
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 			video::S3DVertex vertices[4] = {
-				video::S3DVertex(-dx, -dy, 0, 0,0,0, c, 1,1),
-				video::S3DVertex( dx, -dy, 0, 0,0,0, c, 0,1),
-				video::S3DVertex( dx,  dy, 0, 0,0,0, c, 0,0),
-				video::S3DVertex(-dx,  dy, 0, 0,0,0, c, 1,0),
+				video::S3DVertex(-dx, -dy, 0, 0,0,1, c, 1,1),
+				video::S3DVertex( dx, -dy, 0, 0,0,1, c, 0,1),
+				video::S3DVertex( dx,  dy, 0, 0,0,1, c, 0,0),
+				video::S3DVertex(-dx,  dy, 0, 0,0,1, c, 1,0),
 			};
 			if (m_is_player) {
 				// Move minimal Y position to 0 (feet position)
@@ -635,7 +658,14 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-			buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			buf->getMaterial().MaterialType = m_material_type;
+
+			if (m_enable_shaders) {
+				buf->getMaterial().EmissiveColor = c;
+				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING, false);
+				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
+			}
+
 			// Add to mesh
 			mesh->addMeshBuffer(buf);
 			buf->drop();
@@ -643,10 +673,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		{ // Back
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 			video::S3DVertex vertices[4] = {
-				video::S3DVertex( dx,-dy, 0, 0,0,0, c, 1,1),
-				video::S3DVertex(-dx,-dy, 0, 0,0,0, c, 0,1),
-				video::S3DVertex(-dx, dy, 0, 0,0,0, c, 0,0),
-				video::S3DVertex( dx, dy, 0, 0,0,0, c, 1,0),
+				video::S3DVertex( dx,-dy, 0, 0,0,-1, c, 1,1),
+				video::S3DVertex(-dx,-dy, 0, 0,0,-1, c, 0,1),
+				video::S3DVertex(-dx, dy, 0, 0,0,-1, c, 0,0),
+				video::S3DVertex( dx, dy, 0, 0,0,-1, c, 1,0),
 			};
 			if (m_is_player) {
 				// Move minimal Y position to 0 (feet position)
@@ -659,7 +689,14 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-			buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			buf->getMaterial().MaterialType = m_material_type;
+
+			if (m_enable_shaders) {
+				buf->getMaterial().EmissiveColor = c;
+				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING, false);
+				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
+			}
+
 			// Add to mesh
 			mesh->addMeshBuffer(buf);
 			buf->drop();
@@ -683,10 +720,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		u8 li = m_last_light;
 		setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
 
-		m_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
-		m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		m_meshnode->setMaterialType(material_type);
-		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		setSceneNodeMaterial(m_meshnode);
 	} else if (m_prop.visual == "mesh") {
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
@@ -704,10 +738,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
 
-			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
-			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-			m_animated_meshnode->setMaterialType(material_type);
-			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+			setSceneNodeMaterial(m_animated_meshnode);
+
 			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 				m_prop.backface_culling);
 		} else
@@ -789,17 +821,41 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 		return;
 
 	u8 li = decode_light(light_at_pos + m_glow);
+
 	if (li != m_last_light)	{
 		m_last_light = li;
 		video::SColor color(255,li,li,li);
-		if (m_meshnode) {
-			setMeshColor(m_meshnode->getMesh(), color);
-		} else if (m_animated_meshnode) {
-			setAnimatedMeshColor(m_animated_meshnode, color);
-		} else if (m_wield_meshnode) {
-			m_wield_meshnode->setColor(color);
-		} else if (m_spritenode) {
-			m_spritenode->setColor(color);
+
+		if (m_enable_shaders) {
+			scene::ISceneNode *node = getSceneNode();
+
+			if (node == nullptr) {
+				return;
+			}
+
+			if (m_prop.visual == "upright_sprite") {
+				scene::IMesh *mesh = m_meshnode->getMesh();
+				for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
+					scene::IMeshBuffer* buf = mesh->getMeshBuffer(i);
+					video::SMaterial& material = buf->getMaterial();
+					material.EmissiveColor = color;
+				}
+			} else {
+				for (u32 i = 0; i < node->getMaterialCount(); ++i) {
+					video::SMaterial& material = node->getMaterial(i);
+					material.EmissiveColor = color;
+				}
+			}
+		} else {
+			if (m_meshnode) {
+				setMeshColor(m_meshnode->getMesh(), color);
+			} else if (m_animated_meshnode) {
+				setAnimatedMeshColor(m_animated_meshnode, color);
+			} else if (m_wield_meshnode) {
+				m_wield_meshnode->setColor(color);
+			} else if (m_spritenode) {
+				m_spritenode->setColor(color);
+			}
 		}
 	}
 }
@@ -1101,16 +1157,13 @@ void GenericCAO::updateTextures(std::string mod)
 	m_current_texture_modifier = mod;
 	m_glow = m_prop.glow;
 
-	video::E_MATERIAL_TYPE material_type = (m_prop.use_texture_alpha) ?
-		video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {
 			std::string texturestring = "unknown_node.png";
 			if (!m_prop.textures.empty())
 				texturestring = m_prop.textures[0];
 			texturestring += mod;
-			m_spritenode->getMaterial(0).MaterialType = material_type;
+			m_spritenode->getMaterial(0).MaterialType = m_material_type;
 			m_spritenode->getMaterial(0).MaterialTypeParam = 0.5f;
 			m_spritenode->setMaterialTexture(0,
 					tsrc->getTextureForMesh(texturestring));
@@ -1146,7 +1199,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 				// Set material flags and texture
 				video::SMaterial& material = m_animated_meshnode->getMaterial(i);
-				material.MaterialType = material_type;
+				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = 0.5f;
 				material.TextureLayer[0].Texture = texture;
 				material.setFlag(video::EMF_LIGHTING, true);
@@ -1193,7 +1246,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 				// Set material flags and texture
 				video::SMaterial& material = m_meshnode->getMaterial(i);
-				material.MaterialType = material_type;
+				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = 0.5f;
 				material.setFlag(video::EMF_LIGHTING, false);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);

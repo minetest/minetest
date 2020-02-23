@@ -230,7 +230,11 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 
 int ModApiClient::l_get_language(lua_State *L)
 {
+#ifdef _WIN32
+	char *locale = setlocale(LC_ALL, NULL);
+#else
 	char *locale = setlocale(LC_MESSAGES, NULL);
+#endif
 	std::string lang = gettext("LANG_CODE");
 	if (lang == "LANG_CODE")
 		lang = "";
