@@ -110,8 +110,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 		m_materials[i].MaterialType = video::EMT_SOLID;
 	}
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
-	m_star_params.count = 1;
-	setStarCount(1000);
+	setStarCount(1000, true);
 }
 
 void Sky::OnRegisterSceneNode()
@@ -718,13 +717,11 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	float f = starbrightness;
 	float d = (0.006 / 2) * m_star_params.scale;
 
-	video::SColor starcolor(f * m_star_params.starcolor.getAlpha(),
-		m_star_params.starcolor.getRed(),
-		m_star_params.starcolor.getGreen(),
-		m_star_params.starcolor.getBlue());
+	video::SColor starcolor = m_star_params.starcolor;
+	starcolor.setAlpha(f * m_star_params.starcolor.getAlpha());
 
 	// Stars are only drawn when not fully transparent
-	if (f * m_star_params.starcolor.getAlpha() < 1)
+	if (m_star_params.starcolor.getAlpha() < 1)
 		return;
 #if ENABLE_GLES
 	u16 *indices = new u16[m_star_count * 3];
@@ -915,24 +912,40 @@ void Sky::setMoonTexture(std::string moon_texture,
 	}
 }
 
-void Sky::setStarCount(u16 star_count)
+void Sky::setStarCount(u16 star_count, bool force_update)
 {
+	// Force updating star count at game init.
+	if (force_update) {
+		m_star_params.count = star_count;
+		m_stars.clear();
+		// Rebuild the stars surrounding the camera
+		for (u16 i = 0; i < star_count; i++) {
+			v3f star = v3f(
+				myrand_range(-10000, 10000),
+				myrand_range(-10000, 10000),
+				myrand_range(-10000, 10000)
+			);
+
+			star.normalize();
+			m_stars.emplace_back(star);
+		}
 	// Ignore changing star count if the new value is identical
-	if (m_star_params.count == star_count)
+	} else if (m_star_params.count == star_count)
 		return;
+	else {
+		m_star_params.count = star_count;
+		m_stars.clear();
+		// Rebuild the stars surrounding the camera
+		for (u16 i = 0; i < star_count; i++) {
+			v3f star = v3f(
+				myrand_range(-10000, 10000),
+				myrand_range(-10000, 10000),
+				myrand_range(-10000, 10000)
+			);
 
-	m_star_params.count = star_count;
-	m_stars.clear();
-	// Rebuild the stars surrounding the camera
-	for (u16 i=0; i < star_count; i++) {
-		v3f star = v3f(
-			myrand_range(-10000, 10000),
-			myrand_range(-10000, 10000),
-			myrand_range(-10000, 10000)
-		);
-
-		star.normalize();
-		m_stars.emplace_back(star);
+			star.normalize();
+			m_stars.emplace_back(star);
+		}
 	}
 }
 
@@ -960,7 +973,7 @@ void Sky::addTextureToSkybox(std::string texture, int material_id,
 		ITextureSource *tsrc)
 {
 	// Sanity check for more than six textures.
-	if (material_id > 5)
+	if (material_id + 5 >= SKY_MATERIAL_COUNT)
 		return;
 	// Keep a list of texture names handy.
 	m_sky_params.textures.emplace_back(texture);

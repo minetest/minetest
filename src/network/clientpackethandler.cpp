@@ -1264,8 +1264,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		bool clouds = true;
 		try {
 			skybox.clouds = readU8(is);
-		}
-		catch (...) {}
+		} catch (...) {}
 
 		// Use default skybox settings:
 		SkyboxDefaults sky_defaults;
@@ -1276,6 +1275,9 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		// Fix for "regular" skies, as color isn't kept:
 		if (skybox.type == "regular") {
 			skybox.sky_color = sky_defaults.getSkyColorDefaults();
+			skybox.tint_type = "default";
+			skybox.moon_tint = video::SColor(255, 255, 255, 255);
+			skybox.sun_tint = video::SColor(255, 255, 255, 255);
 		}
 		else {
 			sun.visible = false;
@@ -1285,22 +1287,22 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		}
 
 		// Skybox, sun, moon and stars ClientEvents:
-		ClientEvent* sky_event = new ClientEvent();
+		ClientEvent *sky_event = new ClientEvent();
 		sky_event->type = CE_SET_SKY;
 		sky_event->set_sky = new SkyboxParams(skybox);
 		m_client_event_queue.push(sky_event);
 
-		ClientEvent* sun_event = new ClientEvent();
+		ClientEvent *sun_event = new ClientEvent();
 		sun_event->type = CE_SET_SUN;
 		sun_event->sun_params = new SunParams(sun);
 		m_client_event_queue.push(sun_event);
 
-		ClientEvent* moon_event = new ClientEvent();
+		ClientEvent *moon_event = new ClientEvent();
 		moon_event->type = CE_SET_MOON;
 		moon_event->moon_params = new MoonParams(moon);
 		m_client_event_queue.push(moon_event);
 
-		ClientEvent* star_event = new ClientEvent();
+		ClientEvent *star_event = new ClientEvent();
 		star_event->type = CE_SET_STARS;
 		star_event->star_params = new StarParams(stars);
 		m_client_event_queue.push(star_event);
@@ -1326,7 +1328,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 				>> skybox.sky_color.indoors;
 		}
 
-		ClientEvent* event = new ClientEvent();
+		ClientEvent *event = new ClientEvent();
 		event->type = CE_SET_SKY;
 		event->set_sky = new SkyboxParams(skybox);
 		m_client_event_queue.push(event);

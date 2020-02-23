@@ -324,7 +324,7 @@ private:
 	// hud_get_hotbar_selected_image(self)
 	static int l_hud_get_hotbar_selected_image(lua_State *L);
 
-	// set_sky(self, bgcolor, type, list, clouds = true)
+	// set_sky({base_color=, type=, textures=, clouds=, sky_colors={}})
 	static int l_set_sky(lua_State *L);
 
 	// get_sky(self)
@@ -345,7 +345,7 @@ private:
 	// get_moon(self)
 	static int l_get_moon(lua_State *L);
 
-	// set_stars(self, {visible, count=, starcolor=, rotation, scale=})	
+	// set_stars(self, {visible, count=, starcolor=, rotation, scale=})
 	static int l_set_stars(lua_State *L);
 
 	// get_stars(self)

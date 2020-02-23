@@ -1886,11 +1886,11 @@ int ObjectRef::l_get_sky(lua_State *L)
 }
 
 // get_sky_color(self)
-int ObjectRef::l_get_sky_color(lua_State* L)
+int ObjectRef::l_get_sky_color(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef* ref = checkobject(L, 1);
-	RemotePlayer* player = getplayer(ref);
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
 
 	if (!player)
 		return 0;

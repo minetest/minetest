@@ -75,7 +75,7 @@ public:
 	void setMoonScale(f32 moon_scale) { m_moon_params.scale = moon_scale; }
 
 	void setStarsVisible(bool stars_visible) { m_star_params.visible = stars_visible; }
-	void setStarCount(u16 star_count);
+	void setStarCount(u16 star_count, bool force_update);
 	void setStarColor(video::SColor star_color) { m_star_params.starcolor = star_color; }
 	void setStarScale(f32 star_scale) { m_star_params.scale = star_scale; }
 

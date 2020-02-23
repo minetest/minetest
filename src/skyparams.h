@@ -69,7 +69,8 @@ struct StarParams
 class SkyboxDefaults
 {
 public:
-	const skycolor getSkyColorDefaults() {
+	const skycolor getSkyColorDefaults()
+	{
 		skycolor sky;
 		// Horizon colors
 		sky.day_horizon = video::SColor(255, 155, 193, 240);
@@ -83,7 +84,8 @@ public:
 		return sky;
 	}
 
-	const SunParams getSunDefaults() {
+	const SunParams getSunDefaults()
+	{
 		SunParams sun;
 		sun.visible = true;
 		sun.sunrise_visible = true;
@@ -94,7 +96,8 @@ public:
 		return sun;
 	}
 
-	const MoonParams getMoonDefaults() {
+	const MoonParams getMoonDefaults()
+	{
 		MoonParams moon;
 		moon.visible = true;
 		moon.texture = "moon.png";
@@ -103,7 +106,8 @@ public:
 		return moon;
 	}
 
-	const StarParams getStarDefaults() {
+	const StarParams getStarDefaults()
+	{
 		StarParams stars;
 		stars.count = 1000;
 		stars.starcolor = video::SColor(105, 235, 235, 255);

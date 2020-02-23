@@ -335,12 +335,14 @@ video::SColor read_ARGB8(lua_State *L, int index)
 	return color;
 }
 
-bool is_color_table(lua_State* L, int index)
+bool is_color_table(lua_State *L, int index)
 {
 	// Check whole table in case of missing ColorSpec keys:
 	// This check does not remove the checked value from the stack.
 	// Only update the value if we know we have a valid ColorSpec key pair.
-	if (lua_istable(L, index)) {
+	if (!lua_istable(L, index)) {
+		return false;
+	} else {
 		bool is_color_table = false;
 		lua_getfield(L, index, "r");
 		if (!is_color_table)
@@ -352,8 +354,6 @@ bool is_color_table(lua_State* L, int index)
 		if (!is_color_table)
 			is_color_table = lua_isnumber(L, -1);
 		return is_color_table;
-	} else {
-		return false;
 	}
 }
 

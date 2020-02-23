@@ -608,6 +608,17 @@ enum ToClientCommand
 
 	TOCLIENT_SET_SKY = 0x4f,
 	/*
+		Protocol 38:
+		u8[4] base_color (ARGB)
+		u8 len
+		u8[len] type
+		u16 count
+		foreach count:
+			u8 len
+			u8[len] param
+		u8 clouds (boolean)
+
+		Protocol 39:
 		u8[4] bgcolor (ARGB)
 		std::string type
 		int texture_count
