@@ -389,6 +389,7 @@ private:
 	void parseListRing(parserData* data, const std::string &element);
 	void parseCheckbox(parserData* data, const std::string &element);
 	void parseImage(parserData* data, const std::string &element);
+	void parseVideo(parserData *data, const std::string &element);
 	void parseAnimatedImage(parserData *data, const std::string &element);
 	void parseItemImage(parserData* data, const std::string &element);
 	void parseButton(parserData* data, const std::string &element,

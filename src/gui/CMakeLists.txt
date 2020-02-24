@@ -19,6 +19,7 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiSkin.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiTable.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiHyperText.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/guiVideo.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiVolumeChange.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/intlGUIEditBox.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/modalMenu.cpp

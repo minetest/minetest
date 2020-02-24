@@ -2133,6 +2133,10 @@ Elements
 
 * Show an image
 
+### `video[<X>,<Y>;<W>,<H>;<video name>]`
+
+* Show a video (see FFmpeg supported formats)
+
 ### `animated_image[<X>,<Y>;<W>,<H>;<texture name>:<frame count>,<frame duration>]`
 
 * Show an animated image. The image is drawn like a "vertical_frames" tile

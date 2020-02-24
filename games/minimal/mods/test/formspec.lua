@@ -186,6 +186,8 @@ local pages = {
 			animated_image[0.5,1.75;1,1;test_animation.jpg:4,100]
 			animated_image[3,0.5;5,2;test_animation.png:4,100]
 			animated_image[3,2.75;5,2;test_animation.jpg:4,100]
+			video[3,5;4,4;test_video.ogv]
+			video[3,5;4,4;test_gif.gif]
 		]]
 }
 
