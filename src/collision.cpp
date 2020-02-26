@@ -63,7 +63,7 @@ struct NearbyCollisionInfo {
 // The time after which the collision occurs is stored in dtime.
 CollisionAxis axisAlignedCollision(
 		const aabb3f &staticbox, const aabb3f &movingbox,
-		const v3f &speed, const f32 &dtime_max, f32 *dtime)
+		const v3f &speed, f32 *dtime)
 {
 	//TimeTaker tt("axisAlignedCollision");
 
@@ -76,6 +76,7 @@ CollisionAxis axisAlignedCollision(
 			std::max(movingbox.MaxEdge.Z, staticbox.MaxEdge.Z) - std::min(movingbox.MinEdge.Z, staticbox.MinEdge.Z)
 	);
 
+	const f32 dtime_max = *dtime;
 	const f32 inner_margin = -1.5f;
 	f32 distance;
 	f32 time;
@@ -450,9 +451,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				continue;
 
 			// Find nearest collision of the two boxes (raytracing-like)
-			f32 dtime_tmp;
+			f32 dtime_tmp = nearest_dtime;
 			CollisionAxis collided = axisAlignedCollision(box_info.box,
-					movingbox, *speed_f, dtime, &dtime_tmp);
+					movingbox, *speed_f, &dtime_tmp);
 
 			if (collided == -1 || dtime_tmp >= nearest_dtime)
 				continue;
