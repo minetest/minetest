@@ -1224,21 +1224,9 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 			player->hud_hotbar_itemcount = hotbar_itemcount;
 	}
 	else if (param == HUD_PARAM_HOTBAR_IMAGE) {
-		// If value not empty verify image exists in texture source
-		if (!value.empty() && !getTextureSource()->isKnownSourceImage(value)) {
-			errorstream << "Server sent wrong Hud hotbar image (sent value: '"
-				<< value << "')" << std::endl;
-			return;
-		}
 		player->hotbar_image = value;
 	}
 	else if (param == HUD_PARAM_HOTBAR_SELECTED_IMAGE) {
-		// If value not empty verify image exists in texture source
-		if (!value.empty() && !getTextureSource()->isKnownSourceImage(value)) {
-			errorstream << "Server sent wrong Hud hotbar selected image (sent value: '"
-					<< value << "')" << std::endl;
-			return;
-		}
 		player->hotbar_selected_image = value;
 	}
 }
