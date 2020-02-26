@@ -2252,7 +2252,7 @@ Elements
   an inventory slot.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
-* Displays a static formated text with hyperlinks.
+* Displays a static formatted text with hyperlinks.
 * `x`, `y`, `w` and `h` work as per field
 * `name` is the name of the field as returned in fields to `on_receive_fields` in case of action in text.
 * `text` is the formatted text using `markup language` described below.
