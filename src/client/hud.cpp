@@ -373,11 +373,10 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				// item = precision + 1
 				float precision;
 				u32 item = e->item;
-				if (item == 0) {
+				if (item == 0)
 					precision = 10.0f;
-				} else {
+				else
 					precision = item - 1;
-				}
 
 				if (precision > 0) {
 					std::ostringstream os;
