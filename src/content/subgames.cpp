@@ -310,8 +310,7 @@ bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 
 	// If we're creating a new world, ensure that the path isn't already taken
 	int counter = 1;
-	while(mustCreateNew && fs::PathExists(final_path) && counter < 100)
-	{
+	while(mustCreateNew && fs::PathExists(final_path) && counter < 100) {
 		final_path = path + "_" + std::to_string(counter);
 		counter++;
 	}

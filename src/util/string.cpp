@@ -896,7 +896,7 @@ std::wstring translate_string(const std::wstring &s)
 std::string sanitizeDirName(const std::string &str)
 {
 	std::string tmp = str;
-	for(ulong i = 0; i < str.length(); i++) {
+	for(unsigned long i = 0; i < str.length(); i++) {
 		if (tmp[i] < '0'
 				|| (tmp[i] > '9' && tmp[i] < 'A')
 				|| (tmp[i] > 'Z' && tmp[i] < 'a')
