@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2019-12-16 22:21+0000\n"
-"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
+"PO-Revision-Date: 2020-03-01 19:51+0000\n"
+"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -160,11 +160,11 @@ msgstr "Ĉiuj pakaĵoj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
-msgstr "Reen"
+msgstr "Reeniri"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "Reen al ĉefmenuo"
+msgstr "Reeniri al ĉefmenuo"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading and installing $1, please wait..."
@@ -527,7 +527,7 @@ msgstr "Enlistigi servilon"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr "Asocianta adreso"
+msgstr "Asocii adreso"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
