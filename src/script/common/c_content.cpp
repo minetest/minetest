@@ -68,6 +68,8 @@ void read_item_definition(lua_State* L, int index,
 	read_color(L, -1, &def.color);
 	lua_pop(L, 1);
 
+	def.light_source = getintfield_default(L, index, "light_source", def.light_source);
+
 	lua_getfield(L, index, "wield_scale");
 	if(lua_istable(L, -1)){
 		def.wield_scale = check_v3f(L, -1);

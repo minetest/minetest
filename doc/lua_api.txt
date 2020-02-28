@@ -7340,7 +7340,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         light_source = 0,
         -- When used for nodes: Defines amount of light emitted by node.
-        -- Otherwise: Defines texture glow when viewed as a dropped item
+        -- Otherwise: Defines texture glow when viewed as a dropped/wielded item
         -- To set the maximum (14), use the value 'minetest.LIGHT_MAX'.
         -- A value outside the range 0 to minetest.LIGHT_MAX causes undefined
         -- behavior.

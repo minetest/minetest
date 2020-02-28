@@ -68,6 +68,7 @@ struct ItemDefinition
 	std::string palette_image; // If specified, the item will be colorized based on this
 	video::SColor color; // The fallback color of the node.
 	v3f wield_scale;
+	u8 light_source;
 
 	/*
 		Item stack and interaction properties

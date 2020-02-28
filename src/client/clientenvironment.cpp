@@ -296,7 +296,17 @@ void ClientEnvironment::step(float dtime)
 		node_at_lplayer = m_map->getNode(p);
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
+
+		ItemStack wielditem;
+		wielditem = lplayer->getWieldedItem(&wielditem, nullptr);
+		ItemDefinition wielddef = wielditem.getDefinition(m_client->getItemDefManager());
+
+		u8 wieldlight = decode_light(wielddef.light_source);
+
 		final_color_blend(&lplayer->light_color, light, day_night_ratio);
+
+		if (wielddef.light_source > 0 && wieldlight > lplayer->light_color.getLuminance())
+			lplayer->light_color = irr::video::SColor(255,wieldlight,wieldlight,wieldlight);
 	}
 
 	/*

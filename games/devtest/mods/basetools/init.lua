@@ -312,11 +312,12 @@ minetest.register_tool("basetools:sword_steel", {
 	}
 })
 
--- Fire/Ice sword: Deal damage to non-fleshy damage groups
+-- Fire/Ice sword: Deal damage to non-fleshy damage groups and glow
 minetest.register_tool("basetools:sword_fire", {
 	description = "Fire Sword".."\n"..
 		"Damage: icy=6",
 	inventory_image = "basetools_firesword.png",
+	light_source = 10,
 	tool_capabilities = {
 		full_punch_interval = 1.0,
 		max_drop_level=0,
