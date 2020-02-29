@@ -2870,6 +2870,14 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns the dot product of `v1` and `v2`
 * `vector.cross(v1, v2)`
     * Returns the cross product of `v1` and `v2`
+* `vector.offset(v, x, y, z)`
+    * Returns a vector offset along three axes from the starting vector.
+    * This is a less verbose alternative to `vector.add` in which a vector must
+      be supplied as the second argument.
+* `vector.offset_y(v, y)`
+    * Returns a vector offset along the y-axis from the starting vector.
+    * This is a convenient shorthand for `vector.offset` with zero offset for
+      both horizontal axes.
 
 For the following functions `x` can be either a vector or a number:
 
@@ -2909,6 +2917,8 @@ Helper functions
     * If the absolute value of `x` is within the `tolerance` or `x` is NaN,
       `0` is returned.
 * `math.factorial(x)`: returns the factorial of `x`
+* `math.clamp(v, min, max)`: returns the numeric value clamped to the lower
+  and upper boundaries.
 * `string.split(str, separator, include_empty, max_splits, sep_is_pattern)`
     * `separator`: string, default: `","`
     * `include_empty`: boolean, default: `false`

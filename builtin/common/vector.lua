@@ -141,3 +141,11 @@ function vector.sort(a, b)
 	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},
 		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
 end
+
+function vector.offset(pos, x, y, z)
+        return {x = pos.x + x, y = pos.y + y, z = pos.z + z}
+end
+
+function vector.offset_y(pos, y)
+        return {x = pos.x, y = pos.y + ( y or 1 ), z = pos.z}
+end

@@ -255,6 +255,11 @@ function math.factorial(x)
 end
 
 --------------------------------------------------------------------------------
+function math.clamp(v, min, max)
+        return v < min and min or v > max and max or v
+end
+
+--------------------------------------------------------------------------------
 function get_last_folder(text,count)
 	local parts = text:split(DIR_DELIM)
 
