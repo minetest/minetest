@@ -1,12 +1,19 @@
 -- Minetest: builtin/item_entity.lua
 
-function core.spawn_item(pos, item)
+function core.spawn_item(pos, item, horz, vert)
 	-- Take item in any format
 	local stack = ItemStack(item)
 	local obj = core.add_entity(pos, "__builtin:item")
+
 	-- Don't use obj if it couldn't be added to the map.
 	if obj then
 		obj:get_luaentity():set_item(stack:to_string())
+
+		if horz then
+			obj:set_velocity(vector.new(
+				math.random(-horz, horz), vert or 0, math.random(-horz, horz)
+			))
+		end
 	end
 	return obj
 end

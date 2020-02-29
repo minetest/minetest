@@ -4461,6 +4461,11 @@ Environment access
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
+* `minetest.spawn_item(pos, item, horz, vert)`
+    * Same as `add_item, but with an optional spontaneous velocity applied
+    * `horz` is the maximum velocity along both horizontal axes.
+    * `vert` is the vertical velocity, which may be negative for downward or
+      positive for upward
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
 * `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
   ObjectRefs.
