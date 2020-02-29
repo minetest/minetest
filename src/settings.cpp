@@ -1048,6 +1048,30 @@ void Settings::setDefault(const std::string &name, const FlagDesc *flagdesc,
 	setDefault(name, writeFlagString(flags, flagdesc, U32_MAX));
 }
 
+void Settings::overrideDefaults(Settings *other)
+{
+	for (const auto &setting : other->m_settings) {
+		if (setting.second.is_group) {
+			setGroupDefault(setting.first, setting.second.group);
+			continue;
+		}
+		const FlagDesc *flagdesc = getFlagDescFallback(setting.first);
+		if (flagdesc) {
+			// Flags cannot be copied directly.
+			// 1) Get the current set flags
+			u32 flags = getFlagStr(setting.first, flagdesc, nullptr);
+			// 2) Set the flags as defaults
+			other->setDefault(setting.first, flagdesc, flags);
+			// 3) Get the newly set flags and override the default setting value
+			setDefault(setting.first, flagdesc,
+				other->getFlagStr(setting.first, flagdesc, nullptr));
+			continue;
+		}
+		// Also covers FlagDesc settings
+		setDefault(setting.first, setting.second.value);
+	}
+}
+
 const FlagDesc *Settings::getFlagDescFallback(const std::string &name) const
 {
 	auto it = m_flags.find(name);

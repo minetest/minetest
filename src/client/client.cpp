@@ -1106,7 +1106,7 @@ void Client::sendRemovedSounds(std::vector<s32> &soundList)
 
 	pkt << (u16) (server_ids & 0xFFFF);
 
-	for (int sound_id : soundList)
+	for (s32 sound_id : soundList)
 		pkt << sound_id;
 
 	Send(&pkt);
@@ -1860,7 +1860,7 @@ ITextureSource* Client::getTextureSource()
 {
 	return m_tsrc;
 }
-IShaderSource* Client::getShaderSource()
+IWritableShaderSource* Client::getShaderSource()
 {
 	return m_shsrc;
 }

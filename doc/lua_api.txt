@@ -826,7 +826,7 @@ Examples of sound parameter tables:
         gain = 1.0,  -- default
         loop = true,
     }
-    -- Play in a location
+    -- Play at a location
     {
         pos = {x = 1, y = 2, z = 3},
         gain = 1.0,  -- default
@@ -839,12 +839,21 @@ Examples of sound parameter tables:
         max_hear_distance = 32,  -- default, uses an euclidean metric
         loop = true,
     }
+    -- Play at a location, heard by anyone *but* the given player
+    {
+        pos = {x = 32, y = 0, z = 100},
+        max_hear_distance = 40,
+        exclude_player = name,
+    }
 
 Looped sounds must either be connected to an object or played locationless to
-one player using `to_player = name,`.
+one player using `to_player = name`.
 
 A positional sound will only be heard by players that are within
 `max_hear_distance` of the sound position, at the start of the sound.
+
+`exclude_player = name` can be applied to locationless, positional and object-
+bound sounds to exclude a single player from hearing them.
 
 `SimpleSoundSpec`
 -----------------
@@ -939,7 +948,8 @@ Node paramtypes
 The functions of `param1` and `param2` are determined by certain fields in the
 node definition.
 
-`param1` is reserved for the engine when `paramtype != "none"`:
+The function of `param1` is determined by `paramtype` in node definition.
+`param1` is reserved for the engine when `paramtype != "none"`.
 
 * `paramtype = "light"`
     * The value stores light with and without sun in its upper and lower 4 bits
@@ -956,19 +966,27 @@ node definition.
         * mesh
         * plantlike
         * plantlike_rooted
+* `paramtype = "none"`
+    * `param1` will not be used by the engine and can be used to store
+      an arbitrary value
 
-`param2` is reserved for the engine when any of these are used:
+The function of `param2` is determined by `paramtype2` in node definition.
+`param2` is reserved for the engine when `paramtype2 != "none"`.
 
-* `liquidtype = "flowing"`
-    * The level and some flags of the liquid is stored in `param2`
-* `drawtype = "flowingliquid"`
-    * The drawn liquid level is read from `param2`
-* `drawtype = "torchlike"`
-* `drawtype = "signlike"`
+* `paramtype2 = "flowingliquid"`
+    * Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
+    * The liquid level and a flag of the liquid are stored in `param2`
+    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node
+    * Bit 3: If set, liquid is flowing downwards (no graphical effect)
 * `paramtype2 = "wallmounted"`
-    * The rotation of the node is stored in `param2`. You can make this value
-      by using `minetest.dir_to_wallmounted()`.
+    * Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
+    * The rotation of the node is stored in `param2`
+    * You can make this value by using `minetest.dir_to_wallmounted()`
+    * Values range 0 - 5
+    * The value denotes at which direction the node is "mounted":
+      0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
 * `paramtype2 = "facedir"`
+    * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`. Furnaces and chests are
       rotated this way. Can be made by using `minetest.dir_to_facedir()`.
     * Values range 0 - 23
@@ -987,13 +1005,13 @@ node definition.
             * The height of the 'plantlike' section is stored in `param2`.
             * The height is (`param2` / 16) nodes.
 * `paramtype2 = "degrotate"`
-    * Only valid for "plantlike". The rotation of the node is stored in
+    * Only valid for "plantlike" drawtype. The rotation of the node is stored in
       `param2`.
     * Values range 0 - 179. The value stored in `param2` is multiplied by two to
       get the actual rotation in degrees of the node.
 * `paramtype2 = "meshoptions"`
-    * Only valid for "plantlike". The value of `param2` becomes a bitfield which
-      can be used to change how the client draws plantlike nodes.
+    * Only valid for "plantlike" drawtype. The value of `param2` becomes a
+      bitfield which can be used to change how the client draws plantlike nodes.
     * Bits 0, 1 and 2 form a mesh selector.
       Currently the following meshes are choosable:
         * 0 = a "x" shaped plant (ordinary plant)
@@ -1025,6 +1043,9 @@ node definition.
     * `param2` values 0-63 define 64 levels of internal liquid, 0 being empty
       and 63 being full.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
+* `paramtype2 = "none"`
+    * `param2` will not be used by the engine and can be used to store
+      an arbitrary value
 
 Nodes can also contain extra data. See [Node Metadata].
 
@@ -1946,8 +1967,6 @@ For coloured text you can use `minetest.colorize`.
 
 Since formspec version 3, elements drawn in the order they are defined. All
 background elements are drawn before all other elements.
-`list` elements are an exception here. They are drawn last. This, however, might
-be changed at any time.
 
 **WARNING**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
@@ -2058,7 +2077,6 @@ Elements
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot.
-* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
@@ -2066,7 +2084,6 @@ Elements
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot.
-* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2115,6 +2132,15 @@ Elements
 ### `image[<X>,<Y>;<W>,<H>;<texture name>]`
 
 * Show an image
+
+### `animated_image[<X>,<Y>;<W>,<H>;<texture name>:<frame count>,<frame duration>]`
+
+* Show an animated image. The image is drawn like a "vertical_frames" tile
+    animation (See Tile animation definition), but uses a frame count/duration
+    for simplicity
+* `<texture name>` is the image to use
+* `<frame count>` is the number of frames animating the image
+* `<frame duration>` is in milliseconds
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
@@ -2226,7 +2252,7 @@ Elements
   an inventory slot.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
-* Displays a static formated text with hyperlinks.
+* Displays a static formatted text with hyperlinks.
 * `x`, `y`, `w` and `h` work as per field
 * `name` is the name of the field as returned in fields to `on_receive_fields` in case of action in text.
 * `text` is the formatted text using `markup language` described below.
@@ -2563,6 +2589,8 @@ Some types may inherit styles from parent types.
 
 ### Valid Properties
 
+* animated_image
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * box
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher
@@ -2929,6 +2957,13 @@ Helper functions
       find new indices.
 * `table.key_value_swap(t)`: returns a table with keys and values swapped
     * If multiple keys in `t` map to the same value, the result is undefined.
+* `table.shuffle(table, [from], [to], [random_func])`:
+    * Shuffles elements `from` to `to` in `table` in place
+    * `from` defaults to `1`
+    * `to` defaults to `#table`
+    * `random_func` defaults to `math.random`. This function receives two
+      integers as arguments and should return a random integer inclusively
+      between them.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
@@ -3711,7 +3746,7 @@ Methods
 -----------
 
 A helper class for voxel areas.
-It can be created via `VoxelArea:new{MinEdge=pmin, MaxEdge=pmax}`.
+It can be created via `VoxelArea:new{MinEdge = pmin, MaxEdge = pmax}`.
 The coordinates are *inclusive*, like most other things in Minetest.
 
 ### Methods
@@ -3741,6 +3776,28 @@ The coordinates are *inclusive*, like most other things in Minetest.
     * from (`minx`,`miny`,`minz`) to (`maxx`,`maxy`,`maxz`) in the order of
       `[z [y [x]]]`.
 * `iterp(minp, maxp)`: same as above, except takes a vector
+
+### Y stride and z stride of a flat array
+
+For a particular position in a voxel area, whose flat array index is known,
+it is often useful to know the index of a neighboring or nearby position.
+The table below shows the changes of index required for 1 node movements along
+the axes in a voxel area:
+
+    Movement    Change of index
+    +x          +1
+    -x          -1
+    +y          +ystride
+    -y          -ystride
+    +z          +zstride
+    -z          -zstride
+
+If, for example:
+
+    local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
+
+The values of `ystride` and `zstride` can be obtained using `area.ystride` and
+`area.zstride`.
 
 
 
@@ -4086,6 +4143,9 @@ Call these functions only at load time!
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
+    * Warning: This alters the biome to biome ID correspondences, so any
+      decorations or ores using the 'biomes' field must afterwards be cleared
+      and re-registered.
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer object handle uniquely identifying the registered
       decoration on success. To get the decoration ID, use
@@ -4100,12 +4160,15 @@ Call these functions only at load time!
     * If the function is called when loading the mod, and `name` is a relative
       path, then the current mod path will be prepended to the schematic
       filename.
-* `minetest.clear_registered_ores()`
-    * Clears all ores currently registered.
 * `minetest.clear_registered_biomes()`
     * Clears all biomes currently registered.
+    * Warning: Clearing and re-registering biomes alters the biome to biome ID
+      correspondences, so any decorations or ores using the 'biomes' field must
+      afterwards be cleared and re-registered.
 * `minetest.clear_registered_decorations()`
     * Clears all decorations currently registered.
+* `minetest.clear_registered_ores()`
+    * Clears all ores currently registered.
 * `minetest.clear_registered_schematics()`
     * Clears all schematics currently registered.
 
@@ -4926,10 +4989,15 @@ Defaults for the `on_punch` and `on_dig` node definition callbacks
 Sounds
 ------
 
-* `minetest.sound_play(spec, parameters)`: returns a handle
+* `minetest.sound_play(spec, parameters, [ephemeral])`: returns a handle
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
+    * `ephemeral` is a boolean (default: false)
+      Ephemeral sounds will not return a handle and can't be stopped or faded.
+      It is recommend to use this for short sounds that happen in response to
+      player actions (e.g. door closing).
 * `minetest.sound_stop(handle)`
+    * `handle` is a handle returned by `minetest.sound_play`
 * `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
@@ -5638,8 +5706,21 @@ Can be gotten via `minetest.get_node_timer(pos)`.
 -----------
 
 Moving things in the game are generally these.
+This is basically a reference to a C++ `ServerActiveObject`.
 
-This is basically a reference to a C++ `ServerActiveObject`
+### Advice on handling `ObjectRefs`
+
+When you receive an `ObjectRef` as a callback argument or from another API
+function, it is possible to store the reference somewhere and keep it around.
+It will keep functioning until the object is unloaded or removed.
+
+However, doing this is **NOT** recommended as there is (intentionally) no method
+to test if a previously acquired `ObjectRef` is still valid.
+Instead, `ObjectRefs` should be "let go" of as soon as control is returned from
+Lua back to the engine.
+Doing so is much less error-prone and you will never need to wonder if the
+object you are working with still exists.
+
 
 ### Methods
 
@@ -5710,7 +5791,10 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 #### Lua entity only (no-op for other objects)
 
-* `remove()`: remove object (after returning from Lua)
+* `remove()`: remove object
+    * The object is removed after returning from Lua. However the `ObjectRef`
+      itself instantly becomes unusable with all further method calls having
+      no effect and returning `nil`.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `add_velocity(vel)`

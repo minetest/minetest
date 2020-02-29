@@ -135,7 +135,27 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 	lua_remove(L, error_handler);
 }
 
-void log_deprecated(lua_State *L, const std::string &message)
+static void script_log(lua_State *L, const std::string &message,
+	std::ostream &log_to, bool do_error, int stack_depth)
+{
+	lua_Debug ar;
+
+	log_to << message << " ";
+	if (lua_getstack(L, stack_depth, &ar)) {
+		FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
+		log_to << "(at " << ar.short_src << ":" << ar.currentline << ")";
+	} else {
+		log_to << "(at ?:?)";
+	}
+	log_to << std::endl;
+
+	if (do_error)
+		script_error(L, LUA_ERRRUN, NULL, NULL);
+	else
+		infostream << script_get_backtrace(L) << std::endl;
+}
+
+void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
 {
 	static bool configured = false;
 	static bool do_log     = false;
@@ -152,24 +172,6 @@ void log_deprecated(lua_State *L, const std::string &message)
 		}
 	}
 
-	if (do_log) {
-		warningstream << message;
-		if (L) { // L can be NULL if we get called from scripting_game.cpp
-			lua_Debug ar;
-
-			if (!lua_getstack(L, 2, &ar))
-				FATAL_ERROR_IF(!lua_getstack(L, 1, &ar), "lua_getstack() failed");
-			FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
-			warningstream << " (at " << ar.short_src << ":" << ar.currentline << ")";
-		}
-		warningstream << std::endl;
-
-		if (L) {
-			if (do_error)
-				script_error(L, LUA_ERRRUN, NULL, NULL);
-			else
-				infostream << script_get_backtrace(L) << std::endl;
-		}
-	}
+	if (do_log)
+		script_log(L, message, warningstream, do_error, stack_depth);
 }
-

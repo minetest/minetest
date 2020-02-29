@@ -1019,6 +1019,7 @@ void read_server_sound_params(lua_State *L, int index,
 		params.max_hear_distance = BS*getfloatfield_default(L, index,
 				"max_hear_distance", params.max_hear_distance/BS);
 		getboolfield(L, index, "loop", params.loop);
+		getstringfield(L, index, "exclude_player", params.exclude_player);
 	}
 }
 

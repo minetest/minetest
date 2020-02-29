@@ -103,4 +103,6 @@ int script_exception_wrapper(lua_State *L, lua_CFunction f);
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 void script_run_callbacks_f(lua_State *L, int nargs,
 	RunCallbacksMode mode, const char *fxn);
-void log_deprecated(lua_State *L, const std::string &message);
+
+void log_deprecated(lua_State *L, const std::string &message,
+	int stack_depth=1);

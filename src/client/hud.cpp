@@ -221,19 +221,13 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	// Store hotbar_image in member variable, used by drawItem()
 	if (hotbar_image != player->hotbar_image) {
 		hotbar_image = player->hotbar_image;
-		if (!hotbar_image.empty())
-			use_hotbar_image = tsrc->isKnownSourceImage(hotbar_image);
-		else
-			use_hotbar_image = false;
+		use_hotbar_image = !hotbar_image.empty();
 	}
 
 	// Store hotbar_selected_image in member variable, used by drawItem()
 	if (hotbar_selected_image != player->hotbar_selected_image) {
 		hotbar_selected_image = player->hotbar_selected_image;
-		if (!hotbar_selected_image.empty())
-			use_hotbar_selected_image = tsrc->isKnownSourceImage(hotbar_selected_image);
-		else
-			use_hotbar_selected_image = false;
+		use_hotbar_selected_image = !hotbar_selected_image.empty();
 	}
 
 	// draw customized item background
