@@ -67,7 +67,7 @@ core.register_on_chat_message(function(name, message)
 	if has_privs then
 		core.set_last_run_mod(cmd_def.mod_origin)
 		local success, result = cmd_def.func(name, param)
-		if success == false and result == "/help" then
+		if success == false and result == nil then
 			core.chat_send_player(name, "-!- Invalid command usage")
 			local help_def = core.registered_chatcommands["help"]
 			local _, helpmsg = help_def.func(name, cmd)
