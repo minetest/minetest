@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2020-02-23 20:32+0000\n"
-"Last-Translator: An0n3m0us <an0n3m0us@hotmail.com>\n"
+"PO-Revision-Date: 2020-03-01 19:51+0000\n"
+"Last-Translator: abidin toumi <abidin24@disroot.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
 "ar/>\n"
 "Language: ar\n"
@@ -779,7 +779,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr ""
+msgstr "سوائل متموجة"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -787,19 +787,20 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
-msgstr ""
+msgstr "نعم"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
 msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
 msgid "Main"
-msgstr ""
+msgstr "الرئيسية"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr ""
+msgstr "إلعب فرديا"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -807,15 +808,15 @@ msgstr "انتهت مهلة الاتصال."
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "تم!"
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "تحضير العقد"
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "تحضير العقد..."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
@@ -827,19 +828,20 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "خطأ في الاتصال (انتهاء المهلة؟)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "لا يمكن إيجاد أو تحميل لعبة \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
 msgstr ""
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Main Menu"
-msgstr ""
+msgstr "القائمة الرئيسية"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
@@ -847,11 +849,11 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "إسم اللاعب طويل."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "يرجى اختيار اسم!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
