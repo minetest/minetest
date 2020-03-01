@@ -1,18 +1,9 @@
 local color = minetest.colorize
 
 local clip_fs = [[
-	style_type[label;noclip=%c]
-	style_type[button;noclip=%c]
-	style_type[image_button;noclip=%c]
-	style_type[item_image_button;noclip=%c]
-	style_type[tabheader;noclip=%c]
-	style_type[field;noclip=%c]
-	style_type[textarea;noclip=%c]
-	style_type[checkbox;noclip=%c]
-	style_type[dropdown;noclip=%c]
-	style_type[scrollbar;noclip=%c]
-	style_type[table;noclip=%c]
-	style_type[animated_image;noclip=%c]
+	style_type[label,button,image_button,item_image_button,
+			tabheader,scrollbar,table,animated_image
+			,field,textarea,checkbox,dropdown;noclip=%c]
 
 	label[0,0;A clipping test]
 	button[0,1;3,0.8;x;A clipping test]
