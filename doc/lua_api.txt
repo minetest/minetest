@@ -2495,16 +2495,16 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-### `style[<name>;<prop1>;<prop2>;...]`
+### `style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]`
 
-* Set the style for the named element `name`.
+* Set the style for the named element(s) `name`.
 * Note: this **must** be before the element is defined.
 * See [Styling Formspecs].
 
 
-### `style_type[<type>;<prop1>;<prop2>;...]`
+### `style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]`
 
-* Sets the style for all elements of type `type` which appear after this element.
+* Sets the style for all elements of type(s) `type` which appear after this element.
 * See [Styling Formspecs].
 
 Migrating to Real Coordinates
@@ -2547,12 +2547,17 @@ Styling Formspecs
 
 Formspec elements can be themed using the style elements:
 
-    style[<name>;<prop1>;<prop2>;...]
-    style_type[<type>;<prop1>;<prop2>;...]
+    style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]
+    style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]
 
 Where a prop is:
 
     property_name=property_value
+
+A name/type can optionally be a comma separated list of names/types, like so:
+
+    world_delete,world_create,world_configure
+    button,image_button
 
 For example:
 

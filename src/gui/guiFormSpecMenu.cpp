@@ -2450,13 +2450,6 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 		return false;
 	}
 
-	std::string selector = trim(parts[0]);
-	if (selector.empty()) {
-		errorstream << "Invalid style element (Selector required): '" << element
-					<< "'" << std::endl;
-		return false;
-	}
-
 	StyleSpec spec;
 
 	for (size_t i = 1; i < parts.size(); i++) {
@@ -2486,10 +2479,21 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 		spec.set(prop, value);
 	}
 
-	if (style_type) {
-		theme_by_type[selector] |= spec;
-	} else {
-		theme_by_name[selector] |= spec;
+	std::vector<std::string> selectors = split(parts[0], ',');
+	for (size_t sel = 0; sel < selectors.size(); sel++) {
+		std::string selector = trim(selectors[sel]);
+
+		if (selector.empty()) {
+			errorstream << "Invalid style element (Empty selector): '" << element
+				<< "'" << std::endl;
+			continue;
+		}
+
+		if (style_type) {
+			theme_by_type[selector] |= spec;
+		} else {
+			theme_by_name[selector] |= spec;
+		}
 	}
 
 	return true;
