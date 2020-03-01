@@ -276,8 +276,8 @@ public:
 		m_sound(sound),
 		m_ndef(ndef),
 		makes_footstep_sound(true),
-		m_player_step_timer(0),
-		m_player_jump_timer(0)
+		m_player_step_timer(0.0f),
+		m_player_jump_timer(0.0f)
 	{
 	}
 
@@ -292,9 +292,9 @@ public:
 
 	void playPlayerJump()
 	{
-		if (m_player_jump_timer <= 0) {
-			m_player_jump_timer = 0.2;
-			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5), false);
+		if (m_player_jump_timer <= 0.0f) {
+			m_player_jump_timer = 0.2f;
+			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f), false);
 		}
 	}
 
