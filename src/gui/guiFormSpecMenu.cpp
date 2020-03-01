@@ -2504,14 +2504,16 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 	for (size_t sel = 0; sel < selectors.size(); sel++) {
 		std::string selector = trim(selectors[sel]);
 
+		// Copy the style properties to a new StyleSpec
+		// This allows a separate state mask per-selector
 		StyleSpec selector_spec = spec;
 
 		// Parse state information, if it exists
 		bool state_valid = true;
-		size_t state_pos = parts[0].find(':');
+		size_t state_pos = selector.find(':');
 		if (state_pos != std::string::npos) {
+			std::string state_str = selector.substr(state_pos + 1);
 			selector = selector.substr(0, state_pos);
-			std::string state_str = parts[0].substr(state_pos + 1);
 
 			if (state_str.empty()) {
 				errorstream << "Invalid style element (Invalid state): '" << element
