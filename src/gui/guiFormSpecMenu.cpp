@@ -4516,30 +4516,28 @@ StyleSpec GUIFormSpecMenu::getDefaultStyleForElement(const std::string &type,
 }
 
 std::array<StyleSpec, StyleSpec::NUM_STATES> GUIFormSpecMenu::getStyleForElement(const std::string &type,
-		const std::string &name, const std::string &parent_type) {
+		const std::string &name, const std::string &parent_type)
+{
 	std::array<StyleSpec, StyleSpec::NUM_STATES> ret;
 
 	if (!parent_type.empty()) {
 		auto it = theme_by_type.find(parent_type);
 		if (it != theme_by_type.end()) {
-			for(const StyleSpec &spec : it->second) {
+			for (const StyleSpec &spec : it->second)
 				ret[(u32)spec.getState()] |= spec;
-			}
 		}
 	}
 
 	auto it = theme_by_type.find(type);
 	if (it != theme_by_type.end()) {
-		for(const StyleSpec &spec : it->second) {
+		for (const StyleSpec &spec : it->second)
 			ret[(u32)spec.getState()] |= spec;
-		}
 	}
 
 	it = theme_by_name.find(name);
 	if (it != theme_by_name.end()) {
-		for(const StyleSpec &spec : it->second) {
+		for (const StyleSpec &spec : it->second)
 			ret[(u32)spec.getState()] |= spec;
-		}
 	}
 
 	return ret;
