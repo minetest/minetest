@@ -3981,6 +3981,8 @@ Utilities
           formspec_version_element = true,
           -- Whether AreaStore's IDs are kept on save/load (5.1.0)
           area_store_persistent_ids = true,
+          -- Whether minetest.find_path is functional (5.2.0)
+          pathfinder_works = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
