@@ -1042,14 +1042,15 @@ bool Pathfinder::updateAllCosts(v3s16 ipos,
 
 	bool retval = false;
 
-	std::vector<v3s16> directions;
+	// the 4 cardinal directions
+	const static v3s16 directions[4] = {
+		v3s16(1,0, 0),
+		v3s16(-1,0, 0),
+		v3s16(0,0, 1),
+		v3s16(0,0,-1)
+	};
 
-	directions.emplace_back(1,0, 0);
-	directions.emplace_back(-1,0, 0);
-	directions.emplace_back(0,0, 1);
-	directions.emplace_back(0,0,-1);
-
-	for (v3s16 &direction : directions) {
+	for (v3s16 direction : directions) {
 		if (direction != srcdir) {
 			PathCost cost = g_pos.getCost(direction);
 
@@ -1137,11 +1138,12 @@ bool Pathfinder::updateCostHeuristic(v3s16 isource, v3s16 idestination)
 	openList.push(source);
 
 	// the 4 cardinal directions
-	std::vector<v3s16> directions;
-	directions.emplace_back(1,0, 0);
-	directions.emplace_back(-1,0, 0);
-	directions.emplace_back(0,0, 1);
-	directions.emplace_back(0,0,-1);
+	const static v3s16 directions[4] = {
+		v3s16(1,0, 0),
+		v3s16(-1,0, 0),
+		v3s16(0,0, 1),
+		v3s16(0,0,-1)
+	};
 
 	v3s16 current_pos;
 	PathGridnode& s_pos = getIndexElement(isource);
@@ -1180,7 +1182,7 @@ bool Pathfinder::updateCostHeuristic(v3s16 isource, v3s16 idestination)
 		}
 
 		// for this node, check the 4 cardinal directions
-		for (v3s16 &direction_flat : directions) {
+		for (v3s16 direction_flat : directions) {
 			int current_totalcost = g_pos.totalcost;
 
 			// get cost from current node to currently checked direction
@@ -1220,9 +1222,7 @@ bool Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 ipos)
 {
 	// The cost calculation should have set a source direction for all relevant nodes.
 	// To build the path, we go backwards from the destination until we reach the start.
-	unsigned int waypoints = 0;
-	while (true) {
-		waypoints++;
+	for(u32 waypoints = 1; waypoints++; ) {
 		if (waypoints > PATHFINDER_MAX_WAYPOINTS) {
 			ERROR_TARGET << "Pathfinder: buildPath: path is too long (too many waypoints), aborting" << std::endl;
 			return false;
@@ -1243,6 +1243,9 @@ bool Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 ipos)
 		// go to the node from which the pathfinder came
 		ipos += g_pos.sourcedir;
 	}
+
+	ERROR_TARGET << "Pathfinder: buildPath: no source node found" << std::endl;
+	return false;
 }
 
 /******************************************************************************/
@@ -1265,7 +1268,9 @@ v3s16 Pathfinder::walkDownwards(v3s16 pos, unsigned int max_down) {
 	if ((testpos.Y >= m_limits.MinEdge.Y) &&
 			(node_at_pos.param0 != CONTENT_IGNORE) &&
 			(ndef->get(node_at_pos).walkable)) {
-		if ((down - 1) <= max_down) {
+		if (down == 0) {
+			pos = testpos;
+		} else if ((down - 1) <= max_down) {
 			//difference of y-pos +1 (target node is ABOVE solid node)
 			testpos += v3s16(0, 1, 0);
 			pos = testpos;
