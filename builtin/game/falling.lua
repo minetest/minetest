@@ -96,6 +96,25 @@ core.register_entity(":__builtin:falling_node", {
 				textures = textures,
 				glow = def.light_source,
 			})
+		elseif def.drawtype == "plantlike_rooted" then
+			-- This renders the "base cube" but not the plant
+			if def.tiles then
+				local textures = {}
+				local tile
+				for i=1, 6 do
+					if def.tiles[i] then
+						tile = def.tiles[i]
+					end
+					textures[i] = tile
+				end
+				self.object:set_properties({
+					is_visible = true,
+					visual = "cube",
+					visual_size = { x = 1.0, y = 1.0, z = 1.0 },
+					textures = textures,
+					glow = def.light_source,
+				})
+			end
 		elseif def.drawtype ~= "airlike" then
 			local itemstring = node.name
 			if core.is_colored_paramtype(def.paramtype2) then
