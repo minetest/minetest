@@ -667,15 +667,11 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 	// Do it
 	const char *name = luaL_checkstring(L, 1);
 	RemotePlayer *player = env->getPlayer(name);
-	if (player == NULL){
-		lua_pushnil(L);
-		return 1;
-	}
+	if (!player || player->getPeerId() == PEER_ID_INEXISTENT)
+		return 0;
 	PlayerSAO *sao = player->getPlayerSAO();
-	if(sao == NULL){
-		lua_pushnil(L);
-		return 1;
-	}
+	if (!sao || sao->isGone())
+		return 0;
 	// Put player on stack
 	getScriptApiBase(L)->objectrefGetOrCreate(L, sao);
 	return 1;
