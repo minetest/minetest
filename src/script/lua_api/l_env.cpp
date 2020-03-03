@@ -651,7 +651,7 @@ int ModApiEnvMod::l_get_connected_players(lua_State *L)
 		if (player->getPeerId() == PEER_ID_INEXISTENT)
 			continue;
 		PlayerSAO *sao = player->getPlayerSAO();
-		if (sao) {
+		if (sao && !sao->isGone()) {
 			getScriptApiBase(L)->objectrefGetOrCreate(L, sao);
 			lua_rawseti(L, -2, ++i);
 		}
