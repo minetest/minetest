@@ -609,6 +609,9 @@ enable_waving_plants (Waving plants) bool false
 #    the arm when the camera moves.
 arm_inertia (Arm inertia) bool true
 
+#    Show wielditem description when changing
+wielditem_statustext (Wielditem Statustext) bool true
+
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
 fps_max (Maximum FPS) int 60 1

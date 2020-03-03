@@ -3770,10 +3770,12 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		camera->wield(tool_item);
 
 		// Show item description as statustext
-		std::string item_desc = selected_item.getDefinition(itemdef_manager).description;
-		if (wield_name != item_desc) {
-			m_game_ui->showStatusText(utf8_to_wide(item_desc));
-			wield_name = item_desc;
+		if (g_settings->getBool("wielditem_statustext")) {
+			std::string item_desc = selected_item.getDefinition(itemdef_manager).description;
+			if (wield_name != item_desc) {
+				m_game_ui->showStatusText(utf8_to_wide(item_desc));
+				wield_name = item_desc;
+			}
 		}
 	}
 
