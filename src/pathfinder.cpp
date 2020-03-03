@@ -295,15 +295,15 @@ private:
 	 */
 	bool          buildPath(std::vector<v3s16> &path, v3s16 ipos);
 
-        /**
-         * go downwards from a position until some barrier
-         * is hit.
-         * @param pos position from which to go downwards
-         * @param max_down maximum distance to go downwards
-         * @return new position after movement; if too far down,
-                   pos is returned
-         */
-        v3s16         walkDownwards(v3s16 pos, unsigned int max_down);
+	/**
+	 * go downwards from a position until some barrier
+	 * is hit.
+	 * @param pos position from which to go downwards
+	 * @param max_down maximum distance to go downwards
+	 * @return new position after movement; if too far down,
+	 * pos is returned
+	 */
+	v3s16         walkDownwards(v3s16 pos, unsigned int max_down);
 
 	/* variables */
 	int m_max_index_x = 0;            /**< max index of search area in x direction  */
@@ -387,22 +387,21 @@ private:
 class PathfinderCompareHeuristic
 {
 	private:
-		Pathfinder* myPathfinder;
+		Pathfinder *myPathfinder;
 	public:
-		PathfinderCompareHeuristic(Pathfinder* pf) {
+		PathfinderCompareHeuristic(Pathfinder *pf)
+		{
 			myPathfinder = pf;
 		}
 		bool operator() (v3s16 pos1, v3s16 pos2) {
 			v3s16 ipos1 = myPathfinder->getIndexPos(pos1);
 			v3s16 ipos2 = myPathfinder->getIndexPos(pos2);
-			PathGridnode& g_pos1 = myPathfinder->getIndexElement(ipos1);
-			PathGridnode& g_pos2 = myPathfinder->getIndexElement(ipos2);
-			if (!g_pos1.valid) {
+			PathGridnode &g_pos1 = myPathfinder->getIndexElement(ipos1);
+			PathGridnode &g_pos2 = myPathfinder->getIndexElement(ipos2);
+			if (!g_pos1.valid)
 				return false;
-			}
-			if (!g_pos2.valid) {
+			if (!g_pos2.valid)
 				return false;
-			}
 			return g_pos1.estimated_cost > g_pos2.estimated_cost;
 		}
 };
@@ -937,8 +936,8 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 				(targetpos.Y < m_limits.MaxEdge.Y)) {
 			//if the jump would hit any solid node, discard
 			if ((node_jump.param0 == CONTENT_IGNORE) ||
-				(ndef->get(node_jump).walkable)) {
-				headbanger = true;
+					(ndef->get(node_jump).walkable)) {
+					headbanger = true;
 				break;
 			}
 			targetpos += v3s16(0, 1, 0);
@@ -1127,9 +1126,11 @@ bool Pathfinder::updateCostHeuristic(v3s16 isource, v3s16 idestination)
 {
 	// A* search algorithm.
 
-	// The open list contains the pathfinder nodes that still need to be checked.
-	// The priority queue sorts the pathfinder nodes by estimated cost, with lowest cost on the top.
-	std::priority_queue<v3s16, std::vector<v3s16>, PathfinderCompareHeuristic> openList(PathfinderCompareHeuristic(this));
+	// The open list contains the pathfinder nodes that still need to be
+	// checked. The priority queue sorts the pathfinder nodes by
+	// estimated cost, with lowest cost on the top.
+	std::priority_queue<v3s16, std::vector<v3s16>, PathfinderCompareHeuristic>
+			openList(PathfinderCompareHeuristic(this));
 
 	v3s16 source = getRealPos(isource);
 	v3s16 destination = getRealPos(idestination);
@@ -1198,9 +1199,9 @@ bool Pathfinder::updateCostHeuristic(v3s16 isource, v3s16 idestination)
 			// get position of true neighbor
 			v3s16 neighbor = current_pos + direction_3d;
 			v3s16 ineighbor = getIndexPos(neighbor);
-			PathGridnode& n_pos = getIndexElement(ineighbor);
+			PathGridnode &n_pos = getIndexElement(ineighbor);
 
-			if (cost.valid && (!n_pos.is_closed && !n_pos.is_open)) {
+			if (cost.valid && !n_pos.is_closed && !n_pos.is_open) {
 				// heuristic function; estimate cost from neighbor to destination
 				cur_manhattan = getXZManhattanDist(neighbor);
 
