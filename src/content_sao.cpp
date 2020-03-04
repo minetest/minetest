@@ -653,7 +653,7 @@ u16 LuaEntitySAO::punch(v3f dir,
 	if (!damage_handled) {
 		if (result.did_punch) {
 			setHP((s32)getHP() - result.damage,
-				PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
+				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 
 			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
@@ -663,10 +663,10 @@ u16 LuaEntitySAO::punch(v3f dir,
 	}
 
 	if (getHP() == 0 && !isGone()) {
-		m_pending_removal = true;
 		clearParentAttachment();
 		clearChildAttachments();
 		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
+		m_pending_removal = true;
 	}
 
 	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
@@ -675,6 +675,7 @@ u16 LuaEntitySAO::punch(v3f dir,
 			"), damage=" << (old_hp - (s32)getHP()) <<
 			(damage_handled ? " (handled by Lua)" : "") << std::endl;
 
+	// TODO: give Lua control over wear
 	return result.wear;
 }
 

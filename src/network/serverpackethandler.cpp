@@ -1166,6 +1166,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			u16 wear = pointed_object->punch(dir, &toolcap, playersao,
 					time_from_last_punch);
 
+			// Callback may have changed item, so get it again
+			playersao->getWieldedItem(&selected_item);
 			bool changed = selected_item.addWear(wear, m_itemdef);
 			if (changed)
 				playersao->setWieldedItem(selected_item);

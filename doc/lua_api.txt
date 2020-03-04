@@ -3900,6 +3900,7 @@ Callbacks:
     * `dir`: unit vector of direction of punch. Always defined. Points from the
       puncher to the punched.
     * `damage`: damage that will be done to entity.
+    * Can return `true` to prevent the default damage mechanism.
 * `on_death(self, killer)`
     * Called when the object dies.
     * `killer`: an `ObjectRef` (can be `nil`)
