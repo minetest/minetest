@@ -1852,6 +1852,7 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->text    = getstringfield_default(L, 2, "text", "");
 	elem->number  = getintfield_default(L, 2, "number", 0);
 	if (elem->type == HUD_ELEM_WAYPOINT)
+		// for waypoints, item = precision + 1
 		elem->item = getintfield_default(L, 2, "precision", -1) + 1;
 	else
 		elem->item = getintfield_default(L, 2, "item", 0);

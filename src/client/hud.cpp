@@ -370,13 +370,9 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				core::rect<s32> size(0, 0, 200, 2 * text_height);
 				std::wstring text = unescape_translate(utf8_to_wide(e->name));
 				font->draw(text.c_str(), size + pos, color);
-				// item = precision + 1
-				float precision;
+				// waypoints reusing item for precision, item = precision + 1
 				u32 item = e->item;
-				if (item == 0)
-					precision = 10.0f;
-				else
-					precision = item - 1;
+				float precision = item == 0 ? 10.0f : (item - 1);
 
 				if (precision > 0) {
 					std::ostringstream os;
