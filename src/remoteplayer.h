@@ -84,7 +84,10 @@ public:
 		return hud_hotbar_selected_image;
 	}
 
-	void setSky(const SkyboxParams &skybox_params) { m_skybox_params = skybox_params; }
+	void setSky(const SkyboxParams &skybox_params)
+	{
+		m_skybox_params = skybox_params;
+	}
 
 	const SkyboxParams &getSkyParams() const { return m_skybox_params; }
 
