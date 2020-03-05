@@ -1194,7 +1194,7 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 	unsigned int max_jump       = luaL_checkint(L, 4);
 	unsigned int max_drop       = luaL_checkint(L, 5);
 	PathAlgorithm algo          = PA_PLAIN_NP;
-	if (!lua_isnil(L, 6)) {
+	if (!lua_isnoneornil(L, 6)) {
 		std::string algorithm = luaL_checkstring(L,6);
 
 		if (algorithm == "A*")

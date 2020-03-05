@@ -4045,6 +4045,8 @@ Utilities
           formspec_version_element = true,
           -- Whether AreaStore's IDs are kept on save/load (5.1.0)
           area_store_persistent_ids = true,
+          -- Whether minetest.find_path is functional (5.2.0)
+          pathfinder_works = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4709,16 +4711,25 @@ Environment access
     * `objects`: if false, only nodes will be returned. Default is `true`.
     * `liquids`: if false, liquid nodes won't be returned. Default is `false`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
-    * returns table containing path
+    * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
-      `nil`.
+      `nil` on failure.
+    * Reasons for failure:
+        * No path exists at all
+        * No path exists within `searchdistance` (see below)
+        * Start or end pos is buried in land
     * `pos1`: start position
     * `pos2`: end position
-    * `searchdistance`: number of blocks to search in each direction using a
-      maximum metric.
+    * `searchdistance`: maximum distance from the search positions to search in.
+      In detail: Path must be completely inside a cuboid. The minimum
+      `searchdistance` of 1 will confine search between `pos1` and `pos2`.
+      Larger values will increase the size of this cuboid in all directions
     * `max_jump`: maximum height difference to consider walkable
     * `max_drop`: maximum height difference to consider droppable
-    * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`
+    * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`.
+      Difference between `"A*"` and `"A*_noprefetch"` is that
+      `"A*"` will pre-calculate the cost-data, the other will calculate it
+      on-the-fly
 * `minetest.spawn_tree (pos, {treedef})`
     * spawns L-system tree at given `pos` with definition in `treedef` table
 * `minetest.transforming_liquid_add(pos)`
