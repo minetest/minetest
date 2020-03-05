@@ -5275,10 +5275,16 @@ Misc.
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
     * Example: `serialize({foo='bar'})`, returns `'return { ["foo"] = "bar" }'`
-* `minetest.deserialize(string)`: returns a table
-    * Convert a string returned by `minetest.deserialize` into a table
+* `minetest.deserialize(string[, safe])`: returns a table
+    * Convert a string returned by `minetest.serialize` into a table
     * `string` is loaded in an empty sandbox environment.
-    * Will load functions, but they cannot access the global environment.
+    * Will load functions if safe is false or omitted. Although these functions
+      cannot directly access the global environment, they could bypass this
+      restriction with maliciously crafted Lua bytecode if mod security is
+      disabled.
+    * This function should not be used on untrusted data, regardless of the
+     value of `safe`. It is fine to serialize then deserialize user-provided
+     data, but directly providing user input to deserialize is always unsafe.
     * Example: `deserialize('return { ["foo"] = "bar" }')`,
       returns `{foo='bar'}`
     * Example: `deserialize('print("foo")')`, returns `nil`

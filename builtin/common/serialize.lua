@@ -177,13 +177,16 @@ end
 
 -- Deserialization
 
-local env = {
-	loadstring = loadstring,
-}
+local function safe_loadstring(...)
+	local func, err = loadstring(...)
+	if func then
+		setfenv(func, {})
+		return func
+	end
+	return nil, err
+end
 
-local safe_env = {
-	loadstring = function() end,
-}
+local function dummy_func() end
 
 function core.deserialize(str, safe)
 	if type(str) ~= "string" then
@@ -195,7 +198,10 @@ function core.deserialize(str, safe)
 	end
 	local f, err = loadstring(str)
 	if not f then return nil, err end
-	setfenv(f, safe and safe_env or env)
+
+	-- The environment is recreated every time so deseralized code cannot
+	-- pollute it with permanent references.
+	setfenv(f, {loadstring = safe and dummy_func or safe_loadstring})
 
 	local good, data = pcall(f)
 	if good then
