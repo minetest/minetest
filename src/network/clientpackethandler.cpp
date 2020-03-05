@@ -1244,12 +1244,11 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		skybox.bgcolor = video::SColor(readARGB8(is));
 		skybox.type = std::string(deSerializeString(is));
 		u16 count = readU16(is);
-		std::vector<std::string>* params = new std::vector<std::string>;
 
 		for (size_t i = 0; i < count; i++)
 			skybox.textures.emplace_back(deSerializeString(is));
 
-		bool clouds = true;
+		skybox.clouds = true;
 		try {
 			skybox.clouds = readU8(is);
 		} catch (...) {}
