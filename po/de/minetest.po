@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
 "PO-Revision-Date: 2020-03-06 05:32+0000\n"
-"Last-Translator: Wuzzy <almikes@aol.com>\n"
+"Last-Translator: Robin Townsend <iantownsend@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -6329,7 +6329,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other biome filler node."
-msgstr "Die Tiefe der Erde oder einem anderem Biomfüllerblock."
+msgstr "Die Tiefe der Erde oder eines anderen Biomfüllerblocks."
 
 #: src/settings_translation_file.cpp
 msgid ""
