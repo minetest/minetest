@@ -1392,6 +1392,10 @@ Displays distance to selected world position.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
+* `precision`: Waypoint precision. Defaults to 10 if not set (for compatibility reasons).
+  If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
+  Accordingly, there will be `n` steps behind the decimal dot.
+  `precision = 1000`, for example, would show values like `0.999`.
 * `number:` An integer containing the RGB value of the color used to draw the text.
 * `world_pos`: World position of the waypoint.
 
