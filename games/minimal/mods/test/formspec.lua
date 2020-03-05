@@ -17,7 +17,7 @@ local clip_fs = [[
 	scrollbar[0,9;3,0.8;horizontal;x9;3]
 	tablecolumns[text;text]
 	table[0,10;3,1;x10;one,two,three,four;1]
-	animated_image[0,11;3,1;test_animation.png,4,100]
+	animated_image[0,11;3,1;test_animation.png;4;100]
 ]]
 
 
@@ -172,19 +172,19 @@ local pages = {
 		[[
 			formspec_version[3]
 			size[12,12]
-			animated_image[0.5,0.5;1,1;;test_animation.png,4,100]
-			animated_image[0.5,1.75;1,1;;test_animation.jpg,4,100]
-			animated_image[1.75,0.5;1,1;;test_animation.png,100,100]
-			animated_image[3,0.5;1,1;ani_image;test_animation.png,4,1000]
+			animated_image[0.5,0.5;1,1;;test_animation.png;4;100]
+			animated_image[0.5,1.75;1,1;;test_animation.jpg;4;100]
+			animated_image[1.75,0.5;1,1;;test_animation.png;100;100]
+			animated_image[3,0.5;1,1;ani_image;test_animation.png;4;1000]
 			button[4.25,0.5;1,1;;Current
 Number]
-			animated_image[3,1.75;1,1;;test_animation.png,4,1000;2]
+			animated_image[3,1.75;1,1;;test_animation.png;4;1000;2]
 			button[4.25,1.75;1,1;;Current
 Number]
-			animated_image[3,3;1,1;;test_animation.png,4,0]
-			animated_image[3,4.25;1,1;;test_animation.png,4,0;3]
-			animated_image[5.5,0.5;5,2;;test_animation.png,4,100]
-			animated_image[5.5,2.75;5,2;;test_animation.jpg,4,100]
+			animated_image[3,3;1,1;;test_animation.png;4;0]
+			animated_image[3,4.25;1,1;;test_animation.png;4;0;3]
+			animated_image[5.5,0.5;5,2;;test_animation.png;4;100]
+			animated_image[5.5,2.75;5,2;;test_animation.jpg;4;100]
 		]]
 }
 

@@ -784,7 +784,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 {
 	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() != 4 && parts.size() != 5 &&
+	if (parts.size() != 6 && parts.size() != 7 &&
 		!(parts.size() > 4 && m_formspec_version > FORMSPEC_API_VERSION))
 	{
 		warningstream << "Invalid animated_image element(" << parts.size()
@@ -795,24 +795,9 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	std::vector<std::string> v_pos  = split(parts[0], ',');
 	std::vector<std::string> v_geom = split(parts[1], ',');
 	std::string name = parts[2];
-
-	std::string texture_string = unescape_string(parts[3]);
-	std::vector<std::string> texture = split(texture_string, ',');
-
-	std::string texture_name = texture[0];
-	s32 frame_count = 1;
-	s32 frame_duration = 0;
-
-	if (texture.size() == 3 ||
-		(texture.size() > 3 && m_formspec_version > FORMSPEC_API_VERSION))
-	{
-		frame_count = stoi(texture[1]);
-		frame_duration = stoi(texture[2]);
-	} else {
-		warningstream << "Invalid animated_image texture format \""
-			<< texture_string << "\". Expected format: \"texture_name,frame_count,"
-			"frame_duration\"." << std::endl;
-	}
+	std::string texture_name = unescape_string(parts[3]);
+	s32 frame_count = stoi(parts[4]);
+	s32 frame_duration = stoi(parts[5]);
 
 	MY_CHECKPOS("animated_image", 0);
 	MY_CHECKGEOM("animated_image", 1);
@@ -846,8 +831,8 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, this, spec.fid,
 		rect, texture_name, frame_count, frame_duration, m_tsrc);
 
-	if (parts.size() == 5)
-		e->setFrameIndex(stoi(parts[4]) - 1);
+	if (parts.size() == 7)
+		e->setFrameIndex(stoi(parts[6]) - 1);
 
 	auto style = getStyleForElement("animated_image", spec.fname, "image");
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
