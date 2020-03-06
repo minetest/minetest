@@ -2059,7 +2059,7 @@ int ObjectRef::l_set_stars(lua_State *L)
 	lua_pop(L, 1);
 
 	star_params.scale = getfloatfield_default(L, 2,
-		"size", star_params.scale);
+		"scale", star_params.scale);
 
 	getServer(L)->setStars(player, star_params);
 	lua_pushboolean(L, true);
