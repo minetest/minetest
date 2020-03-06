@@ -864,7 +864,7 @@ void Sky::setSunTexture(std::string sun_texture,
 	}
 }
 
-void Sky::setSunriseTexture(std::string sunglow_texture, 
+void Sky::setSunriseTexture(std::string sunglow_texture,
 		ITextureSource* tsrc)
 {
 	// Ignore matching textures (with modifiers) entirely.
@@ -876,7 +876,7 @@ void Sky::setSunriseTexture(std::string sunglow_texture,
 	);
 }
 
-void Sky::setMoonTexture(std::string moon_texture, 
+void Sky::setMoonTexture(std::string moon_texture,
 		std::string moon_tonemap, ITextureSource *tsrc)
 {
 	// Ignore matching textures (with modifiers) entirely,
@@ -915,22 +915,7 @@ void Sky::setMoonTexture(std::string moon_texture,
 void Sky::setStarCount(u16 star_count, bool force_update)
 {
 	// Force updating star count at game init.
-	if (force_update) {
-		m_star_params.count = star_count;
-		m_stars.clear();
-		// Rebuild the stars surrounding the camera
-		for (u16 i = 0; i < star_count; i++) {
-			v3f star = v3f(
-				myrand_range(-10000, 10000),
-				myrand_range(-10000, 10000),
-				myrand_range(-10000, 10000)
-			);
-
-			star.normalize();
-			m_stars.emplace_back(star);
-		}
-	// Ignore changing star count if the new value is identical
-	} else if (m_star_params.count == star_count)
+	if (m_star_params.count == star_count && !force_update)
 		return;
 	else {
 		m_star_params.count = star_count;
