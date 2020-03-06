@@ -5,7 +5,7 @@
 local string_sub, string_find = string.sub, string.find
 
 --------------------------------------------------------------------------------
-function basic_dump(o)
+local function basic_dump(o)
 	local tp = type(o)
 	if tp == "number" then
 		return tostring(o)
@@ -201,18 +201,6 @@ function table.indexof(list, val)
 end
 
 --------------------------------------------------------------------------------
-if INIT ~= "client" then
-	function file_exists(filename)
-		local f = io.open(filename, "r")
-		if f == nil then
-			return false
-		else
-			f:close()
-			return true
-		end
-	end
-end
---------------------------------------------------------------------------------
 function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
@@ -252,64 +240,6 @@ function math.factorial(x)
 		v = v * k
 	end
 	return v
-end
-
---------------------------------------------------------------------------------
-function get_last_folder(text,count)
-	local parts = text:split(DIR_DELIM)
-
-	if count == nil then
-		return parts[#parts]
-	end
-
-	local retval = ""
-	for i=1,count,1 do
-		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
-	end
-
-	return retval
-end
-
---------------------------------------------------------------------------------
-function cleanup_path(temppath)
-
-	local parts = temppath:split("-")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. "_"
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	parts = temppath:split(".")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. "_"
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	parts = temppath:split("'")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. ""
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	parts = temppath:split(" ")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	return temppath
 end
 
 function core.formspec_escape(text)
