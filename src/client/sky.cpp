@@ -724,10 +724,10 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	if (m_star_params.starcolor.getAlpha() < 1)
 		return;
 #if ENABLE_GLES
-	u16 *indices = new u16[m_star_count * 3];
+	u16 *indices = new u16[m_star_params.count * 3];
 	video::S3DVertex *vertices =
-			new video::S3DVertex[m_star_count * 3];
-	for (u32 i = 0; i < m_star_count; i++) {
+			new video::S3DVertex[m_star_params.count * 3];
+	for (u32 i = 0; i < m_star_params.count; i++) {
 		indices[i * 3 + 0] = i * 3 + 0;
 		indices[i * 3 + 1] = i * 3 + 1;
 		indices[i * 3 + 2] = i * 3 + 2;
@@ -750,8 +750,8 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 		vertices[i * 3 + 2].Pos = p2;
 		vertices[i * 3 + 2].Color = starcolor;
 	}
-	driver->drawIndexedTriangleList(vertices.data(), m_star_count * 3,
-			indices.data(), m_star_count);
+	driver->drawIndexedTriangleList(vertices.data(), m_star_params.count * 3,
+			indices.data(), m_star_params.count);
 	delete[] indices;
 	delete[] vertices;
 #else
@@ -914,10 +914,8 @@ void Sky::setMoonTexture(std::string moon_texture,
 
 void Sky::setStarCount(u16 star_count, bool force_update)
 {
-	// Force updating star count at game init.
-	if (m_star_params.count == star_count && !force_update)
-		return;
-	else {
+	// Allow force updating star count at game init.
+	if (m_star_params.count != star_count || force_update) {
 		m_star_params.count = star_count;
 		m_stars.clear();
 		// Rebuild the stars surrounding the camera
@@ -932,6 +930,7 @@ void Sky::setStarCount(u16 star_count, bool force_update)
 			m_stars.emplace_back(star);
 		}
 	}
+	return;
 }
 
 void Sky::setSkyColors(const SkyboxParams sky)
