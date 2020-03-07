@@ -1637,7 +1637,10 @@ bool Game::getServerContent(bool *aborted)
 			std::stringstream message;
 			std::fixed(message);
 			message.precision(0);
-			message << gettext("Media...") << " " << (client->mediaReceiveProgress()*100) << "%";
+			if (client->mediaReceiveProgress() > 0)
+				message << gettext("Media... ") << (client->mediaReceiveProgress() * 100) << "%";
+			else
+				message << gettext("Media...");
 			message.precision(2);
 
 			if ((USE_CURL == 0) ||
