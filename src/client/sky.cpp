@@ -750,8 +750,8 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 		vertices[i * 3 + 2].Pos = p2;
 		vertices[i * 3 + 2].Color = starcolor;
 	}
-	driver->drawIndexedTriangleList(vertices.data(), m_star_params.count * 3,
-			indices.data(), m_star_params.count);
+	driver->drawIndexedTriangleList(vertices, m_star_params.count * 3,
+			indices, m_star_params.count);
 	delete[] indices;
 	delete[] vertices;
 #else
