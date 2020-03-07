@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2020-03-06 05:33+0000\n"
-"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
+"PO-Revision-Date: 2020-03-08 15:32+0000\n"
+"Last-Translator: wzy2006 <3450354617@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -3173,6 +3173,8 @@ msgid ""
 "Gradient of light curve at maximum light level.\n"
 "Controls the contrast of the highest light levels."
 msgstr ""
+"最大光照下的光曲线梯度。\n"
+"控制最高光照级别的对比度。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3199,9 +3201,8 @@ msgid "Ground noise"
 msgstr "地面噪声"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP mods"
-msgstr "HTTP Mod"
+msgstr "HTTP Mods"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scale factor"
@@ -3593,6 +3594,10 @@ msgid ""
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
 msgstr ""
+"如果 debug.txt 的文件大小在 打开时超过设置，\n"
+"这个文件将被移动到debug.txt.1， \n"
+"如果存在较旧的debug.txt.1，则旧的将被删除。 \n"
+"仅当此设置为正时，才会移动 debug.txt。"
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -4679,7 +4684,6 @@ msgid "Liquid queue purge time"
 msgstr "液体队列清除时间"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Liquid sinking"
 msgstr "液体下沉"
 
@@ -4813,14 +4817,12 @@ msgid "Mapblock limit"
 msgstr "地图块限制"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation delay"
-msgstr "地图生成限制"
+msgstr "地图生成延时"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr "地图生成限制"
+msgstr "地图生成缓存大小"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
@@ -4851,7 +4853,6 @@ msgid "Mapgen Fractal specific flags"
 msgstr "地图生成器Fractal标签"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V5"
 msgstr "地图生成器 v5"
 
@@ -4860,7 +4861,6 @@ msgid "Mapgen V5 specific flags"
 msgstr "地图生成器 v5 标签"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V6"
 msgstr "地图生成器 v6"
 
@@ -4869,7 +4869,6 @@ msgid "Mapgen V6 specific flags"
 msgstr "地图生成器 v6 标签"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V7"
 msgstr "地图生成器 v7"
 
@@ -5030,9 +5029,8 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "给每个客户端发送方块的最大次数"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum size of the out chat queue"
-msgstr "外出聊天队列的最大大小"
+msgstr "显示最大聊天记录的行度"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5404,8 +5402,9 @@ msgid "Pitch move key"
 msgstr "仰角移动键"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Pitch move mode"
-msgstr ""
+msgstr "第三人称视角"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5432,22 +5431,28 @@ msgid ""
 "Port to connect to (UDP).\n"
 "Note that the port field in the main menu overrides this setting."
 msgstr ""
+"要连接到 （UDP） 的端口。 \n"
+"请注意，主菜单中的端口字段将覆盖此设置。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
 msgstr ""
+"按住鼠标时，防止误破坏和误放置。 \n"
+"当您意外破坏方块或意外放置方块时，可以启用此功能。"
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
+msgstr "阻止 mod 执行危险操作，如运行 shell 命令。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Print the engine's profiling data in regular intervals (in seconds).\n"
 "0 = disable. Useful for developers."
 msgstr ""
+"以固定间隔（以秒为单位）打印引擎的分析数据。 \n"
+"0 = 禁用。对开发人员很有用。"
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
