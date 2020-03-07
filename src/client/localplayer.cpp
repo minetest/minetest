@@ -1126,7 +1126,7 @@ float LocalPlayer::getSpeedFactor(Environment *env)
 
 	int speed = speed_below + speed_above;
 	if (speed != 0)
-		return core::clamp(1.0f + f32(speed) / 100.f, 0.0f, 1.0f);
+		return core::clamp(1.0f + f32(speed) / 100.0f, 0.0f, 1.0f);
 
 	return 1.0f;
 }
