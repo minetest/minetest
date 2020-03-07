@@ -930,7 +930,6 @@ void Sky::setStarCount(u16 star_count, bool force_update)
 			m_stars.emplace_back(star);
 		}
 	}
-	return;
 }
 
 void Sky::setSkyColors(const SkyboxParams sky)
