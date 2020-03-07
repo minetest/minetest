@@ -1388,7 +1388,8 @@ Displays a horizontal bar made up of half-images.
 * `offset`: offset in pixels from position.
 
 ### `waypoint`
-Displays distance to selected world position.
+
+Displays distance to selected world position. Accepts offset.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
@@ -1396,8 +1397,13 @@ Displays distance to selected world position.
   If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
   Accordingly, there will be `n` steps behind the decimal dot.
   `precision = 1000`, for example, would show values like `0.999`.
-* `number:` An integer containing the RGB value of the color used to draw the text.
+* `number:` An integer containing the RGB value of the color used to draw the
+  text.
 * `world_pos`: World position of the waypoint.
+
+### `image_waypoint`
+
+Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
 
 ### Particle definition (`add_particle`)
 
