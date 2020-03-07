@@ -1571,7 +1571,7 @@ Special groups
   `"toolrepair"` crafting recipe
 * `speed`: Changes movement speed for players and items will moving on the node.
 	Only a decrease in speed is possible.
-   * `speed = -1`: to slow down the movement (min. `-99`, 1% of normal speed)
+   * `speed = -1`: to slow down the movement (min. `-100`, unable to walk)
 
 Known damage and digging time defining groups
 ---------------------------------------------

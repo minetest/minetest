@@ -1110,23 +1110,23 @@ float LocalPlayer::getSpeedFactor(Environment *env)
 	const NodeDefManager *nodemgr = env->getGameDef()->ndef();
 	Map *map = &env->getMap();
 
-	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(pos));
+	const ContentFeatures &f = nodemgr->get(map->getNode(pos));
 	if (f.walkable)
 		speed_below = itemgroup_get(f.groups, "speed");
 
-	const ContentFeatures &f2 = nodemgr->get(map->getNodeNoEx(
+	const ContentFeatures &f2 = nodemgr->get(map->getNode(
 		pos + v3s16(0, 1, 0)));
 	speed_above = itemgroup_get(f2.groups, "speed");
 
 	if (speed_above == 0) {
-		const ContentFeatures &f3 = nodemgr->get(map->getNodeNoEx(
+		const ContentFeatures &f3 = nodemgr->get(map->getNode(
 			pos + v3s16(0, 2, 0)));
 		speed_above = itemgroup_get(f3.groups, "speed");
 	}
 
 	int speed = speed_below + speed_above;
 	if (speed != 0)
-		return core::clamp(1.0f + f32(speed) / 100.f, 0.01f, 1.f);
+		return core::clamp(1.0f + f32(speed) / 100.f, 0.0f, 1.0f);
 
 	return 1.0f;
 }
