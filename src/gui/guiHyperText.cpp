@@ -405,7 +405,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 	AttrsList attrs;
 	while (c != L'>') {
 		std::string attr_name = "";
-		std::string attr_val = "";
+		core::stringw attr_val = L"";
 
 		while (c == ' ') {
 			c = text[++cursor];
@@ -435,13 +435,13 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 			return 0;
 
 		while (c != L'>' && c != L' ') {
-			attr_val += (char)c;
+			attr_val += c;
 			c = text[++cursor];
 			if (c == L'\0')
 				return 0;
 		}
 
-		attrs[attr_name] = attr_val;
+		attrs[attr_name] = stringw_to_utf8(attr_val);
 	}
 
 	++cursor; // Last ">"
@@ -486,7 +486,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		else
 			enterElement(ELEMENT_ITEM);
 
-		m_element->text = strtostrw(attrs["name"]);
+		m_element->text = utf8_to_stringw(attrs["name"]);
 
 		if (attrs.count("float")) {
 			if (attrs["float"] == "left")
@@ -626,7 +626,7 @@ TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 				if (e.type == ParsedText::ELEMENT_IMAGE) {
 					video::ITexture *texture =
 						m_client->getTextureSource()->
-							getTexture(strwtostr(e.text));
+							getTexture(stringw_to_utf8(e.text));
 					if (texture)
 						dim = texture->getOriginalSize();
 				}
@@ -952,7 +952,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 			case ParsedText::ELEMENT_IMAGE: {
 				video::ITexture *texture =
 						m_client->getTextureSource()->getTexture(
-								strwtostr(el.text));
+								stringw_to_utf8(el.text));
 				if (texture != 0)
 					m_environment->getVideoDriver()->draw2DImage(
 							texture, rect,
@@ -965,7 +965,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 			case ParsedText::ELEMENT_ITEM: {
 				IItemDefManager *idef = m_client->idef();
 				ItemStack item;
-				item.deSerialize(strwtostr(el.text), idef);
+				item.deSerialize(stringw_to_utf8(el.text), idef);
 
 				drawItemStack(
 						m_environment->getVideoDriver(),
@@ -1083,7 +1083,7 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 				for (auto &tag : element->tags) {
 					if (tag->name == "action") {
 						Text = core::stringw(L"action:") +
-						       strtostrw(tag->attrs["name"]);
+						       utf8_to_stringw(tag->attrs["name"]);
 						if (Parent) {
 							SEvent newEvent;
 							newEvent.EventType = EET_GUI_EVENT;
