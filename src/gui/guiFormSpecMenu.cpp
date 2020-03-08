@@ -785,9 +785,8 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	std::vector<std::string> parts = split(element, ';');
 
 	if (parts.size() != 6 && parts.size() != 7 &&
-		!(parts.size() > 4 && m_formspec_version > FORMSPEC_API_VERSION))
-	{
-		warningstream << "Invalid animated_image element(" << parts.size()
+			!(parts.size() > 7 && m_formspec_version > FORMSPEC_API_VERSION)) {
+		errorstream << "Invalid animated_image element(" << parts.size()
 			<< "): '" << element << "'" << std::endl;
 		return;
 	}
@@ -831,7 +830,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, this, spec.fid,
 		rect, texture_name, frame_count, frame_duration, m_tsrc);
 
-	if (parts.size() == 7)
+	if (parts.size() >= 7)
 		e->setFrameIndex(stoi(parts[6]) - 1);
 
 	auto style = getStyleForElement("animated_image", spec.fname, "image");
@@ -3517,9 +3516,9 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					if (table) {
 						fields[name] = table->checkEvent();
 					}
-				// No dynamic cast possible for any element due to some
-				// distributions shipped without rtti support in Irrlicht.
 				} else if (s.ftype == f_DropDown) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
 					IGUIElement *element = getElementFromId(s.fid, true);
 					gui::IGUIComboBox *e = NULL;
 					if ((element) && (element->getType() == gui::EGUIET_COMBO_BOX)) {
@@ -3538,6 +3537,8 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						}
 					}
 				} else if (s.ftype == f_TabHeader) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
 					IGUIElement *element = getElementFromId(s.fid, true);
 					gui::IGUITabControl *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_TAB_CONTROL)) {
@@ -3550,6 +3551,8 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						fields[name] = ss.str();
 					}
 				} else if (s.ftype == f_CheckBox) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
 					IGUIElement *element = getElementFromId(s.fid, true);
 					gui::IGUICheckBox *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_CHECK_BOX)) {
@@ -3563,6 +3566,8 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 							fields[name] = "false";
 					}
 				} else if (s.ftype == f_ScrollBar) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
 					IGUIElement *element = getElementFromId(s.fid, true);
 					GUIScrollBar *e = nullptr;
 					if (element && element->getType() == gui::EGUIET_ELEMENT)
@@ -3577,6 +3582,8 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 							fields[name] = "VAL:" + os.str();
  					}
 				} else if (s.ftype == f_AnimatedImage) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
 					IGUIElement *element = getElementFromId(s.fid, true);
 					GUIAnimatedImage *e = nullptr;
 					if (element && element->getType() == gui::EGUIET_ELEMENT)

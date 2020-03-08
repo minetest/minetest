@@ -2120,14 +2120,14 @@ Elements
 ### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 
 * Adds tooltip for an element
-* `<bgcolor>` tooltip background color as `ColorString` (optional)
-* `<fontcolor>` tooltip font color as `ColorString` (optional)
+* `bgcolor` tooltip background color as `ColorString` (optional)
+* `fontcolor` tooltip font color as `ColorString` (optional)
 
 ### `tooltip[<X>,<Y>;<W>,<H>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 
 * Adds tooltip for an area. Other tooltips will take priority when present.
-* `<bgcolor>` tooltip background color as `ColorString` (optional)
-* `<fontcolor>` tooltip font color as `ColorString` (optional)
+* `bgcolor` tooltip background color as `ColorString` (optional)
+* `fontcolor` tooltip font color as `ColorString` (optional)
 
 ### `image[<X>,<Y>;<W>,<H>;<texture name>]`
 
@@ -2138,12 +2138,11 @@ Elements
 * Show an animated image. The image is drawn like a "vertical_frames" tile
     animation (See [Tile animation definition]), but uses a frame count/duration
     for simplicity
-* `<name>`: The event name. The event is the index of the current frame, and it is fired
-  when another event is fired, e.g. a button is pressed.
-* `<texture name>`: The image to use.
-* `<frame count>`: The number of frames animating the image.
-* `<frame duration>`: Milliseconds between each frame. `0` means the frames don't advance.
-* `<frame start>` (Optional): The index of the frame to start on. Default `1`.
+* `name`: Element name to send when an event occurs. The event value is the index of the current frame.
+* `texture name`: The image to use.
+* `frame count`: The number of frames animating the image.
+* `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
+* `frame start` (Optional): The index of the frame to start on. Default `1`.
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 

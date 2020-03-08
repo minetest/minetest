@@ -17,7 +17,7 @@ local clip_fs = [[
 	scrollbar[0,9;3,0.8;horizontal;x9;3]
 	tablecolumns[text;text]
 	table[0,10;3,1;x10;one,two,three,four;1]
-	animated_image[0,11;3,1;;test_animation.png;4;100]
+	animated_image[-0.5,11;4.5,1;;test_animation.png;4;100]
 ]]
 
 
