@@ -6044,7 +6044,7 @@ object you are working with still exists.
         * `star_color`: ColorSpec, sets the colors of the stars,
             alpha channel is used to set overall star brightness.
             (default: `#ebebff69`)
-        * `size`: Float controlling the overall size of the stars (default: `1`)
+        * `scale`: Float controlling the overall size of the stars (default: `1`)
 * `get_stars()`: returns a table with the current stars parameters as in
     `set_stars`.
 * `set_clouds(parameters)`: set cloud parameters
