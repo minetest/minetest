@@ -24,15 +24,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_set>
 
 #include "irrlichttypes_extrabloated.h"
+#include "IGUIStaticText.h"
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiInventoryList.h"
 #include "guiScrollBar.h"
+#include "guiScrollContainer.h"
 #include "guiTable.h"
 #include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
 #include "util/string.h"
 #include "util/enriched_string.h"
+#include "irr_ptr.h"
 #include "StyleSpec.h"
 
 class InventoryManager;
@@ -222,7 +225,7 @@ public:
 
 	const GUIInventoryList::ItemSpec *getSelectedItem() const
 	{
-		return m_selected_item;
+		return m_selected_item.get();
 	}
 
 	const u16 getSelectedAmount() const
@@ -304,27 +307,26 @@ protected:
 	// we can control cases when the formspec is shown intentionally.
 	bool m_is_form_regenerated = true;
 
-	std::vector<GUIInventoryList *> m_inventorylists;
+	std::vector<irr_ptr<GUIInventoryList>> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
-	std::vector<gui::IGUIElement *> m_backgrounds;
+	std::vector<irr_ptr<gui::IGUIElement>> m_backgrounds;
 	std::unordered_map<std::string, bool> field_close_on_enter;
 	std::unordered_map<std::string, bool> m_dropdown_index_event;
 	std::vector<FieldSpec> m_fields;
-	std::vector<std::pair<FieldSpec, GUITable *>> m_tables;
-	std::vector<std::pair<FieldSpec, gui::IGUICheckBox *>> m_checkboxes;
+	std::vector<std::pair<FieldSpec, irr_ptr<GUITable>>> m_tables;
 	std::map<std::string, TooltipSpec> m_tooltips;
-	std::vector<std::pair<gui::IGUIElement *, TooltipSpec>> m_tooltip_rects;
-	std::vector<std::pair<FieldSpec, GUIScrollBar *>> m_scrollbars;
+	std::vector<std::pair<irr_ptr<gui::IGUIElement>, TooltipSpec>> m_tooltip_rects;
+	std::vector<std::pair<FieldSpec, irr_ptr<GUIScrollBar>>> m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string>>> m_dropdowns;
-	std::vector<gui::IGUIElement *> m_clickthrough_elements;
-	std::vector<std::pair<std::string, GUIScrollContainer *>> m_scroll_containers;
+	std::vector<irr_ptr<gui::IGUIElement>> m_clickthrough_elements;
+	std::vector<std::pair<std::string, irr_ptr<GUIScrollContainer>>> m_scroll_containers;
 
-	GUIInventoryList::ItemSpec *m_selected_item = nullptr;
+	std::unique_ptr<GUIInventoryList::ItemSpec> m_selected_item;
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
 
-	gui::IGUIStaticText *m_tooltip_element = nullptr;
+	irr_ptr<gui::IGUIStaticText> m_tooltip_element;
 
 	u64 m_tooltip_show_delay;
 	bool m_tooltip_append_itemname;
