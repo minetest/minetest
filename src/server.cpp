@@ -1018,16 +1018,15 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	// Send Breath
 	SendPlayerBreath(playersao);
 
-	Address addr = getPeerAddress(player->getPeerId());
-	std::string ip_str = addr.serializeString();
-	actionstream<<player->getName() <<" [" << ip_str << "] joins game. " << std::endl;
 	/*
 		Print out action
 	*/
 	{
+		Address addr = getPeerAddress(player->getPeerId());
+		std::string ip_str = addr.serializeString();
 		const std::vector<std::string> &names = m_clients.getPlayerNames();
 
-		actionstream << player->getName() << " joins game. List of players: ";
+		actionstream << player->getName() << " [" << ip_str << "] joins game. List of players: ";
 
 		for (const std::string &name : names) {
 			actionstream << name << " ";
