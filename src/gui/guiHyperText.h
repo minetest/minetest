@@ -153,7 +153,7 @@ protected:
 	std::unordered_map<std::string, StyleList> m_elementtags;
 	std::unordered_map<std::string, StyleList> m_paragraphtags;
 
-	std::vector<Tag *> m_tags;
+	std::vector<Tag *> m_not_root_tags;
 	std::list<Tag *> m_active_tags;
 
 	// Current values

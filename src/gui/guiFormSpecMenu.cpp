@@ -1662,8 +1662,8 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 	);
 
 	spec.ftype = f_Unknown;
-	new GUIHyperText(
-		spec.flabel.c_str(), Environment, this, spec.fid, rect, m_client, m_tsrc);
+	(new GUIHyperText(spec.flabel.c_str(), Environment, this, spec.fid, rect,
+			m_client, m_tsrc))->drop();
 
 	m_fields.push_back(spec);
 }
