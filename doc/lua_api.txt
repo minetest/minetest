@@ -2469,6 +2469,12 @@ Elements
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
 
+### `dropdown_index_event[<name>;<use indexing>]`
+
+* `name`: Name of the dropdown
+* `use indexing`: If true, dropdowns will return the index of the currently
+  selected item instead of the value.
+
 ### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
 
 * Show a checkbox
@@ -4485,7 +4491,7 @@ Call these functions only at load time!
         * `button` and variants: If pressed, contains the user-facing button
           text as value. If not pressed, is `nil`
         * `field`, `textarea` and variants: Text in the field
-        * `dropdown`: Text of selected item
+        * `dropdown`: Text of selected item or index if `dropdown_index_event` is true
         * `tabheader`: Tab index, starting with `"1"` (only if tab changed)
         * `checkbox`: `"true"` if checked, `"false"` if unchecked
         * `textlist`: See `minetest.explode_textlist_event`
