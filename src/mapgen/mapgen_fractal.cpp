@@ -90,9 +90,7 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 
 MapgenFractal::~MapgenFractal()
 {
-	if (noise_seabed)
-		delete noise_seabed;
-
+	delete noise_seabed;
 	delete noise_filler_depth;
 }
 
