@@ -1285,8 +1285,7 @@ ServerMap::~ServerMap()
 		Close database if it was opened
 	*/
 	delete dbase;
-	if (dbase_ro)
-		delete dbase_ro;
+	delete dbase_ro;
 
 #if 0
 	/*
