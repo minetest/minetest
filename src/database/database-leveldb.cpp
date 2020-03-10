@@ -105,7 +105,6 @@ AuthDatabaseLevelDB::AuthDatabaseLevelDB(const std::string &savedir)
 	leveldb::Status status = leveldb::DB::Open(options,
 		savedir + DIR_DELIM + "auth.db", &m_database);
 	ENSURE_STATUS_OK(status);
-	m_savedir = savedir;
 }
 
 AuthDatabaseLevelDB::~AuthDatabaseLevelDB()
@@ -156,7 +155,7 @@ bool AuthDatabaseLevelDB::saveAuth(const AuthEntry &authEntry)
 	os << serializeString(authEntry.password);
 
 	size_t privilege_count = authEntry.privileges.size();
-	FATAL_ERROR_IF(privilege_count > 0xFFFF,
+	FATAL_ERROR_IF(privilege_count > U16_MAX,
 		"Unsupported number of privileges");
 	writeU16(os, privilege_count);
 	for (const std::string &privilege : authEntry.privileges) {

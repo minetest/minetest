@@ -60,7 +60,6 @@ public:
 
 private:
 	leveldb::DB *m_database;
-	std::string m_savedir;
 };
 
 #endif // USE_LEVELDB
