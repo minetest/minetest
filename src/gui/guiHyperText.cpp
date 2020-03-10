@@ -109,7 +109,6 @@ ParsedText::ParsedText(const wchar_t *text)
 	m_root_tag.style["color"] = "#EEEEEE";
 	m_root_tag.style["hovercolor"] = m_root_tag.style["color"];
 
-	m_tags.push_back(&m_root_tag);
 	m_active_tags.push_front(&m_root_tag);
 	m_style = m_root_tag.style;
 
@@ -174,7 +173,7 @@ ParsedText::ParsedText(const wchar_t *text)
 
 ParsedText::~ParsedText()
 {
-	for (auto &tag : m_tags)
+	for (auto &tag : m_not_root_tags)
 		delete tag;
 }
 
@@ -289,7 +288,7 @@ ParsedText::Tag *ParsedText::newTag(const std::string &name, const AttrsList &at
 	Tag *newtag = new Tag();
 	newtag->name = name;
 	newtag->attrs = attrs;
-	m_tags.push_back(newtag);
+	m_not_root_tags.push_back(newtag);
 	return newtag;
 }
 
@@ -1012,6 +1011,7 @@ GUIHyperText::GUIHyperText(const wchar_t *text, IGUIEnvironment *environment,
 GUIHyperText::~GUIHyperText()
 {
 	m_vscrollbar->remove();
+	m_vscrollbar->drop();
 }
 
 ParsedText::Element *GUIHyperText::getElementAt(s32 X, s32 Y)
