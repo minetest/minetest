@@ -1318,8 +1318,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 4) || (parts.size() == 5) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if ((parts.size() == 4) ||
+		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
@@ -1390,12 +1390,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		evt.KeyInput.PressedDown = true;
 		e->OnEvent(evt);
 
-		if (parts.size() >= 5) {
-			// TODO: remove after 2016-11-03
-			warningstream << "pwdfield: use field_close_on_enter[name, enabled]" <<
-					" instead of the 5th param" << std::endl;
-			field_close_on_enter[name] = is_yes(parts[4]);
-		}
+		// Note: Before 5.2.0 "parts.size() >= 5" resulted in a
+		// warning referring to field_close_on_enter[]!
 
 		m_fields.push_back(spec);
 		return;
@@ -1586,12 +1582,8 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 
 	createTextField(data, spec, rect, type == "textarea");
 
-	if (parts.size() >= 6) {
-		// TODO: remove after 2016-11-03
-		warningstream << "field/textarea: use field_close_on_enter[name, enabled]" <<
-				" instead of the 6th param" << std::endl;
-		field_close_on_enter[name] = is_yes(parts[5]);
-	}
+	// Note: Before 5.2.0 "parts.size() >= 6" resulted in a
+	// warning referring to field_close_on_enter[]!
 
 	m_fields.push_back(spec);
 }
@@ -1606,8 +1598,8 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 		return;
 	}
 
-	if ((parts.size() == 5) || (parts.size() == 6) ||
-		((parts.size() > 6) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if ((parts.size() == 5) ||
+		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		parseTextArea(data,parts,type);
 		return;
