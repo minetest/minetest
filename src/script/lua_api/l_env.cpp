@@ -643,7 +643,13 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 // get_connected_players()
 int ModApiEnvMod::l_get_connected_players(lua_State *L)
 {
-	GET_ENV_PTR;
+	ServerEnvironment *env = (ServerEnvironment *) getEnv(L);
+	if (!env) {
+		log_deprecated(L, "Calling get_connected_players() at mod load time"
+				" is deprecated");
+		lua_createtable(L, 0, 0);
+		return 1;
+	}
 
 	lua_createtable(L, env->getPlayerCount(), 0);
 	u32 i = 0;
