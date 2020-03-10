@@ -363,7 +363,6 @@ private:
 		core::rect<s32> rect;
 		v2s32 basepos;
 		v2u32 screensize;
-		std::string focused_fieldname;
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
 		gui::IGUIElement *current_parent = nullptr;
