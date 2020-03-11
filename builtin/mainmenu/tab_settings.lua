@@ -218,16 +218,9 @@ local function formspec(tabview, name, tabdata)
 					fgettext("Shaders (unavailable)")) .. "]"
 	end
 
-	if core.settings:get("main_menu_style") == "simple" then
-		-- 'Reset singleplayer world' only functions with simple menu
-		tab_string = tab_string ..
-			"button[8,4.75;3.95,1;btn_reset_singleplayer;"
-			.. fgettext("Reset singleplayer world") .. "]"
-	else
-		tab_string = tab_string ..
-			"button[8,4.75;3.95,1;btn_change_keys;"
-			.. fgettext("Change Keys") .. "]"
-	end
+	tab_string = tab_string ..
+		"button[8,4.75;3.95,1;btn_change_keys;"
+		.. fgettext("Change Keys") .. "]"
 
 	tab_string = tab_string ..
 		"button[0,4.75;3.95,1;btn_advanced_settings;"

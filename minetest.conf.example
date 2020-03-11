@@ -1711,13 +1711,6 @@
 #    type: bool
 # high_precision_fpu = true
 
-#    Changes the main menu UI:
-#    -   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no game or texture pack choosers. May be
-#    necessary for smaller screens.
-#    type: enum values: full, simple
-# main_menu_style = full
-
 #    Replaces the default main menu with a custom one.
 #    type: string
 # main_menu_script =

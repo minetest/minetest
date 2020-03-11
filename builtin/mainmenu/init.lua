@@ -24,43 +24,33 @@ mt_color_dark_green = "#25C191"
 
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
-local menustyle = core.settings:get("main_menu_style")
-defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
-					DIR_DELIM .. "pack" .. DIR_DELIM
+defaulttexturedir = core.get_texturepath_share() .. "/base/pack/"
+dofile(basepath .. "common" .. "/async_event.lua")
+dofile(basepath .. "common" .. "/filterlist.lua")
+dofile(basepath .. "fstk" .. "/buttonbar.lua")
+dofile(basepath .. "fstk" .. "/dialog.lua")
+dofile(basepath .. "fstk" .. "/tabview.lua")
+dofile(basepath .. "fstk" .. "/ui.lua")
+dofile(menupath .. "/common.lua")
+dofile(menupath .. "/pkgmgr.lua")
+dofile(menupath .. "/textures.lua")
 
-dofile(basepath .. "common" .. DIR_DELIM .. "async_event.lua")
-dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
-dofile(menupath .. DIR_DELIM .. "common.lua")
-dofile(menupath .. DIR_DELIM .. "pkgmgr.lua")
-dofile(menupath .. DIR_DELIM .. "textures.lua")
-
-dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_settings_advanced.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_contentstore.lua")
-if menustyle ~= "simple" then
-	dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
-	dofile(menupath .. DIR_DELIM .. "dlg_delete_content.lua")
-	dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
-	dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
-end
+dofile(menupath .. "/dlg_config_world.lua")
+dofile(menupath .. "/dlg_settings_advanced.lua")
+dofile(menupath .. "/dlg_contentstore.lua")
+dofile(menupath .. "/dlg_create_world.lua")
+dofile(menupath .. "/dlg_delete_content.lua")
+dofile(menupath .. "/dlg_delete_world.lua")
+dofile(menupath .. "/dlg_rename_modpack.lua")
 
 local tabs = {}
 
-tabs.settings = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
-tabs.content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua")
-tabs.credits  = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
-if menustyle == "simple" then
-	tabs.simple_main = dofile(menupath .. DIR_DELIM .. "tab_simple_main.lua")
-else
-	tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
-	tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
-end
+tabs.settings = dofile(menupath .. "/tab_settings.lua")
+tabs.content  = dofile(menupath .. "/tab_content.lua")
+tabs.credits  = dofile(menupath .. "/tab_credits.lua")
+tabs.local_game = dofile(menupath .. "/tab_local.lua")
+tabs.play_online = dofile(menupath .. "/tab_online.lua")
 
---------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
 	if event == "MenuQuit" then
 		core.close()
@@ -68,7 +58,6 @@ local function main_event_handler(tabview, event)
 	return true
 end
 
---------------------------------------------------------------------------------
 local function init_globals()
 	-- Init gamedata
 	gamedata.worldindex = 0

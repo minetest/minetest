@@ -15,7 +15,7 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
---------------------------------------------------------------------------------
+local server_lookup
 local function get_formspec(tabview, name, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
@@ -64,63 +64,92 @@ local function get_formspec(tabview, name, tabdata)
 		end
 		if fav_selected.description then
 			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
-				core.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
+				core.formspec_escape(gamedata.serverdescription or "") .. "]"
 		end
 	end
 
 	--favourites
 	retval = retval .. "tablecolumns[" ..
-		image_column(fgettext("Favorite"), "favorite") .. ";" ..
-		image_column(fgettext("Ping")) .. ",padding=0.25;" ..
-		"color,span=3;" ..
-		"text,align=right;" ..                -- clients
-		"text,align=center,padding=0.25;" ..  -- "/"
-		"text,align=right,padding=0.25;" ..   -- clients_max
-		image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
-		image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
-		image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
+		"image,tooltip=" .. core.formspec_escape("Gamemode") .. "," ..
+		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
+		"1=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
+		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
+		"3=" .. core.formspec_escape(defaulttexturedir .. "server_ping_2.png") .. "," ..
+		"4=" .. core.formspec_escape(defaulttexturedir .. "server_ping_1.png").. "," ..
+		"5=" .. core.formspec_escape(defaulttexturedir .. "server_flags_favorite.png") .. "," ..
+		"6=" .. core.formspec_escape(defaulttexturedir .. "server_divider_discover.png") .. "," ..
+		"7=" .. core.formspec_escape(defaulttexturedir .. "server_divider_incompatible.png") .. "," ..
+		",padding=0.25;"..
 		"color,span=1;" ..
-		"text,padding=1]" ..
-		"table[-0.15,0.6;7.75,5.15;favourites;"
+		"text,align=inline;"..
+		"color,span=1;" ..
+		"text,align=inline,width=4;" ..
+		"image,tooltip=" .. core.formspec_escape("Gamemode") .. "," ..
+		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
+		"1=" .. core.formspec_escape(defaulttexturedir .."server_flags_creative.png") .. "," ..
+		"2=" .. core.formspec_escape(defaulttexturedir .."server_flags_damage.png") .. "," ..
+		"3=" .. core.formspec_escape(defaulttexturedir .."server_flags_pvp.png") .. "," ..
+		",align=inline,padding=1,width=2;"..
+		"color,align=inline,span=1;" ..
+		"text,align=inline,padding=1]" ..
+		"table[-0.15,0.6;7.75,5.15;servers;"
 
-	if menudata.search_result then
-		for i = 1, #menudata.search_result do
-			local favs = core.get_favorites("local")
-			local server = menudata.search_result[i]
-
-			for fav_id = 1, #favs do
-				if server.address == favs[fav_id].address and
-						server.port == favs[fav_id].port then
-					server.is_favorite = true
-				end
-			end
-
-			if i ~= 1 then
-				retval = retval .. ","
-			end
-
-			retval = retval .. render_serverlist_row(server, server.is_favorite)
-		end
-	elseif #menudata.favorites > 0 then
-		local favs = core.get_favorites("local")
-		if #favs > 0 then
-			for i = 1, #favs do
-			for j = 1, #menudata.favorites do
-				if menudata.favorites[j].address == favs[i].address and
-						menudata.favorites[j].port == favs[i].port then
-					table.insert(menudata.favorites, i, table.remove(menudata.favorites, j))
-				end
-			end
-				if favs[i].address ~= menudata.favorites[i].address then
-					table.insert(menudata.favorites, i, favs[i])
-				end
+	local dividers = {
+		fav = "5,#ffff00,Favorite Servers,#ffffff,,,#ffff00,",
+		discover = "6,"..mt_color_green..",Discover Servers,#ffffff,,,#ffffff,",
+		incompatible = "7,"..mt_color_grey..",Incompatible Servers,#ffffff,,,#aaaaaa,"
+	}
+	local servers = {
+		fav = {},
+		discover = {},
+		incompatible = {}
+	}
+	local favs = core.get_favorites("local")
+	local taken_favs = {}
+	local result = menudata.search_result or menudata.favorites
+	for _, server in ipairs(result) do
+		for index, fav in ipairs(favs) do
+			if server.address == fav.address and server.port == fav.port then
+				taken_favs[index] = true
+				server.is_favorite = true
+				break
 			end
 		end
-		retval = retval .. render_serverlist_row(menudata.favorites[1], (#favs > 0))
-		for i = 2, #menudata.favorites do
-			retval = retval .. "," .. render_serverlist_row(menudata.favorites[i], (i <= #favs))
+		server.is_compatible = is_server_protocol_compat(server.proto_min, server.proto_max)
+		if server.is_favorite then
+			table.insert(servers.fav, server)
+		elseif server.is_compatible then
+			table.insert(servers.discover, server)
+		else
+			table.insert(servers.incompatible, server)
 		end
 	end
+
+	for index, fav in ipairs(favs) do
+		if not taken_favs[index] then
+			table.insert(servers.fav, fav)
+		end
+	end
+
+	local order = {
+		"fav", "discover", "incompatible"
+	}
+
+	server_lookup = {}
+	local rows = {}
+	for _, section in ipairs(order) do
+		local section_servers = servers[section]
+		if next(section_servers) then
+			table.insert(server_lookup, false)
+			table.insert(rows, dividers[section])
+			for _, server in ipairs(section_servers) do
+				table.insert(server_lookup, server)
+				table.insert(rows, render_serverlist_row(server))
+			end
+		end
+	end
+
+	retval = retval..table.concat(rows, ",")
 
 	if tabdata.fav_selected then
 		retval = retval .. ";" .. tabdata.fav_selected .. "]"
@@ -131,7 +160,6 @@ local function get_formspec(tabview, name, tabdata)
 	return retval
 end
 
---------------------------------------------------------------------------------
 local function main_button_handler(tabview, fields, name, tabdata)
 	local serverlist = menudata.search_result or menudata.favorites
 
@@ -140,20 +168,20 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		core.settings:set("name", fields.te_name)
 	end
 
-	if fields.favourites then
-		local event = core.explode_table_event(fields.favourites)
-		local fav = serverlist[event.row]
+	if fields.servers then
+		local event = core.explode_table_event(fields.servers)
+		local server = server_lookup[event.row]
 
-		if event.type == "DCL" then
-			if event.row <= #serverlist then
+		if server then
+			if event.type == "DCL" then
 				if menudata.favorites_is_public and
 						not is_server_protocol_compat_or_error(
-							fav.proto_min, fav.proto_max) then
+							server.proto_min, server.proto_max) then
 					return true
 				end
 
-				gamedata.address    = fav.address
-				gamedata.port       = fav.port
+				gamedata.address    = server.address
+				gamedata.port       = server.port
 				gamedata.playername = fields.te_name
 				gamedata.selected_world = 0
 
@@ -161,29 +189,26 @@ local function main_button_handler(tabview, fields, name, tabdata)
 					gamedata.password = fields.te_pwd
 				end
 
-				gamedata.servername        = fav.name
-				gamedata.serverdescription = fav.description
+				gamedata.servername        = server.name
+				gamedata.serverdescription = server.description
 
 				if gamedata.address and gamedata.port then
 					core.settings:set("address", gamedata.address)
 					core.settings:set("remote_port", gamedata.port)
 					core.start()
 				end
+				return true
 			end
-			return true
-		end
-
-		if event.type == "CHG" then
-			if event.row <= #serverlist then
+			if event.type == "CHG" then
 				gamedata.fav = false
 				local favs = core.get_favorites("local")
-				local address = fav.address
-				local port    = fav.port
-				gamedata.serverdescription = fav.description
+				local address = server.address
+				local port    = server.port
+				gamedata.serverdescription = server.description
 
-				for i = 1, #favs do
-					if fav.address == favs[i].address and
-							fav.port == favs[i].port then
+				for _, fav in ipairs(favs) do
+					if server.address == fav.address and
+							server.port == fav.port then
 						gamedata.fav = true
 					end
 				end
@@ -193,40 +218,9 @@ local function main_button_handler(tabview, fields, name, tabdata)
 					core.settings:set("remote_port", port)
 				end
 				tabdata.fav_selected = event.row
+				return true
 			end
-			return true
 		end
-	end
-
-	if fields.key_up or fields.key_down then
-		local fav_idx = core.get_table_index("favourites")
-		local fav = serverlist[fav_idx]
-
-		if fav_idx then
-			if fields.key_up and fav_idx > 1 then
-				fav_idx = fav_idx - 1
-			elseif fields.key_down and fav_idx < #menudata.favorites then
-				fav_idx = fav_idx + 1
-			end
-		else
-			fav_idx = 1
-		end
-
-		if not menudata.favorites or not fav then
-			tabdata.fav_selected = 0
-			return true
-		end
-
-		local address = fav.address
-		local port    = fav.port
-		gamedata.serverdescription = fav.description
-		if address and port then
-			core.settings:set("address", address)
-			core.settings:set("remote_port", port)
-		end
-
-		tabdata.fav_selected = fav_idx
-		return true
 	end
 
 	if fields.btn_delete_favorite then
@@ -349,7 +343,6 @@ local function on_change(type, old_tab, new_tab)
 	asyncOnlineFavourites()
 end
 
---------------------------------------------------------------------------------
 return {
 	name = "online",
 	caption = fgettext("Join Game"),
