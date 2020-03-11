@@ -55,6 +55,12 @@ function order_favorite_list(list)
 	return res
 end
 
+local function render_client_count(n)
+	if     n > 99 then return '99+'
+	elseif n >= 0 then return tostring(n)
+	else return '?' end
+end
+
 function render_serverlist_row(spec)
 	local text = ""
 	if spec.name then
@@ -85,8 +91,7 @@ function render_serverlist_row(spec)
 		table.insert(details, "0")
 	end
 
-	table.insert(details, "")
-	table.insert(details, "")
+	table.insert(details, ",")
 
 	local color = (grey_out and "#aaaaaa") or ((spec.is_favorite and "#ddddaa") or "#ffffff")
 	if spec.clients and spec.clients_max then
@@ -104,7 +109,7 @@ function render_serverlist_row(spec)
 		end
 
 		table.insert(details, clients_color)
-		table.insert(details, spec.clients.." / "..spec.clients_max)
+		table.insert(details, spec.clients.." / "..render_client_count(spec.clients_max))
 	else
 		table.insert(details, color)
 		table.insert(details, "?")
