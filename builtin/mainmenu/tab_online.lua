@@ -70,7 +70,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	--favourites
 	retval = retval .. "tablecolumns[" ..
-		"image,tooltip=" .. core.formspec_escape("Gamemode") .. "," ..
+		"image,tooltip=Ping," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
@@ -79,25 +79,25 @@ local function get_formspec(tabview, name, tabdata)
 		"5=" .. core.formspec_escape(defaulttexturedir .. "server_flags_favorite.png") .. "," ..
 		"6=" .. core.formspec_escape(defaulttexturedir .. "server_divider_discover.png") .. "," ..
 		"7=" .. core.formspec_escape(defaulttexturedir .. "server_divider_incompatible.png") .. "," ..
-		",padding=0.25;"..
+		"padding=0.25;"..
 		"color,span=1;" ..
 		"text,align=inline;"..
 		"color,span=1;" ..
 		"text,align=inline,width=4;" ..
-		"image,tooltip=" .. core.formspec_escape("Gamemode") .. "," ..
+		"image,tooltip=Gamemode," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .."server_flags_creative.png") .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .."server_flags_damage.png") .. "," ..
 		"3=" .. core.formspec_escape(defaulttexturedir .."server_flags_pvp.png") .. "," ..
-		",align=inline,padding=1,width=2;"..
+		"align=inline,padding=1,width=2;"..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
 		"table[-0.15,0.6;7.75,5.15;servers;"
 
 	local dividers = {
-		fav = "5,#ffff00,Favorite Servers,#ffffff,,,#ffff00,",
-		discover = "6,"..mt_color_green..",Discover Servers,#ffffff,,,#ffffff,",
-		incompatible = "7,"..mt_color_grey..",Incompatible Servers,#ffffff,,,#aaaaaa,"
+		fav = "5,#ffff00,Favorite Servers,,,0,,",
+		discover = "6,"..mt_color_green..",Discover Servers,,,0,,",
+		incompatible = "7,"..mt_color_grey..",Incompatible Servers,,,0,,"
 	}
 	local servers = {
 		fav = {},
