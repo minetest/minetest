@@ -47,14 +47,16 @@ local function get_formspec(tabview, name, tabdata)
 		"box[8.625,0;4.5,7;"..mt_color_green.."]"..
 
 		-- Address / Port
-		"label[8.75,0.35;" .. fgettext("Address / Port") .. "]" ..
+		"label[8.75,0.35;" .. fgettext("Address") .. "]" ..
+		"label[12,0.35;" .. fgettext("Port") .. "]" ..
 		"field[8.75,0.5;3.25,0.5;te_address;;" ..
 			core.formspec_escape(core.settings:get("address")) .. "]" ..
 		"field[12,0.5;1,0.5;te_port;;" ..
 			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
 
 		-- Name / Password
-		"label[8.75,1.55;" .. fgettext("Name / Password") .. "]" ..
+		"label[8.75,1.55;" .. fgettext("Name") .. "]" ..
+		"label[11.5,1.55;" .. fgettext("Password") .. "]" ..
 		"field[8.75,1.75;2.75,0.5;te_name;;" ..
 			core.formspec_escape(core.settings:get("name")) .. "]" ..
 		"pwdfield[11.5,1.75;1.5,0.5;te_pwd;]" ..
