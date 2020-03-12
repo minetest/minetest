@@ -33,7 +33,6 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		-- Search
-		"real_coordinates[true]"..
 		"image_button[0.25,0.25;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "mainmenu_clear.png")
 			.. ";btn_mp_clear;]" ..
 		"field[1,0.25;6,0.75;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
@@ -45,7 +44,7 @@ local function get_formspec(tabview, name, tabdata)
 		"tooltip[btn_mp_search;" .. fgettext("Search") .. "]"..
 		"tooltip[btn_mp_refresh;" .. fgettext("Refresh") .. "]"..
 
-		"box[8.625,0;4.5,7.08;"..mt_color_green.."]"..
+		"box[8.625,0;4.5,7;"..mt_color_green.."]"..
 
 		-- Address / Port
 		"label[8.75,0.35;" .. fgettext("Address / Port") .. "]" ..
@@ -168,7 +167,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. ";0]"
 	end
 
-	return retval
+	return retval, "size[13.125,7,false]real_coordinates[true]"
 end
 
 local function main_button_handler(tabview, fields, name, tabdata)
