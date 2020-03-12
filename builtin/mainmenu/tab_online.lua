@@ -55,12 +55,13 @@ local function get_formspec(tabview, name, tabdata)
 			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
 
 		-- Name / Password
-		"label[8.75,1.25;" .. fgettext("Name / Password") .. "]" ..
+		"label[8.75,1.55;" .. fgettext("Name / Password") .. "]" ..
 		"field[8.75,1.75;2.75,0.5;te_name;;" ..
 			core.formspec_escape(core.settings:get("name")) .. "]" ..
 		"pwdfield[11.5,1.75;1.5,0.5;te_pwd;]" ..
 
 		-- Description Background
+		"label[8.75,3.05;" .. fgettext("Server Description") .. "]" ..
 		"box[8.75,3.25;4.25,2.5;#999999]"..
 
 		-- Connect
