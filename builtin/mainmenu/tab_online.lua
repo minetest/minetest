@@ -33,44 +33,52 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		-- Search
-		"field[0.15,0.075;5.91,1;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
-		"button[5.62,-0.25;1.5,1;btn_mp_search;" .. fgettext("Search") .. "]" ..
-		"image_button[6.97,-.165;.83,.83;" .. core.formspec_escape(defaulttexturedir .. "refresh.png")
+		"real_coordinates[true]"..
+		"image_button[0.25,0.25;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "mainmenu_clear.png")
+			.. ";btn_mp_clear;]" ..
+		"field[1,0.25;6,0.75;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
+		"image_button[7,0.25;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "mainmenu_search.png")
+			.. ";btn_mp_search;]" ..
+		"image_button[7.75,0.25;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "refresh.png")
 			.. ";btn_mp_refresh;]" ..
+		"tooltip[btn_mp_search;" .. fgettext("Clear") .. "]"..
+		"tooltip[btn_mp_search;" .. fgettext("Search") .. "]"..
+		"tooltip[btn_mp_refresh;" .. fgettext("Refresh") .. "]"..
+
+		"box[8.625,0;4.5,7.08;"..mt_color_green.."]"..
 
 		-- Address / Port
-		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
-		"field[8,0.65;3.25,0.5;te_address;;" ..
+		"label[8.75,0.35;" .. fgettext("Address / Port") .. "]" ..
+		"field[8.75,0.5;3.25,0.5;te_address;;" ..
 			core.formspec_escape(core.settings:get("address")) .. "]" ..
-		"field[11.1,0.65;1.4,0.5;te_port;;" ..
+		"field[12,0.5;1,0.5;te_port;;" ..
 			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
 
 		-- Name / Password
-		"label[7.75,0.95;" .. fgettext("Name / Password") .. "]" ..
-		"field[8,1.85;2.9,0.5;te_name;;" ..
+		"label[8.75,1.25;" .. fgettext("Name / Password") .. "]" ..
+		"field[8.75,1.75;2.75,0.5;te_name;;" ..
 			core.formspec_escape(core.settings:get("name")) .. "]" ..
-		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
+		"pwdfield[11.5,1.75;1.5,0.5;te_pwd;]" ..
 
 		-- Description Background
-		"box[7.73,2.25;4.25,2.6;#999999]"..
+		"box[8.75,3.25;4.25,2.5;#999999]"..
 
 		-- Connect
-		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
+		"button[11,6;2,0.75;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
 	if tabdata.fav_selected and fav_selected then
 		if gamedata.fav then
-			retval = retval .. "button[7.73,4.9;2.3,1;btn_delete_favorite;" ..
+			retval = retval .. "button[8.75,6;2,0.75;btn_delete_favorite;" ..
 				fgettext("Del. Favorite") .. "]"
 		end
 		if fav_selected.description then
-			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
+			retval = retval .. "textarea[8.75,3.25;4.25,2.5;;;" ..
 				core.formspec_escape(gamedata.serverdescription or "") .. "]"
 		end
 	end
 
-	--favourites
 	retval = retval .. "tablecolumns[" ..
-		"image,tooltip=Ping," ..
+		"image,tooltip=" .. fgettext("Ping") .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
@@ -84,7 +92,7 @@ local function get_formspec(tabview, name, tabdata)
 		"text,align=inline;"..
 		"color,span=1;" ..
 		"text,align=inline,width=4;" ..
-		"image,tooltip=Gamemode," ..
+		"image,tooltip=" .. fgettext("Gamemode") .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .."server_flags_creative.png") .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .."server_flags_damage.png") .. "," ..
@@ -92,12 +100,12 @@ local function get_formspec(tabview, name, tabdata)
 		"align=inline,padding=1,width=2;"..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
-		"table[-0.15,0.6;7.75,5.15;servers;"
+		"table[0.25,1;8.25,5.75;servers;"
 
 	local dividers = {
-		fav = "5,#ffff00,Favorite Servers,,,0,,",
-		discover = "6,"..mt_color_green..",Discover Servers,,,0,,",
-		incompatible = "7,"..mt_color_grey..",Incompatible Servers,,,0,,"
+		fav = "5,#ffff00," .. fgettext("Favorite Servers") .. ",,,0,,",
+		discover = "6,"..mt_color_green.."," .. fgettext("Discover Servers") .. ",,,0,,",
+		incompatible = "7,"..mt_color_grey.."," .. fgettext("Incompatible Servers") .. ",,,0,,"
 	}
 	local servers = {
 		fav = {},
@@ -125,9 +133,11 @@ local function get_formspec(tabview, name, tabdata)
 		end
 	end
 
-	for index, fav in ipairs(favs) do
-		if not taken_favs[index] then
-			table.insert(servers.fav, fav)
+	if not menudata.search_result then
+		for index, fav in ipairs(favs) do
+			if not taken_favs[index] then
+				table.insert(servers.fav, fav)
+			end
 		end
 	end
 
@@ -233,6 +243,12 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		core.settings:set("address", "")
 		core.settings:set("remote_port", "30000")
+		return true
+	end
+
+	if fields.btn_mp_clear then
+		tabdata.search_for = ""
+		menudata.search_result = nil
 		return true
 	end
 
