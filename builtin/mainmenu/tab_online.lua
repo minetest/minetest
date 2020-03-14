@@ -78,6 +78,7 @@ local function get_formspec(tabview, name, tabdata)
 		"text,align=right,padding=0.25;" ..   -- clients_max
 		image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
 		image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
+		--~ PvP = Player versus Player
 		image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
 		"color,span=1;" ..
 		"text,padding=1]" ..
