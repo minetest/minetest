@@ -94,21 +94,23 @@ local function get_formspec(tabview, name, tabdata)
 		"text,align=inline;"..
 		"color,span=1;" ..
 		"text,align=inline,width=4;" ..
-		"image,tooltip=" .. fgettext("Gamemode") .. "," ..
+		"image,tooltip=" .. fgettext("Creative") .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .."server_flags_creative.png") .. "," ..
-		"2=" .. core.formspec_escape(defaulttexturedir .."server_flags_damage.png") .. "," ..
-		"3=" .. core.formspec_escape(defaulttexturedir .."server_flags_pvp.png") .. "," ..
-		"4=" .. core.formspec_escape(defaulttexturedir .."server_flags_unknown.png") .. "," ..
-		"align=inline,padding=1,width=2;"..
+		"align=inline,padding=1,width=1;" ..
+		"image,tooltip=" .. fgettext("Damage") .. "," ..
+		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
+		"1=" .. core.formspec_escape(defaulttexturedir .."server_flags_damage.png") .. "," ..
+		"2=" .. core.formspec_escape(defaulttexturedir .."server_flags_pvp.png") .. "," ..
+		"align=inline,padding=1,width=2;" ..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
 		"table[0.25,1;8.25,5.75;servers;"
 
 	local dividers = {
-		fav = "5,#ffff00," .. fgettext("Favorite Servers") .. ",,,0,,",
-		discover = "6,"..mt_color_green.."," .. fgettext("Discover Servers") .. ",,,0,,",
-		incompatible = "7,"..mt_color_grey.."," .. fgettext("Incompatible Servers") .. ",,,0,,"
+		fav = "5,#ffff00," .. fgettext("Favorite Servers") .. ",,,0,0,,",
+		discover = "6,"..mt_color_green.."," .. fgettext("Discover Servers") .. ",,,0,0,,",
+		incompatible = "7,"..mt_color_grey.."," .. fgettext("Incompatible Servers") .. ",,,0,0,,"
 	}
 	local servers = {
 		fav = {},

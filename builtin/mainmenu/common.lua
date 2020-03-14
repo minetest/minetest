@@ -116,16 +116,15 @@ function render_serverlist_row(spec)
 	end
 
 	if spec.creative then
-		if spec.pvp or spec.damage then
-			-- unknown server; creative + pvp or creative + damage (or both) makes no sense
-			table.insert(details, "4")
-		else
-			table.insert(details, "1")
-		end
-	elseif spec.pvp then
-		table.insert(details, "3")
-	elseif spec.damage then
+		table.insert(details, "1")
+	else
+		table.insert(details, "0")
+	end
+	
+	if spec.pvp then
 		table.insert(details, "2")
+	elseif spec.damage then
+		table.insert(details, "1")
 	else
 		table.insert(details, "0")
 	end
