@@ -26,13 +26,12 @@ GUIItemImage::GUIItemImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
 	m_item_name(item_name), m_font(font), m_client(client), m_label(core::stringw())
 {
+	// Hack to allow clicks and focus to pass through this element
+	setVisible(false);
 }
 
 void GUIItemImage::draw()
 {
-	if (!IsVisible)
-		return;
-
 	if (!m_client) {
 		IGUIElement::draw();
 		return;
@@ -46,7 +45,9 @@ void GUIItemImage::draw()
 	drawItemStack(Environment->getVideoDriver(), m_font, item, rect,
 			&AbsoluteClippingRect, m_client, IT_ROT_NONE);
 	video::SColor color(255, 255, 255, 255);
-	m_font->draw(m_label, rect, color, true, true, &AbsoluteClippingRect);
+
+	if (!m_label.empty())
+		m_font->draw(m_label, rect, color, true, true, &AbsoluteClippingRect);
 
 	IGUIElement::draw();
 }

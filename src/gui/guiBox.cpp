@@ -24,13 +24,12 @@ GUIBox::GUIBox(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
 	m_color(color)
 {
+	// Hack to allow clicks and focus to pass through this element
+	setVisible(false);
 }
 
 void GUIBox::draw()
 {
-	if (!IsVisible)
-		return;
-
 	Environment->getVideoDriver()->draw2DRectangle(m_color, AbsoluteRect,
 			&AbsoluteClippingRect);
 

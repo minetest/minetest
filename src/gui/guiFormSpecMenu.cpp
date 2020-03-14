@@ -68,6 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiTable.h"
 #include "intlGUIEditBox.h"
 #include "guiHyperText.h"
+#include "guiImage.h"
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -735,11 +736,14 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 			1
 		);
 		core::rect<s32> rect(pos, pos + geom);
-		gui::IGUIImage *e = Environment->addImage(rect, this, spec.fid, 0, true);
+
+		GUIImage *e = new GUIImage(Environment, this, spec.fid, rect);
 		e->setImage(texture);
 		e->setScaleImage(true);
 		auto style = getStyleForElement("image", spec.fname);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
+		e->drop();
+
 		m_fields.push_back(spec);
 
 		return;

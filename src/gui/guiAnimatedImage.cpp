@@ -44,6 +44,9 @@ GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *
 		// No need to step an animation if we have nothing to draw
 		m_frame_count = 1;
 	}
+
+	// Hack to allow clicks and focus to pass through this element
+	setVisible(false);
 }
 
 void GUIAnimatedImage::draw()

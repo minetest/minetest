@@ -26,13 +26,12 @@ GUIBackgroundImage::GUIBackgroundImage(gui::IGUIEnvironment *env,
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
 	m_name(name), m_middle(middle), m_tsrc(tsrc), m_autoclip(autoclip)
 {
+	// Hack to allow clicks and focus to pass through this element
+	setVisible(false);
 }
 
 void GUIBackgroundImage::draw()
 {
-	if (!IsVisible)
-		return;
-
 	video::ITexture *texture = m_tsrc->getTexture(m_name);
 
 	if (!texture) {
