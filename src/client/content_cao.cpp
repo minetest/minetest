@@ -822,26 +822,26 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 	}
 }
 
-void GenericCAO::setNodeLight(u8 light) {
+void GenericCAO::setNodeLight(u8 light)
+{
 	video::SColor color(255, light, light, light);
 
 	if (m_enable_shaders) {
 		scene::ISceneNode *node = getSceneNode();
 
-		if (node == nullptr) {
+		if (node == nullptr)
 			return;
-		}
 
 		if (m_prop.visual == "upright_sprite") {
 			scene::IMesh *mesh = m_meshnode->getMesh();
 			for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
-				scene::IMeshBuffer* buf = mesh->getMeshBuffer(i);
-				video::SMaterial& material = buf->getMaterial();
+				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+				video::SMaterial &material = buf->getMaterial();
 				material.EmissiveColor = color;
 			}
 		} else {
 			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
-				video::SMaterial& material = node->getMaterial(i);
+				video::SMaterial &material = node->getMaterial(i);
 				material.EmissiveColor = color;
 			}
 		}
