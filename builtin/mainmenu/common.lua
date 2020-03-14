@@ -76,13 +76,13 @@ function render_serverlist_row(spec)
 
 	local details = {}
 
-	if spec.ping then
-		local ping = spec.ping * 1000
-		if ping <= 50 then
+	if spec.lag then
+		local lag = spec.lag * 1000
+		if lag <= 75 then
 			table.insert(details, "1")
-		elseif ping <= 100 then
+		elseif lag <= 150 then
 			table.insert(details, "2")
-		elseif ping <= 250 then
+		elseif lag <= 300 then
 			table.insert(details, "3")
 		else
 			table.insert(details, "4")

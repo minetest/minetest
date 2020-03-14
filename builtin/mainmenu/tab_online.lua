@@ -80,7 +80,7 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	retval = retval .. "tablecolumns[" ..
-		"image,tooltip=" .. fgettext("Ping") .. "," ..
+		"image,tooltip=" .. fgettext("Lag") .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
@@ -237,10 +237,10 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_delete_favorite then
-		local current_favourite = core.get_table_index("favourites")
-		if not current_favourite then return end
+		local current_server = core.get_table_index("servers")
+		if not current_server then return end
 
-		core.delete_favorite(current_favourite)
+		core.delete_favorite(current_server)
 		asyncOnlineFavourites()
 		tabdata.fav_selected = nil
 

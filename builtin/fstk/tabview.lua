@@ -16,7 +16,6 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
---------------------------------------------------------------------------------
 -- A tabview implementation                                                   --
 -- Usage:                                                                     --
 -- tabview.create: returns initialized tabview raw element                    --
@@ -24,9 +23,7 @@
 -- element.handle_buttons()                                                   --
 -- element.handle_events()                                                    --
 -- element.getFormspec() returns formspec of tabview                          --
---------------------------------------------------------------------------------
 
---------------------------------------------------------------------------------
 local function add_tab(self,tab)
 	assert(tab.size == nil or (type(tab.size) == table and
 			tab.size.x ~= nil and tab.size.y ~= nil))
@@ -56,7 +53,6 @@ local function add_tab(self,tab)
 	end
 end
 
---------------------------------------------------------------------------------
 local function get_formspec(self)
 	local formspec
 	if not self.hidden and (self.parent == nil or not self.parent.hidden) then
@@ -80,7 +76,6 @@ local function get_formspec(self)
 	return formspec
 end
 
---------------------------------------------------------------------------------
 local function handle_buttons(self,fields)
 
 	if self.hidden then
@@ -109,7 +104,6 @@ local function handle_buttons(self,fields)
 	return false
 end
 
---------------------------------------------------------------------------------
 local function handle_events(self,event)
 
 	if self.hidden then
@@ -135,7 +129,6 @@ local function handle_events(self,event)
 end
 
 
---------------------------------------------------------------------------------
 local function tab_header(self)
 
 	local toadd = ""
@@ -152,7 +145,6 @@ local function tab_header(self)
 			self.header_x, self.header_y, self.name, toadd, self.last_tab_index);
 end
 
---------------------------------------------------------------------------------
 local function switch_to_tab(self, index)
 	--first call on_change for tab to leave
 	if self.tablist[self.last_tab_index].on_change ~= nil then
@@ -176,7 +168,6 @@ local function switch_to_tab(self, index)
 	end
 end
 
---------------------------------------------------------------------------------
 local function handle_tab_buttons(self,fields)
 	--save tab selection to config file
 	if fields[self.name] then
@@ -188,7 +179,6 @@ local function handle_tab_buttons(self,fields)
 	return false
 end
 
---------------------------------------------------------------------------------
 local function set_tab_by_name(self, name)
 	for i=1,#self.tablist,1 do
 		if self.tablist[i].name == name then
@@ -200,7 +190,6 @@ local function set_tab_by_name(self, name)
 	return false
 end
 
---------------------------------------------------------------------------------
 local function hide_tabview(self)
 	self.hidden=true
 
@@ -211,7 +200,6 @@ local function hide_tabview(self)
 	end
 end
 
---------------------------------------------------------------------------------
 local function show_tabview(self)
 	self.hidden=false
 
@@ -246,7 +234,6 @@ local tabview_metatable = {
 
 tabview_metatable.__index = tabview_metatable
 
---------------------------------------------------------------------------------
 function tabview_create(name, size, tabheaderpos)
 	local self = {}
 
