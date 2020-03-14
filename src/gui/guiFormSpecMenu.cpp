@@ -137,8 +137,6 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 		checkbox_it.second->drop();
 	for (auto &scrollbar_it : m_scrollbars)
 		scrollbar_it.second->drop();
-	for (auto &background_it : m_backgrounds)
-		background_it->drop();
 	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
 	for (auto &clickthrough_it : m_clickthrough_elements)
@@ -1124,17 +1122,15 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 		rect = core::rect<s32>(-pos, pos);
 	}
 
-	GUIBackgroundImage *e = new GUIBackgroundImage(Environment, this, spec.fid,
-			rect, name, middle, m_tsrc, clip);
+	GUIBackgroundImage *e = new GUIBackgroundImage(Environment, data->background_parent.get(),
+			spec.fid, rect, name, middle, m_tsrc, clip);
 
 	FATAL_ERROR_IF(!e, "Failed to create background formspec element");
 
 	e->setNotClipped(true);
 
-	e->setVisible(false); // the element is drawn manually before all others
-
-	m_backgrounds.push_back(e);
 	m_fields.push_back(spec);
+	e->drop();
 }
 
 void GUIFormSpecMenu::parseTableOptions(parserData* data, const std::string &element)
@@ -3059,8 +3055,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		checkbox_it.second->drop();
 	for (auto &scrollbar_it : m_scrollbars)
 		scrollbar_it.second->drop();
-	for (auto &background_it : m_backgrounds)
-		background_it->drop();
 	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
 	for (auto &clickthrough_it : m_clickthrough_elements)
@@ -3082,7 +3076,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	mydata.current_parent = this;
 
 	m_inventorylists.clear();
-	m_backgrounds.clear();
 	m_tables.clear();
 	m_checkboxes.clear();
 	m_scrollbars.clear();
@@ -3335,6 +3328,15 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	sanity_check(skin);
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
+
+	// Add a new element that will hold all the background elements as its children.
+	// Because it is the first added element, all backgrounds will be behind all
+	// the other elements.
+	// (We use an arbitrarily big rect. The actual size is determined later by
+	// clipping to `this`.)
+	core::rect<s32> background_parent_rect(0, 0, 100000, 100000);
+	mydata.background_parent.reset(new gui::IGUIElement(EGUIET_ELEMENT, Environment,
+			this, -1, background_parent_rect));
 
 	pos_offset = v2f32();
 
@@ -3589,15 +3591,6 @@ void GUIFormSpecMenu::drawMenu()
 				break;
 			}
 		}
-	}
-
-	/*
-		Draw backgrounds
-	*/
-	for (gui::IGUIElement *e : m_backgrounds) {
-		e->setVisible(true);
-		e->draw();
-		e->setVisible(false);
 	}
 
 	// Some elements are only visible while being drawn
