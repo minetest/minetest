@@ -21,7 +21,7 @@ core.register_on_sending_chat_message(function(message)
 	param = param or ""
 
 	if not cmd then
-		core.display_chat_message(core.gettext("-!- Empty command"))
+		core.display_chat_message(core.gettext("-!- Empty command."))
 		return true
 	end
 
@@ -63,7 +63,7 @@ core.register_chatcommand("clear_chat_queue", {
 	description = core.gettext("Clear the out chat queue"),
 	func = function(param)
 		core.clear_out_chat_queue()
-		return true, core.gettext("The out chat queue is now empty")
+		return true, core.gettext("The out chat queue is now empty.")
 	end,
 })
 
