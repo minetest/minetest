@@ -1,6 +1,7 @@
 -- Minetest: builtin/game/chat.lua
 
 local S = core.get_translator("__builtin")
+local N = function(s) return s end
 
 -- Helper function that implements search and replace without pattern matching
 -- Returns the string and a boolean indicating whether or not the string was modified
@@ -19,7 +20,7 @@ end
 
 -- Implemented in Lua to allow redefinition
 function core.format_chat_message(name, message)
-	local error_str = S("Invalid chat message format - missing %s")
+	local error_str = "Invalid chat message format - missing %s"
 	local str = core.settings:get("chat_message_format")
 	local replaced
 
@@ -641,23 +642,23 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	local leftover = receiverref:get_inventory():add_item("main", itemstack)
 	local msg_self, msg_other
 	if leftover:is_empty() then
-		msg_self = S("%q added to inventory.")
-		msg_other = S("%q added to %s's inventory.")
+		msg_self = N("@1 added to inventory.")
+		msg_other = N("@1 added to @2's inventory.")
 	elseif leftover:get_count() == itemstack:get_count() then
-		msg_self = S("%q could not be added to inventory.")
-		msg_other = S("%q could not be added to %s's inventory.")
+		msg_self = N("@1 could not be added to inventory.")
+		msg_other = N("@1 could not be added to @2's inventory.")
 	else
-		msg_self = S("%q partially added to inventory.")
-		msg_other = S("%q partially added to %s's inventory.")
+		msg_self = N("@1 partially added to inventory.")
+		msg_other = N("@1 partially added to @2's inventory.")
 	end
 	-- The actual item stack string may be different from what the "giver"
 	-- entered (e.g. big numbers are always interpreted as 2^16-1).
 	stackstring = itemstack:to_string()
 	if giver == receiver then
-		return true, msg_self:format(stackstring)
+		return true, S(msg_self, stackstring)
         else
-		core.chat_send_player(receiver, msg_self:format(stackstring))
-		return true, msg_other:format(stackstring, receiver)
+		core.chat_send_player(receiver, S(msg_self, stackstring))
+		return true, S(msg_other, stackstring, receiver)
 	end
 end
 
@@ -787,13 +788,12 @@ core.register_chatcommand("rollback_check", {
 			for i = num_actions, 1, -1 do
 				local action = actions[i]
 				core.chat_send_player(name,
-					(S("%s %s %s -> %s %d seconds ago."))
-						:format(
+					(S("@1 @2 @3 -> @4 @5 seconds ago",
 							core.pos_to_string(action.pos),
 							action.actor,
 							action.oldnode.name,
 							action.newnode.name,
-							time - action.time))
+							time - action.time)))
 			end
 		end
 
@@ -1021,7 +1021,7 @@ core.register_chatcommand("msg", {
 		core.log("action", "DM from " .. name .. " to " .. sendto
 				.. ": " .. message)
 		core.chat_send_player(sendto, S("DM from @1: @2", name, message))
-		return true, "Message sent."
+		return true, S("Message sent.")
 	end,
 })
 
