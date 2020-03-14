@@ -40,7 +40,7 @@ local function get_formspec(tabview, name, tabdata)
 			.. ";btn_mp_search;]" ..
 		"image_button[7.75,0.25;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "refresh.png")
 			.. ";btn_mp_refresh;]" ..
-		"tooltip[btn_mp_search;" .. fgettext("Clear") .. "]"..
+		"tooltip[btn_mp_clear;" .. fgettext("Clear") .. "]"..
 		"tooltip[btn_mp_search;" .. fgettext("Search") .. "]"..
 		"tooltip[btn_mp_refresh;" .. fgettext("Refresh") .. "]"..
 
@@ -99,6 +99,7 @@ local function get_formspec(tabview, name, tabdata)
 		"1=" .. core.formspec_escape(defaulttexturedir .."server_flags_creative.png") .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .."server_flags_damage.png") .. "," ..
 		"3=" .. core.formspec_escape(defaulttexturedir .."server_flags_pvp.png") .. "," ..
+		"4=" .. core.formspec_escape(defaulttexturedir .."server_flags_unknown.png") .. "," ..
 		"align=inline,padding=1,width=2;"..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
