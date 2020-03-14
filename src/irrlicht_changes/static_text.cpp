@@ -41,9 +41,6 @@ StaticText::StaticText(const EnrichedString &text, bool border,
 	#endif
 
 	setText(text);
-
-	// Hack to allow clicks and focus to pass through this element
-	setVisible(false);
 }
 
 
@@ -57,6 +54,9 @@ StaticText::~StaticText()
 //! draws the element and its children
 void StaticText::draw()
 {
+	if (!IsVisible)
+		return;
+
 	IGUISkin* skin = Environment->getSkin();
 	if (!skin)
 		return;
