@@ -1,5 +1,7 @@
 -- Minetest: builtin/misc_register.lua
 
+local S = core.get_translator("__builtin")
+
 --
 -- Make raw registration functions inaccessible to anyone except this file
 --
@@ -333,7 +335,7 @@ end
 
 core.register_item(":unknown", {
 	type = "none",
-	description = "Unknown Item",
+	description = S("Unknown Item"),
 	inventory_image = "unknown_item.png",
 	on_place = core.item_place,
 	on_secondary_use = core.item_secondary_use,
@@ -343,7 +345,7 @@ core.register_item(":unknown", {
 })
 
 core.register_node(":air", {
-	description = "Air",
+	description = S("Air"),
 	inventory_image = "air.png",
 	wield_image = "air.png",
 	drawtype = "airlike",
@@ -360,7 +362,7 @@ core.register_node(":air", {
 })
 
 core.register_node(":ignore", {
-	description = "Ignore",
+	description = S("Ignore"),
 	inventory_image = "ignore.png",
 	wield_image = "ignore.png",
 	drawtype = "airlike",
@@ -377,7 +379,7 @@ core.register_node(":ignore", {
 		core.chat_send_player(
 				placer:get_player_name(),
 				core.colorize("#FF0000",
-				"You can't place 'ignore' nodes!"))
+				S("You can't place 'ignore' nodes!")))
 		return ""
 	end,
 })
