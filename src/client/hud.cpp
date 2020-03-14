@@ -348,19 +348,22 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
-				core::rect<s32> size(0, 0, 200, 2 * text_height);
 				std::wstring text = unescape_translate(utf8_to_wide(e->name));
-				font->draw(text.c_str(), size + pos, color);
 				// waypoints reuse the item field to store precision, item = precision + 1
 				u32 item = e->item;
 				float precision = item == 0 ? 10.0f : (item - 1);
-				if (precision > 0) {
+				bool draw_precision = precision > 0;
+				core::rect<s32> size(0, 0, font->getDimension(text.c_str()).Width, (draw_precision ? 2:1) * text_height);
+				pos.Y += (e->align.Y - 1.0) * size.getHeight() / 2;
+				size += pos;
+				font->draw(text.c_str(), size + v2s32((e->align.X - 1.0) * size.getWidth() / 2, 0), color);
+				if (draw_precision) {
 					std::ostringstream os;
 					float distance = std::floor(precision * p_pos.getDistanceFrom(e->world_pos)) / precision;
 					os << distance << e->text;
 					text = unescape_translate(utf8_to_wide(os.str()));
-					pos.Y += text_height;
-					font->draw(text.c_str(), size + pos, color);
+					size.LowerRightCorner.X = size.UpperLeftCorner.X + font->getDimension(text.c_str()).Width;
+					font->draw(text.c_str(), size + v2s32((e->align.X - 1.0) * size.getWidth() / 2, text_height), color);
 				}
 				break; }
 			case HUD_ELEM_IMAGE_WAYPOINT: {

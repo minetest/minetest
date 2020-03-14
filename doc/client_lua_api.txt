@@ -1400,6 +1400,7 @@ Displays distance to selected world position. Accepts offset.
 * `number:` An integer containing the RGB value of the color used to draw the
   text.
 * `world_pos`: World position of the waypoint.
+* `alignment`: The alignment of the waypoint.
 
 ### `image_waypoint`
 

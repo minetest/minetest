@@ -1362,6 +1362,7 @@ Displays distance to selected world position.
   text.
 * `world_pos`: World position of the waypoint.
 * `offset`: offset in pixels from position.
+* `alignment`: The alignment of the waypoint.
 
 ### `image_waypoint`
 
