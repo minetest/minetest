@@ -101,6 +101,29 @@ Client::Client(
 	m_game_ui(game_ui),
 	m_modchannel_mgr(new ModChannelMgr())
 {
+	// Load builtin translation
+	std::string lang = gettext("LANG_CODE");
+	if (lang != "" && lang != "LANG_CODE") {
+		std::string path = getBuiltinLuaPath() + DIR_DELIM + "locale" +
+			DIR_DELIM + "__builtin." + lang + ".tr";
+		std::ifstream is(path.c_str(), std::ios::binary | std::ios::ate);
+		auto size = is.tellg();
+		std::string translation(size, '\0'); // construct string to stream size
+		is.seekg(0);
+		if(is.good() && is.read(&translation[0], size)) {
+			g_translations->loadTranslation(translation);
+			actionstream << "Builtin translation loaded ["
+				<< lang << "]" << std::endl;
+		} else {
+			warningstream << "No builtin translation loaded - "
+				<< "couldn't read file [" << lang << "]" << std::endl;
+		}
+	} else {
+		actionstream << "No builtin translation loaded - "
+			<< "missing LANG_CODE in locale file ["
+			<< lang << "]" << std::endl;
+	}
+
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
