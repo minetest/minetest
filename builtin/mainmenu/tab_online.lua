@@ -44,7 +44,7 @@ local function get_formspec(tabview, name, tabdata)
 		"tooltip[btn_mp_search;" .. fgettext("Search") .. "]"..
 		"tooltip[btn_mp_refresh;" .. fgettext("Refresh") .. "]"..
 
-		"box[8.625,0;4.5,7;"..mt_color_green.."]"..
+		"box[8.625,0;4.5,7;#888888]"..
 
 		-- Address / Port
 		"label[8.75,0.35;" .. fgettext("Address") .. "]" ..
