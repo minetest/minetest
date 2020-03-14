@@ -120,7 +120,7 @@ function render_serverlist_row(spec)
 	else
 		table.insert(details, "0")
 	end
-	
+
 	if spec.pvp then
 		table.insert(details, "2")
 	elseif spec.damage then
