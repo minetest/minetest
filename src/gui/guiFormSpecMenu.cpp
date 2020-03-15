@@ -3661,7 +3661,8 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	// Mouse wheel and move events: send to hovered element instead of focused
 	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
 			(event.MouseInput.Event == EMIE_MOUSE_WHEEL ||
-			 event.MouseInput.Event == EMIE_MOUSE_MOVED)) {
+			(event.MouseInput.Event == EMIE_MOUSE_MOVED &&
+			event.MouseInput.ButtonStates == 0))) {
 		s32 x = event.MouseInput.X;
 		s32 y = event.MouseInput.Y;
 		gui::IGUIElement *hovered =
