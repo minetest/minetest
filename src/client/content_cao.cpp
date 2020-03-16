@@ -621,8 +621,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 		setSceneNodeMaterial(m_spritenode);
 
-		u8 li = m_last_light;
-		m_spritenode->setColor(video::SColor(255,li,li,li));
 		m_spritenode->setSize(v2f(m_prop.visual_size.X,
 				m_prop.visual_size.Y) * BS);
 		{
@@ -636,8 +634,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		scene::SMesh *mesh = new scene::SMesh();
 		double dx = BS * m_prop.visual_size.X / 2;
 		double dy = BS * m_prop.visual_size.Y / 2;
-		u8 li = m_last_light;
-		video::SColor c(255, li, li, li);
+		video::SColor c(0xFFFFFFFF);
 
 		{ // Front
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
@@ -717,8 +714,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		mesh->drop();
 
 		m_meshnode->setScale(m_prop.visual_size);
-		u8 li = m_last_light;
-		setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
 
 		setSceneNodeMaterial(m_meshnode);
 	} else if (m_prop.visual == "mesh") {
@@ -731,12 +726,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
 			m_animated_meshnode->setScale(m_prop.visual_size);
-			u8 li = m_last_light;
 
 			// set vertex colors to ensure alpha is set
-			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
+			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(0xFFFFFFFF));
 
-			setAnimatedMeshColor(m_animated_meshnode, video::SColor(255,li,li,li));
+			setAnimatedMeshColor(m_animated_meshnode, video::SColor(0xFFFFFFFF));
 
 			setSceneNodeMaterial(m_animated_meshnode);
 
@@ -766,8 +760,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			(m_prop.visual == "wielditem"));
 
 		m_wield_meshnode->setScale(m_prop.visual_size / 2.0f);
-		u8 li = m_last_light;
-		m_wield_meshnode->setColor(video::SColor(255, li, li, li));
+		m_wield_meshnode->setColor(video::SColor(0xFFFFFFFF));
 	} else {
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 				<<"\" not supported"<<std::endl;
@@ -795,6 +788,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	updateAnimation();
 	updateBonePosition();
 	updateAttachments();
+	setNodeLight(m_last_light);
 }
 
 void GenericCAO::updateLight(u8 light_at_pos)
@@ -824,38 +818,42 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 
 	if (li != m_last_light)	{
 		m_last_light = li;
-		video::SColor color(255,li,li,li);
+		setNodeLight(li);
+	}
+}
 
-		if (m_enable_shaders) {
-			scene::ISceneNode *node = getSceneNode();
+void GenericCAO::setNodeLight(u8 light)
+{
+	video::SColor color(255, light, light, light);
 
-			if (node == nullptr) {
-				return;
-			}
+	if (m_enable_shaders) {
+		scene::ISceneNode *node = getSceneNode();
 
-			if (m_prop.visual == "upright_sprite") {
-				scene::IMesh *mesh = m_meshnode->getMesh();
-				for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
-					scene::IMeshBuffer* buf = mesh->getMeshBuffer(i);
-					video::SMaterial& material = buf->getMaterial();
-					material.EmissiveColor = color;
-				}
-			} else {
-				for (u32 i = 0; i < node->getMaterialCount(); ++i) {
-					video::SMaterial& material = node->getMaterial(i);
-					material.EmissiveColor = color;
-				}
+		if (node == nullptr)
+			return;
+
+		if (m_prop.visual == "upright_sprite") {
+			scene::IMesh *mesh = m_meshnode->getMesh();
+			for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
+				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+				video::SMaterial &material = buf->getMaterial();
+				material.EmissiveColor = color;
 			}
 		} else {
-			if (m_meshnode) {
-				setMeshColor(m_meshnode->getMesh(), color);
-			} else if (m_animated_meshnode) {
-				setAnimatedMeshColor(m_animated_meshnode, color);
-			} else if (m_wield_meshnode) {
-				m_wield_meshnode->setColor(color);
-			} else if (m_spritenode) {
-				m_spritenode->setColor(color);
+			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
+				video::SMaterial &material = node->getMaterial(i);
+				material.EmissiveColor = color;
 			}
+		}
+	} else {
+		if (m_meshnode) {
+			setMeshColor(m_meshnode->getMesh(), color);
+		} else if (m_animated_meshnode) {
+			setAnimatedMeshColor(m_animated_meshnode, color);
+		} else if (m_wield_meshnode) {
+			m_wield_meshnode->setColor(color);
+		} else if (m_spritenode) {
+			m_spritenode->setColor(color);
 		}
 	}
 }
