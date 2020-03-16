@@ -50,6 +50,7 @@ typedef enum {
 	f_Box,
 	f_ItemImage,
 	f_HyperText,
+	f_AnimatedImage,
 	f_Unknown
 } FormspecFieldType;
 
