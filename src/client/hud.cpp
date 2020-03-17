@@ -278,7 +278,8 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 }
 
-bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos) {
+bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos)
+{
 	v3f w_pos = e->world_pos * BS;
 	scene::ICameraSceneNode* camera =
 		RenderingEngine::get_scene_manager()->getActiveCamera();
