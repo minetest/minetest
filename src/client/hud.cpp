@@ -278,21 +278,23 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 }
 
-#define calculateScreenPos()		\
-    v3f w_pos = e->world_pos * BS;		\
-	scene::ICameraSceneNode* camera =		\
-		RenderingEngine::get_scene_manager()->getActiveCamera();		\
-	w_pos -= intToFloat(camera_offset, BS);		\
-	core::matrix4 trans = camera->getProjectionMatrix();		\
-	trans *= camera->getViewMatrix();		\
-	f32 transformed_pos[4] = { w_pos.X, w_pos.Y, w_pos.Z, 1.0f };		\
-	trans.multiplyWith1x4Matrix(transformed_pos);		\
-	if (transformed_pos[3] < 0)		\
-		break;		\
-	f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :		\
-		core::reciprocal(transformed_pos[3]);		\
-	pos.X = m_screensize.X * (0.5 * transformed_pos[0] * zDiv + 0.5);		\
-	pos.Y = m_screensize.Y * (0.5 - transformed_pos[1] * zDiv * 0.5);		\
+bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos) {
+	v3f w_pos = e->world_pos * BS;
+	scene::ICameraSceneNode* camera =
+		RenderingEngine::get_scene_manager()->getActiveCamera();
+	w_pos -= intToFloat(camera_offset, BS);
+	core::matrix4 trans = camera->getProjectionMatrix();
+	trans *= camera->getViewMatrix();
+	f32 transformed_pos[4] = { w_pos.X, w_pos.Y, w_pos.Z, 1.0f };
+	trans.multiplyWith1x4Matrix(transformed_pos);
+	if (transformed_pos[3] < 0)
+		return true;
+	f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
+		core::reciprocal(transformed_pos[3]);
+	pos->X = m_screensize.X * (0.5 * transformed_pos[0] * zDiv + 0.5);
+	pos->Y = m_screensize.Y * (0.5 - transformed_pos[1] * zDiv * 0.5);
+	return false;
+}
 
 void Hud::drawLuaElements(const v3s16 &camera_offset)
 {
@@ -342,8 +344,9 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 					inv, e->item, e->dir);
 				break; }
 			case HUD_ELEM_WAYPOINT: {
+				if (calculateScreenPos(camera_offset, e, &pos))
+					break;
 				v3f p_pos = player->getPosition() / BS;
-				calculateScreenPos()
 				pos += v2s32(e->offset.X, e->offset.Y);
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
@@ -367,7 +370,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				}
 				break; }
 			case HUD_ELEM_IMAGE_WAYPOINT: {
-				calculateScreenPos()
+				if (calculateScreenPos(camera_offset, e, &pos))
+					break;
 			}
 			case HUD_ELEM_IMAGE: {
 				video::ITexture *texture = tsrc->getTexture(e->text);
