@@ -217,6 +217,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("node_highlighting", "box");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
+	settings->setDefault("selectionindicator_color", "(255,255,255)");
+	settings->setDefault("selectionindicator_alpha", "255");
 	settings->setDefault("recent_chat_messages", "6");
 	settings->setDefault("hud_scaling", "1.0");
 	settings->setDefault("gui_scaling", "1.0");
@@ -225,7 +227,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
-	settings->setDefault("show_entity_selectionbox", "true");
+	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "2.2");

@@ -84,8 +84,12 @@ void RenderingCore::draw3D()
 void RenderingCore::drawHUD()
 {
 	if (show_hud) {
-		if (draw_crosshair)
+		if (draw_crosshair) {
 			hud->drawCrosshair();
+
+			if (hud->can_draw_selectionindicator)
+				hud->drawSelectionIndicator();
+		}
 		hud->drawHotbar(client->getEnv().getLocalPlayer()->getWieldIndex());
 		hud->drawLuaElements(camera->getOffset());
 		camera->drawNametags();

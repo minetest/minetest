@@ -44,12 +44,17 @@ public:
 	ITextureSource *tsrc;
 
 	video::SColor crosshair_argb;
+	video::SColor selectionindicator_argb;
 	video::SColor selectionbox_argb;
+
 	bool use_crosshair_image = false;
+	bool use_selectionindicator_image = false;
 	std::string hotbar_image = "";
 	bool use_hotbar_image = false;
 	std::string hotbar_selected_image = "";
 	bool use_hotbar_selected_image = false;
+
+	bool can_draw_selectionindicator = false;
 
 	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 			Inventory *inventory);
@@ -58,6 +63,7 @@ public:
 	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
 	void drawCrosshair();
+	void drawSelectionIndicator();
 	void drawSelectionMesh();
 	void updateSelectionMesh(const v3s16 &camera_offset);
 

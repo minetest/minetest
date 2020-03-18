@@ -69,6 +69,13 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	u32 cross_a = rangelim(g_settings->getS32("crosshair_alpha"), 0, 255);
 	crosshair_argb = video::SColor(cross_a, cross_r, cross_g, cross_b);
 
+	v3f selectionindicator_color = g_settings->getV3F("selectionindicator_color");
+	u32 selecind_r = rangelim(myround(selectionindicator_color.X), 0, 255);
+	u32 selecind_g = rangelim(myround(selectionindicator_color.Y), 0, 255);
+	u32 selecind_b = rangelim(myround(selectionindicator_color.Z), 0, 255);
+	u32 selecind_a = rangelim(g_settings->getS32("selectionindicator_alpha"), 0, 255);
+	selectionindicator_argb = video::SColor(selecind_a, selecind_r, selecind_g, selecind_b);
+
 	v3f selectionbox_color = g_settings->getV3F("selectionbox_color");
 	u32 sbox_r = rangelim(myround(selectionbox_color.X), 0, 255);
 	u32 sbox_g = rangelim(myround(selectionbox_color.Y), 0, 255);
@@ -76,6 +83,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	selectionbox_argb = video::SColor(255, sbox_r, sbox_g, sbox_b);
 
 	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
+	use_selectionindicator_image = tsrc->isKnownSourceImage("selectionindicator.png");
 
 	m_selection_boxes.clear();
 	m_halo_boxes.clear();
@@ -614,6 +622,29 @@ void Hud::drawCrosshair()
 				m_displaycenter + v2s32(10, 0), crosshair_argb);
 		driver->draw2DLine(m_displaycenter - v2s32(0, 10),
 				m_displaycenter + v2s32(0, 10), crosshair_argb);
+	}
+}
+
+void Hud::drawSelectionIndicator()
+{
+	int y_offset = 15;
+
+	if (use_crosshair_image) {
+		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
+		y_offset = (crosshair->getOriginalSize().Height/2) + 5;
+	}
+
+	if (use_selectionindicator_image) {
+		video::ITexture *selectionindicator = tsrc->getTexture("selectionindicator.png");
+		v2u32 size  = selectionindicator->getOriginalSize();
+		v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
+				m_displaycenter.Y - size.Y - y_offset+5);
+		driver->draw2DImage(selectionindicator, lsize,
+				core::rect<s32>(0, 0, size.X, size.Y),
+				0, selectionindicator_argb, true);
+	} else {
+		driver->draw2DRectangle(selectionindicator_argb, core::rect<s32>(m_displaycenter.X-4,
+		m_displaycenter.Y-y_offset-8, m_displaycenter.X+4, m_displaycenter.Y-y_offset), nullptr);
 	}
 }
 

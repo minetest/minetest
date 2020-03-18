@@ -3198,6 +3198,9 @@ PointedThing Game::updatePointedThing(
 	PointedThing result;
 	env.continueRaycast(&s, &result);
 	if (result.type == POINTEDTHING_OBJECT) {
+		if (!hud->can_draw_selectionindicator)
+			hud->can_draw_selectionindicator = true;
+
 		runData.selected_object = client->getEnv().getActiveObject(result.object_id);
 		aabb3f selection_box;
 		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox() &&
@@ -3227,6 +3230,9 @@ PointedThing Game::updatePointedThing(
 			result.intersection_normal.X,
 			result.intersection_normal.Y,
 			result.intersection_normal.Z));
+
+		if (hud->can_draw_selectionindicator)
+			hud->can_draw_selectionindicator = false;
 	}
 
 	// Update selection mesh light level and vertex colors
