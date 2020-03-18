@@ -641,6 +641,29 @@ void Hud::drawCrosshair()
 	}
 }
 
+void Hud::drawSelectionIndicator()
+{
+	int y_offset = 15;
+
+	if (use_crosshair_image) {
+		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
+		y_offset = (crosshair->getOriginalSize().Height/2) + 5;
+	}
+
+	if (use_selectionindicator_image) {
+		video::ITexture *selectionindicator = tsrc->getTexture("selectionindicator.png");
+		v2u32 size  = selectionindicator->getOriginalSize();
+		v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
+				m_displaycenter.Y - size.Y - y_offset+5);
+		driver->draw2DImage(selectionindicator, lsize,
+				core::rect<s32>(0, 0, size.X, size.Y),
+				0, selectionindicator_argb, true);
+	} else {
+		driver->draw2DRectangle(selectionindicator_argb, core::rect<s32>(m_displaycenter.X-4,
+		m_displaycenter.Y-y_offset-8, m_displaycenter.X+4, m_displaycenter.Y-y_offset), nullptr);
+	}
+}
+
 void Hud::setSelectionPos(const v3f &pos, const v3s16 &camera_offset)
 {
 	m_camera_offset = camera_offset;
