@@ -955,9 +955,8 @@
 # autoscale_mode = disable
 
 #    Show entity selection boxes
-#    A restart is required after changing this.
 #    type: bool
-# show_entity_selectionbox = false
+# show_entity_selectionbox = true
 
 ## Menus
 
