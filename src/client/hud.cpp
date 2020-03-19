@@ -638,7 +638,7 @@ void Hud::drawSelectionIndicator()
 		video::ITexture *selectionindicator = tsrc->getTexture("selectionindicator.png");
 		v2u32 size  = selectionindicator->getOriginalSize();
 		v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
-				m_displaycenter.Y - size.Y - y_offset+5);
+				m_displaycenter.Y - (size.Y / 2));
 		driver->draw2DImage(selectionindicator, lsize,
 				core::rect<s32>(0, 0, size.X, size.Y),
 				0, selectionindicator_argb, true);
