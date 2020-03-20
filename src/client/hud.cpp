@@ -609,6 +609,9 @@ void Hud::drawHotbar(u16 playeritem) {
 
 void Hud::drawCrosshair()
 {
+	if (can_draw_selectionindicator && use_selectionindicator_image)
+		return;
+
 	if (use_crosshair_image) {
 		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
 		v2u32 size  = crosshair->getOriginalSize();
@@ -628,11 +631,6 @@ void Hud::drawCrosshair()
 void Hud::drawSelectionIndicator()
 {
 	int y_offset = 15;
-
-	if (use_crosshair_image) {
-		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
-		y_offset = (crosshair->getOriginalSize().Height/2) + 5;
-	}
 
 	if (use_selectionindicator_image) {
 		video::ITexture *selectionindicator = tsrc->getTexture("selectionindicator.png");

@@ -75,7 +75,7 @@ by texture packs. All existing fallback textures can be found in the directory
       when no texture was found
 
 * `selectionindicator.png`
-* the entity selection indicator texture above the crosshair. The settings
+* the dot above the crosshair seen when pointing at an entity. Will replace crosshair when shown. The settings
 `selectionindicator_color` and `selectionindicator_alpha` are used to create a cross
 when no texture was found
 
