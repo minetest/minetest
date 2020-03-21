@@ -164,6 +164,15 @@ void UnitSAO::setSprite(v2s16 p, int num_frames, float framelength,
 	m_set_sprite_sent = false;
 }
 
+void UnitSAO::getSprite(v2s16 *p, int *num_frames, float *framelength,
+		bool *select_horiz_by_yawpitch)
+{
+	*p = m_sprite_tx_basepos;
+	*num_frames = m_sprite_num_frames;
+	*framelength = m_sprite_framelength;
+	*select_horiz_by_yawpitch = m_sprite_select_horiz_by_yawpitch;
+}
+
 void UnitSAO::setSpriteFramelength(float framelength)
 {
 	m_sprite_framelength = framelength;

@@ -512,6 +512,26 @@ int ObjectRef::l_set_sprite(lua_State *L)
 	return 0;
 }
 
+// get_sprite(self)
+int ObjectRef::l_get_sprite(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL) return 0;
+	// Do it
+	v2s16 tx_basepos;
+	int num_frames;
+	float framelength;
+	bool get_horiz_by_yawpitch;
+	co->getSprite(&tx_basepos, &num_frames, &framelength, &get_horiz_by_yawpitch);
+	push_v2s16(L, tx_basepos);
+	lua_pushnumber(L, num_frames);
+	lua_pushnumber(L, framelength);
+	lua_pushboolean(L, get_horiz_by_yawpitch);
+	return 4;
+}
+
 // set_sprite_framelength(self, framelength)
 int ObjectRef::l_set_sprite_framelength(lua_State *L)
 {
@@ -2296,6 +2316,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
 	luamethod(ObjectRef, get_texture_mod),
 	luamethod_aliased(ObjectRef, set_sprite, setsprite),
+	luamethod(ObjectRef, get_sprite),
 	luamethod(ObjectRef, set_sprite_framelength),
 	luamethod(ObjectRef, set_animation),
 	luamethod(ObjectRef, get_animation),

@@ -5802,6 +5802,7 @@ object you are working with still exists.
         * Fourth column: subject backing the camera
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
+* `get_sprite()`: returns `p`, `num_frames`, `framelength` and `select_horiz_by_yawpitch`.
 * `set_sprite_framelength(framelength)`
     * `framelength`: number, update the duration of each frame of the sprite.
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`

@@ -157,6 +157,8 @@ public:
 	{ return ""; }
 	virtual void setSprite(v2s16 p, int num_frames, float framelength, bool select_horiz_by_yawpitch)
 	{}
+	virtual void getSprite(v2s16 *p, int *num_frames, float *framelength, bool *select_horiz_by_yawpitch)
+	{}
 	virtual void setSpriteFramelength(float framelength)
 	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
