@@ -95,6 +95,31 @@ inline u32 clamp_u8(s32 value)
 	return (u32) MYMIN(MYMAX(value, 0), 255);
 }
 
+// meins
+// Helper struct
+// instances makes all elements given to it invisible as long as the instance lives
+struct ClickThroughablemaker
+{
+	const std::vector<gui::IGUIElement *> &elems;
+
+	ClickThroughablemaker(const std::vector<gui::IGUIElement *> &elements) :
+		elems(elements)
+	{
+		for (gui::IGUIElement *e : elems) {
+			errorstream << "making " << e << " invisible" << std::endl;
+			e->setVisible(false);
+		}
+	}
+
+	~ClickThroughablemaker()
+	{
+		for (gui::IGUIElement *e : elems) {
+			errorstream << "making " << e << " visible again" << std::endl;
+			e->setVisible(true);
+		}
+	}
+};
+
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
 		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
@@ -141,6 +166,8 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 		background_it->drop();
 	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
+	for (auto &clickthrough_it : m_clickthrough_elements)
+		clickthrough_it->drop();
 
 	delete m_selected_item;
 	delete m_form_src;
@@ -742,6 +769,10 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
 
+		//meins
+		// images should let elements through
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 
@@ -949,6 +980,10 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		}
 
 		m_fields.push_back(spec);
+
+		//meins test
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 	errorstream<< "Invalid button element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -2745,6 +2780,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		background_it->drop();
 	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
+	for (auto &clickthrough_it : m_clickthrough_elements)
+		clickthrough_it->drop();
 
 	mydata.size= v2s32(100,100);
 	mydata.screensize = screensize;
@@ -2767,6 +2804,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_dropdowns.clear();
 	theme_by_name.clear();
 	theme_by_type.clear();
+	m_clickthrough_elements.clear();
 
 	m_bgnonfullscreen = true;
 	m_bgfullscreen = false;
@@ -3615,6 +3653,22 @@ static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 }
 
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
+{
+	//meins
+	// there are elements that should not capture any event, hence they are made
+	// invisible while processing events
+	// bla (todo: name) keeps such elements invisible as long as it lives
+	errorstream << "creating ClickThroughablemaker" << std::endl;
+	ClickThroughablemaker bla(m_clickthrough_elements);
+	errorstream << "ClickThroughablemaker made" << std::endl;
+
+	bool ret = real_preprocess_event(event);
+	errorstream << "real_preprocess_event called; ret=" << ret << std::endl;
+	//~ return ret;
+	return true;
+}
+
+bool GUIFormSpecMenu::real_preprocess_event(const SEvent& event)
 {
 	// The IGUITabControl renders visually using the skin's selected
 	// font, which we override for the duration of form drawing,
