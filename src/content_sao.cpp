@@ -156,23 +156,18 @@ std::string UnitSAO::getTextureMod() const
 void UnitSAO::setSprite(v2s16 p, int num_frames, float framelength,
 		bool select_horiz_by_yawpitch)
 {
-	std::string str = gob_cmd_set_sprite(
-		p,
-		num_frames,
-		framelength,
-		select_horiz_by_yawpitch
-	);
-	// create message and add to list
-	ActiveObjectMessage aom(getId(), true, str);
-	m_messages_out.push(aom);
+	// store these so they can be updated to clients
+	m_sprite_tx_basepos = p;
+	m_sprite_num_frames = num_frames;
+	m_sprite_framelength = framelength;
+	m_sprite_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
+	m_set_sprite_sent = false;
 }
 
 void UnitSAO::setSpriteFramelength(float framelength)
 {
-	std::string str = gob_cmd_set_sprite_framelength(framelength);
-	// create message and add to list
-	ActiveObjectMessage aom(getId(), true, str);
-	m_messages_out.push(aom);
+	m_sprite_framelength = framelength;
+	m_set_sprite_framelength_sent = false;
 }
 
 void UnitSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
@@ -543,6 +538,24 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push(aom);
 	}
 
+	if (!m_set_sprite_sent) {
+		m_set_sprite_sent = true;
+		std::string str = gob_cmd_set_sprite(m_sprite_tx_basepos,
+			m_sprite_num_frames, m_sprite_framelength,
+			m_sprite_select_horiz_by_yawpitch);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if (!m_set_sprite_framelength_sent) {
+		m_set_sprite_framelength_sent = true;
+		std::string str = gob_cmd_set_sprite_framelength(m_sprite_framelength);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
 	if (!m_animation_sent) {
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(
@@ -606,7 +619,9 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	}
 	msg_os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
 		m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
-	int message_count = 4 + m_bone_position.size();
+	msg_os << serializeLongString(gob_cmd_set_sprite(m_sprite_tx_basepos,
+		m_sprite_num_frames, m_sprite_framelength, m_sprite_select_horiz_by_yawpitch)); // 5
+	int message_count = 5 + m_bone_position.size();
 	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
 			(ii != m_attachment_child_ids.end()); ++ii) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
@@ -974,7 +989,9 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 			m_physics_override_sneak_glitch, m_physics_override_new_move)); // 5
 	// (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
 	msg_os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6
-	int message_count = 6 + m_bone_position.size();
+	msg_os << serializeLongString(gob_cmd_set_sprite(m_sprite_tx_basepos,
+		m_sprite_num_frames, m_sprite_framelength, m_sprite_select_horiz_by_yawpitch)); // 7
+	int message_count = 7 + m_bone_position.size();
 	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
 			ii != m_attachment_child_ids.end(); ++ii) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
@@ -1155,6 +1172,24 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 				m_physics_override_jump, m_physics_override_gravity,
 				m_physics_override_sneak, m_physics_override_sneak_glitch,
 				m_physics_override_new_move);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if (!m_set_sprite_sent) {
+		m_set_sprite_sent = true;
+		std::string str = gob_cmd_set_sprite(m_sprite_tx_basepos,
+			m_sprite_num_frames, m_sprite_framelength,
+			m_sprite_select_horiz_by_yawpitch);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if (!m_set_sprite_framelength_sent) {
+		m_set_sprite_framelength_sent = true;
+		std::string str = gob_cmd_set_sprite_framelength(m_sprite_framelength);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);

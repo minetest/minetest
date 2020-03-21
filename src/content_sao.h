@@ -84,6 +84,12 @@ protected:
 	bool m_armor_groups_sent = false;
 
 	std::string m_current_texture_modifier = "";
+	v2s16 m_sprite_tx_basepos;
+	int m_sprite_num_frames = 0;
+	float m_sprite_framelength = 0.0f;
+	bool m_sprite_select_horiz_by_yawpitch = false;
+	bool m_set_sprite_sent = false;
+	bool m_set_sprite_framelength_sent = false;
 	v2f m_animation_range;
 	float m_animation_speed = 0.0f;
 	float m_animation_blend = 0.0f;
