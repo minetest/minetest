@@ -309,8 +309,6 @@ protected:
 	std::vector<std::pair<FieldSpec, std::vector<std::string>>> m_dropdowns;
 	std::vector<gui::IGUIElement *> m_clickthrough_elements;
 
-bool real_preprocess_event(const SEvent& event);
-
 	GUIInventoryList::ItemSpec *m_selected_item = nullptr;
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;

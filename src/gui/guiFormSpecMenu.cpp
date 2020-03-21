@@ -95,31 +95,6 @@ inline u32 clamp_u8(s32 value)
 	return (u32) MYMIN(MYMAX(value, 0), 255);
 }
 
-// meins
-// Helper struct
-// instances makes all elements given to it invisible as long as the instance lives
-struct ClickThroughablemaker
-{
-	const std::vector<gui::IGUIElement *> &elems;
-
-	ClickThroughablemaker(const std::vector<gui::IGUIElement *> &elements) :
-		elems(elements)
-	{
-		for (gui::IGUIElement *e : elems) {
-			errorstream << "making " << e << " invisible" << std::endl;
-			e->setVisible(false);
-		}
-	}
-
-	~ClickThroughablemaker()
-	{
-		for (gui::IGUIElement *e : elems) {
-			errorstream << "making " << e << " visible again" << std::endl;
-			e->setVisible(true);
-		}
-	}
-};
-
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
 		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
@@ -769,8 +744,7 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
 
-		//meins
-		// images should let elements through
+		// images should let events through
 		e->grab();
 		m_clickthrough_elements.push_back(e);
 		return;
@@ -806,6 +780,9 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
 
+		// images should let events through
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 	errorstream<< "Invalid image element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -980,10 +957,6 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		}
 
 		m_fields.push_back(spec);
-
-		//meins test
-		e->grab();
-		m_clickthrough_elements.push_back(e);
 		return;
 	}
 	errorstream<< "Invalid button element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -1782,6 +1755,10 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 
 			m_fields.push_back(spec);
+
+			// labels should let events through
+			e->grab();
+			m_clickthrough_elements.push_back(e);
 		}
 
 		return;
@@ -1858,6 +1835,10 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 
 		m_fields.push_back(spec);
+
+		// vertlabels should let events through
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 	errorstream<< "Invalid vertlabel element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -3286,11 +3267,18 @@ void GUIFormSpecMenu::drawMenu()
 		e->setVisible(false);
 	}
 
+	// Some elements are only visible while being drawn
+	for (gui::IGUIElement *e : m_clickthrough_elements)
+		e->setVisible(true);
+
 	/*
 		Call base class
 		(This is where all the drawing happens.)
 	*/
 	gui::IGUIElement::draw();
+
+	for (gui::IGUIElement *e : m_clickthrough_elements)
+		e->setVisible(false);
 
 	// Draw hovered item tooltips
 	for (const std::string &tooltip : m_hovered_item_tooltips) {
@@ -3653,22 +3641,6 @@ static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 }
 
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
-{
-	//meins
-	// there are elements that should not capture any event, hence they are made
-	// invisible while processing events
-	// bla (todo: name) keeps such elements invisible as long as it lives
-	errorstream << "creating ClickThroughablemaker" << std::endl;
-	ClickThroughablemaker bla(m_clickthrough_elements);
-	errorstream << "ClickThroughablemaker made" << std::endl;
-
-	bool ret = real_preprocess_event(event);
-	errorstream << "real_preprocess_event called; ret=" << ret << std::endl;
-	//~ return ret;
-	return true;
-}
-
-bool GUIFormSpecMenu::real_preprocess_event(const SEvent& event)
 {
 	// The IGUITabControl renders visually using the skin's selected
 	// font, which we override for the duration of form drawing,
