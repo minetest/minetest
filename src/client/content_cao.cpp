@@ -1513,6 +1513,11 @@ void GenericCAO::processMessage(const std::string &data)
 		m_anim_framelength = framelength;
 		m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
 
+		if (m_anim_frame >= m_anim_num_frames)
+			m_anim_frame = 0;
+		if (m_anim_timer >= m_anim_framelength)
+			m_anim_timer = 0.0f;
+
 		updateTexturePos();
 	} else if (cmd == GENERIC_CMD_SET_SPRITE_FRAMELENGTH) {
 		float frame_length = readF32(is);
