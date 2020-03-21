@@ -985,7 +985,6 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		removeFromScene(false);
 		addToScene(m_client->tsrc());
-
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
 		for (u16 cao_id : m_attachment_child_ids) {
 			ClientActiveObject *obj = m_env->getActiveObject(cao_id);
@@ -1110,7 +1109,7 @@ void GenericCAO::updateTexturePos()
 				m_spritenode->getSceneManager()->getActiveCamera();
 		if(!camera)
 			return;
-		v3f cam_to_entity = m_spritenode->getAbsolutePosition()
+		v3f cam_to_entity = getPosRotMatrix().getTranslation()
 				- camera->getAbsolutePosition();
 		cam_to_entity.normalize();
 
