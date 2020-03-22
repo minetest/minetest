@@ -184,7 +184,7 @@ void AuthDatabaseLevelDB::listNames(std::vector<std::string> &res)
 	leveldb::Iterator* it = m_database->NewIterator(leveldb::ReadOptions());
 	res.clear();
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
-		res.push_back(it->key().ToString());
+		res.emplace_back(it->key().ToString());
 	}
 	delete it;
 }
