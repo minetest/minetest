@@ -890,7 +890,9 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 				core::rect<s32>(pos, pos + geom), name, m_font, m_client);
 		auto style = getStyleForElement("item_image", spec.fname);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->drop();
+
+		// item images should let events through
+		m_clickthrough_elements.push_back(e);
 
 		m_fields.push_back(spec);
 		return;
