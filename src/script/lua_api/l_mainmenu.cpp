@@ -328,82 +328,42 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 			}
 		}
 
-		if (!server["version"].asString().empty()) {
-			lua_pushstring(L,"version");
-			std::string topush = server["version"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
+		for (const auto& string_member : {"version", "description", "name", "address", "port"})
+		{
+			if (!server[string_member].asString().empty()) {
+				lua_pushstring(L, string_member);
+				std::string topush = server[string_member].asString();
+				lua_pushstring(L,topush.c_str());
+				lua_settable(L, top_lvl2);
+			}
 		}
 
-		if (!server["proto_min"].asString().empty()) {
-			lua_pushstring(L,"proto_min");
-			lua_pushinteger(L, server["proto_min"].asInt());
-			lua_settable(L, top_lvl2);
+		for (const auto& float_member : {"lag", "ping"})
+		{
+			if (server.isMember(float_member)) {
+				float value = server[float_member].asFloat();
+				lua_pushstring(L, float_member);
+				lua_pushnumber(L, value);
+				lua_settable(L, top_lvl2);
+			}
 		}
 
-		if (!server["proto_max"].asString().empty()) {
-			lua_pushstring(L,"proto_max");
-			lua_pushinteger(L, server["proto_max"].asInt());
-			lua_settable(L, top_lvl2);
+		for (const auto& int_member : {"proto_min", "proto_max"})
+		{
+			if (server.isMember(int_member)) {
+				lua_pushstring(L, int_member);
+				lua_pushinteger(L, server[int_member].asInt());
+				lua_settable(L, top_lvl2);
+			}
 		}
 
-		if (!server["password"].asString().empty()) {
-			lua_pushstring(L,"password");
-			lua_pushboolean(L, server["password"].asBool());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (!server["creative"].asString().empty()) {
-			lua_pushstring(L,"creative");
-			lua_pushboolean(L, server["creative"].asBool());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (!server["damage"].asString().empty()) {
-			lua_pushstring(L,"damage");
-			lua_pushboolean(L, server["damage"].asBool());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (!server["pvp"].asString().empty()) {
-			lua_pushstring(L,"pvp");
-			lua_pushboolean(L, server["pvp"].asBool());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (!server["description"].asString().empty()) {
-			lua_pushstring(L,"description");
-			std::string topush = server["description"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (!server["name"].asString().empty()) {
-			lua_pushstring(L,"name");
-			std::string topush = server["name"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (!server["address"].asString().empty()) {
-			lua_pushstring(L,"address");
-			std::string topush = server["address"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (!server["port"].asString().empty()) {
-			lua_pushstring(L,"port");
-			std::string topush = server["port"].asString();
-			lua_pushstring(L,topush.c_str());
-			lua_settable(L, top_lvl2);
-		}
-
-		if (server.isMember("lag")) {
-			float lag = server["lag"].asFloat();
-			lua_pushstring(L, "lag");
-			lua_pushnumber(L, lag);
-			lua_settable(L, top_lvl2);
+		for (const auto& bool_member : {"creative", "damage", "pvp", "password"})
+		{
+			if (!server[bool_member].asString().empty()) {
+				lua_pushstring(L, bool_member);
+				lua_pushboolean(L, server[bool_member].asBool());
+				lua_settable(L, top_lvl2);
+			}
 		}
 
 		lua_settable(L, top);

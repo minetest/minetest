@@ -56,7 +56,7 @@ function order_favorite_list(list)
 end
 
 local function render_client_count(n)
-	if     n > 99 then return '99+'
+	if     n > 999 then return '99+'
 	elseif n >= 0 then return tostring(n)
 	else return '?' end
 end
@@ -76,13 +76,13 @@ function render_serverlist_row(spec)
 
 	local details = {}
 
-	if spec.lag then
-		local lag = spec.lag * 1000
-		if lag <= 75 then
+	if spec.lag or spec.ping then
+		local lag = (spec.lag or 0) * 1000 + (spec.ping or 0) * 250
+		if lag <= 125 then
 			table.insert(details, "1")
-		elseif lag <= 150 then
+		elseif lag <= 175 then
 			table.insert(details, "2")
-		elseif lag <= 300 then
+		elseif lag <= 250 then
 			table.insert(details, "3")
 		else
 			table.insert(details, "4")

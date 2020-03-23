@@ -93,16 +93,16 @@ local function get_formspec(tabview, name, tabdata)
 		"color,span=1;" ..
 		"text,align=inline;"..
 		"color,span=1;" ..
-		"text,align=inline,width=4;" ..
+		"text,align=inline,width=4.25;" ..
 		"image,tooltip=" .. fgettext("Creative") .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .."server_flags_creative.png") .. "," ..
-		"align=inline,padding=1,width=1;" ..
+		"align=inline,padding=0.25,width=1;" ..
 		"image,tooltip=" .. fgettext("Damage") .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .."server_flags_damage.png") .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .."server_flags_pvp.png") .. "," ..
-		"align=inline,padding=1,width=2;" ..
+		"align=inline,padding=0.25,width=1.5;" ..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
 		"table[0.25,1;8.25,5.75;servers;"
