@@ -114,6 +114,26 @@ public:
 
 	inline void setModified(const bool x) { m_dirty = x; }
 
+	void setLocalSprite(v2s16 tx_basepos[4], int num_frames[4], float framelength, bool select_horiz_by_yawpitch)
+	{
+		for (int i = 0; i < 4; i++) {
+			local_sprite_tx_basepos[i] = tx_basepos[i];
+			local_sprite_num_frames[i] = num_frames[i];
+		}
+		local_sprite_framelength = framelength;
+		local_sprite_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
+	}
+
+	void getLocalSprite(v2s16 *tx_basepos, int *num_frames, float *framelength, bool *select_horiz_by_yawpitch)
+	{
+		for (int i = 0; i < 4; i++) {
+			tx_basepos[i] = local_sprite_tx_basepos[i];
+			num_frames[i] = local_sprite_num_frames[i];
+		}
+		*framelength = local_sprite_framelength;
+		*select_horiz_by_yawpitch = local_sprite_select_horiz_by_yawpitch;
+	}
+
 	void setLocalAnimations(v2s32 frames[4], float frame_speed)
 	{
 		for (int i = 0; i < 4; i++)

@@ -206,7 +206,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_SET_SUN",                  0, true }, // 0x5a
 	{ "TOCLIENT_SET_MOON",                 0, true }, // 0x5b
 	{ "TOCLIENT_SET_STARS",                0, true }, // 0x5c
-	null_command_factory, // 0x5d
+	{ "TOCLIENT_LOCAL_PLAYER_SPRITE",      0, true }, // 0x5d
 	null_command_factory, // 0x5e
 	null_command_factory, // 0x5f
 	{ "TOSERVER_SRP_BYTES_S_B",            0, true }, // 0x60

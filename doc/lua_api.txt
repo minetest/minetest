@@ -6086,6 +6086,12 @@ object you are working with still exists.
       amount.
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
+* `set_local_sprite(stand/idle, walk, dig, walk+dig, framelength, select_horiz_by_yawpitch)`:
+  set animation for player sprite in third person view.
+  Each of stand/idle, walk, dig, walk+dig is a tuple {p = {x, y}, num_frame=z}
+  see `set_sprite` all arguments.
+* `get_local_sprite`: returns stand, walk, dig, dig+walk tuples, `framelength`
+  and `select_horiz_by_yawpitch`.
 * `set_local_animation(stand/idle, walk, dig, walk+dig, frame_speed=frame_speed)`:
   set animation for player model in third person view
 

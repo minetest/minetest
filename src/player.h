@@ -168,6 +168,11 @@ public:
 	f32 movement_liquid_sink;
 	f32 movement_gravity;
 
+	v2s16 local_sprite_tx_basepos[4];
+	int local_sprite_num_frames[4];
+	float local_sprite_framelength;
+	bool local_sprite_select_horiz_by_yawpitch;
+
 	v2s32 local_animations[4];
 	float local_animation_speed;
 

@@ -307,6 +307,8 @@ public:
 
 	Address getPeerAddress(session_t peer_id);
 
+	void setLocalPlayerSprite(RemotePlayer *player, v2s16 tx_basepos[4],
+			int num_frames[4], float framelength, bool select_horiz_by_yawpitch);
 	void setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
 			f32 frame_speed);
 	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third);
@@ -406,6 +408,8 @@ private:
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(session_t peer_id);
 
+	void SendLocalPlayerSprite(session_t peer_id, v2s16 tx_basepos[4],
+		int num_frames[4], float framelength, bool select_horiz_by_yawpitch);
 	void SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
 		f32 animation_speed);
 	void SendEyeOffset(session_t peer_id, v3f first, v3f third);

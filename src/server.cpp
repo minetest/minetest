@@ -1863,6 +1863,19 @@ void Server::SendPlayerFov(session_t peer_id)
 	Send(&pkt);
 }
 
+void Server::SendLocalPlayerSprite(session_t peer_id, v2s16 tx_basepos[4],
+		int num_frames[4], float framelength, bool select_horiz_by_yawpitch)
+{
+	NetworkPacket pkt(TOCLIENT_LOCAL_PLAYER_SPRITE, 0,
+		peer_id);
+
+	pkt << tx_basepos[0] << tx_basepos[1] << tx_basepos[2] << tx_basepos[3]
+		<< num_frames[0] << num_frames[1] << num_frames[2] << num_frames[3]
+		<< framelength << select_horiz_by_yawpitch;
+
+	Send(&pkt);
+}
+
 void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
 		f32 animation_speed)
 {
@@ -3346,6 +3359,15 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, const std::string &
 Address Server::getPeerAddress(session_t peer_id)
 {
 	return m_con->GetPeerAddress(peer_id);
+}
+
+void Server::setLocalPlayerSprite(RemotePlayer *player,
+		v2s16 tx_basepos[4], int num_frames[4],
+		float framelength, bool select_horiz_by_yawpitch)
+{
+	sanity_check(player);
+	player->setLocalSprite(tx_basepos, num_frames, framelength, select_horiz_by_yawpitch);
+	SendLocalPlayerSprite(player->getPeerId(), tx_basepos, num_frames, framelength, select_horiz_by_yawpitch);
 }
 
 void Server::setLocalPlayerAnimations(RemotePlayer *player,

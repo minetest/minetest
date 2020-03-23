@@ -550,6 +550,65 @@ int ObjectRef::l_set_sprite_framelength(lua_State *L)
 	return 1;
 }
 
+// set_local_sprite(self, {stand/idle}, {walk}, {dig}, {walk+dig}, framelength, select_horiz_by_yawpitch)
+int ObjectRef::l_set_local_sprite(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	// Do it
+	v2s16 anim_p[4];
+	int anim_nf[4];
+	for (int i=0;i<4;i++) {
+		if (!lua_isnil(L, 2+i)) {
+			lua_getfield(L, 2+i, "p");
+			if (!lua_isnil(L, -1))
+				anim_p[i] = read_v2s16(L, -1);
+			lua_pop(L, 1);
+			lua_getfield(L, 2+i, "num_frames");
+			anim_nf[i] = lua_tointeger(L, -1);
+			lua_pop(L, 1);
+		}
+	}
+	float framelength = 1;
+	if (!lua_isnil(L, 6))
+		framelength = lua_tonumber(L, 6);
+	bool select_horiz_by_yawpitch = false;
+	if (!lua_isnil(L, 7))
+		select_horiz_by_yawpitch = readParam<bool>(L, 7);
+	getServer(L)->setLocalPlayerSprite(player, anim_p, anim_nf, framelength, select_horiz_by_yawpitch);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_local_sprite(self)
+int ObjectRef::l_get_local_sprite(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	// Do it
+	v2s16 p[4];
+	int num_frames[4];
+	float framelength;
+	bool select_horiz_by_yawpitch;
+	player->getLocalSprite(p, num_frames, &framelength, &select_horiz_by_yawpitch);
+	for (int i=0;i<4;i++) {
+		lua_newtable(L);
+		push_v2s16(L, p[i]);
+		lua_setfield(L, -2, "p");
+		lua_pushnumber(L, num_frames[i]);
+		lua_setfield(L, -2, "num_frames");
+	}
+	lua_pushnumber(L, framelength);
+	lua_pushboolean(L, select_horiz_by_yawpitch);
+	return 6;
+}
+
 // set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
 int ObjectRef::l_set_animation(lua_State *L)
 {
@@ -2397,6 +2456,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_clouds),
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, get_day_night_ratio),
+	luamethod(ObjectRef, set_local_sprite),
+	luamethod(ObjectRef, get_local_sprite),
 	luamethod(ObjectRef, set_local_animation),
 	luamethod(ObjectRef, get_local_animation),
 	luamethod(ObjectRef, set_eye_offset),

@@ -117,7 +117,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_SET_SUN",                  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudSetSun }, // 0x5a
 	{ "TOCLIENT_SET_MOON",                 TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudSetMoon }, // 0x5b
 	{ "TOCLIENT_SET_STARS",                TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudSetStars }, // 0x5c
-	null_command_handler,
+	{ "TOCLIENT_LOCAL_PLAYER_SPRITE",      TOCLIENT_STATE_CONNECTED, &Client::handleCommand_LocalPlayerSprite }, // 0x5d
 	null_command_handler,
 	null_command_handler,
 	{ "TOCLIENT_SRP_BYTES_S_B",            TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_SrpBytesSandB }, // 0x60

@@ -903,6 +903,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		rot_translator.val_current = m_rotation;
 
 		if (m_is_visible) {
+			bool is_sprite = (m_prop.visual == "sprite" || m_prop.visual == "upright_sprite");
 			int old_anim = player->last_animation;
 			float old_anim_speed = player->last_animation_speed;
 			m_velocity = v3f(0,0,0);
@@ -914,9 +915,12 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 					controls.forw_move_joystick_axis != 0.f ||
 					controls.sidew_move_joystick_axis != 0.f)
 				walking = true;
+			bool digging = (controls.LMB || controls.RMB);
 
-			f32 new_speed = player->local_animation_speed;
+			f32 new_speed = (is_sprite) ? 1.0f : player->local_animation_speed;
 			v2s32 new_anim = v2s32(0,0);
+			v2s16 new_anim_basepos = v2s16(-1,-1);
+			int new_anim_num_frames = 0; // sprite only
 			bool allow_update = false;
 
 			// increase speed if using fast or flying fast
@@ -931,20 +935,40 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			if (controls.sneak && walking)
 				new_speed /= 2;
 
-			if (walking && (controls.LMB || controls.RMB)) {
-				new_anim = player->local_animations[3];
+			if (walking && digging) {
+				if (is_sprite) {
+					new_anim_basepos = player->local_sprite_tx_basepos[3];
+					new_anim_num_frames = player->local_sprite_num_frames[3];
+				} else
+					new_anim = player->local_animations[3];
 				player->last_animation = WD_ANIM;
 			} else if(walking) {
-				new_anim = player->local_animations[1];
+				if (is_sprite) {
+					new_anim_basepos = player->local_sprite_tx_basepos[1];
+					new_anim_num_frames = player->local_sprite_num_frames[1];
+				} else
+					new_anim = player->local_animations[1];
 				player->last_animation = WALK_ANIM;
-			} else if(controls.LMB || controls.RMB) {
-				new_anim = player->local_animations[2];
+			} else if (digging) {
+				if (is_sprite) {
+					new_anim_basepos = player->local_sprite_tx_basepos[2];
+					new_anim_num_frames = player->local_sprite_num_frames[2];
+				} else
+					new_anim = player->local_animations[2];
 				player->last_animation = DIG_ANIM;
 			}
 
 			// Apply animations if input detected and not attached
 			// or set idle animation
-			if ((new_anim.X + new_anim.Y) > 0 && !getParent()) {
+			if (is_sprite && (new_anim_basepos.X + new_anim_basepos.Y) >= 0
+					&& !getParent()) {
+				allow_update = true;
+				m_tx_basepos = new_anim_basepos;
+				m_anim_num_frames = new_anim_num_frames;
+				m_anim_framelength = player->local_sprite_framelength;
+				m_tx_select_horiz_by_yawpitch = player->local_sprite_select_horiz_by_yawpitch;
+			} else if (!is_sprite && (new_anim.X + new_anim.Y) > 0
+					 && !getParent()) {
 				allow_update = true;
 				m_animation_range = new_anim;
 				m_animation_speed = new_speed;
@@ -953,16 +977,30 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				player->last_animation = NO_ANIM;
 
 				if (old_anim != NO_ANIM) {
-					m_animation_range = player->local_animations[0];
-					updateAnimation();
+					if (is_sprite) {
+						m_tx_basepos = player->local_sprite_tx_basepos[0];
+						m_anim_num_frames = player->local_sprite_num_frames[0];
+						m_tx_select_horiz_by_yawpitch = player->local_sprite_select_horiz_by_yawpitch;
+					} else {
+						m_animation_range = player->local_animations[0];
+						updateAnimation();
+					}
 				}
 			}
 
-			// Update local player animations
+			// Update local player animations. Sprite animation is handled later
 			if ((player->last_animation != old_anim ||
 				m_animation_speed != old_anim_speed) &&
-				player->last_animation != NO_ANIM && allow_update)
+				player->last_animation != NO_ANIM && allow_update) {
+				if (is_sprite) {
+					if (m_anim_frame >= m_anim_num_frames)
+						m_anim_frame = 0;
+					if (m_anim_timer >= m_anim_framelength)
+						m_anim_timer = 0.0f;
+				} else {
 					updateAnimation();
+				}
+			}
 
 		}
 	}
@@ -1442,7 +1480,8 @@ void GenericCAO::processMessage(const std::string &data)
 
 		if(!m_initial_tx_basepos_set){
 			m_initial_tx_basepos_set = true;
-			m_tx_basepos = m_prop.initial_sprite_basepos;
+			m_tx_basepos.X = m_prop.initial_sprite_basepos.X;
+			m_tx_basepos.Y = m_prop.initial_sprite_basepos.Y;
 		}
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();

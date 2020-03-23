@@ -204,6 +204,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 39:
 		Updated set_sky packet
 		Adds new sun, moon and stars packets
+		Add TOCLIENT_LOCAL_PLAYER_SPRITE
 */
 
 #define LATEST_PROTOCOL_VERSION 39
@@ -735,6 +736,20 @@ enum ToClientCommand
 		f32 scale
 	*/
 
+	TOCLIENT_LOCAL_PLAYER_SPRITE = 0x5d,
+	/*
+		v2s32 stand/idle tx_basepos
+		v2s32 walk tx_basepos
+		v2s32 dig tx_basepos
+		v2s32 walk+dig tx_basepos
+		int stand/idle num_frames
+		int walk num_frames
+		int dig num_frames
+		int walk+dig num_frames
+		float framelength
+		bool select_horiz_by_yawpitch
+	*/
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_SRP.
@@ -750,6 +765,7 @@ enum ToClientCommand
 	*/
 
 	TOCLIENT_NUM_MSG_TYPES = 0x62,
+
 };
 
 enum ToServerCommand

@@ -1409,6 +1409,23 @@ void Client::handleCommand_OverrideDayNightRatio(NetworkPacket* pkt)
 	m_client_event_queue.push(event);
 }
 
+void Client::handleCommand_LocalPlayerSprite(NetworkPacket* pkt)
+{
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+
+	*pkt >> player->local_sprite_tx_basepos[0];
+	*pkt >> player->local_sprite_tx_basepos[1];
+	*pkt >> player->local_sprite_tx_basepos[2];
+	*pkt >> player->local_sprite_tx_basepos[3];
+	*pkt >> player->local_sprite_num_frames[0];
+	*pkt >> player->local_sprite_num_frames[1];
+	*pkt >> player->local_sprite_num_frames[2];
+	*pkt >> player->local_sprite_num_frames[3];
+	*pkt >> player->local_sprite_framelength;
+	*pkt >> player->local_sprite_select_horiz_by_yawpitch;
+}
+
 void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();

@@ -369,6 +369,12 @@ private:
 	// get_day_night_ratio(self)
 	static int l_get_day_night_ratio(lua_State *L);
 
+	// set_local_sprite(self, {stand/idle}, {walk}, {dig}, {walk+dig}, framelength, select_horiz_by_yawpitch)
+	static int l_set_local_sprite(lua_State *L);
+
+	// get_local_sprite(self)
+	static int l_get_local_sprite(lua_State *L);
+
 	// set_local_animation(self, {stand/idle}, {walk}, {dig}, {walk+dig}, frame_speed)
 	static int l_set_local_animation(lua_State *L);
 
