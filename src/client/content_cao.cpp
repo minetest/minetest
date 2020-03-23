@@ -1141,7 +1141,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 void GenericCAO::updateTexturePos()
 {
-	if(m_spritenode)
+	if(m_spritenode && (!m_is_local_player || m_is_visible))
 	{
 		scene::ICameraSceneNode* camera =
 				m_spritenode->getSceneManager()->getActiveCamera();
