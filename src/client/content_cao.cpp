@@ -1163,6 +1163,8 @@ void GenericCAO::updateTexturePos()
 				float mob_dir =
 						atan2(cam_to_entity.Z, cam_to_entity.X) / M_PI * 180.;
 				float dir = mob_dir - m_rotation.Y;
+				if (m_is_local_player)
+					dir -= 90;
 				dir = wrapDegrees_180(dir);
 				if (std::fabs(wrapDegrees_180(dir - 0)) <= 45.1f)
 					col += 2;

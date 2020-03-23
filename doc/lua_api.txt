@@ -5796,10 +5796,10 @@ object you are working with still exists.
     * `framelength`: number, default: `0.2`
     * `select_horiz_by_yawpitch`: when `false` (default), only the first column
       is used no matter the viewing angle. When `true` 6 columns are used:
-        * First column:  subject looking to the right
-        * Second column: subject facing the camera
-        * Third column:  subject looking to the left
-        * Fourth column: subject backing the camera
+        * First column:  subject facing the camera
+        * Second column: subject looking to the left
+        * Third column:  subject backing the camera
+        * Fourth column: subject looking to the right
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
 * `get_sprite()`: returns `p`, `num_frames`, `framelength` and `select_horiz_by_yawpitch`.
