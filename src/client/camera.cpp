@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "debug.h"
 #include "client.h"
+#include "config.h"
 #include "map.h"
 #include "clientmap.h"     // MapDrawControl
 #include "player.h"
@@ -566,8 +567,8 @@ void Camera::updateViewingRange()
 {
 	f32 viewing_range = g_settings->getFloat("viewing_range");
 
-	// Ignore near_plane setting on non-Android platforms to prevent abuse
-#ifdef __ANDROID__
+	// Ignore near_plane setting on all other platforms to prevent abuse
+#if ENABLE_GLES
 	m_cameranode->setNearValue(rangelim(
 		g_settings->getFloat("near_plane"), 0.0f, 0.25f) * BS);
 #else

@@ -164,7 +164,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
-#ifdef __ANDROID__
+#if ENABLE_GLES
 	settings->setDefault("near_plane", "0.1");
 #endif
 	settings->setDefault("screen_w", "1024");
