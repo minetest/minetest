@@ -44,29 +44,29 @@ local function get_formspec(tabview, name, tabdata)
 		"tooltip[btn_mp_search;" .. fgettext("Search") .. "]"..
 		"tooltip[btn_mp_refresh;" .. fgettext("Refresh") .. "]"..
 
-		"box[8.625,0;4.5,7;#888888]"..
+		"box[8.75,0;4.75,7;#888888]"..
 
 		-- Address / Port
-		"label[8.75,0.35;" .. fgettext("Address") .. "]" ..
-		"label[12,0.35;" .. fgettext("Port") .. "]" ..
-		"field[8.75,0.5;3.25,0.5;te_address;;" ..
+		"label[9,0.35;" .. fgettext("Address") .. "]" ..
+		"label[12.25,0.35;" .. fgettext("Port") .. "]" ..
+		"field[9,0.5;3.25,0.5;te_address;;" ..
 			core.formspec_escape(core.settings:get("address")) .. "]" ..
-		"field[12,0.5;1,0.5;te_port;;" ..
+		"field[12.25,0.5;1,0.5;te_port;;" ..
 			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
 
 		-- Name / Password
-		"label[8.75,1.55;" .. fgettext("Name") .. "]" ..
-		"label[11.5,1.55;" .. fgettext("Password") .. "]" ..
-		"field[8.75,1.75;2.75,0.5;te_name;;" ..
+		"label[9,1.55;" .. fgettext("Name") .. "]" ..
+		"label[11.75,1.55;" .. fgettext("Password") .. "]" ..
+		"field[9,1.75;2.75,0.5;te_name;;" ..
 			core.formspec_escape(core.settings:get("name")) .. "]" ..
-		"pwdfield[11.5,1.75;1.5,0.5;te_pwd;]" ..
+		"pwdfield[11.75,1.75;1.5,0.5;te_pwd;]" ..
 
 		-- Description Background
-		"label[8.75,3.05;" .. fgettext("Server Description") .. "]" ..
-		"box[8.75,3.25;4.25,2.5;#999999]"..
+		"label[9,3.05;" .. fgettext("Server Description") .. "]" ..
+		"box[9,3.25;4.25,2.5;#999999]"..
 
 		-- Connect
-		"button[11,6;2,0.75;btn_mp_connect;" .. fgettext("Connect") .. "]"
+		"button[11.25,6;2,0.75;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
 	if tabdata.fav_selected and fav_selected then
 		if gamedata.fav then
@@ -172,7 +172,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. ";0]"
 	end
 
-	return retval, "size[13.125,7,false]real_coordinates[true]"
+	return retval, "size[13.5,7,false]real_coordinates[true]"
 end
 
 local function main_button_handler(tabview, fields, name, tabdata)
