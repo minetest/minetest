@@ -633,6 +633,8 @@ void Camera::drawNametags()
 			i = m_nametags.begin();
 			i != m_nametags.end(); ++i) {
 		Nametag *nametag = *i;
+		if (!nametag->parent_node->isVisible())
+			continue;
 		if (nametag->nametag_color.getAlpha() == 0) {
 			// Enforce hiding nametag,
 			// because if freetype is enabled, a grey

@@ -775,7 +775,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	if (node && m_matrixnode)
 		node->setParent(m_matrixnode);
 
-	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
+	if (node && !m_prop.nametag.empty()) {
 		// Add nametag
 		v3f pos;
 		pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
@@ -1451,7 +1451,7 @@ void GenericCAO::processMessage(const std::string &data)
 			player->setZoomFOV(m_prop.zoom_fov);
 		}
 
-		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
+		if (m_is_player && m_prop.nametag.empty())
 			m_prop.nametag = m_name;
 
 		expireVisuals();
