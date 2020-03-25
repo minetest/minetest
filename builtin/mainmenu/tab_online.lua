@@ -80,16 +80,6 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	retval = retval .. "tablecolumns[" ..
-		"image,tooltip=" .. fgettext("Lag") .. "," ..
-		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
-		"1=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
-		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
-		"3=" .. core.formspec_escape(defaulttexturedir .. "server_ping_2.png") .. "," ..
-		"4=" .. core.formspec_escape(defaulttexturedir .. "server_ping_1.png").. "," ..
-		"5=" .. core.formspec_escape(defaulttexturedir .. "server_flags_favorite.png") .. "," ..
-		"6=" .. core.formspec_escape(defaulttexturedir .. "server_divider_discover.png") .. "," ..
-		"7=" .. core.formspec_escape(defaulttexturedir .. "server_divider_incompatible.png") .. "," ..
-		"padding=0.25;"..
 		"color,span=1;" ..
 		"text,align=inline;"..
 		"color,span=1;" ..

@@ -49,6 +49,8 @@ typedef enum {
 	f_ScrollBar,
 	f_Box,
 	f_ItemImage,
+	f_HyperText,
+	f_AnimatedImage,
 	f_Unknown
 } FormspecFieldType;
 
