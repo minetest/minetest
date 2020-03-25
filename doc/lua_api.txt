@@ -4460,8 +4460,8 @@ Authentication
 * `minetest.auth_reload()`
     * See `reload()` in authentication handler definition
 
-`minetest.set_player_password`, `minetest_set_player_privs`,
-`minetest_get_player_privs` and `minetest.auth_reload` call the authentication
+`minetest.set_player_password`, `minetest.set_player_privs`,
+`minetest.get_player_privs` and `minetest.auth_reload` call the authentication
 handler.
 
 Chat
