@@ -41,17 +41,23 @@ namespace con
 /* defines used for debugging and profiling                                   */
 /******************************************************************************/
 #ifdef NDEBUG
-#define LOG(a) a
-#define PROFILE(a)
+	#define LOG(a) a
+	#define PROFILE(a)
 #else
-/* this mutex is used to achieve log message consistency */
-std::mutex log_message_mutex;
-#define LOG(a)                                                                 \
-	{                                                                          \
-	MutexAutoLock loglock(log_message_mutex);                                 \
-	a;                                                                         \
-	}
-#define PROFILE(a) a
+	#if 0
+	/* this mutex is used to achieve log message consistency */
+	std::mutex log_message_mutex;
+	#define LOG(a)                                                                 \
+		{                                                                          \
+		MutexAutoLock loglock(log_message_mutex);                                 \
+		a;                                                                         \
+		}
+	#else
+	// Prevent deadlocks until a solution is found after 5.2.0 (TODO)
+	#define LOG(a) a
+	#endif
+
+	#define PROFILE(a) a
 #endif
 
 #define PING_TIMEOUT 5.0
