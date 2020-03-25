@@ -1073,6 +1073,10 @@ bool UDPPeer::processReliableSendCommand(
 		FATAL_ERROR_IF(!successfully_put_back_sequence_number, "error");
 	}
 
+	// DO NOT REMOVE n_queued! It avoids a deadlock of async locked
+	// 'log_message_mutex' and 'm_list_mutex'.
+	u32 n_queued = channels[c.channelnum].outgoing_reliables_sent.size();
+
 	LOG(dout_con<<m_connection->getDesc()
 			<< " Windowsize exceeded on reliable sending "
 			<< c.data.getSize() << " bytes"
@@ -1081,7 +1085,7 @@ bool UDPPeer::processReliableSendCommand(
 			<< std::endl << "\t\tgot at most            : "
 			<< packets_available << " packets"
 			<< std::endl << "\t\tpackets queued         : "
-			<< channels[c.channelnum].outgoing_reliables_sent.size()
+			<< n_queued
 			<< std::endl);
 
 	return false;
