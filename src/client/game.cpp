@@ -3193,6 +3193,7 @@ PointedThing Game::updatePointedThing(
 	const NodeDefManager *nodedef = map.getNodeDefManager();
 
 	runData.selected_object = NULL;
+	hud->can_draw_selectionindicator = false;
 
 	RaycastState s(shootline, look_for_object, liquids_pointable);
 	PointedThing result;
@@ -3230,7 +3231,6 @@ PointedThing Game::updatePointedThing(
 			result.intersection_normal.Y,
 			result.intersection_normal.Z));
 
-		hud->can_draw_selectionindicator = false;
 	}
 
 	// Update selection mesh light level and vertex colors

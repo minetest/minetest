@@ -609,8 +609,22 @@ void Hud::drawHotbar(u16 playeritem) {
 
 void Hud::drawCrosshair()
 {
-	if (can_draw_selectionindicator && use_selectionindicator_image)
-		return;
+	if (can_draw_selectionindicator)
+	{
+		if (use_selectionindicator_image) {
+			video::ITexture *selectionindicator = tsrc->getTexture("selectionindicator.png");
+			v2u32 size  = selectionindicator->getOriginalSize();
+			v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
+					m_displaycenter.Y - (size.Y / 2));
+			driver->draw2DImage(selectionindicator, lsize,
+					core::rect<s32>(0, 0, size.X, size.Y),
+					nullptr, selectionindicator_argb, true);
+
+			return;
+		} else {
+			driver->draw2DPolygon(irr::core::vector2di(m_displaycenter.X, m_displaycenter.Y - 22), 7, selectionindicator_argb, 4);
+		}
+	}
 
 	if (use_crosshair_image) {
 		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
@@ -619,30 +633,12 @@ void Hud::drawCrosshair()
 				m_displaycenter.Y - (size.Y / 2));
 		driver->draw2DImage(crosshair, lsize,
 				core::rect<s32>(0, 0, size.X, size.Y),
-				0, crosshair_argb, true);
+				nullptr, crosshair_argb, true);
 	} else {
 		driver->draw2DLine(m_displaycenter - v2s32(10, 0),
 				m_displaycenter + v2s32(10, 0), crosshair_argb);
 		driver->draw2DLine(m_displaycenter - v2s32(0, 10),
 				m_displaycenter + v2s32(0, 10), crosshair_argb);
-	}
-}
-
-void Hud::drawSelectionIndicator()
-{
-	int y_offset = 15;
-
-	if (use_selectionindicator_image) {
-		video::ITexture *selectionindicator = tsrc->getTexture("selectionindicator.png");
-		v2u32 size  = selectionindicator->getOriginalSize();
-		v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
-				m_displaycenter.Y - (size.Y / 2));
-		driver->draw2DImage(selectionindicator, lsize,
-				core::rect<s32>(0, 0, size.X, size.Y),
-				0, selectionindicator_argb, true);
-	} else {
-		driver->draw2DRectangle(selectionindicator_argb, core::rect<s32>(m_displaycenter.X-4,
-		m_displaycenter.Y-y_offset-8, m_displaycenter.X+4, m_displaycenter.Y-y_offset), nullptr);
 	}
 }
 
