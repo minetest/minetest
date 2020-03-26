@@ -134,11 +134,13 @@ public:
 	Tag m_root_tag;
 
 protected:
+	typedef enum { ER_NONE, ER_TAG, ER_NEWLINE } EndReason;
+
 	// Parser functions
 	void enterElement(ElementType type);
 	void endElement();
 	void enterParagraph();
-	void endParagraph();
+	void endParagraph(EndReason reason);
 	void pushChar(wchar_t c);
 	ParsedText::Tag *newTag(const std::string &name, const AttrsList &attrs);
 	ParsedText::Tag *openTag(const std::string &name, const AttrsList &attrs);
@@ -160,6 +162,8 @@ protected:
 	StyleList m_style;
 	Element *m_element;
 	Paragraph *m_paragraph;
+	bool m_empty_paragraph;
+	EndReason m_end_paragraph_reason;
 };
 
 class TextDrawer

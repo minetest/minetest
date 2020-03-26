@@ -167,6 +167,7 @@ ParsedText::ParsedText(const wchar_t *text)
 
 	m_element = NULL;
 	m_paragraph = NULL;
+	m_end_paragraph_reason = ER_NONE;
 
 	parse(text);
 }
@@ -191,7 +192,7 @@ void ParsedText::parse(const wchar_t *text)
 				cursor++;
 			// If text has begun, don't skip empty line
 			if (m_paragraph) {
-				endParagraph();
+				endParagraph(ER_NEWLINE);
 				enterElement(ELEMENT_SEPARATOR);
 			}
 			escape = false;
@@ -201,7 +202,7 @@ void ParsedText::parse(const wchar_t *text)
 		if (c == L'\n') { // Unix breaks
 			// If text has begun, don't skip empty line
 			if (m_paragraph) {
-				endParagraph();
+				endParagraph(ER_NEWLINE);
 				enterElement(ELEMENT_SEPARATOR);
 			}
 			escape = false;
@@ -232,7 +233,7 @@ void ParsedText::parse(const wchar_t *text)
 		pushChar(c);
 	}
 
-	endParagraph();
+	endParagraph(ER_NONE);
 }
 
 void ParsedText::endElement()
@@ -240,11 +241,20 @@ void ParsedText::endElement()
 	m_element = NULL;
 }
 
-void ParsedText::endParagraph()
+void ParsedText::endParagraph(EndReason reason)
 {
 	if (!m_paragraph)
 		return;
 
+	EndReason previous = m_end_paragraph_reason;
+	m_end_paragraph_reason = reason;
+	if (m_empty_paragraph && (reason == ER_TAG ||
+			(reason == ER_NEWLINE && previous == ER_TAG))) {
+		// Ignore last empty paragraph
+		m_paragraph = nullptr;
+		m_paragraphs.pop_back();
+		return;
+	}
 	endElement();
 	m_paragraph = NULL;
 }
@@ -255,6 +265,7 @@ void ParsedText::enterParagraph()
 		m_paragraphs.emplace_back();
 		m_paragraph = &m_paragraphs.back();
 		m_paragraph->setStyle(m_style);
+		m_empty_paragraph = true;
 	}
 }
 
@@ -274,11 +285,15 @@ void ParsedText::enterElement(ElementType type)
 void ParsedText::pushChar(wchar_t c)
 {
 	// New word if needed
-	if (c == L' ' || c == L'\t')
-		enterElement(ELEMENT_SEPARATOR);
-	else
+	if (c == L' ' || c == L'\t') {
+		if (!m_empty_paragraph)
+			enterElement(ELEMENT_SEPARATOR);
+		else
+			return;
+	} else {
+		m_empty_paragraph = false;
 		enterElement(ELEMENT_TEXT);
-
+	}
 	m_element->text += c;
 }
 
@@ -571,7 +586,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		} else {
 			openTag(name, attrs)->style = m_paragraphtags[name];
 		}
-		endParagraph();
+		endParagraph(ER_TAG);
 
 	} else
 		return 0; // Unknown tag
