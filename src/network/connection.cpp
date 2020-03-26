@@ -41,17 +41,23 @@ namespace con
 /* defines used for debugging and profiling                                   */
 /******************************************************************************/
 #ifdef NDEBUG
-#define LOG(a) a
-#define PROFILE(a)
+	#define LOG(a) a
+	#define PROFILE(a)
 #else
-/* this mutex is used to achieve log message consistency */
-std::mutex log_message_mutex;
-#define LOG(a)                                                                 \
-	{                                                                          \
-	MutexAutoLock loglock(log_message_mutex);                                 \
-	a;                                                                         \
-	}
-#define PROFILE(a) a
+	#if 0
+	/* this mutex is used to achieve log message consistency */
+	std::mutex log_message_mutex;
+	#define LOG(a)                                                                 \
+		{                                                                          \
+		MutexAutoLock loglock(log_message_mutex);                                 \
+		a;                                                                         \
+		}
+	#else
+	// Prevent deadlocks until a solution is found after 5.2.0 (TODO)
+	#define LOG(a) a
+	#endif
+
+	#define PROFILE(a) a
 #endif
 
 #define PING_TIMEOUT 5.0
@@ -1073,6 +1079,10 @@ bool UDPPeer::processReliableSendCommand(
 		FATAL_ERROR_IF(!successfully_put_back_sequence_number, "error");
 	}
 
+	// DO NOT REMOVE n_queued! It avoids a deadlock of async locked
+	// 'log_message_mutex' and 'm_list_mutex'.
+	u32 n_queued = channels[c.channelnum].outgoing_reliables_sent.size();
+
 	LOG(dout_con<<m_connection->getDesc()
 			<< " Windowsize exceeded on reliable sending "
 			<< c.data.getSize() << " bytes"
@@ -1081,7 +1091,7 @@ bool UDPPeer::processReliableSendCommand(
 			<< std::endl << "\t\tgot at most            : "
 			<< packets_available << " packets"
 			<< std::endl << "\t\tpackets queued         : "
-			<< channels[c.channelnum].outgoing_reliables_sent.size()
+			<< n_queued
 			<< std::endl);
 
 	return false;
