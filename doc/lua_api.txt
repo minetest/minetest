@@ -4894,9 +4894,11 @@ Item handling
       given `param2` value.
     * Returns `nil` if the given `paramtype2` does not contain color
       information.
-* `minetest.get_node_drops(nodename, toolname)`
-    * Returns list of item names.
-    * **Note**: This will be removed or modified in a future version.
+* `minetest.get_node_drops(node, toolname)`
+    * Returns list of itemstrings that are dropped by `node` when dug
+      with `toolname`.
+    * `node`: node as table or node name
+    * `toolname`: name of the tool item (can be `nil`)
 * `minetest.get_craft_result(input)`: returns `output, decremented_input`
     * `input.method` = `"normal"` or `"cooking"` or `"fuel"`
     * `input.width` = for example `3`
