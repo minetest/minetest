@@ -1,16 +1,18 @@
 Minetest protocol (incomplete, early draft):
+============================================
 Updated 2011-06-18
 
 A custom protocol over UDP.
 Integers are big endian.
 Refer to connection.{h,cpp} for further reference.
 
-Initialization:
+# Initialization
 - A dummy reliable packet with peer_id=PEER_ID_INEXISTENT=0 is sent to the server:
 	- Actually this can be sent without the reliable packet header, too, i guess,
 	  but the sequence number in the header allows the sender to re-send the
 	  packet without accidentally getting a double initialization.
 	- Packet content:
+		```
 		# Basic header
 		u32 protocol_id = PROTOCOL_ID = 0x4f457403
 		u16 sender_peer_id = PEER_ID_INEXISTENT = 0
@@ -21,8 +23,10 @@ Initialization:
 		# Original packet header
 		u8 type = TYPE_ORIGINAL = 1
 		# And no actual payload.
+		```
 - Server responds with something like this:
 	- Packet content:
+		```
 		# Basic header
 		u32 protocol_id = PROTOCOL_ID = 0x4f457403
 		u16 sender_peer_id = PEER_ID_INEXISTENT = 0
@@ -34,8 +38,10 @@ Initialization:
 		u8 type = TYPE_CONTROL = 0
 		u8 controltype = CONTROLTYPE_SET_PEER_ID = 1
 		u16 peer_id_new = assigned peer id to client (other than 0 or 1)
+		```
 - Then the connection can be disconnected by sending:
 	- Packet content:
+		```
 		# Basic header
 		u32 protocol_id = PROTOCOL_ID = 0x4f457403
 		u16 sender_peer_id = whatever was gotten in CONTROLTYPE_SET_PEER_ID
@@ -43,8 +49,11 @@ Initialization:
 		# Control packet header
 		u8 type = TYPE_CONTROL = 0
 		u8 controltype = CONTROLTYPE_DISCO = 3
+		```
 
-- Here's a quick untested connect-disconnect done in PHP:
+### Here's a quick untested connect-disconnect done in PHP:
+
+```Php
 # host: ip of server (use gethostbyname(hostname) to get from a dns name)
 # port: port of server
 function check_if_minetestserver_up($host, $port)
@@ -69,9 +78,11 @@ function check_if_minetestserver_up($host, $port)
 	}
 	return false;
 }
+```
 
-- Here's a Python script for checking if a minetest server is up, confirmed working
+### Here's a Python script for checking if a minetest server is up, confirmed working
 
+```Python
 #!/usr/bin/env python3
 import sys, time, socket
 
@@ -108,3 +119,5 @@ try:
         print("%s seems to be down " % sys.argv[1])
 except Exception as err:
     print("%s seems to be down (%s) " % (sys.argv[1], str(err)))
+```
+
