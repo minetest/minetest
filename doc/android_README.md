@@ -15,13 +15,11 @@ shown), the following controls are available:
 * long tap: dig node
 * touch shown buttons: press button
 * Buttons:
-** left upper corner: chat
-** right lower corner: jump
-** right lower corner: crouch
-** left lower corner: walk/step...
-   left up right
-       down
-** left lower corner: display inventory
+	* left upper corner: chat
+	* right lower corner: jump
+	* right lower corner: crouch
+	* left lower corner: walk/step: left, up, right, down
+	* left lower corner: display inventory
 
 When a menu or inventory is displayed:
 * double tap outside menu area: close menu
@@ -88,7 +86,7 @@ Debug build:
 After the build is finished, the resulting apk can be fond in
 build/android/bin/. It will be called Minetest-debug.apk
 
-Release build:
+## Release build:
 
 * In order to make a release build you'll have to have a keystore setup to sign
   the resulting apk package. How this is done is not part of this README. There
@@ -97,9 +95,10 @@ Release build:
 
 * Once your keystore is setup, enter build/android subdirectory and create a new
   file "ant.properties" there. Add following lines to that file:
-  
-  > key.store=<path to your keystore>
-  > key.alias=Minetest
+```
+key.store=<path to your keystore>
+key.alias=Minetest
+```
 
 * Execute "make release"
 * Enter your keystore as well as your Mintest key password once asked. Be
@@ -107,22 +106,24 @@ Release build:
 * The result can be found at "bin/Minetest-release.apk"
 
 Other things that may be nice to know
-------------
 * The environment for Android development tools is saved within Android build
   build folder. If you want direct access to it do:
-  
-  > make envpaths
-  > . and_env
-  
+```
+make envpaths
+. and_env
+```
   After you've done this you'll have your path and path variables set correct
   to use adb and all other Android development tools
 
 * You can build a single dependency by calling make and the dependency's name,
   e.g.:
-
-  > make irrlicht
+```
+make irrlicht
+```
 
 * You can completely cleanup a dependency by calling make and the "clean" target,
   e.g.:
 
-  > make clean_irrlicht
+```
+make clean_irrlicht
+```
