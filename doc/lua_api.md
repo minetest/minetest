@@ -5,8 +5,16 @@ Minetest Lua Modding API Reference
 * Developer Wiki: <http://dev.minetest.net/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
 
+Sections
+========
+
+* [Introduction](#introduction)
+* [Games](#games)
+* [Mods](#mods)
+* [Aliases](#aliases)
+
 Introduction
-------------
+============
 
 Content and functionality can be added to Minetest using Lua scripting
 in run-time loaded mods.
@@ -20,20 +28,17 @@ files are automatically transferred to the client.
 If you see a deficiency in the API, feel free to attempt to add the
 functionality in the engine and API, and to document it here.
 
-Programming in Lua
-------------------
+## Programming in Lua
 
 If you have any difficulty in understanding this, please read
 [Programming in Lua](http://www.lua.org/pil/).
 
-Startup
--------
+## Startup
 
 Mods are loaded during server startup from the mod load paths by running
 the `init.lua` scripts in a shared environment.
 
-Paths
------
+## Paths
 
 * `RUN_IN_PLACE=1` (Windows release, local build)
     * `$path_user`: `<build directory>`
@@ -77,8 +82,7 @@ The game directory can contain the following files:
   texturepack, overriding mod textures.
   Any server texturepack will override mod textures and the game texturepack.
 
-Menu images
------------
+## Menu images
 
 Games can provide custom main menu images. They are put inside a `menu`
 directory inside the game directory.
@@ -95,8 +99,7 @@ with 1, and a random image will be chosen from the provided ones.
 Mods
 ====
 
-Mod load path
--------------
+## Mod load path
 
 Paths are relative to the directories listed in the [Paths] section above.
 
@@ -104,8 +107,7 @@ Paths are relative to the directories listed in the [Paths] section above.
 * `mods/`
 * `worlds/<worldname>/worldmods/`
 
-World-specific games
---------------------
+## World-specific games
 
 It is possible to include a game in a world; in this case, no mods or
 games are loaded or checked from anywhere else.
@@ -115,8 +117,7 @@ directory exists.
 
 Mods should then be placed in `<worldname>/game/mods/`.
 
-Modpacks
---------
+## Modpacks
 
 Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
@@ -128,24 +129,23 @@ The file is a key-value store of modpack details.
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
-Mod directory structure
------------------------
+## Mod directory structure
 
-    mods
-    ├── modname
-    │   ├── mod.conf
-    │   ├── screenshot.png
-    │   ├── settingtypes.txt
-    │   ├── init.lua
-    │   ├── models
-    │   ├── textures
-    │   │   ├── modname_stuff.png
-    │   │   └── modname_something_else.png
-    │   ├── sounds
-    │   ├── media
-    │   ├── locale
-    │   └── <custom data>
-    └── another
+* `mods`
+	* [`modname`](#modname)
+		* [`mod.conf`](modconf)
+		* [`screenshot.png`](#screenshotpng)
+		* [`settingtypes.txt`](#settingtypestxt)
+		* [`init.lua`](#initlua)
+		* [`textures`](#textures--sounds--media)
+			* `modname_stuff.png`
+			* `modname_something_else.png`
+		* [`sounds`](##textures--sounds--media)
+		* [`models`](#models)
+		* [`media`](#textures--sounds--media)
+		* [`locale`](#locale)
+		* `<custom data>`
+* `another`
 
 ### modname
 
@@ -222,8 +222,7 @@ client and will be available for use by the mod.
 
 Translation files for the clients. (See [Translations])
 
-Naming conventions
-------------------
+## Naming conventions
 
 Registered names should generally be in this format:
 
@@ -280,21 +279,22 @@ you have an item called `epiclylongmodname:stuff`, you could do
 
 and be able to use `/giveme stuff`.
 
-Mapgen aliases
---------------
+## Mapgen aliases
 
 In a game, a certain number of these must be set to tell core mapgens which
 of the game's nodes are to be used for core mapgen generation. For example:
 
-    minetest.register_alias("mapgen_stone", "default:stone")
+```lua
+minetest.register_alias("mapgen_stone", "default:stone")
+```
 
 ### Aliases for non-V6 mapgens
 
 #### Essential aliases
 
-* mapgen_stone
-* mapgen_water_source
-* mapgen_river_water_source
+* `mapgen_stone`
+* `mapgen_water_source`
+* `mapgen_river_water_source`
 
 `mapgen_river_water_source` is required for mapgens with sloping rivers where
 it is necessary to have a river liquid node with a short `liquid_range` and
@@ -302,54 +302,54 @@ it is necessary to have a river liquid node with a short `liquid_range` and
 
 #### Optional aliases
 
-* mapgen_lava_source
+* `mapgen_lava_source`
 
 Fallback lava node used if cave liquids are not defined in biome definitions.
 Deprecated for non-V6 mapgens, define cave liquids in biome definitions instead.
 
-* mapgen_cobble
+* `mapgen_cobble`
 
 Fallback node used if dungeon nodes are not defined in biome definitions.
 Deprecated for non-V6 mapgens, define dungeon nodes in biome definitions instead.
 
 ### Aliases needed for Mapgen V6
 
-* mapgen_stone
-* mapgen_water_source
-* mapgen_lava_source
-* mapgen_dirt
-* mapgen_dirt_with_grass
-* mapgen_sand
-* mapgen_gravel
-* mapgen_desert_stone
-* mapgen_desert_sand
-* mapgen_dirt_with_snow
-* mapgen_snowblock
-* mapgen_snow
-* mapgen_ice
+* `mapgen_stone`
+* `mapgen_water_source`
+* `mapgen_lava_source`
+* `mapgen_dirt`
+* `mapgen_dirt_with_grass`
+* `mapgen_sand`
+* `mapgen_gravel`
+* `mapgen_desert_stone`
+* `mapgen_desert_sand`
+* `mapgen_dirt_with_snow`
+* `mapgen_snowblock`
+* `mapgen_snow`
+* `mapgen_ice`
 
-* mapgen_tree
-* mapgen_leaves
-* mapgen_apple
-* mapgen_jungletree
-* mapgen_jungleleaves
-* mapgen_junglegrass
-* mapgen_pine_tree
-* mapgen_pine_needles
+* `mapgen_tree`
+* `mapgen_leaves`
+* `mapgen_apple`
+* `mapgen_jungletree`
+* `mapgen_jungleleaves`
+* `mapgen_junglegrass`
+* `mapgen_pine_tree`
+* `mapgen_pine_needles`
 
-* mapgen_cobble
-* mapgen_stair_cobble
-* mapgen_mossycobble
-* mapgen_stair_desert_stone
+* `mapgen_cobble`
+* `mapgen_stair_cobble`
+* `mapgen_mossycobble`
+* `mapgen_stair_desert_stone`
 
 ### Setting the node used in Mapgen Singlenode
 
 By default the world is filled with air nodes. To set a different node use, for
 example:
 
-    minetest.register_alias("mapgen_singlenode", "default:stone")
-
-
+```lua
+minetest.register_alias("mapgen_singlenode", "default:stone")
+```
 
 
 Textures
