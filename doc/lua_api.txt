@@ -2870,13 +2870,13 @@ Data structures
 ===============
 
 * Stack
-	* `minetest.create_stack()` returns an empty LIFO queue.
-	* To initialize a stack from given data, a table can be passed whose
-	  `input` field is changed to be a stack, the `n` field can be used to
-	  explicitly pass the stack size, e.g.
-	  `minetest.create_stack({input = mytable})` changes `mytable`
-	  into a stack.
-	* Following methods are implemented:
+  * `minetest.create_stack()` returns an empty LIFO queue.
+  * To initialize a stack from given data, a table can be passed whose
+    `input` field is changed to be a stack, the `n` field can be used to
+    explicitly pass the stack size, e.g.
+    `minetest.create_stack({input = mytable})` changes `mytable`
+    into a stack.
+  * Following methods are implemented:
     * `push(v)`: pushes the value `v` onto the stack; it can be `nil`
     * `pop()`: removes the top element from the stack and returns it
     * `top()`: returns the top element of the stack
@@ -2894,13 +2894,13 @@ Data structures
       string, `tostring` is used if it is omitted
 
 * FIFO queue
-	* `minetest.create_queue()` returns an empty FIFO queue.
-	* To initialize a queue with given data, a table can be passed whose
-	  `input` field containing the data is internally reused,
-	  the `n` field can be used to explicitly pass the queue size, e.g.
-	  `minetest.create_queue({input = mytable})` returns a FIFO queue and
-	  `mytable` should no longer be used for other purposes.
-	* Following methods are implemented:
+  * `minetest.create_queue()` returns an empty FIFO queue.
+  * To initialize a queue with given data, a table can be passed whose
+    `input` field containing the data is internally reused,
+    the `n` field can be used to explicitly pass the queue size, e.g.
+    `minetest.create_queue({input = mytable})` returns a FIFO queue and
+    `mytable` should no longer be used for other purposes.
+  * Following methods are implemented:
     * `add(v)`: adds `v` to the queue, it can be `nil`
     * `take()`: removes the oldest element from the queue and returns it
     * `peek()`: returns the oldest element from the queue
@@ -2916,16 +2916,16 @@ Data structures
       string, `tostring` is used if it is omitted.
 
 * Binary heap
-	* `minetest.create_binary_heap(compare)` returns an empty binary heap.
-	* To initialize a binary heap with given data, a table can be passed whose
-	  `input` field is changed into a binary heap,
-	  the `input_sorted` field should be set to true if `input` is sorted,
-	  the `compare` field contains the comparison function
-	  and the `n` field can be used to explicitly pass the size.
-	* The compare function takes two elements as arguments;
-	  it should return true if the first one has a higher priority than the
-	  second one; if the priority is the same or less, false should be returned
-	* Following methods are implemented:
+  * `minetest.create_binary_heap(compare)` returns an empty binary heap.
+  * To initialize a binary heap with given data, a table can be passed whose
+    `input` field is changed into a binary heap,
+    the `input_sorted` field should be set to true if `input` is sorted,
+    the `compare` field contains the comparison function
+    and the `n` field can be used to explicitly pass the size.
+  * The compare function takes two elements as arguments;
+    it should return true if the first one has a higher priority than the
+    second one; if the priority is the same or less, false should be returned
+  * Following methods are implemented:
     * `peek()`: returns an element with the highest priority
     * `add(v)`: adds `v` to the priority queue
     * `take()`: takes the element with highest priority from the heap
