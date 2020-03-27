@@ -214,6 +214,8 @@ void ItemDefinition::deSerialize(std::istream &is)
 	wield_overlay = deSerializeString(is);
 
 	use_wield_anim = readU8(is);
+	if (is.eof()) // Check for old servers without wield_anim support
+		use_wield_anim = true;
 
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.

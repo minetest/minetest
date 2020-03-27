@@ -328,7 +328,7 @@ struct ContentFeatures
 	// Flowing liquid or snow, value = default level
 	u8 leveled;
 	// Whether the node has a digging or placing animation
-	bool use_wield_anim;
+	bool use_wield_anim = true;
 
 	// --- LIGHTING-RELATED ---
 
