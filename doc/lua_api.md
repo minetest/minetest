@@ -5,6 +5,7 @@ Minetest Lua Modding API Reference
 * Developer Wiki: <http://dev.minetest.net/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
 
+
 Sections
 ========
 
@@ -12,6 +13,8 @@ Sections
 * [Games](#games)
 * [Mods](#mods)
 * [Aliases](#aliases)
+
+----------
 
 Introduction
 ============
@@ -52,8 +55,6 @@ the `init.lua` scripts in a shared environment.
         * Windows: `C:/users/<user>/AppData/minetest` (maybe)
 
 
-
-
 Games
 =====
 
@@ -92,8 +93,6 @@ The images are named `$identifier.png`, where `$identifier` is one of
 If you want to specify multiple images for one identifier, add additional
 images named like `$identifier.$n.png`, with an ascending number $n starting
 with 1, and a random image will be chosen from the provided ones.
-
-
 
 
 Mods
@@ -251,8 +250,6 @@ Any mod can redefine `experimental:tnt` by using the name
 
 when registering it. That mod is required to have `experimental` as a
 dependency.
-
-
 
 
 Aliases
