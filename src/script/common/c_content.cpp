@@ -76,6 +76,8 @@ void read_item_definition(lua_State* L, int index,
 	int stack_max = getintfield_default(L, index, "stack_max", def.stack_max);
 	def.stack_max = rangelim(stack_max, 1, U16_MAX);
 
+	getboolfield(L, index, "use_wield_anim", def.use_wield_anim);
+
 	lua_getfield(L, index, "on_use");
 	def.usable = lua_isfunction(L, -1);
 	lua_pop(L, 1);
@@ -159,6 +161,8 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "wield_scale");
 	lua_pushinteger(L, i.stack_max);
 	lua_setfield(L, -2, "stack_max");
+	lua_pushboolean(L, i.use_wield_anim);
+	lua_setfield(L, -2, "use_wield_anim");
 	lua_pushboolean(L, i.usable);
 	lua_setfield(L, -2, "usable");
 	lua_pushboolean(L, i.liquids_pointable);
@@ -670,6 +674,8 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	getboolfield(L, index, "buildable_to", f.buildable_to);
 	// Liquids flow into and replace node
 	getboolfield(L, index, "floodable", f.floodable);
+	// Whether the node has a digging or placing animation.
+	getboolfield(L, index, "use_wield_anim", f.use_wield_anim);
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	f.liquid_type = (LiquidType)getenumfield(L, index, "liquidtype",
 			ScriptApiNode::es_LiquidType, LIQUID_NONE);
@@ -853,6 +859,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "post_effect_color");
 	lua_pushnumber(L, c.leveled);
 	lua_setfield(L, -2, "leveled");
+	lua_pushboolean(L, c.use_wield_anim);
+	lua_setfield(L, -2, "use_wield_anim");
 	lua_pushboolean(L, c.sunlight_propagates);
 	lua_setfield(L, -2, "sunlight_propagates");
 	lua_pushnumber(L, c.light_source);

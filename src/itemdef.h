@@ -66,6 +66,7 @@ struct ItemDefinition
 	std::string palette_image; // If specified, the item will be colorized based on this
 	video::SColor color; // The fallback color of the node.
 	v3f wield_scale;
+	bool use_wield_anim; // Enables or disables digging or placing animations.
 
 	/*
 		Item stack and interaction properties

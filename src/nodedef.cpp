@@ -368,6 +368,7 @@ void ContentFeatures::reset()
 	floodable = false;
 	rightclickable = true;
 	leveled = 0;
+	use_wield_anim = true;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
 	liquid_alternative_source = "";
@@ -435,6 +436,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 		writeU16(os, connects_to_id);
 	writeARGB8(os, post_effect_color);
 	writeU8(os, leveled);
+	writeU8(os, use_wield_anim);
 
 	// lighting
 	writeU8(os, light_propagates);
@@ -541,6 +543,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 		connects_to_ids.push_back(readU16(is));
 	post_effect_color = readARGB8(is);
 	leveled = readU8(is);
+	use_wield_anim = readU8(is);
 
 	// lighting-related
 	light_propagates = readU8(is);

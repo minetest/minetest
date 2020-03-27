@@ -67,6 +67,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	wield_image = def.wield_image;
 	wield_overlay = def.wield_overlay;
 	wield_scale = def.wield_scale;
+	use_wield_anim = def.use_wield_anim;
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
@@ -106,6 +107,7 @@ void ItemDefinition::reset()
 	inventory_overlay = "";
 	wield_image = "";
 	wield_overlay = "";
+	use_wield_anim = true;
 	palette_image = "";
 	color = video::SColor(0xFFFFFFFF);
 	wield_scale = v3f(1.0, 1.0, 1.0);
@@ -118,7 +120,6 @@ void ItemDefinition::reset()
 	sound_place = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
 	range = -1;
-
 	node_placement_prediction = "";
 }
 
@@ -162,6 +163,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	writeARGB8(os, color);
 	os << serializeString(inventory_overlay);
 	os << serializeString(wield_overlay);
+	writeU8(os, use_wield_anim);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -210,6 +212,8 @@ void ItemDefinition::deSerialize(std::istream &is)
 	color = readARGB8(is);
 	inventory_overlay = deSerializeString(is);
 	wield_overlay = deSerializeString(is);
+
+	use_wield_anim = readU8(is);
 
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.

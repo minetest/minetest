@@ -125,7 +125,7 @@ public:
 	void setDigging(s32 button);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item);
+	void wield(Client* client, const ItemStack &item);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -215,6 +215,7 @@ private:
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button = -1;
+	bool m_use_wield_anim = true;
 
 	// Animation when changing wielded item
 	f32 m_wield_change_timer = 0.125f;

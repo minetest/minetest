@@ -582,15 +582,18 @@ void Camera::updateViewingRange()
 
 void Camera::setDigging(s32 button)
 {
-	if (m_digging_button == -1)
+	if (m_digging_button == -1 && m_use_wield_anim)
 		m_digging_button = button;
 }
 
-void Camera::wield(const ItemStack &item)
+void Camera::wield(Client* client, const ItemStack &item)
 {
 	if (item.name != m_wield_item_next.name ||
 			item.metadata != m_wield_item_next.metadata) {
+		IItemDefManager* idef = client->getItemDefManager();
+		const ItemDefinition& def = item.getDefinition(idef);
 		m_wield_item_next = item;
+		m_use_wield_anim = def.use_wield_anim;
 		if (m_wield_change_timer > 0)
 			m_wield_change_timer = -m_wield_change_timer;
 		else if (m_wield_change_timer == 0)

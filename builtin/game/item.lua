@@ -728,6 +728,7 @@ core.nodedef_default = {
 	climbable = false,
 	buildable_to = false,
 	floodable = false,
+	use_wield_anim = true,
 	liquidtype = "none",
 	liquid_alternative_flowing = "",
 	liquid_alternative_source = "",
@@ -751,7 +752,8 @@ core.craftitemdef_default = {
 	stack_max = 99,
 	liquids_pointable = false,
 	tool_capabilities = nil,
-
+	use_wield_anim = true,
+	
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
 	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
@@ -770,6 +772,7 @@ core.tooldef_default = {
 	stack_max = 1,
 	liquids_pointable = false,
 	tool_capabilities = nil,
+	use_wield_anim = true,
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
@@ -789,6 +792,7 @@ core.noneitemdef_default = {  -- This is used for the hand and unknown items
 	stack_max = 99,
 	liquids_pointable = false,
 	tool_capabilities = nil,
+	use_wield_anim = true,
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'),
