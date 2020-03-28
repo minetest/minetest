@@ -141,3 +141,16 @@ function vector.sort(a, b)
 	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},
 		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
 end
+
+function vector.rotate(v, axis, angle)
+	--flip the angle because the formula is for the right hand rule
+	angle = -angle
+	local cosangle = math.cos(angle)
+	local sinangle = math.sin(angle)
+	
+	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+	return vector.add(vector.add(
+		vector.multiply(v, cosangle),
+		vector.multiply(vector.cross(axis, v), sinangle)),
+		vector.multiply(axis, vector.dot(axis, v) * (1 - cosangle)))
+end
