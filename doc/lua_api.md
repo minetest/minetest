@@ -13,6 +13,11 @@ Sections
 * [Games](#games)
 * [Mods](#mods)
 * [Aliases](#aliases)
+* [Textures](#textures)
+* [Sounds](#sounds)
+* [Registered Definitions](#registered-definitions)
+* [Nodes](#nodes)
+* [Map terminology and coordinates](#map-terminology-and-coordinates)
 
 ----------
 
@@ -31,17 +36,23 @@ files are automatically transferred to the client.
 If you see a deficiency in the API, feel free to attempt to add the
 functionality in the engine and API, and to document it here.
 
-## Programming in Lua
+
+Programming in Lua
+------------------
 
 If you have any difficulty in understanding this, please read
 [Programming in Lua](http://www.lua.org/pil/).
 
-## Startup
+
+Startup
+-------
 
 Mods are loaded during server startup from the mod load paths by running
 the `init.lua` scripts in a shared environment.
 
-## Paths
+
+Paths
+-----
 
 * `RUN_IN_PLACE=1` (Windows release, local build)
     * `$path_user`: `<build directory>`
@@ -83,7 +94,9 @@ The game directory can contain the following files:
   texturepack, overriding mod textures.
   Any server texturepack will override mod textures and the game texturepack.
 
-## Menu images
+
+Menu images
+-----------
 
 Games can provide custom main menu images. They are put inside a `menu`
 directory inside the game directory.
@@ -98,7 +111,8 @@ with 1, and a random image will be chosen from the provided ones.
 Mods
 ====
 
-## Mod load path
+Mod load path
+-------------
 
 Paths are relative to the directories listed in the [Paths] section above.
 
@@ -106,7 +120,9 @@ Paths are relative to the directories listed in the [Paths] section above.
 * `mods/`
 * `worlds/<worldname>/worldmods/`
 
-## World-specific games
+
+World-specific games
+--------------------
 
 It is possible to include a game in a world; in this case, no mods or
 games are loaded or checked from anywhere else.
@@ -116,7 +132,9 @@ directory exists.
 
 Mods should then be placed in `<worldname>/game/mods/`.
 
-## Modpacks
+
+Modpacks
+--------
 
 Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
@@ -128,32 +146,34 @@ The file is a key-value store of modpack details.
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
-## Mod directory structure
 
-* `mods`
-	* [`modname`](#modname)
+Mod directory structure
+-----------------------
+
+* `mods/`
+	* [`modname/`](#modname)
 		* [`mod.conf`](modconf)
 		* [`screenshot.png`](#screenshotpng)
 		* [`settingtypes.txt`](#settingtypestxt)
 		* [`init.lua`](#initlua)
-		* [`textures`](#textures--sounds--media)
+		* [`textures/`](#textures--sounds--media)
 			* `modname_stuff.png`
 			* `modname_something_else.png`
-		* [`sounds`](##textures--sounds--media)
-		* [`models`](#models)
-		* [`media`](#textures--sounds--media)
-		* [`locale`](#locale)
+		* [`sounds/`](##textures--sounds--media)
+		* [`models/`](#models)
+		* [`media/`](#textures--sounds--media)
+		* [`locale/`](#locale)
 		* `<custom data>`
-* `another`
+* `another/`
 
-### modname
+#### `modname`
 
 The location of this directory can be fetched by using
 `minetest.get_modpath(modname)`.
 
-### mod.conf
+#### `mod.conf`
 
-A `Settings` file that provides meta information about the mod.
+* `Settings` file that provides meta information about the mod.
 
 * `name`: The mod name. Allows Minetest to determine the mod name even if the
           folder is wrongly named.
@@ -166,12 +186,12 @@ A `Settings` file that provides meta information about the mod.
 
 Note: to support 0.4.x, please also provide depends.txt.
 
-### `screenshot.png`
+#### `screenshot.png`
 
 A screenshot shown in the mod manager within the main menu. It should
 have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
 
-### `depends.txt`
+#### `depends.txt`
 
 **Deprecated:** you should use mod.conf instead.
 
@@ -185,7 +205,7 @@ Optional dependencies can be defined by appending a question mark
 to a single modname. This means that if the specified mod
 is missing, it does not prevent this mod from being loaded.
 
-### `description.txt`
+#### `description.txt`
 
 **Deprecated:** you should use mod.conf instead.
 
@@ -193,13 +213,13 @@ This file is used if there is no description in mod.conf.
 
 A file containing a description to be shown in the Mods tab of the main menu.
 
-### `settingtypes.txt`
+#### `settingtypes.txt`
 
 The format is documented in `builtin/settingtypes.txt`.
 It is parsed by the main menu settings dialogue to list mod-specific
 settings in the "Mods" category.
 
-### `init.lua`
+#### `init.lua`
 
 The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
@@ -208,20 +228,22 @@ registered callbacks.
 `minetest.settings` can be used to read custom or existing settings at load
 time, if necessary. (See [`Settings`])
 
-### `models`
+#### `models`
 
 Models for entities or meshnodes.
 
-### `textures`, `sounds`, `media`
+#### `textures`, `sounds`, `media`
 
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod.
 
-### `locale`
+#### `locale`
 
 Translation files for the clients. (See [Translations])
 
-## Naming conventions
+
+Naming conventions
+------------------
 
 Registered names should generally be in this format:
 
@@ -276,7 +298,9 @@ you have an item called `epiclylongmodname:stuff`, you could do
 
 and be able to use `/giveme stuff`.
 
-## Mapgen aliases
+
+Mapgen aliases
+--------------
 
 In a game, a certain number of these must be set to tell core mapgens which
 of the game's nodes are to be used for core mapgen generation. For example:
@@ -285,9 +309,11 @@ of the game's nodes are to be used for core mapgen generation. For example:
 minetest.register_alias("mapgen_stone", "default:stone")
 ```
 
-### Aliases for non-V6 mapgens
 
-#### Essential aliases
+Aliases for non-V6 mapgens
+--------------------------
+
+### Essential aliases
 
 * `mapgen_stone`
 * `mapgen_water_source`
@@ -297,7 +323,8 @@ minetest.register_alias("mapgen_stone", "default:stone")
 it is necessary to have a river liquid node with a short `liquid_range` and
 `liquid_renewable = false` to avoid flooding.
 
-#### Optional aliases
+
+### Optional aliases
 
 * `mapgen_lava_source`
 
@@ -308,6 +335,7 @@ Deprecated for non-V6 mapgens, define cave liquids in biome definitions instead.
 
 Fallback node used if dungeon nodes are not defined in biome definitions.
 Deprecated for non-V6 mapgens, define dungeon nodes in biome definitions instead.
+
 
 ### Aliases needed for Mapgen V6
 
@@ -339,6 +367,7 @@ Deprecated for non-V6 mapgens, define dungeon nodes in biome definitions instead
 * `mapgen_mossycobble`
 * `mapgen_stair_desert_stone`
 
+
 ### Setting the node used in Mapgen Singlenode
 
 By default the world is filled with air nodes. To set a different node use, for
@@ -363,11 +392,13 @@ stripping out the file extension:
 * e.g. `foomod_foothing.png`
 * e.g. `foomod_foothing`
 
+
 Texture modifiers
 -----------------
 
 There are various texture modifiers that can be used
 to generate textures on-the-fly.
+
 
 ### Texture overlaying
 
@@ -381,6 +412,7 @@ Example:
 The texture with the lower resolution will be automatically upscaled to
 the higher resolution texture.
 
+
 ### Texture grouping
 
 Textures can be grouped together by enclosing them in `(` and `)`.
@@ -389,6 +421,7 @@ Example: `cobble.png^(thing1.png^thing2.png)`
 
 A texture for `thing1.png^thing2.png` is created and the resulting
 texture is overlaid on top of `cobble.png`.
+
 
 ### Escaping
 
@@ -400,6 +433,7 @@ Example: `cobble.png^[lowpart:50:color.png\^[mask\:trans.png`
 
 The lower 50 percent of `color.png^[mask:trans.png` are overlaid
 on top of `cobble.png`.
+
 
 ### Advanced texture modifiers
 
@@ -577,6 +611,7 @@ Result is more like what you'd expect if you put a color on top of another
 color, meaning white surfaces get a lot of your new color while black parts
 don't change very much.
 
+
 Hardware coloring
 -----------------
 
@@ -586,6 +621,7 @@ differ in their color (like colored wool blocks), you can use hardware
 coloring instead of creating and managing many texture files.
 All of these methods use color multiplication (so a white-black texture
 with red coloring will result in red-black color).
+
 
 ### Static coloring
 
@@ -607,6 +643,7 @@ other coloring method. To disable the coloring of a face,
 set its color to white (because multiplying with white does nothing).
 You can set the `color` property of the tiles in the node's definition
 if the tile is in table format.
+
 
 ### Palettes
 
@@ -652,34 +689,37 @@ a texture. You can also use texture modifiers.
 The node's color depends on its `param2`, so you also must set an
 appropriate `paramtype2`:
 
-* `paramtype2 = "color"` for nodes which use their full `param2` for
-  palette indexing. These nodes can have 256 different colors.
-  The palette should contain 256 pixels.
-* `paramtype2 = "colorwallmounted"` for nodes which use the first
-  five bits (most significant) of `param2` for palette indexing.
-  The remaining three bits are describing rotation, as in `wallmounted`
-  paramtype2. Division by 8 yields the palette index (without stretching the
-  palette). These nodes can have 32 different colors, and the palette
-  should contain 32 pixels.
-  Examples:
-    * `param2 = 17` is 2 * 8 + 1, so the rotation is 1 and the third (= 2 + 1)
-      pixel will be picked from the palette.
-    * `param2 = 35` is 4 * 8 + 3, so the rotation is 3 and the fifth (= 4 + 1)
-      pixel will be picked from the palette.
-* `paramtype2 = "colorfacedir"` for nodes which use the first
-  three bits of `param2` for palette indexing. The remaining
-  five bits are describing rotation, as in `facedir` paramtype2.
-  Division by 32 yields the palette index (without stretching the
-  palette). These nodes can have 8 different colors, and the
-  palette should contain 8 pixels.
-  Examples:
-    * `param2 = 17` is 0 * 32 + 17, so the rotation is 17 and the
-      first (= 0 + 1) pixel will be picked from the palette.
-    * `param2 = 35` is 1 * 32 + 3, so the rotation is 3 and the
-      second (= 1 + 1) pixel will be picked from the palette.
+#### `paramtype2 = "color"`
+For nodes which use their full `param2` for palette indexing. These nodes can
+have 256 different colors. The palette should contain 256 pixels.
+#### `paramtype2 = "colorwallmounted"`
+For nodes which use the first five bits (most significant) of `param2` for
+palette indexing. The remaining three bits are describing rotation, as in
+`wallmounted` paramtype2. Division by 8 yields the palette index (without
+stretching the palette). These nodes can have 32 different colors, and the
+palette should contain 32 pixels.
+
+Examples:
+  * `param2 = 17` is 2 * 8 + 1, so the rotation is 1 and the third (= 2 + 1)
+    pixel will be picked from the palette.
+  * `param2 = 35` is 4 * 8 + 3, so the rotation is 3 and the fifth (= 4 + 1)
+    pixel will be picked from the palette.
+#### `paramtype2 = "colorfacedir"`
+For nodes which use the first three bits of `param2` for palette indexing.
+The remaining five bits are describing rotation, as in `facedir` paramtype2.
+Division by 32 yields the palette index (without stretching the palette).
+These nodes can have 8 different colors, and the palette should contain
+8 pixels.
+
+Examples:
+  * `param2 = 17` is 0 * 32 + 17, so the rotation is 17 and the
+    first (= 0 + 1) pixel will be picked from the palette.
+  * `param2 = 35` is 1 * 32 + 3, so the rotation is 3 and the
+    second (= 1 + 1) pixel will be picked from the palette.
 
 To colorize a node on the map, set its `param2` value (according
 to the node's paramtype2).
+
 
 ### Conversion between nodes in the inventory and on the map
 
@@ -698,37 +738,43 @@ To transfer the color to a special drop, you need a drop table.
 
 Example:
 
-    minetest.register_node("mod:stone", {
-        description = "Stone",
-        tiles = {"default_stone.png"},
-        paramtype2 = "color",
-        palette = "palette.png",
-        drop = {
-            items = {
-                -- assume that mod:cobblestone also has the same palette
-                {items = {"mod:cobblestone"}, inherit_color = true },
-            }
+```lua
+minetest.register_node("mod:stone", {
+    description = "Stone",
+    tiles = {"default_stone.png"},
+    paramtype2 = "color",
+    palette = "palette.png",
+    drop = {
+        items = {
+            -- assume that mod:cobblestone also has the same palette
+            {items = {"mod:cobblestone"}, inherit_color = true },
         }
-    })
+    }
+})
+```
+
 
 ### Colored items in craft recipes
 
 Craft recipes only support item strings, but fortunately item strings
 can also contain metadata. Example craft recipe registration:
 
-    minetest.register_craft({
-        output = minetest.itemstring_with_palette("wool:block", 3),
-        type = "shapeless",
-        recipe = {
-            "wool:block",
-            "dye:red",
-        },
-    })
+```lua
+minetest.register_craft({
+    output = minetest.itemstring_with_palette("wool:block", 3),
+    type = "shapeless",
+    recipe = {
+        "wool:block",
+        "dye:red",
+    },
+})
+```
 
 To set the `color` field, you can use `minetest.itemstring_with_color`.
 
 Metadata field filtering in the `recipe` field are not supported yet,
 so the craft output is independent of the color of the ingredients.
+
 
 Soft texture overlay
 --------------------
@@ -756,24 +802,24 @@ To skip one face, set that overlay tile to an empty string.
 
 Example (colored grass block):
 
-    minetest.register_node("default:dirt_with_grass", {
-        description = "Dirt with Grass",
-        -- Regular tiles, as usual
-        -- The dirt tile disables palette coloring
-        tiles = {{name = "default_grass.png"},
-            {name = "default_dirt.png", color = "white"}},
-        -- Overlay tiles: define them in the same style
-        -- The top and bottom tile does not have overlay
-        overlay_tiles = {"", "",
-            {name = "default_grass_side.png", tileable_vertical = false}},
-        -- Global color, used in inventory
-        color = "green",
-        -- Palette in the world
-        paramtype2 = "color",
-        palette = "default_foilage.png",
-    })
-
-
+```lua
+minetest.register_node("default:dirt_with_grass", {
+    description = "Dirt with Grass",
+    -- Regular tiles, as usual
+    -- The dirt tile disables palette coloring
+    tiles = {{name = "default_grass.png"},
+        {name = "default_dirt.png", color = "white"}},
+    -- Overlay tiles: define them in the same style
+    -- The top and bottom tile does not have overlay
+    overlay_tiles = {"", "",
+        {name = "default_grass_side.png", tileable_vertical = false}},
+    -- Global color, used in inventory
+    color = "green",
+    -- Palette in the world
+    paramtype2 = "color",
+    palette = "default_foilage.png",
+})
+```
 
 
 Sounds
@@ -804,44 +850,46 @@ from the available ones of the following files:
 
 Examples of sound parameter tables:
 
-    -- Play locationless on all clients
-    {
-        gain = 1.0,   -- default
-        fade = 0.0,   -- default, change to a value > 0 to fade the sound in
-        pitch = 1.0,  -- default
-    }
-    -- Play locationless to one player
-    {
-        to_player = name,
-        gain = 1.0,   -- default
-        fade = 0.0,   -- default, change to a value > 0 to fade the sound in
-        pitch = 1.0,  -- default
-    }
-    -- Play locationless to one player, looped
-    {
-        to_player = name,
-        gain = 1.0,  -- default
-        loop = true,
-    }
-    -- Play at a location
-    {
-        pos = {x = 1, y = 2, z = 3},
-        gain = 1.0,  -- default
-        max_hear_distance = 32,  -- default, uses an euclidean metric
-    }
-    -- Play connected to an object, looped
-    {
-        object = <an ObjectRef>,
-        gain = 1.0,  -- default
-        max_hear_distance = 32,  -- default, uses an euclidean metric
-        loop = true,
-    }
-    -- Play at a location, heard by anyone *but* the given player
-    {
-        pos = {x = 32, y = 0, z = 100},
-        max_hear_distance = 40,
-        exclude_player = name,
-    }
+```lua
+-- Play locationless on all clients
+{
+    gain = 1.0,   -- default
+    fade = 0.0,   -- default, change to a value > 0 to fade the sound in
+    pitch = 1.0,  -- default
+}
+-- Play locationless to one player
+{
+    to_player = name,
+    gain = 1.0,   -- default
+    fade = 0.0,   -- default, change to a value > 0 to fade the sound in
+    pitch = 1.0,  -- default
+}
+-- Play locationless to one player, looped
+{
+    to_player = name,
+    gain = 1.0,  -- default
+    loop = true,
+}
+-- Play at a location
+{
+    pos = {x = 1, y = 2, z = 3},
+    gain = 1.0,  -- default
+    max_hear_distance = 32,  -- default, uses an euclidean metric
+}
+-- Play connected to an object, looped
+{
+    object = <an ObjectRef>,
+    gain = 1.0,  -- default
+    max_hear_distance = 32,  -- default, uses an euclidean metric
+    loop = true,
+}
+-- Play at a location, heard by anyone *but* the given player
+{
+    pos = {x = 32, y = 0, z = 100},
+    max_hear_distance = 40,
+    exclude_player = name,
+}
+```
 
 Looped sounds must either be connected to an object or played locationless to
 one player using `to_player = name`.
@@ -852,8 +900,9 @@ A positional sound will only be heard by players that are within
 `exclude_player = name` can be applied to locationless, positional and object-
 bound sounds to exclude a single player from hearing them.
 
-`SimpleSoundSpec`
------------------
+
+SimpleSoundSpec
+---------------
 
 Specifies a sound name, gain (=volume) and pitch.
 This is either a string or a table.
@@ -878,6 +927,7 @@ Examples:
 * `{name = "default_place_node", gain = 0.5}`: 50% volume
 * `{name = "default_place_node", gain = 0.9, pitch = 1.1}`: 90% volume, 110% pitch
 
+
 Special sound files
 -------------------
 
@@ -888,6 +938,7 @@ These sound files are played back by the engine if provided.
    damage by falling (gain = 0.5)
  * `default_dig_<groupname>`: Default node digging sound
    (see node sound definition for details)
+
 
 Registered definitions
 ======================
@@ -906,15 +957,15 @@ All nodes register with `minetest.register_node` get added to the table
 
 If you want to check the drawtype of a node, you could do:
 
-    local function get_nodedef_field(nodename, fieldname)
-        if not minetest.registered_nodes[nodename] then
-            return nil
-        end
-        return minetest.registered_nodes[nodename][fieldname]
+```lua
+local function get_nodedef_field(nodename, fieldname)
+    if not minetest.registered_nodes[nodename] then
+        return nil
     end
-    local drawtype = get_nodedef_field(nodename, "drawtype")
-
-
+    return minetest.registered_nodes[nodename][fieldname]
+end
+local drawtype = get_nodedef_field(nodename, "drawtype")
+```
 
 
 Nodes
@@ -926,18 +977,23 @@ are quite static.
 
 The definition of a node is stored and can be accessed by using
 
-    minetest.registered_nodes[node.name]
+```lua
+minetest.registered_nodes[node.name]
+```
 
 See [Registered definitions].
 
 Nodes are passed by value between Lua and the engine.
 They are represented by a table:
 
-    {name="name", param1=num, param2=num}
+```lua
+{name="name", param1=num, param2=num}
+```
 
 `param1` and `param2` are 8-bit integers ranging from 0 to 255. The engine uses
 them for certain automated functions. If you don't use these functions, you can
 use them to store arbitrary values.
+
 
 Node paramtypes
 ---------------
@@ -948,101 +1004,111 @@ node definition.
 The function of `param1` is determined by `paramtype` in node definition.
 `param1` is reserved for the engine when `paramtype != "none"`.
 
-* `paramtype = "light"`
-    * The value stores light with and without sun in its upper and lower 4 bits
-      respectively.
-    * Required by a light source node to enable spreading its light.
-    * Required by the following drawtypes as they determine their visual
-      brightness from their internal light value:
-        * torchlike
-        * signlike
-        * firelike
-        * fencelike
-        * raillike
-        * nodebox
-        * mesh
-        * plantlike
-        * plantlike_rooted
-* `paramtype = "none"`
-    * `param1` will not be used by the engine and can be used to store
-      an arbitrary value
+#### `paramtype = "light"`
+* The value stores light with and without sun in its upper and lower 4 bits
+  respectively.
+* Required by a light source node to enable spreading its light.
+* Required by the following drawtypes as they determine their visual
+  brightness from their internal light value:
+    * torchlike
+    * signlike
+    * firelike
+    * fencelike
+    * raillike
+    * nodebox
+    * mesh
+    * plantlike
+    * plantlike_rooted
+#### `paramtype = "none"`
+* `param1` will not be used by the engine and can be used to store
+  an arbitrary value
 
 The function of `param2` is determined by `paramtype2` in node definition.
 `param2` is reserved for the engine when `paramtype2 != "none"`.
 
-* `paramtype2 = "flowingliquid"`
-    * Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
-    * The liquid level and a flag of the liquid are stored in `param2`
-    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node
-    * Bit 3: If set, liquid is flowing downwards (no graphical effect)
-* `paramtype2 = "wallmounted"`
-    * Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
-    * The rotation of the node is stored in `param2`
-    * You can make this value by using `minetest.dir_to_wallmounted()`
-    * Values range 0 - 5
-    * The value denotes at which direction the node is "mounted":
-      0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
-* `paramtype2 = "facedir"`
-    * Supported drawtypes: "normal", "nodebox", "mesh"
-    * The rotation of the node is stored in `param2`. Furnaces and chests are
-      rotated this way. Can be made by using `minetest.dir_to_facedir()`.
-    * Values range 0 - 23
-    * facedir / 4 = axis direction:
-      0 = y+,   1 = z+,   2 = z-,   3 = x+,   4 = x-,   5 = y-
-    * facedir modulo 4 = rotation around that axis
-* `paramtype2 = "leveled"`
-    * Only valid for "nodebox" with 'type = "leveled"', and "plantlike_rooted".
-        * Leveled nodebox:
-            * The level of the top face of the nodebox is stored in `param2`.
-            * The other faces are defined by 'fixed = {}' like 'type = "fixed"'
-              nodeboxes.
-            * The nodebox height is (`param2` / 64) nodes.
-            * The maximum accepted value of `param2` is 127.
-        * Rooted plantlike:
-            * The height of the 'plantlike' section is stored in `param2`.
-            * The height is (`param2` / 16) nodes.
-* `paramtype2 = "degrotate"`
-    * Only valid for "plantlike" drawtype. The rotation of the node is stored in
-      `param2`.
-    * Values range 0 - 179. The value stored in `param2` is multiplied by two to
-      get the actual rotation in degrees of the node.
-* `paramtype2 = "meshoptions"`
-    * Only valid for "plantlike" drawtype. The value of `param2` becomes a
-      bitfield which can be used to change how the client draws plantlike nodes.
-    * Bits 0, 1 and 2 form a mesh selector.
-      Currently the following meshes are choosable:
-        * 0 = a "x" shaped plant (ordinary plant)
-        * 1 = a "+" shaped plant (just rotated 45 degrees)
-        * 2 = a "*" shaped plant with 3 faces instead of 2
-        * 3 = a "#" shaped plant with 4 faces instead of 2
-        * 4 = a "#" shaped plant with 4 faces that lean outwards
-        * 5-7 are unused and reserved for future meshes.
-    * Bits 3 through 7 are optional flags that can be combined and give these
-      effects:
-        * bit 3 (0x08) - Makes the plant slightly vary placement horizontally
-        * bit 4 (0x10) - Makes the plant mesh 1.4x larger
-        * bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
-        * bits 6-7 are reserved for future use.
-* `paramtype2 = "color"`
-    * `param2` tells which color is picked from the palette.
-      The palette should have 256 pixels.
-* `paramtype2 = "colorfacedir"`
-    * Same as `facedir`, but with colors.
-    * The first three bits of `param2` tells which color is picked from the
-      palette. The palette should have 8 pixels.
-* `paramtype2 = "colorwallmounted"`
-    * Same as `wallmounted`, but with colors.
-    * The first five bits of `param2` tells which color is picked from the
-      palette. The palette should have 32 pixels.
-* `paramtype2 = "glasslikeliquidlevel"`
-    * Only valid for "glasslike_framed" or "glasslike_framed_optional"
-      drawtypes.
-    * `param2` values 0-63 define 64 levels of internal liquid, 0 being empty
-      and 63 being full.
-    * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
-* `paramtype2 = "none"`
-    * `param2` will not be used by the engine and can be used to store
-      an arbitrary value
+#### `paramtype2 = "flowingliquid"`
+* Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
+* The liquid level and a flag of the liquid are stored in `param2`
+* Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node
+* Bit 3: If set, liquid is flowing downwards (no graphical effect)
+
+#### `paramtype2 = "wallmounted"`
+* Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
+* The rotation of the node is stored in `param2`
+* You can make this value by using `minetest.dir_to_wallmounted()`
+* Values range 0 - 5
+* The value denotes at which direction the node is "mounted":
+  0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
+
+#### `paramtype2 = "facedir"`
+* Supported drawtypes: "normal", "nodebox", "mesh"
+* The rotation of the node is stored in `param2`. Furnaces and chests are
+  rotated this way. Can be made by using `minetest.dir_to_facedir()`.
+* Values range 0 - 23
+* facedir / 4 = axis direction:
+  0 = y+,   1 = z+,   2 = z-,   3 = x+,   4 = x-,   5 = y-
+* facedir modulo 4 = rotation around that axis
+
+#### `paramtype2 = "leveled"`
+* Only valid for "nodebox" with 'type = "leveled"', and "plantlike_rooted".
+    * Leveled nodebox:
+        * The level of the top face of the nodebox is stored in `param2`.
+        * The other faces are defined by 'fixed = {}' like 'type = "fixed"'
+          nodeboxes.
+        * The nodebox height is (`param2` / 64) nodes.
+        * The maximum accepted value of `param2` is 127.
+    * Rooted plantlike:
+        * The height of the 'plantlike' section is stored in `param2`.
+        * The height is (`param2` / 16) nodes.
+
+#### `paramtype2 = "degrotate"`
+* Only valid for "plantlike" drawtype. The rotation of the node is stored in
+  `param2`.
+* Values range 0 - 179. The value stored in `param2` is multiplied by two to
+  get the actual rotation in degrees of the node.
+
+#### `paramtype2 = "meshoptions"`
+* Only valid for "plantlike" drawtype. The value of `param2` becomes a
+  bitfield which can be used to change how the client draws plantlike nodes.
+* Bits 0, 1 and 2 form a mesh selector.
+  Currently the following meshes are choosable:
+    * 0 = a "x" shaped plant (ordinary plant)
+    * 1 = a "+" shaped plant (just rotated 45 degrees)
+    * 2 = a "*" shaped plant with 3 faces instead of 2
+    * 3 = a "#" shaped plant with 4 faces instead of 2
+    * 4 = a "#" shaped plant with 4 faces that lean outwards
+    * 5-7 are unused and reserved for future meshes.
+* Bits 3 through 7 are optional flags that can be combined and give these
+  effects:
+    * bit 3 (0x08) - Makes the plant slightly vary placement horizontally
+    * bit 4 (0x10) - Makes the plant mesh 1.4x larger
+    * bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
+    * bits 6-7 are reserved for future use.
+
+#### `paramtype2 = "color"`
+* `param2` tells which color is picked from the palette.
+  The palette should have 256 pixels.
+
+#### `paramtype2 = "colorfacedir"`
+* Same as `facedir`, but with colors.
+* The first three bits of `param2` tells which color is picked from the
+  palette. The palette should have 8 pixels.
+
+#### `paramtype2 = "colorwallmounted"`
+* Same as `wallmounted`, but with colors.
+* The first five bits of `param2` tells which color is picked from the
+  palette. The palette should have 32 pixels.
+
+#### `paramtype2 = "glasslikeliquidlevel"`
+* Only valid for "glasslike_framed" or "glasslike_framed_optional"
+  drawtypes.
+* `param2` values 0-63 define 64 levels of internal liquid, 0 being empty
+  and 63 being full.
+* Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
+
+#### `paramtype2 = "none"`
+* `param2` will not be used by the engine and can be used to store
+  an arbitrary value
 
 Nodes can also contain extra data. See [Node Metadata].
 
@@ -1053,89 +1119,107 @@ There are a bunch of different looking node types.
 
 Look for examples in `games/minimal` or `games/minetest_game`.
 
-* `normal`
-    * A node-sized cube.
-* `airlike`
-    * Invisible, uses no texture.
-* `liquid`
-    * The cubic source node for a liquid.
-* `flowingliquid`
-    * The flowing version of a liquid, appears with various heights and slopes.
-* `glasslike`
-    * Often used for partially-transparent nodes.
-    * Only external sides of textures are visible.
-* `glasslike_framed`
-    * All face-connected nodes are drawn as one volume within a surrounding
-      frame.
-    * The frame appearance is generated from the edges of the first texture
-      specified in `tiles`. The width of the edges used are 1/16th of texture
-      size: 1 pixel for 16x16, 2 pixels for 32x32 etc.
-    * The glass 'shine' (or other desired detail) on each node face is supplied
-      by the second texture specified in `tiles`.
-* `glasslike_framed_optional`
-    * This switches between the above 2 drawtypes according to the menu setting
-      'Connected Glass'.
-* `allfaces`
-    * Often used for partially-transparent nodes.
-    * External and internal sides of textures are visible.
-* `allfaces_optional`
-    * Often used for leaves nodes.
-    * This switches between `normal`, `glasslike` and `allfaces` according to
-      the menu setting: Opaque Leaves / Simple Leaves / Fancy Leaves.
-    * With 'Simple Leaves' selected, the texture specified in `special_tiles`
-      is used instead, if present. This allows a visually thicker texture to be
-      used to compensate for how `glasslike` reduces visual thickness.
-* `torchlike`
-    * A single vertical texture.
-    * If placed on top of a node, uses the first texture specified in `tiles`.
-    * If placed against the underside of a node, uses the second texture
-      specified in `tiles`.
-    * If placed on the side of a node, uses the third texture specified in
-      `tiles` and is perpendicular to that node.
-* `signlike`
-    * A single texture parallel to, and mounted against, the top, underside or
-      side of a node.
-* `plantlike`
-    * Two vertical and diagonal textures at right-angles to each other.
-    * See `paramtype2 = "meshoptions"` above for other options.
-* `firelike`
-    * When above a flat surface, appears as 6 textures, the central 2 as
-      `plantlike` plus 4 more surrounding those.
-    * If not above a surface the central 2 do not appear, but the texture
-      appears against the faces of surrounding nodes if they are present.
-* `fencelike`
-    * A 3D model suitable for a wooden fence.
-    * One placed node appears as a single vertical post.
-    * Adjacently-placed nodes cause horizontal bars to appear between them.
-* `raillike`
-    * Often used for tracks for mining carts.
-    * Requires 4 textures to be specified in `tiles`, in order: Straight,
-      curved, t-junction, crossing.
-    * Each placed node automatically switches to a suitable rotated texture
-      determined by the adjacent `raillike` nodes, in order to create a
-      continuous track network.
-    * Becomes a sloping node if placed against stepped nodes.
-* `nodebox`
-    * Often used for stairs and slabs.
-    * Allows defining nodes consisting of an arbitrary number of boxes.
-    * See [Node boxes] below for more information.
-* `mesh`
-    * Uses models for nodes.
-    * Tiles should hold model materials textures.
-    * Only static meshes are implemented.
-    * For supported model formats see Irrlicht engine documentation.
-* `plantlike_rooted`
-    * Enables underwater `plantlike` without air bubbles around the nodes.
-    * Consists of a base cube at the co-ordinates of the node plus a
-      `plantlike` extension above with a height of `param2 / 16` nodes.
-    * The `plantlike` extension visually passes through any nodes above the
-      base cube without affecting them.
-    * The base cube texture tiles are defined as normal, the `plantlike`
-      extension uses the defined special tile, for example:
-      `special_tiles = {{name = "default_papyrus.png", tileable_vertical = true}},`
+
+#### `normal`
+* A node-sized cube.
+
+#### `airlike`
+* Invisible, uses no texture.
+
+#### `liquid`
+* The cubic source node for a liquid.
+
+#### `flowingliquid`
+* The flowing version of a liquid, appears with various heights and slopes.
+
+#### `glasslike`
+* Often used for partially-transparent nodes.
+* Only external sides of textures are visible.
+
+#### `glasslike_framed`
+* All face-connected nodes are drawn as one volume within a surrounding frame.
+* The frame appearance is generated from the edges of the first texture
+  specified in `tiles`. The width of the edges used are 1/16th of texture
+  size: 1 pixel for 16x16, 2 pixels for 32x32 etc.
+* The glass 'shine' (or other desired detail) on each node face is supplied
+  by the second texture specified in `tiles`.
+
+#### `glasslike_framed_optional`
+* This switches between the above 2 drawtypes according to the menu setting
+  'Connected Glass'.
+
+#### `allfaces`
+* Often used for partially-transparent nodes.
+* External and internal sides of textures are visible.
+
+#### `allfaces_optional`
+* Often used for leaves nodes.
+* This switches between `normal`, `glasslike` and `allfaces` according to
+  the menu setting: Opaque Leaves / Simple Leaves / Fancy Leaves.
+* With 'Simple Leaves' selected, the texture specified in `special_tiles`
+  is used instead, if present. This allows a visually thicker texture to be
+  used to compensate for how `glasslike` reduces visual thickness.
+
+#### `torchlike`
+* A single vertical texture.
+* If placed on top of a node, uses the first texture specified in `tiles`.
+* If placed against the underside of a node, uses the second texture
+  specified in `tiles`.
+* If placed on the side of a node, uses the third texture specified in
+  `tiles` and is perpendicular to that node.
+
+#### `signlike`
+* A single texture parallel to, and mounted against, the top, underside or
+  side of a node.
+
+#### `plantlike`
+* Two vertical and diagonal textures at right-angles to each other.
+* See `paramtype2 = "meshoptions"` above for other options.
+
+#### `firelike`
+* When above a flat surface, appears as 6 textures, the central 2 as
+  `plantlike` plus 4 more surrounding those.
+* If not above a surface the central 2 do not appear, but the texture
+  appears against the faces of surrounding nodes if they are present.
+
+#### `fencelike`
+* A 3D model suitable for a wooden fence.
+* One placed node appears as a single vertical post.
+* Adjacently-placed nodes cause horizontal bars to appear between them.
+
+#### `raillike`
+* Often used for tracks for mining carts.
+* Requires 4 textures to be specified in `tiles`, in order: Straight,
+  curved, t-junction, crossing.
+* Each placed node automatically switches to a suitable rotated texture
+  determined by the adjacent `raillike` nodes, in order to create a
+  continuous track network.
+* Becomes a sloping node if placed against stepped nodes.
+
+#### `nodebox`
+* Often used for stairs and slabs.
+* Allows defining nodes consisting of an arbitrary number of boxes.
+* See [Node boxes] below for more information.
+
+#### `mesh`
+* Uses models for nodes.
+* Tiles should hold model materials textures.
+* Only static meshes are implemented.
+* For supported model formats see Irrlicht engine documentation.
+
+#### `plantlike_rooted`
+* Enables underwater `plantlike` without air bubbles around the nodes.
+* Consists of a base cube at the co-ordinates of the node plus a
+  `plantlike` extension above with a height of `param2 / 16` nodes.
+* The `plantlike` extension visually passes through any nodes above the
+  base cube without affecting them.
+* The base cube texture tiles are defined as normal, the `plantlike`
+  extension uses the defined special tile, for example:
+  `special_tiles = {{name = "default_papyrus.png", tileable_vertical = true}},`
 
 `*_optional` drawtypes need less rendering time if deactivated
 (always client-side).
+
 
 Node boxes
 ----------
@@ -1144,55 +1228,57 @@ Node selection boxes are defined using "node boxes".
 
 A nodebox is defined as any of:
 
-    {
-        -- A normal cube; the default in most things
-        type = "regular"
-    }
-    {
-        -- A fixed box (or boxes) (facedir param2 is used, if applicable)
-        type = "fixed",
-        fixed = box OR {box1, box2, ...}
-    }
-    {
-        -- A variable height box (or boxes) with the top face position defined
-        -- by the node parameter 'leveled = ', or if 'paramtype2 == "leveled"'
-        -- by param2.
-        -- Other faces are defined by 'fixed = {}' as with 'type = "fixed"'.
-        type = "leveled",
-        fixed = box OR {box1, box2, ...}
-    }
-    {
-        -- A box like the selection box for torches
-        -- (wallmounted param2 is used, if applicable)
-        type = "wallmounted",
-        wall_top = box,
-        wall_bottom = box,
-        wall_side = box
-    }
-    {
-        -- A node that has optional boxes depending on neighbouring nodes'
-        -- presence and type. See also `connects_to`.
-        type = "connected",
-        fixed = box OR {box1, box2, ...}
-        connect_top = box OR {box1, box2, ...}
-        connect_bottom = box OR {box1, box2, ...}
-        connect_front = box OR {box1, box2, ...}
-        connect_left = box OR {box1, box2, ...}
-        connect_back = box OR {box1, box2, ...}
-        connect_right = box OR {box1, box2, ...}
-        -- The following `disconnected_*` boxes are the opposites of the
-        -- `connect_*` ones above, i.e. when a node has no suitable neighbour
-        -- on the respective side, the corresponding disconnected box is drawn.
-        disconnected_top = box OR {box1, box2, ...}
-        disconnected_bottom = box OR {box1, box2, ...}
-        disconnected_front = box OR {box1, box2, ...}
-        disconnected_left = box OR {box1, box2, ...}
-        disconnected_back = box OR {box1, box2, ...}
-        disconnected_right = box OR {box1, box2, ...}
-        disconnected = box OR {box1, box2, ...} -- when there is *no* neighbour
-        disconnected_sides = box OR {box1, box2, ...} -- when there are *no*
-                                                      -- neighbours to the sides
-    }
+```lua
+{
+    -- A normal cube; the default in most things
+    type = "regular"
+}
+{
+    -- A fixed box (or boxes) (facedir param2 is used, if applicable)
+    type = "fixed",
+    fixed = box OR {box1, box2, ...}
+}
+{
+    -- A variable height box (or boxes) with the top face position defined
+    -- by the node parameter 'leveled = ', or if 'paramtype2 == "leveled"'
+    -- by param2.
+    -- Other faces are defined by 'fixed = {}' as with 'type = "fixed"'.
+    type = "leveled",
+    fixed = box OR {box1, box2, ...}
+}
+{
+    -- A box like the selection box for torches
+    -- (wallmounted param2 is used, if applicable)
+    type = "wallmounted",
+    wall_top = box,
+    wall_bottom = box,
+    wall_side = box
+}
+{
+    -- A node that has optional boxes depending on neighbouring nodes'
+    -- presence and type. See also `connects_to`.
+    type = "connected",
+    fixed = box OR {box1, box2, ...}
+    connect_top = box OR {box1, box2, ...}
+    connect_bottom = box OR {box1, box2, ...}
+    connect_front = box OR {box1, box2, ...}
+    connect_left = box OR {box1, box2, ...}
+    connect_back = box OR {box1, box2, ...}
+    connect_right = box OR {box1, box2, ...}
+    -- The following `disconnected_*` boxes are the opposites of the
+    -- `connect_*` ones above, i.e. when a node has no suitable neighbour
+    -- on the respective side, the corresponding disconnected box is drawn.
+    disconnected_top = box OR {box1, box2, ...}
+    disconnected_bottom = box OR {box1, box2, ...}
+    disconnected_front = box OR {box1, box2, ...}
+    disconnected_left = box OR {box1, box2, ...}
+    disconnected_back = box OR {box1, box2, ...}
+    disconnected_right = box OR {box1, box2, ...}
+    disconnected = box OR {box1, box2, ...} -- when there is *no* neighbour
+    disconnected_sides = box OR {box1, box2, ...} -- when there are *no*
+                                                  -- neighbours to the sides
+}
+```
 
 A `box` is defined as:
 
@@ -1201,8 +1287,6 @@ A `box` is defined as:
 A box of a regular node would look like:
 
     {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
-
-
 
 
 Map terminology and coordinates
@@ -1225,6 +1309,7 @@ A 'mapchunk' (sometimes abbreviated to 'chunk') is usually 5x5x5 mapblocks
 the map generator.
 The size in mapblocks has been chosen to optimise map generation.
 
+
 Coordinates
 -----------
 
@@ -1232,9 +1317,11 @@ Coordinates
 
 For node and mapblock coordinates, +X is East, +Y is up, +Z is North.
 
+
 ### Node coordinates
 
 Almost all positions used in the API use node coordinates.
+
 
 ### Mapblock coordinates
 
@@ -1259,8 +1346,6 @@ for each axis:
   nodepos = blockpos * 16
 * Maximum:
   nodepos = blockpos * 16 + 15
-
-
 
 
 HUD
@@ -1301,6 +1386,7 @@ Supports negative values.
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
 
+
 ### `image`
 
 Displays an image on the HUD.
@@ -1312,6 +1398,7 @@ Displays an image on the HUD.
 * `text`: The name of the texture that is displayed.
 * `alignment`: The alignment of the image.
 * `offset`: offset in pixels from position.
+
 
 ### `text`
 
@@ -1325,6 +1412,7 @@ Displays text on the HUD.
 * `alignment`: The alignment of the text.
 * `offset`: offset in pixels from position.
 
+
 ### `statbar`
 
 Displays a horizontal bar made up of half-images.
@@ -1337,6 +1425,7 @@ Displays a horizontal bar made up of half-images.
 * `size`: If used, will force full-image size to this value (override texture
   pack image size)
 
+
 ### `inventory`
 
 * `text`: The name of the inventory list to be displayed.
@@ -1344,6 +1433,7 @@ Displays a horizontal bar made up of half-images.
 * `item`: Position of item that is selected.
 * `direction`
 * `offset`: offset in pixels from position.
+
 
 ### `waypoint`
 
@@ -1356,20 +1446,19 @@ Displays distance to selected world position.
 * `world_pos`: World position of the waypoint.
 
 
-
-
-Representations of simple things
+Representations of Simple Things
 ================================
 
-Position/vector
+Position/Vector
 ---------------
 
     {x=num, y=num, z=num}
 
 For helper functions see [Spatial Vectors].
 
-`pointed_thing`
----------------
+
+pointed_thing
+-------------
 
 * `{type="nothing"}`
 * `{type="node", under=pos, above=pos}`
@@ -1389,8 +1478,6 @@ Exact pointing location (currently only `Raycast` supports these fields):
   selected selection box. This specifies which face is pointed at.
   Is a null vector `{x = 0, y = 0, z = 0}` when the pointer is inside the
   selection box.
-
-
 
 
 Flag Specifier Format
@@ -1428,12 +1515,10 @@ or even
 since, by default, no schematic attributes are set.
 
 
-
-
 Items
 =====
 
-Item types
+Item Types
 ----------
 
 There are three kinds of items: nodes, tools and craftitems.
@@ -1443,7 +1528,8 @@ There are three kinds of items: nodes, tools and craftitems.
   dig nodes or hit objects according to its tool capabilities.
 * Craftitem: Cannot dig nodes or be placed
 
-Amount and wear
+
+Amount and Wear
 ---------------
 
 All item stacks have an amount between 0 and 65535. It is 1 by
@@ -1454,7 +1540,8 @@ value 0 is the default and is used for unworn tools. The values
 1 to 65535 are used for worn tools, where a higher value stands for
 a higher wear. Non-tools always have a wear value of 0.
 
-Item formats
+
+Item Formats
 ------------
 
 Items and item stacks can exist in three formats: Serializes, table format
@@ -1462,6 +1549,7 @@ and `ItemStack`.
 
 When an item must be passed to a function, it can usually be in any of
 these formats.
+
 
 ### Serialized
 
@@ -1477,6 +1565,7 @@ Examples:
 * `'default:dirt 5'`: 5 dirt
 * `'default:pick_stone'`: a new stone pickaxe
 * `'default:pick_wood 1 21323'`: a wooden pickaxe, ca. 1/3 worn out
+
 
 ### Table format
 
@@ -1494,12 +1583,11 @@ An apple:
 
     {name="default:apple", count=1, wear=0, metadata=""}
 
+
 ### `ItemStack`
 
 A native C++ format with many helper methods. Useful for converting
 between formats. See the [Class reference] section for details.
-
-
 
 
 Groups
@@ -1510,6 +1598,7 @@ properties of a thing (item, node, armor of entity, capabilities of
 tool) in such a way that the engine and other mods can can interact with
 the thing without actually knowing what the thing is.
 
+
 Usage
 -----
 
@@ -1517,11 +1606,13 @@ Groups are stored in a table, having the group names with keys and the
 group ratings as values. Group ratings are integer values within the
 range [-32767, 32767]. For example:
 
-    -- Default dirt
-    groups = {crumbly=3, soil=1}
+```lua
+-- Default dirt
+groups = {crumbly=3, soil=1}
 
-    -- A more special dirt-kind of thing
-    groups = {crumbly=2, soil=1, level=2, outerspace=1}
+-- A more special dirt-kind of thing
+groups = {crumbly=2, soil=1, level=2, outerspace=1}
+```
 
 Groups always have a rating associated with them. If there is no
 useful meaning for a rating for an enabled group, it shall be `1`.
@@ -1533,18 +1624,21 @@ You can read the rating of a group for an item or a node by using
 
     minetest.get_item_group(itemname, groupname)
 
-Groups of items
+
+Groups of Items
 ---------------
 
 Groups of items can define what kind of an item it is (e.g. wool).
 
-Groups of nodes
+
+Groups of Nodes
 ---------------
 
 In addition to the general item things, groups are used to define whether
 a node is destroyable and how long it takes to destroy by a tool.
 
-Groups of entities
+
+Groups of Entities
 ------------------
 
 For entities, groups are, as of now, used only for calculating damage.
@@ -1554,89 +1648,117 @@ See [Entity damage mechanism].
     object.get_armor_groups() --> a group-rating table (e.g. {fleshy=100})
     object.set_armor_groups({fleshy=30, cracky=80})
 
-Groups of tools
+
+Groups of Tools
 ---------------
 
 Groups in tools define which groups of nodes and entities they are
 effective towards.
 
-Groups in crafting recipes
+
+Groups in Crafting Recipes
 --------------------------
 
 An example: Make meat soup from any meat, any water and any bowl:
 
-    {
-        output = 'food:meat_soup_raw',
-        recipe = {
-            {'group:meat'},
-            {'group:water'},
-            {'group:bowl'},
-        },
-        -- preserve = {'group:bowl'}, -- Not implemented yet (TODO)
-    }
+```lua
+{
+    output = 'food:meat_soup_raw',
+    recipe = {
+        {'group:meat'},
+        {'group:water'},
+        {'group:bowl'},
+    },
+    -- preserve = {'group:bowl'}, -- Not implemented yet (TODO)
+}
+```
 
 Another example: Make red wool from white wool and red dye:
 
-    {
-        type = 'shapeless',
-        output = 'wool:red',
-        recipe = {'wool:white', 'group:dye,basecolor_red'},
-    }
+```lua
+{
+    type = 'shapeless',
+    output = 'wool:red',
+    recipe = {'wool:white', 'group:dye,basecolor_red'},
+}
+```
 
-Special groups
+
+Special Groups
 --------------
 
 The asterisk `(*)` after a group name describes that there is no engine
 functionality bound to it, and implementation is left up as a suggestion
 to games.
 
-### Node, item and tool groups
 
-* `not_in_creative_inventory`: (*) Special group for inventory mods to indicate
-  that the item should be hidden in item lists.
+### Node, Item and Tool Groups
+
+#### `not_in_creative_inventory`
+(*) Special group for inventory mods to indicate that the item should be hidden
+in item lists.
 
 
-### Node-only groups
+### Node-Only Groups
 
-* `attached_node`: if the node under it is not a walkable block the node will be
-  dropped as an item. If the node is wallmounted the wallmounted direction is
-  checked.
-* `bouncy`: value is bounce speed in percent
-* `connect_to_raillike`: makes nodes of raillike drawtype with same group value
-  connect to each other
-* `dig_immediate`: Player can always pick up node without reducing tool wear
-    * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
-    * `3`: the node always gets the digging time 0 seconds (torch)
-* `disable_jump`: Player (and possibly other things) cannot jump from node
-* `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
-* `falling_node`: if there is no walkable block under the node it will fall
-* `float`: the node will not fall through liquids
-* `level`: Can be used to give an additional sense of progression in the game.
-     * A larger level will cause e.g. a weapon of a lower level make much less
-       damage, and get worn out much faster, or not be able to get drops
-       from destroyed nodes.
-     * `0` is something that is directly accessible at the start of gameplay
-     * There is no upper limit
-     * See also: `leveldiff` in [Tools]
-* `slippery`: Players and items will slide on the node.
-  Slipperiness rises steadily with `slippery` value, starting at 1.
+#### `attached_node`
+If the node under it is not a walkable block the node will be dropped as an
+item. If the node is wallmounted the wallmounted direction is checked.
+
+#### `bouncy`
+Value is bounce speed in percent
+
+#### `connect_to_raillike`
+Makes nodes of raillike drawtype with same group value connect to each other
+
+#### `dig_immediate`
+Player can always pick up node without reducing tool wear
+* `2`: the node always gets the digging time 0.5 seconds (rail, sign)
+* `3`: the node always gets the digging time 0 seconds (torch)
+
+#### `disable_jump`
+Player (and possibly other things) cannot jump from node
+
+#### `fall_damage_add_percent`
+damage speed = `speed * (1 + value/100)`
+
+#### `falling_node`
+If there is no walkable block under the node it will fall
+
+#### `float`
+The node will not fall through liquids
+
+#### `level`
+Can be used to give an additional sense of progression in the game.
+* A larger level will cause e.g. a weapon of a lower level make much less
+  damage, and get worn out much faster, or not be able to get drops
+  from destroyed nodes.
+* `0` is something that is directly accessible at the start of gameplay
+* There is no upper limit
+* See also: `leveldiff` in [Tools]
+
+#### `slippery`
+Players and items will slide on the node.
+Slipperiness rises steadily with `slippery` value, starting at 1.
 
 
 ### Tool-only groups
 
-* `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
-  `"toolrepair"` crafting recipe
+#### `disable_repair`
+If set to 1 for a tool, it cannot be repaired using the `"toolrepair"` crafting
+recipe.
 
 
 ### `ObjectRef` groups
 
-* `immortal`: Skips all damage and breath handling for an object. This group
-  will also hide the integrated HUD status bars for players, and is
-  automatically set to all players when damage is disabled on the server.
-* `punch_operable`: For entities; disables the regular damage mechanism for
-  players punching it by hand or a non-tool item, so that it can do something
-  else than take damage.
+#### `immortal`
+Skips all damage and breath handling for an object. This group will also hide
+the integrated HUD status bars for players, and is automatically set to all
+players when damage is disabled on the server.
 
+#### `punch_operable`
+For entities; disables the regular damage mechanism for players punching it by
+hand or a non-tool item, so that it can do something else than take damage.
 
 
 Known damage and digging time defining groups
@@ -1657,6 +1779,7 @@ Known damage and digging time defining groups
    speed of a tool if the tool can dig at a faster speed than this
    suggests for the hand.
 
+
 Examples of custom groups
 -------------------------
 
@@ -1672,6 +1795,7 @@ Item groups are often used for defining, well, _groups of items_.
 * `metal`: any metal
 * `weapon`: any weapon
 * `heavy`: anything considerably heavy
+
 
 Digging time calculation specifics
 ----------------------------------
@@ -1689,8 +1813,6 @@ full potential.
 Tools define their properties by a list of parameters for groups. They
 cannot dig other groups; thus it is important to use a standard bunch of
 groups to enable interaction with tools.
-
-
 
 
 Tools
