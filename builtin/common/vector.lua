@@ -171,3 +171,16 @@ function vector.up_from_rotation(rot)
 	--take yaw into account
 	return vector_rotate(up, {x = 0, y = 1, z = 0}, rot.y)
 end
+
+function vector.forward_up_to_rotation(forward, up)
+	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
+	local forwup = rot_to_up(rot)
+	rot.z = vector.angle(forwup, up)
+	
+	--we don't use vector.equals for this comparison because of floating point rounding errors
+	if vector.distance(vector_rotate(up, forward, rot.z), forwup) < 0.0000000000001
+	then
+		rot.z = -rot.z
+	end
+	return rot
+end
