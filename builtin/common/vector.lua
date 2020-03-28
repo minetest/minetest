@@ -154,3 +154,20 @@ function vector.rotate(v, axis, angle)
 		vector.multiply(vector.cross(axis, v), sinangle)),
 		vector.multiply(axis, vector.dot(axis, v) * (1 - cosangle)))
 end
+
+function vector.forward_from_rotation(rot)
+	--get pitch vector
+	local forward = {x = 0, y = math.sin(rot.x), z = math.cos(rot.x)}
+	--apply yaw
+	return vector_rotate(forward, {x = 0, y = 1, z = 0}, rot.y)
+end
+
+function vector.up_from_rotation(rot)
+	local uproll = rot.z - math.pi / 2
+	--take roll
+	local up = {x = math.cos(uproll), y = -math.sin(uproll), z = 0}
+	--take pitch into account
+	up = vector_rotate(up, {x = 1, y = 0, z = 0}, rot.x)
+	--take yaw into account
+	return vector_rotate(up, {x = 0, y = 1, z = 0}, rot.y)
+end
