@@ -829,7 +829,8 @@ void GenericCAO::setNodeLight(u8 light)
 	if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
 		// Since these types of visuals are using their own shader
 		// they should be handled separately
-		m_wield_meshnode->setColor(color);
+		if (m_wield_meshnode)
+			m_wield_meshnode->setColor(color);
 	} else if (m_enable_shaders) {
 		scene::ISceneNode *node = getSceneNode();
 
