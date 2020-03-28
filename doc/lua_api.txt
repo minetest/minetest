@@ -2255,9 +2255,10 @@ Elements
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
 * Displays a static formatted text with hyperlinks.
+* **Note**: This element is currently unstable and subject to change.
 * `x`, `y`, `w` and `h` work as per field
 * `name` is the name of the field as returned in fields to `on_receive_fields` in case of action in text.
-* `text` is the formatted text using `markup language` described below.
+* `text` is the formatted text using `Markup Language` described below.
 
 ### `vertlabel[<X>,<Y>;<label>]`
 * Textual label drawn vertically
@@ -2643,11 +2644,12 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 
-Markup language
+Markup Language
 ---------------
 
-Markup language used in `hypertext[]` elements uses tag that look like HTML tags. Some
-tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
+Markup language used in `hypertext[]` elements uses tags that look like HTML tags.
+The markup language is currently unstable and subject to change. Use with caution.
+Some tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
 Tags can have attributes, in that case, attributes are in the opening tag in
 form of a key/value separated with equal signs. Attribute values should not be quoted.
 
