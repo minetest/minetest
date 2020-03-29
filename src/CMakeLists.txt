@@ -725,6 +725,17 @@ else()
 	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
+	# We don't *want* to support this mode, but Debian (and by extension Ubuntu)
+	# build their packages with -DCMAKE_BUILD_TYPE=None, probably so they can
+	# get their custom compiler flags in. This causes -DNDEBUG to *not* be set,
+	# leaving rarely tested debug code in and other annoyances.
+	# So when we see that build type, at least make sure this is detected as a
+	# release build.
+	if(CMAKE_BUILD_TYPE STREQUAL "None")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNDEBUG")
+	endif()
+	#
+
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
 	endif()
