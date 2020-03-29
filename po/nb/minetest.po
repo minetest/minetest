@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
 "PO-Revision-Date: 2020-03-31 10:14+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"Last-Translator: Liet Kynes <sissi90@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -680,7 +680,7 @@ msgstr "Generer normale kart"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr ""
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
@@ -989,11 +989,11 @@ msgstr "Oppretter tjener…"
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "Skjuler feilsøkingsinfo og profilgraf"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
-msgstr ""
+msgstr "Viser feilsøkingsinfo"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
@@ -1014,6 +1014,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Standardstyring:\n"
+"Ved ingen synlig meny:\n"
+"- enkel berøring: knapp aktiveres\n"
+"- dobbel berøring: legg på plass/bruke\n"
+"- glidende berøring: se rundt deg\n"
+"Meny/beholdning synlig:\n"
+"- dobbel berøring (ute):\n"
+" -->lukk\n"
+"- berør stabel, berør spor:\n"
+" --> flytt stabel\n"
+"- berør&trekk, berør med den andre fingeren\n"
+" --> legg én enkelt gjenstand i spor\n"
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
@@ -1097,7 +1109,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Minimap hidden"
-msgstr ""
+msgstr "Skjuler minikart"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x1"
@@ -1137,7 +1149,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "Blokkdefinisjoner..."
 
 #: src/client/game.cpp
 msgid "Off"
@@ -1225,7 +1237,7 @@ msgstr "Chat skjult"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "Viser chat"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
@@ -2353,10 +2365,12 @@ msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"Kommainndelt liste med klarerte modder som har tilgang til usikre\n"
+"funksjoner selv når moddsikkerhet er på (via request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
-msgstr ""
+msgstr "Tast for chat og kommandoer"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2372,7 +2386,7 @@ msgstr "Forbinder glass hvis støttet av knutepunkt."
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
-msgstr ""
+msgstr "Konsolldekkevne (opasitet)"
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
@@ -2384,7 +2398,7 @@ msgstr "Konsollhøyde"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
-msgstr ""
+msgstr "ContentDBs svarteliste"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
@@ -2392,13 +2406,16 @@ msgstr "ContentDB-URL"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "Kontinuerlig fremoverbevegelse"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
+"Kontinuerlig fremoverbevegelse, slås av/på med tasten for automatisk "
+"fremover.\n"
+"Trykk på automatisk fremover-tasten igjen eller gå bakover for å slå av."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -2417,7 +2434,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls sinking speed in liquid."
-msgstr ""
+msgstr "Bestemmer synkehastigheten i væsker."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2460,7 +2477,7 @@ msgstr "Trådkorsfarge (R, G, B)."
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI (skjermoppløsning)"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
@@ -2468,7 +2485,7 @@ msgstr "Skade"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "Tast for å vise/skjule feilsøkingsinfo"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -2484,11 +2501,11 @@ msgstr "Tast for senking av lydstyrke"
 
 #: src/settings_translation_file.cpp
 msgid "Decrease this to increase liquid resistance to movement."
-msgstr ""
+msgstr "Reduksjon av denne verdien øker bevegelsesmotstanden i væsker."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr ""
+msgstr "Serverens oppdateringsintervall (servertikk)"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
@@ -2661,11 +2678,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon maximum Y"
-msgstr ""
+msgstr "Maksimum y-verdi for grotter"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
-msgstr ""
+msgstr "Minimum y-verdi for grotter"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2845,9 +2862,8 @@ msgid "Fall bobbing factor"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font path"
-msgstr "Tilbakefallsskrift"
+msgstr "Filsti for reserveskrifttype"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
@@ -3222,7 +3238,7 @@ msgstr "Bakke støy 4"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Serverens hjemmeside, som vises i serverlisten."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3583,7 +3599,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
-msgstr ""
+msgstr "Tast for beholdning"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -3591,7 +3607,7 @@ msgstr "Inverter mus"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "Inverter vertikale musebevegelser."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4187,6 +4203,11 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Sniketast.\n"
+"Brukes også for å gå ned på stiger og i vann dersom aux1_descends ikke "
+"brukes.\n"
+"See http://irrlicht.sourceforge.net/docu/"
+"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4368,7 +4389,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
-msgstr ""
+msgstr "Bladstil"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4377,10 +4398,14 @@ msgid ""
 "-   Simple: only outer faces, if defined special_tiles are used\n"
 "-   Opaque: disable transparency"
 msgstr ""
+"Bladstil:\n"
+"- Stilig: alle sider synes\n"
+"- Enkel: kun yttersider synes, dersom special_tiles brukes\n"
+"- Tildekket: gjennomsiktighet er av"
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
-msgstr ""
+msgstr "Venstretast"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4520,7 +4545,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
-msgstr ""
+msgstr "Skript for hovedmeny"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4542,7 +4567,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
-msgstr ""
+msgstr "Mappe for kart"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen Carpathian."
@@ -4595,7 +4620,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr ""
+msgstr "Lagringsintervall for kart"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -4709,11 +4734,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Maks FPS («frames» - bilder per sekund)"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
-msgstr ""
+msgstr "Maks FPS når spillet står i pause."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -4821,11 +4846,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
+msgstr "Maks antall brukere"
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
-msgstr ""
+msgstr "Menyer"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
@@ -4833,7 +4858,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
-msgstr ""
+msgstr "Dagens melding"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day displayed to players connecting."
@@ -4845,11 +4870,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "Minikart"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
-msgstr ""
+msgstr "Tast for minikart"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
@@ -4881,11 +4906,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
-msgstr ""
+msgstr "Filsti for monospace skrifttype"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
-msgstr ""
+msgstr "Størrelse for monospace skrifttype"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
@@ -4905,7 +4930,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Pekerfølsomhet"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
@@ -5095,7 +5120,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Path to save screenshots at."
-msgstr ""
+msgstr "Filsti til lagring av skjermdumper."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5129,7 +5154,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
-msgstr ""
+msgstr "Fysikk"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5148,7 +5173,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
-msgstr ""
+msgstr "Spillernavn"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
@@ -5217,7 +5242,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
-msgstr ""
+msgstr "Tilfeldig inndata"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5234,7 +5259,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "Eksterne media"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5244,7 +5269,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
-msgstr ""
+msgstr "Ekstern port."
 
 #: src/settings_translation_file.cpp
 msgid "Report path"
@@ -5359,15 +5384,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
-msgstr ""
+msgstr "Skjermhøyde"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
+msgstr "Skjermbredde"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr ""
+msgstr "Mappe for skjermdumper"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot format"
@@ -5398,7 +5423,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Security"
-msgstr ""
+msgstr "Sikkerhet"
 
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
@@ -5543,7 +5568,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
-msgstr ""
+msgstr "Vis feilsøkingsinfo"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
@@ -5551,7 +5576,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr ""
+msgstr "Beskjed ved avslutning"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5614,7 +5639,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sneak key"
-msgstr ""
+msgstr "Sniketast"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5627,7 +5652,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "Lyd"
 
 #: src/settings_translation_file.cpp
 msgid "Special key"
@@ -5662,7 +5687,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr ""
+msgstr "Fast gjenoppstandelsespunkt"
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
@@ -5701,7 +5726,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
-msgstr ""
+msgstr "Synkron SQLite"
 
 #: src/settings_translation_file.cpp
 msgid "Temperature variation for biomes."
@@ -5748,7 +5773,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
-msgstr ""
+msgstr "Filsti for teksturer"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5795,6 +5820,11 @@ msgid ""
 "Default is 1.0 (1/2 node).\n"
 "Requires waving liquids to be enabled."
 msgstr ""
+"Makshøyden for overflaten på væsker som skvulper.\n"
+"4,0 = Bølgehøyde er to blokker.\n"
+"0,0 = Bølger flytter seg ikke i det hele tatt.\n"
+"Forvalgt verdi er 1,0 (1/2 blokk).\n"
+"Krever at væskebølger er påslått."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -5925,7 +5955,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
-msgstr ""
+msgstr "Forsinkelse for infoboble"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5933,10 +5963,13 @@ msgid ""
 "False = 128\n"
 "Usable to make minimap smoother on slower machines."
 msgstr ""
+"Sann = 256\n"
+"Usann = 128\n"
+"Kan gjøre at minikartet kjører lettere på trege maskiner."
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr ""
+msgstr "Klarterte modder"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -5969,11 +6002,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr ""
+msgstr "Bruk 3D-skyer i stedet for flate."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "Bruk animerte skyer som bakgrunn for hovedmenyen."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
@@ -6060,7 +6093,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "Videodriver"
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing factor"
@@ -6092,13 +6125,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "Volum"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
+"Volum på all lyd. \n"
+"Krever påslått lydsystem."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6115,7 +6150,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
-msgstr ""
+msgstr "Gangfart"
 
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
@@ -6123,7 +6158,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "Vannivå"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
@@ -6131,11 +6166,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
-msgstr ""
+msgstr "Blokksvaiing"
 
 #: src/settings_translation_file.cpp
 msgid "Waving leaves"
-msgstr ""
+msgstr "Bladrasling"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6159,7 +6194,7 @@ msgstr "Bølgende vann"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
-msgstr ""
+msgstr "Plantesvaiing"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6253,6 +6288,8 @@ msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"Mappe for verden (alt i verdenen lagres her).\n"
+"Trengs ikke hvis den opprettes fra hovedmenyen."
 
 #: src/settings_translation_file.cpp
 msgid "World start time"
@@ -6274,17 +6311,20 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y of flat ground."
-msgstr ""
+msgstr "Y-koordinat for flatt land."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Y of mountain density gradient zero level. Used to shift mountains "
 "vertically."
 msgstr ""
+"Y for nullnivået for tetthetsgradient til fjell. Brukes for å forskyve fjell "
+"i høyden."
 
 #: src/settings_translation_file.cpp
 msgid "Y of upper limit of large caves."
-msgstr ""
+msgstr "Y-verdi for store grotters øvre grense."
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
@@ -6292,15 +6332,15 @@ msgstr "Y-avstand som en grotte kan øke i størrelse til full størrelse."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
-msgstr ""
+msgstr "Y-nivå for gjennomsnittlig terrengoverflate."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of cavern upper limit."
-msgstr ""
+msgstr "Y-nivå for øvre grottegrense."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of higher terrain that creates cliffs."
-msgstr ""
+msgstr "Y-nivå for høytliggende terreng som fører til klipper."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of lower terrain and seabed."
