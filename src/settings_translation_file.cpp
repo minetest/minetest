@@ -202,7 +202,7 @@ fake_function() {
 	gettext("Fog");
 	gettext("Whether to fog out the end of the visible area.");
 	gettext("Leaves style");
-	gettext("Leaves style:\n-   Fancy:  all faces visible\n-   Simple: only outer faces, if defined special_tiles are used\n-   Opaque: disable transparency");
+	gettext("Leaves style:\n-   fancy:  All faces visible\n-   simple: Only outer faces, if defined special_tiles are used\n-   opaque: Disable transparency");
 	gettext("Connect glass");
 	gettext("Connects glass if supported by node.");
 	gettext("Smooth lighting");
@@ -325,7 +325,7 @@ fake_function() {
 	gettext("Fall bobbing factor");
 	gettext("Multiplier for fall bobbing.\nFor example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.");
 	gettext("3D mode");
-	gettext("3D support.\nCurrently supported:\n-    none: no 3d output.\n-    anaglyph: cyan/magenta color 3d.\n-    interlaced: odd/even line based polarisation screen support.\n-    topbottom: split screen top/bottom.\n-    sidebyside: split screen side by side.\n-    crossview: Cross-eyed 3d\n-    pageflip: quadbuffer based 3d.\nNote that the interlaced mode requires shaders to be enabled.");
+	gettext("3D support.\nCurrently supported:\n-    none: No 3D output.\n-    anaglyph: Cyan/magenta color 3D.\n-    interlaced: Odd/even line based polarisation screen support.\n-    topbottom: Split screen top/bottom.\n-    sidebyside: split screen side by side.\n-    crossview: Cross-eyed 3d\n-    pageflip: Quadbuffer based 3D.\nNote that the interlaced mode requires shaders to be enabled.");
 	gettext("Console height");
 	gettext("In-game chat console height, between 0.1 (10%) and 1.0 (100%).");
 	gettext("Console color");
@@ -601,7 +601,7 @@ fake_function() {
 	gettext("Acceleration of gravity, in nodes per second per second.");
 	gettext("Advanced");
 	gettext("Deprecated Lua API handling");
-	gettext("Handling for deprecated Lua API calls:\n-    legacy: (try to) mimic old behaviour (default for release).\n-    log: mimic and log backtrace of deprecated call (default for debug).\n-    error: abort on usage of deprecated call (suggested for mod developers).");
+	gettext("Handling for deprecated Lua API calls:\n-    legacy: (Try to) mimic old behaviour (default for release).\n-    log: Mimic and log backtrace of deprecated call (default for debug).\n-    error: Abort on usage of deprecated call (suggested for mod developers).");
 	gettext("Max. clearobjects extra blocks");
 	gettext("Number of extra blocks that can be loaded by /clearobjects at once.\nThis is a trade-off between sqlite transaction overhead and\nmemory consumption (4096=100MB, as a rule of thumb).");
 	gettext("Unload unused server data");
