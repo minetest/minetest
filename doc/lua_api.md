@@ -15,9 +15,17 @@ Sections
 * [Aliases](#aliases)
 * [Textures](#textures)
 * [Sounds](#sounds)
-* [Registered Definitions](#registered-definitions)
+* [Registered definitions](#registered-definitions)
 * [Nodes](#nodes)
 * [Map terminology and coordinates](#map-terminology-and-coordinates)
+* [HUD](#hud)
+* [Representations of Simple Things](#representations-of-simple-things)
+* [Flag Specifier Format](#flag-specifier-format)
+* [Items](#items)
+* [Groups](#groups)
+* [Tools](#tools)
+* [Entity damage mechanism](#entity-damage-mechanism)
+* [Metadata](#metadata)
 
 ----------
 
@@ -294,7 +302,9 @@ This can be used for maintaining backwards compatibility.
 This can also set quick access names for things, e.g. if
 you have an item called `epiclylongmodname:stuff`, you could do
 
-    minetest.register_alias("stuff", "epiclylongmodname:stuff")
+```lua
+minetest.register_alias("stuff", "epiclylongmodname:stuff")
+```
 
 and be able to use `/giveme stuff`.
 
@@ -474,7 +484,6 @@ Example:
     [combine:16x32:0,0=default_cobble.png:0,16=default_wood.png
 
 #### `[resize:<w>x<h>`
-
 Resizes the texture to the given dimensions.
 
 Example:
@@ -482,9 +491,7 @@ Example:
     default_sandstone.png^[resize:16x16
 
 #### `[opacity:<r>`
-
 Makes the base image transparent according to the given ratio.
-
 `r` must be between 0 (transparent) and 255 (opaque).
 
 Example:
@@ -492,7 +499,6 @@ Example:
     default_sandstone.png^[opacity:127
 
 #### `[invert:<mode>`
-
 Inverts the given channels of the base image.
 Mode may contain the characters "r", "g", "b", "a".
 Only the channels that are mentioned in the mode string will be inverted.
@@ -502,7 +508,6 @@ Example:
     default_apple.png^[invert:rgb
 
 #### `[brighten`
-
 Brightens the texture.
 
 Example:
@@ -510,7 +515,6 @@ Example:
     tnt_tnt_side.png^[brighten
 
 #### `[noalpha`
-
 Makes the texture completely opaque.
 
 Example:
@@ -518,7 +522,6 @@ Example:
     default_leaves.png^[noalpha
 
 #### `[makealpha:<r>,<g>,<b>`
-
 Convert one color to transparency.
 
 Example:
@@ -526,7 +529,6 @@ Example:
     default_cobble.png^[makealpha:128,128,128
 
 #### `[transform<t>`
-
 * `<t>`: transformation(s) to apply
 
 Rotates and/or flips the image.
@@ -534,21 +536,22 @@ Rotates and/or flips the image.
 `<t>` can be a number (between 0 and 7) or a transform name.
 Rotations are counter-clockwise.
 
-    0  I      identity
-    1  R90    rotate by 90 degrees
-    2  R180   rotate by 180 degrees
-    3  R270   rotate by 270 degrees
-    4  FX     flip X
-    5  FXR90  flip X then rotate by 90 degrees
-    6  FY     flip Y
-    7  FYR90  flip Y then rotate by 90 degrees
+| Number | String | Description                      |
+| ------ | ------ | -------------------------------- |
+| 0      | I      | identity                         |
+| 1      | R90    | rotate by 90 degrees             |
+| 2      | R180   | rotate by 180 degrees            |
+| 3      | R270   | rotate by 270 degrees            |
+| 4      | FX     | flip X                           |
+| 5      | FXR90  | flip X then rotate by 90 degrees |
+| 6      | FY     | flip Y                           |
+| 7      | FYR90  | flip Y then rotate by 90 degrees |
 
 Example:
 
     default_stone.png^[transformFXR90
 
 #### `[inventorycube{<top>{<left>{<right>`
-
 Escaping does not apply here and `^` is replaced by `&` in texture names
 instead.
 
@@ -562,7 +565,6 @@ Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
 `dirt.png^grass_side.png` textures
 
 #### `[lowpart:<percent>:<file>`
-
 Blit the lower `<percent>`% part of `<file>` on the texture.
 
 Example:
@@ -570,7 +572,6 @@ Example:
     base.png^[lowpart:25:overlay.png
 
 #### `[verticalframe:<t>:<n>`
-
 * `<t>`: animation frame count
 * `<n>`: current animation frame
 
@@ -581,18 +582,15 @@ Example:
     default_torch_animated.png^[verticalframe:16:8
 
 #### `[mask:<file>`
-
 Apply a mask to the base image.
 
 The mask is applied using binary AND.
 
 #### `[sheet:<w>x<h>:<x>,<y>`
-
 Retrieves a tile at position x,y from the base image
 which it assumes to be a tilesheet with dimensions w,h.
 
 #### `[colorize:<color>:<ratio>`
-
 Colorize the textures with the given color.
 `<color>` is specified as a `ColorString`.
 `<ratio>` is an int ranging from 0 to 255 or the word "`alpha`".  If
@@ -604,7 +602,6 @@ the word "`alpha`", then each texture pixel will contain the RGB of
 texture pixel.
 
 #### `[multiply:<color>`
-
 Multiplies texture colors with the given color.
 `<color>` is specified as a `ColorString`.
 Result is more like what you'd expect if you put a color on top of another
@@ -1452,7 +1449,9 @@ Representations of Simple Things
 Position/Vector
 ---------------
 
-    {x=num, y=num, z=num}
+```lua
+{x=num, y=num, z=num}
+```
 
 For helper functions see [Spatial Vectors].
 
@@ -1460,24 +1459,28 @@ For helper functions see [Spatial Vectors].
 pointed_thing
 -------------
 
-* `{type="nothing"}`
-* `{type="node", under=pos, above=pos}`
-    * Indicates a pointed node selection box.
-    * `under` refers to the node position behind the pointed face.
-    * `above` refers to the node position in front of the pointed face.
-* `{type="object", ref=ObjectRef}`
+#### `{type="nothing"}`
+
+#### `{type="node", under=pos, above=pos}`
+* Indicates a pointed node selection box.
+* `under` refers to the node position behind the pointed face.
+* `above` refers to the node position in front of the pointed face.
+
+#### `{type="object", ref=ObjectRef}`
 
 Exact pointing location (currently only `Raycast` supports these fields):
 
-* `pointed_thing.intersection_point`: The absolute world coordinates of the
-  point on the selection box which is pointed at. May be in the selection box
-  if the pointer is in the box too.
-* `pointed_thing.box_id`: The ID of the pointed selection box (counting starts
-  from 1).
-* `pointed_thing.intersection_normal`: Unit vector, points outwards of the
-  selected selection box. This specifies which face is pointed at.
-  Is a null vector `{x = 0, y = 0, z = 0}` when the pointer is inside the
-  selection box.
+#### `pointed_thing.intersection_point`
+The absolute world coordinates of the point on the selection box which is
+pointed at. May be in the selection box if the pointer is in the box too.
+
+#### `pointed_thing.box_id`
+The ID of the pointed selection box (counting starts from 1).
+
+#### `pointed_thing.intersection_normal`
+Unit vector, points outwards of the selected selection box. This specifies
+which face is pointed at. Is a null vector `{x = 0, y = 0, z = 0}` when the
+pointer is inside the selection box.
 
 
 Flag Specifier Format
@@ -1880,17 +1883,20 @@ i.e. players can more quickly click the nodes away instead of holding LMB.
 
 List of damage for groups of entities. See [Entity damage mechanism].
 
+
 Example definition of the capabilities of a tool
 ------------------------------------------------
 
-    tool_capabilities = {
-        full_punch_interval=1.5,
-        max_drop_level=1,
-        groupcaps={
-            crumbly={maxlevel=2, uses=20, times={[1]=1.60, [2]=1.20, [3]=0.80}}
-        }
-        damage_groups = {fleshy=2},
+```lua
+tool_capabilities = {
+    full_punch_interval=1.5,
+    max_drop_level=1,
+    groupcaps={
+        crumbly={maxlevel=2, uses=20, times={[1]=1.60, [2]=1.20, [3]=0.80}}
     }
+    damage_groups = {fleshy=2},
+}
+```
 
 This makes the tool be able to dig nodes that fulfil both of these:
 
@@ -1922,26 +1928,25 @@ Table of resulting tool uses:
 * At `level > 2`, the node is not diggable, because it's `level > maxlevel`
 
 
-
-
 Entity damage mechanism
 =======================
 
 Damage calculation:
 
-    damage = 0
-    foreach group in cap.damage_groups:
-        damage += cap.damage_groups[group]
-            * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
-            * (object.armor_groups[group] / 100.0)
-            -- Where object.armor_groups[group] is 0 for inexistent values
-    return damage
+```lua
+damage = 0
+foreach group in cap.damage_groups:
+    damage += cap.damage_groups[group]
+        * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
+        * (object.armor_groups[group] / 100.0)
+        -- Where object.armor_groups[group] is 0 for inexistent values
+return damage
+```
 
 Client predicts damage based on damage groups. Because of this, it is able to
 give an immediate response when an entity is damaged or dies; the response is
 pre-defined somehow (e.g. by defining a sprite animation) (not implemented;
-TODO).
-Currently a smoke puff will appear when an entity dies.
+TODO). Currently a smoke puff will appear when an entity dies.
 
 The group `immortal` completely disables normal damage.
 
@@ -1951,32 +1956,41 @@ a non-tool item, so that it can do something else than take damage.
 
 On the Lua side, every punch calls:
 
-    entity:on_punch(puncher, time_from_last_punch, tool_capabilities, direction,
-                    damage)
+```lua
+entity:on_punch(puncher, time_from_last_punch, tool_capabilities, direction, damage)
+```
 
 This should never be called directly, because damage is usually not handled by
 the entity itself.
 
-* `puncher` is the object performing the punch. Can be `nil`. Should never be
-  accessed unless absolutely required, to encourage interoperability.
-* `time_from_last_punch` is time from last punch (by `puncher`) or `nil`.
-* `tool_capabilities` can be `nil`.
-* `direction` is a unit vector, pointing from the source of the punch to
-   the punched object.
-* `damage` damage that will be done to entity
-Return value of this function will determine if damage is done by this function
-(retval true) or shall be done by engine (retval false)
+#### `puncher`
+Is the object performing the punch. Can be `nil`. Should never be accessed
+unless absolutely required, to encourage interoperability.
+
+#### `time_from_last_punch`
+Is time from last punch (by `puncher`) or `nil`.
+
+#### `tool_capabilities`
+Can be `nil`.
+
+#### `direction`
+Is a unit vector, pointing from the source of the punch to the punched object.
+
+#### `damage`
+Damage that will be done to entity. Return value of this function will
+determine if damage is done by this function (retval true) or shall be done by
+engine (retval false)
 
 To punch an entity/object in Lua, call:
 
-  object:punch(puncher, time_from_last_punch, tool_capabilities, direction)
+```lua
+object:punch(puncher, time_from_last_punch, tool_capabilities, direction)
+```
 
 * Return value is tool wear.
 * Parameters are equal to the above callback.
 * If `direction` equals `nil` and `puncher` does not equal `nil`, `direction`
   will be automatically filled in based on the location of `puncher`.
-
-
 
 
 Metadata
@@ -2001,31 +2015,34 @@ Some of the values in the key-value store are handled specially:
 
 Example:
 
-    local meta = minetest.get_meta(pos)
-    meta:set_string("formspec",
-            "size[8,9]"..
-            "list[context;main;0,0;8,4;]"..
-            "list[current_player;main;0,5;8,4;]")
-    meta:set_string("infotext", "Chest");
-    local inv = meta:get_inventory()
-    inv:set_size("main", 8*4)
-    print(dump(meta:to_table()))
-    meta:from_table({
-        inventory = {
-            main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "",
-                    [5] = "", [6] = "", [7] = "", [8] = "", [9] = "",
-                    [10] = "", [11] = "", [12] = "", [13] = "",
-                    [14] = "default:cobble", [15] = "", [16] = "", [17] = "",
-                    [18] = "", [19] = "", [20] = "default:cobble", [21] = "",
-                    [22] = "", [23] = "", [24] = "", [25] = "", [26] = "",
-                    [27] = "", [28] = "", [29] = "", [30] = "", [31] = "",
-                    [32] = ""}
-        },
-        fields = {
-            formspec = "size[8,9]list[context;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
-            infotext = "Chest"
-        }
-    })
+```lua
+local meta = minetest.get_meta(pos)
+meta:set_string("formspec",
+        "size[8,9]"..
+        "list[context;main;0,0;8,4;]"..
+        "list[current_player;main;0,5;8,4;]")
+meta:set_string("infotext", "Chest");
+local inv = meta:get_inventory()
+inv:set_size("main", 8*4)
+print(dump(meta:to_table()))
+meta:from_table({
+    inventory = {
+        main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "",
+                [5] = "", [6] = "", [7] = "", [8] = "", [9] = "",
+                [10] = "", [11] = "", [12] = "", [13] = "",
+                [14] = "default:cobble", [15] = "", [16] = "", [17] = "",
+                [18] = "", [19] = "", [20] = "default:cobble", [21] = "",
+                [22] = "", [23] = "", [24] = "", [25] = "", [26] = "",
+                [27] = "", [28] = "", [29] = "", [30] = "", [31] = "",
+                [32] = ""}
+    },
+    fields = {
+        formspec = "size[8,9]list[context;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
+        infotext = "Chest"
+    }
+})
+```
+
 
 Item Metadata
 -------------
@@ -2044,11 +2061,11 @@ Some of the values in the key-value store are handled specially:
 
 Example:
 
-    local meta = stack:get_meta()
-    meta:set_string("key", "value")
-    print(dump(meta:to_table()))
-
-
+```lua
+local meta = stack:get_meta()
+meta:set_string("key", "value")
+print(dump(meta:to_table()))
+```
 
 
 Formspec
