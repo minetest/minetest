@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
 "PO-Revision-Date: 2020-03-29 00:21+0000\n"
-"Last-Translator: Liet Kynes <sissi90@gmail.com>\n"
+"Last-Translator: anonymous <noreply@weblate.org>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -745,7 +745,7 @@ msgstr "Skygger"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr ""
+msgstr "Skyggelegging (ikke tilgjenglig)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
