@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2020-03-28 22:09+0000\n"
-"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
+"PO-Revision-Date: 2020-03-31 10:14+0000\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -863,7 +863,7 @@ msgstr "Donita monda dosierindiko ne ekzistas: "
 
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "yes"
+msgstr "no"
 
 #: src/client/game.cpp
 msgid ""
