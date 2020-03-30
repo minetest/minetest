@@ -159,7 +159,7 @@ function vector.forward_from_rotation(rot)
 	--get pitch vector
 	local forward = {x = 0, y = math.sin(rot.x), z = math.cos(rot.x)}
 	--apply yaw
-	return vector_rotate(forward, {x = 0, y = 1, z = 0}, rot.y)
+	return vector.rotate(forward, {x = 0, y = 1, z = 0}, rot.y)
 end
 
 function vector.up_from_rotation(rot)
@@ -167,19 +167,18 @@ function vector.up_from_rotation(rot)
 	--take roll
 	local up = {x = math.cos(uproll), y = -math.sin(uproll), z = 0}
 	--take pitch into account
-	up = vector_rotate(up, {x = 1, y = 0, z = 0}, rot.x)
+	up = vector.rotate(up, {x = 1, y = 0, z = 0}, rot.x)
 	--take yaw into account
-	return vector_rotate(up, {x = 0, y = 1, z = 0}, rot.y)
+	return vector.rotate(up, {x = 0, y = 1, z = 0}, rot.y)
 end
 
 function vector.forward_up_to_rotation(forward, up)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
-	local forwup = rot_to_up(rot)
+	local forwup = vector.up_from_rotation(rot)
 	rot.z = vector.angle(forwup, up)
 	
 	--we don't use vector.equals for this comparison because of floating point rounding errors
-	if vector.distance(vector_rotate(up, forward, rot.z), forwup) < 0.0000000000001
-	then
+	if vector.distance(vector.rotate(up, forward, rot.z), forwup) < 0.0000000000001 then
 		rot.z = -rot.z
 	end
 	return rot
