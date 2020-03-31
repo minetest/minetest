@@ -6358,6 +6358,8 @@ object you are working with still exists.
     * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
     * Boolean indicating whether the FOV value is a multiplier.
     * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
+* `get_lifetime()`: returns the elapsed time since the player joined the game.
+* `get_idletime()`: returns the elapsed time since the player was last active.
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a

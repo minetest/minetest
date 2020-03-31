@@ -110,9 +110,30 @@ public:
 
 	const CloudParams &getCloudParams() const { return m_cloud_params; }
 
-	bool checkModified() const { return m_dirty || inventory.checkModified(); }
+	u32 getLifetime() const
+	{
+		return (time(NULL) - m_oldtime);
+	}
 
-	inline void setModified(const bool x) { m_dirty = x; }
+	u32 getIdletime() const
+	{
+		return (time(NULL) - m_newtime);
+	}
+
+	inline void resetIdletime()
+	{
+		this->m_newtime = time(NULL);
+	}
+
+	inline bool checkModified() const
+	{
+		return m_dirty || inventory.checkModified();
+	}
+
+	inline void setModified(const bool dirty = true)
+	{
+		m_dirty = dirty;
+	}
 
 	void setLocalAnimations(v2s32 frames[4], float frame_speed)
 	{
@@ -152,6 +173,8 @@ private:
 
 	PlayerSAO *m_sao = nullptr;
 	bool m_dirty = false;
+	time_t m_oldtime = time(NULL);
+	time_t m_newtime = m_oldtime;
 
 	static bool m_setting_cache_loaded;
 	static float m_setting_chat_message_limit_per_10sec;

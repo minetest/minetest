@@ -202,6 +202,12 @@ private:
 	// get_player_name(self)
 	static int l_get_player_name(lua_State *L);
 
+	// get_lifetime(self)
+	static int l_get_lifetime(lua_State *L);
+
+	// get_idletime(self)
+	static int l_get_idletime(lua_State *L);
+
 	// get_fov(self)
 	static int l_get_fov(lua_State *L);
 

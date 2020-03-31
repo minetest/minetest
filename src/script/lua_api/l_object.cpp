@@ -1011,6 +1011,32 @@ int ObjectRef::l_get_player_name(lua_State *L)
 	return 1;
 }
 
+// get_lifetime(self)
+int ObjectRef::l_get_lifetime(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+        if (player == nullptr)
+                 return 0;
+
+	lua_pushinteger(L, player->getLifetime());
+	return 1;
+}
+
+// get_idletime(self)
+int ObjectRef::l_get_idletime(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+        if (player == nullptr)
+                 return 0;
+
+	lua_pushinteger(L, player->getIdletime());
+	return 1;
+}
+
 // get_look_dir(self)
 int ObjectRef::l_get_look_dir(lua_State *L)
 {
@@ -2339,6 +2365,8 @@ luaL_Reg ObjectRef::methods[] = {
 	// Player-only
 	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, get_player_name),
+	luamethod(ObjectRef, get_lifetime),
+	luamethod(ObjectRef, get_idletime),
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),
