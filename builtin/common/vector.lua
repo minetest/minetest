@@ -155,14 +155,14 @@ function vector.rotate(v, axis, angle)
 		vector.multiply(axis, vector.dot(axis, v) * (1 - cosangle)))
 end
 
-function vector.forward_from_rotation(rot)
+function vector.forward_from_rot(rot)
 	--get pitch vector
 	local forward = {x = 0, y = math.sin(rot.x), z = math.cos(rot.x)}
 	--apply yaw
 	return vector.rotate(forward, {x = 0, y = 1, z = 0}, rot.y)
 end
 
-function vector.up_from_rotation(rot)
+function vector.up_from_rot(rot)
 	local uproll = rot.z - math.pi / 2
 	--take roll
 	local up = {x = math.cos(uproll), y = -math.sin(uproll), z = 0}
@@ -172,7 +172,7 @@ function vector.up_from_rotation(rot)
 	return vector.rotate(up, {x = 0, y = 1, z = 0}, rot.y)
 end
 
-function vector.forward_up_to_rotation(forward, up)
+function vector.forward_up_to_rot(forward, up)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
 	local forwup = vector.up_from_rotation(rot)
 	rot.z = vector.angle(forwup, up)

@@ -2896,6 +2896,19 @@ For the following functions `x` can be either a vector or a number:
 * `vector.divide(v, x)`:
     * Returns a scaled vector or Schur quotient.
 
+For the following functions `a` is an angle in radians and `r` is a rotation
+vector ({x = <pitch>, y = <yaw>, z = <roll>})
+
+* `vector.rotate(v1, v2, a):
+    * Returns `v1` rotated around axis `v2` by `a` radians according t
+      the left hand rule.
+* `vector.forward_from_rot(r)`:
+    * Returns a vector pointing forward according to `r`
+* `vector.up_from_rot(r)`:
+    * Returns a vector pointing up according to `r`
+* `vector.forward_up_to_rot(v1, v2):
+    * Returns a rotation vector for v1 pointing forward and v2 pointing up.
+
 
 
 
