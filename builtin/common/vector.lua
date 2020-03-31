@@ -147,6 +147,7 @@ function vector.rotate(v, axis, angle)
 	angle = -angle
 	local cosangle = math.cos(angle)
 	local sinangle = math.sin(angle)
+	axis = vector.normalize(axis)
 	
 	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 	return vector.add(vector.add(
