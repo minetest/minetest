@@ -59,6 +59,32 @@ bool ScriptApiServer::getAuth(const std::string &playername,
 	return true;
 }
 
+bool ScriptApiServer::getAuthLastLogin(const std::string &playername,
+		s64 *dst_last_login)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+	getAuthHandler();
+	lua_getfield(L, -1, "get_auth");
+	if (lua_type(L, -1) != LUA_TFUNCTION)
+		throw LuaError("Authentication handler missing get_auth");
+	lua_pushstring(L, playername.c_str());
+	PCALL_RES(lua_pcall(L, 1, 1, error_handler));
+	lua_remove(L, -2); // Remove auth handler
+	lua_remove(L, error_handler);
+
+	s64 last_login;
+	bool found = getintfield(L, -1, "last_login", last_login);
+	if (!found)
+		throw LuaError("Authentication handler didn't return last_login");
+	*dst_last_login = last_login;
+
+	lua_pop(L, 1);
+
+	return true;
+}
+
 void ScriptApiServer::getAuthHandler()
 {
 	lua_State *L = getStack();
