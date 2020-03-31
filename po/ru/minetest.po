@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2020-03-31 15:03+0000\n"
-"Last-Translator: anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-04-02 14:09+0000\n"
+"Last-Translator: Tiller Luna <t.luna@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -96,7 +96,7 @@ msgstr "Отключить все"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Отключить пакет"
+msgstr "Отключить пакет модов"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -104,7 +104,7 @@ msgstr "Включить все"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Включить пакет"
+msgstr "Включить пакет модов"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -120,7 +120,7 @@ msgstr "Мод:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr "Нет необязательных зависимостей"
+msgstr "Нет (необязательных) зависимостей"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
@@ -152,6 +152,7 @@ msgid "World:"
 msgstr "Мир:"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "enabled"
 msgstr "включить"
 
@@ -293,6 +294,7 @@ msgid "Rename Modpack:"
 msgstr "Переименовать пакет модов:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
+#, fuzzy
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
@@ -353,6 +355,7 @@ msgid "Please enter a valid number."
 msgstr "Пожалуйста, введите допустимое число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Restore Default"
 msgstr "Сбросить значение"
 
@@ -425,6 +428,7 @@ msgid "$1 mods"
 msgstr "$1 модов"
 
 #: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
 msgid "Failed to install $1 to $2"
 msgstr "Невозможно установить $1 в $2"
 
@@ -558,7 +562,7 @@ msgstr "Запустить сервер"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
-msgstr "Имя / Пароль"
+msgstr "Имя/Пароль"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -836,7 +840,7 @@ msgstr "Сборка шейдеров..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr "Ошибка соединения (таймаут?)"
+msgstr "Ошибка соединения (тайм-аут?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
@@ -1114,7 +1118,7 @@ msgstr "МиБ/с"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr "Миникарта в настоящее время отключена игрой или модом"
+msgstr "Миникарта сейчас отключена игрой или модом"
 
 #: src/client/game.cpp
 msgid "Minimap hidden"
@@ -4557,7 +4561,7 @@ msgstr ""
 msgid "Kick players who sent more than X messages per 10 seconds."
 msgstr ""
 "Если клиент отправит в чат столько сообщений в течении 10 секунд, то будет "
-"отключен от сервера."
+"отключён от сервера."
 
 #: src/settings_translation_file.cpp
 msgid "Lake steepness"
@@ -4889,7 +4893,7 @@ msgstr "Размер кэша блоков карты в генераторе м
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
-msgstr "Таймаут выгрузки блоков"
+msgstr "Тайм-аут выгрузки блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian"
@@ -6851,7 +6855,7 @@ msgstr "Y-уровень морского дна."
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
-msgstr "Таймаут загрузки файла с помощью cURL"
+msgstr "Тайм-аут загрузки файла с помощью cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
