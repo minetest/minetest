@@ -141,6 +141,8 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 		background_it->drop();
 	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
+	for (auto &clickthrough_it : m_clickthrough_elements)
+		clickthrough_it->drop();
 
 	delete m_selected_item;
 	delete m_form_src;
@@ -742,6 +744,9 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
 
+		// images should let events through
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 
@@ -775,6 +780,9 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
 
+		// images should let events through
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 	errorstream<< "Invalid image element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -882,7 +890,9 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 				core::rect<s32>(pos, pos + geom), name, m_font, m_client);
 		auto style = getStyleForElement("item_image", spec.fname);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->drop();
+
+		// item images should let events through
+		m_clickthrough_elements.push_back(e);
 
 		m_fields.push_back(spec);
 		return;
@@ -1747,6 +1757,10 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 
 			m_fields.push_back(spec);
+
+			// labels should let events through
+			e->grab();
+			m_clickthrough_elements.push_back(e);
 		}
 
 		return;
@@ -1823,6 +1837,10 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 
 		m_fields.push_back(spec);
+
+		// vertlabels should let events through
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 	errorstream<< "Invalid vertlabel element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -2745,6 +2763,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		background_it->drop();
 	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
+	for (auto &clickthrough_it : m_clickthrough_elements)
+		clickthrough_it->drop();
 
 	mydata.size= v2s32(100,100);
 	mydata.screensize = screensize;
@@ -2767,6 +2787,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_dropdowns.clear();
 	theme_by_name.clear();
 	theme_by_type.clear();
+	m_clickthrough_elements.clear();
 
 	m_bgnonfullscreen = true;
 	m_bgfullscreen = false;
@@ -3248,11 +3269,18 @@ void GUIFormSpecMenu::drawMenu()
 		e->setVisible(false);
 	}
 
+	// Some elements are only visible while being drawn
+	for (gui::IGUIElement *e : m_clickthrough_elements)
+		e->setVisible(true);
+
 	/*
 		Call base class
 		(This is where all the drawing happens.)
 	*/
 	gui::IGUIElement::draw();
+
+	for (gui::IGUIElement *e : m_clickthrough_elements)
+		e->setVisible(false);
 
 	// Draw hovered item tooltips
 	for (const std::string &tooltip : m_hovered_item_tooltips) {
