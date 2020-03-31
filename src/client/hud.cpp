@@ -619,14 +619,13 @@ void Hud::drawCrosshair()
 			driver->draw2DImage(selectionindicator, lsize,
 					core::rect<s32>(0, 0, size.X, size.Y),
 					nullptr, selectionindicator_argb, true);
-
-			return;
 		} else {
-			driver->draw2DPolygon(irr::core::vector2di(m_displaycenter.X, m_displaycenter.Y - 22), 7, selectionindicator_argb, 4);
+			driver->draw2DLine(m_displaycenter - v2s32(9, 9), m_displaycenter + v2s32(9, 9),
+					selectionindicator_argb);
+			driver->draw2DLine(m_displaycenter + v2s32(9, -9), m_displaycenter + v2s32(-9, 9),
+					selectionindicator_argb);
 		}
-	}
-
-	if (use_crosshair_image) {
+	} else if (use_crosshair_image) {
 		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
 		v2u32 size  = crosshair->getOriginalSize();
 		v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
