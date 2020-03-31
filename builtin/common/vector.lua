@@ -175,7 +175,7 @@ end
 
 function vector.forward_up_to_rot(forward, up)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
-	local forwup = vector.up_from_rotation(rot)
+	local forwup = vector.up_from_rot(rot)
 	rot.z = vector.angle(forwup, up)
 	
 	--we don't use vector.equals for this comparison because of floating point rounding errors
