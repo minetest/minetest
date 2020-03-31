@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Greek (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2020-01-11 18:26+0000\n"
-"Last-Translator: rubenwardy <rubenwardy@gmail.com>\n"
+"PO-Revision-Date: 2020-03-31 20:29+0000\n"
+"Last-Translator: THANOS SIOURDAKIS <siourdakisthanos@gmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/minetest/minetest/"
 "el/>\n"
 "Language: el\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10.1\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -92,7 +92,7 @@ msgstr "Εξαρτήσεις:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "Απενεργοποίηση όλων"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
@@ -100,7 +100,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "Ενεργοποίηση όλων"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
@@ -118,11 +118,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "Δεν υπάρχουν (προαιρετικές) εξαρτήσεις"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "Δεν παρέχεται περιγραφή παιχνιδιού."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
