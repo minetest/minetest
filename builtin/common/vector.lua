@@ -142,7 +142,7 @@ function vector.sort(a, b)
 		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
 end
 
-function vector.rotate(v, axis, angle)
+function vector.rotate_around_axis(v, axis, angle)
 	--flip the angle because the formula is for the right hand rule
 	angle = -angle
 	local cosangle = math.cos(angle)
@@ -156,30 +156,61 @@ function vector.rotate(v, axis, angle)
 		vector.multiply(axis, vector.dot(axis, v) * (1 - cosangle)))
 end
 
-function vector.forward_from_rot(rot)
-	--get pitch vector
-	local forward = {x = 0, y = math.sin(rot.x), z = math.cos(rot.x)}
-	--apply yaw
-	return vector.rotate(forward, {x = 0, y = 1, z = 0}, rot.y)
+function vector.rotate(v, rot)
+	local sinpitch = math.sin(-rot.x)
+	local sinyaw = math.sin(-rot.y)
+	local sinroll = math.sin(-rot.z)
+	
+	local cospitch = math.cos(rot.x)
+	local cosyaw = math.cos(rot.y)
+	local cosroll = math.cos(rot.z)
+	
+	local matrix = {
+		{
+			cosyaw * cospitch,
+			cosyaw * sinpitch * sinroll - sinyaw * cosroll,
+			cosyaw * sinpitch * cosroll + sinyaw * sinroll
+		},
+		{
+			sinyaw * cospitch,
+			sinyaw * sinpitch * sinroll + cosyaw * cosroll,
+			sinyaw * sinpitch * cosroll - cosyaw * sinroll
+		},
+		{
+			-sinpitch,
+			cospitch * sinroll,
+			cospitch * cosroll
+		},
+	}
+	
+	--compute matrix multiplication: `matrix` * `v`
+	local keys = {"z", "x", "y"}
+	local ret = vector.new(0, 0, 0)
+	for i = 1, 3 do
+		local row = matrix[i]
+		for ii = 1, 3 do
+			ret[keys[i]] = ret[keys[i]] + row[ii] * v[keys[ii]]
+		end
+	end
+	return ret
 end
 
-function vector.up_from_rot(rot)
-	local uproll = rot.z - math.pi / 2
-	--take roll
-	local up = {x = math.cos(uproll), y = -math.sin(uproll), z = 0}
-	--take pitch into account
-	up = vector.rotate(up, {x = 1, y = 0, z = 0}, rot.x)
-	--take yaw into account
-	return vector.rotate(up, {x = 0, y = 1, z = 0}, rot.y)
+
+function vector.rotation_to_horizontal(rot)
+	return vector.rotate({x = 0, y = 0, z = 1}, rot)
 end
 
-function vector.forward_up_to_rot(forward, up)
+function vector.rotation_to_vertical(rot)
+	return vector.rotate({x = 0, y = 1, z = 0}, rot)
+end
+
+function vector.directions_to_rotation(forward, up)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
-	local forwup = vector.up_from_rot(rot)
+	local forwup = vector.rotation_to_vertical(rot)
 	rot.z = vector.angle(forwup, up)
 	
 	--we don't use vector.equals for this comparison because of floating point rounding errors
-	if vector.distance(vector.rotate(up, forward, rot.z), forwup) < 0.0000000000001 then
+	if vector.distance(vector.rotate_around_axis(up, forward, rot.z), forwup) < 0.0000000000001 then
 		rot.z = -rot.z
 	end
 	return rot
