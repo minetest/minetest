@@ -1032,13 +1032,41 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	bool may_have_prediction = pointed.type == POINTEDTHING_NODE &&
 		(action == INTERACT_DIGGING_COMPLETED || action == INTERACT_PLACE);
 
+	// Functions for undoing placement and dig prediction;
+	// resendBlocks should be used only for edge cases
+	auto sendCurrentNode = [&](v3s16 &p, MapNode &n)
+	{
+		if (m_env->getMap().getNodeMetadata(p)) {
+			// If the node contains metadata, the whole block needs to be sent
+			RemoteClient *client = getClient(peer_id);
+			v3s16 blockpos = getNodeBlockPos(p);
+			client->SetBlockNotSent(blockpos);
+			return;
+		}
+		NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1, peer_id);
+		pkt << p << n.param0 << n.param1 << n.param2 << (u8) 0;
+		Send(&pkt);
+	};
+	auto resendBlocks = [&]()
+	{
+		RemoteClient *client = getClient(peer_id);
+		v3s16 blockpos_u = getNodeBlockPos(p_under);
+		client->SetBlockNotSent(blockpos_u);
+		if (action == INTERACT_DIGGING_COMPLETED)
+			// Dig prediction -> send only under
+			return;
+		// Placement prediction -> also send above
+		v3s16 blockpos_a = getNodeBlockPos(p_above);
+		if (blockpos_a != blockpos_u)
+			client->SetBlockNotSent(blockpos_a);
+	};
+
 	if (playersao->isDead()) {
 		actionstream << "Server: NoCheat: " << player->getName()
 				<< " tried to interact while dead; ignoring." << std::endl;
 		m_script->on_cheat(playersao, "interacted_while_dead");
 		if (may_have_prediction)
-			resendBlocks(peer_id, p_under, p_above,
-				action == INTERACT_DIGGING_COMPLETED);
+			resendBlocks();
 		return;
 	}
 
@@ -1081,8 +1109,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		actionstream << player->getName() << " attempted to interact with "
 			<< pointed.dump() << " without 'interact' privilege" << std::endl;
 		if (may_have_prediction)
-			resendBlocks(peer_id, p_under, p_above,
-				action == INTERACT_DIGGING_COMPLETED);
+			resendBlocks();
 		return;
 	}
 
@@ -1099,7 +1126,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 		if (!checkInteractDistance(player, d, pointed.dump())) {
 			if (may_have_prediction)
-				resendBlocks(peer_id, p_under, p_above, action == 2);
+				resendBlocks();
 			return;
 		}
 	}
@@ -1270,7 +1297,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				return;
 			}
 			if (!is_valid_dig) {
-				sendCurrentNode(peer_id, p_under, n);
+				sendCurrentNode(p_under, n);
 				return;
 			}
 
@@ -1283,7 +1310,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			*/
 			MapNode newnode = m_env->getMap().getNode(p_under);
 			if (newnode.getContent() == n.getContent())
-				sendCurrentNode(peer_id, p_under, n);
+				sendCurrentNode(p_under, n);
 		}
 	} // action == INTERACT_DIGGING_COMPLETED
 
@@ -1371,14 +1398,14 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 		MapNode newnode_a = m_env->getMap().getNode(p_above);
 		if (newnode_a.getContent() == oldnode_a.getContent())
-			sendCurrentNode(peer_id, p_above, oldnode_a);
+			sendCurrentNode(p_above, oldnode_a);
 
 		if (!m_env->getMap().getNodeDefManager()->get(oldnode_u).buildable_to)
 			return;
 
 		MapNode newnode_u = m_env->getMap().getNode(p_under);
 		if (newnode_u.getContent() == oldnode_u.getContent())
-			sendCurrentNode(peer_id, p_under, oldnode_u);
+			sendCurrentNode(p_under, oldnode_u);
 	} // action == INTERACT_PLACE
 
 	/*

@@ -2341,35 +2341,6 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 	m_clients.unlock();
 }
 
-void Server::resendBlocks(session_t peer_id, v3s16 p_under, v3s16 p_above,
-	bool is_digging_completed)
-{
-	RemoteClient *client = getClient(peer_id);
-	v3s16 blockpos_u = getNodeBlockPos(p_under);
-	client->SetBlockNotSent(blockpos_u);
-	if (is_digging_completed)
-		// Dig prediction -> send only under
-		return;
-	// Placement prediction -> also send above
-	v3s16 blockpos_a = getNodeBlockPos(p_above);
-	if (blockpos_a != blockpos_u)
-		client->SetBlockNotSent(blockpos_a);
-}
-
-void Server::sendCurrentNode(session_t peer_id, v3s16 p, MapNode n)
-{
-	if (m_env->getMap().getNodeMetadata(p)) {
-		// If the node contains metadata, the whole block needs to be sent
-		RemoteClient *client = getClient(peer_id);
-		v3s16 blockpos = getNodeBlockPos(p);
-		client->SetBlockNotSent(blockpos);
-		return;
-	}
-	NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1, peer_id);
-	pkt << p << n.param0 << n.param1 << n.param2 << (u8) 0;
-	Send(&pkt);
-}
-
 void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 		u16 net_proto_version)
 {
