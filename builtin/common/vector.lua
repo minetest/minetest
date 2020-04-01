@@ -148,7 +148,6 @@ function vector.rotate_around_axis(v, axis, angle)
 	local cosangle = math.cos(angle)
 	local sinangle = math.sin(angle)
 	axis = vector.normalize(axis)
-	
 	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 	return vector.add(vector.add(
 		vector.multiply(v, cosangle),
@@ -160,11 +159,9 @@ function vector.rotate(v, rot)
 	local sinpitch = math.sin(-rot.x)
 	local sinyaw = math.sin(-rot.y)
 	local sinroll = math.sin(-rot.z)
-	
 	local cospitch = math.cos(rot.x)
 	local cosyaw = math.cos(rot.y)
 	local cosroll = math.cos(rot.z)
-	
 	local matrix = {
 		{
 			cosyaw * cospitch,
@@ -182,7 +179,6 @@ function vector.rotate(v, rot)
 			cospitch * cosroll
 		},
 	}
-	
 	--compute matrix multiplication: `matrix` * `v`
 	local keys = {"z", "x", "y"}
 	local ret = vector.new(0, 0, 0)
@@ -208,7 +204,6 @@ function vector.directions_to_rotation(forward, up)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
 	local forwup = vector.rotation_to_vertical(rot)
 	rot.z = vector.angle(forwup, up)
-	
 	--we don't use vector.equals for this comparison because of floating point rounding errors
 	if vector.distance(vector.rotate_around_axis(up, forward, rot.z), forwup) < 0.0000000000001 then
 		rot.z = -rot.z
