@@ -890,6 +890,12 @@ void GenericCAO::updateNodePos()
 
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
+	if (m_animated_meshnode)
+	{
+		m_animated_meshnode->animateJoints();
+		updateBonePosition();
+	}
+	
 	// Handle model animations and update positions instantly to prevent lags
 	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
@@ -1060,12 +1066,6 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		m_anim_frame++;
 		if(m_anim_frame >= m_anim_num_frames)
 			m_anim_frame = 0;
-	}
-	
-	if (m_animated_meshnode)
-	{
-		m_animated_meshnode->animateJoints();
-		updateBonePosition();
 	}
 
 	updateTexturePos();
