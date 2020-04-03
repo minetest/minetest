@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-03-31 10:14+0000\n"
 "Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
@@ -406,15 +406,26 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z-spridning"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr ""
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "defaults"
 msgstr "Standardspel"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -646,6 +657,7 @@ msgstr "Namn / Lösenord"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP aktiverat"
@@ -894,6 +906,14 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "Den angivna sökvägen för världen existerar inte: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -934,6 +954,7 @@ msgstr "Port"
 msgid "- Public: "
 msgstr "Offentlig "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1400,6 +1421,7 @@ msgstr "Vänster Shift"
 msgid "Left Windows"
 msgstr "Vänster Windowstangent"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Meny"
@@ -1492,6 +1514,7 @@ msgstr "Paus"
 msgid "Play"
 msgstr "Spela"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Skriv ut"
@@ -1528,6 +1551,7 @@ msgstr "Höger Windowstangent"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Välj"
@@ -1773,10 +1797,15 @@ msgstr "Tysta"
 msgid "Sound Volume: "
 msgstr "Ljudvolym: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Enter "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "sv"
@@ -2196,8 +2225,8 @@ msgstr "Bumpmappning"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -4853,7 +4882,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6234,26 +6263,13 @@ msgstr "cURL parallellgräns"
 msgid "cURL timeout"
 msgstr "cURL-timeout"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Slå av/på Filmisk Kamera"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Välj modfil:"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-nivå till vilket luftöars skuggor når."
-
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "Definierar områden för luftöars jämna terräng.\n"
-#~ "Jämna luftöar förekommer när oljud > 0."
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Kontrollerar bredd av tunnlar, mindre värden skapar bredare tunnlar."
+#~ "Justera gammakodningen för ljustabeller. Högre tal är ljusare.\n"
+#~ "Denna inställning påverkar endast klienten och ignoreras av servern."
 
 #, fuzzy
 #~ msgid ""
@@ -6263,10 +6279,23 @@ msgstr "cURL-timeout"
 #~ "Kontrollerar densiteten av luftöars bergsterräng.\n"
 #~ "Är en förskjutning adderad till oljudsvärdet för 'np_mountain'."
 
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr ""
-#~ "Justera gammakodningen för ljustabeller. Högre tal är ljusare.\n"
-#~ "Denna inställning påverkar endast klienten och ignoreras av servern."
+#~ "Kontrollerar bredd av tunnlar, mindre värden skapar bredare tunnlar."
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Definierar områden för luftöars jämna terräng.\n"
+#~ "Jämna luftöar förekommer när oljud > 0."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-nivå till vilket luftöars skuggor når."
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Välj modfil:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Slå av/på Filmisk Kamera"

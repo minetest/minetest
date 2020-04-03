@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-03-31 10:14+0000\n"
 "Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
@@ -248,7 +248,8 @@ msgstr "Fontnombro"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "Averto: La minimuma programista testo estas intencita por programistoj."
+msgstr ""
+"Averto: La minimuma programista testo estas intencita por programistoj."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -400,14 +401,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z-disiĝo"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "absoluta valoro"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "normoj"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "faciligita"
@@ -617,6 +629,7 @@ msgstr "Nomo / Pasvorto"
 msgid "Ping"
 msgstr "Retprokrasto"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "Dueloj ŝaltitas"
@@ -861,6 +874,14 @@ msgstr "Malsukcesis malfermi donitan pasvortan dosieron: "
 msgid "Provided world path doesn't exist: "
 msgstr "Donita monda dosierindiko ne ekzistas: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -897,6 +918,7 @@ msgstr "– Pordo: "
 msgid "- Public: "
 msgstr "– Publika: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "– LkL: "
@@ -1347,6 +1369,7 @@ msgstr "Maldekstra Majuskligo"
 msgid "Left Windows"
 msgstr "Maldekstra Vindozo"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menuo"
@@ -1439,6 +1462,7 @@ msgstr "Haltigo"
 msgid "Play"
 msgstr "Ludi"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Presi"
@@ -1475,6 +1499,7 @@ msgstr "Dekstra Vindozo"
 msgid "Scroll Lock"
 msgstr "Ruluma Baskulo"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Elekti"
@@ -1714,10 +1739,15 @@ msgstr "Silentigita"
 msgid "Sound Volume: "
 msgstr "Laŭteco: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Enigi "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "eo"
@@ -2149,9 +2179,10 @@ msgid "Bumpmapping"
 msgstr "Mapado de elstaraĵoj"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -4982,7 +5013,8 @@ msgstr "Maksimuma larĝo de la fulmobreto"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of large caves per mapchunk."
-msgstr "Maksimuma limo de hazarda nombro de grandaj kavernoj en unu mondoparto."
+msgstr ""
+"Maksimuma limo de hazarda nombro de grandaj kavernoj en unu mondoparto."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of small caves per mapchunk."
@@ -5236,7 +5268,8 @@ msgid ""
 msgstr "Nomo de la servilo, montrota al ludantoj kaj en la listo de serviloj."
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+#, fuzzy
+msgid "Near plane"
 msgstr "Proksime tonda ebeno"
 
 #: src/settings_translation_file.cpp
@@ -6824,82 +6857,40 @@ msgstr "Samtempa limo de cURL"
 msgid "cURL timeout"
 msgstr "cURL tempolimo"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Baskuligi glitan vidpunkton"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Elekti pakaĵan dosieron:"
-
-#, fuzzy
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Y de supera limo de grandaj kvazaŭ-hazardaj kavernoj."
-
-#~ msgid "Waving Water"
-#~ msgstr "Ondanta akvo"
-
-#~ msgid "Projecting dungeons"
-#~ msgstr "Planante forgeskelojn"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-nivelo kien etendiĝas ombroj de fluginsuloj."
-
-#~ msgid "Waving water"
-#~ msgstr "Ondanta akvo"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgid ""
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "Variaĵo de alteco de montetoj kaj profundeco de lagoj sur glata tereno de "
-#~ "fluginsuloj."
+#~ "Alĝustigi la gamaan kodadon al la lumtabeloj. Pli altaj nombroj estas pli "
+#~ "helaj.\n"
+#~ "Ĉi tiu agordo estas klientflanka, kaj serviloj ĝin malatentos."
+
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr ""
+#~ "Ŝanĝas kiel montecaj fluginsuloj maldikiĝas super kaj sub la mezpunkto."
 
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
 #~ msgstr ""
-#~ "Ordinara plejalto, super kaj sub la mezpunkto, de fluginsulaj montoj."
+#~ "Regas densecon de montecaj fluginsuloj.\n"
+#~ "Temas pri deŝovo de la brua valoro «np_mountain»."
 
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Tiu ĉi tiparo uziĝos por iuj lingvoj."
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Regas larĝecon de tuneloj; pli malgranda valoro kreas pri larĝajn "
+#~ "tunelojn."
 
-#~ msgid "Shadow limit"
-#~ msgstr "Limo por ombroj"
+#~ msgid "Darkness sharpness"
+#~ msgstr "Akreco de mallumo"
 
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Dosierindiko al tiparo «TrueType» aŭ bitbildo."
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Akreco de heleco"
-
-#~ msgid "Lava depth"
-#~ msgstr "Lafo-profundeco"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Subteno de IPv6."
-
-#~ msgid "Gamma"
-#~ msgstr "Helĝustigo"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Maltravidebleco de tipara ombro (inter 0 kaj 255)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Alteco de fluginsulaj montoj"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Eksponento de fluginsulaj montoj"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Denseco de fluginsulaj montoj"
-
-#~ msgid "Floatland level"
-#~ msgstr "Alteco de fluginsuloj"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Baza bruo de fluginsuloj"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Bruo de baza alteco de fluginsuloj"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Ŝalti VBO(Vertex Buffer Object)"
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Difinas zonojn de glata tereno sur fluginsuloj.\n"
+#~ "Glataj fluginsuloj okazas kiam bruo superas nulon."
 
 #~ msgid ""
 #~ "Deprecated, define and locate cave liquids using biome definitions "
@@ -6910,37 +6901,79 @@ msgstr "cURL tempolimo"
 #~ "difinoj\n"
 #~ "Y de supra limo de lafo en grandaj kavernoj."
 
+#~ msgid "Enable VBO"
+#~ msgstr "Ŝalti VBO(Vertex Buffer Object)"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Bruo de baza alteco de fluginsuloj"
+
+#~ msgid "Floatland base noise"
+#~ msgstr "Baza bruo de fluginsuloj"
+
+#~ msgid "Floatland level"
+#~ msgstr "Alteco de fluginsuloj"
+
+#~ msgid "Floatland mountain density"
+#~ msgstr "Denseco de fluginsulaj montoj"
+
+#~ msgid "Floatland mountain exponent"
+#~ msgstr "Eksponento de fluginsulaj montoj"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Alteco de fluginsulaj montoj"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Maltravidebleco de tipara ombro (inter 0 kaj 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Helĝustigo"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Subteno de IPv6."
+
+#~ msgid "Lava depth"
+#~ msgstr "Lafo-profundeco"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "Akreco de heleco"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Dosierindiko al tiparo «TrueType» aŭ bitbildo."
+
+#~ msgid "Shadow limit"
+#~ msgstr "Limo por ombroj"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Tiu ĉi tiparo uziĝos por iuj lingvoj."
+
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
-#~ "Difinas zonojn de glata tereno sur fluginsuloj.\n"
-#~ "Glataj fluginsuloj okazas kiam bruo superas nulon."
+#~ "Ordinara plejalto, super kaj sub la mezpunkto, de fluginsulaj montoj."
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "Akreco de mallumo"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
-#~ "Regas larĝecon de tuneloj; pli malgranda valoro kreas pri larĝajn "
-#~ "tunelojn."
+#~ "Variaĵo de alteco de montetoj kaj profundeco de lagoj sur glata tereno de "
+#~ "fluginsuloj."
 
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Regas densecon de montecaj fluginsuloj.\n"
-#~ "Temas pri deŝovo de la brua valoro «np_mountain»."
+#~ msgid "Waving water"
+#~ msgstr "Ondanta akvo"
 
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr ""
-#~ "Ŝanĝas kiel montecaj fluginsuloj maldikiĝas super kaj sub la mezpunkto."
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-nivelo kien etendiĝas ombroj de fluginsuloj."
 
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
-#~ msgstr ""
-#~ "Alĝustigi la gamaan kodadon al la lumtabeloj. Pli altaj nombroj estas pli "
-#~ "helaj.\n"
-#~ "Ĉi tiu agordo estas klientflanka, kaj serviloj ĝin malatentos."
+#~ msgid "Projecting dungeons"
+#~ msgstr "Planante forgeskelojn"
+
+#~ msgid "Waving Water"
+#~ msgstr "Ondanta akvo"
+
+#, fuzzy
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y de supera limo de grandaj kvazaŭ-hazardaj kavernoj."
+
+#~ msgid "Select Package File:"
+#~ msgstr "Elekti pakaĵan dosieron:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Baskuligi glitan vidpunkton"

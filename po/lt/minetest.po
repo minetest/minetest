@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Lithuanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-02-22 19:27+0000\n"
 "Last-Translator: An0n3m0us <an0n3m0us@hotmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/minetest/"
@@ -426,15 +426,26 @@ msgstr ""
 msgid "Z spread"
 msgstr ""
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr ""
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "defaults"
 msgstr "keisti žaidimą"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -676,6 +687,7 @@ msgstr "Vardas / Slaptažodis :"
 msgid "Ping"
 msgstr ""
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP įjungtas"
@@ -933,6 +945,14 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "Pateiktas pasaulio kelias neegzistuoja: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -974,6 +994,7 @@ msgstr "Prievadas"
 msgid "- Public: "
 msgstr "Viešas"
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr ""
@@ -1445,6 +1466,7 @@ msgstr "Kairysis Shift"
 msgid "Left Windows"
 msgstr "Kairieji langai"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Meniu"
@@ -1538,6 +1560,7 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Žaisti"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Spausdinti"
@@ -1574,6 +1597,7 @@ msgstr "Dešinieji langai"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Pasirinkti"
@@ -1820,10 +1844,15 @@ msgstr "paspauskite klavišą"
 msgid "Sound Volume: "
 msgstr "Garso lygis: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Įvesti"
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "lt"
@@ -2202,8 +2231,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -4853,7 +4882,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6220,17 +6249,17 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Įjungti kinematografinį"
-
 #, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Pasirinkite papildinio failą:"
+#~ msgid "Enable VBO"
+#~ msgstr "Įjungti papildinį"
 
 #, fuzzy
 #~ msgid "Enables filmic tone mapping"
 #~ msgstr "Leisti sužeidimus"
 
 #, fuzzy
-#~ msgid "Enable VBO"
-#~ msgstr "Įjungti papildinį"
+#~ msgid "Select Package File:"
+#~ msgstr "Pasirinkite papildinio failą:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Įjungti kinematografinį"

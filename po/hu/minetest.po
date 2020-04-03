@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-04-03 20:24+0000\n"
 "Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
@@ -411,15 +411,26 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z méret"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "absvalue"
 msgstr "abszolút érték"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "alapértelmezések"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "könyített"
@@ -629,6 +640,7 @@ msgstr "Név / Jelszó"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP engedélyezve"
@@ -874,6 +886,14 @@ msgstr "jelszó fájl megnyitás hiba "
 msgid "Provided world path doesn't exist: "
 msgstr "A megadott útvonalon nem létezik világ: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -910,6 +930,7 @@ msgstr "- Port: "
 msgid "- Public: "
 msgstr "- Nyilvános: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1363,6 +1384,7 @@ msgstr "Bal Shift"
 msgid "Left Windows"
 msgstr "Bal Windows"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menü"
@@ -1455,6 +1477,7 @@ msgstr "Szünet"
 msgid "Play"
 msgstr "Játék"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Nyomtatás"
@@ -1491,6 +1514,7 @@ msgstr "Jobb Windows"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Kiválasztás"
@@ -1732,10 +1756,15 @@ msgstr "Némitva"
 msgid "Sound Volume: "
 msgstr "Hangerő: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Belépés "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "hu"
@@ -2176,8 +2205,8 @@ msgstr "Bumpmappolás"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5348,7 +5377,7 @@ msgstr ""
 "csatlakoznak."
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6820,84 +6849,14 @@ msgstr "cURL párhuzamossági korlát"
 msgid "cURL timeout"
 msgstr "cURL időkorlátja"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Váltás „mozi” módba"
-
-#~ msgid "Select Package File:"
-#~ msgstr "csomag fájl kiválasztása:"
-
-#~ msgid "Waving Water"
-#~ msgstr "Hullámzó víz"
-
-#~ msgid "Waving water"
-#~ msgstr "Hullámzó víz"
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Ezt a betűtípust bizonyos nyelvek használják."
-
-#, fuzzy
-#~ msgid "Shadow limit"
-#~ msgstr "Térképblokk korlát"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "A TrueType betűtípus (ttf) vagy bitmap útvonala."
-
-#, fuzzy
-#~ msgid "Lightness sharpness"
-#~ msgstr "Fényélesség"
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Nagy barlang mélység"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 támogatás."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Betűtípus árnyék alfa (átlátszatlanság, 0 és 255 között)."
-
-#, fuzzy
-#~ msgid "Floatland mountain height"
-#~ msgstr "Lebegő hegyek magassága"
-
-#, fuzzy
-#~ msgid "Floatland mountain density"
-#~ msgstr "Lebegő  hegyek sűrűsége"
-
-#~ msgid "Floatland level"
-#~ msgstr "Lebegő föld szintje"
-
-#, fuzzy
-#~ msgid "Floatland base noise"
-#~ msgstr "A lebegő hegyek alapzaja"
-
-#, fuzzy
-#~ msgid "Floatland base height noise"
-#~ msgstr "A lebegő hegyek alapmagassága"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "filmes tónus effektek bekapcsolása"
-
-#~ msgid "Enable VBO"
-#~ msgstr "VBO engedélyez"
-
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "A lebegő szigetek sima területeit határozza meg.\n"
-#~ "Lapos szigetek ott fordulnak elő, ahol a zaj értéke pozitív."
-
-#~ msgid "Darkness sharpness"
-#~ msgstr "a sötétség élessége"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "A járatok szélességét határozza meg, alacsonyabb érték szélesebb "
-#~ "járatokat hoz létre."
+#~ "Gamma kódolás beállítása a fényhez. Alacsonyabb számok - nagyobb "
+#~ "fényerő.\n"
+#~ "Ez a beállítás csak a kliensre érvényes, a szerver nem veszi figyelembe."
 
 #, fuzzy
 #~ msgid ""
@@ -6907,11 +6866,81 @@ msgstr "cURL időkorlátja"
 #~ "A lebegő szigetek hegységeinek sűrűségét szabályozza.\n"
 #~ "Az \"np_mountain\" zaj értékéhez hozzáadott eltolás."
 
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr ""
-#~ "Gamma kódolás beállítása a fényhez. Alacsonyabb számok - nagyobb "
-#~ "fényerő.\n"
-#~ "Ez a beállítás csak a kliensre érvényes, a szerver nem veszi figyelembe."
+#~ "A járatok szélességét határozza meg, alacsonyabb érték szélesebb "
+#~ "járatokat hoz létre."
+
+#~ msgid "Darkness sharpness"
+#~ msgstr "a sötétség élessége"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "A lebegő szigetek sima területeit határozza meg.\n"
+#~ "Lapos szigetek ott fordulnak elő, ahol a zaj értéke pozitív."
+
+#~ msgid "Enable VBO"
+#~ msgstr "VBO engedélyez"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "filmes tónus effektek bekapcsolása"
+
+#, fuzzy
+#~ msgid "Floatland base height noise"
+#~ msgstr "A lebegő hegyek alapmagassága"
+
+#, fuzzy
+#~ msgid "Floatland base noise"
+#~ msgstr "A lebegő hegyek alapzaja"
+
+#~ msgid "Floatland level"
+#~ msgstr "Lebegő föld szintje"
+
+#, fuzzy
+#~ msgid "Floatland mountain density"
+#~ msgstr "Lebegő  hegyek sűrűsége"
+
+#, fuzzy
+#~ msgid "Floatland mountain height"
+#~ msgstr "Lebegő hegyek magassága"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Betűtípus árnyék alfa (átlátszatlanság, 0 és 255 között)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 támogatás."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Nagy barlang mélység"
+
+#, fuzzy
+#~ msgid "Lightness sharpness"
+#~ msgstr "Fényélesség"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "A TrueType betűtípus (ttf) vagy bitmap útvonala."
+
+#, fuzzy
+#~ msgid "Shadow limit"
+#~ msgstr "Térképblokk korlát"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Ezt a betűtípust bizonyos nyelvek használják."
+
+#~ msgid "Waving water"
+#~ msgstr "Hullámzó víz"
+
+#~ msgid "Waving Water"
+#~ msgstr "Hullámzó víz"
+
+#~ msgid "Select Package File:"
+#~ msgstr "csomag fájl kiválasztása:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Váltás „mozi” módba"

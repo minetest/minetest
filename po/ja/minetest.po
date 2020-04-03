@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-01-27 13:21+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -399,14 +399,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Zの広がり"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "絶対値"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "既定値"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "緩和する"
@@ -615,6 +626,7 @@ msgstr "名前 / パスワード"
 msgid "Ping"
 msgstr "応答速度"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP有効"
@@ -859,6 +871,14 @@ msgstr "パスワードファイルを開けませんでした: "
 msgid "Provided world path doesn't exist: "
 msgstr "ワールドが存在しません: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "yes"
@@ -895,6 +915,7 @@ msgstr "- ポート: "
 msgid "- Public: "
 msgstr "- 公開サーバ: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1345,6 +1366,7 @@ msgstr "左Shift"
 msgid "Left Windows"
 msgstr "左Windows"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Alt"
@@ -1437,6 +1459,7 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Play"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Print"
@@ -1473,6 +1496,7 @@ msgstr "右Windows"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Select"
@@ -1715,10 +1739,15 @@ msgstr "消音"
 msgid "Sound Volume: "
 msgstr "音量: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "エンター "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "ja"
@@ -2145,9 +2174,10 @@ msgid "Bumpmapping"
 msgstr "バンプマッピング"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -3244,7 +3274,8 @@ msgid ""
 msgstr ""
 "廃止予定のLua API呼び出しの処理:\n"
 "-    legacy: 古い振る舞いを模倣する(試みる) (リリース版の既定値)。\n"
-"-    log: 廃止予定の呼び出しを模倣してバックトレースを記録 (デバッグ版の既定値)。\n"
+"-    log: 廃止予定の呼び出しを模倣してバックトレースを記録 (デバッグ版の既定"
+"値)。\n"
 "-    error: 廃止予定の呼び出しの使用を中止する (Mod開発者向けに推奨)。"
 
 #: src/settings_translation_file.cpp
@@ -5219,7 +5250,8 @@ msgid ""
 msgstr "プレイヤーが参加したときにサーバ一覧に表示されるサーバの名前。"
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+#, fuzzy
+msgid "Near plane"
 msgstr "クリッピング面付近"
 
 #: src/settings_translation_file.cpp
@@ -5383,7 +5415,8 @@ msgid ""
 "unavailable."
 msgstr ""
 "フォールバックフォントのパス。\n"
-"「フリータイプフォント」が有効な場合：TrueTypeフォントでなければなりません。\n"
+"「フリータイプフォント」が有効な場合：TrueTypeフォントでなければなりませ"
+"ん。\n"
 "「フリータイプフォント」が無効な場合：ビットマップまたはXMLベクターフォント\n"
 "でなければなりません。\n"
 "このフォントは特定の言語で使用されるか、規定のフォントが使用できない\n"
@@ -5415,7 +5448,8 @@ msgid ""
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
 "既定のフォントのパス。\n"
-"「フリータイプフォント」が有効な場合：TrueTypeフォントでなければなりません。\n"
+"「フリータイプフォント」が有効な場合：TrueTypeフォントでなければなりませ"
+"ん。\n"
 "「フリータイプフォント」が無効な場合：ビットマップまたはXMLベクターフォント\n"
 "でなければなりません。\n"
 "このフォールバックフォントはフォントが読み込めないときに使用されます。"
@@ -5428,7 +5462,8 @@ msgid ""
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
 "固定幅フォントのパス。\n"
-"「フリータイプフォント」が有効な場合：TrueTypeフォントでなければなりません。\n"
+"「フリータイプフォント」が有効な場合：TrueTypeフォントでなければなりませ"
+"ん。\n"
 "「フリータイプフォント」が無効な場合：ビットマップまたはXMLベクターフォント\n"
 "でなければなりません。\n"
 "このフォントはコンソールや観測記録画面などで使用されます。"
@@ -5888,7 +5923,9 @@ msgstr ""
 msgid ""
 "Shadow offset (in pixels) of the default font. If 0, then shadow will not be "
 "drawn."
-msgstr "既定のフォントの影のオフセット（ピクセル単位）。 0の場合、影は描画されません。"
+msgstr ""
+"既定のフォントの影のオフセット（ピクセル単位）。 0の場合、影は描画されませ"
+"ん。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6655,7 +6692,8 @@ msgid ""
 msgstr ""
 "フリータイプフォントを使用するかどうかは、フリータイプをサポートして\n"
 "コンパイルされている必要があります。 \n"
-"無効にした場合、代わりにビットマップおよび XML ベクターフォントが使用されます。"
+"無効にした場合、代わりにビットマップおよび XML ベクターフォントが使用されま"
+"す。"
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
@@ -6811,90 +6849,39 @@ msgstr "cURL並行処理制限"
 msgid "cURL timeout"
 msgstr "cURLタイムアウト"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "映画風モード切替"
+#~ msgid ""
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
+#~ msgstr ""
+#~ "ライトテーブルのガンマ補正を調整します。数値が大きいほど明るくなります。\n"
+#~ "この設定はクライアント専用であり、サーバでは無視されます。"
 
-#~ msgid "Select Package File:"
-#~ msgstr "パッケージファイルを選択:"
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr "山型浮遊大陸が中間点の上下でどのように先細くなるかを変更します。"
 
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "大きな洞窟内の溶岩のY高さ上限。"
-
-#~ msgid "Waving Water"
-#~ msgstr "揺れる水"
-
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "ダンジョンが時折地形から突出するかどうか。"
-
-#~ msgid "Projecting dungeons"
-#~ msgstr "突出するダンジョン"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "浮遊大陸の影が広がるYレベル。"
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "浮遊大陸の中間点と湖面のYレベル。"
-
-#~ msgid "Waving water"
-#~ msgstr "揺れる水"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr "浮遊大陸の滑らかな地形における丘の高さと湖の深さの変動。"
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "光度曲線ミッドブーストの中心。"
 
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
-#~ msgstr "浮遊大陸の山の中間点の上と下の典型的な最大高さ。"
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "山型浮遊大陸の密度を制御します。\n"
+#~ "ノイズのオフセットは、'mgv7_np_mountain' ノイズ値に追加されます。"
 
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "このフォントは特定の言語で使用されます。"
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr "トンネルの幅を制御、小さい方の値ほど広いトンネルを生成します。"
 
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "光度曲線ミッドブーストの強さ。"
+#~ msgid "Darkness sharpness"
+#~ msgstr "暗さの鋭さ"
 
-#~ msgid "Shadow limit"
-#~ msgstr "影の制限"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "TrueTypeフォントまたはビットマップへのパス。"
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "明るさの鋭さ"
-
-#~ msgid "Lava depth"
-#~ msgstr "溶岩の深さ"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 サポート。"
-
-#~ msgid "Gamma"
-#~ msgstr "ガンマ"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "フォントの影の透過 (不透明、0～255の間)。"
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "浮遊大陸の山の高さ"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "浮遊大陸の山指数"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "浮遊大陸の山の密度"
-
-#~ msgid "Floatland level"
-#~ msgstr "浮遊大陸の水位"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "浮遊大陸の基準ノイズ"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "浮遊大陸の基準高さノイズ"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "フィルム調トーンマッピング有効にする"
-
-#~ msgid "Enable VBO"
-#~ msgstr "VBOを有効化"
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "浮遊大陸の滑らかな地形の地域を定義します。\n"
+#~ "ノイズが 0 より大きいとき、滑らかな浮遊大陸になります。"
 
 #~ msgid ""
 #~ "Deprecated, define and locate cave liquids using biome definitions "
@@ -6905,36 +6892,87 @@ msgstr "cURLタイムアウト"
 #~ "す。\n"
 #~ "大きな洞窟内の溶岩のY高さ上限。"
 
+#~ msgid "Enable VBO"
+#~ msgstr "VBOを有効化"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "フィルム調トーンマッピング有効にする"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "浮遊大陸の基準高さノイズ"
+
+#~ msgid "Floatland base noise"
+#~ msgstr "浮遊大陸の基準ノイズ"
+
+#~ msgid "Floatland level"
+#~ msgstr "浮遊大陸の水位"
+
+#~ msgid "Floatland mountain density"
+#~ msgstr "浮遊大陸の山の密度"
+
+#~ msgid "Floatland mountain exponent"
+#~ msgstr "浮遊大陸の山指数"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "浮遊大陸の山の高さ"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "フォントの影の透過 (不透明、0～255の間)。"
+
+#~ msgid "Gamma"
+#~ msgstr "ガンマ"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 サポート。"
+
+#~ msgid "Lava depth"
+#~ msgstr "溶岩の深さ"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "明るさの鋭さ"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "TrueTypeフォントまたはビットマップへのパス。"
+
+#~ msgid "Shadow limit"
+#~ msgstr "影の制限"
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "光度曲線ミッドブーストの強さ。"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "このフォントは特定の言語で使用されます。"
+
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "浮遊大陸の滑らかな地形の地域を定義します。\n"
-#~ "ノイズが 0 より大きいとき、滑らかな浮遊大陸になります。"
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr "浮遊大陸の山の中間点の上と下の典型的な最大高さ。"
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "暗さの鋭さ"
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr "浮遊大陸の滑らかな地形における丘の高さと湖の深さの変動。"
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr "トンネルの幅を制御、小さい方の値ほど広いトンネルを生成します。"
+#~ msgid "Waving water"
+#~ msgstr "揺れる水"
 
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "山型浮遊大陸の密度を制御します。\n"
-#~ "ノイズのオフセットは、'mgv7_np_mountain' ノイズ値に追加されます。"
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "浮遊大陸の中間点と湖面のYレベル。"
 
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "光度曲線ミッドブーストの中心。"
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "浮遊大陸の影が広がるYレベル。"
 
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr "山型浮遊大陸が中間点の上下でどのように先細くなるかを変更します。"
+#~ msgid "Projecting dungeons"
+#~ msgstr "突出するダンジョン"
 
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
-#~ msgstr ""
-#~ "ライトテーブルのガンマ補正を調整します。数値が大きいほど明るくなります。\n"
-#~ "この設定はクライアント専用であり、サーバでは無視されます。"
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "ダンジョンが時折地形から突出するかどうか。"
+
+#~ msgid "Waving Water"
+#~ msgstr "揺れる水"
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "大きな洞窟内の溶岩のY高さ上限。"
+
+#~ msgid "Select Package File:"
+#~ msgstr "パッケージファイルを選択:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "映画風モード切替"

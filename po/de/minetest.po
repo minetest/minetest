@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-03-06 05:32+0000\n"
 "Last-Translator: Robin Townsend <iantownsend@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -401,14 +401,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z-Ausbreitung"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "Absolutwert"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "Standardwerte"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "weich (eased)"
@@ -620,6 +631,7 @@ msgstr "Name / Passwort"
 msgid "Ping"
 msgstr "Latenz"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "Spielerkampf aktiviert"
@@ -864,6 +876,14 @@ msgstr "Fehler beim öffnen der ausgewählten Passwort-Datei: "
 msgid "Provided world path doesn't exist: "
 msgstr "Angegebener Weltpfad existiert nicht: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -900,6 +920,7 @@ msgstr "- Port: "
 msgid "- Public: "
 msgstr "- Öffentlich: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- Spielerkampf: "
@@ -1350,6 +1371,7 @@ msgstr "Umsch. links"
 msgid "Left Windows"
 msgstr "Win. links"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menü"
@@ -1442,6 +1464,7 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Spielen"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Druck"
@@ -1478,6 +1501,7 @@ msgstr "Win. rechts"
 msgid "Scroll Lock"
 msgstr "Rollen"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Auswählen"
@@ -1721,10 +1745,15 @@ msgstr "Stumm"
 msgid "Sound Volume: "
 msgstr "Tonlautstärke: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Eingabe "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "de"
@@ -2176,9 +2205,10 @@ msgid "Bumpmapping"
 msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5353,7 +5383,8 @@ msgstr ""
 "Spieler angezeigt."
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+#, fuzzy
+msgid "Near plane"
 msgstr "Vordere Clippingebene"
 
 #: src/settings_translation_file.cpp
@@ -7021,106 +7052,36 @@ msgstr "cURL-Parallel-Begrenzung"
 msgid "cURL timeout"
 msgstr "cURL-Zeitüberschreitung"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Filmmodus umschalten"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Paket-Datei auswählen:"
-
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Y-Wert der Obergrenze von Lava in großen Höhlen."
-
-#~ msgid "Waving Water"
-#~ msgstr "Wasserwellen"
-
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "Ob Verliese manchmal aus dem Gelände herausragen."
-
-#~ msgid "Projecting dungeons"
-#~ msgstr "Herausragende Verliese"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-Höhe, bis zu der sich die Schatten der Schwebeländer ausbreiten."
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgid ""
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "Y-Höhe vom Mittelpunkt der Schwebeländer sowie\n"
-#~ "des Wasserspiegels von Seen."
+#~ "Ändert die Gammakodierung der Lichttabellen. Kleinere Werte sind heller.\n"
+#~ "Diese Einstellung ist rein clientseitig und wird vom Server ignoriert."
 
-#~ msgid "Waving water"
-#~ msgstr "Wasserwellen"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr ""
-#~ "Variierung der Hügelhöhe und Seetiefe in den ruhig verlaufenden\n"
-#~ "Regionen der Schwebeländer."
+#~ "Verändert, wie Schwebeländer des Bergtyps sich über und unter dem "
+#~ "Mittelpunkt zuspitzen."
+
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Mitte der Lichtkurven-Mittenverstärkung."
 
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
 #~ msgstr ""
-#~ "Typische Maximalhöhe, über und unter dem Mittelpunkt von Gebirgen in den\n"
-#~ "Schwebeländern."
+#~ "Legt die Dichte von Gebirgen in den Schwebeländern fest.\n"
+#~ "Dies ist ein Versatz, der zum Rauschwert „mgv7_np_mountain“ addiert wird."
 
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Diese Schrift wird von bestimmten Sprachen benutzt."
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Stärke der Lichtkurven-Mittenverstärkung."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Schattenbegrenzung"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Pfad zu einer TrueType- oder Bitmap-Schrift."
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Helligkeitsschärfe"
-
-#~ msgid "Lava depth"
-#~ msgstr "Lavatiefe"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6-Unterstützung."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr ""
-#~ "Undurchsichtigkeit des Schattens der Schrift (Wert zwischen 0 und 255)."
+#~ "Legt die Breite von Tunneln fest; ein kleinerer Wert erzeugt breitere "
+#~ "Tunnel."
 
-#~ msgid "Floatland mountain height"
-#~ msgstr "Schwebelandberghöhe"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Schwebelandbergexponent"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Schwebelandbergdichte"
-
-#~ msgid "Floatland level"
-#~ msgstr "Schwebelandhöhe"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Schwebelandbasisrauschen"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Schwebeland-Basishöhenrauschen"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Aktiviert filmisches Tone-Mapping"
-
-#~ msgid "Enable VBO"
-#~ msgstr "VBO aktivieren"
-
-#~ msgid ""
-#~ "Deprecated, define and locate cave liquids using biome definitions "
-#~ "instead.\n"
-#~ "Y of upper limit of lava in large caves."
-#~ msgstr ""
-#~ "Misbilligte Einstellung. Definieren/Finden Sie statdessen "
-#~ "Höhlenflüssigkeiten in Biomdefinitionen.\n"
-#~ "Y der Obergrenze von Lava in großen Höhlen."
+#~ msgid "Darkness sharpness"
+#~ msgstr "Dunkelheits-Steilheit"
 
 #~ msgid ""
 #~ "Defines areas of floatland smooth terrain.\n"
@@ -7131,33 +7092,103 @@ msgstr "cURL-Zeitüberschreitung"
 #~ "Schwebeländer treten auf, wenn der\n"
 #~ "Rauschwert > 0 ist."
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "Dunkelheits-Steilheit"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgid ""
+#~ "Deprecated, define and locate cave liquids using biome definitions "
+#~ "instead.\n"
+#~ "Y of upper limit of lava in large caves."
 #~ msgstr ""
-#~ "Legt die Breite von Tunneln fest; ein kleinerer Wert erzeugt breitere "
-#~ "Tunnel."
+#~ "Misbilligte Einstellung. Definieren/Finden Sie statdessen "
+#~ "Höhlenflüssigkeiten in Biomdefinitionen.\n"
+#~ "Y der Obergrenze von Lava in großen Höhlen."
+
+#~ msgid "Enable VBO"
+#~ msgstr "VBO aktivieren"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Aktiviert filmisches Tone-Mapping"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Schwebeland-Basishöhenrauschen"
+
+#~ msgid "Floatland base noise"
+#~ msgstr "Schwebelandbasisrauschen"
+
+#~ msgid "Floatland level"
+#~ msgstr "Schwebelandhöhe"
+
+#~ msgid "Floatland mountain density"
+#~ msgstr "Schwebelandbergdichte"
+
+#~ msgid "Floatland mountain exponent"
+#~ msgstr "Schwebelandbergexponent"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Schwebelandberghöhe"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr ""
+#~ "Undurchsichtigkeit des Schattens der Schrift (Wert zwischen 0 und 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6-Unterstützung."
+
+#~ msgid "Lava depth"
+#~ msgstr "Lavatiefe"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "Helligkeitsschärfe"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Pfad zu einer TrueType- oder Bitmap-Schrift."
+
+#~ msgid "Shadow limit"
+#~ msgstr "Schattenbegrenzung"
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Stärke der Lichtkurven-Mittenverstärkung."
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Diese Schrift wird von bestimmten Sprachen benutzt."
 
 #~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
-#~ "Legt die Dichte von Gebirgen in den Schwebeländern fest.\n"
-#~ "Dies ist ein Versatz, der zum Rauschwert „mgv7_np_mountain“ addiert wird."
+#~ "Typische Maximalhöhe, über und unter dem Mittelpunkt von Gebirgen in den\n"
+#~ "Schwebeländern."
 
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Mitte der Lichtkurven-Mittenverstärkung."
-
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
-#~ "Verändert, wie Schwebeländer des Bergtyps sich über und unter dem "
-#~ "Mittelpunkt zuspitzen."
+#~ "Variierung der Hügelhöhe und Seetiefe in den ruhig verlaufenden\n"
+#~ "Regionen der Schwebeländer."
 
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ msgid "Waving water"
+#~ msgstr "Wasserwellen"
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
 #~ msgstr ""
-#~ "Ändert die Gammakodierung der Lichttabellen. Kleinere Werte sind heller.\n"
-#~ "Diese Einstellung ist rein clientseitig und wird vom Server ignoriert."
+#~ "Y-Höhe vom Mittelpunkt der Schwebeländer sowie\n"
+#~ "des Wasserspiegels von Seen."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-Höhe, bis zu der sich die Schatten der Schwebeländer ausbreiten."
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Herausragende Verliese"
+
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "Ob Verliese manchmal aus dem Gelände herausragen."
+
+#~ msgid "Waving Water"
+#~ msgstr "Wasserwellen"
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y-Wert der Obergrenze von Lava in großen Höhlen."
+
+#~ msgid "Select Package File:"
+#~ msgstr "Paket-Datei auswählen:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Filmmodus umschalten"

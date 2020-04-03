@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-02-24 23:32+0000\n"
 "Last-Translator: Vojtěch Šamla <auzkok@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -403,15 +403,26 @@ msgstr "Z"
 msgid "Z spread"
 msgstr ""
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr ""
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "defaults"
 msgstr "Výchozí hra"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -643,6 +654,7 @@ msgstr "Jméno / Heslo"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP povoleno"
@@ -893,6 +905,14 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "Uvedená cesta ke světu neexistuje: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -929,6 +949,7 @@ msgstr "- Port: "
 msgid "- Public: "
 msgstr "- Veřejný: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1398,6 +1419,7 @@ msgstr "Levý Shift"
 msgid "Left Windows"
 msgstr "Levá klávesa Windows"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Nabídka"
@@ -1490,6 +1512,7 @@ msgstr "Pauza"
 msgid "Play"
 msgstr "Hrát"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Print Screen"
@@ -1526,6 +1549,7 @@ msgstr "Pravá klávesa Windows"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Vybrat"
@@ -1773,10 +1797,15 @@ msgstr "Ztlumit"
 msgid "Sound Volume: "
 msgstr "Hlasitost: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Zadejte "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "cs"
@@ -2201,8 +2230,8 @@ msgstr "Bump mapování"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5202,7 +5231,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6610,69 +6639,14 @@ msgstr "cURL limit paralelních stahování"
 msgid "cURL timeout"
 msgstr "cURL timeout"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Plynulá kamera"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Vybrat soubor s modem:"
-
-#~ msgid "Waving Water"
-#~ msgstr "Vlnění vody"
-
-#~ msgid "Waving water"
-#~ msgstr "Vlnění vody"
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Hloubka velké jeskyně"
-
-#~ msgid "IPv6 support."
-#~ msgstr ""
-#~ "Nastavuje reálnou délku dne.\n"
-#~ "Např.: 72 = 20 minut, 360 = 4 minuty, 1 = 24 hodin, 0 = čas zůstává stále "
-#~ "stejný."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Neprůhlednost stínu písma (od 0 do 255)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Výška hor na létajících ostrovech"
-
-#, fuzzy
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Koncentrace hor na létajících ostrovech"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Koncentrace hor na létajících ostrovech"
-
-#~ msgid "Floatland level"
-#~ msgstr "Výška létajících ostrovů"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Základní šum létajících ostrovů"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Šum základní výšky létajících ostrovů"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Zapne filmový tone mapping"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Zapnout VBO"
-
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "Určuje oblasti létajících ostrovů s rovinný terénem.\n"
-#~ "Terén bude rovný v místech, kde hodnota šumu bude větší než 0."
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr "Ovládá šířku tunelů, menší hodnota vytváří širší tunely."
+#~ "Upraví gamma kódování světelných tabulek. Vyšší čísla znamenají světlejší "
+#~ "hodnoty.\n"
+#~ "Toto nastavení ovlivňuje pouze klienta a serverem není použito."
 
 #, fuzzy
 #~ msgid ""
@@ -6682,11 +6656,66 @@ msgstr "cURL timeout"
 #~ "Stanovuje hustotu horského terénu na létajících ostrovech.\n"
 #~ "Jedná se o posun přidaný k hodnotě šumu 'np_mountain'."
 
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr "Ovládá šířku tunelů, menší hodnota vytváří širší tunely."
+
 #~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
 #~ msgstr ""
-#~ "Upraví gamma kódování světelných tabulek. Vyšší čísla znamenají světlejší "
-#~ "hodnoty.\n"
-#~ "Toto nastavení ovlivňuje pouze klienta a serverem není použito."
+#~ "Určuje oblasti létajících ostrovů s rovinný terénem.\n"
+#~ "Terén bude rovný v místech, kde hodnota šumu bude větší než 0."
+
+#~ msgid "Enable VBO"
+#~ msgstr "Zapnout VBO"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Zapne filmový tone mapping"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Šum základní výšky létajících ostrovů"
+
+#~ msgid "Floatland base noise"
+#~ msgstr "Základní šum létajících ostrovů"
+
+#~ msgid "Floatland level"
+#~ msgstr "Výška létajících ostrovů"
+
+#~ msgid "Floatland mountain density"
+#~ msgstr "Koncentrace hor na létajících ostrovech"
+
+#, fuzzy
+#~ msgid "Floatland mountain exponent"
+#~ msgstr "Koncentrace hor na létajících ostrovech"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Výška hor na létajících ostrovech"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Neprůhlednost stínu písma (od 0 do 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "IPv6 support."
+#~ msgstr ""
+#~ "Nastavuje reálnou délku dne.\n"
+#~ "Např.: 72 = 20 minut, 360 = 4 minuty, 1 = 24 hodin, 0 = čas zůstává stále "
+#~ "stejný."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Hloubka velké jeskyně"
+
+#~ msgid "Waving water"
+#~ msgstr "Vlnění vody"
+
+#~ msgid "Waving Water"
+#~ msgstr "Vlnění vody"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Vybrat soubor s modem:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Plynulá kamera"

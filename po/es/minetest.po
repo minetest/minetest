@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-02-18 06:32+0000\n"
 "Last-Translator: JDiaz <runspect@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
@@ -403,14 +403,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Propagación Z"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "Valor absoluto"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "Predeterminados"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "Suavizado"
@@ -621,6 +632,7 @@ msgstr "Nombre / contraseña"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP activado"
@@ -867,6 +879,14 @@ msgstr "Fallo para abrir el archivo con la contraseña proveída: "
 msgid "Provided world path doesn't exist: "
 msgstr "La ruta del mundo especificada no existe: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -903,6 +923,7 @@ msgstr "- Puerto: "
 msgid "- Public: "
 msgstr "- Público: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1353,6 +1374,7 @@ msgstr "Shift izq."
 msgid "Left Windows"
 msgstr "Win izq."
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menú"
@@ -1445,6 +1467,7 @@ msgstr "Pausa"
 msgid "Play"
 msgstr "Jugar"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Captura"
@@ -1481,6 +1504,7 @@ msgstr "Win der."
 msgid "Scroll Lock"
 msgstr "Bloq Despl"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Seleccionar"
@@ -1722,10 +1746,15 @@ msgstr "Silenciado"
 msgid "Sound Volume: "
 msgstr "Volumen del sonido: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Ingresar "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "es"
@@ -2178,14 +2207,15 @@ msgid "Bumpmapping"
 msgstr "Mapeado de relieve"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Distancia de la cámara 'cerca del plano delimitador' en nodos, entre 0 y 0,5."
-"\n"
+"Distancia de la cámara 'cerca del plano delimitador' en nodos, entre 0 y "
+"0,5.\n"
 "La mayoría de los usuarios no necesitarán cambiar esto.\n"
 "El aumento puede reducir los artefactos en GPU más débiles.\n"
 "0.1 = Predeterminado, 0,25 = Buen valor para comprimidos más débiles."
@@ -3305,8 +3335,8 @@ msgstr ""
 "Manejo de llamadas a la API de Lua en desuso:\n"
 "- legacy: (intentar) imitar el comportamiento antiguo (por defecto para la "
 "liberación).\n"
-"- log: imitar y registrar la pista de seguimiento de la llamada en desuso ("
-"predeterminado para la depuración).\n"
+"- log: imitar y registrar la pista de seguimiento de la llamada en desuso "
+"(predeterminado para la depuración).\n"
 "- error: abortar el uso de la llamada en desuso (sugerido para "
 "desarrolladores de mods)."
 
@@ -4518,8 +4548,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tecla para activar/desactivar el modo cinemático.\n"
-"Véase http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
-"a54da2a0e231901735e3da1b0edf72eb3\n"
+"Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3\n"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4528,8 +4558,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tecla para activar/desactivar la vista del minimapa.\n"
-"Véase http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4538,8 +4568,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tecla para activar/desactivar el modo veloz.\n"
-"Véase http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4548,8 +4578,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tecla para activar/desactivar el vuelo.\n"
-"Véase http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4558,8 +4588,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tecla para activar/desactivar el modo noclip.\n"
-"Véase http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5305,7 +5335,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6721,82 +6751,6 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "Tiempo de espera de cURL"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Activar cinemático"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Seleccionar el archivo del paquete:"
-
-#~ msgid "Waving Water"
-#~ msgstr "Oleaje"
-
-#~ msgid "Waving water"
-#~ msgstr "Oleaje en el agua"
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Características de la Lava"
-
-#~ msgid "IPv6 support."
-#~ msgstr "soporte IPv6."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Alfa de sombra de fuentes (opacidad, entre 0 y 255)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Altura de las montañas en tierras flotantes"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Exponente de las montañas en tierras flotantes"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Densidad de las montañas en tierras flotantes"
-
-#~ msgid "Floatland level"
-#~ msgstr "Nivel de tierra flotante"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Ruido base para tierra flotante"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Ruido de altura base para tierra flotante"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Habilita el mapeado de tonos fílmico"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Activar VBO"
-
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Define áreas de terreno liso flotante.\n"
-#~ "Las zonas flotantes lisas se producen cuando el ruido > 0."
-
-#, fuzzy
-#~ msgid "Darkness sharpness"
-#~ msgstr "Agudeza de la obscuridad"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Controla el ancho de los túneles, un valor menor crea túneles más anchos."
-
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Controla la densidad del terreno montañoso flotante.\n"
-#~ "Se agrega un desplazamiento al valor de ruido 'mgv7_np_mountain'."
-
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr ""
-#~ "Modifica cómo las tierras flotantes del tipo montaña aparecen arriba y "
-#~ "abajo del punto medio."
-
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
 #~ "brighter.\n"
@@ -6805,3 +6759,79 @@ msgstr "Tiempo de espera de cURL"
 #~ "Ajustar la codificación gamma para las tablas de iluminación. Números "
 #~ "mayores son mas brillantes.\n"
 #~ "Este ajuste es solo para cliente y es ignorado por el servidor."
+
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr ""
+#~ "Modifica cómo las tierras flotantes del tipo montaña aparecen arriba y "
+#~ "abajo del punto medio."
+
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "Controla la densidad del terreno montañoso flotante.\n"
+#~ "Se agrega un desplazamiento al valor de ruido 'mgv7_np_mountain'."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Controla el ancho de los túneles, un valor menor crea túneles más anchos."
+
+#, fuzzy
+#~ msgid "Darkness sharpness"
+#~ msgstr "Agudeza de la obscuridad"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Define áreas de terreno liso flotante.\n"
+#~ "Las zonas flotantes lisas se producen cuando el ruido > 0."
+
+#~ msgid "Enable VBO"
+#~ msgstr "Activar VBO"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Habilita el mapeado de tonos fílmico"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Ruido de altura base para tierra flotante"
+
+#~ msgid "Floatland base noise"
+#~ msgstr "Ruido base para tierra flotante"
+
+#~ msgid "Floatland level"
+#~ msgstr "Nivel de tierra flotante"
+
+#~ msgid "Floatland mountain density"
+#~ msgstr "Densidad de las montañas en tierras flotantes"
+
+#~ msgid "Floatland mountain exponent"
+#~ msgstr "Exponente de las montañas en tierras flotantes"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Altura de las montañas en tierras flotantes"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Alfa de sombra de fuentes (opacidad, entre 0 y 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "IPv6 support."
+#~ msgstr "soporte IPv6."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Características de la Lava"
+
+#~ msgid "Waving water"
+#~ msgstr "Oleaje en el agua"
+
+#~ msgid "Waving Water"
+#~ msgstr "Oleaje"
+
+#~ msgid "Select Package File:"
+#~ msgstr "Seleccionar el archivo del paquete:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Activar cinemático"

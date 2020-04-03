@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Danish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-03-31 10:14+0000\n"
 "Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -409,14 +409,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z spredning"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "Absolut værdi"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "Standard"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -630,6 +641,7 @@ msgstr "Navn/adgangskode"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "Spiller mod spiller aktiveret"
@@ -882,6 +894,14 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "Angivne sti til verdenen findes ikke: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -918,6 +938,7 @@ msgstr "- Port: "
 msgid "- Public: "
 msgstr "- Offentlig: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- Spiller mod spiller (PvP): "
@@ -1388,6 +1409,7 @@ msgstr "Venstre Skift"
 msgid "Left Windows"
 msgstr "Venstre meta"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menu"
@@ -1480,6 +1502,7 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Spil"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Udskriv"
@@ -1516,6 +1539,7 @@ msgstr "Højre meta"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Vælg"
@@ -1763,10 +1787,15 @@ msgstr "Lydløs"
 msgid "Sound Volume: "
 msgstr "Lydstyrke: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr " "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "da"
@@ -2181,8 +2210,8 @@ msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5296,7 +5325,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6716,50 +6745,6 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "cURL-tidsudløb"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Aktiver filmisk"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Vælg pakke fil:"
-
-#, fuzzy
-#~ msgid "Shadow limit"
-#~ msgstr "Skygge grænse"
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Dybde for stor hule"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Understøttelse af IPv6."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Alfa for skrifttypeskygge (uigennemsigtighed, mellem 0 og 255)."
-
-#, fuzzy
-#~ msgid "Floatland level"
-#~ msgstr "Svævelandsniveau"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Svævelandsgrundhøjdestøj"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Aktiverer filmisk toneoversættelse"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Aktiver VBO"
-
-#, fuzzy
-#~ msgid "Darkness sharpness"
-#~ msgstr "Søstejlhed"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Styrer bredden af tunneller. En lavere værdi giver bredere tunneller."
-
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
 #~ "brighter.\n"
@@ -6767,3 +6752,47 @@ msgstr "cURL-tidsudløb"
 #~ msgstr ""
 #~ "Justér gammakodningen for lystabellerne. Et større tal betyder lysere.\n"
 #~ "Denne indstilling gælder kun for klienten og ignoreres af serveren."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Styrer bredden af tunneller. En lavere værdi giver bredere tunneller."
+
+#, fuzzy
+#~ msgid "Darkness sharpness"
+#~ msgstr "Søstejlhed"
+
+#~ msgid "Enable VBO"
+#~ msgstr "Aktiver VBO"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Aktiverer filmisk toneoversættelse"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Svævelandsgrundhøjdestøj"
+
+#, fuzzy
+#~ msgid "Floatland level"
+#~ msgstr "Svævelandsniveau"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Alfa for skrifttypeskygge (uigennemsigtighed, mellem 0 og 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Understøttelse af IPv6."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Dybde for stor hule"
+
+#, fuzzy
+#~ msgid "Shadow limit"
+#~ msgstr "Skygge grænse"
+
+#~ msgid "Select Package File:"
+#~ msgstr "Vælg pakke fil:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Aktiver filmisk"

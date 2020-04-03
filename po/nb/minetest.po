@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-03-31 10:14+0000\n"
 "Last-Translator: Liet Kynes <sissi90@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -402,14 +402,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z-spredning"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "Absoluttverdi"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "Forvalg"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "myknet"
@@ -618,6 +629,7 @@ msgstr "Navn / passord"
 msgid "Ping"
 msgstr "Latens"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "Alle mot alle er på"
@@ -862,6 +874,14 @@ msgstr "Passordfilen kunne ikke åpnes: "
 msgid "Provided world path doesn't exist: "
 msgstr "Angitt sti til verdenen finnes ikke: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -898,6 +918,7 @@ msgstr "- Port: "
 msgid "- Public: "
 msgstr "- Offentlig: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- Alle mot alle (PvP): "
@@ -1348,6 +1369,7 @@ msgstr "Venstre Shift"
 msgid "Left Windows"
 msgstr "Venstre Super"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Meny"
@@ -1440,6 +1462,7 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Spill"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Skriv ut"
@@ -1476,6 +1499,7 @@ msgstr "Høyre Super"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Velg"
@@ -1718,10 +1742,15 @@ msgstr "Av"
 msgid "Sound Volume: "
 msgstr "Lydstyrke: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Enter "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "nb"
@@ -1849,7 +1878,8 @@ msgstr "3D-støytall som definerer terrenget."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
-msgstr "3D-støytall for fjelloverheng, klipper o. l. Vanligvis små variasjoner."
+msgstr ""
+"3D-støytall for fjelloverheng, klipper o. l. Vanligvis små variasjoner."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
@@ -1872,8 +1902,8 @@ msgstr ""
 "For øyeblikket støttes følgende alternativer:\n"
 "-    none: Ingen 3D-utdata.\n"
 "-    anaglyph: Cyan/magenta farge-3D.\n"
-"-    interlaced: Skjermstøtte for partall/oddetall-linjebasert polarisering."
-"\n"
+"-    interlaced: Skjermstøtte for partall/oddetall-linjebasert "
+"polarisering.\n"
 "-    topbottom: Del skjermen i topp og bunn.\n"
 "-    sidebyside: Del skjermen side om side.\n"
 "-    crossview: Skjele-3d\n"
@@ -2156,8 +2186,8 @@ msgstr "Teksturpåføring (bump mapping)"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -4206,8 +4236,8 @@ msgstr ""
 "Sniketast.\n"
 "Brukes også for å gå ned på stiger og i vann dersom aux1_descends ikke "
 "brukes.\n"
-"See http://irrlicht.sourceforge.net/docu/"
-"namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4975,7 +5005,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6362,20 +6392,20 @@ msgstr "Maksimal parallellisering i cURL"
 msgid "cURL timeout"
 msgstr "cURL-tidsgrense"
 
-#~ msgid "Select Package File:"
-#~ msgstr "Velg pakkefil:"
-
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Y-verdi for øvre grense for lava i store grotter."
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Hvilket Y-nivå som skyggen til luftøyer når."
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6-støtte."
+#~ msgid "Enable VBO"
+#~ msgstr "Aktiver VBO"
 
 #~ msgid "Enables filmic tone mapping"
 #~ msgstr "Aktiver filmatisk toneoversettelse"
 
-#~ msgid "Enable VBO"
-#~ msgstr "Aktiver VBO"
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6-støtte."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Hvilket Y-nivå som skyggen til luftøyer når."
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y-verdi for øvre grense for lava i store grotter."
+
+#~ msgid "Select Package File:"
+#~ msgstr "Velg pakkefil:"

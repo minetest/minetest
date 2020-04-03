@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-02-18 06:32+0000\n"
 "Last-Translator: Muhammad Nur Hidayat Yasuyoshi <mnh48mail@gmail.com>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -402,14 +402,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Sebaran Z"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "Nilai mutlak"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "lalai"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "tumpul"
@@ -618,6 +629,7 @@ msgstr "Nama / Kata laluan"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "Boleh Berlawan PvP"
@@ -863,6 +875,14 @@ msgstr "Fail kata laluan yang disediakan gagal dibuka: "
 msgid "Provided world path doesn't exist: "
 msgstr "Laluan dunia diberi tidak wujud: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -899,6 +919,7 @@ msgstr "- Port: "
 msgid "- Public: "
 msgstr "- Awam: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1351,6 +1372,7 @@ msgstr "Shift Kiri"
 msgid "Left Windows"
 msgstr "Windows Kiri"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menu"
@@ -1443,6 +1465,7 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Mula Main"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Cetak"
@@ -1479,6 +1502,7 @@ msgstr "Windows Kanan"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Pilih kekunci"
@@ -1720,10 +1744,15 @@ msgstr "Dibisukan"
 msgid "Sound Volume: "
 msgstr "Kekuatan Bunyi: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Masuk "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "ms"
@@ -2155,9 +2184,10 @@ msgid "Bumpmapping"
 msgstr "Pemetaan timbul"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -3281,8 +3311,8 @@ msgstr ""
 "Cara pengendalian panggilan API Lua yang terkecam:\n"
 "-    legacy: (cuba untuk) meniru tingkah laku yang lama (lalai untuk "
 "terbitan).\n"
-"-    log: meniru dan menulis log runut balik kesemua panggilan terkecam ("
-"lalai untuk nyahpepijat).\n"
+"-    log: meniru dan menulis log runut balik kesemua panggilan terkecam "
+"(lalai untuk nyahpepijat).\n"
 "-    error: gugurkan penggunaan panggilan terkecam (dicadangkan untuk "
 "pembangun mods)."
 
@@ -5285,7 +5315,8 @@ msgstr ""
 "senarai pelayan."
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+#, fuzzy
+msgid "Near plane"
 msgstr "Satah dekat ketipan"
 
 #: src/settings_translation_file.cpp
@@ -6924,95 +6955,43 @@ msgstr "Had cURL selari"
 msgid "cURL timeout"
 msgstr "Had masa cURL"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Togol Sinematik"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Pilih Fail Pakej:"
-
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Had Y pengatas lava dalam gua besar."
-
-#~ msgid "Waving Water"
-#~ msgstr "Air Bergelora"
-
-#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgid ""
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "Sama ada kurungan bawah tanah kadang-kala terlunjur daripada rupa bumi."
+#~ "Laraskan pengekodan gama untuk jadual cahaya. Nombor lebih tinggi lebih "
+#~ "cerah.\n"
+#~ "Tetapan ini hanya untuk klien dan diabaikan oleh pelayan permainan."
 
-#~ msgid "Projecting dungeons"
-#~ msgstr "Kurungan bawah tanah melunjur"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Aras Y di mana bayang tanah terapung diperluaskan."
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "Aras Y untuk titik tengah tanah terapung dan permukaan tasik."
-
-#~ msgid "Waving water"
-#~ msgstr "Air bergelora"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr ""
-#~ "Variasi ketinggian bukit dan kedalaman tasik rupa bumi lembut tanah "
-#~ "terapung."
+#~ "Ubah cara tanah terapung jenis gunung menirus di atas dan bawah titik "
+#~ "tengah."
+
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Titik tengah tolakan-tengah lengkung cahaya."
 
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
 #~ msgstr ""
-#~ "Ketinggian maksimum biasa, di atas dan bawah titik tengah, untuk gunung "
-#~ "tanah terapung."
+#~ "Mengawal ketumpatan rupa bumi tanah terapung bergunung.\n"
+#~ "Nilainya ialah ofset yang menambah kepada nilai hingar 'mgv7_np_mountain'."
 
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Fon ini akan digunakan untuk sesetengah bahasa."
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Mengawal lebar terowong, nilai lebih kecil mencipta terowong lebih lebar."
 
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Kekuatan tolakan tengah lengkung cahaya."
+#~ msgid "Darkness sharpness"
+#~ msgstr "Ketajaman kegelapan"
 
-#~ msgid "Shadow limit"
-#~ msgstr "Had bayang"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Laluan ke fon TrueType atau peta bit."
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Ketajaman pencahayaan"
-
-#~ msgid "Lava depth"
-#~ msgstr "Kedalaman lava"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Sokongan IPv6."
-
-#~ msgid "Gamma"
-#~ msgstr "Gama"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Nilai alfa bayang fon (kelegapan, antara 0 dan 255)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Ketinggian gunung tanah terapung"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Eksponen gunung tanah terapung"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Ketumpatan gunung tanah terapung"
-
-#~ msgid "Floatland level"
-#~ msgstr "Aras tanah terapung"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Hingar asas tanah terapung"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Hingar ketinggian asas tanah terapung"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Membolehkan pemetaan tona sinematik"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Membolehkan VBO"
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Mentakrifkan kawasan rupa bumi lembut tanah terapung.\n"
+#~ "Tanag terapung lembut berlaku apabila hingar > 0."
 
 #~ msgid ""
 #~ "Deprecated, define and locate cave liquids using biome definitions "
@@ -7023,40 +7002,92 @@ msgstr "Had masa cURL"
 #~ "pentakrifan biom menggantikan cara asal.\n"
 #~ "Had Y atasan lava di gua-gua besar."
 
+#~ msgid "Enable VBO"
+#~ msgstr "Membolehkan VBO"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Membolehkan pemetaan tona sinematik"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Hingar ketinggian asas tanah terapung"
+
+#~ msgid "Floatland base noise"
+#~ msgstr "Hingar asas tanah terapung"
+
+#~ msgid "Floatland level"
+#~ msgstr "Aras tanah terapung"
+
+#~ msgid "Floatland mountain density"
+#~ msgstr "Ketumpatan gunung tanah terapung"
+
+#~ msgid "Floatland mountain exponent"
+#~ msgstr "Eksponen gunung tanah terapung"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Ketinggian gunung tanah terapung"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Nilai alfa bayang fon (kelegapan, antara 0 dan 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gama"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Sokongan IPv6."
+
+#~ msgid "Lava depth"
+#~ msgstr "Kedalaman lava"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "Ketajaman pencahayaan"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Laluan ke fon TrueType atau peta bit."
+
+#~ msgid "Shadow limit"
+#~ msgstr "Had bayang"
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Kekuatan tolakan tengah lengkung cahaya."
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Fon ini akan digunakan untuk sesetengah bahasa."
+
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
-#~ "Mentakrifkan kawasan rupa bumi lembut tanah terapung.\n"
-#~ "Tanag terapung lembut berlaku apabila hingar > 0."
+#~ "Ketinggian maksimum biasa, di atas dan bawah titik tengah, untuk gunung "
+#~ "tanah terapung."
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "Ketajaman kegelapan"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
-#~ "Mengawal lebar terowong, nilai lebih kecil mencipta terowong lebih lebar."
+#~ "Variasi ketinggian bukit dan kedalaman tasik rupa bumi lembut tanah "
+#~ "terapung."
 
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgid "Waving water"
+#~ msgstr "Air bergelora"
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "Aras Y untuk titik tengah tanah terapung dan permukaan tasik."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Aras Y di mana bayang tanah terapung diperluaskan."
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Kurungan bawah tanah melunjur"
+
+#~ msgid "Whether dungeons occasionally project from the terrain."
 #~ msgstr ""
-#~ "Mengawal ketumpatan rupa bumi tanah terapung bergunung.\n"
-#~ "Nilainya ialah ofset yang menambah kepada nilai hingar 'mgv7_np_mountain'."
+#~ "Sama ada kurungan bawah tanah kadang-kala terlunjur daripada rupa bumi."
 
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Titik tengah tolakan-tengah lengkung cahaya."
+#~ msgid "Waving Water"
+#~ msgstr "Air Bergelora"
 
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr ""
-#~ "Ubah cara tanah terapung jenis gunung menirus di atas dan bawah titik "
-#~ "tengah."
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Had Y pengatas lava dalam gua besar."
 
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
-#~ msgstr ""
-#~ "Laraskan pengekodan gama untuk jadual cahaya. Nombor lebih tinggi lebih "
-#~ "cerah.\n"
-#~ "Tetapan ini hanya untuk klien dan diabaikan oleh pelayan permainan."
+#~ msgid "Select Package File:"
+#~ msgstr "Pilih Fail Pakej:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Togol Sinematik"
