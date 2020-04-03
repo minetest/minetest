@@ -4549,7 +4549,7 @@ msgid ""
 msgstr ""
 "Tecla para activar/desactivar el modo cinemático.\n"
 "Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3\n"
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
