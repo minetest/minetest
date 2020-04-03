@@ -5991,19 +5991,27 @@ object you are working with still exists.
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
         * `sky_color`: A table containing the following values, alpha is ignored:
             * `day_sky`: ColorSpec, for the top half of the `"regular"`
-              skybox during the day. (default: `#8cbafa`)
+              sky during the day. (default: `#8cbafa`)
             * `day_horizon`: ColorSpec, for the bottom half of the 
-              `"regular"` skybox during the day. (default: `#9bc1f0`)
+              `"regular"` sky during the day. (default: `#9bc1f0`)
             * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
-              skybox during dawn/sunset. (default: `#b4bafa`)
+              sky during dawn/sunset. (default: `#b4bafa`)
+              The resulting sky color will be a darkened version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
             * `dawn_horizon`: ColorSpec, for the bottom half of the `"regular"`
-              skybox during dawn/sunset. (default: `#bac1f0`)
+              sky during dawn/sunset. (default: `#bac1f0`)
+              The resulting sky color will be a darkened version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
             * `night_sky`: ColorSpec, for the top half of the `"regular"`
-              skybox during the night. (default: `#006aff`)
+              sky during the night. (default: `#006aff`)
+              The resulting sky color will be a dark version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
             * `night_horizon`: ColorSpec, for the bottom half of the `"regular"`
-              skybox during the night. (default: `#4090ff`)
+              sky during the night. (default: `#4090ff`)
+              The resulting sky color will be a dark version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
             * `indoors`: ColorSpec, for when you're either indoors or 
-              underground. Only applies to the `"regular"` skybox.
+              underground. Only applies to the `"regular"` sky.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
               at sunrise and sunset.
@@ -6047,7 +6055,7 @@ object you are working with still exists.
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
         * `count`: Integer number to set the number of stars in 
-            the skybox. Only applies to `"skybox"` and `"regular"` skyboxes.
+            the skybox. Only applies to `"skybox"` and `"regular"` sky types.
             (default: `1000`)
         * `star_color`: ColorSpec, sets the colors of the stars,
             alpha channel is used to set overall star brightness.
