@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2020-03-01 19:51+0000\n"
-"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
+"PO-Revision-Date: 2020-04-03 20:24+0000\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -1737,9 +1737,8 @@ msgid "Enter "
 msgstr "Belépés "
 
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
-#, fuzzy
 msgid "LANG_CODE"
-msgstr "NYELV_KÓD"
+msgstr "hu"
 
 #: src/settings_translation_file.cpp
 msgid ""
