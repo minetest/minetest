@@ -1519,6 +1519,16 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 }
 
 /*
+	Gets player radius, limited through the max_viewrange setting
+*/
+float getPlayerRadius(float player_radius_f)
+{
+	float max_viewrange_f = g_settings->getFloat("max_viewrange");
+	if (player_radius_f <= 0.0f || player_radius_f > max_viewrange_f)
+		return max_viewrange_f;
+	return player_radius_f;
+}
+/*
 	Finds out what new objects have been added to
 	inside a radius around a position
 */
@@ -1530,11 +1540,8 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 	f32 radius_f = radius * BS;
 	f32 player_radius_f = player_radius * BS;
 
-	if (player_radius_f < 0.0f)
-		player_radius_f = 0.0f;
-
 	m_ao_manager.getAddedActiveObjectsAroundPos(playersao->getBasePosition(), radius_f,
-		player_radius_f, current_objects, added_objects);
+		getPlayerRadius(player_radius_f), current_objects, added_objects);
 }
 
 /*
@@ -1549,8 +1556,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 	f32 radius_f = radius * BS;
 	f32 player_radius_f = player_radius * BS;
 
-	if (player_radius_f < 0)
-		player_radius_f = 0;
+	player_radius_f = getPlayerRadius(player_radius_f);
 	/*
 		Go through current_objects; object is removed if:
 		- object is not found in m_active_objects (this is actually an

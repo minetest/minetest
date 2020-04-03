@@ -1243,6 +1243,9 @@ server_unload_unused_data_timeout (Unload unused server data) int 29
 #    Maximum number of statically stored objects in a block.
 max_objects_per_block (Maximum objects per block) int 64
 
+#    Limits the maximum viewrange for objects
+max_viewrange (Maximum object view range) float 0
+
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 

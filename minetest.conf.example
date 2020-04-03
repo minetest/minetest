@@ -1502,6 +1502,9 @@
 #    type: int
 # max_objects_per_block = 64
 
+#    Limits the maximum viewrange for objects
+# max_viewrange = 0
+
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 #    type: enum values: 0, 1, 2
 # sqlite_synchronous = 2
