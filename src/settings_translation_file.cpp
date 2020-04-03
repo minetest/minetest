@@ -286,8 +286,8 @@ fake_function() {
 	gettext("Open the pause menu when the window's focus is lost. Does not pause if a formspec is\nopen.");
 	gettext("Viewing range");
 	gettext("View distance in nodes.");
-	gettext("Near clipping plane");
-	gettext("Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\nMost users will not need to change this.\nIncreasing can reduce artifacting on weaker GPUs.\n0.1 = Default, 0.25 = Good value for weaker tablets.");
+	gettext("Near plane");
+	gettext("Camera 'near clipping plane' distance in nodes, between 0 and 0.25\nOnly works on GLES platforms. Most users will not need to change this.\nIncreasing can reduce artifacting on weaker GPUs.\n0.1 = Default, 0.25 = Good value for weaker tablets.");
 	gettext("Screen width");
 	gettext("Width component of the initial window size.");
 	gettext("Screen height");
