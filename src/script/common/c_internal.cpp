@@ -47,7 +47,7 @@ int script_exception_wrapper(lua_State *L, lua_CFunction f)
 /*
  * Note that we can't get tracebacks for LUA_ERRMEM or LUA_ERRERR (without
  * hacking Lua internals).  For LUA_ERRMEM, this is because memory errors will
- * not execute the the error handler, and by the time lua_pcall returns the
+ * not execute the error handler, and by the time lua_pcall returns the
  * execution stack will have already been unwound.  For LUA_ERRERR, there was
  * another error while trying to generate a backtrace from a LUA_ERRRUN.  It is
  * presumed there is an error with the internal Lua state and thus not possible
