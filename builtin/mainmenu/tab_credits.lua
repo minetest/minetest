@@ -20,7 +20,6 @@
 local core_developers = {
 	"Perttu Ahola (celeron55) <celeron55@gmail.com>",
 	"sfan5 <sfan5@live.de>",
-	"ShadowNinja <shadowninja@minetest.net>",
 	"Nathanaël Courant (Nore/Ekdohibs) <nore@mesecons.net>",
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
 	"paramat",
@@ -33,8 +32,8 @@ local core_developers = {
 local active_contributors = {
 	"Hugues Ross [Formspecs]",
 	"Maksim (MoNTE48) [Android]",
-	"Desour / DS-Minetest [Formspecs]",
-	"pyrollo [Hypertext]",
+	"DS [Formspecs]",
+	"pyrollo [Formspecs: Hypertext]",
 	"v-rob [Formspecs]",
 	"Jordach [set_sky]",
 	"random-geek [Formspecs]",
@@ -60,6 +59,7 @@ local previous_core_developers = {
 	"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
 	"sapier",
 	"Zeno",
+	"ShadowNinja <shadowninja@minetest.net>",
 }
 
 local previous_contributors = {
