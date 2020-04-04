@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-03-06 05:32+0000\n"
-"Last-Translator: Robin Townsend <iantownsend@disroot.org>\n"
+"PO-Revision-Date: 2020-04-04 19:54+0000\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -132,7 +132,7 @@ msgstr "Keine harten Abhängigkeiten"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "Keine Modpack-Beschreibung verfügbar."
+msgstr "Keine Beschreibung für das Modpack verfügbar."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
@@ -481,7 +481,7 @@ msgstr "Online-Inhalte durchsuchen"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr "Inhalt"
+msgstr "Inhalte"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1016,7 +1016,7 @@ msgstr "Debug-Infos und Profiler-Graph verborgen"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
-msgstr "Debug-Info angezeigt"
+msgstr "Debug-Infos angezeigt"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
@@ -2205,7 +2205,6 @@ msgid "Bumpmapping"
 msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2213,8 +2212,9 @@ msgid ""
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
 "Distanz von der Kamera zur vorderen Clippingebene in Blöcken, zwischen 0 und "
-"0.5.\n"
-"Die meisten Benutzer müssen dies nicht ändern.\n"
+"0.25.\n"
+"Funktioniert nur auf GLES-Plattformen. Die meisten Benutzer müssen dies "
+"nicht ändern.\n"
 "Eine Erhöhung dieses Wertes kann Artefakte auf schwächeren GPUs reduzieren.\n"
 "0.1 = Standard, 0.25 = Guter Wert für schwächere Tablets."
 
@@ -5383,9 +5383,8 @@ msgstr ""
 "Spieler angezeigt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near plane"
-msgstr "Vordere Clippingebene"
+msgstr "Vordere Ebene"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
