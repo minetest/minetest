@@ -70,7 +70,6 @@ local previous_contributors = {
 	"Giuseppe Bilotta",
 	"MirceaKitsune <mirceakitsune@gmail.com>",
 	"Constantin Wenger (SpeedProg)",
-	"DarkRose",
 	"Ciaran Gultnieks (CiaranG)",
 	"stujones11 [Android UX improvements]",
 	"Jeija <jeija@mesecons.net> [HTTP, particles]",
