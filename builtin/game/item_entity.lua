@@ -59,7 +59,7 @@ core.register_entity(":__builtin:item", {
 		local size = 0.2 + 0.1 * (count / max_count) ^ (1 / 3)
 		local coll_height = size * 0.75
 		local def = core.registered_nodes[itemname]
-		local glow = def and def.light_source
+		local glow = def and math.floor(def.light_source / 2 + 0.5)
 
 		self.object:set_properties({
 			is_visible = true,
