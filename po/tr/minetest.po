@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-01-27 13:21+0000\n"
-"Last-Translator: monolifed <monolifed@protonmail.com>\n"
+"PO-Revision-Date: 2020-04-04 06:53+0000\n"
+"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
 "Language: tr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -2179,16 +2179,16 @@ msgid "Bumpmapping"
 msgstr "Tümsek eşleme"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Nodlar arasındaki, kamera 'yakın kırpma düzlem' uzaklığı, 0 ile 0,5 "
+"Nodlar arasındaki, kamera 'yakın kırpma düzlem' uzaklığı, 0 ile 0,25 "
 "arasında.\n"
-"Çoğu kullanıcının bunu değiştirmesi gerekmez.\n"
+"Yalnızca GLES platformlarında çalışır. Çoğu kullanıcının bunu değiştirmesi "
+"gerekmez.\n"
 "Artırma, zayıf GPU'larda görüntü bozulmalarını azaltabilir.\n"
 "0,1 = Öntanımlı, 0,25 = Zayıf tabletler için iyi değer."
 
@@ -5280,7 +5280,6 @@ msgstr ""
 "Oyuncular katılındığında ve sunucu listesinde görüntülenecek sunucu adı."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near plane"
 msgstr "Yakın kırpma düzlemi"
 
