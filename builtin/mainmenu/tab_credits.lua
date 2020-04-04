@@ -69,7 +69,6 @@ local previous_contributors = {
 	"numberZero [Audiovisuals: meshgen]",
 	"Giuseppe Bilotta",
 	"MirceaKitsune <mirceakitsune@gmail.com>",
-	"constantinwenger",
 	"Constantin Wenger (SpeedProg)",
 	"DarkRose",
 	"Ciaran Gultnieks (CiaranG)",
