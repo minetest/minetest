@@ -207,9 +207,6 @@ int main(int argc, char *argv[])
 
 	sanity_check(!game_params.world_path.empty());
 
-	infostream << "Using commanded world path ["
-	           << game_params.world_path << "]" << std::endl;
-
 	if (game_params.is_dedicated_server)
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
 
@@ -686,8 +683,6 @@ static bool auto_select_world(GameParams *game_params)
 	// No world was specified; try to select it automatically
 	// Get information about available worlds
 
-	verbosestream << _("Determining world path") << std::endl;
-
 	std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 	std::string world_path;
 
@@ -708,7 +703,7 @@ static bool auto_select_world(GameParams *game_params)
 		// This is the ultimate default world path
 		world_path = porting::path_user + DIR_DELIM + "worlds" +
 				DIR_DELIM + "world";
-		infostream << "Creating default world at ["
+		infostream << "Using default world at ["
 		           << world_path << "]" << std::endl;
 	}
 
@@ -770,7 +765,6 @@ static bool determine_subgame(GameParams *game_params)
 
 	assert(game_params->world_path != "");	// Pre-condition
 
-	verbosestream << _("Determining gameid/gamespec") << std::endl;
 	// If world doesn't exist
 	if (!game_params->world_path.empty()
 		&& !getWorldExists(game_params->world_path)) {

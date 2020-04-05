@@ -1827,10 +1827,10 @@ void ServerMap::save(ModifiedState save_level)
 	*/
 	if(save_level == MOD_STATE_CLEAN
 			|| block_count != 0) {
-		infostream<<"ServerMap: Written: "
-				<<block_count<<" block files"
-				<<", "<<block_count_all<<" blocks in memory."
-				<<std::endl;
+		infostream << "ServerMap: Written: "
+				<< block_count << " blocks"
+				<< ", " << block_count_all << " blocks in memory."
+				<< std::endl;
 		PrintInfo(infostream); // ServerMap/ClientMap:
 		infostream<<"Blocks modified by: "<<std::endl;
 		modprofiler.print(infostream);

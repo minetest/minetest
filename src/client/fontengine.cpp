@@ -239,7 +239,7 @@ void FontEngine::updateSkin()
 	FATAL_ERROR_IF(font == NULL, "Could not create/get font");
 
 	u32 text_height = font->getDimension(L"Hello, world!").Height;
-	infostream << "text_height=" << text_height << std::endl;
+	infostream << "FontEngine: measured text_height=" << text_height << std::endl;
 }
 
 /******************************************************************************/

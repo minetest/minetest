@@ -1458,7 +1458,7 @@ void NodeDefManager::deSerialize(std::istream &is)
 			m_content_features.resize((u32)(i) + 1);
 		m_content_features[i] = f;
 		addNameIdMapping(i, f.name);
-		verbosestream << "deserialized " << f.name << std::endl;
+		TRACESTREAM(<< "NodeDef: deserialized " << f.name << std::endl);
 
 		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);
 		fixSelectionBoxIntUnion();

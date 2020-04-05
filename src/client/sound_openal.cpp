@@ -165,8 +165,8 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 				<< "preparing sound buffer" << std::endl;
 	}
 
-	infostream << "Audio file "
-		<< filename_for_logging << " loaded" << std::endl;
+	//infostream << "Audio file "
+	//	<< filename_for_logging << " loaded" << std::endl;
 
 	// Clean up!
 	ov_clear(oggFile);
@@ -498,9 +498,11 @@ public:
 	// Remove stopped sounds
 	void maintain()
 	{
-		verbosestream<<"OpenALSoundManager::maintain(): "
-				<<m_sounds_playing.size()<<" playing sounds, "
-				<<m_buffers.size()<<" sound names loaded"<<std::endl;
+		if (!m_sounds_playing.empty()) {
+			verbosestream << "OpenALSoundManager::maintain(): "
+					<< m_sounds_playing.size() <<" playing sounds, "
+					<< m_buffers.size() <<" sound names loaded"<<std::endl;
+		}
 		std::unordered_set<int> del_list;
 		for (const auto &sp : m_sounds_playing) {
 			int id = sp.first;
@@ -530,7 +532,7 @@ public:
 		SoundBuffer *buf = load_ogg_from_file(filepath);
 		if (buf)
 			addBuffer(name, buf);
-		return false;
+		return !!buf;
 	}
 
 	bool loadSoundData(const std::string &name,
@@ -539,7 +541,7 @@ public:
 		SoundBuffer *buf = load_ogg_from_buffer(filedata, name);
 		if (buf)
 			addBuffer(name, buf);
-		return false;
+		return !!buf;
 	}
 
 	void updateListener(const v3f &pos, const v3f &vel, const v3f &at, const v3f &up)

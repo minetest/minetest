@@ -2010,7 +2010,6 @@ void Game::processItemSelection(u16 *new_playeritem)
 	for (u16 i = 0; i <= max_item; i++) {
 		if (wasKeyDown((GameKeyType) (KeyType::SLOT_1 + i))) {
 			*new_playeritem = i;
-			infostream << "Selected item: " << new_playeritem << std::endl;
 			break;
 		}
 	}
@@ -2039,7 +2038,7 @@ void Game::openInventory()
 	if (!player || !player->getCAO())
 		return;
 
-	infostream << "the_game: " << "Launching inventory" << std::endl;
+	infostream << "Game: Launching inventory" << std::endl;
 
 	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
 
