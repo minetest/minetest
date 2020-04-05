@@ -107,7 +107,7 @@ ParsedText::ParsedText(const wchar_t *text)
 	m_root_tag.style["underline"] = "false";
 	m_root_tag.style["halign"] = "left";
 	m_root_tag.style["color"] = "#EEEEEE";
-	m_root_tag.style["hovercolor"] = m_root_tag.style["color"];
+	m_root_tag.style["hovercolor"] = "#FF0000";
 
 	m_active_tags.push_front(&m_root_tag);
 	m_style = m_root_tag.style;
@@ -115,7 +115,6 @@ ParsedText::ParsedText(const wchar_t *text)
 	// Default simple tags definitions
 	StyleList style;
 
-	style["hovercolor"] = "#FF0000";
 	style["color"] = "#0000FF";
 	style["underline"] = "true";
 	m_elementtags["action"] = style;
