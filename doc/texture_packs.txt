@@ -74,9 +74,9 @@ by texture packs. All existing fallback textures can be found in the directory
       `crosshair_color` and `crosshair_alpha` are used to create a cross
       when no texture was found
 
-* `selectionindicator.png`
+* `object_crosshair.png`
 * the dot above the crosshair seen when pointing at an entity. Will replace crosshair when shown. The settings
-`selectionindicator_color` and `selectionindicator_alpha` are used to create a cross
+`object_crosshair_color` and `object_crosshair_alpha` are used to create a cross
 when no texture was found
 
 * `halo.png`: used for the node highlighting mesh

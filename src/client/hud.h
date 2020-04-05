@@ -44,17 +44,17 @@ public:
 	ITextureSource *tsrc;
 
 	video::SColor crosshair_argb;
-	video::SColor selectionindicator_argb;
+	video::SColor object_crosshair_argb;
 	video::SColor selectionbox_argb;
 
 	bool use_crosshair_image = false;
-	bool use_selectionindicator_image = false;
+	bool use_object_crosshair_image = false;
 	std::string hotbar_image = "";
 	bool use_hotbar_image = false;
 	std::string hotbar_selected_image = "";
 	bool use_hotbar_selected_image = false;
 
-	bool can_draw_selectionindicator = false;
+	bool can_draw_object_crosshair = false;
 
 	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 			Inventory *inventory);
