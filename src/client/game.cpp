@@ -3230,12 +3230,6 @@ PointedThing Game::updatePointedThing(
 			result.intersection_normal.X,
 			result.intersection_normal.Y,
 			result.intersection_normal.Z));
-
-<<<<<<< HEAD
-=======
-		if (hud->can_draw_selectionindicator)
-			hud->can_draw_selectionindicator = false;
->>>>>>> The PR is born
 	}
 
 	// Update selection mesh light level and vertex colors
