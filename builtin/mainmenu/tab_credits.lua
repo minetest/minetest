@@ -37,7 +37,7 @@ local active_contributors = {
 	"v-rob [Formspecs]",
 	"Jordach [set_sky]",
 	"random-geek [Formspecs]",
-	"Wuzzy [Pathfinder, builtin]",
+	"Wuzzy [Pathfinder, builtin, translations]",
 	"ANAND (ClobberXD) [Fixes, per-player FOV]",
 	"Warr1024 [Fixes]",
 	"Paul Ouellette (pauloue) [Fixes, Script API]",
@@ -83,7 +83,6 @@ local previous_contributors = {
 	"Gregory Currie (gregorycu) [optimisation]",
 	"TriBlade9 <triblade9@mail.com> [Audiovisuals]",
 	"T4im [Profiler]",
-	"Elijah Duffy (Octacian)",
 	"Jurgen Doser (doserj) <jurgen.doser@gmail.com>",
 }
 
