@@ -620,9 +620,9 @@ void Hud::drawCrosshair()
 					core::rect<s32>(0, 0, size.X, size.Y),
 					nullptr, selectionindicator_argb, true);
 		} else {
-			driver->draw2DLine(m_displaycenter - v2s32(9, 9), m_displaycenter + v2s32(9, 9),
+			driver->draw2DLine(m_displaycenter - v2s32(8, 8), m_displaycenter + v2s32(8, 8),
 					selectionindicator_argb);
-			driver->draw2DLine(m_displaycenter + v2s32(9, -9), m_displaycenter + v2s32(-9, 9),
+			driver->draw2DLine(m_displaycenter + v2s32(8, -8), m_displaycenter + v2s32(-8, 8),
 					selectionindicator_argb);
 		}
 	} else if (use_crosshair_image) {
