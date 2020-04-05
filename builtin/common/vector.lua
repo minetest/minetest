@@ -149,10 +149,13 @@ function vector.rotate_around_axis(v, axis, angle)
 	local sinangle = math.sin(angle)
 	axis = vector.normalize(axis)
 	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
-	return vector.add(vector.add(
-		vector.multiply(v, cosangle),
-		vector.multiply(vector.cross(axis, v), sinangle)),
-		vector.multiply(axis, vector.dot(axis, v) * (1 - cosangle)))
+	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
+	return vector.add(
+		vector.multiply(vector.cross(axis, v), sinangle),
+		vector.add(
+		vector.multiply(vector.subtract(v, dot_axis), cosangle),
+		dot_axis
+	))
 end
 
 function vector.rotate(v, rot)
