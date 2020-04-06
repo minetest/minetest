@@ -1010,22 +1010,24 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Values range 0 - 179. The value stored in `param2` is multiplied by two to
       get the actual rotation in degrees of the node.
 * `paramtype2 = "meshoptions"`
-    * Only valid for "plantlike" drawtype. The value of `param2` becomes a
-      bitfield which can be used to change how the client draws plantlike nodes.
-    * Bits 0, 1 and 2 form a mesh selector.
-      Currently the following meshes are choosable:
+    * Only valid for "plantlike" drawtype. `param2` encodes the shape and
+      optional modifiers of the "plant". `param2` is a bitfield.
+    * Bits 0 to 2 select the shape.
+      Use only one of the values below:
         * 0 = a "x" shaped plant (ordinary plant)
         * 1 = a "+" shaped plant (just rotated 45 degrees)
         * 2 = a "*" shaped plant with 3 faces instead of 2
         * 3 = a "#" shaped plant with 4 faces instead of 2
         * 4 = a "#" shaped plant with 4 faces that lean outwards
         * 5-7 are unused and reserved for future meshes.
-    * Bits 3 through 7 are optional flags that can be combined and give these
-      effects:
-        * bit 3 (0x08) - Makes the plant slightly vary placement horizontally
-        * bit 4 (0x10) - Makes the plant mesh 1.4x larger
-        * bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
-        * bits 6-7 are reserved for future use.
+    * Bits 3 to 7 are used to enable any number of optional modifiers.
+      Just add the corresponding value(s) below to `param2`:
+        * 8  - Makes the plant slightly vary placement horizontally
+        * 16 - Makes the plant mesh 1.4x larger
+        * 32 - Moves each face randomly a small bit down (1/8 max)
+        * values 64 and 128 (bits 6-7) are reserved for future use.
+    * Example: `param2 = 0` selects a normal "x" shaped plant
+    * Example: `param2 = 17` selects a "+" shaped plant, 1.4x larger (1+16)
 * `paramtype2 = "color"`
     * `param2` tells which color is picked from the palette.
       The palette should have 256 pixels.
@@ -2332,8 +2334,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
-* `transparent` (optional): show transparent
-* `draw_border` (optional): draw border
+* `transparent` (optional): if true, tabs are semi-transparent
+* `draw_border` (optional): if true, draw a thin line at tab base
 
 ### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
@@ -7020,6 +7022,7 @@ Used by `minetest.register_node`.
         -- node is deleted from the world or the drops are added. This is
         -- generally the result of either the node being dug or an attached node
         -- becoming detached.
+        -- oldmeta is the NodeMetaRef of the oldnode before deletion.
         -- drops is a table of ItemStacks, so any metadata to be preserved can
         -- be added directly to one or more of the dropped items. See
         -- "ItemStackMetaRef".
@@ -7044,10 +7047,14 @@ Used by `minetest.register_node`.
 
         on_punch = function(pos, node, puncher, pointed_thing),
         -- default: minetest.node_punch
+        -- Called when puncher (an ObjectRef) punches the node at pos.
         -- By default calls minetest.register_on_punchnode callbacks.
 
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing),
         -- default: nil
+        -- Called when clicker (an ObjectRef) "rightclicks"
+        -- ("rightclick" here stands for the placement key) while pointing at
+        -- the node at pos with 'node' being the node table.
         -- itemstack will hold clicker's wielded item.
         -- Shall return the leftover itemstack.
         -- Note: pointed_thing can be nil, if a mod calls this function.
