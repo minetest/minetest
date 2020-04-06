@@ -201,9 +201,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Mod-specific formspec version
 		Player FOV override API
 		"ephemeral" added to TOCLIENT_PLAY_SOUND
+	PROTOCOL VERSION 39:
+		Updated set_sky packet
+		Adds new sun, moon and stars packets
 */
 
-#define LATEST_PROTOCOL_VERSION 38
+#define LATEST_PROTOCOL_VERSION 39
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -605,7 +608,8 @@ enum ToClientCommand
 
 	TOCLIENT_SET_SKY = 0x4f,
 	/*
-		u8[4] color (ARGB)
+		Protocol 38:
+		u8[4] base_color (ARGB)
 		u8 len
 		u8[len] type
 		u16 count
@@ -613,6 +617,24 @@ enum ToClientCommand
 			u8 len
 			u8[len] param
 		u8 clouds (boolean)
+
+		Protocol 39:
+		u8[4] bgcolor (ARGB)
+		std::string type
+		int texture_count
+		std::string[6] param
+		bool clouds
+		bool bgcolor_fog
+		u8[4] day_sky (ARGB)
+		u8[4] day_horizon (ARGB)
+		u8[4] dawn_sky (ARGB)
+		u8[4] dawn_horizon (ARGB)
+		u8[4] night_sky (ARGB)
+		u8[4] night_horizon (ARGB)
+		u8[4] indoors (ARGB)
+		u8[4] sun_tint (ARGB)
+		u8[4] moon_tint (ARGB)
+		std::string tint_type
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
@@ -686,6 +708,31 @@ enum ToClientCommand
 	TOCLIENT_NODEMETA_CHANGED = 0x59,
 	/*
 		serialized and compressed node metadata
+	*/
+
+	TOCLIENT_SET_SUN = 0x5a,
+	/*
+		bool visible
+		std::string texture
+		std::string tonemap
+		std::string sunrise
+		f32 scale
+	*/
+
+	TOCLIENT_SET_MOON = 0x5b,
+	/*
+		bool visible
+		std::string texture
+		std::string tonemap
+		f32 scale
+	*/
+
+	TOCLIENT_SET_STARS = 0x5c,
+	/*
+		bool visible
+		u32 count
+		u8[4] starcolor (ARGB)
+		f32 scale
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

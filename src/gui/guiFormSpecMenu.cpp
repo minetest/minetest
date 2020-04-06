@@ -55,6 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h" // for parseColorString()
 #include "irrlicht_changes/static_text.h"
 #include "client/guiscalingfilter.h"
+#include "guiAnimatedImage.h"
 #include "guiBackgroundImage.h"
 #include "guiBox.h"
 #include "guiButton.h"
@@ -140,6 +141,8 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 		background_it->drop();
 	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
+	for (auto &clickthrough_it : m_clickthrough_elements)
+		clickthrough_it->drop();
 
 	delete m_selected_item;
 	delete m_form_src;
@@ -741,6 +744,9 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
 
+		// images should let events through
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 
@@ -774,9 +780,72 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
 
+		// images should let events through
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 	errorstream<< "Invalid image element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
+void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() != 6 && parts.size() != 7 &&
+			!(parts.size() > 7 && m_formspec_version > FORMSPEC_API_VERSION)) {
+		errorstream << "Invalid animated_image element(" << parts.size()
+			<< "): '" << element << "'" << std::endl;
+		return;
+	}
+
+	std::vector<std::string> v_pos  = split(parts[0], ',');
+	std::vector<std::string> v_geom = split(parts[1], ',');
+	std::string name = parts[2];
+	std::string texture_name = unescape_string(parts[3]);
+	s32 frame_count = stoi(parts[4]);
+	s32 frame_duration = stoi(parts[5]);
+
+	MY_CHECKPOS("animated_image", 0);
+	MY_CHECKGEOM("animated_image", 1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = stof(v_geom[0]) * (float)imgsize.X;
+		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
+	}
+
+	if (!data->explicit_size)
+		warningstream << "Invalid use of animated_image without a size[] element" << std::endl;
+
+	FieldSpec spec(
+		name,
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+	spec.ftype = f_AnimatedImage;
+	spec.send = true;
+
+	core::rect<s32> rect = core::rect<s32>(pos, pos + geom);
+
+	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, this, spec.fid,
+		rect, texture_name, frame_count, frame_duration, m_tsrc);
+
+	if (parts.size() >= 7)
+		e->setFrameIndex(stoi(parts[6]) - 1);
+
+	auto style = getStyleForElement("animated_image", spec.fname, "image");
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	e->drop();
+
+	m_fields.push_back(spec);
 }
 
 void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &element)
@@ -821,7 +890,9 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 				core::rect<s32>(pos, pos + geom), name, m_font, m_client);
 		auto style = getStyleForElement("item_image", spec.fname);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-		e->drop();
+
+		// item images should let events through
+		m_clickthrough_elements.push_back(e);
 
 		m_fields.push_back(spec);
 		return;
@@ -1265,8 +1336,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 4) || (parts.size() == 5) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if ((parts.size() == 4) ||
+		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
@@ -1337,12 +1408,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		evt.KeyInput.PressedDown = true;
 		e->OnEvent(evt);
 
-		if (parts.size() >= 5) {
-			// TODO: remove after 2016-11-03
-			warningstream << "pwdfield: use field_close_on_enter[name, enabled]" <<
-					" instead of the 5th param" << std::endl;
-			field_close_on_enter[name] = is_yes(parts[4]);
-		}
+		// Note: Before 5.2.0 "parts.size() >= 5" resulted in a
+		// warning referring to field_close_on_enter[]!
 
 		m_fields.push_back(spec);
 		return;
@@ -1533,12 +1600,8 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 
 	createTextField(data, spec, rect, type == "textarea");
 
-	if (parts.size() >= 6) {
-		// TODO: remove after 2016-11-03
-		warningstream << "field/textarea: use field_close_on_enter[name, enabled]" <<
-				" instead of the 6th param" << std::endl;
-		field_close_on_enter[name] = is_yes(parts[5]);
-	}
+	// Note: Before 5.2.0 "parts.size() >= 6" resulted in a
+	// warning referring to field_close_on_enter[]!
 
 	m_fields.push_back(spec);
 }
@@ -1553,8 +1616,8 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 		return;
 	}
 
-	if ((parts.size() == 5) || (parts.size() == 6) ||
-		((parts.size() > 6) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if ((parts.size() == 5) ||
+		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		parseTextArea(data,parts,type);
 		return;
@@ -1589,11 +1652,9 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 		pos = getElementBasePos(&v_pos);
 		pos -= padding;
 
-		pos.X += stof(v_pos[0]) * spacing.X;
-		pos.Y += stof(v_pos[1]) * spacing.Y + (m_btn_height * 2);
-
 		geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
-		geom.Y = (stof(v_geom[1]) * imgsize.Y) - (spacing.Y - imgsize.Y);
+		geom.Y = (stof(v_geom[1]) * (float)imgsize.Y) - (spacing.Y - imgsize.Y);
+		pos.Y += m_btn_height;
 	}
 
 	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X + geom.X, pos.Y + geom.Y);
@@ -1608,9 +1669,10 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 		258 + m_fields.size()
 	);
 
-	spec.ftype = f_Unknown;
-	new GUIHyperText(
-		spec.flabel.c_str(), Environment, this, spec.fid, rect, m_client, m_tsrc);
+	spec.ftype = f_HyperText;
+	GUIHyperText *e = new GUIHyperText(spec.flabel.c_str(), Environment, this,
+			spec.fid, rect, m_client, m_tsrc);
+	e->drop();
 
 	m_fields.push_back(spec);
 }
@@ -1695,6 +1757,10 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 
 			m_fields.push_back(spec);
+
+			// labels should let events through
+			e->grab();
+			m_clickthrough_elements.push_back(e);
 		}
 
 		return;
@@ -1771,6 +1837,10 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 
 		m_fields.push_back(spec);
+
+		// vertlabels should let events through
+		e->grab();
+		m_clickthrough_elements.push_back(e);
 		return;
 	}
 	errorstream<< "Invalid vertlabel element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -2311,7 +2381,7 @@ bool GUIFormSpecMenu::parseSizeDirect(parserData* data, const std::string &eleme
 		return false;
 
 	if (type == "invsize")
-		log_deprecated("Deprecated formspec element \"invsize\" is used");
+		warningstream << "Deprecated formspec element \"invsize\" is used" << std::endl;
 
 	parseSize(data, description);
 
@@ -2397,13 +2467,6 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 		return false;
 	}
 
-	std::string selector = trim(parts[0]);
-	if (selector.empty()) {
-		errorstream << "Invalid style element (Selector required): '" << element
-					<< "'" << std::endl;
-		return false;
-	}
-
 	StyleSpec spec;
 
 	for (size_t i = 1; i < parts.size(); i++) {
@@ -2433,10 +2496,21 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 		spec.set(prop, value);
 	}
 
-	if (style_type) {
-		theme_by_type[selector] |= spec;
-	} else {
-		theme_by_name[selector] |= spec;
+	std::vector<std::string> selectors = split(parts[0], ',');
+	for (size_t sel = 0; sel < selectors.size(); sel++) {
+		std::string selector = trim(selectors[sel]);
+
+		if (selector.empty()) {
+			errorstream << "Invalid style element (Empty selector): '" << element
+				<< "'" << std::endl;
+			continue;
+		}
+
+		if (style_type) {
+			theme_by_type[selector] |= spec;
+		} else {
+			theme_by_name[selector] |= spec;
+		}
 	}
 
 	return true;
@@ -2497,6 +2571,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	if (type == "image") {
 		parseImage(data, description);
+		return;
+	}
+
+	if (type == "animated_image") {
+		parseAnimatedImage(data, description);
 		return;
 	}
 
@@ -2684,6 +2763,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		background_it->drop();
 	for (auto &tooltip_rect_it : m_tooltip_rects)
 		tooltip_rect_it.first->drop();
+	for (auto &clickthrough_it : m_clickthrough_elements)
+		clickthrough_it->drop();
 
 	mydata.size= v2s32(100,100);
 	mydata.screensize = screensize;
@@ -2706,6 +2787,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_dropdowns.clear();
 	theme_by_name.clear();
 	theme_by_type.clear();
+	m_clickthrough_elements.clear();
 
 	m_bgnonfullscreen = true;
 	m_bgfullscreen = false;
@@ -3187,11 +3269,18 @@ void GUIFormSpecMenu::drawMenu()
 		e->setVisible(false);
 	}
 
+	// Some elements are only visible while being drawn
+	for (gui::IGUIElement *e : m_clickthrough_elements)
+		e->setVisible(true);
+
 	/*
 		Call base class
 		(This is where all the drawing happens.)
 	*/
 	gui::IGUIElement::draw();
+
+	for (gui::IGUIElement *e : m_clickthrough_elements)
+		e->setVisible(false);
 
 	// Draw hovered item tooltips
 	for (const std::string &tooltip : m_hovered_item_tooltips) {
@@ -3254,7 +3343,8 @@ void GUIFormSpecMenu::drawMenu()
 				}
 
 #ifndef HAVE_TOUCHSCREENGUI
-				if (current_cursor_icon != field.fcursor_icon)
+				if (field.ftype != f_HyperText && // Handled directly in guiHyperText
+						current_cursor_icon != field.fcursor_icon)
 					cursor_control->setActiveIcon(field.fcursor_icon);
 #endif
 
@@ -3445,7 +3535,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 		}
 
 		for (const GUIFormSpecMenu::FieldSpec &s : m_fields) {
-			if(s.send) {
+			if (s.send) {
 				std::string name = s.fname;
 				if (s.ftype == f_Button) {
 					fields[name] = wide_to_utf8(s.flabel);
@@ -3454,14 +3544,13 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					if (table) {
 						fields[name] = table->checkEvent();
 					}
-				}
-				else if(s.ftype == f_DropDown) {
-					// no dynamic cast possible due to some distributions shipped
-					// without rtti support in irrlicht
+				} else if (s.ftype == f_DropDown) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
 					IGUIElement *element = getElementFromId(s.fid, true);
 					gui::IGUIComboBox *e = NULL;
 					if ((element) && (element->getType() == gui::EGUIET_COMBO_BOX)) {
-						e = static_cast<gui::IGUIComboBox*>(element);
+						e = static_cast<gui::IGUIComboBox *>(element);
 					} else {
 						warningstream << "GUIFormSpecMenu::acceptInput: dropdown "
 								<< "field without dropdown element" << std::endl;
@@ -3475,10 +3564,9 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 							fields[name] = (*dropdown_values)[selected];
 						}
 					}
-				}
-				else if (s.ftype == f_TabHeader) {
-					// no dynamic cast possible due to some distributions shipped
-					// without rttzi support in irrlicht
+				} else if (s.ftype == f_TabHeader) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
 					IGUIElement *element = getElementFromId(s.fid, true);
 					gui::IGUITabControl *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_TAB_CONTROL)) {
@@ -3490,10 +3578,9 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						ss << (e->getActiveTab() +1);
 						fields[name] = ss.str();
 					}
-				}
-				else if (s.ftype == f_CheckBox) {
-					// no dynamic cast possible due to some distributions shipped
-					// without rtti support in irrlicht
+				} else if (s.ftype == f_CheckBox) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
 					IGUIElement *element = getElementFromId(s.fid, true);
 					gui::IGUICheckBox *e = nullptr;
 					if ((element) && (element->getType() == gui::EGUIET_CHECK_BOX)) {
@@ -3506,10 +3593,9 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						else
 							fields[name] = "false";
 					}
-				}
-				else if (s.ftype == f_ScrollBar) {
-					// no dynamic cast possible due to some distributions shipped
-					// without rtti support in irrlicht
+				} else if (s.ftype == f_ScrollBar) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
 					IGUIElement *element = getElementFromId(s.fid, true);
 					GUIScrollBar *e = nullptr;
 					if (element && element->getType() == gui::EGUIET_ELEMENT)
@@ -3523,8 +3609,17 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						else
 							fields[name] = "VAL:" + os.str();
  					}
-				}
-				else {
+				} else if (s.ftype == f_AnimatedImage) {
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
+					IGUIElement *element = getElementFromId(s.fid, true);
+					GUIAnimatedImage *e = nullptr;
+					if (element && element->getType() == gui::EGUIET_ELEMENT)
+						e = static_cast<GUIAnimatedImage *>(element);
+
+					if (e)
+						fields[name] = std::to_string(e->getFrameIndex() + 1);
+				} else {
 					IGUIElement *e = getElementFromId(s.fid, true);
 					if (e)
 						fields[name] = wide_to_utf8(e->getText());
@@ -3594,7 +3689,8 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	// Mouse wheel and move events: send to hovered element instead of focused
 	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
 			(event.MouseInput.Event == EMIE_MOUSE_WHEEL ||
-			 event.MouseInput.Event == EMIE_MOUSE_MOVED)) {
+			(event.MouseInput.Event == EMIE_MOUSE_MOVED &&
+			event.MouseInput.ButtonStates == 0))) {
 		s32 x = event.MouseInput.X;
 		s32 y = event.MouseInput.Y;
 		gui::IGUIElement *hovered =
@@ -4180,9 +4276,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				(event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED) ||
 				(event.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED) ||
 				(event.GUIEvent.EventType == gui::EGET_SCROLL_BAR_CHANGED)) {
-			unsigned int btn_id = event.GUIEvent.Caller->getID();
+			s32 caller_id = event.GUIEvent.Caller->getID();
 
-			if (btn_id == 257) {
+			if (caller_id == 257) {
 				if (m_allowclose) {
 					acceptInput(quit_mode_accept);
 					quitMenu();
@@ -4198,8 +4294,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
 				// if its a button, set the send field so
 				// lua knows which button was pressed
-				if ((s.ftype == f_Button || s.ftype == f_CheckBox) &&
-						s.fid == event.GUIEvent.Caller->getID()) {
+
+				if (caller_id != s.fid)
+					continue;
+
+				if (s.ftype == f_Button || s.ftype == f_CheckBox) {
 					s.send = true;
 					if (s.is_exit) {
 						if (m_allowclose) {
@@ -4215,8 +4314,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.send = false;
 					return true;
 
-				} else if ((s.ftype == f_DropDown) &&
-						(s.fid == event.GUIEvent.Caller->getID())) {
+				} else if (s.ftype == f_DropDown) {
 					// only send the changed dropdown
 					for (GUIFormSpecMenu::FieldSpec &s2 : m_fields) {
 						if (s2.ftype == f_DropDown) {
@@ -4234,13 +4332,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 					}
 					return true;
-				} else if ((s.ftype == f_ScrollBar) &&
-						(s.fid == event.GUIEvent.Caller->getID())) {
+				} else if (s.ftype == f_ScrollBar) {
 					s.fdefault = L"Changed";
 					acceptInput(quit_mode_no);
 					s.fdefault = L"";
-				} else if ((s.ftype == f_Unknown) &&
-						(s.fid == event.GUIEvent.Caller->getID())) {
+				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
 					s.send = true;
 					acceptInput();
 					s.send = false;

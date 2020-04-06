@@ -1,31 +1,28 @@
 #!/bin/bash -e
 
 set_linux_compiler_env() {
-	if [[ "${COMPILER}" == "gcc-5.1" ]]; then
-		export CC=gcc-5.1
-		export CXX=g++-5.1
-	elif [[ "${COMPILER}" == "gcc-6" ]]; then
+	if [[ "${COMPILER}" == "gcc-6" ]]; then
 		export CC=gcc-6
 		export CXX=g++-6
 	elif [[ "${COMPILER}" == "gcc-8" ]]; then
 		export CC=gcc-8
 		export CXX=g++-8
-	elif [[ "${COMPILER}" == "clang-3.6" ]]; then
-		export CC=clang-3.6
-		export CXX=clang++-3.6
-	elif [[ "${COMPILER}" == "clang-7" ]]; then
-		export CC=clang-7
-		export CXX=clang++-7
+	elif [[ "${COMPILER}" == "clang-3.9" ]]; then
+		export CC=clang-3.9
+		export CXX=clang++-3.9
+	elif [[ "${COMPILER}" == "clang-9" ]]; then
+		export CC=clang-9
+		export CXX=clang++-9
 	fi
 }
 
 # Linux build only
 install_linux_deps() {
 	sudo apt-get update
-	sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng12-dev \
+	sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng-dev \
 		libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev \
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
-		gettext libpq-dev libleveldb-dev
+		gettext libpq-dev postgresql-server-dev-all libleveldb-dev
 }
 
 # Mac OSX build only

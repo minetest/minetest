@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2020-01-11 18:26+0000\n"
-"Last-Translator: rubenwardy <rubenwardy@gmail.com>\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"PO-Revision-Date: 2020-03-01 19:51+0000\n"
+"Last-Translator: abidin toumi <abidin24@disroot.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
 "ar/>\n"
 "Language: ar\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.10.1\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -401,14 +401,25 @@ msgstr ""
 msgid "Z spread"
 msgstr ""
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr ""
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "إفتراضي"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -617,6 +628,7 @@ msgstr ""
 msgid "Ping"
 msgstr ""
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr ""
@@ -779,7 +791,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr ""
+msgstr "سوائل متموجة"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -787,19 +799,20 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
-msgstr ""
+msgstr "نعم"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
 msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
 msgid "Main"
-msgstr ""
+msgstr "الرئيسية"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr ""
+msgstr "إلعب فرديا"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
@@ -807,15 +820,15 @@ msgstr "انتهت مهلة الاتصال."
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "تم!"
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "تحضير العقد"
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "تحضير العقد..."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
@@ -827,19 +840,20 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "خطأ في الاتصال (انتهاء المهلة؟)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "لا يمكن إيجاد أو تحميل لعبة \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
 msgstr ""
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Main Menu"
-msgstr ""
+msgstr "القائمة الرئيسية"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
@@ -847,11 +861,11 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "إسم اللاعب طويل."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "يرجى اختيار اسم!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
@@ -861,9 +875,17 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr ""
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "yes"
 
 #: src/client/game.cpp
 msgid ""
@@ -895,6 +917,7 @@ msgstr ""
 msgid "- Public: "
 msgstr ""
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr ""
@@ -1319,6 +1342,7 @@ msgstr ""
 msgid "Left Windows"
 msgstr ""
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr ""
@@ -1411,6 +1435,7 @@ msgstr ""
 msgid "Play"
 msgstr ""
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr ""
@@ -1447,6 +1472,7 @@ msgstr ""
 msgid "Scroll Lock"
 msgstr ""
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr ""
@@ -1681,10 +1707,15 @@ msgstr ""
 msgid "Sound Volume: "
 msgstr ""
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr ""
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "ar"
@@ -2058,8 +2089,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -4664,7 +4695,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp

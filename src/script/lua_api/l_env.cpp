@@ -640,6 +640,31 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	return 1;
 }
 
+// get_connected_players()
+int ModApiEnvMod::l_get_connected_players(lua_State *L)
+{
+	ServerEnvironment *env = (ServerEnvironment *) getEnv(L);
+	if (!env) {
+		log_deprecated(L, "Calling get_connected_players() at mod load time"
+				" is deprecated");
+		lua_createtable(L, 0, 0);
+		return 1;
+	}
+
+	lua_createtable(L, env->getPlayerCount(), 0);
+	u32 i = 0;
+	for (RemotePlayer *player : env->getPlayers()) {
+		if (player->getPeerId() == PEER_ID_INEXISTENT)
+			continue;
+		PlayerSAO *sao = player->getPlayerSAO();
+		if (sao && !sao->isGone()) {
+			getScriptApiBase(L)->objectrefGetOrCreate(L, sao);
+			lua_rawseti(L, -2, ++i);
+		}
+	}
+	return 1;
+}
+
 // get_player_by_name(name)
 int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 {
@@ -647,16 +672,12 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 
 	// Do it
 	const char *name = luaL_checkstring(L, 1);
-	RemotePlayer *player = dynamic_cast<RemotePlayer *>(env->getPlayer(name));
-	if (player == NULL){
-		lua_pushnil(L);
-		return 1;
-	}
+	RemotePlayer *player = env->getPlayer(name);
+	if (!player || player->getPeerId() == PEER_ID_INEXISTENT)
+		return 0;
 	PlayerSAO *sao = player->getPlayerSAO();
-	if(sao == NULL){
-		lua_pushnil(L);
-		return 1;
-	}
+	if (!sao || sao->isGone())
+		return 0;
 	// Put player on stack
 	getScriptApiBase(L)->objectrefGetOrCreate(L, sao);
 	return 1;
@@ -1179,7 +1200,7 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 	unsigned int max_jump       = luaL_checkint(L, 4);
 	unsigned int max_drop       = luaL_checkint(L, 5);
 	PathAlgorithm algo          = PA_PLAIN_NP;
-	if (!lua_isnil(L, 6)) {
+	if (!lua_isnoneornil(L, 6)) {
 		std::string algorithm = luaL_checkstring(L,6);
 
 		if (algorithm == "A*")
@@ -1319,6 +1340,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(find_nodes_with_meta);
 	API_FCT(get_meta);
 	API_FCT(get_node_timer);
+	API_FCT(get_connected_players);
 	API_FCT(get_player_by_name);
 	API_FCT(get_objects_inside_radius);
 	API_FCT(set_timeofday);

@@ -1,8 +1,8 @@
 language: cpp
 before_install: ./util/travis/before_install.sh
 script: ./util/travis/script.sh
-sudo: required
-dist: trusty
+os: linux
+dist: bionic
 group: edge
 notifications:
   email: false
@@ -10,21 +10,17 @@ matrix:
   fast_finish: true
   include:
 
-    - env: CLANG_FORMAT=clang-format-7
+    - env: CLANG_FORMAT=clang-format-8
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['clang-format-7']
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+          packages: ['clang-format-8']
 
     - name: "Builtin Luacheck and Unit Tests"
       language: generic
       compiler: null
       os: linux
-      sudo: false
       addons:
         apt:
           packages:
@@ -36,22 +32,21 @@ matrix:
         - $HOME/.luarocks/bin/luacheck builtin
         - $HOME/.luarocks/bin/busted builtin
 
-    - env: CLANG_TIDY=clang-tidy-7
+    - env: CLANG_TIDY=clang-tidy-8
       compiler: clang
       os: linux
       script: ./util/travis/clangtidy.sh
       addons:
         apt:
-          packages: ['clang-7', 'clang++-7', 'clang-tools-7', 'clang-tidy-7']
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+          packages: ['clang-tidy-8']
 
-    - env: PLATFORM=Win32
+    - name: "MinGW cross-compiler (32-bit)"
+      env: PLATFORM=Win32
       compiler: gcc
       os: linux
 
-    - env: PLATFORM=Win64
+    - name: "MinGW cross-compiler (64-bit)"
+      env: PLATFORM=Win64
       compiler: gcc
       os: linux
 
@@ -66,8 +61,6 @@ matrix:
       addons:
         apt:
           packages: ['gcc-6', 'g++-6']
-          sources: &sources
-            - ubuntu-toolchain-r-test
 
     - env: PLATFORM=Unix COMPILER=gcc-8
       compiler: gcc
@@ -75,44 +68,31 @@ matrix:
       addons:
         apt:
           packages: ['gcc-8', 'g++-8']
-          sources: &sources
-            - ubuntu-toolchain-r-test
 
-    - env: PLATFORM=Unix COMPILER=clang-3.6
+    - env: PLATFORM=Unix COMPILER=clang-3.9
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['clang-3.6', 'clang++-3.6']
-          sources: &sources
-            - llvm-toolchain-trusty-3.6
+          packages: ['clang-3.9']
 
-    - env: PLATFORM=Unix COMPILER=clang-7
+    - env: PLATFORM=Unix COMPILER=clang-9
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['clang-7', 'clang++-7']
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+          packages: ['clang-9']
 
-    - env: PLATFORM=Unix COMPILER=clang-7 FREETYPE=0
+    - env: PLATFORM=Unix COMPILER=clang-9 FREETYPE=0
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['clang-7', 'clang++-7']
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+          packages: ['clang-9']
 
-    - env: PLATFORM=Unix COMPILER=clang-7 VALGRIND=1
+    - env: PLATFORM=Unix COMPILER=clang-9 VALGRIND=1
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['valgrind', 'clang-7', 'clang++-7']
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-7
+          packages: ['valgrind', 'clang-9']

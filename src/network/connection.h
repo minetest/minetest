@@ -612,16 +612,16 @@ class Peer {
 		struct rttstats {
 			float jitter_min = FLT_MAX;
 			float jitter_max = 0.0f;
-			float jitter_avg = -1.0f;
+			float jitter_avg = -2.0f;
 			float min_rtt = FLT_MAX;
 			float max_rtt = 0.0f;
-			float avg_rtt = -1.0f;
+			float avg_rtt = -2.0f;
 
 			rttstats() = default;
 		};
 
 		rttstats m_rtt;
-		float m_last_rtt = -1.0f;
+		float m_last_rtt = -2.0f;
 
 		// current usage count
 		unsigned int m_usage = 0;

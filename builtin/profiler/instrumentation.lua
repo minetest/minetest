@@ -162,7 +162,7 @@ local function init()
 			"on_activate",
 			"on_step",
 			"on_punch",
-			"rightclick",
+			"on_rightclick",
 			"get_staticdata",
 		}
 		-- Wrap register_entity() to instrument them on registration.

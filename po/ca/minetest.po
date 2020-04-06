@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Catalan (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
@@ -427,15 +427,26 @@ msgstr ""
 msgid "Z spread"
 msgstr ""
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr ""
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "defaults"
 msgstr "Joc per defecte"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -672,6 +683,7 @@ msgstr "Nom / Contrasenya"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP activat"
@@ -922,6 +934,14 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "La ruta del món especificat no existeix: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -963,6 +983,7 @@ msgstr "Port"
 msgid "- Public: "
 msgstr "Públic"
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr ""
@@ -1435,6 +1456,7 @@ msgstr "Shift esq"
 msgid "Left Windows"
 msgstr "Windows esquerre"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menú"
@@ -1528,6 +1550,7 @@ msgstr "Pausa"
 msgid "Play"
 msgstr "Jugar"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Imprimir"
@@ -1564,6 +1587,7 @@ msgstr "Windows dret"
 msgid "Scroll Lock"
 msgstr "Bloq Despl"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Seleccionar"
@@ -1812,10 +1836,15 @@ msgstr "Utilitza la tecla"
 msgid "Sound Volume: "
 msgstr "Volum de so: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Introdueix "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "ca"
@@ -2226,8 +2255,8 @@ msgstr "Mapat de relleu"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5100,7 +5129,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6495,20 +6524,6 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Activar Cinematogràfic"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Selecciona el fitxer del mod:"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Activar VBO"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Controla l'amplada dels túnels, un valor més petit crea túnels més amples."
-
 #, fuzzy
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -6518,3 +6533,17 @@ msgstr ""
 #~ "Ajusta la codificació gamma per les taules de llum. Els nombrés nés "
 #~ "petits n'augmentaràn la brillantor.\n"
 #~ "Aquesta configuració només afecta al client, el servidor l'ignora."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Controla l'amplada dels túnels, un valor més petit crea túnels més amples."
+
+#~ msgid "Enable VBO"
+#~ msgstr "Activar VBO"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Selecciona el fitxer del mod:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Activar Cinematogràfic"

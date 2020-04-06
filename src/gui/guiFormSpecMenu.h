@@ -38,6 +38,7 @@ class InventoryManager;
 class ISimpleTextureSource;
 class Client;
 class GUIScrollBar;
+class TexturePool;
 
 typedef enum {
 	f_Button,
@@ -48,6 +49,8 @@ typedef enum {
 	f_ScrollBar,
 	f_Box,
 	f_ItemImage,
+	f_HyperText,
+	f_AnimatedImage,
 	f_Unknown
 } FormspecFieldType;
 
@@ -304,6 +307,7 @@ protected:
 	std::vector<std::pair<gui::IGUIElement *, TooltipSpec>> m_tooltip_rects;
 	std::vector<std::pair<FieldSpec, GUIScrollBar *>> m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string>>> m_dropdowns;
+	std::vector<gui::IGUIElement *> m_clickthrough_elements;
 
 	GUIInventoryList::ItemSpec *m_selected_item = nullptr;
 	u16 m_selected_amount = 0;
@@ -388,6 +392,7 @@ private:
 	void parseListRing(parserData* data, const std::string &element);
 	void parseCheckbox(parserData* data, const std::string &element);
 	void parseImage(parserData* data, const std::string &element);
+	void parseAnimatedImage(parserData *data, const std::string &element);
 	void parseItemImage(parserData* data, const std::string &element);
 	void parseButton(parserData* data, const std::string &element,
 			const std::string &typ);

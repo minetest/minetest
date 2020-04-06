@@ -333,6 +333,20 @@ void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
 #endif
 }
 
+/*
+ * How ObjectRefs are handled in Lua:
+ * When an active object is created, an ObjectRef is created on the Lua side
+ * and stored in core.object_refs[id].
+ * Methods that require an ObjectRef to a certain object retrieve it from that
+ * table instead of creating their own.(*)
+ * When an active object is removed, the existing ObjectRef is invalidated
+ * using ::set_null() and removed from the core.object_refs table.
+ * (*) An exception to this are NULL ObjectRefs and anonymous ObjectRefs
+ *     for objects without ID.
+ *     It's unclear what the latter are needed for and their use is problematic
+ *     since we lose control over the ref and the contained pointer.
+ */
+
 void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 {
 	SCRIPTAPI_PRECHECKHEADER

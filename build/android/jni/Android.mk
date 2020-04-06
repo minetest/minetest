@@ -178,6 +178,7 @@ LOCAL_SRC_FILES := \
 		jni/src/filesys.cpp                       \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
+		jni/src/gui/guiAnimatedImage.cpp          \
 		jni/src/gui/guiBackgroundImage.cpp        \
 		jni/src/gui/guiBox.cpp                    \
 		jni/src/gui/guiButton.cpp                 \

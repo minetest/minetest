@@ -1,17 +1,9 @@
 local color = minetest.colorize
 
 local clip_fs = [[
-	style_type[label;noclip=%c]
-	style_type[button;noclip=%c]
-	style_type[image_button;noclip=%c]
-	style_type[item_image_button;noclip=%c]
-	style_type[tabheader;noclip=%c]
-	style_type[field;noclip=%c]
-	style_type[textarea;noclip=%c]
-	style_type[checkbox;noclip=%c]
-	style_type[dropdown;noclip=%c]
-	style_type[scrollbar;noclip=%c]
-	style_type[table;noclip=%c]
+	style_type[label,button,image_button,item_image_button,
+			tabheader,scrollbar,table,animated_image
+			,field,textarea,checkbox,dropdown;noclip=%c]
 
 	label[0,0;A clipping test]
 	button[0,1;3,0.8;x;A clipping test]
@@ -25,6 +17,7 @@ local clip_fs = [[
 	scrollbar[0,9;3,0.8;horizontal;x9;3]
 	tablecolumns[text;text]
 	table[0,10;3,1;x10;one,two,three,four;1]
+	animated_image[-0.5,11;4.5,1;;test_animation.png;4;100]
 ]]
 
 
@@ -119,8 +112,8 @@ local style_fs = [[
 
 local pages = {
 	[[
+		formspec_version[3]
 		size[12,12]
-		real_coordinates[true]
 		image_button[0,0;1,1;logo.png;;1x1]
 		image_button[1,0;2,2;logo.png;;2x2]
 		button[0,2;1,1;;1x1]
@@ -157,7 +150,7 @@ local pages = {
 		tabheader[6.5,0;6,0.65;name;Tab 1,Tab 2,Tab 3,Secrets;1;false;false]
 	]],
 
-		"size[12,12]real_coordinates[true]" ..
+		"formspec_version[3]size[12,12]" ..
 		("label[0.375,0.375;Styled - %s %s]"):format(
 			color("#F00", "red text"),
 			color("#77FF00CC", "green text")) ..
@@ -170,17 +163,35 @@ local pages = {
 		style_fs:gsub("one_", "two_"):gsub("style%[[^%]]+%]", ""):gsub("style_type%[[^%]]+%]", "") ..
 		"container_end[]",
 
-		"size[12,12]real_coordinates[true]" ..
+		"formspec_version[3]size[12,13]" ..
 		"label[0.1,0.5;Clip]" ..
 		"container[-2.5,1]" .. clip_fs:gsub("%%c", "false") .. "container_end[]" ..
 		"label[11,0.5;Noclip]" ..
 		"container[11.5,1]" .. clip_fs:gsub("%%c", "true") .. "container_end[]",
+
+		[[
+			formspec_version[3]
+			size[12,12]
+			animated_image[0.5,0.5;1,1;;test_animation.png;4;100]
+			animated_image[0.5,1.75;1,1;;test_animation.jpg;4;100]
+			animated_image[1.75,0.5;1,1;;test_animation.png;100;100]
+			animated_image[3,0.5;1,1;ani_img_1;test_animation.png;4;1000]
+			button[4.25,0.5;1,1;ani_btn_1;Current
+Number]
+			animated_image[3,1.75;1,1;ani_img_2;test_animation.png;4;1000;2]
+			button[4.25,1.75;1,1;ani_btn_2;Current
+Number]
+			animated_image[3,3;1,1;;test_animation.png;4;0]
+			animated_image[3,4.25;1,1;;test_animation.png;4;0;3]
+			animated_image[5.5,0.5;5,2;;test_animation.png;4;100]
+			animated_image[5.5,2.75;5,2;;test_animation.jpg;4;100]
+		]]
 }
 
 local function show_test_formspec(pname, page_id)
 	page_id = page_id or 2
 
-	local fs = pages[page_id] .. "tabheader[0,0;6,0.65;maintabs;Real Coord,Styles,Noclip;" .. page_id .. ";false;false]"
+	local fs = pages[page_id] .. "tabheader[0,0;6,0.65;maintabs;Real Coord,Styles,Noclip,MiscEle;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "test:formspec", fs)
 end
@@ -195,6 +206,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 
+	if fields.ani_img_1 and fields.ani_btn_1 then
+		minetest.chat_send_all(fields.ani_img_1)
+	elseif fields.ani_img_2 and fields.ani_btn_2 then
+		minetest.chat_send_all(fields.ani_img_2)
+	end
 end)
 
 minetest.register_node("test:node", {

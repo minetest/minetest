@@ -1,6 +1,6 @@
 _G.core = {}
 
-_G.setfenv = function() end
+_G.setfenv = require 'busted.compatibility'.setfenv
 
 dofile("builtin/common/serialize.lua")
 
@@ -24,5 +24,21 @@ describe("serialize", function()
 
 		local test_out = core.deserialize(core.serialize(test_in))
 		assert.same(test_in, test_out)
+	end)
+
+	it("strips functions in safe mode", function()
+		local test_in = {
+			func = function(a, b)
+				error("test")
+			end,
+			foo = "bar"
+		}
+
+		local str = core.serialize(test_in)
+		assert.not_nil(str:find("loadstring"))
+
+		local test_out = core.deserialize(str, true)
+		assert.is_nil(test_out.func)
+		assert.equals(test_out.foo, "bar")
 	end)
 end)

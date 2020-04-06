@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Slovenian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2019-11-29 23:04+0000\n"
 "Last-Translator: Matej Mlinar <mlinar.matej@gmail.com>\n"
 "Language-Team: Slovenian <https://hosted.weblate.org/projects/minetest/"
@@ -406,14 +406,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z širjenje"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "Absolutna vrednost"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "Privzeta/standardna vrednost (defaults)"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -624,6 +635,7 @@ msgstr "Ime / Geslo"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "Igra PvP je omogočena"
@@ -870,6 +882,14 @@ msgstr "Ni bilo mogoče odpreti datoteke z geslom: "
 msgid "Provided world path doesn't exist: "
 msgstr "Podana pot do sveta ne obstaja: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -906,6 +926,7 @@ msgstr "– Vrata: "
 msgid "- Public: "
 msgstr "– Javno: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "– Igra PvP: "
@@ -1359,6 +1380,7 @@ msgstr "Leva tipka Shift"
 msgid "Left Windows"
 msgstr "Leva tipka Win"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Meni"
@@ -1451,6 +1473,7 @@ msgstr "Premor"
 msgid "Play"
 msgstr "Igraj"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Natisni"
@@ -1487,6 +1510,7 @@ msgstr "Desna tipka Win"
 msgid "Scroll Lock"
 msgstr "Tipka zaklepa drsnika"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Izberi"
@@ -1727,10 +1751,15 @@ msgstr "Utišano"
 msgid "Sound Volume: "
 msgstr "Glasnost zvoka: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Vpis "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "sl"
@@ -2112,8 +2141,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -4763,7 +4792,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6122,18 +6151,18 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Preklopi gladek pogled"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Izberi datoteko paketa:"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 podpora."
+#~ msgid "Darkness sharpness"
+#~ msgstr "Ostrina teme"
 
 #, fuzzy
 #~ msgid "Enable VBO"
 #~ msgstr "Omogoči VBO"
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "Ostrina teme"
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 podpora."
+
+#~ msgid "Select Package File:"
+#~ msgstr "Izberi datoteko paketa:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Preklopi gladek pogled"

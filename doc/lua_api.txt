@@ -948,7 +948,8 @@ Node paramtypes
 The functions of `param1` and `param2` are determined by certain fields in the
 node definition.
 
-`param1` is reserved for the engine when `paramtype != "none"`:
+The function of `param1` is determined by `paramtype` in node definition.
+`param1` is reserved for the engine when `paramtype != "none"`.
 
 * `paramtype = "light"`
     * The value stores light with and without sun in its upper and lower 4 bits
@@ -965,19 +966,27 @@ node definition.
         * mesh
         * plantlike
         * plantlike_rooted
+* `paramtype = "none"`
+    * `param1` will not be used by the engine and can be used to store
+      an arbitrary value
 
-`param2` is reserved for the engine when any of these are used:
+The function of `param2` is determined by `paramtype2` in node definition.
+`param2` is reserved for the engine when `paramtype2 != "none"`.
 
-* `liquidtype = "flowing"`
-    * The level and some flags of the liquid is stored in `param2`
-* `drawtype = "flowingliquid"`
-    * The drawn liquid level is read from `param2`
-* `drawtype = "torchlike"`
-* `drawtype = "signlike"`
+* `paramtype2 = "flowingliquid"`
+    * Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
+    * The liquid level and a flag of the liquid are stored in `param2`
+    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node
+    * Bit 3: If set, liquid is flowing downwards (no graphical effect)
 * `paramtype2 = "wallmounted"`
-    * The rotation of the node is stored in `param2`. You can make this value
-      by using `minetest.dir_to_wallmounted()`.
+    * Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
+    * The rotation of the node is stored in `param2`
+    * You can make this value by using `minetest.dir_to_wallmounted()`
+    * Values range 0 - 5
+    * The value denotes at which direction the node is "mounted":
+      0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
 * `paramtype2 = "facedir"`
+    * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`. Furnaces and chests are
       rotated this way. Can be made by using `minetest.dir_to_facedir()`.
     * Values range 0 - 23
@@ -996,13 +1005,13 @@ node definition.
             * The height of the 'plantlike' section is stored in `param2`.
             * The height is (`param2` / 16) nodes.
 * `paramtype2 = "degrotate"`
-    * Only valid for "plantlike". The rotation of the node is stored in
+    * Only valid for "plantlike" drawtype. The rotation of the node is stored in
       `param2`.
     * Values range 0 - 179. The value stored in `param2` is multiplied by two to
       get the actual rotation in degrees of the node.
 * `paramtype2 = "meshoptions"`
-    * Only valid for "plantlike". The value of `param2` becomes a bitfield which
-      can be used to change how the client draws plantlike nodes.
+    * Only valid for "plantlike" drawtype. The value of `param2` becomes a
+      bitfield which can be used to change how the client draws plantlike nodes.
     * Bits 0, 1 and 2 form a mesh selector.
       Currently the following meshes are choosable:
         * 0 = a "x" shaped plant (ordinary plant)
@@ -1034,6 +1043,9 @@ node definition.
     * `param2` values 0-63 define 64 levels of internal liquid, 0 being empty
       and 63 being full.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
+* `paramtype2 = "none"`
+    * `param2` will not be used by the engine and can be used to store
+      an arbitrary value
 
 Nodes can also contain extra data. See [Node Metadata].
 
@@ -2108,18 +2120,29 @@ Elements
 ### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 
 * Adds tooltip for an element
-* `<bgcolor>` tooltip background color as `ColorString` (optional)
-* `<fontcolor>` tooltip font color as `ColorString` (optional)
+* `bgcolor` tooltip background color as `ColorString` (optional)
+* `fontcolor` tooltip font color as `ColorString` (optional)
 
 ### `tooltip[<X>,<Y>;<W>,<H>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 
 * Adds tooltip for an area. Other tooltips will take priority when present.
-* `<bgcolor>` tooltip background color as `ColorString` (optional)
-* `<fontcolor>` tooltip font color as `ColorString` (optional)
+* `bgcolor` tooltip background color as `ColorString` (optional)
+* `fontcolor` tooltip font color as `ColorString` (optional)
 
 ### `image[<X>,<Y>;<W>,<H>;<texture name>]`
 
 * Show an image
+
+### `animated_image[<X>,<Y>;<W>,<H>;<name>;<texture name>;<frame count>;<frame duration>;<frame start>]`
+
+* Show an animated image. The image is drawn like a "vertical_frames" tile
+    animation (See [Tile animation definition]), but uses a frame count/duration
+    for simplicity
+* `name`: Element name to send when an event occurs. The event value is the index of the current frame.
+* `texture name`: The image to use.
+* `frame count`: The number of frames animating the image.
+* `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
+* `frame start` (Optional): The index of the frame to start on. Default `1`.
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
@@ -2231,10 +2254,11 @@ Elements
   an inventory slot.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
-* Displays a static formated text with hyperlinks.
+* Displays a static formatted text with hyperlinks.
+* **Note**: This element is currently unstable and subject to change.
 * `x`, `y`, `w` and `h` work as per field
 * `name` is the name of the field as returned in fields to `on_receive_fields` in case of action in text.
-* `text` is the formatted text using `markup language` described below.
+* `text` is the formatted text using `Markup Language` described below.
 
 ### `vertlabel[<X>,<Y>;<label>]`
 * Textual label drawn vertically
@@ -2474,16 +2498,16 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-### `style[<name>;<prop1>;<prop2>;...]`
+### `style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]`
 
-* Set the style for the named element `name`.
+* Set the style for the named element(s) `name`.
 * Note: this **must** be before the element is defined.
 * See [Styling Formspecs].
 
 
-### `style_type[<type>;<prop1>;<prop2>;...]`
+### `style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]`
 
-* Sets the style for all elements of type `type` which appear after this element.
+* Sets the style for all elements of type(s) `type` which appear after this element.
 * See [Styling Formspecs].
 
 Migrating to Real Coordinates
@@ -2526,12 +2550,17 @@ Styling Formspecs
 
 Formspec elements can be themed using the style elements:
 
-    style[<name>;<prop1>;<prop2>;...]
-    style_type[<type>;<prop1>;<prop2>;...]
+    style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]
+    style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]
 
 Where a prop is:
 
     property_name=property_value
+
+A name/type can optionally be a comma separated list of names/types, like so:
+
+    world_delete,world_create,world_configure
+    button,image_button
 
 For example:
 
@@ -2549,6 +2578,7 @@ Setting a property to nothing will reset it to the default value. For example:
 
 Some types may inherit styles from parent types.
 
+* animated_image, inherits from image
 * button
 * button_exit, inherits from button
 * checkbox
@@ -2568,6 +2598,8 @@ Some types may inherit styles from parent types.
 
 ### Valid Properties
 
+* animated_image
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * box
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher
@@ -2612,11 +2644,12 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 
-Markup language
+Markup Language
 ---------------
 
-Markup language used in `hypertext[]` elements uses tag that look like HTML tags. Some
-tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
+Markup language used in `hypertext[]` elements uses tags that look like HTML tags.
+The markup language is currently unstable and subject to change. Use with caution.
+Some tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
 Tags can have attributes, in that case, attributes are in the opening tag in
 form of a key/value separated with equal signs. Attribute values should not be quoted.
 
@@ -3723,7 +3756,7 @@ Methods
 -----------
 
 A helper class for voxel areas.
-It can be created via `VoxelArea:new{MinEdge=pmin, MaxEdge=pmax}`.
+It can be created via `VoxelArea:new{MinEdge = pmin, MaxEdge = pmax}`.
 The coordinates are *inclusive*, like most other things in Minetest.
 
 ### Methods
@@ -3753,6 +3786,28 @@ The coordinates are *inclusive*, like most other things in Minetest.
     * from (`minx`,`miny`,`minz`) to (`maxx`,`maxy`,`maxz`) in the order of
       `[z [y [x]]]`.
 * `iterp(minp, maxp)`: same as above, except takes a vector
+
+### Y stride and z stride of a flat array
+
+For a particular position in a voxel area, whose flat array index is known,
+it is often useful to know the index of a neighboring or nearby position.
+The table below shows the changes of index required for 1 node movements along
+the axes in a voxel area:
+
+    Movement    Change of index
+    +x          +1
+    -x          -1
+    +y          +ystride
+    -y          -ystride
+    +z          +zstride
+    -z          -zstride
+
+If, for example:
+
+    local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
+
+The values of `ystride` and `zstride` can be obtained using `area.ystride` and
+`area.zstride`.
 
 
 
@@ -3850,6 +3905,7 @@ Callbacks:
     * `dir`: unit vector of direction of punch. Always defined. Points from the
       puncher to the punched.
     * `damage`: damage that will be done to entity.
+    * Can return `true` to prevent the default damage mechanism.
 * `on_death(self, killer)`
     * Called when the object dies.
     * `killer`: an `ObjectRef` (can be `nil`)
@@ -3995,6 +4051,8 @@ Utilities
           formspec_version_element = true,
           -- Whether AreaStore's IDs are kept on save/load (5.1.0)
           area_store_persistent_ids = true,
+          -- Whether minetest.find_path is functional (5.2.0)
+          pathfinder_works = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4272,6 +4330,7 @@ Call these functions only at load time!
       is a table containing each formspecs element value (as string), with
       the `name` parameter as index for each. The value depends on the
       formspec element type:
+        * `animated_image`: Returns the index of the current frame.
         * `button` and variants: If pressed, contains the user-facing button
           text as value. If not pressed, is `nil`
         * `field`, `textarea` and variants: Text in the field
@@ -4403,8 +4462,8 @@ Authentication
 * `minetest.auth_reload()`
     * See `reload()` in authentication handler definition
 
-`minetest.set_player_password`, `minetest_set_player_privs`,
-`minetest_get_player_privs` and `minetest.auth_reload` call the authentication
+`minetest.set_player_password`, `minetest.set_player_privs`,
+`minetest.get_player_privs` and `minetest.auth_reload` call the authentication
 handler.
 
 Chat
@@ -4659,16 +4718,25 @@ Environment access
     * `objects`: if false, only nodes will be returned. Default is `true`.
     * `liquids`: if false, liquid nodes won't be returned. Default is `false`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
-    * returns table containing path
+    * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
-      `nil`.
+      `nil` on failure.
+    * Reasons for failure:
+        * No path exists at all
+        * No path exists within `searchdistance` (see below)
+        * Start or end pos is buried in land
     * `pos1`: start position
     * `pos2`: end position
-    * `searchdistance`: number of blocks to search in each direction using a
-      maximum metric.
+    * `searchdistance`: maximum distance from the search positions to search in.
+      In detail: Path must be completely inside a cuboid. The minimum
+      `searchdistance` of 1 will confine search between `pos1` and `pos2`.
+      Larger values will increase the size of this cuboid in all directions
     * `max_jump`: maximum height difference to consider walkable
     * `max_drop`: maximum height difference to consider droppable
-    * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`
+    * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`.
+      Difference between `"A*"` and `"A*_noprefetch"` is that
+      `"A*"` will pre-calculate the cost-data, the other will calculate it
+      on-the-fly
 * `minetest.spawn_tree (pos, {treedef})`
     * spawns L-system tree at given `pos` with definition in `treedef` table
 * `minetest.transforming_liquid_add(pos)`
@@ -4828,9 +4896,11 @@ Item handling
       given `param2` value.
     * Returns `nil` if the given `paramtype2` does not contain color
       information.
-* `minetest.get_node_drops(nodename, toolname)`
-    * Returns list of item names.
-    * **Note**: This will be removed or modified in a future version.
+* `minetest.get_node_drops(node, toolname)`
+    * Returns list of itemstrings that are dropped by `node` when dug
+      with `toolname`.
+    * `node`: node as table or node name
+    * `toolname`: name of the tool item (can be `nil`)
 * `minetest.get_craft_result(input)`: returns `output, decremented_input`
     * `input.method` = `"normal"` or `"cooking"` or `"fuel"`
     * `input.width` = for example `3`
@@ -5214,10 +5284,16 @@ Misc.
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
     * Example: `serialize({foo='bar'})`, returns `'return { ["foo"] = "bar" }'`
-* `minetest.deserialize(string)`: returns a table
-    * Convert a string returned by `minetest.deserialize` into a table
+* `minetest.deserialize(string[, safe])`: returns a table
+    * Convert a string returned by `minetest.serialize` into a table
     * `string` is loaded in an empty sandbox environment.
-    * Will load functions, but they cannot access the global environment.
+    * Will load functions if safe is false or omitted. Although these functions
+      cannot directly access the global environment, they could bypass this
+      restriction with maliciously crafted Lua bytecode if mod security is
+      disabled.
+    * This function should not be used on untrusted data, regardless of the
+     value of `safe`. It is fine to serialize then deserialize user-provided
+     data, but directly providing user input to deserialize is always unsafe.
     * Example: `deserialize('return { ["foo"] = "bar" }')`,
       returns `{foo='bar'}`
     * Example: `deserialize('print("foo")')`, returns `nil`
@@ -5661,8 +5737,21 @@ Can be gotten via `minetest.get_node_timer(pos)`.
 -----------
 
 Moving things in the game are generally these.
+This is basically a reference to a C++ `ServerActiveObject`.
 
-This is basically a reference to a C++ `ServerActiveObject`
+### Advice on handling `ObjectRefs`
+
+When you receive an `ObjectRef` as a callback argument or from another API
+function, it is possible to store the reference somewhere and keep it around.
+It will keep functioning until the object is unloaded or removed.
+
+However, doing this is **NOT** recommended as there is (intentionally) no method
+to test if a previously acquired `ObjectRef` is still valid.
+Instead, `ObjectRefs` should be "let go" of as soon as control is returned from
+Lua back to the engine.
+Doing so is much less error-prone and you will never need to wonder if the
+object you are working with still exists.
+
 
 ### Methods
 
@@ -5733,7 +5822,10 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 #### Lua entity only (no-op for other objects)
 
-* `remove()`: remove object (after returning from Lua)
+* `remove()`: remove object
+    * The object is removed after returning from Lua. However the `ObjectRef`
+      itself instantly becomes unusable with all further method calls having
+      no effect and returning `nil`.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `add_velocity(vel)`
@@ -5887,15 +5979,90 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
-* `set_sky(bgcolor, type, {texture names}, clouds)`
-    * `bgcolor`: ColorSpec, defaults to white
-    * `type`: Available types:
-        * `"regular"`: Uses 0 textures, `bgcolor` ignored
-        * `"skybox"`: Uses 6 textures, `bgcolor` used
-        * `"plain"`: Uses 0 textures, `bgcolor` used
-    * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
-      `"plain"` custom skyboxes (default: `true`)
-* `get_sky()`: returns bgcolor, type, table of textures, clouds
+* `set_sky(parameters)`
+    * `parameters` is a table with the following optional fields:
+        * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
+        * `type`: Available types:
+            * `"regular"`: Uses 0 textures, `base_color` ignored
+            * `"skybox"`: Uses 6 textures, `base_color` used as fog.
+            * `"plain"`: Uses 0 textures, `base_color` used as both fog and sky.
+        * `textures`: A table containing up to six textures in the following
+            order: Y+ (top), Y- (bottom), X- (west), X+ (east), Z+ (north), Z- (south).
+        * `clouds`: Boolean for whether clouds appear. (default: `true`)
+        * `sky_color`: A table containing the following values, alpha is ignored:
+            * `day_sky`: ColorSpec, for the top half of the `"regular"`
+              sky during the day. (default: `#8cbafa`)
+            * `day_horizon`: ColorSpec, for the bottom half of the 
+              `"regular"` sky during the day. (default: `#9bc1f0`)
+            * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
+              sky during dawn/sunset. (default: `#b4bafa`)
+              The resulting sky color will be a darkened version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
+            * `dawn_horizon`: ColorSpec, for the bottom half of the `"regular"`
+              sky during dawn/sunset. (default: `#bac1f0`)
+              The resulting sky color will be a darkened version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
+            * `night_sky`: ColorSpec, for the top half of the `"regular"`
+              sky during the night. (default: `#006aff`)
+              The resulting sky color will be a dark version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
+            * `night_horizon`: ColorSpec, for the bottom half of the `"regular"`
+              sky during the night. (default: `#4090ff`)
+              The resulting sky color will be a dark version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
+            * `indoors`: ColorSpec, for when you're either indoors or 
+              underground. Only applies to the `"regular"` sky.
+              (default: `#646464`)
+            * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
+              at sunrise and sunset.
+            * `fog_moon_tint`: ColorSpec, changes the fog tinting for the moon
+              at sunrise and sunset.
+            * `fog_tint_type`: string, changes which mode the directional fog
+                abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
+                `"default"` uses the classic Minetest sun and moon tinting.
+                Will use tonemaps, if set to `"default"`. (default: `"default"`)
+* `get_sky()`: returns base_color, type, table of textures, clouds.
+* `get_sky_color()`: returns a table with the `sky_color` parameters as in
+    `set_sky`.
+* `set_sun(parameters)`:
+    * `parameters` is a table with the following optional fields:
+        * `visible`: Boolean for whether the sun is visible.
+            (default: `true`)
+        * `texture`: A regular texture for the sun. Setting to `""`
+            will re-enable the mesh sun. (default: `"sun.png"`)
+        * `tonemap`: A 512x1 texture containing the tonemap for the sun
+            (default: `"sun_tonemap.png"`)
+        * `sunrise`: A regular texture for the sunrise texture.
+            (default: `"sunrisebg.png"`)
+        * `sunrise_visible`: Boolean for whether the sunrise texture is visible.
+            (default: `true`)
+        * `scale`: Float controlling the overall size of the sun. (default: `1`)
+* `get_sun()`: returns a table with the current sun parameters as in
+    `set_sun`.
+* `set_moon(parameters)`:
+    * `parameters` is a table with the following optional fields:
+        * `visible`: Boolean for whether the moon is visible.
+            (default: `true`)
+        * `texture`: A regular texture for the moon. Setting to `""`
+            will re-enable the mesh moon. (default: `"moon.png"`)
+        * `tonemap`: A 512x1 texture containing the tonemap for the moon
+            (default: `"moon_tonemap.png"`)
+        * `scale`: Float controlling the overall size of the moon (default: `1`)
+* `get_moon()`: returns a table with the current moon parameters as in
+    `set_moon`.
+* `set_stars(parameters)`:
+    * `parameters` is a table with the following optional fields:
+        * `visible`: Boolean for whether the stars are visible.
+            (default: `true`)
+        * `count`: Integer number to set the number of stars in 
+            the skybox. Only applies to `"skybox"` and `"regular"` sky types.
+            (default: `1000`)
+        * `star_color`: ColorSpec, sets the colors of the stars,
+            alpha channel is used to set overall star brightness.
+            (default: `#ebebff69`)
+        * `scale`: Float controlling the overall size of the stars (default: `1`)
+* `get_stars()`: returns a table with the current stars parameters as in
+    `set_stars`.
 * `set_clouds(parameters)`: set cloud parameters
     * `parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)

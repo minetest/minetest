@@ -1860,7 +1860,7 @@ ITextureSource* Client::getTextureSource()
 {
 	return m_tsrc;
 }
-IShaderSource* Client::getShaderSource()
+IWritableShaderSource* Client::getShaderSource()
 {
 	return m_shsrc;
 }

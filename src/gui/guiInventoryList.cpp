@@ -176,7 +176,14 @@ bool GUIInventoryList::OnEvent(const SEvent &event)
 		Environment->getRootGUIElement()->getElementFromPoint(
 			core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
 
-	bool ret = hovered && hovered->OnEvent(event);
+	// if the player clicks outside of the formspec window, hovered is not
+	// m_fs_menu, but some other weird element (with ID -1). we do however need
+	// hovered to be m_fs_menu as item dropping when clicking outside of the
+	// formspec window is handled in its OnEvent callback
+	if (!hovered || hovered->getID() == -1)
+		hovered = m_fs_menu;
+
+	bool ret = hovered->OnEvent(event);
 
 	IsVisible = was_visible;
 

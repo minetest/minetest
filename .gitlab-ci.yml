@@ -239,13 +239,13 @@ build:fedora-24:
 ##
 
 .generic_win_template: &generic_win_template
-  image: ubuntu:xenial
+  image: ubuntu:bionic
   before_script:
     - apt-get update -y
-    - apt-get install -y p7zip-full wget unzip git cmake gettext
-    - wget http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_7.1.1_ubuntu14.04.7z -O mingw.7z > /dev/null
+    - apt-get install -y wget xz-utils unzip git cmake gettext
+    - wget -q http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
     - sed -e "s|%PREFIX%|${WIN_ARCH}-w64-mingw32|" -e "s|%ROOTPATH%|/usr/${WIN_ARCH}-w64-mingw32|" < util/travis/toolchain_mingw.cmake.in > ${TOOLCHAIN_OUTPUT}
-    - 7z x -y -o/usr mingw.7z > /dev/null
+    - tar -xaf mingw.tar.xz -C /usr
 
 .build_win_template: &build_win_template
   <<: *generic_win_template
