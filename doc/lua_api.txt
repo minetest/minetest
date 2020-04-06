@@ -64,9 +64,17 @@ The game directory can contain the following files:
 * `game.conf`, with the following keys:
     * `name`: Required, human readable name  e.g. `name = Minetest`
     * `description`: Short description to be shown in the content tab
+    * `allowed_mapgens = <comma-separated mapgens>`
+      e.g. `allowed_mapgens = v5,v6,flat`
+      Mapgens not in this list are removed from the list of mapgens for
+      the game.
+      If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
       These mapgens are removed from the list of mapgens for the game.
+      When both `allowed_mapgens` and `disallowed_mapgens` are
+      specified, `allowed_mapgens` is applied before
+      `disallowed_mapgens`.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
