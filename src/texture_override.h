@@ -47,9 +47,9 @@ struct TextureOverride {
 };
 
 //! Class that provides texture override information from a texture pack
-class CTextureOverrideSource {
+class TextureOverrideSource {
 public:
-	CTextureOverrideSource(std::string filepath);
+	TextureOverrideSource(std::string filepath);
 
 	//! Get all overrides that apply to item definitions
 	std::vector<TextureOverride> getItemTextureOverrides();

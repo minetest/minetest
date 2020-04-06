@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <fstream>
 
-CTextureOverrideSource::CTextureOverrideSource(std::string filepath)
+TextureOverrideSource::TextureOverrideSource(std::string filepath)
 {
 	std::ifstream infile(filepath.c_str());
 	std::string line;
@@ -41,7 +41,7 @@ CTextureOverrideSource::CTextureOverrideSource(std::string filepath)
 
 		std::vector<std::string> splitted = str_split(line, ' ');
 		if (splitted.size() != 3) {
-			errorstream << filepath << ":" << line_index
+			warningstream << filepath << ":" << line_index
 					<< " Syntax error in texture override \"" << line
 					<< "\": Expected 3 arguments, got " << splitted.size()
 					<< std::endl;
@@ -77,7 +77,7 @@ CTextureOverrideSource::CTextureOverrideSource(std::string filepath)
 				texture_override.target |= static_cast<u8>(OverrideTarget::ALL_FACES);
 			else {
 				// Report invalid target
-				errorstream << filepath << ":" << line_index
+				warningstream << filepath << ":" << line_index
 						<< " Syntax error in texture override \"" << line
 						<< "\": Unknown target \"" << target << "\""
 						<< std::endl;
@@ -94,7 +94,7 @@ CTextureOverrideSource::CTextureOverrideSource(std::string filepath)
 }
 
 //! Get all overrides that apply to item definitions
-std::vector<TextureOverride> CTextureOverrideSource::getItemTextureOverrides()
+std::vector<TextureOverride> TextureOverrideSource::getItemTextureOverrides()
 {
 	std::vector<TextureOverride> found_overrides;
 
@@ -108,7 +108,7 @@ std::vector<TextureOverride> CTextureOverrideSource::getItemTextureOverrides()
 }
 
 //! Get all overrides that apply to node definitions
-std::vector<TextureOverride> CTextureOverrideSource::getNodeTileOverrides()
+std::vector<TextureOverride> TextureOverrideSource::getNodeTileOverrides()
 {
 	std::vector<TextureOverride> found_overrides;
 

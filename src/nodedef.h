@@ -589,7 +589,7 @@ public:
 	 *
 	 * @param overrides the texture overrides
 	 */
-	void applyTextureOverrides(std::vector<TextureOverride> overrides);
+	void applyTextureOverrides(const std::vector<TextureOverride> &overrides);
 
 	/*!
 	 * Only the client uses this. Loads textures and shaders required for

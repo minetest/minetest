@@ -160,7 +160,7 @@ public:
 
 	// Replace the textures of registered nodes with the ones specified in
 	// the texture pack's override.txt files
-	virtual void applyTextureOverrides(std::vector<TextureOverride> overrides)=0;
+	virtual void applyTextureOverrides(const std::vector<TextureOverride> &overrides)=0;
 
 	// Remove all registered item and node definitions and aliases
 	// Then re-add the builtin item definitions

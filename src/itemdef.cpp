@@ -422,7 +422,7 @@ public:
 		return get(stack.name).color;
 	}
 #endif
-	void applyTextureOverrides(std::vector<TextureOverride> overrides)
+	void applyTextureOverrides(const std::vector<TextureOverride> &overrides)
 	{
 		infostream << "ItemDefManager::applyTextureOverrides(): Applying "
 			"overrides to textures" << std::endl;
