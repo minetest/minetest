@@ -5413,8 +5413,8 @@ Misc.
   insecure functions if the calling mod has been listed as trusted in the
   `secure.trusted_mods` setting or security is disabled, otherwise returns
   `nil`.
-    * Only works at init time and must be called from the mod's main scope (not
-      from a function).
+    * Only works at init time and must be called from the mod's main scope
+      (ie: the init.lua of the mod, not from another Lua file or within a function).
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE
       IT IN A LOCAL VARIABLE!**
 
@@ -6002,7 +6002,7 @@ object you are working with still exists.
         * `sky_color`: A table containing the following values, alpha is ignored:
             * `day_sky`: ColorSpec, for the top half of the `"regular"`
               sky during the day. (default: `#8cbafa`)
-            * `day_horizon`: ColorSpec, for the bottom half of the 
+            * `day_horizon`: ColorSpec, for the bottom half of the
               `"regular"` sky during the day. (default: `#9bc1f0`)
             * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
               sky during dawn/sunset. (default: `#b4bafa`)
@@ -6020,7 +6020,7 @@ object you are working with still exists.
               sky during the night. (default: `#4090ff`)
               The resulting sky color will be a dark version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `indoors`: ColorSpec, for when you're either indoors or 
+            * `indoors`: ColorSpec, for when you're either indoors or
               underground. Only applies to the `"regular"` sky.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
@@ -6064,7 +6064,7 @@ object you are working with still exists.
     * `parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
-        * `count`: Integer number to set the number of stars in 
+        * `count`: Integer number to set the number of stars in
             the skybox. Only applies to `"skybox"` and `"regular"` sky types.
             (default: `1000`)
         * `star_color`: ColorSpec, sets the colors of the stars,
