@@ -42,19 +42,19 @@ CTextureOverrideSource::CTextureOverrideSource(std::string filepath)
 		std::vector<std::string> splitted = str_split(line, ' ');
 		if (splitted.size() != 3) {
 			errorstream << filepath << ":" << line_index
-				<< " Syntax error in texture override \"" << line
-				<< "\": Expected 3 arguments, got " << splitted.size()
-				<< std::endl;
+					<< " Syntax error in texture override \"" << line
+					<< "\": Expected 3 arguments, got " << splitted.size()
+					<< std::endl;
 			continue;
 		}
 
-		TextureOverride texture_override = { };
+		TextureOverride texture_override = {};
 		texture_override.id = splitted[0];
 		texture_override.texture = splitted[2];
 
 		// Parse the target mask
 		std::vector<std::string> targets = str_split(splitted[1], ',');
-		for (const std::string& target : targets) {
+		for (const std::string &target : targets) {
 			if (target == "top")
 				texture_override.target |= static_cast<u8>(OverrideTarget::TOP);
 			else if (target == "bottom")
@@ -78,9 +78,9 @@ CTextureOverrideSource::CTextureOverrideSource(std::string filepath)
 			else {
 				// Report invalid target
 				errorstream << filepath << ":" << line_index
-					<< " Syntax error in texture override \"" << line
-					<< "\": Unknown target \"" << target << "\""
-					<< std::endl;
+						<< " Syntax error in texture override \"" << line
+						<< "\": Unknown target \"" << target << "\""
+						<< std::endl;
 			}
 		}
 
@@ -99,8 +99,8 @@ std::vector<TextureOverride> CTextureOverrideSource::getItemTextureOverrides()
 	std::vector<TextureOverride> found_overrides;
 
 	for (const TextureOverride& texture_override : m_overrides) {
-		if ((texture_override.target
-					& static_cast<u8>(OverrideTarget::ITEM_TARGETS)) != 0)
+		if ((texture_override.target &
+					static_cast<u8>(OverrideTarget::ITEM_TARGETS)) != 0)
 			found_overrides.push_back(texture_override);
 	}
 
@@ -113,8 +113,8 @@ std::vector<TextureOverride> CTextureOverrideSource::getNodeTileOverrides()
 	std::vector<TextureOverride> found_overrides;
 
 	for (const TextureOverride& texture_override : m_overrides) {
-		if ((texture_override.target
-					& static_cast<u8>(OverrideTarget::ALL_FACES)) != 0)
+		if ((texture_override.target &
+					static_cast<u8>(OverrideTarget::ALL_FACES)) != 0)
 			found_overrides.push_back(texture_override);
 	}
 
