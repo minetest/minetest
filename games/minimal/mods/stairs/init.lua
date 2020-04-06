@@ -18,15 +18,6 @@ function stairs.register_stair(subname, recipeitem, groups, images, description)
 			},
 		},
 	})
-
-	minetest.register_craft({
-		output = 'stairs:stair_' .. subname .. ' 4',
-		recipe = {
-			{recipeitem, "", ""},
-			{recipeitem, recipeitem, ""},
-			{recipeitem, recipeitem, recipeitem},
-		},
-	})
 end
 
 -- Node will be called stairs:slab_<subname>
@@ -47,13 +38,6 @@ function stairs.register_slab(subname, recipeitem, groups, images, description)
 			fixed = {-0.5, -0.5, -0.5, 0.5, 0, 0.5},
 		},
 	})
-
-	minetest.register_craft({
-		output = 'stairs:slab_' .. subname .. ' 3',
-		recipe = {
-			{recipeitem, recipeitem, recipeitem},
-		},
-	})
 end
 
 -- Nodes will be called stairs:{stair,slab}_<subname>
@@ -62,32 +46,20 @@ function stairs.register_stair_and_slab(subname, recipeitem, groups, images, des
 	stairs.register_slab(subname, recipeitem, groups, images, desc_slab)
 end
 
-stairs.register_stair_and_slab("wood", "default:wood",
-		{snappy=2,choppy=2,oddly_breakable_by_hand=2},
-		{"default_wood.png"},
-		"Wooden stair",
-		"Wooden slab")
-
-stairs.register_stair_and_slab("stone", "default:stone",
+stairs.register_stair_and_slab("stone", "basenodes:stone",
 		{cracky=3},
 		{"default_stone.png"},
-		"Stone stair",
-		"Stone slab")
+		"Stone Stair",
+		"Stone Slab")
 
-stairs.register_stair_and_slab("cobble", "default:cobble",
+stairs.register_stair_and_slab("desert_stone", "basenodes:desert_stone",
+		{cracky=3},
+		{"default_desert_stone.png"},
+		"Desert Stone Stair",
+		"Desert Stone Slab")
+
+stairs.register_stair_and_slab("cobble", "basenodes:cobble",
 		{cracky=3},
 		{"default_cobble.png"},
-		"Cobble stair",
-		"Cobble slab")
-
-stairs.register_stair_and_slab("brick", "default:brick",
-		{cracky=3},
-		{"default_brick.png"},
-		"Brick stair",
-		"Brick slab")
-
-stairs.register_stair_and_slab("sandstone", "default:sandstone",
-		{crumbly=2,cracky=2},
-		{"default_sandstone.png"},
-		"Sandstone stair",
-		"Sandstone slab")
+		"Cobblestone Stair",
+		"Cobblestone Slab")

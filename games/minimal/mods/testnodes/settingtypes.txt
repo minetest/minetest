@@ -1,0 +1,4 @@
+# If set to true, will show an inventory image for nodes that have no inventory image as of Minetest 5.1.0.
+# This is due to <https://github.com/minetest/minetest/issues/9209>.
+# This is only added to make the items more visible to avoid confusion, but you will no longer see the default inventory images for these items. When you want to test the default inventory image of drawtypes, this should be turned off.
+testnodes_show_fallback_image (Use fallback inventory images) bool false

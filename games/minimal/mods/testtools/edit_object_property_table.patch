@@ -1,0 +1,176 @@
+diff --git a/mods/testtools/helpers.lua b/mods/testtools/helpers.lua
+new file mode 100644
+index 0000000..06f2bda
+--- /dev/null
++++ b/mods/testtools/helpers.lua
+@@ -0,0 +1,82 @@
++-- FIXME: Quotation marks in strings are not escaped
++-- TODO: Support nested tables
++
++function testtools.parse_table(input)
++	local data = {}
++	local stack = 0
++	local status = "start"	-- "start", "main", "key", "string", "number"
++	local key_num = 1
++	local key = key_num
++	local value = nil
++	for s=1, string.len(input) do
++		local chr = string.sub(input, s, s)
++		if status == "start" then
++			if chr == "{" then
++				status = "main"
++				stack = stack + 1
++			end
++		elseif status == "main" then
++			if chr == "{" then
++				stack = stack + 1
++			elseif chr == "}" then
++				stack = stack - 1
++			elseif chr == "=" then
++				status = "value"
++				if key == "" then
++					key = key_num
++					key_num = key_num + 1
++				end
++			elseif chr == "\"" or chr == "\"" then
++				status = "string"
++				value = ""
++				if key == "" then
++					key = key_num
++					key_num = key_num + 1
++				end
++			elseif chr == "-" or chr == "." or type(tonumber(chr)) == "number" then
++				status = "number"
++				value = chr
++				if key == "" then
++					key = key_num
++					key_num = key_num + 1
++				end
++			elseif chr == "," then
++				key = ""
++				value = nil
++			elseif chr ~= " " and chr ~= "\9" then
++				key = key .. chr
++			end
++		elseif status == "value" then
++			if chr == "\"" or chr == "\"" then
++				status = "string"
++				value = ""
++			elseif chr == "-" or chr == "." or type(tonumber(chr)) == "number" then
++				status = "number"
++				value = chr
++			end
++		elseif status == "string" then
++			if chr == "\"" then
++				-- end string
++				data[key] = value
++				key = ""
++				status = "main"
++			else
++				value = value .. chr
++			end
++		elseif status == "number" then
++			if chr == "-" or chr == "." or type(tonumber(chr)) == "number" then
++				value = value .. chr
++			else
++				value = tonumber(value)
++				data[key] = value
++				key = ""
++				status = "main"
++			end
++		end
++
++		if stack <= 0 then
++			break
++		end
++	end
++	return data
++end
+diff --git a/mods/testtools/init.lua b/mods/testtools/init.lua
+index 2c12468..0884940 100644
+--- a/mods/testtools/init.lua
++++ b/mods/testtools/init.lua
+@@ -1,10 +1,13 @@
+ local S = minetest.get_translator("testtools")
+ local F = minetest.formspec_escape
+ 
++testtools = {}
++dofile(minetest.get_modpath("testtools").."/helpers.lua")
++
+ -- TODO: Add a Node Metadata tool
+ 
+-local function check_priv(player, priv)
+-	-- Tools don't need any privs in the test game
++local function check_priv(player)
++	-- Tools don't need priv in this test game
+ 	return true
+ end
+ 
+@@ -467,10 +470,11 @@ local editor_formspec = function(playername, obj, value, sel)
+ 		"size[9,9]"..
+ 		"label[0,0;"..F(title).."]"..
+ 		"textlist[0,0.5;9,7.5;object_props;"..list..";"..sel..";false]"..
+-		"field[0.2,8.75;6,1;value;"..F(S("Value"))..";"..F(value).."]"..
+-		"button[6,8.5;1,1;submit_boolean;"..F(S("Bool")).."]"..
+-		"button[7,8.5;1,1;submit_string;"..F(S("Str")).."]"..
+-		"button[8,8.5;1,1;submit_number;"..F(S("Num")).."]"
++		"field[0.2,8.75;5,1;value;"..F(S("Value"))..";"..F(value).."]"..
++		"button[5,8.5;1,1;submit_boolean;"..F(S("Bool")).."]"..
++		"button[6,8.5;1,1;submit_string;"..F(S("Str")).."]"..
++		"button[7,8.5;1,1;submit_number;"..F(S("Num")).."]"..
++		"button[8,8.5;1,1;submit_table;"..F(S("Tabl")).."]"
+ 	)
+ end
+ 
+@@ -635,14 +639,15 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
+ 	end
+ 	if formname == "testtools:entity_list" then
+ 		local name = player:get_player_name()
++		if not minetest.get_player_privs(name).give then
++			return
++		end
+ 		if fields.entity_list then
+ 			local expl = minetest.explode_textlist_event(fields.entity_list)
+ 			if expl.type == "DCL" then
+ 				local pos = vector.add(player:get_pos(), {x=0,y=1,z=0})
++				minetest.add_entity(pos, get_entity_list()[expl.index])
+ 				selections[name] = expl.index
+-				if check_priv(player, "give") then
+-					minetest.add_entity(pos, get_entity_list()[expl.index])
+-				end
+ 				return
+ 			elseif expl.type == "CHG" then
+ 				selections[name] = expl.index
+@@ -650,9 +655,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
+ 			end
+ 		elseif fields.spawn and selections[name] then
+ 			local pos = vector.add(player:get_pos(), {x=0,y=1,z=0})
+-			if check_priv(player, "give") then
+-				minetest.add_entity(pos, get_entity_list()[selections[name]])
+-			end
++			minetest.add_entity(pos, get_entity_list()[selections[name]])
+ 			return
+ 		end
+ 	elseif formname == "testtools:object_editor" then
+@@ -672,7 +675,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
+ 				return
+ 			end
+ 		end
+-		if fields.submit_boolean or fields.submit_string or fields.submit_number then
++		if fields.submit_boolean or fields.submit_string or fields.submit_number or fields.submit_table then
+ 			local props = selected_objects[name]:get_properties()
+ 			local keys = property_formspec_data[name]
+ 			if (not property_formspec_index[name]) or (not props) then
+@@ -695,6 +698,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
+ 				if type(props[key]) ~= "number" then
+ 					return
+ 				end
++			elseif fields.submit_table then
++				local parse = testtools.parse_table(string.trim(fields.value))
++				minetest.log("error", dump(parse))
++				if parse then
++					props[key] = parse
++				end
+ 			else
+ 				props[key] = fields.value
+ 			end
