@@ -3315,10 +3315,8 @@ void GUIFormSpecMenu::drawMenu()
 
 	if (hovered != NULL) {
 		if (m_show_debug) {
-			core::rect<s32> hovered_pos = hovered->getAbsolutePosition();
-			driver->draw2DRectangle(0x22FFFF00,
-				hovered->getAbsoluteClippingRect(),
-				&hovered_pos);
+			core::rect<s32> rect = hovered->getAbsoluteClippingRect();
+			driver->draw2DRectangle(0x22FFFF00, rect, &rect);
 		}
 
 		s32 id = hovered->getID();
@@ -3845,7 +3843,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 
 		if (event.KeyInput.PressedDown && kp == getKeySetting("keymap_toggle_debug"))
-			m_show_debug ^= true;
+			m_show_debug = !m_show_debug;
 
 		if (event.KeyInput.PressedDown &&
 			(event.KeyInput.Key==KEY_RETURN ||
