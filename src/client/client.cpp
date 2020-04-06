@@ -1780,12 +1780,23 @@ void Client::makeScreenshot()
 	char timetstamp_c[64];
 	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
 
-	std::string filename_base = g_settings->get("screenshot_path")
+	std::string screenshot_dir;
+
+	if (fs::IsPathAbsolute(g_settings->get("screenshot_path")))
+		screenshot_dir = g_settings->get("screenshot_path");
+	else
+		screenshot_dir = porting::path_user + DIR_DELIM + g_settings->get("screenshot_path");
+
+	std::string filename_base = screenshot_dir
 			+ DIR_DELIM
 			+ std::string("screenshot_")
 			+ std::string(timetstamp_c);
 	std::string filename_ext = "." + g_settings->get("screenshot_format");
 	std::string filename;
+
+	// Create the directory if it doesn't already exist.
+	// Otherwise, saving the screenshot would fail.
+	fs::CreateDir(screenshot_dir);
 
 	u32 quality = (u32)g_settings->getS32("screenshot_quality");
 	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
