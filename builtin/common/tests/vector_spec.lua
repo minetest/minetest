@@ -43,7 +43,7 @@ describe("vector", function()
 	it("add()", function()
 		assert.same({ x = 2, y = 4, z = 6 }, vector.add(vector.new(1, 2, 3), { x = 1, y = 2, z = 3 }))
 	end)
-	
+
 	--this function is needed because of floating point rounding errors
 	local function almost_equal(a, b)
 		if type(a) == "number" then
@@ -51,12 +51,15 @@ describe("vector", function()
 		end
 		return vector.distance(a, b) < 0.000000000001
 	end
-	
+
 	describe("rotate_around_axis()", function()
 		it("rotates", function()
-			assert.True(almost_equal({x = -1, y = 0, z = 0}, vector.rotate_around_axis({x = 1, y = 0, z = 0}, {x = 0, y = 1, z = 0}, math.pi)))
-			assert.True(almost_equal({x = 0, y = 1, z = 0}, vector.rotate_around_axis({x = 0, y = 0, z = 1}, {x = 1, y = 0, z = 0}, math.pi / 2)))
-			assert.True(almost_equal({x = 4, y = 1, z = 1}, vector.rotate_around_axis({x = 4, y = 1, z = 1}, {x = 4, y = 1, z = 1}, math.pi / 6)))
+			assert.True(almost_equal({x = -1, y = 0, z = 0},
+				vector.rotate_around_axis({x = 1, y = 0, z = 0}, {x = 0, y = 1, z = 0}, math.pi)))
+			assert.True(almost_equal({x = 0, y = 1, z = 0},
+				vector.rotate_around_axis({x = 0, y = 0, z = 1}, {x = 1, y = 0, z = 0}, math.pi / 2)))
+			assert.True(almost_equal({x = 4, y = 1, z = 1},
+				vector.rotate_around_axis({x = 4, y = 1, z = 1}, {x = 4, y = 1, z = 1}, math.pi / 6)))
 		end)
 		it("keeps distance to axis", function()
 			local rotate1 = {x = 1, y = 3, z = 1}
@@ -90,19 +93,26 @@ describe("vector", function()
 			assert.True(almost_equal(rotate3, rotated3))
 		end)
 	end)
+
 	it("rotate()", function()
-		assert.True(almost_equal({x = -1, y = 0, z = 0}, vector.rotate({x = 1, y = 0, z = 0}, {x = 0, y = math.pi, z = 0})))
-		assert.True(almost_equal({x = 0, y = -1, z = 0}, vector.rotate({x = 1, y = 0, z = 0}, {x = 0, y = 0, z = math.pi / 2})))
-		assert.True(almost_equal({x = 1, y = 0, z = 0}, vector.rotate({x = 1, y = 0, z = 0}, {x = math.pi / 123, y = 0, z = 0})))
+		assert.True(almost_equal({x = -1, y = 0, z = 0},
+			vector.rotate({x = 1, y = 0, z = 0}, {x = 0, y = math.pi, z = 0})))
+		assert.True(almost_equal({x = 0, y = -1, z = 0},
+			vector.rotate({x = 1, y = 0, z = 0}, {x = 0, y = 0, z = math.pi / 2})))
+		assert.True(almost_equal({x = 1, y = 0, z = 0},
+			vector.rotate({x = 1, y = 0, z = 0}, {x = math.pi / 123, y = 0, z = 0})))
 	end)
+
 	it("rotation_to_horizontal()", function()
 		assert.True(almost_equal({x = 0, y = 0, z = 1}, vector.rotation_to_horizontal({x = 0, y = 0, z = 0})))
 		assert.True(almost_equal({x = 0, y = 0, z = -1}, vector.rotation_to_horizontal({x = math.pi, y = 0, z = math.pi})))
 	end)
+
 	it("rotation-to_vertical()", function()
 		assert.True(almost_equal({x = 0, y = 1, z = 0}, vector.rotation_to_vertical({x = 0, y = 0, z = 0})))
 		assert.True(almost_equal({x = 0, y = 1, z = 0}, vector.rotation_to_vertical({x = math.pi, y = 0, z = math.pi})))
 	end)
+
 	it("directions_to_rotation()", function()
 		--comparing rotations (pitch, yaw, roll) is hard because of certain ambiguities
 		--e.g. (pi, 0, pi) looks exactly the same as (0, pi, 0)
