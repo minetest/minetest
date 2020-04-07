@@ -8,114 +8,118 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-05-02 07:11+0000\n"
+"Last-Translator: Eyekay49 <satvikpatwardhan@gmail.com>\n"
+"Language-Team: Hindi <https://hosted.weblate.org/projects/minetest/minetest/"
+"hi/>\n"
 "Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "आपकी मौत हो गयी"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "वापस ज़िंदा होएं"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "सर्वर वापस कनेक्ट करना चाहता है :"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "वापस कनेक्ट करें"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "मुख्य पृष्ठ"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Lua कोड में यह परेशानी हुई :"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "एक खराबी हो गयी :"
 
 #: builtin/fstk/ui.lua
 msgid "Ok"
-msgstr ""
+msgstr "ठीक है"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "लोड हो रहा है ..."
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"सार्वजनिक सर्वर शृंखला (सर्वर लिस्ट) को 'हां' करें और इंटरनेट कनेक्शन जांचें।"
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "सर्वर केवल प्रोटोकॉल $1 से $2 ही लेता है। "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "सर्वर केवल प्रोटोकॉल $1 लेता है। "
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "हम प्रोटोकॉल $1 से $2 ही लेते हैं।"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "हम केवल प्रोटोकॉल $1 ही लेते हैं।"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "प्रोटोकॉल संख्या एक नहीं है। "
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "दुनिया :"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "माॅडपैक ने अपने बारे में कुछ नहीं बताया।"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "खेल ने अपने बारे में कुछ नहीं बताया।"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "माॅड :"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "कोई (अनावश्यक) निर्भरताएं नहीं हैं"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "कोई आवश्यक निर्भरताएं नहीं"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "अनावश्यक निर्भरताएं :"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr ""
+msgstr "निर्भरताएं :"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "कोई अनावश्यक निर्भरताएं नहीं"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "सेव करें"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
@@ -125,228 +129,232 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "रोकें"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "माॅडपैक रोकें"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "माॅडपैक चालू करें"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "चालू"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "प्रत्येक रोकें"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "प्रत्येक चालू करें"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
+"मना किए गए वर्णों के कारण माॅड \"$1\" चालू नहीं हो सका। कृपया [a-z0-9] "
+"अंग्रेजी वर्ण का ही प्रयोग करें।"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "सभी पैकेज"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "अनेक खेल"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr ""
+msgstr "माॅड"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "कला संकुल"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "$1 का डाऊनलोड असफल हुआ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading and installing $1, please wait..."
-msgstr ""
+msgstr "$1 का डाऊनलोड व इन्स्टाल चल रहा है, कृपया ठहरें ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
-msgstr ""
+msgstr "पीछे"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "इन्स्टाल करें"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "नया संस्करण इन्स्टाल करें"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "हटाऐं"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "ढूंढें"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr ""
+msgstr "वापस मुख्य पृष्ठ पर जाएं"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "कुछ नहीं मिला"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "कोई पैकेज नहीं ला पाया गया"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "दुनिया का नाम"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr ""
+msgstr "स्रोत"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "नक्शा स्रोत"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "खेल"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "बनाइए"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "आपने कोई खेल इन्स्टाल नहीं किया है।"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "आप किसी भी खेल को minetest.net से डाऊनलोड कर सकते हैं"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
 msgstr ""
+"चेतावनी : न्यूनतम विकास खेल (Minimal development test) खेल बनाने वालों के लि"
+"ए है।"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
+msgstr "मैनटेस्ट खेल जैसे अन्य खेल minetest.net से डाऊनलोड किए जा सकते हैं"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "\"$1\" नामक दुनिया पहले से ही है"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "कोई खेल चूना नहीं गया है"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "क्या आप सचमुच \"$1\" को रद्द करना चाहते हैं?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "रद्द करें"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "pkgmgr: \"$1\" रद्द नहीं किया जा सका"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr ""
+msgstr "pkgmgr: \"$1\" फाईल पार गलत है"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "दुनिया रद्द करें?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "हां"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
-msgstr ""
+msgstr "modpack.conf फाईल में इस माॅडपैक को जो नाम दिया गया है वही माना जाएगा।"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "माॅडपैक का नाम बदलें :"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr ""
+msgstr "रुका हुआ"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "चालू"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "ढूंढें"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "आफसेट"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "स्केल"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "X स्प्रेड"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Y स्प्रेड"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr ""
+msgstr "द्वि आयामी नॉइस"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Z स्प्रेड"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "सप्टक (आक्टेव)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "हठ (पर्सिस्टेन्स)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
-msgstr ""
+msgstr "लैकुनारिटी"
 
 #. ~ "defaults" is a noise parameter flag.
 #. It describes the default processing options
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr ""
+msgstr "डीफाल्ट"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -354,7 +362,7 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "आरामदायक (ईज़्ड)"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -362,512 +370,512 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "एब्सोल्यूट वैल्यू"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "एक्स"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "वाई"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "जेड"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(सेटिंग के बारे में कुछ नहीं बताया गया है)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "कृपया एक पूर्णांक (integer) भरें।"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "इसका मूल्य कम-से-कम $1 होना चाहिए।"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "इसका मूल्य $1 से अधिक नहीं होना चाहिए।"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "कृपया एक अंक भरें।"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr ""
+msgstr "फाईल पाथ चुनें"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr ""
+msgstr "फाईल चुनें"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "वापस सेटिंग पृष्ठ पर जाएं"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "बदलें"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "मूल चुनें"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "तकनीकी नाम देखें"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "($1) चालू"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr ""
+msgstr "$1 कला संकुल के रूप में इन्स्टाल नहीं किया जा सका"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "$2 में $1 को इन्स्टाल नहीं किया जा सका"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr ""
+msgstr "सही माॅड या माॅडपैक नहीं ढूंढ पाया गया"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a modpack as a $1"
-msgstr ""
+msgstr "माॅडपैक को $1 के रूप में इन्स्टाल नहीं किया जा सका"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
-msgstr ""
+msgstr "माॅड इन्स्टाल: माॅडपैक $1 के लिए सही फोल्डर नहीं ढूंढा जा सका"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a mod as a $1"
-msgstr ""
+msgstr "मॉड को $1 के रूप में इन्स्टाल नहीं किया जा सका"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr ""
+msgstr "इन्स्टाल मॉड: $1 का असल नाम नहीं जान पाया गया"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a game as a $1"
-msgstr ""
+msgstr "खेल को $1 के रूप में इन्स्टाल नहीं किया जा सका"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr ""
+msgstr "इन्स्टाल : फाईल : \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr ""
+msgstr "इन्स्टाल : \"$1\" का फाईल टाईप अंजान है याफिर आरकाइव खराब है"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr ""
+msgstr "$1 यह सब मॉड"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "इन्स्टाल किये गये पैकेज :"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "नेट पर वस्तुएं ढूंढें"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr ""
+msgstr "पैकेज के बारे में कुछ नहीं बताया गया है"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "नाम बदलें"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "कोई निर्भर्ताएं नहीं हैं|"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr ""
+msgstr "कला संकुल रोकें"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr ""
+msgstr "कला संकुल चालू करें"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "जानकारी :"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr ""
+msgstr "पैकेज हटाएं"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr ""
+msgstr "वस्तुएं"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr ""
+msgstr "आभार सूची"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "मुख्य डेवेलपर"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "सक्रिय सहायक"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "पूर्व मुख्य डेवेलपर"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "पूर्व सहायक"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
-msgstr ""
+msgstr "सेटिंग बदलें"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr ""
+msgstr "नया"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr ""
+msgstr "दुनिया चुन्हें :"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "असीमित संसाधन"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "हानि व मृत्यु हो सकती है"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr ""
+msgstr "सर्वर चलाएं"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr ""
+msgstr "खेल चलाएं"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr ""
+msgstr "सर्वर सार्वजनिक सर्वर सूची (server list) में दिखे"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
-msgstr ""
+msgstr "नाम/पासवर्ड"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr ""
+msgstr "बाईंड एड्रेस"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
-msgstr ""
+msgstr "पोर्ट"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr ""
+msgstr "सर्वर पोर्ट"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr ""
+msgstr "खेल खेलें"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "कोई दुनिया उपस्थित या चुनी गयी नहीं है !"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr ""
+msgstr "खेल शुरू करें"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr ""
+msgstr "ऐडरेस / पोर्ट"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
-msgstr ""
+msgstr "नाम/पासवर्ड"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr ""
+msgstr "कनेक्ट करें"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr ""
+msgstr "पसंद हटाएं"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
-msgstr ""
+msgstr "पसंद"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Ping"
-msgstr ""
+msgstr "पिंग"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "असीमित संसाधन"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr ""
+msgstr "हानि व मृत्यु हो सकती है"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr ""
+msgstr "खिलाडियों में मारा-पीटी की अनुमती है"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr ""
+msgstr "खेल में शामिल होएं"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
-msgstr ""
+msgstr "अपारदर्शी पत्ते"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
-msgstr ""
+msgstr "मामूली पत्ते"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "रोचक पत्ते"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr ""
+msgstr "डिब्बों की रूपरेखा"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr ""
+msgstr "डिब्बें उजाले हों"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr ""
+msgstr "कुछ नहीं"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr ""
+msgstr "कोई फिल्टर नहीं"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "द्विरेखिय फिल्टर"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "त्रिरेखीय फिल्टर"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr ""
+msgstr "मिपमैप नहीं हो"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr ""
+msgstr "मिपमैप"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "मिपमैप व अनीसो. फिल्टर"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "दुग्ना"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "चार गुना"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "आठ गुना"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "क्या आप सचमुच अपने एक-खिलाडी दुनिया रद्द करना चाहते हैं?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
-msgstr ""
+msgstr "हां"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
-msgstr ""
+msgstr "नहीं"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "चिकना उजाला"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
+msgstr "कण"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "त्रिविम दृश्यन बादल"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr ""
+msgstr "अपारदर्शी पानी"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
-msgstr ""
+msgstr "जुडे शिशे"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "कला बनावट :"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "ऐन्टी एलियासिंग :"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
-msgstr ""
+msgstr "स्क्रीन :"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr ""
+msgstr "स्क्रीन परिमाण स्वयं सेव हो"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr ""
+msgstr "छाया बनावट"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr ""
+msgstr "छाया बनावट (अनुपलब्ध)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Reset singleplayer world"
-msgstr ""
+msgstr "एक-खिलाडी दुनिया रीसेट करें"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "की बदलें"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr ""
+msgstr "सभी सेटिंग देखें"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
-msgstr ""
+msgstr "छूने की त्रिज्या : (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bump Mapping"
-msgstr ""
+msgstr "टकराव मैपिंग"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr ""
+msgstr "टोन मैपिंग"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normal Maps"
-msgstr ""
+msgstr "मामूली नक्शे बनाएं"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "पेरलेक्स ऑक्लूजन"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr ""
+msgstr "पानी में लहरें बनें"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
-msgstr ""
+msgstr "पत्ते लहराएं"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr ""
+msgstr "पाैधे लहराएं"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "छाया बनावट कॆ लिये OpenGL ड्राईवर आवश्यक हैं|"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "सेटिंग"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr ""
+msgstr "एक-खिलाडी शुरू करें"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr ""
+msgstr "मॉड कॆ सेटिंग बदलें"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
-msgstr ""
+msgstr "मुख्य"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
-msgstr ""
+msgstr "कनेक्शन समय अंत|"
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "कला लोड हो रही है ..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "छायाएं वापस बन रहीं हैं ..."
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "डिब्बे बन रहें हैं ..."
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "डीब्बे बन रहे हें"
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "हो गया !"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "मुख्य पृ़ष्ठ"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "खिलाडी का नाम अधिक लंबा है|"
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "कनेक्शन खराबी (समय अंत?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "पासवर्ड फाईल नहीं खुला :- "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "कृपया एक नाम चुनें!"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "कोई दुनिया नहीं चुनी गयी है, ना ही पता दिया गया है। कुछ नहीं करना।"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "दुनिया का फाईल पाथ नहीं है : "
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "खेल ढूंढा ना जा सका या लोड नहीं किया जा सका \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "गलत गेमस्पेक कोड।"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string. Put either "no" or "yes"
@@ -879,223 +887,223 @@ msgstr ""
 #. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "yes"
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "शट डाउन हो रहा है ..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "सर्वर बनाया जा रहा है ..."
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "क्लाइंट बनाया जा रहा है ..."
 
 #: src/client/game.cpp
 msgid "Resolving address..."
-msgstr ""
+msgstr "एड्रेस समझा जा रहा है ..."
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
-msgstr ""
+msgstr "सर्वर से कनेक्ट हुआ जा रहा है ..."
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "वस्तुओं के अर्थ ..."
 
 #: src/client/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "डिब्बों का अर्थ ..."
 
 #: src/client/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "कला एवं आवाज़ें ..."
 
 #: src/client/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "कि॰बी॰/एस॰"
 
 #: src/client/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "एम॰ आई॰ बी॰/ एस॰"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr ""
+msgstr "क्लाइंट की तरफ से स्क्रिप्ट लगाना मना है"
 
 #: src/client/game.cpp
 msgid "Sound muted"
-msgstr ""
+msgstr "आवाज़ बंद"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
-msgstr ""
+msgstr "आवाज चालू"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "वॉल्यूम को बदलकर %d%%"
 
 #: src/client/game.cpp src/gui/modalMenu.cpp
 msgid "ok"
-msgstr ""
+msgstr "ठीक है"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
-msgstr ""
+msgstr "उड़ान उपलब्ध है"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr ""
+msgstr "उड़ान उपलब्ध है (सूचना: आपके पास 'उड़ान' विशेषाधिकार नहीं है)"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
-msgstr ""
+msgstr "उड़ान अनुपलब्ध है"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr ""
+msgstr "पिच चलन चालू"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr ""
+msgstr "पिच चलन रुका हुआ"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled"
-msgstr ""
+msgstr "तेज जलन चालू"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr ""
+msgstr "तेज चैनल चालू (सूचना: आपके पास 'तेज' विशेषाधिकार नहीं है)"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
-msgstr ""
+msgstr "तेज चलन रुका हुआ"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled"
-msgstr ""
+msgstr "तरल चाल चालू"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
+msgstr "तरल चाल चालू (सूचना: आपके पास तरल विशेषाधिकार नहीं है)"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "तरल चाल रुका हुआ"
 
 #: src/client/game.cpp
 msgid "Cinematic mode enabled"
-msgstr ""
+msgstr "सिनेमा चाल चालू"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
-msgstr ""
+msgstr "सिनेमा चाल रुका हुआ"
 
 #: src/client/game.cpp
 msgid "Automatic forward enabled"
-msgstr ""
+msgstr "स्वचाल चालू"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
-msgstr ""
+msgstr "स्वचाल रुका हुआ"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
+msgstr "छोटा नक्शा जमीन मोड, 1 गुना ज़ूम"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
+msgstr "छोटा नक्शा जमीन मोड, दोगुना जूम"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x4"
-msgstr ""
+msgstr "छोटा नक्शा जमीन मोड, 4 गुना जून"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
+msgstr "छोटा नक्शा रेडार मोड, 1 गुना ज़ूम"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
+msgstr "छोटा नक्शा रेडर मोड, दोगुना जूम"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
+msgstr "छोटा नक्शा रेडार मोड, 4 गुना ज़ूम"
 
 #: src/client/game.cpp
 msgid "Minimap hidden"
-msgstr ""
+msgstr "छोटा नक्शा गायब"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
+msgstr "खेल या मॉड़ के वजह से छोटा नक्शा मना है"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
-msgstr ""
+msgstr "कोहरा रुका हुआ"
 
 #: src/client/game.cpp
 msgid "Fog enabled"
-msgstr ""
+msgstr "कोहरा चालू"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
-msgstr ""
+msgstr "डीबग जानकारी दिखाई दे रही है"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
-msgstr ""
+msgstr "प्रोफाईलर दिखाई दे रहा है"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr ""
+msgstr "डिब्बे रेखांकित"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
+msgstr "डीबग जानकारी, प्रोफाइलर व रूपरेखा गायब"
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "डीबग जानकारी व प्रोफाइल गायब"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
-msgstr ""
+msgstr "कैमरा रुका हुआ"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
-msgstr ""
+msgstr "कैमरा चालू"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "दृष्टि सीमा अधिकतम : %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
-msgstr ""
+msgstr "दृष्टि सीमा बदलकर %d है"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr ""
+msgstr "दृष्टि सीमा न्यूनतम : %d"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "दृष्टि असीमित"
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "दृष्टि सीमित"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr ""
+msgstr "खेल या मॉड़ के वजह से इस समय ज़ूम मना है"
 
 #: src/client/game.cpp
 msgid ""
@@ -1112,6 +1120,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"आम कंट्रोल्स :\n"
+"कोई मेनू खुला नहीं है :\n"
+"-एक बार टैप : बटन दबेगा\n"
+"-दो टॉप: डालना/ इस्तेमाल करना\n"
+"-उंगली फिसलाना : मुड़ना\n"
+"कोई मेनू या वस्तु सूची खुली है :\n"
+"-बाहर दो बार टैप :\n"
+"--> बंद\n"
+"- ढेर छूएं, स्थान छूएं\n"
+"--> ढेर का स्थान बदलने के लिए\n"
+"- छुए व खींचे, दूसरी उंगली से टैप करें\n"
+"--> एक वस्तु स्थान में डालें\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1131,381 +1151,397 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"कंट्रोल्स:\n"
+"- %s : आगे बढ़ने के लिए\n"
+"- %s : पीछे जाने के लिए\n"
+"- %s : बाय की ओर चलें\n"
+"- %s : दाएं की ओर चलें\n"
+"- %s : कूदे या चढ़े\n"
+"- %s : उतरे / संभल के चलें\n"
+"- %s : वस्तु गिराएं\n"
+"- %s : वस्तु सूची खोलें\n"
+"- : माउस मुड़े देखें\n"
+"- : माउस बाय : खोदें / मुक्का मारें\n"
+"- : माउस दाहिने : डाले / इस्तेमाल करें\n"
+"- : माउस पहिया : वस्तु चुनें\n"
+"- %s : बात करने के लिए\n"
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "आगे बढ़ें"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "पासवर्ड बदलें"
 
 #: src/client/game.cpp
 msgid "Game paused"
-msgstr ""
+msgstr "खेल रुका हुआ है"
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "आवाज़ वॉल्यूम"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "बंद करके मेनू पर जाएं"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "बंद करके ओ॰ एस॰ में जाएं"
 
 #: src/client/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "खेल की जानकारी :"
 
 #: src/client/game.cpp
 msgid "- Mode: "
-msgstr ""
+msgstr "- तकनीक : "
 
 #: src/client/game.cpp
 msgid "Remote server"
-msgstr ""
+msgstr "बाहर का सर्वर"
 
 #: src/client/game.cpp
 msgid "- Address: "
-msgstr ""
+msgstr "- एड्रेस : "
 
 #: src/client/game.cpp
 msgid "Hosting server"
-msgstr ""
+msgstr "सर्वर चलन"
 
 #: src/client/game.cpp
 msgid "- Port: "
-msgstr ""
+msgstr "- पोर्ट : "
 
 #: src/client/game.cpp
 msgid "Singleplayer"
-msgstr ""
+msgstr "एक-खिलाडी"
 
 #: src/client/game.cpp
 msgid "On"
-msgstr ""
+msgstr "ऑन"
 
 #: src/client/game.cpp
 msgid "Off"
-msgstr ""
+msgstr "ऑफ"
 
 #: src/client/game.cpp
 msgid "- Damage: "
-msgstr ""
+msgstr "- हानि : "
 
 #: src/client/game.cpp
 msgid "- Creative Mode: "
-msgstr ""
+msgstr "- असीमित साधन "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "- खिलाड़ियों में मारा-पीटी : "
 
 #: src/client/game.cpp
 msgid "- Public: "
-msgstr ""
+msgstr "- सार्वजनिक : "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr ""
+msgstr "- सर्वर का नाम : "
 
 #: src/client/game.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"अधिक जानकारी के लिए debug.txt देखें।"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "बातें दिखाई देंगी"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
-msgstr ""
+msgstr "बातें दिखाई नहीं देंगी"
 
 #: src/client/gameui.cpp
 msgid "HUD shown"
-msgstr ""
+msgstr "हे॰अ॰डि॰ दिखाई देंगी"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
-msgstr ""
+msgstr "हे॰अ॰डि॰ दिखाई नहीं देंगी"
 
 #: src/client/gameui.cpp
 #, c-format
 msgid "Profiler shown (page %d of %d)"
-msgstr ""
+msgstr "प्रोफाईलर दिखाई दे रही है (पृष्ठ %d %d पृष्ठों में से)"
 
 #: src/client/gameui.cpp
 msgid "Profiler hidden"
-msgstr ""
+msgstr "प्रोफाइलर नहीं दिखाई देगा"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "बायां बटन"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "दाहिना बटन"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
-msgstr ""
+msgstr "बीच का बटन"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
-msgstr ""
+msgstr "X बटन १"
 
 #: src/client/keycode.cpp
 msgid "X Button 2"
-msgstr ""
+msgstr "X बटन २"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
-msgstr ""
+msgstr "बैकस्पेस"
 
 #: src/client/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "टैब बटन"
 
 #: src/client/keycode.cpp
 msgid "Clear"
-msgstr ""
+msgstr "खाली करें"
 
 #: src/client/keycode.cpp
 msgid "Return"
-msgstr ""
+msgstr "रिटर्न बटन"
 
 #: src/client/keycode.cpp
 msgid "Shift"
-msgstr ""
+msgstr "शिफ्ट"
 
 #: src/client/keycode.cpp
 msgid "Control"
-msgstr ""
+msgstr "कंट्रोल"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
-msgstr ""
+msgstr "मेनू (कीबोर्ड)"
 
 #: src/client/keycode.cpp
 msgid "Pause"
-msgstr ""
+msgstr "पॉज़"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
-msgstr ""
+msgstr "कैप्स लाक"
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "स्पेसबार"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "पेज अप"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "पेज डाऊन"
 
 #: src/client/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "एंड"
 
 #: src/client/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "होम"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr ""
+msgstr "बायां"
 
 #: src/client/keycode.cpp
 msgid "Up"
-msgstr ""
+msgstr "ऊपर"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr ""
+msgstr "दाहिना"
 
 #: src/client/keycode.cpp
 msgid "Down"
-msgstr ""
+msgstr "नीचे"
 
 #. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr ""
+msgstr "सिलेक्ट"
 
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr ""
+msgstr "प्रिन्ट बटन"
 
 #: src/client/keycode.cpp
 msgid "Execute"
-msgstr ""
+msgstr "एग्सीक्यूट"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
-msgstr ""
+msgstr "स्नैपशॉट"
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "इन्सर्ट"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "हेल्प"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr ""
+msgstr "लेफ्ट विंडोज"
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr ""
+msgstr "राईट विंडोज"
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr ""
+msgstr "नम्पैड ०"
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr ""
+msgstr "नम्पैड १"
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr ""
+msgstr "नम्पैड २"
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr ""
+msgstr "नम्पैड ३"
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr ""
+msgstr "नम्पैड ४"
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr ""
+msgstr "नम्पैड ५"
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr ""
+msgstr "नम्पैड ६"
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr ""
+msgstr "नम्पैड ७"
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr ""
+msgstr "नम्पैड ८"
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr ""
+msgstr "नम्पैड ९"
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr ""
+msgstr "नम्पैड *"
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr ""
+msgstr "नम्पैड +"
 
 #: src/client/keycode.cpp
 msgid "Numpad ."
-msgstr ""
+msgstr "नम्पैड ."
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr ""
+msgstr "नम्पैड -"
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr ""
+msgstr "नम्पैड /"
 
 #: src/client/keycode.cpp
 msgid "Num Lock"
-msgstr ""
+msgstr "नम लाक"
 
 #: src/client/keycode.cpp
 msgid "Scroll Lock"
-msgstr ""
+msgstr "स्क्रोल लाक"
 
 #: src/client/keycode.cpp
 msgid "Left Shift"
-msgstr ""
+msgstr "लेफ्ट शिफ्ट"
 
 #: src/client/keycode.cpp
 msgid "Right Shift"
-msgstr ""
+msgstr "राईट शिफ्ट"
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "बायां कंट्रोल"
 
 #: src/client/keycode.cpp
 msgid "Right Control"
-msgstr ""
+msgstr "दाहिना"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
-msgstr ""
+msgstr "बायां मेनू"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
-msgstr ""
+msgstr "दाहिना मेनू"
 
 #: src/client/keycode.cpp
 msgid "IME Escape"
-msgstr ""
+msgstr "आई एम ई एस्केप"
 
 #: src/client/keycode.cpp
 msgid "IME Convert"
-msgstr ""
+msgstr "आई एम ई कन्वर्ट"
 
 #: src/client/keycode.cpp
 msgid "IME Nonconvert"
-msgstr ""
+msgstr "आई एम ई नानकन्वर्ट"
 
 #: src/client/keycode.cpp
 msgid "IME Accept"
-msgstr ""
+msgstr "आई एम ई एक्सेप्ट"
 
 #: src/client/keycode.cpp
 msgid "IME Mode Change"
-msgstr ""
+msgstr "आई एम ई मोड चेंज"
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "एप्स"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "स्लीप"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
-msgstr ""
+msgstr "ई.ओ.एफ खाली करें"
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr ""
+msgstr "खेलें"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Zoom"
-msgstr ""
+msgstr "ज़ूम"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
-msgstr ""
+msgstr "ओ ई एम क्लीयर"
 
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
@@ -1516,211 +1552,218 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
+"आप \"%s\" नाम से इस सरवर में पहली बार आने वाले हैं। अगर आप आगे बढ़ते हैं तो "
+"आपके लिए इस सर्वर पर एक अकाउंट बनाया जाएगा।\n"
+"\n"
+"आगे बढ़ने ए लिखें कृपया अपने पासवर्ड को वापस लिखें और फिर 'पंजीकरण व खेलें' "
+"दबाएं, अथवा 'रोकें' दबाएं।"
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr ""
+msgstr "पंजीकरण व खेलें"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "पासवर्ड अलग अलग हैं!"
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr ""
+msgstr "आगे बढ़े"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"कीबोर्ड सेटिंग (अगर यह मेनू खराब हो जाए तो minetest.conf से सब कुछ खाली कर "
+"दें)"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "\"Special\" = climb down"
-msgstr ""
+msgstr "\"स्पेशल\" = नीचे उतरना"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "उड़ने के लिए दो बार कूदें"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
-msgstr ""
+msgstr "कूदने के लिए बटन दबाना अनावश्यक"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr ""
+msgstr "की पहले से इस्तेमाल में है"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "की दबाएं"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "आगे जाएं"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "पीछे जाएं"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Special"
-msgstr ""
+msgstr "स्पेशल"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "कूदना"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "संभल के चलना"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "वस्तु गिराना"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr ""
+msgstr "वस्तु सूची"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
-msgstr ""
+msgstr "पिछली वस्तु"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
-msgstr ""
+msgstr "अगला वस्तु"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
-msgstr ""
+msgstr "कैमरा बदलना"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle minimap"
-msgstr ""
+msgstr "छोटा नक्शा"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr ""
+msgstr "उड़ना"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
-msgstr ""
+msgstr "पिच चलन"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr ""
+msgstr "तेज चलन"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr ""
+msgstr "तरल चाल"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "आवाज बंद"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
-msgstr ""
+msgstr "आवाज़ कम"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
-msgstr ""
+msgstr "आवाज अधिक"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
-msgstr ""
+msgstr "स्वचालन"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr ""
+msgstr "बातें"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Screenshot"
-msgstr ""
+msgstr "स्क्रीनशॉट"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr ""
+msgstr "दृष्टि सीमा चुनना"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr ""
+msgstr "दृष्टि सीमा कम"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr ""
+msgstr "दृष्टि सीमा अधिक"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "कन्सोल"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "आज्ञा"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
-msgstr ""
+msgstr "लोकल कमांड"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr ""
+msgstr "हे. अ. डि"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr ""
+msgstr "बातें दिखना"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fog"
-msgstr ""
+msgstr "कोहरा"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr ""
+msgstr "पुराना पासवर्ड"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr ""
+msgstr "नया पासवर्ड"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "पासवर्ड दोबारा लिखें"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
-msgstr ""
+msgstr "बदलें"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr ""
+msgstr "आवाज "
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
-msgstr ""
+msgstr "निकास"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr ""
+msgstr "चुप"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "डालें "
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "hi"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
-msgstr ""
+msgstr "कंट्रोल्स"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr ""
+msgstr "खिलाडी पर डिब्बे डालना"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1728,40 +1771,46 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"अगर यह चालू होगा तो आप जिस स्थान मैं खडें हैं वही पर डिब्बे डाल सकेंगे |\n"
+"यह छोटी जगहों में काम करते वख़्त काम आ सकता है |"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "उडना"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
+"खिलाडी के असर से मुक्त उड सकेगा |\n"
+"इसके लिये \"उडान\" विषेशाधिकार आवश्यक है |"
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
-msgstr ""
+msgstr "पिच चलन"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
-msgstr ""
+msgstr "चालू होने पर आप जहां देखेंगे उस दिशा को सामने माना जाएगा (पिच चलन)|"
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "तेज चलन"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via the \"special\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"स्पेशल की दबाने पर आप बहुत तॆज चलने लगेंगे |\n"
+"इसके लिये \"तेज\" विषेशाधिकार आवश्यक है |"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "तरल चाल"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1769,52 +1818,57 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"अगर यह उडान के साथ चालू होगा तो आप हर चीज़ के आर-पार उड पाएंगे |\n"
+"इसके लिये \"तरल चाल\" विषेशाधिकार आवश्यक है |"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
-msgstr ""
+msgstr "सिनेमा मोड"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
+"आपका माउस चिकने तरीके से हिलेगा | इसे माउस या दृष्टि चिकनाई भी कहा जाता है |"
+"\n"
+"विडियो बनाते वख़्त काम आ सकता है |"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "केमरा चिकनाई"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
+msgstr "केमरा के मुडने की चिकनाई. मना करने के लिये 0."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "सिनेमा मोड में केमरा चिकनाई"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
+msgstr "सिनेमा मोड में केमरा चिकने तरीके से मुडेगा | मना करने के लिये 0."
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "माउस उल्टा"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "माउस ऊपर करने पर केमरा नीचे जाएगा, और नीचे करने पर ऊपर |"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "माउस संवेदनशीलता"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "माउस संवेदनशीलता गुणक।"
 
 #: src/settings_translation_file.cpp
 msgid "Special key for climbing/descending"
-msgstr ""
+msgstr "चलने उतरने के लिए स्पेशल की"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1822,18 +1876,20 @@ msgid ""
 "down and\n"
 "descending."
 msgstr ""
+"अगर यहां चालू हुआ तो नीचे उतरने के लिए स्पेशल\n"
+"की का इस्तेमाल होगा।"
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr ""
+msgstr "उड़ने के लिए दो बार कूदें"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr ""
+msgstr "दो बार कूदने से उड़ान चलन चालू हो जाता है।"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "हमेशा उड़ान और तेज"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1841,10 +1897,12 @@ msgid ""
 "are\n"
 "enabled."
 msgstr ""
+"अगर यह रुका हुआ हुआ तो तेज उड़ने के लिए\n"
+"स्पेशल की दबानी पड़ेगी |"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "राइट क्लिक के दोहराने का समय"
 
 #: src/settings_translation_file.cpp
 msgid ""
