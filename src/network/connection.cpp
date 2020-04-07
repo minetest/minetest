@@ -924,7 +924,7 @@ UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection* connection) :
 	Peer(a_address,a_id,connection)
 {
 	for (Channel &channel : channels)
-		channel.setWindowSize(g_settings->getU16("max_packets_per_iteration"));
+		channel.setWindowSize(START_RELIABLE_WINDOW_SIZE);
 }
 
 bool UDPPeer::getAddress(MTProtocols type,Address& toset)
@@ -975,22 +975,29 @@ void UDPPeer::PutReliableSendCommand(ConnectionCommand &c,
 	if (m_pending_disconnect)
 		return;
 
-	if ( channels[c.channelnum].queued_commands.empty() &&
+	Channel &chan = channels[c.channelnum];
+
+	if (chan.queued_commands.empty() &&
 			/* don't queue more packets then window size */
-			(channels[c.channelnum].queued_reliables.size()
-			< (channels[c.channelnum].getWindowSize()/2))) {
+			(chan.queued_reliables.size() < chan.getWindowSize() / 2)) {
 		LOG(dout_con<<m_connection->getDesc()
 				<<" processing reliable command for peer id: " << c.peer_id
 				<<" data size: " << c.data.getSize() << std::endl);
 		if (!processReliableSendCommand(c,max_packet_size)) {
-			channels[c.channelnum].queued_commands.push_back(c);
+			chan.queued_commands.push_back(c);
 		}
 	}
 	else {
 		LOG(dout_con<<m_connection->getDesc()
 				<<" Queueing reliable command for peer id: " << c.peer_id
 				<<" data size: " << c.data.getSize() <<std::endl);
-		channels[c.channelnum].queued_commands.push_back(c);
+		chan.queued_commands.push_back(c);
+		if (chan.queued_commands.size() >= chan.getWindowSize() / 2) {
+			LOG(derr_con << m_connection->getDesc()
+					<< "Possible packet stall to peer id: " << c.peer_id
+					<< " queued_commands=" << chan.queued_commands.size()
+					<< std::endl);
+		}
 	}
 }
 
@@ -1001,6 +1008,8 @@ bool UDPPeer::processReliableSendCommand(
 	if (m_pending_disconnect)
 		return true;
 
+	Channel &chan = channels[c.channelnum];
+
 	u32 chunksize_max = max_packet_size
 							- BASE_HEADER_SIZE
 							- RELIABLE_HEADER_SIZE;
@@ -1008,13 +1017,13 @@ bool UDPPeer::processReliableSendCommand(
 	sanity_check(c.data.getSize() < MAX_RELIABLE_WINDOW_SIZE*512);
 
 	std::list<SharedBuffer<u8>> originals;
-	u16 split_sequence_number = channels[c.channelnum].readNextSplitSeqNum();
+	u16 split_sequence_number = chan.readNextSplitSeqNum();
 
 	if (c.raw) {
 		originals.emplace_back(c.data);
 	} else {
 		makeAutoSplitPacket(c.data, chunksize_max,split_sequence_number, &originals);
-		channels[c.channelnum].setNextSplitSeqNum(split_sequence_number);
+		chan.setNextSplitSeqNum(split_sequence_number);
 	}
 
 	bool have_sequence_number = true;
@@ -1023,7 +1032,7 @@ bool UDPPeer::processReliableSendCommand(
 	volatile u16 initial_sequence_number = 0;
 
 	for (SharedBuffer<u8> &original : originals) {
-		u16 seqnum = channels[c.channelnum].getOutgoingSequenceNumber(have_sequence_number);
+		u16 seqnum = chan.getOutgoingSequenceNumber(have_sequence_number);
 
 		/* oops, we don't have enough sequence numbers to send this packet */
 		if (!have_sequence_number)
@@ -1055,10 +1064,10 @@ bool UDPPeer::processReliableSendCommand(
 //					<< " channel: " << (c.channelnum&0xFF)
 //					<< " seqnum: " << readU16(&p.data[BASE_HEADER_SIZE+1])
 //					<< std::endl)
-			channels[c.channelnum].queued_reliables.push(p);
+			chan.queued_reliables.push(p);
 			pcount++;
 		}
-		sanity_check(channels[c.channelnum].queued_reliables.size() < 0xFFFF);
+		sanity_check(chan.queued_reliables.size() < 0xFFFF);
 		return true;
 	}
 
@@ -1073,7 +1082,7 @@ bool UDPPeer::processReliableSendCommand(
 		toadd.pop();
 
 		bool successfully_put_back_sequence_number
-			= channels[c.channelnum].putBackSequenceNumber(
+			= chan.putBackSequenceNumber(
 				(initial_sequence_number+toadd.size() % (SEQNUM_MAX+1)));
 
 		FATAL_ERROR_IF(!successfully_put_back_sequence_number, "error");
@@ -1081,7 +1090,7 @@ bool UDPPeer::processReliableSendCommand(
 
 	// DO NOT REMOVE n_queued! It avoids a deadlock of async locked
 	// 'log_message_mutex' and 'm_list_mutex'.
-	u32 n_queued = channels[c.channelnum].outgoing_reliables_sent.size();
+	u32 n_queued = chan.outgoing_reliables_sent.size();
 
 	LOG(dout_con<<m_connection->getDesc()
 			<< " Windowsize exceeded on reliable sending "
