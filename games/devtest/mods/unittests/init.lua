@@ -5,6 +5,7 @@ dofile(modpath .. "/random.lua")
 dofile(modpath .. "/player.lua")
 dofile(modpath .. "/crafting_prepare.lua")
 dofile(modpath .. "/crafting.lua")
+dofile(modpath .. "/vector_json.lua")
 
 if minetest.settings:get_bool("devtest_unittests_autostart", false) then
 	unittests.test_random()
@@ -12,5 +13,6 @@ if minetest.settings:get_bool("devtest_unittests_autostart", false) then
 	minetest.register_on_joinplayer(function(player)
 		unittests.test_player(player)
 	end)
+	unittests.test_vector_json()
 end
 

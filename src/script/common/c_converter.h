@@ -83,6 +83,7 @@ bool               getstringfield(lua_State *L, int table,
 size_t             getstringlistfield(lua_State *L, int table,
                              const char *fieldname,
                              std::vector<std::string> *result);
+/** Reads item groups from definition; Implemented in c_content.cpp */
 void               read_groups(lua_State *L, int index,
                              std::unordered_map<std::string, int> &result);
 bool               getboolfield(lua_State *L, int table,
@@ -130,9 +131,17 @@ void                pushFloatPos        (lua_State *L, v3f p);
 void                push_v3f            (lua_State *L, v3f p);
 void                push_v2f            (lua_State *L, v2f p);
 
+/** Creates a warning with message @param message if field with name @param fieldname
+ * exists in the @param table; Implemented in c_content.cpp */
 void                warn_if_field_exists(lua_State *L, int table,
                                          const char *fieldname,
                                          const std::string &message);
 
 size_t write_array_slice_float(lua_State *L, int table_index, float *data,
 	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
+
+/**
+ * Returns whether the top value on the stack is a real lua vector, as constructed
+ * from builtin's vector.new
+ */
+bool                is_real_lua_vector  (lua_State *L);

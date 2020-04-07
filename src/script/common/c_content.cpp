@@ -1770,6 +1770,32 @@ void read_json_value(lua_State *L, Json::Value &root, int index, u8 recursion)
 		size_t len;
 		const char *str = lua_tolstring(L, index, &len);
 		root = std::string(str, len);
+	} else if (is_real_lua_vector(L)) {
+		// vectors from builtin need to be handled specially
+		lua_pushnil(L);
+		while (lua_next(L, index)) {
+			// Key is at -2 and value is at -1
+			Json::Value value;
+			read_json_value(L, value, lua_gettop(L), recursion + 1);
+
+			int keytype = lua_type(L, -1);
+			if (keytype == LUA_TNUMBER) {
+				lua_Number key = lua_tonumber(L, -1);
+				// map 1,2,3 to x,y,z
+				if (key == 1.0)
+					root["x"] = value;
+				else if (key == 2.0)
+					root["y"] = value;
+				else if (key == 3.0)
+					root["z"] = value;
+				else
+					throw SerializationError("Can't mix array and vector-object values in JSON");
+			} else if (keytype == LUA_TSTRING) {
+				root[lua_tostring(L, -1)] = value;
+			} else {
+				throw SerializationError("Lua key to convert to JSON is not a string or number");
+			}
+		}
 	} else if (type == LUA_TTABLE) {
 		lua_pushnil(L);
 		while (lua_next(L, index)) {

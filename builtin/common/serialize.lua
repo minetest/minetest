@@ -126,11 +126,13 @@ function core.serialize(x)
 			local vals = {}
 			local idx_dumped = {}
 			local np = nest_points[x]
-			for i, v in ipairs(x) do
-				if not np or not np[i] then
-					vals[#vals + 1] = dump_or_ref_val(v)
+			if not vector.is_vector(x) then
+				for i, v in ipairs(x) do
+					if not np or not np[i] then
+						vals[#vals + 1] = dump_or_ref_val(v)
+					end
+					idx_dumped[i] = true
 				end
-				idx_dumped[i] = true
 			end
 			for k, v in pairs(x) do
 				if (not np or not np[k]) and

@@ -1,4 +1,5 @@
 _G.core = {}
+dofile("builtin/common/vector.lua")
 dofile("builtin/common/misc_helpers.lua")
 
 describe("string", function()
@@ -55,8 +56,8 @@ end)
 
 describe("pos", function()
 	it("from string", function()
-		assert.same({ x = 10, y = 5.1, z = -2}, core.string_to_pos("10.0, 5.1, -2"))
-		assert.same({ x = 10, y = 5.1, z = -2}, core.string_to_pos("( 10.0, 5.1, -2)"))
+		assert.equal(vector.new(10, 5.1, -2), core.string_to_pos("10.0, 5.1, -2"))
+		assert.equal(vector.new(10, 5.1, -2), core.string_to_pos("( 10.0, 5.1, -2)"))
 		assert.is_nil(core.string_to_pos("asd, 5, -2)"))
 	end)
 

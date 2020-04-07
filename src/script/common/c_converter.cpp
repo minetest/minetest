@@ -51,6 +51,31 @@ if (value < F1000_MIN || value > F1000_MAX) { \
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
 
 
+/**
+ * A helper which sets (if available) the vector metatable from builtin as metatable
+ * for the table on top of the stack
+ */
+static void set_vector_metatable(lua_State *L)
+{
+	// get vector.metatable
+	lua_pushstring(L, "vector");
+	lua_rawget(L, LUA_GLOBALSINDEX);
+	if (!lua_istable(L, -1)) {
+		// there is no global vector table
+		lua_pop(L, 1);
+		warningstream << "set_vector_metatable in c_converter.cpp: " <<
+				"missing global vector table" << std::endl;
+		return;
+	}
+	lua_pushstring(L, "metatable");
+	lua_rawget(L, -2);
+	// set the metatable
+	lua_setmetatable(L, -3);
+	// pop vector global
+	lua_pop(L, 1);
+}
+
+
 void push_float_string(lua_State *L, float value)
 {
 	std::stringstream ss;
@@ -62,13 +87,14 @@ void push_float_string(lua_State *L, float value)
 
 void push_v3f(lua_State *L, v3f p)
 {
-	lua_createtable(L, 0, 3);
+	lua_createtable(L, 3, 0);
 	lua_pushnumber(L, p.X);
-	lua_setfield(L, -2, "x");
+	lua_rawseti(L, -2, 1);
 	lua_pushnumber(L, p.Y);
-	lua_setfield(L, -2, "y");
+	lua_rawseti(L, -2, 2);
 	lua_pushnumber(L, p.Z);
-	lua_setfield(L, -2, "z");
+	lua_rawseti(L, -2, 3);
+	set_vector_metatable(L);
 }
 
 void push_v2f(lua_State *L, v2f p)
@@ -274,13 +300,14 @@ v3f checkFloatPos(lua_State *L, int index)
 
 void push_v3s16(lua_State *L, v3s16 p)
 {
-	lua_createtable(L, 0, 3);
+	lua_createtable(L, 3, 0);
 	lua_pushinteger(L, p.X);
-	lua_setfield(L, -2, "x");
+	lua_rawseti(L, -2, 1);
 	lua_pushinteger(L, p.Y);
-	lua_setfield(L, -2, "y");
+	lua_rawseti(L, -2, 2);
 	lua_pushinteger(L, p.Z);
-	lua_setfield(L, -2, "z");
+	lua_rawseti(L, -2, 3);
+	set_vector_metatable(L);
 }
 
 v3s16 read_v3s16(lua_State *L, int index)
@@ -451,6 +478,36 @@ size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result
 	}
 
 	return num_strings;
+}
+
+bool is_real_lua_vector(lua_State *L)
+{
+	if (!lua_istable(L, -1))
+		return false;
+
+	// get the metatable
+	if (!lua_getmetatable(L, -1)) {
+		// no metatable, it can not be a real vector
+		return false;
+	}
+
+	// get vector.metatable
+	lua_pushstring(L, "vector");
+	lua_rawget(L, LUA_GLOBALSINDEX);
+	if (!lua_istable(L, -1)) {
+		// there is no global vector table, hence there can not be a vector
+		lua_pop(L, 2);
+		return false;
+	}
+	lua_pushstring(L, "metatable");
+	lua_rawget(L, -2);
+
+	// compare the metatables (stack: <metatable> <vector> <vector.metatable>)
+	bool ret = lua_rawequal(L, -1, -3);
+
+	// clean up
+	lua_pop(L, 3);
+	return ret;
 }
 
 /*
