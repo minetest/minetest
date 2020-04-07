@@ -31,11 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "util/timetaker.h"
 #include "profiler.h"
-#include <iomanip>
-
-// float error is 10 - 9.96875 = 0.03125
-//#define COLL_ZERO 0.032 // broken unit tests
-#define COLL_ZERO 0
 
 
 struct NearbyCollisionInfo {
@@ -83,24 +78,23 @@ CollisionAxis axisAlignedCollision(
 
 	if (speed.X) {
 		distance = relbox.MaxEdge.X - relbox.MinEdge.X;
-		//distance = distance >= 0.03f ? distance - 0.03f : distance;
 
-		*dtime = distance>=0 ? std::abs(distance / speed.X) : -std::abs(distance / speed.X);
+		*dtime = distance >= 0 ? std::abs(distance / speed.X) : -std::abs(distance / speed.X);
 		time = std::max(*dtime, 0.0f);
 
 		if (distance > inner_margin) {
 			if (*dtime <= dtime_max) {
-				if (((speed.X > 0) && (staticbox.MaxEdge.X > movingbox.MaxEdge.X)) ||
-					((speed.X < 0) && (staticbox.MinEdge.X < movingbox.MinEdge.X)))
-				{
+				if ((speed.X > 0 && staticbox.MaxEdge.X > movingbox.MaxEdge.X) ||
+					(speed.X < 0 && staticbox.MinEdge.X < movingbox.MinEdge.X)) {
 					if (
-						(std::max(movingbox.MaxEdge.Y + speed.Y * time, staticbox.MaxEdge.Y) 
-							- std::min(movingbox.MinEdge.Y + speed.Y * time, staticbox.MinEdge.Y) 
+						(std::max(movingbox.MaxEdge.Y + speed.Y * time, staticbox.MaxEdge.Y)
+							- std::min(movingbox.MinEdge.Y + speed.Y * time, staticbox.MinEdge.Y)
 							- relbox.MinEdge.Y < 0) &&
 						(std::max(movingbox.MaxEdge.Z + speed.Z * time, staticbox.MaxEdge.Z)
 							- std::min(movingbox.MinEdge.Z + speed.Z * time, staticbox.MinEdge.Z)
 							- relbox.MinEdge.Z < 0)
-						) return COLLISION_AXIS_X;
+						) 
+						return COLLISION_AXIS_X;
 				}
 			}
 			else return COLLISION_AXIS_NONE;
@@ -111,17 +105,14 @@ CollisionAxis axisAlignedCollision(
 
 	if (speed.Y) {
 		distance = relbox.MaxEdge.Y - relbox.MinEdge.Y;
-		//distance = distance >= 0.03f ? distance - 0.03f : distance;
 
-		*dtime = distance>=0 ? std::abs(distance / speed.Y) : -std::abs(distance / speed.Y);
+		*dtime = distance >= 0 ? std::abs(distance / speed.Y) : -std::abs(distance / speed.Y);
 		time = std::max(*dtime, 0.0f);
 
 		if (distance > inner_margin) {
 			if (*dtime <= dtime_max) {
-				if (((speed.Y > 0) && (staticbox.MaxEdge.Y > movingbox.MaxEdge.Y)) ||
-					((speed.Y < 0) && (staticbox.MinEdge.Y < movingbox.MinEdge.Y)))
-				{
-
+				if ((speed.Y > 0 && staticbox.MaxEdge.Y > movingbox.MaxEdge.Y) ||
+					(speed.Y < 0 && staticbox.MinEdge.Y < movingbox.MinEdge.Y)) {
 					if (
 						(std::max(movingbox.MaxEdge.X + speed.X * time, staticbox.MaxEdge.X)
 							- std::min(movingbox.MinEdge.X + speed.X * time, staticbox.MinEdge.X)
@@ -129,7 +120,8 @@ CollisionAxis axisAlignedCollision(
 						(std::max(movingbox.MaxEdge.Z + speed.Z * time, staticbox.MaxEdge.Z)
 							- std::min(movingbox.MinEdge.Z + speed.Z * time, staticbox.MinEdge.Z)
 							- relbox.MinEdge.Z < 0)
-						) return COLLISION_AXIS_Y;
+						) 
+						return COLLISION_AXIS_Y;
 				}
 			}
 			else return COLLISION_AXIS_NONE;
@@ -140,17 +132,14 @@ CollisionAxis axisAlignedCollision(
 
 	if (speed.Z) {
 		distance = relbox.MaxEdge.Z - relbox.MinEdge.Z;
-		//distance = distance >= 0.03f ? distance - 0.03f : distance;
 
-		*dtime = distance>=0 ? std::abs(distance / speed.Z) : -std::abs(distance / speed.Z);
+		*dtime = distance >= 0 ? std::abs(distance / speed.Z) : -std::abs(distance / speed.Z);
 		time = std::max(*dtime, 0.0f);
 
 		if (distance > inner_margin) {
 			if (*dtime <= dtime_max) {
-				if (((speed.Z > 0) && (staticbox.MaxEdge.Z > movingbox.MaxEdge.Z)) ||
-					((speed.Z < 0) && (staticbox.MinEdge.Z < movingbox.MinEdge.Z)))
-				{
-
+				if ((speed.Z > 0 && staticbox.MaxEdge.Z > movingbox.MaxEdge.Z) ||
+					(speed.Z < 0 && staticbox.MinEdge.Z < movingbox.MinEdge.Z)) {
 					if (
 						(std::max(movingbox.MaxEdge.X + speed.X * time, staticbox.MaxEdge.X)
 							- std::min(movingbox.MinEdge.X + speed.X * time, staticbox.MinEdge.X)
@@ -158,7 +147,8 @@ CollisionAxis axisAlignedCollision(
 						(std::max(movingbox.MaxEdge.Y + speed.Y * time, staticbox.MaxEdge.Y)
 							- std::min(movingbox.MinEdge.Y + speed.Y * time, staticbox.MinEdge.Y)
 							- relbox.MinEdge.Y < 0)
-						) return COLLISION_AXIS_Z;
+						) 
+						return COLLISION_AXIS_Z;
 				}
 			}
 		}
@@ -412,17 +402,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		Collision detection
 	*/
 
-	/*
-		Collision uncertainty radius
-		Make it a bit larger than the maximum distance of movement
-	*/
-	f32 d = pos_max_d * 1.1f;
-	// A fairly large value in here makes moving smoother
-	//f32 d = 0.15*BS;
-
-	f32 d = 0.0f;	// Temporary fix, any nonzero d causes collision glitches, the more the greater it is.
-	// ultimately it has to be determined if any uncertainty is involved, and if it is, eliminated
-	// and d & pos_max_d params removed from function calls.
+	f32 d = 0.0f;
 
 	int loopcount = 0;
 
@@ -571,9 +551,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			Object touches ground if object's minimum Y is near node's
 			maximum Y and object's X-Z-area overlaps with the node's
 			X-Z-area.
-
-			Use 0.15*BS so that it is easier to get on a node.
 		*/
+
 		if (cbox.MaxEdge.X - d > box.MinEdge.X && cbox.MinEdge.X + d < box.MaxEdge.X &&
 				cbox.MaxEdge.Z - d > box.MinEdge.Z &&
 				cbox.MinEdge.Z + d < box.MaxEdge.Z) {
@@ -583,8 +562,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				box.MinEdge += *pos_f;
 				box.MaxEdge += *pos_f;
 			}
-			//if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.15f * BS) {
-			if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.05f) {					//TheTermos make it less stupid after step-up fix
+			if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.05f) {
 				result.touching_ground = true;
 
 				if (box_info.is_object)
