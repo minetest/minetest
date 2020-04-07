@@ -85,7 +85,7 @@ CollisionAxis axisAlignedCollision(
 		if (distance > inner_margin) {
 			if (*dtime <= dtime_max) {
 				if ((speed.X > 0 && staticbox.MaxEdge.X > movingbox.MaxEdge.X) ||
-					(speed.X < 0 && staticbox.MinEdge.X < movingbox.MinEdge.X)) {
+						(speed.X < 0 && staticbox.MinEdge.X < movingbox.MinEdge.X)) {
 					if (
 						(std::max(movingbox.MaxEdge.Y + speed.Y * time, staticbox.MaxEdge.Y)
 							- std::min(movingbox.MinEdge.Y + speed.Y * time, staticbox.MinEdge.Y)
@@ -96,8 +96,9 @@ CollisionAxis axisAlignedCollision(
 						) 
 						return COLLISION_AXIS_X;
 				}
+			} else {
+				return COLLISION_AXIS_NONE;
 			}
-			else return COLLISION_AXIS_NONE;
 		}
 	}
 
@@ -112,7 +113,7 @@ CollisionAxis axisAlignedCollision(
 		if (distance > inner_margin) {
 			if (*dtime <= dtime_max) {
 				if ((speed.Y > 0 && staticbox.MaxEdge.Y > movingbox.MaxEdge.Y) ||
-					(speed.Y < 0 && staticbox.MinEdge.Y < movingbox.MinEdge.Y)) {
+						(speed.Y < 0 && staticbox.MinEdge.Y < movingbox.MinEdge.Y)) {
 					if (
 						(std::max(movingbox.MaxEdge.X + speed.X * time, staticbox.MaxEdge.X)
 							- std::min(movingbox.MinEdge.X + speed.X * time, staticbox.MinEdge.X)
@@ -123,8 +124,9 @@ CollisionAxis axisAlignedCollision(
 						) 
 						return COLLISION_AXIS_Y;
 				}
+			} else {
+				return COLLISION_AXIS_NONE;
 			}
-			else return COLLISION_AXIS_NONE;
 		}
 	}
 
@@ -139,7 +141,7 @@ CollisionAxis axisAlignedCollision(
 		if (distance > inner_margin) {
 			if (*dtime <= dtime_max) {
 				if ((speed.Z > 0 && staticbox.MaxEdge.Z > movingbox.MaxEdge.Z) ||
-					(speed.Z < 0 && staticbox.MinEdge.Z < movingbox.MinEdge.Z)) {
+						(speed.Z < 0 && staticbox.MinEdge.Z < movingbox.MinEdge.Z)) {
 					if (
 						(std::max(movingbox.MaxEdge.X + speed.X * time, staticbox.MaxEdge.X)
 							- std::min(movingbox.MinEdge.X + speed.X * time, staticbox.MinEdge.X)
