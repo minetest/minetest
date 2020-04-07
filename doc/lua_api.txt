@@ -2897,7 +2897,8 @@ For the following functions `x` can be either a vector or a number:
     * Returns a scaled vector or Schur quotient.
 
 For the following functions `a` is an angle in radians and `r` is a rotation
-vector ({x = <pitch>, y = <yaw>, z = <roll>})
+vector ({x = <pitch>, y = <yaw>, z = <roll>}) where pitch, yaw and roll are
+in radians and according to the left hand rule.
 
 * `vector.rotate(v, r):
     * Applies the rotation `r` to `v` and returns the result.
