@@ -17,7 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "client/tile.h" // ITextureSource
 #include "irrlichttypes_extrabloated.h"
+#include "util/string.h"
 #include <array>
 
 #pragma once
@@ -35,14 +37,18 @@ public:
 		BORDER,
 		BGIMG,
 		BGIMG_HOVERED,
+		BGIMG_MIDDLE,
 		BGIMG_PRESSED,
+		FGIMG,
+		FGIMG_HOVERED,
+		FGIMG_PRESSED,
 		ALPHA,
 		NUM_PROPERTIES,
 		NONE
 	};
 
 private:
-	std::array<bool, NUM_PROPERTIES> property_set;
+	std::array<bool, NUM_PROPERTIES> property_set{};
 	std::array<std::string, NUM_PROPERTIES> properties;
 
 public:
@@ -64,8 +70,16 @@ public:
 			return BGIMG;
 		} else if (name == "bgimg_hovered") {
 			return BGIMG_HOVERED;
+		} else if (name == "bgimg_middle") {
+			return BGIMG_MIDDLE;
 		} else if (name == "bgimg_pressed") {
 			return BGIMG_PRESSED;
+		} else if (name == "fgimg") {
+			return FGIMG;
+		} else if (name == "fgimg_hovered") {
+			return FGIMG_HOVERED;
+		} else if (name == "fgimg_pressed") {
+			return FGIMG_PRESSED;
 		} else if (name == "alpha") {
 			return ALPHA;
 		} else {
@@ -106,6 +120,52 @@ public:
 		return color;
 	}
 
+	irr::core::rect<s32> getRect(Property prop, irr::core::rect<s32> def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty())
+			return def;
+
+		irr::core::rect<s32> rect;
+		if (!parseRect(val, &rect))
+			return def;
+
+		return rect;
+	}
+
+	irr::core::rect<s32> getRect(Property prop) const
+	{
+		const auto &val = properties[prop];
+		FATAL_ERROR_IF(val.empty(), "Unexpected missing property");
+
+		irr::core::rect<s32> rect;
+		parseRect(val, &rect);
+		return rect;
+	}
+
+	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc,
+			video::ITexture *def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty()) {
+			return def;
+		}
+
+		video::ITexture *texture = tsrc->getTexture(val);
+
+		return texture;
+	}
+
+	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc) const
+	{
+		const auto &val = properties[prop];
+		FATAL_ERROR_IF(val.empty(), "Unexpected missing property");
+
+		video::ITexture *texture = tsrc->getTexture(val);
+
+		return texture;
+	}
+
 	bool getBool(Property prop, bool def) const
 	{
 		const auto &val = properties[prop];
@@ -140,5 +200,37 @@ public:
 		StyleSpec newspec = *this;
 		newspec |= other;
 		return newspec;
+	}
+
+private:
+	bool parseRect(const std::string &value, irr::core::rect<s32> *parsed_rect) const
+	{
+		irr::core::rect<s32> rect;
+		std::vector<std::string> v_rect = split(value, ',');
+
+		if (v_rect.size() == 1) {
+			s32 x = stoi(v_rect[0]);
+			rect.UpperLeftCorner = irr::core::vector2di(x, x);
+			rect.LowerRightCorner = irr::core::vector2di(-x, -x);
+		} else if (v_rect.size() == 2) {
+			s32 x = stoi(v_rect[0]);
+			s32 y =	stoi(v_rect[1]);
+			rect.UpperLeftCorner = irr::core::vector2di(x, y);
+			rect.LowerRightCorner = irr::core::vector2di(-x, -y);
+			// `-x` is interpreted as `w - x`
+		} else if (v_rect.size() == 4) {
+			rect.UpperLeftCorner = irr::core::vector2di(
+					stoi(v_rect[0]), stoi(v_rect[1]));
+			rect.LowerRightCorner = irr::core::vector2di(
+					stoi(v_rect[2]), stoi(v_rect[3]));
+		} else {
+			warningstream << "Invalid rectangle string format: \"" << value
+					<< "\"" << std::endl;
+			return false;
+		}
+
+		*parsed_rect = rect;
+
+		return true;
 	}
 };

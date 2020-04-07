@@ -66,6 +66,21 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	m_cloud_params.height = 120.0f;
 	m_cloud_params.thickness = 16.0f;
 	m_cloud_params.speed = v2f(0.0f, -2.0f);
+
+	// Skybox defaults:
+
+	SkyboxDefaults sky_defaults;
+
+	m_skybox_params.sky_color = sky_defaults.getSkyColorDefaults();
+	m_skybox_params.type = "regular";
+	m_skybox_params.clouds = true;
+	m_skybox_params.sun_tint = video::SColor(255, 244, 125, 29);
+	m_skybox_params.moon_tint = video::SColorf(0.5, 0.6, 0.8, 1).toSColor();
+	m_skybox_params.tint_type = "default";
+
+	m_sun_params = sky_defaults.getSunDefaults();
+	m_moon_params = sky_defaults.getMoonDefaults();
+	m_star_params = sky_defaults.getStarDefaults();
 }
 
 void RemotePlayer::serializeExtraAttributes(std::string &output)

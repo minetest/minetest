@@ -7,8 +7,6 @@ if [ -z "${CLANG_TIDY}" ]; then
 	CLANG_TIDY=clang-tidy
 fi
 
-files_to_analyze="$(find src/ -name '*.cpp' -or -name '*.h')"
-
 mkdir -p cmakebuild && cd cmakebuild
 cmake -DCMAKE_BUILD_TYPE=Debug \
 	-DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
@@ -20,11 +18,11 @@ make GenerateVersion
 cd ..
 
 echo "Performing clang-tidy checks..."
-./util/travis/run-clang-tidy.py -clang-tidy-binary=${CLANG_TIDY} -p cmakebuild \
-	-checks='-*,modernize-use-emplace,modernize-avoid-bind,performance-*' \
-	-warningsaserrors='-*,modernize-use-emplace,performance-type-promotion-in-math-fn,performance-faster-string-find,performance-implicit-cast-in-loop' \
-	-no-command-on-stdout -quiet \
-	files 'src/.*'
+./util/travis/run-clang-tidy.py \
+	-clang-tidy-binary=${CLANG_TIDY} -p cmakebuild \
+	-quiet -config="$(cat .clang-tidy)" \
+	'src/.*'
+
 RET=$?
 echo "Clang tidy returned $RET"
 exit $RET

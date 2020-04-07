@@ -41,17 +41,23 @@ namespace con
 /* defines used for debugging and profiling                                   */
 /******************************************************************************/
 #ifdef NDEBUG
-#define LOG(a) a
-#define PROFILE(a)
+	#define LOG(a) a
+	#define PROFILE(a)
 #else
-/* this mutex is used to achieve log message consistency */
-std::mutex log_message_mutex;
-#define LOG(a)                                                                 \
-	{                                                                          \
-	MutexAutoLock loglock(log_message_mutex);                                 \
-	a;                                                                         \
-	}
-#define PROFILE(a) a
+	#if 0
+	/* this mutex is used to achieve log message consistency */
+	std::mutex log_message_mutex;
+	#define LOG(a)                                                                 \
+		{                                                                          \
+		MutexAutoLock loglock(log_message_mutex);                                 \
+		a;                                                                         \
+		}
+	#else
+	// Prevent deadlocks until a solution is found after 5.2.0 (TODO)
+	#define LOG(a) a
+	#endif
+
+	#define PROFILE(a) a
 #endif
 
 #define PING_TIMEOUT 5.0
@@ -1073,6 +1079,10 @@ bool UDPPeer::processReliableSendCommand(
 		FATAL_ERROR_IF(!successfully_put_back_sequence_number, "error");
 	}
 
+	// DO NOT REMOVE n_queued! It avoids a deadlock of async locked
+	// 'log_message_mutex' and 'm_list_mutex'.
+	u32 n_queued = channels[c.channelnum].outgoing_reliables_sent.size();
+
 	LOG(dout_con<<m_connection->getDesc()
 			<< " Windowsize exceeded on reliable sending "
 			<< c.data.getSize() << " bytes"
@@ -1081,7 +1091,7 @@ bool UDPPeer::processReliableSendCommand(
 			<< std::endl << "\t\tgot at most            : "
 			<< packets_available << " packets"
 			<< std::endl << "\t\tpackets queued         : "
-			<< channels[c.channelnum].outgoing_reliables_sent.size()
+			<< n_queued
 			<< std::endl);
 
 	return false;
@@ -1323,16 +1333,21 @@ void Connection::Disconnect()
 	putCommand(c);
 }
 
-void Connection::Receive(NetworkPacket* pkt)
+bool Connection::Receive(NetworkPacket *pkt, u32 timeout)
 {
+	/*
+		Note that this function can potentially wait infinitely if non-data
+		events keep happening before the timeout expires.
+		This is not considered to be a problem (is it?)
+	*/
 	for(;;) {
-		ConnectionEvent e = waitEvent(m_bc_receive_timeout);
+		ConnectionEvent e = waitEvent(timeout);
 		if (e.type != CONNEVENT_NONE)
 			LOG(dout_con << getDesc() << ": Receive: got event: "
 					<< e.describe() << std::endl);
 		switch(e.type) {
 		case CONNEVENT_NONE:
-			throw NoIncomingDataException("No incoming data");
+			return false;
 		case CONNEVENT_DATA_RECEIVED:
 			// Data size is lesser than command size, ignoring packet
 			if (e.data.getSize() < 2) {
@@ -1340,7 +1355,7 @@ void Connection::Receive(NetworkPacket* pkt)
 			}
 
 			pkt->putRawPacket(*e.data, e.data.getSize(), e.peer_id);
-			return;
+			return true;
 		case CONNEVENT_PEER_ADDED: {
 			UDPPeer tmp(e.peer_id, e.address, this);
 			if (m_bc_peerhandler)
@@ -1358,7 +1373,19 @@ void Connection::Receive(NetworkPacket* pkt)
 					"(port already in use?)");
 		}
 	}
-	throw NoIncomingDataException("No incoming data");
+	return false;
+}
+
+void Connection::Receive(NetworkPacket *pkt)
+{
+	bool any = Receive(pkt, m_bc_receive_timeout);
+	if (!any)
+		throw NoIncomingDataException("No incoming data");
+}
+
+bool Connection::TryReceive(NetworkPacket *pkt)
+{
+	return Receive(pkt, 0);
 }
 
 void Connection::Send(session_t peer_id, u8 channelnum,

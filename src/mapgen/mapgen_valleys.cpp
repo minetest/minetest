@@ -67,7 +67,11 @@ MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeManager *emerge)
 
 	cave_width         = params->cave_width;
 	large_cave_depth   = params->large_cave_depth;
-	lava_depth         = params->lava_depth;
+	small_cave_num_min = params->small_cave_num_min;
+	small_cave_num_max = params->small_cave_num_max;
+	large_cave_num_min = params->large_cave_num_min;
+	large_cave_num_max = params->large_cave_num_max;
+	large_cave_flooded = params->large_cave_flooded;
 	cavern_limit       = params->cavern_limit;
 	cavern_taper       = params->cavern_taper;
 	cavern_threshold   = params->cavern_threshold;
@@ -124,18 +128,22 @@ MapgenValleysParams::MapgenValleysParams():
 
 void MapgenValleysParams::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgvalleys_spflags",        spflags, flagdesc_mapgen_valleys);
-	settings->getU16NoEx("mgvalleys_altitude_chill",     altitude_chill);
-	settings->getS16NoEx("mgvalleys_large_cave_depth",   large_cave_depth);
-	settings->getS16NoEx("mgvalleys_lava_depth",         lava_depth);
-	settings->getU16NoEx("mgvalleys_river_depth",        river_depth);
-	settings->getU16NoEx("mgvalleys_river_size",         river_size);
-	settings->getFloatNoEx("mgvalleys_cave_width",       cave_width);
-	settings->getS16NoEx("mgvalleys_cavern_limit",       cavern_limit);
-	settings->getS16NoEx("mgvalleys_cavern_taper",       cavern_taper);
-	settings->getFloatNoEx("mgvalleys_cavern_threshold", cavern_threshold);
-	settings->getS16NoEx("mgvalleys_dungeon_ymin",       dungeon_ymin);
-	settings->getS16NoEx("mgvalleys_dungeon_ymax",       dungeon_ymax);
+	settings->getFlagStrNoEx("mgvalleys_spflags", spflags, flagdesc_mapgen_valleys);
+	settings->getU16NoEx("mgvalleys_altitude_chill",       altitude_chill);
+	settings->getS16NoEx("mgvalleys_large_cave_depth",     large_cave_depth);
+	settings->getU16NoEx("mgvalleys_small_cave_num_min",   small_cave_num_min);
+	settings->getU16NoEx("mgvalleys_small_cave_num_max",   small_cave_num_max);
+	settings->getU16NoEx("mgvalleys_large_cave_num_min",   large_cave_num_min);
+	settings->getU16NoEx("mgvalleys_large_cave_num_max",   large_cave_num_max);
+	settings->getFloatNoEx("mgvalleys_large_cave_flooded", large_cave_flooded);
+	settings->getU16NoEx("mgvalleys_river_depth",          river_depth);
+	settings->getU16NoEx("mgvalleys_river_size",           river_size);
+	settings->getFloatNoEx("mgvalleys_cave_width",         cave_width);
+	settings->getS16NoEx("mgvalleys_cavern_limit",         cavern_limit);
+	settings->getS16NoEx("mgvalleys_cavern_taper",         cavern_taper);
+	settings->getFloatNoEx("mgvalleys_cavern_threshold",   cavern_threshold);
+	settings->getS16NoEx("mgvalleys_dungeon_ymin",         dungeon_ymin);
+	settings->getS16NoEx("mgvalleys_dungeon_ymax",         dungeon_ymax);
 
 	settings->getNoiseParams("mgvalleys_np_filler_depth",       np_filler_depth);
 	settings->getNoiseParams("mgvalleys_np_inter_valley_fill",  np_inter_valley_fill);
@@ -154,18 +162,22 @@ void MapgenValleysParams::readParams(const Settings *settings)
 
 void MapgenValleysParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgvalleys_spflags",        spflags, flagdesc_mapgen_valleys, U32_MAX);
-	settings->setU16("mgvalleys_altitude_chill",     altitude_chill);
-	settings->setS16("mgvalleys_large_cave_depth",   large_cave_depth);
-	settings->setS16("mgvalleys_lava_depth",         lava_depth);
-	settings->setU16("mgvalleys_river_depth",        river_depth);
-	settings->setU16("mgvalleys_river_size",         river_size);
-	settings->setFloat("mgvalleys_cave_width",       cave_width);
-	settings->setS16("mgvalleys_cavern_limit",       cavern_limit);
-	settings->setS16("mgvalleys_cavern_taper",       cavern_taper);
-	settings->setFloat("mgvalleys_cavern_threshold", cavern_threshold);
-	settings->setS16("mgvalleys_dungeon_ymin",       dungeon_ymin);
-	settings->setS16("mgvalleys_dungeon_ymax",       dungeon_ymax);
+	settings->setFlagStr("mgvalleys_spflags", spflags, flagdesc_mapgen_valleys);
+	settings->setU16("mgvalleys_altitude_chill",       altitude_chill);
+	settings->setS16("mgvalleys_large_cave_depth",     large_cave_depth);
+	settings->setU16("mgvalleys_small_cave_num_min",   small_cave_num_min);
+	settings->setU16("mgvalleys_small_cave_num_max",   small_cave_num_max);
+	settings->setU16("mgvalleys_large_cave_num_min",   large_cave_num_min);
+	settings->setU16("mgvalleys_large_cave_num_max",   large_cave_num_max);
+	settings->setFloat("mgvalleys_large_cave_flooded", large_cave_flooded);
+	settings->setU16("mgvalleys_river_depth",          river_depth);
+	settings->setU16("mgvalleys_river_size",           river_size);
+	settings->setFloat("mgvalleys_cave_width",         cave_width);
+	settings->setS16("mgvalleys_cavern_limit",         cavern_limit);
+	settings->setS16("mgvalleys_cavern_taper",         cavern_taper);
+	settings->setFloat("mgvalleys_cavern_threshold",   cavern_threshold);
+	settings->setS16("mgvalleys_dungeon_ymin",         dungeon_ymin);
+	settings->setS16("mgvalleys_dungeon_ymax",         dungeon_ymax);
 
 	settings->setNoiseParams("mgvalleys_np_filler_depth",       np_filler_depth);
 	settings->setNoiseParams("mgvalleys_np_inter_valley_fill",  np_inter_valley_fill);
@@ -180,6 +192,17 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgvalleys_np_cavern",             np_cavern);
 	settings->setNoiseParams("mgvalleys_np_dungeons",           np_dungeons);
 }
+
+
+void MapgenValleysParams::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgvalleys_spflags", flagdesc_mapgen_valleys,
+		MGVALLEYS_ALT_CHILL | MGVALLEYS_HUMID_RIVERS |
+		MGVALLEYS_VARY_RIVER_DEPTH | MGVALLEYS_ALT_DRY);
+}
+
+
+/////////////////////////////////////////////////////////////////
 
 
 void MapgenValleys::makeChunk(BlockMakeData *data)
@@ -248,8 +271,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Dungeon creation
-	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
-			full_node_max.Y <= dungeon_ymax)
+	if (flags & MG_DUNGEONS)
 		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations
@@ -368,7 +390,7 @@ int MapgenValleys::generateTerrain()
 
 		// Rivers are placed where 'river' is negative
 		if (river < 0.0f) {
-			// Use the the function -sqrt(1-x^2) which models a circle
+			// Use the function -sqrt(1-x^2) which models a circle
 			float tr = river / river_size_factor + 1.0f;
 			float depth = (river_depth_bed *
 				std::sqrt(std::fmax(0.0f, 1.0f - tr * tr)));

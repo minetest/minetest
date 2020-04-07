@@ -114,9 +114,9 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MODCHANNEL_MSG",           TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ModChannelMsg }, // 0x57
 	{ "TOCLIENT_MODCHANNEL_SIGNAL",        TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ModChannelSignal }, // 0x58
 	{ "TOCLIENT_NODEMETA_CHANGED",         TOCLIENT_STATE_CONNECTED, &Client::handleCommand_NodemetaChanged }, // 0x59
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
+	{ "TOCLIENT_SET_SUN",                  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudSetSun }, // 0x5a
+	{ "TOCLIENT_SET_MOON",                 TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudSetMoon }, // 0x5b
+	{ "TOCLIENT_SET_STARS",                TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudSetStars }, // 0x5c
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,

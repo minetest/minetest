@@ -653,7 +653,7 @@ u16 LuaEntitySAO::punch(v3f dir,
 	if (!damage_handled) {
 		if (result.did_punch) {
 			setHP((s32)getHP() - result.damage,
-				PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
+				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 
 			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
@@ -663,10 +663,10 @@ u16 LuaEntitySAO::punch(v3f dir,
 	}
 
 	if (getHP() == 0 && !isGone()) {
-		m_pending_removal = true;
 		clearParentAttachment();
 		clearChildAttachments();
 		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
+		m_pending_removal = true;
 	}
 
 	actionstream << puncher->getDescription() << " (id=" << puncher->getId() <<
@@ -675,6 +675,7 @@ u16 LuaEntitySAO::punch(v3f dir,
 			"), damage=" << (old_hp - (s32)getHP()) <<
 			(damage_handled ? " (handled by Lua)" : "") << std::endl;
 
+	// TODO: give Lua control over wear
 	return result.wear;
 }
 
@@ -864,12 +865,11 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_peer_id(peer_id_),
 	m_is_singleplayer(is_singleplayer)
 {
-	assert(m_peer_id != 0);	// pre-condition
+	SANITY_CHECK(m_peer_id != PEER_ID_INEXISTENT);
 
 	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
 	m_prop.breath_max = PLAYER_MAX_BREATH_DEFAULT;
 	m_prop.physical = false;
-	m_prop.weight = 75;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.selectionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.pointable = true;
@@ -985,7 +985,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 
 void PlayerSAO::getStaticData(std::string * result) const
 {
-	FATAL_ERROR("Deprecated function");
+	FATAL_ERROR("Obsolete function");
 }
 
 void PlayerSAO::step(float dtime, bool send_recommended)
@@ -1394,7 +1394,7 @@ bool PlayerSAO::setWieldedItem(const ItemStack &item)
 
 void PlayerSAO::disconnected()
 {
-	m_peer_id = 0;
+	m_peer_id = PEER_ID_INEXISTENT;
 	m_pending_removal = true;
 }
 

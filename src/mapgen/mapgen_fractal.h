@@ -35,10 +35,13 @@ extern FlagDesc flagdesc_mapgen_fractal[];
 
 struct MapgenFractalParams : public MapgenParams
 {
-	u32 spflags = MGFRACTAL_TERRAIN;
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
-	s16 lava_depth = -256;
+	u16 small_cave_num_min = 0;
+	u16 small_cave_num_max = 0;
+	u16 large_cave_num_min = 0;
+	u16 large_cave_num_max = 2;
+	float large_cave_flooded = 0.5f;
 	s16 dungeon_ymin = -31000;
 	s16 dungeon_ymax = 31000;
 	u16 fractal = 1;
@@ -62,6 +65,7 @@ struct MapgenFractalParams : public MapgenParams
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
+	void setDefaultSettings(Settings *settings);
 };
 
 
@@ -81,10 +85,6 @@ public:
 private:
 	u16 formula;
 	bool julia;
-
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
 	u16 fractal;
 	u16 iterations;
 	v3f scale;

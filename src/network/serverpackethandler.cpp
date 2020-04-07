@@ -1166,6 +1166,8 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			u16 wear = pointed_object->punch(dir, &toolcap, playersao,
 					time_from_last_punch);
 
+			// Callback may have changed item, so get it again
+			playersao->getWieldedItem(&selected_item);
 			bool changed = selected_item.addWear(wear, m_itemdef);
 			if (changed)
 				playersao->setWieldedItem(selected_item);
@@ -1316,6 +1318,13 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 					<< pointed_object->getDescription() << std::endl;
 
 			// Do stuff
+			if (m_script->item_OnSecondaryUse(
+					selected_item, playersao, pointed)) {
+				if (playersao->setWieldedItem(selected_item)) {
+					SendInventory(playersao, true);
+				}
+			}
+
 			pointed_object->rightClick(playersao);
 		} else if (m_script->item_OnPlace(
 				selected_item, playersao, pointed)) {
@@ -1376,8 +1385,10 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		actionstream << player->getName() << " activates "
 				<< selected_item.name << std::endl;
 
+		pointed.type = POINTEDTHING_NOTHING; // can only ever be NOTHING
+
 		if (m_script->item_OnSecondaryUse(
-				selected_item, playersao)) {
+				selected_item, playersao, pointed)) {
 			if (playersao->setWieldedItem(selected_item)) {
 				SendInventory(playersao, true);
 			}

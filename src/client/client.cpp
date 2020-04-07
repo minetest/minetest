@@ -156,6 +156,7 @@ void Client::loadMods()
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
 		modconf.printUnsatisfiedModsError();
+		return;
 	}
 
 	// Print mods
@@ -201,14 +202,30 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 	std::string full_path = mod_path + DIR_DELIM + mod_subpath;
 	std::vector<fs::DirListNode> mod = fs::GetDirListing(full_path);
 	for (const fs::DirListNode &j : mod) {
-		std::string filename = j.name;
 		if (j.dir) {
-			scanModSubfolder(mod_name, mod_path, mod_subpath
-					+ filename + DIR_DELIM);
+			scanModSubfolder(mod_name, mod_path, mod_subpath + j.name + DIR_DELIM);
 			continue;
 		}
-		std::replace( mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
-		m_mod_files[mod_name + ":" + mod_subpath + filename] = full_path  + filename;
+		std::replace(mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
+
+		std::string real_path = full_path + j.name;
+		std::string vfs_path = mod_name + ":" + mod_subpath + j.name;
+		infostream << "Client::scanModSubfolder(): Loading \"" << real_path
+				<< "\" as \"" << vfs_path << "\"." << std::endl;
+
+		std::ifstream is(real_path, std::ios::binary | std::ios::ate);
+		if(!is.good()) {
+			errorstream << "Client::scanModSubfolder(): Can't read file \""
+					<< real_path << "\"." << std::endl;
+			continue;
+		}
+		auto size = is.tellg();
+		std::string contents(size, '\0');
+		is.seekg(0);
+		is.read(&contents[0], size);
+
+		infostream << "  size: " << size << " bytes" << std::endl;
+		m_mod_vfs.emplace(vfs_path, contents);
 	}
 }
 
@@ -295,6 +312,7 @@ void Client::connect(Address address, bool is_local_server)
 {
 	initLocalMapSaving(address, m_address_name, is_local_server);
 
+	// Since we use TryReceive() a timeout here would be ineffective anyway
 	m_con->SetTimeoutMs(0);
 	m_con->Connect(address);
 }
@@ -765,11 +783,20 @@ void Client::initLocalMapSaving(const Address &address,
 		return;
 	}
 
-	const std::string world_path = porting::path_user
-		+ DIR_DELIM + "worlds"
-		+ DIR_DELIM + "server_"
+	std::string world_path;
+#define set_world_path(hostname) \
+	world_path = porting::path_user \
+		+ DIR_DELIM + "worlds" \
+		+ DIR_DELIM + "server_" \
 		+ hostname + "_" + std::to_string(address.getPort());
 
+	set_world_path(hostname);
+	if (!fs::IsDir(world_path)) {
+		std::string hostname_escaped = hostname;
+		str_replace(hostname_escaped, ':', '_');
+		set_world_path(hostname_escaped);
+	}
+#undef set_world_path
 	fs::CreateAllDirs(world_path);
 
 	m_localdb = new MapDatabaseSQLite3(world_path);
@@ -779,34 +806,29 @@ void Client::initLocalMapSaving(const Address &address,
 
 void Client::ReceiveAll()
 {
+	NetworkPacket pkt;
 	u64 start_ms = porting::getTimeMs();
-	for(;;)
-	{
+	const u64 budget = 100;
+	for(;;) {
 		// Limit time even if there would be huge amounts of data to
 		// process
-		if(porting::getTimeMs() > start_ms + 100)
+		if (porting::getTimeMs() > start_ms + budget) {
+			infostream << "Client::ReceiveAll(): "
+					"Packet processing budget exceeded." << std::endl;
 			break;
+		}
 
+		pkt.clear();
 		try {
-			Receive();
-			g_profiler->graphAdd("client_received_packets", 1);
-		}
-		catch(con::NoIncomingDataException &e) {
-			break;
-		}
-		catch(con::InvalidIncomingDataException &e) {
-			infostream<<"Client::ReceiveAll(): "
+			if (!m_con->TryReceive(&pkt))
+				break;
+			ProcessData(&pkt);
+		} catch (const con::InvalidIncomingDataException &e) {
+			infostream << "Client::ReceiveAll(): "
 					"InvalidIncomingDataException: what()="
-					<<e.what()<<std::endl;
+					 << e.what() << std::endl;
 		}
 	}
-}
-
-void Client::Receive()
-{
-	NetworkPacket pkt;
-	m_con->Receive(&pkt);
-	ProcessData(&pkt);
 }
 
 inline void Client::handleCommand(NetworkPacket* pkt)
@@ -825,6 +847,7 @@ void Client::ProcessData(NetworkPacket *pkt)
 
 	//infostream<<"Client: received command="<<command<<std::endl;
 	m_packetcounter.add((u16)command);
+	g_profiler->graphAdd("client_received_packets", 1);
 
 	/*
 		If this check is removed, be sure to change the queue
@@ -1084,7 +1107,7 @@ void Client::sendRemovedSounds(std::vector<s32> &soundList)
 
 	pkt << (u16) (server_ids & 0xFFFF);
 
-	for (int sound_id : soundList)
+	for (s32 sound_id : soundList)
 		pkt << sound_id;
 
 	Send(&pkt);
@@ -1297,7 +1320,7 @@ void Client::removeNode(v3s16 p)
  * @param is_valid_position
  * @return
  */
-MapNode Client::getNode(v3s16 p, bool *is_valid_position)
+MapNode Client::CSMGetNode(v3s16 p, bool *is_valid_position)
 {
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES)) {
 		v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
@@ -1307,6 +1330,31 @@ MapNode Client::getNode(v3s16 p, bool *is_valid_position)
 		}
 	}
 	return m_env.getMap().getNode(p, is_valid_position);
+}
+
+int Client::CSMClampRadius(v3s16 pos, int radius)
+{
+	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
+		return radius;
+	// This is approximate and will cause some allowed nodes to be excluded
+	v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	u32 distance = ppos.getDistanceFrom(pos);
+	if (distance >= m_csm_restriction_noderange)
+		return 0;
+	return std::min<int>(radius, m_csm_restriction_noderange - distance);
+}
+
+v3s16 Client::CSMClampPos(v3s16 pos)
+{
+	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
+		return pos;
+	v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	const int range = m_csm_restriction_noderange;
+	return v3s16(
+		core::clamp<int>(pos.X, (int)ppos.X - range, (int)ppos.X + range),
+		core::clamp<int>(pos.Y, (int)ppos.Y - range, (int)ppos.Y + range),
+		core::clamp<int>(pos.Z, (int)ppos.Z - range, (int)ppos.Z + range)
+	);
 }
 
 void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
@@ -1733,12 +1781,23 @@ void Client::makeScreenshot()
 	char timetstamp_c[64];
 	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
 
-	std::string filename_base = g_settings->get("screenshot_path")
+	std::string screenshot_dir;
+
+	if (fs::IsPathAbsolute(g_settings->get("screenshot_path")))
+		screenshot_dir = g_settings->get("screenshot_path");
+	else
+		screenshot_dir = porting::path_user + DIR_DELIM + g_settings->get("screenshot_path");
+
+	std::string filename_base = screenshot_dir
 			+ DIR_DELIM
 			+ std::string("screenshot_")
 			+ std::string(timetstamp_c);
 	std::string filename_ext = "." + g_settings->get("screenshot_format");
 	std::string filename;
+
+	// Create the directory if it doesn't already exist.
+	// Otherwise, saving the screenshot would fail.
+	fs::CreateDir(screenshot_dir);
 
 	u32 quality = (u32)g_settings->getS32("screenshot_quality");
 	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
@@ -1813,7 +1872,7 @@ ITextureSource* Client::getTextureSource()
 {
 	return m_tsrc;
 }
-IShaderSource* Client::getShaderSource()
+IWritableShaderSource* Client::getShaderSource()
 {
 	return m_shsrc;
 }
@@ -1865,14 +1924,20 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 	return mesh;
 }
 
-const std::string* Client::getModFile(const std::string &filename)
+const std::string* Client::getModFile(std::string filename)
 {
-	StringMap::const_iterator it = m_mod_files.find(filename);
-	if (it == m_mod_files.end()) {
-		errorstream << "Client::getModFile(): File not found: \"" << filename
-			<< "\"" << std::endl;
-		return NULL;
-	}
+	// strip dir delimiter from beginning of path
+	auto pos = filename.find_first_of(':');
+	if (pos == std::string::npos)
+		return nullptr;
+	pos++;
+	auto pos2 = filename.find_first_not_of('/', pos);
+	if (pos2 > pos)
+		filename.erase(pos, pos2 - pos);
+
+	StringMap::const_iterator it = m_mod_vfs.find(filename);
+	if (it == m_mod_vfs.end())
+		return nullptr;
 	return &it->second;
 }
 

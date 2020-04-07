@@ -48,15 +48,19 @@ FlagDesc flagdesc_mapgen_v5[] = {
 MapgenV5::MapgenV5(MapgenV5Params *params, EmergeManager *emerge)
 	: MapgenBasic(MAPGEN_V5, params, emerge)
 {
-	spflags          = params->spflags;
-	cave_width       = params->cave_width;
-	large_cave_depth = params->large_cave_depth;
-	lava_depth       = params->lava_depth;
-	cavern_limit     = params->cavern_limit;
-	cavern_taper     = params->cavern_taper;
-	cavern_threshold = params->cavern_threshold;
-	dungeon_ymin     = params->dungeon_ymin;
-	dungeon_ymax     = params->dungeon_ymax;
+	spflags            = params->spflags;
+	cave_width         = params->cave_width;
+	large_cave_depth   = params->large_cave_depth;
+	small_cave_num_min = params->small_cave_num_min;
+	small_cave_num_max = params->small_cave_num_max;
+	large_cave_num_min = params->large_cave_num_min;
+	large_cave_num_max = params->large_cave_num_max;
+	large_cave_flooded = params->large_cave_flooded;
+	cavern_limit       = params->cavern_limit;
+	cavern_taper       = params->cavern_taper;
+	cavern_threshold   = params->cavern_threshold;
+	dungeon_ymin       = params->dungeon_ymin;
+	dungeon_ymax       = params->dungeon_ymax;
 
 	// Terrain noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
@@ -98,15 +102,19 @@ MapgenV5Params::MapgenV5Params():
 
 void MapgenV5Params::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgv5_spflags",        spflags, flagdesc_mapgen_v5);
-	settings->getFloatNoEx("mgv5_cave_width",       cave_width);
-	settings->getS16NoEx("mgv5_large_cave_depth",   large_cave_depth);
-	settings->getS16NoEx("mgv5_lava_depth",         lava_depth);
-	settings->getS16NoEx("mgv5_cavern_limit",       cavern_limit);
-	settings->getS16NoEx("mgv5_cavern_taper",       cavern_taper);
-	settings->getFloatNoEx("mgv5_cavern_threshold", cavern_threshold);
-	settings->getS16NoEx("mgv5_dungeon_ymin",       dungeon_ymin);
-	settings->getS16NoEx("mgv5_dungeon_ymax",       dungeon_ymax);
+	settings->getFlagStrNoEx("mgv5_spflags", spflags, flagdesc_mapgen_v5);
+	settings->getFloatNoEx("mgv5_cave_width",         cave_width);
+	settings->getS16NoEx("mgv5_large_cave_depth",     large_cave_depth);
+	settings->getU16NoEx("mgv5_small_cave_num_min",   small_cave_num_min);
+	settings->getU16NoEx("mgv5_small_cave_num_max",   small_cave_num_max);
+	settings->getU16NoEx("mgv5_large_cave_num_min",   large_cave_num_min);
+	settings->getU16NoEx("mgv5_large_cave_num_max",   large_cave_num_max);
+	settings->getFloatNoEx("mgv5_large_cave_flooded", large_cave_flooded);
+	settings->getS16NoEx("mgv5_cavern_limit",         cavern_limit);
+	settings->getS16NoEx("mgv5_cavern_taper",         cavern_taper);
+	settings->getFloatNoEx("mgv5_cavern_threshold",   cavern_threshold);
+	settings->getS16NoEx("mgv5_dungeon_ymin",         dungeon_ymin);
+	settings->getS16NoEx("mgv5_dungeon_ymax",         dungeon_ymax);
 
 	settings->getNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->getNoiseParams("mgv5_np_factor",       np_factor);
@@ -121,15 +129,19 @@ void MapgenV5Params::readParams(const Settings *settings)
 
 void MapgenV5Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv5_spflags",        spflags, flagdesc_mapgen_v5, U32_MAX);
-	settings->setFloat("mgv5_cave_width",       cave_width);
-	settings->setS16("mgv5_large_cave_depth",   large_cave_depth);
-	settings->setS16("mgv5_lava_depth",         lava_depth);
-	settings->setS16("mgv5_cavern_limit",       cavern_limit);
-	settings->setS16("mgv5_cavern_taper",       cavern_taper);
-	settings->setFloat("mgv5_cavern_threshold", cavern_threshold);
-	settings->setS16("mgv5_dungeon_ymin",       dungeon_ymin);
-	settings->setS16("mgv5_dungeon_ymax",       dungeon_ymax);
+	settings->setFlagStr("mgv5_spflags", spflags, flagdesc_mapgen_v5);
+	settings->setFloat("mgv5_cave_width",         cave_width);
+	settings->setS16("mgv5_large_cave_depth",     large_cave_depth);
+	settings->setU16("mgv5_small_cave_num_min",   small_cave_num_min);
+	settings->setU16("mgv5_small_cave_num_max",   small_cave_num_max);
+	settings->setU16("mgv5_large_cave_num_min",   large_cave_num_min);
+	settings->setU16("mgv5_large_cave_num_max",   large_cave_num_max);
+	settings->setFloat("mgv5_large_cave_flooded", large_cave_flooded);
+	settings->setS16("mgv5_cavern_limit",         cavern_limit);
+	settings->setS16("mgv5_cavern_taper",         cavern_taper);
+	settings->setFloat("mgv5_cavern_threshold",   cavern_threshold);
+	settings->setS16("mgv5_dungeon_ymin",         dungeon_ymin);
+	settings->setS16("mgv5_dungeon_ymax",         dungeon_ymax);
 
 	settings->setNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->setNoiseParams("mgv5_np_factor",       np_factor);
@@ -140,6 +152,15 @@ void MapgenV5Params::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgv5_np_cavern",       np_cavern);
 	settings->setNoiseParams("mgv5_np_dungeons",     np_dungeons);
 }
+
+
+void MapgenV5Params::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgv5_spflags", flagdesc_mapgen_v5, MGV5_CAVERNS);
+}
+
+
+/////////////////////////////////////////////////////////////////
 
 
 int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
@@ -240,8 +261,7 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons and desert temples
-	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
-			full_node_max.Y <= dungeon_ymax)
+	if (flags & MG_DUNGEONS)
 		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations

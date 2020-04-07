@@ -108,7 +108,8 @@ if(BUILD_CLIENT)
 	if(ENABLE_GLES)
 		find_package(OpenGLES2 REQUIRED)
 	else()
-		if(NOT WIN32) # Unix probably
+		# transitive dependency from Irrlicht (see longer explanation below)
+		if(NOT WIN32)
 			set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
 				"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
 			set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
@@ -274,24 +275,35 @@ if(WIN32)
 			set(VORBISFILE_DLL "" CACHE FILEPATH "Path to libvorbisfile.dll for installation (optional)")
 		endif()
 		if(USE_LUAJIT)
-			set(LUA_DLL "" CACHE FILEPATH "Path to lua51.dll for installation (optional)")
+			set(LUA_DLL "" CACHE FILEPATH "Path to luajit-5.1.dll for installation (optional)")
 		endif()
 	endif()
 
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
-		if(NOT HAIKU)
+		if(NOT HAIKU AND NOT APPLE)
 			find_package(X11 REQUIRED)
-		endif(NOT HAIKU)
+		endif(NOT HAIKU AND NOT APPLE)
+
+		##
+		# The following dependencies are transitive dependencies from Irrlicht.
+		# Minetest itself does not use them, but we link them so that statically
+		# linking Irrlicht works.
+		if(NOT HAIKU AND NOT APPLE)
+			# This way Xxf86vm is found on OpenBSD too
+			find_library(XXF86VM_LIBRARY Xxf86vm)
+			mark_as_advanced(XXF86VM_LIBRARY)
+			set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
+		endif(NOT HAIKU AND NOT APPLE)
 
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
 		if(APPLE)
-			find_library(CARBON_LIB Carbon)
-			find_library(COCOA_LIB Cocoa)
-			find_library(IOKIT_LIB IOKit)
+			find_library(CARBON_LIB Carbon REQUIRED)
+			find_library(COCOA_LIB Cocoa REQUIRED)
+			find_library(IOKIT_LIB IOKit REQUIRED)
 			mark_as_advanced(
 				CARBON_LIB
 				COCOA_LIB
@@ -299,7 +311,9 @@ else()
 			)
 			SET(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${CARBON_LIB} ${COCOA_LIB} ${IOKIT_LIB})
 		endif(APPLE)
+		##
 	endif(BUILD_CLIENT)
+
 	find_package(ZLIB REQUIRED)
 	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
 	if(APPLE)
@@ -310,13 +324,6 @@ else()
 			set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
 		endif(HAVE_LIBRT)
 	endif(APPLE)
-
-	if(NOT HAIKU AND NOT APPLE)
-	# This way Xxf86vm is found on OpenBSD too
-		find_library(XXF86VM_LIBRARY Xxf86vm)
-		mark_as_advanced(XXF86VM_LIBRARY)
-		set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
-	endif(NOT HAIKU AND NOT APPLE)
 
 	# Prefer local iconv if installed
 	find_library(ICONV_LIBRARY iconv)
@@ -489,7 +496,6 @@ include_directories(
 	${PROJECT_SOURCE_DIR}
 	${IRRLICHT_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIR}
-	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	${SOUND_INCLUDE_DIRS}
 	${SQLITE3_INCLUDE_DIR}
@@ -535,16 +541,9 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
-	if(APPLE)
-		target_link_libraries(
-			${client_LIBS}
-			${ICONV_LIBRARY}
-		)
-	else()
-		target_link_libraries(
-			${client_LIBS}
-		)
-	endif()
+	target_link_libraries(
+		${client_LIBS}
+	)
 	if(ENABLE_GLES)
 		target_link_libraries(
 			${PROJECT_NAME}
@@ -646,8 +645,6 @@ set(GETTEXT_BLACKLISTED_LOCALES
 	he
 	ko
 	ky
-	zh_CN
-	zh_TW
 )
 
 option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid broken locales" TRUE)
@@ -691,21 +688,20 @@ if(MSVC)
 	# /MD = dynamically link to MSVCRxxx.dll
 	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MD")
 else()
+	# GCC or compatible compilers such as Clang
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	# Probably GCC
-	if(APPLE)
-		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000" )
-	endif()
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
 	else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
 
-	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-		# clang does not understand __extern_always_inline but libc headers use it
-		set(OTHER_FLAGS "${OTHER_FLAGS} \"-D__extern_always_inline=extern __always_inline\"")
-		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare")
+	if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		set(WARNING_FLAGS "${WARNING_FLAGS} -Wsign-compare")
+	endif()
+	if(APPLE AND USE_LUAJIT)
+		# required per http://luajit.org/install.html
+		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000")
 	endif()
 
 	if(MINGW)
@@ -717,7 +713,14 @@ else()
 	if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|BSD|DragonFly)")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
 	else()
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -ffast-math -fomit-frame-pointer")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer")
+		if(CMAKE_SYSTEM_NAME STREQUAL "Linux"
+				AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+				AND CMAKE_CXX_COMPILER_VERSION MATCHES "^9\\.")
+			# Clang 9 has broken -ffast-math on glibc
+		else()
+			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math")
+		endif()
 	endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|BSD|DragonFly)")
 	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
@@ -751,7 +754,7 @@ if(WIN32)
 				FILES_MATCHING PATTERN "*.dll")
 		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/MinSizeRel/
 				DESTINATION ${BINDIR}
-				CONFIGURATIONS RelWithDebInfo
+				CONFIGURATIONS MinSizeRel
 				FILES_MATCHING PATTERN "*.dll")
 	else()
 		# Use the old-style way to install dll's

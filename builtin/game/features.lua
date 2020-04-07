@@ -15,6 +15,7 @@ core.features = {
 	httpfetch_binary_data = true,
 	formspec_version_element = true,
 	area_store_persistent_ids = true,
+	pathfinder_works = true,
 }
 
 function core.has_feature(arg)

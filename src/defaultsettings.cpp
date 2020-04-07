@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "constants.h"
 #include "porting.h"
+#include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
 
 void set_default_settings(Settings *settings)
@@ -47,7 +48,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("noclip", "false");
-	settings->setDefault("screenshot_path", ".");
+	settings->setDefault("screenshot_path", "screenshots");
 	settings->setDefault("screenshot_format", "png");
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
@@ -164,7 +165,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
+#if ENABLE_GLES
 	settings->setDefault("near_plane", "0.1");
+#endif
 	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
 	settings->setDefault("autosave_screensize", "true");
@@ -292,9 +295,17 @@ void set_default_settings(Settings *settings)
 #if USE_FREETYPE
 	settings->setDefault("freetype", "true");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
+	settings->setDefault("font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-Italic.ttf"));
+	settings->setDefault("font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Arimo-Bold.ttf"));
+	settings->setDefault("font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-BoldItalic.ttf"));
+	settings->setDefault("font_bold", "false");
+	settings->setDefault("font_italic", "false");
 	settings->setDefault("font_shadow", "1");
 	settings->setDefault("font_shadow_alpha", "127");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "Cousine-Regular.ttf"));
+	settings->setDefault("mono_font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-Italic.ttf"));
+	settings->setDefault("mono_font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Cousine-Bold.ttf"));
+	settings->setDefault("mono_font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-BoldItalic.ttf"));
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
 
 	settings->setDefault("fallback_font_shadow", "1");
@@ -418,10 +429,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_level", "1");
 	settings->setDefault("mapgen_limit", "31000");
 	settings->setDefault("chunksize", "5");
-	settings->setDefault("mg_flags", "caves,dungeons,light,decorations,biomes");
 	settings->setDefault("fixed_map_seed", "");
 	settings->setDefault("max_block_generate_distance", "8");
 	settings->setDefault("enable_mapgen_debug_info", "false");
+	Mapgen::setDefaultSettings(settings);
 
 	// Server list announcing
 	settings->setDefault("server_announce", "false");
@@ -489,10 +500,3 @@ void set_default_settings(Settings *settings)
 #endif
 }
 
-void override_default_settings(Settings *settings, Settings *from)
-{
-	std::vector<std::string> names = from->getNames();
-	for (const auto &name : names) {
-		settings->setDefault(name, from->get(name));
-	}
-}

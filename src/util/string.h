@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
+#include "irrString.h"
 #include <cstdlib>
 #include <string>
 #include <cstring>
@@ -722,4 +723,22 @@ inline std::string str_join(const std::vector<std::string> &list,
 		first = false;
 	}
 	return oss.str();
+}
+
+/**
+ * Create a UTF8 std::string from a irr::core::stringw.
+ */
+inline std::string stringw_to_utf8(const irr::core::stringw &input)
+{
+	std::wstring str(input.c_str());
+	return wide_to_utf8(str);
+}
+
+ /**
+  * Create a irr::core:stringw from a UTF8 std::string.
+  */
+inline irr::core::stringw utf8_to_stringw(const std::string &input)
+{
+	std::wstring str = utf8_to_wide(input);
+	return irr::core::stringw(str.c_str());
 }

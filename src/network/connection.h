@@ -612,16 +612,16 @@ class Peer {
 		struct rttstats {
 			float jitter_min = FLT_MAX;
 			float jitter_max = 0.0f;
-			float jitter_avg = -1.0f;
+			float jitter_avg = -2.0f;
 			float min_rtt = FLT_MAX;
 			float max_rtt = 0.0f;
-			float avg_rtt = -1.0f;
+			float avg_rtt = -2.0f;
 
 			rttstats() = default;
 		};
 
 		rttstats m_rtt;
-		float m_last_rtt = -1.0f;
+		float m_last_rtt = -2.0f;
 
 		// current usage count
 		unsigned int m_usage = 0;
@@ -771,6 +771,7 @@ public:
 	bool Connected();
 	void Disconnect();
 	void Receive(NetworkPacket* pkt);
+	bool TryReceive(NetworkPacket *pkt);
 	void Send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
 	session_t GetPeerID() const { return m_peer_id; }
 	Address GetPeerAddress(session_t peer_id);
@@ -802,6 +803,8 @@ protected:
 
 	UDPSocket m_udpSocket;
 	MutexedQueue<ConnectionCommand> m_command_queue;
+
+	bool Receive(NetworkPacket *pkt, u32 timeout);
 
 	void putEvent(ConnectionEvent &e);
 

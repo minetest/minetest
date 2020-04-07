@@ -108,11 +108,10 @@ int LuaCamera::l_get_pos(lua_State *L)
 
 int LuaCamera::l_get_offset(lua_State *L)
 {
-	Camera *camera = getobject(L, 1);
-	if (!camera)
-		return 0;
+	LocalPlayer *player = getClient(L)->getEnv().getLocalPlayer();
+	sanity_check(player);
 
-	push_v3s16(L, camera->getOffset());
+	push_v3f(L, player->getEyeOffset() / BS);
 	return 1;
 }
 

@@ -101,6 +101,9 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_add_item(lua_State *L);
 
+	// get_connected_players()
+	static int l_get_connected_players(lua_State *L);
+
 	// get_player_by_name(name)
 	static int l_get_player_by_name(lua_State *L);
 

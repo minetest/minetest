@@ -215,6 +215,17 @@ void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hid
 	}
 }
 
+void Mapgen::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mg_flags", flagdesc_mapgen,
+		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES);
+
+	for (int i = 0; i < (int)MAPGEN_INVALID; ++i) {
+		MapgenParams *params = createMapgenParams((MapgenType)i);
+		params->setDefaultSettings(settings);
+		delete params;
+	}
+}
 
 u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
 {
@@ -831,7 +842,9 @@ void MapgenBasic::dustTopNodes()
 
 void MapgenBasic::generateCavesNoiseIntersection(s16 max_stone_y)
 {
-	if (node_min.Y > max_stone_y)
+	// cave_width >= 10 is used to disable generation and avoid the intensive
+	// 3D noise calculations. Tunnels already have zero width when cave_width > 1.
+	if (node_min.Y > max_stone_y || cave_width >= 10.0f)
 		return;
 
 	CavesNoiseIntersection caves_noise(ndef, m_bmgr, csize,
@@ -841,20 +854,33 @@ void MapgenBasic::generateCavesNoiseIntersection(s16 max_stone_y)
 }
 
 
-void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_depth)
+void MapgenBasic::generateCavesRandomWalk(s16 max_stone_y, s16 large_cave_ymax)
 {
-	if (node_min.Y > max_stone_y || node_max.Y > large_cave_depth)
+	if (node_min.Y > max_stone_y)
 		return;
 
 	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = ps.range(0, 2);
+	// Small randomwalk caves
+	u32 num_small_caves = ps.range(small_cave_num_min, small_cave_num_max);
 
-	for (u32 i = 0; i < bruises_count; i++) {
+	for (u32 i = 0; i < num_small_caves; i++) {
 		CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
-			c_water_source, c_lava_source, lava_depth, biomegen);
+			c_water_source, c_lava_source, large_cave_flooded, biomegen);
+		cave.makeCave(vm, node_min, node_max, &ps, false, max_stone_y, heightmap);
+	}
 
-		cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y,
-			heightmap);
+	if (node_max.Y > large_cave_ymax)
+		return;
+
+	// Large randomwalk caves below 'large_cave_ymax'.
+	// 'large_cave_ymax' can differ from the 'large_cave_depth' mapgen parameter,
+	// it is set to world base to disable large caves in or near caverns.
+	u32 num_large_caves = ps.range(large_cave_num_min, large_cave_num_max);
+
+	for (u32 i = 0; i < num_large_caves; i++) {
+		CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
+			c_water_source, c_lava_source, large_cave_flooded, biomegen);
+		cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y, heightmap);
 	}
 }
 
@@ -873,7 +899,8 @@ bool MapgenBasic::generateCavernsNoise(s16 max_stone_y)
 
 void MapgenBasic::generateDungeons(s16 max_stone_y)
 {
-	if (max_stone_y < node_min.Y)
+	if (node_min.Y > max_stone_y || node_min.Y > dungeon_ymax ||
+			node_max.Y < dungeon_ymin)
 		return;
 
 	u16 num_dungeons = std::fmax(std::floor(
@@ -1052,7 +1079,7 @@ void MapgenParams::writeParams(Settings *settings) const
 	settings->setS16("water_level", water_level);
 	settings->setS16("mapgen_limit", mapgen_limit);
 	settings->setS16("chunksize", chunksize);
-	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
+	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen);
 
 	if (bparams)
 		bparams->writeParams(settings);

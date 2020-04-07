@@ -40,9 +40,6 @@ function core.check_player_privs(name, ...)
 end
 
 
-local player_list = {}
-
-
 function core.send_join_message(player_name)
 	if not core.is_singleplayer() then
 		core.chat_send_all("*** " .. player_name .. " joined the game.")
@@ -61,7 +58,6 @@ end
 
 core.register_on_joinplayer(function(player)
 	local player_name = player:get_player_name()
-	player_list[player_name] = player
 	if not core.is_singleplayer() then
 		local status = core.get_server_status(player_name, true)
 		if status and status ~= "" then
@@ -74,20 +70,8 @@ end)
 
 core.register_on_leaveplayer(function(player, timed_out)
 	local player_name = player:get_player_name()
-	player_list[player_name] = nil
 	core.send_leave_message(player_name, timed_out)
 end)
-
-
-function core.get_connected_players()
-	local temp_table = {}
-	for index, value in pairs(player_list) do
-		if value:is_player_connected() then
-			temp_table[#temp_table + 1] = value
-		end
-	end
-	return temp_table
-end
 
 
 function core.is_player(player)

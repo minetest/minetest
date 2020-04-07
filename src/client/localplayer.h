@@ -47,12 +47,9 @@ public:
 	LocalPlayer(Client *client, const char *name);
 	virtual ~LocalPlayer() = default;
 
-	ClientActiveObject *parent = nullptr;
-
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
 	u16 hp = 0;
-	bool isAttached = false;
 	bool touching_ground = false;
 	// This oscillates so that the player jumps a bit above the surface
 	bool in_liquid = false;
@@ -71,8 +68,6 @@ public:
 	bool physics_override_sneak_glitch = false;
 	// Temporary option for old move code
 	bool physics_override_new_move = true;
-
-	v3f overridePosition;
 
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
@@ -111,6 +106,8 @@ public:
 	float hurt_tilt_strength = 0.0f;
 
 	GenericCAO *getCAO() const { return m_cao; }
+
+	ClientActiveObject *getParent() const;
 
 	void setCAO(GenericCAO *toset)
 	{

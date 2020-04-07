@@ -155,8 +155,18 @@ src/genericobject.cpp
 src/genericobject.h
 src/gettext.cpp
 src/gettext.h
+src/gui/guiAnimatedImage.cpp
+src/gui/guiAnimatedImage.h
+src/gui/guiBackgroundImage.cpp
+src/gui/guiBackgroundImage.h
+src/gui/guiBox.cpp
+src/gui/guiBox.h
 src/gui/guiButton.cpp
 src/gui/guiButton.h
+src/gui/guiButtonImage.cpp
+src/gui/guiButtonImage.h
+src/gui/guiButtonItemImage.cpp
+src/gui/guiButtonItemImage.h
 src/gui/guiChatConsole.cpp
 src/gui/guiChatConsole.h
 src/gui/guiConfirmRegistration.cpp
@@ -167,6 +177,12 @@ src/gui/guiEngine.h
 src/gui/guiFormSpecMenu.cpp
 src/gui/guiFormSpecMenu.h
 src/gui/guiKeyChangeMenu.cpp
+src/gui/guiHyperText.cpp
+src/gui/guiHyperText.h
+src/gui/guiInventoryList.cpp
+src/gui/guiInventoryList.h
+src/gui/guiItemImage.cpp
+src/gui/guiItemImage.h
 src/gui/guiMainMenu.h
 src/gui/guiPasswordChange.cpp
 src/gui/guiPathSelectMenu.cpp
@@ -184,6 +200,7 @@ src/gui/mainmenumanager.h
 src/gui/modalMenu.h
 src/guiscalingfilter.cpp
 src/guiscalingfilter.h
+src/gui/StyleSpec.h
 src/gui/touchscreengui.cpp
 src/httpfetch.cpp
 src/hud.cpp
@@ -341,6 +358,7 @@ src/script/cpp_api/s_server.h
 src/script/lua_api/l_areastore.cpp
 src/script/lua_api/l_base.cpp
 src/script/lua_api/l_base.h
+src/script/lua_api/l_client.cpp
 src/script/lua_api/l_craft.cpp
 src/script/lua_api/l_craft.h
 src/script/lua_api/l_env.cpp

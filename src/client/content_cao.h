@@ -125,6 +125,10 @@ private:
 	u8 m_last_light = 255;
 	bool m_is_visible = false;
 	s8 m_glow = 0;
+	// Material
+	video::E_MATERIAL_TYPE m_material_type;
+	// Settings
+	bool m_enable_shaders = false;
 
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
@@ -165,9 +169,9 @@ public:
 
 	const bool isImmortal();
 
-	scene::ISceneNode *getSceneNode();
+	scene::ISceneNode *getSceneNode() const;
 
-	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
+	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;
 
 	// m_matrixnode controls the position and rotation of the child node
 	// for all scene nodes, as a workaround for an Irrlicht problem with
@@ -233,6 +237,8 @@ public:
 	void updateLight(u8 light_at_pos);
 
 	void updateLightNoCheck(u8 light_at_pos);
+
+	void setNodeLight(u8 light);
 
 	v3s16 getLightPosition();
 

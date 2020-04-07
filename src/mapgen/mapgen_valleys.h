@@ -41,15 +41,17 @@ extern FlagDesc flagdesc_mapgen_valleys[];
 
 
 struct MapgenValleysParams : public MapgenParams {
-	u32 spflags = MGVALLEYS_ALT_CHILL | MGVALLEYS_HUMID_RIVERS |
-		MGVALLEYS_VARY_RIVER_DEPTH | MGVALLEYS_ALT_DRY;
 	u16 altitude_chill = 90;
 	u16 river_depth = 4;
 	u16 river_size = 5;
 
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
-	s16 lava_depth = 1;
+	u16 small_cave_num_min = 0;
+	u16 small_cave_num_max = 0;
+	u16 large_cave_num_min = 0;
+	u16 large_cave_num_max = 2;
+	float large_cave_flooded = 0.5f;
 	s16 cavern_limit = -256;
 	s16 cavern_taper = 192;
 	float cavern_threshold = 0.6f;
@@ -74,6 +76,7 @@ struct MapgenValleysParams : public MapgenParams {
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
+	void setDefaultSettings(Settings *settings);
 };
 
 
@@ -95,10 +98,6 @@ private:
 	float altitude_chill;
 	float river_depth_bed;
 	float river_size_factor;
-
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
 
 	Noise *noise_inter_valley_fill;
 	Noise *noise_inter_valley_slope;
