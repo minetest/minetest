@@ -73,6 +73,7 @@ ConnectionSendThread::ConnectionSendThread(unsigned int max_packet_size,
 	m_timeout(timeout),
 	m_max_data_packets_per_iteration(g_settings->getU16("max_packets_per_iteration"))
 {
+	SANITY_CHECK(m_max_data_packets_per_iteration > 1);
 }
 
 void *ConnectionSendThread::run()
@@ -107,8 +108,13 @@ void *ConnectionSendThread::run()
 		curtime = porting::getTimeMs();
 		float dtime = CALC_DTIME(lasttime, curtime);
 
-		/* first do all the reliable stuff */
+		/* first resend timed-out packets */
 		runTimeouts(dtime);
+		if (m_iteration_packets_avaialble == 0) {
+			LOG(warningstream << m_connection->getDesc()
+				<< " Packet quota used up after re-sending packets, "
+				<< "max=" << m_max_data_packets_per_iteration << std::endl);
+		}
 
 		/* translate commands to packets */
 		ConnectionCommand c = m_connection->m_command_queue.pop_frontNoEx(0);
@@ -121,7 +127,7 @@ void *ConnectionSendThread::run()
 			c = m_connection->m_command_queue.pop_frontNoEx(0);
 		}
 
-		/* send non reliable packets */
+		/* send queued packets */
 		sendPackets(dtime);
 
 		END_DEBUG_EXCEPTION_HANDLER
@@ -644,6 +650,9 @@ void ConnectionSendThread::sendPackets(float dtime)
 	std::list<session_t> pendingDisconnect;
 	std::map<session_t, bool> pending_unreliable;
 
+	const unsigned int peer_packet_quota = m_iteration_packets_avaialble
+		/ MYMAX(peerIds.size(), 1);
+
 	for (session_t peerId : peerIds) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerId);
 		//peer may have been removed
@@ -653,8 +662,7 @@ void ConnectionSendThread::sendPackets(float dtime)
 				<< std::endl);
 			continue;
 		}
-		peer->m_increment_packets_remaining =
-			m_iteration_packets_avaialble / m_connection->m_peers.size();
+		peer->m_increment_packets_remaining = peer_packet_quota;
 
 		UDPPeer *udpPeer = dynamic_cast<UDPPeer *>(&peer);
 
@@ -751,20 +759,27 @@ void ConnectionSendThread::sendPackets(float dtime)
 		}
 
 		/* send acks immediately */
-		if (packet.ack) {
+		if (packet.ack || peer->m_increment_packets_remaining > 0 || stopRequested()) {
 			rawSendAsPacket(packet.peer_id, packet.channelnum,
 				packet.data, packet.reliable);
-			peer->m_increment_packets_remaining =
-				MYMIN(0, peer->m_increment_packets_remaining--);
-		} else if (
-			(peer->m_increment_packets_remaining > 0) ||
-				(stopRequested())) {
-			rawSendAsPacket(packet.peer_id, packet.channelnum,
-				packet.data, packet.reliable);
-			peer->m_increment_packets_remaining--;
+			if (peer->m_increment_packets_remaining > 0)
+				peer->m_increment_packets_remaining--;
 		} else {
 			m_outgoing_queue.push(packet);
 			pending_unreliable[packet.peer_id] = true;
+		}
+	}
+
+	if (peer_packet_quota > 0) {
+		for (session_t peerId : peerIds) {
+			PeerHelper peer = m_connection->getPeerNoEx(peerId);
+			if (!peer)
+				continue;
+			if (peer->m_increment_packets_remaining == 0) {
+				LOG(warningstream << m_connection->getDesc()
+					<< " Packet quota used up for peer_id=" << peerId
+					<< ", was " << peer_packet_quota << " pkts" << std::endl);
+			}
 		}
 	}
 

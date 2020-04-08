@@ -126,6 +126,16 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 
 const static ServerCommandFactory null_command_factory = { "TOSERVER_NULL", 0, false };
 
+/*
+	Channels used for Client -> Server communication
+	2: Notifications back to the server (e.g. GOTBLOCKS)
+	1: Init and Authentication
+	0: everything else
+
+	Packet order is only guaranteed inside a channel, so packets that operate on
+	the same objects are *required* to be in the same channel.
+*/
+
 const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 {
 	null_command_factory, // 0x00
@@ -143,7 +153,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x0c
 	null_command_factory, // 0x0d
 	null_command_factory, // 0x0e
-	null_command_factory, // 0x0F
+	null_command_factory, // 0x0f
 	null_command_factory, // 0x10
 	{ "TOSERVER_INIT2",              1, true }, // 0x11
 	null_command_factory, // 0x12
@@ -186,7 +196,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_PLAYERITEM",         0, true }, // 0x37
 	{ "TOSERVER_RESPAWN",            0, true }, // 0x38
 	{ "TOSERVER_INTERACT",           0, true }, // 0x39
-	{ "TOSERVER_REMOVED_SOUNDS",     1, true }, // 0x3a
+	{ "TOSERVER_REMOVED_SOUNDS",     2, true }, // 0x3a
 	{ "TOSERVER_NODEMETA_FIELDS",    0, true }, // 0x3b
 	{ "TOSERVER_INVENTORY_FIELDS",   0, true }, // 0x3c
 	null_command_factory, // 0x3d
@@ -194,8 +204,8 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",      1, true }, // 0x40
 	null_command_factory, // 0x41
-	{ "TOSERVER_BREATH",             0, true }, // 0x42 old TOSERVER_BREATH. Ignored by servers
-	{ "TOSERVER_CLIENT_READY",       0, true }, // 0x43
+	null_command_factory, // 0x42
+	{ "TOSERVER_CLIENT_READY",       1, true }, // 0x43
 	null_command_factory, // 0x44
 	null_command_factory, // 0x45
 	null_command_factory, // 0x46
