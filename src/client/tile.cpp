@@ -471,8 +471,8 @@ TextureSource::~TextureSource()
 		driver->removeTexture(t);
 	}
 
-	infostream << "~TextureSource() "<< textures_before << "/"
-			<< driver->getTextureCount() << std::endl;
+	infostream << "~TextureSource() before cleanup: "<< textures_before
+			<< " after: " << driver->getTextureCount() << std::endl;
 }
 
 u32 TextureSource::getTextureId(const std::string &name)
@@ -762,6 +762,9 @@ void TextureSource::rebuildImagesAndTextures()
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
+
+	infostream << "TextureSource: recreating " << m_textureinfo_cache.size()
+		<< " textures" << std::endl;
 
 	// Recreate textures
 	for (TextureInfo &ti : m_textureinfo_cache) {
@@ -1270,8 +1273,6 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				video::IImage *img = generateImage(filename);
 				if (img) {
 					core::dimension2d<u32> dim = img->getDimension();
-					infostream<<"Size "<<dim.Width
-							<<"x"<<dim.Height<<std::endl;
 					core::position2d<s32> pos_base(x, y);
 					video::IImage *img2 =
 							driver->createImage(video::ECF_A8R8G8B8, dim);

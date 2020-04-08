@@ -199,7 +199,6 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			infostream << m_connection->getDesc()
 				<< "RunTimeouts(): Peer " << peer->id
 				<< " has timed out."
-				<< " (source=peer->timeout_counter)"
 				<< std::endl;
 			// Add peer to the list
 			timeouted_peers.push_back(peer->id);
@@ -292,7 +291,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 
 	// Remove timed out peers
 	for (u16 timeouted_peer : timeouted_peers) {
-		LOG(derr_con << m_connection->getDesc()
+		LOG(dout_con << m_connection->getDesc()
 			<< "RunTimeouts(): Removing peer " << timeouted_peer << std::endl);
 		m_connection->deletePeer(timeouted_peer, true);
 	}

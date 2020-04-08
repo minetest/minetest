@@ -656,14 +656,17 @@ void Server::AsyncRunStep(bool initial_step)
 		// Save mod storages if modified
 		m_mod_storage_save_timer -= dtime;
 		if (m_mod_storage_save_timer <= 0.0f) {
-			infostream << "Saving registered mod storages." << std::endl;
 			m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+			int n = 0;
 			for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 				if (it->second->isModified()) {
 					it->second->save(getModStoragePath());
+					n++;
 				}
 			}
+			if (n > 0)
+				infostream << "Saved " << n << " modified mod storages." << std::endl;
 		}
 	}
 
@@ -809,7 +812,6 @@ void Server::AsyncRunStep(bool initial_step)
 						disable_single_change_sending ? 5 : 30);
 				break;
 			case MEET_BLOCK_NODE_METADATA_CHANGED: {
-				verbosestream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
 				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
 				if (!event->is_private_change) {
 					// Don't send the change yet. Collect them to eliminate dupes.
@@ -825,7 +827,6 @@ void Server::AsyncRunStep(bool initial_step)
 				break;
 			}
 			case MEET_OTHER:
-				infostream << "Server: MEET_OTHER" << std::endl;
 				prof.add("MEET_OTHER", 1);
 				for (const v3s16 &modified_block : event->modified_blocks) {
 					m_clients.markBlockposAsNotSent(modified_block);
@@ -2535,9 +2536,6 @@ void Server::fillMediaCache()
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
 {
-	verbosestream << "Server: Announcing files to id(" << peer_id << ")"
-		<< std::endl;
-
 	// Make packet
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 
@@ -2560,6 +2558,9 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 
 	pkt << g_settings->get("remote_media");
 	Send(&pkt);
+
+	verbosestream << "Server: Announcing files to id(" << peer_id
+		<< "): count=" << media_sent << " size=" << pkt.getSize() << std::endl;
 }
 
 struct SendableMedia
@@ -2938,10 +2939,8 @@ void Server::UpdateCrafting(RemotePlayer *player)
 	if (!clist || clist->getSize() == 0)
 		return;
 
-	if (!clist->checkModified()) {
-		verbosestream << "Skip Server::UpdateCrafting(): list unmodified" << std::endl;
+	if (!clist->checkModified())
 		return;
-	}
 
 	// Get a preview for crafting
 	ItemStack preview;

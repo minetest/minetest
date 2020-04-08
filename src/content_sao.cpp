@@ -711,13 +711,11 @@ float LuaEntitySAO::getMinimumSavedMovement()
 
 std::string LuaEntitySAO::getDescription()
 {
-	std::ostringstream os(std::ios::binary);
-	os<<"LuaEntitySAO at (";
-	os<<(m_base_position.X/BS)<<",";
-	os<<(m_base_position.Y/BS)<<",";
-	os<<(m_base_position.Z/BS);
-	os<<")";
-	return os.str();
+	std::ostringstream oss;
+	oss << "LuaEntitySAO \"" << m_init_name << "\" ";
+	auto pos = floatToInt(m_base_position, BS);
+	oss << "at " << PP(pos);
+	return oss.str();
 }
 
 void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)

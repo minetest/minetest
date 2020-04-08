@@ -576,9 +576,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 	m_visuals_expired = false;
 
-	if (!m_prop.is_visible) {
+	if (!m_prop.is_visible)
 		return;
-	}
+
+	infostream << "GenericCAO::addToScene(): " << m_prop.visual << std::endl;
 
 	if (m_enable_shaders) {
 		IShaderSource *shader_source = m_client->getShaderSource();
@@ -593,7 +594,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	}
 
 	auto grabMatrixNode = [this] {
-		infostream << "GenericCAO::addToScene(): " << m_prop.visual << std::endl;
 		m_matrixnode = RenderingEngine::get_scene_manager()->
 				addDummyTransformationSceneNode();
 		m_matrixnode->grab();

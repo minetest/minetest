@@ -82,30 +82,19 @@ public:
 
 	void add(u16 command)
 	{
-		std::map<u16, u16>::iterator n = m_packets.find(command);
-		if(n == m_packets.end())
-		{
+		auto n = m_packets.find(command);
+		if (n == m_packets.end())
 			m_packets[command] = 1;
-		}
 		else
-		{
 			n->second++;
-		}
 	}
 
 	void clear()
 	{
-		for (auto &m_packet : m_packets) {
-			m_packet.second = 0;
-		}
+		m_packets.clear();
 	}
 
-	void print(std::ostream &o)
-	{
-		for (const auto &m_packet : m_packets) {
-			o << "cmd "<< m_packet.first <<" count "<< m_packet.second << std::endl;
-		}
-	}
+	void print(std::ostream &o) const;
 
 private:
 	// command, count

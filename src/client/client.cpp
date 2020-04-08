@@ -61,6 +61,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern gui::IGUIEnvironment* guienv;
 
 /*
+	Utility classes
+*/
+
+void PacketCounter::print(std::ostream &o) const
+{
+	for (const auto &it : m_packets) {
+		auto name = it.first >= TOCLIENT_NUM_MSG_TYPES ? "?"
+			: toClientCommandTable[it.first].name;
+		o << "cmd " << it.first << " (" << name << ") count "
+			<< it.second << std::endl;
+	}
+}
+
+/*
 	Client
 */
 
@@ -336,12 +350,12 @@ void Client::step(float dtime)
 	{
 		float &counter = m_packetcounter_timer;
 		counter -= dtime;
-		if(counter <= 0.0)
+		if(counter <= 0.0f)
 		{
-			counter = 20.0;
+			counter = 30.0f;
 
 			infostream << "Client packetcounter (" << m_packetcounter_timer
-					<< "):"<<std::endl;
+					<< "s):"<<std::endl;
 			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
@@ -621,14 +635,17 @@ void Client::step(float dtime)
 
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
-		verbosestream << "Saving registered mod storages." << std::endl;
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+		int n = 0;
 		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 			if (it->second->isModified()) {
 				it->second->save(getModStoragePath());
+				n++;
 			}
 		}
+		if (n > 0)
+			infostream << "Saved " << n << " modified mod storages." << std::endl;
 	}
 
 	// Write server map
@@ -653,8 +670,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, image_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Attempting to load image "
-		<<"file \""<<filename<<"\""<<std::endl;
+		TRACESTREAM(<< "Client: Attempting to load image "
+			<< "file \"" << filename << "\"" << std::endl);
 
 		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
 		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
@@ -687,10 +704,9 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, sound_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Attempting to load sound "
-		<<"file \""<<filename<<"\""<<std::endl;
-		m_sound->loadSoundData(name, data);
-		return true;
+		TRACESTREAM(<< "Client: Attempting to load sound "
+			<< "file \"" << filename << "\"" << std::endl);
+		return m_sound->loadSoundData(name, data);
 	}
 
 	const char *model_ext[] = {
@@ -714,8 +730,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
-		verbosestream << "Client: Loading translation: "
-				<< "\"" << filename << "\"" << std::endl;
+		TRACESTREAM(<< "Client: Loading translation: "
+				<< "\"" << filename << "\"" << std::endl);
 		g_translations->loadTranslation(data);
 		return true;
 	}

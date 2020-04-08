@@ -226,27 +226,17 @@ bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 {
 	// FIXME: It would make more sense for there to be a switch of some
 	// sort here that would call the correct toplevel setup methods for
-	// the environment Minetest is running in but for now not deviating
-	// from the original pattern.
+	// the environment Minetest is running in.
 
 	/* Setting Xorg properties for the top level window */
 	setupTopLevelXorgWindow(name);
-	/* Done with Xorg properties */
 
 	/* Setting general properties for the top level window */
 	verbosestream << "Client: Configuring general top level"
 		<< " window properties"
 		<< std::endl;
-
 	bool result = setWindowIcon();
 
-	verbosestream << "Client: Finished configuring general top level"
-		<< " window properties"
-		<< std::endl;
-	/* Done with general properties */
-
-	// FIXME: setWindowIcon returns a bool result but it is unused.
-	// For now continue to return this result.
 	return result;
 }
 
@@ -262,7 +252,7 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 		return;
 	}
 
-	verbosestream << "Client: Configuring Xorg specific top level"
+	verbosestream << "Client: Configuring X11-specific top level"
 		<< " window properties"
 		<< std::endl;
 
@@ -309,8 +299,6 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);
 
 	pid_t pid = getpid();
-	infostream << "Client: PID is '" << static_cast<long>(pid) << "'"
-		<< std::endl;
 
 	XChangeProperty(x11_dpl, x11_win, NET_WM_PID,
 			XA_CARDINAL, 32, PropModeReplace,
@@ -327,10 +315,6 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	XChangeProperty (x11_dpl, x11_win, WM_CLIENT_LEADER,
 		XA_WINDOW, 32, PropModeReplace,
 		reinterpret_cast<unsigned char *>(&x11_win), 1);
-
-	verbosestream << "Client: Finished configuring Xorg specific top level"
-		<< " window properties"
-		<< std::endl;
 #endif
 }
 

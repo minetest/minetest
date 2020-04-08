@@ -463,7 +463,7 @@ public:
 	}
 	virtual void registerItem(const ItemDefinition &def)
 	{
-		verbosestream<<"ItemDefManager: registering \""<<def.name<<"\""<<std::endl;
+		TRACESTREAM(<< "ItemDefManager: registering " << def.name << std::endl);
 		// Ensure that the "" item (the hand) always has ToolCapabilities
 		if (def.name.empty())
 			FATAL_ERROR_IF(!def.tool_capabilities, "Hand does not have ToolCapabilities");
@@ -490,8 +490,8 @@ public:
 			const std::string &convert_to)
 	{
 		if (m_item_definitions.find(name) == m_item_definitions.end()) {
-			verbosestream<<"ItemDefManager: setting alias "<<name
-				<<" -> "<<convert_to<<std::endl;
+			TRACESTREAM(<< "ItemDefManager: setting alias " << name
+				<< " -> " << convert_to << std::endl);
 			m_aliases[name] = convert_to;
 		}
 	}

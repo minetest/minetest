@@ -136,7 +136,6 @@ EmergeManager::EmergeManager(Server *server)
 		nthreads = Thread::getNumberOfProcessors() - 2;
 	if (nthreads < 1)
 		nthreads = 1;
-	verbosestream << "Using " << nthreads << " emerge threads." << std::endl;
 
 	m_qlimit_total = g_settings->getU16("emergequeue_limit_total");
 	if (!g_settings->getU16NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
