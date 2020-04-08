@@ -90,7 +90,11 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 		luaL_openlibs(m_luastack);
 
 	// Make the ScriptApiBase* accessible to ModApiBase
+#if INDIRECT_SCRIPTAPI_RIDX
+	*(void **)(lua_newuserdata(m_luastack, sizeof(void *))) = this;
+#else
 	lua_pushlightuserdata(m_luastack, this);
+#endif
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
 	// Add and save an error handler
