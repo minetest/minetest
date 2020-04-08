@@ -18,11 +18,17 @@ set_linux_compiler_env() {
 
 # Linux build only
 install_linux_deps() {
-	sudo apt-get update
-	sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng-dev \
+	local pkgs=(libirrlicht-dev cmake libbz2-dev libpng-dev \
 		libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev \
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
-		gettext libpq-dev postgresql-server-dev-all libleveldb-dev
+		gettext libpq-dev postgresql-server-dev-all libleveldb-dev)
+	# for better coverage, build some jobs with luajit
+	if [[ "$CC" == "clang"* && -z "$VALGRIND$FREETYPE" ]]; then
+		pkgs+=(libluajit-5.1-dev)
+	fi
+
+	sudo apt-get update
+	sudo apt-get install -y --no-install-recommends ${pkgs[@]}
 }
 
 # Mac OSX build only
