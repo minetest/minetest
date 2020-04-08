@@ -41,6 +41,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/touchscreengui.h"
 #endif
 
+#define OBJECT_CROSSHAIR_LINE_SIZE 8
+#define CROSSHAIR_LINE_SIZE 10
+
 Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
@@ -620,9 +623,17 @@ void Hud::drawCrosshair()
 					core::rect<s32>(0, 0, size.X, size.Y),
 					nullptr, object_crosshair_argb, true);
 		} else {
-			driver->draw2DLine(m_displaycenter - v2s32(8, 8), m_displaycenter + v2s32(8, 8),
+			driver->draw2DLine(
+					m_displaycenter - v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE),
+					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE),
 					object_crosshair_argb);
-			driver->draw2DLine(m_displaycenter + v2s32(8, -8), m_displaycenter + v2s32(-8, 8),
+			driver->draw2DLine(
+					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					-OBJECT_CROSSHAIR_LINE_SIZE),
+					m_displaycenter + v2s32(-OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE),
 					object_crosshair_argb);
 		}
 	} else if (use_crosshair_image) {
@@ -634,10 +645,10 @@ void Hud::drawCrosshair()
 				core::rect<s32>(0, 0, size.X, size.Y),
 				nullptr, crosshair_argb, true);
 	} else {
-		driver->draw2DLine(m_displaycenter - v2s32(10, 0),
-				m_displaycenter + v2s32(10, 0), crosshair_argb);
-		driver->draw2DLine(m_displaycenter - v2s32(0, 10),
-				m_displaycenter + v2s32(0, 10), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(CROSSHAIR_LINE_SIZE, 0),
+				m_displaycenter + v2s32(CROSSHAIR_LINE_SIZE, 0), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(0, CROSSHAIR_LINE_SIZE),
+				m_displaycenter + v2s32(0, CROSSHAIR_LINE_SIZE), crosshair_argb);
 	}
 }
 
