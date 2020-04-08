@@ -661,7 +661,7 @@ endif()
 
 # Set some optimizations and tweaks
 
-include(CheckCXXCompilerFlag)
+include(CheckCSourceCompiles)
 
 if(MSVC)
 	# Visual Studio
@@ -695,13 +695,19 @@ else()
 	else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
-
 	if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		set(WARNING_FLAGS "${WARNING_FLAGS} -Wsign-compare")
 	endif()
+
 	if(APPLE AND USE_LUAJIT)
 		# required per http://luajit.org/install.html
 		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000")
+	elseif(UNIX AND USE_LUAJIT)
+		check_c_source_compiles("#ifndef __aarch64__\n#error\n#endif\nint main(){}" IS_AARCH64)
+		if(IS_AARCH64)
+			# Move text segment below LuaJIT's 47-bit limit (see issue #9367)
+			SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Ttext-segment=0x200000000")
+		endif()
 	endif()
 
 	if(MINGW)
