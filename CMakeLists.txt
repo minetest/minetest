@@ -102,7 +102,7 @@ elseif(UNIX) # Linux, BSD etc
 		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/share/applications")
 		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/share/metainfo")
 		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/share/icons")
-		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/locale")
+		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/locale")
 	endif()
 endif()
 
@@ -325,4 +325,3 @@ if(DOXYGEN_FOUND)
 		COMMENT "Generating API documentation with Doxygen" VERBATIM
 	)
 endif()
-
