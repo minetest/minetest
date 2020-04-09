@@ -4606,6 +4606,11 @@ Call these functions only at load time!
     * Called always when a player says something
     * Return `true` to mark the message as handled, which means that it will
       not be sent to other players.
+* `minetest.register_on_chatcommand(function(name, command, params))`
+    * Called always when a chatcommand is triggered, before `minetest.registered_chatcommands`
+      is checked to see if the command exists, but after the input is parsed.
+    * Return `true` to mark the command as handled, which means that the default
+      handlers will be prevented.
 * `minetest.register_on_player_receive_fields(function(player, formname, fields))`
     * Called when the server received input from `player` in a formspec with
       the given `formname`. Specifically, this is called on any of the
