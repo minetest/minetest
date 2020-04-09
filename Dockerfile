@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 
 USER root
 RUN apt-get update -y && \

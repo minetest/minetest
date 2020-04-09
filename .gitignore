@@ -26,6 +26,8 @@ gtags.files
 *.project
 # Visual Studio Code
 .vscode/
+# Gradle
+.gradle
 
 ## Files related to Minetest development cycle
 /*.patch
