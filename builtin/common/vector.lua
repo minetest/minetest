@@ -142,11 +142,27 @@ function vector.sort(a, b)
 		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
 end
 
+local function sin(x)
+	if x % math.pi == 0 then
+		return 0
+	else
+		return math.sin(x)
+	end
+end
+
+local function cos(x)
+	if x % math.pi == math.pi / 2 then
+		return 0
+	else
+		return math.cos(x)
+	end
+end
+
 function vector.rotate_around_axis(v, axis, angle)
 	--flip the angle because the formula is for the right hand rule
 	angle = -angle
-	local cosangle = math.cos(angle)
-	local sinangle = math.sin(angle)
+	local cosangle = cos(angle)
+	local sinangle = sin(angle)
 	axis = vector.normalize(axis)
 	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
@@ -159,11 +175,11 @@ function vector.rotate_around_axis(v, axis, angle)
 end
 
 function vector.rotate(v, rot)
-	local sinpitch = math.sin(-rot.x)
-	local sinyaw = math.sin(-rot.y)
-	local sinroll = math.sin(-rot.z)
-	local cospitch = math.cos(rot.x)
-	local cosyaw = math.cos(rot.y)
+	local sinpitch = sin(-rot.x)
+	local sinyaw = sin(-rot.y)
+	local sinroll = sin(-rot.z)
+	local cospitch = cos(rot.x)
+	local cosyaw = cos(rot.y)
 	local cosroll = math.cos(rot.z)
 	local matrix = {
 		{
