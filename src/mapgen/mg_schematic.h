@@ -95,6 +95,8 @@ public:
 	Schematic();
 	virtual ~Schematic();
 
+	ObjDef *clone() const;
+
 	virtual void resolveNodeNames();
 
 	bool loadSchematicFromFile(const std::string &filename,
@@ -127,6 +129,8 @@ class SchematicManager : public ObjDefManager {
 public:
 	SchematicManager(Server *server);
 	virtual ~SchematicManager() = default;
+
+	// not cloneable
 
 	virtual void clear();
 

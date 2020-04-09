@@ -74,11 +74,16 @@ public:
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
 		v3s16 nmin, v3s16 nmax, u8 *biomemap) = 0;
+
+protected:
+	void cloneTo(Ore *def) const;
 };
 
 class OreScatter : public Ore {
 public:
 	static const bool NEEDS_NOISE = false;
+
+	ObjDef *clone() const;
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
 		v3s16 nmin, v3s16 nmax, u8 *biomemap);
@@ -87,6 +92,8 @@ public:
 class OreSheet : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
+
+	ObjDef *clone() const;
 
 	u16 column_height_min;
 	u16 column_height_max;
@@ -99,6 +106,8 @@ public:
 class OrePuff : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
+
+	ObjDef *clone() const;
 
 	NoiseParams np_puff_top;
 	NoiseParams np_puff_bottom;
@@ -116,6 +125,8 @@ class OreBlob : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
 
+	ObjDef *clone() const;
+
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
 		v3s16 nmin, v3s16 nmax, u8 *biomemap);
 };
@@ -123,6 +134,8 @@ public:
 class OreVein : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
+
+	ObjDef *clone() const;
 
 	float random_factor;
 	Noise *noise2 = nullptr;
@@ -139,6 +152,8 @@ class OreStratum : public Ore {
 public:
 	static const bool NEEDS_NOISE = false;
 
+	ObjDef *clone() const;
+
 	NoiseParams np_stratum_thickness;
 	Noise *noise_stratum_thickness = nullptr;
 	u16 stratum_thickness;
@@ -154,6 +169,8 @@ class OreManager : public ObjDefManager {
 public:
 	OreManager(IGameDef *gamedef);
 	virtual ~OreManager() = default;
+
+	OreManager *clone() const;
 
 	const char *getObjectTitle() const
 	{
@@ -183,4 +200,7 @@ public:
 	void clear();
 
 	size_t placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+
+private:
+	OreManager() {};
 };

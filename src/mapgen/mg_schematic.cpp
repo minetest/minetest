@@ -77,6 +77,11 @@ Schematic::~Schematic()
 	delete []slice_probs;
 }
 
+ObjDef *Schematic::clone() const
+{
+	FATAL_ERROR("not cloneable");
+}
+
 
 void Schematic::resolveNodeNames()
 {
@@ -93,6 +98,7 @@ void Schematic::resolveNodeNames()
 
 void Schematic::blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_place)
 {
+	assert(schemdata && slice_probs);
 	sanity_check(m_ndef != NULL);
 
 	int xstride = 1;
@@ -177,7 +183,7 @@ bool Schematic::placeOnVManip(MMVManip *vm, v3s16 p, u32 flags,
 	Rotation rot, bool force_place)
 {
 	assert(vm != NULL);
-	assert(schemdata != NULL);
+	assert(schemdata && slice_probs);
 	sanity_check(m_ndef != NULL);
 
 	//// Determine effective rotation and effective schematic dimensions
