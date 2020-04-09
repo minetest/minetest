@@ -12,7 +12,7 @@ variables:
   MINETEST_GAME_REPO: "https://github.com/minetest/minetest_game.git"
   CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
 
-.build_template: &build_definition
+.build_template:
   stage: build
   script:
     - mkdir cmakebuild
@@ -27,7 +27,7 @@ variables:
     paths:
       - artifact/*
 
-.debpkg_template: &debpkg_template
+.debpkg_template:
   stage: package
   before_script:
     - apt-get update -y
@@ -47,7 +47,7 @@ variables:
     paths:
       - ./*.deb
 
-.debpkg_install: &debpkg_install
+.debpkg_install:
   stage: deploy
   before_script:
     - apt-get update -y
@@ -62,7 +62,7 @@ variables:
 # Jessie
 
 build:debian-8:
-  <<: *build_definition
+  extends: .build_template
   image: debian:8
   before_script:
     - echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" > /etc/apt/sources.list.d/uptodate-toolchain.list
@@ -74,46 +74,70 @@ build:debian-8:
     CXX: g++-6
 
 package:debian-8:
+  extends: .debpkg_template
   image: debian:8
   dependencies:
     - build:debian-8
   variables:
     LEVELDB_PKG: libleveldb1
-  <<: *debpkg_template
 
 deploy:debian-8:
+  extends: .debpkg_install
   image: debian:8
   dependencies:
     - package:debian-8
   variables:
     LEVELDB_PKG: libleveldb1
-  <<: *debpkg_install
 
 # Stretch
 
 build:debian-9:
- <<: *build_definition
+ extends: .build_template
  image: debian:9
  before_script:
    - apt-get update -y
    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 package:debian-9:
+  extends: .debpkg_template
   image: debian:9
   dependencies:
     - build:debian-9
   variables:
     LEVELDB_PKG: libleveldb1v5
-  <<: *debpkg_template
 
 deploy:debian-9:
+  extends: .debpkg_install
   image: debian:9
   dependencies:
     - package:debian-9
   variables:
     LEVELDB_PKG: libleveldb1v5
-  <<: *debpkg_install
 
+# Stretch
+
+build:debian-10:
+ extends: .build_template
+ image: debian:10
+ before_script:
+   - apt-get update -y
+   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+package:debian-10:
+  extends: .debpkg_template
+  image: debian:10
+  dependencies:
+    - build:debian-10
+  variables:
+    LEVELDB_PKG: libleveldb1d
+
+deploy:debian-10:
+  extends: .debpkg_install
+  image: debian:10
+  dependencies:
+    - package:debian-10
+  variables:
+    LEVELDB_PKG: libleveldb1d
 ##
 ## Ubuntu
 ##
@@ -121,7 +145,7 @@ deploy:debian-9:
 # Trusty
 
 build:ubuntu-14.04:
-  <<: *build_definition
+  extends: .build_template
   image: ubuntu:trusty
   before_script:
     - echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" > /etc/apt/sources.list.d/uptodate-toolchain.list
@@ -133,102 +157,53 @@ build:ubuntu-14.04:
     CXX: g++-6
 
 package:ubuntu-14.04:
+  extends: .debpkg_template
   image: ubuntu:trusty
   dependencies:
     - build:ubuntu-14.04
   variables:
     LEVELDB_PKG: libleveldb1
-  <<: *debpkg_template
 
 deploy:ubuntu-14.04:
+  extends: .debpkg_install
   image: ubuntu:trusty
   dependencies:
     - package:ubuntu-14.04
   variables:
     LEVELDB_PKG: libleveldb1
-  <<: *debpkg_install
 
 # Xenial
 
 build:ubuntu-16.04:
-  <<: *build_definition
+  extends: .build_template
   image: ubuntu:xenial
   before_script:
     - apt-get update -y
     - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 package:ubuntu-16.04:
+  extends: .debpkg_template
   image: ubuntu:xenial
   dependencies:
     - build:ubuntu-16.04
   variables:
     LEVELDB_PKG: libleveldb1v5
-  <<: *debpkg_template
 
 deploy:ubuntu-16.04:
+  extends: .debpkg_install
   image: ubuntu:xenial
   dependencies:
     - package:ubuntu-16.04
   variables:
     LEVELDB_PKG: libleveldb1v5
-  <<: *debpkg_install
-
-# Yakkety
-
-#build:ubuntu-16.10:
-#  <<: *build_definition
-#  image: ubuntu:yakkety
-#  before_script:
-#    - apt-get update -y
-#    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
-
-#package:ubuntu-16.10:
-#  image: ubuntu:yakkety
-#  dependencies:
-#    - build:ubuntu-16.10
-#  variables:
-#    LEVELDB_PKG: libleveldb1v5
-#  <<: *debpkg_template
-
-#deploy:ubuntu-16.10:
-#  image: ubuntu:yakkety
-#  dependencies:
-#    - package:ubuntu-16.10
-#  variables:
-#    LEVELDB_PKG: libleveldb1v5
-#  <<: *debpkg_install
-
-# Zesty
-
-#build:ubuntu-17.04:
-#  <<: *build_definition
-#  image: ubuntu:zesty
-#  before_script:
-#    - apt-get update -y
-#    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
-
-#package:ubuntu-17.04:
-#  image: ubuntu:zesty
-#  dependencies:
-#    - build:ubuntu-17.04
-#  variables:
-#    LEVELDB_PKG: libleveldb1v5
-#  <<: *debpkg_template
-
-#deploy:ubuntu-17.04:
-#  image: ubuntu:zesty
-#  dependencies:
-#    - package:ubuntu-17.04
-#  variables:
-#    LEVELDB_PKG: libleveldb1v5
-#  <<: *debpkg_install
 
 ##
 ## Fedora
 ##
 
+# Do we need to support this old version ?
 build:fedora-24:
-  <<: *build_definition
+  extends: .build_template
   image: fedora:24
   before_script:
     - dnf -y install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
@@ -238,7 +213,7 @@ build:fedora-24:
 ## Mingw for Windows
 ##
 
-.generic_win_template: &generic_win_template
+.generic_win_template:
   image: ubuntu:bionic
   before_script:
     - apt-get update -y
@@ -247,8 +222,8 @@ build:fedora-24:
     - sed -e "s|%PREFIX%|${WIN_ARCH}-w64-mingw32|" -e "s|%ROOTPATH%|/usr/${WIN_ARCH}-w64-mingw32|" < util/travis/toolchain_mingw.cmake.in > ${TOOLCHAIN_OUTPUT}
     - tar -xaf mingw.tar.xz -C /usr
 
-.build_win_template: &build_win_template
-  <<: *generic_win_template
+.build_win_template:
+  extends: .generic_win_template
   stage: build
   artifacts:
     when: on_success
@@ -256,8 +231,8 @@ build:fedora-24:
     paths:
       - build/*
 
-.package_win_template: &package_win_template
-  <<: *generic_win_template
+.package_win_template:
+  extends: .generic_win_template
   stage: package
   script:
     - cd build/minetest/_build
@@ -275,7 +250,7 @@ build:fedora-24:
       - minetest-win-*/*
 
 build:win32:
-  <<: *build_win_template
+  extends: .build_win_template
   script:
     - ./util/buildbot/buildwin32.sh build
   variables:
@@ -284,7 +259,7 @@ build:win32:
     TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw.cmake"
 
 package:win32:
-  <<: *package_win_template
+  extends: .package_win_template
   dependencies:
     - build:win32
   variables:
@@ -293,7 +268,7 @@ package:win32:
     TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw.cmake"
 
 build:win64:
-  <<: *build_win_template
+  extends: .build_win_template
   script:
     - ./util/buildbot/buildwin64.sh build
   variables:
@@ -302,7 +277,7 @@ build:win64:
     TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw64.cmake"
 
 package:win64:
-  <<: *package_win_template
+  extends: .package_win_template
   dependencies:
     - build:win64
   variables:
@@ -338,3 +313,4 @@ pages:
       - public
   only:
     - master
+
