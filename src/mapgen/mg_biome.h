@@ -42,6 +42,8 @@ enum BiomeType {
 
 class Biome : public ObjDef, public NodeResolver {
 public:
+	ObjDef *clone() const;
+
 	u32 flags;
 
 	content_t c_top;
@@ -191,6 +193,8 @@ public:
 	BiomeManager(Server *server);
 	virtual ~BiomeManager() = default;
 
+	BiomeManager *clone() const;
+
 	const char *getObjectTitle() const
 	{
 		return "biome";
@@ -232,6 +236,8 @@ public:
 	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos);
 
 private:
+	BiomeManager() {};
+
 	Server *m_server;
 
 };

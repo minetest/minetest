@@ -1572,6 +1572,18 @@ NodeResolver::~NodeResolver()
 }
 
 
+void NodeResolver::cloneTo(NodeResolver *res) const
+{
+	FATAL_ERROR_IF(!m_resolve_done, "NodeResolver can only be cloned"
+		" after resolving has completed");
+	/* We don't actually do anything significant. Since the node resolving has
+	 * already completed, the class that called us will already have the
+	 * resolved IDs in its data structures (which it copies on its own) */
+	res->m_ndef = m_ndef;
+	res->m_resolve_done = true;
+}
+
+
 void NodeResolver::nodeResolveInternal()
 {
 	m_nodenames_idx   = 0;

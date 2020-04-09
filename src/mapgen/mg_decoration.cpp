@@ -67,6 +67,13 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 	return nplaced;
 }
 
+DecorationManager *DecorationManager::clone() const
+{
+	auto mgr = new DecorationManager();
+	ObjDefManager::cloneTo(mgr);
+	return mgr;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -269,7 +276,40 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 }
 
 
+void Decoration::cloneTo(Decoration *def) const
+{
+	ObjDef::cloneTo(def);
+	def->flags = flags;
+	def->mapseed = mapseed;
+	def->c_place_on = c_place_on;
+	def->sidelen = sidelen;
+	def->y_min = y_min;
+	def->y_max = y_max;
+	def->fill_ratio = fill_ratio;
+	def->np = np;
+	def->c_spawnby = c_spawnby;
+	def->nspawnby = nspawnby;
+	def->place_offset_y = place_offset_y;
+	def->biomes = biomes;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
+
+
+ObjDef *DecoSimple::clone() const
+{
+	auto def = new DecoSimple();
+	Decoration::cloneTo(def);
+
+	def->c_decos = c_decos;
+	def->deco_height = deco_height;
+	def->deco_height_max = deco_height_max;
+	def->deco_param2 = deco_param2;
+	def->deco_param2_max = deco_param2_max;
+
+	return def;
+}
 
 
 void DecoSimple::resolveNodeNames()
@@ -349,6 +389,21 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
+
+ObjDef *DecoSchematic::clone() const
+{
+	auto def = new DecoSchematic();
+	Decoration::cloneTo(def);
+	NodeResolver::cloneTo(def);
+
+	def->rotation = rotation;
+	/* FIXME: This is not ideal, we only have a pointer to the schematic despite
+	 * not owning it. Optimally this would be a handle. */
+	def->schematic = schematic; // not cloned
+
+	return def;
+}
 
 
 size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
