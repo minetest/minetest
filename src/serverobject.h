@@ -195,6 +195,8 @@ public:
 	std::string generateUpdateInfantCommand(u16 infant_id, u16 protocol_version);
 	std::string generateUpdateNametagAttributesCommand(const video::SColor &color) const;
 
+	bool dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue);
+
 	/*
 		Number of players which know about this object. Object won't be
 		deleted until this is 0 to keep the id preserved for the right
@@ -238,11 +240,6 @@ public:
 	*/
 	v3s16 m_static_block = v3s16(1337,1337,1337);
 
-	/*
-		Queue of messages to be sent to the client
-	*/
-	std::queue<ActiveObjectMessage> m_messages_out;
-
 protected:
 	virtual void onAttach(int parent_id) {}
 	virtual void onDetach(int parent_id) {}
@@ -256,6 +253,11 @@ protected:
 	ServerEnvironment *m_env;
 	v3f m_base_position;
 	std::unordered_set<u32> m_attached_particle_spawners;
+
+	/*
+		Queue of messages to be sent to the client
+	*/
+	std::queue<ActiveObjectMessage> m_messages_out;
 
 private:
 	// Used for creating objects based on type

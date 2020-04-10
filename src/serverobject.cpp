@@ -104,3 +104,11 @@ std::string ServerActiveObject::generateUpdateNametagAttributesCommand(const vid
 	writeARGB8(os, color);
 	return os.str();
 }
+
+void ServerActiveObject::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue)
+{
+	while (!m_messages_out.empty()) {
+		queue.push(m_messages_out.front());
+		m_messages_out.pop();
+	}
+}
