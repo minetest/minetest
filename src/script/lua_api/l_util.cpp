@@ -349,6 +349,50 @@ int ModApiUtil::l_mkdir(lua_State *L)
 	return 1;
 }
 
+// rmdir(path, recursive)
+int ModApiUtil::l_rmdir(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *path = luaL_checkstring(L, 1);
+	CHECK_SECURE_PATH(L, path, true);
+
+	bool recursive = false;
+
+	if (!lua_isnil(L, 2))
+		recursive = lua_toboolean(L, 2);
+
+	if (recursive)
+		lua_pushboolean(L, fs::RecursiveDelete(path));
+	else
+		lua_pushboolean(L, fs::DeleteSingleFileOrEmptyDirectory(path));
+
+	return 1;
+}
+
+// cpdir(source, destination, remove_source)
+int ModApiUtil::l_cpdir(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *source = luaL_checkstring(L, 1);
+	const char *destination = luaL_checkstring(L, 2);
+	CHECK_SECURE_PATH(L, source, false);
+	CHECK_SECURE_PATH(L, destination, true);
+
+	bool remove_source = false;
+
+	if (!lua_isnil(L, 3))
+		remove_source = lua_toboolean(L, 3);
+
+	bool retval = fs::CopyDir(source, destination);
+
+	if (retval && (remove_source)) {
+		CHECK_SECURE_PATH(L, source, true);
+		retval &= fs::RecursiveDelete(source);
+	}
+	lua_pushboolean(L, retval);
+	return 1;
+}
+
 // get_dir_list(path, is_dir)
 int ModApiUtil::l_get_dir_list(lua_State *L)
 {
@@ -588,6 +632,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(decompress);
 
 	API_FCT(mkdir);
+	API_FCT(rmdir);
+	API_FCT(cpdir);
 	API_FCT(get_dir_list);
 	API_FCT(safe_file_write);
 
@@ -651,6 +697,8 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 	API_FCT(decompress);
 
 	API_FCT(mkdir);
+	API_FCT(rmdir);
+	API_FCT(cpdir);
 	API_FCT(get_dir_list);
 
 	API_FCT(encode_base64);

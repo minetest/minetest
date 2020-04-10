@@ -80,6 +80,12 @@ private:
 	// mkdir(path)
 	static int l_mkdir(lua_State *L);
 
+	// rmdir(path, recursive)
+	static int l_rmdir(lua_State *L);
+
+	// cpdir(source, destination, remove_source)
+	static int l_cpdir(lua_State *L);
+
 	// get_dir_list(path, is_dir)
 	static int l_get_dir_list(lua_State *L);
 
