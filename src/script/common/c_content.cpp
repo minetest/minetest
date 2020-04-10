@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 #include "tool.h"
-#include "serverobject.h"
+#include "server/serveractiveobject.h"
 #include "porting.h"
 #include "mapgen/mg_schematic.h"
 #include "noise.h"
