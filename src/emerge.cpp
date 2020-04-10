@@ -109,6 +109,28 @@ private:
 	VoxelArea *m_ignorevariable;
 };
 
+EmergeParams::~EmergeParams()
+{
+	infostream << "EmergeParams: destroying " << this << std::endl;
+	// Delete everything that was cloned on creation of EmergeParams
+	delete biomemgr;
+	delete oremgr;
+	delete decomgr;
+	delete schemmgr;
+}
+
+EmergeParams::EmergeParams(EmergeManager *parent, const BiomeManager *biomemgr,
+	const OreManager *oremgr, const DecorationManager *decomgr,
+	const SchematicManager *schemmgr) :
+	ndef(parent->ndef),
+	enable_mapgen_debug_info(parent->enable_mapgen_debug_info),
+	gen_notify_on(parent->gen_notify_on),
+	gen_notify_on_deco_ids(&parent->gen_notify_on_deco_ids),
+	biomemgr(biomemgr->clone()), oremgr(oremgr->clone()),
+	decomgr(decomgr->clone()), schemmgr(schemmgr->clone())
+{
+}
+
 ////
 //// EmergeManager
 ////
@@ -182,14 +204,48 @@ EmergeManager::~EmergeManager()
 }
 
 
+BiomeManager *EmergeManager::getWritableBiomeManager()
+{
+	FATAL_ERROR_IF(!m_mapgens.empty(),
+		"Writable managers can only be returned before mapgen init");
+	return biomemgr;
+}
+
+OreManager *EmergeManager::getWritableOreManager()
+{
+	FATAL_ERROR_IF(!m_mapgens.empty(),
+		"Writable managers can only be returned before mapgen init");
+	return oremgr;
+}
+
+DecorationManager *EmergeManager::getWritableDecorationManager()
+{
+	FATAL_ERROR_IF(!m_mapgens.empty(),
+		"Writable managers can only be returned before mapgen init");
+	return decomgr;
+}
+
+SchematicManager *EmergeManager::getWritableSchematicManager()
+{
+	FATAL_ERROR_IF(!m_mapgens.empty(),
+		"Writable managers can only be returned before mapgen init");
+	return schemmgr;
+}
+
+
 void EmergeManager::initMapgens(MapgenParams *params)
 {
 	FATAL_ERROR_IF(!m_mapgens.empty(), "Mapgen already initialised.");
 
 	mgparams = params;
 
-	for (u32 i = 0; i != m_threads.size(); i++)
-		m_mapgens.push_back(Mapgen::createMapgen(params->mgtype, params, this));
+	for (u32 i = 0; i != m_threads.size(); i++) {
+		EmergeParams *p = new EmergeParams(
+			this, biomemgr, oremgr, decomgr, schemmgr);
+		infostream << "EmergeManager: Created params " << p
+			<< " for thread " << i << std::endl;
+		m_mapgens.push_back(Mapgen::createMapgen(params->mgtype, params, p));
+	}
 }
 
 

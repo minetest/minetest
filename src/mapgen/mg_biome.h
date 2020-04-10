@@ -230,10 +230,10 @@ public:
 
 	// For BiomeGen type 'BiomeGenOriginal'
 	float getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
-		NoiseParams &np_heat_blend, u64 seed);
+		NoiseParams &np_heat_blend, u64 seed) const;
 	float getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
-		NoiseParams &np_humidity_blend, u64 seed);
-	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos);
+		NoiseParams &np_humidity_blend, u64 seed) const;
+	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos) const;
 
 private:
 	BiomeManager() {};

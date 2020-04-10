@@ -51,7 +51,7 @@ FlagDesc flagdesc_mapgen_v7[] = {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV7::MapgenV7(MapgenV7Params *params, EmergeManager *emerge)
+MapgenV7::MapgenV7(MapgenV7Params *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_V7, params, emerge)
 {
 	spflags            = params->spflags;

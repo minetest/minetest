@@ -130,7 +130,7 @@ public:
 	SchematicManager(Server *server);
 	virtual ~SchematicManager() = default;
 
-	// not cloneable
+	SchematicManager *clone() const;
 
 	virtual void clear();
 
@@ -145,6 +145,8 @@ public:
 	}
 
 private:
+	SchematicManager() {};
+
 	Server *m_server;
 };
 

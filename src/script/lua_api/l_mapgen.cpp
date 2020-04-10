@@ -91,7 +91,7 @@ struct EnumString ModApiMapgen::es_SchematicFormatType[] =
 	{0, NULL},
 };
 
-ObjDef *get_objdef(lua_State *L, int index, ObjDefManager *objmgr);
+ObjDef *get_objdef(lua_State *L, int index, const ObjDefManager *objmgr);
 
 Biome *get_or_load_biome(lua_State *L, int index,
 	BiomeManager *biomemgr);
@@ -114,7 +114,7 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ObjDef *get_objdef(lua_State *L, int index, ObjDefManager *objmgr)
+ObjDef *get_objdef(lua_State *L, int index, const ObjDefManager *objmgr)
 {
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -486,7 +486,7 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 	if (!biome_str)
 		return 0;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
@@ -508,7 +508,7 @@ int ModApiMapgen::l_get_biome_name(lua_State *L)
 
 	int biome_id = luaL_checkinteger(L, 1);
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
@@ -546,7 +546,7 @@ int ModApiMapgen::l_get_heat(lua_State *L)
 	u64 seed;
 	ss >> seed;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
@@ -587,7 +587,7 @@ int ModApiMapgen::l_get_humidity(lua_State *L)
 	u64 seed;
 	ss >> seed;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
@@ -635,7 +635,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 	u64 seed;
 	ss >> seed;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
@@ -1066,7 +1066,8 @@ int ModApiMapgen::l_get_decoration_id(lua_State *L)
 	if (!deco_str)
 		return 0;
 
-	DecorationManager *dmgr = getServer(L)->getEmergeManager()->decomgr;
+	const DecorationManager *dmgr =
+		getServer(L)->getEmergeManager()->getDecorationManager();
 
 	if (!dmgr)
 		return 0;
@@ -1091,7 +1092,7 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->getWritableBiomeManager();
 
 	Biome *biome = read_biome_def(L, index, ndef);
 	if (!biome)
@@ -1117,9 +1118,10 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	const NodeDefManager *ndef      = getServer(L)->getNodeDefManager();
-	DecorationManager *decomgr = getServer(L)->getEmergeManager()->decomgr;
-	BiomeManager *biomemgr     = getServer(L)->getEmergeManager()->biomemgr;
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	DecorationManager *decomgr = emerge->getWritableDecorationManager();
+	BiomeManager *biomemgr     = emerge->getWritableBiomeManager();
+	SchematicManager *schemmgr = emerge->getWritableSchematicManager();
 
 	enum DecorationType decotype = (DecorationType)getenumfield(L, index,
 				"deco_type", es_DecorationType, -1);
@@ -1274,8 +1276,9 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
-	OreManager *oremgr    = getServer(L)->getEmergeManager()->oremgr;
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	BiomeManager *bmgr    = emerge->getWritableBiomeManager();
+	OreManager *oremgr    = emerge->getWritableOreManager();
 
 	enum OreType oretype = (OreType)getenumfield(L, index,
 				"ore_type", es_OreType, ORE_SCATTER);
@@ -1422,7 +1425,8 @@ int ModApiMapgen::l_register_schematic(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	SchematicManager *schemmgr =
+		getServer(L)->getEmergeManager()->getWritableSchematicManager();
 
 	StringMap replace_names;
 	if (lua_istable(L, 2))
@@ -1449,7 +1453,8 @@ int ModApiMapgen::l_clear_registered_biomes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	BiomeManager *bmgr =
+		getServer(L)->getEmergeManager()->getWritableBiomeManager();
 	bmgr->clear();
 	return 0;
 }
@@ -1460,7 +1465,8 @@ int ModApiMapgen::l_clear_registered_decorations(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	DecorationManager *dmgr = getServer(L)->getEmergeManager()->decomgr;
+	DecorationManager *dmgr =
+		getServer(L)->getEmergeManager()->getWritableDecorationManager();
 	dmgr->clear();
 	return 0;
 }
@@ -1471,7 +1477,8 @@ int ModApiMapgen::l_clear_registered_ores(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	OreManager *omgr = getServer(L)->getEmergeManager()->oremgr;
+	OreManager *omgr =
+		getServer(L)->getEmergeManager()->getWritableOreManager();
 	omgr->clear();
 	return 0;
 }
@@ -1482,7 +1489,8 @@ int ModApiMapgen::l_clear_registered_schematics(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *smgr = getServer(L)->getEmergeManager()->schemmgr;
+	SchematicManager *smgr =
+		getServer(L)->getEmergeManager()->getWritableSchematicManager();
 	smgr->clear();
 	return 0;
 }
@@ -1508,7 +1516,8 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
-	emerge->oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
+	OreManager *oremgr = (OreManager*) emerge->getOreManager(); // FIXME FIXME
+	oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
 
 	return 0;
 }
@@ -1534,7 +1543,8 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
-	emerge->decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
+	DecorationManager *decomgr = (DecorationManager*) emerge->getDecorationManager(); // FIXME FIXME
+	decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
 
 	return 0;
 }
@@ -1614,7 +1624,8 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 	GET_ENV_PTR;
 
 	ServerMap *map = &(env->getServerMap());
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	SchematicManager *schemmgr = (SchematicManager*)
+		getServer(L)->getEmergeManager()->getSchematicManager(); // FIXME FIXME
 
 	//// Read position
 	v3s16 p = check_v3s16(L, 1);
@@ -1659,7 +1670,8 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	SchematicManager *schemmgr = (SchematicManager*)
+		getServer(L)->getEmergeManager()->getSchematicManager(); // FIXME FIXME
 
 	//// Read VoxelManip object
 	MMVManip *vm = LuaVoxelManip::checkobject(L, 1)->vm;
@@ -1707,7 +1719,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	const SchematicManager *schemmgr = getServer(L)->getEmergeManager()->getSchematicManager();
 
 	//// Read options
 	bool use_comments = getboolfield_default(L, 3, "lua_use_comments", false);
@@ -1758,7 +1770,8 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	const SchematicManager *schemmgr =
+		getServer(L)->getEmergeManager()->getSchematicManager();
 
 	//// Read options
 	std::string write_yslice = getstringfield_default(L, 2, "write_yslice_prob", "all");
