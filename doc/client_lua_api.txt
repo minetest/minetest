@@ -734,6 +734,13 @@ Call these functions only at load time!
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
 * `minetest.sound_stop(handle)`
+    * `handle` is a handle returned by `minetest.sound_play`
+* `minetest.sound_fade(handle, step, gain)`
+    * `handle` is a handle returned by `minetest.sound_play`
+    * `step` determines how fast a sound will fade.
+      Negative step will lower the sound volume, positive step will increase
+      the sound volume.
+    * `gain` the target gain for the fade.
 
 ### Timing
 * `minetest.after(time, func, ...)`
