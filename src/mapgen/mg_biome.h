@@ -90,6 +90,7 @@ struct BiomeParams {
 	s32 seed;
 };
 
+// WARNING: this class is not thread-safe
 class BiomeGen {
 public:
 	virtual ~BiomeGen() = default;
@@ -233,7 +234,8 @@ public:
 		NoiseParams &np_heat_blend, u64 seed) const;
 	float getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
 		NoiseParams &np_humidity_blend, u64 seed) const;
-	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos) const;
+	const Biome *getBiomeFromNoiseOriginal(float heat, float humidity,
+		v3s16 pos) const;
 
 private:
 	BiomeManager() {};

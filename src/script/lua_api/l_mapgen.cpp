@@ -490,7 +490,7 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 	if (!bmgr)
 		return 0;
 
-	Biome *biome = (Biome *)bmgr->getByName(biome_str);
+	const Biome *biome = (Biome *)bmgr->getByName(biome_str);
 	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
 
@@ -512,7 +512,7 @@ int ModApiMapgen::l_get_biome_name(lua_State *L)
 	if (!bmgr)
 		return 0;
 
-	Biome *b = (Biome *)bmgr->getRaw(biome_id);
+	const Biome *b = (Biome *)bmgr->getRaw(biome_id);
 	lua_pushstring(L, b->name.c_str());
 
 	return 1;
@@ -551,8 +551,6 @@ int ModApiMapgen::l_get_heat(lua_State *L)
 		return 0;
 
 	float heat = bmgr->getHeatAtPosOriginal(pos, np_heat, np_heat_blend, seed);
-	if (!heat)
-		return 0;
 
 	lua_pushnumber(L, heat);
 
@@ -593,8 +591,6 @@ int ModApiMapgen::l_get_humidity(lua_State *L)
 
 	float humidity = bmgr->getHumidityAtPosOriginal(pos, np_humidity,
 		np_humidity_blend, seed);
-	if (!humidity)
-		return 0;
 
 	lua_pushnumber(L, humidity);
 
@@ -648,7 +644,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 	if (!humidity)
 		return 0;
 
-	Biome *biome = (Biome *)bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos);
+	const Biome *biome = bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos);
 	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
 
@@ -1516,8 +1512,7 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
-	OreManager *oremgr = (OreManager*) emerge->getOreManager(); // FIXME FIXME
-	oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
+	emerge->oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
 
 	return 0;
 }
@@ -1543,8 +1538,7 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
-	DecorationManager *decomgr = (DecorationManager*) emerge->getDecorationManager(); // FIXME FIXME
-	decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
+	emerge->decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
 
 	return 0;
 }
@@ -1624,8 +1618,7 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 	GET_ENV_PTR;
 
 	ServerMap *map = &(env->getServerMap());
-	SchematicManager *schemmgr = (SchematicManager*)
-		getServer(L)->getEmergeManager()->getSchematicManager(); // FIXME FIXME
+	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read position
 	v3s16 p = check_v3s16(L, 1);
@@ -1670,8 +1663,7 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *schemmgr = (SchematicManager*)
-		getServer(L)->getEmergeManager()->getSchematicManager(); // FIXME FIXME
+	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read VoxelManip object
 	MMVManip *vm = LuaVoxelManip::checkobject(L, 1)->vm;
@@ -1727,7 +1719,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 
 	//// Get schematic
 	bool was_loaded = false;
-	Schematic *schem = (Schematic *)get_objdef(L, 1, schemmgr);
+	const Schematic *schem = (Schematic *)get_objdef(L, 1, schemmgr);
 	if (!schem) {
 		schem = load_schematic(L, 1, NULL, NULL);
 		was_loaded = true;
