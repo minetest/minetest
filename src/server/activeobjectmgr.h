@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <functional>
 #include <vector>
 #include "../activeobjectmgr.h"
-#include "serverobject.h"
+#include "serveractiveobject.h"
 
 namespace server
 {

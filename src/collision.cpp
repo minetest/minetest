@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/localplayer.h"
 #endif
 #include "serverenvironment.h"
-#include "serverobject.h"
+#include "server/serveractiveobject.h"
 #include "util/timetaker.h"
 #include "profiler.h"
 

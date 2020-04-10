@@ -421,7 +421,6 @@ set(common_SRCS
 	server.cpp
 	serverenvironment.cpp
 	serverlist.cpp
-	serverobject.cpp
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp

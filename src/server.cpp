@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "filesys.h"
 #include "mapblock.h"
-#include "serverobject.h"
+#include "server/serveractiveobject.h"
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"

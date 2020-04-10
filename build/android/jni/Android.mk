@@ -259,7 +259,7 @@ LOCAL_SRC_FILES := \
 		jni/src/serverenvironment.cpp             \
 		jni/src/serverlist.cpp                    \
 		jni/src/server/mods.cpp                   \
-		jni/src/serverobject.cpp                  \
+		jni/src/server/serveractiveobject.cpp     \
 		jni/src/settings.cpp                      \
 		jni/src/staticobject.cpp                  \
 		jni/src/tileanimation.cpp                 \

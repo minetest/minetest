@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_security.h"
 #include "lua_api/l_object.h"
 #include "common/c_converter.h"
-#include "serverobject.h"
+#include "server/serveractiveobject.h"
 #include "filesys.h"
 #include "content/mods.h"
 #include "porting.h"
