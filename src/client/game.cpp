@@ -1407,8 +1407,11 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	mapper = client->getMinimap();
-	if (mapper)
+	if (mapper) {
 		mapper->setMinimapMode(MINIMAP_MODE_OFF);
+		if (client->modsLoaded())
+			client->getScript()->on_minimap_ready(mapper);
+	}
 
 	return true;
 }

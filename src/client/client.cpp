@@ -178,7 +178,7 @@ void Client::loadMods()
 		infostream << mod.name << " ";
 	infostream << std::endl;
 
-	// Load and run "mod" scripts
+	// Load "mod" scripts
 	for (const ModSpec &mod : m_mods) {
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
 			throw ModError("Error loading mod \"" + mod.name +
@@ -188,7 +188,7 @@ void Client::loadMods()
 		scanModIntoMemory(mod.name, mod.path);
 	}
 
-	// Load and run "mod" scripts
+	// Run them
 	for (const ModSpec &mod : m_mods)
 		m_script->loadModFromMemory(mod.name);
 
@@ -197,10 +197,14 @@ void Client::loadMods()
 
 	// Run a callback when mods are loaded
 	m_script->on_mods_loaded();
+
+	// Create objects if they're ready
 	if (m_state == LC_Ready)
 		m_script->on_client_ready(m_env.getLocalPlayer());
 	if (m_camera)
 		m_script->on_camera_ready(m_camera);
+	if (m_minimap)
+		m_script->on_minimap_ready(m_minimap);
 }
 
 bool Client::checkBuiltinIntegrity()
