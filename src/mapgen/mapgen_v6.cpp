@@ -132,6 +132,21 @@ MapgenV6::MapgenV6(MapgenV6Params *params, EmergeManager *emerge)
 		c_stair_cobble = c_cobble;
 	if (c_stair_desert_stone == CONTENT_IGNORE)
 		c_stair_desert_stone = c_desert_stone;
+
+	if (c_stone == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_stone' is invalid!" << std::endl;
+	if (c_dirt == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_dirt' is invalid!" << std::endl;
+	if (c_dirt_with_grass == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_dirt_with_grass' is invalid!" << std::endl;
+	if (c_sand == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_sand' is invalid!" << std::endl;
+	if (c_water_source == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_water_source' is invalid!" << std::endl;
+	if (c_lava_source == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_lava_source' is invalid!" << std::endl;
+	if (c_cobble == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_cobble' is invalid!" << std::endl;
 }
 
 
