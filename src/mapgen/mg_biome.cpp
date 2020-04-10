@@ -78,7 +78,7 @@ void BiomeManager::clear()
 	EmergeManager *emerge = m_server->getEmergeManager();
 
 	// Remove all dangling references in Decorations
-	DecorationManager *decomgr = emerge->decomgr;
+	DecorationManager *decomgr = emerge->getWritableDecorationManager();
 	for (size_t i = 0; i != decomgr->getNumObjects(); i++) {
 		Decoration *deco = (Decoration *)decomgr->getRaw(i);
 		deco->biomes.clear();
@@ -104,7 +104,7 @@ BiomeManager *BiomeManager::clone() const
 
 // For BiomeGen type 'BiomeGenOriginal'
 float BiomeManager::getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
-	NoiseParams &np_heat_blend, u64 seed)
+	NoiseParams &np_heat_blend, u64 seed) const
 {
 	return
 		NoisePerlin2D(&np_heat,       pos.X, pos.Z, seed) +
@@ -114,7 +114,7 @@ float BiomeManager::getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
 
 // For BiomeGen type 'BiomeGenOriginal'
 float BiomeManager::getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
-	NoiseParams &np_humidity_blend, u64 seed)
+	NoiseParams &np_humidity_blend, u64 seed) const
 {
 	return
 		NoisePerlin2D(&np_humidity,       pos.X, pos.Z, seed) +
@@ -123,7 +123,7 @@ float BiomeManager::getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity
 
 
 // For BiomeGen type 'BiomeGenOriginal'
-Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos)
+Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos) const
 {
 	Biome *biome_closest = nullptr;
 	Biome *biome_closest_blend = nullptr;

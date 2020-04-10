@@ -99,11 +99,13 @@ public:
 	ObjDef *clone() const;
 
 	DecoSchematic() = default;
+	virtual ~DecoSchematic();
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling);
 
 	Rotation rotation;
 	Schematic *schematic = nullptr;
+	bool was_cloned = false; // see FIXME inside DecoSchemtic::clone()
 };
 
 

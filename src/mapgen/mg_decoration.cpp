@@ -391,6 +391,13 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 ///////////////////////////////////////////////////////////////////////////////
 
 
+DecoSchematic::~DecoSchematic()
+{
+	if (was_cloned)
+		delete schematic;
+}
+
+
 ObjDef *DecoSchematic::clone() const
 {
 	auto def = new DecoSchematic();
@@ -398,9 +405,12 @@ ObjDef *DecoSchematic::clone() const
 	NodeResolver::cloneTo(def);
 
 	def->rotation = rotation;
-	/* FIXME: This is not ideal, we only have a pointer to the schematic despite
-	 * not owning it. Optimally this would be a handle. */
-	def->schematic = schematic; // not cloned
+	/* FIXME: We do not own this schematic, yet we only have a pointer to it
+	 * and not a handle. We are left with no option but to clone it ourselves.
+	 * This is a waste of memory and should be replaced with an alternative
+	 * approach sometime. */
+	def->schematic = dynamic_cast<Schematic*>(schematic->clone());
+	def->was_cloned = true;
 
 	return def;
 }

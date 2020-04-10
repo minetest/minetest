@@ -43,12 +43,21 @@ SchematicManager::SchematicManager(Server *server) :
 }
 
 
+SchematicManager *SchematicManager::clone() const
+{
+	auto mgr = new SchematicManager();
+	assert(mgr);
+	ObjDefManager::cloneTo(mgr);
+	return mgr;
+}
+
+
 void SchematicManager::clear()
 {
 	EmergeManager *emerge = m_server->getEmergeManager();
 
 	// Remove all dangling references in Decorations
-	DecorationManager *decomgr = emerge->decomgr;
+	DecorationManager *decomgr = emerge->getWritableDecorationManager();
 	for (size_t i = 0; i != decomgr->getNumObjects(); i++) {
 		Decoration *deco = (Decoration *)decomgr->getRaw(i);
 
@@ -79,7 +88,21 @@ Schematic::~Schematic()
 
 ObjDef *Schematic::clone() const
 {
-	FATAL_ERROR("not cloneable");
+	auto def = new Schematic();
+	ObjDef::cloneTo(def);
+	NodeResolver::cloneTo(def);
+
+	def->c_nodes = c_nodes;
+	def->flags = flags;
+	def->size = size;
+	FATAL_ERROR_IF(!schemdata, "Schematic can only be cloned after loading");
+	u32 nodecount = size.X * size.Y * size.Z;
+	def->schemdata = new MapNode[nodecount];
+	memcpy(def->schemdata, schemdata, sizeof(MapNode) * nodecount);
+	def->slice_probs = new u8[size.Y];
+	memcpy(def->slice_probs, slice_probs, sizeof(u8) * size.Y);
+
+	return def;
 }
 
 
