@@ -804,8 +804,6 @@ Call these functions only at load time!
     * get max available level for leveled node
 
 ### Player
-* `minetest.get_wielded_item()`
-    * Returns the itemstack the local player is holding
 * `minetest.send_chat_message(message)`
     * Act as if `message` was typed by the player into the terminal.
 * `minetest.run_server_chatcommand(cmd, param)`
@@ -1006,6 +1004,10 @@ Methods:
     * returns player HP
 * `get_name()`
     * returns player name
+* `get_wield_index()`
+    * returns the index of the wielded item
+* `get_wielded_item()`
+    * returns the itemstack the player is holding
 * `is_attached()`
     * returns true if player is attached
 * `is_touching_ground()`
@@ -1029,7 +1031,8 @@ Methods:
         jump = float,
         gravity = float,
         sneak = boolean,
-        sneak_glitch = boolean
+        sneak_glitch = boolean,
+        new_move = boolean,
     }
 ```
 
@@ -1081,8 +1084,26 @@ Methods:
     * returns last look horizontal angle
 * `get_last_look_vertical()`:
     * returns last look vertical angle
-* `get_key_pressed()`:
-    * returns last key typed by the player
+* `get_control()`:
+    * returns pressed player controls
+
+```lua
+    {
+       up = boolean,
+       down = boolean,
+       left = boolean,
+       right = boolean,
+       jump = boolean,
+       aux1 = boolean,
+       sneak = boolean,
+       zoom = boolean,
+       LMB = boolean,
+       RMB = boolean,
+    }
+```
+
+* `get_armor_groups()`
+    * returns a table with the armor group ratings
 * `hud_add(definition)`
     * add a HUD element described by HUD def, returns ID number on success and `nil` on failure.
     * See [`HUD definition`](#hud-definition-hud_add-hud_get)
