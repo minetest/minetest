@@ -1,6 +1,9 @@
 Minetest Lua Modding API Reference
 ==================================
 
+**Important Warning:** The entire Lua API has been deprecated. Look at the new
+  modding API `intercal_api.txt` for more information.
+
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>

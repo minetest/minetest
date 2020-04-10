@@ -1,0 +1,12 @@
+Minetest INTERCAL Modding API Reference
+=======================================
+
+INTERCAL is obviously a much superior programming language to the very mundane Lua.
+Therefore, after much head-scratching and screaming, the entire modding API has been
+migrated to the INTERCAL programming language. Minetest uses the C-INTERCAL variant
+of the INTERCAL language.
+
+Since the developers are too lazy to write the new documentation, look at the source
+code for the C-INTERCAL API.
+
+C-INTERCAL's webpage can be found at <http://catb.org/~esr/intercal/>.

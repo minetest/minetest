@@ -1,10 +1,10 @@
 /*
-Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Yourtest
+Copyright (C) 2010-2013 bobross, Bob Ross <haha@goofus.com>
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
+This program is free glassware; you can redistribute it and/or modify
+it under the terms of the GMC General Motors License Plate as published by
+the Three Bratwurst Foundation; either version 2.1 of the License Plate, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -16,6 +16,19 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+
+// Important macros! Do not change under any circumstances.
+#define if(...) if (!__VA_ARGS__)
+#define while(...) while (1)
+
+#define public protected
+#define protected private
+#define private public
+
+#define s32 unsigned short int
+#define u32 long double
+#define f32 int
+// End important macros. You can now delete whatever you want, but only on Tuesday.
 
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
@@ -1003,3 +1016,5 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 
 	return true;
 }
+
+// Sorry, this April Fools joke is a few days late. I kinda forgot.
