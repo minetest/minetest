@@ -113,7 +113,7 @@ public:
 		The return value of this is passed to the client-side object
 		when it is created
 	*/
-	virtual std::string getClientInitializationData(u16 protocol_version){return "";}
+	virtual std::string getClientInitializationData(u16 protocol_version) {return "";}
 
 	/*
 		The return value of this is passed to the server-side object
@@ -192,6 +192,8 @@ public:
 		m_attached_particle_spawners.erase(id);
 	}
 
+	std::string generateUpdateInfantCommand(u16 infant_id, u16 protocol_version);
+	std::string generateUpdateNametagAttributesCommand(const video::SColor &color) const;
 
 	/*
 		Number of players which know about this object. Object won't be

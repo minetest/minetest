@@ -151,8 +151,6 @@ src/fontengine.h
 src/game.cpp
 src/gamedef.h
 src/game.h
-src/genericobject.cpp
-src/genericobject.h
 src/gettext.cpp
 src/gettext.h
 src/gui/guiAnimatedImage.cpp

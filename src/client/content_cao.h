@@ -68,6 +68,7 @@ struct SmoothTranslatorWrappedv3f : SmoothTranslator<v3f>
 class GenericCAO : public ClientActiveObject
 {
 private:
+	void readAOMessageProperties(std::istream &is);
 	// Only set at initialization
 	std::string m_name = "";
 	bool m_is_player = false;
