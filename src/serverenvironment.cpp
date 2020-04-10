@@ -1420,10 +1420,7 @@ void ServerEnvironment::step(float dtime)
 			// Step object
 			obj->step(dtime, send_recommended);
 			// Read messages from object
-			while (!obj->m_messages_out.empty()) {
-				this->m_active_object_messages.push(obj->m_messages_out.front());
-				obj->m_messages_out.pop();
-			}
+			obj->dumpAOMessagesToQueue(m_active_object_messages);
 		};
 		m_ao_manager.step(dtime, cb_state);
 	}

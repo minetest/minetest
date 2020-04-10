@@ -176,7 +176,6 @@ LOCAL_SRC_FILES := \
 		jni/src/environment.cpp                   \
 		jni/src/face_position_cache.cpp           \
 		jni/src/filesys.cpp                       \
-		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
 		jni/src/gui/guiAnimatedImage.cpp          \
 		jni/src/gui/guiBackgroundImage.cpp        \

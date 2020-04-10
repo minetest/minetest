@@ -81,3 +81,34 @@ bool ServerActiveObject::setWieldedItem(const ItemStack &item)
 {
 	return false;
 }
+
+std::string ServerActiveObject::generateUpdateInfantCommand(u16 infant_id, u16 protocol_version)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_SPAWN_INFANT);
+	// parameters
+	writeU16(os, infant_id);
+	writeU8(os, getSendType());
+	os << serializeLongString(getClientInitializationData(protocol_version));
+	return os.str();
+}
+
+std::string ServerActiveObject::generateUpdateNametagAttributesCommand(const video::SColor &color) const
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_UPDATE_NAMETAG_ATTRIBUTES);
+	// parameters
+	writeU8(os, 1); // version for forward compatibility
+	writeARGB8(os, color);
+	return os.str();
+}
+
+void ServerActiveObject::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue)
+{
+	while (!m_messages_out.empty()) {
+		queue.push(m_messages_out.front());
+		m_messages_out.pop();
+	}
+}

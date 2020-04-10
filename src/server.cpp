@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "mapblock.h"
 #include "serverobject.h"
-#include "genericobject.h"
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
@@ -721,7 +720,7 @@ void Server::AsyncRunStep(bool initial_step)
 				// Go through every message
 				for (const ActiveObjectMessage &aom : *list) {
 					// Send position updates to players who do not see the attachment
-					if (aom.datastring[0] == GENERIC_CMD_UPDATE_POSITION) {
+					if (aom.datastring[0] == AO_CMD_UPDATE_POSITION) {
 						if (sao->getId() == player->getId())
 							continue;
 
@@ -1819,9 +1818,7 @@ void Server::SendPlayerHP(session_t peer_id)
 	m_script->player_event(playersao,"health_changed");
 
 	// Send to other clients
-	std::string str = gob_cmd_punched(playersao->getHP());
-	ActiveObjectMessage aom(playersao->getId(), true, str);
-	playersao->m_messages_out.push(aom);
+	playersao->sendPunchCommand();
 }
 
 void Server::SendPlayerBreath(PlayerSAO *sao)

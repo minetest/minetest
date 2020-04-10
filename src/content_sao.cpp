@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "server.h"
 #include "scripting_server.h"
-#include "genericobject.h"
 #include "settings.h"
 #include <algorithm>
 #include <cmath>
@@ -289,6 +288,120 @@ void UnitSAO::notifyObjectPropertiesModified()
 	m_properties_sent = false;
 }
 
+std::string UnitSAO::generateUpdateAttachmentCommand() const
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_ATTACH_TO);
+	// parameters
+	writeS16(os, m_attachment_parent_id);
+	os << serializeString(m_attachment_bone);
+	writeV3F32(os, m_attachment_position);
+	writeV3F32(os, m_attachment_rotation);
+	return os.str();
+}
+
+std::string UnitSAO::generateUpdateBonePositionCommand(const std::string &bone,
+	const v3f &position, const v3f &rotation)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_SET_BONE_POSITION);
+	// parameters
+	os << serializeString(bone);
+	writeV3F32(os, position);
+	writeV3F32(os, rotation);
+	return os.str();
+}
+
+
+std::string UnitSAO::generateUpdateAnimationSpeedCommand() const
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_SET_ANIMATION_SPEED);
+	// parameters
+	writeF32(os, m_animation_speed);
+	return os.str();
+}
+
+std::string UnitSAO::generateUpdateAnimationCommand() const
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_SET_ANIMATION);
+	// parameters
+	writeV2F32(os, m_animation_range);
+	writeF32(os, m_animation_speed);
+	writeF32(os, m_animation_blend);
+	// these are sent inverted so we get true when the server sends nothing
+	writeU8(os, !m_animation_loop);
+	return os.str();
+}
+
+
+std::string UnitSAO::generateUpdateArmorGroupsCommand() const
+{
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, AO_CMD_UPDATE_ARMOR_GROUPS);
+	writeU16(os, m_armor_groups.size());
+	for (const auto &armor_group : m_armor_groups) {
+		os<<serializeString(armor_group.first);
+		writeS16(os, armor_group.second);
+	}
+	return os.str();
+}
+
+
+std::string UnitSAO::generateUpdatePositionCommand(const v3f &position, const v3f &velocity,
+	const v3f &acceleration, const v3f &rotation, bool do_interpolate, bool is_movement_end,
+	f32 update_interval)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_UPDATE_POSITION);
+	// pos
+	writeV3F32(os, position);
+	// velocity
+	writeV3F32(os, velocity);
+	// acceleration
+	writeV3F32(os, acceleration);
+	// rotation
+	writeV3F32(os, rotation);
+	// do_interpolate
+	writeU8(os, do_interpolate);
+	// is_end_position (for interpolation)
+	writeU8(os, is_movement_end);
+	// update_interval (for interpolation)
+	writeF32(os, update_interval);
+	return os.str();
+}
+
+
+std::string UnitSAO::generateSetPropertiesCommand(const ObjectProperties &prop) const
+{
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, AO_CMD_SET_PROPERTIES);
+	prop.serialize(os);
+	return os.str();
+}
+
+std::string UnitSAO::generatePunchCommand(u16 result_hp) const
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_PUNCHED);
+	// result_hp
+	writeU16(os, result_hp);
+	return os.str();
+}
+
+void UnitSAO::sendPunchCommand()
+{
+	m_messages_out.emplace(getId(), true, generatePunchCommand(getHP()));
+}
+
+
 /*
 	LuaEntitySAO
 */
@@ -500,17 +613,13 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if (!m_armor_groups_sent) {
 		m_armor_groups_sent = true;
-		std::string str = gob_cmd_update_armor_groups(
-				m_armor_groups);
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, generateUpdateArmorGroupsCommand());
 	}
 
 	if (!m_animation_sent) {
 		m_animation_sent = true;
-		std::string str = gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
+		std::string str = generateUpdateAnimationCommand();
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
@@ -518,7 +627,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if (!m_animation_speed_sent) {
 		m_animation_speed_sent = true;
-		std::string str = gob_cmd_update_animation_speed(m_animation_speed);
+		std::string str = generateUpdateAnimationSpeedCommand();
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
@@ -528,7 +637,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_bone_position_sent = true;
 		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
-			std::string str = gob_cmd_update_bone_position((*ii).first,
+			std::string str = generateUpdateBonePositionCommand((*ii).first,
 					(*ii).second.X, (*ii).second.Y);
 			// create message and add to list
 			ActiveObjectMessage aom(getId(), true, str);
@@ -538,7 +647,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if (!m_attachment_sent) {
 		m_attachment_sent = true;
-		std::string str = gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
+		std::string str = generateUpdateAttachmentCommand();
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
@@ -560,16 +669,14 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 
 	std::ostringstream msg_os(std::ios::binary);
 	msg_os << serializeLongString(getPropertyPacket()); // message 1
-	msg_os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-	msg_os << serializeLongString(gob_cmd_update_animation(
-		m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop)); // 3
+	msg_os << serializeLongString(generateUpdateArmorGroupsCommand()); // 2
+	msg_os << serializeLongString(generateUpdateAnimationCommand()); // 3
 	for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-		msg_os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
+		msg_os << serializeLongString(generateUpdateBonePositionCommand((*ii).first,
 				(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 	}
-	msg_os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
-		m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
 	int message_count = 4 + m_bone_position.size();
 	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
 			(ii != m_attachment_child_ids.end()); ++ii) {
@@ -577,12 +684,11 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 			message_count++;
 			// TODO after a protocol bump: only send the object initialization data
 			// to older clients (superfluous since this message exists)
-			msg_os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(),
-				obj->getClientInitializationData(protocol_version)));
+			msg_os << serializeLongString(obj->generateUpdateInfantCommand(*ii, protocol_version));
 		}
 	}
 
-	msg_os << serializeLongString(gob_cmd_set_texture_mod(m_current_texture_modifier));
+	msg_os << serializeLongString(generateSetTextureModCommand());
 	message_count++;
 
 	writeU8(os, message_count);
@@ -655,10 +761,8 @@ u16 LuaEntitySAO::punch(v3f dir,
 			setHP((s32)getHP() - result.damage,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 
-			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
+			sendPunchCommand();
 		}
 	}
 
@@ -750,11 +854,9 @@ v3f LuaEntitySAO::getAcceleration()
 
 void LuaEntitySAO::setTextureMod(const std::string &mod)
 {
-	std::string str = gob_cmd_set_texture_mod(mod);
 	m_current_texture_modifier = mod;
 	// create message and add to list
-	ActiveObjectMessage aom(getId(), true, str);
-	m_messages_out.push(aom);
+	m_messages_out.emplace(getId(), true, generateSetTextureModCommand());
 }
 
 std::string LuaEntitySAO::getTextureMod() const
@@ -762,18 +864,42 @@ std::string LuaEntitySAO::getTextureMod() const
 	return m_current_texture_modifier;
 }
 
+
+std::string LuaEntitySAO::generateSetTextureModCommand() const
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_SET_TEXTURE_MOD);
+	// parameters
+	os << serializeString(m_current_texture_modifier);
+	return os.str();
+}
+
+std::string LuaEntitySAO::generateSetSpriteCommand(v2s16 p, u16 num_frames,
+	f32 framelength, bool select_horiz_by_yawpitch)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_SET_SPRITE);
+	// parameters
+	writeV2S16(os, p);
+	writeU16(os, num_frames);
+	writeF32(os, framelength);
+	writeU8(os, select_horiz_by_yawpitch);
+	return os.str();
+}
+
 void LuaEntitySAO::setSprite(v2s16 p, int num_frames, float framelength,
 		bool select_horiz_by_yawpitch)
 {
-	std::string str = gob_cmd_set_sprite(
+	std::string str = generateSetSpriteCommand(
 		p,
 		num_frames,
 		framelength,
 		select_horiz_by_yawpitch
 	);
 	// create message and add to list
-	ActiveObjectMessage aom(getId(), true, str);
-	m_messages_out.push(aom);
+	m_messages_out.emplace(getId(), true, str);
 }
 
 std::string LuaEntitySAO::getName()
@@ -783,7 +909,7 @@ std::string LuaEntitySAO::getName()
 
 std::string LuaEntitySAO::getPropertyPacket()
 {
-	return gob_cmd_set_properties(m_prop);
+	return generateSetPropertiesCommand(m_prop);
 }
 
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
@@ -802,7 +928,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 
 	float update_interval = m_env->getSendRecommendedInterval();
 
-	std::string str = gob_cmd_update_position(
+	std::string str = generateUpdatePositionCommand(
 		m_base_position,
 		m_velocity,
 		m_acceleration,
@@ -812,8 +938,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 		update_interval
 	);
 	// create message and add to list
-	ActiveObjectMessage aom(getId(), false, str);
-	m_messages_out.push(aom);
+	m_messages_out.emplace(getId(), false, str);
 }
 
 bool LuaEntitySAO::getCollisionBox(aabb3f *toset) const
@@ -949,28 +1074,23 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 
 	std::ostringstream msg_os(std::ios::binary);
 	msg_os << serializeLongString(getPropertyPacket()); // message 1
-	msg_os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-	msg_os << serializeLongString(gob_cmd_update_animation(
-		m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop)); // 3
+	msg_os << serializeLongString(generateUpdateArmorGroupsCommand()); // 2
+	msg_os << serializeLongString(generateUpdateAnimationCommand()); // 3
 	for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-		msg_os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
+		msg_os << serializeLongString(generateUpdateBonePositionCommand((*ii).first,
 			(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 	}
-	msg_os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
-		m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
-	msg_os << serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed,
-			m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
-			m_physics_override_sneak_glitch, m_physics_override_new_move)); // 5
-	// (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
-	msg_os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6
+	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
+	msg_os << serializeLongString(generateUpdatePhysicsOverrideCommand()); // 5
+	// (AO_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
+	msg_os << serializeLongString(generateUpdateNametagAttributesCommand(m_prop.nametag_color)); // 6
 	int message_count = 6 + m_bone_position.size();
 	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
 			ii != m_attachment_child_ids.end(); ++ii) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
 			message_count++;
-			msg_os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(),
-				obj->getClientInitializationData(protocol_version)));
+			msg_os << serializeLongString(obj->generateUpdateInfantCommand(*ii, protocol_version));
 		}
 	}
 
@@ -1116,7 +1236,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		else
 			pos = m_base_position;
 
-		std::string str = gob_cmd_update_position(
+		std::string str = generateUpdatePositionCommand(
 			pos,
 			v3f(0.0f, 0.0f, 0.0f),
 			v3f(0.0f, 0.0f, 0.0f),
@@ -1126,59 +1246,61 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			update_interval
 		);
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), false, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), false, str);
 	}
 
 	if (!m_armor_groups_sent) {
 		m_armor_groups_sent = true;
-		std::string str = gob_cmd_update_armor_groups(
-				m_armor_groups);
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, generateUpdateArmorGroupsCommand());
 	}
 
 	if (!m_physics_override_sent) {
 		m_physics_override_sent = true;
-		std::string str = gob_cmd_update_physics_override(m_physics_override_speed,
-				m_physics_override_jump, m_physics_override_gravity,
-				m_physics_override_sneak, m_physics_override_sneak_glitch,
-				m_physics_override_new_move);
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, generateUpdatePhysicsOverrideCommand());
 	}
 
 	if (!m_animation_sent) {
 		m_animation_sent = true;
-		std::string str = gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, generateUpdateAnimationCommand());
 	}
 
 	if (!m_bone_position_sent) {
 		m_bone_position_sent = true;
 		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-			std::string str = gob_cmd_update_bone_position((*ii).first,
+			std::string str = generateUpdateBonePositionCommand((*ii).first,
 					(*ii).second.X, (*ii).second.Y);
 			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
+			m_messages_out.emplace(getId(), true, str);
 		}
 	}
 
 	if (!m_attachment_sent) {
 		m_attachment_sent = true;
-		std::string str = gob_cmd_update_attachment(m_attachment_parent_id,
-				m_attachment_bone, m_attachment_position, m_attachment_rotation);
+		std::string str = generateUpdateAttachmentCommand();
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
 	}
+}
+
+std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_SET_PHYSICS_OVERRIDE);
+	// parameters
+	writeF32(os, m_physics_override_speed);
+	writeF32(os, m_physics_override_jump);
+	writeF32(os, m_physics_override_gravity);
+	// these are sent inverted so we get true when the server sends nothing
+	writeU8(os, !m_physics_override_sneak);
+	writeU8(os, !m_physics_override_sneak_glitch);
+	writeU8(os, !m_physics_override_new_move);
+	return os.str();
 }
 
 void PlayerSAO::setBasePosition(const v3f &position)
@@ -1284,10 +1406,8 @@ u16 PlayerSAO::punch(v3f dir,
 	// No effect if PvP disabled or if immortal
 	if (isImmortal() || !g_settings->getBool("enable_pvp")) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
+			sendPunchCommand();
 			return 0;
 		}
 	}
@@ -1307,10 +1427,8 @@ u16 PlayerSAO::punch(v3f dir,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			std::string str = gob_cmd_punched(getHP());
 			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
+			sendPunchCommand();
 		}
 	}
 
@@ -1408,7 +1526,7 @@ void PlayerSAO::unlinkPlayerSessionAndSave()
 std::string PlayerSAO::getPropertyPacket()
 {
 	m_prop.is_visible = (true);
-	return gob_cmd_set_properties(m_prop);
+	return generateSetPropertiesCommand(m_prop);
 }
 
 void PlayerSAO::setMaxSpeedOverride(const v3f &vel)

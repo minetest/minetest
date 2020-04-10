@@ -67,6 +67,19 @@ public:
 	ServerActiveObject *getParent() const;
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
+
+	std::string generateUpdateAttachmentCommand() const;
+	std::string generateUpdateAnimationSpeedCommand() const;
+	std::string generateUpdateAnimationCommand() const;
+	std::string generateUpdateArmorGroupsCommand() const;
+	static std::string generateUpdatePositionCommand(const v3f &position, const v3f &velocity,
+			const v3f &acceleration, const v3f &rotation, bool do_interpolate,
+			bool is_movement_end, f32 update_interval);
+	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
+	void sendPunchCommand();
+	static std::string generateUpdateBonePositionCommand(const std::string &bone,
+		const v3f &position, const v3f &rotation);
+
 protected:
 	u16 m_hp = 1;
 
@@ -98,6 +111,8 @@ protected:
 private:
 	void onAttach(int parent_id);
 	void onDetach(int parent_id);
+
+	std::string generatePunchCommand(u16 result_hp) const;
 };
 
 /*
@@ -155,6 +170,9 @@ public:
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
+	std::string generateSetTextureModCommand() const;
+	static std::string generateSetSpriteCommand(v2s16 p, u16 num_frames, f32 framelength,
+			bool select_horiz_by_yawpitch);
 
 	std::string m_init_name;
 	std::string m_init_state;
@@ -350,6 +368,7 @@ public:
 private:
 	std::string getPropertyPacket();
 	void unlinkPlayerSessionAndSave();
+	std::string generateUpdatePhysicsOverrideCommand() const;
 
 	RemotePlayer *m_player = nullptr;
 	session_t m_peer_id = 0;

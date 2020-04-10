@@ -384,7 +384,6 @@ set(common_SRCS
 	environment.cpp
 	face_position_cache.cpp
 	filesys.cpp
-	genericobject.cpp
 	gettext.cpp
 	httpfetch.cpp
 	hud.cpp
