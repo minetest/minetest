@@ -24,8 +24,9 @@ gtags.files
 .idea
 # Codelite
 *.project
-# Visual Studio Code
+# Visual Studio Code & plugins
 .vscode/
+build/.cmake/
 # Gradle
 .gradle
 
