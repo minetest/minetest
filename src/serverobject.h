@@ -195,7 +195,7 @@ public:
 	std::string generateUpdateInfantCommand(u16 infant_id, u16 protocol_version);
 	std::string generateUpdateNametagAttributesCommand(const video::SColor &color) const;
 
-	bool dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue);
+	void dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue);
 
 	/*
 		Number of players which know about this object. Object won't be
