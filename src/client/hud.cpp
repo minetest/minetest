@@ -278,6 +278,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 }
 
+// Calculates screen position of waypoint. Returns true if waypoint is behind player (and thus not visible).
 bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos)
 {
 	v3f w_pos = e->world_pos * BS;
