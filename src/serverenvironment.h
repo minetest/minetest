@@ -334,16 +334,6 @@ public:
 	// This makes stuff happen
 	void step(f32 dtime);
 
-	/*!
-	 * Returns false if the given line intersects with a
-	 * non-air node, true otherwise.
-	 * \param pos1 start of the line
-	 * \param pos2 end of the line
-	 * \param p output, position of the first non-air node
-	 * the line intersects
-	 */
-	bool line_of_sight(v3f pos1, v3f pos2, v3s16 *p = NULL);
-
 	u32 getGameTime() const { return m_game_time; }
 
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }

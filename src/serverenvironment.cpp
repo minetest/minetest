@@ -545,24 +545,6 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 	return m_player_database->removePlayer(name);
 }
 
-bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
-{
-	// Iterate trough nodes on the line
-	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
-	do {
-		MapNode n = getMap().getNode(iterator.m_current_node_pos);
-
-		// Return non-air
-		if (n.param0 != CONTENT_AIR) {
-			if (p)
-				*p = iterator.m_current_node_pos;
-			return false;
-		}
-		iterator.next();
-	} while (iterator.m_current_index <= iterator.m_last_index);
-	return true;
-}
-
 void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	const std::string &str_reason, bool reconnect)
 {

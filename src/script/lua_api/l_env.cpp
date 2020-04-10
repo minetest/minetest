@@ -139,8 +139,7 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 
 int LuaRaycast::l_next(lua_State *L)
 {
-	MAP_LOCK_REQUIRED;
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	bool csm = false;
 #ifndef SERVER
@@ -384,7 +383,7 @@ int ModApiEnvMod::l_get_node_or_nil(lua_State *L)
 // timeofday: nil = current time, 0 = night, 0.5 = day
 int ModApiEnvMod::l_get_node_light(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	// Do it
 	v3s16 pos = read_v3s16(L, 1);
@@ -488,10 +487,7 @@ int ModApiEnvMod::l_punch_node(lua_State *L)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node_max_level(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
 	MapNode n = env->getMap().getNode(pos);
@@ -503,10 +499,7 @@ int ModApiEnvMod::l_get_node_max_level(lua_State *L)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node_level(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
 	MapNode n = env->getMap().getNode(pos);
@@ -551,7 +544,7 @@ int ModApiEnvMod::l_add_node_level(lua_State *L)
 // find_nodes_with_meta(pos1, pos2)
 int ModApiEnvMod::l_find_nodes_with_meta(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	std::vector<v3s16> positions = env->getMap().findNodesWithMetadata(
 		check_v3s16(L, 1), check_v3s16(L, 2));
@@ -728,10 +721,7 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 // get_timeofday() -> 0...1
 int ModApiEnvMod::l_get_timeofday(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
 	// Do it
 	int timeofday_mh = env->getTimeOfDay();
@@ -743,10 +733,7 @@ int ModApiEnvMod::l_get_timeofday(lua_State *L)
 // get_day_count() -> int
 int ModApiEnvMod::l_get_day_count(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
 	lua_pushnumber(L, env->getDayCount());
 	return 1;
@@ -767,12 +754,9 @@ int ModApiEnvMod::l_get_gametime(lua_State *L)
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 int ModApiEnvMod::l_find_node_near(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
-	const NodeDefManager *ndef = getGameDef(L)->ndef();
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
 	v3s16 pos = read_v3s16(L, 1);
 	int radius = luaL_checkinteger(L, 2);
 	std::vector<content_t> filter;
@@ -815,20 +799,19 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
 
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+
 #ifndef SERVER
-	const NodeDefManager *ndef = getClient(L) ? getClient(L)->ndef() : getServer(L)->ndef();
 	if (getClient(L)) {
 		minp = getClient(L)->CSMClampPos(minp);
 		maxp = getClient(L)->CSMClampPos(maxp);
 	}
-#else
-	const NodeDefManager *ndef = getServer(L)->ndef();
 #endif
 
 	v3s16 cube = maxp - minp + 1;
@@ -892,20 +875,19 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	 * TODO
 	 */
 
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
 
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+
 #ifndef SERVER
-	const NodeDefManager *ndef = getClient(L) ? getClient(L)->ndef() : getServer(L)->ndef();
 	if (getClient(L)) {
 		minp = getClient(L)->CSMClampPos(minp);
 		maxp = getClient(L)->CSMClampPos(maxp);
 	}
-#else
-	const NodeDefManager *ndef = getServer(L)->ndef();
 #endif
 
 	v3s16 cube = maxp - minp + 1;
@@ -1034,7 +1016,7 @@ int ModApiEnvMod::l_clear_objects(lua_State *L)
 // line_of_sight(pos1, pos2) -> true/false, pos
 int ModApiEnvMod::l_line_of_sight(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	// read position 1 from lua
 	v3f pos1 = checkFloatPos(L, 1);
