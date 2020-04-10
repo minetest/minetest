@@ -19,10 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "l_localplayer.h"
 #include "l_internal.h"
+#include "lua_api/l_item.h"
 #include "script/common/c_converter.h"
 #include "client/localplayer.h"
 #include "hud.h"
 #include "common/c_content.h"
+#include "client/content_cao.h"
 
 LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m) : m_localplayer(m)
 {
@@ -71,6 +73,26 @@ int LuaLocalPlayer::l_get_name(lua_State *L)
 	LocalPlayer *player = getobject(L, 1);
 
 	lua_pushstring(L, player->getName());
+	return 1;
+}
+
+// get_wield_index(self)
+int LuaLocalPlayer::l_get_wield_index(lua_State *L)
+{
+	LocalPlayer *player = getobject(L, 1);
+
+	lua_pushinteger(L, player->getWieldIndex());
+	return 1;
+}
+
+// get_wielded_item(self)
+int LuaLocalPlayer::l_get_wielded_item(lua_State *L)
+{
+	LocalPlayer *player = getobject(L, 1);
+
+	ItemStack selected_item;
+	player->getWieldedItem(&selected_item, nullptr);
+	LuaItemStack::create(L, selected_item);
 	return 1;
 }
 
@@ -130,6 +152,7 @@ int LuaLocalPlayer::l_swimming_vertical(lua_State *L)
 	return 1;
 }
 
+// get_physics_override(self)
 int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
@@ -150,14 +173,9 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 	lua_pushboolean(L, player->physics_override_sneak_glitch);
 	lua_setfield(L, -2, "sneak_glitch");
 
-	return 1;
-}
+	lua_pushboolean(L, player->physics_override_new_move);
+	lua_setfield(L, -2, "new_move");
 
-int LuaLocalPlayer::l_get_override_pos(lua_State *L)
-{
-	LocalPlayer *player = getobject(L, 1);
-
-	push_v3f(L, player->getPosition());
 	return 1;
 }
 
@@ -193,14 +211,33 @@ int LuaLocalPlayer::l_get_last_look_horizontal(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_key_pressed(lua_State *L)
+// get_control(self)
+int LuaLocalPlayer::l_get_control(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
+	const PlayerControl &c = player->getPlayerControl();
 
-	lua_pushinteger(L, player->last_keyPressed);
+	auto set = [L] (const char *name, bool value) {
+		lua_pushboolean(L, value);
+		lua_setfield(L, -2, name);
+	};
+
+	lua_createtable(L, 0, 12);
+	set("up", c.up);
+	set("down", c.down);
+	set("left", c.left);
+	set("right", c.right);
+	set("jump", c.jump);
+	set("aux1", c.aux1);
+	set("sneak", c.sneak);
+	set("zoom", c.zoom);
+	set("LMB", c.LMB);
+	set("RMB", c.RMB);
+
 	return 1;
 }
 
+// get_breath(self)
 int LuaLocalPlayer::l_get_breath(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
@@ -209,6 +246,7 @@ int LuaLocalPlayer::l_get_breath(lua_State *L)
 	return 1;
 }
 
+// get_pos(self)
 int LuaLocalPlayer::l_get_pos(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
@@ -217,6 +255,7 @@ int LuaLocalPlayer::l_get_pos(lua_State *L)
 	return 1;
 }
 
+// get_movement_acceleration(self)
 int LuaLocalPlayer::l_get_movement_acceleration(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
@@ -234,6 +273,7 @@ int LuaLocalPlayer::l_get_movement_acceleration(lua_State *L)
 	return 1;
 }
 
+// get_movement_speed(self)
 int LuaLocalPlayer::l_get_movement_speed(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
@@ -257,6 +297,7 @@ int LuaLocalPlayer::l_get_movement_speed(lua_State *L)
 	return 1;
 }
 
+// get_movement(self)
 int LuaLocalPlayer::l_get_movement(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
@@ -278,6 +319,13 @@ int LuaLocalPlayer::l_get_movement(lua_State *L)
 	return 1;
 }
 
+// get_armor_groups(self)
+int LuaLocalPlayer::l_get_armor_groups(lua_State *L)
+{
+	LocalPlayer *player = getobject(L, 1);
+	push_groups(L, player->getCAO()->getGroups());
+	return 1;
+}
 
 // hud_add(self, form)
 int LuaLocalPlayer::l_hud_add(lua_State *L)
@@ -407,6 +455,8 @@ const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, get_velocity),
 		luamethod(LuaLocalPlayer, get_hp),
 		luamethod(LuaLocalPlayer, get_name),
+		luamethod(LuaLocalPlayer, get_wield_index),
+		luamethod(LuaLocalPlayer, get_wielded_item),
 		luamethod(LuaLocalPlayer, is_attached),
 		luamethod(LuaLocalPlayer, is_touching_ground),
 		luamethod(LuaLocalPlayer, is_in_liquid),
@@ -415,17 +465,19 @@ const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, is_climbing),
 		luamethod(LuaLocalPlayer, swimming_vertical),
 		luamethod(LuaLocalPlayer, get_physics_override),
-		luamethod(LuaLocalPlayer, get_override_pos),
+		// TODO: figure our if these are useful in any way
 		luamethod(LuaLocalPlayer, get_last_pos),
 		luamethod(LuaLocalPlayer, get_last_velocity),
 		luamethod(LuaLocalPlayer, get_last_look_horizontal),
 		luamethod(LuaLocalPlayer, get_last_look_vertical),
-		luamethod(LuaLocalPlayer, get_key_pressed),
+		//
+		luamethod(LuaLocalPlayer, get_control),
 		luamethod(LuaLocalPlayer, get_breath),
 		luamethod(LuaLocalPlayer, get_pos),
 		luamethod(LuaLocalPlayer, get_movement_acceleration),
 		luamethod(LuaLocalPlayer, get_movement_speed),
 		luamethod(LuaLocalPlayer, get_movement),
+		luamethod(LuaLocalPlayer, get_armor_groups),
 		luamethod(LuaLocalPlayer, hud_add),
 		luamethod(LuaLocalPlayer, hud_remove),
 		luamethod(LuaLocalPlayer, hud_change),

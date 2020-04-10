@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "gettext.h"
 #include "l_internal.h"
-#include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
 #include "gui/mainmenumanager.h"
 #include "map.h"
@@ -245,25 +244,18 @@ int ModApiClient::l_get_language(lua_State *L)
 	return 2;
 }
 
-// get_wielded_item()
-int ModApiClient::l_get_wielded_item(lua_State *L)
-{
-	Client *client = getClient(L);
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	if (!player)
-		return 0;
-
-	ItemStack selected_item;
-	player->getWieldedItem(&selected_item, nullptr);
-	LuaItemStack::create(L, selected_item);
-	return 1;
-}
-
 // get_meta(pos)
 int ModApiClient::l_get_meta(lua_State *L)
 {
 	v3s16 p = read_v3s16(L, 1);
-	NodeMetadata *meta = getClient(L)->getEnv().getMap().getNodeMetadata(p);
+
+	// check restrictions first
+	bool pos_ok;
+	getClient(L)->CSMGetNode(p, &pos_ok);
+	if (!pos_ok)
+		return 0;
+
+	NodeMetadata *meta = getEnv(L)->getMap().getNodeMetadata(p);
 	NodeMetaRef::createClient(L, meta);
 	return 1;
 }
@@ -390,6 +382,7 @@ int ModApiClient::l_get_node_def(lua_State *L)
 	return 1;
 }
 
+// get_privilege_list()
 int ModApiClient::l_get_privilege_list(lua_State *L)
 {
 	const Client *client = getClient(L);
@@ -436,7 +429,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(send_respawn);
 	API_FCT(gettext);
 	API_FCT(get_node_or_nil);
-	API_FCT(get_wielded_item);
 	API_FCT(disconnect);
 	API_FCT(get_meta);
 	API_FCT(sound_play);
