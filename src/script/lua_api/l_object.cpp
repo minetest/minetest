@@ -533,7 +533,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 // get_local_animation(self)
 int ObjectRef::l_get_local_animation(lua_State *L)
 {
-	NO_MAP_LOCK_REQUIRED
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
