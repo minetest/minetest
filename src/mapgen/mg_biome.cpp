@@ -123,7 +123,8 @@ float BiomeManager::getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity
 
 
 // For BiomeGen type 'BiomeGenOriginal'
-Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos) const
+const Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat,
+	float humidity, v3s16 pos) const
 {
 	Biome *biome_closest = nullptr;
 	Biome *biome_closest_blend = nullptr;

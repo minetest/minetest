@@ -359,7 +359,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 
 
 bool Schematic::serializeToMts(std::ostream *os,
-	const std::vector<std::string> &names)
+	const std::vector<std::string> &names) const
 {
 	std::ostream &ss = *os;
 
@@ -383,7 +383,8 @@ bool Schematic::serializeToMts(std::ostream *os,
 
 
 bool Schematic::serializeToLua(std::ostream *os,
-	const std::vector<std::string> &names, bool use_comments, u32 indent_spaces)
+	const std::vector<std::string> &names, bool use_comments,
+	u32 indent_spaces) const
 {
 	std::ostream &ss = *os;
 

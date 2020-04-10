@@ -44,6 +44,7 @@ class OreManager;
 class DecorationManager;
 class SchematicManager;
 class Server;
+class ModApiMapgen;
 
 // Structure containing inputs/outputs for chunk generation
 struct BlockMakeData {
@@ -111,6 +112,11 @@ private:
 };
 
 class EmergeManager {
+	/* The mod API needs unchecked access to allow:
+	 * - using decomgr or oremgr to place decos/ores
+	 * - using schemmgr to load and place schematics
+	 */
+	friend class ModApiMapgen;
 public:
 	const NodeDefManager *ndef;
 	bool enable_mapgen_debug_info;
