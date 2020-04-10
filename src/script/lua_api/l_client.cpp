@@ -209,7 +209,7 @@ int ModApiClient::l_gettext(lua_State *L)
 	return 1;
 }
 
-// get_node(pos)
+// get_node_or_nil(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiClient::l_get_node_or_nil(lua_State *L)
 {
@@ -228,6 +228,7 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 	return 1;
 }
 
+// get_langauge()
 int ModApiClient::l_get_language(lua_State *L)
 {
 #ifdef _WIN32
@@ -244,6 +245,7 @@ int ModApiClient::l_get_language(lua_State *L)
 	return 2;
 }
 
+// get_wielded_item()
 int ModApiClient::l_get_wielded_item(lua_State *L)
 {
 	Client *client = getClient(L);
@@ -266,12 +268,14 @@ int ModApiClient::l_get_meta(lua_State *L)
 	return 1;
 }
 
+// sound_play(spec, parameters)
 int ModApiClient::l_sound_play(lua_State *L)
 {
 	ISoundManager *sound = getClient(L)->getSoundManager();
 
 	SimpleSoundSpec spec;
 	read_soundspec(L, 1, spec);
+
 	float gain = 1.0f;
 	float pitch = 1.0f;
 	bool looped = false;
@@ -293,18 +297,29 @@ int ModApiClient::l_sound_play(lua_State *L)
 		}
 	}
 
-	handle = sound->playSound(spec.name, looped, gain * spec.gain, 0.0f, pitch);
+	handle = sound->playSound(spec.name, looped, gain * spec.gain, spec.fade, pitch);
 	lua_pushinteger(L, handle);
 
 	return 1;
 }
 
+// sound_stop(handle)
 int ModApiClient::l_sound_stop(lua_State *L)
 {
-	u32 handle = luaL_checkinteger(L, 1);
+	s32 handle = luaL_checkinteger(L, 1);
 
 	getClient(L)->getSoundManager()->stopSound(handle);
 
+	return 0;
+}
+
+// sound_fade(handle, step, gain)
+int ModApiClient::l_sound_fade(lua_State *L)
+{
+	s32 handle = luaL_checkinteger(L, 1);
+	float step = readParam<float>(L, 2);
+	float gain = readParam<float>(L, 3);
+	getClient(L)->getSoundManager()->fadeSound(handle, step, gain);
 	return 0;
 }
 
@@ -426,6 +441,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_meta);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
+	API_FCT(sound_fade);
 	API_FCT(get_server_info);
 	API_FCT(get_item_def);
 	API_FCT(get_node_def);
