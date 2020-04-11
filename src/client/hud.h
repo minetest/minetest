@@ -81,6 +81,7 @@ public:
 	void drawLuaElements(const v3s16 &camera_offset);
 
 private:
+	bool calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos);
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &texture,
 			s32 count, v2s32 offset, v2s32 size = v2s32());
 
