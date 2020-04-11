@@ -278,7 +278,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 }
 
-// Calculates screen position of waypoint. Returns true if waypoint is behind player (and thus not visible).
+// Calculates screen position of waypoint. Returns true if waypoint is visible (in front of the player), else false.
 bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos)
 {
 	v3f w_pos = e->world_pos * BS;
@@ -290,12 +290,12 @@ bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *p
 	f32 transformed_pos[4] = { w_pos.X, w_pos.Y, w_pos.Z, 1.0f };
 	trans.multiplyWith1x4Matrix(transformed_pos);
 	if (transformed_pos[3] < 0)
-		return true;
+		return false;
 	f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
 		core::reciprocal(transformed_pos[3]);
 	pos->X = m_screensize.X * (0.5 * transformed_pos[0] * zDiv + 0.5);
 	pos->Y = m_screensize.Y * (0.5 - transformed_pos[1] * zDiv * 0.5);
-	return false;
+	return true;
 }
 
 void Hud::drawLuaElements(const v3s16 &camera_offset)
@@ -346,7 +346,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 					inv, e->item, e->dir);
 				break; }
 			case HUD_ELEM_WAYPOINT: {
-				if (calculateScreenPos(camera_offset, e, &pos))
+				if (!calculateScreenPos(camera_offset, e, &pos))
 					break;
 				v3f p_pos = player->getPosition() / BS;
 				pos += v2s32(e->offset.X, e->offset.Y);
@@ -360,21 +360,21 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				float precision = (item == 0) ? 10.0f : (item - 1.f);
 				bool draw_precision = precision > 0;
 
-				core::rect<s32> size(0, 0, font->getDimension(text.c_str()).Width, (draw_precision ? 2:1) * text_height);
-				pos.Y += (e->align.Y - 1.0) * size.getHeight() / 2;
-				size += pos;
-				font->draw(text.c_str(), size + v2s32((e->align.X - 1.0) * size.getWidth() / 2, 0), color);
+				core::rect<s32> bounds(0, 0, font->getDimension(text.c_str()).Width, (draw_precision ? 2:1) * text_height);
+				pos.Y += (e->align.Y - 1.0) * bounds.getHeight() / 2;
+				bounds += pos;
+				font->draw(text.c_str(), bounds + v2s32((e->align.X - 1.0) * bounds.getWidth() / 2, 0), color);
 				if (draw_precision) {
 					std::ostringstream os;
 					float distance = std::floor(precision * p_pos.getDistanceFrom(e->world_pos)) / precision;
 					os << distance << unit;
 					text = unescape_translate(utf8_to_wide(os.str()));
-					size.LowerRightCorner.X = size.UpperLeftCorner.X + font->getDimension(text.c_str()).Width;
-					font->draw(text.c_str(), size + v2s32((e->align.X - 1.0f) * size.getWidth() / 2, text_height), color);
+					bounds.LowerRightCorner.X = bounds.UpperLeftCorner.X + font->getDimension(text.c_str()).Width;
+					font->draw(text.c_str(), bounds + v2s32((e->align.X - 1.0f) * bounds.getWidth() / 2, text_height), color);
 				}
 				break; }
 			case HUD_ELEM_IMAGE_WAYPOINT: {
-				if (calculateScreenPos(camera_offset, e, &pos))
+				if (!calculateScreenPos(camera_offset, e, &pos))
 					break;
 			}
 			case HUD_ELEM_IMAGE: {
