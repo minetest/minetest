@@ -274,11 +274,13 @@ protected:
 	v2s32 getRealCoordinateBasePos(const std::vector<std::string> &v_pos);
 	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
 
-	std::unordered_map<std::string, StyleSpec> theme_by_type;
-	std::unordered_map<std::string, StyleSpec> theme_by_name;
+	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_type;
+	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_name;
 	std::unordered_set<std::string> property_warned;
 
-	StyleSpec getStyleForElement(const std::string &type,
+	StyleSpec getDefaultStyleForElement(const std::string &type,
+			const std::string &name="", const std::string &parent_type="");
+	std::array<StyleSpec, StyleSpec::NUM_STATES> getStyleForElement(const std::string &type,
 			const std::string &name="", const std::string &parent_type="");
 
 	v2s32 padding;

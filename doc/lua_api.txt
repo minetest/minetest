@@ -2188,12 +2188,12 @@ Elements
 
 * 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
 * Middle is a rect which defines the middle of the 9-slice.
-	* `x` - The middle will be x pixels from all sides.
-	* `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
-	* `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
-		will be added to the width and height of the texture, allowing it to be used as the
-		distance from the far end.
-	* All numbers in middle are integers.
+    * `x` - The middle will be x pixels from all sides.
+    * `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
+    * `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
+        will be added to the width and height of the texture, allowing it to be used as the
+        distance from the far end.
+    * All numbers in middle are integers.
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
@@ -2508,16 +2508,28 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-### `style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]`
+### `style[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Set the style for the named element(s) `name`.
+* Set the style for the element(s) matching `selector` by name.
+* `selector` can be one of:
+    * `<name>` - An element name.
+    * `<name>:<state>` - An element name, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * Note: this **must** be before the element is defined.
 * See [Styling Formspecs].
 
 
-### `style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]`
+### `style_type[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Sets the style for all elements of type(s) `type` which appear after this element.
+* Set the style for the element(s) matching `selector` by type.
+* `selector` can be one of:
+    * `<type>` - An element type.
+    * `<type>:<state>` - An element type, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
 
 Migrating to Real Coordinates
@@ -2560,23 +2572,32 @@ Styling Formspecs
 
 Formspec elements can be themed using the style elements:
 
-    style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]
-    style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]
+    style[<name 1>,<name 2>;<prop1>;<prop2>;...]
+    style[<name 1>:<state>,<name 2>:<state>;<prop1>;<prop2>;...]
+    style_type[<type 1>,<type 2>;<prop1>;<prop2>;...]
+    style_type[<type 1>:<state>,<type 2>:<state>;<prop1>;<prop2>;...]
 
 Where a prop is:
 
     property_name=property_value
-
-A name/type can optionally be a comma separated list of names/types, like so:
-
-    world_delete,world_create,world_configure
-    button,image_button
 
 For example:
 
     style_type[button;bgcolor=#006699]
     style[world_delete;bgcolor=red;textcolor=yellow]
     button[4,3.95;2.6,1;world_delete;Delete]
+
+A name/type can optionally be a comma separated list of names/types, like so:
+
+    world_delete,world_create,world_configure
+    button,image_button
+
+Any name/type in the list can also be accompanied by a `+`-separated list of states, like so:
+
+    world_delete:hovered+pressed
+    button:pressed
+
+States allow you to apply styles in response to changes in the element, instead of applying at all times.
 
 Setting a property to nothing will reset it to the default value. For example:
 
@@ -2653,6 +2674,14 @@ Some types may inherit styles from parent types.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+
+### Valid States
+
+* *all elements*
+    * default - Equivalent to providing no states
+* button, button_exit, image_button, item_image_button
+    * hovered - Active when the mouse is hovering over the element
+    * pressed - Active when the button is pressed
 
 Markup Language
 ---------------

@@ -65,7 +65,10 @@ local style_fs = [[
 	style[one_btn13;border=false]
 	item_image_button[1.25,8.35;1,1;default:sword_steel;one_btn13;NoBor]
 
-	style[one_btn14;border=false;bgimg=test_bg.png;bgimg_hovered=test_bg_hovered.png;bgimg_pressed=test_bg_pressed.png;fgimg=bubble.png;fgimg_hovered=default_apple.png;fgimg_pressed=heart.png]
+	style[one_btn14;border=false;bgimg=test_bg.png;fgimg=bubble.png]
+	style[one_btn14:hovered;bgimg=test_bg_hovered.png;fgimg=default_apple.png;textcolor=red]
+	style[one_btn14:pressed;bgimg=test_bg_pressed.png;fgimg=heart.png;textcolor=green]
+	style[one_btn14:hovered+pressed;textcolor=blue]
 	image_button[0,9.6;1,1;bubble.png;one_btn14;Bg]
 
 	style[one_btn15;border=false;bgimg=test_bg.png;bgimg_hovered=test_bg_hovered.png;bgimg_pressed=test_bg_pressed.png]
