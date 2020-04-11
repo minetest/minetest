@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_types.h"
 #include "nodedef.h"
 #include "object_properties.h"
-#include "content_sao.h"
 #include "cpp_api/s_node.h"
 #include "lua_api/l_object.h"
 #include "lua_api/l_item.h"
@@ -29,10 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 #include "tool.h"
-#include "server/serveractiveobject.h"
 #include "porting.h"
 #include "mapgen/mg_schematic.h"
 #include "noise.h"
+#include "server/player_sao.h"
 #include "util/pointedthing.h"
 #include "debug.h" // For FATAL_ERROR
 #include <json/json.h>

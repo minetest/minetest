@@ -36,8 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "exceptions.h"
 #include "settings.h"
-#include "content_sao.h"
 #include "remoteplayer.h"
+#include "server/player_sao.h"
 
 Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string) :
 	m_connect_string(connect_string)

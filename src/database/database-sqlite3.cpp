@@ -33,8 +33,8 @@ SQLite format specification:
 #include "settings.h"
 #include "porting.h"
 #include "util/string.h"
-#include "content_sao.h"
 #include "remoteplayer.h"
+#include "server/player_sao.h"
 
 #include <cassert>
 

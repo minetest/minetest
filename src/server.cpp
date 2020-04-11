@@ -47,7 +47,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mg_biome.h"
 #include "content_mapnode.h"
 #include "content_nodemeta.h"
-#include "content_sao.h"
 #include "content/mods.h"
 #include "modchannels.h"
 #include "serverlist.h"
@@ -64,6 +63,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "chat_interface.h"
 #include "remoteplayer.h"
+#include "server/player_sao.h"
 
 class ClientNotFoundException : public BaseException
 {
