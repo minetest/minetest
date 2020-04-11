@@ -1393,7 +1393,7 @@ Displays distance to specified world position, and some text. Accepts offset.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
-* `precision`: Waypoint precision. Defaults to 10 if not set (for compatibility reasons).
+* `precision`: Waypoint precision. Defaults to 10.
   If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
   Accordingly, there will be `n` steps behind the decimal dot.
   `precision = 1000`, for example, would show values like `0.999`.
