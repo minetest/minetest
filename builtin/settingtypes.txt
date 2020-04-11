@@ -1019,10 +1019,12 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 strip_color_codes (Strip color codes) bool false
 
 [*Stacksizes]
+
 #    Specifies the default stack size for nodes
 stacksize_default_node (Default node stack size) int 99
 #    Specifies the default stack size for items and craftitems
 stacksize_default_item (Default item stack size) int 99
+
 [*Network]
 
 #    Network port to listen (UDP).
