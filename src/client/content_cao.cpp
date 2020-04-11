@@ -890,8 +890,7 @@ void GenericCAO::updateNodePos()
 
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
-	if (m_animated_meshnode)
-	{
+	if (m_animated_meshnode){
 		m_animated_meshnode->animateJoints();
 		updateBonePosition();
 	}
