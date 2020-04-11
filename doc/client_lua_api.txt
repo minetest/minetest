@@ -1389,22 +1389,32 @@ Displays a horizontal bar made up of half-images.
 
 ### `waypoint`
 
-Displays distance to specified world position, and some text. Accepts offset.
+Displays distance to selected world position.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
-* `precision`: Waypoint precision. Defaults to 10.
+* `precision`: Waypoint precision. Defaults to 10 if not set (for compatibility reasons).
   If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
-  When the precision is an integer multiple of 10, there will `log_10(precision)` digits after the decimal point.
-  `precision = 1000`, for example, will show 3 decimal places (eg: `0.999`).
+  Accordingly, there will be `n` steps behind the decimal dot.
+  `precision = 1000`, for example, would show values like `0.999`.
 * `number:` An integer containing the RGB value of the color used to draw the
   text.
 * `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
 * `alignment`: The alignment of the waypoint.
 
 ### `image_waypoint`
 
 Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
+
+* `scale`: The scale of the image, with 1 being the original texture size.
+  Only the X coordinate scale is used (positive values).
+  Negative values represent that percentage of the screen it
+  should take; e.g. `x=-100` means 100% (width).
+* `text`: The name of the texture that is displayed.
+* `alignment`: The alignment of the image.
+* `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
 
 ### Particle definition (`add_particle`)
 
