@@ -1356,8 +1356,10 @@ Displays distance to selected world position.
 * `text`: Distance suffix. Can be blank.
 * `precision`: Waypoint precision, integer >= 0. Defaults to 10.
   If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
-  Accordingly, there will be `n` steps behind the decimal dot.
-  `precision = 1000`, for example, would show values like `0.999`.
+  When the precision is an integer multiple of 10, there will be `log_10(precision)` digits after the decimal point.
+  `precision = 1000`, for example, will show 3 decimal places (eg: `0.999`).
+  `precision = 2` will show multiples of `0.5`; precision = 5 will show multiples of `0.2` and so on:
+  `precision = n` will show multiples of `1/n`
 * `number:` An integer containing the RGB value of the color used to draw the
   text.
 * `world_pos`: World position of the waypoint.
