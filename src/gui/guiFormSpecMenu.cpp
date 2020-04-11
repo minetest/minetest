@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #include <cstdlib>
+#include <cmath>
 #include <algorithm>
 #include <iterator>
 #include <limits>
@@ -1772,24 +1772,56 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 			warningstream << "Invalid use of label without a size[] element." << std::endl;
 
 		std::vector<std::string> lines = split(text, '\n');
-		auto style = getStyleForElement("label", "");
+		auto style = getDefaultStyleForElement("label", "");
 
-		EGUI_ALIGNMENT halign = gui::EGUIA_UPPERLEFT;
-		EGUI_ALIGNMENT valign = gui::EGUIA_CENTER;
-		std::string str_halign = style.get(StyleSpec::HALIGN, "");
-		std::string str_valign = style.get(StyleSpec::VALIGN, "");
+		FormSpecLabelOrigin horigin = ORIGIN_UPPERLEFT;
+		FormSpecLabelOrigin vorigin = ORIGIN_CENTER_LINE;
 
-		if (str_halign == "left")
-			halign = gui::EGUIA_LOWERRIGHT;
-		else if (str_halign == "center")
-			halign = gui::EGUIA_CENTER;
+		std::string str_horigin = trim(style.get(StyleSpec::HORIGIN, ""));
+		std::string str_vorigin = trim(style.get(StyleSpec::VORIGIN, ""));
 
-		if (str_valign == "top")
-			valign = gui::EGUIA_UPPERLEFT;
-		else if (str_valign == "bottom")
-			valign = gui::EGUIA_LOWERRIGHT;
+		if (str_horigin == "right")
+			horigin = ORIGIN_LOWERRIGHT;
+		else if (str_horigin == "center")
+			horigin = ORIGIN_CENTER;
+		else if (str_horigin == "leftline")
+			horigin = ORIGIN_UPPERLEFT_LINE;
+		else if (str_horigin == "centerline")
+			horigin = ORIGIN_CENTER_LINE;
+		else if (str_horigin == "rightline")
+			horigin = ORIGIN_LOWERRIGHT_LINE;
 
-		for (unsigned int i = 0; i != lines.size(); i++) {
+		if (str_vorigin == "top")
+			vorigin = ORIGIN_UPPERLEFT;
+		else if (str_vorigin == "bottom")
+			vorigin = ORIGIN_LOWERRIGHT;
+		else if (str_vorigin == "center")
+			vorigin = ORIGIN_CENTER;
+		else if (str_vorigin == "topline")
+			vorigin = ORIGIN_UPPERLEFT_LINE;
+		else if (str_vorigin == "bottomline")
+			vorigin = ORIGIN_LOWERRIGHT_LINE;
+
+		s32 font_height = font_line_height(m_font);
+
+		std::string str_newline = style.get(StyleSpec::NEWLINE_SPACING, "0.5");
+		float newline_spacing;
+		if (trim(str_newline) == "auto")
+			newline_spacing = (float)font_height;
+		else
+			newline_spacing = stof(str_newline) * (float)imgsize.Y;
+
+		s32 rect_height = abs(newline_spacing) * (float)(lines.size() - 1) + font_height;
+
+		s32 first_char_width = 0;
+		if (lines[0].size() > 0) {
+			std::wstring unescaped = unescape_enriched(translate_string(
+				utf8_to_wide(unescape_string(lines[0]))));
+			wchar_t first[2] = {unescaped[0], '\0'};
+			first_char_width = m_font->getDimension(first).Width;
+		}
+
+		for (u32 i = 0; i < lines.size(); i++) {
 			std::wstring wlabel_colors = translate_string(
 				utf8_to_wide(unescape_string(lines[i])));
 			// Without color escapes to get the font dimensions
@@ -1798,35 +1830,49 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 			core::rect<s32> rect;
 
 			if (data->real_coordinates) {
-				// Lines are spaced at the distance of 1/2 imgsize.
-				// This allows lines that line up with the new elements
-				// easily without sacrificing good line distance. If
-				// it was one whole imgsize, it would have too much
-				// spacing.
 				v2s32 pos = getRealCoordinateBasePos(v_pos);
 
 				// Add newline spacing
-				pos.Y += (float)imgsize.Y * stof(style.get(StyleSpec::NEWLINE_SPACING,
-					"0.5")) * i;
+				pos.Y += newline_spacing * i;
 
 				// Move the label around for alignment
 				s32 font_width = m_font->getDimension(wlabel_plain.c_str()).Width;
-				s32 font_height = font_line_height(m_font);
 
-				if (halign == gui::EGUIA_CENTER)
+				if (horigin == ORIGIN_CENTER)
 					pos.X -= font_width / 2;
-				else if (halign == gui::EGUIA_LOWERRIGHT)
+				else if (horigin == ORIGIN_LOWERRIGHT)
 					pos.X -= font_width;
+				else if (horigin == ORIGIN_CENTER_LINE)
+					pos.X -= first_char_width / 2;
+				else if (horigin == ORIGIN_LOWERRIGHT_LINE)
+					pos.X -= first_char_width;
 
-				if (valign == gui::EGUIA_UPPERLEFT)
-					pos.Y -= font_height;
-				else if (valign == gui::EGUIA_CENTER)
+				if (vorigin == ORIGIN_UPPERLEFT_LINE) {
+					// Don't move it
+				} else if (vorigin == ORIGIN_CENTER_LINE) {
 					pos.Y -= font_height / 2;
+				} else if (vorigin == ORIGIN_LOWERRIGHT_LINE) {
+					pos.Y -= font_height;
+				} else if (newline_spacing >= 0) {
+					if (vorigin == ORIGIN_LOWERRIGHT)
+						pos.Y -= rect_height;
+					else if (vorigin == ORIGIN_CENTER)
+						pos.Y -= rect_height / 2;
+				} else {
+					pos.Y -= font_height;
+
+					if (vorigin == ORIGIN_UPPERLEFT)
+						pos.Y += rect_height;
+					else if (vorigin == ORIGIN_CENTER)
+						pos.Y += rect_height / 2;
+				}
 
 				rect = core::rect<s32>(
-					pos.X, pos.Y,
+					pos.X,
+					pos.Y,
 					pos.X + font_width,
-					pos.Y + font_height);
+					pos.Y + font_height
+				);
 
 			} else {
 				// Lines are spaced at the nominal distance of
@@ -1895,46 +1941,77 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 		if (!data->explicit_size)
 			warningstream << "Invalid use of vertlabel without a size[] element." << std::endl;
 
-		std::vector<std::string> lines = split(text, '\n');
-		auto style = getStyleForElement("vertlabel", "", "label");
+		std::vector<std::string> raw_lines = split(text, '\n');
+		auto style = getDefaultStyleForElement("vertlabel", "", "label");
 
-		EGUI_ALIGNMENT halign = gui::EGUIA_CENTER;
-		EGUI_ALIGNMENT valign = gui::EGUIA_UPPERLEFT;
-		// For some reason, Irrlicht doesn't understand the height of
-		// newlines, so we always set it to align to the top and manually
-		// change it with the rect position.
-		EGUI_ALIGNMENT final_valign = gui::EGUIA_UPPERLEFT;
+		FormSpecLabelOrigin horigin = ORIGIN_CENTER_LINE;
+		FormSpecLabelOrigin vorigin = ORIGIN_UPPERLEFT;
 
-		if (data->real_coordinates) {
-			std::string str_halign = style.get(StyleSpec::HALIGN, "");
-			std::string str_valign = style.get(StyleSpec::VALIGN, "");
+		std::string str_horigin = style.get(StyleSpec::HORIGIN, "");
+		std::string str_vorigin = style.get(StyleSpec::VORIGIN, "");
 
-			if (str_halign == "left")
-				halign = gui::EGUIA_LOWERRIGHT;
-			if (str_halign == "right")
-				halign = gui::EGUIA_UPPERLEFT;
+		if (str_horigin == "left")
+			horigin = ORIGIN_UPPERLEFT;
+		else if (str_horigin == "right")
+			horigin = ORIGIN_LOWERRIGHT;
+		else if (str_horigin == "center")
+			horigin = ORIGIN_CENTER;
+		else if (str_horigin == "leftline")
+			horigin = ORIGIN_UPPERLEFT_LINE;
+		else if (str_horigin == "rightline")
+			horigin = ORIGIN_LOWERRIGHT_LINE;
 
-			if (str_valign == "center")
-				valign = gui::EGUIA_CENTER;
-			if (str_valign == "bottom")
-				valign = gui::EGUIA_LOWERRIGHT;
+		if (str_vorigin == "bottom")
+			vorigin = ORIGIN_LOWERRIGHT;
+		else if (str_vorigin == "center")
+			vorigin = ORIGIN_CENTER;
+		else if (str_vorigin == "topline")
+			vorigin = ORIGIN_UPPERLEFT_LINE;
+		else if (str_vorigin == "centerline")
+			vorigin = ORIGIN_CENTER_LINE;
+		else if (str_vorigin == "bottomline")
+			vorigin = ORIGIN_LOWERRIGHT_LINE;
+
+		std::vector<std::wstring> lines;
+		lines.reserve(raw_lines.size());
+		for (u32 i = 0; i < raw_lines.size(); i++)
+			lines.push_back(unescape_enriched(translate_string(
+				utf8_to_wide(unescape_string(raw_lines[i])))));
+
+		s32 font_width = 0;
+		for (u32 i = 0; i < lines.size(); i++) {
+			for (u32 c = 0; c < lines[i].size(); c++) {
+				wchar_t first[2] = {lines[i][c], '\0'};
+				font_width = std::max(font_width,
+					(s32)m_font->getDimension(first).Width);
+			}
+		}
+
+		std::string str_newline = style.get(StyleSpec::NEWLINE_SPACING, "0.5");
+		float newline_spacing = 0;
+		if (trim(str_newline) == "auto") {
+			newline_spacing = (float)font_width + m_font->getKerningWidth();
 		} else {
-			// Patch for old behavior
-			final_valign = gui::EGUIA_CENTER;
+			newline_spacing = stof(str_newline) * (float)imgsize.X;
+		}
+
+		s32 rect_width = abs(newline_spacing) * (float)(lines.size() - 1) + font_width;
+
+		s32 first_char_height = 0;
+		if (lines[0].size() > 0) {
+			wchar_t first[2] = {lines[0][0], '\0'};
+			first_char_height = m_font->getDimension(first).Height;
 		}
 
 		v2s32 pos;
 
-		for (unsigned int i = 0; i != lines.size(); i++) {
-			std::wstring wlabel_colors = translate_string(
-				utf8_to_wide(unescape_string(lines[i])));
-			// Without color escapes to get the font dimensions
-			std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
-
+		for (u32 i = 0; i < lines.size(); i++) {
 			std::wstring label;
-			for (wchar_t i : lines[i]) {
-				label += i;
-				label += L"\n";
+			label.reserve(lines[i].size() * 2 - 1);
+			for (size_t c = 0; c < lines[i].size(); c++) {
+				label += lines[i][c];
+				if (c != lines[i].size() - 1)
+					label += L'\n';
 			}
 
 			core::rect<s32> rect;
@@ -1943,28 +2020,45 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 				pos = getRealCoordinateBasePos(v_pos);
 
 				// Add newline spacing
-				pos.X += (float)imgsize.X * stof(style.get(StyleSpec::NEWLINE_SPACING,
-					"0.5")) * i;
+				pos.X += newline_spacing * i;
 
 				// Move the label around for alignment
-				s32 font_width = m_font->getDimension(wlabel_plain.c_str()).Width;
-				s32 font_height = m_font->getDimension(wlabel_plain.c_str()).Height *
-					(label.length() / 2);
+				auto font = m_font->getDimension(label.c_str());
 
-				if (halign == gui::EGUIA_CENTER)
-					pos.X -= font_width / 2;
-				else if (halign == gui::EGUIA_LOWERRIGHT)
+				if (horigin == ORIGIN_UPPERLEFT_LINE) {
+					// Don't move it
+				} else if (horigin == ORIGIN_CENTER_LINE) {
+					pos.X -= font.Width / 2;
+				} else if (horigin == ORIGIN_LOWERRIGHT_LINE) {
+					pos.X -= font.Width;
+				} else if (newline_spacing >= 0) {
+					if (horigin == ORIGIN_CENTER)
+						pos.X -= rect_width / 2;
+					else if (horigin == ORIGIN_LOWERRIGHT)
+						pos.X -= rect_width;
+				} else {
 					pos.X -= font_width;
 
-				if (valign == gui::EGUIA_CENTER)
-					pos.Y -= font_height / 2;
-				else if (valign == gui::EGUIA_UPPERLEFT)
-					pos.Y -= font_height;
+					if (horigin == ORIGIN_UPPERLEFT)
+						pos.X += rect_width;
+					else if (horigin == ORIGIN_CENTER)
+						pos.X += rect_width / 2;
+				}
+
+				if (vorigin == ORIGIN_CENTER)
+					pos.Y -= font.Height / 2;
+				else if (vorigin == ORIGIN_LOWERRIGHT)
+					pos.Y -= font.Height;
+				else if (vorigin == ORIGIN_LOWERRIGHT_LINE)
+					pos.Y -= first_char_height;
+				else if (vorigin == ORIGIN_CENTER_LINE)
+					pos.Y -= first_char_height / 2;
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y,
-					pos.X + font_width,
-					pos.Y + font_height);
+					pos.X + font.Width,
+					pos.Y + font.Height
+				);
 			} else {
 				pos = getElementBasePos(&v_pos);
 
@@ -1994,7 +2088,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 
 			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
-			e->setTextAlignment(halign, final_valign);
+			e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 
 			m_fields.push_back(spec);
 

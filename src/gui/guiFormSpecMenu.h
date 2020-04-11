@@ -61,6 +61,15 @@ typedef enum {
 	quit_mode_cancel
 } FormspecQuitMode;
 
+typedef enum {
+	ORIGIN_UPPERLEFT,
+	ORIGIN_CENTER,
+	ORIGIN_LOWERRIGHT,
+	ORIGIN_UPPERLEFT_LINE,
+	ORIGIN_CENTER_LINE,
+	ORIGIN_LOWERRIGHT_LINE
+} FormSpecLabelOrigin;
+
 struct TextDest
 {
 	virtual ~TextDest() = default;

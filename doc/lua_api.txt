@@ -2726,11 +2726,36 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to false.
 * label, vertlabel
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * halign - left/center/right, sets text horizontal alignment in respect to position.
-      Default right for label and center for vertlabel.
-    * valign - top/center/bottom, sets text vertical alignment in respect to position.
-      Default center for label and bottom for vertlabel.
-    * newline_spacing - number, sets space in coordinates between lines of text. Default 0.5.
+    * horigin - Sets horizontal origin in relation to label text. Possible values:
+        * `left`: Left side of the bounding box
+        * `center`: Center of the bounding box
+        * `right`: Right side of the bounding box
+        * `leftline`: **Note**: Only for negative `newline_spacing`
+            * `label`: Acts like `left`
+            * `vertlabel`: Left end of first column
+        * `centerline`:
+            * `label`: Center of first character
+            * `vertlabel`: Center of first column
+        * `rightline`:
+            * `label`: Right end of first character
+            * `vertlabel`: Right end of first column
+      Default `left` for label and `centerline` for vertlabel.
+    * vorigin - Sets vertical origin in relation to label text. Possible values:
+        * `top`: Top of the bounding box
+        * `center`: Center of the bounding box
+        * `bottom`: Bottom of the bounding box
+        * `topline`: **Note**: Only for negative `newline_spacing`
+            * `label`: Top of first line
+            * `vertlabel`: Acts like `top`
+        * `centerline`:
+            * `label`: Center of first line
+            * `vertlabel`: Center of first character
+        * `bottomline`:
+            * `label`: Bottom of first line
+            * `vertlabel`: Bottom of first character
+      Default `centerline` for label and `top` for vertlabel.
+    * newline_spacing - number/`auto`, sets space in coordinates between lines/columns of text.
+      If set to `auto`, the text is as close together as possible without overlap. Default 0.5.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
     * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
