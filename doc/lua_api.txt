@@ -897,6 +897,7 @@ These sound files are played back by the engine if provided.
  * `player_damage`: Played when the local player takes damage (gain = 0.5)
  * `player_falling_damage`: Played when the local player takes
    damage by falling (gain = 0.5)
+ * `player_jump`: Played when the local player jumps
  * `default_dig_<groupname>`: Default node digging sound
    (see node sound definition for details)
 

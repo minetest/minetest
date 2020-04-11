@@ -266,6 +266,7 @@ class SoundMaker
 public:
 	bool makes_footstep_sound;
 	float m_player_step_timer;
+	float m_player_jump_timer;
 
 	SimpleSoundSpec m_player_step_sound;
 	SimpleSoundSpec m_player_leftpunch_sound;
@@ -275,7 +276,8 @@ public:
 		m_sound(sound),
 		m_ndef(ndef),
 		makes_footstep_sound(true),
-		m_player_step_timer(0)
+		m_player_step_timer(0.0f),
+		m_player_jump_timer(0.0f)
 	{
 	}
 
@@ -285,6 +287,14 @@ public:
 			m_player_step_timer = 0.03;
 			if (makes_footstep_sound)
 				m_sound->playSound(m_player_step_sound, false);
+		}
+	}
+
+	void playPlayerJump()
+	{
+		if (m_player_jump_timer <= 0.0f) {
+			m_player_jump_timer = 0.2f;
+			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f), false);
 		}
 	}
 
@@ -302,7 +312,8 @@ public:
 
 	static void playerJump(MtEvent *e, void *data)
 	{
-		//SoundMaker *sm = (SoundMaker*)data;
+		SoundMaker *sm = (SoundMaker *)data;
+		sm->playPlayerJump();
 	}
 
 	static void cameraPunchLeft(MtEvent *e, void *data)
@@ -351,6 +362,7 @@ public:
 	void step(float dtime)
 	{
 		m_player_step_timer -= dtime;
+		m_player_jump_timer -= dtime;
 	}
 };
 
