@@ -118,8 +118,6 @@ src/content_mapblock.h
 src/content_mapnode.cpp
 src/content_nodemeta.cpp
 src/content_nodemeta.h
-src/content_sao.cpp
-src/content_sao.h
 src/convert_json.cpp
 src/convert_json.h
 src/craftdef.cpp
@@ -408,6 +406,8 @@ src/serverenvironment.h
 src/server.h
 src/serverlist.cpp
 src/serverlist.h
+src/server/luaentity_sao.cpp
+src/server/player_sao.cpp
 src/server/serveractiveobject.cpp
 src/server/serveractiveobject.h
 src/settings.cpp

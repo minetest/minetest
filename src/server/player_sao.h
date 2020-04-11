@@ -1,4 +1,3 @@
-
 /*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
@@ -19,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#pragma once
+
 #include "constants.h"
 #include "network/networkprotocol.h"
 #include "unit_sao.h"
@@ -32,33 +33,31 @@ class LagPool
 {
 	float m_pool = 15.0f;
 	float m_max = 15.0f;
+
 public:
 	LagPool() = default;
 
 	void setMax(float new_max)
 	{
 		m_max = new_max;
-		if(m_pool > new_max)
+		if (m_pool > new_max)
 			m_pool = new_max;
 	}
 
 	void add(float dtime)
 	{
 		m_pool -= dtime;
-		if(m_pool < 0)
+		if (m_pool < 0)
 			m_pool = 0;
 	}
 
-	void empty()
-	{
-		m_pool = m_max;
-	}
+	void empty() { m_pool = m_max; }
 
 	bool grab(float dtime)
 	{
-		if(dtime <= 0)
+		if (dtime <= 0)
 			return true;
-		if(m_pool + dtime > m_max)
+		if (m_pool + dtime > m_max)
 			return false;
 		m_pool += dtime;
 		return true;
@@ -73,10 +72,8 @@ public:
 	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
 			bool is_singleplayer);
 
-	ActiveObjectType getType() const
-	{ return ACTIVEOBJECT_TYPE_PLAYER; }
-	ActiveObjectType getSendType() const
-	{ return ACTIVEOBJECT_TYPE_GENERIC; }
+	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_PLAYER; }
+	ActiveObjectType getSendType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
 	std::string getDescription();
 
 	/*
@@ -111,10 +108,8 @@ public:
 		Interaction interface
 	*/
 
-	u16 punch(v3f dir,
-		const ToolCapabilities *toolcap,
-		ServerActiveObject *puncher,
-		float time_from_last_punch);
+	u16 punch(v3f dir, const ToolCapabilities *toolcap, ServerActiveObject *puncher,
+			float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker) {}
 	void setHP(s32 hp, const PlayerHPChangeReason &reason);
 	void setHPRaw(u16 hp) { m_hp = hp; }
@@ -144,10 +139,7 @@ public:
 
 	// Cheat prevention
 
-	v3f getLastGoodPosition() const
-	{
-		return m_last_good_position;
-	}
+	v3f getLastGoodPosition() const { return m_last_good_position; }
 	float resetTimeFromLastPunch()
 	{
 		float r = m_time_from_last_punch;
@@ -159,30 +151,17 @@ public:
 		m_nocheat_dig_pos = p;
 		m_nocheat_dig_time = 0;
 	}
-	v3s16 getNoCheatDigPos()
-	{
-		return m_nocheat_dig_pos;
-	}
-	float getNoCheatDigTime()
-	{
-		return m_nocheat_dig_time;
-	}
-	void noCheatDigEnd()
-	{
-		m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
-	}
-	LagPool& getDigPool()
-	{
-		return m_dig_pool;
-	}
+	v3s16 getNoCheatDigPos() { return m_nocheat_dig_pos; }
+	float getNoCheatDigTime() { return m_nocheat_dig_time; }
+	void noCheatDigEnd() { m_nocheat_dig_pos = v3s16(32767, 32767, 32767); }
+	LagPool &getDigPool() { return m_dig_pool; }
 	void setMaxSpeedOverride(const v3f &vel);
 	// Returns true if cheated
 	bool checkMovementCheat();
 
 	// Other
 
-	void updatePrivileges(const std::set<std::string> &privs,
-			bool is_singleplayer)
+	void updatePrivileges(const std::set<std::string> &privs, bool is_singleplayer)
 	{
 		m_privs = privs;
 		m_is_singleplayer = is_singleplayer;
@@ -236,6 +215,7 @@ private:
 	s16 m_wanted_range = 0.0f;
 
 	Metadata m_meta;
+
 public:
 	float m_physics_override_speed = 1.0f;
 	float m_physics_override_jump = 1.0f;
@@ -246,9 +226,10 @@ public:
 	bool m_physics_override_sent = false;
 };
 
-
-struct PlayerHPChangeReason {
-	enum Type : u8 {
+struct PlayerHPChangeReason
+{
+	enum Type : u8
+	{
 		SET_HP,
 		PLAYER_PUNCH,
 		FALL,
@@ -266,10 +247,7 @@ struct PlayerHPChangeReason {
 	// For NODE_DAMAGE
 	std::string node;
 
-	inline bool hasLuaReference() const
-	{
-		return lua_reference >= 0;
-	}
+	inline bool hasLuaReference() const { return lua_reference >= 0; }
 
 	bool setTypeFromString(const std::string &typestr)
 	{
@@ -311,15 +289,12 @@ struct PlayerHPChangeReason {
 		}
 	}
 
-	PlayerHPChangeReason(Type type):
-			type(type)
-	{}
+	PlayerHPChangeReason(Type type) : type(type) {}
 
-	PlayerHPChangeReason(Type type, ServerActiveObject *object):
+	PlayerHPChangeReason(Type type, ServerActiveObject *object) :
 			type(type), object(object)
-	{}
+	{
+	}
 
-	PlayerHPChangeReason(Type type, std::string node):
-			type(type), node(node)
-	{}
+	PlayerHPChangeReason(Type type, std::string node) : type(type), node(node) {}
 };

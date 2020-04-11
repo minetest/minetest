@@ -43,7 +43,6 @@ extern "C" {
 #include <cstdio>
 #include <cstdarg>
 #include "script/common/c_content.h"
-#include "content_sao.h"
 #include <sstream>
 
 

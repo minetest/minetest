@@ -33,12 +33,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "daynightratio.h"
 #include "util/pointedthing.h"
-#include "content_sao.h"
 #include "mapgen/treegen.h"
 #include "emerge.h"
 #include "pathfinder.h"
 #include "face_position_cache.h"
 #include "remoteplayer.h"
+#include "server/luaentity_sao.h"
 #include "server/player_sao.h"
 #ifndef SERVER
 #include "client/client.h"

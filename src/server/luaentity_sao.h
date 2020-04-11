@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2020 Minetest core developers & community
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -19,38 +20,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "network/networkprotocol.h"
-#include "util/numeric.h"
-#include "server/unit_sao.h"
-#include "itemgroup.h"
-#include "constants.h"
-
-/*
-	LuaEntitySAO needs some internals exposed.
-*/
+#include "unit_sao.h"
 
 class LuaEntitySAO : public UnitSAO
 {
 public:
-	LuaEntitySAO(ServerEnvironment *env, v3f pos,
-		const std::string &name, const std::string &state);
+	LuaEntitySAO() = delete;
+	// Used by the environment to load SAO
+	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data);
+	// Used by the Lua API
+	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &name,
+			const std::string &state) :
+			UnitSAO(env, pos),
+			m_init_name(name), m_init_state(state)
+	{
+	}
 	~LuaEntitySAO();
-	ActiveObjectType getType() const
-	{ return ACTIVEOBJECT_TYPE_LUAENTITY; }
-	ActiveObjectType getSendType() const
-	{ return ACTIVEOBJECT_TYPE_GENERIC; }
+	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_LUAENTITY; }
+	ActiveObjectType getSendType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-		const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
-	bool isStaticAllowed() const
-	{ return m_prop.static_save; }
+	bool isStaticAllowed() const { return m_prop.static_save; }
 	void getStaticData(std::string *result) const;
-	u16 punch(v3f dir,
-		const ToolCapabilities *toolcap = nullptr,
-		ServerActiveObject *puncher = nullptr,
-		float time_from_last_punch = 1000000.0f);
+	u16 punch(v3f dir, const ToolCapabilities *toolcap = nullptr,
+			ServerActiveObject *puncher = nullptr,
+			float time_from_last_punch = 1000000.0f);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
@@ -61,10 +56,7 @@ public:
 
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
-	void addVelocity(v3f velocity)
-	{
-		m_velocity += velocity;
-	}
+	void addVelocity(v3f velocity) { m_velocity += velocity; }
 	v3f getVelocity();
 	void setAcceleration(v3f acceleration);
 	v3f getAcceleration();
@@ -77,12 +69,13 @@ public:
 	bool getCollisionBox(aabb3f *toset) const;
 	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const;
+
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 	std::string generateSetTextureModCommand() const;
-	static std::string generateSetSpriteCommand(v2s16 p, u16 num_frames, f32 framelength,
-			bool select_horiz_by_yawpitch);
+	static std::string generateSetSpriteCommand(v2s16 p, u16 num_frames,
+			f32 framelength, bool select_horiz_by_yawpitch);
 
 	std::string m_init_name;
 	std::string m_init_state;
@@ -98,4 +91,3 @@ private:
 	float m_last_sent_move_precision = 0.0f;
 	std::string m_current_texture_modifier = "";
 };
-

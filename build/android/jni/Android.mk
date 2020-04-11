@@ -161,7 +161,6 @@ LOCAL_SRC_FILES := \
 		jni/src/content/mods.cpp                  \
 		jni/src/content_nodemeta.cpp              \
 		jni/src/content/packages.cpp              \
-		jni/src/content_sao.cpp                   \
 		jni/src/content/subgames.cpp              \
 		jni/src/convert_json.cpp                  \
 		jni/src/craftdef.cpp                      \
@@ -258,8 +257,11 @@ LOCAL_SRC_FILES := \
 		jni/src/server.cpp                        \
 		jni/src/serverenvironment.cpp             \
 		jni/src/serverlist.cpp                    \
+		jni/src/server/luaentity_sao.cpp          \
 		jni/src/server/mods.cpp                   \
+		jni/src/server/player_sao.cpp             \
 		jni/src/server/serveractiveobject.cpp     \
+		jni/src/server/unit_sao.cpp               \
 		jni/src/settings.cpp                      \
 		jni/src/staticobject.cpp                  \
 		jni/src/tileanimation.cpp                 \

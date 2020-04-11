@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2020 Minetest core developers & community
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,151 +18,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "content_sao.h"
-#include "util/serialize.h"
+#include "luaentity_sao.h"
 #include "collision.h"
-#include "environment.h"
-#include "tool.h" // For ToolCapabilities
-#include "gamedef.h"
-#include "nodedef.h"
-#include "remoteplayer.h"
-#include "server.h"
+#include "constants.h"
+#include "player_sao.h"
 #include "scripting_server.h"
-#include "server/player_sao.h"
-#include "settings.h"
-#include <algorithm>
-#include <cmath>
+#include "server.h"
+#include "serverenvironment.h"
 
-std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
-
-/*
-	TestSAO
-*/
-
-class TestSAO : public ServerActiveObject
-{
-public:
-	TestSAO(ServerEnvironment *env, v3f pos):
-		ServerActiveObject(env, pos),
-		m_timer1(0),
-		m_age(0)
-	{
-		ServerActiveObject::registerType(getType(), create);
-	}
-	ActiveObjectType getType() const
-	{ return ACTIVEOBJECT_TYPE_TEST; }
-
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data)
-	{
-		return new TestSAO(env, pos);
-	}
-
-	void step(float dtime, bool send_recommended)
-	{
-		m_age += dtime;
-		if(m_age > 10)
-		{
-			m_pending_removal = true;
-			return;
-		}
-
-		m_base_position.Y += dtime * BS * 2;
-		if(m_base_position.Y > 8*BS)
-			m_base_position.Y = 2*BS;
-
-		if (!send_recommended)
-			return;
-
-		m_timer1 -= dtime;
-		if(m_timer1 < 0.0)
-		{
-			m_timer1 += 0.125;
-
-			std::string data;
-
-			data += itos(0); // 0 = position
-			data += " ";
-			data += itos(m_base_position.X);
-			data += " ";
-			data += itos(m_base_position.Y);
-			data += " ";
-			data += itos(m_base_position.Z);
-
-			ActiveObjectMessage aom(getId(), false, data);
-			m_messages_out.push(aom);
-		}
-	}
-
-	bool getCollisionBox(aabb3f *toset) const { return false; }
-
-	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
-
-	bool collideWithObjects() const { return false; }
-
-private:
-	float m_timer1;
-	float m_age;
-};
-
-// Prototype (registers item for deserialization)
-TestSAO proto_TestSAO(NULL, v3f(0,0,0));
-
-/*
-	LuaEntitySAO
-*/
-
-// Prototype (registers item for deserialization)
-LuaEntitySAO proto_LuaEntitySAO(NULL, v3f(0,0,0), "_prototype", "");
-
-LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
-		const std::string &name, const std::string &state):
-	UnitSAO(env, pos),
-	m_init_name(name),
-	m_init_state(state)
-{
-	// Only register type if no environment supplied
-	if(env == NULL){
-		ServerActiveObject::registerType(getType(), create);
-		return;
-	}
-}
-
-LuaEntitySAO::~LuaEntitySAO()
-{
-	if(m_registered){
-		m_env->getScriptIface()->luaentity_Remove(m_id);
-	}
-
-	for (u32 attached_particle_spawner : m_attached_particle_spawners) {
-		m_env->deleteParticleSpawner(attached_particle_spawner, false);
-	}
-}
-
-void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
-{
-	ServerActiveObject::addedToEnvironment(dtime_s);
-
-	// Create entity from name
-	m_registered = m_env->getScriptIface()->
-		luaentity_Add(m_id, m_init_name.c_str());
-
-	if(m_registered){
-		// Get properties
-		m_env->getScriptIface()->
-			luaentity_GetProperties(m_id, this, &m_prop);
-		// Initialize HP from properties
-		m_hp = m_prop.hp_max;
-		// Activate entity, supplying serialized state
-		m_env->getScriptIface()->
-			luaentity_Activate(m_id, m_init_state, dtime_s);
-	} else {
-		m_prop.infotext = m_init_name;
-	}
-}
-
-ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
-		const std::string &data)
+LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data)
+	: UnitSAO(env, pos)
 {
 	std::string name;
 	std::string state;
@@ -205,11 +71,45 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	// create object
 	infostream << "LuaEntitySAO::create(name=\"" << name << "\" state=\""
 			 << state << "\")" << std::endl;
-	LuaEntitySAO *sao = new LuaEntitySAO(env, pos, name, state);
-	sao->m_hp = hp;
-	sao->m_velocity = velocity;
-	sao->m_rotation = rotation;
-	return sao;
+
+	m_init_name = name;
+	m_init_state = state;
+	m_hp = hp;
+	m_velocity = velocity;
+	m_rotation = rotation;
+}
+
+LuaEntitySAO::~LuaEntitySAO()
+{
+	if(m_registered){
+		m_env->getScriptIface()->luaentity_Remove(m_id);
+	}
+
+	for (u32 attached_particle_spawner : m_attached_particle_spawners) {
+		m_env->deleteParticleSpawner(attached_particle_spawner, false);
+	}
+}
+
+void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
+{
+	ServerActiveObject::addedToEnvironment(dtime_s);
+
+	// Create entity from name
+	m_registered = m_env->getScriptIface()->
+		luaentity_Add(m_id, m_init_name.c_str());
+
+	if(m_registered){
+		// Get properties
+		m_env->getScriptIface()->
+			luaentity_GetProperties(m_id, this, &m_prop);
+		// Initialize HP from properties
+		m_hp = m_prop.hp_max;
+		// Activate entity, supplying serialized state
+		m_env->getScriptIface()->
+			luaentity_Activate(m_id, m_init_state, dtime_s);
+	} else {
+		m_prop.infotext = m_init_name;
+	}
 }
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)

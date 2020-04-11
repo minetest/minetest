@@ -244,12 +244,6 @@ protected:
 	virtual void onAttach(int parent_id) {}
 	virtual void onDetach(int parent_id) {}
 
-	// Used for creating objects based on type
-	typedef ServerActiveObject* (*Factory)
-			(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	static void registerType(u16 type, Factory f);
-
 	ServerEnvironment *m_env;
 	v3f m_base_position;
 	std::unordered_set<u32> m_attached_particle_spawners;
@@ -258,8 +252,4 @@ protected:
 		Queue of messages to be sent to the client
 	*/
 	std::queue<ActiveObjectMessage> m_messages_out;
-
-private:
-	// Used for creating objects based on type
-	static std::map<u16, Factory> m_types;
 };
