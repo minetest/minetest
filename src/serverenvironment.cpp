@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_POSTGRESQL
 #include "database/database-postgresql.h"
 #endif
+#include "server/luaentity_sao.h"
 #include "server/player_sao.h"
 
 #define LBM_NAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_:"
@@ -1778,6 +1779,18 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 	}
 }
 
+ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3f pos,
+		const std::string &data)
+{
+	switch (type) {
+		case ACTIVEOBJECT_TYPE_LUAENTITY:
+			return new LuaEntitySAO(this, pos, data);
+		default:
+			warningstream << "ServerActiveObject: No factory for type=" << type << std::endl;
+	}
+	return nullptr;
+}
+
 /*
 	Convert stored objects from blocks near the players to active.
 */
@@ -1811,10 +1824,10 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 	std::vector<StaticObject> new_stored;
 	for (const StaticObject &s_obj : block->m_static_objects.m_stored) {
 		// Create an active object from the data
-		ServerActiveObject *obj = ServerActiveObject::create
-			((ActiveObjectType) s_obj.type, this, 0, s_obj.pos, s_obj.data);
+		ServerActiveObject *obj = createSAO((ActiveObjectType) s_obj.type, s_obj.pos,
+			s_obj.data);
 		// If couldn't create object, store static data back.
-		if(obj == NULL) {
+		if (!obj) {
 			errorstream<<"ServerEnvironment::activateObjects(): "
 				<<"failed to create active object from static object "
 				<<"in block "<<PP(s_obj.pos/BS)

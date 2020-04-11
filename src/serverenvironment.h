@@ -468,4 +468,6 @@ private:
 	IntervalLimiter m_particle_management_interval;
 	std::unordered_map<u32, float> m_particle_spawners;
 	std::unordered_map<u32, u16> m_particle_spawner_attachments;
+
+	ServerActiveObject* createSAO(ActiveObjectType type, v3f pos, const std::string &data);
 };
