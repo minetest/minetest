@@ -31,6 +31,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "config.h"
 #include "common/c_types.h"
 
 
