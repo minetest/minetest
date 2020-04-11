@@ -300,9 +300,8 @@ package:docker:
 
 pages:
   stage: deploy
-  image: python:3.7
+  image: python:3.8
   before_script:
-    - pip install pip==18.1
     - pip install git+https://github.com/Python-Markdown/markdown.git
     - pip install git+https://github.com/mkdocs/mkdocs.git
     - pip install pygments
