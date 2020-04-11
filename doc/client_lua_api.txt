@@ -1389,7 +1389,7 @@ Displays a horizontal bar made up of half-images.
 
 ### `waypoint`
 
-Displays distance to selected world position. Accepts offset.
+Displays distance to specified world position, and some text. Accepts offset.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
