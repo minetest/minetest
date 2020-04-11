@@ -21,7 +21,7 @@ RUN	mkdir -p /usr/src/minetest/cmakebuild && cd /usr/src/minetest/cmakebuild && 
 FROM debian:stretch
 
 USER root
-RUN groupadd minetest && useradd -m -g minetest -d /var/lib/minetest minetest && \
+RUN groupadd -g 30000 minetest && useradd -u 30000 -m -g minetest -d /var/lib/minetest minetest && \
     apt-get update -y && \
     apt-get -y install libcurl3-gnutls libjsoncpp1 liblua5.1-0 libluajit-5.1-2 libpq5 libsqlite3-0 \
         libstdc++6 zlib1g libc6 && \
@@ -34,7 +34,9 @@ COPY --from=0 /usr/local/share/minetest /usr/local/share/minetest
 COPY --from=0 /usr/local/bin/minetestserver /usr/local/bin/minetestserver
 COPY --from=0 /usr/local/share/doc/minetest/minetest.conf.example /etc/minetest/minetest.conf
 
-USER minetest
+RUN chown -R minetest:minetest /var/lib/minetest
+
+USER minetest:minetest
 
 EXPOSE 30000/udp
 
