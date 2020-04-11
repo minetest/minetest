@@ -1424,7 +1424,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 	if (!is_editable && !is_multiline) {
 		// spec field id to 0, this stops submit searching for a value that isn't there
 		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
-				this, spec.fid);
+				this, 0);
 		return;
 	}
 
