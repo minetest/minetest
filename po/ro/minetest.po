@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Romanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-03-14 10:32+0000\n"
-"Last-Translator: Gmail a - 2 - a Boxa <daniel.r.stancu@gmail.com>\n"
+"PO-Revision-Date: 2020-04-12 12:11+0000\n"
+"Last-Translator: Larissa Piklor <larissa.piklor@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ro/>\n"
 "Language: ro\n"
@@ -394,7 +394,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr "X răspândit"
+msgstr "expansiunea X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
