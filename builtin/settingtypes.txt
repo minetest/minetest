@@ -2120,9 +2120,6 @@ emergequeue_limit_diskonly (Limit of emerge queues on disk) int 64
 emergequeue_limit_generate (Limit of emerge queues to generate) int 64
 
 #    Number of emerge threads to use.
-#    WARNING: Currently there are multiple bugs that may cause crashes when
-#    'num_emerge_threads' is larger than 1. Until this warning is removed it is
-#    strongly recommended this value is set to the default '1'.
 #    Value 0:
 #    -    Automatic selection. The number of emerge threads will be
 #    -    'number of processors - 2', with a lower limit of 1.
