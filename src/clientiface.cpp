@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <sstream>
 #include "clientiface.h"
+#include "content_sao.h"
 #include "network/connection.h"
 #include "network/serveropcodes.h"
 #include "remoteplayer.h"
@@ -27,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "map.h"
 #include "emerge.h"
-#include "content_sao.h"              // TODO this is used for cleanup of only
+#include "server/player_sao.h"
 #include "log.h"
 #include "util/srp.h"
 #include "face_position_cache.h"

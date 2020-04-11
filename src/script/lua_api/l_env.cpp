@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <algorithm>
 #include "lua_api/l_env.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_nodemeta.h"
@@ -25,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_vmanip.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include <algorithm>
 #include "scripting_server.h"
 #include "environment.h"
 #include "mapblock.h"
@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "pathfinder.h"
 #include "face_position_cache.h"
 #include "remoteplayer.h"
+#include "server/player_sao.h"
 #ifndef SERVER
 #include "client/client.h"
 #endif

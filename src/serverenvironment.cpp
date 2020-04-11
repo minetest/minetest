@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <algorithm>
 #include "serverenvironment.h"
-#include "content_sao.h"
 #include "settings.h"
 #include "log.h"
 #include "mapblock.h"
@@ -44,7 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_POSTGRESQL
 #include "database/database-postgresql.h"
 #endif
-#include <algorithm>
+#include "server/player_sao.h"
 
 #define LBM_NAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_:"
 

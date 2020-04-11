@@ -27,12 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "log.h"
 #include "tool.h"
-#include "server/serveractiveobject.h"
 #include "content_sao.h"
 #include "remoteplayer.h"
 #include "server.h"
 #include "hud.h"
 #include "scripting_server.h"
+#include "server/player_sao.h"
 
 /*
 	ObjectRef
