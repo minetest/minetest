@@ -1,5 +1,35 @@
 local color = minetest.colorize
 
+local hypertext = minetest.formspec_escape([[
+	<global halign=justify valign=center background=#CCF color=#444 actioncolor=darkblue margin=10>
+	<center><bigger>Furnace</bigger></center>
+	<style color=black>Furnaces</style> are <action name="crafting">crafted</action> and used by the player for the purpose of cooking food and <action name="smelting">smelting</action> various items.
+	<item name=default:furnace float=right width=128 rotate=yes>
+	<style color=black>Type:</style> Solid block
+	<style color=black>Drops:</style> Itself
+	<style color=black>Physics:</style> No
+	<style color=black>Luminance:</style> Inactive:No Active:Yes (8)
+	<style color=black>Flammable:</style> No
+	<style color=black>Generated:</style> No
+	<style color=black>Renewable:</style> Yes
+	<style color=black>Stackable:</style> Yes (99)
+	<style color=black>Itemstring:</style> default:furnace default:furnace_active
+	<big>Usage</big>
+	The furnace menu can be accessed by <action name="using">using</action> the furnace.
+	The furnace has 3 <action name="inventory">inventories</action>: An input slot, a fuel slot and 4 output slots. The fire in the furnace will automatically start when there is a smeltable item in the input slot and a fuel in the fuel slot.
+	As long as the fire is on, the furnace will smelt any smeltable item in the input slot, one by one, until it is empty. When the fire goes off, it will smelt the next item until there are no smeltable items and no fuel items left.
+	The current stage of cooking can be seen by <action name="pointing">pointing</action> the furnace or by viewing the furnace menu. In the furnace menu, the flame symbol roughly shows the remaining burning time. The arrow symbol shows the progress of the current smelting process.
+	<big>Renewing</big>
+	Furnaces can be crafted from e.g. <action name="default:cobblestone">cobblestone</action>, a renewable resource.
+	<big>Crafting</big>
+	Sorry no way to display crafting yet in formspec pages.
+	<big>Fuel</big>
+	See <action name="smelting">Smelting</action> for a list of furnace fuels.
+	<big>Recipes</big>
+	See the <action name="smelting">Smelting</action> page.
+]])
+
+
 local clip_fs = [[
 	style_type[label,button,image_button,item_image_button,
 			tabheader,scrollbar,table,animated_image
@@ -207,6 +237,7 @@ Number]
 			"item_image_button[2,3;1,1;default:dirt_with_grass;itemimagebutton;ItemImageButton]"..
 			"tooltip[0,11;3,2;Buz;#f00;#000]"..
 			"box[0,11;3,2;#00ff00]"..
+			"hypertext[1,1;3,3;;" .. hypertext .. "]" ..
 			"container[0,18]"..
 				"box[1,2;3,2;#0a0a]"..
 				"scroll_container[1,2;3,2;scrbar2;horizontal;0.06]"..
