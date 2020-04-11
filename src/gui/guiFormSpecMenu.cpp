@@ -1910,36 +1910,22 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 			Environment->setFocus(e);
 		}
 
-		// Push temporary styles with parameters
-		int styles_to_pop = 0;
-		if (!image_name.empty()) {
-			StyleSpec image_spec;
-			image_spec.set(StyleSpec::FGIMG, image_name);
-			theme_by_name[spec.fname].push_back(image_spec);
-			styles_to_pop++;
-		}
-		if (!pressed_image_name.empty()) {
-			StyleSpec image_spec;
-			image_spec.addState(StyleSpec::STATE_PRESSED);
-			image_spec.set(StyleSpec::FGIMG, pressed_image_name);
-			theme_by_name[spec.fname].push_back(image_spec);
-			styles_to_pop++;
-		}
+		auto style = getStyleForElement("image_button", spec.fname);
+
+		// Override style properties with values specified directly in the element
+		if (!image_name.empty())
+			style[StyleSpec::STATE_DEFAULT].set(StyleSpec::FGIMG, image_name);
+
+		if (!pressed_image_name.empty())
+			style[StyleSpec::STATE_PRESSED].set(StyleSpec::FGIMG, pressed_image_name);
+
 		if (parts.size() >= 7) {
-			StyleSpec image_spec;
-			image_spec.set(StyleSpec::NOCLIP, parts[5]);
-			image_spec.set(StyleSpec::BORDER, parts[6]);
-			theme_by_name[spec.fname].push_back(image_spec);
-			styles_to_pop++;
+			style[StyleSpec::STATE_DEFAULT].set(StyleSpec::NOCLIP, parts[5]);
+			style[StyleSpec::STATE_DEFAULT].set(StyleSpec::BORDER, parts[6]);
 		}
 
-		auto style = getStyleForElement("image_button", spec.fname);
 		e->setStyles(style);
 		e->setScaleImage(true);
-
-		theme_by_name[spec.fname].erase(
-				theme_by_name[spec.fname].end() - styles_to_pop,
-				theme_by_name[spec.fname].end());
 
 		m_fields.push_back(spec);
 		return;
