@@ -237,7 +237,7 @@ Number]
 			"item_image_button[2,3;1,1;default:dirt_with_grass;itemimagebutton;ItemImageButton]"..
 			"tooltip[0,11;3,2;Buz;#f00;#000]"..
 			"box[0,11;3,2;#00ff00]"..
-			"hypertext[1,1;3,3;;" .. hypertext .. "]" ..
+			"hypertext[3,13;3,3;;" .. hypertext .. "]" ..
 			"container[0,18]"..
 				"box[1,2;3,2;#0a0a]"..
 				"scroll_container[1,2;3,2;scrbar2;horizontal;0.06]"..
