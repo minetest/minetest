@@ -577,7 +577,7 @@ int ModApiEnvMod::l_get_node_timer(lua_State *L)
 
 	// Do it
 	v3s16 p = read_v3s16(L, 1);
-	NodeTimerRef::create(L, p, env);
+	NodeTimerRef::create(L, p, &env->getServerMap());
 	return 1;
 }
 
@@ -1193,7 +1193,7 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 			algo = PA_DIJKSTRA;
 	}
 
-	std::vector<v3s16> path = get_path(env, pos1, pos2,
+	std::vector<v3s16> path = get_path(&env->getServerMap(), env->getGameDef()->ndef(), pos1, pos2,
 		searchdistance, max_jump, max_drop, algo);
 
 	if (!path.empty()) {
@@ -1257,8 +1257,9 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 	else
 		return 0;
 
+	ServerMap *map = &env->getServerMap();
 	treegen::error e;
-	if ((e = treegen::spawn_ltree (env, p0, ndef, tree_def)) != treegen::SUCCESS) {
+	if ((e = treegen::spawn_ltree (map, p0, ndef, tree_def)) != treegen::SUCCESS) {
 		if (e == treegen::UNBALANCED_BRACKETS) {
 			luaL_error(L, "spawn_tree(): closing ']' has no matching opening bracket");
 		} else {

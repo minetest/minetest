@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "map.h"
 #include "mapblock.h"
-#include "serverenvironment.h"
 #include "nodedef.h"
 #include "treegen.h"
 #include "voxelalgorithms.h"
@@ -120,10 +119,9 @@ void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
 
 
 // L-System tree LUA spawner
-treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
+treegen::error spawn_ltree(ServerMap *map, v3s16 p0,
 	const NodeDefManager *ndef, const TreeDef &tree_definition)
 {
-	ServerMap *map = &env->getServerMap();
 	std::map<v3s16, MapBlock*> modified_blocks;
 	MMVManip vmanip(map);
 	v3s16 tree_blockp = getNodeBlockPos(p0);
