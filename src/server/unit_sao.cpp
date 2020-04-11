@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	UnitSAO
  */
 
-UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
-	ServerActiveObject(env, pos)
+UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos) : ServerActiveObject(env, pos)
 {
 	// Initialize something to armor groups
 	m_armor_groups["fleshy"] = 100;
@@ -54,7 +53,8 @@ const ItemGroupList &UnitSAO::getArmorGroups() const
 	return m_armor_groups;
 }
 
-void UnitSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
+void UnitSAO::setAnimation(
+		v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
 {
 	// store these so they can be updated to clients
 	m_animation_range = frame_range;
@@ -64,7 +64,8 @@ void UnitSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend
 	m_animation_sent = false;
 }
 
-void UnitSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop)
+void UnitSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend,
+		bool *frame_loop)
 {
 	*frame_range = m_animation_range;
 	*frame_speed = m_animation_speed;
@@ -91,14 +92,15 @@ void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotat
 	*rotation = m_bone_position[bone].Y;
 }
 
-void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
+void UnitSAO::setAttachment(
+		int parent_id, const std::string &bone, v3f position, v3f rotation)
 {
 	// Attachments need to be handled on both the server and client.
-	// If we just attach on the server, we can only copy the position of the parent. Attachments
-	// are still sent to clients at an interval so players might see them lagging, plus we can't
-	// read and attach to skeletal bones.
-	// If we just attach on the client, the server still sees the child at its original location.
-	// This breaks some things so we also give the server the most accurate representation
+	// If we just attach on the server, we can only copy the position of the parent.
+	// Attachments are still sent to clients at an interval so players might see them
+	// lagging, plus we can't read and attach to skeletal bones. If we just attach on
+	// the client, the server still sees the child at its original location. This
+	// breaks some things so we also give the server the most accurate representation
 	// even if players only see the client changes.
 
 	int old_parent = m_attachment_parent_id;
@@ -114,8 +116,8 @@ void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position
 	}
 }
 
-void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-	v3f *rotation) const
+void UnitSAO::getAttachment(
+		int *parent_id, std::string *bone, v3f *position, v3f *rotation) const
 {
 	*parent_id = m_attachment_parent_id;
 	*bone = m_attachment_bone;
@@ -194,7 +196,7 @@ void UnitSAO::onDetach(int parent_id)
 		m_env->getScriptIface()->luaentity_on_detach_child(parent_id, this);
 }
 
-ObjectProperties* UnitSAO::accessObjectProperties()
+ObjectProperties *UnitSAO::accessObjectProperties()
 {
 	return &m_prop;
 }
@@ -217,8 +219,8 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 	return os.str();
 }
 
-std::string UnitSAO::generateUpdateBonePositionCommand(const std::string &bone,
-	const v3f &position, const v3f &rotation)
+std::string UnitSAO::generateUpdateBonePositionCommand(
+		const std::string &bone, const v3f &position, const v3f &rotation)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
@@ -229,7 +231,6 @@ std::string UnitSAO::generateUpdateBonePositionCommand(const std::string &bone,
 	writeV3F32(os, rotation);
 	return os.str();
 }
-
 
 std::string UnitSAO::generateUpdateAnimationSpeedCommand() const
 {
@@ -255,23 +256,21 @@ std::string UnitSAO::generateUpdateAnimationCommand() const
 	return os.str();
 }
 
-
 std::string UnitSAO::generateUpdateArmorGroupsCommand() const
 {
 	std::ostringstream os(std::ios::binary);
 	writeU8(os, AO_CMD_UPDATE_ARMOR_GROUPS);
 	writeU16(os, m_armor_groups.size());
 	for (const auto &armor_group : m_armor_groups) {
-		os<<serializeString(armor_group.first);
+		os << serializeString(armor_group.first);
 		writeS16(os, armor_group.second);
 	}
 	return os.str();
 }
 
-
-std::string UnitSAO::generateUpdatePositionCommand(const v3f &position, const v3f &velocity,
-	const v3f &acceleration, const v3f &rotation, bool do_interpolate, bool is_movement_end,
-	f32 update_interval)
+std::string UnitSAO::generateUpdatePositionCommand(const v3f &position,
+		const v3f &velocity, const v3f &acceleration, const v3f &rotation,
+		bool do_interpolate, bool is_movement_end, f32 update_interval)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
@@ -292,7 +291,6 @@ std::string UnitSAO::generateUpdatePositionCommand(const v3f &position, const v3
 	writeF32(os, update_interval);
 	return os.str();
 }
-
 
 std::string UnitSAO::generateSetPropertiesCommand(const ObjectProperties &prop) const
 {

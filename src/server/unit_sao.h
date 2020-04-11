@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "object_properties.h"
 #include "serveractiveobject.h"
 
-class UnitSAO: public ServerActiveObject
+class UnitSAO : public ServerActiveObject
 {
 public:
 	UnitSAO(ServerEnvironment *env, v3f pos);
@@ -40,20 +40,24 @@ public:
 	// Use a function, if isDead can be defined by other conditions
 	bool isDead() const { return m_hp == 0; }
 
-	inline bool isAttached() const
-	{ return getParent(); }
+	inline bool isAttached() const { return getParent(); }
 
 	inline bool isImmortal() const
-	{ return itemgroup_get(getArmorGroups(), "immortal"); }
+	{
+		return itemgroup_get(getArmorGroups(), "immortal");
+	}
 
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	const ItemGroupList &getArmorGroups() const;
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
-	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend,
+			bool frame_loop);
+	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend,
+			bool *frame_loop);
 	void setAnimationSpeed(float frame_speed);
 	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
-	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
+	void setAttachment(int parent_id, const std::string &bone, v3f position,
+			v3f rotation);
 	void getAttachment(int *parent_id, std::string *bone, v3f *position,
 			v3f *rotation) const;
 	void clearChildAttachments();
@@ -62,20 +66,20 @@ public:
 	void removeAttachmentChild(int child_id);
 	const std::unordered_set<int> &getAttachmentChildIds() const;
 	ServerActiveObject *getParent() const;
-	ObjectProperties* accessObjectProperties();
+	ObjectProperties *accessObjectProperties();
 	void notifyObjectPropertiesModified();
 
 	std::string generateUpdateAttachmentCommand() const;
 	std::string generateUpdateAnimationSpeedCommand() const;
 	std::string generateUpdateAnimationCommand() const;
 	std::string generateUpdateArmorGroupsCommand() const;
-	static std::string generateUpdatePositionCommand(const v3f &position, const v3f &velocity,
-			const v3f &acceleration, const v3f &rotation, bool do_interpolate,
-			bool is_movement_end, f32 update_interval);
+	static std::string generateUpdatePositionCommand(const v3f &position,
+			const v3f &velocity, const v3f &acceleration, const v3f &rotation,
+			bool do_interpolate, bool is_movement_end, f32 update_interval);
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
 	void sendPunchCommand();
 	static std::string generateUpdateBonePositionCommand(const std::string &bone,
-		const v3f &position, const v3f &rotation);
+			const v3f &position, const v3f &rotation);
 
 protected:
 	u16 m_hp = 1;
@@ -105,6 +109,7 @@ protected:
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attachment_sent = false;
+
 private:
 	void onAttach(int parent_id);
 	void onDetach(int parent_id);
