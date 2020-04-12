@@ -675,6 +675,8 @@ end
 -- Item definition defaults
 --
 
+local default_stack_max = tonumber(minetest.settings:get("default_stack_max")) or 99
+
 core.nodedef_default = {
 	-- Item properties
 	type="node",
@@ -684,7 +686,7 @@ core.nodedef_default = {
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = tonumber(minetest.settings:get("stacksize_default_node")) or 99,
+	stack_max = default_stack_max,
 	usable = false,
 	liquids_pointable = false,
 	tool_capabilities = nil,
@@ -740,8 +742,6 @@ core.nodedef_default = {
 	legacy_wallmounted = false,
 }
 
-local stacksize_default_item = tonumber(minetest.settings:get("stacksize_default_item")) or 99
-
 core.craftitemdef_default = {
 	type="craft",
 	-- name intentionally not defined here
@@ -750,7 +750,7 @@ core.craftitemdef_default = {
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = stacksize_default_item,
+	stack_max = default_stack_max,
 	liquids_pointable = false,
 	tool_capabilities = nil,
 
@@ -788,7 +788,7 @@ core.noneitemdef_default = {  -- This is used for the hand and unknown items
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = stacksize_default_item,
+	stack_max = default_stack_max,
 	liquids_pointable = false,
 	tool_capabilities = nil,
 
