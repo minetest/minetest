@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-04-13 13:11+0000\n"
-"Last-Translator: anonymous <noreply@weblate.org>\n"
+"Last-Translator: SwampTurtle <SwampTurtle@telesight.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -23,9 +23,8 @@ msgid "You died"
 msgstr "Je stierf"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Er is een fout opgetreden in een Lua script, zoals dat van een mod:"
+msgstr "Er is een fout opgetreden in een Lua script:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -120,9 +119,8 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "Optionele afhankelijkheden:"
+msgstr "Geen (optionele) afhankelijkheden"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
@@ -137,9 +135,8 @@ msgid "No modpack description provided."
 msgstr "Geen mod-beschrijving aanwezig."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "Optionele afhankelijkheden:"
+msgstr "Geen optionele afhankelijkheden"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -295,13 +292,12 @@ msgid "Rename Modpack:"
 msgstr "Modverzameling hernoemen:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
-#, fuzzy
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
-"Deze modverzameling heeft een andere naam in modpack.conf wat hernoemen hier "
-"zal overschrijven."
+"Deze mod verzameling heeft een andere naam in modpack.conf welke de "
+"herbenoeming hier zal overschrijven."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -420,7 +416,7 @@ msgstr ""
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr "Standaard"
+msgstr "standaard"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -431,29 +427,25 @@ msgid "eased"
 msgstr "makkelijker"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 (Enabled)"
-msgstr "Ingeschakeld"
+msgstr "$1 (Ingeschakeld)"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr "3D modus"
+msgstr "$1 mods"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
 msgstr "Installeren van mod $1 in $2 is mislukt"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Mod installeren: kan de echte modnaam niet vinden voor: $1"
+msgstr "Mod installeren: kan de echte mod-naam niet vinden voor: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
-"Mod installeren: kan geen geschikte map-naam vinden voor modverzameling $1"
+"Mod installeren: kan geen geschikte map naam vinden voor mod verzameling $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
@@ -476,14 +468,12 @@ msgid "Unable to install a game as a $1"
 msgstr "Installeren van een spel als $1 mislukt"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a mod as a $1"
 msgstr "Installeren van mod $1 in $2 is mislukt"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a modpack as a $1"
-msgstr "Installeren van mod $1 in $2 is mislukt"
+msgstr "Installeren van mod verzameling $1 in $2 is mislukt"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -494,9 +484,8 @@ msgid "Content"
 msgstr "Inhoud"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Disable Texture Pack"
-msgstr "Selecteer textuurverzameling:"
+msgstr "Uitschakelen Textuurverzameling"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
@@ -603,9 +592,8 @@ msgid "Select World:"
 msgstr "Selecteer Wereld:"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Server Port"
-msgstr "Server-poort"
+msgstr "Server Poort"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
@@ -907,9 +895,8 @@ msgstr "Het gespecificeerde wereld-pad bestaat niet: "
 #. non-Latin script, like Chinese.
 #. When in doubt, test your translation.
 #: src/client/fontengine.cpp
-#, fuzzy
 msgid "needs_fallback_font"
-msgstr "no"
+msgstr "needs_fallback_font"
 
 #: src/client/game.cpp
 msgid ""
@@ -920,16 +907,14 @@ msgstr ""
 "Kijk in debug.txt voor details."
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Address: "
-msgstr "Lokaal server-adres "
+msgstr "-Lokaal server-adres: "
 
 #: src/client/game.cpp
 msgid "- Creative Mode: "
 msgstr "- Creatieve Modus: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Damage: "
 msgstr "- Verwondingen: "
 
