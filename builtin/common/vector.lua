@@ -159,15 +159,15 @@ local function cos(x)
 end
 
 function vector.rotate_around_axis(v, axis, angle)
-	--flip the angle because the formula is for the right hand rule
-	angle = -angle
 	local cosangle = cos(angle)
 	local sinangle = sin(angle)
 	axis = vector.normalize(axis)
 	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+	--this is a version of the Rodrigues rotation formula adjusted for
+	--performance and left handed coordinate system
 	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
 	return vector.add(
-		vector.multiply(vector.cross(axis, v), sinangle),
+		vector.multiply(vector.cross(v, axis), sinangle),
 		vector.add(
 		vector.multiply(vector.subtract(v, dot_axis), cosangle),
 		dot_axis
