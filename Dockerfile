@@ -1,12 +1,24 @@
 FROM alpine:3.11
 
-COPY . /usr/src/minetest
+COPY .git /usr/src/minetest/.git
+COPY CMakeLists.txt /usr/src/minetest/CMakeLists.txt
+COPY minetest.conf.example /usr/src/minetest/minetest.conf.example
+COPY builtin /usr/src/minetest/builtin
+COPY cmake /usr/src/minetest/cmake
+COPY doc /usr/src/minetest/doc
+COPY fonts /usr/src/minetest/fonts
+COPY lib /usr/src/minetest/lib
+COPY misc /usr/src/minetest/misc
+COPY po /usr/src/minetest/po
+COPY src /usr/src/minetest/src
+COPY textures /usr/src/minetest/textures
+
+WORKDIR /usr/src/minetest
 
 RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev libpng-dev \
 		jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev \
 		libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev \
-		gmp-dev jsoncpp-dev && \
-	cd /usr/src/minetest && \
+		gmp-dev jsoncpp-dev postgresql-dev && \
 	git clone --depth=1 https://github.com/minetest/minetest_game.git ./games/minetest_game && \
 	rm -fr ./games/minetest_game/.git && \
 	cmake . \
@@ -19,7 +31,7 @@ RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev libpng-dev \
 
 FROM alpine:3.11
 
-RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc && \
+RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq && \
 	addgroup minetest --gid 30000 && \
 	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
 	chown -R minetest:minetest /var/lib/minetest
