@@ -1,7 +1,10 @@
 FROM alpine:3.11
 
+ENV MINETEST_GAME_VERSION master
+
 COPY .git /usr/src/minetest/.git
 COPY CMakeLists.txt /usr/src/minetest/CMakeLists.txt
+COPY README.md /usr/src/minetest/README.md
 COPY minetest.conf.example /usr/src/minetest/minetest.conf.example
 COPY builtin /usr/src/minetest/builtin
 COPY cmake /usr/src/minetest/cmake
@@ -19,9 +22,11 @@ RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev libpng-dev \
 		jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev \
 		libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev \
 		gmp-dev jsoncpp-dev postgresql-dev && \
-	git clone --depth=1 https://github.com/minetest/minetest_game.git ./games/minetest_game && \
+	git clone --depth=1 -b ${MINETEST_GAME_VERSION} https://github.com/minetest/minetest_game.git ./games/minetest_game && \
 	rm -fr ./games/minetest_game/.git && \
-	cmake . \
+	mkdir build && \
+	cd build && \
+	cmake .. \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DBUILD_SERVER=TRUE \
