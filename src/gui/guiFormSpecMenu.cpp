@@ -3380,8 +3380,12 @@ void GUIFormSpecMenu::drawMenu()
 	bool hovered_element_found = false;
 
 	if (hovered != NULL) {
-		s32 id = hovered->getID();
+		if (m_show_debug) {
+			core::rect<s32> rect = hovered->getAbsoluteClippingRect();
+			driver->draw2DRectangle(0x22FFFF00, rect, &rect);
+		}
 
+		s32 id = hovered->getID();
 		u64 delta = 0;
 		if (id == -1) {
 			m_old_tooltip_id = id;
@@ -3903,6 +3907,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				(kp == getKeySetting("keymap_screenshot"))) {
 			m_client->makeScreenshot();
 		}
+
+		if (event.KeyInput.PressedDown && kp == getKeySetting("keymap_toggle_debug"))
+			m_show_debug = !m_show_debug;
+
 		if (event.KeyInput.PressedDown &&
 			(event.KeyInput.Key==KEY_RETURN ||
 			 event.KeyInput.Key==KEY_UP ||

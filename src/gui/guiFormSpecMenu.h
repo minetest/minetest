@@ -343,6 +343,7 @@ private:
 	u16                 m_formspec_version = 1;
 	std::string         m_focused_element = "";
 	JoystickController *m_joystick;
+	bool m_show_debug = false;
 
 	typedef struct {
 		bool explicit_size;
