@@ -1,32 +1,26 @@
-FROM debian:buster
-
-USER root
-RUN apt-get update -y && \
-	apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev \
-		libsqlite3-dev libcurl4-gnutls-dev zlib1g-dev libgmp-dev libjsoncpp-dev git
+FROM alpine
 
 COPY . /usr/src/minetest
 
-RUN	mkdir -p /usr/src/minetest/cmakebuild && cd /usr/src/minetest/cmakebuild && \
-    	cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE \
+RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev libpng-dev \
+		jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev \
+		libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev \
+		gmp-dev jsoncpp-dev && \
+	cd /usr/src/minetest && \
+	git clone --depth=1 https://github.com/minetest/minetest_game.git ./games/minetest_game && \
+	rm -fr ./games/minetest_game/.git && \
+	cmake . \
+		-DCMAKE_INSTALL_PREFIX=/usr/local \
+		-DCMAKE_BUILD_TYPE=Release \
 		-DBUILD_SERVER=TRUE \
-		-DBUILD_CLIENT=FALSE \
-		-DENABLE_SYSTEM_JSONCPP=1 \
-		.. && \
-		make -j2 && \
-		rm -Rf ../games/minetest_game && git clone --depth 1 https://github.com/minetest/minetest_game ../games/minetest_game && \
-		rm -Rf ../games/minetest_game/.git && \
-		make install
+		-DBUILD_CLIENT=FALSE && \
+	make -j2 && \
+	make install
 
-FROM debian:stretch
+FROM alpine
 
-USER root
-RUN groupadd minetest && useradd -m -g minetest -d /var/lib/minetest minetest && \
-    apt-get update -y && \
-    apt-get -y install libcurl3-gnutls libjsoncpp1 liblua5.1-0 libluajit-5.1-2 libpq5 libsqlite3-0 \
-        libstdc++6 zlib1g libc6 && \
-    apt-get clean && rm -rf /var/cache/apt/archives/* && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc && \
+	adduser -D minetest -h /var/lib/minetest
 
 WORKDIR /var/lib/minetest
 
