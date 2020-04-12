@@ -63,7 +63,6 @@ struct EnumString;
 struct NoiseParams;
 class Schematic;
 class ServerActiveObject;
-struct collisionMoveResult;
 
 extern struct EnumString es_TileAnimationType[];
 
@@ -198,5 +197,3 @@ void               read_hud_element          (lua_State *L, HudElement *elem);
 void               push_hud_element          (lua_State *L, HudElement *elem);
 
 HudElementStat     read_hud_change           (lua_State *L, HudElement *elem, void **value);
-
-void               push_collision_move_result(lua_State *L, const collisionMoveResult &res);

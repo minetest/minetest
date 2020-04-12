@@ -1096,7 +1096,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			m_position = p_pos;
 			m_velocity = p_velocity;
 
-			bool is_end_position = moveresult.collides;
+			bool is_end_position = moveresult.collides_xz || moveresult.collides_y;
 			pos_translator.update(m_position, is_end_position, dtime);
 		} else {
 			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;

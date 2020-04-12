@@ -771,18 +771,148 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 
 /* LuaEntitySAO-only */
 
+// set_speed(self, speed, yaw_offset)
+int ObjectRef::l_set_speed(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	float speed = check_float(L, 2) * BS;
+	float yaw_offset = readFloatYaw(L, 3);
+
+	entitysao->setSpeed(speed, yaw_offset);
+	return 0;
+}
+
+// set_speed_lateral(self, speed_x, speed_y)
+int ObjectRef::l_set_speed_lateral(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	float speed_x = read_float(L, 2) * BS;
+	float speed_y = read_float(L, 3) * BS;
+
+	entitysao->setSpeedLateral(speed_x, speed_y);
+	return 0;
+}
+
+// add_speed(self, speed)
+int ObjectRef::l_add_speed(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	float speed = check_float(L, 2) * BS;
+
+	entitysao->addSpeed(speed);
+	return 0;
+}
+
+// get_speed(self)
+int ObjectRef::l_get_speed(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	lua_pushnumber(L, entitysao->getSpeed() / BS);
+	return 1;
+}
+
+// lock_velocity(self)
+int ObjectRef::l_lock_velocity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	entitysao->lockVelocity();
+	return 0;
+}
+
+// unlock_velocity(self)
+int ObjectRef::l_unlock_velocity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	entitysao->unlockVelocity();
+	return 0;
+}
+
+// is_velocity_locked(self)
+int ObjectRef::l_is_velocity_locked(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	lua_pushboolean(L, entitysao->isVelocityLocked());
+	return 1;
+}
+
 // set_velocity(self, velocity)
 int ObjectRef::l_set_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	LuaEntitySAO *sao = getluaobject(ref);
-	if (sao == nullptr)
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
 		return 0;
 
 	v3f vel = checkFloatPos(L, 2);
 
-	sao->setVelocity(vel);
+	entitysao->setVelocity(vel);
+	return 0;
+}
+
+// set_velocity_horz(self, vel_x, vel_z)
+int ObjectRef::l_set_velocity_horz(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	float vel_x = read_float(L, 2) * BS;
+	float vel_z = read_float(L, 3) * BS;
+
+	entitysao->setVelocityHorz(vel_x, vel_z);
+	return 0;
+}
+
+// set_velocity_vert(self, vel_y)
+int ObjectRef::l_set_velocity_vert(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	float vel_y = read_float(L, 2) * BS;
+
+	entitysao->setVelocityVert(vel_y);
 	return 0;
 }
 
@@ -848,6 +978,21 @@ int ObjectRef::l_set_acceleration(lua_State *L)
 	return 0;
 }
 
+// set_acceleration_vert(self, acc_y)
+int ObjectRef::l_set_acceleration_vert(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	float acc_y = read_float(L, 2) * BS;
+
+	entitysao->setAccelerationVert(acc_y);
+	return 0;
+}
+
 // get_acceleration(self)
 int ObjectRef::l_get_acceleration(lua_State *L)
 {
@@ -902,12 +1047,22 @@ int ObjectRef::l_set_yaw(lua_State *L)
 	if (entitysao == nullptr)
 		return 0;
 
-	if (isNaN(L, 2))
-		throw LuaError("ObjectRef::set_yaw: NaN value is not allowed.");
-
-	float yaw = readParam<float>(L, 2) * core::RADTODEG;
-
+	float yaw = readFloatYaw(L, 2);
 	entitysao->setRotation(v3f(0, yaw, 0));
+	return 0;
+}
+
+// add_yaw(self, radians)
+int ObjectRef::l_add_yaw(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	float yaw = readFloatYaw(L, 2);
+	entitysao->addRotation(v3f(0, yaw, 0));
 	return 0;
 }
 
@@ -924,6 +1079,23 @@ int ObjectRef::l_get_yaw(lua_State *L)
 
 	lua_pushnumber(L, yaw);
 	return 1;
+}
+
+// turn_by(self, yaw_delta, period, cycles)
+int ObjectRef::l_turn_by(lua_State *L)
+{
+        NO_MAP_LOCK_REQUIRED;
+        ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	float yaw_delta = checkFloatYaw(L, 2);
+	float period = luaL_checknumber(L, 3);
+	u16 cycles = luaL_optinteger(L, 4, 1);
+
+	entitysao->turnBy(yaw_delta, period, cycles);
+	return 0;
 }
 
 // set_texture_mod(self, mod)
@@ -974,19 +1146,16 @@ int ObjectRef::l_set_sprite(lua_State *L)
 	return 0;
 }
 
-// DEPRECATED
 // get_entity_name(self)
 int ObjectRef::l_get_entity_name(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
-	log_deprecated(L,"Deprecated call to \"get_entity_name");
 	if (entitysao == nullptr)
 		return 0;
 
 	std::string name = entitysao->getName();
-
 	lua_pushstring(L, name.c_str());
 	return 1;
 }
@@ -2315,19 +2484,31 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
 
-	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
 	luamethod(ObjectRef, add_velocity),
 	{"add_player_velocity", ObjectRef::l_add_velocity},
 	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
 	{"get_player_velocity", ObjectRef::l_get_velocity},
 
 	// LuaEntitySAO-only
+	luamethod(ObjectRef, set_speed),
+	luamethod(ObjectRef, set_speed_lateral),
+	luamethod(ObjectRef, add_speed),
+	luamethod(ObjectRef, get_speed),
+	luamethod(ObjectRef, lock_velocity),
+	luamethod(ObjectRef, unlock_velocity),
+	luamethod(ObjectRef, is_velocity_locked),
+	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
+	luamethod(ObjectRef, set_velocity_horz),
+	luamethod(ObjectRef, set_velocity_vert),
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
+	luamethod(ObjectRef, set_acceleration_vert),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),
+	luamethod(ObjectRef, add_yaw),
 	luamethod_aliased(ObjectRef, get_yaw, getyaw),
 	luamethod(ObjectRef, set_rotation),
 	luamethod(ObjectRef, get_rotation),
+	luamethod(ObjectRef, turn_by),
 	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
 	luamethod(ObjectRef, get_texture_mod),
 	luamethod_aliased(ObjectRef, set_sprite, setsprite),

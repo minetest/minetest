@@ -71,6 +71,8 @@ std::string ObjectProperties::dump()
 	os << ", damage_texture_modifier=" << damage_texture_modifier;
 	os << ", shaded=" << shaded;
 	os << ", show_on_minimap=" << show_on_minimap;
+	os << ", yaw_origin=" << yaw_origin;
+
 	return os.str();
 }
 

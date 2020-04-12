@@ -92,11 +92,39 @@ void ScriptApiEntity::luaentity_Activate(u16 id,
 	if (!lua_isnil(L, -1)) {
 		luaL_checktype(L, -1, LUA_TFUNCTION);
 		lua_pushvalue(L, object); // self
-		lua_pushlstring(L, staticdata.c_str(), staticdata.size());
-		lua_pushinteger(L, dtime_s);
+		lua_pushlstring(L, staticdata.c_str(), staticdata.size()); // staticdata
+		lua_pushinteger(L, dtime_s); // dtime
+		lua_pushnumber(L, id); // id
 
 		setOriginFromTable(object);
-		PCALL_RES(lua_pcall(L, 3, 0, error_handler));
+		PCALL_RES(lua_pcall(L, 4, 0, error_handler));
+	} else {
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 2); // Pop object and error handler
+}
+
+void ScriptApiEntity::luaentity_Deactivate(u16 id)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	verbosestream << "scriptapi_luaentity_deactivate: id=" << id << std::endl;
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	// Get core.luaentities[id]
+	luaentity_get(L, id);
+	int object = lua_gettop(L);
+
+	// Get on_deactivate function
+	lua_getfield(L, -1, "on_deactivate");
+	if (!lua_isnil(L, -1)) {
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		lua_pushvalue(L, object); // self
+		lua_pushnumber(L, id); // id
+
+		setOriginFromTable(object);
+		PCALL_RES(lua_pcall(L, 2, 0, error_handler));
 	} else {
 		lua_pop(L, 1);
 	}
@@ -178,8 +206,8 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	lua_pop(L, 1);
 }
 
-void ScriptApiEntity::luaentity_Step(u16 id, float dtime,
-	const collisionMoveResult *moveresult)
+void ScriptApiEntity::luaentity_Step(u16 id, float dtime, v3f pos, v3f rotation,
+		v3f new_velocity, v3f old_velocity, collisionMoveResult *moveresult)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -198,14 +226,55 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime,
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	lua_pushnumber(L, dtime); // dtime
-	/* moveresult */
-	if (moveresult)
-		push_collision_move_result(L, *moveresult);
-	else
+
+	pushFloatPos(L, pos); // pos
+	push_v3f(L, rotation * core::DEGTORAD); // rotation (in radians)
+	pushFloatPos(L, new_velocity); // new_velocity
+	pushFloatPos(L, old_velocity); // old_velocity
+
+	if (moveresult) {
+		lua_createtable(L, 0, 5);
+
+		// moveresult.collides_y
+		lua_pushboolean(L, moveresult->collides_y);
+		lua_setfield(L, -2, "collides_y");
+
+		// moveresult.collides_xz
+		lua_pushboolean(L, moveresult->collides_xz);
+		lua_setfield(L, -2, "collides_xz");
+
+		// moveresult.is_standing
+		lua_pushboolean(L, moveresult->touching_ground);
+	      	lua_setfield(L, -2, "is_standing");
+
+		int index;
+
+		// moveresult.touched_objects (table)
+		lua_createtable(L, moveresult->touched_objects.size(), 0);
+		index = 0;
+		for (ActiveObject *obj : moveresult->touched_objects) {
+			objectrefGetOrCreate(L, (ServerActiveObject*)obj);
+       			lua_rawseti(L, -2, ++index);
+		}
+		lua_setfield(L, -2, "touched_objects");
+
+		// moveresult.collisions (table)
+		lua_createtable(L, moveresult->collisions.size(), 0);
+		index = 0;
+		for (const CollisionInfo &colinfo : moveresult->collisions) {
+			if (colinfo.type == COLLISION_NODE) {
+				push_v3s16(L, colinfo.node_p);
+				lua_rawseti(L, -2, ++index);
+			}
+		}
+		lua_setfield(L, -2, "collisions");
+	}
+	else {
 		lua_pushnil(L);
+	}
 
 	setOriginFromTable(object);
-	PCALL_RES(lua_pcall(L, 3, 0, error_handler));
+	PCALL_RES(lua_pcall(L, 7, 0, error_handler));
 
 	lua_pop(L, 2); // Pop object and error handler
 }

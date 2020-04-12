@@ -39,6 +39,7 @@ public:
 	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_LUAENTITY; }
 	ActiveObjectType getSendType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
+	virtual void removingFromEnvironment();
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
 	bool isStaticAllowed() const { return m_prop.static_save; }
@@ -56,11 +57,24 @@ public:
 	u16 getHP() const;
 
 	/* LuaEntitySAO-specific */
+	void setSpeed(float speed, float yaw_offset);
+	void setSpeedLateral(float speed_x, float speed_y);
+	void addSpeed(float speed);
+	float getSpeed();
+	void lockVelocity();
+	void unlockVelocity();
+	bool isVelocityLocked();
 	void setVelocity(v3f velocity);
-	void addVelocity(v3f velocity) { m_velocity += velocity; }
+	void setVelocityHorz(float vel_x, float vel_z);
+	void setVelocityVert(float vel_y);
+	void addVelocity(v3f velocity);
 	v3f getVelocity();
 	void setAcceleration(v3f acceleration);
+	void setAccelerationVert(float acc_y);
 	v3f getAcceleration();
+	void setRotation(v3f rotation);
+	void addRotation(v3f rotation);
+	void turnBy(float yaw_delta, float period, u16 cycles);
 
 	void setTextureMod(const std::string &mod);
 	std::string getTextureMod() const;
@@ -82,8 +96,13 @@ private:
 	std::string m_init_state;
 	bool m_registered = false;
 
+	float m_speed = 0.0f;	
 	v3f m_velocity;
+	bool m_velocity_lock = false;
 	v3f m_acceleration;
+	float m_yaw_offset = 0.0f;
+	float m_turn_rate = 0.0f;
+	float m_turn_period = 0.0f;
 
 	v3f m_last_sent_position;
 	v3f m_last_sent_velocity;

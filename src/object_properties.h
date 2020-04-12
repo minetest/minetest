@@ -63,6 +63,7 @@ struct ObjectProperties
 	bool use_texture_alpha = false;
 	bool shaded = true;
 	bool show_on_minimap = false;
+	float yaw_origin = 0.0f;
 
 	ObjectProperties();
 	std::string dump();

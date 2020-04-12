@@ -42,11 +42,17 @@ extern "C" {
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
 #define CHECK_FLOAT_RANGE(value, name) \
 if (value < F1000_MIN || value > F1000_MAX) { \
+	std::string traceback = script_get_backtrace(L); \
 	std::ostringstream error_text; \
-	error_text << "Invalid float vector dimension range '" name "' " << \
+	error_text << "Vector dimension outside of allowable range " << \
 	"(expected " << F1000_MIN << " < " name " < " << F1000_MAX << \
-	" got " << value << ")." << std::endl; \
+	" got " << value << ")." << std::endl << traceback; \
 	throw LuaError(error_text.str()); \
+}
+#define CHECK_FLOAT_RANGE2(value) \
+if (std::isnan(value) || value < F1000_MIN || value > F1000_MAX) { \
+	throw LuaError(std::string("Invalid floating point number.\n") + \
+		script_get_backtrace(L)); \
 }
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
 
@@ -248,6 +254,20 @@ v3d check_v3d(lua_State *L, int index)
 	return pos;
 }
 
+float check_float(lua_State *L, int index)
+{
+	float num = (float)luaL_checknumber(L, index);
+	CHECK_FLOAT_RANGE2(num);
+	return num;
+}
+
+float read_float(lua_State *L, int index)
+{
+	float num = (float)lua_tonumber(L, index);
+	CHECK_FLOAT_RANGE2(num);
+	return num;
+}
+
 void push_ARGB8(lua_State *L, video::SColor color)
 {
 	lua_createtable(L, 0, 4);
@@ -270,6 +290,16 @@ void pushFloatPos(lua_State *L, v3f p)
 v3f checkFloatPos(lua_State *L, int index)
 {
 	return check_v3f(L, index) * BS;
+}
+
+float checkFloatYaw(lua_State *L, int index)
+{
+	return check_float(L, index) * core::RADTODEG;
+}
+
+float readFloatYaw(lua_State *L, int index)
+{
+	return read_float(L, index) * core::RADTODEG;
 }
 
 void push_v3s16(lua_State *L, v3s16 p)

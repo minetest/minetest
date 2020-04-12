@@ -533,7 +533,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				info.type = COLLISION_NODE;
 
 			info.node_p = nearest_info.position;
-			info.object = nearest_info.obj;
 			info.old_speed = *speed_f;
 			info.plane = nearest_collided;
 
@@ -547,19 +546,19 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 					speed_f->X *= bounce;
 				else
 					speed_f->X = 0;
-				result.collides = true;
+				result.collides_xz = true;
 			} else if (nearest_collided == COLLISION_AXIS_Y) {
 				if(fabs(speed_f->Y) > BS * 3)
 					speed_f->Y *= bounce;
 				else
 					speed_f->Y = 0;
-				result.collides = true;
+				result.collides_y = true;
 			} else if (nearest_collided == COLLISION_AXIS_Z) {
 				if (fabs(speed_f->Z) > BS * 3)
 					speed_f->Z *= bounce;
 				else
 					speed_f->Z = 0;
-				result.collides = true;
+				result.collides_xz = true;
 			}
 
 			info.new_speed = *speed_f;
@@ -569,6 +568,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (is_collision) {
 				info.axis = nearest_collided;
 				result.collisions.push_back(info);
+
+				if (nearest_info.obj)
+					result.touched_objects.push_back(nearest_info.obj);
 			}
 		}
 	}
@@ -579,8 +581,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	aabb3f box = box_0;
 	box.MinEdge += *pos_f;
 	box.MaxEdge += *pos_f;
-	for (const auto &box_info : cinfo) {
-		const aabb3f &cbox = box_info.box;
+	for (const auto &nearest_info : cinfo) {
+		const aabb3f &cbox = nearest_info.box;
 
 		/*
 			See if the object is touching ground.
@@ -593,7 +595,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		if (cbox.MaxEdge.X - d > box.MinEdge.X && cbox.MinEdge.X + d < box.MaxEdge.X &&
 				cbox.MaxEdge.Z - d > box.MinEdge.Z &&
 				cbox.MinEdge.Z + d < box.MaxEdge.Z) {
-			if (box_info.is_step_up) {
+			if (nearest_info.is_step_up) {
 				pos_f->Y += cbox.MaxEdge.Y - box.MinEdge.Y;
 				box = box_0;
 				box.MinEdge += *pos_f;
@@ -602,7 +604,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.05f) {
 				result.touching_ground = true;
 
-				if (box_info.isObject())
+				if (nearest_info.isObject())
 					result.standing_on_object = true;
 			}
 		}

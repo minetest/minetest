@@ -99,6 +99,11 @@ void               setfloatfield(lua_State *L, int table,
 void               setboolfield(lua_State *L, int table,
                              const char *fieldname, bool value);
 
+float               checkFloatYaw       (lua_State *L, int index);
+float               readFloatYaw        (lua_State *L, int index);
+float               check_float         (lua_State *L, int index);
+float               read_float          (lua_State *L, int index);
+
 v3f                 checkFloatPos       (lua_State *L, int index);
 v3f                 check_v3f           (lua_State *L, int index);
 v3s16               check_v3s16         (lua_State *L, int index);

@@ -154,8 +154,35 @@ private:
 
 	/* LuaEntitySAO-only */
 
+	// set_speed(self, speed, yaw_offset)
+	static int l_set_speed(lua_State *L);
+
+	// set_speed_lateral(self, speed_x, speed_y)
+	static int l_set_speed_lateral(lua_State *L);
+
+	// add_speed(self, speed)
+	static int l_add_speed(lua_State *L);
+
+	// get_speed(self)
+	static int l_get_speed(lua_State *L);
+
+	// lock_velocity(self)
+	static int l_lock_velocity(lua_State *L);
+
+	// unlock_velocity(self)
+	static int l_unlock_velocity(lua_State *L);
+
+	// is_velocity_locked(self)
+	static int l_is_velocity_locked(lua_State *L);
+
 	// set_velocity(self, velocity)
 	static int l_set_velocity(lua_State *L);
+
+	// set_velocity_horz(self, vel_x, vel_z)
+	static int l_set_velocity_horz(lua_State *L);
+
+	// set_velocity_vert(self, vel_y)
+	static int l_set_velocity_vert(lua_State *L);
 
 	// add_velocity(self, velocity)
 	static int l_add_velocity(lua_State *L);
@@ -165,6 +192,9 @@ private:
 
 	// set_acceleration(self, acceleration)
 	static int l_set_acceleration(lua_State *L);
+
+	// setacceleration_vert(self, acc_y)
+	static int l_set_acceleration_vert(lua_State *L);
 
 	// get_acceleration(self)
 	static int l_get_acceleration(lua_State *L);
@@ -178,8 +208,14 @@ private:
 	// set_yaw(self, yaw)
 	static int l_set_yaw(lua_State *L);
 
+	// add_yaw(self, yaw)
+	static int l_add_yaw(lua_State *L);
+
 	// get_yaw(self)
 	static int l_get_yaw(lua_State *L);
+
+	// turn_by(self, yaw_delta, period, cycles)
+	static int l_turn_by(lua_State *L);
 
 	// set_texture_mod(self, mod)
 	static int l_set_texture_mod(lua_State *L);
