@@ -48,9 +48,8 @@ bool WorldSettings::load(bool return_on_config_read)
 {
 	bool succeeded = readConfigFile(m_conf_path.c_str());
 
-	bool player_backend_exists = exists(PLAYER_BACKEND_KEY);
 	// player backend is not set, assume it's legacy file backend.
-	if (!player_backend_exists) {
+	if (!exists(PLAYER_BACKEND_KEY)) {
 		// fall back to files
 		set(PLAYER_BACKEND_KEY, "files");
 		infostream << "No " << PLAYER_BACKEND_KEY << " key found, assuming files."
@@ -62,9 +61,8 @@ bool WorldSettings::load(bool return_on_config_read)
 		}
 	}
 
-	bool auth_backend_exists = exists(AUTH_BACKEND_KEY);
 	// auth backend is not set, assume it's legacy file backend.
-	if (!auth_backend_exists) {
+	if (!exists(AUTH_BACKEND_KEY)) {
 		set(AUTH_BACKEND_KEY, "files");
 		infostream << "No " << AUTH_BACKEND_KEY << " key found, assuming files."
 			   << std::endl;
@@ -138,7 +136,7 @@ std::string WorldSettings::getReadOnlyDir() const
 std::string WorldSettings::getAuthBackend() const
 {
 	std::string backend_name;
-	getNoEx(PLAYER_BACKEND_KEY, backend_name);
+	getNoEx(AUTH_BACKEND_KEY, backend_name);
 	return backend_name;
 }
 

@@ -2048,9 +2048,8 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 	if (name == "dummy")
 		return new Database_Dummy();
 #if USE_POSTGRESQL
-	if (name == "postgresql") {
+	if (name == "postgresql")
 		return new PlayerDatabasePostgreSQL(conf.getPlayerPostgresConnectionString());
-	}
 #endif
 	if (name == "files")
 		return new PlayerDatabaseFiles(savedir + DIR_DELIM + "players");
