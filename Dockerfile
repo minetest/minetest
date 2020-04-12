@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.11
 
 COPY . /usr/src/minetest
 
@@ -17,10 +17,12 @@ RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev libpng-dev \
 	make -j2 && \
 	make install
 
-FROM alpine
+FROM alpine:3.11
 
 RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc && \
-	adduser -D minetest -h /var/lib/minetest
+	addgroup minetest --gid 30000 && \
+	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
+	chown -R minetest:minetest /var/lib/minetest
 
 WORKDIR /var/lib/minetest
 
@@ -28,7 +30,7 @@ COPY --from=0 /usr/local/share/minetest /usr/local/share/minetest
 COPY --from=0 /usr/local/bin/minetestserver /usr/local/bin/minetestserver
 COPY --from=0 /usr/local/share/doc/minetest/minetest.conf.example /etc/minetest/minetest.conf
 
-USER minetest
+USER minetest:minetest
 
 EXPOSE 30000/udp
 
