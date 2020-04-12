@@ -2108,8 +2108,8 @@ Elements
   * be additionally moved by the current value of the scrollbar with the name
     `scrollbar name` times `scroll factor` along the orientation `orientation` and
   * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
-* Possible values for `orientation` are `vertical` and `horizontal`.
-* `scroll factor` is optional and defaults to `0.1`.
+* `orientation`: possible values are `vertical` and `horizontal`.
+* `scroll factor`: optional, defaults to `0.1`.
 * Nesting is possible.
 * Some elements might work a little different if they are in a scroll_container.
 * Note: If you want the scroll_container to actually work, you also need to add a
