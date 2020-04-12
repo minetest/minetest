@@ -30,6 +30,7 @@ RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev libpng-dev \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DBUILD_SERVER=TRUE \
+		-DBUILD_UNITTESTS=FALSE \
 		-DBUILD_CLIENT=FALSE && \
 	make -j2 && \
 	make install

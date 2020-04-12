@@ -187,7 +187,13 @@ int main(int argc, char *argv[])
 #ifndef __ANDROID__
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
+#if BUILD_UNITTESTS
 		return run_tests();
+#else
+		errorstream << "Unittest support is not enabled in this binary. "
+			<< "If you want to enable it, compile project with BUILD_UNITTESTS=1 flag."
+			<< std::endl;
+#endif
 	}
 #endif
 
