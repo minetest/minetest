@@ -44,6 +44,13 @@ struct TextureOverride {
 	std::string id;
 	std::string texture;
 	u8 target;
+
+	// Helper function for checking if an OverrideTarget is found in
+	// a TextureOverride without casting
+	inline bool hasTarget(const OverrideTarget& overrideTarget) const
+	{
+		return (target & static_cast<u8>(overrideTarget)) != 0;
+	}
 };
 
 //! Class that provides texture override information from a texture pack

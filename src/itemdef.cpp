@@ -434,10 +434,10 @@ public:
 
 			ItemDefinition* itemdef = m_item_definitions[texture_override.id];
 
-			if ((texture_override.target & static_cast<u8>(OverrideTarget::INVENTORY)) != 0)
+			if (texture_override.hasTarget(OverrideTarget::INVENTORY))
 				itemdef->inventory_image = texture_override.texture;
 
-			if ((texture_override.target & static_cast<u8>(OverrideTarget::WIELD)) != 0)
+			if (texture_override.hasTarget(OverrideTarget::WIELD))
 				itemdef->wield_image = texture_override.texture;
 		}
 	}

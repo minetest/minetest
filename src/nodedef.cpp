@@ -1316,22 +1316,22 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 
 		ContentFeatures &nodedef = m_content_features[id];
 
-		if ((texture_override.target & static_cast<u8>(OverrideTarget::TOP)) != 0)
+		if ((texture_override.hasTarget(OverrideTarget::TOP)) != 0)
 			nodedef.tiledef[0].name = texture_override.texture;
 
-		if ((texture_override.target & static_cast<u8>(OverrideTarget::BOTTOM)) != 0)
+		if ((texture_override.hasTarget(OverrideTarget::BOTTOM)) != 0)
 			nodedef.tiledef[1].name = texture_override.texture;
 
-		if ((texture_override.target & static_cast<u8>(OverrideTarget::RIGHT)) != 0)
+		if ((texture_override.hasTarget(OverrideTarget::RIGHT)) != 0)
 			nodedef.tiledef[2].name = texture_override.texture;
 
-		if ((texture_override.target & static_cast<u8>(OverrideTarget::LEFT)) != 0)
+		if ((texture_override.hasTarget(OverrideTarget::LEFT)) != 0)
 			nodedef.tiledef[3].name = texture_override.texture;
 
-		if ((texture_override.target & static_cast<u8>(OverrideTarget::BACK)) != 0)
+		if ((texture_override.hasTarget(OverrideTarget::BACK)) != 0)
 			nodedef.tiledef[4].name = texture_override.texture;
 
-		if ((texture_override.target & static_cast<u8>(OverrideTarget::FRONT)) != 0)
+		if ((texture_override.hasTarget(OverrideTarget::FRONT)) != 0)
 			nodedef.tiledef[5].name = texture_override.texture;
 	}
 }
