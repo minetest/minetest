@@ -379,19 +379,6 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &
 	v2s32 pos = getRealCoordinateBasePos(v_pos);
 	v2s32 geom = getRealCoordinateGeometry(v_geom);
 
-	// old parent (at first: this)
-	// ^ is parent of clipper
-	// ^ is parent of mover
-	// ^ is parent of other elements
-
-	// make clipper
-	FieldSpec spec_clipper(
-		"",
-		L"",
-		L"",
-		258 + m_fields.size()
-	);
-
 	if (orientation == "vertical")
 		scroll_factor *= -imgsize.Y;
 	else if (orientation == "horizontal")
@@ -401,12 +388,16 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &
 				<< "Invalid scroll_container orientation: " << orientation
 				<< std::endl;
 
+	// old parent (at first: this)
+	// ^ is parent of clipper
+	// ^ is parent of mover
+	// ^ is parent of other elements
+
+	// make clipper
 	core::rect<s32> rect_clipper = core::rect<s32>(pos, pos + geom);
 
 	gui::IGUIElement *clipper = new gui::IGUIElement(EGUIET_ELEMENT, Environment,
-			data->current_parent, spec_clipper.fid, rect_clipper);
-
-	m_fields.push_back(spec_clipper);
+			data->current_parent, 0, rect_clipper);
 
 	// make mover
 	FieldSpec spec_mover(
