@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "porting.h"
 #include "network/socket.h"
+#include "server/worldsettings.h"
 #if USE_CURSES
 	#include "terminal_chat_console.h"
 #endif
@@ -939,14 +940,13 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 static bool migrate_map_database(const GameParams &game_params, const Settings &cmd_args)
 {
 	std::string migrate_to = cmd_args.get("migrate");
-	Settings world_mt;
-	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
-	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+	WorldSettings world_mt(game_params.world_path);
+	if (!world_mt.load(true)) {
 		errorstream << "Cannot read world.mt!" << std::endl;
 		return false;
 	}
 
-	if (!world_mt.exists("backend")) {
+	if (!world_mt.isBackendSet()) {
 		errorstream << "Please specify your current backend in world.mt:"
 			<< std::endl
 			<< "	backend = {sqlite3|leveldb|redis|dummy|postgresql}"
@@ -954,7 +954,7 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 		return false;
 	}
 
-	std::string backend = world_mt.get("backend");
+	std::string backend = world_mt.getMapBackend();
 	if (backend == migrate_to) {
 		errorstream << "Cannot migrate: new backend is same"
 			<< " as the old one" << std::endl;
@@ -995,11 +995,6 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 	delete new_db;
 
 	actionstream << "Successfully migrated " << count << " blocks" << std::endl;
-	world_mt.set("backend", migrate_to);
-	if (!world_mt.updateConfigFile(world_mt_path.c_str()))
-		errorstream << "Failed to update world.mt!" << std::endl;
-	else
-		actionstream << "world.mt updated" << std::endl;
-
+	world_mt.setMapBackend(migrate_to, true);
 	return true;
 }

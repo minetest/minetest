@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "activeobject.h"
 #include "environment.h"
 #include "mapnode.h"
-#include "settings.h"
 #include "server/activeobjectmgr.h"
 #include "util/numeric.h"
 #include <set>
@@ -41,7 +40,9 @@ class ActiveBlockModifier;
 struct StaticObject;
 class ServerActiveObject;
 class Server;
+class Settings;
 class ServerScripting;
+class WorldSettings;
 
 /*
 	{Active, Loading} block modifier interface.
@@ -365,9 +366,9 @@ private:
 	void loadDefaultMeta();
 
 	static PlayerDatabase *openPlayerDatabase(const std::string &name,
-			const std::string &savedir, const Settings &conf);
+			const std::string &savedir, const WorldSettings &conf);
 	static AuthDatabase *openAuthDatabase(const std::string &name,
-			const std::string &savedir, const Settings &conf);
+			const std::string &savedir, const WorldSettings &conf);
 	/*
 		Internal ActiveObject interface
 		-------------------------------------------

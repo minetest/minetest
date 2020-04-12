@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <algorithm>
 #include "serverenvironment.h"
-#include "settings.h"
 #include "log.h"
 #include "mapblock.h"
 #include "nodedef.h"
@@ -32,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "scripting_server.h"
 #include "server.h"
+#include "server/worldsettings.h"
 #include "util/serialize.h"
 #include "util/basic_macros.h"
 #include "util/pointedthing.h"
@@ -400,45 +400,17 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 {
 	// Determine which database backend to use
 	std::string conf_path = path_world + DIR_DELIM + "world.mt";
-	Settings conf;
+	WorldSettings conf(path_world);
 
 	std::string player_backend_name = "sqlite3";
 	std::string auth_backend_name = "sqlite3";
 
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
+	bool succeeded = conf.load(true);
 
 	// If we open world.mt read the backend configurations.
 	if (succeeded) {
-		// Read those values before setting defaults
-		bool player_backend_exists = conf.exists("player_backend");
-		bool auth_backend_exists = conf.exists("auth_backend");
-
-		// player backend is not set, assume it's legacy file backend.
-		if (!player_backend_exists) {
-			// fall back to files
-			conf.set("player_backend", "files");
-			player_backend_name = "files";
-
-			if (!conf.updateConfigFile(conf_path.c_str())) {
-				errorstream << "ServerEnvironment::ServerEnvironment(): "
-						<< "Failed to update world.mt!" << std::endl;
-			}
-		} else {
-			conf.getNoEx("player_backend", player_backend_name);
-		}
-
-		// auth backend is not set, assume it's legacy file backend.
-		if (!auth_backend_exists) {
-			conf.set("auth_backend", "files");
-			auth_backend_name = "files";
-
-			if (!conf.updateConfigFile(conf_path.c_str())) {
-				errorstream << "ServerEnvironment::ServerEnvironment(): "
-						<< "Failed to update world.mt!" << std::endl;
-			}
-		} else {
-			conf.getNoEx("auth_backend", auth_backend_name);
-		}
+		player_backend_name = conf.getPlayerBackend();
+		auth_backend_name = conf.getAuthBackend();
 	}
 
 	if (player_backend_name == "files") {
@@ -2067,7 +2039,7 @@ bool ServerEnvironment::saveStaticToBlock(
 }
 
 PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
-		const std::string &savedir, const Settings &conf)
+		const std::string &savedir, const WorldSettings &conf)
 {
 
 	if (name == "sqlite3")
@@ -2077,9 +2049,7 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 		return new Database_Dummy();
 #if USE_POSTGRESQL
 	if (name == "postgresql") {
-		std::string connect_string;
-		conf.getNoEx("pgsql_player_connection", connect_string);
-		return new PlayerDatabasePostgreSQL(connect_string);
+		return new PlayerDatabasePostgreSQL(conf.getPlayerPostgresConnectionString());
 	}
 #endif
 	if (name == "files")
@@ -2092,14 +2062,13 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 		const Settings &cmd_args)
 {
 	std::string migrate_to = cmd_args.get("migrate-players");
-	Settings world_mt;
-	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
-	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+	WorldSettings world_mt(game_params.world_path);
+	if (!world_mt.load(true)) {
 		errorstream << "Cannot read world.mt!" << std::endl;
 		return false;
 	}
 
-	if (!world_mt.exists("player_backend")) {
+	if (!world_mt.isPlayerBackendDefined()) {
 		errorstream << "Please specify your current backend in world.mt:"
 			<< std::endl
 			<< "	player_backend = {files|sqlite3|postgresql}"
@@ -2107,7 +2076,7 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 		return false;
 	}
 
-	std::string backend = world_mt.get("player_backend");
+	std::string backend = world_mt.getPlayerBackend();
 	if (backend == migrate_to) {
 		errorstream << "Cannot migrate: new backend is same"
 			<< " as the old one" << std::endl;
@@ -2153,11 +2122,7 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 
 		actionstream << "Successfully migrated " << player_list.size() << " players"
 			<< std::endl;
-		world_mt.set("player_backend", migrate_to);
-		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
-			errorstream << "Failed to update world.mt!" << std::endl;
-		else
-			actionstream << "world.mt updated" << std::endl;
+		world_mt.setPlayerBackend(migrate_to, true);
 
 		// When migration is finished from file backend, remove players directory if empty
 		if (backend == "files") {
@@ -2176,7 +2141,7 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 }
 
 AuthDatabase *ServerEnvironment::openAuthDatabase(
-		const std::string &name, const std::string &savedir, const Settings &conf)
+		const std::string &name, const std::string &savedir, const WorldSettings &conf)
 {
 	if (name == "sqlite3")
 		return new AuthDatabaseSQLite3(savedir);
@@ -2191,19 +2156,13 @@ bool ServerEnvironment::migrateAuthDatabase(
 		const GameParams &game_params, const Settings &cmd_args)
 {
 	std::string migrate_to = cmd_args.get("migrate-auth");
-	Settings world_mt;
-	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
-	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+	WorldSettings world_mt(game_params.world_path);
+	if (!world_mt.load(true)) {
 		errorstream << "Cannot read world.mt!" << std::endl;
 		return false;
 	}
 
-	std::string backend = "files";
-	if (world_mt.exists("auth_backend"))
-		backend = world_mt.get("auth_backend");
-	else
-		warningstream << "No auth_backend found in world.mt, "
-				"assuming \"files\"." << std::endl;
+	std::string backend = world_mt.getAuthBackend();
 
 	if (backend == migrate_to) {
 		errorstream << "Cannot migrate: new backend is same"
@@ -2231,11 +2190,8 @@ bool ServerEnvironment::migrateAuthDatabase(
 
 		actionstream << "Successfully migrated " << names_list.size()
 				<< " auth entries" << std::endl;
-		world_mt.set("auth_backend", migrate_to);
-		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
-			errorstream << "Failed to update world.mt!" << std::endl;
-		else
-			actionstream << "world.mt updated" << std::endl;
+		world_mt.setAuthBackend(migrate_to, true);
+		
 
 		if (backend == "files") {
 			// special-case files migration:

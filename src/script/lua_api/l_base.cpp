@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/mods.h"
 #include "profiler.h"
 #include "server.h"
+#include "settings.h"
 #include <algorithm>
 #include <cmath>
 

@@ -120,6 +120,24 @@ Configuration file
 - A run-in-place build will look for the configuration file in
     `location_of_exe/../minetest.conf` and also `location_of_exe/../../minetest.conf`
 
+Configuration from environment variables
+----------------------------------------
+
+Minetest reads some environment variables to overwrite the configuration files.
+
+We currently support the following _world.mt_ overwrite variables:
+
+- WORLD_BACKEND: backend (default: `sqlite3`).
+- WORLD_AUTH_BACKEND: authentication backend (default: `sqlite3`).
+- WORLD_PLAYER_BACKEND: player backend (default: `sqlite3`).
+- WORLD_READONLY_BACKEND: readonly_backend flag.
+- WORLD_POSTGRESQL_CONNECTION: PostgreSQL connection string (applied on `postgresql` backend).
+- WORLD_PLAYER_POSTGRESQL_CONNECTION: PostgreSQL player DB connection string (applied on `postgresql`) auth backend.
+- WORLD_REDIS_ADDRESS: Redis address (applied on `redis` backend).
+- WORLD_REDIS_HASH: Redis hash (applied on `redis` backend).
+- WORLD_REDIS_PASSWORD: Redis password (if any, applied on `redis` backend).
+- WORLD_REDIS_PORT: Redis port (applied on `redis` backend)
+
 Command-line options
 --------------------
 - Use `--help`

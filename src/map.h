@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map_settings_manager.h"
 #include "debug.h"
 
-class Settings;
 class MapDatabase;
 class ClientMap;
 class MapSector;
@@ -46,6 +45,7 @@ class IGameDef;
 class IRollbackManager;
 class EmergeManager;
 class ServerEnvironment;
+class WorldSettings;
 struct BlockMakeData;
 
 /*
@@ -384,7 +384,7 @@ public:
 	/*
 		Database functions
 	*/
-	static MapDatabase *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
+	static MapDatabase *createDatabase(const std::string &name, const std::string &savedir, WorldSettings &conf);
 
 	// Call these before and after saving of blocks
 	void beginSave();

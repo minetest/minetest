@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "serialization.h"
 #include "nodemetadata.h"
-#include "settings.h"
 #include "log.h"
 #include "profiler.h"
 #include "nodedef.h"
@@ -45,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-dummy.h"
 #include "database/database-sqlite3.h"
 #include "script/scripting_server.h"
+#include "server/worldsettings.h"
 #include <deque>
 #include <queue>
 #if USE_LEVELDB
@@ -1202,20 +1202,15 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 	*/
 
 	// Determine which database backend to use
-	std::string conf_path = savedir + DIR_DELIM + "world.mt";
-	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if (!succeeded || !conf.exists("backend")) {
-		// fall back to sqlite3
-		conf.set("backend", "sqlite3");
+	WorldSettings conf(savedir);
+	conf.load();
+	dbase = createDatabase(conf.getMapBackend(), savedir, conf);
+	const std::string &ro_backend = conf.getReadOnlyBackend();
+	if (!ro_backend.empty()) {
+		dbase_ro = createDatabase(ro_backend, conf.getReadOnlyDir(), conf);
 	}
-	std::string backend = conf.get("backend");
-	dbase = createDatabase(backend, savedir, conf);
-	if (conf.exists("readonly_backend")) {
-		std::string readonly_dir = savedir + DIR_DELIM + "readonly";
-		dbase_ro = createDatabase(conf.get("readonly_backend"), readonly_dir, conf);
-	}
-	if (!conf.updateConfigFile(conf_path.c_str()))
+
+	if (!conf.updateConfigFile())
 		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
 
 	m_savedir = savedir;
@@ -1862,7 +1857,7 @@ void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 MapDatabase *ServerMap::createDatabase(
 	const std::string &name,
 	const std::string &savedir,
-	Settings &conf)
+	WorldSettings &conf)
 {
 	if (name == "sqlite3")
 		return new MapDatabaseSQLite3(savedir);
@@ -1878,9 +1873,7 @@ MapDatabase *ServerMap::createDatabase(
 	#endif
 	#if USE_POSTGRESQL
 	if (name == "postgresql") {
-		std::string connect_string;
-		conf.getNoEx("pgsql_connection", connect_string);
-		return new MapDatabasePostgreSQL(connect_string);
+		return new MapDatabasePostgreSQL(conf.getMapPostgreSQLConnectionString());
 	}
 	#endif
 

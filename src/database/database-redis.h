@@ -27,12 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "database.h"
 
-class Settings;
+class WorldSettings;
 
 class Database_Redis : public MapDatabase
 {
 public:
-	Database_Redis(Settings &conf);
+	Database_Redis(WorldSettings &conf);
 	~Database_Redis();
 
 	void beginSave();
