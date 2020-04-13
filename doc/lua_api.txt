@@ -2666,7 +2666,10 @@ Some types may inherit styles from parent types.
                      See background9[] documentation for more details
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
+    * content_offset - 2d vector, shifts the position of the button's content without resizing it.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * padding - rect, adds space between the edges of the button and the content. Defaults to
+                the same value as bgimg_middle.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
