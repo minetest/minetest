@@ -1316,7 +1316,7 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 
 		ContentFeatures &nodedef = m_content_features[id];
 
-		if ((texture_override.hasTarget(OverrideTarget::TOP)) != 0)
+		if (texture_override.hasTarget(OverrideTarget::TOP))
 			nodedef.tiledef[0].name = texture_override.texture;
 
 		if ((texture_override.hasTarget(OverrideTarget::BOTTOM)) != 0)

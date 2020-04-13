@@ -145,7 +145,7 @@ are placeholders intended to be overwritten by the game.
 Texture Overrides
 -----------------
 
-You can override the textures of a node or other item from a
+You can override the textures of nodes and items from a
 texture pack using texture overrides. To do this, create one or
 more files in a texture pack called override.txt
 
@@ -165,7 +165,7 @@ You can list multiple targets on one line as a comma-separated list:
 
 	default:tree top,bottom my_special_tree.png
 
-You can use ^ operators as usual:
+You can use texture modifiers, as usual:
 
 	default:dirt_with_grass sides default_stone.png^[brighten
 
