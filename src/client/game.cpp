@@ -1922,29 +1922,47 @@ void Game::processKeyInput()
 		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip();
+#if USE_SOUND
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		bool new_mute_sound = !g_settings->getBool("mute_sound");
-		g_settings->setBool("mute_sound", new_mute_sound);
-		if (new_mute_sound)
-			m_game_ui->showTranslatedStatusText("Sound muted");
-		else
-			m_game_ui->showTranslatedStatusText("Sound unmuted");
+		if (g_settings->getBool("enable_sound")) {
+			bool new_mute_sound = !g_settings->getBool("mute_sound");
+			g_settings->setBool("mute_sound", new_mute_sound);
+			if (new_mute_sound)
+				m_game_ui->showTranslatedStatusText("Sound muted");
+			else
+				m_game_ui->showTranslatedStatusText("Sound unmuted");
+		} else {
+			m_game_ui->showTranslatedStatusText("Sound system is disabled");
+		}
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
-		wchar_t buf[100];
-		g_settings->setFloat("sound_volume", new_volume);
-		const wchar_t *str = wgettext("Volume changed to %d%%");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		if (g_settings->getBool("enable_sound")) {
+			float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+			wchar_t buf[100];
+			g_settings->setFloat("sound_volume", new_volume);
+			const wchar_t *str = wgettext("Volume changed to %d%%");
+			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
+			delete[] str;
+			m_game_ui->showStatusText(buf);
+		} else {
+			m_game_ui->showTranslatedStatusText("Sound system is disabled");
+		}
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
-		wchar_t buf[100];
-		g_settings->setFloat("sound_volume", new_volume);
-		const wchar_t *str = wgettext("Volume changed to %d%%");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		if (g_settings->getBool("enable_sound")) {
+			float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+			wchar_t buf[100];
+			g_settings->setFloat("sound_volume", new_volume);
+			const wchar_t *str = wgettext("Volume changed to %d%%");
+			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
+			delete[] str;
+			m_game_ui->showStatusText(buf);
+		} else {
+			m_game_ui->showTranslatedStatusText("Sound system is disabled");
+		}
+#else
+	} else if (wasKeyDown(KeyType::MUTE) || wasKeyDown(KeyType::INC_VOLUME)
+			|| wasKeyDown(KeyType::DEC_VOLUME)) {
+		m_game_ui->showTranslatedStatusText("Sound system is not supported on this build");
+#endif
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
@@ -4162,8 +4180,12 @@ void Game::showPauseMenu()
 	}
 
 #ifndef __ANDROID__
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
-		<< strgettext("Sound Volume") << "]";
+#if USE_SOUND
+	if (g_settings->getBool("enable_sound")) {
+		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
+			<< strgettext("Sound Volume") << "]";
+	}
+#endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
 		<< strgettext("Change Keys")  << "]";
 #endif
