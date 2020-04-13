@@ -814,9 +814,11 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 			? defaultPressOffset
 			: core::vector2d<s32>(0));
 
-	core::rect<s32> childBounds(Padding.UpperLeftCorner + ContentOffset,
-			core::position2d<s32>(AbsoluteRect.getSize()) + ContentOffset
-			+ Padding.LowerRightCorner);
+	core::rect<s32> childBounds(
+				Padding.UpperLeftCorner.X + ContentOffset.X,
+				Padding.UpperLeftCorner.Y + ContentOffset.Y,
+				AbsoluteRect.getWidth() + Padding.LowerRightCorner.X + ContentOffset.X,
+				AbsoluteRect.getHeight() + Padding.LowerRightCorner.Y + ContentOffset.Y);
 
 	for(IGUIElement *child : getChildren())
 	{
