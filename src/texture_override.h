@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 
 //! Bitmask enum specifying what a texture override should apply to
-enum class OverrideTarget : u8 {
+enum class OverrideTarget : u8
+{
 	INVALID = 0,
 	TOP = 1 << 0,
 	BOTTOM = 1 << 1,
@@ -40,21 +41,23 @@ enum class OverrideTarget : u8 {
 	ITEM_TARGETS = INVENTORY | WIELD,
 };
 
-struct TextureOverride {
+struct TextureOverride
+{
 	std::string id;
 	std::string texture;
 	u8 target;
 
 	// Helper function for checking if an OverrideTarget is found in
 	// a TextureOverride without casting
-	inline bool hasTarget(const OverrideTarget& overrideTarget) const
+	inline bool hasTarget(OverrideTarget overrideTarget) const
 	{
 		return (target & static_cast<u8>(overrideTarget)) != 0;
 	}
 };
 
 //! Class that provides texture override information from a texture pack
-class TextureOverrideSource {
+class TextureOverrideSource
+{
 public:
 	TextureOverrideSource(std::string filepath);
 

@@ -98,7 +98,7 @@ std::vector<TextureOverride> TextureOverrideSource::getItemTextureOverrides()
 {
 	std::vector<TextureOverride> found_overrides;
 
-	for (const TextureOverride& texture_override : m_overrides) {
+	for (const TextureOverride &texture_override : m_overrides) {
 		if (texture_override.hasTarget(OverrideTarget::ITEM_TARGETS))
 			found_overrides.push_back(texture_override);
 	}
@@ -111,7 +111,7 @@ std::vector<TextureOverride> TextureOverrideSource::getNodeTileOverrides()
 {
 	std::vector<TextureOverride> found_overrides;
 
-	for (const TextureOverride& texture_override : m_overrides) {
+	for (const TextureOverride &texture_override : m_overrides) {
 		if (texture_override.hasTarget(OverrideTarget::ALL_FACES))
 			found_overrides.push_back(texture_override);
 	}
