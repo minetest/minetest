@@ -826,7 +826,8 @@ void GenericCAO::setNodeLight(u8 light)
 	video::SColor color(255, light, light, light);
 
 	if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
-		m_wield_meshnode->setNodeLightColor(color);
+		if (m_wield_meshnode)
+			m_wield_meshnode->setNodeLightColor(color);
 		return;
 	}
 
