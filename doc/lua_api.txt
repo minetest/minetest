@@ -6735,6 +6735,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         wield_scale = {x = 1, y = 1, z = 1},
 
+        -- The default value of 99 may be configured by
+        -- users using the setting "default_stack_max"
         stack_max = 99,
 
         range = 4.0,

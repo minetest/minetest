@@ -1079,6 +1079,10 @@ map-dir (Map directory) path
 #    Setting it to -1 disables the feature.
 item_entity_ttl (Item entity TTL) int 900
 
+#    Specifies the default stack size of nodes, items and tools.
+#    Note that mods or games may explicitly set a stack for certain (or all) items.
+default_stack_max (Default stack size) int 99
+
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
 
