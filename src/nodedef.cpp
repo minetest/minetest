@@ -1319,19 +1319,19 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 		if (texture_override.hasTarget(OverrideTarget::TOP))
 			nodedef.tiledef[0].name = texture_override.texture;
 
-		if ((texture_override.hasTarget(OverrideTarget::BOTTOM)) != 0)
+		if (texture_override.hasTarget(OverrideTarget::BOTTOM))
 			nodedef.tiledef[1].name = texture_override.texture;
 
-		if ((texture_override.hasTarget(OverrideTarget::RIGHT)) != 0)
+		if (texture_override.hasTarget(OverrideTarget::RIGHT))
 			nodedef.tiledef[2].name = texture_override.texture;
 
-		if ((texture_override.hasTarget(OverrideTarget::LEFT)) != 0)
+		if (texture_override.hasTarget(OverrideTarget::LEFT))
 			nodedef.tiledef[3].name = texture_override.texture;
 
-		if ((texture_override.hasTarget(OverrideTarget::BACK)) != 0)
+		if (texture_override.hasTarget(OverrideTarget::BACK))
 			nodedef.tiledef[4].name = texture_override.texture;
 
-		if ((texture_override.hasTarget(OverrideTarget::FRONT)) != 0)
+		if (texture_override.hasTarget(OverrideTarget::FRONT))
 			nodedef.tiledef[5].name = texture_override.texture;
 	}
 }
