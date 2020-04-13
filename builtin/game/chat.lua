@@ -308,9 +308,7 @@ core.register_chatcommand("setpassword", {
 		if not toname then
 			return false, S("Name field required.")
 		end
-		local act_str_you = "?"
-		local act_str_log = "?"
-		local act_str_return = "?"
+		local act_str_you, act_str_log, act_str_return
 		if not raw_password then
 			core.set_player_password(toname, "")
 			act_str_you = S("Your password was cleared by @1.", name)
