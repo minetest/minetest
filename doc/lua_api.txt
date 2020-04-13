@@ -2102,6 +2102,26 @@ Elements
 * End of a container, following elements are no longer relative to this
   container.
 
+### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
+
+* Start of a scroll_container block. All contained elements will ...
+  * take the scroll_container coordinate as position origin,
+  * be additionally moved by the current value of the scrollbar with the name
+    `scrollbar name` times `scroll factor` along the orientation `orientation` and
+  * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
+* `orientation`: possible values are `vertical` and `horizontal`.
+* `scroll factor`: optional, defaults to `0.1`.
+* Nesting is possible.
+* Some elements might work a little different if they are in a scroll_container.
+* Note: If you want the scroll_container to actually work, you also need to add a
+  scrollbar element with the specified name. Furthermore, it is highly recommended
+  to use a scrollbaroptions element on this scrollbar.
+
+### `scroll_container_end[]`
+
+* End of a scroll_container, following elements are no longer bound to this
+  container.
+
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
 * Show an inventory list if it has been sent to the client. Nothing will

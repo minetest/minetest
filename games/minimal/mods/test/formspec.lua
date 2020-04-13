@@ -1,5 +1,35 @@
 local color = minetest.colorize
 
+local hypertext = minetest.formspec_escape([[
+	<global halign=justify valign=center background=#CCF color=#444 actioncolor=darkblue margin=10>
+	<center><bigger>Furnace</bigger></center>
+	<style color=black>Furnaces</style> are <action name="crafting">crafted</action> and used by the player for the purpose of cooking food and <action name="smelting">smelting</action> various items.
+	<item name=default:furnace float=right width=128 rotate=yes>
+	<style color=black>Type:</style> Solid block
+	<style color=black>Drops:</style> Itself
+	<style color=black>Physics:</style> No
+	<style color=black>Luminance:</style> Inactive:No Active:Yes (8)
+	<style color=black>Flammable:</style> No
+	<style color=black>Generated:</style> No
+	<style color=black>Renewable:</style> Yes
+	<style color=black>Stackable:</style> Yes (99)
+	<style color=black>Itemstring:</style> default:furnace default:furnace_active
+	<big>Usage</big>
+	The furnace menu can be accessed by <action name="using">using</action> the furnace.
+	The furnace has 3 <action name="inventory">inventories</action>: An input slot, a fuel slot and 4 output slots. The fire in the furnace will automatically start when there is a smeltable item in the input slot and a fuel in the fuel slot.
+	As long as the fire is on, the furnace will smelt any smeltable item in the input slot, one by one, until it is empty. When the fire goes off, it will smelt the next item until there are no smeltable items and no fuel items left.
+	The current stage of cooking can be seen by <action name="pointing">pointing</action> the furnace or by viewing the furnace menu. In the furnace menu, the flame symbol roughly shows the remaining burning time. The arrow symbol shows the progress of the current smelting process.
+	<big>Renewing</big>
+	Furnaces can be crafted from e.g. <action name="default:cobblestone">cobblestone</action>, a renewable resource.
+	<big>Crafting</big>
+	Sorry no way to display crafting yet in formspec pages.
+	<big>Fuel</big>
+	See <action name="smelting">Smelting</action> for a list of furnace fuels.
+	<big>Recipes</big>
+	See the <action name="smelting">Smelting</action> page.
+]])
+
+
 local clip_fs = [[
 	style_type[label,button,image_button,item_image_button,
 			tabheader,scrollbar,table,animated_image
@@ -188,13 +218,48 @@ Number]
 			animated_image[3,4.25;1,1;;test_animation.png;4;0;3]
 			animated_image[5.5,0.5;5,2;;test_animation.png;4;100]
 			animated_image[5.5,2.75;5,2;;test_animation.jpg;4;100]
-		]]
+		]],
+
+		"formspec_version[3]"..
+		"size[12,12]"..
+		"button[8.5,1;1,1;bla;Bla]"..
+		"box[1,1;8,6;#00aa]"..
+		"scroll_container[1,1;8,6;scrbar;vertical]"..
+			"button[0,1;1,1;lorem;Lorem]"..
+			"button[0,10;1,1;ipsum;Ipsum]"..
+			"pwdfield[2,2;1,1;lorem2;Lorem]"..
+			"list[current_player;main;4,4;1,5;]"..
+			"box[2,5;3,2;#ffff00]"..
+			"image[1,10;3,2;bubble.png]"..
+			"image[3,1;bubble.png]"..
+			"item_image[2,6;3,2;default:mese]"..
+			"label[2,15;bla Bli\nfoo bar]"..
+			"item_image_button[2,3;1,1;default:dirt_with_grass;itemimagebutton;ItemImageButton]"..
+			"tooltip[0,11;3,2;Buz;#f00;#000]"..
+			"box[0,11;3,2;#00ff00]"..
+			"hypertext[3,13;3,3;;" .. hypertext .. "]" ..
+			"container[0,18]"..
+				"box[1,2;3,2;#0a0a]"..
+				"scroll_container[1,2;3,2;scrbar2;horizontal;0.06]"..
+					"button[0,0;6,1;butnest;Nest]"..
+					"label[10,0.5;nest]"..
+				"scroll_container_end[]"..
+				"scrollbar[1,0;3.5,0.3;horizontal;scrbar2;0]"..
+			"container_end[]"..
+			"dropdown[0,6;2;hmdrpdwn;apple,bulb;1]"..
+			"image_button[0,4;2,2;bubble.png;bubblebutton;bbbbtt;false;true;heart.png]"..
+			"box[1,22.5;4,1;#a00a]"..
+		"scroll_container_end[]"..
+		"scrollbaroptions[max=170]".. -- lowest seen pos is: 0.1*170+6=23 (factor*max+height)
+		"scrollbar[7.5,0;0.3,4;vertical;scrbar;0]"..
+		"scrollbar[8,0;0.3,4;vertical;scrbarhmmm;0]"..
+		"dropdown[0,6;2;hmdrpdwnnn;apple,bulb;1]",
 }
 
 local function show_test_formspec(pname, page_id)
 	page_id = page_id or 2
 
-	local fs = pages[page_id] .. "tabheader[0,0;6,0.65;maintabs;Real Coord,Styles,Noclip,MiscEle;" .. page_id .. ";false;false]"
+	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,MiscEle,Scroll Container;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "test:formspec", fs)
 end
