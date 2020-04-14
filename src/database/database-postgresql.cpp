@@ -301,7 +301,7 @@ void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	int numrows = PQntuples(results);
 
 	for (int row = 0; row < numrows; ++row)
-		dst.push_back(pg_to_v3s16(results, 0, 0));
+		dst.push_back(pg_to_v3s16(results, row, 0));
 
 	PQclear(results);
 }
