@@ -73,7 +73,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	lua_remove(L, -2); // Remove core
 
 	// Get registered_abms[m_id]
-	lua_pushnumber(L, m_id);
+	lua_pushinteger(L, m_id);
 	lua_gettable(L, -2);
 	if(lua_isnil(L, -1))
 		FATAL_ERROR("");
@@ -116,7 +116,7 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	lua_remove(L, -2); // Remove core
 
 	// Get registered_lbms[m_id]
-	lua_pushnumber(L, m_id);
+	lua_pushinteger(L, m_id);
 	lua_gettable(L, -2);
 	FATAL_ERROR_IF(lua_isnil(L, -1), "Entry with given id not found in registered_lbms table");
 	lua_remove(L, -2); // Remove registered_lbms
@@ -550,7 +550,7 @@ int ModApiEnvMod::l_find_nodes_with_meta(lua_State *L)
 	std::vector<v3s16> positions = env->getMap().findNodesWithMetadata(
 		check_v3s16(L, 1), check_v3s16(L, 2));
 
-	lua_newtable(L);
+	lua_createtable(L, positions.size(), 0);
 	for (size_t i = 0; i != positions.size(); i++) {
 		push_v3s16(L, positions[i]);
 		lua_rawseti(L, -2, i + 1);
@@ -1197,7 +1197,7 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 		searchdistance, max_jump, max_drop, algo);
 
 	if (!path.empty()) {
-		lua_newtable(L);
+		lua_createtable(L, path.size(), 0);
 		int top = lua_gettop(L);
 		unsigned int index = 1;
 		for (const v3s16 &i : path) {
