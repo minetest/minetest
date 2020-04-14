@@ -423,6 +423,7 @@ set(common_SRCS
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
+	texture_override.cpp
 	tileanimation.cpp
 	tool.cpp
 	translation.cpp

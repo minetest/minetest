@@ -423,6 +423,7 @@ src/subgame.cpp
 src/subgame.h
 src/terminal_chat_console.cpp
 src/terminal_chat_console.h
+src/texture_override.cpp
 src/threading/atomic.h
 src/threading/event.cpp
 src/threading/mutex_auto_lock.h

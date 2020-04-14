@@ -373,8 +373,11 @@ void Server::init()
 	std::vector<std::string> paths;
 	fs::GetRecursiveDirs(paths, g_settings->get("texture_path"));
 	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
-	for (const std::string &path : paths)
-		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
+	for (const std::string &path : paths) {
+		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
+		m_nodedef->applyTextureOverrides(override_source.getNodeTileOverrides());
+		m_itemdef->applyTextureOverrides(override_source.getItemTextureOverrides());
+	}
 
 	m_nodedef->setNodeRegistrationStatus(true);
 

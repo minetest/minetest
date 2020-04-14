@@ -422,6 +422,25 @@ public:
 		return get(stack.name).color;
 	}
 #endif
+	void applyTextureOverrides(const std::vector<TextureOverride> &overrides)
+	{
+		infostream << "ItemDefManager::applyTextureOverrides(): Applying "
+			"overrides to textures" << std::endl;
+
+		for (const TextureOverride& texture_override : overrides) {
+			if (m_item_definitions.find(texture_override.id) == m_item_definitions.end()) {
+				continue; // Ignore unknown item
+			}
+
+			ItemDefinition* itemdef = m_item_definitions[texture_override.id];
+
+			if (texture_override.hasTarget(OverrideTarget::INVENTORY))
+				itemdef->inventory_image = texture_override.texture;
+
+			if (texture_override.hasTarget(OverrideTarget::WIELD))
+				itemdef->wield_image = texture_override.texture;
+		}
+	}
 	void clear()
 	{
 		for(std::map<std::string, ItemDefinition*>::const_iterator

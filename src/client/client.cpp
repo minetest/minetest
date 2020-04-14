@@ -1742,8 +1742,11 @@ void Client::afterContentReceived()
 	text = wgettext("Initializing nodes...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
-	for (const auto &path : getTextureDirs())
-		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
+	for (const auto &path : getTextureDirs()) {
+		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
+		m_nodedef->applyTextureOverrides(override_source.getNodeTileOverrides());
+		m_itemdef->applyTextureOverrides(override_source.getItemTextureOverrides());
+	}
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
 	delete[] text;
