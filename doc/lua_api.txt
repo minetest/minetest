@@ -4147,6 +4147,8 @@ Utilities
           area_store_persistent_ids = true,
           -- Whether minetest.find_path is functional (5.2.0)
           pathfinder_works = true,
+          -- Whether Collision info is available to an objects' on_step (5.3.0)
+          object_step_has_moveresult = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -6579,7 +6581,10 @@ Used by `minetest.register_entity`.
 
         on_activate = function(self, staticdata, dtime_s),
 
-        on_step = function(self, dtime),
+        on_step = function(self, dtime, moveresult),
+        -- Called every server step
+        -- dtime: Elapsed time
+        -- moveresult: Table with collision info (only available if physical=true)
 
         on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir),
 
@@ -6592,6 +6597,24 @@ Used by `minetest.register_entity`.
         _custom_field = whatever,
         -- You can define arbitrary member variables here (see Item definition
         -- for more info) by using a '_' prefix
+    }
+
+Collision info passed to `on_step`:
+
+    {
+        touching_ground = boolean,
+        collides = boolean,
+        standing_on_object = boolean,
+        collisions = {
+            {
+                type = string, -- "node" or "object",
+                axis = string, -- "x", "y" or "z"
+                node_pos = vector, -- if type is "node"
+                old_speed = vector,
+                new_speed = vector,
+            },
+            ...
+        }
     }
 
 ABM (ActiveBlockModifier) definition
