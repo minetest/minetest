@@ -57,7 +57,7 @@ describe("vector", function()
 			assert.True(almost_equal({x = -1, y = 0, z = 0},
 				vector.rotate_around_axis({x = 1, y = 0, z = 0}, {x = 0, y = 1, z = 0}, math.pi)))
 			assert.True(almost_equal({x = 0, y = 1, z = 0},
-				vector.rotate_around_axis({x = 0, y = 0, z = 1}, {x = 1, y = 0, z = 0}, math.pi / 2)))
+				vector.rotate_around_axis({x = 0, y = 0, z = -1}, {x = 1, y = 0, z = 0}, math.pi / 2)))
 			assert.True(almost_equal({x = 4, y = 1, z = 1},
 				vector.rotate_around_axis({x = 4, y = 1, z = 1}, {x = 4, y = 1, z = 1}, math.pi / 6)))
 		end)
@@ -92,30 +92,30 @@ describe("vector", function()
 			rotated3 = vector.rotate_around_axis(rotated3, axis3, -math.pi / 2)
 			assert.True(almost_equal(rotate3, rotated3))
 		end)
-		it("is_left_handed", function()
+		it("is left handed", function()
 			local v_before1 = {x = 0, y = 1, z = -1}
 			local v_after1 = vector.rotate_around_axis(v_before1, {x = 1, y = 0, z = 0}, math.pi / 4)
-			assert.True(almost_equal(vector.normalize(vector.cross(v_after1, v_before1)), {x = 1, y = 0, z = 0}))
+			assert.True(almost_equal(vector.normalize(vector.cross(v_before1, v_after1)), {x = 1, y = 0, z = 0}))
 
 			local v_before2 = {x = 0, y = 3, z = 4}
 			local v_after2 = vector.rotate_around_axis(v_before2, {x = 1, y = 0, z = 0},  2 * math.pi / 5)
-			assert.True(almost_equal(vector.normalize(vector.cross(v_after2, v_before2)), {x = 1, y = 0, z = 0}))
+			assert.True(almost_equal(vector.normalize(vector.cross(v_before2, v_after2)), {x = 1, y = 0, z = 0}))
 
 			local v_before3 = {x = 1, y = 0, z = -1}
 			local v_after3 = vector.rotate_around_axis(v_before3, {x = 0, y = 1, z = 0}, math.pi / 4)
-			assert.True(almost_equal(vector.normalize(vector.cross(v_after3, v_before3)), {x = 0, y = 1, z = 0}))
+			assert.True(almost_equal(vector.normalize(vector.cross(v_before3, v_after3)), {x = 0, y = 1, z = 0}))
 
 			local v_before4 = {x = 3, y = 0, z = 4}
 			local v_after4 = vector.rotate_around_axis(v_before4, {x = 0, y = 1, z = 0}, 2 * math.pi / 5)
-			assert.True(almost_equal(vector.normalize(vector.cross(v_after4, v_before4)), {x = 0, y = 1, z = 0}))
+			assert.True(almost_equal(vector.normalize(vector.cross(v_before4, v_after4)), {x = 0, y = 1, z = 0}))
 
 			local v_before5 = {x = 1, y = -1, z = 0}
 			local v_after5 = vector.rotate_around_axis(v_before5, {x = 0, y = 0, z = 1}, math.pi / 4)
-			assert.True(almost_equal(vector.normalize(vector.cross(v_after5, v_before5)), {x = 0, y = 0, z = 1}))
+			assert.True(almost_equal(vector.normalize(vector.cross(v_before5, v_after5)), {x = 0, y = 0, z = 1}))
 
 			local v_before6 = {x = 3, y = 4, z = 0}
 			local v_after6 = vector.rotate_around_axis(v_before6, {x = 0, y = 0, z = 1}, 2 * math.pi / 5)
-			assert.True(almost_equal(vector.normalize(vector.cross(v_after6, v_before6)), {x = 0, y = 0, z = 1}))
+			assert.True(almost_equal(vector.normalize(vector.cross(v_before6, v_after6)), {x = 0, y = 0, z = 1}))
 		end)
 	end)
 
@@ -128,7 +128,7 @@ describe("vector", function()
 			assert.True(almost_equal({x = 1, y = 0, z = 0},
 				vector.rotate({x = 1, y = 0, z = 0}, {x = math.pi / 123, y = 0, z = 0})))
 		end)
-		it("is_left_handed", function()
+		it("is counterclockwise", function()
 			local v_before1 = {x = 0, y = 1, z = -1}
 			local v_after1 = vector.rotate(v_before1, {x = math.pi / 4, y = 0, z = 0})
 			assert.True(almost_equal(vector.normalize(vector.cross(v_after1, v_before1)), {x = 1, y = 0, z = 0}))

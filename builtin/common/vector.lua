@@ -163,11 +163,9 @@ function vector.rotate_around_axis(v, axis, angle)
 	local sinangle = sin(angle)
 	axis = vector.normalize(axis)
 	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
-	--this is a version of the Rodrigues rotation formula adjusted for
-	--performance and left handed coordinate system
 	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
 	return vector.add(
-		vector.multiply(vector.cross(v, axis), sinangle),
+		vector.multiply(vector.cross(axis, v), sinangle),
 		vector.add(
 		vector.multiply(vector.subtract(v, dot_axis), cosangle),
 		dot_axis
@@ -230,7 +228,7 @@ function vector.directions_to_rotation(forward, up)
 	rot.z = vector.angle(forwup, up)
 	--if 'up' rotated by rot.z is equal to forwup, then roll = -rot.z, else roll = rot.z
 	--we don't use vector.equals for this comparison because of floating point rounding errors
-	if vector.distance(vector.rotate_around_axis(up, forward, rot.z), forwup) < 0.0000000000001 then
+	if vector.distance(vector.rotate_around_axis(up, forward, rot.z), forwup) > 0.0000000000001 then
 		rot.z = -rot.z
 	end
 	return rot
