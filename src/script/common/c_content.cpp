@@ -1671,10 +1671,10 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_pushvalue(L, nullindex);
 			break;
 		case Json::intValue:
-			lua_pushinteger(L, value.asInt());
+			lua_pushinteger(L, value.asLargestInt());
 			break;
 		case Json::uintValue:
-			lua_pushinteger(L, value.asUInt());
+			lua_pushinteger(L, value.asLargestUInt());
 			break;
 		case Json::realValue:
 			lua_pushnumber(L, value.asDouble());
@@ -1700,7 +1700,7 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_createtable(L, 0, value.size());
 			for (Json::Value::const_iterator it = value.begin();
 					it != value.end(); ++it) {
-#ifndef JSONCPP_STRING
+#if !defined(JSONCPP_STRING) && (JSONCPP_VERSION_MAJOR < 1 || JSONCPP_VERSION_MINOR < 9)
 				const char *str = it.memberName();
 				lua_pushstring(L, str ? str : "");
 #else
