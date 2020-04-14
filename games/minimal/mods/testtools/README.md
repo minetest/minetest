@@ -60,8 +60,8 @@ Usage:
 * Punch object to open a formspec that allows you to view and edit properties
 * Punch air to edit properties of your own player object
 
-To edit a property, select it in the list, enter a new value and select a data type (boolean, string, number).
-Note that tables are not supported yet.
+To edit a property, select it in the list, enter a new value (in Lua syntax)
+and hit “Submit”.
 
 ## Object Attacher
 Allows you to attach an object to another one.

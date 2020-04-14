@@ -23,8 +23,11 @@ end
 
 -- Callback test entity (all callbacks except on_step)
 minetest.register_entity("testentities:callback", {
-	visual = "upright_sprite",
-	textures = { "testentities_callback.png" },
+	initial_properties = {
+		visual = "upright_sprite",
+		textures = { "testentities_callback.png" },
+	},
+
 	on_activate = function(self, staticdata, dtime_s)
 		message("Callback entity: on_activate! pos="..spos(self).."; dtime_s="..dtime_s)
 	end,

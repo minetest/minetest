@@ -4,8 +4,13 @@ local F = minetest.formspec_escape
 -- TODO: Add a Node Metadata tool
 
 local function check_priv(player, priv)
-	-- Tools don't need any privs in the test game
-	return true
+	if priv == "server" then
+		local privs = minetest.get_player_privs(player:get_player_name())
+		return privs.server
+	else
+		-- Ignore other priv requirements
+		return true
+	end
 end
 
 -- Param 2 Tool: Set param2 value of tools
@@ -410,13 +415,9 @@ minetest.register_tool("testtools:entity_spawner", {
 	end,
 })
 
-local function prop_to_string(property, use_quotes)
+local function prop_to_string(property)
 	if type(property) == "string" then
-		if use_quotes then
-			return "\"" .. property .. "\""
-		else
-			return property
-		end
+		return "\"" .. property .. "\""
 	elseif type(property) == "table" then
 		return tostring(dump(property)):gsub("\n", "")
 	else
@@ -442,7 +443,7 @@ local function get_object_properties_form(obj, playername)
 		local v = props[k]
 		local newline = ""
 		newline = k .. " = "
-		newline = newline .. prop_to_string(v, true)
+		newline = newline .. prop_to_string(v)
 		str = str .. F(newline)
 		if p < #proplist then
 			str = str .. ","
@@ -452,12 +453,14 @@ local function get_object_properties_form(obj, playername)
 	return str
 end
 
+local editor_formspec_selindex = {}
+
 local editor_formspec = function(playername, obj, value, sel)
 	if not value then
 		value = ""
 	end
 	if not sel then
-		sel = "0"
+		sel = ""
 	end
 	local list = get_object_properties_form(obj, playername)
 	local title
@@ -471,14 +474,11 @@ local editor_formspec = function(playername, obj, value, sel)
 		"size[9,9]"..
 		"label[0,0;"..F(title).."]"..
 		"textlist[0,0.5;9,7.5;object_props;"..list..";"..sel..";false]"..
-		"field[0.2,8.75;6,1;value;"..F(S("Value"))..";"..F(value).."]"..
-		"button[6,8.5;1,1;submit_boolean;"..F(S("Bool")).."]"..
-		"button[7,8.5;1,1;submit_string;"..F(S("Str")).."]"..
-		"button[8,8.5;1,1;submit_number;"..F(S("Num")).."]"
+		"field[0.2,8.75;8,1;value;"..F(S("Value"))..";"..F(value).."]"..
+		"button[8,8.5;1,1;submit;"..F(S("Submit")).."]"
 	)
 end
 
--- TODO: Allow editing tables
 minetest.register_tool("testtools:object_editor", {
 	description = S("Object Property Editor"),
 	inventory_image = "testtools_object_editor.png",
@@ -489,14 +489,29 @@ minetest.register_tool("testtools:object_editor", {
 		end
 		if user and user:is_player() then
 			local name = user:get_player_name()
+
 			if pointed_thing.type == "object" then
 				selected_objects[name] = pointed_thing.ref
-				editor_formspec(name, pointed_thing.ref)
-			-- Use on yourself if pointing nothing
 			elseif pointed_thing.type == "nothing" then
+				-- Use on yourself if pointing nothing
 				selected_objects[name] = user
-				editor_formspec(name, user)
+			else
+				-- Unsupported pointed thing
+				return
 			end
+
+			local sel = editor_formspec_selindex[name]
+			local val
+			if selected_objects[name] and selected_objects[name]:get_properties() then
+				local props = selected_objects[name]:get_properties()
+				local keys = property_formspec_data[name]
+				if property_formspec_index[name] and props then
+					local key = keys[property_formspec_index[name]]
+					val = prop_to_string(props[key])
+				end
+			end
+
+			editor_formspec(name, selected_objects[name], val, sel)
 		end
 	end,
 })
@@ -633,6 +648,37 @@ minetest.register_tool("testtools:object_attacher", {
 	end,
 })
 
+-- Use loadstring to parse param as a Lua value
+local function use_loadstring(param, player)
+	-- For security reasons, require 'server' priv, just in case
+	-- someone is actually crazy enough to run this on a public server.
+	if not check_priv(player, "server") then
+		return false, "You need 'server' privilege to change object properties!"
+	end
+	if not param then
+		return false, "Failed: parameter is nil"
+	end
+	--[[ DANGER ZONE ]]
+	-- Interpret string as Lua value
+	local func, errormsg = loadstring("return (" .. param .. ")")
+	if not func then
+		return false, "Failed: " .. errormsg
+	end
+
+	-- Apply sandbox here using setfenv
+	setfenv(func, {})
+
+	-- Run it
+	local good, errOrResult = pcall(func)
+	if not good then
+		-- A Lua error was thrown
+		return false, "Failed: " .. errOrResult
+	end
+
+	-- errOrResult will be the value
+	return true, errOrResult
+end
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if not (player and player:is_player()) then
 		return
@@ -672,11 +718,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 					return
 				end
 				local key = keys[property_formspec_index[name]]
+				editor_formspec_selindex[name] = expl.index
 				editor_formspec(name, selected_objects[name], prop_to_string(props[key]), expl.index)
 				return
 			end
 		end
-		if fields.submit_boolean or fields.submit_string or fields.submit_number then
+		if fields.submit then
 			local props = selected_objects[name]:get_properties()
 			local keys = property_formspec_data[name]
 			if (not property_formspec_index[name]) or (not props) then
@@ -686,24 +733,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if not key then
 				return
 			end
-			if fields.submit_boolean then
-				if fields.value == "true" then
-					props[key] = true
-				elseif fields.value == "false" then
-					props[key] = false
-				else
-					return
-				end
-			elseif fields.submit_number then
-				props[key] = tonumber(fields.value)
-				if type(props[key]) ~= "number" then
-					return
-				end
+			local success, str = use_loadstring(fields.value, player)
+			if success then
+				props[key] = str
 			else
-				props[key] = fields.value
+				minetest.chat_send_player(name, str)
+				return
 			end
 			selected_objects[name]:set_properties(props)
-			editor_formspec(name, selected_objects[name], prop_to_string(props[key]))
+			local sel = editor_formspec_selindex[name]
+			editor_formspec(name, selected_objects[name], prop_to_string(props[key]), sel)
 			return
 		end
 	end

@@ -158,7 +158,10 @@ local style_fs = [[
 	style[one_btn13;border=false]
 	item_image_button[1.25,8.35;1,1;testformspec:item;one_btn13;NoBor]
 
-	style[one_btn14;border=false;bgimg=testformspec_bg.png;bgimg_hovered=testformspec_bg_hovered.png;bgimg_pressed=testformspec_bg_pressed.png;fgimg=testformspec_button_image.png;fgimg_hovered=testformspec_hovered.png;fgimg_pressed=testformspec_pressed.png]
+	style[one_btn14;border=false;bgimg=testformspec_bg.png;fgimg=testformspec_button_image.png]
+	style[one_btn14:hovered;bgimg=testformspec_bg_hovered.png;fgimg=testformspec_hovered.png;textcolor=yellow]
+	style[one_btn14:pressed;bgimg=testformspec_bg_pressed.png;fgimg=testformspec_pressed.png;textcolor=blue]
+	style[one_btn14:hovered+pressed;textcolor=purple]
 	image_button[0,9.6;1,1;testformspec_button_image.png;one_btn14;Bg]
 
 	style[one_btn15;border=false;bgimg=testformspec_bg.png;bgimg_hovered=testformspec_bg_hovered.png;bgimg_pressed=testformspec_bg_pressed.png]
@@ -190,6 +193,40 @@ local style_fs = [[
 
 	container_end[]
 ]]
+
+local scroll_fs =
+	"button[8.5,1;4,1;outside;Outside of container]"..
+	"box[1,1;8,6;#00aa]"..
+	"scroll_container[1,1;8,6;scrbar;vertical]"..
+		"button[0,1;1,1;lorem;Lorem]"..
+		"button[0,10;1,1;ipsum;Ipsum]"..
+		"pwdfield[2,2;1,1;lorem2;Lorem]"..
+		"list[current_player;main;4,4;1,5;]"..
+		"box[2,5;3,2;#ffff00]"..
+		"image[1,10;3,2;testformspec_item.png]"..
+		"image[3,1;testformspec_item.png]"..
+		"item_image[2,6;3,2;testformspec:node]"..
+		"label[2,15;bla Bli\nfoo bar]"..
+		"item_image_button[2,3;1,1;testformspec:node;itemimagebutton;ItemImageButton]"..
+		"tooltip[0,11;3,2;Buz;#f00;#000]"..
+		"box[0,11;3,2;#00ff00]"..
+		"hypertext[3,13;3,3;;" .. hypertext_basic .. "]" ..
+		"container[0,18]"..
+			"box[1,2;3,2;#0a0a]"..
+			"scroll_container[1,2;3,2;scrbar2;horizontal;0.06]"..
+				"button[0,0;6,1;butnest;Nest]"..
+				"label[10,0.5;nest]"..
+			"scroll_container_end[]"..
+			"scrollbar[1,0;3.5,0.3;horizontal;scrbar2;0]"..
+		"container_end[]"..
+		"dropdown[0,6;2;hmdrpdwn;apple,bulb;1]"..
+		"image_button[0,4;2,2;testformspec_button_image.png;imagebutton;bbbbtt;false;true;testformspec_pressed.png]"..
+		"box[1,22.5;4,1;#a00a]"..
+	"scroll_container_end[]"..
+	"scrollbaroptions[max=170]".. -- lowest seen pos is: 0.1*170+6=23 (factor*max+height)
+	"scrollbar[7.5,0;0.3,4;vertical;scrbar;0]"..
+	"scrollbar[8,0;0.3,4;vertical;scrbarhmmm;0]"..
+	"dropdown[0,6;2;hmdrpdwnnn;Outside,of,container;1]"
 
 --style_type[label;textcolor=green]
 --label[0,0;Green]
@@ -290,13 +327,17 @@ Number]
 			animated_image[3,4.25;1,1;;testformspec_animation.png;4;0;3]
 			animated_image[5.5,0.5;5,2;;testformspec_animation.png;4;100]
 			animated_image[5.5,2.75;5,2;;testformspec_animation.jpg;4;100]
-		]]
+		]],
+
+	-- Scroll containers
+		"formspec_version[3]size[12,13]" ..
+		scroll_fs,
 }
 
 local function show_test_formspec(pname, page_id)
 	page_id = page_id or 2
 
-	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Anim;" .. page_id .. ";false;false]"
+	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Anim,ScrollC;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end
