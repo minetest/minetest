@@ -123,14 +123,7 @@ int ObjectRef::l_get_pos(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if (co == NULL) return 0;
-	v3f pos = co->getBasePosition() / BS;
-	lua_newtable(L);
-	lua_pushnumber(L, pos.X);
-	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, pos.Y);
-	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, pos.Z);
-	lua_setfield(L, -2, "z");
+	push_v3f(L, co->getBasePosition() / BS);
 	return 1;
 }
 
