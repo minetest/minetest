@@ -1051,7 +1051,21 @@ int ObjectRef::l_get_luaentity(lua_State *L)
 }
 
 /* Player-only */
+// has_priv(self)
+int ObjectRef::l_has_priv(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
 
+	std::string priv = readParam<std::string>(L, -1);
+
+	Server *server = getServer(L);
+	lua_pushboolean(L, server->checkPriv(player->getName(), priv));
+	return 1;
+}
 // is_player_connected(self)
 int ObjectRef::l_is_player_connected(lua_State *L)
 {
@@ -2295,6 +2309,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_entity_name),
 	luamethod(ObjectRef, get_luaentity),
 	// Player-only
+	luamethod(ObjectRef, has_priv),
 	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, is_player_connected),
 	luamethod(ObjectRef, get_player_name),

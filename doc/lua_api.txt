@@ -4509,6 +4509,10 @@ Authentication
     * `player_or_name`: Either a Player object or the name of a player.
     * `...` is either a list of strings, e.g. `"priva", "privb"` or
       a table, e.g. `{ priva = true, privb = true }`.
+* `player:has_priv(priv_name)`:
+	* The simpler solution to check if player has a single privilege.
+	* Returns true if player has the privilege "priv_name".
+	* Returns nil if object is not a player reference.
 
 * `minetest.check_password_entry(name, entry, password)`
     * Returns true if the "password entry" for a player with name matches given

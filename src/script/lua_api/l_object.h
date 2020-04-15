@@ -203,6 +203,9 @@ private:
 
 	/* Player-only */
 
+	// has_priv(self, name)
+	static int l_has_priv(lua_State *L);
+
 	// is_player_connected(self)
 	static int l_is_player_connected(lua_State *L);
 
