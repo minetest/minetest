@@ -1652,7 +1652,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
-	std::string addr_s = getPeerAddress( pkt->getPeerId( ) ).serializeString( );
+	std::string addr_s = getPeerAddress(pkt->getPeerId()).serializeString();
 	std::string playername = client->getName();
 
 	bool wantSudo = (cstate == CS_Active);

@@ -156,9 +156,11 @@ void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player, s64 last_login)
 	lua_getfield(L, -1, "registered_on_joinplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
-	if(last_login != -1)
+	if (last_login != -1)
 		lua_pushinteger(L, last_login);
-	runCallbacks(last_login != -1 ? 2 : 1, RUN_CALLBACKS_MODE_FIRST);
+	else
+		lua_pushnil(L);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player,
@@ -229,7 +231,7 @@ void ScriptApiPlayer::on_authplayer(const std::string &name, const std::string &
 	// Call callbacks
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
-	lua_pushboolean( L, is_success );
+	lua_pushboolean(L, is_success);
 	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 
