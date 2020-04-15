@@ -4,28 +4,24 @@
 	package="net.minetest.minetest"
 	android:installLocation="auto">
 
-	<uses-feature
-		android:glEsVersion="0x00010000"
-		android:required="true" />
-
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 	<application
+		android:allowBackup="false"
 		android:icon="@mipmap/ic_launcher"
-		android:label="${project}"
+		android:label="@string/label"
 		android:resizeableActivity="false"
-		tools:targetApi="n">
+		tools:ignore="UnusedAttribute">
 
 		<meta-data
 			android:name="android.max_aspect"
-			android:value="2.4" />
+			android:value="3" />
 
 		<activity
 			android:name=".MainActivity"
 			android:configChanges="orientation|keyboardHidden|navigation|screenSize"
-			android:label="${project}"
-			android:launchMode="singleTask"
+			android:maxAspectRatio="3"
 			android:screenOrientation="sensorLandscape"
 			android:theme="@style/AppTheme">
 			<intent-filter>
@@ -33,11 +29,13 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+
 		<activity
-			android:name=".MtNativeActivity"
+			android:name=".GameActivity"
 			android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize"
 			android:hardwareAccelerated="true"
 			android:launchMode="singleTask"
+			android:maxAspectRatio="3"
 			android:screenOrientation="sensorLandscape"
 			android:theme="@style/AppTheme">
 			<intent-filter>
@@ -45,16 +43,18 @@
 			</intent-filter>
 			<meta-data
 				android:name="android.app.lib_name"
-				android:value="minetest" />
+				android:value="Minetest" />
 		</activity>
+
 		<activity
-			android:name=".MinetestTextEntry"
-			android:configChanges="keyboardHidden|orientation|screenSize"
-			android:theme="@style/Theme.Dialog"
-			android:windowSoftInputMode="stateAlwaysHidden" />
-		<activity
-			android:name=".MinetestAssetCopy"
-			android:screenOrientation="sensorLandscape"
-			android:theme="@style/AppTheme" />
+			android:name=".InputDialogActivity"
+			android:maxAspectRatio="3"
+			android:theme="@style/InputTheme" />
+
+		<service
+			android:name=".UnzipService"
+			android:enabled="true"
+			android:exported="false" />
 	</application>
+
 </manifest>
