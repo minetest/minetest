@@ -896,7 +896,16 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		//search through bones to find mistakenly rotated bones due to bug in Irrlicht
 		for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
 			irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(i);
-			if (bone){
+			bool skip = false;
+			if (!m_bone_position.empty()){
+				for(std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
+					std::string bone_name = (*ii).first;
+					if (bone_name == bone->getName()){
+						skip = true;
+					}
+				}
+			}
+			if (bone && !skip){
 				v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
 				// Workaround for Irrlicht bug
 				// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
