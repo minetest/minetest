@@ -893,12 +893,16 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	if (m_animated_meshnode){
 		m_animated_meshnode->animateJoints();
 		updateBonePosition();
-		//search through bones to find misplaced ones
+		//search through bones to find mistakenly rotated bones due to bug in Irrlicht
 		for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
 			irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(i);
 			if (bone){
 				v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
-				if (abs(bone_rot.X - bone->getRotation().X) > 179 && abs(bone_rot.X - bone->getRotation().X) < 181){ // Workaround for Irrlicht bug
+				// Workaround for Irrlicht bug
+				// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
+				// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone the the proper position
+				// and update the bones transformation.
+				if (abs(bone_rot.X - bone->getRotation().X) > 179 && abs(bone_rot.X - bone->getRotation().X) < 181){ 
 					bone->setRotation(bone_rot);
 					bone->updateAbsolutePosition();
 				}
