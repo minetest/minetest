@@ -135,6 +135,9 @@ public:
 	}
 
 	v3f getPosition() const { return m_position; }
+
+	// Non-transformed eye offset getters
+	// For accurate positions, use the Camera functions
 	v3f getEyePosition() const { return m_position + getEyeOffset(); }
 	v3f getEyeOffset() const;
 	void setEyeHeight(float eye_height) { m_eye_height = eye_height; }

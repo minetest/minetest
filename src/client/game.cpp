@@ -3029,16 +3029,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	v3f player_position  = player->getPosition();
-	v3f player_eye_position = player->getEyePosition();
-	v3f camera_position  = camera->getPosition();
-	v3f camera_direction = camera->getDirection();
-	v3s16 camera_offset  = camera->getOffset();
-
-	if (camera->getCameraMode() == CAMERA_MODE_FIRST)
-		player_eye_position += player->eye_offset_first;
-	else
-		player_eye_position += player->eye_offset_third;
+	const v3f head_position = camera->getHeadPosition();
+	const v3f camera_direction = camera->getDirection();
+	const v3s16 camera_offset  = camera->getOffset();
 
 	/*
 		Calculate what block is the crosshair pointing to
@@ -3053,11 +3046,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	core::line3d<f32> shootline;
 
 	if (camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT) {
-		shootline = core::line3d<f32>(player_eye_position,
-			player_eye_position + camera_direction * BS * d);
+		shootline = core::line3d<f32>(head_position,
+			head_position + camera_direction * BS * d);
 	} else {
 		// prevent player pointing anything in front-view
-		shootline = core::line3d<f32>(camera_position, camera_position);
+		shootline = core::line3d<f32>(head_position, head_position);
 	}
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -3145,6 +3138,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
+		v3f player_position  = player->getPosition();
 		handlePointingAtObject(pointed, tool_item, player_position, show_debug);
 	} else if (input->getLeftState()) {
 		// When button is held down in air, show continuous animation

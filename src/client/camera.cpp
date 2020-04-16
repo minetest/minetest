@@ -333,17 +333,21 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		fall_bobbing *= m_cache_fall_bobbing_amount;
 	}
 
-	// Calculate players eye offset for different camera modes
-	v3f PlayerEyeOffset = player->getEyeOffset();
-	if (m_camera_mode == CAMERA_MODE_FIRST)
-		PlayerEyeOffset += player->eye_offset_first;
-	else
-		PlayerEyeOffset += player->eye_offset_third;
+	// Calculate and translate the head SceneNode offsets
+	{
+		v3f eye_offset = player->getEyeOffset();
+		if (m_camera_mode == CAMERA_MODE_FIRST)
+			eye_offset += player->eye_offset_first;
+		else
+			eye_offset += player->eye_offset_third;
 
-	// Set head node transformation
-	m_headnode->setPosition(PlayerEyeOffset+v3f(0,cameratilt*-player->hurt_tilt_strength+fall_bobbing,0));
-	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength));
-	m_headnode->updateAbsolutePosition();
+		// Set head node transformation
+		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
+		m_headnode->setPosition(eye_offset);
+		m_headnode->setRotation(v3f(player->getPitch(), 0,
+			cameratilt * player->hurt_tilt_strength));
+		m_headnode->updateAbsolutePosition();
+	}
 
 	// Compute relative camera position and target
 	v3f rel_cam_pos = v3f(0,0,0);
