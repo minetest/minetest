@@ -3250,9 +3250,9 @@ For this parameter you can randomly choose any whole number. Usually it is
 preferable for this to be different from other seeds, but sometimes it is useful
 to be able to create identical noise patterns.
 
-When used in mapgen this is actually a 'seed offset', it is added to the
-'world seed' to create the seed used by the noise, to ensure the noise has a
-different pattern in different worlds.
+In some noise APIs the world seed is added to the seed specified in noise
+parameters. This is done to make the resulting noise pattern vary in different
+worlds, and be 'world-specific'.
 
 ### `octaves`
 
@@ -4649,8 +4649,11 @@ Environment access
     * Return value: Table with all node positions with a node air above
     * Area volume is limited to 4,096,000 nodes
 * `minetest.get_perlin(noiseparams)`
+    * Return world-specific perlin noise.
+    * The actual seed used is the noiseparams seed plus the world seed.
 * `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-    * Return world-specific perlin noise (`int(worldseed)+seeddiff`)
+    * Deprecated: use `minetest.get_perlin(noiseparams)` instead.
+    * Return world-specific perlin noise.
 * `minetest.get_voxel_manip([pos1, pos2])`
     * Return voxel manipulator object.
     * Loads the manipulator from the map if positions are passed.
@@ -6207,10 +6210,15 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 -------------
 
 A perlin noise generator.
-It can be created via `PerlinNoise(seed, octaves, persistence, spread)`
-or `PerlinNoise(noiseparams)`.
-Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-or `minetest.get_perlin(noiseparams)`.
+It can be created via `PerlinNoise()` or `minetest.get_perlin()`.
+For `minetest.get_perlin()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
+
+`PerlinNoise(noiseparams)`
+`PerlinNoise(seed, octaves, persistence, spread)` (Deprecated).
+
+`minetest.get_perlin(noiseparams)`
+`minetest.get_perlin(seeddiff, octaves, persistence, spread)` (Deprecated).
 
 ### Methods
 
@@ -6224,6 +6232,8 @@ A fast, bulk perlin noise generator.
 
 It can be created via `PerlinNoiseMap(noiseparams, size)` or
 `minetest.get_perlin_map(noiseparams, size)`.
+For `minetest.get_perlin_map()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
 
 Format of `size` is `{x=dimx, y=dimy, z=dimz}`. The `z` component is omitted
 for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
