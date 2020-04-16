@@ -324,9 +324,9 @@ public:
 
 	// Find all active objects inside a radius around a point
 	void getObjectsInsideRadius(std::vector<ServerActiveObject *> &objects, const v3f &pos, float radius,
-			std::function<bool(ServerActiveObject *obj)> includeObjCallback)
+			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 	{
-		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects, includeObjCallback);
+		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects, include_obj_cb);
 	}
 
 	// Clear objects, loading and going through every MapBlock

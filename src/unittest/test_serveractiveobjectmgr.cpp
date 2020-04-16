@@ -161,11 +161,11 @@ void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 	UASSERTCMP(int, ==, result.size(), 5);
 
 	result.clear();
-	auto includeObjCallback = [](ServerActiveObject *obj) {
+	auto include_obj_cb = [](ServerActiveObject *obj) {
 		return (obj->getBasePosition().X != 10);
 	};
 
-	saomgr.getObjectsInsideRadius(v3f(), 750000, result, includeObjCallback);
+	saomgr.getObjectsInsideRadius(v3f(), 750000, result, include_obj_cb);
 	UASSERTCMP(int, ==, result.size(), 4);
 
 	clearSAOMgr(&saomgr);

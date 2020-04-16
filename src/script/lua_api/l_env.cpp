@@ -688,8 +688,8 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	float radius = readParam<float>(L, 2) * BS;
 	std::vector<ServerActiveObject *> objs;
 
-	auto includeObjCallback = [](ServerActiveObject *obj){ return !obj->isGone(); };
-	env->getObjectsInsideRadius(objs, pos, radius, includeObjCallback);
+	auto include_obj_cb = [](ServerActiveObject *obj){ return !obj->isGone(); };
+	env->getObjectsInsideRadius(objs, pos, radius, include_obj_cb);
 
 	int i = 0;
 	lua_createtable(L, objs.size(), 0);
