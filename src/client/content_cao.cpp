@@ -897,7 +897,8 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
 			irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(i);
 			bool skip = false;
-			if (!m_bone_position.empty()){
+			//If bone is manually positioned there is no need to perform the bug check
+			if (!m_bone_position.empty()){ 
 				for(std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
 					std::string bone_name = (*ii).first;
 					if (bone_name == bone->getName()){
