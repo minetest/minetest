@@ -1173,6 +1173,10 @@ void Game::shutdown()
 	if (formspec)
 		formspec->quitMenu();
 
+#ifdef HAVE_TOUCHSCREENGUI
+	g_touchscreengui->hide();
+#endif
+
 	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
 
 	if (clouds)
