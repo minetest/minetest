@@ -896,8 +896,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		//search through bones to find misplaced ones
 		for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
 			irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(i);
-			if (bone)
-			{
+			if (bone){
 				v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
 				if (abs(bone_rot.X - bone->getRotation().X) > 179 && abs(bone_rot.X - bone->getRotation().X) < 181){ // Workaround for Irrlicht bug
 					bone->setRotation(bone_rot);
@@ -1383,8 +1382,7 @@ void GenericCAO::updateBonePosition()
 		v3f bone_pos = (*ii).second.X;
 		v3f bone_rot = (*ii).second.Y;
 		irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
-		if(bone)
-		{
+		if(bone){
 			bone->setPosition(bone_pos);
 			bone->setRotation(bone_rot);
 		}
