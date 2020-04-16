@@ -28,8 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "touchscreengui.h"
 #endif
 
-// clang-format off
-GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent, s32 id,
+GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 		IMenuManager *menumgr) :
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0, 0, 100, 100)),
@@ -153,8 +152,8 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			if (((gui::IGUIEditBox *)hovered)->isPasswordBox())
 				type = 3;
 
-			porting::showInputDialog(gettext("ok"), "",
-				wide_to_utf8(((gui::IGUIEditBox *)hovered)->getText()),	type);
+			porting::showInputDialog(gettext("OK"), "",
+				wide_to_utf8(((gui::IGUIEditBox *)hovered)->getText()), type);
 			return retval;
 		}
 	}
@@ -167,17 +166,16 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 
 		if (!root) {
 			errorstream << "GUIModalMenu::preprocessEvent"
-			            << " unable to get root element" << std::endl;
+				    << " unable to get root element" << std::endl;
 			return false;
 		}
-		gui::IGUIElement *hovered = root->getElementFromPoint(
-			core::position2d<s32>(event.TouchInput.X, event.TouchInput.Y));
+		gui::IGUIElement *hovered =
+				root->getElementFromPoint(core::position2d<s32>(
+						event.TouchInput.X, event.TouchInput.Y));
 
 		translated.MouseInput.X = event.TouchInput.X;
 		translated.MouseInput.Y = event.TouchInput.Y;
 		translated.MouseInput.Control = false;
-
-		bool dont_send_event = false;
 
 		if (event.TouchInput.touchedCount == 1) {
 			switch (event.TouchInput.Event) {
@@ -205,11 +203,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 				m_down_pos = v2s32(0, 0);
 				break;
 			default:
-				dont_send_event = true;
-				// this is not supposed to happen
-				errorstream << "GUIModalMenu::preprocessEvent"
-				            << " unexpected usecase Event="
-				            << event.TouchInput.Event << std::endl;
+				break;
 			}
 		} else if ((event.TouchInput.touchedCount == 2) &&
 				(event.TouchInput.Event == ETIE_PRESSED_DOWN)) {
@@ -219,50 +213,37 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			translated.MouseInput.ButtonStates = EMBSM_LEFT | EMBSM_RIGHT;
 			translated.MouseInput.X = m_pointer.X;
 			translated.MouseInput.Y = m_pointer.Y;
-			if (hovered) {
+			if (hovered)
 				hovered->OnEvent(translated);
-			}
 
 			translated.MouseInput.Event = EMIE_RMOUSE_LEFT_UP;
 			translated.MouseInput.ButtonStates = EMBSM_LEFT;
 
-			if (hovered) {
+			if (hovered)
 				hovered->OnEvent(translated);
-			}
-			dont_send_event = true;
-		}
-		// ignore unhandled 2 touch events ... accidental moving for example
-		else if (event.TouchInput.touchedCount == 2) {
-			dont_send_event = true;
-		}
-		else if (event.TouchInput.touchedCount > 2) {
-			errorstream << "GUIModalMenu::preprocessEvent"
-			            << " to many multitouch events "
-			            << event.TouchInput.touchedCount << " ignoring them"
-			            << std::endl;
-		}
 
-		if (dont_send_event) {
+			return true;
+		} else {
+			// ignore unhandled 2 touch events (accidental moving for example)
 			return true;
 		}
 
 		// check if translated event needs to be preprocessed again
-		if (preprocessEvent(translated)) {
+		if (preprocessEvent(translated))
 			return true;
-		}
+
 		if (hovered) {
 			grab();
 			bool retval = hovered->OnEvent(translated);
 
-			if (event.TouchInput.Event == ETIE_LEFT_UP) {
+			if (event.TouchInput.Event == ETIE_LEFT_UP)
 				// reset pointer
 				m_pointer = v2s32(0, 0);
-			}
+
 			drop();
 			return retval;
 		}
 	}
-	// clang-format on
 #endif
 	return false;
 }
@@ -271,14 +252,12 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 bool GUIModalMenu::hasAndroidUIInput()
 {
 	// no dialog shown
-	if (m_jni_field_name.empty()) {
+	if (m_jni_field_name.empty())
 		return false;
-	}
 
 	// still waiting
-	if (porting::getInputDialogState() == -1) {
+	if (porting::getInputDialogState() == -1)
 		return true;
-	}
 
 	// no value abort dialog processing
 	if (porting::getInputDialogState() != 0) {
