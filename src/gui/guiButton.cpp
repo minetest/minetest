@@ -820,8 +820,7 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 				AbsoluteRect.getWidth() + Padding.LowerRightCorner.X + ContentOffset.X,
 				AbsoluteRect.getHeight() + Padding.LowerRightCorner.Y + ContentOffset.Y);
 
-	for(IGUIElement *child : getChildren())
-	{
+	for(IGUIElement *child : getChildren()) {
 		child->setRelativePosition(childBounds);
 	}
 }
