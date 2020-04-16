@@ -1608,14 +1608,12 @@ void ServerEnvironment::getSelectedActiveObjects(
 	const core::line3d<f32> &shootline_on_map,
 	std::vector<PointedThing> &objects)
 {
-	std::vector<u16> objectIds;
-	getObjectsInsideRadius(objectIds, shootline_on_map.start,
-		shootline_on_map.getLength() + 10.0f);
+	std::vector<ServerActiveObject *> objs;
+	getObjectsInsideRadius(objs, shootline_on_map.start,
+		shootline_on_map.getLength() + 10.0f, nullptr);
 	const v3f line_vector = shootline_on_map.getVector();
 
-	for (u16 objectId : objectIds) {
-		ServerActiveObject* obj = getActiveObject(objectId);
-
+	for (auto obj : objs) {
 		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
@@ -1630,7 +1628,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
 				&current_intersection, &current_normal)) {
 			objects.emplace_back(
-				(s16) objectId, current_intersection, current_normal,
+				(s16) obj->getId(), current_intersection, current_normal,
 				(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}

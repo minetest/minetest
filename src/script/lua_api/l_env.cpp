@@ -681,22 +681,22 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 {
 	GET_ENV_PTR;
+	ScriptApiBase *script = getScriptApiBase(L);
 
 	// Do it
 	v3f pos = checkFloatPos(L, 1);
 	float radius = readParam<float>(L, 2) * BS;
-	std::vector<u16> ids;
-	env->getObjectsInsideRadius(ids, pos, radius);
-	ScriptApiBase *script = getScriptApiBase(L);
-	lua_createtable(L, ids.size(), 0);
-	std::vector<u16>::const_iterator iter = ids.begin();
-	for(u32 i = 0; iter != ids.end(); ++iter) {
-		ServerActiveObject *obj = env->getActiveObject(*iter);
-		if (!obj->isGone()) {
-			// Insert object reference into table
-			script->objectrefGetOrCreate(L, obj);
-			lua_rawseti(L, -2, ++i);
-		}
+	std::vector<ServerActiveObject *> objs;
+
+	auto include_obj_cb = [](ServerActiveObject *obj){ return !obj->isGone(); };
+	env->getObjectsInsideRadius(objs, pos, radius, include_obj_cb);
+
+	int i = 0;
+	lua_createtable(L, objs.size(), 0);
+	for (const auto obj : objs) {
+		// Insert object reference into table
+		script->objectrefGetOrCreate(L, obj);
+		lua_rawseti(L, -2, ++i);
 	}
 	return 1;
 }

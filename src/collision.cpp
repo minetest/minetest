@@ -360,17 +360,19 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				// Calculate distance by speed, add own extent and 1.5m of tolerance
 				f32 distance = speed_f->getLength() * dtime +
 					box_0.getExtent().getLength() + 1.5f * BS;
-				std::vector<u16> s_objects;
-				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance);
 
-				for (u16 obj_id : s_objects) {
-					ServerActiveObject *current = s_env->getActiveObject(obj_id);
-
-					if (!self || (self != current &&
-							self != current->getParent())) {
-						objects.push_back((ActiveObject*)current);
+				// search for objects which are not us, or we are not its parent
+				// we directly use the callback to populate the result to prevent
+				// a useless result loop here
+				auto include_obj_cb = [self, &objects] (ServerActiveObject *obj) {
+					if (!self || (self != obj && self != obj->getParent())) {
+						objects.push_back((ActiveObject *)obj);
 					}
-				}
+					return false;
+				};
+
+				std::vector<ServerActiveObject *> s_objects;
+				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance, include_obj_cb);
 			}
 		}
 
