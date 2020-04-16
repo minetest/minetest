@@ -435,8 +435,11 @@ set(common_SRCS
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
-	${UNITTEST_SRCS}
 )
+
+if(BUILD_UNITTESTS)
+	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
+endif()
 
 
 # This gives us the icon and file version information
@@ -472,8 +475,12 @@ set(client_SRCS
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
 	${client_SCRIPT_SRCS}
-	${UNITTEST_CLIENT_SRCS}
 )
+
+if(BUILD_UNITTESTS)
+	set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
+endif()
+
 list(SORT client_SRCS)
 
 # Server sources
