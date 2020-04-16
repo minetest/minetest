@@ -333,7 +333,7 @@ This is outdated and not recommended. Follow the instructions on https://dev.min
 #### a) Using the vcpkg toolchain and CMake GUI
 1. Start up the CMake GUI
 2. Select **Browse Source...** and select DIR/minetest
-3. Select **Browse Build...** and select DIR/minetest-build
+3. Select **Browse Build...** and select DIR/minetest/build
 4. Select **Configure**
 5. Choose the right visual Studio version and target platform. It has to match the version of the installed dependencies
 6. Choose **Specify toolchain file for cross-compiling**
