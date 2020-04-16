@@ -3359,8 +3359,7 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 
 		IGUIElement *element = getElementFromId(field.fid, true);
 
-		if ((element == nullptr) ||
-				(element->getType() != irr::gui::EGUIET_EDIT_BOX))
+		if (!element || element->getType() != irr::gui::EGUIET_EDIT_BOX)
 			return false;
 
 		std::string text = porting::getInputDialogValue();
