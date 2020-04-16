@@ -67,15 +67,15 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		 * respond for some time, your server was overloaded or
 		 * things like that.
 		 */
-		infostream << "Server::ProcessData(): Canceling: peer "
-				<< peer_id << " not found" << std::endl;
+		infostream << "Server::ProcessData(): Canceling: peer " << peer_id <<
+			" not found" << std::endl;
 		return;
 	}
 
 	// If net_proto_version is set, this client has already been handled
 	if (client->getState() > CS_Created) {
-		verbosestream << "Server: Ignoring multiple TOSERVER_INITs from "
-				<< addr_s << " (peer_id=" << peer_id << ")" << std::endl;
+		verbosestream << "Server: Ignoring multiple TOSERVER_INITs from " <<
+			addr_s << " (peer_id=" << peer_id << ")" << std::endl;
 		return;
 	}
 
@@ -85,8 +85,8 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	// Do not allow multiple players in simple singleplayer mode.
 	// This isn't a perfect way to do it, but will suffice for now
 	if (m_simple_singleplayer_mode && m_clients.getClientIDs().size() > 1) {
-		infostream << "Server: Not allowing another client (" << addr_s
-				<< ") to connect in simple singleplayer mode" << std::endl;
+		infostream << "Server: Not allowing another client (" << addr_s <<
+			") to connect in simple singleplayer mode" << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_SINGLEPLAYER);
 		return;
 	}
@@ -110,10 +110,10 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		depl_serial_v = SER_FMT_VER_INVALID;
 
 	if (depl_serial_v == SER_FMT_VER_INVALID) {
-		actionstream << "Server: A mismatched client tried to connect from "
-				<< addr_s << std::endl;
-		infostream<<"Server: Cannot negotiate serialization version with "
-				<< addr_s << std::endl;
+		actionstream << "Server: A mismatched client tried to connect from " <<
+			addr_s << std::endl;
+		infostream << "Server: Cannot negotiate serialization version with " <<
+			addr_s << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
 		return;
 	}
@@ -147,8 +147,8 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			net_proto_version != LATEST_PROTOCOL_VERSION) ||
 			net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
 			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
-		actionstream << "Server: A mismatched client tried to connect from "
-				<< addr_s << std::endl;
+		actionstream << "Server: A mismatched client tried to connect from " <<
+			addr_s << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
 		return;
 	}
@@ -160,16 +160,16 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	size_t pns = playerName.size();
 	if (pns == 0 || pns > PLAYERNAME_SIZE) {
-		actionstream << "Server: Player with "
-			<< ((pns > PLAYERNAME_SIZE) ? "a too long" : "an empty")
-			<< " name tried to connect from " << addr_s << std::endl;
+		actionstream << "Server: Player with " <<
+			((pns > PLAYERNAME_SIZE) ? "a too long" : "an empty") <<
+			" name tried to connect from " << addr_s << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_NAME);
 		return;
 	}
 
 	if (!string_allowed(playerName, PLAYERNAME_ALLOWED_CHARS)) {
-		actionstream << "Server: Player with an invalid name "
-				<< "tried to connect from " << addr_s << std::endl;
+		actionstream << "Server: Player with an invalid name tried to connect "
+			"from " << addr_s << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_CHARS_IN_NAME);
 		return;
 	}
@@ -180,8 +180,8 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	std::string legacyPlayerNameCasing = playerName;
 
 	if (!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0) {
-		actionstream << "Server: Player with the name \"singleplayer\" "
-				<< "tried to connect from " << addr_s << std::endl;
+		actionstream << "Server: Player with the name \"singleplayer\" tried "
+			"to connect from " << addr_s << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_NAME);
 		return;
 	}
@@ -189,10 +189,10 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	{
 		std::string reason;
 		if (m_script->on_prejoinplayer(playername, addr_s, &reason)) {
-			actionstream << "Server: Player with the name \"" << playerName << "\" "
-					<< "tried to connect from " << addr_s << " "
-					<< "but it was disallowed for the following reason: "
-					<< reason << std::endl;
+			actionstream << "Server: Player with the name \"" << playerName <<
+				"\" tried to connect from " << addr_s <<
+				" but it was disallowed for the following reason: " << reason <<
+				std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_CUSTOM_STRING, reason);
 			return;
 		}
@@ -206,9 +206,9 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	if (m_clients.isUserLimitReached() &&
 			playername != g_settings->get("name") &&
 			!m_script->can_bypass_userlimit(playername, addr_s)) {
-		actionstream << "Server: " << playername << " tried to join from "
-				<< addr_s << ", but there" << " are already max_users="
-				<< g_settings->getU16("max_users") << " players." << std::endl;
+		actionstream << "Server: " << playername << " tried to join from " <<
+			addr_s << ", but there" << " are already max_users=" <<
+			g_settings->getU16("max_users") << " players." << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_TOO_MANY_USERS);
 		return;
 	}
@@ -229,9 +229,9 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 				auth_mechs |= AUTH_MECHANISM_SRP;
 				client->enc_pwd = encpwd;
 			} else {
-				actionstream << "User " << playername
-					<< " tried to log in, but password field"
-					<< " was invalid (unknown mechcode)." << std::endl;
+				actionstream << "User " << playername << " tried to log in, "
+					"but password field was invalid (unknown mechcode)." <<
+					std::endl;
 				DenyAccess(peer_id, SERVER_ACCESSDENIED_SERVER_FAIL);
 				return;
 			}
@@ -239,9 +239,8 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			auth_mechs |= AUTH_MECHANISM_LEGACY_PASSWORD;
 			client->enc_pwd = encpwd;
 		} else {
-			actionstream << "User " << playername
-				<< " tried to log in, but password field"
-				<< " was invalid (invalid base64)." << std::endl;
+			actionstream << "User " << playername << " tried to log in, but "
+				"password field was invalid (invalid base64)." << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_SERVER_FAIL);
 			return;
 		}
