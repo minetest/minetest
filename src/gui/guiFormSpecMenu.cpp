@@ -3346,28 +3346,24 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 	if (!hasAndroidUIInput())
 		return false;
 
+	// still waiting
+	if (porting::getInputDialogState() == -1)
+		return true;
+
 	std::string fieldname = m_jni_field_name;
 	m_jni_field_name.clear();
 
-	for (std::vector<FieldSpec>::iterator iter =  m_fields.begin();
-			iter != m_fields.end(); ++iter) {
-
-		if (iter->fname != fieldname) {
+	for (const FieldSpec &field : m_fields) {
+		if (field.fname != fieldname)
 			continue;
-		}
-		IGUIElement *tochange = getElementFromId(iter->fid, true);
 
-		if (tochange == 0) {
-			return false;
-		}
+		IGUIElement *element = getElementFromId(field.fid, true);
 
-		if (tochange->getType() != irr::gui::EGUIET_EDIT_BOX) {
+		if (!element || element->getType() != irr::gui::EGUIET_EDIT_BOX)
 			return false;
-		}
 
 		std::string text = porting::getInputDialogValue();
-
-		((gui::IGUIEditBox *)tochange)->setText(utf8_to_wide(text).c_str());
+		((gui::IGUIEditBox *)element)->setText(utf8_to_wide(text).c_str());
 	}
 	return false;
 }
