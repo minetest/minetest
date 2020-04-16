@@ -1498,7 +1498,16 @@ Exact pointing location (currently only `Raycast` supports these fields):
   Is a null vector `{x = 0, y = 0, z = 0}` when the pointer is inside the
   selection box.
 
+`move_result`
+---------------
 
+* `{collides_xz, collides_y, is_standing, touched_objects, collisions}`
+    * Result of collision processing for physical objects.
+    * `collides_xz`: whether a collision occured along the X or Z axis
+    * `collides_y`: whether a collision occured along the Y axis
+    * `is_standing`: whether the object is standing on top of a node
+    * `touched_objects`: ObjectRefs that the object is actively touching
+    * `collisions`: node positions intersecting the object's collision box
 
 
 Flag Specifier Format
@@ -4155,14 +4164,30 @@ Functions receive a "luaentity" as `self`:
 
 Callbacks:
 
-* `on_activate(self, staticdata, dtime_s)`
-    * Called when the object is instantiated.
-    * `dtime_s` is the time passed since the object was unloaded, which can be
-      used for updating the entity state.
-* `on_step(self, dtime)`
+* `on_activate(self, staticdata, dtime_s, id)`
+    * Called immediately after the object is added to the environment.
+    * `dtime_s`: time passed since the object was unloaded, which can be used
+      for updating the entity state.
+    * `id`: active object identifier used internally by the engine and stored
+      in the `minetest.luaentities` table
+    * Note that value of `id` is only guaranteed to be unique for the lifetime 
+      of the object and should never be referenced once deactivated.
+* `on_deactivate(self, id)`
+    * Called immediately before the object is removed from the environment,
+      whether as the result of the mapblock unloading, the object being outside
+      the active-object radius, an explicit call to `remove()`, etc.
+* `on_step(self, dtime, pos, rot, new_vel, old_vel, move_result)`
     * Called on every server tick, after movement and collision processing.
-      `dtime` is usually 0.1 seconds, as per the `dedicated_server_step` setting
+    * `dtime` is usually 0.1 seconds, as per the `dedicated_server_step` setting
       in `minetest.conf`.
+    * `pos`: current position of the object
+    * `rot`: current rotation of the object
+    * `new_vel`: calculated velocity of the object as a result of acceleration,
+      angular velocity, and collisions
+    * `old_vel`: velocity of the object prior to movement/collision processing
+    * `move_result`: the result of collision processing (refer to the section
+      "Representations of simple things" for details)
+    * Note that `new_vel` may not correspond with an object's fixed velocity.
 * `on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir, damage)`
     * Called when somebody punches the object.
     * Note that you probably want to handle most punches using the automatic
@@ -6210,15 +6235,76 @@ object you are working with still exists.
       no effect and returning `nil`.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
+    * If the object's velocity is fixed by `lock_velocity()` or `set_speed()`,
+      then only the Y component will be set.
+* `set_velocity_vert(vel_y)`
+    * Sets only the Y component of the velocity vector.
+    * `vel_y` is a number (default: `0.0`)
+* `set_velocity_horz(vel_x, vel_z)`
+    * Sets only the X and Z components of the  velocity vector.
+    * `vel_x` is a number (default: `0.0`)
+    * `vel_z` is a number (default: `0.0`)
+    * If the object's velocity is fixed by `lock_velocity()` or `set_speed()`,
+      then it will remain unchanged.
+* `add_velocity(vel)`
+    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
+    * In comparison to using get_velocity, adding the velocity and then using
+      set_velocity, this method is supposed to avoid synchronization problems.
+* `get_velocity()`: returns the velocity, a vector
+* `lock_velocity()`: fixes the velocity along the X and Z axes
+    * Can prove useful to maintain a specific heading after encountering an
+      obstacle, rather than continuously calling `set_velocity()`.
+    * Note that this will disable acceleration along the X and Z axes.
+* `unlock_velocity()`: frees the velocity along the X and Z axes
+* `is_velocity_locked()`: returns true if the velocity has been fixed
+* `set_speed(speed)`
+    * Automatically fixes the velocity along the X and Z axes to correspond 
+      with the current heading (yaw).
+    * `speed` is a number equal to the length of the vector (vel_x,vel_z).
+    * `yaw_offset` is a number representing the angular offset from normal in 
+      radians, where `0` is forward and `pi` is backward (default: `0`).
+    * Player-like side-stepping can be achieved with either of the following 
+      values for `yaw_offset`:
+       * `pi / 2`: strafe left
+       * `-pi / 2`: strafe right
+    * A negative value for `speed` may also be used for back-tracking.
+* `set_speed_lateral(speed_x, speed_y)`
+    * Similar to `set_speed()` but calculates the angular offset from normal
+      given the magnitude of speed within 2-dimensions.
+    * `speed_x` is a number representing lateral motion, where negative moves
+      left, positive moves right, and zero stops (default: `0`)
+    * `speed_y` is a number, where positive moves forward, negative moves
+      backward, and zero stops (default: `0`)
+    * If the model is not oriented correctly, it may be necessary to set the
+      `yaw_origin` object property.
 * `set_acceleration(acc)`
     * `acc` is a vector
+* `set_acceleration_vert(acc_y)`:
+    * Sets only the Y component of the acceleration vector.
+    * `acc_y` is a number (default: 0.0)
 * `get_acceleration()`: returns the acceleration, a vector
 * `set_rotation(rot)`
-    * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
-      and Z is roll (bank).
-* `get_rotation()`: returns the rotation, a vector (radians)
-* `set_yaw(yaw)`: sets the yaw in radians (heading).
+    * `rot` is a vector in radians.
+       * `x` is pitch (elevation)
+       * `y` is yaw (heading)
+       * `z` is roll (bank)
+* `get_rotation()`: returns the rotation, a vector, in radians
+* `set_yaw(yaw)`: sets the yaw (heading)
+    * `yaw` is a number in radians (default: `0`)
+    * When speed is applied, this will automatically change the velocity to
+      correspond with new yaw (heading).
+* `add_yaw(yaw)`: increases or decreases the yaw
+    * `yaw` is a number in radians
 * `get_yaw()`: returns number in radians
+* `turn_by(yaw_delta, period, cycles)
+    * Performs a continuous or periodic rotation about the Y-axis
+    * `yaw_delta` is a number in radians
+    * `period` is a number in seconds
+    * `cycles` is a number, either positive for a periodic rotation or `0`
+      for a continuous rotation (default: `1`)
+    * The rate of rotation is calculated as `yaw_delta / period`.
+    * When used in combination with `set_speed()` or `set_speed_lateral()`,
+      smooth turning motion is possible.
 * `set_texture_mod(mod)`
     * Set a texture modifier to the base texture, for sprites and meshes.
     * When calling `set_texture_mod` again, the previous one is discarded.
@@ -6239,7 +6325,7 @@ object you are working with still exists.
         * Fourth column: subject looking to the right
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
-* `get_entity_name()` (**Deprecated**: Will be removed in a future version)
+* `get_entity_name()`: returns the registered name of the entity
 * `get_luaentity()`
 
 #### Player only (no-op for other objects)
@@ -6842,6 +6928,7 @@ Player properties need to be saved manually.
         automatic_face_movement_dir = 0.0,
         -- Automatically set yaw to movement direction, offset in degrees.
         -- 'false' to disable.
+        -- This property is ignored when speed is applied.
 
         automatic_face_movement_max_rotation_per_sec = -1,
         -- Limit automatic rotation to this value in degrees per second.
@@ -6880,6 +6967,11 @@ Player properties need to be saved manually.
         show_on_minimap = false,
         -- Defaults to true for players, false for other entities.
         -- If set to true the entity will show as a marker on the minimap.
+
+        yaw_origin = 0.0,
+        -- The orientation of the model, in radians.
+        -- Used by `set_speed()` to compute the angular offset from normal.
+        -- `0` or `-pi / 2` is typical.
     }
 
 Entity definition
@@ -6898,12 +6990,12 @@ Used by `minetest.register_entity`.
         -- table is deprecated. Define object properties in this
         -- `initial_properties` table instead.
 
-        on_activate = function(self, staticdata, dtime_s),
+        on_activate = function(self, staticdata, dtime_s, id),
 
-        on_step = function(self, dtime, moveresult),
+        on_deactivate = function(self, id),
+
+        on_step = function(self, dtime, pos, rot, new_vel, old_vel, move_result),
         -- Called every server step
-        -- dtime: Elapsed time
-        -- moveresult: Table with collision info (only available if physical=true)
 
         on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir),
 
@@ -6916,25 +7008,6 @@ Used by `minetest.register_entity`.
         _custom_field = whatever,
         -- You can define arbitrary member variables here (see Item definition
         -- for more info) by using a '_' prefix
-    }
-
-Collision info passed to `on_step`:
-
-    {
-        touching_ground = boolean,
-        collides = boolean,
-        standing_on_object = boolean,
-        collisions = {
-            {
-                type = string, -- "node" or "object",
-                axis = string, -- "x", "y" or "z"
-                node_pos = vector, -- if type is "node"
-                object = ObjectRef, -- if type is "object"
-                old_velocity = vector,
-                new_velocity = vector,
-            },
-            ...
-        }
     }
 
 ABM (ActiveBlockModifier) definition
