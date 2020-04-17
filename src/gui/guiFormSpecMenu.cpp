@@ -489,36 +489,8 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 			start_i = stoi(startindex);
 
 		if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
-			errorstream<< "Invalid list element: '" << element << "'"  << std::endl;
+			errorstream << "Invalid list element: '" << element << "'"  << std::endl;
 			return;
-		}
-
-		// check for the existence of inventory and list
-		Inventory *inv = m_invmgr->getInventory(loc);
-		if (!inv) {
-			warningstream << "GUIFormSpecMenu::parseList(): "
-					<< "The inventory location "
-					<< "\"" << loc.dump() << "\" doesn't exist"
-					<< std::endl;
-			return;
-		}
-		InventoryList *ilist = inv->getList(listname);
-		if (!ilist) {
-			warningstream << "GUIFormSpecMenu::parseList(): "
-					<< "The inventory list \"" << listname << "\" "
-					<< "@ \"" << loc.dump() << "\" doesn't exist"
-					<< std::endl;
-			return;
-		}
-
-		// trim geom if it is larger than the actual inventory size
-		s32 list_size = (s32)ilist->getSize();
-		if (list_size < geom.X * geom.Y + start_i) {
-			list_size -= MYMAX(start_i, 0);
-			geom.Y = list_size / geom.X;
-			geom.Y += list_size % geom.X > 0 ? 1 : 0;
-			if (geom.Y <= 1)
-				geom.X = list_size;
 		}
 
 		if (!data->explicit_size)
