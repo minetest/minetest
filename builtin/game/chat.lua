@@ -1,40 +1,26 @@
 -- Minetest: builtin/game/chat.lua
 
--- Helper function that implements search and replace without pattern matching
--- Returns the string and a boolean indicating whether or not the string was modified
-local function safe_gsub(s, replace, with)
-	local i1, i2 = s:find(replace, 1, true)
-	if not i1 then
-		return s, false
-	end
-
-	return s:sub(1, i1 - 1) .. with .. s:sub(i2 + 1), true
-end
-
 --
 -- Chat message formatter
 --
 
 -- Implemented in Lua to allow redefinition
 function core.format_chat_message(name, message)
-	local error_str = "Invalid chat message format - missing %s"
 	local str = core.settings:get("chat_message_format")
-	local replaced
+	local error_str = "Invalid chat message format - missing %s"
+	local i
 
-	-- Name
-	str, replaced = safe_gsub(str, "@name", name)
-	if not replaced then
+	str, i = str:gsub("@name", name, 1)
+	if i == 0 then
 		error(error_str:format("@name"), 2)
 	end
 
-	-- Timestamp
-	str = safe_gsub(str, "@timestamp", os.date("%H:%M:%S", os.time()))
-
-	-- Insert the message into the string only after finishing all other processing
-	str, replaced = safe_gsub(str, "@message", message)
-	if not replaced then
+	str, i = str:gsub("@message", message, 1)
+	if i == 0 then
 		error(error_str:format("@message"), 2)
 	end
+
+	str = str:gsub("@timestamp", os.date("%H:%M:%S", os.time()), 1)
 
 	return str
 end
@@ -115,7 +101,6 @@ core.register_chatcommand("me", {
 	privs = {shout=true},
 	func = function(name, param)
 		core.chat_send_all("* " .. name .. " " .. param)
-		return true
 	end,
 })
 
@@ -142,7 +127,7 @@ core.register_chatcommand("privs", {
 		end
 		return true, "Privileges of " .. name .. ": "
 			.. core.privs_to_string(
-				core.get_player_privs(name), ", ")
+				core.get_player_privs(name), ' ')
 	end,
 })
 
@@ -940,7 +925,6 @@ core.register_chatcommand("shutdown", {
 			core.chat_send_all("*** Server shutting down (operator request).")
 		end
 		core.request_shutdown(message:trim(), core.is_yes(reconnect), delay)
-		return true
 	end,
 })
 
@@ -1023,7 +1007,6 @@ core.register_chatcommand("clearobjects", {
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
 		core.chat_send_all("*** Cleared all objects.")
-		return true
 	end,
 })
 
