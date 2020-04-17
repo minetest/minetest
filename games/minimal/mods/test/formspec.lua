@@ -251,7 +251,7 @@ Number]
 			"box[1,22.5;4,1;#a00a]"..
 		"scroll_container_end[]"..
 		"scrollbaroptions[max=170]".. -- lowest seen pos is: 0.1*170+6=23 (factor*max+height)
-		"scrollbar[7.5,0;0.3,4;vertical;scrbar;0]"..
+		"scrollbar[7.5,0;0.3,4;vertical;scrbar;20]"..
 		"scrollbar[8,0;0.3,4;vertical;scrbarhmmm;0]"..
 		"dropdown[0,6;2;hmdrpdwnnn;apple,bulb;1]",
 }
