@@ -209,6 +209,9 @@ wchar_t *narrow_to_wide_c(const char *str)
 }
 
 std::wstring narrow_to_wide(const std::string &mbs) {
+#ifdef __ANDROID__
+	return utf8_to_wide(mbs);
+#else
 	size_t wcl = mbs.size();
 	Buffer<wchar_t> wcs(wcl + 1);
 	size_t len = mbstowcs(*wcs, mbs.c_str(), wcl);
@@ -216,11 +219,15 @@ std::wstring narrow_to_wide(const std::string &mbs) {
 		return L"<invalid multibyte string>";
 	wcs[len] = 0;
 	return *wcs;
+#endif
 }
 
 
 std::string wide_to_narrow(const std::wstring &wcs)
 {
+#ifdef __ANDROID__
+	return wide_to_utf8(wcs);
+#else
 	size_t mbl = wcs.size() * 4;
 	SharedBuffer<char> mbs(mbl+1);
 	size_t len = wcstombs(*mbs, wcs.c_str(), mbl);
@@ -229,6 +236,7 @@ std::string wide_to_narrow(const std::wstring &wcs)
 
 	mbs[len] = 0;
 	return *mbs;
+#endif
 }
 
 

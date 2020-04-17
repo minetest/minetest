@@ -3031,8 +3031,16 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 		line += L"-!- You don't have permission to shout.";
 		broadcast_line = false;
 	} else {
+		/*
+			Workaround for fixing chat on Android. Lua doesn't handle
+			the Cyrillic alphabet and some characters on older Android devices
+		*/
+#ifdef __ANDROID__
+		line += L"<" + wname + L"> " + wmessage;
+#else
 		line += narrow_to_wide(m_script->formatChatMessage(name,
 				wide_to_narrow(wmessage)));
+#endif
 	}
 
 	/*
