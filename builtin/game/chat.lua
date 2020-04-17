@@ -239,8 +239,7 @@ local function handle_revoke_command(caller, revokename, revokeprivstr)
 	local basic_privs =
 		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
 	for priv, _ in pairs(revokeprivs) do
-		if not basic_privs[priv] and
-				not core.check_player_privs(caller, {privs=true}) then
+		if not basic_privs[priv] and not caller_privs.privs then
 			return false, "Your privileges are insufficient."
 		end
 	end
