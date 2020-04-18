@@ -22,10 +22,6 @@ local algorithms = {
 	"Dijkstra",
 }
 
-local function call_find_path(pos1, pos2, searchdistance, max_jump, max_drop, algo)
-	return minetest.find_path(pos1, pos2, searchdistance, max_jump, max_drop, algo)
-end
-
 local function find_path_for_player(player, itemstack)
 	local meta = itemstack:get_meta()
 	if not meta then
@@ -50,7 +46,7 @@ local function find_path_for_player(player, itemstack)
 
 		minetest.chat_send_player(player:get_player_name(), str)
 		local time_start = minetest.get_us_time()
-		local path = call_find_path(pos1, pos2, MAX_SEARCH_DISTANCE, MAX_JUMP, MAX_DROP, algo)
+		local path = minetest.find_path(pos1, pos2, MAX_SEARCH_DISTANCE, MAX_JUMP, MAX_DROP, algo)
 		local time_end = minetest.get_us_time()
 		local time_diff = time_end - time_start
 		str = ""

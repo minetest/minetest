@@ -3,16 +3,6 @@ local F = minetest.formspec_escape
 
 -- TODO: Add a Node Metadata tool
 
-local function check_priv(player, priv)
-	if priv == "server" then
-		local privs = minetest.get_player_privs(player:get_player_name())
-		return privs.server
-	else
-		-- Ignore other priv requirements
-		return true
-	end
-end
-
 -- Param 2 Tool: Set param2 value of tools
 -- Punch: +1
 -- Punch+Shift:	+8
@@ -23,9 +13,6 @@ minetest.register_tool("testtools:param2tool", {
 	inventory_image = "testtools_param2tool.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		if pointed_thing.type ~= "node" or (not pos) then
 			return
@@ -42,9 +29,6 @@ minetest.register_tool("testtools:param2tool", {
 		minetest.swap_node(pos, node)
 	end,
 	on_place = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		if pointed_thing.type ~= "node" or (not pos) then
 			return
@@ -67,9 +51,6 @@ minetest.register_tool("testtools:node_setter", {
 	inventory_image = "testtools_node_setter.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		if pointed_thing.type == "nothing" then
 			local meta = itemstack:get_meta()
@@ -104,9 +85,6 @@ minetest.register_tool("testtools:node_setter", {
 		)
 	end,
 	on_place = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		local meta = itemstack:get_meta()
 		local nodename = meta:get_string("node")
@@ -151,9 +129,6 @@ minetest.register_tool("testtools:remover", {
 	inventory_image = "testtools_remover.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		if pointed_thing.type == "node" and pos ~= nil then
 			minetest.remove_node(pos)
@@ -172,9 +147,6 @@ minetest.register_tool("testtools:falling_node_tool", {
 	groups = { testtool = 1, disable_repair = 1 },
 	on_place = function(itemstack, user, pointed_thing)
 		-- Teleport node 1-2 units upwards (if possible) and make it fall
-		if not check_priv(user) then
-			return
-		end
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		if pointed_thing.type ~= "node" or (not pos) then
 			return
@@ -207,9 +179,6 @@ minetest.register_tool("testtools:falling_node_tool", {
 		end
 	end,
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		local pos = minetest.get_pointed_thing_position(pointed_thing)
 		if pointed_thing.type ~= "node" or (not pos) then
 			return
@@ -226,9 +195,6 @@ minetest.register_tool("testtools:rotator", {
 	inventory_image = "testtools_entity_rotator.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		if pointed_thing.type ~= "object" then
 			return
 		end
@@ -257,9 +223,6 @@ minetest.register_tool("testtools:rotator", {
 })
 
 local mover_config = function(itemstack, user, pointed_thing)
-	if not check_priv(user) then
-		return
-	end
 	if not (user and user:is_player()) then
 		return
 	end
@@ -287,9 +250,6 @@ minetest.register_tool("testtools:object_mover", {
 	on_place = mover_config,
 	on_secondary_use = mover_config,
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		if pointed_thing.type ~= "object" then
 			return
 		end
@@ -331,9 +291,6 @@ minetest.register_tool("testtools:entity_scaler", {
 	inventory_image = "testtools_entity_scaler.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		if pointed_thing.type ~= "object" then
 			return
 		end
@@ -396,9 +353,6 @@ minetest.register_tool("testtools:entity_spawner", {
 		end
 	end,
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		if pointed_thing.type == "object" then
 			return
 		end
@@ -484,9 +438,6 @@ minetest.register_tool("testtools:object_editor", {
 	inventory_image = "testtools_object_editor.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		if user and user:is_player() then
 			local name = user:get_player_name()
 
@@ -521,9 +472,6 @@ local ent_child = {}
 local DEFAULT_ATTACH_OFFSET_Y = 11
 
 local attacher_config = function(itemstack, user, pointed_thing)
-	if not check_priv(user) then
-		return
-	end
 	if not (user and user:is_player()) then
 		return
 	end
@@ -572,9 +520,6 @@ minetest.register_tool("testtools:object_attacher", {
 	on_place = attacher_config,
 	on_secondary_use = attacher_config,
 	on_use = function(itemstack, user, pointed_thing)
-		if not check_priv(user) then
-			return
-		end
 		if user and user:is_player() then
 			local name = user:get_player_name()
 			local selected_object
@@ -652,7 +597,8 @@ minetest.register_tool("testtools:object_attacher", {
 local function use_loadstring(param, player)
 	-- For security reasons, require 'server' priv, just in case
 	-- someone is actually crazy enough to run this on a public server.
-	if not check_priv(player, "server") then
+	local privs = minetest.get_player_privs(player:get_player_name())
+	if not privs.server then
 		return false, "You need 'server' privilege to change object properties!"
 	end
 	if not param then
@@ -690,9 +636,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if expl.type == "DCL" then
 				local pos = vector.add(player:get_pos(), {x=0,y=1,z=0})
 				selections[name] = expl.index
-				if check_priv(player, "give") then
-					minetest.add_entity(pos, get_entity_list()[expl.index])
-				end
+				minetest.add_entity(pos, get_entity_list()[expl.index])
 				return
 			elseif expl.type == "CHG" then
 				selections[name] = expl.index
@@ -700,9 +644,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			end
 		elseif fields.spawn and selections[name] then
 			local pos = vector.add(player:get_pos(), {x=0,y=1,z=0})
-			if check_priv(player, "give") then
-				minetest.add_entity(pos, get_entity_list()[selections[name]])
-			end
+			minetest.add_entity(pos, get_entity_list()[selections[name]])
 			return
 		end
 	elseif formname == "testtools:object_editor" then
