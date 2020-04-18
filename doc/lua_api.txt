@@ -4375,6 +4375,12 @@ Call these functions only at load time!
 * `minetest.register_on_leaveplayer(function(ObjectRef, timed_out))`
     * Called when a player leaves the game
     * `timed_out`: True for timeout, false for other reasons.
+* `minetest.register_player_on_step(function(ObjectRef, dtime))`
+    * Called for every player on every server step.
+    * `ObjectRef`: The player.
+    * `dtime`: Time from last step (see also `minetest.register_globalstep`).
+    * Return `true` to avoid further `on_step`-callbacks to be called on this player (ie. if the
+      `ObjectRef` is no longer valid).
 * `minetest.register_on_auth_fail(function(name, ip))`
     * Called when a client attempts to log into an account but supplies the
       wrong password.
