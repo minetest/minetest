@@ -253,76 +253,57 @@ core.register_chatcommand("grantme", {
 	end,
 })
 
-local function handle_revoke_command(caller, revokename, revokeprivstr)
-	local caller_privs = core.get_player_privs(caller)
-	if not (caller_privs.privs or caller_privs.basic_privs) then
-		return false, "Your privileges are insufficient."
-	end
-
-	if not core.get_auth_handler().get_auth(revokename) then
-		return false, "Player " .. revokename .. " does not exist."
-	end
-
-	local revokeprivs = core.string_to_privs(revokeprivstr)
-	local privs = core.get_player_privs(revokename)
-	local basic_privs =
-		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
-	for priv, _ in pairs(revokeprivs) do
-		if not basic_privs[priv] and not caller_privs.privs then
-			return false, "Your privileges are insufficient."
-		end
-	end
-
-	if revokeprivstr == "all" then
-		revokeprivs = privs
-		privs = {}
-	else
-		for priv, _ in pairs(revokeprivs) do
-			privs[priv] = nil
-		end
-	end
-
-	for priv, _ in pairs(revokeprivs) do
-		-- call the on_revoke callbacks
-		core.run_priv_callbacks(revokename, priv, caller, "revoke")
-	end
-
-	core.set_player_privs(revokename, privs)
-	core.log("action", caller..' revoked ('
-			..core.privs_to_string(revokeprivs, ', ')
-			..') privileges from '..revokename)
-	if revokename ~= caller then
-		core.chat_send_player(revokename, caller
-			.. " revoked privileges from you: "
-			.. core.privs_to_string(revokeprivs, ' '))
-	end
-	return true, "Privileges of " .. revokename .. ": "
-		.. core.privs_to_string(
-			core.get_player_privs(revokename), ' ')
-end
-
 core.register_chatcommand("revoke", {
 	params = "<name> (<privilege> | all)",
 	description = "Remove privileges from player",
 	privs = {},
 	func = function(name, param)
-		local revokename, revokeprivstr = string.match(param, "([^ ]+) (.+)")
-		if not revokename or not revokeprivstr then
+		if not core.check_player_privs(name, {privs=true}) and
+				not core.check_player_privs(name, {basic_privs=true}) then
+			return false, "Your privileges are insufficient."
+		end
+		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
+		if not revoke_name or not revoke_priv_str then
 			return false, "Invalid parameters (see /help revoke)"
+		elseif not core.get_auth_handler().get_auth(revoke_name) then
+			return false, "Player " .. revoke_name .. " does not exist."
 		end
-		return handle_revoke_command(name, revokename, revokeprivstr)
-	end,
-})
+		local revoke_privs = core.string_to_privs(revoke_priv_str)
+		local privs = core.get_player_privs(revoke_name)
+		local basic_privs =
+			core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
+		for priv, _ in pairs(revoke_privs) do
+			if not basic_privs[priv] and
+					not core.check_player_privs(name, {privs=true}) then
+				return false, "Your privileges are insufficient."
+			end
+		end
+		if revoke_priv_str == "all" then
+			revoke_privs = privs
+			privs = {}
+		else
+			for priv, _ in pairs(revoke_privs) do
+				privs[priv] = nil
+			end
+		end
 
-core.register_chatcommand("revokeme", {
-	params = "<privilege> | all",
-	description = "Revoke privileges from yourself",
-	privs = {},
-	func = function(name, param)
-		if param == "" then
-			return false, "Invalid parameters (see /help revokeme)"
+		for priv, _ in pairs(revoke_privs) do
+			-- call the on_revoke callbacks
+			core.run_priv_callbacks(revoke_name, priv, name, "revoke")
 		end
-		return handle_revoke_command(name, name, param)
+
+		core.set_player_privs(revoke_name, privs)
+		core.log("action", name..' revoked ('
+				..core.privs_to_string(revoke_privs, ', ')
+				..') privileges from '..revoke_name)
+		if revoke_name ~= name then
+			core.chat_send_player(revoke_name, name
+					.. " revoked privileges from you: "
+					.. core.privs_to_string(revoke_privs, ' '))
+		end
+		return true, "Privileges of " .. revoke_name .. ": "
+			.. core.privs_to_string(
+				core.get_player_privs(revoke_name), ' ')
 	end,
 })
 
@@ -418,121 +399,111 @@ core.register_chatcommand("remove_player", {
 	end,
 })
 
+
+-- pos may be a non-integer position
+local function find_free_position_near(pos)
+	local tries = {
+		{x=1, y=0, z=0},
+		{x=-1, y=0, z=0},
+		{x=0, y=0, z=1},
+		{x=0, y=0, z=-1},
+	}
+	for _, d in ipairs(tries) do
+		local p = vector.add(pos, d)
+		local n = core.get_node_or_nil(p)
+		if n and n.name then
+			local def = core.registered_nodes[n.name]
+			if def and not def.walkable then
+				return p
+			end
+		end
+	end
+	return pos
+end
+
+-- Teleports player <name> to <p> if possible
+local function teleport_to_pos(name, p)
+	local lm = 31000
+	if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm
+			or p.z < -lm or p.z > lm then
+		return false, "Cannot teleport out of map bounds!"
+	end
+	local teleportee = core.get_player_by_name(name)
+	if not teleportee then
+		return false, "Cannot get player with name " .. name
+	end
+	if teleportee:get_attach() then
+		return false, "Cannot teleport, " .. name ..
+			" is attached to an object!"
+	end
+	teleportee:set_pos(p)
+	return true, "Teleporting " .. name .. " to " .. core.pos_to_string(p)
+end
+
+-- Teleports player <name> next to player <target_name> if possible
+local function teleport_to_player(name, target_name)
+	if name == target_name then
+		return false, "One does not teleport to oneself."
+	end
+	local teleportee = core.get_player_by_name(name)
+	if not teleportee then
+		return false, "Cannot get teleportee with name " .. name
+	end
+	if teleportee:get_attach() then
+		return false, "Cannot teleport, " .. name ..
+			" is attached to an object!"
+	end
+	local target = core.get_player_by_name(target_name)
+	if not target then
+		return false, "Cannot get target player with name " .. target_name
+	end
+	p = find_free_position_near(target:get_pos())
+	teleportee:set_pos(p)
+	return true, "Teleporting " .. name .. " to " .. target_name .. " at " ..
+		core.pos_to_string(p)
+end
+
 core.register_chatcommand("teleport", {
-	params = "<X>,<Y>,<Z> | <to_name> | (<name> <X>,<Y>,<Z>) | (<name> <to_name>)",
+	params = "<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>",
 	description = "Teleport to position or player",
 	privs = {teleport=true},
 	func = function(name, param)
-		-- Returns (pos, true) if found, otherwise (pos, false)
-		local function find_free_position_near(pos)
-			local tries = {
-				{x=1,y=0,z=0},
-				{x=-1,y=0,z=0},
-				{x=0,y=0,z=1},
-				{x=0,y=0,z=-1},
-			}
-			for _, d in ipairs(tries) do
-				local p = {x = pos.x+d.x, y = pos.y+d.y, z = pos.z+d.z}
-				local n = core.get_node_or_nil(p)
-				if n and n.name then
-					local def = core.registered_nodes[n.name]
-					if def and not def.walkable then
-						return p, true
-					end
-				end
-			end
-			return pos, false
-		end
-
 		local p = {}
-		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-		p.x = tonumber(p.x)
-		p.y = tonumber(p.y)
-		p.z = tonumber(p.z)
+		p.x, p.y, p.z = param:match("^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+		p = vector.apply(p, tonumber)
 		if p.x and p.y and p.z then
-
-			local lm = 31000
-			if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm or p.z < -lm or p.z > lm then
-				return false, "Cannot teleport out of map bounds!"
-			end
-			local teleportee = core.get_player_by_name(name)
-			if teleportee then
-				if teleportee:get_attach() then
-					return false, "Can't teleport, you're attached to an object!"
-				end
-				teleportee:set_pos(p)
-				return true, "Teleporting to "..core.pos_to_string(p)
-			end
+			return teleport_to_pos(name, p)
 		end
 
 		local target_name = param:match("^([^ ]+)$")
-		local teleportee = core.get_player_by_name(name)
-
-		p = nil
 		if target_name then
-			local target = core.get_player_by_name(target_name)
-			if target then
-				p = target:get_pos()
-			end
+			return teleport_to_player(name, target_name)
 		end
 
-		if teleportee and p then
-			if teleportee:get_attach() then
-				return false, "Can't teleport, you're attached to an object!"
-			end
-			p = find_free_position_near(p)
-			teleportee:set_pos(p)
-			return true, "Teleporting to " .. target_name
-					.. " at "..core.pos_to_string(p)
-		end
+		local has_bring_priv = core.check_player_privs(name, {bring=true})
+		local missing_bring_msg = "You don't have permission to teleport " ..
+			"other players (missing bring privilege)"
 
-		if not core.check_player_privs(name, {bring=true}) then
-			return false, "You don't have permission to teleport other players (missing bring privilege)"
-		end
-
-		teleportee = nil
-		p = {}
 		local teleportee_name
 		teleportee_name, p.x, p.y, p.z = param:match(
 				"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-		p.x, p.y, p.z = tonumber(p.x), tonumber(p.y), tonumber(p.z)
-		if teleportee_name then
-			teleportee = core.get_player_by_name(teleportee_name)
-		end
-		if teleportee and p.x and p.y and p.z then
-			if teleportee:get_attach() then
-				return false, "Can't teleport, player is attached to an object!"
+		p = vector.apply(p, tonumber)
+		if teleportee_name and p.x and p.y and p.z then
+			if not has_bring_priv then
+				return false, missing_bring_msg
 			end
-			teleportee:set_pos(p)
-			return true, "Teleporting " .. teleportee_name
-					.. " to " .. core.pos_to_string(p)
+			return teleport_to_pos(teleportee_name, p)
 		end
 
-		teleportee = nil
-		p = nil
 		teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
-		if teleportee_name then
-			teleportee = core.get_player_by_name(teleportee_name)
-		end
-		if target_name then
-			local target = core.get_player_by_name(target_name)
-			if target then
-				p = target:get_pos()
+		if teleportee_name and target_name then
+			if not has_bring_priv then
+				return false, missing_bring_msg
 			end
-		end
-		if teleportee and p then
-			if teleportee:get_attach() then
-				return false, "Can't teleport, player is attached to an object!"
-			end
-			p = find_free_position_near(p)
-			teleportee:set_pos(p)
-			return true, "Teleporting " .. teleportee_name
-					.. " to " .. target_name
-					.. " at " .. core.pos_to_string(p)
+			return teleport_to_player(teleportee_name, target_name)
 		end
 
-		return false, 'Invalid parameters ("' .. param
-				.. '") or player not found (see /help teleport)'
+		return false, 'Invalid parameters "' .. param .. '"; see /help teleport'
 	end,
 })
 
@@ -762,9 +733,8 @@ core.register_chatcommand("spawnentity", {
 			end
 		end
 		p.y = p.y + 1
-		local obj = core.add_entity(p, entityname)
-		local msg = obj and "%q spawned." or "%q failed to spawn."
-		return true, msg:format(entityname)
+		core.add_entity(p, entityname)
+		return true, ("%q spawned."):format(entityname)
 	end,
 })
 
@@ -803,7 +773,7 @@ core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
 			.. " within the time specified by <seconds>. Default: range = 0,"
-			.. " seconds = 86400 = 24h, limit = 5. Set <seconds> to inf for no time limit",
+			.. " seconds = 86400 = 24h, limit = 5",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -854,7 +824,7 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
-	description = "Revert actions of a player. Default for <seconds> is 60. Set <seconds> to inf for no time limit",
+	description = "Revert actions of a player. Default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -1082,7 +1052,7 @@ core.register_chatcommand("last-login", {
 			param = name
 		end
 		local pauth = core.get_auth_handler().get_auth(param)
-		if pauth and pauth.last_login and pauth.last_login ~= -1 then
+		if pauth and pauth.last_login then
 			-- Time in UTC, ISO 8601 format
 			return true, param.."'s last login time was " ..
 				os.date("!%Y-%m-%dT%H:%M:%SZ", pauth.last_login)
