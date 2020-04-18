@@ -38,7 +38,11 @@ public:
 			updateScrolling();
 	}
 
-	inline void setScrollBar(GUIScrollBar *scrollbar) { m_scrollbar = scrollbar; }
+	inline void setScrollBar(GUIScrollBar *scrollbar)
+	{
+		m_scrollbar = scrollbar;
+		updateScrolling();
+	}
 
 private:
 	enum OrientationEnum
