@@ -50,6 +50,8 @@ ObjectRef* ObjectRef::checkobject(lua_State *L, int narg)
 ServerActiveObject* ObjectRef::getobject(ObjectRef *ref)
 {
 	ServerActiveObject *co = ref->m_object;
+	if (co && co->isGone())
+		return NULL;
 	return co;
 }
 
@@ -60,8 +62,6 @@ LuaEntitySAO* ObjectRef::getluaobject(ObjectRef *ref)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
 		return NULL;
-	if (obj->isGone())
-		return NULL;
 	return (LuaEntitySAO*)obj;
 }
 
@@ -71,8 +71,6 @@ PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
 	if (obj == NULL)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
-		return NULL;
-	if (obj->isGone())
 		return NULL;
 	return (PlayerSAO*)obj;
 }
@@ -132,7 +130,6 @@ int ObjectRef::l_set_pos(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	//LuaEntitySAO *co = getluaobject(ref);
 	ServerActiveObject *co = getobject(ref);
 	if (co == NULL) return 0;
 	// pos
@@ -147,7 +144,6 @@ int ObjectRef::l_move_to(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	//LuaEntitySAO *co = getluaobject(ref);
 	ServerActiveObject *co = getobject(ref);
 	if (co == NULL) return 0;
 	// pos
@@ -1102,17 +1098,13 @@ int ObjectRef::l_add_player_velocity(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	v3f vel = checkFloatPos(L, 2);
 
-	RemotePlayer *player = getplayer(ref);
 	PlayerSAO *co = getplayersao(ref);
-	if (!player || !co)
+	if (!co)
 		return 0;
 
-	session_t peer_id = player->getPeerId();
-	if (peer_id == PEER_ID_INEXISTENT)
-		return 0;
 	// Do it
 	co->setMaxSpeedOverride(vel);
-	getServer(L)->SendPlayerSpeed(peer_id, vel);
+	getServer(L)->SendPlayerSpeed(co->getPeerID(), vel);
 	return 0;
 }
 
