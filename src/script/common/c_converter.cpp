@@ -62,7 +62,7 @@ void push_float_string(lua_State *L, float value)
 
 void push_v3f(lua_State *L, v3f p)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	lua_pushnumber(L, p.X);
 	lua_setfield(L, -2, "x");
 	lua_pushnumber(L, p.Y);
@@ -73,7 +73,7 @@ void push_v3f(lua_State *L, v3f p)
 
 void push_v2f(lua_State *L, v2f p)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 2);
 	lua_pushnumber(L, p.X);
 	lua_setfield(L, -2, "x");
 	lua_pushnumber(L, p.Y);
@@ -82,7 +82,7 @@ void push_v2f(lua_State *L, v2f p)
 
 void push_v3_float_string(lua_State *L, v3f p)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	push_float_string(L, p.X);
 	lua_setfield(L, -2, "x");
 	push_float_string(L, p.Y);
@@ -93,7 +93,7 @@ void push_v3_float_string(lua_State *L, v3f p)
 
 void push_v2_float_string(lua_State *L, v2f p)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 2);
 	push_float_string(L, p.X);
 	lua_setfield(L, -2, "x");
 	push_float_string(L, p.Y);
@@ -115,19 +115,19 @@ v2s16 read_v2s16(lua_State *L, int index)
 
 void push_v2s16(lua_State *L, v2s16 p)
 {
-	lua_newtable(L);
-	lua_pushnumber(L, p.X);
+	lua_createtable(L, 0, 2);
+	lua_pushinteger(L, p.X);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, p.Y);
+	lua_pushinteger(L, p.Y);
 	lua_setfield(L, -2, "y");
 }
 
 void push_v2s32(lua_State *L, v2s32 p)
 {
-	lua_newtable(L);
-	lua_pushnumber(L, p.X);
+	lua_createtable(L, 0, 2);
+	lua_pushinteger(L, p.X);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, p.Y);
+	lua_pushinteger(L, p.Y);
 	lua_setfield(L, -2, "y");
 }
 
@@ -250,14 +250,14 @@ v3d check_v3d(lua_State *L, int index)
 
 void push_ARGB8(lua_State *L, video::SColor color)
 {
-	lua_newtable(L);
-	lua_pushnumber(L, color.getAlpha());
+	lua_createtable(L, 0, 4);
+	lua_pushinteger(L, color.getAlpha());
 	lua_setfield(L, -2, "a");
-	lua_pushnumber(L, color.getRed());
+	lua_pushinteger(L, color.getRed());
 	lua_setfield(L, -2, "r");
-	lua_pushnumber(L, color.getGreen());
+	lua_pushinteger(L, color.getGreen());
 	lua_setfield(L, -2, "g");
-	lua_pushnumber(L, color.getBlue());
+	lua_pushinteger(L, color.getBlue());
 	lua_setfield(L, -2, "b");
 }
 
@@ -274,12 +274,12 @@ v3f checkFloatPos(lua_State *L, int index)
 
 void push_v3s16(lua_State *L, v3s16 p)
 {
-	lua_newtable(L);
-	lua_pushnumber(L, p.X);
+	lua_createtable(L, 0, 3);
+	lua_pushinteger(L, p.X);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, p.Y);
+	lua_pushinteger(L, p.Y);
 	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, p.Z);
+	lua_pushinteger(L, p.Z);
 	lua_setfield(L, -2, "z");
 }
 
@@ -386,7 +386,7 @@ aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 
 void push_aabb3f(lua_State *L, aabb3f box)
 {
-	lua_newtable(L);
+	lua_createtable(L, 6, 0);
 	lua_pushnumber(L, box.MinEdge.X);
 	lua_rawseti(L, -2, 1);
 	lua_pushnumber(L, box.MinEdge.Y);

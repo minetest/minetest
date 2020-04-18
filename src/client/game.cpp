@@ -266,6 +266,7 @@ class SoundMaker
 public:
 	bool makes_footstep_sound;
 	float m_player_step_timer;
+	float m_player_jump_timer;
 
 	SimpleSoundSpec m_player_step_sound;
 	SimpleSoundSpec m_player_leftpunch_sound;
@@ -275,7 +276,8 @@ public:
 		m_sound(sound),
 		m_ndef(ndef),
 		makes_footstep_sound(true),
-		m_player_step_timer(0)
+		m_player_step_timer(0.0f),
+		m_player_jump_timer(0.0f)
 	{
 	}
 
@@ -285,6 +287,14 @@ public:
 			m_player_step_timer = 0.03;
 			if (makes_footstep_sound)
 				m_sound->playSound(m_player_step_sound, false);
+		}
+	}
+
+	void playPlayerJump()
+	{
+		if (m_player_jump_timer <= 0.0f) {
+			m_player_jump_timer = 0.2f;
+			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f), false);
 		}
 	}
 
@@ -302,7 +312,8 @@ public:
 
 	static void playerJump(MtEvent *e, void *data)
 	{
-		//SoundMaker *sm = (SoundMaker*)data;
+		SoundMaker *sm = (SoundMaker *)data;
+		sm->playPlayerJump();
 	}
 
 	static void cameraPunchLeft(MtEvent *e, void *data)
@@ -351,6 +362,7 @@ public:
 	void step(float dtime)
 	{
 		m_player_step_timer -= dtime;
+		m_player_jump_timer -= dtime;
 	}
 };
 
@@ -1407,8 +1419,11 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	mapper = client->getMinimap();
-	if (mapper)
+	if (mapper) {
 		mapper->setMinimapMode(MINIMAP_MODE_OFF);
+		if (client->modsLoaded())
+			client->getScript()->on_minimap_ready(mapper);
+	}
 
 	return true;
 }
@@ -1553,7 +1568,8 @@ bool Game::connectToServer(const std::string &playername,
 				} else {
 					registration_confirmation_shown = true;
 					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
-						   &g_menumgr, client, playername, password, connection_aborted))->drop();
+						   &g_menumgr, client, playername, password,
+						   connection_aborted, texture_src))->drop();
 				}
 			} else {
 				wait_time += dtime;
@@ -1708,19 +1724,19 @@ inline bool Game::handleCallbacks()
 
 	if (g_gamecallback->changepassword_requested) {
 		(new GUIPasswordChange(guienv, guiroot, -1,
-				       &g_menumgr, client))->drop();
+				       &g_menumgr, client, texture_src))->drop();
 		g_gamecallback->changepassword_requested = false;
 	}
 
 	if (g_gamecallback->changevolume_requested) {
 		(new GUIVolumeChange(guienv, guiroot, -1,
-				     &g_menumgr))->drop();
+				     &g_menumgr, texture_src))->drop();
 		g_gamecallback->changevolume_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
-				      &g_menumgr))->drop();
+				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
 	}
 
@@ -1906,29 +1922,47 @@ void Game::processKeyInput()
 		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip();
+#if USE_SOUND
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		bool new_mute_sound = !g_settings->getBool("mute_sound");
-		g_settings->setBool("mute_sound", new_mute_sound);
-		if (new_mute_sound)
-			m_game_ui->showTranslatedStatusText("Sound muted");
-		else
-			m_game_ui->showTranslatedStatusText("Sound unmuted");
+		if (g_settings->getBool("enable_sound")) {
+			bool new_mute_sound = !g_settings->getBool("mute_sound");
+			g_settings->setBool("mute_sound", new_mute_sound);
+			if (new_mute_sound)
+				m_game_ui->showTranslatedStatusText("Sound muted");
+			else
+				m_game_ui->showTranslatedStatusText("Sound unmuted");
+		} else {
+			m_game_ui->showTranslatedStatusText("Sound system is disabled");
+		}
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
-		wchar_t buf[100];
-		g_settings->setFloat("sound_volume", new_volume);
-		const wchar_t *str = wgettext("Volume changed to %d%%");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		if (g_settings->getBool("enable_sound")) {
+			float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+			wchar_t buf[100];
+			g_settings->setFloat("sound_volume", new_volume);
+			const wchar_t *str = wgettext("Volume changed to %d%%");
+			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
+			delete[] str;
+			m_game_ui->showStatusText(buf);
+		} else {
+			m_game_ui->showTranslatedStatusText("Sound system is disabled");
+		}
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
-		wchar_t buf[100];
-		g_settings->setFloat("sound_volume", new_volume);
-		const wchar_t *str = wgettext("Volume changed to %d%%");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		if (g_settings->getBool("enable_sound")) {
+			float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+			wchar_t buf[100];
+			g_settings->setFloat("sound_volume", new_volume);
+			const wchar_t *str = wgettext("Volume changed to %d%%");
+			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
+			delete[] str;
+			m_game_ui->showStatusText(buf);
+		} else {
+			m_game_ui->showTranslatedStatusText("Sound system is disabled");
+		}
+#else
+	} else if (wasKeyDown(KeyType::MUTE) || wasKeyDown(KeyType::INC_VOLUME)
+			|| wasKeyDown(KeyType::DEC_VOLUME)) {
+		m_game_ui->showTranslatedStatusText("Sound system is not supported on this build");
+#endif
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
@@ -2010,7 +2044,6 @@ void Game::processItemSelection(u16 *new_playeritem)
 	for (u16 i = 0; i <= max_item; i++) {
 		if (wasKeyDown((GameKeyType) (KeyType::SLOT_1 + i))) {
 			*new_playeritem = i;
-			infostream << "Selected item: " << new_playeritem << std::endl;
 			break;
 		}
 	}
@@ -2039,7 +2072,7 @@ void Game::openInventory()
 	if (!player || !player->getCAO())
 		return;
 
-	infostream << "the_game: " << "Launching inventory" << std::endl;
+	infostream << "Game: Launching inventory" << std::endl;
 
 	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
 
@@ -2996,16 +3029,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	v3f player_position  = player->getPosition();
-	v3f player_eye_position = player->getEyePosition();
-	v3f camera_position  = camera->getPosition();
-	v3f camera_direction = camera->getDirection();
-	v3s16 camera_offset  = camera->getOffset();
-
-	if (camera->getCameraMode() == CAMERA_MODE_FIRST)
-		player_eye_position += player->eye_offset_first;
-	else
-		player_eye_position += player->eye_offset_third;
+	const v3f head_position = camera->getHeadPosition();
+	const v3f camera_direction = camera->getDirection();
+	const v3s16 camera_offset  = camera->getOffset();
 
 	/*
 		Calculate what block is the crosshair pointing to
@@ -3020,11 +3046,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	core::line3d<f32> shootline;
 
 	if (camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT) {
-		shootline = core::line3d<f32>(player_eye_position,
-			player_eye_position + camera_direction * BS * d);
+		shootline = core::line3d<f32>(head_position,
+			head_position + camera_direction * BS * d);
 	} else {
 		// prevent player pointing anything in front-view
-		shootline = core::line3d<f32>(camera_position, camera_position);
+		shootline = core::line3d<f32>(head_position, head_position);
 	}
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -3112,6 +3138,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
+		v3f player_position  = player->getPosition();
 		handlePointingAtObject(pointed, tool_item, player_position, show_debug);
 	} else if (input->getLeftState()) {
 		// When button is held down in air, show continuous animation
@@ -4147,8 +4174,12 @@ void Game::showPauseMenu()
 	}
 
 #ifndef __ANDROID__
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
-		<< strgettext("Sound Volume") << "]";
+#if USE_SOUND
+	if (g_settings->getBool("enable_sound")) {
+		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
+			<< strgettext("Sound Volume") << "]";
+	}
+#endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
 		<< strgettext("Change Keys")  << "]";
 #endif

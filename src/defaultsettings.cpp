@@ -48,7 +48,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("noclip", "false");
-	settings->setDefault("screenshot_path", ".");
+	settings->setDefault("screenshot_path", "screenshots");
 	settings->setDefault("screenshot_format", "png");
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");

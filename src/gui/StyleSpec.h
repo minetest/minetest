@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/tile.h" // ITextureSource
+#include "debug.h"
 #include "irrlichttypes_extrabloated.h"
 #include "util/string.h"
 #include <array>
@@ -31,25 +32,34 @@ public:
 	{
 		TEXTCOLOR,
 		BGCOLOR,
-		BGCOLOR_HOVERED,
-		BGCOLOR_PRESSED,
+		BGCOLOR_HOVERED, // Note: Deprecated property
+		BGCOLOR_PRESSED, // Note: Deprecated property
 		NOCLIP,
 		BORDER,
 		BGIMG,
-		BGIMG_HOVERED,
+		BGIMG_HOVERED, // Note: Deprecated property
 		BGIMG_MIDDLE,
-		BGIMG_PRESSED,
+		BGIMG_PRESSED, // Note: Deprecated property
 		FGIMG,
-		FGIMG_HOVERED,
-		FGIMG_PRESSED,
+		FGIMG_HOVERED, // Note: Deprecated property
+		FGIMG_PRESSED, // Note: Deprecated property
 		ALPHA,
 		NUM_PROPERTIES,
 		NONE
+	};
+	enum State
+	{
+		STATE_DEFAULT = 0,
+		STATE_HOVERED = 1 << 0,
+		STATE_PRESSED = 1 << 1,
+		NUM_STATES = 1 << 2,
+		STATE_INVALID = 1 << 3,
 	};
 
 private:
 	std::array<bool, NUM_PROPERTIES> property_set{};
 	std::array<std::string, NUM_PROPERTIES> properties;
+	State state_map = STATE_DEFAULT;
 
 public:
 	static Property GetPropertyByName(const std::string &name)
@@ -97,6 +107,49 @@ public:
 	{
 		properties[prop] = value;
 		property_set[prop] = true;
+	}
+
+	//! Parses a name and returns the corresponding state enum
+	static State getStateByName(const std::string &name)
+	{
+		if (name == "default") {
+			return STATE_DEFAULT;
+		} else if (name == "hovered") {
+			return STATE_HOVERED;
+		} else if (name == "pressed") {
+			return STATE_PRESSED;
+		} else {
+			return STATE_INVALID;
+		}
+	}
+
+	//! Gets the state that this style is intended for
+	State getState() const
+	{
+		return state_map;
+	}
+
+	//! Set the given state on this style
+	void addState(State state)
+	{
+		FATAL_ERROR_IF(state >= NUM_STATES, "Out-of-bounds state received");
+
+		state_map = static_cast<State>(state_map | state);
+	}
+
+	//! Using a list of styles mapped to state values, calculate the final
+	//  combined style for a state by propagating values in its component states
+	static StyleSpec getStyleFromStatePropagation(const std::array<StyleSpec, NUM_STATES> &styles, State state)
+	{
+		StyleSpec temp = styles[StyleSpec::STATE_DEFAULT];
+		temp.state_map = state;
+		for (int i = StyleSpec::STATE_DEFAULT + 1; i <= state; i++) {
+			if ((state & i) != 0) {
+				temp = temp | styles[i];
+			}
+		}
+
+		return temp;
 	}
 
 	video::SColor getColor(Property prop, video::SColor def) const

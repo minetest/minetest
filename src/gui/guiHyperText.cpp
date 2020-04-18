@@ -917,20 +917,20 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 
 // Draw text in a rectangle with a given offset. Items are actually placed in
 // relative (to upper left corner) coordinates.
-void TextDrawer::draw(const core::rect<s32> &dest_rect,
+void TextDrawer::draw(const core::rect<s32> &clip_rect,
 		const core::position2d<s32> &dest_offset)
 {
 	irr::video::IVideoDriver *driver = m_environment->getVideoDriver();
-	core::position2d<s32> offset = dest_rect.UpperLeftCorner + dest_offset;
+	core::position2d<s32> offset = dest_offset;
 	offset.Y += m_voffset;
 
 	if (m_text.background_type == ParsedText::BACKGROUND_COLOR)
-		driver->draw2DRectangle(m_text.background_color, dest_rect);
+		driver->draw2DRectangle(m_text.background_color, clip_rect);
 
 	for (auto &p : m_text.m_paragraphs) {
 		for (auto &el : p.elements) {
 			core::rect<s32> rect(el.pos + offset, el.dim);
-			if (!rect.isRectCollided(dest_rect))
+			if (!rect.isRectCollided(clip_rect))
 				continue;
 
 			switch (el.type) {
@@ -947,7 +947,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 
 				if (el.type == ParsedText::ELEMENT_TEXT)
 					el.font->draw(el.text, rect, color, false, true,
-							&dest_rect);
+							&clip_rect);
 
 				if (el.underline &&  el.drawwidth) {
 					s32 linepos = el.pos.Y + offset.Y +
@@ -958,7 +958,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 							el.pos.X + offset.X + el.drawwidth,
 							linepos + (el.baseline >> 3));
 
-					driver->draw2DRectangle(color, linerect, &dest_rect);
+					driver->draw2DRectangle(color, linerect, &clip_rect);
 				}
 			} break;
 
@@ -972,7 +972,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 							irr::core::rect<s32>(
 									core::position2d<s32>(0, 0),
 									texture->getOriginalSize()),
-							&dest_rect, 0, true);
+							&clip_rect, 0, true);
 			} break;
 
 			case ParsedText::ELEMENT_ITEM: {
@@ -982,7 +982,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 
 				drawItemStack(
 						m_environment->getVideoDriver(),
-						g_fontengine->getFont(), item, rect, &dest_rect,
+						g_fontengine->getFont(), item, rect, &clip_rect,
 						m_client, IT_ROT_OTHER, el.angle, el.rotation
 				);
 			} break;
@@ -1094,6 +1094,7 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 			m_text_scrollpos.Y = -m_vscrollbar->getPos();
 			m_drawer.draw(m_display_text_rect, m_text_scrollpos);
 			checkHover(event.MouseInput.X, event.MouseInput.Y);
+			return true;
 
 		} else if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 			ParsedText::Element *element = getElementAt(
@@ -1151,7 +1152,8 @@ void GUIHyperText::draw()
 		m_vscrollbar->setPos(0);
 		m_vscrollbar->setVisible(false);
 	}
-	m_drawer.draw(m_display_text_rect, m_text_scrollpos);
+	m_drawer.draw(AbsoluteClippingRect,
+			m_display_text_rect.UpperLeftCorner + m_text_scrollpos);
 
 	// draw children
 	IGUIElement::draw();

@@ -7,7 +7,7 @@ Minetest
 
 Minetest is a free open-source voxel game engine with easy modding and game creation.
 
-Copyright (C) 2010-2019 Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2020 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code
@@ -218,6 +218,7 @@ General options and their default values:
 
     BUILD_CLIENT=TRUE          - Build Minetest client
     BUILD_SERVER=FALSE         - Build Minetest server
+    BUILD_UNITTESTS=TRUE       - Build unittest sources
     CMAKE_BUILD_TYPE=Release   - Type of build (Release vs. Debug)
         Release                - Release build
         Debug                  - Debug build

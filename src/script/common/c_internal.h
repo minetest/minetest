@@ -31,6 +31,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "config.h"
 #include "common/c_types.h"
 
 
@@ -53,6 +54,15 @@ extern "C" {
 #define CUSTOM_RIDX_GLOBALS_BACKUP      (CUSTOM_RIDX_BASE + 1)
 #define CUSTOM_RIDX_CURRENT_MOD_NAME    (CUSTOM_RIDX_BASE + 2)
 #define CUSTOM_RIDX_BACKTRACE           (CUSTOM_RIDX_BASE + 3)
+
+// Determine if CUSTOM_RIDX_SCRIPTAPI will hold a light or full userdata
+#if defined(__aarch64__) && USE_LUAJIT
+/* LuaJIT has a 47-bit limit for lightuserdata on this platform and we cannot
+ * assume that the ScriptApi class was allocated at a fitting address. */
+#define INDIRECT_SCRIPTAPI_RIDX 1
+#else
+#define INDIRECT_SCRIPTAPI_RIDX 0
+#endif
 
 // Pushes the error handler onto the stack and returns its index
 #define PUSH_ERROR_HANDLER(L) \

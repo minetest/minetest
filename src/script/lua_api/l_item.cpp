@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "nodedef.h"
 #include "server.h"
-#include "content_sao.h"
 #include "inventory.h"
 #include "log.h"
 
@@ -522,7 +521,6 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 	lua_getfield(L, table, "name");
 	if(lua_isstring(L, -1)){
 		name = readParam<std::string>(L, -1);
-		verbosestream<<"register_item_raw: "<<name<<std::endl;
 	} else {
 		throw LuaError("register_item_raw: name is not defined or not a string");
 	}
