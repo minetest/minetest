@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 
 #include "util/base64.h"
+#include "client/camera.h"
 #include "chatmessage.h"
 #include "client/clientmedia.h"
 #include "log.h"
@@ -530,11 +531,21 @@ void Client::handleCommand_Movement(NetworkPacket* pkt)
 void Client::handleCommand_Fov(NetworkPacket *pkt)
 {
 	f32 fov;
-	bool is_multiplier;
+	bool is_multiplier = false;
+	f32 transition_time = 0.0f;
+
 	*pkt >> fov >> is_multiplier;
 
+	// Wrap transition_time extraction within a
+	// try-catch to preserve backwards compat
+	try {
+		*pkt >> transition_time;
+	} catch (PacketError &e) {};
+
 	LocalPlayer *player = m_env.getLocalPlayer();
-	player->setFov({ fov, is_multiplier });
+	assert(player);
+	player->setFov({ fov, is_multiplier, transition_time });
+	m_camera->notifyFovChange();
 }
 
 void Client::handleCommand_HP(NetworkPacket *pkt)
