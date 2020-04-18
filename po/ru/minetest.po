@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-04-02 14:09+0000\n"
-"Last-Translator: Tiller Luna <t.luna@protonmail.com>\n"
+"PO-Revision-Date: 2020-04-22 04:11+0000\n"
+"Last-Translator: pitchblack <pitchblack@mail.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.0.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -152,9 +152,8 @@ msgid "World:"
 msgstr "Мир:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "enabled"
-msgstr "включить"
+msgstr "включен"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -294,13 +293,12 @@ msgid "Rename Modpack:"
 msgstr "Переименовать пакет модов:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
-#, fuzzy
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
-"Этот пакет модов имеет имя, явно указанное в modpack.conf, которое не "
-"изменится от переименования здесь."
+"Этот модпак имеет явное имя, указанное в modpack.conf, который переопределит "
+"любое переименование здесь."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -355,9 +353,8 @@ msgid "Please enter a valid number."
 msgstr "Пожалуйста, введите допустимое число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Restore Default"
-msgstr "Сбросить значение"
+msgstr "Сброс настроек"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -439,9 +436,8 @@ msgid "$1 mods"
 msgstr "$1 модов"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "Невозможно установить $1 в $2"
+msgstr "Не удалось установить $1 в $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
@@ -2007,6 +2003,13 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
+"Изменяет кривую блеска, применяя к ней «гамма-\n"
+"коррекцию». Более высокие значения делают средний \n"
+"и нижний уровни света ярче. Значение «1.0» оставляет\n"
+"кривую блеска без изменений. Это оказывает \n"
+"существенное влияние только на дневной и \n"
+"искусственный свет, он очень мало влияет на \n"
+"естественный ночной свет."
 
 #: src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -2164,24 +2167,20 @@ msgid "Block send optimize distance"
 msgstr "Оптимизированное расстояние отправки блока"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold and italic font path"
-msgstr "Путь к моноширинному шрифту"
+msgstr "Путь к жирному и курсивному шрифту"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold and italic monospace font path"
-msgstr "Путь к моноширинному шрифту"
+msgstr "Путь к жирному и курсиву моноширинного шрифта"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold font path"
-msgstr "Путь к шрифту"
+msgstr "Путь к жирному шрифту"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold monospace font path"
-msgstr "Путь к моноширинному шрифту"
+msgstr "Путь к жирному моноширинному шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
