@@ -113,7 +113,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		actionstream << "Server: A mismatched client tried to connect from " <<
 			addr_s << std::endl;
 		infostream << "Server: Cannot negotiate serialization version with " <<
-			addr_s << std::endl;
+			addr_s << " client_max=" << (int)client_max << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
 		return;
 	}
@@ -207,7 +207,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			playername != g_settings->get("name") &&
 			!m_script->can_bypass_userlimit(playername, addr_s)) {
 		actionstream << "Server: " << playername << " tried to join from " <<
-			addr_s << ", but there" << " are already max_users=" <<
+			addr_s << ", but there are already max_users=" <<
 			g_settings->getU16("max_users") << " players." << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_TOO_MANY_USERS);
 		return;
