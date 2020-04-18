@@ -53,7 +53,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 
 	session_t peer_id = pkt->getPeerId();
-	RemoteClient* client = getClient(peer_id, CS_Created);
+	RemoteClient *client = getClient(peer_id, CS_Created);
 
 	std::string addr_s;
 	try {
@@ -1471,7 +1471,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 {
 	session_t peer_id = pkt->getPeerId();
-	RemoteClient* client = getClient(peer_id, CS_Invalid);
+	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
 
 	std::string playername = client->getName();
@@ -1538,7 +1538,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 {
 	session_t peer_id = pkt->getPeerId();
-	RemoteClient* client = getClient(peer_id, CS_Invalid);
+	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
 
 	bool wantSudo = (cstate == CS_Active);
@@ -1644,7 +1644,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 {
 	session_t peer_id = pkt->getPeerId();
-	RemoteClient* client = getClient(peer_id, CS_Invalid);
+	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
 
 	bool wantSudo = (cstate == CS_Active);
