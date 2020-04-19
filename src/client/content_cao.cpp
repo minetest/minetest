@@ -890,32 +890,36 @@ void GenericCAO::updateNodePos()
 
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
-	if (m_animated_meshnode){
+	if (m_animated_meshnode) {
 		m_animated_meshnode->animateJoints();
 		updateBonePosition();
-		//search through bones to find mistakenly rotated bones due to bug in Irrlicht
+
+		// search through bones to find mistakenly rotated bones due to bug in Irrlicht
 		for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
-			irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(i);
-			bool skip = false;
+			irr::scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
+			if (!bone)
+				continue;
+
 			//If bone is manually positioned there is no need to perform the bug check
-			if (!m_bone_position.empty()){ 
-				for(std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-					std::string bone_name = (*ii).first;
-					if (bone_name == bone->getName()){
-						skip = true;
-					}
+			bool skip = false;
+			for (auto &it : m_bone_position) {
+				if (it.first == bone->getName()) {
+					skip = true;
+					break;
 				}
 			}
-			if (bone && !skip){
-				v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
-				// Workaround for Irrlicht bug
-				// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
-				// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone the the proper position
-				// and update the bones transformation.
-				if (abs(bone_rot.X - bone->getRotation().X) > 179 && abs(bone_rot.X - bone->getRotation().X) < 181){ 
-					bone->setRotation(bone_rot);
-					bone->updateAbsolutePosition();
-				}
+			if (skip)
+				continue;
+
+			v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
+			// Workaround for Irrlicht bug
+			// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
+			// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone the the proper position
+			// and update the bones transformation.
+			if (abs(bone_rot.X - bone->getRotation().X) > 179 &&
+					abs(bone_rot.X - bone->getRotation().X) < 181){ 
+				bone->setRotation(bone_rot);
+				bone->updateAbsolutePosition();
 			}
 		}
 	}
