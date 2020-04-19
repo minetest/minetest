@@ -225,7 +225,7 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 		return f.light_propagates;
 	};
 
-	std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
+	bool obstructed[4] = { true, true, true, true };
 	add_node(0);
 	bool opaque1 = !add_node(1);
 	bool opaque2 = !add_node(2);
@@ -372,6 +372,32 @@ void final_color_blend(video::SColor *result,
 	Mesh generation helpers
 */
 
+// This table is moved outside getNodeVertexDirs to avoid the compiler using
+// a mutex to initialize this table at runtime right in the hot path.
+// For details search the internet for "cxa_guard_acquire".
+static const v3s16 vertex_dirs_table[] = {
+	// ( 1, 0, 0)
+	v3s16( 1,-1, 1), v3s16( 1,-1,-1),
+	v3s16( 1, 1,-1), v3s16( 1, 1, 1),
+	// ( 0, 1, 0)
+	v3s16( 1, 1,-1), v3s16(-1, 1,-1),
+	v3s16(-1, 1, 1), v3s16( 1, 1, 1),
+	// ( 0, 0, 1)
+	v3s16(-1,-1, 1), v3s16( 1,-1, 1),
+	v3s16( 1, 1, 1), v3s16(-1, 1, 1),
+	// invalid
+	v3s16(), v3s16(), v3s16(), v3s16(),
+	// ( 0, 0,-1)
+	v3s16( 1,-1,-1), v3s16(-1,-1,-1),
+	v3s16(-1, 1,-1), v3s16( 1, 1,-1),
+	// ( 0,-1, 0)
+	v3s16( 1,-1, 1), v3s16(-1,-1, 1),
+	v3s16(-1,-1,-1), v3s16( 1,-1,-1),
+	// (-1, 0, 0)
+	v3s16(-1,-1,-1), v3s16(-1,-1, 1),
+	v3s16(-1, 1, 1), v3s16(-1, 1,-1)
+};
+
 /*
 	vertex_dirs: v3s16[4]
 */
@@ -384,44 +410,16 @@ static void getNodeVertexDirs(const v3s16 &dir, v3s16 *vertex_dirs)
 		2: top-left
 		3: top-right
 	*/
-	if (dir == v3s16(0, 0, 1)) {
-		// If looking towards z+, this is the face that is behind
-		// the center point, facing towards z+.
-		vertex_dirs[0] = v3s16(-1,-1, 1);
-		vertex_dirs[1] = v3s16( 1,-1, 1);
-		vertex_dirs[2] = v3s16( 1, 1, 1);
-		vertex_dirs[3] = v3s16(-1, 1, 1);
-	} else if (dir == v3s16(0, 0, -1)) {
-		// faces towards Z-
-		vertex_dirs[0] = v3s16( 1,-1,-1);
-		vertex_dirs[1] = v3s16(-1,-1,-1);
-		vertex_dirs[2] = v3s16(-1, 1,-1);
-		vertex_dirs[3] = v3s16( 1, 1,-1);
-	} else if (dir == v3s16(1, 0, 0)) {
-		// faces towards X+
-		vertex_dirs[0] = v3s16( 1,-1, 1);
-		vertex_dirs[1] = v3s16( 1,-1,-1);
-		vertex_dirs[2] = v3s16( 1, 1,-1);
-		vertex_dirs[3] = v3s16( 1, 1, 1);
-	} else if (dir == v3s16(-1, 0, 0)) {
-		// faces towards X-
-		vertex_dirs[0] = v3s16(-1,-1,-1);
-		vertex_dirs[1] = v3s16(-1,-1, 1);
-		vertex_dirs[2] = v3s16(-1, 1, 1);
-		vertex_dirs[3] = v3s16(-1, 1,-1);
-	} else if (dir == v3s16(0, 1, 0)) {
-		// faces towards Y+ (assume Z- as "down" in texture)
-		vertex_dirs[0] = v3s16( 1, 1,-1);
-		vertex_dirs[1] = v3s16(-1, 1,-1);
-		vertex_dirs[2] = v3s16(-1, 1, 1);
-		vertex_dirs[3] = v3s16( 1, 1, 1);
-	} else if (dir == v3s16(0, -1, 0)) {
-		// faces towards Y- (assume Z+ as "down" in texture)
-		vertex_dirs[0] = v3s16( 1,-1, 1);
-		vertex_dirs[1] = v3s16(-1,-1, 1);
-		vertex_dirs[2] = v3s16(-1,-1,-1);
-		vertex_dirs[3] = v3s16( 1,-1,-1);
-	}
+
+	// Direction must be (1,0,0), (-1,0,0), (0,1,0), (0,-1,0),
+	// (0,0,1), (0,0,-1)
+	assert(dir.X * dir.X + dir.Y * dir.Y + dir.Z * dir.Z == 1);
+
+	// Convert direction to single integer for table lookup
+	u8 idx = (dir.X + 2 * dir.Y + 3 * dir.Z) & 7;
+	idx = (idx - 1) * 4;
+
+	memcpy(vertex_dirs, &vertex_dirs_table[idx], 4 * sizeof(v3s16));
 }
 
 static void getNodeTextureCoords(v3f base, const v3f &scale, const v3s16 &dir, float *u, float *v)
@@ -892,6 +890,8 @@ static void updateFastFaceRow(
 	u16 lights[4] = {0, 0, 0, 0};
 	u8 waving;
 	TileSpec tile;
+
+	// Get info of first tile
 	getTileInfo(data, p, face_dir,
 			makes_face, p_corrected, face_dir_corrected,
 			lights, waving, tile);
@@ -902,8 +902,6 @@ static void updateFastFaceRow(
 		// If tiling can be done, this is set to false in the next step
 		bool next_is_different = true;
 
-		v3s16 p_next;
-
 		bool next_makes_face = false;
 		v3s16 next_p_corrected;
 		v3s16 next_face_dir_corrected;
@@ -912,9 +910,9 @@ static void updateFastFaceRow(
 		// If at last position, there is nothing to compare to and
 		// the face must be drawn anyway
 		if (j != MAP_BLOCKSIZE - 1) {
-			p_next = p + translate_dir;
+			p += translate_dir;
 
-			getTileInfo(data, p_next, face_dir,
+			getTileInfo(data, p, face_dir,
 					next_makes_face, next_p_corrected,
 					next_face_dir_corrected, next_lights,
 					waving,
@@ -923,7 +921,7 @@ static void updateFastFaceRow(
 			if (next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
-					&& memcmp(next_lights, lights, ARRLEN(lights) * sizeof(u16)) == 0
+					&& memcmp(next_lights, lights, sizeof(lights)) == 0
 					// Don't apply fast faces to waving water.
 					&& (waving != 3 || !waving_liquids)
 					&& next_tile.isTileable(tile)) {
@@ -961,10 +959,9 @@ static void updateFastFaceRow(
 		makes_face = next_makes_face;
 		p_corrected = next_p_corrected;
 		face_dir_corrected = next_face_dir_corrected;
-		std::memcpy(lights, next_lights, ARRLEN(lights) * sizeof(u16));
+		memcpy(lights, next_lights, sizeof(lights));
 		if (next_is_different)
-			tile = next_tile;
-		p = p_next;
+			tile = std::move(next_tile); // faster than copy
 	}
 }
 
