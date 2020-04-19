@@ -609,10 +609,21 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 
+	const IItemDefManager *idef = getGameDef(L)->getItemDefManager();
 	const NodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
+
+	// If this is called at mod load time, NodeDefManager isn't aware of
+	// aliases yet, so we need to handle them manually
+	std::string alias_name = idef->getAlias(name);
+
 	content_t content_id;
-	if (!ndef->getId(name, content_id))
+	if (alias_name != name) {
+		if (!ndef->getId(alias_name, content_id))
+			throw LuaError("Unknown node: " + alias_name +
+					" (from alias " + name + ")");
+	} else if (!ndef->getId(name, content_id)) {
 		throw LuaError("Unknown node: " + name);
+	}
 
 	lua_pushinteger(L, content_id);
 	return 1; /* number of results */
