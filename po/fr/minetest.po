@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-04-03 20:24+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"PO-Revision-Date: 2020-04-22 04:11+0000\n"
+"Last-Translator: William Desportes <williamdes@wdes.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.0.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -2554,7 +2554,6 @@ msgid "Dec. volume key"
 msgstr "Touche pour diminuer le volume"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Decrease this to increase liquid resistance to movement."
 msgstr "Diminuez ceci pour augmenter la résistance liquide au mouvement."
 
@@ -2978,9 +2977,8 @@ msgid "Fall bobbing factor"
 msgstr "Intensité du mouvement de tête en tombant"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font path"
-msgstr "Police alternative"
+msgstr "Chemin de police alternative"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
@@ -3834,14 +3832,12 @@ msgid "Invert vertical mouse movement."
 msgstr "Inverser les mouvements verticaux de la souris."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Italic font path"
-msgstr "Chemin de la police Monospace"
+msgstr "Chemin de la police Italique"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Italic monospace font path"
-msgstr "Chemin de la police Monospace"
+msgstr "Chemin de la police Italique Monospace"
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
@@ -4774,9 +4770,8 @@ msgid "Light curve boost spread"
 msgstr "Étalement du boost intermédiaire de la courbe de lumière"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Light curve gamma"
-msgstr "Boost intermédiaire de la courbe de lumière"
+msgstr "Courbe de lumière gamma"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5012,36 +5007,32 @@ msgid "Mapgen Fractal"
 msgstr "Générateur de terrain Fractal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal specific flags"
-msgstr "Signaux spécifiques au générateur de terrain plat"
+msgstr "Drapeaux spécifiques au générateur Fractal"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
 msgstr "Générateur de terrain V5"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V5 specific flags"
-msgstr "Signaux spécifiques au générateur v5"
+msgstr "Drapeaux spécifiques au générateur v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6"
 msgstr "Générateur de terrain V6"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V6 specific flags"
-msgstr "Signaux spécifiques au générateur v6"
+msgstr "Drapeaux spécifiques au générateur V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7"
 msgstr "Générateur de terrain v7"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V7 specific flags"
-msgstr "Signaux spécifiques au générateur v7"
+msgstr "Drapeaux spécifiques au générateur V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
