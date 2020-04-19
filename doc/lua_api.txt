@@ -4375,11 +4375,11 @@ Call these functions only at load time!
 * `minetest.register_on_leaveplayer(function(ObjectRef, timed_out))`
     * Called when a player leaves the game
     * `timed_out`: True for timeout, false for other reasons.
-* `minetest.register_player_on_step(function(ObjectRef, dtime))`
+* `minetest.register_on_player_step(function(ObjectRef, dtime))`
     * Called for every player on every server step.
     * `ObjectRef`: The player.
     * `dtime`: Time from last step (see also `minetest.register_globalstep`).
-* `minetest.register_player_on_slow_step(step_size, function(ObjectRef))`
+* `minetest.register_on_player_interval(step_size, function(ObjectRef))`
     * Called for every player in specified intervals.
     * `step_size`: The size of the time intervals, in seconds.
     * `ObjectRef`: The player.
