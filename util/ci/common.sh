@@ -24,7 +24,7 @@ install_linux_deps() {
 		gettext libpq-dev postgresql-server-dev-all libleveldb-dev \
 		libcurl4-openssl-dev)
 	# for better coverage, build some jobs with luajit
-	if [[ "x$WITH_LUAJIT" != "x" ]]; then
+	if [ -n "$WITH_LUAJIT" ]; then
 		pkgs+=(libluajit-5.1-dev)
 	fi
 
