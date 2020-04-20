@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2013-2019 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2014-2019 paramat
+Copyright (C) 2014-2020 paramat
+Copyright (C) 2013-2020 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -44,6 +44,7 @@ FlagDesc flagdesc_mapgen_v7[] = {
 	{"ridges",      MGV7_RIDGES},
 	{"floatlands",  MGV7_FLOATLANDS},
 	{"caverns",     MGV7_CAVERNS},
+	{"floatwater",  MGV7_FLOATWATER},
 	{NULL,          0}
 };
 
@@ -58,7 +59,10 @@ MapgenV7::MapgenV7(MapgenV7Params *params, EmergeParams *emerge)
 	mount_zero_level   = params->mount_zero_level;
 	floatland_ymin     = params->floatland_ymin;
 	floatland_ymax     = params->floatland_ymax;
+	floatland_taper    = params->floatland_taper;
+	float_taper_exp    = params->float_taper_exp;
 	floatland_density  = params->floatland_density;
+	floatland_ywater   = params->floatland_ywater;
 
 	cave_width         = params->cave_width;
 	large_cave_depth   = params->large_cave_depth;
@@ -167,7 +171,10 @@ void MapgenV7Params::readParams(const Settings *settings)
 	settings->getS16NoEx("mgv7_mount_zero_level",       mount_zero_level);
 	settings->getS16NoEx("mgv7_floatland_ymin",         floatland_ymin);
 	settings->getS16NoEx("mgv7_floatland_ymax",         floatland_ymax);
+	settings->getS16NoEx("mgv7_floatland_taper",        floatland_taper);
+	settings->getFloatNoEx("mgv7_float_taper_exp",      float_taper_exp);
 	settings->getFloatNoEx("mgv7_floatland_density",    floatland_density);
+	settings->getS16NoEx("mgv7_floatland_ywater",       floatland_ywater);
 
 	settings->getFloatNoEx("mgv7_cave_width",           cave_width);
 	settings->getS16NoEx("mgv7_large_cave_depth",       large_cave_depth);
@@ -205,7 +212,10 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setS16("mgv7_mount_zero_level",           mount_zero_level);
 	settings->setS16("mgv7_floatland_ymin",             floatland_ymin);
 	settings->setS16("mgv7_floatland_ymax",             floatland_ymax);
+	settings->setS16("mgv7_floatland_taper",            floatland_taper);
+	settings->setFloat("mgv7_float_taper_exp",          float_taper_exp);
 	settings->setFloat("mgv7_floatland_density",        floatland_density);
+	settings->setS16("mgv7_floatland_ywater",           floatland_ywater);
 
 	settings->setFloat("mgv7_cave_width",               cave_width);
 	settings->setS16("mgv7_large_cave_depth",           large_cave_depth);
@@ -478,12 +488,14 @@ int MapgenV7::generateTerrain()
 	}
 
 	//// Floatlands
-	// Bool for optimisation of condition checks in y-loop
+	// 'Generate floatlands in this mapchunk' bool for
+	// optimisation of condition checks in y-loop.
 	bool gen_floatlands = false;
 	float float_offset_cache[csize.Y + 2];
 	u8 cache_index = 0;
-	s16 float_taper_ymin = floatland_ymin + 128;
-	s16 float_taper_ymax = floatland_ymax - 128;
+	// Y values where floatland tapering starts
+	s16 float_taper_ymax = floatland_ymax - floatland_taper;
+	s16 float_taper_ymin = floatland_ymin + floatland_taper;
 
 	if ((spflags & MGV7_FLOATLANDS) &&
 			node_max.Y >= floatland_ymin && node_min.Y <= floatland_ymax) {
@@ -491,13 +503,15 @@ int MapgenV7::generateTerrain()
 		// Calculate noise for floatland generation
 		noise_floatland->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
-		// Cache floatland offset values
+		// Cache floatland noise offset values, for floatland tapering
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++, cache_index++) {
 			float float_offset = 0.0f;
-			if (y < float_taper_ymin) {
-				float_offset = (float_taper_ymin - y) * (float_taper_ymin - y) * 0.0002f;
-			} else if (y > float_taper_ymax) {
-				float_offset = (y - float_taper_ymax) * (y - float_taper_ymax) * 0.0002f;
+			if (y > float_taper_ymax) {
+				float_offset = std::pow((y - float_taper_ymax) / (float)floatland_taper,
+					float_taper_exp) * 8.0f;
+			} else if (y < float_taper_ymin) {
+				float_offset = std::pow((float_taper_ymin - y) / (float)floatland_taper,
+					float_taper_exp) * 8.0f;
 			}
 			float_offset_cache[cache_index] = float_offset;
 		}
@@ -539,10 +553,13 @@ int MapgenV7::generateTerrain()
 				vm->m_data[vi] = n_stone; // Floatland terrain
 				if (y > stone_surface_max_y)
 					stone_surface_max_y = y;
-			} else if (y <= water_level) {
+			} else if (y <= water_level) { // Surface water
 				vm->m_data[vi] = n_water;
+			} else if (gen_floatlands && (spflags & MGV7_FLOATWATER) &&
+					y >= float_taper_ymax && y <= floatland_ywater) {
+				vm->m_data[vi] = n_water; // Floatland water
 			} else {
-				vm->m_data[vi] = n_air;
+				vm->m_data[vi] = n_air; // Air
 			}
 		}
 	}

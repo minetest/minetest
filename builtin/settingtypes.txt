@@ -1605,9 +1605,15 @@ mgv6_np_apple_trees (Apple trees noise) noise_params_2d 0, 1, (100, 100, 100), 3
 
 #    Map generation attributes specific to Mapgen v7.
 #    'ridges': Rivers.
-#    'floatlands': Floating land masses throughout the atmosphere.
+#    'floatlands': Floating land masses in the atmosphere.
 #    'caverns': Giant caves deep underground.
-mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
+#    'floatwater': Lakes and seas placed on a solid floatland layer.
+#    *WARNING*:
+#    When enabling 'floatwater' the floatlands must be configured to be a solid
+#    layer by setting 'mgv7_floatland_density' to roughly 2.0 to 3.0, to avoid
+#    server-intensive extreme water flow and to avoid flooding of the world
+#    surface below.
+mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns,nofloatwater mountains,ridges,floatlands,caverns,floatwater,nomountains,noridges,nofloatlands,nocaverns,nofloatwater
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 mgv7_mount_zero_level (Mountain zero level) int 0
@@ -1618,10 +1624,26 @@ mgv7_floatland_ymin (Floatland minimum Y) int 1024
 #    Upper Y limit of floatlands.
 mgv7_floatland_ymax (Floatland maximum Y) int 30000
 
+#    Y-distance over which floatlands taper from full density to nothing.
+#    For a solid floatland layer, this controls the height of hills/mountains.
+mgv7_floatland_taper (Floatland tapering distance) int 256
+
+#    Exponent of the floatland tapering. Alters the tapering behaviour.
+#    Values > 1.0 create a smooth. rounded tapering, suitable for the default
+#    separated floatlands.
+#    Values < 1.0 create a more defined surface level with flatter lowlands
+#    and more extreme hills/mountains, suitable for a solid floatland layer.
+mgv7_float_taper_exp (Floatland taper exponent) float 2.0
+
 #    Adjusts the density of the floatland realm.
-#    Increase value to increase density.
-#    Can be positive or negative.
+#    Increase value to increase density. Can be positive or negative.
+#    Values of roughly 2.0 to 3.0 create a solid floatland layer.
 mgv7_floatland_density (Floatland density) float -0.9
+
+#    Y-level of the floatland water surface.
+#    Should be set to somewhere between
+#    'mgv7_floatland_ymax' - 'mgv7_floatland_taper' and 'mgv7_floatland_ymax'.
+mgv7_floatland_ywater (Floatland water level) int 29872
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
