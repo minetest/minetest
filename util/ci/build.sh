@@ -1,7 +1,4 @@
-#! /bin/bash
-
-set -e
-set -u
+#! /bin/bash -eu
 
 mkdir cmakebuild
 cd cmakebuild

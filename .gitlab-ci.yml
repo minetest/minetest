@@ -257,7 +257,6 @@ build:win32:
     NO_PACKAGE: "1"
     WIN_ARCH: "i686"
     TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw.cmake"
-    NO_MINETEST_GAME: 1
 
 package:win32:
   extends: .package_win_template
@@ -276,7 +275,6 @@ build:win64:
     NO_PACKAGE: "1"
     WIN_ARCH: "x86_64"
     TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw64.cmake"
-    NO_MINETEST_GAME: 1
 
 package:win64:
   extends: .package_win_template

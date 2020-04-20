@@ -1,9 +1,6 @@
-#! /bin/bash
+#! /bin/bash -eu
 
-set -e
-set -u
-
-mkdir -p cmakebuild 
+mkdir -p cmakebuild
 cd cmakebuild
 cmake -DCMAKE_BUILD_TYPE=Debug \
 	-DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
