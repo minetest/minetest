@@ -175,9 +175,10 @@ jobs:
 
       - name: Build
         run: |
-          ./util/buildbot/buildwin32.sh cmakebuild
+          ./util/buildbot/buildwin32.sh .
         env:
           NO_MINETEST_GAME: 1
+          EXISTING_MINETEST_DIR: .
 
   win64:
     runs-on: ubuntu-18.04
@@ -191,6 +192,7 @@ jobs:
           
       - name: Build
         run: |
-          ./util/buildbot/buildwin64.sh cmakebuild
+          ./util/buildbot/buildwin64.sh .
         env:
           NO_MINETEST_GAME: 1
+          EXISTING_MINETEST_DIR: .
