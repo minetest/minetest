@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-03-08 15:32+0000\n"
-"Last-Translator: wzy2006 <3450354617@qq.com>\n"
+"PO-Revision-Date: 2020-04-22 04:11+0000\n"
+"Last-Translator: ERDwaYbR <weblate.uu@vvvvv5.uu.me>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.0.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -5504,19 +5504,24 @@ msgid "Profiling"
 msgstr "Mod 剖析"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Proportion of large caves that contain liquid."
-msgstr ""
+msgstr "包含液体的大洞穴的比例。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
+"以64个节点的云平方数表示的云区域半径。\n"
+"大于26的值将开始在云区域的拐角处产生急剧的截止。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Raises terrain to make valleys around the rivers."
-msgstr ""
+msgstr "抬高地形使河流周围形成山谷。"
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
@@ -5527,8 +5532,9 @@ msgid "Range select key"
 msgstr "范围选择键"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Recent Chat Messages"
-msgstr ""
+msgstr "最近聊天消息"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
