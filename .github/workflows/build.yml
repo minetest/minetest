@@ -4,26 +4,22 @@ name: build
 on:
   push:
     paths:
-      - 'lib/**.c'
+      - 'lib/**.[ch]'
       - 'lib/**.cpp'
-      - 'lib/**.h'
-      - 'src/**.c'
+      - 'src/**.[ch]'
       - 'src/**.cpp'
-      - 'src/**.h'
-      - '**CMakeLists.txt'
+      - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/buildbot/**'
       - 'util/ci/**'
       - '.github/workflows/**.yml'
   pull_request:
     paths:
-      - 'lib/**.c'
+      - 'lib/**.[ch]'
       - 'lib/**.cpp'
-      - 'lib/**.h'
-      - 'src/**.c'
+      - 'src/**.[ch]'
       - 'src/**.cpp'
-      - 'src/**.h'
-      - '**CMakeLists.txt'
+      - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
       - 'util/buildbot/**'
       - 'util/ci/**'
@@ -153,10 +149,10 @@ jobs:
 
       - name: Build
         run: |
-          ./util/buildbot/buildwin32.sh .
+           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh winbuild
         env:
           NO_MINETEST_GAME: 1
-          EXISTING_MINETEST_DIR: .
+          NO_PACKAGE: 1
 
   win64:
     runs-on: ubuntu-18.04
@@ -165,12 +161,11 @@ jobs:
       - name: Install compiler
         run: |
           wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
-          sed -e "s|%PREFIX%|x86_64-w64-mingw32|" -e "s|%ROOTPATH%|/usr/x86_64-w64-mingw32|" < ./util/ci/toolchain_mingw.cmake.in > ./util/buildbot/toolchain_mingw64.cmake
           sudo tar -xaf mingw.tar.xz -C /usr
           
       - name: Build
         run: |
-          ./util/buildbot/buildwin64.sh .
+          EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh winbuild
         env:
           NO_MINETEST_GAME: 1
-          EXISTING_MINETEST_DIR: .
+          NO_PACKAGE: 1

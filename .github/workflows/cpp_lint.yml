@@ -4,28 +4,22 @@ name: cpp_lint
 on:
   push:
     paths:
-      - 'lib/**.c'
+      - 'lib/**.[ch]'
       - 'lib/**.cpp'
-      - 'lib/**.h'
-      - 'src/**.c'
+      - 'src/**.[ch]'
       - 'src/**.cpp'
-      - 'src/**.h'
-      - '**CMakeLists.txt'
+      - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - 'util/buildbot/**'
       - 'util/ci/**'
       - '.github/workflows/**.yml'
   pull_request:
     paths:
-      - 'lib/**.c'
+      - 'lib/**.[ch]'
       - 'lib/**.cpp'
-      - 'lib/**.h'
-      - 'src/**.c'
+      - 'src/**.[ch]'
       - 'src/**.cpp'
-      - 'src/**.h'
-      - '**CMakeLists.txt'
+      - '**/CMakeLists.txt'
       - 'cmake/Modules/**'
-      - 'util/buildbot/**'
       - 'util/ci/**'
       - '.github/workflows/**.yml'
 
