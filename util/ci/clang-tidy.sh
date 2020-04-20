@@ -15,4 +15,7 @@ make GenerateVersion
 
 cd ..
 
-./util/ci/run-clang-tidy.py -clang-tidy-binary=clang-tidy-9 -p cmakebuild -quiet -config="$(cat .clang-tidy)" 'src/.*'
+./util/ci/run-clang-tidy.py \
+	-clang-tidy-binary=clang-tidy-9 -p cmakebuild \
+	-quiet -config="$(cat .clang-tidy)" \
+	'src/.*'
