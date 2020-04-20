@@ -1,8 +1,33 @@
-name: lint
+name: cpp_lint
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
-on: [ push, pull_request ]
+# lint on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.c'
+      - 'lib/**.cpp'
+      - 'lib/**.h'
+      - 'src/**.c'
+      - 'src/**.cpp'
+      - 'src/**.h'
+      - '**CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+  pull_request:
+    paths:
+      - 'lib/**.c'
+      - 'lib/**.cpp'
+      - 'lib/**.h'
+      - 'src/**.c'
+      - 'src/**.cpp'
+      - 'src/**.h'
+      - '**CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
 
 jobs:
   clang_format:
@@ -32,22 +57,3 @@ jobs:
     - name: Run clang-tidy
       run: |
         ./util/ci/clang-tidy.sh
-
-  luacheck:
-    runs-on: ubuntu-18.04
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install luarocks
-      run: |
-        sudo apt-get update -qyy
-        sudo apt-get install luarocks -qyy
-
-    - name: Install luarocks tools
-      run: |
-        luarocks install --local luacheck
-        luarocks install --local busted
-
-    - name: Run checks
-      run: |
-        $HOME/.luarocks/bin/luacheck builtin
-        $HOME/.luarocks/bin/busted builtin
