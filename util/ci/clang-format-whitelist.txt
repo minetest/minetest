@@ -434,6 +434,7 @@ src/threading/thread.cpp
 src/threading/thread.h
 src/threads.h
 src/tileanimation.cpp
+src/tileanimation.h
 src/tool.cpp
 src/tool.h
 src/translation.cpp

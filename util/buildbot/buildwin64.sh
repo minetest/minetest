@@ -78,22 +78,21 @@ cd $libdir
 # Get minetest
 cd $builddir
 if [ ! "x$EXISTING_MINETEST_DIR" = "x" ]; then
-	ln -s $EXISTING_MINETEST_DIR $CORE_NAME
+	cd /$EXISTING_MINETEST_DIR # must be absolute path
 else
 	[ -d $CORE_NAME ] && (cd $CORE_NAME && git pull) || (git clone -b $CORE_BRANCH $CORE_GIT)
+	cd $CORE_NAME
 fi
-cd $CORE_NAME
 git_hash=$(git rev-parse --short HEAD)
 
 # Get minetest_game
-cd games
 if [ "x$NO_MINETEST_GAME" = "x" ]; then
+	cd games
 	[ -d $GAME_NAME ] && (cd $GAME_NAME && git pull) || (git clone -b $GAME_BRANCH $GAME_GIT)
+	cd ..
 fi
-cd ../..
 
 # Build the thing
-cd $CORE_NAME
 [ -d _build ] && rm -Rf _build/
 mkdir _build
 cd _build

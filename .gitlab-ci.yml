@@ -219,7 +219,6 @@ build:fedora-24:
     - apt-get update -y
     - apt-get install -y wget xz-utils unzip git cmake gettext
     - wget -q http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
-    - sed -e "s|%PREFIX%|${WIN_ARCH}-w64-mingw32|" -e "s|%ROOTPATH%|/usr/${WIN_ARCH}-w64-mingw32|" < util/travis/toolchain_mingw.cmake.in > ${TOOLCHAIN_OUTPUT}
     - tar -xaf mingw.tar.xz -C /usr
 
 .build_win_template:
@@ -256,7 +255,6 @@ build:win32:
   variables:
     NO_PACKAGE: "1"
     WIN_ARCH: "i686"
-    TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw.cmake"
 
 package:win32:
   extends: .package_win_template
@@ -265,7 +263,6 @@ package:win32:
   variables:
     NO_PACKAGE: "1"
     WIN_ARCH: "i686"
-    TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw.cmake"
 
 build:win64:
   extends: .build_win_template
@@ -274,7 +271,6 @@ build:win64:
   variables:
     NO_PACKAGE: "1"
     WIN_ARCH: "x86_64"
-    TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw64.cmake"
 
 package:win64:
   extends: .package_win_template
@@ -283,7 +279,6 @@ package:win64:
   variables:
     NO_PACKAGE: "1"
     WIN_ARCH: "x86_64"
-    TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw64.cmake"
 
 package:docker:
   stage: package

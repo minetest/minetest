@@ -21,9 +21,10 @@ install_linux_deps() {
 	local pkgs=(libirrlicht-dev cmake libbz2-dev libpng-dev \
 		libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev \
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
-		gettext libpq-dev postgresql-server-dev-all libleveldb-dev)
+		gettext libpq-dev postgresql-server-dev-all libleveldb-dev \
+		libcurl4-openssl-dev)
 	# for better coverage, build some jobs with luajit
-	if [[ "$CC" == "clang"* && -z "$VALGRIND$FREETYPE" ]]; then
+	if [ -n "$WITH_LUAJIT" ]; then
 		pkgs+=(libluajit-5.1-dev)
 	fi
 
@@ -42,16 +43,3 @@ install_macosx_deps() {
 	fi
 	#brew upgrade postgresql
 }
-
-# Relative to git-repository root:
-TRIGGER_COMPILE_PATHS="src/.*\.(c|cpp|h)|CMakeLists.txt|cmake/Modules/|util/travis/|util/buildbot/"
-
-needs_compile() {
-	RANGE="$TRAVIS_COMMIT_RANGE"
-	if [[ "$(git diff --name-only $RANGE -- 2>/dev/null)" == "" ]]; then
-		RANGE="$TRAVIS_COMMIT^...$TRAVIS_COMMIT"
-		echo "Fixed range: $RANGE"
-	fi
-	git diff --name-only $RANGE -- | egrep -q "^($TRIGGER_COMPILE_PATHS)"
-}
-
