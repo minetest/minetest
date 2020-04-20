@@ -1173,7 +1173,9 @@ Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 	m_bc_peerhandler(peerhandler)
 
 {
-	m_udpSocket.setTimeoutMs(5);
+	/* Amount of time Receive() will wait for data, this is entirely different
+	 * from the connection timeout */
+	m_udpSocket.setTimeoutMs(500);
 
 	m_sendThread->setParent(this);
 	m_receiveThread->setParent(this);
