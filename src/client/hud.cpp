@@ -51,6 +51,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	this->inventory   = inventory;
 
 	m_hud_scaling      = g_settings->getFloat("hud_scaling");
+	m_scale_factor     = m_hud_scaling * RenderingEngine::getDisplayDensity();
 	m_hotbar_imagesize = std::floor(HOTBAR_IMAGE_SIZE *
 		RenderingEngine::getDisplayDensity() + 0.5f);
 	m_hotbar_imagesize *= m_hud_scaling;
@@ -213,9 +214,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 
 	// Position of upper left corner of bar
-	v2s32 pos = screen_offset;
-	pos.X *= m_hud_scaling * RenderingEngine::getDisplayDensity();
-	pos.Y *= m_hud_scaling * RenderingEngine::getDisplayDensity();
+	v2s32 pos = screen_offset * m_scale_factor;
 	pos += upperleftpos;
 
 	// Store hotbar_image in member variable, used by drawItem()
@@ -322,13 +321,34 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
-				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
 				std::wstring text = unescape_translate(utf8_to_wide(e->text));
+#ifdef __ANDROID__ // Only for Android!
+				// The text size on Android is not proportional with the actual scaling
+				irr::gui::IGUIFont *font_scaled = g_fontengine->getFont(
+						g_fontengine->getDefaultFontSize() - 3);
+				if (e->offset.X < -20)
+					textsize = font_scaled->getDimension(text.c_str());
+#endif
 				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
-				v2s32 offs(e->offset.X, e->offset.Y);
+#ifdef __ANDROID__ // Android and Desktop
+				core::rect<s32> size(0, 0, e->scale.X * m_scale_factor,
+				                     text_height * e->scale.Y * m_scale_factor);
+				v2s32 offs(e->offset.X * m_scale_factor,
+				           e->offset.Y * m_scale_factor);
+#else
+				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
+				v2s32 offs(e->offset.X, m_scale_factor * e->offset.Y);
+#endif
+#ifdef __ANDROID__ // Only for Android!
+				if (e->offset.X < -20)
+					font_scaled->draw(text.c_str(), size + pos + offset + offs, color);
+				else
+					font->draw(text.c_str(), size + pos + offset + offs, color);
+#else
 				font->draw(text.c_str(), size + pos + offset + offs, color);
+#endif
 				break; }
 			case HUD_ELEM_STATBAR: {
 				v2s32 offs(e->offset.X, e->offset.Y);
@@ -379,8 +399,13 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				const video::SColor color(255, 255, 255, 255);
 				const video::SColor colors[] = {color, color, color, color};
 				core::dimension2di imgsize(texture->getOriginalSize());
+#ifdef __ANDROID__ // Android and Desktop
+				v2s32 dstsize(imgsize.Width * e->scale.X * m_scale_factor,
+				              imgsize.Height * e->scale.Y * m_scale_factor);
+#else
 				v2s32 dstsize(imgsize.Width * e->scale.X,
 				              imgsize.Height * e->scale.Y);
+#endif
 				if (e->scale.X < 0)
 					dstsize.X = m_screensize.X * (e->scale.X * -0.01);
 				if (e->scale.Y < 0)
@@ -388,7 +413,12 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
 				             (e->align.Y - 1.0) * dstsize.Y / 2);
 				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
+#ifdef __ANDROID__ // Android and Desktop
+				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
+				                             e->offset.Y * m_scale_factor);
+#else
 				rect += pos + offset + v2s32(e->offset.X, e->offset.Y);
+#endif
 				draw2DImageFilterScaled(driver, texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
@@ -415,12 +445,17 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &tex
 	core::dimension2di dstd;
 	if (size == v2s32()) {
 		dstd = srcd;
+#ifdef __ANDROID__ // Android and Desktop
+		dstd.Height *= m_scale_factor;
+		dstd.Width  *= m_scale_factor;
+		offset.X *= m_scale_factor;
+		offset.Y *= m_scale_factor;
+#endif
 	} else {
-		float size_factor = m_hud_scaling * RenderingEngine::getDisplayDensity();
-		dstd.Height = size.Y * size_factor;
-		dstd.Width  = size.X * size_factor;
-		offset.X *= size_factor;
-		offset.Y *= size_factor;
+		dstd.Height = size.Y * m_scale_factor;
+		dstd.Width  = size.X * m_scale_factor;
+		offset.X *= m_scale_factor;
+		offset.Y *= m_scale_factor;
 	}
 
 	v2s32 p = pos;
@@ -486,7 +521,7 @@ void Hud::drawHotbar(u16 playeritem) {
 	v2s32 pos = centerlowerpos - v2s32(width / 2, m_hotbar_imagesize + m_padding * 3);
 
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
-	if ( (float) width / (float) window_size.X <=
+	if ((float) width / (float) window_size.X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
 			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0);
@@ -538,12 +573,10 @@ void Hud::drawSelectionMesh()
 		// Draw 3D selection boxes
 		video::SMaterial oldmaterial = driver->getMaterial2D();
 		driver->setMaterial(m_selection_material);
-		for (std::vector<aabb3f>::const_iterator
-				i = m_selection_boxes.begin();
-				i != m_selection_boxes.end(); ++i) {
+		for (auto & selection_box : m_selection_boxes) {
 			aabb3f box = aabb3f(
-				i->MinEdge + m_selection_pos_with_offset,
-				i->MaxEdge + m_selection_pos_with_offset);
+				selection_box.MinEdge + m_selection_pos_with_offset,
+				selection_box.MaxEdge + m_selection_pos_with_offset);
 
 			u32 r = (selectionbox_argb.getRed() *
 					m_selection_mesh_color.getRed() / 255);
