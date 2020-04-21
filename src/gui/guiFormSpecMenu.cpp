@@ -915,7 +915,9 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 	auto style = getDefaultStyleForElement("animated_image", spec.fname, "image");
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-	e->drop();
+
+	// Animated images should let events through
+	m_clickthrough_elements.push_back(e);
 
 	m_fields.push_back(spec);
 }
