@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-02-18 06:32+0000\n"
-"Last-Translator: Muhammad Nur Hidayat Yasuyoshi <mnh48mail@gmail.com>\n"
+"PO-Revision-Date: 2020-04-22 04:11+0000\n"
+"Last-Translator: Muhammad Nur Hidayat Yasuyoshi <admin@mnh48.moe>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
 "ms/>\n"
 "Language: ms\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.11\n"
+"X-Generator: Weblate 4.0.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -2184,7 +2184,6 @@ msgid "Bumpmapping"
 msgstr "Pemetaan timbul"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2192,7 +2191,8 @@ msgid ""
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
 "Jarak kamera 'berhampiran satah ketipan' dalam nilai nod, antara 0 dan 0.5.\n"
-"Kebanyakan pengguna tidak perlu mengubah nilai ini.\n"
+"Hanya berkesan di platform GLES. Kebanyakan pengguna tidak perlu mengubah "
+"nilai ini.\n"
 "Menaikkan nilai boleh kurangkan artifak pada GPU yang lebih lemah.\n"
 "0.1 = Asal, 0.25 = Nilai bagus untuk tablet yang lebih lemah."
 
@@ -5315,9 +5315,8 @@ msgstr ""
 "senarai pelayan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near plane"
-msgstr "Satah dekat ketipan"
+msgstr "Dekat satah"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
