@@ -121,7 +121,7 @@ function core.serialize(x)
 			return string.format("loadstring(%q)", string.dump(x))
 		elseif tp == "number"   then
 			-- Serialize numbers reversibly with string.format
-			return string.format("%.30g", x)
+			return string.format("%.17g", x)
 		elseif tp == "table" then
 			local vals = {}
 			local idx_dumped = {}
