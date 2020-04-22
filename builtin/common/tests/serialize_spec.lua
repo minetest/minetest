@@ -19,7 +19,7 @@ describe("serialize", function()
 	end)
 
 	it("handles precise numbers", function()
-		local test_in = math.random()
+		local test_in = 0.2695949158945771
 		local test_out = core.deserialize(core.serialize(test_in))
 		assert.same(test_in, test_out)
 	end)
