@@ -1807,7 +1807,7 @@ void Client::storeInventoryImages(u16 res)
 		fs::CreateDir(inv_img_dir);
 		std::set<std::string> result;
 		m_itemdef->getAll(result);
-		for (const std::string item_name : result)
+		for (const std::string &item_name : result)
 		{
 			ItemDefinition item_definition = m_itemdef->get(item_name);
 			ItemStack item_stack = ItemStack(item_name, 1, 0, m_itemdef);
