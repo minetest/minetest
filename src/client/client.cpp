@@ -1795,9 +1795,8 @@ float Client::getCurRate()
 void Client::storeInventoryImages(u16 res)
 {
 	irr::video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	infostream<<"- Saving inventory images"<<std::endl;
-	if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
-	{
+	infostream << "Saving inventory images" << std::endl;
+	if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
 		std::string screenshot_dir;
 		if (fs::IsPathAbsolute(g_settings->get("screenshot_path")))
 			screenshot_dir = g_settings->get("screenshot_path");
@@ -1807,8 +1806,7 @@ void Client::storeInventoryImages(u16 res)
 		fs::CreateDir(inv_img_dir);
 		std::set<std::string> result;
 		m_itemdef->getAll(result);
-		for (const std::string &item_name : result)
-		{
+		for (const std::string &item_name : result) {
 			ItemDefinition item_definition = m_itemdef->get(item_name);
 			ItemStack item_stack = ItemStack(item_name, 1, 0, m_itemdef);
 			video::ITexture* rt = nullptr;
@@ -1834,16 +1832,13 @@ void Client::storeInventoryImages(u16 res)
 			rt->unlock();
 			std::string filename = std::regex_replace(item_name, std::regex("\\:"), "_");
 			filename = inv_img_dir + DIR_DELIM + filename + ".png";
-			if (!driver->writeImageToFile(image, filename.c_str(), 255.0)) {
+			if (!driver->writeImageToFile(image, filename.c_str(), 255.0))
 				errorstream << "Failed to save inventory image '" << filename << "'" << std::endl;
-			}
 			image->drop();
 		}
 	}
 	else
-	{
 		errorstream << "RTT (render-to-texture) disabled, can't generate inventory images";
-	}	
 }
 
 void Client::makeScreenshot()
