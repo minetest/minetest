@@ -381,6 +381,8 @@ public:
 
 	LocalClientState getState() { return m_state; }
 
+	void storeInventoryImages(u16 res);
+
 	void makeScreenshot();
 
 	inline void pushToChatQueue(ChatMessage *cec)

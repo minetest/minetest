@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include<set>
+#include<regex>
 #include <iostream>
 #include <algorithm>
 #include <sstream>
@@ -30,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientevent.h"
 #include "client/gameui.h"
 #include "client/renderingengine.h"
+#include "client/hud.h"
 #include "client/sound.h"
 #include "client/tile.h"
 #include "util/auth.h"
@@ -1787,6 +1790,60 @@ float Client::getCurRate()
 {
 	return (m_con->getLocalStat(con::CUR_INC_RATE) +
 			m_con->getLocalStat(con::CUR_DL_RATE));
+}
+
+void Client::storeInventoryImages(u16 res)
+{
+	irr::video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	infostream<<"- Saving inventory images"<<std::endl;
+	if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
+	{
+		std::string screenshot_dir;
+		if (fs::IsPathAbsolute(g_settings->get("screenshot_path")))
+			screenshot_dir = g_settings->get("screenshot_path");
+		else
+			screenshot_dir = porting::path_user + DIR_DELIM + g_settings->get("screenshot_path");
+		std::string inv_img_dir = screenshot_dir + DIR_DELIM + "inventory_images";
+		fs::CreateDir(inv_img_dir);
+		std::set<std::string> result;
+		m_itemdef->getAll(result);
+		for (const std::string item_name : result)
+		{
+			ItemDefinition item_definition = m_itemdef->get(item_name);
+			ItemStack item_stack = ItemStack(item_name, 1, 0, m_itemdef);
+			video::ITexture* rt = nullptr;
+			rt = driver->addRenderTargetTexture(core::dimension2d<u32>(res, res), "RTT1");
+			driver->setRenderTarget(rt, true, true, video::SColor(0,0,0,0));
+			core::rect<s32> resolution(0, 0, res, res);
+			drawItemStack(
+				driver,
+				nullptr,
+				item_stack,
+				resolution,
+				&resolution,
+				this,
+				IT_ROT_NONE
+			);
+			driver->setRenderTarget(0, true, true, 0);
+			video::IImage* image = driver->createImageFromData(
+				rt->getColorFormat(),
+				rt->getSize(),
+				rt->lock(),
+				false 	// Copy memory
+			);
+			rt->unlock();
+			std::string filename = std::regex_replace(item_name, std::regex("\\:"), "_");
+			filename = inv_img_dir + DIR_DELIM + filename + ".png";
+			if (!driver->writeImageToFile(image, filename.c_str(), 255.0)) {
+				errorstream << "Failed to save inventory image '" << filename << "'" << std::endl;
+			}
+			image->drop();
+		}
+	}
+	else
+	{
+		errorstream << "RTT (render-to-texture) disabled, can't generate inventory images";
+	}	
 }
 
 void Client::makeScreenshot()
