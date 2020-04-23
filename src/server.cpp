@@ -3799,7 +3799,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	player->protocol_version = proto_version;
 
 	// Set player lang_code
-	player->m_lang_code = getClient(peer_id, CS_Invalid)->m_lang_code;
+	player->setLangCode(getClient(peer_id, CS_Invalid)->getLangCode());
 
 	/* Run scripts */
 	if (newplayer) {
