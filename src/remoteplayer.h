@@ -141,7 +141,8 @@ public:
 
 	void onSuccessfulSave();
 
-	std::string m_lang_code;
+	void setLangCode(const std::string &code) { m_lang_code = code; }
+	const std::string &getLangCode() const { return m_lang_code; }
 
 private:
 	/*
@@ -167,6 +168,8 @@ private:
 	float m_day_night_ratio;
 	std::string hud_hotbar_image = "";
 	std::string hud_hotbar_selected_image = "";
+	
+	std::string m_lang_code;
 
 	CloudParams m_cloud_params;
 
