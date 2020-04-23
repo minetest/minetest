@@ -1086,7 +1086,7 @@ int ObjectRef::l_get_player_language(lua_State *L)
 		lua_pushlstring(L, "", 0);
 		return 1;
 	}
-	lua_pushstring(L, player->m_lang_code.c_str());
+	lua_pushstring(L, player->getLangCode().c_str());
 	return 1;
 }
 
