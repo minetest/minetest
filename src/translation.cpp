@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_map>
 
 // Per language translations
-std::unordered_map<std::string,Translations> all_translations;
-std::unordered_map<std::string,Translations> *g_all_translations = &all_translations;
+std::unordered_map<std::string, Translations> all_translations;
+std::unordered_map<std::string, Translations> *g_all_translations = &all_translations;
 
 Translations::~Translations()
 {
