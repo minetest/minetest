@@ -450,7 +450,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 	// Object initialized:
 	if ((obj = getActiveObject(new_id))) {
 		// Final step is to update all children which are already known
-		// Data provided by GENERIC_CMD_SPAWN_INFANT
+		// Data provided by AO_CMD_SPAWN_INFANT
 		const auto &children = obj->getAttachmentChildIds();
 		for (auto c_id : children) {
 			if (auto *o = getActiveObject(c_id))

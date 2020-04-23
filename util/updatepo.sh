@@ -49,6 +49,7 @@ cd ..
 # --package-name
 potfile=po/minetest.pot
 xgettext --package-name=minetest \
+	--add-comments='~' \
 	--sort-by-file \
 	--add-location=file \
 	--keyword=N_ \

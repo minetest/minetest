@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
-"PO-Revision-Date: 2019-12-16 22:21+0000\n"
-"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"PO-Revision-Date: 2020-04-03 20:24+0000\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -37,7 +37,7 @@ msgstr "Főmenü"
 
 #: builtin/fstk/ui.lua
 msgid "Ok"
-msgstr "OK"
+msgstr "Ok"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -106,7 +106,7 @@ msgstr "Összes engedélyezése"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Modok engedélyezése"
+msgstr "Modcsomag engedélyezése"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -127,7 +127,7 @@ msgstr "Választható függőségek:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "Nincs elérhető mód leírás."
+msgstr "Nincs elérhető játékleírás."
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -136,7 +136,7 @@ msgstr "Nincsenek függőségek."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "Nincs elérhető mód leírás."
+msgstr "Nincs elérhető modcsomag-leírás."
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -200,7 +200,7 @@ msgstr "A csomagok nem nyerhetők vissza"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr "Nincs eredmény"
+msgstr "Nincs találat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
@@ -240,6 +240,7 @@ msgid "Game"
 msgstr "Játék"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen"
 msgstr "Térkép-előállítás"
 
@@ -250,7 +251,7 @@ msgstr "Nincs játékmód kiválasztva"
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr "Seed"
+msgstr "Kezdőérték"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
@@ -293,14 +294,14 @@ msgstr "Elfogadás"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Modpakk átnevezése:"
+msgstr "Modcsomag átnevezése:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
-"Ennek a modpack-nek a neve a a modpack.conf fájlban meghatározott, ami "
+"Ennek a modcsomagnak a neve a a modpack.conf fájlban meghatározott, ami "
 "felülír minden itteni átnevezést."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -309,11 +310,11 @@ msgstr "(Nincs megadva leírás a beállításhoz)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr "2D Barlang zaj"
+msgstr "2D zaj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Vissza a Beállítások oldalra"
+msgstr "< Vissza a Beállításokra"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -390,7 +391,7 @@ msgstr "X"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "X spread"
-msgstr "x méret"
+msgstr "X méret"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
@@ -399,7 +400,7 @@ msgstr "Y"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "Y spread"
-msgstr "y méret"
+msgstr "Y méret"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
@@ -410,15 +411,26 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z méret"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "absvalue"
 msgstr "abszolút érték"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr "Alapértelmezettek"
+msgstr "alapértelmezések"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "könyített"
@@ -437,12 +449,12 @@ msgstr "$1 telepítése meghiúsult ide: $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Mód telepítése: nem található valódi mód név ehhez: $1"
+msgstr "Mod telepítése: nem található valódi mod név ehhez: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
-"Mód telepítése: nem található megfelelő mappanév ehhez a módcsomaghoz: $1"
+"Mod telepítése: nem található megfelelő mappanév ehhez a modcsomaghoz: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
@@ -450,43 +462,43 @@ msgstr "Telepítés: nem támogatott „$1” fájltípus, vagy sérült archív
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr "Telepítés: fájl: „$1”"
+msgstr "Telepítés: fájl: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr "nem valós mod, mod csomag"
+msgstr "Nem található érvényes mod, modcsomag"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr "$1 telepítése meghiúsult mint textúra csomag"
+msgstr "$1 telepítése meghiúsult mint textúracsomag"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a game as a $1"
-msgstr "$1 játék telepítése meghiúsult"
+msgstr "$1 aljáték telepítése meghiúsult"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a mod as a $1"
-msgstr "$1 MOD telepítése meghiúsult"
+msgstr "$1 mod telepítése meghiúsult"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a modpack as a $1"
-msgstr "$1 mod csomag telepítése meghiúsult"
+msgstr "$1 modcsomag telepítése meghiúsult"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr "online tartalmak böngészése"
+msgstr "Online tartalmak böngészése"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr "tartalom"
+msgstr "Tartalom"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr "Textúrapakk kikapcsolása"
+msgstr "Textúracsomag kikapcsolása"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr "információk:"
+msgstr "információ:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
@@ -510,7 +522,7 @@ msgstr "Csomag eltávolítása"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr "Textúra pakk használata"
+msgstr "Textúracsomag használata"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -538,7 +550,7 @@ msgstr "Kiszolgáló nyilvánossá tétele"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr "Csatolási cím"
+msgstr "Cím csatolása"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
@@ -628,6 +640,7 @@ msgstr "Név / Jelszó"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP engedélyezve"
@@ -650,7 +663,7 @@ msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr "Minden beállítás"
+msgstr "Összes beállítás"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -694,7 +707,7 @@ msgstr "Mipmap effekt"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr "Mipmap + Anizotropikus szűrés"
+msgstr "Mipmap + Anizotróp szűrés"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
@@ -714,7 +727,7 @@ msgstr "Blokk kiemelés"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr "Node körvonalazás"
+msgstr "Körvonal"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
@@ -730,7 +743,7 @@ msgstr "Átlátszatlan víz"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr "Parallax Occlusion ( dombor textúra )"
+msgstr "Parallax Occlusion ( domború textúra )"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
@@ -750,11 +763,11 @@ msgstr "Beállítások"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr "Shaderek"
+msgstr "Árnyalók"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr "Shéderek ( nem elérhetö)"
+msgstr "Árnyalók ( nem elérhető)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
@@ -770,7 +783,7 @@ msgstr "Textúrázás:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "A shaderek engedélyezéséhez OpenGL driver használata szükséges."
+msgstr "Az árnyalók engedélyezéséhez OpenGL driver használata szükséges."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
@@ -835,7 +848,7 @@ msgstr "Textúrák betöltése…"
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "Shaderek újraépítése…"
+msgstr "Árnyalók újraépítése…"
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -843,11 +856,11 @@ msgstr "Kapcsolódási hiba (időtúllépés?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr "Nem található vagy nem betölthető a(z) \" játék"
+msgstr "Nem található vagy nem betölthető a játék"
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr "Érvénytelen játékmeghatározás"
+msgstr "Érvénytelen játékmeghatározás."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -867,15 +880,23 @@ msgstr "Válassz egy nevet!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr "jelszó file megnyitás hiba "
+msgstr "jelszó fájl megnyitás hiba "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
 msgstr "A megadott útvonalon nem létezik világ: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "yes"
+msgstr "no"
 
 #: src/client/game.cpp
 msgid ""
@@ -909,6 +930,7 @@ msgstr "- Port: "
 msgid "- Public: "
 msgstr "- Nyilvános: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -919,7 +941,7 @@ msgstr "- Kiszolgáló neve: "
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
-msgstr "automata elöre kikapcsolva"
+msgstr "Automata előre kikapcsolva"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -928,23 +950,23 @@ msgstr "automata elöre engedélyezve"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
-msgstr "kamera frissités KI"
+msgstr "kamera frissítés kikapcsolva"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
-msgstr "Kamera frissítés BE"
+msgstr "Kamera frissítés bekapcsolva"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr "Jelszó változtatás"
+msgstr "Jelszóváltoztatás"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
-msgstr "Film mód KI"
+msgstr "Film mód kikapcsolva"
 
 #: src/client/game.cpp
 msgid "Cinematic mode enabled"
-msgstr "Film mód BE"
+msgstr "Film mód bekapcsolva"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1362,6 +1384,7 @@ msgstr "Bal Shift"
 msgid "Left Windows"
 msgstr "Bal Windows"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menü"
@@ -1454,6 +1477,7 @@ msgstr "Szünet"
 msgid "Play"
 msgstr "Játék"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Nyomtatás"
@@ -1490,6 +1514,7 @@ msgstr "Jobb Windows"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Kiválasztás"
@@ -1725,16 +1750,21 @@ msgstr "Kilépés"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr "némitva"
+msgstr "Némitva"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
 msgstr "Hangerő: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Belépés "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "hu"
@@ -2175,8 +2205,8 @@ msgstr "Bumpmappolás"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -2264,8 +2294,9 @@ msgid "Chat key"
 msgstr "Csevegés gomb"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Chat message count limit"
-msgstr ""
+msgstr "Chat üzenetek maximális száma"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5346,7 +5377,7 @@ msgstr ""
 "csatlakoznak."
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6818,84 +6849,14 @@ msgstr "cURL párhuzamossági korlát"
 msgid "cURL timeout"
 msgstr "cURL időkorlátja"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Váltás „mozi” módba"
-
-#~ msgid "Select Package File:"
-#~ msgstr "csomag fájl kiválasztása:"
-
-#~ msgid "Waving Water"
-#~ msgstr "Hullámzó víz"
-
-#~ msgid "Waving water"
-#~ msgstr "Hullámzó víz"
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Ezt a betűtípust bizonyos nyelvek használják."
-
-#, fuzzy
-#~ msgid "Shadow limit"
-#~ msgstr "Térképblokk korlát"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "A TrueType betűtípus (ttf) vagy bitmap útvonala."
-
-#, fuzzy
-#~ msgid "Lightness sharpness"
-#~ msgstr "Fényélesség"
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Nagy barlang mélység"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 támogatás."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Betűtípus árnyék alfa (átlátszatlanság, 0 és 255 között)."
-
-#, fuzzy
-#~ msgid "Floatland mountain height"
-#~ msgstr "Lebegő hegyek magassága"
-
-#, fuzzy
-#~ msgid "Floatland mountain density"
-#~ msgstr "Lebegő  hegyek sűrűsége"
-
-#~ msgid "Floatland level"
-#~ msgstr "Lebegő föld szintje"
-
-#, fuzzy
-#~ msgid "Floatland base noise"
-#~ msgstr "A lebegő hegyek alapzaja"
-
-#, fuzzy
-#~ msgid "Floatland base height noise"
-#~ msgstr "A lebegő hegyek alapmagassága"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "filmes tónus effektek bekapcsolása"
-
-#~ msgid "Enable VBO"
-#~ msgstr "VBO engedélyez"
-
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "A lebegő szigetek sima területeit határozza meg.\n"
-#~ "Lapos szigetek ott fordulnak elő, ahol a zaj értéke pozitív."
-
-#~ msgid "Darkness sharpness"
-#~ msgstr "a sötétség élessége"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "A járatok szélességét határozza meg, alacsonyabb érték szélesebb "
-#~ "járatokat hoz létre."
+#~ "Gamma kódolás beállítása a fényhez. Alacsonyabb számok - nagyobb "
+#~ "fényerő.\n"
+#~ "Ez a beállítás csak a kliensre érvényes, a szerver nem veszi figyelembe."
 
 #, fuzzy
 #~ msgid ""
@@ -6905,11 +6866,81 @@ msgstr "cURL időkorlátja"
 #~ "A lebegő szigetek hegységeinek sűrűségét szabályozza.\n"
 #~ "Az \"np_mountain\" zaj értékéhez hozzáadott eltolás."
 
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr ""
-#~ "Gamma kódolás beállítása a fényhez. Alacsonyabb számok - nagyobb "
-#~ "fényerő.\n"
-#~ "Ez a beállítás csak a kliensre érvényes, a szerver nem veszi figyelembe."
+#~ "A járatok szélességét határozza meg, alacsonyabb érték szélesebb "
+#~ "járatokat hoz létre."
+
+#~ msgid "Darkness sharpness"
+#~ msgstr "a sötétség élessége"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "A lebegő szigetek sima területeit határozza meg.\n"
+#~ "Lapos szigetek ott fordulnak elő, ahol a zaj értéke pozitív."
+
+#~ msgid "Enable VBO"
+#~ msgstr "VBO engedélyez"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "filmes tónus effektek bekapcsolása"
+
+#, fuzzy
+#~ msgid "Floatland base height noise"
+#~ msgstr "A lebegő hegyek alapmagassága"
+
+#, fuzzy
+#~ msgid "Floatland base noise"
+#~ msgstr "A lebegő hegyek alapzaja"
+
+#~ msgid "Floatland level"
+#~ msgstr "Lebegő föld szintje"
+
+#, fuzzy
+#~ msgid "Floatland mountain density"
+#~ msgstr "Lebegő  hegyek sűrűsége"
+
+#, fuzzy
+#~ msgid "Floatland mountain height"
+#~ msgstr "Lebegő hegyek magassága"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Betűtípus árnyék alfa (átlátszatlanság, 0 és 255 között)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 támogatás."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Nagy barlang mélység"
+
+#, fuzzy
+#~ msgid "Lightness sharpness"
+#~ msgstr "Fényélesség"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "A TrueType betűtípus (ttf) vagy bitmap útvonala."
+
+#, fuzzy
+#~ msgid "Shadow limit"
+#~ msgstr "Térképblokk korlát"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Ezt a betűtípust bizonyos nyelvek használják."
+
+#~ msgid "Waving water"
+#~ msgstr "Hullámzó víz"
+
+#~ msgid "Waving Water"
+#~ msgstr "Hullámzó víz"
+
+#~ msgid "Select Package File:"
+#~ msgstr "csomag fájl kiválasztása:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Váltás „mozi” módba"

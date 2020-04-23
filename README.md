@@ -1,13 +1,13 @@
 Minetest
 ========
 
-[![Build Status](https://travis-ci.org/minetest/minetest.svg?branch=master)](https://travis-ci.org/minetest/minetest)
+![Build Status](https://github.com/minetest/minetest/workflows/build/badge.svg)
 [![Translation status](https://hosted.weblate.org/widgets/minetest/-/svg-badge.svg)](https://hosted.weblate.org/engage/minetest/?utm_source=widget)
 [![License](https://img.shields.io/badge/license-LGPLv2.1%2B-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
 
 Minetest is a free open-source voxel game engine with easy modding and game creation.
 
-Copyright (C) 2010-2019 Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2020 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code
@@ -218,6 +218,7 @@ General options and their default values:
 
     BUILD_CLIENT=TRUE          - Build Minetest client
     BUILD_SERVER=FALSE         - Build Minetest server
+    BUILD_UNITTESTS=TRUE       - Build unittest sources
     CMAKE_BUILD_TYPE=Release   - Type of build (Release vs. Debug)
         Release                - Release build
         Debug                  - Debug build

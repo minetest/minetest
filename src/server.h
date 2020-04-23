@@ -165,7 +165,6 @@ public:
 	void handleCommand_InventoryAction(NetworkPacket* pkt);
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
 	void handleCommand_Damage(NetworkPacket* pkt);
-	void handleCommand_Password(NetworkPacket* pkt);
 	void handleCommand_PlayerItem(NetworkPacket* pkt);
 	void handleCommand_Respawn(NetworkPacket* pkt);
 	void handleCommand_Interact(NetworkPacket* pkt);

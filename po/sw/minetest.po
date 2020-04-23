@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swahili (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -421,15 +421,26 @@ msgstr ""
 msgid "Z spread"
 msgstr ""
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr ""
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "defaults"
 msgstr "Chaguo-msingi mchezo"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -666,6 +677,7 @@ msgstr "Jina / nenosiri"
 msgid "Ping"
 msgstr ""
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP kuwezeshwa"
@@ -916,6 +928,14 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "Njia ya dunia iliyotolewa haipo:"
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -957,6 +977,7 @@ msgstr "Bandari"
 msgid "- Public: "
 msgstr "Umma"
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr ""
@@ -1432,6 +1453,7 @@ msgstr "Kisogezi kushoto"
 msgid "Left Windows"
 msgstr "Windows kushoto"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menyu"
@@ -1525,6 +1547,7 @@ msgstr "Sitisha"
 msgid "Play"
 msgstr "Kucheza"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Chapa"
@@ -1561,6 +1584,7 @@ msgstr "Windows kulia"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Teua"
@@ -1809,10 +1833,15 @@ msgstr "Ufunguo wa matumizi"
 msgid "Sound Volume: "
 msgstr "Kiwango sauti:"
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Ingiza"
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "sw"
@@ -2230,8 +2259,8 @@ msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5357,7 +5386,7 @@ msgstr ""
 "Jina la seva, kuonyeshwa wakati wachezaji kujiunga na katika serverlist ya."
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6887,64 +6916,6 @@ msgstr "cURL kikomo sambamba"
 msgid "cURL timeout"
 msgstr "muda wa kuisha wa cURL"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Togoa Cinematic"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Teua faili ya Moduli:"
-
-#, fuzzy
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Y ya upper kikomo ya kubwa pseudorandom cellars."
-
-#~ msgid "Waving Water"
-#~ msgstr "Waving maji"
-
-#~ msgid "Waving water"
-#~ msgstr "Waving maji"
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Fonti hii itatumika kwa lugha fulani."
-
-#, fuzzy
-#~ msgid "Shadow limit"
-#~ msgstr "Kikomo cha Mapblock"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Njia ya TrueTypeFont au vitone michoro."
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Kina ya pango kubwa"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 msaada."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Fonti kivuli Alfa (opaqueness kati ya 0 na 255)."
-
-#, fuzzy
-#~ msgid "Floatland level"
-#~ msgstr "Kiwango cha maji"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Huwezesha toni filmic ramani"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Wezesha VBO"
-
-#, fuzzy
-#~ msgid "Darkness sharpness"
-#~ msgstr "Mwandishi ramani ziwa gorofa mwinuko"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Vidhibiti vya upana wa vichuguu, thamani ndogo huunda vichuguu pana."
-
 #, fuzzy
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -6953,3 +6924,61 @@ msgstr "muda wa kuisha wa cURL"
 #~ msgstr ""
 #~ "Rekebisha simbiko gamma kwa majedwali mwanga. Idadi ya chini ni mkali.\n"
 #~ "Kipimo hiki ni kwa ajili ya mteja tu na ni kupuuzwa na seva."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Vidhibiti vya upana wa vichuguu, thamani ndogo huunda vichuguu pana."
+
+#, fuzzy
+#~ msgid "Darkness sharpness"
+#~ msgstr "Mwandishi ramani ziwa gorofa mwinuko"
+
+#~ msgid "Enable VBO"
+#~ msgstr "Wezesha VBO"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Huwezesha toni filmic ramani"
+
+#, fuzzy
+#~ msgid "Floatland level"
+#~ msgstr "Kiwango cha maji"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Fonti kivuli Alfa (opaqueness kati ya 0 na 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 msaada."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Kina ya pango kubwa"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Njia ya TrueTypeFont au vitone michoro."
+
+#, fuzzy
+#~ msgid "Shadow limit"
+#~ msgstr "Kikomo cha Mapblock"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Fonti hii itatumika kwa lugha fulani."
+
+#~ msgid "Waving water"
+#~ msgstr "Waving maji"
+
+#~ msgid "Waving Water"
+#~ msgstr "Waving maji"
+
+#, fuzzy
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y ya upper kikomo ya kubwa pseudorandom cellars."
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Teua faili ya Moduli:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Togoa Cinematic"

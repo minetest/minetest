@@ -101,8 +101,8 @@ void main(void)
 
 float disp_x;
 float disp_z;
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || \
-	(MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
+// OpenGL < 4.3 does not support continued preprocessor lines
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
 	vec4 pos2 = mWorld * gl_Vertex;
 	float tOffset = (pos2.x + pos2.y) * 0.001 + pos2.z * 0.002;
 	disp_x = (smoothTriangleWave(animationTimer * 23.0 + tOffset) +

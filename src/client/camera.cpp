@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "debug.h"
 #include "client.h"
+#include "config.h"
 #include "map.h"
 #include "clientmap.h"     // MapDrawControl
 #include "player.h"
@@ -39,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
 #define WIELDMESH_OFFSET_Y -35.0f
+#define WIELDMESH_AMPLITUDE_X 7.0f
+#define WIELDMESH_AMPLITUDE_Y 10.0f
 
 Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_draw_control(draw_control),
@@ -234,7 +237,8 @@ void Camera::addArmInertia(f32 player_yaw)
 				m_last_cam_pos.X = player_yaw;
 
 			m_wieldmesh_offset.X = rangelim(m_wieldmesh_offset.X,
-				WIELDMESH_OFFSET_X - 7.0f, WIELDMESH_OFFSET_X + 7.0f);
+				WIELDMESH_OFFSET_X - (WIELDMESH_AMPLITUDE_X * 0.5f),
+				WIELDMESH_OFFSET_X + (WIELDMESH_AMPLITUDE_X * 0.5f));
 		}
 
 		if (m_cam_vel.Y > 1.0f) {
@@ -249,7 +253,8 @@ void Camera::addArmInertia(f32 player_yaw)
 				m_last_cam_pos.Y = m_camera_direction.Y;
 
 			m_wieldmesh_offset.Y = rangelim(m_wieldmesh_offset.Y,
-				WIELDMESH_OFFSET_Y - 10.0f, WIELDMESH_OFFSET_Y + 5.0f);
+				WIELDMESH_OFFSET_Y - (WIELDMESH_AMPLITUDE_Y * 0.5f),
+				WIELDMESH_OFFSET_Y + (WIELDMESH_AMPLITUDE_Y * 0.5f));
 		}
 
 		m_arm_dir = dir(m_wieldmesh_offset);
@@ -259,10 +264,10 @@ void Camera::addArmInertia(f32 player_yaw)
 		    following a vector, with a smooth deceleration factor.
 		*/
 
-		f32 dec_X = 0.12f * (m_cam_vel_old.X * (1.0f +
+		f32 dec_X = 0.35f * (std::min(15.0f, m_cam_vel_old.X) * (1.0f +
 			(1.0f - m_arm_dir.X))) * (gap_X / 20.0f);
 
-		f32 dec_Y = 0.06f * (m_cam_vel_old.Y * (1.0f +
+		f32 dec_Y = 0.25f * (std::min(15.0f, m_cam_vel_old.Y) * (1.0f +
 			(1.0f - m_arm_dir.Y))) * (gap_Y / 15.0f);
 
 		if (gap_X < 0.1f)
@@ -328,17 +333,21 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		fall_bobbing *= m_cache_fall_bobbing_amount;
 	}
 
-	// Calculate players eye offset for different camera modes
-	v3f PlayerEyeOffset = player->getEyeOffset();
-	if (m_camera_mode == CAMERA_MODE_FIRST)
-		PlayerEyeOffset += player->eye_offset_first;
-	else
-		PlayerEyeOffset += player->eye_offset_third;
+	// Calculate and translate the head SceneNode offsets
+	{
+		v3f eye_offset = player->getEyeOffset();
+		if (m_camera_mode == CAMERA_MODE_FIRST)
+			eye_offset += player->eye_offset_first;
+		else
+			eye_offset += player->eye_offset_third;
 
-	// Set head node transformation
-	m_headnode->setPosition(PlayerEyeOffset+v3f(0,cameratilt*-player->hurt_tilt_strength+fall_bobbing,0));
-	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength));
-	m_headnode->updateAbsolutePosition();
+		// Set head node transformation
+		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
+		m_headnode->setPosition(eye_offset);
+		m_headnode->setRotation(v3f(player->getPitch(), 0,
+			cameratilt * player->hurt_tilt_strength));
+		m_headnode->updateAbsolutePosition();
+	}
 
 	// Compute relative camera position and target
 	v3f rel_cam_pos = v3f(0,0,0);
@@ -533,7 +542,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
 
-	m_wieldnode->setColor(player->light_color);
+	m_wieldnode->setNodeLightColor(player->light_color);
 
 	// Set render distance
 	updateViewingRange();
@@ -565,10 +574,16 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 void Camera::updateViewingRange()
 {
 	f32 viewing_range = g_settings->getFloat("viewing_range");
-	f32 near_plane = g_settings->getFloat("near_plane");
+
+	// Ignore near_plane setting on all other platforms to prevent abuse
+#if ENABLE_GLES
+	m_cameranode->setNearValue(rangelim(
+		g_settings->getFloat("near_plane"), 0.0f, 0.25f) * BS);
+#else
+	m_cameranode->setNearValue(0.1f * BS);
+#endif
 
 	m_draw_control.wanted_range = std::fmin(adjustDist(viewing_range, getFovMax()), 4000);
-	m_cameranode->setNearValue(rangelim(near_plane, 0.0f, 0.5f) * BS);
 	if (m_draw_control.range_all) {
 		m_cameranode->setFarValue(100000.0);
 		return;
@@ -596,7 +611,7 @@ void Camera::wield(const ItemStack &item)
 
 void Camera::drawWieldedTool(irr::core::matrix4* translation)
 {
-	// Clear Z buffer so that the wielded tool stay in front of world geometry
+	// Clear Z buffer so that the wielded tool stays in front of world geometry
 	m_wieldmgr->getVideoDriver()->clearZBuffer();
 
 	// Draw the wielded node (in a separate scene manager)

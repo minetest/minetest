@@ -209,6 +209,9 @@ wchar_t *narrow_to_wide_c(const char *str)
 }
 
 std::wstring narrow_to_wide(const std::string &mbs) {
+#ifdef __ANDROID__
+	return utf8_to_wide(mbs);
+#else
 	size_t wcl = mbs.size();
 	Buffer<wchar_t> wcs(wcl + 1);
 	size_t len = mbstowcs(*wcs, mbs.c_str(), wcl);
@@ -216,11 +219,15 @@ std::wstring narrow_to_wide(const std::string &mbs) {
 		return L"<invalid multibyte string>";
 	wcs[len] = 0;
 	return *wcs;
+#endif
 }
 
 
 std::string wide_to_narrow(const std::wstring &wcs)
 {
+#ifdef __ANDROID__
+	return wide_to_utf8(wcs);
+#else
 	size_t mbl = wcs.size() * 4;
 	SharedBuffer<char> mbs(mbl+1);
 	size_t len = wcstombs(*mbs, wcs.c_str(), mbl);
@@ -229,6 +236,7 @@ std::string wide_to_narrow(const std::wstring &wcs)
 
 	mbs[len] = 0;
 	return *mbs;
+#endif
 }
 
 
@@ -859,29 +867,4 @@ std::wstring translate_string(const std::wstring &s) {
 	std::wstring res;
 	translate_all(s, i, res);
 	return res;
-}
-
-/**
- * Create a std::string from a irr::core:stringw.
- */
-std::string strwtostr(const irr::core::stringw &str)
-{
-	std::string text = core::stringc(str.c_str()).c_str();
-	return text;
-}
-
-/**
- * Create a irr::core:stringw from a std::string.
- */
-irr::core::stringw strtostrw(const std::string &str)
-{
-	size_t size = str.size();
-	// s.size() doesn't include NULL terminator
-	wchar_t *text = new wchar_t[size + sizeof(wchar_t)];
-	const char *data = &str[0];
-
-	mbsrtowcs(text, &data, size, NULL);
-
-	text[size] = L'\0';
-	return text;
 }

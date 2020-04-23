@@ -68,6 +68,7 @@ struct SmoothTranslatorWrappedv3f : SmoothTranslator<v3f>
 class GenericCAO : public ClientActiveObject
 {
 private:
+	void readAOMessageProperties(std::istream &is);
 	// Only set at initialization
 	std::string m_name = "";
 	bool m_is_player = false;
@@ -237,6 +238,8 @@ public:
 	void updateLight(u8 light_at_pos);
 
 	void updateLightNoCheck(u8 light_at_pos);
+
+	void setNodeLight(u8 light);
 
 	v3s16 getLightPosition();
 

@@ -48,7 +48,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("noclip", "false");
-	settings->setDefault("screenshot_path", ".");
+	settings->setDefault("screenshot_path", "screenshots");
 	settings->setDefault("screenshot_format", "png");
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
@@ -165,7 +165,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
+#if ENABLE_GLES
 	settings->setDefault("near_plane", "0.1");
+#endif
 	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
 	settings->setDefault("autosave_screensize", "true");

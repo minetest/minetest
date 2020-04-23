@@ -390,7 +390,7 @@ int MapgenValleys::generateTerrain()
 
 		// Rivers are placed where 'river' is negative
 		if (river < 0.0f) {
-			// Use the the function -sqrt(1-x^2) which models a circle
+			// Use the function -sqrt(1-x^2) which models a circle
 			float tr = river / river_size_factor + 1.0f;
 			float depth = (river_depth_bed *
 				std::sqrt(std::fmax(0.0f, 1.0f - tr * tr)));

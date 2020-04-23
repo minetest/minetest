@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.2.0
+Minetest Lua Client Modding API Reference 5.3.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -734,6 +734,13 @@ Call these functions only at load time!
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
 * `minetest.sound_stop(handle)`
+    * `handle` is a handle returned by `minetest.sound_play`
+* `minetest.sound_fade(handle, step, gain)`
+    * `handle` is a handle returned by `minetest.sound_play`
+    * `step` determines how fast a sound will fade.
+      Negative step will lower the sound volume, positive step will increase
+      the sound volume.
+    * `gain` the target gain for the fade.
 
 ### Timing
 * `minetest.after(time, func, ...)`
@@ -797,8 +804,6 @@ Call these functions only at load time!
     * get max available level for leveled node
 
 ### Player
-* `minetest.get_wielded_item()`
-    * Returns the itemstack the local player is holding
 * `minetest.send_chat_message(message)`
     * Act as if `message` was typed by the player into the terminal.
 * `minetest.run_server_chatcommand(cmd, param)`
@@ -999,6 +1004,10 @@ Methods:
     * returns player HP
 * `get_name()`
     * returns player name
+* `get_wield_index()`
+    * returns the index of the wielded item
+* `get_wielded_item()`
+    * returns the itemstack the player is holding
 * `is_attached()`
     * returns true if player is attached
 * `is_touching_ground()`
@@ -1022,7 +1031,8 @@ Methods:
         jump = float,
         gravity = float,
         sneak = boolean,
-        sneak_glitch = boolean
+        sneak_glitch = boolean,
+        new_move = boolean,
     }
 ```
 
@@ -1074,8 +1084,26 @@ Methods:
     * returns last look horizontal angle
 * `get_last_look_vertical()`:
     * returns last look vertical angle
-* `get_key_pressed()`:
-    * returns last key typed by the player
+* `get_control()`:
+    * returns pressed player controls
+
+```lua
+    {
+       up = boolean,
+       down = boolean,
+       left = boolean,
+       right = boolean,
+       jump = boolean,
+       aux1 = boolean,
+       sneak = boolean,
+       zoom = boolean,
+       LMB = boolean,
+       RMB = boolean,
+    }
+```
+
+* `get_armor_groups()`
+    * returns a table with the armor group ratings
 * `hud_add(definition)`
     * add a HUD element described by HUD def, returns ID number on success and `nil` on failure.
     * See [`HUD definition`](#hud-definition-hud_add-hud_get)
@@ -1388,12 +1416,35 @@ Displays a horizontal bar made up of half-images.
 * `offset`: offset in pixels from position.
 
 ### `waypoint`
+
 Displays distance to selected world position.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
-* `number:` An integer containing the RGB value of the color used to draw the text.
+* `precision`: Waypoint precision, integer >= 0. Defaults to 10.
+  If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
+  When the precision is an integer multiple of 10, there will be `log_10(precision)` digits after the decimal point.
+  `precision = 1000`, for example, will show 3 decimal places (eg: `0.999`).
+  `precision = 2` will show multiples of `0.5`; precision = 5 will show multiples of `0.2` and so on:
+  `precision = n` will show multiples of `1/n`
+* `number:` An integer containing the RGB value of the color used to draw the
+  text.
 * `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
+* `alignment`: The alignment of the waypoint.
+
+### `image_waypoint`
+
+Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
+
+* `scale`: The scale of the image, with 1 being the original texture size.
+  Only the X coordinate scale is used (positive values).
+  Negative values represent that percentage of the screen it
+  should take; e.g. `x=-100` means 100% (width).
+* `text`: The name of the texture that is displayed.
+* `alignment`: The alignment of the image.
+* `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
 
 ### Particle definition (`add_particle`)
 

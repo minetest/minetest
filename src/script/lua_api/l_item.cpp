@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "nodedef.h"
 #include "server.h"
-#include "content_sao.h"
 #include "inventory.h"
 #include "log.h"
 
@@ -522,7 +521,6 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 	lua_getfield(L, table, "name");
 	if(lua_isstring(L, -1)){
 		name = readParam<std::string>(L, -1);
-		verbosestream<<"register_item_raw: "<<name<<std::endl;
 	} else {
 		throw LuaError("register_item_raw: name is not defined or not a string");
 	}
@@ -611,10 +609,23 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 
+	const IItemDefManager *idef = getGameDef(L)->getItemDefManager();
 	const NodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
-	content_t c = ndef->getId(name);
 
-	lua_pushinteger(L, c);
+	// If this is called at mod load time, NodeDefManager isn't aware of
+	// aliases yet, so we need to handle them manually
+	std::string alias_name = idef->getAlias(name);
+
+	content_t content_id;
+	if (alias_name != name) {
+		if (!ndef->getId(alias_name, content_id))
+			throw LuaError("Unknown node: " + alias_name +
+					" (from alias " + name + ")");
+	} else if (!ndef->getId(name, content_id)) {
+		throw LuaError("Unknown node: " + name);
+	}
+
+	lua_pushinteger(L, content_id);
 	return 1; /* number of results */
 }
 

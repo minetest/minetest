@@ -726,11 +726,19 @@ inline std::string str_join(const std::vector<std::string> &list,
 }
 
 /**
- * Create a std::string from a irr::core::stringw.
+ * Create a UTF8 std::string from a irr::core::stringw.
  */
-std::string strwtostr(const irr::core::stringw &str);
+inline std::string stringw_to_utf8(const irr::core::stringw &input)
+{
+	std::wstring str(input.c_str());
+	return wide_to_utf8(str);
+}
 
-/**
- * Create a irr::core:stringw from a std::string.
- */
-irr::core::stringw strtostrw(const std::string &str);
+ /**
+  * Create a irr::core:stringw from a UTF8 std::string.
+  */
+inline irr::core::stringw utf8_to_stringw(const std::string &input)
+{
+	std::wstring str = utf8_to_wide(input);
+	return irr::core::stringw(str.c_str());
+}

@@ -39,6 +39,7 @@ class ISimpleTextureSource;
 class Client;
 class GUIScrollBar;
 class TexturePool;
+class GUIScrollContainer;
 
 typedef enum {
 	f_Button,
@@ -49,6 +50,8 @@ typedef enum {
 	f_ScrollBar,
 	f_Box,
 	f_ItemImage,
+	f_HyperText,
+	f_AnimatedImage,
 	f_Unknown
 } FormspecFieldType;
 
@@ -272,11 +275,13 @@ protected:
 	v2s32 getRealCoordinateBasePos(const std::vector<std::string> &v_pos);
 	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
 
-	std::unordered_map<std::string, StyleSpec> theme_by_type;
-	std::unordered_map<std::string, StyleSpec> theme_by_name;
+	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_type;
+	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_name;
 	std::unordered_set<std::string> property_warned;
 
-	StyleSpec getStyleForElement(const std::string &type,
+	StyleSpec getDefaultStyleForElement(const std::string &type,
+			const std::string &name="", const std::string &parent_type="");
+	std::array<StyleSpec, StyleSpec::NUM_STATES> getStyleForElement(const std::string &type,
 			const std::string &name="", const std::string &parent_type="");
 
 	v2s32 padding;
@@ -305,6 +310,8 @@ protected:
 	std::vector<std::pair<gui::IGUIElement *, TooltipSpec>> m_tooltip_rects;
 	std::vector<std::pair<FieldSpec, GUIScrollBar *>> m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string>>> m_dropdowns;
+	std::vector<gui::IGUIElement *> m_clickthrough_elements;
+	std::vector<std::pair<std::string, GUIScrollContainer *>> m_scroll_containers;
 
 	GUIInventoryList::ItemSpec *m_selected_item = nullptr;
 	u16 m_selected_amount = 0;
@@ -338,6 +345,7 @@ private:
 	u16                 m_formspec_version = 1;
 	std::string         m_focused_element = "";
 	JoystickController *m_joystick;
+	bool m_show_debug = false;
 
 	typedef struct {
 		bool explicit_size;
@@ -353,6 +361,7 @@ private:
 		std::string focused_fieldname;
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
+		gui::IGUIElement *current_parent = nullptr;
 
 		GUIInventoryList::Options inventorylist_options;
 
@@ -385,6 +394,8 @@ private:
 	void parseSize(parserData* data, const std::string &element);
 	void parseContainer(parserData* data, const std::string &element);
 	void parseContainerEnd(parserData* data);
+	void parseScrollContainer(parserData *data, const std::string &element);
+	void parseScrollContainerEnd(parserData *data);
 	void parseList(parserData* data, const std::string &element);
 	void parseListRing(parserData* data, const std::string &element);
 	void parseCheckbox(parserData* data, const std::string &element);

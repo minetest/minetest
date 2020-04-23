@@ -115,6 +115,7 @@ core.register_chatcommand("me", {
 	privs = {shout=true},
 	func = function(name, param)
 		core.chat_send_all("* " .. name .. " " .. param)
+		return true
 	end,
 })
 
@@ -919,6 +920,7 @@ core.register_chatcommand("shutdown", {
 			core.chat_send_all("*** Server shutting down (operator request).")
 		end
 		core.request_shutdown(message:trim(), core.is_yes(reconnect), delay)
+		return true
 	end,
 })
 
@@ -1001,6 +1003,7 @@ core.register_chatcommand("clearobjects", {
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
 		core.chat_send_all("*** Cleared all objects.")
+		return true
 	end,
 })
 

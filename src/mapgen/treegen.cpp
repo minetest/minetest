@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "map.h"
 #include "mapblock.h"
-#include "serverenvironment.h"
 #include "nodedef.h"
 #include "treegen.h"
 #include "voxelalgorithms.h"
@@ -44,6 +43,12 @@ void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
 	MapNode treenode(ndef->getId("mapgen_tree"));
 	MapNode leavesnode(ndef->getId("mapgen_leaves"));
 	MapNode applenode(ndef->getId("mapgen_apple"));
+	if (treenode == CONTENT_IGNORE)
+		errorstream << "Treegen: Mapgen alias 'mapgen_tree' is invalid!" << std::endl;
+	if (leavesnode == CONTENT_IGNORE)
+		errorstream << "Treegen: Mapgen alias 'mapgen_leaves' is invalid!" << std::endl;
+	if (applenode == CONTENT_IGNORE)
+		errorstream << "Treegen: Mapgen alias 'mapgen_apple' is invalid!" << std::endl;
 
 	PseudoRandom pr(seed);
 	s16 trunk_h = pr.range(4, 5);
@@ -114,10 +119,9 @@ void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
 
 
 // L-System tree LUA spawner
-treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
+treegen::error spawn_ltree(ServerMap *map, v3s16 p0,
 	const NodeDefManager *ndef, const TreeDef &tree_definition)
 {
-	ServerMap *map = &env->getServerMap();
 	std::map<v3s16, MapBlock*> modified_blocks;
 	MMVManip vmanip(map);
 	v3s16 tree_blockp = getNodeBlockPos(p0);
@@ -145,6 +149,9 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 	const NodeDefManager *ndef, TreeDef tree_definition)
 {
 	MapNode dirtnode(ndef->getId("mapgen_dirt"));
+	if (dirtnode == CONTENT_IGNORE)
+		errorstream << "Treegen (make_ltree): Mapgen alias 'mapgen_dirt' is invalid!" << std::endl;
+
 	s32 seed;
 	if (tree_definition.explicit_seed)
 		seed = tree_definition.seed + 14002;
@@ -662,6 +669,10 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 		c_tree = ndef->getId("mapgen_tree");
 	if (c_leaves == CONTENT_IGNORE)
 		c_leaves = ndef->getId("mapgen_leaves");
+	if (c_tree == CONTENT_IGNORE)
+		errorstream << "Treegen: Mapgen alias 'mapgen_jungletree' is invalid!" << std::endl;
+	if (c_leaves == CONTENT_IGNORE)
+		errorstream << "Treegen: Mapgen alias 'mapgen_jungleleaves' is invalid!" << std::endl;
 
 	MapNode treenode(c_tree);
 	MapNode leavesnode(c_leaves);
@@ -765,6 +776,10 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 		c_leaves = ndef->getId("mapgen_leaves");
 	if (c_snow == CONTENT_IGNORE)
 		c_snow = CONTENT_AIR;
+	if (c_tree == CONTENT_IGNORE)
+		errorstream << "Treegen: Mapgen alias 'mapgen_pine_tree' is invalid!" << std::endl;
+	if (c_leaves == CONTENT_IGNORE)
+		errorstream << "Treegen: Mapgen alias 'mapgen_pine_needles' is invalid!" << std::endl;
 
 	MapNode treenode(c_tree);
 	MapNode leavesnode(c_leaves);

@@ -4,42 +4,24 @@
 #include "client/tile.h" // ITextureSource
 #include "log.h"
 #include "porting.h"
+#include "util/string.h"
 #include <string>
+#include <vector>
 
 GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
-		s32 id, const core::rect<s32> &rectangle, const std::string &name,
-		ISimpleTextureSource *tsrc) :
-		gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
-		m_name(name), m_tsrc(tsrc), m_texture(nullptr), m_global_time(0),
-		m_frame_idx(0), m_frame_count(1), m_frame_duration(1), m_frame_time(0)
+	s32 id, const core::rect<s32> &rectangle, const std::string &texture_name,
+	s32 frame_count, s32 frame_duration, ISimpleTextureSource *tsrc) :
+	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle), m_tsrc(tsrc)
 {
-	// Expected format: "texture_name:frame_count,frame_duration"
-	// If this format is not met, the string will be loaded as a normal texture
+	m_texture = m_tsrc->getTexture(texture_name);
 
-	std::string::size_type colon_position = name.find(':', 0);
-	std::string::size_type comma_position = name.find(',', 0);
-
-	if (comma_position != std::string::npos &&
-			colon_position != std::string::npos &&
-			comma_position < name.size()) {
-		m_texture = m_tsrc->getTexture(name.substr(0, colon_position));
-
-		m_frame_count = std::max(stoi(name.substr(
-					colon_position + 1, comma_position - colon_position - 1)), 1);
-
-		m_frame_duration = std::max(stoi(name.substr(comma_position + 1)), 1);
-	} else {
-		// Leave the count/duration and display a static image
-		m_texture = m_tsrc->getTexture(name);
-		errorstream << "animated_image[]: Invalid texture format " << name <<
-			". Expected format: texture_name:frame_count,frame_duration" << std::endl;
-	}
+	m_frame_count    = std::max(frame_count,    1);
+	m_frame_duration = std::max(frame_duration, 0);
 
 	if (m_texture != nullptr) {
 		core::dimension2d<u32> size = m_texture->getOriginalSize();
-		if (size.Height < (u64)m_frame_count) {
+		if (size.Height < (u64)m_frame_count)
 			m_frame_count = size.Height;
-		}
 	} else {
 		// No need to step an animation if we have nothing to draw
 		m_frame_count = 1;
@@ -58,13 +40,13 @@ void GUIAnimatedImage::draw()
 		core::dimension2d<u32> size = m_texture->getOriginalSize();
 		size.Height /= m_frame_count;
 
-		draw2DImageFilterScaled( driver, m_texture, AbsoluteRect,
-				core::rect<s32>(core::position2d<s32>(0, size.Height * m_frame_idx), size),
-				NoClip ? nullptr : &AbsoluteClippingRect, colors, true);
+		draw2DImageFilterScaled(driver, m_texture, AbsoluteRect,
+			core::rect<s32>(core::position2d<s32>(0, size.Height * m_frame_idx), size),
+			NoClip ? nullptr : &AbsoluteClippingRect, colors, true);
 	}
 
 	// Step the animation
-	if (m_frame_count > 1) {
+	if (m_frame_count > 1 && m_frame_duration > 0) {
 		// Determine the delta time to step
 		u64 new_global_time = porting::getTimeMs();
 		if (m_global_time > 0)
@@ -80,4 +62,12 @@ void GUIAnimatedImage::draw()
 		// the remainder
 		m_frame_time %= m_frame_duration;
 	}
+}
+
+
+void GUIAnimatedImage::setFrameIndex(s32 frame)
+{
+	s32 idx = std::max(frame, 0);
+	if (idx > 0 && idx < m_frame_count)
+		m_frame_idx = idx;
 }

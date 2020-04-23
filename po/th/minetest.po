@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Thai (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-01-11 18:26+0000\n"
 "Last-Translator: rubenwardy <rubenwardy@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -404,14 +404,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z กระจาย"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "ค่าผันแปรการสุ่มสร้างแผนที่"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "เริ่มต้น"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "ความนุ่มนวลของพื้นผิวบนทางลาด"
@@ -620,6 +631,7 @@ msgstr "ชื่อ / รหัสผ่าน"
 msgid "Ping"
 msgstr "เวลาตอบสนอง"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP เปิดใช้งาน"
@@ -869,6 +881,14 @@ msgstr "รหัสผ่านให้ไฟล์ไม่สามารถ
 msgid "Provided world path doesn't exist: "
 msgstr "โลกมีเส้นไม่มี: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "yes"
@@ -906,6 +926,7 @@ msgstr "-พอร์ต: "
 msgid "- Public: "
 msgstr "-ประชาชน: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 #, fuzzy
 msgid "- PvP: "
@@ -1366,6 +1387,7 @@ msgstr "ด้านซ้าย Shift"
 msgid "Left Windows"
 msgstr "หน้าต่างซ้าย"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "เมนู"
@@ -1474,6 +1496,7 @@ msgstr "หยุด"
 msgid "Play"
 msgstr "เล่น"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "พิมพ์"
@@ -1511,6 +1534,7 @@ msgstr "หน้าต่างขวา"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "เลือก"
@@ -1753,10 +1777,15 @@ msgstr "เสียง"
 msgid "Sound Volume: "
 msgstr "ระดับเสียง "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "ป้อน "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "th"
@@ -2161,8 +2190,8 @@ msgstr "Bumpmapping"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5070,7 +5099,7 @@ msgstr "ชื่อของเซิร์ฟเวอร์ที่จะแ
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr "ใกล้เครื่องบิน"
 
 #: src/settings_translation_file.cpp
@@ -6540,48 +6569,6 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "สลับโรงภาพยนตร์"
-
-#~ msgid "Select Package File:"
-#~ msgstr "เลือกแฟ้มแพคเกจ:"
-
-#~ msgid "Waving Water"
-#~ msgstr "น้ำโบก"
-
-#~ msgid "Waving water"
-#~ msgstr "โบกน้ำ"
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "แบบอักษรนี้จะใช้สำหรับบางภาษา"
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "ความแข็งแรงของแสงโค้งกลาง - เพิ่ม"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "เส้นทางแบบอักษร."
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "ความคมชัดของแสง"
-
-#~ msgid "Gamma"
-#~ msgstr "แกมมา"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "ตัวอักษรเงาอัลฟา (ความทึบระหว่าง 0 และ 255)."
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "เปิดใช้งานการจับคู่โทนภาพยนตร์"
-
-#~ msgid "Enable VBO"
-#~ msgstr "ทำให้สามารถ VBO"
-
-#~ msgid "Darkness sharpness"
-#~ msgstr "ความมืดมิด"
-
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "กึ่งกลางของเส้นโค้งแสง - กลางเพิ่ม"
-
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
 #~ "brighter.\n"
@@ -6589,3 +6576,45 @@ msgstr ""
 #~ msgstr ""
 #~ "ปรับการเข้ารหัสแกมม่าสำหรับตารางแสง ตัวเลขที่สูงกว่านั้นจะสว่างกว่า\n"
 #~ "การตั้งค่านี้มีไว้สำหรับไคลเอ็นต์เท่านั้นและเซิร์ฟเวอร์จะเพิกเฉย"
+
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "กึ่งกลางของเส้นโค้งแสง - กลางเพิ่ม"
+
+#~ msgid "Darkness sharpness"
+#~ msgstr "ความมืดมิด"
+
+#~ msgid "Enable VBO"
+#~ msgstr "ทำให้สามารถ VBO"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "เปิดใช้งานการจับคู่โทนภาพยนตร์"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "ตัวอักษรเงาอัลฟา (ความทึบระหว่าง 0 และ 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "แกมมา"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "ความคมชัดของแสง"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "เส้นทางแบบอักษร."
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "ความแข็งแรงของแสงโค้งกลาง - เพิ่ม"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "แบบอักษรนี้จะใช้สำหรับบางภาษา"
+
+#~ msgid "Waving water"
+#~ msgstr "โบกน้ำ"
+
+#~ msgid "Waving Water"
+#~ msgstr "น้ำโบก"
+
+#~ msgid "Select Package File:"
+#~ msgstr "เลือกแฟ้มแพคเกจ:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "สลับโรงภาพยนตร์"

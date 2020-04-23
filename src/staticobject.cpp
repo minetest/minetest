@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "staticobject.h"
 #include "util/serialize.h"
-#include "content_sao.h"
+#include "server/serveractiveobject.h"
 
 StaticObject::StaticObject(const ServerActiveObject *s_obj, const v3f &pos_):
 	type(s_obj->getType()),

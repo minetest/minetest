@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-struct skycolor
+struct SkyColor
 {
 	video::SColor day_sky;
 	video::SColor day_horizon;
@@ -36,7 +36,7 @@ struct SkyboxParams
 	std::string type;
 	std::vector<std::string> textures;
 	bool clouds;
-	skycolor sky_color;
+	SkyColor sky_color;
 	video::SColor sun_tint;
 	video::SColor moon_tint;
 	std::string tint_type;
@@ -72,9 +72,9 @@ struct StarParams
 class SkyboxDefaults
 {
 public:
-	const skycolor getSkyColorDefaults()
+	const SkyColor getSkyColorDefaults()
 	{
-		skycolor sky;
+		SkyColor sky;
 		// Horizon colors
 		sky.day_horizon = video::SColor(255, 155, 193, 240);
 		sky.indoors = video::SColor(255, 100, 100, 100);
@@ -112,6 +112,7 @@ public:
 	const StarParams getStarDefaults()
 	{
 		StarParams stars;
+		stars.visible = true;
 		stars.count = 1000;
 		stars.starcolor = video::SColor(105, 235, 235, 255);
 		stars.scale = 1;

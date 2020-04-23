@@ -1,0 +1,171 @@
+name: build
+
+# build on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+
+jobs:
+  # This is our minor gcc compiler
+  gcc_6:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          sudo apt-get install g++-6 gcc-6 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=gcc-6 -DCMAKE_CXX_COMPILER=g++-6"
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+  # This is the current gcc compiler (available in bionic)
+  gcc_8:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          sudo apt-get install g++-8 gcc-8 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8"
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+  # This is our minor clang compiler
+  clang_3_9:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          sudo apt-get install clang-3.9 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=clang-3.9 -DCMAKE_CXX_COMPILER=clang++-3.9"
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+  # This is the current clang version
+  clang_9:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          sudo apt-get install clang-9 valgrind -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+        env:
+          WITH_LUAJIT: 1
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=clang-9 -DCMAKE_CXX_COMPILER=clang++-9"
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+      - name: Valgrind
+        run: |
+          valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
+
+          
+  # Some builds doesn't require freetype, ensure it compiled properly
+  clang_9_no_freetype:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          sudo apt-get install clang-9 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=clang-9 -DCMAKE_CXX_COMPILER=clang++-9 -DENABLE_FREETYPE=0"
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+  win32:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          wget http://minetest.kitsunemimi.pw/mingw-w64-i686_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+          sudo tar -xaf mingw.tar.xz -C /usr
+
+      - name: Build
+        run: |
+           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh winbuild
+        env:
+          NO_MINETEST_GAME: 1
+          NO_PACKAGE: 1
+
+  win64:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+          sudo tar -xaf mingw.tar.xz -C /usr
+          
+      - name: Build
+        run: |
+          EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh winbuild
+        env:
+          NO_MINETEST_GAME: 1
+          NO_PACKAGE: 1

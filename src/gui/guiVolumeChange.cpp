@@ -38,9 +38,10 @@ const int ID_soundMuteButton = 266;
 
 GUIVolumeChange::GUIVolumeChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
-		IMenuManager *menumgr
+		IMenuManager *menumgr, ISimpleTextureSource *tsrc
 ):
-	GUIModalMenu(env, parent, id, menumgr)
+	GUIModalMenu(env, parent, id, menumgr),
+	m_tsrc(tsrc)
 {
 }
 
@@ -104,7 +105,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 80 * s, 30 * s);
 		rect = rect + v2s32(size.X / 2 - 80 * s / 2, size.Y / 2 + 55 * s);
 		const wchar_t *text = wgettext("Exit");
-		GUIButton::addButton(Environment, rect, this, ID_soundExitButton, text);
+		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_soundExitButton, text);
 		delete[] text;
 	}
 	{
