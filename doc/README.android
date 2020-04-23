@@ -1,6 +1,5 @@
-Minetest Android port
-=====================
-Date: 2014 06 28
+Minetest: Android version
+=========================
 
 Controls
 --------
@@ -40,25 +39,6 @@ file can usually be found at /mnt/sdcard/Minetest.
                main menu is too big or small on your device, try changing this
                value.
 
-Known issues
-------------
-Not all issues are fixed by now:
-
-* Unable to exit from volume menu -- don't use the volume menu, use Android's
-  volume controls instead.
-* 512 MB RAM seems to be inadequate -- this depends on the server you join.
-  Try to play on more lightweight servers.
-
-Versioning
-----------
-Android version numbers are 4 digits instead of Minetest's 3 digits.  The last
-number of Android's version represents the Android internal version code. This
-version code is strictly incremental. It's incremented for each official
-Minetest Android build.
-
-E.g. prerelease Minetest Android builds have been 0.4.9.3, while the first
-official version most likely will be 0.4.10.4
-
 Requirements
 ------------
 
@@ -69,9 +49,9 @@ following software packages. The version number in parenthesis denotes the
 version that was tested at the time this README was drafted; newer/older
 versions may or may not work.
 
-* android SDK (api-26)
-* android NDK (r17c)
-* wget (1.13.4)
+* Android SDK 29
+* Android NDK r21
+* Android Studio 3 [optional]
 
 Additionally, you'll need to have an Internet connection available on the
 build system, as the Android build will download some source packages.
@@ -79,16 +59,15 @@ build system, as the Android build will download some source packages.
 Build
 -----
 
-Debug build:
-* Enter "build/android" subdirectory
-* Execute "make"
-* Answer the questions about where SDK and NDK are located on your filesystem
-* Wait for build to finish
+The new build system Minetest Android is fully functional and is designed to
+speed up and simplify the work, as well as adding the possibility of
+cross-platform build.
+You can use `./gradlew assemblerelease` or `./gradlew assembledebug` from the
+command line or use Android Studio and click the build button.
 
-After the build is finished, the resulting apk can be fond in
-build/android/bin/. It will be called Minetest-debug.apk
-
-Release build:
+When using gradlew, the newest NDK will be downloaded and installed
+automatically. Or you can create a `local.properties` file and specify
+`sdk.dir` and `ndk.dir` yourself.
 
 * In order to make a release build you'll have to have a keystore setup to sign
   the resulting apk package. How this is done is not part of this README. There
@@ -97,32 +76,6 @@ Release build:
 
 * Once your keystore is setup, enter build/android subdirectory and create a new
   file "ant.properties" there. Add following lines to that file:
-  
+
   > key.store=<path to your keystore>
   > key.alias=Minetest
-
-* Execute "make release"
-* Enter your keystore as well as your Mintest key password once asked. Be
-  careful it's shown on console in clear text!
-* The result can be found at "bin/Minetest-release.apk"
-
-Other things that may be nice to know
-------------
-* The environment for Android development tools is saved within Android build
-  build folder. If you want direct access to it do:
-  
-  > make envpaths
-  > . and_env
-  
-  After you've done this you'll have your path and path variables set correct
-  to use adb and all other Android development tools
-
-* You can build a single dependency by calling make and the dependency's name,
-  e.g.:
-
-  > make irrlicht
-
-* You can completely cleanup a dependency by calling make and the "clean" target,
-  e.g.:
-
-  > make clean_irrlicht

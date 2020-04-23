@@ -1,6 +1,8 @@
 #include <windows.h>
+#include <winuser.h>
 #include <commctrl.h>
 #include <richedit.h>
+
 #ifndef USE_CMAKE_CONFIG_H
 #define USE_CMAKE_CONFIG_H
 #endif
@@ -11,6 +13,10 @@
 	#define BUILDMODE "RUN_IN_PLACE=1"
 #else
 	#define BUILDMODE "RUN_IN_PLACE=0"
+#endif
+
+#ifdef __MINGW32__
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "minetest.exe.manifest"
 #endif
 
 LANGUAGE 0, SUBLANG_NEUTRAL

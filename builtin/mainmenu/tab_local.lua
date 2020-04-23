@@ -207,40 +207,35 @@ local function main_button_handler(this, fields, name, tabdata)
 		local selected = core.get_textlist_index("sp_worlds")
 		gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
 
-		if core.settings:get_bool("enable_server") then
-			if selected ~= nil and gamedata.selected_world ~= 0 then
-				gamedata.playername = fields["te_playername"]
-				gamedata.password   = fields["te_passwd"]
-				gamedata.port       = fields["te_serverport"]
-				gamedata.address    = ""
-
-				core.settings:set("port",gamedata.port)
-				if fields["te_serveraddr"] ~= nil then
-					core.settings:set("bind_address",fields["te_serveraddr"])
-				end
-
-				--update last game
-				local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
-				if world then
-					local game = pkgmgr.find_by_gameid(world.gameid)
-					core.settings:set("menu_last_game", game.id)
-				end
-
-				core.start()
-			else
-				gamedata.errormessage =
+		if selected == nil or gamedata.selected_world == 0 then
+			gamedata.errormessage =
 					fgettext("No world created or selected!")
-			end
-		else
-			if selected ~= nil and gamedata.selected_world ~= 0 then
-				gamedata.singleplayer = true
-				core.start()
-			else
-				gamedata.errormessage =
-					fgettext("No world created or selected!")
-			end
 			return true
 		end
+
+		-- Update last game
+		local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
+		if world then
+			local game = pkgmgr.find_by_gameid(world.gameid)
+			core.settings:set("menu_last_game", game.id)
+		end
+
+		if core.settings:get_bool("enable_server") then
+			gamedata.playername = fields["te_playername"]
+			gamedata.password   = fields["te_passwd"]
+			gamedata.port       = fields["te_serverport"]
+			gamedata.address    = ""
+
+			core.settings:set("port",gamedata.port)
+			if fields["te_serveraddr"] ~= nil then
+				core.settings:set("bind_address",fields["te_serveraddr"])
+			end
+		else
+			gamedata.singleplayer = true
+		end
+
+		core.start()
+		return true
 	end
 
 	if fields["world_create"] ~= nil then

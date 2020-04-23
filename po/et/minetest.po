@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Estonian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-01-13 12:21+0000\n"
 "Last-Translator: Evert Prants <evert@lunasqu.ee>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/minetest/"
@@ -401,14 +401,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z levitus"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "absoluutväärtus"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "vaikesätted"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -618,6 +629,7 @@ msgstr "Nimi / Salasõna"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP lubatud"
@@ -862,6 +874,14 @@ msgstr "Salasõnafaili avamine ebaõnnestus: "
 msgid "Provided world path doesn't exist: "
 msgstr "Maailma failiteed pole olemas: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -898,6 +918,7 @@ msgstr "- Port: "
 msgid "- Public: "
 msgstr "- Avalik: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1342,6 +1363,7 @@ msgstr "Vasak Shift"
 msgid "Left Windows"
 msgstr "Vasak Windowsi nupp"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menüü"
@@ -1434,6 +1456,7 @@ msgstr "Paus"
 msgid "Play"
 msgstr "Mängi"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Prindi"
@@ -1470,6 +1493,7 @@ msgstr "Parem Windowsi nupp"
 msgid "Scroll Lock"
 msgstr "Scroll lukk"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Vali"
@@ -1707,10 +1731,15 @@ msgstr "Vaigistatud"
 msgid "Sound Volume: "
 msgstr "Hääle Volüüm: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr ""
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "et"
@@ -2084,8 +2113,8 @@ msgstr "Muhkkaardistamine"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -4730,7 +4759,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6101,20 +6130,20 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
+#~ msgid "Darkness sharpness"
+#~ msgstr "Pimeduse teravus"
+
+#~ msgid "Enable VBO"
+#~ msgstr "Luba VBO"
+
 #, fuzzy
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Lülita kiirus sisse"
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Lubab filmic tone mapping"
 
 #, fuzzy
 #~ msgid "Select Package File:"
 #~ msgstr "Vali modifikatsiooni fail:"
 
 #, fuzzy
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Lubab filmic tone mapping"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Luba VBO"
-
-#~ msgid "Darkness sharpness"
-#~ msgstr "Pimeduse teravus"
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Lülita kiirus sisse"

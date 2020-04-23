@@ -111,17 +111,19 @@ void ActiveObjectMgr::removeObject(u16 id)
 }
 
 // clang-format on
-void ActiveObjectMgr::getObjectsInsideRadius(
-		const v3f &pos, float radius, std::vector<u16> &result)
+void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
+		std::vector<ServerActiveObject *> &result,
+		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 {
 	float r2 = radius * radius;
 	for (auto &activeObject : m_active_objects) {
 		ServerActiveObject *obj = activeObject.second;
-		u16 id = activeObject.first;
 		const v3f &objectpos = obj->getBasePosition();
 		if (objectpos.getDistanceFromSQ(pos) > r2)
 			continue;
-		result.push_back(id);
+
+		if (!include_obj_cb || include_obj_cb(obj))
+			result.push_back(obj);
 	}
 }
 

@@ -145,34 +145,51 @@ are placeholders intended to be overwritten by the game.
 Texture Overrides
 -----------------
 
-You can override the textures of a node from a texture pack using
-texture overrides. To do this, create a file in a texture pack
-called override.txt
+You can override the textures of nodes and items from a
+texture pack using texture overrides. To do this, create one or
+more files in a texture pack called override.txt
 
 Each line in an override.txt file is a rule. It consists of
 
-	nodename face-selector texture
+	itemname target texture
 
 For example,
 
 	default:dirt_with_grass sides default_stone.png
 
-You can use ^ operators as usual:
+or
+
+	default:sword_steel inventory my_steel_sword.png
+
+You can list multiple targets on one line as a comma-separated list:
+
+	default:tree top,bottom my_special_tree.png
+
+You can use texture modifiers, as usual:
 
 	default:dirt_with_grass sides default_stone.png^[brighten
 
-Here are face selectors you can choose from:
+Finally, if a line is empty or starts with '#' it will be considered
+a comment and not read as a rule. You can use this to better organize
+your override.txt files.
 
-| face-selector | behavior                                          |
+Here are targets you can choose from:
+
+| target        | behavior                                          |
 |---------------|---------------------------------------------------|
-| left          | x-                                                |
-| right         | x+                                                |
-| front         | z-                                                |
-| back          | z+                                                |
-| top           | y+                                                |
-| bottom        | y-                                                |
-| sides         | x-, x+, z-, z+                                    |
+| left          | x- face                                           |
+| right         | x+ face                                           |
+| front         | z- face                                           |
+| back          | z+ face                                           |
+| top           | y+ face                                           |
+| bottom        | y- face                                           |
+| sides         | x-, x+, z-, z+ faces                              |
 | all           | All faces. You can also use '*' instead of 'all'. |
+| inventory     | The inventory texture                             |
+| wield         | The texture used when held by the player          |
+
+Nodes support all targets, but other items only support 'inventory'
+and 'wield'
 
 Designing leaves textures for the leaves rendering options
 ----------------------------------------------------------

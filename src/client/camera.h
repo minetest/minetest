@@ -75,6 +75,12 @@ public:
 		return m_camera_position;
 	}
 
+	// Returns the absolute position of the head SceneNode in the world
+	inline v3f getHeadPosition() const
+	{
+		return m_headnode->getAbsolutePosition();
+	}
+
 	// Get the camera direction (in absolute camera coordinates).
 	// This has view bobbing applied.
 	inline v3f getDirection() const

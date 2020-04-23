@@ -64,9 +64,17 @@ The game directory can contain the following files:
 * `game.conf`, with the following keys:
     * `name`: Required, human readable name  e.g. `name = Minetest`
     * `description`: Short description to be shown in the content tab
+    * `allowed_mapgens = <comma-separated mapgens>`
+      e.g. `allowed_mapgens = v5,v6,flat`
+      Mapgens not in this list are removed from the list of mapgens for
+      the game.
+      If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
       These mapgens are removed from the list of mapgens for the game.
+      When both `allowed_mapgens` and `disallowed_mapgens` are
+      specified, `allowed_mapgens` is applied before
+      `disallowed_mapgens`.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -889,6 +897,7 @@ These sound files are played back by the engine if provided.
  * `player_damage`: Played when the local player takes damage (gain = 0.5)
  * `player_falling_damage`: Played when the local player takes
    damage by falling (gain = 0.5)
+ * `player_jump`: Played when the local player jumps
  * `default_dig_<groupname>`: Default node digging sound
    (see node sound definition for details)
 
@@ -1010,22 +1019,24 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Values range 0 - 179. The value stored in `param2` is multiplied by two to
       get the actual rotation in degrees of the node.
 * `paramtype2 = "meshoptions"`
-    * Only valid for "plantlike" drawtype. The value of `param2` becomes a
-      bitfield which can be used to change how the client draws plantlike nodes.
-    * Bits 0, 1 and 2 form a mesh selector.
-      Currently the following meshes are choosable:
+    * Only valid for "plantlike" drawtype. `param2` encodes the shape and
+      optional modifiers of the "plant". `param2` is a bitfield.
+    * Bits 0 to 2 select the shape.
+      Use only one of the values below:
         * 0 = a "x" shaped plant (ordinary plant)
         * 1 = a "+" shaped plant (just rotated 45 degrees)
         * 2 = a "*" shaped plant with 3 faces instead of 2
         * 3 = a "#" shaped plant with 4 faces instead of 2
         * 4 = a "#" shaped plant with 4 faces that lean outwards
         * 5-7 are unused and reserved for future meshes.
-    * Bits 3 through 7 are optional flags that can be combined and give these
-      effects:
-        * bit 3 (0x08) - Makes the plant slightly vary placement horizontally
-        * bit 4 (0x10) - Makes the plant mesh 1.4x larger
-        * bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
-        * bits 6-7 are reserved for future use.
+    * Bits 3 to 7 are used to enable any number of optional modifiers.
+      Just add the corresponding value(s) below to `param2`:
+        * 8  - Makes the plant slightly vary placement horizontally
+        * 16 - Makes the plant mesh 1.4x larger
+        * 32 - Moves each face randomly a small bit down (1/8 max)
+        * values 64 and 128 (bits 6-7) are reserved for future use.
+    * Example: `param2 = 0` selects a normal "x" shaped plant
+    * Example: `param2 = 17` selects a "+" shaped plant, 1.4x larger (1+16)
 * `paramtype2 = "color"`
     * `param2` tells which color is picked from the palette.
       The palette should have 256 pixels.
@@ -1354,10 +1365,30 @@ Displays distance to selected world position.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
+* `precision`: Waypoint precision, integer >= 0. Defaults to 10.
+  If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
+  When the precision is an integer multiple of 10, there will be `log_10(precision)` digits after the decimal point.
+  `precision = 1000`, for example, will show 3 decimal places (eg: `0.999`).
+  `precision = 2` will show multiples of `0.5`; precision = 5 will show multiples of `0.2` and so on:
+  `precision = n` will show multiples of `1/n`
 * `number:` An integer containing the RGB value of the color used to draw the
   text.
 * `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
+* `alignment`: The alignment of the waypoint.
 
+### `image_waypoint`
+
+Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
+
+* `scale`: The scale of the image, with 1 being the original texture size.
+  Only the X coordinate scale is used (positive values).
+  Negative values represent that percentage of the screen it
+  should take; e.g. `x=-100` means 100% (width).
+* `text`: The name of the texture that is displayed.
+* `alignment`: The alignment of the image.
+* `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
 
 
 
@@ -2071,6 +2102,26 @@ Elements
 * End of a container, following elements are no longer relative to this
   container.
 
+### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
+
+* Start of a scroll_container block. All contained elements will ...
+  * take the scroll_container coordinate as position origin,
+  * be additionally moved by the current value of the scrollbar with the name
+    `scrollbar name` times `scroll factor` along the orientation `orientation` and
+  * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
+* `orientation`: possible values are `vertical` and `horizontal`.
+* `scroll factor`: optional, defaults to `0.1`.
+* Nesting is possible.
+* Some elements might work a little different if they are in a scroll_container.
+* Note: If you want the scroll_container to actually work, you also need to add a
+  scrollbar element with the specified name. Furthermore, it is highly recommended
+  to use a scrollbaroptions element on this scrollbar.
+
+### `scroll_container_end[]`
+
+* End of a scroll_container, following elements are no longer bound to this
+  container.
+
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
@@ -2178,12 +2229,12 @@ Elements
 
 * 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
 * Middle is a rect which defines the middle of the 9-slice.
-	* `x` - The middle will be x pixels from all sides.
-	* `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
-	* `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
-		will be added to the width and height of the texture, allowing it to be used as the
-		distance from the far end.
-	* All numbers in middle are integers.
+    * `x` - The middle will be x pixels from all sides.
+    * `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
+    * `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
+        will be added to the width and height of the texture, allowing it to be used as the
+        distance from the far end.
+    * All numbers in middle are integers.
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
@@ -2332,8 +2383,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
-* `transparent` (optional): show transparent
-* `draw_border` (optional): draw border
+* `transparent` (optional): if true, tabs are semi-transparent
+* `draw_border` (optional): if true, draw a thin line at tab base
 
 ### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
@@ -2498,16 +2549,28 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-### `style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]`
+### `style[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Set the style for the named element(s) `name`.
+* Set the style for the element(s) matching `selector` by name.
+* `selector` can be one of:
+    * `<name>` - An element name.
+    * `<name>:<state>` - An element name, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * Note: this **must** be before the element is defined.
 * See [Styling Formspecs].
 
 
-### `style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]`
+### `style_type[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Sets the style for all elements of type(s) `type` which appear after this element.
+* Set the style for the element(s) matching `selector` by type.
+* `selector` can be one of:
+    * `<type>` - An element type.
+    * `<type>:<state>` - An element type, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
 
 Migrating to Real Coordinates
@@ -2550,23 +2613,32 @@ Styling Formspecs
 
 Formspec elements can be themed using the style elements:
 
-    style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]
-    style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]
+    style[<name 1>,<name 2>;<prop1>;<prop2>;...]
+    style[<name 1>:<state>,<name 2>:<state>;<prop1>;<prop2>;...]
+    style_type[<type 1>,<type 2>;<prop1>;<prop2>;...]
+    style_type[<type 1>:<state>,<type 2>:<state>;<prop1>;<prop2>;...]
 
 Where a prop is:
 
     property_name=property_value
-
-A name/type can optionally be a comma separated list of names/types, like so:
-
-    world_delete,world_create,world_configure
-    button,image_button
 
 For example:
 
     style_type[button;bgcolor=#006699]
     style[world_delete;bgcolor=red;textcolor=yellow]
     button[4,3.95;2.6,1;world_delete;Delete]
+
+A name/type can optionally be a comma separated list of names/types, like so:
+
+    world_delete,world_create,world_configure
+    button,image_button
+
+Any name/type in the list can also be accompanied by a `+`-separated list of states, like so:
+
+    world_delete:hovered+pressed
+    button:pressed
+
+States allow you to apply styles in response to changes in the element, instead of applying at all times.
 
 Setting a property to nothing will reset it to the default value. For example:
 
@@ -2643,6 +2715,14 @@ Some types may inherit styles from parent types.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+
+### Valid States
+
+* *all elements*
+    * default - Equivalent to providing no states
+* button, button_exit, image_button, item_image_button
+    * hovered - Active when the mouse is hovering over the element
+    * pressed - Active when the button is pressed
 
 Markup Language
 ---------------
@@ -3170,9 +3250,9 @@ For this parameter you can randomly choose any whole number. Usually it is
 preferable for this to be different from other seeds, but sometimes it is useful
 to be able to create identical noise patterns.
 
-When used in mapgen this is actually a 'seed offset', it is added to the
-'world seed' to create the seed used by the noise, to ensure the noise has a
-different pattern in different worlds.
+In some noise APIs the world seed is added to the seed specified in noise
+parameters. This is done to make the resulting noise pattern vary in different
+worlds, and be 'world-specific'.
 
 ### `octaves`
 
@@ -4569,8 +4649,11 @@ Environment access
     * Return value: Table with all node positions with a node air above
     * Area volume is limited to 4,096,000 nodes
 * `minetest.get_perlin(noiseparams)`
+    * Return world-specific perlin noise.
+    * The actual seed used is the noiseparams seed plus the world seed.
 * `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-    * Return world-specific perlin noise (`int(worldseed)+seeddiff`)
+    * Deprecated: use `minetest.get_perlin(noiseparams)` instead.
+    * Return world-specific perlin noise.
 * `minetest.get_voxel_manip([pos1, pos2])`
     * Return voxel manipulator object.
     * Loads the manipulator from the map if positions are passed.
@@ -5403,8 +5486,8 @@ Misc.
   insecure functions if the calling mod has been listed as trusted in the
   `secure.trusted_mods` setting or security is disabled, otherwise returns
   `nil`.
-    * Only works at init time and must be called from the mod's main scope (not
-      from a function).
+    * Only works at init time and must be called from the mod's main scope
+      (ie: the init.lua of the mod, not from another Lua file or within a function).
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE
       IT IN A LOCAL VARIABLE!**
 
@@ -5991,19 +6074,27 @@ object you are working with still exists.
         * `clouds`: Boolean for whether clouds appear. (default: `true`)
         * `sky_color`: A table containing the following values, alpha is ignored:
             * `day_sky`: ColorSpec, for the top half of the `"regular"`
-              skybox during the day. (default: `#8cbafa`)
-            * `day_horizon`: ColorSpec, for the bottom half of the 
-              `"regular"` skybox during the day. (default: `#9bc1f0`)
+              sky during the day. (default: `#8cbafa`)
+            * `day_horizon`: ColorSpec, for the bottom half of the
+              `"regular"` sky during the day. (default: `#9bc1f0`)
             * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
-              skybox during dawn/sunset. (default: `#b4bafa`)
+              sky during dawn/sunset. (default: `#b4bafa`)
+              The resulting sky color will be a darkened version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
             * `dawn_horizon`: ColorSpec, for the bottom half of the `"regular"`
-              skybox during dawn/sunset. (default: `#bac1f0`)
+              sky during dawn/sunset. (default: `#bac1f0`)
+              The resulting sky color will be a darkened version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
             * `night_sky`: ColorSpec, for the top half of the `"regular"`
-              skybox during the night. (default: `#006aff`)
+              sky during the night. (default: `#006aff`)
+              The resulting sky color will be a dark version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
             * `night_horizon`: ColorSpec, for the bottom half of the `"regular"`
-              skybox during the night. (default: `#4090ff`)
-            * `indoors`: ColorSpec, for when you're either indoors or 
-              underground. Only applies to the `"regular"` skybox.
+              sky during the night. (default: `#4090ff`)
+              The resulting sky color will be a dark version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
+            * `indoors`: ColorSpec, for when you're either indoors or
+              underground. Only applies to the `"regular"` sky.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
               at sunrise and sunset.
@@ -6046,8 +6137,8 @@ object you are working with still exists.
     * `parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
-        * `count`: Integer number to set the number of stars in 
-            the skybox. Only applies to `"skybox"` and `"regular"` skyboxes.
+        * `count`: Integer number to set the number of stars in
+            the skybox. Only applies to `"skybox"` and `"regular"` sky types.
             (default: `1000`)
         * `star_color`: ColorSpec, sets the colors of the stars,
             alpha channel is used to set overall star brightness.
@@ -6119,10 +6210,15 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 -------------
 
 A perlin noise generator.
-It can be created via `PerlinNoise(seed, octaves, persistence, spread)`
-or `PerlinNoise(noiseparams)`.
-Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-or `minetest.get_perlin(noiseparams)`.
+It can be created via `PerlinNoise()` or `minetest.get_perlin()`.
+For `minetest.get_perlin()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
+
+`PerlinNoise(noiseparams)`
+`PerlinNoise(seed, octaves, persistence, spread)` (Deprecated).
+
+`minetest.get_perlin(noiseparams)`
+`minetest.get_perlin(seeddiff, octaves, persistence, spread)` (Deprecated).
 
 ### Methods
 
@@ -6136,6 +6232,8 @@ A fast, bulk perlin noise generator.
 
 It can be created via `PerlinNoiseMap(noiseparams, size)` or
 `minetest.get_perlin_map(noiseparams, size)`.
+For `minetest.get_perlin_map()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
 
 Format of `size` is `{x=dimx, y=dimy, z=dimz}`. The `z` component is omitted
 for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
@@ -6647,6 +6745,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         wield_scale = {x = 1, y = 1, z = 1},
 
+        -- The default value of 99 may be configured by
+        -- users using the setting "default_stack_max"
         stack_max = 99,
 
         range = 4.0,
@@ -7012,6 +7112,7 @@ Used by `minetest.register_node`.
         -- node is deleted from the world or the drops are added. This is
         -- generally the result of either the node being dug or an attached node
         -- becoming detached.
+        -- oldmeta is the NodeMetaRef of the oldnode before deletion.
         -- drops is a table of ItemStacks, so any metadata to be preserved can
         -- be added directly to one or more of the dropped items. See
         -- "ItemStackMetaRef".
@@ -7036,10 +7137,14 @@ Used by `minetest.register_node`.
 
         on_punch = function(pos, node, puncher, pointed_thing),
         -- default: minetest.node_punch
+        -- Called when puncher (an ObjectRef) punches the node at pos.
         -- By default calls minetest.register_on_punchnode callbacks.
 
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing),
         -- default: nil
+        -- Called when clicker (an ObjectRef) "rightclicks"
+        -- ("rightclick" here stands for the placement key) while pointing at
+        -- the node at pos with 'node' being the node table.
         -- itemstack will hold clicker's wielded item.
         -- Shall return the leftover itemstack.
         -- Note: pointed_thing can be nil, if a mod calls this function.

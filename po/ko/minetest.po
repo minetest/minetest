@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Korean (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -423,15 +423,26 @@ msgstr ""
 msgid "Z spread"
 msgstr ""
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr ""
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "defaults"
 msgstr "기본 게임"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr ""
@@ -665,6 +676,7 @@ msgstr "이름/비밀번호"
 msgid "Ping"
 msgstr "핑"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP 가능"
@@ -915,6 +927,14 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "월드 경로가 존재하지 않습니다: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "yes"
@@ -953,6 +973,7 @@ msgstr "- 포트: "
 msgid "- Public: "
 msgstr "일반"
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1422,6 +1443,7 @@ msgstr "왼쪽 쉬프트"
 msgid "Left Windows"
 msgstr "왼쪽 창"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "메뉴"
@@ -1516,6 +1538,7 @@ msgstr "일시 중지"
 msgid "Play"
 msgstr "시작"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 #, fuzzy
 msgid "Print"
@@ -1554,6 +1577,7 @@ msgstr "오른쪽 창"
 msgid "Scroll Lock"
 msgstr "스크롤 락"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "선택"
@@ -1802,10 +1826,15 @@ msgstr "음소거"
 msgid "Sound Volume: "
 msgstr "볼륨 조절: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "들어가기 "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "ko"
@@ -2206,8 +2235,8 @@ msgstr "범프맵핑"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5180,7 +5209,7 @@ msgid ""
 msgstr "서버이름은 플레이어가 서버 리스트에 들어갈 때 나타납니다."
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6676,53 +6705,53 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "시네마틱 스위치"
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr "터널 너비를 조절, 작은 수치는 넓은 터널을 만듭니다."
 
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "선택한 모드 파일:"
+#~ msgid "Enable VBO"
+#~ msgstr "VBO 적용"
 
-#~ msgid "Waving Water"
-#~ msgstr "물결 효과"
+#~ msgid "Floatland level"
+#~ msgstr "Floatland의 높이"
 
-#~ msgid "Waving water"
-#~ msgstr "물결 효과"
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "이 글꼴은 특정 언어에 사용 됩니다."
-
-#~ msgid "Shadow limit"
-#~ msgstr "그림자 제한"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "TrueTypeFont 또는 비트맵의 경로입니다."
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "큰 동굴 깊이"
-
-#~ msgid "Gamma"
-#~ msgstr "감마"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "글꼴 그림자 투명도 (불투명 함, 0과 255 사이)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Floatland의 산 높이"
+#~ msgid "Floatland mountain density"
+#~ msgstr "Floatland의 산 밀집도"
 
 #, fuzzy
 #~ msgid "Floatland mountain exponent"
 #~ msgstr "Floatland의 산 밀집도"
 
-#~ msgid "Floatland mountain density"
-#~ msgstr "Floatland의 산 밀집도"
+#~ msgid "Floatland mountain height"
+#~ msgstr "Floatland의 산 높이"
 
-#~ msgid "Floatland level"
-#~ msgstr "Floatland의 높이"
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "글꼴 그림자 투명도 (불투명 함, 0과 255 사이)."
 
-#~ msgid "Enable VBO"
-#~ msgstr "VBO 적용"
+#~ msgid "Gamma"
+#~ msgstr "감마"
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr "터널 너비를 조절, 작은 수치는 넓은 터널을 만듭니다."
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "큰 동굴 깊이"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "TrueTypeFont 또는 비트맵의 경로입니다."
+
+#~ msgid "Shadow limit"
+#~ msgstr "그림자 제한"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "이 글꼴은 특정 언어에 사용 됩니다."
+
+#~ msgid "Waving water"
+#~ msgstr "물결 효과"
+
+#~ msgid "Waving Water"
+#~ msgstr "물결 효과"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "선택한 모드 파일:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "시네마틱 스위치"

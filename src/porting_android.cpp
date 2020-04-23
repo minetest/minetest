@@ -69,10 +69,10 @@ void android_main(android_app *app)
 /* TODO this doesn't work as expected, no idea why but there's a workaround   */
 /* for it right now */
 extern "C" {
-	JNIEXPORT void JNICALL Java_net_minetest_MtNativeActivity_putMessageBoxResult(
+	JNIEXPORT void JNICALL Java_net_minetest_minetest_GameActivity_putMessageBoxResult(
 			JNIEnv * env, jclass thiz, jstring text)
 	{
-		errorstream << "Java_net_minetest_MtNativeActivity_putMessageBoxResult got: "
+		errorstream << "Java_net_minetest_minetest_GameActivity_putMessageBoxResult got: "
 				<< std::string((const char*)env->GetStringChars(text,0))
 				<< std::endl;
 	}
@@ -107,17 +107,6 @@ jclass findClass(std::string classname)
 	return (jclass) jnienv->CallObjectMethod(cls, findClass, strClassName);
 }
 
-void copyAssets()
-{
-	jmethodID assetcopy = jnienv->GetMethodID(nativeActivity,"copyAssets","()V");
-
-	if (assetcopy == 0) {
-		assert("porting::copyAssets unable to find copy assets method" == 0);
-	}
-
-	jnienv->CallVoidMethod(app_global->activity->clazz, assetcopy);
-}
-
 void initAndroid()
 {
 	porting::jnienv = NULL;
@@ -136,7 +125,7 @@ void initAndroid()
 		exit(-1);
 	}
 
-	nativeActivity = findClass("net/minetest/minetest/MtNativeActivity");
+	nativeActivity = findClass("net/minetest/minetest/GameActivity");
 	if (nativeActivity == 0) {
 		errorstream <<
 			"porting::initAndroid unable to find java native activity class" <<

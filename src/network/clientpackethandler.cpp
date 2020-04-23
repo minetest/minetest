@@ -386,10 +386,10 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 	m_env.setTimeOfDaySpeed(time_speed);
 	m_time_of_day_set = true;
 
-	u32 dr = m_env.getDayNightRatio();
-	infostream << "Client: time_of_day=" << time_of_day
-			<< " time_speed=" << time_speed
-			<< " dr=" << dr << std::endl;
+	//u32 dr = m_env.getDayNightRatio();
+	//infostream << "Client: time_of_day=" << time_of_day
+	//		<< " time_speed=" << time_speed
+	//		<< " dr=" << dr << std::endl;
 }
 
 void Client::handleCommand_ChatMessage(NetworkPacket *pkt)

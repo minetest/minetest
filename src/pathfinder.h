@@ -29,7 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* Forward declarations                                                       */
 /******************************************************************************/
 
-class ServerEnvironment;
+class NodeDefManager;
+class Map;
 
 /******************************************************************************/
 /* Typedefs and macros                                                        */
@@ -54,10 +55,10 @@ typedef enum {
 /******************************************************************************/
 
 /** c wrapper function to use from scriptapi */
-std::vector<v3s16> get_path(ServerEnvironment *env,
-							v3s16 source,
-							v3s16 destination,
-							unsigned int searchdistance,
-							unsigned int max_jump,
-							unsigned int max_drop,
-							PathAlgorithm algo);
+std::vector<v3s16> get_path(Map *map, const NodeDefManager *ndef,
+		v3s16 source,
+		v3s16 destination,
+		unsigned int searchdistance,
+		unsigned int max_jump,
+		unsigned int max_drop,
+		PathAlgorithm algo);

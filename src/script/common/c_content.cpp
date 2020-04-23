@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_types.h"
 #include "nodedef.h"
 #include "object_properties.h"
-#include "content_sao.h"
 #include "cpp_api/s_node.h"
 #include "lua_api/l_object.h"
 #include "lua_api/l_item.h"
@@ -29,10 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 #include "tool.h"
-#include "serverobject.h"
 #include "porting.h"
 #include "mapgen/mg_schematic.h"
 #include "noise.h"
+#include "server/player_sao.h"
 #include "util/pointedthing.h"
 #include "debug.h" // For FATAL_ERROR
 #include <json/json.h>
@@ -351,7 +350,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	push_v3f(L, prop->visual_size);
 	lua_setfield(L, -2, "visual_size");
 
-	lua_newtable(L);
+	lua_createtable(L, prop->textures.size(), 0);
 	u16 i = 1;
 	for (const std::string &texture : prop->textures) {
 		lua_pushlstring(L, texture.c_str(), texture.size());
@@ -359,7 +358,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	}
 	lua_setfield(L, -2, "textures");
 
-	lua_newtable(L);
+	lua_createtable(L, prop->colors.size(), 0);
 	i = 1;
 	for (const video::SColor &color : prop->colors) {
 		push_ARGB8(L, color);
@@ -841,7 +840,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_pushnumber(L, c.connect_sides);
 	lua_setfield(L, -2, "connect_sides");
 
-	lua_newtable(L);
+	lua_createtable(L, c.connects_to.size(), 0);
 	u16 i = 1;
 	for (const std::string &it : c.connects_to) {
 		lua_pushlstring(L, it.c_str(), it.size());
@@ -964,7 +963,7 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 
 void push_box(lua_State *L, const std::vector<aabb3f> &box)
 {
-	lua_newtable(L);
+	lua_createtable(L, box.size(), 0);
 	u8 i = 1;
 	for (const aabb3f &it : box) {
 		push_aabb3f(L, it);
@@ -1041,7 +1040,7 @@ void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 
 void push_soundspec(lua_State *L, const SimpleSoundSpec &spec)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	lua_pushstring(L, spec.name.c_str());
 	lua_setfield(L, -2, "name");
 	lua_pushnumber(L, spec.gain);
@@ -1126,12 +1125,12 @@ MapNode readnode(lua_State *L, int index, const NodeDefManager *ndef)
 /******************************************************************************/
 void pushnode(lua_State *L, const MapNode &n, const NodeDefManager *ndef)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	lua_pushstring(L, ndef->get(n).name.c_str());
 	lua_setfield(L, -2, "name");
-	lua_pushnumber(L, n.getParam1());
+	lua_pushinteger(L, n.getParam1());
 	lua_setfield(L, -2, "param1");
-	lua_pushnumber(L, n.getParam2());
+	lua_pushinteger(L, n.getParam2());
 	lua_setfield(L, -2, "param2");
 }
 
@@ -1164,7 +1163,7 @@ bool string_to_enum(const EnumString *spec, int &result,
 {
 	const EnumString *esp = spec;
 	while(esp->str){
-		if(str == std::string(esp->str)){
+		if (!strcmp(str.c_str(), esp->str)) {
 			result = esp->num;
 			return true;
 		}
@@ -1439,7 +1438,7 @@ ToolCapabilities read_tool_capabilities(
 /******************************************************************************/
 void push_dig_params(lua_State *L,const DigParams &params)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	setboolfield(L, -1, "diggable", params.diggable);
 	setfloatfield(L, -1, "time", params.time);
 	setintfield(L, -1, "wear", params.wear);
@@ -1448,7 +1447,7 @@ void push_dig_params(lua_State *L,const DigParams &params)
 /******************************************************************************/
 void push_hit_params(lua_State *L,const HitParams &params)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	setintfield(L, -1, "hp", params.hp);
 	setintfield(L, -1, "wear", params.wear);
 }
@@ -1541,9 +1540,9 @@ void read_groups(lua_State *L, int index, ItemGroupList &result)
 /******************************************************************************/
 void push_groups(lua_State *L, const ItemGroupList &groups)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, groups.size());
 	for (const auto &group : groups) {
-		lua_pushnumber(L, group.second);
+		lua_pushinteger(L, group.second);
 		lua_setfield(L, -2, group.first.c_str());
 	}
 }
@@ -1588,7 +1587,7 @@ void luaentity_get(lua_State *L, u16 id)
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "luaentities");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
+	lua_pushinteger(L, id);
 	lua_gettable(L, -2);
 	lua_remove(L, -2); // Remove luaentities
 	lua_remove(L, -2); // Remove core
@@ -1672,10 +1671,10 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_pushvalue(L, nullindex);
 			break;
 		case Json::intValue:
-			lua_pushinteger(L, value.asInt());
+			lua_pushinteger(L, value.asLargestInt());
 			break;
 		case Json::uintValue:
-			lua_pushinteger(L, value.asUInt());
+			lua_pushinteger(L, value.asLargestUInt());
 			break;
 		case Json::realValue:
 			lua_pushnumber(L, value.asDouble());
@@ -1690,7 +1689,7 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_pushboolean(L, value.asInt());
 			break;
 		case Json::arrayValue:
-			lua_newtable(L);
+			lua_createtable(L, value.size(), 0);
 			for (Json::Value::const_iterator it = value.begin();
 					it != value.end(); ++it) {
 				push_json_value_helper(L, *it, nullindex);
@@ -1698,10 +1697,10 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			}
 			break;
 		case Json::objectValue:
-			lua_newtable(L);
+			lua_createtable(L, 0, value.size());
 			for (Json::Value::const_iterator it = value.begin();
 					it != value.end(); ++it) {
-#ifndef JSONCPP_STRING
+#if !defined(JSONCPP_STRING) && (JSONCPP_VERSION_MAJOR < 1 || JSONCPP_VERSION_MINOR < 9)
 				const char *str = it.memberName();
 				lua_pushstring(L, str ? str : "");
 #else
@@ -1825,7 +1824,7 @@ void push_objectRef(lua_State *L, const u16 id)
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "object_refs");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
+	lua_pushinteger(L, id);
 	lua_gettable(L, -2);
 	lua_remove(L, -2); // object_refs
 	lua_remove(L, -2); // core
@@ -1851,7 +1850,11 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->name    = getstringfield_default(L, 2, "name", "");
 	elem->text    = getstringfield_default(L, 2, "text", "");
 	elem->number  = getintfield_default(L, 2, "number", 0);
-	elem->item    = getintfield_default(L, 2, "item", 0);
+	if (elem->type == HUD_ELEM_WAYPOINT)
+		// waypoints reuse the item field to store precision, item = precision + 1
+		elem->item = getintfield_default(L, 2, "precision", -1) + 1;
+	else
+		elem->item = getintfield_default(L, 2, "item", 0);
 	elem->dir     = getintfield_default(L, 2, "direction", 0);
 	elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX,
 			getintfield_default(L, 2, "z_index", 0)));

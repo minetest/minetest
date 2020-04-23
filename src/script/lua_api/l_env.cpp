@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <algorithm>
 #include "lua_api/l_env.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_nodemeta.h"
@@ -25,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_vmanip.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include <algorithm>
 #include "scripting_server.h"
 #include "environment.h"
 #include "mapblock.h"
@@ -33,12 +33,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "daynightratio.h"
 #include "util/pointedthing.h"
-#include "content_sao.h"
 #include "mapgen/treegen.h"
 #include "emerge.h"
 #include "pathfinder.h"
 #include "face_position_cache.h"
 #include "remoteplayer.h"
+#include "server/luaentity_sao.h"
+#include "server/player_sao.h"
 #ifndef SERVER
 #include "client/client.h"
 #endif
@@ -72,7 +73,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	lua_remove(L, -2); // Remove core
 
 	// Get registered_abms[m_id]
-	lua_pushnumber(L, m_id);
+	lua_pushinteger(L, m_id);
 	lua_gettable(L, -2);
 	if(lua_isnil(L, -1))
 		FATAL_ERROR("");
@@ -115,7 +116,7 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	lua_remove(L, -2); // Remove core
 
 	// Get registered_lbms[m_id]
-	lua_pushnumber(L, m_id);
+	lua_pushinteger(L, m_id);
 	lua_gettable(L, -2);
 	FATAL_ERROR_IF(lua_isnil(L, -1), "Entry with given id not found in registered_lbms table");
 	lua_remove(L, -2); // Remove registered_lbms
@@ -139,8 +140,7 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 
 int LuaRaycast::l_next(lua_State *L)
 {
-	MAP_LOCK_REQUIRED;
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	bool csm = false;
 #ifndef SERVER
@@ -384,7 +384,7 @@ int ModApiEnvMod::l_get_node_or_nil(lua_State *L)
 // timeofday: nil = current time, 0 = night, 0.5 = day
 int ModApiEnvMod::l_get_node_light(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	// Do it
 	v3s16 pos = read_v3s16(L, 1);
@@ -488,10 +488,7 @@ int ModApiEnvMod::l_punch_node(lua_State *L)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node_max_level(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
 	MapNode n = env->getMap().getNode(pos);
@@ -503,10 +500,7 @@ int ModApiEnvMod::l_get_node_max_level(lua_State *L)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node_level(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
 	MapNode n = env->getMap().getNode(pos);
@@ -551,12 +545,12 @@ int ModApiEnvMod::l_add_node_level(lua_State *L)
 // find_nodes_with_meta(pos1, pos2)
 int ModApiEnvMod::l_find_nodes_with_meta(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	std::vector<v3s16> positions = env->getMap().findNodesWithMetadata(
 		check_v3s16(L, 1), check_v3s16(L, 2));
 
-	lua_newtable(L);
+	lua_createtable(L, positions.size(), 0);
 	for (size_t i = 0; i != positions.size(); i++) {
 		push_v3s16(L, positions[i]);
 		lua_rawseti(L, -2, i + 1);
@@ -583,7 +577,7 @@ int ModApiEnvMod::l_get_node_timer(lua_State *L)
 
 	// Do it
 	v3s16 p = read_v3s16(L, 1);
-	NodeTimerRef::create(L, p, env);
+	NodeTimerRef::create(L, p, &env->getServerMap());
 	return 1;
 }
 
@@ -687,22 +681,22 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 {
 	GET_ENV_PTR;
+	ScriptApiBase *script = getScriptApiBase(L);
 
 	// Do it
 	v3f pos = checkFloatPos(L, 1);
 	float radius = readParam<float>(L, 2) * BS;
-	std::vector<u16> ids;
-	env->getObjectsInsideRadius(ids, pos, radius);
-	ScriptApiBase *script = getScriptApiBase(L);
-	lua_createtable(L, ids.size(), 0);
-	std::vector<u16>::const_iterator iter = ids.begin();
-	for(u32 i = 0; iter != ids.end(); ++iter) {
-		ServerActiveObject *obj = env->getActiveObject(*iter);
-		if (!obj->isGone()) {
-			// Insert object reference into table
-			script->objectrefGetOrCreate(L, obj);
-			lua_rawseti(L, -2, ++i);
-		}
+	std::vector<ServerActiveObject *> objs;
+
+	auto include_obj_cb = [](ServerActiveObject *obj){ return !obj->isGone(); };
+	env->getObjectsInsideRadius(objs, pos, radius, include_obj_cb);
+
+	int i = 0;
+	lua_createtable(L, objs.size(), 0);
+	for (const auto obj : objs) {
+		// Insert object reference into table
+		script->objectrefGetOrCreate(L, obj);
+		lua_rawseti(L, -2, ++i);
 	}
 	return 1;
 }
@@ -728,10 +722,7 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 // get_timeofday() -> 0...1
 int ModApiEnvMod::l_get_timeofday(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
 	// Do it
 	int timeofday_mh = env->getTimeOfDay();
@@ -743,10 +734,7 @@ int ModApiEnvMod::l_get_timeofday(lua_State *L)
 // get_day_count() -> int
 int ModApiEnvMod::l_get_day_count(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
 	lua_pushnumber(L, env->getDayCount());
 	return 1;
@@ -767,12 +755,9 @@ int ModApiEnvMod::l_get_gametime(lua_State *L)
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 int ModApiEnvMod::l_find_node_near(lua_State *L)
 {
-	Environment *env = getEnv(L);
-	if (!env) {
-		return 0;
-	}
+	GET_PLAIN_ENV_PTR;
 
-	const NodeDefManager *ndef = getGameDef(L)->ndef();
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
 	v3s16 pos = read_v3s16(L, 1);
 	int radius = luaL_checkinteger(L, 2);
 	std::vector<content_t> filter;
@@ -815,20 +800,19 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
 
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+
 #ifndef SERVER
-	const NodeDefManager *ndef = getClient(L) ? getClient(L)->ndef() : getServer(L)->ndef();
 	if (getClient(L)) {
 		minp = getClient(L)->CSMClampPos(minp);
 		maxp = getClient(L)->CSMClampPos(maxp);
 	}
-#else
-	const NodeDefManager *ndef = getServer(L)->ndef();
 #endif
 
 	v3s16 cube = maxp - minp + 1;
@@ -892,20 +876,19 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	 * TODO
 	 */
 
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	sortBoxVerticies(minp, maxp);
 
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+
 #ifndef SERVER
-	const NodeDefManager *ndef = getClient(L) ? getClient(L)->ndef() : getServer(L)->ndef();
 	if (getClient(L)) {
 		minp = getClient(L)->CSMClampPos(minp);
 		maxp = getClient(L)->CSMClampPos(maxp);
 	}
-#else
-	const NodeDefManager *ndef = getServer(L)->ndef();
 #endif
 
 	v3s16 cube = maxp - minp + 1;
@@ -1034,7 +1017,7 @@ int ModApiEnvMod::l_clear_objects(lua_State *L)
 // line_of_sight(pos1, pos2) -> true/false, pos
 int ModApiEnvMod::l_line_of_sight(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_PLAIN_ENV_PTR;
 
 	// read position 1 from lua
 	v3f pos1 = checkFloatPos(L, 1);
@@ -1210,11 +1193,11 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 			algo = PA_DIJKSTRA;
 	}
 
-	std::vector<v3s16> path = get_path(env, pos1, pos2,
+	std::vector<v3s16> path = get_path(&env->getServerMap(), env->getGameDef()->ndef(), pos1, pos2,
 		searchdistance, max_jump, max_drop, algo);
 
 	if (!path.empty()) {
-		lua_newtable(L);
+		lua_createtable(L, path.size(), 0);
 		int top = lua_gettop(L);
 		unsigned int index = 1;
 		for (const v3s16 &i : path) {
@@ -1274,8 +1257,9 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 	else
 		return 0;
 
+	ServerMap *map = &env->getServerMap();
 	treegen::error e;
-	if ((e = treegen::spawn_ltree (env, p0, ndef, tree_def)) != treegen::SUCCESS) {
+	if ((e = treegen::spawn_ltree (map, p0, ndef, tree_def)) != treegen::SUCCESS) {
 		if (e == treegen::UNBALANCED_BRACKETS) {
 			luaL_error(L, "spawn_tree(): closing ']' has no matching opening bracket");
 		} else {

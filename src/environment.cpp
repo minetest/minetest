@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "collision.h"
 #include "raycast.h"
-#include "serverobject.h"
 #include "scripting_server.h"
 #include "server.h"
 #include "daynightratio.h"
@@ -81,6 +80,24 @@ float Environment::getTimeOfDayF()
 {
 	MutexAutoLock lock(this->m_time_lock);
 	return m_time_of_day_f;
+}
+
+bool Environment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
+{
+	// Iterate trough nodes on the line
+	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
+	do {
+		MapNode n = getMap().getNode(iterator.m_current_node_pos);
+
+		// Return non-air
+		if (n.param0 != CONTENT_AIR) {
+			if (p)
+				*p = iterator.m_current_node_pos;
+			return false;
+		}
+		iterator.next();
+	} while (iterator.m_current_index <= iterator.m_last_index);
+	return true;
 }
 
 /*
