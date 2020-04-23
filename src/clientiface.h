@@ -241,6 +241,9 @@ public:
 	u32 allowed_auth_mechs = 0;
 	u32 allowed_sudo_mechs = 0;
 
+	// Remote client lanquage for server translations
+	std::string m_lang_code;
+
 	bool isSudoMechAllowed(AuthMechanism mech)
 	{ return allowed_sudo_mechs & mech; }
 	bool isMechAllowed(AuthMechanism mech)

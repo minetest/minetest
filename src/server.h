@@ -358,6 +358,9 @@ public:
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
 
+	// Load translations for a language
+	void loadTranslationLanguage(const std::string &lang_code);
+
 	// Bind address
 	Address m_bind_addr;
 

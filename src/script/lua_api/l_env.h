@@ -187,6 +187,9 @@ private:
 	// stops forceloading a position
 	static int l_forceload_free_block(lua_State *L);
 
+	// Get a translation server side
+	static int l_get_lang_translation(lua_State * L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeClient(lua_State *L, int top);

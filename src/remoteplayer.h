@@ -141,6 +141,8 @@ public:
 
 	void onSuccessfulSave();
 
+	std::string m_lang_code;
+
 private:
 	/*
 		serialize() writes a bunch of text that can contain

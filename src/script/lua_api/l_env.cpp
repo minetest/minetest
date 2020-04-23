@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
+#include "util/string.h"
 #ifndef SERVER
 #include "client/client.h"
 #endif
@@ -1302,6 +1303,18 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	return 0;
 }
 
+// get_lang_translation(string, lang_code)
+int ModApiEnvMod::l_get_lang_translation(lua_State * L)
+{
+	GET_ENV_PTR;
+	std::string string = luaL_checkstring(L, 1);
+	std::string lang_code = luaL_checkstring(L, 2);
+	getServer(L)->loadTranslationLanguage(lang_code);
+	string = wide_to_utf8(translate_string(utf8_to_wide(string), lang_code));
+	lua_pushstring(L, string.c_str());
+	return 1;
+}
+
 void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
@@ -1349,6 +1362,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
+	API_FCT(get_lang_translation);
 }
 
 void ModApiEnvMod::InitializeClient(lua_State *L, int top)
