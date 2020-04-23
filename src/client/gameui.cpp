@@ -229,7 +229,7 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 
 	core::rect<s32> chat_size(10, chat_y,
 		window_size.X - 20, 0);
-	chat_size.LowerRightCorner.Y = std::min((s32)window_size.Y - chat_y,
+	chat_size.LowerRightCorner.Y = std::min((s32)window_size.Y,
 		m_guitext_chat->getTextHeight() + chat_y);
 
 	m_guitext_chat->setRelativePosition(chat_size);
