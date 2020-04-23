@@ -168,7 +168,7 @@ private:
 	float m_day_night_ratio;
 	std::string hud_hotbar_image = "";
 	std::string hud_hotbar_selected_image = "";
-	
+
 	std::string m_lang_code;
 
 	CloudParams m_cloud_params;
