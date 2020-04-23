@@ -903,6 +903,10 @@ fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
 #    This font will be used for certain languages or if the default font is unavailable.
 fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
 
+#    Font size of the recent chat text and chat prompt in point (pt).
+#    Value 0 will use the default font size.
+chat_font_size (Chat font size) int 0
+
 #    Path to save screenshots at. Can be an absolute or relative path.
 #    The folder will be created if it doesn't already exist.
 screenshot_path (Screenshot folder) path screenshots
