@@ -121,7 +121,7 @@ bool AuthDatabaseLevelDB::getAuth(const std::string &name, AuthEntry &res)
 	std::istringstream is(raw);
 
 	/*
-	u8 version = 0
+	u8 version = 1
 	std::string password
 	u16 number of privileges
 	for each privilege {
@@ -130,7 +130,7 @@ bool AuthDatabaseLevelDB::getAuth(const std::string &name, AuthEntry &res)
 	s64 last_login
 	*/
 
-	if (readU8(is) != 0)
+	if (readU8(is) > 1)
 		return false;
 
 	res.id = 1;
@@ -151,7 +151,7 @@ bool AuthDatabaseLevelDB::getAuth(const std::string &name, AuthEntry &res)
 bool AuthDatabaseLevelDB::saveAuth(const AuthEntry &authEntry)
 {
 	std::ostringstream os;
-	writeU8(os, 0);
+	writeU8(os, 1);
 	os << serializeString(authEntry.password);
 
 	size_t privilege_count = authEntry.privileges.size();
