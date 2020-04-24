@@ -198,6 +198,7 @@ if(ENABLE_LEVELDB)
 	endif()
 endif(ENABLE_LEVELDB)
 
+find_library(SYSTEMD_LIBRARY NAMES systemd libsystemd)
 
 OPTION(ENABLE_REDIS "Enable Redis backend" TRUE)
 set(USE_REDIS FALSE)
@@ -614,6 +615,7 @@ if(BUILD_SERVER)
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
 		${PLATFORM_LIBS}
+		${SYSTEMD_LIBRARY}
 	)
 	set_target_properties(${PROJECT_NAME}server PROPERTIES
 			COMPILE_DEFINITIONS "SERVER")

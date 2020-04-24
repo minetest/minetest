@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "settings.h"
 #include "log.h"
+#include <systemd/sd-daemon.h>
 
 #ifdef _WIN32
 // Without this some of the network functions are not found on mingw
@@ -97,9 +98,17 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 		return false;
 	}
 
-	// Use IPv6 if specified
-	m_addr_family = ipv6 ? AF_INET6 : AF_INET;
-	m_handle = socket(m_addr_family, SOCK_DGRAM, IPPROTO_UDP);
+	int sd_sockets = sd_listen_fds(0);
+	if (sd_sockets > 1)
+		dstream << "Too many file descriptors received." << std::endl;
+	else if (sd_sockets == 1) {
+		m_addr_family = AF_INET6;
+		m_handle = SD_LISTEN_FDS_START + 0;
+	} else {
+		// Use IPv6 if specified
+		m_addr_family = ipv6 ? AF_INET6 : AF_INET;
+		m_handle = socket(m_addr_family, SOCK_DGRAM, IPPROTO_UDP);
+	}
 
 	if (socket_enable_debug_output) {
 		dstream << "UDPSocket(" << (int)m_handle
@@ -146,6 +155,9 @@ UDPSocket::~UDPSocket()
 
 void UDPSocket::Bind(Address addr)
 {
+	if (sd_listen_fds(0) == 1)
+		return;
+
 	if (socket_enable_debug_output) {
 		dstream << "UDPSocket(" << (int)m_handle
 			<< ")::Bind(): " << addr.serializeString() << ":"
