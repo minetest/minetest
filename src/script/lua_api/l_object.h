@@ -137,6 +137,9 @@ private:
 	// get_bone_position(self, bone)
 	static int l_get_bone_position(lua_State *L);
 
+	// get_bone_position(self, bone)
+	static int l_get_model_bone_position(lua_State *L);
+
 	// set_attach(self, parent, bone, position, rotation)
 	static int l_set_attach(lua_State *L);
 

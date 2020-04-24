@@ -88,6 +88,12 @@ void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotat
 	*rotation = m_bone_position[bone].Y;
 }
 
+void UnitSAO::getModelBonePosition(const std::string &bone, v3f *position, v3f *rotation)
+{
+	*position = m_bone_position[bone].X;
+	*rotation = m_bone_position[bone].Y;
+}
+
 void UnitSAO::setAttachment(
 		int parent_id, const std::string &bone, v3f position, v3f rotation)
 {
