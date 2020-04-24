@@ -663,28 +663,6 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	return 2;
 }
 
-// get_model_bone_position(self, bone)
-int ObjectRef::l_get_model_bone_position(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	ServerActiveObject *co = getobject(ref);
-	if (co == NULL)
-		return 0;
-	// Do it
-	std::string bone;
-	if (!lua_isnil(L, 2))
-		bone = readParam<std::string>(L, 2);
-
-	v3f position = v3f(0, 0, 0);
-	v3f rotation = v3f(0, 0, 0);
-	co->getBonePosition(bone, &position, &rotation);
-
-	push_v3f(L, position);
-	push_v3f(L, rotation);
-	return 2;
-}
-
 // set_attach(self, parent, bone, position, rotation)
 int ObjectRef::l_set_attach(lua_State *L)
 {
