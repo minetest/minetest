@@ -64,9 +64,17 @@ The game directory can contain the following files:
 * `game.conf`, with the following keys:
     * `name`: Required, human readable name  e.g. `name = Minetest`
     * `description`: Short description to be shown in the content tab
+    * `allowed_mapgens = <comma-separated mapgens>`
+      e.g. `allowed_mapgens = v5,v6,flat`
+      Mapgens not in this list are removed from the list of mapgens for
+      the game.
+      If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
       These mapgens are removed from the list of mapgens for the game.
+      When both `allowed_mapgens` and `disallowed_mapgens` are
+      specified, `allowed_mapgens` is applied before
+      `disallowed_mapgens`.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -826,7 +834,7 @@ Examples of sound parameter tables:
         gain = 1.0,  -- default
         loop = true,
     }
-    -- Play in a location
+    -- Play at a location
     {
         pos = {x = 1, y = 2, z = 3},
         gain = 1.0,  -- default
@@ -839,34 +847,59 @@ Examples of sound parameter tables:
         max_hear_distance = 32,  -- default, uses an euclidean metric
         loop = true,
     }
+    -- Play at a location, heard by anyone *but* the given player
+    {
+        pos = {x = 32, y = 0, z = 100},
+        max_hear_distance = 40,
+        exclude_player = name,
+    }
 
 Looped sounds must either be connected to an object or played locationless to
-one player using `to_player = name,`.
+one player using `to_player = name`.
 
 A positional sound will only be heard by players that are within
 `max_hear_distance` of the sound position, at the start of the sound.
 
+`exclude_player = name` can be applied to locationless, positional and object-
+bound sounds to exclude a single player from hearing them.
+
 `SimpleSoundSpec`
 -----------------
 
-* e.g. `""`
-* e.g. `"default_place_node"`
-* e.g. `{}`
-* e.g. `{name = "default_place_node"}`
-* e.g. `{name = "default_place_node", gain = 1.0}`
-* e.g. `{name = "default_place_node", gain = 1.0, pitch = 1.0}`
+Specifies a sound name, gain (=volume) and pitch.
+This is either a string or a table.
 
+In string form, you just specify the sound name or
+the empty string for no sound.
+
+Table form has the following fields:
+
+* `name`: Sound name
+* `gain`: Volume (`1.0` = 100%)
+* `pitch`: Pitch (`1.0` = 100%)
+
+`gain` and `pitch` are optional and default to `1.0`.
+
+Examples:
+
+* `""`: No sound
+* `{}`: No sound
+* `"default_place_node"`: Play e.g. `default_place_node.ogg`
+* `{name = "default_place_node"}`: Same as above
+* `{name = "default_place_node", gain = 0.5}`: 50% volume
+* `{name = "default_place_node", gain = 0.9, pitch = 1.1}`: 90% volume, 110% pitch
 
 Special sound files
 -------------------
 
 These sound files are played back by the engine if provided.
 
- * `main_menu`: Looped sound in the main menu (gain = 1.0)
  * `player_damage`: Played when the local player takes damage (gain = 0.5)
  * `player_falling_damage`: Played when the local player takes
    damage by falling (gain = 0.5)
-
+ * `player_jump`: Played when the local player jumps
+ * `default_dig_<groupname>`: Default node digging sound
+   (see node sound definition for details)
 
 Registered definitions
 ======================
@@ -924,7 +957,8 @@ Node paramtypes
 The functions of `param1` and `param2` are determined by certain fields in the
 node definition.
 
-`param1` is reserved for the engine when `paramtype != "none"`:
+The function of `param1` is determined by `paramtype` in node definition.
+`param1` is reserved for the engine when `paramtype != "none"`.
 
 * `paramtype = "light"`
     * The value stores light with and without sun in its upper and lower 4 bits
@@ -941,19 +975,27 @@ node definition.
         * mesh
         * plantlike
         * plantlike_rooted
+* `paramtype = "none"`
+    * `param1` will not be used by the engine and can be used to store
+      an arbitrary value
 
-`param2` is reserved for the engine when any of these are used:
+The function of `param2` is determined by `paramtype2` in node definition.
+`param2` is reserved for the engine when `paramtype2 != "none"`.
 
-* `liquidtype = "flowing"`
-    * The level and some flags of the liquid is stored in `param2`
-* `drawtype = "flowingliquid"`
-    * The drawn liquid level is read from `param2`
-* `drawtype = "torchlike"`
-* `drawtype = "signlike"`
+* `paramtype2 = "flowingliquid"`
+    * Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
+    * The liquid level and a flag of the liquid are stored in `param2`
+    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node
+    * Bit 3: If set, liquid is flowing downwards (no graphical effect)
 * `paramtype2 = "wallmounted"`
-    * The rotation of the node is stored in `param2`. You can make this value
-      by using `minetest.dir_to_wallmounted()`.
+    * Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
+    * The rotation of the node is stored in `param2`
+    * You can make this value by using `minetest.dir_to_wallmounted()`
+    * Values range 0 - 5
+    * The value denotes at which direction the node is "mounted":
+      0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
 * `paramtype2 = "facedir"`
+    * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`. Furnaces and chests are
       rotated this way. Can be made by using `minetest.dir_to_facedir()`.
     * Values range 0 - 23
@@ -972,27 +1014,29 @@ node definition.
             * The height of the 'plantlike' section is stored in `param2`.
             * The height is (`param2` / 16) nodes.
 * `paramtype2 = "degrotate"`
-    * Only valid for "plantlike". The rotation of the node is stored in
+    * Only valid for "plantlike" drawtype. The rotation of the node is stored in
       `param2`.
     * Values range 0 - 179. The value stored in `param2` is multiplied by two to
       get the actual rotation in degrees of the node.
 * `paramtype2 = "meshoptions"`
-    * Only valid for "plantlike". The value of `param2` becomes a bitfield which
-      can be used to change how the client draws plantlike nodes.
-    * Bits 0, 1 and 2 form a mesh selector.
-      Currently the following meshes are choosable:
+    * Only valid for "plantlike" drawtype. `param2` encodes the shape and
+      optional modifiers of the "plant". `param2` is a bitfield.
+    * Bits 0 to 2 select the shape.
+      Use only one of the values below:
         * 0 = a "x" shaped plant (ordinary plant)
         * 1 = a "+" shaped plant (just rotated 45 degrees)
         * 2 = a "*" shaped plant with 3 faces instead of 2
         * 3 = a "#" shaped plant with 4 faces instead of 2
         * 4 = a "#" shaped plant with 4 faces that lean outwards
         * 5-7 are unused and reserved for future meshes.
-    * Bits 3 through 7 are optional flags that can be combined and give these
-      effects:
-        * bit 3 (0x08) - Makes the plant slightly vary placement horizontally
-        * bit 4 (0x10) - Makes the plant mesh 1.4x larger
-        * bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
-        * bits 6-7 are reserved for future use.
+    * Bits 3 to 7 are used to enable any number of optional modifiers.
+      Just add the corresponding value(s) below to `param2`:
+        * 8  - Makes the plant slightly vary placement horizontally
+        * 16 - Makes the plant mesh 1.4x larger
+        * 32 - Moves each face randomly a small bit down (1/8 max)
+        * values 64 and 128 (bits 6-7) are reserved for future use.
+    * Example: `param2 = 0` selects a normal "x" shaped plant
+    * Example: `param2 = 17` selects a "+" shaped plant, 1.4x larger (1+16)
 * `paramtype2 = "color"`
     * `param2` tells which color is picked from the palette.
       The palette should have 256 pixels.
@@ -1010,6 +1054,9 @@ node definition.
     * `param2` values 0-63 define 64 levels of internal liquid, 0 being empty
       and 63 being full.
     * Liquid texture is defined using `special_tiles = {"modname_tilename.png"}`
+* `paramtype2 = "none"`
+    * `param2` will not be used by the engine and can be used to store
+      an arbitrary value
 
 Nodes can also contain extra data. See [Node Metadata].
 
@@ -1260,6 +1307,11 @@ precisely positioned items in the HUD.
 **Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
 factor!
 
+The `z_index` field specifies the order of HUD elements from back to front.
+Lower z-index elements are displayed behind higher z-index elements. Elements
+with same z-index are displayed in an arbitrary order. Default 0.
+Supports negative values.
+
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
 
@@ -1313,10 +1365,30 @@ Displays distance to selected world position.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
+* `precision`: Waypoint precision, integer >= 0. Defaults to 10.
+  If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
+  When the precision is an integer multiple of 10, there will be `log_10(precision)` digits after the decimal point.
+  `precision = 1000`, for example, will show 3 decimal places (eg: `0.999`).
+  `precision = 2` will show multiples of `0.5`; precision = 5 will show multiples of `0.2` and so on:
+  `precision = n` will show multiples of `1/n`
 * `number:` An integer containing the RGB value of the color used to draw the
   text.
 * `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
+* `alignment`: The alignment of the waypoint.
 
+### `image_waypoint`
+
+Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
+
+* `scale`: The scale of the image, with 1 being the original texture size.
+  Only the X coordinate scale is used (positive values).
+  Negative values represent that percentage of the screen it
+  should take; e.g. `x=-100` means 100% (width).
+* `text`: The name of the texture that is displayed.
+* `alignment`: The alignment of the image.
+* `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
 
 
 
@@ -1476,7 +1548,8 @@ Usage
 -----
 
 Groups are stored in a table, having the group names with keys and the
-group ratings as values. For example:
+group ratings as values. Group ratings are integer values within the
+range [-32767, 32767]. For example:
 
     -- Default dirt
     groups = {crumbly=3, soil=1}
@@ -1925,8 +1998,6 @@ For coloured text you can use `minetest.colorize`.
 
 Since formspec version 3, elements drawn in the order they are defined. All
 background elements are drawn before all other elements.
-`list` elements are an exception here. They are drawn last. This, however, might
-be changed at any time.
 
 **WARNING**: do _not_ use a element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
@@ -2031,13 +2102,32 @@ Elements
 * End of a container, following elements are no longer relative to this
   container.
 
+### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
+
+* Start of a scroll_container block. All contained elements will ...
+  * take the scroll_container coordinate as position origin,
+  * be additionally moved by the current value of the scrollbar with the name
+    `scrollbar name` times `scroll factor` along the orientation `orientation` and
+  * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
+* `orientation`: possible values are `vertical` and `horizontal`.
+* `scroll factor`: optional, defaults to `0.1`.
+* Nesting is possible.
+* Some elements might work a little different if they are in a scroll_container.
+* Note: If you want the scroll_container to actually work, you also need to add a
+  scrollbar element with the specified name. Furthermore, it is highly recommended
+  to use a scrollbaroptions element on this scrollbar.
+
+### `scroll_container_end[]`
+
+* End of a scroll_container, following elements are no longer bound to this
+  container.
+
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot.
-* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 
@@ -2045,7 +2135,6 @@ Elements
   be shown if the inventory list is of size 0.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot.
-* **Note**: Lists are drawn after every other element. This might change at any time.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2082,28 +2171,47 @@ Elements
 ### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 
 * Adds tooltip for an element
-* `<bgcolor>` tooltip background color as `ColorString` (optional)
-* `<fontcolor>` tooltip font color as `ColorString` (optional)
+* `bgcolor` tooltip background color as `ColorString` (optional)
+* `fontcolor` tooltip font color as `ColorString` (optional)
 
 ### `tooltip[<X>,<Y>;<W>,<H>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 
 * Adds tooltip for an area. Other tooltips will take priority when present.
-* `<bgcolor>` tooltip background color as `ColorString` (optional)
-* `<fontcolor>` tooltip font color as `ColorString` (optional)
+* `bgcolor` tooltip background color as `ColorString` (optional)
+* `fontcolor` tooltip font color as `ColorString` (optional)
 
 ### `image[<X>,<Y>;<W>,<H>;<texture name>]`
 
 * Show an image
 
+### `animated_image[<X>,<Y>;<W>,<H>;<name>;<texture name>;<frame count>;<frame duration>;<frame start>]`
+
+* Show an animated image. The image is drawn like a "vertical_frames" tile
+    animation (See [Tile animation definition]), but uses a frame count/duration
+    for simplicity
+* `name`: Element name to send when an event occurs. The event value is the index of the current frame.
+* `texture name`: The image to use.
+* `frame count`: The number of frames animating the image.
+* `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
+* `frame start` (Optional): The index of the frame to start on. Default `1`.
+
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
 * Show an inventory image of registered item/node
 
-### `bgcolor[<color>;<fullscreen>]`
+### `bgcolor[<bgcolor>;<fullscreen>;<fbgcolor>]`
 
-* Sets background color of formspec as `ColorString`
-* If `true`, a fullscreen background is drawn and the color is ignored
-  (does not affect the size of the formspec)
+* Sets background color of formspec.
+* `bgcolor` and `fbgcolor` (optional) are `ColorString`s, they define the color
+  of the non-fullscreen and the fullscreen background.
+* `fullscreen` (optional) can be one of the following:
+  * `false`: Only the non-fullscreen background color is drawn. (default)
+  * `true`: Only the fullscreen background color is drawn.
+  * `both`: The non-fullscreen and the fullscreen background color are drawn.
+  * `neither`: No background color is drawn.
+* Note: Leave a parameter empty to not modify the value.
+* Note: `fbgcolor`, leaving parameters empty and values for `fullscreen` that
+  are not bools are only available since formspec version 3.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
@@ -2121,12 +2229,12 @@ Elements
 
 * 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
 * Middle is a rect which defines the middle of the 9-slice.
-	* `x` - The middle will be x pixels from all sides.
-	* `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
-	* `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
-		will be added to the width and height of the texture, allowing it to be used as the
-		distance from the far end.
-	* All numbers in middle are integers.
+    * `x` - The middle will be x pixels from all sides.
+    * `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
+    * `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
+        will be added to the width and height of the texture, allowing it to be used as the
+        distance from the far end.
+    * All numbers in middle are integers.
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
@@ -2197,10 +2305,11 @@ Elements
   an inventory slot.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
-* Displays a static formated text with hyperlinks.
+* Displays a static formatted text with hyperlinks.
+* **Note**: This element is currently unstable and subject to change.
 * `x`, `y`, `w` and `h` work as per field
 * `name` is the name of the field as returned in fields to `on_receive_fields` in case of action in text.
-* `text` is the formatted text using `markup language` described below.
+* `text` is the formatted text using `Markup Language` described below.
 
 ### `vertlabel[<X>,<Y>;<label>]`
 * Textual label drawn vertically
@@ -2274,8 +2383,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
-* `transparent` (optional): show transparent
-* `draw_border` (optional): draw border
+* `transparent` (optional): if true, tabs are semi-transparent
+* `draw_border` (optional): if true, draw a thin line at tab base
 
 ### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
@@ -2346,15 +2455,39 @@ Elements
 
 ### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 
-* Show a scrollbar
+* Show a scrollbar using options defined by the previous `scrollbaroptions[]`
 * There are two ways to use it:
     1. handle the changed event (only changed scrollbar is available)
     2. read the value on pressing a button (all scrollbars are available)
 * `orientation`:  `vertical`/`horizontal`
 * Fieldname data is transferred to Lua
-* Value this trackbar is set to (`0`-`1000`)
+* Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
   (main menu: `core.explode_scrollbar_event`).
+
+### `scrollbaroptions[opt1;opt2;...]`
+* Sets options for all following `scrollbar[]` elements
+* `min=<int>`
+    * Sets scrollbar minimum value, defaults to `0`.
+* `max=<int>`
+    * Sets scrollbar maximum value, defaults to `1000`.
+      If the max is equal to the min, the scrollbar will be disabled.
+* `smallstep=<int>`
+    * Sets scrollbar step value when the arrows are clicked or the mouse wheel is
+      scrolled.
+    * If this is set to a negative number, the value will be reset to `10`.
+* `largestep=<int>`
+    * Sets scrollbar step value used by page up and page down.
+    * If this is set to a negative number, the value will be reset to `100`.
+* `thumbsize=<int>`
+    * Sets size of the thumb on the scrollbar. Size is calculated in the number of
+      units the thumb spans out of the range of the scrollbar values.
+    * Example: If a scrollbar has a `min` of 1 and a `max` of 100, a thumbsize of 10
+      would span a tenth of the scrollbar space.
+    * If this is set to zero or less, the value will be reset to `1`.
+* `arrows=<show/hide/default>`
+    * Whether to show the arrow buttons on the scrollbar. `default` hides the arrows
+      when the scrollbar gets too small, but shows them otherwise.
 
 ### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 
@@ -2416,16 +2549,28 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-### `style[<name>;<prop1>;<prop2>;...]`
+### `style[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Set the style for the named element `name`.
+* Set the style for the element(s) matching `selector` by name.
+* `selector` can be one of:
+    * `<name>` - An element name.
+    * `<name>:<state>` - An element name, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * Note: this **must** be before the element is defined.
 * See [Styling Formspecs].
 
 
-### `style_type[<type>;<prop1>;<prop2>;...]`
+### `style_type[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Sets the style for all elements of type `type` which appear after this element.
+* Set the style for the element(s) matching `selector` by type.
+* `selector` can be one of:
+    * `<type>` - An element type.
+    * `<type>:<state>` - An element type, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
 
 Migrating to Real Coordinates
@@ -2468,8 +2613,10 @@ Styling Formspecs
 
 Formspec elements can be themed using the style elements:
 
-    style[<name>;<prop1>;<prop2>;...]
-    style_type[<type>;<prop1>;<prop2>;...]
+    style[<name 1>,<name 2>;<prop1>;<prop2>;...]
+    style[<name 1>:<state>,<name 2>:<state>;<prop1>;<prop2>;...]
+    style_type[<type 1>,<type 2>;<prop1>;<prop2>;...]
+    style_type[<type 1>:<state>,<type 2>:<state>;<prop1>;<prop2>;...]
 
 Where a prop is:
 
@@ -2481,6 +2628,18 @@ For example:
     style[world_delete;bgcolor=red;textcolor=yellow]
     button[4,3.95;2.6,1;world_delete;Delete]
 
+A name/type can optionally be a comma separated list of names/types, like so:
+
+    world_delete,world_create,world_configure
+    button,image_button
+
+Any name/type in the list can also be accompanied by a `+`-separated list of states, like so:
+
+    world_delete:hovered+pressed
+    button:pressed
+
+States allow you to apply styles in response to changes in the element, instead of applying at all times.
+
 Setting a property to nothing will reset it to the default value. For example:
 
     style_type[button;bgimg=button.png;bgimg_pressed=button_pressed.png;border=false]
@@ -2491,6 +2650,7 @@ Setting a property to nothing will reset it to the default value. For example:
 
 Some types may inherit styles from parent types.
 
+* animated_image, inherits from image
 * button
 * button_exit, inherits from button
 * checkbox
@@ -2504,20 +2664,27 @@ Some types may inherit styles from parent types.
 * label
 * vertlabel, inherits from field
 * image_button
-* item_image_button, inherits from image_button
+* item_image_button
 * tabheader
 
 
 ### Valid Properties
 
-* button, button_exit
+* animated_image
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* box
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+        * Default to false in formspec_version version 3 or higher
+* button, button_exit, image_button, item_image_button
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
     * bgcolor_hovered - color when hovered. Defaults to a lighter bgcolor when not provided.
     * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
-    * bgimg - standard image. Defaults to none.
-    * bgimg_hovered - image when hovered. Defaults to bgimg when not provided.
-    * bgimg_pressed - image when pressed. Defaults to bgimg when not provided.
+    * bgimg - standard background image. Defaults to none.
+    * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+    * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
+                     See background9[] documentation for more details
+    * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color, default white.
@@ -2533,24 +2700,36 @@ Some types may inherit styles from parent types.
     * border - set to false to hide the textbox background and border. Default true.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+* image
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+        * Default to false in formspec_version version 3 or higher
+* item_image
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to false.
 * label, vertlabel
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* image_button
-    * alpha - boolean, whether to draw alpha in bgimg. Default true.
-    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* item_image_button
-    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default false.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* image_button (additional properties)
+    * fgimg - standard image. Defaults to none.
+    * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
+    * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
+    * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 
-Markup language
+### Valid States
+
+* *all elements*
+    * default - Equivalent to providing no states
+* button, button_exit, image_button, item_image_button
+    * hovered - Active when the mouse is hovering over the element
+    * pressed - Active when the button is pressed
+
+Markup Language
 ---------------
 
-Markup language used in `hypertext[]` elements uses tag that look like HTML tags. Some
-tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
+Markup language used in `hypertext[]` elements uses tags that look like HTML tags.
+The markup language is currently unstable and subject to change. Use with caution.
+Some tags can enclose text, they open with `<tagname>` and close with `</tagname>`.
 Tags can have attributes, in that case, attributes are in the opening tag in
 form of a key/value separated with equal signs. Attribute values should not be quoted.
 
@@ -2875,6 +3054,15 @@ Helper functions
 * `table.insert_all(table, other_table)`:
     * Appends all values in `other_table` to `table` - uses `#table + 1` to
       find new indices.
+* `table.key_value_swap(t)`: returns a table with keys and values swapped
+    * If multiple keys in `t` map to the same value, the result is undefined.
+* `table.shuffle(table, [from], [to], [random_func])`:
+    * Shuffles elements `from` to `to` in `table` in place
+    * `from` defaults to `1`
+    * `to` defaults to `#table`
+    * `random_func` defaults to `math.random`. This function receives two
+      integers as arguments and should return a random integer inclusively
+      between them.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
@@ -3071,9 +3259,9 @@ For this parameter you can randomly choose any whole number. Usually it is
 preferable for this to be different from other seeds, but sometimes it is useful
 to be able to create identical noise patterns.
 
-When used in mapgen this is actually a 'seed offset', it is added to the
-'world seed' to create the seed used by the noise, to ensure the noise has a
-different pattern in different worlds.
+In some noise APIs the world seed is added to the seed specified in noise
+parameters. This is done to make the resulting noise pattern vary in different
+worlds, and be 'world-specific'.
 
 ### `octaves`
 
@@ -3657,7 +3845,7 @@ Methods
 -----------
 
 A helper class for voxel areas.
-It can be created via `VoxelArea:new{MinEdge=pmin, MaxEdge=pmax}`.
+It can be created via `VoxelArea:new{MinEdge = pmin, MaxEdge = pmax}`.
 The coordinates are *inclusive*, like most other things in Minetest.
 
 ### Methods
@@ -3687,6 +3875,28 @@ The coordinates are *inclusive*, like most other things in Minetest.
     * from (`minx`,`miny`,`minz`) to (`maxx`,`maxy`,`maxz`) in the order of
       `[z [y [x]]]`.
 * `iterp(minp, maxp)`: same as above, except takes a vector
+
+### Y stride and z stride of a flat array
+
+For a particular position in a voxel area, whose flat array index is known,
+it is often useful to know the index of a neighboring or nearby position.
+The table below shows the changes of index required for 1 node movements along
+the axes in a voxel area:
+
+    Movement    Change of index
+    +x          +1
+    -x          -1
+    +y          +ystride
+    -y          -ystride
+    +z          +zstride
+    -z          -zstride
+
+If, for example:
+
+    local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
+
+The values of `ystride` and `zstride` can be obtained using `area.ystride` and
+`area.zstride`.
 
 
 
@@ -3784,6 +3994,7 @@ Callbacks:
     * `dir`: unit vector of direction of punch. Always defined. Points from the
       puncher to the punched.
     * `damage`: damage that will be done to entity.
+    * Can return `true` to prevent the default damage mechanism.
 * `on_death(self, killer)`
     * Called when the object dies.
     * `killer`: an `ObjectRef` (can be `nil`)
@@ -3929,6 +4140,8 @@ Utilities
           formspec_version_element = true,
           -- Whether AreaStore's IDs are kept on save/load (5.1.0)
           area_store_persistent_ids = true,
+          -- Whether minetest.find_path is functional (5.2.0)
+          pathfinder_works = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4032,6 +4245,9 @@ Call these functions only at load time!
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
+    * Warning: This alters the biome to biome ID correspondences, so any
+      decorations or ores using the 'biomes' field must afterwards be cleared
+      and re-registered.
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer object handle uniquely identifying the registered
       decoration on success. To get the decoration ID, use
@@ -4046,12 +4262,15 @@ Call these functions only at load time!
     * If the function is called when loading the mod, and `name` is a relative
       path, then the current mod path will be prepended to the schematic
       filename.
-* `minetest.clear_registered_ores()`
-    * Clears all ores currently registered.
 * `minetest.clear_registered_biomes()`
     * Clears all biomes currently registered.
+    * Warning: Clearing and re-registering biomes alters the biome to biome ID
+      correspondences, so any decorations or ores using the 'biomes' field must
+      afterwards be cleared and re-registered.
 * `minetest.clear_registered_decorations()`
     * Clears all decorations currently registered.
+* `minetest.clear_registered_ores()`
+    * Clears all ores currently registered.
 * `minetest.clear_registered_schematics()`
     * Clears all schematics currently registered.
 
@@ -4200,6 +4419,7 @@ Call these functions only at load time!
       is a table containing each formspecs element value (as string), with
       the `name` parameter as index for each. The value depends on the
       formspec element type:
+        * `animated_image`: Returns the index of the current frame.
         * `button` and variants: If pressed, contains the user-facing button
           text as value. If not pressed, is `nil`
         * `field`, `textarea` and variants: Text in the field
@@ -4284,9 +4504,13 @@ Setting-related
 Authentication
 --------------
 
-* `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
-* `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
-    * Convert between two privilege representations
+* `minetest.string_to_privs(str[, delim])`:
+    * Converts string representation of privs into table form
+    * `delim`: String separating the privs. Defaults to `","`.
+    * Returns `{ priv1 = true, ... }`
+* `minetest.privs_to_string(privs[, delim])`:
+    * Returns the string representation of `privs`
+    * `delim`: String to delimit privs. Defaults to `","`.
 * `minetest.get_player_privs(name) -> {priv1=true,...}`
 * `minetest.check_player_privs(player_or_name, ...)`:
   returns `bool, missing_privs`
@@ -4327,8 +4551,8 @@ Authentication
 * `minetest.auth_reload()`
     * See `reload()` in authentication handler definition
 
-`minetest.set_player_password`, `minetest_set_player_privs`,
-`minetest_get_player_privs` and `minetest.auth_reload` call the authentication
+`minetest.set_player_password`, `minetest.set_player_privs`,
+`minetest.get_player_privs` and `minetest.auth_reload` call the authentication
 handler.
 
 Chat
@@ -4434,8 +4658,11 @@ Environment access
     * Return value: Table with all node positions with a node air above
     * Area volume is limited to 4,096,000 nodes
 * `minetest.get_perlin(noiseparams)`
+    * Return world-specific perlin noise.
+    * The actual seed used is the noiseparams seed plus the world seed.
 * `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-    * Return world-specific perlin noise (`int(worldseed)+seeddiff`)
+    * Deprecated: use `minetest.get_perlin(noiseparams)` instead.
+    * Return world-specific perlin noise.
 * `minetest.get_voxel_manip([pos1, pos2])`
     * Return voxel manipulator object.
     * Loads the manipulator from the map if positions are passed.
@@ -4583,16 +4810,25 @@ Environment access
     * `objects`: if false, only nodes will be returned. Default is `true`.
     * `liquids`: if false, liquid nodes won't be returned. Default is `false`.
 * `minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
-    * returns table containing path
+    * returns table containing path that can be walked on
     * returns a table of 3D points representing a path from `pos1` to `pos2` or
-      `nil`.
+      `nil` on failure.
+    * Reasons for failure:
+        * No path exists at all
+        * No path exists within `searchdistance` (see below)
+        * Start or end pos is buried in land
     * `pos1`: start position
     * `pos2`: end position
-    * `searchdistance`: number of blocks to search in each direction using a
-      maximum metric.
+    * `searchdistance`: maximum distance from the search positions to search in.
+      In detail: Path must be completely inside a cuboid. The minimum
+      `searchdistance` of 1 will confine search between `pos1` and `pos2`.
+      Larger values will increase the size of this cuboid in all directions
     * `max_jump`: maximum height difference to consider walkable
     * `max_drop`: maximum height difference to consider droppable
-    * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`
+    * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`.
+      Difference between `"A*"` and `"A*_noprefetch"` is that
+      `"A*"` will pre-calculate the cost-data, the other will calculate it
+      on-the-fly
 * `minetest.spawn_tree (pos, {treedef})`
     * spawns L-system tree at given `pos` with definition in `treedef` table
 * `minetest.transforming_liquid_add(pos)`
@@ -4752,9 +4988,11 @@ Item handling
       given `param2` value.
     * Returns `nil` if the given `paramtype2` does not contain color
       information.
-* `minetest.get_node_drops(nodename, toolname)`
-    * Returns list of item names.
-    * **Note**: This will be removed or modified in a future version.
+* `minetest.get_node_drops(node, toolname)`
+    * Returns list of itemstrings that are dropped by `node` when dug
+      with `toolname`.
+    * `node`: node as table or node name
+    * `toolname`: name of the tool item (can be `nil`)
 * `minetest.get_craft_result(input)`: returns `output, decremented_input`
     * `input.method` = `"normal"` or `"cooking"` or `"fuel"`
     * `input.width` = for example `3`
@@ -4762,8 +5000,9 @@ Item handling
       `{stack1, stack2, stack3, stack4, stack 5, stack 6, stack 7, stack 8, stack 9}`
     * `output.item` = `ItemStack`, if unsuccessful: empty `ItemStack`
     * `output.time` = a number, if unsuccessful: `0`
-    * `output.replacements` = list of `ItemStack`s that couldn't be placed in
-      `decremented_input.items`
+    * `output.replacements` = List of replacement `ItemStack`s that couldn't be
+      placed in `decremented_input.items`. Replacements can be placed in
+      `decremented_input` if the stack of the replaced item has a count of 1.
     * `decremented_input` = like `input`
 * `minetest.get_craft_recipe(output)`: returns input
     * returns last registered recipe for output item (node)
@@ -4824,33 +5063,36 @@ Rollback
     * Revert latest actions of someone
     * `actor`: `"player:<name>"`, also `"liquid"`.
 
-Defaults for the `on_*` item definition functions
--------------------------------------------------
-
-These functions return the leftover itemstack.
+Defaults for the `on_place` and `on_drop` item definition functions
+-------------------------------------------------------------------
 
 * `minetest.item_place_node(itemstack, placer, pointed_thing[, param2, prevent_after_place])`
     * Place item as a node
     * `param2` overrides `facedir` and wallmounted `param2`
     * `prevent_after_place`: if set to `true`, `after_place_node` is not called
       for the newly placed node to prevent a callback and placement loop
-    * returns `itemstack, success`
+    * returns `itemstack, position`
+      * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_place_object(itemstack, placer, pointed_thing)`
     * Place item as-is
-* `minetest.item_place(itemstack, placer, pointed_thing, param2)`
-    * Use one of the above based on what the item is.
+    * returns the leftover itemstack
+    * **Note**: This function is deprecated and will never be called.
+* `minetest.item_place(itemstack, placer, pointed_thing[, param2])`
+    * Wrapper that calls `minetest.item_place_node` if appropriate
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
     * **Note**: is not called when wielded item overrides `on_place`
-    * `param2` overrides `facedir` and wallmounted `param2`
-    * returns `itemstack, success`
+    * `param2` overrides facedir and wallmounted `param2`
+    * returns `itemstack, position`
+      * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
-* `minetest.item_eat(hp_change, replace_with_item)`
-    * Eat the item.
+    * returns the leftover itemstack
+* `minetest.item_eat(hp_change[, replace_with_item])`
+    * Returns `function(itemstack, user, pointed_thing)` as a
+      function wrapper for `minetest.do_item_eat`.
     * `replace_with_item` is the itemstring which is added to the inventory.
       If the player is eating a stack, then replace_with_item goes to a
-      different spot. Can be `nil`
-    * See `minetest.do_item_eat`
+      different spot.
 
 Defaults for the `on_punch` and `on_dig` node definition callbacks
 ------------------------------------------------------------------
@@ -4864,10 +5106,15 @@ Defaults for the `on_punch` and `on_dig` node definition callbacks
 Sounds
 ------
 
-* `minetest.sound_play(spec, parameters)`: returns a handle
+* `minetest.sound_play(spec, parameters, [ephemeral])`: returns a handle
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
+    * `ephemeral` is a boolean (default: false)
+      Ephemeral sounds will not return a handle and can't be stopped or faded.
+      It is recommend to use this for short sounds that happen in response to
+      player actions (e.g. door closing).
 * `minetest.sound_stop(handle)`
+    * `handle` is a handle returned by `minetest.sound_play`
 * `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
@@ -5129,10 +5376,16 @@ Misc.
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
     * Example: `serialize({foo='bar'})`, returns `'return { ["foo"] = "bar" }'`
-* `minetest.deserialize(string)`: returns a table
-    * Convert a string returned by `minetest.deserialize` into a table
+* `minetest.deserialize(string[, safe])`: returns a table
+    * Convert a string returned by `minetest.serialize` into a table
     * `string` is loaded in an empty sandbox environment.
-    * Will load functions, but they cannot access the global environment.
+    * Will load functions if safe is false or omitted. Although these functions
+      cannot directly access the global environment, they could bypass this
+      restriction with maliciously crafted Lua bytecode if mod security is
+      disabled.
+    * This function should not be used on untrusted data, regardless of the
+     value of `safe`. It is fine to serialize then deserialize user-provided
+     data, but directly providing user input to deserialize is always unsafe.
     * Example: `deserialize('return { ["foo"] = "bar" }')`,
       returns `{foo='bar'}`
     * Example: `deserialize('print("foo")')`, returns `nil`
@@ -5242,8 +5495,8 @@ Misc.
   insecure functions if the calling mod has been listed as trusted in the
   `secure.trusted_mods` setting or security is disabled, otherwise returns
   `nil`.
-    * Only works at init time and must be called from the mod's main scope (not
-      from a function).
+    * Only works at init time and must be called from the mod's main scope
+      (ie: the init.lua of the mod, not from another Lua file or within a function).
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE
       IT IN A LOCAL VARIABLE!**
 
@@ -5576,8 +5829,21 @@ Can be gotten via `minetest.get_node_timer(pos)`.
 -----------
 
 Moving things in the game are generally these.
+This is basically a reference to a C++ `ServerActiveObject`.
 
-This is basically a reference to a C++ `ServerActiveObject`
+### Advice on handling `ObjectRefs`
+
+When you receive an `ObjectRef` as a callback argument or from another API
+function, it is possible to store the reference somewhere and keep it around.
+It will keep functioning until the object is unloaded or removed.
+
+However, doing this is **NOT** recommended as there is (intentionally) no method
+to test if a previously acquired `ObjectRef` is still valid.
+Instead, `ObjectRefs` should be "let go" of as soon as control is returned from
+Lua back to the engine.
+Doing so is much less error-prone and you will never need to wonder if the
+object you are working with still exists.
+
 
 ### Methods
 
@@ -5596,6 +5862,9 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
     * See reason in register_on_player_hpchange
+    * Is limited to the range of 0 ... 65535 (2^16 - 1)
+    * For players: HP are also limited by `hp_max` specified in the player's
+      object properties
 * `get_inventory()`: returns an `InvRef` for players, otherwise returns `nil`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
@@ -5645,7 +5914,10 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 #### Lua entity only (no-op for other objects)
 
-* `remove()`: remove object (after returning from Lua)
+* `remove()`: remove object
+    * The object is removed after returning from Lua. However the `ObjectRef`
+      itself instantly becomes unusable with all further method calls having
+      no effect and returning `nil`.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `add_velocity(vel)`
@@ -5716,6 +5988,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `0`: player is drowning
         * max: bubbles bar is not shown
         * See [Object properties] for more information
+    * Is limited to range 0 ... 65535 (2^16 - 1)
 * `set_fov(fov, is_multiplier)`: Sets player's FOV
     * `fov`: FOV value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
@@ -5798,15 +6071,90 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
-* `set_sky(bgcolor, type, {texture names}, clouds)`
-    * `bgcolor`: ColorSpec, defaults to white
-    * `type`: Available types:
-        * `"regular"`: Uses 0 textures, `bgcolor` ignored
-        * `"skybox"`: Uses 6 textures, `bgcolor` used
-        * `"plain"`: Uses 0 textures, `bgcolor` used
-    * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
-      `"plain"` custom skyboxes (default: `true`)
-* `get_sky()`: returns bgcolor, type, table of textures, clouds
+* `set_sky(parameters)`
+    * `parameters` is a table with the following optional fields:
+        * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
+        * `type`: Available types:
+            * `"regular"`: Uses 0 textures, `base_color` ignored
+            * `"skybox"`: Uses 6 textures, `base_color` used as fog.
+            * `"plain"`: Uses 0 textures, `base_color` used as both fog and sky.
+        * `textures`: A table containing up to six textures in the following
+            order: Y+ (top), Y- (bottom), X- (west), X+ (east), Z+ (north), Z- (south).
+        * `clouds`: Boolean for whether clouds appear. (default: `true`)
+        * `sky_color`: A table containing the following values, alpha is ignored:
+            * `day_sky`: ColorSpec, for the top half of the `"regular"`
+              sky during the day. (default: `#8cbafa`)
+            * `day_horizon`: ColorSpec, for the bottom half of the
+              `"regular"` sky during the day. (default: `#9bc1f0`)
+            * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
+              sky during dawn/sunset. (default: `#b4bafa`)
+              The resulting sky color will be a darkened version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
+            * `dawn_horizon`: ColorSpec, for the bottom half of the `"regular"`
+              sky during dawn/sunset. (default: `#bac1f0`)
+              The resulting sky color will be a darkened version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
+            * `night_sky`: ColorSpec, for the top half of the `"regular"`
+              sky during the night. (default: `#006aff`)
+              The resulting sky color will be a dark version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
+            * `night_horizon`: ColorSpec, for the bottom half of the `"regular"`
+              sky during the night. (default: `#4090ff`)
+              The resulting sky color will be a dark version of the ColorSpec.
+              Warning: The darkening of the ColorSpec is subject to change.
+            * `indoors`: ColorSpec, for when you're either indoors or
+              underground. Only applies to the `"regular"` sky.
+              (default: `#646464`)
+            * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
+              at sunrise and sunset.
+            * `fog_moon_tint`: ColorSpec, changes the fog tinting for the moon
+              at sunrise and sunset.
+            * `fog_tint_type`: string, changes which mode the directional fog
+                abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
+                `"default"` uses the classic Minetest sun and moon tinting.
+                Will use tonemaps, if set to `"default"`. (default: `"default"`)
+* `get_sky()`: returns base_color, type, table of textures, clouds.
+* `get_sky_color()`: returns a table with the `sky_color` parameters as in
+    `set_sky`.
+* `set_sun(parameters)`:
+    * `parameters` is a table with the following optional fields:
+        * `visible`: Boolean for whether the sun is visible.
+            (default: `true`)
+        * `texture`: A regular texture for the sun. Setting to `""`
+            will re-enable the mesh sun. (default: `"sun.png"`)
+        * `tonemap`: A 512x1 texture containing the tonemap for the sun
+            (default: `"sun_tonemap.png"`)
+        * `sunrise`: A regular texture for the sunrise texture.
+            (default: `"sunrisebg.png"`)
+        * `sunrise_visible`: Boolean for whether the sunrise texture is visible.
+            (default: `true`)
+        * `scale`: Float controlling the overall size of the sun. (default: `1`)
+* `get_sun()`: returns a table with the current sun parameters as in
+    `set_sun`.
+* `set_moon(parameters)`:
+    * `parameters` is a table with the following optional fields:
+        * `visible`: Boolean for whether the moon is visible.
+            (default: `true`)
+        * `texture`: A regular texture for the moon. Setting to `""`
+            will re-enable the mesh moon. (default: `"moon.png"`)
+        * `tonemap`: A 512x1 texture containing the tonemap for the moon
+            (default: `"moon_tonemap.png"`)
+        * `scale`: Float controlling the overall size of the moon (default: `1`)
+* `get_moon()`: returns a table with the current moon parameters as in
+    `set_moon`.
+* `set_stars(parameters)`:
+    * `parameters` is a table with the following optional fields:
+        * `visible`: Boolean for whether the stars are visible.
+            (default: `true`)
+        * `count`: Integer number to set the number of stars in
+            the skybox. Only applies to `"skybox"` and `"regular"` sky types.
+            (default: `1000`)
+        * `star_color`: ColorSpec, sets the colors of the stars,
+            alpha channel is used to set overall star brightness.
+            (default: `#ebebff69`)
+        * `scale`: Float controlling the overall size of the stars (default: `1`)
+* `get_stars()`: returns a table with the current stars parameters as in
+    `set_stars`.
 * `set_clouds(parameters)`: set cloud parameters
     * `parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
@@ -5871,10 +6219,15 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 -------------
 
 A perlin noise generator.
-It can be created via `PerlinNoise(seed, octaves, persistence, spread)`
-or `PerlinNoise(noiseparams)`.
-Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-or `minetest.get_perlin(noiseparams)`.
+It can be created via `PerlinNoise()` or `minetest.get_perlin()`.
+For `minetest.get_perlin()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
+
+`PerlinNoise(noiseparams)`
+`PerlinNoise(seed, octaves, persistence, spread)` (Deprecated).
+
+`minetest.get_perlin(noiseparams)`
+`minetest.get_perlin(seeddiff, octaves, persistence, spread)` (Deprecated).
 
 ### Methods
 
@@ -5888,6 +6241,8 @@ A fast, bulk perlin noise generator.
 
 It can be created via `PerlinNoiseMap(noiseparams, size)` or
 `minetest.get_perlin_map(noiseparams, size)`.
+For `minetest.get_perlin_map()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
 
 Format of `size` is `{x=dimx, y=dimy, z=dimz}`. The `z` component is omitted
 for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
@@ -6005,6 +6360,10 @@ It can be created via `Settings(filename)`.
     * `default` is the value returned if `key` is not found.
     * Returns `nil` if `key` is not found and `default` not specified.
 * `get_np_group(key)`: returns a NoiseParams table
+* `get_flags(key)`:
+    * Returns `{flag = true/false, ...}` according to the set flags.
+    * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
+      flags like `mgv5_spflags`.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
@@ -6079,11 +6438,10 @@ Player properties need to be saved manually.
         -- Defaults to 1.625.
 
         physical = true,
+        -- Collide with `walkable` nodes.
 
         collide_with_objects = true,
         -- Collide with other objects if physical = true
-
-        weight = 5,
 
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},  -- Default
         selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
@@ -6118,7 +6476,8 @@ Player properties need to be saved manually.
         -- Multipliers for the visual size. If `z` is not specified, `x` will be used
         -- to scale the entity along both horizontal axes.
 
-        mesh = "model",
+        mesh = "model.obj",
+        -- File name of mesh when using "mesh" visual
 
         textures = {},
         -- Number of required textures depends on visual.
@@ -6148,14 +6507,20 @@ Player properties need to be saved manually.
         -- spritesheet.
 
         is_visible = true,
+        -- If false, object is invisible and can't be pointed.
 
         makes_footstep_sound = false,
+        -- If true, is able to make footstep sounds of nodes
+        -- (see node sound definition for details).
 
         automatic_rotate = 0,
         -- Set constant rotation in radians per second, positive or negative.
         -- Set to 0 to disable constant rotation.
 
         stepheight = 0,
+        -- If positive number, object will climb upwards when it moves
+        -- horizontally against a `walkable` node, if the height difference
+        -- is within `stepheight`.
 
         automatic_face_movement_dir = 0.0,
         -- Automatically set yaw to movement direction, offset in degrees.
@@ -6389,6 +6754,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         wield_scale = {x = 1, y = 1, z = 1},
 
+        -- The default value of 99 may be configured by
+        -- users using the setting "default_stack_max"
         stack_max = 99,
 
         range = 4.0,
@@ -6405,6 +6772,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
                          uses = 20, maxlevel = 2},
             },
             damage_groups = {groupname = damage},
+            -- Damage values must be between -32768 and 32767 (2^15)
 
             punch_attack_uses = nil,
             -- Amount of uses this tool has for attacking players and entities
@@ -6430,9 +6798,14 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- upon digging. Server will always update actual result shortly.
 
         sound = {
-            breaks = "default_tool_break",  -- tools only
-            place = <SimpleSoundSpec>,
+            -- Definition of items sounds to be played at various events.
+            -- All fields in this table are optional.
+
+            breaks = <SimpleSoundSpec>,
+            -- When tool breaks due to wear. Ignored for non-tools
+
             eat = <SimpleSoundSpec>,
+            -- When item is eaten with `minetest.do_item_eat`
         },
 
         on_place = function(itemstack, placer, pointed_thing),
@@ -6490,8 +6863,9 @@ Used by `minetest.register_node`.
         -- Supported for drawtypes "plantlike", "signlike", "torchlike",
         -- "firelike", "mesh".
         -- For plantlike and firelike, the image will start at the bottom of the
-        -- node, for the other drawtypes the image will be centered on the node.
-        -- Note that positioning for "torchlike" may still change.
+        -- node. For torchlike, the image will start at the surface to which the
+        -- node "attaches". For the other drawtypes the image will be centered
+        -- on the node.
 
         tiles = {tile definition 1, def2, def3, def4, def5, def6},
         -- Textures of node; +Y, -Y, +X, -X, +Z, -Z
@@ -6601,7 +6975,8 @@ Used by `minetest.register_node`.
         -- Tells connected nodebox nodes to connect only to these sides of this
         -- node
 
-        mesh = "model",
+        mesh = "model.obj",
+        -- File name of mesh when using "mesh" drawtype
 
         selection_box = {
             type = "fixed",
@@ -6641,12 +7016,33 @@ Used by `minetest.register_node`.
         -- liquid, flowingliquid drawtypes can only wave like liquids.
 
         sounds = {
+            -- Definition of node sounds to be played at various events.
+            -- All fields in this table are optional.
+
             footstep = <SimpleSoundSpec>,
-            dig = <SimpleSoundSpec>,  -- "__group" = group-based sound (default)
+            -- If walkable, played when object walks on it. If node is
+            -- climbable or a liquid, played when object moves through it
+
+            dig = <SimpleSoundSpec> or "__group",
+            -- While digging node.
+            -- If `"__group"`, then the sound will be
+            -- `default_dig_<groupname>`, where `<groupname>` is the
+            -- name of the tool's digging group with the fastest digging time.
+            -- In case of a tie, one of the sounds will be played (but we
+            -- cannot predict which one)
+            -- Default value: `"__group"`
+
             dug = <SimpleSoundSpec>,
+            -- Node was dug
+
             place = <SimpleSoundSpec>,
+            -- Node was placed. Also played after falling
+
             place_failed = <SimpleSoundSpec>,
+            -- When node placement failed
+
             fall = <SimpleSoundSpec>,
+            -- When node starts to fall
         },
 
         drop = "",
@@ -6725,6 +7121,7 @@ Used by `minetest.register_node`.
         -- node is deleted from the world or the drops are added. This is
         -- generally the result of either the node being dug or an attached node
         -- becoming detached.
+        -- oldmeta is the NodeMetaRef of the oldnode before deletion.
         -- drops is a table of ItemStacks, so any metadata to be preserved can
         -- be added directly to one or more of the dropped items. See
         -- "ItemStackMetaRef".
@@ -6749,10 +7146,14 @@ Used by `minetest.register_node`.
 
         on_punch = function(pos, node, puncher, pointed_thing),
         -- default: minetest.node_punch
+        -- Called when puncher (an ObjectRef) punches the node at pos.
         -- By default calls minetest.register_on_punchnode callbacks.
 
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing),
         -- default: nil
+        -- Called when clicker (an ObjectRef) "rightclicks"
+        -- ("rightclick" here stands for the placement key) while pointing at
+        -- the node at pos with 'node' being the node table.
         -- itemstack will hold clicker's wielded item.
         -- Shall return the leftover itemstack.
         -- Note: pointed_thing can be nil, if a mod calls this function.
@@ -7331,6 +7732,9 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
         size = { x=100, y=100 },
         -- Size of element in pixels
+
+        z_index = 0,
+        -- Z index : lower z-index HUDs are displayed behind higher z-index HUDs
     }
 
 Particle definition

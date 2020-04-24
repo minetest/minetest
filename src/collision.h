@@ -77,7 +77,7 @@ collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
 // dtime receives time until first collision, invalid if -1 is returned
 CollisionAxis axisAlignedCollision(
 		const aabb3f &staticbox, const aabb3f &movingbox,
-		const v3f &speed, f32 d, f32 *dtime);
+		const v3f &speed, f32 *dtime);
 
 // Helper function:
 // Checks if moving the movingbox up by the given distance would hit a ceiling.

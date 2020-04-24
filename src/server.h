@@ -61,6 +61,10 @@ class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
 struct CloudParams;
+struct SkyboxParams;
+struct SunParams;
+struct MoonParams;
+struct StarParams;
 class ServerThread;
 class ServerModManager;
 
@@ -98,6 +102,7 @@ struct ServerSoundParams
 	v3f pos;
 	u16 object = 0;
 	std::string to_player = "";
+	std::string exclude_player = "";
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 };
@@ -160,7 +165,6 @@ public:
 	void handleCommand_InventoryAction(NetworkPacket* pkt);
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
 	void handleCommand_Damage(NetworkPacket* pkt);
-	void handleCommand_Password(NetworkPacket* pkt);
 	void handleCommand_PlayerItem(NetworkPacket* pkt);
 	void handleCommand_Respawn(NetworkPacket* pkt);
 	void handleCommand_Interact(NetworkPacket* pkt);
@@ -209,7 +213,8 @@ public:
 
 	// Returns -1 if failed, sound handle on success
 	// Envlock
-	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
+	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params,
+			bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 
@@ -305,9 +310,11 @@ public:
 			f32 frame_speed);
 	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third);
 
-	void setSky(RemotePlayer *player, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params,
-			bool &clouds);
+	void setSky(RemotePlayer *player, const SkyboxParams &params);
+	void setSun(RemotePlayer *player, const SunParams &params);
+	void setMoon(RemotePlayer *player, const MoonParams &params);
+	void setStars(RemotePlayer *player, const StarParams &params);
+
 	void setClouds(RemotePlayer *player, const CloudParams &params);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
@@ -411,9 +418,10 @@ private:
 	void SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(session_t peer_id, u16 param, const std::string &value);
-	void SendSetSky(session_t peer_id, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params,
-			bool &clouds);
+	void SendSetSky(session_t peer_id, const SkyboxParams &params);
+	void SendSetSun(session_t peer_id, const SunParams &params);
+	void SendSetMoon(session_t peer_id, const MoonParams &params);
+	void SendSetStars(session_t peer_id, const StarParams &params);
 	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
 	void broadcastModChannelMessage(const std::string &channel,
@@ -646,7 +654,8 @@ private:
 		Sounds
 	*/
 	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
-	s32 m_next_sound_id = 0;
+	s32 m_next_sound_id = 0; // positive values only
+	s32 nextSoundId();
 
 	/*
 		Detached inventories (behind m_env_mutex)

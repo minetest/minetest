@@ -107,16 +107,14 @@ ParsedText::ParsedText(const wchar_t *text)
 	m_root_tag.style["underline"] = "false";
 	m_root_tag.style["halign"] = "left";
 	m_root_tag.style["color"] = "#EEEEEE";
-	m_root_tag.style["hovercolor"] = m_root_tag.style["color"];
+	m_root_tag.style["hovercolor"] = "#FF0000";
 
-	m_tags.push_back(&m_root_tag);
 	m_active_tags.push_front(&m_root_tag);
 	m_style = m_root_tag.style;
 
 	// Default simple tags definitions
 	StyleList style;
 
-	style["hovercolor"] = "#FF0000";
 	style["color"] = "#0000FF";
 	style["underline"] = "true";
 	m_elementtags["action"] = style;
@@ -168,13 +166,14 @@ ParsedText::ParsedText(const wchar_t *text)
 
 	m_element = NULL;
 	m_paragraph = NULL;
+	m_end_paragraph_reason = ER_NONE;
 
 	parse(text);
 }
 
 ParsedText::~ParsedText()
 {
-	for (auto &tag : m_tags)
+	for (auto &tag : m_not_root_tags)
 		delete tag;
 }
 
@@ -192,7 +191,7 @@ void ParsedText::parse(const wchar_t *text)
 				cursor++;
 			// If text has begun, don't skip empty line
 			if (m_paragraph) {
-				endParagraph();
+				endParagraph(ER_NEWLINE);
 				enterElement(ELEMENT_SEPARATOR);
 			}
 			escape = false;
@@ -202,7 +201,7 @@ void ParsedText::parse(const wchar_t *text)
 		if (c == L'\n') { // Unix breaks
 			// If text has begun, don't skip empty line
 			if (m_paragraph) {
-				endParagraph();
+				endParagraph(ER_NEWLINE);
 				enterElement(ELEMENT_SEPARATOR);
 			}
 			escape = false;
@@ -233,7 +232,7 @@ void ParsedText::parse(const wchar_t *text)
 		pushChar(c);
 	}
 
-	endParagraph();
+	endParagraph(ER_NONE);
 }
 
 void ParsedText::endElement()
@@ -241,11 +240,20 @@ void ParsedText::endElement()
 	m_element = NULL;
 }
 
-void ParsedText::endParagraph()
+void ParsedText::endParagraph(EndReason reason)
 {
 	if (!m_paragraph)
 		return;
 
+	EndReason previous = m_end_paragraph_reason;
+	m_end_paragraph_reason = reason;
+	if (m_empty_paragraph && (reason == ER_TAG ||
+			(reason == ER_NEWLINE && previous == ER_TAG))) {
+		// Ignore last empty paragraph
+		m_paragraph = nullptr;
+		m_paragraphs.pop_back();
+		return;
+	}
 	endElement();
 	m_paragraph = NULL;
 }
@@ -256,6 +264,7 @@ void ParsedText::enterParagraph()
 		m_paragraphs.emplace_back();
 		m_paragraph = &m_paragraphs.back();
 		m_paragraph->setStyle(m_style);
+		m_empty_paragraph = true;
 	}
 }
 
@@ -275,11 +284,15 @@ void ParsedText::enterElement(ElementType type)
 void ParsedText::pushChar(wchar_t c)
 {
 	// New word if needed
-	if (c == L' ' || c == L'\t')
-		enterElement(ELEMENT_SEPARATOR);
-	else
+	if (c == L' ' || c == L'\t') {
+		if (!m_empty_paragraph)
+			enterElement(ELEMENT_SEPARATOR);
+		else
+			return;
+	} else {
+		m_empty_paragraph = false;
 		enterElement(ELEMENT_TEXT);
-
+	}
 	m_element->text += c;
 }
 
@@ -289,7 +302,7 @@ ParsedText::Tag *ParsedText::newTag(const std::string &name, const AttrsList &at
 	Tag *newtag = new Tag();
 	newtag->name = name;
 	newtag->attrs = attrs;
-	m_tags.push_back(newtag);
+	m_not_root_tags.push_back(newtag);
 	return newtag;
 }
 
@@ -405,7 +418,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 	AttrsList attrs;
 	while (c != L'>') {
 		std::string attr_name = "";
-		std::string attr_val = "";
+		core::stringw attr_val = L"";
 
 		while (c == ' ') {
 			c = text[++cursor];
@@ -435,13 +448,13 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 			return 0;
 
 		while (c != L'>' && c != L' ') {
-			attr_val += (char)c;
+			attr_val += c;
 			c = text[++cursor];
 			if (c == L'\0')
 				return 0;
 		}
 
-		attrs[attr_name] = attr_val;
+		attrs[attr_name] = stringw_to_utf8(attr_val);
 	}
 
 	++cursor; // Last ">"
@@ -486,7 +499,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		else
 			enterElement(ELEMENT_ITEM);
 
-		m_element->text = strtostrw(attrs["name"]);
+		m_element->text = utf8_to_stringw(attrs["name"]);
 
 		if (attrs.count("float")) {
 			if (attrs["float"] == "left")
@@ -572,7 +585,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		} else {
 			openTag(name, attrs)->style = m_paragraphtags[name];
 		}
-		endParagraph();
+		endParagraph(ER_TAG);
 
 	} else
 		return 0; // Unknown tag
@@ -626,7 +639,7 @@ TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 				if (e.type == ParsedText::ELEMENT_IMAGE) {
 					video::ITexture *texture =
 						m_client->getTextureSource()->
-							getTexture(strwtostr(e.text));
+							getTexture(stringw_to_utf8(e.text));
 					if (texture)
 						dim = texture->getOriginalSize();
 				}
@@ -904,20 +917,20 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 
 // Draw text in a rectangle with a given offset. Items are actually placed in
 // relative (to upper left corner) coordinates.
-void TextDrawer::draw(const core::rect<s32> &dest_rect,
+void TextDrawer::draw(const core::rect<s32> &clip_rect,
 		const core::position2d<s32> &dest_offset)
 {
 	irr::video::IVideoDriver *driver = m_environment->getVideoDriver();
-	core::position2d<s32> offset = dest_rect.UpperLeftCorner + dest_offset;
+	core::position2d<s32> offset = dest_offset;
 	offset.Y += m_voffset;
 
 	if (m_text.background_type == ParsedText::BACKGROUND_COLOR)
-		driver->draw2DRectangle(m_text.background_color, dest_rect);
+		driver->draw2DRectangle(m_text.background_color, clip_rect);
 
 	for (auto &p : m_text.m_paragraphs) {
 		for (auto &el : p.elements) {
 			core::rect<s32> rect(el.pos + offset, el.dim);
-			if (!rect.isRectCollided(dest_rect))
+			if (!rect.isRectCollided(clip_rect))
 				continue;
 
 			switch (el.type) {
@@ -934,7 +947,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 
 				if (el.type == ParsedText::ELEMENT_TEXT)
 					el.font->draw(el.text, rect, color, false, true,
-							&dest_rect);
+							&clip_rect);
 
 				if (el.underline &&  el.drawwidth) {
 					s32 linepos = el.pos.Y + offset.Y +
@@ -945,31 +958,31 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 							el.pos.X + offset.X + el.drawwidth,
 							linepos + (el.baseline >> 3));
 
-					driver->draw2DRectangle(color, linerect, &dest_rect);
+					driver->draw2DRectangle(color, linerect, &clip_rect);
 				}
 			} break;
 
 			case ParsedText::ELEMENT_IMAGE: {
 				video::ITexture *texture =
 						m_client->getTextureSource()->getTexture(
-								strwtostr(el.text));
+								stringw_to_utf8(el.text));
 				if (texture != 0)
 					m_environment->getVideoDriver()->draw2DImage(
 							texture, rect,
 							irr::core::rect<s32>(
 									core::position2d<s32>(0, 0),
 									texture->getOriginalSize()),
-							&dest_rect, 0, true);
+							&clip_rect, 0, true);
 			} break;
 
 			case ParsedText::ELEMENT_ITEM: {
 				IItemDefManager *idef = m_client->idef();
 				ItemStack item;
-				item.deSerialize(strwtostr(el.text), idef);
+				item.deSerialize(stringw_to_utf8(el.text), idef);
 
 				drawItemStack(
 						m_environment->getVideoDriver(),
-						g_fontengine->getFont(), item, rect, &dest_rect,
+						g_fontengine->getFont(), item, rect, &clip_rect,
 						m_client, IT_ROT_OTHER, el.angle, el.rotation
 				);
 			} break;
@@ -1012,6 +1025,7 @@ GUIHyperText::GUIHyperText(const wchar_t *text, IGUIEnvironment *environment,
 GUIHyperText::~GUIHyperText()
 {
 	m_vscrollbar->remove();
+	m_vscrollbar->drop();
 }
 
 ParsedText::Element *GUIHyperText::getElementAt(s32 X, s32 Y)
@@ -1039,12 +1053,14 @@ void GUIHyperText::checkHover(s32 X, s32 Y)
 		}
 	}
 
+#ifndef HAVE_TOUCHSCREENGUI
 	if (m_drawer.m_hovertag)
 		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
 				gui::ECI_HAND);
 	else
 		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
 				gui::ECI_NORMAL);
+#endif
 }
 
 bool GUIHyperText::OnEvent(const SEvent &event)
@@ -1060,8 +1076,12 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 	if (event.EventType == EET_GUI_EVENT &&
 			event.GUIEvent.EventType == EGET_ELEMENT_LEFT) {
 		m_drawer.m_hovertag = nullptr;
-		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
-				gui::ECI_NORMAL);
+#ifndef HAVE_TOUCHSCREENGUI
+		gui::ICursorControl *cursor_control =
+				RenderingEngine::get_raw_device()->getCursorControl();
+		if (cursor_control->isVisible())
+			cursor_control->setActiveIcon(gui::ECI_NORMAL);
+#endif
 	}
 
 	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
@@ -1074,6 +1094,7 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 			m_text_scrollpos.Y = -m_vscrollbar->getPos();
 			m_drawer.draw(m_display_text_rect, m_text_scrollpos);
 			checkHover(event.MouseInput.X, event.MouseInput.Y);
+			return true;
 
 		} else if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 			ParsedText::Element *element = getElementAt(
@@ -1083,7 +1104,7 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 				for (auto &tag : element->tags) {
 					if (tag->name == "action") {
 						Text = core::stringw(L"action:") +
-						       strtostrw(tag->attrs["name"]);
+						       utf8_to_stringw(tag->attrs["name"]);
 						if (Parent) {
 							SEvent newEvent;
 							newEvent.EventType = EET_GUI_EVENT;
@@ -1131,7 +1152,8 @@ void GUIHyperText::draw()
 		m_vscrollbar->setPos(0);
 		m_vscrollbar->setVisible(false);
 	}
-	m_drawer.draw(m_display_text_rect, m_text_scrollpos);
+	m_drawer.draw(AbsoluteClippingRect,
+			m_display_text_rect.UpperLeftCorner + m_text_scrollpos);
 
 	// draw children
 	IGUIElement::draw();

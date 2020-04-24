@@ -6,11 +6,14 @@
 
 #include "IrrCompileConfig.h"
 
+#include <IGUIStaticText.h>
+#include "irrlicht_changes/static_text.h"
 #include "IGUIButton.h"
 #include "IGUISpriteBank.h"
 #include "ITexture.h"
 #include "SColor.h"
 #include "guiSkin.h"
+#include "StyleSpec.h"
 
 using namespace irr;
 
@@ -64,13 +67,16 @@ using namespace irr;
 
 #endif
 
+class ISimpleTextureSource;
+
 class GUIButton : public gui::IGUIButton
 {
 public:
 
 	//! constructor
 	GUIButton(gui::IGUIEnvironment* environment, gui::IGUIElement* parent,
-			   s32 id, core::rect<s32> rectangle, bool noclip=false);
+			   s32 id, core::rect<s32> rectangle, ISimpleTextureSource *tsrc,
+			   bool noclip=false);
 
 	//! destructor
 	virtual ~GUIButton();
@@ -120,12 +126,9 @@ public:
 	//! Sets an image which should be displayed on the button when it is in pressed state.
 	virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) override;
 
-	//! Sets an image which should be displayed on the button when it is in hovered state.
-	virtual void setHoveredImage(video::ITexture* image=nullptr);
+	//! Sets the text displayed by the button
+	virtual void setText(const wchar_t* text) override;
 	// END PATCH
-
-	//! Sets an image which should be displayed on the button when it is in hovered state.
-	virtual void setHoveredImage(video::ITexture* image, const core::rect<s32>& pos);
 
 	//! Sets the sprite bank used by the button
 	virtual void setSpriteBank(gui::IGUISpriteBank* bank=0) override;
@@ -172,6 +175,11 @@ public:
 	//! Returns if the button is currently pressed
 	virtual bool isPressed() const override;
 
+	// PATCH
+	//! Returns if this element (or one of its direct children) is hovered
+	bool isHovered() const;
+	// END PATCH
+
 	//! Sets if the button should use the skin to draw its border
 	virtual void setDrawBorder(bool border=true) override;
 
@@ -212,40 +220,28 @@ public:
 
 	void setColor(video::SColor color);
 	// PATCH
-	void setHoveredColor(video::SColor color);
-	void setPressedColor(video::SColor color);
+	//! Set element properties from a StyleSpec corresponding to the button state
+	void setFromState();
+
+	//! Set element properties from a StyleSpec
+	virtual void setFromStyle(const StyleSpec& style);
+
+	//! Set the styles used for each state
+	void setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES>& styles);
 	// END PATCH
 
 
 	//! Do not drop returned handle
-	static GUIButton* addButton(gui::IGUIEnvironment *environment, const core::rect<s32>& rectangle,
-									IGUIElement* parent, s32 id, const wchar_t* text, const wchar_t *tooltiptext=L"");
+	static GUIButton* addButton(gui::IGUIEnvironment *environment,
+			const core::rect<s32>& rectangle, ISimpleTextureSource *tsrc,
+			IGUIElement* parent, s32 id, const wchar_t* text,
+			const wchar_t *tooltiptext=L"");
 
 protected:
 	void drawSprite(gui::EGUI_BUTTON_STATE state, u32 startTime, const core::position2di& center);
 	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed) const;
 
-private:
-
-	struct ButtonSprite
-	{
-		ButtonSprite() : Index(-1), Loop(false), Scale(false)
-		{
-		}
-
-		bool operator==(const ButtonSprite& other) const
-		{
-			return Index == other.Index && Color == other.Color && Loop == other.Loop && Scale == other.Scale;
-		}
-
-		s32 Index;
-		video::SColor Color;
-		bool Loop;
-		bool Scale;
-	};
-
-	ButtonSprite ButtonSprites[gui::EGBS_COUNT];
-	gui::IGUISpriteBank* SpriteBank;
+	ISimpleTextureSource *getTextureSource() { return TSrc; }
 
 	struct ButtonImage
 	{
@@ -288,7 +284,33 @@ private:
 		core::rect<s32> SourceRect;
 	};
 
+	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed, const ButtonImage* images) const;
+
+private:
+
+	struct ButtonSprite
+	{
+		ButtonSprite() : Index(-1), Loop(false), Scale(false)
+		{
+		}
+
+		bool operator==(const ButtonSprite& other) const
+		{
+			return Index == other.Index && Color == other.Color && Loop == other.Loop && Scale == other.Scale;
+		}
+
+		s32 Index;
+		video::SColor Color;
+		bool Loop;
+		bool Scale;
+	};
+
+	ButtonSprite ButtonSprites[gui::EGBS_COUNT];
+	gui::IGUISpriteBank* SpriteBank;
+
 	ButtonImage ButtonImages[gui::EGBIS_COUNT];
+
+	std::array<StyleSpec, StyleSpec::NUM_STATES> Styles;
 
 	gui::IGUIFont* OverrideFont;
 
@@ -308,7 +330,11 @@ private:
 
 	video::SColor Colors[4];
 	// PATCH
-	video::SColor HoveredColors[4];
-	video::SColor PressedColors[4];
+	bool WasHovered = false;
+	ISimpleTextureSource *TSrc;
+
+	gui::IGUIStaticText *StaticText;
+
+	core::rect<s32> BgMiddle;
 	// END PATCH
 };

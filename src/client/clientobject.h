@@ -49,8 +49,10 @@ public:
 	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
 	virtual bool collideWithObjects() const { return false; }
 	virtual const v3f getPosition() const { return v3f(0.0f); }
-	virtual scene::ISceneNode *getSceneNode() { return NULL; }
-	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() { return NULL; }
+	virtual scene::ISceneNode *getSceneNode() const
+	{ return NULL; }
+	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const
+	{ return NULL; }
 	virtual bool isLocalPlayer() const { return false; }
 
 	virtual ClientActiveObject *getParent() const { return nullptr; };

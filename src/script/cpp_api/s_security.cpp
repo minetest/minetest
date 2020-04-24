@@ -499,7 +499,12 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 	// Get server from registry
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
+	ScriptApiBase *script;
+#if INDIRECT_SCRIPTAPI_RIDX
+	script = (ScriptApiBase *) *(void**)(lua_touserdata(L, -1));
+#else
+	script = (ScriptApiBase *) lua_touserdata(L, -1);
+#endif
 	lua_pop(L, 1);
 	const IGameDef *gamedef = script->getGameDef();
 	if (!gamedef)

@@ -39,9 +39,22 @@ local function create_world_formspec(dialogdata)
 		local gamepath = game_by_gameidx.path
 		local gameconfig = Settings(gamepath.."/game.conf")
 
+		local allowed_mapgens = (gameconfig:get("allowed_mapgens") or ""):split()
+		for key, value in pairs(allowed_mapgens) do
+			allowed_mapgens[key] = value:trim()
+		end
+
 		local disallowed_mapgens = (gameconfig:get("disallowed_mapgens") or ""):split()
 		for key, value in pairs(disallowed_mapgens) do
 			disallowed_mapgens[key] = value:trim()
+		end
+
+		if #allowed_mapgens > 0 then
+			for i = #mapgens, 1, -1 do
+				if table.indexof(allowed_mapgens, mapgens[i]) == -1 then
+					table.remove(mapgens, i)
+				end
+			end
 		end
 
 		if disallowed_mapgens then

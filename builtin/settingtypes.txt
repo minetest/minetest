@@ -580,10 +580,11 @@ parallax_occlusion_bias (Parallax occlusion bias) float 0.04
 enable_waving_water (Waving liquids) bool false
 
 #    The maximum height of the surface of waving liquids.
-#    1.0 = Wave reaches the top of blocks.
+#    4.0 = Wave height is two nodes.
 #    0.0 = Wave doesn't move at all.
+#    Default is 1.0 (1/2 node).
 #    Requires waving liquids to be enabled.
-water_wave_height (Waving liquids wave height) float 1.0 0.0 1.0
+water_wave_height (Waving liquids wave height) float 1.0 0.0 4.0
 
 #    Length of liquid waves.
 #    Requires waving liquids to be enabled.
@@ -622,11 +623,11 @@ pause_on_lost_focus (Pause on lost window focus) bool false
 #    View distance in nodes.
 viewing_range (Viewing range) int 100 20 4000
 
-#   Camera 'near clipping plane' distance in nodes, between 0 and 0.5.
-#   Most users will not need to change this.
+#   Camera 'near clipping plane' distance in nodes, between 0 and 0.25
+#   Only works on GLES platforms. Most users will not need to change this.
 #   Increasing can reduce artifacting on weaker GPUs.
 #   0.1 = Default, 0.25 = Good value for weaker tablets.
-near_plane (Near clipping plane) float 0.1 0 0.5
+near_plane (Near plane) float 0.1 0 0.25
 
 #    Width component of the initial window size.
 screen_w (Screen width) int 1024 1
@@ -902,8 +903,9 @@ fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
 #    This font will be used for certain languages or if the default font is unavailable.
 fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
 
-#    Path to save screenshots at.
-screenshot_path (Screenshot folder) path
+#    Path to save screenshots at. Can be an absolute or relative path.
+#    The folder will be created if it doesn't already exist.
+screenshot_path (Screenshot folder) path screenshots
 
 #    Format of screenshots.
 screenshot_format (Screenshot format) enum png png,jpg,bmp,pcx,ppm,tga
@@ -1076,6 +1078,10 @@ map-dir (Map directory) path
 #    Time in seconds for item entity (dropped items) to live.
 #    Setting it to -1 disables the feature.
 item_entity_ttl (Item entity TTL) int 900
+
+#    Specifies the default stack size of nodes, items and tools.
+#    Note that mods or games may explicitly set a stack for certain (or all) items.
+default_stack_max (Default stack size) int 99
 
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
@@ -1371,8 +1377,7 @@ name (Player name) string
 
 #    Set the language. Leave empty to use the system language.
 #    A restart is required after changing this.
-language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,ko,ky,lt,ms,nb,nl,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,tr,uk,zh_CN,zh_TW
-
+language (Language) enum   ,ar,ca,cs,da,de,dv,el,en,eo,es,et,eu,fil,fr,hu,id,it,ja,ja_KS,jbo,kk,kn,lo,lt,ms,my,nb,nl,nn,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,th,tr,uk,vi
 
 #    Level of logging to be written to debug.txt:
 #    -    <nothing> (no logging)
@@ -1476,10 +1481,6 @@ mgv5_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
 mgv5_large_cave_depth (Large cave depth) int -256
-
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgv5_lava_depth (Lava depth) int -256
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgv5_small_cave_num_min (Small cave minimum number) int 0 0 256
@@ -1611,10 +1612,6 @@ mgv7_cave_width (Cave width) float 0.09
 #    Y of upper limit of large caves.
 mgv7_large_cave_depth (Large cave depth) int -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgv7_lava_depth (Lava depth) int -256
-
 #    Minimum limit of random number of small caves per mapchunk.
 mgv7_small_cave_num_min (Small cave minimum number) int 0 0 256
 
@@ -1629,22 +1626,6 @@ mgv7_large_cave_num_max (Large cave maximum number) int 2 0 64
 
 #    Proportion of large caves that contain liquid.
 mgv7_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
-
-#    Controls the density of mountain-type floatlands.
-#    Is a noise offset added to the 'mgv7_np_mountain' noise value.
-mgv7_float_mount_density (Floatland mountain density) float 0.6
-
-#    Typical maximum height, above and below midpoint, of floatland mountains.
-mgv7_float_mount_height (Floatland mountain height) float 128.0
-
-#    Alters how mountain-type floatlands taper above and below midpoint.
-mgv7_float_mount_exponent (Floatland mountain exponent) float 0.75
-
-#    Y-level of floatland midpoint and lake surface.
-mgv7_floatland_level (Floatland level) int 1280
-
-#    Y-level to which floatland shadows extend.
-mgv7_shadow_limit (Shadow limit) int 1024
 
 #    Y-level of cavern upper limit.
 mgv7_cavern_limit (Cavern limit) int -256
@@ -1684,13 +1665,6 @@ mgv7_np_mount_height (Mountain height noise) noise_params_2d 256, 112, (1000, 10
 
 #    Defines large-scale river channel structure.
 mgv7_np_ridge_uwater (Ridge underwater noise) noise_params_2d 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0, eased
-
-#    Defines areas of floatland smooth terrain.
-#    Smooth floatlands occur when noise > 0.
-mgv7_np_floatland_base (Floatland base noise) noise_params_2d -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0, eased
-
-#    Variation of hill height and lake depth on floatland smooth terrain.
-mgv7_np_float_base_height (Floatland base height noise) noise_params_2d 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0, eased
 
 #    3D noise defining mountain structure and height.
 #    Also defines structure of floatland mountain terrain.
@@ -1735,10 +1709,6 @@ mgcarpathian_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
 mgcarpathian_large_cave_depth (Large cave depth) int -33
-
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgcarpathian_lava_depth (Lava depth) int -256
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgcarpathian_small_cave_num_min (Small cave minimum number) int 0 0 256
@@ -1835,10 +1805,6 @@ mgflat_ground_level (Ground level) int 8
 #    Y of upper limit of large caves.
 mgflat_large_cave_depth (Large cave depth) int -33
 
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgflat_lava_depth (Lava depth) int -256
-
 #    Minimum limit of random number of small caves per mapchunk.
 mgflat_small_cave_num_min (Small cave minimum number) int 0 0 256
 
@@ -1912,10 +1878,6 @@ mgfractal_cave_width (Cave width) float 0.09
 
 #    Y of upper limit of large caves.
 mgfractal_large_cave_depth (Large cave depth) int -33
-
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgfractal_lava_depth (Lava depth) int -256
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgfractal_small_cave_num_min (Small cave minimum number) int 0 0 256
@@ -2050,10 +2012,6 @@ mgvalleys_altitude_chill (Altitude chill) int 90
 
 #    Depth below which you'll find large caves.
 mgvalleys_large_cave_depth (Large cave depth) int -33
-
-#    Deprecated, define and locate cave liquids using biome definitions instead.
-#    Y of upper limit of lava in large caves.
-mgvalleys_lava_depth (Lava depth) int 1
 
 #    Minimum limit of random number of small caves per mapchunk.
 mgvalleys_small_cave_num_min (Small cave minimum number) int 0 0 256

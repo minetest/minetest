@@ -70,8 +70,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 14:
 		Added transfer of player pressed keys to the server
 		Added new messages for mesh and bone animation, as well as attachments
-		GENERIC_CMD_SET_ANIMATION
-		GENERIC_CMD_SET_BONE_POSITION
+		AO_CMD_SET_ANIMATION
+		AO_CMD_SET_BONE_POSITION
 		GENERIC_CMD_SET_ATTACHMENT
 	PROTOCOL_VERSION 15:
 		Serialization format changes
@@ -87,7 +87,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		damageGroups added to ToolCapabilities
 		sound_place added to ItemDefinition
 	PROTOCOL_VERSION 19:
-		GENERIC_CMD_SET_PHYSICS_OVERRIDE
+		AO_CMD_SET_PHYSICS_OVERRIDE
 	PROTOCOL_VERSION 20:
 		TOCLIENT_HUDADD
 		TOCLIENT_HUDRM
@@ -131,7 +131,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_HELLO for presenting server to client after client
 			presentation
 		Add TOCLIENT_AUTH_ACCEPT to accept connection from client
-		Rename GENERIC_CMD_SET_ATTACHMENT to GENERIC_CMD_ATTACH_TO
+		Rename GENERIC_CMD_SET_ATTACHMENT to AO_CMD_ATTACH_TO
 	PROTOCOL_VERSION 26:
 		Add TileDef tileable_horizontal, tileable_vertical flags
 	PROTOCOL_VERSION 27:
@@ -200,9 +200,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Unknown inventory serialization fields no longer throw an error
 		Mod-specific formspec version
 		Player FOV override API
+		"ephemeral" added to TOCLIENT_PLAY_SOUND
+	PROTOCOL VERSION 39:
+		Updated set_sky packet
+		Adds new sun, moon and stars packets
 */
 
-#define LATEST_PROTOCOL_VERSION 38
+#define LATEST_PROTOCOL_VERSION 39
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -231,6 +235,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		background9[]: 9-slice scaling parameters
 	FORMSPEC VERSION 3:
 		Formspec elements are drawn in the order of definition
+		bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
+		box[] and image[] elements enable clipping by default
+		new element: scroll_container[]
 */
 #define FORMSPEC_API_VERSION 3
 
@@ -448,6 +455,7 @@ enum ToClientCommand
 		s32[3] pos_nodes*10000
 		u16 object_id
 		u8 loop (bool)
+		u8 ephemeral (bool)
 	*/
 
 	TOCLIENT_STOP_SOUND = 0x40,
@@ -563,6 +571,7 @@ enum ToClientCommand
 		v2f1000 offset
 		v3f1000 world_pos
 		v2s32 size
+		s16 z_index
 	*/
 
 	TOCLIENT_HUDRM = 0x4a,
@@ -600,7 +609,8 @@ enum ToClientCommand
 
 	TOCLIENT_SET_SKY = 0x4f,
 	/*
-		u8[4] color (ARGB)
+		Protocol 38:
+		u8[4] base_color (ARGB)
 		u8 len
 		u8[len] type
 		u16 count
@@ -608,6 +618,24 @@ enum ToClientCommand
 			u8 len
 			u8[len] param
 		u8 clouds (boolean)
+
+		Protocol 39:
+		u8[4] bgcolor (ARGB)
+		std::string type
+		int texture_count
+		std::string[6] param
+		bool clouds
+		bool bgcolor_fog
+		u8[4] day_sky (ARGB)
+		u8[4] day_horizon (ARGB)
+		u8[4] dawn_sky (ARGB)
+		u8[4] dawn_horizon (ARGB)
+		u8[4] night_sky (ARGB)
+		u8[4] night_horizon (ARGB)
+		u8[4] indoors (ARGB)
+		u8[4] sun_tint (ARGB)
+		u8[4] moon_tint (ARGB)
+		std::string tint_type
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
@@ -681,6 +709,31 @@ enum ToClientCommand
 	TOCLIENT_NODEMETA_CHANGED = 0x59,
 	/*
 		serialized and compressed node metadata
+	*/
+
+	TOCLIENT_SET_SUN = 0x5a,
+	/*
+		bool visible
+		std::string texture
+		std::string tonemap
+		std::string sunrise
+		f32 scale
+	*/
+
+	TOCLIENT_SET_MOON = 0x5b,
+	/*
+		bool visible
+		std::string texture
+		std::string tonemap
+		f32 scale
+	*/
+
+	TOCLIENT_SET_STARS = 0x5c,
+	/*
+		bool visible
+		u32 count
+		u8[4] starcolor (ARGB)
+		f32 scale
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

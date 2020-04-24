@@ -63,6 +63,7 @@ by texture packs. All existing fallback textures can be found in the directory
 ### Gameplay textures
 
 * `bubble.png`: the bubble texture when the player is drowning
+                (default size: 12×12)
 
 * `crack_anylength.png`: node overlay texture when digging
 
@@ -74,6 +75,7 @@ by texture packs. All existing fallback textures can be found in the directory
 * `halo.png`: used for the node highlighting mesh
 
 * `heart.png`: used to display the health points of the player
+               (default size: 12×12)
 
 * `minimap_mask_round.png`: round minimap mask, white gets replaced by the map
 * `minimap_mask_square.png`: mask used for the square minimap
@@ -101,6 +103,9 @@ by texture packs. All existing fallback textures can be found in the directory
 * `unknown_object.png`: shown texture when an entity definition was not found
 
 * `wieldhand.png`: texture of the wieldhand
+
+Note: The default textures of `player.png`, `player_back.png` and `wieldhand.png`
+are placeholders intended to be overwritten by the game.
 
 ### Mainmenu textures
 
@@ -140,34 +145,51 @@ by texture packs. All existing fallback textures can be found in the directory
 Texture Overrides
 -----------------
 
-You can override the textures of a node from a texture pack using
-texture overrides. To do this, create a file in a texture pack
-called override.txt
+You can override the textures of nodes and items from a
+texture pack using texture overrides. To do this, create one or
+more files in a texture pack called override.txt
 
 Each line in an override.txt file is a rule. It consists of
 
-	nodename face-selector texture
+	itemname target texture
 
 For example,
 
 	default:dirt_with_grass sides default_stone.png
 
-You can use ^ operators as usual:
+or
+
+	default:sword_steel inventory my_steel_sword.png
+
+You can list multiple targets on one line as a comma-separated list:
+
+	default:tree top,bottom my_special_tree.png
+
+You can use texture modifiers, as usual:
 
 	default:dirt_with_grass sides default_stone.png^[brighten
 
-Here are face selectors you can choose from:
+Finally, if a line is empty or starts with '#' it will be considered
+a comment and not read as a rule. You can use this to better organize
+your override.txt files.
 
-| face-selector | behavior                                          |
+Here are targets you can choose from:
+
+| target        | behavior                                          |
 |---------------|---------------------------------------------------|
-| left          | x-                                                |
-| right         | x+                                                |
-| front         | z-                                                |
-| back          | z+                                                |
-| top           | y+                                                |
-| bottom        | y-                                                |
-| sides         | x-, x+, z-, z+                                    |
+| left          | x- face                                           |
+| right         | x+ face                                           |
+| front         | z- face                                           |
+| back          | z+ face                                           |
+| top           | y+ face                                           |
+| bottom        | y- face                                           |
+| sides         | x-, x+, z-, z+ faces                              |
 | all           | All faces. You can also use '*' instead of 'all'. |
+| inventory     | The inventory texture                             |
+| wield         | The texture used when held by the player          |
+
+Nodes support all targets, but other items only support 'inventory'
+and 'wield'
 
 Designing leaves textures for the leaves rendering options
 ----------------------------------------------------------

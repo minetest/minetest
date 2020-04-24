@@ -571,9 +571,10 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 	sanity_check(engine != NULL);
 
 	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(RenderingEngine::get_gui_env(),
-								engine->m_parent,
-								-1,
-								engine->m_menumanager);
+			engine->m_parent,
+			-1,
+			engine->m_menumanager,
+			engine->m_texture_source);
 	kmenu->drop();
 	return 0;
 }
@@ -904,12 +905,12 @@ int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 
 	GUIFileSelectMenu* fileOpenMenu =
 		new GUIFileSelectMenu(RenderingEngine::get_gui_env(),
-								engine->m_parent,
-								-1,
-								engine->m_menumanager,
-								title,
-								formname,
-								is_file_select);
+				engine->m_parent,
+				-1,
+				engine->m_menumanager,
+				title,
+				formname,
+				is_file_select);
 	fileOpenMenu->setTextDest(engine->m_buttonhandler);
 	fileOpenMenu->drop();
 	return 0;

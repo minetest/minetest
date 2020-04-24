@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -61,7 +60,6 @@ MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager
 	spflags            = params->spflags;
 	cave_width         = params->cave_width;
 	large_cave_depth   = params->large_cave_depth;
-	lava_depth         = params->lava_depth;
 	small_cave_num_min = params->small_cave_num_min;
 	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
@@ -155,7 +153,6 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 
 	settings->getFloatNoEx("mgcarpathian_cave_width",         cave_width);
 	settings->getS16NoEx("mgcarpathian_large_cave_depth",     large_cave_depth);
-	settings->getS16NoEx("mgcarpathian_lava_depth",           lava_depth);
 	settings->getU16NoEx("mgcarpathian_small_cave_num_min",   small_cave_num_min);
 	settings->getU16NoEx("mgcarpathian_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgcarpathian_large_cave_num_min",   large_cave_num_min);
@@ -189,7 +186,7 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 
 void MapgenCarpathianParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian, U32_MAX);
+	settings->setFlagStr("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian);
 
 	settings->setFloat("mgcarpathian_base_level",   base_level);
 	settings->setFloat("mgcarpathian_river_width",  river_width);
@@ -198,7 +195,6 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 
 	settings->setFloat("mgcarpathian_cave_width",         cave_width);
 	settings->setS16("mgcarpathian_large_cave_depth",     large_cave_depth);
-	settings->setS16("mgcarpathian_lava_depth",           lava_depth);
 	settings->setU16("mgcarpathian_small_cave_num_min",   small_cave_num_min);
 	settings->setU16("mgcarpathian_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgcarpathian_large_cave_num_min",   large_cave_num_min);
@@ -229,6 +225,12 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgcarpathian_np_dungeons",      np_dungeons);
 }
 
+
+void MapgenCarpathianParams::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgcarpathian_spflags", flagdesc_mapgen_carpathian,
+		MGCARPATHIAN_CAVERNS);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -316,8 +318,7 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons
-	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
-			full_node_max.Y <= dungeon_ymax)
+	if (flags & MG_DUNGEONS)
 		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations

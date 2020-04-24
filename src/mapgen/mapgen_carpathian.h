@@ -37,10 +37,8 @@ struct MapgenCarpathianParams : public MapgenParams
 	float river_depth      = 24.0f;
 	float valley_width     = 0.25f;
 
-	u32 spflags              = MGCARPATHIAN_CAVERNS;
 	float cave_width         = 0.09f;
 	s16 large_cave_depth     = -33;
-	s16 lava_depth           = -256;
 	u16 small_cave_num_min   = 0;
 	u16 small_cave_num_max   = 0;
 	u16 large_cave_num_min   = 0;
@@ -75,6 +73,7 @@ struct MapgenCarpathianParams : public MapgenParams
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
+	void setDefaultSettings(Settings *settings);
 };
 
 class MapgenCarpathian : public MapgenBasic
@@ -93,10 +92,6 @@ private:
 	float river_width;
 	float river_depth;
 	float valley_width;
-
-	s16 large_cave_depth;
-	s16 dungeon_ymin;
-	s16 dungeon_ymax;
 
 	Noise *noise_height1;
 	Noise *noise_height2;

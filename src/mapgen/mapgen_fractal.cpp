@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -54,7 +53,6 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 	spflags            = params->spflags;
 	cave_width         = params->cave_width;
 	large_cave_depth   = params->large_cave_depth;
-	lava_depth         = params->lava_depth;
 	small_cave_num_min = params->small_cave_num_min;
 	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
@@ -91,9 +89,7 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 
 MapgenFractal::~MapgenFractal()
 {
-	if (noise_seabed)
-		delete noise_seabed;
-
+	delete noise_seabed;
 	delete noise_filler_depth;
 }
 
@@ -113,7 +109,6 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 	settings->getFloatNoEx("mgfractal_cave_width",         cave_width);
 	settings->getS16NoEx("mgfractal_large_cave_depth",     large_cave_depth);
-	settings->getS16NoEx("mgfractal_lava_depth",           lava_depth);
 	settings->getU16NoEx("mgfractal_small_cave_num_min",   small_cave_num_min);
 	settings->getU16NoEx("mgfractal_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgfractal_large_cave_num_min",   large_cave_num_min);
@@ -141,10 +136,9 @@ void MapgenFractalParams::readParams(const Settings *settings)
 
 void MapgenFractalParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
+	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 	settings->setFloat("mgfractal_cave_width",         cave_width);
 	settings->setS16("mgfractal_large_cave_depth",     large_cave_depth);
-	settings->setS16("mgfractal_lava_depth",           lava_depth);
 	settings->setU16("mgfractal_small_cave_num_min",   small_cave_num_min);
 	settings->setU16("mgfractal_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgfractal_large_cave_num_min",   large_cave_num_min);
@@ -167,6 +161,13 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgfractal_np_cave1",        np_cave1);
 	settings->setNoiseParams("mgfractal_np_cave2",        np_cave2);
 	settings->setNoiseParams("mgfractal_np_dungeons",     np_dungeons);
+}
+
+
+void MapgenFractalParams::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgfractal_spflags", flagdesc_mapgen_fractal,
+		MGFRACTAL_TERRAIN);
 }
 
 
@@ -252,8 +253,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons
-	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
-			full_node_max.Y <= dungeon_ymax)
+	if (flags & MG_DUNGEONS)
 		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations

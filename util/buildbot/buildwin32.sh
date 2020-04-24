@@ -20,26 +20,24 @@ packagedir=$builddir/packages
 libdir=$builddir/libs
 
 # Test which win32 compiler is present
-which i586-mingw32msvc-windres > /dev/null 2>&1 && toolchain_file=$dir/toolchain_i586-mingw32msvc.cmake
-which i686-w64-mingw32-windres > /dev/null 2>&1 && toolchain_file=$dir/toolchain_i646-w64-mingw32.cmake
+which i586-mingw32msvc-windres &>/dev/null && toolchain_file=$dir/toolchain_i586-mingw32msvc.cmake
+which i686-w64-mingw32-windres &>/dev/null && toolchain_file=$dir/toolchain_i646-w64-mingw32.cmake
 
-if [ -z "$toolchain_file" ]
-then
+if [ -z "$toolchain_file" ]; then
 	echo "Unable to determine which mingw32 compiler to use"
 	exit 1
-else
-	echo "Using $toolchain_file"
 fi
+echo "Using $toolchain_file"
 
 irrlicht_version=1.8.4
 ogg_version=1.3.2
 vorbis_version=1.3.5
 curl_version=7.65.3
-gettext_version=0.19.8.1
-freetype_version=2.9.1
+gettext_version=0.20.1
+freetype_version=2.10.1
 sqlite3_version=3.27.2
 luajit_version=2.1.0-beta3
-leveldb_version=1.20
+leveldb_version=1.22
 zlib_version=1.2.11
 
 mkdir -p $packagedir
@@ -88,22 +86,21 @@ cd $libdir
 # Get minetest
 cd $builddir
 if [ ! "x$EXISTING_MINETEST_DIR" = "x" ]; then
-	ln -s $EXISTING_MINETEST_DIR $CORE_NAME
+	cd /$EXISTING_MINETEST_DIR # must be absolute path
 else
 	[ -d $CORE_NAME ] && (cd $CORE_NAME && git pull) || (git clone -b $CORE_BRANCH $CORE_GIT)
+	cd $CORE_NAME
 fi
-cd $CORE_NAME
 git_hash=$(git rev-parse --short HEAD)
 
 # Get minetest_game
-cd games
 if [ "x$NO_MINETEST_GAME" = "x" ]; then
+	cd games
 	[ -d $GAME_NAME ] && (cd $GAME_NAME && git pull) || (git clone -b $GAME_BRANCH $GAME_GIT)
+	cd ..
 fi
-cd ../..
 
 # Build the thing
-cd $CORE_NAME
 [ -d _build ] && rm -Rf _build/
 mkdir _build
 cd _build

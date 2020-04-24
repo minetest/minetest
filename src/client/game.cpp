@@ -266,6 +266,7 @@ class SoundMaker
 public:
 	bool makes_footstep_sound;
 	float m_player_step_timer;
+	float m_player_jump_timer;
 
 	SimpleSoundSpec m_player_step_sound;
 	SimpleSoundSpec m_player_leftpunch_sound;
@@ -275,7 +276,8 @@ public:
 		m_sound(sound),
 		m_ndef(ndef),
 		makes_footstep_sound(true),
-		m_player_step_timer(0)
+		m_player_step_timer(0.0f),
+		m_player_jump_timer(0.0f)
 	{
 	}
 
@@ -285,6 +287,14 @@ public:
 			m_player_step_timer = 0.03;
 			if (makes_footstep_sound)
 				m_sound->playSound(m_player_step_sound, false);
+		}
+	}
+
+	void playPlayerJump()
+	{
+		if (m_player_jump_timer <= 0.0f) {
+			m_player_jump_timer = 0.2f;
+			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f), false);
 		}
 	}
 
@@ -302,7 +312,8 @@ public:
 
 	static void playerJump(MtEvent *e, void *data)
 	{
-		//SoundMaker *sm = (SoundMaker*)data;
+		SoundMaker *sm = (SoundMaker *)data;
+		sm->playPlayerJump();
 	}
 
 	static void cameraPunchLeft(MtEvent *e, void *data)
@@ -351,6 +362,7 @@ public:
 	void step(float dtime)
 	{
 		m_player_step_timer -= dtime;
+		m_player_jump_timer -= dtime;
 	}
 };
 
@@ -811,6 +823,9 @@ private:
 	void handleClientEvent_HudRemove(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_SetSun(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_SetMoon(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam);
 	void handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
 		CameraOrientation *cam);
 	void handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam);
@@ -1404,8 +1419,11 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	mapper = client->getMinimap();
-	if (mapper)
+	if (mapper) {
 		mapper->setMinimapMode(MINIMAP_MODE_OFF);
+		if (client->modsLoaded())
+			client->getScript()->on_minimap_ready(mapper);
+	}
 
 	return true;
 }
@@ -1550,7 +1568,8 @@ bool Game::connectToServer(const std::string &playername,
 				} else {
 					registration_confirmation_shown = true;
 					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
-						   &g_menumgr, client, playername, password, connection_aborted))->drop();
+						   &g_menumgr, client, playername, password,
+						   connection_aborted, texture_src))->drop();
 				}
 			} else {
 				wait_time += dtime;
@@ -1705,19 +1724,19 @@ inline bool Game::handleCallbacks()
 
 	if (g_gamecallback->changepassword_requested) {
 		(new GUIPasswordChange(guienv, guiroot, -1,
-				       &g_menumgr, client))->drop();
+				       &g_menumgr, client, texture_src))->drop();
 		g_gamecallback->changepassword_requested = false;
 	}
 
 	if (g_gamecallback->changevolume_requested) {
 		(new GUIVolumeChange(guienv, guiroot, -1,
-				     &g_menumgr))->drop();
+				     &g_menumgr, texture_src))->drop();
 		g_gamecallback->changevolume_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
-				      &g_menumgr))->drop();
+				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
 	}
 
@@ -1903,29 +1922,47 @@ void Game::processKeyInput()
 		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip();
+#if USE_SOUND
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		bool new_mute_sound = !g_settings->getBool("mute_sound");
-		g_settings->setBool("mute_sound", new_mute_sound);
-		if (new_mute_sound)
-			m_game_ui->showTranslatedStatusText("Sound muted");
-		else
-			m_game_ui->showTranslatedStatusText("Sound unmuted");
+		if (g_settings->getBool("enable_sound")) {
+			bool new_mute_sound = !g_settings->getBool("mute_sound");
+			g_settings->setBool("mute_sound", new_mute_sound);
+			if (new_mute_sound)
+				m_game_ui->showTranslatedStatusText("Sound muted");
+			else
+				m_game_ui->showTranslatedStatusText("Sound unmuted");
+		} else {
+			m_game_ui->showTranslatedStatusText("Sound system is disabled");
+		}
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
-		wchar_t buf[100];
-		g_settings->setFloat("sound_volume", new_volume);
-		const wchar_t *str = wgettext("Volume changed to %d%%");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		if (g_settings->getBool("enable_sound")) {
+			float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+			wchar_t buf[100];
+			g_settings->setFloat("sound_volume", new_volume);
+			const wchar_t *str = wgettext("Volume changed to %d%%");
+			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
+			delete[] str;
+			m_game_ui->showStatusText(buf);
+		} else {
+			m_game_ui->showTranslatedStatusText("Sound system is disabled");
+		}
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
-		float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
-		wchar_t buf[100];
-		g_settings->setFloat("sound_volume", new_volume);
-		const wchar_t *str = wgettext("Volume changed to %d%%");
-		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
-		delete[] str;
-		m_game_ui->showStatusText(buf);
+		if (g_settings->getBool("enable_sound")) {
+			float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+			wchar_t buf[100];
+			g_settings->setFloat("sound_volume", new_volume);
+			const wchar_t *str = wgettext("Volume changed to %d%%");
+			swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
+			delete[] str;
+			m_game_ui->showStatusText(buf);
+		} else {
+			m_game_ui->showTranslatedStatusText("Sound system is disabled");
+		}
+#else
+	} else if (wasKeyDown(KeyType::MUTE) || wasKeyDown(KeyType::INC_VOLUME)
+			|| wasKeyDown(KeyType::DEC_VOLUME)) {
+		m_game_ui->showTranslatedStatusText("Sound system is not supported on this build");
+#endif
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
@@ -2007,7 +2044,6 @@ void Game::processItemSelection(u16 *new_playeritem)
 	for (u16 i = 0; i <= max_item; i++) {
 		if (wasKeyDown((GameKeyType) (KeyType::SLOT_1 + i))) {
 			*new_playeritem = i;
-			infostream << "Selected item: " << new_playeritem << std::endl;
 			break;
 		}
 	}
@@ -2036,7 +2072,7 @@ void Game::openInventory()
 	if (!player || !player->getCAO())
 		return;
 
-	infostream << "the_game: " << "Launching inventory" << std::endl;
+	infostream << "Game: Launching inventory" << std::endl;
 
 	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
 
@@ -2523,6 +2559,9 @@ const ClientEventHandler Game::clientEventHandler[CLIENTEVENT_MAX] = {
 	{&Game::handleClientEvent_HudRemove},
 	{&Game::handleClientEvent_HudChange},
 	{&Game::handleClientEvent_SetSky},
+	{&Game::handleClientEvent_SetSun},
+	{&Game::handleClientEvent_SetMoon},
+	{&Game::handleClientEvent_SetStars},
 	{&Game::handleClientEvent_OverrideDayNigthRatio},
 	{&Game::handleClientEvent_CloudParams},
 };
@@ -2650,6 +2689,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->offset = *event->hudadd.offset;
 	e->world_pos = *event->hudadd.world_pos;
 	e->size = *event->hudadd.size;
+	e->z_index = event->hudadd.z_index;
 	hud_server_to_client[server_id] = player->addHud(e);
 
 	delete event->hudadd.pos;
@@ -2728,6 +2768,10 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 		case HUD_STAT_SIZE:
 			e->size = *event->hudchange.v2s32data;
 			break;
+
+		case HUD_STAT_Z_INDEX:
+			e->z_index = event->hudchange.data;
+			break;
 	}
 
 	delete event->hudchange.v3fdata;
@@ -2739,41 +2783,85 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 {
 	sky->setVisible(false);
-	// Whether clouds are visible in front of a custom skybox
-	sky->setCloudsEnabled(event->set_sky.clouds);
+	// Whether clouds are visible in front of a custom skybox.
+	sky->setCloudsEnabled(event->set_sky->clouds);
 
 	if (skybox) {
 		skybox->remove();
 		skybox = NULL;
 	}
-
+	// Clear the old textures out in case we switch rendering type.
+	sky->clearSkyboxTextures();
 	// Handle according to type
-	if (*event->set_sky.type == "regular") {
+	if (event->set_sky->type == "regular") {
+		// Shows the mesh skybox
 		sky->setVisible(true);
-		sky->setCloudsEnabled(true);
-	} else if (*event->set_sky.type == "skybox" &&
-		event->set_sky.params->size() == 6) {
-		sky->setFallbackBgColor(*event->set_sky.bgcolor);
-		skybox = RenderingEngine::get_scene_manager()->addSkyBoxSceneNode(
-			texture_src->getTextureForMesh((*event->set_sky.params)[0]),
-			texture_src->getTextureForMesh((*event->set_sky.params)[1]),
-			texture_src->getTextureForMesh((*event->set_sky.params)[2]),
-			texture_src->getTextureForMesh((*event->set_sky.params)[3]),
-			texture_src->getTextureForMesh((*event->set_sky.params)[4]),
-			texture_src->getTextureForMesh((*event->set_sky.params)[5]));
-	}
-		// Handle everything else as plain color
-	else {
-		if (*event->set_sky.type != "plain")
+		// Update mesh based skybox colours if applicable.
+		sky->setSkyColors(*event->set_sky);
+		sky->setHorizonTint(
+			event->set_sky->sun_tint,
+			event->set_sky->moon_tint,
+			event->set_sky->tint_type
+		);
+	} else if (event->set_sky->type == "skybox" &&
+			event->set_sky->textures.size() == 6) {
+		// Disable the dyanmic mesh skybox:
+		sky->setVisible(false);
+		// Set fog colors:
+		sky->setFallbackBgColor(event->set_sky->bgcolor);
+		// Set sunrise and sunset fog tinting:
+		sky->setHorizonTint(
+			event->set_sky->sun_tint,
+			event->set_sky->moon_tint,
+			event->set_sky->tint_type
+		);
+		// Add textures to skybox.
+		for (int i = 0; i < 6; i++)
+			sky->addTextureToSkybox(event->set_sky->textures[i], i, texture_src);
+	} else {
+		// Handle everything else as plain color.
+		if (event->set_sky->type != "plain")
 			infostream << "Unknown sky type: "
-				<< (*event->set_sky.type) << std::endl;
-
-		sky->setFallbackBgColor(*event->set_sky.bgcolor);
+				<< (event->set_sky->type) << std::endl;
+		sky->setVisible(false);
+		sky->setFallbackBgColor(event->set_sky->bgcolor);
+		// Disable directional sun/moon tinting on plain or invalid skyboxes.
+		sky->setHorizonTint(
+			event->set_sky->bgcolor,
+			event->set_sky->bgcolor,
+			"custom"
+		);
 	}
+	delete event->set_sky;
+}
 
-	delete event->set_sky.bgcolor;
-	delete event->set_sky.type;
-	delete event->set_sky.params;
+void Game::handleClientEvent_SetSun(ClientEvent *event, CameraOrientation *cam)
+{
+	sky->setSunVisible(event->sun_params->visible);
+	sky->setSunTexture(event->sun_params->texture,
+		event->sun_params->tonemap, texture_src);
+	sky->setSunScale(event->sun_params->scale);
+	sky->setSunriseVisible(event->sun_params->sunrise_visible);
+	sky->setSunriseTexture(event->sun_params->sunrise, texture_src);
+	delete event->sun_params;
+}
+
+void Game::handleClientEvent_SetMoon(ClientEvent *event, CameraOrientation *cam)
+{
+	sky->setMoonVisible(event->moon_params->visible);
+	sky->setMoonTexture(event->moon_params->texture,
+		event->moon_params->tonemap, texture_src);
+	sky->setMoonScale(event->moon_params->scale);
+	delete event->moon_params;
+}
+
+void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam)
+{
+	sky->setStarsVisible(event->star_params->visible);
+	sky->setStarCount(event->star_params->count, false);
+	sky->setStarColor(event->star_params->starcolor);
+	sky->setStarScale(event->star_params->scale);
+	delete event->star_params;
 }
 
 void Game::handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
@@ -2941,16 +3029,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	v3f player_position  = player->getPosition();
-	v3f player_eye_position = player->getEyePosition();
-	v3f camera_position  = camera->getPosition();
-	v3f camera_direction = camera->getDirection();
-	v3s16 camera_offset  = camera->getOffset();
-
-	if (camera->getCameraMode() == CAMERA_MODE_FIRST)
-		player_eye_position += player->eye_offset_first;
-	else
-		player_eye_position += player->eye_offset_third;
+	const v3f camera_direction = camera->getDirection();
+	const v3s16 camera_offset  = camera->getOffset();
 
 	/*
 		Calculate what block is the crosshair pointing to
@@ -2964,13 +3044,22 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	core::line3d<f32> shootline;
 
-	if (camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT) {
-		shootline = core::line3d<f32>(player_eye_position,
-			player_eye_position + camera_direction * BS * d);
-	} else {
+	switch (camera->getCameraMode()) {
+	case CAMERA_MODE_FIRST:
+		// Shoot from camera position, with bobbing
+		shootline.start = camera->getPosition();
+		break;
+	case CAMERA_MODE_THIRD:
+		// Shoot from player head, no bobbing
+		shootline.start = camera->getHeadPosition();
+		break;
+	case CAMERA_MODE_THIRD_FRONT:
+		shootline.start = camera->getHeadPosition();
 		// prevent player pointing anything in front-view
-		shootline = core::line3d<f32>(camera_position, camera_position);
+		d = 0;
+		break;
 	}
+	shootline.end = shootline.start + camera_direction * BS * d;
 
 #ifdef HAVE_TOUCHSCREENGUI
 
@@ -3057,6 +3146,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
+		v3f player_position  = player->getPosition();
 		handlePointingAtObject(pointed, tool_item, player_position, show_debug);
 	} else if (input->getLeftState()) {
 		// When button is held down in air, show continuous animation
@@ -3701,7 +3791,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 				video::SColor clouds_dark = clouds->getColor()
 						.getInterpolated(video::SColor(255, 0, 0, 0), 0.9);
 				sky->overrideColors(clouds_dark, clouds->getColor());
-				sky->setBodiesVisible(false);
+				sky->setInClouds(true);
 				runData.fog_range = std::fmin(runData.fog_range * 0.5f, 32.0f * BS);
 				// do not draw clouds after all
 				clouds->setVisible(false);
@@ -4092,8 +4182,12 @@ void Game::showPauseMenu()
 	}
 
 #ifndef __ANDROID__
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
-		<< strgettext("Sound Volume") << "]";
+#if USE_SOUND
+	if (g_settings->getBool("enable_sound")) {
+		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
+			<< strgettext("Sound Volume") << "]";
+	}
+#endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
 		<< strgettext("Change Keys")  << "]";
 #endif
@@ -4129,6 +4223,7 @@ void Game::showPauseMenu()
 				<< strgettext("- Creative Mode: ") << creative << "\n";
 		if (!simple_singleplayer_mode) {
 			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
+			//~ PvP = Player versus Player
 			os << strgettext("- PvP: ") << pvp << "\n"
 					<< strgettext("- Public: ") << announced << "\n";
 			std::string server_name = g_settings->get("server_name");

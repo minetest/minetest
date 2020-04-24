@@ -49,11 +49,6 @@ void cleanupAndroid();
 void initializePathsAndroid();
 
 /**
- * use java function to copy media from assets to external storage
- */
-void copyAssets();
-
-/**
  * show text input dialog in java
  * @param acceptButton text to display on accept button
  * @param hint hint to show

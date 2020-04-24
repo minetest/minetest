@@ -194,6 +194,14 @@ void FontEngine::readSettings()
 		m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
 		m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");
 
+		/*~ DO NOT TRANSLATE THIS LITERALLY!
+		This is a special string. Put either "no" or "yes"
+		into the translation field (literally).
+		Choose "yes" if the language requires use of the fallback
+		font, "no" otherwise.
+		The fallback font is (normally) required for languages with
+		non-Latin script, like Chinese.
+		When in doubt, test your translation. */
 		m_currentMode = is_yes(gettext("needs_fallback_font")) ?
 				FM_Fallback : FM_Standard;
 
@@ -231,7 +239,7 @@ void FontEngine::updateSkin()
 	FATAL_ERROR_IF(font == NULL, "Could not create/get font");
 
 	u32 text_height = font->getDimension(L"Hello, world!").Height;
-	infostream << "text_height=" << text_height << std::endl;
+	infostream << "FontEngine: measured text_height=" << text_height << std::endl;
 }
 
 /******************************************************************************/

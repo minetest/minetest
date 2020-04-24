@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -54,7 +53,6 @@ MapgenFlat::MapgenFlat(MapgenFlatParams *params, EmergeManager *emerge)
 	spflags            = params->spflags;
 	ground_level       = params->ground_level;
 	large_cave_depth   = params->large_cave_depth;
-	lava_depth         = params->lava_depth;
 	small_cave_num_min = params->small_cave_num_min;
 	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
@@ -104,7 +102,6 @@ void MapgenFlatParams::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgflat_spflags", spflags, flagdesc_mapgen_flat);
 	settings->getS16NoEx("mgflat_ground_level",         ground_level);
 	settings->getS16NoEx("mgflat_large_cave_depth",     large_cave_depth);
-	settings->getS16NoEx("mgflat_lava_depth",           lava_depth);
 	settings->getU16NoEx("mgflat_small_cave_num_min",   small_cave_num_min);
 	settings->getU16NoEx("mgflat_small_cave_num_max",   small_cave_num_max);
 	settings->getU16NoEx("mgflat_large_cave_num_min",   large_cave_num_min);
@@ -128,10 +125,9 @@ void MapgenFlatParams::readParams(const Settings *settings)
 
 void MapgenFlatParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgflat_spflags", spflags, flagdesc_mapgen_flat, U32_MAX);
+	settings->setFlagStr("mgflat_spflags", spflags, flagdesc_mapgen_flat);
 	settings->setS16("mgflat_ground_level",         ground_level);
 	settings->setS16("mgflat_large_cave_depth",     large_cave_depth);
-	settings->setS16("mgflat_lava_depth",           lava_depth);
 	settings->setU16("mgflat_small_cave_num_min",   small_cave_num_min);
 	settings->setU16("mgflat_small_cave_num_max",   small_cave_num_max);
 	settings->setU16("mgflat_large_cave_num_min",   large_cave_num_min);
@@ -150,6 +146,12 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgflat_np_cave1",        np_cave1);
 	settings->setNoiseParams("mgflat_np_cave2",        np_cave2);
 	settings->setNoiseParams("mgflat_np_dungeons",     np_dungeons);
+}
+
+
+void MapgenFlatParams::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgflat_spflags", flagdesc_mapgen_flat, 0);
 }
 
 
@@ -234,8 +236,7 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 	// Generate the registered ores
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
-	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
-			full_node_max.Y <= dungeon_ymax)
+	if (flags & MG_DUNGEONS)
 		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations

@@ -761,8 +761,8 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 			// set level to last 3 bits, flowing down bit to 4th bit
 			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
 		} else {
-			// set the liquid level and flow bit to 0
-			n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
+			// set the liquid level and flow bits to 0
+			n0.param2 &= ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
 		}
 
 		// change the node.
@@ -1285,8 +1285,7 @@ ServerMap::~ServerMap()
 		Close database if it was opened
 	*/
 	delete dbase;
-	if (dbase_ro)
-		delete dbase_ro;
+	delete dbase_ro;
 
 #if 0
 	/*
@@ -1828,10 +1827,10 @@ void ServerMap::save(ModifiedState save_level)
 	*/
 	if(save_level == MOD_STATE_CLEAN
 			|| block_count != 0) {
-		infostream<<"ServerMap: Written: "
-				<<block_count<<" block files"
-				<<", "<<block_count_all<<" blocks in memory."
-				<<std::endl;
+		infostream << "ServerMap: Written: "
+				<< block_count << " blocks"
+				<< ", " << block_count_all << " blocks in memory."
+				<< std::endl;
 		PrintInfo(infostream); // ServerMap/ClientMap:
 		infostream<<"Blocks modified by: "<<std::endl;
 		modprofiler.print(infostream);
@@ -1886,6 +1885,11 @@ MapDatabase *ServerMap::createDatabase(
 	#endif
 
 	throw BaseException(std::string("Database backend ") + name + " not supported.");
+}
+
+void ServerMap::pingDatabase()
+{
+	dbase->pingDatabase();
 }
 
 void ServerMap::beginSave()

@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "serverenvironment.h"
 #include "scripting_server.h"
-#include "serverobject.h"
+#include "server/serveractiveobject.h"
 #include "settings.h"
 #include "craftdef.h"
 #include "rollback_interface.h"
@@ -861,7 +861,7 @@ void ICraftAction::apply(InventoryManager *mgr,
 	}
 
 	// Put the replacements in the inventory or drop them on the floor, if
-	// the invenotry is full
+	// the inventory is full
 	for (auto &output_replacement : output_replacements) {
 		if (list_main)
 			output_replacement = list_main->addItem(output_replacement);

@@ -43,18 +43,6 @@ void GUIItemImage::draw()
 	item.deSerialize(m_item_name, idef);
 	// Viewport rectangle on screen
 	core::rect<s32> rect = core::rect<s32>(AbsoluteRect);
-	if (Parent->getType() == gui::EGUIET_BUTTON &&
-			((irr::gui::IGUIButton *)Parent)->isPressed()) {
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-		rect += core::dimension2d<s32>(0.05 * (float)rect.getWidth(),
-				0.05 * (float)rect.getHeight());
-#else
-		gui::IGUISkin *skin = Environment->getSkin();
-		rect += core::dimension2d<s32>(
-				skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X),
-				skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y));
-#endif
-	}
 	drawItemStack(Environment->getVideoDriver(), m_font, item, rect,
 			&AbsoluteClippingRect, m_client, IT_ROT_NONE);
 	video::SColor color(255, 255, 255, 255);

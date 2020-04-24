@@ -184,8 +184,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	v3f position = getPosition();
 
 	// Copy parent position if local player is attached
-	if (isAttached) {
-		setPosition(overridePosition);
+	if (getParent()) {
+		setPosition(m_cao->getPosition());
 		added_velocity = v3f(0.0f); // ignored
 		return;
 	}
@@ -474,7 +474,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	setYaw(control.yaw);
 
 	// Nullify speed and don't run positioning code if the player is attached
-	if (isAttached) {
+	if (getParent()) {
 		setSpeed(v3f(0.0f));
 		return;
 	}
@@ -706,6 +706,11 @@ v3f LocalPlayer::getEyeOffset() const
 	return v3f(0.0f, BS * eye_height, 0.0f);
 }
 
+ClientActiveObject *LocalPlayer::getParent() const
+{
+	return m_cao ? m_cao->getParent() : nullptr;
+}
+
 bool LocalPlayer::isDead() const
 {
 	FATAL_ERROR_IF(!getCAO(), "LocalPlayer's CAO isn't initialized");
@@ -764,8 +769,8 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	v3f position = getPosition();
 
 	// Copy parent position if local player is attached
-	if (isAttached) {
-		setPosition(overridePosition);
+	if (getParent()) {
+		setPosition(m_cao->getPosition());
 		m_sneak_node_exists = false;
 		added_velocity = v3f(0.0f);
 		return;

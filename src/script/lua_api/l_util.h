@@ -37,7 +37,7 @@ private:
 
 	// log([level,] text)
 	// Writes a line to the logger.
-	// The one-argument version logs to infostream.
+	// The one-argument version logs to LL_NONE.
 	// The two-argument version accepts a log level.
 	static int l_log(lua_State *L);
 
