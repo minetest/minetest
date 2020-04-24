@@ -736,9 +736,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	if (!name.empty()) {
 		TRACESTREAM(<< "Client: Loading translation: "
 				<< "\"" << filename << "\"" << std::endl);
-		// Using unique lang_code "" for client
-		(*g_all_translations)[""].loadTranslation(data);
-
+		g_client_translations->loadTranslation(data);
 		return true;
 	}
 

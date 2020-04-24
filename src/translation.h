@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 class Translations;
-extern std::unordered_map<std::string, Translations> *g_all_translations;
+extern std::unordered_map<std::string, Translations> *g_server_translations;
+extern Translations *g_client_translations;
 
 class Translations
 {

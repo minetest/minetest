@@ -334,7 +334,7 @@ public:
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientState *state, u32 *uptime,
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
-			std::string* vers_string);
+			std::string* vers_string, std::string* lang_code);
 
 	void printToConsoleOnly(const std::string &text);
 

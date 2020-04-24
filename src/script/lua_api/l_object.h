@@ -209,9 +209,6 @@ private:
 	// get_player_name(self)
 	static int l_get_player_name(lua_State *L);
 
-	// get_player_language(self)
-	static int l_get_player_language(lua_State *L);
-
 	// get_player_velocity(self)
 	static int l_get_player_velocity(lua_State *L);
 

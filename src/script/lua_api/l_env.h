@@ -188,7 +188,7 @@ private:
 	static int l_forceload_free_block(lua_State *L);
 
 	// Get a translation server side
-	static int l_get_lang_translation(lua_State * L);
+	static int l_get_translation(lua_State * L);
 
 public:
 	static void Initialize(lua_State *L, int top);

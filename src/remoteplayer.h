@@ -141,9 +141,6 @@ public:
 
 	void onSuccessfulSave();
 
-	void setLangCode(const std::string &code) { m_lang_code = code; }
-	const std::string &getLangCode() const { return m_lang_code; }
-
 private:
 	/*
 		serialize() writes a bunch of text that can contain
@@ -168,8 +165,6 @@ private:
 	float m_day_night_ratio;
 	std::string hud_hotbar_image = "";
 	std::string hud_hotbar_selected_image = "";
-
-	std::string m_lang_code;
 
 	CloudParams m_cloud_params;
 
