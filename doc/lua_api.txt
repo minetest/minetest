@@ -2909,7 +2909,7 @@ The following functions provide escape sequences:
       `minetest.get_color_escape_sequence(color) ..
       message ..
       minetest.get_color_escape_sequence("#ffffff")`
-   `minetest.colorize_chatcommand(cmd, param)`
+* `minetest.colorize_chatcommand(cmd, param)`
     * Given a chat command name and an optional parameter, returns an
       automatically colorized string
 * `minetest.get_background_escape_sequence(color)`

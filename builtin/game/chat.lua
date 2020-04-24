@@ -8,6 +8,7 @@ end
 -- Pretty-print privileges of give player
 local function format_player_privs(name)
 	return format_privs(core.get_player_privs(name))
+end
 
 -- Helper function that implements search and replace without pattern matching
 -- Returns the string and a boolean indicating whether or not the string was modified
@@ -84,10 +85,9 @@ core.register_on_chat_message(function(name, message)
 		for i=1, #missing_privs do
 			privs[missing_privs[i]] = true
 		end
-		local priv_string = format_privs(privs)
 		core.chat_send_player(name, "You don't have permission"
 				.. " to run this command (missing privileges: "
-				.. priv_string .. ")")
+				.. format_privs(privs) .. ")")
 	end
 	return true  -- Handled chat message
 end)
@@ -308,7 +308,7 @@ core.register_chatcommand("revoke", {
 					.. format_privs(revoke_privs))
 		end
 		return true, "Privileges of " .. revoke_name .. ": "
-			.. format_player_privs(revoke_name))
+			.. format_player_privs(revoke_name)
 	end,
 })
 
@@ -468,7 +468,7 @@ core.register_chatcommand("teleport", {
 
 		if not core.check_player_privs(name, {bring=true}) then
 			return false, "You don't have permission to teleport other players (missing "
-			.. core.colorize(core.COLOR_PRIV, "bring") .. " privilege)"
+				.. core.colorize(core.COLOR_PRIV, "bring") .. " privilege)"
 		end
 
 		teleportee = nil
@@ -946,8 +946,8 @@ core.register_chatcommand("days", {
 
 core.register_chatcommand("shutdown", {
 	params = "[<delay_in_seconds> | -1] [reconnect] [<message>]",
-	description = "Shutdown server ("..core.colorize(core.COLOR_PARAM, "-1") ..
-	" cancels a delayed shutdown)",
+	description = "Shutdown server (" .. core.colorize(core.COLOR_PARAM, "-1") ..
+		" cancels a delayed shutdown)",
 	privs = {server=true},
 	func = function(name, param)
 		local delay, reconnect, message

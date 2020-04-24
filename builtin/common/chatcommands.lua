@@ -79,7 +79,8 @@ local function do_help_cmd(name, param)
 		local help_all = core.colorize_chatcommand(
 				string.format("%shelp", cmd_marker), "all")
 		-- List available commands
-		return true, gettext("Available commands: ") .. core.colorize(core.COLOR_COMMAND, table.concat(cmds, " "))
+		return true, gettext("Available commands: ") ..
+				core.colorize(core.COLOR_COMMAND, table.concat(cmds, " "))
 				.. "\n"
 				.. gettext_replace("Use '$1' to get more information,"
 				.. " or '$2' to list everything.", help_cmd, help_all)
