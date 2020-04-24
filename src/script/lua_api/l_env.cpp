@@ -1304,8 +1304,8 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	return 0;
 }
 
-// get_translation(lang_code, string)
-int ModApiEnvMod::l_get_translation(lua_State * L)
+// get_translated_string(lang_code, string)
+int ModApiEnvMod::l_get_translated_string(lua_State * L)
 {
 	GET_ENV_PTR;
 	std::string lang_code = luaL_checkstring(L, 1);
@@ -1364,7 +1364,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
-	API_FCT(get_translation);
+	API_FCT(get_translated_string);
 }
 
 void ModApiEnvMod::InitializeClient(lua_State *L, int top)

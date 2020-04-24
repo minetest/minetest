@@ -769,9 +769,13 @@ void translate_string(const std::wstring &s, Translations *translations,
 		}
 	}
 
+	std::wstring toutput;
 	// Translate the template.
-	std::wstring toutput = translations->getTranslation(
-			textdomain, output.str());
+	if (translations != nullptr)
+		toutput = translations->getTranslation(
+				textdomain, output.str());
+	else
+		toutput = output.str();
 
 	// Put back the arguments in the translated template.
 	std::wostringstream result;
@@ -879,5 +883,9 @@ std::wstring translate_string(const std::wstring &s, Translations *translations)
 // Translate string client side
 std::wstring translate_string(const std::wstring &s)
 {
+#ifdef SERVER
+	return translate_string(s, nullptr);
+#else
 	return translate_string(s, g_client_translations);
+#endif
 }

@@ -24,7 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Translations;
 extern std::unordered_map<std::string, Translations> *g_server_translations;
+#ifndef SERVER
 extern Translations *g_client_translations;
+#endif
 
 class Translations
 {
