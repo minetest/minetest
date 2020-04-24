@@ -3187,11 +3187,11 @@ that:
 translations for `lang_code` language. It gives the same result as if the string
 was translated by the client.
 
-The `lang_code` to use for a player can be retrieved calling
-`minetest.l_get_player_information(name)` method.
+The `lang_code` to use for a given player can be retrieved from
+the table returned by `minetest.get_player_information(name)`.
 
-Keep in mind that it is always simpler to let the client translate whenever it
-is possible.
+IMPORTANT: This functionality should only be used for sorting, filtering or similar purposes.
+You do not need to use this to get translated strings to show up on the client.
 
 Perlin noise
 ============
