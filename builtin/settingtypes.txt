@@ -1622,14 +1622,14 @@ mgv7_mount_zero_level (Mountain zero level) int 0
 mgv7_floatland_ymin (Floatland minimum Y) int 1024
 
 #    Upper Y limit of floatlands.
-mgv7_floatland_ymax (Floatland maximum Y) int 30000
+mgv7_floatland_ymax (Floatland maximum Y) int 4096
 
 #    Y-distance over which floatlands taper from full density to nothing.
 #    For a solid floatland layer, this controls the height of hills/mountains.
 mgv7_floatland_taper (Floatland tapering distance) int 256
 
 #    Exponent of the floatland tapering. Alters the tapering behaviour.
-#    Values > 1.0 create a smooth. rounded tapering, suitable for the default
+#    Values > 1.0 create a smooth, rounded tapering suitable for the default
 #    separated floatlands.
 #    Values < 1.0 create a more defined surface level with flatter lowlands
 #    and more extreme hills/mountains, suitable for a solid floatland layer.
@@ -1643,7 +1643,7 @@ mgv7_floatland_density (Floatland density) float -0.9
 #    Y-level of the floatland water surface.
 #    Should be set to somewhere between
 #    'mgv7_floatland_ymax' - 'mgv7_floatland_taper' and 'mgv7_floatland_ymax'.
-mgv7_floatland_ywater (Floatland water level) int 29872
+mgv7_floatland_ywater (Floatland water level) int 3968
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -1715,7 +1715,7 @@ mgv7_np_mountain (Mountain noise) noise_params_3d -0.6, 1, (250, 350, 250), 5333
 mgv7_np_ridge (Ridge noise) noise_params_3d 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 
 #    3D noise defining structure of floatlands.
-mgv7_np_floatland (Floatland noise) noise_params_3d 0, 1, (600, 150, 600), 1009, 5, 0.75, 1.618
+mgv7_np_floatland (Floatland noise) noise_params_3d 0, 1, (384, 96, 384), 1009, 4, 0.75, 1.618
 
 #    3D noise defining giant caverns.
 mgv7_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0

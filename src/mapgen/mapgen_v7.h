@@ -1,7 +1,7 @@
 /*
 Minetest
 Copyright (C) 2014-2020 paramat
-Copyright (C) 2013-2020 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -38,11 +38,11 @@ extern FlagDesc flagdesc_mapgen_v7[];
 struct MapgenV7Params : public MapgenParams {
 	s16 mount_zero_level = 0;
 	s16 floatland_ymin = 1024;
-	s16 floatland_ymax = 30000;
+	s16 floatland_ymax = 4096;
 	s16 floatland_taper = 256;
 	float float_taper_exp = 2.0f;
 	float floatland_density = -0.9f;
-	s16 floatland_ywater = 29872;
+	s16 floatland_ywater = 3968;
 
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;

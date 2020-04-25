@@ -1,7 +1,7 @@
 /*
 Minetest
 Copyright (C) 2014-2020 paramat
-Copyright (C) 2013-2020 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -156,7 +156,7 @@ MapgenV7Params::MapgenV7Params():
 	np_ridge_uwater      (0.0,   1.0,   v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0),
 	np_mountain          (-0.6,  1.0,   v3f(250,  350,  250),  5333,  5, 0.63, 2.0),
 	np_ridge             (0.0,   1.0,   v3f(100,  100,  100),  6467,  4, 0.75, 2.0),
-	np_floatland         (0.0,   1.0,   v3f(600,  150,  600),  1009,  5, 0.75, 1.618),
+	np_floatland         (0.0,   1.0,   v3f(384,  96,   384),  1009,  4, 0.75, 1.618),
 	np_cavern            (0.0,   1.0,   v3f(384,  128,  384),  723,   5, 0.63, 2.0),
 	np_cave1             (0.0,   12.0,  v3f(61,   61,   61),   52534, 3, 0.5,  2.0),
 	np_cave2             (0.0,   12.0,  v3f(67,   67,   67),   10325, 3, 0.5,  2.0),
@@ -491,7 +491,7 @@ int MapgenV7::generateTerrain()
 	// 'Generate floatlands in this mapchunk' bool for
 	// optimisation of condition checks in y-loop.
 	bool gen_floatlands = false;
-	float float_offset_cache[csize.Y + 2];
+	float *float_offset_cache = new float[csize.Y + 2];
 	u8 cache_index = 0;
 	// Y values where floatland tapering starts
 	s16 float_taper_ymax = floatland_ymax - floatland_taper;
@@ -563,6 +563,8 @@ int MapgenV7::generateTerrain()
 			}
 		}
 	}
+
+	delete []float_offset_cache;
 
 	return stone_surface_max_y;
 }
