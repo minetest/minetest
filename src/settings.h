@@ -223,7 +223,7 @@ public:
 
 	void setDefault(const std::string &name, const FlagDesc *flagdesc, u32 flags);
 	// Takes the provided setting values and uses them as new defaults
-	void overrideDefaults(Settings *other);
+	void overrideDefaults(const Settings *other);
 	const FlagDesc *getFlagDescFallback(const std::string &name) const;
 
 	void registerChangedCallback(const std::string &name,

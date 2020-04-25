@@ -491,8 +491,10 @@ u32 Settings::getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 	else
 		value = get(name);
 
-	u32 mask = 0;
-	u32 flags = readFlagString(value, flagdesc, &mask);
+	u32 mask = U32_MAX;
+	u32 flags = std::isdigit(value[0])
+		? stoi(value)
+		: readFlagString(value, flagdesc, &mask);
 
 	if (flagmask)
 		*flagmask = mask;
@@ -1005,8 +1007,8 @@ SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 void Settings::combineFlags(std::string &to_modify,
 		const std::string &flags, const FlagDesc *flagdesc)
 {
-	u32 new_mask = 0;
-	u32 old_mask = 0;
+	u32 new_mask = U32_MAX;
+	u32 old_mask = U32_MAX;
 
 	u32 old_flags = std::isdigit(to_modify[0])
 		? stoi(to_modify)
@@ -1056,7 +1058,7 @@ void Settings::setDefault(const std::string &name, const FlagDesc *flagdesc,
 	setDefault(name, writeFlagString(flags, flagdesc, U32_MAX));
 }
 
-void Settings::overrideDefaults(Settings *other)
+void Settings::overrideDefaults(const Settings *other)
 {
 	for (const auto &setting : other->m_settings) {
 		if (setting.second.is_group) {
