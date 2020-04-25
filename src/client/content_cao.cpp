@@ -1368,7 +1368,7 @@ void GenericCAO::updateBonePosition()
 	for (auto &it : m_bone_position) {
 		std::string bone_name = it.first;
 		irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
-		if(bone){
+		if (bone) {
 			bone->setPosition(it.second.X);
 			bone->setRotation(it.second.Y);
 		}
