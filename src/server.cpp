@@ -2472,7 +2472,7 @@ void Server::fillMediaCache()
 				".png", ".jpg", ".bmp", ".tga",
 				".pcx", ".ppm", ".psd", ".wal", ".rgb",
 				".ogg",
-				".x", ".b3d", ".md2", ".obj",
+				".x", ".b3d", ".dae", ".md2", ".obj",
 				// Custom translation file format
 				".tr",
 				NULL
