@@ -4284,7 +4284,6 @@ void the_game(bool *kill,
 				reconnect_requested, &chat_backend, gamespec,
 				simple_singleplayer_mode)) {
 			game.run();
-			game.shutdown();
 		}
 
 	} catch (SerializationError &e) {
@@ -4300,4 +4299,5 @@ void the_game(bool *kill,
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;
 	}
+	game.shutdown();
 }
