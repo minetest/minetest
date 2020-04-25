@@ -1471,6 +1471,10 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		e->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 		e->setOverrideFont(style.getFont());
+		e->setTextAlignment(
+			style.getAlignment(StyleSpec::HALIGN, gui::EGUIA_UPPERLEFT),
+			gui::EGUIA_CENTER
+		);
 
 		irr::SEvent evt;
 		evt.EventType            = EET_KEY_INPUT_EVENT;
@@ -1536,7 +1540,10 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 		if (is_multiline) {
 			e->setMultiLine(true);
 			e->setWordWrap(true);
-			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
+			e->setTextAlignment(
+				style.getAlignment(StyleSpec::HALIGN, gui::EGUIA_UPPERLEFT),
+				style.getAlignment(StyleSpec::VALIGN, gui::EGUIA_UPPERLEFT)
+			);
 		} else {
 			irr::SEvent evt;
 			evt.EventType            = EET_KEY_INPUT_EVENT;
@@ -1546,6 +1553,11 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 			evt.KeyInput.Shift       = 0;
 			evt.KeyInput.PressedDown = true;
 			e->OnEvent(evt);
+
+			e->setTextAlignment(
+				style.getAlignment(StyleSpec::HALIGN, gui::EGUIA_UPPERLEFT),
+				gui::EGUIA_CENTER
+			);
 		}
 
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));

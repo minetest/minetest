@@ -50,6 +50,8 @@ public:
 		PADDING,
 		FONT,
 		FONT_SIZE,
+		HALIGN,
+		VALIGN,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -106,6 +108,10 @@ public:
 			return FONT;
 		} else if (name == "font_size") {
 			return FONT_SIZE;
+		} else if (name == "halign") {
+			return HALIGN;
+		} else if (name == "valign") {
+			return VALIGN;
 		} else {
 			return NONE;
 		}
@@ -164,6 +170,22 @@ public:
 		}
 
 		return temp;
+	}
+
+	gui::EGUI_ALIGNMENT getAlignment(Property prop, gui::EGUI_ALIGNMENT def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty())
+			return def;
+
+		if (val == "left" || val == "top")
+			return gui::EGUIA_UPPERLEFT;
+		else if (val == "center")
+			return gui::EGUIA_CENTER;
+		else if (val == "right" || val == "bottom")
+			return gui::EGUIA_LOWERRIGHT;
+		else
+			return def;
 	}
 
 	video::SColor getColor(Property prop, video::SColor def) const

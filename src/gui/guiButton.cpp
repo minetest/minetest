@@ -826,6 +826,11 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 	for (IGUIElement *child : getChildren()) {
 		child->setRelativePosition(childBounds);
 	}
+
+	StaticText->setTextAlignment(
+		style.getAlignment(StyleSpec::HALIGN, gui::EGUIA_CENTER),
+		style.getAlignment(StyleSpec::VALIGN, gui::EGUIA_CENTER)
+	);
 }
 
 //! Set the styles used for each state

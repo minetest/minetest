@@ -2761,6 +2761,8 @@ Some types may inherit styles from parent types.
       * `*<number>`: Multiplies default font size by `number`, similar to CSS `em`.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * content_offset - 2d vector, shifts the position of the button's content without resizing it.
+    * halign - `left/center/right`: Horizontal alignment of text. Default `center`.
+    * valign - `top/center/bottom`: Vertical alignment of text. Default `center`.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * padding - rect, adds space between the edges of the button and the content. This value is
                 relative to bgimg_middle.
@@ -2779,6 +2781,8 @@ Some types may inherit styles from parent types.
     * border - set to false to hide the textbox background and border. Default true.
     * font - Sets font type. See button `font` property for more information.
     * font_size - Sets font size. See button `font_size` property for more information.
+    * halign - `left/center/right`: Horizontal alignment of text. Default `left`.
+    * valign - `top/center/bottom`: Vertical alignment of text, only for textarea. Default `top`.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 * image
