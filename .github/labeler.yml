@@ -1,0 +1,25 @@
+"@ Build":
+  - .gitlab-ci.yml
+  - .github/**
+  - CMakeLists.txt
+  - src/CMakeLists.txt
+  - src/*/CMakeLists.txt
+
+"@ Builtin":
+  - builtin/**
+
+"@ Documentation":
+  - doc/**
+
+"@ Mapgen":
+  - src/mapgen/**
+
+"@ Network":
+  - src/network/**
+
+"@ Script API":
+  - src/script/scripting_server.*
+  - src/script/cpp_api/*
+
+"Code quality":
+  - src/unittest/**
