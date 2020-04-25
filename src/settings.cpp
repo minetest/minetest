@@ -484,30 +484,18 @@ v3f Settings::getV3F(const std::string &name) const
 u32 Settings::getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 	u32 *flagmask) const
 {
-	u32 flags = 0;
-	u32 mask_default = 0;
-
 	std::string value;
-	// Read default value (if there is any)
-	if (getDefaultNoEx(name, value)) {
-		flags = std::isdigit(value[0])
-			? stoi(value)
-			: readFlagString(value, flagdesc, &mask_default);
-	}
 
-	// Apply custom flags "on top"
-	value = get(name);
-	u32 flags_user;
-	u32 mask_user = U32_MAX;
-	flags_user = std::isdigit(value[0])
-		? stoi(value) // Override default
-		: readFlagString(value, flagdesc, &mask_user);
+	if (getDefaultNoEx(name, value))
+		combineFlags(value, get(name), flagdesc);
+	else
+		value = get(name);
 
-	flags &= ~mask_user;
-	flags |=  flags_user;
+	u32 mask = 0;
+	u32 flags = readFlagString(value, flagdesc, &mask);
 
 	if (flagmask)
-		*flagmask = mask_default | mask_user;
+		*flagmask = mask;
 
 	return flags;
 }
@@ -1014,6 +1002,25 @@ SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 	return SPE_KVPAIR;
 }
 
+void Settings::combineFlags(std::string &to_modify,
+		const std::string &flags, const FlagDesc *flagdesc)
+{
+	u32 new_mask = 0;
+	u32 old_mask = 0;
+
+	u32 old_flags = std::isdigit(to_modify[0])
+		? stoi(to_modify)
+		: readFlagString(to_modify, flagdesc, &old_mask);
+
+	u32 new_flags = std::isdigit(flags[0])
+		? stoi(flags)
+		: readFlagString(flags, flagdesc, &new_mask);
+
+	old_flags &= ~new_mask;
+	old_flags |=  new_flags;
+
+	to_modify = writeFlagString(old_flags, flagdesc, U32_MAX);
+}
 
 void Settings::updateNoLock(const Settings &other)
 {
@@ -1039,6 +1046,7 @@ void Settings::clearDefaultsNoLock()
 			it != m_defaults.end(); ++it)
 		delete it->second.group;
 	m_defaults.clear();
+	m_flags.clear();
 }
 
 void Settings::setDefault(const std::string &name, const FlagDesc *flagdesc,
@@ -1057,14 +1065,27 @@ void Settings::overrideDefaults(Settings *other)
 		}
 		const FlagDesc *flagdesc = getFlagDescFallback(setting.first);
 		if (flagdesc) {
-			// Flags cannot be copied directly.
-			// 1) Get the current set flags
-			u32 flags = getFlagStr(setting.first, flagdesc, nullptr);
-			// 2) Set the flags as defaults
-			other->setDefault(setting.first, flagdesc, flags);
-			// 3) Get the newly set flags and override the default setting value
-			setDefault(setting.first, flagdesc,
-				other->getFlagStr(setting.first, flagdesc, nullptr));
+			/*
+				Flags must be applied on top of another.
+				1) "this" default value
+				2) "other" default value
+				3) "this" user value
+				4) "other" user value
+				-> Set as default
+			*/
+			std::string value, tmp;
+			getDefaultNoEx(setting.first, value);
+			if (other->getDefaultNoEx(setting.first, tmp))
+				combineFlags(value, tmp, flagdesc);
+
+			auto it = m_settings.find(setting.first);
+			if (it != m_settings.end())
+				combineFlags(value, it->second.value, flagdesc);
+
+			combineFlags(value, setting.second.value, flagdesc);
+
+			// "value" is already formatted by writeFlagString()
+			setDefault(setting.first, value);
 			continue;
 		}
 		// Also covers FlagDesc settings

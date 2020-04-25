@@ -232,6 +232,8 @@ public:
 		SettingsChangedCallback cbf, void *userdata = NULL);
 
 private:
+	static void combineFlags(std::string &to_modify,
+		const std::string &flags, const FlagDesc *flagdesc);
 	void updateNoLock(const Settings &other);
 	void clearNoLock();
 	void clearDefaultsNoLock();
