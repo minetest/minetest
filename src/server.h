@@ -334,7 +334,7 @@ public:
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientState *state, u32 *uptime,
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
-			std::string* vers_string);
+			std::string* vers_string, std::string* lang_code);
 
 	void printToConsoleOnly(const std::string &text);
 
@@ -357,6 +357,9 @@ public:
 
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
+
+	// Load translations for a language
+	void loadTranslationLanguage(const std::string &lang_code);
 
 	// Bind address
 	Address m_bind_addr;

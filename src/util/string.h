@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <unordered_map>
 
+class Translations;
+
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
@@ -649,6 +651,8 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 
 	return tokens;
 }
+
+std::wstring translate_string(const std::wstring &s, Translations *translations);
 
 std::wstring translate_string(const std::wstring &s);
 
