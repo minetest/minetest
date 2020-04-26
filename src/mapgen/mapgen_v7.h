@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV7_FLOATLANDS  0x04
 #define MGV7_CAVERNS     0x08
 #define MGV7_BIOMEREPEAT 0x10 // Now unused
-#define MGV7_FLOATWATER  0x20
 
 class BiomeManager;
 
@@ -41,8 +40,8 @@ struct MapgenV7Params : public MapgenParams {
 	s16 floatland_ymax = 4096;
 	s16 floatland_taper = 256;
 	float float_taper_exp = 2.0f;
-	float floatland_density = -0.9f;
-	s16 floatland_ywater = 3968;
+	float floatland_density = -0.6f;
+	s16 floatland_ywater = -31000;
 
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;

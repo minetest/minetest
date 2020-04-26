@@ -44,7 +44,6 @@ FlagDesc flagdesc_mapgen_v7[] = {
 	{"ridges",      MGV7_RIDGES},
 	{"floatlands",  MGV7_FLOATLANDS},
 	{"caverns",     MGV7_CAVERNS},
-	{"floatwater",  MGV7_FLOATWATER},
 	{NULL,          0}
 };
 
@@ -156,7 +155,7 @@ MapgenV7Params::MapgenV7Params():
 	np_ridge_uwater      (0.0,   1.0,   v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0),
 	np_mountain          (-0.6,  1.0,   v3f(250,  350,  250),  5333,  5, 0.63, 2.0),
 	np_ridge             (0.0,   1.0,   v3f(100,  100,  100),  6467,  4, 0.75, 2.0),
-	np_floatland         (0.0,   1.0,   v3f(384,  96,   384),  1009,  4, 0.75, 1.618),
+	np_floatland         (0.0,   0.7,   v3f(384,  96,   384),  1009,  4, 0.75, 1.618),
 	np_cavern            (0.0,   1.0,   v3f(384,  128,  384),  723,   5, 0.63, 2.0),
 	np_cave1             (0.0,   12.0,  v3f(61,   61,   61),   52534, 3, 0.5,  2.0),
 	np_cave2             (0.0,   12.0,  v3f(67,   67,   67),   10325, 3, 0.5,  2.0),
@@ -489,7 +488,7 @@ int MapgenV7::generateTerrain()
 
 	//// Floatlands
 	// 'Generate floatlands in this mapchunk' bool for
-	// optimisation of condition checks in y-loop.
+	// simplification of condition checks in y-loop.
 	bool gen_floatlands = false;
 	float *float_offset_cache = new float[csize.Y + 2];
 	u8 cache_index = 0;
@@ -508,10 +507,10 @@ int MapgenV7::generateTerrain()
 			float float_offset = 0.0f;
 			if (y > float_taper_ymax) {
 				float_offset = std::pow((y - float_taper_ymax) / (float)floatland_taper,
-					float_taper_exp) * 8.0f;
+					float_taper_exp) * 4.0f;
 			} else if (y < float_taper_ymin) {
 				float_offset = std::pow((float_taper_ymin - y) / (float)floatland_taper,
-					float_taper_exp) * 8.0f;
+					float_taper_exp) * 4.0f;
 			}
 			float_offset_cache[cache_index] = float_offset;
 		}
@@ -555,9 +554,8 @@ int MapgenV7::generateTerrain()
 					stone_surface_max_y = y;
 			} else if (y <= water_level) { // Surface water
 				vm->m_data[vi] = n_water;
-			} else if (gen_floatlands && (spflags & MGV7_FLOATWATER) &&
-					y >= float_taper_ymax && y <= floatland_ywater) {
-				vm->m_data[vi] = n_water; // Floatland water
+			} else if (gen_floatlands && y >= float_taper_ymax && y <= floatland_ywater) {
+				vm->m_data[vi] = n_water; // Water for solid floatland layer only
 			} else {
 				vm->m_data[vi] = n_air; // Air
 			}
