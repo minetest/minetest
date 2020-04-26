@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiInventoryList.h"
+#include "guiScrollBar.h"
 #include "guiTable.h"
 #include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
@@ -37,7 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class InventoryManager;
 class ISimpleTextureSource;
 class Client;
-class GUIScrollBar;
 class TexturePool;
 class GUIScrollContainer;
 
