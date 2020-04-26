@@ -154,9 +154,11 @@ const Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat,
 		}
 	}
 
-	mysrand(pos.Y + (heat + humidity) * 0.9f);
+	const u64 seed = pos.Y + (heat + humidity) * 0.9f;
+	PcgRandom rng(seed);
+
 	if (biome_closest_blend && dist_min_blend <= dist_min &&
-			myrand_range(0, biome_closest_blend->vertical_blend) >=
+			rng.range(0, biome_closest_blend->vertical_blend) >=
 			pos.Y - biome_closest_blend->max_pos.Y)
 		return biome_closest_blend;
 
@@ -319,10 +321,11 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 	// Carefully tune pseudorandom seed variation to avoid single node dither
 	// and create larger scale blending patterns similar to horizontal biome
 	// blend.
-	mysrand(pos.Y + (heat + humidity) * 0.9f);
+	const u64 seed = pos.Y + (heat + humidity) * 0.9f;
+	PcgRandom rng(seed);
 
 	if (biome_closest_blend && dist_min_blend <= dist_min &&
-			myrand_range(0, biome_closest_blend->vertical_blend) >=
+			rng.range(0, biome_closest_blend->vertical_blend) >=
 			pos.Y - biome_closest_blend->max_pos.Y)
 		return biome_closest_blend;
 
