@@ -45,7 +45,7 @@ float              getfloatfield_default(lua_State *L, int table,
 int                getintfield_default(lua_State *L, int table,
                              const char *fieldname, int default_);
 
-bool check_field_or_nil(lua_State *L, int type, const char *fieldname);
+bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname);
 
 template<typename T>
 bool getintfield(lua_State *L, int table,
@@ -53,7 +53,7 @@ bool getintfield(lua_State *L, int table,
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
-	if (check_field_or_nil(L, LUA_TNUMBER, fieldname)){
+	if (check_field_or_nil(L, -1, LUA_TNUMBER, fieldname)){
 		result = lua_tointeger(L, -1);
 		got = true;
 	}

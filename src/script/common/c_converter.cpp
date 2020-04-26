@@ -456,12 +456,12 @@ size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result
 	Table field getters
 */
 
-bool check_field_or_nil(lua_State *L, int type, const char *fieldname)
+bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname)
 {
-	if (lua_isnil(L, -1))
+	if (lua_isnil(L, index))
 		return false;
 
-	CHECK_TYPE(-1, std::string("field \"") + fieldname + '"', type);
+	CHECK_TYPE(index, std::string("field \"") + fieldname + '"', type);
 	return true;
 }
 
@@ -471,7 +471,7 @@ bool getstringfield(lua_State *L, int table,
 	lua_getfield(L, table, fieldname);
 	bool got = false;
 
-	if (check_field_or_nil(L, LUA_TSTRING, fieldname)) {
+	if (check_field_or_nil(L, -1, LUA_TSTRING, fieldname)) {
 		size_t len = 0;
 		const char *ptr = lua_tolstring(L, -1, &len);
 		if (ptr) {
@@ -489,7 +489,7 @@ bool getfloatfield(lua_State *L, int table,
 	lua_getfield(L, table, fieldname);
 	bool got = false;
 
-	if (check_field_or_nil(L, LUA_TNUMBER, fieldname)) {
+	if (check_field_or_nil(L, -1, LUA_TNUMBER, fieldname)) {
 		result = lua_tonumber(L, -1);
 		got = true;
 	}
@@ -503,7 +503,7 @@ bool getboolfield(lua_State *L, int table,
 	lua_getfield(L, table, fieldname);
 	bool got = false;
 
-	if (check_field_or_nil(L, LUA_TBOOLEAN, fieldname)){
+	if (check_field_or_nil(L, -1, LUA_TBOOLEAN, fieldname)){
 		result = lua_toboolean(L, -1);
 		got = true;
 	}
