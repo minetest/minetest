@@ -6632,6 +6632,7 @@ Collision info passed to `on_step`:
                 type = string, -- "node" or "object",
                 axis = string, -- "x", "y" or "z"
                 node_pos = vector, -- if type is "node"
+                object = ObjectRef, -- if type is "object"
                 old_velocity = vector,
                 new_velocity = vector,
             },
