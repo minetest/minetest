@@ -589,19 +589,19 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	// pos
 	v3f pos = checkFloatPos(L, 1);
-	// content
 	const char *name = luaL_checkstring(L, 2);
-	// staticdata
 	const char *staticdata = luaL_optstring(L, 3, "");
-	// Do it
+
 	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
 	int objectid = env->addActiveObject(obj);
 	// If failed to add, return nothing (reads as nil)
 	if(objectid == 0)
 		return 0;
-	// Return ObjectRef
+
+	// If already deleted (can happen in on_activate), return nil
+	if (obj->isGone())
+		return 0;
 	getScriptApiBase(L)->objectrefGetOrCreate(L, obj);
 	return 1;
 }
