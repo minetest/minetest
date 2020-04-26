@@ -736,8 +736,9 @@ core.register_chatcommand("spawnentity", {
 			end
 		end
 		p.y = p.y + 1
-		core.add_entity(p, entityname)
-		return true, ("%q spawned."):format(entityname)
+		local obj = core.add_entity(p, entityname)
+		local msg = obj and "%q spawned." or "%q failed to spawn."
+		return true, msg:format(entityname)
 	end,
 })
 
