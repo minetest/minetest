@@ -2043,6 +2043,9 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 		if (c.type == COLLISION_NODE) {
 			push_v3s16(L, c.node_p);
 			lua_setfield(L, -2, "node_pos");
+		} else if (c.type == COLLISION_OBJECT) {
+			push_objectRef(L, c.object->getId());
+			lua_setfield(L, -2, "object");
 		}
 
 		push_v3f(L, c.old_speed / BS);

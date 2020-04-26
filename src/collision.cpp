@@ -37,18 +37,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 struct NearbyCollisionInfo {
-	NearbyCollisionInfo(bool is_ul, bool is_obj, int bouncy,
-			const v3s16 &pos, const aabb3f &box) :
+	// node
+	NearbyCollisionInfo(bool is_ul, int bouncy, const v3s16 &pos,
+			const aabb3f &box) :
 		is_unloaded(is_ul),
-		is_object(is_obj),
+		obj(nullptr),
 		bouncy(bouncy),
 		position(pos),
 		box(box)
 	{}
 
+	// object
+	NearbyCollisionInfo(ActiveObject *obj, int bouncy,
+			const aabb3f &box) :
+		is_unloaded(false),
+		obj(obj),
+		bouncy(bouncy),
+		box(box)
+	{}
+
+	inline bool isObject() const { return obj != nullptr; }
+
 	bool is_unloaded;
 	bool is_step_up = false;
-	bool is_object;
+	ActiveObject *obj;
 	int bouncy;
 	v3s16 position;
 	aabb3f box;
@@ -312,13 +324,13 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			for (auto box : nodeboxes) {
 				box.MinEdge += posf;
 				box.MaxEdge += posf;
-				cinfo.emplace_back(false, false, n_bouncy_value, p, box);
+				cinfo.emplace_back(false, n_bouncy_value, p, box);
 			}
 		} else {
 			// Collide with unloaded nodes (position invalid) and loaded
 			// CONTENT_IGNORE nodes (position valid)
 			aabb3f box = getNodeBox(p, BS);
-			cinfo.emplace_back(true, false, 0, p, box);
+			cinfo.emplace_back(true, 0, p, box);
 		}
 	}
 
@@ -383,12 +395,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				iter != objects.end(); ++iter) {
 			ActiveObject *object = *iter;
 
-			if (object) {
+			if (object && object->collideWithObjects()) {
 				aabb3f object_collisionbox;
-				if (object->getCollisionBox(&object_collisionbox) &&
-						object->collideWithObjects()) {
-					cinfo.emplace_back(false, true, 0, v3s16(), object_collisionbox);
-				}
+				if (object->getCollisionBox(&object_collisionbox))
+					cinfo.emplace_back(object, 0, object_collisionbox);
 			}
 		}
 #ifndef SERVER
@@ -399,7 +409,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				v3f lplayer_pos = lplayer->getPosition();
 				lplayer_collisionbox.MinEdge += lplayer_pos;
 				lplayer_collisionbox.MaxEdge += lplayer_pos;
-				cinfo.emplace_back(false, true, 0, v3s16(), lplayer_collisionbox);
+				ActiveObject *obj = (ActiveObject*) lplayer->getCAO();
+				cinfo.emplace_back(obj, 0, lplayer_collisionbox);
 			}
 		}
 #endif
@@ -498,12 +509,13 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				is_collision = false;
 
 			CollisionInfo info;
-			if (nearest_info.is_object)
+			if (nearest_info.isObject())
 				info.type = COLLISION_OBJECT;
 			else
 				info.type = COLLISION_NODE;
 
 			info.node_p = nearest_info.position;
+			info.object = nearest_info.obj;
 			info.old_speed = *speed_f;
 			info.plane = nearest_collided;
 
@@ -572,7 +584,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.05f) {
 				result.touching_ground = true;
 
-				if (box_info.is_object)
+				if (box_info.isObject())
 					result.standing_on_object = true;
 			}
 		}
