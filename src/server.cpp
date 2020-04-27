@@ -229,18 +229,46 @@ Server::Server(
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_thread(new ServerThread(this)),
-	m_uptime(0),
 	m_clients(m_con),
 	m_admin_chat(iface),
 	m_modchannel_mgr(new ModChannelMgr())
 {
-	m_lag = g_settings->getFloat("dedicated_server_step");
-
 	if (m_path_world.empty())
 		throw ServerError("Supplied empty world path");
 
 	if (!gamespec.isValid())
 		throw ServerError("Supplied invalid gamespec");
+
+#if USE_PROMETHEUS
+	m_metrics_backend = std::unique_ptr<MetricsBackend>(createPrometheusMetricsBackend());
+#else
+	m_metrics_backend = std::unique_ptr<MetricsBackend>(new MetricsBackend());
+#endif
+
+	m_uptime_counter = m_metrics_backend->addCounter("minetest_core_server_uptime", "Server uptime (in seconds)");
+	m_player_gauge = m_metrics_backend->addGauge("minetest_core_player_number", "Number of connected players");
+
+	m_timeofday_gauge = m_metrics_backend->addGauge(
+			"minetest_core_timeofday",
+			"Time of day value");
+
+	m_lag_gauge = m_metrics_backend->addGauge(
+			"minetest_core_latency",
+			"Latency value (in seconds)");
+
+	m_aom_buffer_counter = m_metrics_backend->addCounter(
+			"minetest_core_aom_generated_count",
+			"Number of active object messages generated");
+
+	m_packet_recv_counter = m_metrics_backend->addCounter(
+			"minetest_core_server_packet_recv",
+			"Processable packets received");
+
+	m_packet_recv_processed_counter = m_metrics_backend->addCounter(
+			"minetest_core_server_packet_recv_processed",
+			"Valid received packets processed");
+
+	m_lag_gauge->set(g_settings->getFloat("dedicated_server_step"));
 }
 
 Server::~Server()
@@ -353,7 +381,7 @@ void Server::init()
 	MutexAutoLock envlock(m_env_mutex);
 
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
-	ServerMap *servermap = new ServerMap(m_path_world, this, m_emerge);
+	ServerMap *servermap = new ServerMap(m_path_world, this, m_emerge, m_metrics_backend.get());
 
 	// Initialize scripting
 	infostream << "Server: Initializing Lua" << std::endl;
@@ -511,9 +539,7 @@ void Server::AsyncRunStep(bool initial_step)
 	/*
 		Update uptime
 	*/
-	{
-		m_uptime.set(m_uptime.get() + dtime);
-	}
+	m_uptime_counter->increment(dtime);
 
 	handlePeerChanges();
 
@@ -527,11 +553,13 @@ void Server::AsyncRunStep(bool initial_step)
 	*/
 
 	m_time_of_day_send_timer -= dtime;
-	if(m_time_of_day_send_timer < 0.0) {
+	if (m_time_of_day_send_timer < 0.0) {
 		m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
 		u16 time = m_env->getTimeOfDay();
 		float time_speed = g_settings->getFloat("time_speed");
 		SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
+
+		m_timeofday_gauge->set(time);
 	}
 
 	{
@@ -603,7 +631,7 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 	m_clients.step(dtime);
 
-	m_lag += (m_lag > dtime ? -1 : 1) * dtime/100;
+	m_lag_gauge->increment((m_lag_gauge->get() > dtime ? -1 : 1) * dtime/100);
 #if USE_CURL
 	// send masterserver announce
 	{
@@ -614,9 +642,9 @@ void Server::AsyncRunStep(bool initial_step)
 						ServerList::AA_START,
 					m_bind_addr.getPort(),
 					m_clients.getPlayerNames(),
-					m_uptime.get(),
+					m_uptime_counter->get(),
 					m_env->getGameTime(),
-					m_lag,
+					m_lag_gauge->get(),
 					m_gamespec.id,
 					Mapgen::getMapgenName(m_emerge->mgparams->mgtype),
 					m_modmgr->getMods(),
@@ -638,6 +666,7 @@ void Server::AsyncRunStep(bool initial_step)
 		const RemoteClientMap &clients = m_clients.getClientList();
 		ScopeProfiler sp(g_profiler, "Server: update objects within range");
 
+		m_player_gauge->set(clients.size());
 		for (const auto &client_it : clients) {
 			RemoteClient *client = client_it.second;
 
@@ -702,6 +731,8 @@ void Server::AsyncRunStep(bool initial_step)
 			}
 			message_list->push_back(aom);
 		}
+
+		m_aom_buffer_counter->increment(buffered_messages.size());
 
 		m_clients.lock();
 		const RemoteClientMap &clients = m_clients.getClientList();
@@ -943,7 +974,9 @@ void Server::Receive()
 			}
 
 			peer_id = pkt.getPeerId();
+			m_packet_recv_counter->increment();
 			ProcessData(&pkt);
+			m_packet_recv_processed_counter->increment();
 		} catch (const con::InvalidIncomingDataException &e) {
 			infostream << "Server::Receive(): InvalidIncomingDataException: what()="
 					<< e.what() << std::endl;
@@ -3127,7 +3160,7 @@ std::wstring Server::getStatusString()
 	// Version
 	os << L"version=" << narrow_to_wide(g_version_string);
 	// Uptime
-	os << L", uptime=" << m_uptime.get();
+	os << L", uptime=" << m_uptime_counter->get();
 	// Max lag estimate
 	os << L", max_lag=" << (m_env ? m_env->getMaxLagEstimate() : 0);
 
