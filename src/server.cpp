@@ -218,8 +218,10 @@ Server::Server(
 	m_path_world(path_world),
 	m_gamespec(gamespec),
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
+	m_max_chatmessage_length(g_settings->getU16("chat_message_max_size")),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
+	m_liquid_transform_every(g_settings->getFloat("liquid_update")),
 	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
 			512,
 			CONNECTION_TIMEOUT,
@@ -228,9 +230,12 @@ Server::Server(
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
+	m_lag(g_settings->getFloat("dedicated_server_step")),
 	m_thread(new ServerThread(this)),
 	m_clients(m_con),
 	m_admin_chat(iface),
+	m_csm_restriction_flags(g_settings->getU64("csm_restriction_flags")),
+	m_csm_restriction_noderange(g_settings->getU32("csm_restriction_noderange")),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	if (m_path_world.empty())
@@ -442,15 +447,12 @@ void Server::init()
 	servermap->addEventReceiver(this);
 
 	m_env->loadMeta();
-
-	m_liquid_transform_every = g_settings->getFloat("liquid_update");
-	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
-	m_csm_restriction_flags = g_settings->getU64("csm_restriction_flags");
-	m_csm_restriction_noderange = g_settings->getU32("csm_restriction_noderange");
 }
 
 void Server::start()
 {
+	init();
+
 	infostream << "Starting server on " << m_bind_addr.serializeString()
 			<< "..." << std::endl;
 

@@ -134,7 +134,6 @@ public:
 	~Server();
 	DISABLE_CLASS_COPY(Server);
 
-	void init();
 	void start();
 	void stop();
 	// This is mainly a way to pass the time to the server.
@@ -388,6 +387,8 @@ private:
 		private:
 			float m_timer = 0.0f;
 	};
+
+	void init();
 
 	void SendMovement(session_t peer_id);
 	void SendHP(session_t peer_id, u16 hp);
