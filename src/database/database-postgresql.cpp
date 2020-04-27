@@ -671,7 +671,7 @@ void AuthDatabasePostgreSQL::createDatabase()
 void AuthDatabasePostgreSQL::initStatements()
 {
 	prepareStatement("auth_read", "SELECT id, name, password, last_login FROM auth WHERE name = $1");
-	prepareStatement("auth_write", "UPDATE auth set name = $1, password = $2, last_login = $3 WHERE id = $4");
+	prepareStatement("auth_write", "UPDATE auth SET name = $1, password = $2, last_login = $3 WHERE id = $4");
 	prepareStatement("auth_create", "INSERT INTO auth (name, password, last_login) VALUES ($1, $2, $3) RETURNING id");
 	prepareStatement("auth_delete", "DELETE FROM auth WHERE name = $1");
 
