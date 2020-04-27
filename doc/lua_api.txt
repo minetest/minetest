@@ -450,6 +450,23 @@ Example:
 
     [combine:16x32:0,0=default_cobble.png:0,16=default_wood.png
 
+#### `[image:<w>x<h>:<data>`
+
+Creates a new texture with given width and height.
+Data is a string of `RRGGBBAA` hex colors containing the rows of the image.
+Direction is from left to right and top to bottom.
+
+Example:
+
+    [image:2x2:FF0000FF00FF00FF0000FFFFFFFFFF00"
+
+Creates a 2x2 texture with:
+
+* Red in the top left corner
+* Green in the top right
+* Blue in the bottom left
+* (No) Alpha in the bottom right
+
 #### `[resize:<w>x<h>`
 
 Resizes the texture to the given dimensions.

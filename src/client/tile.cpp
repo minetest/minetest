@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <ICameraSceneNode.h>
 #include <IrrCompileConfig.h>
+#include "util/hex.h"
 #include "util/string.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -1502,7 +1503,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 frame_index = stoi(sf.next(":"));
 
 			if (baseimg == NULL){
-				errorstream<<"generateImagePart(): baseimg != NULL "
+				errorstream<<"generateImagePart(): baseimg == NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1688,6 +1689,62 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				createImage(video::ECF_A8R8G8B8, dim);
 			baseimg->copyToScaling(image);
 			baseimg->drop();
+			baseimg = image;
+		}
+		/*
+			[image:WxH:data
+			Creates image of given dimensions using data
+		*/
+		else if (str_starts_with(part_of_name, "[image"))
+		{
+			if (baseimg != NULL) {
+				errorstream << "generateImagePart(): baseimg != NULL "
+						<< "for part_of_name=\""<< part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			u32 width = stoi(sf.next("x"));
+			u32 height = stoi(sf.next(":"));
+			u32 datasize = width*height;
+			std::string content = sf.next("");
+			char const *data = content.c_str();
+			if (content.length() != datasize*8) {
+				errorstream << "Not enough data, expected "
+						<< std::to_string(datasize*8) << ", got "
+						<< std::to_string(content.length()) << std::endl;
+				return false;
+			}
+			core::dimension2d<u32> dim(width, height);
+
+			video::IImage *image = RenderingEngine::get_video_driver()->
+				createImage(video::ECF_A8R8G8B8, dim);
+			
+			for (u32 i = 0; i < datasize; i++) {
+				u32 x = i % width;
+				u32 y = i / width;
+				u8 components[4];
+				u32 j = i * 8;
+				for (u8 c = 0; c < 4; c++) {
+					unsigned char first;
+					if (!hex_digit_decode(data[j], first)) {
+						errorstream << "Invalid hex digit at index "
+								<< std::to_string(j) << std::endl;
+						return false;
+					}
+					unsigned char second;
+					if (!hex_digit_decode(data[j+1], second)) {
+						errorstream << "Invalid hex digit at index "
+								<< std::to_string(j+1) << std::endl;
+						return false;
+					}
+					components[c] = first*16+second;
+					j += 2;
+				}
+				image->setPixel(x, y, video::SColor(components[3], components[0], components[1], components[2]), true);
+			}
 			baseimg = image;
 		}
 		/*
