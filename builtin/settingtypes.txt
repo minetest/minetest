@@ -955,6 +955,12 @@ address (Server address) string
 #    Note that the port field in the main menu overrides this setting.
 remote_port (Remote port) int 30000 1 65535
 
+#    Prometheus listener address.
+#    If minetest is compiled with ENABLE_PROMETHEUS option enabled,
+#    enable metrics listener for Prometheus on that address.
+#    Metrics can be fetch on http://127.0.0.1:30000/metrics
+prometheus_listener_address (Prometheus listener address) string 127.0.0.1:30000
+
 #    Save the map received by the client on disk.
 enable_local_map_saving (Saving map received from server) bool false
 

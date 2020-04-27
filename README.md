@@ -236,6 +236,7 @@ General options and their default values:
     ENABLE_SPATIAL=ON          - Build with LibSpatial; Speeds up AreaStores
     ENABLE_SOUND=ON            - Build with OpenAL, libogg & libvorbis; in-game sounds
     ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
+    ENABLE_PROMETHEUS=OFF      - Build with Prometheus metrics exporter (listens on tcp/30000 by default)
     ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
     ENABLE_SYSTEM_JSONCPP=OFF  - Use JsonCPP from system
     OPENGL_GL_PREFERENCE=LEGACY - Linux client build only; See CMake Policy CMP0072 for reference
