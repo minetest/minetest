@@ -102,7 +102,8 @@ void read_item_definition(lua_State* L, int index,
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "sounds");
-	if(lua_istable(L, -1)){
+	if (!lua_isnil(L, -1)) {
+		luaL_checktype(L, -1, LUA_TTABLE);
 		lua_getfield(L, -1, "place");
 		read_soundspec(L, -1, def.sound_place);
 		lua_pop(L, 1);
@@ -182,8 +183,10 @@ void read_object_properties(lua_State *L, int index,
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-	if(!lua_istable(L, index))
+	if (lua_isnil(L, index))
 		return;
+
+	luaL_checktype(L, -1, LUA_TTABLE);
 
 	int hp_max = 0;
 	if (getintfield(L, -1, "hp_max", hp_max)) {
@@ -1027,13 +1030,15 @@ void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-	if(lua_isnil(L, index)){
-	} else if(lua_istable(L, index)){
+	if (lua_isnil(L, index))
+		return;
+
+	if (lua_istable(L, index)) {
 		getstringfield(L, index, "name", spec.name);
 		getfloatfield(L, index, "gain", spec.gain);
 		getfloatfield(L, index, "fade", spec.fade);
 		getfloatfield(L, index, "pitch", spec.pitch);
-	} else if(lua_isstring(L, index)){
+	} else if (lua_isstring(L, index)) {
 		spec.name = lua_tostring(L, index);
 	}
 }
@@ -1055,9 +1060,13 @@ void push_soundspec(lua_State *L, const SimpleSoundSpec &spec)
 NodeBox read_nodebox(lua_State *L, int index)
 {
 	NodeBox nodebox;
-	if(lua_istable(L, -1)){
-		nodebox.type = (NodeBoxType)getenumfield(L, index, "type",
-				ScriptApiNode::es_NodeBoxType, NODEBOX_REGULAR);
+	if (lua_isnil(L, -1))
+		return nodebox;
+
+	luaL_checktype(L, -1, LUA_TTABLE);
+
+	nodebox.type = (NodeBoxType)getenumfield(L, index, "type",
+			ScriptApiNode::es_NodeBoxType, NODEBOX_REGULAR);
 
 #define NODEBOXREAD(n, s){ \
 		lua_getfield(L, index, (s)); \
@@ -1067,30 +1076,30 @@ NodeBox read_nodebox(lua_State *L, int index)
 	}
 
 #define NODEBOXREADVEC(n, s) \
-		lua_getfield(L, index, (s)); \
-		if (lua_istable(L, -1)) \
-			(n) = read_aabb3f_vector(L, -1, BS); \
-		lua_pop(L, 1);
+	lua_getfield(L, index, (s)); \
+	if (lua_istable(L, -1)) \
+		(n) = read_aabb3f_vector(L, -1, BS); \
+	lua_pop(L, 1);
 
-		NODEBOXREADVEC(nodebox.fixed, "fixed");
-		NODEBOXREAD(nodebox.wall_top, "wall_top");
-		NODEBOXREAD(nodebox.wall_bottom, "wall_bottom");
-		NODEBOXREAD(nodebox.wall_side, "wall_side");
-		NODEBOXREADVEC(nodebox.connect_top, "connect_top");
-		NODEBOXREADVEC(nodebox.connect_bottom, "connect_bottom");
-		NODEBOXREADVEC(nodebox.connect_front, "connect_front");
-		NODEBOXREADVEC(nodebox.connect_left, "connect_left");
-		NODEBOXREADVEC(nodebox.connect_back, "connect_back");
-		NODEBOXREADVEC(nodebox.connect_right, "connect_right");
-		NODEBOXREADVEC(nodebox.disconnected_top, "disconnected_top");
-		NODEBOXREADVEC(nodebox.disconnected_bottom, "disconnected_bottom");
-		NODEBOXREADVEC(nodebox.disconnected_front, "disconnected_front");
-		NODEBOXREADVEC(nodebox.disconnected_left, "disconnected_left");
-		NODEBOXREADVEC(nodebox.disconnected_back, "disconnected_back");
-		NODEBOXREADVEC(nodebox.disconnected_right, "disconnected_right");
-		NODEBOXREADVEC(nodebox.disconnected, "disconnected");
-		NODEBOXREADVEC(nodebox.disconnected_sides, "disconnected_sides");
-	}
+	NODEBOXREADVEC(nodebox.fixed, "fixed");
+	NODEBOXREAD(nodebox.wall_top, "wall_top");
+	NODEBOXREAD(nodebox.wall_bottom, "wall_bottom");
+	NODEBOXREAD(nodebox.wall_side, "wall_side");
+	NODEBOXREADVEC(nodebox.connect_top, "connect_top");
+	NODEBOXREADVEC(nodebox.connect_bottom, "connect_bottom");
+	NODEBOXREADVEC(nodebox.connect_front, "connect_front");
+	NODEBOXREADVEC(nodebox.connect_left, "connect_left");
+	NODEBOXREADVEC(nodebox.connect_back, "connect_back");
+	NODEBOXREADVEC(nodebox.connect_right, "connect_right");
+	NODEBOXREADVEC(nodebox.disconnected_top, "disconnected_top");
+	NODEBOXREADVEC(nodebox.disconnected_bottom, "disconnected_bottom");
+	NODEBOXREADVEC(nodebox.disconnected_front, "disconnected_front");
+	NODEBOXREADVEC(nodebox.disconnected_left, "disconnected_left");
+	NODEBOXREADVEC(nodebox.disconnected_back, "disconnected_back");
+	NODEBOXREADVEC(nodebox.disconnected_right, "disconnected_right");
+	NODEBOXREADVEC(nodebox.disconnected, "disconnected");
+	NODEBOXREADVEC(nodebox.disconnected_sides, "disconnected_sides");
+
 	return nodebox;
 }
 
@@ -1519,8 +1528,11 @@ void push_flags_string(lua_State *L, FlagDesc *flagdesc, u32 flags, u32 flagmask
 /******************************************************************************/
 void read_groups(lua_State *L, int index, ItemGroupList &result)
 {
-	if (!lua_istable(L,index))
+	if (lua_isnil(L, index))
 		return;
+
+	luaL_checktype(L, index, LUA_TTABLE);
+
 	result.clear();
 	lua_pushnil(L);
 	if (index < 0)
