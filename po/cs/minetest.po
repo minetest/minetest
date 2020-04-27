@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-04-29 12:38+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Marek Sebera <marek.sebera@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -326,9 +326,8 @@ msgid "Enabled"
 msgstr "Zapnuto"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Lacunarity"
-msgstr "Zabezpečení"
+msgstr "Lakunarita"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
@@ -336,11 +335,11 @@ msgstr "Oktávy"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "Odstup"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "Urputnost"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -356,12 +355,11 @@ msgstr "Obnovit výchozí"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Přiblížení"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select directory"
-msgstr "Vybrat soubor s modem:"
+msgstr "Vyberte adresář"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
@@ -385,7 +383,7 @@ msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "Rozptyl X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
@@ -393,7 +391,7 @@ msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Rozptyl Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
@@ -401,7 +399,7 @@ msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Rozptyl Z"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -409,15 +407,14 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "absolutnihodnota"
 
 #. ~ "defaults" is a noise parameter flag.
 #. It describes the default processing options
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "defaults"
-msgstr "Výchozí hra"
+msgstr "Výchozí hodnoty"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -425,117 +422,98 @@ msgstr "Výchozí hra"
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "vyhlazení"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 (Enabled)"
-msgstr "Zapnuto"
+msgstr "$1 (Povoleno)"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "$1 mods"
-msgstr "Režim 3D zobrazení"
+msgstr "$1 rozšíření"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
 msgstr "Selhala instalace $1 do $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Instalace modu: nenašel jsem skutečné jméno modu: $1"
+msgstr "Instalace rozšíření: nenašel jsem skutečné jméno modu: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
-"Instalace modu: nenalezen vhodný adresář s příslušným názvem pro balíček $1"
+"Instalace rozšíření: nenalezen vhodný adresář s příslušným názvem pro "
+"balíček $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unsupported file type \"$1\" or broken archive"
 msgstr ""
-"\n"
-"Instalace modu: špatný archiv nebo nepodporovaný typ souboru \"$1\""
+"Instalace rozšíření: poškozený archiv nebo nepodporovaný typ souboru \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: file: \"$1\""
-msgstr "Instalace modu: ze souboru: \"$1\""
+msgstr "Instalace: soubor: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod or modpack"
-msgstr ""
-"Instalace modu: nenalezen vhodný adresář s příslušným názvem pro balíček $1"
+msgstr "Platné rozšíření nebylo nalezeno"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a texture pack"
-msgstr "Selhala instalace $1 do $2"
+msgstr "Selhala instalace $1 jako rozšíření textur"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a game as a $1"
-msgstr "Selhala instalace $1 do $2"
+msgstr "Selhala instalace hru jako $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a mod as a $1"
-msgstr "Selhala instalace $1 do $2"
+msgstr "Selhala instalace rozšíření $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a modpack as a $1"
-msgstr "Selhala instalace $1 do $2"
+msgstr "Selhala instalace rozšíření $1"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "Procházet online obsah"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content"
-msgstr "Pokračovat"
+msgstr "Obsah"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Disable Texture Pack"
-msgstr "Vyberte balík textur:"
+msgstr "Zakázat Rozšíření Textur"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Information:"
-msgstr "Informace o modu:"
+msgstr "Informace:"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Installed Packages:"
-msgstr "Nainstalované mody:"
+msgstr "Instalované balíčky:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
 msgstr "Žádné závislosti."
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "No package description available"
-msgstr "Mod nemá popis"
+msgstr "Balíček nemá žádný popis"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
 msgstr "Přejmenovat"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Uninstall Package"
-msgstr "Odinstalovat vybraný mod"
+msgstr "Odinstalovat balíček"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Use Texture Pack"
-msgstr "Balíky textur"
+msgstr "Použít Rozšíření Textur"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -543,7 +521,7 @@ msgstr "Aktivní přispěvatelé"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr "Klíčoví vývojáři"
+msgstr "Hlavní vývojáři"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
@@ -563,7 +541,7 @@ msgstr "Uveřejnit server"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr "Svázat adresu"
+msgstr "Poslouchat na Adrese"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
@@ -642,9 +620,8 @@ msgid "Favorite"
 msgstr "Oblíbené"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Join Game"
-msgstr "Založit hru"
+msgstr "Připojit se ke hře"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
@@ -657,7 +634,7 @@ msgstr "Ping"
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "PvP povoleno"
+msgstr "PvP (hráč proti hráči) povoleno"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -676,9 +653,8 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "Nastavení"
+msgstr "Všechna Nastavení"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -689,9 +665,8 @@ msgid "Are you sure to reset your singleplayer world?"
 msgstr "Jste si jisti, že chcete resetovat místní svět?"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Autosave Screen Size"
-msgstr "Ukládat velikost obr."
+msgstr "Pamatovat si velikost obrazovky"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -714,9 +689,8 @@ msgid "Fancy Leaves"
 msgstr "Vícevrstevné listí"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Generate Normal Maps"
-msgstr "Generovat normálové mapy"
+msgstr "Generovat Normální Mapy"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -784,7 +758,7 @@ msgstr "Shadery"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr ""
+msgstr "Shadery (není dostupné)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
@@ -807,9 +781,8 @@ msgid "Tone Mapping"
 msgstr "Tone mapping"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touchthreshold: (px)"
-msgstr "Dosah dotyku (px)"
+msgstr "Dosah dotyku: (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -820,9 +793,8 @@ msgid "Waving Leaves"
 msgstr "Vlnění listů"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Vlnění bloků"
+msgstr "Vlnění Kapalin"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -899,7 +871,7 @@ msgstr "Zvolte prosím název!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "Soubor s heslem nebylo možné otevřít: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -915,7 +887,7 @@ msgstr "Uvedená cesta ke světu neexistuje: "
 #. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "no"
+msgstr "vyzaduje_fallback_font"
 
 #: src/client/game.cpp
 msgid ""
@@ -959,42 +931,36 @@ msgid "- Server Name: "
 msgstr "- Název serveru: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
-msgstr "Vpřed"
+msgstr "Automatický posun vpřed zakázán"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward enabled"
-msgstr "Vpřed"
+msgstr "Automatický posun vpřed povolen"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update disabled"
-msgstr "Klávesa pro přepínání aktualizace pohledu"
+msgstr "Aktualizace kamery (pohledu) zakázána"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update enabled"
-msgstr "Klávesa pro přepínání aktualizace pohledu"
+msgstr "Aktualizace kamery (pohledu) povolena"
 
 #: src/client/game.cpp
 msgid "Change Password"
 msgstr "Změnit heslo"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode disabled"
-msgstr "Klávesa plynulého pohybu kamery"
+msgstr "Filmový režim zakázán"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode enabled"
-msgstr "Klávesa plynulého pohybu kamery"
+msgstr "Filmový režim povolen"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr ""
+msgstr "Uživatelské skripty nejsou povoleny"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
@@ -1047,16 +1013,15 @@ msgstr "Spouštím server…"
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "Ladící informace a profilovací graf skryty"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Debug info shown"
-msgstr "Klávesa pro zobrazení ladících informací"
+msgstr "Ladící informace zobrazeny"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
+msgstr "Ladící informace, profilovací graf a obrysy skryty"
 
 #: src/client/game.cpp
 msgid ""
@@ -1088,11 +1053,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "Neomezený pohled zakázán"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "Neomezený pohled povolen"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1103,42 +1068,36 @@ msgid "Exit to OS"
 msgstr "Ukončit hru"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode disabled"
-msgstr "Rychlost v turbo režimu"
+msgstr "Rychlý režim zakázán"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode enabled"
-msgstr "Rychlost v turbo režimu"
+msgstr "Rychlý režim povolen"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr ""
+msgstr "Rychlý režim povolen (pozn.: nemáte oprávnění 'fast')"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode disabled"
-msgstr "Rychlost v turbo režimu"
+msgstr "Režim létání zakázán"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode enabled"
-msgstr "Zranění povoleno"
+msgstr "Režim létání povolen"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr ""
+msgstr "Režim létání povolen (pozn.: nemáte oprávnění 'fly')"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog disabled"
-msgstr "Je-li zakázáno "
+msgstr "Mlha je zakázána"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled"
-msgstr "zapnuto"
+msgstr "Mlha je povolena"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1170,49 +1129,47 @@ msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
+msgstr "Minimapa je aktuálně zakázána"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Minimap hidden"
-msgstr "Minimapa"
+msgstr "Minimapa je skryta"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
+msgstr "Minimapa v režimu radar, Přiblížení x1"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
+msgstr "Minimapa v režimu radar, Přiblížení x2"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
+msgstr "Minimapa v režimu radar, Přiblížení x4"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
+msgstr "Minimapa v režimu povrch, Přiblížení x1"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
+msgstr "Minimapa v režimu povrch, Přiblížení x2"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x4"
-msgstr ""
+msgstr "Minimapa v režimu povrch, Přiblížení x4"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "Režim bez ořezu zakázán"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Noclip mode enabled"
-msgstr "Zranění povoleno"
+msgstr "Režim bez ořezu povolen"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
+msgstr "Režim bez ořezu povolen (pozn.: nemáte oprávnění 'noclip')"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1228,15 +1185,15 @@ msgstr "Zapnuto"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr ""
+msgstr "Posun v režimu Pitch zakázán"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr ""
+msgstr "Posun v režimu Pitch povolen"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
-msgstr ""
+msgstr "Profilovací graf zobrazen"
 
 #: src/client/game.cpp
 msgid "Remote server"
@@ -1259,29 +1216,27 @@ msgid "Sound Volume"
 msgstr "Hlasitost"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound muted"
-msgstr "Hlasitost"
+msgstr "Zvuk vypnut"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound unmuted"
-msgstr "Hlasitost"
+msgstr "Zvuk zapnut"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d"
-msgstr "Hlasitost nastavena na %d%%"
+msgstr "Omezení dohlédnutí upraveno na %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "Omezení dohlédnutí na maximu: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr ""
+msgstr "Omezení dohlédnutí na minimu: %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -1290,50 +1245,48 @@ msgstr "Hlasitost nastavena na %d%%"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr ""
+msgstr "Obrysy zobrazeny"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr ""
+msgstr "Přiblížení je aktuálně zakázáno"
 
 #: src/client/game.cpp src/gui/modalMenu.cpp
 msgid "ok"
 msgstr "OK"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat hidden"
-msgstr "Klávesa chatu"
+msgstr "Chat skryt"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "Chat zobrazen"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
-msgstr ""
+msgstr "Ovládací prvky skryty"
 
 #: src/client/gameui.cpp
 msgid "HUD shown"
-msgstr ""
+msgstr "Ovládací prvky zobrazeny"
 
 #: src/client/gameui.cpp
 msgid "Profiler hidden"
-msgstr ""
+msgstr "Profilování skryto"
 
 #: src/client/gameui.cpp
 #, c-format
 msgid "Profiler shown (page %d of %d)"
-msgstr ""
+msgstr "Profilování zobrazeno (strana %d z %d)"
 
 #: src/client/keycode.cpp
 msgid "Apps"
 msgstr "Aplikace"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Backspace"
-msgstr "Zpět"
+msgstr "Backspace"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
@@ -1373,7 +1326,7 @@ msgstr "Home"
 
 #: src/client/keycode.cpp
 msgid "IME Accept"
-msgstr "IME Accept"
+msgstr "Povolené IME"
 
 #: src/client/keycode.cpp
 msgid "IME Convert"
@@ -1498,11 +1451,11 @@ msgstr "OEM Clear"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "Klávesa Page Down"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "Klávesa Page Up"
 
 #: src/client/keycode.cpp
 msgid "Pause"
@@ -1596,7 +1549,7 @@ msgstr "Hesla se neshodují!"
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr ""
+msgstr "Registrovat a Připojit se"
 
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
@@ -1607,33 +1560,35 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
+"Budete poprvé připojeni k serveru \"%s\".\n"
+"Pokud budete pokračovat, nový uživatelský účet s vašimi údaji bude vytvořen "
+"na tomto serveru.\n"
+"Prosím znovu napište svoje aktuální heslo a klikněte na 'Registrovat a "
+"Připojit se' pro potvrzení souhlasu, nebo vyberte 'Zrušit' pro návrat."
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
 msgstr "Pokračovat"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Special\" = climb down"
-msgstr "„Použít“ = sestupovat dolů"
+msgstr "„Speciální“ = sestoupit dolů"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Autoforward"
-msgstr "Vpřed"
+msgstr "Automaticky vpřed"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
-msgstr ""
+msgstr "Automaticky skákat"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Vzad"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Change camera"
-msgstr "Změnit nastavení kláves"
+msgstr "Změnit nastavení kamery"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1648,9 +1603,8 @@ msgid "Console"
 msgstr "Konzole"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Dec. range"
-msgstr "Vzdálenost dohledu"
+msgstr "Snížit rozsah"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1669,9 +1623,8 @@ msgid "Forward"
 msgstr "Vpřed"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Inc. range"
-msgstr "Vzdálenost dohledu"
+msgstr "Zvýšit rozsah"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
@@ -1725,44 +1678,39 @@ msgstr "Plížit se"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Special"
-msgstr ""
+msgstr "Speciální"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle HUD"
-msgstr "Létání"
+msgstr "Zapnout/Vypnout ovládací prvky"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle chat log"
-msgstr "Turbo"
+msgstr "Zapnout/Vypnout záznam chatu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "Turbo"
+msgstr "Zapnout/Vypnout rychlost"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr "Létání"
+msgstr "Zapnout/Vypnout létání"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle fog"
-msgstr "Létání"
+msgstr "Zapnout/Vypnout mlhu"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle minimap"
-msgstr "Duch"
+msgstr "Zapnout/Vypnout minimapu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "Duch"
+msgstr "Zapnout/Vypnout režim ořezu"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Turbo"
+msgstr "Zapnout/Vypnout režim posunu Pitch"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1789,9 +1737,8 @@ msgid "Exit"
 msgstr "Odejít"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy
 msgid "Muted"
-msgstr "Ztlumit"
+msgstr "Ztlumeno"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
@@ -1815,6 +1762,8 @@ msgid ""
 "(Android) Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
+"(Android) Opravena pozice virtuálního joysticku.\n"
+"Pokud je zakázán, virtuální joystick se upraví podle umístění prvního dotyku."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1822,9 +1771,11 @@ msgid ""
 "If enabled, virtual joystick will also tap \"aux\" button when out of main "
 "circle."
 msgstr ""
+"(Android) Použít virtuální joystick pro stisknutí tlačítka 'aux'.\n"
+"Pokud je povoleno, virtuální joystick automaticky stiskne tlačítko 'aux' "
+"pokud je mimo hlavní kruh."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world center in units of 'scale'.\n"
 "Can be used to move a desired point to (0, 0) to create a\n"
@@ -1835,10 +1786,13 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"(X,Y,Z) posun fraktálu od středu světa v jednotkách 'scale'.\n"
-"Použito k posunutí vhodného spawnu v údolí poblíž souřadnic (0,0).\n"
-"Výchozí nastavení je vhodné pro Mandelbrotovu množinu,  pro Juliovu množinu "
-"musí být zvlášť upraveny.\n"
+"(X,Y,Z) rozestup fraktálu od středu světa v jednotkách 'scale'.\n"
+"Může být použito k posunutí spawnu ze souřadnic (0,0),\n"
+"nebo k umožnění přiblížení 'zoom in' na konkrétní bod,\n"
+"zvýšením hodnoty 'scale'.\n"
+"Výchozí nastavení je vhodné pro Mandelbrotovu množinu,\n"
+"pro Juliovu a další množiny, může být potřeba speciálního\n"
+"nastavení.\n"
 "Rozsah je přibližně od -2 do 2. Násobte 'scale' pro posun v blocích."
 
 #: src/settings_translation_file.cpp
@@ -1851,6 +1805,13 @@ msgid ""
 "Default is for a vertically-squashed shape suitable for\n"
 "an island, set all 3 numbers equal for the raw shape."
 msgstr ""
+"(X, Y, Z) měřítko fraktálu v uzlech.\n"
+"Skutečná fraktální velikost bude 2 až 3krát větší.\n"
+"Tato čísla mohou být velmi velká, fraktál se nemusí\n"
+"vejít do světa.\n"
+"Zvětšete tyto, abyste „přiblížili“ detail fraktálu.\n"
+"Výchozí je pro svisle stlačený tvar, vhodný například\n"
+"pro ostrov, nastavte všechna 3 čísla stejně pro ryzí tvar."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1862,31 +1823,31 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
-msgstr ""
+msgstr "2D šum, který definuje tvar/velikost horských útvarů."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr ""
+msgstr "2D šum, který definuje tvar/velikost postupných hor."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of step mountains."
-msgstr ""
+msgstr "2D šum, který definuje tvar/velikost schodišťových hor."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr ""
+msgstr "2D šum, který definuje velikost/četnost horských masivů."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of rolling hills."
-msgstr ""
+msgstr "2D šum, který definuje velikost/četnost postupných hor."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
-msgstr ""
+msgstr "2D šum, který definuje velikost/četnost schodišťových horských útvarů."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that locates the river valleys and channels."
-msgstr ""
+msgstr "2D šum, který umisťuje říční koryta a kanály."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1913,20 +1874,18 @@ msgid "3D noise defining structure of river canyon walls."
 msgstr "3D šum určující strukturu stěn kaňonů řek."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D noise defining terrain."
-msgstr "3D šum určující obří jeskynní dutiny."
+msgstr "3D šum určující terén."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
-msgstr ""
+msgstr "3D šum definující horské převisy, atp. Typicky malé odchylky."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr ""
+msgstr "3D šum, který definuje počet žalářů na kusu mapy."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1945,7 +1904,10 @@ msgstr ""
 "-    anaglyph: azurové/purpurové barevné 3D.\n"
 "-    interlaced: pro polarizaci lichý/sudý řádek.\n"
 "-    topbottom: rozdělení obrazovky na horní a dolní část.\n"
-"-    sidebyside: rozdělení obrazovky na levou a pravou část."
+"-    sidebyside: rozdělení obrazovky na levou a pravou část.\n"
+"-    crossview: Zkřížení očí 3d\n"
+"-    pageflip: 3d se 4-násobným bufferem.\n"
+"Pozn.: Režim 'interlaced' vyžaduje podporu 'shaderů'."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1965,9 +1927,8 @@ msgid "A message to be displayed to all clients when the server shuts down."
 msgstr "Zpráva, která se zobrazí všem klientům, když se server vypne."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ABM interval"
-msgstr "Interval ukládání mapy"
+msgstr "Interval Aktivní Blokové Modifikace (ABM)"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
@@ -1979,14 +1940,13 @@ msgstr "Zrychlení ve vzduchu"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "Gravitační zrychlení, v blocích za vteřinu za vteřinu."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
 msgstr "Active Block Modifiery"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active block management interval"
 msgstr "Interval pro Active Block Management"
 
@@ -2034,7 +1994,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Altitude chill"
 msgstr "Výškové ochlazení"
 
@@ -2048,12 +2007,11 @@ msgstr "Gamma ambientní okluze"
 
 #: src/settings_translation_file.cpp
 msgid "Amount of messages a player may send per 10 seconds."
-msgstr ""
+msgstr "Množství zpráv, které může hráč odeslat za 10 vteřin."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Amplifies the valleys."
-msgstr "Zesílí údolí"
+msgstr "Zvýrazní údolí."
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -2070,11 +2028,11 @@ msgstr "Zveřejnit server"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
-msgstr ""
+msgstr "Dodatkový název položky"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name to tooltip."
-msgstr ""
+msgstr "Dodatkový název položky v popisku."
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
@@ -2082,13 +2040,15 @@ msgstr "Použít stromový šum"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
-msgstr ""
+msgstr "Setrvačnost ruky"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
 msgstr ""
+"Setrvačnost ruky, vytváří větší dojem opravdového pohybu\n"
+"ruky, výkyvem/pohybem kamery."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -2126,7 +2086,7 @@ msgstr "Vpřed"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
-msgstr ""
+msgstr "Automaticky vyskočit na překážky vysoké 1 blok."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2139,7 +2099,7 @@ msgstr "Ukládat velikost obr."
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
-msgstr ""
+msgstr "Režim automatického přiblížení"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2194,7 +2154,7 @@ msgstr "Bitová hloubka (bity na pixel) v celoobrazovkovém režimu."
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
-msgstr ""
+msgstr "Optimalizace vzdálenosti vysílání bloku"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2315,7 +2275,7 @@ msgstr "Klávesa chatu"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
-msgstr ""
+msgstr "Omezení počtu zpráv v Chatu"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2329,7 +2289,7 @@ msgstr "Práh pouštního šumu"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
-msgstr ""
+msgstr "Omezení velikosti jedné zprávy v Chatu"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
@@ -2374,7 +2334,7 @@ msgstr "Lokální mody"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr ""
+msgstr "Omezení vyhledávání bloků z klientské aplikace"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2492,7 +2452,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls sinking speed in liquid."
-msgstr ""
+msgstr "Ovládá rychlost potápění v kapalinách."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -4962,7 +4922,7 @@ msgstr "Ladění generátoru mapy"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Nastavení generátoru mapy"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
