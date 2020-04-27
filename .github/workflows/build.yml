@@ -116,7 +116,31 @@ jobs:
         run: |
           valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
 
-          
+
+  clang_9_prometheus:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          sudo apt-get install clang-9 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build prometheus-cpp
+        run: |
+          ./util/ci/build_prometheus_cpp.sh
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=clang-9 -DCMAKE_CXX_COMPILER=clang++-9 -DENABLE_PROMETHEUS=1"
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
   # Some builds doesn't require freetype, ensure it compiled properly
   clang_9_no_freetype:
     runs-on: ubuntu-18.04
@@ -137,6 +161,14 @@ jobs:
       - name: Test
         run: |
           ./bin/minetest --run-unittests
+
+  docker:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker image
+        run: |
+          docker build .
 
   win32:
     runs-on: ubuntu-18.04
@@ -162,7 +194,7 @@ jobs:
         run: |
           wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
           sudo tar -xaf mingw.tar.xz -C /usr
-          
+
       - name: Build
         run: |
           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh winbuild
