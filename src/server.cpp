@@ -3442,15 +3442,12 @@ void Server::setClouds(RemotePlayer *player, const CloudParams &params)
 	SendCloudParams(player->getPeerId(), params);
 }
 
-bool Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
+void Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
 	float ratio)
 {
-	if (!player)
-		return false;
-
+	sanity_check(player);
 	player->overrideDayNightRatio(do_override, ratio);
 	SendOverrideDayNightRatio(player->getPeerId(), do_override, ratio);
-	return true;
 }
 
 void Server::notifyPlayers(const std::wstring &msg)

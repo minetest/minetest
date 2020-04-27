@@ -318,7 +318,7 @@ public:
 
 	void setClouds(RemotePlayer *player, const CloudParams &params);
 
-	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
+	void overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);

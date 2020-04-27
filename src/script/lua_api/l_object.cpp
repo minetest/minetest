@@ -2167,9 +2167,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 		ratio = readParam<float>(L, 2);
 	}
 
-	if (!getServer(L)->overrideDayNightRatio(player, do_override, ratio))
-		return 0;
-
+	getServer(L)->overrideDayNightRatio(player, do_override, ratio);
 	lua_pushboolean(L, true);
 	return 1;
 }
