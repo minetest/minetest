@@ -68,6 +68,7 @@ struct MoonParams;
 struct StarParams;
 class ServerThread;
 class ServerModManager;
+class ServerInventoryMgr;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -116,7 +117,7 @@ struct ServerPlayingSound
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
-		public InventoryManager, public IGameDef
+		public IGameDef
 {
 public:
 	/*
@@ -674,6 +675,9 @@ private:
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	// Inventory manager
+	std::unique_ptr<ServerInventoryMgr> m_inventory_mgr;
 
 	// Global server metrics backend
 	std::unique_ptr<MetricsBackend> m_metrics_backend;
