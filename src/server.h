@@ -68,7 +68,7 @@ struct MoonParams;
 struct StarParams;
 class ServerThread;
 class ServerModManager;
-class ServerInventoryMgr;
+class ServerInventoryManager;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -196,12 +196,6 @@ public:
 	*/
 	void onMapEditEvent(const MapEditEvent &event);
 
-	/*
-		Shall be called with the environment and the connection locked.
-	*/
-	Inventory* getInventory(const InventoryLocation &loc);
-	void setInventoryModified(const InventoryLocation &loc);
-
 	// Connection must be locked when called
 	std::wstring getStatusString();
 	inline double getUptime() const { return m_uptime_counter->get(); }
@@ -253,10 +247,8 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	// Creates or resets inventory
-	Inventory *createDetachedInventory(const std::string &name,
-			const std::string &player = "");
-	bool removeDetachedInventory(const std::string &name);
+	ServerInventoryManager *getInventoryMgr() { return m_inventory_mgr.get(); }
+	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
 
 	// Envlock and conlock should be locked when using scriptapi
 	ServerScripting *getScriptIface(){ return m_script; }
@@ -459,8 +451,6 @@ private:
 	void sendRequestedMedia(session_t peer_id,
 			const std::vector<std::string> &tosend);
 
-	void sendDetachedInventory(const std::string &name, session_t peer_id);
-
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		u16 amount, float spawntime,
@@ -658,14 +648,6 @@ private:
 	s32 m_next_sound_id = 0; // positive values only
 	s32 nextSoundId();
 
-	/*
-		Detached inventories (behind m_env_mutex)
-	*/
-	// key = name
-	std::map<std::string, Inventory*> m_detached_inventories;
-	// value = "" (visible to all players) or player name
-	std::map<std::string, std::string> m_detached_inventories_player;
-
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 
@@ -677,7 +659,7 @@ private:
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 
 	// Inventory manager
-	std::unique_ptr<ServerInventoryMgr> m_inventory_mgr;
+	std::unique_ptr<ServerInventoryManager> m_inventory_mgr;
 
 	// Global server metrics backend
 	std::unique_ptr<MetricsBackend> m_metrics_backend;
