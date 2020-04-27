@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-04-29 12:38+0000\n"
-"Last-Translator: Marek Sebera <marek.sebera@gmail.com>\n"
+"Last-Translator: Roman Ondráček <ondracek.roman@centrum.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -191,7 +191,7 @@ msgstr "Mody"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr "Nelze načíst žádné balíčky"
+msgstr "Nelze načíst žádný balíček"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
