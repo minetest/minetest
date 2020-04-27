@@ -1055,7 +1055,7 @@ bool Game::startup(bool *kill,
 	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
 
-	g_translations->clear();
+	g_client_translations->clear();
 
 	if (!init(map_dir, address, port, gamespec))
 		return false;
@@ -3029,7 +3029,6 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	const v3f head_position = camera->getHeadPosition();
 	const v3f camera_direction = camera->getDirection();
 	const v3s16 camera_offset  = camera->getOffset();
 
@@ -3045,13 +3044,22 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	core::line3d<f32> shootline;
 
-	if (camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT) {
-		shootline = core::line3d<f32>(head_position,
-			head_position + camera_direction * BS * d);
-	} else {
+	switch (camera->getCameraMode()) {
+	case CAMERA_MODE_FIRST:
+		// Shoot from camera position, with bobbing
+		shootline.start = camera->getPosition();
+		break;
+	case CAMERA_MODE_THIRD:
+		// Shoot from player head, no bobbing
+		shootline.start = camera->getHeadPosition();
+		break;
+	case CAMERA_MODE_THIRD_FRONT:
+		shootline.start = camera->getHeadPosition();
 		// prevent player pointing anything in front-view
-		shootline = core::line3d<f32>(head_position, head_position);
+		d = 0;
+		break;
 	}
+	shootline.end = shootline.start + camera_direction * BS * d;
 
 #ifdef HAVE_TOUCHSCREENGUI
 
@@ -4276,7 +4284,6 @@ void the_game(bool *kill,
 				reconnect_requested, &chat_backend, gamespec,
 				simple_singleplayer_mode)) {
 			game.run();
-			game.shutdown();
 		}
 
 	} catch (SerializationError &e) {
@@ -4292,4 +4299,5 @@ void the_game(bool *kill,
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;
 	}
+	game.shutdown();
 }

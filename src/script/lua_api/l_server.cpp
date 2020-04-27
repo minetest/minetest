@@ -163,6 +163,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	u16 prot_vers;
 	u8 ser_vers,major,minor,patch;
 	std::string vers_string;
+	std::string lang_code;
 
 #define ERET(code)                                                             \
 	if (!(code)) {                                                             \
@@ -182,7 +183,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		&avg_jitter))
 
 	ERET(getServer(L)->getClientInfo(player->getPeerId(), &state, &uptime, &ser_vers,
-		&prot_vers, &major, &minor, &patch, &vers_string))
+		&prot_vers, &major, &minor, &patch, &vers_string, &lang_code))
 
 	lua_newtable(L);
 	int table = lua_gettop(L);
@@ -235,6 +236,10 @@ int ModApiServer::l_get_player_information(lua_State *L)
 
 	lua_pushstring(L, "formspec_version");
 	lua_pushnumber(L, player->formspec_version);
+	lua_settable(L, table);
+
+	lua_pushstring(L, "lang_code");
+	lua_pushstring(L, lang_code.c_str());
 	lua_settable(L, table);
 
 #ifndef NDEBUG

@@ -489,36 +489,8 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 			start_i = stoi(startindex);
 
 		if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
-			errorstream<< "Invalid list element: '" << element << "'"  << std::endl;
+			errorstream << "Invalid list element: '" << element << "'"  << std::endl;
 			return;
-		}
-
-		// check for the existence of inventory and list
-		Inventory *inv = m_invmgr->getInventory(loc);
-		if (!inv) {
-			warningstream << "GUIFormSpecMenu::parseList(): "
-					<< "The inventory location "
-					<< "\"" << loc.dump() << "\" doesn't exist"
-					<< std::endl;
-			return;
-		}
-		InventoryList *ilist = inv->getList(listname);
-		if (!ilist) {
-			warningstream << "GUIFormSpecMenu::parseList(): "
-					<< "The inventory list \"" << listname << "\" "
-					<< "@ \"" << loc.dump() << "\" doesn't exist"
-					<< std::endl;
-			return;
-		}
-
-		// trim geom if it is larger than the actual inventory size
-		s32 list_size = (s32)ilist->getSize();
-		if (list_size < geom.X * geom.Y + start_i) {
-			list_size -= MYMAX(start_i, 0);
-			geom.Y = list_size / geom.X;
-			geom.Y += list_size % geom.X > 0 ? 1 : 0;
-			if (geom.Y <= 1)
-				geom.X = list_size;
 		}
 
 		if (!data->explicit_size)
@@ -943,7 +915,9 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 	auto style = getDefaultStyleForElement("animated_image", spec.fname, "image");
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-	e->drop();
+
+	// Animated images should let events through
+	m_clickthrough_elements.push_back(e);
 
 	m_fields.push_back(spec);
 }
@@ -2696,24 +2670,12 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 	if (parseVersionDirect(element))
 		return;
 
-	std::vector<std::string> parts = split(element,'[');
-
-	// ugly workaround to keep compatibility
-	if (parts.size() > 2) {
-		if (trim(parts[0]) == "image") {
-			for (unsigned int i=2;i< parts.size(); i++) {
-				parts[1] += "[" + parts[i];
-			}
-		}
-		else { return; }
-	}
-
-	if (parts.size() < 2) {
+	size_t pos = element.find('[');
+	if (pos == std::string::npos)
 		return;
-	}
 
-	std::string type = trim(parts[0]);
-	std::string description = trim(parts[1]);
+	std::string type = trim(element.substr(0, pos));
+	std::string description = element.substr(pos+1);
 
 	if (type == "container") {
 		parseContainer(data, description);

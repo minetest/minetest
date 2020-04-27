@@ -44,6 +44,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_POSTGRESQL
 #include "database/database-postgresql.h"
 #endif
+#if USE_LEVELDB
+#include "database/database-leveldb.h"
+#endif
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
 
@@ -2184,8 +2187,21 @@ AuthDatabase *ServerEnvironment::openAuthDatabase(
 	if (name == "sqlite3")
 		return new AuthDatabaseSQLite3(savedir);
 
+#if USE_POSTGRESQL
+	if (name == "postgresql") {
+		std::string connect_string;
+		conf.getNoEx("pgsql_auth_connection", connect_string);
+		return new AuthDatabasePostgreSQL(connect_string);
+	}
+#endif
+
 	if (name == "files")
 		return new AuthDatabaseFiles(savedir);
+
+#if USE_LEVELDB
+	if (name == "leveldb")
+		return new AuthDatabaseLevelDB(savedir);
+#endif
 
 	throw BaseException(std::string("Database backend ") + name + " not supported.");
 }

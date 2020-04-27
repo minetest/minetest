@@ -598,18 +598,18 @@ void initializePaths()
 #if USE_GETTEXT
 	bool found_localedir = false;
 #  ifdef STATIC_LOCALEDIR
-	if (STATIC_LOCALEDIR[0] && fs::PathExists(STATIC_LOCALEDIR)) {
+	/* STATIC_LOCALEDIR may be a generalized path such as /usr/share/locale that
+	 * doesn't necessarily contain our locale files, so check data path first. */
+	path_locale = getDataPath("locale");
+	if (fs::PathExists(path_locale)) {
+		found_localedir = true;
+		infostream << "Using in-place locale directory " << path_locale
+			<< " even though a static one was provided." << std::endl;
+	} else if (STATIC_LOCALEDIR[0] && fs::PathExists(STATIC_LOCALEDIR)) {
 		found_localedir = true;
 		path_locale = STATIC_LOCALEDIR;
-		infostream << "Using locale directory " << STATIC_LOCALEDIR << std::endl;
-	} else {
-		path_locale = getDataPath("locale");
-		if (fs::PathExists(path_locale)) {
-			found_localedir = true;
-			infostream << "Using in-place locale directory " << path_locale
-				<< " even though a static one was provided "
-				<< "(RUN_IN_PLACE or CUSTOM_LOCALEDIR)." << std::endl;
-		}
+		infostream << "Using static locale directory " << STATIC_LOCALEDIR
+			<< std::endl;
 	}
 #  else
 	path_locale = getDataPath("locale");

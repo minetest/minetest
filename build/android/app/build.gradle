@@ -63,8 +63,12 @@ task prepareAssets() {
 	copy {
 		from "${projRoot}/builtin" into "${assetsFolder}/builtin"
 	}
-	copy {
+	/*copy {
+		// ToDo: fix Minetest shaders that currently don't work with OpenGL ES
 		from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
+	}*/
+	copy {
+		from "../native/deps/Android/Irrlicht/shaders" into "${assetsFolder}/client/shaders/Irrlicht"
 	}
 	copy {
 		from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
@@ -73,8 +77,7 @@ task prepareAssets() {
 		from "${projRoot}/games/${gameToCopy}" into "${assetsFolder}/games/${gameToCopy}"
 	}
 	/*copy {
-		// locales broken right now
-		// ToDo: fix it!
+		// ToDo: fix broken locales
 		from "${projRoot}/po" into "${assetsFolder}/po"
 	}*/
 	copy {
