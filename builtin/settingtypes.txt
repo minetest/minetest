@@ -1186,6 +1186,14 @@ chat_message_limit_per_10sec (Chat message count limit) float 10.0
 #    Kick players who sent more than X messages per 10 seconds.
 chat_message_limit_trigger_kick (Chat message kick threshold) int 50
 
+#    How to handle digging and placing of falling nodes.
+#    The 'drop' and 'none' options can safeguard against certain forms of griefing
+#    in multiplayer games.
+#    -    fall: Simulate falling as usual
+#    -    drop: Convert to dropped item(s)
+#    -    none: Treat like a non-falling node
+falling_node_behavior (Behavior of falling nodes)
+
 [**Physics]
 
 #    Horizontal and vertical acceleration on ground or when climbing,

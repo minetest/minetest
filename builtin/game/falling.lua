@@ -30,6 +30,8 @@ local facedir_to_euler = {
 	{y = math.pi/2, x = math.pi, z = 0}
 }
 
+local behavior = minetest.settings:get("falling_node_behavior") or "fall"
+
 --
 -- Falling stuff
 --
@@ -266,22 +268,35 @@ core.register_entity(":__builtin:falling_node", {
 })
 
 local function convert_to_falling_node(pos, node)
-	local obj = core.add_entity(pos, "__builtin:falling_node")
-	if not obj then
+        if behavior == "fall" then
+		local obj = core.add_entity(pos, "__builtin:falling_node")
+		if not obj then
+			return false
+		end
+		node.level = core.get_node_level(pos)
+		local meta = core.get_meta(pos)
+		local metatable = meta and meta:to_table() or {}
+
+		local def = core.registered_nodes[node.name]
+		if def and def.sounds and def.sounds.fall then
+			core.sound_play(def.sounds.fall, {pos = pos}, true)
+		end
+
+		obj:get_luaentity():set_node(node, metatable)
+		core.remove_node(pos)
+		return true
+
+	elseif behavior == "drop" then
+                local drops = core.get_node_drops(node.name, "")
+                for _, item in ipairs(drops) do
+                        core.add_item(pos, item)
+                end
+		core.remove_node(pos)
+                return true
+
+	else
 		return false
 	end
-	node.level = core.get_node_level(pos)
-	local meta = core.get_meta(pos)
-	local metatable = meta and meta:to_table() or {}
-
-	local def = core.registered_nodes[node.name]
-	if def and def.sounds and def.sounds.fall then
-		core.sound_play(def.sounds.fall, {pos = pos}, true)
-	end
-
-	obj:get_luaentity():set_node(node, metatable)
-	core.remove_node(pos)
-	return true
 end
 
 function core.spawn_falling_node(pos)
@@ -365,8 +380,7 @@ function core.check_single_for_falling(p)
 				core.get_node_max_level(p_bottom))) and
 
 				(not d_bottom.walkable or d_bottom.buildable_to) then
-			convert_to_falling_node(p, n)
-			return true
+			return convert_to_falling_node(p, n)
 		end
 	end
 
