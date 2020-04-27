@@ -674,8 +674,13 @@ int ObjectRef::l_set_attach(lua_State *L)
 	ServerActiveObject *parent = getobject(parent_ref);
 	if (co == NULL)
 		return 0;
+
 	if (parent == NULL)
 		return 0;
+
+	if (co == parent)
+		throw LuaError("ObjectRef::set_attach: attaching object to itself is not allowed.");
+
 	// Do it
 	int parent_id = 0;
 	std::string bone;
