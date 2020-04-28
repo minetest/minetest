@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2019-11-13 16:04+0000\n"
-"Last-Translator: Jacques Lagrange <Jacques.Reads@gmail.com>\n"
+"PO-Revision-Date: 2020-04-29 12:38+0000\n"
+"Last-Translator: Matteo Gheza <matteo.gheza07@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 4.0.2\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -1774,7 +1774,6 @@ msgstr ""
 "quando fuori dal cerchio principale."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world center in units of 'scale'.\n"
 "Can be used to move a desired point to (0, 0) to create a\n"
@@ -1788,12 +1787,14 @@ msgstr ""
 "Spostamento (X,Y,Z) del frattale dal centro del mondo in\n"
 "unità di \"scala\".\n"
 "Può essere usato per spostare un punto desiderato a (0,0)\n"
-"per creare un punto di comparsa adatto, o per consentire\n"
-"l'ingrandimento su di un punto desiderato per mezzo\n"
-"dell'aumento della \"scala\".\n"
+"per creare un\n"
+"punto di comparsa adatto, o per consentire\n"
+"l'ingrandimento su di un punto desiderato\n"
+"per mezzo dell'aumento della \"scala\".\n"
 "Il valore predefinito è regolato per un punto di comparsa\n"
-"opportuno con le serie Mandelbrot che usino i parametri\n"
-"predefiniti, potrebbe richiedere modifiche in altre situazioni.\n"
+"opportuno con le serie Mandelbrot\n"
+"che usino i parametri predefiniti, potrebbe richiedere modifiche in altre\n"
+"situazioni.\n"
 "Varia grossomodo da -2 a 2. Si moltiplichi per \"scala\" per\n"
 "lo spostamento in nodi."
 
@@ -2003,6 +2004,12 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
+"Altera la curva di luce applicandovi la 'correzione gamma'.\n"
+"Valori più alti rendono più luminosi i livelli di luce medi e inferiori.\n"
+"Il valore '1.0' lascia inalterata la curva di luce.\n"
+"Questo ha un effetto significativo solo sulla luce diurna e sulla luce "
+"artificiale,\n"
+"ha pochissimo effetto sulla luce notturna naturale."
 
 #: src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -2162,24 +2169,20 @@ msgid "Block send optimize distance"
 msgstr "Distanza di ottimizzazione dell'invio dei blocchi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold and italic font path"
-msgstr "Percorso del carattere a spaziatura fissa"
+msgstr "Percorso dei caratteri in grassetto e corsivo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold and italic monospace font path"
-msgstr "Percorso del carattere a spaziatura fissa"
+msgstr "Percorso dei font monospaziali in grassetto e corsivo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold font path"
-msgstr "Percorso del carattere"
+msgstr "Percorso dei caratteri in grassetto"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold monospace font path"
-msgstr "Percorso del carattere a spaziatura fissa"
+msgstr "Percorso caratteri monospaziale in grassetto"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -2194,14 +2197,13 @@ msgid "Bumpmapping"
 msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Distanza in nodi del \"piano di ritaglio vicino\" alla telecamera, tra 0 e "
+"Distanza dei nodi del \"piano di ritaglio vicino\" alla telecamera, tra 0 e "
 "0.5.\n"
 "La maggior parte degli utenti non dovrà cambiarla.\n"
 "Aumentarla può ridurre l'artificialità sulle GPU più deboli.\n"
@@ -2268,6 +2270,8 @@ msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
+"Centro della gamma di amplificazione della curva di luce.\n"
+"Dove 0.0 è il livello di luce minimo, 1.0 è il livello di luce massimo."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2492,6 +2496,11 @@ msgid ""
 "Value >= 10.0 completely disables generation of tunnels and avoids the\n"
 "intensive noise calculations."
 msgstr ""
+"Controlla la larghezza delle gallerie, un valore più piccolo crea gallerie "
+"più ampie.\n"
+"Il valore >= 10.0 disabilita completamente la generazione di tunnel ed evita "
+"l'opzione\n"
+"calcoli intensivi del rumore."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -2754,6 +2763,8 @@ msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
 msgstr ""
+"Abilitare il supporto IPv6 (sia per il client che per il server).\n"
+"Necessario per il funzionamento delle connessioni IPv6."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2845,6 +2856,8 @@ msgid ""
 "Enable vertex buffer objects.\n"
 "This should greatly improve graphics performance."
 msgstr ""
+"Attivare gli oggetti tampone per i vertici.\n"
+"Questo dovrebbe migliorare notevolmente le prestazioni grafiche."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2871,6 +2884,12 @@ msgid ""
 "appearance of high dynamic range images. Mid-range contrast is slightly\n"
 "enhanced, highlights and shadows are gradually compressed."
 msgstr ""
+"Abilita la mappatura dei toni filmici \"Uncharted 2\" di Hable.\n"
+"Simula la curva di tono della pellicola fotografica e come questa approssimi "
+"la\n"
+"comparsa di immagini ad alta gamma dinamica. Il contrasto a medio raggio è "
+"leggermente\n"
+"potenziato, i punti salienti e le ombre vengono gradualmente compressi."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
