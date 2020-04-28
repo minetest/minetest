@@ -11,7 +11,7 @@ local MAX_JUMP = 1
 -- Maximum permitted drop height
 local MAX_DROP = 5
 -- If true, mod won't refuse to run pathfinder even at long distances
-local IGNORE_MAX_DISTANCE_SAFEGUARD = false
+local IGNORE_MAX_DISTANCE_SAFEGUARD = true
 
 -- End of config parameters
 
@@ -37,7 +37,7 @@ local function find_path_for_player(player, itemstack)
 		local pos1 = vector.round(player:get_pos())
 		-- Don't bother calling pathfinder for high distance to avoid freezing
 		if (not IGNORE_MAX_DISTANCE_SAFEGUARD) and (vector.distance(pos1, pos2) > MAX_DIRECT_DISTANCE) then
-			minetest.chat_send_player(player:get_player_name(), S("Destination too far away!"))
+			minetest.chat_send_player(player:get_player_name(), S("Destination too far away! Set a destination (via placing) within a distance of @1 and try again!", MAX_DIRECT_DISTANCE))
 			return
 		end
 		local str = S("Path from @1 to @2:",

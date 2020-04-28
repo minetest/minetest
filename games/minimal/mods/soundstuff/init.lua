@@ -78,7 +78,7 @@ minetest.register_node("soundstuff:footstep_liquid", {
 	walkable = false,
 	pointable = false,
 	diggable = false,
-	buildable_to = false,
+	buildable_to = true,
 	is_ground_content = false,
 	post_effect_color = {a = 64, r = 0, g = 0, b = 200},
 	sounds = {
@@ -127,6 +127,7 @@ minetest.register_tool("soundstuff:breaks", {
 			cracky={times={[2]=2.00, [3]=1.20}, uses=1, maxlevel=0},
 			choppy={times={[2]=2.00, [3]=1.20}, uses=1, maxlevel=0},
 			snappy={times={[2]=2.00, [3]=1.20}, uses=1, maxlevel=0},
+			crumbly={times={[2]=2.00, [3]=1.20}, uses=1, maxlevel=0},
 		},
 	},
 })
@@ -149,7 +150,7 @@ minetest.register_node("soundstuff:positional", {
 		timer:start(0.7)
 	end,
 	on_rightclick = function(pos, node, clicker)
-		node.param2 = (node.param2 - 1) % 64
+		node.param2 = (node.param2 + 1) % 64
 		minetest.set_node(pos, node)
 		if clicker and clicker:is_player() then
 			local dist = node.param2

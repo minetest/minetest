@@ -113,6 +113,7 @@ minetest.register_node("testnodes:liquid_nojump", {
 	pointable = false,
 	liquids_pointable = true,
 	diggable = false,
+	buildable_to = true,
 	is_ground_content = false,
 	post_effect_color = {a = 70, r = 255, g = 0, b = 200},
 })
@@ -142,6 +143,7 @@ minetest.register_node("testnodes:liquidflowing_nojump", {
 	pointable = false,
 	liquids_pointable = true,
 	diggable = false,
+	buildable_to = true,
 	is_ground_content = false,
 	post_effect_color = {a = 70, r = 255, g = 0, b = 200},
 })

@@ -19,7 +19,8 @@ for i=1, minetest.LIGHT_MAX do
 	})
 end
 
--- Lets light through, but with losses in light level
+-- Lets light through, but not sunlight, leading to a
+-- reduction in light level when light passes through
 minetest.register_node("testnodes:sunlight_filter", {
 	description = S("Sunlight Filter"),
 	paramtype = "light",
@@ -32,7 +33,7 @@ minetest.register_node("testnodes:sunlight_filter", {
 	groups = { dig_immediate = 3 },
 })
 
--- Lets sunlight through without obstruction
+-- Lets light and sunlight through without obstruction
 minetest.register_node("testnodes:sunlight_propagator", {
 	description = S("Sunlight Propagator"),
 	paramtype = "light",

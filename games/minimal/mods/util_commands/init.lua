@@ -36,6 +36,30 @@ minetest.register_chatcommand("hp", {
 	end,
 })
 
+minetest.register_chatcommand("zoom", {
+	params = "[<zoom_fov>]",
+	description = "Set or display your zoom_fov",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+		if param == "" then
+			local fov = player:get_properties().zoom_fov
+			return true, "zoom_fov = "..tostring(fov)
+		end
+		local fov = tonumber(param)
+		if not fov then
+			return false, "Missing or incorrect zoom_fov parameter!"
+		end
+		player:set_properties({zoom_fov = fov})
+		fov = player:get_properties().zoom_fov
+		return true, "zoom_fov = "..tostring(fov)
+	end,
+})
+
+
+
 local infplace = minetest.settings:get_bool("devtest_infplace", false)
 
 minetest.register_chatcommand("infplace", {
