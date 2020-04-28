@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Portuguese (Brazil) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2019-12-11 13:36+0000\n"
 "Last-Translator: ramon.venson <ramon.venson@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -404,14 +404,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "amplitude Z"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "valor absoluto"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "Padrões"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "amenizado"
@@ -623,6 +634,7 @@ msgstr "Nome / Senha"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP habilitado"
@@ -869,6 +881,14 @@ msgstr "Arquivo de senha fornecido falhou em abrir : "
 msgid "Provided world path doesn't exist: "
 msgstr "O caminho do mundo providenciado  não existe. "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -905,6 +925,7 @@ msgstr "-Porta: "
 msgid "- Public: "
 msgstr "- Público: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1368,6 +1389,7 @@ msgstr "Shift esquerdo"
 msgid "Left Windows"
 msgstr "Windows esquerdo"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menu"
@@ -1460,6 +1482,7 @@ msgstr "Pausar"
 msgid "Play"
 msgstr "Jogar"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Print Screen"
@@ -1496,6 +1519,7 @@ msgstr "Windows direito"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Tecla Select"
@@ -1738,10 +1762,15 @@ msgstr "Mutado"
 msgid "Sound Volume: "
 msgstr "Volume do som: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Entrar "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "pt_BR"
@@ -2181,8 +2210,8 @@ msgstr "Bump mapping"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5283,7 +5312,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr "plano próximo"
 
 #: src/settings_translation_file.cpp
@@ -6888,125 +6917,6 @@ msgstr "limite paralelo de cURL"
 msgid "cURL timeout"
 msgstr "Tempo limite de cURL"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Alternar modo de câmera cinemática"
-
-#~ msgid "Select Package File:"
-#~ msgstr "Selecionar o arquivo do pacote:"
-
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Limite Y máximo de lava em grandes cavernas."
-
-#~ msgid "Waving Water"
-#~ msgstr "Ondas na água"
-
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "Se dungeons ocasionalmente se projetam do terreno."
-
-#~ msgid "Projecting dungeons"
-#~ msgstr "Projetando dungeons"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Nível Y para o qual as sombras de ilhas flutuantes se estendem."
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr ""
-#~ "Nível em Y do ponto médio da montanha flutuante e da superfície do lago."
-
-#~ msgid "Waving water"
-#~ msgstr "Balanço da água"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr ""
-#~ "Variação da altura da colina e profundidade do lago no terreno liso da "
-#~ "Terra Flutuante."
-
-#~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
-#~ msgstr ""
-#~ "Altura máxima típica, acima e abaixo do ponto médio, do terreno da "
-#~ "montanha flutuante."
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Esta fonte será usada para determinados idiomas."
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Força do aumento médio da curva de luz."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Limite de mapblock"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Caminho para TrueTypeFont ou bitmap."
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Nitidez da iluminação"
-
-#~ msgid "Lava depth"
-#~ msgstr "Profundidade da lava"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Suporte a IPv6."
-
-#~ msgid "Gamma"
-#~ msgstr "Gama"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Fonte alpha de sombra (opacidade, entre 0 e 255)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Altura da Ilha Flutuante montanhosa"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Expoente de terras flutuantes montanhosas"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Densidade da Ilha Flutuante montanhosa"
-
-#~ msgid "Floatland level"
-#~ msgstr "Nível de água"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Ruído base de Ilha Flutuante"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Altura base de ruído de Ilha Flutuante"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Habilitar efeito \"filmic tone mapping\""
-
-#~ msgid "Enable VBO"
-#~ msgstr "Habilitar VBO"
-
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Define áreas de Ilha Flutuante em terreno suavizado.\n"
-#~ "Terrenos suavizados ocorrem quando o ruído é menor que zero."
-
-#~ msgid "Darkness sharpness"
-#~ msgstr "Nitidez da escuridão"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Controla a largura dos túneis, um valor menor cria túneis mais largos."
-
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Controla a densidade do terreno montanhoso nas ilhas flutuantes.\n"
-#~ "É um parâmetro adicionado ao valor de ruído 'mgv7_np_mountain'."
-
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Centro do aumento da curva de luz."
-
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr ""
-#~ "Altera como terras flutuantes montanhosas afunilam acima e abaixo do "
-#~ "ponto médio."
-
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
 #~ "brighter.\n"
@@ -7015,3 +6925,122 @@ msgstr "Tempo limite de cURL"
 #~ "Ajustar a gama de codificação para a tabela de claridade. Os números mais "
 #~ "elevados são mais brilhantes.\n"
 #~ "Esta configuração é somente para o cliente e é ignorada pelo servidor."
+
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr ""
+#~ "Altera como terras flutuantes montanhosas afunilam acima e abaixo do "
+#~ "ponto médio."
+
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Centro do aumento da curva de luz."
+
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "Controla a densidade do terreno montanhoso nas ilhas flutuantes.\n"
+#~ "É um parâmetro adicionado ao valor de ruído 'mgv7_np_mountain'."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Controla a largura dos túneis, um valor menor cria túneis mais largos."
+
+#~ msgid "Darkness sharpness"
+#~ msgstr "Nitidez da escuridão"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Define áreas de Ilha Flutuante em terreno suavizado.\n"
+#~ "Terrenos suavizados ocorrem quando o ruído é menor que zero."
+
+#~ msgid "Enable VBO"
+#~ msgstr "Habilitar VBO"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Habilitar efeito \"filmic tone mapping\""
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Altura base de ruído de Ilha Flutuante"
+
+#~ msgid "Floatland base noise"
+#~ msgstr "Ruído base de Ilha Flutuante"
+
+#~ msgid "Floatland level"
+#~ msgstr "Nível de água"
+
+#~ msgid "Floatland mountain density"
+#~ msgstr "Densidade da Ilha Flutuante montanhosa"
+
+#~ msgid "Floatland mountain exponent"
+#~ msgstr "Expoente de terras flutuantes montanhosas"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Altura da Ilha Flutuante montanhosa"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Fonte alpha de sombra (opacidade, entre 0 e 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Gama"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Suporte a IPv6."
+
+#~ msgid "Lava depth"
+#~ msgstr "Profundidade da lava"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "Nitidez da iluminação"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Caminho para TrueTypeFont ou bitmap."
+
+#~ msgid "Shadow limit"
+#~ msgstr "Limite de mapblock"
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Força do aumento médio da curva de luz."
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Esta fonte será usada para determinados idiomas."
+
+#~ msgid ""
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr ""
+#~ "Altura máxima típica, acima e abaixo do ponto médio, do terreno da "
+#~ "montanha flutuante."
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Variação da altura da colina e profundidade do lago no terreno liso da "
+#~ "Terra Flutuante."
+
+#~ msgid "Waving water"
+#~ msgstr "Balanço da água"
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr ""
+#~ "Nível em Y do ponto médio da montanha flutuante e da superfície do lago."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Nível Y para o qual as sombras de ilhas flutuantes se estendem."
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Projetando dungeons"
+
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "Se dungeons ocasionalmente se projetam do terreno."
+
+#~ msgid "Waving Water"
+#~ msgstr "Ondas na água"
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Limite Y máximo de lava em grandes cavernas."
+
+#~ msgid "Select Package File:"
+#~ msgstr "Selecionar o arquivo do pacote:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Alternar modo de câmera cinemática"

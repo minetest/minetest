@@ -272,6 +272,25 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 }
 
+// Calculates screen position of waypoint. Returns true if waypoint is visible (in front of the player), else false.
+bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos)
+{
+	v3f w_pos = e->world_pos * BS;
+	scene::ICameraSceneNode* camera =
+		RenderingEngine::get_scene_manager()->getActiveCamera();
+	w_pos -= intToFloat(camera_offset, BS);
+	core::matrix4 trans = camera->getProjectionMatrix();
+	trans *= camera->getViewMatrix();
+	f32 transformed_pos[4] = { w_pos.X, w_pos.Y, w_pos.Z, 1.0f };
+	trans.multiplyWith1x4Matrix(transformed_pos);
+	if (transformed_pos[3] < 0)
+		return false;
+	f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
+		core::reciprocal(transformed_pos[3]);
+	pos->X = m_screensize.X * (0.5 * transformed_pos[0] * zDiv + 0.5);
+	pos->Y = m_screensize.Y * (0.5 - transformed_pos[1] * zDiv * 0.5);
+	return true;
+}
 
 void Hud::drawLuaElements(const v3s16 &camera_offset)
 {
@@ -299,28 +318,6 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 		v2s32 pos(floor(e->pos.X * (float) m_screensize.X + 0.5),
 				floor(e->pos.Y * (float) m_screensize.Y + 0.5));
 		switch (e->type) {
-			case HUD_ELEM_IMAGE: {
-				video::ITexture *texture = tsrc->getTexture(e->text);
-				if (!texture)
-					continue;
-
-				const video::SColor color(255, 255, 255, 255);
-				const video::SColor colors[] = {color, color, color, color};
-				core::dimension2di imgsize(texture->getOriginalSize());
-				v2s32 dstsize(imgsize.Width * e->scale.X,
-				              imgsize.Height * e->scale.Y);
-				if (e->scale.X < 0)
-					dstsize.X = m_screensize.X * (e->scale.X * -0.01);
-				if (e->scale.Y < 0)
-					dstsize.Y = m_screensize.Y * (e->scale.Y * -0.01);
-				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
-				             (e->align.Y - 1.0) * dstsize.Y / 2);
-				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
-				rect += pos + offset + v2s32(e->offset.X, e->offset.Y);
-				draw2DImageFilterScaled(driver, texture, rect,
-					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
-					NULL, colors, true);
-				break; }
 			case HUD_ELEM_TEXT: {
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
@@ -343,34 +340,58 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 					inv, e->item, e->dir);
 				break; }
 			case HUD_ELEM_WAYPOINT: {
-				v3f p_pos = player->getPosition() / BS;
-				v3f w_pos = e->world_pos * BS;
-				float distance = std::floor(10 * p_pos.getDistanceFrom(e->world_pos)) /
-					10.0f;
-				scene::ICameraSceneNode* camera =
-					RenderingEngine::get_scene_manager()->getActiveCamera();
-				w_pos -= intToFloat(camera_offset, BS);
-				core::matrix4 trans = camera->getProjectionMatrix();
-				trans *= camera->getViewMatrix();
-				f32 transformed_pos[4] = { w_pos.X, w_pos.Y, w_pos.Z, 1.0f };
-				trans.multiplyWith1x4Matrix(transformed_pos);
-				if (transformed_pos[3] < 0)
+				if (!calculateScreenPos(camera_offset, e, &pos))
 					break;
-				f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
-					core::reciprocal(transformed_pos[3]);
-				pos.X = m_screensize.X * (0.5 * transformed_pos[0] * zDiv + 0.5);
-				pos.Y = m_screensize.Y * (0.5 - transformed_pos[1] * zDiv * 0.5);
+				v3f p_pos = player->getPosition() / BS;
+				pos += v2s32(e->offset.X, e->offset.Y);
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
-				core::rect<s32> size(0, 0, 200, 2 * text_height);
 				std::wstring text = unescape_translate(utf8_to_wide(e->name));
-				font->draw(text.c_str(), size + pos, color);
-				std::ostringstream os;
-				os << distance << e->text;
-				text = unescape_translate(utf8_to_wide(os.str()));
-				pos.Y += text_height;
-				font->draw(text.c_str(), size + pos, color);
+				const std::string &unit = e->text;
+				// waypoints reuse the item field to store precision, item = precision + 1
+				u32 item = e->item;
+				float precision = (item == 0) ? 10.0f : (item - 1.f);
+				bool draw_precision = precision > 0;
+
+				core::rect<s32> bounds(0, 0, font->getDimension(text.c_str()).Width, (draw_precision ? 2:1) * text_height);
+				pos.Y += (e->align.Y - 1.0) * bounds.getHeight() / 2;
+				bounds += pos;
+				font->draw(text.c_str(), bounds + v2s32((e->align.X - 1.0) * bounds.getWidth() / 2, 0), color);
+				if (draw_precision) {
+					std::ostringstream os;
+					float distance = std::floor(precision * p_pos.getDistanceFrom(e->world_pos)) / precision;
+					os << distance << unit;
+					text = unescape_translate(utf8_to_wide(os.str()));
+					bounds.LowerRightCorner.X = bounds.UpperLeftCorner.X + font->getDimension(text.c_str()).Width;
+					font->draw(text.c_str(), bounds + v2s32((e->align.X - 1.0f) * bounds.getWidth() / 2, text_height), color);
+				}
+				break; }
+			case HUD_ELEM_IMAGE_WAYPOINT: {
+				if (!calculateScreenPos(camera_offset, e, &pos))
+					break;
+			}
+			case HUD_ELEM_IMAGE: {
+				video::ITexture *texture = tsrc->getTexture(e->text);
+				if (!texture)
+					continue;
+
+				const video::SColor color(255, 255, 255, 255);
+				const video::SColor colors[] = {color, color, color, color};
+				core::dimension2di imgsize(texture->getOriginalSize());
+				v2s32 dstsize(imgsize.Width * e->scale.X,
+				              imgsize.Height * e->scale.Y);
+				if (e->scale.X < 0)
+					dstsize.X = m_screensize.X * (e->scale.X * -0.01);
+				if (e->scale.Y < 0)
+					dstsize.Y = m_screensize.Y * (e->scale.Y * -0.01);
+				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
+				             (e->align.Y - 1.0) * dstsize.Y / 2);
+				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
+				rect += pos + offset + v2s32(e->offset.X, e->offset.Y);
+				draw2DImageFilterScaled(driver, texture, rect,
+					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+					NULL, colors, true);
 				break; }
 			default:
 				infostream << "Hud::drawLuaElements: ignoring drawform " << e->type <<

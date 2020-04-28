@@ -30,13 +30,14 @@ class GUIButtonItemImage : public GUIButton
 public:
 	//! constructor
 	GUIButtonItemImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
-			s32 id, core::rect<s32> rectangle, std::string item,
-			Client *client, bool noclip = false);
+			s32 id, core::rect<s32> rectangle, ISimpleTextureSource *tsrc,
+			std::string item, Client *client, bool noclip = false);
 
 	//! Do not drop returned handle
 	static GUIButtonItemImage *addButton(gui::IGUIEnvironment *environment,
-			const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
-			const wchar_t *text, std::string item, Client *client);
+			const core::rect<s32> &rectangle, ISimpleTextureSource *tsrc,
+			IGUIElement *parent, s32 id, const wchar_t *text, std::string item,
+			Client *client);
 
 private:
 	std::string m_item_name;

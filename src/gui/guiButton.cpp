@@ -14,6 +14,7 @@
 #include "irrlicht_changes/static_text.h"
 #include "porting.h"
 #include "StyleSpec.h"
+#include "util/numeric.h"
 
 using namespace irr;
 using namespace gui;
@@ -26,14 +27,15 @@ using namespace gui;
 
 //! constructor
 GUIButton::GUIButton(IGUIEnvironment* environment, IGUIElement* parent,
-			s32 id, core::rect<s32> rectangle, bool noclip)
+			s32 id, core::rect<s32> rectangle, ISimpleTextureSource *tsrc,
+			bool noclip)
 : IGUIButton(environment, parent, id, rectangle),
 	SpriteBank(0), OverrideFont(0),
 	OverrideColorEnabled(false), OverrideColor(video::SColor(101,255,255,255)),
 	ClickTime(0), HoverTime(0), FocusTime(0),
 	ClickShiftState(false), ClickControlState(false),
 	IsPushButton(false), Pressed(false),
-	UseAlphaChannel(false), DrawBorder(true), ScaleImage(false)
+	UseAlphaChannel(false), DrawBorder(true), ScaleImage(false), TSrc(tsrc)
 {
 	setNotClipped(noclip);
 
@@ -44,14 +46,6 @@ GUIButton::GUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 	// PATCH
 	for (size_t i = 0; i < 4; i++) {
 		Colors[i] = Environment->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
-		HoveredColors[i] = irr::video::SColor(Colors[i].getAlpha(),
-			core::clamp<u32>(Colors[i].getRed() * COLOR_HOVERED_MOD, 0, 255),
-			core::clamp<u32>(Colors[i].getGreen() * COLOR_HOVERED_MOD, 0, 255),
-			core::clamp<u32>(Colors[i].getBlue() * COLOR_HOVERED_MOD, 0, 255));
-		PressedColors[i] = irr::video::SColor(Colors[i].getAlpha(),
-			core::clamp<u32>(Colors[i].getRed() * COLOR_PRESSED_MOD, 0, 255),
-			core::clamp<u32>(Colors[i].getGreen() * COLOR_PRESSED_MOD, 0, 255),
-			core::clamp<u32>(Colors[i].getBlue() * COLOR_PRESSED_MOD, 0, 255));
 	}
 	StaticText = gui::StaticText::add(Environment, Text.c_str(), core::rect<s32>(0,0,rectangle.getWidth(),rectangle.getHeight()), false, false, this, id);
 	StaticText->setTextAlignment(EGUIA_CENTER, EGUIA_CENTER);
@@ -262,6 +256,13 @@ void GUIButton::draw()
 		return;
 
 	// PATCH
+	// Track hovered state, if it has changed then we need to update the style.
+	bool hovered = isHovered();
+	if (hovered != WasHovered) {
+		WasHovered = hovered;
+		setFromState();
+	}
+
 	GUISkin* skin = dynamic_cast<GUISkin*>(Environment->getSkin());
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 	// END PATCH
@@ -271,21 +272,24 @@ void GUIButton::draw()
 		if (!Pressed)
 		{
 			// PATCH
-			skin->drawColored3DButtonPaneStandard(this, AbsoluteRect, &AbsoluteClippingRect,
-				isHovered() ? HoveredColors : Colors);
+			skin->drawColored3DButtonPaneStandard(this, AbsoluteRect,
+					&AbsoluteClippingRect, Colors);
 			// END PATCH
 		}
 		else
 		{
 			// PATCH
-			skin->drawColored3DButtonPanePressed(this,
-					AbsoluteRect, &AbsoluteClippingRect, PressedColors);
+			skin->drawColored3DButtonPanePressed(this, AbsoluteRect,
+					&AbsoluteClippingRect, Colors);
 			// END PATCH
 		}
 	}
 
 	const core::position2di buttonCenter(AbsoluteRect.getCenter());
-	EGUI_BUTTON_IMAGE_STATE imageState = getImageState(Pressed);
+	// PATCH
+	// The image changes based on the state, so we use the default every time.
+	EGUI_BUTTON_IMAGE_STATE imageState = EGBIS_IMAGE_UP;
+	// END PATCH
 	if ( ButtonImages[(u32)imageState].Texture )
 	{
 		core::position2d<s32> pos(buttonCenter);
@@ -548,18 +552,6 @@ void GUIButton::setPressedImage(video::ITexture* image, const core::rect<s32>& p
 	setImage(gui::EGBIS_IMAGE_DOWN, image, pos);
 }
 
-void GUIButton::setHoveredImage(video::ITexture* image)
-{
-	setImage(gui::EGBIS_IMAGE_UP_MOUSEOVER, image);
-	setImage(gui::EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER, image);
-}
-
-void GUIButton::setHoveredImage(video::ITexture* image, const core::rect<s32>& pos)
-{
-	setImage(gui::EGBIS_IMAGE_UP_MOUSEOVER, image, pos);
-	setImage(gui::EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER, image, pos);
-}
-
 //! Sets the text displayed by the button
 void GUIButton::setText(const wchar_t* text)
 {
@@ -618,6 +610,8 @@ void GUIButton::setPressed(bool pressed)
 							skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y)));
 			}
 		}
+
+		setFromState();
 	}
 }
 
@@ -729,10 +723,12 @@ void GUIButton::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 }
 
 // PATCH
-GUIButton* GUIButton::addButton(IGUIEnvironment *environment, const core::rect<s32>& rectangle,
-								IGUIElement* parent, s32 id, const wchar_t* text, const wchar_t *tooltiptext)
+GUIButton* GUIButton::addButton(IGUIEnvironment *environment,
+		const core::rect<s32>& rectangle, ISimpleTextureSource *tsrc,
+		IGUIElement* parent, s32 id, const wchar_t* text,
+		const wchar_t *tooltiptext)
 {
-	GUIButton* button = new GUIButton(environment, parent ? parent : environment->getRootGUIElement(), id, rectangle);
+	GUIButton* button = new GUIButton(environment, parent ? parent : environment->getRootGUIElement(), id, rectangle, tsrc);
 	if (text)
 		button->setText(text);
 
@@ -749,76 +745,87 @@ void GUIButton::setColor(video::SColor color)
 	for (size_t i = 0; i < 4; i++) {
 		video::SColor base = Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
 		Colors[i] = base.getInterpolated(color, d);
-		HoveredColors[i] = irr::video::SColor(Colors[i].getAlpha(),
-			core::clamp<u32>(Colors[i].getRed() * COLOR_HOVERED_MOD, 0, 255),
-			core::clamp<u32>(Colors[i].getGreen() * COLOR_HOVERED_MOD, 0, 255),
-			core::clamp<u32>(Colors[i].getBlue() * COLOR_HOVERED_MOD, 0, 255));
-		PressedColors[i] = irr::video::SColor(Colors[i].getAlpha(),
-			core::clamp<u32>(Colors[i].getRed() * COLOR_PRESSED_MOD, 0, 255),
-			core::clamp<u32>(Colors[i].getGreen() * COLOR_PRESSED_MOD, 0, 255),
-			core::clamp<u32>(Colors[i].getBlue() * COLOR_PRESSED_MOD, 0, 255));
-	}
-}
-void GUIButton::setHoveredColor(video::SColor color)
-{
-	float d = 0.65f;
-	for (size_t i = 0; i < 4; i++) {
-		video::SColor base = Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
-		HoveredColors[i] = base.getInterpolated(color, d);
-	}
-}
-void GUIButton::setPressedColor(video::SColor color)
-{
-	float d = 0.65f;
-	for (size_t i = 0; i < 4; i++) {
-		video::SColor base = Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
-		PressedColors[i] = base.getInterpolated(color, d);
 	}
 }
 
-//! Set element properties from a StyleSpec
-void GUIButton::setFromStyle(const StyleSpec& style, ISimpleTextureSource *tsrc)
+//! Set element properties from a StyleSpec corresponding to the button state
+void GUIButton::setFromState()
 {
+	StyleSpec::State state = StyleSpec::STATE_DEFAULT;
+
+	if (isPressed())
+		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_PRESSED);
+
+	if (isHovered())
+		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_HOVERED);
+
+	setFromStyle(StyleSpec::getStyleFromStatePropagation(Styles, state));
+}
+
+//! Set element properties from a StyleSpec
+void GUIButton::setFromStyle(const StyleSpec& style)
+{
+	bool hovered = (style.getState() & StyleSpec::STATE_HOVERED) != 0;
+	bool pressed = (style.getState() & StyleSpec::STATE_PRESSED) != 0;
+
 	if (style.isNotDefault(StyleSpec::BGCOLOR)) {
+
 		setColor(style.getColor(StyleSpec::BGCOLOR));
-	}
-	if (style.isNotDefault(StyleSpec::BGCOLOR_HOVERED)) {
-		setHoveredColor(style.getColor(StyleSpec::BGCOLOR_HOVERED));
-	}
-	if (style.isNotDefault(StyleSpec::BGCOLOR_PRESSED)) {
-		setPressedColor(style.getColor(StyleSpec::BGCOLOR_PRESSED));
+
+		// If we have a propagated hover/press color, we need to automatically
+		// lighten/darken it
+		if (!Styles[style.getState()].isNotDefault(StyleSpec::BGCOLOR)) {
+			for (size_t i = 0; i < 4; i++) {
+				if (pressed) {
+					Colors[i] = multiplyColorValue(Colors[i], COLOR_PRESSED_MOD);
+				} else if (hovered) {
+					Colors[i] = multiplyColorValue(Colors[i], COLOR_HOVERED_MOD);
+				}
+			}
+		}
+
+	} else {
+		for (size_t i = 0; i < 4; i++) {
+			video::SColor base =
+					Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
+			if (pressed) {
+				Colors[i] = multiplyColorValue(base, COLOR_PRESSED_MOD);
+			} else if (hovered) {
+				Colors[i] = multiplyColorValue(base, COLOR_HOVERED_MOD);
+			} else {
+				Colors[i] = base;
+			}
+		}
 	}
 
 	if (style.isNotDefault(StyleSpec::TEXTCOLOR)) {
 		setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR));
+	} else {
+		setOverrideColor(video::SColor(255,255,255,255));
+		OverrideColorEnabled = false;
 	}
-	setNotClipped(style.getBool(StyleSpec::NOCLIP, isNotClipped()));
-	setDrawBorder(style.getBool(StyleSpec::BORDER, DrawBorder));
+	setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	setDrawBorder(style.getBool(StyleSpec::BORDER, true));
 	setUseAlphaChannel(style.getBool(StyleSpec::ALPHA, true));
 
 	const core::position2di buttonCenter(AbsoluteRect.getCenter());
 	core::position2d<s32> geom(buttonCenter);
 	if (style.isNotDefault(StyleSpec::BGIMG)) {
-		video::ITexture *texture = style.getTexture(StyleSpec::BGIMG, tsrc);
-
+		video::ITexture *texture = style.getTexture(StyleSpec::BGIMG,
+				getTextureSource());
 		setImage(guiScalingImageButton(
-					Environment->getVideoDriver(), texture, geom.X, geom.Y));
+				Environment->getVideoDriver(), texture, geom.X, geom.Y));
 		setScaleImage(true);
-	}
-	if (style.isNotDefault(StyleSpec::BGIMG_HOVERED)) {
-		video::ITexture *hovered_texture = style.getTexture(StyleSpec::BGIMG_HOVERED, tsrc);
-
-		setHoveredImage(guiScalingImageButton(
-					Environment->getVideoDriver(), hovered_texture, geom.X, geom.Y));
-		setScaleImage(true);
-	}
-	if (style.isNotDefault(StyleSpec::BGIMG_PRESSED)) {
-		video::ITexture *pressed_texture = style.getTexture(StyleSpec::BGIMG_PRESSED, tsrc);
-
-		setPressedImage(guiScalingImageButton(
-					Environment->getVideoDriver(), pressed_texture, geom.X, geom.Y));
-		setScaleImage(true);
+	} else {
+		setImage(nullptr);
 	}
 	BgMiddle = style.getRect(StyleSpec::BGIMG_MIDDLE, BgMiddle);
+}
+
+//! Set the styles used for each state
+void GUIButton::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES>& styles)
+{
+	Styles = styles;
+	setFromState();
 }
 // END PATCH

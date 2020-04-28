@@ -639,12 +639,23 @@ local function create_change_setting_formspec(dialogdata)
 		-- Flags
 		formspec = table.concat(fields)
 				.. "checkbox[0.5," .. height - 0.6 .. ";cb_defaults;"
+				--[[~ "defaults" is a noise parameter flag.
+				It describes the default processing options
+				for noise settings in main menu -> "All Settings". ]]
 				.. fgettext("defaults") .. ";" -- defaults
 				.. tostring(flags["defaults"] == true) .. "]" -- to get false if nil
 				.. "checkbox[5," .. height - 0.6 .. ";cb_eased;"
+				--[[~ "eased" is a noise parameter flag.
+				It is used to make the map smoother and
+				can be enabled in noise settings in
+				main menu -> "All Settings". ]]
 				.. fgettext("eased") .. ";" -- eased
 				.. tostring(flags["eased"] == true) .. "]"
 				.. "checkbox[5," .. height - 0.15 .. ";cb_absvalue;"
+				--[[~ "absvalue" is a noise parameter flag.
+				It is short for "absolute value".
+				It can be enabled in noise settings in
+				main menu -> "All Settings". ]]
 				.. fgettext("absvalue") .. ";" -- absvalue
 				.. tostring(flags["absvalue"] == true) .. "]"
 		height = height + 1

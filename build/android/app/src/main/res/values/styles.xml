@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+	<style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+		<item name="windowActionBar">false</item>
+		<item name="android:windowFullscreen">true</item>
+		<item name="android:windowBackground">@drawable/bg</item>
+		<item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">shortEdges</item>
+	</style>
+
+	<style name="InputTheme" parent="Theme.AppCompat.DayNight.Dialog">
+		<item name="windowNoTitle">true</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+	</style>
+
+	<style name="CustomProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+		<item name="android:indeterminateOnly">false</item>
+		<item name="android:minHeight">10dip</item>
+		<item name="android:maxHeight">20dip</item>
+	</style>
+
+</resources>

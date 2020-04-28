@@ -27,7 +27,7 @@ float directional_ambient(vec3 normal)
 
 void main(void)
 {
-	gl_TexCoord[0] = gl_MultiTexCoord0;
+	gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
 	gl_Position = mWorldViewProj * gl_Vertex;
 
 	vPosition = gl_Position.xyz;

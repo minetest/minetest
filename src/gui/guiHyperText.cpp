@@ -107,7 +107,7 @@ ParsedText::ParsedText(const wchar_t *text)
 	m_root_tag.style["underline"] = "false";
 	m_root_tag.style["halign"] = "left";
 	m_root_tag.style["color"] = "#EEEEEE";
-	m_root_tag.style["hovercolor"] = m_root_tag.style["color"];
+	m_root_tag.style["hovercolor"] = "#FF0000";
 
 	m_active_tags.push_front(&m_root_tag);
 	m_style = m_root_tag.style;
@@ -115,7 +115,6 @@ ParsedText::ParsedText(const wchar_t *text)
 	// Default simple tags definitions
 	StyleList style;
 
-	style["hovercolor"] = "#FF0000";
 	style["color"] = "#0000FF";
 	style["underline"] = "true";
 	m_elementtags["action"] = style;
@@ -167,6 +166,7 @@ ParsedText::ParsedText(const wchar_t *text)
 
 	m_element = NULL;
 	m_paragraph = NULL;
+	m_end_paragraph_reason = ER_NONE;
 
 	parse(text);
 }
@@ -191,7 +191,7 @@ void ParsedText::parse(const wchar_t *text)
 				cursor++;
 			// If text has begun, don't skip empty line
 			if (m_paragraph) {
-				endParagraph();
+				endParagraph(ER_NEWLINE);
 				enterElement(ELEMENT_SEPARATOR);
 			}
 			escape = false;
@@ -201,7 +201,7 @@ void ParsedText::parse(const wchar_t *text)
 		if (c == L'\n') { // Unix breaks
 			// If text has begun, don't skip empty line
 			if (m_paragraph) {
-				endParagraph();
+				endParagraph(ER_NEWLINE);
 				enterElement(ELEMENT_SEPARATOR);
 			}
 			escape = false;
@@ -232,7 +232,7 @@ void ParsedText::parse(const wchar_t *text)
 		pushChar(c);
 	}
 
-	endParagraph();
+	endParagraph(ER_NONE);
 }
 
 void ParsedText::endElement()
@@ -240,11 +240,20 @@ void ParsedText::endElement()
 	m_element = NULL;
 }
 
-void ParsedText::endParagraph()
+void ParsedText::endParagraph(EndReason reason)
 {
 	if (!m_paragraph)
 		return;
 
+	EndReason previous = m_end_paragraph_reason;
+	m_end_paragraph_reason = reason;
+	if (m_empty_paragraph && (reason == ER_TAG ||
+			(reason == ER_NEWLINE && previous == ER_TAG))) {
+		// Ignore last empty paragraph
+		m_paragraph = nullptr;
+		m_paragraphs.pop_back();
+		return;
+	}
 	endElement();
 	m_paragraph = NULL;
 }
@@ -255,6 +264,7 @@ void ParsedText::enterParagraph()
 		m_paragraphs.emplace_back();
 		m_paragraph = &m_paragraphs.back();
 		m_paragraph->setStyle(m_style);
+		m_empty_paragraph = true;
 	}
 }
 
@@ -274,11 +284,15 @@ void ParsedText::enterElement(ElementType type)
 void ParsedText::pushChar(wchar_t c)
 {
 	// New word if needed
-	if (c == L' ' || c == L'\t')
-		enterElement(ELEMENT_SEPARATOR);
-	else
+	if (c == L' ' || c == L'\t') {
+		if (!m_empty_paragraph)
+			enterElement(ELEMENT_SEPARATOR);
+		else
+			return;
+	} else {
+		m_empty_paragraph = false;
 		enterElement(ELEMENT_TEXT);
-
+	}
 	m_element->text += c;
 }
 
@@ -571,7 +585,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		} else {
 			openTag(name, attrs)->style = m_paragraphtags[name];
 		}
-		endParagraph();
+		endParagraph(ER_TAG);
 
 	} else
 		return 0; // Unknown tag
@@ -903,20 +917,20 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 
 // Draw text in a rectangle with a given offset. Items are actually placed in
 // relative (to upper left corner) coordinates.
-void TextDrawer::draw(const core::rect<s32> &dest_rect,
+void TextDrawer::draw(const core::rect<s32> &clip_rect,
 		const core::position2d<s32> &dest_offset)
 {
 	irr::video::IVideoDriver *driver = m_environment->getVideoDriver();
-	core::position2d<s32> offset = dest_rect.UpperLeftCorner + dest_offset;
+	core::position2d<s32> offset = dest_offset;
 	offset.Y += m_voffset;
 
 	if (m_text.background_type == ParsedText::BACKGROUND_COLOR)
-		driver->draw2DRectangle(m_text.background_color, dest_rect);
+		driver->draw2DRectangle(m_text.background_color, clip_rect);
 
 	for (auto &p : m_text.m_paragraphs) {
 		for (auto &el : p.elements) {
 			core::rect<s32> rect(el.pos + offset, el.dim);
-			if (!rect.isRectCollided(dest_rect))
+			if (!rect.isRectCollided(clip_rect))
 				continue;
 
 			switch (el.type) {
@@ -933,7 +947,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 
 				if (el.type == ParsedText::ELEMENT_TEXT)
 					el.font->draw(el.text, rect, color, false, true,
-							&dest_rect);
+							&clip_rect);
 
 				if (el.underline &&  el.drawwidth) {
 					s32 linepos = el.pos.Y + offset.Y +
@@ -944,7 +958,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 							el.pos.X + offset.X + el.drawwidth,
 							linepos + (el.baseline >> 3));
 
-					driver->draw2DRectangle(color, linerect, &dest_rect);
+					driver->draw2DRectangle(color, linerect, &clip_rect);
 				}
 			} break;
 
@@ -958,7 +972,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 							irr::core::rect<s32>(
 									core::position2d<s32>(0, 0),
 									texture->getOriginalSize()),
-							&dest_rect, 0, true);
+							&clip_rect, 0, true);
 			} break;
 
 			case ParsedText::ELEMENT_ITEM: {
@@ -968,7 +982,7 @@ void TextDrawer::draw(const core::rect<s32> &dest_rect,
 
 				drawItemStack(
 						m_environment->getVideoDriver(),
-						g_fontengine->getFont(), item, rect, &dest_rect,
+						g_fontengine->getFont(), item, rect, &clip_rect,
 						m_client, IT_ROT_OTHER, el.angle, el.rotation
 				);
 			} break;
@@ -1039,12 +1053,14 @@ void GUIHyperText::checkHover(s32 X, s32 Y)
 		}
 	}
 
+#ifndef HAVE_TOUCHSCREENGUI
 	if (m_drawer.m_hovertag)
 		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
 				gui::ECI_HAND);
 	else
 		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
 				gui::ECI_NORMAL);
+#endif
 }
 
 bool GUIHyperText::OnEvent(const SEvent &event)
@@ -1060,8 +1076,12 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 	if (event.EventType == EET_GUI_EVENT &&
 			event.GUIEvent.EventType == EGET_ELEMENT_LEFT) {
 		m_drawer.m_hovertag = nullptr;
-		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
-				gui::ECI_NORMAL);
+#ifndef HAVE_TOUCHSCREENGUI
+		gui::ICursorControl *cursor_control =
+				RenderingEngine::get_raw_device()->getCursorControl();
+		if (cursor_control->isVisible())
+			cursor_control->setActiveIcon(gui::ECI_NORMAL);
+#endif
 	}
 
 	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
@@ -1074,6 +1094,7 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 			m_text_scrollpos.Y = -m_vscrollbar->getPos();
 			m_drawer.draw(m_display_text_rect, m_text_scrollpos);
 			checkHover(event.MouseInput.X, event.MouseInput.Y);
+			return true;
 
 		} else if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 			ParsedText::Element *element = getElementAt(
@@ -1131,7 +1152,8 @@ void GUIHyperText::draw()
 		m_vscrollbar->setPos(0);
 		m_vscrollbar->setVisible(false);
 	}
-	m_drawer.draw(m_display_text_rect, m_text_scrollpos);
+	m_drawer.draw(AbsoluteClippingRect,
+			m_display_text_rect.UpperLeftCorner + m_text_scrollpos);
 
 	// draw children
 	IGUIElement::draw();

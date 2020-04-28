@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -409,14 +409,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z spreiding"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr ""
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "Standaard"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "makkelijker"
@@ -639,6 +650,7 @@ msgstr "Naam / Wachtwoord"
 msgid "Ping"
 msgstr "Ping"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "Spelergevechten aangeschakeld"
@@ -888,6 +900,14 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "Het gespecificeerde wereld-pad bestaat niet: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 #, fuzzy
 msgid "needs_fallback_font"
@@ -928,6 +948,7 @@ msgstr "- Poort: "
 msgid "- Public: "
 msgstr "- Publiek: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1402,6 +1423,7 @@ msgstr "Linker Shift"
 msgid "Left Windows"
 msgstr "Linker Windowstoets"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Menu"
@@ -1496,6 +1518,7 @@ msgstr "Pauze"
 msgid "Play"
 msgstr "Spelen"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Print"
@@ -1532,6 +1555,7 @@ msgstr "Rechter Windowstoets"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Selecteren"
@@ -1782,10 +1806,15 @@ msgstr "Dempen"
 msgid "Sound Volume: "
 msgstr "Geluidsvolume: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Enter "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "nl"
@@ -2224,8 +2253,8 @@ msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5457,7 +5486,7 @@ msgstr ""
 "inloggen."
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+msgid "Near plane"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7025,112 +7054,6 @@ msgstr "Maximaal parallellisme in cURL"
 msgid "cURL timeout"
 msgstr "cURL timeout"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Cinematic modus aan/uit"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Selecteer Modbestand:"
-
-#, fuzzy
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Minimale diepte van grote semi-willekeurige grotten."
-
-#~ msgid "Waving Water"
-#~ msgstr "Golvend water"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-niveau tot waar de schaduw van drijvend land reikt."
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "Y-niveau van drijvend land middelpunt en vijver oppervlak."
-
-#~ msgid "Waving water"
-#~ msgstr "Golvend water"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr ""
-#~ "Variatie van de heuvel hoogte en vijver diepte op drijvend egaal terrein."
-
-#, fuzzy
-#~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
-#~ msgstr ""
-#~ "Typisch maximum hoogte, boven en onder het middelpunt van drijvend berg "
-#~ "terrein."
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Dit font wordt gebruikt voor bepaalde talen."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Schaduw limiet"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Pad van TrueType font of bitmap."
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Diepte van grote grotten"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 ondersteuning."
-
-#, fuzzy
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Fontschaduw alphawaarde (ondoorzichtigheid, tussen 0 en 255)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Drijvend gebergte hoogte"
-
-#, fuzzy
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Drijvend gebergte dichtheid"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Drijvend gebergte dichtheid"
-
-#, fuzzy
-#~ msgid "Floatland level"
-#~ msgstr "Waterniveau"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Drijvend land basis ruis"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Drijvend land basis hoogte ruis"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Schakelt filmisch tone-mapping in"
-
-#~ msgid "Enable VBO"
-#~ msgstr "VBO aanzetten"
-
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Bepaalt gebieden van drijvend glijdend terrein.\n"
-#~ "Drijvend glijdend terrein ontstaat wanneer ruis > 0."
-
-#, fuzzy
-#~ msgid "Darkness sharpness"
-#~ msgstr "Steilheid Van de meren"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Bepaalt breedte van tunnels, een kleinere waarde maakt bredere tunnels."
-
-#, fuzzy
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Bepaalt de dichtheid van drijvende bergen.\n"
-#~ "Dit wordt bijgevoegd bij de 'np_mountain' ruis waarde."
-
 #, fuzzy
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -7140,3 +7063,109 @@ msgstr "cURL timeout"
 #~ "Aangepaste gamma voor de licht-tabellen. Lagere waardes zijn helderder.\n"
 #~ "Deze instelling wordt enkel gebruikt door de cliënt, en wordt genegeerd "
 #~ "door de server."
+
+#, fuzzy
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "Bepaalt de dichtheid van drijvende bergen.\n"
+#~ "Dit wordt bijgevoegd bij de 'np_mountain' ruis waarde."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Bepaalt breedte van tunnels, een kleinere waarde maakt bredere tunnels."
+
+#, fuzzy
+#~ msgid "Darkness sharpness"
+#~ msgstr "Steilheid Van de meren"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Bepaalt gebieden van drijvend glijdend terrein.\n"
+#~ "Drijvend glijdend terrein ontstaat wanneer ruis > 0."
+
+#~ msgid "Enable VBO"
+#~ msgstr "VBO aanzetten"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Schakelt filmisch tone-mapping in"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Drijvend land basis hoogte ruis"
+
+#~ msgid "Floatland base noise"
+#~ msgstr "Drijvend land basis ruis"
+
+#, fuzzy
+#~ msgid "Floatland level"
+#~ msgstr "Waterniveau"
+
+#~ msgid "Floatland mountain density"
+#~ msgstr "Drijvend gebergte dichtheid"
+
+#, fuzzy
+#~ msgid "Floatland mountain exponent"
+#~ msgstr "Drijvend gebergte dichtheid"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Drijvend gebergte hoogte"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Fontschaduw alphawaarde (ondoorzichtigheid, tussen 0 en 255)."
+
+#, fuzzy
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 ondersteuning."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Diepte van grote grotten"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Pad van TrueType font of bitmap."
+
+#~ msgid "Shadow limit"
+#~ msgstr "Schaduw limiet"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Dit font wordt gebruikt voor bepaalde talen."
+
+#, fuzzy
+#~ msgid ""
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr ""
+#~ "Typisch maximum hoogte, boven en onder het middelpunt van drijvend berg "
+#~ "terrein."
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Variatie van de heuvel hoogte en vijver diepte op drijvend egaal terrein."
+
+#~ msgid "Waving water"
+#~ msgstr "Golvend water"
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "Y-niveau van drijvend land middelpunt en vijver oppervlak."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-niveau tot waar de schaduw van drijvend land reikt."
+
+#~ msgid "Waving Water"
+#~ msgstr "Golvend water"
+
+#, fuzzy
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Minimale diepte van grote semi-willekeurige grotten."
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Selecteer Modbestand:"
+
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Cinematic modus aan/uit"

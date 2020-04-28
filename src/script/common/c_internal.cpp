@@ -47,7 +47,7 @@ int script_exception_wrapper(lua_State *L, lua_CFunction f)
 /*
  * Note that we can't get tracebacks for LUA_ERRMEM or LUA_ERRERR (without
  * hacking Lua internals).  For LUA_ERRMEM, this is because memory errors will
- * not execute the the error handler, and by the time lua_pcall returns the
+ * not execute the error handler, and by the time lua_pcall returns the
  * execution stack will have already been unwound.  For LUA_ERRERR, there was
  * another error while trying to generate a backtrace from a LUA_ERRRUN.  It is
  * presumed there is an error with the internal Lua state and thus not possible
@@ -157,9 +157,9 @@ static void script_log(lua_State *L, const std::string &message,
 
 void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
 {
-	static bool configured = false;
-	static bool do_log     = false;
-	static bool do_error   = false;
+	static thread_local bool configured = false;
+	static thread_local bool do_log = false;
+	static thread_local bool do_error = false;
 
 	// Only read settings on first call
 	if (!configured) {
@@ -167,9 +167,10 @@ void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
 		if (value == "log") {
 			do_log = true;
 		} else if (value == "error") {
-			do_log   = true;
+			do_log = true;
 			do_error = true;
 		}
+		configured = true;
 	}
 
 	if (do_log)

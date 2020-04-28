@@ -136,8 +136,10 @@ protected:
 	Environment* getEnv() { return m_environment; }
 	void setEnv(Environment* env) { m_environment = env; }
 
+#ifndef SERVER
 	GUIEngine* getGuiEngine() { return m_guiengine; }
 	void setGuiEngine(GUIEngine* guiengine) { m_guiengine = guiengine; }
+#endif
 
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
 
@@ -158,6 +160,8 @@ private:
 
 	IGameDef       *m_gamedef = nullptr;
 	Environment    *m_environment = nullptr;
+#ifndef SERVER
 	GUIEngine      *m_guiengine = nullptr;
+#endif
 	ScriptingType  m_type;
 };

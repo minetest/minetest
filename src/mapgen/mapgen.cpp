@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "emerge.h"
 #include "voxelalgorithms.h"
@@ -629,6 +628,13 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 	// Lava falls back to water as both are suitable as cave liquids.
 	if (c_lava_source == CONTENT_IGNORE)
 		c_lava_source = c_water_source;
+
+	if (c_stone == CONTENT_IGNORE)
+		errorstream << "Mapgen: Mapgen alias 'mapgen_stone' is invalid!" << std::endl;
+	if (c_water_source == CONTENT_IGNORE)
+		errorstream << "Mapgen: Mapgen alias 'mapgen_water_source' is invalid!" << std::endl;
+	if (c_river_water_source == CONTENT_IGNORE)
+		warningstream << "Mapgen: Mapgen alias 'mapgen_river_water_source' is invalid!" << std::endl;
 }
 
 

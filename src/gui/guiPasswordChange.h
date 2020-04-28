@@ -23,12 +23,14 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <string>
 
 class Client;
+class ISimpleTextureSource;
 
 class GUIPasswordChange : public GUIModalMenu
 {
 public:
 	GUIPasswordChange(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-			IMenuManager *menumgr, Client *client);
+			IMenuManager *menumgr, Client *client,
+			ISimpleTextureSource *tsrc);
 	~GUIPasswordChange();
 
 	void removeChildren();
@@ -57,4 +59,5 @@ private:
 	std::wstring m_oldpass = L"";
 	std::wstring m_newpass = L"";
 	std::wstring m_newpass_confirm = L"";
+	ISimpleTextureSource *m_tsrc;
 };

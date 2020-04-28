@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_security.h"
 #include "lua_api/l_object.h"
 #include "common/c_converter.h"
-#include "serverobject.h"
+#include "server/player_sao.h"
 #include "filesys.h"
 #include "content/mods.h"
 #include "porting.h"
@@ -43,7 +43,6 @@ extern "C" {
 #include <cstdio>
 #include <cstdarg>
 #include "script/common/c_content.h"
-#include "content_sao.h"
 #include <sstream>
 
 
@@ -90,7 +89,11 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 		luaL_openlibs(m_luastack);
 
 	// Make the ScriptApiBase* accessible to ModApiBase
+#if INDIRECT_SCRIPTAPI_RIDX
+	*(void **)(lua_newuserdata(m_luastack, sizeof(void *))) = this;
+#else
 	lua_pushlightuserdata(m_luastack, this);
+#endif
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
 	// Add and save an error handler

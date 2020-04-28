@@ -32,11 +32,13 @@ public:
 	Database_PostgreSQL(const std::string &connect_string);
 	~Database_PostgreSQL();
 
+	virtual void pingDatabase();
+
 	void beginSave();
 	void endSave();
+	void rollback();
 
 	bool initialized() const;
-
 
 protected:
 	// Conversion helpers
@@ -82,7 +84,6 @@ protected:
 	}
 
 	void createTableIfNotExists(const std::string &table_name, const std::string &definition);
-	void verifyDatabase();
 
 	// Database initialization
 	void connectToDatabase();
@@ -113,6 +114,8 @@ public:
 	MapDatabasePostgreSQL(const std::string &connect_string);
 	virtual ~MapDatabasePostgreSQL() = default;
 
+	virtual void pingDatabase() { Database_PostgreSQL::pingDatabase(); }
+
 	bool saveBlock(const v3s16 &pos, const std::string &data);
 	void loadBlock(const v3s16 &pos, std::string *block);
 	bool deleteBlock(const v3s16 &pos);
@@ -132,6 +135,8 @@ public:
 	PlayerDatabasePostgreSQL(const std::string &connect_string);
 	virtual ~PlayerDatabasePostgreSQL() = default;
 
+	virtual void pingDatabase() { Database_PostgreSQL::pingDatabase(); }
+
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
 	bool removePlayer(const std::string &name);
@@ -143,4 +148,27 @@ protected:
 
 private:
 	bool playerDataExists(const std::string &playername);
+};
+
+class AuthDatabasePostgreSQL : private Database_PostgreSQL, public AuthDatabase
+{
+public:
+	AuthDatabasePostgreSQL(const std::string &connect_string);
+	virtual ~AuthDatabasePostgreSQL() = default;
+
+	virtual void pingDatabase() { Database_PostgreSQL::pingDatabase(); }
+
+	virtual bool getAuth(const std::string &name, AuthEntry &res);
+	virtual bool saveAuth(const AuthEntry &authEntry);
+	virtual bool createAuth(AuthEntry &authEntry);
+	virtual bool deleteAuth(const std::string &name);
+	virtual void listNames(std::vector<std::string> &res);
+	virtual void reload();
+
+protected:
+	virtual void createDatabase();
+	virtual void initStatements();
+
+private:
+	virtual void writePrivileges(const AuthEntry &authEntry);
 };

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Belarusian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-18 20:21+0000\n"
+"POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2019-11-19 23:04+0000\n"
 "Last-Translator: Viktar Vauchkevich <victorenator@gmail.com>\n"
 "Language-Team: Belarusian <https://hosted.weblate.org/projects/minetest/"
@@ -403,14 +403,25 @@ msgstr "Z"
 msgid "Z spread"
 msgstr "Z распаўсюджвання"
 
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
 msgstr "абсалютная велічыня"
 
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
 msgstr "прадвызначаны"
 
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
 msgstr "паслаблены"
@@ -622,6 +633,7 @@ msgstr "Імя / Пароль"
 msgid "Ping"
 msgstr "Пінг"
 
+#. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP уключаны"
@@ -866,6 +878,14 @@ msgstr "Не атрымалася адкрыць пададзены файл п�
 msgid "Provided world path doesn't exist: "
 msgstr "Пададзены шлях не існуе: "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string. Put either "no" or "yes"
+#. into the translation field (literally).
+#. Choose "yes" if the language requires use of the fallback
+#. font, "no" otherwise.
+#. The fallback font is (normally) required for languages with
+#. non-Latin script, like Chinese.
+#. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "no"
@@ -902,6 +922,7 @@ msgstr "- Порт: "
 msgid "- Public: "
 msgstr "- Публічны: "
 
+#. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
 msgstr "- PvP: "
@@ -1352,6 +1373,7 @@ msgstr "Левы Shift"
 msgid "Left Windows"
 msgstr "Левы Super"
 
+#. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
 msgstr "Меню"
@@ -1444,6 +1466,7 @@ msgstr "Паўза"
 msgid "Play"
 msgstr "Гуляць"
 
+#. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
 msgstr "Друкаваць"
@@ -1480,6 +1503,7 @@ msgstr "Правы Super"
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
+#. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
 msgstr "Абраць"
@@ -1720,10 +1744,15 @@ msgstr "Сцішаны"
 msgid "Sound Volume: "
 msgstr "Гучнасць: "
 
+#. ~ Imperative, as in "Enter/type in text".
+#. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
 msgstr "Увод "
 
+#. ~ DO NOT TRANSLATE THIS LITERALLY!
+#. This is a special string which needs to contain the translation's
+#. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "be"
@@ -2155,9 +2184,10 @@ msgid "Bumpmapping"
 msgstr "Рэльефнае тэкстураванне"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.5.\n"
-"Most users will not need to change this.\n"
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
@@ -5247,7 +5277,8 @@ msgid ""
 msgstr "Назва сервера, што будзе паказвацца пры падлучэнні і ў спісе сервераў."
 
 #: src/settings_translation_file.cpp
-msgid "Near clipping plane"
+#, fuzzy
+msgid "Near plane"
 msgstr "Блізкая плоскасць адсячэння"
 
 #: src/settings_translation_file.cpp
@@ -6841,40 +6872,130 @@ msgid "cURL timeout"
 msgstr "Таймаўт cURL"
 
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen v5.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "Атрыбуты генерацыі мапы для генератара мапы 5.\n"
-#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
-#~ "Атрыбуты, што пачынаюцца з 'no' выкарыстоўваюцца для іх выключэння."
+#~ "Наладка гама-кадавання для светлавых табліц. Высокія значэнні — больш "
+#~ "ярчэйшыя.\n"
+#~ "Гэты параметр прызначаны толькі для кліента і ігнаруецца серверам."
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Кінематаграфічнасць"
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr "Кіруе звужэннем астравоў горнага тыпу ніжэй сярэдняй кропкі."
+
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Цэнтр сярэдняга ўздыму крывой святла."
 
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen Carpathian.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
 #~ msgstr ""
-#~ "Атрыбуты генерацыі мапы для генератара мапы \"Карпаты\".\n"
-#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
-#~ "Атрыбуты, што пачынаюцца з \"no\", выкарыстоўваюцца для іх выключэння."
+#~ "Кіруе шчыльнасцю горнага рэльефу лятучых астравоў.\n"
+#~ "Гэты зрух дадаецца да значэння 'np_mountain'."
 
-#~ msgid "Content Store"
-#~ msgstr "Крама дадаткаў"
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Кіруе шырынёй тунэляў. Меншае значэнне стварае больш шырокія тунэлі."
 
-#~ msgid "Select Package File:"
-#~ msgstr "Абраць файл пакунка:"
+#~ msgid "Darkness sharpness"
+#~ msgstr "Рэзкасць цемры"
 
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Y верхняга ліміту лавы ў шырокіх пячорах."
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Вызначае вобласці гладкага рэльефу лятучых астравоў.\n"
+#~ "Гладкая паверхня з'яўляецца, калі шум больш нуля."
 
-#~ msgid "Waving Water"
+#~ msgid ""
+#~ "Deprecated, define and locate cave liquids using biome definitions "
+#~ "instead.\n"
+#~ "Y of upper limit of lava in large caves."
+#~ msgstr ""
+#~ "Састарэлы. Вызначае і размяшчае пячорныя вадкасці з выкарыстаннем "
+#~ "азначэнняў біёму.\n"
+#~ "Y верхняй мяжы лавы ў вялікіх пячорах."
+
+#~ msgid "Enable VBO"
+#~ msgstr "Уключыць VBO"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Уключае кінематаграфічнае танальнае адлюстраванне"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Шум базавай вышыні лятучых астравоў"
+
+#~ msgid "Floatland base noise"
+#~ msgstr "Базавы шум лятучых астравоў"
+
+#~ msgid "Floatland level"
+#~ msgstr "Узровень лятучых астравоў"
+
+#~ msgid "Floatland mountain density"
+#~ msgstr "Шчыльнасць гор лятучых астравоў"
+
+#~ msgid "Floatland mountain exponent"
+#~ msgstr "Шчыльнасць гор лятучых астравоў"
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Вышыня гор на лятучых астравоў"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Празрыстасць цені шрыфту (ад 0 да 255)."
+
+#~ msgid "Gamma"
+#~ msgstr "Гама"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Падтрымка IPv6."
+
+#~ msgid "Lava depth"
+#~ msgstr "Глыбіня лавы"
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "Рэзкасць паваротлівасці"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Шлях да TrueTypeFont ці растравага шрыфту."
+
+#~ msgid "Shadow limit"
+#~ msgstr "Ліміт ценяў"
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Моц сярэдняга ўздыму крывой святла."
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Гэты шрыфт будзе выкарыстоўваецца для некаторых моў."
+
+#~ msgid ""
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr ""
+#~ "Тыповая максімальная вышыня, вышэй і ніжэй сярэдняй кропкі гор лятучых "
+#~ "астравоў."
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Варыяцыя вышыні пагоркаў і глыбінь азёр на гладкай мясцовасці лятучых "
+#~ "астравоў."
+
+#~ msgid "Waving water"
 #~ msgstr "Хваляванне вады"
 
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "Выступ падзямелляў па-над рэльефам."
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "Y-узровень сярэдняй кропкі і паверхні азёр лятучых астравоў."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-узровень, да якога распаўсюджваюцца цені лятучых астравоў."
+
+#~ msgid ""
+#~ "If enabled together with fly mode, makes move directions relative to the "
+#~ "player's pitch."
+#~ msgstr ""
+#~ "Калі ўключана адначасова з рэжымам палёту, то вызначае напрамак руху "
+#~ "адносна кроку гульца."
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Праектаванне падзямелляў"
 
 #~ msgid ""
 #~ "Map generation attributes specific to Mapgen v7.\n"
@@ -6887,128 +7008,38 @@ msgstr "Таймаўт cURL"
 #~ "Нявызначаныя параметры прадвызначана не змяняюцца.\n"
 #~ "Параметры, што пачынаюцца з \"no\", выкарыстоўваюцца для выключэння."
 
-#~ msgid "Projecting dungeons"
-#~ msgstr "Праектаванне падзямелляў"
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "Выступ падзямелляў па-над рэльефам."
 
-#~ msgid ""
-#~ "If enabled together with fly mode, makes move directions relative to the "
-#~ "player's pitch."
-#~ msgstr ""
-#~ "Калі ўключана адначасова з рэжымам палёту, то вызначае напрамак руху "
-#~ "адносна кроку гульца."
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-узровень, да якога распаўсюджваюцца цені лятучых астравоў."
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "Y-узровень сярэдняй кропкі і паверхні азёр лятучых астравоў."
-
-#~ msgid "Waving water"
+#~ msgid "Waving Water"
 #~ msgstr "Хваляванне вады"
 
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr ""
-#~ "Варыяцыя вышыні пагоркаў і глыбінь азёр на гладкай мясцовасці лятучых "
-#~ "астравоў."
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y верхняга ліміту лавы ў шырокіх пячорах."
+
+#~ msgid "Select Package File:"
+#~ msgstr "Абраць файл пакунка:"
+
+#~ msgid "Content Store"
+#~ msgstr "Крама дадаткаў"
 
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ "Map generation attributes specific to Mapgen Carpathian.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Тыповая максімальная вышыня, вышэй і ніжэй сярэдняй кропкі гор лятучых "
-#~ "астравоў."
+#~ "Атрыбуты генерацыі мапы для генератара мапы \"Карпаты\".\n"
+#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
+#~ "Атрыбуты, што пачынаюцца з \"no\", выкарыстоўваюцца для іх выключэння."
 
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Гэты шрыфт будзе выкарыстоўваецца для некаторых моў."
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Моц сярэдняга ўздыму крывой святла."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Ліміт ценяў"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Шлях да TrueTypeFont ці растравага шрыфту."
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Рэзкасць паваротлівасці"
-
-#~ msgid "Lava depth"
-#~ msgstr "Глыбіня лавы"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Падтрымка IPv6."
-
-#~ msgid "Gamma"
-#~ msgstr "Гама"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Празрыстасць цені шрыфту (ад 0 да 255)."
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Вышыня гор на лятучых астравоў"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Шчыльнасць гор лятучых астравоў"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Шчыльнасць гор лятучых астравоў"
-
-#~ msgid "Floatland level"
-#~ msgstr "Узровень лятучых астравоў"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Базавы шум лятучых астравоў"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Шум базавай вышыні лятучых астравоў"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Уключае кінематаграфічнае танальнае адлюстраванне"
-
-#~ msgid "Enable VBO"
-#~ msgstr "Уключыць VBO"
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Кінематаграфічнасць"
 
 #~ msgid ""
-#~ "Deprecated, define and locate cave liquids using biome definitions "
-#~ "instead.\n"
-#~ "Y of upper limit of lava in large caves."
+#~ "Map generation attributes specific to Mapgen v5.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Састарэлы. Вызначае і размяшчае пячорныя вадкасці з выкарыстаннем "
-#~ "азначэнняў біёму.\n"
-#~ "Y верхняй мяжы лавы ў вялікіх пячорах."
-
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Вызначае вобласці гладкага рэльефу лятучых астравоў.\n"
-#~ "Гладкая паверхня з'яўляецца, калі шум больш нуля."
-
-#~ msgid "Darkness sharpness"
-#~ msgstr "Рэзкасць цемры"
-
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Кіруе шырынёй тунэляў. Меншае значэнне стварае больш шырокія тунэлі."
-
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Кіруе шчыльнасцю горнага рэльефу лятучых астравоў.\n"
-#~ "Гэты зрух дадаецца да значэння 'np_mountain'."
-
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Цэнтр сярэдняга ўздыму крывой святла."
-
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr "Кіруе звужэннем астравоў горнага тыпу ніжэй сярэдняй кропкі."
-
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
-#~ msgstr ""
-#~ "Наладка гама-кадавання для светлавых табліц. Высокія значэнні — больш "
-#~ "ярчэйшыя.\n"
-#~ "Гэты параметр прызначаны толькі для кліента і ігнаруецца серверам."
+#~ "Атрыбуты генерацыі мапы для генератара мапы 5.\n"
+#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
+#~ "Атрыбуты, што пачынаюцца з 'no' выкарыстоўваюцца для іх выключэння."

@@ -187,7 +187,13 @@ int main(int argc, char *argv[])
 #ifndef __ANDROID__
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
+#if BUILD_UNITTESTS
 		return run_tests();
+#else
+		errorstream << "Unittest support is not enabled in this binary. "
+			<< "If you want to enable it, compile project with BUILD_UNITTESTS=1 flag."
+			<< std::endl;
+#endif
 	}
 #endif
 
@@ -206,9 +212,6 @@ int main(int argc, char *argv[])
 		return 1;
 
 	sanity_check(!game_params.world_path.empty());
-
-	infostream << "Using commanded world path ["
-	           << game_params.world_path << "]" << std::endl;
 
 	if (game_params.is_dedicated_server)
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
@@ -460,7 +463,6 @@ static bool create_userdata_path()
 	} else {
 		success = true;
 	}
-	porting::copyAssets();
 #else
 	// Create user data directory
 	success = fs::CreateDir(porting::path_user);
@@ -686,8 +688,6 @@ static bool auto_select_world(GameParams *game_params)
 	// No world was specified; try to select it automatically
 	// Get information about available worlds
 
-	verbosestream << _("Determining world path") << std::endl;
-
 	std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 	std::string world_path;
 
@@ -708,7 +708,7 @@ static bool auto_select_world(GameParams *game_params)
 		// This is the ultimate default world path
 		world_path = porting::path_user + DIR_DELIM + "worlds" +
 				DIR_DELIM + "world";
-		infostream << "Creating default world at ["
+		infostream << "Using default world at ["
 		           << world_path << "]" << std::endl;
 	}
 
@@ -770,7 +770,6 @@ static bool determine_subgame(GameParams *game_params)
 
 	assert(game_params->world_path != "");	// Pre-condition
 
-	verbosestream << _("Determining gameid/gamespec") << std::endl;
 	// If world doesn't exist
 	if (!game_params->world_path.empty()
 		&& !getWorldExists(game_params->world_path)) {
@@ -782,7 +781,7 @@ static bool determine_subgame(GameParams *game_params)
 			gamespec = findSubgame(g_settings->get("default_game"));
 			infostream << "Using default gameid [" << gamespec.id << "]" << std::endl;
 			if (!gamespec.isValid()) {
-				errorstream << "Subgame specified in default_game ["
+				errorstream << "Game specified in default_game ["
 				            << g_settings->get("default_game")
 				            << "] is invalid." << std::endl;
 				return false;
@@ -807,7 +806,7 @@ static bool determine_subgame(GameParams *game_params)
 	}
 
 	if (!gamespec.isValid()) {
-		errorstream << "Subgame [" << gamespec.id << "] could not be found."
+		errorstream << "Game [" << gamespec.id << "] could not be found."
 		            << std::endl;
 		return false;
 	}
