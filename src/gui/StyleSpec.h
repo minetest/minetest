@@ -210,7 +210,6 @@ public:
 		return rect;
 	}
 
-<<<<<<< HEAD
 	irr::core::vector2d<s32> getVector2i(Property prop, irr::core::vector2d<s32> def) const
 	{
 		const auto &val = properties[prop];
@@ -232,7 +231,8 @@ public:
 		irr::core::vector2d<s32> vec;
 		parseVector2i(val, &vec);
 		return vec;
-=======
+	}
+
 	gui::IGUIFont *getFont() const
 	{
 		FontSpec spec(FONT_SIZE_UNSPECIFIED, FM_Standard, false, false);
@@ -262,8 +262,8 @@ public:
 			if (size.size() == 0) {
 				calc_size = 0;
 			} else if (size[0] == '*') {
-				std::string new_size = size.substr(1); // Remove '*' (invalid for stoi)
-				calc_size = stoi(new_size) * g_fontengine->getFontSize(spec.mode);
+				std::string new_size = size.substr(1); // Remove '*' (invalid for stof)
+				calc_size = stof(new_size) * g_fontengine->getFontSize(spec.mode);
 			} else if (size[0] == '+' || size[0] == '-') {
 				calc_size = stoi(size) + g_fontengine->getFontSize(spec.mode);
 			} else {
@@ -274,7 +274,6 @@ public:
 		}
 
 		return g_fontengine->getFont(spec);
->>>>>>> Add FormSpec font styling options
 	}
 
 	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc,
