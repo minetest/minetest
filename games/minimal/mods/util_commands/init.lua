@@ -60,7 +60,14 @@ minetest.register_chatcommand("zoom", {
 
 
 
-local infplace = minetest.settings:get_bool("devtest_infplace", false)
+local s_infplace = minetest.settings:get("devtest_infplace")
+if s_infplace == "true" then
+	infplace = true
+elseif s_infplace == "false" then
+	infplace = false
+else
+	infplace = minetest.settings:get_bool("creative_mode", false)
+end
 
 minetest.register_chatcommand("infplace", {
 	params = "",

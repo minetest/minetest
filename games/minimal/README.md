@@ -17,10 +17,11 @@ This is a basic testing environment that contains a bunch of things to test the 
 
 Basically, just create a world and start. A few important things to note:
 
-* Items are gotten from the “Chest of Everything” (`get_item:chest`)
+* Items are gotten from the “Chest of Everything” (`chest_of_everything:chest`)
 * When you lost your initial items, type in `/stuff` command to get them back
-* Use `/infplace` command to activate infinite node placement. There's also the setting `devtest_infplace`
-* Use the Param2 Tool to experiment with the various drawtype test nodes
+* By default, Creative Mode activates infinite node placement. This behavior can be changed with the `devtest_infplace` setting
+* Use the `/infplace` command to toggle infinite node placement in-game
+* Use the Param2 Tool to change the param2 of nodes; it's useful to experiment with the various drawtype test nodes
 * Check out the game settings and server commands for additional tests and features
 * Creative Mode does nothing (apart from default engine behavior)
 

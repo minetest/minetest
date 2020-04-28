@@ -12,5 +12,3 @@ minetest.register_on_modchannel_message(function(channel, sender, message)
 		mod_channel:leave()
 	end
 end)
-
-minetest.log("action", "[modchannels] Code loaded!")

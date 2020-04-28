@@ -1,5 +1,10 @@
 # If enabled, nodes won't be used up when placed.
-devtest_infplace (Infinite node placement) bool false
+# Note: This behavior can also be toggled in-game with the /infplace command.
+#
+# - true: enabled
+# - false: disabled
+# - auto: only enabled when Creative Mode is enabled (default)
+devtest_infplace (Infinite node placement) enum auto true,false,auto
 
 # If enabled, new players receive some initial items when joining for the first time.
 give_initial_stuff (Give initial stuff) bool true
