@@ -11,7 +11,7 @@ local MAX_JUMP = 1
 -- Maximum permitted drop height
 local MAX_DROP = 5
 -- If true, mod won't refuse to run pathfinder even at long distances
-local IGNORE_MAX_DISTANCE_SAFEGUARD = true
+local IGNORE_MAX_DISTANCE_SAFEGUARD = false
 
 -- End of config parameters
 
