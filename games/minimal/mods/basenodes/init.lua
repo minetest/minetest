@@ -241,7 +241,7 @@ minetest.register_node("basenodes:lava_flowing", {
 	buildable_to = true,
 	is_ground_content = false,
 	drowning = 1,
-	-- Damage intentionally disabled to make it easier to explore it from inside
+	damage_per_second = 4,
 	liquidtype = "flowing",
 	liquid_alternative_flowing = "basenodes:lava_flowing",
 	liquid_alternative_source = "basenodes:lava_source",
@@ -266,7 +266,7 @@ minetest.register_node("basenodes:lava_source", {
 	buildable_to = true,
 	is_ground_content = false,
 	drowning = 1,
-	-- Damage intentionally disabled to make it easier to explore it from inside
+	damage_per_second = 4,
 	liquidtype = "source",
 	liquid_alternative_flowing = "basenodes:lava_flowing",
 	liquid_alternative_source = "basenodes:lava_source",
@@ -299,6 +299,9 @@ minetest.register_node("basenodes:apple", {
 	sunlight_propagates = true,
 	walkable = false,
 	groups = {dig_immediate=3},
+
+	-- Make eatable because why not?
+	on_use = minetest.item_eat(2),
 })
 
 minetest.register_node("basenodes:ice", {
