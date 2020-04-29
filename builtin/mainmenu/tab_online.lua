@@ -16,6 +16,45 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
+
+local storage = core.get_mod_storage()
+
+-- Generate a random password and set it in mod storage
+local char = string.char
+local rand = math.random
+local concat = table.concat
+local function gen_password(key)
+	local num = 64
+	-- Between space and tilde, visible ASCII characters
+	local min = 0x20
+	local max = 0x7e
+
+	local pass = {}
+	for i = 1, num do
+		pass[i] = char(rand(min, max))
+	end
+
+	pass = concat(pass)
+	storage:set_string(key, pass)
+	return pass
+end
+
+-- Get a random password from a server data key.
+-- STORES PASSWORDS UNENCRYPTED IN STORAGE!
+
+local function get_password(key)
+	if type(key) ~= "string" then
+		key = string.format("pwd_%s:%d:%s",
+			key.address,
+			key.port,
+			key.playername)
+	end
+	local pass = storage:get_string(key) or gen_password(key)
+	core.log("error", "Key is " .. key)
+	core.log("error", "Pass is " .. pass)
+	return pass
+end
+
 local function get_formspec(tabview, name, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
@@ -45,11 +84,10 @@ local function get_formspec(tabview, name, tabdata)
 		"field[11.1,0.65;1.4,0.5;te_port;;" ..
 			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
 
-		-- Name / Password
+		-- Name
 		"label[7.75,0.95;" .. fgettext("Name / Password") .. "]" ..
 		"field[8,1.85;2.9,0.5;te_name;;" ..
 			core.formspec_escape(core.settings:get("name")) .. "]" ..
-		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
 
 		-- Description Background
 		"box[7.73,2.25;4.25,2.6;#999999]"..
@@ -78,7 +116,6 @@ local function get_formspec(tabview, name, tabdata)
 		"text,align=right,padding=0.25;" ..   -- clients_max
 		image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
 		image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
-		--~ PvP = Player versus Player
 		image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
 		"color,span=1;" ..
 		"text,padding=1]" ..
@@ -158,9 +195,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				gamedata.playername = fields.te_name
 				gamedata.selected_world = 0
 
-				if fields.te_pwd then
-					gamedata.password = fields.te_pwd
-				end
+				gamedata.password = get_password(gamedata)
 
 				gamedata.servername        = fav.name
 				gamedata.serverdescription = fav.description
@@ -312,9 +347,9 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	if (fields.btn_mp_connect or fields.key_enter)
 			and fields.te_address ~= "" and fields.te_port then
 		gamedata.playername = fields.te_name
-		gamedata.password   = fields.te_pwd
 		gamedata.address    = fields.te_address
 		gamedata.port       = fields.te_port
+		gamedata.password   = get_password(gamedata)
 		gamedata.selected_world = 0
 		local fav_idx = core.get_table_index("favourites")
 		local fav = serverlist[fav_idx]
