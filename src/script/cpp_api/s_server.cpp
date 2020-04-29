@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool ScriptApiServer::getAuth(const std::string &playername,
 		std::string *dst_password,
-		std::set<std::string> *dst_privs)
+		std::set<std::string> *dst_privs,
+		s64 *dst_last_login)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -43,8 +44,7 @@ bool ScriptApiServer::getAuth(const std::string &playername,
 	luaL_checktype(L, -1, LUA_TTABLE);
 
 	std::string password;
-	bool found = getstringfield(L, -1, "password", password);
-	if (!found)
+	if (!getstringfield(L, -1, "password", password))
 		throw LuaError("Authentication handler didn't return password");
 	if (dst_password)
 		*dst_password = password;
@@ -54,33 +54,13 @@ bool ScriptApiServer::getAuth(const std::string &playername,
 		throw LuaError("Authentication handler didn't return privilege table");
 	if (dst_privs)
 		readPrivileges(-1, *dst_privs);
-	lua_pop(L, 1);
-
-	return true;
-}
-
-bool ScriptApiServer::getAuthLastLogin(const std::string &playername,
-		s64 *dst_last_login)
-{
-	SCRIPTAPI_PRECHECKHEADER
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
-	getAuthHandler();
-	lua_getfield(L, -1, "get_auth");
-	if (lua_type(L, -1) != LUA_TFUNCTION)
-		throw LuaError("Authentication handler missing get_auth");
-	lua_pushstring(L, playername.c_str());
-	PCALL_RES(lua_pcall(L, 1, 1, error_handler));
-	lua_remove(L, -2); // Remove auth handler
-	lua_remove(L, error_handler);
+	lua_pop(L, 1);  // Remove key from privs table
 
 	s64 last_login;
-	bool found = getintfield(L, -1, "last_login", last_login);
-	if (!found)
+	if(!getintfield(L, -1, "last_login", last_login))
 		throw LuaError("Authentication handler didn't return last_login");
-	*dst_last_login = last_login;
-
-	lua_pop(L, 1);
+	if (dst_last_login)
+		*dst_last_login = (s64)last_login;
 
 	return true;
 }
