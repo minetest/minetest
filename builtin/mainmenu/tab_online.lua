@@ -44,9 +44,8 @@ end
 
 local function get_password(key)
 	if type(key) ~= "string" then
-		key = string.format("pwd_%s:%d:%s",
+		key = string.format("pwd:%s:%s",
 			key.address,
-			key.port,
 			key.playername)
 	end
 	local pass = storage:get_string(key) or gen_password(key)
