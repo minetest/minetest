@@ -352,6 +352,15 @@ bool open_url(const std::string &url);
  */
 bool open_directory(const std::string &path);
 
+
+/**
+ * Returns current working dir
+ * @param buf Buffer
+ * @param len Length to be written
+ * @return true on success, false on failure
+ */
+bool getCurrentWorkingDir(char *buf, size_t len);
+
 } // namespace porting
 
 #ifdef __ANDROID__

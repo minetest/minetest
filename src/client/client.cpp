@@ -1823,10 +1823,11 @@ void Client::makeScreenshot()
 	if (fs::IsPathAbsolute(g_settings->get("screenshot_path")))
 		screenshot_dir = g_settings->get("screenshot_path");
 	else
-		screenshot_dir = porting::path_user + DIR_DELIM + g_settings->get("screenshot_path");
+		screenshot_dir = porting::path_user + std::string(DIR_DELIM) + g_settings->get("screenshot_path");
 
+	std::size_t pos = screenshot_dir.rfind(std::string(DIR_DELIM));
 	std::string filename_base = screenshot_dir
-			+ DIR_DELIM
+			+ ((pos != screenshot_dir.length()-1) ? std::string(DIR_DELIM): "")
 			+ std::string("screenshot_")
 			+ std::string(timetstamp_c);
 	std::string filename_ext = "." + g_settings->get("screenshot_format");
@@ -1853,6 +1854,10 @@ void Client::makeScreenshot()
 	if (serial == SCREENSHOT_MAX_SERIAL_TRIES) {
 		infostream << "Could not find suitable filename for screenshot" << std::endl;
 	} else {
+		std::string output = fs::AbsolutePath(filename);
+		if (fs::AbsolutePath(screenshot_dir) != fs::GetRootDir(screenshot_dir) && !fs::IsPathAbsolute(g_settings->get("screenshot_path")))
+			output = fs::BuildRelativePath(fs::AbsolutePath(porting::path_user), fs::AbsolutePath(filename), 4);
+
 		irr::video::IImage* const image =
 				driver->createImage(video::ECF_R8G8B8, raw_image->getDimension());
 
@@ -1861,9 +1866,9 @@ void Client::makeScreenshot()
 
 			std::ostringstream sstr;
 			if (driver->writeImageToFile(image, filename.c_str(), quality)) {
-				sstr << "Saved screenshot to '" << filename << "'";
+				sstr << "Saved screenshot to '" << output << "'";
 			} else {
-				sstr << "Failed to save screenshot '" << filename << "'";
+				sstr << "Failed to save screenshot '" << output << "'";
 			}
 			pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
 					utf8_to_wide(sstr.str())));

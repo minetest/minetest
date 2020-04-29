@@ -715,20 +715,107 @@ std::string RemoveRelativePathComponents(std::string path)
 	pos = path.size();
 	while (pos != 0 && IsDirDelimiter(path[pos-1]))
 		pos--;
-	return path.substr(0, pos);
+	// avoid removing trailing dir delimiters if the path is the same as 
+	// the root drive so the paths like "/" would not become empty strings 
+	// also causing any code that calls this function to behave incorrectly
+	if (path != GetRootDir(path))
+		return path.substr(0, pos);
+	else
+		return path;
 }
 
 std::string AbsolutePath(const std::string &path)
 {
 #ifdef _WIN32
 	char *abs_path = _fullpath(NULL, path.c_str(), MAX_PATH);
-#else
-	char *abs_path = realpath(path.c_str(), NULL);
-#endif
 	if (!abs_path) return "";
 	std::string abs_path_str(abs_path);
 	free(abs_path);
 	return abs_path_str;
+#else
+	if (IsPathAbsolute(path)) {
+		return RemoveRelativePathComponents(path);
+	} else {
+		char buf[BUFSIZ];
+		if(!porting::getCurrentWorkingDir(buf, sizeof(buf))) {
+			errorstream << "fs::AbsolutePath(): Unable to get the current working dir"
+				<< std::endl;
+			return RemoveRelativePathComponents(path);
+		}
+		return RemoveRelativePathComponents(std::string(buf)
+				+ std::string(DIR_DELIM) + path);
+	}
+#endif
+}
+
+bool SplitComponentFromPath (std::string &path, std::string &component) {
+	std::size_t pos = path.find(std::string(DIR_DELIM));
+	if (pos != std::string::npos) {
+		component = path.substr(0, pos);
+		path.erase(0, pos + 1);
+		return false;
+	} else {
+		component = path;
+		return true;
+	}
+}
+
+std::string GetRootDir(const std::string path)
+{
+#ifdef _WIN32
+	std::string str = AbsolutePath(path);
+	if (str.find(":") == 1) {
+		return str.substr(0,2) + std::string(DIR_DELIM);
+	}
+#endif //_WIN32
+	return std::string(DIR_DELIM);
+}
+
+std::string GetCommonPath(std::string path1, std::string path2, int &diff) {
+	bool done1 = false, done2 = false, diverged = false, inside = false;
+	int levels1 = 0, levels2 = 0, common = 0;
+	std::string name1, name2, retval;
+	if (path2.rfind(path1, 0) == 0) {
+		inside = true;
+	}
+	do {
+		if (!done1)
+			levels1++;
+		if (!done2)
+			levels2++;
+		done1 = fs::SplitComponentFromPath (path1, name1);
+		done2 = fs::SplitComponentFromPath (path2, name2);
+		if (!diverged && name1 == name2) {
+			retval += ((common > 0) ? std::string(DIR_DELIM) : "")
+				+ name1; //value should be same as in name2
+			common++;
+		} else if (!diverged) {
+			diverged = true;
+		}
+	} while (!done1 || !done2);
+	if (inside) {
+		diff = common - levels2;
+	} else {
+		diff = levels1 - common;
+	}
+	return retval;
+}
+
+std::string BuildRelativePath(const std::string path1, const std::string path2, const int max_parents) {
+	if (path1 == "")
+		return path2;
+	int parents;
+	std::string base = fs::GetCommonPath(path1,path2,parents);
+	if (parents >= max_parents)
+		return path2;
+	std::string retval = "";
+	if (parents > 0)
+		for (int i = 0; i < parents; i++)
+			retval += ((i > 0 && i < parents) ? std::string(DIR_DELIM) : "") + "..";
+	std::size_t pos = base.length()
+		+ ((retval.length() == 0 && base.length() < path2.length())?1:0);
+	retval += path2.substr(pos, path2.length());
+	return retval;
 }
 
 const char *GetFilenameFromPath(const char *path)
