@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_types.h"
 #include "nodedef.h"
 #include "object_properties.h"
+#include "collision.h"
 #include "cpp_api/s_node.h"
 #include "lua_api/l_object.h"
 #include "lua_api/l_item.h"
@@ -102,7 +103,8 @@ void read_item_definition(lua_State* L, int index,
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "sounds");
-	if(lua_istable(L, -1)){
+	if (!lua_isnil(L, -1)) {
+		luaL_checktype(L, -1, LUA_TTABLE);
 		lua_getfield(L, -1, "place");
 		read_soundspec(L, -1, def.sound_place);
 		lua_pop(L, 1);
@@ -182,8 +184,10 @@ void read_object_properties(lua_State *L, int index,
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-	if(!lua_istable(L, index))
+	if (lua_isnil(L, index))
 		return;
+
+	luaL_checktype(L, -1, LUA_TTABLE);
 
 	int hp_max = 0;
 	if (getintfield(L, -1, "hp_max", hp_max)) {
@@ -1027,13 +1031,15 @@ void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-	if(lua_isnil(L, index)){
-	} else if(lua_istable(L, index)){
+	if (lua_isnil(L, index))
+		return;
+
+	if (lua_istable(L, index)) {
 		getstringfield(L, index, "name", spec.name);
 		getfloatfield(L, index, "gain", spec.gain);
 		getfloatfield(L, index, "fade", spec.fade);
 		getfloatfield(L, index, "pitch", spec.pitch);
-	} else if(lua_isstring(L, index)){
+	} else if (lua_isstring(L, index)) {
 		spec.name = lua_tostring(L, index);
 	}
 }
@@ -1055,9 +1061,13 @@ void push_soundspec(lua_State *L, const SimpleSoundSpec &spec)
 NodeBox read_nodebox(lua_State *L, int index)
 {
 	NodeBox nodebox;
-	if(lua_istable(L, -1)){
-		nodebox.type = (NodeBoxType)getenumfield(L, index, "type",
-				ScriptApiNode::es_NodeBoxType, NODEBOX_REGULAR);
+	if (lua_isnil(L, -1))
+		return nodebox;
+
+	luaL_checktype(L, -1, LUA_TTABLE);
+
+	nodebox.type = (NodeBoxType)getenumfield(L, index, "type",
+			ScriptApiNode::es_NodeBoxType, NODEBOX_REGULAR);
 
 #define NODEBOXREAD(n, s){ \
 		lua_getfield(L, index, (s)); \
@@ -1067,30 +1077,30 @@ NodeBox read_nodebox(lua_State *L, int index)
 	}
 
 #define NODEBOXREADVEC(n, s) \
-		lua_getfield(L, index, (s)); \
-		if (lua_istable(L, -1)) \
-			(n) = read_aabb3f_vector(L, -1, BS); \
-		lua_pop(L, 1);
+	lua_getfield(L, index, (s)); \
+	if (lua_istable(L, -1)) \
+		(n) = read_aabb3f_vector(L, -1, BS); \
+	lua_pop(L, 1);
 
-		NODEBOXREADVEC(nodebox.fixed, "fixed");
-		NODEBOXREAD(nodebox.wall_top, "wall_top");
-		NODEBOXREAD(nodebox.wall_bottom, "wall_bottom");
-		NODEBOXREAD(nodebox.wall_side, "wall_side");
-		NODEBOXREADVEC(nodebox.connect_top, "connect_top");
-		NODEBOXREADVEC(nodebox.connect_bottom, "connect_bottom");
-		NODEBOXREADVEC(nodebox.connect_front, "connect_front");
-		NODEBOXREADVEC(nodebox.connect_left, "connect_left");
-		NODEBOXREADVEC(nodebox.connect_back, "connect_back");
-		NODEBOXREADVEC(nodebox.connect_right, "connect_right");
-		NODEBOXREADVEC(nodebox.disconnected_top, "disconnected_top");
-		NODEBOXREADVEC(nodebox.disconnected_bottom, "disconnected_bottom");
-		NODEBOXREADVEC(nodebox.disconnected_front, "disconnected_front");
-		NODEBOXREADVEC(nodebox.disconnected_left, "disconnected_left");
-		NODEBOXREADVEC(nodebox.disconnected_back, "disconnected_back");
-		NODEBOXREADVEC(nodebox.disconnected_right, "disconnected_right");
-		NODEBOXREADVEC(nodebox.disconnected, "disconnected");
-		NODEBOXREADVEC(nodebox.disconnected_sides, "disconnected_sides");
-	}
+	NODEBOXREADVEC(nodebox.fixed, "fixed");
+	NODEBOXREAD(nodebox.wall_top, "wall_top");
+	NODEBOXREAD(nodebox.wall_bottom, "wall_bottom");
+	NODEBOXREAD(nodebox.wall_side, "wall_side");
+	NODEBOXREADVEC(nodebox.connect_top, "connect_top");
+	NODEBOXREADVEC(nodebox.connect_bottom, "connect_bottom");
+	NODEBOXREADVEC(nodebox.connect_front, "connect_front");
+	NODEBOXREADVEC(nodebox.connect_left, "connect_left");
+	NODEBOXREADVEC(nodebox.connect_back, "connect_back");
+	NODEBOXREADVEC(nodebox.connect_right, "connect_right");
+	NODEBOXREADVEC(nodebox.disconnected_top, "disconnected_top");
+	NODEBOXREADVEC(nodebox.disconnected_bottom, "disconnected_bottom");
+	NODEBOXREADVEC(nodebox.disconnected_front, "disconnected_front");
+	NODEBOXREADVEC(nodebox.disconnected_left, "disconnected_left");
+	NODEBOXREADVEC(nodebox.disconnected_back, "disconnected_back");
+	NODEBOXREADVEC(nodebox.disconnected_right, "disconnected_right");
+	NODEBOXREADVEC(nodebox.disconnected, "disconnected");
+	NODEBOXREADVEC(nodebox.disconnected_sides, "disconnected_sides");
+
 	return nodebox;
 }
 
@@ -1519,8 +1529,11 @@ void push_flags_string(lua_State *L, FlagDesc *flagdesc, u32 flags, u32 flagmask
 /******************************************************************************/
 void read_groups(lua_State *L, int index, ItemGroupList &result)
 {
-	if (!lua_istable(L,index))
+	if (lua_isnil(L, index))
 		return;
+
+	luaL_checktype(L, index, LUA_TTABLE);
+
 	result.clear();
 	lua_pushnil(L);
 	if (index < 0)
@@ -1989,4 +2002,57 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 			break;
 	}
 	return stat;
+}
+
+/******************************************************************************/
+
+// Indices must match values in `enum CollisionType` exactly!!
+static const char *collision_type_str[] = {
+	"node",
+	"object",
+};
+
+// Indices must match values in `enum CollisionAxis` exactly!!
+static const char *collision_axis_str[] = {
+	"x",
+	"y",
+	"z",
+};
+
+void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
+{
+	lua_createtable(L, 0, 4);
+
+	setboolfield(L, -1, "touching_ground", res.touching_ground);
+	setboolfield(L, -1, "collides", res.collides);
+	setboolfield(L, -1, "standing_on_object", res.standing_on_object);
+
+	/* collisions */
+	lua_createtable(L, res.collisions.size(), 0);
+	int i = 1;
+	for (const auto &c : res.collisions) {
+		lua_createtable(L, 0, 5);
+
+		lua_pushstring(L, collision_type_str[c.type]);
+		lua_setfield(L, -2, "type");
+
+		assert(c.axis != COLLISION_AXIS_NONE);
+		lua_pushstring(L, collision_axis_str[c.axis]);
+		lua_setfield(L, -2, "axis");
+
+		if (c.type == COLLISION_NODE) {
+			push_v3s16(L, c.node_p);
+			lua_setfield(L, -2, "node_pos");
+		}
+
+		push_v3f(L, c.old_speed / BS);
+		lua_setfield(L, -2, "old_speed");
+
+		push_v3f(L, c.new_speed / BS);
+		lua_setfield(L, -2, "new_speed");
+
+		lua_rawseti(L, -2, i++);
+	}
+	lua_setfield(L, -2, "collisions");
+	/**/
 }

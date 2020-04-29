@@ -55,10 +55,10 @@ endif(WIN32)
 
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GetText DEFAULT_MSG ${GETTEXT_REQUIRED_VARS})
+find_package_handle_standard_args(GettextLib DEFAULT_MSG ${GETTEXT_REQUIRED_VARS})
 
 
-if(GETTEXT_FOUND)
+if(GETTEXTLIB_FOUND)
 	# BSD variants require special linkage as they don't use glibc
 	if(${CMAKE_SYSTEM_NAME} MATCHES "BSD|DragonFly")
 		set(GETTEXT_LIBRARY "intl")

@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
+#include "util/string.h"
+#include "translation.h"
 #ifndef SERVER
 #include "client/client.h"
 #endif
@@ -587,19 +589,19 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	// pos
 	v3f pos = checkFloatPos(L, 1);
-	// content
 	const char *name = luaL_checkstring(L, 2);
-	// staticdata
 	const char *staticdata = luaL_optstring(L, 3, "");
-	// Do it
+
 	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
 	int objectid = env->addActiveObject(obj);
 	// If failed to add, return nothing (reads as nil)
 	if(objectid == 0)
 		return 0;
-	// Return ObjectRef
+
+	// If already deleted (can happen in on_activate), return nil
+	if (obj->isGone())
+		return 0;
 	getScriptApiBase(L)->objectrefGetOrCreate(L, obj);
 	return 1;
 }
@@ -1302,6 +1304,19 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	return 0;
 }
 
+// get_translated_string(lang_code, string)
+int ModApiEnvMod::l_get_translated_string(lua_State * L)
+{
+	GET_ENV_PTR;
+	std::string lang_code = luaL_checkstring(L, 1);
+	std::string string = luaL_checkstring(L, 2);
+	getServer(L)->loadTranslationLanguage(lang_code);
+	string = wide_to_utf8(translate_string(utf8_to_wide(string),
+			&(*g_server_translations)[lang_code]));
+	lua_pushstring(L, string.c_str());
+	return 1;
+}
+
 void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
@@ -1349,6 +1364,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
+	API_FCT(get_translated_string);
 }
 
 void ModApiEnvMod::InitializeClient(lua_State *L, int top)

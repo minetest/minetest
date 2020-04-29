@@ -890,6 +890,11 @@ void GenericCAO::updateNodePos()
 
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
+	if (m_animated_meshnode) {
+		m_animated_meshnode->animateJoints();
+		updateBonePosition();
+	}
+	
 	// Handle model animations and update positions instantly to prevent lags
 	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
@@ -1360,16 +1365,41 @@ void GenericCAO::updateBonePosition()
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for(std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
-			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-		std::string bone_name = (*ii).first;
-		v3f bone_pos = (*ii).second.X;
-		v3f bone_rot = (*ii).second.Y;
+	for (auto &it : m_bone_position) {
+		std::string bone_name = it.first;
 		irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
-		if(bone)
-		{
-			bone->setPosition(bone_pos);
+		if (bone) {
+			bone->setPosition(it.second.X);
+			bone->setRotation(it.second.Y);
+		}
+	}
+	
+	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
+	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
+		irr::scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
+		if (!bone)
+			continue;
+
+		//If bone is manually positioned there is no need to perform the bug check
+		bool skip = false;
+		for (auto &it : m_bone_position) {
+			if (it.first == bone->getName()) {
+				skip = true;
+				break;
+			}
+		}
+		if (skip)
+			continue;
+
+		// Workaround for Irrlicht bug
+		// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
+		// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone to the proper position
+		// and update the bones transformation.
+		v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
+		float offset = fabsf(bone_rot.X - bone->getRotation().X);
+		if (offset > 179.9f && offset < 180.1f) { 
 			bone->setRotation(bone_rot);
+			bone->updateAbsolutePosition();
 		}
 	}
 }
@@ -1583,7 +1613,7 @@ void GenericCAO::processMessage(const std::string &data)
 		v3f rotation = readV3F32(is);
 		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 
-		updateBonePosition();
+		// updateBonePosition(); now called every step
 	} else if (cmd == AO_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);
 		std::string bone = deSerializeString(is);

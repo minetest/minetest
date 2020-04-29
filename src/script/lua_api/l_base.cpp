@@ -62,10 +62,12 @@ Environment *ModApiBase::getEnv(lua_State *L)
 	return getScriptApiBase(L)->getEnv();
 }
 
+#ifndef SERVER
 GUIEngine *ModApiBase::getGuiEngine(lua_State *L)
 {
 	return getScriptApiBase(L)->getGuiEngine();
 }
+#endif
 
 std::string ModApiBase::getCurrentModPath(lua_State *L)
 {

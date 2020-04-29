@@ -311,6 +311,9 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 	RemoteClient *client = getClient(peer_id, CS_InitDone);
 
+	// Keep client language for server translations
+	client->setLangCode(lang);
+
 	// Send active objects
 	{
 		PlayerSAO *sao = getPlayerSAO(peer_id);

@@ -64,6 +64,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chat_interface.h"
 #include "remoteplayer.h"
 #include "server/player_sao.h"
+#include "translation.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -1266,7 +1267,8 @@ bool Server::getClientInfo(
 		u8*          major,
 		u8*          minor,
 		u8*          patch,
-		std::string* vers_string
+		std::string* vers_string,
+		std::string* lang_code
 	)
 {
 	*state = m_clients.getClientState(peer_id);
@@ -1286,6 +1288,7 @@ bool Server::getClientInfo(
 	*minor = client->getMinor();
 	*patch = client->getPatch();
 	*vers_string = client->getFull();
+	*lang_code = client->getLangCode();
 
 	m_clients.unlock();
 
@@ -3935,5 +3938,22 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 
 	if (from_peer != PEER_ID_SERVER) {
 		m_script->on_modchannel_message(channel, sender, message);
+	}
+}
+
+void Server::loadTranslationLanguage(const std::string &lang_code)
+{
+	if (g_server_translations->count(lang_code))
+		return; // Already loaded
+
+	std::string suffix = "." + lang_code + ".tr";
+	for (const auto &i : m_media) {
+		if (str_ends_with(i.first, suffix)) {
+			std::ifstream t(i.second.path);
+			std::string data((std::istreambuf_iterator<char>(t)),
+			std::istreambuf_iterator<char>());
+
+			(*g_server_translations)[lang_code].loadTranslation(data);
+		}
 	}
 }

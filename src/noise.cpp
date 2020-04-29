@@ -46,11 +46,6 @@ typedef float (*Interp3dFxn)(
 		float v001, float v101, float v011, float v111,
 		float x, float y, float z);
 
-float cos_lookup[16] = {
-	1.0f,  0.9238f,  0.7071f,  0.3826f, .0f, -0.3826f, -0.7071f, -0.9238f,
-	1.0f, -0.9238f, -0.7071f, -0.3826f, .0f,  0.3826f,  0.7071f,  0.9238f
-};
-
 FlagDesc flagdesc_noiseparams[] = {
 	{"defaults",    NOISE_FLAG_DEFAULTS},
 	{"eased",       NOISE_FLAG_EASED},
