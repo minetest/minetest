@@ -59,7 +59,7 @@ struct NearbyCollisionInfo {
 // in order to move all the floating point error to one side of the correct value
 static inline f32 truncate(const f32 val, const u16 exp)
 {
-	return std::trunc(val * 10.0f * exp) / (10.0f * exp);
+	return truncf(val * 10.0f * exp) / (10.0f * exp);
 }
 
 static inline v3f truncate(const v3f& vec, const u16 exp)
@@ -470,7 +470,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 		if (nearest_collided == COLLISION_AXIS_NONE) {
 			// No collision with any collision box.
-			*pos_f += truncate(*speed_f * dtime,2);
+			*pos_f += truncate(*speed_f * dtime, 2);
 			dtime = 0;  // Set to 0 to avoid "infinite" loop due to small FP numbers
 		} else {
 			// Otherwise, a collision occurred.
@@ -507,7 +507,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				}
 			} else {
 				*pos_f += truncate(*speed_f * nearest_dtime, 2);
-				dtime -= nearest_dtime; 
+				dtime -= nearest_dtime;
 			}
 
 			bool is_collision = true;
