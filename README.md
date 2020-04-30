@@ -69,15 +69,15 @@ Some can be changed in the key config dialog in the settings tab.
 | J                             | Enable/disable fast mode (needs fast privilege)                |
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
 | E                             | Move fast in fast mode                                         |
+| C                             | Cycle through camera modes                                     |
+| V                             | Cycle through minimap modes                                    |
+| Shift + V                     | Change minimap orientation                                     |
 | F1                            | Hide/show HUD                                                  |
 | F2                            | Hide/show chat                                                 |
 | F3                            | Disable/enable fog                                             |
 | F4                            | Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)  |
 | F5                            | Cycle through debug information screens                        |
 | F6                            | Cycle through profiler info screens                            |
-| F7                            | Cycle through camera modes                                     |
-| F9                            | Cycle through minimap modes                                    |
-| Shift + F9                    | Change minimap orientation                                     |
 | F10                           | Show/hide console                                              |
 | F12                           | Take screenshot                                                |
 

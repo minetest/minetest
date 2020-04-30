@@ -252,7 +252,7 @@ keymap_cinematic (Cinematic mode key) key
 
 #    Key for toggling display of minimap.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_minimap (Minimap key) key KEY_F9
+keymap_minimap (Minimap key) key KEY_KEY_V
 
 #    Key for taking screenshots.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -424,7 +424,7 @@ keymap_toggle_profiler (Profiler toggle key) key KEY_F6
 
 #    Key for switching between first- and third-person camera.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_camera_mode (Toggle camera mode key) key KEY_F7
+keymap_camera_mode (Toggle camera mode key) key KEY_KEY_C
 
 #    Key for increasing the viewing range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
