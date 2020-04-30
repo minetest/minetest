@@ -1,5 +1,6 @@
 --Minetest
 --Copyright (C) 2013 sapier
+--Copyright (C) 2018-2020 rubenwardy
 --
 --This program is free software; you can redistribute it and/or modify
 --it under the terms of the GNU Lesser General Public License as published by
@@ -639,6 +640,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 	end
 
 	-- Copy it
+	core.delete_dir(targetpath)
 	if not core.copy_dir(basefolder.path, targetpath) then
 		return nil,
 			fgettext("Failed to install $1 to $2", basename, targetpath)
