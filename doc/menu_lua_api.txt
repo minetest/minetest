@@ -238,7 +238,6 @@ Other:
 core.open_url(url)
 ^ opens the URL in a web browser, returns false on failure.
 ^ Must begin with http:// or https://
-^ Full regex: ^https?:\/\/([\w\.-\/\?=\%\+\#\&]+)$
 
 Async:
 core.handle_async(async_job,parameters,finished)
