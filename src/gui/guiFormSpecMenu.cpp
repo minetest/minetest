@@ -1806,10 +1806,12 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 		std::string str_newline = style.get(StyleSpec::NEWLINE_SPACING, "0.5");
 		float newline_spacing;
-		if (trim(str_newline) == "auto")
-			newline_spacing = (float)font_height;
-		else
+		if (str_newline.size() > 0 && str_newline[0] == '*') {
+			str_newline = str_newline.substr(1);
+			newline_spacing = stof(str_newline) * (float)font_height;
+		} else {
 			newline_spacing = stof(str_newline) * (float)imgsize.Y;
+		}
 
 		s32 rect_height = abs(newline_spacing) * (float)(lines.size() - 1) + font_height;
 
@@ -1989,8 +1991,10 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 
 		std::string str_newline = style.get(StyleSpec::NEWLINE_SPACING, "0.5");
 		float newline_spacing = 0;
-		if (trim(str_newline) == "auto") {
-			newline_spacing = (float)font_width + m_font->getKerningWidth();
+		if (str_newline.size() > 0 && str_newline[0] == '*') {
+			str_newline = str_newline.substr(1);
+			newline_spacing = stof(str_newline) * (float)font_width +
+				m_font->getKerningWidth();
 		} else {
 			newline_spacing = stof(str_newline) * (float)imgsize.X;
 		}

@@ -2754,8 +2754,9 @@ Some types may inherit styles from parent types.
             * `label`: Bottom of first line
             * `vertlabel`: Bottom of first character
       Default `centerline` for label and `top` for vertlabel.
-    * newline_spacing - number/`auto`, sets space in coordinates between lines/columns of text.
-      If set to `auto`, the text is as close together as possible without overlap. Default 0.5.
+    * newline_spacing - number, sets space between lines/columns of text. If
+      the number is prefixed with `*`, the spacing is set to a multiple of the
+      label's font height or width, otherwise it's in coordinates. Default `0.5`.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
     * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
