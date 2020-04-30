@@ -330,7 +330,7 @@ void ClientEnvironment::step(float dtime)
 			MapNode n = this->m_map->getNode(p, &pos_ok);
 			if (pos_ok) {
 				const NodeDefManager *nodemgr = m_client->ndef();
-				//don't update if clipping with a solid node.
+				// Don't update if clipping with a solid node so object doesn't turn black
 				if (nodemgr->get(n).light_propagates) {
 					light = n.getLightBlend(day_night_ratio, nodemgr);
 					cao->updateLight(light);
