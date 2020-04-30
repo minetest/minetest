@@ -713,7 +713,7 @@ bool openURL(std::string url)
 	}
 
 #if defined(_WIN32)
-	return (int)ShellExecuteA(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL) > 32;
+	return (intptr_t)ShellExecuteA(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL) > 32;
 #elif defined(__ANDROID__)
 	openURLAndroid(url);
 	return true;
