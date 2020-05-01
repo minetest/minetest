@@ -804,7 +804,10 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 	BgMiddle = style.getRect(StyleSpec::BGIMG_MIDDLE, BgMiddle);
 
 	// Child padding and offset
-	Padding = style.getRect(StyleSpec::PADDING, BgMiddle);
+	Padding = style.getRect(StyleSpec::PADDING, core::rect<s32>());
+	Padding = core::rect<s32>(
+			Padding.UpperLeftCorner + BgMiddle.UpperLeftCorner,
+			Padding.LowerRightCorner + BgMiddle.LowerRightCorner);
 
 	GUISkin* skin = dynamic_cast<GUISkin*>(Environment->getSkin());
 	core::vector2d<s32> defaultPressOffset(
