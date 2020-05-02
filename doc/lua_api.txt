@@ -1310,7 +1310,21 @@ factor!
 The `z_index` field specifies the order of HUD elements from back to front.
 Lower z-index elements are displayed behind higher z-index elements. Elements
 with same z-index are displayed in an arbitrary order. Default 0.
-Supports negative values.
+Supports negative values. By convention, the following values are recommended:
+
+*  -400: Graphical effects, such as vignette
+*  -300: Name tags, waypoints
+*  -200: Wieldhand
+*  -100: Things that block the player's view, e.g. masks
+*     0: Default. For standard in-game HUD elements like crosshair, hotbar,
+         minimap, builtin statbars, etc.
+*   100: Temporary text messages or notification icons
+*  1000: Full-screen effects such as full-black screen or credits.
+         This includes effects that cover the entire screen
+* Other: If your HUD element doesn't fit into any category, pick a number
+         between the suggested values
+
+
 
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
