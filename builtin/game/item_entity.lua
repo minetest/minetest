@@ -200,7 +200,11 @@ core.register_entity(":__builtin:item", {
 			return -- Don't do anything
 		end
 
-		assert(moveresult)
+		assert(moveresult,
+				"Collision info not passed to Item Entity's on_step. " ..
+				"This is caused by a game (ie: Minetest Game) or mod not overriding correctly, make sure to update them.")
+
+
 		if not moveresult.collides then
 			-- future TODO: items should probably decelerate in air
 			return
