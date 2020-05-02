@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Install compiler
+      - name: Install deps
         run: |
           sudo apt-get install g++-6 gcc-6 -qyy
           source ./util/ci/common.sh
@@ -41,7 +41,8 @@ jobs:
         run: |
           ./util/ci/build.sh
         env:
-          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=gcc-6 -DCMAKE_CXX_COMPILER=g++-6"
+          CC: gcc-6
+          CXX: g++-6
 
       - name: Test
         run: |
@@ -52,7 +53,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Install compiler
+      - name: Install deps
         run: |
           sudo apt-get install g++-8 gcc-8 -qyy
           source ./util/ci/common.sh
@@ -62,7 +63,8 @@ jobs:
         run: |
           ./util/ci/build.sh
         env:
-          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8"
+          CC: gcc-8
+          CXX: g++-8
 
       - name: Test
         run: |
@@ -73,7 +75,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Install compiler
+      - name: Install deps
         run: |
           sudo apt-get install clang-3.9 -qyy
           source ./util/ci/common.sh
@@ -83,7 +85,8 @@ jobs:
         run: |
           ./util/ci/build.sh
         env:
-          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=clang-3.9 -DCMAKE_CXX_COMPILER=clang++-3.9"
+          CC: clang-3.9
+          CXX: clang++-3.9
 
       - name: Test
         run: |
@@ -94,7 +97,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Install compiler
+      - name: Install deps
         run: |
           sudo apt-get install clang-9 valgrind -qyy
           source ./util/ci/common.sh
@@ -106,7 +109,8 @@ jobs:
         run: |
           ./util/ci/build.sh
         env:
-          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=clang-9 -DCMAKE_CXX_COMPILER=clang++-9"
+          CC: clang-9
+          CXX: clang++-9
 
       - name: Test
         run: |
@@ -116,12 +120,13 @@ jobs:
         run: |
           valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
 
-
+  # Build with prometheus-cpp (server-only)
   clang_9_prometheus:
+    name: "clang_9 (PROMETHEUS=1)"
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Install compiler
+      - name: Install deps
         run: |
           sudo apt-get install clang-9 -qyy
           source ./util/ci/common.sh
@@ -135,18 +140,21 @@ jobs:
         run: |
           ./util/ci/build.sh
         env:
-          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=clang-9 -DCMAKE_CXX_COMPILER=clang++-9 -DENABLE_PROMETHEUS=1"
+          CC: clang-9
+          CXX: clang++-9
+          CMAKE_FLAGS: "-DENABLE_PROMETHEUS=1 -DBUILD_CLIENT=0"
 
       - name: Test
         run: |
-          ./bin/minetest --run-unittests
+          ./bin/minetestserver --run-unittests
 
-  # Some builds doesn't require freetype, ensure it compiled properly
+  # Build without freetype (client-only)
   clang_9_no_freetype:
+    name: "clang_9 (FREETYPE=0)"
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Install compiler
+      - name: Install deps
         run: |
           sudo apt-get install clang-9 -qyy
           source ./util/ci/common.sh
@@ -156,13 +164,16 @@ jobs:
         run: |
           ./util/ci/build.sh
         env:
-          CMAKE_FLAGS: "-DCMAKE_C_COMPILER=clang-9 -DCMAKE_CXX_COMPILER=clang++-9 -DENABLE_FREETYPE=0"
+          CC: clang-9
+          CXX: clang++-9
+          CMAKE_FLAGS: "-DENABLE_FREETYPE=0 -DBUILD_SERVER=0"
 
       - name: Test
         run: |
           ./bin/minetest --run-unittests
 
   docker:
+    name: "Docker image"
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
@@ -171,11 +182,13 @@ jobs:
           docker build .
 
   win32:
+    name: "MinGW cross-compiler (32-bit)"
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Install compiler
         run: |
+          sudo apt-get install gettext -qyy
           wget http://minetest.kitsunemimi.pw/mingw-w64-i686_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
           sudo tar -xaf mingw.tar.xz -C /usr
 
@@ -187,11 +200,13 @@ jobs:
           NO_PACKAGE: 1
 
   win64:
+    name: "MinGW cross-compiler (64-bit)"
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Install compiler
         run: |
+          sudo apt-get install gettext -qyy
           wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
           sudo tar -xaf mingw.tar.xz -C /usr
 
