@@ -777,7 +777,7 @@ core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
 			.. " within the time specified by <seconds>. Default: range = 0,"
-			.. " seconds = 86400 = 24h, limit = 5",
+			.. " seconds = 86400 = 24h, limit = 5. Set <seconds> to inf for no time limit",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -828,7 +828,7 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
-	description = "Revert actions of a player. Default for <seconds> is 60",
+	description = "Revert actions of a player. Default for <seconds> is 60. Set <seconds> to inf for no time limit",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
