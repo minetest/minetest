@@ -1892,10 +1892,10 @@ void Server::SendMovePlayer(session_t peer_id)
 
 void Server::SendPlayerFov(session_t peer_id)
 {
-	NetworkPacket pkt(TOCLIENT_FOV, 4 + 1, peer_id);
+	NetworkPacket pkt(TOCLIENT_FOV, 4 + 1 + 4, peer_id);
 
 	PlayerFovSpec fov_spec = m_env->getPlayer(peer_id)->getFov();
-	pkt << fov_spec.fov << fov_spec.is_multiplier;
+	pkt << fov_spec.fov << fov_spec.is_multiplier << fov_spec.transition_time;
 
 	Send(&pkt);
 }

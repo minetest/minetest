@@ -5998,15 +5998,18 @@ object you are working with still exists.
         * max: bubbles bar is not shown
         * See [Object properties] for more information
     * Is limited to range 0 ... 65535 (2^16 - 1)
-* `set_fov(fov, is_multiplier)`: Sets player's FOV
+* `set_fov(fov, is_multiplier, transition_time)`: Sets player's FOV
     * `fov`: FOV value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
       Defaults to `false`.
-    * Set to 0 to clear FOV override.
-* `get_fov()`:
-    * Returns player's FOV override in degrees, and a boolean depending on whether
-      the value is a multiplier.
-    * Returns 0 as first value if player's FOV hasn't been overridden.
+    * `transition_time`: If defined, enables smooth FOV transition.
+      Interpreted as the time (in seconds) to reach target FOV.
+      If set to 0, FOV change is instantaneous. Defaults to 0.
+    * Set `fov` to 0 to clear FOV override.
+* `get_fov()`: Returns the following:
+    * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
+    * Boolean indicating whether the FOV value is a multiplier.
+    * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a

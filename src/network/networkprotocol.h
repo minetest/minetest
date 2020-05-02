@@ -384,8 +384,9 @@ enum ToClientCommand
 	/*
 		Sends an FOV override/multiplier to client.
 
-		float fov
+		f32 fov
 		bool is_multiplier
+		f32 transition_time
 	*/
 
 	TOCLIENT_DEATHSCREEN = 0x37,
