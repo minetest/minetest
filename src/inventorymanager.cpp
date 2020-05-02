@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/strfnd.h"
 #include "util/basic_macros.h"
 
-#define PLAYER_TO_SA(p)   p->getEnv()->getScriptIface()
+#define PLAYER_TO_SA(p)   p->getEnv()->getApiRouter()
 
 /*
 	InventoryLocation

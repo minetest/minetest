@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "raycast.h"
 
+class ServerScripting;
+
 class ModApiEnvMod : public ModApiBase {
 private:
 	// set_node(pos, node)

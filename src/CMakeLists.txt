@@ -383,6 +383,7 @@ add_subdirectory(unittest)
 add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
+add_subdirectory(libserver)
 
 set(common_SRCS
 	${database_SRCS}
@@ -552,6 +553,7 @@ if(BUILD_CLIENT)
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
 	set(client_LIBS
 		${PROJECT_NAME}
+		${PROJECT_NAME}api
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
 		${JPEG_LIBRARIES}
@@ -631,6 +633,7 @@ if(BUILD_SERVER)
 	add_dependencies(${PROJECT_NAME}server GenerateVersion)
 	target_link_libraries(
 		${PROJECT_NAME}server
+		${PROJECT_NAME}api
 		${ZLIB_LIBRARIES}
 		${SQLITE3_LIBRARY}
 		${JSON_LIBRARY}
@@ -702,7 +705,7 @@ if(MSVC)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:SSE")
 	endif()
-	
+
 	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
 	else()

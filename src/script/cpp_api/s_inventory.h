@@ -20,12 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "cpp_api/s_base.h"
+#include "server/api_inventory.h"
 
 struct MoveAction;
 struct ItemStack;
 
 class ScriptApiDetached
-		: virtual public ScriptApiBase
+		: virtual public ScriptApiBase, virtual public api::server::Inventory
 {
 public:
 	/* Detached inventory callbacks */

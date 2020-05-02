@@ -21,9 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include <set>
+#include "server/api_server.h"
 
 class ScriptApiServer
-		: virtual public ScriptApiBase
+		: virtual public ScriptApiBase, virtual public api::server::Global
 {
 public:
 	// Calls on_chat_message handlers

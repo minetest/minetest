@@ -22,12 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_item.h"
 #include "irr_v3d.h"
+#include "server/api_nodemeta.h"
 
 struct MoveAction;
 struct ItemStack;
 
 class ScriptApiNodemeta
 		: virtual public ScriptApiBase,
+		  virtual public api::server::NodeMeta,
 		  public ScriptApiItem
 {
 public:

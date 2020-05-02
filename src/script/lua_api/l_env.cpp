@@ -59,7 +59,7 @@ struct EnumString ModApiEnvMod::es_ClearObjectsMode[] =
 void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 		u32 active_object_count, u32 active_object_count_wider)
 {
-	ServerScripting *scriptIface = env->getScriptIface();
+	ServerScripting *scriptIface = env->getApiRouter()->getLuaAPI();
 	scriptIface->realityCheck();
 
 	lua_State *L = scriptIface->getStack();
@@ -102,7 +102,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 
 void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 {
-	ServerScripting *scriptIface = env->getScriptIface();
+	ServerScripting *scriptIface = env->getApiRouter()->getLuaAPI();
 	scriptIface->realityCheck();
 
 	lua_State *L = scriptIface->getStack();
@@ -1123,7 +1123,7 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 		int args_ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
 		state = new ScriptCallbackState;
-		state->script       = getServer(L)->getScriptIface();
+		state->script       = getServer(L)->getApiRouter()->getLuaAPI();
 		state->callback_ref = callback_ref;
 		state->args_ref     = args_ref;
 		state->refcount     = num_blocks;

@@ -225,7 +225,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
-		m_env->getScriptIface()->player_event(this, "properties_changed");
+		m_env->getApiRouter()->player_event(this, "properties_changed");
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
@@ -462,7 +462,7 @@ u16 PlayerSAO::punch(v3f dir,
 
 	PlayerSAO *playersao = m_player->getPlayerSAO();
 
-	bool damage_handled = m_env->getScriptIface()->on_punchplayer(playersao,
+	bool damage_handled = m_env->getApiRouter()->on_punchplayer(playersao,
 				puncher, time_from_last_punch, toolcap, dir,
 				hitparams.hp);
 
@@ -492,7 +492,7 @@ void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 	hp = rangelim(hp, 0, m_prop.hp_max);
 
 	if (oldhp != hp) {
-		s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp, reason);
+		s32 hp_change = m_env->getApiRouter()->on_player_hpchange(this, hp - oldhp, reason);
 		if (hp_change == 0)
 			return;
 

@@ -82,7 +82,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 LuaEntitySAO::~LuaEntitySAO()
 {
 	if(m_registered){
-		m_env->getScriptIface()->luaentity_Remove(m_id);
+		m_env->getApiRouter()->luaentity_Remove(m_id);
 	}
 
 	for (u32 attached_particle_spawner : m_attached_particle_spawners) {
@@ -95,17 +95,17 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::addedToEnvironment(dtime_s);
 
 	// Create entity from name
-	m_registered = m_env->getScriptIface()->
+	m_registered = m_env->getApiRouter()->
 		luaentity_Add(m_id, m_init_name.c_str());
 
 	if(m_registered){
 		// Get properties
-		m_env->getScriptIface()->
+		m_env->getApiRouter()->
 			luaentity_GetProperties(m_id, this, &m_prop);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
-		m_env->getScriptIface()->
+		m_env->getApiRouter()->
 			luaentity_Activate(m_id, m_init_state, dtime_s);
 	} else {
 		m_prop.infotext = m_init_name;
@@ -190,9 +190,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_registered) {
-		m_env->getScriptIface()->luaentity_Step(m_id, dtime, moveresult_p);
-	}
+	if (m_registered)
+		m_env->getApiRouter()->on_entity_step(m_id, dtime, moveresult_p);
 
 	if (!send_recommended)
 		return;
@@ -315,8 +314,7 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	os<<serializeString(m_init_name);
 	// state
 	if(m_registered){
-		std::string state = m_env->getScriptIface()->
-			luaentity_GetStaticdata(m_id);
+		std::string state = m_env->getApiRouter()->luaentity_GetStaticdata(m_id);
 		os<<serializeLongString(state);
 	} else {
 		os<<serializeLongString(m_init_state);
@@ -360,7 +358,7 @@ u16 LuaEntitySAO::punch(v3f dir,
 			&tool_item,
 			time_from_last_punch);
 
-	bool damage_handled = m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
+	bool damage_handled = m_env->getApiRouter()->on_entity_punched(m_id, puncher,
 			time_from_last_punch, toolcap, dir, result.did_punch ? result.damage : 0);
 
 	if (!damage_handled) {
@@ -376,7 +374,7 @@ u16 LuaEntitySAO::punch(v3f dir,
 	if (getHP() == 0 && !isGone()) {
 		clearParentAttachment();
 		clearChildAttachments();
-		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
+		m_env->getApiRouter()->on_entity_death(m_id, puncher);
 		m_pending_removal = true;
 	}
 
@@ -395,7 +393,7 @@ void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 	if (!m_registered)
 		return;
 
-	m_env->getScriptIface()->luaentity_Rightclick(m_id, clicker);
+	m_env->getApiRouter()->on_entity_rightclick(m_id, clicker);
 }
 
 void LuaEntitySAO::setPos(const v3f &pos)

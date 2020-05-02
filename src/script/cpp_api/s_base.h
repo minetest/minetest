@@ -97,10 +97,6 @@ public:
 	void runCallbacksRaw(int nargs,
 		RunCallbacksMode mode, const char *fxn);
 
-	/* object */
-	void addObjectReference(ServerActiveObject *cobj);
-	void removeObjectReference(ServerActiveObject *cobj);
-
 	IGameDef *getGameDef() { return m_gamedef; }
 	Server* getServer();
 	ScriptingType getType() { return m_type; }

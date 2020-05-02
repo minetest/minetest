@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_server.h"
 #include "cpp_api/s_security.h"
+#include "server/api.h"
 
 /*****************************************************************************/
 /* Scripting <-> Server Game Interface                                       */
@@ -45,9 +46,6 @@ class ServerScripting:
 {
 public:
 	ServerScripting(Server* server);
-
-	// use ScriptApiBase::loadMod() to load mods
-
 private:
 	void InitializeModApi(lua_State *L, int top);
 };

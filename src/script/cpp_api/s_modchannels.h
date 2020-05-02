@@ -21,8 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "modchannels.h"
+#include "server/api_modchannels.h"
 
-class ScriptApiModChannels : virtual public ScriptApiBase
+class ScriptApiModChannels : virtual public ScriptApiBase,
+			     virtual public api::server::ModChannels
 {
 public:
 	void on_modchannel_message(const std::string &channel, const std::string &sender,
