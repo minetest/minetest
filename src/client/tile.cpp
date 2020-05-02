@@ -2205,22 +2205,22 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 }
 
 namespace {
-	float linear_to_srgb_component(float v)
+	float linear_to_srgb_component(const float v)
 	{
 		if (v > 0.0031308f)
 			return 1.055f * powf(v, 1.0f / 2.4f) - 0.055f;
 		return 12.92f * v;
 	}
-	float srgb_to_linear_component(float v)
+	float srgb_to_linear_component(const float v)
 	{
 		if (v > 0.04045f)
 			return powf((v + 0.055f) / 1.055f, 2.4f);
 		return v / 12.92f;
 	}
 
-	v3f srgb_to_linear(v3u8 col_srgb)
+	v3f srgb_to_linear(const video::SColor &col_srgb)
 	{
-		v3f col(col_srgb.X, col_srgb.Y, col_srgb.Z);
+		v3f col(col_srgb.getRed(), col_srgb.getGreen(), col_srgb.getBlue());
 		col *= 1.0f / 255.0f;
 		col.X = srgb_to_linear_component(col.X);
 		col.Y = srgb_to_linear_component(col.Y);
@@ -2228,7 +2228,7 @@ namespace {
 		return col;
 	}
 
-	v3u8 linear_to_srgb(v3f &col_linear)
+	video::SColor linear_to_srgb(const v3f &col_linear)
 	{
 		v3f col;
 		col.X = linear_to_srgb_component(col_linear.X);
@@ -2238,7 +2238,8 @@ namespace {
 		col.X = core::clamp<float>(col.X, 0.0f, 255.0f);
 		col.Y = core::clamp<float>(col.Y, 0.0f, 255.0f);
 		col.Z = core::clamp<float>(col.Z, 0.0f, 255.0f);
-		return v3u8(myround(col.X), myround(col.Y), myround(col.Z));
+		return video::SColor(0xff, myround(col.X), myround(col.Y),
+			myround(col.Z));
 	}
 }
 
@@ -2261,18 +2262,14 @@ video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 			c = image->getPixel(x,y);
 			if (c.getAlpha() > 0) {
 				total++;
-				v3u8 col_srgb(c.getRed(), c.getGreen(), c.getBlue());
-				col_acc += srgb_to_linear(col_srgb);
+				col_acc += srgb_to_linear(c);
 			}
 		}
 	}
 	image->drop();
 	if (total > 0) {
 		col_acc *= 1.0f / total;
-		v3u8 col_avg_srgb = linear_to_srgb(col_acc);
-		c.setRed(col_avg_srgb.X);
-		c.setGreen(col_avg_srgb.Y);
-		c.setBlue(col_avg_srgb.Z);
+		c = linear_to_srgb(col_acc);
 	}
 	c.setAlpha(255);
 	return c;
