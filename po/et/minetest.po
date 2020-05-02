@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Estonian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-01-13 12:21+0000\n"
-"Last-Translator: Evert Prants <evert@lunasqu.ee>\n"
+"PO-Revision-Date: 2020-05-03 19:14+0000\n"
+"Last-Translator: Janar Leas <janar.leas@gmail.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/minetest/"
 "minetest/et/>\n"
 "Language: et\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10.1\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -422,7 +422,7 @@ msgstr "vaikesätted"
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "pehmendatud"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -1035,6 +1035,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Vaikimisi juhtimine:\n"
+"Menüü pole nähtav:\n"
+"- toksa: nupu käitamine\n"
+"- kaksiktoksa: aseta/kasuta\n"
+"- libista näpuga: vaata ringi\n"
+"Menüü/varamu nähtav:\n"
+"- kaksiktoksa (välja):\n"
+" -->sulgeb\n"
+"- puutu vihku, puutu pesa:\n"
+" --> teisaldab vihu\n"
+"- puutu&lohista, toksa 2-se näpuga\n"
+" --> asetab ühe eseme pessa\n"
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
@@ -1114,47 +1126,47 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
+msgstr "Pisikaardi keelab hetkel mäng või MOD"
 
 #: src/client/game.cpp
 msgid "Minimap hidden"
-msgstr ""
+msgstr "Pisikaart peidetud"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
+msgstr "Radarkaart, Suurendus ×1"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
+msgstr "Radarkaart, Suurendus ×2"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
+msgstr "Radarkaart, Suurendus ×4"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
+msgstr "Pinnakaart, Suurendus ×1"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
+msgstr "Pinnakaart, Suurendus ×2"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x4"
-msgstr ""
+msgstr "Pinnakaart, Suurendus ×4"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "Haakumatus keelatud"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled"
-msgstr "Noclip režiim lubatud"
+msgstr "Nakkumatus lubatud"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
+msgstr "Haakumatus lubatud (pole 'haakumatus' volitust)"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
