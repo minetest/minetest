@@ -7,19 +7,19 @@
 ### 0.1. Introduction
 
 This document attempts to set out Minetest's philosophy, aims, and objectives.
-
-Please note that Minetest is developed by a community, and not everyone in the community
-holds the same views as to what Minetest should be.
+This should be considered as a non-binding summary.
 
 ### 0.2. Definitions
 
 * `Minetest` is the game engine.
 * `Minetest Game` is the default game which comes with the engine, and is not covered by this document.
 * The `Minetest Project` refers to the combination of the above, the development team, and supporting tools.
+* `Content` refers to any installable add-ons, such as Mods, Games, and Texture Packs.
+* Also see the [Terminology](https://dev.minetest.net/Terminology) page on the Minetest dev wiki.
 
 ### 0.3. Other documents
 
-In order to understand this document, it's important to get context.
+In order to understand this document, it's important to have context.
 
 celeron55 has published his opinions on the development of Minetest in these places:
 
@@ -40,8 +40,11 @@ but still powerful system which allows to easily and rapidly create, extend and 
 
 ## 2. Aims
 
-1. **Stability and performance**,
-		especially on older devices.
+What should changes to the engine take into mind?
+
+1. **Stability and performance**.
+		Mobile and low-end devices should not be excluded from essential graphical
+		and gameplay elements.
 2. **Keep the engine as universal as possible**.
 		It's worth comparing everything that goes into the engine for how well
 		it suits a gravitation-less space game without ground surface.
@@ -50,16 +53,28 @@ but still powerful system which allows to easily and rapidly create, extend and 
 		even in ground-based worlds.
 3. **Keep the engine lightweight**.
 		Support a large amount of gameplay by pushing code and functionality out
-		to Lua, rather than having a complex core. Keeping the core as small as
-		possible makes it easier to test and more flexible.
+		to Lua, where possible, rather than having a complex core.
+		The exception to this is when APIs are needed to increase performance.
+		Keeping the core as small as possible makes it easier to test and more flexible.
 4. **Prefer simplicity**.
 		Try to be simple in both API and implementing features.
 5. **Self-contained**.
-		Avoids relying on third party behaviour. For example, there is no
-		central account system and the serverlist isn't actually needed to play online.
+		Avoid relying on third-party behavior. For example, there is no
+		central account system and the serverlist isn't needed to play online.
 6. **Multi-platform**. Essential features should work on all platforms.
 7. **Gameplay over graphics**.
-8. **Maintain fork-friendliness**.
+		To aid support of mobile and low-end devices, graphics should be
+		<!-- TODO -->
+
+## 3. Principles
+
+<!-- TODO -->
+
+1. **Maintain fork-friendliness**.
+		Encourage the use of feature checks (ie: `minetest.features`) instead
+		of parsing versions.
+2. Privacy
+3. Free and open source
 
 ## 3. Scope of Game Engine
 
@@ -71,17 +86,18 @@ The engine is designed for games which fit these rough limitations:
   Nodes may exceed their bounds, but still belong to one position.
 * The visible size of a unit length may change according to the game's requirements, but the engine does
   not aim to promise good performance for visible sizes far deviating the default.
-* Games will tend to define the unit length distance a meaning, for example, Minetest Game defines.
+* Games will tend to define the unit length distance a meaning, for example, Minetest Game defines it as 1 meter.
 
 ## 4. Future Work
 
 * **Improving flexibility**.
-		To fulfill aim 2, development will seek to push functionality to Lua and increase the flexibility
-		and potential.
+		To fulfil aim 2, development will seek to de-hardcode to increase the
+		flexibility and potential.
 * **Improved graphics and rendering performance**
 		Development will seek to improve the performance of rendering, to increase FPS on both old and new
-		devices. New graphical features may be added if they do not jeapordize performance when not used.
+		devices. New graphical features may be added if they do not jeopardize performance when not used.
 * **Improve code structure and maintainability**
-		Development will seek to improve the maintainability of code through refactoring.
+		Development will seek to improve the maintainability of code through refactoring
+		and the addition of unit tests.
 
 Also see https://dev.minetest.net/TODO
