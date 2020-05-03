@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-05-03 19:14+0000\n"
-"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
+"PO-Revision-Date: 2020-05-12 14:46+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -2858,14 +2858,14 @@ msgstr ""
 "Например: 0 отключает покачивание, 1.0 для обычного, 2.0 для двойного."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable/disable running an IPv6 server.\n"
 "Ignored if bind_address is set.\n"
 "Needs enable_ipv6 to be enabled."
 msgstr ""
 "Включить/отключить запуск IPv6-сервера.\n"
-"Игнорируется, если задан «bind_address»."
+"Игнорируется, если задан «bind_address».\n"
+"Для включения необходим «enable_ipv6»."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2959,9 +2959,8 @@ msgid "Fall bobbing factor"
 msgstr "Коэффициент покачивания при падении"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font path"
-msgstr "Резервный шрифт"
+msgstr "Путь к резервному шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
@@ -3102,15 +3101,15 @@ msgstr "Размер шрифта"
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the default font in point (pt)."
-msgstr ""
+msgstr "Размер стандартного шрифта в пунктах (pt)."
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the fallback font in point (pt)."
-msgstr ""
+msgstr "Размер резервного шрифта в пунктах (pt)."
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font in point (pt)."
-msgstr ""
+msgstr "Размер моноширинного шрифта в пунктах (pt)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3783,14 +3782,12 @@ msgid "Invert vertical mouse movement."
 msgstr "Инвертировать мышь по вертикали."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Italic font path"
-msgstr "Путь к моноширинному шрифту"
+msgstr "Путь к курсивному шрифту"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Italic monospace font path"
-msgstr "Путь к моноширинному шрифту"
+msgstr "Путь к курсивному моноширинному шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
@@ -4623,11 +4620,11 @@ msgstr "Глубина больших пещер"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave maximum number"
-msgstr ""
+msgstr "Максимальное количество больших пещер"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave minimum number"
-msgstr ""
+msgstr "Минимальное количество больших пещер"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave proportion flooded"
@@ -5043,7 +5040,7 @@ msgstr "Максимальная ширина горячей панели"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of large caves per mapchunk."
-msgstr ""
+msgstr "Максимальный порог случайного количества больших пещер на кусок карты"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of small caves per mapchunk."
