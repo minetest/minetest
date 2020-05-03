@@ -216,7 +216,7 @@ function package_dialog.get_formspec()
 		formspec[#formspec + 1] = "button[7,0;2,1;install;"
 		formspec[#formspec + 1] = fgettext("Install")
 		formspec[#formspec + 1] = "]"
-	elseif true then -- package.installed_release < package.release then
+	elseif package.installed_release < package.release then
 		-- The install_ action also handles updating
 		formspec[#formspec + 1] = "button[7,0;2,1;install;"
 		formspec[#formspec + 1] = fgettext("Update")
