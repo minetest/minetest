@@ -78,10 +78,10 @@ The engine is designed for games which fit these rough limitations:
 
 ## 4. Future Work
 
-* **Improving flexibility**.
+* **Increase flexibility**.
 		To fulfil aim 2, development will seek to de-hardcode to increase the
 		flexibility and potential.
-* **Improved graphics and rendering performance**
+* **Improve graphics and rendering performance**
 		Development will seek to improve the performance of rendering, to increase FPS on both old and new
 		devices. New graphical features may be added if they do not jeopardize performance when not used.
 * **Improve code structure and maintainability**
