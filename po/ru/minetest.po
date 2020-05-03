@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-05-03 11:07+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-05-03 19:14+0000\n"
+"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -2922,7 +2922,7 @@ msgid ""
 "Changing this setting requires a restart."
 msgstr ""
 "Включает звуковую систему.\n"
-"Если её выключить, то это полностью выключит все звуки, а внутриигровые\n"
+"Если её отключить, то это полностью уберёт все звуки, а внутриигровые\n"
 "настройки звука не будут работать.\n"
 "Изменение этого параметра требует перезапуска."
 
@@ -3082,11 +3082,11 @@ msgstr "Клавиша переключения тумана"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
-msgstr ""
+msgstr "Стандартный жирный шрифт"
 
 #: src/settings_translation_file.cpp
 msgid "Font italic by default"
-msgstr ""
+msgstr "Стандартный курсивный шрифт"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
