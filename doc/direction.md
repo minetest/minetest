@@ -61,20 +61,8 @@ What should changes to the engine take into mind?
 5. **Self-contained**.
 		Avoid relying on third-party behavior. For example, there is no
 		central account system and the serverlist isn't needed to play online.
-6. **Multi-platform**. Essential features should work on all platforms.
-7. **Gameplay over graphics**.
-		To aid support of mobile and low-end devices, graphics should be
-		<!-- TODO -->
-
-## 3. Principles
-
-<!-- TODO -->
-
-1. **Maintain fork-friendliness**.
-		Encourage the use of feature checks (ie: `minetest.features`) instead
-		of parsing versions.
-2. Privacy
-3. Free and open source
+6. **Multi-platform**.
+		Essential features should work on all platforms.
 
 ## 3. Scope of Game Engine
 
