@@ -31,6 +31,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h" // getImagePath
 #endif
 
+// The maximum number of identical world names allowed
+#define MAX_WORLD_NAMES 100
+
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 {
 	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
@@ -304,15 +307,24 @@ std::vector<WorldSpec> getAvailableWorlds()
 }
 
 bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
-		const SubgameSpec &gamespec, bool mustCreateNew)
+		const SubgameSpec &gamespec, bool mustCreateNew, std::string *error)
 {
 	std::string final_path = path;
 
 	// If we're creating a new world, ensure that the path isn't already taken
-	int counter = 1;
-	while (mustCreateNew && fs::PathExists(final_path) && counter < 100) {
-		final_path = path + "_" + std::to_string(counter);
-		counter++;
+	if (mustCreateNew) {
+		int counter = 1;
+		while (fs::PathExists(final_path) && counter < MAX_WORLD_NAMES) {
+			final_path = path + "_" + std::to_string(counter);
+			counter++;
+		}
+
+		if (fs::PathExists(final_path)) {
+			if (error != nullptr) {
+				*error = "Too many similar filenames";
+			}
+			return false;
+		}
 	}
 
 	// Override defaults with those provided by the game.
@@ -342,8 +354,12 @@ bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
 		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
 
-		if (!conf.updateConfigFile(worldmt_path.c_str()))
+		if (!conf.updateConfigFile(worldmt_path.c_str())) {
+			if (error != nullptr) {
+				*error = "Failed to update the config file";
+			}
 			return false;
+		}
 	}
 
 	// Create map_meta.txt if does not already exist

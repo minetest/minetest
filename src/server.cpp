@@ -356,10 +356,11 @@ void Server::init()
 	infostream << "- game:   " << m_gamespec.path << std::endl;
 
 	// Create world if it doesn't exist
+	std::string error;
 	if (!loadGameConfAndInitWorld(m_path_world,
 				fs::GetFilenameFromPath(m_path_world.c_str()),
-				m_gamespec, false))
-		throw ServerError("Failed to initialize world");
+				m_gamespec, false, &error))
+		throw ServerError("Failed to initialize world: " + error);
 
 	// Create emerge manager
 	m_emerge = new EmergeManager(this);
