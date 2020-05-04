@@ -169,6 +169,7 @@ jobs:
         env:
           NO_MINETEST_GAME: 1
           NO_PACKAGE: 1
+
   msvc:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
     runs-on: windows-2019 
@@ -190,7 +191,10 @@ jobs:
               generator: "-G'Visual Studio 16 2019' -A x64",
               vcpkg_triplet: x64-windows
             }
-        type: [portable, installer]
+        type: [portable]
+#        type: [portable, installer]
+# The installer type is working, but disabled, to save runner jobs.
+# Enable it, when working on the installer.
 
     steps:
       - name: Checkout
