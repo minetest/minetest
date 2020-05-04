@@ -252,7 +252,6 @@ void Sky::render()
 		if (m_visible) {
 			driver->setMaterial(m_materials[1]);
 			for (u32 j = 0; j < 4; j++) {
-				video::SColor c = cloudyfogcolor.getInterpolated(m_skycolor, 0.45);
 				vertices[0] = video::S3DVertex(-1, -0.02, -1, 0, 0, 1, m_bgcolor, t, t);
 				vertices[1] = video::S3DVertex( 1, -0.02, -1, 0, 0, 1, m_bgcolor, o, t);
 				vertices[2] = video::S3DVertex( 1, 0.45, -1, 0, 0, 1, m_skycolor, o, o);
