@@ -1276,9 +1276,9 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		// Fix for "regular" skies, as color isn't kept:
 		if (skybox.type == "regular") {
 			skybox.sky_color = sky_defaults.getSkyColorDefaults();
-			skybox.tint_type = "default";
-			skybox.moon_tint = video::SColor(255, 255, 255, 255);
-			skybox.sun_tint = video::SColor(255, 255, 255, 255);
+			skybox.fog_tint_type = "default";
+			skybox.fog_moon_tint = video::SColor(255, 255, 255, 255);
+			skybox.fog_sun_tint = video::SColor(255, 255, 255, 255);
 		}
 		else {
 			sun.visible = false;
@@ -1313,7 +1313,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		std::string texture;
 
 		*pkt >> skybox.bgcolor >> skybox.type >> skybox.clouds >>
-			skybox.sun_tint >> skybox.moon_tint >> skybox.tint_type;
+			skybox.fog_sun_tint >> skybox.fog_moon_tint >> skybox.fog_tint_type;
 
 		if (skybox.type == "skybox") {
 			*pkt >> texture_count;
