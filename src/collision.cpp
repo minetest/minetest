@@ -57,17 +57,17 @@ struct NearbyCollisionInfo {
 // Helper functions:
 // Truncate floating point numbers to specified number of decimal places
 // in order to move all the floating point error to one side of the correct value
-static inline f32 truncate(const f32 val, const u16 exp)
+static inline f32 truncate(const f32 val, const f32 factor)
 {
-	return truncf(val * 10.0f * exp) / (10.0f * exp);
+	return truncf(val * factor) / factor;
 }
 
-static inline v3f truncate(const v3f& vec, const u16 exp)
+static inline v3f truncate(const v3f& vec, const f32 factor)
 {
 	return v3f(
-		truncate(vec.X, exp),
-		truncate(vec.Y, exp),
-		truncate(vec.Z, exp)
+		truncate(vec.X, factor),
+		truncate(vec.Y, factor),
+		truncate(vec.Z, factor)
 	);
 }
 
@@ -133,7 +133,7 @@ CollisionAxis axisAlignedCollision(
 			inner_margin = std::max(-0.5f * (staticbox.MaxEdge.X - staticbox.MinEdge.X), -2.0f);
 
 			if ((speed.X > 0 && staticbox.MinEdge.X - movingbox.MaxEdge.X > inner_margin) ||
-					(speed.X < 0 && movingbox.MinEdge.X - staticbox.MaxEdge.X > inner_margin)) {
+				(speed.X < 0 && movingbox.MinEdge.X - staticbox.MaxEdge.X > inner_margin)) {
 				if (
 					(std::max(movingbox.MaxEdge.Y + speed.Y * time, staticbox.MaxEdge.Y)
 						- std::min(movingbox.MinEdge.Y + speed.Y * time, staticbox.MinEdge.Y)
@@ -160,7 +160,7 @@ CollisionAxis axisAlignedCollision(
 			inner_margin = std::max(-0.5f * (staticbox.MaxEdge.Z - staticbox.MinEdge.Z), -2.0f);
 
 			if ((speed.Z > 0 && staticbox.MinEdge.Z - movingbox.MaxEdge.Z > inner_margin) ||
-					(speed.Z < 0 && movingbox.MinEdge.Z - staticbox.MaxEdge.Z > inner_margin)) {
+				(speed.Z < 0 && movingbox.MinEdge.Z - staticbox.MaxEdge.Z > inner_margin)) {
 				if (
 					(std::max(movingbox.MaxEdge.X + speed.X * time, staticbox.MaxEdge.X)
 						- std::min(movingbox.MinEdge.X + speed.X * time, staticbox.MinEdge.X)
@@ -248,7 +248,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	speed_f->X = rangelim(speed_f->X, -5000, 5000);
 	speed_f->Z = rangelim(speed_f->Z, -5000, 5000);
 
-	*speed_f = truncate(*speed_f, 4);
+	*speed_f = truncate(*speed_f, 10000.0f);
 
 	/*
 		Collect node boxes in movement range
@@ -470,7 +470,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 		if (nearest_collided == COLLISION_AXIS_NONE) {
 			// No collision with any collision box.
-			*pos_f += truncate(*speed_f * dtime, 2);
+			*pos_f += truncate(*speed_f * dtime, 100.0f);
 			dtime = 0;  // Set to 0 to avoid "infinite" loop due to small FP numbers
 		} else {
 			// Otherwise, a collision occurred.
@@ -506,7 +506,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 						pos_f->Z += speed_f->Z * nearest_dtime;
 				}
 			} else {
-				*pos_f += truncate(*speed_f * nearest_dtime, 2);
+				*pos_f += truncate(*speed_f * nearest_dtime, 100.0f);
 				dtime -= nearest_dtime;
 			}
 
