@@ -2799,9 +2799,9 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		// Update mesh based skybox colours if applicable.
 		sky->setSkyColors(*event->set_sky);
 		sky->setHorizonTint(
-			event->set_sky->sun_tint,
-			event->set_sky->moon_tint,
-			event->set_sky->tint_type
+			event->set_sky->fog_sun_tint,
+			event->set_sky->fog_moon_tint,
+			event->set_sky->fog_tint_type
 		);
 	} else if (event->set_sky->type == "skybox" &&
 			event->set_sky->textures.size() == 6) {
@@ -2811,9 +2811,9 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		sky->setFallbackBgColor(event->set_sky->bgcolor);
 		// Set sunrise and sunset fog tinting:
 		sky->setHorizonTint(
-			event->set_sky->sun_tint,
-			event->set_sky->moon_tint,
-			event->set_sky->tint_type
+			event->set_sky->fog_sun_tint,
+			event->set_sky->fog_moon_tint,
+			event->set_sky->fog_tint_type
 		);
 		// Add textures to skybox.
 		for (int i = 0; i < 6; i++)

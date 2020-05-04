@@ -37,9 +37,9 @@ struct SkyboxParams
 	std::vector<std::string> textures;
 	bool clouds;
 	SkyColor sky_color;
-	video::SColor sun_tint;
-	video::SColor moon_tint;
-	std::string tint_type;
+	video::SColor fog_sun_tint;
+	video::SColor fog_moon_tint;
+	std::string fog_tint_type;
 };
 
 struct SunParams

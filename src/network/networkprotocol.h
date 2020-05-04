@@ -634,9 +634,9 @@ enum ToClientCommand
 		u8[4] night_sky (ARGB)
 		u8[4] night_horizon (ARGB)
 		u8[4] indoors (ARGB)
-		u8[4] sun_tint (ARGB)
-		u8[4] moon_tint (ARGB)
-		std::string tint_type
+		u8[4] fog_sun_tint (ARGB)
+		u8[4] fog_moon_tint (ARGB)
+		std::string fog_tint_type
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,

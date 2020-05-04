@@ -529,7 +529,7 @@ void Sky::update(float time_of_day, float time_brightness,
 				pointcolor_sun_f.g = pointcolor_light *
 					(float)m_materials[3].EmissiveColor.getGreen() / 255;
 			} else if (!m_default_tint) {
-				pointcolor_sun_f = m_sky_params.sun_tint;
+				pointcolor_sun_f = m_sky_params.fog_sun_tint;
 			} else {
 				pointcolor_sun_f.r = pointcolor_light * 1;
 				pointcolor_sun_f.b = pointcolor_light *
@@ -548,9 +548,9 @@ void Sky::update(float time_of_day, float time_brightness,
 				);
 			} else {
 				pointcolor_moon_f = video::SColorf(
-					(m_sky_params.moon_tint.getRed() / 255) * pointcolor_light,
-					(m_sky_params.moon_tint.getGreen() / 255) * pointcolor_light,
-					(m_sky_params.moon_tint.getBlue() / 255) * pointcolor_light,
+					(m_sky_params.fog_moon_tint.getRed() / 255) * pointcolor_light,
+					(m_sky_params.fog_moon_tint.getGreen() / 255) * pointcolor_light,
+					(m_sky_params.fog_moon_tint.getBlue() / 255) * pointcolor_light,
 					1
 				);
 			}
@@ -941,8 +941,8 @@ void Sky::setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,
 		std::string use_sun_tint)
 {
 	// Change sun and moon tinting:
-	m_sky_params.sun_tint = sun_tint;
-	m_sky_params.moon_tint = moon_tint;
+	m_sky_params.fog_sun_tint = sun_tint;
+	m_sky_params.fog_moon_tint = moon_tint;
 	// Faster than comparing strings every rendering frame
 	if (use_sun_tint == "default")
 		m_default_tint = true;

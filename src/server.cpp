@@ -1770,8 +1770,8 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 		pkt << params.clouds;
 	} else { // Handle current clients and future clients
 		pkt << params.bgcolor << params.type
-		<< params.clouds << params.sun_tint
-		<< params.moon_tint << params.tint_type;
+		<< params.clouds << params.fog_sun_tint
+		<< params.fog_moon_tint << params.fog_tint_type;
 
 		if (params.type == "skybox") {
 			pkt << (u16) params.textures.size();
