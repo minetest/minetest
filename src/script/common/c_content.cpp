@@ -2046,10 +2046,10 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 		}
 
 		push_v3f(L, c.old_speed / BS);
-		lua_setfield(L, -2, "old_speed");
+		lua_setfield(L, -2, "old_velocity");
 
 		push_v3f(L, c.new_speed / BS);
-		lua_setfield(L, -2, "new_speed");
+		lua_setfield(L, -2, "new_velocity");
 
 		lua_rawseti(L, -2, i++);
 	}
