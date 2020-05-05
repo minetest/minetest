@@ -201,8 +201,8 @@ void showInputDialog(const std::string &acceptButton, const std::string &hint,
 	jmethodID showdialog = jnienv->GetMethodID(nativeActivity, "showDialog",
 		"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
 
-	if (showdialog == nullptr)
-		assert("porting::showInputDialog unable to find java show dialog method" == nullptr);
+	FATAL_ERROR_IF(showdialog == nullptr,
+		"porting::showInputDialog unable to find java show dialog method");
 
 	jstring jacceptButton = jnienv->NewStringUTF(acceptButton.c_str());
 	jstring jhint         = jnienv->NewStringUTF(hint.c_str());
@@ -218,8 +218,8 @@ int getInputDialogState()
 	jmethodID dialogstate = jnienv->GetMethodID(nativeActivity,
 			"getDialogState", "()I");
 
-	if (dialogstate == nullptr)
-		assert("porting::getInputDialogState unable to find java dialog state method" == nullptr);
+	FATAL_ERROR_IF(dialogstate == nullptr,
+		"porting::getInputDialogState unable to find java dialog state method");
 
 	return jnienv->CallIntMethod(app_global->activity->clazz, dialogstate);
 }
@@ -229,8 +229,8 @@ std::string getInputDialogValue()
 	jmethodID dialogvalue = jnienv->GetMethodID(nativeActivity,
 			"getDialogValue", "()Ljava/lang/String;");
 
-	if (dialogvalue == nullptr)
-		assert("porting::getInputDialogValue unable to find java dialog value method" == nullptr);
+FATAL_ERROR_IF(dialogvalue == nullptr,
+	"porting::getInputDialogValue unable to find java dialog value method");
 
 	jobject result = jnienv->CallObjectMethod(app_global->activity->clazz,
 			dialogvalue);
@@ -252,8 +252,8 @@ float getDisplayDensity()
 		jmethodID getDensity = jnienv->GetMethodID(nativeActivity,
 				"getDensity", "()F");
 
-		if (getDensity == nullptr)
-			assert("porting::getDisplayDensity unable to find java getDensity method" == nullptr);
+		FATAL_ERROR_IF(getDensity == nullptr,
+			"porting::getDisplayDensity unable to find java getDensity method");
 
 		value = jnienv->CallFloatMethod(app_global->activity->clazz, getDensity);
 		firstrun = false;
@@ -270,8 +270,8 @@ v2u32 getDisplaySize()
 		jmethodID getDisplayWidth = jnienv->GetMethodID(nativeActivity,
 				"getDisplayWidth", "()I");
 
-		if (getDisplayWidth == nullptr)
-			assert("porting::getDisplayWidth unable to find java getDisplayWidth method" == nullptr);
+		FATAL_ERROR_IF(getDisplayWidth == nullptr,
+			"porting::getDisplayWidth unable to find java getDisplayWidth method");
 
 		retval.X = jnienv->CallIntMethod(app_global->activity->clazz,
 				getDisplayWidth);
@@ -279,8 +279,8 @@ v2u32 getDisplaySize()
 		jmethodID getDisplayHeight = jnienv->GetMethodID(nativeActivity,
 				"getDisplayHeight", "()I");
 
-		if (getDisplayHeight == nullptr)
-			assert("porting::getDisplayHeight unable to find java getDisplayHeight method" == nullptr);
+		FATAL_ERROR_IF(getDisplayHeight == nullptr,
+			"porting::getDisplayHeight unable to find java getDisplayHeight method");
 
 		retval.Y = jnienv->CallIntMethod(app_global->activity->clazz,
 				getDisplayHeight);
