@@ -255,8 +255,9 @@ Mapgen *EmergeManager::getCurrentMapgen()
 		return nullptr;
 
 	for (u32 i = 0; i != m_threads.size(); i++) {
-		if (m_threads[i]->isCurrentThread())
-			return m_threads[i]->m_mapgen;
+		EmergeThread *t = m_threads[i];
+		if (t->isRunning() && t->isCurrentThread())
+			return t->m_mapgen;
 	}
 
 	return nullptr;
@@ -642,8 +643,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 	/*
 		Clear generate notifier events
 	*/
-	Mapgen *mg = m_emerge->getCurrentMapgen();
-	mg->gennotify.clearEvents();
+	m_mapgen->gennotify.clearEvents();
 
 	EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
 
