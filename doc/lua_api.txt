@@ -4293,6 +4293,7 @@ Call these functions only at load time!
       `name` from `minetest.registered_items` and from the associated item table
       according to its nature: `minetest.registered_nodes`, etc.
 * `minetest.register_entity(name, entity definition)`
+    * To modify an already registered entity just edit the value found in minetest.registered_entities
 * `minetest.register_abm(abm definition)`
 * `minetest.register_lbm(lbm definition)`
 * `minetest.register_alias(alias, original_name)`
@@ -5617,6 +5618,7 @@ Global tables
     * Map of registered tool definitions, indexed by name
 * `minetest.registered_entities`
     * Map of registered entity prototypes, indexed by name
+    * You can use this to change the values of already registered entities
 * `minetest.object_refs`
     * Map of object references, indexed by active object id
 * `minetest.luaentities`
