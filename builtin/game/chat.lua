@@ -55,7 +55,7 @@ core.register_on_chat_message(function(name, message)
 
 	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
 	if not cmd then
-		core.chat_send_player(name, S("-!- Empty command."))
+		core.chat_send_player(name, "-!- " .. S("Empty command"))
 		return true
 	end
 
@@ -63,7 +63,7 @@ core.register_on_chat_message(function(name, message)
 
 	local cmd_def = core.registered_chatcommands[cmd]
 	if not cmd_def then
-		core.chat_send_player(name, S("-!- Invalid command: @1", cmd))
+		core.chat_send_player(name, "-!- " .. S("Invalid command: @1", cmd))
 		return true
 	end
 	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
@@ -150,12 +150,12 @@ core.register_chatcommand("privs", {
 
 core.register_chatcommand("haspriv", {
 	params = S("<privilege>"),
-	description = S("Return list of all online players with privilege."),
+	description = S("Return list of all online players with privilege"),
 	privs = {basic_privs = true},
 	func = function(caller, param)
 		param = param:trim()
 		if param == "" then
-			return false, S("Invalid parameters (see /help haspriv).")
+			return false, S("Invalid parameters (see /help haspriv)")
 		end
 		if not core.registered_privileges[param] then
 			return false, S("Unknown privilege!")
@@ -224,7 +224,7 @@ core.register_chatcommand("grant", {
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
-			return false, S("Invalid parameters (see /help grant).")
+			return false, S("Invalid parameters (see /help grant)")
 		end
 		return handle_grant_command(name, grantname, grantprivstr)
 	end,
@@ -235,7 +235,7 @@ core.register_chatcommand("grantme", {
 	description = S("Grant privileges to yourself"),
 	func = function(name, param)
 		if param == "" then
-			return false, S("Invalid parameters (see /help grantme).")
+			return false, S("Invalid parameters (see /help grantme)")
 		end
 		return handle_grant_command(name, name, param)
 	end,
@@ -327,7 +327,7 @@ core.register_chatcommand("setpassword", {
 		end
 
 		if not toname then
-			return false, S("Name field required.")
+			return false, S("Name field required")
 		end
 		local act_str_you, act_str_log, act_str_return
 		if not raw_password then
@@ -361,7 +361,7 @@ core.register_chatcommand("clearpassword", {
 	func = function(name, param)
 		local toname = param
 		if toname == "" then
-			return false, S("Name field required.")
+			return false, S("Name field required")
 		end
 		core.set_player_password(toname, '')
 
@@ -388,7 +388,7 @@ core.register_chatcommand("remove_player", {
 	func = function(name, param)
 		local toname = param
 		if toname == "" then
-			return false, S("Name field required.")
+			return false, S("Name field required")
 		end
 
 		local rc = core.remove_player(toname)
@@ -507,7 +507,7 @@ core.register_chatcommand("teleport", {
 					core.pos_to_string(p))
 		end
 
-		return false, S('Invalid parameters ("@1") or player not found (see /help teleport).', param)
+		return false, S("Invalid parameters (\"@1\") or player not found (see /help teleport)", param)
 	end,
 })
 
@@ -539,7 +539,7 @@ core.register_chatcommand("set", {
 			end
 			return true, setname .. " = " .. setvalue
 		end
-		return false, S("Invalid parameters (see /help set).")
+		return false, S("Invalid parameters (see /help set)")
 	end,
 })
 
@@ -688,7 +688,7 @@ core.register_chatcommand("give", {
 	func = function(name, param)
 		local toname, itemstring = string.match(param, "^([^ ]+) +(.+)$")
 		if not toname or not itemstring then
-			return false, S("Name and ItemString required.")
+			return false, S("Name and ItemString required")
 		end
 		return handle_give_command("/give", name, toname, itemstring)
 	end,
@@ -701,7 +701,7 @@ core.register_chatcommand("giveme", {
 	func = function(name, param)
 		local itemstring = string.match(param, "(.+)$")
 		if not itemstring then
-			return false, S("ItemString required.")
+			return false, S("ItemString required")
 		end
 		return handle_give_command("/giveme", name, name, itemstring)
 	end,
@@ -714,7 +714,7 @@ core.register_chatcommand("spawnentity", {
 	func = function(name, param)
 		local entityname, p = string.match(param, "^([^ ]+) *(.*)$")
 		if not entityname then
-			return false, S("EntityName required.")
+			return false, S("EntityName required")
 		end
 		core.log("action", ("%s invokes /spawnentity, entityname=%q")
 				:format(name, entityname))
@@ -731,7 +731,7 @@ core.register_chatcommand("spawnentity", {
 		else
 			p = core.string_to_pos(p)
 			if p == nil then
-				return false, S("Invalid parameters ('@1').", param)
+				return false, S("Invalid parameters ('@1')", param)
 			end
 		end
 		p.y = p.y + 1
@@ -747,12 +747,12 @@ core.register_chatcommand("pulverize", {
 	func = function(name, param)
 		local player = core.get_player_by_name(name)
 		if not player then
-			core.log("error", "Unable to pulverize, no player.")
-			return false, S("Unable to pulverize, no player.")
+			core.log("error", "Unable to pulverize, no player")
+			return false, S("Unable to pulverize, no player")
 		end
 		local wielded_item = player:get_wielded_item()
 		if wielded_item:is_empty() then
-			return false, S("Unable to pulverize, no item in hand.")
+			return false, S("Unable to pulverize, no item in hand")
 		end
 		core.log("action", name .. " pulverized \"" ..
 			wielded_item:get_name() .. " " .. wielded_item:get_count() .. "\"")
@@ -896,7 +896,7 @@ core.register_chatcommand("time", {
 		if not hour then
 			local new_time = tonumber(param)
 			if not new_time then
-				return false, S("Invalid time.")
+				return false, S("Invalid time")
 			end
 			-- Backward compatibility.
 			core.set_timeofday((new_time % 24000) / 24000)
@@ -906,9 +906,9 @@ core.register_chatcommand("time", {
 		hour = tonumber(hour)
 		minute = tonumber(minute)
 		if hour < 0 or hour > 23 then
-			return false, S("Invalid hour (must be between 0 and 23 inclusive).")
+			return false, S("Invalid hour (must be between 0 and 23 inclusive)")
 		elseif minute < 0 or minute > 59 then
-			return false, S("Invalid minute (must be between 0 and 59 inclusive).")
+			return false, S("Invalid minute (must be between 0 and 59 inclusive)")
 		end
 		core.set_timeofday((hour * 60 + minute) / 1440)
 		core.log("action", ("%s sets time to %d:%02d"):format(name, hour, minute))
@@ -938,7 +938,7 @@ core.register_chatcommand("shutdown", {
 
 		if delay == 0 then
 			core.log("action", name .. " shuts down server")
-			core.chat_send_all(S("*** Server shutting down (operator request)."))
+			core.chat_send_all("*** " .. S("Server shutting down (operator request)."))
 		end
 		core.request_shutdown(message:trim(), core.is_yes(reconnect), delay)
 		return true
@@ -1023,7 +1023,7 @@ core.register_chatcommand("clearobjects", {
 		name))
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
-		core.chat_send_all(S("*** Cleared all objects."))
+		core.chat_send_all(S("Cleared all objects."))
 		return true
 	end,
 })
