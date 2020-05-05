@@ -445,7 +445,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 								(e->align.Y - 1.0) * dstsize.Y / 2) +
 						v2s32(e->offset.X * m_hud_scaling, e->offset.Y * m_hud_scaling);
 
-				switch(e->dir) {
+				switch (e->dir) {
 				case HUD_COMPASS_ROTATE:
 					drawCompassRotate(e, texture, dstrect, angle);
 					break;
