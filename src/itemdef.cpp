@@ -270,17 +270,16 @@ public:
 		// Convert name according to possible alias
 		std::string name = getAlias(name_);
 		// Get the definition
-		std::map<std::string, ItemDefinition*>::const_iterator i;
-		i = m_item_definitions.find(name);
-		if(i == m_item_definitions.end())
+		auto i = m_item_definitions.find(name);
+		if (i == m_item_definitions.cend())
 			i = m_item_definitions.find("unknown");
-		assert(i != m_item_definitions.end());
+		assert(i != m_item_definitions.cend());
 		return *(i->second);
 	}
 	virtual const std::string &getAlias(const std::string &name) const
 	{
-		StringMap::const_iterator it = m_aliases.find(name);
-		if (it != m_aliases.end())
+		auto it = m_aliases.find(name);
+		if (it != m_aliases.cend())
 			return it->second;
 		return name;
 	}
@@ -300,8 +299,7 @@ public:
 		// Convert name according to possible alias
 		std::string name = getAlias(name_);
 		// Get the definition
-		std::map<std::string, ItemDefinition*>::const_iterator i;
-		return m_item_definitions.find(name) != m_item_definitions.end();
+		return m_item_definitions.find(name) != m_item_definitions.cend();
 	}
 #ifndef SERVER
 public:
@@ -422,13 +420,30 @@ public:
 		return get(stack.name).color;
 	}
 #endif
+	void applyTextureOverrides(const std::vector<TextureOverride> &overrides)
+	{
+		infostream << "ItemDefManager::applyTextureOverrides(): Applying "
+			"overrides to textures" << std::endl;
+
+		for (const TextureOverride& texture_override : overrides) {
+			if (m_item_definitions.find(texture_override.id) == m_item_definitions.end()) {
+				continue; // Ignore unknown item
+			}
+
+			ItemDefinition* itemdef = m_item_definitions[texture_override.id];
+
+			if (texture_override.hasTarget(OverrideTarget::INVENTORY))
+				itemdef->inventory_image = texture_override.texture;
+
+			if (texture_override.hasTarget(OverrideTarget::WIELD))
+				itemdef->wield_image = texture_override.texture;
+		}
+	}
 	void clear()
 	{
-		for(std::map<std::string, ItemDefinition*>::const_iterator
-				i = m_item_definitions.begin();
-				i != m_item_definitions.end(); ++i)
+		for (auto &i : m_item_definitions)
 		{
-			delete i->second;
+			delete i.second;
 		}
 		m_item_definitions.clear();
 		m_aliases.clear();
@@ -463,7 +478,7 @@ public:
 	}
 	virtual void registerItem(const ItemDefinition &def)
 	{
-		verbosestream<<"ItemDefManager: registering \""<<def.name<<"\""<<std::endl;
+		TRACESTREAM(<< "ItemDefManager: registering " << def.name << std::endl);
 		// Ensure that the "" item (the hand) always has ToolCapabilities
 		if (def.name.empty())
 			FATAL_ERROR_IF(!def.tool_capabilities, "Hand does not have ToolCapabilities");
@@ -490,8 +505,8 @@ public:
 			const std::string &convert_to)
 	{
 		if (m_item_definitions.find(name) == m_item_definitions.end()) {
-			verbosestream<<"ItemDefManager: setting alias "<<name
-				<<" -> "<<convert_to<<std::endl;
+			TRACESTREAM(<< "ItemDefManager: setting alias " << name
+				<< " -> " << convert_to << std::endl);
 			m_aliases[name] = convert_to;
 		}
 	}
@@ -501,10 +516,8 @@ public:
 		u16 count = m_item_definitions.size();
 		writeU16(os, count);
 
-		for (std::map<std::string, ItemDefinition *>::const_iterator
-				it = m_item_definitions.begin();
-				it != m_item_definitions.end(); ++it) {
-			ItemDefinition *def = it->second;
+		for (const auto &it : m_item_definitions) {
+			ItemDefinition *def = it.second;
 			// Serialize ItemDefinition and write wrapped in a string
 			std::ostringstream tmp_os(std::ios::binary);
 			def->serialize(tmp_os, protocol_version);
@@ -513,11 +526,9 @@ public:
 
 		writeU16(os, m_aliases.size());
 
-		for (StringMap::const_iterator
-				it = m_aliases.begin();
-				it != m_aliases.end(); ++it) {
-			os << serializeString(it->first);
-			os << serializeString(it->second);
+		for (const auto &it : m_aliases) {
+			os << serializeString(it.first);
+			os << serializeString(it.second);
 		}
 	}
 	void deSerialize(std::istream &is)

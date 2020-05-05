@@ -61,6 +61,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern gui::IGUIEnvironment* guienv;
 
 /*
+	Utility classes
+*/
+
+void PacketCounter::print(std::ostream &o) const
+{
+	for (const auto &it : m_packets) {
+		auto name = it.first >= TOCLIENT_NUM_MSG_TYPES ? "?"
+			: toClientCommandTable[it.first].name;
+		o << "cmd " << it.first << " (" << name << ") count "
+			<< it.second << std::endl;
+	}
+}
+
+/*
 	Client
 */
 
@@ -165,7 +179,7 @@ void Client::loadMods()
 		infostream << mod.name << " ";
 	infostream << std::endl;
 
-	// Load and run "mod" scripts
+	// Load "mod" scripts
 	for (const ModSpec &mod : m_mods) {
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
 			throw ModError("Error loading mod \"" + mod.name +
@@ -175,7 +189,7 @@ void Client::loadMods()
 		scanModIntoMemory(mod.name, mod.path);
 	}
 
-	// Load and run "mod" scripts
+	// Run them
 	for (const ModSpec &mod : m_mods)
 		m_script->loadModFromMemory(mod.name);
 
@@ -184,10 +198,14 @@ void Client::loadMods()
 
 	// Run a callback when mods are loaded
 	m_script->on_mods_loaded();
+
+	// Create objects if they're ready
 	if (m_state == LC_Ready)
 		m_script->on_client_ready(m_env.getLocalPlayer());
 	if (m_camera)
 		m_script->on_camera_ready(m_camera);
+	if (m_minimap)
+		m_script->on_minimap_ready(m_minimap);
 }
 
 bool Client::checkBuiltinIntegrity()
@@ -337,12 +355,12 @@ void Client::step(float dtime)
 	{
 		float &counter = m_packetcounter_timer;
 		counter -= dtime;
-		if(counter <= 0.0)
+		if(counter <= 0.0f)
 		{
-			counter = 20.0;
+			counter = 30.0f;
 
 			infostream << "Client packetcounter (" << m_packetcounter_timer
-					<< "):"<<std::endl;
+					<< "s):"<<std::endl;
 			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
@@ -622,14 +640,17 @@ void Client::step(float dtime)
 
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
-		verbosestream << "Saving registered mod storages." << std::endl;
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+		int n = 0;
 		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 			if (it->second->isModified()) {
 				it->second->save(getModStoragePath());
+				n++;
 			}
 		}
+		if (n > 0)
+			infostream << "Saved " << n << " modified mod storages." << std::endl;
 	}
 
 	// Write server map
@@ -654,8 +675,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, image_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Attempting to load image "
-		<<"file \""<<filename<<"\""<<std::endl;
+		TRACESTREAM(<< "Client: Attempting to load image "
+			<< "file \"" << filename << "\"" << std::endl);
 
 		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
 		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
@@ -688,10 +709,9 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, sound_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Attempting to load sound "
-		<<"file \""<<filename<<"\""<<std::endl;
-		m_sound->loadSoundData(name, data);
-		return true;
+		TRACESTREAM(<< "Client: Attempting to load sound "
+			<< "file \"" << filename << "\"" << std::endl);
+		return m_sound->loadSoundData(name, data);
 	}
 
 	const char *model_ext[] = {
@@ -715,9 +735,9 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
-		verbosestream << "Client: Loading translation: "
-				<< "\"" << filename << "\"" << std::endl;
-		g_translations->loadTranslation(data);
+		TRACESTREAM(<< "Client: Loading translation: "
+				<< "\"" << filename << "\"" << std::endl);
+		g_client_translations->loadTranslation(data);
 		return true;
 	}
 
@@ -1723,8 +1743,11 @@ void Client::afterContentReceived()
 	text = wgettext("Initializing nodes...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
-	for (const auto &path : getTextureDirs())
-		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
+	for (const auto &path : getTextureDirs()) {
+		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
+		m_nodedef->applyTextureOverrides(override_source.getNodeTileOverrides());
+		m_itemdef->applyTextureOverrides(override_source.getItemTextureOverrides());
+	}
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
 	delete[] text;

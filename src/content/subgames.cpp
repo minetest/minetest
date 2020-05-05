@@ -253,7 +253,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 	worldspaths.insert(porting::path_user + DIR_DELIM + "worlds");
 	infostream << "Searching worlds..." << std::endl;
 	for (const std::string &worldspath : worldspaths) {
-		infostream << "  In " << worldspath << ": " << std::endl;
+		infostream << "  In " << worldspath << ": ";
 		std::vector<fs::DirListNode> dirvector = fs::GetDirListing(worldspath);
 		for (const fs::DirListNode &dln : dirvector) {
 			if (!dln.dir)

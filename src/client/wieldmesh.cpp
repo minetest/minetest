@@ -347,7 +347,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	scene::SMesh *mesh = nullptr;
 
 	if (m_enable_shaders) {
-		u32 shader_id = shdrsrc->getShader("wielded_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		u32 shader_id = shdrsrc->getShader("object_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
 
@@ -468,6 +468,21 @@ void WieldMeshSceneNode::setColor(video::SColor c)
 			bc.getBlue() * blue / 255);
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		colorizeMeshBuffer(buf, &buffercolor);
+	}
+}
+
+void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
+{
+	if (!m_meshnode)
+		return;
+
+	if (m_enable_shaders) {
+		for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
+			video::SMaterial &material = m_meshnode->getMaterial(i);
+			material.EmissiveColor = color;
+		}
+	} else {
+		setColor(color);
 	}
 }
 

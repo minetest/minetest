@@ -111,6 +111,16 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 
 const static ClientCommandFactory null_command_factory = { "TOCLIENT_NULL", 0, false };
 
+/*
+	Channels used for Server -> Client communication
+	2: Bulk data (mapblocks, media, ...)
+	1: HUD packets
+	0: everything else
+
+	Packet order is only guaranteed inside a channel, so packets that operate on
+	the same objects are *required* to be in the same channel.
+*/
+
 const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 {
 	null_command_factory, // 0x00
@@ -163,7 +173,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_CHAT_MESSAGE",             0, true }, // 0x2F
 	null_command_factory, // 0x30
 	{ "TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD", 0, true }, // 0x31
-	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 Special packet, sent by 0 (rel) and 1 (unrel) channel
+	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 (may be sent as unrel over channel 1 too)
 	{ "TOCLIENT_HP",                       0, true }, // 0x33
 	{ "TOCLIENT_MOVE_PLAYER",              0, true }, // 0x34
 	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     0, true }, // 0x35
@@ -176,7 +186,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_ANNOUNCE_MEDIA",           0, true }, // 0x3C
 	{ "TOCLIENT_ITEMDEF",                  0, true }, // 0x3D
 	null_command_factory, // 0x3E
-	{ "TOCLIENT_PLAY_SOUND",               0, true }, // 0x3f
+	{ "TOCLIENT_PLAY_SOUND",               0, true }, // 0x3f (may be sent as unrel too)
 	{ "TOCLIENT_STOP_SOUND",               0, true }, // 0x40
 	{ "TOCLIENT_PRIVILEGES",               0, true }, // 0x41
 	{ "TOCLIENT_INVENTORY_FORMSPEC",       0, true }, // 0x42
@@ -188,9 +198,9 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory, // 0x48
 	{ "TOCLIENT_HUDADD",                   1, true }, // 0x49
 	{ "TOCLIENT_HUDRM",                    1, true }, // 0x4a
-	{ "TOCLIENT_HUDCHANGE",                0, true }, // 0x4b
-	{ "TOCLIENT_HUD_SET_FLAGS",            0, true }, // 0x4c
-	{ "TOCLIENT_HUD_SET_PARAM",            0, true }, // 0x4d
+	{ "TOCLIENT_HUDCHANGE",                1, true }, // 0x4b
+	{ "TOCLIENT_HUD_SET_FLAGS",            1, true }, // 0x4c
+	{ "TOCLIENT_HUD_SET_PARAM",            1, true }, // 0x4d
 	{ "TOCLIENT_BREATH",                   0, true }, // 0x4e
 	{ "TOCLIENT_SET_SKY",                  0, true }, // 0x4f
 	{ "TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO", 0, true }, // 0x50

@@ -27,12 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "log.h"
 #include "tool.h"
-#include "serverobject.h"
-#include "content_sao.h"
 #include "remoteplayer.h"
 #include "server.h"
 #include "hud.h"
 #include "scripting_server.h"
+#include "server/luaentity_sao.h"
+#include "server/player_sao.h"
 
 /*
 	ObjectRef
@@ -50,6 +50,8 @@ ObjectRef* ObjectRef::checkobject(lua_State *L, int narg)
 ServerActiveObject* ObjectRef::getobject(ObjectRef *ref)
 {
 	ServerActiveObject *co = ref->m_object;
+	if (co && co->isGone())
+		return NULL;
 	return co;
 }
 
@@ -60,8 +62,6 @@ LuaEntitySAO* ObjectRef::getluaobject(ObjectRef *ref)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
 		return NULL;
-	if (obj->isGone())
-		return NULL;
 	return (LuaEntitySAO*)obj;
 }
 
@@ -71,8 +71,6 @@ PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
 	if (obj == NULL)
 		return NULL;
 	if (obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
-		return NULL;
-	if (obj->isGone())
 		return NULL;
 	return (PlayerSAO*)obj;
 }
@@ -123,14 +121,7 @@ int ObjectRef::l_get_pos(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if (co == NULL) return 0;
-	v3f pos = co->getBasePosition() / BS;
-	lua_newtable(L);
-	lua_pushnumber(L, pos.X);
-	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, pos.Y);
-	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, pos.Z);
-	lua_setfield(L, -2, "z");
+	push_v3f(L, co->getBasePosition() / BS);
 	return 1;
 }
 
@@ -139,7 +130,6 @@ int ObjectRef::l_set_pos(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	//LuaEntitySAO *co = getluaobject(ref);
 	ServerActiveObject *co = getobject(ref);
 	if (co == NULL) return 0;
 	// pos
@@ -154,7 +144,6 @@ int ObjectRef::l_move_to(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	//LuaEntitySAO *co = getluaobject(ref);
 	ServerActiveObject *co = getobject(ref);
 	if (co == NULL) return 0;
 	// pos
@@ -533,7 +522,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 // get_local_animation(self)
 int ObjectRef::l_get_local_animation(lua_State *L)
 {
-	NO_MAP_LOCK_REQUIRED
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
@@ -685,8 +674,13 @@ int ObjectRef::l_set_attach(lua_State *L)
 	ServerActiveObject *parent = getobject(parent_ref);
 	if (co == NULL)
 		return 0;
+
 	if (parent == NULL)
 		return 0;
+
+	if (co == parent)
+		throw LuaError("ObjectRef::set_attach: attaching object to itself is not allowed.");
+
 	// Do it
 	int parent_id = 0;
 	std::string bone;
@@ -1109,17 +1103,13 @@ int ObjectRef::l_add_player_velocity(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	v3f vel = checkFloatPos(L, 2);
 
-	RemotePlayer *player = getplayer(ref);
 	PlayerSAO *co = getplayersao(ref);
-	if (!player || !co)
+	if (!co)
 		return 0;
 
-	session_t peer_id = player->getPeerId();
-	if (peer_id == PEER_ID_INEXISTENT)
-		return 0;
 	// Do it
 	co->setMaxSpeedOverride(vel);
-	getServer(L)->SendPlayerSpeed(peer_id, vel);
+	getServer(L)->SendPlayerSpeed(co->getPeerID(), vel);
 	return 0;
 }
 
@@ -1259,7 +1249,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	return 1;
 }
 
-// set_fov(self, degrees[, is_multiplier])
+// set_fov(self, degrees[, is_multiplier, transition_time])
 int ObjectRef::l_set_fov(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1268,7 +1258,11 @@ int ObjectRef::l_set_fov(lua_State *L)
 	if (!player)
 		return 0;
 
-	player->setFov({ static_cast<f32>(luaL_checknumber(L, 2)), readParam<bool>(L, 3) });
+	player->setFov({
+		static_cast<f32>(luaL_checknumber(L, 2)),
+		readParam<bool>(L, 3, false),
+		lua_isnumber(L, 4) ? static_cast<f32>(luaL_checknumber(L, 4)) : 0.0f
+	});
 	getServer(L)->SendPlayerFov(player->getPeerId());
 
 	return 0;
@@ -1286,8 +1280,9 @@ int ObjectRef::l_get_fov(lua_State *L)
 	PlayerFovSpec fov_spec = player->getFov();
 	lua_pushnumber(L, fov_spec.fov);
 	lua_pushboolean(L, fov_spec.is_multiplier);
+	lua_pushnumber(L, fov_spec.transition_time);
 
-	return 2;
+	return 3;
 }
 
 // set_breath(self, breath)
@@ -1787,19 +1782,19 @@ int ObjectRef::l_set_sky(lua_State *L)
 			lua_pop(L, 1);
 
 			// Prevent flickering clouds at dawn/dusk:
-			skybox_params.sun_tint = video::SColor(255, 255, 255, 255);
+			skybox_params.fog_sun_tint = video::SColor(255, 255, 255, 255);
 			lua_getfield(L, -1, "fog_sun_tint");
-			read_color(L, -1, &skybox_params.sun_tint);
+			read_color(L, -1, &skybox_params.fog_sun_tint);
 			lua_pop(L, 1);
 
-			skybox_params.moon_tint = video::SColor(255, 255, 255, 255);
+			skybox_params.fog_moon_tint = video::SColor(255, 255, 255, 255);
 			lua_getfield(L, -1, "fog_moon_tint");
-			read_color(L, -1, &skybox_params.moon_tint);
+			read_color(L, -1, &skybox_params.fog_moon_tint);
 			lua_pop(L, 1);
 
 			lua_getfield(L, -1, "fog_tint_type");
 			if (!lua_isnil(L, -1))
-				skybox_params.tint_type = luaL_checkstring(L, -1);
+				skybox_params.fog_tint_type = luaL_checkstring(L, -1);
 			lua_pop(L, 1);
 
 			// Because we need to leave the "sky_color" table.
@@ -1917,12 +1912,12 @@ int ObjectRef::l_get_sky_color(lua_State *L)
 		push_ARGB8(L, skybox_params.sky_color.indoors);
 		lua_setfield(L, -2, "indoors");
 	}
-	push_ARGB8(L, skybox_params.sun_tint);
-	lua_setfield(L, -2, "sun_tint");
-	push_ARGB8(L, skybox_params.moon_tint);
-	lua_setfield(L, -2, "moon_tint");
-	lua_pushstring(L, skybox_params.tint_type.c_str());
-	lua_setfield(L, -2, "tint_type");
+	push_ARGB8(L, skybox_params.fog_sun_tint);
+	lua_setfield(L, -2, "fog_sun_tint");
+	push_ARGB8(L, skybox_params.fog_moon_tint);
+	lua_setfield(L, -2, "fog_moon_tint");
+	lua_pushstring(L, skybox_params.fog_tint_type.c_str());
+	lua_setfield(L, -2, "fog_tint_type");
 	return 1;
 }
 

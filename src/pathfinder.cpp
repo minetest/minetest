@@ -23,8 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 
 #include "pathfinder.h"
-#include "serverenvironment.h"
-#include "server.h"
+#include "map.h"
 #include "nodedef.h"
 
 //#define PATHFINDER_DEBUG
@@ -180,10 +179,8 @@ private:
 class Pathfinder {
 
 public:
-	/**
-	 * default constructor
-	 */
-	Pathfinder() = default;
+	Pathfinder() = delete;
+	Pathfinder(Map *map, const NodeDefManager *ndef) : m_map(map), m_ndef(ndef) {}
 
 	~Pathfinder();
 
@@ -197,8 +194,7 @@ public:
 	 * @param max_drop maximum number of blocks a path may drop
 	 * @param algo Algorithm to use for finding a path
 	 */
-	std::vector<v3s16> getPath(ServerEnvironment *env,
-			v3s16 source,
+	std::vector<v3s16> getPath(v3s16 source,
 			v3s16 destination,
 			unsigned int searchdistance,
 			unsigned int max_jump,
@@ -328,7 +324,9 @@ private:
 	friend class GridNodeContainer;
 	GridNodeContainer *m_nodes_container = nullptr;
 
-	ServerEnvironment *m_env = 0;     /**< minetest environment pointer             */
+	Map *m_map = nullptr;
+
+	const NodeDefManager *m_ndef = nullptr;
 
 	friend class PathfinderCompareHeuristic;
 
@@ -410,18 +408,15 @@ class PathfinderCompareHeuristic
 /* implementation                                                             */
 /******************************************************************************/
 
-std::vector<v3s16> get_path(ServerEnvironment* env,
-							v3s16 source,
-							v3s16 destination,
-							unsigned int searchdistance,
-							unsigned int max_jump,
-							unsigned int max_drop,
-							PathAlgorithm algo)
+std::vector<v3s16> get_path(Map* map, const NodeDefManager *ndef,
+		v3s16 source,
+		v3s16 destination,
+		unsigned int searchdistance,
+		unsigned int max_jump,
+		unsigned int max_drop,
+		PathAlgorithm algo)
 {
-	Pathfinder searchclass;
-
-	return searchclass.getPath(env,
-				source, destination,
+	return Pathfinder(map, ndef).getPath(source, destination,
 				searchdistance, max_jump, max_drop, algo);
 }
 
@@ -521,13 +516,13 @@ void PathGridnode::setCost(v3s16 dir, const PathCost &cost)
 
 void GridNodeContainer::initNode(v3s16 ipos, PathGridnode *p_node)
 {
-	const NodeDefManager *ndef = m_pathf->m_env->getGameDef()->ndef();
+	const NodeDefManager *ndef = m_pathf->m_ndef;
 	PathGridnode &elem = *p_node;
 
 	v3s16 realpos = m_pathf->getRealPos(ipos);
 
-	MapNode current = m_pathf->m_env->getMap().getNode(realpos);
-	MapNode below   = m_pathf->m_env->getMap().getNode(realpos + v3s16(0, -1, 0));
+	MapNode current = m_pathf->m_map->getNode(realpos);
+	MapNode below   = m_pathf->m_map->getNode(realpos + v3s16(0, -1, 0));
 
 
 	if ((current.param0 == CONTENT_IGNORE) ||
@@ -610,8 +605,7 @@ PathGridnode &MapGridNodeContainer::access(v3s16 p)
 
 
 /******************************************************************************/
-std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
-							v3s16 source,
+std::vector<v3s16> Pathfinder::getPath(v3s16 source,
 							v3s16 destination,
 							unsigned int searchdistance,
 							unsigned int max_jump,
@@ -624,15 +618,8 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 #endif
 	std::vector<v3s16> retval;
 
-	//check parameters
-	if (env == 0) {
-		ERROR_TARGET << "Missing environment pointer" << std::endl;
-		return retval;
-	}
-
 	//initialization
 	m_searchdistance = searchdistance;
-	m_env = env;
 	m_maxjump = max_jump;
 	m_maxdrop = max_drop;
 	m_start       = source;
@@ -681,15 +668,14 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 #endif
 
 	//fail if source or destination is walkable
-	const NodeDefManager *ndef = m_env->getGameDef()->ndef();
-	MapNode node_at_pos = m_env->getMap().getNode(destination);
-	if (ndef->get(node_at_pos).walkable) {
+	MapNode node_at_pos = m_map->getNode(destination);
+	if (m_ndef->get(node_at_pos).walkable) {
 		VERBOSE_TARGET << "Destination is walkable. " <<
 				"Pos: " << PP(destination) << std::endl;
 		return retval;
 	}
-	node_at_pos = m_env->getMap().getNode(source);
-	if (ndef->get(node_at_pos).walkable) {
+	node_at_pos = m_map->getNode(source);
+	if (m_ndef->get(node_at_pos).walkable) {
 		VERBOSE_TARGET << "Source is walkable. " <<
 				"Pos: " << PP(source) << std::endl;
 		return retval;
@@ -843,7 +829,6 @@ v3s16 Pathfinder::getRealPos(v3s16 ipos)
 /******************************************************************************/
 PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 {
-	const NodeDefManager *ndef = m_env->getGameDef()->ndef();
 	PathCost retval;
 
 	retval.updated = true;
@@ -857,7 +842,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 		return retval;
 	}
 
-	MapNode node_at_pos2 = m_env->getMap().getNode(pos2);
+	MapNode node_at_pos2 = m_map->getNode(pos2);
 
 	//did we get information about node?
 	if (node_at_pos2.param0 == CONTENT_IGNORE ) {
@@ -866,9 +851,9 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 			return retval;
 	}
 
-	if (!ndef->get(node_at_pos2).walkable) {
+	if (!m_ndef->get(node_at_pos2).walkable) {
 		MapNode node_below_pos2 =
-			m_env->getMap().getNode(pos2 + v3s16(0, -1, 0));
+			m_map->getNode(pos2 + v3s16(0, -1, 0));
 
 		//did we get information about node?
 		if (node_below_pos2.param0 == CONTENT_IGNORE ) {
@@ -878,7 +863,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 		}
 
 		//test if the same-height neighbor is suitable
-		if (ndef->get(node_below_pos2).walkable) {
+		if (m_ndef->get(node_below_pos2).walkable) {
 			//SUCCESS!
 			retval.valid = true;
 			retval.value = 1;
@@ -889,19 +874,19 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 		else {
 			//test if we can fall a couple of nodes (m_maxdrop)
 			v3s16 testpos = pos2 + v3s16(0, -1, 0);
-			MapNode node_at_pos = m_env->getMap().getNode(testpos);
+			MapNode node_at_pos = m_map->getNode(testpos);
 
 			while ((node_at_pos.param0 != CONTENT_IGNORE) &&
-					(!ndef->get(node_at_pos).walkable) &&
+					(!m_ndef->get(node_at_pos).walkable) &&
 					(testpos.Y > m_limits.MinEdge.Y)) {
 				testpos += v3s16(0, -1, 0);
-				node_at_pos = m_env->getMap().getNode(testpos);
+				node_at_pos = m_map->getNode(testpos);
 			}
 
 			//did we find surface?
 			if ((testpos.Y >= m_limits.MinEdge.Y) &&
 					(node_at_pos.param0 != CONTENT_IGNORE) &&
-					(ndef->get(node_at_pos).walkable)) {
+					(m_ndef->get(node_at_pos).walkable)) {
 				if ((pos2.Y - testpos.Y - 1) <= m_maxdrop) {
 					//SUCCESS!
 					retval.valid = true;
@@ -927,34 +912,34 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 
 		v3s16 targetpos = pos2; // position for jump target
 		v3s16 jumppos = pos; // position for checking if jumping space is free
-		MapNode node_target = m_env->getMap().getNode(targetpos);
-		MapNode node_jump = m_env->getMap().getNode(jumppos);
+		MapNode node_target = m_map->getNode(targetpos);
+		MapNode node_jump = m_map->getNode(jumppos);
 		bool headbanger = false; // true if anything blocks jumppath
 
 		while ((node_target.param0 != CONTENT_IGNORE) &&
-				(ndef->get(node_target).walkable) &&
+				(m_ndef->get(node_target).walkable) &&
 				(targetpos.Y < m_limits.MaxEdge.Y)) {
 			//if the jump would hit any solid node, discard
 			if ((node_jump.param0 == CONTENT_IGNORE) ||
-					(ndef->get(node_jump).walkable)) {
+					(m_ndef->get(node_jump).walkable)) {
 					headbanger = true;
 				break;
 			}
 			targetpos += v3s16(0, 1, 0);
 			jumppos   += v3s16(0, 1, 0);
-			node_target = m_env->getMap().getNode(targetpos);
-			node_jump   = m_env->getMap().getNode(jumppos);
+			node_target = m_map->getNode(targetpos);
+			node_jump   = m_map->getNode(jumppos);
 
 		}
 		//check headbanger one last time
 		if ((node_jump.param0 == CONTENT_IGNORE) ||
-			(ndef->get(node_jump).walkable)) {
+			(m_ndef->get(node_jump).walkable)) {
 			headbanger = true;
 		}
 
 		//did we find surface without banging our head?
 		if ((!headbanger) && (targetpos.Y <= m_limits.MaxEdge.Y) &&
-				(!ndef->get(node_target).walkable)) {
+				(!m_ndef->get(node_target).walkable)) {
 
 			if (targetpos.Y - pos2.Y <= m_maxjump) {
 				//SUCCESS!
@@ -1254,21 +1239,20 @@ v3s16 Pathfinder::walkDownwards(v3s16 pos, unsigned int max_down) {
 	if (max_down == 0)
 		return pos;
 	v3s16 testpos = v3s16(pos);
-	MapNode node_at_pos = m_env->getMap().getNode(testpos);
-	const NodeDefManager *ndef = m_env->getGameDef()->ndef();
+	MapNode node_at_pos = m_map->getNode(testpos);
 	unsigned int down = 0;
 	while ((node_at_pos.param0 != CONTENT_IGNORE) &&
-			(!ndef->get(node_at_pos).walkable) &&
+			(!m_ndef->get(node_at_pos).walkable) &&
 			(testpos.Y > m_limits.MinEdge.Y) &&
 			(down <= max_down)) {
 		testpos += v3s16(0, -1, 0);
 		down++;
-		node_at_pos = m_env->getMap().getNode(testpos);
+		node_at_pos = m_map->getNode(testpos);
 	}
 	//did we find surface?
 	if ((testpos.Y >= m_limits.MinEdge.Y) &&
 			(node_at_pos.param0 != CONTENT_IGNORE) &&
-			(ndef->get(node_at_pos).walkable)) {
+			(m_ndef->get(node_at_pos).walkable)) {
 		if (down == 0) {
 			pos = testpos;
 		} else if ((down - 1) <= max_down) {

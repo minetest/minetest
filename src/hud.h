@@ -52,7 +52,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_HOTBAR_ITEMCOUNT_DEFAULT 8
 #define HUD_HOTBAR_ITEMCOUNT_MAX     32
 
-
 #define HOTBAR_IMAGE_SIZE 48
 
 enum HudElementType {
@@ -61,7 +60,8 @@ enum HudElementType {
 	HUD_ELEM_STATBAR   = 2,
 	HUD_ELEM_INVENTORY = 3,
 	HUD_ELEM_WAYPOINT  = 4,
-	HUD_ELEM_MINIMAP   = 5,	
+	HUD_ELEM_IMAGE_WAYPOINT = 5,
+	HUD_ELEM_MINIMAP   = 6,
 };
 
 enum HudElementStat {

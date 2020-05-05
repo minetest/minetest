@@ -252,7 +252,7 @@ keymap_cinematic (Cinematic mode key) key
 
 #    Key for toggling display of minimap.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_minimap (Minimap key) key KEY_F9
+keymap_minimap (Minimap key) key KEY_KEY_V
 
 #    Key for taking screenshots.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -424,7 +424,7 @@ keymap_toggle_profiler (Profiler toggle key) key KEY_F6
 
 #    Key for switching between first- and third-person camera.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_camera_mode (Toggle camera mode key) key KEY_F7
+keymap_camera_mode (Toggle camera mode key) key KEY_KEY_C
 
 #    Key for increasing the viewing range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -955,6 +955,12 @@ address (Server address) string
 #    Note that the port field in the main menu overrides this setting.
 remote_port (Remote port) int 30000 1 65535
 
+#    Prometheus listener address.
+#    If minetest is compiled with ENABLE_PROMETHEUS option enabled,
+#    enable metrics listener for Prometheus on that address.
+#    Metrics can be fetch on http://127.0.0.1:30000/metrics
+prometheus_listener_address (Prometheus listener address) string 127.0.0.1:30000
+
 #    Save the map received by the client on disk.
 enable_local_map_saving (Saving map received from server) bool false
 
@@ -1078,6 +1084,10 @@ map-dir (Map directory) path
 #    Time in seconds for item entity (dropped items) to live.
 #    Setting it to -1 disables the feature.
 item_entity_ttl (Item entity TTL) int 900
+
+#    Specifies the default stack size of nodes, items and tools.
+#    Note that mods or games may explicitly set a stack for certain (or all) items.
+default_stack_max (Default stack size) int 99
 
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
@@ -1373,7 +1383,7 @@ name (Player name) string
 
 #    Set the language. Leave empty to use the system language.
 #    A restart is required after changing this.
-language (Language) enum   ,ar,ca,cs,da,de,dv,el,eo,es,et,eu,fil,fr,hu,id,it,ja,ja_KS,jbo,kk,kn,lo,lt,ms,my,nb,nl,nn,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,th,tr,uk,vi
+language (Language) enum   ,ar,ca,cs,da,de,dv,el,en,eo,es,et,eu,fil,fr,hu,id,it,ja,ja_KS,jbo,kk,kn,lo,lt,ms,my,nb,nl,nn,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,th,tr,uk,vi
 
 #    Level of logging to be written to debug.txt:
 #    -    <nothing> (no logging)

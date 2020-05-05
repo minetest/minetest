@@ -897,6 +897,7 @@ These sound files are played back by the engine if provided.
  * `player_damage`: Played when the local player takes damage (gain = 0.5)
  * `player_falling_damage`: Played when the local player takes
    damage by falling (gain = 0.5)
+ * `player_jump`: Played when the local player jumps
  * `default_dig_<groupname>`: Default node digging sound
    (see node sound definition for details)
 
@@ -1309,7 +1310,21 @@ factor!
 The `z_index` field specifies the order of HUD elements from back to front.
 Lower z-index elements are displayed behind higher z-index elements. Elements
 with same z-index are displayed in an arbitrary order. Default 0.
-Supports negative values.
+Supports negative values. By convention, the following values are recommended:
+
+*  -400: Graphical effects, such as vignette
+*  -300: Name tags, waypoints
+*  -200: Wieldhand
+*  -100: Things that block the player's view, e.g. masks
+*     0: Default. For standard in-game HUD elements like crosshair, hotbar,
+         minimap, builtin statbars, etc.
+*   100: Temporary text messages or notification icons
+*  1000: Full-screen effects such as full-black screen or credits.
+         This includes effects that cover the entire screen
+* Other: If your HUD element doesn't fit into any category, pick a number
+         between the suggested values
+
+
 
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
@@ -1364,9 +1379,30 @@ Displays distance to selected world position.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
+* `precision`: Waypoint precision, integer >= 0. Defaults to 10.
+  If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
+  When the precision is an integer multiple of 10, there will be `log_10(precision)` digits after the decimal point.
+  `precision = 1000`, for example, will show 3 decimal places (eg: `0.999`).
+  `precision = 2` will show multiples of `0.5`; precision = 5 will show multiples of `0.2` and so on:
+  `precision = n` will show multiples of `1/n`
 * `number:` An integer containing the RGB value of the color used to draw the
   text.
 * `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
+* `alignment`: The alignment of the waypoint.
+
+### `image_waypoint`
+
+Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
+
+* `scale`: The scale of the image, with 1 being the original texture size.
+  Only the X coordinate scale is used (positive values).
+  Negative values represent that percentage of the screen it
+  should take; e.g. `x=-100` means 100% (width).
+* `text`: The name of the texture that is displayed.
+* `alignment`: The alignment of the image.
+* `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
 
 ### `minimap`
 
@@ -2088,6 +2124,26 @@ Elements
 * End of a container, following elements are no longer relative to this
   container.
 
+### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
+
+* Start of a scroll_container block. All contained elements will ...
+  * take the scroll_container coordinate as position origin,
+  * be additionally moved by the current value of the scrollbar with the name
+    `scrollbar name` times `scroll factor` along the orientation `orientation` and
+  * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
+* `orientation`: possible values are `vertical` and `horizontal`.
+* `scroll factor`: optional, defaults to `0.1`.
+* Nesting is possible.
+* Some elements might work a little different if they are in a scroll_container.
+* Note: If you want the scroll_container to actually work, you also need to add a
+  scrollbar element with the specified name. Furthermore, it is highly recommended
+  to use a scrollbaroptions element on this scrollbar.
+
+### `scroll_container_end[]`
+
+* End of a scroll_container, following elements are no longer bound to this
+  container.
+
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
@@ -2195,12 +2251,12 @@ Elements
 
 * 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
 * Middle is a rect which defines the middle of the 9-slice.
-	* `x` - The middle will be x pixels from all sides.
-	* `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
-	* `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
-		will be added to the width and height of the texture, allowing it to be used as the
-		distance from the far end.
-	* All numbers in middle are integers.
+    * `x` - The middle will be x pixels from all sides.
+    * `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
+    * `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
+        will be added to the width and height of the texture, allowing it to be used as the
+        distance from the far end.
+    * All numbers in middle are integers.
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
@@ -2515,16 +2571,28 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-### `style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]`
+### `style[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Set the style for the named element(s) `name`.
+* Set the style for the element(s) matching `selector` by name.
+* `selector` can be one of:
+    * `<name>` - An element name.
+    * `<name>:<state>` - An element name, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * Note: this **must** be before the element is defined.
 * See [Styling Formspecs].
 
 
-### `style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]`
+### `style_type[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Sets the style for all elements of type(s) `type` which appear after this element.
+* Set the style for the element(s) matching `selector` by type.
+* `selector` can be one of:
+    * `<type>` - An element type.
+    * `<type>:<state>` - An element type, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
 
 Migrating to Real Coordinates
@@ -2567,23 +2635,32 @@ Styling Formspecs
 
 Formspec elements can be themed using the style elements:
 
-    style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]
-    style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]
+    style[<name 1>,<name 2>;<prop1>;<prop2>;...]
+    style[<name 1>:<state>,<name 2>:<state>;<prop1>;<prop2>;...]
+    style_type[<type 1>,<type 2>;<prop1>;<prop2>;...]
+    style_type[<type 1>:<state>,<type 2>:<state>;<prop1>;<prop2>;...]
 
 Where a prop is:
 
     property_name=property_value
-
-A name/type can optionally be a comma separated list of names/types, like so:
-
-    world_delete,world_create,world_configure
-    button,image_button
 
 For example:
 
     style_type[button;bgcolor=#006699]
     style[world_delete;bgcolor=red;textcolor=yellow]
     button[4,3.95;2.6,1;world_delete;Delete]
+
+A name/type can optionally be a comma separated list of names/types, like so:
+
+    world_delete,world_create,world_configure
+    button,image_button
+
+Any name/type in the list can also be accompanied by a `+`-separated list of states, like so:
+
+    world_delete:hovered+pressed
+    button:pressed
+
+States allow you to apply styles in response to changes in the element, instead of applying at all times.
 
 Setting a property to nothing will reset it to the default value. For example:
 
@@ -2628,10 +2705,14 @@ Some types may inherit styles from parent types.
     * bgimg - standard background image. Defaults to none.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
     * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
-                     See background9[] documentation for more details
+                     See background9[] documentation for more details. This property also pads the
+                     button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
+    * content_offset - 2d vector, shifts the position of the button's content without resizing it.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * padding - rect, adds space between the edges of the button and the content. This value is
+                relative to bgimg_middle.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -2660,6 +2741,14 @@ Some types may inherit styles from parent types.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+
+### Valid States
+
+* *all elements*
+    * default - Equivalent to providing no states
+* button, button_exit, image_button, item_image_button
+    * hovered - Active when the mouse is hovering over the element
+    * pressed - Active when the button is pressed
 
 Markup Language
 ---------------
@@ -3113,8 +3202,22 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
   `minetest.translate`, but is in translation files.
 * `@n` acts as a literal newline as well.
 
+Server side translations
+------------------------
 
+On some specific cases, server translation could be useful. For example, filter
+a list on labels and send results to client. A method is supplied to achieve
+that:
 
+`minetest.get_translated_string(lang_code, string)`: Translates `string` using
+translations for `lang_code` language. It gives the same result as if the string
+was translated by the client.
+
+The `lang_code` to use for a given player can be retrieved from
+the table returned by `minetest.get_player_information(name)`.
+
+IMPORTANT: This functionality should only be used for sorting, filtering or similar purposes.
+You do not need to use this to get translated strings to show up on the client.
 
 Perlin noise
 ============
@@ -3187,9 +3290,9 @@ For this parameter you can randomly choose any whole number. Usually it is
 preferable for this to be different from other seeds, but sometimes it is useful
 to be able to create identical noise patterns.
 
-When used in mapgen this is actually a 'seed offset', it is added to the
-'world seed' to create the seed used by the noise, to ensure the noise has a
-different pattern in different worlds.
+In some noise APIs the world seed is added to the seed specified in noise
+parameters. This is done to make the resulting noise pattern vary in different
+worlds, and be 'world-specific'.
 
 ### `octaves`
 
@@ -4070,6 +4173,8 @@ Utilities
           area_store_persistent_ids = true,
           -- Whether minetest.find_path is functional (5.2.0)
           pathfinder_works = true,
+          -- Whether Collision info is available to an objects' on_step (5.3.0)
+          object_step_has_moveresult = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4081,16 +4186,18 @@ Utilities
       {
           address = "127.0.0.1",     -- IP address of client
           ip_version = 4,            -- IPv4 / IPv6
+          connection_uptime = 200,   -- seconds since client connected
+          protocol_version = 32,     -- protocol version used by client
+          formspec_version = 2,      -- supported formspec version
+          lang_code = "fr"           -- Language code used for translation
+          -- the following keys can be missing if no stats have been collected yet
           min_rtt = 0.01,            -- minimum round trip time
           max_rtt = 0.2,             -- maximum round trip time
           avg_rtt = 0.02,            -- average round trip time
           min_jitter = 0.01,         -- minimum packet time jitter
           max_jitter = 0.5,          -- maximum packet time jitter
           avg_jitter = 0.03,         -- average packet time jitter
-          connection_uptime = 200,   -- seconds since client connected
-          protocol_version = 32,     -- protocol version used by client
-          formspec_version = 2,      -- supported formspec version
-          -- following information is available on debug build only!!!
+          -- the following information is available in a debug build only!!!
           -- DO NOT USE IN MODS
           --ser_vers = 26,             -- serialization version used by client
           --major = 0,                 -- major version number
@@ -4586,8 +4693,11 @@ Environment access
     * Return value: Table with all node positions with a node air above
     * Area volume is limited to 4,096,000 nodes
 * `minetest.get_perlin(noiseparams)`
+    * Return world-specific perlin noise.
+    * The actual seed used is the noiseparams seed plus the world seed.
 * `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-    * Return world-specific perlin noise (`int(worldseed)+seeddiff`)
+    * Deprecated: use `minetest.get_perlin(noiseparams)` instead.
+    * Return world-specific perlin noise.
 * `minetest.get_voxel_manip([pos1, pos2])`
     * Return voxel manipulator object.
     * Loads the manipulator from the map if positions are passed.
@@ -5914,15 +6024,18 @@ object you are working with still exists.
         * max: bubbles bar is not shown
         * See [Object properties] for more information
     * Is limited to range 0 ... 65535 (2^16 - 1)
-* `set_fov(fov, is_multiplier)`: Sets player's FOV
+* `set_fov(fov, is_multiplier, transition_time)`: Sets player's FOV
     * `fov`: FOV value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
       Defaults to `false`.
-    * Set to 0 to clear FOV override.
-* `get_fov()`:
-    * Returns player's FOV override in degrees, and a boolean depending on whether
-      the value is a multiplier.
-    * Returns 0 as first value if player's FOV hasn't been overridden.
+    * `transition_time`: If defined, enables smooth FOV transition.
+      Interpreted as the time (in seconds) to reach target FOV.
+      If set to 0, FOV change is instantaneous. Defaults to 0.
+    * Set `fov` to 0 to clear FOV override.
+* `get_fov()`: Returns the following:
+    * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
+    * Boolean indicating whether the FOV value is a multiplier.
+    * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a
@@ -6161,10 +6274,15 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 -------------
 
 A perlin noise generator.
-It can be created via `PerlinNoise(seed, octaves, persistence, spread)`
-or `PerlinNoise(noiseparams)`.
-Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-or `minetest.get_perlin(noiseparams)`.
+It can be created via `PerlinNoise()` or `minetest.get_perlin()`.
+For `minetest.get_perlin()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
+
+`PerlinNoise(noiseparams)`
+`PerlinNoise(seed, octaves, persistence, spread)` (Deprecated).
+
+`minetest.get_perlin(noiseparams)`
+`minetest.get_perlin(seeddiff, octaves, persistence, spread)` (Deprecated).
 
 ### Methods
 
@@ -6178,6 +6296,8 @@ A fast, bulk perlin noise generator.
 
 It can be created via `PerlinNoiseMap(noiseparams, size)` or
 `minetest.get_perlin_map(noiseparams, size)`.
+For `minetest.get_perlin_map()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
 
 Format of `size` is `{x=dimx, y=dimy, z=dimz}`. The `z` component is omitted
 for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
@@ -6508,7 +6628,10 @@ Used by `minetest.register_entity`.
 
         on_activate = function(self, staticdata, dtime_s),
 
-        on_step = function(self, dtime),
+        on_step = function(self, dtime, moveresult),
+        -- Called every server step
+        -- dtime: Elapsed time
+        -- moveresult: Table with collision info (only available if physical=true)
 
         on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir),
 
@@ -6521,6 +6644,24 @@ Used by `minetest.register_entity`.
         _custom_field = whatever,
         -- You can define arbitrary member variables here (see Item definition
         -- for more info) by using a '_' prefix
+    }
+
+Collision info passed to `on_step`:
+
+    {
+        touching_ground = boolean,
+        collides = boolean,
+        standing_on_object = boolean,
+        collisions = {
+            {
+                type = string, -- "node" or "object",
+                axis = string, -- "x", "y" or "z"
+                node_pos = vector, -- if type is "node"
+                old_velocity = vector,
+                new_velocity = vector,
+            },
+            ...
+        }
     }
 
 ABM (ActiveBlockModifier) definition
@@ -6689,6 +6830,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         wield_scale = {x = 1, y = 1, z = 1},
 
+        -- The default value of 99 may be configured by
+        -- users using the setting "default_stack_max"
         stack_max = 99,
 
         range = 4.0,

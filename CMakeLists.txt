@@ -49,6 +49,7 @@ set(RUN_IN_PLACE ${DEFAULT_RUN_IN_PLACE} CACHE BOOL
 
 set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
 set(BUILD_SERVER FALSE CACHE BOOL "Build server")
+set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
 
 
 set(WARN_ALL TRUE CACHE BOOL "Enable -Wall for Release build")
@@ -102,7 +103,7 @@ elseif(UNIX) # Linux, BSD etc
 		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/share/applications")
 		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/share/metainfo")
 		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/share/icons")
-		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/locale")
+		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/locale")
 	endif()
 endif()
 
@@ -325,4 +326,3 @@ if(DOXYGEN_FOUND)
 		COMMENT "Generating API documentation with Doxygen" VERBATIM
 	)
 endif()
-

@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
+#include "util/metricsbackend.h"
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"
@@ -173,7 +174,6 @@ public:
 	void handleCommand_InventoryAction(NetworkPacket* pkt);
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
 	void handleCommand_Damage(NetworkPacket* pkt);
-	void handleCommand_Password(NetworkPacket* pkt);
 	void handleCommand_PlayerItem(NetworkPacket* pkt);
 	void handleCommand_Respawn(NetworkPacket* pkt);
 	void handleCommand_Interact(NetworkPacket* pkt);
@@ -212,7 +212,7 @@ public:
 
 	// Connection must be locked when called
 	std::wstring getStatusString();
-	inline double getUptime() const { return m_uptime.m_value; }
+	inline double getUptime() const { return m_uptime_counter->get(); }
 
 	// read shutdown state
 	inline bool isShutdownRequested() const { return m_shutdown_state.is_requested; }
@@ -343,7 +343,7 @@ public:
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientState *state, u32 *uptime,
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
-			std::string* vers_string);
+			std::string* vers_string, std::string* lang_code);
 
 	void printToConsoleOnly(const std::string &text);
 
@@ -369,6 +369,9 @@ public:
 
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
+
+	// Load translations for a language
+	void loadTranslationLanguage(const std::string &lang_code);
 
 	// Bind address
 	Address m_bind_addr;
@@ -600,9 +603,6 @@ private:
 	float m_step_dtime = 0.0f;
 	std::mutex m_step_dtime_mutex;
 
-	// current server step lag counter
-	float m_lag;
-
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;
 
@@ -611,8 +611,6 @@ private:
 	*/
 	// Timer for sending time of day over network
 	float m_time_of_day_send_timer = 0.0f;
-	// Uptime of server in seconds
-	MutexedVariable<double> m_uptime;
 
 	/*
 	 	Client interface
@@ -686,6 +684,19 @@ private:
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	// Global server metrics backend
+	std::unique_ptr<MetricsBackend> m_metrics_backend;
+
+	// Server metrics
+	MetricCounterPtr m_uptime_counter;
+	MetricGaugePtr m_player_gauge;
+	MetricGaugePtr m_timeofday_gauge;
+	// current server step lag
+	MetricGaugePtr m_lag_gauge;
+	MetricCounterPtr m_aom_buffer_counter;
+	MetricCounterPtr m_packet_recv_counter;
+	MetricCounterPtr m_packet_recv_processed_counter;
 };
 
 /*

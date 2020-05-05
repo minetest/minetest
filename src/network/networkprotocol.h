@@ -70,8 +70,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 14:
 		Added transfer of player pressed keys to the server
 		Added new messages for mesh and bone animation, as well as attachments
-		GENERIC_CMD_SET_ANIMATION
-		GENERIC_CMD_SET_BONE_POSITION
+		AO_CMD_SET_ANIMATION
+		AO_CMD_SET_BONE_POSITION
 		GENERIC_CMD_SET_ATTACHMENT
 	PROTOCOL_VERSION 15:
 		Serialization format changes
@@ -87,7 +87,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		damageGroups added to ToolCapabilities
 		sound_place added to ItemDefinition
 	PROTOCOL_VERSION 19:
-		GENERIC_CMD_SET_PHYSICS_OVERRIDE
+		AO_CMD_SET_PHYSICS_OVERRIDE
 	PROTOCOL_VERSION 20:
 		TOCLIENT_HUDADD
 		TOCLIENT_HUDRM
@@ -131,7 +131,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_HELLO for presenting server to client after client
 			presentation
 		Add TOCLIENT_AUTH_ACCEPT to accept connection from client
-		Rename GENERIC_CMD_SET_ATTACHMENT to GENERIC_CMD_ATTACH_TO
+		Rename GENERIC_CMD_SET_ATTACHMENT to AO_CMD_ATTACH_TO
 	PROTOCOL_VERSION 26:
 		Add TileDef tileable_horizontal, tileable_vertical flags
 	PROTOCOL_VERSION 27:
@@ -238,6 +238,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Formspec elements are drawn in the order of definition
 		bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
 		box[] and image[] elements enable clipping by default
+		new element: scroll_container[]
 */
 #define FORMSPEC_API_VERSION 3
 
@@ -384,8 +385,9 @@ enum ToClientCommand
 	/*
 		Sends an FOV override/multiplier to client.
 
-		float fov
+		f32 fov
 		bool is_multiplier
+		f32 transition_time
 	*/
 
 	TOCLIENT_DEATHSCREEN = 0x37,
@@ -633,9 +635,9 @@ enum ToClientCommand
 		u8[4] night_sky (ARGB)
 		u8[4] night_horizon (ARGB)
 		u8[4] indoors (ARGB)
-		u8[4] sun_tint (ARGB)
-		u8[4] moon_tint (ARGB)
-		std::string tint_type
+		u8[4] fog_sun_tint (ARGB)
+		u8[4] fog_moon_tint (ARGB)
+		std::string fog_tint_type
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,

@@ -1,0 +1,59 @@
+apply plugin: 'com.android.library'
+import org.ajoberstar.grgit.Grgit
+
+android {
+	compileSdkVersion 29
+	buildToolsVersion '29.0.3'
+	ndkVersion '21.1.6352462'
+	defaultConfig {
+		minSdkVersion 16
+		targetSdkVersion 29
+		externalNativeBuild {
+			ndkBuild {
+				arguments '-j8',
+						"versionMajor=${versionMajor}",
+						"versionMinor=${versionMinor}",
+						"versionPatch=${versionPatch}",
+						"versionExtra=${versionExtra}"
+			}
+		}
+	}
+
+	externalNativeBuild {
+		ndkBuild {
+			path file('jni/Android.mk')
+		}
+	}
+
+	// supported architectures
+	splits {
+		abi {
+			enable true
+			reset()
+			include 'armeabi-v7a', 'arm64-v8a'//, 'x86'
+		}
+	}
+
+	buildTypes {
+		release {
+			externalNativeBuild {
+				ndkBuild {
+					arguments 'NDEBUG=1'
+				}
+			}
+		}
+	}
+}
+
+task cloneGitRepo() {
+	def destination = file('deps')
+	if(!destination.exists()) {
+		def grgit = Grgit.clone(
+				dir: destination,
+				uri: 'https://github.com/minetest/minetest_android_deps_binaries'
+		)
+		grgit.close()
+	}
+}
+
+preBuild.dependsOn cloneGitRepo
