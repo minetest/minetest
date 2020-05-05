@@ -164,7 +164,7 @@ local style_fs = [[
 	style[one_btn14:hovered+pressed;textcolor=purple]
 	image_button[0,9.6;1,1;testformspec_button_image.png;one_btn14;Bg]
 
-	style[one_btn15;border=false;bgimg=testformspec_bg.png;bgimg_hovered=testformspec_bg_hovered.png;bgimg_pressed=testformspec_bg_pressed.png]
+	style[one_btn15;border=false;bgcolor=#1cc;bgimg=testformspec_bg.png;bgimg_hovered=testformspec_bg_hovered.png;bgimg_pressed=testformspec_bg_pressed.png]
 	item_image_button[1.25,9.6;1,1;testformspec:item;one_btn15;Bg]
 
 	style[one_btn16;border=false;bgimg=testformspec_bg_9slice.png;bgimg_hovered=testformspec_bg_9slice_hovered.png;bgimg_pressed=testformspec_bg_9slice_pressed.png;bgimg_middle=4,6]
