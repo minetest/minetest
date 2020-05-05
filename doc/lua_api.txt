@@ -1414,7 +1414,7 @@ Displays an image oriented or translated according to current heading direction.
 * `text`: The name of the texture that is displayed.
 * `alignment`: The alignment of the image.
 * `offset`: offset in pixels from position.
-* `dir`: How image is rotated/translated :
+* `dir`: How the image is rotated/translated:
   * 0 - Rotate as heading direction
   * 1 - Rotate in reverse direction
   * 2 - Translate as landscape direction
