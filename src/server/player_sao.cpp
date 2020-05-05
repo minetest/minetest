@@ -656,9 +656,9 @@ bool PlayerSAO::checkMovementCheat()
 		float lag_pool_max = m_env->getMaxLagEstimate() * 2.0;
 		lag_pool_max = MYMAX(lag_pool_max, LAG_POOL_MIN);
 		if (m_time_from_last_teleport > lag_pool_max) {
-			actionstream << "Player " << m_player->getName()
-					<< " moved too fast; resetting position"
-					<< std::endl;
+			actionstream << "Server: " << m_player->getName()
+					<< " moved too fast: V=" << d_vert << ", H=" << d_horiz
+					<< "; resetting position." << std::endl;
 			cheated = true;
 		}
 		setBasePosition(m_last_good_position);
