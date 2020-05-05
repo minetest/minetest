@@ -156,18 +156,21 @@ core.get_favorites(location) -> list of favorites (possible in async calls)
 ^ location: "local" or "online"
 ^ returns {
 	[1] = {
-	clients       = <number of clients/nil>,
-	clients_max   = <maximum number of clients/nil>,
-	version       = <server version/nil>,
-	password      = <true/nil>,
-	creative      = <true/nil>,
-	damage        = <true/nil>,
-	pvp           = <true/nil>,
-	description   = <server description/nil>,
-	name          = <server name/nil>,
-	address       = <address of server/nil>,
-	port          = <port>
+		clients       = <number of clients/nil>,
+		clients_max   = <maximum number of clients/nil>,
+		version       = <server version/nil>,
+		password      = <true/nil>,
+		creative      = <true/nil>,
+		damage        = <true/nil>,
+		pvp           = <true/nil>,
+		description   = <server description/nil>,
+		name          = <server name/nil>,
+		address       = <address of server/nil>,
+		port          = <port>
+		clients_list  = <array of clients/nil>
+		mods          = <array of mods/nil>
 	},
+	...
 }
 core.delete_favorite(id, location) -> success
 

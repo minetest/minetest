@@ -95,7 +95,7 @@ local style_fs = [[
 	style[one_btn13;border=false]
 	item_image_button[1.25,8.35;1,1;default:sword_steel;one_btn13;NoBor]
 
-	style[one_btn14;border=false;bgimg=test_bg.png;fgimg=bubble.png]
+	style[one_btn14;border=false;bgimg=test_bg.png;fgimg=bubble.png;padding=8]
 	style[one_btn14:hovered;bgimg=test_bg_hovered.png;fgimg=default_apple.png;textcolor=red]
 	style[one_btn14:pressed;bgimg=test_bg_pressed.png;fgimg=heart.png;textcolor=green]
 	style[one_btn14:hovered+pressed;textcolor=blue]
@@ -105,6 +105,7 @@ local style_fs = [[
 	item_image_button[1.25,9.6;1,1;default:sword_steel;one_btn15;Bg]
 
 	style[one_btn16;border=false;bgimg=test_bg_9slice.png;bgimg_hovered=test_bg_9slice_hovered.png;bgimg_pressed=test_bg_9slice_pressed.png;bgimg_middle=4,6]
+	style[one_btn16:pressed;content_offset=0,1]
 	button[2.5,9.6;2,1;one_btn16;9-Slice Bg]
 
 

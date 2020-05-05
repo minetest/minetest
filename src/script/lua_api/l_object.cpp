@@ -1249,7 +1249,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	return 1;
 }
 
-// set_fov(self, degrees[, is_multiplier])
+// set_fov(self, degrees[, is_multiplier, transition_time])
 int ObjectRef::l_set_fov(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1258,7 +1258,11 @@ int ObjectRef::l_set_fov(lua_State *L)
 	if (!player)
 		return 0;
 
-	player->setFov({ static_cast<f32>(luaL_checknumber(L, 2)), readParam<bool>(L, 3) });
+	player->setFov({
+		static_cast<f32>(luaL_checknumber(L, 2)),
+		readParam<bool>(L, 3, false),
+		lua_isnumber(L, 4) ? static_cast<f32>(luaL_checknumber(L, 4)) : 0.0f
+	});
 	getServer(L)->SendPlayerFov(player->getPeerId());
 
 	return 0;
@@ -1276,8 +1280,9 @@ int ObjectRef::l_get_fov(lua_State *L)
 	PlayerFovSpec fov_spec = player->getFov();
 	lua_pushnumber(L, fov_spec.fov);
 	lua_pushboolean(L, fov_spec.is_multiplier);
+	lua_pushnumber(L, fov_spec.transition_time);
 
-	return 2;
+	return 3;
 }
 
 // set_breath(self, breath)

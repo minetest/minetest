@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
+#include "util/metricsbackend.h"
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"
@@ -203,7 +204,7 @@ public:
 
 	// Connection must be locked when called
 	std::wstring getStatusString();
-	inline double getUptime() const { return m_uptime.m_value; }
+	inline double getUptime() const { return m_uptime_counter->get(); }
 
 	// read shutdown state
 	inline bool isShutdownRequested() const { return m_shutdown_state.is_requested; }
@@ -591,9 +592,6 @@ private:
 	float m_step_dtime = 0.0f;
 	std::mutex m_step_dtime_mutex;
 
-	// current server step lag counter
-	float m_lag;
-
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;
 
@@ -602,8 +600,6 @@ private:
 	*/
 	// Timer for sending time of day over network
 	float m_time_of_day_send_timer = 0.0f;
-	// Uptime of server in seconds
-	MutexedVariable<double> m_uptime;
 
 	/*
 	 	Client interface
@@ -677,6 +673,19 @@ private:
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	// Global server metrics backend
+	std::unique_ptr<MetricsBackend> m_metrics_backend;
+
+	// Server metrics
+	MetricCounterPtr m_uptime_counter;
+	MetricGaugePtr m_player_gauge;
+	MetricGaugePtr m_timeofday_gauge;
+	// current server step lag
+	MetricGaugePtr m_lag_gauge;
+	MetricCounterPtr m_aom_buffer_counter;
+	MetricCounterPtr m_packet_recv_counter;
+	MetricCounterPtr m_packet_recv_processed_counter;
 };
 
 /*

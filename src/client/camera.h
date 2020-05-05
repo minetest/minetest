@@ -112,6 +112,9 @@ public:
 		return MYMAX(m_fov_x, m_fov_y);
 	}
 
+	// Notify about new server-sent FOV and initialize smooth FOV transition
+	void notifyFovChange();
+
 	// Checks if the constructor was able to create the scene nodes
 	bool successfullyCreated(std::string &error_message);
 
@@ -186,12 +189,23 @@ private:
 
 	Client *m_client;
 
+	// Default Client FOV (as defined by the "fov" setting)
+	f32 m_cache_fov;
+
 	// Absolute camera position
 	v3f m_camera_position;
 	// Absolute camera direction
 	v3f m_camera_direction;
 	// Camera offset
 	v3s16 m_camera_offset;
+
+	// Server-sent FOV variables
+	bool m_server_sent_fov = false;
+	f32 m_curr_fov_degrees, m_old_fov_degrees, m_target_fov_degrees;
+
+	// FOV transition variables
+	bool m_fov_transition_active = false;
+	f32 m_fov_diff, m_transition_time;
 
 	v2f m_wieldmesh_offset = v2f(55.0f, -35.0f);
 	v2f m_arm_dir;
@@ -230,7 +244,6 @@ private:
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;
-	f32 m_cache_fov;
 	bool m_arm_inertia;
 
 	std::list<Nametag *> m_nametags;
