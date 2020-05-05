@@ -263,7 +263,7 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Run the unit tests and exit"))));
 #ifndef __ANDROID__
 	allowed_options->insert(std::make_pair("render-formspec", ValueSpec(VALUETYPE_FLAG,
-			_("Batch task: render a formspec in file given by --flag, and ouput a screenshot to the path given -o, then exit"))));
+			_("Batch task: render a formspec in file given by --file, and ouput a screenshot to the path given -o, then exit"))));
 	allowed_options->insert(std::make_pair("file", ValueSpec(VALUETYPE_STRING,
 			_("Input file for batch tasks"))));
 	allowed_options->insert(std::make_pair("o", ValueSpec(VALUETYPE_STRING,
