@@ -115,6 +115,19 @@ Client::Client(
 	m_game_ui(game_ui),
 	m_modchannel_mgr(new ModChannelMgr())
 {
+	loadBuiltinTranslation();
+
+	// Add local player
+	m_env.setLocalPlayer(new LocalPlayer(this, playername));
+
+	if (g_settings->getBool("enable_minimap")) {
+		m_minimap = new Minimap(this);
+	}
+	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
+}
+
+void Client::loadBuiltinTranslation()
+{
 	// Load builtin translation
 	std::string lang = gettext("LANG_CODE");
 	if (lang != "" && lang != "LANG_CODE") {
@@ -125,26 +138,18 @@ Client::Client(
 		std::string translation(size, '\0'); // construct string to stream size
 		is.seekg(0);
 		if(is.good() && is.read(&translation[0], size)) {
-			g_translations->loadTranslation(translation);
-			actionstream << "Builtin translation loaded ["
+			g_client_translations->loadTranslation(translation);
+			infostream << "Builtin translation loaded ["
 				<< lang << "]" << std::endl;
 		} else {
 			warningstream << "No builtin translation loaded - "
 				<< "couldn't read file [" << lang << "]" << std::endl;
 		}
 	} else {
-		actionstream << "No builtin translation loaded - "
+		infostream << "No builtin translation loaded - "
 			<< "missing LANG_CODE in locale file ["
 			<< lang << "]" << std::endl;
 	}
-
-	// Add local player
-	m_env.setLocalPlayer(new LocalPlayer(this, playername));
-
-	if (g_settings->getBool("enable_minimap")) {
-		m_minimap = new Minimap(this);
-	}
-	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 }
 
 void Client::loadMods()

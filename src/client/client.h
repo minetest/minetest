@@ -434,6 +434,7 @@ public:
 	}
 private:
 	void loadMods();
+	void loadBuiltinTranslation();
 	bool checkBuiltinIntegrity();
 
 	// Virtual methods from con::PeerHandler
