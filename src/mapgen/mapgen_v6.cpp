@@ -27,8 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-//#include "serverobject.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -132,6 +130,21 @@ MapgenV6::MapgenV6(MapgenV6Params *params, EmergeManager *emerge)
 		c_stair_cobble = c_cobble;
 	if (c_stair_desert_stone == CONTENT_IGNORE)
 		c_stair_desert_stone = c_desert_stone;
+
+	if (c_stone == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_stone' is invalid!" << std::endl;
+	if (c_dirt == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_dirt' is invalid!" << std::endl;
+	if (c_dirt_with_grass == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_dirt_with_grass' is invalid!" << std::endl;
+	if (c_sand == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_sand' is invalid!" << std::endl;
+	if (c_water_source == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_water_source' is invalid!" << std::endl;
+	if (c_lava_source == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_lava_source' is invalid!" << std::endl;
+	if (c_cobble == CONTENT_IGNORE)
+		errorstream << "Mapgen v6: Mapgen alias 'mapgen_cobble' is invalid!" << std::endl;
 }
 
 
@@ -190,7 +203,7 @@ void MapgenV6Params::readParams(const Settings *settings)
 
 void MapgenV6Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv6_spflags", spflags, flagdesc_mapgen_v6, U32_MAX);
+	settings->setFlagStr("mgv6_spflags", spflags, flagdesc_mapgen_v6);
 	settings->setFloat("mgv6_freq_desert", freq_desert);
 	settings->setFloat("mgv6_freq_beach",  freq_beach);
 	settings->setS16("mgv6_dungeon_ymin",  dungeon_ymin);
@@ -210,7 +223,15 @@ void MapgenV6Params::writeParams(Settings *settings) const
 }
 
 
+void MapgenV6Params::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgv6_spflags", flagdesc_mapgen_v6, MGV6_JUNGLES |
+		MGV6_SNOWBIOMES | MGV6_TREES | MGV6_BIOMEBLEND | MGV6_MUDFLOW);
+}
+
+
 //////////////////////// Some helper functions for the map generator
+
 
 // Returns Y one under area minimum if not found
 s16 MapgenV6::find_stone_level(v2s16 p2d)

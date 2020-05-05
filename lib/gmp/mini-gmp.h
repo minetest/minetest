@@ -1,6 +1,6 @@
 /* mini-gmp, a minimalistic implementation of a GNU GMP subset.
 
-Copyright 2011, 2012, 2013 Free Software Foundation, Inc.
+Copyright 2011-2015, 2017, 2019 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -42,7 +42,11 @@ void mp_get_memory_functions (void *(**) (size_t),
 			      void *(**) (void *, size_t, size_t),
 			      void (**) (void *, size_t));
 
-typedef unsigned long mp_limb_t;
+#ifndef MINI_GMP_LIMB_TYPE
+#define MINI_GMP_LIMB_TYPE long
+#endif
+
+typedef unsigned MINI_GMP_LIMB_TYPE mp_limb_t;
 typedef long mp_size_t;
 typedef unsigned long mp_bitcnt_t;
 
@@ -64,10 +68,14 @@ typedef __mpz_struct mpz_t[1];
 typedef __mpz_struct *mpz_ptr;
 typedef const __mpz_struct *mpz_srcptr;
 
+extern const int mp_bits_per_limb;
+
 void mpn_copyi (mp_ptr, mp_srcptr, mp_size_t);
 void mpn_copyd (mp_ptr, mp_srcptr, mp_size_t);
+void mpn_zero (mp_ptr, mp_size_t);
 
 int mpn_cmp (mp_srcptr, mp_srcptr, mp_size_t);
+int mpn_zero_p (mp_srcptr, mp_size_t);
 
 mp_limb_t mpn_add_1 (mp_ptr, mp_srcptr, mp_size_t, mp_limb_t);
 mp_limb_t mpn_add_n (mp_ptr, mp_srcptr, mp_srcptr, mp_size_t);
@@ -84,9 +92,19 @@ mp_limb_t mpn_submul_1 (mp_ptr, mp_srcptr, mp_size_t, mp_limb_t);
 mp_limb_t mpn_mul (mp_ptr, mp_srcptr, mp_size_t, mp_srcptr, mp_size_t);
 void mpn_mul_n (mp_ptr, mp_srcptr, mp_srcptr, mp_size_t);
 void mpn_sqr (mp_ptr, mp_srcptr, mp_size_t);
+int mpn_perfect_square_p (mp_srcptr, mp_size_t);
+mp_size_t mpn_sqrtrem (mp_ptr, mp_ptr, mp_srcptr, mp_size_t);
 
 mp_limb_t mpn_lshift (mp_ptr, mp_srcptr, mp_size_t, unsigned int);
 mp_limb_t mpn_rshift (mp_ptr, mp_srcptr, mp_size_t, unsigned int);
+
+mp_bitcnt_t mpn_scan0 (mp_srcptr, mp_bitcnt_t);
+mp_bitcnt_t mpn_scan1 (mp_srcptr, mp_bitcnt_t);
+
+void mpn_com (mp_ptr, mp_srcptr, mp_size_t);
+mp_limb_t mpn_neg (mp_ptr, mp_srcptr, mp_size_t);
+
+mp_bitcnt_t mpn_popcount (mp_srcptr, mp_size_t);
 
 mp_limb_t mpn_invert_3by2 (mp_limb_t, mp_limb_t);
 #define mpn_invert_limb(x) mpn_invert_3by2 ((x), 0)
@@ -124,6 +142,10 @@ void mpz_mul_si (mpz_t, const mpz_t, long int);
 void mpz_mul_ui (mpz_t, const mpz_t, unsigned long int);
 void mpz_mul (mpz_t, const mpz_t, const mpz_t);
 void mpz_mul_2exp (mpz_t, const mpz_t, mp_bitcnt_t);
+void mpz_addmul_ui (mpz_t, const mpz_t, unsigned long int);
+void mpz_addmul (mpz_t, const mpz_t, const mpz_t);
+void mpz_submul_ui (mpz_t, const mpz_t, unsigned long int);
+void mpz_submul (mpz_t, const mpz_t, const mpz_t);
 
 void mpz_cdiv_qr (mpz_t, mpz_t, const mpz_t, const mpz_t);
 void mpz_fdiv_qr (mpz_t, mpz_t, const mpz_t, const mpz_t);
@@ -147,6 +169,7 @@ void mpz_mod (mpz_t, const mpz_t, const mpz_t);
 void mpz_divexact (mpz_t, const mpz_t, const mpz_t);
 
 int mpz_divisible_p (const mpz_t, const mpz_t);
+int mpz_congruent_p (const mpz_t, const mpz_t, const mpz_t);
 
 unsigned long mpz_cdiv_qr_ui (mpz_t, mpz_t, const mpz_t, unsigned long);
 unsigned long mpz_fdiv_qr_ui (mpz_t, mpz_t, const mpz_t, unsigned long);
@@ -176,6 +199,7 @@ int mpz_invert (mpz_t, const mpz_t, const mpz_t);
 
 void mpz_sqrtrem (mpz_t, mpz_t, const mpz_t);
 void mpz_sqrt (mpz_t, const mpz_t);
+int mpz_perfect_square_p (const mpz_t);
 
 void mpz_pow_ui (mpz_t, const mpz_t, unsigned long);
 void mpz_ui_pow_ui (mpz_t, unsigned long, unsigned long);
@@ -186,7 +210,11 @@ void mpz_rootrem (mpz_t, mpz_t, const mpz_t, unsigned long);
 int mpz_root (mpz_t, const mpz_t, unsigned long);
 
 void mpz_fac_ui (mpz_t, unsigned long);
+void mpz_2fac_ui (mpz_t, unsigned long);
+void mpz_mfac_uiui (mpz_t, unsigned long, unsigned long);
 void mpz_bin_uiui (mpz_t, unsigned long, unsigned long);
+
+int mpz_probab_prime_p (const mpz_t, int);
 
 int mpz_tstbit (const mpz_t, mp_bitcnt_t);
 void mpz_setbit (mpz_t, mp_bitcnt_t);
@@ -210,6 +238,15 @@ unsigned long int mpz_get_ui (const mpz_t);
 double mpz_get_d (const mpz_t);
 size_t mpz_size (const mpz_t);
 mp_limb_t mpz_getlimbn (const mpz_t, mp_size_t);
+
+void mpz_realloc2 (mpz_t, mp_bitcnt_t);
+mp_srcptr mpz_limbs_read (mpz_srcptr);
+mp_ptr mpz_limbs_modify (mpz_t, mp_size_t);
+mp_ptr mpz_limbs_write (mpz_t, mp_size_t);
+void mpz_limbs_finish (mpz_t, mp_size_t);
+mpz_srcptr mpz_roinit_n (mpz_t, mp_srcptr, mp_size_t);
+
+#define MPZ_ROINIT_N(xp, xs) {{0, (xs),(xp) }}
 
 void mpz_set_si (mpz_t, signed long int);
 void mpz_set_ui (mpz_t, unsigned long int);

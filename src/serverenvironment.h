@@ -323,9 +323,10 @@ public:
 	bool swapNode(v3s16 p, const MapNode &n);
 
 	// Find all active objects inside a radius around a point
-	void getObjectsInsideRadius(std::vector<u16> &objects, const v3f &pos, float radius)
+	void getObjectsInsideRadius(std::vector<ServerActiveObject *> &objects, const v3f &pos, float radius,
+			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 	{
-		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects);
+		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects, include_obj_cb);
 	}
 
 	// Clear objects, loading and going through every MapBlock
@@ -333,16 +334,6 @@ public:
 
 	// This makes stuff happen
 	void step(f32 dtime);
-
-	/*!
-	 * Returns false if the given line intersects with a
-	 * non-air node, true otherwise.
-	 * \param pos1 start of the line
-	 * \param pos2 end of the line
-	 * \param p output, position of the first non-air node
-	 * the line intersects
-	 */
-	bool line_of_sight(v3f pos1, v3f pos2, v3s16 *p = NULL);
 
 	u32 getGameTime() const { return m_game_time; }
 
@@ -358,6 +349,7 @@ public:
 
 	RemotePlayer *getPlayer(const session_t peer_id);
 	RemotePlayer *getPlayer(const char* name);
+	const std::vector<RemotePlayer *> getPlayers() const { return m_players; }
 	u32 getPlayerCount() const { return m_players.size(); }
 
 	static bool migratePlayersDatabase(const GameParams &game_params,
@@ -444,6 +436,7 @@ private:
 	IntervalLimiter m_object_management_interval;
 	// List of active blocks
 	ActiveBlockList m_active_blocks;
+	IntervalLimiter m_database_check_interval;
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
@@ -477,4 +470,6 @@ private:
 	IntervalLimiter m_particle_management_interval;
 	std::unordered_map<u32, float> m_particle_spawners;
 	std::unordered_map<u32, u16> m_particle_spawner_attachments;
+
+	ServerActiveObject* createSAO(ActiveObjectType type, v3f pos, const std::string &data);
 };

@@ -16,6 +16,62 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
+local function get_last_folder(text,count)
+	local parts = text:split(DIR_DELIM)
+
+	if count == nil then
+		return parts[#parts]
+	end
+
+	local retval = ""
+	for i=1,count,1 do
+		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
+	end
+
+	return retval
+end
+
+local function cleanup_path(temppath)
+
+	local parts = temppath:split("-")
+	temppath = ""
+	for i=1,#parts,1 do
+		if temppath ~= "" then
+			temppath = temppath .. "_"
+		end
+		temppath = temppath .. parts[i]
+	end
+
+	parts = temppath:split(".")
+	temppath = ""
+	for i=1,#parts,1 do
+		if temppath ~= "" then
+			temppath = temppath .. "_"
+		end
+		temppath = temppath .. parts[i]
+	end
+
+	parts = temppath:split("'")
+	temppath = ""
+	for i=1,#parts,1 do
+		if temppath ~= "" then
+			temppath = temppath .. ""
+		end
+		temppath = temppath .. parts[i]
+	end
+
+	parts = temppath:split(" ")
+	temppath = ""
+	for i=1,#parts,1 do
+		if temppath ~= "" then
+			temppath = temppath
+		end
+		temppath = temppath .. parts[i]
+	end
+
+	return temppath
+end
+
 function get_mods(path,retval,modpack)
 	local mods = core.get_dir_list(path, true)
 

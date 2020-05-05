@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 class Client;
+class ISimpleTextureSource;
 
 class GUIConfirmRegistration : public GUIModalMenu
 {
@@ -32,7 +33,7 @@ public:
 	GUIConfirmRegistration(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
 			s32 id, IMenuManager *menumgr, Client *client,
 			const std::string &playername, const std::string &password,
-			bool *aborted);
+			bool *aborted, ISimpleTextureSource *tsrc);
 	~GUIConfirmRegistration();
 
 	void removeChildren();
@@ -63,4 +64,5 @@ private:
 	const std::string &m_password;
 	bool *m_aborted = nullptr;
 	std::wstring m_pass_confirm = L"";
+	ISimpleTextureSource *m_tsrc;
 };

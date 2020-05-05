@@ -28,6 +28,8 @@
 #include <string>
 #include <vector>
 
+class ISimpleTextureSource;
+
 struct key_setting
 {
 	int id;
@@ -41,7 +43,7 @@ class GUIKeyChangeMenu : public GUIModalMenu
 {
 public:
 	GUIKeyChangeMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-			IMenuManager *menumgr);
+			IMenuManager *menumgr, ISimpleTextureSource *tsrc);
 	~GUIKeyChangeMenu();
 
 	void removeChildren();
@@ -70,9 +72,9 @@ private:
 	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
 	bool shift_down = false;
-	s32 activeKey = -1;
 
-	std::vector<KeyPress> key_used;
+	key_setting *active_key = nullptr;
 	gui::IGUIStaticText *key_used_text = nullptr;
 	std::vector<key_setting *> key_settings;
+	ISimpleTextureSource *m_tsrc;
 };

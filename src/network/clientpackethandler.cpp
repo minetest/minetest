@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 
 #include "util/base64.h"
+#include "client/camera.h"
 #include "chatmessage.h"
 #include "client/clientmedia.h"
 #include "log.h"
@@ -40,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/srp.h"
 #include "tileanimation.h"
 #include "gettext.h"
+#include "skyparams.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -134,6 +136,9 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 					<< m_recommended_send_interval<<std::endl;
 
 	// Reply to server
+	/*~ DO NOT TRANSLATE THIS LITERALLY!
+	This is a special string which needs to contain the translation's
+	language code (e.g. "de" for German). */
 	std::string lang = gettext("LANG_CODE");
 	if (lang == "LANG_CODE")
 		lang = "";
@@ -382,10 +387,10 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 	m_env.setTimeOfDaySpeed(time_speed);
 	m_time_of_day_set = true;
 
-	u32 dr = m_env.getDayNightRatio();
-	infostream << "Client: time_of_day=" << time_of_day
-			<< " time_speed=" << time_speed
-			<< " dr=" << dr << std::endl;
+	//u32 dr = m_env.getDayNightRatio();
+	//infostream << "Client: time_of_day=" << time_of_day
+	//		<< " time_speed=" << time_speed
+	//		<< " dr=" << dr << std::endl;
 }
 
 void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
@@ -526,11 +531,21 @@ void Client::handleCommand_Movement(NetworkPacket* pkt)
 void Client::handleCommand_Fov(NetworkPacket *pkt)
 {
 	f32 fov;
-	bool is_multiplier;
+	bool is_multiplier = false;
+	f32 transition_time = 0.0f;
+
 	*pkt >> fov >> is_multiplier;
 
+	// Wrap transition_time extraction within a
+	// try-catch to preserve backwards compat
+	try {
+		*pkt >> transition_time;
+	} catch (PacketError &e) {};
+
 	LocalPlayer *player = m_env.getLocalPlayer();
-	player->setFov({ fov, is_multiplier });
+	assert(player);
+	player->setFov({ fov, is_multiplier, transition_time });
+	m_camera->notifyFovChange();
 }
 
 void Client::handleCommand_HP(NetworkPacket *pkt)
@@ -778,6 +793,7 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 		[25 + len] bool loop
 		[26 + len] f32 fade
 		[30 + len] f32 pitch
+		[34 + len] bool ephemeral
 	*/
 
 	s32 server_id;
@@ -790,12 +806,14 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	bool loop;
 	float fade = 0.0f;
 	float pitch = 1.0f;
+	bool ephemeral = false;
 
 	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
 
 	try {
 		*pkt >> fade;
 		*pkt >> pitch;
+		*pkt >> ephemeral;
 	} catch (PacketError &e) {};
 
 	// Start playing
@@ -813,7 +831,6 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 			if (cao)
 				pos = cao->getPosition();
 			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
-			// TODO: Set up sound to move with object
 			break;
 		}
 		default:
@@ -821,8 +838,11 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	}
 
 	if (client_id != -1) {
-		m_sounds_server_to_client[server_id] = client_id;
-		m_sounds_client_to_server[client_id] = server_id;
+		// for ephemeral sounds, server_id is not meaningful
+		if (!ephemeral) {
+			m_sounds_server_to_client[server_id] = client_id;
+			m_sounds_client_to_server[client_id] = server_id;
+		}
 		if (object_id != 0)
 			m_sounds_to_objects[client_id] = object_id;
 	}
@@ -1219,49 +1239,140 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 			player->hud_hotbar_itemcount = hotbar_itemcount;
 	}
 	else if (param == HUD_PARAM_HOTBAR_IMAGE) {
-		// If value not empty verify image exists in texture source
-		if (!value.empty() && !getTextureSource()->isKnownSourceImage(value)) {
-			errorstream << "Server sent wrong Hud hotbar image (sent value: '"
-				<< value << "')" << std::endl;
-			return;
-		}
 		player->hotbar_image = value;
 	}
 	else if (param == HUD_PARAM_HOTBAR_SELECTED_IMAGE) {
-		// If value not empty verify image exists in texture source
-		if (!value.empty() && !getTextureSource()->isKnownSourceImage(value)) {
-			errorstream << "Server sent wrong Hud hotbar selected image (sent value: '"
-					<< value << "')" << std::endl;
-			return;
-		}
 		player->hotbar_selected_image = value;
 	}
 }
 
 void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 {
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
+	if (m_proto_ver < 39) {
+		// Handle Protocol 38 and below servers with old set_sky,
+		// ensuring the classic look is kept.
+		std::string datastring(pkt->getString(0), pkt->getSize());
+		std::istringstream is(datastring, std::ios_base::binary);
 
-	video::SColor *bgcolor           = new video::SColor(readARGB8(is));
-	std::string *type                = new std::string(deSerializeString(is));
-	u16 count                        = readU16(is);
-	std::vector<std::string> *params = new std::vector<std::string>;
+		SkyboxParams skybox;
+		skybox.bgcolor = video::SColor(readARGB8(is));
+		skybox.type = std::string(deSerializeString(is));
+		u16 count = readU16(is);
 
-	for (size_t i = 0; i < count; i++)
-		params->push_back(deSerializeString(is));
+		for (size_t i = 0; i < count; i++)
+			skybox.textures.emplace_back(deSerializeString(is));
 
-	bool clouds = true;
-	try {
-		clouds = readU8(is);
-	} catch (...) {}
+		skybox.clouds = true;
+		try {
+			skybox.clouds = readU8(is);
+		} catch (...) {}
+
+		// Use default skybox settings:
+		SkyboxDefaults sky_defaults;
+		SunParams sun = sky_defaults.getSunDefaults();
+		MoonParams moon = sky_defaults.getMoonDefaults();
+		StarParams stars = sky_defaults.getStarDefaults();
+
+		// Fix for "regular" skies, as color isn't kept:
+		if (skybox.type == "regular") {
+			skybox.sky_color = sky_defaults.getSkyColorDefaults();
+			skybox.fog_tint_type = "default";
+			skybox.fog_moon_tint = video::SColor(255, 255, 255, 255);
+			skybox.fog_sun_tint = video::SColor(255, 255, 255, 255);
+		}
+		else {
+			sun.visible = false;
+			sun.sunrise_visible = false;
+			moon.visible = false;
+			stars.visible = false;
+		}
+
+		// Skybox, sun, moon and stars ClientEvents:
+		ClientEvent *sky_event = new ClientEvent();
+		sky_event->type = CE_SET_SKY;
+		sky_event->set_sky = new SkyboxParams(skybox);
+		m_client_event_queue.push(sky_event);
+
+		ClientEvent *sun_event = new ClientEvent();
+		sun_event->type = CE_SET_SUN;
+		sun_event->sun_params = new SunParams(sun);
+		m_client_event_queue.push(sun_event);
+
+		ClientEvent *moon_event = new ClientEvent();
+		moon_event->type = CE_SET_MOON;
+		moon_event->moon_params = new MoonParams(moon);
+		m_client_event_queue.push(moon_event);
+
+		ClientEvent *star_event = new ClientEvent();
+		star_event->type = CE_SET_STARS;
+		star_event->star_params = new StarParams(stars);
+		m_client_event_queue.push(star_event);
+	} else {
+		SkyboxParams skybox;
+		u16 texture_count;
+		std::string texture;
+
+		*pkt >> skybox.bgcolor >> skybox.type >> skybox.clouds >>
+			skybox.fog_sun_tint >> skybox.fog_moon_tint >> skybox.fog_tint_type;
+
+		if (skybox.type == "skybox") {
+			*pkt >> texture_count;
+			for (int i = 0; i < texture_count; i++) {
+				*pkt >> texture;
+				skybox.textures.emplace_back(texture);
+			}
+		}
+		else if (skybox.type == "regular") {
+			*pkt >> skybox.sky_color.day_sky >> skybox.sky_color.day_horizon
+				>> skybox.sky_color.dawn_sky >> skybox.sky_color.dawn_horizon
+				>> skybox.sky_color.night_sky >> skybox.sky_color.night_horizon
+				>> skybox.sky_color.indoors;
+		}
+
+		ClientEvent *event = new ClientEvent();
+		event->type = CE_SET_SKY;
+		event->set_sky = new SkyboxParams(skybox);
+		m_client_event_queue.push(event);
+	}
+}
+
+void Client::handleCommand_HudSetSun(NetworkPacket *pkt)
+{
+	SunParams sun;
+
+	*pkt >> sun.visible >> sun.texture>> sun.tonemap
+		>> sun.sunrise >> sun.sunrise_visible >> sun.scale;
 
 	ClientEvent *event = new ClientEvent();
-	event->type            = CE_SET_SKY;
-	event->set_sky.bgcolor = bgcolor;
-	event->set_sky.type    = type;
-	event->set_sky.params  = params;
-	event->set_sky.clouds  = clouds;
+	event->type        = CE_SET_SUN;
+	event->sun_params  = new SunParams(sun);
+	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_HudSetMoon(NetworkPacket *pkt)
+{
+	MoonParams moon;
+
+	*pkt >> moon.visible >> moon.texture
+		>> moon.tonemap >> moon.scale;
+
+	ClientEvent *event = new ClientEvent();
+	event->type        = CE_SET_MOON;
+	event->moon_params = new MoonParams(moon);
+	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_HudSetStars(NetworkPacket *pkt)
+{
+	StarParams stars;
+
+	*pkt >> stars.visible >> stars.count
+		>> stars.starcolor >> stars.scale;
+
+	ClientEvent *event = new ClientEvent();
+	event->type        = CE_SET_STARS;
+	event->star_params = new StarParams(stars);
+
 	m_client_event_queue.push(event);
 }
 

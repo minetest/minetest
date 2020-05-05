@@ -28,9 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 using namespace irr;
 using namespace gui;
 
-GUIButtonItemImage::GUIButtonItemImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
-		s32 id, core::rect<s32> rectangle, std::string item, Client *client, bool noclip)
-		: GUIButton (environment, parent, id, rectangle, noclip)
+GUIButtonItemImage::GUIButtonItemImage(gui::IGUIEnvironment *environment,
+		gui::IGUIElement *parent, s32 id, core::rect<s32> rectangle,
+		ISimpleTextureSource *tsrc, std::string item, Client *client,
+		bool noclip)
+		: GUIButton (environment, parent, id, rectangle, tsrc, noclip)
 {
 	m_image = new GUIItemImage(environment, this, id,
 			core::rect<s32>(0,0,rectangle.getWidth(),rectangle.getHeight()),
@@ -42,12 +44,13 @@ GUIButtonItemImage::GUIButtonItemImage(gui::IGUIEnvironment *environment, gui::I
 }
 
 GUIButtonItemImage *GUIButtonItemImage::addButton(IGUIEnvironment *environment,
-		const core::rect<s32> &rectangle, IGUIElement *parent, s32 id,
-		const wchar_t *text, std::string item, Client *client)
+		const core::rect<s32> &rectangle, ISimpleTextureSource *tsrc,
+		IGUIElement *parent, s32 id, const wchar_t *text, std::string item,
+		Client *client)
 {
 	GUIButtonItemImage *button = new GUIButtonItemImage(environment,
 			parent ? parent : environment->getRootGUIElement(),
-			id, rectangle, item, client);
+			id, rectangle, tsrc, item, client);
 
 	if (text)
 		button->setText(text);

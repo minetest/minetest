@@ -28,6 +28,7 @@ struct InventoryLocation;
 struct ItemStack;
 struct ToolCapabilities;
 struct PlayerHPChangeReason;
+class ServerActiveObject;
 
 class ScriptApiPlayer : virtual public ScriptApiBase
 {

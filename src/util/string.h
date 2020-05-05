@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <unordered_map>
 
+class Translations;
+
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
@@ -650,6 +652,8 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 	return tokens;
 }
 
+std::wstring translate_string(const std::wstring &s, Translations *translations);
+
 std::wstring translate_string(const std::wstring &s);
 
 inline std::wstring unescape_translate(const std::wstring &s) {
@@ -726,11 +730,19 @@ inline std::string str_join(const std::vector<std::string> &list,
 }
 
 /**
- * Create a std::string from a irr::core::stringw.
+ * Create a UTF8 std::string from a irr::core::stringw.
  */
-std::string strwtostr(const irr::core::stringw &str);
+inline std::string stringw_to_utf8(const irr::core::stringw &input)
+{
+	std::wstring str(input.c_str());
+	return wide_to_utf8(str);
+}
 
-/**
- * Create a irr::core:stringw from a std::string.
- */
-irr::core::stringw strtostrw(const std::string &str);
+ /**
+  * Create a irr::core:stringw from a UTF8 std::string.
+  */
+inline irr::core::stringw utf8_to_stringw(const std::string &input)
+{
+	std::wstring str = utf8_to_wide(input);
+	return irr::core::stringw(str.c_str());
+}

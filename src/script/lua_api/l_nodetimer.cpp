@@ -41,11 +41,9 @@ int NodeTimerRef::l_set(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
 	f32 t = readParam<float>(L,2);
 	f32 e = readParam<float>(L,3);
-	env->getMap().setNodeTimer(NodeTimer(t, e, o->m_p));
+	o->m_map->setNodeTimer(NodeTimer(t, e, o->m_p));
 	return 0;
 }
 
@@ -53,10 +51,8 @@ int NodeTimerRef::l_start(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
 	f32 t = readParam<float>(L,2);
-	env->getMap().setNodeTimer(NodeTimer(t, 0, o->m_p));
+	o->m_map->setNodeTimer(NodeTimer(t, 0, o->m_p));
 	return 0;
 }
 
@@ -64,9 +60,7 @@ int NodeTimerRef::l_stop(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
-	env->getMap().removeNodeTimer(o->m_p);
+	o->m_map->removeNodeTimer(o->m_p);
 	return 0;
 }
 
@@ -74,10 +68,7 @@ int NodeTimerRef::l_is_started(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
-
-	NodeTimer t = env->getMap().getNodeTimer(o->m_p);
+	NodeTimer t = o->m_map->getNodeTimer(o->m_p);
 	lua_pushboolean(L,(t.timeout != 0));
 	return 1;
 }
@@ -86,10 +77,7 @@ int NodeTimerRef::l_get_timeout(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
-
-	NodeTimer t = env->getMap().getNodeTimer(o->m_p);
+	NodeTimer t = o->m_map->getNodeTimer(o->m_p);
 	lua_pushnumber(L,t.timeout);
 	return 1;
 }
@@ -98,35 +86,19 @@ int NodeTimerRef::l_get_elapsed(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	ServerEnvironment *env = o->m_env;
-	if(env == NULL) return 0;
-
-	NodeTimer t = env->getMap().getNodeTimer(o->m_p);
+	NodeTimer t = o->m_map->getNodeTimer(o->m_p);
 	lua_pushnumber(L,t.elapsed);
 	return 1;
 }
 
-
-NodeTimerRef::NodeTimerRef(v3s16 p, ServerEnvironment *env):
-	m_p(p),
-	m_env(env)
-{
-}
-
 // Creates an NodeTimerRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
-void NodeTimerRef::create(lua_State *L, v3s16 p, ServerEnvironment *env)
+void NodeTimerRef::create(lua_State *L, v3s16 p, ServerMap *map)
 {
-	NodeTimerRef *o = new NodeTimerRef(p, env);
+	NodeTimerRef *o = new NodeTimerRef(p, map);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
-}
-
-void NodeTimerRef::set_null(lua_State *L)
-{
-	NodeTimerRef *o = checkobject(L, -1);
-	o->m_env = NULL;
 }
 
 void NodeTimerRef::Register(lua_State *L)

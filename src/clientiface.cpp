@@ -27,7 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "map.h"
 #include "emerge.h"
-#include "content_sao.h"              // TODO this is used for cleanup of only
+#include "server/luaentity_sao.h"
+#include "server/player_sao.h"
 #include "log.h"
 #include "util/srp.h"
 #include "face_position_cache.h"

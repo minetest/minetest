@@ -1,4 +1,4 @@
-Minetest Lua Mainmenu API Reference 5.2.0
+Minetest Lua Mainmenu API Reference 5.3.0
 =========================================
 
 Introduction
@@ -156,18 +156,21 @@ core.get_favorites(location) -> list of favorites (possible in async calls)
 ^ location: "local" or "online"
 ^ returns {
 	[1] = {
-	clients       = <number of clients/nil>,
-	clients_max   = <maximum number of clients/nil>,
-	version       = <server version/nil>,
-	password      = <true/nil>,
-	creative      = <true/nil>,
-	damage        = <true/nil>,
-	pvp           = <true/nil>,
-	description   = <server description/nil>,
-	name          = <server name/nil>,
-	address       = <address of server/nil>,
-	port          = <port>
+		clients       = <number of clients/nil>,
+		clients_max   = <maximum number of clients/nil>,
+		version       = <server version/nil>,
+		password      = <true/nil>,
+		creative      = <true/nil>,
+		damage        = <true/nil>,
+		pvp           = <true/nil>,
+		description   = <server description/nil>,
+		name          = <server name/nil>,
+		address       = <address of server/nil>,
+		port          = <port>
+		clients_list  = <array of clients/nil>
+		mods          = <array of mods/nil>
 	},
+	...
 }
 core.delete_favorite(id, location) -> success
 
@@ -244,3 +247,11 @@ Limitations of Async operations
  -Limited set of available functions
 	e.g. No access to functions modifying menu like core.start,core.close,
 	core.show_path_select_dialog
+
+Background music
+----------------
+The main menu supports background music.
+It looks for a `main_menu` sound in `$USER_PATH/sounds`. The same naming
+conventions as for normal sounds apply.
+This means the player can add a custom sound.
+It will be played in the main menu (gain = 1.0), looped.

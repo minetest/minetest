@@ -710,7 +710,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		if (!mg->heightmap)
 			return 0;
 
-		lua_newtable(L);
+		lua_createtable(L, maplen, 0);
 		for (size_t i = 0; i != maplen; i++) {
 			lua_pushinteger(L, mg->heightmap[i]);
 			lua_rawseti(L, -2, i + 1);
@@ -722,7 +722,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		if (!mg->biomegen)
 			return 0;
 
-		lua_newtable(L);
+		lua_createtable(L, maplen, 0);
 		for (size_t i = 0; i != maplen; i++) {
 			lua_pushinteger(L, mg->biomegen->biomemap[i]);
 			lua_rawseti(L, -2, i + 1);
@@ -736,7 +736,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 		BiomeGenOriginal *bg = (BiomeGenOriginal *)mg->biomegen;
 
-		lua_newtable(L);
+		lua_createtable(L, maplen, 0);
 		for (size_t i = 0; i != maplen; i++) {
 			lua_pushnumber(L, bg->heatmap[i]);
 			lua_rawseti(L, -2, i + 1);
@@ -751,7 +751,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 		BiomeGenOriginal *bg = (BiomeGenOriginal *)mg->biomegen;
 
-		lua_newtable(L);
+		lua_createtable(L, maplen, 0);
 		for (size_t i = 0; i != maplen; i++) {
 			lua_pushnumber(L, bg->humidmap[i]);
 			lua_rawseti(L, -2, i + 1);
@@ -761,13 +761,12 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 	}
 	case MGOBJ_GENNOTIFY: {
 		std::map<std::string, std::vector<v3s16> >event_map;
-		std::map<std::string, std::vector<v3s16> >::iterator it;
 
 		mg->gennotify.getEvents(event_map);
 
-		lua_newtable(L);
-		for (it = event_map.begin(); it != event_map.end(); ++it) {
-			lua_newtable(L);
+		lua_createtable(L, 0, event_map.size());
+		for (auto it = event_map.begin(); it != event_map.end(); ++it) {
+			lua_createtable(L, it->second.size(), 0);
 
 			for (size_t j = 0; j != it->second.size(); j++) {
 				push_v3s16(L, it->second[j]);

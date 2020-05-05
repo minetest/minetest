@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -90,9 +89,7 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 
 MapgenFractal::~MapgenFractal()
 {
-	if (noise_seabed)
-		delete noise_seabed;
-
+	delete noise_seabed;
 	delete noise_filler_depth;
 }
 
@@ -139,7 +136,7 @@ void MapgenFractalParams::readParams(const Settings *settings)
 
 void MapgenFractalParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
+	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 	settings->setFloat("mgfractal_cave_width",         cave_width);
 	settings->setS16("mgfractal_large_cave_depth",     large_cave_depth);
 	settings->setU16("mgfractal_small_cave_num_min",   small_cave_num_min);
@@ -164,6 +161,13 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgfractal_np_cave1",        np_cave1);
 	settings->setNoiseParams("mgfractal_np_cave2",        np_cave2);
 	settings->setNoiseParams("mgfractal_np_dungeons",     np_dungeons);
+}
+
+
+void MapgenFractalParams::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgfractal_spflags", flagdesc_mapgen_fractal,
+		MGFRACTAL_TERRAIN);
 }
 
 

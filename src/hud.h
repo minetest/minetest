@@ -61,7 +61,8 @@ enum HudElementType {
 	HUD_ELEM_STATBAR   = 2,
 	HUD_ELEM_INVENTORY = 3,
 	HUD_ELEM_WAYPOINT  = 4,
-	HUD_ELEM_COMPASS   = 6,
+	HUD_ELEM_IMAGE_WAYPOINT = 5,
+	HUD_ELEM_COMPASS   = 6
 };
 
 enum HudElementStat {
