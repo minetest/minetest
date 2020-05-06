@@ -439,8 +439,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	const ContentFeatures &f1 = nodemgr->get(map->getNode(m_standing_node + v3s16(0, 1, 0)));
 
 	// Determine if jumping is possible
-	m_disable_jump = (itemgroup_get(f.groups, "disable_jump") ||
-						itemgroup_get(f1.groups, "disable_jump"));
+	m_disable_jump = itemgroup_get(f.groups, "disable_jump") ||
+		itemgroup_get(f1.groups, "disable_jump");
 	m_can_jump = ((touching_ground && !is_climbing) || sneak_can_jump) && !m_disable_jump;
 
 	// Jump key pressed while jumping off from a bouncy block
