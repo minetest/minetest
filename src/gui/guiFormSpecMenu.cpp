@@ -4609,20 +4609,32 @@ StyleSpec GUIFormSpecMenu::getDefaultStyleForElement(const std::string &type,
 	return getStyleForElement(type, name, parent_type)[StyleSpec::STATE_DEFAULT];
 }
 
-std::array<StyleSpec, StyleSpec::NUM_STATES> GUIFormSpecMenu::getStyleForElement(const std::string &type,
-		const std::string &name, const std::string &parent_type)
+std::array<StyleSpec, StyleSpec::NUM_STATES> GUIFormSpecMenu::getStyleForElement(
+	const std::string &type, const std::string &name, const std::string &parent_type)
 {
 	std::array<StyleSpec, StyleSpec::NUM_STATES> ret;
 
+	auto it = theme_by_type.find("*");
+	if (it != theme_by_type.end()) {
+		for (const StyleSpec &spec : it->second)
+			ret[(u32)spec.getState()] |= spec;
+	}
+
+	it = theme_by_name.find("*");
+	if (it != theme_by_name.end()) {
+		for (const StyleSpec &spec : it->second)
+			ret[(u32)spec.getState()] |= spec;
+	}
+
 	if (!parent_type.empty()) {
-		auto it = theme_by_type.find(parent_type);
+		it = theme_by_type.find(parent_type);
 		if (it != theme_by_type.end()) {
 			for (const StyleSpec &spec : it->second)
 				ret[(u32)spec.getState()] |= spec;
 		}
 	}
 
-	auto it = theme_by_type.find(type);
+	it = theme_by_type.find(type);
 	if (it != theme_by_type.end()) {
 		for (const StyleSpec &spec : it->second)
 			ret[(u32)spec.getState()] |= spec;

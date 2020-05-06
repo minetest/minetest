@@ -2567,7 +2567,7 @@ Elements
 
 * Set the style for the element(s) matching `selector` by name.
 * `selector` can be one of:
-    * `<name>` - An element name.
+    * `<name>` - An element name. Includes `*`, which represents every element.
     * `<name>:<state>` - An element name, a colon, and one or more states.
 * `state` is a list of states separated by the `+` character.
     * If a state is provided, the style will only take effect when the element is in that state.
@@ -2580,7 +2580,7 @@ Elements
 
 * Set the style for the element(s) matching `selector` by type.
 * `selector` can be one of:
-    * `<type>` - An element type.
+    * `<type>` - An element type. Includes `*`, which represents every element.
     * `<type>:<state>` - An element type, a colon, and one or more states.
 * `state` is a list of states separated by the `+` character.
     * If a state is provided, the style will only take effect when the element is in that state.
@@ -2646,6 +2646,8 @@ A name/type can optionally be a comma separated list of names/types, like so:
 
     world_delete,world_create,world_configure
     button,image_button
+
+A `*` type can be used to select every element in the formspec.
 
 Any name/type in the list can also be accompanied by a `+`-separated list of states, like so:
 
