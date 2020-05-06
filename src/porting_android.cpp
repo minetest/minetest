@@ -230,7 +230,7 @@ std::string getInputDialogValue()
 			"getDialogValue", "()Ljava/lang/String;");
 
 FATAL_ERROR_IF(dialogvalue == nullptr,
-	"porting::getInputDialogValue unable to find java dialog value method");
+		"porting::getInputDialogValue unable to find java dialog value method");
 
 	jobject result = jnienv->CallObjectMethod(app_global->activity->clazz,
 			dialogvalue);
