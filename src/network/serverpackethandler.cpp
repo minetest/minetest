@@ -322,9 +322,6 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 			SendActiveObjectRemoveAdd(client, sao);
 	}
 
-	// Send detached inventories
-	sendDetachedInventories(peer_id, false);
-
 	// Send player movement settings
 	SendMovement(peer_id);
 
@@ -398,6 +395,9 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 
 	if (pkt->getRemainingBytes() >= 2)
 		*pkt >> playersao->getPlayer()->formspec_version;
+
+	// Send detached inventories
+	sendDetachedInventories(peer_id, false);
 
 	const std::vector<std::string> &players = m_clients.getPlayerNames();
 	NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);
