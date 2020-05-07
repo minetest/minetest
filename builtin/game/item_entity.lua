@@ -201,8 +201,7 @@ core.register_entity(":__builtin:item", {
 		end
 
 		assert(moveresult,
-				"Collision info not passed to Item Entity's on_step. " ..
-				"This is caused by a game (ie: Minetest Game) or mod not overriding correctly, make sure to update them.")
+			"Collision info missing, this is caused by an out-of-date/buggy mod or game")
 
 
 		if not moveresult.collides then
