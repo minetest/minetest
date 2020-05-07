@@ -2671,13 +2671,7 @@ void Server::sendDetachedInventories(session_t peer_id, bool incremental)
 	// Lookup player name, to filter detached inventories just after
 	std::string peer_name;
 	if (peer_id != PEER_ID_INEXISTENT) {
-		if (RemotePlayer *player = m_env->getPlayer(peer_id))
-			peer_name = player->getName();
-		else {
-			warningstream << "Failed to send detached inventories to peer_id=" << peer_id
-				<< ", player not found." << std::endl;
-			return; // Player not found, warn admin
-		}
+		peer_name = getClient(peer_id, CS_Created)->getName();
 	}
 
 	auto send_cb = [this, peer_id](const std::string &name, Inventory *inv) {
