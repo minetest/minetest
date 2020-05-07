@@ -1699,7 +1699,7 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 			m_reset_textures_timer = 0.05;
 			if (result.damage >= 2)
 				m_reset_textures_timer += 0.05 * result.damage;
-			updateTextures(m_current_texture_modifier + m_prop.damage_flash_texture_modifier);
+			updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 		}
 	}
 
