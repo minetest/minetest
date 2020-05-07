@@ -1502,7 +1502,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == AO_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
 
-		// immediatly reset a engine issued texture modifier if a mod sends a different one
+		// immediately reset a engine issued texture modifier if a mod sends a different one
 		if (m_reset_textures_timer > 0) {
 			m_reset_textures_timer = -1;
 			updateTextures(m_previous_texture_modifier);
@@ -1622,7 +1622,7 @@ void GenericCAO::processMessage(const std::string &data)
 				m_reset_textures_timer = 0.05;
 				if(damage >= 2)
 					m_reset_textures_timer += 0.05 * damage;
-				updateTextures(m_current_texture_modifier + "^[brighten");
+				updateTextures(m_current_texture_modifier + m_prop.damage_flash_texture_modifier);
 			}
 		}
 
@@ -1699,7 +1699,7 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 			m_reset_textures_timer = 0.05;
 			if (result.damage >= 2)
 				m_reset_textures_timer += 0.05 * result.damage;
-			updateTextures(m_current_texture_modifier + "^[brighten");
+			updateTextures(m_current_texture_modifier + m_prop.damage_flash_texture_modifier);
 		}
 	}
 
