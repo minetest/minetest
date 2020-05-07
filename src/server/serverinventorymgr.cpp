@@ -62,7 +62,7 @@ Inventory *ServerInventoryManager::getInventory(const InventoryLocation &loc)
 		auto it = m_detached_inventories.find(loc.name);
 		if (it == m_detached_inventories.end())
 			return nullptr;
-		return it.second.inventory;
+		return it->second.inventory;
 	} break;
 	default:
 		sanity_check(false); // abort

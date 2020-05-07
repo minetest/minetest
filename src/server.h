@@ -247,7 +247,7 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	ServerInventoryManager *getInventoryMgr() { return m_inventory_mgr.get(); }
+	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
 
 	// Envlock and conlock should be locked when using scriptapi
