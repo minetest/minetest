@@ -59,9 +59,10 @@ Inventory *ServerInventoryManager::getInventory(const InventoryLocation &loc)
 		return meta->getInventory();
 	} break;
 	case InventoryLocation::DETACHED: {
-		if (m_detached_inventories.count(loc.name) == 0)
-			return NULL;
-		return m_detached_inventories[loc.name].inventory;
+		auto it = m_detached_inventories.find(loc.name);
+		if (it == m_detached_inventories.end())
+			return nullptr;
+		return it.second.inventory;
 	} break;
 	default:
 		sanity_check(false); // abort
