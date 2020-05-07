@@ -624,6 +624,9 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 
 void ServerEnvironment::saveMeta()
 {
+	if (!m_meta_loaded)
+		return;
+
 	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
 	// Open file and serialize
@@ -650,6 +653,9 @@ void ServerEnvironment::saveMeta()
 
 void ServerEnvironment::loadMeta()
 {
+	SANITY_CHECK(!m_meta_loaded);
+	m_meta_loaded = true;
+
 	// If file doesn't exist, load default environment metadata
 	if (!fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt")) {
 		infostream << "ServerEnvironment: Loading default environment metadata"
