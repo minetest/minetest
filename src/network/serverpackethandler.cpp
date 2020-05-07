@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "server/player_sao.h"
+#include "server/serverinventorymgr.h"
 #include "util/auth.h"
 #include "util/base64.h"
 #include "util/pointedthing.h"
@@ -620,9 +621,9 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		ma->from_inv.applyCurrentPlayer(player->getName());
 		ma->to_inv.applyCurrentPlayer(player->getName());
 
-		setInventoryModified(ma->from_inv);
+		m_inventory_mgr->setInventoryModified(ma->from_inv);
 		if (ma->from_inv != ma->to_inv)
-			setInventoryModified(ma->to_inv);
+			m_inventory_mgr->setInventoryModified(ma->to_inv);
 
 		bool from_inv_is_current_player =
 			(ma->from_inv.type == InventoryLocation::PLAYER) &&
@@ -687,7 +688,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 		da->from_inv.applyCurrentPlayer(player->getName());
 
-		setInventoryModified(da->from_inv);
+		m_inventory_mgr->setInventoryModified(da->from_inv);
 
 		/*
 			Disable dropping items out of craftpreview
@@ -723,7 +724,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 		ca->craft_inv.applyCurrentPlayer(player->getName());
 
-		setInventoryModified(ca->craft_inv);
+		m_inventory_mgr->setInventoryModified(ca->craft_inv);
 
 		//bool craft_inv_is_current_player =
 		//	(ca->craft_inv.type == InventoryLocation::PLAYER) &&
@@ -739,7 +740,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	}
 
 	// Do the action
-	a->apply(this, playersao, this);
+	a->apply(m_inventory_mgr.get(), playersao, this);
 	// Eat the action
 	delete a;
 }

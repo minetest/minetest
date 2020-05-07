@@ -887,7 +887,6 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec,
 					false, bind_addr, true, &iface);
-			server.init();
 
 			g_term_console.setup(&iface, &kill, admin_nick);
 
@@ -922,7 +921,6 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec, false,
 				bind_addr, true);
-			server.init();
 			server.start();
 
 			// Run server

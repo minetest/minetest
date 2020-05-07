@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "server.h"
+#include "server/serverinventorymgr.h"
 #include "remoteplayer.h"
 
 /*
@@ -38,7 +39,7 @@ InvRef* InvRef::checkobject(lua_State *L, int narg)
 
 Inventory* InvRef::getinv(lua_State *L, InvRef *ref)
 {
-	return getServer(L)->getInventory(ref->m_loc);
+	return getServerInventoryMgr(L)->getInventory(ref->m_loc);
 }
 
 InventoryList* InvRef::getlist(lua_State *L, InvRef *ref,
@@ -54,7 +55,7 @@ InventoryList* InvRef::getlist(lua_State *L, InvRef *ref,
 void InvRef::reportInventoryChange(lua_State *L, InvRef *ref)
 {
 	// Inform other things that the inventory has changed
-	getServer(L)->setInventoryModified(ref->m_loc);
+	getServerInventoryMgr(L)->setInventoryModified(ref->m_loc);
 }
 
 // Exported functions
@@ -497,7 +498,7 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 		v3s16 pos = check_v3s16(L, -1);
 		loc.setNodeMeta(pos);
 
-		if (getServer(L)->getInventory(loc) != NULL)
+		if (getServerInventoryMgr(L)->getInventory(loc) != NULL)
 			InvRef::create(L, loc);
 		else
 			lua_pushnil(L);
@@ -515,7 +516,7 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 		lua_pop(L, 1);
 	}
 
-	if (getServer(L)->getInventory(loc) != NULL)
+	if (getServerInventoryMgr(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L);
@@ -530,7 +531,7 @@ int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
 	std::string player = readParam<std::string>(L, 2, "");
-	if (getServer(L)->createDetachedInventory(name, player) != NULL) {
+	if (getServerInventoryMgr(L)->createDetachedInventory(name, getServer(L)->idef(), player) != NULL) {
 		InventoryLocation loc;
 		loc.setDetached(name);
 		InvRef::create(L, loc);
@@ -545,7 +546,7 @@ int ModApiInventory::l_remove_detached_inventory_raw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const std::string &name = luaL_checkstring(L, 1);
-	lua_pushboolean(L, getServer(L)->removeDetachedInventory(name));
+	lua_pushboolean(L, getServerInventoryMgr(L)->removeDetachedInventory(name));
 	return 1;
 }
 

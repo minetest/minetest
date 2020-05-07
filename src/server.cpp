@@ -64,6 +64,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chat_interface.h"
 #include "remoteplayer.h"
 #include "server/player_sao.h"
+#include "server/serverinventorymgr.h"
 #include "translation.h"
 
 class ClientNotFoundException : public BaseException
@@ -338,11 +339,6 @@ Server::~Server()
 	infostream << "Server: Deinitializing scripting" << std::endl;
 	delete m_script;
 
-	// Delete detached inventories
-	for (auto &detached_inventory : m_detached_inventories) {
-		delete detached_inventory.second;
-	}
-
 	while (!m_unsent_map_edit_queue.empty()) {
 		delete m_unsent_map_edit_queue.front();
 		m_unsent_map_edit_queue.pop();
@@ -388,6 +384,9 @@ void Server::init()
 
 	m_script = new ServerScripting(this);
 
+	// Must be created before mod loading because we have some inventory creation
+	m_inventory_mgr = std::unique_ptr<ServerInventoryManager>(new ServerInventoryManager());
+
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
 	m_modmgr->loadMods(m_script);
@@ -422,6 +421,7 @@ void Server::init()
 	// Initialize Environment
 	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
 
+	m_inventory_mgr->setEnv(m_env);
 	m_clients.setEnv(m_env);
 
 	if (!servermap->settings_mgr.makeMapgenParams())
@@ -443,6 +443,8 @@ void Server::init()
 
 	m_env->loadMeta();
 
+	// Those settings can be overwritten in world.mt, they are
+	// intended to be cached after environment loading.
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
 	m_csm_restriction_flags = g_settings->getU64("csm_restriction_flags");
@@ -451,6 +453,8 @@ void Server::init()
 
 void Server::start()
 {
+	init();
+
 	infostream << "Starting server on " << m_bind_addr.serializeString()
 			<< "..." << std::endl;
 
@@ -1178,82 +1182,6 @@ void Server::onMapEditEvent(const MapEditEvent &event)
 		return;
 
 	m_unsent_map_edit_queue.push(new MapEditEvent(event));
-}
-
-Inventory* Server::getInventory(const InventoryLocation &loc)
-{
-	switch (loc.type) {
-	case InventoryLocation::UNDEFINED:
-	case InventoryLocation::CURRENT_PLAYER:
-		break;
-	case InventoryLocation::PLAYER:
-	{
-		RemotePlayer *player = m_env->getPlayer(loc.name.c_str());
-		if(!player)
-			return NULL;
-		PlayerSAO *playersao = player->getPlayerSAO();
-		if(!playersao)
-			return NULL;
-		return playersao->getInventory();
-	}
-		break;
-	case InventoryLocation::NODEMETA:
-	{
-		NodeMetadata *meta = m_env->getMap().getNodeMetadata(loc.p);
-		if(!meta)
-			return NULL;
-		return meta->getInventory();
-	}
-		break;
-	case InventoryLocation::DETACHED:
-	{
-		if(m_detached_inventories.count(loc.name) == 0)
-			return NULL;
-		return m_detached_inventories[loc.name];
-	}
-		break;
-	default:
-		sanity_check(false); // abort
-		break;
-	}
-	return NULL;
-}
-
-void Server::setInventoryModified(const InventoryLocation &loc)
-{
-	switch(loc.type){
-	case InventoryLocation::UNDEFINED:
-		break;
-	case InventoryLocation::PLAYER:
-	{
-
-		RemotePlayer *player = m_env->getPlayer(loc.name.c_str());
-
-		if (!player)
-			return;
-
-		player->setModified(true);
-		player->inventory.setModified(true);
-		// Updates are sent in ServerEnvironment::step()
-	}
-		break;
-	case InventoryLocation::NODEMETA:
-	{
-		MapEditEvent event;
-		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-		event.p = loc.p;
-		m_env->getMap().dispatchEvent(event);
-	}
-		break;
-	case InventoryLocation::DETACHED:
-	{
-		// Updates are sent in ServerEnvironment::step()
-	}
-		break;
-	default:
-		sanity_check(false); // abort
-		break;
-	}
 }
 
 void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
@@ -2712,40 +2640,20 @@ void Server::sendRequestedMedia(session_t peer_id,
 	}
 }
 
-void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
+void Server::sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id)
 {
-	const auto &inv_it = m_detached_inventories.find(name);
-	const auto &player_it = m_detached_inventories_player.find(name);
-
-	if (player_it == m_detached_inventories_player.end() ||
-			player_it->second.empty()) {
-		// OK. Send to everyone
-	} else {
-		if (!m_env)
-			return; // Mods are not done loading
-
-		RemotePlayer *p = m_env->getPlayer(player_it->second.c_str());
-		if (!p)
-			return; // Player is offline
-
-		if (peer_id != PEER_ID_INEXISTENT && peer_id != p->getPeerId())
-			return; // Caller requested send to a different player, so don't send.
-
-		peer_id = p->getPeerId();
-	}
-
 	NetworkPacket pkt(TOCLIENT_DETACHED_INVENTORY, 0, peer_id);
 	pkt << name;
 
-	if (inv_it == m_detached_inventories.end()) {
+	if (!inventory) {
 		pkt << false; // Remove inventory
 	} else {
 		pkt << true; // Update inventory
 
 		// Serialization & NetworkPacket isn't a love story
 		std::ostringstream os(std::ios_base::binary);
-		inv_it->second->serialize(os);
-		inv_it->second->setModified(false);
+		inventory->serialize(os);
+		inventory->setModified(false);
 
 		const std::string &os_str = os.str();
 		pkt << static_cast<u16>(os_str.size()); // HACK: to keep compatibility with 5.0.0 clients
@@ -2760,16 +2668,17 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 
 void Server::sendDetachedInventories(session_t peer_id, bool incremental)
 {
-	for (const auto &detached_inventory : m_detached_inventories) {
-		const std::string &name = detached_inventory.first;
-		if (incremental) {
-			Inventory *inv = detached_inventory.second;
-			if (!inv || !inv->checkModified())
-				continue;
-		}
-
-		sendDetachedInventory(name, peer_id);
+	// Lookup player name, to filter detached inventories just after
+	std::string peer_name;
+	if (peer_id != PEER_ID_INEXISTENT) {
+		peer_name = getClient(peer_id, CS_Created)->getName();
 	}
+
+	auto send_cb = [this, peer_id](const std::string &name, Inventory *inv) {
+		sendDetachedInventory(inv, name, peer_id);
+	};
+
+	m_inventory_mgr->sendDetachedInventories(peer_name, incremental, send_cb);
 }
 
 /*
@@ -3442,15 +3351,12 @@ void Server::setClouds(RemotePlayer *player, const CloudParams &params)
 	SendCloudParams(player->getPeerId(), params);
 }
 
-bool Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
+void Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
 	float ratio)
 {
-	if (!player)
-		return false;
-
+	sanity_check(player);
 	player->overrideDayNightRatio(do_override, ratio);
 	SendOverrideDayNightRatio(player->getPeerId(), do_override, ratio);
-	return true;
 }
 
 void Server::notifyPlayers(const std::wstring &msg)
@@ -3541,52 +3447,6 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-Inventory* Server::createDetachedInventory(const std::string &name, const std::string &player)
-{
-	if(m_detached_inventories.count(name) > 0){
-		infostream<<"Server clearing detached inventory \""<<name<<"\""<<std::endl;
-		delete m_detached_inventories[name];
-	} else {
-		infostream<<"Server creating detached inventory \""<<name<<"\""<<std::endl;
-	}
-	Inventory *inv = new Inventory(m_itemdef);
-	sanity_check(inv);
-	m_detached_inventories[name] = inv;
-	if (!player.empty())
-		m_detached_inventories_player[name] = player;
-
-	//TODO find a better way to do this
-	sendDetachedInventory(name,PEER_ID_INEXISTENT);
-	return inv;
-}
-
-bool Server::removeDetachedInventory(const std::string &name)
-{
-	const auto &inv_it = m_detached_inventories.find(name);
-	if (inv_it == m_detached_inventories.end())
-		return false;
-
-	delete inv_it->second;
-	m_detached_inventories.erase(inv_it);
-
-	if (!m_env) // Mods are not done loading
-		return true;
-
-	const auto &player_it = m_detached_inventories_player.find(name);
-	if (player_it != m_detached_inventories_player.end()) {
-		RemotePlayer *player = m_env->getPlayer(player_it->second.c_str());
-
-		if (player && player->getPeerId() != PEER_ID_INEXISTENT)
-			sendDetachedInventory(name, player->getPeerId());
-
-		m_detached_inventories_player.erase(player_it);
-	} else {
-		// Notify all players about the change
-		sendDetachedInventory(name, PEER_ID_INEXISTENT);
-	}
-	return true;
-}
-
 // actions: time-reversed list
 // Return value: success/failure
 bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
@@ -3607,7 +3467,7 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 
 	for (const RollbackAction &action : actions) {
 		num_tried++;
-		bool success = action.applyRevert(map, this, this);
+		bool success = action.applyRevert(map, m_inventory_mgr.get(), this);
 		if(!success){
 			num_failed++;
 			std::ostringstream os;
