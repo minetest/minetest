@@ -1662,7 +1662,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	object->addedToEnvironment(dtime_s);
 
 	// Add static data to block
-	if (object->isStaticAllowed()) {
+	if (object->shouldSaveStatically()) {
 		// Add static object to active static list of the block
 		v3f objectpos = object->getBasePosition();
 		StaticObject s_obj(object, objectpos);
@@ -1892,8 +1892,8 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		// force_delete might be overriden per object
 		bool force_delete = _force_delete;
 
-		// Do not deactivate if static data creation not allowed
-		if (!force_delete && !obj->isStaticAllowed())
+		// Do not deactivate if object requires it (e.g. players)
+		if (!force_delete && obj->shouldNotUnload())
 			return false;
 
 		// removeRemovedObjects() is responsible for these
@@ -1935,7 +1935,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		/*
 			Update the static data
 		*/
-		if (obj->isStaticAllowed()) {
+		if (obj->shouldSaveStatically()) {
 			// Create new static object
 			StaticObject s_obj(obj, objectpos);
 

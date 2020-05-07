@@ -41,7 +41,9 @@ public:
 	virtual void addedToEnvironment(u32 dtime_s);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
-	bool isStaticAllowed() const { return m_prop.static_save; }
+
+	bool shouldSaveStatically() const { return m_prop.static_save; }
+
 	void getStaticData(std::string *result) const;
 	u16 punch(v3f dir, const ToolCapabilities *toolcap = nullptr,
 			ServerActiveObject *puncher = nullptr,

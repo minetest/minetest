@@ -122,15 +122,25 @@ public:
 	*/
 	virtual void getStaticData(std::string *result) const
 	{
-		assert(isStaticAllowed());
+		assert(shouldSaveStatically());
 		*result = "";
 	}
 	/*
-		Return false in here to never save and instead remove object
-		on unload. getStaticData() will not be called in that case.
+		Whether object should be saved statically in blocks.
+		If set to false, getStaticData is not called and object is removed
+		when it's about to be unloaded.
 	*/
-	virtual bool isStaticAllowed() const
+	virtual bool shouldSaveStatically() const
 	{return true;}
+	
+	/*
+		Whether object should never be unloaded.
+		If true, deactivateFarObjects always skips this object, except in destructor.
+		
+		For more details, see deactivateFarObjects() in serverenvironment.cpp
+	*/
+	virtual bool shouldNotUnload() const
+	{return false;}
 
 	// Returns tool wear
 	virtual u16 punch(v3f dir,

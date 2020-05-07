@@ -82,7 +82,13 @@ public:
 
 	void addedToEnvironment(u32 dtime_s);
 	void removingFromEnvironment();
-	bool isStaticAllowed() const { return false; }
+
+	bool shouldSaveStatically() const { return false; }
+	bool shouldNotUnload() const
+	{
+		return true;
+	} // deactivateFarObjects should not touch these
+
 	std::string getClientInitializationData(u16 protocol_version);
 	void getStaticData(std::string *result) const;
 	void step(float dtime, bool send_recommended);
