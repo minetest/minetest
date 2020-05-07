@@ -68,6 +68,7 @@ std::string ObjectProperties::dump()
 	os << ", eye_height=" << eye_height;
 	os << ", zoom_fov=" << zoom_fov;
 	os << ", use_texture_alpha=" << use_texture_alpha;
+	os << ", damage_texture_modifier=" << damage_texture_modifier;
 	return os.str();
 }
 
@@ -167,5 +168,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 	eye_height = readF32(is);
 	zoom_fov = readF32(is);
 	use_texture_alpha = readU8(is);
-	damage_texture_modifier = deSerializeString(is);
+	try {
+		damage_texture_modifier = deSerializeString(is);
+	} catch (SerializationError &e) {}
 }
