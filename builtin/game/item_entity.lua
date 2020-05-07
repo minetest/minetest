@@ -203,7 +203,6 @@ core.register_entity(":__builtin:item", {
 		assert(moveresult,
 			"Collision info missing, this is caused by an out-of-date/buggy mod or game")
 
-
 		if not moveresult.collides then
 			-- future TODO: items should probably decelerate in air
 			return
