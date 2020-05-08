@@ -1272,7 +1272,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 						<<std::endl;
 				video::IImage *img = generateImage(filename);
 				if (img) {
-					core::dimension2d<u32> dim = img->getDimension();
+					dim = img->getDimension();
 					core::position2d<s32> pos_base(x, y);
 					video::IImage *img2 =
 							driver->createImage(video::ECF_A8R8G8B8, dim);

@@ -300,50 +300,50 @@ public:
 
 	static void viewBobbingStep(MtEvent *e, void *data)
 	{
-		SoundMaker *sm = (SoundMaker *)data;
+		auto *sm = (SoundMaker *)data;
 		sm->playPlayerStep();
 	}
 
 	static void playerRegainGround(MtEvent *e, void *data)
 	{
-		SoundMaker *sm = (SoundMaker *)data;
+		auto *sm = (SoundMaker *)data;
 		sm->playPlayerStep();
 	}
 
 	static void playerJump(MtEvent *e, void *data)
 	{
-		SoundMaker *sm = (SoundMaker *)data;
+		auto *sm = (SoundMaker *)data;
 		sm->playPlayerJump();
 	}
 
 	static void cameraPunchLeft(MtEvent *e, void *data)
 	{
-		SoundMaker *sm = (SoundMaker *)data;
+		auto *sm = (SoundMaker *)data;
 		sm->m_sound->playSound(sm->m_player_leftpunch_sound, false);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
 	{
-		SoundMaker *sm = (SoundMaker *)data;
+		auto *sm = (SoundMaker *)data;
 		sm->m_sound->playSound(sm->m_player_rightpunch_sound, false);
 	}
 
 	static void nodeDug(MtEvent *e, void *data)
 	{
-		SoundMaker *sm = (SoundMaker *)data;
-		NodeDugEvent *nde = (NodeDugEvent *)e;
+		auto *sm = (SoundMaker *)data;
+		auto *nde = (NodeDugEvent *)e;
 		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
 	}
 
 	static void playerDamage(MtEvent *e, void *data)
 	{
-		SoundMaker *sm = (SoundMaker *)data;
+		auto *sm = (SoundMaker *)data;
 		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5), false);
 	}
 
 	static void playerFallingDamage(MtEvent *e, void *data)
 	{
-		SoundMaker *sm = (SoundMaker *)data;
+		auto *sm = (SoundMaker *)data;
 		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5), false);
 	}
 
@@ -371,7 +371,7 @@ class GameOnDemandSoundFetcher: public OnDemandSoundFetcher
 {
 	std::set<std::string> m_fetched;
 private:
-	void paths_insert(std::set<std::string> &dst_paths,
+	static void paths_insert(std::set<std::string> &dst_paths,
 		const std::string &base,
 		const std::string &name)
 	{
@@ -571,7 +571,7 @@ class GameGlobalShaderConstantSetterFactory : public IShaderConstantSetterFactor
 public:
 	GameGlobalShaderConstantSetterFactory(bool *force_fog_off,
 			f32 *fog_range, Client *client) :
-		m_sky(NULL),
+		m_sky(nullptr),
 		m_force_fog_off(force_fog_off),
 		m_fog_range(fog_range),
 		m_client(client)
@@ -587,7 +587,7 @@ public:
 
 	virtual IShaderConstantSetter* create()
 	{
-		GameGlobalShaderConstantSetter *scs = new GameGlobalShaderConstantSetter(
+		auto *scs = new GameGlobalShaderConstantSetter(
 				m_sky, m_force_fog_off, m_fog_range, m_client);
 		if (!m_sky)
 			created_nosky.push_back(scs);
@@ -696,7 +696,7 @@ protected:
 			const SubgameSpec &gamespec);
 	bool initSound();
 	bool createSingleplayerServer(const std::string &map_dir,
-			const SubgameSpec &gamespec, u16 port, std::string *address);
+			const SubgameSpec &gamespec, u16 port);
 
 	// Client creation
 	bool createClient(const std::string &playername,
@@ -726,7 +726,7 @@ protected:
 
 	void dropSelectedItem(bool single_item = false);
 	void openInventory();
-	void openConsole(float scale, const wchar_t *line=NULL);
+	void openConsole(float scale, const wchar_t *line=nullptr);
 	void toggleFreeMove();
 	void toggleFreeMoveAlt();
 	void togglePitchMove();
@@ -772,7 +772,7 @@ protected:
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed,
 			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
-	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
+	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &tool_item,
 			const v3f &player_position, bool show_debug);
 	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
@@ -1196,8 +1196,8 @@ void Game::shutdown()
 	if (client) {
 		client->Stop();
 		while (!client->isShutdown()) {
-			assert(texture_src != NULL);
-			assert(shader_src != NULL);
+			assert(texture_src != nullptr);
+			assert(shader_src != nullptr);
 			texture_src->processQueue();
 			shader_src->processQueue();
 			sleep_ms(100);
@@ -1239,7 +1239,7 @@ bool Game::init(
 
 	// Create a server if not connecting to an existing one
 	if (address->empty()) {
-		if (!createSingleplayerServer(map_dir, gamespec, port, address))
+		if (!createSingleplayerServer(map_dir, gamespec, port))
 			return false;
 	}
 
@@ -1274,7 +1274,7 @@ bool Game::initSound()
 }
 
 bool Game::createSingleplayerServer(const std::string &map_dir,
-		const SubgameSpec &gamespec, u16 port, std::string *address)
+			const SubgameSpec &gamespec, u16 port)
 {
 	showOverlayMessage(N_("Creating server..."), 0, 5);
 
@@ -1282,7 +1282,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	Address bind_addr(0, 0, 0, 0, port);
 
 	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes *) NULL);
+		bind_addr.setAddress((IPv6AddressBytes *) nullptr);
 	}
 
 	try {
@@ -1345,7 +1345,7 @@ bool Game::createClient(const std::string &playername,
 		return false;
 	}
 
-	GameGlobalShaderConstantSetterFactory *scsf = new GameGlobalShaderConstantSetterFactory(
+	auto *scsf = new GameGlobalShaderConstantSetterFactory(
 			&m_flags.force_fog_off, &runData.fog_range, client);
 	shader_src->addShaderConstantSetterFactory(scsf);
 
@@ -1374,7 +1374,7 @@ bool Game::createClient(const std::string &playername,
 	 */
 	sky = new Sky(-1, texture_src);
 	scsf->setSky(sky);
-	skybox = NULL;	// This is used/set later on in the main run loop
+	skybox = nullptr;	// This is used/set later on in the main run loop
 
 	if (!sky) {
 		*error_message = "Memory allocation error sky";
@@ -1533,7 +1533,7 @@ bool Game::connectToServer(const std::string &playername,
 			// Update client and server
 			client->step(dtime);
 
-			if (server != NULL)
+			if (server != nullptr)
 				server->step(dtime);
 
 			// End condition
@@ -1608,7 +1608,7 @@ bool Game::getServerContent(bool *aborted)
 		// Update client and server
 		client->step(dtime);
 
-		if (server != NULL)
+		if (server != nullptr)
 			server->step(dtime);
 
 		// End condition
@@ -1634,7 +1634,7 @@ bool Game::getServerContent(bool *aborted)
 		}
 
 		// Display status
-		int progress = 25;
+		int progress;
 
 		if (!client->itemdefReceived()) {
 			const wchar_t *text = wgettext("Item definitions...");
@@ -2051,7 +2051,7 @@ void Game::processItemSelection(u16 *new_playeritem)
 
 void Game::dropSelectedItem(bool single_item)
 {
-	IDropAction *a = new IDropAction();
+	auto *a = new IDropAction();
 	a->count = single_item ? 1 : 0;
 	a->from_inv.setCurrentPlayer();
 	a->from_list = "main";
@@ -2073,7 +2073,7 @@ void Game::openInventory()
 
 	infostream << "Game: Launching inventory" << std::endl;
 
-	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
+	auto *fs_src = new PlayerInventoryFormSource(client);
 
 	InventoryLocation inventoryloc;
 	inventoryloc.setCurrentPlayer();
@@ -2337,7 +2337,6 @@ void Game::increaseViewRange()
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
 		delete[] str;
 		m_game_ui->showStatusText(buf);
-
 	} else {
 		str = wgettext("Viewing range changed to %d");
 		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
@@ -2502,7 +2501,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	 * not fast)
 	 */
 	if (m_cache_hold_aux1) {
-		control.aux1 = control.aux1 ^ true;
+		control.aux1 = !control.aux1;
 		keypress_bits ^= ((u32)(1U << 5));
 	}
 #endif
@@ -2622,9 +2621,9 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 			formspec->quitMenu();
 		}
 	} else {
-		FormspecFormSource *fs_src =
+		auto *fs_src =
 			new FormspecFormSource(*(event->show_formspec.formspec));
-		TextDestPlayerInventory *txt_dst =
+		auto *txt_dst =
 			new TextDestPlayerInventory(client, *(event->show_formspec.formname));
 
 		auto *&formspec = m_game_ui->updateFormspec(*(event->show_formspec.formname));
@@ -2638,8 +2637,8 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 
 void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrientation *cam)
 {
-	FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
-	LocalFormspecHandler *txt_dst =
+	auto *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
+	auto *txt_dst =
 		new LocalFormspecHandler(*event->show_formspec.formname, client);
 	GUIFormSpecMenu::create(m_game_ui->getFormspecGUI(), client, &input->joystick,
 			fs_src, txt_dst, client->getFormspecPrepend());
@@ -2675,7 +2674,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 		return;
 	}
 
-	HudElement *e = new HudElement;
+	auto *e = new HudElement;
 	e->type   = (HudElementType)event->hudadd.type;
 	e->pos    = *event->hudadd.pos;
 	e->name   = *event->hudadd.name;
@@ -2715,7 +2714,7 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 	u32 id = event->hudchange.id;
 	HudElement *e = player->getHud(id);
 
-	if (e == NULL) {
+	if (e == nullptr) {
 		delete event->hudchange.v3fdata;
 		delete event->hudchange.v2fdata;
 		delete event->hudchange.sdata;
@@ -2787,7 +2786,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 
 	if (skybox) {
 		skybox->remove();
-		skybox = NULL;
+		skybox = nullptr;
 	}
 	// Clear the old textures out in case we switch rendering type.
 	sky->clearSkyboxTextures();
@@ -3061,7 +3060,6 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	shootline.end = shootline.start + camera_direction * BS * d;
 
 #ifdef HAVE_TOUCHSCREENGUI
-
 	if ((g_settings->getBool("touchtarget")) && (g_touchscreengui)) {
 		shootline = g_touchscreengui->getShootline();
 		// Scale shootline to the acual distance the player can reach
@@ -3070,7 +3068,6 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		shootline.start += intToFloat(camera_offset, BS);
 		shootline.end += intToFloat(camera_offset, BS);
 	}
-
 #endif
 
 	PointedThing pointed = updatePointedThing(shootline,
@@ -3186,7 +3183,7 @@ PointedThing Game::updatePointedThing(
 	ClientMap &map = env.getClientMap();
 	const NodeDefManager *nodedef = map.getNodeDefManager();
 
-	runData.selected_object = NULL;
+	runData.selected_object = nullptr;
 
 	RaycastState s(shootline, look_for_object, liquids_pointable);
 	PointedThing result;
@@ -3208,10 +3205,8 @@ PointedThing Game::updatePointedThing(
 			n.getNeighbors(result.node_undersurface, &map));
 
 		f32 d = 0.002 * BS;
-		for (std::vector<aabb3f>::const_iterator i = boxes.begin();
-			i != boxes.end(); ++i) {
-			aabb3f box = *i;
-			box.MinEdge -= v3f(d, d, d);
+		for (auto box : boxes) {
+				box.MinEdge -= v3f(d, d, d);
 			box.MaxEdge += v3f(d, d, d);
 			selectionboxes->push_back(box);
 		}
@@ -3246,7 +3241,7 @@ PointedThing Game::updatePointedThing(
 
 		// Modify final color a bit with time
 		u32 timer = porting::getTimeMs() % 5000;
-		float timerf = (float) (irr::core::PI * ((timer / 2500.0) - 0.5));
+		auto timerf = (float) (irr::core::PI * ((timer / 2500.0) - 0.5));
 		float sin_r = 0.08f * std::sin(timerf);
 		float sin_g = 0.08f * std::sin(timerf + irr::core::PI * 0.5f);
 		float sin_b = 0.08f * std::sin(timerf + irr::core::PI);
@@ -3354,7 +3349,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		InventoryLocation inventoryloc;
 		inventoryloc.setNodeMeta(nodepos);
 
-		NodeMetadataFormSource *fs_src = new NodeMetadataFormSource(
+		auto *fs_src = new NodeMetadataFormSource(
 			&client->getEnv().getClientMap(), nodepos);
 		TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
 
@@ -3730,7 +3725,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Calculate general brightness
 	*/
 	u32 daynight_ratio = client->getEnv().getDayNightRatio();
-	float time_brightness = decode_light_f((float)daynight_ratio / 1000.0);
+	float time_brightness = decode_light_f((float) daynight_ratio / 1000.0);
 	float direct_brightness;
 	bool sunlight_seen;
 
@@ -3934,7 +3929,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		video::SColor color(runData.damage_flash, 180, 0, 0);
 		driver->draw2DRectangle(color,
 					core::rect<s32>(0, 0, screensize.X, screensize.Y),
-					NULL);
+					nullptr);
 
 		runData.damage_flash -= 384.0f * dtime;
 	}
@@ -4099,14 +4094,13 @@ void Game::showDeathFormspec()
 		SIZE_TAG
 		"bgcolor[#320000b4;true]"
 		"label[4.85,1.35;" + gettext("You died") + "]"
-		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
-		;
+		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]";
 
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler  *
 	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(formspec_str);
-	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
+	auto *fs_src = new FormspecFormSource(formspec_str);
+	auto *txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
 
 	auto *&formspec = m_game_ui->getFormspecGUI();
 	GUIFormSpecMenu::create(formspec, client, &input->joystick,
@@ -4192,7 +4186,7 @@ void Game::showPauseMenu()
 #endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 		<< strgettext("Exit to Menu") << "]";
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
+	os		<< "button_exit[4," << (ypos) << ";3,0.5;btn_exit_os;"
 		<< strgettext("Exit to OS")   << "]"
 		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
 		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
@@ -4237,8 +4231,8 @@ void Game::showPauseMenu()
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler  *
 	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
-	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
+	auto *fs_src = new FormspecFormSource(os.str());
+	auto *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
 	auto *&formspec = m_game_ui->getFormspecGUI();
 	GUIFormSpecMenu::create(formspec, client, &input->joystick,

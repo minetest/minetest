@@ -45,7 +45,7 @@ static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 
 	aabb3f b_max;
 
-	std::vector<aabb3f>::const_iterator it = nodeboxes.begin();
+	auto it = nodeboxes.begin();
 	b_max = aabb3f(it->MinEdge, it->MaxEdge);
 
 	++it;
@@ -461,7 +461,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 {
-	move(dtime, env, pos_max_d, NULL);
+	move(dtime, env, pos_max_d, nullptr);
 }
 
 void LocalPlayer::applyControl(float dtime, Environment *env)
@@ -636,8 +636,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		speedH = speedH.normalize() * movement_speed_walk;
 
 	// Acceleration increase
-	f32 incH = 0.0f; // Horizontal (X, Z)
-	f32 incV = 0.0f; // Vertical (Y)
+	f32 incH; // Horizontal (X, Z)
+	f32 incV; // Vertical (Y)
 	if ((!touching_ground && !free_move && !is_climbing && !in_liquid) ||
 			(!free_move && m_can_jump && control.jump)) {
 		// Jumping and falling

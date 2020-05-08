@@ -340,21 +340,17 @@ scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 		return cloned_buffer;
 	}
 	case video::EVT_2TCOORDS: {
-		video::S3DVertex2TCoords *v =
-			(video::S3DVertex2TCoords *) mesh_buffer->getVertices();
+		auto *v = (video::S3DVertex2TCoords *) mesh_buffer->getVertices();
 		u16 *indices = mesh_buffer->getIndices();
-		scene::SMeshBufferLightMap *cloned_buffer =
-			new scene::SMeshBufferLightMap();
+		auto *cloned_buffer = new scene::SMeshBufferLightMap();
 		cloned_buffer->append(v, mesh_buffer->getVertexCount(), indices,
 			mesh_buffer->getIndexCount());
 		return cloned_buffer;
 	}
 	case video::EVT_TANGENTS: {
-		video::S3DVertexTangents *v =
-			(video::S3DVertexTangents *) mesh_buffer->getVertices();
+		auto *v = (video::S3DVertexTangents *) mesh_buffer->getVertices();
 		u16 *indices = mesh_buffer->getIndices();
-		scene::SMeshBufferTangents *cloned_buffer =
-			new scene::SMeshBufferTangents();
+		auto *cloned_buffer = new scene::SMeshBufferTangents();
 		cloned_buffer->append(v, mesh_buffer->getVertexCount(), indices,
 			mesh_buffer->getIndexCount());
 		return cloned_buffer;
@@ -367,7 +363,7 @@ scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 
 scene::SMesh* cloneMesh(scene::IMesh *src_mesh)
 {
-	scene::SMesh* dst_mesh = new scene::SMesh();
+	auto *dst_mesh = new scene::SMesh();
 	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++) {
 		scene::IMeshBuffer *temp_buf = cloneMeshBuffer(
 			src_mesh->getMeshBuffer(j));
@@ -381,7 +377,7 @@ scene::SMesh* cloneMesh(scene::IMesh *src_mesh)
 scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 		const f32 *uv_coords, float expand)
 {
-	scene::SMesh* dst_mesh = new scene::SMesh();
+	auto *dst_mesh = new scene::SMesh();
 
 	for (u16 j = 0; j < 6; j++)
 	{
@@ -664,7 +660,7 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 		{
 			//os::Printer::log("Cannot optimize a mesh with 32bit indices", ELL_ERROR);
 			newmesh->drop();
-			return 0;
+			return nullptr;
 		}
 
 		const u32 icount = mb->getIndexCount();
@@ -672,8 +668,8 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 		const u32 vcount = mb->getVertexCount();
 		const u16 *ind = mb->getIndices();
 
-		vcache *vc = new vcache[vcount];
-		tcache *tc = new tcache[tcount];
+		auto *vc = new vcache[vcount];
+		auto *tc = new tcache[tcount];
 
 		f_lru lru(vc, tc);
 
@@ -725,9 +721,9 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 		{
 			case video::EVT_STANDARD:
 			{
-				video::S3DVertex *v = (video::S3DVertex *) mb->getVertices();
+				auto *v = (video::S3DVertex *) mb->getVertices();
 
-				scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+				auto *buf = new scene::SMeshBuffer();
 				buf->Material = mb->getMaterial();
 
 				buf->Vertices.reallocate(vcount);
@@ -836,9 +832,9 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 			break;
 			case video::EVT_2TCOORDS:
 			{
-				video::S3DVertex2TCoords *v = (video::S3DVertex2TCoords *) mb->getVertices();
+				auto *v = (video::S3DVertex2TCoords *) mb->getVertices();
 
-				scene::SMeshBufferLightMap *buf = new scene::SMeshBufferLightMap();
+				auto *buf = new scene::SMeshBufferLightMap();
 				buf->Material = mb->getMaterial();
 
 				buf->Vertices.reallocate(vcount);
@@ -948,9 +944,9 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 			break;
 			case video::EVT_TANGENTS:
 			{
-				video::S3DVertexTangents *v = (video::S3DVertexTangents *) mb->getVertices();
+				auto *v = (video::S3DVertexTangents *) mb->getVertices();
 
-				scene::SMeshBufferTangents *buf = new scene::SMeshBufferTangents();
+				auto *buf = new scene::SMeshBufferTangents();
 				buf->Material = mb->getMaterial();
 
 				buf->Vertices.reallocate(vcount);

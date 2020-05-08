@@ -113,7 +113,7 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 	}
 
 	// Create mesh object
-	scene::SMesh *mesh = new scene::SMesh();
+	auto *mesh = new scene::SMesh();
 	mesh->addMeshBuffer(buf);
 	buf->drop();
 	scaleMesh(mesh, scale);  // also recalculates bounding box
@@ -164,8 +164,7 @@ public:
 
 		int maxdim = MYMAX(dim.Width, dim.Height);
 
-		std::map<int, scene::IMesh*>::iterator
-			it = m_extrusion_meshes.lower_bound(maxdim);
+		auto it = m_extrusion_meshes.lower_bound(maxdim);
 
 		if (it == m_extrusion_meshes.end()) {
 			// no viable resolution found; use largest one
@@ -190,7 +189,7 @@ private:
 	scene::IMesh *m_cube;
 };
 
-ExtrusionMeshCache *g_extrusion_mesh_cache = NULL;
+ExtrusionMeshCache *g_extrusion_mesh_cache = nullptr;
 
 
 WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
@@ -230,7 +229,7 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 }
 
 void WieldMeshSceneNode::setCube(const ContentFeatures &f,
-			v3f wield_scale)
+			const v3f& wield_scale)
 {
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);
@@ -242,7 +241,7 @@ void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 }
 
 void WieldMeshSceneNode::setExtruded(const std::string &imagename,
-	const std::string &overlay_name, v3f wield_scale, ITextureSource *tsrc,
+	const std::string &overlay_name, const v3f& wield_scale, ITextureSource *tsrc,
 	u8 num_frames)
 {
 	video::ITexture *texture = tsrc->getTexture(imagename);
@@ -251,7 +250,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		return;
 	}
 	video::ITexture *overlay_texture =
-		overlay_name.empty() ? NULL : tsrc->getTexture(overlay_name);
+		overlay_name.empty() ? nullptr : tsrc->getTexture(overlay_name);
 
 	core::dimension2d<u32> dim = texture->getSize();
 	// Detect animation texture and pull off top frame instead of using entire thing
@@ -311,7 +310,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 	gen.renderSingle(id);
 	colors->clear();
-	scene::SMesh *mesh = new scene::SMesh();
+	auto *mesh = new scene::SMesh();
 	for (auto &prebuffers : collector.prebuffers)
 		for (PreMeshBuffer &p : prebuffers) {
 			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
@@ -321,7 +320,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 			}
 			for (video::S3DVertex &v : p.vertices)
 				v.Color.setAlpha(255);
-			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+			auto *buf = new scene::SMeshBuffer();
 			buf->Material.setTexture(0, p.layer.texture);
 			p.layer.applyMaterialOptions(buf->Material);
 			mesh->addMeshBuffer(buf);
@@ -607,10 +606,10 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 	// check textures
 	video::ITexture *texture = tsrc->getTextureForMesh(imagename);
 	if (!texture) {
-		return NULL;
+		return nullptr;
 	}
 	video::ITexture *overlay_texture =
-		(overlay_name.empty()) ? NULL : tsrc->getTexture(overlay_name);
+		(overlay_name.empty()) ? nullptr : tsrc->getTexture(overlay_name);
 
 	// get mesh
 	core::dimension2d<u32> dim = texture->getSize();

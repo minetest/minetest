@@ -1741,10 +1741,9 @@ std::string GenericCAO::debugInfoText()
 	std::ostringstream os(std::ios::binary);
 	os<<"GenericCAO hp="<<m_hp<<"\n";
 	os<<"armor={";
-	for(ItemGroupList::const_iterator i = m_armor_groups.begin();
-			i != m_armor_groups.end(); ++i)
+	for (auto & armor_group : m_armor_groups)
 	{
-		os<<i->first<<"="<<i->second<<", ";
+		os<<armor_group.first<<"="<<armor_group.second<<", ";
 	}
 	os<<"}";
 	return os.str();

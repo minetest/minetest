@@ -77,9 +77,9 @@ public:
 	WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id = -1, bool lighting = false);
 	virtual ~WieldMeshSceneNode();
 
-	void setCube(const ContentFeatures &f, v3f wield_scale);
+	void setCube(const ContentFeatures &f, const v3f& wield_scale);
 	void setExtruded(const std::string &imagename, const std::string &overlay_image,
-			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
+			const v3f& wield_scale, ITextureSource *tsrc, u8 num_frames);
 	void setItem(const ItemStack &item, Client *client,
 			bool check_wield_image = true);
 

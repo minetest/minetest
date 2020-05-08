@@ -538,12 +538,10 @@ void Hud::drawSelectionMesh()
 		// Draw 3D selection boxes
 		video::SMaterial oldmaterial = driver->getMaterial2D();
 		driver->setMaterial(m_selection_material);
-		for (std::vector<aabb3f>::const_iterator
-				i = m_selection_boxes.begin();
-				i != m_selection_boxes.end(); ++i) {
+		for (auto & selection_box : m_selection_boxes) {
 			aabb3f box = aabb3f(
-				i->MinEdge + m_selection_pos_with_offset,
-				i->MaxEdge + m_selection_pos_with_offset);
+				selection_box.MinEdge + m_selection_pos_with_offset,
+				selection_box.MaxEdge + m_selection_pos_with_offset);
 
 			u32 r = (selectionbox_argb.getRed() *
 					m_selection_mesh_color.getRed() / 255);

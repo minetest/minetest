@@ -107,7 +107,7 @@ Client::Client(
 	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
 	m_address_name(address_name),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
-	m_last_chat_message_sent(time(NULL)),
+	m_last_chat_message_sent(time(nullptr)),
 	m_password(password),
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
@@ -266,7 +266,7 @@ const std::vector<ModSpec>& Client::getMods() const
 
 const ModSpec* Client::getModSpec(const std::string &modname) const
 {
-	return NULL;
+	return nullptr;
 }
 
 void Client::Stop()
@@ -382,7 +382,7 @@ void Client::step(float dtime)
 			counter = 2.0;
 
 			LocalPlayer *myplayer = m_env.getLocalPlayer();
-			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
+			FATAL_ERROR_IF(myplayer == nullptr, "Local player not found in environment.");
 
 			sendInit(myplayer->getName());
 		}
@@ -411,7 +411,7 @@ void Client::step(float dtime)
 			NOTE: This loop is intentionally iterated the way it is.
 		*/
 
-		std::vector<v3s16>::iterator i = deleted_blocks.begin();
+		auto i = deleted_blocks.begin();
 		std::vector<v3s16> sendlist;
 		for(;;) {
 			if(sendlist.size() == 255 || i == deleted_blocks.end()) {
@@ -471,7 +471,7 @@ void Client::step(float dtime)
 				sendDamage(damage);
 
 			// Add to ClientEvent queue
-			ClientEvent *event = new ClientEvent();
+			auto *event = new ClientEvent();
 			event->type = CE_PLAYER_DAMAGE;
 			event->player_damage.amount = damage;
 			m_client_event_queue.push(event);
@@ -494,11 +494,11 @@ void Client::step(float dtime)
 		Send player position to server
 	*/
 	{
-		float &counter = m_playerpos_send_timer;
-		counter += dtime;
-		if((m_state == LC_Ready) && (counter >= m_recommended_send_interval))
+		float &pcounter = m_playerpos_send_timer;
+		pcounter += dtime;
+		if ((m_state == LC_Ready) && (pcounter >= m_recommended_send_interval))
 		{
-			counter = 0.0;
+			pcounter = 0.0;
 			sendPlayerPos();
 		}
 	}
@@ -513,7 +513,7 @@ void Client::step(float dtime)
 		{
 			num_processed_meshes++;
 
-			MinimapMapblock *minimap_mapblock = NULL;
+			MinimapMapblock *minimap_mapblock = nullptr;
 			bool do_mapper_update = true;
 
 			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
@@ -525,7 +525,7 @@ void Client::step(float dtime)
 
 				if (r.mesh) {
 					minimap_mapblock = r.mesh->moveMinimapMapblock();
-					if (minimap_mapblock == NULL)
+					if (minimap_mapblock == nullptr)
 						do_mapper_update = false;
 
 					bool is_empty = true;
@@ -555,7 +555,7 @@ void Client::step(float dtime)
 				blocks_to_ack.emplace_back(r.p);
 			}
 		}
-		if (blocks_to_ack.size() > 0) {
+		if (!blocks_to_ack.empty()) {
 				// Acknowledge block(s)
 				sendGotBlocks(blocks_to_ack);
 		}
@@ -571,7 +571,7 @@ void Client::step(float dtime)
 		m_media_downloader->step(this);
 		if (m_media_downloader->isDone()) {
 			delete m_media_downloader;
-			m_media_downloader = NULL;
+			m_media_downloader = nullptr;
 		}
 	}
 
@@ -618,7 +618,7 @@ void Client::step(float dtime)
 		m_removed_sounds_check_timer = 0;
 		// Find removed sounds and clear references to them
 		std::vector<s32> removed_server_ids;
-		for (std::unordered_map<s32, int>::iterator i = m_sounds_server_to_client.begin();
+		for (auto i = m_sounds_server_to_client.begin();
 				i != m_sounds_server_to_client.end();) {
 			s32 server_id = i->first;
 			int client_id = i->second;
@@ -641,10 +641,9 @@ void Client::step(float dtime)
 	if (m_mod_storage_save_timer <= 0.0f) {
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
 		int n = 0;
-		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
-				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
-			if (it->second->isModified()) {
-				it->second->save(getModStoragePath());
+		for (auto & mod_storage : m_mod_storages) {
+			if (mod_storage.second->isModified()) {
+				mod_storage.second->save(getModStoragePath());
 				n++;
 			}
 		}
@@ -670,7 +669,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	const char *image_ext[] = {
 		".png", ".jpg", ".bmp", ".tga",
 		".pcx", ".ppm", ".psd", ".wal", ".rgb",
-		NULL
+		nullptr
 	};
 	name = removeStringEnd(filename, image_ext);
 	if (!name.empty()) {
@@ -704,7 +703,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	const char *sound_ext[] = {
 		".0.ogg", ".1.ogg", ".2.ogg", ".3.ogg", ".4.ogg",
 		".5.ogg", ".6.ogg", ".7.ogg", ".8.ogg", ".9.ogg",
-		".ogg", NULL
+		".ogg", nullptr
 	};
 	name = removeStringEnd(filename, sound_ext);
 	if (!name.empty()) {
@@ -715,7 +714,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 
 	const char *model_ext[] = {
 		".x", ".b3d", ".md2", ".obj",
-		NULL
+		nullptr
 	};
 
 	name = removeStringEnd(filename, model_ext);
@@ -730,7 +729,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	}
 
 	const char *translate_ext[] = {
-		".tr", NULL
+		".tr", nullptr
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
@@ -861,7 +860,7 @@ inline void Client::handleCommand(NetworkPacket* pkt)
 */
 void Client::ProcessData(NetworkPacket *pkt)
 {
-	ToClientCommand command = (ToClientCommand) pkt->getCommand();
+	auto command = (ToClientCommand) pkt->getCommand();
 	u32 sender_peer_id = pkt->getPeerId();
 
 	//infostream<<"Client: received command="<<command<<std::endl;
@@ -958,7 +957,7 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 	}
 
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if (myplayer == NULL)
+	if (myplayer == nullptr)
 		return;
 
 	/*
@@ -996,7 +995,7 @@ void Client::deleteAuthData()
 		case AUTH_MECHANISM_SRP:
 		case AUTH_MECHANISM_LEGACY_PASSWORD:
 			srp_user_delete((SRPUser *) m_auth_data);
-			m_auth_data = NULL;
+			m_auth_data = nullptr;
 			break;
 		case AUTH_MECHANISM_NONE:
 			break;
@@ -1076,11 +1075,11 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 			m_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048,
 				getPlayerName().c_str(), playername_u.c_str(),
 				(const unsigned char *) m_password.c_str(),
-				m_password.length(), NULL, NULL);
-			char *bytes_A = 0;
+				m_password.length(), nullptr, nullptr);
+			char *bytes_A = nullptr;
 			size_t len_A = 0;
 			SRP_Result res = srp_user_start_authentication(
-				(struct SRPUser *) m_auth_data, NULL, NULL, 0,
+				(struct SRPUser *) m_auth_data, nullptr, nullptr, 0,
 				(unsigned char **) &bytes_A, &len_A);
 			FATAL_ERROR_IF(res != SRP_OK, "Creating local SRP user failed.");
 
@@ -1191,25 +1190,23 @@ void Client::sendInventoryAction(InventoryAction *a)
 
 bool Client::canSendChatMessage() const
 {
-	u32 now = time(NULL);
+	u32 now = time(nullptr);
 	float time_passed = now - m_last_chat_message_sent;
 
 	float virt_chat_message_allowance = m_chat_message_allowance + time_passed *
 			(CLIENT_CHAT_MESSAGE_LIMIT_PER_10S / 8.0f);
 
-	if (virt_chat_message_allowance < 1.0f)
-		return false;
+	return virt_chat_message_allowance >= 1.0f;
 
-	return true;
 }
 
 void Client::sendChatMessage(const std::wstring &message)
 {
 	const s16 max_queue_size = g_settings->getS16("max_out_chat_queue_size");
 	if (canSendChatMessage()) {
-		u32 now = time(NULL);
+		u32 now = time(nullptr);
 		float time_passed = now - m_last_chat_message_sent;
-		m_last_chat_message_sent = time(NULL);
+		m_last_chat_message_sent = time(nullptr);
 
 		m_chat_message_allowance += time_passed * (CLIENT_CHAT_MESSAGE_LIMIT_PER_10S / 8.0f);
 		if (m_chat_message_allowance > CLIENT_CHAT_MESSAGE_LIMIT_PER_10S)
@@ -1239,7 +1236,7 @@ void Client::sendChangePassword(const std::string &oldpassword,
 	const std::string &newpassword)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	if (player == NULL)
+	if (player == nullptr)
 		return;
 
 	// get into sudo mode and then send new password to server
@@ -1448,7 +1445,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 		// Check if we are working with local player inventory
 		LocalPlayer *player = m_env.getLocalPlayer();
 		if (!player || strcmp(player->getName(), loc.name.c_str()) != 0)
-			return NULL;
+			return nullptr;
 		return &player->inventory;
 	}
 	break;
@@ -1456,14 +1453,14 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	{
 		NodeMetadata *meta = m_env.getMap().getNodeMetadata(loc.p);
 		if(!meta)
-			return NULL;
+			return nullptr;
 		return meta->getInventory();
 	}
 	break;
 	case InventoryLocation::DETACHED:
 	{
 		if (m_detached_inventories.count(loc.name) == 0)
-			return NULL;
+			return nullptr;
 		return m_detached_inventories[loc.name];
 	}
 	break;
@@ -1471,7 +1468,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 		FATAL_ERROR("Invalid inventory location type.");
 		break;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void Client::inventoryAction(InventoryAction *a)
@@ -1583,7 +1580,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 	// neighbor is automatically added, it may not. In that case we don't want
 	// to tell the mesh update thread about it.
 	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
-	if (b == NULL)
+	if (b == nullptr)
 		return;
 
 	m_mesh_update_thread.updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
@@ -1660,11 +1657,6 @@ ClientEvent *Client::getClientEvent()
 	return event;
 }
 
-bool Client::connectedToServer()
-{
-	return m_con->Connected();
-}
-
 const Address Client::getServerAddress()
 {
 	return m_con->GetPeerAddress(PEER_ID_SERVER);
@@ -1688,7 +1680,7 @@ typedef struct TextureUpdateArgs {
 
 void texture_update_progress(void *args, u32 progress, u32 max_progress)
 {
-		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
+		auto* targs = (TextureUpdateArgs*) args;
 		u16 cur_percent = ceil(progress / (double) max_progress * 100.);
 
 		// update the loading menu -- if neccessary
@@ -1797,7 +1789,7 @@ void Client::makeScreenshot()
 	if (!raw_image)
 		return;
 
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 	struct tm *tm = localtime(&t);
 
 	char timetstamp_c[64];
@@ -1887,7 +1879,7 @@ const NodeDefManager* Client::getNodeDefManager()
 }
 ICraftDefManager* Client::getCraftDefManager()
 {
-	return NULL;
+	return nullptr;
 	//return m_craftdef;
 }
 ITextureSource* Client::getTextureSource()
@@ -1923,11 +1915,11 @@ ParticleManager* Client::getParticleManager()
 
 scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 {
-	StringMap::const_iterator it = m_mesh_data.find(filename);
+	auto it = m_mesh_data.find(filename);
 	if (it == m_mesh_data.end()) {
 		errorstream << "Client::getMesh(): Mesh not found: \"" << filename
 			<< "\"" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 	const std::string &data    = it->second;
 
@@ -1957,7 +1949,7 @@ const std::string* Client::getModFile(std::string filename)
 	if (pos2 > pos)
 		filename.erase(pos, pos2 - pos);
 
-	StringMap::const_iterator it = m_mod_vfs.find(filename);
+	auto it = m_mod_vfs.find(filename);
 	if (it == m_mod_vfs.end())
 		return nullptr;
 	return &it->second;
@@ -1977,8 +1969,7 @@ bool Client::registerModStorage(ModMetadata *storage)
 
 void Client::unregisterModStorage(const std::string &name)
 {
-	std::unordered_map<std::string, ModMetadata *>::const_iterator it =
-		m_mod_storages.find(name);
+	auto it = m_mod_storages.find(name);
 	if (it != m_mod_storages.end()) {
 		// Save unconditionaly on unregistration
 		it->second->save(getModStoragePath());
