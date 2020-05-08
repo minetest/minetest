@@ -1617,8 +1617,6 @@ void GenericCAO::processMessage(const std::string &data)
 						v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 				m_env->addSimpleObject(simple);
 			} else if (m_reset_textures_timer < 0) {
-				// TODO: Execute defined fast response
-				// Flashing shall suffice as there is no definition
 				m_reset_textures_timer = 0.05;
 				if(damage >= 2)
 					m_reset_textures_timer += 0.05 * damage;
