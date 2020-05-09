@@ -252,35 +252,10 @@ void Sky::render()
 		if (m_visible) {
 			driver->setMaterial(m_materials[1]);
 			for (u32 j = 0; j < 4; j++) {
-				video::SColor c = cloudyfogcolor.getInterpolated(m_skycolor, 0.45);
-				vertices[0] = video::S3DVertex(-1, 0.08, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, 0.08, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, 0.12, -1, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1, 0.12, -1, 0, 0, 1, c, t, o);
-				for (video::S3DVertex &vertex : vertices) {
-					if (j == 0)
-						// Don't switch
-						{}
-					else if (j == 1)
-						// Switch from -Z (south) to +X (east)
-						vertex.Pos.rotateXZBy(90);
-					else if (j == 2)
-						// Switch from -Z (south) to -X (west)
-						vertex.Pos.rotateXZBy(-90);
-					else
-						// Switch from -Z (south) to +Z (north)
-						vertex.Pos.rotateXZBy(-180);
-				}
-				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-			}
-
-			// Draw far cloudy fog thing at and below all horizons
-			for (u32 j = 0; j < 4; j++) {
-				video::SColor c = cloudyfogcolor;
-				vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, 0.08, -1, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1, 0.08, -1, 0, 0, 1, c, t, o);
+				vertices[0] = video::S3DVertex(-1, -0.02, -1, 0, 0, 1, m_bgcolor, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.02, -1, 0, 0, 1, m_bgcolor, o, t);
+				vertices[2] = video::S3DVertex( 1, 0.45, -1, 0, 0, 1, m_skycolor, o, o);
+				vertices[3] = video::S3DVertex(-1, 0.45, -1, 0, 0, 1, m_skycolor, t, o);
 				for (video::S3DVertex &vertex : vertices) {
 					if (j == 0)
 						// Don't switch
