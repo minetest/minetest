@@ -2910,7 +2910,7 @@ angles in radians.
       the left hand rule.
 * `vector.directions_to_rotation(direction, up)`:
     * Returns a rotation vector for `direction` pointing forward using `up`
-      ad the up vector..
+      as the up vector.
     * `direction` and `up` need to be unit vectors in a 90 degree angle to each other.
 
 
