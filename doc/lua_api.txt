@@ -2905,12 +2905,6 @@ in radians.
 * `vector.rotate_around_axis(v1, v2, a):
     * Returns `v1` rotated around axis `v2` by `a` radians according to
       the left hand rule.
-* `vector.forward_at_rotation(r)`:
-    * Returns a unit vector pointing forward ({x = 0, y = 0, z = 1}) rotated by `r`.
-    * vector.forward_at_rotation(object:get_rotation()) points forward relative to an entity.
-* `vector.up_at_rotation(r)`:
-    * Returns a unit vector pointing up ({x = 0, y = 1, z = 0}) rotated by `r`.
-    * vector.up_at_rotation(object:get_rotation()) points up relative to an entity.
 * `vector.directions_to_rotation(v1, v2):
     * Returns a rotation vector for `v1` pointing forward and `v2` pointing up.
     * `v1` and `v2` both have to be unit vectors.
