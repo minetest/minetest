@@ -44,7 +44,7 @@ describe("vector", function()
 		assert.same({ x = 2, y = 4, z = 6 }, vector.add(vector.new(1, 2, 3), { x = 1, y = 2, z = 3 }))
 	end)
 
-	--this function is needed because of floating point rounding errors
+	-- this function is needed because of floating point imprecision
 	local function almost_equal(a, b)
 		if type(a) == "number" then
 			return math.abs(a - b) < 0.00000000001
@@ -156,9 +156,9 @@ describe("vector", function()
 	end)
 
 	it("directions_to_rotation()", function()
-		--comparing rotations (pitch, yaw, roll) is hard because of certain ambiguities
-		--e.g. (pi, 0, pi) looks exactly the same as (0, pi, 0)
-		--so instead we convert the rotation back to vectors and compare these.
+		-- comparing rotations (pitch, yaw, roll) is hard because of certain ambiguities
+		-- e.g. (pi, 0, pi) looks exactly the same as (0, pi, 0)
+		-- so instead we convert the rotation back to vectors and compare these.
 		local function forward_at_rot(rot)
 			return vector.rotate(vector.new(0, 0, 1), rot)
 		end

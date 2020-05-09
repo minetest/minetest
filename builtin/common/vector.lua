@@ -162,7 +162,7 @@ function vector.rotate_around_axis(v, axis, angle)
 	local cosangle = cos(angle)
 	local sinangle = sin(angle)
 	axis = vector.normalize(axis)
-	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+	-- https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
 	local cross = vector.cross(axis, v)
 	return vector.new(
@@ -179,8 +179,8 @@ function vector.rotate(v, rot)
 	local cospitch = cos(rot.x)
 	local cosyaw = cos(rot.y)
 	local cosroll = math.cos(rot.z)
-	--rotation matrix that applies yaw, pitch and roll
-	--result of matrix multiplying the rotation matrices for yaw, pitch and roll
+	-- rotation matrix that applies yaw, pitch and roll
+	-- result of matrix multiplying the rotation matrices for yaw, pitch and roll
 	local matrix = {
 		{
 			cosyaw * cospitch,
@@ -198,7 +198,7 @@ function vector.rotate(v, rot)
 			cospitch * cosroll
 		},
 	}
-	--compute matrix multiplication: `matrix` * `v`
+	-- compute matrix multiplication: `matrix` * `v`
 	return vector.new(
 		matrix[2][2] * v.x + matrix[2][3] * v.y + matrix[2][1] * v.z,
 		matrix[3][2] * v.x + matrix[3][3] * v.y + matrix[3][1] * v.z,
@@ -208,13 +208,13 @@ end
 
 function vector.directions_to_rotation(forward, up)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
-	--calculate vector pointing uwith roll = 0, just based on forward vector
+	-- calculate vector pointing uwith roll = 0, just based on forward vector
 	local forwup = vector.rotate({x = 0, y = 1, z = 0}, rot)
-	--'forwup' and 'up' are now in a plane with 'forward' as normal.
-	--the angle between them is equal to math.abs(roll)
+	-- 'forwup' and 'up' are now in a plane with 'forward' as normal.
+	-- the angle between them is equal to math.abs(roll)
 	rot.z = vector.angle(forwup, up)
-	--if 'up' rotated by rot.z is equal to forwup, then roll = -rot.z, else roll = rot.z
-	--we don't use vector.equals for this comparison because of floating point rounding errors
+	-- if 'up' rotated by rot.z is equal to forwup, then roll = -rot.z, else roll = rot.z
+	-- we don't use vector.equals for this comparison because of floating point rounding errors
 	if vector.distance(vector.rotate_around_axis(up, forward, rot.z), forwup) > 0.0000000000001 then
 		rot.z = -rot.z
 	end
