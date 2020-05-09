@@ -164,6 +164,7 @@ function vector.rotate_around_axis(v, axis, angle)
 	axis = vector.normalize(axis)
 	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
+	
 	return vector.add(
 		vector.multiply(vector.cross(axis, v), sinangle),
 		vector.add(
@@ -198,16 +199,12 @@ function vector.rotate(v, rot)
 			cospitch * cosroll
 		},
 	}
-	local keys = {"z", "x", "y"}
 	--compute matrix multiplication: `matrix` * `v`
-	local ret = vector.new(0, 0, 0)
-	for i = 1, 3 do
-		local row = matrix[i]
-		for ii = 1, 3 do
-			ret[keys[i]] = ret[keys[i]] + row[ii] * v[keys[ii]]
-		end
-	end
-	return ret
+	return vector.new(
+		matrix[2][2] * v.x + matrix[2][3] * v.y + matrix[2][1] * v.z,
+		matrix[3][2] * v.x + matrix[3][3] * v.y + matrix[3][1] * v.z,
+		matrix[1][2] * v.x + matrix[1][3] * v.y + matrix[1][1] * v.z,
+	)
 end
 
 
