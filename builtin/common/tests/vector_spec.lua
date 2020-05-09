@@ -155,25 +155,21 @@ describe("vector", function()
 		end)
 	end)
 
-	it("forward_at_rotation()", function()
-		assert.True(almost_equal({x = 0, y = 0, z = 1}, vector.forward_at_rotation({x = 0, y = 0, z = 0})))
-		assert.True(almost_equal({x = 0, y = 0, z = -1}, vector.forward_at_rotation({x = math.pi, y = 0, z = math.pi})))
-	end)
-
-	it("up_at_rotation()", function()
-		assert.True(almost_equal({x = 0, y = 1, z = 0}, vector.up_at_rotation({x = 0, y = 0, z = 0})))
-		assert.True(almost_equal({x = 0, y = 1, z = 0}, vector.up_at_rotation({x = math.pi, y = 0, z = math.pi})))
-	end)
-
 	it("directions_to_rotation()", function()
 		--comparing rotations (pitch, yaw, roll) is hard because of certain ambiguities
 		--e.g. (pi, 0, pi) looks exactly the same as (0, pi, 0)
 		--so instead we convert the rotation back to vectors and compare these.
+		local function forward_at_rot(rot)
+			return vector.rotate(vector.new(0, 0, 1), rot)
+		end
+		local function up_at_rot(rot)
+			return vector.rotate(vector.new(0, 1, 0), rot)
+		end
 		local rot1 = vector.directions_to_rotation({x = 1, y = 0, z = 0}, {x = 0, y = 1, z = 0})
-		assert.True(almost_equal({x = 1, y = 0, z = 0}, vector.forward_at_rotation(rot1)))
-		assert.True(almost_equal({x = 0, y = 1, z = 0}, vector.up_at_rotation(rot1)))
+		assert.True(almost_equal({x = 1, y = 0, z = 0}, forward_at_rot(rot1)))
+		assert.True(almost_equal({x = 0, y = 1, z = 0}, up_at_rot(rot1)))
 		local rot2 = vector.directions_to_rotation({x = 1/math.sqrt(2), y = 1/math.sqrt(2), z = 0}, {x = 0, y = 0, z = 1})
-		assert.True(almost_equal({x = 1/math.sqrt(2), y = 1/math.sqrt(2), z = 0}, vector.forward_at_rotation(rot2)))
-		assert.True(almost_equal({x = 0, y = 0, z = 1}, vector.up_at_rotation(rot2)))
+		assert.True(almost_equal({x = 1/math.sqrt(2), y = 1/math.sqrt(2), z = 0}, forward_at_rot(rot2)))
+		assert.True(almost_equal({x = 0, y = 0, z = 1}, up_at_rot(rot2)))
 	end)
 end)
