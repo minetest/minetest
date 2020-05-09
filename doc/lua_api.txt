@@ -2898,16 +2898,20 @@ For the following functions `x` can be either a vector or a number:
 
 For the following functions `a` is an angle in radians and `r` is a rotation
 vector ({x = <pitch>, y = <yaw>, z = <roll>}) where pitch, yaw and roll are
-in radians.
+angles in radians.
 
-* `vector.rotate(v, r):
+* `vector.rotate(v, r)`:
     * Applies the rotation `r` to `v` and returns the result.
-* `vector.rotate_around_axis(v1, v2, a):
+    * `vector.rotate({x = 0, y = 0, z = 1}, r)` and
+      `vector.rotate({x = 0, y = 1, z = 0}, r)` return vectors pointing
+      forward and up relative to an entity's rotation `r`.
+* `vector.rotate_around_axis(v1, v2, a)`:
     * Returns `v1` rotated around axis `v2` by `a` radians according to
       the left hand rule.
-* `vector.directions_to_rotation(v1, v2):
-    * Returns a rotation vector for `v1` pointing forward and `v2` pointing up.
-    * `v1` and `v2` both have to be unit vectors.
+* `vector.directions_to_rotation(direction, up)`:
+    * Returns a rotation vector for `direction` pointing forward using `up`
+      ad the up vector..
+    * `direction` and `up` need to be unit vectors in a 90 degree angle to each other.
 
 
 
