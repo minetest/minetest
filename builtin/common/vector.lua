@@ -164,13 +164,12 @@ function vector.rotate_around_axis(v, axis, angle)
 	axis = vector.normalize(axis)
 	--https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
-	
-	return vector.add(
-		vector.multiply(vector.cross(axis, v), sinangle),
-		vector.add(
-		vector.multiply(vector.subtract(v, dot_axis), cosangle),
-		dot_axis
-	))
+	local cross = vector.cross(axis, v)
+	return vector.new(
+		cross.x * sinangle + (v.x - dot_axis.x) * cosangle + dot_axis.x,
+		cross.y * sinangle + (v.y - dot_axis.y) * cosangle + dot_axis.y,
+		cross.z * sinangle + (v.z - dot_axis.z) * cosangle + dot_axis.z
+	)
 end
 
 function vector.rotate(v, rot)
@@ -203,14 +202,14 @@ function vector.rotate(v, rot)
 	return vector.new(
 		matrix[2][2] * v.x + matrix[2][3] * v.y + matrix[2][1] * v.z,
 		matrix[3][2] * v.x + matrix[3][3] * v.y + matrix[3][1] * v.z,
-		matrix[1][2] * v.x + matrix[1][3] * v.y + matrix[1][1] * v.z,
+		matrix[1][2] * v.x + matrix[1][3] * v.y + matrix[1][1] * v.z
 	)
 end
 
 function vector.directions_to_rotation(forward, up)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
 	--calculate vector pointing uwith roll = 0, just based on forward vector
-	local forwup = vector.up_at_rotation(rot)
+	local forwup = vector.rotate({x = 0, y = 1, z = 0}, rot)
 	--'forwup' and 'up' are now in a plane with 'forward' as normal.
 	--the angle between them is equal to math.abs(roll)
 	rot.z = vector.angle(forwup, up)
