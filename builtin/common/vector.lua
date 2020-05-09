@@ -207,15 +207,6 @@ function vector.rotate(v, rot)
 	)
 end
 
-
-function vector.forward_at_rotation(rot)
-	return vector.rotate({x = 0, y = 0, z = 1}, rot)
-end
-
-function vector.up_at_rotation(rot)
-	return vector.rotate({x = 0, y = 1, z = 0}, rot)
-end
-
 function vector.directions_to_rotation(forward, up)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
 	--calculate vector pointing uwith roll = 0, just based on forward vector
