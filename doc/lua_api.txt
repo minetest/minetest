@@ -6546,7 +6546,7 @@ Player properties need to be saved manually.
         -- Defaults to 'true'.
 
         damage_texture_modifier = "^[brighten",
-        -- By default "^[brighten", texture modifier to be applied when object is hit
+        -- Texture modifier to be applied for a short duration when object is hit
     }
 
 Entity definition
