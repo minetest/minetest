@@ -112,8 +112,8 @@ public:
 		return MYMAX(m_fov_x, m_fov_y);
 	}
 
-	// Notify about new server-sent FOV and initialize smooth FOV transition
-	void notifyFovChange();
+	// Retrieve new server-sent FOV and initialize smooth FOV transition if required
+	void initServerSentFov();
 
 	// Checks if the constructor was able to create the scene nodes
 	bool successfullyCreated(std::string &error_message);
@@ -176,6 +176,9 @@ public:
 	inline void addArmInertia(f32 player_yaw);
 
 private:
+	// FOV-getter helper method
+	void updateCurrentFov(f32 frametime, f32 zoom_fov = 0.0f);
+
 	// Nodes
 	scene::ISceneNode *m_playernode = nullptr;
 	scene::ISceneNode *m_headnode = nullptr;
@@ -203,9 +206,17 @@ private:
 	bool m_server_sent_fov = false;
 	f32 m_curr_fov_degrees, m_old_fov_degrees, m_target_fov_degrees;
 
+	// Whether FOV needs to be updated.
+	// Used for server-sent FOV, zoom FOV, etc.
+	bool m_fov_dirty = false;
+
+	bool m_zoom_key_pressed = false;
+
 	// FOV transition variables
 	bool m_fov_transition_active = false;
 	f32 m_fov_diff, m_transition_time;
+
+	v2u32 m_window_size;
 
 	v2f m_wieldmesh_offset = v2f(55.0f, -35.0f);
 	v2f m_arm_dir;

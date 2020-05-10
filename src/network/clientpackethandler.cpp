@@ -545,7 +545,7 @@ void Client::handleCommand_Fov(NetworkPacket *pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player);
 	player->setFov({ fov, is_multiplier, transition_time });
-	m_camera->notifyFovChange();
+	m_camera->initServerSentFov();
 }
 
 void Client::handleCommand_HP(NetworkPacket *pkt)

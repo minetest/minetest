@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_OFFSET_Y -35.0f
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
+#define MAX_FOV_DEGREES 160.0f
 
 Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_draw_control(draw_control),
@@ -79,6 +80,11 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_cache_fov                 = std::fmax(g_settings->getFloat("fov"), 45.0f);
 	m_arm_inertia               = g_settings->getBool("arm_inertia");
 	m_nametags.clear();
+
+	m_window_size = RenderingEngine::get_instance()->getWindowSize();
+
+	// Initialize FOV. Pass frametime of 0s.
+	updateCurrentFov(0.0f);
 }
 
 Camera::~Camera()
@@ -86,7 +92,7 @@ Camera::~Camera()
 	m_wieldmgr->drop();
 }
 
-void Camera::notifyFovChange()
+void Camera::initServerSentFov()
 {
 	LocalPlayer *player = m_client->getEnv().getLocalPlayer();
 	assert(player);
@@ -129,6 +135,50 @@ void Camera::notifyFovChange()
 		m_transition_time = spec.transition_time;
 		m_fov_diff = m_target_fov_degrees - m_old_fov_degrees;
 	}
+}
+
+void Camera::updateCurrentFov(f32 frametime, f32 zoom_fov)
+{
+	m_fov_dirty = false;
+
+	/*
+	 * Apply server-sent FOV, instantaneous or smooth transition.
+	 * If not, check for zoom and set to zoom FOV.
+	 * Otherwise, default to m_cache_fov.
+	 */
+	if (m_fov_transition_active) {
+		// Smooth FOV transition
+		// Dynamically calculate FOV delta based on frametimes
+		f32 delta = (frametime / m_transition_time) * m_fov_diff;
+		m_curr_fov_degrees += delta;
+
+		// Mark transition as complete if target FOV has been reached
+		if ((m_fov_diff > 0.0f && m_curr_fov_degrees >= m_target_fov_degrees) ||
+				(m_fov_diff < 0.0f && m_curr_fov_degrees <= m_target_fov_degrees)) {
+			m_fov_transition_active = false;
+			m_curr_fov_degrees = m_target_fov_degrees;
+		}
+	} else if (m_server_sent_fov) {
+		// Instantaneous FOV change
+		m_curr_fov_degrees = m_target_fov_degrees;
+	} else if (zoom_fov > 0.001f) {
+		// Player requests zoom, apply zoom FOV
+		m_curr_fov_degrees = zoom_fov;
+	} else {
+		// Set to client's selected FOV
+		m_curr_fov_degrees = m_cache_fov;
+	}
+
+	m_curr_fov_degrees = rangelim(m_curr_fov_degrees, 1.0f, MAX_FOV_DEGREES);
+
+	// Aspect ratio calculation and radian conversion of FOV
+	m_aspect = (f32) m_window_size.X / (f32) m_window_size.Y;
+	m_fov_y = m_curr_fov_degrees * M_PI / 180.0f;
+	// Increase vertical FOV on lower aspect ratios (<16:10)
+	m_fov_y *= MYMAX(1.0, MYMIN(1.4f, sqrt(16.0f / 10.0f / m_aspect)));
+	m_fov_x = 2.0f * atan(m_aspect * tan(0.5f * m_fov_y));
+	m_cameranode->setAspectRatio(m_aspect);
+	m_cameranode->setFOV(m_fov_y);
 }
 
 bool Camera::successfullyCreated(std::string &error_message)
@@ -506,44 +556,26 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (m_camera_mode != CAMERA_MODE_FIRST)
 		m_camera_position = my_cp;
 
-	/*
-	 * Apply server-sent FOV, instantaneous or smooth transition.
-	 * If not, check for zoom and set to zoom FOV.
-	 * Otherwise, default to m_cache_fov.
-	 */
-	if (m_fov_transition_active) {
-		// Smooth FOV transition
-		// Dynamically calculate FOV delta based on frametimes
-		f32 delta = (frametime / m_transition_time) * m_fov_diff;
-		m_curr_fov_degrees += delta;
-
-		// Mark transition as complete if target FOV has been reached
-		if ((m_fov_diff > 0.0f && m_curr_fov_degrees >= m_target_fov_degrees) ||
-				(m_fov_diff < 0.0f && m_curr_fov_degrees <= m_target_fov_degrees)) {
-			m_fov_transition_active = false;
-			m_curr_fov_degrees = m_target_fov_degrees;
-		}
-	} else if (m_server_sent_fov) {
-		// Instantaneous FOV change
-		m_curr_fov_degrees = m_target_fov_degrees;
-	} else if (player->getPlayerControl().zoom && player->getZoomFOV() > 0.001f) {
-		// Player requests zoom, apply zoom FOV
-		m_curr_fov_degrees = player->getZoomFOV();
-	} else {
-		// Set to client's selected FOV
-		m_curr_fov_degrees = m_cache_fov;
+	f32 zoom_fov = 0.0f;
+	if (player->getPlayerControl().zoom && !m_zoom_key_pressed) {
+		m_zoom_key_pressed = true;
+		zoom_fov = player->getZoomFOV();
+		m_fov_dirty = true;
+	} else if (m_zoom_key_pressed && !player->getPlayerControl().zoom) {
+		m_fov_dirty = true;
+		m_zoom_key_pressed = false;
 	}
-	m_curr_fov_degrees = rangelim(m_curr_fov_degrees, 1.0f, 160.0f);
 
-	// FOV and aspect ratio
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
-	m_aspect = (f32) window_size.X / (f32) window_size.Y;
-	m_fov_y = m_curr_fov_degrees * M_PI / 180.0;
-	// Increase vertical FOV on lower aspect ratios (<16:10)
-	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
-	m_fov_x = 2 * atan(m_aspect * tan(0.5 * m_fov_y));
-	m_cameranode->setAspectRatio(m_aspect);
-	m_cameranode->setFOV(m_fov_y);
+	// Check if window size has been updated
+	const v2u32 window_size = RenderingEngine::get_instance()->getWindowSize();
+	if (m_window_size != window_size) {
+		m_window_size = window_size;
+		m_fov_dirty = true;
+	}
+
+	// Update FOV if dirty or if a transition is in progress
+	if (m_fov_dirty || m_fov_transition_active)
+		updateCurrentFov(frametime, zoom_fov);
 
 	if (m_arm_inertia)
 		addArmInertia(player->getYaw());
