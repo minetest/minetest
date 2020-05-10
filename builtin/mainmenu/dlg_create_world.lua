@@ -132,7 +132,7 @@ local function create_world_formspec(dialogdata)
 	end
 
 	local game_by_gameidx = core.get_game(gameidx)
-	local disallowed_mapgen_flags = {}
+	local disallowed_mapgen_settings = {}
 	if game_by_gameidx ~= nil then
 		local gamepath = game_by_gameidx.path
 		local gameconfig = Settings(gamepath.."/game.conf")
@@ -163,9 +163,9 @@ local function create_world_formspec(dialogdata)
 			end
 		end
 
-		local ds = (gameconfig:get("disallowed_mapgen_flags") or ""):split()
+		local ds = (gameconfig:get("disallowed_mapgen_settings") or ""):split()
 		for _, value in pairs(ds) do
-			disallowed_mapgen_flags[value:trim()] = true
+			disallowed_mapgen_settings[value:trim()] = true
 		end
 	end
 
@@ -193,7 +193,7 @@ local function create_world_formspec(dialogdata)
 		if mapgen == "singlenode" then
 			return "", y
 		end
-		if disallowed_mapgen_flags["mg_flags"] then
+		if disallowed_mapgen_settings["mg_flags"] then
 			return "", y
 		end
 
@@ -231,7 +231,7 @@ local function create_world_formspec(dialogdata)
 		if not flag_checkboxes[mapgen] then
 			return "", y
 		end
-		if disallowed_mapgen_flags["mg"..mapgen.."_spflags"] then
+		if disallowed_mapgen_settings["mg"..mapgen.."_spflags"] then
 			return "", y
 		end
 		local form = ""
