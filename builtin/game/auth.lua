@@ -52,7 +52,7 @@ core.builtin_auth_handler = {
 			name = name,
 			password = password,
 			privileges = core.string_to_privs(core.settings:get("default_privs")),
-			last_login = -1,  -- Defer login time calculation until on_joinplayer
+			last_login = -1,  -- Defer login time calculation until record_login (called by on_joinplayer)
 		})
 	end,
 	delete_auth = function(name)
