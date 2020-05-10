@@ -437,55 +437,45 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 	p += offset;
 
 	v2s32 steppos;
-	core::rect<s32> srchalfrect, dsthalfrect, srchalfrectflip, dsthalfrectflip;
+	// Rectangles for the actual value to display
+	core::rect<s32> srchalfrect, dsthalfrect;
+	// Rectangles for the "off state" texture
+	core::rect<s32> srchalfrect2, dsthalfrect2;
 	switch (drawdir) {
 		case HUD_DIR_RIGHT_LEFT:
 			steppos = v2s32(-1, 0);
-			srchalfrect = core::rect<s32>(srcd.Width / 2, 0,
-				srcd.Width, srcd.Height);
-			dsthalfrect = core::rect<s32>(dstd.Width / 2, 0,
-				dstd.Width, dstd.Height);
-			srchalfrectflip = core::rect<s32>(0, 0,
-				srcd.Width / 2, srcd.Height);
-			dsthalfrectflip = core::rect<s32>(0, 0,
-				dstd.Width / 2, dstd.Height);
+			srchalfrect = core::rect<s32>(srcd.Width / 2, 0, srcd.Width, srcd.Height);
+			dsthalfrect = core::rect<s32>(dstd.Width / 2, 0, dstd.Width, dstd.Height);
+			srchalfrect2 = core::rect<s32>(0, 0, srcd.Width / 2, srcd.Height);
+			dsthalfrect2 = core::rect<s32>(0, 0, dstd.Width / 2, dstd.Height);
 			break;
 		case HUD_DIR_TOP_BOTTOM:
 			steppos = v2s32(0, 1);
-			srchalfrect = core::rect<s32>(0, 0,
-				srcd.Width, srcd.Height / 2);
-			dsthalfrect = core::rect<s32>(0, 0,
-				dstd.Width, dstd.Height / 2);
-			srchalfrectflip = core::rect<s32>(0, srcd.Height / 2,
-				srcd.Width, srcd.Height);
-			dsthalfrectflip = core::rect<s32>(0, dstd.Height / 2,
-				dstd.Width, dstd.Height);
+			srchalfrect = core::rect<s32>(0, 0, srcd.Width, srcd.Height / 2);
+			dsthalfrect = core::rect<s32>(0, 0, dstd.Width, dstd.Height / 2);
+			srchalfrect2 = core::rect<s32>(0, srcd.Height / 2, srcd.Width, srcd.Height);
+			dsthalfrect2 = core::rect<s32>(0, dstd.Height / 2, dstd.Width, dstd.Height);
 			break;
 		case HUD_DIR_BOTTOM_TOP:
 			steppos = v2s32(0, -1);
-			srchalfrect = core::rect<s32>(0, srcd.Height / 2,
-				srcd.Width, srcd.Height);
-			dsthalfrect = core::rect<s32>(0, dstd.Height / 2,
-				dstd.Width, dstd.Height);
-			srchalfrectflip = core::rect<s32>(0, 0,
-				srcd.Width, srcd.Height / 2);
-			dsthalfrectflip = core::rect<s32>(0, 0,
-				dstd.Width, dstd.Height / 2);
+			srchalfrect = core::rect<s32>(0, srcd.Height / 2, srcd.Width, srcd.Height);
+			dsthalfrect = core::rect<s32>(0, dstd.Height / 2, dstd.Width, dstd.Height);
+			srchalfrect2 = core::rect<s32>(0, 0, srcd.Width, srcd.Height / 2);
+			dsthalfrect2 = core::rect<s32>(0, 0, dstd.Width, dstd.Height / 2);
 			break;
 		default:
+			// Left to right
 			steppos = v2s32(1, 0);
-			srchalfrect = core::rect<s32>(0, 0,
-				srcd.Width / 2, srcd.Height);
-			dsthalfrect = core::rect<s32>(0, 0,
-				dstd.Width / 2, dstd.Height);
-			srchalfrectflip = core::rect<s32>(srcd.Width / 2, 0,
-				srcd.Width, srcd.Height);
-			dsthalfrectflip = core::rect<s32>(dstd.Width / 2, 0,
-				dstd.Width, dstd.Height);
+			srchalfrect = core::rect<s32>(0, 0, srcd.Width / 2, srcd.Height);
+			dsthalfrect = core::rect<s32>(0, 0, dstd.Width / 2, dstd.Height);
+			srchalfrect2 = core::rect<s32>(srcd.Width / 2, 0, srcd.Width, srcd.Height);
+			dsthalfrect2 = core::rect<s32>(dstd.Width / 2, 0, dstd.Width, dstd.Height);
+			break;
 	}
 	steppos.X *= dstd.Width;
 	steppos.Y *= dstd.Height;
 
+	// Draw full textures
 	for (s32 i = 0; i < count / 2; i++) {
 		core::rect<s32> srcrect(0, 0, srcd.Width, srcd.Height);
 		core::rect<s32> dstrect(0, 0, dstd.Width, dstd.Height);
@@ -497,24 +487,26 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 	}
 
 	if (count % 2 == 1) {
+		// Draw half a texture
 		draw2DImageFilterScaled(driver, stat_texture,
 			dsthalfrect + p, srchalfrect, NULL, colors, true);
 
 		if (stat_texture_bg && maxcount > count) {
 			draw2DImageFilterScaled(driver, stat_texture_bg,
-					dsthalfrectflip + p, srchalfrectflip,
+					dsthalfrect2 + p, srchalfrect2,
 					NULL, colors, true);
 			p += steppos;
 		}
 	}
 
 	if (stat_texture_bg && maxcount > count / 2) {
-		s32 s;
+		// Draw "off state" textures
+		s32 start_offset;
 		if (count % 2 == 1)
-			s = count / 2 + 1;
+			start_offset = count / 2 + 1;
 		else
-			s = count / 2;
-		for (s32 i = s; i < maxcount / 2; i++) {
+			start_offset = count / 2;
+		for (s32 i = start_offset; i < maxcount / 2; i++) {
 			core::rect<s32> srcrect(0, 0, srcd.Width, srcd.Height);
 			core::rect<s32> dstrect(0, 0, dstd.Width, dstd.Height);
 
