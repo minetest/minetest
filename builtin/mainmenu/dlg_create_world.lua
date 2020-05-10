@@ -110,15 +110,16 @@ local function create_world_formspec(dialogdata)
 	local current_mg   = core.settings:get("mg_name")
 	local gameid = core.settings:get("menu_last_game")
 
-	local flags = {}
-	flags.main = core.settings:get_flags("mg_flags")
-	flags.v5 = core.settings:get_flags("mgv5_spflags")
-	flags.v6 = core.settings:get_flags("mgv6_spflags")
-	flags.v7 = core.settings:get_flags("mgv7_spflags")
-	flags.fractal = core.settings:get_flags("mgfractal_spflags")
-	flags.carpathian = core.settings:get_flags("mgcarpathian_spflags")
-	flags.valleys = core.settings:get_flags("mgvalleys_spflags")
-	flags.flat = core.settings:get_flags("mgflat_spflags")
+	local flags = {
+		main = core.settings:get_flags("mg_flags"),
+		v5 = core.settings:get_flags("mgv5_spflags"),
+		v6 = core.settings:get_flags("mgv6_spflags"),
+		v7 = core.settings:get_flags("mgv7_spflags"),
+		fractal = core.settings:get_flags("mgfractal_spflags"),
+		carpathian = core.settings:get_flags("mgcarpathian_spflags"),
+		valleys = core.settings:get_flags("mgvalleys_spflags"),
+		flat = core.settings:get_flags("mgflat_spflags"),
+	}
 
 	local gameidx = 0
 	if gameid ~= nil then
