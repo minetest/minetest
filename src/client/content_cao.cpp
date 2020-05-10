@@ -1691,7 +1691,7 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 					v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 			m_env->addSimpleObject(simple);
 		}
-		if (m_reset_textures_timer < 0) {
+		if (m_reset_textures_timer < 0 && !m_prop.damage_texture_modifier.empty()) {
 			m_reset_textures_timer = 0.05;
 			if (result.damage >= 2)
 				m_reset_textures_timer += 0.05 * result.damage;
