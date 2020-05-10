@@ -1871,6 +1871,7 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->dir     = getintfield_default(L, 2, "direction", 0);
 	elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX,
 			getintfield_default(L, 2, "z_index", 0)));
+	elem->text2   = getstringfield_default(L, 2, "text2", "");
 
 	// Deprecated, only for compatibility's sake
 	if (elem->dir == 0)
@@ -1939,6 +1940,9 @@ void push_hud_element(lua_State *L, HudElement *elem)
 
 	lua_pushnumber(L, elem->z_index);
 	lua_setfield(L, -2, "z_index");
+
+	lua_pushstring(L, elem->text2.c_str());
+	lua_setfield(L, -2, "text2");
 }
 
 HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
@@ -1999,6 +2003,10 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 		case HUD_STAT_Z_INDEX:
 			elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX, luaL_checknumber(L, 4)));
 			*value = &elem->z_index;
+			break;
+		case HUD_STAT_TEXT2:
+			elem->text2 = luaL_checkstring(L, 4);
+			*value = &elem->text2;
 			break;
 	}
 	return stat;

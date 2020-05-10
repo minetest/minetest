@@ -332,7 +332,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				break; }
 			case HUD_ELEM_STATBAR: {
 				v2s32 offs(e->offset.X, e->offset.Y);
-				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->number, offs, e->size);
+				drawStatbar(pos, HUD_CORNER_UPPER, e->dir, e->text, e->text2,
+					e->number, e->item, offs, e->size);
 				break; }
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
@@ -401,8 +402,9 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 }
 
 
-void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &texture,
-		s32 count, v2s32 offset, v2s32 size)
+void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
+		const std::string &texture, const std::string &bgtexture,
+		s32 count, s32 maxcount, v2s32 offset, v2s32 size)
 {
 	const video::SColor color(255, 255, 255, 255);
 	const video::SColor colors[] = {color, color, color, color};
@@ -410,6 +412,11 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &tex
 	video::ITexture *stat_texture = tsrc->getTexture(texture);
 	if (!stat_texture)
 		return;
+
+	video::ITexture *stat_texture_bg = nullptr;
+	if (!bgtexture.empty()) {
+		stat_texture_bg = tsrc->getTexture(bgtexture);
+	}
 
 	core::dimension2di srcd(stat_texture->getOriginalSize());
 	core::dimension2di dstd;
@@ -430,43 +437,99 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &tex
 	p += offset;
 
 	v2s32 steppos;
-	core::rect<s32> srchalfrect, dsthalfrect;
+	core::rect<s32> srchalfrect, dsthalfrect, srchalfrectflip, dsthalfrectflip;
 	switch (drawdir) {
 		case HUD_DIR_RIGHT_LEFT:
 			steppos = v2s32(-1, 0);
-			srchalfrect = core::rect<s32>(srcd.Width / 2, 0, srcd.Width, srcd.Height);
-			dsthalfrect = core::rect<s32>(dstd.Width / 2, 0, dstd.Width, dstd.Height);
+			srchalfrect = core::rect<s32>(srcd.Width / 2, 0,
+				srcd.Width, srcd.Height);
+			dsthalfrect = core::rect<s32>(dstd.Width / 2, 0,
+				dstd.Width, dstd.Height);
+			srchalfrectflip = core::rect<s32>(0, 0,
+				srcd.Width / 2, srcd.Height);
+			dsthalfrectflip = core::rect<s32>(0, 0,
+				dstd.Width / 2, dstd.Height);
 			break;
 		case HUD_DIR_TOP_BOTTOM:
 			steppos = v2s32(0, 1);
-			srchalfrect = core::rect<s32>(0, 0, srcd.Width, srcd.Height / 2);
-			dsthalfrect = core::rect<s32>(0, 0, dstd.Width, dstd.Height / 2);
+			srchalfrect = core::rect<s32>(0, 0,
+				srcd.Width, srcd.Height / 2);
+			dsthalfrect = core::rect<s32>(0, 0,
+				dstd.Width, dstd.Height / 2);
+			srchalfrectflip = core::rect<s32>(0, srcd.Height / 2,
+				srcd.Width, srcd.Height);
+			dsthalfrectflip = core::rect<s32>(0, dstd.Height / 2,
+				dstd.Width, dstd.Height);
 			break;
 		case HUD_DIR_BOTTOM_TOP:
 			steppos = v2s32(0, -1);
-			srchalfrect = core::rect<s32>(0, srcd.Height / 2, srcd.Width, srcd.Height);
-			dsthalfrect = core::rect<s32>(0, dstd.Height / 2, dstd.Width, dstd.Height);
+			srchalfrect = core::rect<s32>(0, srcd.Height / 2,
+				srcd.Width, srcd.Height);
+			dsthalfrect = core::rect<s32>(0, dstd.Height / 2,
+				dstd.Width, dstd.Height);
+			srchalfrectflip = core::rect<s32>(0, 0,
+				srcd.Width, srcd.Height / 2);
+			dsthalfrectflip = core::rect<s32>(0, 0,
+				dstd.Width, dstd.Height / 2);
 			break;
 		default:
 			steppos = v2s32(1, 0);
-			srchalfrect = core::rect<s32>(0, 0, srcd.Width / 2, srcd.Height);
-			dsthalfrect = core::rect<s32>(0, 0, dstd.Width / 2, dstd.Height);
+			srchalfrect = core::rect<s32>(0, 0,
+				srcd.Width / 2, srcd.Height);
+			dsthalfrect = core::rect<s32>(0, 0,
+				dstd.Width / 2, dstd.Height);
+			srchalfrectflip = core::rect<s32>(srcd.Width / 2, 0,
+				srcd.Width, srcd.Height);
+			dsthalfrectflip = core::rect<s32>(dstd.Width / 2, 0,
+				dstd.Width, dstd.Height);
 	}
 	steppos.X *= dstd.Width;
 	steppos.Y *= dstd.Height;
 
 	for (s32 i = 0; i < count / 2; i++) {
 		core::rect<s32> srcrect(0, 0, srcd.Width, srcd.Height);
-		core::rect<s32> dstrect(0,0, dstd.Width, dstd.Height);
+		core::rect<s32> dstrect(0, 0, dstd.Width, dstd.Height);
 
 		dstrect += p;
-		draw2DImageFilterScaled(driver, stat_texture, dstrect, srcrect, NULL, colors, true);
+		draw2DImageFilterScaled(driver, stat_texture,
+			dstrect, srcrect, NULL, colors, true);
 		p += steppos;
 	}
 
 	if (count % 2 == 1) {
-		dsthalfrect += p;
-		draw2DImageFilterScaled(driver, stat_texture, dsthalfrect, srchalfrect, NULL, colors, true);
+		draw2DImageFilterScaled(driver, stat_texture,
+			dsthalfrect + p, srchalfrect, NULL, colors, true);
+
+		if (stat_texture_bg && maxcount > count) {
+			draw2DImageFilterScaled(driver, stat_texture_bg,
+					dsthalfrectflip + p, srchalfrectflip,
+					NULL, colors, true);
+			p += steppos;
+		}
+	}
+
+	if (stat_texture_bg && maxcount > count / 2) {
+		s32 s;
+		if (count % 2 == 1)
+			s = count / 2 + 1;
+		else
+			s = count / 2;
+		for (s32 i = s; i < maxcount / 2; i++) {
+			core::rect<s32> srcrect(0, 0, srcd.Width, srcd.Height);
+			core::rect<s32> dstrect(0, 0, dstd.Width, dstd.Height);
+
+			dstrect += p;
+			draw2DImageFilterScaled(driver, stat_texture_bg,
+					dstrect, srcrect,
+					NULL, colors, true);
+			p += steppos;
+		}
+
+		if (maxcount % 2 == 1) {
+			draw2DImageFilterScaled(driver, stat_texture_bg,
+					dsthalfrect + p, srchalfrect,
+					NULL, colors, true);
+		}
 	}
 }
 

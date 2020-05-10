@@ -136,6 +136,7 @@ struct ClientEvent
 			v3f *world_pos;
 			v2s32 *size;
 			s16 z_index;
+			std::string *text2;
 		} hudadd;
 		struct
 		{

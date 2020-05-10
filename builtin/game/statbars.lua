@@ -5,7 +5,9 @@ local health_bar_definition = {
 	hud_elem_type = "statbar",
 	position = {x = 0.5, y = 1},
 	text = "heart.png",
+	text2 = "heart_gone.png",
 	number = core.PLAYER_MAX_HP_DEFAULT,
+	item = core.PLAYER_MAX_HP_DEFAULT,
 	direction = 0,
 	size = {x = 24, y = 24},
 	offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)},
@@ -15,7 +17,9 @@ local breath_bar_definition = {
 	hud_elem_type = "statbar",
 	position = {x = 0.5, y = 1},
 	text = "bubble.png",
+	text2 = "bubble_gone.png",
 	number = core.PLAYER_MAX_BREATH_DEFAULT,
+	item = core.PLAYER_MAX_BREATH_DEFAULT - 1,
 	direction = 0,
 	size = {x = 24, y = 24},
 	offset = {x = 25, y= -(48 + 24 + 16)},
@@ -68,11 +72,14 @@ local function update_builtin_statbars(player)
 
 	local breath     = player:get_breath()
 	local breath_max = player:get_properties().breath_max
+	local item = math.max(0, 2 * (breath_max - 1))
 	if show_breathbar and breath <= breath_max then
 		local number = 2 * scaleToDefault(player, "breath")
+		local item = math.max(0, 2 * (breath_max - 1))
 		if not hud.id_breathbar and breath < breath_max then
 			local hud_def = table.copy(breath_bar_definition)
 			hud_def.number = number
+			hud_def.item = item
 			hud.id_breathbar = player:hud_add(hud_def)
 		elseif hud.id_breathbar then
 			player:hud_change(hud.id_breathbar, "number", number)
