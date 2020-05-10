@@ -437,41 +437,50 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 	p += offset;
 
 	v2s32 steppos;
-	// Rectangles for the actual value to display
-	core::rect<s32> srchalfrect, dsthalfrect;
-	// Rectangles for the "off state" texture
-	core::rect<s32> srchalfrect2, dsthalfrect2;
 	switch (drawdir) {
 		case HUD_DIR_RIGHT_LEFT:
 			steppos = v2s32(-1, 0);
-			srchalfrect = core::rect<s32>(srcd.Width / 2, 0, srcd.Width, srcd.Height);
-			dsthalfrect = core::rect<s32>(dstd.Width / 2, 0, dstd.Width, dstd.Height);
-			srchalfrect2 = core::rect<s32>(0, 0, srcd.Width / 2, srcd.Height);
-			dsthalfrect2 = core::rect<s32>(0, 0, dstd.Width / 2, dstd.Height);
 			break;
 		case HUD_DIR_TOP_BOTTOM:
 			steppos = v2s32(0, 1);
-			srchalfrect = core::rect<s32>(0, 0, srcd.Width, srcd.Height / 2);
-			dsthalfrect = core::rect<s32>(0, 0, dstd.Width, dstd.Height / 2);
-			srchalfrect2 = core::rect<s32>(0, srcd.Height / 2, srcd.Width, srcd.Height);
-			dsthalfrect2 = core::rect<s32>(0, dstd.Height / 2, dstd.Width, dstd.Height);
 			break;
 		case HUD_DIR_BOTTOM_TOP:
 			steppos = v2s32(0, -1);
-			srchalfrect = core::rect<s32>(0, srcd.Height / 2, srcd.Width, srcd.Height);
-			dsthalfrect = core::rect<s32>(0, dstd.Height / 2, dstd.Width, dstd.Height);
-			srchalfrect2 = core::rect<s32>(0, 0, srcd.Width, srcd.Height / 2);
-			dsthalfrect2 = core::rect<s32>(0, 0, dstd.Width, dstd.Height / 2);
 			break;
 		default:
-			// Left to right
+			// From left to right
 			steppos = v2s32(1, 0);
-			srchalfrect = core::rect<s32>(0, 0, srcd.Width / 2, srcd.Height);
-			dsthalfrect = core::rect<s32>(0, 0, dstd.Width / 2, dstd.Height);
-			srchalfrect2 = core::rect<s32>(srcd.Width / 2, 0, srcd.Width, srcd.Height);
-			dsthalfrect2 = core::rect<s32>(dstd.Width / 2, 0, dstd.Width, dstd.Height);
 			break;
 	}
+
+	auto calculate_clipping_rect = [] (core::dimension2di src,
+			v2s32 steppos) -> core::rect<s32> {
+
+		// Create basic rectangle
+		core::rect<s32> rect(0, 0,
+			src.Width  - std::abs(steppos.X) * src.Width / 2,
+			src.Height - std::abs(steppos.Y) * src.Height / 2
+		);
+		// Move rectangle left or down
+		if (steppos.X == -1)
+			rect += v2s32(src.Width / 2, 0);
+		if (steppos.Y == -1)
+			rect += v2s32(0, src.Height / 2);
+		return rect;
+	};
+	// Rectangles for 1/2 the actual value to display
+	core::rect<s32> srchalfrect, dsthalfrect;
+	// Rectangles for 1/2 the "off state" texture
+	core::rect<s32> srchalfrect2, dsthalfrect2;
+
+	if (count % 2 == 1) {
+		// Need to draw halves: Calculate rectangles
+		srchalfrect  = calculate_clipping_rect(srcd, steppos);
+		dsthalfrect  = calculate_clipping_rect(dstd, steppos);
+		srchalfrect2 = calculate_clipping_rect(srcd, steppos * -1);
+		dsthalfrect2 = calculate_clipping_rect(dstd, steppos * -1);
+	}
+
 	steppos.X *= dstd.Width;
 	steppos.Y *= dstd.Height;
 
