@@ -642,9 +642,19 @@ u8 MapNode::setLevel(const NodeDefManager *nodemgr, s8 level)
 
 u8 MapNode::addLevel(const NodeDefManager *nodemgr, s8 add)
 {
-	s8 level = getLevel(nodemgr);
-	level += add;
-	return setLevel(nodemgr, level);
+	s16 tmpLevel = getLevel(nodemgr);
+	tmpLevel += add;
+	u8 rest = 0;
+	if (tmpLevel > LEVELED_MAX) {
+		rest = tmpLevel - LEVELED_MAX;
+		tmpLevel = LEVELED_MAX;
+	} else if (tmpLevel < 0) {
+		rest = -tmpLevel;
+		tmpLevel = 0;
+	}
+	s8 level = (s8) tmpLevel;
+	setLevel(nodemgr, level);
+	return rest;
 }
 
 u32 MapNode::serializedLength(u8 version)

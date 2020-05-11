@@ -196,10 +196,10 @@ core.register_entity(":__builtin:falling_node", {
 	try_place = function(self, bcp, bcn)
 		local bcd = core.registered_nodes[bcn.name]
 		-- Add levels if dropped on same leveled node
-		if bcd and bcd.leveled and
+		if bcd and bcd.paramtype2 == "leveled" and
 				bcn.name == self.node.name then
-			local addlevel = self.node.level
-			if not addlevel or addlevel <= 0 then
+			local addlevel = self.node.param2 % 128
+			if bcd.leveled and addlevel == 0 then
 				addlevel = bcd.leveled
 			end
 			if core.add_node_level(bcp, addlevel) == 0 then
@@ -441,7 +441,8 @@ function core.check_single_for_falling(p)
 				(core.get_item_group(n.name, "float") == 0 or
 				d_bottom.liquidtype == "none") and
 
-				(n.name ~= n_bottom.name or (d_bottom.leveled and
+				(n.name ~= n_bottom.name or
+				(d_bottom.paramtype2 == "leveled" and
 				core.get_node_level(p_bottom) <
 				core.get_node_max_level(p_bottom))) and
 
