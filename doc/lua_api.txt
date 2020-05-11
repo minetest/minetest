@@ -6589,6 +6589,9 @@ Player properties need to be saved manually.
         -- deleted when the block gets unloaded.
         -- The get_staticdata() callback is never called then.
         -- Defaults to 'true'.
+
+        damage_texture_modifier = "^[brighten",
+        -- Texture modifier to be applied for a short duration when object is hit
     }
 
 Entity definition

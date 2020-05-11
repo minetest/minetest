@@ -1532,7 +1532,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == AO_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
 
-		// immediatly reset a engine issued texture modifier if a mod sends a different one
+		// immediately reset a engine issued texture modifier if a mod sends a different one
 		if (m_reset_textures_timer > 0) {
 			m_reset_textures_timer = -1;
 			updateTextures(m_previous_texture_modifier);
@@ -1646,13 +1646,11 @@ void GenericCAO::processMessage(const std::string &data)
 						m_smgr, m_env, m_position,
 						v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 				m_env->addSimpleObject(simple);
-			} else if (m_reset_textures_timer < 0) {
-				// TODO: Execute defined fast response
-				// Flashing shall suffice as there is no definition
+			} else if (m_reset_textures_timer < 0 && !m_prop.damage_texture_modifier.empty()) {
 				m_reset_textures_timer = 0.05;
 				if(damage >= 2)
 					m_reset_textures_timer += 0.05 * damage;
-				updateTextures(m_current_texture_modifier + "^[brighten");
+				updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 			}
 		}
 
@@ -1723,13 +1721,11 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 					v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 			m_env->addSimpleObject(simple);
 		}
-		// TODO: Execute defined fast response
-		// Flashing shall suffice as there is no definition
-		if (m_reset_textures_timer < 0) {
+		if (m_reset_textures_timer < 0 && !m_prop.damage_texture_modifier.empty()) {
 			m_reset_textures_timer = 0.05;
 			if (result.damage >= 2)
 				m_reset_textures_timer += 0.05 * result.damage;
-			updateTextures(m_current_texture_modifier + "^[brighten");
+			updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 		}
 	}
 

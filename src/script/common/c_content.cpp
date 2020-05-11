@@ -327,6 +327,8 @@ void read_object_properties(lua_State *L, int index,
 
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
+
+	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 }
 
 /******************************************************************************/
@@ -409,6 +411,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "zoom_fov");
 	lua_pushboolean(L, prop->use_texture_alpha);
 	lua_setfield(L, -2, "use_texture_alpha");
+	lua_pushlstring(L, prop->damage_texture_modifier.c_str(), prop->damage_texture_modifier.size());
+	lua_setfield(L, -2, "damage_texture_modifier");
 }
 
 /******************************************************************************/
