@@ -77,6 +77,7 @@ enum HudElementStat {
 	HUD_STAT_WORLD_POS,
 	HUD_STAT_SIZE,
 	HUD_STAT_Z_INDEX,
+	HUD_STAT_TEXT2,
 };
 
 struct HudElement {
@@ -93,6 +94,7 @@ struct HudElement {
 	v3f world_pos;
 	v2s32 size;
 	s16 z_index = 0;
+	std::string text2;
 };
 
 extern const EnumString es_HudElementType[];

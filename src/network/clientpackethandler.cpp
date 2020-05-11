@@ -1102,22 +1102,16 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	v3f world_pos;
 	v2s32 size;
 	s16 z_index = 0;
+	std::string text2;
 
 	*pkt >> server_id >> type >> pos >> name >> scale >> text >> number >> item
 		>> dir >> align >> offset;
 	try {
 		*pkt >> world_pos;
-	}
-	catch(SerializationError &e) {};
-
-	try {
 		*pkt >> size;
-	} catch(SerializationError &e) {};
-
-	try {
 		*pkt >> z_index;
-	}
-	catch(PacketError &e) {}
+		*pkt >> text2;
+	} catch(PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
 	event->type             = CE_HUDADD;
@@ -1135,6 +1129,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	event->hudadd.world_pos = new v3f(world_pos);
 	event->hudadd.size      = new v2s32(size);
 	event->hudadd.z_index   = z_index;
+	event->hudadd.text2     = new std::string(text2);
 	m_client_event_queue.push(event);
 }
 
@@ -1171,7 +1166,7 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE ||
 		stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
 		*pkt >> v2fdata;
-	else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT)
+	else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT || stat == HUD_STAT_TEXT2)
 		*pkt >> sdata;
 	else if (stat == HUD_STAT_WORLD_POS)
 		*pkt >> v3fdata;

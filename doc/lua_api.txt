@@ -1289,9 +1289,9 @@ To account for differing resolutions, the position coordinates are the
 percentage of the screen, ranging in value from `0` to `1`.
 
 The name field is not yet used, but should contain a description of what the
-HUD element represents. The direction field is the direction in which something
-is drawn.
+HUD element represents.
 
+The `direction` field is the direction in which something is drawn.
 `0` draws from left to right, `1` draws from right to left, `2` draws from
 top to bottom, and `3` draws from bottom to top.
 
@@ -1355,12 +1355,16 @@ Displays text on the HUD.
 
 ### `statbar`
 
-Displays a horizontal bar made up of half-images.
+Displays a horizontal bar made up of half-images with an optional background.
 
-* `text`: The name of the texture that is used.
+* `text`: The name of the texture to use.
+* `text2`: Optional texture name to enable a background / "off state"
+  texture (useful to visualize the maximal value). Both textures
+  must have the same size.
 * `number`: The number of half-textures that are displayed.
   If odd, will end with a vertically center-split texture.
-* `direction`
+* `item`: Same as `number` but for the "off state" texture
+* `direction`: To which direction the images will extend to
 * `offset`: offset in pixels from position.
 * `size`: If used, will force full-image size to this value (override texture
   pack image size)
@@ -7771,6 +7775,8 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
         scale = {x = 2, y = 2},
 
         text = "<text>",
+
+        text2 = "<text>",
 
         number = 2,
 

@@ -1621,7 +1621,7 @@ void Server::SendHUDAdd(session_t peer_id, u32 id, HudElement *form)
 	pkt << id << (u8) form->type << form->pos << form->name << form->scale
 			<< form->text << form->number << form->item << form->dir
 			<< form->align << form->offset << form->world_pos << form->size
-			<< form->z_index;
+			<< form->z_index << form->text2;
 
 	Send(&pkt);
 }
@@ -1647,6 +1647,7 @@ void Server::SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void 
 			break;
 		case HUD_STAT_NAME:
 		case HUD_STAT_TEXT:
+		case HUD_STAT_TEXT2:
 			pkt << *(std::string *) value;
 			break;
 		case HUD_STAT_WORLD_POS:

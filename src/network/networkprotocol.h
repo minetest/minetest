@@ -560,10 +560,10 @@ enum ToClientCommand
 		u32 id
 		u8 type
 		v2f1000 pos
-		u32 len
+		u16 len
 		u8[len] name
 		v2f1000 scale
-		u32 len2
+		u16 len2
 		u8[len2] text
 		u32 number
 		u32 item
@@ -573,6 +573,8 @@ enum ToClientCommand
 		v3f1000 world_pos
 		v2s32 size
 		s16 z_index
+		u16 len3
+		u8[len3] text2
 	*/
 
 	TOCLIENT_HUDRM = 0x4a,
