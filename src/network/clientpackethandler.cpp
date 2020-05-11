@@ -1111,8 +1111,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 		*pkt >> size;
 		*pkt >> z_index;
 		*pkt >> text2;
-	}
-	catch(SerializationError &e) {};
+	} catch(PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
 	event->type             = CE_HUDADD;
