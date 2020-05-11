@@ -65,7 +65,7 @@ local flag_checkboxes = {
 		{ "lakes", fgettext("Lakes"), "lakes" },
 	},
 	fractal = {
-		{ "terrain", fgettext("Terrain"), "terrain",
+		{ "terrain", fgettext("Additional terrain"), "terrain",
 		fgettext("Generate non-fractal terrain: Oceans and underground") },
 	},
 	v6 = {
@@ -205,12 +205,11 @@ local function create_world_formspec(dialogdata)
 			fgettext("Dungeons") .. ";"..strflag(flags.main, "dungeons").."]"
 		y = y + 0.5
 
-		local d_name, d_tt
+		local d_name = fgettext("Decorations")
+		local d_tt
 		if mapgen == "v6" then
-			d_name = fgettext("Decorations (no effect on trees/jungle grass)")
-			d_tt = fgettext("Structures appearing on the terrain")
+			d_tt = fgettext("Structures appearing on the terrain (no effect on trees and jungle grass created by v6)")
 		else
-			d_name = fgettext("Decorations")
 			d_tt = fgettext("Structures appearing on the terrain, typically trees and plants")
 		end
 		form = form .. "checkbox[0,"..y..";flag_mg_decorations;" ..
@@ -278,7 +277,7 @@ local function create_world_formspec(dialogdata)
 		-- biomeblend
 		y = y + 0.55
 		form = form .. "checkbox[0,"..y..";flag_mgv6_biomeblend;" ..
-			fgettext("Biome blend") .. ";"..strflag(flags.v6, "biomeblend").."]" ..
+			fgettext("Biome blending") .. ";"..strflag(flags.v6, "biomeblend").."]" ..
 			"tooltip[flag_mgv6_biomeblend;" ..
 			fgettext("Smooth transition between biomes") .. "]"
 
