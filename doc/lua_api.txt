@@ -1359,7 +1359,7 @@ Displays a horizontal bar made up of half-images with an optional background.
 
 * `text`: The name of the texture to use.
 * `text2`: Optional texture name to enable a background / "off state"
-  texture (useful to make the max. value visible). Both textures
+  texture (useful to visualize the maximal value). Both textures
   must have the same size.
 * `number`: The number of half-textures that are displayed.
   If odd, will end with a vertically center-split texture.
