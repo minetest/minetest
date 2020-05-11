@@ -1363,7 +1363,7 @@ Displays a horizontal bar made up of half-images with an optional background.
   must have the same size.
 * `number`: The number of half-textures that are displayed.
   If odd, will end with a vertically center-split texture.
-* `item`: Same as number, but for 2nd texture
+* `item`: Same as `number` but for the "off state" texture
 * `direction`: To which direction the images will extend to
 * `offset`: offset in pixels from position.
 * `size`: If used, will force full-image size to this value (override texture
