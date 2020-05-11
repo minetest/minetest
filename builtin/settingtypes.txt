@@ -2159,15 +2159,15 @@ chunksize (Chunk size) int 5
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.
-emergequeue_limit_total (Absolute limit of emerge queues) int 512
+emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 512
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
-#    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_diskonly (Limit of emerge queues on disk) int 64
+#    This limit is enforced per player.
+emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 64
 
 #    Maximum number of blocks to be queued that are to be generated.
-#    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_generate (Limit of emerge queues to generate) int 64
+#    This limit is enforced per player.
+emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 64
 
 #    Number of emerge threads to use.
 #    Value 0:

@@ -3251,12 +3251,12 @@
 # emergequeue_limit_total = 512
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
-#    Set to blank for an appropriate amount to be chosen automatically.
+#    This limit is enforced per player.
 #    type: int
 # emergequeue_limit_diskonly = 64
 
 #    Maximum number of blocks to be queued that are to be generated.
-#    Set to blank for an appropriate amount to be chosen automatically.
+#    This limit is enforced per player.
 #    type: int
 # emergequeue_limit_generate = 64
 
