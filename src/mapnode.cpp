@@ -608,9 +608,9 @@ u8 MapNode::getLevel(const NodeDefManager *nodemgr) const
 	return f.leveled;
 }
 
-u8 MapNode::setLevel(const NodeDefManager *nodemgr, s8 level)
+s8 MapNode::setLevel(const NodeDefManager *nodemgr, s16 level)
 {
-	u8 rest = 0;
+	s8 rest = 0;
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type_2 == CPT2_FLOWINGLIQUID
 			|| f.liquid_type == LIQUID_FLOWING
@@ -640,21 +640,11 @@ u8 MapNode::setLevel(const NodeDefManager *nodemgr, s8 level)
 	return rest;
 }
 
-u8 MapNode::addLevel(const NodeDefManager *nodemgr, s8 add)
+s8 MapNode::addLevel(const NodeDefManager *nodemgr, s16 add)
 {
-	s16 tmpLevel = getLevel(nodemgr);
-	tmpLevel += add;
-	u8 rest = 0;
-	if (tmpLevel > LEVELED_MAX) {
-		rest = tmpLevel - LEVELED_MAX;
-		tmpLevel = LEVELED_MAX;
-	} else if (tmpLevel < 0) {
-		rest = -tmpLevel;
-		tmpLevel = 0;
-	}
-	s8 level = (s8) tmpLevel;
-	setLevel(nodemgr, level);
-	return rest;
+	s16 level = getLevel(nodemgr);
+	level += add;
+	return setLevel(nodemgr, level);
 }
 
 u32 MapNode::serializedLength(u8 version)

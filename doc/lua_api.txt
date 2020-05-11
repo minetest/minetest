@@ -4872,7 +4872,7 @@ Environment access
 * `minetest.add_node_level(pos, level)`
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
-    * can be negative for decreasing
+    * `level` must be between -127 and 127
 * `minetest.fix_light(pos1, pos2)`: returns `true`/`false`
     * resets the light in a cuboid-shaped part of
       the map and removes lighting bugs.
