@@ -290,7 +290,8 @@ if INIT == "game" then
 			return
 		end
 		local undef = core.registered_nodes[unode.name]
-		if undef and undef.on_rightclick then
+		local sneaking = placer and placer:get_player_control().sneak
+		if undef and undef.on_rightclick and not sneaking then
 			return undef.on_rightclick(pointed_thing.under, unode, placer,
 					itemstack, pointed_thing)
 		end
