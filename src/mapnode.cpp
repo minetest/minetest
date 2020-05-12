@@ -584,7 +584,7 @@ u8 MapNode::getMaxLevel(const NodeDefManager *nodemgr) const
 	if( f.liquid_type == LIQUID_FLOWING || f.param_type_2 == CPT2_FLOWINGLIQUID)
 		return LIQUID_LEVEL_MAX;
 	if(f.leveled || f.param_type_2 == CPT2_LEVELED)
-		return LEVELED_MAX;
+		return f.leveled_max;
 	return 0;
 }
 
@@ -603,8 +603,8 @@ u8 MapNode::getLevel(const NodeDefManager *nodemgr) const
 		if (level)
 			return level;
 	}
-	if (f.leveled > LEVELED_MAX)
-		return LEVELED_MAX;
+	if (f.leveled > f.leveled_max)
+		return f.leveled_max;
 	return f.leveled;
 }
 
@@ -631,9 +631,9 @@ s8 MapNode::setLevel(const NodeDefManager *nodemgr, s16 level)
 		if (level < 0) { // zero means default for a leveled nodebox
 			rest = level;
 			level = 0;
-		} else if (level > LEVELED_MAX) {
-			rest = level - LEVELED_MAX;
-			level = LEVELED_MAX;
+		} else if (level > f.leveled_max) {
+			rest = level - f.leveled_max;
+			level = f.leveled_max;
 		}
 		setParam2((level & LEVELED_MASK) | (getParam2() & ~LEVELED_MASK));
 	}
