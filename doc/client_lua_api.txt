@@ -967,7 +967,7 @@ Please do not try to access the reference until the camera is initialized, other
 * `get_camera_mode()`
     * Returns 0, 1, or 2 as described above
 * `get_fov()`
-    * Returns:
+    * Returns a table with X, Y, maximum and actual FOV in degrees:
 
 ```lua
      {

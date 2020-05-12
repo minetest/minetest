@@ -540,7 +540,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	m_aspect = (f32) window_size.X / (f32) window_size.Y;
 	m_fov_y = m_curr_fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
-	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
+	m_fov_y *= core::clamp(sqrt(16./10. / m_aspect), 1.0, 1.4);
 	m_fov_x = 2 * atan(m_aspect * tan(0.5 * m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
