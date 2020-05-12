@@ -2205,13 +2205,16 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 }
 
 namespace {
-	float linear_to_srgb_component(const float v)
+	// For more colourspace transformations, see for example
+	// https://github.com/tobspr/GLSL-Color-Spaces/blob/master/ColorSpaces.inc.glsl
+
+	inline float linear_to_srgb_component(float v)
 	{
 		if (v > 0.0031308f)
 			return 1.055f * powf(v, 1.0f / 2.4f) - 0.055f;
 		return 12.92f * v;
 	}
-	float srgb_to_linear_component(const float v)
+	inline float srgb_to_linear_component(float v)
 	{
 		if (v > 0.04045f)
 			return powf((v + 0.055f) / 1.055f, 2.4f);
@@ -2221,7 +2224,7 @@ namespace {
 	v3f srgb_to_linear(const video::SColor &col_srgb)
 	{
 		v3f col(col_srgb.getRed(), col_srgb.getGreen(), col_srgb.getBlue());
-		col *= 1.0f / 255.0f;
+		col /= 255.0f;
 		col.X = srgb_to_linear_component(col.X);
 		col.Y = srgb_to_linear_component(col.Y);
 		col.Z = srgb_to_linear_component(col.Z);
@@ -2268,7 +2271,7 @@ video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 	}
 	image->drop();
 	if (total > 0) {
-		col_acc *= 1.0f / total;
+		col_acc /= total;
 		c = linear_to_srgb(col_acc);
 	}
 	c.setAlpha(255);
