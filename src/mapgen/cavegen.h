@@ -44,7 +44,7 @@ public:
 		NoiseParams *np_cave2, s32 seed, float cave_width);
 	~CavesNoiseIntersection();
 
-	void generateCaves(MMVManip *vm, v3s16 nmin, v3s16 nmax, u8 *biomemap);
+	void generateCaves(MMVManip *vm, v3s16 nmin, v3s16 nmax, u16 *biomemap);
 
 private:
 	const NodeDefManager *m_ndef;

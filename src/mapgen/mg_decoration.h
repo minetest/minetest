@@ -72,7 +72,7 @@ public:
 	s16 nspawnby;
 	s16 place_offset_y = 0;
 
-	std::unordered_set<u8> biomes;
+	std::unordered_set<u16> biomes;
 
 protected:
 	void cloneTo(Decoration *def) const;

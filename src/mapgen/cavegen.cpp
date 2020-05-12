@@ -69,7 +69,7 @@ CavesNoiseIntersection::~CavesNoiseIntersection()
 
 
 void CavesNoiseIntersection::generateCaves(MMVManip *vm,
-	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+	v3s16 nmin, v3s16 nmax, u16 *biomemap)
 {
 	assert(vm);
 	assert(biomemap);

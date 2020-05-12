@@ -32,7 +32,7 @@ class BiomeManager;
 //// Biome
 ////
 
-typedef u8 biome_t;
+typedef u16 biome_t;
 
 #define BIOME_NONE ((biome_t)0)
 

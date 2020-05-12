@@ -64,7 +64,7 @@ public:
 	float nthresh;      // threshold for noise at which an ore is placed
 	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise = nullptr;
-	std::unordered_set<u8> biomes;
+	std::unordered_set<u16> biomes;
 
 	Ore() = default;;
 	virtual ~Ore();
@@ -73,7 +73,7 @@ public:
 
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, u8 *biomemap) = 0;
+		v3s16 nmin, v3s16 nmax, u16 *biomemap) = 0;
 
 protected:
 	void cloneTo(Ore *def) const;
@@ -86,7 +86,7 @@ public:
 	ObjDef *clone() const;
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, u8 *biomemap);
+		v3s16 nmin, v3s16 nmax, u16 *biomemap);
 };
 
 class OreSheet : public Ore {
@@ -100,7 +100,7 @@ public:
 	float column_midpoint_factor;
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, u8 *biomemap);
+		v3s16 nmin, v3s16 nmax, u16 *biomemap);
 };
 
 class OrePuff : public Ore {
@@ -118,7 +118,7 @@ public:
 	virtual ~OrePuff();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, u8 *biomemap);
+		v3s16 nmin, v3s16 nmax, u16 *biomemap);
 };
 
 class OreBlob : public Ore {
@@ -128,7 +128,7 @@ public:
 	ObjDef *clone() const;
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, u8 *biomemap);
+		v3s16 nmin, v3s16 nmax, u16 *biomemap);
 };
 
 class OreVein : public Ore {
@@ -145,7 +145,7 @@ public:
 	virtual ~OreVein();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, u8 *biomemap);
+		v3s16 nmin, v3s16 nmax, u16 *biomemap);
 };
 
 class OreStratum : public Ore {
@@ -162,7 +162,7 @@ public:
 	virtual ~OreStratum();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, u8 *biomemap);
+		v3s16 nmin, v3s16 nmax, u16 *biomemap);
 };
 
 class OreManager : public ObjDefManager {
