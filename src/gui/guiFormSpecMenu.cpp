@@ -1784,12 +1784,6 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 			horigin = ORIGIN_LOWERRIGHT;
 		else if (str_horigin == "center")
 			horigin = ORIGIN_CENTER;
-		else if (str_horigin == "leftline")
-			horigin = ORIGIN_UPPERLEFT_LINE;
-		else if (str_horigin == "centerline")
-			horigin = ORIGIN_CENTER_LINE;
-		else if (str_horigin == "rightline")
-			horigin = ORIGIN_LOWERRIGHT_LINE;
 
 		if (str_vorigin == "top")
 			vorigin = ORIGIN_UPPERLEFT;
@@ -1815,14 +1809,6 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 		s32 rect_height = abs(newline_spacing) * (float)(lines.size() - 1) + font_height;
 
-		s32 first_char_width = 0;
-		if (lines[0].size() > 0) {
-			std::wstring unescaped = unescape_enriched(translate_string(
-				utf8_to_wide(unescape_string(lines[0]))));
-			wchar_t first[2] = {unescaped[0], '\0'};
-			first_char_width = m_font->getDimension(first).Width;
-		}
-
 		for (u32 i = 0; i < lines.size(); i++) {
 			std::wstring wlabel_colors = translate_string(
 				utf8_to_wide(unescape_string(lines[i])));
@@ -1844,10 +1830,6 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 					pos.X -= font_width / 2;
 				else if (horigin == ORIGIN_LOWERRIGHT)
 					pos.X -= font_width;
-				else if (horigin == ORIGIN_CENTER_LINE)
-					pos.X -= first_char_width / 2;
-				else if (horigin == ORIGIN_LOWERRIGHT_LINE)
-					pos.X -= first_char_width;
 
 				if (vorigin == ORIGIN_UPPERLEFT_LINE) {
 					// Don't move it
@@ -1967,12 +1949,6 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 			vorigin = ORIGIN_LOWERRIGHT;
 		else if (str_vorigin == "center")
 			vorigin = ORIGIN_CENTER;
-		else if (str_vorigin == "topline")
-			vorigin = ORIGIN_UPPERLEFT_LINE;
-		else if (str_vorigin == "centerline")
-			vorigin = ORIGIN_CENTER_LINE;
-		else if (str_vorigin == "bottomline")
-			vorigin = ORIGIN_LOWERRIGHT_LINE;
 
 		std::vector<std::wstring> lines;
 		lines.reserve(raw_lines.size());
@@ -2000,12 +1976,6 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 		}
 
 		s32 rect_width = abs(newline_spacing) * (float)(lines.size() - 1) + font_width;
-
-		s32 first_char_height = 0;
-		if (lines[0].size() > 0) {
-			wchar_t first[2] = {lines[0][0], '\0'};
-			first_char_height = m_font->getDimension(first).Height;
-		}
 
 		v2s32 pos;
 
@@ -2053,10 +2023,6 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 					pos.Y -= font.Height / 2;
 				else if (vorigin == ORIGIN_LOWERRIGHT)
 					pos.Y -= font.Height;
-				else if (vorigin == ORIGIN_LOWERRIGHT_LINE)
-					pos.Y -= first_char_height;
-				else if (vorigin == ORIGIN_CENTER_LINE)
-					pos.Y -= first_char_height / 2;
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y,

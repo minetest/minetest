@@ -2730,29 +2730,17 @@ Some types may inherit styles from parent types.
         * `left`: Left side of the bounding box
         * `center`: Center of the bounding box
         * `right`: Right side of the bounding box
-        * `leftline`: **Note**: Only for negative `newline_spacing`
-            * `label`: Acts like `left`
-            * `vertlabel`: Left end of first column
-        * `centerline`:
-            * `label`: Center of first character
-            * `vertlabel`: Center of first column
-        * `rightline`:
-            * `label`: Right end of first character
-            * `vertlabel`: Right end of first column
+        * `leftline` (vertlabel only): Left end of first column
+        * `centerline` (vertlabel only): Center of first column
+        * `rightline` (vertlabel only): Right end of first column
       Default `left` for label and `centerline` for vertlabel.
     * vorigin - Sets vertical origin in relation to label text. Possible values:
         * `top`: Top of the bounding box
         * `center`: Center of the bounding box
         * `bottom`: Bottom of the bounding box
-        * `topline`: **Note**: Only for negative `newline_spacing`
-            * `label`: Top of first line
-            * `vertlabel`: Acts like `top`
-        * `centerline`:
-            * `label`: Center of first line
-            * `vertlabel`: Center of first character
-        * `bottomline`:
-            * `label`: Bottom of first line
-            * `vertlabel`: Bottom of first character
+        * `topline` (label only): Top of first line
+        * `centerline` (label only): Center of first line
+        * `bottomline` (label only): Bottom of first line
       Default `centerline` for label and `top` for vertlabel.
     * newline_spacing - number, sets space between lines/columns of text. If
       the number is prefixed with `*`, the spacing is set to a multiple of the
