@@ -2396,8 +2396,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
-* `transparent`: show transparent
-* `draw_border`: draw border
+* `transparent` (optional): show transparent
+* `draw_border` (optional): draw border
 
 ### `tabheader[<X>,<Y>;<W>,<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
@@ -2409,8 +2409,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
-* `transparent`: show transparent
-* `draw_border`: draw border
+* `transparent` (optional): show transparent
+* `draw_border` (optional): draw border
 
 ### `box[<X>,<Y>;<W>,<H>;<color>]`
 
@@ -2573,16 +2573,13 @@ Elements
     * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
 
-### `set_focus[<name>;<always set>]`
+### `set_focus[<name>;<force>]`
 
 * Sets the focus to the element with the same `name` parameter.
 * **Note**: This element must be placed before the element it focuses.
-* `always set` (optional, default `false`): If false, this sets the focus to the
-  element specified only if the formspec is not being reshown. For instance, if
-  the formspec with the name "test:example" is shown, the focus will be set, but
-  if the same formspec is shown again consecutively, the focus will be set to
-  the last thing the user focused before reshowing. If true, the focus will always
-  be set in any circumstance.
+* `force` (optional, default `false`): By default, focus is not applied for
+  re-sent formspecs with the same name so that player-set focus is kept.
+  `true` sets the focus to the specified element for every sent formspec.
 * The following elements have the ability to be focused:
     * checkbox
     * button

@@ -2694,12 +2694,13 @@ void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 	if (parts.size() <= 2 ||
 		(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION))
 	{
-		if (!m_is_form_regenerated && // Never focus on resizing
-			((parts.size() == 2 && is_yes(parts[1])) || // Always focus on any form
-			m_text_dst->m_formname != m_last_formname)) // Only focus on new form
-		{
+		if (m_is_form_regenerated)
+			return; // Never focus on resizing
+
+		bool force_focus = parts.size() >= 2 && is_yes(parts[1]);
+		if (force_focus || m_text_dst->m_formname != m_last_formname)
 			setFocus(parts[0]);
-		}
+
 		return;
 	}
 
