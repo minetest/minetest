@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-04-22 04:11+0000\n"
-"Last-Translator: ERDwaYbR <weblate.uu@vvvvv5.uu.me>\n"
+"PO-Revision-Date: 2020-05-14 11:41+0000\n"
+"Last-Translator: Mivik <mivik@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.0.2-dev\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -2164,14 +2164,13 @@ msgid "Bumpmapping"
 msgstr "凹凸贴图"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"相机在节点附近的“剪切平面附近”距离，介于0到0.5之间。\n"
+"相机在节点附近的“剪切平面附近”距离，介于0到0.25之间。\n"
 "大多数用户不需要更改此设置。\n"
 "增加可以减少较弱GPU上的伪影。\n"
 "0.1 =默认值，0.25 =对于较弱的平板电脑来说是不错的值。"
@@ -5490,9 +5489,8 @@ msgid "Privileges that players with basic_privs can grant"
 msgstr "有\"basic_privs\"的玩家可以授予的权限"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Profiler"
-msgstr "山谷轮廓"
+msgstr "剖析器"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
@@ -5537,7 +5535,6 @@ msgid "Recent Chat Messages"
 msgstr "最近聊天消息"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Regular font path"
 msgstr "字体路径"
 
@@ -5557,7 +5554,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
-msgstr ""
+msgstr "自定义默认的主菜单界面。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5565,6 +5562,7 @@ msgid "Report path"
 msgstr "字体路径"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Restricts the access of certain client-side functions on servers.\n"
 "Combine the byteflags below to restrict client-side features, or set to 0\n"
@@ -5577,10 +5575,19 @@ msgid ""
 "csm_restriction_noderange)\n"
 "READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
+"在服务器上限制一些客户端上的功能。\n"
+"将下面的标志位结合来限制客户端功能，设置为0为无限制：\n"
+"LOAD_CLIENT_MODS：1（禁止加载客户端的 Mods）\n"
+"CHAT_MESSAGES：2（禁止客户端调用 send_chat_message）\n"
+"READ_ITEMDEFS：4（禁止客户端调用 get_item_def）\n"
+"READ_NODEDEFS：8（禁止客户端调用 get_node_def）\n"
+"LOOKUP_NODES_LIMIT：16（禁止客户端调用 get_node 来获取 csm_restriction_noderange）\n"
+"READ_PLAYERINFO：32（禁止客户端调用 get_player_names）"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Ridge mountain spread noise"
-msgstr ""
+msgstr "山脊扩散噪声"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5589,11 +5596,11 @@ msgstr "河流噪音"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge underwater noise"
-msgstr ""
+msgstr "山脊地下水噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Ridged mountain size noise"
-msgstr ""
+msgstr "山脊大小噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -5604,34 +5611,28 @@ msgid "Rightclick repetition interval"
 msgstr "右击重复间隔"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel depth"
-msgstr "河流深度"
+msgstr "河道深度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel width"
-msgstr "河流深度"
+msgstr "河道宽度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River depth"
 msgstr "河流深度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise"
 msgstr "河流噪音"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River size"
 msgstr "河流大小"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River valley width"
-msgstr "河流深度"
+msgstr "河谷深度"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -5639,11 +5640,11 @@ msgstr "回滚记录"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hill size noise"
-msgstr ""
+msgstr "山丘大小噪音"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
-msgstr ""
+msgstr "山丘扩散噪音"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
@@ -5651,19 +5652,21 @@ msgstr "圆形小地图"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
-msgstr ""
+msgstr "安全挖掘和放置"
 
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
-msgstr ""
+msgstr "当 np_beach 超过这个值时会出现沙滩。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Save the map received by the client on disk."
-msgstr ""
+msgstr "将客户端接收到的地图保存在磁盘上。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Save window size automatically when modified."
-msgstr ""
+msgstr "当窗口大小改变时自动记忆。"
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
