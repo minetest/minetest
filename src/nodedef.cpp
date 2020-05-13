@@ -588,12 +588,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	try {
 		node_dig_prediction = deSerializeString(is);
+		u8 tmp_leveled_max = readU8(is);
+		if (is.eof()) /* readU8 doesn't throw exceptions so we have to do this */
+			throw SerializationError("");
+		leveled_max = tmp_leveled_max;
 	} catch(SerializationError &e) {};
-
-	u8 tmp_leveled_max = readU8(is);
-	if (is.eof())
-		throw SerializationError("Nodedef: Missing leveled_max");
-	leveled_max = tmp_leveled_max;
 }
 
 #ifndef SERVER
