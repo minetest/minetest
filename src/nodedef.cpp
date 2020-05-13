@@ -436,7 +436,6 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 		writeU16(os, connects_to_id);
 	writeARGB8(os, post_effect_color);
 	writeU8(os, leveled);
-	writeU8(os, leveled_max);
 
 	// lighting
 	writeU8(os, light_propagates);
@@ -480,6 +479,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, legacy_wallmounted);
 
 	os << serializeString(node_dig_prediction);
+	writeU8(os, leveled_max);
 }
 
 void ContentFeatures::correctAlpha(TileDef *tiles, int length)
@@ -543,7 +543,6 @@ void ContentFeatures::deSerialize(std::istream &is)
 		connects_to_ids.push_back(readU16(is));
 	post_effect_color = readARGB8(is);
 	leveled = readU8(is);
-	leveled_max = readU8(is);
 
 	// lighting-related
 	light_propagates = readU8(is);
@@ -590,6 +589,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 	try {
 		node_dig_prediction = deSerializeString(is);
 	} catch(SerializationError &e) {};
+
+	u8 tmp_leveled_max = readU8(is);
+	if (is.eof())
+		throw SerializationError("Nodedef: Missing leveled_max");
+	leveled_max = tmp_leveled_max;
 }
 
 #ifndef SERVER

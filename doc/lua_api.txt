@@ -6998,7 +6998,7 @@ Used by `minetest.register_node`.
         -- If true, a new liquid source can be created by placing two or more
         -- sources nearby
 
-        leveled = 16,
+        leveled = 0,
         -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
         -- Allows defining the nodebox height without using param2.
         -- The nodebox height is 'leveled' / 64 nodes.

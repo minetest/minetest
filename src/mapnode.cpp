@@ -603,6 +603,7 @@ u8 MapNode::getLevel(const NodeDefManager *nodemgr) const
 		if (level)
 			return level;
 	}
+	// Return static value from nodedef if param2 isn't used for level
 	if (f.leveled > f.leveled_max)
 		return f.leveled_max;
 	return f.leveled;

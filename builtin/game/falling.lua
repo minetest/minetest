@@ -199,7 +199,7 @@ core.register_entity(":__builtin:falling_node", {
 		if bcd and bcd.paramtype2 == "leveled" and
 				bcn.name == self.node.name then
 			local addlevel = self.node.param2 % 128
-			if bcd.leveled and addlevel == 0 then
+			if addlevel == 0 and bcd.leveled then
 				addlevel = bcd.leveled
 			end
 			if core.add_node_level(bcp, addlevel) == 0 then
