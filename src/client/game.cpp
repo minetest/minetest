@@ -614,7 +614,7 @@ struct FpsControl {
 
 /* The reason the following structs are not anonymous structs within the
  * class is that they are not used by the majority of member functions and
- * many functions that do require objects of thse types do not modify them
+ * many functions that do require objects of these types do not modify them
  * (so they can be passed as a const qualified parameter)
  */
 
@@ -2036,6 +2036,7 @@ void Game::processItemSelection(u16 *new_playeritem)
 		*new_playeritem = *new_playeritem < max_item ? *new_playeritem + 1 : 0;
 	else if (dir > 0)
 		*new_playeritem = *new_playeritem > 0 ? *new_playeritem - 1 : max_item;
+
 	// else dir == 0
 
 	/* Item selection using hotbar slot keys
