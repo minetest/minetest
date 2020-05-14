@@ -1607,11 +1607,52 @@ mgv6_np_apple_trees (Apple trees noise) noise_params_2d 0, 1, (100, 100, 100), 3
 [*Mapgen V7]
 
 #    Map generation attributes specific to Mapgen v7.
-#    'ridges' enables the rivers.
+#    'ridges': Rivers.
+#    'floatlands': Floating land masses in the atmosphere.
+#    'caverns': Giant caves deep underground.
 mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 mgv7_mount_zero_level (Mountain zero level) int 0
+
+#    Lower Y limit of floatlands.
+mgv7_floatland_ymin (Floatland minimum Y) int 1024
+
+#    Upper Y limit of floatlands.
+mgv7_floatland_ymax (Floatland maximum Y) int 4096
+
+#    Y-distance over which floatlands taper from full density to nothing.
+#    Tapering starts at this distance from the Y limit.
+#    For a solid floatland layer, this controls the height of hills/mountains.
+#    Must be less than or equal to half the distance between the Y limits.
+mgv7_floatland_taper (Floatland tapering distance) int 256
+
+#    Exponent of the floatland tapering. Alters the tapering behaviour.
+#    Value = 1.0 creates a uniform, linear tapering.
+#    Values > 1.0 create a smooth tapering suitable for the default separated
+#    floatlands.
+#    Values < 1.0 (for example 0.25) create a more defined surface level with
+#    flatter lowlands, suitable for a solid floatland layer.
+mgv7_float_taper_exp (Floatland taper exponent) float 2.0
+
+#    Adjusts the density of the floatland layer.
+#    Increase value to increase density. Can be positive or negative.
+#    Value = 0.0: 50% of volume is floatland.
+#    Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test
+#    to be sure) creates a solid floatland layer.
+mgv7_floatland_density (Floatland density) float -0.9
+
+#    Surface level of optional water placed on a solid floatland layer.
+#    Water is disabled by default and will only be placed if this value is set
+#    to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the
+#    upper tapering).
+#    ***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:
+#    When enabling water placement the floatlands must be configured and tested
+#    to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other
+#    required value depending on 'mgv7_np_floatland'), to avoid
+#    server-intensive extreme water flow and to avoid vast flooding of the
+#    world surface below.
+mgv7_floatland_ywater (Floatland water level) int -31000
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -1681,6 +1722,12 @@ mgv7_np_mountain (Mountain noise) noise_params_3d -0.6, 1, (250, 350, 250), 5333
 
 #    3D noise defining structure of river canyon walls.
 mgv7_np_ridge (Ridge noise) noise_params_3d 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+
+#    3D noise defining structure of floatlands.
+#    If altered from the default, the noise 'scale' (0.7 by default) may need
+#    to be adjusted, as floatland tapering functions best when this noise has
+#    a value range of approximately -2.0 to 2.0.
+mgv7_np_floatland (Floatland noise) noise_params_3d 0, 0.7, (384, 96, 384), 1009, 4, 0.75, 1.618
 
 #    3D noise defining giant caverns.
 mgv7_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
