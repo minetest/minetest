@@ -840,16 +840,15 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 
-	if (player == NULL) {
-		errorstream <<
-			"Server::ProcessData(): Canceling: No player for peer_id=" <<
+	if (!player) {
+		errorstream << "Server::ProcessData(): Canceling: No player for peer_id=" <<
 			peer_id << " disconnecting peer!" << std::endl;
 		DisconnectPeer(peer_id);
 		return;
 	}
 
 	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
+	if (!playersao) {
 		errorstream <<
 			"Server::ProcessData(): Canceling: No player object for peer_id=" <<
 			peer_id << " disconnecting peer!" << std::endl;
@@ -857,11 +856,23 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 		return;
 	}
 
-	u16 item;
+	u16 old_wield_idx, new_wield_idx;
+	ItemStack old_itemstack, new_itemstack;
 
-	*pkt >> item;
+	*pkt >> new_wield_idx;
 
-	playersao->getPlayer()->setWieldIndex(item);
+	// Get current wielded item and its idx
+	old_wield_idx = player->getWieldIndex();
+	player->getWieldedItem(&old_itemstack, nullptr);
+
+	player->setWieldIndex(new_wield_idx);
+
+	// Get new wielded item and run on_wielditem_change callbacks
+	// Clamp the new wield idx by calling getWieldIndex instead of
+	// passing it directly
+	player->getWieldedItem(&new_itemstack, nullptr);
+	getScriptIface()->on_wielditem_change(playersao, old_itemstack, old_wield_idx,
+		new_itemstack, player->getWieldIndex());
 }
 
 void Server::handleCommand_Respawn(NetworkPacket* pkt)
@@ -1668,8 +1679,8 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 	if (client->chosen_mech != AUTH_MECHANISM_SRP &&
 			client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
-		actionstream << "Server: got SRP _M packet, while auth"
-			<< "is going on with mech " << client->chosen_mech << " from " 
+		actionstream << "Server: got SRP _M packet, while auth "
+			<< "is going on with mech " << client->chosen_mech << " from "
 			<< addr_s << " (wantSudo=" << wantSudo << "). Denying." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(peer_id);

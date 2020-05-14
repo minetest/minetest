@@ -4531,11 +4531,17 @@ Call these functions only at load time!
       once with revoker being the player name, and again with revoker being nil.
 * `minetest.register_can_bypass_userlimit(function(name, ip))`
     * Called when `name` user connects with `ip`.
-    * Return `true` to by pass the player limit
+    * Return `true` to bypass the player limit
 * `minetest.register_on_modchannel_message(function(channel_name, sender, message))`
     * Called when an incoming mod channel message is received
     * You should have joined some channels to receive events.
     * If message comes from a server mod, `sender` field is an empty string.
+* `minetest.register_on_wielditem_change(function(player, old_item, old_idx, new_item, new_idx))`
+    * Called when a player selects a wield item, either by using the scroll wheel,
+      or by pressing the corresponding hotbar key.
+    * `player` is an ObjectRef.
+    * `old_item` and `new_item` are ItemStacks.
+    * `old_idx` and `new_idx` are wield indices of the old and new items.
 
 Setting-related
 ---------------

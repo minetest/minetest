@@ -52,6 +52,9 @@ public:
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname, const StringMap &fields);
 	void on_authplayer(const std::string &name, const std::string &ip, bool is_success);
+	void on_wielditem_change(ServerActiveObject *player,
+		const ItemStack &old_item, u16 old_wield_idx,
+		const ItemStack &new_item, u16 new_wield_idx);
 
 	// Player inventory callbacks
 	// Return number of accepted items to be moved

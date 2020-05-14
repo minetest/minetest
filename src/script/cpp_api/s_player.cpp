@@ -235,6 +235,30 @@ void ScriptApiPlayer::on_authplayer(const std::string &name, const std::string &
 	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 
+void ScriptApiPlayer::on_wielditem_change(ServerActiveObject *player,
+	const ItemStack &old_item, u16 old_wield_idx,
+	const ItemStack &new_item, u16 new_wield_idx)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_wielditem_change callbacks
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_wielditem_change");
+
+	// First param: player object
+	objectrefGetOrCreate(L, player);
+
+	// Params 2 & 3: Old wielded item and its wield index
+	LuaItemStack::create(L, old_item);
+	lua_pushnumber(L, old_wield_idx);
+
+	// Params 4 & 5: New wielded item and its wield index
+	LuaItemStack::create(L, new_item);
+	lua_pushnumber(L, new_wield_idx);
+
+	runCallbacks(5, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void ScriptApiPlayer::pushMoveArguments(
 		const MoveAction &ma, int count,
 		ServerActiveObject *player)
