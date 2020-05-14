@@ -2036,7 +2036,6 @@ void Game::processItemSelection(u16 *new_playeritem)
 		*new_playeritem = *new_playeritem < max_item ? *new_playeritem + 1 : 0;
 	else if (dir > 0)
 		*new_playeritem = *new_playeritem > 0 ? *new_playeritem - 1 : max_item;
-
 	// else dir == 0
 
 	/* Item selection using hotbar slot keys

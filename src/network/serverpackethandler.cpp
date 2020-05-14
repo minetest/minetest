@@ -860,9 +860,9 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	playersao->getPlayer()->setWieldIndex(item);
 
-    ItemStack selected_item;
-    playersao->getWieldedItem(&selected_item, nullptr);
-    m_script->item_OnWield(selected_item, playersao);
+	ItemStack selected_item;
+	playersao->getWieldedItem(&selected_item, nullptr);
+	m_script->item_OnWield(selected_item, playersao);
 }
 
 void Server::handleCommand_Respawn(NetworkPacket* pkt)

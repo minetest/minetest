@@ -6890,7 +6890,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         
         on_wield = function(itemstack, user),
         -- default: nil
-        -- It defines the behaviour of an item when it's wielded by a player.
+        -- Called when the player switches to this item in the hotbar.
         -- The user may be any ObjectRef or nil.
 
         on_use = function(itemstack, user, pointed_thing),

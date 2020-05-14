@@ -89,7 +89,7 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 }
 
 bool ScriptApiItem::item_OnWield(const ItemStack &item,
-    ServerActiveObject *user)
+		ServerActiveObject *user)
 {
 	SCRIPTAPI_PRECHECKHEADER
 	
@@ -102,8 +102,8 @@ bool ScriptApiItem::item_OnWield(const ItemStack &item,
 	// Call function
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, user);
-	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
-	lua_pop(L, 2);  // Pop item and error handler
+	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
+	lua_pop(L, 1);  // Pop error handler
 	return true;
 }
 
