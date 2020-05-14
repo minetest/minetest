@@ -855,6 +855,7 @@ private:
 	SoundMaker *soundmaker = nullptr;
 
 	ChatBackend *chat_backend = nullptr;
+	LogOutputBuffer m_chat_log_buf;
 
 	EventManager *eventmgr = nullptr;
 	QuicktuneShortcutter *quicktune = nullptr;
@@ -926,6 +927,7 @@ private:
 };
 
 Game::Game() :
+	m_chat_log_buf(g_logger),
 	m_game_ui(new GameUI())
 {
 	g_settings->registerChangedCallback("doubletap_jump",
@@ -1192,6 +1194,7 @@ void Game::shutdown()
 
 	chat_backend->addMessage(L"", L"# Disconnected.");
 	chat_backend->addMessage(L"", L"");
+	m_chat_log_buf.clear();
 
 	if (client) {
 		client->Stop();
@@ -2903,18 +2906,9 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 void Game::updateChat(f32 dtime, const v2u32 &screensize)
 {
-	// Add chat log output for errors to be shown in chat
-	static LogOutputBuffer chat_log_error_buf(g_logger, LL_ERROR);
-
 	// Get new messages from error log buffer
-	while (!chat_log_error_buf.empty()) {
-		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
-		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message.insert(0, L"\x1b(c@red)");
-			error_message.append(L"\x1b(c@white)");
-		}
-		chat_backend->addMessage(L"", error_message);
-	}
+	while (!m_chat_log_buf.empty())
+		chat_backend->addMessage(L"", utf8_to_wide(m_chat_log_buf.get()));
 
 	// Get new messages from client
 	std::wstring message;

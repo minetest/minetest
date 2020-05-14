@@ -1401,6 +1401,9 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 #    debug.txt is only moved if this setting is positive.
 debug_log_size_max (Debug log file size threshold) int 50
 
+#    Minimal level of logging to be written to chat.
+chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose
+
 #    Enable IPv6 support (for both client and server).
 #    Required for IPv6 connections to work at all.
 enable_ipv6 (IPv6) bool true
