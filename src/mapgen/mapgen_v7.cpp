@@ -76,6 +76,9 @@ MapgenV7::MapgenV7(MapgenV7Params *params, EmergeParams *emerge)
 	dungeon_ymin       = params->dungeon_ymin;
 	dungeon_ymax       = params->dungeon_ymax;
 
+	// Allocate floatland noise offset cache
+	this->float_offset_cache = new float[csize.Y + 2];
+
 	// 2D noise
 	noise_terrain_base =
 		new Noise(&params->np_terrain_base,    seed, csize.X, csize.Z);
@@ -142,6 +145,8 @@ MapgenV7::~MapgenV7()
 	if (spflags & MGV7_FLOATLANDS) {
 		delete noise_floatland;
 	}
+
+	delete []float_offset_cache;
 }
 
 
@@ -490,7 +495,6 @@ int MapgenV7::generateTerrain()
 	// 'Generate floatlands in this mapchunk' bool for
 	// simplification of condition checks in y-loop.
 	bool gen_floatlands = false;
-	float *float_offset_cache = new float[csize.Y + 2];
 	u8 cache_index = 0;
 	// Y values where floatland tapering starts
 	s16 float_taper_ymax = floatland_ymax - floatland_taper;
@@ -561,8 +565,6 @@ int MapgenV7::generateTerrain()
 			}
 		}
 	}
-
-	delete []float_offset_cache;
 
 	return stone_surface_max_y;
 }

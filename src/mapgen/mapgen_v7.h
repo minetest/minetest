@@ -108,6 +108,8 @@ private:
 	float floatland_density;
 	s16 floatland_ywater;
 
+	float *float_offset_cache = nullptr;
+
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;
 	Noise *noise_terrain_persist;
