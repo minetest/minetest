@@ -64,6 +64,14 @@ extern gui::IGUIEnvironment* guienv;
 	Utility classes
 */
 
+u32 PacketCounter::sum() const
+{
+	u32 n = 0;
+	for (const auto &it : m_packets)
+		n += it.second;
+	return n;
+}
+
 void PacketCounter::print(std::ostream &o) const
 {
 	for (const auto &it : m_packets) {
@@ -357,9 +365,11 @@ void Client::step(float dtime)
 		if(counter <= 0.0f)
 		{
 			counter = 30.0f;
+			u32 sum = m_packetcounter.sum();
+			float avg = sum / counter;
 
-			infostream << "Client packetcounter (" << m_packetcounter_timer
-					<< "s):"<<std::endl;
+			infostream << "Client packetcounter (" << counter << "s): "
+					<< "sum=" << sum << " avg=" << avg << "/s" << std::endl;
 			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
