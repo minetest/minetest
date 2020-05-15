@@ -8,15 +8,7 @@ local function handle_job(jobid, serialized_retval)
 	core.async_jobs[jobid] = nil
 end
 
-if core.register_globalstep then
-	core.register_globalstep(function(dtime)
-		for i, job in ipairs(core.get_finished_jobs()) do
-			handle_job(job.jobid, job.retval)
-		end
-	end)
-else
-	core.async_event_handler = handle_job
-end
+core.async_event_handler = handle_job
 
 function core.handle_async(func, parameter, callback)
 	-- Serialize function
