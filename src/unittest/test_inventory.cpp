@@ -32,6 +32,7 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testSerializeDeserialize(IItemDefManager *idef);
+	void testItemStackComparison();
 
 	static const char *serialized_inventory_in;
 	static const char *serialized_inventory_out;
@@ -43,6 +44,7 @@ static TestInventory g_test_instance;
 void TestInventory::runTests(IGameDef *gamedef)
 {
 	TEST(testSerializeDeserialize, gamedef->getItemDefManager());
+	TEST(testItemStackComparison);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +80,31 @@ void TestInventory::testSerializeDeserialize(IItemDefManager *idef)
 	leftover = inv.getList("main")->getItem(7);
 	wanted.count = 12;
 	UASSERT(leftover == wanted);
+}
+
+void TestInventory::testItemStackComparison()
+{
+	ItemStack stack_a, stack_b;
+	UASSERT(stack_a == stack_b);
+
+	ItemStackMetadata meta_a, meta_b;
+	sanity_check(meta_a.setString("key", "meta_a"));
+	sanity_check(meta_b.setString("key", "meta_b"));
+
+	stack_a.name = "stack_a";
+	stack_b.name = "stack_b";
+	UASSERT(stack_a != stack_b);
+
+	stack_a.name  = stack_b.name  = "stack";
+	stack_a.count = stack_b.count = 42;
+	stack_a.wear  = stack_b.wear  = 666;
+	stack_a.metadata = meta_a;
+	stack_b.metadata = meta_b;
+	UASSERT(stack_a != stack_b);
+
+	stack_b.metadata = meta_a;
+	UASSERT(stack_a.metadata == stack_b.metadata);
+	UASSERT(stack_a == stack_b);
 }
 
 const char *TestInventory::serialized_inventory_in =
