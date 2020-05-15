@@ -20,20 +20,18 @@ mt_color_blue  = "#6389FF"
 mt_color_green = "#72FF63"
 mt_color_dark_green = "#25C191"
 
---for all other colors ask sfan5 to complete his work!
-
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
 local menustyle = core.settings:get("main_menu_style")
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 					DIR_DELIM .. "pack" .. DIR_DELIM
 
-dofile(basepath .. "common" .. DIR_DELIM .. "async_event.lua")
 dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
+dofile(menupath .. DIR_DELIM .. "async_event.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
 dofile(menupath .. DIR_DELIM .. "pkgmgr.lua")
 dofile(menupath .. DIR_DELIM .. "textures.lua")
