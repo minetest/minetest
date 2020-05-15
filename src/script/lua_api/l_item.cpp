@@ -184,6 +184,18 @@ int LuaItemStack::l_get_description(lua_State *L)
 	return 1;
 }
 
+// compare(self, itemstack)
+int LuaItemStack::l_compare(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	const ItemStack stack_a = checkobject(L, 1)->getItem();
+	const ItemStack stack_b = checkobject(L, 2)->getItem();
+	lua_pushboolean(L, stack_a == stack_b);
+
+	return 1;
+}
+
 // clear(self) -> true
 int LuaItemStack::l_clear(lua_State *L)
 {
@@ -482,6 +494,7 @@ const luaL_Reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, get_metadata),
 	luamethod(LuaItemStack, set_metadata),
 	luamethod(LuaItemStack, get_description),
+	luamethod(LuaItemStack, compare),
 	luamethod(LuaItemStack, clear),
 	luamethod(LuaItemStack, replace),
 	luamethod(LuaItemStack, to_string),

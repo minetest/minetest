@@ -69,6 +69,9 @@ private:
 	// get_description(self)
 	static int l_get_description(lua_State *L);
 
+	// compare(self, itemstack)
+	static int l_compare(lua_State *L);
+
 	// clear(self) -> true
 	static int l_clear(lua_State *L);
 
