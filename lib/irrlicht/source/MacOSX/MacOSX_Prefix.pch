@@ -1,0 +1,5 @@
+//
+// Prefix header for all source files of the 'MacOSX' target in the 'MacOSX' project.
+//
+
+#include <architecture/byte_order.h>

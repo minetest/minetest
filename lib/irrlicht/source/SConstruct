@@ -1,0 +1,102 @@
+import os
+import sys
+
+USE_GCC = 1;
+NDEBUG = 1;
+PROFILE = 0;
+
+APPLICATION_NAME = 'Irrlicht';
+LIBRARIES = ['gdi32', 'opengl32', 'd3dx9d', 'winmm'];
+if USE_GCC==1 and PROFILE==1:
+	LIBRARIES += ['gmon'];
+
+CXXINCS = ['../../include/', 'zlib/', 'jpeglib/', 'libpng/'];
+
+if USE_GCC==0:
+	env = Environment(ENV = {
+        'PATH': os.environ['PATH']
+    }, CPPPATH=CXXINCS);
+else:
+	env = Environment(ENV = {
+        'PATH': os.environ['PATH']
+    }, tools = ['mingw'], CPPPATH=CXXINCS);
+
+IRRMESHLOADER = ['CBSPMeshFileLoader.cpp', 'CMD2MeshFileLoader.cpp', 'CMD3MeshFileLoader.cpp', 'CMS3DMeshFileLoader.cpp', 'CB3DMeshFileLoader.cpp', 'C3DSMeshFileLoader.cpp', 'COgreMeshFileLoader.cpp', 'COBJMeshFileLoader.cpp', 'CColladaFileLoader.cpp', 'CCSMLoader.cpp', 'CDMFLoader.cpp', 'CLMTSMeshFileLoader.cpp', 'CMY3DMeshFileLoader.cpp', 'COCTLoader.cpp', 'CXMeshFileLoader.cpp', 'CIrrMeshFileLoader.cpp', 'CSTLMeshFileLoader.cpp', 'CLWOMeshFileLoader.cpp'];
+
+IRRMESHWRITER = ['CColladaMeshWriter.cpp', 'CIrrMeshWriter.cpp', 'COBJMeshWriter.cpp', 'CSTLMeshWriter.cpp'];
+
+IRRMESHOBJ = IRRMESHLOADER + IRRMESHWRITER + ['CSkinnedMesh.cpp', 'CBoneSceneNode.cpp', 'CMeshSceneNode.cpp', 'CAnimatedMeshSceneNode.cpp', 'CAnimatedMeshMD2.cpp', 'CAnimatedMeshMD3.cpp', 'CQ3LevelMesh.cpp', 'CQuake3ShaderSceneNode.cpp'];
+
+IRROBJ = ['CBillboardSceneNode.cpp', 'CCameraSceneNode.cpp', 'CDummyTransformationSceneNode.cpp', 'CEmptySceneNode.cpp', 'CGeometryCreator.cpp', 'CLightSceneNode.cpp', 'CMeshManipulator.cpp', 'CMetaTriangleSelector.cpp', 'COctreeSceneNode.cpp', 'COctreeTriangleSelector.cpp', 'CSceneCollisionManager.cpp', 'CSceneManager.cpp', 'CShadowVolumeSceneNode.cpp', 'CSkyBoxSceneNode.cpp', 'CSkyDomeSceneNode.cpp', 'CTerrainSceneNode.cpp', 'CTerrainTriangleSelector.cpp', 'CVolumeLightSceneNode.cpp', 'CCubeSceneNode.cpp', 'CSphereSceneNode.cpp', 'CTextSceneNode.cpp', 'CTriangleBBSelector.cpp', 'CTriangleSelector.cpp', 'CWaterSurfaceSceneNode.cpp', 'CMeshCache.cpp', 'CDefaultSceneNodeAnimatorFactory.cpp', 'CDefaultSceneNodeFactory.cpp'];
+
+IRRPARTICLEOBJ = ['CParticleAnimatedMeshSceneNodeEmitter.cpp', 'CParticleBoxEmitter.cpp', 'CParticleCylinderEmitter.cpp', 'CParticleMeshEmitter.cpp', 'CParticlePointEmitter.cpp', 'CParticleRingEmitter.cpp', 'CParticleSphereEmitter.cpp', 'CParticleAttractionAffector.cpp', 'CParticleFadeOutAffector.cpp', 'CParticleGravityAffector.cpp', 'CParticleRotationAffector.cpp', 'CParticleSystemSceneNode.cpp', 'CParticleScaleAffector.cpp'];
+
+IRRANIMOBJ = ['CSceneNodeAnimatorCameraFPS.cpp', 'CSceneNodeAnimatorCameraMaya.cpp', 'CSceneNodeAnimatorCollisionResponse.cpp', 'CSceneNodeAnimatorDelete.cpp', 'CSceneNodeAnimatorFlyCircle.cpp', 'CSceneNodeAnimatorFlyStraight.cpp', 'CSceneNodeAnimatorFollowSpline.cpp', 'CSceneNodeAnimatorRotation.cpp', 'CSceneNodeAnimatorTexture.cpp'];
+
+IRRDRVROBJ = ['CNullDriver.cpp', 'COpenGLDriver.cpp', 'COpenGLNormalMapRenderer.cpp', 'COpenGLParallaxMapRenderer.cpp', 'COpenGLShaderMaterialRenderer.cpp', 'COpenGLTexture.cpp', 'COpenGLSLMaterialRenderer.cpp', 'COpenGLExtensionHandler.cpp', 'CD3D8Driver.cpp', 'CD3D8NormalMapRenderer.cpp', 'CD3D8ParallaxMapRenderer.cpp', 'CD3D8ShaderMaterialRenderer.cpp', 'CD3D8Texture.cpp', 'CD3D9Driver.cpp', 'CD3D9HLSLMaterialRenderer.cpp', 'CD3D9NormalMapRenderer.cpp', 'CD3D9ParallaxMapRenderer.cpp', 'CD3D9ShaderMaterialRenderer.cpp', 'CD3D9Texture.cpp'];
+
+IRRIMAGEOBJ = ['CColorConverter.cpp', 'CImage.cpp', 'CImageLoaderBMP.cpp', 'CImageLoaderJPG.cpp', 'CImageLoaderPCX.cpp', 'CImageLoaderPNG.cpp', 'CImageLoaderPSD.cpp', 'CImageLoaderTGA.cpp', 'CImageLoaderPPM.cpp', 'CImageLoaderWAL.cpp', 'CImageWriterBMP.cpp', 'CImageWriterJPG.cpp', 'CImageWriterPCX.cpp', 'CImageWriterPNG.cpp', 'CImageWriterPPM.cpp', 'CImageWriterPSD.cpp', 'CImageWriterTGA.cpp'];
+
+IRRVIDEOOBJ = ['CVideoModeList.cpp', 'CFPSCounter.cpp'] + IRRDRVROBJ + IRRIMAGEOBJ;
+
+IRRSWRENDEROBJ = ['CSoftwareDriver.cpp', 'CSoftwareTexture.cpp', 'CTRFlat.cpp', 'CTRFlatWire.cpp', 'CTRGouraud.cpp', 'CTRGouraudWire.cpp', 'CTRTextureFlat.cpp', 'CTRTextureFlatWire.cpp', 'CTRTextureGouraud.cpp', 'CTRTextureGouraudAdd.cpp', 'CTRTextureGouraudNoZ.cpp', 'CTRTextureGouraudWire.cpp', 'CZBuffer.cpp', 'CTRTextureGouraudVertexAlpha2.cpp', 'CTRTextureGouraudNoZ2.cpp', 'CTRTextureLightMap2_M2.cpp', 'CTRTextureLightMap2_M4.cpp', 'CTRTextureLightMap2_M1.cpp', 'CSoftwareDriver2.cpp', 'CSoftwareTexture2.cpp', 'CTRTextureGouraud2.cpp', 'CTRGouraud2.cpp', 'CTRGouraudAlpha2.cpp', 'CTRGouraudAlphaNoZ2.cpp', 'CTRTextureDetailMap2.cpp', 'CTRTextureGouraudAdd2.cpp', 'CTRTextureGouraudAddNoZ2.cpp', 'CTRTextureWire2.cpp', 'CTRTextureLightMap2_Add.cpp', 'CTRTextureLightMapGouraud2_M4.cpp', 'IBurningShader.cpp', 'CTRTextureBlend.cpp', 'CTRTextureGouraudAlpha.cpp', 'CTRTextureGouraudAlphaNoZ.cpp', 'CDepthBuffer.cpp', 'CBurningShader_Raster_Reference.cpp'];
+
+IRRIOOBJ = ['CFileList.cpp', 'CFileSystem.cpp', 'CLimitReadFile.cpp', 'CMemoryReadFile.cpp', 'CReadFile.cpp', 'CWriteFile.cpp', 'CXMLReader.cpp', 'CXMLWriter.cpp', 'CZipReader.cpp', 'CPakReader.cpp', 'CNPKReader.cpp', 'irrXML.cpp', 'CAttributes.cpp', 'lzma/LzmaDec.c'];
+
+IRROTHEROBJ = ['CIrrDeviceSDL.cpp', 'CIrrDeviceLinux.cpp', 'CIrrDeviceStub.cpp', 'CIrrDeviceWin32.cpp', 'CLogger.cpp', 'COSOperator.cpp', 'Irrlicht.cpp', 'os.cpp'];
+
+IRRGUIOBJ = ['CGUIButton.cpp', 'CGUICheckBox.cpp', 'CGUIComboBox.cpp', 'CGUIContextMenu.cpp', 'CGUIEditBox.cpp', 'CGUIEnvironment.cpp', 'CGUIFileOpenDialog.cpp', 'CGUIFont.cpp', 'CGUIImage.cpp', 'CGUIInOutFader.cpp', 'CGUIListBox.cpp', 'CGUIMenu.cpp', 'CGUIMeshViewer.cpp', 'CGUIMessageBox.cpp', 'CGUIModalScreen.cpp', 'CGUIScrollBar.cpp', 'CGUISpinBox.cpp', 'CGUISkin.cpp', 'CGUIStaticText.cpp', 'CGUITabControl.cpp', 'CGUITable.cpp', 'CGUIToolBar.cpp', 'CGUIWindow.cpp', 'CGUIColorSelectDialog.cpp', 'CDefaultGUIElementFactory.cpp', 'CGUISpriteBank.cpp'];
+
+ZLIB_PREFIX = 'zlib/';
+ZLIBNAMES = ['adler32.c', 'compress.c', 'crc32.c', 'deflate.c', 'inffast.c', 'inflate.c', 'inftrees.c', 'trees.c', 'uncompr.c', 'zutil.c'];
+ZLIBOBJ = [];
+for fileName in ZLIBNAMES:
+	ZLIBOBJ += [ZLIB_PREFIX + fileName];
+
+JPEGLIB_PREFIX = 'jpeglib/';
+JPEGLIBNAMES = ['jaricom.c', 'jcapimin.c', 'jcapistd.c', 'jcarith.c', 'jccoefct.c', 'jccolor.c', 'jcdctmgr.c', 'jchuff.c', 'jcinit.c', 'jcmainct.c', 'jcmarker.c', 'jcmaster.c', 'jcomapi.c', 'jcparam.c', 'jcprepct.c', 'jcsample.c', 'jctrans.c', 'jdapimin.c', 'jdapistd.c', 'jdarith.c', 'jdatadst.c', 'jdatasrc.c', 'jdcoefct.c', 'jdcolor.c', 'jddctmgr.c', 'jdhuff.c', 'jdinput.c', 'jdmainct.c', 'jdmarker.c', 'jdmaster.c', 'jdmerge.c', 'jdpostct.c', 'jdsample.c', 'jdtrans.c', 'jerror.c', 'jfdctflt.c', 'jfdctfst.c', 'jfdctint.c', 'jidctflt.c', 'jidctfst.c', 'jidctint.c', 'jmemmgr.c', 'jmemnobs.c', 'jquant1.c', 'jquant2.c', 'jutils.c'];
+JPEGLIBOBJ = [];
+for fileName in JPEGLIBNAMES:
+	JPEGLIBOBJ += [JPEGLIB_PREFIX + fileName];
+
+LIBPNG_PREFIX = 'libpng/';
+LIBPNGNAMES = ['png.c', 'pngerror.c', 'pngget.c', 'pngmem.c', 'pngpread.c', 'pngread.c', 'pngrio.c', 'pngrtran.c', 'pngrutil.c', 'pngset.c', 'pngtrans.c', 'pngwio.c', 'pngwrite.c', 'pngwtran.c', 'pngwutil.c'];
+LIBPNGOBJ = [];
+for fileName in LIBPNGNAMES:
+	LIBPNGOBJ += [LIBPNG_PREFIX + fileName];
+
+AESGLADMAN_PREFIX = 'aesGladman/';
+AESGLADMANNAMES = ['aescrypt.cpp', 'aeskey.cpp', 'aestab.cpp', 'fileenc.cpp', 'hmac.cpp', 'prng.cpp', 'pwd2key.cpp', 'sha1.cpp', 'sha2.cpp'];
+AESGLADMANOBJ = [];
+for fileName in AESGLADMANNAMES:
+	AESGLADMANOBJ += [AESGLADMAN_PREFIX + fileName];
+
+BZIP2_PREFIX = 'bzip2/';
+BZIP2NAMES = ['blocksort.c', 'bzcompress.c', 'bzlib.c', 'crctable.c', 'decompress.c', 'huffman.c', 'randtable.c'];
+BZIP2OBJ = [];
+for fileName in BZIP2NAMES:
+	BZIP2OBJ += [BZIP2_PREFIX + fileName];
+
+# Next variable is for additional scene nodes etc. of customized Irrlicht versions
+EXTRAOBJ = [];
+
+LINKOBJ = IRRMESHOBJ + IRROBJ + IRRPARTICLEOBJ + IRRANIMOBJ + IRRVIDEOOBJ + IRRSWRENDEROBJ + IRRIOOBJ + IRROTHEROBJ + IRRGUIOBJ + ZLIBOBJ + JPEGLIBOBJ + LIBPNGOBJ + AESGLADMANOBJ + EXTRAOBJ;
+
+env.Append(LIBS = LIBRARIES, LIBPATH = CXXINCS);
+
+CXXFLAGS = ['-Wall'];
+if NDEBUG:
+	CXXFLAGS += ['-fexpensive-optimizations', '-O3'];
+else:
+	CXXFLAGS += ['-g', '-D_DEBUG'];
+
+if PROFILE:
+	CXXFLAGS += ['-pg'];
+
+CXXFLAGS += ['-DPNG_NO_MMX_CODE', '-DPNG_NO_MNG_FEATURES', '-DIRRLICHT_EXPORTS=1', '-D_IRR_STATIC_LIB_'];
+if USE_GCC:
+	CXXFLAGS += ['-D__GNUWIN32__=1'];
+
+env.Append(CCFLAGS = CXXFLAGS);
+
+IrrlichtLibrary = env.SharedLibrary("Irrlicht.dll", LINKOBJ);

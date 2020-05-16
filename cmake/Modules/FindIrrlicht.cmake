@@ -1,77 +1,28 @@
+# Look for IRRLICHTCPP if asked to.
+# We use a bundled version by default because some distros ship versions of
+# IRRLICHTCPP that cause segfaults and other memory errors when we link with them.
+# See https://github.com/minetest/minetest/issues/1793
 
-mark_as_advanced(IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR IRRLICHT_DLL)
-set(IRRLICHT_SOURCE_DIR "" CACHE PATH "Path to irrlicht source directory (optional)")
+mark_as_advanced(IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR)
+option(ENABLE_SYSTEM_IRRLICHT "Enable using a system-wide Irrlicht.  May cause irrlicht non fixed bugs!" FALSE)
 
+if(ENABLE_SYSTEM_IRRLICHT)
+	find_library(IRRLICHT_LIBRARY NAMES irrlicht)
+	find_path(IRRLICHT_INCLUDE_DIR irrlicht/IrrCompileConfig.h PATH_SUFFIXES irrlicht)
 
-# Find include directory
+	include(FindPackageHandleStandardArgs)
+	find_package_handle_standard_args(Irrlicht DEFAULT_MSG IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR)
 
-if(NOT IRRLICHT_SOURCE_DIR STREQUAL "")
-	set(IRRLICHT_SOURCE_DIR_INCLUDE
-		"${IRRLICHT_SOURCE_DIR}/include"
-	)
-
-	set(IRRLICHT_LIBRARY_NAMES libIrrlicht.a Irrlicht Irrlicht.lib)
-
-	if(WIN32)
-		if(MSVC)
-			set(IRRLICHT_SOURCE_DIR_LIBS "${IRRLICHT_SOURCE_DIR}/lib/Win32-visualstudio")
-			set(IRRLICHT_LIBRARY_NAMES Irrlicht.lib)
-		else()
-			set(IRRLICHT_SOURCE_DIR_LIBS "${IRRLICHT_SOURCE_DIR}/lib/Win32-gcc")
-			set(IRRLICHT_LIBRARY_NAMES libIrrlicht.a libIrrlicht.dll.a)
-		endif()
-	else()
-		set(IRRLICHT_SOURCE_DIR_LIBS "${IRRLICHT_SOURCE_DIR}/lib/Linux")
-		set(IRRLICHT_LIBRARY_NAMES libIrrlicht.a)
+	if(IRRLICHT_FOUND)
+		message(STATUS "Using system Irrlicht library.")
 	endif()
-
-	find_path(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
-		PATHS
-		${IRRLICHT_SOURCE_DIR_INCLUDE}
-		NO_DEFAULT_PATH
-	)
-
-	find_library(IRRLICHT_LIBRARY NAMES ${IRRLICHT_LIBRARY_NAMES}
-		PATHS
-		${IRRLICHT_SOURCE_DIR_LIBS}
-		NO_DEFAULT_PATH
-	)
-
-else()
-	find_path(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
-		PATHS
-		/usr/local/include/irrlicht
-		/usr/include/irrlicht
-		/system/develop/headers/irrlicht #Haiku
-		PATH_SUFFIXES "include/irrlicht"
-	)
-
-	find_library(IRRLICHT_LIBRARY NAMES libIrrlicht.so libIrrlicht.a Irrlicht
-		PATHS
-		/usr/local/lib
-		/usr/lib
-		/system/develop/lib # Haiku
-	)
 endif()
 
+if(NOT IRRLICHT_FOUND)
+	message(STATUS "Using bundled Irrlicht library.")
+	set(IRRLICHT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/irrlicht/include)
+	set(IRRLICHT_LIBRARY irrlicht)
+	add_subdirectory(lib/irrlicht)
+endif()
 
-# On Windows, find the DLL for installation
-if(WIN32)
-	# If VCPKG_APPLOCAL_DEPS is ON, dll's are automatically handled by VCPKG
-	if(NOT VCPKG_APPLOCAL_DEPS)
-		if(MSVC)
-			set(IRRLICHT_COMPILER "VisualStudio")
-		else()
-			set(IRRLICHT_COMPILER "gcc")
-		endif()
-		find_file(IRRLICHT_DLL NAMES Irrlicht.dll
-			PATHS
-			"${IRRLICHT_SOURCE_DIR}/bin/Win32-${IRRLICHT_COMPILER}"
-			DOC "Path of the Irrlicht dll (for installation)"
-		)
-	endif()
-endif(WIN32)
-
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Irrlicht DEFAULT_MSG IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR)
-
+message(STATUS "Irrlicht include dir: ${IRRLICHT_INCLUDE_DIR}")

@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht_xbox", "Irrlicht_xbox.vcproj", "{2440E601-7438-4C6B-B4AF-BBFE9735875E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Profile = Profile
+		Profile_FastCap = Profile_FastCap
+		Release = Release
+		Release_LTCG = Release_LTCG
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Debug.ActiveCfg = Debug|Xbox
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Debug.Build.0 = Debug|Xbox
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Profile.ActiveCfg = Profile|Xbox
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Profile.Build.0 = Profile|Xbox
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Profile_FastCap.ActiveCfg = Profile_FastCap|Xbox
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Profile_FastCap.Build.0 = Profile_FastCap|Xbox
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Release.ActiveCfg = Release|Xbox
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Release.Build.0 = Release|Xbox
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Release_LTCG.ActiveCfg = Release_LTCG|Xbox
+		{2440E601-7438-4C6B-B4AF-BBFE9735875E}.Release_LTCG.Build.0 = Release_LTCG|Xbox
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
