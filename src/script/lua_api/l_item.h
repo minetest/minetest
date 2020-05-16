@@ -31,6 +31,9 @@ private:
 
 	// Exported functions
 
+	// __eq metamethod
+	static int itemstack_compare(lua_State *L);
+
 	// garbage collector
 	static int gc_object(lua_State *L);
 

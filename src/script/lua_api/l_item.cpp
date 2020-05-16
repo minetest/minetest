@@ -29,6 +29,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 
+// ItemStack metamethod
+// __eq(item1, item2) -> true/false
+int LuaItemStack::itemstack_compare(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	lua_pushboolean(L, checkobject(L, 1)->m_stack == checkobject(L, 2)->m_stack);
+	return 1;
+}
+
+
 // garbage collector
 int LuaItemStack::gc_object(lua_State *L)
 {
@@ -458,6 +468,10 @@ void LuaItemStack::Register(lua_State *L)
 
 	lua_pushliteral(L, "__gc");
 	lua_pushcfunction(L, gc_object);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__eq");
+	lua_pushcfunction(L, itemstack_compare);
 	lua_settable(L, metatable);
 
 	lua_pop(L, 1);  // drop metatable
