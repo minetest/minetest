@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_settings.h"
 #include "lua_api/l_internal.h"
 #include "cpp_api/s_security.h"
+#include "util/string.h" // FlagDesc
 #include "settings.h"
 #include "noise.h"
 #include "log.h"
@@ -121,6 +122,29 @@ int LuaSettings::l_get_np_group(lua_State *L)
 		NoiseParams np;
 		o->m_settings->getNoiseParams(key, np);
 		push_noiseparams(L, &np);
+	} else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
+int LuaSettings::l_get_flags(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings *o = checkobject(L, 1);
+	std::string key = std::string(luaL_checkstring(L, 2));
+
+	u32 flags = 0;
+	auto flagdesc = o->m_settings->getFlagDescFallback(key);
+	if (o->m_settings->getFlagStrNoEx(key, flags, flagdesc)) {
+		lua_newtable(L);
+		int table = lua_gettop(L);
+		for (size_t i = 0; flagdesc[i].name; ++i) {
+			lua_pushboolean(L, flags & flagdesc[i].flag);
+			lua_setfield(L, table, flagdesc[i].name);
+		}
+		lua_pushvalue(L, table);
 	} else {
 		lua_pushnil(L);
 	}
@@ -305,6 +329,7 @@ const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get),
 	luamethod(LuaSettings, get_bool),
 	luamethod(LuaSettings, get_np_group),
+	luamethod(LuaSettings, get_flags),
 	luamethod(LuaSettings, set),
 	luamethod(LuaSettings, set_bool),
 	luamethod(LuaSettings, set_np_group),

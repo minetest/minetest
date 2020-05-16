@@ -9,7 +9,7 @@
 FIND_PATH(LUA_INCLUDE_DIR luajit.h
 	HINTS
 	$ENV{LUA_DIR}
-	PATH_SUFFIXES include/luajit-2.1 include/luajit-2.0 include/luajit-5_1-2.1 include/luajit-5_1-2.0 include
+	PATH_SUFFIXES include/luajit-2.1 include/luajit-2.0 include/luajit-5_1-2.1 include/luajit-5_1-2.0 include luajit
 	PATHS
 	~/Library/Frameworks
 	/Library/Frameworks
@@ -55,7 +55,7 @@ ENDIF()
 INCLUDE(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LUAJIT_FOUND to TRUE if
 # all listed variables are TRUE
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(LuaJit
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(LuaJIT
 	REQUIRED_VARS LUA_LIBRARY LUA_INCLUDE_DIR
 	VERSION_VAR LUA_VERSION_STRING)
 

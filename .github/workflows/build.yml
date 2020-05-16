@@ -1,0 +1,288 @@
+name: build
+
+# build on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+
+jobs:
+  # This is our minor gcc compiler
+  gcc_6:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          sudo apt-get install g++-6 gcc-6 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: gcc-6
+          CXX: g++-6
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+  # This is the current gcc compiler (available in bionic)
+  gcc_8:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          sudo apt-get install g++-8 gcc-8 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: gcc-8
+          CXX: g++-8
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+  # This is our minor clang compiler
+  clang_3_9:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          sudo apt-get install clang-3.9 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: clang-3.9
+          CXX: clang++-3.9
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+  # This is the current clang version
+  clang_9:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          sudo apt-get install clang-9 valgrind -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+        env:
+          WITH_LUAJIT: 1
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: clang-9
+          CXX: clang++-9
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+      - name: Valgrind
+        run: |
+          valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
+
+  # Build with prometheus-cpp (server-only)
+  clang_9_prometheus:
+    name: "clang_9 (PROMETHEUS=1)"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          sudo apt-get install clang-9 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build prometheus-cpp
+        run: |
+          ./util/ci/build_prometheus_cpp.sh
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: clang-9
+          CXX: clang++-9
+          CMAKE_FLAGS: "-DENABLE_PROMETHEUS=1 -DBUILD_CLIENT=0"
+
+      - name: Test
+        run: |
+          ./bin/minetestserver --run-unittests
+
+  # Build without freetype (client-only)
+  clang_9_no_freetype:
+    name: "clang_9 (FREETYPE=0)"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          sudo apt-get install clang-9 -qyy
+          source ./util/ci/common.sh
+          install_linux_deps
+
+      - name: Build
+        run: |
+          ./util/ci/build.sh
+        env:
+          CC: clang-9
+          CXX: clang++-9
+          CMAKE_FLAGS: "-DENABLE_FREETYPE=0 -DBUILD_SERVER=0"
+
+      - name: Test
+        run: |
+          ./bin/minetest --run-unittests
+
+  docker:
+    name: "Docker image"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker image
+        run: |
+          docker build .
+
+  win32:
+    name: "MinGW cross-compiler (32-bit)"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          sudo apt-get install gettext -qyy
+          wget http://minetest.kitsunemimi.pw/mingw-w64-i686_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+          sudo tar -xaf mingw.tar.xz -C /usr
+
+      - name: Build
+        run: |
+           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh winbuild
+        env:
+          NO_MINETEST_GAME: 1
+          NO_PACKAGE: 1
+
+  win64:
+    name: "MinGW cross-compiler (64-bit)"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          sudo apt-get install gettext -qyy
+          wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+          sudo tar -xaf mingw.tar.xz -C /usr
+
+      - name: Build
+        run: |
+          EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh winbuild
+        env:
+          NO_MINETEST_GAME: 1
+          NO_PACKAGE: 1
+
+  msvc:
+    name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
+    runs-on: windows-2019 
+    env:
+      VCPKG_VERSION: c7ab9d3110813979a873b2dbac630a9ab79850dc
+#                    2020.04
+      vcpkg_packages: irrlicht zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              arch: x86,
+              generator: "-G'Visual Studio 16 2019' -A Win32",
+              vcpkg_triplet: x86-windows
+            }
+          - {
+              arch: x64,
+              generator: "-G'Visual Studio 16 2019' -A x64",
+              vcpkg_triplet: x64-windows
+            }
+        type: [portable]
+#        type: [portable, installer]
+# The installer type is working, but disabled, to save runner jobs.
+# Enable it, when working on the installer.
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Restore from cache and run vcpkg
+        uses: lukka/run-vcpkg@v2
+        with:
+          vcpkgArguments: ${{env.vcpkg_packages}}
+          vcpkgDirectory: '${{ github.workspace }}\vcpkg'
+          appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
+          vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
+          vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
+
+      - name: CMake
+        run: |
+          cmake ${{matrix.config.generator}}  `
+          -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"  `
+          -DCMAKE_BUILD_TYPE=Release  `
+          -DRUN_IN_PLACE=${{ contains(matrix.type, 'portable') }} .
+
+      - name: Build
+        run: cmake --build . --config Release
+
+      - name: CPack
+        run: |
+          If ($env:TYPE -eq "installer")
+          {
+            cpack -G WIX -B "$env:GITHUB_WORKSPACE\Package"
+          }
+          ElseIf($env:TYPE -eq "portable")
+          {
+            cpack -G ZIP -B "$env:GITHUB_WORKSPACE\Package"
+          }
+        env:
+          TYPE: ${{matrix.type}}
+
+      - name: Package Clean
+        run: rm -r $env:GITHUB_WORKSPACE\Package\_CPack_Packages
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: msvc-${{ matrix.config.arch }}-${{ matrix.type }}
+          path: .\Package\

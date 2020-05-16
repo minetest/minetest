@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tool.h"
+#include "itemdef.h"
 #include "itemgroup.h"
 #include "log.h"
 #include "inventory.h"
@@ -55,7 +56,10 @@ void ToolGroupCap::fromJson(const Json::Value &json)
 
 void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 {
-	writeU8(os, 4); // protocol_version >= 37
+	if (protocol_version >= 38)
+		writeU8(os, 5);
+	else
+		writeU8(os, 4); // proto == 37
 	writeF32(os, full_punch_interval);
 	writeS16(os, max_drop_level);
 	writeU32(os, groupcaps.size());
@@ -78,6 +82,9 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 		os << serializeString(damageGroup.first);
 		writeS16(os, damageGroup.second);
 	}
+
+	if (protocol_version >= 38)
+		writeU16(os, rangelim(punch_attack_uses, 0, U16_MAX));
 }
 
 void ToolCapabilities::deSerialize(std::istream &is)
@@ -110,6 +117,9 @@ void ToolCapabilities::deSerialize(std::istream &is)
 		s16 rating = readS16(is);
 		damageGroups[name] = rating;
 	}
+
+	if (version >= 5)
+		punch_attack_uses = readU16(is);
 }
 
 void ToolCapabilities::serializeJson(std::ostream &os) const
@@ -117,6 +127,7 @@ void ToolCapabilities::serializeJson(std::ostream &os) const
 	Json::Value root;
 	root["full_punch_interval"] = full_punch_interval;
 	root["max_drop_level"] = max_drop_level;
+	root["punch_attack_uses"] = punch_attack_uses;
 
 	Json::Value groupcaps_object;
 	for (auto groupcap : groupcaps) {
@@ -143,6 +154,8 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 			full_punch_interval = root["full_punch_interval"].asFloat();
 		if (root["max_drop_level"].isInt())
 			max_drop_level = root["max_drop_level"].asInt();
+		if (root["punch_attack_uses"].isInt())
+			punch_attack_uses = root["punch_attack_uses"].asInt();
 
 		Json::Value &groupcaps_object = root["groupcaps"];
 		if (groupcaps_object.isObject()) {
@@ -172,14 +185,16 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp)
 {
-	// Group dig_immediate has fixed time and no wear
-	switch (itemgroup_get(groups, "dig_immediate")) {
-	case 2:
-		return DigParams(true, 0.5, 0, "dig_immediate");
-	case 3:
-		return DigParams(true, 0, 0, "dig_immediate");
-	default:
-		break;
+	// Group dig_immediate defaults to fixed time and no wear
+	if (tp->groupcaps.find("dig_immediate") == tp->groupcaps.cend()) {
+		switch (itemgroup_get(groups, "dig_immediate")) {
+		case 2:
+			return DigParams(true, 0.5, 0, "dig_immediate");
+		case 3:
+			return DigParams(true, 0, 0, "dig_immediate");
+		default:
+			break;
+		}
 	}
 
 	// Values to be returned (with a bit of conversion)
@@ -224,16 +239,20 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp, float time_from_last_punch)
 {
 	s16 damage = 0;
-	float full_punch_interval = tp->full_punch_interval;
+	float result_wear = 0.0f;
+	float punch_interval_multiplier =
+			rangelim(time_from_last_punch / tp->full_punch_interval, 0.0f, 1.0f);
 
 	for (const auto &damageGroup : tp->damageGroups) {
 		s16 armor = itemgroup_get(armor_groups, damageGroup.first);
-		damage += damageGroup.second
-				* rangelim(time_from_last_punch / full_punch_interval, 0.0, 1.0)
-				* armor / 100.0;
+		damage += damageGroup.second * punch_interval_multiplier * armor / 100.0;
 	}
 
-	return {damage, 0};
+	if (tp->punch_attack_uses > 0)
+		result_wear = 1.0f / tp->punch_attack_uses * punch_interval_multiplier;
+
+	u16 wear_i = U16_MAX * result_wear;
+	return {damage, wear_i};
 }
 
 HitParams getHitParams(const ItemGroupList &armor_groups,
@@ -275,4 +294,16 @@ PunchDamageResult getPunchDamage(
 	return result;
 }
 
+f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand)
+{
+	float max_d = def_selected.range;
+	float max_d_hand = def_hand.range;
+
+	if (max_d < 0 && max_d_hand >= 0)
+		max_d = max_d_hand;
+	else if (max_d < 0)
+		max_d = 4.0f;
+
+	return max_d;
+}
 

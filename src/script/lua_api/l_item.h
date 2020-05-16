@@ -66,6 +66,9 @@ private:
 	// set_metadata(self, string)
 	static int l_set_metadata(lua_State *L);
 
+	// get_description(self)
+	static int l_get_description(lua_State *L);
+
 	// clear(self) -> true
 	static int l_clear(lua_State *L);
 

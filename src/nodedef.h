@@ -33,6 +33,7 @@ class Client;
 #include "itemgroup.h"
 #include "sound.h" // SimpleSoundSpec
 #include "constants.h" // BS
+#include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
 
 // PROTOCOL_VERSION >= 37
@@ -583,15 +584,12 @@ public:
 	void updateAliases(IItemDefManager *idef);
 
 	/*!
-	 * Reads the used texture pack's override.txt, and replaces the textures
-	 * of registered nodes with the ones specified there.
+	 * Replaces the textures of registered nodes with the ones specified in
+	 * the texturepack's override.txt file
 	 *
-	 * Format of the input file: in each line
-	 * `node_name top|bottom|right|left|front|back|all|*|sides texture_name.png`
-	 *
-	 * @param override_filepath path to 'texturepack/override.txt'
+	 * @param overrides the texture overrides
 	 */
-	void applyTextureOverrides(const std::string &override_filepath);
+	void applyTextureOverrides(const std::vector<TextureOverride> &overrides);
 
 	/*!
 	 * Only the client uses this. Loads textures and shaders required for
@@ -669,6 +667,14 @@ private:
 	void addNameIdMapping(content_t i, std::string name);
 
 	/*!
+	 * Removes a content ID from all groups.
+	 * Erases content IDs from vectors in \ref m_group_to_items and
+	 * removes empty vectors.
+	 * @param id Content ID
+	 */
+	void eraseIdFromGroups(content_t id);
+
+	/*!
 	 * Recalculates m_selection_box_int_union based on
 	 * m_selection_box_union.
 	 */
@@ -732,6 +738,9 @@ public:
 	NodeResolver();
 	virtual ~NodeResolver();
 	virtual void resolveNodeNames() = 0;
+
+	// required because this class is used as mixin for ObjDef
+	void cloneTo(NodeResolver *res) const;
 
 	bool getIdFromNrBacklog(content_t *result_out,
 		const std::string &node_alt, content_t c_fallback,

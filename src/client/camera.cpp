@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "debug.h"
 #include "client.h"
+#include "config.h"
 #include "map.h"
 #include "clientmap.h"     // MapDrawControl
 #include "player.h"
@@ -39,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
 #define WIELDMESH_OFFSET_Y -35.0f
+#define WIELDMESH_AMPLITUDE_X 7.0f
+#define WIELDMESH_AMPLITUDE_Y 10.0f
 
 Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_draw_control(draw_control),
@@ -83,6 +86,51 @@ Camera::~Camera()
 	m_wieldmgr->drop();
 }
 
+void Camera::notifyFovChange()
+{
+	LocalPlayer *player = m_client->getEnv().getLocalPlayer();
+	assert(player);
+
+	PlayerFovSpec spec = player->getFov();
+
+	/*
+	 * Update m_old_fov_degrees first - it serves as the starting point of the
+	 * upcoming transition.
+	 *
+	 * If an FOV transition is already active, mark current FOV as the start of
+	 * the new transition. If not, set it to the previous transition's target FOV.
+	 */
+	if (m_fov_transition_active)
+		m_old_fov_degrees = m_curr_fov_degrees;
+	else
+		m_old_fov_degrees = m_server_sent_fov ? m_target_fov_degrees : m_cache_fov;
+
+	/*
+	 * Update m_server_sent_fov next - it corresponds to the target FOV of the
+	 * upcoming transition.
+	 *
+	 * Set it to m_cache_fov, if server-sent FOV is 0. Otherwise check if
+	 * server-sent FOV is a multiplier, and multiply it with m_cache_fov instead
+	 * of overriding.
+	 */
+	if (spec.fov == 0.0f) {
+		m_server_sent_fov = false;
+		m_target_fov_degrees = m_cache_fov;
+	} else {
+		m_server_sent_fov = true;
+		m_target_fov_degrees = spec.is_multiplier ? m_cache_fov * spec.fov : spec.fov;
+	}
+
+	if (spec.transition_time > 0.0f)
+		m_fov_transition_active = true;
+
+	// If FOV smooth transition is active, initialize required variables
+	if (m_fov_transition_active) {
+		m_transition_time = spec.transition_time;
+		m_fov_diff = m_target_fov_degrees - m_old_fov_degrees;
+	}
+}
+
 bool Camera::successfullyCreated(std::string &error_message)
 {
 	if (!m_playernode) {
@@ -99,9 +147,9 @@ bool Camera::successfullyCreated(std::string &error_message)
 		error_message.clear();
 	}
 
-	if (g_settings->getBool("enable_client_modding")) {
+	if (m_client->modsLoaded())
 		m_client->getScript()->on_camera_ready(this);
-	}
+
 	return error_message.empty();
 }
 
@@ -234,7 +282,8 @@ void Camera::addArmInertia(f32 player_yaw)
 				m_last_cam_pos.X = player_yaw;
 
 			m_wieldmesh_offset.X = rangelim(m_wieldmesh_offset.X,
-				WIELDMESH_OFFSET_X - 7.0f, WIELDMESH_OFFSET_X + 7.0f);
+				WIELDMESH_OFFSET_X - (WIELDMESH_AMPLITUDE_X * 0.5f),
+				WIELDMESH_OFFSET_X + (WIELDMESH_AMPLITUDE_X * 0.5f));
 		}
 
 		if (m_cam_vel.Y > 1.0f) {
@@ -249,7 +298,8 @@ void Camera::addArmInertia(f32 player_yaw)
 				m_last_cam_pos.Y = m_camera_direction.Y;
 
 			m_wieldmesh_offset.Y = rangelim(m_wieldmesh_offset.Y,
-				WIELDMESH_OFFSET_Y - 10.0f, WIELDMESH_OFFSET_Y + 5.0f);
+				WIELDMESH_OFFSET_Y - (WIELDMESH_AMPLITUDE_Y * 0.5f),
+				WIELDMESH_OFFSET_Y + (WIELDMESH_AMPLITUDE_Y * 0.5f));
 		}
 
 		m_arm_dir = dir(m_wieldmesh_offset);
@@ -259,10 +309,10 @@ void Camera::addArmInertia(f32 player_yaw)
 		    following a vector, with a smooth deceleration factor.
 		*/
 
-		f32 dec_X = 0.12f * (m_cam_vel_old.X * (1.0f +
+		f32 dec_X = 0.35f * (std::min(15.0f, m_cam_vel_old.X) * (1.0f +
 			(1.0f - m_arm_dir.X))) * (gap_X / 20.0f);
 
-		f32 dec_Y = 0.06f * (m_cam_vel_old.Y * (1.0f +
+		f32 dec_Y = 0.25f * (std::min(15.0f, m_cam_vel_old.Y) * (1.0f +
 			(1.0f - m_arm_dir.Y))) * (gap_Y / 15.0f);
 
 		if (gap_X < 0.1f)
@@ -285,9 +335,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	// Smooth the movement when walking up stairs
 	v3f old_player_position = m_playernode->getPosition();
 	v3f player_position = player->getPosition();
-	if (player->isAttached && player->parent)
-		player_position = player->parent->getPosition();
-	//if(player->touching_ground && player_position.Y > old_player_position.Y)
+
+	// This is worse than `LocalPlayer::getPosition()` but
+	// mods expect the player head to be at the parent's position
+	// plus eye height.
+	if (player->getParent())
+		player_position = player->getParent()->getPosition();
+
 	if(player->touching_ground &&
 			player_position.Y > old_player_position.Y)
 	{
@@ -324,17 +378,21 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		fall_bobbing *= m_cache_fall_bobbing_amount;
 	}
 
-	// Calculate players eye offset for different camera modes
-	v3f PlayerEyeOffset = player->getEyeOffset();
-	if (m_camera_mode == CAMERA_MODE_FIRST)
-		PlayerEyeOffset += player->eye_offset_first;
-	else
-		PlayerEyeOffset += player->eye_offset_third;
+	// Calculate and translate the head SceneNode offsets
+	{
+		v3f eye_offset = player->getEyeOffset();
+		if (m_camera_mode == CAMERA_MODE_FIRST)
+			eye_offset += player->eye_offset_first;
+		else
+			eye_offset += player->eye_offset_third;
 
-	// Set head node transformation
-	m_headnode->setPosition(PlayerEyeOffset+v3f(0,cameratilt*-player->hurt_tilt_strength+fall_bobbing,0));
-	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength));
-	m_headnode->updateAbsolutePosition();
+		// Set head node transformation
+		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
+		m_headnode->setPosition(eye_offset);
+		m_headnode->setRotation(v3f(player->getPitch(), 0,
+			cameratilt * player->hurt_tilt_strength));
+		m_headnode->updateAbsolutePosition();
+	}
 
 	// Compute relative camera position and target
 	v3f rel_cam_pos = v3f(0,0,0);
@@ -412,7 +470,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 			// Prevent camera positioned inside nodes
 			const NodeDefManager *nodemgr = m_client->ndef();
 			MapNode n = m_client->getEnv().getClientMap()
-				.getNodeNoEx(floatToInt(my_cp, BS));
+				.getNode(floatToInt(my_cp, BS));
 
 			const ContentFeatures& features = nodemgr->get(n);
 			if (features.walkable) {
@@ -448,22 +506,41 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (m_camera_mode != CAMERA_MODE_FIRST)
 		m_camera_position = my_cp;
 
-	// Get FOV
-	f32 fov_degrees;
-	// Disable zoom with zoom FOV = 0
-	if (player->getPlayerControl().zoom && player->getZoomFOV() > 0.001f) {
-		fov_degrees = player->getZoomFOV();
+	/*
+	 * Apply server-sent FOV, instantaneous or smooth transition.
+	 * If not, check for zoom and set to zoom FOV.
+	 * Otherwise, default to m_cache_fov.
+	 */
+	if (m_fov_transition_active) {
+		// Smooth FOV transition
+		// Dynamically calculate FOV delta based on frametimes
+		f32 delta = (frametime / m_transition_time) * m_fov_diff;
+		m_curr_fov_degrees += delta;
+
+		// Mark transition as complete if target FOV has been reached
+		if ((m_fov_diff > 0.0f && m_curr_fov_degrees >= m_target_fov_degrees) ||
+				(m_fov_diff < 0.0f && m_curr_fov_degrees <= m_target_fov_degrees)) {
+			m_fov_transition_active = false;
+			m_curr_fov_degrees = m_target_fov_degrees;
+		}
+	} else if (m_server_sent_fov) {
+		// Instantaneous FOV change
+		m_curr_fov_degrees = m_target_fov_degrees;
+	} else if (player->getPlayerControl().zoom && player->getZoomFOV() > 0.001f) {
+		// Player requests zoom, apply zoom FOV
+		m_curr_fov_degrees = player->getZoomFOV();
 	} else {
-		fov_degrees = m_cache_fov;
+		// Set to client's selected FOV
+		m_curr_fov_degrees = m_cache_fov;
 	}
-	fov_degrees = rangelim(fov_degrees, 1.0f, 160.0f);
+	m_curr_fov_degrees = rangelim(m_curr_fov_degrees, 1.0f, 160.0f);
 
 	// FOV and aspect ratio
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
 	m_aspect = (f32) window_size.X / (f32) window_size.Y;
-	m_fov_y = fov_degrees * M_PI / 180.0;
+	m_fov_y = m_curr_fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
-	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
+	m_fov_y *= core::clamp(sqrt(16./10. / m_aspect), 1.0, 1.4);
 	m_fov_x = 2 * atan(m_aspect * tan(0.5 * m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
@@ -515,7 +592,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
 
-	m_wieldnode->setColor(player->light_color);
+	m_wieldnode->setNodeLightColor(player->light_color);
 
 	// Set render distance
 	updateViewingRange();
@@ -547,10 +624,16 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 void Camera::updateViewingRange()
 {
 	f32 viewing_range = g_settings->getFloat("viewing_range");
-	f32 near_plane = g_settings->getFloat("near_plane");
+
+	// Ignore near_plane setting on all other platforms to prevent abuse
+#if ENABLE_GLES
+	m_cameranode->setNearValue(rangelim(
+		g_settings->getFloat("near_plane"), 0.0f, 0.25f) * BS);
+#else
+	m_cameranode->setNearValue(0.1f * BS);
+#endif
 
 	m_draw_control.wanted_range = std::fmin(adjustDist(viewing_range, getFovMax()), 4000);
-	m_cameranode->setNearValue(rangelim(near_plane, 0.0f, 0.5f) * BS);
 	if (m_draw_control.range_all) {
 		m_cameranode->setFarValue(100000.0);
 		return;
@@ -578,7 +661,7 @@ void Camera::wield(const ItemStack &item)
 
 void Camera::drawWieldedTool(irr::core::matrix4* translation)
 {
-	// Clear Z buffer so that the wielded tool stay in front of world geometry
+	// Clear Z buffer so that the wielded tool stays in front of world geometry
 	m_wieldmgr->getVideoDriver()->clearZBuffer();
 
 	// Draw the wielded node (in a separate scene manager)

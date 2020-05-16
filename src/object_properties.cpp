@@ -37,7 +37,6 @@ std::string ObjectProperties::dump()
 	os << ", breath_max=" << breath_max;
 	os << ", physical=" << physical;
 	os << ", collideWithObjects=" << collideWithObjects;
-	os << ", weight=" << weight;
 	os << ", collisionbox=" << PP(collisionbox.MinEdge) << "," << PP(collisionbox.MaxEdge);
 	os << ", visual=" << visual;
 	os << ", mesh=" << mesh;
@@ -69,6 +68,7 @@ std::string ObjectProperties::dump()
 	os << ", eye_height=" << eye_height;
 	os << ", zoom_fov=" << zoom_fov;
 	os << ", use_texture_alpha=" << use_texture_alpha;
+	os << ", damage_texture_modifier=" << damage_texture_modifier;
 	return os.str();
 }
 
@@ -77,7 +77,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU8(os, 4); // PROTOCOL_VERSION >= 37
 	writeU16(os, hp_max);
 	writeU8(os, physical);
-	writeF32(os, weight);
+	writeF32(os, 0.f); // Removed property (weight)
 	writeV3F32(os, collisionbox.MinEdge);
 	writeV3F32(os, collisionbox.MaxEdge);
 	writeV3F32(os, selectionbox.MinEdge);
@@ -115,6 +115,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF32(os, eye_height);
 	writeF32(os, zoom_fov);
 	writeU8(os, use_texture_alpha);
+	os << serializeString(damage_texture_modifier);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -128,7 +129,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 
 	hp_max = readU16(is);
 	physical = readU8(is);
-	weight = readF32(is);
+	readU32(is); // removed property (weight)
 	collisionbox.MinEdge = readV3F32(is);
 	collisionbox.MaxEdge = readV3F32(is);
 	selectionbox.MinEdge = readV3F32(is);
@@ -167,4 +168,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 	eye_height = readF32(is);
 	zoom_fov = readF32(is);
 	use_texture_alpha = readU8(is);
+	try {
+		damage_texture_modifier = deSerializeString(is);
+	} catch (SerializationError &e) {}
 }

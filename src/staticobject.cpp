@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "staticobject.h"
 #include "util/serialize.h"
-#include "content_sao.h"
+#include "server/serveractiveobject.h"
 
 StaticObject::StaticObject(const ServerActiveObject *s_obj, const v3f &pos_):
 	type(s_obj->getType()),
@@ -77,6 +77,15 @@ void StaticObjectList::serialize(std::ostream &os)
 }
 void StaticObjectList::deSerialize(std::istream &is)
 {
+	if (m_active.size()) {
+		errorstream << "StaticObjectList::deSerialize(): "
+			<< "deserializing objects while " << m_active.size()
+			<< " active objects already exist (not cleared). "
+			<< m_stored.size() << " stored objects _were_ cleared"
+			<< std::endl;
+	}
+	m_stored.clear();
+
 	// version
 	u8 version = readU8(is);
 	// count

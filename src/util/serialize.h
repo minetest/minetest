@@ -52,8 +52,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // not represent the full range, but rather the largest safe range, of values on
 // all supported architectures.  Note: This definition makes assumptions on
 // platform float-to-int conversion behavior.
-#define F1000_MIN ((float)(s32)((-0x7FFFFFFF - 1) / FIXEDPOINT_FACTOR))
-#define F1000_MAX ((float)(s32)((0x7FFFFFFF) / FIXEDPOINT_FACTOR))
+#define F1000_MIN ((float)(s32)((float)(-0x7FFFFFFF - 1) / FIXEDPOINT_FACTOR))
+#define F1000_MAX ((float)(s32)((float)(0x7FFFFFFF) / FIXEDPOINT_FACTOR))
 
 #define STRING_MAX_LEN 0xFFFF
 #define WIDE_STRING_MAX_LEN 0xFFFF

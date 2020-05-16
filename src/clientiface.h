@@ -338,12 +338,19 @@ public:
 	u8 getMajor() const { return m_version_major; }
 	u8 getMinor() const { return m_version_minor; }
 	u8 getPatch() const { return m_version_patch; }
+	const std::string &getFull() const { return m_full_version; }
+	
+	void setLangCode(const std::string &code) { m_lang_code = code; }
+	const std::string &getLangCode() const { return m_lang_code; }
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version = SER_FMT_VER_INVALID;
 
 	/* current state of client */
 	ClientState m_state = CS_Created;
+	
+	// Client sent language code
+	std::string m_lang_code;
 
 	/*
 		Blocks that have been sent to client.
@@ -501,7 +508,7 @@ private:
 
 	// Connection
 	std::shared_ptr<con::Connection> m_con;
-	std::mutex m_clients_mutex;
+	std::recursive_mutex m_clients_mutex;
 	// Connected clients (behind the con mutex)
 	RemoteClientMap m_clients;
 	std::vector<std::string> m_clients_names; //for announcing masterserver

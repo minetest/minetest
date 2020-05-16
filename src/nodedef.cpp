@@ -1202,6 +1202,26 @@ inline void NodeDefManager::fixSelectionBoxIntUnion()
 }
 
 
+void NodeDefManager::eraseIdFromGroups(content_t id)
+{
+	// For all groups in m_group_to_items...
+	for (auto iter_groups = m_group_to_items.begin();
+			iter_groups != m_group_to_items.end();) {
+		// Get the group items vector.
+		std::vector<content_t> &items = iter_groups->second;
+
+		// Remove any occurence of the id in the group items vector.
+		items.erase(std::remove(items.begin(), items.end(), id), items.end());
+
+		// If group is empty, erase its vector from the map.
+		if (items.empty())
+			iter_groups = m_group_to_items.erase(iter_groups);
+		else
+			++iter_groups;
+	}
+}
+
+
 // IWritableNodeDefManager
 content_t NodeDefManager::set(const std::string &name, const ContentFeatures &def)
 {
@@ -1222,19 +1242,24 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 		assert(id != CONTENT_IGNORE);
 		addNameIdMapping(id, name);
 	}
+
+	// If there is already ContentFeatures registered for this id, clear old groups
+	if (id < m_content_features.size())
+		eraseIdFromGroups(id);
+
 	m_content_features[id] = def;
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
 
 	getNodeBoxUnion(def.selection_box, def, &m_selection_box_union);
 	fixSelectionBoxIntUnion();
+
 	// Add this content to the list of all groups it belongs to
-	// FIXME: This should remove a node from groups it no longer
-	// belongs to when a node is re-registered
 	for (const auto &group : def.groups) {
 		const std::string &group_name = group.first;
 		m_group_to_items[group_name].push_back(id);
 	}
+
 	return id;
 }
 
@@ -1260,18 +1285,7 @@ void NodeDefManager::removeNode(const std::string &name)
 		m_name_id_mapping_with_aliases.erase(name);
 	}
 
-	// Erase node content from all groups it belongs to
-	for (std::unordered_map<std::string, std::vector<content_t>>::iterator iter_groups =
-			m_group_to_items.begin(); iter_groups != m_group_to_items.end();) {
-		std::vector<content_t> &items = iter_groups->second;
-		items.erase(std::remove(items.begin(), items.end(), id), items.end());
-
-		// Check if group is empty
-		if (items.empty())
-			m_group_to_items.erase(iter_groups++);
-		else
-			++iter_groups;
-	}
+	eraseIdFromGroups(id);
 }
 
 
@@ -1290,60 +1304,35 @@ void NodeDefManager::updateAliases(IItemDefManager *idef)
 	}
 }
 
-void NodeDefManager::applyTextureOverrides(const std::string &override_filepath)
+void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &overrides)
 {
 	infostream << "NodeDefManager::applyTextureOverrides(): Applying "
-		"overrides to textures from " << override_filepath << std::endl;
+		"overrides to textures" << std::endl;
 
-	std::ifstream infile(override_filepath.c_str());
-	std::string line;
-	int line_c = 0;
-	while (std::getline(infile, line)) {
-		line_c++;
-		// Also trim '\r' on DOS-style files
-		line = trim(line);
-		if (line.empty())
-			continue;
-
-		std::vector<std::string> splitted = str_split(line, ' ');
-		if (splitted.size() != 3) {
-			errorstream << override_filepath
-				<< ":" << line_c << " Could not apply texture override \""
-				<< line << "\": Syntax error" << std::endl;
-			continue;
-		}
-
+	for (const TextureOverride& texture_override : overrides) {
 		content_t id;
-		if (!getId(splitted[0], id))
+		if (!getId(texture_override.id, id))
 			continue; // Ignore unknown node
 
 		ContentFeatures &nodedef = m_content_features[id];
 
-		if (splitted[1] == "top")
-			nodedef.tiledef[0].name = splitted[2];
-		else if (splitted[1] == "bottom")
-			nodedef.tiledef[1].name = splitted[2];
-		else if (splitted[1] == "right")
-			nodedef.tiledef[2].name = splitted[2];
-		else if (splitted[1] == "left")
-			nodedef.tiledef[3].name = splitted[2];
-		else if (splitted[1] == "back")
-			nodedef.tiledef[4].name = splitted[2];
-		else if (splitted[1] == "front")
-			nodedef.tiledef[5].name = splitted[2];
-		else if (splitted[1] == "all" || splitted[1] == "*")
-			for (TileDef &i : nodedef.tiledef)
-				i.name = splitted[2];
-		else if (splitted[1] == "sides")
-			for (int i = 2; i < 6; i++)
-				nodedef.tiledef[i].name = splitted[2];
-		else {
-			errorstream << override_filepath
-				<< ":" << line_c << " Could not apply texture override \""
-				<< line << "\": Unknown node side \""
-				<< splitted[1] << "\"" << std::endl;
-			continue;
-		}
+		if (texture_override.hasTarget(OverrideTarget::TOP))
+			nodedef.tiledef[0].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::BOTTOM))
+			nodedef.tiledef[1].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::RIGHT))
+			nodedef.tiledef[2].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::LEFT))
+			nodedef.tiledef[3].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::BACK))
+			nodedef.tiledef[4].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::FRONT))
+			nodedef.tiledef[5].name = texture_override.texture;
 	}
 }
 
@@ -1444,7 +1433,7 @@ void NodeDefManager::deSerialize(std::istream &is)
 			m_content_features.resize((u32)(i) + 1);
 		m_content_features[i] = f;
 		addNameIdMapping(i, f.name);
-		verbosestream << "deserialized " << f.name << std::endl;
+		TRACESTREAM(<< "NodeDef: deserialized " << f.name << std::endl);
 
 		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);
 		fixSelectionBoxIntUnion();
@@ -1580,6 +1569,18 @@ NodeResolver::~NodeResolver()
 {
 	if (!m_resolve_done && m_ndef)
 		m_ndef->cancelNodeResolveCallback(this);
+}
+
+
+void NodeResolver::cloneTo(NodeResolver *res) const
+{
+	FATAL_ERROR_IF(!m_resolve_done, "NodeResolver can only be cloned"
+		" after resolving has completed");
+	/* We don't actually do anything significant. Since the node resolving has
+	 * already completed, the class that called us will already have the
+	 * resolved IDs in its data structures (which it copies on its own) */
+	res->m_ndef = m_ndef;
+	res->m_resolve_done = true;
 }
 
 

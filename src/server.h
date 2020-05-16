@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
+#include "util/metricsbackend.h"
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"
@@ -61,8 +62,13 @@ class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
 struct CloudParams;
+struct SkyboxParams;
+struct SunParams;
+struct MoonParams;
+struct StarParams;
 class ServerThread;
 class ServerModManager;
+class ServerInventoryManager;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -98,6 +104,7 @@ struct ServerSoundParams
 	v3f pos;
 	u16 object = 0;
 	std::string to_player = "";
+	std::string exclude_player = "";
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 };
@@ -110,7 +117,7 @@ struct ServerPlayingSound
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
-		public InventoryManager, public IGameDef
+		public IGameDef
 {
 public:
 	/*
@@ -128,7 +135,6 @@ public:
 	~Server();
 	DISABLE_CLASS_COPY(Server);
 
-	void init();
 	void start();
 	void stop();
 	// This is mainly a way to pass the time to the server.
@@ -160,7 +166,6 @@ public:
 	void handleCommand_InventoryAction(NetworkPacket* pkt);
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
 	void handleCommand_Damage(NetworkPacket* pkt);
-	void handleCommand_Password(NetworkPacket* pkt);
 	void handleCommand_PlayerItem(NetworkPacket* pkt);
 	void handleCommand_Respawn(NetworkPacket* pkt);
 	void handleCommand_Interact(NetworkPacket* pkt);
@@ -189,17 +194,11 @@ public:
 		This is accessed by the map, which is inside the environment,
 		so it shouldn't be a problem.
 	*/
-	void onMapEditEvent(MapEditEvent *event);
-
-	/*
-		Shall be called with the environment and the connection locked.
-	*/
-	Inventory* getInventory(const InventoryLocation &loc);
-	void setInventoryModified(const InventoryLocation &loc, bool playerSend = true);
+	void onMapEditEvent(const MapEditEvent &event);
 
 	// Connection must be locked when called
 	std::wstring getStatusString();
-	inline double getUptime() const { return m_uptime.m_value; }
+	inline double getUptime() const { return m_uptime_counter->get(); }
 
 	// read shutdown state
 	inline bool isShutdownRequested() const { return m_shutdown_state.is_requested; }
@@ -209,7 +208,8 @@ public:
 
 	// Returns -1 if failed, sound handle on success
 	// Envlock
-	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
+	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params,
+			bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 
@@ -247,10 +247,8 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	// Creates or resets inventory
-	Inventory *createDetachedInventory(const std::string &name,
-			const std::string &player = "");
-	bool removeDetachedInventory(const std::string &name);
+	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
+	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
 
 	// Envlock and conlock should be locked when using scriptapi
 	ServerScripting *getScriptIface(){ return m_script; }
@@ -305,12 +303,14 @@ public:
 			f32 frame_speed);
 	void setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third);
 
-	void setSky(RemotePlayer *player, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params,
-			bool &clouds);
+	void setSky(RemotePlayer *player, const SkyboxParams &params);
+	void setSun(RemotePlayer *player, const SunParams &params);
+	void setMoon(RemotePlayer *player, const MoonParams &params);
+	void setStars(RemotePlayer *player, const StarParams &params);
+
 	void setClouds(RemotePlayer *player, const CloudParams &params);
 
-	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
+	void overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
@@ -327,14 +327,18 @@ public:
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientState *state, u32 *uptime,
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
-			std::string* vers_string);
+			std::string* vers_string, std::string* lang_code);
 
 	void printToConsoleOnly(const std::string &text);
 
 	void SendPlayerHPOrDie(PlayerSAO *player, const PlayerHPChangeReason &reason);
 	void SendPlayerBreath(PlayerSAO *sao);
-	void SendInventory(PlayerSAO* playerSAO);
+	void SendInventory(PlayerSAO *playerSAO, bool incremental);
 	void SendMovePlayer(session_t peer_id);
+	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
+	void SendPlayerFov(session_t peer_id);
+
+	void sendDetachedInventories(session_t peer_id, bool incremental);
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
@@ -346,6 +350,9 @@ public:
 
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
+
+	// Load translations for a language
+	void loadTranslationLanguage(const std::string &lang_code);
 
 	// Bind address
 	Address m_bind_addr;
@@ -373,6 +380,8 @@ private:
 		private:
 			float m_timer = 0.0f;
 	};
+
+	void init();
 
 	void SendMovement(session_t peer_id);
 	void SendHP(session_t peer_id, u16 hp);
@@ -407,9 +416,10 @@ private:
 	void SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void *value);
 	void SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(session_t peer_id, u16 param, const std::string &value);
-	void SendSetSky(session_t peer_id, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params,
-			bool &clouds);
+	void SendSetSky(session_t peer_id, const SkyboxParams &params);
+	void SendSetSun(session_t peer_id, const SunParams &params);
+	void SendSetMoon(session_t peer_id, const MoonParams &params);
+	void SendSetStars(session_t peer_id, const StarParams &params);
 	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
 	void broadcastModChannelMessage(const std::string &channel,
@@ -441,9 +451,6 @@ private:
 	void sendRequestedMedia(session_t peer_id,
 			const std::vector<std::string> &tosend);
 
-	void sendDetachedInventory(const std::string &name, session_t peer_id);
-	void sendDetachedInventories(session_t peer_id);
-
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		u16 amount, float spawntime,
@@ -467,7 +474,7 @@ private:
 		bool vertical, const std::string &texture,
 		const struct TileAnimationParams &animation, u8 glow);
 
-	u32 SendActiveObjectRemoveAdd(session_t peer_id, const std::string &datas);
+	void SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersao);
 	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
 		bool reliable = true);
 	void SendCSMRestrictionFlags(session_t peer_id);
@@ -513,7 +520,6 @@ private:
 	/*
 		Variables
 	*/
-
 	// World directory
 	std::string m_path_world;
 	// Subgame specification
@@ -573,14 +579,10 @@ private:
 	/*
 		Threads
 	*/
-
 	// A buffer for time steps
 	// step() increments and AsyncRunStep() run by m_thread reads it.
 	float m_step_dtime = 0.0f;
 	std::mutex m_step_dtime_mutex;
-
-	// current server step lag counter
-	float m_lag;
 
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;
@@ -588,14 +590,12 @@ private:
 	/*
 		Time related stuff
 	*/
-
 	// Timer for sending time of day over network
 	float m_time_of_day_send_timer = 0.0f;
-	// Uptime of server in seconds
-	MutexedVariable<double> m_uptime;
+
 	/*
-	 Client interface
-	 */
+	 	Client interface
+	*/
 	ClientInterface m_clients;
 
 	/*
@@ -645,15 +645,8 @@ private:
 		Sounds
 	*/
 	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
-	s32 m_next_sound_id = 0;
-
-	/*
-		Detached inventories (behind m_env_mutex)
-	*/
-	// key = name
-	std::map<std::string, Inventory*> m_detached_inventories;
-	// value = "" (visible to all players) or player name
-	std::map<std::string, std::string> m_detached_inventories_player;
+	s32 m_next_sound_id = 0; // positive values only
+	s32 nextSoundId();
 
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
@@ -664,6 +657,22 @@ private:
 
 	// ModChannel manager
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	// Inventory manager
+	std::unique_ptr<ServerInventoryManager> m_inventory_mgr;
+
+	// Global server metrics backend
+	std::unique_ptr<MetricsBackend> m_metrics_backend;
+
+	// Server metrics
+	MetricCounterPtr m_uptime_counter;
+	MetricGaugePtr m_player_gauge;
+	MetricGaugePtr m_timeofday_gauge;
+	// current server step lag
+	MetricGaugePtr m_lag_gauge;
+	MetricCounterPtr m_aom_buffer_counter;
+	MetricCounterPtr m_packet_recv_counter;
+	MetricCounterPtr m_packet_recv_processed_counter;
 };
 
 /*

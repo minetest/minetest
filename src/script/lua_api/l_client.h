@@ -30,6 +30,9 @@ private:
 	// get_current_modname()
 	static int l_get_current_modname(lua_State *L);
 
+	// get_modpath(modname)
+	static int l_get_modpath(lua_State *L);
+
 	// print(text)
 	static int l_print(lua_State *L);
 
@@ -66,6 +69,7 @@ private:
 	// get_node(pos)
 	static int l_get_node_or_nil(lua_State *L);
 
+	// get_language()
 	static int l_get_language(lua_State *L);
 
 	// get_wielded_item()
@@ -74,9 +78,14 @@ private:
 	// get_meta(pos)
 	static int l_get_meta(lua_State *L);
 
+	// sound_play(spec, parameters)
 	static int l_sound_play(lua_State *L);
 
+	// sound_stop(handle)
 	static int l_sound_stop(lua_State *L);
+
+	// sound_fade(handle, step, gain)
+	static int l_sound_fade(lua_State *L);
 
 	// get_server_info()
 	static int l_get_server_info(lua_State *L);
@@ -92,6 +101,9 @@ private:
 
 	// get_builtin_path()
 	static int l_get_builtin_path(lua_State *L);
+
+	// get_csm_restrictions()
+	static int l_get_csm_restrictions(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

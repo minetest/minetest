@@ -198,7 +198,7 @@ namespace gui
 		core::rect<s32> CurrentTextRect = core::rect<s32>(0,0,1,1);
 		core::rect<s32> FrameRect; // temporary values
 		u32 m_scrollbar_width;
-		guiScrollBar *m_vscrollbar;
+		GUIScrollBar *m_vscrollbar;
 		bool m_writable;
 
 	};

@@ -199,7 +199,7 @@ protected:
 	video::SColor m_highlight_text = video::SColor(255, 255, 255, 255);
 	s32 m_rowheight = 1;
 	gui::IGUIFont *m_font = nullptr;
-	guiScrollBar *m_scrollbar = nullptr;
+	GUIScrollBar *m_scrollbar = nullptr;
 
 	// Allocated strings and images
 	std::vector<core::stringw> m_strings;

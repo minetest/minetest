@@ -1,19 +1,27 @@
-local modname = core.get_current_modname() or "??"
+local modname = assert(core.get_current_modname())
 local modstorage = core.get_mod_storage()
 local mod_channel
 
-dofile("preview:example.lua")
--- This is an example function to ensure it's working properly, should be removed before merge
+dofile(core.get_modpath(modname) .. "example.lua")
+
 core.register_on_shutdown(function()
 	print("[PREVIEW] shutdown client")
 end)
 local id = nil
 
-local server_info = core.get_server_info()
-print("Server version: " .. server_info.protocol_version)
-print("Server ip: " .. server_info.ip)
-print("Server address: " .. server_info.address)
-print("Server port: " .. server_info.port)
+do
+	local server_info = core.get_server_info()
+	print("Server version: " .. server_info.protocol_version)
+	print("Server ip: " .. server_info.ip)
+	print("Server address: " .. server_info.address)
+	print("Server port: " .. server_info.port)
+
+	print("CSM restrictions: " .. dump(core.get_csm_restrictions()))
+
+	local l1, l2 = core.get_language()
+	print("Configured language: " .. l1 .. " / " .. l2)
+end
+
 mod_channel = core.mod_channel_join("experimental_preview")
 
 core.after(4, function()
@@ -23,6 +31,7 @@ core.after(4, function()
 end)
 
 core.after(1, function()
+	print("armor: " .. dump(core.localplayer:get_armor_groups()))
 	id = core.localplayer:hud_add({
 			hud_elem_type = "text",
 			name = "example",
@@ -65,6 +74,26 @@ core.register_on_item_use(function(itemstack, pointed_thing)
 	print("The local player used an item!")
 	print("pointed_thing :" .. dump(pointed_thing))
 	print("item = " .. itemstack:get_name())
+
+	if not itemstack:is_empty() then
+		return false
+	end
+
+	local pos = core.camera:get_pos()
+	local pos2 = vector.add(pos, vector.multiply(core.camera:get_look_dir(), 100))
+
+	local rc = core.raycast(pos, pos2)
+	local i = rc:next()
+	print("[PREVIEW] raycast next: " .. dump(i))
+	if i then
+		print("[PREVIEW] line of sight: " .. (core.line_of_sight(pos, i.above) and "yes" or "no"))
+
+		local n1 = core.find_nodes_in_area(pos, i.under, {"default:stone"})
+		local n2 = core.find_nodes_in_area_under_air(pos, i.under, {"default:stone"})
+		print(("[PREVIEW] found %s nodes, %s nodes under air"):format(
+				n1 and #n1 or "?", n2 and #n2 or "?"))
+	end
+
 	return false
 end)
 
@@ -91,27 +120,9 @@ core.register_on_damage_taken(function(hp)
 end)
 
 -- This is an example function to ensure it's working properly, should be removed before merge
-core.register_globalstep(function(dtime)
-	-- print("[PREVIEW] globalstep " .. dtime)
-end)
-
--- This is an example function to ensure it's working properly, should be removed before merge
 core.register_chatcommand("dump", {
 	func = function(param)
 		return true, dump(_G)
-	end,
-})
-
-core.register_chatcommand("colorize_test", {
-	func = function(param)
-		return true, core.colorize("red", param)
-	end,
-})
-
-core.register_chatcommand("test_node", {
-	func = function(param)
-		core.display_chat_message(dump(core.get_node({x=0, y=0, z=0})))
-		core.display_chat_message(dump(core.get_node_or_nil({x=0, y=0, z=0})))
 	end,
 })
 
@@ -134,7 +145,7 @@ end
 core.after(2, function()
 	print("[PREVIEW] loaded " .. modname .. " mod")
 	modstorage:set_string("current_mod", modname)
-	print(modstorage:get_string("current_mod"))
+	assert(modstorage:get_string("current_mod") == modname)
 	preview_minimap()
 end)
 
@@ -143,8 +154,7 @@ core.after(5, function()
 		core.ui.minimap:show()
 	end
 
-	print("[PREVIEW] Day count: " .. core.get_day_count() ..
-		" time of day " .. core.get_timeofday())
+	print("[PREVIEW] Time of day " .. core.get_timeofday())
 
 	print("[PREVIEW] Node level: " .. core.get_node_level({x=0, y=20, z=0}) ..
 		" max level " .. core.get_node_max_level({x=0, y=20, z=0}))
@@ -162,30 +172,12 @@ end)
 
 core.register_on_punchnode(function(pos, node)
 	print("The local player punched a node!")
-	local itemstack = core.get_wielded_item()
-	--[[
-	-- getters
-	print(dump(itemstack:is_empty()))
-	print(dump(itemstack:get_name()))
-	print(dump(itemstack:get_count()))
-	print(dump(itemstack:get_wear()))
-	print(dump(itemstack:get_meta()))
-	print(dump(itemstack:get_metadata()
-	print(dump(itemstack:is_known()))
-	--print(dump(itemstack:get_definition()))
-	print(dump(itemstack:get_tool_capabilities()))
-	print(dump(itemstack:to_string()))
-	print(dump(itemstack:to_table()))
-	-- setters
-	print(dump(itemstack:set_name("default:dirt")))
-	print(dump(itemstack:set_count("95")))
-	print(dump(itemstack:set_wear(934)))
-	print(dump(itemstack:get_meta()))
-	print(dump(itemstack:get_metadata()))
-	--]]
+	local itemstack = core.localplayer:get_wielded_item()
 	print(dump(itemstack:to_table()))
 	print("pos:" .. dump(pos))
 	print("node:" .. dump(node))
+	local meta = core.get_meta(pos)
+	print("punched meta: " .. (meta and dump(meta:to_table()) or "(missing)"))
 	return false
 end)
 

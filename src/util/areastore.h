@@ -37,15 +37,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 struct Area {
-	Area() = default;
+	Area(u32 area_id) : id(area_id) {}
 
-	Area(const v3s16 &mine, const v3s16 &maxe) :
-		minedge(mine), maxedge(maxe)
+	Area(const v3s16 &mine, const v3s16 &maxe, u32 area_id = U32_MAX) :
+		id(area_id), minedge(mine), maxedge(maxe)
 	{
 		sortBoxVerticies(minedge, maxedge);
 	}
 
-	u32 id = U32_MAX;
+	u32 id;
 	v3s16 minedge, maxedge;
 	std::string data;
 };
@@ -109,7 +109,7 @@ protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos) = 0;
 
 	/// Returns the next area ID and increments it.
-	u32 getNextId() { return m_next_id++; }
+	u32 getNextId() const;
 
 	// Note: This can't be an unordered_map, since all
 	// references would be invalidated on rehash.
@@ -125,8 +125,6 @@ private:
 	/// If you modify this, call invalidateCache()
 	u8 m_cacheblock_radius = 64;
 	LRUCache<v3s16, std::vector<Area *> > m_res_cache;
-
-	u32 m_next_id = 0;
 };
 
 

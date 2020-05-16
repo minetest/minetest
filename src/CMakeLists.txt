@@ -6,7 +6,7 @@ INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
 
 # Add custom SemiDebug build mode
-set(CMAKE_CXX_FLAGS_SEMIDEBUG "-O1 -g -Wall -Wabi" CACHE STRING
+set(CMAKE_CXX_FLAGS_SEMIDEBUG "-O1 -g -Wall" CACHE STRING
 	"Flags used by the C++ compiler during semidebug builds."
 	FORCE
 )
@@ -62,7 +62,7 @@ set(USE_GETTEXT FALSE)
 
 if(ENABLE_GETTEXT)
 	find_package(GettextLib)
-	if(GETTEXT_FOUND)
+	if(GETTEXTLIB_FOUND)
 		if(WIN32)
 			message(STATUS "GetText library: ${GETTEXT_LIBRARY}")
 			message(STATUS "GetText DLL: ${GETTEXT_DLL}")
@@ -70,7 +70,7 @@ if(ENABLE_GETTEXT)
 		endif()
 		set(USE_GETTEXT TRUE)
 		message(STATUS "GetText enabled; locales found: ${GETTEXT_AVAILABLE_LOCALES}")
-	endif(GETTEXT_FOUND)
+	endif(GETTEXTLIB_FOUND)
 else()
 	mark_as_advanced(GETTEXT_ICONV_DLL GETTEXT_INCLUDE_DIR GETTEXT_LIBRARY GETTEXT_MSGFMT)
 	message(STATUS "GetText disabled.")
@@ -102,10 +102,21 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 endif()
 
 
-option(ENABLE_GLES "Enable OpenGL ES support" FALSE)
+option(ENABLE_GLES "Use OpenGL ES instead of OpenGL" FALSE)
 mark_as_advanced(ENABLE_GLES)
-if(ENABLE_GLES)
-	find_package(OpenGLES2)
+if(BUILD_CLIENT)
+	if(ENABLE_GLES)
+		find_package(OpenGLES2 REQUIRED)
+	else()
+		# transitive dependency from Irrlicht (see longer explanation below)
+		if(NOT WIN32)
+			set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
+				"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
+			set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
+
+			find_package(OpenGL REQUIRED)
+		endif()
+	endif()
 endif()
 
 
@@ -206,6 +217,26 @@ endif(ENABLE_REDIS)
 
 find_package(SQLite3 REQUIRED)
 
+OPTION(ENABLE_PROMETHEUS "Enable prometheus client support" FALSE)
+set(USE_PROMETHEUS FALSE)
+
+if(ENABLE_PROMETHEUS)
+	find_path(PROMETHEUS_CPP_INCLUDE_DIR NAMES prometheus/counter.h)
+	find_library(PROMETHEUS_PULL_LIBRARY NAMES prometheus-cpp-pull)
+	find_library(PROMETHEUS_CORE_LIBRARY NAMES prometheus-cpp-core)
+	if(PROMETHEUS_CPP_INCLUDE_DIR AND PROMETHEUS_PULL_LIBRARY AND PROMETHEUS_CORE_LIBRARY)
+		set(PROMETHEUS_LIBRARIES ${PROMETHEUS_PULL_LIBRARY} ${PROMETHEUS_CORE_LIBRARY})
+		set(USE_PROMETHEUS TRUE)
+		include_directories(${PROMETHEUS_CPP_INCLUDE_DIR})
+	endif(PROMETHEUS_CPP_INCLUDE_DIR AND PROMETHEUS_PULL_LIBRARY AND PROMETHEUS_CORE_LIBRARY)
+endif(ENABLE_PROMETHEUS)
+
+if(USE_PROMETHEUS)
+	message(STATUS "Prometheus client enabled.")
+else(USE_PROMETHEUS)
+	message(STATUS "Prometheus client disabled.")
+endif(USE_PROMETHEUS)
+
 OPTION(ENABLE_SPATIAL "Enable SpatialIndex AreaStore backend" TRUE)
 set(USE_SPATIAL FALSE)
 
@@ -264,29 +295,35 @@ if(WIN32)
 			set(VORBISFILE_DLL "" CACHE FILEPATH "Path to libvorbisfile.dll for installation (optional)")
 		endif()
 		if(USE_LUAJIT)
-			set(LUA_DLL "" CACHE FILEPATH "Path to lua51.dll for installation (optional)")
+			set(LUA_DLL "" CACHE FILEPATH "Path to luajit-5.1.dll for installation (optional)")
 		endif()
 	endif()
 
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
-		if(NOT HAIKU)
+		if(NOT HAIKU AND NOT APPLE)
 			find_package(X11 REQUIRED)
-		endif(NOT HAIKU)
+		endif(NOT HAIKU AND NOT APPLE)
 
-		set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
-			"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
-		set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
+		##
+		# The following dependencies are transitive dependencies from Irrlicht.
+		# Minetest itself does not use them, but we link them so that statically
+		# linking Irrlicht works.
+		if(NOT HAIKU AND NOT APPLE)
+			# This way Xxf86vm is found on OpenBSD too
+			find_library(XXF86VM_LIBRARY Xxf86vm)
+			mark_as_advanced(XXF86VM_LIBRARY)
+			set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
+		endif(NOT HAIKU AND NOT APPLE)
 
-		find_package(OpenGL REQUIRED)
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
 		if(APPLE)
-			find_library(CARBON_LIB Carbon)
-			find_library(COCOA_LIB Cocoa)
-			find_library(IOKIT_LIB IOKit)
+			find_library(CARBON_LIB Carbon REQUIRED)
+			find_library(COCOA_LIB Cocoa REQUIRED)
+			find_library(IOKIT_LIB IOKit REQUIRED)
 			mark_as_advanced(
 				CARBON_LIB
 				COCOA_LIB
@@ -294,7 +331,9 @@ else()
 			)
 			SET(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${CARBON_LIB} ${COCOA_LIB} ${IOKIT_LIB})
 		endif(APPLE)
+		##
 	endif(BUILD_CLIENT)
+
 	find_package(ZLIB REQUIRED)
 	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
 	if(APPLE)
@@ -305,13 +344,6 @@ else()
 			set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
 		endif(HAVE_LIBRT)
 	endif(APPLE)
-
-	if(NOT HAIKU AND NOT APPLE)
-	# This way Xxf86vm is found on OpenBSD too
-		find_library(XXF86VM_LIBRARY Xxf86vm)
-		mark_as_advanced(XXF86VM_LIBRARY)
-		set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
-	endif(NOT HAIKU AND NOT APPLE)
 
 	# Prefer local iconv if installed
 	find_library(ICONV_LIBRARY iconv)
@@ -363,7 +395,6 @@ set(common_SRCS
 	collision.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
-	content_sao.cpp
 	convert_json.cpp
 	craftdef.cpp
 	debug.cpp
@@ -372,7 +403,6 @@ set(common_SRCS
 	environment.cpp
 	face_position_cache.cpp
 	filesys.cpp
-	genericobject.cpp
 	gettext.cpp
 	httpfetch.cpp
 	hud.cpp
@@ -401,7 +431,6 @@ set(common_SRCS
 	player.cpp
 	porting.cpp
 	profiler.cpp
-	quicktune.cpp
 	raycast.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
@@ -411,10 +440,10 @@ set(common_SRCS
 	server.cpp
 	serverenvironment.cpp
 	serverlist.cpp
-	serverobject.cpp
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
+	texture_override.cpp
 	tileanimation.cpp
 	tool.cpp
 	translation.cpp
@@ -426,8 +455,11 @@ set(common_SRCS
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
-	${UNITTEST_SRCS}
 )
+
+if(BUILD_UNITTESTS)
+	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
+endif()
 
 
 # This gives us the icon and file version information
@@ -443,7 +475,7 @@ if(WIN32)
 			-i${WINRESOURCE_FILE}
 			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			DEPENDS ${WINRESOURCE_FILE})
+			DEPENDS ${WINRESOURCE_FILE} ${MINETEST_EXE_MANIFEST_FILE})
 		SET(extra_windows_SRCS ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
 	else(MINGW) # Probably MSVC
 		set(extra_windows_SRCS ${WINRESOURCE_FILE} ${MINETEST_EXE_MANIFEST_FILE})
@@ -463,8 +495,12 @@ set(client_SRCS
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
 	${client_SCRIPT_SRCS}
-	${UNITTEST_CLIENT_SRCS}
 )
+
+if(BUILD_UNITTESTS)
+	set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
+endif()
+
 list(SORT client_SRCS)
 
 # Server sources
@@ -485,7 +521,6 @@ include_directories(
 	${PROJECT_SOURCE_DIR}
 	${IRRLICHT_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIR}
-	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	${SOUND_INCLUDE_DIRS}
 	${SQLITE3_INCLUDE_DIR}
@@ -519,7 +554,6 @@ if(BUILD_CLIENT)
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
-		${OPENGL_LIBRARIES}
 		${JPEG_LIBRARIES}
 		${BZIP2_LIBRARIES}
 		${PNG_LIBRARIES}
@@ -529,18 +563,22 @@ if(BUILD_CLIENT)
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
-		${OPENGLES2_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
-	if(APPLE)
+	target_link_libraries(
+		${client_LIBS}
+	)
+	if(ENABLE_GLES)
 		target_link_libraries(
-			${client_LIBS}
-			${ICONV_LIBRARY}
+			${PROJECT_NAME}
+			${OPENGLES2_LIBRARIES}
+			${EGL_LIBRARIES}
 		)
 	else()
 		target_link_libraries(
-			${client_LIBS}
+			${PROJECT_NAME}
+			${OPENGL_LIBRARIES}
 		)
 	endif()
 	if(USE_GETTEXT)
@@ -579,6 +617,9 @@ if(BUILD_CLIENT)
 	if (USE_REDIS)
 		target_link_libraries(${PROJECT_NAME} ${REDIS_LIBRARY})
 	endif()
+	if (USE_PROMETHEUS)
+		target_link_libraries(${PROJECT_NAME} ${PROMETHEUS_LIBRARIES})
+	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
@@ -614,6 +655,9 @@ if(BUILD_SERVER)
 	if (USE_REDIS)
 		target_link_libraries(${PROJECT_NAME}server ${REDIS_LIBRARY})
 	endif()
+	if (USE_PROMETHEUS)
+		target_link_libraries(${PROJECT_NAME}server ${PROMETHEUS_LIBRARIES})
+	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME}server ${SPATIAL_LIBRARY})
 	endif()
@@ -632,13 +676,11 @@ set(GETTEXT_BLACKLISTED_LOCALES
 	he
 	ko
 	ky
-	zh_CN
-	zh_TW
 )
 
 option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid broken locales" TRUE)
 
-if (GETTEXT_FOUND AND APPLY_LOCALE_BLACKLIST)
+if (GETTEXTLIB_FOUND AND APPLY_LOCALE_BLACKLIST)
 	set(GETTEXT_USED_LOCALES "")
 	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 		if (NOT ";${GETTEXT_BLACKLISTED_LOCALES};" MATCHES ";${LOCALE};")
@@ -650,7 +692,7 @@ endif()
 
 # Set some optimizations and tweaks
 
-include(CheckCXXCompilerFlag)
+include(CheckCSourceCompiles)
 
 if(MSVC)
 	# Visual Studio
@@ -660,9 +702,12 @@ if(MSVC)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:SSE")
 	endif()
-	#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /NODEFAULTLIB:\"libcmtd.lib\" /NODEFAULTLIB:\"libcmt.lib\"")
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
-
+	
+	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+	else()
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+	endif()
 
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
@@ -677,21 +722,26 @@ if(MSVC)
 	# /MD = dynamically link to MSVCRxxx.dll
 	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MD")
 else()
+	# GCC or compatible compilers such as Clang
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	# Probably GCC
-	if(APPLE)
-		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000" )
-	endif()
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
 	else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
+	if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		set(WARNING_FLAGS "${WARNING_FLAGS} -Wsign-compare")
+	endif()
 
-	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-		# clang does not understand __extern_always_inline but libc headers use it
-		set(OTHER_FLAGS "${OTHER_FLAGS} \"-D__extern_always_inline=extern __always_inline\"")
-		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare")
+	if(APPLE AND USE_LUAJIT)
+		# required per http://luajit.org/install.html
+		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000")
+	elseif(UNIX AND USE_LUAJIT)
+		check_c_source_compiles("#ifndef __aarch64__\n#error\n#endif\nint main(){}" IS_AARCH64)
+		if(IS_AARCH64)
+			# Move text segment below LuaJIT's 47-bit limit (see issue #9367)
+			SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Ttext-segment=0x200000000")
+		endif()
 	endif()
 
 	if(MINGW)
@@ -699,14 +749,26 @@ else()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN32_LEAN_AND_MEAN")
 	endif()
 
+	# Use a safe subset of flags to speed up math calculations:
+	# - we don't need errno or math exceptions
+	# - we don't deal with Inf/NaN or signed zero
+	set(MATH_FLAGS "-fno-math-errno -fno-trapping-math -ffinite-math-only -fno-signed-zeros")
+
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -Wall -pipe -funroll-loops")
 	if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|BSD|DragonFly)")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
 	else()
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -ffast-math -fomit-frame-pointer")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer")
+		if(CMAKE_SYSTEM_NAME STREQUAL "Linux"
+				AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+				AND CMAKE_CXX_COMPILER_VERSION MATCHES "^9\\.")
+			# Clang 9 has broken -ffast-math on glibc
+		else()
+			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${MATH_FLAGS}")
+		endif()
 	endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|BSD|DragonFly)")
-	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
@@ -724,7 +786,7 @@ if(WIN32)
 	if(VCPKG_APPLOCAL_DEPS)
 		# Collect the dll's from the output path
 		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Release/
-				DESTINATION ${BINDIR} 
+				DESTINATION ${BINDIR}
 				CONFIGURATIONS Release
 				FILES_MATCHING PATTERN "*.dll")
 		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Debug/
@@ -737,7 +799,7 @@ if(WIN32)
 				FILES_MATCHING PATTERN "*.dll")
 		install(DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/MinSizeRel/
 				DESTINATION ${BINDIR}
-				CONFIGURATIONS RelWithDebInfo
+				CONFIGURATIONS MinSizeRel
 				FILES_MATCHING PATTERN "*.dll")
 	else()
 		# Use the old-style way to install dll's

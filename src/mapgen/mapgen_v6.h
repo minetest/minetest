@@ -55,8 +55,6 @@ enum BiomeV6Type
 
 
 struct MapgenV6Params : public MapgenParams {
-	u32 spflags = MGV6_JUNGLES | MGV6_SNOWBIOMES | MGV6_TREES |
-		MGV6_BIOMEBLEND | MGV6_MUDFLOW;
 	float freq_desert = 0.45f;
 	float freq_beach = 0.15f;
 	s16 dungeon_ymin = -31000;
@@ -79,12 +77,13 @@ struct MapgenV6Params : public MapgenParams {
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
+	void setDefaultSettings(Settings *settings);
 };
 
 
 class MapgenV6 : public Mapgen {
 public:
-	EmergeManager *m_emerge;
+	EmergeParams *m_emerge;
 
 	int ystride;
 	u32 spflags;
@@ -134,7 +133,7 @@ public:
 	content_t c_stair_cobble;
 	content_t c_stair_desert_stone;
 
-	MapgenV6(MapgenV6Params *params, EmergeManager *emerge);
+	MapgenV6(MapgenV6Params *params, EmergeParams *emerge);
 	~MapgenV6();
 
 	virtual MapgenType getType() const { return MAPGEN_V6; }

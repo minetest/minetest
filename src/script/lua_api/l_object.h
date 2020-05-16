@@ -212,6 +212,12 @@ private:
 	// get_player_velocity(self)
 	static int l_get_player_velocity(lua_State *L);
 
+	// add_player_velocity(self, {x=num, y=num, z=num})
+	static int l_add_player_velocity(lua_State *L);
+
+	// get_fov(self)
+	static int l_get_fov(lua_State *L);
+
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L);
 
@@ -228,6 +234,9 @@ private:
 
 	// get_look_yaw2(self)
 	static int l_get_look_horizontal(lua_State *L);
+
+	// set_fov(self, degrees, is_multiplier)
+	static int l_set_fov(lua_State *L);
 
 	// set_look_vertical(self, radians)
 	static int l_set_look_vertical(lua_State *L);
@@ -315,11 +324,32 @@ private:
 	// hud_get_hotbar_selected_image(self)
 	static int l_hud_get_hotbar_selected_image(lua_State *L);
 
-	// set_sky(self, bgcolor, type, list, clouds = true)
+	// set_sky({base_color=, type=, textures=, clouds=, sky_colors={}})
 	static int l_set_sky(lua_State *L);
 
 	// get_sky(self)
 	static int l_get_sky(lua_State *L);
+
+	// get_sky_color(self)
+	static int l_get_sky_color(lua_State* L);
+
+	// set_sun(self, {visible, texture=, tonemap=, sunrise=, rotation=, scale=})
+	static int l_set_sun(lua_State *L);
+
+	// get_sun(self)
+	static int l_get_sun(lua_State *L);
+
+	// set_moon(self, {visible, texture=, tonemap=, rotation, scale=})
+	static int l_set_moon(lua_State *L);
+
+	// get_moon(self)
+	static int l_get_moon(lua_State *L);
+
+	// set_stars(self, {visible, count=, starcolor=, rotation, scale=})
+	static int l_set_stars(lua_State *L);
+
+	// get_stars(self)
+	static int l_get_stars(lua_State *L);
 
 	// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
 	static int l_set_clouds(lua_State *L);

@@ -11,6 +11,7 @@ Comment[tr]=Tek-Çok oyuncuyla küplerden sonsuz dünyalar inşa et
 Exec=minetest
 Icon=minetest
 Terminal=false
+PrefersNonDefaultGPU=true
 Type=Application
 Categories=Game;Simulation;
 StartupNotify=false

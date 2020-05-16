@@ -121,23 +121,26 @@ struct IncomingSplitPacket
 
 	IncomingSplitPacket() = delete;
 
-	// Key is chunk number, value is data without headers
-	std::map<u16, SharedBuffer<u8>> chunks;
-	u32 chunk_count;
 	float time = 0.0f; // Seconds from adding
-	bool reliable = false; // If true, isn't deleted on timeout
+	u32 chunk_count;
+	bool reliable; // If true, isn't deleted on timeout
 
 	bool allReceived() const
 	{
 		return (chunks.size() == chunk_count);
 	}
+	bool insert(u32 chunk_num, SharedBuffer<u8> &chunkdata);
+	SharedBuffer<u8> reassemble();
+
+private:
+	// Key is chunk number, value is data without headers
+	std::map<u16, SharedBuffer<u8>> chunks;
 };
 
 /*
 === NOTES ===
 
 A packet is sent through a channel to a peer with a basic header:
-TODO: Should we have a receiver_peer_id also?
 	Header (7 bytes):
 	[0] u32 protocol_id
 	[4] session_t sender_peer_id
@@ -148,8 +151,7 @@ sender_peer_id:
 	value 1 (PEER_ID_SERVER) is reserved for server
 	these constants are defined in constants.h
 channel:
-	The lower the number, the higher the priority is.
-	Only channels 0, 1 and 2 exist.
+	Channel numbers have no intrinsic meaning. Currently only 0, 1, 2 exist.
 */
 #define BASE_HEADER_SIZE 7
 #define CHANNEL_COUNT 3
@@ -240,7 +242,7 @@ public:
 
 	BufferedPacket popFirst();
 	BufferedPacket popSeqnum(u16 seqnum);
-	void insert(BufferedPacket &p,u16 next_expected);
+	void insert(BufferedPacket &p, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
 	std::list<BufferedPacket> getTimedOuts(float timeout,
@@ -248,16 +250,14 @@ public:
 
 	void print();
 	bool empty();
-	bool containsPacket(u16 seqnum);
 	RPBSearchResult notFound();
 	u32 size();
 
 
 private:
-	RPBSearchResult findPacket(u16 seqnum);
+	RPBSearchResult findPacket(u16 seqnum); // does not perform locking
 
 	std::list<BufferedPacket> m_list;
-	u32 m_list_size = 0;
 
 	u16 m_oldest_non_answered_ack;
 
@@ -384,12 +384,14 @@ struct ConnectionCommand
 	}
 };
 
-/* maximum window size to use, 0xFFFF is theoretical maximum  don't think about
+/* maximum window size to use, 0xFFFF is theoretical maximum. don't think about
  * touching it, the less you're away from it the more likely data corruption
  * will occur
  */
 #define MAX_RELIABLE_WINDOW_SIZE 0x8000
-	/* starting value for window size */
+/* starting value for window size */
+#define START_RELIABLE_WINDOW_SIZE 0x400
+/* minimum value for window size */
 #define MIN_RELIABLE_WINDOW_SIZE 0x40
 
 class Channel
@@ -553,15 +555,15 @@ class Peer {
 
 		bool isTimedOut(float timeout);
 
-		unsigned int m_increment_packets_remaining = 9;
-		unsigned int m_increment_bytes_remaining = 0;
+		unsigned int m_increment_packets_remaining = 0;
 
 		virtual u16 getNextSplitSequenceNumber(u8 channel) { return 0; };
 		virtual void setNextSplitSequenceNumber(u8 channel, u16 seqnum) {};
 		virtual SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacket &toadd,
 				bool reliable)
 		{
-			fprintf(stderr,"Peer: addSplitPacket called, this is supposed to be never called!\n");
+			errorstream << "Peer::addSplitPacket called,"
+					<< " this is supposed to be never called!" << std::endl;
 			return SharedBuffer<u8>(0);
 		};
 
@@ -769,6 +771,7 @@ public:
 	bool Connected();
 	void Disconnect();
 	void Receive(NetworkPacket* pkt);
+	bool TryReceive(NetworkPacket *pkt);
 	void Send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
 	session_t GetPeerID() const { return m_peer_id; }
 	Address GetPeerAddress(session_t peer_id);
@@ -800,6 +803,8 @@ protected:
 
 	UDPSocket m_udpSocket;
 	MutexedQueue<ConnectionCommand> m_command_queue;
+
+	bool Receive(NetworkPacket *pkt, u32 timeout);
 
 	void putEvent(ConnectionEvent &e);
 

@@ -1,4 +1,5 @@
-Checks: '-*,modernize-use-emplace,modernize-use-default-member-init,modernize-use-equals-delete,modernize-use-equals-default,modernize-return-braced-init-list,modernize-loop-convert,modernize-avoid-bind,misc-throw-by-value-catch-by-reference,misc-string-compare,misc-inefficient-algorithm,misc-inaccurate-erase,misc-incorrect-roundings,misc-unconventional-assign-operator,bugprone-suspicious-memset-usage,performance-*'
+Checks: '-*,modernize-use-emplace,modernize-avoid-bind,misc-throw-by-value-catch-by-reference,misc-unconventional-assign-operator,performance-*'
+WarningsAsErrors: '-*,modernize-use-emplace,performance-type-promotion-in-math-fn,performance-faster-string-find,performance-implicit-cast-in-loop'
 CheckOptions:
-  - key: modernize-use-default-member-init.UseAssignment
-    value: True
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: v[23]f;v[23][su](16|32)

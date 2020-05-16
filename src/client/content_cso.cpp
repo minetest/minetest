@@ -48,7 +48,7 @@ public:
 		/* Update brightness */
 		u8 light;
 		bool pos_ok;
-		MapNode n = env->getMap().getNodeNoEx(floatToInt(pos, BS), &pos_ok);
+		MapNode n = env->getMap().getNode(floatToInt(pos, BS), &pos_ok);
 		light = pos_ok ? decode_light(n.getLightBlend(env->getDayNightRatio(),
 							env->getGameDef()->ndef()))
 		               : 64;

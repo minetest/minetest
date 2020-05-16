@@ -30,8 +30,8 @@ inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 		t = 24000.0f - t;
 
 	const float values[9][2] = {
-		{4250.0f + 125.0f, 150.0f},
-		{4500.0f + 125.0f, 150.0f},
+		{4250.0f + 125.0f, 175.0f},
+		{4500.0f + 125.0f, 175.0f},
 		{4750.0f + 125.0f, 250.0f},
 		{5000.0f + 125.0f, 350.0f},
 		{5250.0f + 125.0f, 500.0f},

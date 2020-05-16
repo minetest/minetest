@@ -121,8 +121,3 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);
 }
-
-void log_deprecated(const std::string &message)
-{
-	log_deprecated(NULL, message);
-}

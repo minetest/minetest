@@ -32,9 +32,64 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "voxelalgorithms.h"
 #include "settings.h"
+#include "shader.h"
 #include "content_cao.h"
 #include <algorithm>
 #include "client/renderingengine.h"
+
+/*
+	CAOShaderConstantSetter
+*/
+
+//! Shader constant setter for passing material emissive color to the CAO object_shader
+class CAOShaderConstantSetter : public IShaderConstantSetter
+{
+public:
+	CAOShaderConstantSetter():
+			m_emissive_color_setting("emissiveColor")
+	{}
+
+	~CAOShaderConstantSetter() override = default;
+
+	void onSetConstants(video::IMaterialRendererServices *services,
+			bool is_highlevel) override
+	{
+		if (!is_highlevel)
+			return;
+
+		// Ambient color
+		video::SColorf emissive_color(m_emissive_color);
+
+		float as_array[4] = {
+			emissive_color.r,
+			emissive_color.g,
+			emissive_color.b,
+			emissive_color.a,
+		};
+		m_emissive_color_setting.set(as_array, services);
+	}
+
+	void onSetMaterial(const video::SMaterial& material) override
+	{
+		m_emissive_color = material.EmissiveColor;
+	}
+
+private:
+	video::SColor m_emissive_color;
+	CachedPixelShaderSetting<float, 4> m_emissive_color_setting;
+};
+
+class CAOShaderConstantSetterFactory : public IShaderConstantSetterFactory
+{
+public:
+	CAOShaderConstantSetterFactory()
+	{}
+
+	virtual IShaderConstantSetter* create()
+	{
+		return new CAOShaderConstantSetter();
+	}
+};
 
 /*
 	ClientEnvironment
@@ -47,8 +102,8 @@ ClientEnvironment::ClientEnvironment(ClientMap *map,
 	m_texturesource(texturesource),
 	m_client(client)
 {
-	char zero = 0;
-	memset(attachement_parent_ids, zero, sizeof(attachement_parent_ids));
+	auto *shdrsrc = m_client->getShaderSource();
+	shdrsrc->addShaderConstantSetterFactory(new CAOShaderConstantSetterFactory());
 }
 
 ClientEnvironment::~ClientEnvironment()
@@ -220,7 +275,7 @@ void ClientEnvironment::step(float dtime)
 		f32 post_factor = 1; // 1 hp per node/s
 		if (info.type == COLLISION_NODE) {
 			const ContentFeatures &f = m_client->ndef()->
-				get(m_map->getNodeNoEx(info.node_p));
+				get(m_map->getNode(info.node_p));
 			// Determine fall damage multiplier
 			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
 			pre_factor = 1.0f + (float)addp / 100.0f;
@@ -250,7 +305,7 @@ void ClientEnvironment::step(float dtime)
 		MapNode node_at_lplayer(CONTENT_AIR, 0x0f, 0);
 
 		v3s16 p = lplayer->getLightPosition();
-		node_at_lplayer = m_map->getNodeNoEx(p);
+		node_at_lplayer = m_map->getNode(p);
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
 		final_color_blend(&lplayer->light_color, light, day_night_ratio);
@@ -272,7 +327,7 @@ void ClientEnvironment::step(float dtime)
 
 			// Get node at head
 			v3s16 p = cao->getLightPosition();
-			MapNode n = this->m_map->getNodeNoEx(p, &pos_ok);
+			MapNode n = this->m_map->getNode(p, &pos_ok);
 			if (pos_ok)
 				light = n.getLightBlend(day_night_ratio, m_client->ndef());
 			else
@@ -287,15 +342,14 @@ void ClientEnvironment::step(float dtime)
 	/*
 		Step and handle simple objects
 	*/
-	g_profiler->avg("CEnv: num of simple objects", m_simple_objects.size());
+	g_profiler->avg("ClientEnv: CSO count [#]", m_simple_objects.size());
 	for (auto i = m_simple_objects.begin(); i != m_simple_objects.end();) {
-		auto cur = i;
-		ClientSimpleObject *simple = *cur;
+		ClientSimpleObject *simple = *i;
 
 		simple->step(dtime);
 		if(simple->m_to_be_removed) {
 			delete simple;
-			i = m_simple_objects.erase(cur);
+			i = m_simple_objects.erase(i);
 		}
 		else {
 			++i;
@@ -353,7 +407,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 
 	// Get node at head
 	v3s16 p = object->getLightPosition();
-	MapNode n = m_map->getNodeNoEx(p, &pos_ok);
+	MapNode n = m_map->getNode(p, &pos_ok);
 	if (pos_ok)
 		light = n.getLightBlend(getDayNightRatio(), m_client->ndef());
 	else
@@ -392,7 +446,34 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 			<<std::endl;
 	}
 
-	addActiveObject(obj);
+	u16 new_id = addActiveObject(obj);
+	// Object initialized:
+	if ((obj = getActiveObject(new_id))) {
+		// Final step is to update all children which are already known
+		// Data provided by AO_CMD_SPAWN_INFANT
+		const auto &children = obj->getAttachmentChildIds();
+		for (auto c_id : children) {
+			if (auto *o = getActiveObject(c_id))
+				o->updateAttachments();
+		}
+	}
+}
+
+
+void ClientEnvironment::removeActiveObject(u16 id)
+{
+	// Get current attachment childs to detach them visually
+	std::unordered_set<int> attachment_childs;
+	if (auto *obj = getActiveObject(id))
+		attachment_childs = obj->getAttachmentChildIds();
+
+	m_ao_manager.removeObject(id);
+
+	// Perform a proper detach in Irrlicht
+	for (auto c_id : attachment_childs) {
+		if (ClientActiveObject *child = getActiveObject(c_id))
+			child->updateAttachments();
+	}
 }
 
 void ClientEnvironment::processActiveObjectMessage(u16 id, const std::string &data)

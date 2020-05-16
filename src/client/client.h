@@ -82,30 +82,19 @@ public:
 
 	void add(u16 command)
 	{
-		std::map<u16, u16>::iterator n = m_packets.find(command);
-		if(n == m_packets.end())
-		{
+		auto n = m_packets.find(command);
+		if (n == m_packets.end())
 			m_packets[command] = 1;
-		}
 		else
-		{
 			n->second++;
-		}
 	}
 
 	void clear()
 	{
-		for (auto &m_packet : m_packets) {
-			m_packet.second = 0;
-		}
+		m_packets.clear();
 	}
 
-	void print(std::ostream &o)
-	{
-		for (const auto &m_packet : m_packets) {
-			o << "cmd "<< m_packet.first <<" count "<< m_packet.second << std::endl;
-		}
-	}
+	void print(std::ostream &o) const;
 
 private:
 	// command, count
@@ -193,6 +182,7 @@ public:
 	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
 	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
 	void handleCommand_Movement(NetworkPacket* pkt);
+	void handleCommand_Fov(NetworkPacket *pkt);
 	void handleCommand_HP(NetworkPacket* pkt);
 	void handleCommand_Breath(NetworkPacket* pkt);
 	void handleCommand_MovePlayer(NetworkPacket* pkt);
@@ -217,6 +207,9 @@ public:
 	void handleCommand_HudSetFlags(NetworkPacket* pkt);
 	void handleCommand_HudSetParam(NetworkPacket* pkt);
 	void handleCommand_HudSetSky(NetworkPacket* pkt);
+	void handleCommand_HudSetSun(NetworkPacket* pkt);
+	void handleCommand_HudSetMoon(NetworkPacket* pkt);
+	void handleCommand_HudSetStars(NetworkPacket* pkt);
 	void handleCommand_CloudParams(NetworkPacket* pkt);
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
@@ -227,12 +220,13 @@ public:
 	void handleCommand_SrpBytesSandB(NetworkPacket *pkt);
 	void handleCommand_FormspecPrepend(NetworkPacket *pkt);
 	void handleCommand_CSMRestrictionFlags(NetworkPacket *pkt);
+	void handleCommand_PlayerSpeed(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
 	void Send(NetworkPacket* pkt);
 
-	void interact(u8 action, const PointedThing& pointed);
+	void interact(InteractAction action, const PointedThing &pointed);
 
 	void sendNodemetaFields(v3s16 p, const std::string &formname,
 		const StringMap &fields);
@@ -259,31 +253,25 @@ public:
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
 
-	/**
-	 * Helper function for Client Side Modding
-	 * CSM restrictions are applied there, this should not be used for core engine
-	 * @param p
-	 * @param is_valid_position
-	 * @return
-	 */
-	MapNode getNode(v3s16 p, bool *is_valid_position);
+	// helpers to enforce CSM restrictions
+	MapNode CSMGetNode(v3s16 p, bool *is_valid_position);
+	int CSMClampRadius(v3s16 pos, int radius);
+	v3s16 CSMClampPos(v3s16 pos);
+
 	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
 
 	void setPlayerControl(PlayerControl &control);
 
-	void selectPlayerItem(u16 item);
-	u16 getPlayerItem() const
-	{ return m_playeritem; }
-
 	// Returns true if the inventory of the local player has been
 	// updated from the server. If it is true, it is set to false.
-	bool getLocalInventoryUpdated();
-	// Copies the inventory of the local player to parameter
-	void getLocalInventory(Inventory &dst);
+	bool updateWieldedItem();
 
 	/* InventoryManager interface */
 	Inventory* getInventory(const InventoryLocation &loc) override;
 	void inventoryAction(InventoryAction *a) override;
+
+	// Send the item number 'item' as player item to the server
+	void setPlayerItem(u16 item);
 
 	const std::list<std::string> &getConnectedPlayerNames()
 	{
@@ -335,12 +323,14 @@ public:
 	// disconnect client when CSM failed.
 	const std::string &accessDeniedReason() const { return m_access_denied_reason; }
 
-	bool itemdefReceived()
+	const bool itemdefReceived() const
 	{ return m_itemdef_received; }
-	bool nodedefReceived()
+	const bool nodedefReceived() const
 	{ return m_nodedef_received; }
-	bool mediaReceived()
+	const bool mediaReceived() const
 	{ return !m_media_downloader; }
+	const bool activeObjectsReceived() const
+	{ return m_activeobjects_received; }
 
 	u16 getProtoVersion()
 	{ return m_proto_ver; }
@@ -369,7 +359,7 @@ public:
 	const NodeDefManager* getNodeDefManager() override;
 	ICraftDefManager* getCraftDefManager() override;
 	ITextureSource* getTextureSource();
-	virtual IShaderSource* getShaderSource();
+	virtual IWritableShaderSource* getShaderSource();
 	u16 allocateUnknownNodeId(const std::string &name) override;
 	virtual ISoundManager* getSoundManager();
 	MtEventManager* getEventManager();
@@ -377,7 +367,7 @@ public:
 	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
-	const std::string* getModFile(const std::string &filename);
+	const std::string* getModFile(std::string filename);
 
 	std::string getModStoragePath() const override;
 	bool registerModStorage(ModMetadata *meta) override;
@@ -399,7 +389,6 @@ public:
 	}
 
 	ClientScripting *getScript() { return m_script; }
-	const bool moddingEnabled() const { return m_modding_enabled; }
 	const bool modsLoaded() const { return m_mods_loaded; }
 
 	void pushToEventQueue(ClientEvent *event);
@@ -411,6 +400,11 @@ public:
 	const std::string &getAddressName() const
 	{
 		return m_address_name;
+	}
+
+	inline u64 getCSMRestrictionFlags() const
+	{
+		return m_csm_restriction_flags;
 	}
 
 	inline bool checkCSMRestrictionFlag(CSMRestrictionFlags flag) const
@@ -451,11 +445,8 @@ private:
 			bool is_local_server);
 
 	void ReceiveAll();
-	void Receive();
 
 	void sendPlayerPos();
-	// Send the item number 'item' as player item to the server
-	void sendPlayerItem(u16 item);
 
 	void deleteAuthData();
 	// helper method shared with clientpackethandler
@@ -465,7 +456,7 @@ private:
 	void promptConfirmRegistration(AuthMechanism chosen_auth_mechanism);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
-	void sendGotBlocks(v3s16 block);
+	void sendGotBlocks(const std::vector<v3s16> &blocks);
 	void sendRemovedSounds(std::vector<s32> &soundList);
 
 	// Helper function
@@ -506,8 +497,7 @@ private:
 	// If 0, server init hasn't been received yet.
 	u16 m_proto_ver = 0;
 
-	u16 m_playeritem = 0;
-	bool m_inventory_updated = false;
+	bool m_update_wielded_item = false;
 	Inventory *m_inventory_from_server = nullptr;
 	float m_inventory_from_server_age = 0.0f;
 	PacketCounter m_packetcounter;
@@ -545,6 +535,7 @@ private:
 	std::queue<ClientEvent *> m_client_event_queue;
 	bool m_itemdef_received = false;
 	bool m_nodedef_received = false;
+	bool m_activeobjects_received = false;
 	bool m_mods_loaded = false;
 	ClientMediaDownloader *m_media_downloader;
 
@@ -562,7 +553,7 @@ private:
 	std::unordered_map<s32, int> m_sounds_server_to_client;
 	// And the other way!
 	std::unordered_map<int, s32> m_sounds_client_to_server;
-	// And relations to objects
+	// Relation of client id to object id
 	std::unordered_map<int, u16> m_sounds_to_objects;
 
 	// Map server hud ids to client hud ids
@@ -578,8 +569,6 @@ private:
 	// Storage for mesh data for creating multiple instances of the same mesh
 	StringMap m_mesh_data;
 
-	StringMap m_mod_files;
-
 	// own state
 	LocalClientState m_state;
 
@@ -590,11 +579,13 @@ private:
 	IntervalLimiter m_localdb_save_interval;
 	u16 m_cache_save_interval;
 
+	// Client modding
 	ClientScripting *m_script = nullptr;
 	bool m_modding_enabled;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
+	StringMap m_mod_vfs;
 
 	bool m_shutdown = false;
 

@@ -18,6 +18,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "guiPasswordChange.h"
 #include "client/client.h"
+#include "guiButton.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
 #include <IGUIButton.h>
@@ -37,10 +38,12 @@ const int ID_cancel = 261;
 GUIPasswordChange::GUIPasswordChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
-		Client* client
+		Client* client,
+		ISimpleTextureSource *tsrc
 ):
 	GUIModalMenu(env, parent, id, menumgr),
-	m_client(client)
+	m_client(client),
+	m_tsrc(tsrc)
 {
 }
 
@@ -145,14 +148,14 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 		rect = rect + v2s32(size.X / 4 + 56 * s, ypos);
 		text = wgettext("Change");
-		Environment->addButton(rect, this, ID_change, text);
+		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_change, text);
 		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 		rect = rect + v2s32(size.X / 4 + 185 * s, ypos);
 		text = wgettext("Cancel");
-		Environment->addButton(rect, this, ID_cancel, text);
+		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_cancel, text);
 		delete[] text;
 	}
 

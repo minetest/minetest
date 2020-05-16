@@ -20,18 +20,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irr_aabb3d.h"
+#include "irr_v3d.h"
 #include <string>
+
 
 enum ActiveObjectType {
 	ACTIVEOBJECT_TYPE_INVALID = 0,
 	ACTIVEOBJECT_TYPE_TEST = 1,
-// Deprecated stuff
+// Obsolete stuff
 	ACTIVEOBJECT_TYPE_ITEM = 2,
 //	ACTIVEOBJECT_TYPE_RAT = 3,
 //	ACTIVEOBJECT_TYPE_OERKKI1 = 4,
 //	ACTIVEOBJECT_TYPE_FIREFLY = 5,
 	ACTIVEOBJECT_TYPE_MOBV2 = 6,
-// End deprecated stuff
+// End obsolete stuff
 	ACTIVEOBJECT_TYPE_LUAENTITY = 7,
 // Special type, not stored as a static object
 	ACTIVEOBJECT_TYPE_PLAYER = 100,
@@ -51,6 +53,22 @@ struct ActiveObjectMessage
 	u16 id;
 	bool reliable;
 	std::string datastring;
+};
+
+enum ActiveObjectCommand {
+	AO_CMD_SET_PROPERTIES,
+	AO_CMD_UPDATE_POSITION,
+	AO_CMD_SET_TEXTURE_MOD,
+	AO_CMD_SET_SPRITE,
+	AO_CMD_PUNCHED,
+	AO_CMD_UPDATE_ARMOR_GROUPS,
+	AO_CMD_SET_ANIMATION,
+	AO_CMD_SET_BONE_POSITION,
+	AO_CMD_ATTACH_TO,
+	AO_CMD_SET_PHYSICS_OVERRIDE,
+	AO_CMD_UPDATE_NAMETAG_ATTRIBUTES,
+	AO_CMD_SPAWN_INFANT,
+	AO_CMD_SET_ANIMATION_SPEED
 };
 
 /*
@@ -98,6 +116,16 @@ public:
 
 
 	virtual bool collideWithObjects() const = 0;
+
+
+	virtual void setAttachment(int parent_id, const std::string &bone, v3f position,
+			v3f rotation) {}
+	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position,
+			v3f *rotation) const {}
+	virtual void clearChildAttachments() {}
+	virtual void clearParentAttachment() {}
+	virtual void addAttachmentChild(int child_id) {}
+	virtual void removeAttachmentChild(int child_id) {}
 protected:
 	u16 m_id; // 0 is invalid, "no id"
 };

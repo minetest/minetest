@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2013-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2014-2018 paramat
+Copyright (C) 2014-2020 paramat
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -52,29 +51,33 @@ FlagDesc flagdesc_mapgen_v7[] = {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV7::MapgenV7(MapgenV7Params *params, EmergeManager *emerge)
+MapgenV7::MapgenV7(MapgenV7Params *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_V7, params, emerge)
 {
-	spflags              = params->spflags;
-	mount_zero_level     = params->mount_zero_level;
-	float_mount_density  = params->float_mount_density;
-	float_mount_exponent = params->float_mount_exponent;
-	floatland_level      = params->floatland_level;
-	shadow_limit         = params->shadow_limit;
+	spflags            = params->spflags;
+	mount_zero_level   = params->mount_zero_level;
+	floatland_ymin     = params->floatland_ymin;
+	floatland_ymax     = params->floatland_ymax;
+	floatland_taper    = params->floatland_taper;
+	float_taper_exp    = params->float_taper_exp;
+	floatland_density  = params->floatland_density;
+	floatland_ywater   = params->floatland_ywater;
 
-	cave_width           = params->cave_width;
-	large_cave_depth     = params->large_cave_depth;
-	lava_depth           = params->lava_depth;
-	cavern_limit         = params->cavern_limit;
-	cavern_taper         = params->cavern_taper;
-	cavern_threshold     = params->cavern_threshold;
-	dungeon_ymin         = params->dungeon_ymin;
-	dungeon_ymax         = params->dungeon_ymax;
+	cave_width         = params->cave_width;
+	large_cave_depth   = params->large_cave_depth;
+	small_cave_num_min = params->small_cave_num_min;
+	small_cave_num_max = params->small_cave_num_max;
+	large_cave_num_min = params->large_cave_num_min;
+	large_cave_num_max = params->large_cave_num_max;
+	large_cave_flooded = params->large_cave_flooded;
+	cavern_limit       = params->cavern_limit;
+	cavern_taper       = params->cavern_taper;
+	cavern_threshold   = params->cavern_threshold;
+	dungeon_ymin       = params->dungeon_ymin;
+	dungeon_ymax       = params->dungeon_ymax;
 
-	// This is to avoid a divide-by-zero.
-	// Parameter will be saved to map_meta.txt in limited form.
-	params->float_mount_height = std::fmax(params->float_mount_height, 1.0f);
-	float_mount_height   = params->float_mount_height;
+	// Allocate floatland noise offset cache
+	this->float_offset_cache = new float[csize.Y + 2];
 
 	// 2D noise
 	noise_terrain_base =
@@ -88,34 +91,35 @@ MapgenV7::MapgenV7(MapgenV7Params *params, EmergeManager *emerge)
 	noise_filler_depth =
 		new Noise(&params->np_filler_depth,    seed, csize.X, csize.Z);
 
-	if (spflags & MGV7_MOUNTAINS)
+	if (spflags & MGV7_MOUNTAINS) {
+		// 2D noise
 		noise_mount_height =
-			new Noise(&params->np_mount_height,      seed, csize.X, csize.Z);
-
-	if (spflags & MGV7_FLOATLANDS) {
-		noise_floatland_base =
-			new Noise(&params->np_floatland_base,    seed, csize.X, csize.Z);
-		noise_float_base_height =
-			new Noise(&params->np_float_base_height, seed, csize.X, csize.Z);
+			new Noise(&params->np_mount_height, seed, csize.X, csize.Z);
+		// 3D noise, 1 up, 1 down overgeneration
+		noise_mountain =
+			new Noise(&params->np_mountain,     seed, csize.X, csize.Y + 2, csize.Z);
 	}
 
 	if (spflags & MGV7_RIDGES) {
+		// 2D noise
 		noise_ridge_uwater =
-			new Noise(&params->np_ridge_uwater,      seed, csize.X, csize.Z);
-	// 3D noise, 1 up, 1 down overgeneration
+			new Noise(&params->np_ridge_uwater, seed, csize.X, csize.Z);
+		// 3D noise, 1 up, 1 down overgeneration
 		noise_ridge =
-			new Noise(&params->np_ridge,    seed, csize.X, csize.Y + 2, csize.Z);
+			new Noise(&params->np_ridge,        seed, csize.X, csize.Y + 2, csize.Z);
 	}
 
-	// 3D noise, 1 up, 1 down overgeneration
-	if ((spflags & MGV7_MOUNTAINS) || (spflags & MGV7_FLOATLANDS))
-		noise_mountain =
-			new Noise(&params->np_mountain, seed, csize.X, csize.Y + 2, csize.Z);
+	if (spflags & MGV7_FLOATLANDS) {
+		// 3D noise, 1 up, 1 down overgeneration
+		noise_floatland =
+			new Noise(&params->np_floatland,    seed, csize.X, csize.Y + 2, csize.Z);
+	}
 
 	// 3D noise, 1 down overgeneration
 	MapgenBasic::np_cave1    = params->np_cave1;
 	MapgenBasic::np_cave2    = params->np_cave2;
 	MapgenBasic::np_cavern   = params->np_cavern;
+	// 3D noise
 	MapgenBasic::np_dungeons = params->np_dungeons;
 }
 
@@ -128,12 +132,9 @@ MapgenV7::~MapgenV7()
 	delete noise_height_select;
 	delete noise_filler_depth;
 
-	if (spflags & MGV7_MOUNTAINS)
+	if (spflags & MGV7_MOUNTAINS) {
 		delete noise_mount_height;
-
-	if (spflags & MGV7_FLOATLANDS) {
-		delete noise_floatland_base;
-		delete noise_float_base_height;
+		delete noise_mountain;
 	}
 
 	if (spflags & MGV7_RIDGES) {
@@ -141,8 +142,11 @@ MapgenV7::~MapgenV7()
 		delete noise_ridge;
 	}
 
-	if ((spflags & MGV7_MOUNTAINS) || (spflags & MGV7_FLOATLANDS))
-		delete noise_mountain;
+	if (spflags & MGV7_FLOATLANDS) {
+		delete noise_floatland;
+	}
+
+	delete []float_offset_cache;
 }
 
 
@@ -154,10 +158,9 @@ MapgenV7Params::MapgenV7Params():
 	np_filler_depth      (0.0,   1.2,   v3f(150,  150,  150),  261,   3, 0.7,  2.0),
 	np_mount_height      (256.0, 112.0, v3f(1000, 1000, 1000), 72449, 3, 0.6,  2.0),
 	np_ridge_uwater      (0.0,   1.0,   v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0),
-	np_floatland_base    (-0.6,  1.5,   v3f(600,  600,  600),  114,   5, 0.6,  2.0),
-	np_float_base_height (48.0,  24.0,  v3f(300,  300,  300),  907,   4, 0.7,  2.0),
 	np_mountain          (-0.6,  1.0,   v3f(250,  350,  250),  5333,  5, 0.63, 2.0),
 	np_ridge             (0.0,   1.0,   v3f(100,  100,  100),  6467,  4, 0.75, 2.0),
+	np_floatland         (0.0,   0.7,   v3f(384,  96,   384),  1009,  4, 0.75, 1.618),
 	np_cavern            (0.0,   1.0,   v3f(384,  128,  384),  723,   5, 0.63, 2.0),
 	np_cave1             (0.0,   12.0,  v3f(61,   61,   61),   52534, 3, 0.5,  2.0),
 	np_cave2             (0.0,   12.0,  v3f(67,   67,   67),   10325, 3, 0.5,  2.0),
@@ -170,71 +173,88 @@ void MapgenV7Params::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgv7_spflags", spflags, flagdesc_mapgen_v7);
 	settings->getS16NoEx("mgv7_mount_zero_level",       mount_zero_level);
+	settings->getS16NoEx("mgv7_floatland_ymin",         floatland_ymin);
+	settings->getS16NoEx("mgv7_floatland_ymax",         floatland_ymax);
+	settings->getS16NoEx("mgv7_floatland_taper",        floatland_taper);
+	settings->getFloatNoEx("mgv7_float_taper_exp",      float_taper_exp);
+	settings->getFloatNoEx("mgv7_floatland_density",    floatland_density);
+	settings->getS16NoEx("mgv7_floatland_ywater",       floatland_ywater);
+
 	settings->getFloatNoEx("mgv7_cave_width",           cave_width);
 	settings->getS16NoEx("mgv7_large_cave_depth",       large_cave_depth);
-	settings->getS16NoEx("mgv7_lava_depth",             lava_depth);
-	settings->getFloatNoEx("mgv7_float_mount_density",  float_mount_density);
-	settings->getFloatNoEx("mgv7_float_mount_height",   float_mount_height);
-	settings->getFloatNoEx("mgv7_float_mount_exponent", float_mount_exponent);
-	settings->getS16NoEx("mgv7_floatland_level",        floatland_level);
-	settings->getS16NoEx("mgv7_shadow_limit",           shadow_limit);
+	settings->getU16NoEx("mgv7_small_cave_num_min",     small_cave_num_min);
+	settings->getU16NoEx("mgv7_small_cave_num_max",     small_cave_num_max);
+	settings->getU16NoEx("mgv7_large_cave_num_min",     large_cave_num_min);
+	settings->getU16NoEx("mgv7_large_cave_num_max",     large_cave_num_max);
+	settings->getFloatNoEx("mgv7_large_cave_flooded",   large_cave_flooded);
 	settings->getS16NoEx("mgv7_cavern_limit",           cavern_limit);
 	settings->getS16NoEx("mgv7_cavern_taper",           cavern_taper);
 	settings->getFloatNoEx("mgv7_cavern_threshold",     cavern_threshold);
 	settings->getS16NoEx("mgv7_dungeon_ymin",           dungeon_ymin);
 	settings->getS16NoEx("mgv7_dungeon_ymax",           dungeon_ymax);
 
-	settings->getNoiseParams("mgv7_np_terrain_base",      np_terrain_base);
-	settings->getNoiseParams("mgv7_np_terrain_alt",       np_terrain_alt);
-	settings->getNoiseParams("mgv7_np_terrain_persist",   np_terrain_persist);
-	settings->getNoiseParams("mgv7_np_height_select",     np_height_select);
-	settings->getNoiseParams("mgv7_np_filler_depth",      np_filler_depth);
-	settings->getNoiseParams("mgv7_np_mount_height",      np_mount_height);
-	settings->getNoiseParams("mgv7_np_ridge_uwater",      np_ridge_uwater);
-	settings->getNoiseParams("mgv7_np_floatland_base",    np_floatland_base);
-	settings->getNoiseParams("mgv7_np_float_base_height", np_float_base_height);
-	settings->getNoiseParams("mgv7_np_mountain",          np_mountain);
-	settings->getNoiseParams("mgv7_np_ridge",             np_ridge);
-	settings->getNoiseParams("mgv7_np_cavern",            np_cavern);
-	settings->getNoiseParams("mgv7_np_cave1",             np_cave1);
-	settings->getNoiseParams("mgv7_np_cave2",             np_cave2);
-	settings->getNoiseParams("mgv7_np_dungeons",          np_dungeons);
+	settings->getNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
+	settings->getNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
+	settings->getNoiseParams("mgv7_np_terrain_persist", np_terrain_persist);
+	settings->getNoiseParams("mgv7_np_height_select",   np_height_select);
+	settings->getNoiseParams("mgv7_np_filler_depth",    np_filler_depth);
+	settings->getNoiseParams("mgv7_np_mount_height",    np_mount_height);
+	settings->getNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater);
+	settings->getNoiseParams("mgv7_np_mountain",        np_mountain);
+	settings->getNoiseParams("mgv7_np_ridge",           np_ridge);
+	settings->getNoiseParams("mgv7_np_floatland",       np_floatland);
+	settings->getNoiseParams("mgv7_np_cavern",          np_cavern);
+	settings->getNoiseParams("mgv7_np_cave1",           np_cave1);
+	settings->getNoiseParams("mgv7_np_cave2",           np_cave2);
+	settings->getNoiseParams("mgv7_np_dungeons",        np_dungeons);
 }
 
 
 void MapgenV7Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7, U32_MAX);
-	settings->setS16("mgv7_mount_zero_level",       mount_zero_level);
-	settings->setFloat("mgv7_cave_width",           cave_width);
-	settings->setS16("mgv7_large_cave_depth",       large_cave_depth);
-	settings->setS16("mgv7_lava_depth",             lava_depth);
-	settings->setFloat("mgv7_float_mount_density",  float_mount_density);
-	settings->setFloat("mgv7_float_mount_height",   float_mount_height);
-	settings->setFloat("mgv7_float_mount_exponent", float_mount_exponent);
-	settings->setS16("mgv7_floatland_level",        floatland_level);
-	settings->setS16("mgv7_shadow_limit",           shadow_limit);
-	settings->setS16("mgv7_cavern_limit",           cavern_limit);
-	settings->setS16("mgv7_cavern_taper",           cavern_taper);
-	settings->setFloat("mgv7_cavern_threshold",     cavern_threshold);
-	settings->setS16("mgv7_dungeon_ymin",           dungeon_ymin);
-	settings->setS16("mgv7_dungeon_ymax",           dungeon_ymax);
+	settings->setFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7);
+	settings->setS16("mgv7_mount_zero_level",           mount_zero_level);
+	settings->setS16("mgv7_floatland_ymin",             floatland_ymin);
+	settings->setS16("mgv7_floatland_ymax",             floatland_ymax);
+	settings->setS16("mgv7_floatland_taper",            floatland_taper);
+	settings->setFloat("mgv7_float_taper_exp",          float_taper_exp);
+	settings->setFloat("mgv7_floatland_density",        floatland_density);
+	settings->setS16("mgv7_floatland_ywater",           floatland_ywater);
 
-	settings->setNoiseParams("mgv7_np_terrain_base",      np_terrain_base);
-	settings->setNoiseParams("mgv7_np_terrain_alt",       np_terrain_alt);
-	settings->setNoiseParams("mgv7_np_terrain_persist",   np_terrain_persist);
-	settings->setNoiseParams("mgv7_np_height_select",     np_height_select);
-	settings->setNoiseParams("mgv7_np_filler_depth",      np_filler_depth);
-	settings->setNoiseParams("mgv7_np_mount_height",      np_mount_height);
-	settings->setNoiseParams("mgv7_np_ridge_uwater",      np_ridge_uwater);
-	settings->setNoiseParams("mgv7_np_floatland_base",    np_floatland_base);
-	settings->setNoiseParams("mgv7_np_float_base_height", np_float_base_height);
-	settings->setNoiseParams("mgv7_np_mountain",          np_mountain);
-	settings->setNoiseParams("mgv7_np_ridge",             np_ridge);
-	settings->setNoiseParams("mgv7_np_cavern",            np_cavern);
-	settings->setNoiseParams("mgv7_np_cave1",             np_cave1);
-	settings->setNoiseParams("mgv7_np_cave2",             np_cave2);
-	settings->setNoiseParams("mgv7_np_dungeons",          np_dungeons);
+	settings->setFloat("mgv7_cave_width",               cave_width);
+	settings->setS16("mgv7_large_cave_depth",           large_cave_depth);
+	settings->setU16("mgv7_small_cave_num_min",         small_cave_num_min);
+	settings->setU16("mgv7_small_cave_num_max",         small_cave_num_max);
+	settings->setU16("mgv7_large_cave_num_min",         large_cave_num_min);
+	settings->setU16("mgv7_large_cave_num_max",         large_cave_num_max);
+	settings->setFloat("mgv7_large_cave_flooded",       large_cave_flooded);
+	settings->setS16("mgv7_cavern_limit",               cavern_limit);
+	settings->setS16("mgv7_cavern_taper",               cavern_taper);
+	settings->setFloat("mgv7_cavern_threshold",         cavern_threshold);
+	settings->setS16("mgv7_dungeon_ymin",               dungeon_ymin);
+	settings->setS16("mgv7_dungeon_ymax",               dungeon_ymax);
+
+	settings->setNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
+	settings->setNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
+	settings->setNoiseParams("mgv7_np_terrain_persist", np_terrain_persist);
+	settings->setNoiseParams("mgv7_np_height_select",   np_height_select);
+	settings->setNoiseParams("mgv7_np_filler_depth",    np_filler_depth);
+	settings->setNoiseParams("mgv7_np_mount_height",    np_mount_height);
+	settings->setNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater);
+	settings->setNoiseParams("mgv7_np_mountain",        np_mountain);
+	settings->setNoiseParams("mgv7_np_ridge",           np_ridge);
+	settings->setNoiseParams("mgv7_np_floatland",       np_floatland);
+	settings->setNoiseParams("mgv7_np_cavern",          np_cavern);
+	settings->setNoiseParams("mgv7_np_cave1",           np_cave1);
+	settings->setNoiseParams("mgv7_np_cave2",           np_cave2);
+	settings->setNoiseParams("mgv7_np_dungeons",        np_dungeons);
+}
+
+
+void MapgenV7Params::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgv7_spflags", flagdesc_mapgen_v7,
+		MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS);
 }
 
 
@@ -360,8 +380,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons
-	if ((flags & MG_DUNGEONS) && full_node_min.Y >= dungeon_ymin &&
-			full_node_max.Y <= dungeon_ymax)
+	if (flags & MG_DUNGEONS)
 		generateDungeons(stone_surface_max_y);
 
 	// Generate the registered decorations
@@ -375,10 +394,10 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	// Update liquids
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 
-	// Calculate lighting.
-	// Limit floatland shadow.
+	// Calculate lighting
+	// Limit floatland shadows
 	bool propagate_shadow = !((spflags & MGV7_FLOATLANDS) &&
-		node_min.Y <= shadow_limit && node_max.Y >= shadow_limit);
+		node_max.Y >= floatland_ymin - csize.Y * 2 && node_min.Y <= floatland_ymax);
 
 	if (flags & MG_LIGHT)
 		calcLighting(node_min - v3s16(0, 1, 0), node_max + v3s16(0, 1, 0),
@@ -447,50 +466,9 @@ bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 }
 
 
-bool MapgenV7::getFloatlandMountainFromMap(int idx_xyz, int idx_xz, s16 y)
+bool MapgenV7::getFloatlandTerrainFromMap(int idx_xyz, float float_offset)
 {
-	// Make rim 2 nodes thick to match floatland base terrain
-	float density_gradient = (y >= floatland_level) ?
-		-std::pow((float)(y - floatland_level) / float_mount_height,
-		float_mount_exponent) :
-		-std::pow((float)(floatland_level - 1 - y) / float_mount_height,
-		float_mount_exponent);
-
-	float floatn = noise_mountain->result[idx_xyz] + float_mount_density;
-
-	return floatn + density_gradient >= 0.0f;
-}
-
-
-void MapgenV7::floatBaseExtentFromMap(s16 *float_base_min, s16 *float_base_max,
-	int idx_xz)
-{
-	// '+1' to avoid a layer of stone at y = MAX_MAP_GENERATION_LIMIT
-	s16 base_min = MAX_MAP_GENERATION_LIMIT + 1;
-	s16 base_max = MAX_MAP_GENERATION_LIMIT;
-
-	float n_base = noise_floatland_base->result[idx_xz];
-	if (n_base > 0.0f) {
-		float n_base_height =
-				std::fmax(noise_float_base_height->result[idx_xz], 1.0f);
-		float amp = n_base * n_base_height;
-		float ridge = n_base_height / 3.0f;
-		base_min = floatland_level - amp / 1.5f;
-
-		if (amp > ridge * 2.0f) {
-			// Lake bed
-			base_max = floatland_level - (amp - ridge * 2.0f) / 2.0f;
-		} else {
-			// Hills and ridges
-			float diff = std::fabs(amp - ridge) / ridge;
-			// Smooth ridges using the 'smoothstep function'
-			float smooth_diff = diff * diff * (3.0f - 2.0f * diff);
-			base_max = floatland_level + ridge - smooth_diff * ridge;
-		}
-	}
-
-	*float_base_min = base_min;
-	*float_base_max = base_max;
+	return noise_floatland->result[idx_xyz] + floatland_density - float_offset >= 0.0f;
 }
 
 
@@ -508,17 +486,38 @@ int MapgenV7::generateTerrain()
 	noise_terrain_alt->perlinMap2D(node_min.X, node_min.Z, persistmap);
 	noise_height_select->perlinMap2D(node_min.X, node_min.Z);
 
-	if ((spflags & MGV7_MOUNTAINS) || (spflags & MGV7_FLOATLANDS)) {
+	if (spflags & MGV7_MOUNTAINS) {
+		noise_mount_height->perlinMap2D(node_min.X, node_min.Z);
 		noise_mountain->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 	}
 
-	if (spflags & MGV7_MOUNTAINS) {
-		noise_mount_height->perlinMap2D(node_min.X, node_min.Z);
-	}
+	//// Floatlands
+	// 'Generate floatlands in this mapchunk' bool for
+	// simplification of condition checks in y-loop.
+	bool gen_floatlands = false;
+	u8 cache_index = 0;
+	// Y values where floatland tapering starts
+	s16 float_taper_ymax = floatland_ymax - floatland_taper;
+	s16 float_taper_ymin = floatland_ymin + floatland_taper;
 
-	if (spflags & MGV7_FLOATLANDS) {
-		noise_floatland_base->perlinMap2D(node_min.X, node_min.Z);
-		noise_float_base_height->perlinMap2D(node_min.X, node_min.Z);
+	if ((spflags & MGV7_FLOATLANDS) &&
+			node_max.Y >= floatland_ymin && node_min.Y <= floatland_ymax) {
+		gen_floatlands = true;
+		// Calculate noise for floatland generation
+		noise_floatland->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+
+		// Cache floatland noise offset values, for floatland tapering
+		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++, cache_index++) {
+			float float_offset = 0.0f;
+			if (y > float_taper_ymax) {
+				float_offset = std::pow((y - float_taper_ymax) / (float)floatland_taper,
+					float_taper_exp) * 4.0f;
+			} else if (y < float_taper_ymin) {
+				float_offset = std::pow((float_taper_ymin - y) / (float)floatland_taper,
+					float_taper_exp) * 4.0f;
+			}
+			float_offset_cache[cache_index] = float_offset;
+		}
 	}
 
 	//// Place nodes
@@ -532,20 +531,15 @@ int MapgenV7::generateTerrain()
 		if (surface_y > stone_surface_max_y)
 			stone_surface_max_y = surface_y;
 
-		// Get extent of floatland base terrain
-		// '+1' to avoid a layer of stone at y = MAX_MAP_GENERATION_LIMIT
-		s16 float_base_min = MAX_MAP_GENERATION_LIMIT + 1;
-		s16 float_base_max = MAX_MAP_GENERATION_LIMIT;
-		if (spflags & MGV7_FLOATLANDS)
-			floatBaseExtentFromMap(&float_base_min, &float_base_max, index2d);
-
+		cache_index = 0;
 		u32 vi = vm->m_area.index(x, node_min.Y - 1, z);
 		u32 index3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
 
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1;
 				y++,
 				index3d += ystride,
-				VoxelArea::add_y(em, vi, 1)) {
+				VoxelArea::add_y(em, vi, 1),
+				cache_index++) {
 			if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
 				continue;
 
@@ -556,18 +550,18 @@ int MapgenV7::generateTerrain()
 				vm->m_data[vi] = n_stone; // Mountain terrain
 				if (y > stone_surface_max_y)
 					stone_surface_max_y = y;
-			} else if ((spflags & MGV7_FLOATLANDS) &&
-					((y >= float_base_min && y <= float_base_max) ||
-					getFloatlandMountainFromMap(index3d, index2d, y))) {
+			} else if (gen_floatlands &&
+					getFloatlandTerrainFromMap(index3d,
+					float_offset_cache[cache_index])) {
 				vm->m_data[vi] = n_stone; // Floatland terrain
-				stone_surface_max_y = node_max.Y;
-			} else if (y <= water_level) {
-				vm->m_data[vi] = n_water; // Ground level water
-			} else if ((spflags & MGV7_FLOATLANDS) &&
-					(y >= float_base_max && y <= floatland_level)) {
-				vm->m_data[vi] = n_water; // Floatland water
+				if (y > stone_surface_max_y)
+					stone_surface_max_y = y;
+			} else if (y <= water_level) { // Surface water
+				vm->m_data[vi] = n_water;
+			} else if (gen_floatlands && y >= float_taper_ymax && y <= floatland_ywater) {
+				vm->m_data[vi] = n_water; // Water for solid floatland layer only
 			} else {
-				vm->m_data[vi] = n_air;
+				vm->m_data[vi] = n_air; // Air
 			}
 		}
 	}
@@ -579,7 +573,7 @@ int MapgenV7::generateTerrain()
 void MapgenV7::generateRidgeTerrain()
 {
 	if (node_max.Y < water_level - 16 ||
-			((spflags & MGV7_FLOATLANDS) && node_max.Y > shadow_limit))
+			(node_max.Y >= floatland_ymin && node_min.Y <= floatland_ymax))
 		return;
 
 	noise_ridge->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);

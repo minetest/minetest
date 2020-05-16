@@ -104,10 +104,7 @@ public:
 	u16 addActiveObject(ClientActiveObject *object);
 
 	void addActiveObject(u16 id, u8 type, const std::string &init_data);
-	void removeActiveObject(u16 id)
-	{
-		m_ao_manager.removeObject(id);
-	}
+	void removeActiveObject(u16 id);
 
 	void processActiveObjectMessage(u16 id, const std::string &data);
 
@@ -137,8 +134,6 @@ public:
 		const core::line3d<f32> &shootline_on_map,
 		std::vector<PointedThing> &objects
 	);
-
-	u16 attachement_parent_ids[USHRT_MAX + 1];
 
 	const std::list<std::string> &getPlayerNames() { return m_player_names; }
 	void addPlayerName(const std::string &name) { m_player_names.push_back(name); }

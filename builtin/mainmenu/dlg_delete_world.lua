@@ -21,6 +21,7 @@ local function delete_world_formspec(dialogdata)
 		"size[10,2.5,true]" ..
 		"label[0.5,0.5;" ..
 		fgettext("Delete World \"$1\"?", dialogdata.delete_name) .. "]" ..
+		"style[world_delete_confirm;bgcolor=red]" ..
 		"button[0.5,1.5;2.5,0.5;world_delete_confirm;" .. fgettext("Delete") .. "]" ..
 		"button[7.0,1.5;2.5,0.5;world_delete_cancel;" .. fgettext("Cancel") .. "]"
 	return retval

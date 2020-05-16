@@ -34,8 +34,12 @@ core.register_entity(":__builtin:item", {
 
 	itemstring = "",
 	moving_state = true,
-	slippery_state = false,
+	physical_state = true,
+	-- Item expiry
 	age = 0,
+	-- Pushing item out of solid nodes
+	force_out = nil,
+	force_out_start = nil,
 
 	set_item = function(self, item)
 		local stack = ItemStack(item or self.itemstring)
@@ -53,6 +57,8 @@ core.register_entity(":__builtin:item", {
 		local count = math.min(stack:get_count(), max_count)
 		local size = 0.2 + 0.1 * (count / max_count) ^ (1 / 3)
 		local coll_height = size * 0.75
+		local def = core.registered_nodes[itemname]
+		local glow = def and math.floor(def.light_source / 2 + 0.5)
 
 		self.object:set_properties({
 			is_visible = true,
@@ -64,6 +70,7 @@ core.register_entity(":__builtin:item", {
 			selectionbox = {-size, -size, -size, size, size, size},
 			automatic_rotate = math.pi * 0.5 * 0.2 / size,
 			wield_item = self.itemstring,
+			glow = glow,
 		})
 
 	end,
@@ -131,7 +138,25 @@ core.register_entity(":__builtin:item", {
 		return true
 	end,
 
-	on_step = function(self, dtime)
+	enable_physics = function(self)
+		if not self.physical_state then
+			self.physical_state = true
+			self.object:set_properties({physical = true})
+			self.object:set_velocity({x=0, y=0, z=0})
+			self.object:set_acceleration({x=0, y=-gravity, z=0})
+		end
+	end,
+
+	disable_physics = function(self)
+		if self.physical_state then
+			self.physical_state = false
+			self.object:set_properties({physical = false})
+			self.object:set_velocity({x=0, y=0, z=0})
+			self.object:set_acceleration({x=0, y=0, z=0})
+		end
+	end,
+
+	on_step = function(self, dtime, moveresult)
 		self.age = self.age + dtime
 		if time_to_live > 0 and self.age > time_to_live then
 			self.itemstring = ""
@@ -152,46 +177,125 @@ core.register_entity(":__builtin:item", {
 			return
 		end
 
-		local vel = self.object:get_velocity()
-		local def = node and core.registered_nodes[node.name]
-		local is_moving = (def and not def.walkable) or
-			vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0
-		local is_slippery = false
-
-		if def and def.walkable then
-			local slippery = core.get_item_group(node.name, "slippery")
-			is_slippery = slippery ~= 0
-			if is_slippery and (math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2) then
-				-- Horizontal deceleration
-				local slip_factor = 4.0 / (slippery + 4)
-				self.object:set_acceleration({
-					x = -vel.x * slip_factor,
-					y = 0,
-					z = -vel.z * slip_factor
-				})
-			elseif vel.y == 0 then
-				is_moving = false
+		if self.force_out then
+			-- This code runs after the entity got a push from the is_stuck code.
+			-- It makes sure the entity is entirely outside the solid node
+			local c = self.object:get_properties().collisionbox
+			local s = self.force_out_start
+			local f = self.force_out
+			local ok = (f.x > 0 and pos.x + c[1] > s.x + 0.5) or
+				(f.y > 0 and pos.y + c[2] > s.y + 0.5) or
+				(f.z > 0 and pos.z + c[3] > s.z + 0.5) or
+				(f.x < 0 and pos.x + c[4] < s.x - 0.5) or
+				(f.z < 0 and pos.z + c[6] < s.z - 0.5)
+			if ok then
+				-- Item was successfully forced out
+				self.force_out = nil
+				self:enable_physics()
+				return
 			end
 		end
 
-		if self.moving_state == is_moving and
-				self.slippery_state == is_slippery then
-			-- Do not update anything until the moving state changes
+		if not self.physical_state then
+			return -- Don't do anything
+		end
+
+		assert(moveresult,
+			"Collision info missing, this is caused by an out-of-date/buggy mod or game")
+
+		if not moveresult.collides then
+			-- future TODO: items should probably decelerate in air
 			return
 		end
 
-		self.moving_state = is_moving
-		self.slippery_state = is_slippery
-
-		if is_moving then
-			self.object:set_acceleration({x = 0, y = -gravity, z = 0})
-		else
-			self.object:set_acceleration({x = 0, y = 0, z = 0})
-			self.object:set_velocity({x = 0, y = 0, z = 0})
+		-- Push item out when stuck inside solid node
+		local is_stuck = false
+		local snode = core.get_node_or_nil(pos)
+		if snode then
+			local sdef = core.registered_nodes[snode.name] or {}
+			is_stuck = (sdef.walkable == nil or sdef.walkable == true)
+				and (sdef.collision_box == nil or sdef.collision_box.type == "regular")
+				and (sdef.node_box == nil or sdef.node_box.type == "regular")
 		end
 
-		--Only collect items if not moving
-		if is_moving then
+		if is_stuck then
+			local shootdir
+			local order = {
+				{x=1, y=0, z=0}, {x=-1, y=0, z= 0},
+				{x=0, y=0, z=1}, {x= 0, y=0, z=-1},
+			}
+
+			-- Check which one of the 4 sides is free
+			for o = 1, #order do
+				local cnode = core.get_node(vector.add(pos, order[o])).name
+				local cdef = core.registered_nodes[cnode] or {}
+				if cnode ~= "ignore" and cdef.walkable == false then
+					shootdir = order[o]
+					break
+				end
+			end
+			-- If none of the 4 sides is free, check upwards
+			if not shootdir then
+				shootdir = {x=0, y=1, z=0}
+				local cnode = core.get_node(vector.add(pos, shootdir)).name
+				if cnode == "ignore" then
+					shootdir = nil -- Do not push into ignore
+				end
+			end
+
+			if shootdir then
+				-- Set new item moving speed accordingly
+				local newv = vector.multiply(shootdir, 3)
+				self:disable_physics()
+				self.object:set_velocity(newv)
+
+				self.force_out = newv
+				self.force_out_start = vector.round(pos)
+				return
+			end
+		end
+
+		node = nil -- ground node we're colliding with
+		if moveresult.touching_ground then
+			for _, info in ipairs(moveresult.collisions) do
+				if info.axis == "y" then
+					node = core.get_node(info.node_pos)
+					break
+				end
+			end
+		end
+
+		-- Slide on slippery nodes
+		local def = node and core.registered_nodes[node.name]
+		local keep_movement = false
+
+		if def then
+			local slippery = core.get_item_group(node.name, "slippery")
+			local vel = self.object:get_velocity()
+			if slippery ~= 0 and (math.abs(vel.x) > 0.1 or math.abs(vel.z) > 0.1) then
+				-- Horizontal deceleration
+				local factor = math.min(4 / (slippery + 4) * dtime, 1)
+				self.object:set_velocity({
+					x = vel.x * (1 - factor),
+					y = 0,
+					z = vel.z * (1 - factor)
+				})
+				keep_movement = true
+			end
+		end
+
+		if not keep_movement then
+			self.object:set_velocity({x=0, y=0, z=0})
+		end
+
+		if self.moving_state == keep_movement then
+			-- Do not update anything until the moving state changes
+			return
+		end
+		self.moving_state = keep_movement
+
+		-- Only collect items if not moving
+		if self.moving_state then
 			return
 		end
 		-- Collect the items around to merge with

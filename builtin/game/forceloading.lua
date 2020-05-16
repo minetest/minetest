@@ -111,7 +111,7 @@ end
 
 -- periodical forceload persistence
 local function periodically_persist_forceloaded_blocks()
-	
+
 	-- only persist if the blocks actually changed
 	if forceload_blocks_changed then
 		persist_forceloaded_blocks()

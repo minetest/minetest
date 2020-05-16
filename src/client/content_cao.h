@@ -68,6 +68,7 @@ struct SmoothTranslatorWrappedv3f : SmoothTranslator<v3f>
 class GenericCAO : public ClientActiveObject
 {
 private:
+	void readAOMessageProperties(std::istream &is);
 	// Only set at initialization
 	std::string m_name = "";
 	bool m_is_player = false;
@@ -102,10 +103,14 @@ private:
 	bool m_animation_loop = true;
 	// stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
+
+	int m_attachment_parent_id = 0;
+	std::unordered_set<int> m_attachment_child_ids;
 	std::string m_attachment_bone = "";
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attached_to_local = false;
+
 	int m_anim_frame = 0;
 	int m_anim_num_frames = 1;
 	float m_anim_framelength = 0.2f;
@@ -121,8 +126,10 @@ private:
 	u8 m_last_light = 255;
 	bool m_is_visible = false;
 	s8 m_glow = 0;
-
-	std::vector<u16> m_children;
+	// Material
+	video::E_MATERIAL_TYPE m_material_type;
+	// Settings
+	bool m_enable_shaders = false;
 
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
@@ -152,18 +159,20 @@ public:
 
 	virtual bool getSelectionBox(aabb3f *toset) const;
 
-	v3f getPosition();
+	const v3f getPosition() const;
 
-	inline const v3f &getRotation()
+	void setPosition(const v3f &pos)
 	{
-		return m_rotation;
+		pos_translator.val_current = pos;
 	}
+
+	inline const v3f &getRotation() const { return m_rotation; }
 
 	const bool isImmortal();
 
-	scene::ISceneNode *getSceneNode();
+	scene::ISceneNode *getSceneNode() const;
 
-	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
+	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;
 
 	// m_matrixnode controls the position and rotation of the child node
 	// for all scene nodes, as a workaround for an Irrlicht problem with
@@ -176,6 +185,12 @@ public:
 	{
 		assert(m_matrixnode);
 		return m_matrixnode->getRelativeTransformationMatrix();
+	}
+
+	inline const core::matrix4 &getAbsolutePosRotMatrix() const
+	{
+		assert(m_matrixnode);
+		return m_matrixnode->getAbsoluteTransformation();
 	}
 
 	inline f32 getStepHeight() const
@@ -199,10 +214,17 @@ public:
 	}
 
 	void setChildrenVisible(bool toset);
-
+	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
+	void getAttachment(int *parent_id, std::string *bone, v3f *position,
+			v3f *rotation) const;
+	void clearChildAttachments();
+	void clearParentAttachment();
+	void addAttachmentChild(int child_id);
+	void removeAttachmentChild(int child_id);
 	ClientActiveObject *getParent() const;
-
-	void setAttachments();
+	const std::unordered_set<int> &getAttachmentChildIds() const
+	{ return m_attachment_child_ids; }
+	void updateAttachments();
 
 	void removeFromScene(bool permanent);
 
@@ -216,6 +238,8 @@ public:
 	void updateLight(u8 light_at_pos);
 
 	void updateLightNoCheck(u8 light_at_pos);
+
+	void setNodeLight(u8 light);
 
 	v3s16 getLightPosition();
 
@@ -234,8 +258,6 @@ public:
 	void updateAnimationSpeed();
 
 	void updateBonePosition();
-
-	void updateAttachments();
 
 	void processMessage(const std::string &data);
 

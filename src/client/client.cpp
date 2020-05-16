@@ -61,6 +61,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern gui::IGUIEnvironment* guienv;
 
 /*
+	Utility classes
+*/
+
+void PacketCounter::print(std::ostream &o) const
+{
+	for (const auto &it : m_packets) {
+		auto name = it.first >= TOCLIENT_NUM_MSG_TYPES ? "?"
+			: toClientCommandTable[it.first].name;
+		o << "cmd " << it.first << " (" << name << ") count "
+			<< it.second << std::endl;
+	}
+}
+
+/*
 	Client
 */
 
@@ -108,15 +122,6 @@ Client::Client(
 		m_minimap = new Minimap(this);
 	}
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
-
-	m_modding_enabled = g_settings->getBool("enable_client_modding");
-	// Only create the client script environment if client scripting is enabled by the
-	// client.
-	if (m_modding_enabled) {
-		m_script = new ClientScripting(this);
-		m_env.setScript(m_script);
-		m_script->setEnv(&m_env);
-	}
 }
 
 void Client::loadMods()
@@ -124,9 +129,8 @@ void Client::loadMods()
 	// Don't load mods twice.
 	// If client scripting is disabled by the client, don't load builtin or
 	// client-provided mods.
-	if (m_mods_loaded || !m_modding_enabled) {
+	if (m_mods_loaded || !g_settings->getBool("enable_client_modding"))
 		return;
-	}
 
 	// If client scripting is disabled by the server, don't load builtin or
 	// client-provided mods.
@@ -135,10 +139,12 @@ void Client::loadMods()
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOAD_CLIENT_MODS)) {
 		warningstream << "Client-provided mod loading is disabled by server." <<
 			std::endl;
-		// This line is needed because builtin is not loaded
-		m_modding_enabled = false;
 		return;
 	}
+
+	m_script = new ClientScripting(this);
+	m_env.setScript(m_script);
+	m_script->setEnv(&m_env);
 
 	// Load builtin
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
@@ -163,6 +169,7 @@ void Client::loadMods()
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
 		modconf.printUnsatisfiedModsError();
+		return;
 	}
 
 	// Print mods
@@ -171,7 +178,7 @@ void Client::loadMods()
 		infostream << mod.name << " ";
 	infostream << std::endl;
 
-	// Load and run "mod" scripts
+	// Load "mod" scripts
 	for (const ModSpec &mod : m_mods) {
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
 			throw ModError("Error loading mod \"" + mod.name +
@@ -181,13 +188,23 @@ void Client::loadMods()
 		scanModIntoMemory(mod.name, mod.path);
 	}
 
-	// Load and run "mod" scripts
+	// Run them
 	for (const ModSpec &mod : m_mods)
 		m_script->loadModFromMemory(mod.name);
 
+	// Mods are done loading. Unlock callbacks
+	m_mods_loaded = true;
+
 	// Run a callback when mods are loaded
 	m_script->on_mods_loaded();
-	m_mods_loaded = true;
+
+	// Create objects if they're ready
+	if (m_state == LC_Ready)
+		m_script->on_client_ready(m_env.getLocalPlayer());
+	if (m_camera)
+		m_script->on_camera_ready(m_camera);
+	if (m_minimap)
+		m_script->on_minimap_ready(m_minimap);
 }
 
 bool Client::checkBuiltinIntegrity()
@@ -202,14 +219,30 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 	std::string full_path = mod_path + DIR_DELIM + mod_subpath;
 	std::vector<fs::DirListNode> mod = fs::GetDirListing(full_path);
 	for (const fs::DirListNode &j : mod) {
-		std::string filename = j.name;
 		if (j.dir) {
-			scanModSubfolder(mod_name, mod_path, mod_subpath
-					+ filename + DIR_DELIM);
+			scanModSubfolder(mod_name, mod_path, mod_subpath + j.name + DIR_DELIM);
 			continue;
 		}
-		std::replace( mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
-		m_mod_files[mod_name + ":" + mod_subpath + filename] = full_path  + filename;
+		std::replace(mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
+
+		std::string real_path = full_path + j.name;
+		std::string vfs_path = mod_name + ":" + mod_subpath + j.name;
+		infostream << "Client::scanModSubfolder(): Loading \"" << real_path
+				<< "\" as \"" << vfs_path << "\"." << std::endl;
+
+		std::ifstream is(real_path, std::ios::binary | std::ios::ate);
+		if(!is.good()) {
+			errorstream << "Client::scanModSubfolder(): Can't read file \""
+					<< real_path << "\"." << std::endl;
+			continue;
+		}
+		auto size = is.tellg();
+		std::string contents(size, '\0');
+		is.seekg(0);
+		is.read(&contents[0], size);
+
+		infostream << "  size: " << size << " bytes" << std::endl;
+		m_mod_vfs.emplace(vfs_path, contents);
 	}
 }
 
@@ -239,7 +272,7 @@ const ModSpec* Client::getModSpec(const std::string &modname) const
 void Client::Stop()
 {
 	m_shutdown = true;
-	if (m_modding_enabled)
+	if (m_mods_loaded)
 		m_script->on_shutdown();
 	//request all client managed threads to stop
 	m_mesh_update_thread.stop();
@@ -249,7 +282,7 @@ void Client::Stop()
 		m_localdb->endSave();
 	}
 
-	if (m_modding_enabled)
+	if (m_mods_loaded)
 		delete m_script;
 }
 
@@ -296,6 +329,7 @@ void Client::connect(Address address, bool is_local_server)
 {
 	initLocalMapSaving(address, m_address_name, is_local_server);
 
+	// Since we use TryReceive() a timeout here would be ineffective anyway
 	m_con->SetTimeoutMs(0);
 	m_con->Connect(address);
 }
@@ -320,12 +354,12 @@ void Client::step(float dtime)
 	{
 		float &counter = m_packetcounter_timer;
 		counter -= dtime;
-		if(counter <= 0.0)
+		if(counter <= 0.0f)
 		{
-			counter = 20.0;
+			counter = 30.0f;
 
 			infostream << "Client packetcounter (" << m_packetcounter_timer
-					<< "):"<<std::endl;
+					<< "s):"<<std::endl;
 			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
@@ -366,7 +400,6 @@ void Client::step(float dtime)
 	*/
 	const float map_timer_and_unload_dtime = 5.25;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime)) {
-		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
 		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 			g_settings->getFloat("client_unload_unused_data_timeout"),
@@ -475,6 +508,7 @@ void Client::step(float dtime)
 	*/
 	{
 		int num_processed_meshes = 0;
+		std::vector<v3s16> blocks_to_ack;
 		while (!m_mesh_update_thread.m_queue_out.empty())
 		{
 			num_processed_meshes++;
@@ -513,13 +547,17 @@ void Client::step(float dtime)
 				m_minimap->addBlock(r.p, minimap_mapblock);
 
 			if (r.ack_block_to_server) {
-				/*
-					Acknowledge block
-					[0] u8 count
-					[1] v3s16 pos_0
-				*/
-				sendGotBlocks(r.p);
+				if (blocks_to_ack.size() == 255) {
+					sendGotBlocks(blocks_to_ack);
+					blocks_to_ack.clear();
+				}
+
+				blocks_to_ack.emplace_back(r.p);
 			}
+		}
+		if (blocks_to_ack.size() > 0) {
+				// Acknowledge block(s)
+				sendGotBlocks(blocks_to_ack);
 		}
 
 		if (num_processed_meshes > 0)
@@ -553,8 +591,8 @@ void Client::step(float dtime)
 		if (count_after != count_before) {
 			// Do this every <interval> seconds after TOCLIENT_INVENTORY
 			// Reset the locally changed inventory to the authoritative inventory
-			m_env.getLocalPlayer()->inventory = *m_inventory_from_server;
-			m_inventory_updated = true;
+			player->inventory = *m_inventory_from_server;
+			m_update_wielded_item = true;
 		}
 	}
 
@@ -601,14 +639,17 @@ void Client::step(float dtime)
 
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
-		verbosestream << "Saving registered mod storages." << std::endl;
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+		int n = 0;
 		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 			if (it->second->isModified()) {
 				it->second->save(getModStoragePath());
+				n++;
 			}
 		}
+		if (n > 0)
+			infostream << "Saved " << n << " modified mod storages." << std::endl;
 	}
 
 	// Write server map
@@ -633,8 +674,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, image_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Attempting to load image "
-		<<"file \""<<filename<<"\""<<std::endl;
+		TRACESTREAM(<< "Client: Attempting to load image "
+			<< "file \"" << filename << "\"" << std::endl);
 
 		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
 		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
@@ -667,10 +708,9 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, sound_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Attempting to load sound "
-		<<"file \""<<filename<<"\""<<std::endl;
-		m_sound->loadSoundData(name, data);
-		return true;
+		TRACESTREAM(<< "Client: Attempting to load sound "
+			<< "file \"" << filename << "\"" << std::endl);
+		return m_sound->loadSoundData(name, data);
 	}
 
 	const char *model_ext[] = {
@@ -694,9 +734,9 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
-		verbosestream << "Client: Loading translation: "
-				<< "\"" << filename << "\"" << std::endl;
-		g_translations->loadTranslation(data);
+		TRACESTREAM(<< "Client: Loading translation: "
+				<< "\"" << filename << "\"" << std::endl);
+		g_client_translations->loadTranslation(data);
 		return true;
 	}
 
@@ -762,11 +802,20 @@ void Client::initLocalMapSaving(const Address &address,
 		return;
 	}
 
-	const std::string world_path = porting::path_user
-		+ DIR_DELIM + "worlds"
-		+ DIR_DELIM + "server_"
+	std::string world_path;
+#define set_world_path(hostname) \
+	world_path = porting::path_user \
+		+ DIR_DELIM + "worlds" \
+		+ DIR_DELIM + "server_" \
 		+ hostname + "_" + std::to_string(address.getPort());
 
+	set_world_path(hostname);
+	if (!fs::IsDir(world_path)) {
+		std::string hostname_escaped = hostname;
+		str_replace(hostname_escaped, ':', '_');
+		set_world_path(hostname_escaped);
+	}
+#undef set_world_path
 	fs::CreateAllDirs(world_path);
 
 	m_localdb = new MapDatabaseSQLite3(world_path);
@@ -776,34 +825,29 @@ void Client::initLocalMapSaving(const Address &address,
 
 void Client::ReceiveAll()
 {
+	NetworkPacket pkt;
 	u64 start_ms = porting::getTimeMs();
-	for(;;)
-	{
+	const u64 budget = 100;
+	for(;;) {
 		// Limit time even if there would be huge amounts of data to
 		// process
-		if(porting::getTimeMs() > start_ms + 100)
+		if (porting::getTimeMs() > start_ms + budget) {
+			infostream << "Client::ReceiveAll(): "
+					"Packet processing budget exceeded." << std::endl;
 			break;
+		}
 
+		pkt.clear();
 		try {
-			Receive();
-			g_profiler->graphAdd("client_received_packets", 1);
-		}
-		catch(con::NoIncomingDataException &e) {
-			break;
-		}
-		catch(con::InvalidIncomingDataException &e) {
-			infostream<<"Client::ReceiveAll(): "
+			if (!m_con->TryReceive(&pkt))
+				break;
+			ProcessData(&pkt);
+		} catch (const con::InvalidIncomingDataException &e) {
+			infostream << "Client::ReceiveAll(): "
 					"InvalidIncomingDataException: what()="
-					<<e.what()<<std::endl;
+					 << e.what() << std::endl;
 		}
 	}
-}
-
-void Client::Receive()
-{
-	NetworkPacket pkt;
-	m_con->Receive(&pkt);
-	ProcessData(&pkt);
 }
 
 inline void Client::handleCommand(NetworkPacket* pkt)
@@ -822,6 +866,7 @@ void Client::ProcessData(NetworkPacket *pkt)
 
 	//infostream<<"Client: received command="<<command<<std::endl;
 	m_packetcounter.add((u16)command);
+	g_profiler->graphAdd("client_received_packets", 1);
 
 	/*
 		If this check is removed, be sure to change the queue
@@ -903,7 +948,7 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	*pkt << fov << wanted_range;
 }
 
-void Client::interact(u8 action, const PointedThing& pointed)
+void Client::interact(InteractAction action, const PointedThing& pointed)
 {
 	if(m_state != LC_Ready) {
 		errorstream << "Client::interact() "
@@ -923,19 +968,12 @@ void Client::interact(u8 action, const PointedThing& pointed)
 		[5] u32 length of the next item (plen)
 		[9] serialized PointedThing
 		[9 + plen] player position information
-		actions:
-		0: start digging (from undersurface) or use
-		1: stop digging (all parameters ignored)
-		2: digging completed
-		3: place block or item (to abovesurface)
-		4: use item
-		5: perform secondary action of item
 	*/
 
 	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);
 
-	pkt << action;
-	pkt << (u16)getPlayerItem();
+	pkt << (u8)action;
+	pkt << myplayer->getWieldIndex();
 
 	std::ostringstream tmp_os(std::ios::binary);
 	pointed.serialize(tmp_os);
@@ -1069,10 +1107,13 @@ void Client::sendDeletedBlocks(std::vector<v3s16> &blocks)
 	Send(&pkt);
 }
 
-void Client::sendGotBlocks(v3s16 block)
+void Client::sendGotBlocks(const std::vector<v3s16> &blocks)
 {
-	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6);
-	pkt << (u8) 1 << block;
+	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6 * blocks.size());
+	pkt << (u8) blocks.size();
+	for (const v3s16 &block : blocks)
+		pkt << block;
+
 	Send(&pkt);
 }
 
@@ -1085,7 +1126,7 @@ void Client::sendRemovedSounds(std::vector<s32> &soundList)
 
 	pkt << (u16) (server_ids & 0xFFFF);
 
-	for (int sound_id : soundList)
+	for (s32 sound_id : soundList)
 		pkt << sound_id;
 
 	Send(&pkt);
@@ -1195,7 +1236,7 @@ void Client::clearOutChatQueue()
 }
 
 void Client::sendChangePassword(const std::string &oldpassword,
-        const std::string &newpassword)
+	const std::string &newpassword)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
 	if (player == NULL)
@@ -1224,60 +1265,54 @@ void Client::sendRespawn()
 void Client::sendReady()
 {
 	NetworkPacket pkt(TOSERVER_CLIENT_READY,
-			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(g_version_hash));
+			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(g_version_hash) + 2);
 
 	pkt << (u8) VERSION_MAJOR << (u8) VERSION_MINOR << (u8) VERSION_PATCH
 		<< (u8) 0 << (u16) strlen(g_version_hash);
 
 	pkt.putRawString(g_version_hash, (u16) strlen(g_version_hash));
+	pkt << (u16)FORMSPEC_API_VERSION;
 	Send(&pkt);
 }
 
 void Client::sendPlayerPos()
 {
-	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if (!myplayer)
+	LocalPlayer *player = m_env.getLocalPlayer();
+	if (!player)
 		return;
 
 	ClientMap &map = m_env.getClientMap();
+	u8 camera_fov   = map.getCameraFov();
+	u8 wanted_range = map.getControl().wanted_range;
 
-	u8 camera_fov    = map.getCameraFov();
-	u8 wanted_range  = map.getControl().wanted_range;
+	// Save bandwidth by only updating position when
+	// player is not dead and something changed
 
-	// Save bandwidth by only updating position when something changed
-	if(myplayer->last_position        == myplayer->getPosition() &&
-			myplayer->last_speed        == myplayer->getSpeed()    &&
-			myplayer->last_pitch        == myplayer->getPitch()    &&
-			myplayer->last_yaw          == myplayer->getYaw()      &&
-			myplayer->last_keyPressed   == myplayer->keyPressed    &&
-			myplayer->last_camera_fov   == camera_fov              &&
-			myplayer->last_wanted_range == wanted_range)
+	// FIXME: This part causes breakages in mods like 3d_armor, and has been commented for now
+	// if (m_activeobjects_received && player->isDead())
+	//	return;
+
+	if (
+			player->last_position     == player->getPosition() &&
+			player->last_speed        == player->getSpeed()    &&
+			player->last_pitch        == player->getPitch()    &&
+			player->last_yaw          == player->getYaw()      &&
+			player->last_keyPressed   == player->keyPressed    &&
+			player->last_camera_fov   == camera_fov              &&
+			player->last_wanted_range == wanted_range)
 		return;
 
-	myplayer->last_position     = myplayer->getPosition();
-	myplayer->last_speed        = myplayer->getSpeed();
-	myplayer->last_pitch        = myplayer->getPitch();
-	myplayer->last_yaw          = myplayer->getYaw();
-	myplayer->last_keyPressed   = myplayer->keyPressed;
-	myplayer->last_camera_fov   = camera_fov;
-	myplayer->last_wanted_range = wanted_range;
+	player->last_position     = player->getPosition();
+	player->last_speed        = player->getSpeed();
+	player->last_pitch        = player->getPitch();
+	player->last_yaw          = player->getYaw();
+	player->last_keyPressed   = player->keyPressed;
+	player->last_camera_fov   = camera_fov;
+	player->last_wanted_range = wanted_range;
 
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
-	writePlayerPos(myplayer, &map, &pkt);
-
-	Send(&pkt);
-}
-
-void Client::sendPlayerItem(u16 item)
-{
-	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if (!myplayer)
-		return;
-
-	NetworkPacket pkt(TOSERVER_PLAYERITEM, 2);
-
-	pkt << item;
+	writePlayerPos(player, &map, &pkt);
 
 	Send(&pkt);
 }
@@ -1304,7 +1339,7 @@ void Client::removeNode(v3s16 p)
  * @param is_valid_position
  * @return
  */
-MapNode Client::getNode(v3s16 p, bool *is_valid_position)
+MapNode Client::CSMGetNode(v3s16 p, bool *is_valid_position)
 {
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES)) {
 		v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
@@ -1313,7 +1348,32 @@ MapNode Client::getNode(v3s16 p, bool *is_valid_position)
 			return {};
 		}
 	}
-	return m_env.getMap().getNodeNoEx(p, is_valid_position);
+	return m_env.getMap().getNode(p, is_valid_position);
+}
+
+int Client::CSMClampRadius(v3s16 pos, int radius)
+{
+	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
+		return radius;
+	// This is approximate and will cause some allowed nodes to be excluded
+	v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	u32 distance = ppos.getDistanceFrom(pos);
+	if (distance >= m_csm_restriction_noderange)
+		return 0;
+	return std::min<int>(radius, m_csm_restriction_noderange - distance);
+}
+
+v3s16 Client::CSMClampPos(v3s16 pos)
+{
+	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
+		return pos;
+	v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	const int range = m_csm_restriction_noderange;
+	return v3s16(
+		core::clamp<int>(pos.X, (int)ppos.X - range, (int)ppos.X + range),
+		core::clamp<int>(pos.Y, (int)ppos.Y - range, (int)ppos.Y + range),
+		core::clamp<int>(pos.Z, (int)ppos.Z - range, (int)ppos.Z + range)
+	);
 }
 
 void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
@@ -1341,28 +1401,33 @@ void Client::setPlayerControl(PlayerControl &control)
 	player->control = control;
 }
 
-void Client::selectPlayerItem(u16 item)
+void Client::setPlayerItem(u16 item)
 {
-	m_playeritem = item;
-	m_inventory_updated = true;
-	sendPlayerItem(item);
+	m_env.getLocalPlayer()->setWieldIndex(item);
+	m_update_wielded_item = true;
+
+	NetworkPacket pkt(TOSERVER_PLAYERITEM, 2);
+	pkt << item;
+	Send(&pkt);
 }
 
-// Returns true if the inventory of the local player has been
-// updated from the server. If it is true, it is set to false.
-bool Client::getLocalInventoryUpdated()
+// Returns true once after the inventory of the local player
+// has been updated from the server.
+bool Client::updateWieldedItem()
 {
-	bool updated = m_inventory_updated;
-	m_inventory_updated = false;
-	return updated;
-}
+	if (!m_update_wielded_item)
+		return false;
 
-// Copies the inventory of the local player to parameter
-void Client::getLocalInventory(Inventory &dst)
-{
+	m_update_wielded_item = false;
+
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player);
-	dst = player->inventory;
+	if (auto *list = player->inventory.getList("main"))
+		list->setModified(false);
+	if (auto *list = player->inventory.getList("hand"))
+		list->setModified(false);
+
+	return true;
 }
 
 Inventory* Client::getInventory(const InventoryLocation &loc)
@@ -1505,7 +1570,7 @@ void Client::typeChatMessage(const std::wstring &message)
 		return;
 
 	// If message was consumed by script API, don't send it to server
-	if (m_modding_enabled && m_script->on_sending_message(wide_to_utf8(message)))
+	if (m_mods_loaded && m_script->on_sending_message(wide_to_utf8(message)))
 		return;
 
 	// Send to others
@@ -1642,8 +1707,11 @@ void Client::afterContentReceived()
 	text = wgettext("Initializing nodes...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
-	for (const auto &path : getTextureDirs())
-		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
+	for (const auto &path : getTextureDirs()) {
+		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
+		m_nodedef->applyTextureOverrides(override_source.getNodeTileOverrides());
+		m_itemdef->applyTextureOverrides(override_source.getItemTextureOverrides());
+	}
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
 	delete[] text;
@@ -1666,9 +1734,8 @@ void Client::afterContentReceived()
 	m_state = LC_Ready;
 	sendReady();
 
-	if (g_settings->getBool("enable_client_modding")) {
+	if (m_mods_loaded)
 		m_script->on_client_ready(m_env.getLocalPlayer());
-	}
 
 	text = wgettext("Done!");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 100);
@@ -1701,12 +1768,23 @@ void Client::makeScreenshot()
 	char timetstamp_c[64];
 	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
 
-	std::string filename_base = g_settings->get("screenshot_path")
+	std::string screenshot_dir;
+
+	if (fs::IsPathAbsolute(g_settings->get("screenshot_path")))
+		screenshot_dir = g_settings->get("screenshot_path");
+	else
+		screenshot_dir = porting::path_user + DIR_DELIM + g_settings->get("screenshot_path");
+
+	std::string filename_base = screenshot_dir
 			+ DIR_DELIM
 			+ std::string("screenshot_")
 			+ std::string(timetstamp_c);
 	std::string filename_ext = "." + g_settings->get("screenshot_format");
 	std::string filename;
+
+	// Create the directory if it doesn't already exist.
+	// Otherwise, saving the screenshot would fail.
+	fs::CreateDir(screenshot_dir);
 
 	u32 quality = (u32)g_settings->getS32("screenshot_quality");
 	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
@@ -1781,7 +1859,7 @@ ITextureSource* Client::getTextureSource()
 {
 	return m_tsrc;
 }
-IShaderSource* Client::getShaderSource()
+IWritableShaderSource* Client::getShaderSource()
 {
 	return m_shsrc;
 }
@@ -1833,14 +1911,20 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
 	return mesh;
 }
 
-const std::string* Client::getModFile(const std::string &filename)
+const std::string* Client::getModFile(std::string filename)
 {
-	StringMap::const_iterator it = m_mod_files.find(filename);
-	if (it == m_mod_files.end()) {
-		errorstream << "Client::getModFile(): File not found: \"" << filename
-			<< "\"" << std::endl;
-		return NULL;
-	}
+	// strip dir delimiter from beginning of path
+	auto pos = filename.find_first_of(':');
+	if (pos == std::string::npos)
+		return nullptr;
+	pos++;
+	auto pos2 = filename.find_first_not_of('/', pos);
+	if (pos2 > pos)
+		filename.erase(pos, pos2 - pos);
+
+	StringMap::const_iterator it = m_mod_vfs.find(filename);
+	if (it == m_mod_vfs.end())
+		return nullptr;
 	return &it->second;
 }
 

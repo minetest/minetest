@@ -5,7 +5,7 @@
 local string_sub, string_find = string.sub, string.find
 
 --------------------------------------------------------------------------------
-function basic_dump(o)
+local function basic_dump(o)
 	local tp = type(o)
 	if tp == "number" then
 		return tostring(o)
@@ -128,6 +128,7 @@ function dump(o, indent, nested, level)
 	if t ~= "table" then
 		return basic_dump(o)
 	end
+
 	-- Contains table -> true/nil of currently nested tables
 	nested = nested or {}
 	if nested[o] then
@@ -136,10 +137,11 @@ function dump(o, indent, nested, level)
 	nested[o] = true
 	indent = indent or "\t"
 	level = level or 1
-	local t = {}
+
+	local ret = {}
 	local dumped_indexes = {}
 	for i, v in ipairs(o) do
-		t[#t + 1] = dump(v, indent, nested, level + 1)
+		ret[#ret + 1] = dump(v, indent, nested, level + 1)
 		dumped_indexes[i] = true
 	end
 	for k, v in pairs(o) do
@@ -148,7 +150,7 @@ function dump(o, indent, nested, level)
 				k = "["..dump(k, indent, nested, level + 1).."]"
 			end
 			v = dump(v, indent, nested, level + 1)
-			t[#t + 1] = k.." = "..v
+			ret[#ret + 1] = k.." = "..v
 		end
 	end
 	nested[o] = nil
@@ -157,10 +159,10 @@ function dump(o, indent, nested, level)
 		local end_indent_str = "\n"..string.rep(indent, level - 1)
 		return string.format("{%s%s%s}",
 				indent_str,
-				table.concat(t, ","..indent_str),
+				table.concat(ret, ","..indent_str),
 				end_indent_str)
 	end
-	return "{"..table.concat(t, ", ").."}"
+	return "{"..table.concat(ret, ", ").."}"
 end
 
 --------------------------------------------------------------------------------
@@ -198,27 +200,10 @@ function table.indexof(list, val)
 	return -1
 end
 
-assert(table.indexof({"foo", "bar"}, "foo") == 1)
-assert(table.indexof({"foo", "bar"}, "baz") == -1)
-
---------------------------------------------------------------------------------
-if INIT ~= "client" then
-	function file_exists(filename)
-		local f = io.open(filename, "r")
-		if f == nil then
-			return false
-		else
-			f:close()
-			return true
-		end
-	end
-end
 --------------------------------------------------------------------------------
 function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
-
-assert(string.trim("\n \t\tfoo bar\t ") == "foo bar")
 
 --------------------------------------------------------------------------------
 function math.hypot(x, y)
@@ -255,64 +240,6 @@ function math.factorial(x)
 		v = v * k
 	end
 	return v
-end
-
---------------------------------------------------------------------------------
-function get_last_folder(text,count)
-	local parts = text:split(DIR_DELIM)
-
-	if count == nil then
-		return parts[#parts]
-	end
-
-	local retval = ""
-	for i=1,count,1 do
-		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
-	end
-
-	return retval
-end
-
---------------------------------------------------------------------------------
-function cleanup_path(temppath)
-
-	local parts = temppath:split("-")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. "_"
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	parts = temppath:split(".")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. "_"
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	parts = temppath:split("'")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. ""
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	parts = temppath:split(" ")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	return temppath
 end
 
 function core.formspec_escape(text)
@@ -363,7 +290,8 @@ if INIT == "game" then
 			return
 		end
 		local undef = core.registered_nodes[unode.name]
-		if undef and undef.on_rightclick then
+		local sneaking = placer and placer:get_player_control().sneak
+		if undef and undef.on_rightclick and not sneaking then
 			return undef.on_rightclick(pointed_thing.under, unode, placer,
 					itemstack, pointed_thing)
 		end
@@ -407,9 +335,8 @@ if INIT == "game" then
 		end
 
 		local old_itemstack = ItemStack(itemstack)
-		local new_itemstack, removed = core.item_place_node(
-			itemstack, placer, pointed_thing, param2, prevent_after_place
-		)
+		local new_itemstack = core.item_place_node(itemstack, placer,
+				pointed_thing, param2, prevent_after_place)
 		return infinitestacks and old_itemstack or new_itemstack
 	end
 
@@ -427,10 +354,9 @@ if INIT == "game" then
 	core.rotate_node = function(itemstack, placer, pointed_thing)
 		local name = placer and placer:get_player_name() or ""
 		local invert_wall = placer and placer:get_player_control().sneak or false
-		core.rotate_and_place(itemstack, placer, pointed_thing,
+		return core.rotate_and_place(itemstack, placer, pointed_thing,
 				is_creative(name),
 				{invert_wall = invert_wall}, true)
-		return itemstack
 	end
 end
 
@@ -520,9 +446,6 @@ function core.string_to_pos(value)
 	return nil
 end
 
-assert(core.string_to_pos("10.0, 5, -2").x == 10)
-assert(core.string_to_pos("( 10.0, 5, -2)").z == -2)
-assert(core.string_to_pos("asd, 5, -2)") == nil)
 
 --------------------------------------------------------------------------------
 function core.string_to_area(value)
@@ -572,6 +495,29 @@ function table.insert_all(t, other)
 		t[#t + 1] = other[i]
 	end
 	return t
+end
+
+
+function table.key_value_swap(t)
+	local ti = {}
+	for k,v in pairs(t) do
+		ti[v] = k
+	end
+	return ti
+end
+
+
+function table.shuffle(t, from, to, random)
+	from = from or 1
+	to = to or #t
+	random = random or math.random
+	local n = to - from + 1
+	while n > 1 do
+		local r = from + n-1
+		local l = from + random(0, n-1)
+		t[l], t[r] = t[r], t[l]
+		n = n-1
+	end
 end
 
 
@@ -755,6 +701,3 @@ function core.privs_to_string(privs, delim)
 	end
 	return table.concat(list, delim)
 end
-
-assert(core.string_to_privs("a,b").b == true)
-assert(core.privs_to_string({a=true,b=true}) == "a,b")

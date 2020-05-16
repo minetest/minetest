@@ -157,7 +157,7 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 }
 
 void ScriptApiEntity::luaentity_GetProperties(u16 id,
-		ObjectProperties *prop)
+		ServerActiveObject *self, ObjectProperties *prop)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -170,19 +170,18 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	prop->hp_max = 10;
 
 	// Deprecated: read object properties directly
-	read_object_properties(L, -1, prop, getServer()->idef());
+	read_object_properties(L, -1, self, prop, getServer()->idef());
 
 	// Read initial_properties
 	lua_getfield(L, -1, "initial_properties");
-	read_object_properties(L, -1, prop, getServer()->idef());
+	read_object_properties(L, -1, self, prop, getServer()->idef());
 	lua_pop(L, 1);
 }
 
-void ScriptApiEntity::luaentity_Step(u16 id, float dtime)
+void ScriptApiEntity::luaentity_Step(u16 id, float dtime,
+	const collisionMoveResult *moveresult)
 {
 	SCRIPTAPI_PRECHECKHEADER
-
-	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
@@ -199,9 +198,14 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime)
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	lua_pushnumber(L, dtime); // dtime
+	/* moveresult */
+	if (moveresult)
+		push_collision_move_result(L, *moveresult);
+	else
+		lua_pushnil(L);
 
 	setOriginFromTable(object);
-	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
+	PCALL_RES(lua_pcall(L, 3, 0, error_handler));
 
 	lua_pop(L, 2); // Pop object and error handler
 }

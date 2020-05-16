@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include <json/json.h>
 
+struct ItemDefinition;
+
 struct ToolGroupCap
 {
 	std::unordered_map<int, float> times;
@@ -58,17 +60,20 @@ struct ToolCapabilities
 	int max_drop_level;
 	ToolGCMap groupcaps;
 	DamageGroup damageGroups;
+	int punch_attack_uses;
 
 	ToolCapabilities(
-			float full_punch_interval_=1.4,
-			int max_drop_level_=1,
+			float full_punch_interval_ = 1.4f,
+			int max_drop_level_ = 1,
 			const ToolGCMap &groupcaps_ = ToolGCMap(),
-			const DamageGroup &damageGroups_ = DamageGroup()
+			const DamageGroup &damageGroups_ = DamageGroup(),
+			int punch_attack_uses_ = 0
 	):
 		full_punch_interval(full_punch_interval_),
 		max_drop_level(max_drop_level_),
 		groupcaps(groupcaps_),
-		damageGroups(damageGroups_)
+		damageGroups(damageGroups_),
+		punch_attack_uses(punch_attack_uses_)
 	{}
 
 	void serialize(std::ostream &os, u16 version) const;
@@ -101,9 +106,9 @@ DigParams getDigParams(const ItemGroupList &groups,
 struct HitParams
 {
 	s16 hp;
-	s16 wear;
+	u16 wear;
 
-	HitParams(s16 hp_=0, s16 wear_=0):
+	HitParams(s16 hp_ = 0, u16 wear_ = 0):
 		hp(hp_),
 		wear(wear_)
 	{}
@@ -132,3 +137,5 @@ PunchDamageResult getPunchDamage(
 		const ItemStack *punchitem,
 		float time_from_last_punch
 );
+
+f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand);

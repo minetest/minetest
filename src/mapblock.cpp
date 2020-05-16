@@ -100,7 +100,7 @@ bool MapBlock::isValidPositionParent(v3s16 p)
 MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
 {
 	if (!isValidPosition(p))
-		return m_parent->getNodeNoEx(getPosRelative() + p, is_valid_position);
+		return m_parent->getNode(getPosRelative() + p, is_valid_position);
 
 	if (!data) {
 		if (is_valid_position)

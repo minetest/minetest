@@ -77,6 +77,16 @@ public:
 	u32 getDayCount();
 
 	/*!
+	 * Returns false if the given line intersects with a
+	 * non-air node, true otherwise.
+	 * \param pos1 start of the line
+	 * \param pos2 end of the line
+	 * \param p output, position of the first non-air node
+	 * the line intersects
+	 */
+	bool line_of_sight(v3f pos1, v3f pos2, v3s16 *p = nullptr);
+
+	/*!
 	 * Gets the objects pointed by the shootline as
 	 * pointed things.
 	 * If this is a client environment, the local player

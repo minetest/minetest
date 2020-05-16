@@ -42,6 +42,9 @@ private:
 	// get_np_group(self, key) -> noiseparam
 	static int l_get_np_group(lua_State *L);
 
+	// get_flags(self, key) -> key/value table
+	static int l_get_flags(lua_State *L);
+
 	// set(self, key, value)
 	static int l_set(lua_State *L);
 
