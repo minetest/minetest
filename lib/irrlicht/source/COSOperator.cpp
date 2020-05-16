@@ -13,7 +13,7 @@
 #include <unistd.h>
 #ifndef _IRR_SOLARIS_PLATFORM_
 #include <sys/types.h>
-#include <sys/sysctl.h>
+#include <linux/sysctl.h>
 #endif
 #endif
 
