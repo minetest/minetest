@@ -21,7 +21,7 @@ WORKDIR /usr/src/minetest
 RUN apk add --no-cache git build-base irrlicht-dev cmake bzip2-dev libpng-dev \
 		jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev \
 		libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev \
-		gmp-dev jsoncpp-dev postgresql-dev ca-certificates && \
+		gmp-dev jsoncpp-dev postgresql-dev ca-certificates linux-headers && \
 	git clone --depth=1 -b ${MINETEST_GAME_VERSION} https://github.com/minetest/minetest_game.git ./games/minetest_game && \
 	rm -fr ./games/minetest_game/.git
 
