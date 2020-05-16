@@ -29,7 +29,6 @@ if [ -z "$toolchain_file" ]; then
 fi
 echo "Using $toolchain_file"
 
-irrlicht_version=1.8.4
 ogg_version=1.3.2
 vorbis_version=1.3.5
 curl_version=7.65.3
@@ -46,8 +45,6 @@ mkdir -p $libdir
 cd $builddir
 
 # Get stuff
-[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget http://minetest.kitsunemimi.pw/irrlicht-$irrlicht_version-win32.zip \
-	-c -O $packagedir/irrlicht-$irrlicht_version.zip
 [ -e $packagedir/zlib-$zlib_version.zip ] || wget http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip \
 	-c -O $packagedir/zlib-$zlib_version.zip
 [ -e $packagedir/libogg-$ogg_version.zip ] || wget http://minetest.kitsunemimi.pw/libogg-$ogg_version-win32.zip \
@@ -71,7 +68,6 @@ cd $builddir
 
 # Extract stuff
 cd $libdir
-[ -d irrlicht ] || unzip -o $packagedir/irrlicht-$irrlicht_version.zip -d irrlicht
 [ -d zlib ] || unzip -o $packagedir/zlib-$zlib_version.zip -d zlib
 [ -d libogg ] || unzip -o $packagedir/libogg-$ogg_version.zip -d libogg
 [ -d libvorbis ] || unzip -o $packagedir/libvorbis-$vorbis_version.zip -d libvorbis
@@ -115,10 +111,6 @@ cmake .. \
 	-DENABLE_GETTEXT=1 \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
-	\
-	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include \
-	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/Win32-gcc/libIrrlicht.dll.a \
-	-DIRRLICHT_DLL=$libdir/irrlicht/bin/Win32-gcc/Irrlicht.dll \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \

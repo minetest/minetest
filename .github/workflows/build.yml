@@ -223,7 +223,7 @@ jobs:
     env:
       VCPKG_VERSION: c7ab9d3110813979a873b2dbac630a9ab79850dc
 #                    2020.04
-      vcpkg_packages: irrlicht zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
+      vcpkg_packages: zlib curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
     strategy:
       fail-fast: false
       matrix:
