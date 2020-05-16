@@ -39,12 +39,13 @@ static video::SMaterial baseMaterial()
 {
 	video::SMaterial mat;
 	mat.Lighting = false;
-#if ENABLE_GLES
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
 	mat.ZBuffer = video::ECFN_DISABLED;
+	mat.ZWriteEnable = video::EZW_OFF;
 #else
+	mat.ZWriteEnable = false;
 	mat.ZBuffer = video::ECFN_NEVER;
 #endif
-	mat.ZWriteEnable = false;
 	mat.AntiAliasing = 0;
 	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
