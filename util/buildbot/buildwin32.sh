@@ -112,6 +112,8 @@ cmake .. \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
+	-D_IRR_STATIC_LIB_=1 \
+	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
 	-DZLIB_DLL=$libdir/zlib/bin/zlib1.dll \
