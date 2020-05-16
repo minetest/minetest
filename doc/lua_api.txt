@@ -6555,6 +6555,7 @@ Player properties need to be saved manually.
 
         automatic_rotate = 0,
         -- Set constant rotation in radians per second, positive or negative.
+        -- Object rotates along the local Y-axis, and works with set_rotation.
         -- Set to 0 to disable constant rotation.
 
         stepheight = 0,

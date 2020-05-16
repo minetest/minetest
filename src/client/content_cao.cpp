@@ -1077,10 +1077,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updateTextures(m_previous_texture_modifier);
 		}
 	}
+
 	if (!getParent() && std::fabs(m_prop.automatic_rotate) > 0.001) {
-		m_rotation.Y += dtime * m_prop.automatic_rotate * 180 / M_PI;
-		rot_translator.val_current = m_rotation;
-		updateNodePos();
+		// This is the child node's rotation. It is only used for automatic_rotate.
+		v3f local_rot = node->getRotation();
+		local_rot.Y = modulo360f(local_rot.Y - dtime * core::RADTODEG *
+				m_prop.automatic_rotate);
+		node->setRotation(local_rot);
 	}
 
 	if (!getParent() && m_prop.automatic_face_movement_dir &&
@@ -1501,11 +1504,7 @@ void GenericCAO::processMessage(const std::string &data)
 		m_position = readV3F32(is);
 		m_velocity = readV3F32(is);
 		m_acceleration = readV3F32(is);
-
-		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
-			m_rotation = readV3F32(is);
-		else
-			readV3F32(is);
+		m_rotation = readV3F32(is);
 
 		m_rotation = wrapDegrees_0_360_v3f(m_rotation);
 		bool do_interpolate = readU8(is);
