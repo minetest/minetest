@@ -1440,6 +1440,7 @@ void NodeDefManager::deSerialize(std::istream &is)
 		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);
 		fixSelectionBoxIntUnion();
 	}
+	resolveCrossrefs();
 }
 
 
