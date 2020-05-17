@@ -798,8 +798,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	return 0;
 }
 
-// find_nodes_in_area(minp, maxp, nodenames) -> list of positions
-// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+// find_nodes_in_area(minp, maxp, nodenames, [grouped])
 int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
@@ -839,32 +838,76 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		ndef->getIds(readParam<std::string>(L, 3), filter);
 	}
 
-	std::vector<u32> individual_count;
-	individual_count.resize(filter.size());
+	bool grouped = lua_isboolean(L, 4) && readParam<bool>(L, 4);
 
-	lua_newtable(L);
-	u64 i = 0;
-	for (s16 x = minp.X; x <= maxp.X; x++)
-	for (s16 y = minp.Y; y <= maxp.Y; y++)
-	for (s16 z = minp.Z; z <= maxp.Z; z++) {
-		v3s16 p(x, y, z);
-		content_t c = env->getMap().getNode(p).getContent();
+	if (grouped) {
+		// create the table we will be returning
+		lua_createtable(L, 0, filter.size());
+		int base = lua_gettop(L);
 
-		std::vector<content_t>::iterator it = std::find(filter.begin(), filter.end(), c);
-		if (it != filter.end()) {
-			push_v3s16(L, p);
-			lua_rawseti(L, -2, ++i);
+		// create one table for each filter
+		std::vector<u32> idx;
+		idx.resize(filter.size());
+		for (u32 i = 0; i < filter.size(); i++)
+			lua_newtable(L);
 
-			u32 filt_index = it - filter.begin();
-			individual_count[filt_index]++;
+		for (s16 x = minp.X; x <= maxp.X; x++)
+		for (s16 y = minp.Y; y <= maxp.Y; y++)
+		for (s16 z = minp.Z; z <= maxp.Z; z++) {
+			v3s16 p(x, y, z);
+			content_t c = env->getMap().getNode(p).getContent();
+
+			auto it = std::find(filter.begin(), filter.end(), c);
+			if (it != filter.end()) {
+				// Calculate index of the table and append the position
+				u32 filt_index = it - filter.begin();
+				push_v3s16(L, p);
+				lua_rawseti(L, base + 1 + filt_index, ++idx[filt_index]);
+			}
 		}
+
+		// last filter table is at top of stack
+		u32 i = filter.size() - 1;
+		do {
+			if (idx[i] == 0) {
+				// No such node found -> drop the empty table
+				lua_pop(L, 1);
+			} else {
+				// This node was found -> put table into the return table
+				lua_setfield(L, base, ndef->get(filter[i]).name.c_str());
+			}
+		} while (i-- != 0);
+
+		assert(lua_gettop(L) == base);
+		return 1;
+	} else {
+		std::vector<u32> individual_count;
+		individual_count.resize(filter.size());
+
+		lua_newtable(L);
+		u64 i = 0;
+		for (s16 x = minp.X; x <= maxp.X; x++)
+		for (s16 y = minp.Y; y <= maxp.Y; y++)
+		for (s16 z = minp.Z; z <= maxp.Z; z++) {
+			v3s16 p(x, y, z);
+			content_t c = env->getMap().getNode(p).getContent();
+
+			std::vector<content_t>::iterator it = std::find(filter.begin(), filter.end(), c);
+			if (it != filter.end()) {
+				push_v3s16(L, p);
+				lua_rawseti(L, -2, ++i);
+
+				u32 filt_index = it - filter.begin();
+				individual_count[filt_index]++;
+			}
+		}
+		lua_newtable(L);
+		for (u32 i = 0; i < filter.size(); i++) {
+			lua_pushnumber(L, individual_count[i]);
+			lua_setfield(L, -2, ndef->get(filter[i]).name.c_str());
+		}
+		return 2;
 	}
-	lua_newtable(L);
-	for (u32 i = 0; i < filter.size(); i++) {
-		lua_pushnumber(L, individual_count[i]);
-		lua_setfield(L, -2, ndef->get(filter[i]).name.c_str());
-	}
-	return 2;
 }
 
 // find_nodes_in_area_under_air(minp, maxp, nodenames) -> list of positions
