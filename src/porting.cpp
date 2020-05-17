@@ -705,7 +705,8 @@ int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 
 bool openURL(const std::string &url)
 {
-	if (url.substr(0, 7) != "http://" && url.substr(0, 8) != "https://") {
+	if ((url.substr(0, 7) != "http://" && url.substr(0, 8) != "https://") ||
+			url.find_first_of("\r\n") != std::string::npos) {
 		errorstream << "Invalid url: " << url << std::endl;
 		return false;
 	}
