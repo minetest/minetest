@@ -319,7 +319,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				floor(e->pos.Y * (float) m_screensize.Y + 0.5));
 		switch (e->type) {
 			case HUD_ELEM_TEXT: {
-				irr::gui::IGUIFont* textfont = font;
+				irr::gui::IGUIFont *textfont = font;
 				if (e->size.X > 0)
 					textfont = g_fontengine->getFont(
 						e->size.X * g_fontengine->getDefaultFontSize());
