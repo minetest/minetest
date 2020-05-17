@@ -156,7 +156,7 @@ public:
 	}
 	// Get closest extrusion mesh for given image dimensions
 	// Caller must drop the returned pointer
-	scene::IMesh* create(core::dimension2d<u32> dim)
+	scene::IMesh *create(core::dimension2d<u32> dim)
 	{
 		// handle non-power of two textures inefficiently without cache
 		if (!is_power_of_two(dim.Width) || !is_power_of_two(dim.Height)) {
@@ -165,7 +165,7 @@ public:
 
 		int maxdim = MYMAX(dim.Width, dim.Height);
 
-		std::map<int, scene::IMesh*>::iterator
+		std::map<int, scene::IMesh *>::iterator
 			it = m_extrusion_meshes.lower_bound(maxdim);
 
 		if (it == m_extrusion_meshes.end()) {
@@ -180,14 +180,14 @@ public:
 	}
 	// Returns a 1x1x1 cube mesh with one meshbuffer (material) per face
 	// Caller must drop the returned pointer
-	scene::IMesh* createCube()
+	scene::IMesh *createCube()
 	{
 		m_cube->grab();
 		return m_cube;
 	}
 
 private:
-	std::map<int, scene::IMesh*> m_extrusion_meshes;
+	std::map<int, scene::IMesh *> m_extrusion_meshes;
 	scene::IMesh *m_cube;
 };
 
@@ -199,10 +199,10 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool l
 	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
 	m_lighting(lighting)
 {
-	m_enable_shaders = g_settings->getBool("enable_shaders");
+	m_enable_shaders     = g_settings->getBool("enable_shaders");
 	m_anisotropic_filter = g_settings->getBool("anisotropic_filter");
-	m_bilinear_filter = g_settings->getBool("bilinear_filter");
-	m_trilinear_filter = g_settings->getBool("trilinear_filter");
+	m_bilinear_filter    = g_settings->getBool("bilinear_filter");
+	m_trilinear_filter   = g_settings->getBool("trilinear_filter");
 
 	// If this is the first wield mesh scene node, create a cache
 	// for extrusion meshes (and a cube mesh), otherwise reuse it
@@ -230,8 +230,7 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 		g_extrusion_mesh_cache = nullptr;
 }
 
-void WieldMeshSceneNode::setCube(const ContentFeatures &f,
-			v3f wield_scale)
+void WieldMeshSceneNode::setCube(const ContentFeatures &f, v3f wield_scale)
 {
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
 	scene::SMesh *copy = cloneMesh(cubemesh);
@@ -255,6 +254,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		overlay_name.empty() ? NULL : tsrc->getTexture(overlay_name);
 
 	core::dimension2d<u32> dim = texture->getSize();
+
 	// Detect animation texture and pull off top frame instead of using entire thing
 	if (num_frames > 1) {
 		u32 frame_height = dim.Height / num_frames;
@@ -263,9 +263,9 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	scene::IMesh *original = g_extrusion_mesh_cache->create(dim);
 	scene::SMesh *mesh = cloneMesh(original);
 	original->drop();
+
 	//set texture
-	mesh->getMeshBuffer(0)->getMaterial().setTexture(0,
-		tsrc->getTexture(imagename));
+	mesh->getMeshBuffer(0)->getMaterial().setTexture(0, tsrc->getTexture(imagename));
 	if (overlay_texture) {
 		scene::IMeshBuffer *copy = cloneMeshBuffer(mesh->getMeshBuffer(0));
 		copy->getMaterial().setTexture(0, overlay_texture);
@@ -358,8 +358,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 	// If wield_image needs to be checked and is defined, it overrides everything else
 	if (!def.wield_image.empty() && check_wield_image) {
-		setExtruded(def.wield_image, def.wield_overlay, def.wield_scale, tsrc,
-			1);
+		setExtruded(def.wield_image, def.wield_overlay, def.wield_scale, tsrc, 1);
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
@@ -378,50 +377,49 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			mesh->drop();
 			// mesh is pre-scaled by BS * f->visual_scale
 			m_meshnode->setScale(
-					def.wield_scale * WIELD_SCALE_FACTOR
-					/ (BS * f.visual_scale));
+				def.wield_scale * WIELD_SCALE_FACTOR
+				/ (BS * f.visual_scale));
 		} else {
 			switch (f.drawtype) {
-				case NDT_AIRLIKE: {
-					changeToMesh(nullptr);
-					break;
-				}
-				case NDT_PLANTLIKE: {
-					setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-						tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
-						def.wield_scale, tsrc,
-						f.tiles[0].layers[0].animation_frame_count);
-					// Add color
-					const TileLayer &l0 = f.tiles[0].layers[0];
-					m_colors.emplace_back(l0.has_color, l0.color);
-					const TileLayer &l1 = f.tiles[0].layers[1];
-					m_colors.emplace_back(l1.has_color, l1.color);
-					break;
-				}
-				case NDT_PLANTLIKE_ROOTED: {
-					setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
-						"", def.wield_scale, tsrc,
-						f.special_tiles[0].layers[0].animation_frame_count);
-					// Add color
-					const TileLayer &l0 = f.special_tiles[0].layers[0];
-					m_colors.emplace_back(l0.has_color, l0.color);
-					break;
-				}
-				case NDT_NORMAL:
-				case NDT_ALLFACES:
-				case NDT_LIQUID:
-				case NDT_FLOWINGLIQUID: {
-					setCube(f, def.wield_scale);
-					break;
-				}
-				default: {
-					mesh = createSpecialNodeMesh(client, id, &m_colors);
-					changeToMesh(mesh);
-					mesh->drop();
-					m_meshnode->setScale(
-							def.wield_scale * WIELD_SCALE_FACTOR
-							/ (BS * f.visual_scale));
-				}
+			case NDT_AIRLIKE: {
+				changeToMesh(nullptr);
+				break;
+			}
+			case NDT_PLANTLIKE: {
+				setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
+					tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
+					def.wield_scale, tsrc,
+					f.tiles[0].layers[0].animation_frame_count);
+				// Add color
+				const TileLayer &l0 = f.tiles[0].layers[0];
+				m_colors.emplace_back(l0.has_color, l0.color);
+				const TileLayer &l1 = f.tiles[0].layers[1];
+				m_colors.emplace_back(l1.has_color, l1.color);
+				break;
+			}
+			case NDT_PLANTLIKE_ROOTED: {
+				setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
+					"", def.wield_scale, tsrc,
+					f.special_tiles[0].layers[0].animation_frame_count);
+				// Add color
+				const TileLayer &l0 = f.special_tiles[0].layers[0];
+				m_colors.emplace_back(l0.has_color, l0.color);
+				break;
+			}
+			case NDT_NORMAL:
+			case NDT_ALLFACES:
+			case NDT_LIQUID:
+			case NDT_FLOWINGLIQUID: {
+				setCube(f, def.wield_scale);
+				break;
+			}
+			default: {
+				mesh = createSpecialNodeMesh(client, id, &m_colors);
+				changeToMesh(mesh);
+				mesh->drop();
+				m_meshnode->setScale(
+					def.wield_scale * WIELD_SCALE_FACTOR / (BS * f.visual_scale));
+			}
 			}
 		}
 		u32 material_count = m_meshnode->getMaterialCount();
