@@ -107,6 +107,25 @@ bool ScriptApiItem::item_OnWield(const ItemStack &item,
 	return true;
 }
 
+bool ScriptApiItem::item_OnUnWield(const ItemStack &item,
+		ServerActiveObject *user)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	// Push callback function on stack
+	if (!getItemCallback(item.name.c_str(), "on_unwield"))
+		return false;
+
+	// Call function
+	LuaItemStack::create(L, item);
+	objectrefGetOrCreate(L, user);
+	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
+	lua_pop(L, 1);  // Pop error handler
+	return true;
+}
+
 bool ScriptApiItem::item_OnUse(ItemStack &item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {

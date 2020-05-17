@@ -858,6 +858,10 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	*pkt >> item;
 
+	ItemStack previous_item;
+	playersao->getWieldedItem(&previous_item, nullptr);
+	m_script->item_OnUnWield(previous_item, playersao);
+
 	playersao->getPlayer()->setWieldIndex(item);
 
 	ItemStack selected_item;
