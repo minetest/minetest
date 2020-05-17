@@ -247,7 +247,7 @@ void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 		param2 = angle;
 	} else if (cpt2 == CPT2_COLORED_DEGROTATE) {
 		int angle = param2 & 0x1F; // in 15°
-		int color = param2 & 0x60;
+		int color = param2 & 0xE0;
 		angle += 6 * rot;
 		angle %= 24;
 		param2 = color | angle;
