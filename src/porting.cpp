@@ -55,11 +55,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "util/string.h"
-#include "settings.h"
 #include <list>
 #include <cstdarg>
 #include <cstdio>
-#include <regex>
 
 namespace porting
 {
@@ -705,7 +703,7 @@ int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 	return c;
 }
 
-bool openURL(std::string url)
+bool openURL(const std::string &url)
 {
 	if (url.substr(0, 7) != "http://" && url.substr(0, 8) != "https://") {
 		errorstream << "Invalid url: " << url << std::endl;
