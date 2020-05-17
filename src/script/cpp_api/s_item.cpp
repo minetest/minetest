@@ -92,13 +92,13 @@ bool ScriptApiItem::item_OnWield(const ItemStack &item,
 		ServerActiveObject *user)
 {
 	SCRIPTAPI_PRECHECKHEADER
-	
+
 	int error_handler = PUSH_ERROR_HANDLER(L);
-	
+
 	// Push callback function on stack
 	if (!getItemCallback(item.name.c_str(), "on_wield"))
-	  return false;
-		
+		return false;
+
 	// Call function
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, user);
