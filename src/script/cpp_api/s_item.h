@@ -41,7 +41,7 @@ public:
 			ServerActiveObject *placer, const PointedThing &pointed);
 	bool item_OnWield(const ItemStack &item,
 			ServerActiveObject *user);
-	bool item_OnUnWield(const ItemStack &item,
+	bool item_OnUnwield(const ItemStack &item,
 			ServerActiveObject *user);
 	bool item_OnUse(ItemStack &item,
 			ServerActiveObject *user, const PointedThing &pointed);

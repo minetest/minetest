@@ -107,7 +107,7 @@ bool ScriptApiItem::item_OnWield(const ItemStack &item,
 	return true;
 }
 
-bool ScriptApiItem::item_OnUnWield(const ItemStack &item,
+bool ScriptApiItem::item_OnUnwield(const ItemStack &item,
 		ServerActiveObject *user)
 {
 	SCRIPTAPI_PRECHECKHEADER

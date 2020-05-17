@@ -6893,6 +6893,11 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- Called when the player switches to this item in the hotbar.
         -- The user may be any ObjectRef or nil.
 
+        on_unwield = function(itemstack, user),
+         -- default: nil
+         -- Called when the player switches from this item to another slot in the hotbar.
+         -- The user may be any ObjectRef or nil.
+
         on_use = function(itemstack, user, pointed_thing),
         -- default: nil
         -- Function must return either nil if no item shall be removed from
