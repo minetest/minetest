@@ -1501,6 +1501,12 @@ void NodeDefManager::resetNodeResolveState()
 	m_pending_resolve_callbacks.clear();
 }
 
+static void removeDupes(std::vector<content_t> &list) {
+	std::sort(list.begin(), list.end());
+	auto new_end = std::unique(list.begin(), list.end());
+	list.erase(new_end, list.end());
+}
+
 void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
@@ -1515,6 +1521,7 @@ void NodeDefManager::resolveCrossrefs()
 		for (const std::string &name : f.connects_to) {
 			getIds(name, f.connects_to_ids);
 		}
+		removeDupes(f.connects_to_ids);
 	}
 }
 
