@@ -182,17 +182,16 @@ inline f32 my_modf(f32 x)
 
 void Camera::step(f32 dtime)
 {
-	if(m_view_bobbing_fall > 0)
-	{
-		m_view_bobbing_fall -= 3 * dtime;
-		if(m_view_bobbing_fall <= 0)
-			m_view_bobbing_fall = -1; // Mark the effect as finished
+	if (m_view_bobbing_fall > 0.0f) {
+		m_view_bobbing_fall -= 3.0f * dtime;
+		if(m_view_bobbing_fall <= 0.0f)
+			m_view_bobbing_fall = -1.0f; // Mark the effect as finished
 	}
 
 	bool was_under_zero = m_wield_change_timer < 0;
-	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
+	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125f);
 
-	if (m_wield_change_timer >= 0 && was_under_zero) {
+	if (m_wield_change_timer >= 0.0f && was_under_zero) {
 		m_wieldnode->setItem(m_wield_item_next, m_client);
 		auto def = m_wield_item_next.getDefinition(m_client->getItemDefManager());
 		m_wieldmesh_rotation = def.wield_rotation;
@@ -211,43 +210,40 @@ void Camera::step(f32 dtime)
 		m_original_wieldmesh_rotation = m_wieldmesh_rotation;
 	}
 
-	if (m_view_bobbing_state != 0)
-	{
-		//f32 offset = dtime * m_view_bobbing_speed * 0.035;
-		f32 offset = dtime * m_view_bobbing_speed * 0.030;
+	if (m_view_bobbing_state != 0) {
+		//f32 offset = dtime * m_view_bobbing_speed * 0.035f;
+		f32 offset = dtime * m_view_bobbing_speed * 0.030f;
 		if (m_view_bobbing_state == 2) {
 			// Animation is getting turned off
-			if (m_view_bobbing_anim < 0.25) {
+			if (m_view_bobbing_anim < 0.25f) {
 				m_view_bobbing_anim -= offset;
-			} else if (m_view_bobbing_anim > 0.75) {
+			} else if (m_view_bobbing_anim > 0.75f) {
 				m_view_bobbing_anim += offset;
 			}
 
-			if (m_view_bobbing_anim < 0.5) {
+			if (m_view_bobbing_anim < 0.5f) {
 				m_view_bobbing_anim += offset;
-				if (m_view_bobbing_anim > 0.5)
-					m_view_bobbing_anim = 0.5;
+				if (m_view_bobbing_anim > 0.5f)
+					m_view_bobbing_anim = 0.5f;
 			} else {
 				m_view_bobbing_anim -= offset;
-				if (m_view_bobbing_anim < 0.5)
-					m_view_bobbing_anim = 0.5;
+				if (m_view_bobbing_anim < 0.5f)
+					m_view_bobbing_anim = 0.5f;
 			}
 
-			if (m_view_bobbing_anim <= 0 || m_view_bobbing_anim >= 1 ||
-					fabs(m_view_bobbing_anim - 0.5) < 0.01) {
-				m_view_bobbing_anim = 0;
+			if (m_view_bobbing_anim <= 0.0f || m_view_bobbing_anim >= 1.0f ||
+					fabs(m_view_bobbing_anim - 0.5f) < 0.01f) {
+				m_view_bobbing_anim = 0.0f;
 				m_view_bobbing_state = 0;
 			}
-		}
-		else {
+		} else {
 			float was = m_view_bobbing_anim;
 			m_view_bobbing_anim = my_modf(m_view_bobbing_anim + offset);
-			bool step = (was == 0 ||
+			bool step = (was == 0.0f ||
 					(was < 0.5f && m_view_bobbing_anim >= 0.5f) ||
 					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
-			if(step) {
+			if (step)
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::VIEW_BOBBING_STEP));
-			}
 		}
 	}
 
@@ -255,17 +251,15 @@ void Camera::step(f32 dtime)
 		f32 offset = dtime * 3.5f;
 		float m_digging_anim_was = m_digging_anim;
 		m_digging_anim += offset;
-		if (m_digging_anim >= 1)
-		{
+		if (m_digging_anim >= 1) {
 			m_digging_anim = 0;
 			m_digging_button = -1;
 		}
-		float lim = 0.15;
-		if(m_digging_anim_was < lim && m_digging_anim >= lim)
-		{
+		float lim = 0.15f;
+		if (m_digging_anim_was < lim && m_digging_anim >= lim) {
 			if (m_digging_button == 0) {
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
-			} else if(m_digging_button == 1) {
+			} else if (m_digging_button == 1) {
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
 			}
 		}
@@ -303,8 +297,8 @@ void Camera::addArmInertia(f32 player_yaw)
 
 	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
 		/*
-		    The arm moves relative to the camera speed,
-		    with an acceleration factor.
+			The arm moves relative to the camera speed,
+			with an acceleration factor.
 		*/
 
 		if (m_cam_vel.X > 1.0f) {
@@ -341,8 +335,8 @@ void Camera::addArmInertia(f32 player_yaw)
 		m_arm_dir = dir(m_original_wieldmesh_position, m_wieldmesh_position);
 	} else {
 		/*
-		    Now the arm gets back to its default position when the camera stops,
-		    following a vector, with a smooth deceleration factor.
+			Now the arm gets back to its default position when the camera stops,
+			following a vector, with a smooth deceleration factor.
 		*/
 
 		f32 dec_X = 0.35f * (std::min(15.0f, m_cam_vel_old.X) * (1.0f +
@@ -365,7 +359,7 @@ void Camera::addArmInertia(f32 player_yaw)
 	}
 }
 
-void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_reload_ratio)
+void Camera::update(LocalPlayer *player, f32 frametime, f32 busytime, f32 tool_reload_ratio)
 {
 	// Get player position
 	// Smooth the movement when walking up stairs
@@ -378,9 +372,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (player->getParent())
 		player_position = player->getParent()->getPosition();
 
-	if(player->touching_ground &&
-			player_position.Y > old_player_position.Y)
-	{
+	if (player->touching_ground && player_position.Y > old_player_position.Y) {
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
 		f32 t = std::exp(-23 * frametime);
@@ -393,21 +385,21 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	m_playernode->updateAbsolutePosition();
 
 	// Get camera tilt timer (hurt animation)
-	float cameratilt = fabs(fabs(player->hurt_tilt_timer-0.75)-0.75);
+	float cameratilt = fabs(fabs(player->hurt_tilt_timer - 0.75f) - 0.75f);
 
 	// Fall bobbing animation
 	float fall_bobbing = 0;
-	if(player->camera_impact >= 1 && m_camera_mode < CAMERA_MODE_THIRD)
-	{
-		if(m_view_bobbing_fall == -1) // Effect took place and has finished
+	if (player->camera_impact >= 1 && m_camera_mode < CAMERA_MODE_THIRD) {
+		if (m_view_bobbing_fall == -1) // Effect took place and has finished
 			player->camera_impact = m_view_bobbing_fall = 0;
-		else if(m_view_bobbing_fall == 0) // Initialize effect
+		else if (m_view_bobbing_fall == 0) // Initialize effect
 			m_view_bobbing_fall = 1;
 
 		// Convert 0 -> 1 to 0 -> 1 -> 0
-		fall_bobbing = m_view_bobbing_fall < 0.5 ? m_view_bobbing_fall * 2 : -(m_view_bobbing_fall - 0.5) * 2 + 1;
+		fall_bobbing = m_view_bobbing_fall < 0.5f ? m_view_bobbing_fall * 2 :
+			-(m_view_bobbing_fall - 0.5f) * 2 + 1;
 		// Smoothen and invert the above
-		fall_bobbing = sin(fall_bobbing * 0.5 * M_PI) * -1;
+		fall_bobbing = sin(fall_bobbing * 0.5f * M_PI) * -1;
 		// Amplify according to the intensity of the impact
 		fall_bobbing *= (1 - rangelim(50 / player->camera_impact, 0, 1)) * 5;
 
@@ -438,34 +430,34 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (m_cache_view_bobbing_amount != 0.0f && m_view_bobbing_anim != 0.0f &&
 		m_camera_mode < CAMERA_MODE_THIRD) {
 		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
-		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
+		f32 bobdir = m_view_bobbing_anim < 0.5f ? 1.0f : -1.0f;
 
 		#if 1
-		f32 bobknob = 1.2;
+		f32 bobknob = 1.2f;
 		f32 bobtmp = sin(pow(bobfrac, bobknob) * M_PI);
 		//f32 bobtmp2 = cos(pow(bobfrac, bobknob) * M_PI);
 
 		v3f bobvec = v3f(
-			0.3 * bobdir * sin(bobfrac * M_PI),
-			-0.28 * bobtmp * bobtmp,
-			0.);
+			 0.3f  * bobdir * sin(bobfrac * M_PI),
+			-0.28f * bobtmp * bobtmp,
+			 0.0f);
 
-		//rel_cam_pos += 0.2 * bobvec;
-		//rel_cam_target += 0.03 * bobvec;
-		//rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * M_PI);
-		float f = 1.0;
+		//rel_cam_pos += 0.2f * bobvec;
+		//rel_cam_target += 0.03f * bobvec;
+		//rel_cam_up.rotateXYBy(0.02f * bobdir * bobtmp * M_PI);
+		float f = 1.0f;
 		f *= m_cache_view_bobbing_amount;
 		rel_cam_pos += bobvec * f;
-		//rel_cam_target += 0.995 * bobvec * f;
+		//rel_cam_target += 0.995f * bobvec * f;
 		rel_cam_target += bobvec * f;
-		rel_cam_target.Z -= 0.005 * bobvec.Z * f;
-		//rel_cam_target.X -= 0.005 * bobvec.X * f;
-		//rel_cam_target.Y -= 0.005 * bobvec.Y * f;
-		rel_cam_up.rotateXYBy(-0.03 * bobdir * bobtmp * M_PI * f);
+		rel_cam_target.Z -= 0.005f * bobvec.Z * f;
+		//rel_cam_target.X -= 0.005f * bobvec.X * f;
+		//rel_cam_target.Y -= 0.005f * bobvec.Y * f;
+		rel_cam_up.rotateXYBy(-0.03f * bobdir * bobtmp * M_PI * f);
 		#else
 		f32 angle_deg = 1 * bobdir * sin(bobfrac * M_PI);
 		f32 angle_rad = angle_deg * M_PI / 180;
-		f32 r = 0.05;
+		f32 r = 0.05f;
 		v3f off = v3f(
 			r * sin(angle_rad),
 			r * (cos(angle_rad) - 1),
@@ -488,8 +480,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	v3f my_cp = m_camera_position;
 
 	// Reposition the camera for third person view
-	if (m_camera_mode > CAMERA_MODE_FIRST)
-	{
+	if (m_camera_mode > CAMERA_MODE_FIRST) {
 		if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 			m_camera_direction *= -1;
 
@@ -497,7 +488,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 		// Calculate new position
 		bool abort = false;
-		for (int i = BS; i <= BS * 2.75; i++) {
+		for (int i = BS; i <= BS * 2.75f; i++) {
 			my_cp.X = m_camera_position.X + m_camera_direction.X * -i;
 			my_cp.Z = m_camera_position.Z + m_camera_direction.Z * -i;
 			if (i > 12)
@@ -505,34 +496,33 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 			// Prevent camera positioned inside nodes
 			const NodeDefManager *nodemgr = m_client->ndef();
-			MapNode n = m_client->getEnv().getClientMap()
-				.getNode(floatToInt(my_cp, BS));
+			MapNode n = m_client->getEnv().getClientMap().getNode(floatToInt(my_cp, BS));
 
 			const ContentFeatures& features = nodemgr->get(n);
 			if (features.walkable) {
-				my_cp.X += m_camera_direction.X*-1*-BS/2;
-				my_cp.Z += m_camera_direction.Z*-1*-BS/2;
-				my_cp.Y += m_camera_direction.Y*-1*-BS/2;
+				my_cp.X += m_camera_direction.X * -1 * -BS / 2;
+				my_cp.Z += m_camera_direction.Z * -1 * -BS / 2;
+				my_cp.Y += m_camera_direction.Y * -1 * -BS / 2;
 				abort = true;
 				break;
 			}
 		}
 
-		// If node blocks camera position don't move y to heigh
-		if (abort && my_cp.Y > player_position.Y+BS*2)
-			my_cp.Y = player_position.Y+BS*2;
+		// If node blocks camera position don't move y too high
+		if (abort && my_cp.Y > player_position.Y + BS * 2)
+			my_cp.Y = player_position.Y + BS * 2;
 	}
 
 	// Update offset if too far away from the center of the map
-	m_camera_offset.X += CAMERA_OFFSET_STEP*
-			(((s16)(my_cp.X/BS) - m_camera_offset.X)/CAMERA_OFFSET_STEP);
-	m_camera_offset.Y += CAMERA_OFFSET_STEP*
-			(((s16)(my_cp.Y/BS) - m_camera_offset.Y)/CAMERA_OFFSET_STEP);
-	m_camera_offset.Z += CAMERA_OFFSET_STEP*
-			(((s16)(my_cp.Z/BS) - m_camera_offset.Z)/CAMERA_OFFSET_STEP);
+	m_camera_offset.X += CAMERA_OFFSET_STEP *
+			(((s16)(my_cp.X / BS) - m_camera_offset.X) / CAMERA_OFFSET_STEP);
+	m_camera_offset.Y += CAMERA_OFFSET_STEP *
+			(((s16)(my_cp.Y / BS) - m_camera_offset.Y) / CAMERA_OFFSET_STEP);
+	m_camera_offset.Z += CAMERA_OFFSET_STEP *
+			(((s16)(my_cp.Z / BS) - m_camera_offset.Z) / CAMERA_OFFSET_STEP);
 
 	// Set camera node transformation
-	m_cameranode->setPosition(my_cp-intToFloat(m_camera_offset, BS));
+	m_cameranode->setPosition(my_cp - intToFloat(m_camera_offset, BS));
 	m_cameranode->setUpVector(abs_cam_up);
 	// *100.0 helps in large map coordinates
 	m_cameranode->setTarget(my_cp-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
@@ -576,8 +566,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	m_aspect = (f32) window_size.X / (f32) window_size.Y;
 	m_fov_y = m_curr_fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
-	m_fov_y *= core::clamp(sqrt(16./10. / m_aspect), 1.0, 1.4);
-	m_fov_x = 2 * atan(m_aspect * tan(0.5 * m_fov_y));
+	m_fov_y *= core::clamp(sqrt(16.0f / 10.0f / m_aspect), 1.0f, 1.4f);
+	m_fov_x = 2.0f * atan(m_aspect * tan(0.5f * m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
@@ -588,42 +578,42 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	v3f wield_position = v3f(m_wieldmesh_position.X, m_wieldmesh_position.Y,
 		WIELDMESH_OFFSET_Z);
 	v3f wield_rotation = m_wieldmesh_rotation;
-	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
-	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
-	{
-		f32 frac = 1.0;
-		if(m_digging_anim > 0.5)
-			frac = 2.0 * (m_digging_anim - 0.5);
+	wield_position.Y += fabs(m_wield_change_timer) * 320.0f - 40.0f;
+	if (m_digging_anim < 0.05f || m_digging_anim > 0.5f) {
+		f32 frac = 1.0f;
+		if (m_digging_anim > 0.5f)
+			frac = 2.0f * (m_digging_anim - 0.5f);
 		// This value starts from 1 and settles to 0
 		f32 ratiothing = std::pow((1.0f - tool_reload_ratio), 0.5f);
 		//f32 ratiothing2 = pow(ratiothing, 0.5f);
-		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
-		wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7f);
-		//wield_position.Z += frac * 5.0 * ratiothing2;
-		wield_position.X -= frac * 35.0 * pow(ratiothing2, 1.1f);
-		wield_rotation.Y += frac * 70.0 * pow(ratiothing2, 1.4f);
-		//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4f);
-		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
+		f32 ratiothing2 = (easeCurve(ratiothing * 0.5f)) * 2.0f;
+		wield_position.Y -= frac * 25.0f * pow(ratiothing2, 1.7f);
+		//wield_position.Z += frac * 5.0f * ratiothing2;
+		wield_position.X -= frac * 35.0f * pow(ratiothing2, 1.1f);
+		wield_rotation.Y += frac * 70.0f * pow(ratiothing2, 1.4f);
+		//wield_rotation.X -= frac * 15.0f * pow(ratiothing2, 1.4f);
+		//wield_rotation.Z += frac * 15.0f * pow(ratiothing2, 1.0f);
 	}
-	if (m_digging_button != -1)
-	{
+
+	if (m_digging_button != -1) {
 		f32 digfrac = m_digging_anim;
-		wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
-		wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
-		wield_position.Z += 25 * 0.5;
+		wield_position.X -= 50.0f * sin(pow(digfrac, 0.8f) * M_PI);
+		wield_position.Y += 24.0f * sin(digfrac * 1.8f * M_PI);
+		wield_position.Z += 25.0f * 0.5f;
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
 		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
-		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
+		core::quaternion quat_end(v3f(80.0f, 30.0f, 100.0f) * core::DEGTORAD);
 		core::quaternion quat_slerp;
 		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
 		quat_slerp.toEuler(wield_rotation);
 		wield_rotation *= core::RADTODEG;
 	} else {
 		f32 bobfrac = my_modf(m_view_bobbing_anim);
-		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
-		wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
+		wield_position.X -= sin(bobfrac * M_PI * 2.0f) * 3.0f;
+		wield_position.Y += sin(my_modf(bobfrac * 2.0f) * M_PI) * 3.0f;
 	}
+
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
 
@@ -647,9 +637,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		// Start animation
 		m_view_bobbing_state = 1;
 		m_view_bobbing_speed = MYMIN(speed.getLength(), 70);
-	}
-	else if (m_view_bobbing_state == 1)
-	{
+	} else if (m_view_bobbing_state == 1) {
 		// Stop animation
 		m_view_bobbing_state = 2;
 		m_view_bobbing_speed = 60;
@@ -670,7 +658,7 @@ void Camera::updateViewingRange()
 
 	m_draw_control.wanted_range = std::fmin(adjustDist(viewing_range, getFovMax()), 4000);
 	if (m_draw_control.range_all) {
-		m_cameranode->setFarValue(100000.0);
+		m_cameranode->setFarValue(100000.0f);
 		return;
 	}
 	m_cameranode->setFarValue((viewing_range < 2000) ? 2000 * BS : viewing_range * BS);
@@ -690,30 +678,28 @@ void Camera::wield(const ItemStack &item)
 		if (m_wield_change_timer > 0)
 			m_wield_change_timer = -m_wield_change_timer;
 		else if (m_wield_change_timer == 0)
-			m_wield_change_timer = -0.001;
+			m_wield_change_timer = -0.001f;
 	}
 }
 
-void Camera::drawWieldedTool(irr::core::matrix4* translation)
+void Camera::drawWieldedTool(irr::core::matrix4 *translation)
 {
 	// Clear Z buffer so that the wielded tool stays in front of world geometry
 	m_wieldmgr->getVideoDriver()->clearZBuffer();
 
 	// Draw the wielded node (in a separate scene manager)
-	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
+	scene::ICameraSceneNode *cam = m_wieldmgr->getActiveCamera();
 	cam->setAspectRatio(m_cameranode->getAspectRatio());
-	cam->setFOV(72.0*M_PI/180.0);
+	cam->setFOV(72.0f * M_PI / 180.0f);
 	cam->setNearValue(10);
 	cam->setFarValue(1000);
-	if (translation != NULL)
-	{
+	if (translation) {
 		irr::core::matrix4 startMatrix = cam->getAbsoluteTransformation();
 		irr::core::vector3df focusPoint = (cam->getTarget()
 				- cam->getAbsolutePosition()).setLength(1)
 				+ cam->getAbsolutePosition();
 
-		irr::core::vector3df camera_pos =
-				(startMatrix * *translation).getTranslation();
+		irr::core::vector3df camera_pos = (startMatrix * *translation).getTranslation();
 		cam->setPosition(camera_pos);
 		cam->setTarget(focusPoint);
 	}
@@ -749,9 +735,9 @@ void Camera::drawNametags()
 			v2u32 screensize = RenderingEngine::get_video_driver()->getScreenSize();
 			v2s32 screen_pos;
 			screen_pos.X = screensize.X *
-				(0.5 * transformed_pos[0] * zDiv + 0.5) - textsize.Width / 2;
+				(0.5f * transformed_pos[0] * zDiv + 0.5f) - textsize.Width / 2;
 			screen_pos.Y = screensize.Y *
-				(0.5 - transformed_pos[1] * zDiv * 0.5) - textsize.Height / 2;
+				(0.5f - transformed_pos[1] * zDiv * 0.5f) - textsize.Height / 2;
 			core::rect<s32> size(0, 0, textsize.Width, textsize.Height);
 			g_fontengine->getFont()->draw(
 				translate_string(utf8_to_wide(nametag->nametag_text)).c_str(),
