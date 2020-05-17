@@ -126,14 +126,19 @@ core.register_entity(":__builtin:falling_node", {
 		-- Set collision box (certain nodeboxes only for now)
 		local nb_types = {fixed=true, leveled=true, connected=true}
 		if def.drawtype == "nodebox" and def.node_box and
-			nb_types[def.node_box.type] and type(def.node_box.fixed[1]) ~= "table" then
+			nb_types[def.node_box.type] then
 			local box = table.copy(def.node_box.fixed)
-			if def.paramtype2 == "leveled" and (self.node.level or 0) > 0 then
-				box[5] = -0.5 + self.node.level / 64
+			if type(box[1]) == "table" then
+				box = #box == 1 and box[1] or nil -- We can only use a single box
 			end
-			self.object:set_properties({
-				collisionbox = box
-			})
+			if box then
+				if def.paramtype2 == "leveled" and (self.node.level or 0) > 0 then
+					box[5] = -0.5 + self.node.level / 64
+				end
+				self.object:set_properties({
+					collisionbox = box
+				})
+			end
 		end
 
 		-- Rotate entity
