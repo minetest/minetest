@@ -1064,6 +1064,14 @@ int ModApiMainMenu::l_get_max_supp_proto(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_open_url(lua_State *L)
+{
+	std::string url = luaL_checkstring(L, 1);
+	lua_pushboolean(L, porting::openURL(url));
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_do_async_callback(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
@@ -1125,6 +1133,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_screen_info);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
+	API_FCT(open_url);
 	API_FCT(do_async_callback);
 }
 

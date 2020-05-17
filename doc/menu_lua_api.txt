@@ -234,6 +234,11 @@ core.get_min_supp_proto()
 core.get_max_supp_proto()
 ^ returns the maximum supported network protocol version
 
+Other:
+core.open_url(url)
+^ opens the URL in a web browser, returns false on failure.
+^ Must begin with http:// or https://
+
 Async:
 core.handle_async(async_job,parameters,finished)
 ^ execute a function asynchronously
