@@ -6820,6 +6820,14 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         wield_scale = {x = 1, y = 1, z = 1},
 
+        wield_position = {x = 0, y = 0}
+        -- Absolute position of wielditem on the screen. Supports values from [0-1].
+        -- Defaults to an approx. bottom-right position if not defined.
+
+        wield_rotation = {x = 0, y = 0, z = 0},
+        -- Absolute rotation of wielditem in degrees.
+        -- Defaults to an approx. upright orientation if not defined.
+
         -- The default value of 99 may be configured by
         -- users using the setting "default_stack_max"
         stack_max = 99,

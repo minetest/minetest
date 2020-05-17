@@ -37,11 +37,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 #include "script/scripting_client.h"
 
+#include "util/quicktune.h"
+
 #define CAMERA_OFFSET_STEP 200
-#define WIELDMESH_OFFSET_X 55.0f
-#define WIELDMESH_OFFSET_Y -35.0f
+
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
+
+#define WIELDMESH_OFFSET_X 55.0f
+#define WIELDMESH_OFFSET_Y -35.0f
+#define WIELDMESH_OFFSET_Z 65
+
+#define WIELDMESH_ROTATION_X -100
+#define WIELDMESH_ROTATION_Y 120
+#define WIELDMESH_ROTATION_Z -100
+
+v2f default_wieldmesh_position = v2f(
+	WIELDMESH_OFFSET_X,
+	WIELDMESH_OFFSET_Y
+);
+
+v3f default_wieldmesh_rotation = v3f(
+	WIELDMESH_ROTATION_X,
+	WIELDMESH_ROTATION_Y,
+	WIELDMESH_ROTATION_Z
+);
 
 Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_draw_control(draw_control),
@@ -172,8 +192,24 @@ void Camera::step(f32 dtime)
 	bool was_under_zero = m_wield_change_timer < 0;
 	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
 
-	if (m_wield_change_timer >= 0 && was_under_zero)
+	if (m_wield_change_timer >= 0 && was_under_zero) {
 		m_wieldnode->setItem(m_wield_item_next, m_client);
+		auto def = m_wield_item_next.getDefinition(m_client->getItemDefManager());
+		m_wieldmesh_rotation = def.wield_rotation;
+		m_wieldmesh_position = def.wield_position;
+
+		// If wield_position isn't defined, use the default offset v2f
+		if (m_wieldmesh_position.X == -1.0f && m_wieldmesh_position.Y == -1.0f)
+			m_wieldmesh_position = v2f(default_wieldmesh_position);
+
+		// If wield_rotation isn't defined, use the default rotation v3f
+		if (m_wieldmesh_rotation.X == -1.0f && m_wieldmesh_rotation.Y == -1.0f &&
+				m_wieldmesh_rotation.Z == -1.0f)
+			m_wieldmesh_rotation = v3f(default_wieldmesh_rotation);
+
+		m_original_wieldmesh_position = m_wieldmesh_position;
+		m_original_wieldmesh_rotation = m_wieldmesh_rotation;
+	}
 
 	if (m_view_bobbing_state != 0)
 	{
@@ -236,10 +272,10 @@ void Camera::step(f32 dtime)
 	}
 }
 
-static inline v2f dir(const v2f &pos_dist)
+static inline v2f dir(const v2f &from, const v2f &to)
 {
-	f32 x = pos_dist.X - WIELDMESH_OFFSET_X;
-	f32 y = pos_dist.Y - WIELDMESH_OFFSET_Y;
+	f32 x = to.X - from.X;
+	f32 y = to.Y - from.Y;
 
 	f32 x_abs = std::fabs(x);
 	f32 y_abs = std::fabs(y);
@@ -262,8 +298,8 @@ void Camera::addArmInertia(f32 player_yaw)
 	m_cam_vel.X = std::fabs(rangelim(m_last_cam_pos.X - player_yaw,
 		-100.0f, 100.0f) / 0.016f) * 0.01f;
 	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / 0.016f);
-	f32 gap_X = std::fabs(WIELDMESH_OFFSET_X - m_wieldmesh_offset.X);
-	f32 gap_Y = std::fabs(WIELDMESH_OFFSET_Y - m_wieldmesh_offset.Y);
+	f32 gap_X = std::fabs(m_original_wieldmesh_position.X - m_wieldmesh_position.X);
+	f32 gap_Y = std::fabs(m_original_wieldmesh_position.Y - m_wieldmesh_position.Y);
 
 	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
 		/*
@@ -276,14 +312,14 @@ void Camera::addArmInertia(f32 player_yaw)
 				m_cam_vel_old.X = m_cam_vel.X;
 
 			f32 acc_X = 0.12f * (m_cam_vel.X - (gap_X * 0.1f));
-			m_wieldmesh_offset.X += m_last_cam_pos.X < player_yaw ? acc_X : -acc_X;
+			m_wieldmesh_position.X += m_last_cam_pos.X < player_yaw ? acc_X : -acc_X;
 
 			if (m_last_cam_pos.X != player_yaw)
 				m_last_cam_pos.X = player_yaw;
 
-			m_wieldmesh_offset.X = rangelim(m_wieldmesh_offset.X,
-				WIELDMESH_OFFSET_X - (WIELDMESH_AMPLITUDE_X * 0.5f),
-				WIELDMESH_OFFSET_X + (WIELDMESH_AMPLITUDE_X * 0.5f));
+			m_wieldmesh_position.X = rangelim(m_wieldmesh_position.X,
+				m_original_wieldmesh_position.X - (WIELDMESH_AMPLITUDE_X * 0.5f),
+				m_original_wieldmesh_position.X + (WIELDMESH_AMPLITUDE_X * 0.5f));
 		}
 
 		if (m_cam_vel.Y > 1.0f) {
@@ -291,18 +327,18 @@ void Camera::addArmInertia(f32 player_yaw)
 				m_cam_vel_old.Y = m_cam_vel.Y;
 
 			f32 acc_Y = 0.12f * (m_cam_vel.Y - (gap_Y * 0.1f));
-			m_wieldmesh_offset.Y +=
+			m_wieldmesh_position.Y +=
 				m_last_cam_pos.Y > m_camera_direction.Y ? acc_Y : -acc_Y;
 
 			if (m_last_cam_pos.Y != m_camera_direction.Y)
 				m_last_cam_pos.Y = m_camera_direction.Y;
 
-			m_wieldmesh_offset.Y = rangelim(m_wieldmesh_offset.Y,
-				WIELDMESH_OFFSET_Y - (WIELDMESH_AMPLITUDE_Y * 0.5f),
-				WIELDMESH_OFFSET_Y + (WIELDMESH_AMPLITUDE_Y * 0.5f));
+			m_wieldmesh_position.Y = rangelim(m_wieldmesh_position.Y,
+				m_original_wieldmesh_position.Y - (WIELDMESH_AMPLITUDE_Y * 0.5f),
+				m_original_wieldmesh_position.Y + (WIELDMESH_AMPLITUDE_Y * 0.5f));
 		}
 
-		m_arm_dir = dir(m_wieldmesh_offset);
+		m_arm_dir = dir(m_original_wieldmesh_position, m_wieldmesh_position);
 	} else {
 		/*
 		    Now the arm gets back to its default position when the camera stops,
@@ -318,14 +354,14 @@ void Camera::addArmInertia(f32 player_yaw)
 		if (gap_X < 0.1f)
 			m_cam_vel_old.X = 0.0f;
 
-		m_wieldmesh_offset.X -=
-			m_wieldmesh_offset.X > WIELDMESH_OFFSET_X ? dec_X : -dec_X;
+		m_wieldmesh_position.X -=
+			m_wieldmesh_position.X > m_original_wieldmesh_position.X ? dec_X : -dec_X;
 
 		if (gap_Y < 0.1f)
 			m_cam_vel_old.Y = 0.0f;
 
-		m_wieldmesh_offset.Y -=
-			m_wieldmesh_offset.Y > WIELDMESH_OFFSET_Y ? dec_Y : -dec_Y;
+		m_wieldmesh_position.Y -=
+			m_wieldmesh_position.Y > m_original_wieldmesh_position.Y ? dec_Y : -dec_Y;
 	}
 }
 
@@ -549,10 +585,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		addArmInertia(player->getYaw());
 
 	// Position the wielded item
-	//v3f wield_position = v3f(45, -35, 65);
-	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
-	//v3f wield_rotation = v3f(-100, 120, -100);
-	v3f wield_rotation = v3f(-100, 120, -100);
+	v3f wield_position = v3f(m_wieldmesh_position.X, m_wieldmesh_position.Y,
+		WIELDMESH_OFFSET_Z);
+	v3f wield_rotation = m_wieldmesh_rotation;
 	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
 	{

@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "wieldmesh.h"
+#include "camera.h"
 #include "settings.h"
 #include "shader.h"
 #include "inventory.h"
@@ -432,7 +433,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 		}
-		return;
 	}
 	else if (!def.inventory_image.empty()) {
 		setExtruded(def.inventory_image, def.inventory_overlay, def.wield_scale,
@@ -440,11 +440,14 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
-		return;
 	}
 
 	// no wield mesh found
 	changeToMesh(nullptr);
+
+	// Set wielditem position and rotation
+	setRotation(def.wield_rotation);
+	setPosition(v3f(def.wield_position.X, def.wield_position.Y, getPosition().Z));
 }
 
 void WieldMeshSceneNode::setColor(video::SColor c)
@@ -519,7 +522,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	content_t id = ndef->getId(def.name);
 
 	FATAL_ERROR_IF(!g_extrusion_mesh_cache, "Extrusion mesh cache is not yet initialized");
-	
+
 	scene::SMesh *mesh = nullptr;
 
 	// Shading is on by default
@@ -596,6 +599,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		rotateMeshXZby(mesh, -45);
 		rotateMeshYZby(mesh, -30);
 	}
+
 	result->mesh = mesh;
 }
 

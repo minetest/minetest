@@ -207,7 +207,11 @@ private:
 	bool m_fov_transition_active = false;
 	f32 m_fov_diff, m_transition_time;
 
-	v2f m_wieldmesh_offset = v2f(55.0f, -35.0f);
+	v2f m_original_wieldmesh_position;
+	v3f m_original_wieldmesh_rotation;
+	v2f m_wieldmesh_position;
+	v3f m_wieldmesh_rotation;
+
 	v2f m_arm_dir;
 	v2f m_cam_vel;
 	v2f m_cam_vel_old;
