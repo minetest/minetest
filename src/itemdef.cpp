@@ -54,36 +54,36 @@ ItemDefinition::ItemDefinition(const ItemDefinition &def)
 
 ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 {
-	if(this == &def)
+	if (this == &def)
 		return *this;
 
 	reset();
 
-	type = def.type;
-	name = def.name;
-	description = def.description;
-	inventory_image = def.inventory_image;
+	type              = def.type;
+	name              = def.name;
+	description       = def.description;
+	inventory_image   = def.inventory_image;
 	inventory_overlay = def.inventory_overlay;
-	wield_image = def.wield_image;
-	wield_overlay = def.wield_overlay;
-	wield_scale = def.wield_scale;
-	wield_position = def.wield_position;
-	wield_rotation = def.wield_rotation;
-	stack_max = def.stack_max;
-	usable = def.usable;
+	wield_image       = def.wield_image;
+	wield_overlay     = def.wield_overlay;
+	wield_scale       = def.wield_scale;
+	wield_position    = def.wield_position;
+	wield_rotation    = def.wield_rotation;
+	stack_max         = def.stack_max;
+	usable            = def.usable;
 	liquids_pointable = def.liquids_pointable;
+
 	if(def.tool_capabilities)
-	{
-		tool_capabilities = new ToolCapabilities(
-				*def.tool_capabilities);
-	}
-	groups = def.groups;
+		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
+
+	groups                    = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
-	sound_place = def.sound_place;
-	sound_place_failed = def.sound_place_failed;
-	range = def.range;
-	palette_image = def.palette_image;
-	color = def.color;
+	sound_place               = def.sound_place;
+	sound_place_failed        = def.sound_place_failed;
+	range                     = def.range;
+	palette_image             = def.palette_image;
+	color                     = def.color;
+
 	return *this;
 }
 
@@ -101,27 +101,30 @@ void ItemDefinition::resetInitial()
 
 void ItemDefinition::reset()
 {
-	type = ITEM_NONE;
-	name = "";
-	description = "";
-	inventory_image = "";
+	type              = ITEM_NONE;
+	name              = "";
+	description       = "";
+	inventory_image   = "";
 	inventory_overlay = "";
-	wield_image = "";
-	wield_overlay = "";
-	palette_image = "";
-	color = video::SColor(0xFFFFFFFF);
-	wield_scale = v3f(1.0f);
-	wield_position = v2f(-1.0f);
-	wield_rotation = v3f(-1.0f);
-	stack_max = 99;
-	usable = false;
+	wield_image       = "";
+	wield_overlay     = "";
+	palette_image     = "";
+	color             = video::SColor(0xFFFFFFFF);
+	wield_scale       = v3f(1.0f, 1.0f, 1.0f);
+	wield_position    = v2f(0.0f, 0.0f);
+	wield_rotation    = v3f(0.0f, 0.0f, 0.0f);
+	stack_max         = 99;
+	usable            = false;
 	liquids_pointable = false;
+
 	delete tool_capabilities;
 	tool_capabilities = NULL;
+
 	groups.clear();
-	sound_place = SimpleSoundSpec();
+
+	sound_place        = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
-	range = -1;
+	range              = -1;
 
 	node_placement_prediction = "";
 }
@@ -200,7 +203,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	groups.clear();
 	u32 groups_size = readU16(is);
-	for(u32 i=0; i<groups_size; i++){
+	for (u32 i=0; i<groups_size; i++) {
 		std::string name = deSerializeString(is);
 		int value = readS16(is);
 		groups[name] = value;
