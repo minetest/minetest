@@ -66,7 +66,7 @@ public:
 	float nthresh;      // threshold for noise at which an ore is placed
 	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise = nullptr;
-	std::unordered_set<u16> biomes;
+	std::unordered_set<biome_t> biomes;
 
 	Ore() = default;;
 	virtual ~Ore();
