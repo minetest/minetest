@@ -1623,6 +1623,8 @@ void ServerEnvironment::getSelectedActiveObjects(
 	const v3f line_vector = shootline_on_map.getVector();
 
 	for (auto obj : objs) {
+		if (obj->isGone())
+			continue;
 		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))
 			continue;

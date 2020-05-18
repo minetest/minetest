@@ -397,7 +397,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				// we directly use the callback to populate the result to prevent
 				// a useless result loop here
 				auto include_obj_cb = [self, &objects] (ServerActiveObject *obj) {
-					if (!self || (self != obj && self != obj->getParent())) {
+					if (!obj->isGone() &&
+						(!self || (self != obj && self != obj->getParent()))) {
 						objects.push_back((ActiveObject *)obj);
 					}
 					return false;
