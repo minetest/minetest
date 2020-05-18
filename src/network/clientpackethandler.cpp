@@ -1225,7 +1225,7 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	// If radar has been disabled, try to find a non radar mode or fall back to 0
 	if (m_minimap && m_minimap_radar_disabled_by_server
 			&& was_minimap_radar_visible) {
-		while (m_minimap->getModeIndex() &&
+		while (m_minimap->getModeIndex() > 0 &&
 				m_minimap->getModeDef().type == MINIMAP_TYPE_RADAR)
 			m_minimap->nextMode();
 	}

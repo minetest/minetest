@@ -665,7 +665,7 @@ void Minimap::drawMinimap(core::rect<s32> rect) {
 			posf.Y = t2;
 		}
 		posf.X = (posf.X + 0.5) * (float)rect.getWidth();
-		posf.Y = (posf.Y + 0.5) * (float)rect.getWidth();
+		posf.Y = (posf.Y + 0.5) * (float)rect.getHeight();
 		core::rect<s32> dest_rect(
 			s_pos.X + posf.X - marker_size2,
 			s_pos.Y + posf.Y - marker_size2,

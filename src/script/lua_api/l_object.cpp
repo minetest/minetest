@@ -2238,13 +2238,15 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 				mode.texture = getstringfield_default(L, -1, "texture", "");
 				mode.scale = getintfield_default(L, -1, "scale", 1);
 			} else {
+				warningstream << "Minimap mode of unknown type \"" << type.c_str()
+					<< "\" ignored.\n" << std::endl;
 				mode.type = -1;
 			}
 
 			if (mode.type >= 0) {
 				mode.label = getstringfield_default(L, -1, "label", "");
 				// Size is limited to 512. Performance gets poor if size too large, and
-				// segfaults have been exeprienced.
+				// segfaults have been experienced.
 				mode.size = rangelim(getintfield_default(L, -1, "size", 0), 1, 512);
 				modes.push_back(mode);
 			}
