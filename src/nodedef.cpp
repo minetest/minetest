@@ -1440,6 +1440,9 @@ void NodeDefManager::deSerialize(std::istream &is)
 		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);
 		fixSelectionBoxIntUnion();
 	}
+
+	// Since liquid_alternative_flowing_id and liquid_alternative_source_id
+	// are not sent, resolve them client-side too.
 	resolveCrossrefs();
 }
 
@@ -1501,7 +1504,8 @@ void NodeDefManager::resetNodeResolveState()
 	m_pending_resolve_callbacks.clear();
 }
 
-static void removeDupes(std::vector<content_t> &list) {
+static void removeDupes(std::vector<content_t> &list)
+{
 	std::sort(list.begin(), list.end());
 	auto new_end = std::unique(list.begin(), list.end());
 	list.erase(new_end, list.end());
