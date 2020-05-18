@@ -251,10 +251,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	}
 	*speed_f += accel_f * dtime;
 
-	// If there is no speed, there are no collisions
-	if (speed_f->getLength() == 0)
-		return result;
-
 	// Limit speed for avoiding hangs
 	speed_f->Y = rangelim(speed_f->Y, -5000, 5000);
 	speed_f->X = rangelim(speed_f->X, -5000, 5000);
@@ -439,135 +435,138 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	f32 d = 0.0f;
 
-	int loopcount = 0;
+	// If speed == 0, don't bother calculating collisions.
+	if (speed_f->getLength() != 0) {
+		int loopcount = 0;
 
-	while(dtime > BS * 1e-10f) {
-		// Avoid infinite loop
-		loopcount++;
-		if (loopcount >= 100) {
-			warningstream << "collisionMoveSimple: Loop count exceeded, aborting to avoid infiniite loop" << std::endl;
-			break;
-		}
+		while(dtime > BS * 1e-10f) {
+			// Avoid infinite loop
+			loopcount++;
+			if (loopcount >= 100) {
+				warningstream << "collisionMoveSimple: Loop count exceeded, aborting to avoid infinite loop" << std::endl;
+				break;
+			}
 
-		aabb3f movingbox = box_0;
-		movingbox.MinEdge += *pos_f;
-		movingbox.MaxEdge += *pos_f;
+			aabb3f movingbox = box_0;
+			movingbox.MinEdge += *pos_f;
+			movingbox.MaxEdge += *pos_f;
 
-		CollisionAxis nearest_collided = COLLISION_AXIS_NONE;
-		f32 nearest_dtime = dtime;
-		int nearest_boxindex = -1;
+			CollisionAxis nearest_collided = COLLISION_AXIS_NONE;
+			f32 nearest_dtime = dtime;
+			int nearest_boxindex = -1;
 
-		/*
-			Go through every nodebox, find nearest collision
-		*/
-		for (u32 boxindex = 0; boxindex < cinfo.size(); boxindex++) {
-			const NearbyCollisionInfo &box_info = cinfo[boxindex];
-			// Ignore if already stepped up this nodebox.
-			if (box_info.is_step_up)
-				continue;
+			/*
+				Go through every nodebox, find nearest collision
+			*/
+			for (u32 boxindex = 0; boxindex < cinfo.size(); boxindex++) {
+				const NearbyCollisionInfo &box_info = cinfo[boxindex];
+				// Ignore if already stepped up this nodebox.
+				if (box_info.is_step_up)
+					continue;
 
-			// Find nearest collision of the two boxes (raytracing-like)
-			f32 dtime_tmp = nearest_dtime;
-			CollisionAxis collided = axisAlignedCollision(box_info.box,
-					movingbox, *speed_f, &dtime_tmp);
+				// Find nearest collision of the two boxes (raytracing-like)
+				f32 dtime_tmp = nearest_dtime;
+				CollisionAxis collided = axisAlignedCollision(box_info.box,
+						movingbox, *speed_f, &dtime_tmp);
 
-			if (collided == -1 || dtime_tmp >= nearest_dtime)
-				continue;
+				if (collided == -1 || dtime_tmp >= nearest_dtime)
+					continue;
 
-			nearest_dtime = dtime_tmp;
-			nearest_collided = collided;
-			nearest_boxindex = boxindex;
-		}
+				nearest_dtime = dtime_tmp;
+				nearest_collided = collided;
+				nearest_boxindex = boxindex;
+			}
 
-		if (nearest_collided == COLLISION_AXIS_NONE) {
-			// No collision with any collision box.
-			*pos_f += truncate(*speed_f * dtime, 100.0f);
-			dtime = 0;  // Set to 0 to avoid "infinite" loop due to small FP numbers
-		} else {
-			// Otherwise, a collision occurred.
-			NearbyCollisionInfo &nearest_info = cinfo[nearest_boxindex];
-			const aabb3f& cbox = nearest_info.box;
-
-			//movingbox except moved to the horizontal position it would be after step up
-			aabb3f stepbox = movingbox;
-			stepbox.MinEdge.X += speed_f->X * dtime;
-			stepbox.MinEdge.Z += speed_f->Z * dtime;
-			stepbox.MaxEdge.X += speed_f->X * dtime;
-			stepbox.MaxEdge.Z += speed_f->Z * dtime;
-			// Check for stairs.
-			bool step_up = (nearest_collided != COLLISION_AXIS_Y) && // must not be Y direction
-					(movingbox.MinEdge.Y < cbox.MaxEdge.Y) &&
-					(movingbox.MinEdge.Y + stepheight > cbox.MaxEdge.Y) &&
-					(!wouldCollideWithCeiling(cinfo, stepbox,
-							cbox.MaxEdge.Y - movingbox.MinEdge.Y,
-							d));
-
-			// Get bounce multiplier
-			float bounce = -(float)nearest_info.bouncy / 100.0f;
-
-			// Move to the point of collision and reduce dtime by nearest_dtime
-			if (nearest_dtime < 0) {
-				// Handle negative nearest_dtime
-				if (!step_up) {
-					if (nearest_collided == COLLISION_AXIS_X)
-						pos_f->X += speed_f->X * nearest_dtime;
-					if (nearest_collided == COLLISION_AXIS_Y)
-						pos_f->Y += speed_f->Y * nearest_dtime;
-					if (nearest_collided == COLLISION_AXIS_Z)
-						pos_f->Z += speed_f->Z * nearest_dtime;
-				}
+			if (nearest_collided == COLLISION_AXIS_NONE) {
+				// No collision with any collision box.
+				*pos_f += truncate(*speed_f * dtime, 100.0f);
+				dtime = 0;  // Set to 0 to avoid "infinite" loop due to small FP numbers
 			} else {
-				*pos_f += truncate(*speed_f * nearest_dtime, 100.0f);
-				dtime -= nearest_dtime;
-			}
+				// Otherwise, a collision occurred.
+				NearbyCollisionInfo &nearest_info = cinfo[nearest_boxindex];
+				const aabb3f& cbox = nearest_info.box;
 
-			bool is_collision = true;
-			if (nearest_info.is_unloaded)
-				is_collision = false;
+				//movingbox except moved to the horizontal position it would be after step up
+				aabb3f stepbox = movingbox;
+				stepbox.MinEdge.X += speed_f->X * dtime;
+				stepbox.MinEdge.Z += speed_f->Z * dtime;
+				stepbox.MaxEdge.X += speed_f->X * dtime;
+				stepbox.MaxEdge.Z += speed_f->Z * dtime;
+				// Check for stairs.
+				bool step_up = (nearest_collided != COLLISION_AXIS_Y) && // must not be Y direction
+						(movingbox.MinEdge.Y < cbox.MaxEdge.Y) &&
+						(movingbox.MinEdge.Y + stepheight > cbox.MaxEdge.Y) &&
+						(!wouldCollideWithCeiling(cinfo, stepbox,
+								cbox.MaxEdge.Y - movingbox.MinEdge.Y,
+								d));
 
-			CollisionInfo info;
-			if (nearest_info.isObject())
-				info.type = COLLISION_OBJECT;
-			else
-				info.type = COLLISION_NODE;
+				// Get bounce multiplier
+				float bounce = -(float)nearest_info.bouncy / 100.0f;
 
-			info.node_p = nearest_info.position;
-			info.object = nearest_info.obj;
-			info.old_speed = *speed_f;
-			info.plane = nearest_collided;
+				// Move to the point of collision and reduce dtime by nearest_dtime
+				if (nearest_dtime < 0) {
+					// Handle negative nearest_dtime
+					if (!step_up) {
+						if (nearest_collided == COLLISION_AXIS_X)
+							pos_f->X += speed_f->X * nearest_dtime;
+						if (nearest_collided == COLLISION_AXIS_Y)
+							pos_f->Y += speed_f->Y * nearest_dtime;
+						if (nearest_collided == COLLISION_AXIS_Z)
+							pos_f->Z += speed_f->Z * nearest_dtime;
+					}
+				} else {
+					*pos_f += truncate(*speed_f * nearest_dtime, 100.0f);
+					dtime -= nearest_dtime;
+				}
 
-			// Set the speed component that caused the collision to zero
-			if (step_up) {
-				// Special case: Handle stairs
-				nearest_info.is_step_up = true;
-				is_collision = false;
-			} else if (nearest_collided == COLLISION_AXIS_X) {
-				if (fabs(speed_f->X) > BS * 3)
-					speed_f->X *= bounce;
+				bool is_collision = true;
+				if (nearest_info.is_unloaded)
+					is_collision = false;
+
+				CollisionInfo info;
+				if (nearest_info.isObject())
+					info.type = COLLISION_OBJECT;
 				else
-					speed_f->X = 0;
-				result.collides = true;
-			} else if (nearest_collided == COLLISION_AXIS_Y) {
-				if(fabs(speed_f->Y) > BS * 3)
-					speed_f->Y *= bounce;
-				else
-					speed_f->Y = 0;
-				result.collides = true;
-			} else if (nearest_collided == COLLISION_AXIS_Z) {
-				if (fabs(speed_f->Z) > BS * 3)
-					speed_f->Z *= bounce;
-				else
-					speed_f->Z = 0;
-				result.collides = true;
-			}
+					info.type = COLLISION_NODE;
 
-			info.new_speed = *speed_f;
-			if (info.new_speed.getDistanceFrom(info.old_speed) < 0.1f * BS)
-				is_collision = false;
+				info.node_p = nearest_info.position;
+				info.object = nearest_info.obj;
+				info.old_speed = *speed_f;
+				info.plane = nearest_collided;
 
-			if (is_collision) {
-				info.axis = nearest_collided;
-				result.collisions.push_back(info);
+				// Set the speed component that caused the collision to zero
+				if (step_up) {
+					// Special case: Handle stairs
+					nearest_info.is_step_up = true;
+					is_collision = false;
+				} else if (nearest_collided == COLLISION_AXIS_X) {
+					if (fabs(speed_f->X) > BS * 3)
+						speed_f->X *= bounce;
+					else
+						speed_f->X = 0;
+					result.collides = true;
+				} else if (nearest_collided == COLLISION_AXIS_Y) {
+					if(fabs(speed_f->Y) > BS * 3)
+						speed_f->Y *= bounce;
+					else
+						speed_f->Y = 0;
+					result.collides = true;
+				} else if (nearest_collided == COLLISION_AXIS_Z) {
+					if (fabs(speed_f->Z) > BS * 3)
+						speed_f->Z *= bounce;
+					else
+						speed_f->Z = 0;
+					result.collides = true;
+				}
+
+				info.new_speed = *speed_f;
+				if (info.new_speed.getDistanceFrom(info.old_speed) < 0.1f * BS)
+					is_collision = false;
+
+				if (is_collision) {
+					info.axis = nearest_collided;
+					result.collisions.push_back(info);
+				}
 			}
 		}
 	}
