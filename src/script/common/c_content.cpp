@@ -694,6 +694,8 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	f.liquid_range = getintfield_default(L, index,
 			"liquid_range", f.liquid_range);
 	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
+	f.leveled_max = getintfield_default(L, index,
+			"leveled_max", f.leveled_max);
 
 	getboolfield(L, index, "liquid_renewable", f.liquid_renewable);
 	f.drowning = getintfield_default(L, index,
@@ -860,6 +862,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "post_effect_color");
 	lua_pushnumber(L, c.leveled);
 	lua_setfield(L, -2, "leveled");
+	lua_pushnumber(L, c.leveled_max);
+	lua_setfield(L, -2, "leveled_max");
 	lua_pushboolean(L, c.sunlight_propagates);
 	lua_setfield(L, -2, "sunlight_propagates");
 	lua_pushnumber(L, c.light_source);

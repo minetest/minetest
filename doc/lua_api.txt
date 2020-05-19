@@ -4882,7 +4882,7 @@ Environment access
 * `minetest.add_node_level(pos, level)`
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
-    * can be negative for decreasing
+    * `level` must be between -127 and 127
 * `minetest.fix_light(pos1, pos2)`: returns `true`/`false`
     * resets the light in a cuboid-shaped part of
       the map and removes lighting bugs.
@@ -7012,11 +7012,15 @@ Used by `minetest.register_node`.
         -- If true, a new liquid source can be created by placing two or more
         -- sources nearby
 
-        leveled = 16,
+        leveled = 0,
         -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
         -- Allows defining the nodebox height without using param2.
         -- The nodebox height is 'leveled' / 64 nodes.
-        -- The maximum value of 'leveled' is 127.
+        -- The maximum value of 'leveled' is `leveled_max`.
+
+        leveled_max = 127,
+        -- Maximum value for `leveled` (0-127), enforced in
+        -- `minetest.set_node_level` and `minetest.add_node_level`.
 
         liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
 

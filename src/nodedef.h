@@ -326,8 +326,10 @@ struct ContentFeatures
 	std::vector<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
-	// Flowing liquid or snow, value = default level
+	// Flowing liquid or leveled nodebox, value = default level
 	u8 leveled;
+	// Maximum value for leveled nodes
+	u8 leveled_max;
 
 	// --- LIGHTING-RELATED ---
 

@@ -109,6 +109,7 @@ core.register_entity(":__builtin:falling_node", {
 			if core.is_colored_paramtype(def.paramtype2) then
 				itemstring = core.itemstring_with_palette(itemstring, node.param2)
 			end
+			-- FIXME: solution needed for paramtype2 == "leveled"
 			local vsize
 			if def.visual_scale then
 				local s = def.visual_scale * SCALE
@@ -120,6 +121,24 @@ core.register_entity(":__builtin:falling_node", {
 				visual_size = vsize,
 				glow = def.light_source,
 			})
+		end
+
+		-- Set collision box (certain nodeboxes only for now)
+		local nb_types = {fixed=true, leveled=true, connected=true}
+		if def.drawtype == "nodebox" and def.node_box and
+			nb_types[def.node_box.type] then
+			local box = table.copy(def.node_box.fixed)
+			if type(box[1]) == "table" then
+				box = #box == 1 and box[1] or nil -- We can only use a single box
+			end
+			if box then
+				if def.paramtype2 == "leveled" and (self.node.level or 0) > 0 then
+					box[5] = -0.5 + self.node.level / 64
+				end
+				self.object:set_properties({
+					collisionbox = box
+				})
+			end
 		end
 
 		-- Rotate entity
@@ -196,13 +215,16 @@ core.register_entity(":__builtin:falling_node", {
 	try_place = function(self, bcp, bcn)
 		local bcd = core.registered_nodes[bcn.name]
 		-- Add levels if dropped on same leveled node
-		if bcd and bcd.leveled and
+		if bcd and bcd.paramtype2 == "leveled" and
 				bcn.name == self.node.name then
 			local addlevel = self.node.level
-			if not addlevel or addlevel <= 0 then
+			if (addlevel or 0) <= 0 then
 				addlevel = bcd.leveled
 			end
-			if core.add_node_level(bcp, addlevel) == 0 then
+			if core.add_node_level(bcp, addlevel) < addlevel then
+				return true
+			elseif bcd.buildable_to then
+				-- Node level has already reached max, don't place anything
 				return true
 			end
 		end
@@ -351,6 +373,7 @@ local function convert_to_falling_node(pos, node)
 	if not obj then
 		return false
 	end
+	-- remember node level, the entities' set_node() uses this
 	node.level = core.get_node_level(pos)
 	local meta = core.get_meta(pos)
 	local metatable = meta and meta:to_table() or {}
@@ -436,18 +459,23 @@ function core.check_single_for_falling(p)
 		-- Only spawn falling node if node below is loaded
 		local n_bottom = core.get_node_or_nil(p_bottom)
 		local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
-		if d_bottom and
-
-				(core.get_item_group(n.name, "float") == 0 or
-				d_bottom.liquidtype == "none") and
-
-				(n.name ~= n_bottom.name or (d_bottom.leveled and
-				core.get_node_level(p_bottom) <
-				core.get_node_max_level(p_bottom))) and
-
-				(not d_bottom.walkable or d_bottom.buildable_to) then
-			convert_to_falling_node(p, n)
-			return true
+		if d_bottom then
+			local same = n.name == n_bottom.name
+			-- Let leveled nodes fall if it can merge with the bottom node
+			if same and d_bottom.paramtype2 == "leveled" and
+					core.get_node_level(p_bottom) <
+					core.get_node_max_level(p_bottom) then
+				convert_to_falling_node(p, n)
+				return true
+			end
+			-- Otherwise only if the bottom node is considered "fall through"
+			if not same and
+					(not d_bottom.walkable or d_bottom.buildable_to) and
+					(core.get_item_group(n.name, "float") == 0 or
+					d_bottom.liquidtype == "none") then
+				convert_to_falling_node(p, n)
+				return true
+			end
 		end
 	end
 
