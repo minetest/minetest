@@ -53,28 +53,28 @@ void RenderingCoreSecondStage::initMaterial()
 void RenderingCoreSecondStage::initTextures()
 {
 	rendered = driver->addRenderTargetTexture(screensize, "3d_render", video::ECF_A8R8G8B8);
-    normalmap = driver->addRenderTargetTexture(screensize, "3d_normalmap", video::ECF_A8R8G8B8);
+	normalmap = driver->addRenderTargetTexture(screensize, "3d_normalmap", video::ECF_A8R8G8B8);
 	depthmap = driver->addRenderTargetTexture(screensize, "3d_depthmap", video::ECF_R32F);
 	renderTargets.push_back(rendered);
 	renderTargets.push_back(normalmap);
 	renderTargets.push_back(depthmap);
 	mat.TextureLayer[0].Texture = rendered;
-    mat.TextureLayer[1].Texture = normalmap;
+	mat.TextureLayer[1].Texture = normalmap;
 	mat.TextureLayer[2].Texture = depthmap;
 }
 
 void RenderingCoreSecondStage::clearTextures()
 {
 	driver->removeTexture(rendered);
-    driver->removeTexture(normalmap);
+	driver->removeTexture(normalmap);
 	driver->removeTexture(depthmap);
 }
 
 void RenderingCoreSecondStage::drawAll()
 {
-    driver->setRenderTarget(renderTargets, true, true, skycolor);
+	driver->setRenderTarget(renderTargets, true, true, skycolor);
 	draw3D();
-    driver->setRenderTarget(nullptr, false, false, skycolor);
+	driver->setRenderTarget(nullptr, false, false, skycolor);
 	draw();
 	drawHUD();
 }
