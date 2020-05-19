@@ -23,6 +23,9 @@ varying vec3 eyeVec;
 varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
+#ifdef SECONDSTAGE
+varying vec3 normalPass;
+#endif
 
 bool normalTexturePresent = false;
 
@@ -224,5 +227,11 @@ void main(void)
 	col = mix(skyBgColor, col, clarity);
 	col = vec4(col.rgb, base.a);
 
+#ifdef SECONDSTAGE
+	gl_FragData[0] = col;
+	gl_FragData[1] = vec4(normalPass, DRAW_TYPE);
+	gl_FragData[2] = vec4((fogDistance-length(eyeVec))/1000, 0,0,0);
+#else
 	gl_FragColor = col;
+#endif
 }

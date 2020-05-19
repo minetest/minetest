@@ -22,6 +22,9 @@ varying vec3 lightVec;
 varying vec3 tsEyeVec;
 varying vec3 tsLightVec;
 varying float area_enable_parallax;
+#ifdef SECONDSTAGE
+varying vec3 normalPass;
+#endif
 
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
@@ -160,6 +163,9 @@ float disp_z;
 	normal = normalize(gl_NormalMatrix * gl_Normal);
 	tangent = normalize(gl_NormalMatrix * gl_MultiTexCoord1.xyz);
 	binormal = normalize(gl_NormalMatrix * gl_MultiTexCoord2.xyz);
+#ifdef SECONDSTAGE
+	normalPass = normalize((gl_Normal+1)/2);
+#endif
 
 	vec3 v;
 

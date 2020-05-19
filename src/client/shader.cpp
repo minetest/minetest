@@ -344,7 +344,8 @@ IWritableShaderSource *createShaderSource()
 	Generate shader given the shader name.
 */
 ShaderInfo generate_shader(const std::string &name,
-		u8 material_type, u8 drawtype, std::vector<ShaderCallback *> &callbacks,
+		u8 material_type, u8 drawtype, const std::string &additional_headers,
+		std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache);
 
@@ -447,7 +448,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 		return 0;
 	}
 
-	ShaderInfo info = generate_shader(name, material_type, drawtype,
+	ShaderInfo info = generate_shader(name, material_type, drawtype, global_additional_headers,
 			m_callbacks, m_setter_factories, &m_sourcecache);
 
 	/*
@@ -513,7 +514,7 @@ void ShaderSource::rebuildShaders()
 		ShaderInfo *info = &i;
 		if (!info->name.empty()) {
 			*info = generate_shader(info->name, info->material_type,
-					info->drawtype, m_callbacks,
+					info->drawtype, global_additional_headers, m_callbacks,
 					m_setter_factories, &m_sourcecache);
 		}
 	}
@@ -521,7 +522,7 @@ void ShaderSource::rebuildShaders()
 
 
 ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtype,
-		std::vector<ShaderCallback *> &callbacks,
+		const std::string &additional_headers, std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache)
 {
@@ -556,7 +557,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
-	if(!gpu){
+	if (!gpu) {
 		errorstream<<"generate_shader(): "
 				"failed to generate \""<<name<<"\", "
 				"GPU programming not supported."
@@ -603,7 +604,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		return shaderinfo;
 
 	// Create shaders header
-	std::string shaders_header = "#version 120\n";
+	std::string shaders_header = "#version 120\n" + additional_headers;
 
 	static const char* drawTypes[] = {
 		"NDT_NORMAL",

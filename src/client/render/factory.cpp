@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "interlaced.h"
 #include "pageflip.h"
 #include "sidebyside.h"
+#include "secondstage.h"
 
 RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevice *device,
 		Client *client, Hud *hud)
@@ -45,5 +46,7 @@ RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevic
 		return new RenderingCoreSideBySide(device, client, hud, true);
 	if (stereo_mode == "crossview")
 		return new RenderingCoreSideBySide(device, client, hud, false, true);
+	if (stereo_mode == "secondstage")
+		return new RenderingCoreSecondStage(device, client, hud);
 	throw std::invalid_argument("Invalid rendering mode: " + stereo_mode);
 }

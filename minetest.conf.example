@@ -819,9 +819,9 @@
 #    -    sidebyside: split screen side by side.
 #    -    crossview: Cross-eyed 3d
 #    -    pageflip: quadbuffer based 3d.
+#    -    secondstage: second rendering stage for improved visual effects
 #    Note that the interlaced mode requires shaders to be enabled.
-#    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside, crossview, pageflip
-# 3d_mode = none
+3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,crossview,pageflip,secondstage
 
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
 #    type: float min: 0.1 max: 1
