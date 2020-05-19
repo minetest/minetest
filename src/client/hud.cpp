@@ -319,16 +319,21 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				floor(e->pos.Y * (float) m_screensize.Y + 0.5));
 		switch (e->type) {
 			case HUD_ELEM_TEXT: {
+				irr::gui::IGUIFont *textfont = font;
+				if (e->size.X > 0)
+					textfont = g_fontengine->getFont(
+						e->size.X * g_fontengine->getDefaultFontSize());
+
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
 				std::wstring text = unescape_translate(utf8_to_wide(e->text));
-				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
+				core::dimension2d<u32> textsize = textfont->getDimension(text.c_str());
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
 				v2s32 offs(e->offset.X, e->offset.Y);
-				font->draw(text.c_str(), size + pos + offset + offs, color);
+				textfont->draw(text.c_str(), size + pos + offset + offs, color);
 				break; }
 			case HUD_ELEM_STATBAR: {
 				v2s32 offs(e->offset.X, e->offset.Y);
