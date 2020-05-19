@@ -138,52 +138,53 @@ int ModApiServer::l_get_player_ip(lua_State *L)
 // get_player_information(name)
 int ModApiServer::l_get_player_information(lua_State *L)
 {
-
 	NO_MAP_LOCK_REQUIRED;
-	const char * name = luaL_checkstring(L, 1);
-	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
-	if (player == NULL) {
+
+	Server *server = getServer(L);
+
+	const char *name = luaL_checkstring(L, 1);
+	RemotePlayer *player = server->getEnv().getPlayer(name);
+	if (!player) {
 		lua_pushnil(L); // no such player
 		return 1;
 	}
 
 	Address addr;
-	try
-	{
-		addr = getServer(L)->getPeerAddress(player->getPeerId());
-	} catch(const con::PeerNotFoundException &) {
+	try {
+		addr = server->getPeerAddress(player->getPeerId());
+	} catch (const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushnil(L); // error
 		return 1;
 	}
 
-	float min_rtt,max_rtt,avg_rtt,min_jitter,max_jitter,avg_jitter;
+	float min_rtt, max_rtt, avg_rtt, min_jitter, max_jitter, avg_jitter;
 	ClientState state;
 	u32 uptime;
 	u16 prot_vers;
-	u8 ser_vers,major,minor,patch;
-	std::string vers_string;
-	std::string lang_code;
+	u8 ser_vers, major, minor, patch;
+	std::string vers_string, lang_code;
 
-#define ERET(code)                                                             \
-	if (!(code)) {                                                             \
-		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;     \
-		lua_pushnil(L); /* error */                                            \
-		return 1;                                                              \
+	auto getConInfo = [&] (con::rtt_stat_type type, float *value) -> bool {
+		return server->getClientConInfo(player->getPeerId(), type, value);
+	};
+
+	bool have_con_info =
+		getConInfo(con::MIN_RTT, &min_rtt) &&
+		getConInfo(con::MAX_RTT, &max_rtt) &&
+		getConInfo(con::AVG_RTT, &avg_rtt) &&
+		getConInfo(con::MIN_JITTER, &min_jitter) &&
+		getConInfo(con::MAX_JITTER, &max_jitter) &&
+		getConInfo(con::AVG_JITTER, &avg_jitter);
+
+	bool r = server->getClientInfo(player->getPeerId(), &state, &uptime,
+		&ser_vers, &prot_vers, &major, &minor, &patch, &vers_string,
+		&lang_code);
+	if (!r) {
+		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
+		lua_pushnil(L); // error
+		return 1;
 	}
-
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MIN_RTT, &min_rtt))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MAX_RTT, &max_rtt))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_RTT, &avg_rtt))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MIN_JITTER,
-		&min_jitter))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MAX_JITTER,
-		&max_jitter))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_JITTER,
-		&avg_jitter))
-
-	ERET(getServer(L)->getClientInfo(player->getPeerId(), &state, &uptime, &ser_vers,
-		&prot_vers, &major, &minor, &patch, &vers_string, &lang_code))
 
 	lua_newtable(L);
 	int table = lua_gettop(L);
@@ -202,29 +203,31 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	}
 	lua_settable(L, table);
 
-	lua_pushstring(L,"min_rtt");
-	lua_pushnumber(L, min_rtt);
-	lua_settable(L, table);
+	if (have_con_info) { // may be missing
+		lua_pushstring(L, "min_rtt");
+		lua_pushnumber(L, min_rtt);
+		lua_settable(L, table);
 
-	lua_pushstring(L,"max_rtt");
-	lua_pushnumber(L, max_rtt);
-	lua_settable(L, table);
+		lua_pushstring(L, "max_rtt");
+		lua_pushnumber(L, max_rtt);
+		lua_settable(L, table);
 
-	lua_pushstring(L,"avg_rtt");
-	lua_pushnumber(L, avg_rtt);
-	lua_settable(L, table);
+		lua_pushstring(L, "avg_rtt");
+		lua_pushnumber(L, avg_rtt);
+		lua_settable(L, table);
 
-	lua_pushstring(L,"min_jitter");
-	lua_pushnumber(L, min_jitter);
-	lua_settable(L, table);
+		lua_pushstring(L, "min_jitter");
+		lua_pushnumber(L, min_jitter);
+		lua_settable(L, table);
 
-	lua_pushstring(L,"max_jitter");
-	lua_pushnumber(L, max_jitter);
-	lua_settable(L, table);
+		lua_pushstring(L, "max_jitter");
+		lua_pushnumber(L, max_jitter);
+		lua_settable(L, table);
 
-	lua_pushstring(L,"avg_jitter");
-	lua_pushnumber(L, avg_jitter);
-	lua_settable(L, table);
+		lua_pushstring(L, "avg_jitter");
+		lua_pushnumber(L, avg_jitter);
+		lua_settable(L, table);
+	}
 
 	lua_pushstring(L,"connection_uptime");
 	lua_pushnumber(L, uptime);
@@ -268,7 +271,6 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_settable(L, table);
 #endif
 
-#undef ERET
 	return 1;
 }
 

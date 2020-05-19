@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "modifiedstate.h"
 #include "util/container.h"
+#include "util/metricsbackend.h"
 #include "nodetimer.h"
 #include "map_settings_manager.h"
 #include "debug.h"
@@ -45,6 +46,7 @@ class NodeMetadata;
 class IGameDef;
 class IRollbackManager;
 class EmergeManager;
+class MetricsBackend;
 class ServerEnvironment;
 struct BlockMakeData;
 
@@ -324,7 +326,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(const std::string &savedir, IGameDef *gamedef, EmergeManager *emerge);
+	ServerMap(const std::string &savedir, IGameDef *gamedef, EmergeManager *emerge, MetricsBackend *mb);
 	~ServerMap();
 
 	s32 mapType() const
@@ -449,6 +451,8 @@ private:
 	bool m_map_metadata_changed = true;
 	MapDatabase *dbase = nullptr;
 	MapDatabase *dbase_ro = nullptr;
+
+	MetricCounterPtr m_save_time_counter;
 };
 
 

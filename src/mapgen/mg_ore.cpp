@@ -72,6 +72,14 @@ void OreManager::clear()
 }
 
 
+OreManager *OreManager::clone() const
+{
+	auto mgr = new OreManager();
+	ObjDefManager::cloneTo(mgr);
+	return mgr;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -106,7 +114,35 @@ size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 }
 
 
+void Ore::cloneTo(Ore *def) const
+{
+	ObjDef::cloneTo(def);
+	NodeResolver::cloneTo(def);
+	def->c_ore = c_ore;
+	def->c_wherein = c_wherein;
+	def->clust_scarcity = clust_scarcity;
+	def->clust_num_ores = clust_num_ores;
+	def->clust_size = clust_size;
+	def->y_min = y_min;
+	def->y_max = y_max;
+	def->ore_param2 = ore_param2;
+	def->flags = flags;
+	def->nthresh = nthresh;
+	def->np = np;
+	def->noise = nullptr; // cannot be shared! so created on demand
+	def->biomes = biomes;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
+
+
+ObjDef *OreScatter::clone() const
+{
+	auto def = new OreScatter();
+	Ore::cloneTo(def);
+	return def;
+}
 
 
 void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
@@ -156,6 +192,19 @@ void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
+
+ObjDef *OreSheet::clone() const
+{
+	auto def = new OreSheet();
+	Ore::cloneTo(def);
+
+	def->column_height_max = column_height_max;
+	def->column_height_min = column_height_min;
+	def->column_midpoint_factor = column_midpoint_factor;
+
+	return def;
+}
 
 
 void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
@@ -218,6 +267,20 @@ OrePuff::~OrePuff()
 {
 	delete noise_puff_top;
 	delete noise_puff_bottom;
+}
+
+
+ObjDef *OrePuff::clone() const
+{
+	auto def = new OrePuff();
+	Ore::cloneTo(def);
+
+	def->np_puff_top = np_puff_top;
+	def->np_puff_bottom = np_puff_bottom;
+	def->noise_puff_top = nullptr; // cannot be shared, on-demand
+	def->noise_puff_bottom = nullptr;
+
+	return def;
 }
 
 
@@ -294,6 +357,14 @@ void OrePuff::generate(MMVManip *vm, int mapseed, u32 blockseed,
 ///////////////////////////////////////////////////////////////////////////////
 
 
+ObjDef *OreBlob::clone() const
+{
+	auto def = new OreBlob();
+	Ore::cloneTo(def);
+	return def;
+}
+
+
 void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 	v3s16 nmin, v3s16 nmax, u8 *biomemap)
 {
@@ -366,6 +437,19 @@ OreVein::~OreVein()
 }
 
 
+ObjDef *OreVein::clone() const
+{
+	auto def = new OreVein();
+	Ore::cloneTo(def);
+
+	def->random_factor = random_factor;
+	def->noise2 = nullptr; // cannot be shared, on-demand
+	def->sizey_prev = sizey_prev;
+
+	return def;
+}
+
+
 void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
 	v3s16 nmin, v3s16 nmax, u8 *biomemap)
 {
@@ -431,6 +515,19 @@ void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
 OreStratum::~OreStratum()
 {
 	delete noise_stratum_thickness;
+}
+
+
+ObjDef *OreStratum::clone() const
+{
+	auto def = new OreStratum();
+	Ore::cloneTo(def);
+
+	def->np_stratum_thickness = np_stratum_thickness;
+	def->noise_stratum_thickness = nullptr; // cannot be shared, on-demand
+	def->stratum_thickness = stratum_thickness;
+
+	return def;
 }
 
 

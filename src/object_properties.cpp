@@ -68,6 +68,7 @@ std::string ObjectProperties::dump()
 	os << ", eye_height=" << eye_height;
 	os << ", zoom_fov=" << zoom_fov;
 	os << ", use_texture_alpha=" << use_texture_alpha;
+	os << ", damage_texture_modifier=" << damage_texture_modifier;
 	return os.str();
 }
 
@@ -114,6 +115,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF32(os, eye_height);
 	writeF32(os, zoom_fov);
 	writeU8(os, use_texture_alpha);
+	os << serializeString(damage_texture_modifier);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -166,4 +168,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 	eye_height = readF32(is);
 	zoom_fov = readF32(is);
 	use_texture_alpha = readU8(is);
+	try {
+		damage_texture_modifier = deSerializeString(is);
+	} catch (SerializationError &e) {}
 }

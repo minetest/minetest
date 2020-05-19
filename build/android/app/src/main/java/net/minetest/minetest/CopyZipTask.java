@@ -23,7 +23,7 @@ package net.minetest.minetest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class CopyZipTask extends AsyncTask<String, Void, String> {
 	}
 
 	protected String doInBackground(String... params) {
-		copyAssets(params);
+		copyAsset(params[0]);
 		return params[0];
 	}
 
@@ -49,20 +49,13 @@ public class CopyZipTask extends AsyncTask<String, Void, String> {
 		startUnzipService(result);
 	}
 
-	private void copyAsset(String zipName) throws IOException {
+	private void copyAsset(String zipName) {
 		String filename = zipName.substring(zipName.lastIndexOf("/") + 1);
 		try (InputStream in = contextRef.get().getAssets().open(filename);
 		     OutputStream out = new FileOutputStream(zipName)) {
 			copyFile(in, out);
-		}
-	}
-
-	private void copyAssets(String[] zips) {
-		try {
-			for (String zipName : zips)
-				copyAsset(zipName);
 		} catch (IOException e) {
-			Log.e("CopyZipTask", e.getLocalizedMessage());
+			Toast.makeText(contextRef.get(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 			cancel(true);
 		}
 	}

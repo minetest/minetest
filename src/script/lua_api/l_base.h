@@ -38,12 +38,14 @@ class GUIEngine;
 class ScriptApiBase;
 class Server;
 class Environment;
+class ServerInventoryManager;
 
 class ModApiBase : protected LuaHelper {
 
 public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
 	static Server*          getServer(lua_State *L);
+	static ServerInventoryManager *getServerInventoryMgr(lua_State *L);
 	#ifndef SERVER
 	static Client*          getClient(lua_State *L);
 	static GUIEngine*       getGuiEngine(lua_State *L);
