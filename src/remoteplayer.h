@@ -110,30 +110,15 @@ public:
 
 	const CloudParams &getCloudParams() const { return m_cloud_params; }
 
-	u32 getLifetime() const
-	{
-		return (time(NULL) - m_oldtime);
-	}
+	u32 getLifetime() const { return (time(NULL) - m_oldtime); }
 
-	u32 getIdletime() const
-	{
-		return (time(NULL) - m_newtime);
-	}
+	u32 getIdletime() const { return (time(NULL) - m_newtime); }
 
-	inline void resetIdletime()
-	{
-		this->m_newtime = time(NULL);
-	}
+	inline void resetIdletime() { this->m_newtime = time(NULL); }
 
-	inline bool checkModified() const
-	{
-		return m_dirty || inventory.checkModified();
-	}
+	inline bool checkModified() const { return m_dirty || inventory.checkModified(); }
 
-	inline void setModified(const bool dirty = true)
-	{
-		m_dirty = dirty;
-	}
+	inline void setModified(const bool dirty = true) { m_dirty = dirty; }
 
 	void setLocalAnimations(v2s32 frames[4], float frame_speed)
 	{
