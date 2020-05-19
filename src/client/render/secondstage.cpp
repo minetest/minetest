@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 
 RenderingCoreSecondStage::RenderingCoreSecondStage(
-		IrrlichtDevice *_device, Client *_client, Hud *_hud)
-		: RenderingCoreStereo(_device, _client, _hud)
+		IrrlichtDevice *_device, Client *_client, Hud *_hud) :
+		RenderingCoreStereo(_device, _client, _hud)
 {
 	initMaterial();
 }
@@ -52,9 +52,12 @@ void RenderingCoreSecondStage::initMaterial()
 
 void RenderingCoreSecondStage::initTextures()
 {
-	rendered = driver->addRenderTargetTexture(screensize, "3d_render", video::ECF_A8R8G8B8);
-	normalmap = driver->addRenderTargetTexture(screensize, "3d_normalmap", video::ECF_A8R8G8B8);
-	depthmap = driver->addRenderTargetTexture(screensize, "3d_depthmap", video::ECF_R32F);
+	rendered = driver->addRenderTargetTexture(
+			screensize, "3d_render", video::ECF_A8R8G8B8);
+	normalmap = driver->addRenderTargetTexture(
+			screensize, "3d_normalmap", video::ECF_A8R8G8B8);
+	depthmap = driver->addRenderTargetTexture(
+			screensize, "3d_depthmap", video::ECF_R32F);
 	renderTargets.push_back(rendered);
 	renderTargets.push_back(normalmap);
 	renderTargets.push_back(depthmap);
