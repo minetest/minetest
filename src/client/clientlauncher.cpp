@@ -105,7 +105,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	}
 
 	RenderingEngine::get_instance()->setupTopLevelWindow(PROJECT_NAME_C);
-	
+
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
 		Default is 500.

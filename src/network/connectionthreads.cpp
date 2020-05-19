@@ -336,11 +336,9 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 	if (!peer) {
-		LOG(dout_con << m_connection->getDesc()
-			<< " INFO: dropped packet for non existent peer_id: "
-			<< peer_id << std::endl);
-		FATAL_ERROR_IF(!reliable,
-			"Trying to send raw packet reliable but no peer found!");
+		LOG(errorstream << m_connection->getDesc()
+			<< " dropped " << (reliable ? "reliable " : "")
+			<< "packet for non existent peer_id: " << peer_id << std::endl);
 		return false;
 	}
 	Channel *channel = &(dynamic_cast<UDPPeer *>(&peer)->channels[channelnum]);

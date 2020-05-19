@@ -64,7 +64,7 @@ struct MapgenFlatParams : public MapgenParams
 class MapgenFlat : public MapgenBasic
 {
 public:
-	MapgenFlat(MapgenFlatParams *params, EmergeManager *emerge);
+	MapgenFlat(MapgenFlatParams *params, EmergeParams *emerge);
 	~MapgenFlat();
 
 	virtual MapgenType getType() const { return MAPGEN_FLAT; }

@@ -4,7 +4,7 @@ import org.ajoberstar.grgit.Grgit
 android {
 	compileSdkVersion 29
 	buildToolsVersion '29.0.3'
-	ndkVersion '21.0.6113669'
+	ndkVersion '21.1.6352462'
 	defaultConfig {
 		minSdkVersion 16
 		targetSdkVersion 29

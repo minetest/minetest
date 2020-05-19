@@ -64,6 +64,8 @@ by texture packs. All existing fallback textures can be found in the directory
 
 * `bubble.png`: the bubble texture when the player is drowning
                 (default size: 12×12)
+* `bubble_gone.png`: like `bubble.png`, but denotes lack of breath
+                     (transparent by default, same size as bubble.png)
 
 * `crack_anylength.png`: node overlay texture when digging
 
@@ -76,6 +78,8 @@ by texture packs. All existing fallback textures can be found in the directory
 
 * `heart.png`: used to display the health points of the player
                (default size: 12×12)
+* `heart_gone.png`: like `heart.png`, but denotes lack of health points
+                    (transparent by default, same size as heart.png)
 
 * `minimap_mask_round.png`: round minimap mask, white gets replaced by the map
 * `minimap_mask_square.png`: mask used for the square minimap

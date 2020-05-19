@@ -780,8 +780,8 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 
 #ifndef SERVER
 	// Client API limitations
-	if (getClient(L))
-		radius = getClient(L)->CSMClampRadius(pos, radius);
+	if (Client *client = getClient(L))
+		radius = client->CSMClampRadius(pos, radius);
 #endif
 
 	for (int d = start_radius; d <= radius; d++) {
@@ -811,9 +811,9 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
 
 #ifndef SERVER
-	if (getClient(L)) {
-		minp = getClient(L)->CSMClampPos(minp);
-		maxp = getClient(L)->CSMClampPos(maxp);
+	if (Client *client = getClient(L)) {
+		minp = client->CSMClampPos(minp);
+		maxp = client->CSMClampPos(maxp);
 	}
 #endif
 
@@ -887,9 +887,9 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
 
 #ifndef SERVER
-	if (getClient(L)) {
-		minp = getClient(L)->CSMClampPos(minp);
-		maxp = getClient(L)->CSMClampPos(maxp);
+	if (Client *client = getClient(L)) {
+		minp = client->CSMClampPos(minp);
+		maxp = client->CSMClampPos(maxp);
 	}
 #endif
 

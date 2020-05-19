@@ -79,7 +79,7 @@ struct MapgenCarpathianParams : public MapgenParams
 class MapgenCarpathian : public MapgenBasic
 {
 public:
-	MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager *emerge);
+	MapgenCarpathian(MapgenCarpathianParams *params, EmergeParams *emerge);
 	~MapgenCarpathian();
 
 	virtual MapgenType getType() const { return MAPGEN_CARPATHIAN; }

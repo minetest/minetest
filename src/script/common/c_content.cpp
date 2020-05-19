@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_types.h"
 #include "nodedef.h"
 #include "object_properties.h"
+#include "collision.h"
 #include "cpp_api/s_node.h"
 #include "lua_api/l_object.h"
 #include "lua_api/l_item.h"
@@ -326,6 +327,8 @@ void read_object_properties(lua_State *L, int index,
 
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
+
+	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 }
 
 /******************************************************************************/
@@ -408,6 +411,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "zoom_fov");
 	lua_pushboolean(L, prop->use_texture_alpha);
 	lua_setfield(L, -2, "use_texture_alpha");
+	lua_pushlstring(L, prop->damage_texture_modifier.c_str(), prop->damage_texture_modifier.size());
+	lua_setfield(L, -2, "damage_texture_modifier");
 }
 
 /******************************************************************************/
@@ -1870,6 +1875,7 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->dir     = getintfield_default(L, 2, "direction", 0);
 	elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX,
 			getintfield_default(L, 2, "z_index", 0)));
+	elem->text2   = getstringfield_default(L, 2, "text2", "");
 
 	// Deprecated, only for compatibility's sake
 	if (elem->dir == 0)
@@ -1938,6 +1944,9 @@ void push_hud_element(lua_State *L, HudElement *elem)
 
 	lua_pushnumber(L, elem->z_index);
 	lua_setfield(L, -2, "z_index");
+
+	lua_pushstring(L, elem->text2.c_str());
+	lua_setfield(L, -2, "text2");
 }
 
 HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
@@ -1999,6 +2008,66 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 			elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX, luaL_checknumber(L, 4)));
 			*value = &elem->z_index;
 			break;
+		case HUD_STAT_TEXT2:
+			elem->text2 = luaL_checkstring(L, 4);
+			*value = &elem->text2;
+			break;
 	}
 	return stat;
+}
+
+/******************************************************************************/
+
+// Indices must match values in `enum CollisionType` exactly!!
+static const char *collision_type_str[] = {
+	"node",
+	"object",
+};
+
+// Indices must match values in `enum CollisionAxis` exactly!!
+static const char *collision_axis_str[] = {
+	"x",
+	"y",
+	"z",
+};
+
+void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
+{
+	lua_createtable(L, 0, 4);
+
+	setboolfield(L, -1, "touching_ground", res.touching_ground);
+	setboolfield(L, -1, "collides", res.collides);
+	setboolfield(L, -1, "standing_on_object", res.standing_on_object);
+
+	/* collisions */
+	lua_createtable(L, res.collisions.size(), 0);
+	int i = 1;
+	for (const auto &c : res.collisions) {
+		lua_createtable(L, 0, 5);
+
+		lua_pushstring(L, collision_type_str[c.type]);
+		lua_setfield(L, -2, "type");
+
+		assert(c.axis != COLLISION_AXIS_NONE);
+		lua_pushstring(L, collision_axis_str[c.axis]);
+		lua_setfield(L, -2, "axis");
+
+		if (c.type == COLLISION_NODE) {
+			push_v3s16(L, c.node_p);
+			lua_setfield(L, -2, "node_pos");
+		} else if (c.type == COLLISION_OBJECT) {
+			push_objectRef(L, c.object->getId());
+			lua_setfield(L, -2, "object");
+		}
+
+		push_v3f(L, c.old_speed / BS);
+		lua_setfield(L, -2, "old_velocity");
+
+		push_v3f(L, c.new_speed / BS);
+		lua_setfield(L, -2, "new_velocity");
+
+		lua_rawseti(L, -2, i++);
+	}
+	lua_setfield(L, -2, "collisions");
+	/**/
 }

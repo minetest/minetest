@@ -739,6 +739,9 @@ public:
 	virtual ~NodeResolver();
 	virtual void resolveNodeNames() = 0;
 
+	// required because this class is used as mixin for ObjDef
+	void cloneTo(NodeResolver *res) const;
+
 	bool getIdFromNrBacklog(content_t *result_out,
 		const std::string &node_alt, content_t c_fallback,
 		bool error_on_fallback = true);

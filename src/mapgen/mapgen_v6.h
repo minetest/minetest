@@ -83,7 +83,7 @@ struct MapgenV6Params : public MapgenParams {
 
 class MapgenV6 : public Mapgen {
 public:
-	EmergeManager *m_emerge;
+	EmergeParams *m_emerge;
 
 	int ystride;
 	u32 spflags;
@@ -133,7 +133,7 @@ public:
 	content_t c_stair_cobble;
 	content_t c_stair_desert_stone;
 
-	MapgenV6(MapgenV6Params *params, EmergeManager *emerge);
+	MapgenV6(MapgenV6Params *params, EmergeParams *emerge);
 	~MapgenV6();
 
 	virtual MapgenType getType() const { return MAPGEN_V6; }

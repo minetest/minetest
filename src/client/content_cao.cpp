@@ -1077,10 +1077,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updateTextures(m_previous_texture_modifier);
 		}
 	}
+
 	if (!getParent() && std::fabs(m_prop.automatic_rotate) > 0.001) {
-		m_rotation.Y += dtime * m_prop.automatic_rotate * 180 / M_PI;
-		rot_translator.val_current = m_rotation;
-		updateNodePos();
+		// This is the child node's rotation. It is only used for automatic_rotate.
+		v3f local_rot = node->getRotation();
+		local_rot.Y = modulo360f(local_rot.Y - dtime * core::RADTODEG *
+				m_prop.automatic_rotate);
+		node->setRotation(local_rot);
 	}
 
 	if (!getParent() && m_prop.automatic_face_movement_dir &&
@@ -1501,11 +1504,7 @@ void GenericCAO::processMessage(const std::string &data)
 		m_position = readV3F32(is);
 		m_velocity = readV3F32(is);
 		m_acceleration = readV3F32(is);
-
-		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
-			m_rotation = readV3F32(is);
-		else
-			readV3F32(is);
+		m_rotation = readV3F32(is);
 
 		m_rotation = wrapDegrees_0_360_v3f(m_rotation);
 		bool do_interpolate = readU8(is);
@@ -1532,7 +1531,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == AO_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
 
-		// immediatly reset a engine issued texture modifier if a mod sends a different one
+		// immediately reset a engine issued texture modifier if a mod sends a different one
 		if (m_reset_textures_timer > 0) {
 			m_reset_textures_timer = -1;
 			updateTextures(m_previous_texture_modifier);
@@ -1646,13 +1645,11 @@ void GenericCAO::processMessage(const std::string &data)
 						m_smgr, m_env, m_position,
 						v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 				m_env->addSimpleObject(simple);
-			} else if (m_reset_textures_timer < 0) {
-				// TODO: Execute defined fast response
-				// Flashing shall suffice as there is no definition
+			} else if (m_reset_textures_timer < 0 && !m_prop.damage_texture_modifier.empty()) {
 				m_reset_textures_timer = 0.05;
 				if(damage >= 2)
 					m_reset_textures_timer += 0.05 * damage;
-				updateTextures(m_current_texture_modifier + "^[brighten");
+				updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 			}
 		}
 
@@ -1723,13 +1720,11 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 					v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 			m_env->addSimpleObject(simple);
 		}
-		// TODO: Execute defined fast response
-		// Flashing shall suffice as there is no definition
-		if (m_reset_textures_timer < 0) {
+		if (m_reset_textures_timer < 0 && !m_prop.damage_texture_modifier.empty()) {
 			m_reset_textures_timer = 0.05;
 			if (result.damage >= 2)
 				m_reset_textures_timer += 0.05 * result.damage;
-			updateTextures(m_current_texture_modifier + "^[brighten");
+			updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 		}
 	}
 

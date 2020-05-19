@@ -101,8 +101,8 @@ return {
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
 		return "image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
-			"label[0.5,3.2;" .. version.project .. " " .. version.string .. "]" ..
-			"label[0.5,3.5;http://minetest.net]" ..
+			"label[0.5,2.8;" .. version.project .. " " .. version.string .. "]" ..
+			"button[0.5,3;2,2;homepage;minetest.net]" ..
 			"tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[3.5,-0.25;8.5,6.05;list_credits;" ..
@@ -115,5 +115,10 @@ return {
 			"#FFFF00," .. fgettext("Previous Contributors") .. ",," ..
 			buildCreditList(previous_contributors) .. "," ..
 			";1]"
-	end
+	end,
+	cbf_button_handler = function(this, fields, name, tabdata)
+		if fields.homepage then
+			core.open_url("https://www.minetest.net")
+		end
+	end,
 }

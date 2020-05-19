@@ -384,8 +384,9 @@ enum ToClientCommand
 	/*
 		Sends an FOV override/multiplier to client.
 
-		float fov
+		f32 fov
 		bool is_multiplier
+		f32 transition_time
 	*/
 
 	TOCLIENT_DEATHSCREEN = 0x37,
@@ -559,10 +560,10 @@ enum ToClientCommand
 		u32 id
 		u8 type
 		v2f1000 pos
-		u32 len
+		u16 len
 		u8[len] name
 		v2f1000 scale
-		u32 len2
+		u16 len2
 		u8[len2] text
 		u32 number
 		u32 item
@@ -572,6 +573,8 @@ enum ToClientCommand
 		v3f1000 world_pos
 		v2s32 size
 		s16 z_index
+		u16 len3
+		u8[len3] text2
 	*/
 
 	TOCLIENT_HUDRM = 0x4a,
@@ -633,9 +636,9 @@ enum ToClientCommand
 		u8[4] night_sky (ARGB)
 		u8[4] night_horizon (ARGB)
 		u8[4] indoors (ARGB)
-		u8[4] sun_tint (ARGB)
-		u8[4] moon_tint (ARGB)
-		std::string tint_type
+		u8[4] fog_sun_tint (ARGB)
+		u8[4] fog_moon_tint (ARGB)
+		std::string fog_tint_type
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
