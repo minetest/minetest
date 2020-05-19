@@ -35,7 +35,7 @@ void RenderingCoreSecondStage::initMaterial()
 {
 	IWritableShaderSource *s = client->getShaderSource();
 	s->global_additional_headers = "#define SECONDSTAGE 1\n";
-	s->rebuildShaders(); // TODO remove this if possible, consider shader constant setters?
+	s->rebuildShaders(); // TODO remove this if possible, use shader const setters?
 	mat.UseMipMaps = false;
 	mat.ZBuffer = true;
 	mat.ZWriteEnable = true;
