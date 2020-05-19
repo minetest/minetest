@@ -110,6 +110,7 @@ FileLogOutput file_log_output;
 
 static OptionList allowed_options;
 
+#include "util/serializestream.h"
 int main(int argc, char *argv[])
 {
 	int retval;
@@ -184,6 +185,8 @@ int main(int argc, char *argv[])
 	if (g_settings->getBool("enable_console"))
 		porting::attachOrCreateConsole();
 
+	testit();
+	return 0;
 #ifndef __ANDROID__
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
