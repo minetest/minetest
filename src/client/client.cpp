@@ -740,6 +740,17 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		return true;
 	}
 
+	const char *shader_ext[] = {
+		".glsl", NULL
+	};
+	name = removeStringEnd(filename, shader_ext);
+	if (!name.empty()) {
+		TRACESTREAM(<< "Client: Loading shader: "
+				<< "\"" << filename << "\"" << std::endl);
+		g_translations->loadTranslation(data);
+		return true;
+	}
+
 	errorstream << "Client: Don't know how to load file \""
 		<< filename << "\"" << std::endl;
 	return false;
