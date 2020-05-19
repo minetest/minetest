@@ -668,7 +668,14 @@ video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 
 video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
-	return getTexture(name + "^[applyfiltersformesh", id);
+	static thread_local bool filter_needed =
+		g_settings->getBool("texture_clean_transparent") ||
+		((m_setting_trilinear_filter || m_setting_bilinear_filter) &&
+		g_settings->getS32("texture_min_size") > 1);
+	// Avoid duplicating texture if it won't actually change
+	if (filter_needed)
+		return getTexture(name + "^[applyfiltersformesh", id);
+	return getTexture(name, id);
 }
 
 Palette* TextureSource::getPalette(const std::string &name)
@@ -1623,6 +1630,9 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[applyfiltersformesh"))
 		{
+			/* IMPORTANT: When changing this, getTextureForMesh() needs to be
+			 * updated too. */
+
 			// Apply the "clean transparent" filter, if configured.
 			if (g_settings->getBool("texture_clean_transparent"))
 				imageCleanTransparent(baseimg, 127);
