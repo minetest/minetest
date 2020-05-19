@@ -150,7 +150,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 		bool selected)
 {
 	if (selected) {
-		/* draw hihlighting around selected item */
+		/* draw highlighting around selected item */
 		if (use_hotbar_selected_image) {
 			core::rect<s32> imgrect2 = rect;
 			imgrect2.UpperLeftCorner.X  -= (m_padding*2);

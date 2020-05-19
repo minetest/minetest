@@ -205,8 +205,9 @@ enable_particles (Digging particles) bool true
 #    -    sidebyside: split screen side by side.
 #    -    crossview: Cross-eyed 3d
 #    -    pageflip: quadbuffer based 3d.
+#    -    secondstage: second rendering stage for improved visual effects
 #    Note that the interlaced mode requires shaders to be enabled.
-3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,crossview,pageflip
+3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,crossview,pageflip,secondstage
 
 #    Strength of 3D mode parallax.
 3d_paralax_strength (3D mode parallax strength) float 0.025 -0.087 0.087
