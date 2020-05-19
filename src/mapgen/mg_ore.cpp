@@ -170,7 +170,7 @@ void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 index = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
-			std::unordered_set<u16>::const_iterator it = biomes.find(biomemap[index]);
+			auto it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -237,7 +237,7 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			continue;
 
 		if (biomemap && !biomes.empty()) {
-			std::unordered_set<u16>::const_iterator it = biomes.find(biomemap[index]);
+			auto it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -312,7 +312,7 @@ void OrePuff::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			continue;
 
 		if (biomemap && !biomes.empty()) {
-			std::unordered_set<u16>::const_iterator it = biomes.find(biomemap[index]);
+			auto it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -388,7 +388,7 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 bmapidx = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
-			std::unordered_set<u16>::const_iterator it = biomes.find(biomemap[bmapidx]);
+			auto it = biomes.find(biomemap[bmapidx]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -485,7 +485,7 @@ void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 bmapidx = sizex * (z - nmin.Z) + (x - nmin.X);
-			std::unordered_set<u16>::const_iterator it = biomes.find(biomemap[bmapidx]);
+			auto it = biomes.find(biomemap[bmapidx]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -560,7 +560,7 @@ void OreStratum::generate(MMVManip *vm, int mapseed, u32 blockseed,
 	for (int z = nmin.Z; z <= nmax.Z; z++)
 	for (int x = nmin.X; x <= nmax.X; x++, index++) {
 		if (biomemap && !biomes.empty()) {
-			std::unordered_set<u16>::const_iterator it = biomes.find(biomemap[index]);
+			auto it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
