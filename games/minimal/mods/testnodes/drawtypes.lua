@@ -37,7 +37,6 @@ minetest.register_node("testnodes:normal", {
 	drawtype = "normal",
 	tiles = { "testnodes_normal.png" },
 
-
 	groups = { dig_immediate = 3 },
 })
 
@@ -47,7 +46,6 @@ minetest.register_node("testnodes:glasslike", {
 	drawtype = "glasslike",
 	paramtype = "light",
 	tiles = { "testnodes_glasslike.png" },
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -104,7 +102,6 @@ minetest.register_node("testnodes:allfaces", {
 	paramtype = "light",
 	tiles = { "testnodes_allfaces.png" },
 
-
 	groups = { dig_immediate = 3 },
 })
 
@@ -113,7 +110,6 @@ minetest.register_node("testnodes:allfaces_optional", {
 	drawtype = "allfaces_optional",
 	paramtype = "light",
 	tiles = { "testnodes_allfaces_optional.png" },
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -124,7 +120,6 @@ minetest.register_node("testnodes:allfaces_optional_waving", {
 	paramtype = "light",
 	tiles = { "testnodes_allfaces_optional.png^[brighten" },
 	waving = 2,
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -145,7 +140,6 @@ minetest.register_node("testnodes:fencelike", {
 	drawtype = "fencelike",
 	paramtype = "light",
 	tiles = { "testnodes_fencelike.png" },
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -261,7 +255,6 @@ minetest.register_node("testnodes:plantlike_rooted", {
 	tiles = { "testnodes_plantlike_rooted_base.png" },
 	special_tiles = { "testnodes_plantlike_rooted.png" },
 
-
 	groups = { dig_immediate = 3 },
 })
 
@@ -276,7 +269,6 @@ minetest.register_node("testnodes:plantlike_rooted_waving", {
 	},
 	special_tiles = { "testnodes_plantlike_rooted_waving.png" },
 	waving = 1,
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -317,7 +309,6 @@ minetest.register_node("testnodes:plantlike_rooted_meshoptions", {
 		"testnodes_plantlike_rooted_meshoptions.png",
 	},
 
-
 	groups = { dig_immediate = 3 },
 })
 
@@ -335,7 +326,6 @@ minetest.register_node("testnodes:plantlike_rooted_degrotate", {
 	special_tiles = {
 		"testnodes_plantlike_rooted_degrotate.png",
 	},
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -450,7 +440,6 @@ minetest.register_node("testnodes:glassliquid", {
 	special_tiles = {
 		"testnodes_liquid.png",
 	},
-
 
 	groups = { dig_immediate = 3 },
 })

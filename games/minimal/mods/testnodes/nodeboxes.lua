@@ -13,7 +13,6 @@ minetest.register_node("testnodes:nodebox_fixed", {
 		fixed = {-0.25, -0.25, -0.25, 0.25, 0.25, 0.25},
 	},
 
-
 	groups = {dig_immediate=3},
 })
 
@@ -27,7 +26,6 @@ minetest.register_node("testnodes:nodebox_overhigh", {
 		type = "fixed",
 		fixed = {-0.5, -0.5, -0.5, 0.5, 1, 0.5},
 	},
-
 
 	groups = {dig_immediate=3},
 })
@@ -43,7 +41,6 @@ minetest.register_node("testnodes:nodebox_overhigh2", {
 		fixed = {-0.5, -0.5, -0.5, 0.5, 1.5, 0.5},
 	},
 
-
 	groups = {dig_immediate=3},
 })
 
@@ -58,7 +55,6 @@ minetest.register_node("testnodes:nodebox_leveled", {
 		type = "leveled",
 		fixed = {-0.5, 0.0, -0.5, 0.5, -0.499, 0.5},
 	},
-
 
 	groups = {dig_immediate=3},
 })

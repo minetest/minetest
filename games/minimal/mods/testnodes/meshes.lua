@@ -31,7 +31,6 @@ minetest.register_node("testnodes:mesh", {
 	paramtype = "light",
 	collision_box = tall_pyr_cbox,
 
-
 	groups = {dig_immediate=3},
 })
 
@@ -44,7 +43,6 @@ minetest.register_node("testnodes:mesh_facedir", {
 	paramtype = "light",
 	paramtype2 = "facedir",
 	collision_box = ocorner_cbox,
-
 
 	groups = {dig_immediate=3},
 })
@@ -59,7 +57,6 @@ minetest.register_node("testnodes:mesh_colorfacedir", {
 	palette = "testnodes_palette_facedir.png",
 	collision_box = ocorner_cbox,
 
-
 	groups = {dig_immediate=3},
 })
 
@@ -72,7 +69,6 @@ minetest.register_node("testnodes:mesh_wallmounted", {
 	paramtype = "light",
 	paramtype2 = "wallmounted",
 	collision_box = tall_pyr_cbox,
-
 
 	groups = {dig_immediate=3},
 })
@@ -87,7 +83,6 @@ minetest.register_node("testnodes:mesh_colorwallmounted", {
 	palette = "testnodes_palette_wallmounted.png",
 	collision_box = tall_pyr_cbox,
 
-
 	groups = {dig_immediate=3},
 })
 
@@ -101,7 +96,6 @@ minetest.register_node("testnodes:mesh_double", {
 	collision_box = tall_pyr_cbox,
 	visual_scale = 2,
 
-
 	groups = {dig_immediate=3},
 })
 minetest.register_node("testnodes:mesh_half", {
@@ -112,7 +106,6 @@ minetest.register_node("testnodes:mesh_half", {
 	paramtype = "light",
 	collision_box = tall_pyr_cbox,
 	visual_scale = 0.5,
-
 
 	groups = {dig_immediate=3},
 })
@@ -126,7 +119,6 @@ minetest.register_node("testnodes:mesh_waving1", {
 	collision_box = tall_pyr_cbox,
 	waving = 1,
 
-
 	groups = {dig_immediate=3},
 })
 minetest.register_node("testnodes:mesh_waving2", {
@@ -138,7 +130,6 @@ minetest.register_node("testnodes:mesh_waving2", {
 	collision_box = tall_pyr_cbox,
 	waving = 2,
 
-
 	groups = {dig_immediate=3},
 })
 minetest.register_node("testnodes:mesh_waving3", {
@@ -149,7 +140,6 @@ minetest.register_node("testnodes:mesh_waving3", {
 	paramtype = "light",
 	collision_box = tall_pyr_cbox,
 	waving = 3,
-
 
 	groups = {dig_immediate=3},
 })

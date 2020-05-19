@@ -4,13 +4,11 @@ minetest.register_craftitem("unittests:torch", {
 	description = "Crafting Test Item: Torch",
 	inventory_image = "unittests_torch.png",
 
-
 	groups = { dummy = 1 },
 })
 minetest.register_craftitem("unittests:coal_lump", {
 	description = "Crafting Test Item: Coal Lump",
 	inventory_image = "unittests_coal_lump.png",
-
 
 	groups = { dummy = 1 },
 })
@@ -18,20 +16,17 @@ minetest.register_craftitem("unittests:stick", {
 	description = "Crafting Test Item: Stick",
 	inventory_image = "unittests_stick.png",
 
-
 	groups = { dummy = 1 },
 })
 minetest.register_craftitem("unittests:iron_lump", {
 	description = "Crafting Test Item: Iron Lump",
 	inventory_image = "unittests_iron_lump.png",
 
-
 	groups = { dummy = 1 },
 })
 minetest.register_craftitem("unittests:steel_ingot", {
 	description = "Crafting Test Item: Steel Ingot",
 	inventory_image = "unittests_steel_ingot.png",
-
 
 	groups = { dummy = 1 },
 })
@@ -88,7 +83,6 @@ minetest.register_tool("unittests:repairable_tool", {
 			}
 		}
 	},
-
 
 	groups = { dummy = 1 },
 })

@@ -14,7 +14,6 @@ minetest.register_node("testnodes:facedir", {
 		"testnodes_6.png",
 	},
 
-
 	groups = { dig_immediate = 3 },
 })
 
@@ -36,7 +35,6 @@ minetest.register_node("testnodes:facedir_nodebox", {
 		fixed = {-0.5, -0.5, -0.5, 0.2, 0.2, 0.2},
 	},
 
-
 	groups = {dig_immediate=3},
 })
 
@@ -51,7 +49,6 @@ minetest.register_node("testnodes:wallmounted", {
 		"testnodes_5w.png",
 		"testnodes_6w.png",
 	},
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -76,7 +73,6 @@ minetest.register_node("testnodes:wallmounted_nodebox", {
 		wall_side = { -0.5, -0.5, -0.5, 0, 0.5, 0.5 },
 	},
 
-
 	groups = { dig_immediate = 3 },
 })
 
@@ -87,7 +83,6 @@ minetest.register_node("testnodes:color", {
 	tiles = {
 		"testnodes_node.png",
 	},
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -104,7 +99,6 @@ minetest.register_node("testnodes:colorfacedir", {
 		"testnodes_5g.png",
 		"testnodes_6g.png",
 	},
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -128,7 +122,6 @@ minetest.register_node("testnodes:colorfacedir_nodebox", {
 		fixed = {-0.5, -0.5, -0.5, 0.2, 0.2, 0.2},
 	},
 
-
 	groups = {dig_immediate=3},
 })
 
@@ -145,7 +138,6 @@ minetest.register_node("testnodes:colorwallmounted", {
 		"testnodes_5wg.png",
 		"testnodes_6wg.png",
 	},
-
 
 	groups = { dig_immediate = 3 },
 })
@@ -170,7 +162,6 @@ minetest.register_node("testnodes:colorwallmounted_nodebox", {
 		wall_bottom = { -0.5, -0.5, -0.5, 0.5, 0, 0.5 },
 		wall_side = { -0.5, -0.5, -0.5, 0, 0.5, 0.5 },
 	},
-
 
 	groups = { dig_immediate = 3 },
 })

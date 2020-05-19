@@ -82,7 +82,6 @@ minetest.register_node("testnodes:climbable_nojump", {
 	climbable = true,
 	walkable = false,
 
-
 	groups = {disable_jump=1, dig_immediate=3},
 	drawtype = "glasslike",
 	tiles ={"testnodes_climbable_nojump_side.png"},

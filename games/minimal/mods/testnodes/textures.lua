@@ -13,7 +13,6 @@ minetest.register_node("testnodes:6sides", {
 		"testnodes_normal6.png",
 	},
 
-
 	groups = { dig_immediate = 2 },
 })
 
@@ -28,7 +27,6 @@ minetest.register_node("testnodes:anim", {
 			length = 4.0,
 		}, },
 	},
-
 
 	groups = { dig_immediate = 2 },
 })
@@ -50,7 +48,6 @@ for a=1,#alphas do
 		},
 		use_texture_alpha = true,
 
-
 		groups = { dig_immediate = 3 },
 	})
 
@@ -64,7 +61,6 @@ for a=1,#alphas do
 			"testnodes_alpha.png",
 		},
 		alpha = alpha,
-
 
 		groups = { dig_immediate = 3 },
 	})

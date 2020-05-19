@@ -4,7 +4,7 @@ minetest.register_node("experimental:callback_node", {
 	groups = {dig_immediate=3},
 	-- This was known to cause a bug in minetest.item_place_node() when used
 	-- via minetest.place_node(), causing a placer with no position
-  	paramtype2 = "facedir",
+	paramtype2 = "facedir",
 	drop = "",
 
 	on_construct = function(pos)

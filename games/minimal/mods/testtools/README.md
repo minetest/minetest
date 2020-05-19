@@ -39,7 +39,7 @@ Changes the entity rotation (with `set_rotation`).
 Usage:
 
 * Punch entity: Rotate yaw
-* Punch entity while holding down “Sneak” key: Rotate pitch 
+* Punch entity while holding down “Sneak” key: Rotate pitch
 * Punch entity while holding down “Special” key (aka “Aux”): Rotate roll
 
 Each usage rotates the entity by 22.5°.
