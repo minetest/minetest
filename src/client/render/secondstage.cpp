@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 
 RenderingCoreSecondStage::RenderingCoreSecondStage(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCoreStereo(_device, _client, _hud)
+		IrrlichtDevice *_device, Client *_client, Hud *_hud)
+		: RenderingCoreStereo(_device, _client, _hud)
 {
 	initMaterial();
 }
@@ -34,8 +34,8 @@ RenderingCoreSecondStage::RenderingCoreSecondStage(
 void RenderingCoreSecondStage::initMaterial()
 {
 	IWritableShaderSource *s = client->getShaderSource();
-    s->global_additional_headers = "#define SECONDSTAGE 1\n";
-    s->rebuildShaders(); // TODO remove this if possible, consider shader constant setters?
+	s->global_additional_headers = "#define SECONDSTAGE 1\n";
+	s->rebuildShaders(); // TODO remove this if possible, consider shader constant setters?
 	mat.UseMipMaps = false;
 	mat.ZBuffer = true;
 	mat.ZWriteEnable = true;
