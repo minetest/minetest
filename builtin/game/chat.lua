@@ -1056,7 +1056,7 @@ core.register_chatcommand("last-login", {
 			param = name
 		end
 		local pauth = core.get_auth_handler().get_auth(param)
-		if pauth and pauth.last_login ~= -1 then
+		if pauth and pauth.last_login and pauth.last_login ~= -1 then
 			-- Time in UTC, ISO 8601 format
 			return true, "Last login time was " ..
 				os.date("!%Y-%m-%dT%H:%M:%SZ", pauth.last_login)
