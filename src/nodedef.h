@@ -368,8 +368,10 @@ struct ContentFeatures
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
 	std::string liquid_alternative_flowing;
+	content_t liquid_alternative_flowing_id;
 	// If the content is liquid, this is the source version of the liquid.
 	std::string liquid_alternative_source;
+	content_t liquid_alternative_source_id;
 	// Viscosity for fluid flow, ranging from 1 to 7, with
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
@@ -428,7 +430,7 @@ struct ContentFeatures
 	}
 	bool sameLiquid(const ContentFeatures &f) const{
 		if(!isLiquid() || !f.isLiquid()) return false;
-		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
+		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
 	}
 
 	int getGroup(const std::string &group) const
@@ -641,10 +643,11 @@ public:
 	void resetNodeResolveState();
 
 	/*!
-	 * Resolves the IDs to which connecting nodes connect from names.
+	 * Resolves (caches the IDs) cross-references between nodes,
+	 * like liquid alternatives.
 	 * Must be called after node registration has finished!
 	 */
-	void mapNodeboxConnections();
+	void resolveCrossrefs();
 
 private:
 	/*!

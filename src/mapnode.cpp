@@ -622,10 +622,10 @@ s8 MapNode::setLevel(const NodeDefManager *nodemgr, s16 level)
 		}
 		if (level >= LIQUID_LEVEL_SOURCE) {
 			rest = level - LIQUID_LEVEL_SOURCE;
-			setContent(nodemgr->getId(f.liquid_alternative_source));
+			setContent(f.liquid_alternative_source_id);
 			setParam2(0);
 		} else {
-			setContent(nodemgr->getId(f.liquid_alternative_flowing));
+			setContent(f.liquid_alternative_flowing_id);
 			setParam2((level & LIQUID_LEVEL_MASK) | (getParam2() & ~LIQUID_LEVEL_MASK));
 		}
 	} else if (f.param_type_2 == CPT2_LEVELED) {
