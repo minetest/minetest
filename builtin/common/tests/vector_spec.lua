@@ -168,8 +168,19 @@ describe("vector", function()
 		local rot1 = vector.directions_to_rotation({x = 1, y = 0, z = 0}, {x = 0, y = 1, z = 0})
 		assert.True(almost_equal({x = 1, y = 0, z = 0}, forward_at_rot(rot1)))
 		assert.True(almost_equal({x = 0, y = 1, z = 0}, up_at_rot(rot1)))
-		local rot2 = vector.directions_to_rotation({x = 1/math.sqrt(2), y = 1/math.sqrt(2), z = 0}, {x = 0, y = 0, z = 1})
+		local rot2 = vector.directions_to_rotation({x = 1, y = 1, z = 0}, {x = 0, y = 0, z = 1})
 		assert.True(almost_equal({x = 1/math.sqrt(2), y = 1/math.sqrt(2), z = 0}, forward_at_rot(rot2)))
 		assert.True(almost_equal({x = 0, y = 0, z = 1}, up_at_rot(rot2)))
+		for i = 1, 1000 do
+			local rand_vec = vector.new(math.random(), math.random(), math.random())
+			local rot_1 = vector.directions_to_rotation(rand_vec)
+			local rot_2 = {
+				x = math.atan2(rand_vec.y, math.sqrt(rand_vec.z * rand_vec.z + rand_vec.x * rand_vec.x)),
+				y = -math.atan2(rand_vec.x, rand_vec.z),
+				z = 0
+			}
+			assert.True(almost_equal(rot_1, rot_2))
+		end
+
 	end)
 end)

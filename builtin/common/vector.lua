@@ -206,7 +206,14 @@ function vector.rotate(v, rot)
 end
 
 function vector.directions_to_rotation(forward, up)
+	forward = vector.normalize(forward)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
+	if not up then
+		return rot
+	end
+	assert(vector.dot(forward, up) < 0.000001,
+			"Invalid vectors passed to vector.directions_to_rotation().")
+	up = vector.normalize(up)
 	-- Calculate vector pointing up with roll = 0, just based on forward vector.
 	local forwup = vector.rotate({x = 0, y = 1, z = 0}, rot)
 	-- 'forwup' and 'up' are now in a plane with 'forward' as normal.
@@ -217,9 +224,11 @@ function vector.directions_to_rotation(forward, up)
 	-- than math.pi, rot.z has to be inverted sometimes.
 	-- To determine wether this is the case, we rotate the up vector back around
 	-- the forward vector and check if it worked out.
+	local back = vector.rotate_around_axis(up, forward, rot.z)
 
 	-- We don't use vector.equals for this comparison because of floating point rounding errors.
-	if vector.distance(vector.rotate_around_axis(up, forward, rot.z), forwup) > 0.0000000000001 then
+
+	if vector.distance(back, forwup) > 0.0000000000001 then
 		rot.z = -rot.z
 	end
 	return rot
