@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "nodedef.h"
 
+typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+
 class Mapgen;
 class MMVManip;
 class PcgRandom;
@@ -72,7 +74,7 @@ public:
 	s16 nspawnby;
 	s16 place_offset_y = 0;
 
-	std::unordered_set<u8> biomes;
+	std::unordered_set<biome_t> biomes;
 
 protected:
 	void cloneTo(Decoration *def) const;
