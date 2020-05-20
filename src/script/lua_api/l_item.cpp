@@ -174,13 +174,43 @@ int LuaItemStack::l_set_metadata(lua_State *L)
 	return 1;
 }
 
+// set_description(self)
+int LuaItemStack::l_set_description(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	ItemStack &item = o->m_stack;
+
+	size_t len = 0;
+	const char *ptr = luaL_checklstring(L, 2, &len);
+	item.metadata.setString("description", std::string(ptr, len));
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 // get_description(self)
 int LuaItemStack::l_get_description(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
-	std::string desc = o->m_stack.getDescription(getGameDef(L)->idef());
+	ItemStack &item = o->m_stack;
+
+	char src = 1;
+	std::string desc = item.metadata.getString("description");
+	if (desc.empty()) {
+		src = 2;
+		desc = item.getDefinition(getGameDef(L)->idef()).description;
+	}
+	if (desc.empty()) {
+		src = 0;
+		desc = item.name;
+	}
 	lua_pushstring(L, desc.c_str());
+	if (src)
+		lua_pushboolean(L, src == 1);
+	else
+		lua_pushnil(L);
 	return 1;
 }
 
