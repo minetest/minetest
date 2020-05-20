@@ -2907,11 +2907,12 @@ angles in radians.
       forward and up relative to an entity's rotation `r`.
 * `vector.rotate_around_axis(v1, v2, a)`:
     * Returns `v1` rotated around axis `v2` by `a` radians according to
-      the left hand rule.
-* `vector.directions_to_rotation(direction, up)`:
+      the right hand rule.
+* `vector.directions_to_rotation(direction[, up])`:
     * Returns a rotation vector for `direction` pointing forward using `up`
       as the up vector.
-    * `direction` and `up` need to be unit vectors in a 90 degree angle to each other.
+    * If `up` is omitted, the roll of the returned vector defaults to zero.
+    * Otherwise `direction` and `up` need to be vectors in a 90 degree angle to each other.
 
 
 
