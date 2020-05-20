@@ -52,3 +52,16 @@ jobs:
     - name: Run clang-tidy
       run: |
         ./util/ci/clang-tidy.sh
+
+  guardonce:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install guardonce
+      run: |
+        sudo apt-get install python3 python3-pip -qyy
+        pip install guardonce
+
+    - name: Run guardonce
+      run: |
+        ./util/ci/guardonce.sh
