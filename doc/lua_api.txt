@@ -7443,6 +7443,10 @@ Biome definition
 
 Used by `minetest.register_biome`.
 
+The maximum number of biomes that can be used is 65535. However, using an
+excessive number of biomes will slow down map generation. Depending on desired
+performance and computing power the practical limit is much lower.
+
     {
         name = "tundra",
 
