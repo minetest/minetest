@@ -2484,7 +2484,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->joystick.getAxisWithoutDead(JA_FORWARD_MOVE)
 	);
 
-	u32 keypress_bits =
+	u32 keypress_bits = (
 			( (u32)(isKeyDown(KeyType::FORWARD)                       & 0x1) << 0) |
 			( (u32)(isKeyDown(KeyType::BACKWARD)                      & 0x1) << 1) |
 			( (u32)(isKeyDown(KeyType::LEFT)                          & 0x1) << 2) |
