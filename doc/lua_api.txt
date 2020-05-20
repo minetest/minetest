@@ -5449,7 +5449,7 @@ Misc.
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
-* `minetest.decode_base64(string)`: returns string
+* `minetest.decode_base64(string)`: returns string or nil for invalid base64
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returning `true` restricts the player `name` from modifying (i.e. digging,
