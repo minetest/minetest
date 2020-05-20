@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 
 RenderingCoreSecondStage::RenderingCoreSecondStage(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCoreStereo(_device, _client, _hud)
+		IrrlichtDevice *_device, Client *_client, Hud *_hud) :
+		RenderingCoreStereo(_device, _client, _hud)
 {
 	initMaterial();
 }
@@ -34,8 +34,8 @@ RenderingCoreSecondStage::RenderingCoreSecondStage(
 void RenderingCoreSecondStage::initMaterial()
 {
 	IWritableShaderSource *s = client->getShaderSource();
-    s->global_additional_headers = "#define SECONDSTAGE 1\n";
-    s->rebuildShaders(); // TODO remove this if possible, consider shader constant setters?
+	s->global_additional_headers = "#define SECONDSTAGE 1\n";
+	s->rebuildShaders(); // TODO remove this if possible, use shader const setters?
 	mat.UseMipMaps = false;
 	mat.ZBuffer = true;
 	mat.ZWriteEnable = true;
@@ -52,29 +52,32 @@ void RenderingCoreSecondStage::initMaterial()
 
 void RenderingCoreSecondStage::initTextures()
 {
-	rendered = driver->addRenderTargetTexture(screensize, "3d_render", video::ECF_A8R8G8B8);
-    normalmap = driver->addRenderTargetTexture(screensize, "3d_normalmap", video::ECF_A8R8G8B8);
-	depthmap = driver->addRenderTargetTexture(screensize, "3d_depthmap", video::ECF_R32F);
+	rendered = driver->addRenderTargetTexture(
+			screensize, "3d_render", video::ECF_A8R8G8B8);
+	normalmap = driver->addRenderTargetTexture(
+			screensize, "3d_normalmap", video::ECF_A8R8G8B8);
+	depthmap = driver->addRenderTargetTexture(
+			screensize, "3d_depthmap", video::ECF_R32F);
 	renderTargets.push_back(rendered);
 	renderTargets.push_back(normalmap);
 	renderTargets.push_back(depthmap);
 	mat.TextureLayer[0].Texture = rendered;
-    mat.TextureLayer[1].Texture = normalmap;
+	mat.TextureLayer[1].Texture = normalmap;
 	mat.TextureLayer[2].Texture = depthmap;
 }
 
 void RenderingCoreSecondStage::clearTextures()
 {
 	driver->removeTexture(rendered);
-    driver->removeTexture(normalmap);
+	driver->removeTexture(normalmap);
 	driver->removeTexture(depthmap);
 }
 
 void RenderingCoreSecondStage::drawAll()
 {
-    driver->setRenderTarget(renderTargets, true, true, skycolor);
+	driver->setRenderTarget(renderTargets, true, true, skycolor);
 	draw3D();
-    driver->setRenderTarget(nullptr, false, false, skycolor);
+	driver->setRenderTarget(nullptr, false, false, skycolor);
 	draw();
 	drawHUD();
 }
