@@ -164,7 +164,7 @@ function vector.rotate_around_axis(v, axis, angle)
 	axis = vector.normalize(axis)
 	-- https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
-	local cross = vector.cross(axis, v)
+	local cross = vector.cross(v, axis)
 	return vector.new(
 		cross.x * sinangle + (v.x - dot_axis.x) * cosangle + dot_axis.x,
 		cross.y * sinangle + (v.y - dot_axis.y) * cosangle + dot_axis.y,
@@ -224,7 +224,7 @@ function vector.directions_to_rotation(forward, up)
 	-- than math.pi, rot.z has to be inverted sometimes.
 	-- To determine wether this is the case, we rotate the up vector back around
 	-- the forward vector and check if it worked out.
-	local back = vector.rotate_around_axis(up, forward, rot.z)
+	local back = vector.rotate_around_axis(up, forward, -rot.z)
 
 	-- We don't use vector.equals for this comparison because of floating point rounding errors.
 
