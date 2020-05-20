@@ -1444,6 +1444,8 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "aux1");
 	lua_pushboolean(L, control.sneak);
 	lua_setfield(L, -2, "sneak");
+	lua_pushboolean(L, control.zoom);
+	lua_setfield(L, -2, "zoom");
 	lua_pushboolean(L, control.LMB);
 	lua_setfield(L, -2, "LMB");
 	lua_pushboolean(L, control.RMB);
