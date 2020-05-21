@@ -417,7 +417,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		Report collisions
 	*/
 
-	if (result.standing_on_object && !touching_ground_was && touching_ground) {
+	if (!result.standing_on_object && !touching_ground_was && touching_ground) {
 		m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_REGAIN_GROUND));
 
 		// Set camera impact value to be used for view bobbing
@@ -1027,7 +1027,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		}
 	}
 
-	if (result.standing_on_object && !touching_ground_was && touching_ground) {
+	if (!result.standing_on_object && !touching_ground_was && touching_ground) {
 		m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_REGAIN_GROUND));
 		// Set camera impact value to be used for view bobbing
 		camera_impact = getSpeed().Y * -1.0f;
