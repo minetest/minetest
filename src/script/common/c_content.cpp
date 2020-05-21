@@ -391,7 +391,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "stepheight");
 	lua_pushnumber(L, prop->eye_height);
 	lua_setfield(L, -2, "eye_height");
-	lua_pushnumber(L, prop->automatic_rotate * core::DEGTORAD);
+	lua_pushnumber(L, prop->automatic_rotate);
 	lua_setfield(L, -2, "automatic_rotate");
 	if (prop->automatic_face_movement_dir)
 		lua_pushnumber(L, prop->automatic_face_movement_dir_offset);
@@ -424,7 +424,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "damage_texture_modifier");
 	lua_pushboolean(L, prop->show_on_minimap);
 	lua_setfield(L, -2, "show_on_minimap");
-	lua_pushnumber(L, prop->yaw_origin);
+	lua_pushnumber(L, prop->yaw_origin * core::DEGTORAD);
 	lua_setfield(L, -2, "yaw_origin");
 }
 

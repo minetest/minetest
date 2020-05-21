@@ -569,7 +569,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				info.axis = nearest_collided;
 				result.collisions.push_back(info);
 
-				if (nearest_info.obj)
+				if (nearest_info.isObject())
 					result.touched_objects.push_back(nearest_info.obj);
 			}
 		}

@@ -270,7 +270,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		// TODO: Find a better way to overcome buggy client-side
 		// synchronization with velocity changes since the client
 		// does not correctly predict entity-player collisions.
-		float force_send = m_last_sent_position_timer > 0.5 &&
+		bool force_send = m_last_sent_position_timer > 0.5 &&
 			m_velocity.getLength() > 0.05 && m_prop.collideWithObjects;
 
 		if (force_send || pos_d > minchange || vel_d > minchange ||
