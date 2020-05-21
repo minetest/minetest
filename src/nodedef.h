@@ -326,8 +326,10 @@ struct ContentFeatures
 	std::vector<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
-	// Flowing liquid or snow, value = default level
+	// Flowing liquid or leveled nodebox, value = default level
 	u8 leveled;
+	// Maximum value for leveled nodes
+	u8 leveled_max;
 
 	// --- LIGHTING-RELATED ---
 
@@ -738,6 +740,9 @@ public:
 	NodeResolver();
 	virtual ~NodeResolver();
 	virtual void resolveNodeNames() = 0;
+
+	// required because this class is used as mixin for ObjDef
+	void cloneTo(NodeResolver *res) const;
 
 	bool getIdFromNrBacklog(content_t *result_out,
 		const std::string &node_alt, content_t c_fallback,

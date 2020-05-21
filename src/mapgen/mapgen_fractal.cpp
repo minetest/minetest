@@ -47,7 +47,7 @@ FlagDesc flagdesc_mapgen_fractal[] = {
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
+MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_FRACTAL, params, emerge)
 {
 	spflags            = params->spflags;

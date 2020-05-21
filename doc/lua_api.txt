@@ -75,6 +75,10 @@ The game directory can contain the following files:
       When both `allowed_mapgens` and `disallowed_mapgens` are
       specified, `allowed_mapgens` is applied before
       `disallowed_mapgens`.
+    * `disallowed_mapgen_settings= <comma-separated mapgen settings>`
+      e.g. `disallowed_mapgen_settings = mgv5_spflags`
+      These settings are hidden for this game in the world creation
+      dialog and game start menu.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -1289,9 +1293,9 @@ To account for differing resolutions, the position coordinates are the
 percentage of the screen, ranging in value from `0` to `1`.
 
 The name field is not yet used, but should contain a description of what the
-HUD element represents. The direction field is the direction in which something
-is drawn.
+HUD element represents.
 
+The `direction` field is the direction in which something is drawn.
 `0` draws from left to right, `1` draws from right to left, `2` draws from
 top to bottom, and `3` draws from bottom to top.
 
@@ -1310,7 +1314,21 @@ factor!
 The `z_index` field specifies the order of HUD elements from back to front.
 Lower z-index elements are displayed behind higher z-index elements. Elements
 with same z-index are displayed in an arbitrary order. Default 0.
-Supports negative values.
+Supports negative values. By convention, the following values are recommended:
+
+*  -400: Graphical effects, such as vignette
+*  -300: Name tags, waypoints
+*  -200: Wieldhand
+*  -100: Things that block the player's view, e.g. masks
+*     0: Default. For standard in-game HUD elements like crosshair, hotbar,
+         minimap, builtin statbars, etc.
+*   100: Temporary text messages or notification icons
+*  1000: Full-screen effects such as full-black screen or credits.
+         This includes effects that cover the entire screen
+* Other: If your HUD element doesn't fit into any category, pick a number
+         between the suggested values
+
+
 
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
@@ -1338,15 +1356,21 @@ Displays text on the HUD.
   text. Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
 * `alignment`: The alignment of the text.
 * `offset`: offset in pixels from position.
+* `size`: size of the text.
+  The player-set font size is multiplied by size.x (y value isn't used).
 
 ### `statbar`
 
-Displays a horizontal bar made up of half-images.
+Displays a horizontal bar made up of half-images with an optional background.
 
-* `text`: The name of the texture that is used.
+* `text`: The name of the texture to use.
+* `text2`: Optional texture name to enable a background / "off state"
+  texture (useful to visualize the maximal value). Both textures
+  must have the same size.
 * `number`: The number of half-textures that are displayed.
   If odd, will end with a vertically center-split texture.
-* `direction`
+* `item`: Same as `number` but for the "off state" texture
+* `direction`: To which direction the images will extend to
 * `offset`: offset in pixels from position.
 * `size`: If used, will force full-image size to this value (override texture
   pack image size)
@@ -2553,7 +2577,7 @@ Elements
 
 * Set the style for the element(s) matching `selector` by name.
 * `selector` can be one of:
-    * `<name>` - An element name.
+    * `<name>` - An element name. Includes `*`, which represents every element.
     * `<name>:<state>` - An element name, a colon, and one or more states.
 * `state` is a list of states separated by the `+` character.
     * If a state is provided, the style will only take effect when the element is in that state.
@@ -2566,7 +2590,7 @@ Elements
 
 * Set the style for the element(s) matching `selector` by type.
 * `selector` can be one of:
-    * `<type>` - An element type.
+    * `<type>` - An element type. Includes `*`, which represents every element.
     * `<type>:<state>` - An element type, a colon, and one or more states.
 * `state` is a list of states separated by the `+` character.
     * If a state is provided, the style will only take effect when the element is in that state.
@@ -2633,6 +2657,8 @@ A name/type can optionally be a comma separated list of names/types, like so:
     world_delete,world_create,world_configure
     button,image_button
 
+A `*` type can be used to select every element in the formspec.
+
 Any name/type in the list can also be accompanied by a `+`-separated list of states, like so:
 
     world_delete:hovered+pressed
@@ -2683,10 +2709,14 @@ Some types may inherit styles from parent types.
     * bgimg - standard background image. Defaults to none.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
     * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
-                     See background9[] documentation for more details
+                     See background9[] documentation for more details. This property also pads the
+                     button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
+    * content_offset - 2d vector, shifts the position of the button's content without resizing it.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * padding - rect, adds space between the edges of the button and the content. This value is
+                relative to bgimg_middle.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -3176,8 +3206,22 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
   `minetest.translate`, but is in translation files.
 * `@n` acts as a literal newline as well.
 
+Server side translations
+------------------------
 
+On some specific cases, server translation could be useful. For example, filter
+a list on labels and send results to client. A method is supplied to achieve
+that:
 
+`minetest.get_translated_string(lang_code, string)`: Translates `string` using
+translations for `lang_code` language. It gives the same result as if the string
+was translated by the client.
+
+The `lang_code` to use for a given player can be retrieved from
+the table returned by `minetest.get_player_information(name)`.
+
+IMPORTANT: This functionality should only be used for sorting, filtering or similar purposes.
+You do not need to use this to get translated strings to show up on the client.
 
 Perlin noise
 ============
@@ -4133,6 +4177,8 @@ Utilities
           area_store_persistent_ids = true,
           -- Whether minetest.find_path is functional (5.2.0)
           pathfinder_works = true,
+          -- Whether Collision info is available to an objects' on_step (5.3.0)
+          object_step_has_moveresult = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4144,16 +4190,18 @@ Utilities
       {
           address = "127.0.0.1",     -- IP address of client
           ip_version = 4,            -- IPv4 / IPv6
+          connection_uptime = 200,   -- seconds since client connected
+          protocol_version = 32,     -- protocol version used by client
+          formspec_version = 2,      -- supported formspec version
+          lang_code = "fr"           -- Language code used for translation
+          -- the following keys can be missing if no stats have been collected yet
           min_rtt = 0.01,            -- minimum round trip time
           max_rtt = 0.2,             -- maximum round trip time
           avg_rtt = 0.02,            -- average round trip time
           min_jitter = 0.01,         -- minimum packet time jitter
           max_jitter = 0.5,          -- maximum packet time jitter
           avg_jitter = 0.03,         -- average packet time jitter
-          connection_uptime = 200,   -- seconds since client connected
-          protocol_version = 32,     -- protocol version used by client
-          formspec_version = 2,      -- supported formspec version
-          -- following information is available on debug build only!!!
+          -- the following information is available in a debug build only!!!
           -- DO NOT USE IN MODS
           --ser_vers = 26,             -- serialization version used by client
           --major = 0,                 -- major version number
@@ -4834,7 +4882,7 @@ Environment access
 * `minetest.add_node_level(pos, level)`
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
-    * can be negative for decreasing
+    * `level` must be between -127 and 127
 * `minetest.fix_light(pos1, pos2)`: returns `true`/`false`
     * resets the light in a cuboid-shaped part of
       the map and removes lighting bugs.
@@ -5980,15 +6028,18 @@ object you are working with still exists.
         * max: bubbles bar is not shown
         * See [Object properties] for more information
     * Is limited to range 0 ... 65535 (2^16 - 1)
-* `set_fov(fov, is_multiplier)`: Sets player's FOV
+* `set_fov(fov, is_multiplier, transition_time)`: Sets player's FOV
     * `fov`: FOV value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
       Defaults to `false`.
-    * Set to 0 to clear FOV override.
-* `get_fov()`:
-    * Returns player's FOV override in degrees, and a boolean depending on whether
-      the value is a multiplier.
-    * Returns 0 as first value if player's FOV hasn't been overridden.
+    * `transition_time`: If defined, enables smooth FOV transition.
+      Interpreted as the time (in seconds) to reach target FOV.
+      If set to 0, FOV change is instantaneous. Defaults to 0.
+    * Set `fov` to 0 to clear FOV override.
+* `get_fov()`: Returns the following:
+    * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
+    * Boolean indicating whether the FOV value is a multiplier.
+    * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a
@@ -6507,6 +6558,7 @@ Player properties need to be saved manually.
 
         automatic_rotate = 0,
         -- Set constant rotation in radians per second, positive or negative.
+        -- Object rotates along the local Y-axis, and works with set_rotation.
         -- Set to 0 to disable constant rotation.
 
         stepheight = 0,
@@ -6545,6 +6597,9 @@ Player properties need to be saved manually.
         -- deleted when the block gets unloaded.
         -- The get_staticdata() callback is never called then.
         -- Defaults to 'true'.
+
+        damage_texture_modifier = "^[brighten",
+        -- Texture modifier to be applied for a short duration when object is hit
     }
 
 Entity definition
@@ -6565,7 +6620,10 @@ Used by `minetest.register_entity`.
 
         on_activate = function(self, staticdata, dtime_s),
 
-        on_step = function(self, dtime),
+        on_step = function(self, dtime, moveresult),
+        -- Called every server step
+        -- dtime: Elapsed time
+        -- moveresult: Table with collision info (only available if physical=true)
 
         on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir),
 
@@ -6578,6 +6636,25 @@ Used by `minetest.register_entity`.
         _custom_field = whatever,
         -- You can define arbitrary member variables here (see Item definition
         -- for more info) by using a '_' prefix
+    }
+
+Collision info passed to `on_step`:
+
+    {
+        touching_ground = boolean,
+        collides = boolean,
+        standing_on_object = boolean,
+        collisions = {
+            {
+                type = string, -- "node" or "object",
+                axis = string, -- "x", "y" or "z"
+                node_pos = vector, -- if type is "node"
+                object = ObjectRef, -- if type is "object"
+                old_velocity = vector,
+                new_velocity = vector,
+            },
+            ...
+        }
     }
 
 ABM (ActiveBlockModifier) definition
@@ -6936,11 +7013,15 @@ Used by `minetest.register_node`.
         -- If true, a new liquid source can be created by placing two or more
         -- sources nearby
 
-        leveled = 16,
+        leveled = 0,
         -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
         -- Allows defining the nodebox height without using param2.
         -- The nodebox height is 'leveled' / 64 nodes.
-        -- The maximum value of 'leveled' is 127.
+        -- The maximum value of 'leveled' is `leveled_max`.
+
+        leveled_max = 127,
+        -- Maximum value for `leveled` (0-127), enforced in
+        -- `minetest.set_node_level` and `minetest.add_node_level`.
 
         liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
 
@@ -7709,6 +7790,8 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
         scale = {x = 2, y = 2},
 
         text = "<text>",
+
+        text2 = "<text>",
 
         number = 2,
 

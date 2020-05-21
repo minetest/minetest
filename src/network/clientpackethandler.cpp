@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 
 #include "util/base64.h"
+#include "client/camera.h"
 #include "chatmessage.h"
 #include "client/clientmedia.h"
 #include "log.h"
@@ -530,11 +531,21 @@ void Client::handleCommand_Movement(NetworkPacket* pkt)
 void Client::handleCommand_Fov(NetworkPacket *pkt)
 {
 	f32 fov;
-	bool is_multiplier;
+	bool is_multiplier = false;
+	f32 transition_time = 0.0f;
+
 	*pkt >> fov >> is_multiplier;
 
+	// Wrap transition_time extraction within a
+	// try-catch to preserve backwards compat
+	try {
+		*pkt >> transition_time;
+	} catch (PacketError &e) {};
+
 	LocalPlayer *player = m_env.getLocalPlayer();
-	player->setFov({ fov, is_multiplier });
+	assert(player);
+	player->setFov({ fov, is_multiplier, transition_time });
+	m_camera->notifyFovChange();
 }
 
 void Client::handleCommand_HP(NetworkPacket *pkt)
@@ -1091,22 +1102,16 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	v3f world_pos;
 	v2s32 size;
 	s16 z_index = 0;
+	std::string text2;
 
 	*pkt >> server_id >> type >> pos >> name >> scale >> text >> number >> item
 		>> dir >> align >> offset;
 	try {
 		*pkt >> world_pos;
-	}
-	catch(SerializationError &e) {};
-
-	try {
 		*pkt >> size;
-	} catch(SerializationError &e) {};
-
-	try {
 		*pkt >> z_index;
-	}
-	catch(PacketError &e) {}
+		*pkt >> text2;
+	} catch(PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
 	event->type             = CE_HUDADD;
@@ -1124,6 +1129,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	event->hudadd.world_pos = new v3f(world_pos);
 	event->hudadd.size      = new v2s32(size);
 	event->hudadd.z_index   = z_index;
+	event->hudadd.text2     = new std::string(text2);
 	m_client_event_queue.push(event);
 }
 
@@ -1160,7 +1166,7 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE ||
 		stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
 		*pkt >> v2fdata;
-	else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT)
+	else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT || stat == HUD_STAT_TEXT2)
 		*pkt >> sdata;
 	else if (stat == HUD_STAT_WORLD_POS)
 		*pkt >> v3fdata;
@@ -1265,9 +1271,9 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		// Fix for "regular" skies, as color isn't kept:
 		if (skybox.type == "regular") {
 			skybox.sky_color = sky_defaults.getSkyColorDefaults();
-			skybox.tint_type = "default";
-			skybox.moon_tint = video::SColor(255, 255, 255, 255);
-			skybox.sun_tint = video::SColor(255, 255, 255, 255);
+			skybox.fog_tint_type = "default";
+			skybox.fog_moon_tint = video::SColor(255, 255, 255, 255);
+			skybox.fog_sun_tint = video::SColor(255, 255, 255, 255);
 		}
 		else {
 			sun.visible = false;
@@ -1302,7 +1308,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		std::string texture;
 
 		*pkt >> skybox.bgcolor >> skybox.type >> skybox.clouds >>
-			skybox.sun_tint >> skybox.moon_tint >> skybox.tint_type;
+			skybox.fog_sun_tint >> skybox.fog_moon_tint >> skybox.fog_tint_type;
 
 		if (skybox.type == "skybox") {
 			*pkt >> texture_count;

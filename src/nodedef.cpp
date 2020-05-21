@@ -368,6 +368,7 @@ void ContentFeatures::reset()
 	floodable = false;
 	rightclickable = true;
 	leveled = 0;
+	leveled_max = LEVELED_MAX;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
 	liquid_alternative_source = "";
@@ -478,6 +479,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, legacy_wallmounted);
 
 	os << serializeString(node_dig_prediction);
+	writeU8(os, leveled_max);
 }
 
 void ContentFeatures::correctAlpha(TileDef *tiles, int length)
@@ -586,6 +588,10 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	try {
 		node_dig_prediction = deSerializeString(is);
+		u8 tmp_leveled_max = readU8(is);
+		if (is.eof()) /* readU8 doesn't throw exceptions so we have to do this */
+			throw SerializationError("");
+		leveled_max = tmp_leveled_max;
 	} catch(SerializationError &e) {};
 }
 
@@ -1569,6 +1575,18 @@ NodeResolver::~NodeResolver()
 {
 	if (!m_resolve_done && m_ndef)
 		m_ndef->cancelNodeResolveCallback(this);
+}
+
+
+void NodeResolver::cloneTo(NodeResolver *res) const
+{
+	FATAL_ERROR_IF(!m_resolve_done, "NodeResolver can only be cloned"
+		" after resolving has completed");
+	/* We don't actually do anything significant. Since the node resolving has
+	 * already completed, the class that called us will already have the
+	 * resolved IDs in its data structures (which it copies on its own) */
+	res->m_ndef = m_ndef;
+	res->m_resolve_done = true;
 }
 
 

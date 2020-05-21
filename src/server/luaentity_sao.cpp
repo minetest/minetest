@@ -135,6 +135,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	m_last_sent_position_timer += dtime;
 
+	collisionMoveResult moveresult, *moveresult_p = nullptr;
+
 	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
 	// If the object gets detached this comes into effect automatically from the last known origin
 	if(isAttached())
@@ -150,7 +152,6 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			aabb3f box = m_prop.collisionbox;
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
-			collisionMoveResult moveresult;
 			f32 pos_max_d = BS*0.25; // Distance per iteration
 			v3f p_pos = m_base_position;
 			v3f p_velocity = m_velocity;
@@ -159,6 +160,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 					pos_max_d, box, m_prop.stepheight, dtime,
 					&p_pos, &p_velocity, p_acceleration,
 					this, m_prop.collideWithObjects);
+			moveresult_p = &moveresult;
 
 			// Apply results
 			m_base_position = p_pos;
@@ -188,8 +190,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_registered){
-		m_env->getScriptIface()->luaentity_Step(m_id, dtime);
+	if(m_registered) {
+		m_env->getScriptIface()->luaentity_Step(m_id, dtime, moveresult_p);
 	}
 
 	if (!send_recommended)

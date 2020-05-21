@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "server/player_sao.h"
+#include "server/serverinventorymgr.h"
 #include "util/auth.h"
 #include "util/base64.h"
 #include "util/pointedthing.h"
@@ -111,9 +112,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	if (depl_serial_v == SER_FMT_VER_INVALID) {
 		actionstream << "Server: A mismatched client tried to connect from " <<
-			addr_s << std::endl;
-		infostream << "Server: Cannot negotiate serialization version with " <<
-			addr_s << " client_max=" << (int)client_max << std::endl;
+			addr_s << " ser_fmt_max=" << (int)client_max << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
 		return;
 	}
@@ -148,7 +147,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
 			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
 		actionstream << "Server: A mismatched client tried to connect from " <<
-			addr_s << std::endl;
+			addr_s << " proto_max=" << (int)max_net_proto_version << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
 		return;
 	}
@@ -310,6 +309,9 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	sendMediaAnnouncement(peer_id, lang);
 
 	RemoteClient *client = getClient(peer_id, CS_InitDone);
+
+	// Keep client language for server translations
+	client->setLangCode(lang);
 
 	// Send active objects
 	{
@@ -620,9 +622,9 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		ma->from_inv.applyCurrentPlayer(player->getName());
 		ma->to_inv.applyCurrentPlayer(player->getName());
 
-		setInventoryModified(ma->from_inv);
+		m_inventory_mgr->setInventoryModified(ma->from_inv);
 		if (ma->from_inv != ma->to_inv)
-			setInventoryModified(ma->to_inv);
+			m_inventory_mgr->setInventoryModified(ma->to_inv);
 
 		bool from_inv_is_current_player =
 			(ma->from_inv.type == InventoryLocation::PLAYER) &&
@@ -687,7 +689,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 		da->from_inv.applyCurrentPlayer(player->getName());
 
-		setInventoryModified(da->from_inv);
+		m_inventory_mgr->setInventoryModified(da->from_inv);
 
 		/*
 			Disable dropping items out of craftpreview
@@ -723,7 +725,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 		ca->craft_inv.applyCurrentPlayer(player->getName());
 
-		setInventoryModified(ca->craft_inv);
+		m_inventory_mgr->setInventoryModified(ca->craft_inv);
 
 		//bool craft_inv_is_current_player =
 		//	(ca->craft_inv.type == InventoryLocation::PLAYER) &&
@@ -739,7 +741,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	}
 
 	// Do the action
-	a->apply(this, playersao, this);
+	a->apply(m_inventory_mgr.get(), playersao, this);
 	// Eat the action
 	delete a;
 }
@@ -900,8 +902,8 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 		actionstream << "Player " << player->getName()
 				<< " tried to access " << what
 				<< " from too far: "
-				<< "d=" << d <<", max_d=" << max_d
-				<< ". ignoring." << std::endl;
+				<< "d=" << d << ", max_d=" << max_d
+				<< "; ignoring." << std::endl;
 		// Call callbacks
 		m_script->on_cheat(player->getPlayerSAO(), "interacted_too_far");
 		return false;
@@ -954,7 +956,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	}
 
 	if (playersao->isDead()) {
-		actionstream << "Server: NoCheat: " << player->getName()
+		actionstream << "Server: " << player->getName()
 				<< " tried to interact while dead; ignoring." << std::endl;
 		if (pointed.type == POINTEDTHING_NODE) {
 			// Re-send block to revert change on client-side
@@ -1143,7 +1145,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				playersao->noCheatDigEnd();
 				// If player didn't start digging this, ignore dig
 				if (nocheat_p != p_under) {
-					infostream << "Server: NoCheat: " << player->getName()
+					infostream << "Server: " << player->getName()
 							<< " started digging "
 							<< PP(nocheat_p) << " and completed digging "
 							<< PP(p_under) << "; not digging." << std::endl;
@@ -1167,9 +1169,9 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				}
 				// If can't dig, ignore dig
 				if (!params.diggable) {
-					infostream << "Server: NoCheat: " << player->getName()
+					infostream << "Server: " << player->getName()
 							<< " completed digging " << PP(p_under)
-							<< ", which is not diggable with tool. not digging."
+							<< ", which is not diggable with tool; not digging."
 							<< std::endl;
 					is_valid_dig = false;
 					// Call callbacks
@@ -1193,7 +1195,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				}
 				// Dig not possible
 				else {
-					infostream << "Server: NoCheat: " << player->getName()
+					infostream << "Server: " << player->getName()
 							<< " completed digging " << PP(p_under)
 							<< "too fast; not digging." << std::endl;
 					is_valid_dig = false;

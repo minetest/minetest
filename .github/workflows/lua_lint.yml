@@ -13,12 +13,12 @@ on:
 
 jobs:
   luacheck:
+    name: "Builtin Luacheck and Unit Tests"
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
     - name: Install luarocks
       run: |
-        sudo apt-get update -qyy
         sudo apt-get install luarocks -qyy
 
     - name: Install luarocks tools

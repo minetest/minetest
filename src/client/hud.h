@@ -82,8 +82,9 @@ public:
 
 private:
 	bool calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos);
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &texture,
-			s32 count, v2s32 offset, v2s32 size = v2s32());
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
+			const std::string &texture, const std::string& bgtexture,
+			s32 count, s32 maxcount, v2s32 offset, v2s32 size = v2s32());
 
 	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 			s32 inv_offset, InventoryList *mainlist, u16 selectitem,

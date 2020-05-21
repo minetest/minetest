@@ -94,11 +94,12 @@ public:
 		m_packets.clear();
 	}
 
+	u32 sum() const;
 	void print(std::ostream &o) const;
 
 private:
 	// command, count
-	std::map<u16, u16> m_packets;
+	std::map<u16, u32> m_packets;
 };
 
 class ClientScripting;
