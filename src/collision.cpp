@@ -249,6 +249,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	} else {
 		time_notification_done = false;
 	}
+
+	v3f old_speed_f = *speed_f;
 	*speed_f += accel_f * dtime;
 
 	// If there is no speed, there are no collisions
@@ -540,24 +542,34 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (step_up) {
 				// Special case: Handle stairs
 				nearest_info.is_step_up = true;
+				result.steps_up = true;
 				is_collision = false;
 			} else if (nearest_collided == COLLISION_AXIS_X) {
+				if (old_speed_f.X != 0)
+					info.is_impact = true;
 				if (fabs(speed_f->X) > BS * 3)
 					speed_f->X *= bounce;
 				else
 					speed_f->X = 0;
+				info.side.X = old_speed_f.X > 0 ? 1 : -1;
 				result.collides_xz = true;
 			} else if (nearest_collided == COLLISION_AXIS_Y) {
+				if (old_speed_f.Y != 0)
+					info.is_impact = true;
 				if(fabs(speed_f->Y) > BS * 3)
 					speed_f->Y *= bounce;
 				else
 					speed_f->Y = 0;
+				info.side.Y = old_speed_f.Y > 0 ? 1 : -1;
 				result.collides_y = true;
 			} else if (nearest_collided == COLLISION_AXIS_Z) {
+				if (old_speed_f.Z != 0)
+					info.is_impact = true;
 				if (fabs(speed_f->Z) > BS * 3)
 					speed_f->Z *= bounce;
 				else
 					speed_f->Z = 0;
+				info.side.Z = old_speed_f.Z > 0 ? 1 : -1;
 				result.collides_xz = true;
 			}
 

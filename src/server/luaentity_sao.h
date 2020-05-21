@@ -96,7 +96,7 @@ private:
 	std::string m_init_state;
 	bool m_registered = false;
 
-	float m_speed = 0.0f;	
+	float m_speed = 0.0f;
 	v3f m_velocity;
 	bool m_velocity_lock = false;
 	v3f m_acceleration;

@@ -233,7 +233,7 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime, v3f pos, v3f rotation,
 	pushFloatPos(L, old_velocity); // old_velocity
 
 	if (moveresult) {
-		lua_createtable(L, 0, 5);
+		lua_createtable(L, 0, 6);
 
 		// moveresult.collides_y
 		lua_pushboolean(L, moveresult->collides_y);
@@ -243,9 +243,14 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime, v3f pos, v3f rotation,
 		lua_pushboolean(L, moveresult->collides_xz);
 		lua_setfield(L, -2, "collides_xz");
 
-		// moveresult.is_standing
+
+		// moveresult.steps_up
+		lua_pushboolean(L, moveresult->steps_up);
+		lua_setfield(L, -2, "steps_up");
+
+		// moveresult.standing
 		lua_pushboolean(L, moveresult->touching_ground);
-	      	lua_setfield(L, -2, "is_standing");
+	      	lua_setfield(L, -2, "standing");
 
 		int index;
 
@@ -263,7 +268,17 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime, v3f pos, v3f rotation,
 		index = 0;
 		for (const CollisionInfo &colinfo : moveresult->collisions) {
 			if (colinfo.type == COLLISION_NODE) {
+				lua_createtable(L, 0, 3);
+
+				push_v3s16(L, colinfo.side);
+				lua_setfield(L, -2, "side");
+
 				push_v3s16(L, colinfo.node_p);
+				lua_setfield(L, -2, "node_pos");
+
+				lua_pushboolean(L, colinfo.is_impact);
+				lua_setfield(L, -2, "is_impact");
+
 				lua_rawseti(L, -2, ++index);
 			}
 		}

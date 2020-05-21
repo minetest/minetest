@@ -48,8 +48,10 @@ struct CollisionInfo
 	CollisionType type = COLLISION_NODE;
 	CollisionAxis axis = COLLISION_AXIS_NONE;
 	v3s16 node_p = v3s16(-32768,-32768,-32768); // COLLISION_NODE
+	v3s16 side = v3s16(0,0,0);
 	v3f old_speed;
 	v3f new_speed;
+	bool is_impact = false;
 	int plane = -1;
 };
 
@@ -58,6 +60,7 @@ struct collisionMoveResult
 	collisionMoveResult() = default;
 
 	bool touching_ground = false;
+	bool steps_up = false;
 	bool collides_y = false;
 	bool collides_xz = false;
 	bool standing_on_object = false;

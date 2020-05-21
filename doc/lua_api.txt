@@ -1501,13 +1501,22 @@ Exact pointing location (currently only `Raycast` supports these fields):
 `move_result`
 ---------------
 
-* `{collides_xz, collides_y, is_standing, touched_objects, collisions}`
+* `{collides_xz, collides_y, standing, touched_objects, collisions}`
     * Result of collision processing for physical objects.
-    * `collides_xz`: whether a collision occured along the X or Z axis
-    * `collides_y`: whether a collision occured along the Y axis
-    * `is_standing`: whether the object is standing on top of a node
-    * `touched_objects`: ObjectRefs that the object is actively touching
-    * `collisions`: node positions intersecting the object's collision box
+    * `collides_xz`: whether this object collided along the X or Z axis
+    * `collides_y`: whether this object collided along the Y axis
+    * `steps_up`: whether this object stepped onto a stair node
+    * `standing`: whether this object is standing on a node or other object
+    * `touched_objects`: list of ObjectRefs actively touched by this object
+    * `collisions`: list of nodes intersecting this object's collision box,
+       each subtable consisting of three fields:
+        * `side`: relative direction of the collision as a unit vector
+        * `node_pos`: position of the collided node in world coordinates
+        * `is_impact`: whether the collision caused a change in velocity
+    * Note that an object-object collision is only reported for one physical
+      object being culpable for hitting another, but not the reverse. When
+      necessary, the hitter object should manually notify all objects that
+      have been hit of the resulting collision.
 
 
 Flag Specifier Format
@@ -6257,26 +6266,37 @@ object you are working with still exists.
     * Note that this will disable acceleration along the X and Z axes.
 * `unlock_velocity()`: frees the velocity along the X and Z axes
 * `is_velocity_locked()`: returns true if the velocity has been fixed
-* `set_speed(speed)`
+* `set_speed(speed, yaw_offset)`
     * Automatically fixes the velocity along the X and Z axes to correspond 
       with the current heading (yaw).
     * `speed` is a number equal to the length of the vector (vel_x,vel_z).
     * `yaw_offset` is a number representing the angular offset from normal in 
       radians, where `0` is forward and `pi` is backward (default: `0`).
+    * The object's normal is determined by its `yaw_origin` property.
     * Player-like side-stepping can be achieved with either of the following 
       values for `yaw_offset`:
-       * `pi / 2`: strafe left
-       * `-pi / 2`: strafe right
+        * `pi / 2`: strafe left
+        * `-pi / 2`: strafe right
     * A negative value for `speed` may also be used for back-tracking.
+* `add_speed(speed): increases or decreases the speed
+    * `speed` is a number
 * `set_speed_lateral(speed_x, speed_y)`
     * Similar to `set_speed()` but calculates the angular offset from normal
-      given the magnitude of speed within 2-dimensions.
+      given the magnitude of speed as a 2-dimensional vector (x,y) within the
+      object's local reference frame.
     * `speed_x` is a number representing lateral motion, where negative moves
       left, positive moves right, and zero stops (default: `0`)
     * `speed_y` is a number, where positive moves forward, negative moves
       backward, and zero stops (default: `0`)
+    * If `speed_x` is zero, then this method is equivalent to `set_speed()`
+      with `nil` for the second parameter. Other equivalencies include
+        * `set_speed_lateral(0, speed)` -> `set_speed(speed)`
+        * `set_speed_lateral(0, -speed)` -> `set_speed(-speed)`
+        * `set_speed_lateral(0, -speed)` -> `set_speed(speed, pi)`
+        * `set_speed_lateral(-speed)` -> `set_speed(speed, pi / 2)`
+        * `set_speed_lateral(speed)` -> `set_speed(speed, -pi / 2)`
     * If the model is not oriented correctly, it may be necessary to set the
-      `yaw_origin` object property.
+      object's `yaw_origin` property to correspond with its normal.
 * `set_acceleration(acc)`
     * `acc` is a vector
 * `set_acceleration_vert(acc_y)`:
@@ -6285,9 +6305,9 @@ object you are working with still exists.
 * `get_acceleration()`: returns the acceleration, a vector
 * `set_rotation(rot)`
     * `rot` is a vector in radians.
-       * `x` is pitch (elevation)
-       * `y` is yaw (heading)
-       * `z` is roll (bank)
+        * `x` is pitch (elevation)
+        * `y` is yaw (heading)
+        * `z` is roll (bank)
 * `get_rotation()`: returns the rotation, a vector, in radians
 * `set_yaw(yaw)`: sets the yaw (heading)
     * `yaw` is a number in radians (default: `0`)
@@ -6928,7 +6948,8 @@ Player properties need to be saved manually.
         automatic_face_movement_dir = 0.0,
         -- Automatically set yaw to movement direction, offset in degrees.
         -- 'false' to disable.
-        -- This property is ignored when speed is applied.
+        -- This property is ignored when speed is applied via the ObjectRef
+        -- methods `set_speed()`, `add_speed()` and `set_speed_lateral().
 
         automatic_face_movement_max_rotation_per_sec = -1,
         -- Limit automatic rotation to this value in degrees per second.
