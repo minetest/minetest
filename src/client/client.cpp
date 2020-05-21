@@ -740,15 +740,15 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		return true;
 	}
 
+	// Vertex, Geometry and Fragment shaders
 	const char *shader_ext[] = {
-		".glsl", NULL
+		".vs.glsl", ".gs.glsl", ".fs.glsl", NULL
 	};
 	name = removeStringEnd(filename, shader_ext);
 	if (!name.empty()) {
 		TRACESTREAM(<< "Client: Loading shader: "
 				<< "\"" << filename << "\"" << std::endl);
-		g_translations->loadTranslation(data);
-		return true;
+		return m_shsrc->setShaderMedia(filename, data);
 	}
 
 	errorstream << "Client: Don't know how to load file \""

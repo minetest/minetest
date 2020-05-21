@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <fstream>
 #include <iterator>
+#include <string>
 #include "shader.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
@@ -37,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gamedef.h"
 #include "client/tile.h"
+#include "string.h"
 
 /*
 	A cache from shader name to shader path
@@ -117,6 +119,20 @@ public:
 			}
 		}
 		m_programs[combined] = program;
+	}
+
+	void insertMedia(const std::string &filename, const std::string &program)
+	{
+		std::string type;
+		if (str_ends_with(filename, ".vs.glsl"))
+			type = "vertex";
+		else if (str_ends_with(filename, ".gs.glsl"))
+			type = "geometry";
+		else if (str_ends_with(filename, ".fs.glsl"))
+			type = "fragment";
+		else
+			errorstream << "Unsupported shader type: " << filename << std::endl;
+		insert(filename.substr(0, filename.length() - 8), "opengl_" + type + ".glsl", program, false);
 	}
 
 	std::string get(const std::string &name_of_shader,
@@ -304,6 +320,8 @@ public:
 	// Rebuild shaders from the current set of source shaders
 	// Shall be called from the main thread.
 	void rebuildShaders();
+
+	bool setShaderMedia(const std::string &filename, const std::string &data);
 
 	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter)
 	{
@@ -518,6 +536,13 @@ void ShaderSource::rebuildShaders()
 					m_setter_factories, &m_sourcecache);
 		}
 	}
+}
+
+bool ShaderSource::setShaderMedia(const std::string &filename, const std::string &data)
+{
+	m_sourcecache.insertMedia(filename, data);
+	rebuildShaders();
+	return true;
 }
 
 

@@ -152,6 +152,7 @@ public:
 		const std::string &filename, const std::string &program)=0;
 	virtual void rebuildShaders()=0;
 	virtual void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) = 0;
+	virtual bool setShaderMedia(const std::string &filename, const std::string &data){return false;}
 };
 
 IWritableShaderSource *createShaderSource();

@@ -2475,8 +2475,8 @@ void Server::fillMediaCache()
 				".x", ".b3d", ".md2", ".obj",
 				// Custom translation file format
 				".tr",
-				// Shaders
-				".glsl",
+				// Vertex, Geometry & Fragment Shaders
+				".vs.glsl", ".gs.glsl", ".fs.glsl",
 				NULL
 			};
 			if (removeStringEnd(filename, supported_ext).empty()){

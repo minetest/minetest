@@ -164,12 +164,5 @@ void main(void)
 		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
 	col = mix(skyBgColor, col, clarity);
 
-	vec4 final_col = vec4(col.rgb, base.a);
-#ifdef SECONDSTAGE
-	gl_FragData[0] = final_col;
-	gl_FragData[1] = vec4((vNormal+1)/2, DRAW_TYPE);
-	gl_FragData[2] = vec4((fogDistance-length(eyeVec))/1000, 0,0,0);
-#else
-	gl_FragColor = final_col;
-#endif
+	gl_FragColor = vec4(col.rgb, base.a);
 }
