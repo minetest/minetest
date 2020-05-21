@@ -170,5 +170,5 @@ void TestServerModManager::testGetModMediaPaths()
 	sm.getModsMediaPaths(result);
 	UASSERTEQ(bool, result.empty(), false);
 	// We should have 5 folders for each mod (textures, media, locale, model, sounds)
-	UASSERTEQ(unsigned long, result.size() % 5, 0);
+	UASSERTEQ(unsigned long, result.size() % 6, 0);
 }
