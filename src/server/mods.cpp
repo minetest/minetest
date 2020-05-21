@@ -103,5 +103,6 @@ void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 		paths.push_back(spec.path + DIR_DELIM + "media");
 		paths.push_back(spec.path + DIR_DELIM + "models");
 		paths.push_back(spec.path + DIR_DELIM + "locale");
+		paths.push_back(spec.path + DIR_DELIM + "shaders");
 	}
 }

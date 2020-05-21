@@ -221,6 +221,16 @@ time, if necessary. (See [`Settings`])
 
 Models for entities or meshnodes.
 
+### `shaders`
+
+Shaders to be sent to the client.
+
+* Vertex shader (`opengl_vertex.glsl`): `<shadername>.vs.glsl`
+* Fragment shader (`opengl_fragment.glsl`): `<shadername>.fs.glsl`
+* Geometry shader (`opengl_geometry.glsl`): `<shadername>.gs.glsl`
+
+Where `<shadername>` is the name of the directory they are (would be) in.
+
 ### `textures`, `sounds`, `media`
 
 Media files (textures, sounds, whatever) that will be transferred to the
