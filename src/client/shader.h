@@ -132,8 +132,6 @@ public:
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
 	virtual u32 getShader(const std::string &name,
 		const u8 material_type, const u8 drawtype){return 0;}
-
-	std::string global_additional_headers = "";
 };
 
 class IWritableShaderSource : public IShaderSource {
