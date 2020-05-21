@@ -1323,8 +1323,11 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	std::vector<aabb3f> boxes;
 	n.getNodeBoxes(nodedef, &boxes, neighbors_set);
-	for (const auto &box : boxes)
+	for (auto &box : boxes) {
+		box.MinEdge *= f->visual_scale;
+		box.MaxEdge *= f->visual_scale;
 		drawAutoLightedCuboid(box, nullptr, tiles, 6);
+	}
 }
 
 void MapblockMeshGenerator::drawMeshNode()
