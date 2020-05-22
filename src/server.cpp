@@ -1549,12 +1549,30 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	const ParticleSpawnerParameters &p, u16 attached_id, u32 id)
 {
+	static thread_local const float radius =
+			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE * BS;
+
 	if (peer_id == PEER_ID_INEXISTENT) {
 		std::vector<session_t> clients = m_clients.getClientIDs();
+		const v3f pos = (p.minpos + p.maxpos) / 2.0f * BS;
+		const float radius_sq = radius * radius;
+		/* Don't send short-lived spawners to distant players.
+		 * This could be replaced with proper tracking at some point. */
+		const bool distance_check = !attached_id && p.time <= 1.0f;
+
 		for (const session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
 			if (!player)
 				continue;
+
+			if (distance_check) {
+				PlayerSAO *sao = player->getPlayerSAO();
+				if (!sao)
+					continue;
+				if (sao->getBasePosition().getDistanceFromSQ(pos) > radius_sq)
+					continue;
+			}
+
 			SendAddParticleSpawner(client_id, player->protocol_version,
 				p, attached_id, id);
 		}
