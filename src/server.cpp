@@ -1533,19 +1533,14 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 	}
 	assert(protocol_version != 0);
 
-	NetworkPacket pkt(TOCLIENT_SPAWN_PARTICLE, 60, peer_id);
+	NetworkPacket pkt(TOCLIENT_SPAWN_PARTICLE, 0, peer_id);
 
-	pkt << p.pos << p.vel << p.acc << p.expirationtime << p.size
-		<< p.collisiondetection;
-	pkt.putLongString(p.texture);
-	pkt << p.vertical << p.collision_removal;
 	{
 		// NetworkPacket and iostreams are incompatible...
-		std::ostringstream os(std::ios_base::binary);
-		p.animation.serialize(os, protocol_version);
-		pkt.putRawString(os.str());
+		std::ostringstream oss(std::ios_base::binary);
+		p.serialize(oss, protocol_version);
+		pkt.putRawString(oss.str());
 	}
-	pkt << p.glow << p.object_collision;
 
 	Send(&pkt);
 }

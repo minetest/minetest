@@ -959,19 +959,7 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	std::istringstream is(datastring, std::ios_base::binary);
 
 	ParticleParameters p;
-
-	p.pos                = readV3F32(is);
-	p.vel                = readV3F32(is);
-	p.acc                = readV3F32(is);
-	p.expirationtime     = readF32(is);
-	p.size               = readF32(is);
-	p.collisiondetection = readU8(is);
-	p.texture            = deSerializeLongString(is);
-	p.vertical = readU8(is);
-	p.collision_removal = readU8(is);
-	p.animation.deSerialize(is, m_proto_ver);
-	p.glow = readU8(is);
-	p.object_collision = readU8(is);
+	p.deSerialize(is, m_proto_ver);
 
 	ClientEvent *event = new ClientEvent();
 	event->type           = CE_SPAWN_PARTICLE;

@@ -58,6 +58,9 @@ struct ParticleParameters : CommonParticleParams {
 	v3f acc;
 	f32 expirationtime = 1;
 	f32 size = 1;
+
+	void serialize(std::ostream &os, u16 protocol_ver) const;
+	void deSerialize(std::istream &is, u16 protocol_ver);
 };
 
 struct ParticleSpawnerParameters : CommonParticleParams {
@@ -65,4 +68,6 @@ struct ParticleSpawnerParameters : CommonParticleParams {
 	v3f minpos, maxpos, minvel, maxvel, minacc, maxacc;
 	f32 time = 1;
 	f32 minexptime = 1, maxexptime = 1, minsize = 1, maxsize = 1;
+
+	// For historical reasons no (de-)serialization methods here
 };
