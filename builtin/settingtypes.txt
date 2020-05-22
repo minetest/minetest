@@ -42,10 +42,10 @@
 #            Flags are always separated by comma without spaces.
 #            - default possible_flags
 #   * noise_params_2d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>, <lacunarity>[, <default flags>]
 #            - default
 #   * noise_params_3d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>, <lacunarity>[, <default flags>]
 #            - default
 #   * v3f:
 #            Format is (<X>, <Y>, <Z>)
@@ -561,9 +561,6 @@ enable_parallax_occlusion (Parallax occlusion) bool false
 #    1 = relief mapping (slower, more accurate).
 parallax_occlusion_mode (Parallax occlusion mode) int 1 0 1
 
-#    Strength of parallax.
-3d_paralax_strength (Parallax occlusion strength) float 0.025
-
 #    Number of parallax occlusion iterations.
 parallax_occlusion_iterations (Parallax occlusion iterations) int 4
 
@@ -712,6 +709,9 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03
 #    -    pageflip: quadbuffer based 3d.
 #    Note that the interlaced mode requires shaders to be enabled.
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,crossview,pageflip
+
+#    Strength of 3D mode parallax.
+3d_paralax_strength (3D mode parallax strength) float 0.025
 
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
 console_height (Console height) float 0.6 0.1 1.0
@@ -1160,7 +1160,7 @@ active_object_send_range_blocks (Active object send range) int 4
 #    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
-#    This should be configured together with active_object_range.
+#    This should be configured together with active_object_send_range_blocks.
 active_block_range (Active block range) int 3
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
@@ -1640,7 +1640,7 @@ mgv7_float_taper_exp (Floatland taper exponent) float 2.0
 #    Value = 0.0: 50% of volume is floatland.
 #    Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test
 #    to be sure) creates a solid floatland layer.
-mgv7_floatland_density (Floatland density) float -0.9
+mgv7_floatland_density (Floatland density) float -0.6
 
 #    Surface level of optional water placed on a solid floatland layer.
 #    Water is disabled by default and will only be placed if this value is set
