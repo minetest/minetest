@@ -1594,6 +1594,15 @@
 #    type: string
 # secure.http_mods =
 
+#    Prevent servers from running custom shaders on your client
+#    type: bool
+# secure.enable_shader_security = true
+
+#    Comma-separated list of servers (IPs) that are allowed to send shaders
+#    "localhost" is the only valid non-IP:port entry
+#    type: string
+# secure.trusted_shader_servers = 127.0.0.1
+
 ## Advanced
 
 ### Profiling

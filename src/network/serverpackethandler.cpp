@@ -307,7 +307,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	m_clients.event(peer_id, CSE_SetDefinitionsSent);
 
 	// Send media announcement
-	sendMediaAnnouncement(peer_id, lang);
+	sendMediaAnnouncement(peer_id, lang, protocol_version);
 
 	RemoteClient *client = getClient(peer_id, CS_InitDone);
 

@@ -2536,16 +2536,19 @@ void Server::fillMediaCache()
 	}
 }
 
-void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
+void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code, u16 protocol_version)
 {
 	// Make packet
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 
+	bool supports_shaders = protocol_version >= 40;
 	u16 media_sent = 0;
 	std::string lang_suffix;
 	lang_suffix.append(".").append(lang_code).append(".tr");
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
+			continue;
+		if (!supports_shaders && str_ends_with(i.first, ".glsl"))
 			continue;
 		media_sent++;
 	}
@@ -2554,6 +2557,8 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
+			continue;
+		if (!supports_shaders && str_ends_with(i.first, ".glsl"))
 			continue;
 		pkt << i.first << i.second.sha1_digest;
 	}

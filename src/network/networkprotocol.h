@@ -204,9 +204,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 39:
 		Updated set_sky packet
 		Adds new sun, moon and stars packets
+	PROTOCOL VERSION 40:
+		Shader media packets
 */
 
-#define LATEST_PROTOCOL_VERSION 39
+#define LATEST_PROTOCOL_VERSION 40
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range

@@ -1324,6 +1324,15 @@ secure.trusted_mods (Trusted mods) string
 #    allow them to upload and download data to/from the internet.
 secure.http_mods (HTTP mods) string
 
+#    Prevent servers from running custom shaders on your client
+#    type: bool
+secure.enable_shader_security (Enable shader security) bool true
+
+#    Comma-separated list of servers (IPs) that are allowed to send shaders
+#    "localhost" is the only valid non-IP:port entry
+#    type: string
+secure.trusted_shader_servers (Trusted shader servers) string 127.0.0.1
+
 [*Advanced]
 
 [**Profiling]

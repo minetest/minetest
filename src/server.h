@@ -449,7 +449,7 @@ private:
 	void SendBlocks(float dtime);
 
 	void fillMediaCache();
-	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
+	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code, u16 protocol_version);
 	void sendRequestedMedia(session_t peer_id,
 			const std::vector<std::string> &tosend);
 

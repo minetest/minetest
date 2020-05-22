@@ -404,6 +404,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("secure.enable_security", "true");
 	settings->setDefault("secure.trusted_mods", "");
 	settings->setDefault("secure.http_mods", "");
+	settings->setDefault("secure.enable_shader_security", "true");
+	settings->setDefault("secure.trusted_shader_servers", "127.0.0.1");
 
 	// Physics
 	settings->setDefault("movement_acceleration_default", "3");

@@ -746,6 +746,21 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, shader_ext);
 	if (!name.empty()) {
+		if (g_settings->getBool("secure.enable_shader_security")) {
+			// Check secure.trusted_shader_servers
+			Address server_address = getServerAddress();
+			std::string server_name = server_address.serializeString();
+			std::string trusted_servers = g_settings->get("secure.trusted_shader_servers");
+			trusted_servers.erase(std::remove_if(trusted_servers.begin(),
+					trusted_servers.end(), static_cast<int(*)(int)>(&std::isspace)),
+					trusted_servers.end());
+			std::vector<std::string> server_list = str_split(trusted_servers, ',');
+			bool found_address = std::find(server_list.begin(), server_list.end(), server_name) != server_list.end();
+			bool found_localhost = server_address.isLocalhost() && std::find(server_list.begin(),
+					server_list.end(), "localhost") != server_list.end();
+			if (!found_address && !found_localhost)
+				return true;
+		}
 		TRACESTREAM(<< "Client: Loading shader: "
 				<< "\"" << filename << "\"" << std::endl);
 		return m_shsrc->setShaderMedia(filename, data);
