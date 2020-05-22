@@ -27,7 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/mods.h"
 #include "inventorymanager.h"
 #include "content/subgames.h"
-#include "tileanimation.h" // struct TileAnimationParams
+#include "tileanimation.h" // TileAnimationParams
+#include "particles.h" // ParticleParams
 #include "network/peerhandler.h"
 #include "network/address.h"
 #include "util/numeric.h"
@@ -226,24 +227,12 @@ public:
 
 	void notifyPlayer(const char *name, const std::wstring &msg);
 	void notifyPlayers(const std::wstring &msg);
-	void spawnParticle(const std::string &playername,
-		v3f pos, v3f velocity, v3f acceleration,
-		float expirationtime, float size,
-		bool collisiondetection, bool collision_removal, bool object_collision,
-		bool vertical, const std::string &texture,
-		const struct TileAnimationParams &animation, u8 glow);
 
-	u32 addParticleSpawner(u16 amount, float spawntime,
-		v3f minpos, v3f maxpos,
-		v3f minvel, v3f maxvel,
-		v3f minacc, v3f maxacc,
-		float minexptime, float maxexptime,
-		float minsize, float maxsize,
-		bool collisiondetection, bool collision_removal, bool object_collision,
-		ServerActiveObject *attached,
-		bool vertical, const std::string &texture,
-		const std::string &playername, const struct TileAnimationParams &animation,
-		u8 glow);
+	void spawnParticle(const std::string &playername,
+		const ParticleParameters &p);
+
+	u32 addParticleSpawner(const ParticleSpawnerParameters &p,
+		ServerActiveObject *attached, const std::string &playername);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
@@ -453,26 +442,13 @@ private:
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
-		u16 amount, float spawntime,
-		v3f minpos, v3f maxpos,
-		v3f minvel, v3f maxvel,
-		v3f minacc, v3f maxacc,
-		float minexptime, float maxexptime,
-		float minsize, float maxsize,
-		bool collisiondetection, bool collision_removal, bool object_collision,
-		u16 attached_id,
-		bool vertical, const std::string &texture, u32 id,
-		const struct TileAnimationParams &animation, u8 glow);
+		const ParticleSpawnerParameters &p, u16 attached_id, u32 id);
 
 	void SendDeleteParticleSpawner(session_t peer_id, u32 id);
 
 	// Spawns particle on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendSpawnParticle(session_t peer_id, u16 protocol_version,
-		v3f pos, v3f velocity, v3f acceleration,
-		float expirationtime, float size,
-		bool collisiondetection, bool collision_removal, bool object_collision,
-		bool vertical, const std::string &texture,
-		const struct TileAnimationParams &animation, u8 glow);
+		const ParticleParameters &p);
 
 	void SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersao);
 	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
