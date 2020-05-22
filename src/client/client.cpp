@@ -572,6 +572,7 @@ void Client::step(float dtime)
 		if (m_media_downloader->isDone()) {
 			delete m_media_downloader;
 			m_media_downloader = NULL;
+			m_shsrc->rebuildShaders();
 		}
 	}
 

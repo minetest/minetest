@@ -541,7 +541,6 @@ void ShaderSource::rebuildShaders()
 bool ShaderSource::setShaderMedia(const std::string &filename, const std::string &data)
 {
 	m_sourcecache.insertMedia(filename, data);
-	rebuildShaders();
 	return true;
 }
 
