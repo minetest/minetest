@@ -7835,6 +7835,8 @@ Used by `minetest.add_particle`.
 
         size = 1,
         -- Scales the visual size of the particle texture.
+        -- If `node` is set, size can be set to 0 to spawn a randomly-sized
+        -- particle (just like actual node dig particles).
 
         collisiondetection = false,
         -- If true collides with `walkable` nodes and, depending on the
@@ -7853,6 +7855,7 @@ Used by `minetest.add_particle`.
         -- If true faces player using y axis only
 
         texture = "image.png",
+        -- The texture of the particle
 
         playername = "singleplayer",
         -- Optional, if specified spawns particle only on the player's client
@@ -7863,6 +7866,17 @@ Used by `minetest.add_particle`.
         glow = 0
         -- Optional, specify particle self-luminescence in darkness.
         -- Values 0-14.
+
+        node = {name = "ignore", param2 = 0},
+        -- Optional, if specified the particle will have the same appearance as
+        -- node dig particles for the given node.
+        -- `texture` and `animation` will be ignored if this is set.
+
+        node_tile = 0,
+        -- Optional, only valid in combination with `node`
+        -- If set to a valid number 1-6, specifies the tile from which the
+        -- particle texture is picked.
+        -- Otherwise, the default behavior is used. (currently: any random tile)
     }
 
 
@@ -7892,7 +7906,9 @@ Used by `minetest.add_particlespawner`.
         maxsize = 1,
         -- The particles' properties are random values between the min and max
         -- values.
-        -- pos, velocity, acceleration, expirationtime, size
+        -- applies to: pos, velocity, acceleration, expirationtime, size
+        -- If `node` is set, min and maxsize can be set to 0 to spawn
+        -- randomly-sized particles (just like actual node dig particles).
 
         collisiondetection = false,
         -- If true collide with `walkable` nodes and, depending on the
@@ -7915,6 +7931,7 @@ Used by `minetest.add_particlespawner`.
         -- If true face player using y axis only
 
         texture = "image.png",
+        -- The texture of the particle
 
         playername = "singleplayer",
         -- Optional, if specified spawns particles only on the player's client
@@ -7925,6 +7942,17 @@ Used by `minetest.add_particlespawner`.
         glow = 0
         -- Optional, specify particle self-luminescence in darkness.
         -- Values 0-14.
+
+        node = {name = "ignore", param2 = 0},
+        -- Optional, if specified the particles will have the same appearance as
+        -- node dig particles for the given node.
+        -- `texture` and `animation` will be ignored if this is set.
+
+        node_tile = 0,
+        -- Optional, only valid in combination with `node`
+        -- If set to a valid number 1-6, specifies the tile from which the
+        -- particle texture is picked.
+        -- Otherwise, the default behavior is used. (currently: any random tile)
     }
 
 `HTTPRequest` definition

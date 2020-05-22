@@ -67,6 +67,13 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	p.texture = getstringfield_default(L, 1, "texture", p.texture);
 	p.glow = getintfield_default(L, 1, "glow", p.glow);
 
+	lua_getfield(L, 1, "node");
+	if (lua_istable(L, -1))
+		p.node = readnode(L, -1, getGameDef(L)->ndef());
+	lua_pop(L, 1);
+
+	p.node_tile = getintfield_default(L, 1, "node_tile", p.node_tile);
+
 	ClientEvent *event = new ClientEvent();
 	event->type           = CE_SPAWN_PARTICLE;
 	event->spawn_particle = new ParticleParameters(p);
@@ -133,6 +140,13 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	p.vertical = getboolfield_default(L, 1, "vertical", p.vertical);
 	p.texture = getstringfield_default(L, 1, "texture", p.texture);
 	p.glow = getintfield_default(L, 1, "glow", p.glow);
+
+	lua_getfield(L, 1, "node");
+	if (lua_istable(L, -1))
+		p.node = readnode(L, -1, getGameDef(L)->ndef());
+	lua_pop(L, 1);
+
+	p.node_tile = getintfield_default(L, 1, "node_tile", p.node_tile);
 
 	u64 id = getClient(L)->getParticleManager()->generateSpawnerId();
 
