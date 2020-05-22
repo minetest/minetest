@@ -304,18 +304,37 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	}
 
 	pp.expirationtime = random_f32(p.minexptime, p.maxexptime);
-	pp.size = random_f32(p.minsize, p.maxsize);
-
 	p.copyCommon(pp);
+
+	video::ITexture *texture;
+	v2f texpos, texsize;
+	video::SColor color(0xFFFFFFFF);
+
+	if (p.node.getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &f =
+			m_particlemanager->m_env->getGameDef()->ndef()->get(p.node);
+		if (!ParticleManager::getNodeParticleParams(p.node, f, pp, &texture,
+				texpos, texsize, &color, p.node_tile))
+			return;
+	} else {
+		texture = m_texture;
+		texpos = v2f(0.0f, 0.0f);
+		texsize = v2f(1.0f, 1.0f);
+	}
+
+	// Allow keeping default random size
+	if (p.maxsize > 0.0f)
+		pp.size = random_f32(p.minsize, p.maxsize);
 
 	m_particlemanager->addParticle(new Particle(
 		m_gamedef,
 		m_player,
 		env,
 		pp,
-		m_texture,
-		v2f(0.0, 0.0),
-		v2f(1.0, 1.0)
+		texture,
+		texpos,
+		texsize,
+		color
 	));
 }
 
@@ -460,17 +479,35 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			break;
 		}
 		case CE_SPAWN_PARTICLE: {
-			const ParticleParameters &p = *event->spawn_particle;
-			video::ITexture *texture =
-				client->tsrc()->getTextureForMesh(p.texture);
+			ParticleParameters &p = *event->spawn_particle;
 
-			Particle *toadd = new Particle(client, player, m_env,
-					p,
-					texture,
-					v2f(0.0, 0.0),
-					v2f(1.0, 1.0));
+			video::ITexture *texture;
+			v2f texpos, texsize;
+			video::SColor color(0xFFFFFFFF);
 
-			addParticle(toadd);
+			f32 oldsize = p.size;
+
+			if (p.node.getContent() != CONTENT_IGNORE) {
+				const ContentFeatures &f = m_env->getGameDef()->ndef()->get(p.node);
+				if (!getNodeParticleParams(p.node, f, p, &texture, texpos,
+						texsize, &color, p.node_tile))
+					texture = nullptr;
+			} else {
+				texture = client->tsrc()->getTextureForMesh(p.texture);
+				texpos = v2f(0.0f, 0.0f);
+				texsize = v2f(1.0f, 1.0f);
+			}
+
+			// Allow keeping default random size
+			if (oldsize > 0.0f)
+				p.size = oldsize;
+
+			if (texture) {
+				Particle *toadd = new Particle(client, player, m_env,
+						p, texture, texpos, texsize, color);
+
+				addParticle(toadd);
+			}
 
 			delete event->spawn_particle;
 			break;
@@ -480,15 +517,19 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 }
 
 bool ParticleManager::getNodeParticleParams(const MapNode &n,
-	const ContentFeatures &f, ParticleParameters &p,
-	video::ITexture **texture, v2f &texpos, v2f &texsize, video::SColor *color)
+	const ContentFeatures &f, ParticleParameters &p, video::ITexture **texture,
+	v2f &texpos, v2f &texsize, video::SColor *color, u8 tilenum)
 {
 	// No particles for "airlike" nodes
 	if (f.drawtype == NDT_AIRLIKE)
 		return false;
 
 	// Texture
-	u8 texid = rand() % 6;
+	u8 texid;
+	if (tilenum > 0 && tilenum <= 6)
+		texid = tilenum - 1;
+	else
+		texid = rand() % 6;
 	const TileLayer &tile = f.tiles[texid].layers[0];
 	p.animation.type = TAT_NONE;
 

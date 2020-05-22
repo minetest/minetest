@@ -42,7 +42,7 @@ class Particle : public scene::ISceneNode
 		video::ITexture *texture,
 		v2f texpos,
 		v2f texsize,
-		video::SColor color = video::SColor(0xFFFFFFFF)
+		video::SColor color
 	);
 	~Particle() = default;
 
@@ -171,7 +171,7 @@ public:
 protected:
 	static bool getNodeParticleParams(const MapNode &n, const ContentFeatures &f,
 		ParticleParameters &p, video::ITexture **texture, v2f &texpos,
-		v2f &texsize, video::SColor *color);
+		v2f &texsize, video::SColor *color, u8 tilenum = 0);
 
 	void addParticle(Particle* toadd);
 

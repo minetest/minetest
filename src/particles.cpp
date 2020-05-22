@@ -34,6 +34,9 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	animation.serialize(os, 6); /* NOT the protocol ver */
 	writeU8(os, glow);
 	writeU8(os, object_collision);
+	writeU16(os, node.param0);
+	writeU8(os, node.param2);
+	writeU8(os, node_tile);
 }
 
 void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
@@ -50,4 +53,11 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 	animation.deSerialize(is, 6); /* NOT the protocol ver */
 	glow               = readU8(is);
 	object_collision   = readU8(is);
+	// This is kinda awful
+	u16 tmp_param0 = readU16(is);
+	if (is.eof())
+		return;
+	node.param0 = tmp_param0;
+	node.param2 = readU8(is);
+	node_tile   = readU8(is);
 }

@@ -1003,6 +1003,16 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	p.glow = readU8(is);
 	p.object_collision = readU8(is);
 
+	// This is kinda awful
+	do {
+		u16 tmp_param0 = readU16(is);
+		if (is.eof())
+			break;
+		p.node.param0 = tmp_param0;
+		p.node.param2 = readU8(is);
+		p.node_tile   = readU8(is);
+	} while (0);
+
 	auto event = new ClientEvent();
 	event->type                            = CE_ADD_PARTICLESPAWNER;
 	event->add_particlespawner.p           = new ParticleSpawnerParameters(p);

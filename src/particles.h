@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "irrlichttypes_bloated.h"
 #include "tileanimation.h"
+#include "mapnode.h"
 
 // This file defines the particle-related structures that both the server and
 // client need. The ParticleManager and rendering is in client/particles.h
@@ -34,9 +35,12 @@ struct CommonParticleParams {
 	std::string texture;
 	struct TileAnimationParams animation;
 	u8 glow = 0;
+	MapNode node;
+	u8 node_tile = 0;
 
 	CommonParticleParams() {
 		animation.type = TAT_NONE;
+		node.setContent(CONTENT_IGNORE);
 	}
 
 	/* This helper is useful for copying params from
@@ -49,6 +53,8 @@ struct CommonParticleParams {
 		to.texture = texture;
 		to.animation = animation;
 		to.glow = glow;
+		to.node = node;
+		to.node_tile = node_tile;
 	}
 };
 
