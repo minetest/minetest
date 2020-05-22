@@ -2,7 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#pragma once
+#ifndef __GUI_SKIN_H_INCLUDED__
+#define __GUI_SKIN_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
@@ -372,3 +373,4 @@ inline void setShading(video::SColor &color,f32 s) // :PATCH:
 
 #endif // _IRR_COMPILE_WITH_GUI_
 
+#endif

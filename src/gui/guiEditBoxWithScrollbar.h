@@ -2,7 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#pragma once
+#ifndef GUIEDITBOXWITHSCROLLBAR_HEADER
+#define GUIEDITBOXWITHSCROLLBAR_HEADER
 
 #include "IGUIEditBox.h"
 #include "IOSOperator.h"
@@ -194,4 +195,5 @@ protected:
 };
 
 
+#endif // GUIEDITBOXWITHSCROLLBAR_HEADER
 
