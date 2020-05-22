@@ -628,7 +628,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		return shaderinfo;
 
 	// Create shaders header
-	std::string shaders_header = "#version 120\n";
+	std::string shaders_header = "#version 120\n#define SHADER_VERSION 1\n";
 
 	static const char* drawTypes[] = {
 		"NDT_NORMAL",
