@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_HUD_HEADER
-#define CLIENT_HUD_HEADER
+#pragma once
 
 #include <vector>
 #include <IGUIFont.h>
@@ -147,4 +146,3 @@ void drawItemStack(
 		const v3s16 &angle,
 		const v3s16 &rotation_speed);
 
-#endif
