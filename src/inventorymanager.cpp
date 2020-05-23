@@ -484,16 +484,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				*this, count, player);
 		mgr->setInventoryModified(from_inv);
 	} else {
-		/*ItemStack dst_item = src_item;
-		if (did_swap) {
-			std::swap(from_inv, to_inv);
-			std::swap(from_list, to_list);
-			std::swap(from_i, to_i);
-			//src_item = list_from->getItem(from_i);
-			dst_item = list_to->getItem(to_i);
-			
-			errorstream << "DID SWAP! BELIEVE! " << dst_item.name << std::endl;
-		}*/
 		// Destinations
 		if (to_inv.type == InventoryLocation::DETACHED)
 			PLAYER_TO_SA(player)->detached_inventory_OnPut(
@@ -514,6 +504,36 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		else if (from_inv.type == InventoryLocation::PLAYER)
 			PLAYER_TO_SA(player)->player_inventory_OnTake(
 				*this, src_item, player);
+		if (did_swap) {
+			// Item is now placed in source list
+			src_item = list_from->getItem(from_i);
+			std::swap(from_inv, to_inv);
+			std::swap(from_list, to_list);
+			std::swap(from_i, to_i);
+			// Destinations
+			if (to_inv.type == InventoryLocation::DETACHED)
+				PLAYER_TO_SA(player)->detached_inventory_OnPut(
+					*this, src_item, player);
+			else if (to_inv.type == InventoryLocation::NODEMETA)
+				PLAYER_TO_SA(player)->nodemeta_inventory_OnPut(
+					*this, src_item, player);
+			else if (to_inv.type == InventoryLocation::PLAYER)
+				PLAYER_TO_SA(player)->player_inventory_OnPut(
+					*this, src_item, player);
+			// Sources
+			if (from_inv.type == InventoryLocation::DETACHED)
+				PLAYER_TO_SA(player)->detached_inventory_OnTake(
+					*this, src_item, player);
+			else if (from_inv.type == InventoryLocation::NODEMETA)
+				PLAYER_TO_SA(player)->nodemeta_inventory_OnTake(
+					*this, src_item, player);
+			else if (from_inv.type == InventoryLocation::PLAYER)
+				PLAYER_TO_SA(player)->player_inventory_OnTake(
+					*this, src_item, player);
+			std::swap(from_inv, to_inv);
+			std::swap(from_list, to_list);
+			std::swap(from_i, to_i);
+		}
 		mgr->setInventoryModified(to_inv);
 		mgr->setInventoryModified(from_inv);
 	}
