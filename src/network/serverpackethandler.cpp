@@ -409,9 +409,12 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	// (u16) 1 + std::string represents a pseudo vector serialization representation
 	notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(playersao->getPlayer()->getName());
 	m_clients.sendToAll(&notice_pkt);
-
 	m_clients.event(peer_id, CSE_SetClientReady);
-	m_script->on_joinplayer(playersao);
+
+	s64 last_login;
+	m_script->getAuth(playersao->getPlayer()->getName(), nullptr, nullptr, &last_login);
+	m_script->on_joinplayer(playersao, last_login);
+
 	// Send shutdown timer if shutdown has been scheduled
 	if (m_shutdown_state.isTimerRunning()) {
 		SendChatMessage(peer_id, m_shutdown_state.getShutdownTimerMessage());
@@ -1512,6 +1515,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 
 		initial_ver_key = encode_srp_verifier(verification_key, salt);
 		m_script->createAuth(playername, initial_ver_key);
+		m_script->on_authplayer(playername, addr_s, true);
 
 		acceptAuth(peer_id, false);
 	} else {
@@ -1648,24 +1652,25 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
+	std::string addr_s = getPeerAddress(pkt->getPeerId()).serializeString();
+	std::string playername = client->getName();
 
 	bool wantSudo = (cstate == CS_Active);
 
 	verbosestream << "Server: Received TOCLIENT_SRP_BYTES_M." << std::endl;
 
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
-		actionstream << "Server: got SRP _M packet in wrong state " << cstate <<
-			" from " << getPeerAddress(peer_id).serializeString() <<
-			". Ignoring." << std::endl;
+		actionstream << "Server: got SRP _M packet in wrong state "
+			<< cstate << " from " << addr_s
+			<< ". Ignoring." << std::endl;
 		return;
 	}
 
 	if (client->chosen_mech != AUTH_MECHANISM_SRP &&
 			client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
-		actionstream << "Server: got SRP _M packet, while auth is going on "
-			"with mech " << client->chosen_mech << " from " <<
-			getPeerAddress(peer_id).serializeString() <<
-			" (wantSudo=" << wantSudo << "). Denying." << std::endl;
+		actionstream << "Server: got SRP _M packet, while auth"
+			<< "is going on with mech " << client->chosen_mech << " from " 
+			<< addr_s << " (wantSudo=" << wantSudo << "). Denying." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(peer_id);
 			return;
@@ -1680,9 +1685,8 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 	if (srp_verifier_get_session_key_length((SRPVerifier *) client->auth_data)
 			!= bytes_M.size()) {
-		actionstream << "Server: User " << client->getName() << " at " <<
-			getPeerAddress(peer_id).serializeString() <<
-			" sent bytes_M with invalid length " << bytes_M.size() << std::endl;
+		actionstream << "Server: User " << playername << " at " << addr_s
+			<< " sent bytes_M with invalid length " << bytes_M.size() << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 		return;
 	}
@@ -1694,24 +1698,21 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 	if (!bytes_HAMK) {
 		if (wantSudo) {
-			actionstream << "Server: User " << client->getName() << " at " <<
-				getPeerAddress(peer_id).serializeString() <<
-				" tried to change their password, but supplied wrong (SRP) "
-				"password for authentication." << std::endl;
+			actionstream << "Server: User " << playername << " at " << addr_s
+				<< " tried to change their password, but supplied wrong"
+				<< " (SRP) password for authentication." << std::endl;
 			DenySudoAccess(peer_id);
 			return;
 		}
 
-		std::string ip = getPeerAddress(peer_id).serializeString();
-		actionstream << "Server: User " << client->getName() << " at " << ip <<
-			" supplied wrong password (auth mechanism: SRP)." << std::endl;
-		m_script->on_auth_failure(client->getName(), ip);
+		actionstream << "Server: User " << playername << " at " << addr_s
+			<< " supplied wrong password (auth mechanism: SRP)." << std::endl;
+		m_script->on_authplayer(playername, addr_s, false);
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_PASSWORD);
 		return;
 	}
 
 	if (client->create_player_on_auth_success) {
-		std::string playername = client->getName();
 		m_script->createAuth(playername, client->enc_pwd);
 
 		std::string checkpwd; // not used, but needed for passing something
@@ -1725,6 +1726,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		client->create_player_on_auth_success = false;
 	}
 
+	m_script->on_authplayer(playername, addr_s, true);
 	acceptAuth(peer_id, wantSudo);
 }
 

@@ -43,7 +43,8 @@ public:
 	/* auth */
 	bool getAuth(const std::string &playername,
 		std::string *dst_password,
-		std::set<std::string> *dst_privs);
+		std::set<std::string> *dst_privs,
+		s64 *dst_last_login = nullptr);
 	void createAuth(const std::string &playername,
 		const std::string &password);
 	bool setPassword(const std::string &playername,

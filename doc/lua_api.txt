@@ -4374,7 +4374,7 @@ Call these functions only at load time!
     * Called after generating a piece of world. Modifying nodes inside the area
       is a bit faster than usually.
 * `minetest.register_on_newplayer(function(ObjectRef))`
-    * Called after a new player has been created
+    * Called when a new player enters the world for the first time
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
     * Note: This callback is invoked even if the punched player is dead.
@@ -4415,19 +4415,23 @@ Call these functions only at load time!
     * Called _before_ repositioning of player occurs
     * return true in func to disable regular player placement
 * `minetest.register_on_prejoinplayer(function(name, ip))`
-    * Called before a player joins the game
-    * If it returns a string, the player is disconnected with that string as
+    * Called when a client connects to the server, prior to authentication
+    * If it returns a string, the client is disconnected with that string as
       reason.
-* `minetest.register_on_joinplayer(function(ObjectRef))`
+* `minetest.register_on_joinplayer(function(ObjectRef, last_login))`
     * Called when a player joins the game
+    * `last_login`: The timestamp of the previous login, or nil if player is new
 * `minetest.register_on_leaveplayer(function(ObjectRef, timed_out))`
     * Called when a player leaves the game
     * `timed_out`: True for timeout, false for other reasons.
+* `minetest.register_on_authplayer(function(name, ip, is_success))`
+    * Called when a client attempts to log into an account.
+    * `name`: The name of the account being authenticated.
+    * `ip`: The IP address of the client
+    * `is_success`: Whether the client was successfully authenticated
+    * For newly registered accounts, `is_success` will always be true
 * `minetest.register_on_auth_fail(function(name, ip))`
-    * Called when a client attempts to log into an account but supplies the
-      wrong password.
-    * `ip`: The IP address of the client.
-    * `name`: The account the client attempted to log into.
+    * Deprecated: use `minetest.register_on_authplayer(name, ip, is_success)` instead.
 * `minetest.register_on_cheat(function(ObjectRef, cheat))`
     * Called when a player cheats
     * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:
