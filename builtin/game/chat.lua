@@ -824,12 +824,14 @@ end)
 core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
-		.. " within the time specified by "..core.colorize(core.COLOR_PARAM, "<seconds>") .. ". "
+		.. " within the time specified by "
+		.. core.colorize(core.COLOR_PARAM, "<seconds>") .. ". "
 		.. "Default: "
 		.. core.colorize(core.COLOR_PARAM, "<range>") .. " = 0, "
 		.. core.colorize(core.COLOR_PARAM, "<seconds>") .. " = 86400 = 24h, "
 		.. core.colorize(core.COLOR_PARAM, "<limit>") .. " = 5 "
-    .. "Set " .. core.colorize(core.COLOR_PARAM, "<seconds>") .. " to inf for no time limit",
+		.. "Set " .. core.colorize(core.COLOR_PARAM, "<seconds>")
+		.. " to inf for no time limit",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -881,8 +883,9 @@ core.register_chatcommand("rollback_check", {
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
 	description = "Revert actions of a player. Default for "
-			.. core.colorize(core.COLOR_PARAM, "<seconds>")
-			.. " is 60. Set " .. core.colorize(core.COLOR_PARAM, "<seconds>") .. " to inf for no time limit",
+		.. core.colorize(core.COLOR_PARAM, "<seconds>")
+		.. " is 60. Set " .. core.colorize(core.COLOR_PARAM, "<seconds>")
+		.. " to inf for no time limit",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -1070,7 +1073,8 @@ core.register_chatcommand("clearobjects", {
 		elseif param == "full" then
 			options.mode = "full"
 		else
-			return false, "Invalid usage, see "..core.colorize_chatcommand("/help", "clearobjects").."."
+			return false, "Invalid usage, see " ..
+				core.colorize_chatcommand("/help", "clearobjects") .. "."
 		end
 
 		core.log("action", name .. " clears all objects ("
@@ -1092,7 +1096,8 @@ core.register_chatcommand("msg", {
 	func = function(name, param)
 		local sendto, message = param:match("^(%S+)%s(.+)$")
 		if not sendto then
-			return false, "Invalid usage, see "..core.colorize_chatcommand("/help", "msg").."."
+			return false, "Invalid usage, see " ..
+				core.colorize_chatcommand("/help", "msg").."."
 		end
 		if not core.get_player_by_name(sendto) then
 			return false, "The player " .. sendto
@@ -1131,8 +1136,8 @@ core.register_chatcommand("clearinv", {
 		if param and param ~= "" and param ~= name then
 			if not core.check_player_privs(name, {server=true}) then
 				return false, "You don't have permission"
-				.. " to clear to clear another player's inventory"
-				.. " (missing privilege: "..core.colorize(core.COLOR_PRIV, "server")..")."
+					.. " to clear to clear another player's inventory"
+					.. " (missing privilege: "..core.colorize(core.COLOR_PRIV, "server")..")."
 			end
 			player = core.get_player_by_name(param)
 			core.chat_send_player(param, name.." cleared your inventory.")
