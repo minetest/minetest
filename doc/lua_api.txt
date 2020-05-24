@@ -4494,7 +4494,7 @@ Call these functions only at load time!
     * The same as before, except that it is called before the player crafts, to
       make craft prediction, and it should not change anything.
 * `minetest.register_allow_player_inventory_action(function(player, action, inventory, inventory_info))`
-    * Determinates how much of a stack may be taken, put or moved to a
+    * Determines how much of a stack may be taken, put or moved to a
       player inventory.
     * `player` (type `ObjectRef`) is the player who modified the inventory
       `inventory` (type `InvRef`).
