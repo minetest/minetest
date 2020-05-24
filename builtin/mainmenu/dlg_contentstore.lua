@@ -198,10 +198,11 @@ function store.load()
 
 	assert(core.create_dir(tmpdir))
 
-	local base_url     = core.settings:get("contentdb_url")
+	local version = core.get_version()
+	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto()
+		core.get_max_supp_proto() .. "&engine_version=" .. version.string
 
 	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
