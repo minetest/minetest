@@ -11,8 +11,11 @@ android {
 		versionCode project.versionCode
 	}
 
+	// load properties
 	Properties props = new Properties()
-	props.load(new FileInputStream(file('../local.properties')))
+	def propfile = file('../local.properties')
+	if (propfile.exists())
+		props.load(new FileInputStream(propfile))
 
 	if (props.getProperty('keystore') != null) {
 		signingConfigs {
