@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if defined(__FreeBSD__)  || defined(__NetBSD__) || defined(__DragonFly__)
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
+	extern char **environ;
 #elif defined(_WIN32)
 	#include <windows.h>
 	#include <wincrypt.h>
