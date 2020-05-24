@@ -713,6 +713,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		mesh->drop();
 
 		m_meshnode->setScale(m_prop.visual_size);
+		m_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
+			m_prop.backface_culling);
 
 		setSceneNodeMaterial(m_meshnode);
 	} else if (m_prop.visual == "mesh") {
@@ -832,19 +834,20 @@ void GenericCAO::setNodeLight(u8 light)
 	}
 
 	if (m_enable_shaders) {
-		scene::ISceneNode *node = getSceneNode();
-
-		if (node == nullptr)
-			return;
-
 		if (m_prop.visual == "upright_sprite") {
+			if (!m_meshnode)
+				return;
+
 			scene::IMesh *mesh = m_meshnode->getMesh();
 			for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-				video::SMaterial &material = buf->getMaterial();
-				material.EmissiveColor = color;
+				buf->getMaterial().EmissiveColor = color;
 			}
 		} else {
+			scene::ISceneNode *node = getSceneNode();
+			if (!node)
+				return;
+
 			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
 				video::SMaterial &material = node->getMaterial(i);
 				material.EmissiveColor = color;
