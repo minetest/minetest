@@ -1,8 +1,20 @@
 --
 -- HP Change Reasons
 --
+local tests_enabled = false
 local expect = nil
 local function run_hpchangereason_tests(player)
+	-- Cache old HP; temporarily set to max_hp
+	-- This prevents unintended behavior.
+	local old_hp = player:get_hp()
+	player:set_hp(player:get_properties().hp_max)
+
+	--
+	-- Tests begin
+	--
+
+	tests_enabled = true
+
 	expect = { type = "set_hp", from = "mod" }
 	player:set_hp(3)
 	assert(expect == nil)
@@ -15,7 +27,14 @@ local function run_hpchangereason_tests(player)
 	player:set_hp(10, { type = "fall", df = 3458973454 })
 	assert(expect == nil)
 
-	player:set_hp(20)
+	tests_enabled = false
+
+	--
+	-- Tests end
+	--
+
+	-- Restore old HP
+	player:set_hp(old_hp)
 end
 
 local function run_player_meta_tests(player)
@@ -48,7 +67,7 @@ end
 
 function unittests.test_player(player)
 	minetest.register_on_player_hpchange(function(player, hp, reason)
-		if not expect then
+		if not tests_enabled then
 			return
 		end
 
