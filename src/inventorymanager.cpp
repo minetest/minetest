@@ -334,7 +334,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			std::swap(from_i, to_i);
 		}
 	}
-	
+
 	int old_count = count;
 
 	/* Modify count according to collected data */
