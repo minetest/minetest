@@ -321,8 +321,12 @@ void set_default_settings(Settings *settings)
 
 	std::string font_size_str = std::to_string(DEFAULT_FONT_SIZE);
 #endif
+	// General font settings
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
+	settings->setDefault("chat_font_size", "0"); // Default "font_size"
+
+	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
 #ifdef __ANDROID__
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, android_default");
