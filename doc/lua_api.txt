@@ -1069,7 +1069,7 @@ Node drawtypes
 
 There are a bunch of different looking node types.
 
-Look for examples in `games/minimal` or `games/minetest_game`.
+Look for examples in `games/devtest` or `games/minetest_game`.
 
 * `normal`
     * A node-sized cube.

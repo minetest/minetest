@@ -304,13 +304,13 @@ local function create_world_formspec(dialogdata)
 		label_spflags = "label[0,"..y_start..";" .. fgettext("Mapgen-specific flags") .. "]"
 	end
 
-	-- Warning if only minimal is installed
-	local minimal_only = ""
+	-- Warning if only devtest is installed
+	local devtest_only = ""
 	local gamelist_height = 2.3
-	if #pkgmgr.games == 1 and pkgmgr.games[1].id == "minimal" then
-		minimal_only = "box[0,0;5.8,1.7;#ff8800]" ..
+	if #pkgmgr.games == 1 and pkgmgr.games[1].id == "devtest" then
+		devtest_only = "box[0,0;5.8,1.7;#ff8800]" ..
 				"textarea[0.3,0;6,1.8;;;"..
-				fgettext("Warning: The minimal development test is meant for developers.") .. "\n" ..
+				fgettext("Warning: The Development Test is meant for developers.") .. "\n" ..
 				fgettext("Download a game, such as Minetest Game, from minetest.net") .. "]"
 		gamelist_height = 0.5
 	end
@@ -335,7 +335,7 @@ local function create_world_formspec(dialogdata)
 		"textlist[0,3.85;5.8,"..gamelist_height..";games;" ..
 		pkgmgr.gamelist() .. ";" .. gameidx .. ";false]" ..
 		"container[0,4.5]" ..
-		minimal_only ..
+		devtest_only ..
 		"container_end[]" ..
 		"container_end[]" ..
 
