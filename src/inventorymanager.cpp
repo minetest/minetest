@@ -280,55 +280,54 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				&& restitem.count == src_item.count
 				&& !caused_by_move_somewhere;
 
-		ItemStack source_item = src_item;
 		if (to_inv.type == InventoryLocation::DETACHED) {
 			dst_can_put_count = PLAYER_TO_SA(player)->detached_inventory_AllowPut(
-				*this, source_item, player);
+				*this, src_item, player);
 		} else if (to_inv.type == InventoryLocation::NODEMETA) {
 			dst_can_put_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowPut(
-				*this, source_item, player);
+				*this, src_item, player);
 		} else if (to_inv.type == InventoryLocation::PLAYER) {
 			dst_can_put_count = PLAYER_TO_SA(player)->player_inventory_AllowPut(
-				*this, source_item, player);
+				*this, src_item, player);
 		}
 
 		if (from_inv.type == InventoryLocation::DETACHED) {
 			src_can_take_count = PLAYER_TO_SA(player)->detached_inventory_AllowTake(
-				*this, source_item, player);
+				*this, src_item, player);
 		} else if (from_inv.type == InventoryLocation::NODEMETA) {
 			src_can_take_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowTake(
-				*this, source_item, player);
+				*this, src_item, player);
 		} else if (from_inv.type == InventoryLocation::PLAYER) {
 			src_can_take_count = PLAYER_TO_SA(player)->player_inventory_AllowTake(
-				*this, source_item, player);
+				*this, src_item, player);
 		}
 
 		if (swap_expected) {
-			source_item = list_to->getItem(to_i);
-			source_item.count = dst_can_put_count;
+			ItemStack dst_item = list_to->getItem(to_i);
+			dst_item.count = dst_can_put_count;
 			std::swap(from_inv, to_inv);
 			std::swap(from_list, to_list);
 			std::swap(from_i, to_i);
 			if (to_inv.type == InventoryLocation::DETACHED) {
 				dst_can_put_count = PLAYER_TO_SA(player)->detached_inventory_AllowPut(
-					*this, source_item, player);
+					*this, dst_item, player);
 			} else if (to_inv.type == InventoryLocation::NODEMETA) {
 				dst_can_put_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowPut(
-					*this, source_item, player);
+					*this, dst_item, player);
 			} else if (to_inv.type == InventoryLocation::PLAYER) {
 				dst_can_put_count = PLAYER_TO_SA(player)->player_inventory_AllowPut(
-					*this, source_item, player);
+					*this, dst_item, player);
 			}
 
 			if (from_inv.type == InventoryLocation::DETACHED) {
 				src_can_take_count = PLAYER_TO_SA(player)->detached_inventory_AllowTake(
-					*this, source_item, player);
+					*this, dst_item, player);
 			} else if (from_inv.type == InventoryLocation::NODEMETA) {
 				src_can_take_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowTake(
-					*this, source_item, player);
+					*this, dst_item, player);
 			} else if (from_inv.type == InventoryLocation::PLAYER) {
 				src_can_take_count = PLAYER_TO_SA(player)->player_inventory_AllowTake(
-					*this, source_item, player);
+					*this, dst_item, player);
 			}
 			std::swap(from_inv, to_inv);
 			std::swap(from_list, to_list);
