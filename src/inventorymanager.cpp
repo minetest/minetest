@@ -275,10 +275,10 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	} else {
 		ItemStack restitem;
 		bool swap_expected = list_to->getItem(to_i).count != 0
-				&& !list_to->itemFits(to_i, src_item, &restitem)
-				&& !restitem.empty()
-				&& restitem.count == src_item.count
-				&& !caused_by_move_somewhere;
+			&& !list_to->itemFits(to_i, src_item, &restitem)
+			&& !restitem.empty()
+			&& restitem.count == src_item.count
+			&& !caused_by_move_somewhere;
 
 		if (to_inv.type == InventoryLocation::DETACHED) {
 			dst_can_put_count = PLAYER_TO_SA(player)->detached_inventory_AllowPut(
