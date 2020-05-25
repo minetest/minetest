@@ -1457,13 +1457,23 @@ void GenericCAO::updateAttachments()
 	}
 }
 
-void GenericCAO::readAOMessageProperties(std::istream &is)
+bool GenericCAO::visualExpiryRequired(const ObjectProperties &new_) const
 {
-	// Reset object properties first
-	m_prop = ObjectProperties();
-
-	// Then read the whole new stream
-	m_prop.deSerialize(is);
+	const ObjectProperties &old = m_prop;
+	// Ordered to compare primitive types before std::vectors
+	return old.backface_culling != new_.backface_culling ||
+		old.initial_sprite_basepos != new_.initial_sprite_basepos ||
+		old.is_visible != new_.is_visible ||
+		old.mesh != new_.mesh ||
+		old.nametag != new_.nametag ||
+		old.nametag_color != new_.nametag_color ||
+		old.spritediv != new_.spritediv ||
+		old.use_texture_alpha != new_.use_texture_alpha ||
+		old.visual != new_.visual ||
+		old.visual_size != new_.visual_size ||
+		old.wield_item != new_.wield_item ||
+		old.colors != new_.colors ||
+		old.textures != new_.textures;
 }
 
 void GenericCAO::processMessage(const std::string &data)
@@ -1473,14 +1483,21 @@ void GenericCAO::processMessage(const std::string &data)
 	// command
 	u8 cmd = readU8(is);
 	if (cmd == AO_CMD_SET_PROPERTIES) {
-		readAOMessageProperties(is);
+		ObjectProperties newprops;
+		newprops.deSerialize(is);
+
+		// Check what exactly changed
+		bool expire_visuals = visualExpiryRequired(newprops);
+
+		// Apply changes
+		m_prop = std::move(newprops);
 
 		m_selection_box = m_prop.selectionbox;
 		m_selection_box.MinEdge *= BS;
 		m_selection_box.MaxEdge *= BS;
 
-		m_tx_size.X = 1.0 / m_prop.spritediv.X;
-		m_tx_size.Y = 1.0 / m_prop.spritediv.Y;
+		m_tx_size.X = 1.0f / m_prop.spritediv.X;
+		m_tx_size.Y = 1.0f / m_prop.spritediv.Y;
 
 		if(!m_initial_tx_basepos_set){
 			m_initial_tx_basepos_set = true;
@@ -1500,7 +1517,12 @@ void GenericCAO::processMessage(const std::string &data)
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
 			m_prop.nametag = m_name;
 
-		expireVisuals();
+		if (expire_visuals) {
+			expireVisuals();
+		} else {
+			infostream << "GenericCAO: properties updated but expiring visuals"
+				<< " not necessary" << std::endl;
+		}
 	} else if (cmd == AO_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
