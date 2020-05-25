@@ -68,7 +68,6 @@ struct SmoothTranslatorWrappedv3f : SmoothTranslator<v3f>
 class GenericCAO : public ClientActiveObject
 {
 private:
-	void readAOMessageProperties(std::istream &is);
 	// Only set at initialization
 	std::string m_name = "";
 	bool m_is_player = false;
@@ -130,6 +129,8 @@ private:
 	video::E_MATERIAL_TYPE m_material_type;
 	// Settings
 	bool m_enable_shaders = false;
+
+	bool visualExpiryRequired(const ObjectProperties &newprops) const;
 
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
