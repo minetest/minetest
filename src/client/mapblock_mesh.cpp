@@ -888,7 +888,7 @@ static void updateFastFaceRow(
 	v3s16 p_corrected;
 	v3s16 face_dir_corrected;
 	u16 lights[4] = {0, 0, 0, 0};
-	u8 waving;
+	u8 waving = 0;
 	TileSpec tile;
 
 	// Get info of first tile
