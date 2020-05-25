@@ -173,7 +173,7 @@ Download source (this is the URL to the latest of source repository, which might
     git clone --depth 1 https://github.com/minetest/minetest.git
     cd minetest
 
-Download minetest_game (otherwise only the "Minimal development test" game is available) using Git:
+Download minetest_game (otherwise only the "Development Test" game is available) using Git:
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 

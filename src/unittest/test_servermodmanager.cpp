@@ -88,7 +88,7 @@ void TestServerModManager::testCreation()
 {
 	std::string path = std::string(TEST_WORLDDIR) + DIR_DELIM + "world.mt";
 	Settings world_config;
-	world_config.set("gameid", "minimal");
+	world_config.set("gameid", "devtest");
 	UASSERTEQ(bool, world_config.updateConfigFile(path.c_str()), true);
 	ServerModManager sm(TEST_WORLDDIR);
 }
@@ -118,10 +118,10 @@ void TestServerModManager::testGetMods()
 	const auto &mods = sm.getMods();
 	UASSERTEQ(bool, mods.empty(), false);
 
-	// Ensure we found default mod inside the test folder
+	// Ensure we found basenodes mod (part of devtest)
 	bool default_found = false;
 	for (const auto &m : mods) {
-		if (m.name == "default")
+		if (m.name == "basenodes")
 			default_found = true;
 
 		// Verify if paths are not empty
@@ -135,7 +135,7 @@ void TestServerModManager::testGetModspec()
 {
 	ServerModManager sm(std::string(TEST_WORLDDIR));
 	UASSERTEQ(const ModSpec *, sm.getModSpec("wrongmod"), NULL);
-	UASSERT(sm.getModSpec("default") != NULL);
+	UASSERT(sm.getModSpec("basenodes") != NULL);
 }
 
 void TestServerModManager::testGetModNamesWrongDir()
@@ -152,7 +152,7 @@ void TestServerModManager::testGetModNames()
 	std::vector<std::string> result;
 	sm.getModNames(result);
 	UASSERTEQ(bool, result.empty(), false);
-	UASSERT(std::find(result.begin(), result.end(), "default") != result.end());
+	UASSERT(std::find(result.begin(), result.end(), "basenodes") != result.end());
 }
 
 void TestServerModManager::testGetModMediaPathsWrongDir()
