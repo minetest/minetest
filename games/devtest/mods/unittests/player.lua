@@ -3,6 +3,9 @@
 --
 local expect = nil
 local function run_hpchangereason_tests(player)
+	local old_hp = player:get_hp()
+
+	player:set_hp(20)
 	expect = { type = "set_hp", from = "mod" }
 	player:set_hp(3)
 	assert(expect == nil)
@@ -15,7 +18,7 @@ local function run_hpchangereason_tests(player)
 	player:set_hp(10, { type = "fall", df = 3458973454 })
 	assert(expect == nil)
 
-	player:set_hp(20)
+	player:set_hp(old_hp)
 end
 
 local function run_player_meta_tests(player)
