@@ -747,7 +747,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, shader_ext);
 	if (!name.empty()) {
-		if (g_settings->getBool("secure.enable_shader_security")) {
+		if (!g_settings->getBool("secure.enable_custom_shaders")) {
 			// Check secure.trusted_shader_servers
 			Address server_address = getServerAddress();
 			std::string server_name = server_address.serializeString();

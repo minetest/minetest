@@ -217,7 +217,7 @@ registered callbacks.
 `minetest.settings` can be used to read custom or existing settings at load
 time, if necessary. (See [`Settings`])
 
-#### Media
+### Media
 
 All game assets, such as textures, sounds and models, are considered "media".
 Media is identified by unique names and SHA-1 hashes and cached on the client.
@@ -238,11 +238,14 @@ There are 5 corresponding media directories, each for certain types of media:
 * `locale`: translation files for the client (See [Translations])
 * `shaders`: custom graphical effects
 
-There also is the `media` directory for all kinds of media. Putting files in the wrong folders works but is frowned upon.
+There also is the `media` directory for all kinds of media. It is possible to
+put files of the wrong type in a media directory, but this is discouraged.
 
-##### Shaders
+#### Shaders
 
-Custom shaders to be sent to the client. GLSL version currently is `120`. **Experimental.**
+**Experimental:** this may receive breaking changes in the future, without warning.
+
+Custom shaders to be sent to the client. GLSL version currently is `120`.
 
 * Vertex shader (`opengl_vertex.glsl`): `<shadername>.vs.glsl`
 * Fragment shader (`opengl_fragment.glsl`): `<shadername>.fs.glsl`
