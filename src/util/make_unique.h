@@ -21,12 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if __cplusplus == 201103L
 
-namespace std {
+namespace std
+{
 
-	template<typename T, typename... Args>
-	std::unique_ptr<T> make_unique(Args &&... args) {
-		return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-	}
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args &&... args)
+{
+	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
 
 }
 
