@@ -223,8 +223,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, str);
 		m_env->getScriptIface()->player_event(this, "properties_changed");
 	}
 
@@ -324,10 +323,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if (!m_attachment_sent) {
 		m_attachment_sent = true;
-		std::string str = generateUpdateAttachmentCommand();
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, generateUpdateAttachmentCommand());
 	}
 }
 

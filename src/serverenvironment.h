@@ -289,9 +289,9 @@ public:
 
 	/*
 		Get the next message emitted by some active object.
-		Returns a message with id=0 if no messages are available.
+		Returns false if no messages are available, true otherwise.
 	*/
-	ActiveObjectMessage getActiveObjectMessage();
+	bool getActiveObjectMessage(ActiveObjectMessage *dest);
 
 	virtual void getSelectedActiveObjects(
 		const core::line3d<f32> &shootline_on_map,

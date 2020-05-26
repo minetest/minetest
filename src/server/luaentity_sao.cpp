@@ -119,8 +119,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, str);
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
@@ -228,16 +227,14 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_animation_sent = true;
 		std::string str = generateUpdateAnimationCommand();
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, str);
 	}
 
 	if (!m_animation_speed_sent) {
 		m_animation_speed_sent = true;
 		std::string str = generateUpdateAnimationSpeedCommand();
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, str);
 	}
 
 	if (!m_bone_position_sent) {
@@ -247,8 +244,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			std::string str = generateUpdateBonePositionCommand((*ii).first,
 					(*ii).second.X, (*ii).second.Y);
 			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
+			m_messages_out.emplace(getId(), true, str);
 		}
 	}
 
@@ -256,8 +252,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_attachment_sent = true;
 		std::string str = generateUpdateAttachmentCommand();
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, str);
 	}
 }
 

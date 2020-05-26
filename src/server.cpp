@@ -718,34 +718,35 @@ void Server::AsyncRunStep(bool initial_step)
 		std::unordered_map<u16, std::vector<ActiveObjectMessage>*> buffered_messages;
 
 		// Get active object messages from environment
+		ActiveObjectMessage aom(0);
+		u32 aom_count = 0;
 		for(;;) {
-			ActiveObjectMessage aom = m_env->getActiveObjectMessage();
-			if (aom.id == 0)
+			if (!m_env->getActiveObjectMessage(&aom))
 				break;
 
 			std::vector<ActiveObjectMessage>* message_list = nullptr;
-			std::unordered_map<u16, std::vector<ActiveObjectMessage>* >::iterator n;
-			n = buffered_messages.find(aom.id);
+			auto n = buffered_messages.find(aom.id);
 			if (n == buffered_messages.end()) {
 				message_list = new std::vector<ActiveObjectMessage>;
 				buffered_messages[aom.id] = message_list;
-			}
-			else {
+			} else {
 				message_list = n->second;
 			}
-			message_list->push_back(aom);
+			message_list->push_back(std::move(aom));
+			aom_count++;
 		}
 
-		m_aom_buffer_counter->increment(buffered_messages.size());
+		m_aom_buffer_counter->increment(aom_count);
 
 		m_clients.lock();
 		const RemoteClientMap &clients = m_clients.getClientList();
 		// Route data to every client
+		std::string reliable_data, unreliable_data;
 		for (const auto &client_it : clients) {
+			reliable_data.clear();
+			unreliable_data.clear();
 			RemoteClient *client = client_it.second;
 			PlayerSAO *player = getPlayerSAO(client->peer_id);
-			std::string reliable_data;
-			std::string unreliable_data;
 			// Go through all objects in message buffer
 			for (const auto &buffered_message : buffered_messages) {
 				// If object does not exist or is not known by client, skip it
@@ -770,19 +771,15 @@ void Server::AsyncRunStep(bool initial_step)
 								client->m_known_objects.end())
 							continue;
 					}
-					// Compose the full new data with header
-					std::string new_data;
-					// Add object id
-					char buf[2];
-					writeU16((u8*)&buf[0], aom.id);
-					new_data.append(buf, 2);
-					// Add data
-					new_data += serializeString(aom.datastring);
-					// Add data to buffer
-					if (aom.reliable)
-						reliable_data += new_data;
-					else
-						unreliable_data += new_data;
+
+					// Add full new data to appropriate buffer
+					std::string &buffer = aom.reliable ? reliable_data : unreliable_data;
+					char idbuf[2];
+					writeU16((u8*) idbuf, aom.id);
+					// u16 id
+					// std::string data
+					buffer.append(idbuf, sizeof(idbuf));
+					buffer.append(serializeString(aom.datastring));
 				}
 			}
 			/*

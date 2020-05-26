@@ -75,7 +75,7 @@ std::string ServerActiveObject::generateUpdateNametagAttributesCommand(const vid
 void ServerActiveObject::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &queue)
 {
 	while (!m_messages_out.empty()) {
-		queue.push(m_messages_out.front());
+		queue.push(std::move(m_messages_out.front()));
 		m_messages_out.pop();
 	}
 }
