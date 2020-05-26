@@ -62,6 +62,9 @@ ServerScripting::ServerScripting(Server* server):
 
 	if (g_settings->getBool("secure.enable_security")) {
 		initializeSecurity();
+	} else {
+		warningstream << "Disabling mod security is deprecated, and should not be done. "
+				<< "Mods should use minetest.request_insecure_environment() instead" << std::endl;
 	}
 
 	lua_getglobal(L, "core");

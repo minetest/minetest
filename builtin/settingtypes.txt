@@ -1323,7 +1323,7 @@ csm_restriction_noderange (Client side node lookup range restriction) int 0
 
 [*Security]
 
-#    Prevent mods from doing insecure things like running shell commands.
+#    Prevent mods from doing insecure things like running shell commands. Deprecated: Disabling this should never be done.
 secure.enable_security (Enable mod security) bool true
 
 #    Comma-separated list of trusted mods that are allowed to access insecure
