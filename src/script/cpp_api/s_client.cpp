@@ -73,7 +73,7 @@ bool ScriptApiClient::on_receiving_message(const ChatMessage *chatMessage)
 
 	lua_newtable(L);
 
-	lua_pushstring(L, chatMessage->getType().c_str());
+	lua_pushstring(L, chatMessage->getType());
 	lua_setfield(L, -2, "type");
 
 	lua_pushstring(L, message.c_str());

@@ -417,9 +417,8 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 
 	chatMessage->type = (ChatMessageType) message_type;
 
-	if (!modsLoaded() || !m_script->on_receiving_message(chatMessage.get())) {
+	if (!modsLoaded() || !m_script->on_receiving_message(chatMessage.get()))
 		pushToChatQueue(chatMessage.release());
-	}
 }
 
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
