@@ -384,9 +384,9 @@ public:
 
 	void makeScreenshot();
 
-	inline void pushToChatQueue(ChatMessage *cec)
+	inline void pushToChatQueue(std::unique_ptr<ChatMessage> &&cec)
 	{
-		m_chat_queue.push(cec);
+		m_chat_queue.push(std::move(cec));
 	}
 
 	ClientScripting *getScript() { return m_script; }
@@ -512,7 +512,7 @@ private:
 	std::queue<std::wstring> m_out_chat_queue;
 	u32 m_last_chat_message_sent;
 	float m_chat_message_allowance = 5.0f;
-	std::queue<ChatMessage *> m_chat_queue;
+	std::queue<std::unique_ptr<ChatMessage>> m_chat_queue;
 
 	// The authentication methods we can use to enter sudo mode (=change password)
 	u32 m_sudo_auth_methods;

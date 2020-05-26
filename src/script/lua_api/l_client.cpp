@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "util/string.h"
 #include "nodedef.h"
+#include "util/make_unique.h"
 
 #define checkCSMRestrictionFlag(flag) \
 	( getClient(L)->checkCSMRestrictionFlag(CSMRestrictionFlags::flag) )
@@ -116,7 +117,7 @@ int ModApiClient::l_display_chat_message(lua_State *L)
 		return 0;
 
 	std::string message = luaL_checkstring(L, 1);
-	getClient(L)->pushToChatQueue(new ChatMessage(utf8_to_wide(message)));
+	getClient(L)->pushToChatQueue(std::make_unique<ChatMessage>(utf8_to_wide(message)));
 	lua_pushboolean(L, true);
 	return 1;
 }

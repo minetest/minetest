@@ -57,6 +57,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "game.h"
 #include "chatmessage.h"
 #include "translation.h"
+#include "util/make_unique.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -1547,8 +1548,7 @@ bool Client::getChatMessage(std::wstring &res)
 	if (m_chat_queue.empty())
 		return false;
 
-	ChatMessage *chatMessage = m_chat_queue.front();
-	m_chat_queue.pop();
+	auto &chatMessage = m_chat_queue.front();
 
 	res = L"";
 
@@ -1569,7 +1569,7 @@ bool Client::getChatMessage(std::wstring &res)
 			break;
 	}
 
-	delete chatMessage;
+	m_chat_queue.pop();
 	return true;
 }
 
@@ -1860,7 +1860,7 @@ void Client::makeScreenshot()
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
-			pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+			pushToChatQueue(std::make_unique<ChatMessage>(CHATMESSAGE_TYPE_SYSTEM,
 					narrow_to_wide(sstr.str())));
 			infostream << sstr.str() << std::endl;
 			image->drop();

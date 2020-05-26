@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
+#include "util/make_unique.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -165,9 +166,8 @@ void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 }
 void Client::handleCommand_DenySudoMode(NetworkPacket* pkt)
 {
-	ChatMessage *chatMessage = new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
-			L"Password change denied. Password NOT changed.");
-	pushToChatQueue(chatMessage);
+	pushToChatQueue(std::make_unique<ChatMessage>(CHATMESSAGE_TYPE_SYSTEM,
+			L"Password change denied. Password NOT changed."));
 	// reset everything and be sad
 	deleteAuthData();
 }
@@ -404,7 +404,7 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 		wstring message
 	 */
 
-	auto chatMessage = std::unique_ptr<ChatMessage>(new ChatMessage());
+	auto chatMessage = std::make_unique<ChatMessage>();
 	u8 version, message_type;
 	*pkt >> version >> message_type;
 
@@ -418,7 +418,7 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 	chatMessage->type = (ChatMessageType) message_type;
 
 	if (!modsLoaded() || !m_script->on_receiving_message(chatMessage.get()))
-		pushToChatQueue(chatMessage.release());
+		pushToChatQueue(std::move(chatMessage));
 }
 
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
