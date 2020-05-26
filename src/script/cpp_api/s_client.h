@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/pointedthing.h"
 #include "lua_api/l_item.h"
+#include "chatmessage.h"
 
 #ifdef _CRT_MSVCP_CURRENT
 #include <cstdint>
@@ -45,7 +46,7 @@ public:
 
 	// Chat message handlers
 	bool on_sending_message(const std::string &message);
-	bool on_receiving_message(const std::string &message);
+	bool on_receiving_message(const ChatMessage *chatMessage);
 
 	void on_damage_taken(int32_t damage_amount);
 	void on_hp_modification(int32_t newhp);

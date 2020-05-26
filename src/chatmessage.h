@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include <ctime>
+#include "debug.h"
 
 enum ChatMessageType
 {
@@ -46,4 +47,20 @@ struct ChatMessage
 	std::wstring message = L"";
 	std::wstring sender = L"";
 	std::time_t timestamp = std::time(0);
+
+	std::string getType() const {
+		switch (type) {
+		case CHATMESSAGE_TYPE_RAW:
+			return "raw";
+		case CHATMESSAGE_TYPE_NORMAL:
+			return "normal";
+		case CHATMESSAGE_TYPE_ANNOUNCE:
+			return "announce";
+		case CHATMESSAGE_TYPE_SYSTEM:
+			return "system";
+		default:
+			FATAL_ERROR("Unexpected ChatMessageType error");
+		}
+	}
 };
+

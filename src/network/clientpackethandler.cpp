@@ -404,14 +404,12 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 		wstring message
 	 */
 
-	ChatMessage *chatMessage = new ChatMessage();
+	auto chatMessage = std::unique_ptr<ChatMessage>(new ChatMessage());
 	u8 version, message_type;
 	*pkt >> version >> message_type;
 
-	if (version != 1 || message_type >= CHATMESSAGE_TYPE_MAX) {
-		delete chatMessage;
+	if (version != 1 || message_type >= CHATMESSAGE_TYPE_MAX)
 		return;
-	}
 
 	u64 timestamp;
 	*pkt >> chatMessage->sender >> chatMessage->message >> timestamp;
@@ -419,13 +417,8 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 
 	chatMessage->type = (ChatMessageType) message_type;
 
-	// @TODO send this to CSM using ChatMessage object
-	if (modsLoaded() && m_script->on_receiving_message(
-			wide_to_utf8(chatMessage->message))) {
-		// Message was consumed by CSM and should not be handled by client
-		delete chatMessage;
-	} else {
-		pushToChatQueue(chatMessage);
+	if (!modsLoaded() || !m_script->on_receiving_message(chatMessage.get())) {
+		pushToChatQueue(chatMessage.release());
 	}
 }
 

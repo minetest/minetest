@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include "s_item.h"
 
 void ScriptApiClient::on_mods_loaded()
 {
@@ -60,15 +59,34 @@ bool ScriptApiClient::on_sending_message(const std::string &message)
 	return readParam<bool>(L, -1);
 }
 
-bool ScriptApiClient::on_receiving_message(const std::string &message)
+bool ScriptApiClient::on_receiving_message(const ChatMessage *chatMessage)
 {
 	SCRIPTAPI_PRECHECKHEADER
+
+	std::string message = wide_to_utf8(chatMessage->message);
+	std::string sender = wide_to_utf8(chatMessage->sender);
+
 
 	// Get core.registered_on_chat_messages
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_receiving_chat_message");
-	// Call callbacks
+
+	lua_newtable(L);
+
+	lua_pushstring(L, chatMessage->getType().c_str());
+	lua_setfield(L, -2, "type");
+
 	lua_pushstring(L, message.c_str());
+	lua_setfield(L, -2, "message");
+
+	if (!sender.empty()) {
+		lua_pushstring(L, sender.c_str());
+		lua_setfield(L, -2, "sender");
+	}
+
+	lua_pushnumber(L, chatMessage->timestamp);
+	lua_setfield(L, -2, "timestamp");
+
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
 	return readParam<bool>(L, -1);
 }

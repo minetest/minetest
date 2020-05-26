@@ -676,12 +676,21 @@ Call these functions only at load time!
     * **Warning**: If the client terminates abnormally (i.e. crashes), the registered
       callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
-* `minetest.register_on_receiving_chat_message(function(message))`
-    * Called always when a client receive a message
-    * Return `true` to mark the message as handled, which means that it will not be shown to chat
+* `minetest.register_on_receiving_chat_message(function(chat_message))`
+    * Called when a client receive a message
+    * `chat_message` is a table with following:
+        * `type`:
+            * `raw` - No meta data attached, just a message.
+            * `normal` - Sent by a player, sender will be present.
+            * `announce` - A server gemeral announcement.
+            * `system` - A server system announcement (ie: shutting down).
+        * `message` - The full message.
+        * `sender` (optional) - Player name of sender. Only with `normal` type.
+        * `timestamp` - UNIX timestamp
+    * Return `true` to mark the message as handled, which means that it will not be shown to chat.
 * `minetest.register_on_sending_chat_message(function(message))`
-    * Called always when a client send a message from chat
-    * Return `true` to mark the message as handled, which means that it will not be sent to server
+    * Called when the local player sends a chat message.
+    * Return `true` to mark the message as handled, which means that it will not be sent to the server.
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
     * Adds definition to minetest.registered_chatcommands
 * `minetest.unregister_chatcommand(name)`
