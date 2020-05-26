@@ -1274,7 +1274,7 @@ bool Game::initSound()
 }
 
 bool Game::createSingleplayerServer(const std::string &map_dir,
-			const SubgameSpec &gamespec, u16 port)
+		const SubgameSpec &gamespec, u16 port)
 {
 	showOverlayMessage(N_("Creating server..."), 0, 5);
 
@@ -3206,7 +3206,7 @@ PointedThing Game::updatePointedThing(
 
 		f32 d = 0.002 * BS;
 		for (auto box : boxes) {
-				box.MinEdge -= v3f(d, d, d);
+			box.MinEdge -= v3f(d, d, d);
 			box.MaxEdge += v3f(d, d, d);
 			selectionboxes->push_back(box);
 		}
