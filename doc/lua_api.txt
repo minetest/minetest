@@ -5475,6 +5475,13 @@ Misc.
 * `minetest.record_protection_violation(pos, name)`
     * This function calls functions registered with
       `minetest.register_on_protection_violation`.
+* `minetest.is_creative_enabled(name)`: returns boolean
+    * Returning `true` means that Creative Mode is enabled for player `name`.
+    * `name` will be `""` for non-players or if the player is unknown.
+    * This function should be overridden by Creative Mode-related mods to
+      implement a per-player Creative Mode.
+    * By default, this function returns `true` if the setting
+      `creative_mode` is `true` and `false` otherwise.
 * `minetest.is_area_protected(pos1, pos2, player_name, interval)`
     * Returns the position of the first node that `player_name` may not modify
       in the specified cuboid between `pos1` and `pos2`.

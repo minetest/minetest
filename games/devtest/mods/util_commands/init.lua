@@ -66,7 +66,7 @@ if s_infplace == "true" then
 elseif s_infplace == "false" then
 	infplace = false
 else
-	infplace = minetest.settings:get_bool("creative_mode", false)
+	infplace = minetest.is_creative_enabled("")
 end
 
 minetest.register_chatcommand("infplace", {
