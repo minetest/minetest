@@ -1326,7 +1326,7 @@ secure.http_mods (HTTP mods) string
 
 #    Allow servers to run custom shaders on your client
 #    type: bool
-secure.enable_server_sent_shaders (Enable server-sent shaders) bool true
+secure.enable_custom_shaders (Enable custom shaders) bool true
 
 #    Comma-separated list of servers (IPs) that are allowed to send shaders
 #    "localhost" is the only valid non-IP entry
