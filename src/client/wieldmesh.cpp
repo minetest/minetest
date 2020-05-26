@@ -320,6 +320,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 			param2 = 4;
 	}
 	gen.renderSingle(id, param2);
+
 	colors->clear();
 	scene::SMesh *mesh = new scene::SMesh();
 	for (auto &prebuffers : collector.prebuffers)
@@ -379,7 +380,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	// Handle nodes
 	// See also CItemDefManager::createClientCached()
 	if (def.type == ITEM_NODE) {
-		// Disable backface culling for the drawtypes above
+		// Disable backface culling for the drawtypes below
 		bool cull_backface = true;
 		switch (f.drawtype) {
 		case NDT_TORCHLIKE:
@@ -388,23 +389,19 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		case NDT_RAILLIKE:
 		case NDT_PLANTLIKE:
 		case NDT_PLANTLIKE_ROOTED:
-		case NDT_MESH: {
+		case NDT_MESH:
 			cull_backface = false;
 			break;
-		}
-		default: {
-			// No-op
-		}
+		default:
+			break;
 		}
 
 		// Select rendering method
 		switch (f.drawtype) {
-		case NDT_AIRLIKE: {
-			setExtruded(
-				"no_texture_airlike.png", "",
+		case NDT_AIRLIKE:
+			setExtruded("no_texture_airlike.png", "",
 				v3f(1.0, 1.0, 1.0), tsrc, 1);
 			break;
-		}
 		case NDT_SIGNLIKE:
 		case NDT_TORCHLIKE:
 		case NDT_RAILLIKE:
@@ -413,7 +410,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		case NDT_FLOWINGLIQUID: {
 			v3f wscale = def.wield_scale;
 			if (f.drawtype == NDT_FLOWINGLIQUID)
-				wscale *= v3f(1.0, 1.0, 0.1);
+				wscale.Z *= 0.1f;
 			setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
 				tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
 				wscale, tsrc,
@@ -427,11 +424,10 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		}
 		case NDT_NORMAL:
 		case NDT_ALLFACES:
-		case NDT_LIQUID: {
+		case NDT_LIQUID:
 			setCube(f, def.wield_scale);
 			break;
-		}
-		default: {
+		default:
 			// Render non-trivial drawtypes like the actual node
 			mesh = createSpecialNodeMesh(client, id, &m_colors, f);
 			changeToMesh(mesh);
@@ -439,21 +435,20 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			m_meshnode->setScale(
 				def.wield_scale * WIELD_SCALE_FACTOR
 				/ (BS * f.visual_scale));
+			break;
 		}
-		}
+
 		u32 material_count = m_meshnode->getMaterialCount();
 		for (u32 i = 0; i < material_count; ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.MaterialType = m_material_type;
 			material.MaterialTypeParam = 0.5f;
-			if (cull_backface)
-				material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, cull_backface);
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 		}
 		return;
-	}
-	else if (!def.inventory_image.empty()) {
+	} else if (!def.inventory_image.empty()) {
 		setExtruded(def.inventory_image, def.inventory_overlay, def.wield_scale,
 			tsrc, 1);
 		m_colors.emplace_back();
@@ -529,7 +524,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	// Shading is on by default
 	result->needs_shading = true;
 
-	// Disable backface culling for the drawtypes above
+	// Disable backface culling for the drawtypes below
 	bool cull_backface = true;
 	switch (f.drawtype) {
 	case NDT_TORCHLIKE:
@@ -538,13 +533,11 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	case NDT_RAILLIKE:
 	case NDT_PLANTLIKE:
 	case NDT_PLANTLIKE_ROOTED:
-	case NDT_MESH: {
+	case NDT_MESH:
 		cull_backface = false;
 		break;
-	}
-	default: {
-	// No-op
-	}
+	default:
+		break;
 	}
 
 	// If inventory_image is defined, it overrides everything else
@@ -599,11 +592,11 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			result->buffer_colors.emplace_back(l0.has_color, l0.color);
 			break;
 		}
-		default: {
+		default:
 			// Render non-trivial drawtypes like the actual node
 			mesh = createSpecialNodeMesh(client, id, &result->buffer_colors, f);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-		}
+			break;
 		}
 
 		u32 mc = mesh->getMeshBufferCount();
@@ -614,8 +607,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			material.MaterialTypeParam = 0.5f;
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
-			if (cull_backface)
-				material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, cull_backface);
 			material.setFlag(video::EMF_LIGHTING, false);
 		}
 
