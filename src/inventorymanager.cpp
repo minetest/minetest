@@ -302,6 +302,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				*this, src_item, player);
 		}
 
+		// A swap is expected, which means that we have to
+		// run the "allow" callbacks a second time with swapped inventories
 		if (swap_expected) {
 			ItemStack dst_item = list_to->getItem(to_i);
 			dst_item.count = dst_can_put_count;
