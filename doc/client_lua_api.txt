@@ -680,8 +680,8 @@ Call these functions only at load time!
     * Called when a client receive a message
     * `chat_message` is a table with following:
         * `type`:
-            * `raw` - No meta data attached, just a message.
-            * `normal` - Sent by a player, sender will be present.
+            * `raw` - Unknown type.
+            * `normal` - Sent by a player, `sender` will be present.
             * `announce` - A server gemeral announcement.
             * `system` - A server system announcement (ie: shutting down).
         * `message` - The full message.

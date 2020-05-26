@@ -48,7 +48,8 @@ struct ChatMessage
 	std::wstring sender = L"";
 	std::time_t timestamp = std::time(0);
 
-	const char *getType() const {
+	const char *getType() const
+	{
 		switch (type) {
 		case CHATMESSAGE_TYPE_RAW:
 			return "raw";
@@ -63,4 +64,3 @@ struct ChatMessage
 		}
 	}
 };
-
