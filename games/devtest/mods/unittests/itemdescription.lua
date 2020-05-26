@@ -1,5 +1,6 @@
+local full_description = "Colorful Pickaxe\nThe best pick."
 minetest.register_tool("unittests:colorful_pick", {
-	description = "Colorful Pickaxe\nThe best pick.",
+	description = full_description,
 	inventory_image = "basetools_mesepick.png",
 	tool_capabilities = {
 		full_punch_interval = 1.0,
@@ -27,12 +28,17 @@ minetest.register_chatcommand("item_description", {
 function unittests.test_short_desc()
 	local stack = ItemStack("unittests:colorful_pick")
 	assert(stack:get_short_description() == "Colorful Pickaxe")
+	assert(stack:get_short_description() == minetest.registered_items["unittests:colorful_pick"].short_description)
+	assert(stack:get_description() == full_description)
 	assert(stack:get_description() == minetest.registered_items["unittests:colorful_pick"].description)
-	assert(stack:get_description() ~= stack:get_short_description())
 
 	stack:get_meta():set_string("description", "Hello World")
-	assert(stack:get_description() == "Hello World")
 	assert(stack:get_short_description() == "Colorful Pickaxe")
+	assert(stack:get_description() == "Hello World")
+
+	stack:get_meta():set_string("short_description", "Foo Bar")
+	assert(stack:get_short_description() == "Foo Bar")
+	assert(stack:get_description() == "Hello World")
 
 	return true
 end
