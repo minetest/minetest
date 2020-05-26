@@ -169,6 +169,7 @@ void TestServerModManager::testGetModMediaPaths()
 	std::vector<std::string> result;
 	sm.getModsMediaPaths(result);
 	UASSERTEQ(bool, result.empty(), false);
-	// We should have 6 folders for each mod (textures, media, locale, model, sounds, shaders)
+	// We should have 6 folders for each mod:
+	// textures, media, locale, model, sounds, shaders
 	UASSERTEQ(unsigned long, result.size() % 6, 0);
 }
