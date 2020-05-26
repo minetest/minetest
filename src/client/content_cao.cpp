@@ -776,15 +776,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	if (node && m_matrixnode)
 		node->setParent(m_matrixnode);
 
-	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
-		// Add nametag
-		v3f pos;
-		pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
-		m_nametag = m_client->getCamera()->addNametag(node,
-			m_prop.nametag, m_prop.nametag_color,
-			pos);
-	}
-
+	updateNametag();
 	updateNodePos();
 	updateAnimation();
 	updateBonePosition();
@@ -870,6 +862,38 @@ v3s16 GenericCAO::getLightPosition()
 		return floatToInt(m_position + v3f(0, 0.5 * BS, 0), BS);
 
 	return floatToInt(m_position, BS);
+}
+
+void GenericCAO::updateNametag()
+{
+	if (m_is_local_player) // No nametag for local player
+		return;
+
+	if (m_prop.nametag.empty()) {
+		// Delete nametag
+		if (m_nametag) {
+			m_client->getCamera()->removeNametag(m_nametag);
+			m_nametag = nullptr;
+		}
+		return;
+	}
+
+	scene::ISceneNode *node = getSceneNode();
+	if (!node)
+		return;
+
+	v3f pos;
+	pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
+	if (!m_nametag) {
+		// Add nametag
+		m_nametag = m_client->getCamera()->addNametag(node,
+			m_prop.nametag, m_prop.nametag_color, pos);
+	} else {
+		// Update nametag
+		m_nametag->nametag_text = m_prop.nametag;
+		m_nametag->nametag_color = m_prop.nametag_color;
+		m_nametag->nametag_pos = pos;
+	}
 }
 
 void GenericCAO::updateNodePos()
@@ -1465,8 +1489,6 @@ bool GenericCAO::visualExpiryRequired(const ObjectProperties &new_) const
 		old.initial_sprite_basepos != new_.initial_sprite_basepos ||
 		old.is_visible != new_.is_visible ||
 		old.mesh != new_.mesh ||
-		old.nametag != new_.nametag ||
-		old.nametag_color != new_.nametag_color ||
 		old.spritediv != new_.spritediv ||
 		old.use_texture_alpha != new_.use_texture_alpha ||
 		old.visual != new_.visual ||
@@ -1516,6 +1538,7 @@ void GenericCAO::processMessage(const std::string &data)
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
 			m_prop.nametag = m_name;
+		updateNametag();
 
 		if (expire_visuals) {
 			expireVisuals();
@@ -1694,22 +1717,14 @@ void GenericCAO::processMessage(const std::string &data)
 			int rating = readS16(is);
 			m_armor_groups[name] = rating;
 		}
-	} else if (cmd == AO_CMD_UPDATE_NAMETAG_ATTRIBUTES) {
-		// Deprecated, for backwards compatibility only.
-		readU8(is); // version
-		m_prop.nametag_color = readARGB8(is);
-		if (m_nametag != NULL) {
-			m_nametag->nametag_color = m_prop.nametag_color;
-			v3f pos;
-			pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
-			m_nametag->nametag_pos = pos;
-		}
 	} else if (cmd == AO_CMD_SPAWN_INFANT) {
 		u16 child_id = readU16(is);
 		u8 type = readU8(is); // maybe this will be useful later
 		(void)type;
 
 		addAttachmentChild(child_id);
+	} else if (cmd == AO_CMD_OBSOLETE1) {
+		// Don't do anything and also don't log a warning
 	} else {
 		warningstream << FUNCTION_NAME
 			<< ": unknown command or outdated client \""

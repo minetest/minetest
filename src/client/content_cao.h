@@ -244,6 +244,8 @@ public:
 
 	v3s16 getLightPosition();
 
+	void updateNametag();
+
 	void updateNodePos();
 
 	void step(float dtime, ClientEnvironment *env);

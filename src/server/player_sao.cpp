@@ -127,9 +127,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	}
 	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
 	msg_os << serializeLongString(generateUpdatePhysicsOverrideCommand()); // 5
-	// (AO_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
-	msg_os << serializeLongString(generateUpdateNametagAttributesCommand(m_prop.nametag_color)); // 6
-	int message_count = 6 + m_bone_position.size();
+	int message_count = 5 + m_bone_position.size();
 	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
 			ii != m_attachment_child_ids.end(); ++ii) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
