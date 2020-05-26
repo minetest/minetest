@@ -323,7 +323,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 0)  & 0xFF);
 				std::wstring text = unescape_translate(utf8_to_wide(e->text));
 				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
-#ifdef __ANDROID__ // Only for Android!
+#ifdef __ANDROID__
 				// The text size on Android is not proportional with the actual scaling
 				irr::gui::IGUIFont *font_scaled = g_fontengine->getFont(
 						g_fontengine->getDefaultFontSize() - 3);
@@ -332,16 +332,11 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 #endif
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
-//#ifdef __ANDROID__ // Android and Desktop
 				core::rect<s32> size(0, 0, e->scale.X * m_scale_factor,
 				                     text_height * e->scale.Y * m_scale_factor);
 				v2s32 offs(e->offset.X * m_scale_factor,
 				           e->offset.Y * m_scale_factor);
-/*#else
-				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
-				v2s32 offs(e->offset.X, m_scale_factor * e->offset.Y);
-#endif*/
-#ifdef __ANDROID__ // Only for Android!
+#ifdef __ANDROID__
 				if (e->offset.X < -20)
 					font_scaled->draw(text.c_str(), size + pos + offset + offs, color);
 				else
@@ -399,13 +394,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				const video::SColor color(255, 255, 255, 255);
 				const video::SColor colors[] = {color, color, color, color};
 				core::dimension2di imgsize(texture->getOriginalSize());
-//#ifdef __ANDROID__ // Android and Desktop
 				v2s32 dstsize(imgsize.Width * e->scale.X * m_scale_factor,
 				              imgsize.Height * e->scale.Y * m_scale_factor);
-/*#else
-				v2s32 dstsize(imgsize.Width * e->scale.X,
-				              imgsize.Height * e->scale.Y);
-#endif*/
 				if (e->scale.X < 0)
 					dstsize.X = m_screensize.X * (e->scale.X * -0.01);
 				if (e->scale.Y < 0)
@@ -413,12 +403,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
 				             (e->align.Y - 1.0) * dstsize.Y / 2);
 				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
-//#ifdef __ANDROID__ // Android and Desktop
 				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
 				                             e->offset.Y * m_scale_factor);
-/*#else
-				rect += pos + offset + v2s32(e->offset.X, e->offset.Y);
-#endif*/
 				draw2DImageFilterScaled(driver, texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
@@ -445,12 +431,10 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &tex
 	core::dimension2di dstd;
 	if (size == v2s32()) {
 		dstd = srcd;
-//#ifdef __ANDROID__ // Android and Desktop
 		dstd.Height *= m_scale_factor;
 		dstd.Width  *= m_scale_factor;
 		offset.X *= m_scale_factor;
 		offset.Y *= m_scale_factor;
-//#endif
 	} else {
 		dstd.Height = size.Y * m_scale_factor;
 		dstd.Width  = size.X * m_scale_factor;
