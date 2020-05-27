@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-05-27 17:53+0000\n"
-"Last-Translator: Miniontoby <tobias.gaarenstroom@gmail.com>\n"
+"Last-Translator: Oscar <kingoscargames@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -838,7 +838,7 @@ msgstr "Nodes initialiseren..."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr "Bezig met texturen te laden..."
+msgstr "Texturen laden..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
@@ -866,7 +866,7 @@ msgstr "Geen wereld geselecteerd en geen adres opgegeven. Niets te doen."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr "Spelernaam is te lang."
+msgstr "Speler-naam is te lang."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
