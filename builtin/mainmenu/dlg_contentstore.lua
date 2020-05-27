@@ -213,8 +213,6 @@ function store.load()
 		store.loaded = true
 	end
 
-	store.packages[2].downloading = true
-
 	core.delete_dir(tmpdir)
 end
 
