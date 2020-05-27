@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-05-27 17:53+0000\n"
-"Last-Translator: Oscar <kingoscargames@gmail.com>\n"
+"Last-Translator: dave90dave <dave.hulst@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -921,9 +921,8 @@ msgid "- Port: "
 msgstr "- Poort: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "- Public: "
-msgstr "- Publiek: "
+msgstr "- Openbaar: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
