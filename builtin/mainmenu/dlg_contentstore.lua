@@ -46,14 +46,12 @@ local filter_types_type = {
 local function download_package(param)
 	if core.download_file(param.package.url, param.filename) then
 		return {
-			package = param.package,
 			filename = param.filename,
 			successful = true,
 		}
 	else
 		core.log("error", "downloading " .. dump(param.package.url) .. " failed")
 		return {
-			package = param.package,
 			successful = false,
 		}
 	end
@@ -67,9 +65,9 @@ local function start_install(calling_dialog, package)
 
 	local function callback(result)
 		if result.successful then
-			local path, msg = pkgmgr.install(result.package.type,
-					result.filename, result.package.name,
-					result.package.path)
+			local path, msg = pkgmgr.install(package.type,
+					result.filename, package.name,
+					package.path)
 			if not path then
 				gamedata.errormessage = msg
 			else
@@ -77,33 +75,33 @@ local function start_install(calling_dialog, package)
 
 				local conf_path
 				local name_is_title = false
-				if result.package.type == "mod" then
+				if package.type == "mod" then
 					local actual_type = pkgmgr.get_folder_type(path)
 					if actual_type.type == "modpack" then
 						conf_path = path .. DIR_DELIM .. "modpack.conf"
 					else
 						conf_path = path .. DIR_DELIM .. "mod.conf"
 					end
-				elseif result.package.type == "game" then
+				elseif package.type == "game" then
 					conf_path = path .. DIR_DELIM .. "game.conf"
 					name_is_title = true
-				elseif result.package.type == "txp" then
+				elseif package.type == "txp" then
 					conf_path = path .. DIR_DELIM .. "texture_pack.conf"
 				end
 
 				if conf_path then
 					local conf = Settings(conf_path)
 					if name_is_title then
-						conf:set("name",   result.package.title)
+						conf:set("name",   package.title)
 					else
-						conf:set("title",  result.package.title)
-						conf:set("name",   result.package.name)
+						conf:set("title",  package.title)
+						conf:set("name",   package.name)
 					end
 					if not conf:get("description") then
-						conf:set("description", result.package.short_description)
+						conf:set("description", package.short_description)
 					end
-					conf:set("author",     result.package.author)
-					conf:set("release",    result.package.release)
+					conf:set("author",     package.author)
+					conf:set("release",    package.release)
 					conf:write()
 				end
 			end
@@ -112,37 +110,17 @@ local function start_install(calling_dialog, package)
 			gamedata.errormessage = fgettext("Failed to download $1", package.name)
 		end
 
-		if gamedata.errormessage == nil then
-			core.button_handler({btn_hidden_close_download=result})
-		else
-			core.button_handler({btn_hidden_close_download={successful=false}})
-		end
+		package.downloading = false
+		ui.update()
 	end
+
+	package.downloading = true
 
 	if not core.handle_async(download_package, params, callback) then
 		core.log("error", "ERROR: async event failed")
 		gamedata.errormessage = fgettext("Failed to download $1", package.name)
+		return
 	end
-
-	local new_dlg = dialog_create("store_downloading",
-		function(data)
-			return "size[7,2]label[0.25,0.75;" ..
-				fgettext("Downloading and installing $1, please wait...", data.title) .. "]"
-		end,
-		function(this,fields)
-			if fields["btn_hidden_close_download"] ~= nil then
-				this:delete()
-				return true
-			end
-
-			return false
-		end,
-		nil)
-
-	new_dlg:set_parent(calling_dialog)
-	new_dlg.data.title = package.title
-	calling_dialog:hide()
-	new_dlg:show()
 end
 
 local function get_screenshot(package)
@@ -392,9 +370,12 @@ function store.get_formspec(dlgdata)
 				minetest.colorize("#BFBFBF", " by " .. package.author))
 		formspec[#formspec + 1] = "]"
 
-		-- buttons
 		local description_width = 7.5
-		if not package.path then
+		if package.downloading then
+			formspec[#formspec + 1] = "label[8.4,0.2;"
+			formspec[#formspec + 1] = fgettext("Downloading...")
+			formspec[#formspec + 1] = "]"
+		elseif not package.path then
 			formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
