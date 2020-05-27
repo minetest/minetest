@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-05-27 17:53+0000\n"
-"Last-Translator: dave90dave <dave.hulst@gmail.com>\n"
+"Last-Translator: you can't know <gekkeupie@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -461,7 +461,7 @@ msgstr "Niet mogelijk om geschikte map-naam vinden voor modverzameling $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr "Kan $1 niet als textuurpakket installeren"
+msgstr "Installatie van $1 als texturepack mislukt"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a game as a $1"
