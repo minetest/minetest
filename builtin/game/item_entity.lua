@@ -27,8 +27,6 @@ core.register_entity(":__builtin:item", {
 		visual = "wielditem",
 		visual_size = {x = 0.4, y = 0.4},
 		textures = {""},
-		spritediv = {x = 1, y = 1},
-		initial_sprite_basepos = {x = 0, y = 0},
 		is_visible = false,
 	},
 
@@ -56,7 +54,6 @@ core.register_entity(":__builtin:item", {
 		local max_count = stack:get_stack_max()
 		local count = math.min(stack:get_count(), max_count)
 		local size = 0.2 + 0.1 * (count / max_count) ^ (1 / 3)
-		local coll_height = size * 0.75
 		local def = core.registered_nodes[itemname]
 		local glow = def and math.floor(def.light_source / 2 + 0.5)
 
@@ -65,9 +62,7 @@ core.register_entity(":__builtin:item", {
 			visual = "wielditem",
 			textures = {itemname},
 			visual_size = {x = size, y = size},
-			collisionbox = {-size, -coll_height, -size,
-				size, coll_height, size},
-			selectionbox = {-size, -size, -size, size, size, size},
+			collisionbox = {-size, -size, -size, size, size, size},
 			automatic_rotate = math.pi * 0.5 * 0.2 / size,
 			wield_item = self.itemstring,
 			glow = glow,
