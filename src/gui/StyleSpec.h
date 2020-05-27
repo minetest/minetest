@@ -44,6 +44,8 @@ public:
 		FGIMG_HOVERED, // Note: Deprecated property
 		FGIMG_PRESSED, // Note: Deprecated property
 		ALPHA,
+		CONTENT_OFFSET,
+		PADDING,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -92,6 +94,10 @@ public:
 			return FGIMG_PRESSED;
 		} else if (name == "alpha") {
 			return ALPHA;
+		} else if (name == "content_offset") {
+			return CONTENT_OFFSET;
+		} else if (name == "padding") {
+			return PADDING;
 		} else {
 			return NONE;
 		}
@@ -196,6 +202,29 @@ public:
 		return rect;
 	}
 
+	irr::core::vector2d<s32> getVector2i(Property prop, irr::core::vector2d<s32> def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty())
+			return def;
+
+		irr::core::vector2d<s32> vec;
+		if (!parseVector2i(val, &vec))
+			return def;
+
+		return vec;
+	}
+
+	irr::core::vector2d<s32> getVector2i(Property prop) const
+	{
+		const auto &val = properties[prop];
+		FATAL_ERROR_IF(val.empty(), "Unexpected missing property");
+
+		irr::core::vector2d<s32> vec;
+		parseVector2i(val, &vec);
+		return vec;
+	}
+
 	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc,
 			video::ITexture *def) const
 	{
@@ -283,6 +312,31 @@ private:
 		}
 
 		*parsed_rect = rect;
+
+		return true;
+	}
+
+	bool parseVector2i(const std::string &value, irr::core::vector2d<s32> *parsed_vec) const
+	{
+		irr::core::vector2d<s32> vec;
+		std::vector<std::string> v_vector = split(value, ',');
+
+		if (v_vector.size() == 1) {
+			s32 x = stoi(v_vector[0]);
+			vec.X = x;
+			vec.Y = x;
+		} else if (v_vector.size() == 2) {
+			s32 x = stoi(v_vector[0]);
+			s32 y =	stoi(v_vector[1]);
+			vec.X = x;
+			vec.Y = y;
+		} else {
+			warningstream << "Invalid vector2d string format: \"" << value
+					<< "\"" << std::endl;
+			return false;
+		}
+
+		*parsed_vec = vec;
 
 		return true;
 	}

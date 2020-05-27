@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "gettime.h"
 #include "porting.h"
+#include "settings.h"
 #include "config.h"
 #include "exceptions.h"
 #include "util/numeric.h"
@@ -338,7 +339,80 @@ void FileLogOutput::setFile(const std::string &filename, s64 file_size_max)
 		"-------------\n" << std::endl;
 }
 
+void StreamLogOutput::logRaw(LogLevel lev, const std::string &line)
+{
+	bool colored_message = (Logger::color_mode == LOG_COLOR_ALWAYS) ||
+		(Logger::color_mode == LOG_COLOR_AUTO && is_tty);
+	if (colored_message) {
+		switch (lev) {
+		case LL_ERROR:
+			// error is red
+			m_stream << "\033[91m";
+			break;
+		case LL_WARNING:
+			// warning is yellow
+			m_stream << "\033[93m";
+			break;
+		case LL_INFO:
+			// info is a bit dark
+			m_stream << "\033[37m";
+			break;
+		case LL_VERBOSE:
+			// verbose is darker than info
+			m_stream << "\033[2m";
+			break;
+		default:
+			// action is white
+			colored_message = false;
+		}
+	}
 
+	m_stream << line << std::endl;
+
+	if (colored_message) {
+		// reset to white color
+		m_stream << "\033[0m";
+	}
+}
+
+void LogOutputBuffer::updateLogLevel()
+{
+	const std::string &conf_loglev = g_settings->get("chat_log_level");
+	LogLevel log_level = Logger::stringToLevel(conf_loglev);
+	if (log_level == LL_MAX) {
+		warningstream << "Supplied unrecognized chat_log_level; "
+			"showing none." << std::endl;
+		log_level = LL_NONE;
+	}
+
+	m_logger.removeOutput(this);
+	m_logger.addOutputMaxLevel(this, log_level);
+}
+
+void LogOutputBuffer::logRaw(LogLevel lev, const std::string &line)
+{
+	std::string color;
+
+	if (!g_settings->getBool("disable_escape_sequences")) {
+		switch (lev) {
+		case LL_ERROR: // red
+			color = "\x1b(c@#F00)";
+			break;
+		case LL_WARNING: // yellow
+			color = "\x1b(c@#EE0)";
+			break;
+		case LL_INFO: // grey
+			color = "\x1b(c@#BBB)";
+			break;
+		case LL_VERBOSE: // dark grey
+			color = "\x1b(c@#888)";
+			break;
+		default: break;
+		}
+	}
+
+	m_buffer.push(color.append(line));
+}
 
 ////
 //// *Buffer methods

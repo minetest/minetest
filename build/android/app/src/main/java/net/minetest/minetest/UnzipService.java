@@ -28,11 +28,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,9 +43,12 @@ public class UnzipService extends IntentService {
 	public static final String ACTION_UPDATE = "net.minetest.minetest.UPDATE";
 	public static final String ACTION_PROGRESS = "net.minetest.minetest.PROGRESS";
 	public static final String EXTRA_KEY_IN_FILE = "file";
+	public static final int SUCCESS = -1;
+	public static final int FAILURE = -2;
 	private static final String TAG = "UnzipService";
 	private final int id = 1;
 	private NotificationManager mNotifyManager;
+	private boolean isSuccess = true;
 
 	public UnzipService() {
 		super("net.minetest.minetest.UnzipService");
@@ -120,10 +122,9 @@ public class UnzipService extends IntentService {
 				}
 				zipFile.delete();
 			}
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, e.getLocalizedMessage());
 		} catch (IOException e) {
-			Log.e(TAG, e.getLocalizedMessage());
+			isSuccess = false;
+			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -139,7 +140,7 @@ public class UnzipService extends IntentService {
 			ZipFile zipSize = new ZipFile(zip);
 			size += zipSize.size();
 		} catch (IOException e) {
-			Log.e(TAG, e.getLocalizedMessage());
+			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 		}
 		return size;
 	}
@@ -148,6 +149,6 @@ public class UnzipService extends IntentService {
 	public void onDestroy() {
 		super.onDestroy();
 		mNotifyManager.cancel(id);
-		publishProgress(-1);
+		publishProgress(isSuccess ? SUCCESS : FAILURE);
 	}
 }

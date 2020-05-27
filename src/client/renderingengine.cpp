@@ -130,12 +130,9 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
 	params.ZBufferBits = 24;
 #ifdef __ANDROID__
-	// clang-format off
 	params.PrivateData = porting::app_global;
-	params.OGLES2ShaderPath = std::string(porting::path_user + DIR_DELIM + "media" +
-		DIR_DELIM + "Shaders" + DIR_DELIM).c_str();
-	// clang-format on
-#elif ENABLE_GLES
+#endif
+#if ENABLE_GLES
 	// there is no standardized path for these on desktop
 	std::string rel_path = std::string("client") + DIR_DELIM
 			+ "shaders" + DIR_DELIM + "Irrlicht";

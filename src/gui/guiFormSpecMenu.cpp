@@ -915,7 +915,9 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 
 	auto style = getDefaultStyleForElement("animated_image", spec.fname, "image");
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-	e->drop();
+
+	// Animated images should let events through
+	m_clickthrough_elements.push_back(e);
 
 	m_fields.push_back(spec);
 }
@@ -2025,7 +2027,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		// Width is not here because tabs are the width of the text, and
 		// there's no reason to change that.
 		unsigned int i = 0;
-		std::vector<std::string> v_geom = {"1", "0.75"}; // Dummy width and default height
+		std::vector<std::string> v_geom = {"1", "1"}; // Dummy width and height
 		bool auto_width = true;
 		if (parts.size() == 7) {
 			i++;
@@ -2069,6 +2071,9 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 			pos = getRealCoordinateBasePos(v_pos);
 
 			geom = getRealCoordinateGeometry(v_geom);
+			// Set default height
+			if (parts.size() <= 6)
+				geom.Y = m_btn_height * 2;
 			pos.Y -= geom.Y; // TabHeader base pos is the bottom, not the top.
 			if (auto_width)
 				geom.X = DesiredRect.getWidth(); // Set automatic width
@@ -2668,24 +2673,12 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 	if (parseVersionDirect(element))
 		return;
 
-	std::vector<std::string> parts = split(element,'[');
-
-	// ugly workaround to keep compatibility
-	if (parts.size() > 2) {
-		if (trim(parts[0]) == "image") {
-			for (unsigned int i=2;i< parts.size(); i++) {
-				parts[1] += "[" + parts[i];
-			}
-		}
-		else { return; }
-	}
-
-	if (parts.size() < 2) {
+	size_t pos = element.find('[');
+	if (pos == std::string::npos)
 		return;
-	}
 
-	std::string type = trim(parts[0]);
-	std::string description = trim(parts[1]);
+	std::string type = trim(element.substr(0, pos));
+	std::string description = element.substr(pos+1);
 
 	if (type == "container") {
 		parseContainer(data, description);
@@ -4619,20 +4612,32 @@ StyleSpec GUIFormSpecMenu::getDefaultStyleForElement(const std::string &type,
 	return getStyleForElement(type, name, parent_type)[StyleSpec::STATE_DEFAULT];
 }
 
-std::array<StyleSpec, StyleSpec::NUM_STATES> GUIFormSpecMenu::getStyleForElement(const std::string &type,
-		const std::string &name, const std::string &parent_type)
+std::array<StyleSpec, StyleSpec::NUM_STATES> GUIFormSpecMenu::getStyleForElement(
+	const std::string &type, const std::string &name, const std::string &parent_type)
 {
 	std::array<StyleSpec, StyleSpec::NUM_STATES> ret;
 
+	auto it = theme_by_type.find("*");
+	if (it != theme_by_type.end()) {
+		for (const StyleSpec &spec : it->second)
+			ret[(u32)spec.getState()] |= spec;
+	}
+
+	it = theme_by_name.find("*");
+	if (it != theme_by_name.end()) {
+		for (const StyleSpec &spec : it->second)
+			ret[(u32)spec.getState()] |= spec;
+	}
+
 	if (!parent_type.empty()) {
-		auto it = theme_by_type.find(parent_type);
+		it = theme_by_type.find(parent_type);
 		if (it != theme_by_type.end()) {
 			for (const StyleSpec &spec : it->second)
 				ret[(u32)spec.getState()] |= spec;
 		}
 	}
 
-	auto it = theme_by_type.find(type);
+	it = theme_by_type.find(type);
 	if (it != theme_by_type.end()) {
 		for (const StyleSpec &spec : it->second)
 			ret[(u32)spec.getState()] |= spec;

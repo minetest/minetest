@@ -3251,19 +3251,16 @@
 # emergequeue_limit_total = 512
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
-#    Set to blank for an appropriate amount to be chosen automatically.
+#    This limit is enforced per player.
 #    type: int
 # emergequeue_limit_diskonly = 64
 
 #    Maximum number of blocks to be queued that are to be generated.
-#    Set to blank for an appropriate amount to be chosen automatically.
+#    This limit is enforced per player.
 #    type: int
 # emergequeue_limit_generate = 64
 
 #    Number of emerge threads to use.
-#    WARNING: Currently there are multiple bugs that may cause crashes when
-#    'num_emerge_threads' is larger than 1. Until this warning is removed it is
-#    strongly recommended this value is set to the default '1'.
 #    Value 0:
 #    -    Automatic selection. The number of emerge threads will be
 #    -    'number of processors - 2', with a lower limit of 1.

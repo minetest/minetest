@@ -7,11 +7,18 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+	<!--
+		`android:requestLegacyExternalStorage="true"` is workaround for using `/sdcard`
+		instead of the `getFilesDir()` patch for assets. Check link below for more information:
+		https://developer.android.com/training/data-storage/compatibility
+	-->
+
 	<application
 		android:allowBackup="false"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/label"
 		android:resizeableActivity="false"
+		android:requestLegacyExternalStorage="true"
 		tools:ignore="UnusedAttribute">
 
 		<meta-data

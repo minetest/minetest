@@ -239,57 +239,76 @@ core.register_chatcommand("grantme", {
 	end,
 })
 
+local function handle_revoke_command(caller, revokename, revokeprivstr)
+	local caller_privs = core.get_player_privs(caller)
+	if not (caller_privs.privs or caller_privs.basic_privs) then
+		return false, "Your privileges are insufficient."
+	end
+
+	if not core.get_auth_handler().get_auth(revokename) then
+		return false, "Player " .. revokename .. " does not exist."
+	end
+
+	local revokeprivs = core.string_to_privs(revokeprivstr)
+	local privs = core.get_player_privs(revokename)
+	local basic_privs =
+		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
+	for priv, _ in pairs(revokeprivs) do
+		if not basic_privs[priv] and not caller_privs.privs then
+			return false, "Your privileges are insufficient."
+		end
+	end
+
+	if revokeprivstr == "all" then
+		revokeprivs = privs
+		privs = {}
+	else
+		for priv, _ in pairs(revokeprivs) do
+			privs[priv] = nil
+		end
+	end
+
+	for priv, _ in pairs(revokeprivs) do
+		-- call the on_revoke callbacks
+		core.run_priv_callbacks(revokename, priv, caller, "revoke")
+	end
+
+	core.set_player_privs(revokename, privs)
+	core.log("action", caller..' revoked ('
+			..core.privs_to_string(revokeprivs, ', ')
+			..') privileges from '..revokename)
+	if revokename ~= caller then
+		core.chat_send_player(revokename, caller
+			.. " revoked privileges from you: "
+			.. core.privs_to_string(revokeprivs, ' '))
+	end
+	return true, "Privileges of " .. revokename .. ": "
+		.. core.privs_to_string(
+			core.get_player_privs(revokename), ' ')
+end
+
 core.register_chatcommand("revoke", {
 	params = "<name> (<privilege> | all)",
 	description = "Remove privileges from player",
 	privs = {},
 	func = function(name, param)
-		if not core.check_player_privs(name, {privs=true}) and
-				not core.check_player_privs(name, {basic_privs=true}) then
-			return false, "Your privileges are insufficient."
-		end
-		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
-		if not revoke_name or not revoke_priv_str then
+		local revokename, revokeprivstr = string.match(param, "([^ ]+) (.+)")
+		if not revokename or not revokeprivstr then
 			return false, "Invalid parameters (see /help revoke)"
-		elseif not core.get_auth_handler().get_auth(revoke_name) then
-			return false, "Player " .. revoke_name .. " does not exist."
 		end
-		local revoke_privs = core.string_to_privs(revoke_priv_str)
-		local privs = core.get_player_privs(revoke_name)
-		local basic_privs =
-			core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
-		for priv, _ in pairs(revoke_privs) do
-			if not basic_privs[priv] and
-					not core.check_player_privs(name, {privs=true}) then
-				return false, "Your privileges are insufficient."
-			end
-		end
-		if revoke_priv_str == "all" then
-			revoke_privs = privs
-			privs = {}
-		else
-			for priv, _ in pairs(revoke_privs) do
-				privs[priv] = nil
-			end
-		end
+		return handle_revoke_command(name, revokename, revokeprivstr)
+	end,
+})
 
-		for priv, _ in pairs(revoke_privs) do
-			-- call the on_revoke callbacks
-			core.run_priv_callbacks(revoke_name, priv, name, "revoke")
+core.register_chatcommand("revokeme", {
+	params = "<privilege> | all",
+	description = "Revoke privileges from yourself",
+	privs = {},
+	func = function(name, param)
+		if param == "" then
+			return false, "Invalid parameters (see /help revokeme)"
 		end
-
-		core.set_player_privs(revoke_name, privs)
-		core.log("action", name..' revoked ('
-				..core.privs_to_string(revoke_privs, ', ')
-				..') privileges from '..revoke_name)
-		if revoke_name ~= name then
-			core.chat_send_player(revoke_name, name
-					.. " revoked privileges from you: "
-					.. core.privs_to_string(revoke_privs, ' '))
-		end
-		return true, "Privileges of " .. revoke_name .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(revoke_name), ' ')
+		return handle_revoke_command(name, name, param)
 	end,
 })
 
@@ -424,6 +443,9 @@ core.register_chatcommand("teleport", {
 			end
 			local teleportee = core.get_player_by_name(name)
 			if teleportee then
+				if teleportee:get_attach() then
+					return false, "Can't teleport, you're attached to an object!"
+				end
 				teleportee:set_pos(p)
 				return true, "Teleporting to "..core.pos_to_string(p)
 			end
@@ -441,6 +463,9 @@ core.register_chatcommand("teleport", {
 		end
 
 		if teleportee and p then
+			if teleportee:get_attach() then
+				return false, "Can't teleport, you're attached to an object!"
+			end
 			p = find_free_position_near(p)
 			teleportee:set_pos(p)
 			return true, "Teleporting to " .. target_name
@@ -461,6 +486,9 @@ core.register_chatcommand("teleport", {
 			teleportee = core.get_player_by_name(teleportee_name)
 		end
 		if teleportee and p.x and p.y and p.z then
+			if teleportee:get_attach() then
+				return false, "Can't teleport, player is attached to an object!"
+			end
 			teleportee:set_pos(p)
 			return true, "Teleporting " .. teleportee_name
 					.. " to " .. core.pos_to_string(p)
@@ -479,6 +507,9 @@ core.register_chatcommand("teleport", {
 			end
 		end
 		if teleportee and p then
+			if teleportee:get_attach() then
+				return false, "Can't teleport, player is attached to an object!"
+			end
 			p = find_free_position_near(p)
 			teleportee:set_pos(p)
 			return true, "Teleporting " .. teleportee_name
@@ -717,8 +748,9 @@ core.register_chatcommand("spawnentity", {
 			end
 		end
 		p.y = p.y + 1
-		core.add_entity(p, entityname)
-		return true, ("%q spawned."):format(entityname)
+		local obj = core.add_entity(p, entityname)
+		local msg = obj and "%q spawned." or "%q failed to spawn."
+		return true, msg:format(entityname)
 	end,
 })
 
@@ -757,7 +789,7 @@ core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
 			.. " within the time specified by <seconds>. Default: range = 0,"
-			.. " seconds = 86400 = 24h, limit = 5",
+			.. " seconds = 86400 = 24h, limit = 5. Set <seconds> to inf for no time limit",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -808,7 +840,7 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
-	description = "Revert actions of a player. Default for <seconds> is 60",
+	description = "Revert actions of a player. Default for <seconds> is 60. Set <seconds> to inf for no time limit",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -1036,7 +1068,7 @@ core.register_chatcommand("last-login", {
 			param = name
 		end
 		local pauth = core.get_auth_handler().get_auth(param)
-		if pauth and pauth.last_login then
+		if pauth and pauth.last_login and pauth.last_login ~= -1 then
 			-- Time in UTC, ISO 8601 format
 			return true, "Last login time was " ..
 				os.date("!%Y-%m-%dT%H:%M:%SZ", pauth.last_login)

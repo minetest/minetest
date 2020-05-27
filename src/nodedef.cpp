@@ -368,9 +368,12 @@ void ContentFeatures::reset()
 	floodable = false;
 	rightclickable = true;
 	leveled = 0;
+	leveled_max = LEVELED_MAX;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
+	liquid_alternative_flowing_id = CONTENT_IGNORE;
 	liquid_alternative_source = "";
+	liquid_alternative_source_id = CONTENT_IGNORE;
 	liquid_viscosity = 0;
 	liquid_renewable = true;
 	liquid_range = LIQUID_LEVEL_MAX+1;
@@ -478,6 +481,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, legacy_wallmounted);
 
 	os << serializeString(node_dig_prediction);
+	writeU8(os, leveled_max);
 }
 
 void ContentFeatures::correctAlpha(TileDef *tiles, int length)
@@ -586,6 +590,10 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	try {
 		node_dig_prediction = deSerializeString(is);
+		u8 tmp_leveled_max = readU8(is);
+		if (is.eof()) /* readU8 doesn't throw exceptions so we have to do this */
+			throw SerializationError("");
+		leveled_max = tmp_leveled_max;
 	} catch(SerializationError &e) {};
 }
 
@@ -1438,6 +1446,10 @@ void NodeDefManager::deSerialize(std::istream &is)
 		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);
 		fixSelectionBoxIntUnion();
 	}
+
+	// Since liquid_alternative_flowing_id and liquid_alternative_source_id
+	// are not sent, resolve them client-side too.
+	resolveCrossrefs();
 }
 
 
@@ -1498,15 +1510,28 @@ void NodeDefManager::resetNodeResolveState()
 	m_pending_resolve_callbacks.clear();
 }
 
-void NodeDefManager::mapNodeboxConnections()
+static void removeDupes(std::vector<content_t> &list)
+{
+	std::sort(list.begin(), list.end());
+	auto new_end = std::unique(list.begin(), list.end());
+	list.erase(new_end, list.end());
+}
+
+void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
+		if (f.liquid_type != LIQUID_NONE) {
+			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
+			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
+			continue;
+		}
 		if (f.drawtype != NDT_NODEBOX || f.node_box.type != NODEBOX_CONNECTED)
 			continue;
 
 		for (const std::string &name : f.connects_to) {
 			getIds(name, f.connects_to_ids);
 		}
+		removeDupes(f.connects_to_ids);
 	}
 }
 
@@ -1569,6 +1594,18 @@ NodeResolver::~NodeResolver()
 {
 	if (!m_resolve_done && m_ndef)
 		m_ndef->cancelNodeResolveCallback(this);
+}
+
+
+void NodeResolver::cloneTo(NodeResolver *res) const
+{
+	FATAL_ERROR_IF(!m_resolve_done, "NodeResolver can only be cloned"
+		" after resolving has completed");
+	/* We don't actually do anything significant. Since the node resolving has
+	 * already completed, the class that called us will already have the
+	 * resolved IDs in its data structures (which it copies on its own) */
+	res->m_ndef = m_ndef;
+	res->m_resolve_done = true;
 }
 
 

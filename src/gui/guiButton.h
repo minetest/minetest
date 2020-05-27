@@ -336,5 +336,7 @@ private:
 	gui::IGUIStaticText *StaticText;
 
 	core::rect<s32> BgMiddle;
+	core::rect<s32> Padding;
+	core::vector2d<s32> ContentOffset;
 	// END PATCH
 };

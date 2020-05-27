@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
+#include "util/string.h"
+#include "translation.h"
 #ifndef SERVER
 #include "client/client.h"
 #endif
@@ -527,13 +529,13 @@ int ModApiEnvMod::l_set_node_level(lua_State *L)
 
 // add_node_level(pos, level)
 // pos = {x=num, y=num, z=num}
-// level: 0..63
+// level: -127..127
 int ModApiEnvMod::l_add_node_level(lua_State *L)
 {
 	GET_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
-	u8 level = 1;
+	s16 level = 1;
 	if(lua_isnumber(L, 2))
 		level = lua_tonumber(L, 2);
 	MapNode n = env->getMap().getNode(pos);
@@ -587,19 +589,19 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	// pos
 	v3f pos = checkFloatPos(L, 1);
-	// content
 	const char *name = luaL_checkstring(L, 2);
-	// staticdata
 	const char *staticdata = luaL_optstring(L, 3, "");
-	// Do it
+
 	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
 	int objectid = env->addActiveObject(obj);
 	// If failed to add, return nothing (reads as nil)
 	if(objectid == 0)
 		return 0;
-	// Return ObjectRef
+
+	// If already deleted (can happen in on_activate), return nil
+	if (obj->isGone())
+		return 0;
 	getScriptApiBase(L)->objectrefGetOrCreate(L, obj);
 	return 1;
 }
@@ -778,8 +780,8 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 
 #ifndef SERVER
 	// Client API limitations
-	if (getClient(L))
-		radius = getClient(L)->CSMClampRadius(pos, radius);
+	if (Client *client = getClient(L))
+		radius = client->CSMClampRadius(pos, radius);
 #endif
 
 	for (int d = start_radius; d <= radius; d++) {
@@ -809,9 +811,9 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
 
 #ifndef SERVER
-	if (getClient(L)) {
-		minp = getClient(L)->CSMClampPos(minp);
-		maxp = getClient(L)->CSMClampPos(maxp);
+	if (Client *client = getClient(L)) {
+		minp = client->CSMClampPos(minp);
+		maxp = client->CSMClampPos(maxp);
 	}
 #endif
 
@@ -885,9 +887,9 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
 
 #ifndef SERVER
-	if (getClient(L)) {
-		minp = getClient(L)->CSMClampPos(minp);
-		maxp = getClient(L)->CSMClampPos(maxp);
+	if (Client *client = getClient(L)) {
+		minp = client->CSMClampPos(minp);
+		maxp = client->CSMClampPos(maxp);
 	}
 #endif
 
@@ -1302,6 +1304,19 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	return 0;
 }
 
+// get_translated_string(lang_code, string)
+int ModApiEnvMod::l_get_translated_string(lua_State * L)
+{
+	GET_ENV_PTR;
+	std::string lang_code = luaL_checkstring(L, 1);
+	std::string string = luaL_checkstring(L, 2);
+	getServer(L)->loadTranslationLanguage(lang_code);
+	string = wide_to_utf8(translate_string(utf8_to_wide(string),
+			&(*g_server_translations)[lang_code]));
+	lua_pushstring(L, string.c_str());
+	return 1;
+}
+
 void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
@@ -1349,6 +1364,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
+	API_FCT(get_translated_string);
 }
 
 void ModApiEnvMod::InitializeClient(lua_State *L, int top)

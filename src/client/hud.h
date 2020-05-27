@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_HUD_HEADER
-#define CLIENT_HUD_HEADER
+#pragma once
 
 #include <vector>
 #include <IGUIFont.h>
@@ -82,8 +81,9 @@ public:
 
 private:
 	bool calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos);
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &texture,
-			s32 count, v2s32 offset, v2s32 size = v2s32());
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
+			const std::string &texture, const std::string& bgtexture,
+			s32 count, s32 maxcount, v2s32 offset, v2s32 size = v2s32());
 
 	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 			s32 inv_offset, InventoryList *mainlist, u16 selectitem,
@@ -147,4 +147,3 @@ void drawItemStack(
 		const v3s16 &angle,
 		const v3s16 &rotation_speed);
 
-#endif

@@ -37,9 +37,9 @@ struct SkyboxParams
 	std::vector<std::string> textures;
 	bool clouds;
 	SkyColor sky_color;
-	video::SColor sun_tint;
-	video::SColor moon_tint;
-	std::string tint_type;
+	video::SColor fog_sun_tint;
+	video::SColor fog_moon_tint;
+	std::string fog_tint_type;
 };
 
 struct SunParams
@@ -76,12 +76,12 @@ public:
 	{
 		SkyColor sky;
 		// Horizon colors
-		sky.day_horizon = video::SColor(255, 155, 193, 240);
+		sky.day_horizon = video::SColor(255, 144, 211, 246);
 		sky.indoors = video::SColor(255, 100, 100, 100);
 		sky.dawn_horizon = video::SColor(255, 186, 193, 240);
 		sky.night_horizon = video::SColor(255, 64, 144, 255);
 		// Sky colors
-		sky.day_sky = video::SColor(255, 140, 186, 250);
+		sky.day_sky = video::SColor(255, 97, 181, 245);
 		sky.dawn_sky = video::SColor(255, 180, 186, 250);
 		sky.night_sky = video::SColor(255, 0, 107, 255);
 		return sky;

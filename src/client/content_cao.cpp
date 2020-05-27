@@ -713,6 +713,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		mesh->drop();
 
 		m_meshnode->setScale(m_prop.visual_size);
+		m_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
+			m_prop.backface_culling);
 
 		setSceneNodeMaterial(m_meshnode);
 	} else if (m_prop.visual == "mesh") {
@@ -832,19 +834,20 @@ void GenericCAO::setNodeLight(u8 light)
 	}
 
 	if (m_enable_shaders) {
-		scene::ISceneNode *node = getSceneNode();
-
-		if (node == nullptr)
-			return;
-
 		if (m_prop.visual == "upright_sprite") {
+			if (!m_meshnode)
+				return;
+
 			scene::IMesh *mesh = m_meshnode->getMesh();
 			for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-				video::SMaterial &material = buf->getMaterial();
-				material.EmissiveColor = color;
+				buf->getMaterial().EmissiveColor = color;
 			}
 		} else {
+			scene::ISceneNode *node = getSceneNode();
+			if (!node)
+				return;
+
 			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
 				video::SMaterial &material = node->getMaterial(i);
 				material.EmissiveColor = color;
@@ -890,6 +893,11 @@ void GenericCAO::updateNodePos()
 
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
+	if (m_animated_meshnode) {
+		m_animated_meshnode->animateJoints();
+		updateBonePosition();
+	}
+	
 	// Handle model animations and update positions instantly to prevent lags
 	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
@@ -1072,10 +1080,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updateTextures(m_previous_texture_modifier);
 		}
 	}
+
 	if (!getParent() && std::fabs(m_prop.automatic_rotate) > 0.001) {
-		m_rotation.Y += dtime * m_prop.automatic_rotate * 180 / M_PI;
-		rot_translator.val_current = m_rotation;
-		updateNodePos();
+		// This is the child node's rotation. It is only used for automatic_rotate.
+		v3f local_rot = node->getRotation();
+		local_rot.Y = modulo360f(local_rot.Y - dtime * core::RADTODEG *
+				m_prop.automatic_rotate);
+		node->setRotation(local_rot);
 	}
 
 	if (!getParent() && m_prop.automatic_face_movement_dir &&
@@ -1360,16 +1371,41 @@ void GenericCAO::updateBonePosition()
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for(std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
-			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-		std::string bone_name = (*ii).first;
-		v3f bone_pos = (*ii).second.X;
-		v3f bone_rot = (*ii).second.Y;
+	for (auto &it : m_bone_position) {
+		std::string bone_name = it.first;
 		irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
-		if(bone)
-		{
-			bone->setPosition(bone_pos);
+		if (bone) {
+			bone->setPosition(it.second.X);
+			bone->setRotation(it.second.Y);
+		}
+	}
+	
+	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
+	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
+		irr::scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
+		if (!bone)
+			continue;
+
+		//If bone is manually positioned there is no need to perform the bug check
+		bool skip = false;
+		for (auto &it : m_bone_position) {
+			if (it.first == bone->getName()) {
+				skip = true;
+				break;
+			}
+		}
+		if (skip)
+			continue;
+
+		// Workaround for Irrlicht bug
+		// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
+		// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone to the proper position
+		// and update the bones transformation.
+		v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
+		float offset = fabsf(bone_rot.X - bone->getRotation().X);
+		if (offset > 179.9f && offset < 180.1f) { 
 			bone->setRotation(bone_rot);
+			bone->updateAbsolutePosition();
 		}
 	}
 }
@@ -1471,11 +1507,7 @@ void GenericCAO::processMessage(const std::string &data)
 		m_position = readV3F32(is);
 		m_velocity = readV3F32(is);
 		m_acceleration = readV3F32(is);
-
-		if (std::fabs(m_prop.automatic_rotate) < 0.001f)
-			m_rotation = readV3F32(is);
-		else
-			readV3F32(is);
+		m_rotation = readV3F32(is);
 
 		m_rotation = wrapDegrees_0_360_v3f(m_rotation);
 		bool do_interpolate = readU8(is);
@@ -1502,7 +1534,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == AO_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
 
-		// immediatly reset a engine issued texture modifier if a mod sends a different one
+		// immediately reset a engine issued texture modifier if a mod sends a different one
 		if (m_reset_textures_timer > 0) {
 			m_reset_textures_timer = -1;
 			updateTextures(m_previous_texture_modifier);
@@ -1583,7 +1615,7 @@ void GenericCAO::processMessage(const std::string &data)
 		v3f rotation = readV3F32(is);
 		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 
-		updateBonePosition();
+		// updateBonePosition(); now called every step
 	} else if (cmd == AO_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);
 		std::string bone = deSerializeString(is);
@@ -1616,13 +1648,11 @@ void GenericCAO::processMessage(const std::string &data)
 						m_smgr, m_env, m_position,
 						v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 				m_env->addSimpleObject(simple);
-			} else if (m_reset_textures_timer < 0) {
-				// TODO: Execute defined fast response
-				// Flashing shall suffice as there is no definition
+			} else if (m_reset_textures_timer < 0 && !m_prop.damage_texture_modifier.empty()) {
 				m_reset_textures_timer = 0.05;
 				if(damage >= 2)
 					m_reset_textures_timer += 0.05 * damage;
-				updateTextures(m_current_texture_modifier + "^[brighten");
+				updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 			}
 		}
 
@@ -1693,13 +1723,11 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 					v2f(m_prop.visual_size.X, m_prop.visual_size.Y) * BS);
 			m_env->addSimpleObject(simple);
 		}
-		// TODO: Execute defined fast response
-		// Flashing shall suffice as there is no definition
-		if (m_reset_textures_timer < 0) {
+		if (m_reset_textures_timer < 0 && !m_prop.damage_texture_modifier.empty()) {
 			m_reset_textures_timer = 0.05;
 			if (result.damage >= 2)
 				m_reset_textures_timer += 0.05 * result.damage;
-			updateTextures(m_current_texture_modifier + "^[brighten");
+			updateTextures(m_current_texture_modifier + m_prop.damage_texture_modifier);
 		}
 	}
 

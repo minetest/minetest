@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 
 #include "util/base64.h"
+#include "client/camera.h"
 #include "chatmessage.h"
 #include "client/clientmedia.h"
 #include "log.h"
@@ -530,11 +531,21 @@ void Client::handleCommand_Movement(NetworkPacket* pkt)
 void Client::handleCommand_Fov(NetworkPacket *pkt)
 {
 	f32 fov;
-	bool is_multiplier;
+	bool is_multiplier = false;
+	f32 transition_time = 0.0f;
+
 	*pkt >> fov >> is_multiplier;
 
+	// Wrap transition_time extraction within a
+	// try-catch to preserve backwards compat
+	try {
+		*pkt >> transition_time;
+	} catch (PacketError &e) {};
+
 	LocalPlayer *player = m_env.getLocalPlayer();
-	player->setFov({ fov, is_multiplier });
+	assert(player);
+	player->setFov({ fov, is_multiplier, transition_time });
+	m_camera->notifyFovChange();
 }
 
 void Client::handleCommand_HP(NetworkPacket *pkt)
@@ -947,114 +958,66 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	std::string datastring(pkt->getString(0), pkt->getSize());
 	std::istringstream is(datastring, std::ios_base::binary);
 
-	v3f pos                 = readV3F32(is);
-	v3f vel                 = readV3F32(is);
-	v3f acc                 = readV3F32(is);
-	float expirationtime    = readF32(is);
-	float size              = readF32(is);
-	bool collisiondetection = readU8(is);
-	std::string texture     = deSerializeLongString(is);
-
-	bool vertical          = false;
-	bool collision_removal = false;
-	TileAnimationParams animation;
-	animation.type         = TAT_NONE;
-	u8 glow                = 0;
-	bool object_collision  = false;
-	try {
-		vertical = readU8(is);
-		collision_removal = readU8(is);
-		animation.deSerialize(is, m_proto_ver);
-		glow = readU8(is);
-		object_collision = readU8(is);
-	} catch (...) {}
+	ParticleParameters p;
+	p.deSerialize(is, m_proto_ver);
 
 	ClientEvent *event = new ClientEvent();
-	event->type                              = CE_SPAWN_PARTICLE;
-	event->spawn_particle.pos                = new v3f (pos);
-	event->spawn_particle.vel                = new v3f (vel);
-	event->spawn_particle.acc                = new v3f (acc);
-	event->spawn_particle.expirationtime     = expirationtime;
-	event->spawn_particle.size               = size;
-	event->spawn_particle.collisiondetection = collisiondetection;
-	event->spawn_particle.collision_removal  = collision_removal;
-	event->spawn_particle.object_collision   = object_collision;
-	event->spawn_particle.vertical           = vertical;
-	event->spawn_particle.texture            = new std::string(texture);
-	event->spawn_particle.animation          = animation;
-	event->spawn_particle.glow               = glow;
+	event->type           = CE_SPAWN_PARTICLE;
+	event->spawn_particle = new ParticleParameters(p);
 
 	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 {
-	u16 amount;
-	float spawntime;
-	v3f minpos;
-	v3f maxpos;
-	v3f minvel;
-	v3f maxvel;
-	v3f minacc;
-	v3f maxacc;
-	float minexptime;
-	float maxexptime;
-	float minsize;
-	float maxsize;
-	bool collisiondetection;
+	std::string datastring(pkt->getString(0), pkt->getSize());
+	std::istringstream is(datastring, std::ios_base::binary);
+
+	ParticleSpawnerParameters p;
 	u32 server_id;
+	u16 attached_id = 0;
 
-	*pkt >> amount >> spawntime >> minpos >> maxpos >> minvel >> maxvel
-		>> minacc >> maxacc >> minexptime >> maxexptime >> minsize
-		>> maxsize >> collisiondetection;
+	p.amount             = readU16(is);
+	p.time               = readF32(is);
+	p.minpos             = readV3F32(is);
+	p.maxpos             = readV3F32(is);
+	p.minvel             = readV3F32(is);
+	p.maxvel             = readV3F32(is);
+	p.minacc             = readV3F32(is);
+	p.maxacc             = readV3F32(is);
+	p.minexptime         = readF32(is);
+	p.maxexptime         = readF32(is);
+	p.minsize            = readF32(is);
+	p.maxsize            = readF32(is);
+	p.collisiondetection = readU8(is);
+	p.texture            = deSerializeLongString(is);
 
-	std::string texture = pkt->readLongString();
+	server_id = readU32(is);
 
-	*pkt >> server_id;
+	p.vertical = readU8(is);
+	p.collision_removal = readU8(is);
 
-	bool vertical          = false;
-	bool collision_removal = false;
-	u16 attached_id        = 0;
-	TileAnimationParams animation;
-	animation.type         = TAT_NONE;
-	u8 glow                = 0;
-	bool object_collision  = false;
-	try {
-		*pkt >> vertical;
-		*pkt >> collision_removal;
-		*pkt >> attached_id;
+	attached_id = readU16(is);
 
-		// This is horrible but required (why are there two ways to deserialize pkts?)
-		std::string datastring(pkt->getRemainingString(), pkt->getRemainingBytes());
-		std::istringstream is(datastring, std::ios_base::binary);
-		animation.deSerialize(is, m_proto_ver);
-		glow = readU8(is);
-		object_collision = readU8(is);
-	} catch (...) {}
+	p.animation.deSerialize(is, m_proto_ver);
+	p.glow = readU8(is);
+	p.object_collision = readU8(is);
+
+	// This is kinda awful
+	do {
+		u16 tmp_param0 = readU16(is);
+		if (is.eof())
+			break;
+		p.node.param0 = tmp_param0;
+		p.node.param2 = readU8(is);
+		p.node_tile   = readU8(is);
+	} while (0);
 
 	auto event = new ClientEvent();
-	event->type                                   = CE_ADD_PARTICLESPAWNER;
-	event->add_particlespawner.amount             = amount;
-	event->add_particlespawner.spawntime          = spawntime;
-	event->add_particlespawner.minpos             = new v3f (minpos);
-	event->add_particlespawner.maxpos             = new v3f (maxpos);
-	event->add_particlespawner.minvel             = new v3f (minvel);
-	event->add_particlespawner.maxvel             = new v3f (maxvel);
-	event->add_particlespawner.minacc             = new v3f (minacc);
-	event->add_particlespawner.maxacc             = new v3f (maxacc);
-	event->add_particlespawner.minexptime         = minexptime;
-	event->add_particlespawner.maxexptime         = maxexptime;
-	event->add_particlespawner.minsize            = minsize;
-	event->add_particlespawner.maxsize            = maxsize;
-	event->add_particlespawner.collisiondetection = collisiondetection;
-	event->add_particlespawner.collision_removal  = collision_removal;
-	event->add_particlespawner.object_collision   = object_collision;
-	event->add_particlespawner.attached_id        = attached_id;
-	event->add_particlespawner.vertical           = vertical;
-	event->add_particlespawner.texture            = new std::string(texture);
-	event->add_particlespawner.id                 = server_id;
-	event->add_particlespawner.animation          = animation;
-	event->add_particlespawner.glow               = glow;
+	event->type                            = CE_ADD_PARTICLESPAWNER;
+	event->add_particlespawner.p           = new ParticleSpawnerParameters(p);
+	event->add_particlespawner.attached_id = attached_id;
+	event->add_particlespawner.id          = server_id;
 
 	m_client_event_queue.push(event);
 }
@@ -1091,22 +1054,16 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	v3f world_pos;
 	v2s32 size;
 	s16 z_index = 0;
+	std::string text2;
 
 	*pkt >> server_id >> type >> pos >> name >> scale >> text >> number >> item
 		>> dir >> align >> offset;
 	try {
 		*pkt >> world_pos;
-	}
-	catch(SerializationError &e) {};
-
-	try {
 		*pkt >> size;
-	} catch(SerializationError &e) {};
-
-	try {
 		*pkt >> z_index;
-	}
-	catch(PacketError &e) {}
+		*pkt >> text2;
+	} catch(PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
 	event->type             = CE_HUDADD;
@@ -1124,6 +1081,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	event->hudadd.world_pos = new v3f(world_pos);
 	event->hudadd.size      = new v2s32(size);
 	event->hudadd.z_index   = z_index;
+	event->hudadd.text2     = new std::string(text2);
 	m_client_event_queue.push(event);
 }
 
@@ -1160,7 +1118,7 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE ||
 		stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
 		*pkt >> v2fdata;
-	else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT)
+	else if (stat == HUD_STAT_NAME || stat == HUD_STAT_TEXT || stat == HUD_STAT_TEXT2)
 		*pkt >> sdata;
 	else if (stat == HUD_STAT_WORLD_POS)
 		*pkt >> v3fdata;
@@ -1265,9 +1223,9 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		// Fix for "regular" skies, as color isn't kept:
 		if (skybox.type == "regular") {
 			skybox.sky_color = sky_defaults.getSkyColorDefaults();
-			skybox.tint_type = "default";
-			skybox.moon_tint = video::SColor(255, 255, 255, 255);
-			skybox.sun_tint = video::SColor(255, 255, 255, 255);
+			skybox.fog_tint_type = "default";
+			skybox.fog_moon_tint = video::SColor(255, 255, 255, 255);
+			skybox.fog_sun_tint = video::SColor(255, 255, 255, 255);
 		}
 		else {
 			sun.visible = false;
@@ -1302,7 +1260,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 		std::string texture;
 
 		*pkt >> skybox.bgcolor >> skybox.type >> skybox.clouds >>
-			skybox.sun_tint >> skybox.moon_tint >> skybox.tint_type;
+			skybox.fog_sun_tint >> skybox.fog_moon_tint >> skybox.fog_tint_type;
 
 		if (skybox.type == "skybox") {
 			*pkt >> texture_count;

@@ -855,6 +855,7 @@ private:
 	SoundMaker *soundmaker = nullptr;
 
 	ChatBackend *chat_backend = nullptr;
+	LogOutputBuffer m_chat_log_buf;
 
 	EventManager *eventmgr = nullptr;
 	QuicktuneShortcutter *quicktune = nullptr;
@@ -926,6 +927,7 @@ private:
 };
 
 Game::Game() :
+	m_chat_log_buf(g_logger),
 	m_game_ui(new GameUI())
 {
 	g_settings->registerChangedCallback("doubletap_jump",
@@ -1055,7 +1057,7 @@ bool Game::startup(bool *kill,
 	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
 
-	g_translations->clear();
+	g_client_translations->clear();
 
 	if (!init(map_dir, address, port, gamespec))
 		return false;
@@ -1192,6 +1194,7 @@ void Game::shutdown()
 
 	chat_backend->addMessage(L"", L"# Disconnected.");
 	chat_backend->addMessage(L"", L"");
+	m_chat_log_buf.clear();
 
 	if (client) {
 		client->Stop();
@@ -1249,7 +1252,7 @@ bool Game::init(
 bool Game::initSound()
 {
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound")) {
+	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
 		sound = createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher);
 		if (!sound)
@@ -1302,7 +1305,6 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	}
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr, false);
-	server->init();
 	server->start();
 
 	return true;
@@ -2673,6 +2675,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 		delete event->hudadd.offset;
 		delete event->hudadd.world_pos;
 		delete event->hudadd.size;
+		delete event->hudadd.text2;
 		return;
 	}
 
@@ -2690,6 +2693,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->world_pos = *event->hudadd.world_pos;
 	e->size = *event->hudadd.size;
 	e->z_index = event->hudadd.z_index;
+	e->text2  = *event->hudadd.text2;
 	hud_server_to_client[server_id] = player->addHud(e);
 
 	delete event->hudadd.pos;
@@ -2700,6 +2704,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	delete event->hudadd.offset;
 	delete event->hudadd.world_pos;
 	delete event->hudadd.size;
+	delete event->hudadd.text2;
 }
 
 void Game::handleClientEvent_HudRemove(ClientEvent *event, CameraOrientation *cam)
@@ -2772,6 +2777,10 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 		case HUD_STAT_Z_INDEX:
 			e->z_index = event->hudchange.data;
 			break;
+
+		case HUD_STAT_TEXT2:
+			e->text2 = *event->hudchange.sdata;
+			break;
 	}
 
 	delete event->hudchange.v3fdata;
@@ -2799,9 +2808,9 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		// Update mesh based skybox colours if applicable.
 		sky->setSkyColors(*event->set_sky);
 		sky->setHorizonTint(
-			event->set_sky->sun_tint,
-			event->set_sky->moon_tint,
-			event->set_sky->tint_type
+			event->set_sky->fog_sun_tint,
+			event->set_sky->fog_moon_tint,
+			event->set_sky->fog_tint_type
 		);
 	} else if (event->set_sky->type == "skybox" &&
 			event->set_sky->textures.size() == 6) {
@@ -2811,9 +2820,9 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		sky->setFallbackBgColor(event->set_sky->bgcolor);
 		// Set sunrise and sunset fog tinting:
 		sky->setHorizonTint(
-			event->set_sky->sun_tint,
-			event->set_sky->moon_tint,
-			event->set_sky->tint_type
+			event->set_sky->fog_sun_tint,
+			event->set_sky->fog_moon_tint,
+			event->set_sky->fog_tint_type
 		);
 		// Add textures to skybox.
 		for (int i = 0; i < 6; i++)
@@ -2897,18 +2906,9 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 void Game::updateChat(f32 dtime, const v2u32 &screensize)
 {
-	// Add chat log output for errors to be shown in chat
-	static LogOutputBuffer chat_log_error_buf(g_logger, LL_ERROR);
-
 	// Get new messages from error log buffer
-	while (!chat_log_error_buf.empty()) {
-		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
-		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message.insert(0, L"\x1b(c@red)");
-			error_message.append(L"\x1b(c@white)");
-		}
-		chat_backend->addMessage(L"", error_message);
-	}
+	while (!m_chat_log_buf.empty())
+		chat_backend->addMessage(L"", utf8_to_wide(m_chat_log_buf.get()));
 
 	// Get new messages from client
 	std::wstring message;
@@ -3029,7 +3029,6 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	const v3f head_position = camera->getHeadPosition();
 	const v3f camera_direction = camera->getDirection();
 	const v3s16 camera_offset  = camera->getOffset();
 
@@ -3045,13 +3044,22 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	core::line3d<f32> shootline;
 
-	if (camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT) {
-		shootline = core::line3d<f32>(head_position,
-			head_position + camera_direction * BS * d);
-	} else {
+	switch (camera->getCameraMode()) {
+	case CAMERA_MODE_FIRST:
+		// Shoot from camera position, with bobbing
+		shootline.start = camera->getPosition();
+		break;
+	case CAMERA_MODE_THIRD:
+		// Shoot from player head, no bobbing
+		shootline.start = camera->getHeadPosition();
+		break;
+	case CAMERA_MODE_THIRD_FRONT:
+		shootline.start = camera->getHeadPosition();
 		// prevent player pointing anything in front-view
-		shootline = core::line3d<f32>(head_position, head_position);
+		d = 0;
+		break;
 	}
+	shootline.end = shootline.start + camera_direction * BS * d;
 
 #ifdef HAVE_TOUCHSCREENGUI
 
@@ -4276,7 +4284,6 @@ void the_game(bool *kill,
 				reconnect_requested, &chat_backend, gamespec,
 				simple_singleplayer_mode)) {
 			game.run();
-			game.shutdown();
 		}
 
 	} catch (SerializationError &e) {
@@ -4292,4 +4299,5 @@ void the_game(bool *kill,
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;
 	}
+	game.shutdown();
 }

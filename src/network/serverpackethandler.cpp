@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "server/player_sao.h"
+#include "server/serverinventorymgr.h"
 #include "util/auth.h"
 #include "util/base64.h"
 #include "util/pointedthing.h"
@@ -111,9 +112,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	if (depl_serial_v == SER_FMT_VER_INVALID) {
 		actionstream << "Server: A mismatched client tried to connect from " <<
-			addr_s << std::endl;
-		infostream << "Server: Cannot negotiate serialization version with " <<
-			addr_s << " client_max=" << (int)client_max << std::endl;
+			addr_s << " ser_fmt_max=" << (int)client_max << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
 		return;
 	}
@@ -148,7 +147,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
 			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
 		actionstream << "Server: A mismatched client tried to connect from " <<
-			addr_s << std::endl;
+			addr_s << " proto_max=" << (int)max_net_proto_version << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
 		return;
 	}
@@ -311,6 +310,9 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 	RemoteClient *client = getClient(peer_id, CS_InitDone);
 
+	// Keep client language for server translations
+	client->setLangCode(lang);
+
 	// Send active objects
 	{
 		PlayerSAO *sao = getPlayerSAO(peer_id);
@@ -407,9 +409,12 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	// (u16) 1 + std::string represents a pseudo vector serialization representation
 	notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(playersao->getPlayer()->getName());
 	m_clients.sendToAll(&notice_pkt);
-
 	m_clients.event(peer_id, CSE_SetClientReady);
-	m_script->on_joinplayer(playersao);
+
+	s64 last_login;
+	m_script->getAuth(playersao->getPlayer()->getName(), nullptr, nullptr, &last_login);
+	m_script->on_joinplayer(playersao, last_login);
+
 	// Send shutdown timer if shutdown has been scheduled
 	if (m_shutdown_state.isTimerRunning()) {
 		SendChatMessage(peer_id, m_shutdown_state.getShutdownTimerMessage());
@@ -619,9 +624,9 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		ma->from_inv.applyCurrentPlayer(player->getName());
 		ma->to_inv.applyCurrentPlayer(player->getName());
 
-		setInventoryModified(ma->from_inv);
+		m_inventory_mgr->setInventoryModified(ma->from_inv);
 		if (ma->from_inv != ma->to_inv)
-			setInventoryModified(ma->to_inv);
+			m_inventory_mgr->setInventoryModified(ma->to_inv);
 
 		bool from_inv_is_current_player =
 			(ma->from_inv.type == InventoryLocation::PLAYER) &&
@@ -686,7 +691,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 		da->from_inv.applyCurrentPlayer(player->getName());
 
-		setInventoryModified(da->from_inv);
+		m_inventory_mgr->setInventoryModified(da->from_inv);
 
 		/*
 			Disable dropping items out of craftpreview
@@ -722,7 +727,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 		ca->craft_inv.applyCurrentPlayer(player->getName());
 
-		setInventoryModified(ca->craft_inv);
+		m_inventory_mgr->setInventoryModified(ca->craft_inv);
 
 		//bool craft_inv_is_current_player =
 		//	(ca->craft_inv.type == InventoryLocation::PLAYER) &&
@@ -738,7 +743,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	}
 
 	// Do the action
-	a->apply(this, playersao, this);
+	a->apply(m_inventory_mgr.get(), playersao, this);
 	// Eat the action
 	delete a;
 }
@@ -899,8 +904,8 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 		actionstream << "Player " << player->getName()
 				<< " tried to access " << what
 				<< " from too far: "
-				<< "d=" << d <<", max_d=" << max_d
-				<< ". ignoring." << std::endl;
+				<< "d=" << d << ", max_d=" << max_d
+				<< "; ignoring." << std::endl;
 		// Call callbacks
 		m_script->on_cheat(player->getPlayerSAO(), "interacted_too_far");
 		return false;
@@ -953,7 +958,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	}
 
 	if (playersao->isDead()) {
-		actionstream << "Server: NoCheat: " << player->getName()
+		actionstream << "Server: " << player->getName()
 				<< " tried to interact while dead; ignoring." << std::endl;
 		if (pointed.type == POINTEDTHING_NODE) {
 			// Re-send block to revert change on client-side
@@ -1142,7 +1147,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				playersao->noCheatDigEnd();
 				// If player didn't start digging this, ignore dig
 				if (nocheat_p != p_under) {
-					infostream << "Server: NoCheat: " << player->getName()
+					infostream << "Server: " << player->getName()
 							<< " started digging "
 							<< PP(nocheat_p) << " and completed digging "
 							<< PP(p_under) << "; not digging." << std::endl;
@@ -1166,9 +1171,9 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				}
 				// If can't dig, ignore dig
 				if (!params.diggable) {
-					infostream << "Server: NoCheat: " << player->getName()
+					infostream << "Server: " << player->getName()
 							<< " completed digging " << PP(p_under)
-							<< ", which is not diggable with tool. not digging."
+							<< ", which is not diggable with tool; not digging."
 							<< std::endl;
 					is_valid_dig = false;
 					// Call callbacks
@@ -1192,7 +1197,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				}
 				// Dig not possible
 				else {
-					infostream << "Server: NoCheat: " << player->getName()
+					infostream << "Server: " << player->getName()
 							<< " completed digging " << PP(p_under)
 							<< "too fast; not digging." << std::endl;
 					is_valid_dig = false;
@@ -1510,6 +1515,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 
 		initial_ver_key = encode_srp_verifier(verification_key, salt);
 		m_script->createAuth(playername, initial_ver_key);
+		m_script->on_authplayer(playername, addr_s, true);
 
 		acceptAuth(peer_id, false);
 	} else {
@@ -1646,24 +1652,25 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
+	std::string addr_s = getPeerAddress(pkt->getPeerId()).serializeString();
+	std::string playername = client->getName();
 
 	bool wantSudo = (cstate == CS_Active);
 
 	verbosestream << "Server: Received TOCLIENT_SRP_BYTES_M." << std::endl;
 
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
-		actionstream << "Server: got SRP _M packet in wrong state " << cstate <<
-			" from " << getPeerAddress(peer_id).serializeString() <<
-			". Ignoring." << std::endl;
+		actionstream << "Server: got SRP _M packet in wrong state "
+			<< cstate << " from " << addr_s
+			<< ". Ignoring." << std::endl;
 		return;
 	}
 
 	if (client->chosen_mech != AUTH_MECHANISM_SRP &&
 			client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
-		actionstream << "Server: got SRP _M packet, while auth is going on "
-			"with mech " << client->chosen_mech << " from " <<
-			getPeerAddress(peer_id).serializeString() <<
-			" (wantSudo=" << wantSudo << "). Denying." << std::endl;
+		actionstream << "Server: got SRP _M packet, while auth"
+			<< "is going on with mech " << client->chosen_mech << " from " 
+			<< addr_s << " (wantSudo=" << wantSudo << "). Denying." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(peer_id);
 			return;
@@ -1678,9 +1685,8 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 	if (srp_verifier_get_session_key_length((SRPVerifier *) client->auth_data)
 			!= bytes_M.size()) {
-		actionstream << "Server: User " << client->getName() << " at " <<
-			getPeerAddress(peer_id).serializeString() <<
-			" sent bytes_M with invalid length " << bytes_M.size() << std::endl;
+		actionstream << "Server: User " << playername << " at " << addr_s
+			<< " sent bytes_M with invalid length " << bytes_M.size() << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 		return;
 	}
@@ -1692,24 +1698,21 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 	if (!bytes_HAMK) {
 		if (wantSudo) {
-			actionstream << "Server: User " << client->getName() << " at " <<
-				getPeerAddress(peer_id).serializeString() <<
-				" tried to change their password, but supplied wrong (SRP) "
-				"password for authentication." << std::endl;
+			actionstream << "Server: User " << playername << " at " << addr_s
+				<< " tried to change their password, but supplied wrong"
+				<< " (SRP) password for authentication." << std::endl;
 			DenySudoAccess(peer_id);
 			return;
 		}
 
-		std::string ip = getPeerAddress(peer_id).serializeString();
-		actionstream << "Server: User " << client->getName() << " at " << ip <<
-			" supplied wrong password (auth mechanism: SRP)." << std::endl;
-		m_script->on_auth_failure(client->getName(), ip);
+		actionstream << "Server: User " << playername << " at " << addr_s
+			<< " supplied wrong password (auth mechanism: SRP)." << std::endl;
+		m_script->on_authplayer(playername, addr_s, false);
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_PASSWORD);
 		return;
 	}
 
 	if (client->create_player_on_auth_success) {
-		std::string playername = client->getName();
 		m_script->createAuth(playername, client->enc_pwd);
 
 		std::string checkpwd; // not used, but needed for passing something
@@ -1723,6 +1726,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		client->create_player_on_auth_success = false;
 	}
 
+	m_script->on_authplayer(playername, addr_s, true);
 	acceptAuth(peer_id, wantSudo);
 }
 

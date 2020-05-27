@@ -62,7 +62,7 @@ set(USE_GETTEXT FALSE)
 
 if(ENABLE_GETTEXT)
 	find_package(GettextLib)
-	if(GETTEXT_FOUND)
+	if(GETTEXTLIB_FOUND)
 		if(WIN32)
 			message(STATUS "GetText library: ${GETTEXT_LIBRARY}")
 			message(STATUS "GetText DLL: ${GETTEXT_DLL}")
@@ -70,7 +70,7 @@ if(ENABLE_GETTEXT)
 		endif()
 		set(USE_GETTEXT TRUE)
 		message(STATUS "GetText enabled; locales found: ${GETTEXT_AVAILABLE_LOCALES}")
-	endif(GETTEXT_FOUND)
+	endif(GETTEXTLIB_FOUND)
 else()
 	mark_as_advanced(GETTEXT_ICONV_DLL GETTEXT_INCLUDE_DIR GETTEXT_LIBRARY GETTEXT_MSGFMT)
 	message(STATUS "GetText disabled.")
@@ -216,6 +216,26 @@ endif(ENABLE_REDIS)
 
 
 find_package(SQLite3 REQUIRED)
+
+OPTION(ENABLE_PROMETHEUS "Enable prometheus client support" FALSE)
+set(USE_PROMETHEUS FALSE)
+
+if(ENABLE_PROMETHEUS)
+	find_path(PROMETHEUS_CPP_INCLUDE_DIR NAMES prometheus/counter.h)
+	find_library(PROMETHEUS_PULL_LIBRARY NAMES prometheus-cpp-pull)
+	find_library(PROMETHEUS_CORE_LIBRARY NAMES prometheus-cpp-core)
+	if(PROMETHEUS_CPP_INCLUDE_DIR AND PROMETHEUS_PULL_LIBRARY AND PROMETHEUS_CORE_LIBRARY)
+		set(PROMETHEUS_LIBRARIES ${PROMETHEUS_PULL_LIBRARY} ${PROMETHEUS_CORE_LIBRARY})
+		set(USE_PROMETHEUS TRUE)
+		include_directories(${PROMETHEUS_CPP_INCLUDE_DIR})
+	endif(PROMETHEUS_CPP_INCLUDE_DIR AND PROMETHEUS_PULL_LIBRARY AND PROMETHEUS_CORE_LIBRARY)
+endif(ENABLE_PROMETHEUS)
+
+if(USE_PROMETHEUS)
+	message(STATUS "Prometheus client enabled.")
+else(USE_PROMETHEUS)
+	message(STATUS "Prometheus client disabled.")
+endif(USE_PROMETHEUS)
 
 OPTION(ENABLE_SPATIAL "Enable SpatialIndex AreaStore backend" TRUE)
 set(USE_SPATIAL FALSE)
@@ -407,6 +427,7 @@ set(common_SRCS
 	noise.cpp
 	objdef.cpp
 	object_properties.cpp
+	particles.cpp
 	pathfinder.cpp
 	player.cpp
 	porting.cpp
@@ -597,6 +618,9 @@ if(BUILD_CLIENT)
 	if (USE_REDIS)
 		target_link_libraries(${PROJECT_NAME} ${REDIS_LIBRARY})
 	endif()
+	if (USE_PROMETHEUS)
+		target_link_libraries(${PROJECT_NAME} ${PROMETHEUS_LIBRARIES})
+	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
@@ -632,6 +656,9 @@ if(BUILD_SERVER)
 	if (USE_REDIS)
 		target_link_libraries(${PROJECT_NAME}server ${REDIS_LIBRARY})
 	endif()
+	if (USE_PROMETHEUS)
+		target_link_libraries(${PROJECT_NAME}server ${PROMETHEUS_LIBRARIES})
+	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME}server ${SPATIAL_LIBRARY})
 	endif()
@@ -654,7 +681,7 @@ set(GETTEXT_BLACKLISTED_LOCALES
 
 option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid broken locales" TRUE)
 
-if (GETTEXT_FOUND AND APPLY_LOCALE_BLACKLIST)
+if (GETTEXTLIB_FOUND AND APPLY_LOCALE_BLACKLIST)
 	set(GETTEXT_USED_LOCALES "")
 	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 		if (NOT ";${GETTEXT_BLACKLISTED_LOCALES};" MATCHES ";${LOCALE};")
@@ -676,9 +703,12 @@ if(MSVC)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:SSE")
 	endif()
-	#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /NODEFAULTLIB:\"libcmtd.lib\" /NODEFAULTLIB:\"libcmt.lib\"")
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
-
+	
+	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+	else()
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+	endif()
 
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
