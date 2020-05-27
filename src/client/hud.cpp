@@ -347,7 +347,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				else
 #endif
 				{
-					textfont->draw(text.c_str(), size + pos + offset + offs, olor);
+					textfont->draw(text.c_str(), size + pos + offset + offs, color);
 				}
 				break; }
 			case HUD_ELEM_STATBAR: {
