@@ -400,10 +400,6 @@ function store.get_formspec(dlgdata)
 				formspec[#formspec + 1] = "]"
 			end
 
-			formspec[#formspec + 1] = "style[uninstall_"
-			formspec[#formspec + 1] = tostring(i)
-			formspec[#formspec + 1] = ";bgcolor=red]"
-
 			formspec[#formspec + 1] = "button[-3,0;1.5,0.8;uninstall_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
