@@ -303,34 +303,35 @@ function store.get_formspec(dlgdata)
 		cur_page = 1
 	end
 
+	local W = 15.75
+	local H = 9.5
+
 	local formspec
 	if #store.packages_full > 0 then
 		formspec = {
-			"size[12,7;true]",
+			"formspec_version[3]",
+			"size[15.75,9.5]",
 			"position[0.5,0.55]",
-			"field[0.2,0.1;7.8,1;search_string;;",
-			core.formspec_escape(search_string), "]",
+			"container[0.375,0.375]",
+			"field[0,0;10.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
 			"field_close_on_enter[search_string;false]",
-			"button[7.7,-0.2;2,1;search;",
-			fgettext("Search"), "]",
-			"dropdown[9.7,-0.1;2.4;type;",
-			table.concat(filter_types_titles, ","),
-			";", filter_type, "]",
-			-- "textlist[0,1;2.4,5.6;a;",
-			-- table.concat(taglist, ","), "]",
+			"button[10.225,0;2,0.8;search;", fgettext("Search"), "]",
+			"dropdown[12.6,0;2.4,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
+			"container_end[]",
 
 			-- Page nav buttons
-			"container[0,",
-			num_per_page + 1.5, "]",
-			"button[-0.1,0;3,1;back;",
-			fgettext("Back to Main Menu"), "]",
-			"button[7.1,0;1,1;pstart;<<]",
-			"button[8.1,0;1,1;pback;<]",
-			"label[9.2,0.2;",
-			tonumber(cur_page), " / ",
-			tonumber(dlgdata.pagemax), "]",
-			"button[10.1,0;1,1;pnext;>]",
-			"button[11.1,0;1,1;pend;>>]",
+			"container[0,", H - 0.8 - 0.375, "]",
+			"button[0.375,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
+
+			"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
+			"image_button[0,0;0.8,0.8;", defaulttexturedir, "start_icon.png;pstart;]",
+			"image_button[0.8,0;0.8,0.8;", defaulttexturedir, "prev_icon.png;pback;]",
+			"style[pagenum;border=false]",
+			"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
+			"image_button[3.6,0;0.8,0.8;", defaulttexturedir, "next_icon.png;pnext;]",
+			"image_button[4.4,0;0.8,0.8;", defaulttexturedir, "end_icon.png;pend;]",
+			"container_end[]",
+
 			"container_end[]",
 		}
 
@@ -341,75 +342,82 @@ function store.get_formspec(dlgdata)
 		end
 	else
 		formspec = {
-			"size[12,7;true]",
+			"size[12,7]",
 			"position[0.5,0.55]",
 			"label[4,3;", fgettext("No packages could be retrieved"), "]",
-			"button[-0.1,",
-			num_per_page + 1.5,
-			";3,1;back;",
-			fgettext("Back to Main Menu"), "]",
+			"container[0,", H - 0.8 - 0.375, "]",
+			"button[0,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
+			"container_end[]",
 		}
 	end
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
 		local package = store.packages[i]
-		formspec[#formspec + 1] = "container[0.5,"
-		formspec[#formspec + 1] = (i - start_idx) * 1.1 + 1
+		formspec[#formspec + 1] = "container[0.375,"
+		formspec[#formspec + 1] = (i - start_idx) * 1.375 + (2*0.375 + 0.8)
 		formspec[#formspec + 1] = "]"
 
 		-- image
-		formspec[#formspec + 1] = "image[-0.4,0;1.5,1;"
+		formspec[#formspec + 1] = "image[0,0;1.5,1;"
 		formspec[#formspec + 1] = core.formspec_escape(get_screenshot(package))
 		formspec[#formspec + 1] = "]"
 
 		-- title
-		formspec[#formspec + 1] = "label[1,-0.1;"
+		formspec[#formspec + 1] = "label[1.875,0.1;"
 		formspec[#formspec + 1] = core.formspec_escape(
 				minetest.colorize(mt_color_green, package.title) ..
 				minetest.colorize("#BFBFBF", " by " .. package.author))
 		formspec[#formspec + 1] = "]"
 
-		local description_width = 7.5
+		-- buttons
+		local description_width = W - 0.375*5 - 1 - 2*1.5
+		formspec[#formspec + 1] = "container["
+		formspec[#formspec + 1] = W - 0.375*2
+		formspec[#formspec + 1] = ",0.1]"
+
 		if package.downloading then
-			formspec[#formspec + 1] = "label[8.4,0.2;"
+			formspec[#formspec + 1] = "style[download;border=false]"
+
+			formspec[#formspec + 1] = "button[-3.5,0;2,0.8;download;"
 			formspec[#formspec + 1] = fgettext("Downloading...")
 			formspec[#formspec + 1] = "]"
 		elseif not package.path then
-			formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
+			formspec[#formspec + 1] = "button[-3,0;1.5,0.8;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Install")
 			formspec[#formspec + 1] = "]"
 		else
 			if package.installed_release < package.release then
-				description_width = 6
+				description_width = description_width - 1.5
 
 				-- The install_ action also handles updating
-				formspec[#formspec + 1] = "button[6.9,0;1.5,1;install_"
+				formspec[#formspec + 1] = "button[-4.5,0;1.5,0.8;install_"
 				formspec[#formspec + 1] = tostring(i)
 				formspec[#formspec + 1] = ";"
 				formspec[#formspec + 1] = fgettext("Update")
 				formspec[#formspec + 1] = "]"
 			end
 
-			formspec[#formspec + 1] = "button[8.4,0;1.5,1;uninstall_"
+			formspec[#formspec + 1] = "button[-3,0;1.5,0.8;uninstall_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Uninstall")
 			formspec[#formspec + 1] = "]"
 		end
 
-		formspec[#formspec + 1] = "button[9.9,0;1.5,1;view_"
+		formspec[#formspec + 1] = "button[-1.5,0;1.5,0.8;view_"
 		formspec[#formspec + 1] = tostring(i)
 		formspec[#formspec + 1] = ";"
 		formspec[#formspec + 1] = fgettext("View")
 		formspec[#formspec + 1] = "]"
+		formspec[#formspec + 1] = "container_end[]"
 
 		-- description
-		formspec[#formspec + 1] = "textarea[1.25,0.3;"
+		formspec[#formspec + 1] = "textarea[1.855,0.3;"
 		formspec[#formspec + 1] = tostring(description_width)
-		formspec[#formspec + 1] = ",1;;;"
+		formspec[#formspec + 1] = ",0.8;;;"
 		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
 		formspec[#formspec + 1] = "]"
 
