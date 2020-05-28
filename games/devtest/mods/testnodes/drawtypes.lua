@@ -330,8 +330,7 @@ minetest.register_node("testnodes:plantlike_rooted_degrotate", {
 	groups = { dig_immediate = 3 },
 })
 
--- Demonstrative liquid nodes, source and flowing form. This is only the
--- drawtype, no physical liquid properties are used
+-- Demonstrative liquid nodes, source and flowing form.
 minetest.register_node("testnodes:liquid", {
 	description = S("Source Liquid Drawtype Test Node"),
 	drawtype = "liquid",
@@ -347,6 +346,9 @@ minetest.register_node("testnodes:liquid", {
 
 
 	walkable = false,
+	liquidtype = "source",
+	liquid_range = 1,
+	liquid_viscosity = 0,
 	liquid_alternative_flowing = "testnodes:liquid_flowing",
 	liquid_alternative_source = "testnodes:liquid",
 	groups = { dig_immediate = 3 },
@@ -367,6 +369,9 @@ minetest.register_node("testnodes:liquid_flowing", {
 
 
 	walkable = false,
+	liquidtype = "flowing",
+	liquid_range = 1,
+	liquid_viscosity = 0,
 	liquid_alternative_flowing = "testnodes:liquid_flowing",
 	liquid_alternative_source = "testnodes:liquid",
 	groups = { dig_immediate = 3 },
@@ -387,8 +392,11 @@ minetest.register_node("testnodes:liquid_waving", {
 
 
 	walkable = false,
-	liquid_alternative_flowing = "testnodes:liquid_flowing",
-	liquid_alternative_source = "testnodes:liquid",
+	liquidtype = "source",
+	liquid_range = 1,
+	liquid_viscosity = 0,
+	liquid_alternative_flowing = "testnodes:liquid_flowing_waving",
+	liquid_alternative_source = "testnodes:liquid_waving",
 	groups = { dig_immediate = 3 },
 })
 minetest.register_node("testnodes:liquid_flowing_waving", {
@@ -408,8 +416,11 @@ minetest.register_node("testnodes:liquid_flowing_waving", {
 
 
 	walkable = false,
-	liquid_alternative_flowing = "testnodes:liquid_flowing",
-	liquid_alternative_source = "testnodes:liquid",
+	liquidtype = "flowing",
+	liquid_range = 1,
+	liquid_viscosity = 0,
+	liquid_alternative_flowing = "testnodes:liquid_flowing_waving",
+	liquid_alternative_source = "testnodes:liquid_waving",
 	groups = { dig_immediate = 3 },
 })
 
