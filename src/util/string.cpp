@@ -891,19 +891,51 @@ std::wstring translate_string(const std::wstring &s)
 }
 
 /**
+ * List of characters that are blacklisted from created directories
+ */
+static const wchar_t disallowed_path_chars[] {
+    // Problematic characters from here:
+    // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
+    '<',
+    '>',
+    ':',
+    '\"',
+    '/',
+    '\\',
+    '|',
+    '?',
+    '*',
+
+    // Disallowed to avoid patterns that resolve into path segments, like '..'
+    '.',
+};
+static const int disallowed_char_count = 10;
+
+/**
  * Remove 'unsafe' characters from a directory name by replacing them with '_'
  */
 std::string sanitizeDirName(const std::string &str)
 {
-	std::string tmp = str;
-	for(unsigned long i = 0; i < str.length(); i++) {
-		if (tmp[i] < '0'
-				|| (tmp[i] > '9' && tmp[i] < 'A')
-				|| (tmp[i] > 'Z' && tmp[i] < 'a')
-				|| (tmp[i] > 'z')) {
-			tmp[i] = '_';
-		}
+	std::wstring tmp = utf8_to_wide(str);
+    for(unsigned long i = 0; i < tmp.length(); i++) {
+        bool is_valid = true;
+
+        // Unlikely, but control characters should always be blacklisted
+        if (tmp[i] < 32) {
+            is_valid = false;
+        } else if (tmp[i] < 128) {
+            for (int j = 0; j < disallowed_char_count; ++j) {
+                if (tmp[i] == disallowed_path_chars[j]) {
+                    is_valid = false;
+                    break;
+                }
+            }
+        }
+
+        if (!is_valid) {
+            tmp[i] = '_';
+        }
 	}
 
-	return tmp;
+	return wide_to_utf8(tmp);
 }
