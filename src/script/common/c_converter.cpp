@@ -29,6 +29,7 @@ extern "C" {
 #include "common/c_internal.h"
 #include "constants.h"
 #include <algorithm> // std::find
+#include <set>
 
 
 #define CHECK_TYPE(index, name, type) { \
@@ -459,7 +460,7 @@ size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result
 
 bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname)
 {
-	static thread_local std::vector<u64> warned_msgs;
+	static thread_local std::set<u64> warned_msgs;
 
 	int t = lua_type(L, index);
 	if (t == LUA_TNIL)
@@ -474,10 +475,9 @@ bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname
 		" got " + lua_typename(L, t) + ").\n" + script_get_backtrace(L);
 
 	u64 hash = murmur_hash_64_ua(backtrace.data(), backtrace.length(), 0xBADBABE);
-	if (std::find(warned_msgs.begin(), warned_msgs.end(), hash)
-			== warned_msgs.end()) {
+	if (warned_msgs.find(hash) == warned_msgs.end()) {
 		warningstream << backtrace << std::endl;
-		warned_msgs.push_back(hash);
+		warned_msgs.insert(hash);
 	}
 
 	return false;
