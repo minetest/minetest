@@ -1471,6 +1471,20 @@ void Client::handleCommand_PlayerSpeed(NetworkPacket *pkt)
 	player->addVelocity(added_vel);
 }
 
+void Client::handleCommand_MediaPush(NetworkPacket *pkt)
+{
+	std::string filename, filedata;
+
+	*pkt >> filename;
+	filedata = pkt->readLongString();
+
+	verbosestream << "Server pushes media file \"" << filename << "\" with "
+		<< filedata.size() << " bytes of data" << std::endl;
+
+	// TODO: ensure it's an image file and doesn't exist already
+	loadMedia(filedata, filename);
+}
+
 /*
  * Mod channels
  */

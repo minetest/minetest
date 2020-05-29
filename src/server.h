@@ -236,6 +236,8 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
+	bool runtimeAddMedia(const std::string &filepath);
+
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
 
@@ -454,6 +456,9 @@ private:
 	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
 		bool reliable = true);
 	void SendCSMRestrictionFlags(session_t peer_id);
+
+	void SendMediaPush(session_t peer_id, const std::string &filename,
+		const std::string &filedata);
 
 	/*
 		Something random

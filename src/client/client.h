@@ -222,6 +222,7 @@ public:
 	void handleCommand_FormspecPrepend(NetworkPacket *pkt);
 	void handleCommand_CSMRestrictionFlags(NetworkPacket *pkt);
 	void handleCommand_PlayerSpeed(NetworkPacket *pkt);
+	void handleCommand_MediaPush(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 

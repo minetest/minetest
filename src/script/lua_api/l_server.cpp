@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_base.h"
+#include "cpp_api/s_security.h"
 #include "server.h"
 #include "environment.h"
 #include "remoteplayer.h"
@@ -474,6 +475,18 @@ int ModApiServer::l_sound_fade(lua_State *L)
 	return 0;
 }
 
+// runtime_add_media(filepath)
+int ModApiServer::l_runtime_add_media(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string filepath = readParam<std::string>(L, 1);
+	CHECK_SECURE_PATH(L, filepath.c_str(), false);
+
+	bool ok = getServer(L)->runtimeAddMedia(filepath);
+	lua_pushboolean(L, ok);
+	return 1;
+}
+
 // is_singleplayer()
 int ModApiServer::l_is_singleplayer(lua_State *L)
 {
@@ -538,6 +551,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
 	API_FCT(sound_fade);
+	API_FCT(runtime_add_media);
 
 	API_FCT(get_player_information);
 	API_FCT(get_player_privs);

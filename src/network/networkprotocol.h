@@ -323,6 +323,8 @@ enum ToClientCommand
 		v3f added_vel
 	 */
 
+	TOCLIENT_MEDIA_PUSH = 0x2C,
+
 	// (oops, there is some gap here)
 
 	TOCLIENT_CHAT_MESSAGE = 0x2F,

@@ -2009,6 +2009,17 @@ void Server::SendCSMRestrictionFlags(session_t peer_id)
 	Send(&pkt);
 }
 
+void Server::SendMediaPush(session_t peer_id, const std::string &filename,
+		const std::string &filedata)
+{
+	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0, peer_id);
+	// TODO: file hash, make client ask for data, cached or not?
+	pkt << filename;
+	pkt.putLongString(filedata);
+
+	Send(&pkt);
+}
+
 void Server::SendPlayerSpeed(session_t peer_id, const v3f &added_vel)
 {
 	NetworkPacket pkt(TOCLIENT_PLAYER_SPEED, 0, peer_id);
@@ -3426,6 +3437,84 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 
 	m_env->deleteParticleSpawner(id);
 	SendDeleteParticleSpawner(peer_id, id);
+}
+
+bool Server::runtimeAddMedia(const std::string &filepath)
+{
+	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
+	if (m_media.find(filename) != m_media.end()) {
+		errorstream << "runtimeAddMedia(): file \"" << filename
+			<< "\" already exists in media cache" << std::endl;
+		return false;
+	}
+
+	// TODO: do more validation, see Server::fillMediaCache()
+	if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
+		errorstream << "runtimeAddMedia(): illegal file name: \"" << filename
+			<< "\"" << std::endl;
+		return false;
+	}
+
+	/* copy-paste */
+	// Read data
+	std::ifstream fis(filepath.c_str(), std::ios_base::binary);
+	if (!fis.good()) {
+		errorstream << "Server::fillMediaCache(): Could not open \""
+				<< filename << "\" for reading" << std::endl;
+		return false;
+	}
+	std::ostringstream tmp_os(std::ios_base::binary);
+	bool bad = false;
+	for(;;) {
+		char buf[1024];
+		fis.read(buf, 1024);
+		std::streamsize len = fis.gcount();
+		tmp_os.write(buf, len);
+		if (fis.eof())
+			break;
+		if (!fis.good()) {
+			bad = true;
+			break;
+		}
+	}
+	if(bad) {
+		errorstream<<"Server::fillMediaCache(): Failed to read \""
+				<< filename << "\"" << std::endl;
+		return false;
+	}
+	if(tmp_os.str().length() == 0) {
+		errorstream << "Server::fillMediaCache(): Empty file \""
+				<< filepath << "\"" << std::endl;
+		return false;
+	}
+
+	SHA1 sha1;
+	sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
+
+	unsigned char *digest = sha1.getDigest();
+	std::string sha1_base64 = base64_encode(digest, 20);
+	std::string sha1_hex = hex_encode((char*)digest, 20);
+	free(digest);
+
+	// Put in list
+	m_media[filename] = MediaInfo(filepath, sha1_base64);
+	verbosestream << "Server: " << sha1_hex << " is " << filename
+			<< std::endl;
+	/* copy-paste end */
+
+	// Send media to existing clients
+	std::string filedata = tmp_os.str();
+	for (session_t client_id : m_clients.getClientIDs()) {
+		RemotePlayer *player = m_env->getPlayer(client_id);
+		if (!player)
+			continue;
+		if (player->protocol_version < 123) {
+			// foo!
+		}
+		SendMediaPush(client_id, filename, filedata);
+	}
+
+	return true;
 }
 
 // actions: time-reversed list
