@@ -830,6 +830,10 @@ Call these functions only at load time!
     * Returns [server info](#server-info).
 * `minetest.send_respawn()`
     * Sends a respawn request to the server.
+* `minetest.set_worldsaving("on|off|toggle")`
+    * Instructs the client to start/stop world saving
+* `minetest.get_worldsaving()`
+     * Returns either "on" or "off" based on the current value of enable_local_map_saving
 
 ### Storage API
 * `minetest.get_mod_storage()`:

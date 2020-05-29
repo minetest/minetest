@@ -45,6 +45,12 @@ private:
 	// clear_out_chat_queue()
 	static int l_clear_out_chat_queue(lua_State *L);
 
+	// set_worldsaving("(on|off|toggle)")
+	static int l_set_worldsaving(lua_State *L);
+
+	// get_worldsaving(), returns "on" or "off"
+	static int l_get_worldsaving(lua_State *L);
+
 	// get_player_names()
 	static int l_get_player_names(lua_State *L);
 

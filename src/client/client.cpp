@@ -89,6 +89,7 @@ void PacketCounter::print(std::ostream &o) const
 Client::Client(
 		const char *playername,
 		const std::string &password,
+		const Address &address,
 		const std::string &address_name,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
@@ -98,7 +99,8 @@ Client::Client(
 		ISoundManager *sound,
 		MtEventManager *event,
 		bool ipv6,
-		GameUI *game_ui
+		GameUI *game_ui,
+		bool localGame
 ):
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
@@ -113,6 +115,7 @@ Client::Client(
 	),
 	m_particle_manager(&m_env),
 	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
+	m_address(address),
 	m_address_name(address_name),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_last_chat_message_sent(time(NULL)),
@@ -121,7 +124,8 @@ Client::Client(
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
 	m_game_ui(game_ui),
-	m_modchannel_mgr(new ModChannelMgr())
+	m_modchannel_mgr(new ModChannelMgr()),
+	m_is_local_server(localGame)
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -333,13 +337,13 @@ Client::~Client()
 	delete m_media_downloader;
 }
 
-void Client::connect(Address address, bool is_local_server)
+void Client::connect()
 {
-	initLocalMapSaving(address, m_address_name, is_local_server);
+	initLocalMapSaving(m_address, m_address_name, m_is_local_server);
 
 	// Since we use TryReceive() a timeout here would be ineffective anyway
 	m_con->SetTimeoutMs(0);
-	m_con->Connect(address);
+	m_con->Connect(m_address);
 }
 
 void Client::step(float dtime)
@@ -805,12 +809,12 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 }
 
 void Client::initLocalMapSaving(const Address &address,
-		const std::string &hostname,
-		bool is_local_server)
+	const std::string &hostname,
+	bool is_local_server)
 {
 	if (!g_settings->getBool("enable_local_map_saving") || is_local_server) {
 		return;
-	}
+}
 
 	std::string world_path;
 #define set_world_path(hostname) \
@@ -1285,6 +1289,22 @@ void Client::sendReady()
 	Send(&pkt);
 }
 
+void Client::startLocalMapSaving()
+{
+	initLocalMapSaving(m_address, m_address_name, m_is_local_server);
+}
+
+void Client::stopLocalMapSaving()
+{
+	if (m_localdb)
+	{
+		m_localdb->endSave();
+		delete m_localdb;
+		m_localdb = nullptr;
+	}
+	actionstream << "Local map saving stopped" << std::endl;
+}
+
 void Client::sendPlayerPos()
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
@@ -1308,7 +1328,7 @@ void Client::sendPlayerPos()
 			player->last_pitch        == player->getPitch()    &&
 			player->last_yaw          == player->getYaw()      &&
 			player->last_keyPressed   == player->keyPressed    &&
-			player->last_camera_fov   == camera_fov              &&
+			player->last_camera_fov   == camera_fov            &&
 			player->last_wanted_range == wanted_range)
 		return;
 

@@ -65,6 +65,33 @@ core.register_chatcommand("clear_chat_queue", {
 	end,
 })
 
+core.register_chatcommand("worldsaving", {
+	params="[ on | off | toggle | status ]",
+	description = core.gettext("Switch local world saving on/off"),
+	func = function(param)
+		local onoff
+
+		if ((param == "") or (param == "status")) then
+			onoff = core.get_worldsaving()
+			return true, core.gettext("Currently world saving is turned " .. onoff .. ".")
+		end
+
+		if ((param ~= "on") and (param ~= "off") and (param ~= "toggle")) then
+			return false, core.gettext("Try .help worldsaving first please")
+		end
+
+		core.set_worldsaving(param)
+
+		onoff = param
+
+		if (param == "toggle") then
+			onoff = core.get_worldsaving()
+		end
+
+		return true, core.gettext("OK, Worldsaving toggled " .. onoff)
+	end,
+})
+
 function core.run_server_chatcommand(cmd, param)
 	core.send_chat_message("/" .. cmd .. " " .. param)
 end

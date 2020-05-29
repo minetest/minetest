@@ -144,6 +144,51 @@ int ModApiClient::l_clear_out_chat_queue(lua_State *L)
 	return 0;
 }
 
+
+// set_worldsaving("(on|off|toggle)")
+int ModApiClient::l_set_worldsaving(lua_State *L)
+{
+	if (! lua_isstring(L, 1))
+		return 0;
+
+	std::string param = luaL_checkstring(L, 1);
+	Client *client = getClient(L);
+	bool turnOn;
+	if (param == "on") {
+		turnOn = true;
+	}
+	else if (param == "off") {
+		turnOn = false;
+	}
+	else if (param == "toggle") {
+		turnOn = ! g_settings->getBool("enable_local_map_saving");
+	}
+	else
+	{
+		return 0;
+	}
+
+	g_settings->setBool("enable_local_map_saving",turnOn);
+
+	if (turnOn) {
+		client->startLocalMapSaving();
+	}
+	else {
+		client->stopLocalMapSaving();
+	}
+
+	return 0;
+}
+
+
+// get_worldsaving(), returns "on" or "off"
+int ModApiClient::l_get_worldsaving(lua_State *L)
+{
+	lua_pushstring(L, g_settings->getBool("enable_local_map_saving") ? "on" : "off");
+	return 1;
+}
+
+
 // get_player_names()
 int ModApiClient::l_get_player_names(lua_State *L)
 {
@@ -441,4 +486,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_builtin_path);
 	API_FCT(get_language);
 	API_FCT(get_csm_restrictions);
+	API_FCT(set_worldsaving);
+	API_FCT(get_worldsaving);
 }

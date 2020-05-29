@@ -1499,10 +1499,11 @@ bool Game::connectToServer(const std::string &playername,
 		return false;
 	}
 
-	client = new Client(playername.c_str(), password, *address,
-			*draw_control, texture_src, shader_src,
-			itemdef_manager, nodedef_manager, sound, eventmgr,
-			connect_address.isIPv6(), m_game_ui.get());
+	client = new Client(playername.c_str(), password, connect_address, *address,
+		*draw_control, texture_src, shader_src,
+		itemdef_manager, nodedef_manager, sound, eventmgr,
+		connect_address.isIPv6(), m_game_ui.get(),
+		simple_singleplayer_mode || local_server_mode);
 
 	if (!client)
 		return false;
@@ -1513,8 +1514,7 @@ bool Game::connectToServer(const std::string &playername,
 	connect_address.print(&infostream);
 	infostream << std::endl;
 
-	client->connect(connect_address,
-		simple_singleplayer_mode || local_server_mode);
+	client->connect();
 
 	/*
 		Wait for server to accept connection

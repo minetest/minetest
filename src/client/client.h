@@ -115,6 +115,7 @@ public:
 	Client(
 			const char *playername,
 			const std::string &password,
+			const Address &address,
 			const std::string &address_name,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
@@ -124,7 +125,8 @@ public:
 			ISoundManager *sound,
 			MtEventManager *event,
 			bool ipv6,
-			GameUI *game_ui
+			GameUI *game_ui,
+			bool localGame
 	);
 
 	~Client();
@@ -150,7 +152,7 @@ public:
 		The name of the local player should already be set when
 		calling this, as it is sent in the initialization.
 	*/
-	void connect(Address address, bool is_local_server);
+	void connect();
 
 	/*
 		Stuff that references the environment is valid only as
@@ -241,6 +243,9 @@ public:
 	void sendDamage(u16 damage);
 	void sendRespawn();
 	void sendReady();
+
+	void startLocalMapSaving();
+	void stopLocalMapSaving();
 
 	ClientEnvironment& getEnv() { return m_env; }
 	ITextureSource *tsrc() { return getTextureSource(); }
@@ -442,8 +447,8 @@ private:
 	void deletingPeer(con::Peer *peer, bool timeout) override;
 
 	void initLocalMapSaving(const Address &address,
-			const std::string &hostname,
-			bool is_local_server);
+		const std::string &hostname,
+		bool is_local_server);
 
 	void ReceiveAll();
 
@@ -484,6 +489,7 @@ private:
 	ClientEnvironment m_env;
 	ParticleManager m_particle_manager;
 	std::unique_ptr<con::Connection> m_con;
+	Address m_address;
 	std::string m_address_name;
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;
@@ -595,4 +601,6 @@ private:
 	u32 m_csm_restriction_noderange = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	bool m_is_local_server;
 };
