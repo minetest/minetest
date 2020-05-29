@@ -350,8 +350,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			ItemStack dst_item = list_to->getItem(to_i);
 			dst_item.count = dst_can_put_count;
 			swapDirections();
-			dst_can_put_count = allowPut(dst_item, player);
-			src_can_take_count = allowTake(dst_item, player);
+			dst_can_put_count = std::min(dst_can_put_count, allowPut(dst_item, player));
+			src_can_take_count = std::min(src_can_take_count, allowTake(dst_item, player));
 			swapDirections();
 		}
 	}
