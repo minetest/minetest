@@ -28,7 +28,6 @@ extern "C" {
 #include "common/c_converter.h"
 #include "common/c_internal.h"
 #include "constants.h"
-#include <algorithm> // std::find
 #include <set>
 
 
