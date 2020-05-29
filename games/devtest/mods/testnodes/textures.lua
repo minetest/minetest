@@ -71,3 +71,32 @@ for a=1,#alphas do
 		groups = { dig_immediate = 3 },
 	})
 end
+
+
+-- Bumpmapping and Parallax Occlusion
+
+minetest.register_node("testnodes:height_pyramid", {
+	description = "Bumpmapping and Parallax Occlusion Tester",
+	tiles = {"testnodes_height_pyramid.png"},
+	groups = {cracky=2},
+})
+
+-- With this we can validate rotations etc., e.g. test Tangent Space correctness
+stairs.register_stair_and_slab("height_pyramid", "experimantal:height_pyramid",
+	{cracky=2},
+	{"testnodes_height_pyramid.png"},
+	"height_pyramid stair",
+	"height_pyramid slab")
+
+minetest.register_node("testnodes:parallax_extruded", {
+	description = "Parallax Occlusion Tester",
+	tiles = {"testnodes_parallax_extruded.png"},
+	groups = {cracky=2},
+})
+
+stairs.register_stair_and_slab("parallax_extruded",
+	"experimantal:parallax_extruded",
+	{cracky=2},
+	{"testnodes_parallax_extruded.png"},
+	"parallax_extruded stair",
+	"parallax_extruded slab")
