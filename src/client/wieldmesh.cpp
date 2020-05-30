@@ -467,7 +467,11 @@ void WieldMeshSceneNode::setColor(video::SColor c)
 			bc.getGreen() * green / 255,
 			bc.getBlue() * blue / 255);
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		colorizeMeshBuffer(buf, &buffercolor);
+
+		if (m_enable_shaders)
+			setMeshBufferColor(buf, buffercolor);
+		else
+			colorizeMeshBuffer(buf, &buffercolor);
 	}
 }
 
@@ -481,9 +485,9 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.EmissiveColor = color;
 		}
-	} else {
-		setColor(color);
 	}
+
+	setColor(color);
 }
 
 void WieldMeshSceneNode::render()
