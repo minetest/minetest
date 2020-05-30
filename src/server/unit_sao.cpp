@@ -89,7 +89,7 @@ void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotat
 }
 
 // clang-format off
-void UnitSAO::sendModificationMessages()
+void UnitSAO::sendOutdatedData()
 {
 	if (!m_armor_groups_sent) {
 		m_armor_groups_sent = true;

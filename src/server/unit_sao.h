@@ -76,7 +76,7 @@ public:
 	// Object properties
 	ObjectProperties *accessObjectProperties();
 	void notifyObjectPropertiesModified();
-	void sendModificationMessages();
+	void sendOutdatedData();
 
 	// Update packets
 	std::string generateUpdateAttachmentCommand() const;

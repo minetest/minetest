@@ -216,7 +216,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	sendModificationMessages();
+	sendOutdatedData();
 }
 
 std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)

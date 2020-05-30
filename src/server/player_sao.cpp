@@ -298,7 +298,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_messages_out.emplace(getId(), true, generateUpdatePhysicsOverrideCommand());
 	}
 
-	sendModificationMessages();
+	sendOutdatedData();
 }
 
 std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
