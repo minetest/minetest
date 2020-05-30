@@ -182,26 +182,26 @@ function vector.rotate(v, rot)
 	-- Rotation matrix that applies yaw, pitch and roll
 	local matrix = {
 		{
-			cosyaw * cospitch,
-			cosyaw * sinpitch * sinroll - sinyaw * cosroll,
-			cosyaw * sinpitch * cosroll + sinyaw * sinroll
-		},
-		{
-			sinyaw * cospitch,
 			sinyaw * sinpitch * sinroll + cosyaw * cosroll,
-			sinyaw * sinpitch * cosroll - cosyaw * sinroll
+			sinyaw * sinpitch * cosroll - cosyaw * sinroll,
+			sinyaw * cospitch,
 		},
 		{
-			-sinpitch,
 			cospitch * sinroll,
-			cospitch * cosroll
+			cospitch * cosroll,
+			-sinpitch,
+		},
+		{
+			cosyaw * sinpitch * sinroll - sinyaw * cosroll,
+			cosyaw * sinpitch * cosroll + sinyaw * sinroll,
+			cosyaw * cospitch,
 		},
 	}
 	-- Compute matrix multiplication: `matrix` * `v`
 	return vector.new(
-		matrix[2][2] * v.x + matrix[2][3] * v.y + matrix[2][1] * v.z,
-		matrix[3][2] * v.x + matrix[3][3] * v.y + matrix[3][1] * v.z,
-		matrix[1][2] * v.x + matrix[1][3] * v.y + matrix[1][1] * v.z
+		matrix[1][1] * v.x + matrix[1][2] * v.y + matrix[1][3] * v.z,
+		matrix[2][1] * v.x + matrix[2][2] * v.y + matrix[2][3] * v.z,
+		matrix[3][1] * v.x + matrix[3][2] * v.y + matrix[3][3] * v.z
 	)
 end
 
