@@ -216,11 +216,6 @@ void UnitSAO::onDetach(int parent_id)
 	if (getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
 		m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
 
-	/*if (getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		PlayerSAO *sao = (PlayerSAO *)this;
-		co->setMaxSpeedOverride(vel);
-	}
-*/
 	if (!parent || parent->isGone())
 		return; // Do not try to notify soon gone parent
 
