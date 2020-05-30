@@ -858,15 +858,16 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	*pkt >> item;
 
-	ItemStack previous_item;
-	playersao->getWieldedItem(&previous_item, nullptr);
-	m_script->item_OnUnwield(previous_item, playersao);
-
-	playersao->getPlayer()->setWieldIndex(item);
-
 	ItemStack selected_item;
-	playersao->getWieldedItem(&selected_item, nullptr);
-	m_script->item_OnWield(selected_item, playersao);
+	player->getWieldedItem(&selected_item, nullptr);
+	if (!selected_item.empty())
+		m_script->item_OnUnwield(selected_item, playersao);
+
+	player->setWieldIndex(item);
+
+	player->getWieldedItem(&selected_item, nullptr);
+	if (!selected_item.empty())
+		m_script->item_OnWield(selected_item, playersao);
 }
 
 void Server::handleCommand_Respawn(NetworkPacket* pkt)
