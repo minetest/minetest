@@ -107,12 +107,9 @@ void UnitSAO::sendModificationMessages()
 
 	if (!m_bone_position_sent) {
 		m_bone_position_sent = true;
-		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
-				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-			std::string str = generateUpdateBonePositionCommand((*ii).first,
-					(*ii).second.X, (*ii).second.Y);
-			// create message and add to list
-			m_messages_out.emplace(getId(), true, str);
+		for (const auto &bone_pos : m_bone_position) {
+			m_messages_out.emplace(getId(), true, generateUpdateBonePositionCommand(
+				bone_pos.first, bone_pos.second.X, bone_pos.second.Y));
 		}
 	}
 
