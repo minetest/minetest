@@ -88,6 +88,40 @@ void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotat
 	*rotation = m_bone_position[bone].Y;
 }
 
+void UnitSAO::sendModificationMessages()
+{
+	if (!m_armor_groups_sent) {
+		m_armor_groups_sent = true;
+		m_messages_out.emplace(getId(), true, generateUpdateArmorGroupsCommand());
+	}
+
+	if (!m_animation_sent) {
+		m_animation_sent = true;
+		m_animation_speed_sent = true;
+		m_messages_out.emplace(getId(), true, generateUpdateAnimationCommand());
+	} else if (!m_animation_speed_sent) {
+		// Animation speed is also sent when 'm_animation_sent == false'
+		m_animation_speed_sent = true;
+		m_messages_out.emplace(getId(), true, generateUpdateAnimationSpeedCommand());
+	}
+
+	if (!m_bone_position_sent) {
+		m_bone_position_sent = true;
+		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
+				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
+			std::string str = generateUpdateBonePositionCommand((*ii).first,
+					(*ii).second.X, (*ii).second.Y);
+			// create message and add to list
+			m_messages_out.emplace(getId(), true, str);
+		}
+	}
+
+	if (!m_attachment_sent) {
+		m_attachment_sent = true;
+		m_messages_out.emplace(getId(), true, generateUpdateAttachmentCommand());
+	}
+}
+
 void UnitSAO::setAttachment(
 		int parent_id, const std::string &bone, v3f position, v3f rotation)
 {
@@ -185,6 +219,11 @@ void UnitSAO::onDetach(int parent_id)
 	if (getType() == ACTIVEOBJECT_TYPE_LUAENTITY)
 		m_env->getScriptIface()->luaentity_on_detach(m_id, parent);
 
+	/*if (getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		PlayerSAO *sao = (PlayerSAO *)this;
+		co->setMaxSpeedOverride(vel);
+	}
+*/
 	if (!parent || parent->isGone())
 		return; // Do not try to notify soon gone parent
 

@@ -473,7 +473,12 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 			o->removeAttachmentChild(m_id);
 		if (parent)
 			parent->addAttachmentChild(m_id);
+#if 0
+		printf("Attach id=%d to parent=%d (old=%d)\n", m_id, parent_id, old_parent);
+		std::cout << "\tpos=" << PP(position) << ", rot=" << PP(rotation) << std::endl;
+#endif
 	}
+
 
 	updateAttachments();
 }
