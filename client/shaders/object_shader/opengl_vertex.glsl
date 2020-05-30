@@ -38,7 +38,12 @@ void main(void)
 
 	lightVec = sunPosition - worldPosition;
 	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
-	vIDiff = directional_ambient(normalize(gl_Normal));
+
+	// This is intentional comparison with zero without any margin.
+	// If normal is not equal to zero exactly, then we assume it's a valid, just not normalized vector
+	vIDiff = length(gl_Normal) == 0.0
+		? 1.0
+		: directional_ambient(normalize(gl_Normal));
 
 	gl_FrontColor = gl_BackColor = gl_Color;
 }
