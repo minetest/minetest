@@ -25,30 +25,29 @@ end
 
 local function init_data(data)
 	data.list = filterlist.create(
-			pkgmgr.preparemodlist,
-			pkgmgr.comparemod,
-			function(element, uid)
-				if element.name == uid then
-					return true
-				end
-			end,
-			function(element, criteria)
-				if criteria.hide_game and
-						element.is_game_content then
-					return false
-				end
-
-				if criteria.hide_modpackcontents and
-						element.modpack ~= nil then
-					return false
-				end
+		pkgmgr.preparemodlist,
+		pkgmgr.comparemod,
+		function(element, uid)
+			if element.name == uid then
 				return true
-			end,
-			{
-				worldpath = data.worldspec.path,
-				gameid = data.worldspec.gameid
-			}
-	)
+			end
+		end,
+		function(element, criteria)
+			if criteria.hide_game and
+					element.is_game_content then
+				return false
+			end
+
+			if criteria.hide_modpackcontents and
+					element.modpack ~= nil then
+				return false
+			end
+			return true
+		end,
+		{
+			worldpath = data.worldspec.path,
+			gameid = data.worldspec.gameid
+		})
 
 	if data.selected_mod > data.list:size() then
 		data.selected_mod = 0
@@ -135,7 +134,7 @@ local function get_formspec(data)
 		"button[5.75,7;2.5,0.5;btn_config_world_cancel;" ..
 		fgettext("Cancel") .. "]" ..
 		"button[9,7;2.5,0.5;btn_config_world_cdb;" ..
-			fgettext("Get Mods") .. "]"
+		fgettext("Find More Mods") .. "]"
 
 	if mod.name ~= "" and not mod.is_game_content then
 		if mod.is_modpack then
