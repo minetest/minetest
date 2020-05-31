@@ -161,7 +161,7 @@ void IMoveAction::swapDirections()
 	std::swap(from_i, to_i);
 }
 
-void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveObject* player)
+void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player)
 {
 	ServerScripting* sa = PLAYER_TO_SA(player);
 	if (to_inv.type == InventoryLocation::DETACHED)
@@ -184,9 +184,9 @@ void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveObject* 
 	}
 }
 
-void IMoveAction::onMove(int count, ServerActiveObject* player)
+void IMoveAction::onMove(int count, ServerActiveObject *player)
 {
-	ServerScripting* sa = PLAYER_TO_SA(player);
+	ServerScripting *sa = PLAYER_TO_SA(player);
 	if (from_inv.type == InventoryLocation::DETACHED)
 		sa->detached_inventory_OnMove(*this, count, player);
 	else if (from_inv.type == InventoryLocation::NODEMETA)
@@ -195,9 +195,9 @@ void IMoveAction::onMove(int count, ServerActiveObject* player)
 		sa->player_inventory_OnMove(*this, count, player);
 }
 
-int IMoveAction::allowPut(const ItemStack &dst_item, ServerActiveObject* player)
+int IMoveAction::allowPut(const ItemStack &dst_item, ServerActiveObject *player)
 {
-	ServerScripting* sa = PLAYER_TO_SA(player);
+	ServerScripting *sa = PLAYER_TO_SA(player);
 	int dst_can_put_count = 0xffff;
 	if (to_inv.type == InventoryLocation::DETACHED)
 		dst_can_put_count = sa->detached_inventory_AllowPut(*this, dst_item, player);
@@ -210,9 +210,9 @@ int IMoveAction::allowPut(const ItemStack &dst_item, ServerActiveObject* player)
 	return dst_can_put_count;
 }
 
-int IMoveAction::allowTake(const ItemStack &src_item, ServerActiveObject* player)
+int IMoveAction::allowTake(const ItemStack &src_item, ServerActiveObject *player)
 {
-	ServerScripting* sa = PLAYER_TO_SA(player);
+	ServerScripting *sa = PLAYER_TO_SA(player);
 	int src_can_take_count = 0xffff;
 	if (from_inv.type == InventoryLocation::DETACHED)
 		src_can_take_count = sa->detached_inventory_AllowTake(*this, src_item, player);
@@ -225,9 +225,9 @@ int IMoveAction::allowTake(const ItemStack &src_item, ServerActiveObject* player
 	return src_can_take_count;
 }
 
-int IMoveAction::allowMove(int try_take_count, ServerActiveObject* player)
+int IMoveAction::allowMove(int try_take_count, ServerActiveObject *player)
 {
-	ServerScripting* sa = PLAYER_TO_SA(player);
+	ServerScripting *sa = PLAYER_TO_SA(player);
 	int src_can_take_count = 0xffff;
 	if (from_inv.type == InventoryLocation::DETACHED)
 		src_can_take_count = sa->detached_inventory_AllowMove(*this, try_take_count, player);
