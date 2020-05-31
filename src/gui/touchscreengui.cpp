@@ -1211,7 +1211,12 @@ void TouchScreenGUI::step(float dtime)
 	}
 
 	// joystick
-	applyJoystickStatus();
+	for (unsigned int i = 0; i < 4; i++) {
+		if (m_joystick_status[i]) {
+			applyJoystickStatus();
+			break;
+		}
+	}
 
 	// if a new placed pointer isn't moved for some time start digging
 	if ((m_move_id != -1) &&
