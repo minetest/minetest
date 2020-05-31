@@ -364,8 +364,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			if (dst_can_put_count != try_put_count)
 				swap_expected = false;
 			swapDirections();
-		} else
+		} else {
 			dst_can_put_count = src_can_take_count;
+		}
 	} else {
 		dst_can_put_count = allowPut(src_item, player);
 		src_can_take_count = allowTake(src_item, player);
