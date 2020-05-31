@@ -163,7 +163,7 @@ void IMoveAction::swapDirections()
 
 const void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player)
 {
-	ServerScripting* sa = PLAYER_TO_SA(player);
+	ServerScripting *sa = PLAYER_TO_SA(player);
 	if (to_inv.type == InventoryLocation::DETACHED)
 		sa->detached_inventory_OnPut(*this, src_item, player);
 	else if (to_inv.type == InventoryLocation::NODEMETA)
