@@ -181,7 +181,7 @@ public:
 
 	void addToScene(ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
-	void updateLight(u8 light_at_pos);
+	void updateLight(u8 light_at_pos, bool ignore_parent = false);
 	v3s16 getLightPosition();
 	void updateNodePos();
 
@@ -254,7 +254,7 @@ void TestCAO::removeFromScene(bool permanent)
 	m_node = NULL;
 }
 
-void TestCAO::updateLight(u8 light_at_pos)
+void TestCAO::updateLight(u8 light_at_pos, bool ignore_parent)
 {
 }
 
@@ -784,34 +784,25 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	setNodeLight(m_last_light);
 }
 
-void GenericCAO::updateLight(u8 light_at_pos)
+void GenericCAO::updateLight(u8 light_at_pos, bool ignore_parent)
 {
-	// Don't update light of attached one
-	if (getParent() != NULL) {
+	// The topmost parent updates all its children
+	if (!ignore_parent && getParent())
 		return;
-	}
 
-	updateLightNoCheck(light_at_pos);
+	if (m_glow >= 0) {
+		u8 li = decode_light(light_at_pos + m_glow);
+
+		if (li != m_last_light)	{
+			m_last_light = li;
+			setNodeLight(li);
+		}
+	}
 
 	// Update light of all children
 	for (u16 i : m_attachment_child_ids) {
-		ClientActiveObject *obj = m_env->getActiveObject(i);
-		if (obj) {
-			obj->updateLightNoCheck(light_at_pos);
-		}
-	}
-}
-
-void GenericCAO::updateLightNoCheck(u8 light_at_pos)
-{
-	if (m_glow < 0)
-		return;
-
-	u8 li = decode_light(light_at_pos + m_glow);
-
-	if (li != m_last_light)	{
-		m_last_light = li;
-		setNodeLight(li);
+		if (ClientActiveObject *obj = m_env->getActiveObject(i))
+			obj->updateLight(light_at_pos, true);
 	}
 }
 
