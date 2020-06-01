@@ -468,6 +468,15 @@ bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname
 	if (t == type)
 		return true;
 
+	// Check coercion types
+	if (type == LUA_TNUMBER) {
+		if (lua_isnumber(L, index))
+			return true;
+	} else if (type == LUA_TSTRING) {
+		if (lua_isstring(L, index))
+			return true;
+	}
+
 	// Types mismatch. Log unique line.
 	std::string backtrace = std::string("Invalid field ") + fieldname +
 		" (expected " + lua_typename(L, type) +
@@ -475,7 +484,7 @@ bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname
 
 	u64 hash = murmur_hash_64_ua(backtrace.data(), backtrace.length(), 0xBADBABE);
 	if (warned_msgs.find(hash) == warned_msgs.end()) {
-		warningstream << backtrace << std::endl;
+		errorstream << backtrace << std::endl;
 		warned_msgs.insert(hash);
 	}
 
