@@ -168,19 +168,19 @@ const void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveOb
 		sa->detached_inventory_OnPut(*this, src_item, player);
 	else if (to_inv.type == InventoryLocation::NODEMETA)
 		sa->nodemeta_inventory_OnPut(*this, src_item, player);
-	else {
-		assert(to_inv.type == InventoryLocation::PLAYER);
+	else if (to_inv.type == InventoryLocation::PLAYER)
 		sa->player_inventory_OnPut(*this, src_item, player);
-	}
+	else
+		assert(false);
 	
 	if (from_inv.type == InventoryLocation::DETACHED)
 		sa->detached_inventory_OnTake(*this, src_item, player);
 	else if (from_inv.type == InventoryLocation::NODEMETA)
 		sa->nodemeta_inventory_OnTake(*this, src_item, player);
-	else {
-		assert(from_inv.type == InventoryLocation::PLAYER);
+	else if (from_inv.type == InventoryLocation::PLAYER)
 		sa->player_inventory_OnTake(*this, src_item, player);
-	}
+	else
+		assert(false);
 }
 
 const void IMoveAction::onMove(int count, ServerActiveObject *player)
@@ -192,6 +192,8 @@ const void IMoveAction::onMove(int count, ServerActiveObject *player)
 		sa->nodemeta_inventory_OnMove(*this, count, player);
 	else if (from_inv.type == InventoryLocation::PLAYER)
 		sa->player_inventory_OnMove(*this, count, player);
+	else
+		assert(false);
 }
 
 const int IMoveAction::allowPut(const ItemStack &dst_item, ServerActiveObject *player)
@@ -202,10 +204,10 @@ const int IMoveAction::allowPut(const ItemStack &dst_item, ServerActiveObject *p
 		dst_can_put_count = sa->detached_inventory_AllowPut(*this, dst_item, player);
 	else if (to_inv.type == InventoryLocation::NODEMETA)
 		dst_can_put_count = sa->nodemeta_inventory_AllowPut(*this, dst_item, player);
-	else {
-		assert(to_inv.type == InventoryLocation::PLAYER);
+	else if (to_inv.type == InventoryLocation::PLAYER)
 		dst_can_put_count = sa->player_inventory_AllowPut(*this, dst_item, player);
-	}
+	else
+		assert(false);
 	return dst_can_put_count;
 }
 
@@ -217,10 +219,10 @@ const int IMoveAction::allowTake(const ItemStack &src_item, ServerActiveObject *
 		src_can_take_count = sa->detached_inventory_AllowTake(*this, src_item, player);
 	else if (from_inv.type == InventoryLocation::NODEMETA)
 		src_can_take_count = sa->nodemeta_inventory_AllowTake(*this, src_item, player);
-	else {
-		assert(from_inv.type == InventoryLocation::PLAYER);
+	else if (from_inv.type == InventoryLocation::PLAYER)
 		src_can_take_count = sa->player_inventory_AllowTake(*this, src_item, player);
-	}
+	else
+		assert(false);
 	return src_can_take_count;
 }
 
@@ -232,10 +234,10 @@ const int IMoveAction::allowMove(int try_take_count, ServerActiveObject *player)
 		src_can_take_count = sa->detached_inventory_AllowMove(*this, try_take_count, player);
 	else if (from_inv.type == InventoryLocation::NODEMETA)
 		src_can_take_count = sa->nodemeta_inventory_AllowMove(*this, try_take_count, player);
-	else {
-		assert(from_inv.type == InventoryLocation::PLAYER);
+	else if (from_inv.type == InventoryLocation::PLAYER)
 		src_can_take_count = sa->player_inventory_AllowMove(*this, try_take_count, player);
-	}
+	else
+		assert(false);
 	return src_can_take_count;
 }
 

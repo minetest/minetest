@@ -733,7 +733,11 @@ u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
 		return count;
 
 	// Take item from source list
-	ItemStack item1 = count == 0 ? changeItem(i, ItemStack()) : takeItem(i, count);
+	ItemStack item1;
+	if (count == 0)
+		item1 = changeItem(i, ItemStack());
+	else
+		item1 = takeItem(i, count);
 
 	if (item1.empty())
 		return 0;
