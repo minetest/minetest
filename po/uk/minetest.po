@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-03-31 10:14+0000\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
+"PO-Revision-Date: 2020-06-02 00:46+0000\n"
+"Last-Translator: Rostyslav <info@ubilling.net.ua>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -384,23 +384,23 @@ msgstr "Х"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "Розкидання по X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Розкидання по Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Розкидання по Z"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -423,7 +423,7 @@ msgstr "Стандартно"
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "полегшений"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -1450,11 +1450,11 @@ msgstr "OEM Clear"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "Сторінка вниз"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "Сторінка вгору"
 
 #: src/client/keycode.cpp
 msgid "Pause"
