@@ -236,7 +236,7 @@ public:
 		m_visuals_expired = true;
 	}
 
-	void updateLight(u8 light_at_pos, bool ignore_parent = false);
+	void updateLight(u32 day_night_ratio);
 
 	void setNodeLight(u8 light);
 

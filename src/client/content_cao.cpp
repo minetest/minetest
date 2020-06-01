@@ -181,7 +181,7 @@ public:
 
 	void addToScene(ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
-	void updateLight(u8 light_at_pos, bool ignore_parent = false);
+	void updateLight(u32 day_night_ratio);
 	v3s16 getLightPosition();
 	void updateNodePos();
 
@@ -254,7 +254,7 @@ void TestCAO::removeFromScene(bool permanent)
 	m_node = NULL;
 }
 
-void TestCAO::updateLight(u8 light_at_pos, bool ignore_parent)
+void TestCAO::updateLight(u32 day_night_ratio)
 {
 }
 
@@ -784,25 +784,22 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	setNodeLight(m_last_light);
 }
 
-void GenericCAO::updateLight(u8 light_at_pos, bool ignore_parent)
+void GenericCAO::updateLight(u32 day_night_ratio)
 {
-	// The topmost parent updates all its children
-	if (!ignore_parent && getParent())
-		return;
+	u8 light_at_pos = 0;
+	bool pos_ok;
 
-	if (m_glow >= 0) {
-		u8 li = decode_light(light_at_pos + m_glow);
+	v3s16 p = getLightPosition();
+	MapNode n = m_env->getMap().getNode(p, &pos_ok);
+	if (pos_ok)
+		light_at_pos = n.getLightBlend(day_night_ratio, m_client->ndef());
+	else
+		light_at_pos = blend_light(day_night_ratio, LIGHT_SUN, 0);
 
-		if (li != m_last_light)	{
-			m_last_light = li;
-			setNodeLight(li);
-		}
-	}
-
-	// Update light of all children
-	for (u16 i : m_attachment_child_ids) {
-		if (ClientActiveObject *obj = m_env->getActiveObject(i))
-			obj->updateLight(light_at_pos, true);
+	u8 light = decode_light(light_at_pos);
+	if (light != m_last_light) {
+		m_last_light = light;
+		setNodeLight(light);
 	}
 }
 
