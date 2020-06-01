@@ -608,8 +608,9 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	layer->material_type = material_type;
 
 	bool has_scale = tiledef.scale > 0;
-	if (((tsettings.autoscale_mode == AUTOSCALE_ENABLE) && !has_scale) ||
-			(tsettings.autoscale_mode == AUTOSCALE_FORCE)) {
+	bool use_autoscale = tsettings.autoscale_mode == AUTOSCALE_FORCE ||
+		(tsettings.autoscale_mode == AUTOSCALE_ENABLE && !has_scale);
+	if (use_autoscale && layer->texture) {
 		auto texture_size = layer->texture->getOriginalSize();
 		float base_size = tsettings.node_texture_size;
 		float size = std::fmin(texture_size.Width, texture_size.Height);
