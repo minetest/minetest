@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
+#include "util/sha1.h"
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
@@ -1473,16 +1474,47 @@ void Client::handleCommand_PlayerSpeed(NetworkPacket *pkt)
 
 void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 {
-	std::string filename, filedata;
+	std::string raw_hash, filename, filedata;
+	bool cached;
 
-	*pkt >> filename;
+	*pkt >> raw_hash >> filename >> cached;
 	filedata = pkt->readLongString();
 
-	verbosestream << "Server pushes media file \"" << filename << "\" with "
-		<< filedata.size() << " bytes of data" << std::endl;
+	if (raw_hash.size() != 20 || filedata.empty() || filename.empty() ||
+			!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
+		throw PacketError("Illegal filename, data or hash");
+	}
 
-	// TODO: ensure it's an image file and doesn't exist already
-	loadMedia(filedata, filename);
+	verbosestream << "Server pushes media file \"" << filename << "\" with "
+		<< filedata.size() << " bytes of data (cached=" << cached
+		<< ")" << std::endl;
+
+	if (m_media_pushed_files.count(filename) != 0) {
+		// Silently ignore for synchronization purposes
+		return;
+	}
+
+	// Compute and check checksum of data
+	std::string computed_hash;
+	{
+		SHA1 ctx;
+		ctx.addBytes(filedata.c_str(), filedata.size());
+		unsigned char *buf = ctx.getDigest();
+		computed_hash.assign((char*) buf, 20);
+		free(buf);
+	}
+	if (raw_hash != computed_hash) {
+		verbosestream << "Hash of file data mismatches, ignoring." << std::endl;
+		return;
+	}
+
+	// Actually load media
+	loadMedia(filedata, filename, true);
+	m_media_pushed_files.insert(filename);
+
+	// Cache file for the next time when this client joins the same server
+	if (cached)
+		clientMediaUpdateCache(raw_hash, filedata);
 }
 
 /*

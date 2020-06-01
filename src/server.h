@@ -236,7 +236,7 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	bool runtimeAddMedia(const std::string &filepath);
+	bool dynamicAddMedia(const std::string &filepath);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
@@ -437,6 +437,8 @@ private:
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
 
+	bool addMediaFile(const std::string &filename, const std::string &filepath,
+			std::string *filedata = nullptr, std::string *digest = nullptr);
 	void fillMediaCache();
 	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
 	void sendRequestedMedia(session_t peer_id,
@@ -457,8 +459,8 @@ private:
 		bool reliable = true);
 	void SendCSMRestrictionFlags(session_t peer_id);
 
-	void SendMediaPush(session_t peer_id, const std::string &filename,
-		const std::string &filedata);
+	void SendMediaPush(session_t peer_id, const std::string &raw_hash,
+		const std::string &filename, const std::string &filedata);
 
 	/*
 		Something random

@@ -2009,17 +2009,6 @@ void Server::SendCSMRestrictionFlags(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendMediaPush(session_t peer_id, const std::string &filename,
-		const std::string &filedata)
-{
-	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0, peer_id);
-	// TODO: file hash, make client ask for data, cached or not?
-	pkt << filename;
-	pkt.putLongString(filedata);
-
-	Send(&pkt);
-}
-
 void Server::SendPlayerSpeed(session_t peer_id, const v3f &added_vel)
 {
 	NetworkPacket pkt(TOCLIENT_PLAYER_SPEED, 0, peer_id);
@@ -2416,9 +2405,87 @@ bool Server::SendBlock(session_t peer_id, const v3s16 &blockpos)
 	return true;
 }
 
+bool Server::addMediaFile(const std::string &filename,
+	const std::string &filepath, std::string *filedata_to,
+	std::string *digest_to)
+{
+	// If name contains illegal characters, ignore the file
+	if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
+		infostream << "Server: ignoring illegal file name: \""
+				<< filename << "\"" << std::endl;
+		return false;
+	}
+	// If name is not in a supported format, ignore it
+	const char *supported_ext[] = {
+		".png", ".jpg", ".bmp", ".tga",
+		".pcx", ".ppm", ".psd", ".wal", ".rgb",
+		".ogg",
+		".x", ".b3d", ".md2", ".obj",
+		// Custom translation file format
+		".tr",
+		NULL
+	};
+	if (removeStringEnd(filename, supported_ext).empty()){
+		infostream << "Server: ignoring unsupported file extension: \""
+				<< filename << "\"" << std::endl;
+		return false;
+	}
+	// Ok, attempt to load the file and add to cache
+
+	// Read data
+	std::ifstream fis(filepath.c_str(), std::ios_base::binary);
+	if (!fis.good()) {
+		errorstream << "Server::addMediaFile(): Could not open \""
+				<< filename << "\" for reading" << std::endl;
+		return false;
+	}
+	std::string filedata;
+	bool bad = false;
+	for (;;) {
+		char buf[1024];
+		fis.read(buf, sizeof(buf));
+		std::streamsize len = fis.gcount();
+		filedata.append(buf, len);
+		if (fis.eof())
+			break;
+		if (!fis.good()) {
+			bad = true;
+			break;
+		}
+	}
+	if (bad) {
+		errorstream << "Server::addMediaFile(): Failed to read \""
+				<< filename << "\"" << std::endl;
+		return false;
+	} else if (filedata.empty()) {
+		errorstream << "Server::addMediaFile(): Empty file \""
+				<< filepath << "\"" << std::endl;
+		return false;
+	}
+
+	SHA1 sha1;
+	sha1.addBytes(filedata.c_str(), filedata.length());
+
+	unsigned char *digest = sha1.getDigest();
+	std::string sha1_base64 = base64_encode(digest, 20);
+	std::string sha1_hex = hex_encode((char*) digest, 20);
+	if (digest_to)
+		*digest_to = std::string((char*) digest, 20);
+	free(digest);
+
+	// Put in list
+	m_media[filename] = MediaInfo(filepath, sha1_base64);
+	verbosestream << "Server: " << sha1_hex << " is " << filename
+			<< std::endl;
+
+	if (filedata_to)
+		*filedata_to = std::move(filedata);
+	return true;
+}
+
 void Server::fillMediaCache()
 {
-	infostream<<"Server: Calculating media file checksums"<<std::endl;
+	infostream << "Server: Calculating media file checksums" << std::endl;
 
 	// Collect all media file paths
 	std::vector<std::string> paths;
@@ -2430,80 +2497,15 @@ void Server::fillMediaCache()
 	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
 		for (const fs::DirListNode &dln : dirlist) {
-			if (dln.dir) // Ignode dirs
+			if (dln.dir) // Ignore dirs
 				continue;
-			std::string filename = dln.name;
-			// If name contains illegal characters, ignore the file
-			if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
-				infostream<<"Server: ignoring illegal file name: \""
-						<< filename << "\"" << std::endl;
-				continue;
-			}
-			// If name is not in a supported format, ignore it
-			const char *supported_ext[] = {
-				".png", ".jpg", ".bmp", ".tga",
-				".pcx", ".ppm", ".psd", ".wal", ".rgb",
-				".ogg",
-				".x", ".b3d", ".md2", ".obj",
-				// Custom translation file format
-				".tr",
-				NULL
-			};
-			if (removeStringEnd(filename, supported_ext).empty()){
-				infostream << "Server: ignoring unsupported file extension: \""
-						<< filename << "\"" << std::endl;
-				continue;
-			}
-			// Ok, attempt to load the file and add to cache
-			std::string filepath;
-			filepath.append(mediapath).append(DIR_DELIM).append(filename);
-
-			// Read data
-			std::ifstream fis(filepath.c_str(), std::ios_base::binary);
-			if (!fis.good()) {
-				errorstream << "Server::fillMediaCache(): Could not open \""
-						<< filename << "\" for reading" << std::endl;
-				continue;
-			}
-			std::ostringstream tmp_os(std::ios_base::binary);
-			bool bad = false;
-			for(;;) {
-				char buf[1024];
-				fis.read(buf, 1024);
-				std::streamsize len = fis.gcount();
-				tmp_os.write(buf, len);
-				if (fis.eof())
-					break;
-				if (!fis.good()) {
-					bad = true;
-					break;
-				}
-			}
-			if(bad) {
-				errorstream<<"Server::fillMediaCache(): Failed to read \""
-						<< filename << "\"" << std::endl;
-				continue;
-			}
-			if(tmp_os.str().length() == 0) {
-				errorstream << "Server::fillMediaCache(): Empty file \""
-						<< filepath << "\"" << std::endl;
-				continue;
-			}
-
-			SHA1 sha1;
-			sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
-
-			unsigned char *digest = sha1.getDigest();
-			std::string sha1_base64 = base64_encode(digest, 20);
-			std::string sha1_hex = hex_encode((char*)digest, 20);
-			free(digest);
-
-			// Put in list
-			m_media[filename] = MediaInfo(filepath, sha1_base64);
-			verbosestream << "Server: " << sha1_hex << " is " << filename
-					<< std::endl;
+			std::string filepath = mediapath;
+			filepath.append(DIR_DELIM).append(dln.name);
+			addMediaFile(dln.name, filepath);
 		}
 	}
+
+	infostream << "Server: " << m_media.size() << " media files collected" << std::endl;
 }
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
@@ -3439,79 +3441,39 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-bool Server::runtimeAddMedia(const std::string &filepath)
+bool Server::dynamicAddMedia(const std::string &filepath)
 {
 	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
 	if (m_media.find(filename) != m_media.end()) {
-		errorstream << "runtimeAddMedia(): file \"" << filename
+		errorstream << "Server::dynamicAddMedia(): file \"" << filename
 			<< "\" already exists in media cache" << std::endl;
 		return false;
 	}
 
-	// TODO: do more validation, see Server::fillMediaCache()
-	if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
-		errorstream << "runtimeAddMedia(): illegal file name: \"" << filename
-			<< "\"" << std::endl;
+	// Load the file and add it to our media cache
+	std::string filedata, raw_hash;
+	bool ok = addMediaFile(filename, filepath, &filedata, &raw_hash);
+	if (!ok)
 		return false;
-	}
 
-	/* copy-paste */
-	// Read data
-	std::ifstream fis(filepath.c_str(), std::ios_base::binary);
-	if (!fis.good()) {
-		errorstream << "Server::fillMediaCache(): Could not open \""
-				<< filename << "\" for reading" << std::endl;
-		return false;
-	}
-	std::ostringstream tmp_os(std::ios_base::binary);
-	bool bad = false;
-	for(;;) {
-		char buf[1024];
-		fis.read(buf, 1024);
-		std::streamsize len = fis.gcount();
-		tmp_os.write(buf, len);
-		if (fis.eof())
-			break;
-		if (!fis.good()) {
-			bad = true;
-			break;
-		}
-	}
-	if(bad) {
-		errorstream<<"Server::fillMediaCache(): Failed to read \""
-				<< filename << "\"" << std::endl;
-		return false;
-	}
-	if(tmp_os.str().length() == 0) {
-		errorstream << "Server::fillMediaCache(): Empty file \""
-				<< filepath << "\"" << std::endl;
-		return false;
-	}
+	// Push file to existing clients
+	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
+	pkt << raw_hash << filename << (bool) true;
+	pkt.putLongString(filedata);
 
-	SHA1 sha1;
-	sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
-
-	unsigned char *digest = sha1.getDigest();
-	std::string sha1_base64 = base64_encode(digest, 20);
-	std::string sha1_hex = hex_encode((char*)digest, 20);
-	free(digest);
-
-	// Put in list
-	m_media[filename] = MediaInfo(filepath, sha1_base64);
-	verbosestream << "Server: " << sha1_hex << " is " << filename
-			<< std::endl;
-	/* copy-paste end */
-
-	// Send media to existing clients
-	std::string filedata = tmp_os.str();
-	for (session_t client_id : m_clients.getClientIDs()) {
-		RemotePlayer *player = m_env->getPlayer(client_id);
-		if (!player)
-			continue;
-		if (player->protocol_version < 123) {
-			// foo!
-		}
-		SendMediaPush(client_id, filename, filedata);
+	auto client_ids = m_clients.getClientIDs(CS_DefinitionsSent);
+	for (session_t client_id : client_ids) {
+		/*
+			The network layer only guarantees ordered delivery inside a channel.
+			Since the very next packet could be one that uses the media, we have
+			to push the media over ALL channels to ensure it is processed before
+			it is used.
+			In practice this means we have to send it twice:
+			- channel 1 (HUD)
+			- channel 0 (everything else: e.g. play_sound, object messages)
+		*/
+		m_clients.send(client_id, 1, &pkt, true);
+		m_clients.send(client_id, 0, &pkt, true);
 	}
 
 	return true;
