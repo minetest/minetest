@@ -75,14 +75,14 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_sneak", "KEY_LSHIFT");
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
 	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
-	settings->setDefault("keymap_inventory", "KEY_KEY_I");
-	settings->setDefault("keymap_special1", "KEY_KEY_E");
+	settings->setDefault("keymap_inventory", "KEY_KEY_E");
+	settings->setDefault("keymap_special1", "KEY_KEY_R");
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_cmd", "/");
 	settings->setDefault("keymap_cmd_local", ".");
 	settings->setDefault("keymap_minimap", "KEY_KEY_V");
 	settings->setDefault("keymap_console", "KEY_F10");
-	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
+	settings->setDefault("keymap_rangeselect", "KEY_KEY_I");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_pitchmove", "KEY_KEY_P");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
