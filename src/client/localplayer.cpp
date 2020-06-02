@@ -444,8 +444,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	m_can_jump = ((touching_ground && !is_climbing) || sneak_can_jump) && !m_disable_jump;
 
 	// Jump key pressed while jumping off from a bouncy block
-	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
-		m_speed.Y >= -0.5f * BS) {
+	if ((!physics_override_new_jump && m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") && m_speed.Y >= -0.5f * BS)||
+		(physics_override_new_jump && control.jump && itemgroup_get(f.groups, "bouncy") && 
+		m_speed.Y >= -0.5f * BS && m_speed.Y <= itemgroup_get(f.groups, "bouncy"))) {
 		float jumpspeed = movement_speed_jump * physics_override_jump;
 		if (m_speed.Y > 1.0f) {
 			// Reduce boost when speed already is high
@@ -609,7 +610,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 				at its starting value
 			*/
 			v3f speedJ = getSpeed();
-			if (speedJ.Y >= -0.5f * BS) {
+			if ((!physics_override_new_jump && speedJ.Y >= -0.5f * BS) ||
+				(physics_override_new_jump && touching_ground && speedJ.Y >= -0.5f * BS && speedJ.Y <= 0.5f * BS)) {
 				speedJ.Y = movement_speed_jump * physics_override_jump;
 				setSpeed(speedJ);
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_JUMP));

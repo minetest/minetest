@@ -339,6 +339,7 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 	writeU8(os, !m_physics_override_sneak);
 	writeU8(os, !m_physics_override_sneak_glitch);
 	writeU8(os, !m_physics_override_new_move);
+	writeU8(os, !m_physics_override_new_jump);
 	return os.str();
 }
 

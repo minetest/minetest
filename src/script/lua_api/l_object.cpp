@@ -386,7 +386,7 @@ int ObjectRef::l_get_armor_groups(lua_State *L)
 }
 
 // set_physics_override(self, physics_override_speed, physics_override_jump,
-//                      physics_override_gravity, sneak, sneak_glitch, new_move)
+//                      physics_override_gravity, sneak, sneak_glitch, new_move, new_jump)
 int ObjectRef::l_set_physics_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -407,6 +407,8 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 				L, 2, "sneak_glitch", co->m_physics_override_sneak_glitch);
 		co->m_physics_override_new_move = getboolfield_default(
 				L, 2, "new_move", co->m_physics_override_new_move);
+		co->m_physics_override_new_jump = getboolfield_default(
+				L, 2, "new_jump", co->m_physics_override_new_jump);
 		co->m_physics_override_sent = false;
 	} else {
 		// old, non-table format
@@ -448,6 +450,8 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	lua_setfield(L, -2, "sneak_glitch");
 	lua_pushboolean(L, co->m_physics_override_new_move);
 	lua_setfield(L, -2, "new_move");
+	lua_pushboolean(L, co->m_physics_override_new_jump);
+	lua_setfield(L, -2, "new_jump");
 	return 1;
 }
 
