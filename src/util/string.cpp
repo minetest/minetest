@@ -890,6 +890,34 @@ std::wstring translate_string(const std::wstring &s)
 #endif
 }
 
+static const std::wstring disallowed_dir_names[] {
+	// Problematic filenames from here:
+	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
+	L"CON",
+	L"PRN",
+	L"AUX",
+	L"NUL",
+	L"COM1",
+	L"COM2",
+	L"COM3",
+	L"COM4",
+	L"COM5",
+	L"COM6",
+	L"COM7",
+	L"COM8",
+	L"COM9",
+	L"LPT1",
+	L"LPT2",
+	L"LPT3",
+	L"LPT4",
+	L"LPT5",
+	L"LPT6",
+	L"LPT7",
+	L"LPT8",
+	L"LPT9",
+};
+static const int disallowed_name_count = 22;
+
 /**
  * List of characters that are blacklisted from created directories
  */
@@ -912,29 +940,39 @@ static const wchar_t disallowed_path_chars[] {
 static const int disallowed_char_count = 10;
 
 /**
- * Remove 'unsafe' characters from a directory name by replacing them with '_'
+ * Sanitize the name of a new directory. This consists of two stages:
+ * 1. Check for 'reserved filenames' that can't be used on some filesystems
+ *	and add a prefix to them
+ * 2. Remove 'unsafe' characters from the name by replacing them with '_'
  */
-std::string sanitizeDirName(const std::string &str)
+std::string sanitizeDirName(const std::string &str, const std::string &unsafe_prefix)
 {
 	std::wstring tmp = utf8_to_wide(str);
-    for(unsigned long i = 0; i < tmp.length(); i++) {
-        bool is_valid = true;
 
-        // Unlikely, but control characters should always be blacklisted
-        if (tmp[i] < 32) {
-            is_valid = false;
-        } else if (tmp[i] < 128) {
-            for (int j = 0; j < disallowed_char_count; ++j) {
-                if (tmp[i] == disallowed_path_chars[j]) {
-                    is_valid = false;
-                    break;
-                }
-            }
-        }
+	for(int i = 0; i < disallowed_name_count; ++i) {
+		if (str_equal(tmp, disallowed_dir_names[i], true)) {
+			tmp = utf8_to_wide(unsafe_prefix) + tmp;
+		}
+	}
 
-        if (!is_valid) {
-            tmp[i] = '_';
-        }
+	for(unsigned long i = 0; i < tmp.length(); i++) {
+		bool is_valid = true;
+
+		// Unlikely, but control characters should always be blacklisted
+		if (tmp[i] < 32) {
+			is_valid = false;
+		} else if (tmp[i] < 128) {
+			for (int j = 0; j < disallowed_char_count; ++j) {
+				if (tmp[i] == disallowed_path_chars[j]) {
+					is_valid = false;
+					break;
+				}
+			}
+		}
+
+		if (!is_valid) {
+			tmp[i] = '_';
+		}
 	}
 
 	return wide_to_utf8(tmp);
