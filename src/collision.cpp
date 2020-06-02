@@ -499,6 +499,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			bool step_up = (nearest_collided != COLLISION_AXIS_Y) && // must not be Y direction
 					(movingbox.MinEdge.Y < cbox.MaxEdge.Y) &&
 					(movingbox.MinEdge.Y + stepheight > cbox.MaxEdge.Y) &&
+					(speed_f->Y <= 0.f) &&
 					(!wouldCollideWithCeiling(cinfo, stepbox,
 							cbox.MaxEdge.Y - movingbox.MinEdge.Y,
 							d));
