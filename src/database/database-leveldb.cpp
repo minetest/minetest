@@ -117,7 +117,7 @@ PlayerDatabaseLevelDB::~PlayerDatabaseLevelDB()
 void PlayerDatabaseLevelDB::savePlayer(RemotePlayer *player)
 {
 	/*
-	u8 version = 0
+	u8 version = 1
 	u16 hp
 	v3f position
 	f32 pitch
