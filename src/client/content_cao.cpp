@@ -1593,7 +1593,7 @@ void GenericCAO::processMessage(const std::string &data)
 		bool sneak = !readU8(is);
 		bool sneak_glitch = !readU8(is);
 		bool new_move = !readU8(is);
-		bool new_jump = !readU8(is);
+		bool new_jump = readU8(is);
 
 
 		if(m_is_local_player)
