@@ -6092,6 +6092,9 @@ object you are working with still exists.
           (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behaviour (default: `true`)
+        * `new_jump`: use the new jump/bouncy jump code. When `false` the exact
+          old code is used for jumping and bouncy jumping behavior.
+          (default: `true`)
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
