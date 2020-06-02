@@ -2089,6 +2089,7 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 
 	if (name == "dummy")
 		return new Database_Dummy();
+
 #if USE_POSTGRESQL
 	if (name == "postgresql") {
 		std::string connect_string;
@@ -2096,6 +2097,12 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 		return new PlayerDatabasePostgreSQL(connect_string);
 	}
 #endif
+
+#if USE_LEVELDB
+	if (name == "leveldb")
+		return new PlayerDatabaseLevelDB(savedir);
+#endif
+
 	if (name == "files")
 		return new PlayerDatabaseFiles(savedir + DIR_DELIM + "players");
 
