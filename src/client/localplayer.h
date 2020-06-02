@@ -66,7 +66,7 @@ public:
 	float physics_override_gravity = 1.0f;
 	bool physics_override_sneak = true;
 	bool physics_override_sneak_glitch = false;
-	bool physics_override_new_jump = true;
+	bool physics_override_new_jump = false;
 	// Temporary option for old move code
 	bool physics_override_new_move = true;
 
