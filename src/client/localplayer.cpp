@@ -441,11 +441,18 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Determine if jumping is possible
 	m_disable_jump = itemgroup_get(f.groups, "disable_jump") ||
 		itemgroup_get(f1.groups, "disable_jump");
+	
 	m_can_jump = ((touching_ground && !is_climbing) || sneak_can_jump) && !m_disable_jump;
+	//new bouncy jump style
+	if (physics_override_new_jump) {
+		m_can_bouncy_jump = (!is_climbing || sneak_can_jump && !m_disable_jump);
+	}else if(!physics_override_new_jump){ //old bouncy jump style
+		m_can_bouncy_jump = ((touching_ground && !is_climbing) || sneak_can_jump) && !m_disable_jump;
+	}
 
 	// Jump key pressed while jumping off from a bouncy block
-	if ((!physics_override_new_jump && m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") && m_speed.Y >= -0.5f * BS)||
-		(physics_override_new_jump && control.jump && itemgroup_get(f.groups, "bouncy") && 
+	if ((!physics_override_new_jump && m_can_bouncy_jump && control.jump && itemgroup_get(f.groups, "bouncy") && m_speed.Y >= -0.5f * BS)||
+		(physics_override_new_jump && m_can_bouncy_jump && control.jump && itemgroup_get(f.groups, "bouncy") && 
 		m_speed.Y >= -0.5f * BS && m_speed.Y <= itemgroup_get(f.groups, "bouncy"))) {
 		float jumpspeed = movement_speed_jump * physics_override_jump;
 		if (m_speed.Y > 1.0f) {
