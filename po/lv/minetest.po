@@ -8,114 +8,120 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-06-04 16:41+0000\n"
+"Last-Translator: Uko Koknevics <TheZeus121@gmail.com>\n"
+"Language-Team: Latvian <https://hosted.weblate.org/projects/minetest/"
+"minetest/lv/>\n"
 "Language: lv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 0 || n % 100 >= 11 && n % 100 <= "
+"19) ? 0 : ((n % 10 == 1 && n % 100 != 11) ? 1 : 2);\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "Jūs nomirāt"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Atdzīvoties"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Serveris ir pieprasījis savienojuma atjaunošanu:"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "Atjaunot savienojumu"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "Galvenā izvēlne"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Radās kļūme Lua skriptā:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "Radās kļūme:"
 
 #: builtin/fstk/ui.lua
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "Ielāde..."
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Pamēģiniet atkārtoti ieslēgt publisko serveru sarakstu un pārbaudiet "
+"interneta savienojumu."
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Serveris atbalsta protokola versijas starp $1 un $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Serveris pieprasa protokola versiju $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Mēs atbalstam protokola versijas starp $1 un $2."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Mēs atbalstam tikai protokola versiju $1."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Protokola versiju neatbilstība. "
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "Pasaule:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "Nav atrasts modu komplekta apraksts."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "Nav atrasts spēles apraksts."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Mods:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "Nav (neobligāto) atkarību"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "Nav obligāto atkarību"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Neobligātās atkarības:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr ""
+msgstr "Atkarības:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "Nav neobligāto atkarību"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "Saglabāt"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
@@ -125,217 +131,222 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "Atcelt"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "Atspējot modu komplektu"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "Iespējot modu komplektu"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "iespējots"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "Atspējot visus"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "Iespējot visus"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
+"Neizdevās iespējot modu \"$1\", jo tas satur neatļautus simbolus. Tikai "
+"sekojošie simboli ir atļauti: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Visi papildinājumi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "Spēles"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr ""
+msgstr "Modi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "Tekstūru komplekti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "Neizdevās lejuplādēt $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading and installing $1, please wait..."
-msgstr ""
+msgstr "Lejuplādējas un instalējas $1, lūdzu uzgaidiet..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back"
-msgstr ""
+msgstr "Atpakaļ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "Instalēt"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Atjaunot"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "Atinstalēt"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "Meklēt"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr ""
+msgstr "Atpakaļ uz Galveno Izvēlni"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Nav resultātu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Nevarēja iegūt papildinājumus"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "Pasaules nosaukums"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr ""
+msgstr "Sēkla"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "Kartes ģenerators"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "Spēle"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "Izveidot"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "Jums nav instalēta neviena spēle."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Varat tās lejuplādēt no minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
 msgstr ""
+"Uzmanību: “Minimal development test” ir domāts priekš spēles izstrādātājiem."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
+msgstr "Lejuplādējiet spēles, kā piemēram, “Minetest Game”, no minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "Pasaule ar nosaukumu “$1” jau eksistē"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "Nav izvēlētas spēles"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Vai Jūs esat pārliecināts, ka vēlaties izdzēst “$1”?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "Izdzēst"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "pkgmgr: neizdevās izdzēst “$1”"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr ""
+msgstr "pkgmgr: nepieejama atrašanās vieta “$1”"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "Vai izdzēst pasauli “$1”?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "Piekrist"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"Šim modu komplektam ir noteikts nosaukums, kas uzdots failā modpack.conf, un "
+"tas anulēs jebkādu pārsaukšanu šeit."
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Pārsaukt modu komplektu:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr ""
+msgstr "Atspējots"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "Iespējots"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "Pārlūkot"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "Nobīde"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Mērogs"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "Izkaisījums pa X asi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "Izkaisījums pa Y asi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr ""
+msgstr "2D Troksnis"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "Izkaisījums pa Z asi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Oktāvas"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "Noturība"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
@@ -346,7 +357,7 @@ msgstr ""
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr ""
+msgstr "noklusējuma"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -354,7 +365,7 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "atvieglots"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -362,512 +373,515 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "absolūtā vērtība"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Nav iestatījuma apraksta)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Lūdzu ievadiet derīgu veselu skaitli."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "Vērtībai jābūt vismaz $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "Vērtībai jābūt ne lielākai par $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Lūdzu ievadiet derīgu skaitli."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr ""
+msgstr "Izvēlēties mapi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr ""
+msgstr "Izvēlēties failu"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Atpakaļ uz Iestatījumu lapu"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "Izmainīt"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Atiestatīt uz noklusējumu"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Rādīt tehniskos nosaukumus"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "$1 (Iespējots)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr ""
+msgstr "Neizdevās ieinstalēt $1 kā tekstūru paku"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "Neizdevās instalēt $1 uz $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr ""
+msgstr "Neizdevās atrast derīgu modu vai modu komplektu"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a modpack as a $1"
-msgstr ""
+msgstr "Neizdevās instalēt modu komplektu kā $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
 msgstr ""
+"Moda instalācija: Neizdevās atrast derīgu mapes nosaukumu priekš modu "
+"komplekta “$1”"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a mod as a $1"
-msgstr ""
+msgstr "Neizdevās instalēt modu kā $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr ""
+msgstr "Moda instalācija: Neizdevās atrast īsto moda nosaukumu priekš “$1”"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a game as a $1"
-msgstr ""
+msgstr "Neizdevās instalēt spēli kā $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr ""
+msgstr "Instalācija: fails: “$1”"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr ""
+msgstr "Instalācija: Neatbalstīts faila tips “$1” vai arī sabojāts arhīvs"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr ""
+msgstr "$1 modi"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "Instalētie papildinājumi:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "Pārlūkot tiešsaistes saturu"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr ""
+msgstr "Nav atrasts papildinājuma apraksts"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "Pārsaukt"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "Nav atkarību."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr ""
+msgstr "Atspējot tekstūru komplektu"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr ""
+msgstr "Iespējot tekstūru komplektu"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "Informācija:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr ""
+msgstr "Atinstalēt papildinājumu"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr ""
+msgstr "Saturs"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr ""
+msgstr "Pateicības"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "Pamata izstrādātāji"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "Aktīvie dalībnieki"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "Bijušie pamata izstrādātāji"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Bijušie dalībnieki"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
-msgstr ""
+msgstr "Iestatīt"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr ""
+msgstr "Jauns"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr ""
+msgstr "Izvēlieties pasauli:"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "Radošais režīms"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "Iespējot bojājumus"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr ""
+msgstr "Palaist serveri"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr ""
+msgstr "Spēlēt (kā serveris)"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr ""
+msgstr "Paziņot par serveri"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
-msgstr ""
+msgstr "Vārds/Parole"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr ""
+msgstr "Piesaistes adrese"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
-msgstr ""
+msgstr "Ports"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr ""
+msgstr "Servera ports"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr ""
+msgstr "Spēlēt"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "Pasaule nav ne izveidota, ne izvēlēta!"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr ""
+msgstr "Sākt spēli"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr ""
+msgstr "Adrese / Ports"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
-msgstr ""
+msgstr "Vārds / Parole"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr ""
+msgstr "Pieslēgties"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr ""
+msgstr "Izdzēst no izlases"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
-msgstr ""
+msgstr "Pievienot izlasei"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Ping"
-msgstr ""
+msgstr "Pings"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "Radošais režīms"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr ""
+msgstr "Bojājumi iespējoti"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr ""
+msgstr "PvP iespējots"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr ""
+msgstr "Pievienoties spēlei"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
-msgstr ""
+msgstr "Necaurredzamas lapas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Vienkāršas lapas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "Skaistas lapas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr ""
+msgstr "Bloku konturēšana"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Bloku izcelšana"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr ""
+msgstr "Nekas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr ""
+msgstr "Bez filtra"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "Bilineārais filtrs"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "Trilineārais filtrs"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr ""
+msgstr "Bez “mipmap”"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr ""
+msgstr "“Mipmap”"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "“Mipmap” + anizotr. filtrs"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
 msgstr ""
+"Vai esat pārliecināts, ka vēlaties atiestatīt savu viena spēlētāja pasauli?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
-msgstr ""
+msgstr "Jā"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
-msgstr ""
+msgstr "Nē"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Gluds apgaismojums"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
+msgstr "Daļiņas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D mākoņi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr ""
+msgstr "Necaurredzams ūdens"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
-msgstr ""
+msgstr "Savienots stikls"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Teksturēšana:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Gludināšana:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
-msgstr ""
+msgstr "Ekrāns:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr ""
+msgstr "Atcerēties ekrāna izmēru"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr ""
+msgstr "Šeideri"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr ""
+msgstr "Šeideri (nepieejami)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Reset singleplayer world"
-msgstr ""
+msgstr "Atiestatīt viena spēlētāja pasauli"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "Nomainīt kontroles"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr ""
+msgstr "Visi iestatījumi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
-msgstr ""
+msgstr "Pieskārienslieksnis: (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bump Mapping"
-msgstr ""
+msgstr "“Bump Mapping”"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr ""
+msgstr "Toņu atbilstība"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normal Maps"
-msgstr ""
+msgstr "Izveidot normāl-kartes"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Tekstūru dziļums"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr ""
+msgstr "Viļņojoši šķidrumi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Viļņojošas lapas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr ""
+msgstr "Viļņojoši augi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Lai iespējotu šeiderus, jāizmanto OpenGL draiveris."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "Iestatījumi"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr ""
+msgstr "Sākt viena spēlētāja spēli"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr ""
+msgstr "Iestatīt modus"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
-msgstr ""
+msgstr "Galvenā izvēlne"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
-msgstr ""
+msgstr "Savienojuma noildze."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Ielādē tekstūras..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Pārbūvē šeiderus..."
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Inicializē blokus..."
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Inicializē blokus"
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Gatavs!"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "Galvenā izvēlne"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Spēlētāja vārds ir pārāk garš."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Savienojuma kļūme (noildze?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "Neizdevās atvērt iestatīto paroļu failu: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "Lūdzu, izvēlieties vārdu!"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Nav izvēlēta ne pasaule, ne adrese. Nav, ko darīt."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Sniegtā pasaules atrašanās vieta neeksistē: "
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Nevarēja atrast vai ielādēt spēli \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Nederīga spēles specifikācija."
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string. Put either "no" or "yes"
@@ -879,223 +893,224 @@ msgstr ""
 #. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "no"
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "Beidz darbu..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "Izveido serveri..."
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "Izveido klientu..."
 
 #: src/client/game.cpp
 msgid "Resolving address..."
-msgstr ""
+msgstr "Atrisina adresi..."
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Savienojas ar serveri..."
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "Priekšmetu apraksti..."
 
 #: src/client/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "Bloku apraksti..."
 
 #: src/client/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "Mēdiji..."
 
 #: src/client/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/client/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr ""
+msgstr "Klienta puses skriptēšana ir atspējota"
 
 #: src/client/game.cpp
 msgid "Sound muted"
-msgstr ""
+msgstr "Skaņa izslēgta"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
-msgstr ""
+msgstr "Skaņa ieslēgta"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "Skaļums nomainīts uz %d%%"
 
 #: src/client/game.cpp src/gui/modalMenu.cpp
 msgid "ok"
-msgstr ""
+msgstr "ok"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
-msgstr ""
+msgstr "Lidošanas režīms ieslēgts"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr ""
+msgstr "Lidošanas režīms ieslēgts (bet: nav “fly” privilēģijas)"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
-msgstr ""
+msgstr "Lidošanas režīms izslēgts"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr ""
+msgstr "Kustība uz augšu/leju pēc skatīšanās virziena ieslēgta"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr ""
+msgstr "Kustība uz augšu/leju pēc skatīšanās virziena izslēgta"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled"
-msgstr ""
+msgstr "Ātrais režīms ieslēgts"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr ""
+msgstr "Ātrais režīms ieslēgts (bet: nav “fast” privilēģijas)"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
-msgstr ""
+msgstr "Ātrais režīms izslēgts"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled"
-msgstr ""
+msgstr "“Noclip” režīms ieslēgts"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
+msgstr "“Noclip” režīms ieslēgts (bet: nav “noclip” privilēģijas)"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "“Noclip” režīms izslēgts"
 
 #: src/client/game.cpp
 msgid "Cinematic mode enabled"
-msgstr ""
+msgstr "Kino režīms ieslēgts"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
-msgstr ""
+msgstr "Kino režīms izslēgts"
 
 #: src/client/game.cpp
 msgid "Automatic forward enabled"
-msgstr ""
+msgstr "Automātiskā pārvietošanās ieslēgta"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
-msgstr ""
+msgstr "Automātiskā pārvietošanās izslēgta"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
+msgstr "Minikarte virsmas režīmā, palielinājums x1"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
+msgstr "Minikarte virsmas režīmā, palielinājums x2"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x4"
-msgstr ""
+msgstr "Minikarte virsmas režīmā, palielinājums x4"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
+msgstr "Minikarte radara režīmā, palielinājums x1"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
+msgstr "Minikarte radara režīmā, palielinājums x2"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
+msgstr "Minikarte radara režīmā, palielinājums x4"
 
 #: src/client/game.cpp
 msgid "Minimap hidden"
-msgstr ""
+msgstr "Minikarte paslēpta"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
+msgstr "Minikarte šobrīd atspējota vai nu spēlei, vai modam"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
-msgstr ""
+msgstr "Migla atspējota"
 
 #: src/client/game.cpp
 msgid "Fog enabled"
-msgstr ""
+msgstr "Migla iespējota"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
-msgstr ""
+msgstr "Atkļūdošanas informācija parādīta"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
-msgstr ""
+msgstr "Profilēšanas grafiks parādīts"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr ""
+msgstr "Karkasattēlojums iespējots"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
 msgstr ""
+"Atkļūdošanas informācija, profilēšanas grafiks un karkasattēlojums atspējoti"
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "Atkļūdošanas informācija un profilēšanas grafiks paslēpti"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
-msgstr ""
+msgstr "Kameras atjaunošana atspējota"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
-msgstr ""
+msgstr "Kameras atjaunošana iespējota"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "Redzamības diapazons ir maksimāls: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
-msgstr ""
+msgstr "Redzamības diapazons nomainīts uz %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr ""
+msgstr "Redzamības diapazons ir minimāls: %d"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "Iespējots neierobežots redzamības diapazons"
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "Atspējots neierobežots redzamības diapazons"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr ""
+msgstr "Tuvināšana šobrīd atspējota vai nu spēlei, vai modam"
 
 #: src/client/game.cpp
 msgid ""
@@ -1112,6 +1127,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Noklusējuma kontroles:\n"
+"Ne izvēlnē:\n"
+"- pieskāriens: aktivizē pogu\n"
+"- dubultpieskāriens: nolikt/izmantot\n"
+"- vilkt ar pirksto: skatīties apkārt\n"
+"Izvēlnē/inventārā:\n"
+"- dubultpieskāriens (ārpus izvēlnes)\n"
+" --> aizvērt izvēlni\n"
+"- pieskāriens priekšmetiem, pieskāriens kastītei:\n"
+" --> pārvietot priekšmetus\n"
+"- pieskāriens&vilkšana, ar otru pirkstu pieskāriens:\n"
+" --> novietot vienu priekšmetu kastītē\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1131,381 +1158,397 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"Kontroles:\n"
+"- %s: uz priekšu\n"
+"- %s: uz atpakaļu\n"
+"- %s: pa kreisi\n"
+"- %s: pa labi\n"
+"- %s: lekt/kāpt\n"
+"- %s: lavīties/nolaisties\n"
+"- %s: nomest priekšmetu\n"
+"- %s: inventārs\n"
+"- Pele: griezties/skatīties\n"
+"- Peles kreisā poga: rakt/sist\n"
+"- Peles labā poga: likt/izmantot\n"
+"- Peles rullītis: izvēlēties priekšmetu\n"
+"- %s: čats\n"
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Turpināt"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Nomainīt paroli"
 
 #: src/client/game.cpp
 msgid "Game paused"
-msgstr ""
+msgstr "Spēle nopauzēta"
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "Skaņas skaļums"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Iziet uz izvēlni"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "Iziet uz OS"
 
 #: src/client/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "Spēles informācija:"
 
 #: src/client/game.cpp
 msgid "- Mode: "
-msgstr ""
+msgstr "- Režīms: "
 
 #: src/client/game.cpp
 msgid "Remote server"
-msgstr ""
+msgstr "Attālināts serveris"
 
 #: src/client/game.cpp
 msgid "- Address: "
-msgstr ""
+msgstr "- Adrese: "
 
 #: src/client/game.cpp
 msgid "Hosting server"
-msgstr ""
+msgstr "Lokāls serveris"
 
 #: src/client/game.cpp
 msgid "- Port: "
-msgstr ""
+msgstr "- Ports: "
 
 #: src/client/game.cpp
 msgid "Singleplayer"
-msgstr ""
+msgstr "Viena spēlētāja režīms"
 
 #: src/client/game.cpp
 msgid "On"
-msgstr ""
+msgstr "Ieslēgts"
 
 #: src/client/game.cpp
 msgid "Off"
-msgstr ""
+msgstr "Izslēgts"
 
 #: src/client/game.cpp
 msgid "- Damage: "
-msgstr ""
+msgstr "- Bojājumi: "
 
 #: src/client/game.cpp
 msgid "- Creative Mode: "
-msgstr ""
+msgstr "- Radošais režīms: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "- PvP: "
 
 #: src/client/game.cpp
 msgid "- Public: "
-msgstr ""
+msgstr "- Publisks: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr ""
+msgstr "- Severa nosaukums: "
 
 #: src/client/game.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Vairāk informācijas failā debug.txt."
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "Čats parādīts"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
-msgstr ""
+msgstr "Čats paslēpts"
 
 #: src/client/gameui.cpp
 msgid "HUD shown"
-msgstr ""
+msgstr "Spēles saskarne parādīta"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
-msgstr ""
+msgstr "Spēles saskarne paslēpta"
 
 #: src/client/gameui.cpp
 #, c-format
 msgid "Profiler shown (page %d of %d)"
-msgstr ""
+msgstr "Profilētājs parādīts (lapa %d no %d)"
 
 #: src/client/gameui.cpp
 msgid "Profiler hidden"
-msgstr ""
+msgstr "Profilētājs paslēpts"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "Kreisā poga"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "Labā poga"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
-msgstr ""
+msgstr "Vidējā poga"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
-msgstr ""
+msgstr "X Poga 1"
 
 #: src/client/keycode.cpp
 msgid "X Button 2"
-msgstr ""
+msgstr "X Poga 2"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
-msgstr ""
+msgstr "Backspace"
 
 #: src/client/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Clear"
-msgstr ""
+msgstr "Notīrīt"
 
 #: src/client/keycode.cpp
 msgid "Return"
-msgstr ""
+msgstr "Return"
 
 #: src/client/keycode.cpp
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/client/keycode.cpp
 msgid "Control"
-msgstr ""
+msgstr "Ctrl"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
-msgstr ""
+msgstr "Alt"
 
 #: src/client/keycode.cpp
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
-msgstr ""
+msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "Atstarpe"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "Page up"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "Page down"
 
 #: src/client/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/client/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr ""
+msgstr "Pa kreisi"
 
 #: src/client/keycode.cpp
 msgid "Up"
-msgstr ""
+msgstr "Uz augšu"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr ""
+msgstr "Pa labi"
 
 #: src/client/keycode.cpp
 msgid "Down"
-msgstr ""
+msgstr "Uz leju"
 
 #. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr ""
+msgstr "Select"
 
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr ""
+msgstr "Print Screen"
 
 #: src/client/keycode.cpp
 msgid "Execute"
-msgstr ""
+msgstr "Execute"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
-msgstr ""
+msgstr "Snapshot"
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Insert"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "Help"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr ""
+msgstr "Kreisā Windows poga"
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr ""
+msgstr "Labā Windows poga"
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr ""
+msgstr "Ciparbloka 0"
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr ""
+msgstr "Ciparbloka 1"
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr ""
+msgstr "Ciparbloka 2"
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr ""
+msgstr "Ciparbloka 3"
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr ""
+msgstr "Ciparbloka 4"
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr ""
+msgstr "Ciparbloka 5"
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr ""
+msgstr "Ciparbloka 6"
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr ""
+msgstr "Ciparbloka 7"
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr ""
+msgstr "Ciparbloka 8"
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr ""
+msgstr "Ciparbloka 9"
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr ""
+msgstr "Ciparbloka *"
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr ""
+msgstr "Ciparbloka +"
 
 #: src/client/keycode.cpp
 msgid "Numpad ."
-msgstr ""
+msgstr "Ciparbloka ."
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr ""
+msgstr "Ciparbloka -"
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr ""
+msgstr "Ciparbloka /"
 
 #: src/client/keycode.cpp
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/client/keycode.cpp
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Scroll Lock"
 
 #: src/client/keycode.cpp
 msgid "Left Shift"
-msgstr ""
+msgstr "Kreisais Shift"
 
 #: src/client/keycode.cpp
 msgid "Right Shift"
-msgstr ""
+msgstr "Labais Shift"
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "Kreisais Ctrl"
 
 #: src/client/keycode.cpp
 msgid "Right Control"
-msgstr ""
+msgstr "Labais Ctrl"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
-msgstr ""
+msgstr "Kreisais Alt"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
-msgstr ""
+msgstr "Labais Alt"
 
 #: src/client/keycode.cpp
 msgid "IME Escape"
-msgstr ""
+msgstr "IME Escape"
 
 #: src/client/keycode.cpp
 msgid "IME Convert"
-msgstr ""
+msgstr "IME Convert"
 
 #: src/client/keycode.cpp
 msgid "IME Nonconvert"
-msgstr ""
+msgstr "IME Nonconvert"
 
 #: src/client/keycode.cpp
 msgid "IME Accept"
-msgstr ""
+msgstr "IME Accept"
 
 #: src/client/keycode.cpp
 msgid "IME Mode Change"
-msgstr ""
+msgstr "IME Mode Change"
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "Menu"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "Sleep"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
-msgstr ""
+msgstr "Erase EOF"
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr ""
+msgstr "Play"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Clear"
 
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
@@ -1516,211 +1559,219 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
+"Jūs tūlīt pievienosieties šim serverim ar vārdu \"%s\" pirmo reizi.\n"
+"Ja Jūs turpināsiet, šajā serverī tiks izveidots jauns lietotājs ar jūsu "
+"pierakstīšanās informāciju.\n"
+"Lūdzu ievadiet savu paroli vēlreiz un nospiediet “Reģistrēties un "
+"pievienoties”, lai apstiprinātu lietotāja izveidi, vai arī nospiediet "
+"“Atcelt”, lai pārtrauktu šo darbību."
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr ""
+msgstr "Reģistrēties un pievienoties"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Paroles nesakrīt!"
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr ""
+msgstr "Turpināt"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Taustiņu iestatījumi. (Ja šī izvēlne salūzt, izdzēsiet iestatījumus no "
+"minetest.conf)"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "\"Special\" = climb down"
-msgstr ""
+msgstr "“Speciālais” = kāpt lejā"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "Nospied “lekt” divreiz, lai lidotu"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
-msgstr ""
+msgstr "Automātiskā lekšana"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr ""
+msgstr "Šis taustiņš jau tiek izmantots"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "nospiediet pogu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "Uz priekšu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "Atmuguriski"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Special"
-msgstr ""
+msgstr "Speciālais"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "Lekt"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "Lavīties"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "Mest"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr ""
+msgstr "Inventārs"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
-msgstr ""
+msgstr "Iepr. priekšmets"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
-msgstr ""
+msgstr "Nāk. priekšmets"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
-msgstr ""
+msgstr "Mainīt kameru"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle minimap"
-msgstr ""
+msgstr "Minikarte"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr ""
+msgstr "Lidot"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
-msgstr ""
+msgstr "Pārvietoties pēc skatīšanās leņķa"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr ""
+msgstr "Ātrā pārvietošanās"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr ""
+msgstr "“Noclip”"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "Skaņa"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
-msgstr ""
+msgstr "Sam. skaļumu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
-msgstr ""
+msgstr "Pal. skaļumu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
-msgstr ""
+msgstr "Auto-iešana"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr ""
+msgstr "Čats"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Screenshot"
-msgstr ""
+msgstr "Ekrānšāviņš"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr ""
+msgstr "Redzamības diapazons"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr ""
+msgstr "Sam. diapazonu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr ""
+msgstr "Pal. diapazonu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "Konsole"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "Komanda"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
-msgstr ""
+msgstr "Lokālā komanda"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr ""
+msgstr "Spēles saskarne"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr ""
+msgstr "Čata logs"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fog"
-msgstr ""
+msgstr "Migla"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr ""
+msgstr "Vecā parole"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr ""
+msgstr "Jaunā parole"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "Apstiprināt paroli"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
-msgstr ""
+msgstr "Nomainīt"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Skaņas skaļums: "
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
-msgstr ""
+msgstr "Iziet"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr ""
+msgstr "Apklusināts"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "Ievadiet "
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "lv"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
-msgstr ""
+msgstr "Vadība"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr ""
+msgstr "Būvēt iekšā spēlētājā"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1728,30 +1779,36 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"Ja iespējots, varat novietot blokus, kur Jūs stāvat.\n"
+"Šis ir noderīgi, kad jābūvē šaurās vietās."
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "Lidošana"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
+"Spēlētājs var lidot ignorējot gravitāciju.\n"
+"Šim ir vajadzīga “fly” privilēģija servera pusē."
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
-msgstr ""
+msgstr "Kustība uz augšu/leju pēc skatīšanās virziena"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
 msgstr ""
+"Ja iespējota, liek visām kustībām peldot un lidojot būt relatīvām pret "
+"spēlētāja skatīšanās virziena."
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "Ātrā pārvietošanās"
 
 #: src/settings_translation_file.cpp
 msgid ""
