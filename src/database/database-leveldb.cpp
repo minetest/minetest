@@ -149,9 +149,7 @@ void PlayerDatabaseLevelDB::savePlayer(RemotePlayer *player)
 		os << serializeLongString(it.second);
 	}
 
-	std::ostringstream serialized_inventory;
-	player->inventory.serialize(serialized_inventory);
-	os << serializeLongString(serialized_inventory.str());
+	player->inventory.serialize(os);
 
 	leveldb::Status status = m_database->Put(leveldb::WriteOptions(),
 		player->getName(), os.str());
@@ -191,9 +189,9 @@ bool PlayerDatabaseLevelDB::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	}
 	sao->getMeta().setModified(false);
 
-	std::istringstream serialized_inventory(deSerializeLongString(is));
+	// This should always be last.
 	try {
-		player->inventory.deSerialize(serialized_inventory);
+		player->inventory.deSerialize(is);
 	} catch (SerializationError &e) {
 		errorstream << "Failed to deserialize player inventory. player_name="
 			<< player->getName() << " " << e.what() << std::endl;
