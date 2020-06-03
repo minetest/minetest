@@ -343,7 +343,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		player_position = player->getParent()->getPosition();
 
 	if(player->touching_ground &&
-			player_position.Y > old_player_position.Y)
+			player_position.Y != old_player_position.Y)
 	{
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;

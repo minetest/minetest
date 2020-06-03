@@ -598,6 +598,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				box = box_0;
 				box.MinEdge += *pos_f;
 				box.MaxEdge += *pos_f;
+			}else if((cbox.MaxEdge.X - cbox.MinEdge.X != 10 || cbox.MaxEdge.Y - cbox.MinEdge.Y != 10 || cbox.MaxEdge.Z - cbox.MinEdge.Z != 10) &&
+				box.MinEdge.Y > cbox.MaxEdge.Y && box.MinEdge.Y - (stepheight * 2) < cbox.MaxEdge.Y && 
+				speed_f->Y < 0.0f && speed_f->Y > -3.0f * BS){
+				pos_f->Y = cbox.MaxEdge.Y;
+				speed_f->Y = 0.0f;
+				box = box_0;
+				box.MinEdge += *pos_f;
+				box.MaxEdge += *pos_f;
 			}
 			if (std::fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.05f) {
 				result.touching_ground = true;
