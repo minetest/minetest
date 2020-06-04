@@ -475,6 +475,7 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 			parent->addAttachmentChild(m_id);
 	}
 
+
 	updateAttachments();
 }
 
