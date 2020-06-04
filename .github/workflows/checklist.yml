@@ -10,4 +10,5 @@ jobs:
       - name: Checklist
         uses: wyozi/contextual-qa-checklist-action@master
         with:
+          input-file: .github/CHECKLIST.yml
           gh-token: ${{ secrets.GITHUB_TOKEN }}

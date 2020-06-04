@@ -8,6 +8,6 @@ paths:
     - Req 6. Accurate and readable documentation where relevant
     - DevTest has been updated
   "src/script/lua_api/**.*":
-    - Have you updated the API documentation?
+    - Updated lua documentation
   "src/gui/**.*":
-    - Example added to DevTest's test formspec.
+    - Example added to DevTest's test formspec
