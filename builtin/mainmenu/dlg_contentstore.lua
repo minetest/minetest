@@ -513,6 +513,17 @@ function create_store_dlg(type)
 
 	search_string = ""
 	cur_page = 1
+
+	if type then
+		-- table.indexof does not work on tables that contain `nil`
+		for i, v in pairs(filter_types_type) do
+			if v == type then
+				filter_type = i
+				break
+			end
+		end
+	end
+
 	store.filter_packages(search_string)
 
 	return dialog_create("store",
