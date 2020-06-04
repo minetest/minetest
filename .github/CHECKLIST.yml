@@ -1,5 +1,5 @@
 paths:
-  "**.*":
+  "**":
     - Req 1. Concept is okay and follows aims of the project
     - Req 2. Works
     - Req 3. Code style
@@ -7,7 +7,7 @@ paths:
     - Req 5. Good protocols, serialization formats and APIs
     - Req 6. Accurate and readable documentation where relevant
     - DevTest has been updated
-  "src/script/lua_api/**.*":
+  "src/script/lua_api/**":
     - Updated lua documentation
-  "src/gui/**.*":
+  "src/gui/**":
     - Example added to DevTest's test formspec
