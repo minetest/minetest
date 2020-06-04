@@ -2908,7 +2908,7 @@ angles in radians.
 * `vector.rotate_around_axis(v1, v2, a)`:
     * Returns `v1` rotated around axis `v2` by `a` radians according to
       the right hand rule.
-* `vector.directions_to_rotation(direction[, up])`:
+* `vector.dir_to_rotation(direction[, up])`:
     * Returns a rotation vector for `direction` pointing forward using `up`
       as the up vector.
     * If `up` is omitted, the roll of the returned vector defaults to zero.

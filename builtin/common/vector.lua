@@ -205,14 +205,14 @@ function vector.rotate(v, rot)
 	)
 end
 
-function vector.directions_to_rotation(forward, up)
+function vector.dir_to_rotation(forward, up)
 	forward = vector.normalize(forward)
 	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
 	if not up then
 		return rot
 	end
 	assert(vector.dot(forward, up) < 0.000001,
-			"Invalid vectors passed to vector.directions_to_rotation().")
+			"Invalid vectors passed to vector.dir_to_rotation().")
 	up = vector.normalize(up)
 	-- Calculate vector pointing up with roll = 0, just based on forward vector.
 	local forwup = vector.rotate({x = 0, y = 1, z = 0}, rot)
