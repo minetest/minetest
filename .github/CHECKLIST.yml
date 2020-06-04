@@ -1,0 +1,13 @@
+paths:
+  "**.*":
+    - Req 1. Concept is okay and follows aims of the project
+    - Req 2. Works
+    - Req 3. Code style
+    - Req 4. Good code design, internal interfaces, and is reasonably optimized
+    - Req 5. Good protocols, serialization formats and APIs
+    - Req 6. Accurate and readable documentation where relevant
+    - DevTest has been updated
+  "src/script/lua_api/**.*":
+    - Have you updated the API documentation?
+  "src/gui/**.*":
+    - Example added to DevTest's test formspec.
