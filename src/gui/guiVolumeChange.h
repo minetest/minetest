@@ -23,12 +23,14 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "modalMenu.h"
 #include <string>
 
+class ISimpleTextureSource;
+
 class GUIVolumeChange : public GUIModalMenu
 {
 public:
 	GUIVolumeChange(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
-			IMenuManager *menumgr);
+			IMenuManager *menumgr, ISimpleTextureSource *tsrc);
 	~GUIVolumeChange();
 
 	void removeChildren();
@@ -46,4 +48,7 @@ public:
 protected:
 	std::wstring getLabelByID(s32 id) { return L""; }
 	std::string getNameByID(s32 id) { return ""; }
+
+private:
+	ISimpleTextureSource *m_tsrc;
 };

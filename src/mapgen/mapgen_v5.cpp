@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -45,7 +44,7 @@ FlagDesc flagdesc_mapgen_v5[] = {
 };
 
 
-MapgenV5::MapgenV5(MapgenV5Params *params, EmergeManager *emerge)
+MapgenV5::MapgenV5(MapgenV5Params *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_V5, params, emerge)
 {
 	spflags            = params->spflags;

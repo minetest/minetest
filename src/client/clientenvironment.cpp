@@ -320,21 +320,8 @@ void ClientEnvironment::step(float dtime)
 		// Step object
 		cao->step(dtime, this);
 
-		if (update_lighting) {
-			// Update lighting
-			u8 light = 0;
-			bool pos_ok;
-
-			// Get node at head
-			v3s16 p = cao->getLightPosition();
-			MapNode n = this->m_map->getNode(p, &pos_ok);
-			if (pos_ok)
-				light = n.getLightBlend(day_night_ratio, m_client->ndef());
-			else
-				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
-
-			cao->updateLight(light);
-		}
+		if (update_lighting)
+			cao->updateLight(day_night_ratio);
 	};
 
 	m_ao_manager.step(dtime, cb_state);
@@ -402,18 +389,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	object->addToScene(m_texturesource);
 
 	// Update lighting immediately
-	u8 light = 0;
-	bool pos_ok;
-
-	// Get node at head
-	v3s16 p = object->getLightPosition();
-	MapNode n = m_map->getNode(p, &pos_ok);
-	if (pos_ok)
-		light = n.getLightBlend(getDayNightRatio(), m_client->ndef());
-	else
-		light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
-
-	object->updateLight(light);
+	object->updateLight(getDayNightRatio());
 	return object->getId();
 }
 
@@ -450,7 +426,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 	// Object initialized:
 	if ((obj = getActiveObject(new_id))) {
 		// Final step is to update all children which are already known
-		// Data provided by GENERIC_CMD_SPAWN_INFANT
+		// Data provided by AO_CMD_SPAWN_INFANT
 		const auto &children = obj->getAttachmentChildIds();
 		for (auto c_id : children) {
 			if (auto *o = getActiveObject(c_id))

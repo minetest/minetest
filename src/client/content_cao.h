@@ -130,6 +130,8 @@ private:
 	// Settings
 	bool m_enable_shaders = false;
 
+	bool visualExpiryRequired(const ObjectProperties &newprops) const;
+
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
 
@@ -234,13 +236,13 @@ public:
 		m_visuals_expired = true;
 	}
 
-	void updateLight(u8 light_at_pos);
-
-	void updateLightNoCheck(u8 light_at_pos);
+	void updateLight(u32 day_night_ratio);
 
 	void setNodeLight(u8 light);
 
 	v3s16 getLightPosition();
+
+	void updateNametag();
 
 	void updateNodePos();
 

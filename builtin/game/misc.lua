@@ -164,6 +164,12 @@ function core.record_protection_violation(pos, name)
 	end
 end
 
+-- To be overridden by Creative mods
+
+local creative_mode_cache = core.settings:get_bool("creative_mode")
+function core.is_creative_enabled(name)
+	return creative_mode_cache
+end
 
 -- Checks if specified volume intersects a protected volume
 

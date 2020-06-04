@@ -76,6 +76,11 @@ void GameUI::init()
 	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
 		//false, false); // Disable word wrap as of now
 		false, true, guiroot);
+	u16 chat_font_size = g_settings->getU16("chat_font_size");
+	if (chat_font_size != 0) {
+		m_guitext_chat->setOverrideFont(g_fontengine->getFont(
+			chat_font_size, FM_Unspecified));
+	}
 
 	// Profiler text (size is updated when text is updated)
 	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
@@ -128,9 +133,9 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< "pos: (" << (player_position.X / BS)
 			<< ", " << (player_position.Y / BS)
 			<< ", " << (player_position.Z / BS)
-			<< ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
+			<< ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "\xC2\xB0 "
 			<< yawToDirectionString(cam.camera_yaw)
-			<< " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "°"
+			<< " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "\xC2\xB0"
 			<< " | seed: " << ((u64)client->getMapSeed());
 
 		if (pointed_old.type == POINTEDTHING_NODE) {
@@ -213,7 +218,6 @@ void GameUI::showTranslatedStatusText(const char *str)
 
 void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 {
-	setStaticText(m_guitext_chat, chat_text);
 
 	// Update gui element size and position
 	s32 chat_y = 5;
@@ -221,16 +225,15 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 	if (m_flags.show_debug)
 		chat_y += 2 * g_fontengine->getLineHeight();
 
-	// first pass to calculate height of text to be set
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
-	s32 width = std::min(g_fontengine->getTextWidth(chat_text.c_str()) + 10,
-		window_size.X - 20);
-	m_guitext_chat->setRelativePosition(core::rect<s32>(10, chat_y, width,
-		chat_y + window_size.Y));
 
-	// now use real height of text and adjust rect according to this size
-	m_guitext_chat->setRelativePosition(core::rect<s32>(10, chat_y, width,
-		chat_y + m_guitext_chat->getTextHeight()));
+	core::rect<s32> chat_size(10, chat_y,
+		window_size.X - 20, 0);
+	chat_size.LowerRightCorner.Y = std::min((s32)window_size.Y,
+		m_guitext_chat->getTextHeight() + chat_y);
+
+	m_guitext_chat->setRelativePosition(chat_size);
+	setStaticText(m_guitext_chat, chat_text);
 
 	m_recent_chat_count = recent_chat_count;
 }

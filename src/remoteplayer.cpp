@@ -20,13 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "remoteplayer.h"
 #include <json/json.h>
-#include "content_sao.h"
 #include "filesys.h"
 #include "gamedef.h"
 #include "porting.h"  // strlcpy
 #include "server.h"
 #include "settings.h"
 #include "convert_json.h"
+#include "server/player_sao.h"
 
 /*
 	RemotePlayer
@@ -74,9 +74,9 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	m_skybox_params.sky_color = sky_defaults.getSkyColorDefaults();
 	m_skybox_params.type = "regular";
 	m_skybox_params.clouds = true;
-	m_skybox_params.sun_tint = video::SColor(255, 244, 125, 29);
-	m_skybox_params.moon_tint = video::SColorf(0.5, 0.6, 0.8, 1).toSColor();
-	m_skybox_params.tint_type = "default";
+	m_skybox_params.fog_sun_tint = video::SColor(255, 244, 125, 29);
+	m_skybox_params.fog_moon_tint = video::SColorf(0.5, 0.6, 0.8, 1).toSColor();
+	m_skybox_params.fog_tint_type = "default";
 
 	m_sun_params = sky_defaults.getSunDefaults();
 	m_moon_params = sky_defaults.getMoonDefaults();

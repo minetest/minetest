@@ -35,7 +35,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct PlayerFovSpec
 {
 	f32 fov;
+
+	// Whether to multiply the client's FOV or to override it
 	bool is_multiplier;
+
+	// The time to be take to trasition to the new FOV value.
+	// Transition is instantaneous if omitted. Omitted by default.
+	f32 transition_time;
 };
 
 struct PlayerControl
@@ -186,12 +192,12 @@ public:
 
 	void setFov(const PlayerFovSpec &spec)
 	{
-		m_fov_spec = spec;
+		m_fov_override_spec = spec;
 	}
 
 	const PlayerFovSpec &getFov() const
 	{
-		return m_fov_spec;
+		return m_fov_override_spec;
 	}
 
 	u32 keyPressed = 0;
@@ -208,7 +214,7 @@ protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;
 	u16 m_wield_index = 0;
-	PlayerFovSpec m_fov_spec = { 0.0f, false };
+	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };
 
 	std::vector<HudElement *> hud;
 private:

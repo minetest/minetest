@@ -209,6 +209,9 @@ wchar_t *narrow_to_wide_c(const char *str)
 }
 
 std::wstring narrow_to_wide(const std::string &mbs) {
+#ifdef __ANDROID__
+	return utf8_to_wide(mbs);
+#else
 	size_t wcl = mbs.size();
 	Buffer<wchar_t> wcs(wcl + 1);
 	size_t len = mbstowcs(*wcs, mbs.c_str(), wcl);
@@ -216,11 +219,15 @@ std::wstring narrow_to_wide(const std::string &mbs) {
 		return L"<invalid multibyte string>";
 	wcs[len] = 0;
 	return *wcs;
+#endif
 }
 
 
 std::string wide_to_narrow(const std::wstring &wcs)
 {
+#ifdef __ANDROID__
+	return wide_to_utf8(wcs);
+#else
 	size_t mbl = wcs.size() * 4;
 	SharedBuffer<char> mbs(mbl+1);
 	size_t len = wcstombs(*mbs, wcs.c_str(), mbl);
@@ -229,6 +236,7 @@ std::string wide_to_narrow(const std::wstring &wcs)
 
 	mbs[len] = 0;
 	return *mbs;
+#endif
 }
 
 
@@ -685,10 +693,12 @@ void str_replace(std::string &str, char from, char to)
  * before filling it again.
  */
 
-void translate_all(const std::wstring &s, size_t &i, std::wstring &res);
+void translate_all(const std::wstring &s, size_t &i,
+		Translations *translations, std::wstring &res);
 
-void translate_string(const std::wstring &s, const std::wstring &textdomain,
-		size_t &i, std::wstring &res) {
+void translate_string(const std::wstring &s, Translations *translations,
+		const std::wstring &textdomain, size_t &i, std::wstring &res)
+{
 	std::wostringstream output;
 	std::vector<std::wstring> args;
 	int arg_number = 1;
@@ -742,7 +752,7 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 			if (arg_number >= 10) {
 				errorstream << "Ignoring too many arguments to translation" << std::endl;
 				std::wstring arg;
-				translate_all(s, i, arg);
+				translate_all(s, i, translations, arg);
 				args.push_back(arg);
 				continue;
 			}
@@ -750,7 +760,7 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 			output << arg_number;
 			++arg_number;
 			std::wstring arg;
-			translate_all(s, i, arg);
+			translate_all(s, i, translations, arg);
 			args.push_back(arg);
 		} else {
 			// This is an escape sequence *inside* the template string to translate itself.
@@ -759,8 +769,13 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 		}
 	}
 
+	std::wstring toutput;
 	// Translate the template.
-	std::wstring toutput = g_translations->getTranslation(textdomain, output.str());
+	if (translations != nullptr)
+		toutput = translations->getTranslation(
+				textdomain, output.str());
+	else
+		toutput = output.str();
 
 	// Put back the arguments in the translated template.
 	std::wostringstream result;
@@ -794,7 +809,9 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 	res = result.str();
 }
 
-void translate_all(const std::wstring &s, size_t &i, std::wstring &res) {
+void translate_all(const std::wstring &s, size_t &i,
+		Translations *translations, std::wstring &res)
+{
 	std::wostringstream output;
 	while (i < s.length()) {
 		// Not an escape sequence: just add the character.
@@ -843,7 +860,7 @@ void translate_all(const std::wstring &s, size_t &i, std::wstring &res) {
 			if (parts.size() > 1)
 				textdomain = parts[1];
 			std::wstring translated;
-			translate_string(s, textdomain, i, translated);
+			translate_string(s, translations, textdomain, i, translated);
 			output << translated;
 		} else {
 			// Another escape sequence, such as colors. Preserve it.
@@ -854,9 +871,21 @@ void translate_all(const std::wstring &s, size_t &i, std::wstring &res) {
 	res = output.str();
 }
 
-std::wstring translate_string(const std::wstring &s) {
+// Translate string server side
+std::wstring translate_string(const std::wstring &s, Translations *translations)
+{
 	size_t i = 0;
 	std::wstring res;
-	translate_all(s, i, res);
+	translate_all(s, i, translations, res);
 	return res;
+}
+
+// Translate string client side
+std::wstring translate_string(const std::wstring &s)
+{
+#ifdef SERVER
+	return translate_string(s, nullptr);
+#else
+	return translate_string(s, g_client_translations);
+#endif
 }

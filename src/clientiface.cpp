@@ -27,7 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "map.h"
 #include "emerge.h"
-#include "content_sao.h"              // TODO this is used for cleanup of only
+#include "server/luaentity_sao.h"
+#include "server/player_sao.h"
 #include "log.h"
 #include "util/srp.h"
 #include "face_position_cache.h"
@@ -343,10 +344,10 @@ void RemoteClient::GetNextBlocks (
 			}
 
 			/*
-				If block has been marked to not exist on disk (dummy)
-				and generating new ones is not wanted, skip block.
+				If block has been marked to not exist on disk (dummy) or is
+				not generated and generating new ones is not wanted, skip block.
 			*/
-			if (!generate && surely_not_found_on_disk) {
+			if (!generate && (surely_not_found_on_disk || block_is_invalid)) {
 				// get next one.
 				continue;
 			}

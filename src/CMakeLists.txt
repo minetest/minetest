@@ -6,7 +6,7 @@ INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
 
 # Add custom SemiDebug build mode
-set(CMAKE_CXX_FLAGS_SEMIDEBUG "-O1 -g -Wall -Wabi" CACHE STRING
+set(CMAKE_CXX_FLAGS_SEMIDEBUG "-O1 -g -Wall" CACHE STRING
 	"Flags used by the C++ compiler during semidebug builds."
 	FORCE
 )
@@ -62,7 +62,7 @@ set(USE_GETTEXT FALSE)
 
 if(ENABLE_GETTEXT)
 	find_package(GettextLib)
-	if(GETTEXT_FOUND)
+	if(GETTEXTLIB_FOUND)
 		if(WIN32)
 			message(STATUS "GetText library: ${GETTEXT_LIBRARY}")
 			message(STATUS "GetText DLL: ${GETTEXT_DLL}")
@@ -70,7 +70,7 @@ if(ENABLE_GETTEXT)
 		endif()
 		set(USE_GETTEXT TRUE)
 		message(STATUS "GetText enabled; locales found: ${GETTEXT_AVAILABLE_LOCALES}")
-	endif(GETTEXT_FOUND)
+	endif(GETTEXTLIB_FOUND)
 else()
 	mark_as_advanced(GETTEXT_ICONV_DLL GETTEXT_INCLUDE_DIR GETTEXT_LIBRARY GETTEXT_MSGFMT)
 	message(STATUS "GetText disabled.")
@@ -216,6 +216,26 @@ endif(ENABLE_REDIS)
 
 
 find_package(SQLite3 REQUIRED)
+
+OPTION(ENABLE_PROMETHEUS "Enable prometheus client support" FALSE)
+set(USE_PROMETHEUS FALSE)
+
+if(ENABLE_PROMETHEUS)
+	find_path(PROMETHEUS_CPP_INCLUDE_DIR NAMES prometheus/counter.h)
+	find_library(PROMETHEUS_PULL_LIBRARY NAMES prometheus-cpp-pull)
+	find_library(PROMETHEUS_CORE_LIBRARY NAMES prometheus-cpp-core)
+	if(PROMETHEUS_CPP_INCLUDE_DIR AND PROMETHEUS_PULL_LIBRARY AND PROMETHEUS_CORE_LIBRARY)
+		set(PROMETHEUS_LIBRARIES ${PROMETHEUS_PULL_LIBRARY} ${PROMETHEUS_CORE_LIBRARY})
+		set(USE_PROMETHEUS TRUE)
+		include_directories(${PROMETHEUS_CPP_INCLUDE_DIR})
+	endif(PROMETHEUS_CPP_INCLUDE_DIR AND PROMETHEUS_PULL_LIBRARY AND PROMETHEUS_CORE_LIBRARY)
+endif(ENABLE_PROMETHEUS)
+
+if(USE_PROMETHEUS)
+	message(STATUS "Prometheus client enabled.")
+else(USE_PROMETHEUS)
+	message(STATUS "Prometheus client disabled.")
+endif(USE_PROMETHEUS)
 
 OPTION(ENABLE_SPATIAL "Enable SpatialIndex AreaStore backend" TRUE)
 set(USE_SPATIAL FALSE)
@@ -375,7 +395,6 @@ set(common_SRCS
 	collision.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
-	content_sao.cpp
 	convert_json.cpp
 	craftdef.cpp
 	debug.cpp
@@ -384,7 +403,6 @@ set(common_SRCS
 	environment.cpp
 	face_position_cache.cpp
 	filesys.cpp
-	genericobject.cpp
 	gettext.cpp
 	httpfetch.cpp
 	hud.cpp
@@ -409,6 +427,7 @@ set(common_SRCS
 	noise.cpp
 	objdef.cpp
 	object_properties.cpp
+	particles.cpp
 	pathfinder.cpp
 	player.cpp
 	porting.cpp
@@ -422,10 +441,10 @@ set(common_SRCS
 	server.cpp
 	serverenvironment.cpp
 	serverlist.cpp
-	serverobject.cpp
 	settings.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
+	texture_override.cpp
 	tileanimation.cpp
 	tool.cpp
 	translation.cpp
@@ -437,8 +456,11 @@ set(common_SRCS
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
-	${UNITTEST_SRCS}
 )
+
+if(BUILD_UNITTESTS)
+	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
+endif()
 
 
 # This gives us the icon and file version information
@@ -454,7 +476,7 @@ if(WIN32)
 			-i${WINRESOURCE_FILE}
 			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			DEPENDS ${WINRESOURCE_FILE})
+			DEPENDS ${WINRESOURCE_FILE} ${MINETEST_EXE_MANIFEST_FILE})
 		SET(extra_windows_SRCS ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
 	else(MINGW) # Probably MSVC
 		set(extra_windows_SRCS ${WINRESOURCE_FILE} ${MINETEST_EXE_MANIFEST_FILE})
@@ -474,8 +496,12 @@ set(client_SRCS
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
 	${client_SCRIPT_SRCS}
-	${UNITTEST_CLIENT_SRCS}
 )
+
+if(BUILD_UNITTESTS)
+	set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
+endif()
+
 list(SORT client_SRCS)
 
 # Server sources
@@ -592,6 +618,9 @@ if(BUILD_CLIENT)
 	if (USE_REDIS)
 		target_link_libraries(${PROJECT_NAME} ${REDIS_LIBRARY})
 	endif()
+	if (USE_PROMETHEUS)
+		target_link_libraries(${PROJECT_NAME} ${PROMETHEUS_LIBRARIES})
+	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
@@ -627,6 +656,9 @@ if(BUILD_SERVER)
 	if (USE_REDIS)
 		target_link_libraries(${PROJECT_NAME}server ${REDIS_LIBRARY})
 	endif()
+	if (USE_PROMETHEUS)
+		target_link_libraries(${PROJECT_NAME}server ${PROMETHEUS_LIBRARIES})
+	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME}server ${SPATIAL_LIBRARY})
 	endif()
@@ -649,7 +681,7 @@ set(GETTEXT_BLACKLISTED_LOCALES
 
 option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid broken locales" TRUE)
 
-if (GETTEXT_FOUND AND APPLY_LOCALE_BLACKLIST)
+if (GETTEXTLIB_FOUND AND APPLY_LOCALE_BLACKLIST)
 	set(GETTEXT_USED_LOCALES "")
 	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 		if (NOT ";${GETTEXT_BLACKLISTED_LOCALES};" MATCHES ";${LOCALE};")
@@ -661,7 +693,7 @@ endif()
 
 # Set some optimizations and tweaks
 
-include(CheckCXXCompilerFlag)
+include(CheckCSourceCompiles)
 
 if(MSVC)
 	# Visual Studio
@@ -671,9 +703,12 @@ if(MSVC)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:SSE")
 	endif()
-	#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /NODEFAULTLIB:\"libcmtd.lib\" /NODEFAULTLIB:\"libcmt.lib\"")
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
-
+	
+	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+	else()
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+	endif()
 
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
@@ -695,19 +730,30 @@ else()
 	else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
-
 	if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		set(WARNING_FLAGS "${WARNING_FLAGS} -Wsign-compare")
 	endif()
+
 	if(APPLE AND USE_LUAJIT)
 		# required per http://luajit.org/install.html
 		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000")
+	elseif(UNIX AND USE_LUAJIT)
+		check_c_source_compiles("#ifndef __aarch64__\n#error\n#endif\nint main(){}" IS_AARCH64)
+		if(IS_AARCH64)
+			# Move text segment below LuaJIT's 47-bit limit (see issue #9367)
+			SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Ttext-segment=0x200000000")
+		endif()
 	endif()
 
 	if(MINGW)
 		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN32_LEAN_AND_MEAN")
 	endif()
+
+	# Use a safe subset of flags to speed up math calculations:
+	# - we don't need errno or math exceptions
+	# - we don't deal with Inf/NaN or signed zero
+	set(MATH_FLAGS "-fno-math-errno -fno-trapping-math -ffinite-math-only -fno-signed-zeros")
 
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -Wall -pipe -funroll-loops")
 	if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|BSD|DragonFly)")
@@ -719,11 +765,11 @@ else()
 				AND CMAKE_CXX_COMPILER_VERSION MATCHES "^9\\.")
 			# Clang 9 has broken -ffast-math on glibc
 		else()
-			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math")
+			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${MATH_FLAGS}")
 		endif()
 	endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|BSD|DragonFly)")
-	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")

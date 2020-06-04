@@ -39,6 +39,7 @@ struct ObjectProperties
 	std::string mesh = "";
 	v3f visual_size = v3f(1, 1, 1);
 	std::vector<std::string> textures;
+	std::string damage_texture_modifier = "^[brighten";
 	std::vector<video::SColor> colors;
 	v2s16 spritediv = v2s16(1, 1);
 	v2s16 initial_sprite_basepos;

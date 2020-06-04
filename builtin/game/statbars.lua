@@ -3,22 +3,26 @@ local enable_damage = core.settings:get_bool("enable_damage")
 
 local health_bar_definition = {
 	hud_elem_type = "statbar",
-	position = { x=0.5, y=1 },
+	position = {x = 0.5, y = 1},
 	text = "heart.png",
+	text2 = "heart_gone.png",
 	number = core.PLAYER_MAX_HP_DEFAULT,
+	item = core.PLAYER_MAX_HP_DEFAULT,
 	direction = 0,
-	size = { x=24, y=24 },
-	offset = { x=(-10*24)-25, y=-(48+24+16)},
+	size = {x = 24, y = 24},
+	offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)},
 }
 
 local breath_bar_definition = {
 	hud_elem_type = "statbar",
-	position = { x=0.5, y=1 },
+	position = {x = 0.5, y = 1},
 	text = "bubble.png",
+	text2 = "bubble_gone.png",
 	number = core.PLAYER_MAX_BREATH_DEFAULT,
+	item = core.PLAYER_MAX_BREATH_DEFAULT * 2,
 	direction = 0,
-	size = { x=24, y=24 },
-	offset = {x=25,y=-(48+24+16)},
+	size = {x = 24, y = 24},
+	offset = {x = 25, y= -(48 + 24 + 16)},
 }
 
 local hud_ids = {}
@@ -26,7 +30,7 @@ local hud_ids = {}
 local function scaleToDefault(player, field)
 	-- Scale "hp" or "breath" to the default dimensions
 	local current = player["get_" .. field](player)
-	local nominal = core["PLAYER_MAX_".. field:upper() .. "_DEFAULT"]
+	local nominal = core["PLAYER_MAX_" .. field:upper() .. "_DEFAULT"]
 	local max_display = math.max(nominal,
 		math.max(player:get_properties()[field .. "_max"], current))
 	return current / max_display * nominal
@@ -49,6 +53,7 @@ local function update_builtin_statbars(player)
 	local hud = hud_ids[name]
 
 	local immortal = player:get_armor_groups().immortal == 1
+
 	if flags.healthbar and enable_damage and not immortal then
 		local number = scaleToDefault(player, "hp")
 		if hud.id_healthbar == nil then
@@ -63,19 +68,28 @@ local function update_builtin_statbars(player)
 		hud.id_healthbar = nil
 	end
 
+	local show_breathbar = flags.breathbar and enable_damage and not immortal
+
+	local breath     = player:get_breath()
 	local breath_max = player:get_properties().breath_max
-	if flags.breathbar and enable_damage and not immortal and
-			player:get_breath() < breath_max then
+	if show_breathbar and breath <= breath_max then
 		local number = 2 * scaleToDefault(player, "breath")
-		if hud.id_breathbar == nil then
+		if not hud.id_breathbar and breath < breath_max then
 			local hud_def = table.copy(breath_bar_definition)
 			hud_def.number = number
 			hud.id_breathbar = player:hud_add(hud_def)
-		else
+		elseif hud.id_breathbar then
 			player:hud_change(hud.id_breathbar, "number", number)
 		end
-	elseif hud.id_breathbar then
-		player:hud_remove(hud.id_breathbar)
+	end
+
+	if hud.id_breathbar and (not show_breathbar or breath == breath_max) then
+		minetest.after(1, function(player_name, breath_bar)
+			local player = minetest.get_player_by_name(player_name)
+			if player then
+				player:hud_remove(breath_bar)
+			end
+		end, name, hud.id_breathbar)
 		hud.id_breathbar = nil
 	end
 end

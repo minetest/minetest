@@ -368,9 +368,12 @@ void ContentFeatures::reset()
 	floodable = false;
 	rightclickable = true;
 	leveled = 0;
+	leveled_max = LEVELED_MAX;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
+	liquid_alternative_flowing_id = CONTENT_IGNORE;
 	liquid_alternative_source = "";
+	liquid_alternative_source_id = CONTENT_IGNORE;
 	liquid_viscosity = 0;
 	liquid_renewable = true;
 	liquid_range = LIQUID_LEVEL_MAX+1;
@@ -478,6 +481,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, legacy_wallmounted);
 
 	os << serializeString(node_dig_prediction);
+	writeU8(os, leveled_max);
 }
 
 void ContentFeatures::correctAlpha(TileDef *tiles, int length)
@@ -586,6 +590,10 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	try {
 		node_dig_prediction = deSerializeString(is);
+		u8 tmp_leveled_max = readU8(is);
+		if (is.eof()) /* readU8 doesn't throw exceptions so we have to do this */
+			throw SerializationError("");
+		leveled_max = tmp_leveled_max;
 	} catch(SerializationError &e) {};
 }
 
@@ -600,8 +608,9 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	layer->material_type = material_type;
 
 	bool has_scale = tiledef.scale > 0;
-	if (((tsettings.autoscale_mode == AUTOSCALE_ENABLE) && !has_scale) ||
-			(tsettings.autoscale_mode == AUTOSCALE_FORCE)) {
+	bool use_autoscale = tsettings.autoscale_mode == AUTOSCALE_FORCE ||
+		(tsettings.autoscale_mode == AUTOSCALE_ENABLE && !has_scale);
+	if (use_autoscale && layer->texture) {
 		auto texture_size = layer->texture->getOriginalSize();
 		float base_size = tsettings.node_texture_size;
 		float size = std::fmin(texture_size.Width, texture_size.Height);
@@ -1304,60 +1313,35 @@ void NodeDefManager::updateAliases(IItemDefManager *idef)
 	}
 }
 
-void NodeDefManager::applyTextureOverrides(const std::string &override_filepath)
+void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &overrides)
 {
 	infostream << "NodeDefManager::applyTextureOverrides(): Applying "
-		"overrides to textures from " << override_filepath << std::endl;
+		"overrides to textures" << std::endl;
 
-	std::ifstream infile(override_filepath.c_str());
-	std::string line;
-	int line_c = 0;
-	while (std::getline(infile, line)) {
-		line_c++;
-		// Also trim '\r' on DOS-style files
-		line = trim(line);
-		if (line.empty())
-			continue;
-
-		std::vector<std::string> splitted = str_split(line, ' ');
-		if (splitted.size() != 3) {
-			errorstream << override_filepath
-				<< ":" << line_c << " Could not apply texture override \""
-				<< line << "\": Syntax error" << std::endl;
-			continue;
-		}
-
+	for (const TextureOverride& texture_override : overrides) {
 		content_t id;
-		if (!getId(splitted[0], id))
+		if (!getId(texture_override.id, id))
 			continue; // Ignore unknown node
 
 		ContentFeatures &nodedef = m_content_features[id];
 
-		if (splitted[1] == "top")
-			nodedef.tiledef[0].name = splitted[2];
-		else if (splitted[1] == "bottom")
-			nodedef.tiledef[1].name = splitted[2];
-		else if (splitted[1] == "right")
-			nodedef.tiledef[2].name = splitted[2];
-		else if (splitted[1] == "left")
-			nodedef.tiledef[3].name = splitted[2];
-		else if (splitted[1] == "back")
-			nodedef.tiledef[4].name = splitted[2];
-		else if (splitted[1] == "front")
-			nodedef.tiledef[5].name = splitted[2];
-		else if (splitted[1] == "all" || splitted[1] == "*")
-			for (TileDef &i : nodedef.tiledef)
-				i.name = splitted[2];
-		else if (splitted[1] == "sides")
-			for (int i = 2; i < 6; i++)
-				nodedef.tiledef[i].name = splitted[2];
-		else {
-			errorstream << override_filepath
-				<< ":" << line_c << " Could not apply texture override \""
-				<< line << "\": Unknown node side \""
-				<< splitted[1] << "\"" << std::endl;
-			continue;
-		}
+		if (texture_override.hasTarget(OverrideTarget::TOP))
+			nodedef.tiledef[0].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::BOTTOM))
+			nodedef.tiledef[1].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::RIGHT))
+			nodedef.tiledef[2].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::LEFT))
+			nodedef.tiledef[3].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::BACK))
+			nodedef.tiledef[4].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::FRONT))
+			nodedef.tiledef[5].name = texture_override.texture;
 	}
 }
 
@@ -1458,11 +1442,15 @@ void NodeDefManager::deSerialize(std::istream &is)
 			m_content_features.resize((u32)(i) + 1);
 		m_content_features[i] = f;
 		addNameIdMapping(i, f.name);
-		verbosestream << "deserialized " << f.name << std::endl;
+		TRACESTREAM(<< "NodeDef: deserialized " << f.name << std::endl);
 
 		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);
 		fixSelectionBoxIntUnion();
 	}
+
+	// Since liquid_alternative_flowing_id and liquid_alternative_source_id
+	// are not sent, resolve them client-side too.
+	resolveCrossrefs();
 }
 
 
@@ -1523,15 +1511,28 @@ void NodeDefManager::resetNodeResolveState()
 	m_pending_resolve_callbacks.clear();
 }
 
-void NodeDefManager::mapNodeboxConnections()
+static void removeDupes(std::vector<content_t> &list)
+{
+	std::sort(list.begin(), list.end());
+	auto new_end = std::unique(list.begin(), list.end());
+	list.erase(new_end, list.end());
+}
+
+void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
+		if (f.liquid_type != LIQUID_NONE) {
+			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
+			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
+			continue;
+		}
 		if (f.drawtype != NDT_NODEBOX || f.node_box.type != NODEBOX_CONNECTED)
 			continue;
 
 		for (const std::string &name : f.connects_to) {
 			getIds(name, f.connects_to_ids);
 		}
+		removeDupes(f.connects_to_ids);
 	}
 }
 
@@ -1594,6 +1595,18 @@ NodeResolver::~NodeResolver()
 {
 	if (!m_resolve_done && m_ndef)
 		m_ndef->cancelNodeResolveCallback(this);
+}
+
+
+void NodeResolver::cloneTo(NodeResolver *res) const
+{
+	FATAL_ERROR_IF(!m_resolve_done, "NodeResolver can only be cloned"
+		" after resolving has completed");
+	/* We don't actually do anything significant. Since the node resolving has
+	 * already completed, the class that called us will already have the
+	 * resolved IDs in its data structures (which it copies on its own) */
+	res->m_ndef = m_ndef;
+	res->m_resolve_done = true;
 }
 
 

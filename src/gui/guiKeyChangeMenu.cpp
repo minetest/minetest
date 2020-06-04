@@ -82,8 +82,10 @@ enum
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
-				gui::IGUIElement* parent, s32 id, IMenuManager *menumgr) :
-GUIModalMenu(env, parent, id, menumgr)
+		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
+		ISimpleTextureSource *tsrc) :
+		GUIModalMenu(env, parent, id, menumgr),
+		m_tsrc(tsrc)
 {
 	init_keys();
 }
@@ -157,7 +159,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 			rect += topleft + v2s32(offset.X + 150 * s, offset.Y - 5 * s);
 			const wchar_t *text = wgettext(k->key.name());
-			k->button = GUIButton::addButton(Environment, rect, this, k->id, text);
+			k->button = GUIButton::addButton(Environment, rect, m_tsrc, this, k->id, text);
 			delete[] text;
 		}
 		if ((i + 1) % KMaxButtonPerColumns == 0) {
@@ -217,14 +219,14 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 		rect += topleft + v2s32(size.X / 2 - 105 * s, size.Y - 40 * s);
 		const wchar_t *text =  wgettext("Save");
-		GUIButton::addButton(Environment, rect, this, GUI_ID_BACK_BUTTON, text);
+		GUIButton::addButton(Environment, rect, m_tsrc, this, GUI_ID_BACK_BUTTON, text);
 		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 		rect += topleft + v2s32(size.X / 2 + 5 * s, size.Y - 40 * s);
 		const wchar_t *text = wgettext("Cancel");
-		GUIButton::addButton(Environment, rect, this, GUI_ID_ABORT_BUTTON, text);
+		GUIButton::addButton(Environment, rect, m_tsrc, this, GUI_ID_ABORT_BUTTON, text);
 		delete[] text;
 	}
 }

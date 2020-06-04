@@ -64,9 +64,21 @@ The game directory can contain the following files:
 * `game.conf`, with the following keys:
     * `name`: Required, human readable name  e.g. `name = Minetest`
     * `description`: Short description to be shown in the content tab
+    * `allowed_mapgens = <comma-separated mapgens>`
+      e.g. `allowed_mapgens = v5,v6,flat`
+      Mapgens not in this list are removed from the list of mapgens for
+      the game.
+      If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
       These mapgens are removed from the list of mapgens for the game.
+      When both `allowed_mapgens` and `disallowed_mapgens` are
+      specified, `allowed_mapgens` is applied before
+      `disallowed_mapgens`.
+    * `disallowed_mapgen_settings= <comma-separated mapgen settings>`
+      e.g. `disallowed_mapgen_settings = mgv5_spflags`
+      These settings are hidden for this game in the world creation
+      dialog and game start menu.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -889,6 +901,7 @@ These sound files are played back by the engine if provided.
  * `player_damage`: Played when the local player takes damage (gain = 0.5)
  * `player_falling_damage`: Played when the local player takes
    damage by falling (gain = 0.5)
+ * `player_jump`: Played when the local player jumps
  * `default_dig_<groupname>`: Default node digging sound
    (see node sound definition for details)
 
@@ -1010,22 +1023,24 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Values range 0 - 179. The value stored in `param2` is multiplied by two to
       get the actual rotation in degrees of the node.
 * `paramtype2 = "meshoptions"`
-    * Only valid for "plantlike" drawtype. The value of `param2` becomes a
-      bitfield which can be used to change how the client draws plantlike nodes.
-    * Bits 0, 1 and 2 form a mesh selector.
-      Currently the following meshes are choosable:
+    * Only valid for "plantlike" drawtype. `param2` encodes the shape and
+      optional modifiers of the "plant". `param2` is a bitfield.
+    * Bits 0 to 2 select the shape.
+      Use only one of the values below:
         * 0 = a "x" shaped plant (ordinary plant)
         * 1 = a "+" shaped plant (just rotated 45 degrees)
         * 2 = a "*" shaped plant with 3 faces instead of 2
         * 3 = a "#" shaped plant with 4 faces instead of 2
         * 4 = a "#" shaped plant with 4 faces that lean outwards
         * 5-7 are unused and reserved for future meshes.
-    * Bits 3 through 7 are optional flags that can be combined and give these
-      effects:
-        * bit 3 (0x08) - Makes the plant slightly vary placement horizontally
-        * bit 4 (0x10) - Makes the plant mesh 1.4x larger
-        * bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
-        * bits 6-7 are reserved for future use.
+    * Bits 3 to 7 are used to enable any number of optional modifiers.
+      Just add the corresponding value(s) below to `param2`:
+        * 8  - Makes the plant slightly vary placement horizontally
+        * 16 - Makes the plant mesh 1.4x larger
+        * 32 - Moves each face randomly a small bit down (1/8 max)
+        * values 64 and 128 (bits 6-7) are reserved for future use.
+    * Example: `param2 = 0` selects a normal "x" shaped plant
+    * Example: `param2 = 17` selects a "+" shaped plant, 1.4x larger (1+16)
 * `paramtype2 = "color"`
     * `param2` tells which color is picked from the palette.
       The palette should have 256 pixels.
@@ -1054,7 +1069,7 @@ Node drawtypes
 
 There are a bunch of different looking node types.
 
-Look for examples in `games/minimal` or `games/minetest_game`.
+Look for examples in `games/devtest` or `games/minetest_game`.
 
 * `normal`
     * A node-sized cube.
@@ -1278,9 +1293,9 @@ To account for differing resolutions, the position coordinates are the
 percentage of the screen, ranging in value from `0` to `1`.
 
 The name field is not yet used, but should contain a description of what the
-HUD element represents. The direction field is the direction in which something
-is drawn.
+HUD element represents.
 
+The `direction` field is the direction in which something is drawn.
 `0` draws from left to right, `1` draws from right to left, `2` draws from
 top to bottom, and `3` draws from bottom to top.
 
@@ -1299,7 +1314,21 @@ factor!
 The `z_index` field specifies the order of HUD elements from back to front.
 Lower z-index elements are displayed behind higher z-index elements. Elements
 with same z-index are displayed in an arbitrary order. Default 0.
-Supports negative values.
+Supports negative values. By convention, the following values are recommended:
+
+*  -400: Graphical effects, such as vignette
+*  -300: Name tags, waypoints
+*  -200: Wieldhand
+*  -100: Things that block the player's view, e.g. masks
+*     0: Default. For standard in-game HUD elements like crosshair, hotbar,
+         minimap, builtin statbars, etc.
+*   100: Temporary text messages or notification icons
+*  1000: Full-screen effects such as full-black screen or credits.
+         This includes effects that cover the entire screen
+* Other: If your HUD element doesn't fit into any category, pick a number
+         between the suggested values
+
+
 
 Below are the specific uses for fields in each type; fields not listed for that
 type are ignored.
@@ -1327,15 +1356,21 @@ Displays text on the HUD.
   text. Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
 * `alignment`: The alignment of the text.
 * `offset`: offset in pixels from position.
+* `size`: size of the text.
+  The player-set font size is multiplied by size.x (y value isn't used).
 
 ### `statbar`
 
-Displays a horizontal bar made up of half-images.
+Displays a horizontal bar made up of half-images with an optional background.
 
-* `text`: The name of the texture that is used.
+* `text`: The name of the texture to use.
+* `text2`: Optional texture name to enable a background / "off state"
+  texture (useful to visualize the maximal value). Both textures
+  must have the same size.
 * `number`: The number of half-textures that are displayed.
   If odd, will end with a vertically center-split texture.
-* `direction`
+* `item`: Same as `number` but for the "off state" texture
+* `direction`: To which direction the images will extend to
 * `offset`: offset in pixels from position.
 * `size`: If used, will force full-image size to this value (override texture
   pack image size)
@@ -1354,10 +1389,30 @@ Displays distance to selected world position.
 
 * `name`: The name of the waypoint.
 * `text`: Distance suffix. Can be blank.
+* `precision`: Waypoint precision, integer >= 0. Defaults to 10.
+  If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
+  When the precision is an integer multiple of 10, there will be `log_10(precision)` digits after the decimal point.
+  `precision = 1000`, for example, will show 3 decimal places (eg: `0.999`).
+  `precision = 2` will show multiples of `0.5`; precision = 5 will show multiples of `0.2` and so on:
+  `precision = n` will show multiples of `1/n`
 * `number:` An integer containing the RGB value of the color used to draw the
   text.
 * `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
+* `alignment`: The alignment of the waypoint.
 
+### `image_waypoint`
+
+Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
+
+* `scale`: The scale of the image, with 1 being the original texture size.
+  Only the X coordinate scale is used (positive values).
+  Negative values represent that percentage of the screen it
+  should take; e.g. `x=-100` means 100% (width).
+* `text`: The name of the texture that is displayed.
+* `alignment`: The alignment of the image.
+* `world_pos`: World position of the waypoint.
+* `offset`: offset in pixels from position.
 
 
 
@@ -1611,6 +1666,7 @@ to games.
     * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
     * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
+  or if their feet are in the node. Note: not supported for `new_move = false`
 * `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids
@@ -2071,6 +2127,26 @@ Elements
 * End of a container, following elements are no longer relative to this
   container.
 
+### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
+
+* Start of a scroll_container block. All contained elements will ...
+  * take the scroll_container coordinate as position origin,
+  * be additionally moved by the current value of the scrollbar with the name
+    `scrollbar name` times `scroll factor` along the orientation `orientation` and
+  * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
+* `orientation`: possible values are `vertical` and `horizontal`.
+* `scroll factor`: optional, defaults to `0.1`.
+* Nesting is possible.
+* Some elements might work a little different if they are in a scroll_container.
+* Note: If you want the scroll_container to actually work, you also need to add a
+  scrollbar element with the specified name. Furthermore, it is highly recommended
+  to use a scrollbaroptions element on this scrollbar.
+
+### `scroll_container_end[]`
+
+* End of a scroll_container, following elements are no longer bound to this
+  container.
+
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
 * Show an inventory list if it has been sent to the client. Nothing will
@@ -2178,12 +2254,12 @@ Elements
 
 * 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
 * Middle is a rect which defines the middle of the 9-slice.
-	* `x` - The middle will be x pixels from all sides.
-	* `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
-	* `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
-		will be added to the width and height of the texture, allowing it to be used as the
-		distance from the far end.
-	* All numbers in middle are integers.
+    * `x` - The middle will be x pixels from all sides.
+    * `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
+    * `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
+        will be added to the width and height of the texture, allowing it to be used as the
+        distance from the far end.
+    * All numbers in middle are integers.
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
 * If `auto_clip` is `true`, the background is clipped to the formspec size
@@ -2332,8 +2408,8 @@ Elements
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1...
-* `transparent` (optional): show transparent
-* `draw_border` (optional): draw border
+* `transparent` (optional): if true, tabs are semi-transparent
+* `draw_border` (optional): if true, draw a thin line at tab base
 
 ### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
@@ -2498,16 +2574,28 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-### `style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]`
+### `style[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Set the style for the named element(s) `name`.
+* Set the style for the element(s) matching `selector` by name.
+* `selector` can be one of:
+    * `<name>` - An element name. Includes `*`, which represents every element.
+    * `<name>:<state>` - An element name, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * Note: this **must** be before the element is defined.
 * See [Styling Formspecs].
 
 
-### `style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]`
+### `style_type[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
 
-* Sets the style for all elements of type(s) `type` which appear after this element.
+* Set the style for the element(s) matching `selector` by type.
+* `selector` can be one of:
+    * `<type>` - An element type. Includes `*`, which represents every element.
+    * `<type>:<state>` - An element type, a colon, and one or more states.
+* `state` is a list of states separated by the `+` character.
+    * If a state is provided, the style will only take effect when the element is in that state.
+    * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
 
 Migrating to Real Coordinates
@@ -2550,23 +2638,34 @@ Styling Formspecs
 
 Formspec elements can be themed using the style elements:
 
-    style[<name 1>,<name 2>,...;<prop1>;<prop2>;...]
-    style_type[<type 1>,<type 2>,...;<prop1>;<prop2>;...]
+    style[<name 1>,<name 2>;<prop1>;<prop2>;...]
+    style[<name 1>:<state>,<name 2>:<state>;<prop1>;<prop2>;...]
+    style_type[<type 1>,<type 2>;<prop1>;<prop2>;...]
+    style_type[<type 1>:<state>,<type 2>:<state>;<prop1>;<prop2>;...]
 
 Where a prop is:
 
     property_name=property_value
-
-A name/type can optionally be a comma separated list of names/types, like so:
-
-    world_delete,world_create,world_configure
-    button,image_button
 
 For example:
 
     style_type[button;bgcolor=#006699]
     style[world_delete;bgcolor=red;textcolor=yellow]
     button[4,3.95;2.6,1;world_delete;Delete]
+
+A name/type can optionally be a comma separated list of names/types, like so:
+
+    world_delete,world_create,world_configure
+    button,image_button
+
+A `*` type can be used to select every element in the formspec.
+
+Any name/type in the list can also be accompanied by a `+`-separated list of states, like so:
+
+    world_delete:hovered+pressed
+    button:pressed
+
+States allow you to apply styles in response to changes in the element, instead of applying at all times.
 
 Setting a property to nothing will reset it to the default value. For example:
 
@@ -2611,10 +2710,14 @@ Some types may inherit styles from parent types.
     * bgimg - standard background image. Defaults to none.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
     * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
-                     See background9[] documentation for more details
+                     See background9[] documentation for more details. This property also pads the
+                     button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
+    * content_offset - 2d vector, shifts the position of the button's content without resizing it.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * padding - rect, adds space between the edges of the button and the content. This value is
+                relative to bgimg_middle.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -2643,6 +2746,14 @@ Some types may inherit styles from parent types.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+
+### Valid States
+
+* *all elements*
+    * default - Equivalent to providing no states
+* button, button_exit, image_button, item_image_button
+    * hovered - Active when the mouse is hovering over the element
+    * pressed - Active when the button is pressed
 
 Markup Language
 ---------------
@@ -3096,8 +3207,22 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
   `minetest.translate`, but is in translation files.
 * `@n` acts as a literal newline as well.
 
+Server side translations
+------------------------
 
+On some specific cases, server translation could be useful. For example, filter
+a list on labels and send results to client. A method is supplied to achieve
+that:
 
+`minetest.get_translated_string(lang_code, string)`: Translates `string` using
+translations for `lang_code` language. It gives the same result as if the string
+was translated by the client.
+
+The `lang_code` to use for a given player can be retrieved from
+the table returned by `minetest.get_player_information(name)`.
+
+IMPORTANT: This functionality should only be used for sorting, filtering or similar purposes.
+You do not need to use this to get translated strings to show up on the client.
 
 Perlin noise
 ============
@@ -3170,9 +3295,9 @@ For this parameter you can randomly choose any whole number. Usually it is
 preferable for this to be different from other seeds, but sometimes it is useful
 to be able to create identical noise patterns.
 
-When used in mapgen this is actually a 'seed offset', it is added to the
-'world seed' to create the seed used by the noise, to ensure the noise has a
-different pattern in different worlds.
+In some noise APIs the world seed is added to the seed specified in noise
+parameters. This is done to make the resulting noise pattern vary in different
+worlds, and be 'world-specific'.
 
 ### `octaves`
 
@@ -4053,6 +4178,8 @@ Utilities
           area_store_persistent_ids = true,
           -- Whether minetest.find_path is functional (5.2.0)
           pathfinder_works = true,
+          -- Whether Collision info is available to an objects' on_step (5.3.0)
+          object_step_has_moveresult = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4064,16 +4191,18 @@ Utilities
       {
           address = "127.0.0.1",     -- IP address of client
           ip_version = 4,            -- IPv4 / IPv6
+          connection_uptime = 200,   -- seconds since client connected
+          protocol_version = 32,     -- protocol version used by client
+          formspec_version = 2,      -- supported formspec version
+          lang_code = "fr"           -- Language code used for translation
+          -- the following keys can be missing if no stats have been collected yet
           min_rtt = 0.01,            -- minimum round trip time
           max_rtt = 0.2,             -- maximum round trip time
           avg_rtt = 0.02,            -- average round trip time
           min_jitter = 0.01,         -- minimum packet time jitter
           max_jitter = 0.5,          -- maximum packet time jitter
           avg_jitter = 0.03,         -- average packet time jitter
-          connection_uptime = 200,   -- seconds since client connected
-          protocol_version = 32,     -- protocol version used by client
-          formspec_version = 2,      -- supported formspec version
-          -- following information is available on debug build only!!!
+          -- the following information is available in a debug build only!!!
           -- DO NOT USE IN MODS
           --ser_vers = 26,             -- serialization version used by client
           --major = 0,                 -- major version number
@@ -4246,7 +4375,7 @@ Call these functions only at load time!
     * Called after generating a piece of world. Modifying nodes inside the area
       is a bit faster than usually.
 * `minetest.register_on_newplayer(function(ObjectRef))`
-    * Called after a new player has been created
+    * Called when a new player enters the world for the first time
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
     * Note: This callback is invoked even if the punched player is dead.
@@ -4287,19 +4416,23 @@ Call these functions only at load time!
     * Called _before_ repositioning of player occurs
     * return true in func to disable regular player placement
 * `minetest.register_on_prejoinplayer(function(name, ip))`
-    * Called before a player joins the game
-    * If it returns a string, the player is disconnected with that string as
+    * Called when a client connects to the server, prior to authentication
+    * If it returns a string, the client is disconnected with that string as
       reason.
-* `minetest.register_on_joinplayer(function(ObjectRef))`
+* `minetest.register_on_joinplayer(function(ObjectRef, last_login))`
     * Called when a player joins the game
+    * `last_login`: The timestamp of the previous login, or nil if player is new
 * `minetest.register_on_leaveplayer(function(ObjectRef, timed_out))`
     * Called when a player leaves the game
     * `timed_out`: True for timeout, false for other reasons.
+* `minetest.register_on_authplayer(function(name, ip, is_success))`
+    * Called when a client attempts to log into an account.
+    * `name`: The name of the account being authenticated.
+    * `ip`: The IP address of the client
+    * `is_success`: Whether the client was successfully authenticated
+    * For newly registered accounts, `is_success` will always be true
 * `minetest.register_on_auth_fail(function(name, ip))`
-    * Called when a client attempts to log into an account but supplies the
-      wrong password.
-    * `ip`: The IP address of the client.
-    * `name`: The account the client attempted to log into.
+    * Deprecated: use `minetest.register_on_authplayer(name, ip, is_success)` instead.
 * `minetest.register_on_cheat(function(ObjectRef, cheat))`
     * Called when a player cheats
     * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:
@@ -4362,7 +4495,7 @@ Call these functions only at load time!
     * The same as before, except that it is called before the player crafts, to
       make craft prediction, and it should not change anything.
 * `minetest.register_allow_player_inventory_action(function(player, action, inventory, inventory_info))`
-    * Determinates how much of a stack may be taken, put or moved to a
+    * Determines how much of a stack may be taken, put or moved to a
       player inventory.
     * `player` (type `ObjectRef`) is the player who modified the inventory
       `inventory` (type `InvRef`).
@@ -4569,8 +4702,11 @@ Environment access
     * Return value: Table with all node positions with a node air above
     * Area volume is limited to 4,096,000 nodes
 * `minetest.get_perlin(noiseparams)`
+    * Return world-specific perlin noise.
+    * The actual seed used is the noiseparams seed plus the world seed.
 * `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-    * Return world-specific perlin noise (`int(worldseed)+seeddiff`)
+    * Deprecated: use `minetest.get_perlin(noiseparams)` instead.
+    * Return world-specific perlin noise.
 * `minetest.get_voxel_manip([pos1, pos2])`
     * Return voxel manipulator object.
     * Loads the manipulator from the map if positions are passed.
@@ -4751,7 +4887,7 @@ Environment access
 * `minetest.add_node_level(pos, level)`
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
-    * can be negative for decreasing
+    * `level` must be between -127 and 127
 * `minetest.fix_light(pos1, pos2)`: returns `true`/`false`
     * resets the light in a cuboid-shaped part of
       the map and removes lighting bugs.
@@ -5318,7 +5454,7 @@ Misc.
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
-* `minetest.decode_base64(string)`: returns string
+* `minetest.decode_base64(string)`: returns string or nil for invalid base64
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returning `true` restricts the player `name` from modifying (i.e. digging,
@@ -5340,6 +5476,13 @@ Misc.
 * `minetest.record_protection_violation(pos, name)`
     * This function calls functions registered with
       `minetest.register_on_protection_violation`.
+* `minetest.is_creative_enabled(name)`: returns boolean
+    * Returning `true` means that Creative Mode is enabled for player `name`.
+    * `name` will be `""` for non-players or if the player is unknown.
+    * This function should be overridden by Creative Mode-related mods to
+      implement a per-player Creative Mode.
+    * By default, this function returns `true` if the setting
+      `creative_mode` is `true` and `false` otherwise.
 * `minetest.is_area_protected(pos1, pos2, player_name, interval)`
     * Returns the position of the first node that `player_name` may not modify
       in the specified cuboid between `pos1` and `pos2`.
@@ -5403,8 +5546,8 @@ Misc.
   insecure functions if the calling mod has been listed as trusted in the
   `secure.trusted_mods` setting or security is disabled, otherwise returns
   `nil`.
-    * Only works at init time and must be called from the mod's main scope (not
-      from a function).
+    * Only works at init time and must be called from the mod's main scope
+      (ie: the init.lua of the mod, not from another Lua file or within a function).
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE
       IT IN A LOCAL VARIABLE!**
 
@@ -5897,15 +6040,18 @@ object you are working with still exists.
         * max: bubbles bar is not shown
         * See [Object properties] for more information
     * Is limited to range 0 ... 65535 (2^16 - 1)
-* `set_fov(fov, is_multiplier)`: Sets player's FOV
+* `set_fov(fov, is_multiplier, transition_time)`: Sets player's FOV
     * `fov`: FOV value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
       Defaults to `false`.
-    * Set to 0 to clear FOV override.
-* `get_fov()`:
-    * Returns player's FOV override in degrees, and a boolean depending on whether
-      the value is a multiplier.
-    * Returns 0 as first value if player's FOV hasn't been overridden.
+    * `transition_time`: If defined, enables smooth FOV transition.
+      Interpreted as the time (in seconds) to reach target FOV.
+      If set to 0, FOV change is instantaneous. Defaults to 0.
+    * Set `fov` to 0 to clear FOV override.
+* `get_fov()`: Returns the following:
+    * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
+    * Boolean indicating whether the FOV value is a multiplier.
+    * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a
@@ -5992,7 +6138,7 @@ object you are working with still exists.
         * `sky_color`: A table containing the following values, alpha is ignored:
             * `day_sky`: ColorSpec, for the top half of the `"regular"`
               sky during the day. (default: `#8cbafa`)
-            * `day_horizon`: ColorSpec, for the bottom half of the 
+            * `day_horizon`: ColorSpec, for the bottom half of the
               `"regular"` sky during the day. (default: `#9bc1f0`)
             * `dawn_sky`: ColorSpec, for the top half of the `"regular"`
               sky during dawn/sunset. (default: `#b4bafa`)
@@ -6010,7 +6156,7 @@ object you are working with still exists.
               sky during the night. (default: `#4090ff`)
               The resulting sky color will be a dark version of the ColorSpec.
               Warning: The darkening of the ColorSpec is subject to change.
-            * `indoors`: ColorSpec, for when you're either indoors or 
+            * `indoors`: ColorSpec, for when you're either indoors or
               underground. Only applies to the `"regular"` sky.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
@@ -6054,7 +6200,7 @@ object you are working with still exists.
     * `parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
-        * `count`: Integer number to set the number of stars in 
+        * `count`: Integer number to set the number of stars in
             the skybox. Only applies to `"skybox"` and `"regular"` sky types.
             (default: `1000`)
         * `star_color`: ColorSpec, sets the colors of the stars,
@@ -6127,10 +6273,15 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 -------------
 
 A perlin noise generator.
-It can be created via `PerlinNoise(seed, octaves, persistence, spread)`
-or `PerlinNoise(noiseparams)`.
-Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, spread)`
-or `minetest.get_perlin(noiseparams)`.
+It can be created via `PerlinNoise()` or `minetest.get_perlin()`.
+For `minetest.get_perlin()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
+
+`PerlinNoise(noiseparams)`
+`PerlinNoise(seed, octaves, persistence, spread)` (Deprecated).
+
+`minetest.get_perlin(noiseparams)`
+`minetest.get_perlin(seeddiff, octaves, persistence, spread)` (Deprecated).
 
 ### Methods
 
@@ -6144,6 +6295,8 @@ A fast, bulk perlin noise generator.
 
 It can be created via `PerlinNoiseMap(noiseparams, size)` or
 `minetest.get_perlin_map(noiseparams, size)`.
+For `minetest.get_perlin_map()`, the actual seed used is the noiseparams seed
+plus the world seed, to create world-specific noise.
 
 Format of `size` is `{x=dimx, y=dimy, z=dimz}`. The `z` component is omitted
 for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
@@ -6416,6 +6569,7 @@ Player properties need to be saved manually.
 
         automatic_rotate = 0,
         -- Set constant rotation in radians per second, positive or negative.
+        -- Object rotates along the local Y-axis, and works with set_rotation.
         -- Set to 0 to disable constant rotation.
 
         stepheight = 0,
@@ -6454,6 +6608,9 @@ Player properties need to be saved manually.
         -- deleted when the block gets unloaded.
         -- The get_staticdata() callback is never called then.
         -- Defaults to 'true'.
+
+        damage_texture_modifier = "^[brighten",
+        -- Texture modifier to be applied for a short duration when object is hit
     }
 
 Entity definition
@@ -6474,7 +6631,10 @@ Used by `minetest.register_entity`.
 
         on_activate = function(self, staticdata, dtime_s),
 
-        on_step = function(self, dtime),
+        on_step = function(self, dtime, moveresult),
+        -- Called every server step
+        -- dtime: Elapsed time
+        -- moveresult: Table with collision info (only available if physical=true)
 
         on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir),
 
@@ -6487,6 +6647,25 @@ Used by `minetest.register_entity`.
         _custom_field = whatever,
         -- You can define arbitrary member variables here (see Item definition
         -- for more info) by using a '_' prefix
+    }
+
+Collision info passed to `on_step`:
+
+    {
+        touching_ground = boolean,
+        collides = boolean,
+        standing_on_object = boolean,
+        collisions = {
+            {
+                type = string, -- "node" or "object",
+                axis = string, -- "x", "y" or "z"
+                node_pos = vector, -- if type is "node"
+                object = ObjectRef, -- if type is "object"
+                old_velocity = vector,
+                new_velocity = vector,
+            },
+            ...
+        }
     }
 
 ABM (ActiveBlockModifier) definition
@@ -6655,6 +6834,8 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         wield_scale = {x = 1, y = 1, z = 1},
 
+        -- The default value of 99 may be configured by
+        -- users using the setting "default_stack_max"
         stack_max = 99,
 
         range = 4.0,
@@ -6850,11 +7031,15 @@ Used by `minetest.register_node`.
         -- If true, a new liquid source can be created by placing two or more
         -- sources nearby
 
-        leveled = 16,
+        leveled = 0,
         -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
         -- Allows defining the nodebox height without using param2.
         -- The nodebox height is 'leveled' / 64 nodes.
-        -- The maximum value of 'leveled' is 127.
+        -- The maximum value of 'leveled' is `leveled_max`.
+
+        leveled_max = 127,
+        -- Maximum value for `leveled` (0-127), enforced in
+        -- `minetest.set_node_level` and `minetest.add_node_level`.
 
         liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
 
@@ -7021,6 +7206,7 @@ Used by `minetest.register_node`.
         -- node is deleted from the world or the drops are added. This is
         -- generally the result of either the node being dug or an attached node
         -- becoming detached.
+        -- oldmeta is the NodeMetaRef of the oldnode before deletion.
         -- drops is a table of ItemStacks, so any metadata to be preserved can
         -- be added directly to one or more of the dropped items. See
         -- "ItemStackMetaRef".
@@ -7045,10 +7231,14 @@ Used by `minetest.register_node`.
 
         on_punch = function(pos, node, puncher, pointed_thing),
         -- default: minetest.node_punch
+        -- Called when puncher (an ObjectRef) punches the node at pos.
         -- By default calls minetest.register_on_punchnode callbacks.
 
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing),
         -- default: nil
+        -- Called when clicker (an ObjectRef) "rightclicks"
+        -- ("rightclick" here stands for the placement key) while pointing at
+        -- the node at pos with 'node' being the node table.
         -- itemstack will hold clicker's wielded item.
         -- Shall return the leftover itemstack.
         -- Note: pointed_thing can be nil, if a mod calls this function.
@@ -7265,6 +7455,10 @@ Biome definition
 ----------------
 
 Used by `minetest.register_biome`.
+
+The maximum number of biomes that can be used is 65535. However, using an
+excessive number of biomes will slow down map generation. Depending on desired
+performance and computing power the practical limit is much lower.
 
     {
         name = "tundra",
@@ -7613,6 +7807,8 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
         text = "<text>",
 
+        text2 = "<text>",
+
         number = 2,
 
         item = 3,
@@ -7648,6 +7844,8 @@ Used by `minetest.add_particle`.
 
         size = 1,
         -- Scales the visual size of the particle texture.
+        -- If `node` is set, size can be set to 0 to spawn a randomly-sized
+        -- particle (just like actual node dig particles).
 
         collisiondetection = false,
         -- If true collides with `walkable` nodes and, depending on the
@@ -7666,6 +7864,7 @@ Used by `minetest.add_particle`.
         -- If true faces player using y axis only
 
         texture = "image.png",
+        -- The texture of the particle
 
         playername = "singleplayer",
         -- Optional, if specified spawns particle only on the player's client
@@ -7676,6 +7875,17 @@ Used by `minetest.add_particle`.
         glow = 0
         -- Optional, specify particle self-luminescence in darkness.
         -- Values 0-14.
+
+        node = {name = "ignore", param2 = 0},
+        -- Optional, if specified the particle will have the same appearance as
+        -- node dig particles for the given node.
+        -- `texture` and `animation` will be ignored if this is set.
+
+        node_tile = 0,
+        -- Optional, only valid in combination with `node`
+        -- If set to a valid number 1-6, specifies the tile from which the
+        -- particle texture is picked.
+        -- Otherwise, the default behavior is used. (currently: any random tile)
     }
 
 
@@ -7705,7 +7915,9 @@ Used by `minetest.add_particlespawner`.
         maxsize = 1,
         -- The particles' properties are random values between the min and max
         -- values.
-        -- pos, velocity, acceleration, expirationtime, size
+        -- applies to: pos, velocity, acceleration, expirationtime, size
+        -- If `node` is set, min and maxsize can be set to 0 to spawn
+        -- randomly-sized particles (just like actual node dig particles).
 
         collisiondetection = false,
         -- If true collide with `walkable` nodes and, depending on the
@@ -7728,6 +7940,7 @@ Used by `minetest.add_particlespawner`.
         -- If true face player using y axis only
 
         texture = "image.png",
+        -- The texture of the particle
 
         playername = "singleplayer",
         -- Optional, if specified spawns particles only on the player's client
@@ -7738,6 +7951,17 @@ Used by `minetest.add_particlespawner`.
         glow = 0
         -- Optional, specify particle self-luminescence in darkness.
         -- Values 0-14.
+
+        node = {name = "ignore", param2 = 0},
+        -- Optional, if specified the particles will have the same appearance as
+        -- node dig particles for the given node.
+        -- `texture` and `animation` will be ignored if this is set.
+
+        node_tile = 0,
+        -- Optional, only valid in combination with `node`
+        -- If set to a valid number 1-6, specifies the tile from which the
+        -- particle texture is picked.
+        -- Otherwise, the default behavior is used. (currently: any random tile)
     }
 
 `HTTPRequest` definition

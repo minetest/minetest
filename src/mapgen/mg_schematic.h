@@ -95,6 +95,8 @@ public:
 	Schematic();
 	virtual ~Schematic();
 
+	ObjDef *clone() const;
+
 	virtual void resolveNodeNames();
 
 	bool loadSchematicFromFile(const std::string &filename,
@@ -104,9 +106,10 @@ public:
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 
 	bool deserializeFromMts(std::istream *is, std::vector<std::string> *names);
-	bool serializeToMts(std::ostream *os, const std::vector<std::string> &names);
+	bool serializeToMts(std::ostream *os,
+		const std::vector<std::string> &names) const;
 	bool serializeToLua(std::ostream *os, const std::vector<std::string> &names,
-		bool use_comments, u32 indent_spaces);
+		bool use_comments, u32 indent_spaces) const;
 
 	void blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_place);
 	bool placeOnVManip(MMVManip *vm, v3s16 p, u32 flags, Rotation rot, bool force_place);
@@ -128,6 +131,8 @@ public:
 	SchematicManager(Server *server);
 	virtual ~SchematicManager() = default;
 
+	SchematicManager *clone() const;
+
 	virtual void clear();
 
 	const char *getObjectTitle() const
@@ -141,6 +146,8 @@ public:
 	}
 
 private:
+	SchematicManager() {};
+
 	Server *m_server;
 };
 
