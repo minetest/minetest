@@ -1,3 +1,5 @@
+name: Checklist
+
 on: [pull_request]
 
 jobs:
