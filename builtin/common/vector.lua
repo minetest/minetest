@@ -226,9 +226,10 @@ function vector.dir_to_rotation(forward, up)
 	-- the forward vector and check if it worked out.
 	local back = vector.rotate_around_axis(up, forward, -rot.z)
 
-	-- We don't use vector.equals for this comparison because of floating point rounding errors.
-
-	if vector.distance(back, forwup) > 0.0000000000001 then
+	-- We don't use vector.equals for this because of floating point imprecision.
+	if (back.x - forwup.x) * (back.x - forwup.x) +
+			(back.y - forwup.y) * (back.y - forwup.y) +
+			(back.z - forwup.z) * (back.z - forwup.z) > 0.0000001 then
 		rot.z = -rot.z
 	end
 	return rot
