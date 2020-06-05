@@ -355,6 +355,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		&& !restitem.empty()
 		&& restitem.count == src_item.count
 		&& !caused_by_move_somewhere;
+	if (caused_by_move_somewhere && restitem.count == src_item.count)
+		return;
 	if (from_inv == to_inv) {
 		src_can_take_count = allowMove(try_take_count, player);
 		swap_expected = swap_expected
