@@ -6163,15 +6163,23 @@ object you are working with still exists.
     * Only affects formspecs shown after this is called.
 * `get_formspec_prepend(formspec)`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
-    * The table consists of fields with boolean value representing the pressed
-      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up, zoom.
-    * example: `{jump=false, right=true, left=false, LMB=false, RMB=false,
-      sneak=true, aux1=false, down=false, up=false, zoom=false}`
-    * The `zoom` field is available since 5.3
+    * The table consists of fields with the following boolean values
+      representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
+      `aux1`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
+    * The fields `LMB` and `RMB` are equal to `dig` and `place` respectively,
+      and exist only to preserve backwards compatibility.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
-  keys.
-    * bit nr/meaning: 0/up, 1/down, 2/left, 3/right, 4/jump, 5/aux1, 6/sneak,
-      7/LMB, 8/RMB, 9/zoom (zoom available since 5.3)
+  keys. Bits:
+    * 0 - up
+    * 1 - down
+    * 2 - left
+    * 3 - right
+    * 4 - jump
+    * 5 - aux1
+    * 6 - sneak
+    * 7 - dig
+    * 8 - place
+    * 9 - zoom
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)

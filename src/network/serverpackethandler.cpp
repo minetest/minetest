@@ -491,17 +491,18 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	playersao->setPlayerYaw(yaw);
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
+
 	player->keyPressed = keyPressed;
-	player->control.up = (keyPressed & 1);
-	player->control.down = (keyPressed & 2);
-	player->control.left = (keyPressed & 4);
-	player->control.right = (keyPressed & 8);
-	player->control.jump = (keyPressed & 16);
-	player->control.aux1 = (keyPressed & 32);
-	player->control.sneak = (keyPressed & 64);
-	player->control.LMB = (keyPressed & 128);
-	player->control.RMB = (keyPressed & 256);
-	player->control.zoom = (keyPressed & 512);
+	player->control.up    = (keyPressed & (0x1 << 0));
+	player->control.down  = (keyPressed & (0x1 << 1));
+	player->control.left  = (keyPressed & (0x1 << 2));
+	player->control.right = (keyPressed & (0x1 << 3));
+	player->control.jump  = (keyPressed & (0x1 << 4));
+	player->control.aux1  = (keyPressed & (0x1 << 5));
+	player->control.sneak = (keyPressed & (0x1 << 6));
+	player->control.dig   = (keyPressed & (0x1 << 7));
+	player->control.place = (keyPressed & (0x1 << 8));
+	player->control.zoom  = (keyPressed & (0x1 << 9));
 
 	if (playersao->checkMovementCheat()) {
 		// Call callbacks
@@ -1670,7 +1671,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	if (client->chosen_mech != AUTH_MECHANISM_SRP &&
 			client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
 		actionstream << "Server: got SRP _M packet, while auth"
-			<< "is going on with mech " << client->chosen_mech << " from " 
+			<< "is going on with mech " << client->chosen_mech << " from "
 			<< addr_s << " (wantSudo=" << wantSudo << "). Denying." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(peer_id);
