@@ -357,14 +357,14 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		&& !caused_by_move_somewhere;
 	if (from_inv == to_inv) {
 		src_can_take_count = allowMove(try_take_count, player);
-		if (src_can_take_count != src_item.count)
-			swap_expected = false;
+		swap_expected = swap_expected
+			&& (src_can_take_count == -1 || src_can_take_count >= src_item.count);
 		if (swap_expected) {
 			int try_put_count = list_to->getItem(to_i).count;
 			swapDirections();
 			dst_can_put_count = allowMove(try_put_count, player);
-			if (dst_can_put_count != try_put_count)
-				swap_expected = false;
+			swap_expected = swap_expected
+				&& (dst_can_put_count == -1 || dst_can_put_count >= try_put_count);
 			swapDirections();
 		} else {
 			dst_can_put_count = src_can_take_count;
@@ -373,16 +373,21 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		dst_can_put_count = allowPut(src_item, player);
 		src_can_take_count = allowTake(src_item, player);
 
-		if (dst_can_put_count != src_item.count || src_can_take_count != src_item.count)
-			swap_expected = false;
+		swap_expected = swap_expected
+			&& (src_can_take_count == -1 || src_can_take_count >= src_item.count)
+			&& (dst_can_put_count == -1 || dst_can_put_count >= src_item.count);
 		// A swap is expected, which means that we have to
 		// run the "allow" callbacks a second time with swapped inventories
 		if (swap_expected) {
 			ItemStack dst_item = list_to->getItem(to_i);
 			dst_item.count = dst_can_put_count;
 			swapDirections();
-			if (allowPut(dst_item, player) != dst_item.count || allowTake(dst_item, player) != dst_item.count)
-				swap_expected = false;
+
+			int src_can_take = allowPut(dst_item, player);
+			int dst_can_put = allowTake(dst_item, player);
+			swap_expected = swap_expected
+				&& (src_can_take == -1 || src_can_take >= dst_item.count)
+				&& (dst_can_put == -1 || dst_can_put >= dst_item.count);
 			swapDirections();
 		}
 	}
