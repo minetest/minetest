@@ -319,9 +319,13 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 		switch (e->type) {
 			case HUD_ELEM_TEXT: {
 				irr::gui::IGUIFont *textfont = font;
+				unsigned int font_size = g_fontengine->getDefaultFontSize();
+
 				if (e->size.X > 0)
-					textfont = g_fontengine->getFont(
-						e->size.X * g_fontengine->getDefaultFontSize());
+					font_size *= e->size.X;
+
+				if (font_size != g_fontengine->getDefaultFontSize())
+					textfont = g_fontengine->getFont(font_size);
 
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
@@ -330,8 +334,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				core::dimension2d<u32> textsize = textfont->getDimension(text.c_str());
 #ifdef __ANDROID__
 				// The text size on Android is not proportional with the actual scaling
-				irr::gui::IGUIFont *font_scaled = g_fontengine->getFont(
-						g_fontengine->getDefaultFontSize() - 3);
+				irr::gui::IGUIFont *font_scaled = g_fontengine->getFont(font_size - 3);
 				if (e->offset.X < -20)
 					textsize = font_scaled->getDimension(text.c_str());
 #endif
