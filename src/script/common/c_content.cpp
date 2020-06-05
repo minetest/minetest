@@ -329,6 +329,12 @@ void read_object_properties(lua_State *L, int index,
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
+
+	lua_getfield(L, -1, "light_anchor");
+	bool has_light_anchor = lua_istable(L, -1);
+	if (has_light_anchor)
+		prop->light_anchor = read_v3f(L, -1);
+	lua_pop(L, 1);
 }
 
 /******************************************************************************/

@@ -173,6 +173,8 @@ public:
 
 	scene::ISceneNode *getSceneNode() const;
 
+	m4x4f getTransform();
+
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;
 
 	// m_matrixnode controls the position and rotation of the child node

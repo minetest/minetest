@@ -6594,6 +6594,13 @@ Player properties need to be saved manually.
         -- For faking self-lighting, UI style entities, or programmatic coloring
         -- in mods.
 
+        light_anchor = {x = 0, y = 0, z = 0},
+        -- Use this position when sampling light from the world.
+        -- The anchor is relative to the entity, Z being the local front & back,
+        -- and X being the local left & right.
+        -- Player objects have a different default light anchor,
+        -- { x = 0, y = 0.5, z = 0 } instead of the one above.
+
         nametag = "",
         -- By default empty, for players their name is shown if empty
 

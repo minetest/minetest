@@ -845,12 +845,30 @@ void GenericCAO::setNodeLight(u8 light)
 	}
 }
 
+m4x4f GenericCAO::getTransform()
+{
+	scene::ISceneNode *node = getSceneNode();
+	if (node)
+		return node->getAbsoluteTransformation();
+
+	return m4x4f(m4x4f::EM4CONST_IDENTITY);
+}
+
 v3s16 GenericCAO::getLightPosition()
 {
-	if (m_is_player)
-		return floatToInt(m_position + v3f(0, 0.5 * BS, 0), BS);
+	// Players and entities now both use a property to define the light sampling offset.
+	// The offset is in the entity's local space.
 
-	return floatToInt(m_position, BS);
+	v3f offset = v3f(m_prop.light_anchor);
+	if (offset == v3f(0,0,0)) {
+		// No transformation is applied if the offset is zero.
+		return floatToInt(m_position, BS);
+	}
+
+	m4x4f transform = getTransform();
+	transform.rotateVect(offset);
+
+	return floatToInt(m_position + offset, BS);
 }
 
 void GenericCAO::updateNametag()
