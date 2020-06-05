@@ -161,7 +161,7 @@ void IMoveAction::swapDirections()
 	std::swap(from_i, to_i);
 }
 
-const void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player)
+void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player) const
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
 	if (to_inv.type == InventoryLocation::DETACHED)
@@ -183,7 +183,7 @@ const void IMoveAction::onPutAndOnTake(const ItemStack &src_item, ServerActiveOb
 		assert(false);
 }
 
-const void IMoveAction::onMove(int count, ServerActiveObject *player)
+void IMoveAction::onMove(int count, ServerActiveObject *player) const
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
 	if (from_inv.type == InventoryLocation::DETACHED)
@@ -196,7 +196,7 @@ const void IMoveAction::onMove(int count, ServerActiveObject *player)
 		assert(false);
 }
 
-const int IMoveAction::allowPut(const ItemStack &dst_item, ServerActiveObject *player)
+int IMoveAction::allowPut(const ItemStack &dst_item, ServerActiveObject *player) const
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
 	int dst_can_put_count = 0xffff;
@@ -211,7 +211,7 @@ const int IMoveAction::allowPut(const ItemStack &dst_item, ServerActiveObject *p
 	return dst_can_put_count;
 }
 
-const int IMoveAction::allowTake(const ItemStack &src_item, ServerActiveObject *player)
+int IMoveAction::allowTake(const ItemStack &src_item, ServerActiveObject *player) const
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
 	int src_can_take_count = 0xffff;
@@ -226,7 +226,7 @@ const int IMoveAction::allowTake(const ItemStack &src_item, ServerActiveObject *
 	return src_can_take_count;
 }
 
-const int IMoveAction::allowMove(int try_take_count, ServerActiveObject *player)
+int IMoveAction::allowMove(int try_take_count, ServerActiveObject *player) const
 {
 	ServerScripting *sa = PLAYER_TO_SA(player);
 	int src_can_take_count = 0xffff;

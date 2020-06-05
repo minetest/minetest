@@ -186,15 +186,15 @@ struct IMoveAction : public InventoryAction, public MoveAction
 
 	void swapDirections();
 
-	const void onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player);
+	void onPutAndOnTake(const ItemStack &src_item, ServerActiveObject *player) const;
 
-	const void onMove(int count, ServerActiveObject *player);
+	void onMove(int count, ServerActiveObject *player) const;
 
-	const int allowPut(const ItemStack &dst_item, ServerActiveObject *player);
+	int allowPut(const ItemStack &dst_item, ServerActiveObject *player) const;
 
-	const int allowTake(const ItemStack &src_item, ServerActiveObject *player);
+	int allowTake(const ItemStack &src_item, ServerActiveObject *player) const;
 
-	const int allowMove(int try_take_count, ServerActiveObject *player);
+	int allowMove(int try_take_count, ServerActiveObject *player) const;
 };
 
 struct IDropAction : public InventoryAction, public MoveAction
