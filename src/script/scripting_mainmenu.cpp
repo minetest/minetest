@@ -17,11 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <script/lua_api/l_http.h>
 #include "scripting_mainmenu.h"
 #include "content/mods.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_base.h"
+#include "lua_api/l_http.h"
 #include "lua_api/l_mainmenu.h"
 #include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"

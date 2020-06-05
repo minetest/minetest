@@ -43,6 +43,9 @@ private:
 
 	// request_http_api()
 	static int l_request_http_api(lua_State *L);
+
+	// get_http_api()
+	static int l_get_http_api(lua_State *L);
 #endif
 
 public:

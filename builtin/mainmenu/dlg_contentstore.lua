@@ -15,9 +15,17 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+if not minetest.get_http_api then
+	function create_store_dlg()
+		local msg = fgettext("ContentDB is not available when Minetest was compiled without cURL")
+		return messagebox("store", msg)
+	end
+	return
+end
+
 local store = { packages = {}, packages_full = {} }
 
-local http = minetest.request_http_api()
+local http = minetest.get_http_api()
 
 -- Screenshot
 local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
