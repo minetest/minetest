@@ -194,7 +194,8 @@ function store.load()
 		end
 	end
 
-	local response = http.fetch_sync({ url = url })
+	local timeout = tonumber(minetest.settings:get("curl_file_download_timeout"))
+	local response = http.fetch_sync({ url = url, timeout = timeout })
 	if not response.succeeded then
 		return
 	end
