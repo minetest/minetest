@@ -147,7 +147,9 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	if (ModApiBase::getGuiEngine(L) == nullptr) {
+	bool isMainmenu = ModApiBase::getGuiEngine(L) != nullptr;
+
+	if (!isMainmenu) {
 		// We have to make sure that this function is being called directly by
 		// a mod, otherwise a malicious mod could override this function and
 		// steal its return value.
@@ -193,7 +195,8 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 	lua_newtable(L);
 	HTTP_API(fetch_async);
 	HTTP_API(fetch_async_get);
-	HTTP_API(fetch_sync);
+	if (isMainmenu)
+		HTTP_API(fetch_sync);
 
 	if (lua_isfunction(L, -2)) {
 		// Stack now looks like this:
