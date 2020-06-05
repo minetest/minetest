@@ -385,7 +385,8 @@ function store.get_formspec(dlgdata)
 			local num_avail_updates = 0
 			for i=1, #store.packages_full do
 				local package = store.packages_full[i]
-				if package.path and package.installed_release < package.release and not (package.downloading or package.queued) then
+				if package.path and package.installed_release < package.release and
+						not (package.downloading or package.queued) then
 					num_avail_updates = num_avail_updates + 1
 				end
 			end
@@ -547,7 +548,8 @@ function store.handle_submit(this, fields)
 	if fields.update_all then
 		for i=1, #store.packages_full do
 			local package = store.packages_full[i]
-			if package.path and package.installed_release < package.release and not (package.downloading or package.queued) then
+			if package.path and package.installed_release < package.release and
+					not (package.downloading or package.queued) then
 				queue_download(package)
 			end
 		end
