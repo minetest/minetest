@@ -376,7 +376,7 @@ function store.get_formspec(dlgdata)
 		if number_downloading > 0 then
 			formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;status;"
 			if #download_queue > 0 then
-				formspec[#formspec + 1] = fgettext("$1 downloading, $2 queued", number_downloading, #download_queue)
+				formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
 			else
 				formspec[#formspec + 1] = fgettext("$1 downloading...", number_downloading)
 			end
