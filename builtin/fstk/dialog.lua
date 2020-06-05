@@ -75,7 +75,7 @@ function messagebox(name, message)
 					formspec_version[3]
 					size[8,3]
 					textarea[0.375,0.375;7.25,1.2;;;%s]
-					button[3,1.825;2,0.8;back;%s]"
+					button[3,1.825;2,0.8;back;%s]
 				]]):format(message, fgettext("Back"))
 			end,
 			function(this, fields)
