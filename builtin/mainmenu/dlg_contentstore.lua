@@ -17,8 +17,8 @@
 
 if not minetest.get_http_api then
 	function create_store_dlg()
-		local msg = fgettext("ContentDB is not available when Minetest was compiled without cURL")
-		return messagebox("store", msg)
+		return messagebox("store",
+				fgettext("ContentDB is not available when Minetest was compiled without cURL"))
 	end
 	return
 end

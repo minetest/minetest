@@ -210,15 +210,22 @@ int ModApiHttp::l_get_http_api(lua_State *L)
 
 	return 1;
 }
+
 #endif
 
 void ModApiHttp::Initialize(lua_State *L, int top)
 {
 #if USE_CURL
+
+#ifndef SERVER
 	if (ModApiBase::getGuiEngine(L) != nullptr) {
 		API_FCT(get_http_api);
 	} else {
+#endif
 		API_FCT(request_http_api);
+#ifndef SERVER
 	}
+#endif
+
 #endif
 }
