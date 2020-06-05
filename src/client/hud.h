@@ -92,6 +92,7 @@ private:
 	void drawItem(const ItemStack &item, const core::rect<s32> &rect, bool selected);
 
 	float m_hud_scaling; // cached minetest setting
+	float m_scale_factor;
 	v3s16 m_camera_offset;
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
