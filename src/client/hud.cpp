@@ -334,7 +334,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				core::dimension2d<u32> textsize = textfont->getDimension(text.c_str());
 #ifdef __ANDROID__
 				// The text size on Android is not proportional with the actual scaling
-				irr::gui::IGUIFont *font_scaled = g_fontengine->getFont(font_size - 3);
+				irr::gui::IGUIFont *font_scaled = font_size <= 3 ?
+					textfont : g_fontengine->getFont(font_size - 3);
 				if (e->offset.X < -20)
 					textsize = font_scaled->getDimension(text.c_str());
 #endif
