@@ -92,10 +92,8 @@ HTTP Requests
     * The returned table contains the functions `fetch_sync`, `fetch_async` and
       `fetch_async_get` described below.
     * Function only exists if minetest server was built with cURL support.
-* `HTTPApiTable.fetch(HTTPRequest req, callback)`
-    * Performs given request asynchronously and calls callback upon completion
-    * callback: `function(HTTPRequestResult res)`
-    * Use this HTTP function if you are unsure, the others are for advanced use
+* `HTTPApiTable.fetch_sync(HTTPRequest req, callback)`: returns HTTPRequestResult
+    * Performs given request synchronously
 * `HTTPApiTable.fetch_async(HTTPRequest req)`: returns handle
     * Performs given request asynchronously and returns handle for
       `HTTPApiTable.fetch_async_get`
