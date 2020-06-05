@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <script/lua_api/l_http.h>
 #include "scripting_mainmenu.h"
 #include "content/mods.h"
 #include "cpp_api/s_internal.h"
@@ -67,6 +68,7 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 	ModApiMainMenu::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiSound::Initialize(L, top);
+	ModApiHttp::Initialize(L, top);
 
 	asyncEngine.registerStateInitializer(registerLuaClasses);
 	asyncEngine.registerStateInitializer(ModApiMainMenu::InitializeAsync);

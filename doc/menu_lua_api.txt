@@ -27,10 +27,13 @@ The "gamedata" table is read when calling core.start(). It should contain:
 
 Functions
 ---------
+
 core.start()
 core.close()
 
-Filesystem:
+Filesystem
+----------
+
 core.get_builtin_path()
 ^ returns path to builtin root
 core.create_dir(absolute_path) (possible in async calls)
@@ -48,10 +51,6 @@ core.extract_zip(zipfile,destination) [unzip within path required]
 ^ zipfile to extract
 ^ destination folder to extract to
 ^ returns true/false
-core.download_file(url,target) (possible in async calls)
-^ url to download
-^ target to store to
-^ returns true/false
 core.get_version() (possible in async calls)
 ^ returns current core version
 core.sound_play(spec, looped) -> handle
@@ -67,7 +66,88 @@ core.get_mapgen_names([include_hidden=false]) -> table of map generator algorith
     registered in the core (possible in async calls)
 core.get_cache_path() -> path of cache
 
-Formspec:
+HTTP Requests
+-------------
+* core.download_file(url, target) (possible in async calls)
+	* url to download, and target to store to
+	* returns true/false
+* `minetest.request_http_api()` (possible in async calls)
+    * returns `HTTPApiTable` containing http functions if the calling mod has
+      been granted access by being listed in the `secure.http_mods` or
+      `secure.trusted_mods` setting, otherwise returns `nil`.
+    * The returned table contains the functions `fetch`, `fetch_async` and
+      `fetch_async_get` described below.
+    * Only works at init time and must be called from the mod's main scope
+      (not from a function).
+    * Function only exists if minetest server was built with cURL support.
+    * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED TABLE, STORE IT IN
+      A LOCAL VARIABLE!**
+* `HTTPApiTable.fetch(HTTPRequest req, callback)`
+    * Performs given request asynchronously and calls callback upon completion
+    * callback: `function(HTTPRequestResult res)`
+    * Use this HTTP function if you are unsure, the others are for advanced use
+* `HTTPApiTable.fetch_async(HTTPRequest req)`: returns handle
+    * Performs given request asynchronously and returns handle for
+      `HTTPApiTable.fetch_async_get`
+* `HTTPApiTable.fetch_async_get(handle)`: returns HTTPRequestResult
+    * Return response data for given asynchronous HTTP request
+
+### `HTTPRequest` definition
+
+Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
+
+    {
+        url = "http://example.org",
+
+        timeout = 10,
+        -- Timeout for connection in seconds. Default is 3 seconds.
+
+        post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
+        -- Optional, if specified a POST request with post_data is performed.
+        -- Accepts both a string and a table. If a table is specified, encodes
+        -- table as x-www-form-urlencoded key-value pairs.
+        -- If post_data is not specified, a GET request is performed instead.
+
+        user_agent = "ExampleUserAgent",
+        -- Optional, if specified replaces the default minetest user agent with
+        -- given string
+
+        extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
+        -- Optional, if specified adds additional headers to the HTTP request.
+        -- You must make sure that the header strings follow HTTP specification
+        -- ("Key: Value").
+
+        multipart = boolean
+        -- Optional, if true performs a multipart HTTP request.
+        -- Default is false.
+    }
+
+### `HTTPRequestResult` definition
+
+Passed to `HTTPApiTable.fetch` callback. Returned by
+`HTTPApiTable.fetch_async_get`.
+
+    {
+        completed = true,
+        -- If true, the request has finished (either succeeded, failed or timed
+        -- out)
+
+        succeeded = true,
+        -- If true, the request was successful
+
+        timeout = false,
+        -- If true, the request timed out
+
+        code = 200,
+        -- HTTP status code
+
+        data = "response"
+    }
+
+
+Formspec
+--------
+
 core.update_formspec(formspec)
 core.get_table_index(tablename) -> index
 ^ can also handle textlists
@@ -82,7 +162,9 @@ core.explode_textlist_event(string) -> table
 core.set_formspec_prepend(formspec)
 ^ string to be added to every mainmenu formspec, to be used for theming.
 
-GUI:
+GUI
+---
+
 core.set_background(type, texturepath,[tile],[minsize])
 ^ type: "background", "overlay", "header" or "footer"
 ^ tile: tile the image instead of scaling (background only)

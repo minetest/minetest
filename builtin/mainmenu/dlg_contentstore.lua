@@ -17,6 +17,9 @@
 
 local store = { packages = {}, packages_full = {} }
 
+local http = assert(minetest.request_http_api())
+print(dump(http))
+
 -- Screenshot
 local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
 assert(core.create_dir(screenshot_dir))
@@ -171,11 +174,6 @@ local function get_screenshot(package)
 end
 
 function store.load()
-	local tmpdir = os.tempfolder()
-	local target = tmpdir .. DIR_DELIM .. "packages.json"
-
-	assert(core.create_dir(tmpdir))
-
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
@@ -189,31 +187,28 @@ function store.load()
 		end
 	end
 
-	core.download_file(url, target)
+	local response = http.fetch_sync({ url = url, timeout = 10 })
+	if not response.succeeded then
+		return
+	end
 
-	local file = io.open(target, "r")
-	if file then
-		store.packages_full = core.parse_json(file:read("*all")) or {}
-		file:close()
+	store.packages_full = core.parse_json(response.data) or {}
 
-		for _, package in pairs(store.packages_full) do
-			package.url = base_url .. "/packages/" ..
+	for _, package in pairs(store.packages_full) do
+		package.url = base_url .. "/packages/" ..
 				package.author .. "/" .. package.name ..
 				"/releases/" .. package.release .. "/download/"
 
-			local name_len = #package.name
-			if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
-				package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
-			else
-				package.id = package.author:lower() .. "/" .. package.name
-			end
+		local name_len = #package.name
+		if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
+			package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
+		else
+			package.id = package.author:lower() .. "/" .. package.name
 		end
-
-		store.packages = store.packages_full
-		store.loaded = true
 	end
 
-	core.delete_dir(tmpdir)
+	store.packages = store.packages_full
+	store.loaded = true
 end
 
 function store.update_paths()

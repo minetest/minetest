@@ -83,6 +83,25 @@ void ModApiHttp::push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool
 	setstringfield(L, -1, "data", res.data);
 }
 
+// http_api.fetch_sync(HTTPRequest definition)
+int ModApiHttp::l_http_fetch_sync(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	HTTPFetchRequest req;
+	read_http_fetch_request(L, req);
+
+	infostream << "Mod performs HTTP request with URL " << req.url << std::endl;
+
+	HTTPFetchResult res;
+	httpfetch_sync(req, res);
+
+	push_http_fetch_result(L, res, true);
+
+	// Co
+	return 1;
+}
+
 // http_api.fetch_async(HTTPRequest definition)
 int ModApiHttp::l_http_fetch_async(lua_State *L)
 {
@@ -128,42 +147,44 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	// We have to make sure that this function is being called directly by
-	// a mod, otherwise a malicious mod could override this function and
-	// steal its return value.
-	lua_Debug info;
+	if (ModApiBase::getGuiEngine(L) == nullptr) {
+		// We have to make sure that this function is being called directly by
+		// a mod, otherwise a malicious mod could override this function and
+		// steal its return value.
+		lua_Debug info;
 
-	// Make sure there's only one item below this function on the stack...
-	if (lua_getstack(L, 2, &info)) {
-		return 0;
-	}
-	FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
-	FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
+		// Make sure there's only one item below this function on the stack...
+		if (lua_getstack(L, 2, &info)) {
+			return 0;
+		}
+		FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
+		FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
 
-	// ...and that that item is the main file scope.
-	if (strcmp(info.what, "main") != 0) {
-		return 0;
-	}
+		// ...and that that item is the main file scope.
+		if (strcmp(info.what, "main") != 0) {
+			return 0;
+		}
 
-	// Mod must be listed in secure.http_mods or secure.trusted_mods
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (!lua_isstring(L, -1)) {
-		return 0;
-	}
+		// Mod must be listed in secure.http_mods or secure.trusted_mods
+		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+		if (!lua_isstring(L, -1)) {
+			return 0;
+		}
 
-	std::string mod_name = readParam<std::string>(L, -1);
-	std::string http_mods = g_settings->get("secure.http_mods");
-	http_mods.erase(std::remove(http_mods.begin(), http_mods.end(), ' '), http_mods.end());
-	std::vector<std::string> mod_list_http = str_split(http_mods, ',');
+		std::string mod_name = readParam<std::string>(L, -1);
+		std::string http_mods = g_settings->get("secure.http_mods");
+		http_mods.erase(std::remove(http_mods.begin(), http_mods.end(), ' '), http_mods.end());
+		std::vector<std::string> mod_list_http = str_split(http_mods, ',');
 
-	std::string trusted_mods = g_settings->get("secure.trusted_mods");
-	trusted_mods.erase(std::remove(trusted_mods.begin(), trusted_mods.end(), ' '), trusted_mods.end());
-	std::vector<std::string> mod_list_trusted = str_split(trusted_mods, ',');
+		std::string trusted_mods = g_settings->get("secure.trusted_mods");
+		trusted_mods.erase(std::remove(trusted_mods.begin(), trusted_mods.end(), ' '), trusted_mods.end());
+		std::vector<std::string> mod_list_trusted = str_split(trusted_mods, ',');
 
-	mod_list_http.insert(mod_list_http.end(), mod_list_trusted.begin(), mod_list_trusted.end());
-	if (std::find(mod_list_http.begin(), mod_list_http.end(), mod_name) == mod_list_http.end()) {
-		lua_pushnil(L);
-		return 1;
+		mod_list_http.insert(mod_list_http.end(), mod_list_trusted.begin(), mod_list_trusted.end());
+		if (std::find(mod_list_http.begin(), mod_list_http.end(), mod_name) == mod_list_http.end()) {
+			lua_pushnil(L);
+			return 1;
+		}
 	}
 
 	lua_getglobal(L, "core");
@@ -172,11 +193,14 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 	lua_newtable(L);
 	HTTP_API(fetch_async);
 	HTTP_API(fetch_async_get);
+	HTTP_API(fetch_sync);
 
-	// Stack now looks like this:
-	// <core.http_add_fetch> <table with fetch_async, fetch_async_get>
-	// Now call core.http_add_fetch to append .fetch(request, callback) to table
-	lua_call(L, 1, 1);
+	if (lua_isfunction(L, -2)) {
+		// Stack now looks like this:
+		// <core.http_add_fetch> <table with fetch_async, fetch_async_get>
+		// Now call core.http_add_fetch to append .fetch(request, callback) to table
+		lua_call(L, 1, 1);
+	}
 
 	return 1;
 }
