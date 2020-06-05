@@ -194,7 +194,7 @@ function store.load()
 		end
 	end
 
-	local response = http.fetch_sync({ url = url, timeout = 10 })
+	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
 		return
 	end
