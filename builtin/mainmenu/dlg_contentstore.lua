@@ -17,8 +17,7 @@
 
 local store = { packages = {}, packages_full = {} }
 
-local http = assert(minetest.request_http_api())
-print(dump(http))
+local http = minetest.request_http_api()
 
 -- Screenshot
 local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
