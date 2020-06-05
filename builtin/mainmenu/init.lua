@@ -19,6 +19,7 @@ mt_color_grey  = "#AAAAAA"
 mt_color_blue  = "#6389FF"
 mt_color_green = "#72FF63"
 mt_color_dark_green = "#25C191"
+mt_color_orange  = "#FF8800"
 
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
