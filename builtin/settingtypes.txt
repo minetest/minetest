@@ -110,9 +110,9 @@ doubletap_jump (Double tap jump for fly) bool false
 #    enabled.
 always_fly_fast (Always fly and fast) bool true
 
-#    The time in seconds it takes between repeated right clicks when holding the right
-#    mouse button.
-repeat_rightclick_time (Rightclick repetition interval) float 0.25 0.001
+#    The time in seconds it takes between repeated node placements when holding
+#    the place button.
+repeat_place_time (Place repetition interval) float 0.25 0.001
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -181,6 +181,14 @@ keymap_jump (Jump key) key KEY_SPACE
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_sneak (Sneak key) key KEY_LSHIFT
+
+#    Key for digging.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_dig (Dig key) key KEY_LBUTTON
+
+#    Key for placing.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_place (Place key) key KEY_RBUTTON
 
 #    Key for opening the inventory.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
