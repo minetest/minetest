@@ -1,5 +1,5 @@
 --Minetest
---Copyright (C) 2018 rubenwardy
+--Copyright (C) 2018-20 rubenwardy
 --
 --This program is free software; you can redistribute it and/or modify
 --it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,17 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+if not minetest.get_http_api then
+	function create_store_dlg()
+		return messagebox("store",
+				fgettext("ContentDB is not available when Minetest was compiled without cURL"))
+	end
+	return
+end
+
 local store = { packages = {}, packages_full = {} }
+
+local http = minetest.get_http_api()
 
 -- Screenshot
 local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
@@ -171,11 +181,6 @@ local function get_screenshot(package)
 end
 
 function store.load()
-	local tmpdir = os.tempfolder()
-	local target = tmpdir .. DIR_DELIM .. "packages.json"
-
-	assert(core.create_dir(tmpdir))
-
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
@@ -189,31 +194,29 @@ function store.load()
 		end
 	end
 
-	core.download_file(url, target)
+	local timeout = tonumber(minetest.settings:get("curl_file_download_timeout"))
+	local response = http.fetch_sync({ url = url, timeout = timeout })
+	if not response.succeeded then
+		return
+	end
 
-	local file = io.open(target, "r")
-	if file then
-		store.packages_full = core.parse_json(file:read("*all")) or {}
-		file:close()
+	store.packages_full = core.parse_json(response.data) or {}
 
-		for _, package in pairs(store.packages_full) do
-			package.url = base_url .. "/packages/" ..
+	for _, package in pairs(store.packages_full) do
+		package.url = base_url .. "/packages/" ..
 				package.author .. "/" .. package.name ..
 				"/releases/" .. package.release .. "/download/"
 
-			local name_len = #package.name
-			if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
-				package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
-			else
-				package.id = package.author:lower() .. "/" .. package.name
-			end
+		local name_len = #package.name
+		if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
+			package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
+		else
+			package.id = package.author:lower() .. "/" .. package.name
 		end
-
-		store.packages = store.packages_full
-		store.loaded = true
 	end
 
-	core.delete_dir(tmpdir)
+	store.packages = store.packages_full
+	store.loaded = true
 end
 
 function store.update_paths()
