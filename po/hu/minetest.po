@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-05-12 14:46+0000\n"
-"Last-Translator: Balázs Vámos <vamos.balazs@outlook.com>\n"
+"PO-Revision-Date: 2020-06-07 22:41+0000\n"
+"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -136,7 +136,7 @@ msgstr "Nincs elérhető modcsomag-leírás."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr "Nincs választható függőségek"
+msgstr "Nincsenek választható függőségek. "
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -384,7 +384,7 @@ msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr "X méret"
+msgstr "X kiterjedés"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
@@ -392,7 +392,7 @@ msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr "Y méret"
+msgstr "Y kiterjedés"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
@@ -400,7 +400,7 @@ msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr "Z méret"
+msgstr "Z kiterjedés"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -408,7 +408,7 @@ msgstr "Z méret"
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr "abszérték"
+msgstr "abszolút érték"
 
 #. ~ "defaults" is a noise parameter flag.
 #. It describes the default processing options
@@ -792,7 +792,6 @@ msgid "Waving Leaves"
 msgstr "Hullámzó levelek"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
 msgstr "Hullámzó folyadékok"
 
@@ -2835,8 +2834,9 @@ msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
-"nézet billegés, és mértéke.\n"
-"például: 0 nincs billegés; 1.0 normál; 2.0 dupla."
+"Bekapcsolja a fejmozgást és beállítja a mértékét.\n"
+"Pl: 0 nincs fejmozgás; 1.0 alapértelmezett fejmozgás van; 2.0 dupla "
+"fejmozgás van"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
