@@ -219,7 +219,7 @@ void ModApiHttp::Initialize(lua_State *L, int top)
 
 	bool isMainmenu = false;
 #ifndef SERVER
-	isMainmenu = ModApiBase::getGuiEngine(L);
+	isMainmenu = ModApiBase::getGuiEngine(L) != nullptr;
 #endif
 
 	if (isMainmenu) {
