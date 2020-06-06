@@ -728,7 +728,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 			if (!checkMeshNormals(mesh)) {
 				infostream << "GenericCAO: recalculating normals for mesh "
-					   << m_prop.mesh << std::endl;
+					<< m_prop.mesh << std::endl;
 				m_smgr->getMeshManipulator()->
 						recalculateNormals(mesh, true, false);
 			}
