@@ -338,34 +338,32 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		Collect information of endpoints
 	*/
 
-	int try_take_count = count;
-	if (try_take_count == 0)
-		try_take_count = list_from->getItem(from_i).count;
-
 	ItemStack src_item = list_from->getItem(from_i);
-	src_item.count = try_take_count;
+	if (count > 0)
+		src_item.count = count;
+	if (src_item.empty())
+		return;
 
 	int src_can_take_count = 0xffff;
 	int dst_can_put_count = 0xffff;
 
 	// this is needed for swapping items inside one inventory to work
 	ItemStack restitem;
-	bool swap_expected = list_to->getItem(to_i).count != 0
-		&& !list_to->itemFits(to_i, src_item, &restitem)
-		&& !restitem.empty()
+	bool allow_swap = !list_to->itemFits(to_i, src_item, &restitem)
 		&& restitem.count == src_item.count
 		&& !caused_by_move_somewhere;
+	// Shift-click: Cannot fill this stack, proceed with next slot
 	if (caused_by_move_somewhere && restitem.count == src_item.count)
 		return;
 	if (from_inv == to_inv) {
-		src_can_take_count = allowMove(try_take_count, player);
-		swap_expected = swap_expected
+		src_can_take_count = allowMove(src_item.count, player);
+		allow_swap = allow_swap
 			&& (src_can_take_count == -1 || src_can_take_count >= src_item.count);
-		if (swap_expected) {
+		if (allow_swap) {
 			int try_put_count = list_to->getItem(to_i).count;
 			swapDirections();
 			dst_can_put_count = allowMove(try_put_count, player);
-			swap_expected = swap_expected
+			allow_swap = allow_swap
 				&& (dst_can_put_count == -1 || dst_can_put_count >= try_put_count);
 			swapDirections();
 		} else {
@@ -375,19 +373,19 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		dst_can_put_count = allowPut(src_item, player);
 		src_can_take_count = allowTake(src_item, player);
 
-		swap_expected = swap_expected
+		allow_swap = allow_swap
 			&& (src_can_take_count == -1 || src_can_take_count >= src_item.count)
 			&& (dst_can_put_count == -1 || dst_can_put_count >= src_item.count);
 		// A swap is expected, which means that we have to
 		// run the "allow" callbacks a second time with swapped inventories
-		if (swap_expected) {
+		if (allow_swap) {
 			ItemStack dst_item = list_to->getItem(to_i);
 			dst_item.count = dst_can_put_count;
 			swapDirections();
 
 			int src_can_take = allowPut(dst_item, player);
 			int dst_can_put = allowTake(dst_item, player);
-			swap_expected = swap_expected
+			allow_swap = allow_swap
 				&& (src_can_take == -1 || src_can_take >= dst_item.count)
 				&& (dst_can_put == -1 || dst_can_put >= dst_item.count);
 			swapDirections();
@@ -397,7 +395,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	int old_count = count;
 
 	/* Modify count according to collected data */
-	count = try_take_count;
+	count = src_item.count;
 	if (src_can_take_count != -1 && count > src_can_take_count)
 		count = src_can_take_count;
 	if (dst_can_put_count != -1 && count > dst_can_put_count)
@@ -440,8 +438,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 	bool did_swap = false;
 	move_count = list_from->moveItem(from_i,
-		list_to, to_i, count, swap_expected, &did_swap);
-	assert(swap_expected == did_swap);
+		list_to, to_i, count, allow_swap, &did_swap);
+	assert(allow_swap == did_swap);
 
 	// If source is infinite, reset it's stack
 	if (src_can_take_count == -1) {
