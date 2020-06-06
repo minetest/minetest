@@ -339,8 +339,7 @@ bool checkMeshNormals(scene::IMesh *mesh)
 		// has it valid, then most likely all other ones are fine too. We can
 		// check all of the normals to have length, but it seems like an overkill
 		// hurting the performance and covering only really weird broken models.
-		core::vector3df first_normal = buffer->getNormal(0);
-		f32 length = first_normal.getLength();
+		f32 length = buffer->getNormal(0).getLength();
 
 		if (length == 0 || isinf(length) || isnan(length))
 			return false;
