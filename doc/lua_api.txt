@@ -588,6 +588,17 @@ Result is more like what you'd expect if you put a color on top of another
 color, meaning white surfaces get a lot of your new color while black parts
 don't change very much.
 
+#### `[item:<modname>:<itemname>:[W]x[H]
+
+Renders an inventory image for a given item to texture.
+Width & height are optional and specify the resulting resolution:
+
+* If `[item:<modname>:<itemname>` is used, width & height default to 64
+* If `[item:<modname>:<itemname>:W` is used, width & height are set to W
+* If `[item:<modname>:<itemname>:WxH` is used, width is set to W & height is set to H
+
+Example: `[item:default:dirt:64x32` will result in a stretched texture of a dirt block.
+
 Hardware coloring
 -----------------
 

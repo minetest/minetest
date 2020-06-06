@@ -197,3 +197,11 @@ core.register_chatcommand("text", {
 core.register_on_mods_loaded(function()
 	core.log("Yeah preview mod is loaded with other CSM mods.")
 end)
+
+minetest.after(0, function()
+	if core.store_texture("[item:default:dirt", "default_dirt.png") then
+		print("Stored dirt texture.")
+	else
+		print("Storing dirt texture failed!")
+	end
+end)

@@ -915,10 +915,6 @@ screenshot_format (Screenshot format) enum png png,jpg,bmp,pcx,ppm,tga
 #    Use 0 for default quality.
 screenshot_quality (Screenshot quality) int 0 0 100
 
-#    Resolution of generated inventory images
-#    Set to 0 to not generate inventory images
-stored_inventory_image_resolution (Resolution of generated inventory images) int 0 0 1024
-
 [*Advanced]
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.

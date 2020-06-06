@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientevent.h"
 #include "client/sound.h"
 #include "client/clientenvironment.h"
+#include "client/renderingengine.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
 #include "cpp_api/s_base.h"
@@ -34,6 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "util/string.h"
 #include "nodedef.h"
+#include "filesys.h"
+#include "util/string.h"
 
 #define checkCSMRestrictionFlag(flag) \
 	( getClient(L)->checkCSMRestrictionFlag(CSMRestrictionFlags::flag) )
@@ -414,6 +417,59 @@ int ModApiClient::l_get_csm_restrictions(lua_State *L)
 	return 1;
 }
 
+// store_texture(texture, path)
+int ModApiClient::l_store_texture(lua_State *L)
+{
+	const std::string texturename = luaL_checkstring(L, 1);
+	const std::string filename = luaL_checkstring(L, 2);
+	
+	if (filename.empty())
+		return 0;
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	std::string current_mod = readParam<std::string>(L, -1, "");
+	if (current_mod.empty()) {
+		current_mod = getScriptApiBase(L)->getOrigin();
+		if (current_mod.empty())
+			return 0;
+	}
+
+	std::string base_path = fs::AbsolutePath(getClient(L)->getClientModsLuaPath()) + DIR_DELIM + current_mod;
+	std::string path = base_path + DIR_DELIM + filename;
+	
+	std::string abs_path = fs::AbsolutePath(path);
+	if (abs_path.empty()) {
+		std::string component;
+		abs_path = fs::AbsolutePath(fs::RemoveLastPathComponent(path, &component));
+		const char *supported_ext[] = {
+			".png", ".jpg", ".bmp", ".tga",
+			".pcx", ".ppm", ".psd", ".wal", ".rgb",
+			NULL
+		};
+		if (abs_path.empty() || removeStringEnd(component, supported_ext).empty())
+			return 0;
+		abs_path += DIR_DELIM + component;
+	}
+
+	if (!fs::PathStartsWith(abs_path, base_path))
+		return 0;
+
+	video::ITexture* rt = getClient(L)->getTextureSource()->getTexture(texturename, nullptr);
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	video::IImage* image = driver->createImageFromData(
+		rt->getColorFormat(),
+		rt->getSize(),
+		rt->lock(),
+		false 	// Copy memory
+	);
+	rt->unlock();
+	if (!driver->writeImageToFile(image, abs_path.c_str(), 255.0))
+		return 0;
+	image->drop();
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -441,4 +497,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_builtin_path);
 	API_FCT(get_language);
 	API_FCT(get_csm_restrictions);
+	API_FCT(store_texture);
 }

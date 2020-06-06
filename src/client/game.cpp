@@ -68,7 +68,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 #include "version.h"
 #include "script/scripting_client.h"
-#include "hud.h"
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
@@ -1227,6 +1226,8 @@ bool Game::init(
 	itemdef_manager = createItemDefManager();
 	nodedef_manager = createNodeDefManager();
 
+	texture_src->m_itemdef_manager = itemdef_manager;
+
 	eventmgr = new EventManager();
 	quicktune = new QuicktuneShortcutter();
 
@@ -1513,6 +1514,8 @@ bool Game::connectToServer(const std::string &playername,
 
 	client->connect(connect_address,
 		simple_singleplayer_mode || local_server_mode);
+
+	texture_src->m_client = client;
 
 	/*
 		Wait for server to accept connection
@@ -2286,11 +2289,10 @@ void Game::toggleFog()
 
 void Game::toggleDebug()
 {
-	// Initial / 3x toggle: Chat only
+	// Initial / 4x toggle: Chat only
 	// 1x toggle: Debug text with chat
 	// 2x toggle: Debug text with profiler graph
 	// 3x toggle: Debug text and wireframe
-	// 4x toggle: Store inventory images (if enabled) & go back to chat
 	if (!m_game_ui->m_flags.show_debug) {
 		m_game_ui->m_flags.show_debug = true;
 		m_game_ui->m_flags.show_profiler_graph = false;
@@ -2312,9 +2314,6 @@ void Game::toggleDebug()
 		} else {
 			m_game_ui->showTranslatedStatusText("Debug info and profiler graph hidden");
 		}
-		u16 inv_img_res = g_settings->getU16("stored_inventory_image_resolution");
-		if (inv_img_res > 0)
-			client->storeInventoryImages(inv_img_res);
 	}
 }
 

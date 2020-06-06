@@ -830,6 +830,13 @@ Call these functions only at load time!
     * Returns [server info](#server-info).
 * `minetest.send_respawn()`
     * Sends a respawn request to the server.
+* `minetest.store_texture(texture, path)`
+    * Texture may include texture modifiers
+    * Will be written to `path` which is relative to the CSM folder
+        * Only subfolders of the CSM folder are allowed
+        * Path needs to exist except for the image to be stored
+        * Filetype needs to be supported (see supported media types)
+    * Example: `minetest.store_texture("[item:default:dirt", "default_dirt.png")`
 
 ### Storage API
 * `minetest.get_mod_storage()`:

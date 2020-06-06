@@ -28,11 +28,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <memory>
 #include "util/numeric.h"
 #include "config.h"
+#include "itemdef.h"
+#include "wieldmesh.h"
 
 #if ENABLE_GLES
 #include <IVideoDriver.h>
 #endif
 
+class Client;
+struct ItemPartColor;
 class IGameDef;
 struct TileSpec;
 struct TileDef;
@@ -130,6 +134,9 @@ public:
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
+	
+	IWritableItemDefManager* m_itemdef_manager;
+	Client* m_client;
 };
 
 IWritableTextureSource *createTextureSource();
