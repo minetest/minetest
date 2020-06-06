@@ -6941,7 +6941,7 @@ Used by `minetest.register_node`.
 
         visual_scale = 1.0,
         -- Supported for drawtypes "plantlike", "signlike", "torchlike",
-        -- "firelike", "mesh".
+        -- "firelike", "mesh", "nodebox", "allfaces".
         -- For plantlike and firelike, the image will start at the bottom of the
         -- node. For torchlike, the image will start at the surface to which the
         -- node "attaches". For the other drawtypes the image will be centered

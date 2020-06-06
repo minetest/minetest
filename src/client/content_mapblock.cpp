@@ -366,6 +366,7 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	TileSpec *tiles, int tile_count)
 {
+	bool scale = std::fabs(f->visual_scale - 1.0f) > 1e-3f;
 	f32 texture_coord_buf[24];
 	f32 dx1 = box.MinEdge.X;
 	f32 dy1 = box.MinEdge.Y;
@@ -373,6 +374,14 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	f32 dx2 = box.MaxEdge.X;
 	f32 dy2 = box.MaxEdge.Y;
 	f32 dz2 = box.MaxEdge.Z;
+	if (scale) {
+		if (!txc) { // generate texture coords before scaling
+			generateCuboidTextureCoords(box, texture_coord_buf);
+			txc = texture_coord_buf;
+		}
+		box.MinEdge *= f->visual_scale;
+		box.MaxEdge *= f->visual_scale;
+	}
 	box.MinEdge += origin;
 	box.MaxEdge += origin;
 	if (!txc) {
@@ -1323,7 +1332,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	std::vector<aabb3f> boxes;
 	n.getNodeBoxes(nodedef, &boxes, neighbors_set);
-	for (const auto &box : boxes)
+	for (auto &box : boxes)
 		drawAutoLightedCuboid(box, nullptr, tiles, 6);
 }
 
