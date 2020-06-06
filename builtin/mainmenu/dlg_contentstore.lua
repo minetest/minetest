@@ -133,6 +133,11 @@ local function start_install(calling_dialog, package)
 	end
 end
 
+local function get_file_extension(path)
+	local parts = path:split(".")
+	return parts[#parts]
+end
+
 local function get_screenshot(package)
 	if not package.thumbnail then
 		return defaulttexturedir .. "no_screenshot.png"
@@ -141,8 +146,9 @@ local function get_screenshot(package)
 	end
 
 	-- Get tmp screenshot path
+	local ext = get_file_extension(package.thumbnail)
 	local filepath = screenshot_dir .. DIR_DELIM ..
-		package.type .. "-" .. package.author .. "-" .. package.name .. ".png"
+		("%s-%s-%s.%s"):format(package.type, package.author, package.name, ext)
 
 	-- Return if already downloaded
 	local file = io.open(filepath, "r")
