@@ -173,13 +173,15 @@ describe("vector", function()
 		assert.True(almost_equal({x = 0, y = 0, z = 1}, up_at_rot(rot2)))
 		for i = 1, 1000 do
 			local rand_vec = vector.new(math.random(), math.random(), math.random())
-			local rot_1 = vector.dir_to_rotation(rand_vec)
-			local rot_2 = {
-				x = math.atan2(rand_vec.y, math.sqrt(rand_vec.z * rand_vec.z + rand_vec.x * rand_vec.x)),
-				y = -math.atan2(rand_vec.x, rand_vec.z),
-				z = 0
-			}
-			assert.True(almost_equal(rot_1, rot_2))
+			if vector.length(rand_vec) ~= 0 then
+				local rot_1 = vector.dir_to_rotation(rand_vec)
+				local rot_2 = {
+					x = math.atan2(rand_vec.y, math.sqrt(rand_vec.z * rand_vec.z + rand_vec.x * rand_vec.x)),
+					y = -math.atan2(rand_vec.x, rand_vec.z),
+					z = 0
+				}
+				assert.True(almost_equal(rot_1, rot_2))
+			end
 		end
 
 	end)
