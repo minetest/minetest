@@ -330,17 +330,17 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 
 bool checkMeshNormals(scene::IMesh *mesh)
 {
-	u32 buffersCount = mesh->getMeshBufferCount();
+	u32 buffer_count = mesh->getMeshBufferCount();
 
-	for (u32 i = 0; i < buffersCount; i++) {
+	for (u32 i = 0; i < buffer_count; i++) {
 		scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
 
 		// Here we intentionally check only first normal, assuming that if buffer
 		// has it valid, then most likely all other ones are fine too. We can
 		// check all of the normals to have length, but it seems like an overkill
 		// hurting the performance and covering only really weird broken models.
-		core::vector3df firstNormal = buffer->getNormal(0);
-		f32 length = firstNormal.getLength();
+		core::vector3df first_normal = buffer->getNormal(0);
+		f32 length = first_normal.getLength();
 
 		if (length == 0 || isinf(length) || isnan(length))
 			return false;
