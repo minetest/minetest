@@ -1,5 +1,5 @@
 --Minetest
---Copyright (C) 2018 rubenwardy
+--Copyright (C) 2018-20 rubenwardy
 --
 --This program is free software; you can redistribute it and/or modify
 --it under the terms of the GNU Lesser General Public License as published by
