@@ -14,68 +14,57 @@ namespace {
 		state.pos_offset += c_offset;
 	}
 
-//	void parseList(ParserState &state, const FormspecElement &element)
-//	{
+	void parseList(ParserState &state, const FormspecElement &element)
+	{
 //		if (m_client == 0) {
 //			throw FormspecParseException(false, "Not supported when not a client");
 //		}
-//
-//		if (element.size() != 4) {
-//			element.checkLength(state.formspec_version > FORMSPEC_API_VERSION, 5);
-//		}
-//
-//		std::string location = element.getString(0);
-//		std::string listname = element.getString(1);
-//		v2f32 givenPos = element.getV2f(2);
-//		v2s32 geom = element.getV2s(3);
-//
-//		std::string startindex;
-//		if (element.size() == 5)
-//			startindex = element.getString(4);
-//
-//		InventoryLocation loc;
-//
-//		if (location == "context" || location == "current_name")
-//			loc = state.inventoryLocation;
-//		else
-//			loc.deSerialize(location);
-//
-//		s32 start_i = 0;
-//		if (!startindex.empty())
-//			start_i = stoi(startindex);
-//
-//		if (geom.X < 0 || geom.Y < 0 || start_i < 0)
-//			throw FormspecParseException(true, "Negative size or start index");
-//
-//		if (!state.explicit_size)
-//			warningstream << "invalid use of list without a size[] element" << std::endl;
-//
-//		FieldSpec spec(
-//				"",
-//				L"",
-//				L"",
-//				258 + m_fields.size(),
-//				3
-//		);
-//
-//		v2f32 slot_spacing = state.real_coordinates ?
-//							 v2f32(state.imgsize.X * 1.25f, state.imgsize.Y * 1.25f) : state.spacing;
-//
-//		v2s32 pos = state.real_coordinates ? state.getRealCoordinateBasePos(givenPos)
-//										   : state.getElementBasePos(true, givenPos);
-//
-//		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
-//											   pos.X + (geom.X - 1) * slot_spacing.X + state.imgsize.X,
-//											   pos.Y + (geom.Y - 1) * slot_spacing.Y + state.imgsize.Y);
-//
+
+		if (element.size() != 4 && element.size() != 5) {
+			element.checkLength(state.formspec_version > FORMSPEC_API_VERSION, 5);
+		}
+
+		std::string location = element.getString(0);
+		std::string listname = element.getString(1);
+		v2f32 givenPos = element.getV2f(2);
+		v2s32 geom = element.getV2s(3);
+
+		std::string startindex;
+		if (element.size() == 5)
+			startindex = element.getString(4);
+
+		InventoryLocation loc;
+
+		if (location == "context" || location == "current_name")
+			loc = state.inventoryLocation;
+		else
+			loc.deSerialize(location);
+
+		s32 start_i = 0;
+		if (!startindex.empty())
+			start_i = stoi(startindex);
+
+		if (geom.X < 0 || geom.Y < 0 || start_i < 0)
+			throw FormspecParseException(true, "Negative size or start index");
+
+		if (!state.explicit_size)
+			warningstream << "invalid use of list without a size[] element" << std::endl;
+
+		auto &spec = state.makeSpec(3);
+		v2f32 slot_spacing = state.real_coordinates ?
+							 v2f32(state.imgsize.X * 1.25f, state.imgsize.Y * 1.25f) : state.spacing;
+
+		v2s32 pos = state.getPosition(givenPos);
+		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
+			pos.X + (geom.X - 1) * slot_spacing.X + state.imgsize.X,
+			pos.Y + (geom.Y - 1) * slot_spacing.Y + state.imgsize.Y);
+
 //		GUIInventoryList *e = new GUIInventoryList(state.Environment, state.getParentElement(),
 //				spec.fid, rect, m_invmgr, loc, listname, geom, start_i, state.imgsize,
-//				slot_spacing, state.getParentElement(), state.inventoryListOptions, m_font);
+//				slot_spacing, state.getParentElement(), state.inventorylist_options, m_font);
 //
 //		m_inventorylists.push_back(e);
-//		m_fields.push_back(spec);
-//		return;
-//	}
+	}
 }
 
 
@@ -85,5 +74,5 @@ namespace {
 void initParsers(std::map<std::string, FormspecElementParser> &parsers)
 {
 	bind("container", parseContainer);
-//	bind("list", parseList);
+	bind("list", parseList);
 }

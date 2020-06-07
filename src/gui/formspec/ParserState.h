@@ -4,9 +4,11 @@
 #include <stack>
 
 #include "../guiTable.h"
+#include "FieldSpec.h"
 
 class ParserState {
 	irr::gui::IGUIElement *parent;
+	std::vector<FieldSpec> specs;
 
 public:
 	irr::gui::IGUIEnvironment *Environment;
@@ -47,6 +49,7 @@ public:
 	// used to restore table selection/scroll/treeview state
 	std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 
+
 	ParserState(irr::gui::IGUIEnvironment *Environment,
 				irr::gui::IGUIElement *parent,
 				InventoryLocation &inventoryLocation):
@@ -64,7 +67,7 @@ public:
 		parent = v;
 	}
 
-	v2s32 getElementBasePos(bool hasPos, const v2f32 &pos)
+	v2s32 getElementBasePos(bool hasPos, const v2f32 &pos) const
 	{
 		v2f32 pos_f = v2f32(padding.X, padding.Y) + pos_offset * spacing;
 		if (hasPos) {
@@ -74,14 +77,25 @@ public:
 		return v2s32(pos_f.X, pos_f.Y);
 	}
 
-	v2s32 getRealCoordinateBasePos(const v2f32 &pos)
+	v2s32 getRealCoordinateBasePos(const v2f32 &pos) const
 	{
 		return v2s32((pos.X + pos_offset.X) * imgsize.X,
 					 (pos.Y + pos_offset.Y) * imgsize.Y);
 	}
 
-	v2s32 getRealCoordinateGeometry(const v2f32 &geom)
+	v2s32 getRealCoordinateGeometry(const v2f32 &geom) const
 	{
 		return v2s32(geom.X * imgsize.X, geom.Y * imgsize.Y);
+	}
+
+	v2s32 getPosition(v2f32 pos) const
+	{
+		return real_coordinates ? getRealCoordinateBasePos(pos)
+							   : getElementBasePos(true, pos);
+	}
+
+	FieldSpec &makeSpec(int priority) {
+		specs.emplace_back("", L"", L"", 258 + specs.size(), priority);
+		return specs[specs.size() - 1];
 	}
 };
