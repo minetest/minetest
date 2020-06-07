@@ -341,7 +341,7 @@ bool checkMeshNormals(scene::IMesh *mesh)
 		// hurting the performance and covering only really weird broken models.
 		f32 length = buffer->getNormal(0).getLength();
 
-		if (length == 0 || !isfinite(length))
+		if (!isfinite(length) || fabs(length) < 1e-10)
 			return false;
 	}
 
