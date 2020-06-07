@@ -323,7 +323,7 @@ v2s32 GUIFormSpecMenu::getRealCoordinateGeometry(const std::vector<std::string> 
 	return getRealCoordinateGeometry(v2f32(stof(v_geom[0]), stof(v_geom[1])));
 }
 
-void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseSize(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,',');
 
@@ -350,7 +350,7 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 	errorstream<< "Invalid size element (" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseContainer(parserData *data, const FormspecElement &element)
+void GUIFormSpecMenu::parseContainer(ParserState *data, const FormspecElement &element)
 {
 	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 1);
 
@@ -359,7 +359,7 @@ void GUIFormSpecMenu::parseContainer(parserData *data, const FormspecElement &el
 	pos_offset += c_offset;
 }
 
-void GUIFormSpecMenu::parseContainerEnd(parserData* data, const FormspecElement &element)
+void GUIFormSpecMenu::parseContainerEnd(ParserState* data, const FormspecElement &element)
 {
 	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 1);
 
@@ -371,7 +371,7 @@ void GUIFormSpecMenu::parseContainerEnd(parserData* data, const FormspecElement 
 	}
 }
 
-void GUIFormSpecMenu::parseScrollContainer(parserData *data, const FormspecElement &element)
+void GUIFormSpecMenu::parseScrollContainer(ParserState *data, const FormspecElement &element)
 {
 	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 5);
 
@@ -401,7 +401,7 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const FormspecEleme
 	core::rect<s32> rect_clipper = core::rect<s32>(pos, pos + geom);
 
 	gui::IGUIElement *clipper = new gui::IGUIElement(EGUIET_ELEMENT, Environment,
-			data->current_parent, 0, rect_clipper);
+			data->getParentElement(), 0, rect_clipper);
 
 	// make mover
 	FieldSpec spec_mover(
@@ -416,7 +416,7 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const FormspecEleme
 	GUIScrollContainer *mover = new GUIScrollContainer(Environment,
 			clipper, spec_mover.fid, rect_mover, orientation, scroll_factor);
 
-	data->current_parent = mover;
+	data->setParentElement(mover);
 
 	m_scroll_containers.emplace_back(scrollbar_name, mover);
 
@@ -430,9 +430,9 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const FormspecEleme
 	pos_offset.Y = 0.0f;
 }
 
-void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data)
+void GUIFormSpecMenu::parseScrollContainerEnd(ParserState *data)
 {
-	if (data->current_parent == this || data->current_parent->getParent() == this ||
+	if (data->getParentElement() == this || data->getParentElement()->getParent() == this ||
 			container_stack.empty()) {
 		errorstream << "Invalid scroll_container end element, "
 				<< "no matching scroll_container start element" << std::endl;
@@ -449,12 +449,12 @@ void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data)
 		return;
 	}
 
-	data->current_parent = data->current_parent->getParent()->getParent();
+	data->setParentElement(data->getParentElement()->getParent()->getParent());
 	pos_offset = container_stack.top();
 	container_stack.pop();
 }
 
-void GUIFormSpecMenu::parseList(parserData *data, const FormspecElement &element)
+void GUIFormSpecMenu::parseList(ParserState *data, const FormspecElement &element)
 {
 	if (m_client == 0) {
 		warningstream<<"invalid use of 'list' with m_client==0"<<std::endl;
@@ -510,7 +510,7 @@ void GUIFormSpecMenu::parseList(parserData *data, const FormspecElement &element
 			pos.X + (geom.X - 1) * slot_spacing.X + imgsize.X,
 			pos.Y + (geom.Y - 1) * slot_spacing.Y + imgsize.Y);
 
-	GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
+	GUIInventoryList *e = new GUIInventoryList(Environment, data->getParentElement(),
 			spec.fid, rect, m_invmgr, loc, listname, geom, start_i, imgsize,
 			slot_spacing, this, data->inventorylist_options, m_font);
 
@@ -519,7 +519,7 @@ void GUIFormSpecMenu::parseList(parserData *data, const FormspecElement &element
 	return;
 }
 
-void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseListRing(ParserState *data, const std::string &element)
 {
 	if (m_client == 0) {
 		errorstream << "WARNING: invalid use of 'listring' with m_client==0" << std::endl;
@@ -557,7 +557,7 @@ void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element
 		<< m_inventorylists.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseCheckbox(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -616,7 +616,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		spec.ftype = f_CheckBox;
 
 		gui::IGUICheckBox *e = Environment->addCheckBox(fselected, rect,
-				data->current_parent, spec.fid, spec.flabel.c_str());
+				data->getParentElement(), spec.fid, spec.flabel.c_str());
 
 		auto style = getDefaultStyleForElement("checkbox", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -633,7 +633,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 	errorstream<< "Invalid checkbox element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseScrollBar(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -675,7 +675,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 
 		spec.ftype = f_ScrollBar;
 		spec.send  = true;
-		GUIScrollBar *e = new GUIScrollBar(Environment, data->current_parent,
+		GUIScrollBar *e = new GUIScrollBar(Environment, data->getParentElement(),
 				spec.fid, rect, is_horizontal, true);
 
 		auto style = getDefaultStyleForElement("scrollbar", name);
@@ -705,7 +705,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		<< "'" << std::endl;
 }
 
-void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseScrollBarOptions(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
 
@@ -758,7 +758,7 @@ void GUIFormSpecMenu::parseScrollBarOptions(parserData* data, const std::string 
 	}
 }
 
-void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseImage(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -802,7 +802,7 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 			1
 		);
 		core::rect<s32> rect(pos, pos + geom);
-		gui::IGUIImage *e = Environment->addImage(rect, data->current_parent,
+		gui::IGUIImage *e = Environment->addImage(rect, data->getParentElement(),
 				spec.fid, 0, true);
 		e->setImage(texture);
 		e->setScaleImage(true);
@@ -841,7 +841,7 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 			258 + m_fields.size()
 		);
 		gui::IGUIImage *e = Environment->addImage(texture, pos, true,
-				data->current_parent, spec.fid, 0);
+				data->getParentElement(), spec.fid, 0);
 		auto style = getDefaultStyleForElement("image", spec.fname);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
 		m_fields.push_back(spec);
@@ -854,7 +854,7 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	errorstream<< "Invalid image element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseAnimatedImage(ParserState *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
 
@@ -916,7 +916,7 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseItemImage(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -954,7 +954,7 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 		);
 		spec.ftype = f_ItemImage;
 
-		GUIItemImage *e = new GUIItemImage(Environment, data->current_parent, spec.fid,
+		GUIItemImage *e = new GUIItemImage(Environment, data->getParentElement(), spec.fid,
 				core::rect<s32>(pos, pos + geom), name, m_font, m_client);
 		auto style = getDefaultStyleForElement("item_image", spec.fname);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -968,8 +968,8 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 	errorstream<< "Invalid ItemImage element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
-		const std::string &type)
+void GUIFormSpecMenu::parseButton(ParserState* data, const std::string &element,
+								  const std::string &type)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1018,7 +1018,7 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 			spec.is_exit = true;
 
 		GUIButton *e = GUIButton::addButton(Environment, rect, m_tsrc,
-				data->current_parent, spec.fid, spec.flabel.c_str());
+				data->getParentElement(), spec.fid, spec.flabel.c_str());
 
 		auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
 		e->setStyles(style);
@@ -1033,7 +1033,7 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 	errorstream<< "Invalid button element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseBackground(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1129,7 +1129,7 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 	errorstream<< "Invalid background element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseTableOptions(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTableOptions(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1141,7 +1141,7 @@ void GUIFormSpecMenu::parseTableOptions(parserData* data, const std::string &ele
 	}
 }
 
-void GUIFormSpecMenu::parseTableColumns(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTableColumns(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1161,7 +1161,7 @@ void GUIFormSpecMenu::parseTableColumns(parserData* data, const std::string &ele
 	}
 }
 
-void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTable(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1209,7 +1209,7 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 		}
 
 		//now really show table
-		GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
+		GUITable *e = new GUITable(Environment, data->getParentElement(), spec.fid,
 				rect, m_tsrc);
 
 		if (spec.fname == data->focused_fieldname) {
@@ -1235,7 +1235,7 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 	errorstream<< "Invalid table element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTextList(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1286,7 +1286,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 		}
 
 		//now really show list
-		GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
+		GUITable *e = new GUITable(Environment, data->getParentElement(), spec.fid,
 				rect, m_tsrc);
 
 		if (spec.fname == data->focused_fieldname) {
@@ -1313,7 +1313,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 }
 
 
-void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseDropDown(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1363,7 +1363,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 		spec.send = true;
 
 		//now really show list
-		gui::IGUIComboBox *e = Environment->addComboBox(rect, data->current_parent,
+		gui::IGUIComboBox *e = Environment->addComboBox(rect, data->getParentElement(),
 				spec.fid);
 
 		if (spec.fname == data->focused_fieldname) {
@@ -1395,7 +1395,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 				<< element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseFieldCloseOnEnter(ParserState *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 	if (parts.size() == 2 ||
@@ -1404,7 +1404,7 @@ void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string
 	}
 }
 
-void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parsePwdField(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1451,7 +1451,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 
 		spec.send = true;
 		gui::IGUIEditBox *e = Environment->addEditBox(0, rect, true,
-				data->current_parent, spec.fid);
+				data->getParentElement(), spec.fid);
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -1462,7 +1462,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 			rect.UpperLeftCorner.Y -= font_height;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
 			gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
-				data->current_parent, 0);
+				data->getParentElement(), 0);
 		}
 
 		e->setPasswordBox(true,L'*');
@@ -1490,14 +1490,14 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 	errorstream<< "Invalid pwdfield element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
-	core::rect<s32> &rect, bool is_multiline)
+void GUIFormSpecMenu::createTextField(ParserState *data, FieldSpec &spec,
+									  core::rect<s32> &rect, bool is_multiline)
 {
 	bool is_editable = !spec.fname.empty();
 	if (!is_editable && !is_multiline) {
 		// spec field id to 0, this stops submit searching for a value that isn't there
 		gui::StaticText::add(Environment, spec.flabel.c_str(), rect, false, true,
-				data->current_parent, 0);
+				data->getParentElement(), 0);
 		return;
 	}
 
@@ -1515,14 +1515,14 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 
 	if (use_intl_edit_box && g_settings->getBool("freetype")) {
 		e = new gui::intlGUIEditBox(spec.fdefault.c_str(), true, Environment,
-				data->current_parent, spec.fid, rect, is_editable, is_multiline);
+				data->getParentElement(), spec.fid, rect, is_editable, is_multiline);
 	} else {
 		if (is_multiline) {
 			e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true, Environment,
-					data->current_parent, spec.fid, rect, is_editable, true);
+					data->getParentElement(), spec.fid, rect, is_editable, true);
 		} else if (is_editable) {
 			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true,
-					data->current_parent, spec.fid);
+					data->getParentElement(), spec.fid);
 			e->grab();
 		}
 	}
@@ -1563,15 +1563,15 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 		rect.UpperLeftCorner.Y -= font_height;
 		rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
 		IGUIElement *t = gui::StaticText::add(Environment, spec.flabel.c_str(),
-				rect, false, true, data->current_parent, 0);
+				rect, false, true, data->getParentElement(), 0);
 
 		if (t)
 			t->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 	}
 }
 
-void GUIFormSpecMenu::parseSimpleField(parserData *data,
-	std::vector<std::string> &parts)
+void GUIFormSpecMenu::parseSimpleField(ParserState *data,
+									   std::vector<std::string> &parts)
 {
 	std::string name = parts[0];
 	std::string label = parts[1];
@@ -1614,8 +1614,8 @@ void GUIFormSpecMenu::parseSimpleField(parserData *data,
 	data->simple_field_count++;
 }
 
-void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& parts,
-		const std::string &type)
+void GUIFormSpecMenu::parseTextArea(ParserState* data, std::vector<std::string>& parts,
+									const std::string &type)
 {
 	std::vector<std::string> v_pos = split(parts[0],',');
 	std::vector<std::string> v_geom = split(parts[1],',');
@@ -1679,8 +1679,8 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
-		const std::string &type)
+void GUIFormSpecMenu::parseField(ParserState* data, const std::string &element,
+								 const std::string &type)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1698,7 +1698,7 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 	errorstream<< "Invalid field element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseHyperText(ParserState *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
 
@@ -1744,13 +1744,13 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 
 	spec.ftype = f_HyperText;
 	GUIHyperText *e = new GUIHyperText(spec.flabel.c_str(), Environment,
-			data->current_parent, spec.fid, rect, m_client, m_tsrc);
+			data->getParentElement(), spec.fid, rect, m_client, m_tsrc);
 	e->drop();
 
 	m_fields.push_back(spec);
 }
 
-void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseLabel(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1822,7 +1822,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 				4
 			);
 			gui::IGUIStaticText *e = gui::StaticText::add(Environment,
-					spec.flabel.c_str(), rect, false, false, data->current_parent,
+					spec.flabel.c_str(), rect, false, false, data->getParentElement(),
 					spec.fid);
 			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 
@@ -1843,7 +1843,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		<< "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseVertLabel(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1903,7 +1903,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 			258 + m_fields.size()
 		);
 		gui::IGUIStaticText *e = gui::StaticText::add(Environment, spec.flabel.c_str(),
-				rect, false, false, data->current_parent, spec.fid);
+				rect, false, false, data->getParentElement(), spec.fid);
 		e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 
 		auto style = getDefaultStyleForElement("vertlabel", spec.fname, "label");
@@ -1920,8 +1920,8 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 	errorstream<< "Invalid vertlabel element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &element,
-		const std::string &type)
+void GUIFormSpecMenu::parseImageButton(ParserState* data, const std::string &element,
+									   const std::string &type)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -1977,7 +1977,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 			spec.is_exit = true;
 
 		GUIButtonImage *e = GUIButtonImage::addButton(Environment, rect, m_tsrc,
-				data->current_parent, spec.fid, spec.flabel.c_str());
+				data->getParentElement(), spec.fid, spec.flabel.c_str());
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -2007,7 +2007,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 	errorstream<< "Invalid imagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTabHeader(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
 
@@ -2087,7 +2087,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 				pos.Y+geom.Y);
 
 		gui::IGUITabControl *e = Environment->addTabControl(rect,
-				data->current_parent, show_background, show_border, spec.fid);
+				data->getParentElement(), show_background, show_border, spec.fid);
 		e->setAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT,
 				irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_LOWERRIGHT);
 		e->setTabHeight(geom.Y);
@@ -2120,7 +2120,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 			<< element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseItemImageButton(ParserState* data, const std::string &element)
 {
 	if (m_client == 0) {
 		warningstream << "invalid use of item_image_button with m_client==0"
@@ -2181,7 +2181,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 		);
 
 		GUIButtonItemImage *e_btn = GUIButtonItemImage::addButton(Environment,
-				rect, m_tsrc, data->current_parent, spec_btn.fid, spec_btn.flabel.c_str(),
+				rect, m_tsrc, data->getParentElement(), spec_btn.fid, spec_btn.flabel.c_str(),
 				item_name, m_client);
 
 		auto style = getStyleForElement("item_image_button", spec_btn.fname, "image_button");
@@ -2200,7 +2200,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 	errorstream<< "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseBox(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -2239,7 +2239,7 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 
 			core::rect<s32> rect(pos, pos + geom);
 
-			GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid,
+			GUIBox *e = new GUIBox(Environment, data->getParentElement(), spec.fid,
 					rect, tmp_color);
 
 			auto style = getDefaultStyleForElement("box", spec.fname);
@@ -2257,7 +2257,7 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 	errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseBackgroundColor(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 	const u32 parameter_count = parts.size();
@@ -2292,7 +2292,7 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 		parseColorString(parts[2], m_fullscreen_bgcolor, false);
 }
 
-void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseListColors(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 
@@ -2329,7 +2329,7 @@ void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &eleme
 	errorstream<< "Invalid listcolors element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseTooltip(ParserState* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
 	if (parts.size() < 2) {
@@ -2392,7 +2392,7 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
 		core::rect<s32> rect(pos, pos + geom);
 
 		gui::IGUIElement *e = new gui::IGUIElement(EGUIET_ELEMENT, Environment,
-				data->current_parent, fieldspec.fid, rect);
+				data->getParentElement(), fieldspec.fid, rect);
 
 		// the element the rect tooltip is bound to should not block mouse-clicks
 		e->setVisible(false);
@@ -2429,7 +2429,7 @@ bool GUIFormSpecMenu::parseVersionDirect(const std::string &data)
 	return false;
 }
 
-bool GUIFormSpecMenu::parseSizeDirect(parserData* data, const std::string &element)
+bool GUIFormSpecMenu::parseSizeDirect(ParserState* data, const std::string &element)
 {
 	if (element.empty())
 		return false;
@@ -2453,7 +2453,7 @@ bool GUIFormSpecMenu::parseSizeDirect(parserData* data, const std::string &eleme
 	return true;
 }
 
-bool GUIFormSpecMenu::parsePositionDirect(parserData *data, const std::string &element)
+bool GUIFormSpecMenu::parsePositionDirect(ParserState *data, const std::string &element)
 {
 	if (element.empty())
 		return false;
@@ -2474,7 +2474,7 @@ bool GUIFormSpecMenu::parsePositionDirect(parserData *data, const std::string &e
 	return true;
 }
 
-void GUIFormSpecMenu::parsePosition(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parsePosition(ParserState *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ',');
 
@@ -2487,7 +2487,7 @@ void GUIFormSpecMenu::parsePosition(parserData *data, const std::string &element
 	errorstream << "Invalid position element (" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
-bool GUIFormSpecMenu::parseAnchorDirect(parserData *data, const std::string &element)
+bool GUIFormSpecMenu::parseAnchorDirect(ParserState *data, const std::string &element)
 {
 	if (element.empty())
 		return false;
@@ -2508,7 +2508,7 @@ bool GUIFormSpecMenu::parseAnchorDirect(parserData *data, const std::string &ele
 	return true;
 }
 
-void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseAnchor(ParserState *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ',');
 
@@ -2522,7 +2522,7 @@ void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
 			<< "'" << std::endl;
 }
 
-bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, bool style_type)
+bool GUIFormSpecMenu::parseStyle(ParserState *data, const std::string &element, bool style_type)
 {
 	std::vector<std::string> parts = split(element, ';');
 
@@ -2658,8 +2658,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 	return true;
 }
 
-void GUIFormSpecMenu::parseElement(ParserState &state, parserData* data,
-		const std::string &source)
+void GUIFormSpecMenu::parseElement(ParserState &state, const std::string &source)
 {
 	//some prechecks
 	if (source.empty())
@@ -2685,177 +2684,177 @@ void GUIFormSpecMenu::parseElement(ParserState &state, parserData* data,
 		}
 
 		if (type == "container") {
-			parseContainer(data, element);
+			parseContainer(&state, element);
 			return;
 		}
 
 		if (type == "container_end") {
-			parseContainerEnd(data, element);
+			parseContainerEnd(&state, element);
 			return;
 		}
 
 		if (type == "list") {
-			parseList(data, description);
+			parseList(&state, description);
 			return;
 		}
 
 		if (type == "listring") {
-			parseListRing(data, description);
+			parseListRing(&state, description);
 			return;
 		}
 
 		if (type == "checkbox") {
-			parseCheckbox(data, description);
+			parseCheckbox(&state, description);
 			return;
 		}
 
 		if (type == "image") {
-			parseImage(data, description);
+			parseImage(&state, description);
 			return;
 		}
 
 		if (type == "animated_image") {
-			parseAnimatedImage(data, description);
+			parseAnimatedImage(&state, description);
 			return;
 		}
 
 		if (type == "item_image") {
-			parseItemImage(data, description);
+			parseItemImage(&state, description);
 			return;
 		}
 
 		if (type == "button" || type == "button_exit") {
-			parseButton(data, description, type);
+			parseButton(&state, description, type);
 			return;
 		}
 
 		if (type == "background" || type == "background9") {
-			parseBackground(data, description);
+			parseBackground(&state, description);
 			return;
 		}
 
 		if (type == "tableoptions") {
-			parseTableOptions(data, description);
+			parseTableOptions(&state, description);
 			return;
 		}
 
 		if (type == "tablecolumns") {
-			parseTableColumns(data, description);
+			parseTableColumns(&state, description);
 			return;
 		}
 
 		if (type == "table") {
-			parseTable(data, description);
+			parseTable(&state, description);
 			return;
 		}
 
 		if (type == "textlist") {
-			parseTextList(data, description);
+			parseTextList(&state, description);
 			return;
 		}
 
 		if (type == "dropdown") {
-			parseDropDown(data, description);
+			parseDropDown(&state, description);
 			return;
 		}
 
 		if (type == "field_close_on_enter") {
-			parseFieldCloseOnEnter(data, description);
+			parseFieldCloseOnEnter(&state, description);
 			return;
 		}
 
 		if (type == "pwdfield") {
-			parsePwdField(data, description);
+			parsePwdField(&state, description);
 			return;
 		}
 
 		if ((type == "field") || (type == "textarea")) {
-			parseField(data, description, type);
+			parseField(&state, description, type);
 			return;
 		}
 
 		if (type == "hypertext") {
-			parseHyperText(data, description);
+			parseHyperText(&state, description);
 			return;
 		}
 
 		if (type == "label") {
-			parseLabel(data, description);
+			parseLabel(&state, description);
 			return;
 		}
 
 		if (type == "vertlabel") {
-			parseVertLabel(data, description);
+			parseVertLabel(&state, description);
 			return;
 		}
 
 		if (type == "item_image_button") {
-			parseItemImageButton(data, description);
+			parseItemImageButton(&state, description);
 			return;
 		}
 
 		if ((type == "image_button") || (type == "image_button_exit")) {
-			parseImageButton(data, description, type);
+			parseImageButton(&state, description, type);
 			return;
 		}
 
 		if (type == "tabheader") {
-			parseTabHeader(data, description);
+			parseTabHeader(&state, description);
 			return;
 		}
 
 		if (type == "box") {
-			parseBox(data, description);
+			parseBox(&state, description);
 			return;
 		}
 
 		if (type == "bgcolor") {
-			parseBackgroundColor(data, description);
+			parseBackgroundColor(&state, description);
 			return;
 		}
 
 		if (type == "listcolors") {
-			parseListColors(data, description);
+			parseListColors(&state, description);
 			return;
 		}
 
 		if (type == "tooltip") {
-			parseTooltip(data, description);
+			parseTooltip(&state, description);
 			return;
 		}
 
 		if (type == "scrollbar") {
-			parseScrollBar(data, description);
+			parseScrollBar(&state, description);
 			return;
 		}
 
 		if (type == "real_coordinates") {
-			data->real_coordinates = is_yes(description);
+			state.real_coordinates = is_yes(description);
 			return;
 		}
 
 		if (type == "style") {
-			parseStyle(data, description, false);
+			parseStyle(&state, description, false);
 			return;
 		}
 
 		if (type == "style_type") {
-			parseStyle(data, description, true);
+			parseStyle(&state, description, true);
 			return;
 		}
 
 		if (type == "scrollbaroptions") {
-			parseScrollBarOptions(data, description);
+			parseScrollBarOptions(&state, description);
 			return;
 		}
 
 		if (type == "scroll_container") {
-			parseScrollContainer(data, description);
+			parseScrollContainer(&state, description);
 			return;
 		}
 
 		if (type == "scroll_container_end") {
-			parseScrollContainerEnd(data);
+			parseScrollContainerEnd(&state);
 			return;
 		}
 
@@ -2875,8 +2874,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		return;
 	}
 
-	ParserState state{Environment, this, m_current_inventory_location};
-	parserData mydata;
+	ParserState mydata{Environment, this, m_current_inventory_location};
 
 	//preserve tables
 	for (auto &m_table : m_tables) {
@@ -2931,9 +2929,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	// Base position of contents of form
 	mydata.basepos = getBasePos();
-
-	// the parent for the parsed elements
-	mydata.current_parent = this;
 
 	m_inventorylists.clear();
 	m_backgrounds.clear();
@@ -3194,7 +3189,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 		std::vector<std::string> prepend_elements = split(m_formspec_prepend, ']');
 		for (const auto &element : prepend_elements)
-			parseElement(state, &mydata, element);
+			parseElement(mydata, element);
 
 		// legacy sorting for formspec versions < 3
 		if (m_formspec_version >= 3)
@@ -3209,10 +3204,10 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 
 	for (; i< elements.size(); i++) {
-		parseElement(state, &mydata, elements[i]);
+		parseElement(mydata, elements[i]);
 	}
 
-	if (mydata.current_parent != this) {
+	if (mydata.getParentElement() != this) {
 		errorstream << "Invalid formspec string: scroll_container was never closed!"
 			<< std::endl;
 	} else if (!container_stack.empty()) {
