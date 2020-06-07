@@ -200,6 +200,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	if (noclip && free_move) {
 		position += m_speed * dtime;
 		setPosition(position);
+
+		touching_ground = false;
 		added_velocity = v3f(0.0f); // ignored
 		return;
 	}
@@ -787,6 +789,8 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	if (free_move) {
 		position += m_speed * dtime;
 		setPosition(position);
+
+		touching_ground = false;
 		m_sneak_node_exists = false;
 		added_velocity = v3f(0.0f);
 		return;
