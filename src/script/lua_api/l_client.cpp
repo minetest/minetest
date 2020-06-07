@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <set>
 #include "l_client.h"
 #include "chatmessage.h"
 #include "client/client.h"
@@ -360,6 +361,31 @@ int ModApiClient::l_get_item_def(lua_State *L)
 	return 1;
 }
 
+// get_item_defs()
+int ModApiClient::l_get_item_defs(lua_State *L)
+{
+	if (checkCSMRestrictionFlag(CSM_RF_READ_ITEMDEFS))
+		return 0;
+
+	IGameDef *gdef = getGameDef(L);
+	assert(gdef);
+
+	IItemDefManager *idef = gdef->idef();
+	assert(idef);
+
+	std::set<std::string> itemdefs;
+	idef->getAll(itemdefs);
+	lua_createtable(L, 0, itemdefs.size());
+	for (const std::string &item_name : itemdefs) {
+		const ItemDefinition &def = idef->get(item_name);
+		lua_pushstring(L, item_name.c_str());
+		push_item_definition_full(L, def);
+		lua_settable(L, -3);
+	}
+
+	return 1;
+}
+
 // get_node_def(nodename)
 int ModApiClient::l_get_node_def(lua_State *L)
 {
@@ -492,6 +518,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(sound_fade);
 	API_FCT(get_server_info);
 	API_FCT(get_item_def);
+	API_FCT(get_item_defs);
 	API_FCT(get_node_def);
 	API_FCT(get_privilege_list);
 	API_FCT(get_builtin_path);

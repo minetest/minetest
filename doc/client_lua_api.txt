@@ -1182,6 +1182,8 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 	* Returns [node definition](#node-definition) table of `nodename`
 * `minetest.get_item_def(itemstring)`
 	* Returns item definition table of `itemstring`
+* `minetest.get_item_defs()`
+	* Returns table of item definitions, indexed by name
 
 #### Node Definition
 
