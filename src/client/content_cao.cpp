@@ -787,6 +787,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 void GenericCAO::updateLight(u32 day_night_ratio)
 {
+	if (m_glow < 0)
+		return;
+
 	u8 light_at_pos = 0;
 	bool pos_ok;
 
@@ -797,7 +800,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	else
 		light_at_pos = blend_light(day_night_ratio, LIGHT_SUN, 0);
 
-	u8 light = decode_light(light_at_pos);
+	u8 light = decode_light(light_at_pos + m_glow);
 	if (light != m_last_light) {
 		m_last_light = light;
 		setNodeLight(light);
