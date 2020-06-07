@@ -122,6 +122,12 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 void recalculateBoundingBox(scene::IMesh *src_mesh);
 
 /*
+	Check if mesh has valid normals and return true if it does.
+	We assume normal to be valid when it's 0 < length < Inf. and not NaN
+ */
+bool checkMeshNormals(scene::IMesh *mesh);
+
+/*
 	Vertex cache optimization according to the Forsyth paper:
 	http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html
 	Ported from irrlicht 1.8
