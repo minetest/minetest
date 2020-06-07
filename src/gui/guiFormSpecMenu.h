@@ -224,19 +224,9 @@ public:
 protected:
 	std::map<std::string, FormspecElementParser> parsers;
 
-	v2s32 getBasePos() const
-	{
-			return padding + offset + AbsoluteRect.UpperLeftCorner;
-	}
 	std::wstring getLabelByID(s32 id);
 	std::string getNameByID(s32 id);
 	const FieldSpec *getSpecByID(s32 id);
-	v2s32 getElementBasePos(bool hasPos, const v2f32 &pos=v2f32());
-	v2s32 getRealCoordinateBasePos(const v2f32 &pos);
-	v2s32 getRealCoordinateGeometry(const v2f32 &geom);
-	v2s32 getElementBasePos(const std::vector<std::string> *v_pos);
-	v2s32 getRealCoordinateBasePos(const std::vector<std::string> &v_pos);
-	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
 
 	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_type;
 	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_name;
@@ -246,13 +236,6 @@ protected:
 			const std::string &name="", const std::string &parent_type="");
 	std::array<StyleSpec, StyleSpec::NUM_STATES> getStyleForElement(const std::string &type,
 			const std::string &name="", const std::string &parent_type="");
-
-	v2s32 padding;
-	v2f32 spacing;
-	v2s32 imgsize;
-	v2s32 offset;
-	v2f32 pos_offset;
-	std::stack<v2f32> container_stack;
 
 	InventoryManager *m_invmgr;
 	ISimpleTextureSource *m_tsrc;

@@ -20,8 +20,8 @@ public:
 	v2f32 pos_offset{};
 
 	std::stack<v2f32> container_stack{};
-	v2f32 imgsize{};
-	v2f32 padding{};
+	v2s32 imgsize{};
+	v2s32 padding{};
 	v2f32 spacing{};
 
 	u8 simple_field_count;
@@ -67,13 +67,11 @@ public:
 		parent = v;
 	}
 
-	v2s32 getElementBasePos(bool hasPos, const v2f32 &pos) const
+	v2s32 getElementBasePos(const v2f32 &pos) const
 	{
 		v2f32 pos_f = v2f32(padding.X, padding.Y) + pos_offset * spacing;
-		if (hasPos) {
-			pos_f.X += pos.X * spacing.X;
-			pos_f.Y += pos.Y * spacing.Y;
-		}
+		pos_f.X += pos.X * spacing.X;
+		pos_f.Y += pos.Y * spacing.Y;
 		return v2s32(pos_f.X, pos_f.Y);
 	}
 
@@ -91,11 +89,26 @@ public:
 	v2s32 getPosition(v2f32 pos) const
 	{
 		return real_coordinates ? getRealCoordinateBasePos(pos)
-							   : getElementBasePos(true, pos);
+							   : getElementBasePos(pos);
 	}
 
 	FieldSpec &makeSpec(int priority) {
 		specs.emplace_back("", L"", L"", 258 + specs.size(), priority);
 		return specs[specs.size() - 1];
+	}
+
+	v2s32 getElementBasePosOld(const std::vector<std::string> &v_pos)
+	{
+		return getElementBasePos(v2f32(stof(v_pos[0]), stof(v_pos[1])));
+	}
+
+	v2s32 getRealCoordinateBasePosOld(const std::vector<std::string> &v_pos)
+	{
+		return getRealCoordinateBasePos(v2f32(stof(v_pos[0]), stof(v_pos[1])));
+	}
+
+	v2s32 getRealCoordinateGeometryOld(const std::vector<std::string> &v_geom)
+	{
+		return getRealCoordinateGeometry(v2f32(stof(v_geom[0]), stof(v_geom[1])));
 	}
 };
