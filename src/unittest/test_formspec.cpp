@@ -46,9 +46,9 @@ void TestFormspec::testFormspecElement()
 	{
 		FormspecElement element{"1.1,2.2;3.3,4.4;name;Label;value"};
 
-		UASSERT(element.getNumberOfParts() == 5);
-		VC_EQUALS(element.getVector(0), v2f32(1.1f, 2.2f));
-		VC_EQUALS(element.getVector(1), v2f32(3.3f, 4.4f));
+		UASSERT(element.size() == 5);
+		VC_EQUALS(element.getV2f(0), v2f32(1.1f, 2.2f));
+		VC_EQUALS(element.getV2f(1), v2f32(3.3f, 4.4f));
 		UASSERT(element.getString(2) == "name");
 		UASSERT(element.getString(3) == "Label");
 		UASSERT(element.getString(4) == "value");
@@ -57,7 +57,7 @@ void TestFormspec::testFormspecElement()
 	{
 		FormspecElement element{"name;one=1;two=2;three=3"};
 
-		UASSERT(element.getNumberOfParts() == 4);
+		UASSERT(element.size() == 4);
 		UASSERT(element.getString(0) == "name");
 
 		auto parameters = element.getParameters(1);

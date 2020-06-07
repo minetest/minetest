@@ -352,7 +352,7 @@ void GUIFormSpecMenu::parseContainer(parserData *data, const FormspecElement &el
 {
 	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 1);
 
-	v2f32 c_offset = element.getVector(0);
+	v2f32 c_offset = element.getV2f(0);
 	container_stack.push(pos_offset);
 	pos_offset += c_offset;
 }
@@ -373,12 +373,12 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const FormspecEleme
 {
 	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 5);
 
-	v2s32 pos = getRealCoordinateBasePos(element.getVector(0));
-	v2s32 geom = getRealCoordinateGeometry(element.getVector(1));
+	v2s32 pos = getRealCoordinateBasePos(element.getV2f(0));
+	v2s32 geom = getRealCoordinateGeometry(element.getV2f(1));
 	std::string scrollbar_name = element.getString(2);
 	std::string orientation = element.getString(3);
 	f32 scroll_factor = 0.1f;
-	if (element.getNumberOfParts() >= 5 && !element.getString(4).empty())
+	if (element.size() >= 5 && !element.getString(4).empty())
 		scroll_factor = element.getFloat(4);
 
 	if (orientation == "vertical")
@@ -452,79 +452,67 @@ void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data)
 	container_stack.pop();
 }
 
-void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseList(parserData *data, const FormspecElement &element)
 {
 	if (m_client == 0) {
 		warningstream<<"invalid use of 'list' with m_client==0"<<std::endl;
 		return;
 	}
 
-	std::vector<std::string> parts = split(element,';');
+	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 4);
 
-	if (((parts.size() == 4) || (parts.size() == 5)) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		std::string location = parts[0];
-		std::string listname = parts[1];
-		std::vector<std::string> v_pos  = split(parts[2],',');
-		std::vector<std::string> v_geom = split(parts[3],',');
-		std::string startindex;
-		if (parts.size() == 5)
-			startindex = parts[4];
+	std::string location = element.getString(0);
+	std::string listname = element.getString(1);
+	v2f32 givenPos = element.getV2f(2);
+	v2s32 geom = element.getV2s(3);
 
-		MY_CHECKPOS("list",2);
-		MY_CHECKGEOM("list",3);
+	std::string startindex;
+	if (element.size() == 5)
+		startindex = element.getString(4);
 
-		InventoryLocation loc;
+	InventoryLocation loc;
 
-		if (location == "context" || location == "current_name")
-			loc = m_current_inventory_location;
-		else
-			loc.deSerialize(location);
+	if (location == "context" || location == "current_name")
+		loc = m_current_inventory_location;
+	else
+		loc.deSerialize(location);
 
-		v2s32 geom;
-		geom.X = stoi(v_geom[0]);
-		geom.Y = stoi(v_geom[1]);
+	s32 start_i = 0;
+	if (!startindex.empty())
+		start_i = stoi(startindex);
 
-		s32 start_i = 0;
-		if (!startindex.empty())
-			start_i = stoi(startindex);
-
-		if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
-			errorstream << "Invalid list element: '" << element << "'"  << std::endl;
-			return;
-		}
-
-		if (!data->explicit_size)
-			warningstream << "invalid use of list without a size[] element" << std::endl;
-
-		FieldSpec spec(
-			"",
-			L"",
-			L"",
-			258 + m_fields.size(),
-			3
-		);
-
-		v2f32 slot_spacing = data->real_coordinates ?
-				v2f32(imgsize.X * 1.25f, imgsize.Y * 1.25f) : spacing;
-
-		v2s32 pos = data->real_coordinates ? getRealCoordinateBasePos(v_pos)
-				: getElementBasePos(&v_pos);
-
-		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
-				pos.X + (geom.X - 1) * slot_spacing.X + imgsize.X,
-				pos.Y + (geom.Y - 1) * slot_spacing.Y + imgsize.Y);
-
-		GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
-				spec.fid, rect, m_invmgr, loc, listname, geom, start_i, imgsize,
-				slot_spacing, this, data->inventorylist_options, m_font);
-
-		m_inventorylists.push_back(e);
-		m_fields.push_back(spec);
-		return;
+	if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
+		throw FormspecParseException(true, "Negative size or start index");
 	}
-	errorstream<< "Invalid list element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	if (!data->explicit_size)
+		warningstream << "invalid use of list without a size[] element" << std::endl;
+
+	FieldSpec spec(
+		"",
+		L"",
+		L"",
+		258 + m_fields.size(),
+		3
+	);
+
+	v2f32 slot_spacing = data->real_coordinates ?
+			v2f32(imgsize.X * 1.25f, imgsize.Y * 1.25f) : spacing;
+
+	v2s32 pos = data->real_coordinates ? getRealCoordinateBasePos(givenPos)
+			: getElementBasePos(true, givenPos);
+
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
+			pos.X + (geom.X - 1) * slot_spacing.X + imgsize.X,
+			pos.Y + (geom.Y - 1) * slot_spacing.Y + imgsize.Y);
+
+	GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
+			spec.fid, rect, m_invmgr, loc, listname, geom, start_i, imgsize,
+			slot_spacing, this, data->inventorylist_options, m_font);
+
+	m_inventorylists.push_back(e);
+	m_fields.push_back(spec);
+	return;
 }
 
 void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element)

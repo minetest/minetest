@@ -401,7 +401,7 @@ private:
 	void parseContainerEnd(parserData* data, const FormspecElement &element);
 	void parseScrollContainer(parserData *data, const FormspecElement &element);
 	void parseScrollContainerEnd(parserData *data);
-	void parseList(parserData* data, const std::string &element);
+	void parseList(parserData* data, const FormspecElement &element);
 	void parseListRing(parserData* data, const std::string &element);
 	void parseCheckbox(parserData* data, const std::string &element);
 	void parseImage(parserData* data, const std::string &element);

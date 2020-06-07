@@ -15,7 +15,7 @@ public:
 			parts(split(source, ';'))
 	{}
 
-	inline int getNumberOfParts() const {
+	inline size_t size() const {
 		return parts.size();
 	}
 
@@ -33,7 +33,8 @@ public:
 		return stof(getString(idx));
 	}
 
-	v2f32 getVector(size_t idx) const;
+	v2f32 getV2f(size_t idx) const;
+	v2s32 getV2s(size_t idx) const;
 
 	std::map<std::string, std::string> getParameters(size_t start) const;
 };
