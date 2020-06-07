@@ -182,7 +182,6 @@ public:
 	void addToScene(ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
 	void updateLight(u32 day_night_ratio);
-	v3s16 getLightPosition();
 	void updateNodePos();
 
 	void step(float dtime, ClientEnvironment *env);
@@ -256,11 +255,6 @@ void TestCAO::removeFromScene(bool permanent)
 
 void TestCAO::updateLight(u32 day_night_ratio)
 {
-}
-
-v3s16 TestCAO::getLightPosition()
-{
-	return floatToInt(m_position, BS);
 }
 
 void TestCAO::updateNodePos()
@@ -799,13 +793,20 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 		return;
 
 	u8 light_at_pos = 0;
-	bool pos_ok;
+	bool pos_ok = false;
 
-	v3s16 p = getLightPosition();
-	MapNode n = m_env->getMap().getNode(p, &pos_ok);
-	if (pos_ok)
-		light_at_pos = n.getLightBlend(day_night_ratio, m_client->ndef());
-	else
+	v3s16 pos[3];
+	u16 npos = getLightPosition(pos);
+	for (u16 i = 0; i < npos; i++) {
+		bool this_ok;
+		MapNode n = m_env->getMap().getNode(pos[i], &this_ok);
+		if (this_ok) {
+			u8 this_light = n.getLightBlend(day_night_ratio, m_client->ndef());
+			light_at_pos = MYMAX(light_at_pos, this_light);
+			pos_ok = true;
+		}
+	}
+	if (!pos_ok)
 		light_at_pos = blend_light(day_night_ratio, LIGHT_SUN, 0);
 
 	u8 light = decode_light(light_at_pos + m_glow);
@@ -856,12 +857,17 @@ void GenericCAO::setNodeLight(u8 light)
 	}
 }
 
-v3s16 GenericCAO::getLightPosition()
+u16 GenericCAO::getLightPosition(v3s16 *pos)
 {
-	if (m_is_player)
-		return floatToInt(m_position + v3f(0, 0.5 * BS, 0), BS);
+	const auto &box = m_prop.collisionbox;
+	pos[0] = floatToInt(m_position + box.MinEdge * BS, BS);
+	pos[1] = floatToInt(m_position + box.MaxEdge * BS, BS);
 
-	return floatToInt(m_position, BS);
+	// Skip center pos if it falls into the same node as Min or MaxEdge
+	if ((box.MaxEdge - box.MinEdge).getLengthSQ() < 3.0f)
+		return 2;
+	pos[2] = floatToInt(m_position + box.getCenter() * BS, BS);
+	return 3;
 }
 
 void GenericCAO::updateNametag()

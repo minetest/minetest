@@ -240,7 +240,10 @@ public:
 
 	void setNodeLight(u8 light);
 
-	v3s16 getLightPosition();
+	/* Get light position(s).
+	 * returns number of positions written into pos[], which must have space
+	 * for at least 3 vectors. */
+	u16 getLightPosition(v3s16 *pos);
 
 	void updateNametag();
 
