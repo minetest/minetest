@@ -125,6 +125,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
 	m_tooltip_append_itemname = g_settings->getBool("tooltip_append_itemname");
+
+	initParsers(parsers);
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
@@ -459,7 +461,9 @@ void GUIFormSpecMenu::parseList(parserData *data, const FormspecElement &element
 		return;
 	}
 
-	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 4);
+	if (element.size() != 4) {
+		element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 5);
+	}
 
 	std::string location = element.getString(0);
 	std::string listname = element.getString(1);
@@ -2654,7 +2658,8 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 	return true;
 }
 
-void GUIFormSpecMenu::parseElement(parserData* data, const std::string &source)
+void GUIFormSpecMenu::parseElement(ParserState &state, parserData* data,
+		const std::string &source)
 {
 	//some prechecks
 	if (source.empty())
@@ -2672,6 +2677,12 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &source)
 
 	try {
 		FormspecElement element(description);
+
+		auto parser = parsers.find(type);
+		if (parser != parsers.end()) {
+			parser->second(state, element);
+			return;
+		}
 
 		if (type == "container") {
 			parseContainer(data, element);
@@ -2864,6 +2875,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		return;
 	}
 
+	ParserState state{Environment, this, m_current_inventory_location};
 	parserData mydata;
 
 	//preserve tables
@@ -2882,7 +2894,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	if (focused_element && focused_element->getParent() == this) {
 		s32 focused_id = focused_element->getID();
 		if (focused_id > 257) {
-			for (const GUIFormSpecMenu::FieldSpec &field : m_fields) {
+			for (const FieldSpec &field : m_fields) {
 				if (field.fid == focused_id) {
 					mydata.focused_fieldname = field.fname;
 					break;
@@ -3182,7 +3194,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 		std::vector<std::string> prepend_elements = split(m_formspec_prepend, ']');
 		for (const auto &element : prepend_elements)
-			parseElement(&mydata, element);
+			parseElement(state, &mydata, element);
 
 		// legacy sorting for formspec versions < 3
 		if (m_formspec_version >= 3)
@@ -3197,7 +3209,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 
 	for (; i< elements.size(); i++) {
-		parseElement(&mydata, elements[i]);
+		parseElement(state, &mydata, elements[i]);
 	}
 
 	if (mydata.current_parent != this) {
@@ -3700,7 +3712,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 			current_keys_pending.key_escape = false;
 		}
 
-		for (const GUIFormSpecMenu::FieldSpec &s : m_fields) {
+		for (const FieldSpec &s : m_fields) {
 			if (s.send) {
 				std::string name = s.fname;
 				if (s.ftype == f_Button) {
@@ -4423,7 +4435,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_TAB_CHANGED
 				&& isVisible()) {
 			// find the element that was clicked
-			for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
+			for (FieldSpec &s : m_fields) {
 				if ((s.ftype == f_TabHeader) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
 					s.send = true;
@@ -4461,7 +4473,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 
 			// find the element that was clicked
-			for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
+			for (FieldSpec &s : m_fields) {
 				// if its a button, set the send field so
 				// lua knows which button was pressed
 
@@ -4486,7 +4498,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				} else if (s.ftype == f_DropDown) {
 					// only send the changed dropdown
-					for (GUIFormSpecMenu::FieldSpec &s2 : m_fields) {
+					for (FieldSpec &s2 : m_fields) {
 						if (s2.ftype == f_DropDown) {
 							s2.send = false;
 						}
@@ -4496,7 +4508,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					// revert configuration to make sure dropdowns are sent on
 					// regular button click
-					for (GUIFormSpecMenu::FieldSpec &s2 : m_fields) {
+					for (FieldSpec &s2 : m_fields) {
 						if (s2.ftype == f_DropDown) {
 							s2.send = true;
 						}
@@ -4523,7 +4535,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER) {
 			if (event.GUIEvent.Caller->getID() > 257) {
 				bool close_on_enter = true;
-				for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
+				for (FieldSpec &s : m_fields) {
 					if (s.ftype == f_Unknown &&
 							s.fid == event.GUIEvent.Caller->getID()) {
 						current_field_enter_pending = s.fname;
@@ -4553,7 +4565,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			int current_id = event.GUIEvent.Caller->getID();
 			if (current_id > 257) {
 				// find the element that was clicked
-				for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
+				for (FieldSpec &s : m_fields) {
 					// if it's a table, set the send field
 					// so lua knows which table was changed
 					if ((s.ftype == f_Table) && (s.fid == current_id)) {
@@ -4585,7 +4597,7 @@ std::string GUIFormSpecMenu::getNameByID(s32 id)
 }
 
 
-const GUIFormSpecMenu::FieldSpec *GUIFormSpecMenu::getSpecByID(s32 id)
+const FieldSpec *GUIFormSpecMenu::getSpecByID(s32 id)
 {
 	for (FieldSpec &spec : m_fields) {
 		if (spec.fid == id)

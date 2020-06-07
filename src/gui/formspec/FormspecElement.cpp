@@ -3,12 +3,12 @@
 #include <sstream>
 
 void FormspecElement::checkLength(bool relaxed, size_t expectedSize) const {
-	size_t size = size();
-	if (size == expectedSize || (relaxed && size > expectedSize))
+	size_t actualSize = size();
+	if (actualSize == expectedSize || (relaxed && actualSize > expectedSize))
 		return;
 
 	std::ostringstream os;
-	os << "Incorrect number of parts (" << size << " != " << expectedSize << ")";
+	os << "Incorrect number of parts (" << actualSize << " != " << expectedSize << ")";
 	throw FormspecParseException(true, os.str());
 }
 
@@ -31,7 +31,7 @@ v2s32 FormspecElement::getV2s(size_t idx) const {
 		throw FormspecParseException(true, os.str());
 	}
 
-	return v2f32(stoi(v[0]), stoi(v[1]));
+	return v2s32(stoi(v[0]), stoi(v[1]));
 }
 
 std::map<std::string, std::string> FormspecElement::getParameters(size_t start) const {

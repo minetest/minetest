@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <utility>
 #include <stack>
 #include <unordered_set>
-
 #include "irrlichttypes_extrabloated.h"
+
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiInventoryList.h"
@@ -33,8 +33,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
-
 #include "formspec/FormspecElement.h"
+
+#include "formspec/FieldSpec.h"
+#include "formspec/parsers.h"
 
 class InventoryManager;
 class ISimpleTextureSource;
@@ -42,20 +44,6 @@ class Client;
 class GUIScrollBar;
 class TexturePool;
 class GUIScrollContainer;
-
-typedef enum {
-	f_Button,
-	f_Table,
-	f_TabHeader,
-	f_CheckBox,
-	f_DropDown,
-	f_ScrollBar,
-	f_Box,
-	f_ItemImage,
-	f_HyperText,
-	f_AnimatedImage,
-	f_Unknown
-} FormspecFieldType;
 
 typedef enum {
 	quit_mode_no,
@@ -98,38 +86,6 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 		InventoryLocation inventoryloc;
 		std::string listname;
-	};
-
-	struct FieldSpec
-	{
-		FieldSpec() = default;
-
-		FieldSpec(const std::string &name, const std::wstring &label,
-				const std::wstring &default_text, s32 id, int priority = 0,
-				gui::ECURSOR_ICON cursor_icon = ECI_NORMAL) :
-			fname(name),
-			flabel(label),
-			fdefault(unescape_enriched(translate_string(default_text))),
-			fid(id),
-			send(false),
-			ftype(f_Unknown),
-			is_exit(false),
-			priority(priority),
-			fcursor_icon(cursor_icon)
-		{
-		}
-
-		std::string fname;
-		std::wstring flabel;
-		std::wstring fdefault;
-		s32 fid;
-		bool send;
-		FormspecFieldType ftype;
-		bool is_exit;
-		// Draw priority for formspec version < 3
-		int priority;
-		core::rect<s32> rect;
-		gui::ECURSOR_ICON fcursor_icon;
 	};
 
 	struct TooltipSpec
@@ -266,6 +222,8 @@ public:
 #endif
 
 protected:
+	std::map<std::string, FormspecElementParser> parsers;
+
 	v2s32 getBasePos() const
 	{
 			return padding + offset + AbsoluteRect.UpperLeftCorner;
@@ -394,7 +352,7 @@ private:
 	std::string current_field_enter_pending = "";
 	std::vector<std::string> m_hovered_item_tooltips;
 
-	void parseElement(parserData* data, const std::string &source);
+	void parseElement(ParserState &state, parserData* data, const std::string &source);
 
 	void parseSize(parserData* data, const std::string &element);
 	void parseContainer(parserData* data, const FormspecElement &element);
