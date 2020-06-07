@@ -43,7 +43,6 @@ public:
 	virtual void removeFromScene(bool permanent) {}
 
 	virtual void updateLight(u32 day_night_ratio) {}
-	virtual v3s16 getLightPosition() { return v3s16(0, 0, 0); }
 
 	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
 	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
