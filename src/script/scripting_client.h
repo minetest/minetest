@@ -28,6 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Client;
 class LocalPlayer;
 class Camera;
+class Minimap;
+
 class ClientScripting:
 	virtual public ScriptApiBase,
 	public ScriptApiSecurity,
@@ -38,6 +40,7 @@ public:
 	ClientScripting(Client *client);
 	void on_client_ready(LocalPlayer *localplayer);
 	void on_camera_ready(Camera *camera);
+	void on_minimap_ready(Minimap *minimap);
 
 private:
 	virtual void InitializeModApi(lua_State *L, int top);

@@ -48,6 +48,7 @@ struct CollisionInfo
 	CollisionType type = COLLISION_NODE;
 	CollisionAxis axis = COLLISION_AXIS_NONE;
 	v3s16 node_p = v3s16(-32768,-32768,-32768); // COLLISION_NODE
+	ActiveObject *object = nullptr; // COLLISION_OBJECT
 	v3f old_speed;
 	v3f new_speed;
 	int plane = -1;
@@ -77,7 +78,7 @@ collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
 // dtime receives time until first collision, invalid if -1 is returned
 CollisionAxis axisAlignedCollision(
 		const aabb3f &staticbox, const aabb3f &movingbox,
-		const v3f &speed, f32 d, f32 *dtime);
+		const v3f &speed, f32 *dtime);
 
 // Helper function:
 // Checks if moving the movingbox up by the given distance would hit a ceiling.

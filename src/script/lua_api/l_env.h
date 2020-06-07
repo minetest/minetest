@@ -101,6 +101,9 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_add_item(lua_State *L);
 
+	// get_connected_players()
+	static int l_get_connected_players(lua_State *L);
+
 	// get_player_by_name(name)
 	static int l_get_player_by_name(lua_State *L);
 
@@ -183,6 +186,9 @@ private:
 	// forceload_free_block(blockpos)
 	// stops forceloading a position
 	static int l_forceload_free_block(lua_State *L);
+
+	// Get a string translated server side
+	static int l_get_translated_string(lua_State * L);
 
 public:
 	static void Initialize(lua_State *L, int top);

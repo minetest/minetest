@@ -42,10 +42,10 @@
 #            Flags are always separated by comma without spaces.
 #            - default possible_flags
 #   * noise_params_2d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>, <lacunarity>[, <default flags>]
 #            - default
 #   * noise_params_3d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>, <lacunarity>[, <default flags>]
 #            - default
 #   * v3f:
 #            Format is (<X>, <Y>, <Z>)
@@ -252,7 +252,7 @@ keymap_cinematic (Cinematic mode key) key
 
 #    Key for toggling display of minimap.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_minimap (Minimap key) key KEY_F9
+keymap_minimap (Minimap key) key KEY_KEY_V
 
 #    Key for taking screenshots.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -424,7 +424,7 @@ keymap_toggle_profiler (Profiler toggle key) key KEY_F6
 
 #    Key for switching between first- and third-person camera.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_camera_mode (Toggle camera mode key) key KEY_F7
+keymap_camera_mode (Toggle camera mode key) key KEY_KEY_C
 
 #    Key for increasing the viewing range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -561,9 +561,6 @@ enable_parallax_occlusion (Parallax occlusion) bool false
 #    1 = relief mapping (slower, more accurate).
 parallax_occlusion_mode (Parallax occlusion mode) int 1 0 1
 
-#    Strength of parallax.
-3d_paralax_strength (Parallax occlusion strength) float 0.025
-
 #    Number of parallax occlusion iterations.
 parallax_occlusion_iterations (Parallax occlusion iterations) int 4
 
@@ -580,10 +577,11 @@ parallax_occlusion_bias (Parallax occlusion bias) float 0.04
 enable_waving_water (Waving liquids) bool false
 
 #    The maximum height of the surface of waving liquids.
-#    1.0 = Wave reaches the top of blocks.
+#    4.0 = Wave height is two nodes.
 #    0.0 = Wave doesn't move at all.
+#    Default is 1.0 (1/2 node).
 #    Requires waving liquids to be enabled.
-water_wave_height (Waving liquids wave height) float 1.0 0.0 1.0
+water_wave_height (Waving liquids wave height) float 1.0 0.0 4.0
 
 #    Length of liquid waves.
 #    Requires waving liquids to be enabled.
@@ -622,11 +620,11 @@ pause_on_lost_focus (Pause on lost window focus) bool false
 #    View distance in nodes.
 viewing_range (Viewing range) int 100 20 4000
 
-#   Camera 'near clipping plane' distance in nodes, between 0 and 0.5.
-#   Most users will not need to change this.
+#   Camera 'near clipping plane' distance in nodes, between 0 and 0.25
+#   Only works on GLES platforms. Most users will not need to change this.
 #   Increasing can reduce artifacting on weaker GPUs.
 #   0.1 = Default, 0.25 = Good value for weaker tablets.
-near_plane (Near clipping plane) float 0.1 0 0.5
+near_plane (Near plane) float 0.1 0 0.25
 
 #    Width component of the initial window size.
 screen_w (Screen width) int 1024 1
@@ -711,6 +709,9 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03
 #    -    pageflip: quadbuffer based 3d.
 #    Note that the interlaced mode requires shaders to be enabled.
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,crossview,pageflip
+
+#    Strength of 3D mode parallax.
+3d_paralax_strength (3D mode parallax strength) float 0.025
 
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
 console_height (Console height) float 0.6 0.1 1.0
@@ -902,8 +903,13 @@ fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
 #    This font will be used for certain languages or if the default font is unavailable.
 fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
 
-#    Path to save screenshots at.
-screenshot_path (Screenshot folder) path
+#    Font size of the recent chat text and chat prompt in point (pt).
+#    Value 0 will use the default font size.
+chat_font_size (Chat font size) int 0
+
+#    Path to save screenshots at. Can be an absolute or relative path.
+#    The folder will be created if it doesn't already exist.
+screenshot_path (Screenshot folder) path screenshots
 
 #    Format of screenshots.
 screenshot_format (Screenshot format) enum png png,jpg,bmp,pcx,ppm,tga
@@ -952,6 +958,12 @@ address (Server address) string
 #    Port to connect to (UDP).
 #    Note that the port field in the main menu overrides this setting.
 remote_port (Remote port) int 30000 1 65535
+
+#    Prometheus listener address.
+#    If minetest is compiled with ENABLE_PROMETHEUS option enabled,
+#    enable metrics listener for Prometheus on that address.
+#    Metrics can be fetch on http://127.0.0.1:30000/metrics
+prometheus_listener_address (Prometheus listener address) string 127.0.0.1:30000
 
 #    Save the map received by the client on disk.
 enable_local_map_saving (Saving map received from server) bool false
@@ -1077,6 +1089,10 @@ map-dir (Map directory) path
 #    Setting it to -1 disables the feature.
 item_entity_ttl (Item entity TTL) int 900
 
+#    Specifies the default stack size of nodes, items and tools.
+#    Note that mods or games may explicitly set a stack for certain (or all) items.
+default_stack_max (Default stack size) int 99
+
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
 
@@ -1148,7 +1164,7 @@ active_object_send_range_blocks (Active object send range) int 4
 #    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
-#    This should be configured together with active_object_range.
+#    This should be configured together with active_object_send_range_blocks.
 active_block_range (Active block range) int 3
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
@@ -1371,8 +1387,7 @@ name (Player name) string
 
 #    Set the language. Leave empty to use the system language.
 #    A restart is required after changing this.
-language (Language) enum   ,be,ca,cs,da,de,dv,en,eo,es,et,fr,he,hu,id,it,ja,jbo,ko,ky,lt,ms,nb,nl,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,tr,uk,zh_CN,zh_TW
-
+language (Language) enum   ,ar,ca,cs,da,de,dv,el,en,eo,es,et,eu,fil,fr,hu,id,it,ja,ja_KS,jbo,kk,kn,lo,lt,ms,my,nb,nl,nn,pl,pt,pt_BR,ro,ru,sl,sr_Cyrl,sv,sw,th,tr,uk,vi
 
 #    Level of logging to be written to debug.txt:
 #    -    <nothing> (no logging)
@@ -1389,6 +1404,9 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 #    deleting an older debug.txt.1 if it exists.
 #    debug.txt is only moved if this setting is positive.
 debug_log_size_max (Debug log file size threshold) int 50
+
+#    Minimal level of logging to be written to chat.
+chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose
 
 #    Enable IPv6 support (for both client and server).
 #    Required for IPv6 connections to work at all.
@@ -1593,11 +1611,52 @@ mgv6_np_apple_trees (Apple trees noise) noise_params_2d 0, 1, (100, 100, 100), 3
 [*Mapgen V7]
 
 #    Map generation attributes specific to Mapgen v7.
-#    'ridges' enables the rivers.
+#    'ridges': Rivers.
+#    'floatlands': Floating land masses in the atmosphere.
+#    'caverns': Giant caves deep underground.
 mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 mgv7_mount_zero_level (Mountain zero level) int 0
+
+#    Lower Y limit of floatlands.
+mgv7_floatland_ymin (Floatland minimum Y) int 1024
+
+#    Upper Y limit of floatlands.
+mgv7_floatland_ymax (Floatland maximum Y) int 4096
+
+#    Y-distance over which floatlands taper from full density to nothing.
+#    Tapering starts at this distance from the Y limit.
+#    For a solid floatland layer, this controls the height of hills/mountains.
+#    Must be less than or equal to half the distance between the Y limits.
+mgv7_floatland_taper (Floatland tapering distance) int 256
+
+#    Exponent of the floatland tapering. Alters the tapering behaviour.
+#    Value = 1.0 creates a uniform, linear tapering.
+#    Values > 1.0 create a smooth tapering suitable for the default separated
+#    floatlands.
+#    Values < 1.0 (for example 0.25) create a more defined surface level with
+#    flatter lowlands, suitable for a solid floatland layer.
+mgv7_float_taper_exp (Floatland taper exponent) float 2.0
+
+#    Adjusts the density of the floatland layer.
+#    Increase value to increase density. Can be positive or negative.
+#    Value = 0.0: 50% of volume is floatland.
+#    Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test
+#    to be sure) creates a solid floatland layer.
+mgv7_floatland_density (Floatland density) float -0.6
+
+#    Surface level of optional water placed on a solid floatland layer.
+#    Water is disabled by default and will only be placed if this value is set
+#    to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the
+#    upper tapering).
+#    ***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:
+#    When enabling water placement the floatlands must be configured and tested
+#    to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other
+#    required value depending on 'mgv7_np_floatland'), to avoid
+#    server-intensive extreme water flow and to avoid vast flooding of the
+#    world surface below.
+mgv7_floatland_ywater (Floatland water level) int -31000
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -1621,22 +1680,6 @@ mgv7_large_cave_num_max (Large cave maximum number) int 2 0 64
 
 #    Proportion of large caves that contain liquid.
 mgv7_large_cave_flooded (Large cave proportion flooded) float 0.5 0.0 1.0
-
-#    Controls the density of mountain-type floatlands.
-#    Is a noise offset added to the 'mgv7_np_mountain' noise value.
-mgv7_float_mount_density (Floatland mountain density) float 0.6
-
-#    Typical maximum height, above and below midpoint, of floatland mountains.
-mgv7_float_mount_height (Floatland mountain height) float 128.0
-
-#    Alters how mountain-type floatlands taper above and below midpoint.
-mgv7_float_mount_exponent (Floatland mountain exponent) float 0.75
-
-#    Y-level of floatland midpoint and lake surface.
-mgv7_floatland_level (Floatland level) int 1280
-
-#    Y-level to which floatland shadows extend.
-mgv7_shadow_limit (Shadow limit) int 1024
 
 #    Y-level of cavern upper limit.
 mgv7_cavern_limit (Cavern limit) int -256
@@ -1677,19 +1720,18 @@ mgv7_np_mount_height (Mountain height noise) noise_params_2d 256, 112, (1000, 10
 #    Defines large-scale river channel structure.
 mgv7_np_ridge_uwater (Ridge underwater noise) noise_params_2d 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0, eased
 
-#    Defines areas of floatland smooth terrain.
-#    Smooth floatlands occur when noise > 0.
-mgv7_np_floatland_base (Floatland base noise) noise_params_2d -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0, eased
-
-#    Variation of hill height and lake depth on floatland smooth terrain.
-mgv7_np_float_base_height (Floatland base height noise) noise_params_2d 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0, eased
-
 #    3D noise defining mountain structure and height.
 #    Also defines structure of floatland mountain terrain.
 mgv7_np_mountain (Mountain noise) noise_params_3d -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
 
 #    3D noise defining structure of river canyon walls.
 mgv7_np_ridge (Ridge noise) noise_params_3d 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+
+#    3D noise defining structure of floatlands.
+#    If altered from the default, the noise 'scale' (0.7 by default) may need
+#    to be adjusted, as floatland tapering functions best when this noise has
+#    a value range of approximately -2.0 to 2.0.
+mgv7_np_floatland (Floatland noise) noise_params_3d 0, 0.7, (384, 96, 384), 1009, 4, 0.75, 1.618
 
 #    3D noise defining giant caverns.
 mgv7_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
@@ -2121,20 +2163,17 @@ chunksize (Chunk size) int 5
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.
-emergequeue_limit_total (Absolute limit of emerge queues) int 512
+emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 512
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
-#    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_diskonly (Limit of emerge queues on disk) int 64
+#    This limit is enforced per player.
+emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 64
 
 #    Maximum number of blocks to be queued that are to be generated.
-#    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_generate (Limit of emerge queues to generate) int 64
+#    This limit is enforced per player.
+emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 64
 
 #    Number of emerge threads to use.
-#    WARNING: Currently there are multiple bugs that may cause crashes when
-#    'num_emerge_threads' is larger than 1. Until this warning is removed it is
-#    strongly recommended this value is set to the default '1'.
 #    Value 0:
 #    -    Automatic selection. The number of emerge threads will be
 #    -    'number of processors - 2', with a lower limit of 1.

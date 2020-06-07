@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 //#include "profiler.h" // For TimeTaker
@@ -48,7 +47,7 @@ FlagDesc flagdesc_mapgen_flat[] = {
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenFlat::MapgenFlat(MapgenFlatParams *params, EmergeManager *emerge)
+MapgenFlat::MapgenFlat(MapgenFlatParams *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_FLAT, params, emerge)
 {
 	spflags            = params->spflags;
@@ -126,7 +125,7 @@ void MapgenFlatParams::readParams(const Settings *settings)
 
 void MapgenFlatParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgflat_spflags", spflags, flagdesc_mapgen_flat, U32_MAX);
+	settings->setFlagStr("mgflat_spflags", spflags, flagdesc_mapgen_flat);
 	settings->setS16("mgflat_ground_level",         ground_level);
 	settings->setS16("mgflat_large_cave_depth",     large_cave_depth);
 	settings->setU16("mgflat_small_cave_num_min",   small_cave_num_min);
@@ -147,6 +146,12 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgflat_np_cave1",        np_cave1);
 	settings->setNoiseParams("mgflat_np_cave2",        np_cave2);
 	settings->setNoiseParams("mgflat_np_dungeons",     np_dungeons);
+}
+
+
+void MapgenFlatParams::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgflat_spflags", flagdesc_mapgen_flat, 0);
 }
 
 

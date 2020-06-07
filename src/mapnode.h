@@ -268,12 +268,12 @@ struct MapNode
 		std::vector<aabb3f> *boxes, u8 neighbors = 0) const;
 
 	/*
-		Liquid helpers
+		Liquid/leveled helpers
 	*/
 	u8 getMaxLevel(const NodeDefManager *nodemgr) const;
 	u8 getLevel(const NodeDefManager *nodemgr) const;
-	u8 setLevel(const NodeDefManager *nodemgr, s8 level = 1);
-	u8 addLevel(const NodeDefManager *nodemgr, s8 add = 1);
+	s8 setLevel(const NodeDefManager *nodemgr, s16 level = 1);
+	s8 addLevel(const NodeDefManager *nodemgr, s16 add = 1);
 
 	/*
 		Serialization functions

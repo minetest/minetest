@@ -61,6 +61,9 @@ void TestBan::runTests(IGameDef *gamedef)
 
 	reinitTestEnv();
 	TEST(testGetBanDescription);
+
+	// Delete leftover files
+	reinitTestEnv();
 }
 
 // This module is stateful due to disk writes, add helper to remove files

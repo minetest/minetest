@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "emerge.h"
 #include "voxelalgorithms.h"
@@ -107,8 +106,8 @@ STATIC_ASSERT(
 //// Mapgen
 ////
 
-Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
-	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
+Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge) :
+	gennotify(emerge->gen_notify_on, emerge->gen_notify_on_deco_ids)
 {
 	id           = mapgenid;
 	water_level  = params->water_level;
@@ -157,7 +156,7 @@ const char *Mapgen::getMapgenName(MapgenType mgtype)
 
 
 Mapgen *Mapgen::createMapgen(MapgenType mgtype, MapgenParams *params,
-	EmergeManager *emerge)
+	EmergeParams *emerge)
 {
 	switch (mgtype) {
 	case MAPGEN_CARPATHIAN:
@@ -215,6 +214,17 @@ void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hid
 	}
 }
 
+void Mapgen::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mg_flags", flagdesc_mapgen,
+		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES);
+
+	for (int i = 0; i < (int)MAPGEN_INVALID; ++i) {
+		MapgenParams *params = createMapgenParams((MapgenType)i);
+		params->setDefaultSettings(settings);
+		delete params;
+	}
+}
 
 u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
 {
@@ -575,7 +585,7 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 //// MapgenBasic
 ////
 
-MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge)
+MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
 	this->m_emerge = emerge;
@@ -618,6 +628,13 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 	// Lava falls back to water as both are suitable as cave liquids.
 	if (c_lava_source == CONTENT_IGNORE)
 		c_lava_source = c_water_source;
+
+	if (c_stone == CONTENT_IGNORE)
+		errorstream << "Mapgen: Mapgen alias 'mapgen_stone' is invalid!" << std::endl;
+	if (c_water_source == CONTENT_IGNORE)
+		errorstream << "Mapgen: Mapgen alias 'mapgen_water_source' is invalid!" << std::endl;
+	if (c_river_water_source == CONTENT_IGNORE)
+		warningstream << "Mapgen: Mapgen alias 'mapgen_river_water_source' is invalid!" << std::endl;
 }
 
 
@@ -625,6 +642,8 @@ MapgenBasic::~MapgenBasic()
 {
 	delete biomegen;
 	delete []heightmap;
+
+	delete m_emerge; // destroying EmergeParams is our responsibility
 }
 
 
@@ -957,7 +976,7 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 ////
 
 GenerateNotifier::GenerateNotifier(u32 notify_on,
-	std::set<u32> *notify_on_deco_ids)
+	const std::set<u32> *notify_on_deco_ids)
 {
 	m_notify_on = notify_on;
 	m_notify_on_deco_ids = notify_on_deco_ids;
@@ -970,7 +989,8 @@ void GenerateNotifier::setNotifyOn(u32 notify_on)
 }
 
 
-void GenerateNotifier::setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids)
+void GenerateNotifier::setNotifyOnDecoIds(
+	const std::set<u32> *notify_on_deco_ids)
 {
 	m_notify_on_deco_ids = notify_on_deco_ids;
 }
@@ -982,7 +1002,7 @@ bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos, u32 id)
 		return false;
 
 	if (type == GENNOTIFY_DECORATION &&
-		m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->end())
+		m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->cend())
 		return false;
 
 	GenNotifyEvent gne;
@@ -1068,7 +1088,7 @@ void MapgenParams::writeParams(Settings *settings) const
 	settings->setS16("water_level", water_level);
 	settings->setS16("mapgen_limit", mapgen_limit);
 	settings->setS16("chunksize", chunksize);
-	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
+	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen);
 
 	if (bparams)
 		bparams->writeParams(settings);

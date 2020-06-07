@@ -82,34 +82,24 @@ public:
 
 	void add(u16 command)
 	{
-		std::map<u16, u16>::iterator n = m_packets.find(command);
-		if(n == m_packets.end())
-		{
+		auto n = m_packets.find(command);
+		if (n == m_packets.end())
 			m_packets[command] = 1;
-		}
 		else
-		{
 			n->second++;
-		}
 	}
 
 	void clear()
 	{
-		for (auto &m_packet : m_packets) {
-			m_packet.second = 0;
-		}
+		m_packets.clear();
 	}
 
-	void print(std::ostream &o)
-	{
-		for (const auto &m_packet : m_packets) {
-			o << "cmd "<< m_packet.first <<" count "<< m_packet.second << std::endl;
-		}
-	}
+	u32 sum() const;
+	void print(std::ostream &o) const;
 
 private:
 	// command, count
-	std::map<u16, u16> m_packets;
+	std::map<u16, u32> m_packets;
 };
 
 class ClientScripting;
@@ -218,6 +208,9 @@ public:
 	void handleCommand_HudSetFlags(NetworkPacket* pkt);
 	void handleCommand_HudSetParam(NetworkPacket* pkt);
 	void handleCommand_HudSetSky(NetworkPacket* pkt);
+	void handleCommand_HudSetSun(NetworkPacket* pkt);
+	void handleCommand_HudSetMoon(NetworkPacket* pkt);
+	void handleCommand_HudSetStars(NetworkPacket* pkt);
 	void handleCommand_CloudParams(NetworkPacket* pkt);
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
@@ -367,7 +360,7 @@ public:
 	const NodeDefManager* getNodeDefManager() override;
 	ICraftDefManager* getCraftDefManager() override;
 	ITextureSource* getTextureSource();
-	virtual IShaderSource* getShaderSource();
+	virtual IWritableShaderSource* getShaderSource();
 	u16 allocateUnknownNodeId(const std::string &name) override;
 	virtual ISoundManager* getSoundManager();
 	MtEventManager* getEventManager();
@@ -561,7 +554,7 @@ private:
 	std::unordered_map<s32, int> m_sounds_server_to_client;
 	// And the other way!
 	std::unordered_map<int, s32> m_sounds_client_to_server;
-	// And relations to objects
+	// Relation of client id to object id
 	std::unordered_map<int, u16> m_sounds_to_objects;
 
 	// Map server hud ids to client hud ids

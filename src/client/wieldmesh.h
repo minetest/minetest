@@ -87,6 +87,8 @@ public:
 	// Must only be used if the constructor was called with lighting = false
 	void setColor(video::SColor color);
 
+	void setNodeLightColor(video::SColor color);
+
 	scene::IMesh *getMesh() { return m_meshnode->getMesh(); }
 
 	virtual void render();

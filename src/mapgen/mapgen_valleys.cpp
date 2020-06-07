@@ -54,7 +54,7 @@ FlagDesc flagdesc_mapgen_valleys[] = {
 };
 
 
-MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeManager *emerge)
+MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_VALLEYS, params, emerge)
 {
 	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
@@ -162,7 +162,7 @@ void MapgenValleysParams::readParams(const Settings *settings)
 
 void MapgenValleysParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgvalleys_spflags", spflags, flagdesc_mapgen_valleys, U32_MAX);
+	settings->setFlagStr("mgvalleys_spflags", spflags, flagdesc_mapgen_valleys);
 	settings->setU16("mgvalleys_altitude_chill",       altitude_chill);
 	settings->setS16("mgvalleys_large_cave_depth",     large_cave_depth);
 	settings->setU16("mgvalleys_small_cave_num_min",   small_cave_num_min);
@@ -192,6 +192,17 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 	settings->setNoiseParams("mgvalleys_np_cavern",             np_cavern);
 	settings->setNoiseParams("mgvalleys_np_dungeons",           np_dungeons);
 }
+
+
+void MapgenValleysParams::setDefaultSettings(Settings *settings)
+{
+	settings->setDefault("mgvalleys_spflags", flagdesc_mapgen_valleys,
+		MGVALLEYS_ALT_CHILL | MGVALLEYS_HUMID_RIVERS |
+		MGVALLEYS_VARY_RIVER_DEPTH | MGVALLEYS_ALT_DRY);
+}
+
+
+/////////////////////////////////////////////////////////////////
 
 
 void MapgenValleys::makeChunk(BlockMakeData *data)
@@ -379,7 +390,7 @@ int MapgenValleys::generateTerrain()
 
 		// Rivers are placed where 'river' is negative
 		if (river < 0.0f) {
-			// Use the the function -sqrt(1-x^2) which models a circle
+			// Use the function -sqrt(1-x^2) which models a circle
 			float tr = river / river_size_factor + 1.0f;
 			float depth = (river_depth_bed *
 				std::sqrt(std::fmax(0.0f, 1.0f - tr * tr)));

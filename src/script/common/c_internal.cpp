@@ -47,7 +47,7 @@ int script_exception_wrapper(lua_State *L, lua_CFunction f)
 /*
  * Note that we can't get tracebacks for LUA_ERRMEM or LUA_ERRERR (without
  * hacking Lua internals).  For LUA_ERRMEM, this is because memory errors will
- * not execute the the error handler, and by the time lua_pcall returns the
+ * not execute the error handler, and by the time lua_pcall returns the
  * execution stack will have already been unwound.  For LUA_ERRERR, there was
  * another error while trying to generate a backtrace from a LUA_ERRRUN.  It is
  * presumed there is an error with the internal Lua state and thus not possible
@@ -135,11 +135,31 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 	lua_remove(L, error_handler);
 }
 
-void log_deprecated(lua_State *L, const std::string &message)
+static void script_log(lua_State *L, const std::string &message,
+	std::ostream &log_to, bool do_error, int stack_depth)
 {
-	static bool configured = false;
-	static bool do_log     = false;
-	static bool do_error   = false;
+	lua_Debug ar;
+
+	log_to << message << " ";
+	if (lua_getstack(L, stack_depth, &ar)) {
+		FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
+		log_to << "(at " << ar.short_src << ":" << ar.currentline << ")";
+	} else {
+		log_to << "(at ?:?)";
+	}
+	log_to << std::endl;
+
+	if (do_error)
+		script_error(L, LUA_ERRRUN, NULL, NULL);
+	else
+		infostream << script_get_backtrace(L) << std::endl;
+}
+
+void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
+{
+	static thread_local bool configured = false;
+	static thread_local bool do_log = false;
+	static thread_local bool do_error = false;
 
 	// Only read settings on first call
 	if (!configured) {
@@ -147,29 +167,12 @@ void log_deprecated(lua_State *L, const std::string &message)
 		if (value == "log") {
 			do_log = true;
 		} else if (value == "error") {
-			do_log   = true;
+			do_log = true;
 			do_error = true;
 		}
+		configured = true;
 	}
 
-	if (do_log) {
-		warningstream << message;
-		if (L) { // L can be NULL if we get called from scripting_game.cpp
-			lua_Debug ar;
-
-			if (!lua_getstack(L, 2, &ar))
-				FATAL_ERROR_IF(!lua_getstack(L, 1, &ar), "lua_getstack() failed");
-			FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
-			warningstream << " (at " << ar.short_src << ":" << ar.currentline << ")";
-		}
-		warningstream << std::endl;
-
-		if (L) {
-			if (do_error)
-				script_error(L, LUA_ERRRUN, NULL, NULL);
-			else
-				infostream << script_get_backtrace(L) << std::endl;
-		}
-	}
+	if (do_log)
+		script_log(L, message, warningstream, do_error, stack_depth);
 }
-

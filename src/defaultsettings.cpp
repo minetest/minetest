@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "constants.h"
 #include "porting.h"
+#include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
 
 void set_default_settings(Settings *settings)
@@ -47,7 +48,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("pitch_move", "false");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("noclip", "false");
-	settings->setDefault("screenshot_path", ".");
+	settings->setDefault("screenshot_path", "screenshots");
 	settings->setDefault("screenshot_format", "png");
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
@@ -79,7 +80,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_cmd", "/");
 	settings->setDefault("keymap_cmd_local", ".");
-	settings->setDefault("keymap_minimap", "KEY_F9");
+	settings->setDefault("keymap_minimap", "KEY_KEY_V");
 	settings->setDefault("keymap_console", "KEY_F10");
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
@@ -102,7 +103,7 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("keymap_toggle_debug", "KEY_F5");
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
-	settings->setDefault("keymap_camera_mode", "KEY_F7");
+	settings->setDefault("keymap_camera_mode", "KEY_KEY_C");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
@@ -164,7 +165,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
+#if ENABLE_GLES
 	settings->setDefault("near_plane", "0.1");
+#endif
 	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
 	settings->setDefault("autosave_screensize", "true");
@@ -318,8 +321,12 @@ void set_default_settings(Settings *settings)
 
 	std::string font_size_str = std::to_string(DEFAULT_FONT_SIZE);
 #endif
+	// General font settings
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
+	settings->setDefault("chat_font_size", "0"); // Default "font_size"
+
+	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
 #ifdef __ANDROID__
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, android_default");
@@ -331,6 +338,9 @@ void set_default_settings(Settings *settings)
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
 	settings->setDefault("strip_color_codes", "false");
+#if USE_PROMETHEUS
+	settings->setDefault("prometheus_listener_address", "127.0.0.1:30000");
+#endif
 
 	// Network
 	settings->setDefault("enable_ipv6", "true");
@@ -394,6 +404,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("debug_log_size_max", "50");
+	settings->setDefault("chat_log_level", "error");
 	settings->setDefault("emergequeue_limit_total", "512");
 	settings->setDefault("emergequeue_limit_diskonly", "64");
 	settings->setDefault("emergequeue_limit_generate", "64");
@@ -426,10 +437,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_level", "1");
 	settings->setDefault("mapgen_limit", "31000");
 	settings->setDefault("chunksize", "5");
-	settings->setDefault("mg_flags", "caves,dungeons,light,decorations,biomes");
 	settings->setDefault("fixed_map_seed", "");
 	settings->setDefault("max_block_generate_distance", "8");
 	settings->setDefault("enable_mapgen_debug_info", "false");
+	Mapgen::setDefaultSettings(settings);
 
 	// Server list announcing
 	settings->setDefault("server_announce", "false");
@@ -497,10 +508,3 @@ void set_default_settings(Settings *settings)
 #endif
 }
 
-void override_default_settings(Settings *settings, Settings *from)
-{
-	std::vector<std::string> names = from->getNames();
-	for (const auto &name : names) {
-		settings->setDefault(name, from->get(name));
-	}
-}

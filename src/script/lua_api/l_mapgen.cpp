@@ -91,13 +91,13 @@ struct EnumString ModApiMapgen::es_SchematicFormatType[] =
 	{0, NULL},
 };
 
-ObjDef *get_objdef(lua_State *L, int index, ObjDefManager *objmgr);
+ObjDef *get_objdef(lua_State *L, int index, const ObjDefManager *objmgr);
 
 Biome *get_or_load_biome(lua_State *L, int index,
 	BiomeManager *biomemgr);
 Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef);
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, std::unordered_set<u8> *biome_id_list);
+	BiomeManager *biomemgr, std::unordered_set<biome_t> *biome_id_list);
 
 Schematic *get_or_load_schematic(lua_State *L, int index,
 	SchematicManager *schemmgr, StringMap *replace_names);
@@ -114,7 +114,7 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ObjDef *get_objdef(lua_State *L, int index, ObjDefManager *objmgr)
+ObjDef *get_objdef(lua_State *L, int index, const ObjDefManager *objmgr)
 {
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -425,7 +425,7 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 
 
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, std::unordered_set<u8> *biome_id_list)
+	BiomeManager *biomemgr, std::unordered_set<biome_t> *biome_id_list)
 {
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -486,11 +486,11 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 	if (!biome_str)
 		return 0;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
-	Biome *biome = (Biome *)bmgr->getByName(biome_str);
+	const Biome *biome = (Biome *)bmgr->getByName(biome_str);
 	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
 
@@ -508,11 +508,11 @@ int ModApiMapgen::l_get_biome_name(lua_State *L)
 
 	int biome_id = luaL_checkinteger(L, 1);
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
-	Biome *b = (Biome *)bmgr->getRaw(biome_id);
+	const Biome *b = (Biome *)bmgr->getRaw(biome_id);
 	lua_pushstring(L, b->name.c_str());
 
 	return 1;
@@ -546,13 +546,11 @@ int ModApiMapgen::l_get_heat(lua_State *L)
 	u64 seed;
 	ss >> seed;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
 	float heat = bmgr->getHeatAtPosOriginal(pos, np_heat, np_heat_blend, seed);
-	if (!heat)
-		return 0;
 
 	lua_pushnumber(L, heat);
 
@@ -587,14 +585,12 @@ int ModApiMapgen::l_get_humidity(lua_State *L)
 	u64 seed;
 	ss >> seed;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
 	float humidity = bmgr->getHumidityAtPosOriginal(pos, np_humidity,
 		np_humidity_blend, seed);
-	if (!humidity)
-		return 0;
 
 	lua_pushnumber(L, humidity);
 
@@ -635,7 +631,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 	u64 seed;
 	ss >> seed;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
@@ -648,7 +644,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 	if (!humidity)
 		return 0;
 
-	Biome *biome = (Biome *)bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos);
+	const Biome *biome = bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos);
 	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
 
@@ -710,7 +706,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		if (!mg->heightmap)
 			return 0;
 
-		lua_newtable(L);
+		lua_createtable(L, maplen, 0);
 		for (size_t i = 0; i != maplen; i++) {
 			lua_pushinteger(L, mg->heightmap[i]);
 			lua_rawseti(L, -2, i + 1);
@@ -722,7 +718,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		if (!mg->biomegen)
 			return 0;
 
-		lua_newtable(L);
+		lua_createtable(L, maplen, 0);
 		for (size_t i = 0; i != maplen; i++) {
 			lua_pushinteger(L, mg->biomegen->biomemap[i]);
 			lua_rawseti(L, -2, i + 1);
@@ -736,7 +732,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 		BiomeGenOriginal *bg = (BiomeGenOriginal *)mg->biomegen;
 
-		lua_newtable(L);
+		lua_createtable(L, maplen, 0);
 		for (size_t i = 0; i != maplen; i++) {
 			lua_pushnumber(L, bg->heatmap[i]);
 			lua_rawseti(L, -2, i + 1);
@@ -751,7 +747,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 		BiomeGenOriginal *bg = (BiomeGenOriginal *)mg->biomegen;
 
-		lua_newtable(L);
+		lua_createtable(L, maplen, 0);
 		for (size_t i = 0; i != maplen; i++) {
 			lua_pushnumber(L, bg->humidmap[i]);
 			lua_rawseti(L, -2, i + 1);
@@ -761,13 +757,12 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 	}
 	case MGOBJ_GENNOTIFY: {
 		std::map<std::string, std::vector<v3s16> >event_map;
-		std::map<std::string, std::vector<v3s16> >::iterator it;
 
 		mg->gennotify.getEvents(event_map);
 
-		lua_newtable(L);
-		for (it = event_map.begin(); it != event_map.end(); ++it) {
-			lua_newtable(L);
+		lua_createtable(L, 0, event_map.size());
+		for (auto it = event_map.begin(); it != event_map.end(); ++it) {
+			lua_createtable(L, it->second.size(), 0);
 
 			for (size_t j = 0; j != it->second.size(); j++) {
 				push_v3s16(L, it->second[j]);
@@ -1067,7 +1062,8 @@ int ModApiMapgen::l_get_decoration_id(lua_State *L)
 	if (!deco_str)
 		return 0;
 
-	DecorationManager *dmgr = getServer(L)->getEmergeManager()->decomgr;
+	const DecorationManager *dmgr =
+		getServer(L)->getEmergeManager()->getDecorationManager();
 
 	if (!dmgr)
 		return 0;
@@ -1092,7 +1088,7 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->getWritableBiomeManager();
 
 	Biome *biome = read_biome_def(L, index, ndef);
 	if (!biome)
@@ -1118,9 +1114,10 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	const NodeDefManager *ndef      = getServer(L)->getNodeDefManager();
-	DecorationManager *decomgr = getServer(L)->getEmergeManager()->decomgr;
-	BiomeManager *biomemgr     = getServer(L)->getEmergeManager()->biomemgr;
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	DecorationManager *decomgr = emerge->getWritableDecorationManager();
+	BiomeManager *biomemgr     = emerge->getWritableBiomeManager();
+	SchematicManager *schemmgr = emerge->getWritableSchematicManager();
 
 	enum DecorationType decotype = (DecorationType)getenumfield(L, index,
 				"deco_type", es_DecorationType, -1);
@@ -1275,8 +1272,9 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
-	OreManager *oremgr    = getServer(L)->getEmergeManager()->oremgr;
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	BiomeManager *bmgr    = emerge->getWritableBiomeManager();
+	OreManager *oremgr    = emerge->getWritableOreManager();
 
 	enum OreType oretype = (OreType)getenumfield(L, index,
 				"ore_type", es_OreType, ORE_SCATTER);
@@ -1423,7 +1421,8 @@ int ModApiMapgen::l_register_schematic(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	SchematicManager *schemmgr =
+		getServer(L)->getEmergeManager()->getWritableSchematicManager();
 
 	StringMap replace_names;
 	if (lua_istable(L, 2))
@@ -1450,7 +1449,8 @@ int ModApiMapgen::l_clear_registered_biomes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	BiomeManager *bmgr =
+		getServer(L)->getEmergeManager()->getWritableBiomeManager();
 	bmgr->clear();
 	return 0;
 }
@@ -1461,7 +1461,8 @@ int ModApiMapgen::l_clear_registered_decorations(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	DecorationManager *dmgr = getServer(L)->getEmergeManager()->decomgr;
+	DecorationManager *dmgr =
+		getServer(L)->getEmergeManager()->getWritableDecorationManager();
 	dmgr->clear();
 	return 0;
 }
@@ -1472,7 +1473,8 @@ int ModApiMapgen::l_clear_registered_ores(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	OreManager *omgr = getServer(L)->getEmergeManager()->oremgr;
+	OreManager *omgr =
+		getServer(L)->getEmergeManager()->getWritableOreManager();
 	omgr->clear();
 	return 0;
 }
@@ -1483,7 +1485,8 @@ int ModApiMapgen::l_clear_registered_schematics(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *smgr = getServer(L)->getEmergeManager()->schemmgr;
+	SchematicManager *smgr =
+		getServer(L)->getEmergeManager()->getWritableSchematicManager();
 	smgr->clear();
 	return 0;
 }
@@ -1708,7 +1711,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	const SchematicManager *schemmgr = getServer(L)->getEmergeManager()->getSchematicManager();
 
 	//// Read options
 	bool use_comments = getboolfield_default(L, 3, "lua_use_comments", false);
@@ -1716,7 +1719,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 
 	//// Get schematic
 	bool was_loaded = false;
-	Schematic *schem = (Schematic *)get_objdef(L, 1, schemmgr);
+	const Schematic *schem = (Schematic *)get_objdef(L, 1, schemmgr);
 	if (!schem) {
 		schem = load_schematic(L, 1, NULL, NULL);
 		was_loaded = true;
@@ -1759,7 +1762,8 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	const SchematicManager *schemmgr =
+		getServer(L)->getEmergeManager()->getSchematicManager();
 
 	//// Read options
 	std::string write_yslice = getstringfield_default(L, 2, "write_yslice_prob", "all");

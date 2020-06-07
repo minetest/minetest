@@ -141,7 +141,6 @@ private:
 === NOTES ===
 
 A packet is sent through a channel to a peer with a basic header:
-TODO: Should we have a receiver_peer_id also?
 	Header (7 bytes):
 	[0] u32 protocol_id
 	[4] session_t sender_peer_id
@@ -152,8 +151,7 @@ sender_peer_id:
 	value 1 (PEER_ID_SERVER) is reserved for server
 	these constants are defined in constants.h
 channel:
-	The lower the number, the higher the priority is.
-	Only channels 0, 1 and 2 exist.
+	Channel numbers have no intrinsic meaning. Currently only 0, 1, 2 exist.
 */
 #define BASE_HEADER_SIZE 7
 #define CHANNEL_COUNT 3
@@ -386,12 +384,14 @@ struct ConnectionCommand
 	}
 };
 
-/* maximum window size to use, 0xFFFF is theoretical maximum  don't think about
+/* maximum window size to use, 0xFFFF is theoretical maximum. don't think about
  * touching it, the less you're away from it the more likely data corruption
  * will occur
  */
 #define MAX_RELIABLE_WINDOW_SIZE 0x8000
-	/* starting value for window size */
+/* starting value for window size */
+#define START_RELIABLE_WINDOW_SIZE 0x400
+/* minimum value for window size */
 #define MIN_RELIABLE_WINDOW_SIZE 0x40
 
 class Channel
@@ -555,15 +555,15 @@ class Peer {
 
 		bool isTimedOut(float timeout);
 
-		unsigned int m_increment_packets_remaining = 9;
-		unsigned int m_increment_bytes_remaining = 0;
+		unsigned int m_increment_packets_remaining = 0;
 
 		virtual u16 getNextSplitSequenceNumber(u8 channel) { return 0; };
 		virtual void setNextSplitSequenceNumber(u8 channel, u16 seqnum) {};
 		virtual SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacket &toadd,
 				bool reliable)
 		{
-			fprintf(stderr,"Peer: addSplitPacket called, this is supposed to be never called!\n");
+			errorstream << "Peer::addSplitPacket called,"
+					<< " this is supposed to be never called!" << std::endl;
 			return SharedBuffer<u8>(0);
 		};
 

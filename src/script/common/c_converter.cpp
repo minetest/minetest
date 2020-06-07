@@ -28,15 +28,15 @@ extern "C" {
 #include "common/c_converter.h"
 #include "common/c_internal.h"
 #include "constants.h"
+#include <set>
 
 
 #define CHECK_TYPE(index, name, type) { \
 		int t = lua_type(L, (index)); \
 		if (t != (type)) { \
-			std::string traceback = script_get_backtrace(L); \
 			throw LuaError(std::string("Invalid ") + (name) + \
 				" (expected " + lua_typename(L, (type)) + \
-				" got " + lua_typename(L, t) + ").\n" + traceback); \
+				" got " + lua_typename(L, t) + ")."); \
 		} \
 	}
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
@@ -62,7 +62,7 @@ void push_float_string(lua_State *L, float value)
 
 void push_v3f(lua_State *L, v3f p)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	lua_pushnumber(L, p.X);
 	lua_setfield(L, -2, "x");
 	lua_pushnumber(L, p.Y);
@@ -73,7 +73,7 @@ void push_v3f(lua_State *L, v3f p)
 
 void push_v2f(lua_State *L, v2f p)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 2);
 	lua_pushnumber(L, p.X);
 	lua_setfield(L, -2, "x");
 	lua_pushnumber(L, p.Y);
@@ -82,7 +82,7 @@ void push_v2f(lua_State *L, v2f p)
 
 void push_v3_float_string(lua_State *L, v3f p)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	push_float_string(L, p.X);
 	lua_setfield(L, -2, "x");
 	push_float_string(L, p.Y);
@@ -93,7 +93,7 @@ void push_v3_float_string(lua_State *L, v3f p)
 
 void push_v2_float_string(lua_State *L, v2f p)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 2);
 	push_float_string(L, p.X);
 	lua_setfield(L, -2, "x");
 	push_float_string(L, p.Y);
@@ -115,19 +115,19 @@ v2s16 read_v2s16(lua_State *L, int index)
 
 void push_v2s16(lua_State *L, v2s16 p)
 {
-	lua_newtable(L);
-	lua_pushnumber(L, p.X);
+	lua_createtable(L, 0, 2);
+	lua_pushinteger(L, p.X);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, p.Y);
+	lua_pushinteger(L, p.Y);
 	lua_setfield(L, -2, "y");
 }
 
 void push_v2s32(lua_State *L, v2s32 p)
 {
-	lua_newtable(L);
-	lua_pushnumber(L, p.X);
+	lua_createtable(L, 0, 2);
+	lua_pushinteger(L, p.X);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, p.Y);
+	lua_pushinteger(L, p.Y);
 	lua_setfield(L, -2, "y");
 }
 
@@ -250,14 +250,14 @@ v3d check_v3d(lua_State *L, int index)
 
 void push_ARGB8(lua_State *L, video::SColor color)
 {
-	lua_newtable(L);
-	lua_pushnumber(L, color.getAlpha());
+	lua_createtable(L, 0, 4);
+	lua_pushinteger(L, color.getAlpha());
 	lua_setfield(L, -2, "a");
-	lua_pushnumber(L, color.getRed());
+	lua_pushinteger(L, color.getRed());
 	lua_setfield(L, -2, "r");
-	lua_pushnumber(L, color.getGreen());
+	lua_pushinteger(L, color.getGreen());
 	lua_setfield(L, -2, "g");
-	lua_pushnumber(L, color.getBlue());
+	lua_pushinteger(L, color.getBlue());
 	lua_setfield(L, -2, "b");
 }
 
@@ -274,12 +274,12 @@ v3f checkFloatPos(lua_State *L, int index)
 
 void push_v3s16(lua_State *L, v3s16 p)
 {
-	lua_newtable(L);
-	lua_pushnumber(L, p.X);
+	lua_createtable(L, 0, 3);
+	lua_pushinteger(L, p.X);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, p.Y);
+	lua_pushinteger(L, p.Y);
 	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, p.Z);
+	lua_pushinteger(L, p.Z);
 	lua_setfield(L, -2, "z");
 }
 
@@ -335,6 +335,28 @@ video::SColor read_ARGB8(lua_State *L, int index)
 	return color;
 }
 
+bool is_color_table(lua_State *L, int index)
+{
+	// Check whole table in case of missing ColorSpec keys:
+	// This check does not remove the checked value from the stack.
+	// Only update the value if we know we have a valid ColorSpec key pair.
+	if (!lua_istable(L, index))
+		return false;
+
+	bool is_color_table = false;
+	lua_getfield(L, index, "r");
+	if (!is_color_table)
+		is_color_table = lua_isnumber(L, -1);
+	lua_getfield(L, index, "g");
+	if (!is_color_table)
+		is_color_table = lua_isnumber(L, -1);
+	lua_getfield(L, index, "b");
+	if (!is_color_table)
+		is_color_table = lua_isnumber(L, -1);
+	lua_pop(L, 3); // b, g, r values
+	return is_color_table;
+}
+
 aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 {
 	aabb3f box;
@@ -364,7 +386,7 @@ aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 
 void push_aabb3f(lua_State *L, aabb3f box)
 {
-	lua_newtable(L);
+	lua_createtable(L, 6, 0);
 	lua_pushnumber(L, box.MinEdge.X);
 	lua_rawseti(L, -2, 1);
 	lua_pushnumber(L, box.MinEdge.Y);
@@ -435,12 +457,47 @@ size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result
 	Table field getters
 */
 
+bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname)
+{
+	static thread_local std::set<u64> warned_msgs;
+
+	int t = lua_type(L, index);
+	if (t == LUA_TNIL)
+		return false;
+
+	if (t == type)
+		return true;
+
+	// Check coercion types
+	if (type == LUA_TNUMBER) {
+		if (lua_isnumber(L, index))
+			return true;
+	} else if (type == LUA_TSTRING) {
+		if (lua_isstring(L, index))
+			return true;
+	}
+
+	// Types mismatch. Log unique line.
+	std::string backtrace = std::string("Invalid field ") + fieldname +
+		" (expected " + lua_typename(L, type) +
+		" got " + lua_typename(L, t) + ").\n" + script_get_backtrace(L);
+
+	u64 hash = murmur_hash_64_ua(backtrace.data(), backtrace.length(), 0xBADBABE);
+	if (warned_msgs.find(hash) == warned_msgs.end()) {
+		errorstream << backtrace << std::endl;
+		warned_msgs.insert(hash);
+	}
+
+	return false;
+}
+
 bool getstringfield(lua_State *L, int table,
 		const char *fieldname, std::string &result)
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
-	if(lua_isstring(L, -1)){
+
+	if (check_field_or_nil(L, -1, LUA_TSTRING, fieldname)) {
 		size_t len = 0;
 		const char *ptr = lua_tolstring(L, -1, &len);
 		if (ptr) {
@@ -457,7 +514,8 @@ bool getfloatfield(lua_State *L, int table,
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
-	if(lua_isnumber(L, -1)){
+
+	if (check_field_or_nil(L, -1, LUA_TNUMBER, fieldname)) {
 		result = lua_tonumber(L, -1);
 		got = true;
 	}
@@ -470,7 +528,8 @@ bool getboolfield(lua_State *L, int table,
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
-	if(lua_isboolean(L, -1)){
+
+	if (check_field_or_nil(L, -1, LUA_TBOOLEAN, fieldname)){
 		result = lua_toboolean(L, -1);
 		got = true;
 	}
@@ -487,17 +546,6 @@ size_t getstringlistfield(lua_State *L, int table, const char *fieldname,
 
 	lua_pop(L, 1);
 	return num_strings_read;
-}
-
-std::string checkstringfield(lua_State *L, int table,
-		const char *fieldname)
-{
-	lua_getfield(L, table, fieldname);
-	CHECK_TYPE(-1, std::string("field \"") + fieldname + '"', LUA_TSTRING);
-	size_t len;
-	const char *s = lua_tolstring(L, -1, &len);
-	lua_pop(L, 1);
-	return std::string(s, len);
 }
 
 std::string getstringfield_default(lua_State *L, int table,

@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 
 
-MapgenSinglenode::MapgenSinglenode(MapgenParams *params, EmergeManager *emerge)
+MapgenSinglenode::MapgenSinglenode(MapgenParams *params, EmergeParams *emerge)
 	: Mapgen(MAPGEN_SINGLENODE, params, emerge)
 {
 	const NodeDefManager *ndef = emerge->ndef;

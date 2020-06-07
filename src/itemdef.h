@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include "itemgroup.h"
 #include "sound.h"
+#include "texture_override.h" // TextureOverride
 class IGameDef;
 class Client;
 struct ToolCapabilities;
@@ -156,6 +157,10 @@ public:
 	virtual ItemMesh* getWieldMesh(const std::string &name,
 		Client *client) const=0;
 #endif
+
+	// Replace the textures of registered nodes with the ones specified in
+	// the texture pack's override.txt files
+	virtual void applyTextureOverrides(const std::vector<TextureOverride> &overrides)=0;
 
 	// Remove all registered item and node definitions and aliases
 	// Then re-add the builtin item definitions

@@ -45,7 +45,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+#endif
 
+#ifdef _WIN32
+#include <windows.h>
+#include <winuser.h>
 #endif
 
 #if ENABLE_GLES
@@ -126,12 +130,9 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
 	params.ZBufferBits = 24;
 #ifdef __ANDROID__
-	// clang-format off
 	params.PrivateData = porting::app_global;
-	params.OGLES2ShaderPath = std::string(porting::path_user + DIR_DELIM + "media" +
-		DIR_DELIM + "Shaders" + DIR_DELIM).c_str();
-	// clang-format on
-#elif ENABLE_GLES
+#endif
+#if ENABLE_GLES
 	// there is no standardized path for these on desktop
 	std::string rel_path = std::string("client") + DIR_DELIM
 			+ "shaders" + DIR_DELIM + "Irrlicht";
@@ -226,27 +227,17 @@ bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 {
 	// FIXME: It would make more sense for there to be a switch of some
 	// sort here that would call the correct toplevel setup methods for
-	// the environment Minetest is running in but for now not deviating
-	// from the original pattern.
+	// the environment Minetest is running in.
 
 	/* Setting Xorg properties for the top level window */
 	setupTopLevelXorgWindow(name);
-	/* Done with Xorg properties */
 
 	/* Setting general properties for the top level window */
 	verbosestream << "Client: Configuring general top level"
 		<< " window properties"
 		<< std::endl;
-
 	bool result = setWindowIcon();
 
-	verbosestream << "Client: Finished configuring general top level"
-		<< " window properties"
-		<< std::endl;
-	/* Done with general properties */
-
-	// FIXME: setWindowIcon returns a bool result but it is unused.
-	// For now continue to return this result.
 	return result;
 }
 
@@ -262,7 +253,7 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 		return;
 	}
 
-	verbosestream << "Client: Configuring Xorg specific top level"
+	verbosestream << "Client: Configuring X11-specific top level"
 		<< " window properties"
 		<< std::endl;
 
@@ -309,8 +300,6 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);
 
 	pid_t pid = getpid();
-	infostream << "Client: PID is '" << static_cast<long>(pid) << "'"
-		<< std::endl;
 
 	XChangeProperty(x11_dpl, x11_win, NET_WM_PID,
 			XA_CARDINAL, 32, PropModeReplace,
@@ -327,13 +316,31 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	XChangeProperty (x11_dpl, x11_win, WM_CLIENT_LEADER,
 		XA_WINDOW, 32, PropModeReplace,
 		reinterpret_cast<unsigned char *>(&x11_win), 1);
-
-	verbosestream << "Client: Finished configuring Xorg specific top level"
-		<< " window properties"
-		<< std::endl;
 #endif
 }
 
+#ifdef _WIN32
+static bool getWindowHandle(irr::video::IVideoDriver *driver, HWND &hWnd)
+{
+	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
+
+	switch (driver->getDriverType()) {
+	case video::EDT_DIRECT3D8:
+		hWnd = reinterpret_cast<HWND>(exposedData.D3D8.HWnd);
+		break;
+	case video::EDT_DIRECT3D9:
+		hWnd = reinterpret_cast<HWND>(exposedData.D3D9.HWnd);
+		break;
+	case video::EDT_OPENGL:
+		hWnd = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd);
+		break;
+	default:
+		return false;
+	}
+
+	return true;
+}
+#endif
 
 bool RenderingEngine::setWindowIcon()
 {
@@ -351,22 +358,9 @@ bool RenderingEngine::setWindowIcon()
 							       "-xorg-icon-128.png");
 #endif
 #elif defined(_WIN32)
-	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 	HWND hWnd; // Window handle
-
-	switch (driver->getDriverType()) {
-	case video::EDT_DIRECT3D8:
-		hWnd = reinterpret_cast<HWND>(exposedData.D3D8.HWnd);
-		break;
-	case video::EDT_DIRECT3D9:
-		hWnd = reinterpret_cast<HWND>(exposedData.D3D9.HWnd);
-		break;
-	case video::EDT_OPENGL:
-		hWnd = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd);
-		break;
-	default:
+	if (!getWindowHandle(driver, hWnd))
 		return false;
-	}
 
 	// Load the ICON from resource file
 	const HICON hicon = LoadIcon(GetModuleHandle(NULL),
@@ -648,7 +642,7 @@ const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYP
 }
 
 #ifndef __ANDROID__
-#ifdef XORG_USED
+#if defined(XORG_USED)
 
 static float calcDisplayDensity()
 {
@@ -683,12 +677,42 @@ float RenderingEngine::getDisplayDensity()
 	return cached_display_density;
 }
 
-#else  // XORG_USED
+#elif defined(_WIN32)
+
+
+static float calcDisplayDensity(irr::video::IVideoDriver *driver)
+{
+	HWND hWnd;
+	if (getWindowHandle(driver, hWnd)) {
+		HDC hdc = GetDC(hWnd);
+		float dpi = GetDeviceCaps(hdc, LOGPIXELSX);
+		ReleaseDC(hWnd, hdc);
+		return dpi / 96.0f;
+	}
+
+	/* return manually specified dpi */
+	return g_settings->getFloat("screen_dpi") / 96.0f;
+}
+
+float RenderingEngine::getDisplayDensity()
+{
+	static bool cached = false;
+	static float display_density;
+	if (!cached) {
+		display_density = calcDisplayDensity(get_video_driver());
+		cached = true;
+	}
+	return display_density;
+}
+
+#else
+
 float RenderingEngine::getDisplayDensity()
 {
 	return g_settings->getFloat("screen_dpi") / 96.0;
 }
-#endif // XORG_USED
+
+#endif
 
 v2u32 RenderingEngine::getDisplaySize()
 {

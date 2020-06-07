@@ -5,7 +5,7 @@
 local string_sub, string_find = string.sub, string.find
 
 --------------------------------------------------------------------------------
-function basic_dump(o)
+local function basic_dump(o)
 	local tp = type(o)
 	if tp == "number" then
 		return tostring(o)
@@ -200,27 +200,10 @@ function table.indexof(list, val)
 	return -1
 end
 
-assert(table.indexof({"foo", "bar"}, "foo") == 1)
-assert(table.indexof({"foo", "bar"}, "baz") == -1)
-
---------------------------------------------------------------------------------
-if INIT ~= "client" then
-	function file_exists(filename)
-		local f = io.open(filename, "r")
-		if f == nil then
-			return false
-		else
-			f:close()
-			return true
-		end
-	end
-end
 --------------------------------------------------------------------------------
 function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
-
-assert(string.trim("\n \t\tfoo bar\t ") == "foo bar")
 
 --------------------------------------------------------------------------------
 function math.hypot(x, y)
@@ -257,64 +240,6 @@ function math.factorial(x)
 		v = v * k
 	end
 	return v
-end
-
---------------------------------------------------------------------------------
-function get_last_folder(text,count)
-	local parts = text:split(DIR_DELIM)
-
-	if count == nil then
-		return parts[#parts]
-	end
-
-	local retval = ""
-	for i=1,count,1 do
-		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
-	end
-
-	return retval
-end
-
---------------------------------------------------------------------------------
-function cleanup_path(temppath)
-
-	local parts = temppath:split("-")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. "_"
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	parts = temppath:split(".")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. "_"
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	parts = temppath:split("'")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath .. ""
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	parts = temppath:split(" ")
-	temppath = ""
-	for i=1,#parts,1 do
-		if temppath ~= "" then
-			temppath = temppath
-		end
-		temppath = temppath .. parts[i]
-	end
-
-	return temppath
 end
 
 function core.formspec_escape(text)
@@ -383,7 +308,8 @@ if INIT == "game" then
 			return
 		end
 		local undef = core.registered_nodes[unode.name]
-		if undef and undef.on_rightclick then
+		local sneaking = placer and placer:get_player_control().sneak
+		if undef and undef.on_rightclick and not sneaking then
 			return undef.on_rightclick(pointed_thing.under, unode, placer,
 					itemstack, pointed_thing)
 		end
@@ -437,18 +363,12 @@ if INIT == "game" then
 --Wrapper for rotate_and_place() to check for sneak and assume Creative mode
 --implies infinite stacks when performing a 6d rotation.
 --------------------------------------------------------------------------------
-	local creative_mode_cache = core.settings:get_bool("creative_mode")
-	local function is_creative(name)
-		return creative_mode_cache or
-				core.check_player_privs(name, {creative = true})
-	end
-
 	core.rotate_node = function(itemstack, placer, pointed_thing)
 		local name = placer and placer:get_player_name() or ""
 		local invert_wall = placer and placer:get_player_control().sneak or false
 		return core.rotate_and_place(itemstack, placer, pointed_thing,
-				is_creative(name),
-				{invert_wall = invert_wall}, true)
+			core.is_creative_enabled(name),
+			{invert_wall = invert_wall}, true)
 	end
 end
 
@@ -538,9 +458,6 @@ function core.string_to_pos(value)
 	return nil
 end
 
-assert(core.string_to_pos("10.0, 5, -2").x == 10)
-assert(core.string_to_pos("( 10.0, 5, -2)").z == -2)
-assert(core.string_to_pos("asd, 5, -2)") == nil)
 
 --------------------------------------------------------------------------------
 function core.string_to_area(value)
@@ -590,6 +507,29 @@ function table.insert_all(t, other)
 		t[#t + 1] = other[i]
 	end
 	return t
+end
+
+
+function table.key_value_swap(t)
+	local ti = {}
+	for k,v in pairs(t) do
+		ti[v] = k
+	end
+	return ti
+end
+
+
+function table.shuffle(t, from, to, random)
+	from = from or 1
+	to = to or #t
+	random = random or math.random
+	local n = to - from + 1
+	while n > 1 do
+		local r = from + n-1
+		local l = from + random(0, n-1)
+		t[l], t[r] = t[r], t[l]
+		n = n-1
+	end
 end
 
 
@@ -773,6 +713,3 @@ function core.privs_to_string(privs, delim)
 	end
 	return table.concat(list, delim)
 end
-
-assert(core.string_to_privs("a,b").b == true)
-assert(core.privs_to_string({a=true,b=true}) == "a,b")

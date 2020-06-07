@@ -31,7 +31,6 @@ struct ObjectProperties
 	u16 breath_max = 0;
 	bool physical = false;
 	bool collideWithObjects = true;
-	float weight = 5.0f;
 	// Values are BS=1
 	aabb3f collisionbox = aabb3f(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
 	aabb3f selectionbox = aabb3f(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
@@ -40,6 +39,7 @@ struct ObjectProperties
 	std::string mesh = "";
 	v3f visual_size = v3f(1, 1, 1);
 	std::vector<std::string> textures;
+	std::string damage_texture_modifier = "^[brighten";
 	std::vector<video::SColor> colors;
 	v2s16 spritediv = v2s16(1, 1);
 	v2s16 initial_sprite_basepos;

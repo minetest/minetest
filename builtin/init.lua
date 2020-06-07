@@ -36,6 +36,7 @@ dofile(commonpath .. "misc_helpers.lua")
 
 if INIT == "game" then
 	dofile(gamepath .. "init.lua")
+	assert(not core.get_http_api)
 elseif INIT == "mainmenu" then
 	local mm_script = core.settings:get("main_menu_script")
 	if mm_script and mm_script ~= "" then

@@ -91,7 +91,7 @@ void imageScaleNNAA(video::IImage *src, const core::rect<s32> &srcrect, video::I
 	u32 dy, dx;
 	video::SColor pxl;
 
-	// Cache rectsngle boundaries.
+	// Cache rectangle boundaries.
 	double sox = srcrect.UpperLeftCorner.X * 1.0;
 	double soy = srcrect.UpperLeftCorner.Y * 1.0;
 	double sw = srcrect.getWidth() * 1.0;
@@ -107,15 +107,15 @@ void imageScaleNNAA(video::IImage *src, const core::rect<s32> &srcrect, video::I
 		// Do some basic clipping, and for mirrored/flipped rects,
 		// make sure min/max are in the right order.
 		minsx = sox + (dx * sw / dim.Width);
-		minsx = rangelim(minsx, 0, sw);
+		minsx = rangelim(minsx, 0, sox + sw);
 		maxsx = minsx + sw / dim.Width;
-		maxsx = rangelim(maxsx, 0, sw);
+		maxsx = rangelim(maxsx, 0, sox + sw);
 		if (minsx > maxsx)
 			SWAP(double, minsx, maxsx);
 		minsy = soy + (dy * sh / dim.Height);
-		minsy = rangelim(minsy, 0, sh);
+		minsy = rangelim(minsy, 0, soy + sh);
 		maxsy = minsy + sh / dim.Height;
-		maxsy = rangelim(maxsy, 0, sh);
+		maxsy = rangelim(maxsy, 0, soy + sh);
 		if (minsy > maxsy)
 			SWAP(double, minsy, maxsy);
 

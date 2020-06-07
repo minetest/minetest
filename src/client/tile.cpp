@@ -471,8 +471,8 @@ TextureSource::~TextureSource()
 		driver->removeTexture(t);
 	}
 
-	infostream << "~TextureSource() "<< textures_before << "/"
-			<< driver->getTextureCount() << std::endl;
+	infostream << "~TextureSource() before cleanup: "<< textures_before
+			<< " after: " << driver->getTextureCount() << std::endl;
 }
 
 u32 TextureSource::getTextureId(const std::string &name)
@@ -668,7 +668,14 @@ video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 
 video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
-	return getTexture(name + "^[applyfiltersformesh", id);
+	static thread_local bool filter_needed =
+		g_settings->getBool("texture_clean_transparent") ||
+		((m_setting_trilinear_filter || m_setting_bilinear_filter) &&
+		g_settings->getS32("texture_min_size") > 1);
+	// Avoid duplicating texture if it won't actually change
+	if (filter_needed)
+		return getTexture(name + "^[applyfiltersformesh", id);
+	return getTexture(name, id);
 }
 
 Palette* TextureSource::getPalette(const std::string &name)
@@ -762,6 +769,9 @@ void TextureSource::rebuildImagesAndTextures()
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
+
+	infostream << "TextureSource: recreating " << m_textureinfo_cache.size()
+		<< " textures" << std::endl;
 
 	// Recreate textures
 	for (TextureInfo &ti : m_textureinfo_cache) {
@@ -1270,8 +1280,6 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				video::IImage *img = generateImage(filename);
 				if (img) {
 					core::dimension2d<u32> dim = img->getDimension();
-					infostream<<"Size "<<dim.Width
-							<<"x"<<dim.Height<<std::endl;
 					core::position2d<s32> pos_base(x, y);
 					video::IImage *img2 =
 							driver->createImage(video::ECF_A8R8G8B8, dim);
@@ -1622,6 +1630,9 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		*/
 		else if (str_starts_with(part_of_name, "[applyfiltersformesh"))
 		{
+			/* IMPORTANT: When changing this, getTextureForMesh() needs to be
+			 * updated too. */
+
 			// Apply the "clean transparent" filter, if configured.
 			if (g_settings->getBool("texture_clean_transparent"))
 				imageCleanTransparent(baseimg, 127);
