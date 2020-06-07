@@ -19,16 +19,17 @@ public:
 	bool explicit_size = false;
 	v2f32 pos_offset{};
 
-	std::stack<v2f32> container_stack{};
 	v2s32 imgsize{};
+	v2s32 windowPosition;
+	v2f32 windowAnchor;
+
+	std::stack<v2f32> container_stack{};
 	v2s32 padding{};
 	v2f32 spacing{};
-
 	u8 simple_field_count;
 	v2f invsize;
 	v2s32 size;
 	v2f32 offset;
-	v2f32 anchor;
 	core::rect<s32> rect;
 	v2s32 basepos;
 	v2u32 screensize;

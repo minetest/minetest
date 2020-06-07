@@ -2438,8 +2438,8 @@ void GUIFormSpecMenu::parsePosition(ParserState *data, const std::string &elemen
 	std::vector<std::string> parts = split(element, ',');
 
 	if (parts.size() == 2) {
-		data->offset.X = stof(parts[0]);
-		data->offset.Y = stof(parts[1]);
+		data->windowPosition.X = stof(parts[0]);
+		data->windowPosition.Y = stof(parts[1]);
 		return;
 	}
 
@@ -2472,8 +2472,8 @@ void GUIFormSpecMenu::parseAnchor(ParserState *data, const std::string &element)
 	std::vector<std::string> parts = split(element, ',');
 
 	if (parts.size() == 2) {
-		data->anchor.X = stof(parts[0]);
-		data->anchor.Y = stof(parts[1]);
+		data->windowAnchor.X = stof(parts[0]);
+		data->windowAnchor.Y = stof(parts[1]);
 		return;
 	}
 
@@ -2883,11 +2883,11 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	mydata.size = v2s32(100, 100);
 	mydata.screensize = screensize;
 	mydata.offset = v2f32(0.5f, 0.5f);
-	mydata.anchor = v2f32(0.5f, 0.5f);
+	mydata.windowAnchor = v2f32(0.5f, 0.5f);
 	mydata.simple_field_count = 0;
 
 	// Base position of contents of form
-	mydata.basepos = mydata.padding + mydata.offset + AbsoluteRect.UpperLeftCorner;
+	mydata.basepos = mydata.padding + mydata.windowPosition + AbsoluteRect.UpperLeftCorner;
 
 	m_inventorylists.clear();
 	m_backgrounds.clear();
@@ -3021,11 +3021,10 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			else
 				delta.X = 0;
 
-			offset = v2s32(delta.X,delta.Y);
-
+			mydata.windowPosition = v2s32(delta.X,delta.Y);
 			mydata.screensize = m_lockscreensize;
 		} else {
-			offset = v2s32(0,0);
+			mydata.windowPosition = v2s32(0,0);
 		}
 
 		double gui_scaling = g_settings->getFloat("gui_scaling");
@@ -3108,10 +3107,10 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 
 		DesiredRect = mydata.rect = core::rect<s32>(
-				(s32)((f32)mydata.screensize.X * mydata.offset.X) - (s32)(mydata.anchor.X * (f32)mydata.size.X) + mydata.offset.X,
-				(s32)((f32)mydata.screensize.Y * mydata.offset.Y) - (s32)(mydata.anchor.Y * (f32)mydata.size.Y) + mydata.offset.Y,
-				(s32)((f32)mydata.screensize.X * mydata.offset.X) + (s32)((1.0 - mydata.anchor.X) * (f32)mydata.size.X) + mydata.offset.X,
-				(s32)((f32)mydata.screensize.Y * mydata.offset.Y) + (s32)((1.0 - mydata.anchor.Y) * (f32)mydata.size.Y) + mydata.offset.Y
+				(s32)((f32)mydata.screensize.X * mydata.windowPosition.X) - (s32)(mydata.windowAnchor.X * (f32)mydata.size.X) + mydata.windowPosition.X,
+				(s32)((f32)mydata.screensize.Y * mydata.windowPosition.Y) - (s32)(mydata.windowAnchor.Y * (f32)mydata.size.Y) + mydata.windowPosition.Y,
+				(s32)((f32)mydata.screensize.X * mydata.windowPosition.X) + (s32)((1.0 - mydata.windowAnchor.X) * (f32)mydata.size.X) + mydata.windowPosition.X,
+				(s32)((f32)mydata.screensize.Y * mydata.windowPosition.Y) + (s32)((1.0 - mydata.windowAnchor.Y) * (f32)mydata.size.Y) + mydata.windowPosition.Y
 		);
 	} else {
 		// Non-size[] form must consist only of text fields and
@@ -3120,14 +3119,15 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_font = g_fontengine->getFont();
 		m_btn_height = font_line_height(m_font) * 0.875;
 		DesiredRect = core::rect<s32>(
-			(s32)((f32)mydata.screensize.X * mydata.offset.X) - (s32)(mydata.anchor.X * 580.0),
-			(s32)((f32)mydata.screensize.Y * mydata.offset.Y) - (s32)(mydata.anchor.Y * 300.0),
-			(s32)((f32)mydata.screensize.X * mydata.offset.X) + (s32)((1.0 - mydata.anchor.X) * 580.0),
-			(s32)((f32)mydata.screensize.Y * mydata.offset.Y) + (s32)((1.0 - mydata.anchor.Y) * 300.0)
+			(s32)((f32)mydata.screensize.X * mydata.windowPosition.X) - (s32)(mydata.windowAnchor.X * 580.0),
+			(s32)((f32)mydata.screensize.Y * mydata.windowPosition.Y) - (s32)(mydata.windowAnchor.Y * 300.0),
+			(s32)((f32)mydata.screensize.X * mydata.windowPosition.X) + (s32)((1.0 - mydata.windowAnchor.X) * 580.0),
+			(s32)((f32)mydata.screensize.Y * mydata.windowPosition.Y) + (s32)((1.0 - mydata.windowAnchor.Y) * 300.0)
 		);
 	}
+
 	recalculateAbsolutePosition(false);
-	mydata.basepos = getBasePos();
+	mydata.basepos = mydata.padding + mydata.windowPosition + AbsoluteRect.UpperLeftCorner;
 	m_tooltip_element->setOverrideFont(m_font);
 
 	gui::IGUISkin *skin = Environment->getSkin();
@@ -3196,7 +3196,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 		DesiredRect = mydata.rect;
 		recalculateAbsolutePosition(false);
-		mydata.basepos = getBasePos();
+		mydata.basepos = mydata.padding + mydata.windowPosition + AbsoluteRect.UpperLeftCorner;
 
 		{
 			v2s32 pos = mydata.basepos;
