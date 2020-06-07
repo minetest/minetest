@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IGUITabControl.h>
+#include "formspec/FormspecParseException.h"
 #include "client/renderingengine.h"
 #include "log.h"
 #include "client/tile.h" // ITextureSource
@@ -280,25 +281,44 @@ std::vector<std::string>* GUIFormSpecMenu::getDropDownValues(const std::string &
 	return NULL;
 }
 
-v2s32 GUIFormSpecMenu::getElementBasePos(const std::vector<std::string> *v_pos)
+v2s32 GUIFormSpecMenu::getElementBasePos(bool hasPos, const v2f32 &pos)
 {
 	v2f32 pos_f = v2f32(padding.X, padding.Y) + pos_offset * spacing;
-	if (v_pos) {
-		pos_f.X += stof((*v_pos)[0]) * spacing.X;
-		pos_f.Y += stof((*v_pos)[1]) * spacing.Y;
+	if (hasPos) {
+		pos_f.X += pos.X * spacing.X;
+		pos_f.Y += pos.Y * spacing.Y;
 	}
 	return v2s32(pos_f.X, pos_f.Y);
 }
 
+v2s32 GUIFormSpecMenu::getRealCoordinateBasePos(const v2f32 &pos)
+{
+	return v2s32((pos.X + pos_offset.X) * imgsize.X,
+				 (pos.Y + pos_offset.Y) * imgsize.Y);
+}
+
+v2s32 GUIFormSpecMenu::getRealCoordinateGeometry(const v2f32 &geom)
+{
+	return v2s32(geom.X * imgsize.X, geom.Y * imgsize.Y);
+}
+
+v2s32 GUIFormSpecMenu::getElementBasePos(const std::vector<std::string> *v_pos)
+{
+	if (v_pos) {
+		return getElementBasePos(true, v2f32(stof((*v_pos)[0]), stof((*v_pos)[1])));
+	} else {
+		return getElementBasePos(false);
+	}
+}
+
 v2s32 GUIFormSpecMenu::getRealCoordinateBasePos(const std::vector<std::string> &v_pos)
 {
-	return v2s32((stof(v_pos[0]) + pos_offset.X) * imgsize.X,
-		(stof(v_pos[1]) + pos_offset.Y) * imgsize.Y);
+	return getRealCoordinateBasePos(v2f32(stof(v_pos[0]), stof(v_pos[1])));
 }
 
 v2s32 GUIFormSpecMenu::getRealCoordinateGeometry(const std::vector<std::string> &v_geom)
 {
-	return v2s32(stof(v_geom[0]) * imgsize.X, stof(v_geom[1]) * imgsize.Y);
+	return getRealCoordinateGeometry(v2f32(stof(v_geom[0]), stof(v_geom[1])));
 }
 
 void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
@@ -328,24 +348,19 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 	errorstream<< "Invalid size element (" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseContainer(parserData *data, const FormspecElement &element)
 {
-	std::vector<std::string> parts = split(element, ',');
+	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 1);
 
-	if (parts.size() >= 2) {
-		if (parts[1].find(';') != std::string::npos)
-			parts[1] = parts[1].substr(0, parts[1].find(';'));
-
-		container_stack.push(pos_offset);
-		pos_offset.X += stof(parts[0]);
-		pos_offset.Y += stof(parts[1]);
-		return;
-	}
-	errorstream<< "Invalid container start element (" << parts.size() << "): '" << element << "'"  << std::endl;
+	v2f32 c_offset = element.getVector(0);
+	container_stack.push(pos_offset);
+	pos_offset += c_offset;
 }
 
-void GUIFormSpecMenu::parseContainerEnd(parserData* data)
+void GUIFormSpecMenu::parseContainerEnd(parserData* data, const FormspecElement &element)
 {
+	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 1);
+
 	if (container_stack.empty()) {
 		errorstream<< "Invalid container end element, no matching container start element"  << std::endl;
 	} else {
@@ -354,30 +369,17 @@ void GUIFormSpecMenu::parseContainerEnd(parserData* data)
 	}
 }
 
-void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseScrollContainer(parserData *data, const FormspecElement &element)
 {
-	std::vector<std::string> parts = split(element, ';');
+	element.checkLength(m_formspec_version > FORMSPEC_API_VERSION, 5);
 
-	if (parts.size() < 4 ||
-			(parts.size() > 5 && m_formspec_version <= FORMSPEC_API_VERSION)) {
-		errorstream << "Invalid scroll_container start element (" << parts.size()
-				<< "): '" << element << "'" << std::endl;
-		return;
-	}
-
-	std::vector<std::string> v_pos  = split(parts[0], ',');
-	std::vector<std::string> v_geom = split(parts[1], ',');
-	std::string scrollbar_name = parts[2];
-	std::string orientation = parts[3];
+	v2s32 pos = getRealCoordinateBasePos(element.getVector(0));
+	v2s32 geom = getRealCoordinateGeometry(element.getVector(1));
+	std::string scrollbar_name = element.getString(2);
+	std::string orientation = element.getString(3);
 	f32 scroll_factor = 0.1f;
-	if (parts.size() >= 5 && !parts[4].empty())
-		scroll_factor = stof(parts[4]);
-
-	MY_CHECKPOS("scroll_container", 0);
-	MY_CHECKGEOM("scroll_container", 1);
-
-	v2s32 pos = getRealCoordinateBasePos(v_pos);
-	v2s32 geom = getRealCoordinateGeometry(v_geom);
+	if (element.getNumberOfParts() >= 5 && !element.getString(4).empty())
+		scroll_factor = element.getFloat(4);
 
 	if (orientation == "vertical")
 		scroll_factor *= -imgsize.Y;
@@ -2664,200 +2666,207 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 	return true;
 }
 
-void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseElement(parserData* data, const std::string &source)
 {
 	//some prechecks
-	if (element.empty())
+	if (source.empty())
 		return;
 
-	if (parseVersionDirect(element))
+	if (parseVersionDirect(source))
 		return;
 
-	size_t pos = element.find('[');
+	size_t pos = source.find('[');
 	if (pos == std::string::npos)
 		return;
 
-	std::string type = trim(element.substr(0, pos));
-	std::string description = element.substr(pos+1);
+	std::string type = trim(source.substr(0, pos));
+	std::string description = source.substr(pos + 1);
 
-	if (type == "container") {
-		parseContainer(data, description);
-		return;
+	try {
+		FormspecElement element(description);
+
+		if (type == "container") {
+			parseContainer(data, element);
+			return;
+		}
+
+		if (type == "container_end") {
+			parseContainerEnd(data, element);
+			return;
+		}
+
+		if (type == "list") {
+			parseList(data, description);
+			return;
+		}
+
+		if (type == "listring") {
+			parseListRing(data, description);
+			return;
+		}
+
+		if (type == "checkbox") {
+			parseCheckbox(data, description);
+			return;
+		}
+
+		if (type == "image") {
+			parseImage(data, description);
+			return;
+		}
+
+		if (type == "animated_image") {
+			parseAnimatedImage(data, description);
+			return;
+		}
+
+		if (type == "item_image") {
+			parseItemImage(data, description);
+			return;
+		}
+
+		if (type == "button" || type == "button_exit") {
+			parseButton(data, description, type);
+			return;
+		}
+
+		if (type == "background" || type == "background9") {
+			parseBackground(data, description);
+			return;
+		}
+
+		if (type == "tableoptions") {
+			parseTableOptions(data, description);
+			return;
+		}
+
+		if (type == "tablecolumns") {
+			parseTableColumns(data, description);
+			return;
+		}
+
+		if (type == "table") {
+			parseTable(data, description);
+			return;
+		}
+
+		if (type == "textlist") {
+			parseTextList(data, description);
+			return;
+		}
+
+		if (type == "dropdown") {
+			parseDropDown(data, description);
+			return;
+		}
+
+		if (type == "field_close_on_enter") {
+			parseFieldCloseOnEnter(data, description);
+			return;
+		}
+
+		if (type == "pwdfield") {
+			parsePwdField(data, description);
+			return;
+		}
+
+		if ((type == "field") || (type == "textarea")) {
+			parseField(data, description, type);
+			return;
+		}
+
+		if (type == "hypertext") {
+			parseHyperText(data, description);
+			return;
+		}
+
+		if (type == "label") {
+			parseLabel(data, description);
+			return;
+		}
+
+		if (type == "vertlabel") {
+			parseVertLabel(data, description);
+			return;
+		}
+
+		if (type == "item_image_button") {
+			parseItemImageButton(data, description);
+			return;
+		}
+
+		if ((type == "image_button") || (type == "image_button_exit")) {
+			parseImageButton(data, description, type);
+			return;
+		}
+
+		if (type == "tabheader") {
+			parseTabHeader(data, description);
+			return;
+		}
+
+		if (type == "box") {
+			parseBox(data, description);
+			return;
+		}
+
+		if (type == "bgcolor") {
+			parseBackgroundColor(data, description);
+			return;
+		}
+
+		if (type == "listcolors") {
+			parseListColors(data, description);
+			return;
+		}
+
+		if (type == "tooltip") {
+			parseTooltip(data, description);
+			return;
+		}
+
+		if (type == "scrollbar") {
+			parseScrollBar(data, description);
+			return;
+		}
+
+		if (type == "real_coordinates") {
+			data->real_coordinates = is_yes(description);
+			return;
+		}
+
+		if (type == "style") {
+			parseStyle(data, description, false);
+			return;
+		}
+
+		if (type == "style_type") {
+			parseStyle(data, description, true);
+			return;
+		}
+
+		if (type == "scrollbaroptions") {
+			parseScrollBarOptions(data, description);
+			return;
+		}
+
+		if (type == "scroll_container") {
+			parseScrollContainer(data, description);
+			return;
+		}
+
+		if (type == "scroll_container_end") {
+			parseScrollContainerEnd(data);
+			return;
+		}
+
+		// Ignore others
+		infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
+				   << std::endl;
+	} catch (FormspecParseException &ex) {
+		auto &stream = ex.serious ? errorstream : warningstream;
+		stream << "Problem parsing element " << type << ": " << ex.what() << ", source: " << description << std::endl;
 	}
-
-	if (type == "container_end") {
-		parseContainerEnd(data);
-		return;
-	}
-
-	if (type == "list") {
-		parseList(data, description);
-		return;
-	}
-
-	if (type == "listring") {
-		parseListRing(data, description);
-		return;
-	}
-
-	if (type == "checkbox") {
-		parseCheckbox(data, description);
-		return;
-	}
-
-	if (type == "image") {
-		parseImage(data, description);
-		return;
-	}
-
-	if (type == "animated_image") {
-		parseAnimatedImage(data, description);
-		return;
-	}
-
-	if (type == "item_image") {
-		parseItemImage(data, description);
-		return;
-	}
-
-	if (type == "button" || type == "button_exit") {
-		parseButton(data, description, type);
-		return;
-	}
-
-	if (type == "background" || type == "background9") {
-		parseBackground(data, description);
-		return;
-	}
-
-	if (type == "tableoptions"){
-		parseTableOptions(data,description);
-		return;
-	}
-
-	if (type == "tablecolumns"){
-		parseTableColumns(data,description);
-		return;
-	}
-
-	if (type == "table"){
-		parseTable(data,description);
-		return;
-	}
-
-	if (type == "textlist"){
-		parseTextList(data,description);
-		return;
-	}
-
-	if (type == "dropdown"){
-		parseDropDown(data,description);
-		return;
-	}
-
-	if (type == "field_close_on_enter") {
-		parseFieldCloseOnEnter(data, description);
-		return;
-	}
-
-	if (type == "pwdfield") {
-		parsePwdField(data,description);
-		return;
-	}
-
-	if ((type == "field") || (type == "textarea")){
-		parseField(data,description,type);
-		return;
-	}
-
-	if (type == "hypertext") {
-		parseHyperText(data,description);
-		return;
-	}
-
-	if (type == "label") {
-		parseLabel(data,description);
-		return;
-	}
-
-	if (type == "vertlabel") {
-		parseVertLabel(data,description);
-		return;
-	}
-
-	if (type == "item_image_button") {
-		parseItemImageButton(data,description);
-		return;
-	}
-
-	if ((type == "image_button") || (type == "image_button_exit")) {
-		parseImageButton(data,description,type);
-		return;
-	}
-
-	if (type == "tabheader") {
-		parseTabHeader(data,description);
-		return;
-	}
-
-	if (type == "box") {
-		parseBox(data,description);
-		return;
-	}
-
-	if (type == "bgcolor") {
-		parseBackgroundColor(data,description);
-		return;
-	}
-
-	if (type == "listcolors") {
-		parseListColors(data,description);
-		return;
-	}
-
-	if (type == "tooltip") {
-		parseTooltip(data,description);
-		return;
-	}
-
-	if (type == "scrollbar") {
-		parseScrollBar(data, description);
-		return;
-	}
-
-	if (type == "real_coordinates") {
-		data->real_coordinates = is_yes(description);
-		return;
-	}
-
-	if (type == "style") {
-		parseStyle(data, description, false);
-		return;
-	}
-
-	if (type == "style_type") {
-		parseStyle(data, description, true);
-		return;
-	}
-
-	if (type == "scrollbaroptions") {
-		parseScrollBarOptions(data, description);
-		return;
-	}
-
-	if (type == "scroll_container") {
-		parseScrollContainer(data, description);
-		return;
-	}
-
-	if (type == "scroll_container_end") {
-		parseScrollContainerEnd(data);
-		return;
-	}
-
-	// Ignore others
-	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
-			<< std::endl;
 }
 
 void GUIFormSpecMenu::regenerateGui(v2u32 screensize)

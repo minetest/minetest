@@ -34,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
 
+#include "formspec/FormspecElement.h"
+
 class InventoryManager;
 class ISimpleTextureSource;
 class Client;
@@ -271,6 +273,9 @@ protected:
 	std::wstring getLabelByID(s32 id);
 	std::string getNameByID(s32 id);
 	const FieldSpec *getSpecByID(s32 id);
+	v2s32 getElementBasePos(bool hasPos, const v2f32 &pos=v2f32());
+	v2s32 getRealCoordinateBasePos(const v2f32 &pos);
+	v2s32 getRealCoordinateGeometry(const v2f32 &geom);
 	v2s32 getElementBasePos(const std::vector<std::string> *v_pos);
 	v2s32 getRealCoordinateBasePos(const std::vector<std::string> &v_pos);
 	v2s32 getRealCoordinateGeometry(const std::vector<std::string> &v_geom);
@@ -347,7 +352,7 @@ private:
 	JoystickController *m_joystick;
 	bool m_show_debug = false;
 
-	typedef struct {
+	struct parserData {
 		bool explicit_size;
 		bool real_coordinates;
 		u8 simple_field_count;
@@ -376,7 +381,7 @@ private:
 
 		// used to restore table selection/scroll/treeview state
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
-	} parserData;
+	};
 
 	typedef struct {
 		bool key_up;
@@ -389,12 +394,12 @@ private:
 	std::string current_field_enter_pending = "";
 	std::vector<std::string> m_hovered_item_tooltips;
 
-	void parseElement(parserData* data, const std::string &element);
+	void parseElement(parserData* data, const std::string &source);
 
 	void parseSize(parserData* data, const std::string &element);
-	void parseContainer(parserData* data, const std::string &element);
-	void parseContainerEnd(parserData* data);
-	void parseScrollContainer(parserData *data, const std::string &element);
+	void parseContainer(parserData* data, const FormspecElement &element);
+	void parseContainerEnd(parserData* data, const FormspecElement &element);
+	void parseScrollContainer(parserData *data, const FormspecElement &element);
 	void parseScrollContainerEnd(parserData *data);
 	void parseList(parserData* data, const std::string &element);
 	void parseListRing(parserData* data, const std::string &element);
