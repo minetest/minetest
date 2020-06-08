@@ -1461,13 +1461,12 @@ void GenericCAO::updateAttachments()
 		}
 
 		if (m_matrixnode && parent_node) {
-			parent_node->updateAbsolutePosition();
 			m_matrixnode->setParent(parent_node);
 			getPosRotMatrix().setTranslation(m_attachment_position);
 			//setPitchYawRoll(getPosRotMatrix(), m_attachment_rotation);
 			// use Irrlicht eulers instead
 			getPosRotMatrix().setRotationDegrees(m_attachment_rotation);
-			m_matrixnode->updateAbsolutePosition();
+			parent_node->updateAbsolutePosition();
 		}
 	}
 }
