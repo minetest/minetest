@@ -162,6 +162,15 @@ static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
 	matrix.setTextureScale(txs, tys);
 }
 
+// Evaluate transform chain recursively; irrlicht does not do this for us
+static void updatePositionRecursive(scene::ISceneNode *node) {
+	scene::ISceneNode *parent;
+	if(parent = node->getParent()) {
+		updatePositionRecursive(parent);
+	}
+	node->updateAbsolutePosition();
+}
+
 /*
 	TestCAO
 */
@@ -1466,7 +1475,7 @@ void GenericCAO::updateAttachments()
 			//setPitchYawRoll(getPosRotMatrix(), m_attachment_rotation);
 			// use Irrlicht eulers instead
 			getPosRotMatrix().setRotationDegrees(m_attachment_rotation);
-			parent_node->updateAbsolutePosition();
+			updatePositionRecursive( m_matrixnode );
 		}
 	}
 }
