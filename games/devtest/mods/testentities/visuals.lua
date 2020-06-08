@@ -66,9 +66,9 @@ minetest.register_entity("testentities:yawsprite", {
 		textures = {"testentities_dungeon_master.png^[makealpha:128,0,0^[makealpha:128,128,0"},
 		spritediv = {x=6, y=5},
 		initial_sprite_basepos = {x=0, y=0},
-		on_activate = function(self, staticdata)
-			self.object:set_sprite({x=0, y=0}, 1, 0, true)
-		end,
 	},
+	on_activate = function(self, staticdata)
+		self.object:set_sprite({x=0, y=0}, 1, 0, true)
+	end,
 })
 
