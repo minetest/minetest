@@ -60,6 +60,11 @@ include $(PREBUILT_STATIC_LIBRARY)
 #include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := GetText
+LOCAL_SRC_FILES := deps/Android/GetText/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libintl.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := Vorbis
 LOCAL_SRC_FILES := deps/Android/Vorbis/${NDK_TOOLCHAIN_VERSION}/$(APP_ABI)/libvorbis.a
 include $(PREBUILT_STATIC_LIBRARY)
@@ -76,6 +81,8 @@ LOCAL_CFLAGS += \
 	-DUSE_FREETYPE=1                \
 	-DUSE_LEVELDB=0                 \
 	-DUSE_LUAJIT=1                  \
+	-DUSE_GETTEXT=1                 \
+	-DRUN_IN_PLACE=0                \
 	-DVERSION_MAJOR=${versionMajor} \
 	-DVERSION_MINOR=${versionMinor} \
 	-DVERSION_PATCH=${versionPatch} \
@@ -101,6 +108,7 @@ LOCAL_C_INCLUDES := \
 	deps/Android/Freetype/include                   \
 	deps/Android/Irrlicht/include                   \
 	deps/Android/LevelDB/include                    \
+	deps/Android/GetText/include                    \
 	deps/Android/libiconv/include                   \
 	deps/Android/libiconv/libcharset/include        \
 	deps/Android/LuaJIT/src                         \
@@ -206,7 +214,7 @@ LOCAL_SRC_FILES += \
 # SQLite3
 LOCAL_SRC_FILES += deps/Android/sqlite/sqlite3.c
 
-LOCAL_STATIC_LIBRARIES += Curl Freetype Irrlicht OpenAL mbedTLS mbedx509 mbedcrypto Vorbis LuaJIT android_native_app_glue $(PROFILER_LIBS) #LevelDB
+LOCAL_STATIC_LIBRARIES += Curl Freetype Irrlicht OpenAL mbedTLS mbedx509 mbedcrypto Vorbis LuaJIT GetText android_native_app_glue $(PROFILER_LIBS) #LevelDB
 #OpenSSL Crypto
 
 LOCAL_LDLIBS := -lEGL -lGLESv1_CM -lGLESv2 -landroid -lOpenSLES
