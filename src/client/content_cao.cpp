@@ -1147,17 +1147,6 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		m_animated_meshnode->updateAbsolutePosition();
 		m_animated_meshnode->animateJoints();
 		updateBonePosition();
-		// The following is needed for set_bone_pos to propagate to
-		// attached objects correctly.
-		// Irrlicht ought to do this, but doesn't.
-		for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
-			auto bone = m_animated_meshnode->getJointNode(i);
-			if (!bone)
-				continue;
-			if (bone->getParent() == m_animated_meshnode) {
-				bone->updateAbsolutePositionOfAllChildren();
-			}
-		}
 	}
 }
 
@@ -1458,6 +1447,17 @@ void GenericCAO::updateBonePosition()
 		if (offset > 179.9f && offset < 180.1f) {
 			bone->setRotation(bone_rot);
 			bone->updateAbsolutePosition();
+		}
+	}
+	// The following is needed for set_bone_pos to propagate to
+	// attached objects correctly.
+	// Irrlicht ought to do this, but doesn't when using EJUOR_CONTROL.
+	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
+		auto bone = m_animated_meshnode->getJointNode(i);
+		// Look for the root bone.
+		if (bone != NULL && bone->getParent() == m_animated_meshnode) {
+			// Update entire skeleton.
+			bone->updateAbsolutePositionOfAllChildren();
 		}
 	}
 }
