@@ -1475,7 +1475,7 @@ void GenericCAO::updateAttachments()
 			//setPitchYawRoll(getPosRotMatrix(), m_attachment_rotation);
 			// use Irrlicht eulers instead
 			getPosRotMatrix().setRotationDegrees(m_attachment_rotation);
-			updatePositionRecursive( m_matrixnode );
+			updatePositionRecursive(m_matrixnode);
 		}
 	}
 }
