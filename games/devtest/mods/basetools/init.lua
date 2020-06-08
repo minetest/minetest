@@ -54,6 +54,7 @@ minetest.register_tool("basetools:pick_mese", {
 			choppy={times={[1]=0.0, [2]=0.0, [3]=0.0}, maxlevel=255},
 			dig_immediate={times={[1]=0.0, [2]=0.0, [3]=0.0}, maxlevel=255},
 		},
+		damage_groups = {fleshy=100},
 	},
 })
 

@@ -429,6 +429,7 @@ local editor_formspec = function(playername, obj, value, sel)
 		"label[0,0;"..F(title).."]"..
 		"textlist[0,0.5;9,7.5;object_props;"..list..";"..sel..";false]"..
 		"field[0.2,8.75;8,1;value;"..F(S("Value"))..";"..F(value).."]"..
+		"field_close_on_enter[value;false]"..
 		"button[8,8.5;1,1;submit;"..F(S("Submit")).."]"
 	)
 end
@@ -665,7 +666,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				return
 			end
 		end
-		if fields.submit then
+		if fields.key_enter_field == "value" or fields.submit then
 			local props = selected_objects[name]:get_properties()
 			local keys = property_formspec_data[name]
 			if (not property_formspec_index[name]) or (not props) then
