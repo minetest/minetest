@@ -162,6 +162,15 @@ static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
 	matrix.setTextureScale(txs, tys);
 }
 
+// Evaluate transform chain recursively; irrlicht does not do this for us
+static void updatePositionRecursive(scene::ISceneNode *node) {
+	scene::ISceneNode *parent = node->getParent();
+	if (parent != NULL) {
+		updatePositionRecursive(parent);
+	}
+	node->updateAbsolutePosition();
+}
+
 /*
 	TestCAO
 */
@@ -917,11 +926,6 @@ void GenericCAO::updateNodePos()
 
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
-	if (m_animated_meshnode) {
-		m_animated_meshnode->animateJoints();
-		updateBonePosition();
-	}
-
 	// Handle model animations and update positions instantly to prevent lags
 	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
@@ -1130,6 +1134,30 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		rot_translator.val_current = m_rotation;
 		updateNodePos();
+	}
+
+	if (m_animated_meshnode) {
+		// Everything must be updated; the whole transform
+		// chain as well as the animated mesh node.
+		// Otherwise, bone attachments would be relative to
+		// a position that's one frame old.
+		if(m_matrixnode){
+			updatePositionRecursive(m_matrixnode);
+		}
+		m_animated_meshnode->updateAbsolutePosition();
+		m_animated_meshnode->animateJoints();
+		updateBonePosition();
+		// The following is needed for set_bone_pos to propagate to
+		// attached objects correctly.
+		// Irrlicht ought to do this, but doesn't.
+		for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
+			auto bone = m_animated_meshnode->getJointNode(i);
+			if (!bone)
+				continue;
+			if (bone->getParent() == m_animated_meshnode) {
+				bone->updateAbsolutePositionOfAllChildren();
+			}
+		}
 	}
 }
 
