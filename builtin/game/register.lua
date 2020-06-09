@@ -122,7 +122,7 @@ function core.register_item(name, itemdef)
 	itemdef.description = itemdef.description or name
 	-- default short_description to first line of description
 	itemdef.short_description = itemdef.short_description or
-		itemdef.description:split("\n", false, 1, false)[1]
+		itemdef.description:gsub("\n.*","")
 
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
