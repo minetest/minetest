@@ -921,7 +921,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		m_animated_meshnode->animateJoints();
 		updateBonePosition();
 	}
-	
+
 	// Handle model animations and update positions instantly to prevent lags
 	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
@@ -1403,7 +1403,7 @@ void GenericCAO::updateBonePosition()
 			bone->setRotation(it.second.Y);
 		}
 	}
-	
+
 	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
 	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
 		irr::scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
@@ -1427,7 +1427,7 @@ void GenericCAO::updateBonePosition()
 		// and update the bones transformation.
 		v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
 		float offset = fabsf(bone_rot.X - bone->getRotation().X);
-		if (offset > 179.9f && offset < 180.1f) { 
+		if (offset > 179.9f && offset < 180.1f) {
 			bone->setRotation(bone_rot);
 			bone->updateAbsolutePosition();
 		}
@@ -1454,15 +1454,17 @@ void GenericCAO::updateAttachments()
 
 	if (!parent) { // Detach or don't attach
 		if (m_matrixnode) {
+			v3s16 camera_offset = m_env->getCameraOffset();
 			v3f old_pos = getPosition();
 
 			m_matrixnode->setParent(m_smgr->getRootSceneNode());
-			getPosRotMatrix().setTranslation(old_pos);
+			getPosRotMatrix().setTranslation(old_pos - intToFloat(camera_offset, BS));
 			m_matrixnode->updateAbsolutePosition();
 		}
 	}
 	else // Attach
 	{
+		parent->updateAttachments();
 		scene::ISceneNode *parent_node = parent->getSceneNode();
 		scene::IAnimatedMeshSceneNode *parent_animated_mesh_node =
 				parent->getAnimatedMeshSceneNode();
@@ -1472,6 +1474,7 @@ void GenericCAO::updateAttachments()
 
 		if (m_matrixnode && parent_node) {
 			m_matrixnode->setParent(parent_node);
+			parent_node->updateAbsolutePosition();
 			getPosRotMatrix().setTranslation(m_attachment_position);
 			//setPitchYawRoll(getPosRotMatrix(), m_attachment_rotation);
 			// use Irrlicht eulers instead
