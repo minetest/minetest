@@ -141,3 +141,96 @@ function vector.sort(a, b)
 	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},
 		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
 end
+
+local function sin(x)
+	if x % math.pi == 0 then
+		return 0
+	else
+		return math.sin(x)
+	end
+end
+
+local function cos(x)
+	if x % math.pi == math.pi / 2 then
+		return 0
+	else
+		return math.cos(x)
+	end
+end
+
+function vector.rotate_around_axis(v, axis, angle)
+	local cosangle = cos(angle)
+	local sinangle = sin(angle)
+	axis = vector.normalize(axis)
+	-- https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
+	local cross = vector.cross(v, axis)
+	return vector.new(
+		cross.x * sinangle + (v.x - dot_axis.x) * cosangle + dot_axis.x,
+		cross.y * sinangle + (v.y - dot_axis.y) * cosangle + dot_axis.y,
+		cross.z * sinangle + (v.z - dot_axis.z) * cosangle + dot_axis.z
+	)
+end
+
+function vector.rotate(v, rot)
+	local sinpitch = sin(-rot.x)
+	local sinyaw = sin(-rot.y)
+	local sinroll = sin(-rot.z)
+	local cospitch = cos(rot.x)
+	local cosyaw = cos(rot.y)
+	local cosroll = math.cos(rot.z)
+	-- Rotation matrix that applies yaw, pitch and roll
+	local matrix = {
+		{
+			sinyaw * sinpitch * sinroll + cosyaw * cosroll,
+			sinyaw * sinpitch * cosroll - cosyaw * sinroll,
+			sinyaw * cospitch,
+		},
+		{
+			cospitch * sinroll,
+			cospitch * cosroll,
+			-sinpitch,
+		},
+		{
+			cosyaw * sinpitch * sinroll - sinyaw * cosroll,
+			cosyaw * sinpitch * cosroll + sinyaw * sinroll,
+			cosyaw * cospitch,
+		},
+	}
+	-- Compute matrix multiplication: `matrix` * `v`
+	return vector.new(
+		matrix[1][1] * v.x + matrix[1][2] * v.y + matrix[1][3] * v.z,
+		matrix[2][1] * v.x + matrix[2][2] * v.y + matrix[2][3] * v.z,
+		matrix[3][1] * v.x + matrix[3][2] * v.y + matrix[3][3] * v.z
+	)
+end
+
+function vector.dir_to_rotation(forward, up)
+	forward = vector.normalize(forward)
+	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
+	if not up then
+		return rot
+	end
+	assert(vector.dot(forward, up) < 0.000001,
+			"Invalid vectors passed to vector.dir_to_rotation().")
+	up = vector.normalize(up)
+	-- Calculate vector pointing up with roll = 0, just based on forward vector.
+	local forwup = vector.rotate({x = 0, y = 1, z = 0}, rot)
+	-- 'forwup' and 'up' are now in a plane with 'forward' as normal.
+	-- The angle between them is the absolute of the roll value we're looking for.
+	rot.z = vector.angle(forwup, up)
+
+	-- Since vector.angle never returns a negative value or a value greater
+	-- than math.pi, rot.z has to be inverted sometimes.
+	-- To determine wether this is the case, we rotate the up vector back around
+	-- the forward vector and check if it worked out.
+	local back = vector.rotate_around_axis(up, forward, -rot.z)
+
+	-- We don't use vector.equals for this because of floating point imprecision.
+	if (back.x - forwup.x) * (back.x - forwup.x) +
+			(back.y - forwup.y) * (back.y - forwup.y) +
+			(back.z - forwup.z) * (back.z - forwup.z) > 0.0000001 then
+		rot.z = -rot.z
+	end
+	return rot
+end
