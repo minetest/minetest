@@ -6032,8 +6032,8 @@ object you are working with still exists.
       (x: column, y: row), default: `{x=0, y=0}`
     * `num_frames`: number, default: `1`
     * `framelength`: number, default: `0.2`
-    * `select_horiz_by_yawpitch`: boolean, this was once used for the Dungeon
-      Master mob, default: `false`
+    * `select_horiz_by_yawpitch`: boolean, default: `false`
+      only possible with visual = `sprite`
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 

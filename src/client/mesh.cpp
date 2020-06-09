@@ -203,6 +203,15 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 		setMeshBufferColor(mesh->getMeshBuffer(j), color);
 }
 
+void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count)
+{
+	const u32 stride = getVertexPitchFromType(buf->getVertexType());
+	assert(buf->getVertexCount() >= count);
+	u8 *vertices = (u8 *) buf->getVertices();
+	for (u32 i = 0; i < count; i++)
+		((video::S3DVertex*) (vertices + i * stride))->TCoords = uv[i];
+}
+
 template <typename F>
 static void applyToMesh(scene::IMesh *mesh, const F &fn)
 {
