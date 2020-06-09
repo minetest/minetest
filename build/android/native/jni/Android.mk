@@ -82,7 +82,6 @@ LOCAL_CFLAGS += \
 	-DUSE_LEVELDB=0                 \
 	-DUSE_LUAJIT=1                  \
 	-DUSE_GETTEXT=1                 \
-	-DRUN_IN_PLACE=0                \
 	-DVERSION_MAJOR=${versionMajor} \
 	-DVERSION_MINOR=${versionMinor} \
 	-DVERSION_PATCH=${versionPatch} \
