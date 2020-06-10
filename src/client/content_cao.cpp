@@ -1487,18 +1487,22 @@ void GenericCAO::updateAttachments()
 bool GenericCAO::visualExpiryRequired(const ObjectProperties &new_) const
 {
 	const ObjectProperties &old = m_prop;
+	/* Visuals do not need to be expired for:
+	 * - nametag props: handled by updateNametag()
+	 * - textures:      handled by updateTextures()
+	 * - sprite props:  handled by updateTexturePos()
+	 * - glow:          handled by updateLight()
+	 * - any other properties that do not change appearance
+	 */
 	// Ordered to compare primitive types before std::vectors
 	return old.backface_culling != new_.backface_culling ||
-		old.initial_sprite_basepos != new_.initial_sprite_basepos ||
 		old.is_visible != new_.is_visible ||
 		old.mesh != new_.mesh ||
-		old.spritediv != new_.spritediv ||
 		old.use_texture_alpha != new_.use_texture_alpha ||
 		old.visual != new_.visual ||
 		old.visual_size != new_.visual_size ||
 		old.wield_item != new_.wield_item ||
-		old.colors != new_.colors ||
-		old.textures != new_.textures;
+		old.colors != new_.colors;
 }
 
 void GenericCAO::processMessage(const std::string &data)
@@ -1513,6 +1517,7 @@ void GenericCAO::processMessage(const std::string &data)
 
 		// Check what exactly changed
 		bool expire_visuals = visualExpiryRequired(newprops);
+		bool textures_changed = m_prop.textures != newprops.textures;
 
 		// Apply changes
 		m_prop = std::move(newprops);
@@ -1541,13 +1546,18 @@ void GenericCAO::processMessage(const std::string &data)
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
 			m_prop.nametag = m_name;
-		updateNametag();
 
 		if (expire_visuals) {
 			expireVisuals();
 		} else {
 			infostream << "GenericCAO: properties updated but expiring visuals"
 				<< " not necessary" << std::endl;
+			if (textures_changed) {
+				// don't update while punch texture modifier is active
+				if (m_reset_textures_timer < 0)
+					updateTextures(m_current_texture_modifier);
+			}
+			updateNametag();
 		}
 	} else if (cmd == AO_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
