@@ -1454,7 +1454,7 @@ void GenericCAO::updateBonePosition()
 	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
 		auto bone = m_animated_meshnode->getJointNode(i);
 		// Look for the root bone.
-		if (bone && bone->getParent() == m_animated_meshnode)
+		if (bone && bone->getParent() == m_animated_meshnode) {
 			// Update entire skeleton.
 			bone->updateAbsolutePositionOfAllChildren();
 		}
