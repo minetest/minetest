@@ -689,8 +689,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		// Read image
 		video::IImage *img = vdrv->createImageFromFile(rfile);
 		if (!img) {
-			errorstream<<"Client: Cannot create image from data of "
-					<<"file \""<<filename<<"\""<<std::endl;
+			errorstream << "Client: Cannot create image from data of "
+					<< "file \"" << filename << "\"" << std::endl;
 			rfile->drop();
 			return false;
 		}
@@ -720,11 +720,11 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 
 	name = removeStringEnd(filename, model_ext);
 	if (!name.empty()) {
-		verbosestream<<"Client: Storing model into memory: "
-				<<"\""<<filename<<"\""<<std::endl;
+		verbosestream << "Client: Storing model into memory: "
+				<< "\"" << filename << "\"" << std::endl;
 		if(m_mesh_data.count(filename))
-			errorstream<<"Multiple models with name \""<<filename.c_str()
-					<<"\" found; replacing previous model"<<std::endl;
+			errorstream << "Multiple models with name \"" << filename.c_str()
+					<< "\" found; replacing previous model" << std::endl;
 		m_mesh_data[filename] = data;
 		return true;
 	}
@@ -1611,9 +1611,9 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 {
 	{
 		v3s16 p = nodepos;
-		infostream<<"Client::addUpdateMeshTaskForNode(): "
-				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-				<<std::endl;
+		infostream << "Client::addUpdateMeshTaskForNode(): "
+				<< "(" << p.X << "," << p.Y << "," << p.Z << ")"
+				<< std::endl;
 	}
 
 	v3s16 blockpos          = getNodeBlockPos(nodepos);
@@ -1712,7 +1712,7 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 
 void Client::afterContentReceived()
 {
-	infostream<<"Client::afterContentReceived() started"<<std::endl;
+	infostream << "Client::afterContentReceived() started" << std::endl;
 	assert(m_itemdef_received); // pre-condition
 	assert(m_nodedef_received); // pre-condition
 	assert(mediaReceived()); // pre-condition
@@ -1725,20 +1725,20 @@ void Client::afterContentReceived()
 	guiScalingCacheClear();
 
 	// Rebuild inherited images and recreate textures
-	infostream<<"- Rebuilding images and textures"<<std::endl;
+	infostream << "- Rebuilding images and textures" << std::endl;
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 70);
 	m_tsrc->rebuildImagesAndTextures();
 	delete[] text;
 
 	// Rebuild shaders
-	infostream<<"- Rebuilding shaders"<<std::endl;
+	infostream << "- Rebuilding shaders" << std::endl;
 	text = wgettext("Rebuilding shaders...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 71);
 	m_shsrc->rebuildShaders();
 	delete[] text;
 
 	// Update node aliases
-	infostream<<"- Updating node aliases"<<std::endl;
+	infostream << "- Updating node aliases" << std::endl;
 	text = wgettext("Initializing nodes...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
@@ -1752,7 +1752,7 @@ void Client::afterContentReceived()
 	delete[] text;
 
 	// Update node textures and assign shaders to each tile
-	infostream<<"- Updating node textures"<<std::endl;
+	infostream << "- Updating node textures" << std::endl;
 	TextureUpdateArgs tu_args;
 	tu_args.guienv = guienv;
 	tu_args.last_time_ms = porting::getTimeMs();
@@ -1774,7 +1774,7 @@ void Client::afterContentReceived()
 
 	text = wgettext("Done!");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 100);
-	infostream<<"Client::afterContentReceived() done"<<std::endl;
+	infostream << "Client::afterContentReceived() done" << std::endl;
 	delete[] text;
 }
 

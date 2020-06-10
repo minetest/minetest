@@ -111,7 +111,7 @@ void *ServerThread::run()
 			m_server->Receive();
 
 		} catch (con::PeerNotFoundException &e) {
-			infostream<<"Server: PeerNotFoundException"<<std::endl;
+			infostream << "Server: PeerNotFoundException" << std::endl;
 		} catch (ClientNotFoundException &e) {
 		} catch (con::ConnectionBindFailed &e) {
 			m_server->setAsyncFatalError(e.what());
@@ -488,7 +488,7 @@ void Server::stop()
 	m_thread->wait();
 	//m_emergethread.stop();
 
-	infostream<<"Server: Threads stopped"<<std::endl;
+	infostream << "Server: Threads stopped" << std::endl;
 }
 
 void Server::step(float dtime)
@@ -569,8 +569,8 @@ void Server::AsyncRunStep(bool initial_step)
 		max_lag *= 0.9998; // Decrease slowly (about half per 5 minutes)
 		if(dtime > max_lag){
 			if(dtime > 0.1 && dtime > max_lag * 2.0)
-				infostream<<"Server: Maximum lag peaked to "<<dtime
-						<<" s"<<std::endl;
+				infostream << "Server: Maximum lag peaked to " << dtime
+						<< " s" << std::endl;
 			max_lag = dtime;
 		}
 		m_env->reportMaxLagEstimate(max_lag);
@@ -1069,7 +1069,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 			actionstream << name << " ";
 		}
 
-		actionstream << player->getName() <<std::endl;
+		actionstream << player->getName() << std::endl;
 	}
 	return playersao;
 }
@@ -1270,16 +1270,16 @@ void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
 
 void Server::peerAdded(con::Peer *peer)
 {
-	verbosestream<<"Server::peerAdded(): peer->id="
-			<<peer->id<<std::endl;
+	verbosestream << "Server::peerAdded(): peer->id="
+			<< peer->id << std::endl;
 
 	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, false));
 }
 
 void Server::deletingPeer(con::Peer *peer, bool timeout)
 {
-	verbosestream<<"Server::deletingPeer(): peer->id="
-			<<peer->id<<", timeout="<<timeout<<std::endl;
+	verbosestream << "Server::deletingPeer(): peer->id="
+			<< peer->id << ", timeout=" << timeout << std::endl;
 
 	m_clients.event(peer->id, CSE_Disconnect);
 	m_peer_change_queue.push(con::PeerChange(con::PEER_REMOVED, peer->id, timeout));
@@ -1335,9 +1335,9 @@ void Server::handlePeerChanges()
 		con::PeerChange c = m_peer_change_queue.front();
 		m_peer_change_queue.pop();
 
-		verbosestream<<"Server: Handling peer change: "
-				<<"id="<<c.peer_id<<", timeout="<<c.timeout
-				<<std::endl;
+		verbosestream << "Server: Handling peer change: "
+				<< "id=" << c.peer_id << ", timeout=" << c.timeout
+				<< std::endl;
 
 		switch(c.type)
 		{
@@ -2116,13 +2116,13 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	if (!params.to_player.empty()) {
 		RemotePlayer *player = m_env->getPlayer(params.to_player.c_str());
 		if(!player){
-			infostream<<"Server::playSound: Player \""<<params.to_player
-					<<"\" not found"<<std::endl;
+			infostream << "Server::playSound: Player \"" << params.to_player
+					<< "\" not found" << std::endl;
 			return -1;
 		}
 		if (player->getPeerId() == PEER_ID_INEXISTENT) {
-			infostream<<"Server::playSound: Player \""<<params.to_player
-					<<"\" not connected"<<std::endl;
+			infostream << "Server::playSound: Player \"" << params.to_player
+					<< "\" not connected" << std::endl;
 			return -1;
 		}
 		dst_clients.push_back(player->getPeerId());
@@ -2482,7 +2482,7 @@ bool Server::SendBlock(session_t peer_id, const v3s16 &blockpos)
 
 void Server::fillMediaCache()
 {
-	infostream<<"Server: Calculating media file checksums"<<std::endl;
+	infostream << "Server: Calculating media file checksums" << std::endl;
 
 	// Collect all media file paths
 	std::vector<std::string> paths;
@@ -2499,7 +2499,7 @@ void Server::fillMediaCache()
 			std::string filename = dln.name;
 			// If name contains illegal characters, ignore the file
 			if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
-				infostream<<"Server: ignoring illegal file name: \""
+				infostream << "Server: ignoring illegal file name: \""
 						<< filename << "\"" << std::endl;
 				continue;
 			}
@@ -2544,7 +2544,7 @@ void Server::fillMediaCache()
 				}
 			}
 			if(bad) {
-				errorstream<<"Server::fillMediaCache(): Failed to read \""
+				errorstream << "Server::fillMediaCache(): Failed to read \""
 						<< filename << "\"" << std::endl;
 				continue;
 			}
@@ -2616,8 +2616,8 @@ struct SendableMedia
 void Server::sendRequestedMedia(session_t peer_id,
 		const std::vector<std::string> &tosend)
 {
-	verbosestream<<"Server::sendRequestedMedia(): "
-			<<"Sending files to client"<<std::endl;
+	verbosestream << "Server::sendRequestedMedia(): "
+			<< "Sending files to client" << std::endl;
 
 	/* Read files */
 
@@ -2631,8 +2631,8 @@ void Server::sendRequestedMedia(session_t peer_id,
 
 	for (const std::string &name : tosend) {
 		if (m_media.find(name) == m_media.end()) {
-			errorstream<<"Server::sendRequestedMedia(): Client asked for "
-					<<"unknown file \""<<(name)<<"\""<<std::endl;
+			errorstream << "Server::sendRequestedMedia(): Client asked for "
+					<< "unknown file \"" << (name) << "\"" << std::endl;
 			continue;
 		}
 
@@ -2642,8 +2642,8 @@ void Server::sendRequestedMedia(session_t peer_id,
 		// Read data
 		std::ifstream fis(tpath.c_str(), std::ios_base::binary);
 		if(!fis.good()){
-			errorstream<<"Server::sendRequestedMedia(): Could not open \""
-					<<tpath<<"\" for reading"<<std::endl;
+			errorstream << "Server::sendRequestedMedia(): Could not open \""
+					<< tpath << "\" for reading" << std::endl;
 			continue;
 		}
 		std::ostringstream tmp_os(std::ios_base::binary);
@@ -2662,8 +2662,8 @@ void Server::sendRequestedMedia(session_t peer_id,
 			}
 		}
 		if (bad) {
-			errorstream<<"Server::sendRequestedMedia(): Failed to read \""
-					<<name<<"\""<<std::endl;
+			errorstream << "Server::sendRequestedMedia(): Failed to read \""
+					<< name << "\"" << std::endl;
 			continue;
 		}
 		/*infostream<<"Server::sendRequestedMedia(): Loaded \""
@@ -3544,10 +3544,10 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 Inventory* Server::createDetachedInventory(const std::string &name, const std::string &player)
 {
 	if(m_detached_inventories.count(name) > 0){
-		infostream<<"Server clearing detached inventory \""<<name<<"\""<<std::endl;
+		infostream << "Server clearing detached inventory \"" << name << "\"" << std::endl;
 		delete m_detached_inventories[name];
 	} else {
-		infostream<<"Server creating detached inventory \""<<name<<"\""<<std::endl;
+		infostream << "Server creating detached inventory \"" << name << "\"" << std::endl;
 	}
 	Inventory *inv = new Inventory(m_itemdef);
 	sanity_check(inv);
@@ -3592,7 +3592,7 @@ bool Server::removeDetachedInventory(const std::string &name)
 bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 		std::list<std::string> *log)
 {
-	infostream<<"Server::rollbackRevertActions(len="<<actions.size()<<")"<<std::endl;
+	infostream << "Server::rollbackRevertActions(len=" << actions.size() << ")" << std::endl;
 	ServerMap *map = (ServerMap*)(&m_env->getMap());
 
 	// Fail if no actions to handle
@@ -3611,21 +3611,21 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 		if(!success){
 			num_failed++;
 			std::ostringstream os;
-			os<<"Revert of step ("<<num_tried<<") "<<action.toString()<<" failed";
-			infostream<<"Map::rollbackRevertActions(): "<<os.str()<<std::endl;
+			os << "Revert of step (" << num_tried << ") " << action.toString() << " failed";
+			infostream << "Map::rollbackRevertActions(): " << os.str() << std::endl;
 			if (log)
 				log->push_back(os.str());
 		}else{
 			std::ostringstream os;
-			os<<"Successfully reverted step ("<<num_tried<<") "<<action.toString();
-			infostream<<"Map::rollbackRevertActions(): "<<os.str()<<std::endl;
+			os << "Successfully reverted step (" << num_tried << ") " << action.toString();
+			infostream << "Map::rollbackRevertActions(): " << os.str() << std::endl;
 			if (log)
 				log->push_back(os.str());
 		}
 	}
 
-	infostream<<"Map::rollbackRevertActions(): "<<num_failed<<"/"<<num_tried
-			<<" failed"<<std::endl;
+	infostream << "Map::rollbackRevertActions(): " << num_failed << "/" << num_tried
+			<< " failed" << std::endl;
 
 	// Call it done if less than half failed
 	return num_failed <= num_tried/2;
@@ -3807,7 +3807,7 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 
 	// If player is already connected, cancel
 	if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
-		infostream<<"emergePlayer(): Player already connected"<<std::endl;
+		infostream << "emergePlayer(): Player already connected" << std::endl;
 		return NULL;
 	}
 
@@ -3815,8 +3815,8 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 		If player with the wanted peer_id already exists, cancel.
 	*/
 	if (m_env->getPlayer(peer_id)) {
-		infostream<<"emergePlayer(): Player with wrong name but same"
-				" peer_id already exists"<<std::endl;
+		infostream << "emergePlayer(): Player with wrong name but same"
+				" peer_id already exists" << std::endl;
 		return NULL;
 	}
 
@@ -3865,7 +3865,7 @@ void Server::unregisterModStorage(const std::string &name)
 
 void dedicated_server_loop(Server &server, bool &kill)
 {
-	verbosestream<<"dedicated_server_loop()"<<std::endl;
+	verbosestream << "dedicated_server_loop()" << std::endl;
 
 	IntervalLimiter m_profiler_interval;
 
@@ -3894,7 +3894,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 		if (profiler_print_interval != 0) {
 			if(m_profiler_interval.step(steplen, profiler_print_interval))
 			{
-				infostream<<"Profiler:"<<std::endl;
+				infostream << "Profiler:" << std::endl;
 				g_profiler->print(infostream);
 				g_profiler->clear();
 			}

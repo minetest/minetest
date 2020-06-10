@@ -182,10 +182,10 @@ void Map::setNode(v3s16 p, MapNode & n)
 	// Never allow placing CONTENT_IGNORE, it causes problems
 	if(n.getContent() == CONTENT_IGNORE){
 		bool temp_bool;
-		errorstream<<"Map::setNode(): Not allowing to place CONTENT_IGNORE"
-				<<" while trying to replace \""
-				<<m_nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
-				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
+		errorstream << "Map::setNode(): Not allowing to place CONTENT_IGNORE"
+				<< " while trying to replace \""
+				<< m_nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
+				<< "\" at " << PP(p) << " (block " << PP(blockpos) << ")" << std::endl;
 		return;
 	}
 	block->setNodeNoCheck(relpos, n);
@@ -439,15 +439,15 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 	if(deleted_blocks_count != 0)
 	{
 		PrintInfo(infostream); // ServerMap/ClientMap:
-		infostream<<"Unloaded "<<deleted_blocks_count
-				<<" blocks from memory";
+		infostream << "Unloaded " << deleted_blocks_count
+				<< " blocks from memory";
 		if(save_before_unloading)
-			infostream<<", of which "<<saved_blocks_count<<" were written";
-		infostream<<", "<<block_count_all<<" blocks in memory";
-		infostream<<"."<<std::endl;
+			infostream << ", of which " << saved_blocks_count << " were written";
+		infostream << ", " << block_count_all << " blocks in memory";
+		infostream << "." << std::endl;
 		if(saved_blocks_count != 0){
 			PrintInfo(infostream); // ServerMap/ClientMap:
-			infostream<<"Blocks modified by: "<<std::endl;
+			infostream << "Blocks modified by: " << std::endl;
 			modprofiler.print(infostream);
 		}
 	}
@@ -473,7 +473,7 @@ void Map::deleteSectors(std::vector<v2s16> &sectorList)
 
 void Map::PrintInfo(std::ostream &out)
 {
-	out<<"Map: ";
+	out << "Map: ";
 }
 
 #define WATER_DROP_BOOST 4
@@ -932,13 +932,13 @@ NodeMetadata *Map::getNodeMetadata(v3s16 p)
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
-		infostream<<"Map::getNodeMetadata(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+		infostream << "Map::getNodeMetadata(): Need to emerge "
+				<< PP(blockpos) << std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		warningstream<<"Map::getNodeMetadata(): Block not found"
-				<<std::endl;
+		warningstream << "Map::getNodeMetadata(): Block not found"
+				<< std::endl;
 		return NULL;
 	}
 	NodeMetadata *meta = block->m_node_metadata.get(p_rel);
@@ -951,13 +951,13 @@ bool Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
-		infostream<<"Map::setNodeMetadata(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+		infostream << "Map::setNodeMetadata(): Need to emerge "
+				<< PP(blockpos) << std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		warningstream<<"Map::setNodeMetadata(): Block not found"
-				<<std::endl;
+		warningstream << "Map::setNodeMetadata(): Block not found"
+				<< std::endl;
 		return false;
 	}
 	block->m_node_metadata.set(p_rel, meta);
@@ -971,8 +971,8 @@ void Map::removeNodeMetadata(v3s16 p)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(block == NULL)
 	{
-		warningstream<<"Map::removeNodeMetadata(): Block not found"
-				<<std::endl;
+		warningstream << "Map::removeNodeMetadata(): Block not found"
+				<< std::endl;
 		return;
 	}
 	block->m_node_metadata.remove(p_rel);
@@ -984,13 +984,13 @@ NodeTimer Map::getNodeTimer(v3s16 p)
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
-		infostream<<"Map::getNodeTimer(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+		infostream << "Map::getNodeTimer(): Need to emerge "
+				<< PP(blockpos) << std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		warningstream<<"Map::getNodeTimer(): Block not found"
-				<<std::endl;
+		warningstream << "Map::getNodeTimer(): Block not found"
+				<< std::endl;
 		return NodeTimer();
 	}
 	NodeTimer t = block->m_node_timers.get(p_rel);
@@ -1005,13 +1005,13 @@ void Map::setNodeTimer(const NodeTimer &t)
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
-		infostream<<"Map::setNodeTimer(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+		infostream<< "Map::setNodeTimer(): Need to emerge "
+				<< PP(blockpos) << std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		warningstream<<"Map::setNodeTimer(): Block not found"
-				<<std::endl;
+		warningstream << "Map::setNodeTimer(): Block not found"
+				<< std::endl;
 		return;
 	}
 	NodeTimer nt(t.timeout, t.elapsed, p_rel);
@@ -1025,8 +1025,8 @@ void Map::removeNodeTimer(v3s16 p)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(block == NULL)
 	{
-		warningstream<<"Map::removeNodeTimer(): Block not found"
-				<<std::endl;
+		warningstream << "Map::removeNodeTimer(): Block not found"
+				<< std::endl;
 		return;
 	}
 	block->m_node_timers.remove(p_rel);
@@ -1192,7 +1192,7 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 	settings_mgr(g_settings, savedir + DIR_DELIM + "map_meta.txt"),
 	m_emerge(emerge)
 {
-	verbosestream<<FUNCTION_NAME<<std::endl;
+	verbosestream << FUNCTION_NAME << std::endl;
 
 	// Tell the EmergeManager about our MapSettingsManager
 	emerge->map_settings_mgr = &settings_mgr;
@@ -1228,8 +1228,8 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 		if (fs::PathExists(m_savedir)) {
 			// If directory is empty, it is safe to save into it.
 			if (fs::GetDirListing(m_savedir).empty()) {
-				infostream<<"ServerMap: Empty save directory is valid."
-						<<std::endl;
+				infostream << "ServerMap: Empty save directory is valid."
+						<< std::endl;
 				m_map_saving_enabled = true;
 			}
 			else
@@ -1256,16 +1256,16 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 	}
 	catch(std::exception &e)
 	{
-		warningstream<<"ServerMap: Failed to load map from "<<savedir
-				<<", exception: "<<e.what()<<std::endl;
-		infostream<<"Please remove the map or fix it."<<std::endl;
-		warningstream<<"Map saving will be disabled."<<std::endl;
+		warningstream << "ServerMap: Failed to load map from " << savedir
+				<< ", exception: " << e.what() << std::endl;
+		infostream << "Please remove the map or fix it." << std::endl;
+		warningstream << "Map saving will be disabled." << std::endl;
 	}
 }
 
 ServerMap::~ServerMap()
 {
-	verbosestream<<FUNCTION_NAME<<std::endl;
+	verbosestream << FUNCTION_NAME << std::endl;
 
 	try
 	{
@@ -1279,8 +1279,8 @@ ServerMap::~ServerMap()
 	}
 	catch(std::exception &e)
 	{
-		infostream<<"ServerMap: Failed to save map to "<<m_savedir
-				<<", exception: "<<e.what()<<std::endl;
+		infostream << "ServerMap: Failed to save map to " << m_savedir
+				<< ", exception: " << e.what() << std::endl;
 	}
 
 	/*
@@ -1644,7 +1644,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	try {
 		sector = createSector(p2d);
 	} catch (InvalidPositionException &e) {
-		infostream<<"createBlock: createSector() failed"<<std::endl;
+		infostream << "createBlock: createSector() failed" << std::endl;
 		throw e;
 	}
 
@@ -1766,8 +1766,8 @@ plan_b:
 void ServerMap::createDirs(const std::string &path)
 {
 	if (!fs::CreateAllDirs(path)) {
-		m_dout<<"ServerMap: Failed to create directory "
-				<<"\""<<path<<"\""<<std::endl;
+		m_dout << "ServerMap: Failed to create directory "
+				<< "\"" << path << "\"" << std::endl;
 		throw BaseException("ServerMap failed to create directory");
 	}
 }
@@ -1775,15 +1775,15 @@ void ServerMap::createDirs(const std::string &path)
 void ServerMap::save(ModifiedState save_level)
 {
 	if (!m_map_saving_enabled) {
-		warningstream<<"Not saving map, saving disabled."<<std::endl;
+		warningstream << "Not saving map, saving disabled." << std::endl;
 		return;
 	}
 
 	u64 start_time = porting::getTimeNs();
 
 	if(save_level == MOD_STATE_CLEAN)
-		infostream<<"ServerMap: Saving whole map, this can take time."
-				<<std::endl;
+		infostream << "ServerMap: Saving whole map, this can take time."
+				<< std::endl;
 
 	if (m_map_metadata_changed || save_level == MOD_STATE_CLEAN) {
 		if (settings_mgr.saveMapMeta())
@@ -1836,7 +1836,7 @@ void ServerMap::save(ModifiedState save_level)
 				<< ", " << block_count_all << " blocks in memory."
 				<< std::endl;
 		PrintInfo(infostream); // ServerMap/ClientMap:
-		infostream<<"Blocks modified by: "<<std::endl;
+		infostream << "Blocks modified by: " << std::endl;
 		modprofiler.print(infostream);
 	}
 
@@ -1989,16 +1989,16 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 	}
 	catch(SerializationError &e)
 	{
-		errorstream<<"Invalid block data in database"
-				<<" ("<<p3d.X<<","<<p3d.Y<<","<<p3d.Z<<")"
-				<<" (SerializationError): "<<e.what()<<std::endl;
+		errorstream << "Invalid block data in database"
+				<< " (" << p3d.X << "," << p3d.Y << "," << p3d.Z << ")"
+				<< " (SerializationError): " << e.what() << std::endl;
 
 		// TODO: Block should be marked as invalid in memory so that it is
 		// not touched but the game can run
 
 		if(g_settings->getBool("ignore_world_load_errors")){
-			errorstream<<"Ignoring block load error. Duck and cover! "
-					<<"(ignore_world_load_errors)"<<std::endl;
+			errorstream << "Ignoring block load error. Duck and cover! "
+					<< "(ignore_world_load_errors)" << std::endl;
 		} else {
 			throw SerializationError("Invalid block data in database");
 		}
@@ -2062,7 +2062,7 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 
 void ServerMap::PrintInfo(std::ostream &out)
 {
-	out<<"ServerMap: ";
+	out << "ServerMap: ";
 }
 
 bool ServerMap::repairBlockLight(v3s16 blockpos,
@@ -2096,10 +2096,10 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 	u32 size_MB = block_area_nodes.getVolume()*4/1000000;
 	if(size_MB >= 1)
 	{
-		infostream<<"initialEmerge: area: ";
+		infostream << "initialEmerge: area: ";
 		block_area_nodes.print(infostream);
-		infostream<<" ("<<size_MB<<"MB)";
-		infostream<<std::endl;
+		infostream << " (" << size_MB << "MB)";
+		infostream << std::endl;
 	}
 
 	addArea(block_area_nodes);

@@ -419,7 +419,7 @@ int LuaPseudoRandom::l_next(lua_State *L)
 	if (lua_isnumber(L, 3))
 		max = luaL_checkinteger(L, 3);
 	if (max < min) {
-		errorstream<<"PseudoRandom.next(): max="<<max<<" min="<<min<<std::endl;
+		errorstream << "PseudoRandom.next(): max=" << max << " min=" << min << std::endl;
 		throw LuaError("PseudoRandom.next(): max < min");
 	}
 	if(max - min != 32767 && max - min > 32767/5)

@@ -191,7 +191,7 @@ wchar_t *narrow_to_wide_c(const char *str)
 #if defined(_WIN32)
 	int nResult = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) str, -1, 0, 0);
 	if (nResult == 0) {
-		errorstream<<"gettext: MultiByteToWideChar returned null"<<std::endl;
+		errorstream << "gettext: MultiByteToWideChar returned null" << std::endl;
 	} else {
 		nstr = new wchar_t[nResult];
 		MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) str, -1, (WCHAR *) nstr, nResult);

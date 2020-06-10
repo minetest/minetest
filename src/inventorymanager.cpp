@@ -46,19 +46,19 @@ void InventoryLocation::serialize(std::ostream &os) const
 {
 	switch (type) {
 	case InventoryLocation::UNDEFINED:
-		os<<"undefined";
+		os << "undefined";
 		break;
 	case InventoryLocation::CURRENT_PLAYER:
-		os<<"current_player";
+		os << "current_player";
 		break;
 	case InventoryLocation::PLAYER:
-		os<<"player:"<<name;
+		os << "player:" << name;
 		break;
 	case InventoryLocation::NODEMETA:
-		os<<"nodemeta:"<<p.X<<","<<p.Y<<","<<p.Z;
+		os << "nodemeta:" << p.X << "," << p.Y << "," << p.Z;
 		break;
 	case InventoryLocation::DETACHED:
-		os<<"detached:"<<name;
+		os << "detached:" << name;
 		break;
 	default:
 		FATAL_ERROR("Unhandled inventory location type");
@@ -88,7 +88,7 @@ void InventoryLocation::deSerialize(std::istream &is)
 		type = InventoryLocation::DETACHED;
 		std::getline(is, name, '\n');
 	} else {
-		infostream<<"Unknown InventoryLocation type=\""<<tname<<"\""<<std::endl;
+		infostream << "Unknown InventoryLocation type=\"" << tname << "\"" << std::endl;
 		throw SerializationError("Unknown InventoryLocation type");
 	}
 }
@@ -355,15 +355,15 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if (to_inv.type == InventoryLocation::PLAYER)
 			list_to->setModified();
 
-		infostream<<"IMoveAction::apply(): move was completely disallowed:"
-				<<" count="<<old_count
-				<<" from inv=\""<<from_inv.dump()<<"\""
-				<<" list=\""<<from_list<<"\""
-				<<" i="<<from_i
-				<<" to inv=\""<<to_inv.dump()<<"\""
-				<<" list=\""<<to_list<<"\""
-				<<" i="<<to_i
-				<<std::endl;
+		infostream << "IMoveAction::apply(): move was completely disallowed:"
+				<< " count=" << old_count
+				<< " from inv=\"" << from_inv.dump() << "\""
+				<< " list=\"" << from_list << "\""
+				<< " i=" << from_i
+				<< " to inv=\"" << to_inv.dump() << "\""
+				<< " list=\"" << to_list << "\""
+				<< " i=" << to_i
+				<< std::endl;
 		return;
 	}
 
@@ -592,8 +592,8 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	Inventory *inv_from = mgr->getInventory(from_inv);
 
 	if (!inv_from) {
-		infostream<<"IDropAction::apply(): FAIL: source inventory not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""<<std::endl;
+		infostream << "IDropAction::apply(): FAIL: source inventory not found: "
+				<< "from_inv=\"" << from_inv.dump() << "\"" << std::endl;
 		return;
 	}
 
@@ -603,15 +603,15 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		If a list doesn't exist or the source item doesn't exist
 	*/
 	if (!list_from) {
-		infostream<<"IDropAction::apply(): FAIL: source list not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""<<std::endl;
+		infostream << "IDropAction::apply(): FAIL: source list not found: "
+				<< "from_inv=\"" << from_inv.dump() << "\"" << std::endl;
 		return;
 	}
 	if (list_from->getItem(from_i).empty()) {
-		infostream<<"IDropAction::apply(): FAIL: source item not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""
-				<<", from_list=\""<<from_list<<"\""
-				<<" from_i="<<from_i<<std::endl;
+		infostream << "IDropAction::apply(): FAIL: source item not found: "
+				<< "from_inv=\"" << from_inv.dump() << "\""
+				<< ", from_list=\"" << from_list << "\""
+				<< " from_i=" << from_i << std::endl;
 		return;
 	}
 
@@ -664,7 +664,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		int actually_dropped_count = take_count - item1.count;
 
 		if (actually_dropped_count == 0) {
-			infostream<<"Actually dropped no items"<<std::endl;
+			infostream << "Actually dropped no items" << std::endl;
 
 			// Revert client prediction. See 'clientApply'
 			if (from_inv.type == InventoryLocation::PLAYER)
@@ -678,18 +678,18 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			ItemStack item2 = list_from->takeItem(from_i, actually_dropped_count);
 
 			if (item2.count != actually_dropped_count)
-				errorstream<<"Could not take dropped count of items"<<std::endl;
+				errorstream << "Could not take dropped count of items" << std::endl;
 		}
 
 		src_item.count = actually_dropped_count;
 		mgr->setInventoryModified(from_inv);
 	}
 
-	infostream<<"IDropAction::apply(): dropped "
-			<<" from inv=\""<<from_inv.dump()<<"\""
-			<<" list=\""<<from_list<<"\""
-			<<" i="<<from_i
-			<<std::endl;
+	infostream << "IDropAction::apply(): dropped "
+			<< " from inv=\"" << from_inv.dump() << "\""
+			<< " list=\"" << from_list << "\""
+			<< " i=" << from_i
+			<< std::endl;
 
 
 	/*
@@ -881,9 +881,9 @@ void ICraftAction::apply(InventoryManager *mgr,
 		} while (!output_replacement.empty());
 	}
 
-	infostream<<"ICraftAction::apply(): crafted "
-			<<" craft_inv=\""<<craft_inv.dump()<<"\""
-			<<std::endl;
+	infostream << "ICraftAction::apply(): crafted "
+			<< " craft_inv=\"" << craft_inv.dump() << "\""
+			<< std::endl;
 }
 
 void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)

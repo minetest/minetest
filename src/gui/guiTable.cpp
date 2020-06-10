@@ -212,8 +212,8 @@ void GUITable::setTable(const TableOptions &options,
 		else if (name == "opendepth")
 			opendepth = stoi(value);
 		else
-			errorstream<<"Invalid table option: \""<<name<<"\""
-				<<" (value=\""<<value<<"\")"<<std::endl;
+			errorstream << "Invalid table option: \"" << name << "\""
+				<< " (value=\"" << value << "\")" << std::endl;
 	}
 
 	// Get number of columns and rows
@@ -273,8 +273,8 @@ void GUITable::setTable(const TableOptions &options,
 		else if (columns[j].type == "tree")
 			columntype = COLUMN_TYPE_TREE;
 		else
-			errorstream<<"Invalid table column type: \""
-				<<columns[j].type<<"\""<<std::endl;
+			errorstream << "Invalid table column type: \""
+				<< columns[j].type << "\"" << std::endl;
 
 		// Process column options
 		s32 padding = myround(0.5 * em);
@@ -319,8 +319,8 @@ void GUITable::setTable(const TableOptions &options,
 							content_index));
 			}
 			else {
-				errorstream<<"Invalid table column option: \""<<name<<"\""
-					<<" (value=\""<<value<<"\")"<<std::endl;
+				errorstream << "Invalid table column option: \"" << name << "\""
+					<< " (value=\"" << value << "\")" << std::endl;
 			}
 		}
 

@@ -112,8 +112,8 @@ unsigned long httpfetch_caller_alloc_secure()
 
 void httpfetch_caller_free(unsigned long caller)
 {
-	verbosestream<<"httpfetch_caller_free: freeing "
-			<<caller<<std::endl;
+	verbosestream << "httpfetch_caller_free: freeing "
+			<< caller << std::endl;
 
 	httpfetch_request_clear(caller);
 	if (caller != HTTPFETCH_DISCARD) {
@@ -185,7 +185,7 @@ public:
 		if (handles.empty()) {
 			curl = curl_easy_init();
 			if (curl == NULL) {
-				errorstream<<"curl_easy_init returned NULL"<<std::endl;
+				errorstream << "curl_easy_init returned NULL" << std::endl;
 			}
 		}
 		else {
@@ -610,9 +610,9 @@ protected:
 
 		mres = curl_multi_timeout(m_multi, &select_timeout);
 		if (mres != CURLM_OK) {
-			errorstream<<"curl_multi_timeout"
-				<<" returned error code "<<mres
-				<<std::endl;
+			errorstream << "curl_multi_timeout"
+				<< " returned error code " << mres
+				<< std::endl;
 			select_timeout = 0;
 		}
 
@@ -631,11 +631,11 @@ protected:
 						&select_tv);
 				if (retval == -1) {
 					#ifdef _WIN32
-					errorstream<<"select returned error code "
-						<<WSAGetLastError()<<std::endl;
+					errorstream << "select returned error code "
+						<< WSAGetLastError() << std::endl;
 					#else
-					errorstream<<"select returned error code "
-						<<errno<<std::endl;
+					errorstream << "select returned error code "
+						<< errno << std::endl;
 					#endif
 				}
 			}
@@ -651,7 +651,7 @@ protected:
 
 		m_multi = curl_multi_init();
 		if (m_multi == NULL) {
-			errorstream<<"curl_multi_init returned NULL\n";
+			errorstream << "curl_multi_init returned NULL\n";
 			return NULL;
 		}
 
@@ -719,9 +719,9 @@ protected:
 
 		CURLMcode mres = curl_multi_cleanup(m_multi);
 		if (mres != CURLM_OK) {
-			errorstream<<"curl_multi_cleanup"
-				<<" returned error code "<<mres
-				<<std::endl;
+			errorstream << "curl_multi_cleanup"
+				<< " returned error code " << mres
+				<< std::endl;
 		}
 
 		return NULL;
@@ -732,8 +732,8 @@ CurlFetchThread *g_httpfetch_thread = NULL;
 
 void httpfetch_init(int parallel_limit)
 {
-	verbosestream<<"httpfetch_init: parallel_limit="<<parallel_limit
-			<<std::endl;
+	verbosestream << "httpfetch_init: parallel_limit=" << parallel_limit
+			<< std::endl;
 
 	CURLcode res = curl_global_init(CURL_GLOBAL_DEFAULT);
 	FATAL_ERROR_IF(res != CURLE_OK, "CURL init failed");
@@ -748,7 +748,7 @@ void httpfetch_init(int parallel_limit)
 
 void httpfetch_cleanup()
 {
-	verbosestream<<"httpfetch_cleanup: cleaning up"<<std::endl;
+	verbosestream << "httpfetch_cleanup: cleaning up" << std::endl;
 
 	g_httpfetch_thread->stop();
 	g_httpfetch_thread->requestWakeUp();

@@ -176,13 +176,13 @@ std::string TempPath()
 {
 	DWORD bufsize = GetTempPath(0, NULL);
 	if(bufsize == 0){
-		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
+		errorstream << "GetTempPath failed, error = " << GetLastError() << std::endl;
 		return "";
 	}
 	std::vector<char> buf(bufsize);
 	DWORD len = GetTempPath(bufsize, &buf[0]);
 	if(len == 0 || len > bufsize){
-		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
+		errorstream << "GetTempPath failed, error = " << GetLastError() << std::endl;
 		return "";
 	}
 	return std::string(buf.begin(), buf.begin() + len);
@@ -293,7 +293,7 @@ bool RecursiveDelete(const std::string &path)
 		Execute the 'rm' command directly, by fork() and execve()
 	*/
 
-	infostream<<"Removing \""<<path<<"\""<<std::endl;
+	infostream << "Removing \"" << path << "\"" << std::endl;
 
 	//return false;
 
@@ -316,8 +316,8 @@ bool RecursiveDelete(const std::string &path)
 		argv[2] = argv_data[2];
 		argv[3] = NULL;
 
-		verbosestream<<"Executing '"<<argv[0]<<"' '"<<argv[1]<<"' '"
-				<<argv[2]<<"'"<<std::endl;
+		verbosestream << "Executing '" << argv[0] << "' '" << argv[1] << "' '"
+				<< argv[2] << "'" << std::endl;
 
 		execv(argv[0], argv);
 
@@ -415,7 +415,7 @@ bool DeletePaths(const std::vector<std::string> &paths)
 		const std::string &path = paths[i];
 		bool did = DeleteSingleFileOrEmptyDirectory(path);
 		if(!did){
-			errorstream<<"Failed to delete "<<path<<std::endl;
+			errorstream << "Failed to delete " << path << std::endl;
 			success = false;
 		}
 	}
@@ -424,7 +424,7 @@ bool DeletePaths(const std::vector<std::string> &paths)
 
 bool RecursiveDeleteContent(const std::string &path)
 {
-	infostream<<"Removing content of \""<<path<<"\""<<std::endl;
+	infostream << "Removing content of \"" << path << "\"" << std::endl;
 	std::vector<DirListNode> list = GetDirListing(path);
 	for (const DirListNode &dln : list) {
 		if(trim(dln.name) == "." || trim(dln.name) == "..")
@@ -461,15 +461,15 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 {
 	FILE *sourcefile = fopen(source.c_str(), "rb");
 	if(sourcefile == NULL){
-		errorstream<<source<<": can't open for reading: "
-			<<strerror(errno)<<std::endl;
+		errorstream << source << ": can't open for reading: "
+			<< strerror(errno) << std::endl;
 		return false;
 	}
 
 	FILE *targetfile = fopen(target.c_str(), "wb");
 	if(targetfile == NULL){
-		errorstream<<target<<": can't open for writing: "
-			<<strerror(errno)<<std::endl;
+		errorstream << target << ": can't open for writing: "
+			<< strerror(errno) << std::endl;
 		fclose(sourcefile);
 		return false;
 	}
@@ -483,8 +483,8 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 				sizeof(readbuffer), sourcefile);
 		total += readbytes;
 		if(ferror(sourcefile)){
-			errorstream<<source<<": IO error: "
-				<<strerror(errno)<<std::endl;
+			errorstream << source << ": IO error: "
+				<< strerror(errno) << std::endl;
 			retval = false;
 			done = true;
 		}
@@ -498,14 +498,14 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 			done = true;
 		}
 		if(ferror(targetfile)){
-			errorstream<<target<<": IO error: "
-					<<strerror(errno)<<std::endl;
+			errorstream << target << ": IO error: "
+					<< strerror(errno) << std::endl;
 			retval = false;
 			done = true;
 		}
 	}
-	infostream<<"copied "<<total<<" bytes from "
-		<<source<<" to "<<target<<std::endl;
+	infostream << "copied " << total << " bytes from "
+		<< source << " to " << target << std::endl;
 	fclose(sourcefile);
 	fclose(targetfile);
 	return retval;

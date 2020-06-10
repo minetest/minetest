@@ -325,7 +325,7 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 		data->explicit_size = true;
 		return;
 	}
-	errorstream<< "Invalid size element (" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid size element (" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &element)
@@ -341,13 +341,13 @@ void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &elemen
 		pos_offset.Y += stof(parts[1]);
 		return;
 	}
-	errorstream<< "Invalid container start element (" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid container start element (" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseContainerEnd(parserData* data)
 {
 	if (container_stack.empty()) {
-		errorstream<< "Invalid container end element, no matching container start element"  << std::endl;
+		errorstream << "Invalid container end element, no matching container start element" << std::endl;
 	} else {
 		pos_offset = container_stack.top();
 		container_stack.pop();
@@ -522,7 +522,7 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid list element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid list element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element)
@@ -559,8 +559,8 @@ void GUIFormSpecMenu::parseListRing(parserData *data, const std::string &element
 		return;
 	}
 
-	errorstream<< "Invalid list ring element(" << parts.size() << ", "
-		<< m_inventorylists.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid list ring element(" << parts.size() << ", "
+		<< m_inventorylists.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element)
@@ -636,7 +636,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid checkbox element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid checkbox element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &element)
@@ -857,7 +857,7 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 		m_clickthrough_elements.push_back(e);
 		return;
 	}
-	errorstream<< "Invalid image element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid image element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &element)
@@ -971,7 +971,7 @@ void GUIFormSpecMenu::parseItemImage(parserData* data, const std::string &elemen
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid ItemImage element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid ItemImage element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
@@ -1036,7 +1036,7 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid button element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid button element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &element)
@@ -1132,7 +1132,7 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid background element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid background element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseTableOptions(parserData* data, const std::string &element)
@@ -1238,7 +1238,7 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid table element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid table element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element)
@@ -1315,7 +1315,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid textlist element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid textlist element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 
@@ -1398,7 +1398,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 		return;
 	}
 	errorstream << "Invalid dropdown element(" << parts.size() << "): '"
-				<< element << "'"  << std::endl;
+				<< element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
@@ -1493,7 +1493,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid pwdfield element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid pwdfield element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
@@ -1701,7 +1701,7 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 		parseTextArea(data,parts,type);
 		return;
 	}
-	errorstream<< "Invalid field element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid field element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element)
@@ -1846,7 +1846,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		return;
 	}
 	errorstream << "Invalid label element(" << parts.size() << "): '" << element
-		<< "'"  << std::endl;
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &element)
@@ -1923,7 +1923,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 		m_clickthrough_elements.push_back(e);
 		return;
 	}
-	errorstream<< "Invalid vertlabel element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid vertlabel element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &element,
@@ -2010,7 +2010,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 		return;
 	}
 
-	errorstream<< "Invalid imagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid imagebutton element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &element)
@@ -2120,7 +2120,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		return;
 	}
 	errorstream << "Invalid TabHeader element(" << parts.size() << "): '"
-			<< element << "'"  << std::endl;
+			<< element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &element)
@@ -2200,7 +2200,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 		m_fields.push_back(spec_btn);
 		return;
 	}
-	errorstream<< "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
@@ -2253,11 +2253,11 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 			m_fields.push_back(spec);
 
 		} else {
-			errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'  INVALID COLOR"  << std::endl;
+			errorstream << "Invalid Box element(" << parts.size() << "): '" << element << "'  INVALID COLOR" << std::endl;
 		}
 		return;
 	}
-	errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid Box element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)
@@ -2329,7 +2329,7 @@ void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &eleme
 		}
 		return;
 	}
-	errorstream<< "Invalid listcolors element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid listcolors element(" << parts.size() << "): '" << element << "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
@@ -2337,7 +2337,7 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
 	std::vector<std::string> parts = split(element,';');
 	if (parts.size() < 2) {
 		errorstream << "Invalid tooltip element(" << parts.size() << "): '"
-				<< element << "'"  << std::endl;
+				<< element << "'" << std::endl;
 		return;
 	}
 
@@ -2346,7 +2346,7 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
 	size_t base_size = rect_mode ? 3 : 2;
 	if (parts.size() != base_size && parts.size() != base_size + 2) {
 		errorstream << "Invalid tooltip element(" << parts.size() << "): '"
-				<< element << "'"  << std::endl;
+				<< element << "'" << std::endl;
 		return;
 	}
 
@@ -2357,7 +2357,7 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, const std::string &element)
 			(!parseColorString(parts[base_size], bgcolor, false) ||
 				!parseColorString(parts[base_size + 1], color, false))) {
 		errorstream << "Invalid color in tooltip element(" << parts.size()
-				<< "): '" << element << "'"  << std::endl;
+				<< "): '" << element << "'" << std::endl;
 		return;
 	}
 
