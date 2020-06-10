@@ -342,9 +342,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (player->getParent())
 		player_position = player->getParent()->getPosition();
 
-	if(player->touching_ground &&
-			player_position.Y > old_player_position.Y)
-	{
+	// Smooth the camera movement when the player instantly moves upward due to stepheight
+	if (player_position.Y > old_player_position.Y) {
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
 		f32 t = std::exp(-23 * frametime);
