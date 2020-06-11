@@ -915,6 +915,30 @@ void GenericCAO::updateNodePos()
 	}
 }
 
+void GenericCAO::pushMeshAnimFrame(float dtime)
+{
+	if (m_animated_meshnode) {
+		// Compensate for the time lost remaking the scene node.
+		// Not an exact fix - the time may be a tiny bit ahead.
+		s32 delta = (s32)(dtime / m_animated_meshnode->getAnimationSpeed() + 1);
+		// Stash animation frame (with an offset)
+		m_mesh_anim_frame = m_animated_meshnode->getFrameNr() + delta;
+		if ( m_mesh_anim_frame > m_animated_meshnode->getEndFrame()) {
+			if ( m_animated_meshnode->getLoopMode() )
+				m_mesh_anim_frame = m_animated_meshnode->getStartFrame();
+			else
+				m_mesh_anim_frame = m_animated_meshnode->getEndFrame();
+		}
+	}
+}
+
+void GenericCAO::popMeshAnimFrame()
+{
+	// Restore stashed animation frame.
+	if (m_animated_meshnode)
+		m_animated_meshnode->setCurrentFrame(m_mesh_anim_frame);
+}
+
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
 	if (m_animated_meshnode) {
@@ -1011,8 +1035,10 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			}
 		}
 
+		pushMeshAnimFrame(dtime);
 		removeFromScene(false);
 		addToScene(m_client->tsrc());
+		popMeshAnimFrame();
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
 		for (u16 cao_id : m_attachment_child_ids) {

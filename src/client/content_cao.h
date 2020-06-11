@@ -100,6 +100,9 @@ private:
 	float m_animation_speed = 15.0f;
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
+	// Mesh animation frame stashed when expiring the visuals.
+	// Not used for anything else.
+	s32 m_mesh_anim_frame = 0;
 	// stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
 
@@ -230,6 +233,10 @@ public:
 	void removeFromScene(bool permanent);
 
 	void addToScene(ITextureSource *tsrc);
+
+	void pushMeshAnimFrame(float dtime);
+
+	void popMeshAnimFrame();
 
 	inline void expireVisuals()
 	{
