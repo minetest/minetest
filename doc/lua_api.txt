@@ -1501,17 +1501,18 @@ Exact pointing location (currently only `Raycast` supports these fields):
 `move_result`
 ---------------
 
-* `{collides_xz, collides_y, standing, touched_objects, collisions}`
+* `{collides_xz, collides_y, standing, collisions}`
     * Result of collision processing for physical objects.
     * `collides_xz`: whether this object collided along the X or Z axis
     * `collides_y`: whether this object collided along the Y axis
     * `steps_up`: whether this object stepped onto a stair node
     * `standing`: whether this object is standing on a node or other object
     * `touched_objects`: list of ObjectRefs actively touched by this object
-    * `collisions`: list of nodes intersecting this object's collision box,
-       each subtable consisting of three fields:
+    * `collisions`: list of nodes or ObjectRefs intersecting this object's
+       collision box, each subtable consisting of three fields:
         * `side`: relative direction of the collision as a unit vector
         * `node_pos`: position of the collided node in world coordinates
+        * `object`: ObjectRef of the collided object (see note below)
         * `is_impact`: whether the collision caused a change in velocity
     * Note that an object-object collision is only reported for one physical
       object being culpable for hitting another, but not the reverse. When
