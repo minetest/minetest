@@ -103,8 +103,7 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 
 	if (socket_enable_debug_output) {
 		dstream << "UDPSocket(" << (int)m_handle
-			<< ")::UDPSocket(): ipv6 = " << (ipv6 ? "true" : "false")
-			<< std::endl;
+				<< ")::UDPSocket(): ipv6 = " << (ipv6 ? "true" : "false") << std::endl;
 	}
 
 	if (m_handle <= 0) {
@@ -112,8 +111,8 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 			return false;
 		}
 
-		throw SocketException(std::string("Failed to create socket: error ") +
-				      itos(LAST_SOCKET_ERR()));
+		throw SocketException(
+				std::string("Failed to create socket: error ") + itos(LAST_SOCKET_ERR()));
 	}
 
 	setTimeoutMs(0);
@@ -123,8 +122,8 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 		// required on Windows:
 		// https://msdn.microsoft.com/en-us/library/windows/desktop/bb513665(v=vs.85).aspx
 		int value = 0;
-		setsockopt(m_handle, IPPROTO_IPV6, IPV6_V6ONLY,
-				reinterpret_cast<char *>(&value), sizeof(value));
+		setsockopt(m_handle, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<char *>(&value),
+				sizeof(value));
 	}
 
 	return true;
@@ -133,8 +132,7 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 UDPSocket::~UDPSocket()
 {
 	if (socket_enable_debug_output) {
-		dstream << "UDPSocket( " << (int)m_handle << ")::~UDPSocket()"
-			<< std::endl;
+		dstream << "UDPSocket( " << (int)m_handle << ")::~UDPSocket()" << std::endl;
 	}
 
 #ifdef _WIN32
@@ -148,13 +146,12 @@ void UDPSocket::Bind(Address addr)
 {
 	if (socket_enable_debug_output) {
 		dstream << "UDPSocket(" << (int)m_handle
-			<< ")::Bind(): " << addr.serializeString() << ":"
-			<< addr.getPort() << std::endl;
+				<< ")::Bind(): " << addr.serializeString() << ":" << addr.getPort()
+				<< std::endl;
 	}
 
 	if (addr.getFamily() != m_addr_family) {
-		static const char *errmsg =
-				"Socket and bind address families do not match";
+		static const char *errmsg = "Socket and bind address families do not match";
 		errorstream << "Bind failed: " << errmsg << std::endl;
 		throw SocketException(errmsg);
 	}
@@ -168,9 +165,8 @@ void UDPSocket::Bind(Address addr)
 		address.sin6_port = htons(addr.getPort());
 
 		if (bind(m_handle, (const struct sockaddr *)&address,
-				    sizeof(struct sockaddr_in6)) < 0) {
-			dstream << (int)m_handle << ": Bind failed: " << strerror(errno)
-				<< std::endl;
+					sizeof(struct sockaddr_in6)) < 0) {
+			dstream << (int)m_handle << ": Bind failed: " << strerror(errno) << std::endl;
 			throw SocketException("Failed to bind socket");
 		}
 	} else {
@@ -182,9 +178,8 @@ void UDPSocket::Bind(Address addr)
 		address.sin_port = htons(addr.getPort());
 
 		if (bind(m_handle, (const struct sockaddr *)&address,
-				    sizeof(struct sockaddr_in)) < 0) {
-			dstream << (int)m_handle << ": Bind failed: " << strerror(errno)
-				<< std::endl;
+					sizeof(struct sockaddr_in)) < 0) {
+			dstream << (int)m_handle << ": Bind failed: " << strerror(errno) << std::endl;
 			throw SocketException("Failed to bind socket");
 		}
 	}
@@ -223,8 +218,7 @@ void UDPSocket::Send(const Address &destination, const void *data, int size)
 
 	if (dumping_packet) {
 		// Lol let's forget it
-		dstream << "UDPSocket::Send(): INTERNET_SIMULATOR: dumping packet."
-			<< std::endl;
+		dstream << "UDPSocket::Send(): INTERNET_SIMULATOR: dumping packet." << std::endl;
 		return;
 	}
 
@@ -235,13 +229,13 @@ void UDPSocket::Send(const Address &destination, const void *data, int size)
 	if (m_addr_family == AF_INET6) {
 		struct sockaddr_in6 address = destination.getAddress6();
 		address.sin6_port = htons(destination.getPort());
-		sent = sendto(m_handle, (const char *)data, size, 0,
-				(struct sockaddr *)&address, sizeof(struct sockaddr_in6));
+		sent = sendto(m_handle, (const char *)data, size, 0, (struct sockaddr *)&address,
+				sizeof(struct sockaddr_in6));
 	} else {
 		struct sockaddr_in address = destination.getAddress();
 		address.sin_port = htons(destination.getPort());
-		sent = sendto(m_handle, (const char *)data, size, 0,
-				(struct sockaddr *)&address, sizeof(struct sockaddr_in));
+		sent = sendto(m_handle, (const char *)data, size, 0, (struct sockaddr *)&address,
+				sizeof(struct sockaddr_in));
 	}
 
 	if (sent != size)
@@ -260,8 +254,8 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 		memset(&address, 0, sizeof(address));
 		socklen_t address_len = sizeof(address);
 
-		received = recvfrom(m_handle, (char *)data, size, 0,
-				(struct sockaddr *)&address, &address_len);
+		received = recvfrom(m_handle, (char *)data, size, 0, (struct sockaddr *)&address,
+				&address_len);
 
 		if (received < 0)
 			return -1;
@@ -276,8 +270,8 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 
 		socklen_t address_len = sizeof(address);
 
-		received = recvfrom(m_handle, (char *)data, size, 0,
-				(struct sockaddr *)&address, &address_len);
+		received = recvfrom(m_handle, (char *)data, size, 0, (struct sockaddr *)&address,
+				&address_len);
 
 		if (received < 0)
 			return -1;
@@ -349,8 +343,7 @@ bool UDPSocket::WaitData(int timeout_ms)
 	}
 
 	if (result < 0) {
-		dstream << m_handle << ": Select failed: " << strerror(errno)
-			<< std::endl;
+		dstream << m_handle << ": Select failed: " << strerror(errno) << std::endl;
 
 #ifdef _WIN32
 		int e = WSAGetLastError();

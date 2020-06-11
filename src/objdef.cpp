@@ -67,8 +67,8 @@ ObjDef *ObjDefManager::set(ObjDefHandle handle, ObjDef *obj)
 
 	ObjDef *oldobj = setRaw(index, obj);
 
-	obj->uid    = oldobj->uid;
-	obj->index  = oldobj->index;
+	obj->uid = oldobj->uid;
+	obj->index = oldobj->index;
 	obj->handle = oldobj->handle;
 
 	return oldobj;
@@ -91,11 +91,8 @@ u32 ObjDefManager::addRaw(ObjDef *obj)
 
 	m_objects.push_back(obj);
 
-	infostream << "ObjDefManager: added " << getObjectTitle()
-		<< ": name=\"" << obj->name
-		<< "\" index=" << obj->index
-		<< " uid="     << obj->uid
-		<< std::endl;
+	infostream << "ObjDefManager: added " << getObjectTitle() << ": name=\"" << obj->name
+			   << "\" index=" << obj->index << " uid=" << obj->uid << std::endl;
 
 	return nobjects;
 }
@@ -142,12 +139,9 @@ u32 ObjDefManager::validateHandle(ObjDefHandle handle) const
 	u32 index;
 	u32 uid;
 
-	bool is_valid =
-		(handle != OBJDEF_INVALID_HANDLE)         &&
-		decodeHandle(handle, &index, &type, &uid) &&
-		(type == m_objtype)                       &&
-		(index < m_objects.size())                &&
-		(m_objects[index]->uid == uid);
+	bool is_valid = (handle != OBJDEF_INVALID_HANDLE) &&
+			decodeHandle(handle, &index, &type, &uid) && (type == m_objtype) &&
+			(index < m_objects.size()) && (m_objects[index]->uid == uid);
 
 	return is_valid ? index : -1;
 }
@@ -167,8 +161,8 @@ ObjDefHandle ObjDefManager::createHandle(u32 index, ObjDefType type, u32 uid)
 }
 
 
-bool ObjDefManager::decodeHandle(ObjDefHandle handle, u32 *index,
-	ObjDefType *type, u32 *uid)
+bool ObjDefManager::decodeHandle(
+		ObjDefHandle handle, u32 *index, ObjDefType *type, u32 *uid)
 {
 	handle ^= OBJDEF_HANDLE_SALT;
 
@@ -178,8 +172,8 @@ bool ObjDefManager::decodeHandle(ObjDefHandle handle, u32 *index,
 		return false;
 
 	*index = get_bits(handle, 0, 18);
-	*type  = (ObjDefType)get_bits(handle, 18, 6);
-	*uid   = get_bits(handle, 24, 7);
+	*type = (ObjDefType)get_bits(handle, 18, 6);
+	*uid = get_bits(handle, 24, 7);
 	return true;
 }
 

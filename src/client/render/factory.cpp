@@ -26,8 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "pageflip.h"
 #include "sidebyside.h"
 
-RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevice *device,
-		Client *client, Hud *hud)
+RenderingCore *createRenderingCore(
+		const std::string &stereo_mode, IrrlichtDevice *device, Client *client, Hud *hud)
 {
 	if (stereo_mode == "none")
 		return new RenderingCorePlain(device, client, hud);

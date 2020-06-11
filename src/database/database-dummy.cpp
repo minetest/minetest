@@ -56,4 +56,3 @@ void Database_Dummy::listAllLoadableBlocks(std::vector<v3s16> &dst)
 		dst.push_back(getIntegerAsBlock(x->first));
 	}
 }
-

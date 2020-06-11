@@ -115,15 +115,13 @@ int ModApiServer::l_get_player_privs(lua_State *L)
 int ModApiServer::l_get_player_ip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char * name = luaL_checkstring(L, 1);
+	const char *name = luaL_checkstring(L, 1);
 	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
-	if(player == NULL)
-	{
+	if (player == NULL) {
 		lua_pushnil(L); // no such player
 		return 1;
 	}
-	try
-	{
+	try {
 		Address addr = getServer(L)->getPeerAddress(player->getPeerId());
 		std::string ip_str = addr.serializeString();
 		lua_pushstring(L, ip_str.c_str());
@@ -165,21 +163,18 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	u8 ser_vers, major, minor, patch;
 	std::string vers_string, lang_code;
 
-	auto getConInfo = [&] (con::rtt_stat_type type, float *value) -> bool {
+	auto getConInfo = [&](con::rtt_stat_type type, float *value) -> bool {
 		return server->getClientConInfo(player->getPeerId(), type, value);
 	};
 
-	bool have_con_info =
-		getConInfo(con::MIN_RTT, &min_rtt) &&
-		getConInfo(con::MAX_RTT, &max_rtt) &&
-		getConInfo(con::AVG_RTT, &avg_rtt) &&
-		getConInfo(con::MIN_JITTER, &min_jitter) &&
-		getConInfo(con::MAX_JITTER, &max_jitter) &&
-		getConInfo(con::AVG_JITTER, &avg_jitter);
+	bool have_con_info = getConInfo(con::MIN_RTT, &min_rtt) &&
+			getConInfo(con::MAX_RTT, &max_rtt) && getConInfo(con::AVG_RTT, &avg_rtt) &&
+			getConInfo(con::MIN_JITTER, &min_jitter) &&
+			getConInfo(con::MAX_JITTER, &max_jitter) &&
+			getConInfo(con::AVG_JITTER, &avg_jitter);
 
-	bool r = server->getClientInfo(player->getPeerId(), &state, &uptime,
-		&ser_vers, &prot_vers, &major, &minor, &patch, &vers_string,
-		&lang_code);
+	bool r = server->getClientInfo(player->getPeerId(), &state, &uptime, &ser_vers,
+			&prot_vers, &major, &minor, &patch, &vers_string, &lang_code);
 	if (!r) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushnil(L); // error
@@ -189,11 +184,11 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_newtable(L);
 	int table = lua_gettop(L);
 
-	lua_pushstring(L,"address");
+	lua_pushstring(L, "address");
 	lua_pushstring(L, addr.serializeString().c_str());
 	lua_settable(L, table);
 
-	lua_pushstring(L,"ip_version");
+	lua_pushstring(L, "ip_version");
 	if (addr.getFamily() == AF_INET) {
 		lua_pushnumber(L, 4);
 	} else if (addr.getFamily() == AF_INET6) {
@@ -229,11 +224,11 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		lua_settable(L, table);
 	}
 
-	lua_pushstring(L,"connection_uptime");
+	lua_pushstring(L, "connection_uptime");
 	lua_pushnumber(L, uptime);
 	lua_settable(L, table);
 
-	lua_pushstring(L,"protocol_version");
+	lua_pushstring(L, "protocol_version");
 	lua_pushnumber(L, prot_vers);
 	lua_settable(L, table);
 
@@ -246,28 +241,28 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_settable(L, table);
 
 #ifndef NDEBUG
-	lua_pushstring(L,"serialization_version");
+	lua_pushstring(L, "serialization_version");
 	lua_pushnumber(L, ser_vers);
 	lua_settable(L, table);
 
-	lua_pushstring(L,"major");
+	lua_pushstring(L, "major");
 	lua_pushnumber(L, major);
 	lua_settable(L, table);
 
-	lua_pushstring(L,"minor");
+	lua_pushstring(L, "minor");
 	lua_pushnumber(L, minor);
 	lua_settable(L, table);
 
-	lua_pushstring(L,"patch");
+	lua_pushstring(L, "patch");
 	lua_pushnumber(L, patch);
 	lua_settable(L, table);
 
-	lua_pushstring(L,"version_string");
+	lua_pushstring(L, "version_string");
 	lua_pushstring(L, vers_string.c_str());
 	lua_settable(L, table);
 
-	lua_pushstring(L,"state");
-	lua_pushstring(L,ClientInterface::state2Name(state).c_str());
+	lua_pushstring(L, "state");
+	lua_pushstring(L, ClientInterface::state2Name(state).c_str());
 	lua_settable(L, table);
 #endif
 
@@ -286,7 +281,7 @@ int ModApiServer::l_get_ban_list(lua_State *L)
 int ModApiServer::l_get_ban_description(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char * ip_or_name = luaL_checkstring(L, 1);
+	const char *ip_or_name = luaL_checkstring(L, 1);
 	lua_pushstring(L, getServer(L)->getBanDescription(std::string(ip_or_name)).c_str());
 	return 1;
 }
@@ -295,19 +290,20 @@ int ModApiServer::l_get_ban_description(lua_State *L)
 int ModApiServer::l_ban_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char * name = luaL_checkstring(L, 1);
+	const char *name = luaL_checkstring(L, 1);
 	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
 	if (player == NULL) {
 		lua_pushboolean(L, false); // no such player
 		return 1;
 	}
-	try
-	{
-		Address addr = getServer(L)->getPeerAddress(
-			dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name)->getPeerId());
+	try {
+		Address addr =
+				getServer(L)->getPeerAddress(dynamic_cast<ServerEnvironment *>(getEnv(L))
+													 ->getPlayer(name)
+													 ->getPeerId());
 		std::string ip_str = addr.serializeString();
 		getServer(L)->setIpBanned(ip_str, name);
-	} catch(const con::PeerNotFoundException &) {
+	} catch (const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushboolean(L, false); // error
 		return 1;
@@ -357,7 +353,7 @@ int ModApiServer::l_remove_player(lua_State *L)
 int ModApiServer::l_unban_player_or_ip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char * ip_or_name = luaL_checkstring(L, 1);
+	const char *ip_or_name = luaL_checkstring(L, 1);
 	getServer(L)->unsetIpBanned(ip_or_name);
 	lua_pushboolean(L, true);
 	return 1;
@@ -371,10 +367,9 @@ int ModApiServer::l_show_formspec(lua_State *L)
 	const char *formname = luaL_checkstring(L, 2);
 	const char *formspec = luaL_checkstring(L, 3);
 
-	if(getServer(L)->showFormspec(playername,formspec,formname))
-	{
+	if (getServer(L)->showFormspec(playername, formspec, formname)) {
 		lua_pushboolean(L, true);
-	}else{
+	} else {
 		lua_pushboolean(L, false);
 	}
 	return 1;
@@ -487,7 +482,7 @@ int ModApiServer::l_notify_authentication_modified(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name;
-	if(lua_isstring(L, 1))
+	if (lua_isstring(L, 1))
 		name = readParam<std::string>(L, 1);
 	getServer(L)->reportPrivsModified(name);
 	return 0;

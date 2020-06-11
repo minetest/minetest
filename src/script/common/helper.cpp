@@ -31,8 +31,8 @@ static inline void check_lua_type(lua_State *L, int index, const char *name, int
 	if (t != type) {
 		std::string traceback = script_get_backtrace(L);
 		throw LuaError(std::string("Invalid ") + (name) + " (expected " +
-				lua_typename(L, (type)) + " got " + lua_typename(L, t) +
-				").\n" + traceback);
+				lua_typename(L, (type)) + " got " + lua_typename(L, t) + ").\n" +
+				traceback);
 	}
 }
 
@@ -49,12 +49,14 @@ bool LuaHelper::isNaN(lua_State *L, int idx)
 /*
  * Read template functions
  */
-template <> bool LuaHelper::readParam(lua_State *L, int index)
+template <>
+bool LuaHelper::readParam(lua_State *L, int index)
 {
 	return lua_toboolean(L, index) != 0;
 }
 
-template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &default_value)
+template <>
+bool LuaHelper::readParam(lua_State *L, int index, const bool &default_value)
 {
 	if (lua_isnil(L, index))
 		return default_value;
@@ -62,12 +64,14 @@ template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &defau
 	return lua_toboolean(L, index) != 0;
 }
 
-template <> s16 LuaHelper::readParam(lua_State *L, int index)
+template <>
+s16 LuaHelper::readParam(lua_State *L, int index)
 {
 	return lua_tonumber(L, index);
 }
 
-template <> float LuaHelper::readParam(lua_State *L, int index)
+template <>
+float LuaHelper::readParam(lua_State *L, int index)
 {
 	if (isNaN(L, index))
 		throw LuaError("NaN value is not allowed.");
@@ -75,7 +79,8 @@ template <> float LuaHelper::readParam(lua_State *L, int index)
 	return (float)luaL_checknumber(L, index);
 }
 
-template <> v2s16 LuaHelper::readParam(lua_State *L, int index)
+template <>
+v2s16 LuaHelper::readParam(lua_State *L, int index)
 {
 	v2s16 p;
 	CHECK_POS_TAB(index);
@@ -90,7 +95,8 @@ template <> v2s16 LuaHelper::readParam(lua_State *L, int index)
 	return p;
 }
 
-template <> v2f LuaHelper::readParam(lua_State *L, int index)
+template <>
+v2f LuaHelper::readParam(lua_State *L, int index)
 {
 	v2f p;
 	CHECK_POS_TAB(index);
@@ -105,7 +111,8 @@ template <> v2f LuaHelper::readParam(lua_State *L, int index)
 	return p;
 }
 
-template <> std::string LuaHelper::readParam(lua_State *L, int index)
+template <>
+std::string LuaHelper::readParam(lua_State *L, int index)
 {
 	size_t length;
 	std::string result;

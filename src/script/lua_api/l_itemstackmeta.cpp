@@ -26,17 +26,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	NodeMetaRef
 */
-ItemStackMetaRef* ItemStackMetaRef::checkobject(lua_State *L, int narg)
+ItemStackMetaRef *ItemStackMetaRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(ItemStackMetaRef**)ud;  // unbox pointer
+	return *(ItemStackMetaRef **)ud; // unbox pointer
 }
 
-Metadata* ItemStackMetaRef::getmeta(bool auto_create)
+Metadata *ItemStackMetaRef::getmeta(bool auto_create)
 {
 	return &istack->metadata;
 }
@@ -68,7 +68,8 @@ int ItemStackMetaRef::l_set_tool_capabilities(lua_State *L)
 }
 
 // garbage collector
-int ItemStackMetaRef::gc_object(lua_State *L) {
+int ItemStackMetaRef::gc_object(lua_State *L)
+{
 	ItemStackMetaRef *o = *(ItemStackMetaRef **)(lua_touserdata(L, 1));
 	delete o;
 	return 0;
@@ -94,7 +95,7 @@ void ItemStackMetaRef::Register(lua_State *L)
 
 	lua_pushliteral(L, "__metatable");
 	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+	lua_settable(L, metatable); // hide metatable from Lua getmetatable()
 
 	lua_pushliteral(L, "metadata_class");
 	lua_pushlstring(L, className, strlen(className));
@@ -112,28 +113,20 @@ void ItemStackMetaRef::Register(lua_State *L)
 	lua_pushcfunction(L, l_equals);
 	lua_settable(L, metatable);
 
-	lua_pop(L, 1);  // drop metatable
+	lua_pop(L, 1); // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	luaL_openlib(L, 0, methods, 0); // fill methodtable
+	lua_pop(L, 1); // drop methodtable
 
 	// Cannot be created from Lua
 	//lua_register(L, className, create_object);
 }
 
 const char ItemStackMetaRef::className[] = "ItemStackMetaRef";
-const luaL_Reg ItemStackMetaRef::methods[] = {
-	luamethod(MetaDataRef, contains),
-	luamethod(MetaDataRef, get),
-	luamethod(MetaDataRef, get_string),
-	luamethod(MetaDataRef, set_string),
-	luamethod(MetaDataRef, get_int),
-	luamethod(MetaDataRef, set_int),
-	luamethod(MetaDataRef, get_float),
-	luamethod(MetaDataRef, set_float),
-	luamethod(MetaDataRef, to_table),
-	luamethod(MetaDataRef, from_table),
-	luamethod(MetaDataRef, equals),
-	luamethod(ItemStackMetaRef, set_tool_capabilities),
-	{0,0}
-};
+const luaL_Reg ItemStackMetaRef::methods[] = { luamethod(MetaDataRef, contains),
+	luamethod(MetaDataRef, get), luamethod(MetaDataRef, get_string),
+	luamethod(MetaDataRef, set_string), luamethod(MetaDataRef, get_int),
+	luamethod(MetaDataRef, set_int), luamethod(MetaDataRef, get_float),
+	luamethod(MetaDataRef, set_float), luamethod(MetaDataRef, to_table),
+	luamethod(MetaDataRef, from_table), luamethod(MetaDataRef, equals),
+	luamethod(ItemStackMetaRef, set_tool_capabilities), { 0, 0 } };

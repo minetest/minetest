@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/strfnd.h"
 #include "defaultsettings.h" // for set_default_settings
-#include "mapgen/mapgen.h"   // for MapgenParams
+#include "mapgen/mapgen.h" // for MapgenParams
 #include "util/string.h"
 
 #ifndef SERVER
@@ -41,8 +41,8 @@ struct GameFindPath
 {
 	std::string path;
 	bool user_specific;
-	GameFindPath(const std::string &path, bool user_specific) :
-			path(path), user_specific(user_specific)
+	GameFindPath(const std::string &path, bool user_specific)
+		: path(path), user_specific(user_specific)
 	{
 	}
 };
@@ -126,11 +126,10 @@ SubgameSpec findSubgame(const std::string &id)
 
 	std::string menuicon_path;
 #ifndef SERVER
-	menuicon_path = getImagePath(
-			game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
+	menuicon_path = getImagePath(game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
 #endif
-	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
-			menuicon_path, game_author, game_release);
+	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name, menuicon_path,
+			game_author, game_release);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)
@@ -178,13 +177,13 @@ std::set<std::string> getAvailableGameIds()
 
 			// If configuration file is not found or broken, ignore game
 			Settings conf;
-			std::string conf_path = gamespath + DIR_DELIM + dln.name +
-						DIR_DELIM + "game.conf";
+			std::string conf_path =
+					gamespath + DIR_DELIM + dln.name + DIR_DELIM + "game.conf";
 			if (!conf.readConfigFile(conf_path.c_str()))
 				continue;
 
 			// Add it to result
-			const char *ends[] = {"_game", NULL};
+			const char *ends[] = { "_game", NULL };
 			std::string shorter = removeStringEnd(dln.name, ends);
 			if (!shorter.empty())
 				gameids.insert(shorter);
@@ -323,8 +322,7 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 	// Create map_meta.txt if does not already exist
 	std::string map_meta_path = path + DIR_DELIM + "map_meta.txt";
 	if (!fs::PathExists(map_meta_path)) {
-		verbosestream << "Creating map_meta.txt (" << map_meta_path << ")"
-			      << std::endl;
+		verbosestream << "Creating map_meta.txt (" << map_meta_path << ")" << std::endl;
 		fs::CreateAllDirs(path);
 		std::ostringstream oss(std::ios_base::binary);
 

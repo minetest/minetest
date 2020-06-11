@@ -36,10 +36,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkexceptions.h"
 
 #if USE_SOUND
-	#include "sound_openal.h"
+#include "sound_openal.h"
 #endif
 #ifdef __ANDROID__
-	#include "porting.h"
+#include "porting.h"
 #endif
 
 /* mainmenumanager.h
@@ -119,8 +119,8 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 	init_input();
 
-	RenderingEngine::get_scene_manager()->getParameters()->
-		setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
+	RenderingEngine::get_scene_manager()->getParameters()->setAttribute(
+			scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
 	guienv = RenderingEngine::get_gui_env();
 	skin = RenderingEngine::get_gui_env()->getSkin();
@@ -157,7 +157,8 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	g_fontengine = new FontEngine(g_settings, guienv);
 	FATAL_ERROR_IF(g_fontengine == NULL, "Font engine creation failed.");
 
-#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
+#if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) ||                      \
+		IRRLICHT_VERSION_MAJOR >= 2
 	// Irrlicht 1.8 input colours
 	skin->setColor(gui::EGDC_EDITABLE, video::SColor(255, 128, 128, 128));
 	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255, 96, 134, 49));
@@ -170,7 +171,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		g_menuclouds = new Clouds(g_menucloudsmgr, -1, rand());
 	g_menuclouds->setHeight(100.0f);
 	g_menuclouds->update(v3f(0, 0, 0), video::SColor(255, 240, 240, 255));
-	scene::ICameraSceneNode* camera;
+	scene::ICameraSceneNode *camera;
 	camera = g_menucloudsmgr->addCameraSceneNode(NULL, v3f(0, 0, 0), v3f(0, 60, 100));
 	camera->setFarValue(10000);
 
@@ -193,17 +194,16 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	bool retval = true;
 	bool *kill = porting::signal_handler_killstatus();
 
-	while (RenderingEngine::run() && !*kill &&
-		!g_gamecallback->shutdown_requested) {
+	while (RenderingEngine::run() && !*kill && !g_gamecallback->shutdown_requested) {
 		// Set the window caption
 		const wchar_t *text = wgettext("Main Menu");
-		RenderingEngine::get_raw_device()->
-			setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
-			L" " + utf8_to_wide(g_version_hash) +
-			L" [" + text + L"]").c_str());
+		RenderingEngine::get_raw_device()->setWindowCaption(
+				(utf8_to_wide(PROJECT_NAME_C) + L" " + utf8_to_wide(g_version_hash) +
+						L" [" + text + L"]")
+						.c_str());
 		delete[] text;
 
-		try {	// This is used for catching disconnects
+		try { // This is used for catching disconnects
 
 			RenderingEngine::get_gui_env()->clear();
 
@@ -212,11 +212,11 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 				custom gui elements directly on the screen.
 				Otherwise they won't be automatically drawn.
 			*/
-			guiroot = RenderingEngine::get_gui_env()->addStaticText(L"",
-				core::rect<s32>(0, 0, 10000, 10000));
+			guiroot = RenderingEngine::get_gui_env()->addStaticText(
+					L"", core::rect<s32>(0, 0, 10000, 10000));
 
-			bool game_has_run = launch_game(error_message, reconnect_requested,
-				game_params, cmd_args);
+			bool game_has_run = launch_game(
+					error_message, reconnect_requested, game_params, cmd_args);
 
 			// Reset the reconnect_requested flag
 			reconnect_requested = false;
@@ -241,9 +241,9 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 				break;
 			}
 
-			if (current_playername.length() > PLAYERNAME_SIZE-1) {
+			if (current_playername.length() > PLAYERNAME_SIZE - 1) {
 				error_message = gettext("Player name too long.");
-				playername = current_playername.substr(0, PLAYERNAME_SIZE-1);
+				playername = current_playername.substr(0, PLAYERNAME_SIZE - 1);
 				g_settings->set("name", playername);
 				continue;
 			}
@@ -252,25 +252,15 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 					video::ETCF_CREATE_MIP_MAPS, g_settings->getBool("mip_map"));
 
 #ifdef HAVE_TOUCHSCREENGUI
-			receiver->m_touchscreengui = new TouchScreenGUI(RenderingEngine::get_raw_device(), receiver);
+			receiver->m_touchscreengui =
+					new TouchScreenGUI(RenderingEngine::get_raw_device(), receiver);
 			g_touchscreengui = receiver->m_touchscreengui;
 #endif
 
-			the_game(
-				kill,
-				random_input,
-				input,
-				worldspec.path,
-				current_playername,
-				current_password,
-				current_address,
-				current_port,
-				error_message,
-				chat_backend,
-				&reconnect_requested,
-				gamespec,
-				simple_singleplayer_mode
-			);
+			the_game(kill, random_input, input, worldspec.path, current_playername,
+					current_password, current_address, current_port, error_message,
+					chat_backend, &reconnect_requested, gamespec,
+					simple_singleplayer_mode);
 			RenderingEngine::get_scene_manager()->clear();
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -284,7 +274,6 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 			error_message = gettext("Connection error (timed out?)");
 			errorstream << error_message << std::endl;
 		}
-
 #ifdef NDEBUG
 		catch (std::exception &e) {
 			std::string error_message = "Some exception: \"";
@@ -297,8 +286,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		// If no main menu, show error and exit
 		if (skip_main_menu) {
 			if (!error_message.empty()) {
-				verbosestream << "error_message = "
-				              << error_message << std::endl;
+				verbosestream << "error_message = " << error_message << std::endl;
 				retval = false;
 			}
 			break;
@@ -313,7 +301,6 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args)
 {
-
 	skip_main_menu = cmd_args.getFlag("go");
 
 	// FIXME: This is confusing (but correct)
@@ -336,8 +323,8 @@ void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args
 
 	use_freetype = g_settings->getBool("freetype");
 
-	random_input = g_settings->getBool("random_input")
-			|| cmd_args.getFlag("random-input");
+	random_input =
+			g_settings->getBool("random_input") || cmd_args.getFlag("random-input");
 }
 
 bool ClientLauncher::init_engine()
@@ -374,17 +361,16 @@ void ClientLauncher::init_input()
 	}
 }
 
-bool ClientLauncher::launch_game(std::string &error_message,
-		bool reconnect_requested, GameParams &game_params,
-		const Settings &cmd_args)
+bool ClientLauncher::launch_game(std::string &error_message, bool reconnect_requested,
+		GameParams &game_params, const Settings &cmd_args)
 {
 	// Initialize menu data
 	MainMenuData menudata;
-	menudata.address                         = address;
-	menudata.name                            = playername;
-	menudata.password                        = password;
-	menudata.port                            = itos(game_params.socket_port);
-	menudata.script_data.errormessage        = error_message;
+	menudata.address = address;
+	menudata.name = playername;
+	menudata.password = password;
+	menudata.port = itos(game_params.socket_port);
+	menudata.script_data.errormessage = error_message;
 	menudata.script_data.reconnect_requested = reconnect_requested;
 
 	error_message.clear();
@@ -399,8 +385,8 @@ bool ClientLauncher::launch_game(std::string &error_message,
 			getline(passfile, menudata.password);
 		} else {
 			error_message = gettext("Provided password file "
-					"failed to open: ")
-					+ cmd_args.get("password-file");
+									"failed to open: ") +
+					cmd_args.get("password-file");
 			errorstream << error_message << std::endl;
 			return false;
 		}
@@ -411,7 +397,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		worldspec.gameid = getWorldGameId(game_params.world_path, true);
 		worldspec.name = _("[--world parameter]");
 
-		if (worldspec.gameid.empty()) {	// Create new
+		if (worldspec.gameid.empty()) { // Create new
 			worldspec.gameid = g_settings->get("default_game");
 			worldspec.name += " [new]";
 		}
@@ -436,10 +422,10 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 
-		if (menudata.selected_world >= 0
-				&& menudata.selected_world < (int)worldspecs.size()) {
-			g_settings->set("selected_world_path",
-					worldspecs[menudata.selected_world].path);
+		if (menudata.selected_world >= 0 &&
+				menudata.selected_world < (int)worldspecs.size()) {
+			g_settings->set(
+					"selected_world_path", worldspecs[menudata.selected_world].path);
 			worldspec = worldspecs[menudata.selected_world];
 		}
 	}
@@ -462,9 +448,9 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	password = menudata.password;
 
 	current_playername = playername;
-	current_password   = password;
-	current_address    = address;
-	current_port       = game_params.socket_port;
+	current_password = password;
+	current_address = address;
+	current_port = game_params.socket_port;
 
 	// If using simple singleplayer mode, override
 	if (simple_singleplayer_mode) {
@@ -485,20 +471,20 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		}
 	}
 
-	infostream << "Selected world: " << worldspec.name
-	           << " [" << worldspec.path << "]" << std::endl;
+	infostream << "Selected world: " << worldspec.name << " [" << worldspec.path << "]"
+			   << std::endl;
 
 	if (current_address.empty()) { // If local game
 		if (worldspec.path.empty()) {
 			error_message = gettext("No world selected and no address "
-					"provided. Nothing to do.");
+									"provided. Nothing to do.");
 			errorstream << error_message << std::endl;
 			return false;
 		}
 
 		if (!fs::PathExists(worldspec.path)) {
-			error_message = gettext("Provided world path doesn't exist: ")
-					+ worldspec.path;
+			error_message =
+					gettext("Provided world path doesn't exist: ") + worldspec.path;
 			errorstream << error_message << std::endl;
 			return false;
 		}
@@ -506,8 +492,8 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		// Load gamespec for required game
 		gamespec = findWorldSubgame(worldspec.path);
 		if (!gamespec.isValid() && !game_params.game_spec.isValid()) {
-			error_message = gettext("Could not find or load game \"")
-					+ worldspec.gameid + "\"";
+			error_message =
+					gettext("Could not find or load game \"") + worldspec.gameid + "\"";
 			errorstream << error_message << std::endl;
 			return false;
 		}
@@ -517,9 +503,8 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 		if (game_params.game_spec.isValid() &&
 				game_params.game_spec.id != worldspec.gameid) {
-			warningstream << "Overriding gamespec from \""
-			            << worldspec.gameid << "\" to \""
-			            << game_params.game_spec.id << "\"" << std::endl;
+			warningstream << "Overriding gamespec from \"" << worldspec.gameid
+						  << "\" to \"" << game_params.game_spec.id << "\"" << std::endl;
 			gamespec = game_params.game_spec;
 		}
 
@@ -589,7 +574,7 @@ void ClientLauncher::speed_tests()
 			for (u32 i = 0; i < ii; i++) {
 				tempstring2 += "asd";
 			}
-			for (u32 i = 0; i < ii+1; i++) {
+			for (u32 i = 0; i < ii + 1; i++) {
 				tempstring += "asd";
 				if (tempstring == tempstring2)
 					break;
@@ -598,7 +583,7 @@ void ClientLauncher::speed_tests()
 	}
 
 	infostream << "All of the following tests should take around 100ms each."
-	           << std::endl;
+			   << std::endl;
 
 	{
 		TimeTaker timer("Testing floating-point conversion speed");
@@ -628,7 +613,7 @@ void ClientLauncher::speed_tests()
 		const s16 ii = 300;
 		for (s16 y = 0; y < ii; y++) {
 			for (s16 x = 0; x < ii; x++) {
-				map1[v2s16(x, y)] =  tempf;
+				map1[v2s16(x, y)] = tempf;
 				tempf += 1;
 			}
 		}
@@ -654,7 +639,7 @@ void ClientLauncher::speed_tests()
 			}
 		}
 		// Do at least 10ms
-		while(timer.getTimerTime() < 10);
+		while (timer.getTimerTime() < 10);
 
 		u32 dtime = timer.stop();
 		u32 per_ms = n / dtime;

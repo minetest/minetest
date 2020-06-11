@@ -99,12 +99,11 @@ int LuaMinimap::l_set_mode(lua_State *L)
 	Minimap *m = getobject(ref);
 
 	s32 mode = lua_tointeger(L, 2);
-	if (mode < MINIMAP_MODE_OFF ||
-		mode >= MINIMAP_MODE_COUNT) {
+	if (mode < MINIMAP_MODE_OFF || mode >= MINIMAP_MODE_COUNT) {
 		return 0;
 	}
 
-	m->setMinimapMode((MinimapMode) mode);
+	m->setMinimapMode((MinimapMode)mode);
 	return 1;
 }
 
@@ -172,15 +171,16 @@ LuaMinimap *LuaMinimap::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(LuaMinimap **)ud;  // unbox pointer
+	return *(LuaMinimap **)ud; // unbox pointer
 }
 
-Minimap* LuaMinimap::getobject(LuaMinimap *ref)
+Minimap *LuaMinimap::getobject(LuaMinimap *ref)
 {
 	return ref->m_minimap;
 }
 
-int LuaMinimap::gc_object(lua_State *L) {
+int LuaMinimap::gc_object(lua_State *L)
+{
 	LuaMinimap *o = *(LuaMinimap **)(lua_touserdata(L, 1));
 	delete o;
 	return 0;
@@ -195,7 +195,7 @@ void LuaMinimap::Register(lua_State *L)
 
 	lua_pushliteral(L, "__metatable");
 	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+	lua_settable(L, metatable); // hide metatable from Lua getmetatable()
 
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);
@@ -205,23 +205,16 @@ void LuaMinimap::Register(lua_State *L)
 	lua_pushcfunction(L, gc_object);
 	lua_settable(L, metatable);
 
-	lua_pop(L, 1);  // drop metatable
+	lua_pop(L, 1); // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	luaL_openlib(L, 0, methods, 0); // fill methodtable
+	lua_pop(L, 1); // drop methodtable
 }
 
 const char LuaMinimap::className[] = "Minimap";
-const luaL_Reg LuaMinimap::methods[] = {
-	luamethod(LuaMinimap, show),
-	luamethod(LuaMinimap, hide),
-	luamethod(LuaMinimap, get_pos),
-	luamethod(LuaMinimap, set_pos),
-	luamethod(LuaMinimap, get_angle),
-	luamethod(LuaMinimap, set_angle),
-	luamethod(LuaMinimap, get_mode),
-	luamethod(LuaMinimap, set_mode),
-	luamethod(LuaMinimap, set_shape),
-	luamethod(LuaMinimap, get_shape),
-	{0,0}
-};
+const luaL_Reg LuaMinimap::methods[] = { luamethod(LuaMinimap, show),
+	luamethod(LuaMinimap, hide), luamethod(LuaMinimap, get_pos),
+	luamethod(LuaMinimap, set_pos), luamethod(LuaMinimap, get_angle),
+	luamethod(LuaMinimap, set_angle), luamethod(LuaMinimap, get_mode),
+	luamethod(LuaMinimap, set_mode), luamethod(LuaMinimap, set_shape),
+	luamethod(LuaMinimap, get_shape), { 0, 0 } };

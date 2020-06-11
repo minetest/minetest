@@ -95,7 +95,7 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 
 	if (!path_found) {
 		errorstream << "Didn't find free file for player " << player->getName()
-				<< std::endl;
+					<< std::endl;
 		return;
 	}
 
@@ -156,7 +156,8 @@ bool PlayerDatabaseFiles::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 		path = players_path + player_to_load + itos(i);
 	}
 
-	infostream << "Player file for player " << player_to_load << " not found" << std::endl;
+	infostream << "Player file for player " << player_to_load << " not found"
+			   << std::endl;
 	return false;
 }
 
@@ -164,8 +165,8 @@ void PlayerDatabaseFiles::listPlayers(std::vector<std::string> &res)
 {
 	std::vector<fs::DirListNode> files = fs::GetDirListing(m_savedir);
 	// list files into players directory
-	for (std::vector<fs::DirListNode>::const_iterator it = files.begin(); it !=
-		files.end(); ++it) {
+	for (std::vector<fs::DirListNode>::const_iterator it = files.begin();
+			it != files.end(); ++it) {
 		// Ignore directories
 		if (it->dir)
 			continue;
@@ -261,11 +262,11 @@ bool AuthDatabaseFiles::readAuthFile()
 		s64 last_login = parts.size() > 3 ? atol(parts[3].c_str()) : 0;
 
 		m_auth_list[name] = {
-				1,
-				name,
-				password,
-				privileges,
-				last_login,
+			1,
+			name,
+			password,
+			privileges,
+			last_login,
 		};
 	}
 	return true;

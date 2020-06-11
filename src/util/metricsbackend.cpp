@@ -47,13 +47,11 @@ public:
 	PrometheusMetricCounter() = delete;
 
 	PrometheusMetricCounter(const std::string &name, const std::string &help_str,
-			std::shared_ptr<prometheus::Registry> registry) :
-			MetricCounter(),
-			m_family(prometheus::BuildCounter()
-							.Name(name)
-							.Help(help_str)
-							.Register(*registry)),
-			m_counter(m_family.Add({}))
+			std::shared_ptr<prometheus::Registry> registry)
+		: MetricCounter(),
+		  m_family(prometheus::BuildCounter().Name(name).Help(help_str).Register(
+				  *registry)),
+		  m_counter(m_family.Add({}))
 	{
 	}
 
@@ -73,13 +71,11 @@ public:
 	PrometheusMetricGauge() = delete;
 
 	PrometheusMetricGauge(const std::string &name, const std::string &help_str,
-			std::shared_ptr<prometheus::Registry> registry) :
-			MetricGauge(),
-			m_family(prometheus::BuildGauge()
-							.Name(name)
-							.Help(help_str)
-							.Register(*registry)),
-			m_gauge(m_family.Add({}))
+			std::shared_ptr<prometheus::Registry> registry)
+		: MetricGauge(),
+		  m_family(
+				  prometheus::BuildGauge().Name(name).Help(help_str).Register(*registry)),
+		  m_gauge(m_family.Add({}))
 	{
 	}
 
@@ -98,10 +94,10 @@ private:
 class PrometheusMetricsBackend : public MetricsBackend
 {
 public:
-	PrometheusMetricsBackend(const std::string &addr) :
-			MetricsBackend(), m_exposer(std::unique_ptr<prometheus::Exposer>(
-							  new prometheus::Exposer(addr))),
-			m_registry(std::make_shared<prometheus::Registry>())
+	PrometheusMetricsBackend(const std::string &addr)
+		: MetricsBackend(),
+		  m_exposer(std::unique_ptr<prometheus::Exposer>(new prometheus::Exposer(addr))),
+		  m_registry(std::make_shared<prometheus::Registry>())
 	{
 		m_exposer->RegisterCollectable(m_registry);
 	}
@@ -110,8 +106,7 @@ public:
 
 	virtual MetricCounterPtr addCounter(
 			const std::string &name, const std::string &help_str);
-	virtual MetricGaugePtr addGauge(
-			const std::string &name, const std::string &help_str);
+	virtual MetricGaugePtr addGauge(const std::string &name, const std::string &help_str);
 
 private:
 	std::unique_ptr<prometheus::Exposer> m_exposer;

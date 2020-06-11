@@ -27,7 +27,7 @@ inline u32 scaledown(u32 coef, u32 size)
 }
 
 RenderingCorePlain::RenderingCorePlain(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud)
+		IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: RenderingCore(_device, _client, _hud)
 {
 	scale = g_settings->getU16("undersampling");
@@ -37,9 +37,8 @@ void RenderingCorePlain::initTextures()
 {
 	if (scale <= 1)
 		return;
-	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
-	lowres = driver->addRenderTargetTexture(
-			size, "render_lowres", video::ECF_A8R8G8B8);
+	v2u32 size{ scaledown(scale, screensize.X), scaledown(scale, screensize.Y) };
+	lowres = driver->addRenderTargetTexture(size, "render_lowres", video::ECF_A8R8G8B8);
 }
 
 void RenderingCorePlain::clearTextures()
@@ -61,8 +60,8 @@ void RenderingCorePlain::upscale()
 	if (scale <= 1)
 		return;
 	driver->setRenderTarget(0, true, true);
-	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
-	v2u32 dest_size{scale * size.X, scale * size.Y};
+	v2u32 size{ scaledown(scale, screensize.X), scaledown(scale, screensize.Y) };
+	v2u32 dest_size{ scale * size.X, scale * size.Y };
 	driver->draw2DImage(lowres, core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
 			core::rect<s32>(0, 0, size.X, size.Y));
 }

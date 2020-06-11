@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 std::string Package::getDownloadURL(const std::string &baseURL) const
 {
 	return baseURL + "/packages/" + author + "/" + name + "/releases/" +
-	       std::to_string(release) + "/download/";
+			std::to_string(release) + "/download/";
 }
 
 #if USE_CURL

@@ -30,8 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // common start: ensure auth db
 AuthDatabase *ModApiAuth::getAuthDb(lua_State *L)
 {
-	ServerEnvironment *server_environment =
-			dynamic_cast<ServerEnvironment *>(getEnv(L));
+	ServerEnvironment *server_environment = dynamic_cast<ServerEnvironment *>(getEnv(L));
 	if (!server_environment)
 		return nullptr;
 	return server_environment->getAuthDatabase();
@@ -201,7 +200,6 @@ int ModApiAuth::l_auth_reload(lua_State *L)
 
 void ModApiAuth::Initialize(lua_State *L, int top)
 {
-
 	lua_newtable(L);
 	int auth_top = lua_gettop(L);
 

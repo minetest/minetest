@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool ModChannel::registerConsumer(session_t peer_id)
 {
-
 	// ignore if peer_id already joined
 	if (CONTAINS(m_client_consumers, peer_id))
 		return false;
@@ -43,9 +42,8 @@ bool ModChannel::removeConsumer(session_t peer_id)
 		return p == peer_id;
 	};
 
-	m_client_consumers.erase(
-			std::remove_if(m_client_consumers.begin(),
-					m_client_consumers.end(), peer_removal_fct),
+	m_client_consumers.erase(std::remove_if(m_client_consumers.begin(),
+									 m_client_consumers.end(), peer_removal_fct),
 			m_client_consumers.end());
 
 	return found;
@@ -88,8 +86,7 @@ bool ModChannelMgr::canWriteOnChannel(const std::string &channel) const
 
 void ModChannelMgr::registerChannel(const std::string &channel)
 {
-	m_registered_channels[channel] =
-			std::unique_ptr<ModChannel>(new ModChannel(channel));
+	m_registered_channels[channel] = std::unique_ptr<ModChannel>(new ModChannel(channel));
 }
 
 bool ModChannelMgr::setChannelState(const std::string &channel, ModChannelState state)

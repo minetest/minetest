@@ -47,8 +47,8 @@ void TestIrrPtr::runTests(IGameDef *gamedef)
 ////////////////////////////////////////////////////////////////////////////////
 
 #define UASSERT_REFERENCE_COUNT(object, value, info)                                     \
-	UTEST((object)->getReferenceCount() == value,                                    \
-			info "Reference count is %d instead of " #value,                 \
+	UTEST((object)->getReferenceCount() == value,                                        \
+			info "Reference count is %d instead of " #value,                             \
 			(object)->getReferenceCount())
 
 void TestIrrPtr::testRefCounting()
@@ -57,16 +57,16 @@ void TestIrrPtr::testRefCounting()
 	obj->grab();
 	UASSERT_REFERENCE_COUNT(obj, 2, "Pre-condition failed: ");
 	{
-		irr_ptr<IReferenceCounted> p1{obj}; // move semantics
+		irr_ptr<IReferenceCounted> p1{ obj }; // move semantics
 		UASSERT(p1.get() == obj);
 		UASSERT_REFERENCE_COUNT(obj, 2, );
 
-		irr_ptr<IReferenceCounted> p2{p1}; // copy ctor
+		irr_ptr<IReferenceCounted> p2{ p1 }; // copy ctor
 		UASSERT(p1.get() == obj);
 		UASSERT(p2.get() == obj);
 		UASSERT_REFERENCE_COUNT(obj, 3, );
 
-		irr_ptr<IReferenceCounted> p3{std::move(p1)}; // move ctor
+		irr_ptr<IReferenceCounted> p3{ std::move(p1) }; // move ctor
 		UASSERT(p1.get() == nullptr);
 		UASSERT(p3.get() == obj);
 		UASSERT_REFERENCE_COUNT(obj, 3, );
@@ -93,7 +93,7 @@ void TestIrrPtr::testRefCounting()
 
 void TestIrrPtr::testSelfAssignment()
 {
-	irr_ptr<IReferenceCounted> p1{new IReferenceCounted()};
+	irr_ptr<IReferenceCounted> p1{ new IReferenceCounted() };
 	UASSERT(p1);
 	UASSERT_REFERENCE_COUNT(p1, 1, );
 	p1 = p1;
@@ -108,14 +108,14 @@ void TestIrrPtr::testNullHandling()
 {
 	// In the case of an error, it will probably crash with SEGV.
 	// Nevertheless, UASSERTs are used to catch possible corner cases.
-	irr_ptr<IReferenceCounted> p1{new IReferenceCounted()};
+	irr_ptr<IReferenceCounted> p1{ new IReferenceCounted() };
 	UASSERT(p1);
 	irr_ptr<IReferenceCounted> p2;
 	UASSERT(!p2);
-	irr_ptr<IReferenceCounted> p3{p2};
+	irr_ptr<IReferenceCounted> p3{ p2 };
 	UASSERT(!p2);
 	UASSERT(!p3);
-	irr_ptr<IReferenceCounted> p4{std::move(p2)};
+	irr_ptr<IReferenceCounted> p4{ std::move(p2) };
 	UASSERT(!p2);
 	UASSERT(!p4);
 	p2 = p2;

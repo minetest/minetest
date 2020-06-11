@@ -51,14 +51,14 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data)
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		data->blockpos_requested.Z >= data->blockpos_min.Z);
+			data->blockpos_requested.Y >= data->blockpos_min.Y &&
+			data->blockpos_requested.Z >= data->blockpos_min.Z);
 	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		data->blockpos_requested.Z <= data->blockpos_max.Z);
+			data->blockpos_requested.Y <= data->blockpos_max.Y &&
+			data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
-	this->vm   = data->vmanip;
+	this->vm = data->vmanip;
 	this->ndef = data->nodedef;
 
 	v3s16 blockpos_min = data->blockpos_min;
@@ -73,14 +73,14 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data)
 	MapNode n_node(c_node);
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 y = node_min.Y; y <= node_max.Y; y++) {
-		u32 i = vm->m_area.index(node_min.X, y, z);
-		for (s16 x = node_min.X; x <= node_max.X; x++) {
-			if (vm->m_data[i].getContent() == CONTENT_IGNORE)
-				vm->m_data[i] = n_node;
-			i++;
+		for (s16 y = node_min.Y; y <= node_max.Y; y++) {
+			u32 i = vm->m_area.index(node_min.X, y, z);
+			for (s16 x = node_min.X; x <= node_max.X; x++) {
+				if (vm->m_data[i].getContent() == CONTENT_IGNORE)
+					vm->m_data[i] = n_node;
+				i++;
+			}
 		}
-	}
 
 	// Add top and bottom side of water to transforming_liquid queue
 	updateLiquid(&data->transforming_liquid, node_min, node_max);

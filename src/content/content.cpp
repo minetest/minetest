@@ -111,7 +111,7 @@ void parseContentInfo(ContentSpec &spec)
 
 	if (spec.desc.empty()) {
 		std::ifstream is((spec.path + DIR_DELIM + "description.txt").c_str());
-		spec.desc = std::string((std::istreambuf_iterator<char>(is)),
-				std::istreambuf_iterator<char>());
+		spec.desc = std::string(
+				(std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
 	}
 }

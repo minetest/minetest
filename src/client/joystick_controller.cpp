@@ -41,7 +41,7 @@ bool JoystickAxisCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 }
 
 // spares many characters
-#define JLO_B_PB(A, B, C)    jlo.button_keys.emplace_back(A, B, C)
+#define JLO_B_PB(A, B, C) jlo.button_keys.emplace_back(A, B, C)
 #define JLO_A_PB(A, B, C, D) jlo.axis_keys.emplace_back(A, B, C, D)
 
 JoystickLayout create_default_layout()
@@ -51,10 +51,10 @@ JoystickLayout create_default_layout()
 	jlo.axes_dead_border = 1024;
 
 	const JoystickAxisLayout axes[JA_COUNT] = {
-		{0, 1}, // JA_SIDEWARD_MOVE
-		{1, 1}, // JA_FORWARD_MOVE
-		{3, 1}, // JA_FRUSTUM_HORIZONTAL
-		{4, 1}, // JA_FRUSTUM_VERTICAL
+		{ 0, 1 }, // JA_SIDEWARD_MOVE
+		{ 1, 1 }, // JA_FORWARD_MOVE
+		{ 3, 1 }, // JA_FRUSTUM_HORIZONTAL
+		{ 4, 1 }, // JA_FRUSTUM_VERTICAL
 	};
 	memcpy(jlo.axes, axes, sizeof(jlo.axes));
 
@@ -63,29 +63,29 @@ JoystickLayout create_default_layout()
 	u32 bm = sb | fb; // Mask for Both Modifiers
 
 	// The back button means "ESC".
-	JLO_B_PB(KeyType::ESC,        1 << 6,      1 << 6);
+	JLO_B_PB(KeyType::ESC, 1 << 6, 1 << 6);
 
 	// The start button counts as modifier as well as use key.
 	// JLO_B_PB(KeyType::USE,        sb,          sb));
 
 	// Accessible without start modifier button pressed
 	// regardless whether four is pressed or not
-	JLO_B_PB(KeyType::SNEAK,      sb | 1 << 2, 1 << 2);
+	JLO_B_PB(KeyType::SNEAK, sb | 1 << 2, 1 << 2);
 
 	// Accessible without four modifier button pressed
 	// regardless whether start is pressed or not
-	JLO_B_PB(KeyType::MOUSE_L,    fb | 1 << 4, 1 << 4);
-	JLO_B_PB(KeyType::MOUSE_R,    fb | 1 << 5, 1 << 5);
+	JLO_B_PB(KeyType::MOUSE_L, fb | 1 << 4, 1 << 4);
+	JLO_B_PB(KeyType::MOUSE_R, fb | 1 << 5, 1 << 5);
 
 	// Accessible without any modifier pressed
-	JLO_B_PB(KeyType::JUMP,       bm | 1 << 0, 1 << 0);
-	JLO_B_PB(KeyType::SPECIAL1,   bm | 1 << 1, 1 << 1);
+	JLO_B_PB(KeyType::JUMP, bm | 1 << 0, 1 << 0);
+	JLO_B_PB(KeyType::SPECIAL1, bm | 1 << 1, 1 << 1);
 
 	// Accessible with start button not pressed, but four pressed
 	// TODO find usage for button 0
-	JLO_B_PB(KeyType::DROP,       bm | 1 << 1, fb | 1 << 1);
-	JLO_B_PB(KeyType::SCROLL_UP,  bm | 1 << 4, fb | 1 << 4);
-	JLO_B_PB(KeyType::SCROLL_DOWN,bm | 1 << 5, fb | 1 << 5);
+	JLO_B_PB(KeyType::DROP, bm | 1 << 1, fb | 1 << 1);
+	JLO_B_PB(KeyType::SCROLL_UP, bm | 1 << 4, fb | 1 << 4);
+	JLO_B_PB(KeyType::SCROLL_DOWN, bm | 1 << 5, fb | 1 << 5);
 
 	// Accessible with start button and four pressed
 	// TODO find usage for buttons 0, 1 and 4, 5
@@ -93,13 +93,13 @@ JoystickLayout create_default_layout()
 	// Now about the buttons simulated by the axes
 
 	// Movement buttons, important for vessels
-	JLO_A_PB(KeyType::FORWARD,  1,  1, 1024);
+	JLO_A_PB(KeyType::FORWARD, 1, 1, 1024);
 	JLO_A_PB(KeyType::BACKWARD, 1, -1, 1024);
-	JLO_A_PB(KeyType::LEFT,     0,  1, 1024);
-	JLO_A_PB(KeyType::RIGHT,    0, -1, 1024);
+	JLO_A_PB(KeyType::LEFT, 0, 1, 1024);
+	JLO_A_PB(KeyType::RIGHT, 0, -1, 1024);
 
 	// Scroll buttons
-	JLO_A_PB(KeyType::SCROLL_UP,   2, -1, 1024);
+	JLO_A_PB(KeyType::SCROLL_UP, 2, -1, 1024);
 	JLO_A_PB(KeyType::SCROLL_DOWN, 5, -1, 1024);
 
 	return jlo;
@@ -112,50 +112,50 @@ JoystickLayout create_xbox_layout()
 	jlo.axes_dead_border = 7000;
 
 	const JoystickAxisLayout axes[JA_COUNT] = {
-		{0, 1}, // JA_SIDEWARD_MOVE
-		{1, 1}, // JA_FORWARD_MOVE
-		{2, 1}, // JA_FRUSTUM_HORIZONTAL
-		{3, 1}, // JA_FRUSTUM_VERTICAL
+		{ 0, 1 }, // JA_SIDEWARD_MOVE
+		{ 1, 1 }, // JA_FORWARD_MOVE
+		{ 2, 1 }, // JA_FRUSTUM_HORIZONTAL
+		{ 3, 1 }, // JA_FRUSTUM_VERTICAL
 	};
 	memcpy(jlo.axes, axes, sizeof(jlo.axes));
 
 	// The back button means "ESC".
-	JLO_B_PB(KeyType::ESC,        1 << 8,  1 << 8); // back
-	JLO_B_PB(KeyType::ESC,        1 << 9,  1 << 9); // start
+	JLO_B_PB(KeyType::ESC, 1 << 8, 1 << 8); // back
+	JLO_B_PB(KeyType::ESC, 1 << 9, 1 << 9); // start
 
 	// 4 Buttons
-	JLO_B_PB(KeyType::JUMP,        1 << 0,  1 << 0); // A/green
-	JLO_B_PB(KeyType::ESC,         1 << 1,  1 << 1); // B/red
-	JLO_B_PB(KeyType::SPECIAL1,    1 << 2,  1 << 2); // X/blue
-	JLO_B_PB(KeyType::INVENTORY,   1 << 3,  1 << 3); // Y/yellow
+	JLO_B_PB(KeyType::JUMP, 1 << 0, 1 << 0); // A/green
+	JLO_B_PB(KeyType::ESC, 1 << 1, 1 << 1); // B/red
+	JLO_B_PB(KeyType::SPECIAL1, 1 << 2, 1 << 2); // X/blue
+	JLO_B_PB(KeyType::INVENTORY, 1 << 3, 1 << 3); // Y/yellow
 
 	// Analog Sticks
-	JLO_B_PB(KeyType::SPECIAL1,    1 << 11, 1 << 11); // left
-	JLO_B_PB(KeyType::SNEAK,       1 << 12, 1 << 12); // right
+	JLO_B_PB(KeyType::SPECIAL1, 1 << 11, 1 << 11); // left
+	JLO_B_PB(KeyType::SNEAK, 1 << 12, 1 << 12); // right
 
 	// Triggers
-	JLO_B_PB(KeyType::MOUSE_L,     1 << 6,  1 << 6); // lt
-	JLO_B_PB(KeyType::MOUSE_R,     1 << 7,  1 << 7); // rt
-	JLO_B_PB(KeyType::SCROLL_UP,   1 << 4,  1 << 4); // lb
-	JLO_B_PB(KeyType::SCROLL_DOWN, 1 << 5,  1 << 5); // rb
+	JLO_B_PB(KeyType::MOUSE_L, 1 << 6, 1 << 6); // lt
+	JLO_B_PB(KeyType::MOUSE_R, 1 << 7, 1 << 7); // rt
+	JLO_B_PB(KeyType::SCROLL_UP, 1 << 4, 1 << 4); // lb
+	JLO_B_PB(KeyType::SCROLL_DOWN, 1 << 5, 1 << 5); // rb
 
 	// D-PAD
-	JLO_B_PB(KeyType::ZOOM,        1 << 15, 1 << 15); // up
-	JLO_B_PB(KeyType::DROP,        1 << 13, 1 << 13); // left
-	JLO_B_PB(KeyType::SCREENSHOT,  1 << 14, 1 << 14); // right
-	JLO_B_PB(KeyType::FREEMOVE,    1 << 16, 1 << 16); // down
+	JLO_B_PB(KeyType::ZOOM, 1 << 15, 1 << 15); // up
+	JLO_B_PB(KeyType::DROP, 1 << 13, 1 << 13); // left
+	JLO_B_PB(KeyType::SCREENSHOT, 1 << 14, 1 << 14); // right
+	JLO_B_PB(KeyType::FREEMOVE, 1 << 16, 1 << 16); // down
 
 	// Movement buttons, important for vessels
-	JLO_A_PB(KeyType::FORWARD,  1,  1, 1024);
+	JLO_A_PB(KeyType::FORWARD, 1, 1, 1024);
 	JLO_A_PB(KeyType::BACKWARD, 1, -1, 1024);
-	JLO_A_PB(KeyType::LEFT,     0,  1, 1024);
-	JLO_A_PB(KeyType::RIGHT,    0, -1, 1024);
+	JLO_A_PB(KeyType::LEFT, 0, 1, 1024);
+	JLO_A_PB(KeyType::RIGHT, 0, -1, 1024);
 
 	return jlo;
 }
 
-JoystickController::JoystickController() :
-		doubling_dtime(g_settings->getFloat("repeat_joystick_button_time"))
+JoystickController::JoystickController()
+	: doubling_dtime(g_settings->getFloat("repeat_joystick_button_time"))
 {
 	for (float &i : m_past_pressed_time) {
 		i = 0;
@@ -163,9 +163,10 @@ JoystickController::JoystickController() :
 	clear();
 }
 
-void JoystickController::onJoystickConnect(const std::vector<irr::SJoystickInfo> &joystick_infos)
+void JoystickController::onJoystickConnect(
+		const std::vector<irr::SJoystickInfo> &joystick_infos)
 {
-	s32         id     = g_settings->getS32("joystick_id");
+	s32 id = g_settings->getS32("joystick_id");
 	std::string layout = g_settings->get("joystick_type");
 
 	if (id < 0 || (u16)id >= joystick_infos.size()) {

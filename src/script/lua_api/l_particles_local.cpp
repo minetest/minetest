@@ -49,15 +49,14 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 		p.acc = check_v3f(L, -1);
 	lua_pop(L, 1);
 
-	p.expirationtime = getfloatfield_default(L, 1, "expirationtime",
-		p.expirationtime);
+	p.expirationtime = getfloatfield_default(L, 1, "expirationtime", p.expirationtime);
 	p.size = getfloatfield_default(L, 1, "size", p.size);
-	p.collisiondetection = getboolfield_default(L, 1,
-		"collisiondetection", p.collisiondetection);
-	p.collision_removal = getboolfield_default(L, 1,
-		"collision_removal", p.collision_removal);
-	p.object_collision = getboolfield_default(L, 1,
-		"object_collision", p.object_collision);
+	p.collisiondetection =
+			getboolfield_default(L, 1, "collisiondetection", p.collisiondetection);
+	p.collision_removal =
+			getboolfield_default(L, 1, "collision_removal", p.collision_removal);
+	p.object_collision =
+			getboolfield_default(L, 1, "object_collision", p.object_collision);
 	p.vertical = getboolfield_default(L, 1, "vertical", p.vertical);
 
 	lua_getfield(L, 1, "animation");
@@ -75,7 +74,7 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	p.node_tile = getintfield_default(L, 1, "node_tile", p.node_tile);
 
 	ClientEvent *event = new ClientEvent();
-	event->type           = CE_SPAWN_PARTICLE;
+	event->type = CE_SPAWN_PARTICLE;
 	event->spawn_particle = new ParticleParameters(p);
 	getClient(L)->pushToEventQueue(event);
 
@@ -126,12 +125,12 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	p.maxexptime = getfloatfield_default(L, 1, "maxexptime", p.maxexptime);
 	p.minsize = getfloatfield_default(L, 1, "minsize", p.minsize);
 	p.maxsize = getfloatfield_default(L, 1, "maxsize", p.maxsize);
-	p.collisiondetection = getboolfield_default(L, 1,
-		"collisiondetection", p.collisiondetection);
-	p.collision_removal = getboolfield_default(L, 1,
-		"collision_removal", p.collision_removal);
-	p.object_collision = getboolfield_default(L, 1,
-		"object_collision", p.object_collision);
+	p.collisiondetection =
+			getboolfield_default(L, 1, "collisiondetection", p.collisiondetection);
+	p.collision_removal =
+			getboolfield_default(L, 1, "collision_removal", p.collision_removal);
+	p.object_collision =
+			getboolfield_default(L, 1, "object_collision", p.object_collision);
 
 	lua_getfield(L, 1, "animation");
 	p.animation = read_animation_definition(L, -1);
@@ -151,10 +150,10 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	u64 id = getClient(L)->getParticleManager()->generateSpawnerId();
 
 	auto event = new ClientEvent();
-	event->type                            = CE_ADD_PARTICLESPAWNER;
-	event->add_particlespawner.p           = new ParticleSpawnerParameters(p);
+	event->type = CE_ADD_PARTICLESPAWNER;
+	event->add_particlespawner.p = new ParticleSpawnerParameters(p);
 	event->add_particlespawner.attached_id = 0;
-	event->add_particlespawner.id          = id;
+	event->add_particlespawner.id = id;
 
 	getClient(L)->pushToEventQueue(event);
 	lua_pushnumber(L, id);
@@ -168,7 +167,7 @@ int ModApiParticlesLocal::l_delete_particlespawner(lua_State *L)
 	u32 id = luaL_checknumber(L, 1);
 
 	ClientEvent *event = new ClientEvent();
-	event->type                      = CE_DELETE_PARTICLESPAWNER;
+	event->type = CE_DELETE_PARTICLESPAWNER;
 	event->delete_particlespawner.id = id;
 
 	getClient(L)->pushToEventQueue(event);

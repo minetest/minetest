@@ -27,8 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include <fstream>
 
-static inline void get_data_and_border_flags(lua_State *L, u8 start_i,
-		bool *borders, bool *data)
+static inline void get_data_and_border_flags(
+		lua_State *L, u8 start_i, bool *borders, bool *data)
 {
 	if (!lua_isboolean(L, start_i))
 		return;
@@ -38,8 +38,8 @@ static inline void get_data_and_border_flags(lua_State *L, u8 start_i,
 	*data = lua_toboolean(L, start_i + 1);
 }
 
-static void push_area(lua_State *L, const Area *a,
-		bool include_borders, bool include_data)
+static void push_area(
+		lua_State *L, const Area *a, bool include_borders, bool include_data)
 {
 	if (!include_borders && !include_data) {
 		lua_pushboolean(L, true);
@@ -58,8 +58,8 @@ static void push_area(lua_State *L, const Area *a,
 	}
 }
 
-static inline void push_areas(lua_State *L, const std::vector<Area *> &areas,
-		bool borders, bool data)
+static inline void push_areas(
+		lua_State *L, const std::vector<Area *> &areas, bool borders, bool data)
 {
 	lua_newtable(L);
 	size_t cnt = areas.size();
@@ -71,8 +71,7 @@ static inline void push_areas(lua_State *L, const std::vector<Area *> &areas,
 }
 
 // Deserializes value and handles errors
-static int deserialization_helper(lua_State *L, AreaStore *as,
-		std::istream &is)
+static int deserialization_helper(lua_State *L, AreaStore *as, std::istream &is)
 {
 	try {
 		as->deserialize(is);
@@ -329,8 +328,8 @@ int LuaAreaStore::create_object(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = (lua_isstring(L, 1)) ?
-		new LuaAreaStore(readParam<std::string>(L, 1)) :
-		new LuaAreaStore();
+			new LuaAreaStore(readParam<std::string>(L, 1)) :
+			new LuaAreaStore();
 
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
@@ -348,7 +347,7 @@ LuaAreaStore *LuaAreaStore::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(LuaAreaStore **)ud;  // unbox pointer
+	return *(LuaAreaStore **)ud; // unbox pointer
 }
 
 void LuaAreaStore::Register(lua_State *L)
@@ -360,7 +359,7 @@ void LuaAreaStore::Register(lua_State *L)
 
 	lua_pushliteral(L, "__metatable");
 	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+	lua_settable(L, metatable); // hide metatable from Lua getmetatable()
 
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);
@@ -370,27 +369,20 @@ void LuaAreaStore::Register(lua_State *L)
 	lua_pushcfunction(L, gc_object);
 	lua_settable(L, metatable);
 
-	lua_pop(L, 1);  // drop metatable
+	lua_pop(L, 1); // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	luaL_openlib(L, 0, methods, 0); // fill methodtable
+	lua_pop(L, 1); // drop methodtable
 
 	// Can be created from Lua (AreaStore())
 	lua_register(L, className, create_object);
 }
 
 const char LuaAreaStore::className[] = "AreaStore";
-const luaL_Reg LuaAreaStore::methods[] = {
-	luamethod(LuaAreaStore, get_area),
+const luaL_Reg LuaAreaStore::methods[] = { luamethod(LuaAreaStore, get_area),
 	luamethod(LuaAreaStore, get_areas_for_pos),
-	luamethod(LuaAreaStore, get_areas_in_area),
-	luamethod(LuaAreaStore, insert_area),
-	luamethod(LuaAreaStore, reserve),
-	luamethod(LuaAreaStore, remove_area),
-	luamethod(LuaAreaStore, set_cache_params),
-	luamethod(LuaAreaStore, to_string),
-	luamethod(LuaAreaStore, to_file),
-	luamethod(LuaAreaStore, from_string),
-	luamethod(LuaAreaStore, from_file),
-	{0,0}
-};
+	luamethod(LuaAreaStore, get_areas_in_area), luamethod(LuaAreaStore, insert_area),
+	luamethod(LuaAreaStore, reserve), luamethod(LuaAreaStore, remove_area),
+	luamethod(LuaAreaStore, set_cache_params), luamethod(LuaAreaStore, to_string),
+	luamethod(LuaAreaStore, to_file), luamethod(LuaAreaStore, from_string),
+	luamethod(LuaAreaStore, from_file), { 0, 0 } };

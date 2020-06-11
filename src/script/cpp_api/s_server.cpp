@@ -21,10 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_internal.h"
 #include "common/c_converter.h"
 
-bool ScriptApiServer::getAuth(const std::string &playername,
-		std::string *dst_password,
-		std::set<std::string> *dst_privs,
-		s64 *dst_last_login)
+bool ScriptApiServer::getAuth(const std::string &playername, std::string *dst_password,
+		std::set<std::string> *dst_privs, s64 *dst_last_login)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -54,10 +52,10 @@ bool ScriptApiServer::getAuth(const std::string &playername,
 		throw LuaError("Authentication handler didn't return privilege table");
 	if (dst_privs)
 		readPrivileges(-1, *dst_privs);
-	lua_pop(L, 1);  // Remove key from privs table
+	lua_pop(L, 1); // Remove key from privs table
 
 	s64 last_login;
-	if(!getintfield(L, -1, "last_login", last_login))
+	if (!getintfield(L, -1, "last_login", last_login))
 		throw LuaError("Authentication handler didn't return last_login");
 	if (dst_last_login)
 		*dst_last_login = (s64)last_login;
@@ -71,7 +69,7 @@ void ScriptApiServer::getAuthHandler()
 
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_auth_handler");
-	if (lua_isnil(L, -1)){
+	if (lua_isnil(L, -1)) {
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "builtin_auth_handler");
 	}
@@ -102,8 +100,8 @@ void ScriptApiServer::readPrivileges(int index, std::set<std::string> &result)
 	}
 }
 
-void ScriptApiServer::createAuth(const std::string &playername,
-		const std::string &password)
+void ScriptApiServer::createAuth(
+		const std::string &playername, const std::string &password)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -119,8 +117,8 @@ void ScriptApiServer::createAuth(const std::string &playername,
 	lua_pop(L, 1); // Pop error handler
 }
 
-bool ScriptApiServer::setPassword(const std::string &playername,
-		const std::string &password)
+bool ScriptApiServer::setPassword(
+		const std::string &playername, const std::string &password)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -137,8 +135,7 @@ bool ScriptApiServer::setPassword(const std::string &playername,
 	return lua_toboolean(L, -1);
 }
 
-bool ScriptApiServer::on_chat_message(const std::string &name,
-		const std::string &message)
+bool ScriptApiServer::on_chat_message(const std::string &name, const std::string &message)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -174,8 +171,8 @@ void ScriptApiServer::on_shutdown()
 	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
 }
 
-std::string ScriptApiServer::formatChatMessage(const std::string &name,
-	const std::string &message)
+std::string ScriptApiServer::formatChatMessage(
+		const std::string &name, const std::string &message)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

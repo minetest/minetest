@@ -52,9 +52,9 @@ ItemDefinition::ItemDefinition(const ItemDefinition &def)
 	*this = def;
 }
 
-ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
+ItemDefinition &ItemDefinition::operator=(const ItemDefinition &def)
 {
-	if(this == &def)
+	if (this == &def)
 		return *this;
 
 	reset();
@@ -70,10 +70,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
-	if(def.tool_capabilities)
-	{
-		tool_capabilities = new ToolCapabilities(
-				*def.tool_capabilities);
+	if (def.tool_capabilities) {
+		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
 	}
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
@@ -193,7 +191,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	groups.clear();
 	u32 groups_size = readU16(is);
-	for(u32 i=0; i<groups_size; i++){
+	for (u32 i = 0; i < groups_size; i++) {
 		std::string name = deSerializeString(is);
 		int value = readS16(is);
 		groups[name] = value;
@@ -224,7 +222,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 // SUGG: Support chains of aliases?
 
-class CItemDefManager: public IWritableItemDefManager
+class CItemDefManager : public IWritableItemDefManager
 {
 #ifndef SERVER
 	struct ClientCached
@@ -233,17 +231,13 @@ class CItemDefManager: public IWritableItemDefManager
 		ItemMesh wield_mesh;
 		Palette *palette;
 
-		ClientCached():
-			inventory_texture(NULL),
-			palette(NULL)
-		{}
+		ClientCached() : inventory_texture(NULL), palette(NULL) {}
 	};
 #endif
 
 public:
 	CItemDefManager()
 	{
-
 #ifndef SERVER
 		m_main_thread = std::this_thread::get_id();
 #endif
@@ -252,7 +246,7 @@ public:
 	virtual ~CItemDefManager()
 	{
 #ifndef SERVER
-		const std::vector<ClientCached*> &values = m_clientcached.getValues();
+		const std::vector<ClientCached *> &values = m_clientcached.getValues();
 		for (ClientCached *cc : values) {
 			if (cc->wield_mesh.mesh)
 				cc->wield_mesh.mesh->drop();
@@ -265,7 +259,7 @@ public:
 		}
 		m_item_definitions.clear();
 	}
-	virtual const ItemDefinition& get(const std::string &name_) const
+	virtual const ItemDefinition &get(const std::string &name_) const
 	{
 		// Convert name according to possible alias
 		std::string name = getAlias(name_);
@@ -303,11 +297,10 @@ public:
 	}
 #ifndef SERVER
 public:
-	ClientCached* createClientCachedDirect(const std::string &name,
-			Client *client) const
+	ClientCached *createClientCachedDirect(const std::string &name, Client *client) const
 	{
-		infostream<<"Lazily creating item texture and mesh for \""
-				<<name<<"\""<<std::endl;
+		infostream << "Lazily creating item texture and mesh for \"" << name << "\""
+				   << std::endl;
 
 		// This is not thread-safe
 		sanity_check(std::this_thread::get_id() == m_main_thread);
@@ -315,7 +308,7 @@ public:
 		// Skip if already in cache
 		ClientCached *cc = NULL;
 		m_clientcached.get(name, &cc);
-		if(cc)
+		if (cc)
 			return cc;
 
 		ITextureSource *tsrc = client->getTextureSource();
@@ -341,8 +334,7 @@ public:
 
 		return cc;
 	}
-	ClientCached* getClientCached(const std::string &name,
-			Client *client) const
+	ClientCached *getClientCached(const std::string &name, Client *client) const
 	{
 		ClientCached *cc = NULL;
 		m_clientcached.get(name, &cc);
@@ -354,57 +346,54 @@ public:
 		}
 
 		// We're gonna ask the result to be put into here
-		static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
+		static ResultQueue<std::string, ClientCached *, u8, u8> result_queue;
 
 		// Throw a request in
 		m_get_clientcached_queue.add(name, 0, 0, &result_queue);
 		try {
-			while(true) {
+			while (true) {
 				// Wait result for a second
-				GetResult<std::string, ClientCached*, u8, u8>
-					result = result_queue.pop_front(1000);
+				GetResult<std::string, ClientCached *, u8, u8> result =
+						result_queue.pop_front(1000);
 
 				if (result.key == name) {
 					return result.item;
 				}
 			}
-		} catch(ItemNotFoundException &e) {
-			errorstream << "Waiting for clientcached " << name
-				<< " timed out." << std::endl;
+		} catch (ItemNotFoundException &e) {
+			errorstream << "Waiting for clientcached " << name << " timed out."
+						<< std::endl;
 			return &m_dummy_clientcached;
 		}
 	}
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			Client *client) const
+	virtual video::ITexture *getInventoryTexture(
+			const std::string &name, Client *client) const
 	{
 		ClientCached *cc = getClientCached(name, client);
-		if(!cc)
+		if (!cc)
 			return NULL;
 		return cc->inventory_texture;
 	}
 	// Get item wield mesh
-	virtual ItemMesh* getWieldMesh(const std::string &name,
-			Client *client) const
+	virtual ItemMesh *getWieldMesh(const std::string &name, Client *client) const
 	{
 		ClientCached *cc = getClientCached(name, client);
-		if(!cc)
+		if (!cc)
 			return NULL;
 		return &(cc->wield_mesh);
 	}
 
 	// Get item palette
-	virtual Palette* getPalette(const std::string &name,
-			Client *client) const
+	virtual Palette *getPalette(const std::string &name, Client *client) const
 	{
 		ClientCached *cc = getClientCached(name, client);
-		if(!cc)
+		if (!cc)
 			return NULL;
 		return cc->palette;
 	}
 
-	virtual video::SColor getItemstackColor(const ItemStack &stack,
-		Client *client) const
+	virtual video::SColor getItemstackColor(const ItemStack &stack, Client *client) const
 	{
 		// Look for direct color definition
 		const std::string &colorstring = stack.metadata.getString("color", 0);
@@ -423,14 +412,16 @@ public:
 	void applyTextureOverrides(const std::vector<TextureOverride> &overrides)
 	{
 		infostream << "ItemDefManager::applyTextureOverrides(): Applying "
-			"overrides to textures" << std::endl;
+					  "overrides to textures"
+				   << std::endl;
 
-		for (const TextureOverride& texture_override : overrides) {
-			if (m_item_definitions.find(texture_override.id) == m_item_definitions.end()) {
+		for (const TextureOverride &texture_override : overrides) {
+			if (m_item_definitions.find(texture_override.id) ==
+					m_item_definitions.end()) {
 				continue; // Ignore unknown item
 			}
 
-			ItemDefinition* itemdef = m_item_definitions[texture_override.id];
+			ItemDefinition *itemdef = m_item_definitions[texture_override.id];
 
 			if (texture_override.hasTarget(OverrideTarget::INVENTORY))
 				itemdef->inventory_image = texture_override.texture;
@@ -441,8 +432,7 @@ public:
 	}
 	void clear()
 	{
-		for (auto &i : m_item_definitions)
-		{
+		for (auto &i : m_item_definitions) {
 			delete i.second;
 		}
 		m_item_definitions.clear();
@@ -455,23 +445,23 @@ public:
 		//   "air" is the air node
 		//   "ignore" is the ignore node
 
-		ItemDefinition* hand_def = new ItemDefinition;
+		ItemDefinition *hand_def = new ItemDefinition;
 		hand_def->name = "";
 		hand_def->wield_image = "wieldhand.png";
 		hand_def->tool_capabilities = new ToolCapabilities;
 		m_item_definitions.insert(std::make_pair("", hand_def));
 
-		ItemDefinition* unknown_def = new ItemDefinition;
+		ItemDefinition *unknown_def = new ItemDefinition;
 		unknown_def->type = ITEM_NODE;
 		unknown_def->name = "unknown";
 		m_item_definitions.insert(std::make_pair("unknown", unknown_def));
 
-		ItemDefinition* air_def = new ItemDefinition;
+		ItemDefinition *air_def = new ItemDefinition;
 		air_def->type = ITEM_NODE;
 		air_def->name = "air";
 		m_item_definitions.insert(std::make_pair("air", air_def));
 
-		ItemDefinition* ignore_def = new ItemDefinition;
+		ItemDefinition *ignore_def = new ItemDefinition;
 		ignore_def->type = ITEM_NODE;
 		ignore_def->name = "ignore";
 		m_item_definitions.insert(std::make_pair("ignore", ignore_def));
@@ -483,30 +473,29 @@ public:
 		if (def.name.empty())
 			FATAL_ERROR_IF(!def.tool_capabilities, "Hand does not have ToolCapabilities");
 
-		if(m_item_definitions.count(def.name) == 0)
+		if (m_item_definitions.count(def.name) == 0)
 			m_item_definitions[def.name] = new ItemDefinition(def);
 		else
 			*(m_item_definitions[def.name]) = def;
 
 		// Remove conflicting alias if it exists
 		bool alias_removed = (m_aliases.erase(def.name) != 0);
-		if(alias_removed)
-			infostream<<"ItemDefManager: erased alias "<<def.name
-					<<" because item was defined"<<std::endl;
+		if (alias_removed)
+			infostream << "ItemDefManager: erased alias " << def.name
+					   << " because item was defined" << std::endl;
 	}
 	virtual void unregisterItem(const std::string &name)
 	{
-		verbosestream<<"ItemDefManager: unregistering \""<<name<<"\""<<std::endl;
+		verbosestream << "ItemDefManager: unregistering \"" << name << "\"" << std::endl;
 
 		delete m_item_definitions[name];
 		m_item_definitions.erase(name);
 	}
-	virtual void registerAlias(const std::string &name,
-			const std::string &convert_to)
+	virtual void registerAlias(const std::string &name, const std::string &convert_to)
 	{
 		if (m_item_definitions.find(name) == m_item_definitions.end()) {
-			TRACESTREAM(<< "ItemDefManager: setting alias " << name
-				<< " -> " << convert_to << std::endl);
+			TRACESTREAM(<< "ItemDefManager: setting alias " << name << " -> "
+						<< convert_to << std::endl);
 			m_aliases[name] = convert_to;
 		}
 	}
@@ -537,11 +526,10 @@ public:
 		clear();
 		// Deserialize
 		int version = readU8(is);
-		if(version != 0)
+		if (version != 0)
 			throw SerializationError("unsupported ItemDefManager version");
 		u16 count = readU16(is);
-		for(u16 i=0; i<count; i++)
-		{
+		for (u16 i = 0; i < count; i++) {
 			// Deserialize a string and grab an ItemDefinition from it
 			std::istringstream tmp_is(deSerializeString(is), std::ios::binary);
 			ItemDefinition def;
@@ -550,8 +538,7 @@ public:
 			registerItem(def);
 		}
 		u16 num_aliases = readU16(is);
-		for(u16 i=0; i<num_aliases; i++)
-		{
+		for (u16 i = 0; i < num_aliases; i++) {
 			std::string name = deSerializeString(is);
 			std::string convert_to = deSerializeString(is);
 			registerAlias(name, convert_to);
@@ -561,19 +548,19 @@ public:
 	{
 #ifndef SERVER
 		//NOTE this is only thread safe for ONE consumer thread!
-		while(!m_get_clientcached_queue.empty())
-		{
-			GetRequest<std::string, ClientCached*, u8, u8>
-					request = m_get_clientcached_queue.pop();
+		while (!m_get_clientcached_queue.empty()) {
+			GetRequest<std::string, ClientCached *, u8, u8> request =
+					m_get_clientcached_queue.pop();
 
-			m_get_clientcached_queue.pushResult(request,
-					createClientCachedDirect(request.key, (Client *)gamedef));
+			m_get_clientcached_queue.pushResult(
+					request, createClientCachedDirect(request.key, (Client *)gamedef));
 		}
 #endif
 	}
+
 private:
 	// Key is name
-	std::map<std::string, ItemDefinition*> m_item_definitions;
+	std::map<std::string, ItemDefinition *> m_item_definitions;
 	// Aliases
 	StringMap m_aliases;
 #ifndef SERVER
@@ -582,13 +569,13 @@ private:
 	// A reference to this can be returned when nothing is found, to avoid NULLs
 	mutable ClientCached m_dummy_clientcached;
 	// Cached textures and meshes
-	mutable MutexedMap<std::string, ClientCached*> m_clientcached;
+	mutable MutexedMap<std::string, ClientCached *> m_clientcached;
 	// Queued clientcached fetches (to be processed by the main thread)
-	mutable RequestQueue<std::string, ClientCached*, u8, u8> m_get_clientcached_queue;
+	mutable RequestQueue<std::string, ClientCached *, u8, u8> m_get_clientcached_queue;
 #endif
 };
 
-IWritableItemDefManager* createItemDefManager()
+IWritableItemDefManager *createItemDefManager()
 {
 	return new CItemDefManager();
 }

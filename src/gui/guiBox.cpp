@@ -20,9 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiBox.h"
 
 GUIBox::GUIBox(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-	const core::rect<s32> &rectangle, const video::SColor &color) :
-	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
-	m_color(color)
+		const core::rect<s32> &rectangle, const video::SColor &color)
+	: gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle), m_color(color)
 {
 }
 
@@ -31,8 +30,8 @@ void GUIBox::draw()
 	if (!IsVisible)
 		return;
 
-	Environment->getVideoDriver()->draw2DRectangle(m_color, AbsoluteRect,
-			&AbsoluteClippingRect);
+	Environment->getVideoDriver()->draw2DRectangle(
+			m_color, AbsoluteRect, &AbsoluteClippingRect);
 
 	IGUIElement::draw();
 }

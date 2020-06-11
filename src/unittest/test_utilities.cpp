@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/string.h"
 
-class TestUtilities : public TestBase {
+class TestUtilities : public TestBase
+{
 public:
 	TestUtilities() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestUtilities"; }
@@ -113,63 +114,63 @@ inline float ref_WrapDegrees_0_360(float f)
 }
 
 
-void TestUtilities::testAngleWrapAround() {
-    UASSERT(fabs(modulo360f(100.0) - 100.0) < 0.001);
-    UASSERT(fabs(modulo360f(720.5) - 0.5) < 0.001);
-    UASSERT(fabs(modulo360f(-0.5) - (-0.5)) < 0.001);
-    UASSERT(fabs(modulo360f(-365.5) - (-5.5)) < 0.001);
+void TestUtilities::testAngleWrapAround()
+{
+	UASSERT(fabs(modulo360f(100.0) - 100.0) < 0.001);
+	UASSERT(fabs(modulo360f(720.5) - 0.5) < 0.001);
+	UASSERT(fabs(modulo360f(-0.5) - (-0.5)) < 0.001);
+	UASSERT(fabs(modulo360f(-365.5) - (-5.5)) < 0.001);
 
-    for (float f = -720; f <= -360; f += 0.25) {
-        UASSERT(std::fabs(modulo360f(f) - modulo360f(f + 360)) < 0.001);
-    }
+	for (float f = -720; f <= -360; f += 0.25) {
+		UASSERT(std::fabs(modulo360f(f) - modulo360f(f + 360)) < 0.001);
+	}
 
-    for (float f = -1440; f <= 1440; f += 0.25) {
-        UASSERT(std::fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
-        UASSERT(std::fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
-        UASSERT(std::fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
-        UASSERT(wrapDegrees_0_360(
-                std::fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
-    }
-
+	for (float f = -1440; f <= 1440; f += 0.25) {
+		UASSERT(std::fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
+		UASSERT(std::fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
+		UASSERT(std::fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
+		UASSERT(wrapDegrees_0_360(std::fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) <
+				0.001);
+	}
 }
 
 void TestUtilities::testWrapDegrees_0_360_v3f()
 {
-    // only x test with little step
+	// only x test with little step
 	for (float x = -720.f; x <= 720; x += 0.05) {
-        v3f r = wrapDegrees_0_360_v3f(v3f(x, 0, 0));
-        UASSERT(r.X >= 0.0f && r.X < 360.0f)
-        UASSERT(r.Y == 0.0f)
-        UASSERT(r.Z == 0.0f)
-    }
-
-    // only y test with little step
-    for (float y = -720.f; y <= 720; y += 0.05) {
-        v3f r = wrapDegrees_0_360_v3f(v3f(0, y, 0));
-        UASSERT(r.X == 0.0f)
-        UASSERT(r.Y >= 0.0f && r.Y < 360.0f)
-        UASSERT(r.Z == 0.0f)
-    }
-
-    // only z test with little step
-    for (float z = -720.f; z <= 720; z += 0.05) {
-        v3f r = wrapDegrees_0_360_v3f(v3f(0, 0, z));
-        UASSERT(r.X == 0.0f)
-        UASSERT(r.Y == 0.0f)
-        UASSERT(r.Z >= 0.0f && r.Z < 360.0f)
+		v3f r = wrapDegrees_0_360_v3f(v3f(x, 0, 0));
+		UASSERT(r.X >= 0.0f && r.X < 360.0f)
+		UASSERT(r.Y == 0.0f)
+		UASSERT(r.Z == 0.0f)
 	}
 
-    // test the whole coordinate translation
-    for (float x = -720.f; x <= 720; x += 2.5) {
-        for (float y = -720.f; y <= 720; y += 2.5) {
-            for (float z = -720.f; z <= 720; z += 2.5) {
-                v3f r = wrapDegrees_0_360_v3f(v3f(x, y, z));
-                UASSERT(r.X >= 0.0f && r.X < 360.0f)
-                UASSERT(r.Y >= 0.0f && r.Y < 360.0f)
-                UASSERT(r.Z >= 0.0f && r.Z < 360.0f)
-            }
-        }
-    }
+	// only y test with little step
+	for (float y = -720.f; y <= 720; y += 0.05) {
+		v3f r = wrapDegrees_0_360_v3f(v3f(0, y, 0));
+		UASSERT(r.X == 0.0f)
+		UASSERT(r.Y >= 0.0f && r.Y < 360.0f)
+		UASSERT(r.Z == 0.0f)
+	}
+
+	// only z test with little step
+	for (float z = -720.f; z <= 720; z += 0.05) {
+		v3f r = wrapDegrees_0_360_v3f(v3f(0, 0, z));
+		UASSERT(r.X == 0.0f)
+		UASSERT(r.Y == 0.0f)
+		UASSERT(r.Z >= 0.0f && r.Z < 360.0f)
+	}
+
+	// test the whole coordinate translation
+	for (float x = -720.f; x <= 720; x += 2.5) {
+		for (float y = -720.f; y <= 720; y += 2.5) {
+			for (float z = -720.f; z <= 720; z += 2.5) {
+				v3f r = wrapDegrees_0_360_v3f(v3f(x, y, z));
+				UASSERT(r.X >= 0.0f && r.X < 360.0f)
+				UASSERT(r.Y >= 0.0f && r.Y < 360.0f)
+				UASSERT(r.Z >= 0.0f && r.Z < 360.0f)
+			}
+		}
+	}
 }
 
 
@@ -204,7 +205,7 @@ void TestUtilities::testIsYes()
 
 void TestUtilities::testRemoveStringEnd()
 {
-	const char *ends[] = {"abc", "c", "bc", "", NULL};
+	const char *ends[] = { "abc", "c", "bc", "", NULL };
 	UASSERT(removeStringEnd("abc", ends) == "");
 	UASSERT(removeStringEnd("bc", ends) == "b");
 	UASSERT(removeStringEnd("12c", ends) == "12");
@@ -214,15 +215,13 @@ void TestUtilities::testRemoveStringEnd()
 
 void TestUtilities::testUrlEncode()
 {
-	UASSERT(urlencode("\"Aardvarks lurk, OK?\"")
-			== "%22Aardvarks%20lurk%2C%20OK%3F%22");
+	UASSERT(urlencode("\"Aardvarks lurk, OK?\"") == "%22Aardvarks%20lurk%2C%20OK%3F%22");
 }
 
 
 void TestUtilities::testUrlDecode()
 {
-	UASSERT(urldecode("%22Aardvarks%20lurk%2C%20OK%3F%22")
-			== "\"Aardvarks lurk, OK?\"");
+	UASSERT(urldecode("%22Aardvarks%20lurk%2C%20OK%3F%22") == "\"Aardvarks lurk, OK?\"");
 }
 
 
@@ -234,14 +233,13 @@ void TestUtilities::testPadString()
 void TestUtilities::testStartsWith()
 {
 	UASSERT(str_starts_with(std::string(), std::string()) == true);
-	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
-		std::string()) == true);
-	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
-		std::string("the")) == true);
-	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
-		std::string("The")) == false);
-	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
-		std::string("The"), true) == true);
+	UASSERT(str_starts_with(std::string("the sharp pickaxe"), std::string()) == true);
+	UASSERT(str_starts_with(std::string("the sharp pickaxe"), std::string("the")) ==
+			true);
+	UASSERT(str_starts_with(std::string("the sharp pickaxe"), std::string("The")) ==
+			false);
+	UASSERT(str_starts_with(std::string("the sharp pickaxe"), std::string("The"), true) ==
+			true);
 	UASSERT(str_starts_with(std::string("T"), std::string("The")) == false);
 }
 
@@ -303,45 +301,39 @@ void TestUtilities::testAsciiPrintableHelper()
 void TestUtilities::testUTF8()
 {
 	UASSERT(wide_to_utf8(utf8_to_wide("")) == "");
-	UASSERT(wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!"))
-		== "the shovel dug a crumbly node!");
+	UASSERT(wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!")) ==
+			"the shovel dug a crumbly node!");
 }
 
 void TestUtilities::testRemoveEscapes()
 {
-	UASSERT(unescape_enriched<wchar_t>(
-		L"abc\x1bXdef") == L"abcdef");
-	UASSERT(unescape_enriched<wchar_t>(
-		L"abc\x1b(escaped)def") == L"abcdef");
-	UASSERT(unescape_enriched<wchar_t>(
-		L"abc\x1b((escaped with parenthesis\\))def") == L"abcdef");
-	UASSERT(unescape_enriched<wchar_t>(
-		L"abc\x1b(incomplete") == L"abc");
-	UASSERT(unescape_enriched<wchar_t>(
-		L"escape at the end\x1b") == L"escape at the end");
+	UASSERT(unescape_enriched<wchar_t>(L"abc\x1bXdef") == L"abcdef");
+	UASSERT(unescape_enriched<wchar_t>(L"abc\x1b(escaped)def") == L"abcdef");
+	UASSERT(unescape_enriched<wchar_t>(L"abc\x1b((escaped with parenthesis\\))def") ==
+			L"abcdef");
+	UASSERT(unescape_enriched<wchar_t>(L"abc\x1b(incomplete") == L"abc");
+	UASSERT(unescape_enriched<wchar_t>(L"escape at the end\x1b") == L"escape at the end");
 	// Nested escapes not supported
-	UASSERT(unescape_enriched<wchar_t>(
-		L"abc\x1b(outer \x1b(inner escape)escape)def") == L"abcescape)def");
+	UASSERT(unescape_enriched<wchar_t>(L"abc\x1b(outer \x1b(inner escape)escape)def") ==
+			L"abcescape)def");
 }
 
 void TestUtilities::testWrapRows()
 {
-	UASSERT(wrap_rows("12345678",4) == "1234\n5678");
+	UASSERT(wrap_rows("12345678", 4) == "1234\n5678");
 	// test that wrap_rows doesn't wrap inside multibyte sequences
 	{
-		const unsigned char s[] = {
-			0x2f, 0x68, 0x6f, 0x6d, 0x65, 0x2f, 0x72, 0x61, 0x70, 0x74, 0x6f,
-			0x72, 0x2f, 0xd1, 0x82, 0xd0, 0xb5, 0xd1, 0x81, 0xd1, 0x82, 0x2f,
-			0x6d, 0x69, 0x6e, 0x65, 0x74, 0x65, 0x73, 0x74, 0x2f, 0x62, 0x69,
-			0x6e, 0x2f, 0x2e, 0x2e, 0};
+		const unsigned char s[] = { 0x2f, 0x68, 0x6f, 0x6d, 0x65, 0x2f, 0x72, 0x61, 0x70,
+			0x74, 0x6f, 0x72, 0x2f, 0xd1, 0x82, 0xd0, 0xb5, 0xd1, 0x81, 0xd1, 0x82, 0x2f,
+			0x6d, 0x69, 0x6e, 0x65, 0x74, 0x65, 0x73, 0x74, 0x2f, 0x62, 0x69, 0x6e, 0x2f,
+			0x2e, 0x2e, 0 };
 		std::string str((char *)s);
 		UASSERT(utf8_to_wide(wrap_rows(str, 20)) != L"<invalid UTF-8 string>");
 	};
 	{
-		const unsigned char s[] = {
-			0x74, 0x65, 0x73, 0x74, 0x20, 0xd1, 0x82, 0xd0, 0xb5, 0xd1, 0x81,
-			0xd1, 0x82, 0x20, 0xd1, 0x82, 0xd0, 0xb5, 0xd1, 0x81, 0xd1, 0x82,
-			0x20, 0xd1, 0x82, 0xd0, 0xb5, 0xd1, 0x81, 0xd1, 0x82, 0};
+		const unsigned char s[] = { 0x74, 0x65, 0x73, 0x74, 0x20, 0xd1, 0x82, 0xd0, 0xb5,
+			0xd1, 0x81, 0xd1, 0x82, 0x20, 0xd1, 0x82, 0xd0, 0xb5, 0xd1, 0x81, 0xd1, 0x82,
+			0x20, 0xd1, 0x82, 0xd0, 0xb5, 0xd1, 0x81, 0xd1, 0x82, 0 };
 		std::string str((char *)s);
 		UASSERT(utf8_to_wide(wrap_rows(str, 8)) != L"<invalid UTF-8 string>");
 	}
@@ -424,17 +416,16 @@ static bool within(const f32 value1, const f32 value2, const f32 precision)
 
 static bool within(const v3f &v1, const v3f &v2, const f32 precision)
 {
-	return within(v1.X, v2.X, precision) && within(v1.Y, v2.Y, precision)
-		&& within(v1.Z, v2.Z, precision);
+	return within(v1.X, v2.X, precision) && within(v1.Y, v2.Y, precision) &&
+			within(v1.Z, v2.Z, precision);
 }
 
-static bool within(const core::matrix4 &m1, const core::matrix4 &m2,
-		const f32 precision)
+static bool within(const core::matrix4 &m1, const core::matrix4 &m2, const f32 precision)
 {
 	const f32 *M1 = m1.pointer();
 	const f32 *M2 = m2.pointer();
 	for (int i = 0; i < 16; i++)
-		if (! within(M1[i], M2[i], precision))
+		if (!within(M1[i], M2[i], precision))
 			return false;
 	return true;
 }
@@ -463,7 +454,7 @@ void TestUtilities::testEulerConversion()
 	// Check that the radians version and the degrees version
 	// produce the same results. Check also that the conversion
 	// works both ways for these values.
-	v1 = v3f(M_PI/3.0, M_PI/5.0, M_PI/4.0);
+	v1 = v3f(M_PI / 3.0, M_PI / 5.0, M_PI / 4.0);
 	v2 = v3f(60.0f, 36.0f, 45.0f);
 	setPitchYawRollRad(m1, v1);
 	setPitchYawRoll(m2, v2);

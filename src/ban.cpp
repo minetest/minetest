@@ -28,14 +28,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "filesys.h"
 
-BanManager::BanManager(const std::string &banfilepath):
-		m_banfilepath(banfilepath)
+BanManager::BanManager(const std::string &banfilepath) : m_banfilepath(banfilepath)
 {
 	try {
 		load();
-	} catch(SerializationError &e) {
-		infostream << "BanManager: creating "
-				<< m_banfilepath << std::endl;
+	} catch (SerializationError &e) {
+		infostream << "BanManager: creating " << m_banfilepath << std::endl;
 	}
 }
 
@@ -47,10 +45,10 @@ BanManager::~BanManager()
 void BanManager::load()
 {
 	MutexAutoLock lock(m_mutex);
-	infostream<<"BanManager: loading from "<<m_banfilepath<<std::endl;
+	infostream << "BanManager: loading from " << m_banfilepath << std::endl;
 	std::ifstream is(m_banfilepath.c_str(), std::ios::binary);
 	if (!is.good()) {
-		infostream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
+		infostream << "BanManager: failed loading from " << m_banfilepath << std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
 
@@ -60,7 +58,7 @@ void BanManager::load()
 		Strfnd f(line);
 		std::string ip = trim(f.next("|"));
 		std::string name = trim(f.next("|"));
-		if(!ip.empty()) {
+		if (!ip.empty()) {
 			m_ips[ip] = name;
 		}
 	}
@@ -95,8 +93,7 @@ std::string BanManager::getBanDescription(const std::string &ip_or_name)
 	MutexAutoLock lock(m_mutex);
 	std::string s;
 	for (const auto &ip : m_ips) {
-		if (ip.first  == ip_or_name || ip.second == ip_or_name
-				|| ip_or_name.empty()) {
+		if (ip.first == ip_or_name || ip.second == ip_or_name || ip_or_name.empty()) {
 			s += ip.first + "|" + ip.second + ", ";
 		}
 	}
@@ -139,4 +136,3 @@ bool BanManager::isModified()
 	MutexAutoLock lock(m_mutex);
 	return m_modified;
 }
-

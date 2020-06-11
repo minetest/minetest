@@ -30,8 +30,9 @@ Translations *g_client_translations = &client_translations;
 #endif
 
 // Per language server translations
-std::unordered_map<std::string,Translations> server_translations;
-std::unordered_map<std::string,Translations> *g_server_translations = &server_translations;
+std::unordered_map<std::string, Translations> server_translations;
+std::unordered_map<std::string, Translations> *g_server_translations =
+		&server_translations;
 
 Translations::~Translations()
 {
@@ -51,8 +52,8 @@ const std::wstring &Translations::getTranslation(
 		return m_translations.at(key);
 	} catch (const std::out_of_range &) {
 		verbosestream << "Translations: can't find translation for string \""
-		              << wide_to_utf8(s) << "\" in textdomain \""
-		              << wide_to_utf8(textdomain) << "\"" << std::endl;
+					  << wide_to_utf8(s) << "\" in textdomain \""
+					  << wide_to_utf8(textdomain) << "\"" << std::endl;
 		// Silence that warning in the future
 		m_translations[key] = s;
 		return s;
@@ -68,7 +69,7 @@ void Translations::loadTranslation(const std::string &data)
 	while (is.good()) {
 		std::getline(is, line);
 		// Trim last character if file was using a \r\n line ending
-		if (line.length () > 0 && line[line.length() - 1] == '\r')
+		if (line.length() > 0 && line[line.length() - 1] == '\r')
 			line.resize(line.length() - 1);
 
 		if (str_starts_with(line, "# textdomain:")) {
@@ -117,8 +118,7 @@ void Translations::loadTranslation(const std::string &data)
 		}
 
 		if (i == wline.length()) {
-			errorstream << "Malformed translation line \"" << line << "\""
-			            << std::endl;
+			errorstream << "Malformed translation line \"" << line << "\"" << std::endl;
 			continue;
 		}
 		i++;
@@ -154,8 +154,8 @@ void Translations::loadTranslation(const std::string &data)
 		std::wstring oword1 = word1.str(), oword2 = word2.str();
 		if (oword2.empty()) {
 			oword2 = oword1;
-			errorstream << "Ignoring empty translation for \""
-			            << wide_to_utf8(oword1) << "\"" << std::endl;
+			errorstream << "Ignoring empty translation for \"" << wide_to_utf8(oword1)
+						<< "\"" << std::endl;
 		}
 
 		std::wstring translation_index = textdomain + L"|";

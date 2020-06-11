@@ -21,7 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/areastore.h"
 
-class TestAreaStore : public TestBase {
+class TestAreaStore : public TestBase
+{
 public:
 	TestAreaStore() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestAreaStore"; }
@@ -139,21 +140,21 @@ void TestAreaStore::testSerialization()
 	store.serialize(os);
 	std::string str = os.str();
 
-	std::string str_wanted("\x00"  // Version
-			"\x00\x02"  // Count
-			"\xFF\xFF\x00\x00\x00\x01"  // Area A min edge
-			"\x00\x00\x00\x01\x00\x02"  // Area A max edge
-			"\x00\x07"  // Area A data length
-			"Area AA"   // Area A data
-			"\x00\x7B\x00\x64\x00\x0A"  // Area B min edge (last two swapped with max edge for sorting)
-			"\x7D\x00\x01\xC8\x03\x15"  // Area B max edge (^)
-			"\x00\x07"  // Area B data length
-			"Area BB"   // Area B data
-			"\x00\x00\x00\x00"  // ID A = 0
+	std::string str_wanted(
+			"\x00" // Version
+			"\x00\x02" // Count
+			"\xFF\xFF\x00\x00\x00\x01" // Area A min edge
+			"\x00\x00\x00\x01\x00\x02" // Area A max edge
+			"\x00\x07" // Area A data length
+			"Area AA" // Area A data
+			"\x00\x7B\x00\x64\x00\x0A" // Area B min edge (last two swapped with max edge for sorting)
+			"\x7D\x00\x01\xC8\x03\x15" // Area B max edge (^)
+			"\x00\x07" // Area B data length
+			"Area BB" // Area B data
+			"\x00\x00\x00\x00" // ID A = 0
 			"\x00\x00\x00\x01", // ID B = 1
-			1 + 2 +
-			(6 + 6 + 2 + 7) * 2 + // min/max edge, length, data
-			2 * 4); // Area IDs
+			1 + 2 + (6 + 6 + 2 + 7) * 2 + // min/max edge, length, data
+					2 * 4); // Area IDs
 
 	UASSERTEQ(const std::string &, str, str_wanted);
 
@@ -170,4 +171,3 @@ void TestAreaStore::testSerialization()
 
 	UASSERTEQ(u32, c.id, 2);
 }
-

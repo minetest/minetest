@@ -31,45 +31,47 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 
 #ifdef _MSC_VER
-	#include <dbghelp.h>
-	#include "version.h"
-	#include "filesys.h"
+#include <dbghelp.h>
+#include "version.h"
+#include "filesys.h"
 #endif
 
 #if USE_CURSES
-	#include "terminal_chat_console.h"
+#include "terminal_chat_console.h"
 #endif
 
 /*
 	Assert
 */
 
-void sanity_check_fn(const char *assertion, const char *file,
-		unsigned int line, const char *function)
+void sanity_check_fn(
+		const char *assertion, const char *file, unsigned int line, const char *function)
 {
 #if USE_CURSES
 	g_term_console.stopAndWaitforThread();
 #endif
 
-	errorstream << std::endl << "In thread " << std::hex
-		<< std::this_thread::get_id() << ":" << std::endl;
-	errorstream << file << ":" << line << ": " << function
-		<< ": An engine assumption '" << assertion << "' failed." << std::endl;
+	errorstream << std::endl
+				<< "In thread " << std::hex << std::this_thread::get_id() << ":"
+				<< std::endl;
+	errorstream << file << ":" << line << ": " << function << ": An engine assumption '"
+				<< assertion << "' failed." << std::endl;
 
 	abort();
 }
 
-void fatal_error_fn(const char *msg, const char *file,
-		unsigned int line, const char *function)
+void fatal_error_fn(
+		const char *msg, const char *file, unsigned int line, const char *function)
 {
 #if USE_CURSES
 	g_term_console.stopAndWaitforThread();
 #endif
 
-	errorstream << std::endl << "In thread " << std::hex
-		<< std::this_thread::get_id() << ":" << std::endl;
+	errorstream << std::endl
+				<< "In thread " << std::hex << std::this_thread::get_id() << ":"
+				<< std::endl;
 	errorstream << file << ":" << line << ": " << function
-		<< ": A fatal error occurred: " << msg << std::endl;
+				<< ": A fatal error occurred: " << msg << std::endl;
 
 	abort();
 }
@@ -141,27 +143,27 @@ long WINAPI Win32ExceptionHandler(struct _EXCEPTION_POINTERS *pExceptInfo)
 	std::string version_str(PROJECT_NAME " ");
 	version_str += g_version_hash;
 
-	HANDLE hFile = CreateFileA(dumpfile.c_str(), GENERIC_WRITE,
-		FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFileA(dumpfile.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, NULL,
+			CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 		goto minidump_failed;
 
 	if (SetEndOfFile(hFile) == FALSE)
 		goto minidump_failed;
 
-	mdei.ClientPointers	   = NULL;
+	mdei.ClientPointers = NULL;
 	mdei.ExceptionPointers = pExceptInfo;
-	mdei.ThreadId		   = GetCurrentThreadId();
+	mdei.ThreadId = GetCurrentThreadId();
 
-	mdus.Type       = CommentStreamA;
+	mdus.Type = CommentStreamA;
 	mdus.BufferSize = version_str.size();
-	mdus.Buffer     = (PVOID)version_str.c_str();
+	mdus.Buffer = (PVOID)version_str.c_str();
 
 	mdusi.UserStreamArray = &mdus;
 	mdusi.UserStreamCount = 1;
 
 	if (MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile,
-			MiniDumpNormal, &mdei, &mdusi, NULL) == FALSE)
+				MiniDumpNormal, &mdei, &mdusi, NULL) == FALSE)
 		goto minidump_failed;
 
 	minidump_created = true;
@@ -172,10 +174,10 @@ minidump_failed:
 
 	DWORD excode = pExceptInfo->ExceptionRecord->ExceptionCode;
 	_snprintf(buf, sizeof(buf),
-		" >> === FATAL ERROR ===\n"
-		" >> %s (Exception 0x%08X) at 0x%p\n",
-		Win32ExceptionCodeToString(excode), excode,
-		pExceptInfo->ExceptionRecord->ExceptionAddress);
+			" >> === FATAL ERROR ===\n"
+			" >> %s (Exception 0x%08X) at 0x%p\n",
+			Win32ExceptionCodeToString(excode), excode,
+			pExceptInfo->ExceptionRecord->ExceptionAddress);
 	dstream << buf;
 
 	if (minidump_created)
@@ -194,4 +196,3 @@ void debug_set_exception_handler()
 	SetUnhandledExceptionFilter(Win32ExceptionHandler);
 #endif
 }
-

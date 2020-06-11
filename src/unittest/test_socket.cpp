@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "network/socket.h"
 
-class TestSocket : public TestBase {
+class TestSocket : public TestBase
+{
 public:
 	TestSocket()
 	{
@@ -117,8 +118,7 @@ void TestSocket::testIPv6Socket()
 		   minetest and therefore this should not cause the unit
 		   test to fail
 		*/
-		dstream << "WARNING: IPv6 socket creation failed (unit test)"
-			<< std::endl;
+		dstream << "WARNING: IPv6 socket creation failed (unit test)" << std::endl;
 		return;
 	}
 
@@ -136,16 +136,15 @@ void TestSocket::testIPv6Socket()
 		char rcvbuffer[256] = { 0 };
 		Address sender;
 
-		for(;;) {
+		for (;;) {
 			if (socket6.Receive(sender, rcvbuffer, sizeof(rcvbuffer)) < 0)
 				break;
 		}
 		//FIXME: This fails on some systems
 		UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer)) == 0);
 		UASSERT(memcmp(sender.getAddress6().sin6_addr.s6_addr,
-				Address(&bytes, 0).getAddress6().sin6_addr.s6_addr, 16) == 0);
+						Address(&bytes, 0).getAddress6().sin6_addr.s6_addr, 16) == 0);
 	} catch (SendFailedException &e) {
-		errorstream << "IPv6 support enabled but not available!"
-					<< std::endl;
+		errorstream << "IPv6 support enabled but not available!" << std::endl;
 	}
 }

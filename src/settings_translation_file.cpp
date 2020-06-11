@@ -2,7 +2,8 @@
 // It conatins a bunch of fake gettext calls, to tell xgettext about the strings in config files
 // To update it, refer to the bottom of builtin/mainmenu/dlg_settings_advanced.lua
 
-fake_function() {
+fake_function()
+{
 	gettext("Controls");
 	gettext("Build inside player");
 	gettext("If enabled, you can place blocks at the position (feet + eye level) where you stand.\nThis is helpful when working with nodeboxes in small areas.");

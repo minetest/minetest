@@ -294,19 +294,28 @@ void set_default_settings(Settings *settings)
 
 #if USE_FREETYPE
 	settings->setDefault("freetype", "true");
-	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
-	settings->setDefault("font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-Italic.ttf"));
-	settings->setDefault("font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Arimo-Bold.ttf"));
-	settings->setDefault("font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Arimo-BoldItalic.ttf"));
+	settings->setDefault(
+			"font_path", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
+	settings->setDefault("font_path_italic",
+			porting::getDataPath("fonts" DIR_DELIM "Arimo-Italic.ttf"));
+	settings->setDefault(
+			"font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Arimo-Bold.ttf"));
+	settings->setDefault("font_path_bold_italic",
+			porting::getDataPath("fonts" DIR_DELIM "Arimo-BoldItalic.ttf"));
 	settings->setDefault("font_bold", "false");
 	settings->setDefault("font_italic", "false");
 	settings->setDefault("font_shadow", "1");
 	settings->setDefault("font_shadow_alpha", "127");
-	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "Cousine-Regular.ttf"));
-	settings->setDefault("mono_font_path_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-Italic.ttf"));
-	settings->setDefault("mono_font_path_bold", porting::getDataPath("fonts" DIR_DELIM "Cousine-Bold.ttf"));
-	settings->setDefault("mono_font_path_bold_italic", porting::getDataPath("fonts" DIR_DELIM "Cousine-BoldItalic.ttf"));
-	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
+	settings->setDefault("mono_font_path",
+			porting::getDataPath("fonts" DIR_DELIM "Cousine-Regular.ttf"));
+	settings->setDefault("mono_font_path_italic",
+			porting::getDataPath("fonts" DIR_DELIM "Cousine-Italic.ttf"));
+	settings->setDefault("mono_font_path_bold",
+			porting::getDataPath("fonts" DIR_DELIM "Cousine-Bold.ttf"));
+	settings->setDefault("mono_font_path_bold_italic",
+			porting::getDataPath("fonts" DIR_DELIM "Cousine-BoldItalic.ttf"));
+	settings->setDefault("fallback_font_path",
+			porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
 
 	settings->setDefault("fallback_font_shadow", "1");
 	settings->setDefault("fallback_font_shadow_alpha", "128");
@@ -316,8 +325,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fallback_font_size", font_size_str);
 #else
 	settings->setDefault("freetype", "false");
-	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
-	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
+	settings->setDefault(
+			"font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
+	settings->setDefault(
+			"mono_font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
 
 	std::string font_size_str = std::to_string(DEFAULT_FONT_SIZE);
 #endif
@@ -345,7 +356,7 @@ void set_default_settings(Settings *settings)
 	// Network
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");
-	settings->setDefault("max_packets_per_iteration","1024");
+	settings->setDefault("max_packets_per_iteration", "1024");
 	settings->setDefault("port", "30000");
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("player_transfer_distance", "0");
@@ -371,7 +382,8 @@ void set_default_settings(Settings *settings)
 #endif
 
 	settings->setDefault("kick_msg_shutdown", "Server shutting down.");
-	settings->setDefault("kick_msg_crash", "This server has experienced an internal error. You will now be disconnected.");
+	settings->setDefault("kick_msg_crash",
+			"This server has experienced an internal error. You will now be disconnected.");
 	settings->setDefault("ask_reconnect_on_crash", "false");
 
 	settings->setDefault("chat_message_format", "<@name> @message");
@@ -465,7 +477,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("touchtarget", "true");
 	settings->setDefault("TMPFolder", porting::getDataPath("tmp" DIR_DELIM));
-	settings->setDefault("touchscreen_threshold","20");
+	settings->setDefault("touchscreen_threshold", "20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux", "false");
 	settings->setDefault("smooth_lighting", "false");
@@ -483,11 +495,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("active_block_range", "2");
 	settings->setDefault("viewing_range", "50");
 	settings->setDefault("leaves_style", "simple");
-	settings->setDefault("curl_verify_cert","false");
+	settings->setDefault("curl_verify_cert", "false");
 
 	// Apply settings according to screen size
-	float x_inches = ((double) porting::getDisplaySize().X /
-			(160 * porting::getDisplayDensity()));
+	float x_inches =
+			((double)porting::getDisplaySize().X / (160 * porting::getDisplayDensity()));
 
 	if (x_inches < 3.7f) {
 		settings->setDefault("hud_scaling", "0.6");
@@ -507,4 +519,3 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screen_dpi", "72");
 #endif
 }
-

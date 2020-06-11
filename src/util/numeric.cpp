@@ -79,14 +79,21 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 
 	const unsigned char *data2 = (const unsigned char *)data;
 	switch (len & 7) {
-		case 7: h ^= (u64)data2[6] << 48;
-		case 6: h ^= (u64)data2[5] << 40;
-		case 5: h ^= (u64)data2[4] << 32;
-		case 4: h ^= (u64)data2[3] << 24;
-		case 3: h ^= (u64)data2[2] << 16;
-		case 2: h ^= (u64)data2[1] << 8;
-		case 1: h ^= (u64)data2[0];
-				h *= m;
+	case 7:
+		h ^= (u64)data2[6] << 48;
+	case 6:
+		h ^= (u64)data2[5] << 40;
+	case 5:
+		h ^= (u64)data2[4] << 32;
+	case 4:
+		h ^= (u64)data2[3] << 24;
+	case 3:
+		h ^= (u64)data2[2] << 16;
+	case 2:
+		h ^= (u64)data2[1] << 8;
+	case 1:
+		h ^= (u64)data2[0];
+		h *= m;
 	}
 
 	h ^= h >> r;
@@ -103,8 +110,8 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 	range: viewing range
 	distance_ptr: return location for distance from the camera
 */
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
-		f32 camera_fov, f32 range, f32 *distance_ptr)
+bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 camera_fov,
+		f32 range, f32 *distance_ptr)
 {
 	// Maximum radius of a block.  The magic number is
 	// sqrt(3.0) / 2.0 in literal form.
@@ -113,11 +120,9 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
 
 	// Block center position
-	v3f blockpos(
-			((float)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
-			((float)blockpos_nodes.Y + MAP_BLOCKSIZE/2) * BS,
-			((float)blockpos_nodes.Z + MAP_BLOCKSIZE/2) * BS
-	);
+	v3f blockpos(((float)blockpos_nodes.X + MAP_BLOCKSIZE / 2) * BS,
+			((float)blockpos_nodes.Y + MAP_BLOCKSIZE / 2) * BS,
+			((float)blockpos_nodes.Z + MAP_BLOCKSIZE / 2) * BS);
 
 	// Block position relative to camera
 	v3f blockpos_relative = blockpos - camera_pos;
@@ -171,8 +176,9 @@ s16 adjustDist(s16 dist, float zoom_fov)
 	if (zoom_fov < 0.001f || zoom_fov > threshold_fov)
 		return dist;
 
-	return std::round(dist * std::cbrt((1.0f - std::cos(threshold_fov)) /
-		(1.0f - std::cos(zoom_fov / 2.0f))));
+	return std::round(dist *
+			std::cbrt((1.0f - std::cos(threshold_fov)) /
+					(1.0f - std::cos(zoom_fov / 2.0f))));
 }
 
 void setPitchYawRollRad(core::matrix4 &m, const v3f &rot)
@@ -201,11 +207,11 @@ v3f getPitchYawRollRad(const core::matrix4 &m)
 	const f32 *M = m.pointer();
 
 	f64 a1 = atan2(M[1], M[5]);
-	f32 c2 = std::sqrt((f64)M[10]*M[10] + (f64)M[8]*M[8]);
+	f32 c2 = std::sqrt((f64)M[10] * M[10] + (f64)M[8] * M[8]);
 	f32 a2 = atan2f(-M[9], c2);
 	f64 c1 = cos(a1);
 	f64 s1 = sin(a1);
-	f32 a3 = atan2f(s1*M[6] - c1*M[2], c1*M[0] - s1*M[4]);
+	f32 a3 = atan2f(s1 * M[6] - c1 * M[2], c1 * M[0] - s1 * M[4]);
 
 	return v3f(a2, a3, a1);
 }

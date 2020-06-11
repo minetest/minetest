@@ -42,9 +42,9 @@ TextureOverrideSource::TextureOverrideSource(std::string filepath)
 		std::vector<std::string> splitted = str_split(line, ' ');
 		if (splitted.size() != 3) {
 			warningstream << filepath << ":" << line_index
-					<< " Syntax error in texture override \"" << line
-					<< "\": Expected 3 arguments, got " << splitted.size()
-					<< std::endl;
+						  << " Syntax error in texture override \"" << line
+						  << "\": Expected 3 arguments, got " << splitted.size()
+						  << std::endl;
 			continue;
 		}
 
@@ -78,9 +78,8 @@ TextureOverrideSource::TextureOverrideSource(std::string filepath)
 			else {
 				// Report invalid target
 				warningstream << filepath << ":" << line_index
-						<< " Syntax error in texture override \"" << line
-						<< "\": Unknown target \"" << target << "\""
-						<< std::endl;
+							  << " Syntax error in texture override \"" << line
+							  << "\": Unknown target \"" << target << "\"" << std::endl;
 			}
 		}
 

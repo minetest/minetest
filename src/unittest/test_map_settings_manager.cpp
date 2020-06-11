@@ -1,4 +1,4 @@
- /*
+/*
 Minetest
 Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
@@ -25,7 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/sha1.h"
 #include "map_settings_manager.h"
 
-class TestMapSettingsManager : public TestBase {
+class TestMapSettingsManager : public TestBase
+{
 public:
 	TestMapSettingsManager() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestMapSettingsManager"; }
@@ -107,11 +108,11 @@ std::string TestMapSettingsManager::makeMetaFile(bool make_corrupt)
 	std::string metafile = getTestTempFile();
 
 	const char *metafile_contents =
-		"mg_name = v5\n"
-		"seed = 1234\n"
-		"mg_flags = light\n"
-		"mgv5_np_filler_depth = 20, 1, (150, 150, 150), 261, 4, 0.7,  1.0\n"
-		"mgv5_np_height = 20, 10, (250, 250, 250), 84174,  4, 0.5,  1.0\n";
+			"mg_name = v5\n"
+			"seed = 1234\n"
+			"mg_flags = light\n"
+			"mgv5_np_filler_depth = 20, 1, (150, 150, 150), 261, 4, 0.7,  1.0\n"
+			"mgv5_np_height = 20, 10, (250, 250, 250), 84174,  4, 0.5,  1.0\n";
 
 	FILE *f = fopen(metafile.c_str(), "wb");
 	UASSERT(f != NULL);
@@ -150,7 +151,7 @@ void TestMapSettingsManager::testMapSettingsManager()
 	UASSERT(mgr.getMapSetting("water_level", &value));
 	UASSERT(value == "20");
 
-    // Pretend we have some mapgen settings configured from the scripting
+	// Pretend we have some mapgen settings configured from the scripting
 	UASSERT(mgr.setMapSetting("water_level", "15"));
 	UASSERT(mgr.setMapSetting("seed", "02468"));
 	UASSERT(mgr.setMapSetting("mg_flags", "nolight", true));
@@ -158,8 +159,9 @@ void TestMapSettingsManager::testMapSettingsManager()
 	NoiseParams script_np_filler_depth(0, 100, v3f(200, 100, 200), 261, 4, 0.7, 2.0);
 	NoiseParams script_np_factor(0, 100, v3f(50, 50, 50), 920381, 3, 0.45, 2.0);
 	NoiseParams script_np_height(0, 100, v3f(450, 450, 450), 84174, 4, 0.5, 2.0);
-	NoiseParams meta_np_height(20, 10, v3f(250, 250, 250), 84174,  4, 0.5,  1.0);
-	NoiseParams user_np_ground(-43, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED);
+	NoiseParams meta_np_height(20, 10, v3f(250, 250, 250), 84174, 4, 0.5, 1.0);
+	NoiseParams user_np_ground(
+			-43, 40, v3f(80, 80, 80), 983240, 4, 0.55, 2.0, NOISE_FLAG_EASED);
 
 	mgr.setMapSettingNoiseParams("mgv5_np_filler_depth", &script_np_filler_depth, true);
 	mgr.setMapSettingNoiseParams("mgv5_np_height", &script_np_height);
@@ -213,8 +215,8 @@ void TestMapSettingsManager::testMapSettingsManager()
 void TestMapSettingsManager::testMapMetaSaveLoad()
 {
 	Settings conf;
-	std::string path = getTestTempDirectory()
-		+ DIR_DELIM + "foobar" + DIR_DELIM + "map_meta.txt";
+	std::string path =
+			getTestTempDirectory() + DIR_DELIM + "foobar" + DIR_DELIM + "map_meta.txt";
 
 	// Create a set of mapgen params and save them to map meta
 	conf.set("seed", "12345");

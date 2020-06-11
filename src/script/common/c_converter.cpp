@@ -31,23 +31,24 @@ extern "C" {
 #include <set>
 
 
-#define CHECK_TYPE(index, name, type) { \
-		int t = lua_type(L, (index)); \
-		if (t != (type)) { \
-			throw LuaError(std::string("Invalid ") + (name) + \
-				" (expected " + lua_typename(L, (type)) + \
-				" got " + lua_typename(L, t) + ")."); \
-		} \
+#define CHECK_TYPE(index, name, type)                                                    \
+	{                                                                                    \
+		int t = lua_type(L, (index));                                                    \
+		if (t != (type)) {                                                               \
+			throw LuaError(std::string("Invalid ") + (name) + " (expected " +            \
+					lua_typename(L, (type)) + " got " + lua_typename(L, t) + ").");      \
+		}                                                                                \
 	}
-#define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
-#define CHECK_FLOAT_RANGE(value, name) \
-if (value < F1000_MIN || value > F1000_MAX) { \
-	std::ostringstream error_text; \
-	error_text << "Invalid float vector dimension range '" name "' " << \
-	"(expected " << F1000_MIN << " < " name " < " << F1000_MAX << \
-	" got " << value << ")." << std::endl; \
-	throw LuaError(error_text.str()); \
-}
+#define CHECK_POS_COORD(name)                                                            \
+	CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
+#define CHECK_FLOAT_RANGE(value, name)                                                   \
+	if (value < F1000_MIN || value > F1000_MAX) {                                        \
+		std::ostringstream error_text;                                                   \
+		error_text << "Invalid float vector dimension range '" name "' "                 \
+				   << "(expected " << F1000_MIN << " < " name " < " << F1000_MAX         \
+				   << " got " << value << ")." << std::endl;                             \
+		throw LuaError(error_text.str());                                                \
+	}
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
 
 
@@ -360,7 +361,7 @@ bool is_color_table(lua_State *L, int index)
 aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 {
 	aabb3f box;
-	if(lua_istable(L, index)){
+	if (lua_istable(L, index)) {
 		lua_rawgeti(L, index, 1);
 		box.MinEdge.X = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
@@ -404,22 +405,22 @@ void push_aabb3f(lua_State *L, aabb3f box)
 std::vector<aabb3f> read_aabb3f_vector(lua_State *L, int index, f32 scale)
 {
 	std::vector<aabb3f> boxes;
-	if(lua_istable(L, index)){
+	if (lua_istable(L, index)) {
 		int n = lua_objlen(L, index);
 		// Check if it's a single box or a list of boxes
 		bool possibly_single_box = (n == 6);
-		for(int i = 1; i <= n && possibly_single_box; i++){
+		for (int i = 1; i <= n && possibly_single_box; i++) {
 			lua_rawgeti(L, index, i);
-			if(!lua_isnumber(L, -1))
+			if (!lua_isnumber(L, -1))
 				possibly_single_box = false;
 			lua_pop(L, 1);
 		}
-		if(possibly_single_box){
+		if (possibly_single_box) {
 			// Read a single box
 			boxes.push_back(read_aabb3f(L, index, scale));
 		} else {
 			// Read a list of boxes
-			for(int i = 1; i <= n; i++){
+			for (int i = 1; i <= n; i++) {
 				lua_rawgeti(L, index, i);
 				boxes.push_back(read_aabb3f(L, -1, scale));
 				lua_pop(L, 1);
@@ -478,9 +479,9 @@ bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname
 	}
 
 	// Types mismatch. Log unique line.
-	std::string backtrace = std::string("Invalid field ") + fieldname +
-		" (expected " + lua_typename(L, type) +
-		" got " + lua_typename(L, t) + ").\n" + script_get_backtrace(L);
+	std::string backtrace = std::string("Invalid field ") + fieldname + " (expected " +
+			lua_typename(L, type) + " got " + lua_typename(L, t) + ").\n" +
+			script_get_backtrace(L);
 
 	u64 hash = murmur_hash_64_ua(backtrace.data(), backtrace.length(), 0xBADBABE);
 	if (warned_msgs.find(hash) == warned_msgs.end()) {
@@ -491,8 +492,7 @@ bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname
 	return false;
 }
 
-bool getstringfield(lua_State *L, int table,
-		const char *fieldname, std::string &result)
+bool getstringfield(lua_State *L, int table, const char *fieldname, std::string &result)
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
@@ -509,8 +509,7 @@ bool getstringfield(lua_State *L, int table,
 	return got;
 }
 
-bool getfloatfield(lua_State *L, int table,
-		const char *fieldname, float &result)
+bool getfloatfield(lua_State *L, int table, const char *fieldname, float &result)
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
@@ -523,13 +522,12 @@ bool getfloatfield(lua_State *L, int table,
 	return got;
 }
 
-bool getboolfield(lua_State *L, int table,
-		const char *fieldname, bool &result)
+bool getboolfield(lua_State *L, int table, const char *fieldname, bool &result)
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
 
-	if (check_field_or_nil(L, -1, LUA_TBOOLEAN, fieldname)){
+	if (check_field_or_nil(L, -1, LUA_TBOOLEAN, fieldname)) {
 		result = lua_toboolean(L, -1);
 		got = true;
 	}
@@ -537,8 +535,8 @@ bool getboolfield(lua_State *L, int table,
 	return got;
 }
 
-size_t getstringlistfield(lua_State *L, int table, const char *fieldname,
-		std::vector<std::string> *result)
+size_t getstringlistfield(
+		lua_State *L, int table, const char *fieldname, std::vector<std::string> *result)
 {
 	lua_getfield(L, table, fieldname);
 
@@ -548,77 +546,72 @@ size_t getstringlistfield(lua_State *L, int table, const char *fieldname,
 	return num_strings_read;
 }
 
-std::string getstringfield_default(lua_State *L, int table,
-		const char *fieldname, const std::string &default_)
+std::string getstringfield_default(
+		lua_State *L, int table, const char *fieldname, const std::string &default_)
 {
 	std::string result = default_;
 	getstringfield(L, table, fieldname, result);
 	return result;
 }
 
-int getintfield_default(lua_State *L, int table,
-		const char *fieldname, int default_)
+int getintfield_default(lua_State *L, int table, const char *fieldname, int default_)
 {
 	int result = default_;
 	getintfield(L, table, fieldname, result);
 	return result;
 }
 
-float getfloatfield_default(lua_State *L, int table,
-		const char *fieldname, float default_)
+float getfloatfield_default(
+		lua_State *L, int table, const char *fieldname, float default_)
 {
 	float result = default_;
 	getfloatfield(L, table, fieldname, result);
 	return result;
 }
 
-bool getboolfield_default(lua_State *L, int table,
-		const char *fieldname, bool default_)
+bool getboolfield_default(lua_State *L, int table, const char *fieldname, bool default_)
 {
 	bool result = default_;
 	getboolfield(L, table, fieldname, result);
 	return result;
 }
 
-v3s16 getv3s16field_default(lua_State *L, int table,
-		const char *fieldname, v3s16 default_)
+v3s16 getv3s16field_default(
+		lua_State *L, int table, const char *fieldname, v3s16 default_)
 {
 	getv3intfield(L, table, fieldname, default_);
 	return default_;
 }
 
-void setstringfield(lua_State *L, int table,
-		const char *fieldname, const std::string &value)
+void setstringfield(
+		lua_State *L, int table, const char *fieldname, const std::string &value)
 {
 	lua_pushlstring(L, value.c_str(), value.length());
-	if(table < 0)
+	if (table < 0)
 		table -= 1;
 	lua_setfield(L, table, fieldname);
 }
 
-void setintfield(lua_State *L, int table,
-		const char *fieldname, int value)
+void setintfield(lua_State *L, int table, const char *fieldname, int value)
 {
 	lua_pushinteger(L, value);
-	if(table < 0)
+	if (table < 0)
 		table -= 1;
 	lua_setfield(L, table, fieldname);
 }
 
-void setfloatfield(lua_State *L, int table,
-		const char *fieldname, float value)
+void setfloatfield(lua_State *L, int table, const char *fieldname, float value)
 {
 	lua_pushnumber(L, value);
-	if(table < 0)
+	if (table < 0)
 		table -= 1;
 	lua_setfield(L, table, fieldname);
 }
 
-void setboolfield(lua_State *L, int table,
-		const char *fieldname, bool value)
+void setboolfield(lua_State *L, int table, const char *fieldname, bool value)
 {
 	lua_pushboolean(L, value);
-	if(table < 0)
+	if (table < 0)
 		table -= 1;
 	lua_setfield(L, table, fieldname);
 }
@@ -628,13 +621,8 @@ void setboolfield(lua_State *L, int table,
 //// Array table slices
 ////
 
-size_t write_array_slice_float(
-	lua_State *L,
-	int table_index,
-	float *data,
-	v3u16 data_size,
-	v3u16 slice_offset,
-	v3u16 slice_size)
+size_t write_array_slice_float(lua_State *L, int table_index, float *data,
+		v3u16 data_size, v3u16 slice_offset, v3u16 slice_size)
 {
 	v3u16 pmin, pmax(data_size);
 
@@ -661,25 +649,20 @@ size_t write_array_slice_float(
 
 	u32 elem_index = 1;
 	for (u32 z = pmin.Z; z != pmax.Z; z++)
-	for (u32 y = pmin.Y; y != pmax.Y; y++)
-	for (u32 x = pmin.X; x != pmax.X; x++) {
-		u32 i = z * zstride + y * ystride + x;
-		lua_pushnumber(L, data[i]);
-		lua_rawseti(L, table_index, elem_index);
-		elem_index++;
-	}
+		for (u32 y = pmin.Y; y != pmax.Y; y++)
+			for (u32 x = pmin.X; x != pmax.X; x++) {
+				u32 i = z * zstride + y * ystride + x;
+				lua_pushnumber(L, data[i]);
+				lua_rawseti(L, table_index, elem_index);
+				elem_index++;
+			}
 
 	return elem_index - 1;
 }
 
 
-size_t write_array_slice_u16(
-	lua_State *L,
-	int table_index,
-	u16 *data,
-	v3u16 data_size,
-	v3u16 slice_offset,
-	v3u16 slice_size)
+size_t write_array_slice_u16(lua_State *L, int table_index, u16 *data, v3u16 data_size,
+		v3u16 slice_offset, v3u16 slice_size)
 {
 	v3u16 pmin, pmax(data_size);
 
@@ -706,13 +689,13 @@ size_t write_array_slice_u16(
 
 	u32 elem_index = 1;
 	for (u32 z = pmin.Z; z != pmax.Z; z++)
-	for (u32 y = pmin.Y; y != pmax.Y; y++)
-	for (u32 x = pmin.X; x != pmax.X; x++) {
-		u32 i = z * zstride + y * ystride + x;
-		lua_pushinteger(L, data[i]);
-		lua_rawseti(L, table_index, elem_index);
-		elem_index++;
-	}
+		for (u32 y = pmin.Y; y != pmax.Y; y++)
+			for (u32 x = pmin.X; x != pmax.X; x++) {
+				u32 i = z * zstride + y * ystride + x;
+				lua_pushinteger(L, data[i]);
+				lua_rawseti(L, table_index, elem_index);
+				elem_index++;
+			}
 
 	return elem_index - 1;
 }

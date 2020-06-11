@@ -22,19 +22,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include "client/hud.h"
 
-RenderingCoreSideBySide::RenderingCoreSideBySide(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud, bool _horizontal, bool _flipped)
-	: RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal), flipped(_flipped)
+RenderingCoreSideBySide::RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client,
+		Hud *_hud, bool _horizontal, bool _flipped)
+	: RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal),
+	  flipped(_flipped)
 {
 }
 
 void RenderingCoreSideBySide::initTextures()
 {
 	if (horizontal) {
-		image_size = {screensize.X, screensize.Y / 2};
+		image_size = { screensize.X, screensize.Y / 2 };
 		rpos = v2s32(0, screensize.Y / 2);
 	} else {
-		image_size = {screensize.X / 2, screensize.Y};
+		image_size = { screensize.X / 2, screensize.Y };
 		rpos = v2s32(screensize.X / 2, 0);
 	}
 	virtual_size = image_size;

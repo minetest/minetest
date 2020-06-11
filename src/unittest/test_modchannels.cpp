@@ -66,8 +66,7 @@ void TestModChannels::testLeaveChannel(IGameDef *gamedef)
 void TestModChannels::testSendMessageToChannel(IGameDef *gamedef)
 {
 	// Test sendmsg (not joined)
-	UASSERT(!gamedef->sendModChannelMessage(
-			"test_sendmsg_channel", "testmsgchannel"));
+	UASSERT(!gamedef->sendModChannelMessage("test_sendmsg_channel", "testmsgchannel"));
 
 	UASSERT(gamedef->joinModChannel("test_sendmsg_channel"));
 

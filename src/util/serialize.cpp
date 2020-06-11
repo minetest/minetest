@@ -180,8 +180,7 @@ std::wstring deSerializeWideString(std::istream &is)
 	for (u32 i = 0; i < s_size; i++) {
 		is.read(&buf[0], 2);
 		if (is.gcount() != 2) {
-			throw SerializationError(
-				"deSerializeWideString: couldn't read all chars");
+			throw SerializationError("deSerializeWideString: couldn't read all chars");
 		}
 
 		wchar_t c16 = readU16((u8 *)buf);
@@ -203,7 +202,7 @@ std::string serializeLongString(const std::string &plain)
 		throw SerializationError("String too long for serializeLongString");
 	s.reserve(4 + plain.size());
 
-	writeU32((u8*)&buf[0], plain.size());
+	writeU32((u8 *)&buf[0], plain.size());
 	s.append(buf, 4);
 	s.append(plain);
 	return s;
@@ -225,7 +224,8 @@ std::string deSerializeLongString(std::istream &is)
 	// We don't really want a remote attacker to force us to allocate 4GB...
 	if (s_size > LONG_STRING_MAX_LEN) {
 		throw SerializationError("deSerializeLongString: "
-			"string too long: " + itos(s_size) + " bytes");
+								 "string too long: " +
+				itos(s_size) + " bytes");
 	}
 
 	s.resize(s_size);
@@ -247,40 +247,39 @@ std::string serializeJsonString(const std::string &plain)
 
 	for (char c : plain) {
 		switch (c) {
-			case '"':
-				os << "\\\"";
-				break;
-			case '\\':
-				os << "\\\\";
-				break;
-			case '/':
-				os << "\\/";
-				break;
-			case '\b':
-				os << "\\b";
-				break;
-			case '\f':
-				os << "\\f";
-				break;
-			case '\n':
-				os << "\\n";
-				break;
-			case '\r':
-				os << "\\r";
-				break;
-			case '\t':
-				os << "\\t";
-				break;
-			default: {
-				if (c >= 32 && c <= 126) {
-					os << c;
-				} else {
-					u32 cnum = (u8)c;
-					os << "\\u" << std::hex << std::setw(4)
-						<< std::setfill('0') << cnum;
-				}
-				break;
+		case '"':
+			os << "\\\"";
+			break;
+		case '\\':
+			os << "\\\\";
+			break;
+		case '/':
+			os << "\\/";
+			break;
+		case '\b':
+			os << "\\b";
+			break;
+		case '\f':
+			os << "\\f";
+			break;
+		case '\n':
+			os << "\\n";
+			break;
+		case '\r':
+			os << "\\r";
+			break;
+		case '\t':
+			os << "\\t";
+			break;
+		default: {
+			if (c >= 32 && c <= 126) {
+				os << c;
+			} else {
+				u32 cnum = (u8)c;
+				os << "\\u" << std::hex << std::setw(4) << std::setfill('0') << cnum;
 			}
+			break;
+		}
 		}
 	}
 
@@ -313,38 +312,38 @@ std::string deSerializeJsonString(std::istream &is)
 			if (is.eof())
 				throw SerializationError("JSON string ended prematurely");
 			switch (c2) {
-				case 'b':
-					os << '\b';
-					break;
-				case 'f':
-					os << '\f';
-					break;
-				case 'n':
-					os << '\n';
-					break;
-				case 'r':
-					os << '\r';
-					break;
-				case 't':
-					os << '\t';
-					break;
-				case 'u': {
-					int hexnumber;
-					char hexdigits[4 + 1];
+			case 'b':
+				os << '\b';
+				break;
+			case 'f':
+				os << '\f';
+				break;
+			case 'n':
+				os << '\n';
+				break;
+			case 'r':
+				os << '\r';
+				break;
+			case 't':
+				os << '\t';
+				break;
+			case 'u': {
+				int hexnumber;
+				char hexdigits[4 + 1];
 
-					is.read(hexdigits, 4);
-					if (is.eof())
-						throw SerializationError("JSON string ended prematurely");
-					hexdigits[4] = 0;
+				is.read(hexdigits, 4);
+				if (is.eof())
+					throw SerializationError("JSON string ended prematurely");
+				hexdigits[4] = 0;
 
-					std::istringstream tmp_is(hexdigits, std::ios::binary);
-					tmp_is >> std::hex >> hexnumber;
-					os << (char)hexnumber;
-					break;
-				}
-				default:
-					os << c2;
-					break;
+				std::istringstream tmp_is(hexdigits, std::ios::binary);
+				tmp_is >> std::hex >> hexnumber;
+				os << (char)hexnumber;
+				break;
+			}
+			default:
+				os << c2;
+				break;
 			}
 		} else {
 			os << c;
@@ -377,7 +376,7 @@ std::string deSerializeJsonStringIfNeeded(std::istream &is)
 		if (expect_initial_quote && c == '"') {
 			tmp_os << c;
 			is_json = true;
-		} else if(is_json) {
+		} else if (is_json) {
 			tmp_os << c;
 			if (was_backslash)
 				was_backslash = false;
@@ -408,8 +407,8 @@ std::string deSerializeJsonStringIfNeeded(std::istream &is)
 //// String/Struct conversions
 ////
 
-bool deSerializeStringToStruct(std::string valstr,
-	std::string format, void *out, size_t olen)
+bool deSerializeStringToStruct(
+		std::string valstr, std::string format, void *out, size_t olen)
 {
 	size_t len = olen;
 	std::vector<std::string *> strs_alloced;
@@ -434,119 +433,119 @@ bool deSerializeStringToStruct(std::string valstr,
 			valtype = 'i';
 
 		switch (valtype) {
-			case 'u':
-				is_unsigned = true;
-				/* FALLTHROUGH */
-			case 'i':
-				if (width == 16) {
-					bufpos += PADDING(bufpos, u16);
-					if ((bufpos - buf) + sizeof(u16) <= len) {
-						if (is_unsigned)
-							*(u16 *)bufpos = (u16)strtoul(s, &s, 10);
-						else
-							*(s16 *)bufpos = (s16)strtol(s, &s, 10);
-					}
-					bufpos += sizeof(u16);
-				} else if (width == 32) {
-					bufpos += PADDING(bufpos, u32);
-					if ((bufpos - buf) + sizeof(u32) <= len) {
-						if (is_unsigned)
-							*(u32 *)bufpos = (u32)strtoul(s, &s, 10);
-						else
-							*(s32 *)bufpos = (s32)strtol(s, &s, 10);
-					}
-					bufpos += sizeof(u32);
-				} else if (width == 64) {
-					bufpos += PADDING(bufpos, u64);
-					if ((bufpos - buf) + sizeof(u64) <= len) {
-						if (is_unsigned)
-							*(u64 *)bufpos = (u64)strtoull(s, &s, 10);
-						else
-							*(s64 *)bufpos = (s64)strtoll(s, &s, 10);
-					}
-					bufpos += sizeof(u64);
+		case 'u':
+			is_unsigned = true;
+			/* FALLTHROUGH */
+		case 'i':
+			if (width == 16) {
+				bufpos += PADDING(bufpos, u16);
+				if ((bufpos - buf) + sizeof(u16) <= len) {
+					if (is_unsigned)
+						*(u16 *)bufpos = (u16)strtoul(s, &s, 10);
+					else
+						*(s16 *)bufpos = (s16)strtol(s, &s, 10);
 				}
-				s = strchr(s, ',');
-				break;
-			case 'b':
-				snext = strchr(s, ',');
-				if (snext)
-					*snext++ = 0;
-
-				bufpos += PADDING(bufpos, bool);
-				if ((bufpos - buf) + sizeof(bool) <= len)
-					*(bool *)bufpos = is_yes(std::string(s));
-				bufpos += sizeof(bool);
-
-				s = snext;
-				break;
-			case 'f':
-				bufpos += PADDING(bufpos, float);
-				if ((bufpos - buf) + sizeof(float) <= len)
-					*(float *)bufpos = strtof(s, &s);
-				bufpos += sizeof(float);
-
-				s = strchr(s, ',');
-				break;
-			case 's':
-				while (*s == ' ' || *s == '\t')
-					s++;
-				if (*s++ != '"') //error, expected string
-					goto fail;
-				snext = s;
-
-				while (snext[0] && !(snext[-1] != '\\' && snext[0] == '"'))
-					snext++;
+				bufpos += sizeof(u16);
+			} else if (width == 32) {
+				bufpos += PADDING(bufpos, u32);
+				if ((bufpos - buf) + sizeof(u32) <= len) {
+					if (is_unsigned)
+						*(u32 *)bufpos = (u32)strtoul(s, &s, 10);
+					else
+						*(s32 *)bufpos = (s32)strtol(s, &s, 10);
+				}
+				bufpos += sizeof(u32);
+			} else if (width == 64) {
+				bufpos += PADDING(bufpos, u64);
+				if ((bufpos - buf) + sizeof(u64) <= len) {
+					if (is_unsigned)
+						*(u64 *)bufpos = (u64)strtoull(s, &s, 10);
+					else
+						*(s64 *)bufpos = (s64)strtoll(s, &s, 10);
+				}
+				bufpos += sizeof(u64);
+			}
+			s = strchr(s, ',');
+			break;
+		case 'b':
+			snext = strchr(s, ',');
+			if (snext)
 				*snext++ = 0;
 
-				bufpos += PADDING(bufpos, std::string *);
+			bufpos += PADDING(bufpos, bool);
+			if ((bufpos - buf) + sizeof(bool) <= len)
+				*(bool *)bufpos = is_yes(std::string(s));
+			bufpos += sizeof(bool);
 
-				str = new std::string(s);
-				pos = 0;
-				while ((pos = str->find("\\\"", pos)) != std::string::npos)
-					str->erase(pos, 1);
+			s = snext;
+			break;
+		case 'f':
+			bufpos += PADDING(bufpos, float);
+			if ((bufpos - buf) + sizeof(float) <= len)
+				*(float *)bufpos = strtof(s, &s);
+			bufpos += sizeof(float);
 
-				if ((bufpos - buf) + sizeof(std::string *) <= len)
-					*(std::string **)bufpos = str;
-				bufpos += sizeof(std::string *);
-				strs_alloced.push_back(str);
-
-				s = *snext ? snext + 1 : nullptr;
-				break;
-			case 'v':
-				while (*s == ' ' || *s == '\t')
-					s++;
-				if (*s++ != '(') //error, expected vector
-					goto fail;
-
-				if (width == 2) {
-					bufpos += PADDING(bufpos, v2f);
-
-					if ((bufpos - buf) + sizeof(v2f) <= len) {
-					v2f *v = (v2f *)bufpos;
-						v->X = strtof(s, &s);
-						s++;
-						v->Y = strtof(s, &s);
-					}
-
-					bufpos += sizeof(v2f);
-				} else if (width == 3) {
-					bufpos += PADDING(bufpos, v3f);
-					if ((bufpos - buf) + sizeof(v3f) <= len) {
-						v3f *v = (v3f *)bufpos;
-						v->X = strtof(s, &s);
-						s++;
-						v->Y = strtof(s, &s);
-						s++;
-						v->Z = strtof(s, &s);
-					}
-
-					bufpos += sizeof(v3f);
-				}
-				s = strchr(s, ',');
-				break;
-			default: //error, invalid format specifier
+			s = strchr(s, ',');
+			break;
+		case 's':
+			while (*s == ' ' || *s == '\t')
+				s++;
+			if (*s++ != '"') //error, expected string
 				goto fail;
+			snext = s;
+
+			while (snext[0] && !(snext[-1] != '\\' && snext[0] == '"'))
+				snext++;
+			*snext++ = 0;
+
+			bufpos += PADDING(bufpos, std::string *);
+
+			str = new std::string(s);
+			pos = 0;
+			while ((pos = str->find("\\\"", pos)) != std::string::npos)
+				str->erase(pos, 1);
+
+			if ((bufpos - buf) + sizeof(std::string *) <= len)
+				*(std::string **)bufpos = str;
+			bufpos += sizeof(std::string *);
+			strs_alloced.push_back(str);
+
+			s = *snext ? snext + 1 : nullptr;
+			break;
+		case 'v':
+			while (*s == ' ' || *s == '\t')
+				s++;
+			if (*s++ != '(') //error, expected vector
+				goto fail;
+
+			if (width == 2) {
+				bufpos += PADDING(bufpos, v2f);
+
+				if ((bufpos - buf) + sizeof(v2f) <= len) {
+					v2f *v = (v2f *)bufpos;
+					v->X = strtof(s, &s);
+					s++;
+					v->Y = strtof(s, &s);
+				}
+
+				bufpos += sizeof(v2f);
+			} else if (width == 3) {
+				bufpos += PADDING(bufpos, v3f);
+				if ((bufpos - buf) + sizeof(v3f) <= len) {
+					v3f *v = (v3f *)bufpos;
+					v->X = strtof(s, &s);
+					s++;
+					v->Y = strtof(s, &s);
+					s++;
+					v->Z = strtof(s, &s);
+				}
+
+				bufpos += sizeof(v3f);
+			}
+			s = strchr(s, ',');
+			break;
+		default: //error, invalid format specifier
+			goto fail;
 		}
 
 		if (s && *s == ',')
@@ -557,7 +556,7 @@ bool deSerializeStringToStruct(std::string valstr,
 	}
 
 	if (f && *f) { //error, mismatched number of fields and values
-fail:
+	fail:
 		for (size_t i = 0; i != strs_alloced.size(); i++)
 			delete strs_alloced[i];
 		delete[] buf;
@@ -570,17 +569,16 @@ fail:
 }
 
 // Casts *buf to a signed or unsigned fixed-width integer of 'w' width
-#define SIGN_CAST(w, buf) (is_unsigned ? *((u##w *) buf) : *((s##w *) buf))
+#define SIGN_CAST(w, buf) (is_unsigned ? *((u##w *)buf) : *((s##w *)buf))
 
-bool serializeStructToString(std::string *out,
-	std::string format, void *value)
+bool serializeStructToString(std::string *out, std::string format, void *value)
 {
 	std::ostringstream os;
 	std::string str;
 	char *f;
 	size_t strpos;
 
-	char *bufpos = (char *) value;
+	char *bufpos = (char *)value;
 	char *fmtpos, *fmt = &format[0];
 	while ((f = strtok_r(fmt, ",", &fmtpos))) {
 		fmt = nullptr;
@@ -593,62 +591,62 @@ bool serializeStructToString(std::string *out,
 			valtype = 'i';
 
 		switch (valtype) {
-			case 'u':
-				is_unsigned = true;
-				/* FALLTHROUGH */
-			case 'i':
-				if (width == 16) {
-					bufpos += PADDING(bufpos, u16);
-					os << SIGN_CAST(16, bufpos);
-					bufpos += sizeof(u16);
-				} else if (width == 32) {
-					bufpos += PADDING(bufpos, u32);
-					os << SIGN_CAST(32, bufpos);
-					bufpos += sizeof(u32);
-				} else if (width == 64) {
-					bufpos += PADDING(bufpos, u64);
-					os << SIGN_CAST(64, bufpos);
-					bufpos += sizeof(u64);
-				}
-				break;
-			case 'b':
-				bufpos += PADDING(bufpos, bool);
-				os << std::boolalpha << *((bool *) bufpos);
-				bufpos += sizeof(bool);
-				break;
-			case 'f':
-				bufpos += PADDING(bufpos, float);
-				os << *((float *) bufpos);
-				bufpos += sizeof(float);
-				break;
-			case 's':
-				bufpos += PADDING(bufpos, std::string *);
-				str = **((std::string **) bufpos);
+		case 'u':
+			is_unsigned = true;
+			/* FALLTHROUGH */
+		case 'i':
+			if (width == 16) {
+				bufpos += PADDING(bufpos, u16);
+				os << SIGN_CAST(16, bufpos);
+				bufpos += sizeof(u16);
+			} else if (width == 32) {
+				bufpos += PADDING(bufpos, u32);
+				os << SIGN_CAST(32, bufpos);
+				bufpos += sizeof(u32);
+			} else if (width == 64) {
+				bufpos += PADDING(bufpos, u64);
+				os << SIGN_CAST(64, bufpos);
+				bufpos += sizeof(u64);
+			}
+			break;
+		case 'b':
+			bufpos += PADDING(bufpos, bool);
+			os << std::boolalpha << *((bool *)bufpos);
+			bufpos += sizeof(bool);
+			break;
+		case 'f':
+			bufpos += PADDING(bufpos, float);
+			os << *((float *)bufpos);
+			bufpos += sizeof(float);
+			break;
+		case 's':
+			bufpos += PADDING(bufpos, std::string *);
+			str = **((std::string **)bufpos);
 
-				strpos = 0;
-				while ((strpos = str.find('"', strpos)) != std::string::npos) {
-					str.insert(strpos, 1, '\\');
-					strpos += 2;
-				}
+			strpos = 0;
+			while ((strpos = str.find('"', strpos)) != std::string::npos) {
+				str.insert(strpos, 1, '\\');
+				strpos += 2;
+			}
 
-				os << str;
-				bufpos += sizeof(std::string *);
-				break;
-			case 'v':
-				if (width == 2) {
-					bufpos += PADDING(bufpos, v2f);
-					v2f *v = (v2f *) bufpos;
-					os << '(' << v->X << ", " << v->Y << ')';
-					bufpos += sizeof(v2f);
-				} else {
-					bufpos += PADDING(bufpos, v3f);
-					v3f *v = (v3f *) bufpos;
-					os << '(' << v->X << ", " << v->Y << ", " << v->Z << ')';
-					bufpos += sizeof(v3f);
-				}
-				break;
-			default:
-				return false;
+			os << str;
+			bufpos += sizeof(std::string *);
+			break;
+		case 'v':
+			if (width == 2) {
+				bufpos += PADDING(bufpos, v2f);
+				v2f *v = (v2f *)bufpos;
+				os << '(' << v->X << ", " << v->Y << ')';
+				bufpos += sizeof(v2f);
+			} else {
+				bufpos += PADDING(bufpos, v3f);
+				v3f *v = (v3f *)bufpos;
+				os << '(' << v->X << ", " << v->Y << ", " << v->Z << ')';
+				bufpos += sizeof(v3f);
+			}
+			break;
+		default:
+			return false;
 		}
 		os << ", ";
 	}

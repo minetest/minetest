@@ -23,16 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h" // BS
 #include "log.h"
 
-ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
-	ActiveObject(0),
-	m_env(env),
-	m_base_position(pos)
+ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos)
+	: ActiveObject(0), m_env(env), m_base_position(pos)
 {
 }
 
 float ServerActiveObject::getMinimumSavedMovement()
 {
-	return 2.0*BS;
+	return 2.0 * BS;
 }
 
 ItemStack ServerActiveObject::getWieldedItem(ItemStack *selected, ItemStack *hand) const
@@ -49,7 +47,8 @@ bool ServerActiveObject::setWieldedItem(const ItemStack &item)
 	return false;
 }
 
-std::string ServerActiveObject::generateUpdateInfantCommand(u16 infant_id, u16 protocol_version)
+std::string ServerActiveObject::generateUpdateInfantCommand(
+		u16 infant_id, u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
 	// command

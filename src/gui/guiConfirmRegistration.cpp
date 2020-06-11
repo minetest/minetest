@@ -39,11 +39,10 @@ const int ID_message = 266;
 
 GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr, Client *client,
-		const std::string &playername, const std::string &password,
-		bool *aborted, ISimpleTextureSource *tsrc) :
-		GUIModalMenu(env, parent, id, menumgr),
-		m_client(client), m_playername(playername), m_password(password),
-		m_aborted(aborted), m_tsrc(tsrc)
+		const std::string &playername, const std::string &password, bool *aborted,
+		ISimpleTextureSource *tsrc)
+	: GUIModalMenu(env, parent, id, menumgr), m_client(client), m_playername(playername),
+	  m_password(password), m_aborted(aborted), m_tsrc(tsrc)
 {
 #ifdef __ANDROID__
 	m_touchscreen_visible = false;
@@ -74,12 +73,9 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		Calculate new sizes and positions
 	*/
 	const float s = m_gui_scale;
-	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 600 * s / 2,
-		screensize.Y / 2 - 360 * s / 2,
-		screensize.X / 2 + 600 * s / 2,
-		screensize.Y / 2 + 360 * s / 2
-	);
+	DesiredRect = core::rect<s32>(screensize.X / 2 - 600 * s / 2,
+			screensize.Y / 2 - 360 * s / 2, screensize.X / 2 + 600 * s / 2,
+			screensize.Y / 2 + 360 * s / 2);
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();
@@ -119,8 +115,8 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect2(0, 0, 540 * s, 30 * s);
 		rect2 += topleft_client + v2s32(30 * s, ypos);
-		gui::IGUIEditBox *e = Environment->addEditBox(m_pass_confirm.c_str(),
-				rect2, true, this, ID_confirmPassword);
+		gui::IGUIEditBox *e = Environment->addEditBox(
+				m_pass_confirm.c_str(), rect2, true, this, ID_confirmPassword);
 		e->setPasswordBox(true);
 		Environment->setFocus(e);
 	}
@@ -144,8 +140,8 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect2(0, 0, 500 * s, 40 * s);
 		rect2 += topleft_client + v2s32(30 * s, ypos + 40 * s);
 		text = wgettext("Passwords do not match!");
-		IGUIElement *e = Environment->addStaticText(
-				text, rect2, false, true, this, ID_message);
+		IGUIElement *e =
+				Environment->addStaticText(text, rect2, false, true, this, ID_message);
 		e->setVisible(false);
 		delete[] text;
 	}
@@ -222,8 +218,7 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 
 	if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST && isVisible()) {
 		if (!canTakeFocus(event.GUIEvent.Element)) {
-			dstream << "GUIConfirmRegistration: Not allowing focus change."
-				<< std::endl;
+			dstream << "GUIConfirmRegistration: Not allowing focus change." << std::endl;
 			// Returning true disables focus change
 			return true;
 		}

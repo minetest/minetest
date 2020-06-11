@@ -45,27 +45,18 @@ static f32 random_f32(f32 min, f32 max)
 static v3f random_v3f(v3f min, v3f max)
 {
 	return v3f(
-		random_f32(min.X, max.X),
-		random_f32(min.Y, max.Y),
-		random_f32(min.Z, max.Z));
+			random_f32(min.X, max.X), random_f32(min.Y, max.Y), random_f32(min.Z, max.Z));
 }
 
 /*
 	Particle
 */
 
-Particle::Particle(
-	IGameDef *gamedef,
-	LocalPlayer *player,
-	ClientEnvironment *env,
-	const ParticleParameters &p,
-	video::ITexture *texture,
-	v2f texpos,
-	v2f texsize,
-	video::SColor color
-):
-	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
-		RenderingEngine::get_scene_manager())
+Particle::Particle(IGameDef *gamedef, LocalPlayer *player, ClientEnvironment *env,
+		const ParticleParameters &p, video::ITexture *texture, v2f texpos, v2f texsize,
+		video::SColor color)
+	: scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
+			  RenderingEngine::get_scene_manager())
 {
 	// Misc
 	m_gamedef = gamedef;
@@ -125,9 +116,8 @@ void Particle::render()
 	driver->setMaterial(m_material);
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
-	u16 indices[] = {0,1,2, 2,3,0};
-	driver->drawVertexPrimitiveList(m_vertices, 4,
-			indices, 2, video::EVT_STANDARD,
+	u16 indices[] = { 0, 1, 2, 2, 3, 0 };
+	driver->drawVertexPrimitiveList(m_vertices, 4, indices, 2, video::EVT_STANDARD,
 			scene::EPT_TRIANGLES, video::EIT_16BIT);
 }
 
@@ -138,9 +128,9 @@ void Particle::step(float dtime)
 		aabb3f box = m_collisionbox;
 		v3f p_pos = m_pos * BS;
 		v3f p_velocity = m_velocity * BS;
-		collisionMoveResult r = collisionMoveSimple(m_env, m_gamedef, BS * 0.5f,
-			box, 0.0f, dtime, &p_pos, &p_velocity, m_acceleration * BS, nullptr,
-			m_object_collision);
+		collisionMoveResult r =
+				collisionMoveSimple(m_env, m_gamedef, BS * 0.5f, box, 0.0f, dtime, &p_pos,
+						&p_velocity, m_acceleration * BS, nullptr, m_object_collision);
 		if (m_collision_removal && r.collides) {
 			// force expiration of the particle
 			m_expiration = -1.0;
@@ -156,8 +146,7 @@ void Particle::step(float dtime)
 		m_animation_time += dtime;
 		int frame_length_i, frame_count;
 		m_animation.determineParams(
-				m_material.getTexture(0)->getSize(),
-				&frame_count, &frame_length_i, NULL);
+				m_material.getTexture(0)->getSize(), &frame_count, &frame_length_i, NULL);
 		float frame_length = frame_length_i / 1000.0;
 		while (m_animation_time > frame_length) {
 			m_animation_frame++;
@@ -177,11 +166,7 @@ void Particle::updateLight()
 	u8 light = 0;
 	bool pos_ok;
 
-	v3s16 p = v3s16(
-		floor(m_pos.X+0.5),
-		floor(m_pos.Y+0.5),
-		floor(m_pos.Z+0.5)
-	);
+	v3s16 p = v3s16(floor(m_pos.X + 0.5), floor(m_pos.Y + 0.5), floor(m_pos.Z + 0.5));
 	MapNode n = m_env->getClientMap().getNode(p, &pos_ok);
 	if (pos_ok)
 		light = n.getLightBlend(m_env->getDayNightRatio(), m_gamedef->ndef());
@@ -189,10 +174,9 @@ void Particle::updateLight()
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
 
 	u8 m_light = decode_light(light + m_glow);
-	m_color.set(255,
-		m_light * m_base_color.getRed() / 255,
-		m_light * m_base_color.getGreen() / 255,
-		m_light * m_base_color.getBlue() / 255);
+	m_color.set(255, m_light * m_base_color.getRed() / 255,
+			m_light * m_base_color.getGreen() / 255,
+			m_light * m_base_color.getBlue() / 255);
 }
 
 void Particle::updateVertices()
@@ -205,7 +189,7 @@ void Particle::updateVertices()
 		v2u32 framesize;
 		texcoord = m_animation.getTextureCoords(texsize, m_animation_frame);
 		m_animation.determineParams(texsize, NULL, NULL, &framesize);
-		framesize_f = v2f(framesize.X / (float) texsize.X, framesize.Y / (float) texsize.Y);
+		framesize_f = v2f(framesize.X / (float)texsize.X, framesize.Y / (float)texsize.Y);
 
 		tx0 = m_texpos.X + texcoord.X;
 		tx1 = m_texpos.X + texcoord.X + framesize_f.X * m_texsize.X;
@@ -218,27 +202,27 @@ void Particle::updateVertices()
 		ty1 = m_texpos.Y + m_texsize.Y;
 	}
 
-	m_vertices[0] = video::S3DVertex(-m_size / 2, -m_size / 2,
-		0, 0, 0, 0, m_color, tx0, ty1);
-	m_vertices[1] = video::S3DVertex(m_size / 2, -m_size / 2,
-		0, 0, 0, 0, m_color, tx1, ty1);
-	m_vertices[2] = video::S3DVertex(m_size / 2, m_size / 2,
-		0, 0, 0, 0, m_color, tx1, ty0);
-	m_vertices[3] = video::S3DVertex(-m_size / 2, m_size / 2,
-		0, 0, 0, 0, m_color, tx0, ty0);
+	m_vertices[0] =
+			video::S3DVertex(-m_size / 2, -m_size / 2, 0, 0, 0, 0, m_color, tx0, ty1);
+	m_vertices[1] =
+			video::S3DVertex(m_size / 2, -m_size / 2, 0, 0, 0, 0, m_color, tx1, ty1);
+	m_vertices[2] =
+			video::S3DVertex(m_size / 2, m_size / 2, 0, 0, 0, 0, m_color, tx1, ty0);
+	m_vertices[3] =
+			video::S3DVertex(-m_size / 2, m_size / 2, 0, 0, 0, 0, m_color, tx0, ty0);
 
 	v3s16 camera_offset = m_env->getCameraOffset();
 	for (video::S3DVertex &vertex : m_vertices) {
 		if (m_vertical) {
-			v3f ppos = m_player->getPosition()/BS;
-			vertex.Pos.rotateXZBy(std::atan2(ppos.Z - m_pos.Z, ppos.X - m_pos.X) /
-				core::DEGTORAD + 90);
+			v3f ppos = m_player->getPosition() / BS;
+			vertex.Pos.rotateXZBy(
+					std::atan2(ppos.Z - m_pos.Z, ppos.X - m_pos.X) / core::DEGTORAD + 90);
 		} else {
 			vertex.Pos.rotateYZBy(m_player->getPitch());
 			vertex.Pos.rotateXZBy(m_player->getYaw());
 		}
 		m_box.addInternalPoint(vertex.Pos);
-		vertex.Pos += m_pos*BS - intToFloat(camera_offset, BS);
+		vertex.Pos += m_pos * BS - intToFloat(camera_offset, BS);
 	}
 }
 
@@ -246,15 +230,10 @@ void Particle::updateVertices()
 	ParticleSpawner
 */
 
-ParticleSpawner::ParticleSpawner(
-	IGameDef *gamedef,
-	LocalPlayer *player,
-	const ParticleSpawnerParameters &p,
-	u16 attached_id,
-	video::ITexture *texture,
-	ParticleManager *p_manager
-):
-	m_particlemanager(p_manager), p(p)
+ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
+		const ParticleSpawnerParameters &p, u16 attached_id, video::ITexture *texture,
+		ParticleManager *p_manager)
+	: m_particlemanager(p_manager), p(p)
 {
 	m_gamedef = gamedef;
 	m_player = player;
@@ -270,7 +249,7 @@ ParticleSpawner::ParticleSpawner(
 }
 
 void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
-	const core::matrix4 *attached_absolute_pos_rot_matrix)
+		const core::matrix4 *attached_absolute_pos_rot_matrix)
 {
 	v3f ppos = m_player->getPosition() / BS;
 	v3f pos = random_v3f(p.minpos, p.maxpos);
@@ -312,9 +291,9 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	if (p.node.getContent() != CONTENT_IGNORE) {
 		const ContentFeatures &f =
-			m_particlemanager->m_env->getGameDef()->ndef()->get(p.node);
-		if (!ParticleManager::getNodeParticleParams(p.node, f, pp, &texture,
-				texpos, texsize, &color, p.node_tile))
+				m_particlemanager->m_env->getGameDef()->ndef()->get(p.node);
+		if (!ParticleManager::getNodeParticleParams(
+					p.node, f, pp, &texture, texpos, texsize, &color, p.node_tile))
 			return;
 	} else {
 		texture = m_texture;
@@ -326,16 +305,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	if (p.maxsize > 0.0f)
 		pp.size = random_f32(p.minsize, p.maxsize);
 
-	m_particlemanager->addParticle(new Particle(
-		m_gamedef,
-		m_player,
-		env,
-		pp,
-		texture,
-		texpos,
-		texsize,
-		color
-	));
+	m_particlemanager->addParticle(
+			new Particle(m_gamedef, m_player, env, pp, texture, texpos, texsize, color));
 }
 
 void ParticleSpawner::step(float dtime, ClientEnvironment *env)
@@ -348,7 +319,8 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 	bool unloaded = false;
 	const core::matrix4 *attached_absolute_pos_rot_matrix = nullptr;
 	if (m_attached_id) {
-		if (GenericCAO *attached = dynamic_cast<GenericCAO *>(env->getActiveObject(m_attached_id))) {
+		if (GenericCAO *attached =
+						dynamic_cast<GenericCAO *>(env->getActiveObject(m_attached_id))) {
 			attached_absolute_pos_rot_matrix = &attached->getAbsolutePosRotMatrix();
 		} else {
 			unloaded = true;
@@ -357,7 +329,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 
 	if (p.time != 0) {
 		// Spawner exists for a predefined timespan
-		for (auto i = m_spawntimes.begin(); i != m_spawntimes.end(); ) {
+		for (auto i = m_spawntimes.begin(); i != m_spawntimes.end();) {
 			if ((*i) <= m_time && p.amount > 0) {
 				--p.amount;
 
@@ -389,9 +361,9 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 	ParticleManager
 */
 
-ParticleManager::ParticleManager(ClientEnvironment *env) :
-	m_env(env)
-{}
+ParticleManager::ParticleManager(ClientEnvironment *env) : m_env(env)
+{
+}
 
 ParticleManager::~ParticleManager()
 {
@@ -400,8 +372,8 @@ ParticleManager::~ParticleManager()
 
 void ParticleManager::step(float dtime)
 {
-	stepParticles (dtime);
-	stepSpawners (dtime);
+	stepParticles(dtime);
+	stepSpawners(dtime);
 }
 
 void ParticleManager::stepSpawners(float dtime)
@@ -442,83 +414,79 @@ void ParticleManager::clearAll()
 		m_particle_spawners.erase(i++);
 	}
 
-	for(auto i = m_particles.begin(); i != m_particles.end();)
-	{
+	for (auto i = m_particles.begin(); i != m_particles.end();) {
 		(*i)->remove();
 		delete *i;
 		i = m_particles.erase(i);
 	}
 }
 
-void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
-	LocalPlayer *player)
+void ParticleManager::handleParticleEvent(
+		ClientEvent *event, Client *client, LocalPlayer *player)
 {
 	switch (event->type) {
-		case CE_DELETE_PARTICLESPAWNER: {
-			deleteParticleSpawner(event->delete_particlespawner.id);
-			// no allocated memory in delete event
-			break;
+	case CE_DELETE_PARTICLESPAWNER: {
+		deleteParticleSpawner(event->delete_particlespawner.id);
+		// no allocated memory in delete event
+		break;
+	}
+	case CE_ADD_PARTICLESPAWNER: {
+		deleteParticleSpawner(event->add_particlespawner.id);
+
+		const ParticleSpawnerParameters &p = *event->add_particlespawner.p;
+
+		video::ITexture *texture = client->tsrc()->getTextureForMesh(p.texture);
+
+		auto toadd = new ParticleSpawner(
+				client, player, p, event->add_particlespawner.attached_id, texture, this);
+
+		addParticleSpawner(event->add_particlespawner.id, toadd);
+
+		delete event->add_particlespawner.p;
+		break;
+	}
+	case CE_SPAWN_PARTICLE: {
+		ParticleParameters &p = *event->spawn_particle;
+
+		video::ITexture *texture;
+		v2f texpos, texsize;
+		video::SColor color(0xFFFFFFFF);
+
+		f32 oldsize = p.size;
+
+		if (p.node.getContent() != CONTENT_IGNORE) {
+			const ContentFeatures &f = m_env->getGameDef()->ndef()->get(p.node);
+			if (!getNodeParticleParams(
+						p.node, f, p, &texture, texpos, texsize, &color, p.node_tile))
+				texture = nullptr;
+		} else {
+			texture = client->tsrc()->getTextureForMesh(p.texture);
+			texpos = v2f(0.0f, 0.0f);
+			texsize = v2f(1.0f, 1.0f);
 		}
-		case CE_ADD_PARTICLESPAWNER: {
-			deleteParticleSpawner(event->add_particlespawner.id);
 
-			const ParticleSpawnerParameters &p = *event->add_particlespawner.p;
+		// Allow keeping default random size
+		if (oldsize > 0.0f)
+			p.size = oldsize;
 
-			video::ITexture *texture =
-				client->tsrc()->getTextureForMesh(p.texture);
+		if (texture) {
+			Particle *toadd = new Particle(
+					client, player, m_env, p, texture, texpos, texsize, color);
 
-			auto toadd = new ParticleSpawner(client, player,
-					p,
-					event->add_particlespawner.attached_id,
-					texture,
-					this);
-
-			addParticleSpawner(event->add_particlespawner.id, toadd);
-
-			delete event->add_particlespawner.p;
-			break;
+			addParticle(toadd);
 		}
-		case CE_SPAWN_PARTICLE: {
-			ParticleParameters &p = *event->spawn_particle;
 
-			video::ITexture *texture;
-			v2f texpos, texsize;
-			video::SColor color(0xFFFFFFFF);
-
-			f32 oldsize = p.size;
-
-			if (p.node.getContent() != CONTENT_IGNORE) {
-				const ContentFeatures &f = m_env->getGameDef()->ndef()->get(p.node);
-				if (!getNodeParticleParams(p.node, f, p, &texture, texpos,
-						texsize, &color, p.node_tile))
-					texture = nullptr;
-			} else {
-				texture = client->tsrc()->getTextureForMesh(p.texture);
-				texpos = v2f(0.0f, 0.0f);
-				texsize = v2f(1.0f, 1.0f);
-			}
-
-			// Allow keeping default random size
-			if (oldsize > 0.0f)
-				p.size = oldsize;
-
-			if (texture) {
-				Particle *toadd = new Particle(client, player, m_env,
-						p, texture, texpos, texsize, color);
-
-				addParticle(toadd);
-			}
-
-			delete event->spawn_particle;
-			break;
-		}
-		default: break;
+		delete event->spawn_particle;
+		break;
+	}
+	default:
+		break;
 	}
 }
 
-bool ParticleManager::getNodeParticleParams(const MapNode &n,
-	const ContentFeatures &f, ParticleParameters &p, video::ITexture **texture,
-	v2f &texpos, v2f &texsize, video::SColor *color, u8 tilenum)
+bool ParticleManager::getNodeParticleParams(const MapNode &n, const ContentFeatures &f,
+		ParticleParameters &p, video::ITexture **texture, v2f &texpos, v2f &texsize,
+		video::SColor *color, u8 tilenum)
 {
 	// No particles for "airlike" nodes
 	if (f.drawtype == NDT_AIRLIKE)
@@ -558,8 +526,8 @@ bool ParticleManager::getNodeParticleParams(const MapNode &n,
 // The final burst of particles when a node is finally dug, *not* particles
 // spawned during the digging of a node.
 
-void ParticleManager::addDiggingParticles(IGameDef *gamedef,
-	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
+void ParticleManager::addDiggingParticles(IGameDef *gamedef, LocalPlayer *player,
+		v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
 	// No particles for "airlike" nodes
 	if (f.drawtype == NDT_AIRLIKE)
@@ -573,8 +541,8 @@ void ParticleManager::addDiggingParticles(IGameDef *gamedef,
 // During the digging of a node particles are spawned individually by this
 // function, called from Game::handleDigging() in game.cpp.
 
-void ParticleManager::addNodeParticle(IGameDef *gamedef,
-	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
+void ParticleManager::addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
+		const MapNode &n, const ContentFeatures &f)
 {
 	ParticleParameters p;
 	video::ITexture *texture;
@@ -587,31 +555,16 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	p.expirationtime = (rand() % 100) / 100.0f;
 
 	// Physics
-	p.vel = v3f(
-		(rand() % 150) / 50.0f - 1.5f,
-		(rand() % 150) / 50.0f,
-		(rand() % 150) / 50.0f - 1.5f
-	);
-	p.acc = v3f(
-		0.0f,
-		-player->movement_gravity * player->physics_override_gravity / BS,
-		0.0f
-	);
-	p.pos = v3f(
-		(f32)pos.X + (rand() % 100) / 200.0f - 0.25f,
-		(f32)pos.Y + (rand() % 100) / 200.0f - 0.25f,
-		(f32)pos.Z + (rand() % 100) / 200.0f - 0.25f
-	);
+	p.vel = v3f((rand() % 150) / 50.0f - 1.5f, (rand() % 150) / 50.0f,
+			(rand() % 150) / 50.0f - 1.5f);
+	p.acc = v3f(0.0f, -player->movement_gravity * player->physics_override_gravity / BS,
+			0.0f);
+	p.pos = v3f((f32)pos.X + (rand() % 100) / 200.0f - 0.25f,
+			(f32)pos.Y + (rand() % 100) / 200.0f - 0.25f,
+			(f32)pos.Z + (rand() % 100) / 200.0f - 0.25f);
 
-	Particle *toadd = new Particle(
-		gamedef,
-		player,
-		m_env,
-		p,
-		texture,
-		texpos,
-		texsize,
-		color);
+	Particle *toadd =
+			new Particle(gamedef, player, m_env, p, texture, texpos, texsize, color);
 
 	addParticle(toadd);
 }

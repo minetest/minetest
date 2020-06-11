@@ -91,8 +91,7 @@ void TestServerActiveObjectMgr::testFreeID()
 		aoids.push_back(tsao->getId());
 
 		// Ensure next id is not in registered list
-		UASSERT(std::find(aoids.begin(), aoids.end(), saomgr.getFreeId()) ==
-				aoids.end());
+		UASSERT(std::find(aoids.begin(), aoids.end(), saomgr.getFreeId()) == aoids.end());
 	}
 
 	clearSAOMgr(&saomgr);
@@ -137,11 +136,11 @@ void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 {
 	server::ActiveObjectMgr saomgr;
 	static const v3f sao_pos[] = {
-			v3f(10, 40, 10),
-			v3f(740, 100, -304),
-			v3f(-200, 100, -304),
-			v3f(740, -740, -304),
-			v3f(1500, -740, -304),
+		v3f(10, 40, 10),
+		v3f(740, 100, -304),
+		v3f(-200, 100, -304),
+		v3f(740, -740, -304),
+		v3f(1500, -740, -304),
 	};
 
 	for (const auto &p : sao_pos) {
@@ -175,11 +174,11 @@ void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
 {
 	server::ActiveObjectMgr saomgr;
 	static const v3f sao_pos[] = {
-			v3f(10, 40, 10),
-			v3f(740, 100, -304),
-			v3f(-200, 100, -304),
-			v3f(740, -740, -304),
-			v3f(1500, -740, -304),
+		v3f(10, 40, 10),
+		v3f(740, 100, -304),
+		v3f(-200, 100, -304),
+		v3f(740, -740, -304),
+		v3f(1500, -740, -304),
 	};
 
 	for (const auto &p : sao_pos) {

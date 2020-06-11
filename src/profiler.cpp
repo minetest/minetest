@@ -23,9 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
 ScopeProfiler::ScopeProfiler(
-		Profiler *profiler, const std::string &name, ScopeProfilerType type) :
-		m_profiler(profiler),
-		m_name(name), m_type(type)
+		Profiler *profiler, const std::string &name, ScopeProfilerType type)
+	: m_profiler(profiler), m_name(name), m_type(type)
 {
 	m_name.append(" [ms]");
 	if (m_profiler)
@@ -153,8 +152,8 @@ int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 			else
 				o << " ";
 		}
-		porting::mt_snprintf(num_buf, sizeof(num_buf), "% 4ix % 3g",
-				getAvgCount(i.first), i.second);
+		porting::mt_snprintf(
+				num_buf, sizeof(num_buf), "% 4ix % 3g", getAvgCount(i.first), i.second);
 		o << num_buf << std::endl;
 	}
 	return values.size();

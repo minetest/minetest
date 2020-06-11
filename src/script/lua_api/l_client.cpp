@@ -35,11 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "nodedef.h"
 
-#define checkCSMRestrictionFlag(flag) \
-	( getClient(L)->checkCSMRestrictionFlag(CSMRestrictionFlags::flag) )
+#define checkCSMRestrictionFlag(flag)                                                    \
+	(getClient(L)->checkCSMRestrictionFlag(CSMRestrictionFlags::flag))
 
 // Not the same as FlagDesc, which contains an `u32 flag`
-struct CSMFlagDesc {
+struct CSMFlagDesc
+{
 	const char *name;
 	u64 flag;
 };
@@ -49,15 +50,11 @@ struct CSMFlagDesc {
 	It also needs to be kept in sync with the definition of CSMRestrictionFlags
 	in network/networkprotocol.h
 */
-const static CSMFlagDesc flagdesc_csm_restriction[] = {
-	{"load_client_mods",  CSM_RF_LOAD_CLIENT_MODS},
-	{"chat_messages",     CSM_RF_CHAT_MESSAGES},
-	{"read_itemdefs",     CSM_RF_READ_ITEMDEFS},
-	{"read_nodedefs",     CSM_RF_READ_NODEDEFS},
-	{"lookup_nodes",      CSM_RF_LOOKUP_NODES},
-	{"read_playerinfo",   CSM_RF_READ_PLAYERINFO},
-	{NULL,      0}
-};
+const static CSMFlagDesc flagdesc_csm_restriction[] = { { "load_client_mods",
+																CSM_RF_LOAD_CLIENT_MODS },
+	{ "chat_messages", CSM_RF_CHAT_MESSAGES }, { "read_itemdefs", CSM_RF_READ_ITEMDEFS },
+	{ "read_nodedefs", CSM_RF_READ_NODEDEFS }, { "lookup_nodes", CSM_RF_LOOKUP_NODES },
+	{ "read_playerinfo", CSM_RF_READ_PLAYERINFO }, { NULL, 0 } };
 
 // get_current_modname()
 int ModApiClient::l_get_current_modname(lua_State *L)
@@ -282,8 +279,7 @@ int ModApiClient::l_sound_play(lua_State *L)
 		if (!lua_isnil(L, -1)) {
 			v3f pos = read_v3f(L, -1) * BS;
 			lua_pop(L, 1);
-			handle = sound->playSoundAt(
-					spec.name, looped, gain * spec.gain, pos, pitch);
+			handle = sound->playSoundAt(spec.name, looped, gain * spec.gain, pos, pitch);
 			lua_pushinteger(L, handle);
 			return 1;
 		}

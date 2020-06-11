@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 std::string QuicktuneValue::getString()
 {
-	switch(type){
+	switch (type) {
 	case QVT_NONE:
 		return "(none)";
 	case QVT_FLOAT:
@@ -33,14 +33,14 @@ std::string QuicktuneValue::getString()
 }
 void QuicktuneValue::relativeAdd(float amount)
 {
-	switch(type){
+	switch (type) {
 	case QVT_NONE:
 		break;
 	case QVT_FLOAT:
 		value_QVT_FLOAT.current += amount * (value_QVT_FLOAT.max - value_QVT_FLOAT.min);
-		if(value_QVT_FLOAT.current > value_QVT_FLOAT.max)
+		if (value_QVT_FLOAT.current > value_QVT_FLOAT.max)
 			value_QVT_FLOAT.current = value_QVT_FLOAT.max;
-		if(value_QVT_FLOAT.current < value_QVT_FLOAT.min)
+		if (value_QVT_FLOAT.current < value_QVT_FLOAT.min)
 			value_QVT_FLOAT.current = value_QVT_FLOAT.min;
 		break;
 	}
@@ -52,7 +52,7 @@ std::mutex *g_mutex = NULL;
 
 static void makeMutex()
 {
-	if(!g_mutex){
+	if (!g_mutex) {
 		g_mutex = new std::mutex();
 	}
 }
@@ -67,7 +67,7 @@ QuicktuneValue getQuicktuneValue(const std::string &name)
 	makeMutex();
 	MutexAutoLock lock(*g_mutex);
 	std::map<std::string, QuicktuneValue>::iterator i = g_values.find(name);
-	if(i == g_values.end()){
+	if (i == g_values.end()) {
 		QuicktuneValue val;
 		val.type = QVT_NONE;
 		return val;
@@ -88,17 +88,16 @@ void updateQuicktuneValue(const std::string &name, QuicktuneValue &val)
 	makeMutex();
 	MutexAutoLock lock(*g_mutex);
 	std::map<std::string, QuicktuneValue>::iterator i = g_values.find(name);
-	if(i == g_values.end()){
+	if (i == g_values.end()) {
 		g_values[name] = val;
 		g_names.push_back(name);
 		return;
 	}
 	QuicktuneValue &ref = i->second;
-	if(ref.modified)
+	if (ref.modified)
 		val = ref;
-	else{
+	else {
 		ref = val;
 		ref.modified = false;
 	}
 }
-

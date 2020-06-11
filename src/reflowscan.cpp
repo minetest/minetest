@@ -24,9 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/timetaker.h"
 
 
-ReflowScan::ReflowScan(Map *map, const NodeDefManager *ndef) :
-	m_map(map),
-	m_ndef(ndef)
+ReflowScan::ReflowScan(Map *map, const NodeDefManager *ndef) : m_map(map), m_ndef(ndef)
 {
 }
 
@@ -48,9 +46,9 @@ void ReflowScan::scan(MapBlock *block, UniqueQueue<v3s16> *liquid_queue)
 
 	// Scan the columns in the block
 	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
-	for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
-		scanColumn(x, z);
-	}
+		for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
+			scanColumn(x, z);
+		}
 
 	// Scan neighbouring columns from the nearby blocks as they might contain
 	// liquid nodes that weren't allowed to flow to prevent gaps.
@@ -107,10 +105,8 @@ inline bool ReflowScan::isLiquidHorizontallyFlowable(int x, int y, int z)
 {
 	// Check if the (x,y,z) might spread to one of the horizontally
 	// neighbouring nodes
-	return isLiquidFlowableTo(x - 1, y, z) ||
-		isLiquidFlowableTo(x + 1, y, z) ||
-		isLiquidFlowableTo(x, y, z - 1) ||
-		isLiquidFlowableTo(x, y, z + 1);
+	return isLiquidFlowableTo(x - 1, y, z) || isLiquidFlowableTo(x + 1, y, z) ||
+			isLiquidFlowableTo(x, y, z - 1) || isLiquidFlowableTo(x, y, z + 1);
 }
 
 void ReflowScan::scanColumn(int x, int z)
@@ -164,8 +160,9 @@ void ReflowScan::scanColumn(int x, int z)
 			was_pushed = is_pushed;
 		} else {
 			// This is the topmost node below a liquid column
-			if (!was_pushed && (f.floodable ||
-					(!was_checked && isLiquidHorizontallyFlowable(x, y + 1, z)))) {
+			if (!was_pushed &&
+					(f.floodable ||
+							(!was_checked && isLiquidHorizontallyFlowable(x, y + 1, z)))) {
 				// Activate the lowest node in the column which is one
 				// node above this one
 				m_liquid_queue->push_back(m_rel_block_pos + v3s16(x, y + 1, z));
@@ -194,8 +191,9 @@ void ReflowScan::scanColumn(int x, int z)
 			}
 		} else {
 			// This is the topmost node below a liquid column
-			if (!was_pushed && (f.floodable ||
-					(!was_checked && isLiquidHorizontallyFlowable(x, 0, z)))) {
+			if (!was_pushed &&
+					(f.floodable ||
+							(!was_checked && isLiquidHorizontallyFlowable(x, 0, z)))) {
 				// Activate the lowest node in the column which is one
 				// node above this one
 				m_liquid_queue->push_back(m_rel_block_pos + v3s16(x, 0, z));

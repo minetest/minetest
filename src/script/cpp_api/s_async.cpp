@@ -36,7 +36,6 @@ extern "C" {
 /******************************************************************************/
 AsyncEngine::~AsyncEngine()
 {
-
 	// Request all threads to stop
 	for (AsyncWorkerThread *workerThread : workerThreads) {
 		workerThread->stop();
@@ -77,16 +76,16 @@ void AsyncEngine::initialize(unsigned int numEngines)
 	initDone = true;
 
 	for (unsigned int i = 0; i < numEngines; i++) {
-		AsyncWorkerThread *toAdd = new AsyncWorkerThread(this,
-			std::string("AsyncWorker-") + itos(i));
+		AsyncWorkerThread *toAdd =
+				new AsyncWorkerThread(this, std::string("AsyncWorker-") + itos(i));
 		workerThreads.push_back(toAdd);
 		toAdd->start();
 	}
 }
 
 /******************************************************************************/
-unsigned int AsyncEngine::queueAsyncJob(const std::string &func,
-		const std::string &params)
+unsigned int AsyncEngine::queueAsyncJob(
+		const std::string &func, const std::string &params)
 {
 	jobQueueMutex.lock();
 	LuaJobInfo toAdd;
@@ -148,8 +147,8 @@ void AsyncEngine::step(lua_State *L)
 		luaL_checktype(L, -1, LUA_TFUNCTION);
 
 		lua_pushinteger(L, jobDone.id);
-		lua_pushlstring(L, jobDone.serializedResult.data(),
-				jobDone.serializedResult.size());
+		lua_pushlstring(
+				L, jobDone.serializedResult.data(), jobDone.serializedResult.size());
 
 		PCALL_RESL(L, lua_pcall(L, 2, 0, error_handler));
 	}
@@ -158,7 +157,8 @@ void AsyncEngine::step(lua_State *L)
 }
 
 /******************************************************************************/
-void AsyncEngine::pushFinishedJobs(lua_State* L) {
+void AsyncEngine::pushFinishedJobs(lua_State *L)
+{
 	// Result Table
 	MutexAutoLock l(resultQueueMutex);
 
@@ -170,7 +170,7 @@ void AsyncEngine::pushFinishedJobs(lua_State* L) {
 		LuaJobInfo jobDone = resultQueue.front();
 		resultQueue.pop_front();
 
-		lua_createtable(L, 0, 2);  // Pre-allocate space for two map fields
+		lua_createtable(L, 0, 2); // Pre-allocate space for two map fields
 		int top_lvl2 = lua_gettop(L);
 
 		lua_pushstring(L, "jobid");
@@ -178,8 +178,8 @@ void AsyncEngine::pushFinishedJobs(lua_State* L) {
 		lua_settable(L, top_lvl2);
 
 		lua_pushstring(L, "retval");
-		lua_pushlstring(L, jobDone.serializedResult.data(),
-			jobDone.serializedResult.size());
+		lua_pushlstring(
+				L, jobDone.serializedResult.data(), jobDone.serializedResult.size());
 		lua_settable(L, top_lvl2);
 
 		lua_rawseti(L, top, index++);
@@ -187,7 +187,7 @@ void AsyncEngine::pushFinishedJobs(lua_State* L) {
 }
 
 /******************************************************************************/
-void AsyncEngine::prepareEnvironment(lua_State* L, int top)
+void AsyncEngine::prepareEnvironment(lua_State *L, int top)
 {
 	for (StateInitializer &stateInitializer : stateInitializers) {
 		stateInitializer(L, top);
@@ -195,11 +195,8 @@ void AsyncEngine::prepareEnvironment(lua_State* L, int top)
 }
 
 /******************************************************************************/
-AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
-		const std::string &name) :
-	Thread(name),
-	ScriptApiBase(ScriptingType::Async),
-	jobDispatcher(jobDispatcher)
+AsyncWorkerThread::AsyncWorkerThread(AsyncEngine *jobDispatcher, const std::string &name)
+	: Thread(name), ScriptApiBase(ScriptingType::Async), jobDispatcher(jobDispatcher)
 {
 	lua_State *L = getStack();
 
@@ -221,7 +218,7 @@ AsyncWorkerThread::~AsyncWorkerThread()
 }
 
 /******************************************************************************/
-void* AsyncWorkerThread::run()
+void *AsyncWorkerThread::run()
 {
 	lua_State *L = getStack();
 
@@ -229,8 +226,8 @@ void* AsyncWorkerThread::run()
 	try {
 		loadScript(script);
 	} catch (const ModError &e) {
-		errorstream << "Execution of async base environment failed: "
-			<< e.what() << std::endl;
+		errorstream << "Execution of async base environment failed: " << e.what()
+					<< std::endl;
 		FATAL_ERROR("Execution of async base environment failed");
 	}
 
@@ -258,12 +255,10 @@ void* AsyncWorkerThread::run()
 		luaL_checktype(L, -1, LUA_TFUNCTION);
 
 		// Call it
-		lua_pushlstring(L,
-				toProcess.serializedFunction.data(),
+		lua_pushlstring(L, toProcess.serializedFunction.data(),
 				toProcess.serializedFunction.size());
-		lua_pushlstring(L,
-				toProcess.serializedParams.data(),
-				toProcess.serializedParams.size());
+		lua_pushlstring(
+				L, toProcess.serializedParams.data(), toProcess.serializedParams.size());
 
 		int result = lua_pcall(L, 2, 1, error_handler);
 		if (result) {
@@ -276,14 +271,13 @@ void* AsyncWorkerThread::run()
 			toProcess.serializedResult = std::string(retval, length);
 		}
 
-		lua_pop(L, 1);  // Pop retval
+		lua_pop(L, 1); // Pop retval
 
 		// Put job result
 		jobDispatcher->putJobResult(toProcess);
 	}
 
-	lua_pop(L, 2);  // Pop core and error handler
+	lua_pop(L, 2); // Pop core and error handler
 
 	return 0;
 }
-

@@ -26,46 +26,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "craftdef.h"
 
-struct EnumString ModApiCraft::es_CraftMethod[] =
-{
-	{CRAFT_METHOD_NORMAL, "normal"},
-	{CRAFT_METHOD_COOKING, "cooking"},
-	{CRAFT_METHOD_FUEL, "fuel"},
-	{0, NULL},
+struct EnumString ModApiCraft::es_CraftMethod[] = {
+	{ CRAFT_METHOD_NORMAL, "normal" },
+	{ CRAFT_METHOD_COOKING, "cooking" },
+	{ CRAFT_METHOD_FUEL, "fuel" },
+	{ 0, NULL },
 };
 
 // helper for register_craft
-bool ModApiCraft::readCraftRecipeShaped(lua_State *L, int index,
-		int &width, std::vector<std::string> &recipe)
+bool ModApiCraft::readCraftRecipeShaped(
+		lua_State *L, int index, int &width, std::vector<std::string> &recipe)
 {
-	if(index < 0)
+	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	if(!lua_istable(L, index))
+	if (!lua_istable(L, index))
 		return false;
 
 	lua_pushnil(L);
 	int rowcount = 0;
-	while(lua_next(L, index) != 0){
+	while (lua_next(L, index) != 0) {
 		int colcount = 0;
 		// key at index -2 and value at index -1
-		if(!lua_istable(L, -1))
+		if (!lua_istable(L, -1))
 			return false;
 		int table2 = lua_gettop(L);
 		lua_pushnil(L);
-		while(lua_next(L, table2) != 0){
+		while (lua_next(L, table2) != 0) {
 			// key at index -2 and value at index -1
-			if(!lua_isstring(L, -1))
+			if (!lua_isstring(L, -1))
 				return false;
 			recipe.emplace_back(readParam<std::string>(L, -1));
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			colcount++;
 		}
-		if(rowcount == 0){
+		if (rowcount == 0) {
 			width = colcount;
 		} else {
-			if(colcount != width)
+			if (colcount != width)
 				return false;
 		}
 		// removes value, keeps key for next iteration
@@ -76,19 +75,19 @@ bool ModApiCraft::readCraftRecipeShaped(lua_State *L, int index,
 }
 
 // helper for register_craft
-bool ModApiCraft::readCraftRecipeShapeless(lua_State *L, int index,
-		std::vector<std::string> &recipe)
+bool ModApiCraft::readCraftRecipeShapeless(
+		lua_State *L, int index, std::vector<std::string> &recipe)
 {
-	if(index < 0)
+	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	if(!lua_istable(L, index))
+	if (!lua_istable(L, index))
 		return false;
 
 	lua_pushnil(L);
-	while(lua_next(L, index) != 0){
+	while (lua_next(L, index) != 0) {
 		// key at index -2 and value at index -1
-		if(!lua_isstring(L, -1))
+		if (!lua_isstring(L, -1))
 			return false;
 		recipe.emplace_back(readParam<std::string>(L, -1));
 		// removes value, keeps key for next iteration
@@ -98,27 +97,27 @@ bool ModApiCraft::readCraftRecipeShapeless(lua_State *L, int index,
 }
 
 // helper for register_craft
-bool ModApiCraft::readCraftReplacements(lua_State *L, int index,
-		CraftReplacements &replacements)
+bool ModApiCraft::readCraftReplacements(
+		lua_State *L, int index, CraftReplacements &replacements)
 {
-	if(index < 0)
+	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	if(!lua_istable(L, index))
+	if (!lua_istable(L, index))
 		return false;
 
 	lua_pushnil(L);
-	while(lua_next(L, index) != 0){
+	while (lua_next(L, index) != 0) {
 		// key at index -2 and value at index -1
-		if(!lua_istable(L, -1))
+		if (!lua_istable(L, -1))
 			return false;
 		lua_rawgeti(L, -1, 1);
-		if(!lua_isstring(L, -1))
+		if (!lua_isstring(L, -1))
 			return false;
 		std::string replace_from = readParam<std::string>(L, -1);
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 2);
-		if(!lua_isstring(L, -1))
+		if (!lua_isstring(L, -1))
 			return false;
 		std::string replace_to = readParam<std::string>(L, -1);
 		lua_pop(L, 1);
@@ -137,15 +136,14 @@ int ModApiCraft::l_register_craft(lua_State *L)
 	int table = 1;
 
 	// Get the writable craft definition manager from the server
-	IWritableCraftDefManager *craftdef =
-			getServer(L)->getWritableCraftDefManager();
+	IWritableCraftDefManager *craftdef = getServer(L)->getWritableCraftDefManager();
 
 	std::string type = getstringfield_default(L, table, "type", "shaped");
 
 	/*
 		CraftDefinitionShaped
 	*/
-	if(type == "shaped"){
+	if (type == "shaped") {
 		std::string output = getstringfield_default(L, table, "output", "");
 		if (output.empty())
 			throw LuaError("Crafting definition is missing an output");
@@ -153,125 +151,124 @@ int ModApiCraft::l_register_craft(lua_State *L)
 		int width = 0;
 		std::vector<std::string> recipe;
 		lua_getfield(L, table, "recipe");
-		if(lua_isnil(L, -1))
+		if (lua_isnil(L, -1))
 			throw LuaError("Crafting definition is missing a recipe"
-					" (output=\"" + output + "\")");
-		if(!readCraftRecipeShaped(L, -1, width, recipe))
+						   " (output=\"" +
+					output + "\")");
+		if (!readCraftRecipeShaped(L, -1, width, recipe))
 			throw LuaError("Invalid crafting recipe"
-					" (output=\"" + output + "\")");
+						   " (output=\"" +
+					output + "\")");
 
 		CraftReplacements replacements;
 		lua_getfield(L, table, "replacements");
-		if(!lua_isnil(L, -1))
-		{
-			if(!readCraftReplacements(L, -1, replacements))
+		if (!lua_isnil(L, -1)) {
+			if (!readCraftReplacements(L, -1, replacements))
 				throw LuaError("Invalid replacements"
-						" (output=\"" + output + "\")");
+							   " (output=\"" +
+						output + "\")");
 		}
 
-		CraftDefinition *def = new CraftDefinitionShaped(
-				output, width, recipe, replacements);
+		CraftDefinition *def =
+				new CraftDefinitionShaped(output, width, recipe, replacements);
 		craftdef->registerCraft(def, getServer(L));
 	}
 	/*
 		CraftDefinitionShapeless
 	*/
-	else if(type == "shapeless"){
+	else if (type == "shapeless") {
 		std::string output = getstringfield_default(L, table, "output", "");
 		if (output.empty())
 			throw LuaError("Crafting definition (shapeless)"
-					" is missing an output");
+						   " is missing an output");
 
 		std::vector<std::string> recipe;
 		lua_getfield(L, table, "recipe");
-		if(lua_isnil(L, -1))
+		if (lua_isnil(L, -1))
 			throw LuaError("Crafting definition (shapeless)"
-					" is missing a recipe"
-					" (output=\"" + output + "\")");
-		if(!readCraftRecipeShapeless(L, -1, recipe))
+						   " is missing a recipe"
+						   " (output=\"" +
+					output + "\")");
+		if (!readCraftRecipeShapeless(L, -1, recipe))
 			throw LuaError("Invalid crafting recipe"
-					" (output=\"" + output + "\")");
+						   " (output=\"" +
+					output + "\")");
 
 		CraftReplacements replacements;
 		lua_getfield(L, table, "replacements");
-		if(!lua_isnil(L, -1))
-		{
-			if(!readCraftReplacements(L, -1, replacements))
+		if (!lua_isnil(L, -1)) {
+			if (!readCraftReplacements(L, -1, replacements))
 				throw LuaError("Invalid replacements"
-						" (output=\"" + output + "\")");
+							   " (output=\"" +
+						output + "\")");
 		}
 
-		CraftDefinition *def = new CraftDefinitionShapeless(
-				output, recipe, replacements);
+		CraftDefinition *def = new CraftDefinitionShapeless(output, recipe, replacements);
 		craftdef->registerCraft(def, getServer(L));
 	}
 	/*
 		CraftDefinitionToolRepair
 	*/
-	else if(type == "toolrepair"){
-		float additional_wear = getfloatfield_default(L, table,
-				"additional_wear", 0.0);
+	else if (type == "toolrepair") {
+		float additional_wear = getfloatfield_default(L, table, "additional_wear", 0.0);
 
-		CraftDefinition *def = new CraftDefinitionToolRepair(
-				additional_wear);
+		CraftDefinition *def = new CraftDefinitionToolRepair(additional_wear);
 		craftdef->registerCraft(def, getServer(L));
 	}
 	/*
 		CraftDefinitionCooking
 	*/
-	else if(type == "cooking"){
+	else if (type == "cooking") {
 		std::string output = getstringfield_default(L, table, "output", "");
 		if (output.empty())
 			throw LuaError("Crafting definition (cooking)"
-					" is missing an output");
+						   " is missing an output");
 
 		std::string recipe = getstringfield_default(L, table, "recipe", "");
 		if (recipe.empty())
 			throw LuaError("Crafting definition (cooking)"
-					" is missing a recipe"
-					" (output=\"" + output + "\")");
+						   " is missing a recipe"
+						   " (output=\"" +
+					output + "\")");
 
 		float cooktime = getfloatfield_default(L, table, "cooktime", 3.0);
 
 		CraftReplacements replacements;
 		lua_getfield(L, table, "replacements");
-		if(!lua_isnil(L, -1))
-		{
-			if(!readCraftReplacements(L, -1, replacements))
+		if (!lua_isnil(L, -1)) {
+			if (!readCraftReplacements(L, -1, replacements))
 				throw LuaError("Invalid replacements"
-						" (cooking output=\"" + output + "\")");
+							   " (cooking output=\"" +
+						output + "\")");
 		}
 
-		CraftDefinition *def = new CraftDefinitionCooking(
-				output, recipe, cooktime, replacements);
+		CraftDefinition *def =
+				new CraftDefinitionCooking(output, recipe, cooktime, replacements);
 		craftdef->registerCraft(def, getServer(L));
 	}
 	/*
 		CraftDefinitionFuel
 	*/
-	else if(type == "fuel"){
+	else if (type == "fuel") {
 		std::string recipe = getstringfield_default(L, table, "recipe", "");
 		if (recipe.empty())
 			throw LuaError("Crafting definition (fuel)"
-					" is missing a recipe");
+						   " is missing a recipe");
 
 		float burntime = getfloatfield_default(L, table, "burntime", 1.0);
 
 		CraftReplacements replacements;
 		lua_getfield(L, table, "replacements");
-		if(!lua_isnil(L, -1))
-		{
-			if(!readCraftReplacements(L, -1, replacements))
+		if (!lua_isnil(L, -1)) {
+			if (!readCraftReplacements(L, -1, replacements))
 				throw LuaError("Invalid replacements"
-						" (fuel recipe=\"" + recipe + "\")");
+							   " (fuel recipe=\"" +
+						recipe + "\")");
 		}
 
-		CraftDefinition *def = new CraftDefinitionFuel(
-				recipe, burntime, replacements);
+		CraftDefinition *def = new CraftDefinitionFuel(recipe, burntime, replacements);
 		craftdef->registerCraft(def, getServer(L));
-	}
-	else
-	{
+	} else {
 		throw LuaError("Unknown crafting definition type: \"" + type + "\"");
 	}
 
@@ -287,8 +284,7 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 	int table = 1;
 
 	// Get the writable craft definition manager from the server
-	IWritableCraftDefManager *craftdef =
-			getServer(L)->getWritableCraftDefManager();
+	IWritableCraftDefManager *craftdef = getServer(L)->getWritableCraftDefManager();
 
 	std::string output = getstringfield_default(L, table, "output", "");
 	std::string type = getstringfield_default(L, table, "type", "shaped");
@@ -334,7 +330,7 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 		std::string rec = getstringfield_default(L, table, "recipe", "");
 		if (rec.empty())
 			throw LuaError("Crafting definition (cooking)"
-					" is missing a recipe");
+						   " is missing a recipe");
 		recipe.push_back(rec);
 	}
 	/*
@@ -345,7 +341,7 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 		std::string rec = getstringfield_default(L, table, "recipe", "");
 		if (rec.empty())
 			throw LuaError("Crafting definition (fuel)"
-					" is missing a recipe");
+						   " is missing a recipe");
 		recipe.push_back(rec);
 	} else {
 		throw LuaError("Unknown crafting definition type: \"" + type + "\"");
@@ -374,15 +370,15 @@ int ModApiCraft::l_get_craft_result(lua_State *L)
 
 	int input_i = 1;
 	std::string method_s = getstringfield_default(L, input_i, "method", "normal");
-	enum CraftMethod method = (CraftMethod)getenumfield(L, input_i, "method",
-				es_CraftMethod, CRAFT_METHOD_NORMAL);
+	enum CraftMethod method = (CraftMethod)getenumfield(
+			L, input_i, "method", es_CraftMethod, CRAFT_METHOD_NORMAL);
 	int width = 1;
 	lua_getfield(L, input_i, "width");
-	if(lua_isnumber(L, -1))
+	if (lua_isnumber(L, -1))
 		width = luaL_checkinteger(L, -1);
 	lua_pop(L, 1);
 	lua_getfield(L, input_i, "items");
-	std::vector<ItemStack> items = read_items(L, -1,getServer(L));
+	std::vector<ItemStack> items = read_items(L, -1, getServer(L));
 	lua_pop(L, 1); // items
 
 	IGameDef *gdef = getServer(L);
@@ -418,8 +414,7 @@ int ModApiCraft::l_get_craft_result(lua_State *L)
 }
 
 
-static void push_craft_recipe(lua_State *L, IGameDef *gdef,
-		const CraftDefinition *recipe,
+static void push_craft_recipe(lua_State *L, IGameDef *gdef, const CraftDefinition *recipe,
 		const CraftOutput &tmpout)
 {
 	CraftInput input = recipe->getInput(tmpout, gdef);
@@ -462,8 +457,7 @@ static void push_craft_recipe(lua_State *L, IGameDef *gdef,
 }
 
 static void push_craft_recipes(lua_State *L, IGameDef *gdef,
-		const std::vector<CraftDefinition*> &recipes,
-		const CraftOutput &output)
+		const std::vector<CraftDefinition *> &recipes, const CraftOutput &output)
 {
 	lua_createtable(L, recipes.size(), 0);
 
@@ -472,7 +466,7 @@ static void push_craft_recipes(lua_State *L, IGameDef *gdef,
 		return;
 	}
 
-	std::vector<CraftDefinition*>::const_iterator it = recipes.begin();
+	std::vector<CraftDefinition *>::const_iterator it = recipes.begin();
 	for (unsigned i = 0; it != recipes.end(); ++it) {
 		lua_newtable(L);
 		push_craft_recipe(L, gdef, *it, output);
@@ -489,8 +483,8 @@ int ModApiCraft::l_get_craft_recipe(lua_State *L)
 	std::string item = luaL_checkstring(L, 1);
 	Server *server = getServer(L);
 	CraftOutput output(item, 0);
-	std::vector<CraftDefinition*> recipes = server->cdef()
-			->getCraftRecipes(output, server, 1);
+	std::vector<CraftDefinition *> recipes =
+			server->cdef()->getCraftRecipes(output, server, 1);
 
 	lua_createtable(L, 1, 0);
 
@@ -512,8 +506,8 @@ int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
 	std::string item = luaL_checkstring(L, 1);
 	Server *server = getServer(L);
 	CraftOutput output(item, 0);
-	std::vector<CraftDefinition*> recipes = server->cdef()
-			->getCraftRecipes(output, server);
+	std::vector<CraftDefinition *> recipes =
+			server->cdef()->getCraftRecipes(output, server);
 
 	push_craft_recipes(L, server, recipes, output);
 	return 1;

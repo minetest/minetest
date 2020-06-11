@@ -85,7 +85,7 @@ private:
 	std::string dir;
 	AuthDatabase *auth_db = nullptr;
 };
-}
+} // namespace
 
 class TestAuthDatabase : public TestBase
 {
@@ -266,7 +266,6 @@ void TestAuthDatabase::testRecallChangedPrivileges()
 
 void TestAuthDatabase::testListNames()
 {
-
 	AuthDatabase *auth_db = auth_provider->getAuthDatabase();
 	std::vector<std::string> list;
 

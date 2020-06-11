@@ -42,7 +42,7 @@ int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
 
 	v3s16 pos = read_v3s16(L, 1);
 	int range = luaL_checknumber(L, 2);
-	time_t seconds = (time_t) luaL_checknumber(L, 3);
+	time_t seconds = (time_t)luaL_checknumber(L, 3);
 	int limit = luaL_checknumber(L, 4);
 	Server *server = getServer(L);
 	IRollbackManager *rollback = server->getRollbackManager();
@@ -50,7 +50,8 @@ int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
 		return 0;
 	}
 
-	std::list<RollbackAction> actions = rollback->getNodeActors(pos, range, seconds, limit);
+	std::list<RollbackAction> actions =
+			rollback->getNodeActors(pos, range, seconds, limit);
 	std::list<RollbackAction>::iterator iter = actions.begin();
 
 	lua_createtable(L, actions.size(), 0);
@@ -101,8 +102,8 @@ int ModApiRollback::l_rollback_revert_actions_by(lua_State *L)
 	lua_pushboolean(L, success);
 	lua_createtable(L, log.size(), 0);
 	unsigned long i = 0;
-	for(std::list<std::string>::const_iterator iter = log.begin();
-			iter != log.end(); ++i, ++iter) {
+	for (std::list<std::string>::const_iterator iter = log.begin(); iter != log.end();
+			++i, ++iter) {
 		lua_pushnumber(L, i);
 		lua_pushstring(L, iter->c_str());
 		lua_settable(L, -3);

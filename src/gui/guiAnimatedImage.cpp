@@ -9,13 +9,13 @@
 #include <vector>
 
 GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
-	s32 id, const core::rect<s32> &rectangle, const std::string &texture_name,
-	s32 frame_count, s32 frame_duration, ISimpleTextureSource *tsrc) :
-	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle), m_tsrc(tsrc)
+		s32 id, const core::rect<s32> &rectangle, const std::string &texture_name,
+		s32 frame_count, s32 frame_duration, ISimpleTextureSource *tsrc)
+	: gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle), m_tsrc(tsrc)
 {
 	m_texture = m_tsrc->getTexture(texture_name);
 
-	m_frame_count    = std::max(frame_count,    1);
+	m_frame_count = std::max(frame_count, 1);
 	m_frame_duration = std::max(frame_duration, 0);
 
 	if (m_texture != nullptr) {
@@ -35,14 +35,15 @@ void GUIAnimatedImage::draw()
 		video::IVideoDriver *driver = Environment->getVideoDriver();
 
 		const video::SColor color(255, 255, 255, 255);
-		const video::SColor colors[] = {color, color, color, color};
+		const video::SColor colors[] = { color, color, color, color };
 
 		core::dimension2d<u32> size = m_texture->getOriginalSize();
 		size.Height /= m_frame_count;
 
 		draw2DImageFilterScaled(driver, m_texture, AbsoluteRect,
-			core::rect<s32>(core::position2d<s32>(0, size.Height * m_frame_idx), size),
-			NoClip ? nullptr : &AbsoluteClippingRect, colors, true);
+				core::rect<s32>(
+						core::position2d<s32>(0, size.Height * m_frame_idx), size),
+				NoClip ? nullptr : &AbsoluteClippingRect, colors, true);
 	}
 
 	// Step the animation

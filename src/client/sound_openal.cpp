@@ -24,17 +24,17 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "sound_openal.h"
 
 #if defined(_WIN32)
-	#include <al.h>
-	#include <alc.h>
-	//#include <alext.h>
+#include <al.h>
+#include <alc.h>
+//#include <alext.h>
 #elif defined(__APPLE__)
-	#include <OpenAL/al.h>
-	#include <OpenAL/alc.h>
-	//#include <OpenAL/alext.h>
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+//#include <OpenAL/alext.h>
 #else
-	#include <AL/al.h>
-	#include <AL/alc.h>
-	#include <AL/alext.h>
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <AL/alext.h>
 #endif
 #include <cmath>
 #include <vorbis/vorbisfile.h>
@@ -52,7 +52,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
 
 typedef std::unique_ptr<ALCdevice, void (*)(ALCdevice *p)> unique_ptr_alcdevice;
-typedef std::unique_ptr<ALCcontext, void(*)(ALCcontext *p)> unique_ptr_alccontext;
+typedef std::unique_ptr<ALCcontext, void (*)(ALCcontext *p)> unique_ptr_alccontext;
 
 static void delete_alcdevice(ALCdevice *p)
 {
@@ -90,9 +90,9 @@ static const char *alErrorString(ALenum err)
 
 static ALenum warn_if_error(ALenum err, const char *desc)
 {
-	if(err == AL_NO_ERROR)
+	if (err == AL_NO_ERROR)
 		return err;
-	warningstream<<desc<<": "<<alErrorString(err)<<std::endl;
+	warningstream << desc << ": " << alErrorString(err) << std::endl;
 	return err;
 }
 
@@ -111,8 +111,8 @@ struct SoundBuffer
 	std::vector<char> buffer;
 };
 
-SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
-		const std::string &filename_for_logging)
+SoundBuffer *load_opened_ogg_file(
+		OggVorbis_File *oggFile, const std::string &filename_for_logging)
 {
 	int endian = 0; // 0 for Little-Endian, 1 for Big-Endian
 	int bitStream;
@@ -126,7 +126,7 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 	pInfo = ov_info(oggFile, -1);
 
 	// Check the number of channels... always use 16-bit samples
-	if(pInfo->channels == 1)
+	if (pInfo->channels == 1)
 		snd->format = AL_FORMAT_MONO16;
 	else
 		snd->format = AL_FORMAT_STEREO16;
@@ -135,16 +135,13 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 	snd->freq = pInfo->rate;
 
 	// Keep reading until all is read
-	do
-	{
+	do {
 		// Read up to a buffer's worth of decoded sound data
 		bytes = ov_read(oggFile, array, BUFFER_SIZE, endian, 2, 1, &bitStream);
 
-		if(bytes < 0)
-		{
+		if (bytes < 0) {
 			ov_clear(oggFile);
-			infostream << "Audio: Error decoding "
-				<< filename_for_logging << std::endl;
+			infostream << "Audio: Error decoding " << filename_for_logging << std::endl;
 			delete snd;
 			return nullptr;
 		}
@@ -154,15 +151,14 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 	} while (bytes > 0);
 
 	alGenBuffers(1, &snd->buffer_id);
-	alBufferData(snd->buffer_id, snd->format,
-			&(snd->buffer[0]), snd->buffer.size(),
+	alBufferData(snd->buffer_id, snd->format, &(snd->buffer[0]), snd->buffer.size(),
 			snd->freq);
 
 	ALenum error = alGetError();
 
-	if(error != AL_NO_ERROR){
+	if (error != AL_NO_ERROR) {
 		infostream << "Audio: OpenAL error: " << alErrorString(error)
-				<< "preparing sound buffer" << std::endl;
+				   << "preparing sound buffer" << std::endl;
 	}
 
 	//infostream << "Audio file "
@@ -182,15 +178,15 @@ SoundBuffer *load_ogg_from_file(const std::string &path)
 	// This requires libvorbis >= 1.3.2, as
 	// previous versions expect a non-const char *
 	if (ov_fopen(path.c_str(), &oggFile) != 0) {
-		infostream << "Audio: Error opening " << path
-			<< " for decoding" << std::endl;
+		infostream << "Audio: Error opening " << path << " for decoding" << std::endl;
 		return nullptr;
 	}
 
 	return load_opened_ogg_file(&oggFile, path);
 }
 
-struct BufferSource {
+struct BufferSource
+{
 	const char *buf;
 	size_t cur_offset;
 	size_t len;
@@ -216,8 +212,8 @@ int buffer_sound_seek_func(void *datasource, ogg_int64_t offset, int whence)
 		s->cur_offset = offset;
 		return 0;
 	} else if (whence == SEEK_CUR) {
-		if ((size_t)MYMIN(-offset, 0) > s->cur_offset
-				|| s->cur_offset + offset > s->len) {
+		if ((size_t)MYMIN(-offset, 0) > s->cur_offset ||
+				s->cur_offset + offset > s->len) {
 			// offset out of bounds
 			return -1;
 		}
@@ -234,12 +230,8 @@ long BufferSourceell_func(void *datasource)
 	return s->cur_offset;
 }
 
-static ov_callbacks g_buffer_ov_callbacks = {
-	&buffer_sound_read_func,
-	&buffer_sound_seek_func,
-	nullptr,
-	&BufferSourceell_func
-};
+static ov_callbacks g_buffer_ov_callbacks = { &buffer_sound_read_func,
+	&buffer_sound_seek_func, nullptr, &BufferSourceell_func };
 
 SoundBuffer *load_ogg_from_buffer(const std::string &buf, const std::string &id_for_log)
 {
@@ -251,8 +243,8 @@ SoundBuffer *load_ogg_from_buffer(const std::string &buf, const std::string &id_
 	s.len = buf.size();
 
 	if (ov_open_callbacks(&s, &oggFile, nullptr, 0, g_buffer_ov_callbacks) != 0) {
-		infostream << "Audio: Error opening " << id_for_log
-			<< " for decoding" << std::endl;
+		infostream << "Audio: Error opening " << id_for_log << " for decoding"
+				   << std::endl;
 		return nullptr;
 	}
 
@@ -268,43 +260,48 @@ struct PlayingSound
 class SoundManagerSingleton
 {
 public:
-	unique_ptr_alcdevice  m_device;
+	unique_ptr_alcdevice m_device;
 	unique_ptr_alccontext m_context;
+
 public:
-	SoundManagerSingleton() :
-		m_device(nullptr, delete_alcdevice),
-		m_context(nullptr, delete_alccontext)
+	SoundManagerSingleton()
+		: m_device(nullptr, delete_alcdevice), m_context(nullptr, delete_alccontext)
 	{
 	}
 
 	bool init()
 	{
-		if (!(m_device = unique_ptr_alcdevice(alcOpenDevice(nullptr), delete_alcdevice))) {
-			errorstream << "Audio: Global Initialization: Failed to open device" << std::endl;
+		if (!(m_device = unique_ptr_alcdevice(
+					  alcOpenDevice(nullptr), delete_alcdevice))) {
+			errorstream << "Audio: Global Initialization: Failed to open device"
+						<< std::endl;
 			return false;
 		}
 
 		if (!(m_context = unique_ptr_alccontext(
-				alcCreateContext(m_device.get(), nullptr), delete_alccontext))) {
-			errorstream << "Audio: Global Initialization: Failed to create context" << std::endl;
+					  alcCreateContext(m_device.get(), nullptr), delete_alccontext))) {
+			errorstream << "Audio: Global Initialization: Failed to create context"
+						<< std::endl;
 			return false;
 		}
 
 		if (!alcMakeContextCurrent(m_context.get())) {
-			errorstream << "Audio: Global Initialization: Failed to make current context" << std::endl;
+			errorstream << "Audio: Global Initialization: Failed to make current context"
+						<< std::endl;
 			return false;
 		}
 
 		alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 
 		if (alGetError() != AL_NO_ERROR) {
-			errorstream << "Audio: Global Initialization: OpenAL Error " << alGetError() << std::endl;
+			errorstream << "Audio: Global Initialization: OpenAL Error " << alGetError()
+						<< std::endl;
 			return false;
 		}
 
 		infostream << "Audio: Global Initialized: OpenAL " << alGetString(AL_VERSION)
-			<< ", using " << alcGetString(m_device.get(), ALC_DEVICE_SPECIFIER)
-			<< std::endl;
+				   << ", using " << alcGetString(m_device.get(), ALC_DEVICE_SPECIFIER)
+				   << std::endl;
 
 		return true;
 	}
@@ -315,22 +312,23 @@ public:
 	}
 };
 
-class OpenALSoundManager: public ISoundManager
+class OpenALSoundManager : public ISoundManager
 {
 private:
 	OnDemandSoundFetcher *m_fetcher;
 	ALCdevice *m_device;
 	ALCcontext *m_context;
 	int m_next_id;
-	std::unordered_map<std::string, std::vector<SoundBuffer*>> m_buffers;
-	std::unordered_map<int, PlayingSound*> m_sounds_playing;
-	struct FadeState {
+	std::unordered_map<std::string, std::vector<SoundBuffer *>> m_buffers;
+	std::unordered_map<int, PlayingSound *> m_sounds_playing;
+	struct FadeState
+	{
 		FadeState() = default;
 
-		FadeState(float step, float current_gain, float target_gain):
-			step(step),
-			current_gain(current_gain),
-			target_gain(target_gain) {}
+		FadeState(float step, float current_gain, float target_gain)
+			: step(step), current_gain(current_gain), target_gain(target_gain)
+		{
+		}
 		float step;
 		float current_gain;
 		float target_gain;
@@ -338,13 +336,11 @@ private:
 
 	std::unordered_map<int, FadeState> m_sounds_fading;
 	float m_fade_delay;
+
 public:
-	OpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher):
-		m_fetcher(fetcher),
-		m_device(smg->m_device.get()),
-		m_context(smg->m_context.get()),
-		m_next_id(1),
-		m_fade_delay(0)
+	OpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher)
+		: m_fetcher(fetcher), m_device(smg->m_device.get()),
+		  m_context(smg->m_context.get()), m_next_id(1), m_fade_delay(0)
 	{
 		infostream << "Audio: Initialized: OpenAL " << std::endl;
 	}
@@ -372,37 +368,34 @@ public:
 		infostream << "Audio: Deinitialized." << std::endl;
 	}
 
-	void step(float dtime)
-	{
-		doFades(dtime);
-	}
+	void step(float dtime) { doFades(dtime); }
 
 	void addBuffer(const std::string &name, SoundBuffer *buf)
 	{
-		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer *>>::iterator i =
 				m_buffers.find(name);
-		if(i != m_buffers.end()){
+		if (i != m_buffers.end()) {
 			i->second.push_back(buf);
 			return;
 		}
-		std::vector<SoundBuffer*> bufs;
+		std::vector<SoundBuffer *> bufs;
 		bufs.push_back(buf);
 		m_buffers[name] = bufs;
 	}
 
-	SoundBuffer* getBuffer(const std::string &name)
+	SoundBuffer *getBuffer(const std::string &name)
 	{
-		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer *>>::iterator i =
 				m_buffers.find(name);
-		if(i == m_buffers.end())
+		if (i == m_buffers.end())
 			return nullptr;
-		std::vector<SoundBuffer*> &bufs = i->second;
+		std::vector<SoundBuffer *> &bufs = i->second;
 		int j = myrand() % bufs.size();
 		return bufs[j];
 	}
 
-	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
-			float volume, float pitch)
+	PlayingSound *createPlayingSound(
+			SoundBuffer *buf, bool loop, float volume, float pitch)
 	{
 		infostream << "OpenALSoundManager: Creating playing sound" << std::endl;
 		assert(buf);
@@ -423,11 +416,11 @@ public:
 		return sound;
 	}
 
-	PlayingSound* createPlayingSoundAt(SoundBuffer *buf, bool loop,
-			float volume, v3f pos, float pitch)
+	PlayingSound *createPlayingSoundAt(
+			SoundBuffer *buf, bool loop, float volume, v3f pos, float pitch)
 	{
 		infostream << "OpenALSoundManager: Creating positional playing sound"
-				<< std::endl;
+				   << std::endl;
 		assert(buf);
 		PlayingSound *sound = new PlayingSound;
 		assert(sound);
@@ -456,19 +449,19 @@ public:
 	{
 		assert(buf);
 		PlayingSound *sound = createPlayingSound(buf, loop, volume, pitch);
-		if(!sound)
+		if (!sound)
 			return -1;
 		int id = m_next_id++;
 		m_sounds_playing[id] = sound;
 		return id;
 	}
 
-	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, const v3f &pos,
-			float pitch)
+	int playSoundRawAt(
+			SoundBuffer *buf, bool loop, float volume, const v3f &pos, float pitch)
 	{
 		assert(buf);
 		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos, pitch);
-		if(!sound)
+		if (!sound)
 			return -1;
 		int id = m_next_id++;
 		m_sounds_playing[id] = sound;
@@ -477,8 +470,8 @@ public:
 
 	void deleteSound(int id)
 	{
-		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
-		if(i == m_sounds_playing.end())
+		std::unordered_map<int, PlayingSound *>::iterator i = m_sounds_playing.find(id);
+		if (i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
 
@@ -489,12 +482,12 @@ public:
 	}
 
 	/* If buffer does not exist, consult the fetcher */
-	SoundBuffer* getFetchBuffer(const std::string &name)
+	SoundBuffer *getFetchBuffer(const std::string &name)
 	{
 		SoundBuffer *buf = getBuffer(name);
-		if(buf)
+		if (buf)
 			return buf;
-		if(!m_fetcher)
+		if (!m_fetcher)
 			return nullptr;
 		std::set<std::string> paths;
 		std::set<std::string> datas;
@@ -512,9 +505,9 @@ public:
 	void maintain()
 	{
 		if (!m_sounds_playing.empty()) {
-			verbosestream << "OpenALSoundManager::maintain(): "
-					<< m_sounds_playing.size() <<" playing sounds, "
-					<< m_buffers.size() <<" sound names loaded"<<std::endl;
+			verbosestream << "OpenALSoundManager::maintain(): " << m_sounds_playing.size()
+						  << " playing sounds, " << m_buffers.size()
+						  << " sound names loaded" << std::endl;
 		}
 		std::unordered_set<int> del_list;
 		for (const auto &sp : m_sounds_playing) {
@@ -524,14 +517,14 @@ public:
 			{
 				ALint state;
 				alGetSourcei(sound->source_id, AL_SOURCE_STATE, &state);
-				if(state != AL_PLAYING){
+				if (state != AL_PLAYING) {
 					del_list.insert(id);
 				}
 			}
 		}
-		if(!del_list.empty())
-			verbosestream<<"OpenALSoundManager::maintain(): deleting "
-					<<del_list.size()<<" playing sounds"<<std::endl;
+		if (!del_list.empty())
+			verbosestream << "OpenALSoundManager::maintain(): deleting "
+						  << del_list.size() << " playing sounds" << std::endl;
 		for (int i : del_list) {
 			deleteSound(i);
 		}
@@ -539,8 +532,7 @@ public:
 
 	/* Interface */
 
-	bool loadSoundFile(const std::string &name,
-			const std::string &filepath)
+	bool loadSoundFile(const std::string &name, const std::string &filepath)
 	{
 		SoundBuffer *buf = load_ogg_from_file(filepath);
 		if (buf)
@@ -548,8 +540,7 @@ public:
 		return !!buf;
 	}
 
-	bool loadSoundData(const std::string &name,
-			const std::string &filedata)
+	bool loadSoundData(const std::string &name, const std::string &filedata)
 	{
 		SoundBuffer *buf = load_ogg_from_buffer(filedata, name);
 		if (buf)
@@ -563,25 +554,23 @@ public:
 		alListener3f(AL_VELOCITY, vel.X, vel.Y, vel.Z);
 		ALfloat f[6];
 		f3_set(f, at);
-		f3_set(f+3, -up);
+		f3_set(f + 3, -up);
 		alListenerfv(AL_ORIENTATION, f);
 		warn_if_error(alGetError(), "updateListener");
 	}
 
-	void setListenerGain(float gain)
-	{
-		alListenerf(AL_GAIN, gain);
-	}
+	void setListenerGain(float gain) { alListenerf(AL_GAIN, gain); }
 
-	int playSound(const std::string &name, bool loop, float volume, float fade, float pitch)
+	int playSound(
+			const std::string &name, bool loop, float volume, float fade, float pitch)
 	{
 		maintain();
 		if (name.empty())
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
-		if(!buf){
+		if (!buf) {
 			infostream << "OpenALSoundManager: \"" << name << "\" not found."
-					<< std::endl;
+					   << std::endl;
 			return -1;
 		}
 		int handle = -1;
@@ -594,15 +583,16 @@ public:
 		return handle;
 	}
 
-	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos, float pitch)
+	int playSoundAt(
+			const std::string &name, bool loop, float volume, v3f pos, float pitch)
 	{
 		maintain();
 		if (name.empty())
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
-		if(!buf){
+		if (!buf) {
 			infostream << "OpenALSoundManager: \"" << name << "\" not found."
-					<< std::endl;
+					   << std::endl;
 			return -1;
 		}
 		return playSoundRawAt(buf, loop, volume, pos, pitch);
@@ -627,8 +617,7 @@ public:
 			return;
 
 		float chkGain = 0;
-		for (auto i = m_sounds_fading.begin();
-				i != m_sounds_fading.end();) {
+		for (auto i = m_sounds_fading.begin(); i != m_sounds_fading.end();) {
 			if (i->second.step < 0.f)
 				chkGain = -(i->second.current_gain);
 			else
@@ -702,7 +691,8 @@ std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton()
 	return smg;
 }
 
-ISoundManager *createOpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher)
+ISoundManager *createOpenALSoundManager(
+		SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher)
 {
 	return new OpenALSoundManager(smg, fetcher);
 };

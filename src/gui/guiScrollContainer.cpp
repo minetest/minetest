@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 GUIScrollContainer::GUIScrollContainer(gui::IGUIEnvironment *env,
 		gui::IGUIElement *parent, s32 id, const core::rect<s32> &rectangle,
-		const std::string &orientation, f32 scrollfactor) :
-		gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
-		m_scrollbar(nullptr), m_scrollfactor(scrollfactor)
+		const std::string &orientation, f32 scrollfactor)
+	: gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
+	  m_scrollbar(nullptr), m_scrollfactor(scrollfactor)
 {
 	if (orientation == "vertical")
 		m_orientation = VERTICAL;
@@ -42,8 +42,8 @@ bool GUIScrollContainer::OnEvent(const SEvent &event)
 		bool retval = m_scrollbar->OnEvent(event);
 
 		// a hacky fix for updating the hovering and co.
-		IGUIElement *hovered_elem = getElementFromPoint(core::position2d<s32>(
-				event.MouseInput.X, event.MouseInput.Y));
+		IGUIElement *hovered_elem = getElementFromPoint(
+				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
 		SEvent mov_event = event;
 		mov_event.MouseInput.Event = EMIE_MOUSE_MOVED;
 		Environment->postEventFromUser(mov_event);

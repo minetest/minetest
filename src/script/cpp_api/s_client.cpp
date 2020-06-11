@@ -120,13 +120,13 @@ void ScriptApiClient::environment_step(float dtime)
 	try {
 		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 	} catch (LuaError &e) {
-		getClient()->setFatalError(std::string("Client environment_step: ") + e.what() + "\n"
-				+ script_get_backtrace(L));
+		getClient()->setFatalError(std::string("Client environment_step: ") + e.what() +
+				"\n" + script_get_backtrace(L));
 	}
 }
 
-void ScriptApiClient::on_formspec_input(const std::string &formname,
-	const StringMap &fields)
+void ScriptApiClient::on_formspec_input(
+		const std::string &formname, const StringMap &fields)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -187,7 +187,8 @@ bool ScriptApiClient::on_punchnode(v3s16 p, MapNode node)
 	return readParam<bool>(L, -1);
 }
 
-bool ScriptApiClient::on_placenode(const PointedThing &pointed, const ItemDefinition &item)
+bool ScriptApiClient::on_placenode(
+		const PointedThing &pointed, const ItemDefinition &item)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -228,11 +229,11 @@ bool ScriptApiClient::on_inventory_open(Inventory *inventory)
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_inventory_open");
 
-	std::vector<const InventoryList*> lists = inventory->getLists();
-	std::vector<const InventoryList*>::iterator iter = lists.begin();
+	std::vector<const InventoryList *> lists = inventory->getLists();
+	std::vector<const InventoryList *>::iterator iter = lists.begin();
 	lua_createtable(L, 0, lists.size());
 	for (; iter != lists.end(); iter++) {
-		const char* name = (*iter)->getName().c_str();
+		const char *name = (*iter)->getName().c_str();
 		lua_pushstring(L, name);
 		push_inventory_list(L, inventory, name);
 		lua_rawset(L, -3);

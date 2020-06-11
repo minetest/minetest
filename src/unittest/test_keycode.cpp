@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "client/keycode.h"
 
-class TestKeycode : public TestBase {
+class TestKeycode : public TestBase
+{
 public:
 	TestKeycode() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestKeycode"; }

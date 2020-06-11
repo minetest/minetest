@@ -29,15 +29,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	NodeMetaRef
 */
-NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
+NodeMetaRef *NodeMetaRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
-	return *(NodeMetaRef**)ud;  // unbox pointer
+	if (!ud)
+		luaL_typerror(L, narg, className);
+	return *(NodeMetaRef **)ud; // unbox pointer
 }
 
-Metadata* NodeMetaRef::getmeta(bool auto_create)
+Metadata *NodeMetaRef::getmeta(bool auto_create)
 {
 	if (m_is_local)
 		return m_meta;
@@ -64,7 +65,7 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 	SANITY_CHECK(!m_is_local);
 	// NOTE: This same code is in rollback_interface.cpp
 	// Inform other things that the metadata has changed
-	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(m_meta);
+	NodeMetadata *meta = dynamic_cast<NodeMetadata *>(m_meta);
 
 	MapEditEvent event;
 	event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
@@ -76,7 +77,8 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 // Exported functions
 
 // garbage collector
-int NodeMetaRef::gc_object(lua_State *L) {
+int NodeMetaRef::gc_object(lua_State *L)
+{
 	NodeMetaRef *o = *(NodeMetaRef **)(lua_touserdata(L, 1));
 	delete o;
 	return 0;
@@ -88,7 +90,7 @@ int NodeMetaRef::l_get_inventory(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	NodeMetaRef *ref = checkobject(L, 1);
-	ref->getmeta(true);  // try to ensure the metadata exists
+	ref->getmeta(true); // try to ensure the metadata exists
 	InvRef::createNodeMeta(L, ref->m_p);
 	return 1;
 }
@@ -99,7 +101,7 @@ int NodeMetaRef::l_mark_as_private(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	NodeMetaRef *ref = checkobject(L, 1);
-	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(ref->getmeta(true));
+	NodeMetadata *meta = dynamic_cast<NodeMetadata *>(ref->getmeta(true));
 	assert(meta);
 
 	if (lua_istable(L, 2)) {
@@ -124,15 +126,15 @@ void NodeMetaRef::handleToTable(lua_State *L, Metadata *_meta)
 	// fields
 	MetaDataRef::handleToTable(L, _meta);
 
-	NodeMetadata *meta = (NodeMetadata*) _meta;
+	NodeMetadata *meta = (NodeMetadata *)_meta;
 
 	// inventory
 	lua_newtable(L);
 	Inventory *inv = meta->getInventory();
 	if (inv) {
 		std::vector<const InventoryList *> lists = inv->getLists();
-		for(std::vector<const InventoryList *>::const_iterator
-				i = lists.begin(); i != lists.end(); ++i) {
+		for (std::vector<const InventoryList *>::const_iterator i = lists.begin();
+				i != lists.end(); ++i) {
 			push_inventory_list(L, inv, (*i)->getName().c_str());
 			lua_setfield(L, -2, (*i)->getName().c_str());
 		}
@@ -147,7 +149,7 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table, Metadata *_meta)
 	if (!MetaDataRef::handleFromTable(L, table, _meta))
 		return false;
 
-	NodeMetadata *meta = (NodeMetadata*) _meta;
+	NodeMetadata *meta = (NodeMetadata *)_meta;
 
 	// inventory
 	Inventory *inv = meta->getInventory();
@@ -168,15 +170,11 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table, Metadata *_meta)
 }
 
 
-NodeMetaRef::NodeMetaRef(v3s16 p, ServerEnvironment *env):
-	m_p(p),
-	m_env(env)
+NodeMetaRef::NodeMetaRef(v3s16 p, ServerEnvironment *env) : m_p(p), m_env(env)
 {
 }
 
-NodeMetaRef::NodeMetaRef(Metadata *meta):
-	m_meta(meta),
-	m_is_local(true)
+NodeMetaRef::NodeMetaRef(Metadata *meta) : m_meta(meta), m_is_local(true)
 {
 }
 
@@ -210,7 +208,7 @@ void NodeMetaRef::RegisterCommon(lua_State *L)
 
 	lua_pushliteral(L, "__metatable");
 	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+	lua_settable(L, metatable); // hide metatable from Lua getmetatable()
 
 	lua_pushliteral(L, "metadata_class");
 	lua_pushlstring(L, className, strlen(className));
@@ -228,49 +226,35 @@ void NodeMetaRef::RegisterCommon(lua_State *L)
 	lua_pushcfunction(L, l_equals);
 	lua_settable(L, metatable);
 
-	lua_pop(L, 1);  // drop metatable
+	lua_pop(L, 1); // drop metatable
 }
 
 void NodeMetaRef::Register(lua_State *L)
 {
 	RegisterCommon(L);
-	luaL_openlib(L, 0, methodsServer, 0);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	luaL_openlib(L, 0, methodsServer, 0); // fill methodtable
+	lua_pop(L, 1); // drop methodtable
 }
 
 
-const luaL_Reg NodeMetaRef::methodsServer[] = {
-	luamethod(MetaDataRef, contains),
-	luamethod(MetaDataRef, get),
-	luamethod(MetaDataRef, get_string),
-	luamethod(MetaDataRef, set_string),
-	luamethod(MetaDataRef, get_int),
-	luamethod(MetaDataRef, set_int),
-	luamethod(MetaDataRef, get_float),
-	luamethod(MetaDataRef, set_float),
-	luamethod(MetaDataRef, to_table),
-	luamethod(MetaDataRef, from_table),
-	luamethod(NodeMetaRef, get_inventory),
-	luamethod(NodeMetaRef, mark_as_private),
-	luamethod(MetaDataRef, equals),
-	{0,0}
-};
+const luaL_Reg NodeMetaRef::methodsServer[] = { luamethod(MetaDataRef, contains),
+	luamethod(MetaDataRef, get), luamethod(MetaDataRef, get_string),
+	luamethod(MetaDataRef, set_string), luamethod(MetaDataRef, get_int),
+	luamethod(MetaDataRef, set_int), luamethod(MetaDataRef, get_float),
+	luamethod(MetaDataRef, set_float), luamethod(MetaDataRef, to_table),
+	luamethod(MetaDataRef, from_table), luamethod(NodeMetaRef, get_inventory),
+	luamethod(NodeMetaRef, mark_as_private), luamethod(MetaDataRef, equals), { 0, 0 } };
 
 
 void NodeMetaRef::RegisterClient(lua_State *L)
 {
 	RegisterCommon(L);
-	luaL_openlib(L, 0, methodsClient, 0);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	luaL_openlib(L, 0, methodsClient, 0); // fill methodtable
+	lua_pop(L, 1); // drop methodtable
 }
 
 
-const luaL_Reg NodeMetaRef::methodsClient[] = {
-	luamethod(MetaDataRef, contains),
-	luamethod(MetaDataRef, get),
-	luamethod(MetaDataRef, get_string),
-	luamethod(MetaDataRef, get_int),
-	luamethod(MetaDataRef, get_float),
-	luamethod(MetaDataRef, to_table),
-	{0,0}
-};
+const luaL_Reg NodeMetaRef::methodsClient[] = { luamethod(MetaDataRef, contains),
+	luamethod(MetaDataRef, get), luamethod(MetaDataRef, get_string),
+	luamethod(MetaDataRef, get_int), luamethod(MetaDataRef, get_float),
+	luamethod(MetaDataRef, to_table), { 0, 0 } };

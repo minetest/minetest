@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxelalgorithms.h"
 #include "util/numeric.h"
 
-class TestVoxelAlgorithms : public TestBase {
+class TestVoxelAlgorithms : public TestBase
+{
 public:
 	TestVoxelAlgorithms() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestVoxelAlgorithms"; }
@@ -49,17 +50,17 @@ void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
 	// Test some lines
 	// Do not test lines that start or end on the border of
 	// two voxels as rounding errors can make the test fail!
-	std::vector<core::line3d<f32> > lines;
+	std::vector<core::line3d<f32>> lines;
 	for (f32 x = -9.1; x < 9; x += 3.124) {
-	for (f32 y = -9.2; y < 9; y += 3.123) {
-	for (f32 z = -9.3; z < 9; z += 3.122) {
-		lines.emplace_back(-x, -y, -z, x, y, z);
-	}
-	}
+		for (f32 y = -9.2; y < 9; y += 3.123) {
+			for (f32 z = -9.3; z < 9; z += 3.122) {
+				lines.emplace_back(-x, -y, -z, x, y, z);
+			}
+		}
 	}
 	lines.emplace_back(0, 0, 0, 0, 0, 0);
 	// Test every line
-	std::vector<core::line3d<f32> >::iterator it = lines.begin();
+	std::vector<core::line3d<f32>>::iterator it = lines.begin();
 	for (; it < lines.end(); it++) {
 		core::line3d<f32> l = *it;
 
@@ -73,8 +74,7 @@ void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
 		// Values for testing
 		v3s16 end_voxel = floatToInt(l.end, 1);
 		v3s16 voxel_vector = end_voxel - start_voxel;
-		int nodecount = abs(voxel_vector.X) + abs(voxel_vector.Y)
-			+ abs(voxel_vector.Z);
+		int nodecount = abs(voxel_vector.X) + abs(voxel_vector.Y) + abs(voxel_vector.Z);
 		int actual_nodecount = 0;
 		v3s16 old_voxel = iterator.m_current_node_pos;
 
@@ -86,8 +86,8 @@ void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
 			UASSERTEQ(f32, (new_voxel - old_voxel).getLengthSQ(), 1);
 			// The line must intersect with the voxel
 			v3f voxel_center = intToFloat(iterator.m_current_node_pos, 1);
-			aabb3f box(voxel_center - v3f(0.5, 0.5, 0.5),
-				voxel_center + v3f(0.5, 0.5, 0.5));
+			aabb3f box(
+					voxel_center - v3f(0.5, 0.5, 0.5), voxel_center + v3f(0.5, 0.5, 0.5));
 			UASSERT(box.intersectsWithLine(l));
 			// Update old voxel
 			old_voxel = new_voxel;

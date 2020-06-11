@@ -43,9 +43,9 @@ void RenderingCorePageflip::drawAll()
 
 void RenderingCorePageflip::useEye(bool _right)
 {
-	driver->setRenderTarget(_right ? video::ERT_STEREO_RIGHT_BUFFER
-				       : video::ERT_STEREO_LEFT_BUFFER,
-			true, true, skycolor);
+	driver->setRenderTarget(
+			_right ? video::ERT_STEREO_RIGHT_BUFFER : video::ERT_STEREO_LEFT_BUFFER, true,
+			true, skycolor);
 	RenderingCoreStereo::useEye(_right);
 }
 

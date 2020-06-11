@@ -87,7 +87,7 @@ void *TerminalChatConsole::run()
 
 	std::cout << "========================" << std::endl;
 	std::cout << "Begin log output over terminal"
-		<< " (no stdout/stderr backlog during that)" << std::endl;
+			  << " (no stdout/stderr backlog during that)" << std::endl;
 	// Make the loggers to stdout/stderr shut up.
 	// Go over our own loggers instead.
 	LogLevelMask err_mask = g_logger.removeOutput(&stderr_output);
@@ -96,15 +96,13 @@ void *TerminalChatConsole::run()
 	g_logger.addOutput(&m_log_output);
 
 	// Inform the server of our nick
-	m_chat_interface->command_queue.push_back(
-		new ChatEventNick(CET_NICK_ADD, m_nick));
+	m_chat_interface->command_queue.push_back(new ChatEventNick(CET_NICK_ADD, m_nick));
 
 	{
 		// Ensures that curses is deinitialized even on an exception being thrown
 		CursesInitHelper helper(this);
 
 		while (!stopRequested()) {
-
 			int ch = getch();
 			if (stopRequested())
 				break;
@@ -121,7 +119,7 @@ void *TerminalChatConsole::run()
 	g_logger.addOutputMasked(&stdout_output, out_mask);
 
 	std::cout << "End log output over terminal"
-		<< " (no stdout/stderr backlog during that)" << std::endl;
+			  << " (no stdout/stderr backlog during that)" << std::endl;
 	std::cout << "========================" << std::endl;
 
 	END_DEBUG_EXCEPTION_HANDLER
@@ -136,8 +134,7 @@ void TerminalChatConsole::typeChatMessage(const std::wstring &msg)
 		return;
 
 	// Send to server
-	m_chat_interface->command_queue.push_back(
-		new ChatEventChat(m_nick, msg));
+	m_chat_interface->command_queue.push_back(new ChatEventChat(m_nick, msg));
 
 	// Print if its a command (gets eaten by server otherwise)
 	if (msg[0] == L'/') {
@@ -162,154 +159,132 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 	// range of terminals that are compatible to xterm.
 
 	switch (ch) {
-		case ERR: // no input
-			break;
-		case 27: // ESC
-			// Toggle ESC mode
-			m_esc_mode = !m_esc_mode;
-			break;
-		case KEY_PPAGE:
-			m_chat_backend.scrollPageUp();
-			complete_redraw_needed = true;
-			break;
-		case KEY_NPAGE:
-			m_chat_backend.scrollPageDown();
-			complete_redraw_needed = true;
-			break;
-		case KEY_ENTER:
-		case '\r':
-		case '\n': {
-			prompt.addToHistory(prompt.getLine());
-			typeChatMessage(prompt.replace(L""));
-			break;
-		}
-		case KEY_UP:
-			prompt.historyPrev();
-			break;
-		case KEY_DOWN:
-			prompt.historyNext();
-			break;
-		case KEY_LEFT:
-			// Left pressed
-			// move character to the left
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
+	case ERR: // no input
+		break;
+	case 27: // ESC
+		// Toggle ESC mode
+		m_esc_mode = !m_esc_mode;
+		break;
+	case KEY_PPAGE:
+		m_chat_backend.scrollPageUp();
+		complete_redraw_needed = true;
+		break;
+	case KEY_NPAGE:
+		m_chat_backend.scrollPageDown();
+		complete_redraw_needed = true;
+		break;
+	case KEY_ENTER:
+	case '\r':
+	case '\n': {
+		prompt.addToHistory(prompt.getLine());
+		typeChatMessage(prompt.replace(L""));
+		break;
+	}
+	case KEY_UP:
+		prompt.historyPrev();
+		break;
+	case KEY_DOWN:
+		prompt.historyNext();
+		break;
+	case KEY_LEFT:
+		// Left pressed
+		// move character to the left
+		prompt.cursorOperation(ChatPrompt::CURSOROP_MOVE, ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER);
-			break;
-		case 545:
-			// Ctrl-Left pressed
-			// move word to the left
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
+		break;
+	case 545:
+		// Ctrl-Left pressed
+		// move word to the left
+		prompt.cursorOperation(ChatPrompt::CURSOROP_MOVE, ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_WORD);
-			break;
-		case KEY_RIGHT:
-			// Right pressed
-			// move character to the right
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
+		break;
+	case KEY_RIGHT:
+		// Right pressed
+		// move character to the right
+		prompt.cursorOperation(ChatPrompt::CURSOROP_MOVE, ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER);
-			break;
-		case 560:
-			// Ctrl-Right pressed
-			// move word to the right
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
+		break;
+	case 560:
+		// Ctrl-Right pressed
+		// move word to the right
+		prompt.cursorOperation(ChatPrompt::CURSOROP_MOVE, ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_WORD);
-			break;
-		case KEY_HOME:
-			// Home pressed
-			// move to beginning of line
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
+		break;
+	case KEY_HOME:
+		// Home pressed
+		// move to beginning of line
+		prompt.cursorOperation(ChatPrompt::CURSOROP_MOVE, ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
-			break;
-		case KEY_END:
-			// End pressed
-			// move to end of line
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
+		break;
+	case KEY_END:
+		// End pressed
+		// move to end of line
+		prompt.cursorOperation(ChatPrompt::CURSOROP_MOVE, ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
-			break;
-		case KEY_BACKSPACE:
-		case '\b':
-		case 127:
-			// Backspace pressed
-			// delete character to the left
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
+		break;
+	case KEY_BACKSPACE:
+	case '\b':
+	case 127:
+		// Backspace pressed
+		// delete character to the left
+		prompt.cursorOperation(ChatPrompt::CURSOROP_DELETE, ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER);
-			break;
-		case KEY_DC:
-			// Delete pressed
-			// delete character to the right
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				ChatPrompt::CURSOROP_SCOPE_CHARACTER);
-			break;
-		case 519:
-			// Ctrl-Delete pressed
-			// delete word to the right
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				ChatPrompt::CURSOROP_SCOPE_WORD);
-			break;
-		case 21:
-			// Ctrl-U pressed
-			// kill line to left end
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
+		break;
+	case KEY_DC:
+		// Delete pressed
+		// delete character to the right
+		prompt.cursorOperation(ChatPrompt::CURSOROP_DELETE,
+				ChatPrompt::CURSOROP_DIR_RIGHT, ChatPrompt::CURSOROP_SCOPE_CHARACTER);
+		break;
+	case 519:
+		// Ctrl-Delete pressed
+		// delete word to the right
+		prompt.cursorOperation(ChatPrompt::CURSOROP_DELETE,
+				ChatPrompt::CURSOROP_DIR_RIGHT, ChatPrompt::CURSOROP_SCOPE_WORD);
+		break;
+	case 21:
+		// Ctrl-U pressed
+		// kill line to left end
+		prompt.cursorOperation(ChatPrompt::CURSOROP_DELETE, ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
-			break;
-		case 11:
-			// Ctrl-K pressed
-			// kill line to right end
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			break;
-		case KEY_TAB:
-			// Tab pressed
-			// Nick completion
-			prompt.nickCompletion(m_nicks, false);
-			break;
-		default:
-			// Add character to the prompt,
-			// assuming UTF-8.
-			if (IS_UTF8_MULTB_START(ch)) {
-				m_pending_utf8_bytes.append(1, (char)ch);
-				m_utf8_bytes_to_wait += UTF8_MULTB_START_LEN(ch) - 1;
-			} else if (m_utf8_bytes_to_wait != 0) {
-				m_pending_utf8_bytes.append(1, (char)ch);
-				m_utf8_bytes_to_wait--;
-				if (m_utf8_bytes_to_wait == 0) {
-					std::wstring w = utf8_to_wide(m_pending_utf8_bytes);
-					m_pending_utf8_bytes = "";
-					// hopefully only one char in the wstring...
-					for (size_t i = 0; i < w.size(); i++) {
-						prompt.input(w.c_str()[i]);
-					}
+		break;
+	case 11:
+		// Ctrl-K pressed
+		// kill line to right end
+		prompt.cursorOperation(ChatPrompt::CURSOROP_DELETE,
+				ChatPrompt::CURSOROP_DIR_RIGHT, ChatPrompt::CURSOROP_SCOPE_LINE);
+		break;
+	case KEY_TAB:
+		// Tab pressed
+		// Nick completion
+		prompt.nickCompletion(m_nicks, false);
+		break;
+	default:
+		// Add character to the prompt,
+		// assuming UTF-8.
+		if (IS_UTF8_MULTB_START(ch)) {
+			m_pending_utf8_bytes.append(1, (char)ch);
+			m_utf8_bytes_to_wait += UTF8_MULTB_START_LEN(ch) - 1;
+		} else if (m_utf8_bytes_to_wait != 0) {
+			m_pending_utf8_bytes.append(1, (char)ch);
+			m_utf8_bytes_to_wait--;
+			if (m_utf8_bytes_to_wait == 0) {
+				std::wstring w = utf8_to_wide(m_pending_utf8_bytes);
+				m_pending_utf8_bytes = "";
+				// hopefully only one char in the wstring...
+				for (size_t i = 0; i < w.size(); i++) {
+					prompt.input(w.c_str()[i]);
 				}
-			} else if (IS_ASCII_PRINTABLE_CHAR(ch)) {
-				prompt.input(ch);
-			} else {
-				// Silently ignore characters we don't handle
-
-				//warningstream << "Pressed invalid character '"
-				//	<< keyname(ch) << "' (code " << itos(ch) << ")" << std::endl;
 			}
-			break;
+		} else if (IS_ASCII_PRINTABLE_CHAR(ch)) {
+			prompt.input(ch);
+		} else {
+			// Silently ignore characters we don't handle
+
+			//warningstream << "Pressed invalid character '"
+			//	<< keyname(ch) << "' (code " << itos(ch) << ")" << std::endl;
+		}
+		break;
 	}
 }
 
@@ -321,22 +296,22 @@ void TerminalChatConsole::step(int ch)
 	while (!m_chat_interface->outgoing_queue.empty()) {
 		ChatEvent *evt = m_chat_interface->outgoing_queue.pop_frontNoEx();
 		switch (evt->type) {
-			case CET_NICK_REMOVE:
-				m_nicks.remove(((ChatEventNick *)evt)->nick);
-				break;
-			case CET_NICK_ADD:
-				m_nicks.push_back(((ChatEventNick *)evt)->nick);
-				break;
-			case CET_CHAT:
-				complete_redraw_needed = true;
-				// This is only used for direct replies from commands
-				// or for lua's print() functionality
-				m_chat_backend.addMessage(L"", ((ChatEventChat *)evt)->evt_msg);
-				break;
-			case CET_TIME_INFO:
-				ChatEventTimeInfo *tevt = (ChatEventTimeInfo *)evt;
-				m_game_time = tevt->game_time;
-				m_time_of_day = tevt->time;
+		case CET_NICK_REMOVE:
+			m_nicks.remove(((ChatEventNick *)evt)->nick);
+			break;
+		case CET_NICK_ADD:
+			m_nicks.push_back(((ChatEventNick *)evt)->nick);
+			break;
+		case CET_CHAT:
+			complete_redraw_needed = true;
+			// This is only used for direct replies from commands
+			// or for lua's print() functionality
+			m_chat_backend.addMessage(L"", ((ChatEventChat *)evt)->evt_msg);
+			break;
+		case CET_TIME_INFO:
+			ChatEventTimeInfo *tevt = (ChatEventTimeInfo *)evt;
+			m_game_time = tevt->game_time;
+			m_time_of_day = tevt->time;
 		};
 		delete evt;
 	}
@@ -348,8 +323,9 @@ void TerminalChatConsole::step(int ch)
 
 		std::wstring error_message = utf8_to_wide(Logger::getLevelLabel(p.first));
 		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message = std::wstring(L"\x1b(c@red)").append(error_message)
-				.append(L"\x1b(c@white)");
+			error_message = std::wstring(L"\x1b(c@red)")
+									.append(error_message)
+									.append(L"\x1b(c@white)");
 		}
 		m_chat_backend.addMessage(error_message, utf8_to_wide(p.second));
 	}
@@ -359,20 +335,20 @@ void TerminalChatConsole::step(int ch)
 		handleInput(ch, complete_redraw_needed);
 	} else {
 		switch (ch) {
-			case ERR: // no input
-				break;
-			case 27: // ESC
-				// Toggle ESC mode
-				m_esc_mode = !m_esc_mode;
-				break;
-			case 'L':
-				m_log_level--;
-				m_log_level = MYMAX(m_log_level, LL_NONE + 1); // LL_NONE isn't accessible
-				break;
-			case 'l':
-				m_log_level++;
-				m_log_level = MYMIN(m_log_level, LL_MAX - 1);
-				break;
+		case ERR: // no input
+			break;
+		case 27: // ESC
+			// Toggle ESC mode
+			m_esc_mode = !m_esc_mode;
+			break;
+		case 'L':
+			m_log_level--;
+			m_log_level = MYMAX(m_log_level, LL_NONE + 1); // LL_NONE isn't accessible
+			break;
+		case 'l':
+			m_log_level++;
+			m_log_level = MYMIN(m_log_level, LL_MAX - 1);
+			break;
 		}
 	}
 
@@ -398,8 +374,7 @@ void TerminalChatConsole::step(int ch)
 	minutes = (float)minutes / 1000 * 60;
 
 	if (m_game_time)
-		printw(" | Game %d Time of day %02d:%02d ",
-			m_game_time, hours, minutes);
+		printw(" | Game %d Time of day %02d:%02d ", m_game_time, hours, minutes);
 
 	// draw text
 	if (complete_redraw_needed && m_can_draw_text)
@@ -408,7 +383,7 @@ void TerminalChatConsole::step(int ch)
 	// draw prompt
 	if (!m_esc_mode) {
 		// normal prompt
-		ChatPrompt& prompt = m_chat_backend.getPrompt();
+		ChatPrompt &prompt = m_chat_backend.getPrompt();
 		std::string prompt_text = wide_to_utf8(prompt.getVisiblePortion());
 		move(m_rows - 1, 0);
 		clrtoeol();
@@ -423,9 +398,9 @@ void TerminalChatConsole::step(int ch)
 		move(m_rows - 1, 0);
 		clrtoeol();
 		printw("[ESC] Toggle ESC mode |"
-			" [CTRL+C] Shut down |"
-			" (L) in-, (l) decrease loglevel %s",
-			Logger::getLevelLabel((LogLevel) m_log_level).c_str());
+			   " [CTRL+C] Shut down |"
+			   " (L) in-, (l) decrease loglevel %s",
+				Logger::getLevelLabel((LogLevel)m_log_level).c_str());
 	}
 
 	refresh();
@@ -433,11 +408,11 @@ void TerminalChatConsole::step(int ch)
 
 void TerminalChatConsole::draw_text()
 {
-	ChatBuffer& buf = m_chat_backend.getConsoleBuffer();
+	ChatBuffer &buf = m_chat_backend.getConsoleBuffer();
 	for (u32 row = 0; row < buf.getRows(); row++) {
 		move_for_backend(row, 0);
 		clrtoeol();
-		const ChatFormattedLine& line = buf.getFormattedLine(row);
+		const ChatFormattedLine &line = buf.getFormattedLine(row);
 		if (line.fragments.empty())
 			continue;
 		for (const ChatFormattedFragment &fragment : line.fragments) {

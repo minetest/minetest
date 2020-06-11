@@ -77,7 +77,6 @@ void ServerInventoryManager::setInventoryModified(const InventoryLocation &loc)
 	case InventoryLocation::UNDEFINED:
 		break;
 	case InventoryLocation::PLAYER: {
-
 		RemotePlayer *player = m_env->getPlayer(loc.name.c_str());
 
 		if (!player)
@@ -107,11 +106,11 @@ Inventory *ServerInventoryManager::createDetachedInventory(
 {
 	if (m_detached_inventories.count(name) > 0) {
 		infostream << "Server clearing detached inventory \"" << name << "\""
-			   << std::endl;
+				   << std::endl;
 		delete m_detached_inventories[name].inventory;
 	} else {
 		infostream << "Server creating detached inventory \"" << name << "\""
-			   << std::endl;
+				   << std::endl;
 	}
 
 	Inventory *inv = new Inventory(idef);
@@ -127,8 +126,7 @@ Inventory *ServerInventoryManager::createDetachedInventory(
 
 		// if player is connected, send him the inventory
 		if (p && p->getPeerId() != PEER_ID_INEXISTENT) {
-			m_env->getGameDef()->sendDetachedInventory(
-					inv, name, p->getPeerId());
+			m_env->getGameDef()->sendDetachedInventory(inv, name, p->getPeerId());
 		}
 	} else {
 		if (!m_env)
@@ -159,8 +157,7 @@ bool ServerInventoryManager::removeDetachedInventory(const std::string &name)
 
 	} else {
 		// Notify all players about the change
-		m_env->getGameDef()->sendDetachedInventory(
-				nullptr, name, PEER_ID_INEXISTENT);
+		m_env->getGameDef()->sendDetachedInventory(nullptr, name, PEER_ID_INEXISTENT);
 	}
 
 	m_detached_inventories.erase(inv_it);
@@ -169,8 +166,7 @@ bool ServerInventoryManager::removeDetachedInventory(const std::string &name)
 }
 
 void ServerInventoryManager::sendDetachedInventories(const std::string &peer_name,
-		bool incremental,
-		std::function<void(const std::string &, Inventory *)> apply_cb)
+		bool incremental, std::function<void(const std::string &, Inventory *)> apply_cb)
 {
 	for (const auto &detached_inventory : m_detached_inventories) {
 		const DetachedInventory &dinv = detached_inventory.second;

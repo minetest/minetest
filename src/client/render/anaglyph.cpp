@@ -33,8 +33,8 @@ void RenderingCoreAnaglyph::setupMaterial(int color_mask)
 	mat.Material.ColorMask = color_mask;
 	mat.EnableFlags = video::EMF_COLOR_MASK;
 	mat.EnablePasses = scene::ESNRP_SKY_BOX | scene::ESNRP_SOLID |
-			   scene::ESNRP_TRANSPARENT | scene::ESNRP_TRANSPARENT_EFFECT |
-			   scene::ESNRP_SHADOW;
+			scene::ESNRP_TRANSPARENT | scene::ESNRP_TRANSPARENT_EFFECT |
+			scene::ESNRP_SHADOW;
 }
 
 void RenderingCoreAnaglyph::useEye(bool right)

@@ -37,11 +37,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 const int BUFFER_LENGTH = 256;
 
-class StringBuffer : public std::streambuf {
+class StringBuffer : public std::streambuf
+{
 public:
-	StringBuffer() {
-		buffer_index = 0;
-	}
+	StringBuffer() { buffer_index = 0; }
 
 	int overflow(int c);
 	virtual void flush(const std::string &buf) = 0;
@@ -54,12 +53,10 @@ private:
 };
 
 
-class LogBuffer : public StringBuffer {
+class LogBuffer : public StringBuffer
+{
 public:
-	LogBuffer(Logger &logger, LogLevel lev) :
-		logger(logger),
-		level(lev)
-	{}
+	LogBuffer(Logger &logger, LogLevel lev) : logger(logger), level(lev) {}
 
 	void flush(const std::string &buffer);
 
@@ -69,7 +66,8 @@ private:
 };
 
 
-class RawLogBuffer : public StringBuffer {
+class RawLogBuffer : public StringBuffer
+{
 public:
 	void flush(const std::string &buffer);
 };
@@ -119,33 +117,27 @@ std::ostream verbosestream(&verbose_buf);
 #ifdef __ANDROID__
 
 static unsigned int g_level_to_android[] = {
-	ANDROID_LOG_INFO,     // LL_NONE
+	ANDROID_LOG_INFO, // LL_NONE
 	//ANDROID_LOG_FATAL,
-	ANDROID_LOG_ERROR,    // LL_ERROR
-	ANDROID_LOG_WARN,     // LL_WARNING
-	ANDROID_LOG_WARN,     // LL_ACTION
+	ANDROID_LOG_ERROR, // LL_ERROR
+	ANDROID_LOG_WARN, // LL_WARNING
+	ANDROID_LOG_WARN, // LL_ACTION
 	//ANDROID_LOG_INFO,
-	ANDROID_LOG_DEBUG,    // LL_INFO
-	ANDROID_LOG_VERBOSE,  // LL_VERBOSE
+	ANDROID_LOG_DEBUG, // LL_INFO
+	ANDROID_LOG_VERBOSE, // LL_VERBOSE
 };
 
-class AndroidSystemLogOutput : public ICombinedLogOutput {
-	public:
-		AndroidSystemLogOutput()
-		{
-			g_logger.addOutput(this);
-		}
-		~AndroidSystemLogOutput()
-		{
-			g_logger.removeOutput(this);
-		}
-		void logRaw(LogLevel lev, const std::string &line)
-		{
-			STATIC_ASSERT(ARRLEN(g_level_to_android) == LL_MAX,
+class AndroidSystemLogOutput : public ICombinedLogOutput
+{
+public:
+	AndroidSystemLogOutput() { g_logger.addOutput(this); }
+	~AndroidSystemLogOutput() { g_logger.removeOutput(this); }
+	void logRaw(LogLevel lev, const std::string &line)
+	{
+		STATIC_ASSERT(ARRLEN(g_level_to_android) == LL_MAX,
 				mismatch_between_android_and_internal_loglevels);
-			__android_log_print(g_level_to_android[lev],
-				PROJECT_NAME_C, "%s", line.c_str());
-		}
+		__android_log_print(g_level_to_android[lev], PROJECT_NAME_C, "%s", line.c_str());
+	}
 };
 
 AndroidSystemLogOutput g_android_log_output;
@@ -247,8 +239,7 @@ const std::string Logger::getLevelLabel(LogLevel lev)
 		"VERBOSE",
 	};
 	assert(lev < LL_MAX && lev >= 0);
-	STATIC_ASSERT(ARRLEN(names) == LL_MAX,
-		mismatch_between_loglevel_names_and_enum);
+	STATIC_ASSERT(ARRLEN(names) == LL_MAX, mismatch_between_loglevel_names_and_enum);
 	return names[lev];
 }
 
@@ -298,8 +289,8 @@ void Logger::logToOutputsRaw(LogLevel lev, const std::string &line)
 }
 
 void Logger::logToOutputs(LogLevel lev, const std::string &combined,
-	const std::string &time, const std::string &thread_name,
-	const std::string &payload_text)
+		const std::string &time, const std::string &thread_name,
+		const std::string &payload_text)
 {
 	MutexAutoLock lock(m_mutex);
 	for (size_t i = 0; i != m_outputs[lev].size(); i++)
@@ -323,26 +314,28 @@ void FileLogOutput::setFile(const std::string &filename, s64 file_size_max)
 
 	if (is_too_large) {
 		std::string filename_secondary = filename + ".1";
-		actionstream << "The log file grew too big; it is moved to " <<
-			filename_secondary << std::endl;
+		actionstream << "The log file grew too big; it is moved to " << filename_secondary
+					 << std::endl;
 		remove(filename_secondary.c_str());
 		rename(filename.c_str(), filename_secondary.c_str());
 	}
 	m_stream.open(filename, std::ios::app | std::ios::ate);
 
 	if (!m_stream.good())
-		throw FileNotGoodException("Failed to open log file " +
-			filename + ": " + strerror(errno));
+		throw FileNotGoodException(
+				"Failed to open log file " + filename + ": " + strerror(errno));
 	m_stream << "\n\n"
-		"-------------" << std::endl <<
-		"  Separator" << std::endl <<
-		"-------------\n" << std::endl;
+				"-------------"
+			 << std::endl
+			 << "  Separator" << std::endl
+			 << "-------------\n"
+			 << std::endl;
 }
 
 void StreamLogOutput::logRaw(LogLevel lev, const std::string &line)
 {
 	bool colored_message = (Logger::color_mode == LOG_COLOR_ALWAYS) ||
-		(Logger::color_mode == LOG_COLOR_AUTO && is_tty);
+			(Logger::color_mode == LOG_COLOR_AUTO && is_tty);
 	if (colored_message) {
 		switch (lev) {
 		case LL_ERROR:
@@ -381,7 +374,8 @@ void LogOutputBuffer::updateLogLevel()
 	LogLevel log_level = Logger::stringToLevel(conf_loglev);
 	if (log_level == LL_MAX) {
 		warningstream << "Supplied unrecognized chat_log_level; "
-			"showing none." << std::endl;
+						 "showing none."
+					  << std::endl;
 		log_level = LL_NONE;
 	}
 
@@ -407,7 +401,8 @@ void LogOutputBuffer::logRaw(LogLevel lev, const std::string &line)
 		case LL_VERBOSE: // dark grey
 			color = "\x1b(c@#888)";
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 

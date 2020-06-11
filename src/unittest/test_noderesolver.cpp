@@ -27,7 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 
 
-class TestNodeResolver : public TestBase {
+class TestNodeResolver : public TestBase
+{
 public:
 	TestNodeResolver() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestNodeResolver"; }
@@ -44,8 +45,7 @@ static TestNodeResolver g_test_instance;
 
 void TestNodeResolver::runTests(IGameDef *gamedef)
 {
-	NodeDefManager *ndef =
-		(NodeDefManager *)gamedef->getNodeDefManager();
+	NodeDefManager *ndef = (NodeDefManager *)gamedef->getNodeDefManager();
 
 	ndef->resetNodeResolveState();
 	TEST(testNodeResolving, ndef);
@@ -54,7 +54,8 @@ void TestNodeResolver::runTests(IGameDef *gamedef)
 	TEST(testPendingResolveCancellation, ndef);
 }
 
-class Foobar : public NodeResolver {
+class Foobar : public NodeResolver
+{
 public:
 	void resolveNodeNames();
 
@@ -69,7 +70,8 @@ public:
 	std::vector<content_t> test_nr_list_empty;
 };
 
-class Foobaz : public NodeResolver {
+class Foobaz : public NodeResolver
+{
 public:
 	void resolveNodeNames();
 
@@ -84,15 +86,13 @@ void Foobar::resolveNodeNames()
 	UASSERT(getIdFromNrBacklog(&test_nr_node1, "", CONTENT_IGNORE) == true);
 	UASSERT(getIdsFromNrBacklog(&test_nr_list) == true);
 	UASSERT(getIdsFromNrBacklog(&test_nr_list_group) == true);
-	UASSERT(getIdsFromNrBacklog(&test_nr_list_required,
-		true, CONTENT_AIR) == false);
+	UASSERT(getIdsFromNrBacklog(&test_nr_list_required, true, CONTENT_AIR) == false);
 	UASSERT(getIdsFromNrBacklog(&test_nr_list_empty) == true);
 
 	UASSERT(getIdFromNrBacklog(&test_nr_node2, "", CONTENT_IGNORE) == true);
-	UASSERT(getIdFromNrBacklog(&test_nr_node3,
-		"default:brick", CONTENT_IGNORE) == true);
-	UASSERT(getIdFromNrBacklog(&test_nr_node4,
-		"default:gobbledygook", CONTENT_AIR) == false);
+	UASSERT(getIdFromNrBacklog(&test_nr_node3, "default:brick", CONTENT_IGNORE) == true);
+	UASSERT(getIdFromNrBacklog(&test_nr_node4, "default:gobbledygook", CONTENT_AIR) ==
+			false);
 	UASSERT(getIdFromNrBacklog(&test_nr_node5, "", CONTENT_IGNORE) == false);
 }
 
@@ -162,8 +162,7 @@ void TestNodeResolver::testNodeResolving(NodeDefManager *ndef)
 	};
 	UASSERTEQ(size_t, foobar.test_nr_list_group.size(), 2);
 	for (i = 0; i != foobar.test_nr_list_group.size(); i++) {
-		UASSERT(CONTAINS(foobar.test_nr_list_group,
-			expected_test_nr_list_group[i]));
+		UASSERT(CONTAINS(foobar.test_nr_list_group, expected_test_nr_list_group[i]));
 	}
 
 	// Check that we read all the items we're able to in a required list
@@ -175,7 +174,7 @@ void TestNodeResolver::testNodeResolving(NodeDefManager *ndef)
 	UASSERTEQ(size_t, foobar.test_nr_list_required.size(), 3);
 	for (i = 0; i != foobar.test_nr_list_required.size(); i++)
 		UASSERTEQ(content_t, foobar.test_nr_list_required[i],
-			expected_test_nr_list_required[i]);
+				expected_test_nr_list_required[i]);
 
 	// Check that the edge case of 0 is successful
 	UASSERTEQ(size_t, foobar.test_nr_list_empty.size(), 0);

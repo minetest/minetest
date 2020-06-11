@@ -35,13 +35,13 @@ std::string script_get_backtrace(lua_State *L)
 int script_exception_wrapper(lua_State *L, lua_CFunction f)
 {
 	try {
-		return f(L);  // Call wrapped function and return result.
-	} catch (const char *s) {  // Catch and convert exceptions.
+		return f(L); // Call wrapped function and return result.
+	} catch (const char *s) { // Catch and convert exceptions.
 		lua_pushstring(L, s);
 	} catch (std::exception &e) {
 		lua_pushstring(L, e.what());
 	}
-	return lua_error(L);  // Rethrow as a Lua error.
+	return lua_error(L); // Rethrow as a Lua error.
 }
 
 /*
@@ -85,15 +85,16 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 		err_descr = "<no description>";
 
 	char buf[256];
-	porting::mt_snprintf(buf, sizeof(buf), "%s error from mod '%s' in callback %s(): ",
-		err_type, mod, fxn);
+	porting::mt_snprintf(buf, sizeof(buf),
+			"%s error from mod '%s' in callback %s(): ", err_type, mod, fxn);
 
 	std::string err_msg(buf);
 	err_msg += err_descr;
 
 	if (pcall_result == LUA_ERRMEM) {
-		err_msg += "\nCurrent Lua memory usage: "
-			+ itos(lua_gc(L, LUA_GCCOUNT, 0) >> 10) + " MB";
+		err_msg +=
+				"\nCurrent Lua memory usage: " + itos(lua_gc(L, LUA_GCCOUNT, 0) >> 10) +
+				" MB";
 	}
 
 	throw LuaError(err_msg);
@@ -105,8 +106,8 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 // - runs the callbacks
 // - replaces the table and arguments with the return value,
 //     computed depending on mode
-void script_run_callbacks_f(lua_State *L, int nargs,
-	RunCallbacksMode mode, const char *fxn)
+void script_run_callbacks_f(
+		lua_State *L, int nargs, RunCallbacksMode mode, const char *fxn)
 {
 	FATAL_ERROR_IF(lua_gettop(L) < nargs + 1, "Not enough arguments");
 
@@ -122,7 +123,7 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 	lua_insert(L, error_handler + 1);
 
 	// Insert mode after table
-	lua_pushnumber(L, (int) mode);
+	lua_pushnumber(L, (int)mode);
 	lua_insert(L, error_handler + 3);
 
 	// Stack now looks like this:
@@ -135,8 +136,8 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 	lua_remove(L, error_handler);
 }
 
-static void script_log(lua_State *L, const std::string &message,
-	std::ostream &log_to, bool do_error, int stack_depth)
+static void script_log(lua_State *L, const std::string &message, std::ostream &log_to,
+		bool do_error, int stack_depth)
 {
 	lua_Debug ar;
 

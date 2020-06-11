@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "../gui/guiSkin.h"
 
-#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
+#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) &&                  \
 		!defined(SERVER) && !defined(__HAIKU__)
 #define XORG_USED
 #endif
@@ -67,7 +67,7 @@ static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
 	gui::IGUIFont *builtinfont = environment->getBuiltInFont();
 	gui::IGUIFontBitmap *bitfont = nullptr;
 	if (builtinfont && builtinfont->getType() == gui::EGFT_BITMAP)
-		bitfont = (gui::IGUIFontBitmap*)builtinfont;
+		bitfont = (gui::IGUIFontBitmap *)builtinfont;
 
 	gui::IGUISpriteBank *bank = 0;
 	skin->setFont(builtinfont);
@@ -106,15 +106,15 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u32 i;
 	for (i = 0; i != drivers.size(); i++) {
 		if (!strcasecmp(driverstring.c_str(),
-				RenderingEngine::getVideoDriverName(drivers[i]))) {
+					RenderingEngine::getVideoDriverName(drivers[i]))) {
 			driverType = drivers[i];
 			break;
 		}
 	}
 	if (i == drivers.size()) {
 		errorstream << "Invalid video_driver specified; "
-			       "defaulting to opengl"
-			    << std::endl;
+					   "defaulting to opengl"
+					<< std::endl;
 	}
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
@@ -134,9 +134,10 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 #endif
 #if ENABLE_GLES
 	// there is no standardized path for these on desktop
-	std::string rel_path = std::string("client") + DIR_DELIM
-			+ "shaders" + DIR_DELIM + "Irrlicht";
-	params.OGLES2ShaderPath = (porting::path_share + DIR_DELIM + rel_path + DIR_DELIM).c_str();
+	std::string rel_path =
+			std::string("client") + DIR_DELIM + "shaders" + DIR_DELIM + "Irrlicht";
+	params.OGLES2ShaderPath =
+			(porting::path_share + DIR_DELIM + rel_path + DIR_DELIM).c_str();
 #endif
 
 	m_device = createDeviceEx(params);
@@ -144,8 +145,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	s_singleton = this;
 
-	auto skin = createSkin(m_device->getGUIEnvironment(),
-			gui::EGST_WINDOWS_METALLIC, driver);
+	auto skin =
+			createSkin(m_device->getGUIEnvironment(), gui::EGST_WINDOWS_METALLIC, driver);
 	m_device->getGUIEnvironment()->setSkin(skin);
 	skin->drop();
 }
@@ -206,15 +207,15 @@ bool RenderingEngine::print_video_modes()
 		for (s32 i = 0; i < videomode_count; ++i) {
 			videomode_res = videomode_list->getVideoModeResolution(i);
 			videomode_depth = videomode_list->getVideoModeDepth(i);
-			std::cout << videomode_res.Width << "x" << videomode_res.Height
-				  << "x" << videomode_depth << std::endl;
+			std::cout << videomode_res.Width << "x" << videomode_res.Height << "x"
+					  << videomode_depth << std::endl;
 		}
 
 		std::cout << _("Active video mode (WxHxD):") << std::endl;
 		videomode_res = videomode_list->getDesktopResolution();
 		videomode_depth = videomode_list->getDesktopDepth();
 		std::cout << videomode_res.Width << "x" << videomode_res.Height << "x"
-			  << videomode_depth << std::endl;
+				  << videomode_depth << std::endl;
 	}
 
 	nulldevice->drop();
@@ -234,8 +235,7 @@ bool RenderingEngine::setupTopLevelWindow(const std::string &name)
 
 	/* Setting general properties for the top level window */
 	verbosestream << "Client: Configuring general top level"
-		<< " window properties"
-		<< std::endl;
+				  << " window properties" << std::endl;
 	bool result = setWindowIcon();
 
 	return result;
@@ -249,13 +249,12 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	Display *x11_dpl = reinterpret_cast<Display *>(exposedData.OpenGLLinux.X11Display);
 	if (x11_dpl == NULL) {
 		warningstream << "Client: Could not find X11 Display in ExposedVideoData"
-			<< std::endl;
+					  << std::endl;
 		return;
 	}
 
 	verbosestream << "Client: Configuring X11-specific top level"
-		<< " window properties"
-		<< std::endl;
+				  << " window properties" << std::endl;
 
 
 	Window x11_win = reinterpret_cast<Window>(exposedData.OpenGLLinux.X11Window);
@@ -284,10 +283,9 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	// more, using gtk/gdk as the model it would seem that not using a FQDN is
 	// not an issue for modern Xorg window managers.
 
-	verbosestream << "Client: Setting Xorg window manager Properties"
-		<< std::endl;
+	verbosestream << "Client: Setting Xorg window manager Properties" << std::endl;
 
-	XSetWMProperties (x11_dpl, x11_win, NULL, NULL, NULL, 0, NULL, NULL, NULL);
+	XSetWMProperties(x11_dpl, x11_win, NULL, NULL, NULL, 0, NULL, NULL, NULL);
 
 	// Set the _NET_WM_PID window property according to the EWMH spec. _NET_WM_PID
 	// (in conjunction with WM_CLIENT_MACHINE) can be used by window managers to
@@ -295,27 +293,24 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 	// window message.
 
 	verbosestream << "Client: Setting Xorg _NET_WM_PID extened window manager property"
-		<< std::endl;
+				  << std::endl;
 
 	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);
 
 	pid_t pid = getpid();
 
-	XChangeProperty(x11_dpl, x11_win, NET_WM_PID,
-			XA_CARDINAL, 32, PropModeReplace,
-			reinterpret_cast<unsigned char *>(&pid),1);
+	XChangeProperty(x11_dpl, x11_win, NET_WM_PID, XA_CARDINAL, 32, PropModeReplace,
+			reinterpret_cast<unsigned char *>(&pid), 1);
 
 	// Set the WM_CLIENT_LEADER window property here. Minetest has only one
 	// window and that window will always be the leader.
 
-	verbosestream << "Client: Setting Xorg WM_CLIENT_LEADER property"
-		<< std::endl;
+	verbosestream << "Client: Setting Xorg WM_CLIENT_LEADER property" << std::endl;
 
 	Atom WM_CLIENT_LEADER = XInternAtom(x11_dpl, "WM_CLIENT_LEADER", false);
 
-	XChangeProperty (x11_dpl, x11_win, WM_CLIENT_LEADER,
-		XA_WINDOW, 32, PropModeReplace,
-		reinterpret_cast<unsigned char *>(&x11_win), 1);
+	XChangeProperty(x11_dpl, x11_win, WM_CLIENT_LEADER, XA_WINDOW, 32, PropModeReplace,
+			reinterpret_cast<unsigned char *>(&x11_win), 1);
 #endif
 }
 
@@ -353,9 +348,9 @@ bool RenderingEngine::setWindowIcon()
 	// compiled with RUN_IN_PLACE. Don't break with this and
 	// also try the path_share location.
 	return setXorgWindowIconFromPath(
-			       ICON_DIR "/hicolor/128x128/apps/" PROJECT_NAME ".png") ||
-	       setXorgWindowIconFromPath(porting::path_share + "/misc/" PROJECT_NAME
-							       "-xorg-icon-128.png");
+				   ICON_DIR "/hicolor/128x128/apps/" PROJECT_NAME ".png") ||
+			setXorgWindowIconFromPath(
+					porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
 #endif
 #elif defined(_WIN32)
 	HWND hWnd; // Window handle
@@ -365,13 +360,12 @@ bool RenderingEngine::setWindowIcon()
 	// Load the ICON from resource file
 	const HICON hicon = LoadIcon(GetModuleHandle(NULL),
 			MAKEINTRESOURCE(130) // The ID of the ICON defined in
-					     // winresource.rc
+			// winresource.rc
 	);
 
 	if (hicon) {
 		SendMessage(hWnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hicon));
-		SendMessage(hWnd, WM_SETICON, ICON_SMALL,
-				reinterpret_cast<LPARAM>(hicon));
+		SendMessage(hWnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hicon));
 		return true;
 	}
 	return false;
@@ -387,16 +381,15 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 	video::IImageLoader *image_loader = NULL;
 	u32 cnt = driver->getImageLoaderCount();
 	for (u32 i = 0; i < cnt; i++) {
-		if (driver->getImageLoader(i)->isALoadableFileExtension(
-				    icon_file.c_str())) {
+		if (driver->getImageLoader(i)->isALoadableFileExtension(icon_file.c_str())) {
 			image_loader = driver->getImageLoader(i);
 			break;
 		}
 	}
 
 	if (!image_loader) {
-		warningstream << "Could not find image loader for file '" << icon_file
-			      << "'" << std::endl;
+		warningstream << "Could not find image loader for file '" << icon_file << "'"
+					  << std::endl;
 		return false;
 	}
 
@@ -404,16 +397,14 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 			m_device->getFileSystem()->createAndOpenFile(icon_file.c_str());
 
 	if (!icon_f) {
-		warningstream << "Could not load icon file '" << icon_file << "'"
-			      << std::endl;
+		warningstream << "Could not load icon file '" << icon_file << "'" << std::endl;
 		return false;
 	}
 
 	video::IImage *img = image_loader->loadImage(icon_f);
 
 	if (!img) {
-		warningstream << "Could not load icon file '" << icon_file << "'"
-			      << std::endl;
+		warningstream << "Could not load icon file '" << icon_file << "'" << std::endl;
 		icon_f->drop();
 		return false;
 	}
@@ -447,8 +438,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 	Display *x11_dpl = (Display *)video_data.OpenGLLinux.X11Display;
 
 	if (x11_dpl == NULL) {
-		warningstream << "Could not find x11 display for setting its icon."
-			      << std::endl;
+		warningstream << "Could not find x11 display for setting its icon." << std::endl;
 		delete[] icon_buffer;
 		return false;
 	}
@@ -472,8 +462,8 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
 */
 void RenderingEngine::_draw_load_screen(const std::wstring &text,
-		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
-		int percent, bool clouds)
+		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime, int percent,
+		bool clouds)
 {
 	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
 
@@ -489,8 +479,7 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 	if (cloud_menu_background) {
 		g_menuclouds->step(dtime * 3);
 		g_menuclouds->render();
-		get_video_driver()->beginScene(
-				true, true, video::SColor(255, 140, 186, 250));
+		get_video_driver()->beginScene(true, true, video::SColor(255, 140, 186, 250));
 		g_menucloudsmgr->drawAll();
 	} else
 		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
@@ -498,13 +487,11 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 	// draw progress bar
 	if ((percent >= 0) && (percent <= 100)) {
 		video::ITexture *progress_img = tsrc->getTexture("progress_bar.png");
-		video::ITexture *progress_img_bg =
-				tsrc->getTexture("progress_bar_bg.png");
+		video::ITexture *progress_img_bg = tsrc->getTexture("progress_bar_bg.png");
 
 		if (progress_img && progress_img_bg) {
 #ifndef __ANDROID__
-			const core::dimension2d<u32> &img_size =
-					progress_img_bg->getSize();
+			const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
 			u32 imgW = rangelim(img_size.Width, 200, 600);
 			u32 imgH = rangelim(img_size.Height, 24, 72);
 #else
@@ -513,24 +500,18 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 			u32 imgW = screensize.X / 2.2f;
 			u32 imgH = floor(imgW * imgRatio);
 #endif
-			v2s32 img_pos((screensize.X - imgW) / 2,
-					(screensize.Y - imgH) / 2);
+			v2s32 img_pos((screensize.X - imgW) / 2, (screensize.Y - imgH) / 2);
 
 			draw2DImageFilterScaled(get_video_driver(), progress_img_bg,
-					core::rect<s32>(img_pos.X, img_pos.Y,
-							img_pos.X + imgW,
-							img_pos.Y + imgH),
-					core::rect<s32>(0, 0, img_size.Width,
-							img_size.Height),
-					0, 0, true);
+					core::rect<s32>(
+							img_pos.X, img_pos.Y, img_pos.X + imgW, img_pos.Y + imgH),
+					core::rect<s32>(0, 0, img_size.Width, img_size.Height), 0, 0, true);
 
 			draw2DImageFilterScaled(get_video_driver(), progress_img,
 					core::rect<s32>(img_pos.X, img_pos.Y,
-							img_pos.X + (percent * imgW) / 100,
-							img_pos.Y + imgH),
-					core::rect<s32>(0, 0,
-							(percent * img_size.Width) / 100,
-							img_size.Height),
+							img_pos.X + (percent * imgW) / 100, img_pos.Y + imgH),
+					core::rect<s32>(
+							0, 0, (percent * img_size.Width) / 100, img_size.Height),
 					0, 0, true);
 		}
 	}
@@ -543,15 +524,14 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 /*
 	Draws the menu scene including (optional) cloud background.
 */
-void RenderingEngine::_draw_menu_scene(gui::IGUIEnvironment *guienv,
-		float dtime, bool clouds)
+void RenderingEngine::_draw_menu_scene(
+		gui::IGUIEnvironment *guienv, float dtime, bool clouds)
 {
 	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
 	if (cloud_menu_background) {
 		g_menuclouds->step(dtime * 3);
 		g_menuclouds->render();
-		get_video_driver()->beginScene(
-				true, true, video::SColor(255, 140, 186, 250));
+		get_video_driver()->beginScene(true, true, video::SColor(255, 140, 186, 250));
 		g_menucloudsmgr->drawAll();
 	} else
 		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
@@ -612,14 +592,14 @@ void RenderingEngine::_draw_scene(video::SColor skycolor, bool show_hud,
 const char *RenderingEngine::getVideoDriverName(irr::video::E_DRIVER_TYPE type)
 {
 	static const char *driver_ids[] = {
-			"null",
-			"software",
-			"burningsvideo",
-			"direct3d8",
-			"direct3d9",
-			"opengl",
-			"ogles1",
-			"ogles2",
+		"null",
+		"software",
+		"burningsvideo",
+		"direct3d8",
+		"direct3d9",
+		"opengl",
+		"ogles1",
+		"ogles2",
 	};
 
 	return driver_ids[type];
@@ -628,14 +608,14 @@ const char *RenderingEngine::getVideoDriverName(irr::video::E_DRIVER_TYPE type)
 const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type)
 {
 	static const char *driver_names[] = {
-			"NULL Driver",
-			"Software Renderer",
-			"Burning's Video",
-			"Direct3D 8",
-			"Direct3D 9",
-			"OpenGL",
-			"OpenGL ES1",
-			"OpenGL ES2",
+		"NULL Driver",
+		"Software Renderer",
+		"Burning's Video",
+		"Direct3D 8",
+		"Direct3D 9",
+		"OpenGL",
+		"OpenGL ES1",
+		"OpenGL ES2",
 	};
 
 	return driver_names[type];

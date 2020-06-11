@@ -35,15 +35,9 @@ const int ID_change = 259;
 const int ID_message = 260;
 const int ID_cancel = 261;
 
-GUIPasswordChange::GUIPasswordChange(gui::IGUIEnvironment* env,
-		gui::IGUIElement* parent, s32 id,
-		IMenuManager *menumgr,
-		Client* client,
-		ISimpleTextureSource *tsrc
-):
-	GUIModalMenu(env, parent, id, menumgr),
-	m_client(client),
-	m_tsrc(tsrc)
+GUIPasswordChange::GUIPasswordChange(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
+		s32 id, IMenuManager *menumgr, Client *client, ISimpleTextureSource *tsrc)
+	: GUIModalMenu(env, parent, id, menumgr), m_client(client), m_tsrc(tsrc)
 {
 }
 
@@ -80,12 +74,9 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		Calculate new sizes and positions
 	*/
 	const float s = m_gui_scale;
-	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 580 * s / 2,
-		screensize.Y / 2 - 300 * s / 2,
-		screensize.X / 2 + 580 * s / 2,
-		screensize.Y / 2 + 300 * s / 2
-	);
+	DesiredRect = core::rect<s32>(screensize.X / 2 - 580 * s / 2,
+			screensize.Y / 2 - 300 * s / 2, screensize.X / 2 + 580 * s / 2,
+			screensize.Y / 2 + 300 * s / 2);
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();
@@ -165,8 +156,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		rect += topleft_client + v2s32(35 * s, ypos);
 		text = wgettext("Passwords do not match!");
 		IGUIElement *e =
-			Environment->addStaticText(
-			text, rect, false, true, this, ID_message);
+				Environment->addStaticText(text, rect, false, true, this, ID_message);
 		e->setVisible(false);
 		delete[] text;
 	}
@@ -233,11 +223,9 @@ bool GUIPasswordChange::OnEvent(const SEvent &event)
 		}
 	}
 	if (event.EventType == EET_GUI_EVENT) {
-		if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST &&
-				isVisible()) {
+		if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST && isVisible()) {
 			if (!canTakeFocus(event.GUIEvent.Element)) {
-				dstream << "GUIPasswordChange: Not allowing focus change."
-					<< std::endl;
+				dstream << "GUIPasswordChange: Not allowing focus change." << std::endl;
 				// Returning true disables focus change
 				return true;
 			}

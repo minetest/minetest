@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace server
 {
-
 void ActiveObjectMgr::clear(const std::function<bool(ServerActiveObject *, u16)> &cb)
 {
 	std::vector<u16> objects_to_remove;
@@ -128,8 +127,7 @@ void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
 }
 
 void ActiveObjectMgr::getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 radius,
-		f32 player_radius, std::set<u16> &current_objects,
-		std::queue<u16> &added_objects)
+		f32 player_radius, std::set<u16> &current_objects, std::queue<u16> &added_objects)
 {
 	/*
 		Go through the object list,

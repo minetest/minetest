@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 
 RenderingCoreStereo::RenderingCoreStereo(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud)
+		IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: RenderingCore(_device, _client, _hud)
 {
 	eye_offset = BS * g_settings->getFloat("3d_paralax_strength");
@@ -39,8 +39,7 @@ void RenderingCoreStereo::beforeDraw()
 void RenderingCoreStereo::useEye(bool right)
 {
 	core::matrix4 move;
-	move.setTranslation(
-			core::vector3df(right ? eye_offset : -eye_offset, 0.0f, 0.0f));
+	move.setTranslation(core::vector3df(right ? eye_offset : -eye_offset, 0.0f, 0.0f));
 	cam->setPosition((base_transform * move).getTranslation());
 }
 

@@ -41,7 +41,8 @@ content_t t_CONTENT_BRICK;
 //// TestGameDef
 ////
 
-class TestGameDef : public IGameDef {
+class TestGameDef : public IGameDef
+{
 public:
 	TestGameDef();
 	~TestGameDef();
@@ -67,7 +68,7 @@ public:
 		static std::vector<ModSpec> testmodspec;
 		return testmodspec;
 	}
-	virtual const ModSpec* getModSpec(const std::string &modname) const { return NULL; }
+	virtual const ModSpec *getModSpec(const std::string &modname) const { return NULL; }
 	virtual std::string getModStoragePath() const { return "."; }
 	virtual bool registerModStorage(ModMetadata *meta) { return true; }
 	virtual void unregisterModStorage(const std::string &name) {}
@@ -93,8 +94,7 @@ private:
 };
 
 
-TestGameDef::TestGameDef() :
-	m_modchannel_mgr(new ModChannelMgr())
+TestGameDef::TestGameDef() : m_modchannel_mgr(new ModChannelMgr())
 {
 	m_itemdef = createItemDefManager();
 	m_nodedef = createNodeDefManager();
@@ -125,9 +125,9 @@ void TestGameDef::defineSomeNodes()
 	itemdef.description = "Stone";
 	itemdef.groups["cracky"] = 3;
 	itemdef.inventory_image = "[inventorycube"
-		"{default_stone.png"
-		"{default_stone.png"
-		"{default_stone.png";
+							  "{default_stone.png"
+							  "{default_stone.png"
+							  "{default_stone.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
 	for (TileDef &tiledef : f.tiledef)
@@ -143,14 +143,14 @@ void TestGameDef::defineSomeNodes()
 	itemdef.description = "Dirt with grass";
 	itemdef.groups["crumbly"] = 3;
 	itemdef.inventory_image = "[inventorycube"
-		"{default_grass.png"
-		"{default_dirt.png&default_grass_side.png"
-		"{default_dirt.png&default_grass_side.png";
+							  "{default_grass.png"
+							  "{default_dirt.png&default_grass_side.png"
+							  "{default_dirt.png&default_grass_side.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
 	f.tiledef[0].name = "default_grass.png";
 	f.tiledef[1].name = "default_dirt.png";
-	for(int i = 2; i < 6; i++)
+	for (int i = 2; i < 6; i++)
 		f.tiledef[i].name = "default_dirt.png^default_grass_side.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
@@ -165,7 +165,7 @@ void TestGameDef::defineSomeNodes()
 	f.param_type = CPT_LIGHT;
 	f.light_propagates = true;
 	f.sunlight_propagates = true;
-	f.light_source = LIGHT_MAX-1;
+	f.light_source = LIGHT_MAX - 1;
 	idef->registerItem(itemdef);
 	t_CONTENT_TORCH = ndef->set(f.name, f);
 
@@ -175,9 +175,9 @@ void TestGameDef::defineSomeNodes()
 	itemdef.name = "default:water";
 	itemdef.description = "Water";
 	itemdef.inventory_image = "[inventorycube"
-		"{default_water.png"
-		"{default_water.png"
-		"{default_water.png";
+							  "{default_water.png"
+							  "{default_water.png"
+							  "{default_water.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
 	f.alpha = 128;
@@ -196,15 +196,15 @@ void TestGameDef::defineSomeNodes()
 	itemdef.name = "default:lava";
 	itemdef.description = "Lava";
 	itemdef.inventory_image = "[inventorycube"
-		"{default_lava.png"
-		"{default_lava.png"
-		"{default_lava.png";
+							  "{default_lava.png"
+							  "{default_lava.png"
+							  "{default_lava.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
 	f.alpha = 128;
 	f.liquid_type = LIQUID_SOURCE;
 	f.liquid_viscosity = 7;
-	f.light_source = LIGHT_MAX-1;
+	f.light_source = LIGHT_MAX - 1;
 	f.is_ground_content = true;
 	f.groups["liquids"] = 3;
 	for (TileDef &tiledef : f.tiledef)
@@ -220,9 +220,9 @@ void TestGameDef::defineSomeNodes()
 	itemdef.description = "Brick";
 	itemdef.groups["cracky"] = 3;
 	itemdef.inventory_image = "[inventorycube"
-		"{default_brick.png"
-		"{default_brick.png"
-		"{default_brick.png";
+							  "{default_brick.png"
+							  "{default_brick.png"
+							  "{default_brick.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
 	for (TileDef &tiledef : f.tiledef)
@@ -242,8 +242,8 @@ bool TestGameDef::leaveModChannel(const std::string &channel)
 	return m_modchannel_mgr->leaveChannel(channel, PEER_ID_SERVER);
 }
 
-bool TestGameDef::sendModChannelMessage(const std::string &channel,
-	const std::string &message)
+bool TestGameDef::sendModChannelMessage(
+		const std::string &channel, const std::string &message)
 {
 	if (!m_modchannel_mgr->channelRegistered(channel))
 		return false;
@@ -262,9 +262,9 @@ bool run_tests()
 
 	g_logger.setLevelSilenced(LL_ERROR, true);
 
-	u32 num_modules_failed     = 0;
+	u32 num_modules_failed = 0;
 	u32 num_total_tests_failed = 0;
-	u32 num_total_tests_run    = 0;
+	u32 num_total_tests_run = 0;
 	std::vector<TestBase *> &testmods = TestManager::getTestModules();
 	for (size_t i = 0; i != testmods.size(); i++) {
 		if (!testmods[i]->testModule(&gamedef))
@@ -280,16 +280,15 @@ bool run_tests()
 
 	const char *overall_status = (num_modules_failed == 0) ? "PASSED" : "FAILED";
 
-	rawstream
-		<< "++++++++++++++++++++++++++++++++++++++++"
-		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
-		<< "Unit Test Results: " << overall_status << std::endl
-		<< "    " << num_modules_failed << " / " << testmods.size()
-		<< " failed modules (" << num_total_tests_failed << " / "
-		<< num_total_tests_run << " failed individual tests)." << std::endl
-		<< "    Testing took " << tdiff << "ms total." << std::endl
-		<< "++++++++++++++++++++++++++++++++++++++++"
-		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
+	rawstream << "++++++++++++++++++++++++++++++++++++++++"
+			  << "++++++++++++++++++++++++++++++++++++++++" << std::endl
+			  << "Unit Test Results: " << overall_status << std::endl
+			  << "    " << num_modules_failed << " / " << testmods.size()
+			  << " failed modules (" << num_total_tests_failed << " / "
+			  << num_total_tests_run << " failed individual tests)." << std::endl
+			  << "    Testing took " << tdiff << "ms total." << std::endl
+			  << "++++++++++++++++++++++++++++++++++++++++"
+			  << "++++++++++++++++++++++++++++++++++++++++" << std::endl;
 
 	return num_modules_failed;
 }
@@ -308,9 +307,9 @@ bool TestBase::testModule(IGameDef *gamedef)
 
 	u64 tdiff = porting::getTimeMs() - t1;
 	rawstream << "======== Module " << getName() << " "
-		<< (num_tests_failed ? "failed" : "passed") << " (" << num_tests_failed
-		<< " failures / " << num_tests_run << " tests) - " << tdiff
-		<< "ms" << std::endl;
+			  << (num_tests_failed ? "failed" : "passed") << " (" << num_tests_failed
+			  << " failures / " << num_tests_run << " tests) - " << tdiff << "ms"
+			  << std::endl;
 
 	if (!m_test_dir.empty())
 		fs::RecursiveDelete(m_test_dir);

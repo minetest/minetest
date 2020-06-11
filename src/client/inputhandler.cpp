@@ -165,11 +165,11 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		}
 	} else if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
 		static const LogLevel irr_loglev_conv[] = {
-				LL_VERBOSE, // ELL_DEBUG
-				LL_INFO,    // ELL_INFORMATION
-				LL_WARNING, // ELL_WARNING
-				LL_ERROR,   // ELL_ERROR
-				LL_NONE,    // ELL_NONE
+			LL_VERBOSE, // ELL_DEBUG
+			LL_INFO, // ELL_INFORMATION
+			LL_WARNING, // ELL_WARNING
+			LL_ERROR, // ELL_ERROR
+			LL_NONE, // ELL_NONE
 		};
 		assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
 		g_logger.log(irr_loglev_conv[event.LogEvent.Level],

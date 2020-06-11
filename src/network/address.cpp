@@ -94,13 +94,12 @@ bool Address::operator==(const Address &address)
 		return false;
 
 	if (m_addr_family == AF_INET) {
-		return m_address.ipv4.sin_addr.s_addr ==
-		       address.m_address.ipv4.sin_addr.s_addr;
+		return m_address.ipv4.sin_addr.s_addr == address.m_address.ipv4.sin_addr.s_addr;
 	}
 
 	if (m_addr_family == AF_INET6) {
 		return memcmp(m_address.ipv6.sin6_addr.s6_addr,
-				       address.m_address.ipv6.sin6_addr.s6_addr, 16) == 0;
+					   address.m_address.ipv6.sin6_addr.s6_addr, 16) == 0;
 	}
 
 	return false;
@@ -175,7 +174,7 @@ std::string Address::serializeString() const
 		std::ostringstream os;
 		for (int i = 0; i < 16; i += 2) {
 			u16 section = (m_address.ipv6.sin6_addr.s6_addr[i] << 8) |
-				      (m_address.ipv6.sin6_addr.s6_addr[i + 1]);
+					(m_address.ipv6.sin6_addr.s6_addr[i + 1]);
 			os << std::hex << section;
 			if (i < 14)
 				os << ":";
@@ -186,10 +185,9 @@ std::string Address::serializeString() const
 #else
 	char str[INET6_ADDRSTRLEN];
 	if (inet_ntop(m_addr_family,
-			    (m_addr_family == AF_INET)
-					    ? (void *)&(m_address.ipv4.sin_addr)
-					    : (void *)&(m_address.ipv6.sin6_addr),
-			    str, INET6_ADDRSTRLEN) == NULL) {
+				(m_addr_family == AF_INET) ? (void *)&(m_address.ipv4.sin_addr) :
+											 (void *)&(m_address.ipv6.sin6_addr),
+				str, INET6_ADDRSTRLEN) == NULL) {
 		return std::string("");
 	}
 	return std::string(str);
@@ -228,7 +226,7 @@ bool Address::isZero() const
 	}
 
 	if (m_addr_family == AF_INET6) {
-		static const char zero[16] = {0};
+		static const char zero[16] = { 0 };
 		return memcmp(m_address.ipv6.sin6_addr.s6_addr, zero, 16) == 0;
 	}
 	return false;
@@ -275,15 +273,15 @@ void Address::print(std::ostream *s) const
 bool Address::isLocalhost() const
 {
 	if (isIPv6()) {
-		static const unsigned char localhost_bytes[] = {
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-		static const unsigned char mapped_ipv4_localhost[] = {
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0x7f, 0, 0, 0};
+		static const unsigned char localhost_bytes[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 1 };
+		static const unsigned char mapped_ipv4_localhost[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0xff, 0xff, 0x7f, 0, 0, 0 };
 
 		auto addr = m_address.ipv6.sin6_addr.s6_addr;
 
 		return memcmp(addr, localhost_bytes, 16) == 0 ||
-			memcmp(addr, mapped_ipv4_localhost, 13) == 0;
+				memcmp(addr, mapped_ipv4_localhost, 13) == 0;
 	}
 
 	return (m_address.ipv4.sin_addr.s_addr & 0xFF) == 0x7f;

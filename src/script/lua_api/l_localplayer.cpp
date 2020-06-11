@@ -217,7 +217,7 @@ int LuaLocalPlayer::l_get_control(lua_State *L)
 	LocalPlayer *player = getobject(L, 1);
 	const PlayerControl &c = player->getPlayerControl();
 
-	auto set = [L] (const char *name, bool value) {
+	auto set = [L](const char *name, bool value) {
 		lua_pushboolean(L, value);
 		lua_setfield(L, -2, name);
 	};
@@ -447,41 +447,31 @@ void LuaLocalPlayer::Register(lua_State *L)
 	lua_pop(L, 1); // Drop metatable
 
 	luaL_openlib(L, 0, methods, 0); // fill methodtable
-	lua_pop(L, 1);			// Drop methodtable
+	lua_pop(L, 1); // Drop methodtable
 }
 
 const char LuaLocalPlayer::className[] = "LocalPlayer";
-const luaL_Reg LuaLocalPlayer::methods[] = {
-		luamethod(LuaLocalPlayer, get_velocity),
-		luamethod(LuaLocalPlayer, get_hp),
-		luamethod(LuaLocalPlayer, get_name),
-		luamethod(LuaLocalPlayer, get_wield_index),
-		luamethod(LuaLocalPlayer, get_wielded_item),
-		luamethod(LuaLocalPlayer, is_attached),
-		luamethod(LuaLocalPlayer, is_touching_ground),
-		luamethod(LuaLocalPlayer, is_in_liquid),
-		luamethod(LuaLocalPlayer, is_in_liquid_stable),
-		luamethod(LuaLocalPlayer, get_liquid_viscosity),
-		luamethod(LuaLocalPlayer, is_climbing),
-		luamethod(LuaLocalPlayer, swimming_vertical),
-		luamethod(LuaLocalPlayer, get_physics_override),
-		// TODO: figure our if these are useful in any way
-		luamethod(LuaLocalPlayer, get_last_pos),
-		luamethod(LuaLocalPlayer, get_last_velocity),
-		luamethod(LuaLocalPlayer, get_last_look_horizontal),
-		luamethod(LuaLocalPlayer, get_last_look_vertical),
-		//
-		luamethod(LuaLocalPlayer, get_control),
-		luamethod(LuaLocalPlayer, get_breath),
-		luamethod(LuaLocalPlayer, get_pos),
-		luamethod(LuaLocalPlayer, get_movement_acceleration),
-		luamethod(LuaLocalPlayer, get_movement_speed),
-		luamethod(LuaLocalPlayer, get_movement),
-		luamethod(LuaLocalPlayer, get_armor_groups),
-		luamethod(LuaLocalPlayer, hud_add),
-		luamethod(LuaLocalPlayer, hud_remove),
-		luamethod(LuaLocalPlayer, hud_change),
-		luamethod(LuaLocalPlayer, hud_get),
+const luaL_Reg LuaLocalPlayer::methods[] = { luamethod(LuaLocalPlayer, get_velocity),
+	luamethod(LuaLocalPlayer, get_hp), luamethod(LuaLocalPlayer, get_name),
+	luamethod(LuaLocalPlayer, get_wield_index),
+	luamethod(LuaLocalPlayer, get_wielded_item), luamethod(LuaLocalPlayer, is_attached),
+	luamethod(LuaLocalPlayer, is_touching_ground),
+	luamethod(LuaLocalPlayer, is_in_liquid),
+	luamethod(LuaLocalPlayer, is_in_liquid_stable),
+	luamethod(LuaLocalPlayer, get_liquid_viscosity),
+	luamethod(LuaLocalPlayer, is_climbing), luamethod(LuaLocalPlayer, swimming_vertical),
+	luamethod(LuaLocalPlayer, get_physics_override),
+	// TODO: figure our if these are useful in any way
+	luamethod(LuaLocalPlayer, get_last_pos), luamethod(LuaLocalPlayer, get_last_velocity),
+	luamethod(LuaLocalPlayer, get_last_look_horizontal),
+	luamethod(LuaLocalPlayer, get_last_look_vertical),
+	//
+	luamethod(LuaLocalPlayer, get_control), luamethod(LuaLocalPlayer, get_breath),
+	luamethod(LuaLocalPlayer, get_pos),
+	luamethod(LuaLocalPlayer, get_movement_acceleration),
+	luamethod(LuaLocalPlayer, get_movement_speed),
+	luamethod(LuaLocalPlayer, get_movement), luamethod(LuaLocalPlayer, get_armor_groups),
+	luamethod(LuaLocalPlayer, hud_add), luamethod(LuaLocalPlayer, hud_remove),
+	luamethod(LuaLocalPlayer, hud_change), luamethod(LuaLocalPlayer, hud_get),
 
-		{0, 0}
-};
+	{ 0, 0 } };

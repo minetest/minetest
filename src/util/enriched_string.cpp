@@ -29,8 +29,8 @@ EnrichedString::EnrichedString()
 	clear();
 }
 
-EnrichedString::EnrichedString(const std::wstring &string,
-		const std::vector<SColor> &colors)
+EnrichedString::EnrichedString(
+		const std::wstring &string, const std::vector<SColor> &colors)
 {
 	clear();
 	m_string = string;
@@ -68,8 +68,7 @@ void EnrichedString::operator=(const wchar_t *str)
 void EnrichedString::addAtEnd(const std::wstring &s, const SColor &initial_color)
 {
 	SColor color(initial_color);
-	bool use_default = (m_default_length == m_string.size() &&
-		color == m_default_color);
+	bool use_default = (m_default_length == m_string.size() && color == m_default_color);
 
 	size_t i = 0;
 	while (i < s.length()) {
@@ -171,10 +170,8 @@ EnrichedString EnrichedString::substr(size_t pos, size_t len) const
 	if (len == std::string::npos || pos + len > m_string.length())
 		len = m_string.length() - pos;
 
-	EnrichedString str(
-		m_string.substr(pos, len),
-		std::vector<SColor>(m_colors.begin() + pos, m_colors.begin() + pos + len)
-	);
+	EnrichedString str(m_string.substr(pos, len),
+			std::vector<SColor>(m_colors.begin() + pos, m_colors.begin() + pos + len));
 
 	str.m_has_background = m_has_background;
 	str.m_background = m_background;

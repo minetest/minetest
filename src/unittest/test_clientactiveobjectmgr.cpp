@@ -74,8 +74,7 @@ void TestClientActiveObjectMgr::testFreeID()
 		aoids.push_back(tcao->getId());
 
 		// Ensure next id is not in registered list
-		UASSERT(std::find(aoids.begin(), aoids.end(), caomgr.getFreeId()) ==
-				aoids.end());
+		UASSERT(std::find(aoids.begin(), aoids.end(), caomgr.getFreeId()) == aoids.end());
 	}
 
 	caomgr.clear();

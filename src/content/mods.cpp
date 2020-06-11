@@ -34,8 +34,7 @@ bool parseDependsString(std::string &dep, std::unordered_set<char> &symbols)
 	dep = trim(dep);
 	symbols.clear();
 	size_t pos = dep.size();
-	while (pos > 0 &&
-			!string_allowed(dep.substr(pos - 1, 1), MODNAME_ALLOWED_CHARS)) {
+	while (pos > 0 && !string_allowed(dep.substr(pos - 1, 1), MODNAME_ALLOWED_CHARS)) {
 		// last character is a symbol, not part of the modname
 		symbols.insert(dep[pos - 1]);
 		--pos;
@@ -130,8 +129,7 @@ void parseModContents(ModSpec &spec)
 		if (info.exists("description")) {
 			spec.desc = info.get("description");
 		} else {
-			std::ifstream is((spec.path + DIR_DELIM + "description.txt")
-							 .c_str());
+			std::ifstream is((spec.path + DIR_DELIM + "description.txt").c_str());
 			spec.desc = std::string((std::istreambuf_iterator<char>(is)),
 					std::istreambuf_iterator<char>());
 		}
@@ -192,8 +190,7 @@ ModConfiguration::ModConfiguration(const std::string &worldpath)
 void ModConfiguration::printUnsatisfiedModsError() const
 {
 	for (const ModSpec &mod : m_unsatisfied_mods) {
-		errorstream << "mod \"" << mod.name
-			    << "\" has unsatisfied dependencies: ";
+		errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
 		for (const std::string &unsatisfied_depend : mod.unsatisfied_depends)
 			errorstream << " \"" << unsatisfied_depend << "\"";
 		errorstream << std::endl;
@@ -235,12 +232,10 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 				// BAD CASE: name conflict in different levels.
 				u32 oldindex = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
-				warningstream << "Mod name conflict detected: \""
-					      << mod.name << "\"" << std::endl
-					      << "Will not load: " << oldmod.path
-					      << std::endl
-					      << "Overridden by: " << mod.path
-					      << std::endl;
+				warningstream << "Mod name conflict detected: \"" << mod.name << "\""
+							  << std::endl
+							  << "Will not load: " << oldmod.path << std::endl
+							  << "Overridden by: " << mod.path << std::endl;
 				m_unsatisfied_mods[oldindex] = mod;
 
 				// If there was a "VERY BAD CASE" name conflict
@@ -250,12 +245,10 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 				// VERY BAD CASE: name conflict in the same level.
 				u32 oldindex = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
-				warningstream << "Mod name conflict detected: \""
-					      << mod.name << "\"" << std::endl
-					      << "Will not load: " << oldmod.path
-					      << std::endl
-					      << "Will not load: " << mod.path
-					      << std::endl;
+				warningstream << "Mod name conflict detected: \"" << mod.name << "\""
+							  << std::endl
+							  << "Will not load: " << oldmod.path << std::endl
+							  << "Will not load: " << mod.path << std::endl;
 				m_unsatisfied_mods[oldindex] = mod;
 				m_name_conflicts.insert(mod.name);
 			}
@@ -382,8 +375,8 @@ void ModConfiguration::resolveDependencies()
 }
 
 #ifndef SERVER
-ClientModConfiguration::ClientModConfiguration(const std::string &path) :
-		ModConfiguration(path)
+ClientModConfiguration::ClientModConfiguration(const std::string &path)
+	: ModConfiguration(path)
 {
 	std::set<std::string> paths;
 	std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
@@ -408,32 +401,31 @@ void ModMetadata::clear()
 bool ModMetadata::save(const std::string &root_path)
 {
 	Json::Value json;
-	for (StringMap::const_iterator it = m_stringvars.begin();
-			it != m_stringvars.end(); ++it) {
+	for (StringMap::const_iterator it = m_stringvars.begin(); it != m_stringvars.end();
+			++it) {
 		json[it->first] = it->second;
 	}
 
 	if (!fs::PathExists(root_path)) {
 		if (!fs::CreateAllDirs(root_path)) {
-			errorstream << "ModMetadata[" << m_mod_name
-				    << "]: Unable to save. '" << root_path
-				    << "' tree cannot be created." << std::endl;
+			errorstream << "ModMetadata[" << m_mod_name << "]: Unable to save. '"
+						<< root_path << "' tree cannot be created." << std::endl;
 			return false;
 		}
 	} else if (!fs::IsDir(root_path)) {
-		errorstream << "ModMetadata[" << m_mod_name << "]: Unable to save. '"
-			    << root_path << "' is not a directory." << std::endl;
+		errorstream << "ModMetadata[" << m_mod_name << "]: Unable to save. '" << root_path
+					<< "' is not a directory." << std::endl;
 		return false;
 	}
 
-	bool w_ok = fs::safeWriteToFile(
-			root_path + DIR_DELIM + m_mod_name, fastWriteJson(json));
+	bool w_ok =
+			fs::safeWriteToFile(root_path + DIR_DELIM + m_mod_name, fastWriteJson(json));
 
 	if (w_ok) {
 		m_modified = false;
 	} else {
 		errorstream << "ModMetadata[" << m_mod_name << "]: failed write file."
-			    << std::endl;
+					<< std::endl;
 	}
 	return w_ok;
 }
@@ -442,8 +434,7 @@ bool ModMetadata::load(const std::string &root_path)
 {
 	m_stringvars.clear();
 
-	std::ifstream is((root_path + DIR_DELIM + m_mod_name).c_str(),
-			std::ios_base::binary);
+	std::ifstream is((root_path + DIR_DELIM + m_mod_name).c_str(), std::ios_base::binary);
 	if (!is.good()) {
 		return false;
 	}
@@ -455,9 +446,9 @@ bool ModMetadata::load(const std::string &root_path)
 
 	if (!Json::parseFromStream(builder, is, &root, &errs)) {
 		errorstream << "ModMetadata[" << m_mod_name
-			    << "]: failed read data "
-			       "(Json decoding failure). Message: "
-			    << errs << std::endl;
+					<< "]: failed read data "
+					   "(Json decoding failure). Message: "
+					<< errs << std::endl;
 		return false;
 	}
 

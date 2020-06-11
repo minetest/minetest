@@ -19,14 +19,11 @@
 
 #include "guiPathSelectMenu.h"
 
-GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment* env,
-		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
-		const std::string &title, const std::string &formname,
-		bool is_file_select) :
-	GUIModalMenu(env, parent, id, menumgr),
-	m_title(utf8_to_wide(title)),
-	m_formname(formname),
-	m_file_select_dialog(is_file_select)
+GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
+		s32 id, IMenuManager *menumgr, const std::string &title,
+		const std::string &formname, bool is_file_select)
+	: GUIModalMenu(env, parent, id, menumgr), m_title(utf8_to_wide(title)),
+	  m_formname(formname), m_file_select_dialog(is_file_select)
 {
 }
 
@@ -47,11 +44,10 @@ void GUIFileSelectMenu::regenerateGui(v2u32 screensize)
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 
-	m_fileOpenDialog =
-			Environment->addFileOpenDialog(m_title.c_str(), false, this, -1);
+	m_fileOpenDialog = Environment->addFileOpenDialog(m_title.c_str(), false, this, -1);
 
-	core::position2di pos = core::position2di(screensize.X / 2 - size.Width / 2,
-			screensize.Y / 2 - size.Height / 2);
+	core::position2di pos = core::position2di(
+			screensize.X / 2 - size.Width / 2, screensize.Y / 2 - size.Height / 2);
 	m_fileOpenDialog->setRelativePosition(pos);
 	m_fileOpenDialog->setMinSize(size);
 }
@@ -72,8 +68,7 @@ void GUIFileSelectMenu::acceptInput()
 		if (m_accepted) {
 			std::string path;
 			if (!m_file_select_dialog) {
-				core::string<fschar_t> string =
-						m_fileOpenDialog->getDirectoryName();
+				core::string<fschar_t> string = m_fileOpenDialog->getDirectoryName();
 				path = std::string(string.c_str());
 			} else {
 				path = wide_to_utf8(m_fileOpenDialog->getFileName());

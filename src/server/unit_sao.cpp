@@ -60,8 +60,8 @@ void UnitSAO::setAnimation(
 	m_animation_sent = false;
 }
 
-void UnitSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend,
-		bool *frame_loop)
+void UnitSAO::getAnimation(
+		v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop)
 {
 	*frame_range = m_animation_range;
 	*frame_speed = m_animation_speed;
