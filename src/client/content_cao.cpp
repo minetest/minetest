@@ -920,14 +920,21 @@ void GenericCAO::pushMeshAnimFrame(float dtime)
 	if (m_animated_meshnode) {
 		// Compensate for the time lost remaking the scene node.
 		// Not an exact fix - the time may be a tiny bit ahead.
-		s32 delta = (s32)(dtime / m_animated_meshnode->getAnimationSpeed() + 1);
+		s32 delta = (s32)ceil(dtime * (float)m_animated_meshnode->getAnimationSpeed());
 		// Stash animation frame (with an offset)
 		m_mesh_anim_frame = m_animated_meshnode->getFrameNr() + delta;
-		if ( m_mesh_anim_frame > m_animated_meshnode->getEndFrame()) {
-			if ( m_animated_meshnode->getLoopMode() )
-				m_mesh_anim_frame = m_animated_meshnode->getStartFrame();
+		s32 start = m_animated_meshnode->getStartFrame();
+		s32 end = m_animated_meshnode->getEndFrame();
+		if (m_mesh_anim_frame > end) {
+			s32 length = end - start;
+			if (m_animated_meshnode->getLoopMode() && length > 0) {
+				s32 relative = m_mesh_anim_frame - start;
+				m_mesh_anim_frame = relative % length + start;
+			}
 			else
-				m_mesh_anim_frame = m_animated_meshnode->getEndFrame();
+			{	
+				m_mesh_anim_frame = end;
+			}
 		}
 	}
 }
