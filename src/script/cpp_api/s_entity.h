@@ -41,7 +41,7 @@ public:
 			ServerActiveObject *self, ObjectProperties *prop);
 	void luaentity_Step(u16 id, float dtime,
 			v3f pos, v3f rotation, v3f old_velocity, v3f new_velocity,
-			collisionMoveResult *moveresult);
+			const collisionMoveResult *moveresult);
 	bool luaentity_Punch(u16 id,
 			ServerActiveObject *puncher, float time_from_last_punch,
 			const ToolCapabilities *toolcap, v3f dir, s16 damage);

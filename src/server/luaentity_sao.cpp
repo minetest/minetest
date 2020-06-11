@@ -123,7 +123,7 @@ void LuaEntitySAO::removingFromEnvironment()
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
-	collisionMoveResult moveresult;
+	collisionMoveResult moveresult, *moveresult_p = nullptr;
 	v3f old_velocity;
 	v3f new_velocity;
 
@@ -223,6 +223,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 					pos_max_d, box, m_prop.stepheight, dtime,
 					&p_pos, &p_velocity, p_acceleration,
 					this, m_prop.collideWithObjects);
+			moveresult_p = &moveresult;
 
 			// Apply changes to position, acceleration, and velocity
 			if(!m_velocity_lock) {
@@ -248,7 +249,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if (m_registered) {
 		m_env->getScriptIface()->luaentity_Step(m_id, dtime,
 			m_base_position, m_rotation, new_velocity, old_velocity,
-			m_prop.physical ? &moveresult : nullptr);
+			moveresult_p);
 	}
 
 	if (!send_recommended)
@@ -518,7 +519,7 @@ void LuaEntitySAO::addSpeed(float speed)
 	m_velocity.Z = cos((m_rotation.Y + m_yaw_offset) * core::DEGTORAD) * m_speed;
 }
 
-float LuaEntitySAO::getSpeed()
+float LuaEntitySAO::getSpeed() const
 {
 	return m_speed;
 }
@@ -537,7 +538,7 @@ void LuaEntitySAO::unlockVelocity()
 	m_velocity_lock = false;
 }
 
-bool LuaEntitySAO::isVelocityLocked()
+bool LuaEntitySAO::isVelocityLocked() const
 {
 	return m_velocity_lock;
 }

@@ -49,6 +49,8 @@ if (value < F1000_MIN || value > F1000_MAX) { \
 	" got " << value << ")." << std::endl << traceback; \
 	throw LuaError(error_text.str()); \
 }
+// Note: Unlike the macro above, this is for validation of scalar floating point
+// values that should always be represented as real numbers.
 #define CHECK_FLOAT_RANGE2(value) \
 if (std::isnan(value) || value < F1000_MIN || value > F1000_MAX) { \
 	throw LuaError(std::string("Invalid floating point number.\n") + \

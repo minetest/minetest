@@ -60,10 +60,10 @@ public:
 	void setSpeed(float speed, float yaw_offset);
 	void setSpeedLateral(float speed_x, float speed_y);
 	void addSpeed(float speed);
-	float getSpeed();
+	float getSpeed() const;
 	void lockVelocity();
 	void unlockVelocity();
-	bool isVelocityLocked();
+	bool isVelocityLocked() const;
 	void setVelocity(v3f velocity);
 	void setVelocityHorz(float vel_x, float vel_z);
 	void setVelocityVert(float vel_y);

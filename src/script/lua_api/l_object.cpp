@@ -1084,8 +1084,8 @@ int ObjectRef::l_get_yaw(lua_State *L)
 // turn_by(self, yaw_delta, period, cycles)
 int ObjectRef::l_turn_by(lua_State *L)
 {
-        NO_MAP_LOCK_REQUIRED;
-        ObjectRef *ref = checkobject(L, 1);
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
