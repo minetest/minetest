@@ -291,8 +291,8 @@ struct PlayerHPChangeReason
 
 	PlayerHPChangeReason(Type type) : type(type) {}
 
-	PlayerHPChangeReason(Type type, ServerActiveObject *object) :
-			type(type), object(object)
+	PlayerHPChangeReason(Type type, ServerActiveObject *object)
+		: type(type), object(object)
 	{
 	}
 

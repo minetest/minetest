@@ -23,15 +23,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <SColor.h>
 
-class EnrichedString {
+class EnrichedString
+{
 public:
 	EnrichedString();
 	EnrichedString(const std::wstring &s,
-		const irr::video::SColor &color = irr::video::SColor(255, 255, 255, 255));
+			const irr::video::SColor &color = irr::video::SColor(255, 255, 255, 255));
 	EnrichedString(const wchar_t *str,
-		const irr::video::SColor &color = irr::video::SColor(255, 255, 255, 255));
-	EnrichedString(const std::wstring &string,
-		const std::vector<irr::video::SColor> &colors);
+			const irr::video::SColor &color = irr::video::SColor(255, 255, 255, 255));
+	EnrichedString(
+			const std::wstring &string, const std::vector<irr::video::SColor> &colors);
 	void clear();
 	void operator=(const wchar_t *str);
 	void addAtEnd(const std::wstring &s, const irr::video::SColor &color);
@@ -54,10 +55,7 @@ public:
 
 	void setDefaultColor(const irr::video::SColor &color);
 	void updateDefaultColor();
-	inline const irr::video::SColor &getDefaultColor() const
-	{
-		return m_default_color;
-	}
+	inline const irr::video::SColor &getDefaultColor() const { return m_default_color; }
 
 	inline bool operator==(const EnrichedString &other) const
 	{
@@ -67,23 +65,11 @@ public:
 	{
 		return !(*this == other);
 	}
-	inline bool empty() const
-	{
-		return m_string.empty();
-	}
-	inline size_t size() const
-	{
-		return m_string.size();
-	}
+	inline bool empty() const { return m_string.empty(); }
+	inline size_t size() const { return m_string.size(); }
 
-	inline bool hasBackground() const
-	{
-		return m_has_background;
-	}
-	inline irr::video::SColor getBackground() const
-	{
-		return m_background;
-	}
+	inline bool hasBackground() const { return m_has_background; }
+	inline irr::video::SColor getBackground() const { return m_background; }
 	inline void setBackground(const irr::video::SColor &color)
 	{
 		m_background = color;

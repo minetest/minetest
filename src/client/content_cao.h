@@ -35,7 +35,7 @@ struct Nametag;
 	SmoothTranslator
 */
 
-template<typename T>
+template <typename T>
 struct SmoothTranslator
 {
 	T val_old;
@@ -49,8 +49,7 @@ struct SmoothTranslator
 
 	void init(T current);
 
-	void update(T new_target, bool is_end_position = false,
-		float update_interval = -1);
+	void update(T new_target, bool is_end_position = false, float update_interval = -1);
 
 	void translate(f32 dtime);
 };
@@ -77,7 +76,8 @@ private:
 	//
 	scene::ISceneManager *m_smgr = nullptr;
 	Client *m_client = nullptr;
-	aabb3f m_selection_box = aabb3f(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.);
+	aabb3f m_selection_box =
+			aabb3f(-BS / 3., -BS / 3., -BS / 3., BS / 3., BS / 3., BS / 3.);
 	scene::IMeshSceneNode *m_meshnode = nullptr;
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode = nullptr;
 	WieldMeshSceneNode *m_wield_meshnode = nullptr;
@@ -92,7 +92,7 @@ private:
 	SmoothTranslator<v3f> pos_translator;
 	SmoothTranslatorWrappedv3f rot_translator;
 	// Spritesheet/animation stuff
-	v2f m_tx_size = v2f(1,1);
+	v2f m_tx_size = v2f(1, 1);
 	v2s16 m_tx_basepos;
 	bool m_initial_tx_basepos_set = false;
 	bool m_tx_select_horiz_by_yawpitch = false;
@@ -137,19 +137,13 @@ public:
 
 	~GenericCAO();
 
-	static ClientActiveObject* create(Client *client, ClientEnvironment *env)
+	static ClientActiveObject *create(Client *client, ClientEnvironment *env)
 	{
 		return new GenericCAO(client, env);
 	}
 
-	inline ActiveObjectType getType() const
-	{
-		return ACTIVEOBJECT_TYPE_GENERIC;
-	}
-	inline const ItemGroupList &getGroups() const
-	{
-		return m_armor_groups;
-	}
+	inline ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
+	inline const ItemGroupList &getGroups() const { return m_armor_groups; }
 	void initialize(const std::string &data);
 
 	void processInitData(const std::string &data);
@@ -162,10 +156,7 @@ public:
 
 	const v3f getPosition() const;
 
-	void setPosition(const v3f &pos)
-	{
-		pos_translator.val_current = pos;
-	}
+	void setPosition(const v3f &pos) { pos_translator.val_current = pos; }
 
 	inline const v3f &getRotation() const { return m_rotation; }
 
@@ -194,47 +185,35 @@ public:
 		return m_matrixnode->getAbsoluteTransformation();
 	}
 
-	inline f32 getStepHeight() const
-	{
-		return m_prop.stepheight;
-	}
+	inline f32 getStepHeight() const { return m_prop.stepheight; }
 
-	inline bool isLocalPlayer() const
-	{
-		return m_is_local_player;
-	}
+	inline bool isLocalPlayer() const { return m_is_local_player; }
 
-	inline bool isVisible() const
-	{
-		return m_is_visible;
-	}
+	inline bool isVisible() const { return m_is_visible; }
 
-	inline void setVisible(bool toset)
-	{
-		m_is_visible = toset;
-	}
+	inline void setVisible(bool toset) { m_is_visible = toset; }
 
 	void setChildrenVisible(bool toset);
-	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
-	void getAttachment(int *parent_id, std::string *bone, v3f *position,
-			v3f *rotation) const;
+	void setAttachment(
+			int parent_id, const std::string &bone, v3f position, v3f rotation);
+	void getAttachment(
+			int *parent_id, std::string *bone, v3f *position, v3f *rotation) const;
 	void clearChildAttachments();
 	void clearParentAttachment();
 	void addAttachmentChild(int child_id);
 	void removeAttachmentChild(int child_id);
 	ClientActiveObject *getParent() const;
 	const std::unordered_set<int> &getAttachmentChildIds() const
-	{ return m_attachment_child_ids; }
+	{
+		return m_attachment_child_ids;
+	}
 	void updateAttachments();
 
 	void removeFromScene(bool permanent);
 
 	void addToScene(ITextureSource *tsrc);
 
-	inline void expireVisuals()
-	{
-		m_visuals_expired = true;
-	}
+	inline void expireVisuals() { m_visuals_expired = true; }
 
 	void updateLight(u32 day_night_ratio);
 
@@ -262,13 +241,10 @@ public:
 
 	void processMessage(const std::string &data);
 
-	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
-			float time_from_last_punch=1000000);
+	bool directReportPunch(v3f dir, const ItemStack *punchitem = NULL,
+			float time_from_last_punch = 1000000);
 
 	std::string debugInfoText();
 
-	std::string infoText()
-	{
-		return m_prop.infotext;
-	}
+	std::string infoText() { return m_prop.infotext; }
 };

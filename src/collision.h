@@ -47,7 +47,7 @@ struct CollisionInfo
 
 	CollisionType type = COLLISION_NODE;
 	CollisionAxis axis = COLLISION_AXIS_NONE;
-	v3s16 node_p = v3s16(-32768,-32768,-32768); // COLLISION_NODE
+	v3s16 node_p = v3s16(-32768, -32768, -32768); // COLLISION_NODE
 	ActiveObject *object = nullptr; // COLLISION_OBJECT
 	v3f old_speed;
 	v3f new_speed;
@@ -65,24 +65,19 @@ struct collisionMoveResult
 };
 
 // Moves using a single iteration; speed should not exceed pos_max_d/dtime
-collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
-		f32 pos_max_d, const aabb3f &box_0,
-		f32 stepheight, f32 dtime,
-		v3f *pos_f, v3f *speed_f,
-		v3f accel_f, ActiveObject *self=NULL,
-		bool collideWithObjects=true);
+collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
+		f32 pos_max_d, const aabb3f &box_0, f32 stepheight, f32 dtime, v3f *pos_f,
+		v3f *speed_f, v3f accel_f, ActiveObject *self = NULL,
+		bool collideWithObjects = true);
 
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
 // Returns -1 if no collision, 0 if X collision, 1 if Y collision, 2 if Z collision
 // dtime receives time until first collision, invalid if -1 is returned
 CollisionAxis axisAlignedCollision(
-		const aabb3f &staticbox, const aabb3f &movingbox,
-		const v3f &speed, f32 *dtime);
+		const aabb3f &staticbox, const aabb3f &movingbox, const v3f &speed, f32 *dtime);
 
 // Helper function:
 // Checks if moving the movingbox up by the given distance would hit a ceiling.
-bool wouldCollideWithCeiling(
-		const std::vector<aabb3f> &staticboxes,
-		const aabb3f &movingbox,
-		f32 y_increase, f32 d);
+bool wouldCollideWithCeiling(const std::vector<aabb3f> &staticboxes,
+		const aabb3f &movingbox, f32 y_increase, f32 d);

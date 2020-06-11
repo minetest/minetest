@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <bitset>
 #include <vector>
 
-enum JoystickAxis {
+enum JoystickAxis
+{
 	JA_SIDEWARD_MOVE,
 	JA_FORWARD_MOVE,
 
@@ -35,27 +36,27 @@ enum JoystickAxis {
 	JA_COUNT,
 };
 
-struct JoystickAxisLayout {
+struct JoystickAxisLayout
+{
 	u16 axis_id;
 	// -1 if to invert, 1 if to keep it.
 	int invert;
 };
 
 
-struct JoystickCombination {
-
-	virtual bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const=0;
+struct JoystickCombination
+{
+	virtual bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const = 0;
 
 	GameKeyType key;
 };
 
-struct JoystickButtonCmb : public JoystickCombination {
-
+struct JoystickButtonCmb : public JoystickCombination
+{
 	JoystickButtonCmb() = default;
 
-	JoystickButtonCmb(GameKeyType key, u32 filter_mask, u32 compare_mask) :
-		filter_mask(filter_mask),
-		compare_mask(compare_mask)
+	JoystickButtonCmb(GameKeyType key, u32 filter_mask, u32 compare_mask)
+		: filter_mask(filter_mask), compare_mask(compare_mask)
 	{
 		this->key = key;
 	}
@@ -68,14 +69,12 @@ struct JoystickButtonCmb : public JoystickCombination {
 	u32 compare_mask;
 };
 
-struct JoystickAxisCmb : public JoystickCombination {
-
+struct JoystickAxisCmb : public JoystickCombination
+{
 	JoystickAxisCmb() = default;
 
-	JoystickAxisCmb(GameKeyType key, u16 axis_to_compare, int direction, s16 thresh) :
-		axis_to_compare(axis_to_compare),
-		direction(direction),
-		thresh(thresh)
+	JoystickAxisCmb(GameKeyType key, u16 axis_to_compare, int direction, s16 thresh)
+		: axis_to_compare(axis_to_compare), direction(direction), thresh(thresh)
 	{
 		this->key = key;
 	}
@@ -92,15 +91,16 @@ struct JoystickAxisCmb : public JoystickCombination {
 	s16 thresh;
 };
 
-struct JoystickLayout {
+struct JoystickLayout
+{
 	std::vector<JoystickButtonCmb> button_keys;
 	std::vector<JoystickAxisCmb> axis_keys;
 	JoystickAxisLayout axes[JA_COUNT];
 	s16 axes_dead_border;
 };
 
-class JoystickController {
-
+class JoystickController
+{
 public:
 	JoystickController();
 
@@ -115,14 +115,8 @@ public:
 		m_past_pressed_keys[b] = false;
 		return r;
 	}
-	bool getWasKeyDown(GameKeyType b)
-	{
-		return m_past_pressed_keys[b];
-	}
-	void clearWasKeyDown(GameKeyType b)
-	{
-		m_past_pressed_keys[b] = false;
-	}
+	bool getWasKeyDown(GameKeyType b) { return m_past_pressed_keys[b]; }
+	void clearWasKeyDown(GameKeyType b) { m_past_pressed_keys[b] = false; }
 
 	bool wasKeyReleased(GameKeyType b)
 	{
@@ -130,24 +124,12 @@ public:
 		m_past_released_keys[b] = false;
 		return r;
 	}
-	bool getWasKeyReleased(GameKeyType b)
-	{
-		return m_past_pressed_keys[b];
-	}
-	void clearWasKeyReleased(GameKeyType b)
-	{
-		m_past_pressed_keys[b] = false;
-	}
+	bool getWasKeyReleased(GameKeyType b) { return m_past_pressed_keys[b]; }
+	void clearWasKeyReleased(GameKeyType b) { m_past_pressed_keys[b] = false; }
 
-	bool isKeyDown(GameKeyType b)
-	{
-		return m_pressed_keys[b];
-	}
+	bool isKeyDown(GameKeyType b) { return m_pressed_keys[b]; }
 
-	s16 getAxis(JoystickAxis axis)
-	{
-		return m_axes_vals[axis];
-	}
+	s16 getAxis(JoystickAxis axis) { return m_axes_vals[axis]; }
 
 	s16 getAxisWithoutDead(JoystickAxis axis);
 

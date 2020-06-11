@@ -33,12 +33,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV6_FREQ_JUNGLE 0.5
 
 //////////// Mapgen V6 flags
-#define MGV6_JUNGLES    0x01
+#define MGV6_JUNGLES 0x01
 #define MGV6_BIOMEBLEND 0x02
-#define MGV6_MUDFLOW    0x04
+#define MGV6_MUDFLOW 0x04
 #define MGV6_SNOWBIOMES 0x08
-#define MGV6_FLAT       0x10
-#define MGV6_TREES      0x20
+#define MGV6_FLAT 0x10
+#define MGV6_TREES 0x20
 
 
 extern FlagDesc flagdesc_mapgen_v6[];
@@ -54,7 +54,8 @@ enum BiomeV6Type
 };
 
 
-struct MapgenV6Params : public MapgenParams {
+struct MapgenV6Params : public MapgenParams
+{
 	float freq_desert = 0.45f;
 	float freq_beach = 0.15f;
 	s16 dungeon_ymin = -31000;
@@ -81,7 +82,8 @@ struct MapgenV6Params : public MapgenParams {
 };
 
 
-class MapgenV6 : public Mapgen {
+class MapgenV6 : public Mapgen
+{
 public:
 	EmergeParams *m_emerge;
 
@@ -142,8 +144,8 @@ public:
 	int getGroundLevelAtPoint(v2s16 p);
 	int getSpawnLevelAtPoint(v2s16 p);
 
-	float baseTerrainLevel(float terrain_base, float terrain_higher,
-		float steepness, float height_select);
+	float baseTerrainLevel(float terrain_base, float terrain_higher, float steepness,
+			float height_select);
 	virtual float baseTerrainLevelFromNoise(v2s16 p);
 	virtual float baseTerrainLevelFromMap(v2s16 p);
 	virtual float baseTerrainLevelFromMap(int index);
@@ -168,8 +170,8 @@ public:
 	int generateGround();
 	void addMud();
 	void flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos);
-	void moveMud(u32 remove_index, u32 place_index,
-		u32 above_remove_index, v2s16 pos, v3s16 em);
+	void moveMud(u32 remove_index, u32 place_index, u32 above_remove_index, v2s16 pos,
+			v3s16 em);
 	void growGrass();
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);

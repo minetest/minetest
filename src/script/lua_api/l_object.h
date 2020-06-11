@@ -31,7 +31,8 @@ class RemotePlayer;
 	ObjectRef
 */
 
-class ObjectRef : public ModApiBase {
+class ObjectRef : public ModApiBase
+{
 public:
 	ObjectRef(ServerActiveObject *object);
 
@@ -47,16 +48,17 @@ public:
 
 	static ObjectRef *checkobject(lua_State *L, int narg);
 
-	static ServerActiveObject* getobject(ObjectRef *ref);
+	static ServerActiveObject *getobject(ObjectRef *ref);
+
 private:
 	ServerActiveObject *m_object = nullptr;
 	static const char className[];
 	static luaL_Reg methods[];
 
 
-	static LuaEntitySAO* getluaobject(ObjectRef *ref);
+	static LuaEntitySAO *getluaobject(ObjectRef *ref);
 
-	static PlayerSAO* getplayersao(ObjectRef *ref);
+	static PlayerSAO *getplayersao(ObjectRef *ref);
 
 	static RemotePlayer *getplayer(ObjectRef *ref);
 
@@ -331,7 +333,7 @@ private:
 	static int l_get_sky(lua_State *L);
 
 	// get_sky_color(self)
-	static int l_get_sky_color(lua_State* L);
+	static int l_get_sky_color(lua_State *L);
 
 	// set_sun(self, {visible, texture=, tonemap=, sunrise=, rotation=, scale=})
 	static int l_set_sun(lua_State *L);

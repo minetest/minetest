@@ -70,8 +70,7 @@ public:
 
 private:
 	unsigned int m_addr_family = 0;
-	union
-	{
+	union {
 		struct sockaddr_in ipv4;
 		struct sockaddr_in6 ipv6;
 	} m_address;

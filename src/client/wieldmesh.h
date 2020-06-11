@@ -46,8 +46,8 @@ struct ItemPartColor
 
 	ItemPartColor() = default;
 
-	ItemPartColor(bool override, video::SColor color) :
-			override_base(override), color(color)
+	ItemPartColor(bool override, video::SColor color)
+		: override_base(override), color(color)
 	{
 	}
 };
@@ -80,8 +80,7 @@ public:
 	void setCube(const ContentFeatures &f, v3f wield_scale);
 	void setExtruded(const std::string &imagename, const std::string &overlay_image,
 			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
-	void setItem(const ItemStack &item, Client *client,
-			bool check_wield_image = true);
+	void setItem(const ItemStack &item, Client *client, bool check_wield_image = true);
 
 	// Sets the vertex color of the wield mesh.
 	// Must only be used if the constructor was called with lighting = false

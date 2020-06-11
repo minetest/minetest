@@ -45,20 +45,20 @@ extern "C" {
 // use that name to bypass security!
 #define BUILTIN_MOD_NAME "*builtin*"
 
-#define PCALL_RES(RES) {                    \
-	int result_ = (RES);                    \
-	if (result_ != 0) {                     \
-		scriptError(result_, __FUNCTION__); \
-	}                                       \
-}
+#define PCALL_RES(RES)                                                                   \
+	{                                                                                    \
+		int result_ = (RES);                                                             \
+		if (result_ != 0) {                                                              \
+			scriptError(result_, __FUNCTION__);                                          \
+		}                                                                                \
+	}
 
-#define runCallbacks(nargs, mode) \
-	runCallbacksRaw((nargs), (mode), __FUNCTION__)
+#define runCallbacks(nargs, mode) runCallbacksRaw((nargs), (mode), __FUNCTION__)
 
-#define setOriginFromTable(index) \
-	setOriginFromTableRaw(index, __FUNCTION__)
+#define setOriginFromTable(index) setOriginFromTableRaw(index, __FUNCTION__)
 
-enum class ScriptingType: u8 {
+enum class ScriptingType : u8
+{
 	Async,
 	Client,
 	MainMenu,
@@ -75,14 +75,12 @@ class GUIEngine;
 class ServerActiveObject;
 struct PlayerHPChangeReason;
 
-class ScriptApiBase : protected LuaHelper {
+class ScriptApiBase : protected LuaHelper
+{
 public:
 	ScriptApiBase(ScriptingType type);
 	// fake constructor to allow script API classes (e.g ScriptApiEnv) to virtually inherit from this one.
-	ScriptApiBase()
-	{
-		FATAL_ERROR("ScriptApiBase created without ScriptingType!");
-	}
+	ScriptApiBase() { FATAL_ERROR("ScriptApiBase created without ScriptingType!"); }
 	virtual ~ScriptApiBase();
 	DISABLE_CLASS_COPY(ScriptApiBase);
 
@@ -94,18 +92,17 @@ public:
 	void loadModFromMemory(const std::string &mod_name);
 #endif
 
-	void runCallbacksRaw(int nargs,
-		RunCallbacksMode mode, const char *fxn);
+	void runCallbacksRaw(int nargs, RunCallbacksMode mode, const char *fxn);
 
 	/* object */
 	void addObjectReference(ServerActiveObject *cobj);
 	void removeObjectReference(ServerActiveObject *cobj);
 
 	IGameDef *getGameDef() { return m_gamedef; }
-	Server* getServer();
+	Server *getServer();
 	ScriptingType getType() { return m_type; }
 #ifndef SERVER
-	Client* getClient();
+	Client *getClient();
 #endif
 
 	std::string getOrigin() { return m_last_run_mod; }
@@ -124,44 +121,43 @@ protected:
 	friend class ModApiEnvMod;
 	friend class LuaVoxelManip;
 
-	lua_State* getStack()
-		{ return m_luastack; }
+	lua_State *getStack() { return m_luastack; }
 
 	void realityCheck();
 	void scriptError(int result, const char *fxn);
 	void stackDump(std::ostream &o);
 
-	void setGameDef(IGameDef* gamedef) { m_gamedef = gamedef; }
+	void setGameDef(IGameDef *gamedef) { m_gamedef = gamedef; }
 
-	Environment* getEnv() { return m_environment; }
-	void setEnv(Environment* env) { m_environment = env; }
+	Environment *getEnv() { return m_environment; }
+	void setEnv(Environment *env) { m_environment = env; }
 
 #ifndef SERVER
-	GUIEngine* getGuiEngine() { return m_guiengine; }
-	void setGuiEngine(GUIEngine* guiengine) { m_guiengine = guiengine; }
+	GUIEngine *getGuiEngine() { return m_guiengine; }
+	void setGuiEngine(GUIEngine *guiengine) { m_guiengine = guiengine; }
 #endif
 
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
 
-	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason);
+	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason);
 
 	std::recursive_mutex m_luastackmutex;
-	std::string     m_last_run_mod;
-	bool            m_secure = false;
+	std::string m_last_run_mod;
+	bool m_secure = false;
 #ifdef SCRIPTAPI_LOCK_DEBUG
-	int             m_lock_recursion_count{};
+	int m_lock_recursion_count{};
 	std::thread::id m_owning_thread;
 #endif
 
 private:
 	static int luaPanic(lua_State *L);
 
-	lua_State      *m_luastack = nullptr;
+	lua_State *m_luastack = nullptr;
 
-	IGameDef       *m_gamedef = nullptr;
-	Environment    *m_environment = nullptr;
+	IGameDef *m_gamedef = nullptr;
+	Environment *m_environment = nullptr;
 #ifndef SERVER
-	GUIEngine      *m_guiengine = nullptr;
+	GUIEngine *m_guiengine = nullptr;
 #endif
-	ScriptingType  m_type;
+	ScriptingType m_type;
 };

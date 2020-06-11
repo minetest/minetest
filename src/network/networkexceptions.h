@@ -85,7 +85,7 @@ class IncomingDataCorruption : public BaseException
 public:
 	IncomingDataCorruption(const char *s) : BaseException(s) {}
 };
-}
+} // namespace con
 
 class SocketException : public BaseException
 {

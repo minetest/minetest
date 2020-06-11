@@ -52,9 +52,10 @@ struct LuaJobInfo
 };
 
 // Asynchronous working environment
-class AsyncWorkerThread : public Thread, public ScriptApiBase {
+class AsyncWorkerThread : public Thread, public ScriptApiBase
+{
 public:
-	AsyncWorkerThread(AsyncEngine* jobDispatcher, const std::string &name);
+	AsyncWorkerThread(AsyncEngine *jobDispatcher, const std::string &name);
 	virtual ~AsyncWorkerThread();
 
 	void *run();
@@ -64,9 +65,11 @@ private:
 };
 
 // Asynchornous thread and job management
-class AsyncEngine {
+class AsyncEngine
+{
 	friend class AsyncWorkerThread;
 	typedef void (*StateInitializer)(lua_State *L, int top);
+
 public:
 	AsyncEngine() = default;
 	~AsyncEngine();
@@ -125,7 +128,7 @@ protected:
 	 * @param L Lua stack to initialize
 	 * @param top Stack position
 	 */
-	void prepareEnvironment(lua_State* L, int top);
+	void prepareEnvironment(lua_State *L, int top);
 
 private:
 	// Variable locking the engine against further modification
@@ -149,7 +152,7 @@ private:
 	std::deque<LuaJobInfo> resultQueue;
 
 	// List of current worker threads
-	std::vector<AsyncWorkerThread*> workerThreads;
+	std::vector<AsyncWorkerThread *> workerThreads;
 
 	// Counter semaphore for job dispatching
 	Semaphore jobQueueCounter;

@@ -28,19 +28,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "util/numeric.h"
 #ifndef ANDROID
-	#include "cmake_config.h"
+#include "cmake_config.h"
 #endif
 #if USE_SPATIAL
-	#include <spatialindex/SpatialIndex.h>
-	#include "util/serialize.h"
+#include <spatialindex/SpatialIndex.h>
+#include "util/serialize.h"
 #endif
 
 
-struct Area {
+struct Area
+{
 	Area(u32 area_id) : id(area_id) {}
 
-	Area(const v3s16 &mine, const v3s16 &maxe, u32 area_id = U32_MAX) :
-		id(area_id), minedge(mine), maxedge(maxe)
+	Area(const v3s16 &mine, const v3s16 &maxe, u32 area_id = U32_MAX)
+		: id(area_id), minedge(mine), maxedge(maxe)
 	{
 		sortBoxVerticies(minedge, maxedge);
 	}
@@ -51,17 +52,16 @@ struct Area {
 };
 
 
-class AreaStore {
+class AreaStore
+{
 public:
-	AreaStore() :
-		m_res_cache(1000, &cacheMiss, this)
-	{}
+	AreaStore() : m_res_cache(1000, &cacheMiss, this) {}
 
 	virtual ~AreaStore() = default;
 
 	static AreaStore *getOptimalImplementation();
 
-	virtual void reserve(size_t count) {};
+	virtual void reserve(size_t count){};
 	size_t size() const { return areas_map.size(); }
 
 	/// Add an area to the store.
@@ -80,8 +80,8 @@ public:
 	/// Finds areas that are completely contained inside the area defined
 	/// by the passed edges.  If @p accept_overlap is true this finds any
 	/// areas that intersect with the passed area at any point.
-	virtual void getAreasInArea(std::vector<Area *> *result,
-		v3s16 minedge, v3s16 maxedge, bool accept_overlap) = 0;
+	virtual void getAreasInArea(std::vector<Area *> *result, v3s16 minedge, v3s16 maxedge,
+			bool accept_overlap) = 0;
 
 	/// Sets cache parameters.
 	void setCacheParams(bool enabled, u8 block_radius, size_t limit);
@@ -124,17 +124,18 @@ private:
 	/// Range, in nodes, of the getAreasForPos cache.
 	/// If you modify this, call invalidateCache()
 	u8 m_cacheblock_radius = 64;
-	LRUCache<v3s16, std::vector<Area *> > m_res_cache;
+	LRUCache<v3s16, std::vector<Area *>> m_res_cache;
 };
 
 
-class VectorAreaStore : public AreaStore {
+class VectorAreaStore : public AreaStore
+{
 public:
 	virtual void reserve(size_t count) { m_areas.reserve(count); }
 	virtual bool insertArea(Area *a);
 	virtual bool removeArea(u32 id);
-	virtual void getAreasInArea(std::vector<Area *> *result,
-		v3s16 minedge, v3s16 maxedge, bool accept_overlap);
+	virtual void getAreasInArea(std::vector<Area *> *result, v3s16 minedge, v3s16 maxedge,
+			bool accept_overlap);
 
 protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
@@ -146,15 +147,16 @@ private:
 
 #if USE_SPATIAL
 
-class SpatialAreaStore : public AreaStore {
+class SpatialAreaStore : public AreaStore
+{
 public:
 	SpatialAreaStore();
 	virtual ~SpatialAreaStore();
 
 	virtual bool insertArea(Area *a);
 	virtual bool removeArea(u32 id);
-	virtual void getAreasInArea(std::vector<Area *> *result,
-		v3s16 minedge, v3s16 maxedge, bool accept_overlap);
+	virtual void getAreasInArea(std::vector<Area *> *result, v3s16 minedge, v3s16 maxedge,
+			bool accept_overlap);
 
 protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
@@ -163,12 +165,13 @@ private:
 	SpatialIndex::ISpatialIndex *m_tree = nullptr;
 	SpatialIndex::IStorageManager *m_storagemanager = nullptr;
 
-	class VectorResultVisitor : public SpatialIndex::IVisitor {
+	class VectorResultVisitor : public SpatialIndex::IVisitor
+	{
 	public:
-		VectorResultVisitor(std::vector<Area *> *result, SpatialAreaStore *store) :
-			m_store(store),
-			m_result(result)
-		{}
+		VectorResultVisitor(std::vector<Area *> *result, SpatialAreaStore *store)
+			: m_store(store), m_result(result)
+		{
+		}
 		~VectorResultVisitor() {}
 
 		virtual void visitNode(const SpatialIndex::INode &in) {}

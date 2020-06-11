@@ -26,7 +26,8 @@ class NodeDefManager;
 class Map;
 class MapBlock;
 
-class ReflowScan {
+class ReflowScan
+{
 public:
 	ReflowScan(Map *map, const NodeDefManager *ndef);
 	void scan(MapBlock *block, UniqueQueue<v3s16> *liquid_queue);

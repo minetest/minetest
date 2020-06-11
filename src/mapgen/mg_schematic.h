@@ -68,29 +68,31 @@ class Server;
 
 //// Schematic constants
 #define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
-#define MTSCHEM_FILE_VER_HIGHEST_READ  4
+#define MTSCHEM_FILE_VER_HIGHEST_READ 4
 #define MTSCHEM_FILE_VER_HIGHEST_WRITE 4
 
-#define MTSCHEM_PROB_MASK       0x7F
+#define MTSCHEM_PROB_MASK 0x7F
 
-#define MTSCHEM_PROB_NEVER      0x00
-#define MTSCHEM_PROB_ALWAYS     0x7F
+#define MTSCHEM_PROB_NEVER 0x00
+#define MTSCHEM_PROB_ALWAYS 0x7F
 #define MTSCHEM_PROB_ALWAYS_OLD 0xFF
 
-#define MTSCHEM_FORCE_PLACE     0x80
+#define MTSCHEM_FORCE_PLACE 0x80
 
 enum SchematicType
 {
 	SCHEMATIC_NORMAL,
 };
 
-enum SchematicFormatType {
+enum SchematicFormatType
+{
 	SCHEM_FMT_HANDLE,
 	SCHEM_FMT_MTS,
 	SCHEM_FMT_LUA,
 };
 
-class Schematic : public ObjDef, public NodeResolver {
+class Schematic : public ObjDef, public NodeResolver
+{
 public:
 	Schematic();
 	virtual ~Schematic();
@@ -99,25 +101,22 @@ public:
 
 	virtual void resolveNodeNames();
 
-	bool loadSchematicFromFile(const std::string &filename,
-		const NodeDefManager *ndef, StringMap *replace_names = NULL);
-	bool saveSchematicToFile(const std::string &filename,
-		const NodeDefManager *ndef);
+	bool loadSchematicFromFile(const std::string &filename, const NodeDefManager *ndef,
+			StringMap *replace_names = NULL);
+	bool saveSchematicToFile(const std::string &filename, const NodeDefManager *ndef);
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 
 	bool deserializeFromMts(std::istream *is, std::vector<std::string> *names);
-	bool serializeToMts(std::ostream *os,
-		const std::vector<std::string> &names) const;
+	bool serializeToMts(std::ostream *os, const std::vector<std::string> &names) const;
 	bool serializeToLua(std::ostream *os, const std::vector<std::string> &names,
-		bool use_comments, u32 indent_spaces) const;
+			bool use_comments, u32 indent_spaces) const;
 
 	void blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_place);
 	bool placeOnVManip(MMVManip *vm, v3s16 p, u32 flags, Rotation rot, bool force_place);
 	void placeOnMap(ServerMap *map, v3s16 p, u32 flags, Rotation rot, bool force_place);
 
-	void applyProbabilities(v3s16 p0,
-		std::vector<std::pair<v3s16, u8> > *plist,
-		std::vector<std::pair<s16, u8> > *splist);
+	void applyProbabilities(v3s16 p0, std::vector<std::pair<v3s16, u8>> *plist,
+			std::vector<std::pair<s16, u8>> *splist);
 
 	std::vector<content_t> c_nodes;
 	u32 flags = 0;
@@ -126,7 +125,8 @@ public:
 	u8 *slice_probs = nullptr;
 };
 
-class SchematicManager : public ObjDefManager {
+class SchematicManager : public ObjDefManager
+{
 public:
 	SchematicManager(Server *server);
 	virtual ~SchematicManager() = default;
@@ -135,21 +135,15 @@ public:
 
 	virtual void clear();
 
-	const char *getObjectTitle() const
-	{
-		return "schematic";
-	}
+	const char *getObjectTitle() const { return "schematic"; }
 
-	static Schematic *create(SchematicType type)
-	{
-		return new Schematic;
-	}
+	static Schematic *create(SchematicType type) { return new Schematic; }
 
 private:
-	SchematicManager() {};
+	SchematicManager(){};
 
 	Server *m_server;
 };
 
 void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
-	std::vector<std::string> *usednodes, const NodeDefManager *ndef);
+		std::vector<std::string> *usednodes, const NodeDefManager *ndef);

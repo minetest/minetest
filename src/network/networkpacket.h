@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class NetworkPacket
 {
-
 public:
 	NetworkPacket(u16 command, u32 datasize, session_t peer_id);
 	NetworkPacket(u16 command, u32 datasize);
@@ -49,10 +48,7 @@ public:
 	const char *getString(u32 from_offset);
 	// major difference to putCString(): doesn't write len into the buffer
 	void putRawString(const char *src, u32 len);
-	void putRawString(const std::string &src)
-	{
-		putRawString(src.c_str(), src.size());
-	}
+	void putRawString(const std::string &src) { putRawString(src.c_str(), src.size()); }
 
 	NetworkPacket &operator>>(std::string &dst);
 	NetworkPacket &operator<<(const std::string &src);

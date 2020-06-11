@@ -27,8 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class OnDemandSoundFetcher
 {
 public:
-	virtual void fetchSounds(const std::string &name,
-			std::set<std::string> &dst_paths,
+	virtual void fetchSounds(const std::string &name, std::set<std::string> &dst_paths,
 			std::set<std::string> &dst_datas) = 0;
 };
 
@@ -40,10 +39,8 @@ public:
 	// Multiple sounds can be loaded per name; when played, the sound
 	// should be chosen randomly from alternatives
 	// Return value determines success/failure
-	virtual bool loadSoundFile(
-			const std::string &name, const std::string &filepath) = 0;
-	virtual bool loadSoundData(
-			const std::string &name, const std::string &filedata) = 0;
+	virtual bool loadSoundFile(const std::string &name, const std::string &filepath) = 0;
+	virtual bool loadSoundData(const std::string &name, const std::string &filedata) = 0;
 
 	virtual void updateListener(
 			const v3f &pos, const v3f &vel, const v3f &at, const v3f &up) = 0;
@@ -84,17 +81,15 @@ public:
 	{
 		return true;
 	}
-	void updateListener(const v3f &pos, const v3f &vel, const v3f &at, const v3f &up)
-	{
-	}
+	void updateListener(const v3f &pos, const v3f &vel, const v3f &at, const v3f &up) {}
 	void setListenerGain(float gain) {}
-	int playSound(const std::string &name, bool loop, float volume, float fade,
-			float pitch)
+	int playSound(
+			const std::string &name, bool loop, float volume, float fade, float pitch)
 	{
 		return 0;
 	}
-	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos,
-			float pitch)
+	int playSoundAt(
+			const std::string &name, bool loop, float volume, v3f pos, float pitch)
 	{
 		return 0;
 	}

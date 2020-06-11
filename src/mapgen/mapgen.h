@@ -30,15 +30,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGEN_DEFAULT_NAME "v7"
 
 /////////////////// Mapgen flags
-#define MG_TREES       0x01  // Obsolete. Moved into mgv6 flags
-#define MG_CAVES       0x02
-#define MG_DUNGEONS    0x04
-#define MG_FLAT        0x08  // Obsolete. Moved into mgv6 flags
-#define MG_LIGHT       0x10
+#define MG_TREES 0x01 // Obsolete. Moved into mgv6 flags
+#define MG_CAVES 0x02
+#define MG_DUNGEONS 0x04
+#define MG_FLAT 0x08 // Obsolete. Moved into mgv6 flags
+#define MG_LIGHT 0x10
 #define MG_DECORATIONS 0x20
-#define MG_BIOMES      0x40
+#define MG_BIOMES 0x40
 
-typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+typedef u16 biome_t; // copy from mg_biome.h to avoid an unnecessary include
 
 class Settings;
 class MMVManip;
@@ -59,7 +59,8 @@ struct BlockMakeData;
 class VoxelArea;
 class Map;
 
-enum MapgenObject {
+enum MapgenObject
+{
 	MGOBJ_VMANIP,
 	MGOBJ_HEIGHTMAP,
 	MGOBJ_BIOMEMAP,
@@ -68,7 +69,8 @@ enum MapgenObject {
 	MGOBJ_GENNOTIFY
 };
 
-enum GenNotifyType {
+enum GenNotifyType
+{
 	GENNOTIFY_DUNGEON,
 	GENNOTIFY_TEMPLE,
 	GENNOTIFY_CAVE_BEGIN,
@@ -79,13 +81,15 @@ enum GenNotifyType {
 	NUM_GENNOTIFY_TYPES
 };
 
-struct GenNotifyEvent {
+struct GenNotifyEvent
+{
 	GenNotifyType type;
 	v3s16 pos;
 	u32 id;
 };
 
-class GenerateNotifier {
+class GenerateNotifier
+{
 public:
 	GenerateNotifier() = default;
 	GenerateNotifier(u32 notify_on, const std::set<u32> *notify_on_deco_ids);
@@ -93,8 +97,8 @@ public:
 	void setNotifyOn(u32 notify_on);
 	void setNotifyOnDecoIds(const std::set<u32> *notify_on_deco_ids);
 
-	bool addEvent(GenNotifyType type, v3s16 pos, u32 id=0);
-	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map);
+	bool addEvent(GenNotifyType type, v3s16 pos, u32 id = 0);
+	void getEvents(std::map<std::string, std::vector<v3s16>> &event_map);
 	void clearEvents();
 
 private:
@@ -104,7 +108,8 @@ private:
 };
 
 // Order must match the order of 'static MapgenDesc g_reg_mapgens[]' in mapgen.cpp
-enum MapgenType {
+enum MapgenType
+{
 	MAPGEN_V7,
 	MAPGEN_VALLEYS,
 	MAPGEN_CARPATHIAN,
@@ -116,7 +121,8 @@ enum MapgenType {
 	MAPGEN_INVALID,
 };
 
-struct MapgenParams {
+struct MapgenParams
+{
 	MapgenParams() = default;
 	virtual ~MapgenParams();
 
@@ -137,7 +143,7 @@ struct MapgenParams {
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
 	// Default settings for g_settings such as flags
-	virtual void setDefaultSettings(Settings *settings) {};
+	virtual void setDefaultSettings(Settings *settings){};
 
 	s32 getSpawnRangeMax();
 
@@ -156,7 +162,8 @@ private:
 	methods can be used by constructing a Mapgen base class and setting the
 	appropriate public members (e.g. vm, ndef, and so on).
 */
-class Mapgen {
+class Mapgen
+{
 public:
 	s32 seed = 0;
 	int water_level = 0;
@@ -189,16 +196,16 @@ public:
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
 	s16 findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax);
 	void updateHeightmap(v3s16 nmin, v3s16 nmax);
-	void getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
-		std::vector<s16> &floors, std::vector<s16> &ceilings);
+	void getSurfaces(v2s16 p2d, s16 ymin, s16 ymax, std::vector<s16> &floors,
+			std::vector<s16> &ceilings);
 
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 
 	void setLighting(u8 light, v3s16 nmin, v3s16 nmax);
 	void lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
-		const v3s16 &p, u8 light);
+			const v3s16 &p, u8 light);
 	void calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nmax,
-		bool propagate_shadow = true);
+			bool propagate_shadow = true);
 	void propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow);
 	void spreadLight(const v3s16 &nmin, const v3s16 &nmax);
 
@@ -215,8 +222,8 @@ public:
 	// Mapgen management functions
 	static MapgenType getMapgenType(const std::string &mgname);
 	static const char *getMapgenName(MapgenType mgtype);
-	static Mapgen *createMapgen(MapgenType mgtype, MapgenParams *params,
-		EmergeParams *emerge);
+	static Mapgen *createMapgen(
+			MapgenType mgtype, MapgenParams *params, EmergeParams *emerge);
 	static MapgenParams *createMapgenParams(MapgenType mgtype);
 	static void getMapgenNames(std::vector<const char *> *mgnames, bool include_hidden);
 	static void setDefaultSettings(Settings *settings);
@@ -242,7 +249,8 @@ private:
 	Note that you must still create your own generateTerrain implementation when
 	inheriting MapgenBasic.
 */
-class MapgenBasic : public Mapgen {
+class MapgenBasic : public Mapgen
+{
 public:
 	MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerge);
 	virtual ~MapgenBasic();

@@ -40,43 +40,43 @@ class Server;
 class Environment;
 class ServerInventoryManager;
 
-class ModApiBase : protected LuaHelper {
-
+class ModApiBase : protected LuaHelper
+{
 public:
-	static ScriptApiBase*   getScriptApiBase(lua_State *L);
-	static Server*          getServer(lua_State *L);
+	static ScriptApiBase *getScriptApiBase(lua_State *L);
+	static Server *getServer(lua_State *L);
 	static ServerInventoryManager *getServerInventoryMgr(lua_State *L);
-	#ifndef SERVER
-	static Client*          getClient(lua_State *L);
-	static GUIEngine*       getGuiEngine(lua_State *L);
-	#endif // !SERVER
+#ifndef SERVER
+	static Client *getClient(lua_State *L);
+	static GUIEngine *getGuiEngine(lua_State *L);
+#endif // !SERVER
 
-	static IGameDef*        getGameDef(lua_State *L);
+	static IGameDef *getGameDef(lua_State *L);
 
-	static Environment*     getEnv(lua_State *L);
+	static Environment *getEnv(lua_State *L);
 
 	// When we are not loading the mod, this function returns "."
-	static std::string      getCurrentModPath(lua_State *L);
+	static std::string getCurrentModPath(lua_State *L);
 
 	// Get an arbitrary subclass of ScriptApiBase
 	// by using dynamic_cast<> on getScriptApiBase()
-	template<typename T>
-	static T* getScriptApi(lua_State *L) {
+	template <typename T>
+	static T *getScriptApi(lua_State *L)
+	{
 		ScriptApiBase *scriptIface = getScriptApiBase(L);
-		T *scriptIfaceDowncast = dynamic_cast<T*>(scriptIface);
+		T *scriptIfaceDowncast = dynamic_cast<T *>(scriptIface);
 		if (!scriptIfaceDowncast) {
 			throw LuaError("Requested unavailable ScriptApi - core engine bug!");
 		}
 		return scriptIfaceDowncast;
 	}
 
-	static bool registerFunction(lua_State *L,
-			const char* name,
-			lua_CFunction func,
-			int top);
+	static bool registerFunction(
+			lua_State *L, const char *name, lua_CFunction func, int top);
 
 	static int l_deprecated_function(lua_State *L);
 	static void markAliasDeprecated(luaL_Reg *reg);
+
 private:
 	// <old_name> = { <new_name>, <new_function> }
 	static std::unordered_map<std::string, luaL_Reg> m_deprecated_wrappers;

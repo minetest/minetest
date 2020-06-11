@@ -36,11 +36,13 @@ typedef u16 biome_t;
 
 #define BIOME_NONE ((biome_t)0)
 
-enum BiomeType {
+enum BiomeType
+{
 	BIOMETYPE_NORMAL,
 };
 
-class Biome : public ObjDef, public NodeResolver {
+class Biome : public ObjDef, public NodeResolver
+{
 public:
 	ObjDef *clone() const;
 
@@ -78,11 +80,13 @@ public:
 //// BiomeGen
 ////
 
-enum BiomeGenType {
+enum BiomeGenType
+{
 	BIOMEGEN_ORIGINAL,
 };
 
-struct BiomeParams {
+struct BiomeParams
+{
 	virtual void readParams(const Settings *settings) = 0;
 	virtual void writeParams(Settings *settings) const = 0;
 	virtual ~BiomeParams() = default;
@@ -91,7 +95,8 @@ struct BiomeParams {
 };
 
 // WARNING: this class is not thread-safe
-class BiomeGen {
+class BiomeGen
+{
 public:
 	virtual ~BiomeGen() = default;
 
@@ -137,12 +142,13 @@ protected:
 // Original biome algorithm (Whittaker's classification + surface height)
 //
 
-struct BiomeParamsOriginal : public BiomeParams {
-	BiomeParamsOriginal() :
-		np_heat(50, 50, v3f(1000.0, 1000.0, 1000.0), 5349, 3, 0.5, 2.0),
-		np_humidity(50, 50, v3f(1000.0, 1000.0, 1000.0), 842, 3, 0.5, 2.0),
-		np_heat_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0),
-		np_humidity_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 90003, 2, 1.0, 2.0)
+struct BiomeParamsOriginal : public BiomeParams
+{
+	BiomeParamsOriginal()
+		: np_heat(50, 50, v3f(1000.0, 1000.0, 1000.0), 5349, 3, 0.5, 2.0),
+		  np_humidity(50, 50, v3f(1000.0, 1000.0, 1000.0), 842, 3, 0.5, 2.0),
+		  np_heat_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0),
+		  np_humidity_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 90003, 2, 1.0, 2.0)
 	{
 	}
 
@@ -155,10 +161,11 @@ struct BiomeParamsOriginal : public BiomeParams {
 	NoiseParams np_humidity_blend;
 };
 
-class BiomeGenOriginal : public BiomeGen {
+class BiomeGenOriginal : public BiomeGen
+{
 public:
-	BiomeGenOriginal(BiomeManager *biomemgr,
-		BiomeParamsOriginal *params, v3s16 chunksize);
+	BiomeGenOriginal(
+			BiomeManager *biomemgr, BiomeParamsOriginal *params, v3s16 chunksize);
 	virtual ~BiomeGenOriginal();
 
 	BiomeGenType getType() const { return BIOMEGEN_ORIGINAL; }
@@ -189,29 +196,23 @@ private:
 //// BiomeManager
 ////
 
-class BiomeManager : public ObjDefManager {
+class BiomeManager : public ObjDefManager
+{
 public:
 	BiomeManager(Server *server);
 	virtual ~BiomeManager() = default;
 
 	BiomeManager *clone() const;
 
-	const char *getObjectTitle() const
-	{
-		return "biome";
-	}
+	const char *getObjectTitle() const { return "biome"; }
 
-	static Biome *create(BiomeType type)
-	{
-		return new Biome;
-	}
+	static Biome *create(BiomeType type) { return new Biome; }
 
 	BiomeGen *createBiomeGen(BiomeGenType type, BiomeParams *params, v3s16 chunksize)
 	{
 		switch (type) {
 		case BIOMEGEN_ORIGINAL:
-			return new BiomeGenOriginal(this,
-				(BiomeParamsOriginal *)params, chunksize);
+			return new BiomeGenOriginal(this, (BiomeParamsOriginal *)params, chunksize);
 		default:
 			return NULL;
 		}
@@ -230,16 +231,14 @@ public:
 	virtual void clear();
 
 	// For BiomeGen type 'BiomeGenOriginal'
-	float getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
-		NoiseParams &np_heat_blend, u64 seed) const;
+	float getHeatAtPosOriginal(
+			v3s16 pos, NoiseParams &np_heat, NoiseParams &np_heat_blend, u64 seed) const;
 	float getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
-		NoiseParams &np_humidity_blend, u64 seed) const;
-	const Biome *getBiomeFromNoiseOriginal(float heat, float humidity,
-		v3s16 pos) const;
+			NoiseParams &np_humidity_blend, u64 seed) const;
+	const Biome *getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos) const;
 
 private:
-	BiomeManager() {};
+	BiomeManager(){};
 
 	Server *m_server;
-
 };

@@ -81,13 +81,12 @@ public:
 
 private:
 	bool calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos);
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
-			const std::string &texture, const std::string& bgtexture,
-			s32 count, s32 maxcount, v2s32 offset, v2s32 size = v2s32());
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &texture,
+			const std::string &bgtexture, s32 count, s32 maxcount, v2s32 offset,
+			v2s32 size = v2s32());
 
-	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
-			s32 inv_offset, InventoryList *mainlist, u16 selectitem,
-			u16 direction);
+	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount, s32 inv_offset,
+			InventoryList *mainlist, u16 selectitem, u16 direction);
 
 	void drawItem(const ItemStack &item, const core::rect<s32> &rect, bool selected);
 
@@ -128,22 +127,11 @@ enum ItemRotationKind
 	IT_ROT_NONE, // Must be last, also serves as number
 };
 
-void drawItemStack(video::IVideoDriver *driver,
-		gui::IGUIFont *font,
-		const ItemStack &item,
-		const core::rect<s32> &rect,
-		const core::rect<s32> *clip,
-		Client *client,
-		ItemRotationKind rotation_kind);
+void drawItemStack(video::IVideoDriver *driver, gui::IGUIFont *font,
+		const ItemStack &item, const core::rect<s32> &rect, const core::rect<s32> *clip,
+		Client *client, ItemRotationKind rotation_kind);
 
-void drawItemStack(
-		video::IVideoDriver *driver,
-		gui::IGUIFont *font,
-		const ItemStack &item,
-		const core::rect<s32> &rect,
-		const core::rect<s32> *clip,
-		Client *client,
-		ItemRotationKind rotation_kind,
-		const v3s16 &angle,
+void drawItemStack(video::IVideoDriver *driver, gui::IGUIFont *font,
+		const ItemStack &item, const core::rect<s32> &rect, const core::rect<s32> *clip,
+		Client *client, ItemRotationKind rotation_kind, const v3s16 &angle,
 		const v3s16 &rotation_speed);
-

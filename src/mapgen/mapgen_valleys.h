@@ -29,10 +29,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-#define MGVALLEYS_ALT_CHILL        0x01
-#define MGVALLEYS_HUMID_RIVERS     0x02
+#define MGVALLEYS_ALT_CHILL 0x01
+#define MGVALLEYS_HUMID_RIVERS 0x02
 #define MGVALLEYS_VARY_RIVER_DEPTH 0x04
-#define MGVALLEYS_ALT_DRY          0x08
+#define MGVALLEYS_ALT_DRY 0x08
 
 class BiomeManager;
 class BiomeGenOriginal;
@@ -40,7 +40,8 @@ class BiomeGenOriginal;
 extern FlagDesc flagdesc_mapgen_valleys[];
 
 
-struct MapgenValleysParams : public MapgenParams {
+struct MapgenValleysParams : public MapgenParams
+{
 	u16 altitude_chill = 90;
 	u16 river_depth = 4;
 	u16 river_size = 5;
@@ -80,11 +81,10 @@ struct MapgenValleysParams : public MapgenParams {
 };
 
 
-class MapgenValleys : public MapgenBasic {
+class MapgenValleys : public MapgenBasic
+{
 public:
-
-	MapgenValleys(MapgenValleysParams *params,
-		EmergeParams *emerge);
+	MapgenValleys(MapgenValleysParams *params, EmergeParams *emerge);
 	~MapgenValleys();
 
 	virtual MapgenType getType() const { return MAPGEN_VALLEYS; }

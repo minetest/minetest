@@ -52,15 +52,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <vector>
 
-enum QuicktuneValueType{
+enum QuicktuneValueType
+{
 	QVT_NONE,
 	QVT_FLOAT
 };
 struct QuicktuneValue
 {
 	QuicktuneValueType type = QVT_NONE;
-	union{
-		struct{
+	union {
+		struct
+		{
 			float current;
 			float min;
 			float max;
@@ -81,18 +83,20 @@ void setQuicktuneValue(const std::string &name, const QuicktuneValue &val);
 void updateQuicktuneValue(const std::string &name, QuicktuneValue &val);
 
 #ifndef NDEBUG
-	#define QUICKTUNE(type_, var, min_, max_, name){\
-		QuicktuneValue qv;\
-		qv.type = type_;\
-		qv.value_##type_.current = var;\
-		qv.value_##type_.min = min_;\
-		qv.value_##type_.max = max_;\
-		updateQuicktuneValue(name, qv);\
-		var = qv.value_##type_.current;\
+#define QUICKTUNE(type_, var, min_, max_, name)                                          \
+	{                                                                                    \
+		QuicktuneValue qv;                                                               \
+		qv.type = type_;                                                                 \
+		qv.value_##type_.current = var;                                                  \
+		qv.value_##type_.min = min_;                                                     \
+		qv.value_##type_.max = max_;                                                     \
+		updateQuicktuneValue(name, qv);                                                  \
+		var = qv.value_##type_.current;                                                  \
 	}
 #else // NDEBUG
-	#define QUICKTUNE(type, var, min_, max_, name){}
+#define QUICKTUNE(type, var, min_, max_, name)                                           \
+	{                                                                                    \
+	}
 #endif
 
-#define QUICKTUNE_AUTONAME(type_, var, min_, max_)\
-	QUICKTUNE(type_, var, min_, max_, #var)
+#define QUICKTUNE_AUTONAME(type_, var, min_, max_) QUICKTUNE(type_, var, min_, max_, #var)

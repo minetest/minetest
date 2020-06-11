@@ -32,10 +32,10 @@ using namespace gui;
 GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
 		gui::IGUIElement *parent, s32 id, core::rect<s32> rectangle,
 		ISimpleTextureSource *tsrc, bool noclip)
-	: GUIButton (environment, parent, id, rectangle, tsrc, noclip)
+	: GUIButton(environment, parent, id, rectangle, tsrc, noclip)
 {
 	m_image = Environment->addImage(
-			core::rect<s32>(0,0,rectangle.getWidth(),rectangle.getHeight()), this);
+			core::rect<s32>(0, 0, rectangle.getWidth(), rectangle.getHeight()), this);
 	m_image->setScaleImage(isScalingImage());
 	sendToBack(m_image);
 }
@@ -56,7 +56,7 @@ void GUIButtonImage::setForegroundImage(video::ITexture *image)
 }
 
 //! Set element properties from a StyleSpec
-void GUIButtonImage::setFromStyle(const StyleSpec& style)
+void GUIButtonImage::setFromStyle(const StyleSpec &style)
 {
 	GUIButton::setFromStyle(style);
 
@@ -65,8 +65,7 @@ void GUIButtonImage::setFromStyle(const StyleSpec& style)
 	const core::position2di buttonCenter(AbsoluteRect.getCenter());
 	core::position2d<s32> geom(buttonCenter);
 	if (style.isNotDefault(StyleSpec::FGIMG)) {
-		video::ITexture *texture = style.getTexture(StyleSpec::FGIMG,
-				getTextureSource());
+		video::ITexture *texture = style.getTexture(StyleSpec::FGIMG, getTextureSource());
 
 		setForegroundImage(guiScalingImageButton(driver, texture, geom.X, geom.Y));
 		setScaleImage(true);
@@ -82,9 +81,8 @@ void GUIButtonImage::setScaleImage(bool scaleImage)
 }
 
 GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
-		const core::rect<s32> &rectangle, ISimpleTextureSource *tsrc,
-		IGUIElement *parent, s32 id, const wchar_t *text,
-		const wchar_t *tooltiptext)
+		const core::rect<s32> &rectangle, ISimpleTextureSource *tsrc, IGUIElement *parent,
+		s32 id, const wchar_t *text, const wchar_t *tooltiptext)
 {
 	GUIButtonImage *button = new GUIButtonImage(environment,
 			parent ? parent : environment->getRootGUIElement(), id, rectangle, tsrc);

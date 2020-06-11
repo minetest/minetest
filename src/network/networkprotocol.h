@@ -222,8 +222,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Constant that differentiates the protocol from random data and other protocols
 #define PROTOCOL_ID 0x4f457403
 
-#define PASSWORD_SIZE 28       // Maximum password length. Allows for
-                               // base64-encoded SHA-1 (27+\0).
+#define PASSWORD_SIZE                                                                    \
+	28 // Maximum password length. Allows for                                            \
+			// base64-encoded SHA-1 (27+\0).
 
 /*
 	Changes by FORMSPEC_API_VERSION:
@@ -241,7 +242,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #define FORMSPEC_API_VERSION 3
 
-#define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
+#define TEXTURENAME_ALLOWED_CHARS                                                        \
+	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
 typedef u16 session_t;
 
@@ -986,7 +988,8 @@ enum AuthMechanism
 	AUTH_MECHANISM_FIRST_SRP = 1 << 2,
 };
 
-enum AccessDeniedCode {
+enum AccessDeniedCode
+{
 	SERVER_ACCESSDENIED_WRONG_PASSWORD,
 	SERVER_ACCESSDENIED_UNEXPECTED_DATA,
 	SERVER_ACCESSDENIED_SINGLEPLAYER,
@@ -1003,7 +1006,8 @@ enum AccessDeniedCode {
 	SERVER_ACCESSDENIED_MAX,
 };
 
-enum NetProtoCompressionMode {
+enum NetProtoCompressionMode
+{
 	NETPROTO_COMPRESSION_NONE = 0,
 };
 
@@ -1012,45 +1016,43 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"Your client sent something the server didn't expect.  Try reconnecting or updating your client",
 	"The server is running in simple singleplayer mode.  You cannot connect.",
 	"Your client's version is not supported.\nPlease contact server administrator.",
-	"Player name contains disallowed characters.",
-	"Player name not allowed.",
-	"Too many users.",
-	"Empty passwords are disallowed.  Set a password and try again.",
+	"Player name contains disallowed characters.", "Player name not allowed.",
+	"Too many users.", "Empty passwords are disallowed.  Set a password and try again.",
 	"Another client is connected with this name.  If your client closed unexpectedly, try again in a minute.",
-	"Server authentication failed.  This is likely a server error.",
-	"",
+	"Server authentication failed.  This is likely a server error.", "",
 	"Server shutting down.",
 	"This server has experienced an internal error. You will now be disconnected."
 };
 
-enum PlayerListModifer: u8
+enum PlayerListModifer : u8
 {
 	PLAYER_LIST_INIT,
 	PLAYER_LIST_ADD,
 	PLAYER_LIST_REMOVE,
 };
 
-enum CSMRestrictionFlags : u64 {
+enum CSMRestrictionFlags : u64
+{
 	CSM_RF_NONE = 0x00000000,
 	// Until server-sent CSM and verifying of builtin are complete,
 	// 'CSM_RF_LOAD_CLIENT_MODS' also disables loading 'builtin'.
 	// When those are complete, this should return to only being a restriction on the
 	// loading of client mods.
 	CSM_RF_LOAD_CLIENT_MODS = 0x00000001, // Don't load client-provided mods or 'builtin'
-	CSM_RF_CHAT_MESSAGES = 0x00000002,    // Disable chat message sending from CSM
-	CSM_RF_READ_ITEMDEFS = 0x00000004,    // Disable itemdef lookups
-	CSM_RF_READ_NODEDEFS = 0x00000008,    // Disable nodedef lookups
-	CSM_RF_LOOKUP_NODES = 0x00000010,     // Limit node lookups
-	CSM_RF_READ_PLAYERINFO = 0x00000020,  // Disable player info lookups
+	CSM_RF_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
+	CSM_RF_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
+	CSM_RF_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
+	CSM_RF_LOOKUP_NODES = 0x00000010, // Limit node lookups
+	CSM_RF_READ_PLAYERINFO = 0x00000020, // Disable player info lookups
 	CSM_RF_ALL = 0xFFFFFFFF,
 };
 
 enum InteractAction : u8
 {
-	INTERACT_START_DIGGING,     // 0: start digging (from undersurface) or use
-	INTERACT_STOP_DIGGING,      // 1: stop digging (all parameters ignored)
+	INTERACT_START_DIGGING, // 0: start digging (from undersurface) or use
+	INTERACT_STOP_DIGGING, // 1: stop digging (all parameters ignored)
 	INTERACT_DIGGING_COMPLETED, // 2: digging completed
-	INTERACT_PLACE,             // 3: place block or item (to abovesurface)
-	INTERACT_USE,               // 4: use item
-	INTERACT_ACTIVATE           // 5: rightclick air ("activate")
+	INTERACT_PLACE, // 3: place block or item (to abovesurface)
+	INTERACT_USE, // 4: use item
+	INTERACT_ACTIVATE // 5: rightclick air ("activate")
 };

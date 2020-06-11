@@ -25,24 +25,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <thread>
 #include <mutex>
-#if !defined(_WIN32)  // POSIX
-	#include <unistd.h>
+#if !defined(_WIN32) // POSIX
+#include <unistd.h>
 #endif
 #include "irrlichttypes.h"
 
 class ILogOutput;
 
-enum LogLevel {
+enum LogLevel
+{
 	LL_NONE, // Special level that is always printed
 	LL_ERROR,
 	LL_WARNING,
-	LL_ACTION,  // In-game actions
+	LL_ACTION, // In-game actions
 	LL_INFO,
 	LL_VERBOSE,
 	LL_MAX,
 };
 
-enum LogColor {
+enum LogColor
+{
 	LOG_COLOR_NEVER,
 	LOG_COLOR_ALWAYS,
 	LOG_COLOR_AUTO,
@@ -51,7 +53,8 @@ enum LogColor {
 typedef u8 LogLevelMask;
 #define LOGLEVEL_TO_MASKLEVEL(x) (1 << x)
 
-class Logger {
+class Logger
+{
 public:
 	void addOutput(ILogOutput *out);
 	void addOutput(ILogOutput *out, LogLevel lev);
@@ -77,9 +80,8 @@ public:
 
 private:
 	void logToOutputsRaw(LogLevel, const std::string &line);
-	void logToOutputs(LogLevel, const std::string &combined,
-		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text);
+	void logToOutputs(LogLevel, const std::string &combined, const std::string &time,
+			const std::string &thread_name, const std::string &payload_text);
 
 	const std::string getThreadName();
 
@@ -94,28 +96,28 @@ private:
 	bool m_trace_enabled;
 };
 
-class ILogOutput {
+class ILogOutput
+{
 public:
 	virtual void logRaw(LogLevel, const std::string &line) = 0;
-	virtual void log(LogLevel, const std::string &combined,
-		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text) = 0;
+	virtual void log(LogLevel, const std::string &combined, const std::string &time,
+			const std::string &thread_name, const std::string &payload_text) = 0;
 };
 
-class ICombinedLogOutput : public ILogOutput {
+class ICombinedLogOutput : public ILogOutput
+{
 public:
-	void log(LogLevel lev, const std::string &combined,
-		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text)
+	void log(LogLevel lev, const std::string &combined, const std::string &time,
+			const std::string &thread_name, const std::string &payload_text)
 	{
 		logRaw(lev, combined);
 	}
 };
 
-class StreamLogOutput : public ICombinedLogOutput {
+class StreamLogOutput : public ICombinedLogOutput
+{
 public:
-	StreamLogOutput(std::ostream &stream) :
-		m_stream(stream)
+	StreamLogOutput(std::ostream &stream) : m_stream(stream)
 	{
 #if !defined(_WIN32)
 		is_tty = isatty(fileno(stdout));
@@ -131,45 +133,31 @@ private:
 	bool is_tty;
 };
 
-class FileLogOutput : public ICombinedLogOutput {
+class FileLogOutput : public ICombinedLogOutput
+{
 public:
 	void setFile(const std::string &filename, s64 file_size_max);
 
-	void logRaw(LogLevel lev, const std::string &line)
-	{
-		m_stream << line << std::endl;
-	}
+	void logRaw(LogLevel lev, const std::string &line) { m_stream << line << std::endl; }
 
 private:
 	std::ofstream m_stream;
 };
 
-class LogOutputBuffer : public ICombinedLogOutput {
+class LogOutputBuffer : public ICombinedLogOutput
+{
 public:
-	LogOutputBuffer(Logger &logger) :
-		m_logger(logger)
-	{
-		updateLogLevel();
-	};
+	LogOutputBuffer(Logger &logger) : m_logger(logger) { updateLogLevel(); };
 
-	virtual ~LogOutputBuffer()
-	{
-		m_logger.removeOutput(this);
-	}
+	virtual ~LogOutputBuffer() { m_logger.removeOutput(this); }
 
 	void updateLogLevel();
 
 	void logRaw(LogLevel lev, const std::string &line);
 
-	void clear()
-	{
-		m_buffer = std::queue<std::string>();
-	}
+	void clear() { m_buffer = std::queue<std::string>(); }
 
-	bool empty() const
-	{
-		return m_buffer.empty();
-	}
+	bool empty() const { return m_buffer.empty(); }
 
 	std::string get()
 	{
@@ -212,11 +200,12 @@ extern std::ostream infostream;
 extern std::ostream verbosestream;
 extern std::ostream dstream;
 
-#define TRACEDO(x) do {               \
-	if (g_logger.getTraceEnabled()) { \
-		x;                            \
-	}                                 \
-} while (0)
+#define TRACEDO(x)                                                                       \
+	do {                                                                                 \
+		if (g_logger.getTraceEnabled()) {                                                \
+			x;                                                                           \
+		}                                                                                \
+	} while (0)
 
 #define TRACESTREAM(x) TRACEDO(verbosestream x)
 
@@ -225,5 +214,5 @@ extern std::ostream dstream;
 #define dout_server (*dout_server_ptr)
 
 #ifndef SERVER
-	#define dout_client (*dout_client_ptr)
+#define dout_client (*dout_client_ptr)
 #endif

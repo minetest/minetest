@@ -29,8 +29,8 @@ class GUIFileSelectMenu : public GUIModalMenu
 {
 public:
 	GUIFileSelectMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-			IMenuManager *menumgr, const std::string &title,
-			const std::string &formid, bool is_file_select);
+			IMenuManager *menumgr, const std::string &title, const std::string &formid,
+			bool is_file_select);
 	~GUIFileSelectMenu();
 
 	/*

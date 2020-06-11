@@ -29,12 +29,8 @@ class Client;
 class GUIChatConsole : public gui::IGUIElement
 {
 public:
-	GUIChatConsole(gui::IGUIEnvironment* env,
-			gui::IGUIElement* parent,
-			s32 id,
-			ChatBackend* backend,
-			Client* client,
-			IMenuManager* menumgr);
+	GUIChatConsole(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
+			ChatBackend *backend, Client *client, IMenuManager *menumgr);
 	virtual ~GUIChatConsole();
 
 	// Open the console (height = desired fraction of screen size)
@@ -63,18 +59,15 @@ public:
 	void replaceAndAddToHistory(const std::wstring &line);
 
 	// Change how the cursor looks
-	void setCursor(
-		bool visible,
-		bool blinking = false,
-		f32 blink_speed = 1.0,
-		f32 relative_height = 1.0);
+	void setCursor(bool visible, bool blinking = false, f32 blink_speed = 1.0,
+			f32 relative_height = 1.0);
 
 	// Irrlicht draw method
 	virtual void draw();
 
-	bool canTakeFocus(gui::IGUIElement* element) { return false; }
+	bool canTakeFocus(gui::IGUIElement *element) { return false; }
 
-	virtual bool OnEvent(const SEvent& event);
+	virtual bool OnEvent(const SEvent &event);
 
 	virtual void setVisible(bool visible);
 
@@ -89,9 +82,9 @@ private:
 	void drawPrompt();
 
 private:
-	ChatBackend* m_chat_backend;
-	Client* m_client;
-	IMenuManager* m_menumgr;
+	ChatBackend *m_chat_backend;
+	Client *m_client;
+	IMenuManager *m_menumgr;
 
 	// current screen size
 	v2u32 m_screensize;

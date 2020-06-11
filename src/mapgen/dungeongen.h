@@ -26,8 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define VMANIP_FLAG_DUNGEON_INSIDE VOXELFLAG_CHECKED1
 #define VMANIP_FLAG_DUNGEON_PRESERVE VOXELFLAG_CHECKED2
-#define VMANIP_FLAG_DUNGEON_UNTOUCHABLE (\
-		VMANIP_FLAG_DUNGEON_INSIDE|VMANIP_FLAG_DUNGEON_PRESERVE)
+#define VMANIP_FLAG_DUNGEON_UNTOUCHABLE                                                  \
+	(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE)
 
 class MMVManip;
 class NodeDefManager;
@@ -38,7 +38,8 @@ void random_turn(PseudoRandom &random, v3s16 &dir);
 int dir_to_facedir(v3s16 d);
 
 
-struct DungeonParams {
+struct DungeonParams
+{
 	s32 seed;
 
 	content_t c_wall;
@@ -82,7 +83,8 @@ struct DungeonParams {
 	GenNotifyType notifytype;
 };
 
-class DungeonGen {
+class DungeonGen
+{
 public:
 	MMVManip *vm = nullptr;
 	const NodeDefManager *ndef;
@@ -99,15 +101,15 @@ public:
 	v3s16 m_pos;
 	v3s16 m_dir;
 
-	DungeonGen(const NodeDefManager *ndef,
-		GenerateNotifier *gennotify, DungeonParams *dparams);
+	DungeonGen(const NodeDefManager *ndef, GenerateNotifier *gennotify,
+			DungeonParams *dparams);
 
 	void generate(MMVManip *vm, u32 bseed, v3s16 full_node_min, v3s16 full_node_max);
 
 	void makeDungeon(v3s16 start_padding);
 	void makeRoom(v3s16 roomsize, v3s16 roomplace);
-	void makeCorridor(v3s16 doorplace, v3s16 doordir,
-		v3s16 &result_place, v3s16 &result_dir);
+	void makeCorridor(
+			v3s16 doorplace, v3s16 doordir, v3s16 &result_place, v3s16 &result_dir);
 	void makeDoor(v3s16 doorplace, v3s16 doordir);
 	void makeFill(v3s16 place, v3s16 size, u8 avoid_flags, MapNode n, u8 or_flags);
 	void makeHole(v3s16 place);
@@ -116,10 +118,7 @@ public:
 	bool findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 			v3s16 &result_doordir, v3s16 &result_roomplace);
 
-	inline void randomizeDir()
-	{
-		m_dir = rand_ortho_dir(random, dp.diagonal_dirs);
-	}
+	inline void randomizeDir() { m_dir = rand_ortho_dir(random, dp.diagonal_dirs); }
 };
 
 extern NoiseParams nparams_dungeon_density;

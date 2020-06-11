@@ -110,14 +110,13 @@ public:
 	AutoHideButtonBar(IrrlichtDevice *device, IEventReceiver *receiver);
 
 	void init(ISimpleTextureSource *tsrc, const char *starter_img, int button_id,
-			const v2s32 &UpperLeft, const v2s32 &LowerRight,
-			autohide_button_bar_dir dir, float timeout);
+			const v2s32 &UpperLeft, const v2s32 &LowerRight, autohide_button_bar_dir dir,
+			float timeout);
 
 	~AutoHideButtonBar();
 
 	// add button to be shown
-	void addButton(touch_gui_button_id id, const wchar_t *caption,
-			const char *btn_image);
+	void addButton(touch_gui_button_id id, const wchar_t *caption, const char *btn_image);
 
 	// add toggle button to be shown
 	void addToggleButton(touch_gui_button_id id, const wchar_t *caption,
@@ -215,9 +214,9 @@ private:
 	double m_camera_pitch = 0.0;
 
 	// forward, backward, left, right
-	touch_gui_button_id m_joystick_names[5] = {
-			forward_id, backward_id, left_id, right_id, special1_id};
-	bool m_joystick_status[5] = {false, false, false, false, false};
+	touch_gui_button_id m_joystick_names[5] = { forward_id, backward_id, left_id,
+		right_id, special1_id };
+	bool m_joystick_status[5] = { false, false, false, false, false };
 
 	/*
 	 * A line starting at the camera and pointing towards the
@@ -258,9 +257,8 @@ private:
 			float repeat_delay = BUTTON_REPEAT_DELAY);
 
 	// initialize a joystick button
-	button_info *initJoystickButton(touch_gui_button_id id,
-			const rect<s32> &button_rect, int texture_id,
-			bool visible = true);
+	button_info *initJoystickButton(touch_gui_button_id id, const rect<s32> &button_rect,
+			int texture_id, bool visible = true);
 
 	struct id_status
 	{

@@ -26,29 +26,21 @@ class ServerActiveObject;
 
 struct InventoryLocation
 {
-	enum Type{
+	enum Type
+	{
 		UNDEFINED,
 		CURRENT_PLAYER,
 		PLAYER,
 		NODEMETA,
-        DETACHED,
+		DETACHED,
 	} type;
 
 	std::string name; // PLAYER, DETACHED
 	v3s16 p; // NODEMETA
 
-	InventoryLocation()
-	{
-		setUndefined();
-	}
-	void setUndefined()
-	{
-		type = UNDEFINED;
-	}
-	void setCurrentPlayer()
-	{
-		type = CURRENT_PLAYER;
-	}
+	InventoryLocation() { setUndefined(); }
+	void setUndefined() { type = UNDEFINED; }
+	void setCurrentPlayer() { type = CURRENT_PLAYER; }
 	void setPlayer(const std::string &name_)
 	{
 		type = PLAYER;
@@ -67,9 +59,9 @@ struct InventoryLocation
 
 	bool operator==(const InventoryLocation &other) const
 	{
-		if(type != other.type)
+		if (type != other.type)
 			return false;
-		switch(type){
+		switch (type) {
 		case UNDEFINED:
 			return false;
 		case CURRENT_PLAYER:
@@ -83,14 +75,11 @@ struct InventoryLocation
 		}
 		return false;
 	}
-	bool operator!=(const InventoryLocation &other) const
-	{
-		return !(*this == other);
-	}
+	bool operator!=(const InventoryLocation &other) const { return !(*this == other); }
 
 	void applyCurrentPlayer(const std::string &name_)
 	{
-		if(type == CURRENT_PLAYER)
+		if (type == CURRENT_PLAYER)
 			setPlayer(name_);
 	}
 
@@ -109,14 +98,15 @@ public:
 	virtual ~InventoryManager() = default;
 
 	// Get an inventory (server and client)
-	virtual Inventory* getInventory(const InventoryLocation &loc){return NULL;}
-    // Set modified (will be saved and sent over network; only on server)
+	virtual Inventory *getInventory(const InventoryLocation &loc) { return NULL; }
+	// Set modified (will be saved and sent over network; only on server)
 	virtual void setInventoryModified(const InventoryLocation &loc) {}
-    // Send inventory action to server (only on client)
-	virtual void inventoryAction(InventoryAction *a){}
+	// Send inventory action to server (only on client)
+	virtual void inventoryAction(InventoryAction *a) {}
 };
 
-enum class IAction : u16 {
+enum class IAction : u16
+{
 	Move,
 	Drop,
 	Craft
@@ -128,10 +118,11 @@ struct InventoryAction
 
 	virtual IAction getType() const = 0;
 	virtual void serialize(std::ostream &os) const = 0;
-	virtual void apply(InventoryManager *mgr, ServerActiveObject *player,
-			IGameDef *gamedef) = 0;
+	virtual void apply(
+			InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef) = 0;
 	virtual void clientApply(InventoryManager *mgr, IGameDef *gamedef) = 0;
-	virtual ~InventoryAction() = default;;
+	virtual ~InventoryAction() = default;
+	;
 };
 
 struct MoveAction
@@ -159,10 +150,7 @@ struct IMoveAction : public InventoryAction, public MoveAction
 
 	IMoveAction(std::istream &is, bool somewhere);
 
-	IAction getType() const
-	{
-		return IAction::Move;
-	}
+	IAction getType() const { return IAction::Move; }
 
 	void serialize(std::ostream &os) const
 	{
@@ -194,18 +182,15 @@ struct IDropAction : public InventoryAction, public MoveAction
 
 	IDropAction(std::istream &is);
 
-	IAction getType() const
-	{
-		return IAction::Drop;
-	}
+	IAction getType() const { return IAction::Drop; }
 
 	void serialize(std::ostream &os) const
 	{
-		os<<"Drop ";
-		os<<count<<" ";
-		os<<from_inv.dump()<<" ";
-		os<<from_list<<" ";
-		os<<from_i;
+		os << "Drop ";
+		os << count << " ";
+		os << from_inv.dump() << " ";
+		os << from_list << " ";
+		os << from_i;
 	}
 
 	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
@@ -223,16 +208,13 @@ struct ICraftAction : public InventoryAction
 
 	ICraftAction(std::istream &is);
 
-	IAction getType() const
-	{
-		return IAction::Craft;
-	}
+	IAction getType() const { return IAction::Craft; }
 
 	void serialize(std::ostream &os) const
 	{
-		os<<"Craft ";
-		os<<count<<" ";
-		os<<craft_inv.dump()<<" ";
+		os << "Craft ";
+		os << count << " ";
+		os << craft_inv.dump() << " ";
 	}
 
 	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
@@ -242,5 +224,5 @@ struct ICraftAction : public InventoryAction
 
 // Crafting helper
 bool getCraftingResult(Inventory *inv, ItemStack &result,
-		std::vector<ItemStack> &output_replacements,
-		bool decrementInput, IGameDef *gamedef);
+		std::vector<ItemStack> &output_replacements, bool decrementInput,
+		IGameDef *gamedef);

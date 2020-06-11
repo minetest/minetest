@@ -106,8 +106,8 @@ public:
 
 		// img & item specific attributes
 		std::string name;
-		v3s16 angle{0, 0, 0};
-		v3s16 rotation{0, 0, 0};
+		v3s16 angle{ 0, 0, 0 };
+		v3s16 rotation{ 0, 0, 0 };
 
 		s32 margin = 10;
 
@@ -134,7 +134,12 @@ public:
 	Tag m_root_tag;
 
 protected:
-	typedef enum { ER_NONE, ER_TAG, ER_NEWLINE } EndReason;
+	typedef enum
+	{
+		ER_NONE,
+		ER_TAG,
+		ER_NEWLINE
+	} EndReason;
 
 	// Parser functions
 	void enterElement(ElementType type);
@@ -145,8 +150,8 @@ protected:
 	ParsedText::Tag *newTag(const std::string &name, const AttrsList &attrs);
 	ParsedText::Tag *openTag(const std::string &name, const AttrsList &attrs);
 	bool closeTag(const std::string &name);
-	void parseGenericStyleAttr(const std::string &name, const std::string &value,
-			StyleList &style);
+	void parseGenericStyleAttr(
+			const std::string &name, const std::string &value, StyleList &style);
 	void parseStyles(const AttrsList &attrs, StyleList &style);
 	void globalTag(const ParsedText::AttrsList &attrs);
 	u32 parseTag(const wchar_t *text, u32 cursor);
@@ -174,8 +179,7 @@ public:
 
 	void place(const core::rect<s32> &dest_rect);
 	inline s32 getHeight() { return m_height; };
-	void draw(const core::rect<s32> &clip_rect,
-			const core::position2d<s32> &dest_offset);
+	void draw(const core::rect<s32> &clip_rect, const core::position2d<s32> &dest_offset);
 	ParsedText::Element *getElementAt(core::position2d<s32> pos);
 	ParsedText::Tag *m_hovertag;
 
@@ -199,9 +203,8 @@ class GUIHyperText : public gui::IGUIElement
 public:
 	//! constructor
 	GUIHyperText(const wchar_t *text, gui::IGUIEnvironment *environment,
-			gui::IGUIElement *parent, s32 id,
-			const core::rect<s32> &rectangle, Client *client,
-			ISimpleTextureSource *tsrc);
+			gui::IGUIElement *parent, s32 id, const core::rect<s32> &rectangle,
+			Client *client, ISimpleTextureSource *tsrc);
 
 	//! destructor
 	virtual ~GUIHyperText();

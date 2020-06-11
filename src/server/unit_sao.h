@@ -42,18 +42,15 @@ public:
 	f32 getRadYawDep() const { return (m_rotation.Y + 90.) * core::DEGTORAD; }
 
 	// Armor groups
-	inline bool isImmortal() const
-	{
-		return itemgroup_get(getArmorGroups(), "immortal");
-	}
+	inline bool isImmortal() const { return itemgroup_get(getArmorGroups(), "immortal"); }
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	const ItemGroupList &getArmorGroups() const;
 
 	// Animation
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend,
-			bool frame_loop);
-	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend,
-			bool *frame_loop);
+	void setAnimation(
+			v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
+	void getAnimation(
+			v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
 	void setAnimationSpeed(float frame_speed);
 
 	// Bone position
@@ -63,10 +60,10 @@ public:
 	// Attachments
 	ServerActiveObject *getParent() const;
 	inline bool isAttached() const { return getParent(); }
-	void setAttachment(int parent_id, const std::string &bone, v3f position,
-			v3f rotation);
-	void getAttachment(int *parent_id, std::string *bone, v3f *position,
-			v3f *rotation) const;
+	void setAttachment(
+			int parent_id, const std::string &bone, v3f position, v3f rotation);
+	void getAttachment(
+			int *parent_id, std::string *bone, v3f *position, v3f *rotation) const;
 	void clearChildAttachments();
 	void clearParentAttachment();
 	void addAttachmentChild(int child_id);
@@ -87,8 +84,8 @@ public:
 			const v3f &velocity, const v3f &acceleration, const v3f &rotation,
 			bool do_interpolate, bool is_movement_end, f32 update_interval);
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
-	static std::string generateUpdateBonePositionCommand(const std::string &bone,
-			const v3f &position, const v3f &rotation);
+	static std::string generateUpdateBonePositionCommand(
+			const std::string &bone, const v3f &position, const v3f &rotation);
 	void sendPunchCommand();
 
 protected:

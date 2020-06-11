@@ -79,8 +79,7 @@ public:
 
 	virtual ~ISimpleTextureSource() = default;
 
-	virtual video::ITexture* getTexture(
-			const std::string &name, u32 *id = nullptr) = 0;
+	virtual video::ITexture *getTexture(const std::string &name, u32 *id = nullptr) = 0;
 };
 
 class ITextureSource : public ISimpleTextureSource
@@ -90,12 +89,11 @@ public:
 
 	virtual ~ITextureSource() = default;
 
-	virtual u32 getTextureId(const std::string &name)=0;
-	virtual std::string getTextureName(u32 id)=0;
-	virtual video::ITexture* getTexture(u32 id)=0;
-	virtual video::ITexture* getTexture(
-			const std::string &name, u32 *id = nullptr)=0;
-	virtual video::ITexture* getTextureForMesh(
+	virtual u32 getTextureId(const std::string &name) = 0;
+	virtual std::string getTextureName(u32 id) = 0;
+	virtual video::ITexture *getTexture(u32 id) = 0;
+	virtual video::ITexture *getTexture(const std::string &name, u32 *id = nullptr) = 0;
+	virtual video::ITexture *getTextureForMesh(
 			const std::string &name, u32 *id = nullptr) = 0;
 	/*!
 	 * Returns a palette from the given texture name.
@@ -103,11 +101,11 @@ public:
 	 * destructed.
 	 * Should be called from the main thread.
 	 */
-	virtual Palette* getPalette(const std::string &name) = 0;
-	virtual bool isKnownSourceImage(const std::string &name)=0;
-	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
-	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
-	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
+	virtual Palette *getPalette(const std::string &name) = 0;
+	virtual bool isKnownSourceImage(const std::string &name) = 0;
+	virtual video::ITexture *getNormalTexture(const std::string &name) = 0;
+	virtual video::SColor getTextureAverageColor(const std::string &name) = 0;
+	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present) = 0;
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -117,29 +115,29 @@ public:
 
 	virtual ~IWritableTextureSource() = default;
 
-	virtual u32 getTextureId(const std::string &name)=0;
-	virtual std::string getTextureName(u32 id)=0;
-	virtual video::ITexture* getTexture(u32 id)=0;
-	virtual video::ITexture* getTexture(
-			const std::string &name, u32 *id = nullptr)=0;
-	virtual bool isKnownSourceImage(const std::string &name)=0;
+	virtual u32 getTextureId(const std::string &name) = 0;
+	virtual std::string getTextureName(u32 id) = 0;
+	virtual video::ITexture *getTexture(u32 id) = 0;
+	virtual video::ITexture *getTexture(const std::string &name, u32 *id = nullptr) = 0;
+	virtual bool isKnownSourceImage(const std::string &name) = 0;
 
-	virtual void processQueue()=0;
-	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
-	virtual void rebuildImagesAndTextures()=0;
-	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
-	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
-	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
+	virtual void processQueue() = 0;
+	virtual void insertSourceImage(const std::string &name, video::IImage *img) = 0;
+	virtual void rebuildImagesAndTextures() = 0;
+	virtual video::ITexture *getNormalTexture(const std::string &name) = 0;
+	virtual video::SColor getTextureAverageColor(const std::string &name) = 0;
+	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present) = 0;
 };
 
 IWritableTextureSource *createTextureSource();
 
 #if ENABLE_GLES
 bool hasNPotSupport();
-video::IImage * Align2Npot2(video::IImage * image, irr::video::IVideoDriver* driver);
+video::IImage *Align2Npot2(video::IImage *image, irr::video::IVideoDriver *driver);
 #endif
 
-enum MaterialType{
+enum MaterialType
+{
 	TILE_MATERIAL_BASIC,
 	TILE_MATERIAL_ALPHA,
 	TILE_MATERIAL_LIQUID_TRANSPARENT,
@@ -191,21 +189,15 @@ struct TileLayer
 	 */
 	bool operator==(const TileLayer &other) const
 	{
-		return
-			texture_id == other.texture_id &&
-			material_type == other.material_type &&
-			material_flags == other.material_flags &&
-			color == other.color &&
-			scale == other.scale;
+		return texture_id == other.texture_id && material_type == other.material_type &&
+				material_flags == other.material_flags && color == other.color &&
+				scale == other.scale;
 	}
 
 	/*!
 	 * Two tiles are not equal if they must have different vertices.
 	 */
-	bool operator!=(const TileLayer &other) const
-	{
-		return !(*this == other);
-	}
+	bool operator!=(const TileLayer &other) const { return !(*this == other); }
 
 	// Sets everything else except the texture in the material
 	void applyMaterialOptions(video::SMaterial &material) const
@@ -255,8 +247,8 @@ struct TileLayer
 
 	bool isTileable() const
 	{
-		return (material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
-			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
+		return (material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL) &&
+				(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
 	}
 
 	// Ordered for size, please do not reorder
@@ -274,10 +266,9 @@ struct TileLayer
 
 	u8 material_type = TILE_MATERIAL_BASIC;
 	u8 material_flags =
-		//0 // <- DEBUG, Use the one below
-		MATERIAL_FLAG_BACKFACE_CULLING |
-		MATERIAL_FLAG_TILEABLE_HORIZONTAL|
-		MATERIAL_FLAG_TILEABLE_VERTICAL;
+			//0 // <- DEBUG, Use the one below
+			MATERIAL_FLAG_BACKFACE_CULLING | MATERIAL_FLAG_TILEABLE_HORIZONTAL |
+			MATERIAL_FLAG_TILEABLE_VERTICAL;
 
 	//! If true, the tile has its own color.
 	bool has_color = false;
@@ -303,16 +294,16 @@ struct TileSpec
 	/*!
 	 * Returns true if this tile can be merged with the other tile.
 	 */
-	bool isTileable(const TileSpec &other) const {
+	bool isTileable(const TileSpec &other) const
+	{
 		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 			if (layers[layer] != other.layers[layer])
 				return false;
 			if (!layers[layer].isTileable())
 				return false;
 		}
-		return rotation == 0
-			&& rotation == other.rotation
-			&& emissive_light == other.emissive_light;
+		return rotation == 0 && rotation == other.rotation &&
+				emissive_light == other.emissive_light;
 	}
 
 	//! If true, the tile rotation is ignored.

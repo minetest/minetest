@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
 
-typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+typedef u16 biome_t; // copy from mg_biome.h to avoid an unnecessary include
 
 class GenerateNotifier;
 
@@ -41,9 +41,9 @@ class GenerateNotifier;
 class CavesNoiseIntersection
 {
 public:
-	CavesNoiseIntersection(const NodeDefManager *nodedef,
-		BiomeManager *biomemgr, v3s16 chunksize, NoiseParams *np_cave1,
-		NoiseParams *np_cave2, s32 seed, float cave_width);
+	CavesNoiseIntersection(const NodeDefManager *nodedef, BiomeManager *biomemgr,
+			v3s16 chunksize, NoiseParams *np_cave1, NoiseParams *np_cave2, s32 seed,
+			float cave_width);
 	~CavesNoiseIntersection();
 
 	void generateCaves(MMVManip *vm, v3s16 nmin, v3s16 nmax, biome_t *biomemap);
@@ -70,9 +70,8 @@ private:
 class CavernsNoise
 {
 public:
-	CavernsNoise(const NodeDefManager *nodedef, v3s16 chunksize,
-		NoiseParams *np_cavern, s32 seed, float cavern_limit,
-		float cavern_taper, float cavern_threshold);
+	CavernsNoise(const NodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
+			s32 seed, float cavern_limit, float cavern_taper, float cavern_threshold);
 	~CavernsNoise();
 
 	bool generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax);
@@ -140,10 +139,10 @@ public:
 	v3s16 node_min;
 	v3s16 node_max;
 
-	v3f orp;  // starting point, relative to caved space
+	v3f orp; // starting point, relative to caved space
 	v3s16 of; // absolute coordinates of caved space
 	v3s16 ar; // allowed route area
-	s16 rs;   // tunnel radius size
+	s16 rs; // tunnel radius size
 	v3f main_direction;
 
 	s16 route_y_min;
@@ -158,10 +157,10 @@ public:
 	// ndef is a mandatory parameter.
 	// If gennotify is NULL, generation events are not logged.
 	// If biomegen is NULL, cave liquids have classic behaviour.
-	CavesRandomWalk(const NodeDefManager *ndef, GenerateNotifier *gennotify =
-		NULL, s32 seed = 0, int water_level = 1, content_t water_source =
-		CONTENT_IGNORE, content_t lava_source = CONTENT_IGNORE,
-		float large_cave_flooded = 0.5f, BiomeGen *biomegen = NULL);
+	CavesRandomWalk(const NodeDefManager *ndef, GenerateNotifier *gennotify = NULL,
+			s32 seed = 0, int water_level = 1, content_t water_source = CONTENT_IGNORE,
+			content_t lava_source = CONTENT_IGNORE, float large_cave_flooded = 0.5f,
+			BiomeGen *biomegen = NULL);
 
 	// vm and ps are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to
@@ -218,10 +217,10 @@ public:
 	v3s16 node_min;
 	v3s16 node_max;
 
-	v3f orp;  // starting point, relative to caved space
+	v3f orp; // starting point, relative to caved space
 	v3s16 of; // absolute coordinates of caved space
 	v3s16 ar; // allowed route area
-	s16 rs;   // tunnel radius size
+	s16 rs; // tunnel radius size
 	v3f main_direction;
 
 	s16 route_y_min;

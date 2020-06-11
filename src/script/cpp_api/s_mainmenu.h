@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "gui/guiMainMenu.h"
 
-class ScriptApiMainMenu : virtual public ScriptApiBase {
+class ScriptApiMainMenu : virtual public ScriptApiBase
+{
 public:
 	/**
 	 * Hand over MainMenuDataForScript to lua to inform lua of the content

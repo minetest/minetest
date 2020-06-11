@@ -32,12 +32,9 @@ public:
 	{
 		ItemSpec() = default;
 
-		ItemSpec(const InventoryLocation &a_inventoryloc,
-				const std::string &a_listname,
-				s32 a_i) :
-			inventoryloc(a_inventoryloc),
-			listname(a_listname),
-			i(a_i)
+		ItemSpec(const InventoryLocation &a_inventoryloc, const std::string &a_listname,
+				s32 a_i)
+			: inventoryloc(a_inventoryloc), listname(a_listname), i(a_i)
 		{
 		}
 
@@ -49,7 +46,8 @@ public:
 	};
 
 	// options for inventorylists that are setable with the lua api
-	struct Options {
+	struct Options
+	{
 		// whether a one-pixel border for the slots should be drawn and its color
 		bool slotborder = false;
 		video::SColor slotbordercolor = video::SColor(200, 0, 0, 0);
@@ -58,34 +56,20 @@ public:
 		video::SColor slotbg_h = video::SColor(255, 192, 192, 192);
 	};
 
-	GUIInventoryList(gui::IGUIEnvironment *env,
-		gui::IGUIElement *parent,
-		s32 id,
-		const core::rect<s32> &rectangle,
-		InventoryManager *invmgr,
-		const InventoryLocation &inventoryloc,
-		const std::string &listname,
-		const v2s32 &geom,
-		const s32 start_item_i,
-		const v2s32 &slot_size,
-		const v2f32 &slot_spacing,
-		GUIFormSpecMenu *fs_menu,
-		const Options &options,
-		gui::IGUIFont *font);
+	GUIInventoryList(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
+			const core::rect<s32> &rectangle, InventoryManager *invmgr,
+			const InventoryLocation &inventoryloc, const std::string &listname,
+			const v2s32 &geom, const s32 start_item_i, const v2s32 &slot_size,
+			const v2f32 &slot_spacing, GUIFormSpecMenu *fs_menu, const Options &options,
+			gui::IGUIFont *font);
 
 	virtual void draw() override;
 
 	virtual bool OnEvent(const SEvent &event) override;
 
-	const InventoryLocation &getInventoryloc() const
-	{
-		return m_inventoryloc;
-	}
+	const InventoryLocation &getInventoryloc() const { return m_inventoryloc; }
 
-	const std::string &getListname() const
-	{
-		return m_listname;
-	}
+	const std::string &getListname() const { return m_listname; }
 
 	void setSlotBGColors(const video::SColor &slotbg_n, const video::SColor &slotbg_h)
 	{

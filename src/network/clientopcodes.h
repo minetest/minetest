@@ -25,7 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class NetworkPacket;
 
-enum ToClientConnectionState {
+enum ToClientConnectionState
+{
 	TOCLIENT_STATE_NOT_CONNECTED,
 	TOCLIENT_STATE_CONNECTED,
 	TOCLIENT_STATE_ALL,
@@ -33,14 +34,14 @@ enum ToClientConnectionState {
 
 struct ToClientCommandHandler
 {
-    const char* name;
-    ToClientConnectionState state;
-    void (Client::*handler)(NetworkPacket* pkt);
+	const char *name;
+	ToClientConnectionState state;
+	void (Client::*handler)(NetworkPacket *pkt);
 };
 
 struct ServerCommandFactory
 {
-	const char* name;
+	const char *name;
 	u8 channel;
 	bool reliable;
 };

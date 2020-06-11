@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace con
 {
-
 typedef enum
 {
 	MIN_RTT,
@@ -64,8 +63,8 @@ enum PeerChangeType : u8
 
 struct PeerChange
 {
-	PeerChange(PeerChangeType t, session_t _peer_id, bool _timeout) :
-			type(t), peer_id(_peer_id), timeout(_timeout)
+	PeerChange(PeerChangeType t, session_t _peer_id, bool _timeout)
+		: type(t), peer_id(_peer_id), timeout(_timeout)
 	{
 	}
 	PeerChange() = delete;
@@ -74,4 +73,4 @@ struct PeerChange
 	session_t peer_id;
 	bool timeout;
 };
-}
+} // namespace con

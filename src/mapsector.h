@@ -39,20 +39,16 @@ class IGameDef;
 class MapSector
 {
 public:
-
 	MapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
 	virtual ~MapSector();
 
 	void deleteBlocks();
 
-	v2s16 getPos()
-	{
-		return m_pos;
-	}
+	v2s16 getPos() { return m_pos; }
 
-	MapBlock * getBlockNoCreateNoEx(s16 y);
-	MapBlock * createBlankBlockNoInsert(s16 y);
-	MapBlock * createBlankBlock(s16 y);
+	MapBlock *getBlockNoCreateNoEx(s16 y);
+	MapBlock *createBlankBlockNoInsert(s16 y);
+	MapBlock *createBlankBlock(s16 y);
 
 	void insertBlock(MapBlock *block);
 
@@ -63,9 +59,8 @@ public:
 	bool empty() const { return m_blocks.empty(); }
 
 protected:
-
 	// The pile of MapBlocks
-	std::unordered_map<s16, MapBlock*> m_blocks;
+	std::unordered_map<s16, MapBlock *> m_blocks;
 
 	Map *m_parent;
 	// Position on parent (in MapBlock widths)
@@ -82,5 +77,4 @@ protected:
 		Private methods
 	*/
 	MapBlock *getBlockBuffered(s16 y);
-
 };

@@ -35,15 +35,16 @@ extern const u8 wallmounted_to_facedir[6];
 
 /// Direction in the 6D format. g_27dirs contains corresponding vectors.
 /// Here P means Positive, N stands for Negative.
-enum Direction6D {
-// 0
+enum Direction6D
+{
+	// 0
 	D6D_ZP,
 	D6D_YP,
 	D6D_XP,
 	D6D_ZN,
 	D6D_YN,
 	D6D_XN,
-// 6
+	// 6
 	D6D_XN_YP,
 	D6D_XP_YP,
 	D6D_YP_ZP,
@@ -56,7 +57,7 @@ enum Direction6D {
 	D6D_XP_YN,
 	D6D_YN_ZP,
 	D6D_YN_ZN,
-// 18
+	// 18
 	D6D_XN_YP_ZP,
 	D6D_XP_YP_ZP,
 	D6D_XN_YP_ZN,
@@ -65,21 +66,22 @@ enum Direction6D {
 	D6D_XP_YN_ZP,
 	D6D_XN_YN_ZN,
 	D6D_XP_YN_ZN,
-// 26
+	// 26
 	D6D,
 
-// aliases
-	D6D_BACK   = D6D_ZP,
-	D6D_TOP    = D6D_YP,
-	D6D_RIGHT  = D6D_XP,
-	D6D_FRONT  = D6D_ZN,
+	// aliases
+	D6D_BACK = D6D_ZP,
+	D6D_TOP = D6D_YP,
+	D6D_RIGHT = D6D_XP,
+	D6D_FRONT = D6D_ZN,
 	D6D_BOTTOM = D6D_YN,
-	D6D_LEFT   = D6D_XN,
+	D6D_LEFT = D6D_XN,
 };
 
 /// Direction in the wallmounted format.
 /// P is Positive, N is Negative.
-enum DirectionWallmounted {
+enum DirectionWallmounted
+{
 	DWM_YP,
 	DWM_YN,
 	DWM_XP,

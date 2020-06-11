@@ -144,7 +144,7 @@ public:
 
 	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
 
-	const aabb3f& getCollisionbox() const { return m_collisionbox; }
+	const aabb3f &getCollisionbox() const { return m_collisionbox; }
 
 	float getZoomFOV() const { return m_zoom_fov; }
 	void setZoomFOV(float zoom_fov) { m_zoom_fov = zoom_fov; }
@@ -153,20 +153,15 @@ public:
 
 	bool isDead() const;
 
-	inline void addVelocity(const v3f &vel)
-	{
-		added_velocity += vel;
-	}
+	inline void addVelocity(const v3f &vel) { added_velocity += vel; }
 
 private:
 	void accelerate(const v3f &target_speed, const f32 max_increase_H,
-		const f32 max_increase_V, const bool use_pitch);
+			const f32 max_increase_V, const bool use_pitch);
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
 	float getSlipFactor(Environment *env, const v3f &speedH);
-	void handleAutojump(f32 dtime, Environment *env,
-		const collisionMoveResult &result,
-		const v3f &position_before_move, const v3f &speed_before_move,
-		f32 pos_max_d);
+	void handleAutojump(f32 dtime, Environment *env, const collisionMoveResult &result,
+			const v3f &position_before_move, const v3f &speed_before_move, f32 pos_max_d);
 
 	v3f m_position;
 	v3s16 m_standing_node;
@@ -197,8 +192,8 @@ private:
 	f32 m_yaw = 0.0f;
 	f32 m_pitch = 0.0f;
 	bool camera_barely_in_ceiling = false;
-	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
-		BS * 1.75f, BS * 0.30f);
+	aabb3f m_collisionbox =
+			aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f, BS * 1.75f, BS * 0.30f);
 	float m_eye_height = 1.625f;
 	float m_zoom_fov = 0.0f;
 	bool m_autojump = false;

@@ -30,10 +30,9 @@ class ISimpleTextureSource;
 class GUIConfirmRegistration : public GUIModalMenu
 {
 public:
-	GUIConfirmRegistration(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
-			s32 id, IMenuManager *menumgr, Client *client,
-			const std::string &playername, const std::string &password,
-			bool *aborted, ISimpleTextureSource *tsrc);
+	GUIConfirmRegistration(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
+			IMenuManager *menumgr, Client *client, const std::string &playername,
+			const std::string &password, bool *aborted, ISimpleTextureSource *tsrc);
 	~GUIConfirmRegistration();
 
 	void removeChildren();

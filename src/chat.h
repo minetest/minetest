@@ -38,15 +38,13 @@ struct ChatLine
 	// message text
 	EnrichedString text;
 
-	ChatLine(const std::wstring &a_name, const std::wstring &a_text):
-		name(a_name),
-		text(a_text)
+	ChatLine(const std::wstring &a_name, const std::wstring &a_text)
+		: name(a_name), text(a_text)
 	{
 	}
 
-	ChatLine(const EnrichedString &a_name, const EnrichedString &a_text):
-		name(a_name),
-		text(a_text)
+	ChatLine(const EnrichedString &a_name, const EnrichedString &a_text)
+		: name(a_name), text(a_text)
 	{
 	}
 };
@@ -85,7 +83,7 @@ public:
 	// Get number of lines currently in buffer.
 	u32 getLineCount() const;
 	// Get reference to i-th chat line.
-	const ChatLine& getLine(u32 index) const;
+	const ChatLine &getLine(u32 index) const;
 
 	// Increase each chat line's age by dtime.
 	void step(f32 dtime);
@@ -102,7 +100,7 @@ public:
 	void reformat(u32 cols, u32 rows);
 	// Get formatted line for a given row (0 is top of screen).
 	// Only valid after reformat has been called at least once
-	const ChatFormattedLine& getFormattedLine(u32 row) const;
+	const ChatFormattedLine &getFormattedLine(u32 row) const;
 	// Scrolling in formatted buffer (relative)
 	// positive rows == scroll up, negative rows == scroll down
 	void scroll(s32 rows);
@@ -116,10 +114,11 @@ public:
 	// Format a chat line for the given number of columns.
 	// Appends the formatted lines to the destination array and
 	// returns the number of formatted lines.
-	u32 formatChatLine(const ChatLine& line, u32 cols,
-			std::vector<ChatFormattedLine>& destination) const;
+	u32 formatChatLine(const ChatLine &line, u32 cols,
+			std::vector<ChatFormattedLine> &destination) const;
 
 	void resize(u32 scrollback);
+
 protected:
 	s32 getTopScrollPos() const;
 	s32 getBottomScrollPos() const;
@@ -173,7 +172,7 @@ public:
 	void historyNext();
 
 	// Nick completion
-	void nickCompletion(const std::list<std::string>& names, bool backwards);
+	void nickCompletion(const std::list<std::string> &names, bool backwards);
 
 	// Update console size and reformat the visible portion of the prompt
 	void reformat(u32 cols);
@@ -185,20 +184,23 @@ public:
 	s32 getCursorLength() const { return m_cursor_len; }
 
 	// Cursor operations
-	enum CursorOp {
+	enum CursorOp
+	{
 		CURSOROP_MOVE,
 		CURSOROP_SELECT,
 		CURSOROP_DELETE
 	};
 
 	// Cursor operation direction
-	enum CursorOpDir {
+	enum CursorOpDir
+	{
 		CURSOROP_DIR_LEFT,
 		CURSOROP_DIR_RIGHT
 	};
 
 	// Cursor operation scope
-	enum CursorOpScope {
+	enum CursorOpScope
+	{
 		CURSOROP_SCOPE_CHARACTER,
 		CURSOROP_SCOPE_WORD,
 		CURSOROP_SCOPE_LINE,
@@ -261,13 +263,13 @@ public:
 	void addUnparsedMessage(std::wstring line);
 
 	// Get the console buffer
-	ChatBuffer& getConsoleBuffer();
+	ChatBuffer &getConsoleBuffer();
 	// Get the recent messages buffer
-	ChatBuffer& getRecentBuffer();
+	ChatBuffer &getRecentBuffer();
 	// Concatenate all recent messages
 	EnrichedString getRecentChat() const;
 	// Get the console prompt
-	ChatPrompt& getPrompt();
+	ChatPrompt &getPrompt();
 
 	// Reformat all buffers
 	void reformat(u32 cols, u32 rows);

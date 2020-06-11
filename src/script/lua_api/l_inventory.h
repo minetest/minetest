@@ -30,7 +30,8 @@ class RemotePlayer;
 	InvRef
 */
 
-class InvRef : public ModApiBase {
+class InvRef : public ModApiBase
+{
 private:
 	InventoryLocation m_loc;
 
@@ -39,10 +40,9 @@ private:
 
 	static InvRef *checkobject(lua_State *L, int narg);
 
-	static Inventory* getinv(lua_State *L, InvRef *ref);
+	static Inventory *getinv(lua_State *L, InvRef *ref);
 
-	static InventoryList* getlist(lua_State *L, InvRef *ref,
-			const char *listname);
+	static InventoryList *getlist(lua_State *L, InvRef *ref, const char *listname);
 
 	static void reportInventoryChange(lua_State *L, InvRef *ref);
 
@@ -116,7 +116,8 @@ public:
 	static void Register(lua_State *L);
 };
 
-class ModApiInventory : public ModApiBase {
+class ModApiInventory : public ModApiBase
+{
 private:
 	static int l_create_detached_inventory_raw(lua_State *L);
 

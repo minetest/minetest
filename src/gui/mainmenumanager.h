@@ -54,7 +54,7 @@ public:
 		}
 #endif
 
-		if(!m_stack.empty())
+		if (!m_stack.empty())
 			m_stack.back()->setVisible(false);
 		m_stack.push_back(menu);
 	}
@@ -68,35 +68,32 @@ public:
 		assert(*i == menu);
 		m_stack.erase(i);*/
 
-		if(!m_stack.empty())
+		if (!m_stack.empty())
 			m_stack.back()->setVisible(true);
 	}
 
 	// Returns true to prevent further processing
-	virtual bool preprocessEvent(const SEvent& event)
+	virtual bool preprocessEvent(const SEvent &event)
 	{
 		if (m_stack.empty())
 			return false;
-		GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(m_stack.back());
+		GUIModalMenu *mm = dynamic_cast<GUIModalMenu *>(m_stack.back());
 		return mm && mm->preprocessEvent(event);
 	}
 
-	u32 menuCount()
-	{
-		return m_stack.size();
-	}
+	u32 menuCount() { return m_stack.size(); }
 
 	bool pausesGame()
 	{
 		for (gui::IGUIElement *i : m_stack) {
-			GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(i);
+			GUIModalMenu *mm = dynamic_cast<GUIModalMenu *>(i);
 			if (mm && mm->pausesGame())
 				return true;
 		}
 		return false;
 	}
 
-	std::list<gui::IGUIElement*> m_stack;
+	std::list<gui::IGUIElement *> m_stack;
 };
 
 extern MainMenuManager g_menumgr;
@@ -109,35 +106,17 @@ public:
 	MainGameCallback() = default;
 	virtual ~MainGameCallback() = default;
 
-	virtual void exitToOS()
-	{
-		shutdown_requested = true;
-	}
+	virtual void exitToOS() { shutdown_requested = true; }
 
-	virtual void disconnect()
-	{
-		disconnect_requested = true;
-	}
+	virtual void disconnect() { disconnect_requested = true; }
 
-	virtual void changePassword()
-	{
-		changepassword_requested = true;
-	}
+	virtual void changePassword() { changepassword_requested = true; }
 
-	virtual void changeVolume()
-	{
-		changevolume_requested = true;
-	}
+	virtual void changeVolume() { changevolume_requested = true; }
 
-	virtual void keyConfig()
-	{
-		keyconfig_requested = true;
-	}
+	virtual void keyConfig() { keyconfig_requested = true; }
 
-	virtual void signalKeyConfigChange()
-	{
-		keyconfig_changed = true;
-	}
+	virtual void signalKeyConfigChange() { keyconfig_changed = true; }
 
 
 	bool disconnect_requested = false;

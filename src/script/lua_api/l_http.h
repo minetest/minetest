@@ -25,12 +25,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct HTTPFetchRequest;
 struct HTTPFetchResult;
 
-class ModApiHttp : public ModApiBase {
+class ModApiHttp : public ModApiBase
+{
 private:
 #if USE_CURL
 	// Helpers for HTTP fetch functions
 	static void read_http_fetch_request(lua_State *L, HTTPFetchRequest &req);
-	static void push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool completed = true);
+	static void push_http_fetch_result(
+			lua_State *L, HTTPFetchResult &res, bool completed = true);
 
 	// http_fetch_sync({url=, timeout=, post_data=})
 	static int l_http_fetch_sync(lua_State *L);

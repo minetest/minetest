@@ -38,10 +38,9 @@ class StackUnroller
 private:
 	lua_State *m_lua;
 	int m_original_top;
+
 public:
-	StackUnroller(lua_State *L):
-		m_lua(L),
-		m_original_top(-1)
+	StackUnroller(lua_State *L) : m_lua(L), m_original_top(-1)
 	{
 		m_original_top = lua_gettop(m_lua); // store stack height
 	}

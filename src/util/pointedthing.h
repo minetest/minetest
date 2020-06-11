@@ -89,9 +89,8 @@ struct PointedThing
 	//! Constructor for POINTEDTHING_NOTHING
 	PointedThing() = default;
 	//! Constructor for POINTEDTHING_NODE
-	PointedThing(const v3s16 &under, const v3s16 &above,
-		const v3s16 &real_under, const v3f &point, const v3s16 &normal,
-		u16 box_id, f32 distSq);
+	PointedThing(const v3s16 &under, const v3s16 &above, const v3s16 &real_under,
+			const v3f &point, const v3s16 &normal, u16 box_id, f32 distSq);
 	//! Constructor for POINTEDTHING_OBJECT
 	PointedThing(s16 id, const v3f &point, const v3s16 &normal, f32 distSq);
 	std::string dump() const;

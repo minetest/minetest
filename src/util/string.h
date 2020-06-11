@@ -37,29 +37,26 @@ class Translations;
 #define TOSTRING(x) STRINGIFY(x)
 
 // Checks whether a value is an ASCII printable character
-#define IS_ASCII_PRINTABLE_CHAR(x)   \
-	(((unsigned int)(x) >= 0x20) &&  \
-	( (unsigned int)(x) <= 0x7e))
+#define IS_ASCII_PRINTABLE_CHAR(x)                                                       \
+	(((unsigned int)(x) >= 0x20) && ((unsigned int)(x) <= 0x7e))
 
 // Checks whether a byte is an inner byte for an utf-8 multibyte sequence
-#define IS_UTF8_MULTB_INNER(x)       \
-	(((unsigned char)(x) >= 0x80) && \
-	( (unsigned char)(x) <= 0xbf))
+#define IS_UTF8_MULTB_INNER(x)                                                           \
+	(((unsigned char)(x) >= 0x80) && ((unsigned char)(x) <= 0xbf))
 
 // Checks whether a byte is a start byte for an utf-8 multibyte sequence
-#define IS_UTF8_MULTB_START(x)       \
-	(((unsigned char)(x) >= 0xc2) && \
-	( (unsigned char)(x) <= 0xf4))
+#define IS_UTF8_MULTB_START(x)                                                           \
+	(((unsigned char)(x) >= 0xc2) && ((unsigned char)(x) <= 0xf4))
 
 // Given a start byte x for an utf-8 multibyte sequence
 // it gives the length of the whole sequence in bytes.
-#define UTF8_MULTB_START_LEN(x)            \
-	(((unsigned char)(x) < 0xe0) ? 2 :     \
-	(((unsigned char)(x) < 0xf0) ? 3 : 4))
+#define UTF8_MULTB_START_LEN(x)                                                          \
+	(((unsigned char)(x) < 0xe0) ? 2 : (((unsigned char)(x) < 0xf0) ? 3 : 4))
 
 typedef std::unordered_map<std::string, std::string> StringMap;
 
-struct FlagDesc {
+struct FlagDesc
+{
 	const char *name;
 	u32 flag;
 };
@@ -116,8 +113,7 @@ inline std::string padStringRight(std::string str, size_t len)
  *
  * @return If no end could be removed then "" is returned.
  */
-inline std::string removeStringEnd(const std::string &str,
-		const char *ends[])
+inline std::string removeStringEnd(const std::string &str, const char *ends[])
 {
 	const char **p = ends;
 
@@ -143,8 +139,7 @@ inline std::string removeStringEnd(const std::string &str,
  * @return true if the strings match
  */
 template <typename T>
-inline bool str_equal(const std::basic_string<T> &s1,
-		const std::basic_string<T> &s2,
+inline bool str_equal(const std::basic_string<T> &s1, const std::basic_string<T> &s2,
 		bool case_insensitive = false)
 {
 	if (!case_insensitive)
@@ -154,7 +149,7 @@ inline bool str_equal(const std::basic_string<T> &s1,
 		return false;
 
 	for (size_t i = 0; i < s1.size(); ++i)
-		if(tolower(s1[i]) != tolower(s2[i]))
+		if (tolower(s1[i]) != tolower(s2[i]))
 			return false;
 
 	return true;
@@ -173,8 +168,7 @@ inline bool str_equal(const std::basic_string<T> &s1,
  */
 template <typename T>
 inline bool str_starts_with(const std::basic_string<T> &str,
-		const std::basic_string<T> &prefix,
-		bool case_insensitive = false)
+		const std::basic_string<T> &prefix, bool case_insensitive = false)
 {
 	if (str.size() < prefix.size())
 		return false;
@@ -199,12 +193,10 @@ inline bool str_starts_with(const std::basic_string<T> &str,
  * @return true if the str begins with prefix
  */
 template <typename T>
-inline bool str_starts_with(const std::basic_string<T> &str,
-		const T *prefix,
-		bool case_insensitive = false)
+inline bool str_starts_with(
+		const std::basic_string<T> &str, const T *prefix, bool case_insensitive = false)
 {
-	return str_starts_with(str, std::basic_string<T>(prefix),
-			case_insensitive);
+	return str_starts_with(str, std::basic_string<T>(prefix), case_insensitive);
 }
 
 
@@ -220,8 +212,7 @@ inline bool str_starts_with(const std::basic_string<T> &str,
  */
 template <typename T>
 inline bool str_ends_with(const std::basic_string<T> &str,
-		const std::basic_string<T> &suffix,
-		bool case_insensitive = false)
+		const std::basic_string<T> &suffix, bool case_insensitive = false)
 {
 	if (str.size() < suffix.size())
 		return false;
@@ -248,12 +239,10 @@ inline bool str_ends_with(const std::basic_string<T> &str,
  * @return true if the str begins with suffix
  */
 template <typename T>
-inline bool str_ends_with(const std::basic_string<T> &str,
-		const T *suffix,
-		bool case_insensitive = false)
+inline bool str_ends_with(
+		const std::basic_string<T> &str, const T *suffix, bool case_insensitive = false)
 {
-	return str_ends_with(str, std::basic_string<T>(suffix),
-			case_insensitive);
+	return str_ends_with(str, std::basic_string<T>(suffix), case_insensitive);
 }
 
 
@@ -264,11 +253,10 @@ inline bool str_ends_with(const std::basic_string<T> &str,
  * @return An std::vector<std::basic_string<T> > of the component parts
  */
 template <typename T>
-inline std::vector<std::basic_string<T> > str_split(
-		const std::basic_string<T> &str,
-		T delimiter)
+inline std::vector<std::basic_string<T>> str_split(
+		const std::basic_string<T> &str, T delimiter)
 {
-	std::vector<std::basic_string<T> > parts;
+	std::vector<std::basic_string<T>> parts;
 	std::basic_stringstream<T> sstr(str);
 	std::basic_string<T> part;
 
@@ -403,11 +391,14 @@ inline T from_string(const std::string &str)
 }
 
 /// Returns a 64-bit signed value represented by the string \p str (decimal).
-inline s64 stoi64(const std::string &str) { return from_string<s64>(str); }
+inline s64 stoi64(const std::string &str)
+{
+	return from_string<s64>(str);
+}
 
 #if __cplusplus < 201103L
-namespace std {
-
+namespace std
+{
 /// Returns a string representing the value \p val.
 template <typename T>
 inline string to_string(T val)
@@ -416,15 +407,13 @@ inline string to_string(T val)
 	oss << val;
 	return oss.str();
 }
-#define DEFINE_STD_TOSTRING_FLOATINGPOINT(T)		\
-	template <>					\
-	inline string to_string<T>(T val)		\
-	{						\
-		ostringstream oss;			\
-		oss << std::fixed			\
-			<< std::setprecision(6)		\
-			<< val;				\
-		return oss.str();			\
+#define DEFINE_STD_TOSTRING_FLOATINGPOINT(T)                                             \
+	template <>                                                                          \
+	inline string to_string<T>(T val)                                                    \
+	{                                                                                    \
+		ostringstream oss;                                                               \
+		oss << std::fixed << std::setprecision(6) << val;                                \
+		return oss.str();                                                                \
 	}
 DEFINE_STD_TOSTRING_FLOATINGPOINT(float)
 DEFINE_STD_TOSTRING_FLOATINGPOINT(double)
@@ -436,15 +425,21 @@ DEFINE_STD_TOSTRING_FLOATINGPOINT(long double)
 template <typename T>
 inline wstring to_wstring(T val)
 {
-      return utf8_to_wide(to_string(val));
+	return utf8_to_wide(to_string(val));
 }
-}
+} // namespace std
 #endif
 
 /// Returns a string representing the decimal value of the 32-bit value \p i.
-inline std::string itos(s32 i) { return std::to_string(i); }
+inline std::string itos(s32 i)
+{
+	return std::to_string(i);
+}
 /// Returns a string representing the decimal value of the 64-bit value \p i.
-inline std::string i64tos(s64 i) { return std::to_string(i); }
+inline std::string i64tos(s64 i)
+{
+	return std::to_string(i);
+}
 
 // std::to_string uses the '%.6f' conversion, which is inconsistent with
 // std::ostream::operator<<() and impractical too.  ftos() uses the
@@ -465,8 +460,8 @@ inline std::string ftos(float f)
  * @param pattern The pattern to replace.
  * @param replacement What to replace the pattern with.
  */
-inline void str_replace(std::string &str, const std::string &pattern,
-		const std::string &replacement)
+inline void str_replace(
+		std::string &str, const std::string &pattern, const std::string &replacement)
 {
 	std::string::size_type start = str.find(pattern, 0);
 	while (start != str.npos) {
@@ -523,8 +518,8 @@ inline bool string_allowed(const std::string &str, const std::string &allowed_ch
 
  * @see string_allowed()
  */
-inline bool string_allowed_blacklist(const std::string &str,
-		const std::string &blacklisted_chars)
+inline bool string_allowed_blacklist(
+		const std::string &str, const std::string &blacklisted_chars)
 {
 	return str.find_first_of(blacklisted_chars) == str.npos;
 }
@@ -545,8 +540,7 @@ inline bool string_allowed_blacklist(const std::string &str,
  * @param row_len The row length (in characters).
  * @return A new string with the wrapping applied.
  */
-inline std::string wrap_rows(const std::string &from,
-		unsigned row_len)
+inline std::string wrap_rows(const std::string &from, unsigned row_len)
 {
 	std::string to;
 
@@ -599,7 +593,8 @@ std::basic_string<T> unescape_enriched(const std::basic_string<T> &s)
 	while (i < s.length()) {
 		if (s[i] == '\x1b') {
 			++i;
-			if (i == s.length()) continue;
+			if (i == s.length())
+				continue;
 			if (s[i] == '(') {
 				++i;
 				while (i < s.length() && s[i] != ')') {
@@ -621,9 +616,9 @@ std::basic_string<T> unescape_enriched(const std::basic_string<T> &s)
 }
 
 template <typename T>
-std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
+std::vector<std::basic_string<T>> split(const std::basic_string<T> &s, T delim)
 {
-	std::vector<std::basic_string<T> > tokens;
+	std::vector<std::basic_string<T>> tokens;
 
 	std::basic_string<T> current;
 	bool last_was_escape = false;
@@ -656,7 +651,8 @@ std::wstring translate_string(const std::wstring &s, Translations *translations)
 
 std::wstring translate_string(const std::wstring &s);
 
-inline std::wstring unescape_translate(const std::wstring &s) {
+inline std::wstring unescape_translate(const std::wstring &s)
+{
 	return unescape_enriched(translate_string(s));
 }
 
@@ -715,8 +711,8 @@ inline const std::string duration_to_string(int sec)
  *
  * @return A std::string
  */
-inline std::string str_join(const std::vector<std::string> &list,
-		const std::string &delimiter)
+inline std::string str_join(
+		const std::vector<std::string> &list, const std::string &delimiter)
 {
 	std::ostringstream oss;
 	bool first = true;
@@ -738,7 +734,7 @@ inline std::string stringw_to_utf8(const irr::core::stringw &input)
 	return wide_to_utf8(str);
 }
 
- /**
+/**
   * Create a irr::core:stringw from a UTF8 std::string.
   */
 inline irr::core::stringw utf8_to_stringw(const std::string &input)

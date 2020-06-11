@@ -58,7 +58,8 @@
 struct SRPVerifier;
 struct SRPUser;
 
-typedef enum {
+typedef enum
+{
 	SRP_NG_1024,
 	SRP_NG_2048,
 	SRP_NG_4096,
@@ -66,7 +67,8 @@ typedef enum {
 	SRP_NG_CUSTOM
 } SRP_NGType;
 
-typedef enum {
+typedef enum
+{
 	/*SRP_SHA1,*/
 	/*SRP_SHA224,*/
 	SRP_SHA256,
@@ -74,7 +76,8 @@ typedef enum {
 	SRP_SHA512*/
 } SRP_HashAlgorithm;
 
-typedef enum {
+typedef enum
+{
 	SRP_ERR,
 	SRP_OK,
 } SRP_Result;
@@ -141,7 +144,7 @@ const char *srp_verifier_get_username(struct SRPVerifier *ver);
 
 /* key_length may be null */
 const unsigned char *srp_verifier_get_session_key(
-	struct SRPVerifier *ver, size_t *key_length);
+		struct SRPVerifier *ver, size_t *key_length);
 
 size_t srp_verifier_get_session_key_length(struct SRPVerifier *ver);
 
@@ -149,15 +152,15 @@ size_t srp_verifier_get_session_key_length(struct SRPVerifier *ver);
  * user_M must be exactly srp_verifier_get_session_key_length() bytes in size
  */
 void srp_verifier_verify_session(
-	struct SRPVerifier *ver, const unsigned char *user_M, unsigned char **bytes_HAMK);
+		struct SRPVerifier *ver, const unsigned char *user_M, unsigned char **bytes_HAMK);
 
 /*******************************************************************************/
 
 /* The n_hex and g_hex parameters should be 0 unless SRP_NG_CUSTOM is used for ng_type */
 struct SRPUser *srp_user_new(SRP_HashAlgorithm alg, SRP_NGType ng_type,
-	const char *username, const char *username_for_verifier,
-	const unsigned char *bytes_password, size_t len_password, const char *n_hex,
-	const char *g_hex);
+		const char *username, const char *username_for_verifier,
+		const unsigned char *bytes_password, size_t len_password, const char *n_hex,
+		const char *g_hex);
 
 void srp_user_delete(struct SRPUser *usr);
 

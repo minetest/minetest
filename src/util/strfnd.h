@@ -22,13 +22,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 template <typename T>
-class BasicStrfnd {
+class BasicStrfnd
+{
 	typedef std::basic_string<T> String;
 	String str;
 	size_t pos;
+
 public:
 	BasicStrfnd(const String &s) : str(s), pos(0) {}
-	void start(const String &s) { str = s; pos = 0; }
+	void start(const String &s)
+	{
+		str = s;
+		pos = 0;
+	}
 	size_t where() { return pos; }
 	void to(size_t i) { pos = i; }
 	bool at_end() { return pos >= str.size(); }
@@ -49,7 +55,7 @@ public:
 	}
 
 	// Returns substr up to the next occurence of sep that isn't escaped with esc ('\\')
-	String next_esc(const String &sep, T esc=static_cast<T>('\\'))
+	String next_esc(const String &sep, T esc = static_cast<T>('\\'))
 	{
 		if (pos >= str.size())
 			return String();

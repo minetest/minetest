@@ -26,10 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct SimpleSoundSpec
 {
-	SimpleSoundSpec(const std::string &name = "", float gain = 1.0f,
-			float fade = 0.0f, float pitch = 1.0f) :
-			name(name),
-			gain(gain), fade(fade), pitch(pitch)
+	SimpleSoundSpec(const std::string &name = "", float gain = 1.0f, float fade = 0.0f,
+			float pitch = 1.0f)
+		: name(name), gain(gain), fade(fade), pitch(pitch)
 	{
 	}
 

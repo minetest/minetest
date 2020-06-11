@@ -26,7 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct CraftReplacements;
 
-class ModApiCraft : public ModApiBase {
+class ModApiCraft : public ModApiBase
+{
 private:
 	static int l_register_craft(lua_State *L);
 	static int l_get_craft_recipe(lua_State *L);
@@ -34,12 +35,12 @@ private:
 	static int l_get_craft_result(lua_State *L);
 	static int l_clear_craft(lua_State *L);
 
-	static bool readCraftReplacements(lua_State *L, int index,
-			CraftReplacements &replacements);
-	static bool readCraftRecipeShapeless(lua_State *L, int index,
-			std::vector<std::string> &recipe);
-	static bool readCraftRecipeShaped(lua_State *L, int index,
-			int &width, std::vector<std::string> &recipe);
+	static bool readCraftReplacements(
+			lua_State *L, int index, CraftReplacements &replacements);
+	static bool readCraftRecipeShapeless(
+			lua_State *L, int index, std::vector<std::string> &recipe);
+	static bool readCraftRecipeShaped(
+			lua_State *L, int index, int &width, std::vector<std::string> &recipe);
 
 	static struct EnumString es_CraftMethod[];
 

@@ -25,7 +25,7 @@ class GUIBox : public gui::IGUIElement
 {
 public:
 	GUIBox(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-		const core::rect<s32> &rectangle, const video::SColor &color);
+			const core::rect<s32> &rectangle, const video::SColor &color);
 
 	virtual void draw() override;
 

@@ -27,11 +27,9 @@ private:
 	std::vector<std::string> m_names;
 	u32 m_selected_i;
 	std::string m_message;
+
 public:
-	bool hasMessage() const
-	{
-		return !m_message.empty();
-	}
+	bool hasMessage() const { return !m_message.empty(); }
 
 	std::string getMessage()
 	{
@@ -43,42 +41,40 @@ public:
 	}
 	std::string getSelectedName()
 	{
-		if(m_selected_i < m_names.size())
+		if (m_selected_i < m_names.size())
 			return m_names[m_selected_i];
 		return "(nothing)";
 	}
 	void next()
 	{
 		m_names = getQuicktuneNames();
-		if(m_selected_i < m_names.size()-1)
+		if (m_selected_i < m_names.size() - 1)
 			m_selected_i++;
 		else
 			m_selected_i = 0;
-		m_message = std::string("Selected \"")+getSelectedName()+"\"";
+		m_message = std::string("Selected \"") + getSelectedName() + "\"";
 	}
 	void prev()
 	{
 		m_names = getQuicktuneNames();
-		if(m_selected_i > 0)
+		if (m_selected_i > 0)
 			m_selected_i--;
 		else
-			m_selected_i = m_names.size()-1;
-		m_message = std::string("Selected \"")+getSelectedName()+"\"";
+			m_selected_i = m_names.size() - 1;
+		m_message = std::string("Selected \"") + getSelectedName() + "\"";
 	}
 	void inc()
 	{
 		QuicktuneValue val = getQuicktuneValue(getSelectedName());
 		val.relativeAdd(0.05);
-		m_message = std::string("\"")+getSelectedName()
-				+"\" = "+val.getString();
+		m_message = std::string("\"") + getSelectedName() + "\" = " + val.getString();
 		setQuicktuneValue(getSelectedName(), val);
 	}
 	void dec()
 	{
 		QuicktuneValue val = getQuicktuneValue(getSelectedName());
 		val.relativeAdd(-0.05);
-		m_message = std::string("\"")+getSelectedName()
-				+"\" = "+val.getString();
+		m_message = std::string("\"") + getSelectedName() + "\" = " + val.getString();
 		setQuicktuneValue(getSelectedName(), val);
 	}
 };

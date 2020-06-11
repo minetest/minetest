@@ -28,16 +28,15 @@ class GUIButtonImage : public GUIButton
 {
 public:
 	//! constructor
-	GUIButtonImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent,
-			s32 id, core::rect<s32> rectangle, ISimpleTextureSource *tsrc,
-			bool noclip = false);
+	GUIButtonImage(gui::IGUIEnvironment *environment, gui::IGUIElement *parent, s32 id,
+			core::rect<s32> rectangle, ISimpleTextureSource *tsrc, bool noclip = false);
 
 	void setForegroundImage(video::ITexture *image = nullptr);
 
 	//! Set element properties from a StyleSpec
-	virtual void setFromStyle(const StyleSpec& style) override;
+	virtual void setFromStyle(const StyleSpec &style) override;
 
-	virtual void setScaleImage(bool scaleImage=true) override;
+	virtual void setScaleImage(bool scaleImage = true) override;
 
 	//! Do not drop returned handle
 	static GUIButtonImage *addButton(gui::IGUIEnvironment *environment,

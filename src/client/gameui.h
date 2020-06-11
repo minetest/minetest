@@ -84,7 +84,8 @@ public:
 
 	const bool isChatVisible()
 	{
-		return m_flags.show_chat && m_recent_chat_count != 0 && m_profiler_current_page == 0;
+		return m_flags.show_chat && m_recent_chat_count != 0 &&
+				m_profiler_current_page == 0;
 	}
 	void setChatText(const EnrichedString &chat_text, u32 recent_chat_count);
 
@@ -107,7 +108,7 @@ public:
 private:
 	Flags m_flags;
 
-	gui::IGUIStaticText *m_guitext = nullptr;  // First line of debug text
+	gui::IGUIStaticText *m_guitext = nullptr; // First line of debug text
 	gui::IGUIStaticText *m_guitext2 = nullptr; // Second line of debug text
 
 	gui::IGUIStaticText *m_guitext_info = nullptr; // At the middle of the screen

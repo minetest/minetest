@@ -103,11 +103,10 @@ public:
 	}
 
 	inline static void draw_load_screen(const std::wstring &text,
-			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
-			float dtime = 0, int percent = 0, bool clouds = true)
+			gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime = 0,
+			int percent = 0, bool clouds = true)
 	{
-		s_singleton->_draw_load_screen(
-				text, guienv, tsrc, dtime, percent, clouds);
+		s_singleton->_draw_load_screen(text, guienv, tsrc, dtime, percent, clouds);
 	}
 
 	inline static void draw_menu_scene(
@@ -119,8 +118,8 @@ public:
 	inline static void draw_scene(video::SColor skycolor, bool show_hud,
 			bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
 	{
-		s_singleton->_draw_scene(skycolor, show_hud, show_minimap,
-				draw_wield_tool, draw_crosshair);
+		s_singleton->_draw_scene(
+				skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
 	}
 
 	inline static void initialize(Client *client, Hud *hud)
@@ -141,11 +140,10 @@ public:
 
 private:
 	void _draw_load_screen(const std::wstring &text, gui::IGUIEnvironment *guienv,
-			ITextureSource *tsrc, float dtime = 0, int percent = 0,
-			bool clouds = true);
+			ITextureSource *tsrc, float dtime = 0, int percent = 0, bool clouds = true);
 
-	void _draw_menu_scene(gui::IGUIEnvironment *guienv, float dtime = 0,
-			bool clouds = true);
+	void _draw_menu_scene(
+			gui::IGUIEnvironment *guienv, float dtime = 0, bool clouds = true);
 
 	void _draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
 			bool draw_wield_tool, bool draw_crosshair);

@@ -33,7 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* Typedefs and macros                                                        */
 /******************************************************************************/
 /** texture layer ids */
-typedef enum {
+typedef enum
+{
 	TEX_LAYER_BACKGROUND = 0,
 	TEX_LAYER_OVERLAY,
 	TEX_LAYER_HEADER,
@@ -41,10 +42,11 @@ typedef enum {
 	TEX_LAYER_MAX
 } texture_layer;
 
-typedef struct {
+typedef struct
+{
 	video::ITexture *texture = nullptr;
-	bool             tile;
-	unsigned int     minsize;
+	bool tile;
+	unsigned int minsize;
 } image_definition;
 
 /******************************************************************************/
@@ -67,7 +69,7 @@ public:
 	 * default constructor
 	 * @param engine the engine data is transmitted for further processing
 	 */
-	TextDestGuiEngine(GUIEngine* engine) : m_engine(engine) {};
+	TextDestGuiEngine(GUIEngine *engine) : m_engine(engine){};
 
 	/**
 	 * receive fields transmitted by guiFormSpecMenu
@@ -94,7 +96,7 @@ public:
 	 * default constructor
 	 * @param driver the video driver to load textures from
 	 */
-	MenuTextureSource(video::IVideoDriver *driver) : m_driver(driver) {};
+	MenuTextureSource(video::IVideoDriver *driver) : m_driver(driver){};
 
 	/**
 	 * destructor, removes all loaded textures
@@ -116,7 +118,7 @@ private:
 };
 
 /** GUIEngine specific implementation of OnDemandSoundFetcher */
-class MenuMusicFetcher: public OnDemandSoundFetcher
+class MenuMusicFetcher : public OnDemandSoundFetcher
 {
 public:
 	/**
@@ -125,8 +127,7 @@ public:
 	 * @param dst_paths receives possible paths to sound files
 	 * @param dst_datas receives binary sound data (not used here)
 	 */
-	void fetchSounds(const std::string &name,
-			std::set<std::string> &dst_paths,
+	void fetchSounds(const std::string &name, std::set<std::string> &dst_paths,
 			std::set<std::string> &dst_datas);
 
 private:
@@ -135,7 +136,8 @@ private:
 };
 
 /** implementation of main menu based uppon formspecs */
-class GUIEngine {
+class GUIEngine
+{
 	/** grant ModApiMainMenu access to private members */
 	friend class ModApiMainMenu;
 	friend class ModApiSound;
@@ -149,11 +151,8 @@ public:
 	 * @param smgr scene manager to add scene elements to
 	 * @param data struct to transfer data to main game handling
 	 */
-	GUIEngine(JoystickController *joystick,
-			gui::IGUIElement *parent,
-			IMenuManager *menumgr,
-			MainMenuData *data,
-			bool &kill);
+	GUIEngine(JoystickController *joystick, gui::IGUIElement *parent,
+			IMenuManager *menumgr, MainMenuData *data, bool &kill);
 
 	/** default destructor */
 	virtual ~GUIEngine();
@@ -161,25 +160,18 @@ public:
 	/**
 	 * return MainMenuScripting interface
 	 */
-	MainMenuScripting *getScriptIface()
-	{
-		return m_script;
-	}
+	MainMenuScripting *getScriptIface() { return m_script; }
 
 	/**
 	 * return dir of current menuscript
 	 */
-	std::string getScriptDir()
-	{
-		return m_scriptdir;
-	}
+	std::string getScriptDir() { return m_scriptdir; }
 
 	/** pass async callback to scriptengine **/
-	unsigned int queueAsync(const std::string &serialized_fct,
-			const std::string &serialized_params);
+	unsigned int queueAsync(
+			const std::string &serialized_fct, const std::string &serialized_params);
 
 private:
-
 	/** find and run the main menu script */
 	bool loadMainMenuScript();
 
@@ -190,36 +182,36 @@ private:
 	void updateTopLeftTextSize();
 
 	/** parent gui element */
-	gui::IGUIElement        *m_parent = nullptr;
+	gui::IGUIElement *m_parent = nullptr;
 	/** manager to add menus to */
-	IMenuManager            *m_menumanager = nullptr;
+	IMenuManager *m_menumanager = nullptr;
 	/** scene manager to add scene elements to */
-	scene::ISceneManager    *m_smgr = nullptr;
+	scene::ISceneManager *m_smgr = nullptr;
 	/** pointer to data beeing transfered back to main game handling */
-	MainMenuData            *m_data = nullptr;
+	MainMenuData *m_data = nullptr;
 	/** pointer to texture source */
-	ISimpleTextureSource    *m_texture_source = nullptr;
+	ISimpleTextureSource *m_texture_source = nullptr;
 	/** pointer to soundmanager*/
-	ISoundManager           *m_sound_manager = nullptr;
+	ISoundManager *m_sound_manager = nullptr;
 
 	/** representation of form source to be used in mainmenu formspec */
-	FormspecFormSource      *m_formspecgui = nullptr;
+	FormspecFormSource *m_formspecgui = nullptr;
 	/** formspec input receiver */
-	TextDestGuiEngine       *m_buttonhandler = nullptr;
+	TextDestGuiEngine *m_buttonhandler = nullptr;
 	/** the formspec menu */
-	GUIFormSpecMenu         *m_menu = nullptr;
+	GUIFormSpecMenu *m_menu = nullptr;
 
 	/** reference to kill variable managed by SIGINT handler */
-	bool                    &m_kill;
+	bool &m_kill;
 
 	/** variable used to abort menu and return back to main game handling */
-	bool                     m_startgame = false;
+	bool m_startgame = false;
 
 	/** scripting interface */
-	MainMenuScripting       *m_script = nullptr;
+	MainMenuScripting *m_script = nullptr;
 
 	/** script basefolder */
-	std::string              m_scriptdir = "";
+	std::string m_scriptdir = "";
 
 	void setFormspecPrepend(const std::string &fs);
 
@@ -249,8 +241,8 @@ private:
 	 * @param layer draw layer to specify texture
 	 * @param texturepath full path of texture to load
 	 */
-	bool setTexture(texture_layer layer, const std::string &texturepath,
-			bool tile_image, unsigned int minsize);
+	bool setTexture(texture_layer layer, const std::string &texturepath, bool tile_image,
+			unsigned int minsize);
 
 	/**
 	 * download a file using curl
@@ -281,11 +273,12 @@ private:
 	void cloudPostProcess();
 
 	/** internam data required for drawing clouds */
-	struct clouddata {
+	struct clouddata
+	{
 		/** delta time since last cloud processing */
-		f32     dtime;
+		f32 dtime;
 		/** absolute time of last cloud processing */
-		u32     lasttime;
+		u32 lasttime;
 		/** pointer to cloud class */
 		Clouds *clouds = nullptr;
 		/** camera required for drawing clouds */
@@ -293,14 +286,12 @@ private:
 	};
 
 	/** is drawing of clouds enabled atm */
-	bool        m_clouds_enabled = true;
+	bool m_clouds_enabled = true;
 	/** data used to draw clouds */
-	clouddata   m_cloud;
+	clouddata m_cloud;
 
 	/** start playing a sound and return handle */
 	s32 playSound(const SimpleSoundSpec &spec, bool looped);
 	/** stop playing a sound started with playSound() */
 	void stopSound(s32 handle);
-
-
 };

@@ -28,13 +28,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <matrix4.h>
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
-#define myfloor(x) ((x) < 0.0 ? (int)(x) - 1 : (int)(x))
+#define myfloor(x) ((x) < 0.0 ? (int)(x)-1 : (int)(x))
 // The naive swap performs better than the xor version
-#define SWAP(t, x, y) do { \
-	t temp = x; \
-	x = y; \
-	y = temp; \
-} while (0)
+#define SWAP(t, x, y)                                                                    \
+	do {                                                                                 \
+		t temp = x;                                                                      \
+		x = y;                                                                           \
+		y = temp;                                                                        \
+	} while (0)
 
 
 inline s16 getContainerPos(s16 p, s16 d)
@@ -44,36 +45,24 @@ inline s16 getContainerPos(s16 p, s16 d)
 
 inline v2s16 getContainerPos(v2s16 p, s16 d)
 {
-	return v2s16(
-		getContainerPos(p.X, d),
-		getContainerPos(p.Y, d)
-	);
+	return v2s16(getContainerPos(p.X, d), getContainerPos(p.Y, d));
 }
 
 inline v3s16 getContainerPos(v3s16 p, s16 d)
 {
 	return v3s16(
-		getContainerPos(p.X, d),
-		getContainerPos(p.Y, d),
-		getContainerPos(p.Z, d)
-	);
+			getContainerPos(p.X, d), getContainerPos(p.Y, d), getContainerPos(p.Z, d));
 }
 
 inline v2s16 getContainerPos(v2s16 p, v2s16 d)
 {
-	return v2s16(
-		getContainerPos(p.X, d.X),
-		getContainerPos(p.Y, d.Y)
-	);
+	return v2s16(getContainerPos(p.X, d.X), getContainerPos(p.Y, d.Y));
 }
 
 inline v3s16 getContainerPos(v3s16 p, v3s16 d)
 {
-	return v3s16(
-		getContainerPos(p.X, d.X),
-		getContainerPos(p.Y, d.Y),
-		getContainerPos(p.Z, d.Z)
-	);
+	return v3s16(getContainerPos(p.X, d.X), getContainerPos(p.Y, d.Y),
+			getContainerPos(p.Z, d.Z));
 }
 
 inline void getContainerPosWithOffset(s16 p, s16 d, s16 &container, s16 &offset)
@@ -82,13 +71,15 @@ inline void getContainerPosWithOffset(s16 p, s16 d, s16 &container, s16 &offset)
 	offset = p & (d - 1);
 }
 
-inline void getContainerPosWithOffset(const v2s16 &p, s16 d, v2s16 &container, v2s16 &offset)
+inline void getContainerPosWithOffset(
+		const v2s16 &p, s16 d, v2s16 &container, v2s16 &offset)
 {
 	getContainerPosWithOffset(p.X, d, container.X, offset.X);
 	getContainerPosWithOffset(p.Y, d, container.Y, offset.Y);
 }
 
-inline void getContainerPosWithOffset(const v3s16 &p, s16 d, v3s16 &container, v3s16 &offset)
+inline void getContainerPosWithOffset(
+		const v3s16 &p, s16 d, v3s16 &container, v3s16 &offset)
 {
 	getContainerPosWithOffset(p.X, d, container.X, offset.X);
 	getContainerPosWithOffset(p.Y, d, container.Y, offset.Y);
@@ -98,31 +89,21 @@ inline void getContainerPosWithOffset(const v3s16 &p, s16 d, v3s16 &container, v
 
 inline bool isInArea(v3s16 p, s16 d)
 {
-	return (
-		p.X >= 0 && p.X < d &&
-		p.Y >= 0 && p.Y < d &&
-		p.Z >= 0 && p.Z < d
-	);
+	return (p.X >= 0 && p.X < d && p.Y >= 0 && p.Y < d && p.Z >= 0 && p.Z < d);
 }
 
 inline bool isInArea(v2s16 p, s16 d)
 {
-	return (
-		p.X >= 0 && p.X < d &&
-		p.Y >= 0 && p.Y < d
-	);
+	return (p.X >= 0 && p.X < d && p.Y >= 0 && p.Y < d);
 }
 
 inline bool isInArea(v3s16 p, v3s16 d)
 {
-	return (
-		p.X >= 0 && p.X < d.X &&
-		p.Y >= 0 && p.Y < d.Y &&
-		p.Z >= 0 && p.Z < d.Z
-	);
+	return (p.X >= 0 && p.X < d.X && p.Y >= 0 && p.Y < d.Y && p.Z >= 0 && p.Z < d.Z);
 }
 
-inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2) {
+inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2)
+{
 	if (p1.X > p2.X)
 		SWAP(s16, p1.X, p2.X);
 	if (p1.Y > p2.Y)
@@ -248,8 +229,8 @@ inline u32 calc_parity(u32 v)
 
 u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed);
 
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
-		f32 camera_fov, f32 range, f32 *distance_ptr=NULL);
+bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 camera_fov,
+		f32 range, f32 *distance_ptr = NULL);
 
 s16 adjustDist(s16 dist, float zoom_fov);
 
@@ -272,10 +253,9 @@ inline constexpr f32 sqr(f32 f)
 */
 inline v3s16 floatToInt(v3f p, f32 d)
 {
-	return v3s16(
-		(p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
-		(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
-		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
+	return v3s16((p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
+			(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
+			(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
 }
 
 /*
@@ -283,10 +263,9 @@ inline v3s16 floatToInt(v3f p, f32 d)
  */
 inline v3s16 doubleToInt(v3d p, double d)
 {
-	return v3s16(
-		(p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
-		(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
-		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
+	return v3s16((p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
+			(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
+			(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
 }
 
 /*
@@ -294,24 +273,15 @@ inline v3s16 doubleToInt(v3d p, double d)
 */
 inline v3f intToFloat(v3s16 p, f32 d)
 {
-	return v3f(
-		(f32)p.X * d,
-		(f32)p.Y * d,
-		(f32)p.Z * d
-	);
+	return v3f((f32)p.X * d, (f32)p.Y * d, (f32)p.Z * d);
 }
 
 // Random helper. Usually d=BS
 inline aabb3f getNodeBox(v3s16 p, float d)
 {
-	return aabb3f(
-		(float)p.X * d - 0.5f * d,
-		(float)p.Y * d - 0.5f * d,
-		(float)p.Z * d - 0.5f * d,
-		(float)p.X * d + 0.5f * d,
-		(float)p.Y * d + 0.5f * d,
-		(float)p.Z * d + 0.5f * d
-	);
+	return aabb3f((float)p.X * d - 0.5f * d, (float)p.Y * d - 0.5f * d,
+			(float)p.Z * d - 0.5f * d, (float)p.X * d + 0.5f * d,
+			(float)p.Y * d + 0.5f * d, (float)p.Z * d + 0.5f * d);
 }
 
 
@@ -359,16 +329,16 @@ inline void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxi
 	if (length < 1 || pagecount < 1 || page < 1 || page > pagecount) {
 		// Special cases or invalid parameters
 		minindex = maxindex = 0;
-	} else if(pagecount <= length) {
+	} else if (pagecount <= length) {
 		// Less pages than entries in the list:
 		// Each page contains at least one entry
-		minindex = (length * (page-1) + (pagecount-1)) / pagecount;
-		maxindex = (length * page + (pagecount-1)) / pagecount;
+		minindex = (length * (page - 1) + (pagecount - 1)) / pagecount;
+		maxindex = (length * page + (pagecount - 1)) / pagecount;
 	} else {
 		// More pages than entries in the list:
 		// Make sure the empty pages are at the end
 		if (page < length) {
-			minindex = page-1;
+			minindex = page - 1;
 			maxindex = page;
 		} else {
 			minindex = 0;
@@ -379,9 +349,11 @@ inline void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxi
 
 inline float cycle_shift(float value, float by = 0, float max = 1)
 {
-    if (value + by < 0)   return value + by + max;
-    if (value + by > max) return value + by - max;
-    return value + by;
+	if (value + by < 0)
+		return value + by + max;
+	if (value + by > max)
+		return value + by - max;
+	return value + by;
 }
 
 inline bool is_power_of_two(u32 n)
@@ -391,7 +363,8 @@ inline bool is_power_of_two(u32 n)
 
 // Compute next-higher power of 2 efficiently, e.g. for power-of-2 texture sizes.
 // Public Domain: https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-inline u32 npot2(u32 orig) {
+inline u32 npot2(u32 orig)
+{
 	orig--;
 	orig |= orig >> 1;
 	orig |= orig >> 2;
@@ -403,9 +376,9 @@ inline u32 npot2(u32 orig) {
 
 // Gradual steps towards the target value in a wrapped (circular) system
 // using the shorter of both ways
-template<typename T>
-inline void wrappedApproachShortest(T &current, const T target, const T stepsize,
-	const T maximum)
+template <typename T>
+inline void wrappedApproachShortest(
+		T &current, const T target, const T stepsize, const T maximum)
 {
 	T delta = target - current;
 	if (delta < 0)

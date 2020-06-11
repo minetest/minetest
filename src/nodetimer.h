@@ -36,10 +36,11 @@ class NodeTimer
 {
 public:
 	NodeTimer() = default;
-	NodeTimer(const v3s16 &position_):
-		position(position_) {}
-	NodeTimer(f32 timeout_, f32 elapsed_, v3s16 position_):
-		timeout(timeout_), elapsed(elapsed_), position(position_) {}
+	NodeTimer(const v3s16 &position_) : position(position_) {}
+	NodeTimer(f32 timeout_, f32 elapsed_, v3s16 position_)
+		: timeout(timeout_), elapsed(elapsed_), position(position_)
+	{
+	}
 	~NodeTimer() = default;
 
 	void serialize(std::ostream &os) const;
@@ -64,9 +65,10 @@ public:
 	void deSerialize(std::istream &is, u8 map_format_version);
 
 	// Get timer
-	NodeTimer get(const v3s16 &p) {
+	NodeTimer get(const v3s16 &p)
+	{
 		std::map<v3s16, std::multimap<double, NodeTimer>::iterator>::iterator n =
-			m_iterators.find(p);
+				m_iterators.find(p);
 		if (n == m_iterators.end())
 			return NodeTimer();
 		NodeTimer t = n->second->second;
@@ -74,10 +76,11 @@ public:
 		return t;
 	}
 	// Deletes timer
-	void remove(v3s16 p) {
+	void remove(v3s16 p)
+	{
 		std::map<v3s16, std::multimap<double, NodeTimer>::iterator>::iterator n =
-			m_iterators.find(p);
-		if(n != m_iterators.end()) {
+				m_iterators.find(p);
+		if (n != m_iterators.end()) {
 			double removed_time = n->second->first;
 			m_timers.erase(n->second);
 			m_iterators.erase(n);
@@ -93,25 +96,26 @@ public:
 		}
 	}
 	// Undefined behaviour if there already is a timer
-	void insert(NodeTimer timer) {
+	void insert(NodeTimer timer)
+	{
 		v3s16 p = timer.position;
 		double trigger_time = m_time + (double)(timer.timeout - timer.elapsed);
 		std::multimap<double, NodeTimer>::iterator it =
-			m_timers.insert(std::pair<double, NodeTimer>(
-				trigger_time, timer
-			));
+				m_timers.insert(std::pair<double, NodeTimer>(trigger_time, timer));
 		m_iterators.insert(
-			std::pair<v3s16, std::multimap<double, NodeTimer>::iterator>(p, it));
+				std::pair<v3s16, std::multimap<double, NodeTimer>::iterator>(p, it));
 		if (m_next_trigger_time == -1. || trigger_time < m_next_trigger_time)
 			m_next_trigger_time = trigger_time;
 	}
 	// Deletes old timer and sets a new one
-	inline void set(const NodeTimer &timer) {
+	inline void set(const NodeTimer &timer)
+	{
 		remove(timer.position);
 		insert(timer);
 	}
 	// Deletes all timers
-	void clear() {
+	void clear()
+	{
 		m_timers.clear();
 		m_iterators.clear();
 		m_next_trigger_time = -1.;

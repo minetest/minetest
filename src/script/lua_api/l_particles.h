@@ -21,7 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 
-class ModApiParticles : public ModApiBase {
+class ModApiParticles : public ModApiBase
+{
 private:
 	static int l_add_particle(lua_State *L);
 	static int l_add_particlespawner(lua_State *L);

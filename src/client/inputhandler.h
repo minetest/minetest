@@ -44,7 +44,6 @@ class InputHandler;
  */
 struct KeyCache
 {
-
 	KeyCache()
 	{
 		handler = NULL;
@@ -282,9 +281,7 @@ public:
 	virtual v2s32 getMousePos()
 	{
 		if (RenderingEngine::get_raw_device()->getCursorControl()) {
-			return RenderingEngine::get_raw_device()
-					->getCursorControl()
-					->getPosition();
+			return RenderingEngine::get_raw_device()->getCursorControl()->getPosition();
 		}
 
 		return m_mousepos;
@@ -293,9 +290,7 @@ public:
 	virtual void setMousePos(s32 x, s32 y)
 	{
 		if (RenderingEngine::get_raw_device()->getCursorControl()) {
-			RenderingEngine::get_raw_device()
-					->getCursorControl()
-					->setPosition(x, y);
+			RenderingEngine::get_raw_device()->getCursorControl()->setPosition(x, y);
 		} else {
 			m_mousepos = v2s32(x, y);
 		}
@@ -312,13 +307,11 @@ public:
 
 	virtual bool getLeftClicked()
 	{
-		return m_receiver->leftclicked ||
-		       joystick.getWasKeyDown(KeyType::MOUSE_L);
+		return m_receiver->leftclicked || joystick.getWasKeyDown(KeyType::MOUSE_L);
 	}
 	virtual bool getRightClicked()
 	{
-		return m_receiver->rightclicked ||
-		       joystick.getWasKeyDown(KeyType::MOUSE_R);
+		return m_receiver->rightclicked || joystick.getWasKeyDown(KeyType::MOUSE_R);
 	}
 
 	virtual void resetLeftClicked()
@@ -334,13 +327,11 @@ public:
 
 	virtual bool getLeftReleased()
 	{
-		return m_receiver->leftreleased ||
-		       joystick.wasKeyReleased(KeyType::MOUSE_L);
+		return m_receiver->leftreleased || joystick.wasKeyReleased(KeyType::MOUSE_L);
 	}
 	virtual bool getRightReleased()
 	{
-		return m_receiver->rightreleased ||
-		       joystick.wasKeyReleased(KeyType::MOUSE_R);
+		return m_receiver->rightreleased || joystick.wasKeyReleased(KeyType::MOUSE_R);
 	}
 
 	virtual void resetLeftReleased()

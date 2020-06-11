@@ -120,8 +120,7 @@ struct NodeBox
 	std::vector<aabb3f> disconnected;
 	std::vector<aabb3f> disconnected_sides;
 
-	NodeBox()
-	{ reset(); }
+	NodeBox() { reset(); }
 
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
@@ -131,26 +130,30 @@ struct NodeBox
 struct MapNode;
 class NodeMetadata;
 
-enum LeavesStyle {
+enum LeavesStyle
+{
 	LEAVES_FANCY,
 	LEAVES_SIMPLE,
 	LEAVES_OPAQUE,
 };
 
-enum AutoScale : u8 {
+enum AutoScale : u8
+{
 	AUTOSCALE_DISABLE,
 	AUTOSCALE_ENABLE,
 	AUTOSCALE_FORCE,
 };
 
-enum WorldAlignMode : u8 {
+enum WorldAlignMode : u8
+{
 	WORLDALIGN_DISABLE,
 	WORLDALIGN_ENABLE,
 	WORLDALIGN_FORCE,
 	WORLDALIGN_FORCE_NODEBOX,
 };
 
-class TextureSettings {
+class TextureSettings
+{
 public:
 	LeavesStyle leaves_style;
 	WorldAlignMode world_aligned_mode;
@@ -214,11 +217,12 @@ enum NodeDrawType
 };
 
 // Mesh options for NDT_PLANTLIKE with CPT2_MESHOPTIONS
-static const u8 MO_MASK_STYLE          = 0x07;
-static const u8 MO_BIT_RANDOM_OFFSET   = 0x08;
-static const u8 MO_BIT_SCALE_SQRT2     = 0x10;
+static const u8 MO_MASK_STYLE = 0x07;
+static const u8 MO_BIT_RANDOM_OFFSET = 0x08;
+static const u8 MO_BIT_SCALE_SQRT2 = 0x10;
 static const u8 MO_BIT_RANDOM_OFFSET_Y = 0x20;
-enum PlantlikeStyle {
+enum PlantlikeStyle
+{
 	PLANT_STYLE_CROSS,
 	PLANT_STYLE_CROSS2,
 	PLANT_STYLE_STAR,
@@ -226,7 +230,8 @@ enum PlantlikeStyle {
 	PLANT_STYLE_HASH2,
 };
 
-enum AlignStyle : u8 {
+enum AlignStyle : u8
+{
 	ALIGN_STYLE_NODE,
 	ALIGN_STYLE_WORLD,
 	ALIGN_STYLE_USER_DEFINED,
@@ -251,14 +256,10 @@ struct TileDef
 
 	struct TileAnimationParams animation;
 
-	TileDef()
-	{
-		animation.type = TAT_NONE;
-	}
+	TileDef() { animation.type = TAT_NONE; }
 
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is, u8 contentfeatures_version,
-		NodeDrawType drawtype);
+	void deSerialize(std::istream &is, u8 contentfeatures_version, NodeDrawType drawtype);
 };
 
 #define CF_SPECIAL_COUNT 6
@@ -425,22 +426,20 @@ struct ContentFeatures
 	/*
 		Some handy methods
 	*/
-	bool isLiquid() const{
-		return (liquid_type != LIQUID_NONE);
-	}
-	bool sameLiquid(const ContentFeatures &f) const{
-		if(!isLiquid() || !f.isLiquid()) return false;
+	bool isLiquid() const { return (liquid_type != LIQUID_NONE); }
+	bool sameLiquid(const ContentFeatures &f) const
+	{
+		if (!isLiquid() || !f.isLiquid())
+			return false;
 		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
 	}
 
-	int getGroup(const std::string &group) const
-	{
-		return itemgroup_get(groups, group);
-	}
+	int getGroup(const std::string &group) const { return itemgroup_get(groups, group); }
 
 #ifndef SERVER
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
-		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
+			scene::IMeshManipulator *meshmanip, Client *client,
+			const TextureSettings &tsettings);
 #endif
 };
 
@@ -456,7 +455,8 @@ struct ContentFeatures
  * functions only get `const` pointers to it, to prevent modification of
  * registered nodes.
  */
-class NodeDefManager {
+class NodeDefManager
+{
 public:
 	/*!
 	 * Creates a NodeDefManager, and registers three ContentFeatures:
@@ -471,10 +471,10 @@ public:
 	 * @return properties of the given content type, or \ref CONTENT_UNKNOWN
 	 * if the given content type is not registered.
 	 */
-	inline const ContentFeatures& get(content_t c) const {
-		return
-			c < m_content_features.size() ?
-				m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
+	inline const ContentFeatures &get(content_t c) const
+	{
+		return c < m_content_features.size() ? m_content_features[c] :
+											   m_content_features[CONTENT_UNKNOWN];
 	}
 
 	/*!
@@ -483,7 +483,8 @@ public:
 	 * @return properties of the given node or @ref CONTENT_UNKNOWN if the
 	 * given content type is not registered.
 	 */
-	inline const ContentFeatures& get(const MapNode &n) const {
+	inline const ContentFeatures &get(const MapNode &n) const
+	{
 		return get(n.getContent());
 	}
 
@@ -493,7 +494,7 @@ public:
 	 * @return properties of the given node or @ref CONTENT_UNKNOWN if
 	 * not found
 	 */
-	const ContentFeatures& get(const std::string &name) const;
+	const ContentFeatures &get(const std::string &name) const;
 
 	/*!
 	 * Returns the content ID for the given name.
@@ -526,7 +527,8 @@ public:
 	 * contains all nodes' selection boxes. The returned box might be larger
 	 * than the minimal size if the largest node is removed from the manager.
 	 */
-	inline core::aabbox3d<s16> getSelectionBoxIntUnion() const {
+	inline core::aabbox3d<s16> getSelectionBoxIntUnion() const
+	{
 		return m_selection_box_int_union;
 	}
 
@@ -539,8 +541,7 @@ public:
 	 * Bits: +y (least significant), -y, -z, -x, +z, +x (most significant).
 	 * @return true if the node connects, false otherwise
 	 */
-	bool nodeboxConnects(MapNode from, MapNode to,
-			u8 connect_face) const;
+	bool nodeboxConnects(MapNode from, MapNode to, u8 connect_face) const;
 
 	/*!
 	 * Registers a NodeResolver to wait for the registration of
@@ -605,8 +606,8 @@ public:
 	 * @param progress_cbk_args passed to the callback function
 	 */
 	void updateTextures(IGameDef *gamedef,
-		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
-		void *progress_cbk_args);
+			void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
+			void *progress_cbk_args);
 
 	/*!
 	 * Writes the content of this manager to the given output stream.
@@ -625,7 +626,8 @@ public:
 	 * Used to indicate that node registration has finished.
 	 * @param completed tells whether registration is complete
 	 */
-	inline void setNodeRegistrationStatus(bool completed) {
+	inline void setNodeRegistrationStatus(bool completed)
+	{
 		m_node_registration_complete = completed;
 	}
 
@@ -738,7 +740,8 @@ private:
 
 NodeDefManager *createNodeDefManager();
 
-class NodeResolver {
+class NodeResolver
+{
 public:
 	NodeResolver();
 	virtual ~NodeResolver();
@@ -747,11 +750,10 @@ public:
 	// required because this class is used as mixin for ObjDef
 	void cloneTo(NodeResolver *res) const;
 
-	bool getIdFromNrBacklog(content_t *result_out,
-		const std::string &node_alt, content_t c_fallback,
-		bool error_on_fallback = true);
+	bool getIdFromNrBacklog(content_t *result_out, const std::string &node_alt,
+			content_t c_fallback, bool error_on_fallback = true);
 	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
-		bool all_required = false, content_t c_fallback = CONTENT_IGNORE);
+			bool all_required = false, content_t c_fallback = CONTENT_IGNORE);
 
 	void nodeResolveInternal();
 

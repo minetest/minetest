@@ -32,19 +32,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* Scripting <-> Server Game Interface                                       */
 /*****************************************************************************/
 
-class ServerScripting:
-		virtual public ScriptApiBase,
-		public ScriptApiDetached,
-		public ScriptApiEntity,
-		public ScriptApiEnv,
-		public ScriptApiModChannels,
-		public ScriptApiNode,
-		public ScriptApiPlayer,
-		public ScriptApiServer,
-		public ScriptApiSecurity
+class ServerScripting : virtual public ScriptApiBase,
+						public ScriptApiDetached,
+						public ScriptApiEntity,
+						public ScriptApiEnv,
+						public ScriptApiModChannels,
+						public ScriptApiNode,
+						public ScriptApiPlayer,
+						public ScriptApiServer,
+						public ScriptApiSecurity
 {
 public:
-	ServerScripting(Server* server);
+	ServerScripting(Server *server);
 
 	// use ScriptApiBase::loadMod() to load mods
 

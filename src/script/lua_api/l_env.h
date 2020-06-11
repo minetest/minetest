@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "raycast.h"
 
-class ModApiEnvMod : public ModApiBase {
+class ModApiEnvMod : public ModApiBase
+{
 private:
 	// set_node(pos, node)
 	// pos = {x=num, y=num, z=num}
@@ -188,7 +189,7 @@ private:
 	static int l_forceload_free_block(lua_State *L);
 
 	// Get a string translated server side
-	static int l_get_translated_string(lua_State * L);
+	static int l_get_translated_string(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);
@@ -197,7 +198,8 @@ public:
 	static struct EnumString es_ClearObjectsMode[];
 };
 
-class LuaABM : public ActiveBlockModifier {
+class LuaABM : public ActiveBlockModifier
+{
 private:
 	int m_id;
 
@@ -206,17 +208,14 @@ private:
 	float m_trigger_interval;
 	u32 m_trigger_chance;
 	bool m_simple_catch_up;
+
 public:
-	LuaABM(lua_State *L, int id,
-			const std::vector<std::string> &trigger_contents,
-			const std::vector<std::string> &required_neighbors,
-			float trigger_interval, u32 trigger_chance, bool simple_catch_up):
-		m_id(id),
-		m_trigger_contents(trigger_contents),
-		m_required_neighbors(required_neighbors),
-		m_trigger_interval(trigger_interval),
-		m_trigger_chance(trigger_chance),
-		m_simple_catch_up(simple_catch_up)
+	LuaABM(lua_State *L, int id, const std::vector<std::string> &trigger_contents,
+			const std::vector<std::string> &required_neighbors, float trigger_interval,
+			u32 trigger_chance, bool simple_catch_up)
+		: m_id(id), m_trigger_contents(trigger_contents),
+		  m_required_neighbors(required_neighbors), m_trigger_interval(trigger_interval),
+		  m_trigger_chance(trigger_chance), m_simple_catch_up(simple_catch_up)
 	{
 	}
 	virtual const std::vector<std::string> &getTriggerContents() const
@@ -227,18 +226,9 @@ public:
 	{
 		return m_required_neighbors;
 	}
-	virtual float getTriggerInterval()
-	{
-		return m_trigger_interval;
-	}
-	virtual u32 getTriggerChance()
-	{
-		return m_trigger_chance;
-	}
-	virtual bool getSimpleCatchUp()
-	{
-		return m_simple_catch_up;
-	}
+	virtual float getTriggerInterval() { return m_trigger_interval; }
+	virtual u32 getTriggerChance() { return m_trigger_chance; }
+	virtual bool getSimpleCatchUp() { return m_simple_catch_up; }
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 			u32 active_object_count, u32 active_object_count_wider);
 };
@@ -247,12 +237,11 @@ class LuaLBM : public LoadingBlockModifierDef
 {
 private:
 	int m_id;
+
 public:
-	LuaLBM(lua_State *L, int id,
-			const std::set<std::string> &trigger_contents,
-			const std::string &name,
-			bool run_at_every_load):
-		m_id(id)
+	LuaLBM(lua_State *L, int id, const std::set<std::string> &trigger_contents,
+			const std::string &name, bool run_at_every_load)
+		: m_id(id)
 	{
 		this->run_at_every_load = run_at_every_load;
 		this->trigger_contents = trigger_contents;
@@ -280,14 +269,14 @@ private:
 	 * Returns the next pointed thing on the ray.
 	 */
 	static int l_next(lua_State *L);
+
 public:
 	//! Constructor with the same arguments as RaycastState.
-	LuaRaycast(
-		const core::line3d<f32> &shootline,
-		bool objects_pointable,
-		bool liquids_pointable) :
-		state(shootline, objects_pointable, liquids_pointable)
-	{}
+	LuaRaycast(const core::line3d<f32> &shootline, bool objects_pointable,
+			bool liquids_pointable)
+		: state(shootline, objects_pointable, liquids_pointable)
+	{
+	}
 
 	//! Creates a LuaRaycast and leaves it on top of the stack.
 	static int create_object(lua_State *L);
@@ -302,7 +291,8 @@ public:
 	static void Register(lua_State *L);
 };
 
-struct ScriptCallbackState {
+struct ScriptCallbackState
+{
 	ServerScripting *script;
 	int callback_ref;
 	int args_ref;

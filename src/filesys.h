@@ -38,7 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace fs
 {
-
 struct DirListNode
 {
 	std::string name;
@@ -80,10 +79,8 @@ std::vector<std::string> GetRecursiveDirs(const std::string &dir);
    list files - include files in the list of subpaths.
    ignore - paths that start with these charcters will not be listed.
 */
-void GetRecursiveSubPaths(const std::string &path,
-		  std::vector<std::string> &dst,
-		  bool list_files,
-		  const std::set<char> &ignore = {});
+void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst,
+		bool list_files, const std::set<char> &ignore = {});
 
 // Tries to delete all, returns false if any failed
 bool DeletePaths(const std::vector<std::string> &paths);
@@ -110,8 +107,8 @@ bool PathStartsWith(const std::string &path, const std::string &prefix);
 // returns "" if there is only one path component.
 // removed: If non-NULL, receives the removed component(s).
 // count: Number of components to remove
-std::string RemoveLastPathComponent(const std::string &path,
-               std::string *removed = NULL, int count = 1);
+std::string RemoveLastPathComponent(
+		const std::string &path, std::string *removed = NULL, int count = 1);
 
 // Remove "." and ".." path components and for every ".." removed, remove
 // the last normal path component before it. Unlike AbsolutePath,

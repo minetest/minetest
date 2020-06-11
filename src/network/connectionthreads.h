@@ -26,12 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace con
 {
-
 class Connection;
 
 class ConnectionSendThread : public Thread
 {
-
 public:
 	friend class UDPPeer;
 
@@ -52,8 +50,8 @@ public:
 private:
 	void runTimeouts(float dtime);
 	void rawSend(const BufferedPacket &packet);
-	bool rawSendAsPacket(session_t peer_id, u8 channelnum,
-			const SharedBuffer<u8> &data, bool reliable);
+	bool rawSendAsPacket(session_t peer_id, u8 channelnum, const SharedBuffer<u8> &data,
+			bool reliable);
 
 	void processReliableCommand(ConnectionCommand &c);
 	void processNonReliableCommand(ConnectionCommand &c);
@@ -119,32 +117,26 @@ private:
 			channelnum: channel on which the packet was sent
 			reliable: true if recursing into a reliable packet
 	*/
-	SharedBuffer<u8> processPacket(Channel *channel,
-			const SharedBuffer<u8> &packetdata, session_t peer_id,
-			u8 channelnum, bool reliable);
+	SharedBuffer<u8> processPacket(Channel *channel, const SharedBuffer<u8> &packetdata,
+			session_t peer_id, u8 channelnum, bool reliable);
 
 	SharedBuffer<u8> handlePacketType_Control(Channel *channel,
-			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
-			bool reliable);
+			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable);
 	SharedBuffer<u8> handlePacketType_Original(Channel *channel,
-			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
-			bool reliable);
+			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable);
 	SharedBuffer<u8> handlePacketType_Split(Channel *channel,
-			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
-			bool reliable);
+			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable);
 	SharedBuffer<u8> handlePacketType_Reliable(Channel *channel,
-			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
-			bool reliable);
+			const SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable);
 
 	struct PacketTypeHandler
 	{
 		SharedBuffer<u8> (ConnectionReceiveThread::*handler)(Channel *channel,
-				const SharedBuffer<u8> &packet, Peer *peer, u8 channelnum,
-				bool reliable);
+				const SharedBuffer<u8> &packet, Peer *peer, u8 channelnum, bool reliable);
 	};
 
 	static const PacketTypeHandler packetTypeRouter[PACKET_TYPE_MAX];
 
 	Connection *m_connection = nullptr;
 };
-}
+} // namespace con

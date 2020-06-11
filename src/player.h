@@ -29,7 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PLAYERNAME_SIZE 20
 
-#define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+#define PLAYERNAME_ALLOWED_CHARS                                                         \
+	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 #define PLAYERNAME_ALLOWED_CHARS_USER_EXPL "'a' to 'z', 'A' to 'Z', '0' to '9', '-', '_'"
 
 struct PlayerFovSpec
@@ -48,22 +49,10 @@ struct PlayerControl
 {
 	PlayerControl() = default;
 
-	PlayerControl(
-		bool a_up,
-		bool a_down,
-		bool a_left,
-		bool a_right,
-		bool a_jump,
-		bool a_aux1,
-		bool a_sneak,
-		bool a_zoom,
-		bool a_LMB,
-		bool a_RMB,
-		float a_pitch,
-		float a_yaw,
-		float a_sidew_move_joystick_axis,
-		float a_forw_move_joystick_axis
-	)
+	PlayerControl(bool a_up, bool a_down, bool a_left, bool a_right, bool a_jump,
+			bool a_aux1, bool a_sneak, bool a_zoom, bool a_LMB, bool a_RMB, float a_pitch,
+			float a_yaw, float a_sidew_move_joystick_axis,
+			float a_forw_move_joystick_axis)
 	{
 		up = a_up;
 		down = a_down;
@@ -107,10 +96,8 @@ struct PlayerSettings
 	bool noclip = false;
 	bool autojump = false;
 
-	const std::string setting_names[8] = {
-		"free_move", "pitch_move", "fast_move", "continuous_forward", "always_fly_fast",
-		"aux1_descends", "noclip", "autojump"
-	};
+	const std::string setting_names[8] = { "free_move", "pitch_move", "fast_move",
+		"continuous_forward", "always_fly_fast", "aux1_descends", "noclip", "autojump" };
 	void readGlobalSettings();
 };
 
@@ -122,27 +109,20 @@ class Environment;
 class Player
 {
 public:
-
 	Player(const char *name, IItemDefManager *idef);
 	virtual ~Player() = 0;
 
 	DISABLE_CLASS_COPY(Player);
 
-	virtual void move(f32 dtime, Environment *env, f32 pos_max_d)
-	{}
+	virtual void move(f32 dtime, Environment *env, f32 pos_max_d) {}
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info)
-	{}
-
-	const v3f &getSpeed() const
 	{
-		return m_speed;
 	}
 
-	void setSpeed(const v3f &speed)
-	{
-		m_speed = speed;
-	}
+	const v3f &getSpeed() const { return m_speed; }
+
+	void setSpeed(const v3f &speed) { m_speed = speed; }
 
 	const char *getName() const { return m_name; }
 
@@ -181,7 +161,7 @@ public:
 	std::string formspec_prepend;
 
 	PlayerControl control;
-	const PlayerControl& getPlayerControl() { return control; }
+	const PlayerControl &getPlayerControl() { return control; }
 	PlayerSettings &getPlayerSettings() { return m_player_settings; }
 	static void settingsChangedCallback(const std::string &name, void *data);
 
@@ -190,22 +170,16 @@ public:
 	void setWieldIndex(u16 index);
 	u16 getWieldIndex() const { return m_wield_index; }
 
-	void setFov(const PlayerFovSpec &spec)
-	{
-		m_fov_override_spec = spec;
-	}
+	void setFov(const PlayerFovSpec &spec) { m_fov_override_spec = spec; }
 
-	const PlayerFovSpec &getFov() const
-	{
-		return m_fov_override_spec;
-	}
+	const PlayerFovSpec &getFov() const { return m_fov_override_spec; }
 
 	u32 keyPressed = 0;
 
-	HudElement* getHud(u32 id);
-	u32         addHud(HudElement* hud);
-	HudElement* removeHud(u32 id);
-	void        clearHud();
+	HudElement *getHud(u32 id);
+	u32 addHud(HudElement *hud);
+	HudElement *removeHud(u32 id);
+	void clearHud();
 
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
@@ -217,6 +191,7 @@ protected:
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };
 
 	std::vector<HudElement *> hud;
+
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread

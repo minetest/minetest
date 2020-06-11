@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 
 ///////////// Mapgen Fractal flags
-#define MGFRACTAL_TERRAIN     0x01
+#define MGFRACTAL_TERRAIN 0x01
 
 class BiomeManager;
 

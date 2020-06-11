@@ -30,9 +30,8 @@ public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data);
 	// Used by the Lua API
 	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &name,
-			const std::string &state) :
-			UnitSAO(env, pos),
-			m_init_name(name), m_init_state(state)
+			const std::string &state)
+		: UnitSAO(env, pos), m_init_name(name), m_init_state(state)
 	{
 	}
 	~LuaEntitySAO();
@@ -63,8 +62,8 @@ public:
 
 	void setTextureMod(const std::string &mod);
 	std::string getTextureMod() const;
-	void setSprite(v2s16 p, int num_frames, float framelength,
-			bool select_horiz_by_yawpitch);
+	void setSprite(
+			v2s16 p, int num_frames, float framelength, bool select_horiz_by_yawpitch);
 	std::string getName();
 	bool getCollisionBox(aabb3f *toset) const;
 	bool getSelectionBox(aabb3f *toset) const;
@@ -74,8 +73,8 @@ private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 	std::string generateSetTextureModCommand() const;
-	static std::string generateSetSpriteCommand(v2s16 p, u16 num_frames,
-			f32 framelength, bool select_horiz_by_yawpitch);
+	static std::string generateSetSpriteCommand(
+			v2s16 p, u16 num_frames, f32 framelength, bool select_horiz_by_yawpitch);
 
 	std::string m_init_name;
 	std::string m_init_state;

@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 
-typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+typedef u16 biome_t; // copy from mg_biome.h to avoid an unnecessary include
 
 class ModApiMapgen : public ModApiBase
 {

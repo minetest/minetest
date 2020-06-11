@@ -5,11 +5,12 @@
 
 class ISimpleTextureSource;
 
-class GUIAnimatedImage : public gui::IGUIElement {
+class GUIAnimatedImage : public gui::IGUIElement
+{
 public:
-	GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
-		s32 id, const core::rect<s32> &rectangle, const std::string &texture_name,
-		s32 frame_count, s32 frame_duration, ISimpleTextureSource *tsrc);
+	GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
+			const core::rect<s32> &rectangle, const std::string &texture_name,
+			s32 frame_count, s32 frame_duration, ISimpleTextureSource *tsrc);
 
 	virtual void draw() override;
 

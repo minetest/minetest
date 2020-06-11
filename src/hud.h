@@ -29,19 +29,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_DIR_TOP_BOTTOM 2
 #define HUD_DIR_BOTTOM_TOP 3
 
-#define HUD_CORNER_UPPER  0
-#define HUD_CORNER_LOWER  1
+#define HUD_CORNER_UPPER 0
+#define HUD_CORNER_LOWER 1
 #define HUD_CORNER_CENTER 2
 
 // Note that these visibility flags do not determine if the hud items are
 // actually drawn, but rather, whether to draw the item should the rest
 // of the game state permit it.
-#define HUD_FLAG_HOTBAR_VISIBLE        (1 << 0)
-#define HUD_FLAG_HEALTHBAR_VISIBLE     (1 << 1)
-#define HUD_FLAG_CROSSHAIR_VISIBLE     (1 << 2)
-#define HUD_FLAG_WIELDITEM_VISIBLE     (1 << 3)
-#define HUD_FLAG_BREATHBAR_VISIBLE     (1 << 4)
-#define HUD_FLAG_MINIMAP_VISIBLE       (1 << 5)
+#define HUD_FLAG_HOTBAR_VISIBLE (1 << 0)
+#define HUD_FLAG_HEALTHBAR_VISIBLE (1 << 1)
+#define HUD_FLAG_CROSSHAIR_VISIBLE (1 << 2)
+#define HUD_FLAG_WIELDITEM_VISIBLE (1 << 3)
+#define HUD_FLAG_BREATHBAR_VISIBLE (1 << 4)
+#define HUD_FLAG_MINIMAP_VISIBLE (1 << 5)
 #define HUD_FLAG_MINIMAP_RADAR_VISIBLE (1 << 6)
 
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
@@ -49,21 +49,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_PARAM_HOTBAR_SELECTED_IMAGE 3
 
 #define HUD_HOTBAR_ITEMCOUNT_DEFAULT 8
-#define HUD_HOTBAR_ITEMCOUNT_MAX     32
+#define HUD_HOTBAR_ITEMCOUNT_MAX 32
 
 
 #define HOTBAR_IMAGE_SIZE 48
 
-enum HudElementType {
-	HUD_ELEM_IMAGE     = 0,
-	HUD_ELEM_TEXT      = 1,
-	HUD_ELEM_STATBAR   = 2,
+enum HudElementType
+{
+	HUD_ELEM_IMAGE = 0,
+	HUD_ELEM_TEXT = 1,
+	HUD_ELEM_STATBAR = 2,
 	HUD_ELEM_INVENTORY = 3,
-	HUD_ELEM_WAYPOINT  = 4,
+	HUD_ELEM_WAYPOINT = 4,
 	HUD_ELEM_IMAGE_WAYPOINT = 5
 };
 
-enum HudElementStat {
+enum HudElementStat
+{
 	HUD_STAT_POS = 0,
 	HUD_STAT_NAME,
 	HUD_STAT_SCALE,
@@ -79,7 +81,8 @@ enum HudElementStat {
 	HUD_STAT_TEXT2,
 };
 
-struct HudElement {
+struct HudElement
+{
 	HudElementType type;
 	v2f pos;
 	std::string name;
@@ -99,4 +102,3 @@ struct HudElement {
 extern const EnumString es_HudElementType[];
 extern const EnumString es_HudElementStat[];
 extern const EnumString es_HudBuiltinElement[];
-

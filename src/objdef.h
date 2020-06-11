@@ -33,7 +33,8 @@ class NodeDefManager;
 
 typedef u32 ObjDefHandle;
 
-enum ObjDefType {
+enum ObjDefType
+{
 	OBJDEF_GENERIC,
 	OBJDEF_BIOME,
 	OBJDEF_ORE,
@@ -41,7 +42,8 @@ enum ObjDefType {
 	OBJDEF_SCHEMATIC,
 };
 
-class ObjDef {
+class ObjDef
+{
 public:
 	virtual ~ObjDef() = default;
 
@@ -67,7 +69,8 @@ protected:
 // added/set to.  Note that ObjDefs managed by ObjDefManager are NOT refcounted,
 // so the same ObjDef instance must not be referenced multiple
 // TODO: const correctness for getter methods
-class ObjDefManager {
+class ObjDefManager
+{
 public:
 	ObjDefManager(IGameDef *gamedef, ObjDefType type);
 	virtual ~ObjDefManager();
@@ -99,11 +102,10 @@ public:
 
 	u32 validateHandle(ObjDefHandle handle) const;
 	static ObjDefHandle createHandle(u32 index, ObjDefType type, u32 uid);
-	static bool decodeHandle(ObjDefHandle handle, u32 *index,
-		ObjDefType *type, u32 *uid);
+	static bool decodeHandle(ObjDefHandle handle, u32 *index, ObjDefType *type, u32 *uid);
 
 protected:
-	ObjDefManager() {};
+	ObjDefManager(){};
 	// Helper for child classes to implement clone()
 	void cloneTo(ObjDefManager *mgr) const;
 

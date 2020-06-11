@@ -29,7 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 
-namespace porting {
+namespace porting
+{
 // java app
 extern android_app *app_global;
 
@@ -55,8 +56,8 @@ void initializePathsAndroid();
  * @param editType type of texfield
  * (1==multiline text input; 2==single line text input; 3=password field)
  */
-void showInputDialog(const std::string &acceptButton,
-					const std::string &hint, const std::string &current, int editType);
+void showInputDialog(const std::string &acceptButton, const std::string &hint,
+		const std::string &current, int editType);
 
 void openURLAndroid(const std::string &url);
 
@@ -76,4 +77,4 @@ std::string getInputDialogValue();
 float getDisplayDensity();
 v2u32 getDisplaySize();
 #endif
-}
+} // namespace porting

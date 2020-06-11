@@ -30,11 +30,10 @@ class LocalPlayer;
 class Camera;
 class Minimap;
 
-class ClientScripting:
-	virtual public ScriptApiBase,
-	public ScriptApiSecurity,
-	public ScriptApiClient,
-	public ScriptApiModChannels
+class ClientScripting : virtual public ScriptApiBase,
+						public ScriptApiSecurity,
+						public ScriptApiClient,
+						public ScriptApiModChannels
 {
 public:
 	ClientScripting(Client *client);

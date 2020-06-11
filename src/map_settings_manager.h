@@ -42,10 +42,10 @@ struct MapgenParams;
 	  to whichever Map-related objects that may require it.
 	- Save these active settings to the metadata file when requested
 */
-class MapSettingsManager {
+class MapSettingsManager
+{
 public:
-	MapSettingsManager(Settings *user_settings,
-		const std::string &map_meta_path);
+	MapSettingsManager(Settings *user_settings, const std::string &map_meta_path);
 	~MapSettingsManager();
 
 	// Finalized map generation parameters
@@ -53,17 +53,16 @@ public:
 
 	bool getMapSetting(const std::string &name, std::string *value_out);
 
-	bool getMapSettingNoiseParams(
-		const std::string &name, NoiseParams *value_out);
+	bool getMapSettingNoiseParams(const std::string &name, NoiseParams *value_out);
 
 	// Note: Map config becomes read-only after makeMapgenParams() gets called
 	// (i.e. mapgen_params is non-NULL).  Attempts to set map config after
 	// params have been finalized will result in failure.
-	bool setMapSetting(const std::string &name,
-		const std::string &value, bool override_meta = false);
+	bool setMapSetting(const std::string &name, const std::string &value,
+			bool override_meta = false);
 
-	bool setMapSettingNoiseParams(const std::string &name,
-		const NoiseParams *value, bool override_meta = false);
+	bool setMapSettingNoiseParams(const std::string &name, const NoiseParams *value,
+			bool override_meta = false);
 
 	bool loadMapMeta();
 	bool saveMapMeta();

@@ -79,7 +79,8 @@ enum LightBank
 /*
 	Simple rotation enum.
 */
-enum Rotation {
+enum Rotation
+{
 	ROTATE_0,
 	ROTATE_90,
 	ROTATE_180,
@@ -98,7 +99,7 @@ enum Rotation {
 
 /* maximum amount of liquid in a block */
 #define LIQUID_LEVEL_MAX LIQUID_LEVEL_MASK
-#define LIQUID_LEVEL_SOURCE (LIQUID_LEVEL_MAX+1)
+#define LIQUID_LEVEL_SOURCE (LIQUID_LEVEL_MAX + 1)
 
 #define LIQUID_INFINITY_MASK 0x80 //0b10000000
 
@@ -139,44 +140,24 @@ struct MapNode
 
 	MapNode() = default;
 
-	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0) noexcept
-		: param0(content),
-		  param1(a_param1),
-		  param2(a_param2)
-	{ }
+	MapNode(content_t content, u8 a_param1 = 0, u8 a_param2 = 0) noexcept
+		: param0(content), param1(a_param1), param2(a_param2)
+	{
+	}
 
 	bool operator==(const MapNode &other) const noexcept
 	{
-		return (param0 == other.param0
-				&& param1 == other.param1
-				&& param2 == other.param2);
+		return (param0 == other.param0 && param1 == other.param1 &&
+				param2 == other.param2);
 	}
 
 	// To be used everywhere
-	content_t getContent() const noexcept
-	{
-		return param0;
-	}
-	void setContent(content_t c) noexcept
-	{
-		param0 = c;
-	}
-	u8 getParam1() const noexcept
-	{
-		return param1;
-	}
-	void setParam1(u8 p) noexcept
-	{
-		param1 = p;
-	}
-	u8 getParam2() const noexcept
-	{
-		return param2;
-	}
-	void setParam2(u8 p) noexcept
-	{
-		param2 = p;
-	}
+	content_t getContent() const noexcept { return param0; }
+	void setContent(content_t c) noexcept { param0 = c; }
+	u8 getParam1() const noexcept { return param1; }
+	void setParam1(u8 p) noexcept { param1 = p; }
+	u8 getParam2() const noexcept { return param2; }
+	void setParam2(u8 p) noexcept { param2 = p; }
 
 	/*!
 	 * Returns the color of the node.
@@ -223,8 +204,7 @@ struct MapNode
 	 */
 	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f) const noexcept;
 
-	bool getLightBanks(u8 &lightday, u8 &lightnight,
-		const NodeDefManager *nodemgr) const;
+	bool getLightBanks(u8 &lightday, u8 &lightnight, const NodeDefManager *nodemgr) const;
 
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
@@ -253,19 +233,19 @@ struct MapNode
 		Gets list of node boxes (used for rendering (NDT_NODEBOX))
 	*/
 	void getNodeBoxes(const NodeDefManager *nodemgr, std::vector<aabb3f> *boxes,
-		u8 neighbors = 0) const;
+			u8 neighbors = 0) const;
 
 	/*
 		Gets list of selection boxes
 	*/
-	void getSelectionBoxes(const NodeDefManager *nodemg,
-		std::vector<aabb3f> *boxes, u8 neighbors = 0) const;
+	void getSelectionBoxes(const NodeDefManager *nodemg, std::vector<aabb3f> *boxes,
+			u8 neighbors = 0) const;
 
 	/*
 		Gets list of collision boxes
 	*/
-	void getCollisionBoxes(const NodeDefManager *nodemgr,
-		std::vector<aabb3f> *boxes, u8 neighbors = 0) const;
+	void getCollisionBoxes(const NodeDefManager *nodemgr, std::vector<aabb3f> *boxes,
+			u8 neighbors = 0) const;
 
 	/*
 		Liquid/leveled helpers
@@ -290,12 +270,10 @@ struct MapNode
 	//   content_width = the number of bytes of content per node
 	//   params_width = the number of bytes of params per node
 	//   compressed = true to zlib-compress output
-	static void serializeBulk(std::ostream &os, int version,
-			const MapNode *nodes, u32 nodecount,
-			u8 content_width, u8 params_width, bool compressed);
-	static void deSerializeBulk(std::istream &is, int version,
-			MapNode *nodes, u32 nodecount,
-			u8 content_width, u8 params_width, bool compressed);
+	static void serializeBulk(std::ostream &os, int version, const MapNode *nodes,
+			u32 nodecount, u8 content_width, u8 params_width, bool compressed);
+	static void deSerializeBulk(std::istream &is, int version, MapNode *nodes,
+			u32 nodecount, u8 content_width, u8 params_width, bool compressed);
 
 private:
 	// Deprecated serialization methods

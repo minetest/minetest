@@ -30,7 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * This class permits caching getFacePosition call results.
  * This reduces CPU usage and vector calls.
  */
-class FacePositionCache {
+class FacePositionCache
+{
 public:
 	static const std::vector<v3s16> &getFacePositions(u16 d);
 

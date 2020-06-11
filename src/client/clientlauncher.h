@@ -40,7 +40,7 @@ protected:
 	void init_input();
 
 	bool launch_game(std::string &error_message, bool reconnect_requested,
-		GameParams &game_params, const Settings &cmd_args);
+			GameParams &game_params, const Settings &cmd_args);
 
 	void main_menu(MainMenuData *menudata);
 

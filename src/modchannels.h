@@ -88,6 +88,5 @@ public:
 private:
 	bool removeChannel(const std::string &channel);
 
-	std::unordered_map<std::string, std::unique_ptr<ModChannel>>
-			m_registered_channels;
+	std::unordered_map<std::string, std::unique_ptr<ModChannel>> m_registered_channels;
 };

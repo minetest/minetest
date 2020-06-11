@@ -42,9 +42,8 @@ public:
 
 	virtual ~SimpleMetricCounter() {}
 
-	SimpleMetricCounter(const std::string &name, const std::string &help_str) :
-			MetricCounter(), m_name(name), m_help_str(help_str),
-			m_counter(0.0)
+	SimpleMetricCounter(const std::string &name, const std::string &help_str)
+		: MetricCounter(), m_name(name), m_help_str(help_str), m_counter(0.0)
 	{
 	}
 
@@ -86,8 +85,8 @@ class SimpleMetricGauge : public MetricGauge
 public:
 	SimpleMetricGauge() = delete;
 
-	SimpleMetricGauge(const std::string &name, const std::string &help_str) :
-			MetricGauge(), m_name(name), m_help_str(help_str), m_gauge(0.0)
+	SimpleMetricGauge(const std::string &name, const std::string &help_str)
+		: MetricGauge(), m_name(name), m_help_str(help_str), m_gauge(0.0)
 	{
 	}
 
@@ -131,8 +130,7 @@ public:
 
 	virtual MetricCounterPtr addCounter(
 			const std::string &name, const std::string &help_str);
-	virtual MetricGaugePtr addGauge(
-			const std::string &name, const std::string &help_str);
+	virtual MetricGaugePtr addGauge(const std::string &name, const std::string &help_str);
 };
 
 #if USE_PROMETHEUS

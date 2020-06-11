@@ -51,12 +51,12 @@ struct ModSpec
 
 	// if modpack:
 	std::map<std::string, ModSpec> modpack_content;
-	ModSpec(const std::string &name = "", const std::string &path = "") :
-			name(name), path(path)
+	ModSpec(const std::string &name = "", const std::string &path = "")
+		: name(name), path(path)
 	{
 	}
-	ModSpec(const std::string &name, const std::string &path, bool part_of_modpack) :
-			name(name), path(path), part_of_modpack(part_of_modpack)
+	ModSpec(const std::string &name, const std::string &path, bool part_of_modpack)
+		: name(name), path(path), part_of_modpack(part_of_modpack)
 	{
 	}
 };
@@ -81,10 +81,7 @@ public:
 
 	const std::vector<ModSpec> &getMods() const { return m_sorted_mods; }
 
-	const std::vector<ModSpec> &getUnsatisfiedMods() const
-	{
-		return m_unsatisfied_mods;
-	}
+	const std::vector<ModSpec> &getUnsatisfiedMods() const { return m_unsatisfied_mods; }
 
 	void printUnsatisfiedModsError() const;
 
@@ -97,8 +94,8 @@ protected:
 	// adds all mods in the set.
 	void addMods(const std::vector<ModSpec> &new_mods);
 
-	void addModsFromConfig(const std::string &settings_path,
-			const std::set<std::string> &mods);
+	void addModsFromConfig(
+			const std::string &settings_path, const std::set<std::string> &mods);
 
 	void checkConflictsAndDeps();
 

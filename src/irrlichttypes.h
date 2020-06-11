@@ -27,54 +27,55 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  *       regardless of the compiler.
  */
 #ifndef _MSC_VER
-#	include <cstdint>
+#include <cstdint>
 #endif
 
 #include <irrTypes.h>
 
 using namespace irr;
 
-namespace irr {
-
+namespace irr
+{
 // Irrlicht 1.8+ defines 64bit unsigned symbol in irrTypes.h
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 #ifdef _MSC_VER
-	// Windows
-	typedef long long s64;
-	typedef unsigned long long u64;
+// Windows
+typedef long long s64;
+typedef unsigned long long u64;
 #else
-	// Posix
-	typedef int64_t s64;
-	typedef uint64_t u64;
+// Posix
+typedef int64_t s64;
+typedef uint64_t u64;
 #endif
 #endif
 
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 9)
-namespace core {
-	template <typename T>
-	inline T roundingError();
+namespace core
+{
+template <typename T>
+inline T roundingError();
 
-	template <>
-	inline s16 roundingError()
-	{
-		return 0;
-	}
+template <>
+inline s16 roundingError()
+{
+	return 0;
 }
+} // namespace core
 #endif
 
-}
+} // namespace irr
 
-#define S8_MIN  (-0x7F - 1)
+#define S8_MIN (-0x7F - 1)
 #define S16_MIN (-0x7FFF - 1)
 #define S32_MIN (-0x7FFFFFFF - 1)
 #define S64_MIN (-0x7FFFFFFFFFFFFFFF - 1)
 
-#define S8_MAX  0x7F
+#define S8_MAX 0x7F
 #define S16_MAX 0x7FFF
 #define S32_MAX 0x7FFFFFFF
 #define S64_MAX 0x7FFFFFFFFFFFFFFF
 
-#define U8_MAX  0xFF
+#define U8_MAX 0xFF
 #define U16_MAX 0xFFFF
 #define U32_MAX 0xFFFFFFFF
 #define U64_MAX 0xFFFFFFFFFFFFFFFF

@@ -41,7 +41,8 @@ class GUIScrollBar;
 class TexturePool;
 class GUIScrollContainer;
 
-typedef enum {
+typedef enum
+{
 	f_Button,
 	f_Table,
 	f_TabHeader,
@@ -55,7 +56,8 @@ typedef enum {
 	f_Unknown
 } FormspecFieldType;
 
-typedef enum {
+typedef enum
+{
 	quit_mode_no,
 	quit_mode_accept,
 	quit_mode_cancel
@@ -87,10 +89,9 @@ class GUIFormSpecMenu : public GUIModalMenu
 	{
 		ListRingSpec() = default;
 
-		ListRingSpec(const InventoryLocation &a_inventoryloc,
-				const std::string &a_listname):
-			inventoryloc(a_inventoryloc),
-			listname(a_listname)
+		ListRingSpec(
+				const InventoryLocation &a_inventoryloc, const std::string &a_listname)
+			: inventoryloc(a_inventoryloc), listname(a_listname)
 		{
 		}
 
@@ -104,16 +105,11 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 		FieldSpec(const std::string &name, const std::wstring &label,
 				const std::wstring &default_text, s32 id, int priority = 0,
-				gui::ECURSOR_ICON cursor_icon = ECI_NORMAL) :
-			fname(name),
-			flabel(label),
-			fdefault(unescape_enriched(translate_string(default_text))),
-			fid(id),
-			send(false),
-			ftype(f_Unknown),
-			is_exit(false),
-			priority(priority),
-			fcursor_icon(cursor_icon)
+				gui::ECURSOR_ICON cursor_icon = ECI_NORMAL)
+			: fname(name), flabel(label),
+			  fdefault(unescape_enriched(translate_string(default_text))), fid(id),
+			  send(false), ftype(f_Unknown), is_exit(false), priority(priority),
+			  fcursor_icon(cursor_icon)
 		{
 		}
 
@@ -134,10 +130,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 	{
 		TooltipSpec() = default;
 		TooltipSpec(const std::wstring &a_tooltip, irr::video::SColor a_bgcolor,
-				irr::video::SColor a_color):
-			tooltip(translate_string(a_tooltip)),
-			bgcolor(a_bgcolor),
-			color(a_color)
+				irr::video::SColor a_color)
+			: tooltip(translate_string(a_tooltip)), bgcolor(a_bgcolor), color(a_color)
 		{
 		}
 
@@ -147,21 +141,16 @@ class GUIFormSpecMenu : public GUIModalMenu
 	};
 
 public:
-	GUIFormSpecMenu(JoystickController *joystick,
-			gui::IGUIElement* parent, s32 id,
-			IMenuManager *menumgr,
-			Client *client,
-			ISimpleTextureSource *tsrc,
-			IFormSource* fs_src,
-			TextDest* txt_dst,
-			const std::string &formspecPrepend,
+	GUIFormSpecMenu(JoystickController *joystick, gui::IGUIElement *parent, s32 id,
+			IMenuManager *menumgr, Client *client, ISimpleTextureSource *tsrc,
+			IFormSource *fs_src, TextDest *txt_dst, const std::string &formspecPrepend,
 			bool remap_dbl_click = true);
 
 	~GUIFormSpecMenu();
 
 	static void create(GUIFormSpecMenu *&cur_formspec, Client *client,
-		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
-		const std::string &formspecPrepend);
+			JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
+			const std::string &formspecPrepend);
 
 	void setFormSpec(const std::string &formspec_string,
 			const InventoryLocation &current_inventory_location)
@@ -195,12 +184,9 @@ public:
 		m_text_dst = text_dst;
 	}
 
-	void allowClose(bool value)
-	{
-		m_allowclose = value;
-	}
+	void allowClose(bool value) { m_allowclose = value; }
 
-	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0))
+	void lockSize(bool lock, v2u32 basescreensize = v2u32(0, 0))
 	{
 		m_lock = lock;
 		m_lockscreensize = basescreensize;
@@ -209,30 +195,15 @@ public:
 	void removeChildren();
 	void setInitialFocus();
 
-	void setFocus(const std::string &elementname)
-	{
-		m_focused_element = elementname;
-	}
+	void setFocus(const std::string &elementname) { m_focused_element = elementname; }
 
-	Client *getClient() const
-	{
-		return m_client;
-	}
+	Client *getClient() const { return m_client; }
 
-	const GUIInventoryList::ItemSpec *getSelectedItem() const
-	{
-		return m_selected_item;
-	}
+	const GUIInventoryList::ItemSpec *getSelectedItem() const { return m_selected_item; }
 
-	const u16 getSelectedAmount() const
-	{
-		return m_selected_amount;
-	}
+	const u16 getSelectedAmount() const { return m_selected_amount; }
 
-	bool doTooltipAppendItemname() const
-	{
-		return m_tooltip_append_itemname;
-	}
+	bool doTooltipAppendItemname() const { return m_tooltip_append_itemname; }
 
 	void addHoveredItemTooltip(const std::string &name)
 	{
@@ -251,23 +222,20 @@ public:
 	ItemStack verifySelectedItem();
 
 	void acceptInput(FormspecQuitMode quitmode);
-	bool preprocessEvent(const SEvent& event);
-	bool OnEvent(const SEvent& event);
+	bool preprocessEvent(const SEvent &event);
+	bool OnEvent(const SEvent &event);
 	bool doPause;
 	bool pausesGame() { return doPause; }
 
-	GUITable* getTable(const std::string &tablename);
-	std::vector<std::string>* getDropDownValues(const std::string &name);
+	GUITable *getTable(const std::string &tablename);
+	std::vector<std::string> *getDropDownValues(const std::string &name);
 
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
 #endif
 
 protected:
-	v2s32 getBasePos() const
-	{
-			return padding + offset + AbsoluteRect.UpperLeftCorner;
-	}
+	v2s32 getBasePos() const { return padding + offset + AbsoluteRect.UpperLeftCorner; }
 	std::wstring getLabelByID(s32 id);
 	std::string getNameByID(s32 id);
 	const FieldSpec *getSpecByID(s32 id);
@@ -280,9 +248,10 @@ protected:
 	std::unordered_set<std::string> property_warned;
 
 	StyleSpec getDefaultStyleForElement(const std::string &type,
-			const std::string &name="", const std::string &parent_type="");
-	std::array<StyleSpec, StyleSpec::NUM_STATES> getStyleForElement(const std::string &type,
-			const std::string &name="", const std::string &parent_type="");
+			const std::string &name = "", const std::string &parent_type = "");
+	std::array<StyleSpec, StyleSpec::NUM_STATES> getStyleForElement(
+			const std::string &type, const std::string &name = "",
+			const std::string &parent_type = "");
 
 	v2s32 padding;
 	v2f32 spacing;
@@ -340,14 +309,15 @@ protected:
 
 
 private:
-	IFormSource        *m_form_src;
-	TextDest           *m_text_dst;
-	u16                 m_formspec_version = 1;
-	std::string         m_focused_element = "";
+	IFormSource *m_form_src;
+	TextDest *m_text_dst;
+	u16 m_formspec_version = 1;
+	std::string m_focused_element = "";
 	JoystickController *m_joystick;
 	bool m_show_debug = false;
 
-	typedef struct {
+	typedef struct
+	{
 		bool explicit_size;
 		bool real_coordinates;
 		u8 simple_field_count;
@@ -365,7 +335,8 @@ private:
 
 		GUIInventoryList::Options inventorylist_options;
 
-		struct {
+		struct
+		{
 			s32 max = 1000;
 			s32 min = 0;
 			s32 small_step = 10;
@@ -378,7 +349,8 @@ private:
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 	} parserData;
 
-	typedef struct {
+	typedef struct
+	{
 		bool key_up;
 		bool key_down;
 		bool key_enter;
@@ -389,49 +361,50 @@ private:
 	std::string current_field_enter_pending = "";
 	std::vector<std::string> m_hovered_item_tooltips;
 
-	void parseElement(parserData* data, const std::string &element);
+	void parseElement(parserData *data, const std::string &element);
 
-	void parseSize(parserData* data, const std::string &element);
-	void parseContainer(parserData* data, const std::string &element);
-	void parseContainerEnd(parserData* data);
+	void parseSize(parserData *data, const std::string &element);
+	void parseContainer(parserData *data, const std::string &element);
+	void parseContainerEnd(parserData *data);
 	void parseScrollContainer(parserData *data, const std::string &element);
 	void parseScrollContainerEnd(parserData *data);
-	void parseList(parserData* data, const std::string &element);
-	void parseListRing(parserData* data, const std::string &element);
-	void parseCheckbox(parserData* data, const std::string &element);
-	void parseImage(parserData* data, const std::string &element);
+	void parseList(parserData *data, const std::string &element);
+	void parseListRing(parserData *data, const std::string &element);
+	void parseCheckbox(parserData *data, const std::string &element);
+	void parseImage(parserData *data, const std::string &element);
 	void parseAnimatedImage(parserData *data, const std::string &element);
-	void parseItemImage(parserData* data, const std::string &element);
-	void parseButton(parserData* data, const std::string &element,
-			const std::string &typ);
-	void parseBackground(parserData* data, const std::string &element);
-	void parseTableOptions(parserData* data, const std::string &element);
-	void parseTableColumns(parserData* data, const std::string &element);
-	void parseTable(parserData* data, const std::string &element);
-	void parseTextList(parserData* data, const std::string &element);
-	void parseDropDown(parserData* data, const std::string &element);
+	void parseItemImage(parserData *data, const std::string &element);
+	void parseButton(
+			parserData *data, const std::string &element, const std::string &typ);
+	void parseBackground(parserData *data, const std::string &element);
+	void parseTableOptions(parserData *data, const std::string &element);
+	void parseTableColumns(parserData *data, const std::string &element);
+	void parseTable(parserData *data, const std::string &element);
+	void parseTextList(parserData *data, const std::string &element);
+	void parseDropDown(parserData *data, const std::string &element);
 	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
-	void parsePwdField(parserData* data, const std::string &element);
-	void parseField(parserData* data, const std::string &element, const std::string &type);
-	void createTextField(parserData *data, FieldSpec &spec,
-		core::rect<s32> &rect, bool is_multiline);
-	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
-	void parseTextArea(parserData* data,std::vector<std::string>& parts,
-			const std::string &type);
+	void parsePwdField(parserData *data, const std::string &element);
+	void parseField(
+			parserData *data, const std::string &element, const std::string &type);
+	void createTextField(
+			parserData *data, FieldSpec &spec, core::rect<s32> &rect, bool is_multiline);
+	void parseSimpleField(parserData *data, std::vector<std::string> &parts);
+	void parseTextArea(
+			parserData *data, std::vector<std::string> &parts, const std::string &type);
 	void parseHyperText(parserData *data, const std::string &element);
-	void parseLabel(parserData* data, const std::string &element);
-	void parseVertLabel(parserData* data, const std::string &element);
-	void parseImageButton(parserData* data, const std::string &element,
-			const std::string &type);
-	void parseItemImageButton(parserData* data, const std::string &element);
-	void parseTabHeader(parserData* data, const std::string &element);
-	void parseBox(parserData* data, const std::string &element);
-	void parseBackgroundColor(parserData* data, const std::string &element);
-	void parseListColors(parserData* data, const std::string &element);
-	void parseTooltip(parserData* data, const std::string &element);
+	void parseLabel(parserData *data, const std::string &element);
+	void parseVertLabel(parserData *data, const std::string &element);
+	void parseImageButton(
+			parserData *data, const std::string &element, const std::string &type);
+	void parseItemImageButton(parserData *data, const std::string &element);
+	void parseTabHeader(parserData *data, const std::string &element);
+	void parseBox(parserData *data, const std::string &element);
+	void parseBackgroundColor(parserData *data, const std::string &element);
+	void parseListColors(parserData *data, const std::string &element);
+	void parseTooltip(parserData *data, const std::string &element);
 	bool parseVersionDirect(const std::string &data);
-	bool parseSizeDirect(parserData* data, const std::string &element);
-	void parseScrollBar(parserData* data, const std::string &element);
+	bool parseSizeDirect(parserData *data, const std::string &element);
+	void parseScrollBar(parserData *data, const std::string &element);
 	void parseScrollBarOptions(parserData *data, const std::string &element);
 	bool parsePositionDirect(parserData *data, const std::string &element);
 	void parsePosition(parserData *data, const std::string &element);
@@ -442,7 +415,7 @@ private:
 	void tryClose();
 
 	void showTooltip(const std::wstring &text, const irr::video::SColor &color,
-		const irr::video::SColor &bgcolor);
+			const irr::video::SColor &bgcolor);
 
 	/**
 	 * In formspec version < 2 the elements were not ordered properly. Some element
@@ -477,25 +450,16 @@ private:
 	bool m_remap_dbl_click;
 };
 
-class FormspecFormSource: public IFormSource
+class FormspecFormSource : public IFormSource
 {
 public:
-	FormspecFormSource(const std::string &formspec):
-		m_formspec(formspec)
-	{
-	}
+	FormspecFormSource(const std::string &formspec) : m_formspec(formspec) {}
 
 	~FormspecFormSource() = default;
 
-	void setForm(const std::string &formspec)
-	{
-		m_formspec = formspec;
-	}
+	void setForm(const std::string &formspec) { m_formspec = formspec; }
 
-	const std::string &getForm() const
-	{
-		return m_formspec;
-	}
+	const std::string &getForm() const { return m_formspec; }
 
 	std::string m_formspec;
 };

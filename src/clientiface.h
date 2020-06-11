@@ -19,10 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irr_v3d.h"                   // for irrlicht datatypes
+#include "irr_v3d.h" // for irrlicht datatypes
 
 #include "constants.h"
-#include "serialization.h"             // for SER_FMT_VER_INVALID
+#include "serialization.h" // for SER_FMT_VER_INVALID
 #include "network/networkpacket.h"
 #include "network/networkprotocol.h"
 #include "porting.h"
@@ -162,8 +162,9 @@ class EmergeManager;
                                                     +-----------------------------+
 
 */
-namespace con {
-	class Connection;
+namespace con
+{
+class Connection;
 }
 
 
@@ -211,7 +212,7 @@ struct PrioritySortedBlockTransfer
 		pos = a_pos;
 		peer_id = a_peer_id;
 	}
-	bool operator < (const PrioritySortedBlockTransfer &other) const
+	bool operator<(const PrioritySortedBlockTransfer &other) const
 	{
 		return priority < other.priority;
 	}
@@ -236,15 +237,13 @@ public:
 	/* Authentication information */
 	std::string enc_pwd = "";
 	bool create_player_on_auth_success = false;
-	AuthMechanism chosen_mech  = AUTH_MECHANISM_NONE;
+	AuthMechanism chosen_mech = AUTH_MECHANISM_NONE;
 	void *auth_data = nullptr;
 	u32 allowed_auth_mechs = 0;
 	u32 allowed_sudo_mechs = 0;
 
-	bool isSudoMechAllowed(AuthMechanism mech)
-	{ return allowed_sudo_mechs & mech; }
-	bool isMechAllowed(AuthMechanism mech)
-	{ return allowed_auth_mechs & mech; }
+	bool isSudoMechAllowed(AuthMechanism mech) { return allowed_sudo_mechs & mech; }
+	bool isMechAllowed(AuthMechanism mech) { return allowed_auth_mechs & mech; }
 
 	RemoteClient();
 	~RemoteClient() = default;
@@ -254,15 +253,15 @@ public:
 		Environment should be locked when this is called.
 		dtime is used for resetting send radius at slow interval
 	*/
-	void GetNextBlocks(ServerEnvironment *env, EmergeManager* emerge,
-			float dtime, std::vector<PrioritySortedBlockTransfer> &dest);
+	void GetNextBlocks(ServerEnvironment *env, EmergeManager *emerge, float dtime,
+			std::vector<PrioritySortedBlockTransfer> &dest);
 
 	void GotBlock(v3s16 p);
 
 	void SentBlock(v3s16 p);
 
 	void SetBlockNotSent(v3s16 p);
-	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
+	void SetBlocksNotSent(std::map<v3s16, MapBlock *> &blocks);
 
 	/**
 	 * tell client about this block being modified right now.
@@ -286,12 +285,11 @@ public:
 
 	void PrintInfo(std::ostream &o)
 	{
-		o<<"RemoteClient "<<peer_id<<": "
-				<<"m_blocks_sent.size()="<<m_blocks_sent.size()
-				<<", m_blocks_sending.size()="<<m_blocks_sending.size()
-				<<", m_nearest_unsent_d="<<m_nearest_unsent_d
-				<<", m_excess_gotblocks="<<m_excess_gotblocks
-				<<std::endl;
+		o << "RemoteClient " << peer_id << ": "
+		  << "m_blocks_sent.size()=" << m_blocks_sent.size()
+		  << ", m_blocks_sending.size()=" << m_blocks_sending.size()
+		  << ", m_nearest_unsent_d=" << m_nearest_unsent_d
+		  << ", m_excess_gotblocks=" << m_excess_gotblocks << std::endl;
 		m_excess_gotblocks = 0;
 	}
 
@@ -314,13 +312,16 @@ public:
 
 	/* set expected serialization version */
 	void setPendingSerializationVersion(u8 version)
-		{ m_pending_serialization_version = version; }
+	{
+		m_pending_serialization_version = version;
+	}
 
-	void setDeployedCompressionMode(u16 byteFlag)
-		{ m_deployed_compression = byteFlag; }
+	void setDeployedCompressionMode(u16 byteFlag) { m_deployed_compression = byteFlag; }
 
 	void confirmSerializationVersion()
-		{ serialization_version = m_pending_serialization_version; }
+	{
+		serialization_version = m_pending_serialization_version;
+	}
 
 	/* get uptime */
 	u64 uptime() const;
@@ -339,16 +340,17 @@ public:
 	u8 getMinor() const { return m_version_minor; }
 	u8 getPatch() const { return m_version_patch; }
 	const std::string &getFull() const { return m_full_version; }
-	
+
 	void setLangCode(const std::string &code) { m_lang_code = code; }
 	const std::string &getLangCode() const { return m_lang_code; }
+
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version = SER_FMT_VER_INVALID;
 
 	/* current state of client */
 	ClientState m_state = CS_Created;
-	
+
 	// Client sent language code
 	std::string m_lang_code;
 
@@ -427,11 +429,11 @@ private:
 	const u64 m_connection_time = porting::getTimeS();
 };
 
-typedef std::unordered_map<u16, RemoteClient*> RemoteClientMap;
+typedef std::unordered_map<u16, RemoteClient *> RemoteClientMap;
 
-class ClientInterface {
+class ClientInterface
+{
 public:
-
 	friend class Server;
 
 	ClientInterface(const std::shared_ptr<con::Connection> &con);
@@ -441,7 +443,7 @@ public:
 	void step(float dtime);
 
 	/* get list of active client id's */
-	std::vector<session_t> getClientIDs(ClientState min_state=CS_Active);
+	std::vector<session_t> getClientIDs(ClientState min_state = CS_Active);
 
 	/* mark block as not sent to active client sessions */
 	void markBlockposAsNotSent(const v3s16 &pos);
@@ -466,10 +468,11 @@ public:
 	void CreateClient(session_t peer_id);
 
 	/* get a client by peer_id */
-	RemoteClient *getClientNoEx(session_t peer_id,  ClientState state_min = CS_Active);
+	RemoteClient *getClientNoEx(session_t peer_id, ClientState state_min = CS_Active);
 
 	/* get client by peer_id (make sure you have list lock before!*/
-	RemoteClient *lockedGetClientNoEx(session_t peer_id,  ClientState state_min = CS_Active);
+	RemoteClient *lockedGetClientNoEx(
+			session_t peer_id, ClientState state_min = CS_Active);
 
 	/* get state of client by id*/
 	ClientState getClientState(session_t peer_id);
@@ -481,8 +484,8 @@ public:
 	u16 getProtocolVersion(session_t peer_id);
 
 	/* set client version */
-	void setClientVersion(session_t peer_id, u8 major, u8 minor, u8 patch,
-			const std::string &full);
+	void setClientVersion(
+			session_t peer_id, u8 major, u8 minor, u8 patch, const std::string &full);
 
 	/* event to update client state */
 	void event(session_t peer_id, ClientStateEvent event);
@@ -495,12 +498,13 @@ public:
 	}
 
 	static std::string state2Name(ClientState state);
+
 protected:
 	//TODO find way to avoid this functions
 	void lock() { m_clients_mutex.lock(); }
 	void unlock() { m_clients_mutex.unlock(); }
 
-	RemoteClientMap& getClientList() { return m_clients; }
+	RemoteClientMap &getClientList() { return m_clients; }
 
 private:
 	/* update internal player list */

@@ -25,8 +25,8 @@ class GUIBackgroundImage : public gui::IGUIElement
 {
 public:
 	GUIBackgroundImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-		const core::rect<s32> &rectangle, const std::string &name,
-		const core::rect<s32> &middle, ISimpleTextureSource *tsrc, bool autoclip);
+			const core::rect<s32> &rectangle, const std::string &name,
+			const core::rect<s32> &middle, ISimpleTextureSource *tsrc, bool autoclip);
 
 	virtual void draw() override;
 

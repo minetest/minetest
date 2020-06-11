@@ -28,8 +28,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common/c_internal.h"
 
-#define luamethod(class, name) {#name, class::l_##name}
-#define luamethod_aliased(class, name, alias) {#name, class::l_##name}, {#alias, class::l_##name}
+#define luamethod(class, name)                                                           \
+	{                                                                                    \
+#name, class ::l_##name                                                          \
+	}
+#define luamethod_aliased(class, name, alias)                                            \
+	{ #name, class ::l_##name }, { #alias, class ::l_##name }
 #define API_FCT(name) registerFunction(L, #name, l_##name, top)
 
 // For future use
@@ -39,32 +43,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* In debug mode ensure no code tries to retrieve the server env when it isn't
  * actually available (in CSM) */
 #if !defined(SERVER) && !defined(NDEBUG)
-#define DEBUG_ASSERT_NO_CLIENTAPI                    \
-	FATAL_ERROR_IF(getClient(L) != nullptr, "Tried " \
-		"to retrieve ServerEnvironment on client")
+#define DEBUG_ASSERT_NO_CLIENTAPI                                                        \
+	FATAL_ERROR_IF(getClient(L) != nullptr,                                              \
+			"Tried "                                                                     \
+			"to retrieve ServerEnvironment on client")
 #else
 #define DEBUG_ASSERT_NO_CLIENTAPI ((void)0)
 #endif
 
 // Retrieve ServerEnvironment pointer as `env` (no map lock)
-#define GET_ENV_PTR_NO_MAP_LOCK                              \
-	DEBUG_ASSERT_NO_CLIENTAPI;                               \
-	ServerEnvironment *env = (ServerEnvironment *)getEnv(L); \
-	if (env == NULL)                                         \
-		return 0
+#define GET_ENV_PTR_NO_MAP_LOCK                                                          \
+	DEBUG_ASSERT_NO_CLIENTAPI;                                                           \
+	ServerEnvironment *env = (ServerEnvironment *)getEnv(L);                             \
+	if (env == NULL)                                                                     \
+	return 0
 
 // Retrieve ServerEnvironment pointer as `env`
-#define GET_ENV_PTR         \
-	MAP_LOCK_REQUIRED;      \
+#define GET_ENV_PTR                                                                      \
+	MAP_LOCK_REQUIRED;                                                                   \
 	GET_ENV_PTR_NO_MAP_LOCK
 
 // Retrieve Environment pointer as `env` (no map lock)
-#define GET_PLAIN_ENV_PTR_NO_MAP_LOCK            \
-	Environment *env = (Environment *)getEnv(L); \
-	if (env == NULL)                             \
-		return 0
+#define GET_PLAIN_ENV_PTR_NO_MAP_LOCK                                                    \
+	Environment *env = (Environment *)getEnv(L);                                         \
+	if (env == NULL)                                                                     \
+	return 0
 
 // Retrieve Environment pointer as `env`
-#define GET_PLAIN_ENV_PTR         \
-	MAP_LOCK_REQUIRED;            \
+#define GET_PLAIN_ENV_PTR                                                                \
+	MAP_LOCK_REQUIRED;                                                                   \
 	GET_PLAIN_ENV_PTR_NO_MAP_LOCK

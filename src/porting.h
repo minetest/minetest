@@ -24,11 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #ifdef _WIN32
-	#ifdef _WIN32_WINNT
-		#undef _WIN32_WINNT
-	#endif
-	#define _WIN32_WINNT 0x0501 // We need to do this before any other headers
-		// because those might include sdkddkver.h which defines _WIN32_WINNT if not already set
+#ifdef _WIN32_WINNT
+#undef _WIN32_WINNT
+#endif
+#define _WIN32_WINNT 0x0501 // We need to do this before any other headers
+// because those might include sdkddkver.h which defines _WIN32_WINNT if not already set
 #endif
 
 #include <string>
@@ -41,9 +41,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 
 #ifdef _MSC_VER
-	#define SWPRINTF_CHARSTRING L"%S"
+#define SWPRINTF_CHARSTRING L"%S"
 #else
-	#define SWPRINTF_CHARSTRING L"%s"
+#define SWPRINTF_CHARSTRING L"%s"
 #endif
 
 //currently not needed
@@ -51,38 +51,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
 
 #ifdef _WIN32
-	#include <windows.h>
+#include <windows.h>
 
-	#define sleep_ms(x) Sleep(x)
+#define sleep_ms(x) Sleep(x)
 #else
-	#include <unistd.h>
-	#include <cstdint> //for uintptr_t
+#include <unistd.h>
+#include <cstdint> //for uintptr_t
 
-	// Use standard Posix macro for Linux
-	#if (defined(linux) || defined(__linux)) && !defined(__linux__)
-		#define __linux__
-	#endif
-	#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
-		#define _GNU_SOURCE
-	#endif
+// Use standard Posix macro for Linux
+#if (defined(linux) || defined(__linux)) && !defined(__linux__)
+#define __linux__
+#endif
+#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
+#define _GNU_SOURCE
+#endif
 
-	#define sleep_ms(x) usleep(x*1000)
+#define sleep_ms(x) usleep(x * 1000)
 #endif
 
 #ifdef _MSC_VER
-	#define ALIGNOF(x) __alignof(x)
-	#define strtok_r(x, y, z) strtok_s(x, y, z)
-	#define strtof(x, y) (float)strtod(x, y)
-	#define strtoll(x, y, z) _strtoi64(x, y, z)
-	#define strtoull(x, y, z) _strtoui64(x, y, z)
-	#define strcasecmp(x, y) stricmp(x, y)
-	#define strncasecmp(x, y, n) strnicmp(x, y, n)
+#define ALIGNOF(x) __alignof(x)
+#define strtok_r(x, y, z) strtok_s(x, y, z)
+#define strtof(x, y) (float)strtod(x, y)
+#define strtoll(x, y, z) _strtoi64(x, y, z)
+#define strtoull(x, y, z) _strtoui64(x, y, z)
+#define strcasecmp(x, y) stricmp(x, y)
+#define strncasecmp(x, y, n) strnicmp(x, y, n)
 #else
-	#define ALIGNOF(x) __alignof__(x)
+#define ALIGNOF(x) __alignof__(x)
 #endif
 
 #ifdef __MINGW32__
-	#define strtok_r(x, y, z) mystrtok_r(x, y, z)
+#define strtok_r(x, y, z) mystrtok_r(x, y, z)
 #endif
 
 // strlcpy is missing from glibc.  thanks a lot, drepper.
@@ -90,39 +90,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // We can't simply alias strlcpy to MSVC's strcpy_s, since strcpy_s by
 // default raises an assertion error and aborts the program if the buffer is
 // too small.
-#if defined(__FreeBSD__) || defined(__NetBSD__)    || \
-	defined(__OpenBSD__) || defined(__DragonFly__) || \
-	defined(__APPLE__)   ||                           \
-	defined(__sun)       || defined(sun)           || \
-	defined(__QNX__)     || defined(__QNXNTO__)
-	#define HAVE_STRLCPY
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) ||               \
+		defined(__DragonFly__) || defined(__APPLE__) || defined(__sun) ||                \
+		defined(sun) || defined(__QNX__) || defined(__QNXNTO__)
+#define HAVE_STRLCPY
 #endif
 
 // So we need to define our own.
 #ifndef HAVE_STRLCPY
-	#define strlcpy(d, s, n) mystrlcpy(d, s, n)
+#define strlcpy(d, s, n) mystrlcpy(d, s, n)
 #endif
 
-#define PADDING(x, y) ((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
+#define PADDING(x, y)                                                                    \
+	((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
 
 #if defined(__APPLE__)
-	#include <mach-o/dyld.h>
-	#include <CoreFoundation/CoreFoundation.h>
+#include <mach-o/dyld.h>
+#include <CoreFoundation/CoreFoundation.h>
 #endif
 
 #ifndef _WIN32 // Posix
-	#include <sys/time.h>
-	#include <ctime>
+#include <sys/time.h>
+#include <ctime>
 
 #if defined(__MACH__) && defined(__APPLE__)
-		#include <mach/clock.h>
-		#include <mach/mach.h>
-	#endif
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
 #endif
 
 namespace porting
 {
-
 /*
 	Signal handler (grabs Ctrl-C on POSIX systems)
 */
@@ -130,7 +128,7 @@ namespace porting
 void signal_handler_init();
 // Returns a pointer to a bool.
 // When the bool is true, program should quit.
-bool * signal_handler_killstatus();
+bool *signal_handler_killstatus();
 
 /*
 	Path of static data directory.
@@ -193,18 +191,30 @@ inline u64 os_get_time(double mult)
 }
 
 // Resolution is <1us.
-inline u64 getTimeS() { return os_get_time(1); }
-inline u64 getTimeMs() { return os_get_time(1000); }
-inline u64 getTimeUs() { return os_get_time(1000*1000); }
-inline u64 getTimeNs() { return os_get_time(1000*1000*1000); }
+inline u64 getTimeS()
+{
+	return os_get_time(1);
+}
+inline u64 getTimeMs()
+{
+	return os_get_time(1000);
+}
+inline u64 getTimeUs()
+{
+	return os_get_time(1000 * 1000);
+}
+inline u64 getTimeNs()
+{
+	return os_get_time(1000 * 1000 * 1000);
+}
 
 #else // Posix
 
 inline void os_get_clock(struct timespec *ts)
 {
 #if defined(__MACH__) && defined(__APPLE__)
-// From http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
-// OS X does not have clock_gettime, use clock_get_time
+	// From http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
+	// OS X does not have clock_gettime, use clock_get_time
 	clock_serv_t cclock;
 	mach_timespec_t mts;
 	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
@@ -256,10 +266,14 @@ inline u64 getTimeNs()
 inline u64 getTime(TimePrecision prec)
 {
 	switch (prec) {
-	case PRECISION_SECONDS: return getTimeS();
-	case PRECISION_MILLI:   return getTimeMs();
-	case PRECISION_MICRO:   return getTimeUs();
-	case PRECISION_NANO:    return getTimeNs();
+	case PRECISION_SECONDS:
+		return getTimeS();
+	case PRECISION_MILLI:
+		return getTimeMs();
+	case PRECISION_MICRO:
+		return getTimeUs();
+	case PRECISION_NANO:
+		return getTimeNs();
 	}
 	FATAL_ERROR("Called getTime with invalid time precision");
 }
@@ -283,44 +297,44 @@ inline const char *getPlatformName()
 {
 	return
 #if defined(ANDROID)
-	"Android"
+			"Android"
 #elif defined(__linux__)
-	"Linux"
+			"Linux"
 #elif defined(_WIN32) || defined(_WIN64)
-	"Windows"
-#elif defined(__DragonFly__) || defined(__FreeBSD__) || \
-		defined(__NetBSD__) || defined(__OpenBSD__)
-	"BSD"
+			"Windows"
+#elif defined(__DragonFly__) || defined(__FreeBSD__) || defined(__NetBSD__) ||           \
+		defined(__OpenBSD__)
+			"BSD"
 #elif defined(__APPLE__) && defined(__MACH__)
-	#if TARGET_OS_MAC
-		"OSX"
-	#elif TARGET_OS_IPHONE
-		"iOS"
-	#else
-		"Apple"
-	#endif
-#elif defined(_AIX)
-	"AIX"
-#elif defined(__hpux)
-	"HP-UX"
-#elif defined(__sun) || defined(sun)
-	#if defined(__SVR4)
-		"Solaris"
-	#else
-		"SunOS"
-	#endif
-#elif defined(__CYGWIN__)
-	"Cygwin"
-#elif defined(__unix__) || defined(__unix)
-	#if defined(_POSIX_VERSION)
-		"Posix"
-	#else
-		"Unix"
-	#endif
+#if TARGET_OS_MAC
+			"OSX"
+#elif TARGET_OS_IPHONE
+			"iOS"
 #else
-	"?"
+			"Apple"
 #endif
-	;
+#elif defined(_AIX)
+			"AIX"
+#elif defined(__hpux)
+			"HP-UX"
+#elif defined(__sun) || defined(sun)
+#if defined(__SVR4)
+			"Solaris"
+#else
+			"SunOS"
+#endif
+#elif defined(__CYGWIN__)
+			"Cygwin"
+#elif defined(__unix__) || defined(__unix)
+#if defined(_POSIX_VERSION)
+			"Posix"
+#else
+			"Unix"
+#endif
+#else
+			"?"
+#endif
+			;
 }
 
 bool secure_rand_fill_buf(void *buf, size_t len);

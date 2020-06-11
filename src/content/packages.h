@@ -35,8 +35,8 @@ struct Package
 
 	bool valid() const
 	{
-		return !(author.empty() || name.empty() || title.empty() ||
-				type.empty() || release <= 0);
+		return !(author.empty() || name.empty() || title.empty() || type.empty() ||
+				release <= 0);
 	}
 
 	std::string getDownloadURL(const std::string &baseURL) const;

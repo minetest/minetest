@@ -27,7 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // This file defines the particle-related structures that both the server and
 // client need. The ParticleManager and rendering is in client/particles.h
 
-struct CommonParticleParams {
+struct CommonParticleParams
+{
 	bool collisiondetection = false;
 	bool collision_removal = false;
 	bool object_collision = false;
@@ -38,14 +39,16 @@ struct CommonParticleParams {
 	MapNode node;
 	u8 node_tile = 0;
 
-	CommonParticleParams() {
+	CommonParticleParams()
+	{
 		animation.type = TAT_NONE;
 		node.setContent(CONTENT_IGNORE);
 	}
 
 	/* This helper is useful for copying params from
 	 * ParticleSpawnerParameters to ParticleParameters */
-	inline void copyCommon(CommonParticleParams &to) const {
+	inline void copyCommon(CommonParticleParams &to) const
+	{
 		to.collisiondetection = collisiondetection;
 		to.collision_removal = collision_removal;
 		to.object_collision = object_collision;
@@ -58,7 +61,8 @@ struct CommonParticleParams {
 	}
 };
 
-struct ParticleParameters : CommonParticleParams {
+struct ParticleParameters : CommonParticleParams
+{
 	v3f pos;
 	v3f vel;
 	v3f acc;
@@ -69,7 +73,8 @@ struct ParticleParameters : CommonParticleParams {
 	void deSerialize(std::istream &is, u16 protocol_ver);
 };
 
-struct ParticleSpawnerParameters : CommonParticleParams {
+struct ParticleSpawnerParameters : CommonParticleParams
+{
 	u16 amount = 1;
 	v3f minpos, maxpos, minvel, maxvel, minacc, maxacc;
 	f32 time = 1;

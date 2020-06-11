@@ -28,17 +28,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct ChatInterface;
 
-class TermLogOutput : public ILogOutput {
+class TermLogOutput : public ILogOutput
+{
 public:
-
 	void logRaw(LogLevel lev, const std::string &line)
 	{
 		queue.push_back(std::make_pair(lev, line));
 	}
 
-	virtual void log(LogLevel lev, const std::string &combined,
-		const std::string &time, const std::string &thread_name,
-		const std::string &payload_text)
+	virtual void log(LogLevel lev, const std::string &combined, const std::string &time,
+			const std::string &thread_name, const std::string &payload_text)
 	{
 		std::ostringstream os(std::ios_base::binary);
 		os << time << ": [" << thread_name << "] " << payload_text;
@@ -46,20 +45,15 @@ public:
 		queue.push_back(std::make_pair(lev, os.str()));
 	}
 
-	MutexedQueue<std::pair<LogLevel, std::string> > queue;
+	MutexedQueue<std::pair<LogLevel, std::string>> queue;
 };
 
-class TerminalChatConsole : public Thread {
+class TerminalChatConsole : public Thread
+{
 public:
+	TerminalChatConsole() : Thread("TerminalThread") {}
 
-	TerminalChatConsole() :
-		Thread("TerminalThread")
-	{}
-
-	void setup(
-		ChatInterface *iface,
-		bool *kill_requested,
-		const std::string &nick)
+	void setup(ChatInterface *iface, bool *kill_requested, const std::string &nick)
 	{
 		m_nick = nick;
 		m_kill_requested = kill_requested;
@@ -89,11 +83,13 @@ private:
 	void step(int ch);
 
 	// Used to ensure the deinitialisation is always called.
-	struct CursesInitHelper {
+	struct CursesInitHelper
+	{
 		TerminalChatConsole *cons;
-		CursesInitHelper(TerminalChatConsole * a_console)
-			: cons(a_console)
-		{ cons->initOfCurses(); }
+		CursesInitHelper(TerminalChatConsole *a_console) : cons(a_console)
+		{
+			cons->initOfCurses();
+		}
 		~CursesInitHelper() { cons->deInitOfCurses(); }
 	};
 

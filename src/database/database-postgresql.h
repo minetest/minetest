@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Settings;
 
-class Database_PostgreSQL: public Database
+class Database_PostgreSQL : public Database
 {
 public:
 	Database_PostgreSQL(const std::string &connect_string);
@@ -49,41 +49,39 @@ protected:
 
 	inline u32 pg_to_uint(PGresult *res, int row, int col)
 	{
-		return (u32) atoi(PQgetvalue(res, row, col));
+		return (u32)atoi(PQgetvalue(res, row, col));
 	}
 
 	inline float pg_to_float(PGresult *res, int row, int col)
 	{
-		return (float) atof(PQgetvalue(res, row, col));
+		return (float)atof(PQgetvalue(res, row, col));
 	}
 
 	inline v3s16 pg_to_v3s16(PGresult *res, int row, int col)
 	{
-		return v3s16(
-			pg_to_int(res, row, col),
-			pg_to_int(res, row, col + 1),
-			pg_to_int(res, row, col + 2)
-		);
+		return v3s16(pg_to_int(res, row, col), pg_to_int(res, row, col + 1),
+				pg_to_int(res, row, col + 2));
 	}
 
 	inline PGresult *execPrepared(const char *stmtName, const int paramsNumber,
-		const void **params,
-		const int *paramsLengths = NULL, const int *paramsFormats = NULL,
-		bool clear = true, bool nobinary = true)
+			const void **params, const int *paramsLengths = NULL,
+			const int *paramsFormats = NULL, bool clear = true, bool nobinary = true)
 	{
 		return checkResults(PQexecPrepared(m_conn, stmtName, paramsNumber,
-			(const char* const*) params, paramsLengths, paramsFormats,
-			nobinary ? 1 : 0), clear);
+									(const char *const *)params, paramsLengths,
+									paramsFormats, nobinary ? 1 : 0),
+				clear);
 	}
 
 	inline PGresult *execPrepared(const char *stmtName, const int paramsNumber,
-		const char **params, bool clear = true, bool nobinary = true)
+			const char **params, bool clear = true, bool nobinary = true)
 	{
-		return execPrepared(stmtName, paramsNumber,
-			(const void **)params, NULL, NULL, clear, nobinary);
+		return execPrepared(stmtName, paramsNumber, (const void **)params, NULL, NULL,
+				clear, nobinary);
 	}
 
-	void createTableIfNotExists(const std::string &table_name, const std::string &definition);
+	void createTableIfNotExists(
+			const std::string &table_name, const std::string &definition);
 
 	// Database initialization
 	void connectToDatabase();
@@ -95,6 +93,7 @@ protected:
 	}
 
 	const int getPGVersion() const { return m_pgversion; }
+
 private:
 	// Database connectivity checks
 	void ping();

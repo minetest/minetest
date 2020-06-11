@@ -26,13 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "container.h"
 
-template<typename T>
+template <typename T>
 class MutexedVariable
 {
 public:
-	MutexedVariable(const T &value):
-		m_value(value)
-	{}
+	MutexedVariable(const T &value) : m_value(value) {}
 
 	T get()
 	{
@@ -48,6 +46,7 @@ public:
 
 	// You pretty surely want to grab the lock when accessing this
 	T m_value;
+
 private:
 	std::mutex m_mutex;
 };
@@ -55,38 +54,40 @@ private:
 /*
 	A single worker thread - multiple client threads queue framework.
 */
-template<typename Key, typename T, typename Caller, typename CallerData>
-class GetResult {
+template <typename Key, typename T, typename Caller, typename CallerData>
+class GetResult
+{
 public:
 	Key key;
 	T item;
 	std::pair<Caller, CallerData> caller;
 };
 
-template<typename Key, typename T, typename Caller, typename CallerData>
-class ResultQueue : public MutexedQueue<GetResult<Key, T, Caller, CallerData> > {
+template <typename Key, typename T, typename Caller, typename CallerData>
+class ResultQueue : public MutexedQueue<GetResult<Key, T, Caller, CallerData>>
+{
 };
 
-template<typename Caller, typename Data, typename Key, typename T>
-class CallerInfo {
+template <typename Caller, typename Data, typename Key, typename T>
+class CallerInfo
+{
 public:
 	Caller caller;
 	Data data;
 	ResultQueue<Key, T, Caller, Data> *dest;
 };
 
-template<typename Key, typename T, typename Caller, typename CallerData>
-class GetRequest {
+template <typename Key, typename T, typename Caller, typename CallerData>
+class GetRequest
+{
 public:
 	GetRequest() = default;
 	~GetRequest() = default;
 
-	GetRequest(const Key &a_key): key(a_key)
-	{
-	}
+	GetRequest(const Key &a_key) : key(a_key) {}
 
 	Key key;
-	std::list<CallerInfo<Caller, CallerData, Key, T> > callers;
+	std::list<CallerInfo<Caller, CallerData, Key, T>> callers;
 };
 
 /**
@@ -96,19 +97,17 @@ public:
  * @param Caller unique id of calling thread
  * @param CallerData data passed back to caller
  */
-template<typename Key, typename T, typename Caller, typename CallerData>
-class RequestQueue {
+template <typename Key, typename T, typename Caller, typename CallerData>
+class RequestQueue
+{
 public:
-	bool empty()
-	{
-		return m_queue.empty();
-	}
+	bool empty() { return m_queue.empty(); }
 
 	void add(const Key &key, Caller caller, CallerData callerdata,
-		ResultQueue<Key, T, Caller, CallerData> *dest)
+			ResultQueue<Key, T, Caller, CallerData> *dest)
 	{
-		typename std::deque<GetRequest<Key, T, Caller, CallerData> >::iterator i;
-		typename std::list<CallerInfo<Caller, CallerData, Key, T> >::iterator j;
+		typename std::deque<GetRequest<Key, T, Caller, CallerData>>::iterator i;
+		typename std::list<CallerInfo<Caller, CallerData, Key, T>>::iterator j;
 
 		{
 			MutexAutoLock lock(m_queue.getMutex());
@@ -158,19 +157,16 @@ public:
 		return m_queue.pop_front(timeout_ms);
 	}
 
-	GetRequest<Key, T, Caller, CallerData> pop()
-	{
-		return m_queue.pop_frontNoEx();
-	}
+	GetRequest<Key, T, Caller, CallerData> pop() { return m_queue.pop_frontNoEx(); }
 
 	void pushResult(GetRequest<Key, T, Caller, CallerData> req, T res)
 	{
-		for (typename std::list<CallerInfo<Caller, CallerData, Key, T> >::iterator
-				i = req.callers.begin();
+		for (typename std::list<CallerInfo<Caller, CallerData, Key, T>>::iterator i =
+						req.callers.begin();
 				i != req.callers.end(); ++i) {
 			CallerInfo<Caller, CallerData, Key, T> &ca = *i;
 
-			GetResult<Key,T,Caller,CallerData> result;
+			GetResult<Key, T, Caller, CallerData> result;
 
 			result.key = req.key;
 			result.item = res;
@@ -182,7 +178,7 @@ public:
 	}
 
 private:
-	MutexedQueue<GetRequest<Key, T, Caller, CallerData> > m_queue;
+	MutexedQueue<GetRequest<Key, T, Caller, CallerData>> m_queue;
 };
 
 class UpdateThread : public Thread
@@ -208,9 +204,11 @@ public:
 		while (!stopRequested()) {
 			m_update_sem.wait();
 			// Set semaphore to 0
-			while (m_update_sem.wait(0));
+			while (m_update_sem.wait(0))
+				;
 
-			if (stopRequested()) break;
+			if (stopRequested())
+				break;
 
 			doUpdate();
 		}

@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "nodedef.h"
 
-typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+typedef u16 biome_t; // copy from mg_biome.h to avoid an unnecessary include
 
 class Noise;
 class Mapgen;
@@ -33,13 +33,14 @@ class MMVManip;
 
 /////////////////// Ore generation flags
 
-#define OREFLAG_ABSHEIGHT     0x01 // Non-functional but kept to not break flags
-#define OREFLAG_PUFF_CLIFFS   0x02
+#define OREFLAG_ABSHEIGHT 0x01 // Non-functional but kept to not break flags
+#define OREFLAG_PUFF_CLIFFS 0x02
 #define OREFLAG_PUFF_ADDITIVE 0x04
-#define OREFLAG_USE_NOISE     0x08
-#define OREFLAG_USE_NOISE2    0x10
+#define OREFLAG_USE_NOISE 0x08
+#define OREFLAG_USE_NOISE2 0x10
 
-enum OreType {
+enum OreType
+{
 	ORE_SCATTER,
 	ORE_SHEET,
 	ORE_PUFF,
@@ -50,48 +51,52 @@ enum OreType {
 
 extern FlagDesc flagdesc_ore[];
 
-class Ore : public ObjDef, public NodeResolver {
+class Ore : public ObjDef, public NodeResolver
+{
 public:
 	static const bool NEEDS_NOISE = false;
 
-	content_t c_ore;                  // the node to place
+	content_t c_ore; // the node to place
 	std::vector<content_t> c_wherein; // the nodes to be placed in
 	u32 clust_scarcity; // ore cluster has a 1-in-clust_scarcity chance of appearing at a node
 	s16 clust_num_ores; // how many ore nodes are in a chunk
-	s16 clust_size;     // how large (in nodes) a chunk of ore is
+	s16 clust_size; // how large (in nodes) a chunk of ore is
 	s16 y_min;
 	s16 y_max;
-	u8 ore_param2;		// to set node-specific attributes
-	u32 flags = 0;          // attributes for this ore
-	float nthresh;      // threshold for noise at which an ore is placed
-	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
+	u8 ore_param2; // to set node-specific attributes
+	u32 flags = 0; // attributes for this ore
+	float nthresh; // threshold for noise at which an ore is placed
+	NoiseParams np; // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise = nullptr;
 	std::unordered_set<biome_t> biomes;
 
-	Ore() = default;;
+	Ore() = default;
+	;
 	virtual ~Ore();
 
 	virtual void resolveNodeNames();
 
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap) = 0;
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed, v3s16 nmin,
+			v3s16 nmax, biome_t *biomemap) = 0;
 
 protected:
 	void cloneTo(Ore *def) const;
 };
 
-class OreScatter : public Ore {
+class OreScatter : public Ore
+{
 public:
 	static const bool NEEDS_NOISE = false;
 
 	ObjDef *clone() const;
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed, v3s16 nmin,
+			v3s16 nmax, biome_t *biomemap);
 };
 
-class OreSheet : public Ore {
+class OreSheet : public Ore
+{
 public:
 	static const bool NEEDS_NOISE = true;
 
@@ -101,11 +106,12 @@ public:
 	u16 column_height_max;
 	float column_midpoint_factor;
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed, v3s16 nmin,
+			v3s16 nmax, biome_t *biomemap);
 };
 
-class OrePuff : public Ore {
+class OrePuff : public Ore
+{
 public:
 	static const bool NEEDS_NOISE = true;
 
@@ -119,21 +125,23 @@ public:
 	OrePuff() = default;
 	virtual ~OrePuff();
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed, v3s16 nmin,
+			v3s16 nmax, biome_t *biomemap);
 };
 
-class OreBlob : public Ore {
+class OreBlob : public Ore
+{
 public:
 	static const bool NEEDS_NOISE = true;
 
 	ObjDef *clone() const;
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed, v3s16 nmin,
+			v3s16 nmax, biome_t *biomemap);
 };
 
-class OreVein : public Ore {
+class OreVein : public Ore
+{
 public:
 	static const bool NEEDS_NOISE = true;
 
@@ -146,11 +154,12 @@ public:
 	OreVein() = default;
 	virtual ~OreVein();
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed, v3s16 nmin,
+			v3s16 nmax, biome_t *biomemap);
 };
 
-class OreStratum : public Ore {
+class OreStratum : public Ore
+{
 public:
 	static const bool NEEDS_NOISE = false;
 
@@ -163,21 +172,19 @@ public:
 	OreStratum() = default;
 	virtual ~OreStratum();
 
-	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, biome_t *biomemap);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed, v3s16 nmin,
+			v3s16 nmax, biome_t *biomemap);
 };
 
-class OreManager : public ObjDefManager {
+class OreManager : public ObjDefManager
+{
 public:
 	OreManager(IGameDef *gamedef);
 	virtual ~OreManager() = default;
 
 	OreManager *clone() const;
 
-	const char *getObjectTitle() const
-	{
-		return "ore";
-	}
+	const char *getObjectTitle() const { return "ore"; }
 
 	static Ore *create(OreType type)
 	{
@@ -204,5 +211,5 @@ public:
 	size_t placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
 private:
-	OreManager() {};
+	OreManager(){};
 };
