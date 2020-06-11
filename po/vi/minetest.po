@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Vietnamese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-01-11 18:26+0000\n"
-"Last-Translator: rubenwardy <rubenwardy@gmail.com>\n"
+"PO-Revision-Date: 2020-06-13 21:08+0000\n"
+"Last-Translator: darkcloudcat <leducthn@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/minetest/"
 "minetest/vi/>\n"
 "Language: vi\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.10.1\n"
+"X-Generator: Weblate 4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -23,9 +23,8 @@ msgid "You died"
 msgstr "Bạn đã chết"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Đã xảy ra lỗi trong tập lệnh Lua, chẳng hạn như mod:"
+msgstr "Đã xảy ra lỗi trong tập lệnh Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -33,7 +32,7 @@ msgstr "Xảy ra lỗi:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr "Thực đơn chính"
+msgstr "Trình đơn chính"
 
 #: builtin/fstk/ui.lua
 msgid "Ok"
@@ -49,7 +48,7 @@ msgstr "Máy chủ đã yêu cầu kết nối lại:"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "Tải..."
+msgstr "Đang tải..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
