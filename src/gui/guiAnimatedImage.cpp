@@ -10,17 +10,18 @@
 
 GUIAnimatedImage::GUIAnimatedImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
 		s32 id, const core::rect<s32> &rectangle, const std::string &texture_name,
-		s32 frame_count, s32 frame_duration, ISimpleTextureSource *tsrc)
-	: gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle), m_tsrc(tsrc)
+		s32 frame_count, s32 frame_duration, ISimpleTextureSource *tsrc) :
+	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
+	m_tsrc(tsrc)
 {
 	m_texture = m_tsrc->getTexture(texture_name);
 
-	m_frame_count = std::max(frame_count, 1);
+	m_frame_count	 = std::max(frame_count, 1);
 	m_frame_duration = std::max(frame_duration, 0);
 
 	if (m_texture != nullptr) {
 		core::dimension2d<u32> size = m_texture->getOriginalSize();
-		if (size.Height < (u64)m_frame_count)
+		if (size.Height < (u64) m_frame_count)
 			m_frame_count = size.Height;
 	} else {
 		// No need to step an animation if we have nothing to draw

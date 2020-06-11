@@ -57,7 +57,7 @@ int ModApiUtil::l_log(lua_State *L)
 		text = luaL_checkstring(L, 1);
 	} else {
 		std::string name = luaL_checkstring(L, 1);
-		text = luaL_checkstring(L, 2);
+		text			 = luaL_checkstring(L, 2);
 		if (name == "deprecated") {
 			log_deprecated(L, text, 2);
 			return 0;
@@ -187,8 +187,8 @@ int ModApiUtil::l_get_hit_params(lua_State *L)
 int ModApiUtil::l_check_password_entry(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string name = luaL_checkstring(L, 1);
-	std::string entry = luaL_checkstring(L, 2);
+	std::string name	 = luaL_checkstring(L, 1);
+	std::string entry	 = luaL_checkstring(L, 2);
 	std::string password = luaL_checkstring(L, 3);
 
 	if (base64_is_valid(entry)) {
@@ -216,9 +216,9 @@ int ModApiUtil::l_check_password_entry(lua_State *L)
 int ModApiUtil::l_get_password_hash(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string name = luaL_checkstring(L, 1);
+	std::string name		 = luaL_checkstring(L, 1);
 	std::string raw_password = luaL_checkstring(L, 2);
-	std::string hash = translate_password(name, raw_password);
+	std::string hash		 = translate_password(name, raw_password);
 	lua_pushstring(L, hash.c_str());
 	return 1;
 }
@@ -306,7 +306,7 @@ int ModApiUtil::l_encode_base64(lua_State *L)
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
 
-	std::string out = base64_encode((const unsigned char *)(data), size);
+	std::string out = base64_encode((const unsigned char *) (data), size);
 
 	lua_pushlstring(L, out.data(), out.size());
 	return 1;
@@ -318,7 +318,7 @@ int ModApiUtil::l_decode_base64(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	size_t size;
-	const char *d = luaL_checklstring(L, 1, &size);
+	const char *d		   = luaL_checklstring(L, 1, &size);
 	const std::string data = std::string(d, size);
 
 	if (!base64_is_valid(data))
@@ -345,8 +345,8 @@ int ModApiUtil::l_get_dir_list(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *path = luaL_checkstring(L, 1);
-	bool list_all = !lua_isboolean(L, 2); // if its not a boolean list all
-	bool list_dirs = readParam<bool>(L, 2); // true: list dirs, false: list files
+	bool list_all	 = !lua_isboolean(L, 2); // if its not a boolean list all
+	bool list_dirs	 = readParam<bool>(L, 2); // true: list dirs, false: list files
 
 	CHECK_SECURE_PATH(L, path, false);
 
@@ -414,7 +414,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 	}
 
 	// Check secure.trusted_mods
-	std::string mod_name = readParam<std::string>(L, -1);
+	std::string mod_name	 = readParam<std::string>(L, -1);
 	std::string trusted_mods = g_settings->get("secure.trusted_mods");
 	trusted_mods.erase(std::remove_if(trusted_mods.begin(), trusted_mods.end(),
 							   static_cast<int (*)(int)>(&std::isspace)),
@@ -454,7 +454,7 @@ int ModApiUtil::l_sha1(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
-	bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
+	bool hex		 = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
 
 	// Compute actual checksum of data
 	std::string data_sha1;
@@ -462,7 +462,7 @@ int ModApiUtil::l_sha1(lua_State *L)
 		SHA1 ctx;
 		ctx.addBytes(data, size);
 		unsigned char *data_tmpdigest = ctx.getDigest();
-		data_sha1.assign((char *)data_tmpdigest, 20);
+		data_sha1.assign((char *) data_tmpdigest, 20);
 		free(data_tmpdigest);
 	}
 

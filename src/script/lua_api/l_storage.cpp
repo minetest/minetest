@@ -54,8 +54,7 @@ void ModApiStorage::Initialize(lua_State *L, int top)
 }
 
 StorageRef::StorageRef(ModMetadata *object) : m_object(object)
-{
-}
+{}
 
 StorageRef::~StorageRef()
 {
@@ -64,15 +63,15 @@ StorageRef::~StorageRef()
 
 void StorageRef::create(lua_State *L, ModMetadata *object)
 {
-	StorageRef *o = new StorageRef(object);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	StorageRef *o									= new StorageRef(object);
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 }
 
 int StorageRef::gc_object(lua_State *L)
 {
-	StorageRef *o = *(StorageRef **)(lua_touserdata(L, 1));
+	StorageRef *o = *(StorageRef **) (lua_touserdata(L, 1));
 	// Server side
 	if (IGameDef *gamedef = getGameDef(L))
 		gamedef->unregisterModStorage(getobject(o)->getModName());
@@ -119,7 +118,7 @@ StorageRef *StorageRef::checkobject(lua_State *L, int narg)
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud)
 		luaL_typerror(L, narg, className);
-	return *(StorageRef **)ud; // unbox pointer
+	return *(StorageRef **) ud; // unbox pointer
 }
 
 ModMetadata *StorageRef::getobject(StorageRef *ref)
@@ -138,7 +137,7 @@ void StorageRef::clearMeta()
 	m_object->clear();
 }
 
-const char StorageRef::className[] = "StorageRef";
+const char StorageRef::className[]	 = "StorageRef";
 const luaL_Reg StorageRef::methods[] = { luamethod(MetaDataRef, contains),
 	luamethod(MetaDataRef, get), luamethod(MetaDataRef, get_string),
 	luamethod(MetaDataRef, set_string), luamethod(MetaDataRef, get_int),

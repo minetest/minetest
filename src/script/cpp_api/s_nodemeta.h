@@ -29,7 +29,7 @@ struct ItemStack;
 class ScriptApiNodemeta : virtual public ScriptApiBase, public ScriptApiItem
 {
 public:
-	ScriptApiNodemeta() = default;
+	ScriptApiNodemeta()			 = default;
 	virtual ~ScriptApiNodemeta() = default;
 
 	// Return number of accepted items to be moved

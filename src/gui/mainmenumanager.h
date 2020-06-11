@@ -29,11 +29,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IGameCallback
 {
 public:
-	virtual void exitToOS() = 0;
-	virtual void keyConfig() = 0;
-	virtual void disconnect() = 0;
+	virtual void exitToOS()		  = 0;
+	virtual void keyConfig()	  = 0;
+	virtual void disconnect()	  = 0;
 	virtual void changePassword() = 0;
-	virtual void changeVolume() = 0;
+	virtual void changeVolume()	  = 0;
 
 	virtual void signalKeyConfigChange() = 0;
 };
@@ -103,7 +103,7 @@ extern bool isMenuActive();
 class MainGameCallback : public IGameCallback
 {
 public:
-	MainGameCallback() = default;
+	MainGameCallback()			= default;
 	virtual ~MainGameCallback() = default;
 
 	virtual void exitToOS() { shutdown_requested = true; }
@@ -119,11 +119,11 @@ public:
 	virtual void signalKeyConfigChange() { keyconfig_changed = true; }
 
 
-	bool disconnect_requested = false;
+	bool disconnect_requested	  = false;
 	bool changepassword_requested = false;
-	bool changevolume_requested = false;
-	bool keyconfig_requested = false;
-	bool shutdown_requested = false;
+	bool changevolume_requested	  = false;
+	bool keyconfig_requested	  = false;
+	bool shutdown_requested		  = false;
 
 	bool keyconfig_changed = false;
 };

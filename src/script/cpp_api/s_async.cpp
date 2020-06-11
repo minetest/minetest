@@ -89,9 +89,9 @@ unsigned int AsyncEngine::queueAsyncJob(
 {
 	jobQueueMutex.lock();
 	LuaJobInfo toAdd;
-	toAdd.id = jobIdCounter++;
+	toAdd.id				 = jobIdCounter++;
 	toAdd.serializedFunction = func;
-	toAdd.serializedParams = params;
+	toAdd.serializedParams	 = params;
 
 	jobQueue.push_back(toAdd);
 
@@ -195,8 +195,10 @@ void AsyncEngine::prepareEnvironment(lua_State *L, int top)
 }
 
 /******************************************************************************/
-AsyncWorkerThread::AsyncWorkerThread(AsyncEngine *jobDispatcher, const std::string &name)
-	: Thread(name), ScriptApiBase(ScriptingType::Async), jobDispatcher(jobDispatcher)
+AsyncWorkerThread::AsyncWorkerThread(
+		AsyncEngine *jobDispatcher, const std::string &name) :
+	Thread(name),
+	ScriptApiBase(ScriptingType::Async), jobDispatcher(jobDispatcher)
 {
 	lua_State *L = getStack();
 
@@ -267,7 +269,7 @@ void *AsyncWorkerThread::run()
 		} else {
 			// Fetch result
 			size_t length;
-			const char *retval = lua_tolstring(L, -1, &length);
+			const char *retval		   = lua_tolstring(L, -1, &length);
 			toProcess.serializedResult = std::string(retval, length);
 		}
 

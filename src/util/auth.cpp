@@ -40,7 +40,7 @@ std::string translate_password(const std::string &name, const std::string &passw
 	SHA1 sha1;
 	sha1.addBytes(slt.c_str(), slt.length());
 	unsigned char *digest = sha1.getDigest();
-	std::string pwd = base64_encode(digest, 20);
+	std::string pwd		  = base64_encode(digest, 20);
 	free(digest);
 	return pwd;
 }
@@ -53,9 +53,9 @@ static inline void gen_srp_v(const std::string &name, const std::string &passwor
 		char **salt, size_t *salt_len, char **bytes_v, size_t *len_v)
 {
 	std::string n_name = lowercase(name);
-	SRP_Result res = srp_create_salted_verification_key(SRP_SHA256, SRP_NG_2048,
-			n_name.c_str(), (const unsigned char *)password.c_str(), password.size(),
-			(unsigned char **)salt, salt_len, (unsigned char **)bytes_v, len_v, NULL,
+	SRP_Result res	   = srp_create_salted_verification_key(SRP_SHA256, SRP_NG_2048,
+			n_name.c_str(), (const unsigned char *) password.c_str(), password.size(),
+			(unsigned char **) salt, salt_len, (unsigned char **) bytes_v, len_v, NULL,
 			NULL);
 	FATAL_ERROR_IF(res != SRP_OK, "Couldn't create salted SRP verifier");
 }
@@ -67,9 +67,9 @@ std::string generate_srp_verifier(
 	size_t salt_len = salt.size();
 	// The API promises us that the salt doesn't
 	// get modified if &salt_ptr isn't NULL.
-	char *salt_ptr = (char *)salt.c_str();
+	char *salt_ptr = (char *) salt.c_str();
 
-	char *bytes_v = nullptr;
+	char *bytes_v		= nullptr;
 	size_t verifier_len = 0;
 	gen_srp_v(name, password, &salt_ptr, &salt_len, &bytes_v, &verifier_len);
 	std::string verifier = std::string(bytes_v, verifier_len);
@@ -87,7 +87,7 @@ void generate_srp_verifier_and_salt(const std::string &name, const std::string &
 	size_t salt_len;
 	gen_srp_v(name, password, &salt_ptr, &salt_len, &bytes_v, &verifier_len);
 	*verifier = std::string(bytes_v, verifier_len);
-	*salt = std::string(salt_ptr, salt_len);
+	*salt	  = std::string(salt_ptr, salt_len);
 	free(bytes_v);
 	free(salt_ptr);
 }
@@ -106,8 +106,8 @@ std::string get_encoded_srp_verifier(const std::string &name, const std::string 
 std::string encode_srp_verifier(const std::string &verifier, const std::string &salt)
 {
 	std::ostringstream ret_str;
-	ret_str << "#1#" << base64_encode((unsigned char *)salt.c_str(), salt.size()) << "#"
-			<< base64_encode((unsigned char *)verifier.c_str(), verifier.size());
+	ret_str << "#1#" << base64_encode((unsigned char *) salt.c_str(), salt.size()) << "#"
+			<< base64_encode((unsigned char *) verifier.c_str(), verifier.size());
 	return ret_str.str();
 }
 
@@ -122,7 +122,7 @@ bool decode_srp_verifier_and_salt(
 			|| !base64_is_valid(components[2]) || !base64_is_valid(components[3]))
 		return false;
 
-	*salt = base64_decode(components[2]);
+	*salt	  = base64_decode(components[2]);
 	*verifier = base64_decode(components[3]);
 	return true;
 }

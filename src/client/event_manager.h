@@ -27,7 +27,7 @@ class EventManager : public MtEventManager
 {
 	static void receiverReceive(MtEvent *e, void *data)
 	{
-		MtEventReceiver *r = (MtEventReceiver *)data;
+		MtEventReceiver *r = (MtEventReceiver *) data;
 		r->onEvent(e);
 	}
 	struct FuncSpec
@@ -73,7 +73,7 @@ public:
 		std::map<MtEvent::Type, Dest>::iterator i = m_dest.find(type);
 		if (i != m_dest.end()) {
 			std::list<FuncSpec> &funcs = i->second.funcs;
-			auto j = funcs.begin();
+			auto j					   = funcs.begin();
 			while (j != funcs.end()) {
 				bool remove = (j->f == f && (!data || j->d == data));
 				if (remove)

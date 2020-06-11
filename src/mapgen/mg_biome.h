@@ -34,7 +34,7 @@ class BiomeManager;
 
 typedef u16 biome_t;
 
-#define BIOME_NONE ((biome_t)0)
+#define BIOME_NONE ((biome_t) 0)
 
 enum BiomeType
 {
@@ -87,9 +87,9 @@ enum BiomeGenType
 
 struct BiomeParams
 {
-	virtual void readParams(const Settings *settings) = 0;
+	virtual void readParams(const Settings *settings)  = 0;
 	virtual void writeParams(Settings *settings) const = 0;
-	virtual ~BiomeParams() = default;
+	virtual ~BiomeParams()							   = default;
 
 	s32 seed;
 };
@@ -144,13 +144,12 @@ protected:
 
 struct BiomeParamsOriginal : public BiomeParams
 {
-	BiomeParamsOriginal()
-		: np_heat(50, 50, v3f(1000.0, 1000.0, 1000.0), 5349, 3, 0.5, 2.0),
-		  np_humidity(50, 50, v3f(1000.0, 1000.0, 1000.0), 842, 3, 0.5, 2.0),
-		  np_heat_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0),
-		  np_humidity_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 90003, 2, 1.0, 2.0)
-	{
-	}
+	BiomeParamsOriginal() :
+		np_heat(50, 50, v3f(1000.0, 1000.0, 1000.0), 5349, 3, 0.5, 2.0),
+		np_humidity(50, 50, v3f(1000.0, 1000.0, 1000.0), 842, 3, 0.5, 2.0),
+		np_heat_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0),
+		np_humidity_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 90003, 2, 1.0, 2.0)
+	{}
 
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
@@ -212,7 +211,7 @@ public:
 	{
 		switch (type) {
 		case BIOMEGEN_ORIGINAL:
-			return new BiomeGenOriginal(this, (BiomeParamsOriginal *)params, chunksize);
+			return new BiomeGenOriginal(this, (BiomeParamsOriginal *) params, chunksize);
 		default:
 			return NULL;
 		}

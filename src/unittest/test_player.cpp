@@ -35,5 +35,4 @@ public:
 static TestPlayer g_test_instance;
 
 void TestPlayer::runTests(IGameDef *gamedef)
-{
-}
+{}

@@ -87,8 +87,8 @@ private:
 class MapEditEventAreaIgnorer
 {
 public:
-	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a)
-		: m_ignorevariable(ignorevariable)
+	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a) :
+		m_ignorevariable(ignorevariable)
 	{
 		if (m_ignorevariable->getVolume() == 0)
 			*m_ignorevariable = a;
@@ -120,14 +120,13 @@ EmergeParams::~EmergeParams()
 
 EmergeParams::EmergeParams(EmergeManager *parent, const BiomeManager *biomemgr,
 		const OreManager *oremgr, const DecorationManager *decomgr,
-		const SchematicManager *schemmgr)
-	: ndef(parent->ndef), enable_mapgen_debug_info(parent->enable_mapgen_debug_info),
-	  gen_notify_on(parent->gen_notify_on),
-	  gen_notify_on_deco_ids(&parent->gen_notify_on_deco_ids),
-	  biomemgr(biomemgr->clone()), oremgr(oremgr->clone()), decomgr(decomgr->clone()),
-	  schemmgr(schemmgr->clone())
-{
-}
+		const SchematicManager *schemmgr) :
+	ndef(parent->ndef),
+	enable_mapgen_debug_info(parent->enable_mapgen_debug_info),
+	gen_notify_on(parent->gen_notify_on),
+	gen_notify_on_deco_ids(&parent->gen_notify_on_deco_ids), biomemgr(biomemgr->clone()),
+	oremgr(oremgr->clone()), decomgr(decomgr->clone()), schemmgr(schemmgr->clone())
+{}
 
 ////
 //// EmergeManager
@@ -135,10 +134,10 @@ EmergeParams::EmergeParams(EmergeManager *parent, const BiomeManager *biomemgr,
 
 EmergeManager::EmergeManager(Server *server)
 {
-	this->ndef = server->getNodeDefManager();
+	this->ndef	   = server->getNodeDefManager();
 	this->biomemgr = new BiomeManager(server);
-	this->oremgr = new OreManager(server);
-	this->decomgr = new DecorationManager(server);
+	this->oremgr   = new OreManager(server);
+	this->decomgr  = new DecorationManager(server);
 	this->schemmgr = new SchematicManager(server);
 
 	// Note that accesses to this variable are not synchronized.
@@ -315,7 +314,7 @@ bool EmergeManager::enqueueBlockEmerge(
 bool EmergeManager::enqueueBlockEmergeEx(v3s16 blockpos, session_t peer_id, u16 flags,
 		EmergeCompletionCallback callback, void *callback_param)
 {
-	EmergeThread *thread = NULL;
+	EmergeThread *thread	  = NULL;
 	bool entry_already_exists = false;
 
 	{
@@ -420,7 +419,7 @@ bool EmergeManager::pushBlockEmergeData(v3s16 pos, u16 peer_requested, u16 flags
 	findres = m_blocks_enqueued.insert(std::make_pair(pos, BlockEmergeData()));
 
 	BlockEmergeData &bedata = findres.first->second;
-	*entry_already_exists = !findres.second;
+	*entry_already_exists	= !findres.second;
 
 	if (callback)
 		bedata.callbacks.emplace_back(callback, callback_param);
@@ -428,7 +427,7 @@ bool EmergeManager::pushBlockEmergeData(v3s16 pos, u16 peer_requested, u16 flags
 	if (*entry_already_exists) {
 		bedata.flags |= flags;
 	} else {
-		bedata.flags = flags;
+		bedata.flags		  = flags;
 		bedata.peer_requested = peer_requested;
 
 		count_peer++;
@@ -469,13 +468,13 @@ EmergeThread *EmergeManager::getOptimalThread()
 
 	FATAL_ERROR_IF(nthreads == 0, "No emerge threads!");
 
-	size_t index = 0;
+	size_t index		 = 0;
 	size_t nitems_lowest = m_threads[0]->m_block_queue.size();
 
 	for (size_t i = 1; i < nthreads; i++) {
 		size_t nitems = m_threads[i]->m_block_queue.size();
 		if (nitems < nitems_lowest) {
-			index = i;
+			index		  = i;
 			nitems_lowest = nitems;
 		}
 	}
@@ -488,9 +487,9 @@ EmergeThread *EmergeManager::getOptimalThread()
 //// EmergeThread
 ////
 
-EmergeThread::EmergeThread(Server *server, int ethreadid)
-	: enable_mapgen_debug_info(false), id(ethreadid), m_server(server), m_map(NULL),
-	  m_emerge(NULL), m_mapgen(NULL)
+EmergeThread::EmergeThread(Server *server, int ethreadid) :
+	enable_mapgen_debug_info(false), id(ethreadid), m_server(server), m_map(NULL),
+	m_emerge(NULL), m_mapgen(NULL)
 {
 	m_name = "Emerge-" + itos(ethreadid);
 }
@@ -535,7 +534,7 @@ void EmergeThread::runCompletionCallbacks(
 		void *param;
 
 		callback = callbacks[i].first;
-		param = callbacks[i].second;
+		param	 = callbacks[i].second;
 
 		callback(pos, action, param);
 	}
@@ -645,9 +644,9 @@ void *EmergeThread::run()
 
 	v3s16 pos;
 
-	m_map = (ServerMap *)&(m_server->m_env->getMap());
-	m_emerge = m_server->m_emerge;
-	m_mapgen = m_emerge->m_mapgens[id];
+	m_map					 = (ServerMap *) &(m_server->m_env->getMap());
+	m_emerge				 = m_server->m_emerge;
+	m_mapgen				 = m_emerge->m_mapgens[id];
 	enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 
 	try {

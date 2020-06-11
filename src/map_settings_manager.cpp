@@ -26,9 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map_settings_manager.h"
 
 MapSettingsManager::MapSettingsManager(
-		Settings *user_settings, const std::string &map_meta_path)
-	: m_map_meta_path(map_meta_path), m_map_settings(new Settings()),
-	  m_user_settings(user_settings)
+		Settings *user_settings, const std::string &map_meta_path) :
+	m_map_meta_path(map_meta_path),
+	m_map_settings(new Settings()), m_user_settings(user_settings)
 {
 	assert(m_user_settings != NULL);
 }

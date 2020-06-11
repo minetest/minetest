@@ -68,20 +68,19 @@ struct HTTPFetchRequest
 
 struct HTTPFetchResult
 {
-	bool succeeded = false;
-	bool timeout = false;
+	bool succeeded	   = false;
+	bool timeout	   = false;
 	long response_code = 0;
-	std::string data = "";
+	std::string data   = "";
 	// The caller and request_id from the corresponding HTTPFetchRequest.
-	unsigned long caller = HTTPFETCH_DISCARD;
+	unsigned long caller	 = HTTPFETCH_DISCARD;
 	unsigned long request_id = 0;
 
 	HTTPFetchResult() = default;
 
-	HTTPFetchResult(const HTTPFetchRequest &fetch_request)
-		: caller(fetch_request.caller), request_id(fetch_request.request_id)
-	{
-	}
+	HTTPFetchResult(const HTTPFetchRequest &fetch_request) :
+		caller(fetch_request.caller), request_id(fetch_request.request_id)
+	{}
 };
 
 // Initializes the httpfetch module

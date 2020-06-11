@@ -36,8 +36,8 @@ class NodeMetaRef : public MetaDataRef
 private:
 	v3s16 m_p;
 	ServerEnvironment *m_env = nullptr;
-	Metadata *m_meta = nullptr;
-	bool m_is_local = false;
+	Metadata *m_meta		 = nullptr;
+	bool m_is_local			 = false;
 
 	static const char className[];
 	static const luaL_Reg methodsServer[];

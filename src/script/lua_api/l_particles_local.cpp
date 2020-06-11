@@ -50,7 +50,7 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	lua_pop(L, 1);
 
 	p.expirationtime = getfloatfield_default(L, 1, "expirationtime", p.expirationtime);
-	p.size = getfloatfield_default(L, 1, "size", p.size);
+	p.size			 = getfloatfield_default(L, 1, "size", p.size);
 	p.collisiondetection =
 			getboolfield_default(L, 1, "collisiondetection", p.collisiondetection);
 	p.collision_removal =
@@ -64,7 +64,7 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	lua_pop(L, 1);
 
 	p.texture = getstringfield_default(L, 1, "texture", p.texture);
-	p.glow = getintfield_default(L, 1, "glow", p.glow);
+	p.glow	  = getintfield_default(L, 1, "glow", p.glow);
 
 	lua_getfield(L, 1, "node");
 	if (lua_istable(L, -1))
@@ -73,8 +73,8 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 
 	p.node_tile = getintfield_default(L, 1, "node_tile", p.node_tile);
 
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_SPAWN_PARTICLE;
+	ClientEvent *event	  = new ClientEvent();
+	event->type			  = CE_SPAWN_PARTICLE;
 	event->spawn_particle = new ParticleParameters(p);
 	getClient(L)->pushToEventQueue(event);
 
@@ -89,7 +89,7 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	ParticleSpawnerParameters p;
 
 	p.amount = getintfield_default(L, 1, "amount", p.amount);
-	p.time = getfloatfield_default(L, 1, "time", p.time);
+	p.time	 = getfloatfield_default(L, 1, "time", p.time);
 
 	lua_getfield(L, 1, "minpos");
 	if (lua_istable(L, -1))
@@ -123,8 +123,8 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 
 	p.minexptime = getfloatfield_default(L, 1, "minexptime", p.minexptime);
 	p.maxexptime = getfloatfield_default(L, 1, "maxexptime", p.maxexptime);
-	p.minsize = getfloatfield_default(L, 1, "minsize", p.minsize);
-	p.maxsize = getfloatfield_default(L, 1, "maxsize", p.maxsize);
+	p.minsize	 = getfloatfield_default(L, 1, "minsize", p.minsize);
+	p.maxsize	 = getfloatfield_default(L, 1, "maxsize", p.maxsize);
 	p.collisiondetection =
 			getboolfield_default(L, 1, "collisiondetection", p.collisiondetection);
 	p.collision_removal =
@@ -137,8 +137,8 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	lua_pop(L, 1);
 
 	p.vertical = getboolfield_default(L, 1, "vertical", p.vertical);
-	p.texture = getstringfield_default(L, 1, "texture", p.texture);
-	p.glow = getintfield_default(L, 1, "glow", p.glow);
+	p.texture  = getstringfield_default(L, 1, "texture", p.texture);
+	p.glow	   = getintfield_default(L, 1, "glow", p.glow);
 
 	lua_getfield(L, 1, "node");
 	if (lua_istable(L, -1))
@@ -149,11 +149,11 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 
 	u64 id = getClient(L)->getParticleManager()->generateSpawnerId();
 
-	auto event = new ClientEvent();
-	event->type = CE_ADD_PARTICLESPAWNER;
-	event->add_particlespawner.p = new ParticleSpawnerParameters(p);
+	auto event							   = new ClientEvent();
+	event->type							   = CE_ADD_PARTICLESPAWNER;
+	event->add_particlespawner.p		   = new ParticleSpawnerParameters(p);
 	event->add_particlespawner.attached_id = 0;
-	event->add_particlespawner.id = id;
+	event->add_particlespawner.id		   = id;
 
 	getClient(L)->pushToEventQueue(event);
 	lua_pushnumber(L, id);
@@ -166,8 +166,8 @@ int ModApiParticlesLocal::l_delete_particlespawner(lua_State *L)
 	// Get parameters
 	u32 id = luaL_checknumber(L, 1);
 
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_DELETE_PARTICLESPAWNER;
+	ClientEvent *event				 = new ClientEvent();
+	event->type						 = CE_DELETE_PARTICLESPAWNER;
 	event->delete_particlespawner.id = id;
 
 	getClient(L)->pushToEventQueue(event);

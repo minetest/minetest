@@ -33,10 +33,10 @@ public:
 		ItemSpec() = default;
 
 		ItemSpec(const InventoryLocation &a_inventoryloc, const std::string &a_listname,
-				s32 a_i)
-			: inventoryloc(a_inventoryloc), listname(a_listname), i(a_i)
-		{
-		}
+				s32 a_i) :
+			inventoryloc(a_inventoryloc),
+			listname(a_listname), i(a_i)
+		{}
 
 		bool isValid() const { return i != -1; }
 
@@ -49,7 +49,7 @@ public:
 	struct Options
 	{
 		// whether a one-pixel border for the slots should be drawn and its color
-		bool slotborder = false;
+		bool slotborder				  = false;
 		video::SColor slotbordercolor = video::SColor(200, 0, 0, 0);
 		// colors for normal and highlighted slot background
 		video::SColor slotbg_n = video::SColor(255, 128, 128, 128);
@@ -79,7 +79,7 @@ public:
 
 	void setSlotBorders(bool slotborder, const video::SColor &slotbordercolor)
 	{
-		m_options.slotborder = slotborder;
+		m_options.slotborder	  = slotborder;
 		m_options.slotbordercolor = slotbordercolor;
 	}
 

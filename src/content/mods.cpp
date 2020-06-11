@@ -73,7 +73,7 @@ void parseModContents(ModSpec &spec)
 		if (modpack2_is.good())
 			modpack2_is.close();
 
-		spec.is_modpack = true;
+		spec.is_modpack		 = true;
 		spec.modpack_content = getModsInPath(spec.path, true);
 
 	} else {
@@ -81,7 +81,7 @@ void parseModContents(ModSpec &spec)
 		bool mod_conf_has_depends = false;
 		if (info.exists("depends")) {
 			mod_conf_has_depends = true;
-			std::string dep = info.get("depends");
+			std::string dep		 = info.get("depends");
 			// clang-format off
 			dep.erase(std::remove_if(dep.begin(), dep.end(),
 					static_cast<int (*)(int)>(&std::isspace)), dep.end());
@@ -93,7 +93,7 @@ void parseModContents(ModSpec &spec)
 
 		if (info.exists("optional_depends")) {
 			mod_conf_has_depends = true;
-			std::string dep = info.get("optional_depends");
+			std::string dep		 = info.get("optional_depends");
 			// clang-format off
 			dep.erase(std::remove_if(dep.begin(), dep.end(),
 					static_cast<int (*)(int)>(&std::isspace)), dep.end());
@@ -184,8 +184,7 @@ std::vector<ModSpec> flattenMods(const std::map<std::string, ModSpec> &mods)
 }
 
 ModConfiguration::ModConfiguration(const std::string &worldpath)
-{
-}
+{}
 
 void ModConfiguration::printUnsatisfiedModsError() const
 {
@@ -221,7 +220,7 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 		std::set<std::string> seen_this_iteration;
 
 		for (const ModSpec &mod : new_mods) {
-			if (mod.part_of_modpack != (bool)want_from_modpack)
+			if (mod.part_of_modpack != (bool) want_from_modpack)
 				continue;
 
 			if (existing_mods.count(mod.name) == 0) {
@@ -230,7 +229,7 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 				existing_mods[mod.name] = m_unsatisfied_mods.size() - 1;
 			} else if (seen_this_iteration.count(mod.name) == 0) {
 				// BAD CASE: name conflict in different levels.
-				u32 oldindex = existing_mods[mod.name];
+				u32 oldindex		  = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
 				warningstream << "Mod name conflict detected: \"" << mod.name << "\""
 							  << std::endl
@@ -243,7 +242,7 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 				m_name_conflicts.erase(mod.name);
 			} else {
 				// VERY BAD CASE: name conflict in the same level.
-				u32 oldindex = existing_mods[mod.name];
+				u32 oldindex		  = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
 				warningstream << "Mod name conflict detected: \"" << mod.name << "\""
 							  << std::endl
@@ -375,8 +374,8 @@ void ModConfiguration::resolveDependencies()
 }
 
 #ifndef SERVER
-ClientModConfiguration::ClientModConfiguration(const std::string &path)
-	: ModConfiguration(path)
+ClientModConfiguration::ClientModConfiguration(const std::string &path) :
+	ModConfiguration(path)
 {
 	std::set<std::string> paths;
 	std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
@@ -389,8 +388,7 @@ ClientModConfiguration::ClientModConfiguration(const std::string &path)
 #endif
 
 ModMetadata::ModMetadata(const std::string &mod_name) : m_mod_name(mod_name)
-{
-}
+{}
 
 void ModMetadata::clear()
 {
@@ -455,7 +453,7 @@ bool ModMetadata::load(const std::string &root_path)
 	const Json::Value::Members attr_list = root.getMemberNames();
 	for (const auto &it : attr_list) {
 		Json::Value attr_value = root[it];
-		m_stringvars[it] = attr_value.asString();
+		m_stringvars[it]	   = attr_value.asString();
 	}
 
 	return true;

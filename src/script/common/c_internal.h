@@ -45,9 +45,9 @@ extern "C" {
 	so we can use numeric indices freely.
 */
 #ifdef LUA_RIDX_LAST
-#define CUSTOM_RIDX_BASE ((LUA_RIDX_LAST) + 1)
+	#define CUSTOM_RIDX_BASE ((LUA_RIDX_LAST) + 1)
 #else
-#define CUSTOM_RIDX_BASE 1
+	#define CUSTOM_RIDX_BASE 1
 #endif
 
 #define CUSTOM_RIDX_SCRIPTAPI (CUSTOM_RIDX_BASE)
@@ -57,11 +57,11 @@ extern "C" {
 
 // Determine if CUSTOM_RIDX_SCRIPTAPI will hold a light or full userdata
 #if defined(__aarch64__) && USE_LUAJIT
-/* LuaJIT has a 47-bit limit for lightuserdata on this platform and we cannot
+	/* LuaJIT has a 47-bit limit for lightuserdata on this platform and we cannot
  * assume that the ScriptApi class was allocated at a fitting address. */
-#define INDIRECT_SCRIPTAPI_RIDX 1
+	#define INDIRECT_SCRIPTAPI_RIDX 1
 #else
-#define INDIRECT_SCRIPTAPI_RIDX 0
+	#define INDIRECT_SCRIPTAPI_RIDX 0
 #endif
 
 // Pushes the error handler onto the stack and returns its index

@@ -27,7 +27,7 @@ class ISimpleTextureSource;
 class Client;
 
 #if USE_FREETYPE
-#include "irrlicht_changes/CGUITTFont.h"
+	#include "irrlicht_changes/CGUITTFont.h"
 #endif
 
 class ParsedText
@@ -126,8 +126,8 @@ public:
 	std::vector<Paragraph> m_paragraphs;
 
 	// Element style
-	s32 margin = 3;
-	ValignType valign = VALIGN_TOP;
+	s32 margin					   = 3;
+	ValignType valign			   = VALIGN_TOP;
 	BackgroundType background_type = BACKGROUND_NONE;
 	irr::video::SColor background_color;
 

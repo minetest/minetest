@@ -37,7 +37,7 @@ namespace
 class AuthDatabaseProvider
 {
 public:
-	virtual ~AuthDatabaseProvider() = default;
+	virtual ~AuthDatabaseProvider()			= default;
 	virtual AuthDatabase *getAuthDatabase() = 0;
 };
 
@@ -125,7 +125,7 @@ void TestAuthDatabase::runTests(IGameDef *gamedef)
 	rawstream << "-------- Files database (same object)" << std::endl;
 
 	AuthDatabase *auth_db = new AuthDatabaseFiles(test_dir);
-	auth_provider = new FixedProvider(auth_db);
+	auth_provider		  = new FixedProvider(auth_db);
 
 	runTestsForCurrentDB();
 
@@ -145,7 +145,7 @@ void TestAuthDatabase::runTests(IGameDef *gamedef)
 
 	rawstream << "-------- SQLite3 database (same object)" << std::endl;
 
-	auth_db = new AuthDatabaseSQLite3(test_dir);
+	auth_db		  = new AuthDatabaseSQLite3(test_dir);
 	auth_provider = new FixedProvider(auth_db);
 
 	runTestsForCurrentDB();
@@ -195,7 +195,7 @@ void TestAuthDatabase::testCreate()
 	AuthDatabase *auth_db = auth_provider->getAuthDatabase();
 	AuthEntry authEntry;
 
-	authEntry.name = "TestName";
+	authEntry.name	   = "TestName";
 	authEntry.password = "TestPassword";
 	authEntry.privileges.emplace_back("shout");
 	authEntry.privileges.emplace_back("interact");
@@ -222,7 +222,7 @@ void TestAuthDatabase::testChange()
 	AuthEntry authEntry;
 
 	UASSERT(auth_db->getAuth("TestName", authEntry));
-	authEntry.password = "NewPassword";
+	authEntry.password	 = "NewPassword";
 	authEntry.last_login = 1002;
 	UASSERT(auth_db->saveAuth(authEntry));
 }
@@ -271,7 +271,7 @@ void TestAuthDatabase::testListNames()
 
 	AuthEntry authEntry;
 
-	authEntry.name = "SecondName";
+	authEntry.name	   = "SecondName";
 	authEntry.password = "SecondPassword";
 	authEntry.privileges.emplace_back("shout");
 	authEntry.privileges.emplace_back("interact");

@@ -34,7 +34,7 @@ Json::Value fetchJsonValue(
 {
 	HTTPFetchRequest fetch_request;
 	HTTPFetchResult fetch_result;
-	fetch_request.url = url;
+	fetch_request.url	 = url;
 	fetch_request.caller = HTTPFETCH_SYNC;
 
 	if (extra_headers != NULL)

@@ -33,11 +33,10 @@ struct LightPair
 	LightPair() = default;
 	explicit LightPair(u16 value) : lightDay(value & 0xff), lightNight(value >> 8) {}
 	LightPair(u8 valueA, u8 valueB) : lightDay(valueA), lightNight(valueB) {}
-	LightPair(float valueA, float valueB)
-		: lightDay(core::clamp(core::round32(valueA), 0, 255)),
-		  lightNight(core::clamp(core::round32(valueB), 0, 255))
-	{
-	}
+	LightPair(float valueA, float valueB) :
+		lightDay(core::clamp(core::round32(valueA), 0, 255)),
+		lightNight(core::clamp(core::round32(valueB), 0, 255))
+	{}
 	operator u16() const { return lightDay | lightNight << 8; }
 };
 

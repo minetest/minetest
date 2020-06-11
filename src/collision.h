@@ -45,9 +45,9 @@ struct CollisionInfo
 {
 	CollisionInfo() = default;
 
-	CollisionType type = COLLISION_NODE;
-	CollisionAxis axis = COLLISION_AXIS_NONE;
-	v3s16 node_p = v3s16(-32768, -32768, -32768); // COLLISION_NODE
+	CollisionType type	 = COLLISION_NODE;
+	CollisionAxis axis	 = COLLISION_AXIS_NONE;
+	v3s16 node_p		 = v3s16(-32768, -32768, -32768); // COLLISION_NODE
 	ActiveObject *object = nullptr; // COLLISION_OBJECT
 	v3f old_speed;
 	v3f new_speed;
@@ -58,8 +58,8 @@ struct collisionMoveResult
 {
 	collisionMoveResult() = default;
 
-	bool touching_ground = false;
-	bool collides = false;
+	bool touching_ground	= false;
+	bool collides			= false;
 	bool standing_on_object = false;
 	std::vector<CollisionInfo> collisions;
 };

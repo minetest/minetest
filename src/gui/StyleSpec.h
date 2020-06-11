@@ -54,7 +54,7 @@ public:
 		STATE_DEFAULT = 0,
 		STATE_HOVERED = 1 << 0,
 		STATE_PRESSED = 1 << 1,
-		NUM_STATES = 1 << 2,
+		NUM_STATES	  = 1 << 2,
 		STATE_INVALID = 1 << 3,
 	};
 
@@ -111,7 +111,7 @@ public:
 
 	void set(Property prop, const std::string &value)
 	{
-		properties[prop] = value;
+		properties[prop]   = value;
 		property_set[prop] = true;
 	}
 
@@ -264,7 +264,7 @@ public:
 	StyleSpec &operator|=(const StyleSpec &other)
 	{
 		for (size_t i = 0; i < NUM_PROPERTIES; i++) {
-			auto prop = (Property)i;
+			auto prop = (Property) i;
 			if (other.hasProperty(prop)) {
 				set(prop, other.get(prop, ""));
 			}
@@ -287,13 +287,13 @@ private:
 		std::vector<std::string> v_rect = split(value, ',');
 
 		if (v_rect.size() == 1) {
-			s32 x = stoi(v_rect[0]);
-			rect.UpperLeftCorner = irr::core::vector2di(x, x);
+			s32 x				  = stoi(v_rect[0]);
+			rect.UpperLeftCorner  = irr::core::vector2di(x, x);
 			rect.LowerRightCorner = irr::core::vector2di(-x, -x);
 		} else if (v_rect.size() == 2) {
-			s32 x = stoi(v_rect[0]);
-			s32 y = stoi(v_rect[1]);
-			rect.UpperLeftCorner = irr::core::vector2di(x, y);
+			s32 x				  = stoi(v_rect[0]);
+			s32 y				  = stoi(v_rect[1]);
+			rect.UpperLeftCorner  = irr::core::vector2di(x, y);
 			rect.LowerRightCorner = irr::core::vector2di(-x, -y);
 			// `-x` is interpreted as `w - x`
 		} else if (v_rect.size() == 4) {

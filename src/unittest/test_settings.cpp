@@ -187,7 +187,7 @@ void TestSettings::testAllSettings()
 		UASSERT(np.octaves == 5);
 		UASSERT(std::fabs(np.persist - 0.7) < 0.001f);
 
-		np.offset = 3.5;
+		np.offset  = 3.5;
 		np.octaves = 6;
 		s.setNoiseParams("np_terrain", np);
 

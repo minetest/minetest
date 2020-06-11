@@ -31,18 +31,18 @@ extern FlagDesc flagdesc_mapgen_v5[];
 
 struct MapgenV5Params : public MapgenParams
 {
-	float cave_width = 0.09f;
-	s16 large_cave_depth = -256;
-	u16 small_cave_num_min = 0;
-	u16 small_cave_num_max = 0;
-	u16 large_cave_num_min = 0;
-	u16 large_cave_num_max = 2;
+	float cave_width		 = 0.09f;
+	s16 large_cave_depth	 = -256;
+	u16 small_cave_num_min	 = 0;
+	u16 small_cave_num_max	 = 0;
+	u16 large_cave_num_min	 = 0;
+	u16 large_cave_num_max	 = 2;
 	float large_cave_flooded = 0.5f;
-	s16 cavern_limit = -256;
-	s16 cavern_taper = 256;
-	float cavern_threshold = 0.7f;
-	s16 dungeon_ymin = -31000;
-	s16 dungeon_ymax = 31000;
+	s16 cavern_limit		 = -256;
+	s16 cavern_taper		 = 256;
+	float cavern_threshold	 = 0.7f;
+	s16 dungeon_ymin		 = -31000;
+	s16 dungeon_ymax		 = 31000;
 
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;

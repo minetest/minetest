@@ -29,14 +29,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "server.h"
 #ifndef SERVER
-#include "client/client.h"
+	#include "client/client.h"
 #endif
 
 
 extern "C" {
 #include "lualib.h"
 #if USE_LUAJIT
-#include "luajit.h"
+	#include "luajit.h"
 #endif
 }
 
@@ -89,7 +89,7 @@ ScriptApiBase::ScriptApiBase(ScriptingType type) : m_type(type)
 
 		// Make the ScriptApiBase* accessible to ModApiBase
 #if INDIRECT_SCRIPTAPI_RIDX
-	*(void **)(lua_newuserdata(m_luastack, sizeof(void *))) = this;
+	*(void **) (lua_newuserdata(m_luastack, sizeof(void *))) = this;
 #else
 	lua_pushlightuserdata(m_luastack, this);
 #endif
@@ -104,7 +104,7 @@ ScriptApiBase::ScriptApiBase(ScriptingType type) : m_type(type)
 	// If we are using LuaJIT add a C++ wrapper function to catch
 	// exceptions thrown in Lua -> C++ calls
 #if USE_LUAJIT
-	lua_pushlightuserdata(m_luastack, (void *)script_exception_wrapper);
+	lua_pushlightuserdata(m_luastack, (void *) script_exception_wrapper);
 	luaJIT_setmode(m_luastack, -1, LUAJIT_MODE_WRAPCFUNC | LUAJIT_MODE_ON);
 	lua_pop(m_luastack, 1);
 #endif
@@ -203,7 +203,7 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 	sanity_check(m_type == ScriptingType::Client);
 
 	const std::string init_filename = mod_name + ":init.lua";
-	const std::string chunk_name = "@" + init_filename;
+	const std::string chunk_name	= "@" + init_filename;
 
 	const std::string *contents = getClient()->getModFile(init_filename);
 	if (!contents)
@@ -263,7 +263,7 @@ void ScriptApiBase::runCallbacksRaw(int nargs, RunCallbacksMode mode, const char
 	lua_insert(L, error_handler + 1);
 
 	// Insert mode after table
-	lua_pushnumber(L, (int)mode);
+	lua_pushnumber(L, (int) mode);
 	lua_insert(L, error_handler + 3);
 
 	// Stack now looks like this:
@@ -418,7 +418,7 @@ void ScriptApiBase::pushPlayerHPChangeReason(
 		lua_newtable(L);
 
 	lua_getfield(L, -1, "type");
-	bool has_type = (bool)lua_isstring(L, -1);
+	bool has_type = (bool) lua_isstring(L, -1);
 	lua_pop(L, 1);
 	if (!has_type) {
 		lua_pushstring(L, reason.getTypeAsString().c_str());

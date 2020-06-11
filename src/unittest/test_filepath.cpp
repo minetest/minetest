@@ -90,7 +90,7 @@ void TestFilePath::testIsDirDelimiter()
 
 void TestFilePath::testPathStartsWith()
 {
-	const int numpaths = 12;
+	const int numpaths			= 12;
 	std::string paths[numpaths] = {
 		"",
 		p("/"),
@@ -134,7 +134,7 @@ void TestFilePath::testPathStartsWith()
 			/*verbosestream<<"testing fs::PathStartsWith(\""
 			<<paths[i]<<"\", \""
 			<<paths[j]<<"\")"<<std::endl;*/
-			bool starts = fs::PathStartsWith(paths[i], paths[j]);
+			bool starts	 = fs::PathStartsWith(paths[i], paths[j]);
 			int expected = expected_results[i][j];
 			if (expected == 0) {
 				UASSERT(starts == false);
@@ -155,7 +155,7 @@ void TestFilePath::testPathStartsWith()
 			}
 #endif
 			else if (expected == 4) {
-				UASSERT(starts == (bool)FILESYS_CASE_INSENSITIVE);
+				UASSERT(starts == (bool) FILESYS_CASE_INSENSITIVE);
 			}
 		}
 }
@@ -166,7 +166,7 @@ void TestFilePath::testRemoveLastPathComponent()
 	std::string path, result, removed;
 
 	UASSERT(fs::RemoveLastPathComponent("") == "");
-	path = p("/home/user/minetest/bin/..//worlds/world1");
+	path   = p("/home/user/minetest/bin/..//worlds/world1");
 	result = fs::RemoveLastPathComponent(path, &removed, 0);
 	UASSERT(result == path);
 	UASSERT(removed == "");
@@ -202,7 +202,7 @@ void TestFilePath::testRemoveLastPathComponentWithTrailingDelimiter()
 {
 	std::string path, result, removed;
 
-	path = p("/home/user/minetest/bin/..//worlds/world1/");
+	path   = p("/home/user/minetest/bin/..//worlds/world1/");
 	result = fs::RemoveLastPathComponent(path, &removed, 0);
 	UASSERT(result == path);
 	UASSERT(removed == "");
@@ -238,25 +238,25 @@ void TestFilePath::testRemoveRelativePathComponent()
 {
 	std::string path, result, removed;
 
-	path = p("/home/user/minetest/bin");
+	path   = p("/home/user/minetest/bin");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == path);
-	path = p("/home/user/minetest/bin/../worlds/world1");
+	path   = p("/home/user/minetest/bin/../worlds/world1");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == p("/home/user/minetest/worlds/world1"));
-	path = p("/home/user/minetest/bin/../worlds/world1/");
+	path   = p("/home/user/minetest/bin/../worlds/world1/");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == p("/home/user/minetest/worlds/world1"));
-	path = p(".");
+	path   = p(".");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == "");
-	path = p("../a");
+	path   = p("../a");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == "");
-	path = p("./subdir/../..");
+	path   = p("./subdir/../..");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == "");
-	path = p("/a/b/c/.././../d/../e/f/g/../h/i/j/../../../..");
+	path   = p("/a/b/c/.././../d/../e/f/g/../h/i/j/../../../..");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == p("/a/e"));
 }

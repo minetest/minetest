@@ -84,8 +84,9 @@ enum
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
-		s32 id, IMenuManager *menumgr, ISimpleTextureSource *tsrc)
-	: GUIModalMenu(env, parent, id, menumgr), m_tsrc(tsrc)
+		s32 id, IMenuManager *menumgr, ISimpleTextureSource *tsrc) :
+	GUIModalMenu(env, parent, id, menumgr),
+	m_tsrc(tsrc)
 {
 	init_keys();
 }
@@ -120,9 +121,9 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	removeChildren();
 
 	const float s = m_gui_scale;
-	DesiredRect = core::rect<s32>(screensize.X / 2 - 835 * s / 2,
-			screensize.Y / 2 - 430 * s / 2, screensize.X / 2 + 835 * s / 2,
-			screensize.Y / 2 + 430 * s / 2);
+	DesiredRect	  = core::rect<s32>(screensize.X / 2 - 835 * s / 2,
+			  screensize.Y / 2 - 430 * s / 2, screensize.X / 2 + 835 * s / 2,
+			  screensize.Y / 2 + 430 * s / 2);
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();
@@ -256,17 +257,17 @@ bool GUIKeyChangeMenu::acceptInput()
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
 		if (e && e->getType() == gui::EGUIET_CHECK_BOX)
-			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox *)e)->isChecked());
+			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox *) e)->isChecked());
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
 		if (e && e->getType() == gui::EGUIET_CHECK_BOX)
-			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox *)e)->isChecked());
+			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox *) e)->isChecked());
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUTOJUMP);
 		if (e && e->getType() == gui::EGUIET_CHECK_BOX)
-			g_settings->setBool("autojump", ((gui::IGUICheckBox *)e)->isChecked());
+			g_settings->setBool("autojump", ((gui::IGUICheckBox *) e)->isChecked());
 	}
 
 	clearKeyCache();
@@ -331,7 +332,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent &event)
 
 		// But go on
 		{
-			active_key->key = kp;
+			active_key->key		= kp;
 			const wchar_t *text = wgettext(kp.name());
 			active_key->button->setText(text);
 			delete[] text;
@@ -376,7 +377,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent &event)
 				}
 				FATAL_ERROR_IF(!active_key, "Key setting not found");
 
-				shift_down = false;
+				shift_down			= false;
 				const wchar_t *text = wgettext("press key");
 				active_key->button->setText(text);
 				delete[] text;
@@ -392,11 +393,11 @@ void GUIKeyChangeMenu::add_key(
 		int id, const wchar_t *button_name, const std::string &setting_name)
 {
 	key_setting *k = new key_setting;
-	k->id = id;
+	k->id		   = id;
 
-	k->button_name = button_name;
+	k->button_name	= button_name;
 	k->setting_name = setting_name;
-	k->key = getKeySetting(k->setting_name.c_str());
+	k->key			= getKeySetting(k->setting_name.c_str());
 	key_settings.push_back(k);
 }
 

@@ -83,7 +83,7 @@ private:
 	v3s16 m_camera_offset;
 	struct TileAnimationParams m_animation;
 	float m_animation_time = 0.0f;
-	int m_animation_frame = 0;
+	int m_animation_frame  = 0;
 	u8 m_glow;
 };
 

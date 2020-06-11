@@ -39,21 +39,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) &&                  \
 		!defined(SERVER) && !defined(__HAIKU__)
-#define XORG_USED
+	#define XORG_USED
 #endif
 #ifdef XORG_USED
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
+	#include <X11/Xlib.h>
+	#include <X11/Xutil.h>
+	#include <X11/Xatom.h>
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
-#include <winuser.h>
+	#include <windows.h>
+	#include <winuser.h>
 #endif
 
 #if ENABLE_GLES
-#include "filesys.h"
+	#include "filesys.h"
 #endif
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
@@ -64,10 +64,10 @@ static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
 {
 	gui::GUISkin *skin = new gui::GUISkin(type, driver);
 
-	gui::IGUIFont *builtinfont = environment->getBuiltInFont();
+	gui::IGUIFont *builtinfont	 = environment->getBuiltInFont();
 	gui::IGUIFontBitmap *bitfont = nullptr;
 	if (builtinfont && builtinfont->getType() == gui::EGFT_BITMAP)
-		bitfont = (gui::IGUIFontBitmap *)builtinfont;
+		bitfont = (gui::IGUIFontBitmap *) builtinfont;
 
 	gui::IGUISpriteBank *bank = 0;
 	skin->setFont(builtinfont);
@@ -87,13 +87,13 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	// Resolution selection
 	bool fullscreen = g_settings->getBool("fullscreen");
-	u16 screen_w = g_settings->getU16("screen_w");
-	u16 screen_h = g_settings->getU16("screen_h");
+	u16 screen_w	= g_settings->getU16("screen_w");
+	u16 screen_h	= g_settings->getU16("screen_h");
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
-	u16 bits = g_settings->getU16("fullscreen_bpp");
-	u16 fsaa = g_settings->getU16("fsaa");
+	u16 bits   = g_settings->getU16("fullscreen_bpp");
+	u16 fsaa   = g_settings->getU16("fsaa");
 
 	// stereo buffer required for pageflip stereo
 	bool stereo_buffer = g_settings->get("3d_mode") == "pageflip";
@@ -118,17 +118,17 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	}
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
-	params.DriverType = driverType;
-	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);
-	params.Bits = bits;
-	params.AntiAlias = fsaa;
-	params.Fullscreen = fullscreen;
-	params.Stencilbuffer = false;
-	params.Stereobuffer = stereo_buffer;
-	params.Vsync = vsync;
-	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
-	params.ZBufferBits = 24;
+	params.DriverType				   = driverType;
+	params.WindowSize				   = core::dimension2d<u32>(screen_w, screen_h);
+	params.Bits						   = bits;
+	params.AntiAlias				   = fsaa;
+	params.Fullscreen				   = fullscreen;
+	params.Stencilbuffer			   = false;
+	params.Stereobuffer				   = stereo_buffer;
+	params.Vsync					   = vsync;
+	params.EventReceiver			   = receiver;
+	params.HighPrecisionFPU			   = g_settings->getBool("high_precision_fpu");
+	params.ZBufferBits				   = 24;
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 #endif
@@ -141,7 +141,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 #endif
 
 	m_device = createDeviceEx(params);
-	driver = m_device->getVideoDriver();
+	driver	 = m_device->getVideoDriver();
 
 	s_singleton = this;
 
@@ -174,20 +174,20 @@ bool RenderingEngine::print_video_modes()
 {
 	IrrlichtDevice *nulldevice;
 
-	bool vsync = g_settings->getBool("vsync");
-	u16 fsaa = g_settings->getU16("fsaa");
+	bool vsync				  = g_settings->getBool("vsync");
+	u16 fsaa				  = g_settings->getU16("fsaa");
 	MyEventReceiver *receiver = new MyEventReceiver();
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
-	params.DriverType = video::EDT_NULL;
-	params.WindowSize = core::dimension2d<u32>(640, 480);
-	params.Bits = 24;
-	params.AntiAlias = fsaa;
-	params.Fullscreen = false;
-	params.Stencilbuffer = false;
-	params.Vsync = vsync;
-	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
+	params.DriverType				   = video::EDT_NULL;
+	params.WindowSize				   = core::dimension2d<u32>(640, 480);
+	params.Bits						   = 24;
+	params.AntiAlias				   = fsaa;
+	params.Fullscreen				   = false;
+	params.Stencilbuffer			   = false;
+	params.Vsync					   = vsync;
+	params.EventReceiver			   = receiver;
+	params.HighPrecisionFPU			   = g_settings->getBool("high_precision_fpu");
 
 	nulldevice = createDeviceEx(params);
 
@@ -205,14 +205,14 @@ bool RenderingEngine::print_video_modes()
 		core::dimension2d<u32> videomode_res;
 		s32 videomode_depth;
 		for (s32 i = 0; i < videomode_count; ++i) {
-			videomode_res = videomode_list->getVideoModeResolution(i);
+			videomode_res	= videomode_list->getVideoModeResolution(i);
 			videomode_depth = videomode_list->getVideoModeDepth(i);
 			std::cout << videomode_res.Width << "x" << videomode_res.Height << "x"
 					  << videomode_depth << std::endl;
 		}
 
 		std::cout << _("Active video mode (WxHxD):") << std::endl;
-		videomode_res = videomode_list->getDesktopResolution();
+		videomode_res	= videomode_list->getDesktopResolution();
 		videomode_depth = videomode_list->getDesktopDepth();
 		std::cout << videomode_res.Width << "x" << videomode_res.Height << "x"
 				  << videomode_depth << std::endl;
@@ -261,8 +261,8 @@ void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
 
 	// Set application name and class hints. For now name and class are the same.
 	XClassHint *classhint = XAllocClassHint();
-	classhint->res_name = const_cast<char *>(name.c_str());
-	classhint->res_class = const_cast<char *>(name.c_str());
+	classhint->res_name	  = const_cast<char *>(name.c_str());
+	classhint->res_class  = const_cast<char *>(name.c_str());
 
 	XSetClassHint(x11_dpl, x11_win, classhint);
 	XFree(classhint);
@@ -340,10 +340,10 @@ static bool getWindowHandle(irr::video::IVideoDriver *driver, HWND &hWnd)
 bool RenderingEngine::setWindowIcon()
 {
 #if defined(XORG_USED)
-#if RUN_IN_PLACE
+	#if RUN_IN_PLACE
 	return setXorgWindowIconFromPath(
 			porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
-#else
+	#else
 	// We have semi-support for reading in-place data if we are
 	// compiled with RUN_IN_PLACE. Don't break with this and
 	// also try the path_share location.
@@ -351,7 +351,7 @@ bool RenderingEngine::setWindowIcon()
 				   ICON_DIR "/hicolor/128x128/apps/" PROJECT_NAME ".png") ||
 			setXorgWindowIconFromPath(
 					porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
-#endif
+	#endif
 #elif defined(_WIN32)
 	HWND hWnd; // Window handle
 	if (!getWindowHandle(driver, hWnd))
@@ -379,7 +379,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 #ifdef XORG_USED
 
 	video::IImageLoader *image_loader = NULL;
-	u32 cnt = driver->getImageLoaderCount();
+	u32 cnt							  = driver->getImageLoaderCount();
 	for (u32 i = 0; i < cnt; i++) {
 		if (driver->getImageLoader(i)->isALoadableFileExtension(icon_file.c_str())) {
 			image_loader = driver->getImageLoader(i);
@@ -410,10 +410,10 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 	}
 
 	u32 height = img->getDimension().Height;
-	u32 width = img->getDimension().Width;
+	u32 width  = img->getDimension().Width;
 
 	size_t icon_buffer_len = 2 + height * width;
-	long *icon_buffer = new long[icon_buffer_len];
+	long *icon_buffer	   = new long[icon_buffer_len];
 
 	icon_buffer[0] = width;
 	icon_buffer[1] = height;
@@ -421,11 +421,11 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 	for (u32 x = 0; x < width; x++) {
 		for (u32 y = 0; y < height; y++) {
 			video::SColor col = img->getPixel(x, y);
-			long pixel_val = 0;
-			pixel_val |= (u8)col.getAlpha() << 24;
-			pixel_val |= (u8)col.getRed() << 16;
-			pixel_val |= (u8)col.getGreen() << 8;
-			pixel_val |= (u8)col.getBlue();
+			long pixel_val	  = 0;
+			pixel_val |= (u8) col.getAlpha() << 24;
+			pixel_val |= (u8) col.getRed() << 16;
+			pixel_val |= (u8) col.getGreen() << 8;
+			pixel_val |= (u8) col.getBlue();
 			icon_buffer[2 + x + y * width] = pixel_val;
 		}
 	}
@@ -435,7 +435,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 
 	const video::SExposedVideoData &video_data = driver->getExposedVideoData();
 
-	Display *x11_dpl = (Display *)video_data.OpenGLLinux.X11Display;
+	Display *x11_dpl = (Display *) video_data.OpenGLLinux.X11Display;
 
 	if (x11_dpl == NULL) {
 		warningstream << "Could not find x11 display for setting its icon." << std::endl;
@@ -443,12 +443,12 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 		return false;
 	}
 
-	Window x11_win = (Window)video_data.OpenGLLinux.X11Window;
+	Window x11_win = (Window) video_data.OpenGLLinux.X11Window;
 
 	Atom net_wm_icon = XInternAtom(x11_dpl, "_NET_WM_ICON", False);
-	Atom cardinal = XInternAtom(x11_dpl, "CARDINAL", False);
+	Atom cardinal	 = XInternAtom(x11_dpl, "CARDINAL", False);
 	XChangeProperty(x11_dpl, x11_win, net_wm_icon, cardinal, 32, PropModeReplace,
-			(const unsigned char *)icon_buffer, icon_buffer_len);
+			(const unsigned char *) icon_buffer, icon_buffer_len);
 
 	delete[] icon_buffer;
 
@@ -486,19 +486,19 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 
 	// draw progress bar
 	if ((percent >= 0) && (percent <= 100)) {
-		video::ITexture *progress_img = tsrc->getTexture("progress_bar.png");
+		video::ITexture *progress_img	 = tsrc->getTexture("progress_bar.png");
 		video::ITexture *progress_img_bg = tsrc->getTexture("progress_bar_bg.png");
 
 		if (progress_img && progress_img_bg) {
 #ifndef __ANDROID__
 			const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
-			u32 imgW = rangelim(img_size.Width, 200, 600);
-			u32 imgH = rangelim(img_size.Height, 24, 72);
+			u32 imgW							   = rangelim(img_size.Width, 200, 600);
+			u32 imgH							   = rangelim(img_size.Height, 24, 72);
 #else
 			const core::dimension2d<u32> img_size(256, 48);
-			float imgRatio = (float)img_size.Height / img_size.Width;
-			u32 imgW = screensize.X / 2.2f;
-			u32 imgH = floor(imgW * imgRatio);
+			float imgRatio = (float) img_size.Height / img_size.Width;
+			u32 imgW	   = screensize.X / 2.2f;
+			u32 imgH	   = floor(imgW * imgRatio);
 #endif
 			v2s32 img_pos((screensize.X - imgW) / 2, (screensize.Y - imgH) / 2);
 
@@ -551,7 +551,7 @@ std::vector<core::vector3d<u32>> RenderingEngine::getSupportedVideoModes()
 	s32 num_modes = modelist->getVideoModeCount();
 	for (s32 i = 0; i != num_modes; i++) {
 		core::dimension2d<u32> mode_res = modelist->getVideoModeResolution(i);
-		u32 mode_depth = (u32)modelist->getVideoModeDepth(i);
+		u32 mode_depth					= (u32) modelist->getVideoModeDepth(i);
 		mlist.emplace_back(mode_res.Width, mode_res.Height, mode_depth);
 	}
 
@@ -564,8 +564,8 @@ std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers
 	std::vector<irr::video::E_DRIVER_TYPE> drivers;
 
 	for (int i = 0; i != irr::video::EDT_COUNT; i++) {
-		if (irr::IrrlichtDevice::isDriverSupported((irr::video::E_DRIVER_TYPE)i))
-			drivers.push_back((irr::video::E_DRIVER_TYPE)i);
+		if (irr::IrrlichtDevice::isDriverSupported((irr::video::E_DRIVER_TYPE) i))
+			drivers.push_back((irr::video::E_DRIVER_TYPE) i);
 	}
 
 	return drivers;
@@ -622,7 +622,7 @@ const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYP
 }
 
 #ifndef __ANDROID__
-#if defined(XORG_USED)
+	#if defined(XORG_USED)
 
 static float calcDisplayDensity()
 {
@@ -633,15 +633,15 @@ static float calcDisplayDensity()
 
 		if (x11display != NULL) {
 			/* try x direct */
-			int dh = DisplayHeight(x11display, 0);
-			int dw = DisplayWidth(x11display, 0);
+			int dh	  = DisplayHeight(x11display, 0);
+			int dw	  = DisplayWidth(x11display, 0);
 			int dh_mm = DisplayHeightMM(x11display, 0);
 			int dw_mm = DisplayWidthMM(x11display, 0);
 			XCloseDisplay(x11display);
 
 			if (dh_mm != 0 && dw_mm != 0) {
 				float dpi_height = floor(dh / (dh_mm * 0.039370) + 0.5);
-				float dpi_width = floor(dw / (dw_mm * 0.039370) + 0.5);
+				float dpi_width	 = floor(dw / (dw_mm * 0.039370) + 0.5);
 				return std::max(dpi_height, dpi_width) / 96.0;
 			}
 		}
@@ -657,7 +657,7 @@ float RenderingEngine::getDisplayDensity()
 	return cached_display_density;
 }
 
-#elif defined(_WIN32)
+	#elif defined(_WIN32)
 
 
 static float calcDisplayDensity(irr::video::IVideoDriver *driver)
@@ -685,14 +685,14 @@ float RenderingEngine::getDisplayDensity()
 	return display_density;
 }
 
-#else
+	#else
 
 float RenderingEngine::getDisplayDensity()
 {
 	return g_settings->getFloat("screen_dpi") / 96.0;
 }
 
-#endif
+	#endif
 
 v2u32 RenderingEngine::getDisplaySize()
 {

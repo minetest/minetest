@@ -49,8 +49,7 @@ class SimpleTestThread : public Thread
 {
 public:
 	SimpleTestThread(unsigned int interval) : Thread("SimpleTest"), m_interval(interval)
-	{
-	}
+	{}
 
 private:
 	void *run()
@@ -58,7 +57,7 @@ private:
 		void *retval = this;
 
 		if (isCurrentThread() == false)
-			retval = (void *)0xBAD;
+			retval = (void *) 0xBAD;
 
 		while (!stopRequested())
 			sleep_ms(m_interval);
@@ -138,10 +137,9 @@ void TestThreading::testThreadKill()
 class AtomicTestThread : public Thread
 {
 public:
-	AtomicTestThread(std::atomic<u32> &v, Semaphore &trigger)
-		: Thread("AtomicTest"), val(v), trigger(trigger)
-	{
-	}
+	AtomicTestThread(std::atomic<u32> &v, Semaphore &trigger) :
+		Thread("AtomicTest"), val(v), trigger(trigger)
+	{}
 
 private:
 	void *run()

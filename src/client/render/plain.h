@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class RenderingCorePlain : public RenderingCore
 {
 protected:
-	int scale = 0;
+	int scale				= 0;
 	video::ITexture *lowres = nullptr;
 
 	void initTextures() override;

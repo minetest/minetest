@@ -49,12 +49,12 @@ std::vector<Package> getPackagesFromURL(const std::string &url)
 	for (unsigned int i = 0; i < json.size(); ++i) {
 		Package package;
 
-		package.author = json[i]["author"].asString();
-		package.name = json[i]["name"].asString();
-		package.title = json[i]["title"].asString();
-		package.type = json[i]["type"].asString();
+		package.author	  = json[i]["author"].asString();
+		package.name	  = json[i]["name"].asString();
+		package.title	  = json[i]["title"].asString();
+		package.type	  = json[i]["type"].asString();
 		package.shortDesc = json[i]["shortDesc"].asString();
-		package.release = json[i]["release"].asInt();
+		package.release	  = json[i]["release"].asInt();
 		if (json[i].isMember("thumbnail"))
 			package.thumbnail = json[i]["thumbnail"].asString();
 

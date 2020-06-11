@@ -24,17 +24,17 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "sound_openal.h"
 
 #if defined(_WIN32)
-#include <al.h>
-#include <alc.h>
+	#include <al.h>
+	#include <alc.h>
 //#include <alext.h>
 #elif defined(__APPLE__)
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
+	#include <OpenAL/al.h>
+	#include <OpenAL/alc.h>
 //#include <OpenAL/alext.h>
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
-#include <AL/alext.h>
+	#include <AL/al.h>
+	#include <AL/alc.h>
+	#include <AL/alext.h>
 #endif
 #include <cmath>
 #include <vorbis/vorbisfile.h>
@@ -194,7 +194,7 @@ struct BufferSource
 
 size_t buffer_sound_read_func(void *ptr, size_t size, size_t nmemb, void *datasource)
 {
-	BufferSource *s = (BufferSource *)datasource;
+	BufferSource *s	   = (BufferSource *) datasource;
 	size_t copied_size = MYMIN(s->len - s->cur_offset, size);
 	memcpy(ptr, s->buf + s->cur_offset, copied_size);
 	s->cur_offset += copied_size;
@@ -203,16 +203,16 @@ size_t buffer_sound_read_func(void *ptr, size_t size, size_t nmemb, void *dataso
 
 int buffer_sound_seek_func(void *datasource, ogg_int64_t offset, int whence)
 {
-	BufferSource *s = (BufferSource *)datasource;
+	BufferSource *s = (BufferSource *) datasource;
 	if (whence == SEEK_SET) {
-		if (offset < 0 || (size_t)MYMAX(offset, 0) >= s->len) {
+		if (offset < 0 || (size_t) MYMAX(offset, 0) >= s->len) {
 			// offset out of bounds
 			return -1;
 		}
 		s->cur_offset = offset;
 		return 0;
 	} else if (whence == SEEK_CUR) {
-		if ((size_t)MYMIN(-offset, 0) > s->cur_offset ||
+		if ((size_t) MYMIN(-offset, 0) > s->cur_offset ||
 				s->cur_offset + offset > s->len) {
 			// offset out of bounds
 			return -1;
@@ -226,7 +226,7 @@ int buffer_sound_seek_func(void *datasource, ogg_int64_t offset, int whence)
 
 long BufferSourceell_func(void *datasource)
 {
-	BufferSource *s = (BufferSource *)datasource;
+	BufferSource *s = (BufferSource *) datasource;
 	return s->cur_offset;
 }
 
@@ -238,9 +238,9 @@ SoundBuffer *load_ogg_from_buffer(const std::string &buf, const std::string &id_
 	OggVorbis_File oggFile;
 
 	BufferSource s;
-	s.buf = buf.c_str();
+	s.buf		 = buf.c_str();
 	s.cur_offset = 0;
-	s.len = buf.size();
+	s.len		 = buf.size();
 
 	if (ov_open_callbacks(&s, &oggFile, nullptr, 0, g_buffer_ov_callbacks) != 0) {
 		infostream << "Audio: Error opening " << id_for_log << " for decoding"
@@ -264,10 +264,9 @@ public:
 	unique_ptr_alccontext m_context;
 
 public:
-	SoundManagerSingleton()
-		: m_device(nullptr, delete_alcdevice), m_context(nullptr, delete_alccontext)
-	{
-	}
+	SoundManagerSingleton() :
+		m_device(nullptr, delete_alcdevice), m_context(nullptr, delete_alccontext)
+	{}
 
 	bool init()
 	{
@@ -325,10 +324,9 @@ private:
 	{
 		FadeState() = default;
 
-		FadeState(float step, float current_gain, float target_gain)
-			: step(step), current_gain(current_gain), target_gain(target_gain)
-		{
-		}
+		FadeState(float step, float current_gain, float target_gain) :
+			step(step), current_gain(current_gain), target_gain(target_gain)
+		{}
 		float step;
 		float current_gain;
 		float target_gain;
@@ -338,9 +336,9 @@ private:
 	float m_fade_delay;
 
 public:
-	OpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher)
-		: m_fetcher(fetcher), m_device(smg->m_device.get()),
-		  m_context(smg->m_context.get()), m_next_id(1), m_fade_delay(0)
+	OpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher) :
+		m_fetcher(fetcher), m_device(smg->m_device.get()),
+		m_context(smg->m_context.get()), m_next_id(1), m_fade_delay(0)
 	{
 		infostream << "Audio: Initialized: OpenAL " << std::endl;
 	}
@@ -390,7 +388,7 @@ public:
 		if (i == m_buffers.end())
 			return nullptr;
 		std::vector<SoundBuffer *> &bufs = i->second;
-		int j = myrand() % bufs.size();
+		int j							 = myrand() % bufs.size();
 		return bufs[j];
 	}
 
@@ -451,7 +449,7 @@ public:
 		PlayingSound *sound = createPlayingSound(buf, loop, volume, pitch);
 		if (!sound)
 			return -1;
-		int id = m_next_id++;
+		int id				 = m_next_id++;
 		m_sounds_playing[id] = sound;
 		return id;
 	}
@@ -463,7 +461,7 @@ public:
 		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos, pitch);
 		if (!sound)
 			return -1;
-		int id = m_next_id++;
+		int id				 = m_next_id++;
 		m_sounds_playing[id] = sound;
 		return id;
 	}
@@ -511,7 +509,7 @@ public:
 		}
 		std::unordered_set<int> del_list;
 		for (const auto &sp : m_sounds_playing) {
-			int id = sp.first;
+			int id				= sp.first;
 			PlayingSound *sound = sp.second;
 			// If not playing, remove it
 			{

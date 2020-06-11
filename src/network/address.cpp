@@ -35,25 +35,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 #ifdef _WIN32
-// Without this some of the network functions are not found on mingw
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#define LAST_SOCKET_ERR() WSAGetLastError()
+	// Without this some of the network functions are not found on mingw
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0501
+	#endif
+	#include <windows.h>
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+	#define LAST_SOCKET_ERR() WSAGetLastError()
 typedef SOCKET socket_t;
 typedef int socklen_t;
 #else
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#define LAST_SOCKET_ERR() (errno)
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <fcntl.h>
+	#include <netdb.h>
+	#include <unistd.h>
+	#include <arpa/inet.h>
+	#define LAST_SOCKET_ERR() (errno)
 typedef int socket_t;
 #endif
 
@@ -114,9 +114,9 @@ void Address::Resolve(const char *name)
 {
 	if (!name || name[0] == 0) {
 		if (m_addr_family == AF_INET) {
-			setAddress((u32)0);
+			setAddress((u32) 0);
 		} else if (m_addr_family == AF_INET6) {
-			setAddress((IPv6AddressBytes *)0);
+			setAddress((IPv6AddressBytes *) 0);
 		}
 		return;
 	}
@@ -127,7 +127,7 @@ void Address::Resolve(const char *name)
 	// Setup hints
 	hints.ai_socktype = 0;
 	hints.ai_protocol = 0;
-	hints.ai_flags = 0;
+	hints.ai_flags	  = 0;
 	if (g_settings->getBool("enable_ipv6")) {
 		// AF_UNSPEC allows both IPv6 and IPv4 addresses to be returned
 		hints.ai_family = AF_UNSPEC;
@@ -142,13 +142,13 @@ void Address::Resolve(const char *name)
 
 	// Copy data
 	if (resolved->ai_family == AF_INET) {
-		struct sockaddr_in *t = (struct sockaddr_in *)resolved->ai_addr;
-		m_addr_family = AF_INET;
-		m_address.ipv4 = *t;
+		struct sockaddr_in *t = (struct sockaddr_in *) resolved->ai_addr;
+		m_addr_family		  = AF_INET;
+		m_address.ipv4		  = *t;
 	} else if (resolved->ai_family == AF_INET6) {
-		struct sockaddr_in6 *t = (struct sockaddr_in6 *)resolved->ai_addr;
-		m_addr_family = AF_INET6;
-		m_address.ipv6 = *t;
+		struct sockaddr_in6 *t = (struct sockaddr_in6 *) resolved->ai_addr;
+		m_addr_family		   = AF_INET6;
+		m_address.ipv6		   = *t;
 	} else {
 		freeaddrinfo(resolved);
 		throw ResolveError("");
@@ -165,10 +165,10 @@ std::string Address::serializeString() const
 		u8 a, b, c, d;
 		u32 addr;
 		addr = ntohl(m_address.ipv4.sin_addr.s_addr);
-		a = (addr & 0xFF000000) >> 24;
-		b = (addr & 0x00FF0000) >> 16;
-		c = (addr & 0x0000FF00) >> 8;
-		d = (addr & 0x000000FF);
+		a	 = (addr & 0xFF000000) >> 24;
+		b	 = (addr & 0x00FF0000) >> 16;
+		c	 = (addr & 0x0000FF00) >> 8;
+		d	 = (addr & 0x000000FF);
 		return itos(a) + "." + itos(b) + "." + itos(c) + "." + itos(d);
 	} else if (m_addr_family == AF_INET6) {
 		std::ostringstream os;
@@ -185,8 +185,8 @@ std::string Address::serializeString() const
 #else
 	char str[INET6_ADDRSTRLEN];
 	if (inet_ntop(m_addr_family,
-				(m_addr_family == AF_INET) ? (void *)&(m_address.ipv4.sin_addr) :
-											 (void *)&(m_address.ipv6.sin6_addr),
+				(m_addr_family == AF_INET) ? (void *) &(m_address.ipv4.sin_addr) :
+											 (void *) &(m_address.ipv6.sin6_addr),
 				str, INET6_ADDRSTRLEN) == NULL) {
 		return std::string("");
 	}
@@ -234,22 +234,22 @@ bool Address::isZero() const
 
 void Address::setAddress(u32 address)
 {
-	m_addr_family = AF_INET;
-	m_address.ipv4.sin_family = AF_INET;
+	m_addr_family				   = AF_INET;
+	m_address.ipv4.sin_family	   = AF_INET;
 	m_address.ipv4.sin_addr.s_addr = htonl(address);
 }
 
 void Address::setAddress(u8 a, u8 b, u8 c, u8 d)
 {
-	m_addr_family = AF_INET;
-	m_address.ipv4.sin_family = AF_INET;
-	u32 addr = htonl((a << 24) | (b << 16) | (c << 8) | d);
+	m_addr_family				   = AF_INET;
+	m_address.ipv4.sin_family	   = AF_INET;
+	u32 addr					   = htonl((a << 24) | (b << 16) | (c << 8) | d);
 	m_address.ipv4.sin_addr.s_addr = addr;
 }
 
 void Address::setAddress(const IPv6AddressBytes *ipv6_bytes)
 {
-	m_addr_family = AF_INET6;
+	m_addr_family			   = AF_INET6;
 	m_address.ipv6.sin6_family = AF_INET6;
 	if (ipv6_bytes)
 		memcpy(m_address.ipv6.sin6_addr.s6_addr, ipv6_bytes->bytes, 16);

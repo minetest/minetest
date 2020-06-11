@@ -23,19 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 #if USE_GETTEXT
-#include <libintl.h>
+	#include <libintl.h>
 #else
-// In certain environments, some standard headers like <iomanip>
-// and <locale> include libintl.h. If libintl.h is included after
-// we define our gettext macro below, this causes a syntax error
-// at the declaration of the gettext function in libintl.h.
-// Fix this by including such a header before defining the macro.
-// See issue #4446.
-// Note that we can't include libintl.h directly since we're in
-// the USE_GETTEXT=0 case and can't assume that gettext is installed.
-#include <locale>
+	// In certain environments, some standard headers like <iomanip>
+	// and <locale> include libintl.h. If libintl.h is included after
+	// we define our gettext macro below, this causes a syntax error
+	// at the declaration of the gettext function in libintl.h.
+	// Fix this by including such a header before defining the macro.
+	// See issue #4446.
+	// Note that we can't include libintl.h directly since we're in
+	// the USE_GETTEXT=0 case and can't assume that gettext is installed.
+	#include <locale>
 
-#define gettext(String) String
+	#define gettext(String) String
 #endif
 
 #define _(String) gettext(String)

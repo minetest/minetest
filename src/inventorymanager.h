@@ -49,7 +49,7 @@ struct InventoryLocation
 	void setNodeMeta(const v3s16 &p_)
 	{
 		type = NODEMETA;
-		p = p_;
+		p	 = p_;
 	}
 	void setDetached(const std::string &name_)
 	{
@@ -94,7 +94,7 @@ struct InventoryAction;
 class InventoryManager
 {
 public:
-	InventoryManager() = default;
+	InventoryManager()			= default;
 	virtual ~InventoryManager() = default;
 
 	// Get an inventory (server and client)
@@ -116,11 +116,11 @@ struct InventoryAction
 {
 	static InventoryAction *deSerialize(std::istream &is);
 
-	virtual IAction getType() const = 0;
+	virtual IAction getType() const				   = 0;
 	virtual void serialize(std::ostream &os) const = 0;
 	virtual void apply(
 			InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef) = 0;
-	virtual void clientApply(InventoryManager *mgr, IGameDef *gamedef) = 0;
+	virtual void clientApply(InventoryManager *mgr, IGameDef *gamedef)			  = 0;
 	virtual ~InventoryAction() = default;
 	;
 };
@@ -138,13 +138,13 @@ struct MoveAction
 struct IMoveAction : public InventoryAction, public MoveAction
 {
 	// count=0 means "everything"
-	u16 count = 0;
+	u16 count			= 0;
 	bool move_somewhere = false;
 
 	// treat these as private
 	// related to movement to somewhere
 	bool caused_by_move_somewhere = false;
-	u32 move_count = 0;
+	u32 move_count				  = 0;
 
 	IMoveAction() = default;
 

@@ -30,7 +30,7 @@ public:
 	Buffer()
 	{
 		m_size = 0;
-		data = NULL;
+		data   = NULL;
 	}
 	Buffer(unsigned int size)
 	{
@@ -95,9 +95,9 @@ class SharedBuffer
 public:
 	SharedBuffer()
 	{
-		m_size = 0;
-		data = NULL;
-		refcount = new unsigned int;
+		m_size		= 0;
+		data		= NULL;
+		refcount	= new unsigned int;
 		(*refcount) = 1;
 	}
 	SharedBuffer(unsigned int size)
@@ -113,8 +113,8 @@ public:
 	}
 	SharedBuffer(const SharedBuffer &buffer)
 	{
-		m_size = buffer.m_size;
-		data = buffer.data;
+		m_size	 = buffer.m_size;
+		data	 = buffer.data;
 		refcount = buffer.refcount;
 		(*refcount)++;
 	}
@@ -123,8 +123,8 @@ public:
 		if (this == &buffer)
 			return *this;
 		drop();
-		m_size = buffer.m_size;
-		data = buffer.data;
+		m_size	 = buffer.m_size;
+		data	 = buffer.data;
 		refcount = buffer.refcount;
 		(*refcount)++;
 		return *this;
@@ -140,7 +140,7 @@ public:
 			memcpy(data, t, m_size);
 		} else
 			data = NULL;
-		refcount = new unsigned int;
+		refcount	= new unsigned int;
 		(*refcount) = 1;
 	}
 	/*
@@ -154,7 +154,7 @@ public:
 			memcpy(data, *buffer, buffer.getSize());
 		} else
 			data = NULL;
-		refcount = new unsigned int;
+		refcount	= new unsigned int;
 		(*refcount) = 1;
 	}
 	~SharedBuffer() { drop(); }

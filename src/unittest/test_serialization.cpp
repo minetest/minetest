@@ -93,12 +93,12 @@ void TestSerialization::buildTestStrings()
 	std::wostringstream tmp_os_w;
 	std::ostringstream tmp_os_w_encoded;
 	for (int i = 0; i < 256; i++) {
-		tmp_os << (char)i;
-		tmp_os_w << (wchar_t)i;
-		tmp_os_w_encoded << (char)0 << (char)i;
+		tmp_os << (char) i;
+		tmp_os_w << (wchar_t) i;
+		tmp_os_w_encoded << (char) 0 << (char) i;
 	}
-	teststring2 = tmp_os.str();
-	teststring2_w = tmp_os_w.str();
+	teststring2			  = tmp_os.str();
+	teststring2_w		  = tmp_os_w.str();
 	teststring2_w_encoded = tmp_os_w_encoded.str();
 }
 
@@ -288,7 +288,8 @@ void TestSerialization::testSerializeHex()
 
 void TestSerialization::testStreamRead()
 {
-	std::string datastr((const char *)test_serialized_data, sizeof(test_serialized_data));
+	std::string datastr(
+			(const char *) test_serialized_data, sizeof(test_serialized_data));
 	std::istringstream is(datastr, std::ios_base::binary);
 
 	UASSERT(readU8(is) == 0x11);
@@ -480,7 +481,7 @@ void TestSerialization::testBufReader()
 
 	// Verify the offset and data is unchanged after a failed read
 	size_t orig_pos = buf.pos;
-	u32_data = 0;
+	u32_data		= 0;
 	UASSERT(buf.getU32NoEx(&u32_data) == false);
 	UASSERT(buf.pos == orig_pos);
 	UASSERT(u32_data == 0);
@@ -633,7 +634,7 @@ void TestSerialization::testFloatFormat()
 		{ -23298764.f, 0xCBB1C166UL }, { 0.5f, 0x3F000000UL }, { -0.5f, 0xBF000000UL } };
 	for (const auto &v : float_results) {
 		i = f32Tou32Slow(v.first);
-		if (std::abs((s64)v.second - i) > 32) {
+		if (std::abs((s64) v.second - i) > 32) {
 			printf("Inaccurate float values on %.9g, expected 0x%X, actual 0x%X\n",
 					v.first, v.second, i);
 			UASSERT(false);

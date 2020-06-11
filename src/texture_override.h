@@ -26,18 +26,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //! Bitmask enum specifying what a texture override should apply to
 enum class OverrideTarget : u8
 {
-	INVALID = 0,
-	TOP = 1 << 0,
-	BOTTOM = 1 << 1,
-	LEFT = 1 << 2,
-	RIGHT = 1 << 3,
-	FRONT = 1 << 4,
-	BACK = 1 << 5,
+	INVALID	  = 0,
+	TOP		  = 1 << 0,
+	BOTTOM	  = 1 << 1,
+	LEFT	  = 1 << 2,
+	RIGHT	  = 1 << 3,
+	FRONT	  = 1 << 4,
+	BACK	  = 1 << 5,
 	INVENTORY = 1 << 6,
-	WIELD = 1 << 7,
+	WIELD	  = 1 << 7,
 
-	SIDES = LEFT | RIGHT | FRONT | BACK,
-	ALL_FACES = TOP | BOTTOM | SIDES,
+	SIDES		 = LEFT | RIGHT | FRONT | BACK,
+	ALL_FACES	 = TOP | BOTTOM | SIDES,
 	ITEM_TARGETS = INVENTORY | WIELD,
 };
 

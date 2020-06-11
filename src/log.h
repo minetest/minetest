@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <thread>
 #include <mutex>
 #if !defined(_WIN32) // POSIX
-#include <unistd.h>
+	#include <unistd.h>
 #endif
 #include "irrlichttypes.h"
 
@@ -99,7 +99,7 @@ private:
 class ILogOutput
 {
 public:
-	virtual void logRaw(LogLevel, const std::string &line) = 0;
+	virtual void logRaw(LogLevel, const std::string &line)					 = 0;
 	virtual void log(LogLevel, const std::string &combined, const std::string &time,
 			const std::string &thread_name, const std::string &payload_text) = 0;
 };
@@ -214,5 +214,5 @@ extern std::ostream dstream;
 #define dout_server (*dout_server_ptr)
 
 #ifndef SERVER
-#define dout_client (*dout_client_ptr)
+	#define dout_client (*dout_client_ptr)
 #endif

@@ -47,18 +47,16 @@ struct ModSpec
 	std::unordered_set<std::string> unsatisfied_depends;
 
 	bool part_of_modpack = false;
-	bool is_modpack = false;
+	bool is_modpack		 = false;
 
 	// if modpack:
 	std::map<std::string, ModSpec> modpack_content;
-	ModSpec(const std::string &name = "", const std::string &path = "")
-		: name(name), path(path)
-	{
-	}
-	ModSpec(const std::string &name, const std::string &path, bool part_of_modpack)
-		: name(name), path(path), part_of_modpack(part_of_modpack)
-	{
-	}
+	ModSpec(const std::string &name = "", const std::string &path = "") :
+		name(name), path(path)
+	{}
+	ModSpec(const std::string &name, const std::string &path, bool part_of_modpack) :
+		name(name), path(path), part_of_modpack(part_of_modpack)
+	{}
 };
 
 // Retrieves depends, optdepends, is_modpack and modpack_content

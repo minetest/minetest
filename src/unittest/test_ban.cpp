@@ -92,7 +92,7 @@ void TestBan::testCreate()
 
 void TestBan::testAdd()
 {
-	std::string bm_test1_entry = "192.168.0.246";
+	std::string bm_test1_entry	= "192.168.0.246";
 	std::string bm_test1_result = "test_username";
 
 	BanManager bm("testbm.txt");
@@ -103,10 +103,10 @@ void TestBan::testAdd()
 
 void TestBan::testRemove()
 {
-	std::string bm_test1_entry = "192.168.0.249";
+	std::string bm_test1_entry	= "192.168.0.249";
 	std::string bm_test1_result = "test_username";
 
-	std::string bm_test2_entry = "192.168.0.250";
+	std::string bm_test2_entry	= "192.168.0.250";
 	std::string bm_test2_result = "test_username7";
 
 	BanManager bm("testbm.txt");
@@ -142,7 +142,7 @@ void TestBan::testModificationFlag()
 
 void TestBan::testGetBanName()
 {
-	std::string bm_test1_entry = "192.168.0.247";
+	std::string bm_test1_entry	= "192.168.0.247";
 	std::string bm_test1_result = "test_username";
 
 	BanManager bm("testbm.txt");
@@ -157,7 +157,7 @@ void TestBan::testGetBanName()
 
 void TestBan::testGetBanDescription()
 {
-	std::string bm_test1_entry = "192.168.0.247";
+	std::string bm_test1_entry	= "192.168.0.247";
 	std::string bm_test1_entry2 = "test_username";
 
 	std::string bm_test1_result = "192.168.0.247|test_username";

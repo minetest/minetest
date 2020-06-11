@@ -30,9 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct CommonParticleParams
 {
 	bool collisiondetection = false;
-	bool collision_removal = false;
-	bool object_collision = false;
-	bool vertical = false;
+	bool collision_removal	= false;
+	bool object_collision	= false;
+	bool vertical			= false;
 	std::string texture;
 	struct TileAnimationParams animation;
 	u8 glow = 0;
@@ -50,14 +50,14 @@ struct CommonParticleParams
 	inline void copyCommon(CommonParticleParams &to) const
 	{
 		to.collisiondetection = collisiondetection;
-		to.collision_removal = collision_removal;
-		to.object_collision = object_collision;
-		to.vertical = vertical;
-		to.texture = texture;
-		to.animation = animation;
-		to.glow = glow;
-		to.node = node;
-		to.node_tile = node_tile;
+		to.collision_removal  = collision_removal;
+		to.object_collision	  = object_collision;
+		to.vertical			  = vertical;
+		to.texture			  = texture;
+		to.animation		  = animation;
+		to.glow				  = glow;
+		to.node				  = node;
+		to.node_tile		  = node_tile;
 	}
 };
 
@@ -67,7 +67,7 @@ struct ParticleParameters : CommonParticleParams
 	v3f vel;
 	v3f acc;
 	f32 expirationtime = 1;
-	f32 size = 1;
+	f32 size		   = 1;
 
 	void serialize(std::ostream &os, u16 protocol_ver) const;
 	void deSerialize(std::istream &is, u16 protocol_ver);
@@ -77,7 +77,7 @@ struct ParticleSpawnerParameters : CommonParticleParams
 {
 	u16 amount = 1;
 	v3f minpos, maxpos, minvel, maxvel, minacc, maxacc;
-	f32 time = 1;
+	f32 time	   = 1;
 	f32 minexptime = 1, maxexptime = 1, minsize = 1, maxsize = 1;
 
 	// For historical reasons no (de-)serialization methods here

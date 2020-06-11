@@ -73,7 +73,7 @@ private:
 
 	bool shift_down = false;
 
-	key_setting *active_key = nullptr;
+	key_setting *active_key			   = nullptr;
 	gui::IGUIStaticText *key_used_text = nullptr;
 	std::vector<key_setting *> key_settings;
 	ISimpleTextureSource *m_tsrc;

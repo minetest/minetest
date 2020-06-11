@@ -119,7 +119,7 @@ public:
 
 	NoiseParams np_puff_top;
 	NoiseParams np_puff_bottom;
-	Noise *noise_puff_top = nullptr;
+	Noise *noise_puff_top	 = nullptr;
 	Noise *noise_puff_bottom = nullptr;
 
 	OrePuff() = default;
@@ -148,7 +148,7 @@ public:
 	ObjDef *clone() const;
 
 	float random_factor;
-	Noise *noise2 = nullptr;
+	Noise *noise2  = nullptr;
 	int sizey_prev = 0;
 
 	OreVein() = default;

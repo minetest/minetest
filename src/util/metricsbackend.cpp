@@ -19,12 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "metricsbackend.h"
 #if USE_PROMETHEUS
-#include <prometheus/exposer.h>
-#include <prometheus/registry.h>
-#include <prometheus/counter.h>
-#include <prometheus/gauge.h>
-#include "log.h"
-#include "settings.h"
+	#include <prometheus/exposer.h>
+	#include <prometheus/registry.h>
+	#include <prometheus/counter.h>
+	#include <prometheus/gauge.h>
+	#include "log.h"
+	#include "settings.h"
 #endif
 
 MetricCounterPtr MetricsBackend::addCounter(
@@ -47,13 +47,12 @@ public:
 	PrometheusMetricCounter() = delete;
 
 	PrometheusMetricCounter(const std::string &name, const std::string &help_str,
-			std::shared_ptr<prometheus::Registry> registry)
-		: MetricCounter(),
-		  m_family(prometheus::BuildCounter().Name(name).Help(help_str).Register(
-				  *registry)),
-		  m_counter(m_family.Add({}))
-	{
-	}
+			std::shared_ptr<prometheus::Registry> registry) :
+		MetricCounter(),
+		m_family(
+				prometheus::BuildCounter().Name(name).Help(help_str).Register(*registry)),
+		m_counter(m_family.Add({}))
+	{}
 
 	virtual ~PrometheusMetricCounter() {}
 
@@ -71,13 +70,11 @@ public:
 	PrometheusMetricGauge() = delete;
 
 	PrometheusMetricGauge(const std::string &name, const std::string &help_str,
-			std::shared_ptr<prometheus::Registry> registry)
-		: MetricGauge(),
-		  m_family(
-				  prometheus::BuildGauge().Name(name).Help(help_str).Register(*registry)),
-		  m_gauge(m_family.Add({}))
-	{
-	}
+			std::shared_ptr<prometheus::Registry> registry) :
+		MetricGauge(),
+		m_family(prometheus::BuildGauge().Name(name).Help(help_str).Register(*registry)),
+		m_gauge(m_family.Add({}))
+	{}
 
 	virtual ~PrometheusMetricGauge() {}
 
@@ -94,10 +91,10 @@ private:
 class PrometheusMetricsBackend : public MetricsBackend
 {
 public:
-	PrometheusMetricsBackend(const std::string &addr)
-		: MetricsBackend(),
-		  m_exposer(std::unique_ptr<prometheus::Exposer>(new prometheus::Exposer(addr))),
-		  m_registry(std::make_shared<prometheus::Registry>())
+	PrometheusMetricsBackend(const std::string &addr) :
+		MetricsBackend(),
+		m_exposer(std::unique_ptr<prometheus::Exposer>(new prometheus::Exposer(addr))),
+		m_registry(std::make_shared<prometheus::Registry>())
 	{
 		m_exposer->RegisterCollectable(m_registry);
 	}

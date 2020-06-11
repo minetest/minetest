@@ -118,7 +118,7 @@ public:
 
 	std::string get(const std::string &name_of_shader, const std::string &filename)
 	{
-		std::string combined = name_of_shader + DIR_DELIM + filename;
+		std::string combined  = name_of_shader + DIR_DELIM + filename;
 		StringMap::iterator n = m_programs.find(combined);
 		if (n != m_programs.end())
 			return n->second;
@@ -128,7 +128,7 @@ public:
 	// Primarily fetches from cache, secondarily tries to read from filesystem
 	std::string getOrLoad(const std::string &name_of_shader, const std::string &filename)
 	{
-		std::string combined = name_of_shader + DIR_DELIM + filename;
+		std::string combined  = name_of_shader + DIR_DELIM + filename;
 		StringMap::iterator n = m_programs.find(combined);
 		if (n != m_programs.end())
 			return n->second;
@@ -467,8 +467,7 @@ ShaderInfo ShaderSource::getShaderInfo(u32 id)
 }
 
 void ShaderSource::processQueue()
-{
-}
+{}
 
 void ShaderSource::insertSourceShader(const std::string &name_of_shader,
 		const std::string &filename, const std::string &program)
@@ -513,10 +512,10 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		SourceShaderCache *sourcecache)
 {
 	ShaderInfo shaderinfo;
-	shaderinfo.name = name;
+	shaderinfo.name			 = name;
 	shaderinfo.material_type = material_type;
-	shaderinfo.drawtype = drawtype;
-	shaderinfo.material = video::EMT_SOLID;
+	shaderinfo.drawtype		 = drawtype;
+	shaderinfo.material		 = video::EMT_SOLID;
 	switch (material_type) {
 	case TILE_MATERIAL_OPAQUE:
 	case TILE_MATERIAL_LIQUID_OPAQUE:
@@ -655,7 +654,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaders_header += ftos(g_settings->getFloat("normalmaps_strength"));
 	shaders_header += "\n";
 	float sample_step;
-	int smooth = (int)g_settings->getFloat("normalmaps_smooth");
+	int smooth = (int) g_settings->getFloat("normalmaps_smooth");
 	switch (smooth) {
 	case 0:
 		sample_step = 0.0078125; // 1.0 / 128.0
@@ -678,9 +677,9 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaders_header += "#define ENABLE_BUMPMAPPING\n";
 
 	if (g_settings->getBool("enable_parallax_occlusion")) {
-		int mode = g_settings->getFloat("parallax_occlusion_mode");
-		float scale = g_settings->getFloat("parallax_occlusion_scale");
-		float bias = g_settings->getFloat("parallax_occlusion_bias");
+		int mode	   = g_settings->getFloat("parallax_occlusion_mode");
+		float scale	   = g_settings->getFloat("parallax_occlusion_scale");
+		float bias	   = g_settings->getFloat("parallax_occlusion_bias");
 		int iterations = g_settings->getFloat("parallax_occlusion_iterations");
 		shaders_header += "#define ENABLE_PARALLAX_OCCLUSION\n";
 		shaders_header += "#define PARALLAX_OCCLUSION_MODE ";
@@ -739,23 +738,23 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaders_header += "\n";
 
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()
-	const c8 *vertex_program_ptr = 0;
-	const c8 *pixel_program_ptr = 0;
+	const c8 *vertex_program_ptr   = 0;
+	const c8 *pixel_program_ptr	   = 0;
 	const c8 *geometry_program_ptr = 0;
 	if (!vertex_program.empty()) {
-		vertex_program = shaders_header + vertex_program;
+		vertex_program	   = shaders_header + vertex_program;
 		vertex_program_ptr = vertex_program.c_str();
 	}
 	if (!pixel_program.empty()) {
-		pixel_program = shaders_header + pixel_program;
+		pixel_program	  = shaders_header + pixel_program;
 		pixel_program_ptr = pixel_program.c_str();
 	}
 	if (!geometry_program.empty()) {
-		geometry_program = shaders_header + geometry_program;
+		geometry_program	 = shaders_header + geometry_program;
 		geometry_program_ptr = geometry_program.c_str();
 	}
 	ShaderCallback *cb = new ShaderCallback(setter_factories);
-	s32 shadermat = -1;
+	s32 shadermat	   = -1;
 	if (is_highlevel) {
 		infostream << "Compiling high level shaders for " << name << std::endl;
 		shadermat = gpu->addHighLevelShaderMaterial(
@@ -817,7 +816,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	driver->getMaterialRenderer(shadermat)->grab();
 
 	// Apply the newly created material type
-	shaderinfo.material = (video::E_MATERIAL_TYPE)shadermat;
+	shaderinfo.material = (video::E_MATERIAL_TYPE) shadermat;
 	return shaderinfo;
 }
 
@@ -825,23 +824,23 @@ void load_shaders(const std::string &name, SourceShaderCache *sourcecache,
 		video::E_DRIVER_TYPE drivertype, bool enable_shaders, std::string &vertex_program,
 		std::string &pixel_program, std::string &geometry_program, bool &is_highlevel)
 {
-	vertex_program = "";
-	pixel_program = "";
+	vertex_program	 = "";
+	pixel_program	 = "";
 	geometry_program = "";
-	is_highlevel = false;
+	is_highlevel	 = false;
 
 	if (enable_shaders) {
 		// Look for high level shaders
 		if (drivertype == video::EDT_DIRECT3D9) {
 			// Direct3D 9: HLSL
 			// (All shaders in one file)
-			vertex_program = sourcecache->getOrLoad(name, "d3d9.hlsl");
-			pixel_program = vertex_program;
+			vertex_program	 = sourcecache->getOrLoad(name, "d3d9.hlsl");
+			pixel_program	 = vertex_program;
 			geometry_program = vertex_program;
 		} else if (drivertype == video::EDT_OPENGL) {
 			// OpenGL: GLSL
-			vertex_program = sourcecache->getOrLoad(name, "opengl_vertex.glsl");
-			pixel_program = sourcecache->getOrLoad(name, "opengl_fragment.glsl");
+			vertex_program	 = sourcecache->getOrLoad(name, "opengl_vertex.glsl");
+			pixel_program	 = sourcecache->getOrLoad(name, "opengl_fragment.glsl");
 			geometry_program = sourcecache->getOrLoad(name, "opengl_geometry.glsl");
 		}
 		if (!vertex_program.empty() || !pixel_program.empty() ||
@@ -857,9 +856,9 @@ void dumpShaderProgram(std::ostream &output_stream, const std::string &program_t
 {
 	output_stream << program_type << " shader program:" << std::endl
 				  << "----------------------------------" << std::endl;
-	size_t pos = 0;
+	size_t pos	= 0;
 	size_t prev = 0;
-	s16 line = 1;
+	s16 line	= 1;
 	while ((pos = program.find('\n', prev)) != std::string::npos) {
 		output_stream << line++ << ": " << program.substr(prev, pos - prev) << std::endl;
 		prev = pos + 1;

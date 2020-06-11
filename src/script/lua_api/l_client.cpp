@@ -150,7 +150,7 @@ int ModApiClient::l_get_player_names(lua_State *L)
 	const std::list<std::string> &plist = getClient(L)->getConnectedPlayerNames();
 	lua_createtable(L, plist.size(), 0);
 	int newTable = lua_gettop(L);
-	int index = 1;
+	int index	 = 1;
 	std::list<std::string>::const_iterator iter;
 	for (iter = plist.begin(); iter != plist.end(); ++iter) {
 		lua_pushstring(L, (*iter).c_str());
@@ -166,8 +166,8 @@ int ModApiClient::l_show_formspec(lua_State *L)
 	if (!lua_isstring(L, 1) || !lua_isstring(L, 2))
 		return 0;
 
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_SHOW_LOCAL_FORMSPEC;
+	ClientEvent *event			  = new ClientEvent();
+	event->type					  = CE_SHOW_LOCAL_FORMSPEC;
 	event->show_formspec.formname = new std::string(luaL_checkstring(L, 1));
 	event->show_formspec.formspec = new std::string(luaL_checkstring(L, 2));
 	getClient(L)->pushToEventQueue(event);
@@ -265,7 +265,7 @@ int ModApiClient::l_sound_play(lua_State *L)
 	SimpleSoundSpec spec;
 	read_soundspec(L, 1, spec);
 
-	float gain = 1.0f;
+	float gain	= 1.0f;
 	float pitch = 1.0f;
 	bool looped = false;
 	s32 handle;
@@ -314,7 +314,7 @@ int ModApiClient::l_sound_fade(lua_State *L)
 // get_server_info()
 int ModApiClient::l_get_server_info(lua_State *L)
 {
-	Client *client = getClient(L);
+	Client *client		  = getClient(L);
 	Address serverAddress = client->getServerAddress();
 	lua_newtable(L);
 	lua_pushstring(L, client->getAddressName().c_str());
@@ -368,7 +368,7 @@ int ModApiClient::l_get_node_def(lua_State *L)
 	if (checkCSMRestrictionFlag(CSM_RF_READ_NODEDEFS))
 		return 0;
 
-	std::string name = readParam<std::string>(L, 1);
+	std::string name		  = readParam<std::string>(L, 1);
 	const ContentFeatures &cf = ndef->get(ndef->getId(name));
 	if (cf.name != name) // Unknown node. | name = <whatever>, cf.name = ignore
 		return 0;
@@ -400,7 +400,7 @@ int ModApiClient::l_get_builtin_path(lua_State *L)
 // get_csm_restrictions()
 int ModApiClient::l_get_csm_restrictions(lua_State *L)
 {
-	u64 flags = getClient(L)->getCSMRestrictionFlags();
+	u64 flags					= getClient(L)->getCSMRestrictionFlags();
 	const CSMFlagDesc *flagdesc = flagdesc_csm_restriction;
 
 	lua_newtable(L);

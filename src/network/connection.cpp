@@ -40,23 +40,23 @@ namespace con
 /* defines used for debugging and profiling                                   */
 /******************************************************************************/
 #ifdef NDEBUG
-#define LOG(a) a
-#define PROFILE(a)
+	#define LOG(a) a
+	#define PROFILE(a)
 #else
-#if 0
+	#if 0
 	/* this mutex is used to achieve log message consistency */
 	std::mutex log_message_mutex;
-#define LOG(a)                                                                           \
-	{                                                                                    \
-		MutexAutoLock loglock(log_message_mutex);                                        \
-		a;                                                                               \
-	}
-#else
-// Prevent deadlocks until a solution is found after 5.2.0 (TODO)
-#define LOG(a) a
-#endif
+		#define LOG(a)                                                                   \
+			{                                                                            \
+				MutexAutoLock loglock(log_message_mutex);                                \
+				a;                                                                       \
+			}
+	#else
+		// Prevent deadlocks until a solution is found after 5.2.0 (TODO)
+		#define LOG(a) a
+	#endif
 
-#define PROFILE(a) a
+	#define PROFILE(a) a
 #endif
 
 #define PING_TIMEOUT 5.0
@@ -97,17 +97,17 @@ void makeSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max, u16 seqnum
 	// Chunk packets, containing the TYPE_SPLIT header
 	u32 chunk_header_size = 7;
 	u32 maximum_data_size = chunksize_max - chunk_header_size;
-	u32 start = 0;
-	u32 end = 0;
-	u32 chunk_num = 0;
-	u16 chunk_count = 0;
+	u32 start			  = 0;
+	u32 end				  = 0;
+	u32 chunk_num		  = 0;
+	u16 chunk_count		  = 0;
 	do {
 		end = start + maximum_data_size - 1;
 		if (end > data.getSize() - 1)
 			end = data.getSize() - 1;
 
 		u32 payload_size = end - start + 1;
-		u32 packet_size = chunk_header_size + payload_size;
+		u32 packet_size	 = chunk_header_size + payload_size;
 
 		SharedBuffer<u8> chunk(packet_size);
 
@@ -208,7 +208,7 @@ bool ReliablePacketBuffer::getFirstSeqnum(u16 &result)
 	if (m_list.empty())
 		return false;
 	const BufferedPacket &p = *m_list.begin();
-	result = readU16(&p.data[BASE_HEADER_SIZE + 1]);
+	result					= readU16(&p.data[BASE_HEADER_SIZE + 1]);
 	return true;
 }
 
@@ -243,7 +243,7 @@ BufferedPacket ReliablePacketBuffer::popSeqnum(u16 seqnum)
 	RPBSearchResult next = r;
 	++next;
 	if (next != notFound()) {
-		u16 s = readU16(&(next->data[BASE_HEADER_SIZE + 1]));
+		u16 s					  = readU16(&(next->data[BASE_HEADER_SIZE + 1]));
 		m_oldest_non_answered_ack = s;
 	}
 
@@ -437,10 +437,10 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(const BufferedPacket &p, bool relia
 		errorstream << "Invalid data size for split packet" << std::endl;
 		return SharedBuffer<u8>();
 	}
-	u8 type = readU8(&p.data[BASE_HEADER_SIZE + 0]);
-	u16 seqnum = readU16(&p.data[BASE_HEADER_SIZE + 1]);
+	u8 type			= readU8(&p.data[BASE_HEADER_SIZE + 0]);
+	u16 seqnum		= readU16(&p.data[BASE_HEADER_SIZE + 1]);
 	u16 chunk_count = readU16(&p.data[BASE_HEADER_SIZE + 3]);
-	u16 chunk_num = readU16(&p.data[BASE_HEADER_SIZE + 5]);
+	u16 chunk_num	= readU16(&p.data[BASE_HEADER_SIZE + 5]);
 
 	if (type != PACKET_TYPE_SPLIT) {
 		errorstream << "IncomingSplitBuffer::insert(): type is not split" << std::endl;
@@ -455,7 +455,7 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(const BufferedPacket &p, bool relia
 	// Add if doesn't exist
 	IncomingSplitPacket *sp;
 	if (m_buf.find(seqnum) == m_buf.end()) {
-		sp = new IncomingSplitPacket(chunk_count, reliable);
+		sp			  = new IncomingSplitPacket(chunk_count, reliable);
 		m_buf[seqnum] = sp;
 	} else {
 		sp = m_buf[seqnum];
@@ -521,11 +521,11 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 void ConnectionCommand::send(
 		session_t peer_id_, u8 channelnum_, NetworkPacket *pkt, bool reliable_)
 {
-	type = CONNCMD_SEND;
-	peer_id = peer_id_;
+	type	   = CONNCMD_SEND;
+	peer_id	   = peer_id_;
 	channelnum = channelnum_;
-	data = pkt->oldForgePacket();
-	reliable = reliable_;
+	data	   = pkt->oldForgePacket();
+	reliable   = reliable_;
 }
 
 /*
@@ -649,7 +649,7 @@ void Channel::UpdateTimers(float dtime)
 	if (packet_loss_counter > 1.0f) {
 		packet_loss_counter -= 1.0f;
 
-		unsigned int packet_loss = 11; /* use a neutral value for initialization */
+		unsigned int packet_loss		= 11; /* use a neutral value for initialization */
 		unsigned int packets_successful = 0;
 		//unsigned int packet_too_late = 0;
 
@@ -661,23 +661,23 @@ void Channel::UpdateTimers(float dtime)
 			//packet_too_late = current_packet_too_late;
 			packets_successful = current_packet_successful;
 
-			if (current_bytes_transfered > (unsigned int)(window_size * 512 / 2)) {
+			if (current_bytes_transfered > (unsigned int) (window_size * 512 / 2)) {
 				reasonable_amount_of_data_transmitted = true;
 			}
-			current_packet_loss = 0;
-			current_packet_too_late = 0;
+			current_packet_loss		  = 0;
+			current_packet_too_late	  = 0;
 			current_packet_successful = 0;
 		}
 
 		/* dynamic window size */
 		float successful_to_lost_ratio = 0.0f;
-		bool done = false;
+		bool done					   = false;
 
 		if (packets_successful > 0) {
 			successful_to_lost_ratio = packet_loss / packets_successful;
 		} else if (packet_loss > 0) {
 			window_size = std::max((window_size - 10), MIN_RELIABLE_WINDOW_SIZE);
-			done = true;
+			done		= true;
 		}
 
 		if (!done) {
@@ -704,13 +704,14 @@ void Channel::UpdateTimers(float dtime)
 	if (bpm_counter > 10.0f) {
 		{
 			MutexAutoLock internal(m_internal_mutex);
-			cur_kbps = (((float)current_bytes_transfered) / bpm_counter) / 1024.0f;
+			cur_kbps = (((float) current_bytes_transfered) / bpm_counter) / 1024.0f;
 			current_bytes_transfered = 0;
-			cur_kbps_lost = (((float)current_bytes_lost) / bpm_counter) / 1024.0f;
+			cur_kbps_lost	   = (((float) current_bytes_lost) / bpm_counter) / 1024.0f;
 			current_bytes_lost = 0;
-			cur_incoming_kbps = (((float)current_bytes_received) / bpm_counter) / 1024.0f;
+			cur_incoming_kbps =
+					(((float) current_bytes_received) / bpm_counter) / 1024.0f;
 			current_bytes_received = 0;
-			bpm_counter = 0.0f;
+			bpm_counter			   = 0.0f;
 		}
 
 		if (cur_kbps > max_kbps) {
@@ -725,9 +726,9 @@ void Channel::UpdateTimers(float dtime)
 			max_incoming_kbps = cur_incoming_kbps;
 		}
 
-		rate_samples = MYMIN(rate_samples + 1, 10);
-		float old_fraction = ((float)(rate_samples - 1)) / ((float)rate_samples);
-		avg_kbps = avg_kbps * old_fraction + cur_kbps * (1.0 - old_fraction);
+		rate_samples	   = MYMIN(rate_samples + 1, 10);
+		float old_fraction = ((float) (rate_samples - 1)) / ((float) rate_samples);
+		avg_kbps		   = avg_kbps * old_fraction + cur_kbps * (1.0 - old_fraction);
 		avg_kbps_lost =
 				avg_kbps_lost * old_fraction + cur_kbps_lost * (1.0 - old_fraction);
 		avg_incoming_kbps = avg_incoming_kbps * old_fraction +
@@ -779,7 +780,7 @@ bool PeerHelper::operator!()
 
 bool PeerHelper::operator!=(void *ptr)
 {
-	return ((void *)m_peer != ptr);
+	return ((void *) m_peer != ptr);
 }
 
 bool Peer::IncUseCount()
@@ -860,7 +861,7 @@ bool Peer::isTimedOut(float timeout)
 	MutexAutoLock lock(m_exclusive_access_mutex);
 	u64 current_time = porting::getTimeMs();
 
-	float dtime = CALC_DTIME(m_last_timeout_check, current_time);
+	float dtime			 = CALC_DTIME(m_last_timeout_check, current_time);
 	m_last_timeout_check = current_time;
 
 	m_timeout_counter += dtime;
@@ -889,8 +890,8 @@ void Peer::Drop()
 	delete this;
 }
 
-UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection *connection)
-	: Peer(a_address, a_id, connection)
+UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection *connection) :
+	Peer(a_address, a_id, connection)
 {
 	for (Channel &channel : channels)
 		channel.setWindowSize(START_RELIABLE_WINDOW_SIZE);
@@ -989,7 +990,7 @@ bool UDPPeer::processReliableSendCommand(
 		chan.setNextSplitSeqNum(split_sequence_number);
 	}
 
-	bool have_sequence_number = true;
+	bool have_sequence_number		  = true;
 	bool have_initial_sequence_number = false;
 	std::queue<BufferedPacket> toadd;
 	volatile u16 initial_sequence_number = 0;
@@ -1002,7 +1003,7 @@ bool UDPPeer::processReliableSendCommand(
 			break;
 
 		if (!have_initial_sequence_number) {
-			initial_sequence_number = seqnum;
+			initial_sequence_number		 = seqnum;
 			have_initial_sequence_number = true;
 		}
 
@@ -1118,11 +1119,12 @@ SharedBuffer<u8> UDPPeer::addSplitPacket(
 */
 
 Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6,
-		PeerHandler *peerhandler)
-	: m_udpSocket(ipv6), m_protocol_id(protocol_id),
-	  m_sendThread(new ConnectionSendThread(max_packet_size, timeout)),
-	  m_receiveThread(new ConnectionReceiveThread(max_packet_size)),
-	  m_bc_peerhandler(peerhandler)
+		PeerHandler *peerhandler) :
+	m_udpSocket(ipv6),
+	m_protocol_id(protocol_id),
+	m_sendThread(new ConnectionSendThread(max_packet_size, timeout)),
+	m_receiveThread(new ConnectionReceiveThread(max_packet_size)),
+	m_bc_peerhandler(peerhandler)
 
 {
 	/* Amount of time Receive() will wait for data, this is entirely different
@@ -1421,7 +1423,7 @@ u16 Connection::createPeer(Address &sender, MTProtocols protocol, int fd)
 
 	// Get a unique peer id (2 or higher)
 	session_t peer_id_new = m_next_remote_peer_id;
-	u16 overflow = MAX_UDP_PEERS;
+	u16 overflow		  = MAX_UDP_PEERS;
 
 	/*
 		Find an unused peer id
@@ -1448,7 +1450,7 @@ u16 Connection::createPeer(Address &sender, MTProtocols protocol, int fd)
 
 	// Create a peer
 	Peer *peer = 0;
-	peer = new UDPPeer(peer_id_new, sender, this);
+	peer	   = new UDPPeer(peer_id_new, sender, this);
 
 	m_peers[peer->id] = peer;
 	m_peer_ids.push_back(peer->id);

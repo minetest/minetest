@@ -49,12 +49,12 @@ protected:
 
 	inline u32 pg_to_uint(PGresult *res, int row, int col)
 	{
-		return (u32)atoi(PQgetvalue(res, row, col));
+		return (u32) atoi(PQgetvalue(res, row, col));
 	}
 
 	inline float pg_to_float(PGresult *res, int row, int col)
 	{
-		return (float)atof(PQgetvalue(res, row, col));
+		return (float) atof(PQgetvalue(res, row, col));
 	}
 
 	inline v3s16 pg_to_v3s16(PGresult *res, int row, int col)
@@ -68,7 +68,7 @@ protected:
 			const int *paramsFormats = NULL, bool clear = true, bool nobinary = true)
 	{
 		return checkResults(PQexecPrepared(m_conn, stmtName, paramsNumber,
-									(const char *const *)params, paramsLengths,
+									(const char *const *) params, paramsLengths,
 									paramsFormats, nobinary ? 1 : 0),
 				clear);
 	}
@@ -76,7 +76,7 @@ protected:
 	inline PGresult *execPrepared(const char *stmtName, const int paramsNumber,
 			const char **params, bool clear = true, bool nobinary = true)
 	{
-		return execPrepared(stmtName, paramsNumber, (const void **)params, NULL, NULL,
+		return execPrepared(stmtName, paramsNumber, (const void **) params, NULL, NULL,
 				clear, nobinary);
 	}
 
@@ -103,7 +103,7 @@ private:
 
 	// Attributes
 	std::string m_connect_string;
-	PGconn *m_conn = nullptr;
+	PGconn *m_conn	= nullptr;
 	int m_pgversion = 0;
 };
 

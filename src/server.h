@@ -83,10 +83,9 @@ struct MediaInfo
 	std::string path;
 	std::string sha1_digest;
 
-	MediaInfo(const std::string &path_ = "", const std::string &sha1_digest_ = "")
-		: path(path_), sha1_digest(sha1_digest_)
-	{
-	}
+	MediaInfo(const std::string &path_ = "", const std::string &sha1_digest_ = "") :
+		path(path_), sha1_digest(sha1_digest_)
+	{}
 };
 
 struct ServerSoundParams
@@ -96,15 +95,15 @@ struct ServerSoundParams
 		SSP_LOCAL,
 		SSP_POSITIONAL,
 		SSP_OBJECT
-	} type = SSP_LOCAL;
-	float gain = 1.0f;
-	float fade = 0.0f;
-	float pitch = 1.0f;
-	bool loop = false;
+	} type					= SSP_LOCAL;
+	float gain				= 1.0f;
+	float fade				= 0.0f;
+	float pitch				= 1.0f;
+	bool loop				= false;
 	float max_hear_distance = 32 * BS;
 	v3f pos;
-	u16 object = 0;
-	std::string to_player = "";
+	u16 object				   = 0;
+	std::string to_player	   = "";
 	std::string exclude_player = "";
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
@@ -355,7 +354,7 @@ private:
 		friend class TestServerShutdownState;
 
 	public:
-		bool is_requested = false;
+		bool is_requested	  = false;
 		bool should_reconnect = false;
 		std::string message;
 
@@ -509,11 +508,11 @@ private:
 	MutexedVariable<std::string> m_async_fatal_error;
 
 	// Some timers
-	float m_liquid_transform_timer = 0.0f;
-	float m_liquid_transform_every = 1.0f;
-	float m_masterserver_timer = 0.0f;
+	float m_liquid_transform_timer	   = 0.0f;
+	float m_liquid_transform_every	   = 1.0f;
+	float m_masterserver_timer		   = 0.0f;
 	float m_emergethread_trigger_timer = 0.0f;
-	float m_savemap_timer = 0.0f;
+	float m_savemap_timer			   = 0.0f;
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	// Environment
@@ -626,7 +625,7 @@ private:
 	float m_mod_storage_save_timer = 10.0f;
 
 	// CSM restrictions byteflag
-	u64 m_csm_restriction_flags = CSMRestrictionFlags::CSM_RF_NONE;
+	u64 m_csm_restriction_flags		= CSMRestrictionFlags::CSM_RF_NONE;
 	u32 m_csm_restriction_noderange = 8;
 
 	// ModChannel manager

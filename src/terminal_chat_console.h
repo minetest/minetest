@@ -55,7 +55,7 @@ public:
 
 	void setup(ChatInterface *iface, bool *kill_requested, const std::string &nick)
 	{
-		m_nick = nick;
+		m_nick			 = nick;
 		m_kill_requested = kill_requested;
 		m_chat_interface = iface;
 	}
@@ -113,7 +113,7 @@ private:
 
 	bool m_esc_mode = false;
 
-	u64 m_game_time = 0;
+	u64 m_game_time	  = 0;
 	u32 m_time_of_day = 0;
 };
 

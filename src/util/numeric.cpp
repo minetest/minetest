@@ -59,10 +59,10 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 {
 	const u64 m = 0xc6a4a7935bd1e995ULL;
 	const int r = 47;
-	u64 h = seed ^ (len * m);
+	u64 h		= seed ^ (len * m);
 
-	const u8 *data = (const u8 *)key;
-	const u8 *end = data + (len / 8) * 8;
+	const u8 *data = (const u8 *) key;
+	const u8 *end  = data + (len / 8) * 8;
 
 	while (data != end) {
 		u64 k;
@@ -77,22 +77,22 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 		h *= m;
 	}
 
-	const unsigned char *data2 = (const unsigned char *)data;
+	const unsigned char *data2 = (const unsigned char *) data;
 	switch (len & 7) {
 	case 7:
-		h ^= (u64)data2[6] << 48;
+		h ^= (u64) data2[6] << 48;
 	case 6:
-		h ^= (u64)data2[5] << 40;
+		h ^= (u64) data2[5] << 40;
 	case 5:
-		h ^= (u64)data2[4] << 32;
+		h ^= (u64) data2[4] << 32;
 	case 4:
-		h ^= (u64)data2[3] << 24;
+		h ^= (u64) data2[3] << 24;
 	case 3:
-		h ^= (u64)data2[2] << 16;
+		h ^= (u64) data2[2] << 16;
 	case 2:
-		h ^= (u64)data2[1] << 8;
+		h ^= (u64) data2[1] << 8;
 	case 1:
-		h ^= (u64)data2[0];
+		h ^= (u64) data2[0];
 		h *= m;
 	}
 
@@ -120,9 +120,9 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 camera
 	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
 
 	// Block center position
-	v3f blockpos(((float)blockpos_nodes.X + MAP_BLOCKSIZE / 2) * BS,
-			((float)blockpos_nodes.Y + MAP_BLOCKSIZE / 2) * BS,
-			((float)blockpos_nodes.Z + MAP_BLOCKSIZE / 2) * BS);
+	v3f blockpos(((float) blockpos_nodes.X + MAP_BLOCKSIZE / 2) * BS,
+			((float) blockpos_nodes.Y + MAP_BLOCKSIZE / 2) * BS,
+			((float) blockpos_nodes.Z + MAP_BLOCKSIZE / 2) * BS);
 
 	// Block position relative to camera
 	v3f blockpos_relative = blockpos - camera_pos;
@@ -197,8 +197,8 @@ void setPitchYawRollRad(core::matrix4 &m, const v3f &rot)
 	M[5] = c1 * c2;
 	M[6] = c1 * s2 * c3 + s1 * s3;
 
-	M[8] = c2 * s3;
-	M[9] = -s2;
+	M[8]  = c2 * s3;
+	M[9]  = -s2;
 	M[10] = c2 * c3;
 }
 
@@ -207,7 +207,7 @@ v3f getPitchYawRollRad(const core::matrix4 &m)
 	const f32 *M = m.pointer();
 
 	f64 a1 = atan2(M[1], M[5]);
-	f32 c2 = std::sqrt((f64)M[10] * M[10] + (f64)M[8] * M[8]);
+	f32 c2 = std::sqrt((f64) M[10] * M[10] + (f64) M[8] * M[8]);
 	f32 a2 = atan2f(-M[9], c2);
 	f64 c1 = cos(a1);
 	f64 s1 = sin(a1);

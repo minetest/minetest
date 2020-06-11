@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void ToolGroupCap::toJson(Json::Value &object) const
 {
 	object["maxlevel"] = maxlevel;
-	object["uses"] = uses;
+	object["uses"]	   = uses;
 
 	Json::Value times_object;
 	for (auto time : times)
@@ -94,18 +94,18 @@ void ToolCapabilities::deSerialize(std::istream &is)
 		throw SerializationError("unsupported ToolCapabilities version");
 
 	full_punch_interval = readF32(is);
-	max_drop_level = readS16(is);
+	max_drop_level		= readS16(is);
 	groupcaps.clear();
 	u32 groupcaps_size = readU32(is);
 	for (u32 i = 0; i < groupcaps_size; i++) {
 		std::string name = deSerializeString(is);
 		ToolGroupCap cap;
-		cap.uses = readS16(is);
-		cap.maxlevel = readS16(is);
+		cap.uses	   = readS16(is);
+		cap.maxlevel   = readS16(is);
 		u32 times_size = readU32(is);
 		for (u32 i = 0; i < times_size; i++) {
-			int level = readS16(is);
-			float time = readF32(is);
+			int level		 = readS16(is);
+			float time		 = readF32(is);
 			cap.times[level] = time;
 		}
 		groupcaps[name] = cap;
@@ -113,8 +113,8 @@ void ToolCapabilities::deSerialize(std::istream &is)
 
 	u32 damage_groups_size = readU32(is);
 	for (u32 i = 0; i < damage_groups_size; i++) {
-		std::string name = deSerializeString(is);
-		s16 rating = readS16(is);
+		std::string name   = deSerializeString(is);
+		s16 rating		   = readS16(is);
 		damageGroups[name] = rating;
 	}
 
@@ -126,8 +126,8 @@ void ToolCapabilities::serializeJson(std::ostream &os) const
 {
 	Json::Value root;
 	root["full_punch_interval"] = full_punch_interval;
-	root["max_drop_level"] = max_drop_level;
-	root["punch_attack_uses"] = punch_attack_uses;
+	root["max_drop_level"]		= max_drop_level;
+	root["punch_attack_uses"]	= punch_attack_uses;
 
 	Json::Value groupcaps_object;
 	for (const auto &groupcap : groupcaps) {
@@ -197,8 +197,8 @@ DigParams getDigParams(const ItemGroupList &groups, const ToolCapabilities *tp)
 
 	// Values to be returned (with a bit of conversion)
 	bool result_diggable = false;
-	float result_time = 0.0;
-	float result_wear = 0.0;
+	float result_time	 = 0.0;
+	float result_wear	 = 0.0;
 	std::string result_main_group;
 
 	int level = itemgroup_get(groups, "level");
@@ -210,16 +210,16 @@ DigParams getDigParams(const ItemGroupList &groups, const ToolCapabilities *tp)
 			continue;
 
 		const std::string &groupname = groupcap.first;
-		float time = 0;
-		int rating = itemgroup_get(groups, groupname);
-		bool time_exists = cap.getTime(rating, &time);
+		float time					 = 0;
+		int rating					 = itemgroup_get(groups, groupname);
+		bool time_exists			 = cap.getTime(rating, &time);
 		if (!time_exists)
 			continue;
 
 		if (leveldiff > 1)
 			time /= leveldiff;
 		if (!result_diggable || time < result_time) {
-			result_time = time;
+			result_time		= time;
 			result_diggable = true;
 			if (cap.uses != 0)
 				result_wear = 1.0 / cap.uses / pow(3.0, leveldiff);
@@ -236,7 +236,7 @@ DigParams getDigParams(const ItemGroupList &groups, const ToolCapabilities *tp)
 HitParams getHitParams(const ItemGroupList &armor_groups, const ToolCapabilities *tp,
 		float time_from_last_punch)
 {
-	s16 damage = 0;
+	s16 damage		  = 0;
 	float result_wear = 0.0f;
 	float punch_interval_multiplier =
 			rangelim(time_from_last_punch / tp->full_punch_interval, 0.0f, 1.0f);
@@ -279,9 +279,9 @@ PunchDamageResult getPunchDamage(const ItemGroupList &armor_groups,
 	PunchDamageResult result;
 	if (do_hit) {
 		HitParams hitparams = getHitParams(armor_groups, toolcap, time_from_last_punch);
-		result.did_punch = true;
-		result.wear = hitparams.wear;
-		result.damage = hitparams.hp;
+		result.did_punch	= true;
+		result.wear			= hitparams.wear;
+		result.damage		= hitparams.hp;
 	}
 
 	return result;
@@ -289,7 +289,7 @@ PunchDamageResult getPunchDamage(const ItemGroupList &armor_groups,
 
 f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand)
 {
-	float max_d = def_selected.range;
+	float max_d		 = def_selected.range;
 	float max_d_hand = def_hand.range;
 
 	if (max_d < 0 && max_d_hand >= 0)

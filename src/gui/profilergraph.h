@@ -40,10 +40,9 @@ private:
 		float min;
 		float max;
 		video::SColor color;
-		Meta(float initial = 0, video::SColor color = video::SColor(255, 255, 255, 255))
-			: min(initial), max(initial), color(color)
-		{
-		}
+		Meta(float initial = 0, video::SColor color = video::SColor(255, 255, 255, 255)) :
+			min(initial), max(initial), color(color)
+		{}
 	};
 	std::deque<Piece> m_log;
 

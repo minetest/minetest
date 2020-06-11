@@ -101,7 +101,7 @@ bool Metadata::setString(const std::string &name, const std::string &var)
 	}
 
 	m_stringvars[name] = var;
-	m_modified = true;
+	m_modified		   = true;
 	return true;
 }
 

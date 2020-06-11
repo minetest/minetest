@@ -25,10 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	ClientActiveObject
 */
 
-ClientActiveObject::ClientActiveObject(u16 id, Client *client, ClientEnvironment *env)
-	: ActiveObject(id), m_client(client), m_env(env)
-{
-}
+ClientActiveObject::ClientActiveObject(u16 id, Client *client, ClientEnvironment *env) :
+	ActiveObject(id), m_client(client), m_env(env)
+{}
 
 ClientActiveObject::~ClientActiveObject()
 {
@@ -42,12 +41,12 @@ ClientActiveObject *ClientActiveObject::create(
 	auto n = m_types.find(type);
 	if (n == m_types.end()) {
 		// If factory is not found, just return.
-		warningstream << "ClientActiveObject: No factory for type=" << (int)type
+		warningstream << "ClientActiveObject: No factory for type=" << (int) type
 					  << std::endl;
 		return NULL;
 	}
 
-	Factory f = n->second;
+	Factory f				   = n->second;
 	ClientActiveObject *object = (*f)(client, env);
 	return object;
 }

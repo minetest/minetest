@@ -54,10 +54,10 @@ public:
 	// Flags that can, or may, change during main game loop
 	struct Flags
 	{
-		bool show_chat = true;
-		bool show_hud = true;
-		bool show_minimap = false;
-		bool show_debug = true;
+		bool show_chat			 = true;
+		bool show_hud			 = true;
+		bool show_minimap		 = false;
+		bool show_debug			 = true;
 		bool show_profiler_graph = false;
 	};
 
@@ -76,7 +76,7 @@ public:
 
 	inline void showStatusText(const std::wstring &str)
 	{
-		m_statustext = str;
+		m_statustext	  = str;
 		m_statustext_time = 0.0f;
 	}
 	void showTranslatedStatusText(const char *str);
@@ -108,7 +108,7 @@ public:
 private:
 	Flags m_flags;
 
-	gui::IGUIStaticText *m_guitext = nullptr; // First line of debug text
+	gui::IGUIStaticText *m_guitext	= nullptr; // First line of debug text
 	gui::IGUIStaticText *m_guitext2 = nullptr; // Second line of debug text
 
 	gui::IGUIStaticText *m_guitext_info = nullptr; // At the middle of the screen
@@ -120,11 +120,11 @@ private:
 	video::SColor m_statustext_initial_color;
 
 	gui::IGUIStaticText *m_guitext_chat = nullptr; // Chat text
-	u32 m_recent_chat_count = 0;
+	u32 m_recent_chat_count				= 0;
 
 	gui::IGUIStaticText *m_guitext_profiler = nullptr; // Profiler text
-	u8 m_profiler_current_page = 0;
-	const u8 m_profiler_max_page = 3;
+	u8 m_profiler_current_page				= 0;
+	const u8 m_profiler_max_page			= 3;
 
 	// Default: "". If other than "": Empty show_formspec packets will only
 	// close the formspec when the formname matches

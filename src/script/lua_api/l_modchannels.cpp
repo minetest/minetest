@@ -50,10 +50,9 @@ void ModApiChannels::Initialize(lua_State *L, int top)
  * ModChannelRef
  */
 
-ModChannelRef::ModChannelRef(const std::string &modchannel)
-	: m_modchannel_name(modchannel)
-{
-}
+ModChannelRef::ModChannelRef(const std::string &modchannel) :
+	m_modchannel_name(modchannel)
+{}
 
 int ModChannelRef::l_leave(lua_State *L)
 {
@@ -64,7 +63,7 @@ int ModChannelRef::l_leave(lua_State *L)
 
 int ModChannelRef::l_send_all(lua_State *L)
 {
-	ModChannelRef *ref = checkobject(L, 1);
+	ModChannelRef *ref	= checkobject(L, 1);
 	ModChannel *channel = getobject(L, ref);
 	if (!channel || !channel->canWrite())
 		return 0;
@@ -78,7 +77,7 @@ int ModChannelRef::l_send_all(lua_State *L)
 
 int ModChannelRef::l_is_writeable(lua_State *L)
 {
-	ModChannelRef *ref = checkobject(L, 1);
+	ModChannelRef *ref	= checkobject(L, 1);
 	ModChannel *channel = getobject(L, ref);
 	if (!channel)
 		return 0;
@@ -113,15 +112,15 @@ void ModChannelRef::Register(lua_State *L)
 
 void ModChannelRef::create(lua_State *L, const std::string &channel)
 {
-	ModChannelRef *o = new ModChannelRef(channel);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	ModChannelRef *o								= new ModChannelRef(channel);
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 }
 
 int ModChannelRef::gc_object(lua_State *L)
 {
-	ModChannelRef *o = *(ModChannelRef **)(lua_touserdata(L, 1));
+	ModChannelRef *o = *(ModChannelRef **) (lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
@@ -134,7 +133,7 @@ ModChannelRef *ModChannelRef::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(ModChannelRef **)ud; // unbox pointer
+	return *(ModChannelRef **) ud; // unbox pointer
 }
 
 ModChannel *ModChannelRef::getobject(lua_State *L, ModChannelRef *ref)

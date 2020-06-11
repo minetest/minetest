@@ -125,7 +125,7 @@ public:
 	ReferenceCounted *release() noexcept
 	{
 		ReferenceCounted *object = value;
-		value = nullptr;
+		value					 = nullptr;
 		return object;
 	}
 

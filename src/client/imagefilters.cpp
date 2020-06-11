@@ -93,8 +93,8 @@ void imageScaleNNAA(
 	// Cache rectangle boundaries.
 	double sox = srcrect.UpperLeftCorner.X * 1.0;
 	double soy = srcrect.UpperLeftCorner.Y * 1.0;
-	double sw = srcrect.getWidth() * 1.0;
-	double sh = srcrect.getHeight() * 1.0;
+	double sw  = srcrect.getWidth() * 1.0;
+	double sh  = srcrect.getHeight() * 1.0;
 
 	// Walk each destination image pixel.
 	// Note: loop y around x for better cache locality.
@@ -120,10 +120,10 @@ void imageScaleNNAA(
 			// Total area, and integral of r, g, b values over that area,
 			// initialized to zero, to be summed up in next loops.
 			area = 0;
-			ra = 0;
-			ga = 0;
-			ba = 0;
-			aa = 0;
+			ra	 = 0;
+			ga	 = 0;
+			ba	 = 0;
+			aa	 = 0;
 
 			// Loop over the integral pixel positions described by those bounds.
 			for (sy = floor(minsy); sy < maxsy; sy++)
@@ -144,7 +144,7 @@ void imageScaleNNAA(
 
 					// Get source pixel and add it to totals, weighted
 					// by covered area and alpha.
-					pxl = src->getPixel((u32)sx, (u32)sy);
+					pxl = src->getPixel((u32) sx, (u32) sy);
 					area += pa;
 					ra += pa * pxl.getRed();
 					ga += pa * pxl.getGreen();

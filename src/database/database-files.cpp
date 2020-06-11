@@ -66,8 +66,8 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 	fs::CreateDir(m_savedir);
 
 	std::string savedir = m_savedir + DIR_DELIM;
-	std::string path = savedir + player->getName();
-	bool path_found = false;
+	std::string path	= savedir + player->getName();
+	bool path_found		= false;
 	RemotePlayer testplayer("", NULL);
 
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES && !path_found; i++) {
@@ -112,7 +112,7 @@ void PlayerDatabaseFiles::savePlayer(RemotePlayer *player)
 bool PlayerDatabaseFiles::removePlayer(const std::string &name)
 {
 	std::string players_path = m_savedir + DIR_DELIM;
-	std::string path = players_path + name;
+	std::string path		 = players_path + name;
 
 	RemotePlayer temp_player("", NULL);
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
@@ -138,7 +138,7 @@ bool PlayerDatabaseFiles::removePlayer(const std::string &name)
 bool PlayerDatabaseFiles::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 {
 	std::string players_path = m_savedir + DIR_DELIM;
-	std::string path = players_path + player->getName();
+	std::string path		 = players_path + player->getName();
 
 	const std::string player_to_load = player->getName();
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
@@ -172,7 +172,7 @@ void PlayerDatabaseFiles::listPlayers(std::vector<std::string> &res)
 			continue;
 
 		const std::string &filename = it->name;
-		std::string full_path = m_savedir + DIR_DELIM + filename;
+		std::string full_path		= m_savedir + DIR_DELIM + filename;
 		std::ifstream is(full_path.c_str(), std::ios_base::binary);
 		if (!is.good())
 			continue;
@@ -256,8 +256,8 @@ bool AuthDatabaseFiles::readAuthFile()
 		std::vector<std::string> parts = str_split(line, ':');
 		if (parts.size() < 3) // also: empty line at end
 			continue;
-		const std::string &name = parts[0];
-		const std::string &password = parts[1];
+		const std::string &name				= parts[0];
+		const std::string &password			= parts[1];
 		std::vector<std::string> privileges = str_split(parts[2], ',');
 		s64 last_login = parts.size() > 3 ? atol(parts[3].c_str()) : 0;
 

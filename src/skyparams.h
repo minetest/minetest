@@ -76,13 +76,13 @@ public:
 	{
 		SkyColor sky;
 		// Horizon colors
-		sky.day_horizon = video::SColor(255, 144, 211, 246);
-		sky.indoors = video::SColor(255, 100, 100, 100);
-		sky.dawn_horizon = video::SColor(255, 186, 193, 240);
+		sky.day_horizon	  = video::SColor(255, 144, 211, 246);
+		sky.indoors		  = video::SColor(255, 100, 100, 100);
+		sky.dawn_horizon  = video::SColor(255, 186, 193, 240);
 		sky.night_horizon = video::SColor(255, 64, 144, 255);
 		// Sky colors
-		sky.day_sky = video::SColor(255, 97, 181, 245);
-		sky.dawn_sky = video::SColor(255, 180, 186, 250);
+		sky.day_sky	  = video::SColor(255, 97, 181, 245);
+		sky.dawn_sky  = video::SColor(255, 180, 186, 250);
 		sky.night_sky = video::SColor(255, 0, 107, 255);
 		return sky;
 	}
@@ -90,12 +90,12 @@ public:
 	const SunParams getSunDefaults()
 	{
 		SunParams sun;
-		sun.visible = true;
+		sun.visible			= true;
 		sun.sunrise_visible = true;
-		sun.texture = "sun.png";
-		sun.tonemap = "sun_tonemap.png";
-		sun.sunrise = "sunrisebg.png";
-		sun.scale = 1;
+		sun.texture			= "sun.png";
+		sun.tonemap			= "sun_tonemap.png";
+		sun.sunrise			= "sunrisebg.png";
+		sun.scale			= 1;
 		return sun;
 	}
 
@@ -105,17 +105,17 @@ public:
 		moon.visible = true;
 		moon.texture = "moon.png";
 		moon.tonemap = "moon_tonemap.png";
-		moon.scale = 1;
+		moon.scale	 = 1;
 		return moon;
 	}
 
 	const StarParams getStarDefaults()
 	{
 		StarParams stars;
-		stars.visible = true;
-		stars.count = 1000;
+		stars.visible	= true;
+		stars.count		= 1000;
 		stars.starcolor = video::SColor(105, 235, 235, 255);
-		stars.scale = 1;
+		stars.scale		= 1;
 		return stars;
 	}
 };

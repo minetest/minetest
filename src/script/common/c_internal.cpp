@@ -123,7 +123,7 @@ void script_run_callbacks_f(
 	lua_insert(L, error_handler + 1);
 
 	// Insert mode after table
-	lua_pushnumber(L, (int)mode);
+	lua_pushnumber(L, (int) mode);
 	lua_insert(L, error_handler + 3);
 
 	// Stack now looks like this:
@@ -159,8 +159,8 @@ static void script_log(lua_State *L, const std::string &message, std::ostream &l
 void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
 {
 	static thread_local bool configured = false;
-	static thread_local bool do_log = false;
-	static thread_local bool do_error = false;
+	static thread_local bool do_log		= false;
+	static thread_local bool do_error	= false;
 
 	// Only read settings on first call
 	if (!configured) {
@@ -168,7 +168,7 @@ void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
 		if (value == "log") {
 			do_log = true;
 		} else if (value == "error") {
-			do_log = true;
+			do_log	 = true;
 			do_error = true;
 		}
 		configured = true;

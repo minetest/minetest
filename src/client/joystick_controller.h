@@ -55,8 +55,8 @@ struct JoystickButtonCmb : public JoystickCombination
 {
 	JoystickButtonCmb() = default;
 
-	JoystickButtonCmb(GameKeyType key, u32 filter_mask, u32 compare_mask)
-		: filter_mask(filter_mask), compare_mask(compare_mask)
+	JoystickButtonCmb(GameKeyType key, u32 filter_mask, u32 compare_mask) :
+		filter_mask(filter_mask), compare_mask(compare_mask)
 	{
 		this->key = key;
 	}
@@ -73,8 +73,8 @@ struct JoystickAxisCmb : public JoystickCombination
 {
 	JoystickAxisCmb() = default;
 
-	JoystickAxisCmb(GameKeyType key, u16 axis_to_compare, int direction, s16 thresh)
-		: axis_to_compare(axis_to_compare), direction(direction), thresh(thresh)
+	JoystickAxisCmb(GameKeyType key, u16 axis_to_compare, int direction, s16 thresh) :
+		axis_to_compare(axis_to_compare), direction(direction), thresh(thresh)
 	{
 		this->key = key;
 	}
@@ -111,7 +111,7 @@ public:
 
 	bool wasKeyDown(GameKeyType b)
 	{
-		bool r = m_past_pressed_keys[b];
+		bool r				   = m_past_pressed_keys[b];
 		m_past_pressed_keys[b] = false;
 		return r;
 	}
@@ -120,7 +120,7 @@ public:
 
 	bool wasKeyReleased(GameKeyType b)
 	{
-		bool r = m_past_released_keys[b];
+		bool r					= m_past_released_keys[b];
 		m_past_released_keys[b] = false;
 		return r;
 	}

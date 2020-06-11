@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 
 #if ENABLE_GLES
-#include "client/tile.h"
+	#include "client/tile.h"
 #endif
 
 
@@ -60,7 +60,7 @@ void TextDestGuiEngine::gotText(const std::wstring &text)
 MenuTextureSource::~MenuTextureSource()
 {
 	for (const std::string &texture_to_delete : m_to_delete) {
-		const char *tname = texture_to_delete.c_str();
+		const char *tname		 = texture_to_delete.c_str();
 		video::ITexture *texture = m_driver->getTexture(tname);
 		m_driver->removeTexture(texture);
 	}
@@ -86,7 +86,7 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 	if (!image)
 		return NULL;
 
-	image = Align2Npot2(image, m_driver);
+	image  = Align2Npot2(image, m_driver);
 	retval = m_driver->addTexture(name.c_str(), image);
 	image->drop();
 	return retval;
@@ -120,9 +120,10 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /** GUIEngine                                                                 */
 /******************************************************************************/
 GUIEngine::GUIEngine(JoystickController *joystick, gui::IGUIElement *parent,
-		IMenuManager *menumgr, MainMenuData *data, bool &kill)
-	: m_parent(parent), m_menumanager(menumgr),
-	  m_smgr(RenderingEngine::get_scene_manager()), m_data(data), m_kill(kill)
+		IMenuManager *menumgr, MainMenuData *data, bool &kill) :
+	m_parent(parent),
+	m_menumanager(menumgr), m_smgr(RenderingEngine::get_scene_manager()), m_data(data),
+	m_kill(kill)
 {
 	//initialize texture pointers
 	for (image_definition &texture : m_textures) {
@@ -235,11 +236,11 @@ void GUIEngine::run()
 	{
 		video::SColor fog_color;
 		video::E_FOG_TYPE fog_type = video::EFT_FOG_LINEAR;
-		f32 fog_start = 0;
-		f32 fog_end = 0;
-		f32 fog_density = 0;
-		bool fog_pixelfog = false;
-		bool fog_rangefog = false;
+		f32 fog_start			   = 0;
+		f32 fog_end				   = 0;
+		f32 fog_density			   = 0;
+		bool fog_pixelfog		   = false;
+		bool fog_rangefog		   = false;
 		driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density, fog_pixelfog,
 				fog_rangefog);
 
@@ -448,13 +449,14 @@ void GUIEngine::drawHeader(video::IVideoDriver *driver)
 	if (!texture)
 		return;
 
-	f32 mult = (((f32)screensize.Width / 2.0)) / ((f32)texture->getOriginalSize().Width);
+	f32 mult =
+			(((f32) screensize.Width / 2.0)) / ((f32) texture->getOriginalSize().Width);
 
-	v2s32 splashsize(((f32)texture->getOriginalSize().Width) * mult,
-			((f32)texture->getOriginalSize().Height) * mult);
+	v2s32 splashsize(((f32) texture->getOriginalSize().Width) * mult,
+			((f32) texture->getOriginalSize().Height) * mult);
 
 	// Don't draw the header if there isn't enough room
-	s32 free_space = (((s32)screensize.Height) - 320) / 2;
+	s32 free_space = (((s32) screensize.Height) - 320) / 2;
 
 	if (free_space > splashsize.Y) {
 		core::rect<s32> splashrect(0, 0, splashsize.X, splashsize.Y);
@@ -481,13 +483,13 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 	if (!texture)
 		return;
 
-	f32 mult = (((f32)screensize.Width)) / ((f32)texture->getOriginalSize().Width);
+	f32 mult = (((f32) screensize.Width)) / ((f32) texture->getOriginalSize().Width);
 
-	v2s32 footersize(((f32)texture->getOriginalSize().Width) * mult,
-			((f32)texture->getOriginalSize().Height) * mult);
+	v2s32 footersize(((f32) texture->getOriginalSize().Width) * mult,
+			((f32) texture->getOriginalSize().Height) * mult);
 
 	// Don't draw the footer if there isn't enough room
-	s32 free_space = (((s32)screensize.Height) - 320) / 2;
+	s32 free_space = (((s32) screensize.Height) - 320) / 2;
 
 	if (free_space > footersize.Y) {
 		core::rect<s32> rect(0, 0, footersize.X, footersize.Y);
@@ -517,7 +519,7 @@ bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
 	}
 
 	m_textures[layer].texture = driver->getTexture(texturepath.c_str());
-	m_textures[layer].tile = tile_image;
+	m_textures[layer].tile	  = tile_image;
 	m_textures[layer].minsize = minsize;
 
 	if (!m_textures[layer].texture) {
@@ -538,8 +540,8 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 
 	HTTPFetchRequest fetch_request;
 	HTTPFetchResult fetch_result;
-	fetch_request.url = url;
-	fetch_request.caller = HTTPFETCH_SYNC;
+	fetch_request.url	  = url;
+	fetch_request.caller  = HTTPFETCH_SYNC;
 	fetch_request.timeout = g_settings->getS32("curl_file_download_timeout");
 	httpfetch_sync(fetch_request, fetch_result);
 

@@ -45,11 +45,11 @@ struct table_key
 #define DEFINEKEY2(x, ch, lang) /* Irrlicht key with character */                        \
 	{ #x, irr::x, ch, lang },
 #define DEFINEKEY3(ch) /* single Irrlicht key (e.g. KEY_KEY_X) */                        \
-	{ "KEY_KEY_" TOSTRING(ch), irr::KEY_KEY_##ch, (wchar_t)*TOSTRING(ch), TOSTRING(ch) },
+	{ "KEY_KEY_" TOSTRING(ch), irr::KEY_KEY_##ch, (wchar_t) *TOSTRING(ch), TOSTRING(ch) },
 #define DEFINEKEY4(ch) /* single Irrlicht function key (e.g. KEY_F3) */                  \
 	{ "KEY_F" TOSTRING(ch), irr::KEY_F##ch, L'\0', "F" TOSTRING(ch) },
 #define DEFINEKEY5(ch) /* key without Irrlicht keycode */                                \
-	{ ch, irr::KEY_KEY_CODES_COUNT, (wchar_t)*ch, ch },
+	{ ch, irr::KEY_KEY_CODES_COUNT, (wchar_t) *ch, ch },
 
 #define N_(text) text
 
@@ -178,7 +178,7 @@ struct table_key lookup_keykey(irr::EKEY_CODE key)
 	}
 
 	std::ostringstream os;
-	os << "<Keycode " << (int)key << ">";
+	os << "<Keycode " << (int) key << ">";
 	throw UnknownKeycode(os.str().c_str());
 }
 
@@ -190,15 +190,15 @@ struct table_key lookup_keychar(wchar_t Char)
 	}
 
 	std::ostringstream os;
-	os << "<Char " << hex_encode((char *)&Char, sizeof(wchar_t)) << ">";
+	os << "<Char " << hex_encode((char *) &Char, sizeof(wchar_t)) << ">";
 	throw UnknownKeycode(os.str().c_str());
 }
 
 KeyPress::KeyPress(const char *name)
 {
 	if (strlen(name) == 0) {
-		Key = irr::KEY_KEY_CODES_COUNT;
-		Char = L'\0';
+		Key	   = irr::KEY_KEY_CODES_COUNT;
+		Char   = L'\0';
 		m_name = "";
 		return;
 	}
@@ -209,8 +209,8 @@ KeyPress::KeyPress(const char *name)
 		FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
 		try {
 			struct table_key k = lookup_keychar(Char);
-			m_name = k.Name;
-			Key = k.Key;
+			m_name			   = k.Name;
+			Key				   = k.Key;
 			return;
 		} catch (UnknownKeycode &e) {
 		};
@@ -219,15 +219,15 @@ KeyPress::KeyPress(const char *name)
 		m_name = name;
 		try {
 			struct table_key k = lookup_keyname(name);
-			Key = k.Key;
-			Char = k.Char;
+			Key				   = k.Key;
+			Char			   = k.Char;
 			return;
 		} catch (UnknownKeycode &e) {
 		};
 	}
 
 	// It's not a known key, complain and try to do something
-	Key = irr::KEY_KEY_CODES_COUNT;
+	Key			   = irr::KEY_KEY_CODES_COUNT;
 	int chars_read = mbtowc(&Char, name, 1);
 	FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
 	m_name = "";

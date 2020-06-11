@@ -51,19 +51,19 @@ Player::Player(const char *name, IItemDefManager *idef) : inventory(idef)
 
 	// Initialize movement settings at default values, so movement can work
 	// if the server fails to send them
-	movement_acceleration_default = 3 * BS;
-	movement_acceleration_air = 2 * BS;
-	movement_acceleration_fast = 10 * BS;
-	movement_speed_walk = 4 * BS;
-	movement_speed_crouch = 1.35 * BS;
-	movement_speed_fast = 20 * BS;
-	movement_speed_climb = 2 * BS;
-	movement_speed_jump = 6.5 * BS;
-	movement_liquid_fluidity = 1 * BS;
+	movement_acceleration_default	= 3 * BS;
+	movement_acceleration_air		= 2 * BS;
+	movement_acceleration_fast		= 10 * BS;
+	movement_speed_walk				= 4 * BS;
+	movement_speed_crouch			= 1.35 * BS;
+	movement_speed_fast				= 20 * BS;
+	movement_speed_climb			= 2 * BS;
+	movement_speed_jump				= 6.5 * BS;
+	movement_liquid_fluidity		= 1 * BS;
 	movement_liquid_fluidity_smooth = 0.5 * BS;
-	movement_liquid_sink = 10 * BS;
-	movement_gravity = 9.81 * BS;
-	local_animation_speed = 0.0;
+	movement_liquid_sink			= 10 * BS;
+	movement_gravity				= 9.81 * BS;
+	local_animation_speed			= 0.0;
 
 	hud_flags = HUD_FLAG_HOTBAR_VISIBLE | HUD_FLAG_HEALTHBAR_VISIBLE |
 			HUD_FLAG_CROSSHAIR_VISIBLE | HUD_FLAG_WIELDITEM_VISIBLE |
@@ -91,7 +91,7 @@ Player::~Player()
 void Player::setWieldIndex(u16 index)
 {
 	const InventoryList *mlist = inventory.getList("main");
-	m_wield_index = MYMIN(index, mlist ? mlist->getSize() : 0);
+	m_wield_index			   = MYMIN(index, mlist ? mlist->getSize() : 0);
 }
 
 ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
@@ -141,7 +141,7 @@ HudElement *Player::removeHud(u32 id)
 
 	HudElement *retval = NULL;
 	if (id < hud.size()) {
-		retval = hud[id];
+		retval	= hud[id];
 		hud[id] = NULL;
 	}
 	return retval;
@@ -159,17 +159,17 @@ void Player::clearHud()
 
 void PlayerSettings::readGlobalSettings()
 {
-	free_move = g_settings->getBool("free_move");
-	pitch_move = g_settings->getBool("pitch_move");
-	fast_move = g_settings->getBool("fast_move");
+	free_move		   = g_settings->getBool("free_move");
+	pitch_move		   = g_settings->getBool("pitch_move");
+	fast_move		   = g_settings->getBool("fast_move");
 	continuous_forward = g_settings->getBool("continuous_forward");
-	always_fly_fast = g_settings->getBool("always_fly_fast");
-	aux1_descends = g_settings->getBool("aux1_descends");
-	noclip = g_settings->getBool("noclip");
-	autojump = g_settings->getBool("autojump");
+	always_fly_fast	   = g_settings->getBool("always_fly_fast");
+	aux1_descends	   = g_settings->getBool("aux1_descends");
+	noclip			   = g_settings->getBool("noclip");
+	autojump		   = g_settings->getBool("autojump");
 }
 
 void Player::settingsChangedCallback(const std::string &name, void *data)
 {
-	((PlayerSettings *)data)->readGlobalSettings();
+	((PlayerSettings *) data)->readGlobalSettings();
 }

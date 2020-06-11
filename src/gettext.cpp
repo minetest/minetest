@@ -26,12 +26,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 #if USE_GETTEXT && defined(_MSC_VER)
-#include <windows.h>
-#include <map>
-#include <direct.h>
-#include "filesys.h"
+	#include <windows.h>
+	#include <map>
+	#include <direct.h>
+	#include "filesys.h"
 
-#define setlocale(category, localename) setlocale(category, MSVC_LocaleLookup(localename))
+	#define setlocale(category, localename)                                              \
+		setlocale(category, MSVC_LocaleLookup(localename))
 
 static std::map<std::wstring, std::wstring> glb_supported_locales;
 
@@ -59,7 +60,7 @@ BOOL CALLBACK UpdateLocaleCallback(LPTSTR pStr)
 		std::wstring languagename = buffer;
 
 		/* set both short and long variant */
-		glb_supported_locales[name] = languagename;
+		glb_supported_locales[name]					 = languagename;
 		glb_supported_locales[name + L"_" + country] = languagename;
 	}
 	return true;
@@ -80,7 +81,7 @@ const char *MSVC_LocaleLookup(const char *raw_shortname)
 
 	static std::string last_raw_value = "";
 	static std::string last_full_name = "";
-	static bool first_use = true;
+	static bool first_use			  = true;
 
 	if (last_raw_value == shortname) {
 		return last_full_name.c_str();
@@ -114,13 +115,13 @@ void init_gettext(
 #if USE_GETTEXT
 	// First, try to set user override environment
 	if (!configured_language.empty()) {
-#ifndef _WIN32
+	#ifndef _WIN32
 		// Add user specified locale to environment
 		setenv("LANGUAGE", configured_language.c_str(), 1);
 
 		// Reload locale with changed environment
 		setlocale(LC_ALL, "");
-#elif defined(_MSC_VER)
+	#elif defined(_MSC_VER)
 		std::string current_language;
 		const char *env_lang = getenv("LANGUAGE");
 		if (env_lang)
@@ -129,7 +130,7 @@ void init_gettext(
 		_putenv(("LANGUAGE=" + configured_language).c_str());
 		SetEnvironmentVariableA("LANGUAGE", configured_language.c_str());
 
-#ifndef SERVER
+		#ifndef SERVER
 		// Hack to force gettext to see the right environment
 		if (current_language != configured_language) {
 			errorstream << "MSVC localization workaround active.  "
@@ -155,10 +156,10 @@ void init_gettext(
 			if (app_name.compare(app_name.size() - 4, 4, ".exe") != 0)
 				app_name += ".exe";
 
-			STARTUPINFO startup_info = { 0 };
+			STARTUPINFO startup_info		 = { 0 };
 			PROCESS_INFORMATION process_info = { 0 };
 
-			bool success = CreateProcess(app_name.c_str(), (char *)ptr_parameters, NULL,
+			bool success = CreateProcess(app_name.c_str(), (char *) ptr_parameters, NULL,
 					NULL, false, DETACHED_PROCESS | CREATE_UNICODE_ENVIRONMENT, NULL,
 					NULL, &startup_info, &process_info);
 
@@ -182,35 +183,35 @@ void init_gettext(
 							<< std::endl;
 			}
 		}
-#else
+		#else
 		errorstream << "*******************************************************"
 					<< std::endl;
 		errorstream << "Can't apply locale workaround for server!" << std::endl;
 		errorstream << "Expect language to be broken!" << std::endl;
 		errorstream << "*******************************************************"
 					<< std::endl;
-#endif
+		#endif
 
 		setlocale(LC_ALL, configured_language.c_str());
-#else // Mingw
+	#else // Mingw
 		_putenv(("LANGUAGE=" + configured_language).c_str());
 		setlocale(LC_ALL, "");
-#endif // ifndef _WIN32
+	#endif // ifndef _WIN32
 	} else {
 		/* set current system default locale */
 		setlocale(LC_ALL, "");
 	}
 
-#if defined(_WIN32)
+	#if defined(_WIN32)
 	if (getenv("LANGUAGE") != 0) {
 		setlocale(LC_ALL, getenv("LANGUAGE"));
 	}
-#ifdef _MSC_VER
+		#ifdef _MSC_VER
 	else if (getenv("LANG") != 0) {
 		setlocale(LC_ALL, getenv("LANG"));
 	}
-#endif
-#endif
+		#endif
+	#endif
 
 	std::string name = lowercase(PROJECT_NAME);
 	infostream << "Gettext: domainname=\"" << name << "\" path=\"" << path << "\""
@@ -219,17 +220,17 @@ void init_gettext(
 	bindtextdomain(name.c_str(), path);
 	textdomain(name.c_str());
 
-#if defined(_WIN32)
+	#if defined(_WIN32)
 	// Set character encoding for Win32
-	char *tdomain = textdomain((char *)NULL);
+	char *tdomain = textdomain((char *) NULL);
 	if (tdomain == NULL) {
 		errorstream << "Warning: domainname parameter is the null pointer"
 					<< ", default domain is not set" << std::endl;
-		tdomain = (char *)"messages";
+		tdomain = (char *) "messages";
 	}
 	/* char *codeset = */ bind_textdomain_codeset(tdomain, "UTF-8");
-	//errorstream << "Gettext debug: domainname = " << tdomain << "; codeset = "<< codeset << std::endl;
-#endif // defined(_WIN32)
+		//errorstream << "Gettext debug: domainname = " << tdomain << "; codeset = "<< codeset << std::endl;
+	#endif // defined(_WIN32)
 
 #else
 	/* set current system default locale */

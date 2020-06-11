@@ -28,18 +28,18 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "porting.h"
 #include "gettext.h"
 
-const int ID_oldPassword = 256;
+const int ID_oldPassword  = 256;
 const int ID_newPassword1 = 257;
 const int ID_newPassword2 = 258;
-const int ID_change = 259;
-const int ID_message = 260;
-const int ID_cancel = 261;
+const int ID_change		  = 259;
+const int ID_message	  = 260;
+const int ID_cancel		  = 261;
 
 GUIPasswordChange::GUIPasswordChange(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
-		s32 id, IMenuManager *menumgr, Client *client, ISimpleTextureSource *tsrc)
-	: GUIModalMenu(env, parent, id, menumgr), m_client(client), m_tsrc(tsrc)
-{
-}
+		s32 id, IMenuManager *menumgr, Client *client, ISimpleTextureSource *tsrc) :
+	GUIModalMenu(env, parent, id, menumgr),
+	m_client(client), m_tsrc(tsrc)
+{}
 
 GUIPasswordChange::~GUIPasswordChange()
 {
@@ -74,9 +74,9 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		Calculate new sizes and positions
 	*/
 	const float s = m_gui_scale;
-	DesiredRect = core::rect<s32>(screensize.X / 2 - 580 * s / 2,
-			screensize.Y / 2 - 300 * s / 2, screensize.X / 2 + 580 * s / 2,
-			screensize.Y / 2 + 300 * s / 2);
+	DesiredRect	  = core::rect<s32>(screensize.X / 2 - 580 * s / 2,
+			  screensize.Y / 2 - 300 * s / 2, screensize.X / 2 + 580 * s / 2,
+			  screensize.Y / 2 + 300 * s / 2);
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();

@@ -34,7 +34,7 @@ bool ModChannel::registerConsumer(session_t peer_id)
 
 bool ModChannel::removeConsumer(session_t peer_id)
 {
-	bool found = false;
+	bool found			  = false;
 	auto peer_removal_fct = [peer_id, &found](u16 p) {
 		if (p == peer_id)
 			found = true;

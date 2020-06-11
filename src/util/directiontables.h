@@ -70,12 +70,12 @@ enum Direction6D
 	D6D,
 
 	// aliases
-	D6D_BACK = D6D_ZP,
-	D6D_TOP = D6D_YP,
-	D6D_RIGHT = D6D_XP,
-	D6D_FRONT = D6D_ZN,
+	D6D_BACK   = D6D_ZP,
+	D6D_TOP	   = D6D_YP,
+	D6D_RIGHT  = D6D_XP,
+	D6D_FRONT  = D6D_ZN,
 	D6D_BOTTOM = D6D_YN,
-	D6D_LEFT = D6D_XN,
+	D6D_LEFT   = D6D_XN,
 };
 
 /// Direction in the wallmounted format.

@@ -45,7 +45,7 @@ static TestNodeResolver g_test_instance;
 
 void TestNodeResolver::runTests(IGameDef *gamedef)
 {
-	NodeDefManager *ndef = (NodeDefManager *)gamedef->getNodeDefManager();
+	NodeDefManager *ndef = (NodeDefManager *) gamedef->getNodeDefManager();
 
 	ndef->resetNodeResolveState();
 	TEST(testNodeResolving, ndef);

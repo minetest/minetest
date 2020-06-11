@@ -43,14 +43,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
 
-Camera::Camera(MapDrawControl &draw_control, Client *client)
-	: m_draw_control(draw_control), m_client(client)
+Camera::Camera(MapDrawControl &draw_control, Client *client) :
+	m_draw_control(draw_control), m_client(client)
 {
 	scene::ISceneManager *smgr = RenderingEngine::get_scene_manager();
 	// note: making the camera node a child of the player node
 	// would lead to unexpected behaviour, so we don't do that.
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
-	m_headnode = smgr->addEmptySceneNode(m_playernode);
+	m_headnode	 = smgr->addEmptySceneNode(m_playernode);
 	m_cameranode = smgr->addCameraSceneNode(smgr->getRootSceneNode());
 	m_cameranode->bindTargetAndRotation(true);
 
@@ -75,7 +75,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client)
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	// 45 degrees is the lowest FOV that doesn't cause the server to treat this
 	// as a zoom FOV and load world beyond the set server limits.
-	m_cache_fov = std::fmax(g_settings->getFloat("fov"), 45.0f);
+	m_cache_fov	  = std::fmax(g_settings->getFloat("fov"), 45.0f);
 	m_arm_inertia = g_settings->getBool("arm_inertia");
 	m_nametags.clear();
 }
@@ -113,10 +113,10 @@ void Camera::notifyFovChange()
 	 * of overriding.
 	 */
 	if (spec.fov == 0.0f) {
-		m_server_sent_fov = false;
+		m_server_sent_fov	 = false;
 		m_target_fov_degrees = m_cache_fov;
 	} else {
-		m_server_sent_fov = true;
+		m_server_sent_fov	 = true;
 		m_target_fov_degrees = spec.is_multiplier ? m_cache_fov * spec.fov : spec.fov;
 	}
 
@@ -126,7 +126,7 @@ void Camera::notifyFovChange()
 	// If FOV smooth transition is active, initialize required variables
 	if (m_fov_transition_active) {
 		m_transition_time = spec.transition_time;
-		m_fov_diff = m_target_fov_degrees - m_old_fov_degrees;
+		m_fov_diff		  = m_target_fov_degrees - m_old_fov_degrees;
 	}
 }
 
@@ -167,7 +167,7 @@ void Camera::step(f32 dtime)
 			m_view_bobbing_fall = -1; // Mark the effect as finished
 	}
 
-	bool was_under_zero = m_wield_change_timer < 0;
+	bool was_under_zero	 = m_wield_change_timer < 0;
 	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
 
 	if (m_wield_change_timer >= 0 && was_under_zero)
@@ -196,11 +196,11 @@ void Camera::step(f32 dtime)
 
 			if (m_view_bobbing_anim <= 0 || m_view_bobbing_anim >= 1 ||
 					fabs(m_view_bobbing_anim - 0.5) < 0.01) {
-				m_view_bobbing_anim = 0;
+				m_view_bobbing_anim	 = 0;
 				m_view_bobbing_state = 0;
 			}
 		} else {
-			float was = m_view_bobbing_anim;
+			float was			= m_view_bobbing_anim;
 			m_view_bobbing_anim = my_modf(m_view_bobbing_anim + offset);
 			bool step = (was == 0 || (was < 0.5f && m_view_bobbing_anim >= 0.5f) ||
 					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
@@ -212,11 +212,11 @@ void Camera::step(f32 dtime)
 	}
 
 	if (m_digging_button != -1) {
-		f32 offset = dtime * 3.5f;
+		f32 offset				 = dtime * 3.5f;
 		float m_digging_anim_was = m_digging_anim;
 		m_digging_anim += offset;
 		if (m_digging_anim >= 1) {
-			m_digging_anim = 0;
+			m_digging_anim	 = 0;
 			m_digging_button = -1;
 		}
 		float lim = 0.15;
@@ -259,8 +259,8 @@ void Camera::addArmInertia(f32 player_yaw)
 			std::fabs(rangelim(m_last_cam_pos.X - player_yaw, -100.0f, 100.0f) / 0.016f) *
 			0.01f;
 	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / 0.016f);
-	f32 gap_X = std::fabs(WIELDMESH_OFFSET_X - m_wieldmesh_offset.X);
-	f32 gap_Y = std::fabs(WIELDMESH_OFFSET_Y - m_wieldmesh_offset.Y);
+	f32 gap_X	= std::fabs(WIELDMESH_OFFSET_X - m_wieldmesh_offset.X);
+	f32 gap_Y	= std::fabs(WIELDMESH_OFFSET_Y - m_wieldmesh_offset.Y);
 
 	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
 		/*
@@ -334,7 +334,7 @@ void Camera::update(
 	// Get player position
 	// Smooth the movement when walking up stairs
 	v3f old_player_position = m_playernode->getPosition();
-	v3f player_position = player->getPosition();
+	v3f player_position		= player->getPosition();
 
 	// This is worse than `LocalPlayer::getPosition()` but
 	// mods expect the player head to be at the parent's position
@@ -343,9 +343,9 @@ void Camera::update(
 		player_position = player->getParent()->getPosition();
 
 	if (player->touching_ground && player_position.Y > old_player_position.Y) {
-		f32 oldy = old_player_position.Y;
-		f32 newy = player_position.Y;
-		f32 t = std::exp(-23 * frametime);
+		f32 oldy		  = old_player_position.Y;
+		f32 newy		  = player_position.Y;
+		f32 t			  = std::exp(-23 * frametime);
 		player_position.Y = oldy * t + newy * (1 - t);
 	}
 
@@ -393,18 +393,18 @@ void Camera::update(
 	}
 
 	// Compute relative camera position and target
-	v3f rel_cam_pos = v3f(0, 0, 0);
+	v3f rel_cam_pos	   = v3f(0, 0, 0);
 	v3f rel_cam_target = v3f(0, 0, 1);
-	v3f rel_cam_up = v3f(0, 1, 0);
+	v3f rel_cam_up	   = v3f(0, 1, 0);
 
 	if (m_cache_view_bobbing_amount != 0.0f && m_view_bobbing_anim != 0.0f &&
 			m_camera_mode < CAMERA_MODE_THIRD) {
 		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
-		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
+		f32 bobdir	= (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
 #if 1
 		f32 bobknob = 1.2;
-		f32 bobtmp = sin(pow(bobfrac, bobknob) * M_PI);
+		f32 bobtmp	= sin(pow(bobfrac, bobknob) * M_PI);
 		//f32 bobtmp2 = cos(pow(bobfrac, bobknob) * M_PI);
 
 		v3f bobvec = v3f(0.3 * bobdir * sin(bobfrac * M_PI), -0.28 * bobtmp * bobtmp, 0.);
@@ -424,8 +424,8 @@ void Camera::update(
 #else
 		f32 angle_deg = 1 * bobdir * sin(bobfrac * M_PI);
 		f32 angle_rad = angle_deg * M_PI / 180;
-		f32 r = 0.05;
-		v3f off = v3f(r * sin(angle_rad), r * (cos(angle_rad) - 1), 0);
+		f32 r		  = 0.05;
+		v3f off		  = v3f(r * sin(angle_rad), r * (cos(angle_rad) - 1), 0);
 		rel_cam_pos += off;
 		//rel_cam_target += off;
 		rel_cam_up.rotateXYBy(angle_deg);
@@ -512,7 +512,7 @@ void Camera::update(
 		if ((m_fov_diff > 0.0f && m_curr_fov_degrees >= m_target_fov_degrees) ||
 				(m_fov_diff < 0.0f && m_curr_fov_degrees <= m_target_fov_degrees)) {
 			m_fov_transition_active = false;
-			m_curr_fov_degrees = m_target_fov_degrees;
+			m_curr_fov_degrees		= m_target_fov_degrees;
 		}
 	} else if (m_server_sent_fov) {
 		// Instantaneous FOV change
@@ -528,8 +528,8 @@ void Camera::update(
 
 	// FOV and aspect ratio
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
-	m_aspect = (f32)window_size.X / (f32)window_size.Y;
-	m_fov_y = m_curr_fov_degrees * M_PI / 180.0;
+	m_aspect				 = (f32) window_size.X / (f32) window_size.Y;
+	m_fov_y					 = m_curr_fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
 	m_fov_y *= core::clamp(sqrt(16. / 10. / m_aspect), 1.0, 1.4);
 	m_fov_x = 2 * atan(m_aspect * tan(0.5 * m_fov_y));
@@ -589,11 +589,11 @@ void Camera::update(
 	// If the player is walking, swimming, or climbing,
 	// view bobbing is enabled and free_move is off,
 	// start (or continue) the view bobbing animation.
-	const v3f &speed = player->getSpeed();
+	const v3f &speed	   = player->getSpeed();
 	const bool movement_XZ = hypot(speed.X, speed.Z) > BS;
-	const bool movement_Y = fabs(speed.Y) > BS;
+	const bool movement_Y  = fabs(speed.Y) > BS;
 
-	const bool walking = movement_XZ && player->touching_ground;
+	const bool walking	= movement_XZ && player->touching_ground;
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
 	const bool climbing = movement_Y && player->is_climbing;
 	if ((walking || swimming || climbing) &&

@@ -94,7 +94,7 @@ public:
 	}
 	void overrideColors(const video::SColor &bgcolor, const video::SColor &skycolor)
 	{
-		m_bgcolor = bgcolor;
+		m_bgcolor  = bgcolor;
 		m_skycolor = skycolor;
 	}
 	void setSkyColors(const SkyColor &sky_color);
@@ -145,19 +145,19 @@ private:
 	bool m_visible = true;
 	// Used when m_visible=false
 	video::SColor m_fallback_bg_color = video::SColor(255, 255, 255, 255);
-	bool m_first_update = true;
+	bool m_first_update				  = true;
 	float m_time_of_day;
 	float m_time_brightness;
 	bool m_sunlight_seen;
-	float m_brightness = 0.5f;
+	float m_brightness		 = 0.5f;
 	float m_cloud_brightness = 0.5f;
 	bool m_clouds_visible; // Whether clouds are disabled due to player underground
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
 	bool m_in_clouds = true; // Prevent duplicating bools to remember old values
 
-	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
-	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	video::SColorf m_bgcolor_bright_f	 = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	video::SColorf m_skycolor_bright_f	 = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_cloudcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColor m_bgcolor;
 	video::SColor m_skycolor;

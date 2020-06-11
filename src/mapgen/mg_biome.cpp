@@ -39,17 +39,17 @@ BiomeManager::BiomeManager(Server *server) : ObjDefManager(server, OBJDEF_BIOME)
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
 
-	b->name = "default";
-	b->flags = 0;
-	b->depth_top = 0;
-	b->depth_filler = -MAX_MAP_GENERATION_LIMIT;
+	b->name			   = "default";
+	b->flags		   = 0;
+	b->depth_top	   = 0;
+	b->depth_filler	   = -MAX_MAP_GENERATION_LIMIT;
 	b->depth_water_top = 0;
-	b->depth_riverbed = 0;
-	b->min_pos = v3s16(-MAX_MAP_GENERATION_LIMIT, -MAX_MAP_GENERATION_LIMIT,
+	b->depth_riverbed  = 0;
+	b->min_pos		   = v3s16(-MAX_MAP_GENERATION_LIMIT, -MAX_MAP_GENERATION_LIMIT,
 			-MAX_MAP_GENERATION_LIMIT);
-	b->max_pos = v3s16(
+	b->max_pos		   = v3s16(
 			MAX_MAP_GENERATION_LIMIT, MAX_MAP_GENERATION_LIMIT, MAX_MAP_GENERATION_LIMIT);
-	b->heat_point = 0.0;
+	b->heat_point	  = 0.0;
 	b->humidity_point = 0.0;
 	b->vertical_blend = 0;
 
@@ -79,13 +79,13 @@ void BiomeManager::clear()
 	// Remove all dangling references in Decorations
 	DecorationManager *decomgr = emerge->getWritableDecorationManager();
 	for (size_t i = 0; i != decomgr->getNumObjects(); i++) {
-		Decoration *deco = (Decoration *)decomgr->getRaw(i);
+		Decoration *deco = (Decoration *) decomgr->getRaw(i);
 		deco->biomes.clear();
 	}
 
 	// Don't delete the first biome
 	for (size_t i = 1; i < m_objects.size(); i++)
-		delete (Biome *)m_objects[i];
+		delete (Biome *) m_objects[i];
 
 	m_objects.resize(1);
 }
@@ -123,29 +123,29 @@ float BiomeManager::getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity
 const Biome *BiomeManager::getBiomeFromNoiseOriginal(
 		float heat, float humidity, v3s16 pos) const
 {
-	Biome *biome_closest = nullptr;
+	Biome *biome_closest	   = nullptr;
 	Biome *biome_closest_blend = nullptr;
-	float dist_min = FLT_MAX;
-	float dist_min_blend = FLT_MAX;
+	float dist_min			   = FLT_MAX;
+	float dist_min_blend	   = FLT_MAX;
 
 	for (size_t i = 1; i < getNumObjects(); i++) {
-		Biome *b = (Biome *)getRaw(i);
+		Biome *b = (Biome *) getRaw(i);
 		if (!b || pos.Y < b->min_pos.Y || pos.Y > b->max_pos.Y + b->vertical_blend ||
 				pos.X < b->min_pos.X || pos.X > b->max_pos.X || pos.Z < b->min_pos.Z ||
 				pos.Z > b->max_pos.Z)
 			continue;
 
-		float d_heat = heat - b->heat_point;
+		float d_heat	 = heat - b->heat_point;
 		float d_humidity = humidity - b->humidity_point;
-		float dist = (d_heat * d_heat) + (d_humidity * d_humidity);
+		float dist		 = (d_heat * d_heat) + (d_humidity * d_humidity);
 
 		if (pos.Y <= b->max_pos.Y) { // Within y limits of biome b
 			if (dist < dist_min) {
-				dist_min = dist;
+				dist_min	  = dist;
 				biome_closest = b;
 			}
 		} else if (dist < dist_min_blend) { // Blend area above biome b
-			dist_min_blend = dist;
+			dist_min_blend		= dist;
 			biome_closest_blend = b;
 		}
 	}
@@ -158,7 +158,7 @@ const Biome *BiomeManager::getBiomeFromNoiseOriginal(
 					pos.Y - biome_closest_blend->max_pos.Y)
 		return biome_closest_blend;
 
-	return (biome_closest) ? biome_closest : (Biome *)getRaw(BIOME_NONE);
+	return (biome_closest) ? biome_closest : (Biome *) getRaw(BIOME_NONE);
 }
 
 
@@ -187,18 +187,18 @@ void BiomeParamsOriginal::writeParams(Settings *settings) const
 BiomeGenOriginal::BiomeGenOriginal(
 		BiomeManager *biomemgr, BiomeParamsOriginal *params, v3s16 chunksize)
 {
-	m_bmgr = biomemgr;
+	m_bmgr	 = biomemgr;
 	m_params = params;
-	m_csize = chunksize;
+	m_csize	 = chunksize;
 
-	noise_heat = new Noise(&params->np_heat, params->seed, m_csize.X, m_csize.Z);
+	noise_heat	   = new Noise(&params->np_heat, params->seed, m_csize.X, m_csize.Z);
 	noise_humidity = new Noise(&params->np_humidity, params->seed, m_csize.X, m_csize.Z);
 	noise_heat_blend =
 			new Noise(&params->np_heat_blend, params->seed, m_csize.X, m_csize.Z);
 	noise_humidity_blend =
 			new Noise(&params->np_humidity_blend, params->seed, m_csize.X, m_csize.Z);
 
-	heatmap = noise_heat->result;
+	heatmap	 = noise_heat->result;
 	humidmap = noise_humidity->result;
 
 	biomemap = new biome_t[m_csize.X * m_csize.Z];
@@ -277,29 +277,29 @@ Biome *BiomeGenOriginal::getBiomeAtIndex(size_t index, v3s16 pos) const
 
 Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 pos) const
 {
-	Biome *biome_closest = nullptr;
+	Biome *biome_closest	   = nullptr;
 	Biome *biome_closest_blend = nullptr;
-	float dist_min = FLT_MAX;
-	float dist_min_blend = FLT_MAX;
+	float dist_min			   = FLT_MAX;
+	float dist_min_blend	   = FLT_MAX;
 
 	for (size_t i = 1; i < m_bmgr->getNumObjects(); i++) {
-		Biome *b = (Biome *)m_bmgr->getRaw(i);
+		Biome *b = (Biome *) m_bmgr->getRaw(i);
 		if (!b || pos.Y < b->min_pos.Y || pos.Y > b->max_pos.Y + b->vertical_blend ||
 				pos.X < b->min_pos.X || pos.X > b->max_pos.X || pos.Z < b->min_pos.Z ||
 				pos.Z > b->max_pos.Z)
 			continue;
 
-		float d_heat = heat - b->heat_point;
+		float d_heat	 = heat - b->heat_point;
 		float d_humidity = humidity - b->humidity_point;
-		float dist = (d_heat * d_heat) + (d_humidity * d_humidity);
+		float dist		 = (d_heat * d_heat) + (d_humidity * d_humidity);
 
 		if (pos.Y <= b->max_pos.Y) { // Within y limits of biome b
 			if (dist < dist_min) {
-				dist_min = dist;
+				dist_min	  = dist;
 				biome_closest = b;
 			}
 		} else if (dist < dist_min_blend) { // Blend area above biome b
-			dist_min_blend = dist;
+			dist_min_blend		= dist;
 			biome_closest_blend = b;
 		}
 	}
@@ -315,7 +315,7 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 					pos.Y - biome_closest_blend->max_pos.Y)
 		return biome_closest_blend;
 
-	return (biome_closest) ? biome_closest : (Biome *)m_bmgr->getRaw(BIOME_NONE);
+	return (biome_closest) ? biome_closest : (Biome *) m_bmgr->getRaw(BIOME_NONE);
 }
 
 
@@ -329,27 +329,27 @@ ObjDef *Biome::clone() const
 
 	obj->flags = flags;
 
-	obj->c_top = c_top;
-	obj->c_filler = c_filler;
-	obj->c_stone = c_stone;
-	obj->c_water_top = c_water_top;
-	obj->c_water = c_water;
-	obj->c_river_water = c_river_water;
-	obj->c_riverbed = c_riverbed;
-	obj->c_dust = c_dust;
-	obj->c_cave_liquid = c_cave_liquid;
-	obj->c_dungeon = c_dungeon;
-	obj->c_dungeon_alt = c_dungeon_alt;
+	obj->c_top			 = c_top;
+	obj->c_filler		 = c_filler;
+	obj->c_stone		 = c_stone;
+	obj->c_water_top	 = c_water_top;
+	obj->c_water		 = c_water;
+	obj->c_river_water	 = c_river_water;
+	obj->c_riverbed		 = c_riverbed;
+	obj->c_dust			 = c_dust;
+	obj->c_cave_liquid	 = c_cave_liquid;
+	obj->c_dungeon		 = c_dungeon;
+	obj->c_dungeon_alt	 = c_dungeon_alt;
 	obj->c_dungeon_stair = c_dungeon_stair;
 
-	obj->depth_top = depth_top;
-	obj->depth_filler = depth_filler;
+	obj->depth_top		 = depth_top;
+	obj->depth_filler	 = depth_filler;
 	obj->depth_water_top = depth_water_top;
-	obj->depth_riverbed = depth_riverbed;
+	obj->depth_riverbed	 = depth_riverbed;
 
-	obj->min_pos = min_pos;
-	obj->max_pos = max_pos;
-	obj->heat_point = heat_point;
+	obj->min_pos		= min_pos;
+	obj->max_pos		= max_pos;
+	obj->heat_point		= heat_point;
 	obj->humidity_point = humidity_point;
 	obj->vertical_blend = vertical_blend;
 

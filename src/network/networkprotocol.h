@@ -287,7 +287,7 @@ enum ToClientCommand
 	TOCLIENT_INIT_LEGACY = 0x10, // Obsolete
 
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
-	TOCLIENT_ADDNODE = 0x21,
+	TOCLIENT_ADDNODE   = 0x21,
 	/*
 		v3s16 position
 		serialized mapnode
@@ -295,10 +295,10 @@ enum ToClientCommand
 	*/
 	TOCLIENT_REMOVENODE = 0x22,
 
-	TOCLIENT_PLAYERPOS = 0x23, // Obsolete
-	TOCLIENT_PLAYERINFO = 0x24, // Obsolete
+	TOCLIENT_PLAYERPOS			 = 0x23, // Obsolete
+	TOCLIENT_PLAYERINFO			 = 0x24, // Obsolete
 	TOCLIENT_OPT_BLOCK_NOT_FOUND = 0x25, // Obsolete
-	TOCLIENT_SECTORMETA = 0x26, // Obsolete
+	TOCLIENT_SECTORMETA			 = 0x26, // Obsolete
 
 	TOCLIENT_INVENTORY = 0x27,
 	/*
@@ -801,8 +801,8 @@ enum ToServerCommand
 	 	std::string message
 	 */
 
-	TOSERVER_GETBLOCK = 0x20, // Obsolete
-	TOSERVER_ADDNODE = 0x21, // Obsolete
+	TOSERVER_GETBLOCK	= 0x20, // Obsolete
+	TOSERVER_ADDNODE	= 0x21, // Obsolete
 	TOSERVER_REMOVENODE = 0x22, // Obsolete
 
 	TOSERVER_PLAYERPOS = 0x23,
@@ -836,10 +836,10 @@ enum ToServerCommand
 	*/
 
 	TOSERVER_ADDNODE_FROM_INVENTORY = 0x26, // Obsolete
-	TOSERVER_CLICK_OBJECT = 0x27, // Obsolete
-	TOSERVER_GROUND_ACTION = 0x28, // Obsolete
-	TOSERVER_RELEASE = 0x29, // Obsolete
-	TOSERVER_SIGNTEXT = 0x30, // Obsolete
+	TOSERVER_CLICK_OBJECT			= 0x27, // Obsolete
+	TOSERVER_GROUND_ACTION			= 0x28, // Obsolete
+	TOSERVER_RELEASE				= 0x29, // Obsolete
+	TOSERVER_SIGNTEXT				= 0x30, // Obsolete
 
 	TOSERVER_INVENTORY_ACTION = 0x31,
 	/*
@@ -852,7 +852,7 @@ enum ToServerCommand
 		wstring message
 	*/
 
-	TOSERVER_SIGNNODETEXT = 0x33, // Obsolete
+	TOSERVER_SIGNNODETEXT		= 0x33, // Obsolete
 	TOSERVER_CLICK_ACTIVEOBJECT = 0x34, // Obsolete
 
 	TOSERVER_DAMAGE = 0x35,
@@ -931,7 +931,7 @@ enum ToServerCommand
 	*/
 
 	TOSERVER_RECEIVED_MEDIA = 0x41, // Obsolete
-	TOSERVER_BREATH = 0x42, // Obsolete
+	TOSERVER_BREATH			= 0x42, // Obsolete
 
 	TOSERVER_CLIENT_READY = 0x43,
 	/*
@@ -1039,12 +1039,12 @@ enum CSMRestrictionFlags : u64
 	// When those are complete, this should return to only being a restriction on the
 	// loading of client mods.
 	CSM_RF_LOAD_CLIENT_MODS = 0x00000001, // Don't load client-provided mods or 'builtin'
-	CSM_RF_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
-	CSM_RF_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
-	CSM_RF_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
-	CSM_RF_LOOKUP_NODES = 0x00000010, // Limit node lookups
-	CSM_RF_READ_PLAYERINFO = 0x00000020, // Disable player info lookups
-	CSM_RF_ALL = 0xFFFFFFFF,
+	CSM_RF_CHAT_MESSAGES	= 0x00000002, // Disable chat message sending from CSM
+	CSM_RF_READ_ITEMDEFS	= 0x00000004, // Disable itemdef lookups
+	CSM_RF_READ_NODEDEFS	= 0x00000008, // Disable nodedef lookups
+	CSM_RF_LOOKUP_NODES		= 0x00000010, // Limit node lookups
+	CSM_RF_READ_PLAYERINFO	= 0x00000020, // Disable player info lookups
+	CSM_RF_ALL				= 0xFFFFFFFF,
 };
 
 enum InteractAction : u8

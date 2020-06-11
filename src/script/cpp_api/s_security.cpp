@@ -260,7 +260,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"table",
 		"math",
 	};
-	static const char *os_whitelist[] = { "clock", "date", "difftime", "time" };
+	static const char *os_whitelist[]	 = { "clock", "date", "difftime", "time" };
 	static const char *debug_whitelist[] = { "getinfo", "traceback" };
 
 #if USE_LUAJIT
@@ -280,7 +280,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 	m_secure = true;
 
 	lua_State *L = getStack();
-	int thread = getThread(L);
+	int thread	 = getThread(L);
 
 	// create an empty environment
 	createEmptyEnv(L);
@@ -388,7 +388,7 @@ bool ScriptApiSecurity::safeLoadFile(
 	if (!display_name)
 		display_name = path;
 	if (!path) {
-		fp = stdin;
+		fp		   = stdin;
 		chunk_name = const_cast<char *>("=stdin");
 	} else {
 		fp = fopen(path, "rb");
@@ -396,14 +396,14 @@ bool ScriptApiSecurity::safeLoadFile(
 			lua_pushfstring(L, "%s: %s", path, strerror(errno));
 			return false;
 		}
-		chunk_name = new char[strlen(display_name) + 2];
+		chunk_name	  = new char[strlen(display_name) + 2];
 		chunk_name[0] = '@';
 		chunk_name[1] = '\0';
 		strcat(chunk_name, display_name);
 	}
 
 	size_t start = 0;
-	int c = std::getc(fp);
+	int c		 = std::getc(fp);
 	if (c == '#') {
 		// Skip the first line
 		while ((c = std::getc(fp)) != EOF && c != '\n') {
@@ -501,9 +501,9 @@ bool ScriptApiSecurity::checkPath(
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 	ScriptApiBase *script;
 #if INDIRECT_SCRIPTAPI_RIDX
-	script = (ScriptApiBase *)*(void **)(lua_touserdata(L, -1));
+	script = (ScriptApiBase *) *(void **) (lua_touserdata(L, -1));
 #else
-	script = (ScriptApiBase *)lua_touserdata(L, -1);
+	script = (ScriptApiBase *) lua_touserdata(L, -1);
 #endif
 	lua_pop(L, 1);
 	const IGameDef *gamedef = script->getGameDef();
@@ -632,12 +632,12 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 {
 #ifndef SERVER
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-	ScriptApiBase *script = (ScriptApiBase *)lua_touserdata(L, -1);
+	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
 	lua_pop(L, 1);
 
 	// Client implementation
 	if (script->getType() == ScriptingType::Client) {
-		std::string path = readParam<std::string>(L, 1);
+		std::string path			= readParam<std::string>(L, 1);
 		const std::string *contents = script->getClient()->getModFile(path);
 		if (!contents) {
 			std::string error_msg = "Coudln't find script called: " + path;
@@ -714,7 +714,7 @@ int ScriptApiSecurity::sl_io_open(lua_State *L)
 	if (with_mode) {
 		luaL_checktype(L, 2, LUA_TSTRING);
 		const char *mode = lua_tostring(L, 2);
-		write_requested = strchr(mode, 'w') != NULL || strchr(mode, '+') != NULL ||
+		write_requested	 = strchr(mode, 'w') != NULL || strchr(mode, '+') != NULL ||
 				strchr(mode, 'a') != NULL;
 	}
 	CHECK_SECURE_PATH_INTERNAL(L, path, write_requested, NULL);

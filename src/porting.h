@@ -24,10 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #ifdef _WIN32
-#ifdef _WIN32_WINNT
-#undef _WIN32_WINNT
-#endif
-#define _WIN32_WINNT 0x0501 // We need to do this before any other headers
+	#ifdef _WIN32_WINNT
+		#undef _WIN32_WINNT
+	#endif
+	#define _WIN32_WINNT 0x0501 // We need to do this before any other headers
 // because those might include sdkddkver.h which defines _WIN32_WINNT if not already set
 #endif
 
@@ -41,9 +41,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 
 #ifdef _MSC_VER
-#define SWPRINTF_CHARSTRING L"%S"
+	#define SWPRINTF_CHARSTRING L"%S"
 #else
-#define SWPRINTF_CHARSTRING L"%s"
+	#define SWPRINTF_CHARSTRING L"%s"
 #endif
 
 //currently not needed
@@ -51,38 +51,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
 
 #ifdef _WIN32
-#include <windows.h>
+	#include <windows.h>
 
-#define sleep_ms(x) Sleep(x)
+	#define sleep_ms(x) Sleep(x)
 #else
-#include <unistd.h>
-#include <cstdint> //for uintptr_t
+	#include <unistd.h>
+	#include <cstdint> //for uintptr_t
 
-// Use standard Posix macro for Linux
-#if (defined(linux) || defined(__linux)) && !defined(__linux__)
-#define __linux__
-#endif
-#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
-#define _GNU_SOURCE
-#endif
+	// Use standard Posix macro for Linux
+	#if (defined(linux) || defined(__linux)) && !defined(__linux__)
+		#define __linux__
+	#endif
+	#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
+		#define _GNU_SOURCE
+	#endif
 
-#define sleep_ms(x) usleep(x * 1000)
+	#define sleep_ms(x) usleep(x * 1000)
 #endif
 
 #ifdef _MSC_VER
-#define ALIGNOF(x) __alignof(x)
-#define strtok_r(x, y, z) strtok_s(x, y, z)
-#define strtof(x, y) (float)strtod(x, y)
-#define strtoll(x, y, z) _strtoi64(x, y, z)
-#define strtoull(x, y, z) _strtoui64(x, y, z)
-#define strcasecmp(x, y) stricmp(x, y)
-#define strncasecmp(x, y, n) strnicmp(x, y, n)
+	#define ALIGNOF(x) __alignof(x)
+	#define strtok_r(x, y, z) strtok_s(x, y, z)
+	#define strtof(x, y) (float) strtod(x, y)
+	#define strtoll(x, y, z) _strtoi64(x, y, z)
+	#define strtoull(x, y, z) _strtoui64(x, y, z)
+	#define strcasecmp(x, y) stricmp(x, y)
+	#define strncasecmp(x, y, n) strnicmp(x, y, n)
 #else
-#define ALIGNOF(x) __alignof__(x)
+	#define ALIGNOF(x) __alignof__(x)
 #endif
 
 #ifdef __MINGW32__
-#define strtok_r(x, y, z) mystrtok_r(x, y, z)
+	#define strtok_r(x, y, z) mystrtok_r(x, y, z)
 #endif
 
 // strlcpy is missing from glibc.  thanks a lot, drepper.
@@ -93,30 +93,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) ||               \
 		defined(__DragonFly__) || defined(__APPLE__) || defined(__sun) ||                \
 		defined(sun) || defined(__QNX__) || defined(__QNXNTO__)
-#define HAVE_STRLCPY
+	#define HAVE_STRLCPY
 #endif
 
 // So we need to define our own.
 #ifndef HAVE_STRLCPY
-#define strlcpy(d, s, n) mystrlcpy(d, s, n)
+	#define strlcpy(d, s, n) mystrlcpy(d, s, n)
 #endif
 
 #define PADDING(x, y)                                                                    \
 	((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
 
 #if defined(__APPLE__)
-#include <mach-o/dyld.h>
-#include <CoreFoundation/CoreFoundation.h>
+	#include <mach-o/dyld.h>
+	#include <CoreFoundation/CoreFoundation.h>
 #endif
 
 #ifndef _WIN32 // Posix
-#include <sys/time.h>
-#include <ctime>
+	#include <sys/time.h>
+	#include <ctime>
 
-#if defined(__MACH__) && defined(__APPLE__)
-#include <mach/clock.h>
-#include <mach/mach.h>
-#endif
+	#if defined(__MACH__) && defined(__APPLE__)
+		#include <mach/clock.h>
+		#include <mach/mach.h>
+	#endif
 #endif
 
 namespace porting
@@ -212,7 +212,7 @@ inline u64 getTimeNs()
 
 inline void os_get_clock(struct timespec *ts)
 {
-#if defined(__MACH__) && defined(__APPLE__)
+	#if defined(__MACH__) && defined(__APPLE__)
 	// From http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
 	// OS X does not have clock_gettime, use clock_get_time
 	clock_serv_t cclock;
@@ -220,17 +220,17 @@ inline void os_get_clock(struct timespec *ts)
 	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
 	clock_get_time(cclock, &mts);
 	mach_port_deallocate(mach_task_self(), cclock);
-	ts->tv_sec = mts.tv_sec;
+	ts->tv_sec	= mts.tv_sec;
 	ts->tv_nsec = mts.tv_nsec;
-#elif defined(CLOCK_MONOTONIC_RAW)
+	#elif defined(CLOCK_MONOTONIC_RAW)
 	clock_gettime(CLOCK_MONOTONIC_RAW, ts);
-#elif defined(_POSIX_MONOTONIC_CLOCK)
+	#elif defined(_POSIX_MONOTONIC_CLOCK)
 	clock_gettime(CLOCK_MONOTONIC, ts);
-#else
+	#else
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	TIMEVAL_TO_TIMESPEC(&tv, ts);
-#endif
+	#endif
 }
 
 inline u64 getTimeS()
@@ -306,31 +306,31 @@ inline const char *getPlatformName()
 		defined(__OpenBSD__)
 			"BSD"
 #elif defined(__APPLE__) && defined(__MACH__)
-#if TARGET_OS_MAC
+	#if TARGET_OS_MAC
 			"OSX"
-#elif TARGET_OS_IPHONE
+	#elif TARGET_OS_IPHONE
 			"iOS"
-#else
+	#else
 			"Apple"
-#endif
+	#endif
 #elif defined(_AIX)
 			"AIX"
 #elif defined(__hpux)
 			"HP-UX"
 #elif defined(__sun) || defined(sun)
-#if defined(__SVR4)
+	#if defined(__SVR4)
 			"Solaris"
-#else
+	#else
 			"SunOS"
-#endif
+	#endif
 #elif defined(__CYGWIN__)
 			"Cygwin"
 #elif defined(__unix__) || defined(__unix)
-#if defined(_POSIX_VERSION)
+	#if defined(_POSIX_VERSION)
 			"Posix"
-#else
+	#else
 			"Unix"
-#endif
+	#endif
 #else
 			"?"
 #endif
@@ -349,5 +349,5 @@ bool openURL(const std::string &url);
 } // namespace porting
 
 #ifdef __ANDROID__
-#include "porting_android.h"
+	#include "porting_android.h"
 #endif

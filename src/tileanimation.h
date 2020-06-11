@@ -24,15 +24,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 enum TileAnimationType
 {
-	TAT_NONE = 0,
+	TAT_NONE			= 0,
 	TAT_VERTICAL_FRAMES = 1,
-	TAT_SHEET_2D = 2,
+	TAT_SHEET_2D		= 2,
 };
 
 struct TileAnimationParams
 {
 	enum TileAnimationType type;
-	union {
+	union
+	{
 		// struct {
 		// } none;
 		struct

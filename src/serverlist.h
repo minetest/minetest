@@ -51,7 +51,7 @@ void sendAnnounce(AnnounceAction, u16 port,
 		double uptime = 0, u32 game_time = 0, float lag = 0,
 		const std::string &gameid = "", const std::string &mg_name = "",
 		const std::vector<ModSpec> &mods = std::vector<ModSpec>(),
-		bool dedicated = false);
+		bool dedicated					 = false);
 #endif
 
 } // namespace ServerList

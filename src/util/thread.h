@@ -81,7 +81,7 @@ template <typename Key, typename T, typename Caller, typename CallerData>
 class GetRequest
 {
 public:
-	GetRequest() = default;
+	GetRequest()  = default;
 	~GetRequest() = default;
 
 	GetRequest(const Key &a_key) : key(a_key) {}
@@ -130,8 +130,8 @@ public:
 
 				CallerInfo<Caller, CallerData, Key, T> ca;
 				ca.caller = caller;
-				ca.data = callerdata;
-				ca.dest = dest;
+				ca.data	  = callerdata;
+				ca.dest	  = dest;
 				request.callers.push_back(ca);
 				return;
 			}
@@ -145,8 +145,8 @@ public:
 		request.key = key;
 		CallerInfo<Caller, CallerData, Key, T> ca;
 		ca.caller = caller;
-		ca.data = callerdata;
-		ca.dest = dest;
+		ca.data	  = callerdata;
+		ca.dest	  = dest;
 		request.callers.push_back(ca);
 
 		m_queue.push_back(request);
@@ -168,9 +168,9 @@ public:
 
 			GetResult<Key, T, Caller, CallerData> result;
 
-			result.key = req.key;
-			result.item = res;
-			result.caller.first = ca.caller;
+			result.key			 = req.key;
+			result.item			 = res;
+			result.caller.first	 = ca.caller;
 			result.caller.second = ca.data;
 
 			ca.dest->push_back(result);

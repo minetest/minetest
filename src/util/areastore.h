@@ -28,11 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "util/numeric.h"
 #ifndef ANDROID
-#include "cmake_config.h"
+	#include "cmake_config.h"
 #endif
 #if USE_SPATIAL
-#include <spatialindex/SpatialIndex.h>
-#include "util/serialize.h"
+	#include <spatialindex/SpatialIndex.h>
+	#include "util/serialize.h"
 #endif
 
 
@@ -40,8 +40,8 @@ struct Area
 {
 	Area(u32 area_id) : id(area_id) {}
 
-	Area(const v3s16 &mine, const v3s16 &maxe, u32 area_id = U32_MAX)
-		: id(area_id), minedge(mine), maxedge(maxe)
+	Area(const v3s16 &mine, const v3s16 &maxe, u32 area_id = U32_MAX) :
+		id(area_id), minedge(mine), maxedge(maxe)
 	{
 		sortBoxVerticies(minedge, maxedge);
 	}
@@ -162,16 +162,15 @@ protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
 
 private:
-	SpatialIndex::ISpatialIndex *m_tree = nullptr;
+	SpatialIndex::ISpatialIndex *m_tree				= nullptr;
 	SpatialIndex::IStorageManager *m_storagemanager = nullptr;
 
 	class VectorResultVisitor : public SpatialIndex::IVisitor
 	{
 	public:
-		VectorResultVisitor(std::vector<Area *> *result, SpatialAreaStore *store)
-			: m_store(store), m_result(result)
-		{
-		}
+		VectorResultVisitor(std::vector<Area *> *result, SpatialAreaStore *store) :
+			m_store(store), m_result(result)
+		{}
 		~VectorResultVisitor() {}
 
 		virtual void visitNode(const SpatialIndex::INode &in) {}
@@ -192,7 +191,7 @@ private:
 		}
 
 	private:
-		SpatialAreaStore *m_store = nullptr;
+		SpatialAreaStore *m_store	  = nullptr;
 		std::vector<Area *> *m_result = nullptr;
 	};
 };

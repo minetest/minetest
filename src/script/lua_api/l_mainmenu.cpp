@@ -133,17 +133,17 @@ int ModApiMainMenu::l_start(lua_State *L)
 
 	MainMenuData *data = engine->m_data;
 
-	data->selected_world = getIntegerData(L, "selected_world", valid) - 1;
+	data->selected_world		   = getIntegerData(L, "selected_world", valid) - 1;
 	data->simple_singleplayer_mode = getBoolData(L, "singleplayer", valid);
-	data->do_reconnect = getBoolData(L, "do_reconnect", valid);
+	data->do_reconnect			   = getBoolData(L, "do_reconnect", valid);
 	if (!data->do_reconnect) {
-		data->name = getTextData(L, "playername");
+		data->name	   = getTextData(L, "playername");
 		data->password = getTextData(L, "password");
-		data->address = getTextData(L, "address");
-		data->port = getTextData(L, "port");
+		data->address  = getTextData(L, "address");
+		data->port	   = getTextData(L, "port");
 	}
 	data->serverdescription = getTextData(L, "serverdescription");
-	data->servername = getTextData(L, "servername");
+	data->servername		= getTextData(L, "servername");
 
 	//close menu next time
 	engine->m_startgame = true;
@@ -169,8 +169,8 @@ int ModApiMainMenu::l_set_background(lua_State *L)
 	std::string backgroundlevel(luaL_checkstring(L, 1));
 	std::string texturename(luaL_checkstring(L, 2));
 
-	bool tile_image = false;
-	bool retval = false;
+	bool tile_image		 = false;
+	bool retval			 = false;
 	unsigned int minsize = 16;
 
 	if (!lua_isnone(L, 3)) {
@@ -230,7 +230,7 @@ int ModApiMainMenu::l_get_table_index(lua_State *L)
 
 	std::string tablename(luaL_checkstring(L, 1));
 	GUITable *table = engine->m_menu->getTable(tablename);
-	s32 selection = table ? table->getSelected() : 0;
+	s32 selection	= table ? table->getSelected() : 0;
 
 	if (selection >= 1)
 		lua_pushinteger(L, selection);
@@ -245,7 +245,7 @@ int ModApiMainMenu::l_get_worlds(lua_State *L)
 	std::vector<WorldSpec> worlds = getAvailableWorlds();
 
 	lua_newtable(L);
-	int top = lua_gettop(L);
+	int top			   = lua_gettop(L);
 	unsigned int index = 1;
 
 	for (const WorldSpec &world : worlds) {
@@ -290,7 +290,7 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 	}
 
 	lua_newtable(L);
-	int top = lua_gettop(L);
+	int top			   = lua_gettop(L);
 	unsigned int index = 1;
 
 	for (const Json::Value &server : servers) {
@@ -301,8 +301,8 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 
 		if (!server["clients"].asString().empty()) {
 			std::string clients_raw = server["clients"].asString();
-			char *endptr = 0;
-			int numbervalue = strtol(clients_raw.c_str(), &endptr, 10);
+			char *endptr			= 0;
+			int numbervalue			= strtol(clients_raw.c_str(), &endptr, 10);
 
 			if ((!clients_raw.empty()) && (*endptr == 0)) {
 				lua_pushstring(L, "clients");
@@ -313,8 +313,8 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 
 		if (!server["clients_max"].asString().empty()) {
 			std::string clients_max_raw = server["clients_max"].asString();
-			char *endptr = 0;
-			int numbervalue = strtol(clients_max_raw.c_str(), &endptr, 10);
+			char *endptr				= 0;
+			int numbervalue				= strtol(clients_max_raw.c_str(), &endptr, 10);
 
 			if ((!clients_max_raw.empty()) && (*endptr == 0)) {
 				lua_pushstring(L, "clients_max");
@@ -460,7 +460,7 @@ int ModApiMainMenu::l_delete_favorite(lua_State *L)
 
 	int fav_idx = luaL_checkinteger(L, 1) - 1;
 
-	if ((fav_idx >= 0) && (fav_idx < (int)servers.size())) {
+	if ((fav_idx >= 0) && (fav_idx < (int) servers.size())) {
 		ServerList::deleteEntry(servers[fav_idx]);
 	}
 
@@ -473,7 +473,7 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 	std::vector<SubgameSpec> games = getAvailableGames();
 
 	lua_newtable(L);
-	int top = lua_gettop(L);
+	int top			   = lua_gettop(L);
 	unsigned int index = 1;
 
 	for (const SubgameSpec &game : games) {
@@ -515,7 +515,7 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 
 		lua_pushstring(L, "addon_mods_paths");
 		lua_newtable(L);
-		int table2 = lua_gettop(L);
+		int table2		   = lua_gettop(L);
 		int internal_index = 1;
 		for (const std::string &addon_mods_path : game.addon_mods_paths) {
 			lua_pushnumber(L, internal_index);
@@ -602,13 +602,13 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 int ModApiMainMenu::l_create_world(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
-	int gameidx = luaL_checkinteger(L, 2) - 1;
+	int gameidx		 = luaL_checkinteger(L, 2) - 1;
 
 	std::string path = porting::path_user + DIR_DELIM "worlds" + DIR_DELIM + name;
 
 	std::vector<SubgameSpec> games = getAvailableGames();
 
-	if ((gameidx >= 0) && (gameidx < (int)games.size())) {
+	if ((gameidx >= 0) && (gameidx < (int) games.size())) {
 		// Create world if it doesn't exist
 		if (!loadGameConfAndInitWorld(path, games[gameidx])) {
 			lua_pushstring(L, "Failed to initialize world");
@@ -624,9 +624,9 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_delete_world(lua_State *L)
 {
-	int world_id = luaL_checkinteger(L, 1) - 1;
+	int world_id				  = luaL_checkinteger(L, 1) - 1;
 	std::vector<WorldSpec> worlds = getAvailableWorlds();
-	if (world_id < 0 || world_id >= (int)worlds.size()) {
+	if (world_id < 0 || world_id >= (int) worlds.size()) {
 		lua_pushstring(L, "Invalid world index");
 		return 1;
 	}
@@ -753,7 +753,7 @@ int ModApiMainMenu::l_delete_dir(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_copy_dir(lua_State *L)
 {
-	const char *source = luaL_checkstring(L, 1);
+	const char *source		= luaL_checkstring(L, 1);
 	const char *destination = luaL_checkstring(L, 2);
 
 	bool keep_source = true;
@@ -763,7 +763,7 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 	}
 
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
-	std::string absolute_source = fs::RemoveRelativePathComponents(source);
+	std::string absolute_source		 = fs::RemoveRelativePathComponents(source);
 
 	if ((ModApiMainMenu::mayModifyPath(absolute_destination))) {
 		bool retval = fs::CopyDir(absolute_source, absolute_destination);
@@ -781,7 +781,7 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_extract_zip(lua_State *L)
 {
-	const char *zipfile = luaL_checkstring(L, 1);
+	const char *zipfile		= luaL_checkstring(L, 1);
 	const char *destination = luaL_checkstring(L, 2);
 
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
@@ -904,7 +904,7 @@ bool ModApiMainMenu::mayModifyPath(const std::string &path)
 /******************************************************************************/
 int ModApiMainMenu::l_may_modify_path(lua_State *L)
 {
-	const char *target = luaL_checkstring(L, 1);
+	const char *target				 = luaL_checkstring(L, 1);
 	std::string absolute_destination = fs::RemoveRelativePathComponents(target);
 	lua_pushboolean(L, ModApiMainMenu::mayModifyPath(absolute_destination));
 	return 1;
@@ -917,8 +917,8 @@ int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 	sanity_check(engine != NULL);
 
 	const char *formname = luaL_checkstring(L, 1);
-	const char *title = luaL_checkstring(L, 2);
-	bool is_file_select = readParam<bool>(L, 3);
+	const char *title	 = luaL_checkstring(L, 2);
+	bool is_file_select	 = readParam<bool>(L, 3);
 
 	GUIFileSelectMenu *fileOpenMenu =
 			new GUIFileSelectMenu(RenderingEngine::get_gui_env(), engine->m_parent, -1,
@@ -931,7 +931,7 @@ int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_download_file(lua_State *L)
 {
-	const char *url = luaL_checkstring(L, 1);
+	const char *url	   = luaL_checkstring(L, 1);
 	const char *target = luaL_checkstring(L, 2);
 
 	//check path
@@ -958,7 +958,7 @@ int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 
 	lua_newtable(L);
 	for (u32 i = 0; i != drivers.size(); i++) {
-		const char *name = RenderingEngine::getVideoDriverName(drivers[i]);
+		const char *name  = RenderingEngine::getVideoDriverName(drivers[i]);
 		const char *fname = RenderingEngine::getVideoDriverFriendlyName(drivers[i]);
 
 		lua_newtable(L);
@@ -1066,7 +1066,7 @@ int ModApiMainMenu::l_do_async_callback(lua_State *L)
 	sanity_check(serialized_func_raw != NULL);
 	sanity_check(serialized_param_raw != NULL);
 
-	std::string serialized_func = std::string(serialized_func_raw, func_length);
+	std::string serialized_func	 = std::string(serialized_func_raw, func_length);
 	std::string serialized_param = std::string(serialized_param_raw, param_length);
 
 	lua_pushinteger(L, engine->queueAsync(serialized_func, serialized_param));

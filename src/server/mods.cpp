@@ -35,8 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * Creates a ServerModManager which targets worldpath
  * @param worldpath
  */
-ServerModManager::ServerModManager(const std::string &worldpath)
-	: ModConfiguration(worldpath)
+ServerModManager::ServerModManager(const std::string &worldpath) :
+	ModConfiguration(worldpath)
 {
 	SubgameSpec gamespec = findWorldSubgame(worldpath);
 

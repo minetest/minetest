@@ -137,11 +137,10 @@ static void load_button_texture(button_info *btn, const char *path,
 	}
 }
 
-AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, IEventReceiver *receiver)
-	: m_driver(device->getVideoDriver()), m_guienv(device->getGUIEnvironment()),
-	  m_receiver(receiver)
-{
-}
+AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device, IEventReceiver *receiver) :
+	m_driver(device->getVideoDriver()), m_guienv(device->getGUIEnvironment()),
+	m_receiver(receiver)
+{}
 
 void AutoHideButtonBar::init(ISimpleTextureSource *tsrc, const char *starter_img,
 		int button_id, const v2s32 &UpperLeft, const v2s32 &LowerRight,
@@ -149,7 +148,7 @@ void AutoHideButtonBar::init(ISimpleTextureSource *tsrc, const char *starter_img
 {
 	m_texturesource = tsrc;
 
-	m_upper_left = UpperLeft;
+	m_upper_left  = UpperLeft;
 	m_lower_right = LowerRight;
 
 	// init settings bar
@@ -160,15 +159,15 @@ void AutoHideButtonBar::init(ISimpleTextureSource *tsrc, const char *starter_img
 	m_starter.guibutton =
 			m_guienv->addButton(current_button, nullptr, button_id, L"", nullptr);
 	m_starter.guibutton->grab();
-	m_starter.repeatcounter = -1;
-	m_starter.keycode = KEY_OEM_8; // use invalid keycode as it's not relevant
+	m_starter.repeatcounter		= -1;
+	m_starter.keycode			= KEY_OEM_8; // use invalid keycode as it's not relevant
 	m_starter.immediate_release = true;
 	m_starter.ids.clear();
 
 	load_button_texture(
 			&m_starter, starter_img, current_button, m_texturesource, m_driver);
 
-	m_dir = dir;
+	m_dir			= dir;
 	m_timeout_value = timeout;
 
 	m_initialized = true;
@@ -200,7 +199,7 @@ void AutoHideButtonBar::addButton(
 
 	if ((m_dir == AHBB_Dir_Right_Left) || (m_dir == AHBB_Dir_Left_Right)) {
 		int x_start = 0;
-		int x_end = 0;
+		int x_end	= 0;
 
 		if (m_dir == AHBB_Dir_Left_Right) {
 			x_start = m_lower_right.X + (button_size * 1.25 * m_buttons.size()) +
@@ -215,7 +214,7 @@ void AutoHideButtonBar::addButton(
 		current_button = rect<s32>(x_start, m_upper_left.Y, x_end, m_lower_right.Y);
 	} else {
 		double y_start = 0;
-		double y_end = 0;
+		double y_end   = 0;
 
 		if (m_dir == AHBB_Dir_Top_Bottom) {
 			y_start = m_lower_right.X + (button_size * 1.25 * m_buttons.size()) +
@@ -236,8 +235,8 @@ void AutoHideButtonBar::addButton(
 	btn->guibutton->grab();
 	btn->guibutton->setVisible(false);
 	btn->guibutton->setEnabled(false);
-	btn->repeatcounter = -1;
-	btn->keycode = id2keycode(button_id);
+	btn->repeatcounter	   = -1;
+	btn->keycode		   = id2keycode(button_id);
 	btn->immediate_release = true;
 	btn->ids.clear();
 
@@ -251,7 +250,7 @@ void AutoHideButtonBar::addToggleButton(touch_gui_button_id button_id,
 {
 	addButton(button_id, caption, btn_image_1);
 	button_info *btn = m_buttons.back();
-	btn->togglable = 1;
+	btn->togglable	 = 1;
 	btn->textures.push_back(btn_image_1);
 	btn->textures.push_back(btn_image_2);
 }
@@ -277,11 +276,11 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 			if ((*iter)->guibutton == element) {
 				auto *translated = new SEvent();
 				memset(translated, 0, sizeof(SEvent));
-				translated->EventType = irr::EET_KEY_INPUT_EVENT;
-				translated->KeyInput.Key = (*iter)->keycode;
+				translated->EventType		 = irr::EET_KEY_INPUT_EVENT;
+				translated->KeyInput.Key	 = (*iter)->keycode;
 				translated->KeyInput.Control = false;
-				translated->KeyInput.Shift = false;
-				translated->KeyInput.Char = 0;
+				translated->KeyInput.Shift	 = false;
+				translated->KeyInput.Char	 = 0;
 
 				// add this event
 				translated->KeyInput.PressedDown = true;
@@ -319,7 +318,7 @@ bool AutoHideButtonBar::isButton(const SEvent &event)
 			m_starter.ids.push_back(event.TouchInput.ID);
 			m_starter.guibutton->setVisible(false);
 			m_starter.guibutton->setEnabled(false);
-			m_active = true;
+			m_active  = true;
 			m_timeout = 0;
 
 			auto iter = m_buttons.begin();
@@ -396,33 +395,33 @@ void AutoHideButtonBar::show()
 	}
 }
 
-TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
-	: m_device(device), m_guienv(device->getGUIEnvironment()), m_receiver(receiver),
-	  m_settingsbar(device, receiver), m_rarecontrolsbar(device, receiver)
+TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver) :
+	m_device(device), m_guienv(device->getGUIEnvironment()), m_receiver(receiver),
+	m_settingsbar(device, receiver), m_rarecontrolsbar(device, receiver)
 {
 	for (auto &button : m_buttons) {
-		button.guibutton = nullptr;
+		button.guibutton	 = nullptr;
 		button.repeatcounter = -1;
-		button.repeatdelay = BUTTON_REPEAT_DELAY;
+		button.repeatdelay	 = BUTTON_REPEAT_DELAY;
 	}
 
-	m_touchscreen_threshold = g_settings->getU16("touchscreen_threshold");
-	m_fixed_joystick = g_settings->getBool("fixed_virtual_joystick");
+	m_touchscreen_threshold		 = g_settings->getU16("touchscreen_threshold");
+	m_fixed_joystick			 = g_settings->getBool("fixed_virtual_joystick");
 	m_joystick_triggers_special1 = g_settings->getBool("virtual_joystick_triggers_aux");
-	m_screensize = m_device->getVideoDriver()->getScreenSize();
-	button_size = MYMIN(m_screensize.Y / 4.5f,
-			porting::getDisplayDensity() * g_settings->getFloat("hud_scaling") * 65.0f);
+	m_screensize				 = m_device->getVideoDriver()->getScreenSize();
+	button_size					 = MYMIN(m_screensize.Y / 4.5f,
+			 porting::getDisplayDensity() * g_settings->getFloat("hud_scaling") * 65.0f);
 }
 
 void TouchScreenGUI::initButton(touch_gui_button_id id, const rect<s32> &button_rect,
 		const std::wstring &caption, bool immediate_release, float repeat_delay)
 {
 	button_info *btn = &m_buttons[id];
-	btn->guibutton = m_guienv->addButton(button_rect, nullptr, id, caption.c_str());
+	btn->guibutton	 = m_guienv->addButton(button_rect, nullptr, id, caption.c_str());
 	btn->guibutton->grab();
-	btn->repeatcounter = -1;
-	btn->repeatdelay = repeat_delay;
-	btn->keycode = id2keycode(id);
+	btn->repeatcounter	   = -1;
+	btn->repeatdelay	   = repeat_delay;
+	btn->keycode		   = id2keycode(id);
 	btn->immediate_release = immediate_release;
 	btn->ids.clear();
 
@@ -433,7 +432,7 @@ void TouchScreenGUI::initButton(touch_gui_button_id id, const rect<s32> &button_
 button_info *TouchScreenGUI::initJoystickButton(touch_gui_button_id id,
 		const rect<s32> &button_rect, int texture_id, bool visible)
 {
-	auto *btn = new button_info();
+	auto *btn	   = new button_info();
 	btn->guibutton = m_guienv->addButton(button_rect, nullptr, id, L"O");
 	btn->guibutton->setVisible(visible);
 	btn->guibutton->grab();
@@ -449,7 +448,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 {
 	assert(tsrc);
 
-	m_visible = true;
+	m_visible		= true;
 	m_texturesource = tsrc;
 
 	/* Init joystick display "button"
@@ -550,7 +549,7 @@ touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
 		if (element)
 			for (unsigned int i = 0; i < after_last_element_id; i++)
 				if (element == m_buttons[i].guibutton)
-					return (touch_gui_button_id)i;
+					return (touch_gui_button_id) i;
 	}
 
 	return after_last_element_id;
@@ -564,7 +563,7 @@ touch_gui_button_id TouchScreenGUI::getButtonID(size_t eventID)
 		auto id = std::find(btn->ids.begin(), btn->ids.end(), eventID);
 
 		if (id != btn->ids.end())
-			return (touch_gui_button_id)i;
+			return (touch_gui_button_id) i;
 	}
 
 	return after_last_element_id;
@@ -578,10 +577,10 @@ bool TouchScreenGUI::isHUDButton(const SEvent &event)
 					v2s32(event.TouchInput.X, event.TouchInput.Y))) {
 			auto *translated = new SEvent();
 			memset(translated, 0, sizeof(SEvent));
-			translated->EventType = irr::EET_KEY_INPUT_EVENT;
-			translated->KeyInput.Key = (irr::EKEY_CODE)(KEY_KEY_1 + hud_rect.first);
+			translated->EventType		 = irr::EET_KEY_INPUT_EVENT;
+			translated->KeyInput.Key	 = (irr::EKEY_CODE)(KEY_KEY_1 + hud_rect.first);
 			translated->KeyInput.Control = false;
-			translated->KeyInput.Shift = false;
+			translated->KeyInput.Shift	 = false;
 			translated->KeyInput.PressedDown = true;
 			m_receiver->OnEvent(*translated);
 			m_hud_ids[event.TouchInput.ID] = translated->KeyInput.Key;
@@ -598,11 +597,11 @@ void TouchScreenGUI::handleButtonEvent(
 	button_info *btn = &m_buttons[button];
 	auto *translated = new SEvent();
 	memset(translated, 0, sizeof(SEvent));
-	translated->EventType = irr::EET_KEY_INPUT_EVENT;
-	translated->KeyInput.Key = btn->keycode;
+	translated->EventType		 = irr::EET_KEY_INPUT_EVENT;
+	translated->KeyInput.Key	 = btn->keycode;
 	translated->KeyInput.Control = false;
-	translated->KeyInput.Shift = false;
-	translated->KeyInput.Char = 0;
+	translated->KeyInput.Shift	 = false;
+	translated->KeyInput.Char	 = 0;
 
 	// add this event
 	if (action) {
@@ -613,9 +612,9 @@ void TouchScreenGUI::handleButtonEvent(
 		if (btn->ids.size() > 1)
 			return;
 
-		btn->repeatcounter = 0;
+		btn->repeatcounter				 = 0;
 		translated->KeyInput.PressedDown = true;
-		translated->KeyInput.Key = btn->keycode;
+		translated->KeyInput.Key		 = btn->keycode;
 		m_receiver->OnEvent(*translated);
 	}
 
@@ -630,7 +629,7 @@ void TouchScreenGUI::handleButtonEvent(
 			return;
 
 		translated->KeyInput.PressedDown = false;
-		btn->repeatcounter = -1;
+		btn->repeatcounter				 = -1;
 		m_receiver->OnEvent(*translated);
 	}
 	delete translated;
@@ -652,13 +651,13 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 		if (m_move_sent_as_mouse_event) {
 			auto *translated = new SEvent;
 			memset(translated, 0, sizeof(SEvent));
-			translated->EventType = EET_MOUSE_INPUT_EVENT;
-			translated->MouseInput.X = m_move_downlocation.X;
-			translated->MouseInput.Y = m_move_downlocation.Y;
-			translated->MouseInput.Shift = false;
-			translated->MouseInput.Control = false;
+			translated->EventType				= EET_MOUSE_INPUT_EVENT;
+			translated->MouseInput.X			= m_move_downlocation.X;
+			translated->MouseInput.Y			= m_move_downlocation.Y;
+			translated->MouseInput.Shift		= false;
+			translated->MouseInput.Control		= false;
 			translated->MouseInput.ButtonStates = 0;
-			translated->MouseInput.Event = EMIE_LMOUSE_LEFT_UP;
+			translated->MouseInput.Event		= EMIE_LMOUSE_LEFT_UP;
 			m_receiver->OnEvent(*translated);
 			delete translated;
 		} else {
@@ -711,8 +710,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 		 */
 		id_status toadd;
 		toadd.id = event.TouchInput.ID;
-		toadd.X = event.TouchInput.X;
-		toadd.Y = event.TouchInput.Y;
+		toadd.X	 = event.TouchInput.X;
+		toadd.Y	 = event.TouchInput.Y;
 		m_known_ids.push_back(toadd);
 
 		size_t eventID = event.TouchInput.ID;
@@ -750,7 +749,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					(!m_fixed_joystick && event.TouchInput.X < m_screensize.X / 3.0f)) {
 				// If we don't already have a starting point for joystick make this the one.
 				if (m_joystick_id == -1) {
-					m_joystick_id = event.TouchInput.ID;
+					m_joystick_id				= event.TouchInput.ID;
 					m_joystick_has_really_moved = false;
 
 					m_joystick_btn_off->guibutton->setVisible(false);
@@ -770,9 +769,9 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			} else {
 				// If we don't already have a moving point make this the moving one.
 				if (m_move_id == -1) {
-					m_move_id = event.TouchInput.ID;
+					m_move_id				= event.TouchInput.ID;
 					m_move_has_really_moved = false;
-					m_move_downtime = porting::getTimeMs();
+					m_move_downtime			= porting::getTimeMs();
 					m_move_downlocation = v2s32(event.TouchInput.X, event.TouchInput.Y);
 					m_move_sent_as_mouse_event = false;
 				}
@@ -802,8 +801,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 
 				if ((distance > m_touchscreen_threshold) || (m_move_has_really_moved)) {
 					m_move_has_really_moved = true;
-					s32 X = event.TouchInput.X;
-					s32 Y = event.TouchInput.Y;
+					s32 X					= event.TouchInput.X;
+					s32 Y					= event.TouchInput.Y;
 
 					// update camera_yaw and camera_pitch
 					s32 dx = X - m_pointerpos[event.TouchInput.ID].X;
@@ -854,7 +853,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 							distance_sq >
 									m_touchscreen_threshold * m_touchscreen_threshold)) {
 				m_joystick_has_really_moved = true;
-				double distance = sqrt(distance_sq);
+				double distance				= sqrt(distance_sq);
 
 				// angle in degrees
 				double angle = acos(dx / distance) * 180 / M_PI;
@@ -873,22 +872,22 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_joystick_status[j_left] = true;
 				else if (angle < 90) {
 					m_joystick_status[j_forward] = true;
-					m_joystick_status[j_left] = true;
+					m_joystick_status[j_left]	 = true;
 				} else if (angle < 135)
 					m_joystick_status[j_forward] = true;
 				else if (angle < 180) {
 					m_joystick_status[j_forward] = true;
-					m_joystick_status[j_right] = true;
+					m_joystick_status[j_right]	 = true;
 				} else if (angle < 225)
 					m_joystick_status[j_right] = true;
 				else if (angle < 270) {
 					m_joystick_status[j_backward] = true;
-					m_joystick_status[j_right] = true;
+					m_joystick_status[j_right]	  = true;
 				} else if (angle < 315)
 					m_joystick_status[j_backward] = true;
 				else if (angle <= 360) {
 					m_joystick_status[j_backward] = true;
-					m_joystick_status[j_left] = true;
+					m_joystick_status[j_left]	  = true;
 				}
 
 				if (distance > button_size) {
@@ -933,12 +932,12 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 					continue;
 
 				// remove old button
-				handleButtonEvent((touch_gui_button_id)i, *iter, false);
+				handleButtonEvent((touch_gui_button_id) i, *iter, false);
 
 				if (current_button_id == after_last_element_id)
 					return;
 
-				handleButtonEvent((touch_gui_button_id)current_button_id, *iter, true);
+				handleButtonEvent((touch_gui_button_id) current_button_id, *iter, true);
 				return;
 			}
 		}
@@ -953,17 +952,17 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 	if (std::find(btn->ids.begin(), btn->ids.end(), event.TouchInput.ID) ==
 			btn->ids.end())
 		handleButtonEvent(
-				(touch_gui_button_id)current_button_id, event.TouchInput.ID, true);
+				(touch_gui_button_id) current_button_id, event.TouchInput.ID, true);
 }
 
 bool TouchScreenGUI::doubleTapDetection()
 {
 	m_key_events[0].down_time = m_key_events[1].down_time;
-	m_key_events[0].x = m_key_events[1].x;
-	m_key_events[0].y = m_key_events[1].y;
+	m_key_events[0].x		  = m_key_events[1].x;
+	m_key_events[0].y		  = m_key_events[1].y;
 	m_key_events[1].down_time = m_move_downtime;
-	m_key_events[1].x = m_move_downlocation.X;
-	m_key_events[1].y = m_move_downlocation.Y;
+	m_key_events[1].x		  = m_move_downlocation.X;
+	m_key_events[1].y		  = m_move_downlocation.Y;
 
 	u64 delta = porting::getDeltaMs(m_key_events[0].down_time, porting::getTimeMs());
 	if (delta > 400)
@@ -979,11 +978,11 @@ bool TouchScreenGUI::doubleTapDetection()
 
 	auto *translated = new SEvent();
 	memset(translated, 0, sizeof(SEvent));
-	translated->EventType = EET_MOUSE_INPUT_EVENT;
-	translated->MouseInput.X = m_key_events[0].x;
-	translated->MouseInput.Y = m_key_events[0].y;
-	translated->MouseInput.Shift = false;
-	translated->MouseInput.Control = false;
+	translated->EventType				= EET_MOUSE_INPUT_EVENT;
+	translated->MouseInput.X			= m_key_events[0].x;
+	translated->MouseInput.Y			= m_key_events[0].y;
+	translated->MouseInput.Shift		= false;
+	translated->MouseInput.Control		= false;
 	translated->MouseInput.ButtonStates = EMBSM_RIGHT;
 
 	// update shootline
@@ -997,7 +996,7 @@ bool TouchScreenGUI::doubleTapDetection()
 	m_receiver->OnEvent(*translated);
 
 	translated->MouseInput.ButtonStates = 0;
-	translated->MouseInput.Event = EMIE_RMOUSE_LEFT_UP;
+	translated->MouseInput.Event		= EMIE_RMOUSE_LEFT_UP;
 	verbosestream << "TouchScreenGUI::translateEvent right click release" << std::endl;
 	m_receiver->OnEvent(*translated);
 	delete translated;
@@ -1011,8 +1010,8 @@ void TouchScreenGUI::applyJoystickStatus()
 			continue;
 
 		SEvent translated;
-		translated.EventType = irr::EET_KEY_INPUT_EVENT;
-		translated.KeyInput.Key = id2keycode(m_joystick_names[i]);
+		translated.EventType			= irr::EET_KEY_INPUT_EVENT;
+		translated.KeyInput.Key			= id2keycode(m_joystick_names[i]);
 		translated.KeyInput.PressedDown = false;
 		m_receiver->OnEvent(translated);
 
@@ -1065,8 +1064,8 @@ void TouchScreenGUI::step(float dtime)
 			button.repeatcounter = 0;
 			SEvent translated;
 			memset(&translated, 0, sizeof(SEvent));
-			translated.EventType = irr::EET_KEY_INPUT_EVENT;
-			translated.KeyInput.Key = button.keycode;
+			translated.EventType			= irr::EET_KEY_INPUT_EVENT;
+			translated.KeyInput.Key			= button.keycode;
 			translated.KeyInput.PressedDown = false;
 			m_receiver->OnEvent(translated);
 
@@ -1096,13 +1095,13 @@ void TouchScreenGUI::step(float dtime)
 
 			SEvent translated;
 			memset(&translated, 0, sizeof(SEvent));
-			translated.EventType = EET_MOUSE_INPUT_EVENT;
-			translated.MouseInput.X = m_move_downlocation.X;
-			translated.MouseInput.Y = m_move_downlocation.Y;
-			translated.MouseInput.Shift = false;
-			translated.MouseInput.Control = false;
+			translated.EventType			   = EET_MOUSE_INPUT_EVENT;
+			translated.MouseInput.X			   = m_move_downlocation.X;
+			translated.MouseInput.Y			   = m_move_downlocation.Y;
+			translated.MouseInput.Shift		   = false;
+			translated.MouseInput.Control	   = false;
 			translated.MouseInput.ButtonStates = EMBSM_LEFT;
-			translated.MouseInput.Event = EMIE_LMOUSE_PRESSED_DOWN;
+			translated.MouseInput.Event		   = EMIE_LMOUSE_PRESSED_DOWN;
 			verbosestream << "TouchScreenGUI::step left click press" << std::endl;
 			m_receiver->OnEvent(translated);
 			m_move_sent_as_mouse_event = true;

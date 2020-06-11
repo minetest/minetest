@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ObjDefManager::ObjDefManager(IGameDef *gamedef, ObjDefType type)
 {
 	m_objtype = type;
-	m_ndef = gamedef ? gamedef->getNodeDefManager() : NULL;
+	m_ndef	  = gamedef ? gamedef->getNodeDefManager() : NULL;
 }
 
 
@@ -67,8 +67,8 @@ ObjDef *ObjDefManager::set(ObjDefHandle handle, ObjDef *obj)
 
 	ObjDef *oldobj = setRaw(index, obj);
 
-	obj->uid = oldobj->uid;
-	obj->index = oldobj->index;
+	obj->uid	= oldobj->uid;
+	obj->index	= oldobj->index;
 	obj->handle = oldobj->handle;
 
 	return oldobj;
@@ -106,7 +106,7 @@ ObjDef *ObjDefManager::getRaw(u32 index) const
 
 ObjDef *ObjDefManager::setRaw(u32 index, ObjDef *obj)
 {
-	ObjDef *old_obj = m_objects[index];
+	ObjDef *old_obj	 = m_objects[index];
 	m_objects[index] = obj;
 	return old_obj;
 }
@@ -172,8 +172,8 @@ bool ObjDefManager::decodeHandle(
 		return false;
 
 	*index = get_bits(handle, 0, 18);
-	*type = (ObjDefType)get_bits(handle, 18, 6);
-	*uid = get_bits(handle, 24, 7);
+	*type  = (ObjDefType) get_bits(handle, 18, 6);
+	*uid   = get_bits(handle, 24, 7);
 	return true;
 }
 
@@ -181,10 +181,10 @@ bool ObjDefManager::decodeHandle(
 
 void ObjDef::cloneTo(ObjDef *def) const
 {
-	def->index = index;
-	def->uid = uid;
+	def->index	= index;
+	def->uid	= uid;
 	def->handle = handle;
-	def->name = name;
+	def->name	= name;
 }
 
 void ObjDefManager::cloneTo(ObjDefManager *mgr) const

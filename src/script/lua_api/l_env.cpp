@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "translation.h"
 #ifndef SERVER
-#include "client/client.h"
+	#include "client/client.h"
 #endif
 
 struct EnumString ModApiEnvMod::es_ClearObjectsMode[] = {
@@ -178,7 +178,7 @@ int LuaRaycast::create_object(lua_State *L)
 
 	LuaRaycast *o = new LuaRaycast(core::line3d<f32>(pos1, pos2), objects, liquids);
 
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 	return 1;
@@ -192,12 +192,12 @@ LuaRaycast *LuaRaycast::checkobject(lua_State *L, int narg)
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud)
 		luaL_typerror(L, narg, className);
-	return *(LuaRaycast **)ud;
+	return *(LuaRaycast **) ud;
 }
 
 int LuaRaycast::gc_object(lua_State *L)
 {
-	LuaRaycast *o = *(LuaRaycast **)(lua_touserdata(L, 1));
+	LuaRaycast *o = *(LuaRaycast **) (lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
@@ -233,12 +233,12 @@ void LuaRaycast::Register(lua_State *L)
 	lua_register(L, className, create_object);
 }
 
-const char LuaRaycast::className[] = "Raycast";
+const char LuaRaycast::className[]	 = "Raycast";
 const luaL_Reg LuaRaycast::methods[] = { luamethod(LuaRaycast, next), { 0, 0 } };
 
 void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
 {
-	ScriptCallbackState *state = (ScriptCallbackState *)param;
+	ScriptCallbackState *state = (ScriptCallbackState *) param;
 	assert(state != NULL);
 	assert(state->script != NULL);
 	assert(state->refcount > 0);
@@ -384,7 +384,7 @@ int ModApiEnvMod::l_get_node_light(lua_State *L)
 	GET_PLAIN_ENV_PTR;
 
 	// Do it
-	v3s16 pos = read_v3s16(L, 1);
+	v3s16 pos		= read_v3s16(L, 1);
 	u32 time_of_day = env->getTimeOfDay();
 	if (lua_isnumber(L, 2))
 		time_of_day = 24000.0 * lua_tonumber(L, 2);
@@ -409,9 +409,9 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 	GET_ENV_PTR;
 
 	ScriptApiItem *scriptIfaceItem = getScriptApi<ScriptApiItem>(L);
-	Server *server = getServer(L);
-	const NodeDefManager *ndef = server->ndef();
-	IItemDefManager *idef = server->idef();
+	Server *server				   = getServer(L);
+	const NodeDefManager *ndef	   = server->ndef();
+	IItemDefManager *idef		   = server->idef();
 
 	v3s16 pos = read_v3s16(L, 1);
 	MapNode n = readnode(L, 2, ndef);
@@ -426,7 +426,7 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 	ItemStack item(ndef->get(n).name, 1, 0, idef);
 	// Make pointed position
 	PointedThing pointed;
-	pointed.type = POINTEDTHING_NODE;
+	pointed.type			  = POINTEDTHING_NODE;
 	pointed.node_abovesurface = pos;
 	pointed.node_undersurface = pos + v3s16(0, -1, 0);
 	// Place it with a NULL placer (appears in Lua as nil)
@@ -513,7 +513,7 @@ int ModApiEnvMod::l_set_node_level(lua_State *L)
 	GET_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
-	u8 level = 1;
+	u8 level  = 1;
 	if (lua_isnumber(L, 2))
 		level = lua_tonumber(L, 2);
 	MapNode n = env->getMap().getNode(pos);
@@ -584,12 +584,12 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	v3f pos = checkFloatPos(L, 1);
-	const char *name = luaL_checkstring(L, 2);
+	v3f pos				   = checkFloatPos(L, 1);
+	const char *name	   = luaL_checkstring(L, 2);
 	const char *staticdata = luaL_optstring(L, 3, "");
 
 	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
-	int objectid = env->addActiveObject(obj);
+	int objectid			= env->addActiveObject(obj);
 	// If failed to add, return nothing (reads as nil)
 	if (objectid == 0)
 		return 0;
@@ -634,7 +634,7 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 // get_connected_players()
 int ModApiEnvMod::l_get_connected_players(lua_State *L)
 {
-	ServerEnvironment *env = (ServerEnvironment *)getEnv(L);
+	ServerEnvironment *env = (ServerEnvironment *) getEnv(L);
 	if (!env) {
 		log_deprecated(L,
 				"Calling get_connected_players() at mod load time"
@@ -663,7 +663,7 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 	GET_ENV_PTR;
 
 	// Do it
-	const char *name = luaL_checkstring(L, 1);
+	const char *name	 = luaL_checkstring(L, 1);
 	RemotePlayer *player = env->getPlayer(name);
 	if (!player || player->getPeerId() == PEER_ID_INEXISTENT)
 		return 0;
@@ -682,7 +682,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	ScriptApiBase *script = getScriptApiBase(L);
 
 	// Do it
-	v3f pos = checkFloatPos(L, 1);
+	v3f pos		 = checkFloatPos(L, 1);
 	float radius = readParam<float>(L, 2) * BS;
 	std::vector<ServerActiveObject *> objs;
 
@@ -708,7 +708,7 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 	// Do it
 	float timeofday_f = readParam<float>(L, 1);
 	sanity_check(timeofday_f >= 0.0 && timeofday_f <= 1.0);
-	int timeofday_mh = (int)(timeofday_f * 24000.0);
+	int timeofday_mh = (int) (timeofday_f * 24000.0);
 	// This should be set directly in the environment but currently
 	// such changes aren't immediately sent to the clients, so call
 	// the server instead.
@@ -723,8 +723,8 @@ int ModApiEnvMod::l_get_timeofday(lua_State *L)
 	GET_PLAIN_ENV_PTR;
 
 	// Do it
-	int timeofday_mh = env->getTimeOfDay();
-	float timeofday_f = (float)timeofday_mh / 24000.0f;
+	int timeofday_mh  = env->getTimeOfDay();
+	float timeofday_f = (float) timeofday_mh / 24000.0f;
 	lua_pushnumber(L, timeofday_f);
 	return 1;
 }
@@ -756,8 +756,8 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	GET_PLAIN_ENV_PTR;
 
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
-	v3s16 pos = read_v3s16(L, 1);
-	int radius = luaL_checkinteger(L, 2);
+	v3s16 pos				   = read_v3s16(L, 1);
+	int radius				   = luaL_checkinteger(L, 2);
 	std::vector<content_t> filter;
 	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
@@ -783,7 +783,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	for (int d = start_radius; d <= radius; d++) {
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 		for (const v3s16 &i : list) {
-			v3s16 p = pos + i;
+			v3s16 p		= pos + i;
 			content_t c = env->getMap().getNode(p).getContent();
 			if (CONTAINS(filter, c)) {
 				push_v3s16(L, p);
@@ -815,7 +815,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 
 	v3s16 cube = maxp - minp + 1;
 	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
-	if ((u64)cube.X * (u64)cube.Y * (u64)cube.Z > 4096000) {
+	if ((u64) cube.X * (u64) cube.Y * (u64) cube.Z > 4096000) {
 		luaL_error(L,
 				"find_nodes_in_area(): area volume"
 				" exceeds allowed value of 4096000");
@@ -893,7 +893,7 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 
 	v3s16 cube = maxp - minp + 1;
 	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
-	if ((u64)cube.X * (u64)cube.Y * (u64)cube.Z > 4096000) {
+	if ((u64) cube.X * (u64) cube.Y * (u64) cube.Z > 4096000) {
 		luaL_error(L,
 				"find_nodes_in_area_under_air(): area volume"
 				" exceeds allowed value of 4096000");
@@ -946,16 +946,16 @@ int ModApiEnvMod::l_get_perlin(lua_State *L)
 	if (lua_istable(L, 1)) {
 		read_noiseparams(L, 1, &params);
 	} else {
-		params.seed = luaL_checkint(L, 1);
+		params.seed	   = luaL_checkint(L, 1);
 		params.octaves = luaL_checkint(L, 2);
 		params.persist = readParam<float>(L, 3);
-		params.spread = v3f(1, 1, 1) * readParam<float>(L, 4);
+		params.spread  = v3f(1, 1, 1) * readParam<float>(L, 4);
 	}
 
-	params.seed += (int)env->getServerMap().getSeed();
+	params.seed += (int) env->getServerMap().getSeed();
 
-	LuaPerlinNoise *n = new LuaPerlinNoise(&params);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = n;
+	LuaPerlinNoise *n								= new LuaPerlinNoise(&params);
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = n;
 	luaL_getmetatable(L, "PerlinNoise");
 	lua_setmetatable(L, -2);
 	return 1;
@@ -972,9 +972,9 @@ int ModApiEnvMod::l_get_perlin_map(lua_State *L)
 		return 0;
 	v3s16 size = read_v3s16(L, 2);
 
-	s32 seed = (s32)(env->getServerMap().getSeed());
+	s32 seed			 = (s32)(env->getServerMap().getSeed());
 	LuaPerlinNoiseMap *n = new LuaPerlinNoiseMap(&np, seed, size);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = n;
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = n;
 	luaL_getmetatable(L, "PerlinNoiseMap");
 	lua_setmetatable(L, -2);
 	return 1;
@@ -986,12 +986,12 @@ int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	Map *map = &(env->getMap());
+	Map *map		 = &(env->getMap());
 	LuaVoxelManip *o = (lua_istable(L, 1) && lua_istable(L, 2)) ?
 			new LuaVoxelManip(map, read_v3s16(L, 1), read_v3s16(L, 2)) :
 			new LuaVoxelManip(map);
 
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, "VoxelManip");
 	lua_setmetatable(L, -2);
 	return 1;
@@ -1006,7 +1006,7 @@ int ModApiEnvMod::l_clear_objects(lua_State *L)
 
 	ClearObjectsMode mode = CLEAR_OBJECTS_MODE_QUICK;
 	if (lua_istable(L, 1)) {
-		mode = (ClearObjectsMode)getenumfield(
+		mode = (ClearObjectsMode) getenumfield(
 				L, 1, "mode", ModApiEnvMod::es_ClearObjectsMode, mode);
 	}
 
@@ -1042,7 +1042,7 @@ int ModApiEnvMod::l_fix_light(lua_State *L)
 
 	v3s16 blockpos1 = getContainerPos(read_v3s16(L, 1), MAP_BLOCKSIZE);
 	v3s16 blockpos2 = getContainerPos(read_v3s16(L, 2), MAP_BLOCKSIZE);
-	ServerMap &map = env->getServerMap();
+	ServerMap &map	= env->getServerMap();
 	std::map<v3s16, MapBlock *> modified_blocks;
 	bool success = true;
 	v3s16 blockpos;
@@ -1076,7 +1076,7 @@ int ModApiEnvMod::l_load_area(lua_State *L)
 	GET_ENV_PTR;
 	MAP_LOCK_REQUIRED;
 
-	Map *map = &(env->getMap());
+	Map *map  = &(env->getMap());
 	v3s16 bp1 = getNodeBlockPos(check_v3s16(L, 1));
 	if (!lua_istable(L, 2)) {
 		map->emergeBlock(bp1);
@@ -1100,7 +1100,7 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 	GET_ENV_PTR;
 
 	EmergeCompletionCallback callback = NULL;
-	ScriptCallbackState *state = NULL;
+	ScriptCallbackState *state		  = NULL;
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 
@@ -1120,12 +1120,12 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 		lua_pushvalue(L, 4);
 		int args_ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
-		state = new ScriptCallbackState;
-		state->script = getServer(L)->getScriptIface();
+		state				= new ScriptCallbackState;
+		state->script		= getServer(L)->getScriptIface();
 		state->callback_ref = callback_ref;
-		state->args_ref = args_ref;
-		state->refcount = num_blocks;
-		state->origin = getScriptApiBase(L)->getOrigin();
+		state->args_ref		= args_ref;
+		state->refcount		= num_blocks;
+		state->origin		= getScriptApiBase(L)->getOrigin();
 	}
 
 	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
@@ -1178,12 +1178,12 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	v3s16 pos1 = read_v3s16(L, 1);
-	v3s16 pos2 = read_v3s16(L, 2);
+	v3s16 pos1					= read_v3s16(L, 1);
+	v3s16 pos2					= read_v3s16(L, 2);
 	unsigned int searchdistance = luaL_checkint(L, 3);
-	unsigned int max_jump = luaL_checkint(L, 4);
-	unsigned int max_drop = luaL_checkint(L, 5);
-	PathAlgorithm algo = PA_PLAIN_NP;
+	unsigned int max_jump		= luaL_checkint(L, 4);
+	unsigned int max_drop		= luaL_checkint(L, 5);
+	PathAlgorithm algo			= PA_PLAIN_NP;
 	if (!lua_isnoneornil(L, 6)) {
 		std::string algorithm = luaL_checkstring(L, 6);
 
@@ -1199,7 +1199,7 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 
 	if (!path.empty()) {
 		lua_createtable(L, path.size(), 0);
-		int top = lua_gettop(L);
+		int top			   = lua_gettop(L);
 		unsigned int index = 1;
 		for (const v3s16 &i : path) {
 			lua_pushnumber(L, index);
@@ -1233,7 +1233,7 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 		getstringfield(L, 2, "trunk", trunk);
 		tree_def.trunknode = ndef->getId(trunk);
 		getstringfield(L, 2, "leaves", leaves);
-		tree_def.leavesnode = ndef->getId(leaves);
+		tree_def.leavesnode		= ndef->getId(leaves);
 		tree_def.leaves2_chance = 0;
 		getstringfield(L, 2, "leaves2", leaves);
 		if (!leaves.empty()) {
@@ -1306,7 +1306,7 @@ int ModApiEnvMod::l_get_translated_string(lua_State *L)
 {
 	GET_ENV_PTR;
 	std::string lang_code = luaL_checkstring(L, 1);
-	std::string string = luaL_checkstring(L, 2);
+	std::string string	  = luaL_checkstring(L, 2);
 	getServer(L)->loadTranslationLanguage(lang_code);
 	string = wide_to_utf8(
 			translate_string(utf8_to_wide(string), &(*g_server_translations)[lang_code]));

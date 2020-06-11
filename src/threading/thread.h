@@ -41,18 +41,18 @@ DEALINGS IN THE SOFTWARE.
  * even divisions between the minimum and maximum reported thread priority.
  */
 #if !defined(_WIN32)
-	#define THREAD_PRIORITY_LOWEST       0
+	#define THREAD_PRIORITY_LOWEST 0
 	#define THREAD_PRIORITY_BELOW_NORMAL 1
-	#define THREAD_PRIORITY_NORMAL       2
+	#define THREAD_PRIORITY_NORMAL 2
 	#define THREAD_PRIORITY_ABOVE_NORMAL 3
-	#define THREAD_PRIORITY_HIGHEST      4
+	#define THREAD_PRIORITY_HIGHEST 4
 #endif
 
 
-
-class Thread {
+class Thread
+{
 public:
-	Thread(const std::string &name="");
+	Thread(const std::string &name = "");
 	virtual ~Thread();
 	DISABLE_CLASS_COPY(Thread)
 
@@ -141,11 +141,13 @@ protected:
 
 private:
 	std::thread::native_handle_type getThreadHandle()
-		{ return m_thread_obj->native_handle(); }
+	{
+		return m_thread_obj->native_handle();
+	}
 
 	static void threadProc(Thread *thr);
 
-	void *m_retval = nullptr;
+	void *m_retval	= nullptr;
 	bool m_joinable = false;
 	std::atomic<bool> m_request_stop;
 	std::atomic<bool> m_running;
@@ -161,4 +163,3 @@ private:
 	tid_t m_kernel_thread_id;
 #endif
 };
-

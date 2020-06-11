@@ -55,7 +55,8 @@ enum ClientEventType : u8
 struct ClientEvent
 {
 	ClientEventType type;
-	union {
+	union
+	{
 		// struct{
 		//} none;
 		struct

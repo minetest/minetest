@@ -209,8 +209,8 @@ struct PrioritySortedBlockTransfer
 	PrioritySortedBlockTransfer(float a_priority, const v3s16 &a_pos, session_t a_peer_id)
 	{
 		priority = a_priority;
-		pos = a_pos;
-		peer_id = a_peer_id;
+		pos		 = a_pos;
+		peer_id	 = a_peer_id;
 	}
 	bool operator<(const PrioritySortedBlockTransfer &other) const
 	{
@@ -235,12 +235,12 @@ public:
 	u16 net_proto_version = 0;
 
 	/* Authentication information */
-	std::string enc_pwd = "";
+	std::string enc_pwd				   = "";
 	bool create_player_on_auth_success = false;
-	AuthMechanism chosen_mech = AUTH_MECHANISM_NONE;
-	void *auth_data = nullptr;
-	u32 allowed_auth_mechs = 0;
-	u32 allowed_sudo_mechs = 0;
+	AuthMechanism chosen_mech		   = AUTH_MECHANISM_NONE;
+	void *auth_data					   = nullptr;
+	u32 allowed_auth_mechs			   = 0;
+	u32 allowed_sudo_mechs			   = 0;
 
 	bool isSudoMechAllowed(AuthMechanism mech) { return allowed_sudo_mechs & mech; }
 	bool isMechAllowed(AuthMechanism mech) { return allowed_auth_mechs & mech; }
@@ -332,7 +332,7 @@ public:
 		m_version_major = major;
 		m_version_minor = minor;
 		m_version_patch = patch;
-		m_full_version = full;
+		m_full_version	= full;
 	}
 
 	/* read version information */

@@ -39,8 +39,8 @@ void ProfilerGraph::draw(
 
 	for (const Piece &piece : m_log) {
 		for (const auto &i : piece.values) {
-			const std::string &id = i.first;
-			const float &value = i.second;
+			const std::string &id					= i.first;
+			const float &value						= i.second;
 			std::map<std::string, Meta>::iterator j = m_meta.find(id);
 
 			if (j == m_meta.end()) {
@@ -61,7 +61,7 @@ void ProfilerGraph::draw(
 		video::SColor(255, 90, 225, 90), video::SColor(255, 100, 100, 255),
 		video::SColor(255, 255, 150, 50), video::SColor(255, 220, 220, 100) };
 	static const u32 usable_colors_count = sizeof(usable_colors) / sizeof(*usable_colors);
-	u32 next_color_i = 0;
+	u32 next_color_i					 = 0;
 
 	for (auto &i : m_meta) {
 		Meta &meta = i.second;
@@ -74,17 +74,17 @@ void ProfilerGraph::draw(
 	}
 
 	s32 graphh = 50;
-	s32 textx = x_left + m_log_max_size + 15;
+	s32 textx  = x_left + m_log_max_size + 15;
 	s32 textx2 = textx + 200 - 15;
 	s32 meta_i = 0;
 
 	for (const auto &p : m_meta) {
 		const std::string &id = p.first;
-		const Meta &meta = p.second;
-		s32 x = x_left;
-		s32 y = y_bottom - meta_i * 50;
-		float show_min = meta.min;
-		float show_max = meta.max;
+		const Meta &meta	  = p.second;
+		s32 x				  = x_left;
+		s32 y				  = y_bottom - meta_i * 50;
+		float show_min		  = meta.min;
+		float show_max		  = meta.max;
 
 		if (show_min >= -0.0001 && show_max >= -0.0001) {
 			if (show_min <= show_max * 0.5)
@@ -104,19 +104,19 @@ void ProfilerGraph::draw(
 				core::rect<s32>(textx, y - graphh / 2 - texth / 2, textx2,
 						y - graphh / 2 + texth / 2),
 				meta.color);
-		s32 graph1y = y;
-		s32 graph1h = graphh;
-		bool relativegraph = (show_min != 0 && show_min != show_max);
-		float lastscaledvalue = 0.0;
+		s32 graph1y					= y;
+		s32 graph1h					= graphh;
+		bool relativegraph			= (show_min != 0 && show_min != show_max);
+		float lastscaledvalue		= 0.0;
 		bool lastscaledvalue_exists = false;
 
 		for (const Piece &piece : m_log) {
-			float value = 0;
-			bool value_exists = false;
+			float value								= 0;
+			bool value_exists						= false;
 			Profiler::GraphValues::const_iterator k = piece.values.find(id);
 
 			if (k != piece.values.end()) {
-				value = k->second;
+				value		 = k->second;
 				value_exists = true;
 			}
 
@@ -145,7 +145,7 @@ void ProfilerGraph::draw(
 							v2s32(x, graph1y - ivalue2), meta.color);
 				}
 
-				lastscaledvalue = scaledvalue;
+				lastscaledvalue		   = scaledvalue;
 				lastscaledvalue_exists = true;
 			} else {
 				s32 ivalue = scaledvalue * graph1h;

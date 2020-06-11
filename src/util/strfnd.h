@@ -50,7 +50,7 @@ public:
 			n = str.size();
 		}
 		String ret = str.substr(pos, n - pos);
-		pos = n + sep.size();
+		pos		   = n + sep.size();
 		return ret;
 	}
 

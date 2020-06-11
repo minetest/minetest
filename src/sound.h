@@ -27,10 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct SimpleSoundSpec
 {
 	SimpleSoundSpec(const std::string &name = "", float gain = 1.0f, float fade = 0.0f,
-			float pitch = 1.0f)
-		: name(name), gain(gain), fade(fade), pitch(pitch)
-	{
-	}
+			float pitch = 1.0f) :
+		name(name),
+		gain(gain), fade(fade), pitch(pitch)
+	{}
 
 	bool exists() const { return !name.empty(); }
 
@@ -48,14 +48,14 @@ struct SimpleSoundSpec
 
 	void deSerialize(std::istream &is, u8 cf_version)
 	{
-		name = deSerializeString(is);
-		gain = readF32(is);
+		name  = deSerializeString(is);
+		gain  = readF32(is);
 		pitch = readF32(is);
-		fade = readF32(is);
+		fade  = readF32(is);
 	}
 
 	std::string name;
-	float gain = 1.0f;
-	float fade = 0.0f;
+	float gain	= 1.0f;
+	float fade	= 0.0f;
 	float pitch = 1.0f;
 };

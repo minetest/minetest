@@ -55,7 +55,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 		int num_vars = readU32(is);
 		for (int i = 0; i < num_vars; i++) {
 			std::string name = deSerializeString(is);
-			std::string var = deSerializeLongString(is);
+			std::string var	 = deSerializeLongString(is);
 			meta->setString(name, var);
 		}
 		return false;
@@ -104,16 +104,16 @@ static bool content_nodemeta_deserialize_legacy_body(
 		meta->getInventory()->deSerialize(is);
 		int temp = 0;
 		is >> temp;
-		meta->setString("fuel_totaltime", ftos((float)temp / 10));
+		meta->setString("fuel_totaltime", ftos((float) temp / 10));
 		temp = 0;
 		is >> temp;
-		meta->setString("fuel_time", ftos((float)temp / 10));
+		meta->setString("fuel_time", ftos((float) temp / 10));
 		temp = 0;
 		is >> temp;
 		//meta->setString("src_totaltime", ftos((float)temp/10));
 		temp = 0;
 		is >> temp;
-		meta->setString("src_time", ftos((float)temp / 10));
+		meta->setString("src_time", ftos((float) temp / 10));
 
 		meta->setString("formspec",
 				"size[8,9]"
@@ -173,7 +173,7 @@ void content_nodemeta_deserialize_legacy(std::istream &is, NodeMetadataList *met
 		}
 
 		NodeMetadata *data = new NodeMetadata(item_def_mgr);
-		bool need_timer = content_nodemeta_deserialize_legacy_meta(is, data);
+		bool need_timer	   = content_nodemeta_deserialize_legacy_meta(is, data);
 		meta->set(p, data);
 
 		if (need_timer)

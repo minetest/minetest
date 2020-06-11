@@ -39,7 +39,7 @@ private:
 	void scanColumn(int x, int z);
 
 private:
-	Map *m_map = nullptr;
+	Map *m_map					 = nullptr;
 	const NodeDefManager *m_ndef = nullptr;
 	v3s16 m_block_pos, m_rel_block_pos;
 	UniqueQueue<v3s16> *m_liquid_queue = nullptr;

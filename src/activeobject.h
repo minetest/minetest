@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 enum ActiveObjectType
 {
 	ACTIVEOBJECT_TYPE_INVALID = 0,
-	ACTIVEOBJECT_TYPE_TEST = 1,
+	ACTIVEOBJECT_TYPE_TEST	  = 1,
 	// Obsolete stuff
 	ACTIVEOBJECT_TYPE_ITEM = 2,
 	//	ACTIVEOBJECT_TYPE_RAT = 3,
@@ -45,10 +45,9 @@ enum ActiveObjectType
 
 struct ActiveObjectMessage
 {
-	ActiveObjectMessage(u16 id_, bool reliable_ = true, const std::string &data_ = "")
-		: id(id_), reliable(reliable_), datastring(data_)
-	{
-	}
+	ActiveObjectMessage(u16 id_, bool reliable_ = true, const std::string &data_ = "") :
+		id(id_), reliable(reliable_), datastring(data_)
+	{}
 
 	u16 id;
 	bool reliable;
@@ -113,12 +112,10 @@ public:
 
 	virtual void setAttachment(
 			int parent_id, const std::string &bone, v3f position, v3f rotation)
-	{
-	}
+	{}
 	virtual void getAttachment(
 			int *parent_id, std::string *bone, v3f *position, v3f *rotation) const
-	{
-	}
+	{}
 	virtual void clearChildAttachments() {}
 	virtual void clearParentAttachment() {}
 	virtual void addAttachmentChild(int child_id) {}

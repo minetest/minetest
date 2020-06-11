@@ -36,10 +36,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkexceptions.h"
 
 #if USE_SOUND
-#include "sound_openal.h"
+	#include "sound_openal.h"
 #endif
 #ifdef __ANDROID__
-#include "porting.h"
+	#include "porting.h"
 #endif
 
 /* mainmenumanager.h
@@ -123,7 +123,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 			scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
 	guienv = RenderingEngine::get_gui_env();
-	skin = RenderingEngine::get_gui_env()->getSkin();
+	skin   = RenderingEngine::get_gui_env()->getSkin();
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
 	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 30, 30, 30));
@@ -144,8 +144,8 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		else
 			sprite_path.append("checkbox_16.png");
 		// Texture dimensions should be a power of 2
-		gui::IGUISpriteBank *sprites = skin->getSpriteBank();
-		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+		gui::IGUISpriteBank *sprites	= skin->getSpriteBank();
+		video::IVideoDriver *driver		= RenderingEngine::get_video_driver();
 		video::ITexture *sprite_texture = driver->getTexture(sprite_path.c_str());
 		if (sprite_texture) {
 			s32 sprite_id = sprites->addTextureAsSprite(sprite_texture);
@@ -192,7 +192,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		Menu-game loop
 	*/
 	bool retval = true;
-	bool *kill = porting::signal_handler_killstatus();
+	bool *kill	= porting::signal_handler_killstatus();
 
 	while (RenderingEngine::run() && !*kill && !g_gamecallback->shutdown_requested) {
 		// Set the window caption
@@ -243,7 +243,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 			if (current_playername.length() > PLAYERNAME_SIZE - 1) {
 				error_message = gettext("Player name too long.");
-				playername = current_playername.substr(0, PLAYERNAME_SIZE - 1);
+				playername	  = current_playername.substr(0, PLAYERNAME_SIZE - 1);
 				g_settings->set("name", playername);
 				continue;
 			}
@@ -265,7 +265,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 #ifdef HAVE_TOUCHSCREENGUI
 			delete g_touchscreengui;
-			g_touchscreengui = NULL;
+			g_touchscreengui		   = NULL;
 			receiver->m_touchscreengui = NULL;
 #endif
 
@@ -366,11 +366,11 @@ bool ClientLauncher::launch_game(std::string &error_message, bool reconnect_requ
 {
 	// Initialize menu data
 	MainMenuData menudata;
-	menudata.address = address;
-	menudata.name = playername;
-	menudata.password = password;
-	menudata.port = itos(game_params.socket_port);
-	menudata.script_data.errormessage = error_message;
+	menudata.address						 = address;
+	menudata.name							 = playername;
+	menudata.password						 = password;
+	menudata.port							 = itos(game_params.socket_port);
+	menudata.script_data.errormessage		 = error_message;
 	menudata.script_data.reconnect_requested = reconnect_requested;
 
 	error_message.clear();
@@ -395,7 +395,7 @@ bool ClientLauncher::launch_game(std::string &error_message, bool reconnect_requ
 	// If a world was commanded, append and select it
 	if (!game_params.world_path.empty()) {
 		worldspec.gameid = getWorldGameId(game_params.world_path, true);
-		worldspec.name = _("[--world parameter]");
+		worldspec.name	 = _("[--world parameter]");
 
 		if (worldspec.gameid.empty()) { // Create new
 			worldspec.gameid = g_settings->get("default_game");
@@ -413,7 +413,7 @@ bool ClientLauncher::launch_game(std::string &error_message, bool reconnect_requ
 		if (*porting::signal_handler_killstatus())
 			return false;
 
-		address = menudata.address;
+		address		= menudata.address;
 		int newport = stoi(menudata.port);
 		if (newport != 0)
 			game_params.socket_port = newport;
@@ -423,7 +423,7 @@ bool ClientLauncher::launch_game(std::string &error_message, bool reconnect_requ
 		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 
 		if (menudata.selected_world >= 0 &&
-				menudata.selected_world < (int)worldspecs.size()) {
+				menudata.selected_world < (int) worldspecs.size()) {
 			g_settings->set(
 					"selected_world_path", worldspecs[menudata.selected_world].path);
 			worldspec = worldspecs[menudata.selected_world];
@@ -445,27 +445,27 @@ bool ClientLauncher::launch_game(std::string &error_message, bool reconnect_requ
 	}
 
 	playername = menudata.name;
-	password = menudata.password;
+	password   = menudata.password;
 
 	current_playername = playername;
-	current_password = password;
-	current_address = address;
-	current_port = game_params.socket_port;
+	current_password   = password;
+	current_address	   = address;
+	current_port	   = game_params.socket_port;
 
 	// If using simple singleplayer mode, override
 	if (simple_singleplayer_mode) {
 		assert(!skip_main_menu);
 		current_playername = "singleplayer";
-		current_password = "";
-		current_address = "";
-		current_port = myrand_range(49152, 65535);
+		current_password   = "";
+		current_address	   = "";
+		current_port	   = myrand_range(49152, 65535);
 	} else {
 		g_settings->set("name", playername);
 		if (!address.empty()) {
 			ServerListSpec server;
-			server["name"] = menudata.servername;
-			server["address"] = menudata.address;
-			server["port"] = menudata.port;
+			server["name"]		  = menudata.servername;
+			server["address"]	  = menudata.address;
+			server["port"]		  = menudata.port;
 			server["description"] = menudata.serverdescription;
 			ServerList::insert(server);
 		}
@@ -521,7 +521,7 @@ bool ClientLauncher::launch_game(std::string &error_message, bool reconnect_requ
 
 void ClientLauncher::main_menu(MainMenuData *menudata)
 {
-	bool *kill = porting::signal_handler_killstatus();
+	bool *kill					= porting::signal_handler_killstatus();
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	infostream << "Waiting for other menus" << std::endl;
@@ -568,8 +568,8 @@ void ClientLauncher::speed_tests()
 		TimeTaker timer("Testing std::string speed");
 		const u32 jj = 10000;
 		for (u32 j = 0; j < jj; j++) {
-			tempstring = "";
-			tempstring2 = "";
+			tempstring	 = "";
+			tempstring2	 = "";
 			const u32 ii = 10;
 			for (u32 i = 0; i < ii; i++) {
 				tempstring2 += "asd";
@@ -609,7 +609,7 @@ void ClientLauncher::speed_tests()
 		TimeTaker timer("Testing std::map speed");
 
 		std::map<v2s16, f32> map1;
-		tempf = -324;
+		tempf		 = -324;
 		const s16 ii = 300;
 		for (s16 y = 0; y < ii; y++) {
 			for (s16 x = 0; x < ii; x++) {
@@ -641,7 +641,7 @@ void ClientLauncher::speed_tests()
 		// Do at least 10ms
 		while (timer.getTimerTime() < 10);
 
-		u32 dtime = timer.stop();
+		u32 dtime  = timer.stop();
 		u32 per_ms = n / dtime;
 		infostream << "Done. " << dtime << "ms, " << per_ms << "/ms" << std::endl;
 	}

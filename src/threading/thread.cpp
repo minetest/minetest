@@ -34,17 +34,18 @@ DEALINGS IN THE SOFTWARE.
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 	#include <pthread_np.h>
 #elif defined(_MSC_VER)
-	struct THREADNAME_INFO {
-		DWORD dwType;     // Must be 0x1000
-		LPCSTR szName;    // Pointer to name (in user addr space)
-		DWORD dwThreadID; // Thread ID (-1=caller thread)
-		DWORD dwFlags;    // Reserved for future use, must be zero
-	};
+struct THREADNAME_INFO
+{
+	DWORD dwType; // Must be 0x1000
+	LPCSTR szName; // Pointer to name (in user addr space)
+	DWORD dwThreadID; // Thread ID (-1=caller thread)
+	DWORD dwFlags; // Reserved for future use, must be zero
+};
 #endif
 
 // for bindToProcessor
 #if __FreeBSD_version >= 702106
-	typedef cpuset_t cpu_set_t;
+typedef cpuset_t cpu_set_t;
 #elif defined(__sun) || defined(sun)
 	#include <sys/types.h>
 	#include <sys/processor.h>
@@ -59,9 +60,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 Thread::Thread(const std::string &name) :
-	m_name(name),
-	m_request_stop(false),
-	m_running(false)
+	m_name(name), m_request_stop(false), m_running(false)
 {
 #ifdef _AIX
 	m_kernel_thread_id = -1;
@@ -76,7 +75,6 @@ Thread::~Thread()
 	// Make sure start finished mutex is unlocked before it's destroyed
 	if (m_start_finished_mutex.try_lock())
 		m_start_finished_mutex.unlock();
-
 }
 
 
@@ -152,16 +150,16 @@ bool Thread::kill()
 #else
 	// We need to pthread_kill instead on Android since NDKv5's pthread
 	// implementation is incomplete.
-# ifdef __ANDROID__
+	#ifdef __ANDROID__
 	pthread_kill(getThreadHandle(), SIGKILL);
-# else
+	#else
 	pthread_cancel(getThreadHandle());
-# endif
+	#endif
 	wait();
 #endif
 
-	m_retval       = nullptr;
-	m_joinable     = false;
+	m_retval	   = nullptr;
+	m_joinable	   = false;
 	m_request_stop = false;
 
 	return true;
@@ -231,14 +229,13 @@ void Thread::setName(const std::string &name)
 	// but the MSVC debugger does...
 	THREADNAME_INFO info;
 
-	info.dwType = 0x1000;
-	info.szName = name.c_str();
+	info.dwType		= 0x1000;
+	info.szName		= name.c_str();
 	info.dwThreadID = -1;
-	info.dwFlags = 0;
+	info.dwFlags	= 0;
 
 	__try {
-		RaiseException(0x406D1388, 0,
-			sizeof(info) / sizeof(DWORD), (ULONG_PTR *)&info);
+		RaiseException(0x406D1388, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR *) &info);
 	} __except (EXCEPTION_CONTINUE_EXECUTION) {
 	}
 
@@ -294,18 +291,17 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 
 	pthread_spu_t answer;
 
-	return pthread_processor_bind_np(PTHREAD_BIND_ADVISORY_NP,
-			&answer, proc_number, getThreadHandle()) == 0;
+	return pthread_processor_bind_np(PTHREAD_BIND_ADVISORY_NP, &answer, proc_number,
+				   getThreadHandle()) == 0;
 
 #elif defined(__APPLE__)
 
 	struct thread_affinity_policy tapol;
 
 	thread_port_t threadport = pthread_mach_thread_np(getThreadHandle());
-	tapol.affinity_tag = proc_number + 1;
-	return thread_policy_set(threadport, THREAD_AFFINITY_POLICY,
-			(thread_policy_t)&tapol,
-			THREAD_AFFINITY_POLICY_COUNT) == KERN_SUCCESS;
+	tapol.affinity_tag		 = proc_number + 1;
+	return thread_policy_set(threadport, THREAD_AFFINITY_POLICY, (thread_policy_t) &tapol,
+				   THREAD_AFFINITY_POLICY_COUNT) == KERN_SUCCESS;
 
 #else
 
@@ -341,4 +337,3 @@ bool Thread::setPriority(int prio)
 
 #endif
 }
-

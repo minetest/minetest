@@ -20,27 +20,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_POSTGRESQL
 
-#include "database-postgresql.h"
+	#include "database-postgresql.h"
 
-#ifdef _WIN32
-// Without this some of the network functions are not found on mingw
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif
-#include <windows.h>
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#endif
+	#ifdef _WIN32
+		// Without this some of the network functions are not found on mingw
+		#ifndef _WIN32_WINNT
+			#define _WIN32_WINNT 0x0501
+		#endif
+		#include <windows.h>
+		#include <winsock2.h>
+	#else
+		#include <netinet/in.h>
+	#endif
 
-#include "debug.h"
-#include "exceptions.h"
-#include "settings.h"
-#include "remoteplayer.h"
-#include "server/player_sao.h"
+	#include "debug.h"
+	#include "exceptions.h"
+	#include "settings.h"
+	#include "remoteplayer.h"
+	#include "server/player_sao.h"
 
-Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string)
-	: m_connect_string(connect_string)
+Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string) :
+	m_connect_string(connect_string)
 {
 	if (m_connect_string.empty()) {
 		throw SettingNotFoundException(
@@ -167,8 +167,8 @@ void Database_PostgreSQL::rollback()
 	checkResults(PQexec(m_conn, "ROLLBACK;"));
 }
 
-MapDatabasePostgreSQL::MapDatabasePostgreSQL(const std::string &connect_string)
-	: Database_PostgreSQL(connect_string), MapDatabase()
+MapDatabasePostgreSQL::MapDatabasePostgreSQL(const std::string &connect_string) :
+	Database_PostgreSQL(connect_string), MapDatabase()
 {
 	connectToDatabase();
 }
@@ -240,7 +240,7 @@ bool MapDatabasePostgreSQL::saveBlock(const v3s16 &pos, const std::string &data)
 	z = htonl(pos.Z);
 
 	const void *args[] = { &x, &y, &z, data.c_str() };
-	const int argLen[] = { sizeof(x), sizeof(y), sizeof(z), (int)data.size() };
+	const int argLen[] = { sizeof(x), sizeof(y), sizeof(z), (int) data.size() };
 	const int argFmt[] = { 1, 1, 1, 1 };
 
 	if (getPGVersion() < 90500) {
@@ -312,8 +312,8 @@ void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
 /*
  * Player Database
  */
-PlayerDatabasePostgreSQL::PlayerDatabasePostgreSQL(const std::string &connect_string)
-	: Database_PostgreSQL(connect_string), PlayerDatabase()
+PlayerDatabasePostgreSQL::PlayerDatabasePostgreSQL(const std::string &connect_string) :
+	Database_PostgreSQL(connect_string), PlayerDatabase()
 {
 	connectToDatabase();
 }
@@ -435,7 +435,7 @@ bool PlayerDatabasePostgreSQL::playerDataExists(const std::string &playername)
 	pingDatabase();
 
 	const char *values[] = { playername.c_str() };
-	PGresult *results = execPrepared("load_player", 1, values, false);
+	PGresult *results	 = execPrepared("load_player", 1, values, false);
 
 	bool res = (PQntuples(results) > 0);
 	PQclear(results);
@@ -450,14 +450,14 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 
 	pingDatabase();
 
-	v3f pos = sao->getBasePosition();
-	std::string pitch = ftos(sao->getLookPitch());
-	std::string yaw = ftos(sao->getRotation().Y);
-	std::string posx = ftos(pos.X);
-	std::string posy = ftos(pos.Y);
-	std::string posz = ftos(pos.Z);
-	std::string hp = itos(sao->getHP());
-	std::string breath = itos(sao->getBreath());
+	v3f pos				 = sao->getBasePosition();
+	std::string pitch	 = ftos(sao->getLookPitch());
+	std::string yaw		 = ftos(sao->getRotation().Y);
+	std::string posx	 = ftos(pos.X);
+	std::string posy	 = ftos(pos.Y);
+	std::string posz	 = ftos(pos.Z);
+	std::string hp		 = itos(sao->getHP());
+	std::string breath	 = itos(sao->getBreath());
 	const char *values[] = { player->getName(), pitch.c_str(), yaw.c_str(), posx.c_str(),
 		posy.c_str(), posz.c_str(), hp.c_str(), breath.c_str() };
 
@@ -479,7 +479,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	std::vector<const InventoryList *> inventory_lists = sao->getInventory()->getLists();
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
 		const InventoryList *list = inventory_lists[i];
-		const std::string &name = list->getName();
+		const std::string &name	  = list->getName();
 		std::string width = itos(list->getWidth()), inv_id = itos(i),
 					lsize = itos(list->getSize());
 
@@ -516,7 +516,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	pingDatabase();
 
 	const char *values[] = { player->getName() };
-	PGresult *results = execPrepared("load_player", 1, values, false, false);
+	PGresult *results	 = execPrepared("load_player", 1, values, false, false);
 
 	// Player not found, return not found
 	if (!PQntuples(results)) {
@@ -528,8 +528,8 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	sao->setRotation(v3f(0, pg_to_float(results, 0, 1), 0));
 	sao->setBasePosition(v3f(pg_to_float(results, 0, 2), pg_to_float(results, 0, 3),
 			pg_to_float(results, 0, 4)));
-	sao->setHPRaw((u16)pg_to_int(results, 0, 5));
-	sao->setBreath((u16)pg_to_int(results, 0, 6), false);
+	sao->setHPRaw((u16) pg_to_int(results, 0, 5));
+	sao->setBreath((u16) pg_to_int(results, 0, 6), false);
 
 	PQclear(results);
 
@@ -543,7 +543,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 				PQgetvalue(results, row, 2), pg_to_uint(results, row, 3));
 		invList->setWidth(pg_to_uint(results, row, 1));
 
-		u32 invId = pg_to_uint(results, row, 0);
+		u32 invId			 = pg_to_uint(results, row, 0);
 		std::string invIdStr = itos(invId);
 
 		const char *values2[] = { player->getName(), invIdStr.c_str() };
@@ -604,8 +604,8 @@ void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 	PQclear(results);
 }
 
-AuthDatabasePostgreSQL::AuthDatabasePostgreSQL(const std::string &connect_string)
-	: Database_PostgreSQL(connect_string), AuthDatabase()
+AuthDatabasePostgreSQL::AuthDatabasePostgreSQL(const std::string &connect_string) :
+	Database_PostgreSQL(connect_string), AuthDatabase()
 {
 	connectToDatabase();
 }
@@ -654,23 +654,23 @@ bool AuthDatabasePostgreSQL::getAuth(const std::string &name, AuthEntry &res)
 	pingDatabase();
 
 	const char *values[] = { name.c_str() };
-	PGresult *result = execPrepared("auth_read", 1, values, false, false);
-	int numrows = PQntuples(result);
+	PGresult *result	 = execPrepared("auth_read", 1, values, false, false);
+	int numrows			 = PQntuples(result);
 	if (numrows == 0) {
 		PQclear(result);
 		return false;
 	}
 
-	res.id = pg_to_uint(result, 0, 0);
-	res.name = std::string(PQgetvalue(result, 0, 1), PQgetlength(result, 0, 1));
-	res.password = std::string(PQgetvalue(result, 0, 2), PQgetlength(result, 0, 2));
+	res.id		   = pg_to_uint(result, 0, 0);
+	res.name	   = std::string(PQgetvalue(result, 0, 1), PQgetlength(result, 0, 1));
+	res.password   = std::string(PQgetvalue(result, 0, 2), PQgetlength(result, 0, 2));
 	res.last_login = pg_to_int(result, 0, 3);
 
 	PQclear(result);
 
-	std::string playerIdStr = itos(res.id);
+	std::string playerIdStr	  = itos(res.id);
 	const char *privsValues[] = { playerIdStr.c_str() };
-	PGresult *results = execPrepared("auth_read_privs", 1, privsValues, false);
+	PGresult *results		  = execPrepared("auth_read_privs", 1, privsValues, false);
 
 	numrows = PQntuples(results);
 	for (int row = 0; row < numrows; row++)
@@ -688,8 +688,8 @@ bool AuthDatabasePostgreSQL::saveAuth(const AuthEntry &authEntry)
 	beginSave();
 
 	std::string lastLoginStr = itos(authEntry.last_login);
-	std::string idStr = itos(authEntry.id);
-	const char *values[] = {
+	std::string idStr		 = itos(authEntry.id);
+	const char *values[]	 = {
 		authEntry.name.c_str(),
 		authEntry.password.c_str(),
 		lastLoginStr.c_str(),
@@ -708,7 +708,7 @@ bool AuthDatabasePostgreSQL::createAuth(AuthEntry &authEntry)
 	pingDatabase();
 
 	std::string lastLoginStr = itos(authEntry.last_login);
-	const char *values[] = { authEntry.name.c_str(), authEntry.password.c_str(),
+	const char *values[]	 = { authEntry.name.c_str(), authEntry.password.c_str(),
 		lastLoginStr.c_str() };
 
 	beginSave();
@@ -766,7 +766,7 @@ void AuthDatabasePostgreSQL::reload()
 void AuthDatabasePostgreSQL::writePrivileges(const AuthEntry &authEntry)
 {
 	std::string authIdStr = itos(authEntry.id);
-	const char *values[] = { authIdStr.c_str() };
+	const char *values[]  = { authIdStr.c_str() };
 	execPrepared("auth_delete_privs", 1, values);
 
 	for (const std::string &privilege : authEntry.privileges) {

@@ -26,8 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "nameidmapping.h"
 #ifndef SERVER
-#include "client/tile.h"
-#include <IMeshManipulator.h>
+	#include "client/tile.h"
+	#include <IMeshManipulator.h>
 class Client;
 #endif
 #include "itemgroup.h"
@@ -217,9 +217,9 @@ enum NodeDrawType
 };
 
 // Mesh options for NDT_PLANTLIKE with CPT2_MESHOPTIONS
-static const u8 MO_MASK_STYLE = 0x07;
-static const u8 MO_BIT_RANDOM_OFFSET = 0x08;
-static const u8 MO_BIT_SCALE_SQRT2 = 0x10;
+static const u8 MO_MASK_STYLE		   = 0x07;
+static const u8 MO_BIT_RANDOM_OFFSET   = 0x08;
+static const u8 MO_BIT_SCALE_SQRT2	   = 0x10;
 static const u8 MO_BIT_RANDOM_OFFSET_Y = 0x20;
 enum PlantlikeStyle
 {
@@ -243,16 +243,16 @@ enum AlignStyle : u8
 
 struct TileDef
 {
-	std::string name = "";
-	bool backface_culling = true; // Takes effect only in special cases
+	std::string name		 = "";
+	bool backface_culling	 = true; // Takes effect only in special cases
 	bool tileable_horizontal = true;
-	bool tileable_vertical = true;
+	bool tileable_vertical	 = true;
 	//! If true, the tile has its own color.
 	bool has_color = false;
 	//! The color of the tile.
-	video::SColor color = video::SColor(0xFFFFFFFF);
+	video::SColor color	   = video::SColor(0xFFFFFFFF);
 	AlignStyle align_style = ALIGN_STYLE_NODE;
-	u8 scale = 0;
+	u8 scale			   = 0;
 
 	struct TileAnimationParams animation;
 
@@ -757,10 +757,10 @@ public:
 
 	void nodeResolveInternal();
 
-	u32 m_nodenames_idx = 0;
+	u32 m_nodenames_idx	  = 0;
 	u32 m_nnlistsizes_idx = 0;
 	std::vector<std::string> m_nodenames;
 	std::vector<size_t> m_nnlistsizes;
 	const NodeDefManager *m_ndef = nullptr;
-	bool m_resolve_done = false;
+	bool m_resolve_done			 = false;
 };

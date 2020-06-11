@@ -62,7 +62,7 @@ enum CraftHashType
 	CRAFT_HASH_TYPE_UNHASHED
 
 };
-const int craft_hash_type_max = (int)CRAFT_HASH_TYPE_UNHASHED;
+const int craft_hash_type_max = (int) CRAFT_HASH_TYPE_UNHASHED;
 
 /*
 	Input: The contents of the crafting slots, arranged in matrix form
@@ -76,10 +76,10 @@ struct CraftInput
 	CraftInput() = default;
 
 	CraftInput(CraftMethod method_, unsigned int width_,
-			const std::vector<ItemStack> &items_)
-		: method(method_), width(width_), items(items_)
-	{
-	}
+			const std::vector<ItemStack> &items_) :
+		method(method_),
+		width(width_), items(items_)
+	{}
 
 	// Returns true if all items are empty.
 	bool empty() const;
@@ -119,10 +119,9 @@ struct CraftReplacements
 	std::vector<std::pair<std::string, std::string>> pairs;
 
 	CraftReplacements() = default;
-	CraftReplacements(const std::vector<std::pair<std::string, std::string>> &pairs_)
-		: pairs(pairs_)
-	{
-	}
+	CraftReplacements(const std::vector<std::pair<std::string, std::string>> &pairs_) :
+		pairs(pairs_)
+	{}
 	std::string dump() const;
 };
 
@@ -149,7 +148,7 @@ public:
 		PRIORITY_SHAPED,
 	};
 
-	CraftDefinition() = default;
+	CraftDefinition()		   = default;
 	virtual ~CraftDefinition() = default;
 
 	// Returns type of crafting definition
@@ -387,7 +386,7 @@ private:
 class ICraftDefManager
 {
 public:
-	ICraftDefManager() = default;
+	ICraftDefManager()			= default;
 	virtual ~ICraftDefManager() = default;
 
 	/**
@@ -416,7 +415,7 @@ public:
 class IWritableCraftDefManager : public ICraftDefManager
 {
 public:
-	IWritableCraftDefManager() = default;
+	IWritableCraftDefManager()			= default;
 	virtual ~IWritableCraftDefManager() = default;
 
 	// The main crafting function
@@ -427,7 +426,7 @@ public:
 			CraftOutput &output, IGameDef *gamedef, unsigned limit = 0) const = 0;
 
 	virtual bool clearCraftsByOutput(const CraftOutput &output, IGameDef *gamedef) = 0;
-	virtual bool clearCraftsByInput(const CraftInput &input, IGameDef *gamedef) = 0;
+	virtual bool clearCraftsByInput(const CraftInput &input, IGameDef *gamedef)	   = 0;
 
 	// Print crafting recipes for debugging
 	virtual std::string dump() const = 0;

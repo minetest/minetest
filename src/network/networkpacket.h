@@ -126,8 +126,8 @@ private:
 	}
 
 	std::vector<u8> m_data;
-	u32 m_datasize = 0;
-	u32 m_read_offset = 0;
-	u16 m_command = 0;
+	u32 m_datasize		= 0;
+	u32 m_read_offset	= 0;
+	u16 m_command		= 0;
 	session_t m_peer_id = 0;
 };

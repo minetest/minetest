@@ -26,8 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "serverenvironment.h"
 
-LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data)
-	: UnitSAO(env, pos)
+LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data) :
+	UnitSAO(env, pos)
 {
 	std::string name;
 	std::string state;
@@ -40,15 +40,15 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 		// 'version' does not allow to incrementally extend the parameter list thus
 		// we need another variable to build on top of 'version=1'. Ugly hack but works™
 		u8 version2 = 0;
-		u8 version = readU8(is);
+		u8 version	= readU8(is);
 
-		name = deSerializeString(is);
+		name  = deSerializeString(is);
 		state = deSerializeLongString(is);
 
 		if (version < 1)
 			break;
 
-		hp = readU16(is);
+		hp		 = readU16(is);
 		velocity = readV3F1000(is);
 		// yaw must be yaw to be backwards-compatible
 		rotation.Y = readF1000(is);
@@ -72,11 +72,11 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 	infostream << "LuaEntitySAO::create(name=\"" << name << "\" state=\"" << state
 			   << "\")" << std::endl;
 
-	m_init_name = name;
+	m_init_name	 = name;
 	m_init_state = state;
-	m_hp = hp;
-	m_velocity = velocity;
-	m_rotation = rotation;
+	m_hp		 = hp;
+	m_velocity	 = velocity;
+	m_rotation	 = rotation;
 }
 
 LuaEntitySAO::~LuaEntitySAO()
@@ -113,7 +113,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
 	if (!m_properties_sent) {
 		m_properties_sent = true;
-		std::string str = getPropertyPacket();
+		std::string str	  = getPropertyPacket();
 		// create message and add to list
 		m_messages_out.emplace(getId(), true, str);
 	}
@@ -137,26 +137,26 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if (isAttached()) {
 		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		m_base_position = pos;
-		m_velocity = v3f(0, 0, 0);
-		m_acceleration = v3f(0, 0, 0);
+		m_velocity		= v3f(0, 0, 0);
+		m_acceleration	= v3f(0, 0, 0);
 	} else {
 		if (m_prop.physical) {
 			aabb3f box = m_prop.collisionbox;
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
-			f32 pos_max_d = BS * 0.25; // Distance per iteration
-			v3f p_pos = m_base_position;
-			v3f p_velocity = m_velocity;
+			f32 pos_max_d	   = BS * 0.25; // Distance per iteration
+			v3f p_pos		   = m_base_position;
+			v3f p_velocity	   = m_velocity;
 			v3f p_acceleration = m_acceleration;
-			moveresult = collisionMoveSimple(m_env, m_env->getGameDef(), pos_max_d, box,
-					m_prop.stepheight, dtime, &p_pos, &p_velocity, p_acceleration, this,
-					m_prop.collideWithObjects);
+			moveresult	 = collisionMoveSimple(m_env, m_env->getGameDef(), pos_max_d, box,
+					  m_prop.stepheight, dtime, &p_pos, &p_velocity, p_acceleration, this,
+					  m_prop.collideWithObjects);
 			moveresult_p = &moveresult;
 
 			// Apply results
 			m_base_position = p_pos;
-			m_velocity = p_velocity;
-			m_acceleration = p_acceleration;
+			m_velocity		= p_velocity;
+			m_acceleration	= p_acceleration;
 		} else {
 			m_base_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
 			m_velocity += dtime * m_acceleration;
@@ -307,7 +307,7 @@ u16 LuaEntitySAO::punch(v3f dir, const ToolCapabilities *toolcap,
 
 	if (!damage_handled) {
 		if (result.did_punch) {
-			setHP((s32)getHP() - result.damage,
+			setHP((s32) getHP() - result.damage,
 					PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 
 			// create message and add to list
@@ -325,7 +325,7 @@ u16 LuaEntitySAO::punch(v3f dir, const ToolCapabilities *toolcap,
 	actionstream << puncher->getDescription() << " (id=" << puncher->getId()
 				 << ", hp=" << puncher->getHP() << ") punched " << getDescription()
 				 << " (id=" << m_id << ", hp=" << m_hp
-				 << "), damage=" << (old_hp - (s32)getHP())
+				 << "), damage=" << (old_hp - (s32) getHP())
 				 << (damage_handled ? " (handled by Lua)" : "") << std::endl;
 
 	// TODO: give Lua control over wear
@@ -465,8 +465,8 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 
 	m_last_sent_move_precision = m_base_position.getDistanceFrom(m_last_sent_position);
 	m_last_sent_position_timer = 0;
-	m_last_sent_position = m_base_position;
-	m_last_sent_velocity = m_velocity;
+	m_last_sent_position	   = m_base_position;
+	m_last_sent_velocity	   = m_velocity;
 	//m_last_sent_acceleration = m_acceleration;
 	m_last_sent_rotation = m_rotation;
 

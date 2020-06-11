@@ -44,20 +44,20 @@ public:
 
 	virtual void updateListener(
 			const v3f &pos, const v3f &vel, const v3f &at, const v3f &up) = 0;
-	virtual void setListenerGain(float gain) = 0;
+	virtual void setListenerGain(float gain)							  = 0;
 
 	// playSound functions return -1 on failure, otherwise a handle to the
 	// sound. If name=="", call should be ignored without error.
 	virtual int playSound(const std::string &name, bool loop, float volume,
-			float fade = 0.0f, float pitch = 1.0f) = 0;
+			float fade = 0.0f, float pitch = 1.0f)			  = 0;
 	virtual int playSoundAt(const std::string &name, bool loop, float volume, v3f pos,
-			float pitch = 1.0f) = 0;
-	virtual void stopSound(int sound) = 0;
-	virtual bool soundExists(int sound) = 0;
-	virtual void updateSoundPosition(int sound, v3f pos) = 0;
-	virtual bool updateSoundGain(int id, float gain) = 0;
-	virtual float getSoundGain(int id) = 0;
-	virtual void step(float dtime) = 0;
+			float pitch = 1.0f)								  = 0;
+	virtual void stopSound(int sound)						  = 0;
+	virtual bool soundExists(int sound)						  = 0;
+	virtual void updateSoundPosition(int sound, v3f pos)	  = 0;
+	virtual bool updateSoundGain(int id, float gain)		  = 0;
+	virtual float getSoundGain(int id)						  = 0;
+	virtual void step(float dtime)							  = 0;
 	virtual void fadeSound(int sound, float step, float gain) = 0;
 
 	int playSound(const SimpleSoundSpec &spec, bool loop)

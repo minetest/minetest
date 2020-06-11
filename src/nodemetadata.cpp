@@ -31,10 +31,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	NodeMetadata
 */
 
-NodeMetadata::NodeMetadata(IItemDefManager *item_def_mgr)
-	: m_inventory(new Inventory(item_def_mgr))
-{
-}
+NodeMetadata::NodeMetadata(IItemDefManager *item_def_mgr) :
+	m_inventory(new Inventory(item_def_mgr))
+{}
 
 NodeMetadata::~NodeMetadata()
 {
@@ -64,8 +63,8 @@ void NodeMetadata::deSerialize(std::istream &is, u8 version)
 	clear();
 	int num_vars = readU32(is);
 	for (int i = 0; i < num_vars; i++) {
-		std::string name = deSerializeString(is);
-		std::string var = deSerializeLongString(is);
+		std::string name   = deSerializeString(is);
+		std::string var	   = deSerializeLongString(is);
 		m_stringvars[name] = var;
 		if (version >= 2) {
 			if (readU8(is) == 1)
@@ -131,7 +130,7 @@ void NodeMetadataList::serialize(
 	writeU16(os, count);
 
 	for (NodeMetadataMap::const_iterator i = m_data.begin(); i != m_data.end(); ++i) {
-		v3s16 p = i->first;
+		v3s16 p			   = i->first;
 		NodeMetadata *data = i->second;
 		if (data->empty())
 			continue;
@@ -178,7 +177,7 @@ void NodeMetadataList::deSerialize(
 			p.Z = readS16(is);
 		} else {
 			u16 p16 = readU16(is);
-			p.X = p16 & (MAP_BLOCKSIZE - 1);
+			p.X		= p16 & (MAP_BLOCKSIZE - 1);
 			p16 /= MAP_BLOCKSIZE;
 			p.Y = p16 & (MAP_BLOCKSIZE - 1);
 			p16 /= MAP_BLOCKSIZE;

@@ -72,11 +72,11 @@ void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
 		UASSERT(iterator.m_current_node_pos == start_voxel);
 
 		// Values for testing
-		v3s16 end_voxel = floatToInt(l.end, 1);
+		v3s16 end_voxel	   = floatToInt(l.end, 1);
 		v3s16 voxel_vector = end_voxel - start_voxel;
 		int nodecount = abs(voxel_vector.X) + abs(voxel_vector.Y) + abs(voxel_vector.Z);
 		int actual_nodecount = 0;
-		v3s16 old_voxel = iterator.m_current_node_pos;
+		v3s16 old_voxel		 = iterator.m_current_node_pos;
 
 		while (iterator.hasNext()) {
 			iterator.next();

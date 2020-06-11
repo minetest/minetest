@@ -44,28 +44,28 @@ FlagDesc flagdesc_mapgen_fractal[] = { { "terrain", MGFRACTAL_TERRAIN }, { NULL,
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeParams *emerge)
-	: MapgenBasic(MAPGEN_FRACTAL, params, emerge)
+MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeParams *emerge) :
+	MapgenBasic(MAPGEN_FRACTAL, params, emerge)
 {
-	spflags = params->spflags;
-	cave_width = params->cave_width;
-	large_cave_depth = params->large_cave_depth;
+	spflags			   = params->spflags;
+	cave_width		   = params->cave_width;
+	large_cave_depth   = params->large_cave_depth;
 	small_cave_num_min = params->small_cave_num_min;
 	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
 	large_cave_num_max = params->large_cave_num_max;
 	large_cave_flooded = params->large_cave_flooded;
-	dungeon_ymin = params->dungeon_ymin;
-	dungeon_ymax = params->dungeon_ymax;
-	fractal = params->fractal;
-	iterations = params->iterations;
-	scale = params->scale;
-	offset = params->offset;
-	slice_w = params->slice_w;
-	julia_x = params->julia_x;
-	julia_y = params->julia_y;
-	julia_z = params->julia_z;
-	julia_w = params->julia_w;
+	dungeon_ymin	   = params->dungeon_ymin;
+	dungeon_ymax	   = params->dungeon_ymax;
+	fractal			   = params->fractal;
+	iterations		   = params->iterations;
+	scale			   = params->scale;
+	offset			   = params->offset;
+	slice_w			   = params->slice_w;
+	julia_x			   = params->julia_x;
+	julia_y			   = params->julia_y;
+	julia_z			   = params->julia_z;
+	julia_w			   = params->julia_w;
 
 	//// 2D noise
 	if (spflags & MGFRACTAL_TERRAIN)
@@ -80,7 +80,7 @@ MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeParams *emerge)
 	MapgenBasic::np_cave2 = params->np_cave2;
 
 	formula = fractal / 2 + fractal % 2;
-	julia = fractal % 2 == 0;
+	julia	= fractal % 2 == 0;
 }
 
 
@@ -91,14 +91,13 @@ MapgenFractal::~MapgenFractal()
 }
 
 
-MapgenFractalParams::MapgenFractalParams()
-	: np_seabed(-14, 9, v3f(600, 600, 600), 41900, 5, 0.6, 2.0),
-	  np_filler_depth(0, 1.2, v3f(150, 150, 150), 261, 3, 0.7, 2.0),
-	  np_cave1(0, 12, v3f(61, 61, 61), 52534, 3, 0.5, 2.0),
-	  np_cave2(0, 12, v3f(67, 67, 67), 10325, 3, 0.5, 2.0),
-	  np_dungeons(0.9, 0.5, v3f(500, 500, 500), 0, 2, 0.8, 2.0)
-{
-}
+MapgenFractalParams::MapgenFractalParams() :
+	np_seabed(-14, 9, v3f(600, 600, 600), 41900, 5, 0.6, 2.0),
+	np_filler_depth(0, 1.2, v3f(150, 150, 150), 261, 3, 0.7, 2.0),
+	np_cave1(0, 12, v3f(61, 61, 61), 52534, 3, 0.5, 2.0),
+	np_cave2(0, 12, v3f(67, 67, 67), 10325, 3, 0.5, 2.0),
+	np_dungeons(0.9, 0.5, v3f(500, 500, 500), 0, 2, 0.8, 2.0)
+{}
 
 
 void MapgenFractalParams::readParams(const Settings *settings)
@@ -173,20 +172,20 @@ void MapgenFractalParams::setDefaultSettings(Settings *settings)
 int MapgenFractal::getSpawnLevelAtPoint(v2s16 p)
 {
 	bool solid_below = false; // Fractal node is present below to spawn on
-	u8 air_count = 0; // Consecutive air nodes above a fractal node
+	u8 air_count	 = 0; // Consecutive air nodes above a fractal node
 	s16 search_start = 0; // No terrain search start
 
 	// If terrain present, don't start search below terrain or water level
 	if (noise_seabed) {
 		s16 seabed_level = NoisePerlin2D(&noise_seabed->np, p.X, p.Y, seed);
-		search_start = MYMAX(search_start, MYMAX(seabed_level, water_level));
+		search_start	 = MYMAX(search_start, MYMAX(seabed_level, water_level));
 	}
 
 	for (s16 y = search_start; y <= search_start + 4096; y++) {
 		if (getFractalAtPoint(p.X, y, p.Y)) {
 			// Fractal node
 			solid_below = true;
-			air_count = 0;
+			air_count	= 0;
 		} else if (solid_below) {
 			// Air above fractal node
 			air_count++;
@@ -215,15 +214,15 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	//TimeTaker t("makeChunk");
 
 	this->generating = true;
-	this->vm = data->vmanip;
-	this->ndef = data->nodedef;
+	this->vm		 = data->vmanip;
+	this->ndef		 = data->nodedef;
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
-	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
-	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	node_min		   = blockpos_min * MAP_BLOCKSIZE;
+	node_max		   = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	full_node_min	   = (blockpos_min - 1) * MAP_BLOCKSIZE;
+	full_node_max	   = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
@@ -284,14 +283,14 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 		cy = julia_y;
 		cz = julia_z;
 		cw = julia_w;
-		ox = (float)x / scale.X - offset.X;
-		oy = (float)y / scale.Y - offset.Y;
-		oz = (float)z / scale.Z - offset.Z;
+		ox = (float) x / scale.X - offset.X;
+		oy = (float) y / scale.Y - offset.Y;
+		oz = (float) z / scale.Z - offset.Z;
 		ow = slice_w;
 	} else { // Mandelbrot set
-		cx = (float)x / scale.X - offset.X;
-		cy = (float)y / scale.Y - offset.Y;
-		cz = (float)z / scale.Z - offset.Z;
+		cx = (float) x / scale.X - offset.X;
+		cy = (float) y / scale.Y - offset.Y;
+		cz = (float) z / scale.Z - offset.Z;
 		cw = slice_w;
 		ox = 0.0f;
 		oy = 0.0f;
@@ -344,9 +343,9 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				nz = 4.0f * oz * ox + cz;
 			} else {
 				float a = (2.0f * ox) / (std::sqrt(oy * oy + oz * oz));
-				nx = ox * ox - oy * oy - oz * oz + cx;
-				ny = a * (oy * oy - oz * oz) + cy;
-				nz = a * 2.0f * oy * oz + cz;
+				nx		= ox * ox - oy * oy - oz * oz + cx;
+				ny		= a * (oy * oy - oz * oz) + cy;
+				nz		= a * 2.0f * oy * oz + cz;
 			}
 			break;
 		case 7: // 3D "Mandelbulb"
@@ -356,9 +355,9 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				nz = -2.0f * oz * std::sqrt(ox * ox) + cz;
 			} else {
 				float a = 1.0f - (oz * oz) / (ox * ox + oy * oy);
-				nx = (ox * ox - oy * oy) * a + cx;
-				ny = 2.0f * ox * oy * a + cy;
-				nz = -2.0f * oz * std::sqrt(ox * ox + oy * oy) + cz;
+				nx		= (ox * ox - oy * oy) * a + cx;
+				ny		= 2.0f * ox * oy * a + cy;
+				nz		= -2.0f * oz * std::sqrt(ox * ox + oy * oy) + cz;
 			}
 			break;
 		case 8: // 3D "Cosine Mandelbulb"
@@ -368,13 +367,13 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				nz = oz * oz - ox * ox - oy * oy + cz;
 			} else {
 				float a = (2.0f * oz) / std::sqrt(ox * ox + oy * oy);
-				nx = (ox * ox - oy * oy) * a + cx;
-				ny = 2.0f * ox * oy * a + cy;
-				nz = oz * oz - ox * ox - oy * oy + cz;
+				nx		= (ox * ox - oy * oy) * a + cx;
+				ny		= 2.0f * ox * oy * a + cy;
+				nz		= oz * oz - ox * ox - oy * oy + cz;
 			}
 			break;
 		case 9: // 4D "Mandelbulb"
-			float rxy = std::sqrt(ox * ox + oy * oy);
+			float rxy  = std::sqrt(ox * ox + oy * oy);
 			float rxyz = std::sqrt(ox * ox + oy * oy + oz * oz);
 			if (std::fabs(ow) < 0.000000001f && std::fabs(oz) < 0.000000001f) {
 				nx = (ox * ox - oy * oy) + cx;
@@ -384,10 +383,10 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 			} else {
 				float a = 1.0f - (ow * ow) / (rxyz * rxyz);
 				float b = a * (1.0f - (oz * oz) / (rxy * rxy));
-				nx = (ox * ox - oy * oy) * b + cx;
-				ny = 2.0f * ox * oy * b + cy;
-				nz = -2.0f * rxy * oz * a + cz;
-				nw = 2.0f * rxyz * ow + cw;
+				nx		= (ox * ox - oy * oy) * b + cx;
+				ny		= 2.0f * ox * oy * b + cy;
+				nz		= -2.0f * rxy * oz * a + cz;
+				nw		= 2.0f * rxyz * ow + cw;
 			}
 			break;
 		}
@@ -412,7 +411,7 @@ s16 MapgenFractal::generateTerrain()
 	MapNode n_water(c_water_source);
 
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
-	u32 index2d = 0;
+	u32 index2d				= 0;
 
 	if (noise_seabed)
 		noise_seabed->perlinMap2D(node_min.X, node_min.Z);

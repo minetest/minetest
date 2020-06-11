@@ -72,10 +72,9 @@ typedef std::map<v3s16, NodeMetadata *> NodeMetadataMap;
 class NodeMetadataList
 {
 public:
-	NodeMetadataList(bool is_metadata_owner = true)
-		: m_is_metadata_owner(is_metadata_owner)
-	{
-	}
+	NodeMetadataList(bool is_metadata_owner = true) :
+		m_is_metadata_owner(is_metadata_owner)
+	{}
 
 	~NodeMetadataList();
 

@@ -175,7 +175,7 @@ void TestMapSettingsManager::testMapSettingsManager()
 	UASSERT(params->seed == 1234);
 	UASSERT((params->flags & MG_LIGHT) == 0);
 
-	MapgenV5Params *v5params = (MapgenV5Params *)params;
+	MapgenV5Params *v5params = (MapgenV5Params *) params;
 
 	check_noise_params(&v5params->np_filler_depth, &script_np_filler_depth);
 	check_noise_params(&v5params->np_factor, &script_np_factor);

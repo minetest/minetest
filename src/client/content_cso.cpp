@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class SmokePuffCSO : public ClientSimpleObject
 {
-	float m_age = 0.0f;
+	float m_age								 = 0.0f;
 	scene::IBillboardSceneNode *m_spritenode = nullptr;
 
 public:
@@ -49,7 +49,7 @@ public:
 		u8 light;
 		bool pos_ok;
 		MapNode n = env->getMap().getNode(floatToInt(pos, BS), &pos_ok);
-		light = pos_ok ? decode_light(n.getLightBlend(
+		light	  = pos_ok ? decode_light(n.getLightBlend(
 								 env->getDayNightRatio(), env->getGameDef()->ndef())) :
 						 64;
 		video::SColor color(255, light, light, light);

@@ -33,7 +33,7 @@ ItemStackMetaRef *ItemStackMetaRef::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(ItemStackMetaRef **)ud; // unbox pointer
+	return *(ItemStackMetaRef **) ud; // unbox pointer
 }
 
 Metadata *ItemStackMetaRef::getmeta(bool auto_create)
@@ -70,7 +70,7 @@ int ItemStackMetaRef::l_set_tool_capabilities(lua_State *L)
 // garbage collector
 int ItemStackMetaRef::gc_object(lua_State *L)
 {
-	ItemStackMetaRef *o = *(ItemStackMetaRef **)(lua_touserdata(L, 1));
+	ItemStackMetaRef *o = *(ItemStackMetaRef **) (lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
@@ -81,7 +81,7 @@ void ItemStackMetaRef::create(lua_State *L, ItemStack *istack)
 {
 	ItemStackMetaRef *o = new ItemStackMetaRef(istack);
 	//infostream<<"NodeMetaRef::create: o="<<o<<std::endl;
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 }
@@ -122,7 +122,7 @@ void ItemStackMetaRef::Register(lua_State *L)
 	//lua_register(L, className, create_object);
 }
 
-const char ItemStackMetaRef::className[] = "ItemStackMetaRef";
+const char ItemStackMetaRef::className[]   = "ItemStackMetaRef";
 const luaL_Reg ItemStackMetaRef::methods[] = { luamethod(MetaDataRef, contains),
 	luamethod(MetaDataRef, get), luamethod(MetaDataRef, get_string),
 	luamethod(MetaDataRef, set_string), luamethod(MetaDataRef, get_int),

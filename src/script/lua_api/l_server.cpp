@@ -32,8 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int ModApiServer::l_request_shutdown(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char *msg = lua_tolstring(L, 1, NULL);
-	bool reconnect = readParam<bool>(L, 2);
+	const char *msg				  = lua_tolstring(L, 1, NULL);
+	bool reconnect				  = readParam<bool>(L, 2);
 	float seconds_before_shutdown = lua_tonumber(L, 3);
 	getServer(L)->requestShutdown(msg ? msg : "", reconnect, seconds_before_shutdown);
 	return 0;
@@ -101,7 +101,7 @@ int ModApiServer::l_get_player_privs(lua_State *L)
 	Server *server = getServer(L);
 	// Do it
 	lua_newtable(L);
-	int table = lua_gettop(L);
+	int table					  = lua_gettop(L);
 	std::set<std::string> privs_s = server->getPlayerEffectivePrivs(name);
 	for (const std::string &privs_ : privs_s) {
 		lua_pushboolean(L, true);
@@ -115,14 +115,14 @@ int ModApiServer::l_get_player_privs(lua_State *L)
 int ModApiServer::l_get_player_ip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char *name = luaL_checkstring(L, 1);
+	const char *name	 = luaL_checkstring(L, 1);
 	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
 	if (player == NULL) {
 		lua_pushnil(L); // no such player
 		return 1;
 	}
 	try {
-		Address addr = getServer(L)->getPeerAddress(player->getPeerId());
+		Address addr	   = getServer(L)->getPeerAddress(player->getPeerId());
 		std::string ip_str = addr.serializeString();
 		lua_pushstring(L, ip_str.c_str());
 		return 1;
@@ -140,7 +140,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 
 	Server *server = getServer(L);
 
-	const char *name = luaL_checkstring(L, 1);
+	const char *name	 = luaL_checkstring(L, 1);
 	RemotePlayer *player = server->getEnv().getPlayer(name);
 	if (!player) {
 		lua_pushnil(L); // no such player
@@ -290,7 +290,7 @@ int ModApiServer::l_get_ban_description(lua_State *L)
 int ModApiServer::l_ban_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char *name = luaL_checkstring(L, 1);
+	const char *name	 = luaL_checkstring(L, 1);
 	RemotePlayer *player = dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name);
 	if (player == NULL) {
 		lua_pushboolean(L, false); // no such player
@@ -336,7 +336,7 @@ int ModApiServer::l_kick_player(lua_State *L)
 int ModApiServer::l_remove_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string name = luaL_checkstring(L, 1);
+	std::string name		 = luaL_checkstring(L, 1);
 	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment *>(getEnv(L));
 	assert(s_env);
 
@@ -364,8 +364,8 @@ int ModApiServer::l_show_formspec(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *playername = luaL_checkstring(L, 1);
-	const char *formname = luaL_checkstring(L, 2);
-	const char *formspec = luaL_checkstring(L, 3);
+	const char *formname   = luaL_checkstring(L, 2);
+	const char *formspec   = luaL_checkstring(L, 3);
 
 	if (getServer(L)->showFormspec(playername, formspec, formname)) {
 		lua_pushboolean(L, true);
@@ -388,7 +388,7 @@ int ModApiServer::l_get_modpath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string modname = luaL_checkstring(L, 1);
-	const ModSpec *mod = getServer(L)->getModSpec(modname);
+	const ModSpec *mod	= getServer(L)->getModSpec(modname);
 	if (!mod) {
 		lua_pushnil(L);
 		return 1;

@@ -54,7 +54,7 @@ extern FlagDesc flagdesc_deco[];
 class Decoration : public ObjDef, public NodeResolver
 {
 public:
-	Decoration() = default;
+	Decoration()		  = default;
 	virtual ~Decoration() = default;
 
 	virtual void resolveNodeNames();
@@ -64,7 +64,7 @@ public:
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling) = 0;
 
-	u32 flags = 0;
+	u32 flags	= 0;
 	int mapseed = 0;
 	std::vector<content_t> c_place_on;
 	s16 sidelen = 1;
@@ -111,7 +111,7 @@ public:
 
 	Rotation rotation;
 	Schematic *schematic = nullptr;
-	bool was_cloned = false; // see FIXME inside DecoSchemtic::clone()
+	bool was_cloned		 = false; // see FIXME inside DecoSchemtic::clone()
 };
 
 

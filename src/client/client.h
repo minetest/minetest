@@ -315,7 +315,7 @@ public:
 
 	void setFatalError(const std::string &reason)
 	{
-		m_access_denied = true;
+		m_access_denied		   = true;
 		m_access_denied_reason = reason;
 	}
 
@@ -447,10 +447,10 @@ private:
 
 	bool canSendChatMessage() const;
 
-	float m_packetcounter_timer = 0.0f;
+	float m_packetcounter_timer		= 0.0f;
 	float m_connection_reinit_timer = 0.1f;
-	float m_avg_rtt_timer = 0.0f;
-	float m_playerpos_send_timer = 0.0f;
+	float m_avg_rtt_timer			= 0.0f;
+	float m_playerpos_send_timer	= 0.0f;
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	IWritableTextureSource *m_tsrc;
@@ -466,8 +466,8 @@ private:
 	ParticleManager m_particle_manager;
 	std::unique_ptr<con::Connection> m_con;
 	std::string m_address_name;
-	Camera *m_camera = nullptr;
-	Minimap *m_minimap = nullptr;
+	Camera *m_camera				  = nullptr;
+	Minimap *m_minimap				  = nullptr;
 	bool m_minimap_disabled_by_server = false;
 	// Server serialization version
 	u8 m_server_ser_ver;
@@ -479,13 +479,13 @@ private:
 	// If 0, server init hasn't been received yet.
 	u16 m_proto_ver = 0;
 
-	bool m_update_wielded_item = false;
+	bool m_update_wielded_item		   = false;
 	Inventory *m_inventory_from_server = nullptr;
-	float m_inventory_from_server_age = 0.0f;
+	float m_inventory_from_server_age  = 0.0f;
 	PacketCounter m_packetcounter;
 	// Block mesh animation parameters
 	float m_animation_time = 0.0f;
-	int m_crack_level = -1;
+	int m_crack_level	   = -1;
 	v3s16 m_crack_pos;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
@@ -511,19 +511,19 @@ private:
 	void *m_auth_data = nullptr;
 
 
-	bool m_access_denied = false;
-	bool m_access_denied_reconnect = false;
+	bool m_access_denied			   = false;
+	bool m_access_denied_reconnect	   = false;
 	std::string m_access_denied_reason = "";
 	std::queue<ClientEvent *> m_client_event_queue;
-	bool m_itemdef_received = false;
-	bool m_nodedef_received = false;
+	bool m_itemdef_received		  = false;
+	bool m_nodedef_received		  = false;
 	bool m_activeobjects_received = false;
-	bool m_mods_loaded = false;
+	bool m_mods_loaded			  = false;
 	ClientMediaDownloader *m_media_downloader;
 
 	// time_of_day speed approximation for old protocol
-	bool m_time_of_day_set = false;
-	float m_last_time_of_day_f = -1.0f;
+	bool m_time_of_day_set			 = false;
+	float m_last_time_of_day_f		 = -1.0f;
 	float m_time_of_day_update_timer = 0.0f;
 
 	// An interval for generally sending object positions and stuff
@@ -572,7 +572,7 @@ private:
 	bool m_shutdown = false;
 
 	// CSM restrictions byteflag
-	u64 m_csm_restriction_flags = CSMRestrictionFlags::CSM_RF_NONE;
+	u64 m_csm_restriction_flags		= CSMRestrictionFlags::CSM_RF_NONE;
 	u32 m_csm_restriction_noderange = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;

@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 
 LuaCamera::LuaCamera(Camera *m) : m_camera(m)
-{
-}
+{}
 
 void LuaCamera::create(lua_State *L, Camera *m)
 {
@@ -42,8 +41,8 @@ void LuaCamera::create(lua_State *L, Camera *m)
 		return;
 	}
 
-	LuaCamera *o = new LuaCamera(m);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	LuaCamera *o									= new LuaCamera(m);
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 
@@ -54,7 +53,7 @@ void LuaCamera::create(lua_State *L, Camera *m)
 // set_camera_mode(self, mode)
 int LuaCamera::l_set_camera_mode(lua_State *L)
 {
-	Camera *camera = getobject(L, 1);
+	Camera *camera		  = getobject(L, 1);
 	GenericCAO *playercao = getClient(L)->getEnv().getLocalPlayer()->getCAO();
 	if (!camera)
 		return 0;
@@ -62,7 +61,7 @@ int LuaCamera::l_set_camera_mode(lua_State *L)
 	if (!lua_isnumber(L, 2))
 		return 0;
 
-	camera->setCameraMode((CameraMode)((int)lua_tonumber(L, 2)));
+	camera->setCameraMode((CameraMode)((int) lua_tonumber(L, 2)));
 	playercao->setVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	return 0;
@@ -75,7 +74,7 @@ int LuaCamera::l_get_camera_mode(lua_State *L)
 	if (!camera)
 		return 0;
 
-	lua_pushinteger(L, (int)camera->getCameraMode());
+	lua_pushinteger(L, (int) camera->getCameraMode());
 
 	return 1;
 }
@@ -172,7 +171,7 @@ LuaCamera *LuaCamera::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(LuaCamera **)ud;
+	return *(LuaCamera **) ud;
 }
 
 Camera *LuaCamera::getobject(LuaCamera *ref)
@@ -192,7 +191,7 @@ Camera *LuaCamera::getobject(lua_State *L, int narg)
 
 int LuaCamera::gc_object(lua_State *L)
 {
-	LuaCamera *o = *(LuaCamera **)(lua_touserdata(L, 1));
+	LuaCamera *o = *(LuaCamera **) (lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }

@@ -74,9 +74,9 @@ void TestInventory::testSerializeDeserialize(IItemDefManager *idef)
 	UASSERTEQ(std::string, inv_os.str(), serialized_inventory_inc);
 
 	ItemStack leftover = inv.getList("main")->takeItem(7, 99 - 12);
-	ItemStack wanted = ItemStack("default:dirt", 99 - 12, 0, idef);
+	ItemStack wanted   = ItemStack("default:dirt", 99 - 12, 0, idef);
 	UASSERT(leftover == wanted);
-	leftover = inv.getList("main")->getItem(7);
+	leftover	 = inv.getList("main")->getItem(7);
 	wanted.count = 12;
 	UASSERT(leftover == wanted);
 }

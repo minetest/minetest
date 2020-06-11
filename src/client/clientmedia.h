@@ -128,10 +128,10 @@ private:
 	// Status of remote transfers
 	unsigned long m_httpfetch_caller;
 	unsigned long m_httpfetch_next_id = 0;
-	long m_httpfetch_timeout = 0;
-	s32 m_httpfetch_active = 0;
-	s32 m_httpfetch_active_limit = 0;
-	s32 m_outstanding_hash_sets = 0;
+	long m_httpfetch_timeout		  = 0;
+	s32 m_httpfetch_active			  = 0;
+	s32 m_httpfetch_active_limit	  = 0;
+	s32 m_outstanding_hash_sets		  = 0;
 	std::unordered_map<unsigned long, std::string> m_remote_file_transfers;
 
 	// All files up to this name have either been received from a

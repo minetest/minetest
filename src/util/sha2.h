@@ -65,11 +65,11 @@ extern "C" {
 #endif
 
 #if defined(OPENSSL_NO_SHA) || (defined(OPENSSL_NO_SHA0) && defined(OPENSSL_NO_SHA1))
-#error SHA is disabled.
+	#error SHA is disabled.
 #endif
 
 #if defined(OPENSSL_FIPS)
-#define FIPS_SHA_SIZE_T size_t
+	#define FIPS_SHA_SIZE_T size_t
 #endif
 
 /*
@@ -91,12 +91,12 @@ extern "C" {
  */
 
 #if defined(__LP32__)
-#define SHA_LONG unsigned long
+	#define SHA_LONG unsigned long
 #elif defined(__ILP64__)
-#define SHA_LONG unsigned long
-#define SHA_LONG_LOG2 3
+	#define SHA_LONG unsigned long
+	#define SHA_LONG_LOG2 3
 #else
-#define SHA_LONG unsigned int
+	#define SHA_LONG unsigned int
 #endif
 
 #define SHA_LBLOCK 16
@@ -131,10 +131,10 @@ typedef struct SHA256state_st
 } SHA256_CTX;
 
 #ifndef OPENSSL_NO_SHA256
-#ifdef OPENSSL_FIPS
+	#ifdef OPENSSL_FIPS
 int private_SHA224_Init(SHA256_CTX *c);
 int private_SHA256_Init(SHA256_CTX *c);
-#endif
+	#endif
 int SHA224_Init(SHA256_CTX *c);
 int SHA224_Update(SHA256_CTX *c, const void *data, size_t len);
 int SHA224_Final(unsigned char *md, SHA256_CTX *c);

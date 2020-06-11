@@ -57,9 +57,9 @@ enum BiomeV6Type
 struct MapgenV6Params : public MapgenParams
 {
 	float freq_desert = 0.45f;
-	float freq_beach = 0.15f;
-	s16 dungeon_ymin = -31000;
-	s16 dungeon_ymax = 31000;
+	float freq_beach  = 0.15f;
+	s16 dungeon_ymin  = -31000;
+	s16 dungeon_ymax  = 31000;
 
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_higher;

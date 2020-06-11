@@ -24,11 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "inventory.h"
 #ifndef SERVER
-#include "client/mapblock_mesh.h"
-#include "client/mesh.h"
-#include "client/wieldmesh.h"
-#include "client/tile.h"
-#include "client/client.h"
+	#include "client/mapblock_mesh.h"
+	#include "client/mesh.h"
+	#include "client/wieldmesh.h"
+	#include "client/tile.h"
+	#include "client/client.h"
 #endif
 #include "log.h"
 #include "settings.h"
@@ -59,27 +59,27 @@ ItemDefinition &ItemDefinition::operator=(const ItemDefinition &def)
 
 	reset();
 
-	type = def.type;
-	name = def.name;
-	description = def.description;
-	inventory_image = def.inventory_image;
+	type			  = def.type;
+	name			  = def.name;
+	description		  = def.description;
+	inventory_image	  = def.inventory_image;
 	inventory_overlay = def.inventory_overlay;
-	wield_image = def.wield_image;
-	wield_overlay = def.wield_overlay;
-	wield_scale = def.wield_scale;
-	stack_max = def.stack_max;
-	usable = def.usable;
+	wield_image		  = def.wield_image;
+	wield_overlay	  = def.wield_overlay;
+	wield_scale		  = def.wield_scale;
+	stack_max		  = def.stack_max;
+	usable			  = def.usable;
 	liquids_pointable = def.liquids_pointable;
 	if (def.tool_capabilities) {
 		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
 	}
-	groups = def.groups;
+	groups					  = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
-	sound_place = def.sound_place;
-	sound_place_failed = def.sound_place_failed;
-	range = def.range;
-	palette_image = def.palette_image;
-	color = def.color;
+	sound_place				  = def.sound_place;
+	sound_place_failed		  = def.sound_place_failed;
+	range					  = def.range;
+	palette_image			  = def.palette_image;
+	color					  = def.color;
 	return *this;
 }
 
@@ -97,25 +97,25 @@ void ItemDefinition::resetInitial()
 
 void ItemDefinition::reset()
 {
-	type = ITEM_NONE;
-	name = "";
-	description = "";
-	inventory_image = "";
+	type			  = ITEM_NONE;
+	name			  = "";
+	description		  = "";
+	inventory_image	  = "";
 	inventory_overlay = "";
-	wield_image = "";
-	wield_overlay = "";
-	palette_image = "";
-	color = video::SColor(0xFFFFFFFF);
-	wield_scale = v3f(1.0, 1.0, 1.0);
-	stack_max = 99;
-	usable = false;
+	wield_image		  = "";
+	wield_overlay	  = "";
+	palette_image	  = "";
+	color			  = video::SColor(0xFFFFFFFF);
+	wield_scale		  = v3f(1.0, 1.0, 1.0);
+	stack_max		  = 99;
+	usable			  = false;
 	liquids_pointable = false;
 	delete tool_capabilities;
 	tool_capabilities = NULL;
 	groups.clear();
-	sound_place = SimpleSoundSpec();
+	sound_place		   = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
-	range = -1;
+	range			   = -1;
 
 	node_placement_prediction = "";
 }
@@ -172,14 +172,14 @@ void ItemDefinition::deSerialize(std::istream &is)
 	if (version < 6)
 		throw SerializationError("unsupported ItemDefinition version");
 
-	type = (enum ItemType)readU8(is);
-	name = deSerializeString(is);
-	description = deSerializeString(is);
-	inventory_image = deSerializeString(is);
-	wield_image = deSerializeString(is);
-	wield_scale = readV3F32(is);
-	stack_max = readS16(is);
-	usable = readU8(is);
+	type			  = (enum ItemType) readU8(is);
+	name			  = deSerializeString(is);
+	description		  = deSerializeString(is);
+	inventory_image	  = deSerializeString(is);
+	wield_image		  = deSerializeString(is);
+	wield_scale		  = readV3F32(is);
+	stack_max		  = readS16(is);
+	usable			  = readU8(is);
 	liquids_pointable = readU8(is);
 
 	std::string tool_capabilities_s = deSerializeString(is);
@@ -193,8 +193,8 @@ void ItemDefinition::deSerialize(std::istream &is)
 	u32 groups_size = readU16(is);
 	for (u32 i = 0; i < groups_size; i++) {
 		std::string name = deSerializeString(is);
-		int value = readS16(is);
-		groups[name] = value;
+		int value		 = readS16(is);
+		groups[name]	 = value;
 	}
 
 	node_placement_prediction = deSerializeString(is);
@@ -203,11 +203,11 @@ void ItemDefinition::deSerialize(std::istream &is)
 	sound_place.deSerialize(is, CONTENTFEATURES_VERSION);
 	sound_place_failed.deSerialize(is, CONTENTFEATURES_VERSION);
 
-	range = readF32(is);
-	palette_image = deSerializeString(is);
-	color = readARGB8(is);
+	range			  = readF32(is);
+	palette_image	  = deSerializeString(is);
+	color			  = readARGB8(is);
 	inventory_overlay = deSerializeString(is);
-	wield_overlay = deSerializeString(is);
+	wield_overlay	  = deSerializeString(is);
 
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
@@ -311,7 +311,7 @@ public:
 		if (cc)
 			return cc;
 
-		ITextureSource *tsrc = client->getTextureSource();
+		ITextureSource *tsrc	  = client->getTextureSource();
 		const ItemDefinition &def = get(name);
 
 		// Create new ClientCached
@@ -323,7 +323,7 @@ public:
 			cc->inventory_texture = tsrc->getTexture(def.inventory_image);
 
 		ItemStack item = ItemStack();
-		item.name = def.name;
+		item.name	   = def.name;
 
 		getItemMesh(client, item, &(cc->wield_mesh));
 
@@ -401,7 +401,7 @@ public:
 		if (!colorstring.empty() && parseColorString(colorstring, directcolor, true))
 			return directcolor;
 		// See if there is a palette
-		Palette *palette = getPalette(stack.name, client);
+		Palette *palette		 = getPalette(stack.name, client);
 		const std::string &index = stack.metadata.getString("palette_index", 0);
 		if (palette && !index.empty())
 			return (*palette)[mystoi(index, 0, 255)];
@@ -445,25 +445,25 @@ public:
 		//   "air" is the air node
 		//   "ignore" is the ignore node
 
-		ItemDefinition *hand_def = new ItemDefinition;
-		hand_def->name = "";
-		hand_def->wield_image = "wieldhand.png";
+		ItemDefinition *hand_def	= new ItemDefinition;
+		hand_def->name				= "";
+		hand_def->wield_image		= "wieldhand.png";
 		hand_def->tool_capabilities = new ToolCapabilities;
 		m_item_definitions.insert(std::make_pair("", hand_def));
 
 		ItemDefinition *unknown_def = new ItemDefinition;
-		unknown_def->type = ITEM_NODE;
-		unknown_def->name = "unknown";
+		unknown_def->type			= ITEM_NODE;
+		unknown_def->name			= "unknown";
 		m_item_definitions.insert(std::make_pair("unknown", unknown_def));
 
 		ItemDefinition *air_def = new ItemDefinition;
-		air_def->type = ITEM_NODE;
-		air_def->name = "air";
+		air_def->type			= ITEM_NODE;
+		air_def->name			= "air";
 		m_item_definitions.insert(std::make_pair("air", air_def));
 
 		ItemDefinition *ignore_def = new ItemDefinition;
-		ignore_def->type = ITEM_NODE;
-		ignore_def->name = "ignore";
+		ignore_def->type		   = ITEM_NODE;
+		ignore_def->name		   = "ignore";
 		m_item_definitions.insert(std::make_pair("ignore", ignore_def));
 	}
 	virtual void registerItem(const ItemDefinition &def)
@@ -539,7 +539,7 @@ public:
 		}
 		u16 num_aliases = readU16(is);
 		for (u16 i = 0; i < num_aliases; i++) {
-			std::string name = deSerializeString(is);
+			std::string name	   = deSerializeString(is);
 			std::string convert_to = deSerializeString(is);
 			registerAlias(name, convert_to);
 		}
@@ -553,7 +553,7 @@ public:
 					m_get_clientcached_queue.pop();
 
 			m_get_clientcached_queue.pushResult(
-					request, createClientCachedDirect(request.key, (Client *)gamedef));
+					request, createClientCachedDirect(request.key, (Client *) gamedef));
 		}
 #endif
 	}

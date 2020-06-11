@@ -21,21 +21,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_LEVELDB
 
-#include "database-leveldb.h"
+	#include "database-leveldb.h"
 
-#include "log.h"
-#include "filesys.h"
-#include "exceptions.h"
-#include "util/serialize.h"
-#include "util/string.h"
+	#include "log.h"
+	#include "filesys.h"
+	#include "exceptions.h"
+	#include "util/serialize.h"
+	#include "util/string.h"
 
-#include "leveldb/db.h"
+	#include "leveldb/db.h"
 
 
-#define ENSURE_STATUS_OK(s)                                                              \
-	if (!(s).ok()) {                                                                     \
-		throw DatabaseException(std::string("LevelDB error: ") + (s).ToString());        \
-	}
+	#define ENSURE_STATUS_OK(s)                                                          \
+		if (!(s).ok()) {                                                                 \
+			throw DatabaseException(std::string("LevelDB error: ") + (s).ToString());    \
+		}
 
 
 Database_LevelDB::Database_LevelDB(const std::string &savedir)
@@ -132,8 +132,8 @@ bool AuthDatabaseLevelDB::getAuth(const std::string &name, AuthEntry &res)
 	if (readU8(is) > 1)
 		return false;
 
-	res.id = 1;
-	res.name = name;
+	res.id		 = 1;
+	res.name	 = name;
 	res.password = deSerializeString(is);
 
 	u16 privilege_count = readU16(is);

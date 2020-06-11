@@ -31,7 +31,7 @@ class IGameDef;
 class Client;
 struct ToolCapabilities;
 #ifndef SERVER
-#include "client/tile.h"
+	#include "client/tile.h"
 struct ItemMesh;
 struct ItemStack;
 #endif
@@ -173,7 +173,7 @@ public:
 			const std::string &name, const std::string &convert_to) = 0;
 
 	virtual void serialize(std::ostream &os, u16 protocol_version) = 0;
-	virtual void deSerialize(std::istream &is) = 0;
+	virtual void deSerialize(std::istream &is)					   = 0;
 
 	// Do stuff asked by threads that can only be done in the main thread
 	virtual void processQueue(IGameDef *gamedef) = 0;

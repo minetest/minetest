@@ -69,12 +69,12 @@ SQLite format specification:
 int Database_SQLite3::busyHandler(void *data, int count)
 {
 	s64 &first_time = reinterpret_cast<s64 *>(data)[0];
-	s64 &prev_time = reinterpret_cast<s64 *>(data)[1];
-	s64 cur_time = porting::getTimeMs();
+	s64 &prev_time	= reinterpret_cast<s64 *>(data)[1];
+	s64 cur_time	= porting::getTimeMs();
 
 	if (count == 0) {
 		first_time = cur_time;
-		prev_time = first_time;
+		prev_time  = first_time;
 	} else {
 		while (cur_time < prev_time)
 			cur_time += s64(1) << 32;
@@ -112,10 +112,11 @@ int Database_SQLite3::busyHandler(void *data, int count)
 }
 
 
-Database_SQLite3::Database_SQLite3(const std::string &savedir, const std::string &dbname)
-	: m_savedir(savedir), m_dbname(dbname)
-{
-}
+Database_SQLite3::Database_SQLite3(
+		const std::string &savedir, const std::string &dbname) :
+	m_savedir(savedir),
+	m_dbname(dbname)
+{}
 
 void Database_SQLite3::beginSave()
 {
@@ -197,10 +198,9 @@ Database_SQLite3::~Database_SQLite3()
  * Map database
  */
 
-MapDatabaseSQLite3::MapDatabaseSQLite3(const std::string &savedir)
-	: Database_SQLite3(savedir, "map"), MapDatabase()
-{
-}
+MapDatabaseSQLite3::MapDatabaseSQLite3(const std::string &savedir) :
+	Database_SQLite3(savedir, "map"), MapDatabase()
+{}
 
 MapDatabaseSQLite3::~MapDatabaseSQLite3()
 {
@@ -298,8 +298,8 @@ void MapDatabaseSQLite3::loadBlock(const v3s16 &pos, std::string *block)
 		return;
 	}
 
-	const char *data = (const char *)sqlite3_column_blob(m_stmt_read, 0);
-	size_t len = sqlite3_column_bytes(m_stmt_read, 0);
+	const char *data = (const char *) sqlite3_column_blob(m_stmt_read, 0);
+	size_t len		 = sqlite3_column_bytes(m_stmt_read, 0);
 
 	*block = (data) ? std::string(data, len) : "";
 
@@ -322,10 +322,9 @@ void MapDatabaseSQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
  * Player Database
  */
 
-PlayerDatabaseSQLite3::PlayerDatabaseSQLite3(const std::string &savedir)
-	: Database_SQLite3(savedir, "players"), PlayerDatabase()
-{
-}
+PlayerDatabaseSQLite3::PlayerDatabaseSQLite3(const std::string &savedir) :
+	Database_SQLite3(savedir, "players"), PlayerDatabase()
+{}
 
 PlayerDatabaseSQLite3::~PlayerDatabaseSQLite3(){
 	FINALIZE_STATEMENT(m_stmt_player_load) FINALIZE_STATEMENT(
@@ -557,8 +556,8 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 	sao->setLookPitch(sqlite_to_float(m_stmt_player_load, 0));
 	sao->setPlayerYaw(sqlite_to_float(m_stmt_player_load, 1));
 	sao->setBasePosition(sqlite_to_v3f(m_stmt_player_load, 2));
-	sao->setHPRaw((u16)MYMIN(sqlite_to_int(m_stmt_player_load, 5), U16_MAX));
-	sao->setBreath((u16)MYMIN(sqlite_to_int(m_stmt_player_load, 6), U16_MAX), false);
+	sao->setHPRaw((u16) MYMIN(sqlite_to_int(m_stmt_player_load, 5), U16_MAX));
+	sao->setBreath((u16) MYMIN(sqlite_to_int(m_stmt_player_load, 6), U16_MAX), false);
 	sqlite3_reset(m_stmt_player_load);
 
 	// Load inventory
@@ -590,7 +589,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 
 	str_to_sqlite(m_stmt_player_metadata_load, 1, sao->getPlayer()->getName());
 	while (sqlite3_step(m_stmt_player_metadata_load) == SQLITE_ROW) {
-		std::string attr = sqlite_to_string(m_stmt_player_metadata_load, 0);
+		std::string attr  = sqlite_to_string(m_stmt_player_metadata_load, 0);
 		std::string value = sqlite_to_string(m_stmt_player_metadata_load, 1);
 
 		sao->getMeta().setString(attr, value);
@@ -625,10 +624,9 @@ void PlayerDatabaseSQLite3::listPlayers(std::vector<std::string> &res)
  * Auth database
  */
 
-AuthDatabaseSQLite3::AuthDatabaseSQLite3(const std::string &savedir)
-	: Database_SQLite3(savedir, "auth"), AuthDatabase()
-{
-}
+AuthDatabaseSQLite3::AuthDatabaseSQLite3(const std::string &savedir) :
+	Database_SQLite3(savedir, "auth"), AuthDatabase()
+{}
 
 AuthDatabaseSQLite3::~AuthDatabaseSQLite3()
 {
@@ -696,9 +694,9 @@ bool AuthDatabaseSQLite3::getAuth(const std::string &name, AuthEntry &res)
 		sqlite3_reset(m_stmt_read);
 		return false;
 	}
-	res.id = sqlite_to_uint(m_stmt_read, 0);
-	res.name = sqlite_to_string(m_stmt_read, 1);
-	res.password = sqlite_to_string(m_stmt_read, 2);
+	res.id		   = sqlite_to_uint(m_stmt_read, 0);
+	res.name	   = sqlite_to_string(m_stmt_read, 1);
+	res.password   = sqlite_to_string(m_stmt_read, 2);
 	res.last_login = sqlite_to_int64(m_stmt_read, 3);
 	sqlite3_reset(m_stmt_read);
 

@@ -230,8 +230,8 @@ public:
 	LRUCache(size_t limit, void (*cache_miss)(void *data, const K &key, V *dest),
 			void *data)
 	{
-		m_limit = limit;
-		m_cache_miss = cache_miss;
+		m_limit			  = limit;
+		m_cache_miss	  = cache_miss;
 		m_cache_miss_data = data;
 	}
 
@@ -265,7 +265,7 @@ public:
 		} else {
 			// cache miss -- enter into cache
 			cache_entry_t &entry = m_map[key];
-			ret = &entry.second;
+			ret					 = &entry.second;
 			m_cache_miss(m_cache_miss_data, key, &entry.second);
 
 			// delete old entries

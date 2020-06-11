@@ -28,13 +28,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <matrix4.h>
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
-#define myfloor(x) ((x) < 0.0 ? (int)(x)-1 : (int)(x))
+#define myfloor(x) ((x) < 0.0 ? (int) (x) -1 : (int) (x))
 // The naive swap performs better than the xor version
 #define SWAP(t, x, y)                                                                    \
 	do {                                                                                 \
 		t temp = x;                                                                      \
-		x = y;                                                                           \
-		y = temp;                                                                        \
+		x	   = y;                                                                      \
+		y	   = temp;                                                                   \
 	} while (0)
 
 
@@ -68,7 +68,7 @@ inline v3s16 getContainerPos(v3s16 p, v3s16 d)
 inline void getContainerPosWithOffset(s16 p, s16 d, s16 &container, s16 &offset)
 {
 	container = (p >= 0 ? p : p - d + 1) / d;
-	offset = p & (d - 1);
+	offset	  = p & (d - 1);
 }
 
 inline void getContainerPosWithOffset(
@@ -141,7 +141,7 @@ inline float modulo360f(float f)
 	float fraction;
 
 	if (f < 0) {
-		f = -f;
+		f	 = -f;
 		sign = -1;
 	} else {
 		sign = 1;
@@ -273,15 +273,15 @@ inline v3s16 doubleToInt(v3d p, double d)
 */
 inline v3f intToFloat(v3s16 p, f32 d)
 {
-	return v3f((f32)p.X * d, (f32)p.Y * d, (f32)p.Z * d);
+	return v3f((f32) p.X * d, (f32) p.Y * d, (f32) p.Z * d);
 }
 
 // Random helper. Usually d=BS
 inline aabb3f getNodeBox(v3s16 p, float d)
 {
-	return aabb3f((float)p.X * d - 0.5f * d, (float)p.Y * d - 0.5f * d,
-			(float)p.Z * d - 0.5f * d, (float)p.X * d + 0.5f * d,
-			(float)p.Y * d + 0.5f * d, (float)p.Z * d + 0.5f * d);
+	return aabb3f((float) p.X * d - 0.5f * d, (float) p.Y * d - 0.5f * d,
+			(float) p.Z * d - 0.5f * d, (float) p.X * d + 0.5f * d,
+			(float) p.Y * d + 0.5f * d, (float) p.Z * d + 0.5f * d);
 }
 
 

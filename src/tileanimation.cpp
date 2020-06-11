@@ -35,15 +35,15 @@ void TileAnimationParams::serialize(std::ostream &os, u8 tiledef_version) const
 
 void TileAnimationParams::deSerialize(std::istream &is, u8 tiledef_version)
 {
-	type = (TileAnimationType)readU8(is);
+	type = (TileAnimationType) readU8(is);
 
 	if (type == TAT_VERTICAL_FRAMES) {
 		vertical_frames.aspect_w = readU16(is);
 		vertical_frames.aspect_h = readU16(is);
-		vertical_frames.length = readF32(is);
+		vertical_frames.length	 = readF32(is);
 	} else if (type == TAT_SHEET_2D) {
-		sheet_2d.frames_w = readU8(is);
-		sheet_2d.frames_h = readU8(is);
+		sheet_2d.frames_w	  = readU8(is);
+		sheet_2d.frames_h	  = readU8(is);
 		sheet_2d.frame_length = readF32(is);
 	}
 }
@@ -52,8 +52,8 @@ void TileAnimationParams::determineParams(v2u32 texture_size, int *frame_count,
 		int *frame_length_ms, v2u32 *frame_size) const
 {
 	if (type == TAT_VERTICAL_FRAMES) {
-		int frame_height = (float)texture_size.X / (float)vertical_frames.aspect_w *
-				(float)vertical_frames.aspect_h;
+		int frame_height = (float) texture_size.X / (float) vertical_frames.aspect_w *
+				(float) vertical_frames.aspect_h;
 		int _frame_count = texture_size.Y / frame_height;
 		if (frame_count)
 			*frame_count = _frame_count;
@@ -95,16 +95,16 @@ v2f TileAnimationParams::getTextureCoords(v2u32 texture_size, int frame) const
 {
 	v2u32 ret(0, 0);
 	if (type == TAT_VERTICAL_FRAMES) {
-		int frame_height = (float)texture_size.X / (float)vertical_frames.aspect_w *
-				(float)vertical_frames.aspect_h;
+		int frame_height = (float) texture_size.X / (float) vertical_frames.aspect_w *
+				(float) vertical_frames.aspect_h;
 		ret = v2u32(0, frame_height * frame);
 	} else if (type == TAT_SHEET_2D) {
 		v2u32 frame_size;
 		determineParams(texture_size, NULL, NULL, &frame_size);
 		int q, r;
-		q = frame / sheet_2d.frames_w;
-		r = frame % sheet_2d.frames_w;
+		q	= frame / sheet_2d.frames_w;
+		r	= frame % sheet_2d.frames_w;
 		ret = v2u32(r * frame_size.X, q * frame_size.Y);
 	}
-	return v2f(ret.X / (float)texture_size.X, ret.Y / (float)texture_size.Y);
+	return v2f(ret.X / (float) texture_size.X, ret.Y / (float) texture_size.Y);
 }

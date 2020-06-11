@@ -73,7 +73,7 @@ int ModApiAuth::l_auth_read(lua_State *L)
 		return 0;
 	AuthEntry authEntry;
 	const char *name = luaL_checkstring(L, 1);
-	bool success = auth_db->getAuth(std::string(name), authEntry);
+	bool success	 = auth_db->getAuth(std::string(name), authEntry);
 	if (!success)
 		return 0;
 
@@ -180,7 +180,7 @@ int ModApiAuth::l_auth_list_names(lua_State *L)
 	auth_db->listNames(names);
 	lua_createtable(L, names.size(), 0);
 	int table = lua_gettop(L);
-	int i = 1;
+	int i	  = 1;
 	for (const std::string &name : names) {
 		lua_pushstring(L, name.c_str());
 		lua_rawseti(L, table, i++);

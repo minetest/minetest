@@ -27,17 +27,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 
 
-Environment::Environment(IGameDef *gamedef)
-	: m_time_of_day_speed(0.0f), m_day_count(0), m_gamedef(gamedef)
+Environment::Environment(IGameDef *gamedef) :
+	m_time_of_day_speed(0.0f), m_day_count(0), m_gamedef(gamedef)
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
 	m_cache_active_block_mgmt_interval =
 			g_settings->getFloat("active_block_mgmt_interval");
-	m_cache_abm_interval = g_settings->getFloat("abm_interval");
+	m_cache_abm_interval	   = g_settings->getFloat("abm_interval");
 	m_cache_nodetimer_interval = g_settings->getFloat("nodetimer_interval");
 
-	m_time_of_day = g_settings->getU32("world_start_time");
-	m_time_of_day_f = (float)m_time_of_day / 24000.0f;
+	m_time_of_day	= g_settings->getU32("world_start_time");
+	m_time_of_day_f = (float) m_time_of_day / 24000.0f;
 }
 
 u32 Environment::getDayNightRatio()
@@ -57,7 +57,7 @@ void Environment::setDayNightRatioOverride(bool enable, u32 value)
 {
 	MutexAutoLock lock(this->m_time_lock);
 	m_enable_day_night_ratio_override = enable;
-	m_day_night_ratio_override = value;
+	m_day_night_ratio_override		  = value;
 }
 
 void Environment::setTimeOfDay(u32 time)
@@ -65,8 +65,8 @@ void Environment::setTimeOfDay(u32 time)
 	MutexAutoLock lock(this->m_time_lock);
 	if (m_time_of_day > time)
 		++m_day_count;
-	m_time_of_day = time;
-	m_time_of_day_f = (float)time / 24000.0;
+	m_time_of_day	= time;
+	m_time_of_day_f = (float) time / 24000.0;
 }
 
 u32 Environment::getTimeOfDay()
@@ -123,8 +123,8 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 		}
 		// Set search range
 		core::aabbox3d<s16> maximal_exceed = nodedef->getSelectionBoxIntUnion();
-		state->m_search_range.MinEdge = -maximal_exceed.MaxEdge;
-		state->m_search_range.MaxEdge = -maximal_exceed.MinEdge;
+		state->m_search_range.MinEdge	   = -maximal_exceed.MaxEdge;
+		state->m_search_range.MaxEdge	   = -maximal_exceed.MinEdge;
 		// Setting is done
 		state->m_initialization_needed = false;
 	}
@@ -211,12 +211,12 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 												 .getLengthSQ();
 						// If this is the nearest collision, save it
 						if (min_distance_sq > distanceSq) {
-							min_distance_sq = distanceSq;
-							result.intersection_point = intersection_point;
+							min_distance_sq			   = distanceSq;
+							result.intersection_point  = intersection_point;
 							result.intersection_normal = intersection_normal;
-							result.box_id = id;
-							found_boxcenter = box.getCenter();
-							is_colliding = true;
+							result.box_id			   = id;
+							found_boxcenter			   = box.getCenter();
+							is_colliding			   = true;
 						}
 						++id;
 					}
@@ -224,11 +224,11 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 					if (!is_colliding) {
 						continue;
 					}
-					result.type = POINTEDTHING_NODE;
+					result.type				 = POINTEDTHING_NODE;
 					result.node_undersurface = np;
-					result.distanceSq = min_distance_sq;
+					result.distanceSq		 = min_distance_sq;
 					// Set undersurface and abovesurface nodes
-					f32 d = 0.002 * BS;
+					f32 d				  = 0.002 * BS;
 					v3f fake_intersection = result.intersection_point;
 					// Move intersection towards its source block.
 					if (fake_intersection.X < found_boxcenter.X) {
@@ -282,7 +282,7 @@ void Environment::stepTimeOfDay(float dtime)
 
 	f32 speed = cached_time_of_day_speed * 24000. / (24. * 3600);
 	m_time_conversion_skew += dtime;
-	u32 units = (u32)(m_time_conversion_skew * speed);
+	u32 units	= (u32)(m_time_conversion_skew * speed);
 	bool sync_f = false;
 	if (units > 0) {
 		// Sync at overflow
@@ -292,10 +292,10 @@ void Environment::stepTimeOfDay(float dtime)
 		}
 		m_time_of_day = (m_time_of_day + units) % 24000;
 		if (sync_f)
-			m_time_of_day_f = (float)m_time_of_day / 24000.0;
+			m_time_of_day_f = (float) m_time_of_day / 24000.0;
 	}
 	if (speed > 0) {
-		m_time_conversion_skew -= (f32)units / speed;
+		m_time_conversion_skew -= (f32) units / speed;
 	}
 	if (!sync_f) {
 		m_time_of_day_f += cached_time_of_day_speed / 24 / 3600 * dtime;

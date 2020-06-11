@@ -51,7 +51,7 @@ class ModApiMapgen;
 struct BlockMakeData
 {
 	MMVManip *vmanip = nullptr;
-	u64 seed = 0;
+	u64 seed		 = 0;
 	v3s16 blockpos_min;
 	v3s16 blockpos_max;
 	v3s16 blockpos_requested;

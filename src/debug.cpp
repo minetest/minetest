@@ -31,13 +31,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 
 #ifdef _MSC_VER
-#include <dbghelp.h>
-#include "version.h"
-#include "filesys.h"
+	#include <dbghelp.h>
+	#include "version.h"
+	#include "filesys.h"
 #endif
 
 #if USE_CURSES
-#include "terminal_chat_console.h"
+	#include "terminal_chat_console.h"
 #endif
 
 /*
@@ -151,13 +151,13 @@ long WINAPI Win32ExceptionHandler(struct _EXCEPTION_POINTERS *pExceptInfo)
 	if (SetEndOfFile(hFile) == FALSE)
 		goto minidump_failed;
 
-	mdei.ClientPointers = NULL;
+	mdei.ClientPointers	   = NULL;
 	mdei.ExceptionPointers = pExceptInfo;
-	mdei.ThreadId = GetCurrentThreadId();
+	mdei.ThreadId		   = GetCurrentThreadId();
 
-	mdus.Type = CommentStreamA;
+	mdus.Type		= CommentStreamA;
 	mdus.BufferSize = version_str.size();
-	mdus.Buffer = (PVOID)version_str.c_str();
+	mdus.Buffer		= (PVOID) version_str.c_str();
 
 	mdusi.UserStreamArray = &mdus;
 	mdusi.UserStreamCount = 1;

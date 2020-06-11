@@ -61,8 +61,8 @@ public:
 	// Starts as zero sized
 	VoxelArea() = default;
 
-	VoxelArea(const v3s16 &min_edge, const v3s16 &max_edge)
-		: MinEdge(min_edge), MaxEdge(max_edge)
+	VoxelArea(const v3s16 &min_edge, const v3s16 &max_edge) :
+		MinEdge(min_edge), MaxEdge(max_edge)
 	{
 		cacheExtent();
 	}
@@ -137,7 +137,7 @@ public:
 
 	s32 getVolume() const
 	{
-		return (s32)m_cache_extent.X * (s32)m_cache_extent.Y * (s32)m_cache_extent.Z;
+		return (s32) m_cache_extent.X * (s32) m_cache_extent.Y * (s32) m_cache_extent.Z;
 	}
 
 	bool contains(const VoxelArea &a) const

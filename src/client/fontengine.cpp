@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 
 #if USE_FREETYPE
-#include "irrlicht_changes/CGUITTFont.h"
+	#include "irrlicht_changes/CGUITTFont.h"
 #endif
 
 /** maximum size distance for getting a "similar" font size */
@@ -42,11 +42,11 @@ static void font_setting_changed(const std::string &name, void *userdata)
 }
 
 /******************************************************************************/
-FontEngine::FontEngine(Settings *main_settings, gui::IGUIEnvironment *env)
-	: m_settings(main_settings), m_env(env)
+FontEngine::FontEngine(Settings *main_settings, gui::IGUIEnvironment *env) :
+	m_settings(main_settings), m_env(env)
 {
 	for (u32 &i : m_default_size) {
-		i = (FontMode)FONT_SIZE_UNSPECIFIED;
+		i = (FontMode) FONT_SIZE_UNSPECIFIED;
 	}
 
 	assert(m_settings != NULL); // pre-condition
@@ -113,7 +113,7 @@ irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec)
 		spec.mode = (spec.mode == FM_Mono || spec.mode == FM_SimpleMono) ? FM_SimpleMono :
 																		   FM_Simple;
 		// Support for those could be added, but who cares?
-		spec.bold = false;
+		spec.bold	= false;
 		spec.italic = false;
 	}
 
@@ -122,7 +122,7 @@ irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec)
 		spec.size = m_default_size[spec.mode];
 
 	const auto &cache = m_font_cache[spec.getHash()];
-	auto it = cache.find(spec.size);
+	auto it			  = cache.find(spec.size);
 	if (it != cache.end())
 		return it->second;
 
@@ -194,7 +194,7 @@ void FontEngine::readSettings()
 	if (USE_FREETYPE && g_settings->getBool("freetype")) {
 		m_default_size[FM_Standard] = m_settings->getU16("font_size");
 		m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
-		m_default_size[FM_Mono] = m_settings->getU16("mono_font_size");
+		m_default_size[FM_Mono]		= m_settings->getU16("mono_font_size");
 
 		/*~ DO NOT TRANSLATE THIS LITERALLY!
 		This is a special string. Put either "no" or "yes"
@@ -207,14 +207,14 @@ void FontEngine::readSettings()
 		m_currentMode =
 				is_yes(gettext("needs_fallback_font")) ? FM_Fallback : FM_Standard;
 
-		m_default_bold = m_settings->getBool("font_bold");
+		m_default_bold	 = m_settings->getBool("font_bold");
 		m_default_italic = m_settings->getBool("font_italic");
 
 	} else {
 		m_currentMode = FM_Simple;
 	}
 
-	m_default_size[FM_Simple] = m_settings->getU16("font_size");
+	m_default_size[FM_Simple]	  = m_settings->getU16("font_size");
 	m_default_size[FM_SimpleMono] = m_settings->getU16("mono_font_size");
 
 	cleanCache();
@@ -288,7 +288,7 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 		abort();
 	}
 
-	u16 font_shadow = 0;
+	u16 font_shadow		  = 0;
 	u16 font_shadow_alpha = 0;
 	g_settings->getU16NoEx(setting_prefix + "font_shadow", font_shadow);
 	g_settings->getU16NoEx(setting_prefix + "font_shadow_alpha", font_shadow_alpha);
@@ -335,9 +335,9 @@ gui::IGUIFont *FontEngine::initSimpleFont(const FontSpec &spec)
 	const std::string &font_path = m_settings->get(
 			(spec.mode == FM_SimpleMono) ? "mono_font_path" : "font_path");
 
-	size_t pos_dot = font_path.find_last_of('.');
+	size_t pos_dot		 = font_path.find_last_of('.');
 	std::string basename = font_path;
-	std::string ending = lowercase(font_path.substr(pos_dot));
+	std::string ending	 = lowercase(font_path.substr(pos_dot));
 
 	if (ending == ".ttf") {
 		errorstream << "FontEngine: Found font \"" << font_path
@@ -351,7 +351,7 @@ gui::IGUIFont *FontEngine::initSimpleFont(const FontSpec &spec)
 	u32 size = std::floor(RenderingEngine::getDisplayDensity() *
 			m_settings->getFloat("gui_scaling") * spec.size);
 
-	irr::gui::IGUIFont *font = nullptr;
+	irr::gui::IGUIFont *font	  = nullptr;
 	std::string font_extensions[] = { ".png", ".xml" };
 
 	// Find nearest matching font scale
@@ -360,7 +360,7 @@ gui::IGUIFont *FontEngine::initSimpleFont(const FontSpec &spec)
 		std::stringstream path;
 
 		// LSB to sign
-		s32 sign = (zoffset & 1) ? -1 : 1;
+		s32 sign   = (zoffset & 1) ? -1 : 1;
 		s32 offset = zoffset >> 1;
 
 		for (const std::string &ext : font_extensions) {

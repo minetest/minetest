@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MapgenSinglenodeParams : public MapgenParams
 {
-	MapgenSinglenodeParams() = default;
+	MapgenSinglenodeParams()  = default;
 	~MapgenSinglenodeParams() = default;
 
 	void readParams(const Settings *settings) {}

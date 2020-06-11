@@ -81,15 +81,15 @@ public:
 	}
 
 private:
-	IItemDefManager *m_itemdef = nullptr;
-	const NodeDefManager *m_nodedef = nullptr;
-	ICraftDefManager *m_craftdef = nullptr;
-	ITextureSource *m_texturesrc = nullptr;
-	IShaderSource *m_shadersrc = nullptr;
-	ISoundManager *m_soundmgr = nullptr;
+	IItemDefManager *m_itemdef		 = nullptr;
+	const NodeDefManager *m_nodedef	 = nullptr;
+	ICraftDefManager *m_craftdef	 = nullptr;
+	ITextureSource *m_texturesrc	 = nullptr;
+	IShaderSource *m_shadersrc		 = nullptr;
+	ISoundManager *m_soundmgr		 = nullptr;
 	scene::ISceneManager *m_scenemgr = nullptr;
-	IRollbackManager *m_rollbackmgr = nullptr;
-	EmergeManager *m_emergemgr = nullptr;
+	IRollbackManager *m_rollbackmgr	 = nullptr;
+	EmergeManager *m_emergemgr		 = nullptr;
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 };
 
@@ -112,23 +112,23 @@ TestGameDef::~TestGameDef()
 
 void TestGameDef::defineSomeNodes()
 {
-	IWritableItemDefManager *idef = (IWritableItemDefManager *)m_itemdef;
-	NodeDefManager *ndef = (NodeDefManager *)m_nodedef;
+	IWritableItemDefManager *idef = (IWritableItemDefManager *) m_itemdef;
+	NodeDefManager *ndef		  = (NodeDefManager *) m_nodedef;
 
 	ItemDefinition itemdef;
 	ContentFeatures f;
 
 	//// Stone
-	itemdef = ItemDefinition();
-	itemdef.type = ITEM_NODE;
-	itemdef.name = "default:stone";
-	itemdef.description = "Stone";
+	itemdef					 = ItemDefinition();
+	itemdef.type			 = ITEM_NODE;
+	itemdef.name			 = "default:stone";
+	itemdef.description		 = "Stone";
 	itemdef.groups["cracky"] = 3;
-	itemdef.inventory_image = "[inventorycube"
+	itemdef.inventory_image	 = "[inventorycube"
 							  "{default_stone.png"
 							  "{default_stone.png"
 							  "{default_stone.png";
-	f = ContentFeatures();
+	f	   = ContentFeatures();
 	f.name = itemdef.name;
 	for (TileDef &tiledef : f.tiledef)
 		tiledef.name = "default_stone.png";
@@ -137,17 +137,17 @@ void TestGameDef::defineSomeNodes()
 	t_CONTENT_STONE = ndef->set(f.name, f);
 
 	//// Grass
-	itemdef = ItemDefinition();
-	itemdef.type = ITEM_NODE;
-	itemdef.name = "default:dirt_with_grass";
-	itemdef.description = "Dirt with grass";
+	itemdef					  = ItemDefinition();
+	itemdef.type			  = ITEM_NODE;
+	itemdef.name			  = "default:dirt_with_grass";
+	itemdef.description		  = "Dirt with grass";
 	itemdef.groups["crumbly"] = 3;
-	itemdef.inventory_image = "[inventorycube"
+	itemdef.inventory_image	  = "[inventorycube"
 							  "{default_grass.png"
 							  "{default_dirt.png&default_grass_side.png"
 							  "{default_dirt.png&default_grass_side.png";
-	f = ContentFeatures();
-	f.name = itemdef.name;
+	f				  = ContentFeatures();
+	f.name			  = itemdef.name;
 	f.tiledef[0].name = "default_grass.png";
 	f.tiledef[1].name = "default_dirt.png";
 	for (int i = 2; i < 6; i++)
@@ -157,32 +157,32 @@ void TestGameDef::defineSomeNodes()
 	t_CONTENT_GRASS = ndef->set(f.name, f);
 
 	//// Torch (minimal definition for lighting tests)
-	itemdef = ItemDefinition();
-	itemdef.type = ITEM_NODE;
-	itemdef.name = "default:torch";
-	f = ContentFeatures();
-	f.name = itemdef.name;
-	f.param_type = CPT_LIGHT;
-	f.light_propagates = true;
+	itemdef				  = ItemDefinition();
+	itemdef.type		  = ITEM_NODE;
+	itemdef.name		  = "default:torch";
+	f					  = ContentFeatures();
+	f.name				  = itemdef.name;
+	f.param_type		  = CPT_LIGHT;
+	f.light_propagates	  = true;
 	f.sunlight_propagates = true;
-	f.light_source = LIGHT_MAX - 1;
+	f.light_source		  = LIGHT_MAX - 1;
 	idef->registerItem(itemdef);
 	t_CONTENT_TORCH = ndef->set(f.name, f);
 
 	//// Water
-	itemdef = ItemDefinition();
-	itemdef.type = ITEM_NODE;
-	itemdef.name = "default:water";
-	itemdef.description = "Water";
+	itemdef					= ItemDefinition();
+	itemdef.type			= ITEM_NODE;
+	itemdef.name			= "default:water";
+	itemdef.description		= "Water";
 	itemdef.inventory_image = "[inventorycube"
 							  "{default_water.png"
 							  "{default_water.png"
 							  "{default_water.png";
-	f = ContentFeatures();
-	f.name = itemdef.name;
-	f.alpha = 128;
-	f.liquid_type = LIQUID_SOURCE;
-	f.liquid_viscosity = 4;
+	f					= ContentFeatures();
+	f.name				= itemdef.name;
+	f.alpha				= 128;
+	f.liquid_type		= LIQUID_SOURCE;
+	f.liquid_viscosity	= 4;
 	f.is_ground_content = true;
 	f.groups["liquids"] = 3;
 	for (TileDef &tiledef : f.tiledef)
@@ -191,20 +191,20 @@ void TestGameDef::defineSomeNodes()
 	t_CONTENT_WATER = ndef->set(f.name, f);
 
 	//// Lava
-	itemdef = ItemDefinition();
-	itemdef.type = ITEM_NODE;
-	itemdef.name = "default:lava";
-	itemdef.description = "Lava";
+	itemdef					= ItemDefinition();
+	itemdef.type			= ITEM_NODE;
+	itemdef.name			= "default:lava";
+	itemdef.description		= "Lava";
 	itemdef.inventory_image = "[inventorycube"
 							  "{default_lava.png"
 							  "{default_lava.png"
 							  "{default_lava.png";
-	f = ContentFeatures();
-	f.name = itemdef.name;
-	f.alpha = 128;
-	f.liquid_type = LIQUID_SOURCE;
-	f.liquid_viscosity = 7;
-	f.light_source = LIGHT_MAX - 1;
+	f					= ContentFeatures();
+	f.name				= itemdef.name;
+	f.alpha				= 128;
+	f.liquid_type		= LIQUID_SOURCE;
+	f.liquid_viscosity	= 7;
+	f.light_source		= LIGHT_MAX - 1;
 	f.is_ground_content = true;
 	f.groups["liquids"] = 3;
 	for (TileDef &tiledef : f.tiledef)
@@ -214,16 +214,16 @@ void TestGameDef::defineSomeNodes()
 
 
 	//// Brick
-	itemdef = ItemDefinition();
-	itemdef.type = ITEM_NODE;
-	itemdef.name = "default:brick";
-	itemdef.description = "Brick";
+	itemdef					 = ItemDefinition();
+	itemdef.type			 = ITEM_NODE;
+	itemdef.name			 = "default:brick";
+	itemdef.description		 = "Brick";
 	itemdef.groups["cracky"] = 3;
-	itemdef.inventory_image = "[inventorycube"
+	itemdef.inventory_image	 = "[inventorycube"
 							  "{default_brick.png"
 							  "{default_brick.png"
 							  "{default_brick.png";
-	f = ContentFeatures();
+	f	   = ContentFeatures();
 	f.name = itemdef.name;
 	for (TileDef &tiledef : f.tiledef)
 		tiledef.name = "default_brick.png";
@@ -262,9 +262,9 @@ bool run_tests()
 
 	g_logger.setLevelSilenced(LL_ERROR, true);
 
-	u32 num_modules_failed = 0;
-	u32 num_total_tests_failed = 0;
-	u32 num_total_tests_run = 0;
+	u32 num_modules_failed			  = 0;
+	u32 num_total_tests_failed		  = 0;
+	u32 num_total_tests_run			  = 0;
 	std::vector<TestBase *> &testmods = TestManager::getTestModules();
 	for (size_t i = 0; i != testmods.size(); i++) {
 		if (!testmods[i]->testModule(&gamedef))

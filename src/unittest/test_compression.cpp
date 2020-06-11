@@ -70,7 +70,7 @@ void TestCompression::testRLECompression()
 	infostream << "str_out.size()=" << str_out.size() << std::endl;
 	infostream << "TestCompress: 1,5,5,1 -> ";
 	for (char i : str_out)
-		infostream << (u32)i << ",";
+		infostream << (u32) i << ",";
 	infostream << std::endl;
 
 	UASSERT(str_out.size() == 10);
@@ -94,7 +94,7 @@ void TestCompression::testRLECompression()
 
 	infostream << "decompress: ";
 	for (char i : str_out2)
-		infostream << (u32)i << ",";
+		infostream << (u32) i << ",";
 	infostream << std::endl;
 
 	UASSERTEQ(size_t, str_out2.size(), fromdata.getSize());
@@ -119,7 +119,7 @@ void TestCompression::testZlibCompression()
 	infostream << "str_out.size()=" << str_out.size() << std::endl;
 	infostream << "TestCompress: 1,5,5,1 -> ";
 	for (char i : str_out)
-		infostream << (u32)i << ",";
+		infostream << (u32) i << ",";
 	infostream << std::endl;
 
 	std::istringstream is(str_out, std::ios_base::binary);
@@ -130,7 +130,7 @@ void TestCompression::testZlibCompression()
 
 	infostream << "decompress: ";
 	for (char i : str_out2)
-		infostream << (u32)i << ",";
+		infostream << (u32) i << ",";
 	infostream << std::endl;
 
 	UASSERTEQ(size_t, str_out2.size(), fromdata.getSize());

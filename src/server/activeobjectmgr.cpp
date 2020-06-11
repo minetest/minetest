@@ -117,7 +117,7 @@ void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
 	float r2 = radius * radius;
 	for (auto &activeObject : m_active_objects) {
 		ServerActiveObject *obj = activeObject.second;
-		const v3f &objectpos = obj->getBasePosition();
+		const v3f &objectpos	= obj->getBasePosition();
 		if (objectpos.getDistanceFromSQ(pos) > r2)
 			continue;
 

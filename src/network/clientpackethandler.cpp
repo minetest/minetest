@@ -67,7 +67,7 @@ void Client::handleCommand_Hello(NetworkPacket *pkt)
 	AuthMechanism chosen_auth_mechanism = choseAuthMech(auth_mechs);
 
 	infostream << "Client: TOCLIENT_HELLO received with "
-			   << "serialization_ver=" << (u32)serialization_ver
+			   << "serialization_ver=" << (u32) serialization_ver
 			   << ", auth_mechs=" << auth_mechs << ", proto_ver=" << proto_ver
 			   << ", compression_mode=" << compression_mode << ". Doing auth with mech "
 			   << chosen_auth_mechanism << std::endl;
@@ -79,7 +79,7 @@ void Client::handleCommand_Hello(NetworkPacket *pkt)
 	}
 
 	m_server_ser_ver = serialization_ver;
-	m_proto_ver = proto_ver;
+	m_proto_ver		 = proto_ver;
 
 	//TODO verify that username_legacy matches sent username, only
 	// differs in casing (make both uppercase and compare)
@@ -91,7 +91,7 @@ void Client::handleCommand_Hello(NetworkPacket *pkt)
 					<< "(chosen_mech=" << m_chosen_auth_mech << ")." << std::endl;
 		if (m_chosen_auth_mech == AUTH_MECHANISM_SRP ||
 				m_chosen_auth_mech == AUTH_MECHANISM_LEGACY_PASSWORD) {
-			srp_user_delete((SRPUser *)m_auth_data);
+			srp_user_delete((SRPUser *) m_auth_data);
 			m_auth_data = 0;
 		}
 	}
@@ -106,8 +106,8 @@ void Client::handleCommand_Hello(NetworkPacket *pkt)
 			startAuth(chosen_auth_mechanism);
 		}
 	} else {
-		m_chosen_auth_mech = AUTH_MECHANISM_NONE;
-		m_access_denied = true;
+		m_chosen_auth_mech	   = AUTH_MECHANISM_NONE;
+		m_access_denied		   = true;
 		m_access_denied_reason = "Unknown";
 		m_con->Disconnect();
 	}
@@ -173,7 +173,7 @@ void Client::handleCommand_AccessDenied(NetworkPacket *pkt)
 	// The server didn't like our password. Note, this needs
 	// to be processed even if the serialisation format has
 	// not been agreed yet, the same as TOCLIENT_INIT.
-	m_access_denied = true;
+	m_access_denied		   = true;
 	m_access_denied_reason = "Unknown";
 
 	if (pkt->getCommand() != TOCLIENT_ACCESS_DENIED) {
@@ -239,7 +239,7 @@ void Client::handleCommand_AddNode(NetworkPacket *pkt)
 	n.deSerialize(pkt->getU8Ptr(6), m_server_ser_ver);
 
 	bool remove_metadata = true;
-	u32 index = 6 + MapNode::serializedLength(m_server_ser_ver);
+	u32 index			 = 6 + MapNode::serializedLength(m_server_ser_ver);
 	if ((pkt->getSize() >= index + 1) && pkt->getU8(index)) {
 		remove_metadata = false;
 	}
@@ -335,7 +335,7 @@ void Client::handleCommand_Inventory(NetworkPacket *pkt)
 	m_update_wielded_item = true;
 
 	delete m_inventory_from_server;
-	m_inventory_from_server = new Inventory(player->inventory);
+	m_inventory_from_server		= new Inventory(player->inventory);
 	m_inventory_from_server_age = 0.0;
 }
 
@@ -348,23 +348,23 @@ void Client::handleCommand_TimeOfDay(NetworkPacket *pkt)
 
 	*pkt >> time_of_day;
 
-	time_of_day = time_of_day % 24000;
+	time_of_day		 = time_of_day % 24000;
 	float time_speed = 0;
 
 	if (pkt->getSize() >= 2 + 4) {
 		*pkt >> time_speed;
 	} else {
 		// Old message; try to approximate speed of time by ourselves
-		float time_of_day_f = (float)time_of_day / 24000.0f;
-		float tod_diff_f = 0;
+		float time_of_day_f = (float) time_of_day / 24000.0f;
+		float tod_diff_f	= 0;
 
 		if (time_of_day_f < 0.2 && m_last_time_of_day_f > 0.8)
 			tod_diff_f = time_of_day_f - m_last_time_of_day_f + 1.0f;
 		else
 			tod_diff_f = time_of_day_f - m_last_time_of_day_f;
 
-		m_last_time_of_day_f = time_of_day_f;
-		float time_diff = m_time_of_day_update_timer;
+		m_last_time_of_day_f	   = time_of_day_f;
+		float time_diff			   = m_time_of_day_update_timer;
 		m_time_of_day_update_timer = 0;
 
 		if (m_time_of_day_set) {
@@ -411,7 +411,7 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 	*pkt >> chatMessage->sender >> chatMessage->message >> timestamp;
 	chatMessage->timestamp = static_cast<std::time_t>(timestamp);
 
-	chatMessage->type = (ChatMessageType)message_type;
+	chatMessage->type = (ChatMessageType) message_type;
 
 	// @TODO send this to CSM using ChatMessage object
 	if (modsLoaded() &&
@@ -508,24 +508,24 @@ void Client::handleCommand_Movement(NetworkPacket *pkt)
 	*pkt >> mad >> maa >> maf >> msw >> mscr >> msf >> mscl >> msj >> lf >> lfs >> ls >>
 			g;
 
-	player->movement_acceleration_default = mad * BS;
-	player->movement_acceleration_air = maa * BS;
-	player->movement_acceleration_fast = maf * BS;
-	player->movement_speed_walk = msw * BS;
-	player->movement_speed_crouch = mscr * BS;
-	player->movement_speed_fast = msf * BS;
-	player->movement_speed_climb = mscl * BS;
-	player->movement_speed_jump = msj * BS;
-	player->movement_liquid_fluidity = lf * BS;
+	player->movement_acceleration_default	= mad * BS;
+	player->movement_acceleration_air		= maa * BS;
+	player->movement_acceleration_fast		= maf * BS;
+	player->movement_speed_walk				= msw * BS;
+	player->movement_speed_crouch			= mscr * BS;
+	player->movement_speed_fast				= msf * BS;
+	player->movement_speed_climb			= mscl * BS;
+	player->movement_speed_jump				= msj * BS;
+	player->movement_liquid_fluidity		= lf * BS;
 	player->movement_liquid_fluidity_smooth = lfs * BS;
-	player->movement_liquid_sink = ls * BS;
-	player->movement_gravity = g * BS;
+	player->movement_liquid_sink			= ls * BS;
+	player->movement_gravity				= g * BS;
 }
 
 void Client::handleCommand_Fov(NetworkPacket *pkt)
 {
 	f32 fov;
-	bool is_multiplier = false;
+	bool is_multiplier	= false;
 	f32 transition_time = 0.0f;
 
 	*pkt >> fov >> is_multiplier;
@@ -560,8 +560,8 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 
 	if (hp < oldhp) {
 		// Add to ClientEvent queue
-		ClientEvent *event = new ClientEvent();
-		event->type = CE_PLAYER_DAMAGE;
+		ClientEvent *event			= new ClientEvent();
+		event->type					= CE_PLAYER_DAMAGE;
 		event->player_damage.amount = oldhp - hp;
 		m_client_event_queue.push(event);
 	}
@@ -601,10 +601,10 @@ void Client::handleCommand_MovePlayer(NetworkPacket *pkt)
 		it would just force the pitch and yaw values to whatever
 		the camera points to.
 	*/
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_PLAYER_FORCE_MOVE;
+	ClientEvent *event			   = new ClientEvent();
+	event->type					   = CE_PLAYER_FORCE_MOVE;
 	event->player_force_move.pitch = pitch;
-	event->player_force_move.yaw = yaw;
+	event->player_force_move.yaw   = yaw;
 	m_client_event_queue.push(event);
 }
 
@@ -616,12 +616,12 @@ void Client::handleCommand_DeathScreen(NetworkPacket *pkt)
 	*pkt >> set_camera_point_target;
 	*pkt >> camera_point_target;
 
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_DEATHSCREEN;
+	ClientEvent *event						   = new ClientEvent();
+	event->type								   = CE_DEATHSCREEN;
 	event->deathscreen.set_camera_point_target = set_camera_point_target;
-	event->deathscreen.camera_point_target_x = camera_point_target.X;
-	event->deathscreen.camera_point_target_y = camera_point_target.Y;
-	event->deathscreen.camera_point_target_z = camera_point_target.Z;
+	event->deathscreen.camera_point_target_x   = camera_point_target.X;
+	event->deathscreen.camera_point_target_y   = camera_point_target.Y;
+	event->deathscreen.camera_point_target_z   = camera_point_target.Z;
 	m_client_event_queue.push(event);
 }
 
@@ -787,8 +787,8 @@ void Client::handleCommand_PlaySound(NetworkPacket *pkt)
 	v3f pos;
 	u16 object_id;
 	bool loop;
-	float fade = 0.0f;
-	float pitch = 1.0f;
+	float fade	   = 0.0f;
+	float pitch	   = 1.0f;
 	bool ephemeral = false;
 
 	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
@@ -906,7 +906,7 @@ void Client::handleCommand_DetachedInventory(NetworkPacket *pkt)
 	}
 	Inventory *inv = nullptr;
 	if (inv_it == m_detached_inventories.end()) {
-		inv = new Inventory(m_itemdef);
+		inv							 = new Inventory(m_itemdef);
 		m_detached_inventories[name] = inv;
 	} else {
 		inv = inv_it->second;
@@ -928,7 +928,7 @@ void Client::handleCommand_ShowFormSpec(NetworkPacket *pkt)
 	*pkt >> formname;
 
 	ClientEvent *event = new ClientEvent();
-	event->type = CE_SHOW_FORMSPEC;
+	event->type		   = CE_SHOW_FORMSPEC;
 	// pointer is required as event is a struct only!
 	// adding a std:string to a struct isn't possible
 	event->show_formspec.formspec = new std::string(formspec);
@@ -944,8 +944,8 @@ void Client::handleCommand_SpawnParticle(NetworkPacket *pkt)
 	ParticleParameters p;
 	p.deSerialize(is, m_proto_ver);
 
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_SPAWN_PARTICLE;
+	ClientEvent *event	  = new ClientEvent();
+	event->type			  = CE_SPAWN_PARTICLE;
 	event->spawn_particle = new ParticleParameters(p);
 
 	m_client_event_queue.push(event);
@@ -960,30 +960,30 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket *pkt)
 	u32 server_id;
 	u16 attached_id = 0;
 
-	p.amount = readU16(is);
-	p.time = readF32(is);
-	p.minpos = readV3F32(is);
-	p.maxpos = readV3F32(is);
-	p.minvel = readV3F32(is);
-	p.maxvel = readV3F32(is);
-	p.minacc = readV3F32(is);
-	p.maxacc = readV3F32(is);
-	p.minexptime = readF32(is);
-	p.maxexptime = readF32(is);
-	p.minsize = readF32(is);
-	p.maxsize = readF32(is);
+	p.amount			 = readU16(is);
+	p.time				 = readF32(is);
+	p.minpos			 = readV3F32(is);
+	p.maxpos			 = readV3F32(is);
+	p.minvel			 = readV3F32(is);
+	p.maxvel			 = readV3F32(is);
+	p.minacc			 = readV3F32(is);
+	p.maxacc			 = readV3F32(is);
+	p.minexptime		 = readF32(is);
+	p.maxexptime		 = readF32(is);
+	p.minsize			 = readF32(is);
+	p.maxsize			 = readF32(is);
 	p.collisiondetection = readU8(is);
-	p.texture = deSerializeLongString(is);
+	p.texture			 = deSerializeLongString(is);
 
 	server_id = readU32(is);
 
-	p.vertical = readU8(is);
+	p.vertical			= readU8(is);
 	p.collision_removal = readU8(is);
 
 	attached_id = readU16(is);
 
 	p.animation.deSerialize(is, m_proto_ver);
-	p.glow = readU8(is);
+	p.glow			   = readU8(is);
 	p.object_collision = readU8(is);
 
 	// This is kinda awful
@@ -993,14 +993,14 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket *pkt)
 			break;
 		p.node.param0 = tmp_param0;
 		p.node.param2 = readU8(is);
-		p.node_tile = readU8(is);
+		p.node_tile	  = readU8(is);
 	} while (0);
 
-	auto event = new ClientEvent();
-	event->type = CE_ADD_PARTICLESPAWNER;
-	event->add_particlespawner.p = new ParticleSpawnerParameters(p);
+	auto event							   = new ClientEvent();
+	event->type							   = CE_ADD_PARTICLESPAWNER;
+	event->add_particlespawner.p		   = new ParticleSpawnerParameters(p);
 	event->add_particlespawner.attached_id = attached_id;
-	event->add_particlespawner.id = server_id;
+	event->add_particlespawner.id		   = server_id;
 
 	m_client_event_queue.push(event);
 }
@@ -1011,8 +1011,8 @@ void Client::handleCommand_DeleteParticleSpawner(NetworkPacket *pkt)
 	u32 server_id;
 	*pkt >> server_id;
 
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_DELETE_PARTICLESPAWNER;
+	ClientEvent *event				 = new ClientEvent();
+	event->type						 = CE_DELETE_PARTICLESPAWNER;
 	event->delete_particlespawner.id = server_id;
 
 	m_client_event_queue.push(event);
@@ -1049,23 +1049,23 @@ void Client::handleCommand_HudAdd(NetworkPacket *pkt)
 	} catch (PacketError &e) {
 	};
 
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_HUDADD;
+	ClientEvent *event		= new ClientEvent();
+	event->type				= CE_HUDADD;
 	event->hudadd.server_id = server_id;
-	event->hudadd.type = type;
-	event->hudadd.pos = new v2f(pos);
-	event->hudadd.name = new std::string(name);
-	event->hudadd.scale = new v2f(scale);
-	event->hudadd.text = new std::string(text);
-	event->hudadd.number = number;
-	event->hudadd.item = item;
-	event->hudadd.dir = dir;
-	event->hudadd.align = new v2f(align);
-	event->hudadd.offset = new v2f(offset);
+	event->hudadd.type		= type;
+	event->hudadd.pos		= new v2f(pos);
+	event->hudadd.name		= new std::string(name);
+	event->hudadd.scale		= new v2f(scale);
+	event->hudadd.text		= new std::string(text);
+	event->hudadd.number	= number;
+	event->hudadd.item		= item;
+	event->hudadd.dir		= dir;
+	event->hudadd.align		= new v2f(align);
+	event->hudadd.offset	= new v2f(offset);
 	event->hudadd.world_pos = new v3f(world_pos);
-	event->hudadd.size = new v2s32(size);
-	event->hudadd.z_index = z_index;
-	event->hudadd.text2 = new std::string(text2);
+	event->hudadd.size		= new v2s32(size);
+	event->hudadd.z_index	= z_index;
+	event->hudadd.text2		= new std::string(text2);
 	m_client_event_queue.push(event);
 }
 
@@ -1081,8 +1081,8 @@ void Client::handleCommand_HudRemove(NetworkPacket *pkt)
 		m_hud_server_to_client.erase(i);
 
 		ClientEvent *event = new ClientEvent();
-		event->type = CE_HUDRM;
-		event->hudrm.id = client_id;
+		event->type		   = CE_HUDRM;
+		event->hudrm.id	   = client_id;
 		m_client_event_queue.push(event);
 	}
 }
@@ -1114,14 +1114,14 @@ void Client::handleCommand_HudChange(NetworkPacket *pkt)
 	std::unordered_map<u32, u32>::const_iterator i =
 			m_hud_server_to_client.find(server_id);
 	if (i != m_hud_server_to_client.end()) {
-		ClientEvent *event = new ClientEvent();
-		event->type = CE_HUDCHANGE;
-		event->hudchange.id = i->second;
-		event->hudchange.stat = (HudElementStat)stat;
-		event->hudchange.v2fdata = new v2f(v2fdata);
-		event->hudchange.v3fdata = new v3f(v3fdata);
-		event->hudchange.sdata = new std::string(sdata);
-		event->hudchange.data = intdata;
+		ClientEvent *event		   = new ClientEvent();
+		event->type				   = CE_HUDCHANGE;
+		event->hudchange.id		   = i->second;
+		event->hudchange.stat	   = (HudElementStat) stat;
+		event->hudchange.v2fdata   = new v2f(v2fdata);
+		event->hudchange.v3fdata   = new v3f(v3fdata);
+		event->hudchange.sdata	   = new std::string(sdata);
+		event->hudchange.data	   = intdata;
 		event->hudchange.v2s32data = new v2s32(v2s32data);
 		m_client_event_queue.push(event);
 	}
@@ -1136,7 +1136,7 @@ void Client::handleCommand_HudSetFlags(NetworkPacket *pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	bool was_minimap_visible = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
+	bool was_minimap_visible	   = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
 	bool was_minimap_radar_visible = player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE;
 
 	player->hud_flags &= ~mask;
@@ -1168,7 +1168,7 @@ void Client::handleCommand_HudSetParam(NetworkPacket *pkt)
 	assert(player != NULL);
 
 	if (param == HUD_PARAM_HOTBAR_ITEMCOUNT && value.size() == 4) {
-		s32 hotbar_itemcount = readS32((u8 *)value.c_str());
+		s32 hotbar_itemcount = readS32((u8 *) value.c_str());
 		if (hotbar_itemcount > 0 && hotbar_itemcount <= HUD_HOTBAR_ITEMCOUNT_MAX)
 			player->hud_hotbar_itemcount = hotbar_itemcount;
 	} else if (param == HUD_PARAM_HOTBAR_IMAGE) {
@@ -1188,8 +1188,8 @@ void Client::handleCommand_HudSetSky(NetworkPacket *pkt)
 
 		SkyboxParams skybox;
 		skybox.bgcolor = video::SColor(readARGB8(is));
-		skybox.type = std::string(deSerializeString(is));
-		u16 count = readU16(is);
+		skybox.type	   = std::string(deSerializeString(is));
+		u16 count	   = readU16(is);
 
 		for (size_t i = 0; i < count; i++)
 			skybox.textures.emplace_back(deSerializeString(is));
@@ -1202,41 +1202,41 @@ void Client::handleCommand_HudSetSky(NetworkPacket *pkt)
 
 		// Use default skybox settings:
 		SkyboxDefaults sky_defaults;
-		SunParams sun = sky_defaults.getSunDefaults();
-		MoonParams moon = sky_defaults.getMoonDefaults();
+		SunParams sun	 = sky_defaults.getSunDefaults();
+		MoonParams moon	 = sky_defaults.getMoonDefaults();
 		StarParams stars = sky_defaults.getStarDefaults();
 
 		// Fix for "regular" skies, as color isn't kept:
 		if (skybox.type == "regular") {
-			skybox.sky_color = sky_defaults.getSkyColorDefaults();
+			skybox.sky_color	 = sky_defaults.getSkyColorDefaults();
 			skybox.fog_tint_type = "default";
 			skybox.fog_moon_tint = video::SColor(255, 255, 255, 255);
-			skybox.fog_sun_tint = video::SColor(255, 255, 255, 255);
+			skybox.fog_sun_tint	 = video::SColor(255, 255, 255, 255);
 		} else {
-			sun.visible = false;
+			sun.visible			= false;
 			sun.sunrise_visible = false;
-			moon.visible = false;
-			stars.visible = false;
+			moon.visible		= false;
+			stars.visible		= false;
 		}
 
 		// Skybox, sun, moon and stars ClientEvents:
 		ClientEvent *sky_event = new ClientEvent();
-		sky_event->type = CE_SET_SKY;
-		sky_event->set_sky = new SkyboxParams(skybox);
+		sky_event->type		   = CE_SET_SKY;
+		sky_event->set_sky	   = new SkyboxParams(skybox);
 		m_client_event_queue.push(sky_event);
 
 		ClientEvent *sun_event = new ClientEvent();
-		sun_event->type = CE_SET_SUN;
-		sun_event->sun_params = new SunParams(sun);
+		sun_event->type		   = CE_SET_SUN;
+		sun_event->sun_params  = new SunParams(sun);
 		m_client_event_queue.push(sun_event);
 
 		ClientEvent *moon_event = new ClientEvent();
-		moon_event->type = CE_SET_MOON;
+		moon_event->type		= CE_SET_MOON;
 		moon_event->moon_params = new MoonParams(moon);
 		m_client_event_queue.push(moon_event);
 
 		ClientEvent *star_event = new ClientEvent();
-		star_event->type = CE_SET_STARS;
+		star_event->type		= CE_SET_STARS;
 		star_event->star_params = new StarParams(stars);
 		m_client_event_queue.push(star_event);
 	} else {
@@ -1261,8 +1261,8 @@ void Client::handleCommand_HudSetSky(NetworkPacket *pkt)
 		}
 
 		ClientEvent *event = new ClientEvent();
-		event->type = CE_SET_SKY;
-		event->set_sky = new SkyboxParams(skybox);
+		event->type		   = CE_SET_SKY;
+		event->set_sky	   = new SkyboxParams(skybox);
 		m_client_event_queue.push(event);
 	}
 }
@@ -1275,8 +1275,8 @@ void Client::handleCommand_HudSetSun(NetworkPacket *pkt)
 			sun.sunrise_visible >> sun.scale;
 
 	ClientEvent *event = new ClientEvent();
-	event->type = CE_SET_SUN;
-	event->sun_params = new SunParams(sun);
+	event->type		   = CE_SET_SUN;
+	event->sun_params  = new SunParams(sun);
 	m_client_event_queue.push(event);
 }
 
@@ -1287,7 +1287,7 @@ void Client::handleCommand_HudSetMoon(NetworkPacket *pkt)
 	*pkt >> moon.visible >> moon.texture >> moon.tonemap >> moon.scale;
 
 	ClientEvent *event = new ClientEvent();
-	event->type = CE_SET_MOON;
+	event->type		   = CE_SET_MOON;
 	event->moon_params = new MoonParams(moon);
 	m_client_event_queue.push(event);
 }
@@ -1299,7 +1299,7 @@ void Client::handleCommand_HudSetStars(NetworkPacket *pkt)
 	*pkt >> stars.visible >> stars.count >> stars.starcolor >> stars.scale;
 
 	ClientEvent *event = new ClientEvent();
-	event->type = CE_SET_STARS;
+	event->type		   = CE_SET_STARS;
 	event->star_params = new StarParams(stars);
 
 	m_client_event_queue.push(event);
@@ -1316,16 +1316,16 @@ void Client::handleCommand_CloudParams(NetworkPacket *pkt)
 
 	*pkt >> density >> color_bright >> color_ambient >> height >> thickness >> speed;
 
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_CLOUD_PARAMS;
+	ClientEvent *event			= new ClientEvent();
+	event->type					= CE_CLOUD_PARAMS;
 	event->cloud_params.density = density;
 	// use the underlying u32 representation, because we can't
 	// use struct members with constructors here, and this way
 	// we avoid using new() and delete() for no good reason
-	event->cloud_params.color_bright = color_bright.color;
+	event->cloud_params.color_bright  = color_bright.color;
 	event->cloud_params.color_ambient = color_ambient.color;
-	event->cloud_params.height = height;
-	event->cloud_params.thickness = thickness;
+	event->cloud_params.height		  = height;
+	event->cloud_params.thickness	  = thickness;
 	// same here: deconstruct to skip constructor
 	event->cloud_params.speed_x = speed.X;
 	event->cloud_params.speed_y = speed.Y;
@@ -1339,12 +1339,12 @@ void Client::handleCommand_OverrideDayNightRatio(NetworkPacket *pkt)
 
 	*pkt >> do_override >> day_night_ratio_u;
 
-	float day_night_ratio_f = (float)day_night_ratio_u / 65536;
+	float day_night_ratio_f = (float) day_night_ratio_u / 65536;
 
-	ClientEvent *event = new ClientEvent();
-	event->type = CE_OVERRIDE_DAY_NIGHT_RATIO;
+	ClientEvent *event							= new ClientEvent();
+	event->type									= CE_OVERRIDE_DAY_NIGHT_RATIO;
 	event->override_day_night_ratio.do_override = do_override;
-	event->override_day_night_ratio.ratio_f = day_night_ratio_f;
+	event->override_day_night_ratio.ratio_f		= day_night_ratio_f;
 	m_client_event_queue.push(event);
 }
 
@@ -1373,7 +1373,7 @@ void Client::handleCommand_UpdatePlayerList(NetworkPacket *pkt)
 	u8 type;
 	u16 num_players;
 	*pkt >> type >> num_players;
-	PlayerListModifer notice_type = (PlayerListModifer)type;
+	PlayerListModifer notice_type = (PlayerListModifer) type;
 
 	for (u16 i = 0; i < num_players; i++) {
 		std::string name;
@@ -1401,16 +1401,16 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket *pkt)
 	}
 
 	char *bytes_M = 0;
-	size_t len_M = 0;
-	SRPUser *usr = (SRPUser *)m_auth_data;
+	size_t len_M  = 0;
+	SRPUser *usr  = (SRPUser *) m_auth_data;
 	std::string s;
 	std::string B;
 	*pkt >> s >> B;
 
 	infostream << "Client: Received TOCLIENT_SRP_BYTES_S_B." << std::endl;
 
-	srp_user_process_challenge(usr, (const unsigned char *)s.c_str(), s.size(),
-			(const unsigned char *)B.c_str(), B.size(), (unsigned char **)&bytes_M,
+	srp_user_process_challenge(usr, (const unsigned char *) s.c_str(), s.size(),
+			(const unsigned char *) B.c_str(), B.size(), (unsigned char **) &bytes_M,
 			&len_M);
 
 	if (!bytes_M) {
@@ -1482,7 +1482,7 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 
 	*pkt >> signal_tmp >> channel;
 
-	signal = (ModChannelSignal)signal_tmp;
+	signal = (ModChannelSignal) signal_tmp;
 
 	bool valid_signal = true;
 	// @TODO: send Signal to Lua API
@@ -1525,7 +1525,7 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 			return;
 		}
 
-		m_modchannel_mgr->setChannelState(channel, (ModChannelState)state);
+		m_modchannel_mgr->setChannelState(channel, (ModChannelState) state);
 		infostream << "Server sets mod channel `" << channel << "` in read-only mode."
 				   << std::endl;
 		break;

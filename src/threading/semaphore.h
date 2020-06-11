@@ -20,11 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #if defined(_WIN32)
-#include <windows.h>
+	#include <windows.h>
 #elif defined(__MACH__) && defined(__APPLE__)
-#include <mach/semaphore.h>
+	#include <mach/semaphore.h>
 #else
-#include <semaphore.h>
+	#include <semaphore.h>
 #endif
 
 #include "util/basic_macros.h"

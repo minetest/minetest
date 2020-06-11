@@ -37,7 +37,7 @@ const std::vector<v3s16> &FacePositionCache::getFacePositions(u16 d)
 
 const std::vector<v3s16> &FacePositionCache::generateFacePosition(u16 d)
 {
-	cache[d] = std::vector<v3s16>();
+	cache[d]			  = std::vector<v3s16>();
 	std::vector<v3s16> &c = cache[d];
 	if (d == 0) {
 		c.emplace_back(0, 0, 0);

@@ -301,9 +301,9 @@ protected:
 
 private:
 	f32 m_transforming_liquid_loop_count_multiplier = 1.0f;
-	u32 m_unprocessed_count = 0;
-	u64 m_inc_trending_up_start_time = 0; // milliseconds
-	bool m_queue_size_timer_started = false;
+	u32 m_unprocessed_count							= 0;
+	u64 m_inc_trending_up_start_time				= 0; // milliseconds
+	bool m_queue_size_timer_started					= false;
 };
 
 /*
@@ -440,8 +440,8 @@ private:
 		This is reset to false when written on disk.
 	*/
 	bool m_map_metadata_changed = true;
-	MapDatabase *dbase = nullptr;
-	MapDatabase *dbase_ro = nullptr;
+	MapDatabase *dbase			= nullptr;
+	MapDatabase *dbase_ro		= nullptr;
 
 	MetricCounterPtr m_save_time_counter;
 };

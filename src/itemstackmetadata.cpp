@@ -68,8 +68,8 @@ void ItemStackMetadata::deSerialize(std::istream &is)
 			Strfnd fnd(in);
 			fnd.to(1);
 			while (!fnd.at_end()) {
-				std::string name = fnd.next(DESERIALIZE_KV_DELIM_STR);
-				std::string var = fnd.next(DESERIALIZE_PAIR_DELIM_STR);
+				std::string name   = fnd.next(DESERIALIZE_KV_DELIM_STR);
+				std::string var	   = fnd.next(DESERIALIZE_PAIR_DELIM_STR);
 				m_stringvars[name] = var;
 			}
 		} else {
@@ -84,7 +84,7 @@ void ItemStackMetadata::updateToolCapabilities()
 {
 	if (contains(TOOLCAP_KEY)) {
 		toolcaps_overridden = true;
-		toolcaps_override = ToolCapabilities();
+		toolcaps_override	= ToolCapabilities();
 		std::istringstream is(getString(TOOLCAP_KEY));
 		toolcaps_override.deserializeJson(is);
 	} else {

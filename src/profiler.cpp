@@ -23,8 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
 ScopeProfiler::ScopeProfiler(
-		Profiler *profiler, const std::string &name, ScopeProfilerType type)
-	: m_profiler(profiler), m_name(name), m_type(type)
+		Profiler *profiler, const std::string &name, ScopeProfilerType type) :
+	m_profiler(profiler),
+	m_name(name), m_type(type)
 {
 	m_name.append(" [ms]");
 	if (m_profiler)
@@ -37,7 +38,7 @@ ScopeProfiler::~ScopeProfiler()
 		return;
 
 	float duration_ms = m_timer->stop(true);
-	float duration = duration_ms / 1000.0;
+	float duration	  = duration_ms / 1000.0;
 	if (m_profiler) {
 		switch (m_type) {
 		case SPT_ADD:

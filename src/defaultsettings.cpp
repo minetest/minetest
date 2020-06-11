@@ -187,11 +187,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 #if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
+	#ifdef _IRR_COMPILE_WITH_OGLES1_
 	settings->setDefault("video_driver", "ogles1");
-#else
+	#else
 	settings->setDefault("video_driver", "ogles2");
-#endif
+	#endif
 #else
 	settings->setDefault("video_driver", "opengl");
 #endif
@@ -499,7 +499,7 @@ void set_default_settings(Settings *settings)
 
 	// Apply settings according to screen size
 	float x_inches =
-			((double)porting::getDisplaySize().X / (160 * porting::getDisplayDensity()));
+			((double) porting::getDisplaySize().X / (160 * porting::getDisplayDensity()));
 
 	if (x_inches < 3.7f) {
 		settings->setDefault("hud_scaling", "0.6");

@@ -127,12 +127,12 @@ struct MapgenParams
 	virtual ~MapgenParams();
 
 	MapgenType mgtype = MAPGEN_DEFAULT;
-	s16 chunksize = 5;
-	u64 seed = 0;
-	s16 water_level = 1;
-	s16 mapgen_limit = MAX_MAP_GENERATION_LIMIT;
+	s16 chunksize	  = 5;
+	u64 seed		  = 0;
+	s16 water_level	  = 1;
+	s16 mapgen_limit  = MAX_MAP_GENERATION_LIMIT;
 	// Flags set in readParams
-	u32 flags = 0;
+	u32 flags	= 0;
 	u32 spflags = 0;
 
 	BiomeParams *bparams = nullptr;
@@ -165,18 +165,18 @@ private:
 class Mapgen
 {
 public:
-	s32 seed = 0;
-	int water_level = 0;
+	s32 seed		 = 0;
+	int water_level	 = 0;
 	int mapgen_limit = 0;
-	u32 flags = 0;
-	bool generating = false;
-	int id = -1;
+	u32 flags		 = 0;
+	bool generating	 = false;
+	int id			 = -1;
 
-	MMVManip *vm = nullptr;
+	MMVManip *vm			   = nullptr;
 	const NodeDefManager *ndef = nullptr;
 
 	u32 blockseed;
-	s16 *heightmap = nullptr;
+	s16 *heightmap	  = nullptr;
 	biome_t *biomemap = nullptr;
 	v3s16 csize;
 

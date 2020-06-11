@@ -36,26 +36,26 @@ extern FlagDesc flagdesc_mapgen_v7[];
 
 struct MapgenV7Params : public MapgenParams
 {
-	s16 mount_zero_level = 0;
-	s16 floatland_ymin = 1024;
-	s16 floatland_ymax = 4096;
-	s16 floatland_taper = 256;
-	float float_taper_exp = 2.0f;
+	s16 mount_zero_level	= 0;
+	s16 floatland_ymin		= 1024;
+	s16 floatland_ymax		= 4096;
+	s16 floatland_taper		= 256;
+	float float_taper_exp	= 2.0f;
 	float floatland_density = -0.6f;
-	s16 floatland_ywater = -31000;
+	s16 floatland_ywater	= -31000;
 
-	float cave_width = 0.09f;
-	s16 large_cave_depth = -33;
-	u16 small_cave_num_min = 0;
-	u16 small_cave_num_max = 0;
-	u16 large_cave_num_min = 0;
-	u16 large_cave_num_max = 2;
+	float cave_width		 = 0.09f;
+	s16 large_cave_depth	 = -33;
+	u16 small_cave_num_min	 = 0;
+	u16 small_cave_num_max	 = 0;
+	u16 large_cave_num_min	 = 0;
+	u16 large_cave_num_max	 = 2;
 	float large_cave_flooded = 0.5f;
-	s16 cavern_limit = -256;
-	s16 cavern_taper = 256;
-	float cavern_threshold = 0.7f;
-	s16 dungeon_ymin = -31000;
-	s16 dungeon_ymax = 31000;
+	s16 cavern_limit		 = -256;
+	s16 cavern_taper		 = 256;
+	float cavern_threshold	 = 0.7f;
+	s16 dungeon_ymin		 = -31000;
+	s16 dungeon_ymax		 = 31000;
 
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_alt;

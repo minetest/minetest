@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_item.h"
 
 #ifdef _CRT_MSVCP_CURRENT
-#include <cstdint>
+	#include <cstdint>
 #endif
 
 class ClientEnvironment;

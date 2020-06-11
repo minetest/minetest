@@ -112,7 +112,7 @@ public:
 	std::string getTestTempFile();
 
 	virtual void runTests(IGameDef *gamedef) = 0;
-	virtual const char *getName() = 0;
+	virtual const char *getName()			 = 0;
 
 	u32 num_tests_failed;
 	u32 num_tests_run;

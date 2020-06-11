@@ -32,9 +32,9 @@ ScriptApiBase *ModApiBase::getScriptApiBase(lua_State *L)
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 	ScriptApiBase *sapi_ptr;
 #if INDIRECT_SCRIPTAPI_RIDX
-	sapi_ptr = (ScriptApiBase *)*(void **)(lua_touserdata(L, -1));
+	sapi_ptr = (ScriptApiBase *) *(void **) (lua_touserdata(L, -1));
 #else
-	sapi_ptr = (ScriptApiBase *)lua_touserdata(L, -1);
+	sapi_ptr = (ScriptApiBase *) lua_touserdata(L, -1);
 #endif
 	lua_pop(L, 1);
 	return sapi_ptr;
@@ -120,8 +120,8 @@ int ModApiBase::l_deprecated_function(lua_State *L)
 
 	// Get parent class to get the wrappers map
 	luaL_checktype(L, 1, LUA_TUSERDATA);
-	void *ud = lua_touserdata(L, 1);
-	ModApiBase *o = *(ModApiBase **)ud;
+	void *ud	  = lua_touserdata(L, 1);
+	ModApiBase *o = *(ModApiBase **) ud;
 
 	// New function and new function name
 	auto it = o->m_deprecated_wrappers.find(ar.name);
@@ -149,13 +149,13 @@ int ModApiBase::l_deprecated_function(lua_State *L)
 
 void ModApiBase::markAliasDeprecated(luaL_Reg *reg)
 {
-	std::string value = g_settings->get("deprecated_lua_api_handling");
+	std::string value		 = g_settings->get("deprecated_lua_api_handling");
 	m_error_deprecated_calls = value == "error";
 
 	if (!m_error_deprecated_calls && value != "log")
 		return;
 
-	const char *last_name = nullptr;
+	const char *last_name	= nullptr;
 	lua_CFunction last_func = nullptr;
 
 	// ! Null termination !

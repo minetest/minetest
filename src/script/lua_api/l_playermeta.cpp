@@ -32,7 +32,7 @@ PlayerMetaRef *PlayerMetaRef::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(PlayerMetaRef **)ud; // unbox pointer
+	return *(PlayerMetaRef **) ud; // unbox pointer
 }
 
 Metadata *PlayerMetaRef::getmeta(bool auto_create)
@@ -53,7 +53,7 @@ void PlayerMetaRef::reportMetadataChange(const std::string *name)
 // garbage collector
 int PlayerMetaRef::gc_object(lua_State *L)
 {
-	PlayerMetaRef *o = *(PlayerMetaRef **)(lua_touserdata(L, 1));
+	PlayerMetaRef *o = *(PlayerMetaRef **) (lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
@@ -62,8 +62,8 @@ int PlayerMetaRef::gc_object(lua_State *L)
 // Not callable from Lua; all references are created on the C side.
 void PlayerMetaRef::create(lua_State *L, Metadata *metadata)
 {
-	PlayerMetaRef *o = new PlayerMetaRef(metadata);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	PlayerMetaRef *o								= new PlayerMetaRef(metadata);
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 }

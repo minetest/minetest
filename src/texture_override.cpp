@@ -49,8 +49,8 @@ TextureOverrideSource::TextureOverrideSource(std::string filepath)
 		}
 
 		TextureOverride texture_override = {};
-		texture_override.id = splitted[0];
-		texture_override.texture = splitted[2];
+		texture_override.id				 = splitted[0];
+		texture_override.texture		 = splitted[2];
 
 		// Parse the target mask
 		std::vector<std::string> targets = str_split(splitted[1], ',');

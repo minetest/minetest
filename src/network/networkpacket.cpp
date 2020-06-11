@@ -23,14 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "networkprotocol.h"
 
-NetworkPacket::NetworkPacket(u16 command, u32 datasize, session_t peer_id)
-	: m_datasize(datasize), m_command(command), m_peer_id(peer_id)
+NetworkPacket::NetworkPacket(u16 command, u32 datasize, session_t peer_id) :
+	m_datasize(datasize), m_command(command), m_peer_id(peer_id)
 {
 	m_data.resize(m_datasize);
 }
 
-NetworkPacket::NetworkPacket(u16 command, u32 datasize)
-	: m_datasize(datasize), m_command(command)
+NetworkPacket::NetworkPacket(u16 command, u32 datasize) :
+	m_datasize(datasize), m_command(command)
 {
 	m_data.resize(m_datasize);
 }
@@ -57,7 +57,7 @@ void NetworkPacket::putRawPacket(u8 *data, u32 datasize, session_t peer_id)
 	assert(m_command == 0);
 
 	m_datasize = datasize - 2;
-	m_peer_id = peer_id;
+	m_peer_id  = peer_id;
 
 	m_data.resize(m_datasize);
 
@@ -69,17 +69,17 @@ void NetworkPacket::putRawPacket(u8 *data, u32 datasize, session_t peer_id)
 void NetworkPacket::clear()
 {
 	m_data.clear();
-	m_datasize = 0;
+	m_datasize	  = 0;
 	m_read_offset = 0;
-	m_command = 0;
-	m_peer_id = 0;
+	m_command	  = 0;
+	m_peer_id	  = 0;
 }
 
 const char *NetworkPacket::getString(u32 from_offset)
 {
 	checkReadOffset(from_offset, 0);
 
-	return (char *)&m_data[from_offset];
+	return (char *) &m_data[from_offset];
 }
 
 void NetworkPacket::putRawString(const char *src, u32 len)
@@ -111,7 +111,7 @@ NetworkPacket &NetworkPacket::operator>>(std::string &dst)
 	checkReadOffset(m_read_offset, strLen);
 
 	dst.reserve(strLen);
-	dst.append((char *)&m_data[m_read_offset], strLen);
+	dst.append((char *) &m_data[m_read_offset], strLen);
 
 	m_read_offset += strLen;
 	return *this;
@@ -127,7 +127,7 @@ NetworkPacket &NetworkPacket::operator<<(const std::string &src)
 
 	*this << msgsize;
 
-	putRawString(src.c_str(), (u32)msgsize);
+	putRawString(src.c_str(), (u32) msgsize);
 
 	return *this;
 }
@@ -181,7 +181,7 @@ NetworkPacket &NetworkPacket::operator<<(const std::wstring &src)
 
 	// Write string
 	for (u16 i = 0; i < msgsize; i++) {
-		*this << (u16)src[i];
+		*this << (u16) src[i];
 	}
 
 	return *this;
@@ -206,7 +206,7 @@ std::string NetworkPacket::readLongString()
 	std::string dst;
 
 	dst.reserve(strLen);
-	dst.append((char *)&m_data[m_read_offset], strLen);
+	dst.append((char *) &m_data[m_read_offset], strLen);
 
 	m_read_offset += strLen;
 
@@ -335,7 +335,7 @@ u8 *NetworkPacket::getU8Ptr(u32 from_offset)
 
 	checkReadOffset(from_offset, 1);
 
-	return (u8 *)&m_data[from_offset];
+	return (u8 *) &m_data[from_offset];
 }
 
 NetworkPacket &NetworkPacket::operator>>(u16 &dst)
@@ -417,7 +417,7 @@ NetworkPacket &NetworkPacket::operator>>(s16 &dst)
 
 NetworkPacket &NetworkPacket::operator<<(s16 src)
 {
-	*this << (u16)src;
+	*this << (u16) src;
 	return *this;
 }
 
@@ -433,7 +433,7 @@ NetworkPacket &NetworkPacket::operator>>(s32 &dst)
 
 NetworkPacket &NetworkPacket::operator<<(s32 src)
 {
-	*this << (u32)src;
+	*this << (u32) src;
 	return *this;
 }
 
@@ -469,39 +469,39 @@ NetworkPacket &NetworkPacket::operator>>(v3s32 &dst)
 
 NetworkPacket &NetworkPacket::operator<<(v2f src)
 {
-	*this << (float)src.X;
-	*this << (float)src.Y;
+	*this << (float) src.X;
+	*this << (float) src.Y;
 	return *this;
 }
 
 NetworkPacket &NetworkPacket::operator<<(v3f src)
 {
-	*this << (float)src.X;
-	*this << (float)src.Y;
-	*this << (float)src.Z;
+	*this << (float) src.X;
+	*this << (float) src.Y;
+	*this << (float) src.Z;
 	return *this;
 }
 
 NetworkPacket &NetworkPacket::operator<<(v3s16 src)
 {
-	*this << (s16)src.X;
-	*this << (s16)src.Y;
-	*this << (s16)src.Z;
+	*this << (s16) src.X;
+	*this << (s16) src.Y;
+	*this << (s16) src.Z;
 	return *this;
 }
 
 NetworkPacket &NetworkPacket::operator<<(v2s32 src)
 {
-	*this << (s32)src.X;
-	*this << (s32)src.Y;
+	*this << (s32) src.X;
+	*this << (s32) src.Y;
 	return *this;
 }
 
 NetworkPacket &NetworkPacket::operator<<(v3s32 src)
 {
-	*this << (s32)src.X;
-	*this << (s32)src.Y;
-	*this << (s32)src.Z;
+	*this << (s32) src.X;
+	*this << (s32) src.Y;
+	*this << (s32) src.Z;
 	return *this;
 }
 

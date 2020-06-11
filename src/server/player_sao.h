@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class LagPool
 {
 	float m_pool = 15.0f;
-	float m_max = 15.0f;
+	float m_max	 = 15.0f;
 
 public:
 	LagPool() = default;
@@ -142,13 +142,13 @@ public:
 	v3f getLastGoodPosition() const { return m_last_good_position; }
 	float resetTimeFromLastPunch()
 	{
-		float r = m_time_from_last_punch;
+		float r				   = m_time_from_last_punch;
 		m_time_from_last_punch = 0.0;
 		return r;
 	}
 	void noCheatDigStart(const v3s16 &p)
 	{
-		m_nocheat_dig_pos = p;
+		m_nocheat_dig_pos  = p;
 		m_nocheat_dig_time = 0;
 	}
 	v3s16 getNoCheatDigPos() { return m_nocheat_dig_pos; }
@@ -163,7 +163,7 @@ public:
 
 	void updatePrivileges(const std::set<std::string> &privs, bool is_singleplayer)
 	{
-		m_privs = privs;
+		m_privs			  = privs;
 		m_is_singleplayer = is_singleplayer;
 	}
 
@@ -185,18 +185,18 @@ private:
 	std::string generateUpdatePhysicsOverrideCommand() const;
 
 	RemotePlayer *m_player = nullptr;
-	session_t m_peer_id = 0;
+	session_t m_peer_id	   = 0;
 
 	// Cheat prevention
 	LagPool m_dig_pool;
 	LagPool m_move_pool;
 	v3f m_last_good_position;
 	float m_time_from_last_teleport = 0.0f;
-	float m_time_from_last_punch = 0.0f;
-	v3s16 m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
-	float m_nocheat_dig_time = 0.0f;
+	float m_time_from_last_punch	= 0.0f;
+	v3s16 m_nocheat_dig_pos			= v3s16(32767, 32767, 32767);
+	float m_nocheat_dig_time		= 0.0f;
 	float m_max_speed_override_time = 0.0f;
-	v3f m_max_speed_override = v3f(0.0f, 0.0f, 0.0f);
+	v3f m_max_speed_override		= v3f(0.0f, 0.0f, 0.0f);
 
 	// Timers
 	IntervalLimiter m_breathing_interval;
@@ -209,21 +209,21 @@ private:
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
 
-	u16 m_breath = PLAYER_MAX_BREATH_DEFAULT;
-	f32 m_pitch = 0.0f;
-	f32 m_fov = 0.0f;
+	u16 m_breath	   = PLAYER_MAX_BREATH_DEFAULT;
+	f32 m_pitch		   = 0.0f;
+	f32 m_fov		   = 0.0f;
 	s16 m_wanted_range = 0.0f;
 
 	Metadata m_meta;
 
 public:
-	float m_physics_override_speed = 1.0f;
-	float m_physics_override_jump = 1.0f;
-	float m_physics_override_gravity = 1.0f;
-	bool m_physics_override_sneak = true;
+	float m_physics_override_speed		 = 1.0f;
+	float m_physics_override_jump		 = 1.0f;
+	float m_physics_override_gravity	 = 1.0f;
+	bool m_physics_override_sneak		 = true;
 	bool m_physics_override_sneak_glitch = false;
-	bool m_physics_override_new_move = true;
-	bool m_physics_override_sent = false;
+	bool m_physics_override_new_move	 = true;
+	bool m_physics_override_sent		 = false;
 };
 
 struct PlayerHPChangeReason
@@ -238,8 +238,8 @@ struct PlayerHPChangeReason
 		RESPAWN
 	};
 
-	Type type = SET_HP;
-	bool from_mod = false;
+	Type type		  = SET_HP;
+	bool from_mod	  = false;
 	int lua_reference = -1;
 
 	// For PLAYER_PUNCH
@@ -291,10 +291,9 @@ struct PlayerHPChangeReason
 
 	PlayerHPChangeReason(Type type) : type(type) {}
 
-	PlayerHPChangeReason(Type type, ServerActiveObject *object)
-		: type(type), object(object)
-	{
-	}
+	PlayerHPChangeReason(Type type, ServerActiveObject *object) :
+		type(type), object(object)
+	{}
 
 	PlayerHPChangeReason(Type type, std::string node) : type(type), node(node) {}
 };

@@ -26,34 +26,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
-#include <sys/types.h>
-#include <sys/sysctl.h>
+	#include <sys/types.h>
+	#include <sys/sysctl.h>
 extern char **environ;
 #elif defined(_WIN32)
-#include <windows.h>
-#include <wincrypt.h>
-#include <algorithm>
-#include <shlwapi.h>
-#include <shellapi.h>
+	#include <windows.h>
+	#include <wincrypt.h>
+	#include <algorithm>
+	#include <shlwapi.h>
+	#include <shellapi.h>
 #endif
 #if !defined(_WIN32)
-#include <unistd.h>
-#include <sys/utsname.h>
-#if !defined(__ANDROID__)
-#include <spawn.h>
-#endif
+	#include <unistd.h>
+	#include <sys/utsname.h>
+	#if !defined(__ANDROID__)
+		#include <spawn.h>
+	#endif
 #endif
 #if defined(__hpux)
-#define _PSTAT64
-#include <sys/pstat.h>
+	#define _PSTAT64
+	#include <sys/pstat.h>
 #endif
 #if defined(__ANDROID__)
-#include "porting_android.h"
+	#include "porting_android.h"
 #endif
 #if defined(__APPLE__)
-// For _NSGetEnviron()
-// Related: https://gitlab.haskell.org/ghc/ghc/issues/2458
-#include <crt_externs.h>
+	// For _NSGetEnviron()
+	// Related: https://gitlab.haskell.org/ghc/ghc/issues/2458
+	#include <crt_externs.h>
 #endif
 
 #include "config.h"
@@ -79,7 +79,7 @@ bool *signal_handler_killstatus()
 }
 
 #if !defined(_WIN32) // POSIX
-#include <signal.h>
+	#include <signal.h>
 
 void signal_handler(int sig)
 {
@@ -99,18 +99,18 @@ void signal_handler(int sig)
 
 		g_killed = true;
 	} else {
-		(void)signal(sig, SIG_DFL);
+		(void) signal(sig, SIG_DFL);
 	}
 }
 
 void signal_handler_init(void)
 {
-	(void)signal(SIGINT, signal_handler);
-	(void)signal(SIGTERM, signal_handler);
+	(void) signal(SIGINT, signal_handler);
+	(void) signal(SIGTERM, signal_handler);
 }
 
 #else // _WIN32
-#include <signal.h>
+	#include <signal.h>
 
 BOOL WINAPI event_handler(DWORD sig)
 {
@@ -126,7 +126,7 @@ BOOL WINAPI event_handler(DWORD sig)
 					<< std::endl;
 			g_killed = true;
 		} else {
-			(void)signal(SIGINT, SIG_DFL);
+			(void) signal(SIGINT, SIG_DFL);
 		}
 		break;
 	case CTRL_BREAK_EVENT:
@@ -138,7 +138,7 @@ BOOL WINAPI event_handler(DWORD sig)
 
 void signal_handler_init(void)
 {
-	SetConsoleCtrlHandler((PHANDLER_ROUTINE)event_handler, TRUE);
+	SetConsoleCtrlHandler((PHANDLER_ROUTINE) event_handler, TRUE);
 }
 
 #endif
@@ -149,10 +149,10 @@ void signal_handler_init(void)
 */
 
 // Default to RUN_IN_PLACE style relative paths
-std::string path_share = "..";
-std::string path_user = "..";
+std::string path_share	= "..";
+std::string path_user	= "..";
 std::string path_locale = path_share + DIR_DELIM + "locale";
-std::string path_cache = path_user + DIR_DELIM + "cache";
+std::string path_cache	= path_user + DIR_DELIM + "cache";
 
 
 std::string getDataPath(const char *subpath)
@@ -190,25 +190,25 @@ std::string get_sysinfo()
 	GetSystemDirectoryA(filePath, MAX_PATH);
 	PathAppendA(filePath, "kernel32.dll");
 
-	DWORD dwVersionSize = GetFileVersionInfoSizeA(filePath, NULL);
+	DWORD dwVersionSize	 = GetFileVersionInfoSizeA(filePath, NULL);
 	LPBYTE lpVersionInfo = new BYTE[dwVersionSize];
 
 	GetFileVersionInfoA(filePath, 0, dwVersionSize, lpVersionInfo);
-	VerQueryValueA(lpVersionInfo, "\\", (LPVOID *)&fixedFileInfo, &blockSize);
+	VerQueryValueA(lpVersionInfo, "\\", (LPVOID *) &fixedFileInfo, &blockSize);
 
 	oss << "Windows/" << HIWORD(fixedFileInfo->dwProductVersionMS) << '.' // Major
 		<< LOWORD(fixedFileInfo->dwProductVersionMS) << '.' // Minor
 		<< HIWORD(fixedFileInfo->dwProductVersionLS) << ' '; // Build
 
-#ifdef _WIN64
+	#ifdef _WIN64
 	oss << "x86_64";
-#else
+	#else
 	BOOL is64 = FALSE;
 	if (IsWow64Process(GetCurrentProcess(), &is64) && is64)
 		oss << "x86_64"; // 32-bit app on 64-bit OS
 	else
 		oss << "x86";
-#endif
+	#endif
 
 	delete[] lpVersionInfo;
 	delete[] filePath;
@@ -281,7 +281,7 @@ bool getCurrentExecPath(char *buf, size_t len)
 
 bool getCurrentExecPath(char *buf, size_t len)
 {
-	uint32_t lenb = (uint32_t)len;
+	uint32_t lenb = (uint32_t) len;
 	if (_NSGetExecutablePath(buf, &lenb) == -1)
 		return false;
 
@@ -410,11 +410,11 @@ bool setSystemPaths()
 	char buf[BUFSIZ];
 
 	if (!getCurrentExecPath(buf, sizeof(buf))) {
-#ifdef __ANDROID__
+	#ifdef __ANDROID__
 		errorstream << "Unable to read bindir " << std::endl;
-#else
+	#else
 		FATAL_ERROR("Unable to read bindir");
-#endif
+	#endif
 		return false;
 	}
 
@@ -431,9 +431,9 @@ bool setSystemPaths()
 	trylist.push_back(bindir + DIR_DELIM ".." DIR_DELIM "share" DIR_DELIM + PROJECT_NAME);
 	trylist.push_back(bindir + DIR_DELIM "..");
 
-#ifdef __ANDROID__
+	#ifdef __ANDROID__
 	trylist.push_back(path_user);
-#endif
+	#endif
 
 	for (std::list<std::string>::const_iterator i = trylist.begin(); i != trylist.end();
 			++i) {
@@ -455,9 +455,9 @@ bool setSystemPaths()
 		break;
 	}
 
-#ifndef __ANDROID__
+	#ifndef __ANDROID__
 	path_user = std::string(getHomeOrFail()) + DIR_DELIM "." + PROJECT_NAME;
-#endif
+	#endif
 
 	return true;
 }
@@ -469,9 +469,9 @@ bool setSystemPaths()
 bool setSystemPaths()
 {
 	CFBundleRef main_bundle = CFBundleGetMainBundle();
-	CFURLRef resources_url = CFBundleCopyResourcesDirectoryURL(main_bundle);
+	CFURLRef resources_url	= CFBundleCopyResourcesDirectoryURL(main_bundle);
 	char path[PATH_MAX];
-	if (CFURLGetFileSystemRepresentation(resources_url, TRUE, (UInt8 *)path, PATH_MAX)) {
+	if (CFURLGetFileSystemRepresentation(resources_url, TRUE, (UInt8 *) path, PATH_MAX)) {
 		path_share = std::string(path);
 	} else {
 		warningstream << "Could not determine bundle resource path" << std::endl;
@@ -489,7 +489,7 @@ bool setSystemPaths()
 bool setSystemPaths()
 {
 	path_share = STATIC_SHAREDIR;
-	path_user = std::string(getHomeOrFail()) + DIR_DELIM "." + lowercase(PROJECT_NAME);
+	path_user  = std::string(getHomeOrFail()) + DIR_DELIM "." + lowercase(PROJECT_NAME);
 	return true;
 }
 
@@ -532,7 +532,7 @@ void initializePaths()
 		std::string execpath(buf);
 
 		path_share = execpath + DIR_DELIM "..";
-		path_user = execpath + DIR_DELIM "..";
+		path_user  = execpath + DIR_DELIM "..";
 
 		if (detectMSVCBuildDir(execpath)) {
 			path_share += DIR_DELIM "..";
@@ -558,7 +558,7 @@ void initializePaths()
 		std::string execpath(buf);
 
 		path_share = execpath;
-		path_user = execpath;
+		path_user  = execpath;
 	}
 	path_cache = path_user + DIR_DELIM + "cache";
 #else
@@ -568,9 +568,9 @@ void initializePaths()
 		errorstream << "Failed to get one or more system-wide path" << std::endl;
 
 
-#ifdef _WIN32
+	#ifdef _WIN32
 	path_cache = path_user + DIR_DELIM + "cache";
-#else
+	#else
 	// Initialize path_cache
 	// First try $XDG_CACHE_HOME/PROJECT_NAME
 	const char *cache_dir = getenv("XDG_CACHE_HOME");
@@ -587,7 +587,7 @@ void initializePaths()
 	}
 	// Migrate cache folder to new location if possible
 	migrateCachePath();
-#endif // _WIN32
+	#endif // _WIN32
 #endif // RUN_IN_PLACE
 
 	infostream << "Detected share path: " << path_share << std::endl;
@@ -596,7 +596,7 @@ void initializePaths()
 
 #if USE_GETTEXT
 	bool found_localedir = false;
-#ifdef STATIC_LOCALEDIR
+	#ifdef STATIC_LOCALEDIR
 	/* STATIC_LOCALEDIR may be a generalized path such as /usr/share/locale that
 	 * doesn't necessarily contain our locale files, so check data path first. */
 	path_locale = getDataPath("locale");
@@ -606,15 +606,15 @@ void initializePaths()
 				   << " even though a static one was provided." << std::endl;
 	} else if (STATIC_LOCALEDIR[0] && fs::PathExists(STATIC_LOCALEDIR)) {
 		found_localedir = true;
-		path_locale = STATIC_LOCALEDIR;
+		path_locale		= STATIC_LOCALEDIR;
 		infostream << "Using static locale directory " << STATIC_LOCALEDIR << std::endl;
 	}
-#else
+	#else
 	path_locale = getDataPath("locale");
 	if (fs::PathExists(path_locale)) {
 		found_localedir = true;
 	}
-#endif
+	#endif
 	if (!found_localedir) {
 		warningstream << "Couldn't find a locale directory!" << std::endl;
 	}
@@ -634,7 +634,7 @@ bool secure_rand_fill_buf(void *buf, size_t len)
 	if (!CryptAcquireContext(&wctx, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
 		return false;
 
-	CryptGenRandom(wctx, len, (BYTE *)buf);
+	CryptGenRandom(wctx, len, (BYTE *) buf);
 	CryptReleaseContext(wctx, 0);
 	return true;
 }
@@ -664,8 +664,8 @@ void attachOrCreateConsole()
 {
 #ifdef _WIN32
 	static bool consoleAllocated = false;
-	const bool redirected = (_fileno(stdout) == -2 ||
-			_fileno(stdout) == -1); // If output is redirected to e.g a file
+	const bool redirected		 = (_fileno(stdout) == -2 ||
+			   _fileno(stdout) == -1); // If output is redirected to e.g a file
 	if (!consoleAllocated && redirected &&
 			(AttachConsole(ATTACH_PARENT_PROCESS) || AllocConsole())) {
 		freopen("CONOUT$", "w", stdout);
@@ -706,17 +706,18 @@ bool openURL(const std::string &url)
 	}
 
 #if defined(_WIN32)
-	return (intptr_t)ShellExecuteA(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL) >
+	return (intptr_t) ShellExecuteA(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL) >
 			32;
 #elif defined(__ANDROID__)
 	openURLAndroid(url);
 	return true;
 #elif defined(__APPLE__)
 	const char *argv[] = { "open", url.c_str(), NULL };
-	return posix_spawnp(NULL, "open", NULL, NULL, (char **)argv, (*_NSGetEnviron())) == 0;
+	return posix_spawnp(NULL, "open", NULL, NULL, (char **) argv, (*_NSGetEnviron())) ==
+			0;
 #else
 	const char *argv[] = { "xdg-open", url.c_str(), NULL };
-	return posix_spawnp(NULL, "xdg-open", NULL, NULL, (char **)argv, environ) == 0;
+	return posix_spawnp(NULL, "xdg-open", NULL, NULL, (char **) argv, environ) == 0;
 #endif
 }
 

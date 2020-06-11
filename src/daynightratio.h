@@ -23,9 +23,9 @@ inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 {
 	float t = time_of_day;
 	if (t < 0.0f)
-		t += ((int)(-t) / 24000) * 24000.0f;
+		t += ((int) (-t) / 24000) * 24000.0f;
 	if (t >= 24000.0f)
-		t -= ((int)(t) / 24000) * 24000.0f;
+		t -= ((int) (t) / 24000) * 24000.0f;
 	if (t > 12000.0f)
 		t = 24000.0f - t;
 
@@ -44,9 +44,9 @@ inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 	if (!smooth) {
 		float lastt = values[0][0];
 		for (u32 i = 1; i < 9; i++) {
-			float t0 = values[i][0];
+			float t0	   = values[i][0];
 			float switch_t = (t0 + lastt) / 2.0f;
-			lastt = t0;
+			lastt		   = t0;
 			if (switch_t <= t)
 				continue;
 
@@ -65,7 +65,7 @@ inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 			continue;
 
 		float td0 = values[i][0] - values[i - 1][0];
-		float f = (t - values[i - 1][0]) / td0;
+		float f	  = (t - values[i - 1][0]) / td0;
 		return f * values[i][1] + (1.0f - f) * values[i - 1][1];
 	}
 	return 1000;

@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 int NodeTimerRef::gc_object(lua_State *L)
 {
-	NodeTimerRef *o = *(NodeTimerRef **)(lua_touserdata(L, 1));
+	NodeTimerRef *o = *(NodeTimerRef **) (lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
@@ -36,15 +36,15 @@ NodeTimerRef *NodeTimerRef::checkobject(lua_State *L, int narg)
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud)
 		luaL_typerror(L, narg, className);
-	return *(NodeTimerRef **)ud; // unbox pointer
+	return *(NodeTimerRef **) ud; // unbox pointer
 }
 
 int NodeTimerRef::l_set(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	f32 t = readParam<float>(L, 2);
-	f32 e = readParam<float>(L, 3);
+	f32 t			= readParam<float>(L, 2);
+	f32 e			= readParam<float>(L, 3);
 	o->m_map->setNodeTimer(NodeTimer(t, e, o->m_p));
 	return 0;
 }
@@ -53,7 +53,7 @@ int NodeTimerRef::l_start(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	f32 t = readParam<float>(L, 2);
+	f32 t			= readParam<float>(L, 2);
 	o->m_map->setNodeTimer(NodeTimer(t, 0, o->m_p));
 	return 0;
 }
@@ -70,7 +70,7 @@ int NodeTimerRef::l_is_started(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	NodeTimer t = o->m_map->getNodeTimer(o->m_p);
+	NodeTimer t		= o->m_map->getNodeTimer(o->m_p);
 	lua_pushboolean(L, (t.timeout != 0));
 	return 1;
 }
@@ -79,7 +79,7 @@ int NodeTimerRef::l_get_timeout(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	NodeTimer t = o->m_map->getNodeTimer(o->m_p);
+	NodeTimer t		= o->m_map->getNodeTimer(o->m_p);
 	lua_pushnumber(L, t.timeout);
 	return 1;
 }
@@ -88,7 +88,7 @@ int NodeTimerRef::l_get_elapsed(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 	NodeTimerRef *o = checkobject(L, 1);
-	NodeTimer t = o->m_map->getNodeTimer(o->m_p);
+	NodeTimer t		= o->m_map->getNodeTimer(o->m_p);
 	lua_pushnumber(L, t.elapsed);
 	return 1;
 }
@@ -97,8 +97,8 @@ int NodeTimerRef::l_get_elapsed(lua_State *L)
 // Not callable from Lua; all references are created on the C side.
 void NodeTimerRef::create(lua_State *L, v3s16 p, ServerMap *map)
 {
-	NodeTimerRef *o = new NodeTimerRef(p, map);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	NodeTimerRef *o									= new NodeTimerRef(p, map);
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 }
@@ -131,7 +131,7 @@ void NodeTimerRef::Register(lua_State *L)
 	//lua_register(L, className, create_object);
 }
 
-const char NodeTimerRef::className[] = "NodeTimerRef";
+const char NodeTimerRef::className[]   = "NodeTimerRef";
 const luaL_Reg NodeTimerRef::methods[] = { luamethod(NodeTimerRef, start),
 	luamethod(NodeTimerRef, set), luamethod(NodeTimerRef, stop),
 	luamethod(NodeTimerRef, is_started), luamethod(NodeTimerRef, get_timeout),

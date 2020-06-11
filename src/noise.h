@@ -45,7 +45,7 @@ public:
 	inline int next()
 	{
 		m_next = m_next * 1103515245 + 12345;
-		return (unsigned)(m_next / 65536) % (RANDOM_RANGE + 1);
+		return (unsigned) (m_next / 65536) % (RANDOM_RANGE + 1);
 	}
 
 	inline int range(int min, int max)
@@ -71,8 +71,8 @@ private:
 class PcgRandom
 {
 public:
-	const static s32 RANDOM_MIN = -0x7fffffff - 1;
-	const static s32 RANDOM_MAX = 0x7fffffff;
+	const static s32 RANDOM_MIN	  = -0x7fffffff - 1;
+	const static s32 RANDOM_MAX	  = 0x7fffffff;
 	const static u32 RANDOM_RANGE = 0xffffffff;
 
 	PcgRandom(u64 state = 0x853c49e6748fea9bULL, u64 seq = 0xda3e39cb94b95bdbULL);
@@ -98,28 +98,28 @@ private:
 
 struct NoiseParams
 {
-	float offset = 0.0f;
-	float scale = 1.0f;
-	v3f spread = v3f(250, 250, 250);
-	s32 seed = 12345;
-	u16 octaves = 3;
-	float persist = 0.6f;
+	float offset	 = 0.0f;
+	float scale		 = 1.0f;
+	v3f spread		 = v3f(250, 250, 250);
+	s32 seed		 = 12345;
+	u16 octaves		 = 3;
+	float persist	 = 0.6f;
 	float lacunarity = 2.0f;
-	u32 flags = NOISE_FLAG_DEFAULTS;
+	u32 flags		 = NOISE_FLAG_DEFAULTS;
 
 	NoiseParams() = default;
 
 	NoiseParams(float offset_, float scale_, const v3f &spread_, s32 seed_, u16 octaves_,
 			float persist_, float lacunarity_, u32 flags_ = NOISE_FLAG_DEFAULTS)
 	{
-		offset = offset_;
-		scale = scale_;
-		spread = spread_;
-		seed = seed_;
-		octaves = octaves_;
-		persist = persist_;
+		offset	   = offset_;
+		scale	   = scale_;
+		spread	   = spread_;
+		seed	   = seed_;
+		octaves	   = octaves_;
+		persist	   = persist_;
 		lacunarity = lacunarity_;
-		flags = flags_;
+		flags	   = flags_;
 	}
 };
 
@@ -131,10 +131,10 @@ public:
 	u32 sx;
 	u32 sy;
 	u32 sz;
-	float *noise_buf = nullptr;
+	float *noise_buf	= nullptr;
 	float *gradient_buf = nullptr;
-	float *persist_buf = nullptr;
-	float *result = nullptr;
+	float *persist_buf	= nullptr;
+	float *result		= nullptr;
 
 	Noise(NoiseParams *np, s32 seed, u32 sx, u32 sy, u32 sz = 1);
 	~Noise();

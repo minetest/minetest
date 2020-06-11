@@ -136,7 +136,7 @@ std::vector<NodeTimer> NodeTimerList::step(float dtime)
 	// Process timers
 	for (; i != m_timers.end() && i->first <= m_time; ++i) {
 		NodeTimer t = i->second;
-		t.elapsed = t.timeout + (f32)(m_time - i->first);
+		t.elapsed	= t.timeout + (f32)(m_time - i->first);
 		elapsed_timers.push_back(t);
 		m_iterators.erase(t.position);
 	}

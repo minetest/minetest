@@ -154,8 +154,8 @@ JoystickLayout create_xbox_layout()
 	return jlo;
 }
 
-JoystickController::JoystickController()
-	: doubling_dtime(g_settings->getFloat("repeat_joystick_button_time"))
+JoystickController::JoystickController() :
+	doubling_dtime(g_settings->getFloat("repeat_joystick_button_time"))
 {
 	for (float &i : m_past_pressed_time) {
 		i = 0;
@@ -166,15 +166,15 @@ JoystickController::JoystickController()
 void JoystickController::onJoystickConnect(
 		const std::vector<irr::SJoystickInfo> &joystick_infos)
 {
-	s32 id = g_settings->getS32("joystick_id");
+	s32 id			   = g_settings->getS32("joystick_id");
 	std::string layout = g_settings->get("joystick_type");
 
-	if (id < 0 || (u16)id >= joystick_infos.size()) {
+	if (id < 0 || (u16) id >= joystick_infos.size()) {
 		// TODO: auto detection
 		id = 0;
 	}
 
-	if (id >= 0 && (u16)id < joystick_infos.size()) {
+	if (id >= 0 && (u16) id < joystick_infos.size()) {
 		if (layout.empty() || layout == "auto")
 			setLayoutFromControllerName(joystick_infos[id].Name.c_str());
 		else
@@ -234,7 +234,7 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 
 	for (size_t i = 0; i < JA_COUNT; i++) {
 		const JoystickAxisLayout &ax_la = m_layout.axes[i];
-		m_axes_vals[i] = ax_la.invert * ev.Axis[ax_la.axis_id];
+		m_axes_vals[i]					= ax_la.invert * ev.Axis[ax_la.axis_id];
 	}
 
 

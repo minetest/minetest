@@ -30,7 +30,7 @@ public:
 	virtual ~MetricCounter() {}
 
 	virtual void increment(double number = 1.0) = 0;
-	virtual double get() const = 0;
+	virtual double get() const					= 0;
 };
 
 typedef std::shared_ptr<MetricCounter> MetricCounterPtr;
@@ -42,10 +42,9 @@ public:
 
 	virtual ~SimpleMetricCounter() {}
 
-	SimpleMetricCounter(const std::string &name, const std::string &help_str)
-		: MetricCounter(), m_name(name), m_help_str(help_str), m_counter(0.0)
-	{
-	}
+	SimpleMetricCounter(const std::string &name, const std::string &help_str) :
+		MetricCounter(), m_name(name), m_help_str(help_str), m_counter(0.0)
+	{}
 
 	virtual void increment(double number)
 	{
@@ -74,8 +73,8 @@ public:
 
 	virtual void increment(double number = 1.0) = 0;
 	virtual void decrement(double number = 1.0) = 0;
-	virtual void set(double number) = 0;
-	virtual double get() const = 0;
+	virtual void set(double number)				= 0;
+	virtual double get() const					= 0;
 };
 
 typedef std::shared_ptr<MetricGauge> MetricGaugePtr;
@@ -85,10 +84,9 @@ class SimpleMetricGauge : public MetricGauge
 public:
 	SimpleMetricGauge() = delete;
 
-	SimpleMetricGauge(const std::string &name, const std::string &help_str)
-		: MetricGauge(), m_name(name), m_help_str(help_str), m_gauge(0.0)
-	{
-	}
+	SimpleMetricGauge(const std::string &name, const std::string &help_str) :
+		MetricGauge(), m_name(name), m_help_str(help_str), m_gauge(0.0)
+	{}
 
 	virtual ~SimpleMetricGauge() {}
 

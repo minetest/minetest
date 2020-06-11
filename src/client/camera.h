@@ -34,11 +34,11 @@ class WieldMeshSceneNode;
 struct Nametag
 {
 	Nametag(scene::ISceneNode *a_parent_node, const std::string &a_nametag_text,
-			const video::SColor &a_nametag_color, const v3f &a_nametag_pos)
-		: parent_node(a_parent_node), nametag_text(a_nametag_text),
-		  nametag_color(a_nametag_color), nametag_pos(a_nametag_pos)
-	{
-	}
+			const video::SColor &a_nametag_color, const v3f &a_nametag_pos) :
+		parent_node(a_parent_node),
+		nametag_text(a_nametag_text), nametag_color(a_nametag_color),
+		nametag_pos(a_nametag_pos)
+	{}
 	scene::ISceneNode *parent_node;
 	std::string nametag_text;
 	video::SColor nametag_color;
@@ -148,12 +148,12 @@ public:
 
 private:
 	// Nodes
-	scene::ISceneNode *m_playernode = nullptr;
-	scene::ISceneNode *m_headnode = nullptr;
+	scene::ISceneNode *m_playernode		  = nullptr;
+	scene::ISceneNode *m_headnode		  = nullptr;
 	scene::ICameraSceneNode *m_cameranode = nullptr;
 
 	scene::ISceneManager *m_wieldmgr = nullptr;
-	WieldMeshSceneNode *m_wieldnode = nullptr;
+	WieldMeshSceneNode *m_wieldnode	 = nullptr;
 
 	// draw control
 	MapDrawControl &m_draw_control;
@@ -186,8 +186,8 @@ private:
 
 	// Field of view and aspect ratio stuff
 	f32 m_aspect = 1.0f;
-	f32 m_fov_x = 1.0f;
-	f32 m_fov_y = 1.0f;
+	f32 m_fov_x	 = 1.0f;
+	f32 m_fov_y	 = 1.0f;
 
 	// View bobbing animation frame (0 <= m_view_bobbing_anim < 1)
 	f32 m_view_bobbing_anim = 0.0f;

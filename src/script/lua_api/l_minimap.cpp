@@ -26,13 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 
 LuaMinimap::LuaMinimap(Minimap *m) : m_minimap(m)
-{
-}
+{}
 
 void LuaMinimap::create(lua_State *L, Minimap *m)
 {
-	LuaMinimap *o = new LuaMinimap(m);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	LuaMinimap *o									= new LuaMinimap(m);
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 
@@ -51,7 +50,7 @@ void LuaMinimap::create(lua_State *L, Minimap *m)
 int LuaMinimap::l_get_pos(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 
 	push_v3s16(L, m->getPos());
 	return 1;
@@ -60,7 +59,7 @@ int LuaMinimap::l_get_pos(lua_State *L)
 int LuaMinimap::l_set_pos(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 
 	m->setPos(read_v3s16(L, 2));
 	return 1;
@@ -69,7 +68,7 @@ int LuaMinimap::l_set_pos(lua_State *L)
 int LuaMinimap::l_get_angle(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 
 	lua_pushinteger(L, m->getAngle());
 	return 1;
@@ -78,7 +77,7 @@ int LuaMinimap::l_get_angle(lua_State *L)
 int LuaMinimap::l_set_angle(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 
 	m->setAngle(lua_tointeger(L, 2));
 	return 1;
@@ -87,7 +86,7 @@ int LuaMinimap::l_set_angle(lua_State *L)
 int LuaMinimap::l_get_mode(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 
 	lua_pushinteger(L, m->getMinimapMode());
 	return 1;
@@ -96,34 +95,34 @@ int LuaMinimap::l_get_mode(lua_State *L)
 int LuaMinimap::l_set_mode(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 
 	s32 mode = lua_tointeger(L, 2);
 	if (mode < MINIMAP_MODE_OFF || mode >= MINIMAP_MODE_COUNT) {
 		return 0;
 	}
 
-	m->setMinimapMode((MinimapMode)mode);
+	m->setMinimapMode((MinimapMode) mode);
 	return 1;
 }
 
 int LuaMinimap::l_set_shape(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 	if (!lua_isnumber(L, 2))
 		return 0;
 
-	m->setMinimapShape((MinimapShape)((int)lua_tonumber(L, 2)));
+	m->setMinimapShape((MinimapShape)((int) lua_tonumber(L, 2)));
 	return 0;
 }
 
 int LuaMinimap::l_get_shape(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 
-	lua_pushnumber(L, (int)m->getMinimapShape());
+	lua_pushnumber(L, (int) m->getMinimapShape());
 	return 1;
 }
 
@@ -137,7 +136,7 @@ int LuaMinimap::l_show(lua_State *L)
 	assert(client);
 
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 
 	if (m->getMinimapMode() == MINIMAP_MODE_OFF)
 		m->setMinimapMode(MINIMAP_MODE_SURFACEx1);
@@ -152,7 +151,7 @@ int LuaMinimap::l_hide(lua_State *L)
 	assert(client);
 
 	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
+	Minimap *m		= getobject(ref);
 
 	if (m->getMinimapMode() != MINIMAP_MODE_OFF)
 		m->setMinimapMode(MINIMAP_MODE_OFF);
@@ -171,7 +170,7 @@ LuaMinimap *LuaMinimap::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(LuaMinimap **)ud; // unbox pointer
+	return *(LuaMinimap **) ud; // unbox pointer
 }
 
 Minimap *LuaMinimap::getobject(LuaMinimap *ref)
@@ -181,7 +180,7 @@ Minimap *LuaMinimap::getobject(LuaMinimap *ref)
 
 int LuaMinimap::gc_object(lua_State *L)
 {
-	LuaMinimap *o = *(LuaMinimap **)(lua_touserdata(L, 1));
+	LuaMinimap *o = *(LuaMinimap **) (lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
@@ -211,7 +210,7 @@ void LuaMinimap::Register(lua_State *L)
 	lua_pop(L, 1); // drop methodtable
 }
 
-const char LuaMinimap::className[] = "Minimap";
+const char LuaMinimap::className[]	 = "Minimap";
 const luaL_Reg LuaMinimap::methods[] = { luamethod(LuaMinimap, show),
 	luamethod(LuaMinimap, hide), luamethod(LuaMinimap, get_pos),
 	luamethod(LuaMinimap, set_pos), luamethod(LuaMinimap, get_angle),

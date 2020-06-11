@@ -45,7 +45,7 @@ static TestSchematic g_test_instance;
 
 void TestSchematic::runTests(IGameDef *gamedef)
 {
-	NodeDefManager *ndef = (NodeDefManager *)gamedef->getNodeDefManager();
+	NodeDefManager *ndef = (NodeDefManager *) gamedef->getNodeDefManager();
 
 	ndef->setNodeRegistrationStatus(true);
 
@@ -73,9 +73,9 @@ void TestSchematic::testMtsSerializeDeserialize(const NodeDefManager *ndef)
 
 	Schematic schem, schem2;
 
-	schem.flags = 0;
-	schem.size = size;
-	schem.schemdata = new MapNode[volume];
+	schem.flags		  = 0;
+	schem.size		  = size;
+	schem.schemdata	  = new MapNode[volume];
 	schem.slice_probs = new u8[size.Y];
 	for (size_t i = 0; i != volume; i++)
 		schem.schemdata[i] = MapNode(test_schem1_data[i], MTSCHEM_PROB_ALWAYS, 0);
@@ -110,9 +110,9 @@ void TestSchematic::testLuaTableSerialize(const NodeDefManager *ndef)
 
 	Schematic schem;
 
-	schem.flags = 0;
-	schem.size = size;
-	schem.schemdata = new MapNode[volume];
+	schem.flags		  = 0;
+	schem.size		  = size;
+	schem.schemdata	  = new MapNode[volume];
 	schem.slice_probs = new u8[size.Y];
 	for (size_t i = 0; i != volume; i++)
 		schem.schemdata[i] = MapNode(test_schem2_data[i], test_schem2_prob[i], 0);
@@ -134,7 +134,7 @@ void TestSchematic::testLuaTableSerialize(const NodeDefManager *ndef)
 void TestSchematic::testFileSerializeDeserialize(const NodeDefManager *ndef)
 {
 	static const v3s16 size(3, 3, 3);
-	static const u32 volume = size.X * size.Y * size.Z;
+	static const u32 volume				 = size.X * size.Y * size.Z;
 	static const content_t content_map[] = {
 		CONTENT_AIR,
 		t_CONTENT_STONE,
@@ -151,16 +151,16 @@ void TestSchematic::testFileSerializeDeserialize(const NodeDefManager *ndef)
 	Schematic schem1, schem2;
 
 	//// Construct the schematic to save
-	schem1.flags = 0;
-	schem1.size = size;
-	schem1.schemdata = new MapNode[volume];
-	schem1.slice_probs = new u8[size.Y];
+	schem1.flags		  = 0;
+	schem1.size			  = size;
+	schem1.schemdata	  = new MapNode[volume];
+	schem1.slice_probs	  = new u8[size.Y];
 	schem1.slice_probs[0] = 80;
 	schem1.slice_probs[1] = 160;
 	schem1.slice_probs[2] = 240;
 
 	for (size_t i = 0; i != volume; i++) {
-		content_t c = content_map[test_schem2_data[i]];
+		content_t c			= content_map[test_schem2_data[i]];
 		schem1.schemdata[i] = MapNode(c, test_schem2_prob[i], 0);
 	}
 

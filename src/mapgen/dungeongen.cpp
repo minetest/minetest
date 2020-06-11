@@ -40,7 +40,7 @@ DungeonGen::DungeonGen(
 {
 	assert(ndef);
 
-	this->ndef = ndef;
+	this->ndef		= ndef;
 	this->gennotify = gennotify;
 
 #ifdef DGEN_USE_TORCHES
@@ -53,23 +53,23 @@ DungeonGen::DungeonGen(
 		// Default dungeon parameters
 		dp.seed = 0;
 
-		dp.c_wall = ndef->getId("mapgen_cobble");
+		dp.c_wall	  = ndef->getId("mapgen_cobble");
 		dp.c_alt_wall = ndef->getId("mapgen_mossycobble");
-		dp.c_stair = ndef->getId("mapgen_stair_cobble");
+		dp.c_stair	  = ndef->getId("mapgen_stair_cobble");
 
-		dp.diagonal_dirs = false;
-		dp.only_in_ground = true;
-		dp.holesize = v3s16(1, 2, 1);
-		dp.corridor_len_min = 1;
-		dp.corridor_len_max = 13;
-		dp.room_size_min = v3s16(4, 4, 4);
-		dp.room_size_max = v3s16(8, 6, 8);
+		dp.diagonal_dirs	   = false;
+		dp.only_in_ground	   = true;
+		dp.holesize			   = v3s16(1, 2, 1);
+		dp.corridor_len_min	   = 1;
+		dp.corridor_len_max	   = 13;
+		dp.room_size_min	   = v3s16(4, 4, 4);
+		dp.room_size_max	   = v3s16(8, 6, 8);
 		dp.room_size_large_min = v3s16(8, 8, 8);
 		dp.room_size_large_max = v3s16(16, 16, 16);
-		dp.large_room_chance = 1;
-		dp.num_rooms = 8;
-		dp.num_dungeons = 1;
-		dp.notifytype = GENNOTIFY_DUNGEON;
+		dp.large_room_chance   = 1;
+		dp.num_rooms		   = 8;
+		dp.num_dungeons		   = 1;
+		dp.notifytype		   = GENNOTIFY_DUNGEON;
 
 		dp.np_alt_wall =
 				NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
@@ -86,7 +86,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 
 	//TimeTaker t("gen dungeons");
 
-	this->vm = vm;
+	this->vm		= vm;
 	this->blockseed = bseed;
 	random.seed(bseed + 2);
 
@@ -105,7 +105,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 			for (s16 y = nmin.Y; y <= nmax.Y; y++) {
 				u32 i = vm->m_area.index(nmin.X, y, z);
 				for (s16 x = nmin.X; x <= nmax.X; x++) {
-					content_t c = vm->m_data[i].getContent();
+					content_t c		   = vm->m_data[i].getContent();
 					NodeDrawType dtype = ndef->get(c).drawtype;
 					if (dtype == NDT_AIRLIKE || dtype == NDT_LIQUID ||
 							c == CONTENT_IGNORE || !ndef->get(c).is_ground_content)
@@ -177,7 +177,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 			for (s16 y = 0; y < roomsize.Y; y++)
 				for (s16 x = 0; x < roomsize.X; x++) {
 					v3s16 p = roomplace + v3s16(x, y, z);
-					u32 vi = vm->m_area.index(p);
+					u32 vi	= vm->m_area.index(p);
 					if ((vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE) ||
 							vm->m_data[vi].getContent() == CONTENT_IGNORE) {
 						fits = false;
@@ -400,11 +400,11 @@ void DungeonGen::makeCorridor(
 		v3s16 doorplace, v3s16 doordir, v3s16 &result_place, v3s16 &result_dir)
 {
 	makeHole(doorplace);
-	v3s16 p0 = doorplace;
-	v3s16 dir = doordir;
-	u32 length = random.range(dp.corridor_len_min, dp.corridor_len_max);
-	u32 partlength = random.range(dp.corridor_len_min, dp.corridor_len_max);
-	u32 partcount = 0;
+	v3s16 p0		= doorplace;
+	v3s16 dir		= doordir;
+	u32 length		= random.range(dp.corridor_len_min, dp.corridor_len_max);
+	u32 partlength	= random.range(dp.corridor_len_min, dp.corridor_len_max);
+	u32 partcount	= 0;
 	s16 make_stairs = 0;
 
 	if (random.next() % 2 == 0 && partlength >= 3)
@@ -435,8 +435,8 @@ void DungeonGen::makeCorridor(
 								((make_stairs == -1) && i != length - 1))) {
 					// rotate face 180 deg if
 					// making stairs backwards
-					int facedir = dir_to_facedir(dir * make_stairs);
-					v3s16 ps = p;
+					int facedir		= dir_to_facedir(dir * make_stairs);
+					v3s16 ps		= p;
 					u16 stair_width = (dir.Z != 0) ? dp.holesize.X : dp.holesize.Z;
 					// Stair width direction vector
 					v3s16 swv = (dir.Z != 0) ? v3s16(1, 0, 0) : v3s16(0, 0, 1);
@@ -470,10 +470,10 @@ void DungeonGen::makeCorridor(
 			p0 = p;
 		} else {
 			// Can't go here, turn away
-			dir = turn_xz(dir, random.range(0, 1));
+			dir			= turn_xz(dir, random.range(0, 1));
 			make_stairs = -make_stairs;
-			partcount = 0;
-			partlength = random.range(1, length);
+			partcount	= 0;
+			partlength	= random.range(1, length);
 			continue;
 		}
 
@@ -491,14 +491,14 @@ void DungeonGen::makeCorridor(
 		}
 	}
 	result_place = p0;
-	result_dir = dir;
+	result_dir	 = dir;
 }
 
 
 bool DungeonGen::findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir)
 {
 	for (u32 i = 0; i < 100; i++) {
-		v3s16 p = m_pos + m_dir;
+		v3s16 p	 = m_pos + m_dir;
 		v3s16 p1 = p + v3s16(0, 1, 0);
 		if (!vm->m_area.contains(p) || !vm->m_area.contains(p1) || i % 4 == 0) {
 			randomizeDir();
@@ -508,7 +508,7 @@ bool DungeonGen::findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir)
 				vm->getNodeNoExNoEmerge(p1).getContent() == dp.c_wall) {
 			// Found wall, this is a good place!
 			result_place = p;
-			result_dir = m_dir;
+			result_dir	 = m_dir;
 			// Randomize next direction
 			randomizeDir();
 			return true;
@@ -582,7 +582,7 @@ bool DungeonGen::findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 			continue;
 		}
 		result_doorplace = doorplace;
-		result_doordir = doordir;
+		result_doordir	 = doordir;
 		result_roomplace = roomplace;
 		return true;
 	}

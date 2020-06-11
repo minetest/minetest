@@ -54,47 +54,47 @@ struct PlayerControl
 			float a_yaw, float a_sidew_move_joystick_axis,
 			float a_forw_move_joystick_axis)
 	{
-		up = a_up;
-		down = a_down;
-		left = a_left;
-		right = a_right;
-		jump = a_jump;
-		aux1 = a_aux1;
-		sneak = a_sneak;
-		zoom = a_zoom;
-		LMB = a_LMB;
-		RMB = a_RMB;
-		pitch = a_pitch;
-		yaw = a_yaw;
+		up						 = a_up;
+		down					 = a_down;
+		left					 = a_left;
+		right					 = a_right;
+		jump					 = a_jump;
+		aux1					 = a_aux1;
+		sneak					 = a_sneak;
+		zoom					 = a_zoom;
+		LMB						 = a_LMB;
+		RMB						 = a_RMB;
+		pitch					 = a_pitch;
+		yaw						 = a_yaw;
 		sidew_move_joystick_axis = a_sidew_move_joystick_axis;
-		forw_move_joystick_axis = a_forw_move_joystick_axis;
+		forw_move_joystick_axis	 = a_forw_move_joystick_axis;
 	}
-	bool up = false;
-	bool down = false;
-	bool left = false;
-	bool right = false;
-	bool jump = false;
-	bool aux1 = false;
-	bool sneak = false;
-	bool zoom = false;
-	bool LMB = false;
-	bool RMB = false;
-	float pitch = 0.0f;
-	float yaw = 0.0f;
+	bool up						   = false;
+	bool down					   = false;
+	bool left					   = false;
+	bool right					   = false;
+	bool jump					   = false;
+	bool aux1					   = false;
+	bool sneak					   = false;
+	bool zoom					   = false;
+	bool LMB					   = false;
+	bool RMB					   = false;
+	float pitch					   = 0.0f;
+	float yaw					   = 0.0f;
 	float sidew_move_joystick_axis = 0.0f;
-	float forw_move_joystick_axis = 0.0f;
+	float forw_move_joystick_axis  = 0.0f;
 };
 
 struct PlayerSettings
 {
-	bool free_move = false;
-	bool pitch_move = false;
-	bool fast_move = false;
+	bool free_move			= false;
+	bool pitch_move			= false;
+	bool fast_move			= false;
 	bool continuous_forward = false;
-	bool always_fly_fast = false;
-	bool aux1_descends = false;
-	bool noclip = false;
-	bool autojump = false;
+	bool always_fly_fast	= false;
+	bool aux1_descends		= false;
+	bool noclip				= false;
+	bool autojump			= false;
 
 	const std::string setting_names[8] = { "free_move", "pitch_move", "fast_move",
 		"continuous_forward", "always_fly_fast", "aux1_descends", "noclip", "autojump" };
@@ -117,8 +117,7 @@ public:
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d) {}
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info)
-	{
-	}
+	{}
 
 	const v3f &getSpeed() const { return m_speed; }
 
@@ -187,7 +186,7 @@ public:
 protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;
-	u16 m_wield_index = 0;
+	u16 m_wield_index				  = 0;
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };
 
 	std::vector<HudElement *> hud;

@@ -50,11 +50,11 @@ QueuedMeshUpdate::~QueuedMeshUpdate()
 
 MeshUpdateQueue::MeshUpdateQueue(Client *client) : m_client(client)
 {
-	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
+	m_cache_enable_shaders		 = g_settings->getBool("enable_shaders");
 	m_cache_use_tangent_vertices = m_cache_enable_shaders &&
 			(g_settings->getBool("enable_bumpmapping") ||
 					g_settings->getBool("enable_parallax_occlusion"));
-	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
+	m_cache_smooth_lighting	   = g_settings->getBool("smooth_lighting");
 	m_meshgen_block_cache_size = g_settings->getS32("meshgen_block_cache_size");
 }
 
@@ -117,7 +117,7 @@ void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 			if (ack_block_to_server)
 				q->ack_block_to_server = true;
 			q->crack_level = m_client->getCrackLevel();
-			q->crack_pos = m_client->getCrackPos();
+			q->crack_pos   = m_client->getCrackPos();
 			return;
 		}
 	}
@@ -125,11 +125,11 @@ void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	/*
 		Add the block
 	*/
-	QueuedMeshUpdate *q = new QueuedMeshUpdate;
-	q->p = p;
+	QueuedMeshUpdate *q	   = new QueuedMeshUpdate;
+	q->p				   = p;
 	q->ack_block_to_server = ack_block_to_server;
-	q->crack_level = m_client->getCrackLevel();
-	q->crack_pos = m_client->getCrackPos();
+	q->crack_level		   = m_client->getCrackLevel();
+	q->crack_pos		   = m_client->getCrackPos();
 	m_queue.push_back(q);
 
 	// This queue entry is a new reference to the cached blocks
@@ -161,7 +161,7 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 CachedMapBlockData *MeshUpdateQueue::cacheBlock(
 		Map *map, v3s16 p, UpdateMode mode, size_t *cache_hit_counter)
 {
-	CachedMapBlockData *cached_block = nullptr;
+	CachedMapBlockData *cached_block				   = nullptr;
 	std::map<v3s16, CachedMapBlockData *>::iterator it = m_cache.find(p);
 
 	if (it != m_cache.end()) {
@@ -177,7 +177,7 @@ CachedMapBlockData *MeshUpdateQueue::cacheBlock(
 	if (!cached_block) {
 		// Not yet in cache
 		cached_block = new CachedMapBlockData();
-		m_cache[p] = cached_block;
+		m_cache[p]	 = cached_block;
 	}
 
 	MapBlock *b = map->getBlockNoCreateNoEx(p);
@@ -218,7 +218,7 @@ void MeshUpdateQueue::fillDataFromMapBlockCache(QueuedMeshUpdate *q)
 	for (dp.X = -1; dp.X <= 1; dp.X++)
 		for (dp.Y = -1; dp.Y <= 1; dp.Y++)
 			for (dp.Z = -1; dp.Z <= 1; dp.Z++) {
-				v3s16 p = q->p + dp;
+				v3s16 p							 = q->p + dp;
 				CachedMapBlockData *cached_block = getCachedBlock(p);
 				if (cached_block) {
 					cached_block->refcount_from_queue--;
@@ -241,9 +241,9 @@ void MeshUpdateQueue::cleanupCache()
 
 	// The cache size is kept roughly below cache_soft_max_size, not letting
 	// anything get older than cache_seconds_max or deleted before 2 seconds.
-	const int cache_seconds_max = 10;
+	const int cache_seconds_max	  = 10;
 	const int cache_soft_max_size = m_meshgen_block_cache_size * 1000 / mapblock_kB;
-	int cache_seconds = MYMAX(2,
+	int cache_seconds			  = MYMAX(2,
 			cache_seconds_max -
 					m_cache.size() / (cache_soft_max_size / cache_seconds_max));
 
@@ -266,8 +266,8 @@ void MeshUpdateQueue::cleanupCache()
 	MeshUpdateThread
 */
 
-MeshUpdateThread::MeshUpdateThread(Client *client)
-	: UpdateThread("Mesh"), m_queue_in(client)
+MeshUpdateThread::MeshUpdateThread(Client *client) :
+	UpdateThread("Mesh"), m_queue_in(client)
 {
 	m_generation_interval = g_settings->getU16("mesh_generation_interval");
 	m_generation_interval = rangelim(m_generation_interval, 0, 50);
@@ -292,8 +292,8 @@ void MeshUpdateThread::doUpdate()
 		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, m_camera_offset);
 
 		MeshUpdateResult r;
-		r.p = q->p;
-		r.mesh = mesh_new;
+		r.p					  = q->p;
+		r.mesh				  = mesh_new;
 		r.ack_block_to_server = q->ack_block_to_server;
 
 		m_queue_out.push_back(r);

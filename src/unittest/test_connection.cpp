@@ -78,7 +78,7 @@ struct Handler : public con::PeerHandler
 		count--;
 	}
 
-	s32 count = 0;
+	s32 count	= 0;
 	u16 last_id = 0;
 	const char *name;
 };
@@ -86,9 +86,9 @@ struct Handler : public con::PeerHandler
 void TestConnection::testHelpers()
 {
 	// Some constants for testing
-	u32 proto_id = 0x12345678;
+	u32 proto_id	  = 0x12345678;
 	session_t peer_id = 123;
-	u8 channel = 2;
+	u8 channel		  = 2;
 	SharedBuffer<u8> data1(1);
 	data1[0] = 100;
 	Address a(127, 0, 0, 1, 10);
@@ -245,7 +245,7 @@ void TestConnection::testConnectSendReceive()
 	*/
 	{
 		NetworkPacket pkt;
-		pkt.putRawPacket((u8 *)"Hello World !", 14, 0);
+		pkt.putRawPacket((u8 *) "Hello World !", 14, 0);
 
 		SharedBuffer<u8> sentdata = pkt.oldForgePacket();
 
@@ -259,7 +259,7 @@ void TestConnection::testConnectSendReceive()
 		server.Receive(&recvpacket);
 		infostream << "** Server received: peer_id=" << pkt.getPeerId()
 				   << ", size=" << pkt.getSize()
-				   << ", data=" << (const char *)pkt.getU8Ptr(0) << std::endl;
+				   << ", data=" << (const char *) pkt.getU8Ptr(0) << std::endl;
 
 		SharedBuffer<u8> recvdata = pkt.oldForgePacket();
 
@@ -274,7 +274,7 @@ void TestConnection::testConnectSendReceive()
 		const int datasize = 30000;
 		NetworkPacket pkt(0, datasize);
 		for (u16 i = 0; i < datasize; i++) {
-			pkt << (u8)i / 4;
+			pkt << (u8) i / 4;
 		}
 
 		infostream << "Sending data (size=" << datasize << "):";
@@ -283,7 +283,7 @@ void TestConnection::testConnectSendReceive()
 				infostream << " ";
 			char buf[10];
 			porting::mt_snprintf(buf, sizeof(buf), "%.2X",
-					((int)((const char *)pkt.getU8Ptr(0))[i]) & 0xff);
+					((int) ((const char *) pkt.getU8Ptr(0))[i]) & 0xff);
 			infostream << buf;
 		}
 		if (datasize > 20)
@@ -299,17 +299,17 @@ void TestConnection::testConnectSendReceive()
 		SharedBuffer<u8> recvdata;
 		infostream << "** running client.Receive()" << std::endl;
 		session_t peer_id = 132;
-		u16 size = 0;
-		bool received = false;
-		u64 timems0 = porting::getTimeMs();
+		u16 size		  = 0;
+		bool received	  = false;
+		u64 timems0		  = porting::getTimeMs();
 		for (;;) {
 			if (porting::getTimeMs() - timems0 > 5000 || received)
 				break;
 			try {
 				NetworkPacket pkt;
 				client.Receive(&pkt);
-				size = pkt.getSize();
-				peer_id = pkt.getPeerId();
+				size	 = pkt.getSize();
+				peer_id	 = pkt.getPeerId();
 				recvdata = pkt.oldForgePacket();
 				received = true;
 			} catch (con::NoIncomingDataException &e) {
@@ -325,7 +325,7 @@ void TestConnection::testConnectSendReceive()
 			if (i % 2 == 0)
 				infostream << " ";
 			char buf[10];
-			porting::mt_snprintf(buf, sizeof(buf), "%.2X", ((int)(recvdata[i])) & 0xff);
+			porting::mt_snprintf(buf, sizeof(buf), "%.2X", ((int) (recvdata[i])) & 0xff);
 			infostream << buf;
 		}
 		if (size > 20)

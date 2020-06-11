@@ -38,20 +38,20 @@ class Translations;
 
 // Checks whether a value is an ASCII printable character
 #define IS_ASCII_PRINTABLE_CHAR(x)                                                       \
-	(((unsigned int)(x) >= 0x20) && ((unsigned int)(x) <= 0x7e))
+	(((unsigned int) (x) >= 0x20) && ((unsigned int) (x) <= 0x7e))
 
 // Checks whether a byte is an inner byte for an utf-8 multibyte sequence
 #define IS_UTF8_MULTB_INNER(x)                                                           \
-	(((unsigned char)(x) >= 0x80) && ((unsigned char)(x) <= 0xbf))
+	(((unsigned char) (x) >= 0x80) && ((unsigned char) (x) <= 0xbf))
 
 // Checks whether a byte is a start byte for an utf-8 multibyte sequence
 #define IS_UTF8_MULTB_START(x)                                                           \
-	(((unsigned char)(x) >= 0xc2) && ((unsigned char)(x) <= 0xf4))
+	(((unsigned char) (x) >= 0xc2) && ((unsigned char) (x) <= 0xf4))
 
 // Given a start byte x for an utf-8 multibyte sequence
 // it gives the length of the whole sequence in bytes.
 #define UTF8_MULTB_START_LEN(x)                                                          \
-	(((unsigned char)(x) < 0xe0) ? 2 : (((unsigned char)(x) < 0xf0) ? 3 : 4))
+	(((unsigned char) (x) < 0xe0) ? 2 : (((unsigned char) (x) < 0xf0) ? 3 : 4))
 
 typedef std::unordered_map<std::string, std::string> StringMap;
 
@@ -407,19 +407,19 @@ inline string to_string(T val)
 	oss << val;
 	return oss.str();
 }
-#define DEFINE_STD_TOSTRING_FLOATINGPOINT(T)                                             \
-	template <>                                                                          \
-	inline string to_string<T>(T val)                                                    \
-	{                                                                                    \
-		ostringstream oss;                                                               \
-		oss << std::fixed << std::setprecision(6) << val;                                \
-		return oss.str();                                                                \
-	}
+	#define DEFINE_STD_TOSTRING_FLOATINGPOINT(T)                                         \
+		template <>                                                                      \
+		inline string to_string<T>(T val)                                                \
+		{                                                                                \
+			ostringstream oss;                                                           \
+			oss << std::fixed << std::setprecision(6) << val;                            \
+			return oss.str();                                                            \
+		}
 DEFINE_STD_TOSTRING_FLOATINGPOINT(float)
 DEFINE_STD_TOSTRING_FLOATINGPOINT(double)
 DEFINE_STD_TOSTRING_FLOATINGPOINT(long double)
 
-#undef DEFINE_STD_TOSTRING_FLOATINGPOINT
+	#undef DEFINE_STD_TOSTRING_FLOATINGPOINT
 
 /// Returns a wide string representing the value \p val
 template <typename T>
@@ -631,7 +631,7 @@ std::vector<std::basic_string<T>> split(const std::basic_string<T> &s, T delim)
 		} else {
 			if (si == delim) {
 				tokens.push_back(current);
-				current = std::basic_string<T>();
+				current			= std::basic_string<T>();
 				last_was_escape = false;
 			} else if (si == '\\') {
 				last_was_escape = true;

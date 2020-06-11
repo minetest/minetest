@@ -115,10 +115,10 @@ private:
 
 	// Animation
 	v2f m_animation_range;
-	float m_animation_speed = 0.0f;
-	float m_animation_blend = 0.0f;
-	bool m_animation_loop = true;
-	bool m_animation_sent = false;
+	float m_animation_speed		= 0.0f;
+	float m_animation_blend		= 0.0f;
+	bool m_animation_loop		= true;
+	bool m_animation_sent		= false;
 	bool m_animation_speed_sent = false;
 
 	// Bone positions

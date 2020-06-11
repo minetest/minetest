@@ -45,7 +45,7 @@ bool BufReader::getStringNoEx(std::string *val)
 		return false;
 	}
 
-	val->assign((const char *)data + pos, num_chars);
+	val->assign((const char *) data + pos, num_chars);
 	pos += num_chars;
 
 	return true;
@@ -81,7 +81,7 @@ bool BufReader::getLongStringNoEx(std::string *val)
 		return false;
 	}
 
-	val->assign((const char *)data + pos, num_chars);
+	val->assign((const char *) data + pos, num_chars);
 	pos += num_chars;
 
 	return true;
@@ -112,7 +112,7 @@ std::string serializeString(const std::string &plain)
 		throw SerializationError("String too long for serializeString");
 	s.reserve(2 + plain.size());
 
-	writeU16((u8 *)&buf[0], plain.size());
+	writeU16((u8 *) &buf[0], plain.size());
 	s.append(buf, 2);
 
 	s.append(plain);
@@ -128,7 +128,7 @@ std::string deSerializeString(std::istream &is)
 	if (is.gcount() != 2)
 		throw SerializationError("deSerializeString: size not read");
 
-	u16 s_size = readU16((u8 *)buf);
+	u16 s_size = readU16((u8 *) buf);
 	if (s_size == 0)
 		return s;
 
@@ -153,11 +153,11 @@ std::string serializeWideString(const std::wstring &plain)
 		throw SerializationError("String too long for serializeWideString");
 	s.reserve(2 + 2 * plain.size());
 
-	writeU16((u8 *)buf, plain.size());
+	writeU16((u8 *) buf, plain.size());
 	s.append(buf, 2);
 
 	for (wchar_t i : plain) {
-		writeU16((u8 *)buf, i);
+		writeU16((u8 *) buf, i);
 		s.append(buf, 2);
 	}
 	return s;
@@ -172,7 +172,7 @@ std::wstring deSerializeWideString(std::istream &is)
 	if (is.gcount() != 2)
 		throw SerializationError("deSerializeWideString: size not read");
 
-	u16 s_size = readU16((u8 *)buf);
+	u16 s_size = readU16((u8 *) buf);
 	if (s_size == 0)
 		return s;
 
@@ -183,7 +183,7 @@ std::wstring deSerializeWideString(std::istream &is)
 			throw SerializationError("deSerializeWideString: couldn't read all chars");
 		}
 
-		wchar_t c16 = readU16((u8 *)buf);
+		wchar_t c16 = readU16((u8 *) buf);
 		s.append(&c16, 1);
 	}
 	return s;
@@ -202,7 +202,7 @@ std::string serializeLongString(const std::string &plain)
 		throw SerializationError("String too long for serializeLongString");
 	s.reserve(4 + plain.size());
 
-	writeU32((u8 *)&buf[0], plain.size());
+	writeU32((u8 *) &buf[0], plain.size());
 	s.append(buf, 4);
 	s.append(plain);
 	return s;
@@ -217,7 +217,7 @@ std::string deSerializeLongString(std::istream &is)
 	if (is.gcount() != 4)
 		throw SerializationError("deSerializeLongString: size not read");
 
-	u32 s_size = readU32((u8 *)buf);
+	u32 s_size = readU32((u8 *) buf);
 	if (s_size == 0)
 		return s;
 
@@ -230,7 +230,7 @@ std::string deSerializeLongString(std::istream &is)
 
 	s.resize(s_size);
 	is.read(&s[0], s_size);
-	if ((u32)is.gcount() != s_size)
+	if ((u32) is.gcount() != s_size)
 		throw SerializationError("deSerializeLongString: couldn't read all chars");
 
 	return s;
@@ -275,7 +275,7 @@ std::string serializeJsonString(const std::string &plain)
 			if (c >= 32 && c <= 126) {
 				os << c;
 			} else {
-				u32 cnum = (u8)c;
+				u32 cnum = (u8) c;
 				os << "\\u" << std::hex << std::setw(4) << std::setfill('0') << cnum;
 			}
 			break;
@@ -338,7 +338,7 @@ std::string deSerializeJsonString(std::istream &is)
 
 				std::istringstream tmp_is(hexdigits, std::ios::binary);
 				tmp_is >> std::hex >> hexnumber;
-				os << (char)hexnumber;
+				os << (char) hexnumber;
 				break;
 			}
 			default:
@@ -366,8 +366,8 @@ std::string deSerializeJsonStringIfNeeded(std::istream &is)
 {
 	std::ostringstream tmp_os;
 	bool expect_initial_quote = true;
-	bool is_json = false;
-	bool was_backslash = false;
+	bool is_json			  = false;
+	bool was_backslash		  = false;
 	for (;;) {
 		char c = is.get();
 		if (is.eof())
@@ -416,8 +416,8 @@ bool deSerializeStringToStruct(
 	char *f, *snext;
 	size_t pos;
 
-	char *s = &valstr[0];
-	char *buf = new char[len];
+	char *s		 = &valstr[0];
+	char *buf	 = new char[len];
 	char *bufpos = buf;
 
 	char *fmtpos, *fmt = &format[0];
@@ -425,10 +425,10 @@ bool deSerializeStringToStruct(
 		fmt = nullptr;
 
 		bool is_unsigned = false;
-		int width = 0;
-		char valtype = *f;
+		int width		 = 0;
+		char valtype	 = *f;
 
-		width = (int)strtol(f + 1, &f, 10);
+		width = (int) strtol(f + 1, &f, 10);
 		if (width && valtype == 's')
 			valtype = 'i';
 
@@ -441,27 +441,27 @@ bool deSerializeStringToStruct(
 				bufpos += PADDING(bufpos, u16);
 				if ((bufpos - buf) + sizeof(u16) <= len) {
 					if (is_unsigned)
-						*(u16 *)bufpos = (u16)strtoul(s, &s, 10);
+						*(u16 *) bufpos = (u16) strtoul(s, &s, 10);
 					else
-						*(s16 *)bufpos = (s16)strtol(s, &s, 10);
+						*(s16 *) bufpos = (s16) strtol(s, &s, 10);
 				}
 				bufpos += sizeof(u16);
 			} else if (width == 32) {
 				bufpos += PADDING(bufpos, u32);
 				if ((bufpos - buf) + sizeof(u32) <= len) {
 					if (is_unsigned)
-						*(u32 *)bufpos = (u32)strtoul(s, &s, 10);
+						*(u32 *) bufpos = (u32) strtoul(s, &s, 10);
 					else
-						*(s32 *)bufpos = (s32)strtol(s, &s, 10);
+						*(s32 *) bufpos = (s32) strtol(s, &s, 10);
 				}
 				bufpos += sizeof(u32);
 			} else if (width == 64) {
 				bufpos += PADDING(bufpos, u64);
 				if ((bufpos - buf) + sizeof(u64) <= len) {
 					if (is_unsigned)
-						*(u64 *)bufpos = (u64)strtoull(s, &s, 10);
+						*(u64 *) bufpos = (u64) strtoull(s, &s, 10);
 					else
-						*(s64 *)bufpos = (s64)strtoll(s, &s, 10);
+						*(s64 *) bufpos = (s64) strtoll(s, &s, 10);
 				}
 				bufpos += sizeof(u64);
 			}
@@ -474,7 +474,7 @@ bool deSerializeStringToStruct(
 
 			bufpos += PADDING(bufpos, bool);
 			if ((bufpos - buf) + sizeof(bool) <= len)
-				*(bool *)bufpos = is_yes(std::string(s));
+				*(bool *) bufpos = is_yes(std::string(s));
 			bufpos += sizeof(bool);
 
 			s = snext;
@@ -482,7 +482,7 @@ bool deSerializeStringToStruct(
 		case 'f':
 			bufpos += PADDING(bufpos, float);
 			if ((bufpos - buf) + sizeof(float) <= len)
-				*(float *)bufpos = strtof(s, &s);
+				*(float *) bufpos = strtof(s, &s);
 			bufpos += sizeof(float);
 
 			s = strchr(s, ',');
@@ -506,7 +506,7 @@ bool deSerializeStringToStruct(
 				str->erase(pos, 1);
 
 			if ((bufpos - buf) + sizeof(std::string *) <= len)
-				*(std::string **)bufpos = str;
+				*(std::string **) bufpos = str;
 			bufpos += sizeof(std::string *);
 			strs_alloced.push_back(str);
 
@@ -522,8 +522,8 @@ bool deSerializeStringToStruct(
 				bufpos += PADDING(bufpos, v2f);
 
 				if ((bufpos - buf) + sizeof(v2f) <= len) {
-					v2f *v = (v2f *)bufpos;
-					v->X = strtof(s, &s);
+					v2f *v = (v2f *) bufpos;
+					v->X   = strtof(s, &s);
 					s++;
 					v->Y = strtof(s, &s);
 				}
@@ -532,8 +532,8 @@ bool deSerializeStringToStruct(
 			} else if (width == 3) {
 				bufpos += PADDING(bufpos, v3f);
 				if ((bufpos - buf) + sizeof(v3f) <= len) {
-					v3f *v = (v3f *)bufpos;
-					v->X = strtof(s, &s);
+					v3f *v = (v3f *) bufpos;
+					v->X   = strtof(s, &s);
 					s++;
 					v->Y = strtof(s, &s);
 					s++;
@@ -569,7 +569,7 @@ bool deSerializeStringToStruct(
 }
 
 // Casts *buf to a signed or unsigned fixed-width integer of 'w' width
-#define SIGN_CAST(w, buf) (is_unsigned ? *((u##w *)buf) : *((s##w *)buf))
+#define SIGN_CAST(w, buf) (is_unsigned ? *((u##w *) buf) : *((s##w *) buf))
 
 bool serializeStructToString(std::string *out, std::string format, void *value)
 {
@@ -578,15 +578,15 @@ bool serializeStructToString(std::string *out, std::string format, void *value)
 	char *f;
 	size_t strpos;
 
-	char *bufpos = (char *)value;
+	char *bufpos = (char *) value;
 	char *fmtpos, *fmt = &format[0];
 	while ((f = strtok_r(fmt, ",", &fmtpos))) {
-		fmt = nullptr;
+		fmt				 = nullptr;
 		bool is_unsigned = false;
-		int width = 0;
-		char valtype = *f;
+		int width		 = 0;
+		char valtype	 = *f;
 
-		width = (int)strtol(f + 1, &f, 10);
+		width = (int) strtol(f + 1, &f, 10);
 		if (width && valtype == 's')
 			valtype = 'i';
 
@@ -611,17 +611,17 @@ bool serializeStructToString(std::string *out, std::string format, void *value)
 			break;
 		case 'b':
 			bufpos += PADDING(bufpos, bool);
-			os << std::boolalpha << *((bool *)bufpos);
+			os << std::boolalpha << *((bool *) bufpos);
 			bufpos += sizeof(bool);
 			break;
 		case 'f':
 			bufpos += PADDING(bufpos, float);
-			os << *((float *)bufpos);
+			os << *((float *) bufpos);
 			bufpos += sizeof(float);
 			break;
 		case 's':
 			bufpos += PADDING(bufpos, std::string *);
-			str = **((std::string **)bufpos);
+			str = **((std::string **) bufpos);
 
 			strpos = 0;
 			while ((strpos = str.find('"', strpos)) != std::string::npos) {
@@ -635,12 +635,12 @@ bool serializeStructToString(std::string *out, std::string format, void *value)
 		case 'v':
 			if (width == 2) {
 				bufpos += PADDING(bufpos, v2f);
-				v2f *v = (v2f *)bufpos;
+				v2f *v = (v2f *) bufpos;
 				os << '(' << v->X << ", " << v->Y << ')';
 				bufpos += sizeof(v2f);
 			} else {
 				bufpos += PADDING(bufpos, v3f);
-				v3f *v = (v3f *)bufpos;
+				v3f *v = (v3f *) bufpos;
 				os << '(' << v->X << ", " << v->Y << ", " << v->Z << ')';
 				bufpos += sizeof(v3f);
 			}

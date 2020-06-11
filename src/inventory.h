@@ -57,9 +57,9 @@ struct ItemStack
 
 	void clear()
 	{
-		name = "";
+		name  = "";
 		count = 0;
-		wear = 0;
+		wear  = 0;
 		metadata.clear();
 	}
 
@@ -161,8 +161,8 @@ struct ItemStack
 		Properties
 	*/
 	std::string name = "";
-	u16 count = 0;
-	u16 wear = 0;
+	u16 count		 = 0;
+	u16 wear		 = 0;
 	ItemStackMetadata metadata;
 };
 

@@ -45,8 +45,9 @@ static content_t content_translate_from_19_to_internal(content_t c_from)
 }
 
 ItemStack::ItemStack(
-		const std::string &name_, u16 count_, u16 wear_, IItemDefManager *itemdef)
-	: name(itemdef->getAlias(name_)), count(count_), wear(wear_)
+		const std::string &name_, u16 count_, u16 wear_, IItemDefManager *itemdef) :
+	name(itemdef->getAlias(name_)),
+	count(count_), wear(wear_)
 {
 	if (name.empty() || count == 0)
 		clear();
@@ -340,8 +341,10 @@ ItemStack ItemStack::peekItem(u32 peekcount) const
 	Inventory
 */
 
-InventoryList::InventoryList(const std::string &name, u32 size, IItemDefManager *itemdef)
-	: m_name(name), m_size(size), m_itemdef(itemdef)
+InventoryList::InventoryList(
+		const std::string &name, u32 size, IItemDefManager *itemdef) :
+	m_name(name),
+	m_size(size), m_itemdef(itemdef)
 {
 	clearItems();
 }
@@ -407,7 +410,7 @@ void InventoryList::deSerialize(std::istream &is)
 	setModified();
 
 	u32 item_i = 0;
-	m_width = 0;
+	m_width	   = 0;
 
 	while (is.good()) {
 		std::string line;
@@ -460,10 +463,10 @@ InventoryList::InventoryList(const InventoryList &other)
 
 InventoryList &InventoryList::operator=(const InventoryList &other)
 {
-	m_items = other.m_items;
-	m_size = other.m_size;
-	m_width = other.m_width;
-	m_name = other.m_name;
+	m_items	  = other.m_items;
+	m_size	  = other.m_size;
+	m_width	  = other.m_width;
+	m_name	  = other.m_name;
 	m_itemdef = other.m_itemdef;
 	//setDirty(true);
 
@@ -533,7 +536,7 @@ ItemStack InventoryList::changeItem(u32 i, const ItemStack &newitem)
 		return newitem;
 
 	ItemStack olditem = m_items[i];
-	m_items[i] = newitem;
+	m_items[i]		  = newitem;
 	setModified();
 	return olditem;
 }
@@ -705,7 +708,7 @@ u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count,
 
 	// Try to add the item to destination list
 	u32 oldcount = item1.count;
-	item1 = dest->addItem(dest_i, item1);
+	item1		 = dest->addItem(dest_i, item1);
 
 	// If something is returned, the item was not fully added
 	if (!item1.empty()) {
@@ -842,7 +845,7 @@ void Inventory::deSerialize(std::istream &is)
 			iss >> listsize;
 
 			InventoryList *list = getList(listname);
-			bool create_new = !list;
+			bool create_new		= !list;
 			if (create_new)
 				list = new InventoryList(listname, listsize, m_itemdef);
 			else

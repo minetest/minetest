@@ -31,7 +31,7 @@ struct ToolGroupCap
 {
 	std::unordered_map<int, float> times;
 	int maxlevel = 1;
-	int uses = 20;
+	int uses	 = 20;
 
 	ToolGroupCap() = default;
 
@@ -63,13 +63,13 @@ struct ToolCapabilities
 	int punch_attack_uses;
 
 	ToolCapabilities(float full_punch_interval_ = 1.4f, int max_drop_level_ = 1,
-			const ToolGCMap &groupcaps_ = ToolGCMap(),
-			const DamageGroup &damageGroups_ = DamageGroup(), int punch_attack_uses_ = 0)
-		: full_punch_interval(full_punch_interval_), max_drop_level(max_drop_level_),
-		  groupcaps(groupcaps_), damageGroups(damageGroups_),
-		  punch_attack_uses(punch_attack_uses_)
-	{
-	}
+			const ToolGCMap &groupcaps_		 = ToolGCMap(),
+			const DamageGroup &damageGroups_ = DamageGroup(),
+			int punch_attack_uses_			 = 0) :
+		full_punch_interval(full_punch_interval_),
+		max_drop_level(max_drop_level_), groupcaps(groupcaps_),
+		damageGroups(damageGroups_), punch_attack_uses(punch_attack_uses_)
+	{}
 
 	void serialize(std::ostream &os, u16 version) const;
 	void deSerialize(std::istream &is);
@@ -87,10 +87,10 @@ struct DigParams
 	std::string main_group;
 
 	DigParams(bool a_diggable = false, float a_time = 0.0f, u16 a_wear = 0,
-			const std::string &a_main_group = "")
-		: diggable(a_diggable), time(a_time), wear(a_wear), main_group(a_main_group)
-	{
-	}
+			const std::string &a_main_group = "") :
+		diggable(a_diggable),
+		time(a_time), wear(a_wear), main_group(a_main_group)
+	{}
 };
 
 DigParams getDigParams(const ItemGroupList &groups, const ToolCapabilities *tp);
@@ -111,8 +111,8 @@ HitParams getHitParams(const ItemGroupList &armor_groups, const ToolCapabilities
 struct PunchDamageResult
 {
 	bool did_punch = false;
-	int damage = 0;
-	int wear = 0;
+	int damage	   = 0;
+	int wear	   = 0;
 
 	PunchDamageResult() = default;
 };

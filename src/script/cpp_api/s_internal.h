@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 
 #ifdef SCRIPTAPI_LOCK_DEBUG
-#include <cassert>
+	#include <cassert>
 
 class LockChecker
 {
@@ -40,8 +40,8 @@ public:
 	LockChecker(int *recursion_counter, std::thread::id *owning_thread)
 	{
 		m_lock_recursion_counter = recursion_counter;
-		m_owning_thread = owning_thread;
-		m_original_level = *recursion_counter;
+		m_owning_thread			 = owning_thread;
+		m_original_level		 = *recursion_counter;
 
 		if (*m_lock_recursion_counter > 0) {
 			assert(*m_owning_thread == std::this_thread::get_id());
@@ -68,11 +68,12 @@ private:
 	std::thread::id *m_owning_thread;
 };
 
-#define SCRIPTAPI_LOCK_CHECK                                                             \
-	LockChecker scriptlock_checker(&this->m_lock_recursion_count, &this->m_owning_thread)
+	#define SCRIPTAPI_LOCK_CHECK                                                         \
+		LockChecker scriptlock_checker(                                                  \
+				&this->m_lock_recursion_count, &this->m_owning_thread)
 
 #else
-#define SCRIPTAPI_LOCK_CHECK while (0)
+	#define SCRIPTAPI_LOCK_CHECK while (0)
 #endif
 
 #define SCRIPTAPI_PRECHECKHEADER                                                         \

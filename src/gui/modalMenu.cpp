@@ -25,16 +25,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
-#include "touchscreengui.h"
+	#include "touchscreengui.h"
 #endif
 
 GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-		IMenuManager *menumgr)
-	: IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, core::rect<s32>(0, 0, 100, 100)),
+		IMenuManager *menumgr) :
+	IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, core::rect<s32>(0, 0, 100, 100)),
 #ifdef __ANDROID__
-	  m_jni_field_name(""),
+	m_jni_field_name(""),
 #endif
-	  m_menumgr(menumgr)
+	m_menumgr(menumgr)
 {
 	m_gui_scale = g_settings->getFloat("gui_scaling");
 #ifdef __ANDROID__
@@ -68,7 +68,7 @@ void GUIModalMenu::draw()
 		return;
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
-	v2u32 screensize = driver->getScreenSize();
+	v2u32 screensize			= driver->getScreenSize();
 	if (screensize != m_screensize_old) {
 		m_screensize_old = screensize;
 		regenerateGui(screensize);

@@ -43,13 +43,13 @@ std::string getShaderPath(const std::string &name_of_shader, const std::string &
 
 struct ShaderInfo
 {
-	std::string name = "";
+	std::string name					 = "";
 	video::E_MATERIAL_TYPE base_material = video::EMT_SOLID;
-	video::E_MATERIAL_TYPE material = video::EMT_SOLID;
-	u8 drawtype = 0;
-	u8 material_type = 0;
+	video::E_MATERIAL_TYPE material		 = video::EMT_SOLID;
+	u8 drawtype							 = 0;
+	u8 material_type					 = 0;
 
-	ShaderInfo() = default;
+	ShaderInfo()		  = default;
 	virtual ~ShaderInfo() = default;
 };
 
@@ -93,10 +93,9 @@ class CachedShaderSetting
 	bool is_pixel;
 
 protected:
-	CachedShaderSetting(const char *name, bool is_pixel)
-		: m_name(name), is_pixel(is_pixel)
-	{
-	}
+	CachedShaderSetting(const char *name, bool is_pixel) :
+		m_name(name), is_pixel(is_pixel)
+	{}
 
 public:
 	void set(const T value[count], video::IMaterialRendererServices *services)
@@ -117,18 +116,16 @@ class CachedPixelShaderSetting : public CachedShaderSetting<T, count>
 {
 public:
 	CachedPixelShaderSetting(const char *name) : CachedShaderSetting<T, count>(name, true)
-	{
-	}
+	{}
 };
 
 template <typename T, std::size_t count = 1>
 class CachedVertexShaderSetting : public CachedShaderSetting<T, count>
 {
 public:
-	CachedVertexShaderSetting(const char *name)
-		: CachedShaderSetting<T, count>(name, false)
-	{
-	}
+	CachedVertexShaderSetting(const char *name) :
+		CachedShaderSetting<T, count>(name, false)
+	{}
 };
 
 
@@ -139,7 +136,7 @@ public:
 class IShaderSource
 {
 public:
-	IShaderSource() = default;
+	IShaderSource()			 = default;
 	virtual ~IShaderSource() = default;
 
 	virtual u32 getShaderIdDirect(
@@ -158,7 +155,7 @@ public:
 class IWritableShaderSource : public IShaderSource
 {
 public:
-	IWritableShaderSource() = default;
+	IWritableShaderSource()			 = default;
 	virtual ~IWritableShaderSource() = default;
 
 	virtual u32 getShaderIdDirect(
@@ -173,10 +170,10 @@ public:
 		return 0;
 	}
 
-	virtual void processQueue() = 0;
+	virtual void processQueue()														  = 0;
 	virtual void insertSourceShader(const std::string &name_of_shader,
-			const std::string &filename, const std::string &program) = 0;
-	virtual void rebuildShaders() = 0;
+			const std::string &filename, const std::string &program)				  = 0;
+	virtual void rebuildShaders()													  = 0;
 	virtual void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) = 0;
 };
 

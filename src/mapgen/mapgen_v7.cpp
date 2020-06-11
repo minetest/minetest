@@ -47,41 +47,41 @@ FlagDesc flagdesc_mapgen_v7[] = { { "mountains", MGV7_MOUNTAINS },
 ////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV7::MapgenV7(MapgenV7Params *params, EmergeParams *emerge)
-	: MapgenBasic(MAPGEN_V7, params, emerge)
+MapgenV7::MapgenV7(MapgenV7Params *params, EmergeParams *emerge) :
+	MapgenBasic(MAPGEN_V7, params, emerge)
 {
-	spflags = params->spflags;
-	mount_zero_level = params->mount_zero_level;
-	floatland_ymin = params->floatland_ymin;
-	floatland_ymax = params->floatland_ymax;
-	floatland_taper = params->floatland_taper;
-	float_taper_exp = params->float_taper_exp;
+	spflags			  = params->spflags;
+	mount_zero_level  = params->mount_zero_level;
+	floatland_ymin	  = params->floatland_ymin;
+	floatland_ymax	  = params->floatland_ymax;
+	floatland_taper	  = params->floatland_taper;
+	float_taper_exp	  = params->float_taper_exp;
 	floatland_density = params->floatland_density;
-	floatland_ywater = params->floatland_ywater;
+	floatland_ywater  = params->floatland_ywater;
 
-	cave_width = params->cave_width;
-	large_cave_depth = params->large_cave_depth;
+	cave_width		   = params->cave_width;
+	large_cave_depth   = params->large_cave_depth;
 	small_cave_num_min = params->small_cave_num_min;
 	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
 	large_cave_num_max = params->large_cave_num_max;
 	large_cave_flooded = params->large_cave_flooded;
-	cavern_limit = params->cavern_limit;
-	cavern_taper = params->cavern_taper;
-	cavern_threshold = params->cavern_threshold;
-	dungeon_ymin = params->dungeon_ymin;
-	dungeon_ymax = params->dungeon_ymax;
+	cavern_limit	   = params->cavern_limit;
+	cavern_taper	   = params->cavern_taper;
+	cavern_threshold   = params->cavern_threshold;
+	dungeon_ymin	   = params->dungeon_ymin;
+	dungeon_ymax	   = params->dungeon_ymax;
 
 	// Allocate floatland noise offset cache
 	this->float_offset_cache = new float[csize.Y + 2];
 
 	// 2D noise
 	noise_terrain_base = new Noise(&params->np_terrain_base, seed, csize.X, csize.Z);
-	noise_terrain_alt = new Noise(&params->np_terrain_alt, seed, csize.X, csize.Z);
+	noise_terrain_alt  = new Noise(&params->np_terrain_alt, seed, csize.X, csize.Z);
 	noise_terrain_persist =
 			new Noise(&params->np_terrain_persist, seed, csize.X, csize.Z);
 	noise_height_select = new Noise(&params->np_height_select, seed, csize.X, csize.Z);
-	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
+	noise_filler_depth	= new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
 
 	if (spflags & MGV7_MOUNTAINS) {
 		// 2D noise
@@ -105,8 +105,8 @@ MapgenV7::MapgenV7(MapgenV7Params *params, EmergeParams *emerge)
 	}
 
 	// 3D noise, 1 down overgeneration
-	MapgenBasic::np_cave1 = params->np_cave1;
-	MapgenBasic::np_cave2 = params->np_cave2;
+	MapgenBasic::np_cave1  = params->np_cave1;
+	MapgenBasic::np_cave2  = params->np_cave2;
 	MapgenBasic::np_cavern = params->np_cavern;
 	// 3D noise
 	MapgenBasic::np_dungeons = params->np_dungeons;
@@ -139,23 +139,22 @@ MapgenV7::~MapgenV7()
 }
 
 
-MapgenV7Params::MapgenV7Params()
-	: np_terrain_base(4.0, 70.0, v3f(600, 600, 600), 82341, 5, 0.6, 2.0),
-	  np_terrain_alt(4.0, 25.0, v3f(600, 600, 600), 5934, 5, 0.6, 2.0),
-	  np_terrain_persist(0.6, 0.1, v3f(2000, 2000, 2000), 539, 3, 0.6, 2.0),
-	  np_height_select(-8.0, 16.0, v3f(500, 500, 500), 4213, 6, 0.7, 2.0),
-	  np_filler_depth(0.0, 1.2, v3f(150, 150, 150), 261, 3, 0.7, 2.0),
-	  np_mount_height(256.0, 112.0, v3f(1000, 1000, 1000), 72449, 3, 0.6, 2.0),
-	  np_ridge_uwater(0.0, 1.0, v3f(1000, 1000, 1000), 85039, 5, 0.6, 2.0),
-	  np_mountain(-0.6, 1.0, v3f(250, 350, 250), 5333, 5, 0.63, 2.0),
-	  np_ridge(0.0, 1.0, v3f(100, 100, 100), 6467, 4, 0.75, 2.0),
-	  np_floatland(0.0, 0.7, v3f(384, 96, 384), 1009, 4, 0.75, 1.618),
-	  np_cavern(0.0, 1.0, v3f(384, 128, 384), 723, 5, 0.63, 2.0),
-	  np_cave1(0.0, 12.0, v3f(61, 61, 61), 52534, 3, 0.5, 2.0),
-	  np_cave2(0.0, 12.0, v3f(67, 67, 67), 10325, 3, 0.5, 2.0),
-	  np_dungeons(0.9, 0.5, v3f(500, 500, 500), 0, 2, 0.8, 2.0)
-{
-}
+MapgenV7Params::MapgenV7Params() :
+	np_terrain_base(4.0, 70.0, v3f(600, 600, 600), 82341, 5, 0.6, 2.0),
+	np_terrain_alt(4.0, 25.0, v3f(600, 600, 600), 5934, 5, 0.6, 2.0),
+	np_terrain_persist(0.6, 0.1, v3f(2000, 2000, 2000), 539, 3, 0.6, 2.0),
+	np_height_select(-8.0, 16.0, v3f(500, 500, 500), 4213, 6, 0.7, 2.0),
+	np_filler_depth(0.0, 1.2, v3f(150, 150, 150), 261, 3, 0.7, 2.0),
+	np_mount_height(256.0, 112.0, v3f(1000, 1000, 1000), 72449, 3, 0.6, 2.0),
+	np_ridge_uwater(0.0, 1.0, v3f(1000, 1000, 1000), 85039, 5, 0.6, 2.0),
+	np_mountain(-0.6, 1.0, v3f(250, 350, 250), 5333, 5, 0.63, 2.0),
+	np_ridge(0.0, 1.0, v3f(100, 100, 100), 6467, 4, 0.75, 2.0),
+	np_floatland(0.0, 0.7, v3f(384, 96, 384), 1009, 4, 0.75, 1.618),
+	np_cavern(0.0, 1.0, v3f(384, 128, 384), 723, 5, 0.63, 2.0),
+	np_cave1(0.0, 12.0, v3f(61, 61, 61), 52534, 3, 0.5, 2.0),
+	np_cave2(0.0, 12.0, v3f(67, 67, 67), 10325, 3, 0.5, 2.0),
+	np_dungeons(0.9, 0.5, v3f(500, 500, 500), 0, 2, 0.8, 2.0)
+{}
 
 
 void MapgenV7Params::readParams(const Settings *settings)
@@ -254,7 +253,7 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 {
 	// If rivers are enabled, first check if in a river
 	if (spflags & MGV7_RIDGES) {
-		float width = 0.2f;
+		float width	  = 0.2f;
 		float uwatern = NoisePerlin2D(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2.0f;
 		if (std::fabs(uwatern) <= width)
 			return MAX_MAP_GENERATION_LIMIT; // Unsuitable spawn point
@@ -315,15 +314,15 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	//TimeTaker t("makeChunk");
 
 	this->generating = true;
-	this->vm = data->vmanip;
-	this->ndef = data->nodedef;
+	this->vm		 = data->vmanip;
+	this->ndef		 = data->nodedef;
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
-	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
-	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	node_min		   = blockpos_min * MAP_BLOCKSIZE;
+	node_max		   = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	full_node_min	   = (blockpos_min - 1) * MAP_BLOCKSIZE;
+	full_node_max	   = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
@@ -402,15 +401,15 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 float MapgenV7::baseTerrainLevelAtPoint(s16 x, s16 z)
 {
 	float hselect = NoisePerlin2D(&noise_height_select->np, x, z, seed);
-	hselect = rangelim(hselect, 0.0f, 1.0f);
+	hselect		  = rangelim(hselect, 0.0f, 1.0f);
 
 	float persist = NoisePerlin2D(&noise_terrain_persist->np, x, z, seed);
 
 	noise_terrain_base->np.persist = persist;
-	float height_base = NoisePerlin2D(&noise_terrain_base->np, x, z, seed);
+	float height_base			   = NoisePerlin2D(&noise_terrain_base->np, x, z, seed);
 
 	noise_terrain_alt->np.persist = persist;
-	float height_alt = NoisePerlin2D(&noise_terrain_alt->np, x, z, seed);
+	float height_alt			  = NoisePerlin2D(&noise_terrain_alt->np, x, z, seed);
 
 	if (height_alt > height_base)
 		return height_alt;
@@ -421,9 +420,9 @@ float MapgenV7::baseTerrainLevelAtPoint(s16 x, s16 z)
 
 float MapgenV7::baseTerrainLevelFromMap(int index)
 {
-	float hselect = rangelim(noise_height_select->result[index], 0.0f, 1.0f);
+	float hselect	  = rangelim(noise_height_select->result[index], 0.0f, 1.0f);
 	float height_base = noise_terrain_base->result[index];
-	float height_alt = noise_terrain_alt->result[index];
+	float height_alt  = noise_terrain_alt->result[index];
 
 	if (height_alt > height_base)
 		return height_alt;
@@ -435,8 +434,8 @@ float MapgenV7::baseTerrainLevelFromMap(int index)
 bool MapgenV7::getMountainTerrainAtPoint(s16 x, s16 y, s16 z)
 {
 	float mnt_h_n = std::fmax(NoisePerlin2D(&noise_mount_height->np, x, z, seed), 1.0f);
-	float density_gradient = -((float)(y - mount_zero_level) / mnt_h_n);
-	float mnt_n = NoisePerlin3D(&noise_mountain->np, x, y, z, seed);
+	float density_gradient = -((float) (y - mount_zero_level) / mnt_h_n);
+	float mnt_n			   = NoisePerlin3D(&noise_mountain->np, x, y, z, seed);
 
 	return mnt_n + density_gradient >= 0.0f;
 }
@@ -444,9 +443,9 @@ bool MapgenV7::getMountainTerrainAtPoint(s16 x, s16 y, s16 z)
 
 bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
-	float mounthn = std::fmax(noise_mount_height->result[idx_xz], 1.0f);
-	float density_gradient = -((float)(y - mount_zero_level) / mounthn);
-	float mountn = noise_mountain->result[idx_xyz];
+	float mounthn		   = std::fmax(noise_mount_height->result[idx_xz], 1.0f);
+	float density_gradient = -((float) (y - mount_zero_level) / mounthn);
+	float mountn		   = noise_mountain->result[idx_xyz];
 
 	return mountn + density_gradient >= 0.0f;
 }
@@ -481,7 +480,7 @@ int MapgenV7::generateTerrain()
 	// 'Generate floatlands in this mapchunk' bool for
 	// simplification of condition checks in y-loop.
 	bool gen_floatlands = false;
-	u8 cache_index = 0;
+	u8 cache_index		= 0;
 	// Y values where floatland tapering starts
 	s16 float_taper_ymax = floatland_ymax - floatland_taper;
 	s16 float_taper_ymin = floatland_ymin + floatland_taper;
@@ -496,11 +495,11 @@ int MapgenV7::generateTerrain()
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++, cache_index++) {
 			float float_offset = 0.0f;
 			if (y > float_taper_ymax) {
-				float_offset = std::pow((y - float_taper_ymax) / (float)floatland_taper,
+				float_offset = std::pow((y - float_taper_ymax) / (float) floatland_taper,
 									   float_taper_exp) *
 						4.0f;
 			} else if (y < float_taper_ymin) {
-				float_offset = std::pow((float_taper_ymin - y) / (float)floatland_taper,
+				float_offset = std::pow((float_taper_ymin - y) / (float) floatland_taper,
 									   float_taper_exp) *
 						4.0f;
 			}
@@ -509,9 +508,9 @@ int MapgenV7::generateTerrain()
 	}
 
 	//// Place nodes
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s16 &em			= vm->m_area.getExtent();
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
-	u32 index2d = 0;
+	u32 index2d				= 0;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 		for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
@@ -520,7 +519,7 @@ int MapgenV7::generateTerrain()
 				stone_surface_max_y = surface_y;
 
 			cache_index = 0;
-			u32 vi = vm->m_area.index(x, node_min.Y - 1, z);
+			u32 vi		= vm->m_area.index(x, node_min.Y - 1, z);
 			u32 index3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
 
 			for (s16 y = node_min.Y - 1; y <= node_max.Y + 1;
@@ -574,7 +573,7 @@ void MapgenV7::generateRidgeTerrain()
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			u32 vi = vm->m_area.index(node_min.X, y, z);
 			for (s16 x = node_min.X; x <= node_max.X; x++, index3d++, vi++) {
-				u32 index2d = (z - node_min.Z) * csize.X + (x - node_min.X);
+				u32 index2d	  = (z - node_min.Z) * csize.X + (x - node_min.X);
 				float uwatern = noise_ridge_uwater->result[index2d] * 2.0f;
 				if (std::fabs(uwatern) > width)
 					continue;
@@ -584,9 +583,9 @@ void MapgenV7::generateRidgeTerrain()
 				if (c != c_stone)
 					continue;
 
-				float altitude = y - water_level;
+				float altitude	 = y - water_level;
 				float height_mod = (altitude + 17.0f) / 2.5f;
-				float width_mod = width - std::fabs(uwatern);
+				float width_mod	 = width - std::fabs(uwatern);
 				float nridge =
 						noise_ridge->result[index3d] * std::fmax(altitude, 0.0f) / 7.0f;
 				if (nridge + width_mod * height_mod < 0.6f)

@@ -27,14 +27,13 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env, gui::IGUIElement *
 		const InventoryLocation &inventoryloc, const std::string &listname,
 		const v2s32 &geom, const s32 start_item_i, const v2s32 &slot_size,
 		const v2f32 &slot_spacing, GUIFormSpecMenu *fs_menu, const Options &options,
-		gui::IGUIFont *font)
-	: gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle), m_invmgr(invmgr),
-	  m_inventoryloc(inventoryloc), m_listname(listname), m_geom(geom),
-	  m_start_item_i(start_item_i), m_slot_size(slot_size), m_slot_spacing(slot_spacing),
-	  m_fs_menu(fs_menu), m_options(options), m_font(font), m_hovered_i(-1),
-	  m_already_warned(false)
-{
-}
+		gui::IGUIFont *font) :
+	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
+	m_invmgr(invmgr), m_inventoryloc(inventoryloc), m_listname(listname), m_geom(geom),
+	m_start_item_i(start_item_i), m_slot_size(slot_size), m_slot_spacing(slot_spacing),
+	m_fs_menu(fs_menu), m_options(options), m_font(font), m_hovered_i(-1),
+	m_already_warned(false)
+{}
 
 void GUIInventoryList::draw()
 {
@@ -64,14 +63,14 @@ void GUIInventoryList::draw()
 	}
 	m_already_warned = false;
 
-	video::IVideoDriver *driver = Environment->getVideoDriver();
-	Client *client = m_fs_menu->getClient();
+	video::IVideoDriver *driver	  = Environment->getVideoDriver();
+	Client *client				  = m_fs_menu->getClient();
 	const ItemSpec *selected_item = m_fs_menu->getSelectedItem();
 
 	core::rect<s32> imgrect(0, 0, m_slot_size.X, m_slot_size.Y);
 	v2s32 base_pos = AbsoluteRect.UpperLeftCorner;
 
-	const s32 list_size = (s32)ilist->getSize();
+	const s32 list_size = (s32) ilist->getSize();
 
 	for (s32 i = 0; i < m_geom.X * m_geom.Y; i++) {
 		s32 item_i = i + m_start_item_i;
@@ -80,7 +79,7 @@ void GUIInventoryList::draw()
 
 		v2s32 p((i % m_geom.X) * m_slot_spacing.X, (i / m_geom.X) * m_slot_spacing.Y);
 		core::rect<s32> rect = imgrect + base_pos + p;
-		ItemStack item = ilist->getItem(item_i);
+		ItemStack item		 = ilist->getItem(item_i);
 
 		bool selected = selected_item &&
 				m_invmgr->getInventory(selected_item->inventoryloc) == inv &&
@@ -100,10 +99,10 @@ void GUIInventoryList::draw()
 
 		// Draw inv slot borders
 		if (m_options.slotborder) {
-			s32 x1 = rect.UpperLeftCorner.X;
-			s32 y1 = rect.UpperLeftCorner.Y;
-			s32 x2 = rect.LowerRightCorner.X;
-			s32 y2 = rect.LowerRightCorner.Y;
+			s32 x1	   = rect.UpperLeftCorner.X;
+			s32 y1	   = rect.UpperLeftCorner.Y;
+			s32 x2	   = rect.LowerRightCorner.X;
+			s32 y2	   = rect.LowerRightCorner.Y;
 			s32 border = 1;
 			core::rect<s32> clipping_rect =
 					Parent ? Parent->getAbsoluteClippingRect() : core::rect<s32>();
@@ -163,8 +162,8 @@ bool GUIInventoryList::OnEvent(const SEvent &event)
 
 	// no item slot at pos of mouse event => allow clicking through
 	// find the element that would be hovered if this inventorylist was invisible
-	bool was_visible = IsVisible;
-	IsVisible = false;
+	bool was_visible	 = IsVisible;
+	IsVisible			 = false;
 	IGUIElement *hovered = Environment->getRootGUIElement()->getElementFromPoint(
 			core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
 
@@ -201,8 +200,8 @@ s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 	v2s32 base_pos = AbsoluteRect.UpperLeftCorner;
 
 	// instead of looping through each slot, we look where p would be in the grid
-	s32 i = (p.X - base_pos.X) / (s32)m_slot_spacing.X +
-			m_geom.X * ((p.Y - base_pos.Y) / (s32)m_slot_spacing.Y);
+	s32 i = (p.X - base_pos.X) / (s32) m_slot_spacing.X +
+			m_geom.X * ((p.Y - base_pos.Y) / (s32) m_slot_spacing.Y);
 
 	v2s32 p0((i % m_geom.X) * m_slot_spacing.X, (i / m_geom.X) * m_slot_spacing.Y);
 
@@ -211,7 +210,7 @@ s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 	rect.clipAgainst(AbsoluteClippingRect);
 
 	if (rect.getArea() > 0 && rect.isPointInside(p) &&
-			i + m_start_item_i < (s32)ilist->getSize())
+			i + m_start_item_i < (s32) ilist->getSize())
 		return i + m_start_item_i;
 
 	return -1;

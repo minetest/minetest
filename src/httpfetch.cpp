@@ -41,12 +41,11 @@ std::mutex g_httpfetch_mutex;
 std::map<unsigned long, std::queue<HTTPFetchResult>> g_httpfetch_results;
 PcgRandom g_callerid_randomness;
 
-HTTPFetchRequest::HTTPFetchRequest()
-	: timeout(g_settings->getS32("curl_timeout")), connect_timeout(timeout),
-	  useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" +
-			  porting::get_sysinfo() + ")")
-{
-}
+HTTPFetchRequest::HTTPFetchRequest() :
+	timeout(g_settings->getS32("curl_timeout")), connect_timeout(timeout),
+	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" +
+			porting::get_sysinfo() + ")")
+{}
 
 
 static void httpfetch_deliver_result(const HTTPFetchResult &fetch_result)
@@ -92,7 +91,7 @@ unsigned long httpfetch_caller_alloc_secure()
 	unsigned long caller;
 
 	do {
-		caller = (((u64)g_callerid_randomness.next()) << 32) |
+		caller = (((u64) g_callerid_randomness.next()) << 32) |
 				g_callerid_randomness.next();
 
 		if (--tries < 1) {
@@ -141,7 +140,7 @@ bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
 }
 
 #if USE_CURL
-#include <curl/curl.h>
+	#include <curl/curl.h>
 
 /*
 	USE_CURL is on: use cURL based httpfetch implementation
@@ -150,8 +149,8 @@ bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
 static size_t httpfetch_writefunction(
 		char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	std::ostringstream *stream = (std::ostringstream *)userdata;
-	size_t count = size * nmemb;
+	std::ostringstream *stream = (std::ostringstream *) userdata;
+	size_t count			   = size * nmemb;
 	stream->write(ptr, count);
 	return count;
 }
@@ -222,9 +221,10 @@ private:
 
 
 HTTPFetchOngoing::HTTPFetchOngoing(
-		const HTTPFetchRequest &request_, CurlHandlePool *pool_)
-	: pool(pool_), curl(NULL), multi(NULL), request(request_), result(request_),
-	  oss(std::ios::binary), http_header(NULL), post(NULL)
+		const HTTPFetchRequest &request_, CurlHandlePool *pool_) :
+	pool(pool_),
+	curl(NULL), multi(NULL), request(request_), result(request_), oss(std::ios::binary),
+	http_header(NULL), post(NULL)
 {
 	curl = pool->alloc();
 	if (curl == NULL) {
@@ -247,14 +247,14 @@ HTTPFetchOngoing::HTTPFetchOngoing(
 		curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 	}
 
-#if LIBCURL_VERSION_NUM >= 0x071304
+	#if LIBCURL_VERSION_NUM >= 0x071304
 	// Restrict protocols so that curl vulnerabilities in
 	// other protocols don't affect us.
 	// These settings were introduced in curl 7.19.4.
 	long protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP | CURLPROTO_FTPS;
 	curl_easy_setopt(curl, CURLOPT_PROTOCOLS, protocols);
 	curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS, protocols);
-#endif
+	#endif
 
 	// Set cURL options based on HTTPFetchRequest
 	curl_easy_setopt(curl, CURLOPT_URL, request.url.c_str());
@@ -344,8 +344,8 @@ CURLcode HTTPFetchOngoing::start(CURLM *multi_)
 const HTTPFetchResult *HTTPFetchOngoing::complete(CURLcode res)
 {
 	result.succeeded = (res == CURLE_OK);
-	result.timeout = (res == CURLE_OPERATION_TIMEDOUT);
-	result.data = oss.str();
+	result.timeout	 = (res == CURLE_OPERATION_TIMEDOUT);
+	result.data		 = oss.str();
 
 	// Get HTTP/FTP response code
 	result.response_code = 0;
@@ -429,25 +429,25 @@ public:
 	void requestFetch(const HTTPFetchRequest &fetch_request)
 	{
 		Request req;
-		req.type = RT_FETCH;
+		req.type		  = RT_FETCH;
 		req.fetch_request = fetch_request;
-		req.event = NULL;
+		req.event		  = NULL;
 		m_requests.push_back(req);
 	}
 
 	void requestClear(unsigned long caller, Event *event)
 	{
 		Request req;
-		req.type = RT_CLEAR;
+		req.type				 = RT_CLEAR;
 		req.fetch_request.caller = caller;
-		req.event = event;
+		req.event				 = event;
 		m_requests.push_back(req);
 	}
 
 	void requestWakeUp()
 	{
 		Request req;
-		req.type = RT_WAKEUP;
+		req.type  = RT_WAKEUP;
 		req.event = NULL;
 		m_requests.push_back(req);
 	}
@@ -520,7 +520,7 @@ protected:
 	void processCurlMessage(CURLMsg *msg)
 	{
 		// Determine which ongoing fetch the message pertains to
-		size_t i = 0;
+		size_t i   = 0;
 		bool found = false;
 		for (i = 0; i < m_all_ongoing.size(); ++i) {
 			if (m_all_ongoing[i]->getEasyHandle() == msg->easy_handle) {
@@ -587,17 +587,17 @@ protected:
 			// in Winsock it is forbidden to pass three empty
 			// fd_sets to select(), so in that case use sleep_ms
 			if (max_fd != -1) {
-				select_tv.tv_sec = select_timeout / 1000;
+				select_tv.tv_sec  = select_timeout / 1000;
 				select_tv.tv_usec = (select_timeout % 1000) * 1000;
-				int retval = select(
-						max_fd + 1, &read_fd_set, &write_fd_set, &exc_fd_set, &select_tv);
+				int retval		  = select(
+						   max_fd + 1, &read_fd_set, &write_fd_set, &exc_fd_set, &select_tv);
 				if (retval == -1) {
-#ifdef _WIN32
+	#ifdef _WIN32
 					errorstream << "select returned error code " << WSAGetLastError()
 								<< std::endl;
-#else
+	#else
 					errorstream << "select returned error code " << errno << std::endl;
-#endif
+	#endif
 				}
 			} else {
 				sleep_ms(select_timeout);
@@ -642,7 +642,7 @@ protected:
 			/*
 				Handle completed async requests
 			*/
-			if (still_ongoing < (int)m_all_ongoing.size()) {
+			if (still_ongoing < (int) m_all_ongoing.size()) {
 				CURLMsg *msg;
 				int msgs_in_queue;
 				msg = curl_multi_info_read(m_multi, &msgs_in_queue);
@@ -755,12 +755,10 @@ void httpfetch_sync(const HTTPFetchRequest &fetch_request, HTTPFetchResult &fetc
 */
 
 void httpfetch_init(int parallel_limit)
-{
-}
+{}
 
 void httpfetch_cleanup()
-{
-}
+{}
 
 void httpfetch_async(const HTTPFetchRequest &fetch_request)
 {
@@ -772,8 +770,7 @@ void httpfetch_async(const HTTPFetchRequest &fetch_request)
 }
 
 static void httpfetch_request_clear(unsigned long caller)
-{
-}
+{}
 
 void httpfetch_sync(const HTTPFetchRequest &fetch_request, HTTPFetchResult &fetch_result)
 {

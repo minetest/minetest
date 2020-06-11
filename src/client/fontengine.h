@@ -42,10 +42,9 @@ enum FontMode : u8
 
 struct FontSpec
 {
-	FontSpec(unsigned int font_size, FontMode mode, bool bold, bool italic)
-		: size(font_size), mode(mode), bold(bold), italic(italic)
-	{
-	}
+	FontSpec(unsigned int font_size, FontMode mode, bool bold, bool italic) :
+		size(font_size), mode(mode), bold(bold), italic(italic)
+	{}
 
 	u16 getHash() { return (mode << 2) | (bold << 1) | italic; }
 
@@ -66,7 +65,7 @@ public:
 	irr::gui::IGUIFont *getFont(FontSpec spec);
 
 	irr::gui::IGUIFont *getFont(unsigned int font_size = FONT_SIZE_UNSPECIFIED,
-			FontMode mode = FM_Unspecified)
+			FontMode mode							   = FM_Unspecified)
 	{
 		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
 		return getFont(spec);
@@ -77,7 +76,7 @@ public:
 
 	/** get text width if a text for a specific font */
 	unsigned int getTextHeight(unsigned int font_size = FONT_SIZE_UNSPECIFIED,
-			FontMode mode = FM_Unspecified)
+			FontMode mode							  = FM_Unspecified)
 	{
 		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
 		return getTextHeight(spec);
@@ -88,7 +87,7 @@ public:
 	/** get text width if a text for a specific font */
 	unsigned int getTextWidth(const std::wstring &text,
 			unsigned int font_size = FONT_SIZE_UNSPECIFIED,
-			FontMode mode = FM_Unspecified)
+			FontMode mode		   = FM_Unspecified)
 	{
 		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
 		return getTextWidth(text, spec);
@@ -101,7 +100,7 @@ public:
 
 	unsigned int getTextWidth(const std::string &text,
 			unsigned int font_size = FONT_SIZE_UNSPECIFIED,
-			FontMode mode = FM_Unspecified)
+			FontMode mode		   = FM_Unspecified)
 	{
 		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
 		return getTextWidth(utf8_to_wide(text), spec);
@@ -111,7 +110,7 @@ public:
 	unsigned int getLineHeight(const FontSpec &spec);
 
 	unsigned int getLineHeight(unsigned int font_size = FONT_SIZE_UNSPECIFIED,
-			FontMode mode = FM_Unspecified)
+			FontMode mode							  = FM_Unspecified)
 	{
 		FontSpec spec(font_size, mode, m_default_bold, m_default_italic);
 		return getLineHeight(spec);
@@ -155,7 +154,7 @@ private:
 	unsigned int m_default_size[FM_MaxMode];
 
 	/** default bold and italic */
-	bool m_default_bold = false;
+	bool m_default_bold	  = false;
 	bool m_default_italic = false;
 
 	/** current font engine mode */

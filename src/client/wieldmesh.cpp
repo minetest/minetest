@@ -66,15 +66,15 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 		buf->append(vertices, 8, indices, 12);
 	}
 
-	f32 pixelsize_x = 1 / (f32)resolution_x;
-	f32 pixelsize_y = 1 / (f32)resolution_y;
+	f32 pixelsize_x = 1 / (f32) resolution_x;
+	f32 pixelsize_y = 1 / (f32) resolution_y;
 
 	for (int i = 0; i < resolution_x; ++i) {
-		f32 pixelpos_x = i * pixelsize_x - 0.5;
-		f32 x0 = pixelpos_x;
-		f32 x1 = pixelpos_x + pixelsize_x;
-		f32 tex0 = (i + 0.1) * pixelsize_x;
-		f32 tex1 = (i + 0.9) * pixelsize_x;
+		f32 pixelpos_x				 = i * pixelsize_x - 0.5;
+		f32 x0						 = pixelpos_x;
+		f32 x1						 = pixelpos_x + pixelsize_x;
+		f32 tex0					 = (i + 0.1) * pixelsize_x;
+		f32 tex1					 = (i + 0.9) * pixelsize_x;
 		video::S3DVertex vertices[8] = {
 			// x-
 			video::S3DVertex(x0, -r, -r, -1, 0, 0, c, tex0, 1),
@@ -91,11 +91,11 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 		buf->append(vertices, 8, indices, 12);
 	}
 	for (int i = 0; i < resolution_y; ++i) {
-		f32 pixelpos_y = i * pixelsize_y - 0.5;
-		f32 y0 = -pixelpos_y - pixelsize_y;
-		f32 y1 = -pixelpos_y;
-		f32 tex0 = (i + 0.1) * pixelsize_y;
-		f32 tex1 = (i + 0.9) * pixelsize_y;
+		f32 pixelpos_y				 = i * pixelsize_y - 0.5;
+		f32 y0						 = -pixelpos_y - pixelsize_y;
+		f32 y1						 = -pixelpos_y;
+		f32 tex0					 = (i + 0.1) * pixelsize_y;
+		f32 tex1					 = (i + 0.9) * pixelsize_y;
 		video::S3DVertex vertices[8] = {
 			// y-
 			video::S3DVertex(-r, y0, -r, 0, -1, 0, c, 0, tex0),
@@ -191,14 +191,14 @@ private:
 ExtrusionMeshCache *g_extrusion_mesh_cache = NULL;
 
 
-WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting)
-	: scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
-	  m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF), m_lighting(lighting)
+WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting) :
+	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
+	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF), m_lighting(lighting)
 {
-	m_enable_shaders = g_settings->getBool("enable_shaders");
+	m_enable_shaders	 = g_settings->getBool("enable_shaders");
 	m_anisotropic_filter = g_settings->getBool("anisotropic_filter");
-	m_bilinear_filter = g_settings->getBool("bilinear_filter");
-	m_trilinear_filter = g_settings->getBool("trilinear_filter");
+	m_bilinear_filter	 = g_settings->getBool("bilinear_filter");
+	m_trilinear_filter	 = g_settings->getBool("trilinear_filter");
 
 	// If this is the first wield mesh scene node, create a cache
 	// for extrusion meshes (and a cube mesh), otherwise reuse it
@@ -213,7 +213,7 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool l
 
 	// Create the child scene node
 	scene::IMesh *dummymesh = g_extrusion_mesh_cache->createCube();
-	m_meshnode = SceneManager->addMeshSceneNode(dummymesh, this, -1);
+	m_meshnode				= SceneManager->addMeshSceneNode(dummymesh, this, -1);
 	m_meshnode->setReadOnlyMaterials(false);
 	m_meshnode->setVisible(false);
 	dummymesh->drop(); // m_meshnode grabbed it
@@ -229,7 +229,7 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 void WieldMeshSceneNode::setCube(const ContentFeatures &f, v3f wield_scale)
 {
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
-	scene::SMesh *copy = cloneMesh(cubemesh);
+	scene::SMesh *copy	   = cloneMesh(cubemesh);
 	cubemesh->drop();
 	postProcessNodeMesh(copy, f, false, true, &m_material_type, &m_colors, true);
 	changeToMesh(copy);
@@ -253,10 +253,10 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	// Detect animation texture and pull off top frame instead of using entire thing
 	if (num_frames > 1) {
 		u32 frame_height = dim.Height / num_frames;
-		dim = core::dimension2d<u32>(dim.Width, frame_height);
+		dim				 = core::dimension2d<u32>(dim.Width, frame_height);
 	}
 	scene::IMesh *original = g_extrusion_mesh_cache->create(dim);
-	scene::SMesh *mesh = cloneMesh(original);
+	scene::SMesh *mesh	   = cloneMesh(original);
 	original->drop();
 	//set texture
 	mesh->getMeshBuffer(0)->getMaterial().setTexture(0, tsrc->getTexture(imagename));
@@ -273,11 +273,11 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 
 	// Customize materials
 	for (u32 layer = 0; layer < m_meshnode->getMaterialCount(); layer++) {
-		video::SMaterial &material = m_meshnode->getMaterial(layer);
+		video::SMaterial &material			  = m_meshnode->getMaterial(layer);
 		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-		material.MaterialType = m_material_type;
-		material.MaterialTypeParam = 0.5f;
+		material.MaterialType				  = m_material_type;
+		material.MaterialTypeParam			  = 0.5f;
 		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 		// Enable bi/trilinear filtering only for high resolution textures
 		if (dim.Width > 32) {
@@ -313,7 +313,7 @@ scene::SMesh *createSpecialNodeMesh(
 		for (PreMeshBuffer &p : prebuffers) {
 			if (p.layer.material_flags & MATERIAL_FLAG_ANIMATION) {
 				const FrameSpec &frame = (*p.layer.frames)[0];
-				p.layer.texture = frame.texture;
+				p.layer.texture		   = frame.texture;
 				p.layer.normal_texture = frame.normal_texture;
 			}
 			for (video::S3DVertex &v : p.vertices)
@@ -333,13 +333,13 @@ scene::SMesh *createSpecialNodeMesh(
 void WieldMeshSceneNode::setItem(
 		const ItemStack &item, Client *client, bool check_wield_image)
 {
-	ITextureSource *tsrc = client->getTextureSource();
-	IItemDefManager *idef = client->getItemDefManager();
-	IShaderSource *shdrsrc = client->getShaderSource();
+	ITextureSource *tsrc	   = client->getTextureSource();
+	IItemDefManager *idef	   = client->getItemDefManager();
+	IShaderSource *shdrsrc	   = client->getShaderSource();
 	const NodeDefManager *ndef = client->getNodeDefManager();
-	const ItemDefinition &def = item.getDefinition(idef);
-	const ContentFeatures &f = ndef->get(def.name);
-	content_t id = ndef->getId(def.name);
+	const ItemDefinition &def  = item.getDefinition(idef);
+	const ContentFeatures &f   = ndef->get(def.name);
+	content_t id			   = ndef->getId(def.name);
 
 	scene::SMesh *mesh = nullptr;
 
@@ -421,7 +421,7 @@ void WieldMeshSceneNode::setItem(
 		u32 material_count = m_meshnode->getMaterialCount();
 		for (u32 i = 0; i < material_count; ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
-			material.MaterialType = m_material_type;
+			material.MaterialType	   = m_material_type;
 			material.MaterialTypeParam = 0.5f;
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
@@ -447,10 +447,10 @@ void WieldMeshSceneNode::setColor(video::SColor c)
 	if (!mesh)
 		return;
 
-	u8 red = c.getRed();
+	u8 red	 = c.getRed();
 	u8 green = c.getGreen();
-	u8 blue = c.getBlue();
-	u32 mc = mesh->getMeshBufferCount();
+	u8 blue	 = c.getBlue();
+	u32 mc	 = mesh->getMeshBufferCount();
 	for (u32 j = 0; j < mc; j++) {
 		video::SColor bc(m_base_color);
 		if ((m_colors.size() > j) && (m_colors[j].override_base))
@@ -474,7 +474,7 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 	if (m_enable_shaders) {
 		for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
-			material.EmissiveColor = color;
+			material.EmissiveColor	   = color;
 		}
 	}
 
@@ -506,12 +506,12 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 
 void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 {
-	ITextureSource *tsrc = client->getTextureSource();
-	IItemDefManager *idef = client->getItemDefManager();
+	ITextureSource *tsrc	   = client->getTextureSource();
+	IItemDefManager *idef	   = client->getItemDefManager();
 	const NodeDefManager *ndef = client->getNodeDefManager();
-	const ItemDefinition &def = item.getDefinition(idef);
-	const ContentFeatures &f = ndef->get(def.name);
-	content_t id = ndef->getId(def.name);
+	const ItemDefinition &def  = item.getDefinition(idef);
+	const ContentFeatures &f   = ndef->get(def.name);
+	content_t id			   = ndef->getId(def.name);
 
 	FATAL_ERROR_IF(
 			!g_extrusion_mesh_cache, "Extrusion mesh cache is not yet initialized");
@@ -561,7 +561,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			case NDT_LIQUID:
 			case NDT_FLOWINGLIQUID: {
 				scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
-				mesh = cloneMesh(cube);
+				mesh			   = cloneMesh(cube);
 				cube->drop();
 				scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 				// add overlays
@@ -578,9 +578,9 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 
 		u32 mc = mesh->getMeshBufferCount();
 		for (u32 i = 0; i < mc; ++i) {
-			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+			scene::IMeshBuffer *buf	   = mesh->getMeshBuffer(i);
 			video::SMaterial &material = buf->getMaterial();
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			material.MaterialType	   = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			material.MaterialTypeParam = 0.5f;
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
@@ -608,8 +608,8 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename
 
 	// get mesh
 	core::dimension2d<u32> dim = texture->getSize();
-	scene::IMesh *original = g_extrusion_mesh_cache->create(dim);
-	scene::SMesh *mesh = cloneMesh(original);
+	scene::IMesh *original	   = g_extrusion_mesh_cache->create(dim);
+	scene::SMesh *mesh		   = cloneMesh(original);
 	original->drop();
 
 	//set texture
@@ -622,14 +622,14 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename
 	}
 	// Customize materials
 	for (u32 layer = 0; layer < mesh->getMeshBufferCount(); layer++) {
-		video::SMaterial &material = mesh->getMeshBuffer(layer)->getMaterial();
+		video::SMaterial &material			  = mesh->getMeshBuffer(layer)->getMaterial();
 		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		material.setFlag(video::EMF_BILINEAR_FILTER, false);
 		material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 		material.setFlag(video::EMF_LIGHTING, false);
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		material.MaterialType	   = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		material.MaterialTypeParam = 0.5f;
 	}
 	scaleMesh(mesh, v3f(2.0, 2.0, 2.0));
@@ -648,7 +648,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_
 		colors->push_back(ItemPartColor());
 
 	for (u32 i = 0; i < mc; ++i) {
-		const TileSpec *tile = &(f.tiles[i]);
+		const TileSpec *tile	= &(f.tiles[i]);
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 		for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 			const TileLayer *layer = &tile->layers[layernum];
@@ -656,7 +656,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_
 				continue;
 			if (layernum != 0) {
 				scene::IMeshBuffer *copy = cloneMeshBuffer(buf);
-				copy->getMaterial() = buf->getMaterial();
+				copy->getMaterial()		 = buf->getMaterial();
 				mesh->addMeshBuffer(copy);
 				copy->drop();
 				buf = copy;

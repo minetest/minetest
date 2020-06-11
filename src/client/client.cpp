@@ -90,16 +90,17 @@ Client::Client(const char *playername, const std::string &password,
 		const std::string &address_name, MapDrawControl &control,
 		IWritableTextureSource *tsrc, IWritableShaderSource *shsrc,
 		IWritableItemDefManager *itemdef, NodeDefManager *nodedef, ISoundManager *sound,
-		MtEventManager *event, bool ipv6, GameUI *game_ui)
-	: m_tsrc(tsrc), m_shsrc(shsrc), m_itemdef(itemdef), m_nodedef(nodedef),
-	  m_sound(sound), m_event(event), m_mesh_update_thread(this),
-	  m_env(new ClientMap(this, control, 666), tsrc, this), m_particle_manager(&m_env),
-	  m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
-	  m_address_name(address_name), m_server_ser_ver(SER_FMT_VER_INVALID),
-	  m_last_chat_message_sent(time(NULL)), m_password(password),
-	  m_chosen_auth_mech(AUTH_MECHANISM_NONE),
-	  m_media_downloader(new ClientMediaDownloader()), m_state(LC_Created),
-	  m_game_ui(game_ui), m_modchannel_mgr(new ModChannelMgr())
+		MtEventManager *event, bool ipv6, GameUI *game_ui) :
+	m_tsrc(tsrc),
+	m_shsrc(shsrc), m_itemdef(itemdef), m_nodedef(nodedef), m_sound(sound),
+	m_event(event), m_mesh_update_thread(this),
+	m_env(new ClientMap(this, control, 666), tsrc, this), m_particle_manager(&m_env),
+	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
+	m_address_name(address_name), m_server_ser_ver(SER_FMT_VER_INVALID),
+	m_last_chat_message_sent(time(NULL)), m_password(password),
+	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
+	m_media_downloader(new ClientMediaDownloader()), m_state(LC_Created),
+	m_game_ui(game_ui), m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -202,7 +203,7 @@ bool Client::checkBuiltinIntegrity()
 void Client::scanModSubfolder(
 		const std::string &mod_name, const std::string &mod_path, std::string mod_subpath)
 {
-	std::string full_path = mod_path + DIR_DELIM + mod_subpath;
+	std::string full_path			 = mod_path + DIR_DELIM + mod_subpath;
 	std::vector<fs::DirListNode> mod = fs::GetDirListing(full_path);
 	for (const fs::DirListNode &j : mod) {
 		if (j.dir) {
@@ -212,7 +213,7 @@ void Client::scanModSubfolder(
 		std::replace(mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
 
 		std::string real_path = full_path + j.name;
-		std::string vfs_path = mod_name + ":" + mod_subpath + j.name;
+		std::string vfs_path  = mod_name + ":" + mod_subpath + j.name;
 		infostream << "Client::scanModSubfolder(): Loading \"" << real_path << "\" as \""
 				   << vfs_path << "\"." << std::endl;
 
@@ -342,8 +343,8 @@ void Client::step(float dtime)
 		float &counter = m_packetcounter_timer;
 		counter -= dtime;
 		if (counter <= 0.0f) {
-			counter = 30.0f;
-			u32 sum = m_packetcounter.sum();
+			counter	  = 30.0f;
+			u32 sum	  = m_packetcounter.sum();
 			float avg = sum / counter;
 
 			infostream << "Client packetcounter (" << counter << "s): "
@@ -457,8 +458,8 @@ void Client::step(float dtime)
 				sendDamage(damage);
 
 			// Add to ClientEvent queue
-			ClientEvent *event = new ClientEvent();
-			event->type = CE_PLAYER_DAMAGE;
+			ClientEvent *event			= new ClientEvent();
+			event->type					= CE_PLAYER_DAMAGE;
 			event->player_damage.amount = damage;
 			m_client_event_queue.push(event);
 		}
@@ -498,10 +499,10 @@ void Client::step(float dtime)
 			num_processed_meshes++;
 
 			MinimapMapblock *minimap_mapblock = NULL;
-			bool do_mapper_update = true;
+			bool do_mapper_update			  = true;
 
 			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
-			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
+			MapBlock *block	   = m_env.getMap().getBlockNoCreateNoEx(r.p);
 			if (block) {
 				// Delete the old mesh
 				delete block->mesh;
@@ -565,7 +566,7 @@ void Client::step(float dtime)
 		and knows something is wrong).
 	*/
 	if (m_inventory_from_server) {
-		float interval = 10.0f;
+		float interval	   = 10.0f;
 		float count_before = std::floor(m_inventory_from_server_age / interval);
 
 		m_inventory_from_server_age += dtime;
@@ -575,7 +576,7 @@ void Client::step(float dtime)
 		if (count_after != count_before) {
 			// Do this every <interval> seconds after TOCLIENT_INVENTORY
 			// Reset the locally changed inventory to the authoritative inventory
-			player->inventory = *m_inventory_from_server;
+			player->inventory	  = *m_inventory_from_server;
 			m_update_wielded_item = true;
 		}
 	}
@@ -585,8 +586,8 @@ void Client::step(float dtime)
 	*/
 	{
 		for (auto &m_sounds_to_object : m_sounds_to_objects) {
-			int client_id = m_sounds_to_object.first;
-			u16 object_id = m_sounds_to_object.second;
+			int client_id			= m_sounds_to_object.first;
+			u16 object_id			= m_sounds_to_object.second;
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (!cao)
 				continue;
@@ -624,7 +625,7 @@ void Client::step(float dtime)
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-		int n = 0;
+		int n					 = 0;
 		for (std::unordered_map<std::string, ModMetadata *>::const_iterator it =
 						m_mod_storages.begin();
 				it != m_mod_storages.end(); ++it) {
@@ -653,12 +654,12 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 
 	const char *image_ext[] = { ".png", ".jpg", ".bmp", ".tga", ".pcx", ".ppm", ".psd",
 		".wal", ".rgb", NULL };
-	name = removeStringEnd(filename, image_ext);
+	name					= removeStringEnd(filename, image_ext);
 	if (!name.empty()) {
 		TRACESTREAM(<< "Client: Attempting to load image "
 					<< "file \"" << filename << "\"" << std::endl);
 
-		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
+		io::IFileSystem *irrfs	  = RenderingEngine::get_filesystem();
 		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
 
 		// Create an irrlicht memory file
@@ -684,7 +685,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 
 	const char *sound_ext[] = { ".0.ogg", ".1.ogg", ".2.ogg", ".3.ogg", ".4.ogg",
 		".5.ogg", ".6.ogg", ".7.ogg", ".8.ogg", ".9.ogg", ".ogg", NULL };
-	name = removeStringEnd(filename, sound_ext);
+	name					= removeStringEnd(filename, sound_ext);
 	if (!name.empty()) {
 		TRACESTREAM(<< "Client: Attempting to load sound "
 					<< "file \"" << filename << "\"" << std::endl);
@@ -705,7 +706,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	}
 
 	const char *translate_ext[] = { ".tr", NULL };
-	name = removeStringEnd(filename, translate_ext);
+	name						= removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
 		TRACESTREAM(<< "Client: Loading translation: "
 					<< "\"" << filename << "\"" << std::endl);
@@ -730,7 +731,7 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 			   << "(timeout=" << timeout << ")" << std::endl;
 
 	if (timeout) {
-		m_access_denied = true;
+		m_access_denied		   = true;
 		m_access_denied_reason = gettext("Connection timed out.");
 	}
 }
@@ -796,7 +797,7 @@ void Client::initLocalMapSaving(
 void Client::ReceiveAll()
 {
 	NetworkPacket pkt;
-	u64 start_ms = porting::getTimeMs();
+	u64 start_ms	 = porting::getTimeMs();
 	const u64 budget = 100;
 	for (;;) {
 		// Limit time even if there would be huge amounts of data to
@@ -832,11 +833,11 @@ inline void Client::handleCommand(NetworkPacket *pkt)
 */
 void Client::ProcessData(NetworkPacket *pkt)
 {
-	ToClientCommand command = (ToClientCommand)pkt->getCommand();
-	u32 sender_peer_id = pkt->getPeerId();
+	ToClientCommand command = (ToClientCommand) pkt->getCommand();
+	u32 sender_peer_id		= pkt->getPeerId();
 
 	//infostream<<"Client: received command="<<command<<std::endl;
-	m_packetcounter.add((u16)command);
+	m_packetcounter.add((u16) command);
 	g_profiler->graphAdd("client_received_packets", 1);
 
 	/*
@@ -890,10 +891,10 @@ void Client::Send(NetworkPacket *pkt)
 // Will fill up 12 + 12 + 4 + 4 + 4 bytes
 void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
 {
-	v3f pf = myplayer->getPosition() * 100;
-	v3f sf = myplayer->getSpeed() * 100;
-	s32 pitch = myplayer->getPitch() * 100;
-	s32 yaw = myplayer->getYaw() * 100;
+	v3f pf		   = myplayer->getPosition() * 100;
+	v3f sf		   = myplayer->getSpeed() * 100;
+	s32 pitch	   = myplayer->getPitch() * 100;
+	s32 yaw		   = myplayer->getYaw() * 100;
 	u32 keyPressed = myplayer->keyPressed;
 	// scaled by 80, so that pi can fit into a u8
 	u8 fov = clientMap->getCameraFov() * 80;
@@ -941,7 +942,7 @@ void Client::interact(InteractAction action, const PointedThing &pointed)
 
 	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);
 
-	pkt << (u8)action;
+	pkt << (u8) action;
 	pkt << myplayer->getWieldIndex();
 
 	std::ostringstream tmp_os(std::ios::binary);
@@ -964,7 +965,7 @@ void Client::deleteAuthData()
 		break;
 	case AUTH_MECHANISM_SRP:
 	case AUTH_MECHANISM_LEGACY_PASSWORD:
-		srp_user_delete((SRPUser *)m_auth_data);
+		srp_user_delete((SRPUser *) m_auth_data);
 		m_auth_data = NULL;
 		break;
 	case AUTH_MECHANISM_NONE:
@@ -995,8 +996,8 @@ void Client::sendInit(const std::string &playerName)
 	// we don't support network compression yet
 	u16 supp_comp_modes = NETPROTO_COMPRESSION_NONE;
 
-	pkt << (u8)SER_FMT_VER_HIGHEST_READ << (u16)supp_comp_modes;
-	pkt << (u16)CLIENT_PROTOCOL_VERSION_MIN << (u16)CLIENT_PROTOCOL_VERSION_MAX;
+	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) supp_comp_modes;
+	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 	pkt << playerName;
 
 	Send(&pkt);
@@ -1004,7 +1005,7 @@ void Client::sendInit(const std::string &playerName)
 
 void Client::promptConfirmRegistration(AuthMechanism chosen_auth_mechanism)
 {
-	m_chosen_auth_mech = chosen_auth_mechanism;
+	m_chosen_auth_mech					 = chosen_auth_mechanism;
 	m_is_registration_confirmation_state = true;
 }
 
@@ -1037,17 +1038,17 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 
 		if (chosen_auth_mechanism == AUTH_MECHANISM_LEGACY_PASSWORD) {
 			m_password = translate_password(getPlayerName(), m_password);
-			based_on = 0;
+			based_on   = 0;
 		}
 
 		std::string playername_u = lowercase(getPlayerName());
-		m_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048, getPlayerName().c_str(),
-				playername_u.c_str(), (const unsigned char *)m_password.c_str(),
-				m_password.length(), NULL, NULL);
-		char *bytes_A = 0;
-		size_t len_A = 0;
-		SRP_Result res = srp_user_start_authentication((struct SRPUser *)m_auth_data,
-				NULL, NULL, 0, (unsigned char **)&bytes_A, &len_A);
+		m_auth_data	   = srp_user_new(SRP_SHA256, SRP_NG_2048, getPlayerName().c_str(),
+				   playername_u.c_str(), (const unsigned char *) m_password.c_str(),
+				   m_password.length(), NULL, NULL);
+		char *bytes_A  = 0;
+		size_t len_A   = 0;
+		SRP_Result res = srp_user_start_authentication((struct SRPUser *) m_auth_data,
+				NULL, NULL, 0, (unsigned char **) &bytes_A, &len_A);
 		FATAL_ERROR_IF(res != SRP_OK, "Creating local SRP user failed.");
 
 		NetworkPacket resp_pkt(TOSERVER_SRP_BYTES_A, 0);
@@ -1064,7 +1065,7 @@ void Client::sendDeletedBlocks(std::vector<v3s16> &blocks)
 {
 	NetworkPacket pkt(TOSERVER_DELETEDBLOCKS, 1 + sizeof(v3s16) * blocks.size());
 
-	pkt << (u8)blocks.size();
+	pkt << (u8) blocks.size();
 
 	for (const v3s16 &block : blocks) {
 		pkt << block;
@@ -1076,7 +1077,7 @@ void Client::sendDeletedBlocks(std::vector<v3s16> &blocks)
 void Client::sendGotBlocks(const std::vector<v3s16> &blocks)
 {
 	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6 * blocks.size());
-	pkt << (u8)blocks.size();
+	pkt << (u8) blocks.size();
 	for (const v3s16 &block : blocks)
 		pkt << block;
 
@@ -1111,7 +1112,7 @@ void Client::sendNodemetaFields(
 
 	StringMap::const_iterator it;
 	for (it = fields.begin(); it != fields.end(); ++it) {
-		const std::string &name = it->first;
+		const std::string &name	 = it->first;
 		const std::string &value = it->second;
 		pkt << name;
 		pkt.putLongString(value);
@@ -1130,7 +1131,7 @@ void Client::sendInventoryFields(const std::string &formname, const StringMap &f
 
 	StringMap::const_iterator it;
 	for (it = fields.begin(); it != fields.end(); ++it) {
-		const std::string &name = it->first;
+		const std::string &name	 = it->first;
 		const std::string &value = it->second;
 		pkt << name;
 		pkt.putLongString(value);
@@ -1156,7 +1157,7 @@ void Client::sendInventoryAction(InventoryAction *a)
 
 bool Client::canSendChatMessage() const
 {
-	u32 now = time(NULL);
+	u32 now			  = time(NULL);
 	float time_passed = now - m_last_chat_message_sent;
 
 	float virt_chat_message_allowance = m_chat_message_allowance +
@@ -1172,8 +1173,8 @@ void Client::sendChatMessage(const std::wstring &message)
 {
 	const s16 max_queue_size = g_settings->getS16("max_out_chat_queue_size");
 	if (canSendChatMessage()) {
-		u32 now = time(NULL);
-		float time_passed = now - m_last_chat_message_sent;
+		u32 now					 = time(NULL);
+		float time_passed		 = now - m_last_chat_message_sent;
 		m_last_chat_message_sent = time(NULL);
 
 		m_chat_message_allowance +=
@@ -1188,7 +1189,7 @@ void Client::sendChatMessage(const std::wstring &message)
 		pkt << message;
 
 		Send(&pkt);
-	} else if (m_out_chat_queue.size() < (u16)max_queue_size || max_queue_size == -1) {
+	} else if (m_out_chat_queue.size() < (u16) max_queue_size || max_queue_size == -1) {
 		m_out_chat_queue.push(message);
 	} else {
 		infostream << "Could not queue chat message because maximum out chat queue size ("
@@ -1209,7 +1210,7 @@ void Client::sendChangePassword(
 		return;
 
 	// get into sudo mode and then send new password to server
-	m_password = oldpassword;
+	m_password	   = oldpassword;
 	m_new_password = newpassword;
 	startAuth(choseAuthMech(m_sudo_auth_methods));
 }
@@ -1233,11 +1234,11 @@ void Client::sendReady()
 	NetworkPacket pkt(TOSERVER_CLIENT_READY,
 			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(g_version_hash) + 2);
 
-	pkt << (u8)VERSION_MAJOR << (u8)VERSION_MINOR << (u8)VERSION_PATCH << (u8)0
-		<< (u16)strlen(g_version_hash);
+	pkt << (u8) VERSION_MAJOR << (u8) VERSION_MINOR << (u8) VERSION_PATCH << (u8) 0
+		<< (u16) strlen(g_version_hash);
 
-	pkt.putRawString(g_version_hash, (u16)strlen(g_version_hash));
-	pkt << (u16)FORMSPEC_API_VERSION;
+	pkt.putRawString(g_version_hash, (u16) strlen(g_version_hash));
+	pkt << (u16) FORMSPEC_API_VERSION;
 	Send(&pkt);
 }
 
@@ -1247,8 +1248,8 @@ void Client::sendPlayerPos()
 	if (!player)
 		return;
 
-	ClientMap &map = m_env.getClientMap();
-	u8 camera_fov = map.getCameraFov();
+	ClientMap &map	= m_env.getClientMap();
+	u8 camera_fov	= map.getCameraFov();
 	u8 wanted_range = map.getControl().wanted_range;
 
 	// Save bandwidth by only updating position when
@@ -1267,12 +1268,12 @@ void Client::sendPlayerPos()
 			player->last_wanted_range == wanted_range)
 		return;
 
-	player->last_position = player->getPosition();
-	player->last_speed = player->getSpeed();
-	player->last_pitch = player->getPitch();
-	player->last_yaw = player->getYaw();
-	player->last_keyPressed = player->keyPressed;
-	player->last_camera_fov = camera_fov;
+	player->last_position	  = player->getPosition();
+	player->last_speed		  = player->getSpeed();
+	player->last_pitch		  = player->getPitch();
+	player->last_yaw		  = player->getYaw();
+	player->last_keyPressed	  = player->keyPressed;
+	player->last_camera_fov	  = camera_fov;
 	player->last_wanted_range = wanted_range;
 
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
@@ -1307,7 +1308,7 @@ MapNode Client::CSMGetNode(v3s16 p, bool *is_valid_position)
 {
 	if (checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES)) {
 		v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
-		if ((u32)ppos.getDistanceFrom(p) > m_csm_restriction_noderange) {
+		if ((u32) ppos.getDistanceFrom(p) > m_csm_restriction_noderange) {
 			*is_valid_position = false;
 			return {};
 		}
@@ -1320,7 +1321,7 @@ int Client::CSMClampRadius(v3s16 pos, int radius)
 	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
 		return radius;
 	// This is approximate and will cause some allowed nodes to be excluded
-	v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	v3s16 ppos	 = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
 	u32 distance = ppos.getDistanceFrom(pos);
 	if (distance >= m_csm_restriction_noderange)
 		return 0;
@@ -1331,11 +1332,11 @@ v3s16 Client::CSMClampPos(v3s16 pos)
 {
 	if (!checkCSMRestrictionFlag(CSMRestrictionFlags::CSM_RF_LOOKUP_NODES))
 		return pos;
-	v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+	v3s16 ppos		= floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
 	const int range = m_csm_restriction_noderange;
-	return v3s16(core::clamp<int>(pos.X, (int)ppos.X - range, (int)ppos.X + range),
-			core::clamp<int>(pos.Y, (int)ppos.Y - range, (int)ppos.Y + range),
-			core::clamp<int>(pos.Z, (int)ppos.Z - range, (int)ppos.Z + range));
+	return v3s16(core::clamp<int>(pos.X, (int) ppos.X - range, (int) ppos.X + range),
+			core::clamp<int>(pos.Y, (int) ppos.Y - range, (int) ppos.Y + range),
+			core::clamp<int>(pos.Z, (int) ppos.Z - range, (int) ppos.Z + range));
 }
 
 void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
@@ -1463,7 +1464,7 @@ void Client::setCrack(int level, v3s16 pos)
 	v3s16 old_crack_pos = m_crack_pos;
 
 	m_crack_level = level;
-	m_crack_pos = pos;
+	m_crack_pos	  = pos;
 
 	if (old_crack_level >= 0 && (level < 0 || pos != old_crack_pos)) {
 		// remove old crack
@@ -1564,7 +1565,7 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 				   << "(" << p.X << "," << p.Y << "," << p.Z << ")" << std::endl;
 	}
 
-	v3s16 blockpos = getNodeBlockPos(nodepos);
+	v3s16 blockpos			= getNodeBlockPos(nodepos);
 	v3s16 blockpos_relative = blockpos * MAP_BLOCKSIZE;
 
 	try {
@@ -1637,15 +1638,15 @@ typedef struct TextureUpdateArgs
 
 void texture_update_progress(void *args, u32 progress, u32 max_progress)
 {
-	TextureUpdateArgs *targs = (TextureUpdateArgs *)args;
-	u16 cur_percent = ceil(progress / (double)max_progress * 100.);
+	TextureUpdateArgs *targs = (TextureUpdateArgs *) args;
+	u16 cur_percent			 = ceil(progress / (double) max_progress * 100.);
 
 	// update the loading menu -- if neccessary
 	bool do_draw = false;
-	u64 time_ms = targs->last_time_ms;
+	u64 time_ms	 = targs->last_time_ms;
 	if (cur_percent != targs->last_percent) {
 		targs->last_percent = cur_percent;
-		time_ms = porting::getTimeMs();
+		time_ms				= porting::getTimeMs();
 		// only draw when the user will notice something:
 		do_draw = (time_ms - targs->last_time_ms > 100);
 	}
@@ -1655,7 +1656,7 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 		std::basic_stringstream<wchar_t> strm;
 		strm << targs->text_base << " " << targs->last_percent << "%...";
 		RenderingEngine::draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
-				72 + (u16)((18. / 100.) * (double)targs->last_percent), true);
+				72 + (u16)((18. / 100.) * (double) targs->last_percent), true);
 	}
 }
 
@@ -1703,11 +1704,11 @@ void Client::afterContentReceived()
 	// Update node textures and assign shaders to each tile
 	infostream << "- Updating node textures" << std::endl;
 	TextureUpdateArgs tu_args;
-	tu_args.guienv = guienv;
+	tu_args.guienv		 = guienv;
 	tu_args.last_time_ms = porting::getTimeMs();
 	tu_args.last_percent = 0;
-	tu_args.text_base = wgettext("Initializing nodes");
-	tu_args.tsrc = m_tsrc;
+	tu_args.text_base	 = wgettext("Initializing nodes");
+	tu_args.tsrc		 = m_tsrc;
 	m_nodedef->updateTextures(this, texture_update_progress, &tu_args);
 	delete[] tu_args.text_base;
 
@@ -1740,13 +1741,13 @@ float Client::getCurRate()
 
 void Client::makeScreenshot()
 {
-	irr::video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	irr::video::IVideoDriver *driver	= RenderingEngine::get_video_driver();
 	irr::video::IImage *const raw_image = driver->createScreenShot();
 
 	if (!raw_image)
 		return;
 
-	time_t t = time(NULL);
+	time_t t	  = time(NULL);
 	struct tm *tm = localtime(&t);
 
 	char timetstamp_c[64];
@@ -1769,8 +1770,8 @@ void Client::makeScreenshot()
 	// Otherwise, saving the screenshot would fail.
 	fs::CreateDir(screenshot_dir);
 
-	u32 quality = (u32)g_settings->getS32("screenshot_quality");
-	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
+	u32 quality = (u32) g_settings->getS32("screenshot_quality");
+	quality		= MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
 
 	// Try to find a unique filename
 	unsigned serial = 0;

@@ -66,7 +66,7 @@ enum ModChannelSignal : u8
 class ModChannelMgr
 {
 public:
-	ModChannelMgr() = default;
+	ModChannelMgr()	 = default;
 	~ModChannelMgr() = default;
 
 	void registerChannel(const std::string &channel);

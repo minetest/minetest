@@ -22,9 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 
 #if USE_SPATIAL
-#include <spatialindex/SpatialIndex.h>
-#include <spatialindex/RTree.h>
-#include <spatialindex/Point.h>
+	#include <spatialindex/SpatialIndex.h>
+	#include <spatialindex/RTree.h>
+	#include <spatialindex/Point.h>
 #endif
 
 #define AST_SMALLER_EQ_AS(p, q) (((p).X <= (q).X) && ((p).Y <= (q).Y) && ((p).Z <= (q).Z))
@@ -97,10 +97,10 @@ void AreaStore::deserialize(std::istream &is)
 	std::vector<Area> areas;
 	for (u32 i = 0; i < num_areas; ++i) {
 		Area a(U32_MAX);
-		a.minedge = readV3S16(is);
-		a.maxedge = readV3S16(is);
+		a.minedge	 = readV3S16(is);
+		a.maxedge	 = readV3S16(is);
 		u16 data_len = readU16(is);
-		char *data = new char[data_len];
+		char *data	 = new char[data_len];
 		is.read(data, data_len);
 		a.data = std::string(data, data_len);
 		areas.emplace_back(a);
@@ -138,7 +138,7 @@ u32 AreaStore::getNextId() const
 
 void AreaStore::setCacheParams(bool enabled, u8 block_radius, size_t limit)
 {
-	m_cache_enabled = enabled;
+	m_cache_enabled		= enabled;
 	m_cacheblock_radius = MYMAX(block_radius, 16);
 	m_res_cache.setLimit(MYMAX(limit, 20));
 	invalidateCache();
@@ -146,8 +146,8 @@ void AreaStore::setCacheParams(bool enabled, u8 block_radius, size_t limit)
 
 void AreaStore::cacheMiss(void *data, const v3s16 &mpos, std::vector<Area *> *dest)
 {
-	AreaStore *as = (AreaStore *)data;
-	u8 r = as->m_cacheblock_radius;
+	AreaStore *as = (AreaStore *) data;
+	u8 r		  = as->m_cacheblock_radius;
 
 	// get the points at the edges of the mapblock
 	v3s16 minedge(mpos.X * r, mpos.Y * r, mpos.Z * r);
@@ -165,7 +165,7 @@ void AreaStore::cacheMiss(void *data, const v3s16 &mpos, std::vector<Area *> *de
 void AreaStore::getAreasForPos(std::vector<Area *> *result, v3s16 pos)
 {
 	if (m_cache_enabled) {
-		v3s16 mblock = getContainerPos(pos, m_cacheblock_radius);
+		v3s16 mblock						= getContainerPos(pos, m_cacheblock_radius);
 		const std::vector<Area *> *pre_list = m_res_cache.lookupCache(mblock);
 
 		size_t s_p_l = pre_list->size();
@@ -242,14 +242,15 @@ void VectorAreaStore::getAreasInArea(
 static inline SpatialIndex::Region get_spatial_region(
 		const v3s16 minedge, const v3s16 maxedge)
 {
-	const double p_low[] = { (double)minedge.X, (double)minedge.Y, (double)minedge.Z };
-	const double p_high[] = { (double)maxedge.X, (double)maxedge.Y, (double)maxedge.Z };
+	const double p_low[] = { (double) minedge.X, (double) minedge.Y, (double) minedge.Z };
+	const double p_high[] = { (double) maxedge.X, (double) maxedge.Y,
+		(double) maxedge.Z };
 	return SpatialIndex::Region(p_low, p_high, 3);
 }
 
 static inline SpatialIndex::Point get_spatial_point(const v3s16 pos)
 {
-	const double p[] = { (double)pos.X, (double)pos.Y, (double)pos.Z };
+	const double p[] = { (double) pos.X, (double) pos.Y, (double) pos.Z };
 	return SpatialIndex::Point(p, 3);
 }
 
@@ -270,7 +271,7 @@ bool SpatialAreaStore::removeArea(u32 id)
 {
 	std::map<u32, Area>::iterator itr = areas_map.find(id);
 	if (itr != areas_map.end()) {
-		Area *a = &itr->second;
+		Area *a		= &itr->second;
 		bool result = m_tree->deleteData(get_spatial_region(a->minedge, a->maxedge), id);
 		areas_map.erase(itr);
 		invalidateCache();

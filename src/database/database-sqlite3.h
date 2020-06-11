@@ -62,7 +62,7 @@ protected:
 
 	inline void int64_to_sqlite(sqlite3_stmt *s, int iCol, s64 val) const
 	{
-		sqlite3_vrfy(sqlite3_bind_int64(s, iCol, (sqlite3_int64)val));
+		sqlite3_vrfy(sqlite3_bind_int64(s, iCol, (sqlite3_int64) val));
 	}
 
 	inline void double_to_sqlite(sqlite3_stmt *s, int iCol, double val) const
@@ -83,22 +83,22 @@ protected:
 
 	inline u32 sqlite_to_uint(sqlite3_stmt *s, int iCol)
 	{
-		return (u32)sqlite3_column_int(s, iCol);
+		return (u32) sqlite3_column_int(s, iCol);
 	}
 
 	inline s64 sqlite_to_int64(sqlite3_stmt *s, int iCol)
 	{
-		return (s64)sqlite3_column_int64(s, iCol);
+		return (s64) sqlite3_column_int64(s, iCol);
 	}
 
 	inline u64 sqlite_to_uint64(sqlite3_stmt *s, int iCol)
 	{
-		return (u64)sqlite3_column_int64(s, iCol);
+		return (u64) sqlite3_column_int64(s, iCol);
 	}
 
 	inline float sqlite_to_float(sqlite3_stmt *s, int iCol)
 	{
-		return (float)sqlite3_column_double(s, iCol);
+		return (float) sqlite3_column_double(s, iCol);
 	}
 
 	inline const v3f sqlite_to_v3f(sqlite3_stmt *s, int iCol)
@@ -132,10 +132,10 @@ private:
 	bool m_initialized = false;
 
 	std::string m_savedir = "";
-	std::string m_dbname = "";
+	std::string m_dbname  = "";
 
 	sqlite3_stmt *m_stmt_begin = nullptr;
-	sqlite3_stmt *m_stmt_end = nullptr;
+	sqlite3_stmt *m_stmt_end   = nullptr;
 
 	s64 m_busy_handler_data[2];
 
@@ -166,9 +166,9 @@ private:
 	void bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index = 1);
 
 	// Map
-	sqlite3_stmt *m_stmt_read = nullptr;
-	sqlite3_stmt *m_stmt_write = nullptr;
-	sqlite3_stmt *m_stmt_list = nullptr;
+	sqlite3_stmt *m_stmt_read	= nullptr;
+	sqlite3_stmt *m_stmt_write	= nullptr;
+	sqlite3_stmt *m_stmt_list	= nullptr;
 	sqlite3_stmt *m_stmt_delete = nullptr;
 };
 
@@ -193,20 +193,20 @@ private:
 	bool playerDataExists(const std::string &name);
 
 	// Players
-	sqlite3_stmt *m_stmt_player_load = nullptr;
-	sqlite3_stmt *m_stmt_player_add = nullptr;
-	sqlite3_stmt *m_stmt_player_update = nullptr;
-	sqlite3_stmt *m_stmt_player_remove = nullptr;
-	sqlite3_stmt *m_stmt_player_list = nullptr;
-	sqlite3_stmt *m_stmt_player_load_inventory = nullptr;
-	sqlite3_stmt *m_stmt_player_load_inventory_items = nullptr;
-	sqlite3_stmt *m_stmt_player_add_inventory = nullptr;
-	sqlite3_stmt *m_stmt_player_add_inventory_items = nullptr;
-	sqlite3_stmt *m_stmt_player_remove_inventory = nullptr;
+	sqlite3_stmt *m_stmt_player_load				   = nullptr;
+	sqlite3_stmt *m_stmt_player_add					   = nullptr;
+	sqlite3_stmt *m_stmt_player_update				   = nullptr;
+	sqlite3_stmt *m_stmt_player_remove				   = nullptr;
+	sqlite3_stmt *m_stmt_player_list				   = nullptr;
+	sqlite3_stmt *m_stmt_player_load_inventory		   = nullptr;
+	sqlite3_stmt *m_stmt_player_load_inventory_items   = nullptr;
+	sqlite3_stmt *m_stmt_player_add_inventory		   = nullptr;
+	sqlite3_stmt *m_stmt_player_add_inventory_items	   = nullptr;
+	sqlite3_stmt *m_stmt_player_remove_inventory	   = nullptr;
 	sqlite3_stmt *m_stmt_player_remove_inventory_items = nullptr;
-	sqlite3_stmt *m_stmt_player_metadata_load = nullptr;
-	sqlite3_stmt *m_stmt_player_metadata_remove = nullptr;
-	sqlite3_stmt *m_stmt_player_metadata_add = nullptr;
+	sqlite3_stmt *m_stmt_player_metadata_load		   = nullptr;
+	sqlite3_stmt *m_stmt_player_metadata_remove		   = nullptr;
+	sqlite3_stmt *m_stmt_player_metadata_add		   = nullptr;
 };
 
 class AuthDatabaseSQLite3 : private Database_SQLite3, public AuthDatabase
@@ -231,13 +231,13 @@ protected:
 private:
 	virtual void writePrivileges(const AuthEntry &authEntry);
 
-	sqlite3_stmt *m_stmt_read = nullptr;
-	sqlite3_stmt *m_stmt_write = nullptr;
-	sqlite3_stmt *m_stmt_create = nullptr;
-	sqlite3_stmt *m_stmt_delete = nullptr;
-	sqlite3_stmt *m_stmt_list_names = nullptr;
-	sqlite3_stmt *m_stmt_read_privs = nullptr;
-	sqlite3_stmt *m_stmt_write_privs = nullptr;
-	sqlite3_stmt *m_stmt_delete_privs = nullptr;
+	sqlite3_stmt *m_stmt_read			   = nullptr;
+	sqlite3_stmt *m_stmt_write			   = nullptr;
+	sqlite3_stmt *m_stmt_create			   = nullptr;
+	sqlite3_stmt *m_stmt_delete			   = nullptr;
+	sqlite3_stmt *m_stmt_list_names		   = nullptr;
+	sqlite3_stmt *m_stmt_read_privs		   = nullptr;
+	sqlite3_stmt *m_stmt_write_privs	   = nullptr;
+	sqlite3_stmt *m_stmt_delete_privs	   = nullptr;
 	sqlite3_stmt *m_stmt_last_insert_rowid = nullptr;
 };

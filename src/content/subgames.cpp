@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 
 #ifndef SERVER
-#include "client/tile.h" // getImagePath
+	#include "client/tile.h" // getImagePath
 #endif
 
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
@@ -41,10 +41,9 @@ struct GameFindPath
 {
 	std::string path;
 	bool user_specific;
-	GameFindPath(const std::string &path, bool user_specific)
-		: path(path), user_specific(user_specific)
-	{
-	}
+	GameFindPath(const std::string &path, bool user_specific) :
+		path(path), user_specific(user_specific)
+	{}
 };
 
 std::string getSubgamePathEnv()
@@ -58,7 +57,7 @@ SubgameSpec findSubgame(const std::string &id)
 	if (id.empty())
 		return SubgameSpec();
 	std::string share = porting::path_share;
-	std::string user = porting::path_user;
+	std::string user  = porting::path_user;
 
 	// Get games install locations
 	Strfnd search_paths(getSubgamePathEnv());
@@ -73,8 +72,8 @@ SubgameSpec findSubgame(const std::string &id)
 		find_paths.emplace_back(path, false);
 	}
 
-	std::string game_base = DIR_DELIM;
-	game_base = game_base.append("games").append(DIR_DELIM).append(id);
+	std::string game_base	  = DIR_DELIM;
+	game_base				  = game_base.append("games").append(DIR_DELIM).append(id);
 	std::string game_suffixed = game_base + "_game";
 	find_paths.emplace_back(user + game_suffixed, true);
 	find_paths.emplace_back(user + game_base, true);
@@ -139,8 +138,8 @@ SubgameSpec findWorldSubgame(const std::string &world_path)
 	std::string world_gamepath = world_path + DIR_DELIM + "game";
 	if (fs::PathExists(world_gamepath)) {
 		SubgameSpec gamespec;
-		gamespec.id = world_gameid;
-		gamespec.path = world_gamepath;
+		gamespec.id			   = world_gameid;
+		gamespec.path		   = world_gamepath;
 		gamespec.gamemods_path = world_gamepath + DIR_DELIM + "mods";
 
 		Settings conf;
@@ -183,7 +182,7 @@ std::set<std::string> getAvailableGameIds()
 				continue;
 
 			// Add it to result
-			const char *ends[] = { "_game", NULL };
+			const char *ends[]	= { "_game", NULL };
 			std::string shorter = removeStringEnd(dln.name, ends);
 			if (!shorter.empty())
 				gameids.insert(shorter);
@@ -258,7 +257,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 			if (!dln.dir)
 				continue;
 			std::string fullpath = worldspath + DIR_DELIM + dln.name;
-			std::string name = dln.name;
+			std::string name	 = dln.name;
 			// Just allow filling in the gameid always for now
 			bool can_be_legacy = true;
 			std::string gameid = getWorldGameId(fullpath, can_be_legacy);
@@ -277,7 +276,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 		std::string fullpath = porting::path_user + DIR_DELIM + "world";
 		if (!fs::PathExists(fullpath))
 			break;
-		std::string name = "Old World";
+		std::string name   = "Old World";
 		std::string gameid = getWorldGameId(fullpath, true);
 		WorldSpec spec(fullpath, name, gameid);
 		infostream << "Old world found." << std::endl;

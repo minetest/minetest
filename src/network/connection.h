@@ -69,7 +69,7 @@ inline bool seqnum_higher(u16 totest, u16 base)
 inline bool seqnum_in_window(u16 seqnum, u16 next, u16 window_size)
 {
 	u16 window_start = next;
-	u16 window_end = (next + window_size) % (SEQNUM_MAX + 1);
+	u16 window_end	 = (next + window_size) % (SEQNUM_MAX + 1);
 
 	if (window_start < window_end) {
 		return ((seqnum >= window_start) && (seqnum < window_end));
@@ -90,8 +90,8 @@ struct BufferedPacket
 	BufferedPacket(u8 *a_data, u32 a_size) : data(a_data, a_size) {}
 	BufferedPacket(u32 a_size) : data(a_size) {}
 	Buffer<u8> data; // Data of the packet, including headers
-	float time = 0.0f; // Seconds from buffering the packet or re-sending
-	float totaltime = 0.0f; // Seconds from buffering the packet
+	float time			   = 0.0f; // Seconds from buffering the packet or re-sending
+	float totaltime		   = 0.0f; // Seconds from buffering the packet
 	u64 absolute_send_time = -1;
 	Address address; // Sender or destination
 	unsigned int resend_count = 0;
@@ -212,9 +212,9 @@ with a buffer in the receiving and transmitting end.
 
 enum PacketType : u8
 {
-	PACKET_TYPE_CONTROL = 0,
+	PACKET_TYPE_CONTROL	 = 0,
 	PACKET_TYPE_ORIGINAL = 1,
-	PACKET_TYPE_SPLIT = 2,
+	PACKET_TYPE_SPLIT	 = 2,
 	PACKET_TYPE_RELIABLE = 3,
 	PACKET_TYPE_MAX
 };
@@ -287,11 +287,10 @@ struct OutgoingPacket
 	bool ack;
 
 	OutgoingPacket(session_t peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_,
-			bool reliable_, bool ack_ = false)
-		: peer_id(peer_id_), channelnum(channelnum_), data(data_), reliable(reliable_),
-		  ack(ack_)
-	{
-	}
+			bool reliable_, bool ack_ = false) :
+		peer_id(peer_id_),
+		channelnum(channelnum_), data(data_), reliable(reliable_), ack(ack_)
+	{}
 };
 
 enum ConnectionCommandType
@@ -312,39 +311,39 @@ struct ConnectionCommand
 	enum ConnectionCommandType type = CONNCMD_NONE;
 	Address address;
 	session_t peer_id = PEER_ID_INEXISTENT;
-	u8 channelnum = 0;
+	u8 channelnum	  = 0;
 	Buffer<u8> data;
 	bool reliable = false;
-	bool raw = false;
+	bool raw	  = false;
 
-	ConnectionCommand() = default;
+	ConnectionCommand()		   = default;
 	ConnectionCommand &operator=(const ConnectionCommand &other)
 	{
-		type = other.type;
-		address = other.address;
-		peer_id = other.peer_id;
+		type	   = other.type;
+		address	   = other.address;
+		peer_id	   = other.peer_id;
 		channelnum = other.channelnum;
 		// We must copy the buffer here to prevent race condition
-		data = SharedBuffer<u8>(*other.data, other.data.getSize());
+		data	 = SharedBuffer<u8>(*other.data, other.data.getSize());
 		reliable = other.reliable;
-		raw = other.raw;
+		raw		 = other.raw;
 		return *this;
 	}
 
 	void serve(Address address_)
 	{
-		type = CONNCMD_SERVE;
+		type	= CONNCMD_SERVE;
 		address = address_;
 	}
 	void connect(Address address_)
 	{
-		type = CONNCMD_CONNECT;
+		type	= CONNCMD_CONNECT;
 		address = address_;
 	}
 	void disconnect() { type = CONNCMD_DISCONNECT; }
 	void disconnect_peer(session_t peer_id_)
 	{
-		type = CONNCMD_DISCONNECT_PEER;
+		type	= CONNCMD_DISCONNECT_PEER;
 		peer_id = peer_id_;
 	}
 
@@ -352,21 +351,21 @@ struct ConnectionCommand
 
 	void ack(session_t peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_)
 	{
-		type = CONCMD_ACK;
-		peer_id = peer_id_;
+		type	   = CONCMD_ACK;
+		peer_id	   = peer_id_;
 		channelnum = channelnum_;
-		data = data_;
-		reliable = false;
+		data	   = data_;
+		reliable   = false;
 	}
 
 	void createPeer(session_t peer_id_, const SharedBuffer<u8> &data_)
 	{
-		type = CONCMD_CREATE_PEER;
-		peer_id = peer_id_;
-		data = data_;
+		type	   = CONCMD_CREATE_PEER;
+		peer_id	   = peer_id_;
+		data	   = data_;
 		channelnum = 0;
-		reliable = true;
-		raw = true;
+		reliable   = true;
+		raw		   = true;
 	}
 };
 
@@ -408,7 +407,7 @@ public:
 
 	IncomingSplitBuffer incoming_splits;
 
-	Channel() = default;
+	Channel()  = default;
 	~Channel() = default;
 
 	void UpdatePacketLossCounter(unsigned int count);
@@ -478,27 +477,27 @@ private:
 
 	u16 next_incoming_seqnum = SEQNUM_INITIAL;
 
-	u16 next_outgoing_seqnum = SEQNUM_INITIAL;
+	u16 next_outgoing_seqnum	   = SEQNUM_INITIAL;
 	u16 next_outgoing_split_seqnum = SEQNUM_INITIAL;
 
-	unsigned int current_packet_loss = 0;
-	unsigned int current_packet_too_late = 0;
+	unsigned int current_packet_loss	   = 0;
+	unsigned int current_packet_too_late   = 0;
 	unsigned int current_packet_successful = 0;
-	float packet_loss_counter = 0.0f;
+	float packet_loss_counter			   = 0.0f;
 
 	unsigned int current_bytes_transfered = 0;
-	unsigned int current_bytes_received = 0;
-	unsigned int current_bytes_lost = 0;
-	float max_kbps = 0.0f;
-	float cur_kbps = 0.0f;
-	float avg_kbps = 0.0f;
-	float max_incoming_kbps = 0.0f;
-	float cur_incoming_kbps = 0.0f;
-	float avg_incoming_kbps = 0.0f;
-	float max_kbps_lost = 0.0f;
-	float cur_kbps_lost = 0.0f;
-	float avg_kbps_lost = 0.0f;
-	float bpm_counter = 0.0f;
+	unsigned int current_bytes_received	  = 0;
+	unsigned int current_bytes_lost		  = 0;
+	float max_kbps						  = 0.0f;
+	float cur_kbps						  = 0.0f;
+	float avg_kbps						  = 0.0f;
+	float max_incoming_kbps				  = 0.0f;
+	float cur_incoming_kbps				  = 0.0f;
+	float avg_incoming_kbps				  = 0.0f;
+	float max_kbps_lost					  = 0.0f;
+	float cur_kbps_lost					  = 0.0f;
+	float avg_kbps_lost					  = 0.0f;
+	float bpm_counter					  = 0.0f;
 
 	unsigned int rate_samples = 0;
 };
@@ -539,9 +538,9 @@ class Peer
 public:
 	friend class PeerHelper;
 
-	Peer(Address address_, u16 id_, Connection *connection)
-		: id(id_), m_connection(connection), address(address_),
-		  m_last_timeout_check(porting::getTimeMs()){};
+	Peer(Address address_, u16 id_, Connection *connection) :
+		id(id_), m_connection(connection), address(address_),
+		m_last_timeout_check(porting::getTimeMs()){};
 
 	virtual ~Peer()
 	{
@@ -633,9 +632,9 @@ private:
 		float jitter_min = FLT_MAX;
 		float jitter_max = 0.0f;
 		float jitter_avg = -1.0f;
-		float min_rtt = FLT_MAX;
-		float max_rtt = 0.0f;
-		float avg_rtt = -1.0f;
+		float min_rtt	 = FLT_MAX;
+		float max_rtt	 = 0.0f;
+		float avg_rtt	 = -1.0f;
 
 		rttstats() = default;
 	};
@@ -722,7 +721,7 @@ enum ConnectionEventType
 struct ConnectionEvent
 {
 	enum ConnectionEventType type = CONNEVENT_NONE;
-	session_t peer_id = 0;
+	session_t peer_id			  = 0;
 	Buffer<u8> data;
 	bool timeout = false;
 	Address address;
@@ -748,19 +747,19 @@ struct ConnectionEvent
 
 	void dataReceived(session_t peer_id_, const SharedBuffer<u8> &data_)
 	{
-		type = CONNEVENT_DATA_RECEIVED;
+		type	= CONNEVENT_DATA_RECEIVED;
 		peer_id = peer_id_;
-		data = data_;
+		data	= data_;
 	}
 	void peerAdded(session_t peer_id_, Address address_)
 	{
-		type = CONNEVENT_PEER_ADDED;
+		type	= CONNEVENT_PEER_ADDED;
 		peer_id = peer_id_;
 		address = address_;
 	}
 	void peerRemoved(session_t peer_id_, bool timeout_, Address address_)
 	{
-		type = CONNEVENT_PEER_REMOVED;
+		type	= CONNEVENT_PEER_REMOVED;
 		peer_id = peer_id_;
 		timeout = timeout_;
 		address = address_;

@@ -58,7 +58,7 @@ bool ScriptApiServer::getAuth(const std::string &playername, std::string *dst_pa
 	if (!getintfield(L, -1, "last_login", last_login))
 		throw LuaError("Authentication handler didn't return last_login");
 	if (dst_last_login)
-		*dst_last_login = (s64)last_login;
+		*dst_last_login = (s64) last_login;
 
 	return true;
 }
@@ -92,7 +92,7 @@ void ScriptApiServer::readPrivileges(int index, std::set<std::string> &result)
 	while (lua_next(L, index) != 0) {
 		// key at index -2 and value at index -1
 		std::string key = luaL_checkstring(L, -2);
-		bool value = readParam<bool>(L, -1);
+		bool value		= readParam<bool>(L, -1);
 		if (value)
 			result.insert(key);
 		// removes value, keeps key for next iteration

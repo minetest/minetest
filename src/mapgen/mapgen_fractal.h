@@ -35,24 +35,24 @@ extern FlagDesc flagdesc_mapgen_fractal[];
 
 struct MapgenFractalParams : public MapgenParams
 {
-	float cave_width = 0.09f;
-	s16 large_cave_depth = -33;
-	u16 small_cave_num_min = 0;
-	u16 small_cave_num_max = 0;
-	u16 large_cave_num_min = 0;
-	u16 large_cave_num_max = 2;
+	float cave_width		 = 0.09f;
+	s16 large_cave_depth	 = -33;
+	u16 small_cave_num_min	 = 0;
+	u16 small_cave_num_max	 = 0;
+	u16 large_cave_num_min	 = 0;
+	u16 large_cave_num_max	 = 2;
 	float large_cave_flooded = 0.5f;
-	s16 dungeon_ymin = -31000;
-	s16 dungeon_ymax = 31000;
-	u16 fractal = 1;
-	u16 iterations = 11;
-	v3f scale = v3f(4096.0, 1024.0, 4096.0);
-	v3f offset = v3f(1.52, 0.0, 0.0);
-	float slice_w = 0.0f;
-	float julia_x = 0.267f;
-	float julia_y = 0.2f;
-	float julia_z = 0.133f;
-	float julia_w = 0.067f;
+	s16 dungeon_ymin		 = -31000;
+	s16 dungeon_ymax		 = 31000;
+	u16 fractal				 = 1;
+	u16 iterations			 = 11;
+	v3f scale				 = v3f(4096.0, 1024.0, 4096.0);
+	v3f offset				 = v3f(1.52, 0.0, 0.0);
+	float slice_w			 = 0.0f;
+	float julia_x			 = 0.267f;
+	float julia_y			 = 0.2f;
+	float julia_z			 = 0.133f;
+	float julia_w			 = 0.067f;
 
 	NoiseParams np_seabed;
 	NoiseParams np_filler_depth;

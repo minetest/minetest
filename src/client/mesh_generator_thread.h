@@ -27,9 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct CachedMapBlockData
 {
-	v3s16 p = v3s16(-1337, -1337, -1337);
-	MapNode *data = nullptr; // A copy of the MapBlock's data member
-	int refcount_from_queue = 0;
+	v3s16 p							= v3s16(-1337, -1337, -1337);
+	MapNode *data					= nullptr; // A copy of the MapBlock's data member
+	int refcount_from_queue			= 0;
 	std::time_t last_used_timestamp = std::time(0);
 
 	CachedMapBlockData() = default;
@@ -38,10 +38,10 @@ struct CachedMapBlockData
 
 struct QueuedMeshUpdate
 {
-	v3s16 p = v3s16(-1337, -1337, -1337);
+	v3s16 p					 = v3s16(-1337, -1337, -1337);
 	bool ack_block_to_server = false;
-	bool urgent = false;
-	int crack_level = -1;
+	bool urgent				 = false;
+	int crack_level			 = -1;
 	v3s16 crack_pos;
 	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
 
@@ -101,8 +101,8 @@ private:
 
 struct MeshUpdateResult
 {
-	v3s16 p = v3s16(-1338, -1338, -1338);
-	MapBlockMesh *mesh = nullptr;
+	v3s16 p					 = v3s16(-1338, -1338, -1338);
+	MapBlockMesh *mesh		 = nullptr;
 	bool ack_block_to_server = false;
 
 	MeshUpdateResult() = default;

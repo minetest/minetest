@@ -38,15 +38,13 @@ struct ChatLine
 	// message text
 	EnrichedString text;
 
-	ChatLine(const std::wstring &a_name, const std::wstring &a_text)
-		: name(a_name), text(a_text)
-	{
-	}
+	ChatLine(const std::wstring &a_name, const std::wstring &a_text) :
+		name(a_name), text(a_text)
+	{}
 
-	ChatLine(const EnrichedString &a_name, const EnrichedString &a_text)
-		: name(a_name), text(a_text)
-	{
-	}
+	ChatLine(const EnrichedString &a_name, const EnrichedString &a_text) :
+		name(a_name), text(a_text)
+	{}
 };
 
 struct ChatFormattedFragment

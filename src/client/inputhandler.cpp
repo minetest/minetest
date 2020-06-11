@@ -30,56 +30,56 @@ void KeyCache::populate_nonchanging()
 
 void KeyCache::populate()
 {
-	key[KeyType::FORWARD] = getKeySetting("keymap_forward");
+	key[KeyType::FORWARD]  = getKeySetting("keymap_forward");
 	key[KeyType::BACKWARD] = getKeySetting("keymap_backward");
-	key[KeyType::LEFT] = getKeySetting("keymap_left");
-	key[KeyType::RIGHT] = getKeySetting("keymap_right");
-	key[KeyType::JUMP] = getKeySetting("keymap_jump");
+	key[KeyType::LEFT]	   = getKeySetting("keymap_left");
+	key[KeyType::RIGHT]	   = getKeySetting("keymap_right");
+	key[KeyType::JUMP]	   = getKeySetting("keymap_jump");
 	key[KeyType::SPECIAL1] = getKeySetting("keymap_special1");
-	key[KeyType::SNEAK] = getKeySetting("keymap_sneak");
+	key[KeyType::SNEAK]	   = getKeySetting("keymap_sneak");
 
 	key[KeyType::AUTOFORWARD] = getKeySetting("keymap_autoforward");
 
-	key[KeyType::DROP] = getKeySetting("keymap_drop");
-	key[KeyType::INVENTORY] = getKeySetting("keymap_inventory");
-	key[KeyType::CHAT] = getKeySetting("keymap_chat");
-	key[KeyType::CMD] = getKeySetting("keymap_cmd");
-	key[KeyType::CMD_LOCAL] = getKeySetting("keymap_cmd_local");
-	key[KeyType::CONSOLE] = getKeySetting("keymap_console");
-	key[KeyType::MINIMAP] = getKeySetting("keymap_minimap");
-	key[KeyType::FREEMOVE] = getKeySetting("keymap_freemove");
-	key[KeyType::PITCHMOVE] = getKeySetting("keymap_pitchmove");
-	key[KeyType::FASTMOVE] = getKeySetting("keymap_fastmove");
-	key[KeyType::NOCLIP] = getKeySetting("keymap_noclip");
-	key[KeyType::HOTBAR_PREV] = getKeySetting("keymap_hotbar_previous");
-	key[KeyType::HOTBAR_NEXT] = getKeySetting("keymap_hotbar_next");
-	key[KeyType::MUTE] = getKeySetting("keymap_mute");
-	key[KeyType::INC_VOLUME] = getKeySetting("keymap_increase_volume");
-	key[KeyType::DEC_VOLUME] = getKeySetting("keymap_decrease_volume");
-	key[KeyType::CINEMATIC] = getKeySetting("keymap_cinematic");
-	key[KeyType::SCREENSHOT] = getKeySetting("keymap_screenshot");
-	key[KeyType::TOGGLE_HUD] = getKeySetting("keymap_toggle_hud");
-	key[KeyType::TOGGLE_CHAT] = getKeySetting("keymap_toggle_chat");
-	key[KeyType::TOGGLE_FOG] = getKeySetting("keymap_toggle_fog");
+	key[KeyType::DROP]				   = getKeySetting("keymap_drop");
+	key[KeyType::INVENTORY]			   = getKeySetting("keymap_inventory");
+	key[KeyType::CHAT]				   = getKeySetting("keymap_chat");
+	key[KeyType::CMD]				   = getKeySetting("keymap_cmd");
+	key[KeyType::CMD_LOCAL]			   = getKeySetting("keymap_cmd_local");
+	key[KeyType::CONSOLE]			   = getKeySetting("keymap_console");
+	key[KeyType::MINIMAP]			   = getKeySetting("keymap_minimap");
+	key[KeyType::FREEMOVE]			   = getKeySetting("keymap_freemove");
+	key[KeyType::PITCHMOVE]			   = getKeySetting("keymap_pitchmove");
+	key[KeyType::FASTMOVE]			   = getKeySetting("keymap_fastmove");
+	key[KeyType::NOCLIP]			   = getKeySetting("keymap_noclip");
+	key[KeyType::HOTBAR_PREV]		   = getKeySetting("keymap_hotbar_previous");
+	key[KeyType::HOTBAR_NEXT]		   = getKeySetting("keymap_hotbar_next");
+	key[KeyType::MUTE]				   = getKeySetting("keymap_mute");
+	key[KeyType::INC_VOLUME]		   = getKeySetting("keymap_increase_volume");
+	key[KeyType::DEC_VOLUME]		   = getKeySetting("keymap_decrease_volume");
+	key[KeyType::CINEMATIC]			   = getKeySetting("keymap_cinematic");
+	key[KeyType::SCREENSHOT]		   = getKeySetting("keymap_screenshot");
+	key[KeyType::TOGGLE_HUD]		   = getKeySetting("keymap_toggle_hud");
+	key[KeyType::TOGGLE_CHAT]		   = getKeySetting("keymap_toggle_chat");
+	key[KeyType::TOGGLE_FOG]		   = getKeySetting("keymap_toggle_fog");
 	key[KeyType::TOGGLE_UPDATE_CAMERA] = getKeySetting("keymap_toggle_update_camera");
-	key[KeyType::TOGGLE_DEBUG] = getKeySetting("keymap_toggle_debug");
-	key[KeyType::TOGGLE_PROFILER] = getKeySetting("keymap_toggle_profiler");
-	key[KeyType::CAMERA_MODE] = getKeySetting("keymap_camera_mode");
+	key[KeyType::TOGGLE_DEBUG]		   = getKeySetting("keymap_toggle_debug");
+	key[KeyType::TOGGLE_PROFILER]	   = getKeySetting("keymap_toggle_profiler");
+	key[KeyType::CAMERA_MODE]		   = getKeySetting("keymap_camera_mode");
 	key[KeyType::INCREASE_VIEWING_RANGE] =
 			getKeySetting("keymap_increase_viewing_range_min");
 	key[KeyType::DECREASE_VIEWING_RANGE] =
 			getKeySetting("keymap_decrease_viewing_range_min");
 	key[KeyType::RANGESELECT] = getKeySetting("keymap_rangeselect");
-	key[KeyType::ZOOM] = getKeySetting("keymap_zoom");
+	key[KeyType::ZOOM]		  = getKeySetting("keymap_zoom");
 
 	key[KeyType::QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
 	key[KeyType::QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");
-	key[KeyType::QUICKTUNE_INC] = getKeySetting("keymap_quicktune_inc");
-	key[KeyType::QUICKTUNE_DEC] = getKeySetting("keymap_quicktune_dec");
+	key[KeyType::QUICKTUNE_INC]	 = getKeySetting("keymap_quicktune_inc");
+	key[KeyType::QUICKTUNE_DEC]	 = getKeySetting("keymap_quicktune_dec");
 
 	for (int i = 0; i < HUD_HOTBAR_ITEMCOUNT_MAX; i++) {
 		std::string slot_key_name = "keymap_slot" + std::to_string(i + 1);
-		key[KeyType::SLOT_1 + i] = getKeySetting(slot_key_name.c_str());
+		key[KeyType::SLOT_1 + i]  = getKeySetting(slot_key_name.c_str());
 	}
 
 	if (handler) {
@@ -139,13 +139,13 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	// handle mouse events
 	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		if (isMenuActive()) {
-			left_active = false;
+			left_active	  = false;
 			middle_active = false;
-			right_active = false;
+			right_active  = false;
 		} else {
-			left_active = event.MouseInput.isLeftPressed();
+			left_active	  = event.MouseInput.isLeftPressed();
 			middle_active = event.MouseInput.isMiddlePressed();
-			right_active = event.MouseInput.isRightPressed();
+			right_active  = event.MouseInput.isRightPressed();
 
 			if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 				leftclicked = true;
@@ -226,7 +226,7 @@ void RandomInputHandler::step(float dtime)
 		static float counter1 = 0;
 		counter1 -= dtime;
 		if (counter1 < 0.0) {
-			counter1 = 0.1 * Rand(1, 20);
+			counter1   = 0.1 * Rand(1, 20);
 			mousespeed = v2s32(Rand(-20, 20), Rand(-15, 20));
 		}
 	}
@@ -246,7 +246,7 @@ void RandomInputHandler::step(float dtime)
 		static float counter1 = 0;
 		counter1 -= dtime;
 		if (counter1 < 0.0) {
-			counter1 = 0.1 * Rand(1, 15);
+			counter1  = 0.1 * Rand(1, 15);
 			rightdown = !rightdown;
 			if (rightdown)
 				rightclicked = true;

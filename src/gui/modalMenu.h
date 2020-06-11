@@ -28,7 +28,7 @@ class IMenuManager
 {
 public:
 	// A GUIModalMenu calls these when this class is passed as a parameter
-	virtual void createdMenu(gui::IGUIElement *menu) = 0;
+	virtual void createdMenu(gui::IGUIElement *menu)  = 0;
 	virtual void deletingMenu(gui::IGUIElement *menu) = 0;
 };
 
@@ -49,7 +49,7 @@ public:
 	void removeChildren();
 
 	virtual void regenerateGui(v2u32 screensize) = 0;
-	virtual void drawMenu() = 0;
+	virtual void drawMenu()						 = 0;
 	virtual bool preprocessEvent(const SEvent &event);
 	virtual bool OnEvent(const SEvent &event) { return false; };
 	virtual bool pausesGame() { return false; } // Used for pause menu
@@ -60,7 +60,7 @@ public:
 
 protected:
 	virtual std::wstring getLabelByID(s32 id) = 0;
-	virtual std::string getNameByID(s32 id) = 0;
+	virtual std::string getNameByID(s32 id)	  = 0;
 
 	v2s32 m_pointer;
 	v2s32 m_old_pointer; // Mouse position after previous mouse event

@@ -78,8 +78,8 @@ struct SettingsEntry
 	SettingsEntry(Settings *group_) : group(group_), is_group(true) {}
 
 	std::string value = "";
-	Settings *group = nullptr;
-	bool is_group = false;
+	Settings *group	  = nullptr;
+	bool is_group	  = false;
 };
 
 typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;

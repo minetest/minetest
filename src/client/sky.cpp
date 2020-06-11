@@ -34,9 +34,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 using namespace irr::core;
 
-Sky::Sky(s32 id, ITextureSource *tsrc)
-	: scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
-			  RenderingEngine::get_scene_manager(), id)
+Sky::Sky(s32 id, ITextureSource *tsrc) :
+	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
+			RenderingEngine::get_scene_manager(), id)
 {
 	setAutomaticCulling(scene::EAC_OFF);
 	m_box.MaxEdge.set(0, 0, 0);
@@ -49,13 +49,13 @@ Sky::Sky(s32 id, ITextureSource *tsrc)
 #if ENABLE_GLES
 	mat.ZBuffer = video::ECFN_DISABLED;
 #else
-	mat.ZBuffer = video::ECFN_NEVER;
+	mat.ZBuffer				   = video::ECFN_NEVER;
 #endif
-	mat.ZWriteEnable = false;
-	mat.AntiAliasing = 0;
+	mat.ZWriteEnable				 = false;
+	mat.AntiAliasing				 = 0;
 	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-	mat.BackfaceCulling = false;
+	mat.BackfaceCulling				 = false;
 
 	m_materials[0] = mat;
 
@@ -109,8 +109,8 @@ Sky::Sky(s32 id, ITextureSource *tsrc)
 	}
 
 	for (int i = 5; i < 11; i++) {
-		m_materials[i] = mat;
-		m_materials[i].Lighting = true;
+		m_materials[i]				= mat;
+		m_materials[i].Lighting		= true;
 		m_materials[i].MaterialType = video::EMT_SOLID;
 	}
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
@@ -127,7 +127,7 @@ void Sky::OnRegisterSceneNode()
 
 void Sky::render()
 {
-	video::IVideoDriver *driver = SceneManager->getVideoDriver();
+	video::IVideoDriver *driver		= SceneManager->getVideoDriver();
 	scene::ICameraSceneNode *camera = SceneManager->getActiveCamera();
 
 	if (!camera || !driver)
@@ -166,8 +166,8 @@ void Sky::render()
 		video::SColorf mooncolor_f(0.50, 0.57, 0.65, 1);
 		video::SColorf mooncolor2_f(0.85, 0.875, 0.9, 1);
 
-		float nightlength = 0.415;
-		float wn = nightlength / 2;
+		float nightlength		 = 0.415;
+		float wn				 = nightlength / 2;
 		float wicked_time_of_day = 0;
 		if (m_time_of_day > wn && m_time_of_day < 1.0 - wn)
 			wicked_time_of_day = (m_time_of_day - wn) / (1.0 - wn * 2) * 0.5 + 0.25;
@@ -178,17 +178,17 @@ void Sky::render()
 		/*std::cerr<<"time_of_day="<<m_time_of_day<<" -> "
 				<<"wicked_time_of_day="<<wicked_time_of_day<<std::endl;*/
 
-		video::SColor suncolor = suncolor_f.toSColor();
-		video::SColor suncolor2 = suncolor2_f.toSColor();
-		video::SColor mooncolor = mooncolor_f.toSColor();
+		video::SColor suncolor	 = suncolor_f.toSColor();
+		video::SColor suncolor2	 = suncolor2_f.toSColor();
+		video::SColor mooncolor	 = mooncolor_f.toSColor();
 		video::SColor mooncolor2 = mooncolor2_f.toSColor();
 
 		// Calculate offset normalized to the X dimension of a 512x1 px tonemap
 		float offset = (1.0 - fabs(sin((m_time_of_day - 0.5) * irr::core::PI))) * 511;
 
 		if (m_sun_tonemap) {
-			u8 *texels = (u8 *)m_sun_tonemap->lock();
-			video::SColor *texel = (video::SColor *)(texels + (u32)offset * 4);
+			u8 *texels			 = (u8 *) m_sun_tonemap->lock();
+			video::SColor *texel = (video::SColor *) (texels + (u32) offset * 4);
 			video::SColor texel_color(
 					255, texel->getRed(), texel->getGreen(), texel->getBlue());
 			m_sun_tonemap->unlock();
@@ -196,16 +196,16 @@ void Sky::render()
 		}
 
 		if (m_moon_tonemap) {
-			u8 *texels = (u8 *)m_moon_tonemap->lock();
-			video::SColor *texel = (video::SColor *)(texels + (u32)offset * 4);
+			u8 *texels			 = (u8 *) m_moon_tonemap->lock();
+			video::SColor *texel = (video::SColor *) (texels + (u32) offset * 4);
 			video::SColor texel_color(
 					255, texel->getRed(), texel->getGreen(), texel->getBlue());
 			m_moon_tonemap->unlock();
 			m_materials[4].EmissiveColor = texel_color;
 		}
 
-		const f32 t = 1.0f;
-		const f32 o = 0.0f;
+		const f32 t					= 1.0f;
+		const f32 o					= 0.0f;
 		static const u16 indices[4] = { 0, 1, 2, 3 };
 		video::S3DVertex vertices[4];
 
@@ -287,12 +287,12 @@ void Sky::render()
 		if (m_sun_params.sunrise_visible) {
 			driver->setMaterial(m_materials[2]);
 			float mid1 = 0.25;
-			float mid = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
-			float a_ = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
-			float a = easeCurve(MYMAX(0, MYMIN(1, a_)));
+			float mid  = wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1);
+			float a_   = 1.0f - std::fabs(wicked_time_of_day - mid) * 35.0f;
+			float a	   = easeCurve(MYMAX(0, MYMIN(1, a_)));
 			//std::cerr<<"a_="<<a_<<" a="<<a<<std::endl;
 			video::SColor c(255, 255, 255, 255);
-			float y = -(1.0 - a) * 0.22;
+			float y		= -(1.0 - a) * 0.22;
 			vertices[0] = video::S3DVertex(-1, -0.05 + y, -1, 0, 0, 1, c, t, t);
 			vertices[1] = video::S3DVertex(1, -0.05 + y, -1, 0, 0, 1, c, o, t);
 			vertices[2] = video::S3DVertex(1, 0.2 + y, -1, 0, 0, 1, c, o, o);
@@ -323,10 +323,10 @@ void Sky::render()
 
 			for (u32 j = 0; j < 4; j++) {
 				video::SColor c = cloudyfogcolor;
-				vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex(1, -1.0, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex(1, -0.02, -1, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1, -0.02, -1, 0, 0, 1, c, t, o);
+				vertices[0]		= video::S3DVertex(-1, -1.0, -1, 0, 0, 1, c, t, t);
+				vertices[1]		= video::S3DVertex(1, -1.0, -1, 0, 0, 1, c, o, t);
+				vertices[2]		= video::S3DVertex(1, -0.02, -1, 0, 0, 1, c, o, o);
+				vertices[3]		= video::S3DVertex(-1, -0.02, -1, 0, 0, 1, c, t, o);
 				for (video::S3DVertex &vertex : vertices) {
 					if (j == 0)
 					// Don't switch
@@ -346,10 +346,10 @@ void Sky::render()
 
 			// Draw bottom far cloudy fog thing in front of sun, moon and stars
 			video::SColor c = cloudyfogcolor;
-			vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 1, 0, c, t, t);
-			vertices[1] = video::S3DVertex(1, -1.0, -1, 0, 1, 0, c, o, t);
-			vertices[2] = video::S3DVertex(1, -1.0, 1, 0, 1, 0, c, o, o);
-			vertices[3] = video::S3DVertex(-1, -1.0, 1, 0, 1, 0, c, t, o);
+			vertices[0]		= video::S3DVertex(-1, -1.0, -1, 0, 1, 0, c, t, t);
+			vertices[1]		= video::S3DVertex(1, -1.0, -1, 0, 1, 0, c, o, t);
+			vertices[2]		= video::S3DVertex(1, -1.0, 1, 0, 1, 0, c, o, o);
+			vertices[3]		= video::S3DVertex(-1, -1.0, 1, 0, 1, 0, c, t, o);
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 	}
@@ -372,10 +372,10 @@ void Sky::update(float time_of_day, float time_brightness, float direct_brightne
 		return;
 	}
 
-	m_time_of_day = time_of_day;
+	m_time_of_day	  = time_of_day;
 	m_time_brightness = time_brightness;
-	m_sunlight_seen = sunlight_seen;
-	m_in_clouds = false;
+	m_sunlight_seen	  = sunlight_seen;
+	m_in_clouds		  = false;
 
 	bool is_dawn = (time_brightness >= 0.20 && time_brightness < 0.35);
 
@@ -395,22 +395,22 @@ void Sky::update(float time_of_day, float time_brightness, float direct_brightne
 
 	video::SColorf bgcolor_bright_normal_f = m_sky_params.sky_color.day_horizon;
 	video::SColorf bgcolor_bright_indoor_f = m_sky_params.sky_color.indoors;
-	video::SColorf bgcolor_bright_dawn_f = m_sky_params.sky_color.dawn_horizon;
-	video::SColorf bgcolor_bright_night_f = m_sky_params.sky_color.night_horizon;
+	video::SColorf bgcolor_bright_dawn_f   = m_sky_params.sky_color.dawn_horizon;
+	video::SColorf bgcolor_bright_night_f  = m_sky_params.sky_color.night_horizon;
 
 	video::SColorf skycolor_bright_normal_f = m_sky_params.sky_color.day_sky;
-	video::SColorf skycolor_bright_dawn_f = m_sky_params.sky_color.dawn_sky;
-	video::SColorf skycolor_bright_night_f = m_sky_params.sky_color.night_sky;
+	video::SColorf skycolor_bright_dawn_f	= m_sky_params.sky_color.dawn_sky;
+	video::SColorf skycolor_bright_night_f	= m_sky_params.sky_color.night_sky;
 
 	video::SColorf cloudcolor_bright_normal_f = m_cloudcolor_day_f;
-	video::SColorf cloudcolor_bright_dawn_f = m_cloudcolor_dawn_f;
+	video::SColorf cloudcolor_bright_dawn_f	  = m_cloudcolor_dawn_f;
 
 	float cloud_color_change_fraction = 0.95;
 	if (sunlight_seen) {
 		if (std::fabs(time_brightness - m_brightness) < 0.2f) {
 			m_brightness = m_brightness * 0.95 + time_brightness * 0.05;
 		} else {
-			m_brightness = m_brightness * 0.80 + time_brightness * 0.20;
+			m_brightness				= m_brightness * 0.80 + time_brightness * 0.20;
 			cloud_color_change_fraction = 0.0;
 		}
 	} else {
@@ -420,7 +420,7 @@ void Sky::update(float time_of_day, float time_brightness, float direct_brightne
 			m_brightness = m_brightness * 0.98 + direct_brightness * 0.02;
 	}
 
-	m_clouds_visible = true;
+	m_clouds_visible			= true;
 	float color_change_fraction = 0.98f;
 	if (sunlight_seen) {
 		if (is_dawn) { // Dawn
@@ -495,11 +495,11 @@ void Sky::update(float time_of_day, float time_brightness, float direct_brightne
 			// which keeps previous behaviour.
 			if (m_sun_tonemap && m_default_tint) {
 				pointcolor_sun_f.r = pointcolor_light *
-						(float)m_materials[3].EmissiveColor.getRed() / 255;
+						(float) m_materials[3].EmissiveColor.getRed() / 255;
 				pointcolor_sun_f.b = pointcolor_light *
-						(float)m_materials[3].EmissiveColor.getBlue() / 255;
+						(float) m_materials[3].EmissiveColor.getBlue() / 255;
 				pointcolor_sun_f.g = pointcolor_light *
-						(float)m_materials[3].EmissiveColor.getGreen() / 255;
+						(float) m_materials[3].EmissiveColor.getGreen() / 255;
 			} else if (!m_default_tint) {
 				pointcolor_sun_f = m_sky_params.fog_sun_tint;
 			} else {
@@ -527,19 +527,19 @@ void Sky::update(float time_of_day, float time_brightness, float direct_brightne
 			}
 			if (m_moon_tonemap && m_default_tint) {
 				pointcolor_moon_f.r = pointcolor_light *
-						(float)m_materials[4].EmissiveColor.getRed() / 255;
+						(float) m_materials[4].EmissiveColor.getRed() / 255;
 				pointcolor_moon_f.b = pointcolor_light *
-						(float)m_materials[4].EmissiveColor.getBlue() / 255;
+						(float) m_materials[4].EmissiveColor.getBlue() / 255;
 				pointcolor_moon_f.g = pointcolor_light *
-						(float)m_materials[4].EmissiveColor.getGreen() / 255;
+						(float) m_materials[4].EmissiveColor.getGreen() / 255;
 			}
 
-			video::SColor pointcolor_sun = pointcolor_sun_f.toSColor();
+			video::SColor pointcolor_sun  = pointcolor_sun_f.toSColor();
 			video::SColor pointcolor_moon = pointcolor_moon_f.toSColor();
 			// Calculate the blend color
 			pointcolor = m_mix_scolor(pointcolor_moon, pointcolor_sun, pointcolor_blend);
 		}
-		m_bgcolor = m_mix_scolor(m_bgcolor, pointcolor, m_horizon_blend() * 0.5);
+		m_bgcolor  = m_mix_scolor(m_bgcolor, pointcolor, m_horizon_blend() * 0.5);
 		m_skycolor = m_mix_scolor(m_skycolor, pointcolor, m_horizon_blend() * 0.25);
 	}
 
@@ -589,10 +589,10 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize,
 	if (!m_sun_texture) {
 		driver->setMaterial(m_materials[1]);
 		const float sunsizes[4] = { (sunsize * 1.7f) * m_sun_params.scale,
-			(sunsize * 1.2f) * m_sun_params.scale, (sunsize)*m_sun_params.scale,
+			(sunsize * 1.2f) * m_sun_params.scale, (sunsize) *m_sun_params.scale,
 			(sunsize * 0.7f) * m_sun_params.scale };
-		video::SColor c1 = suncolor;
-		video::SColor c2 = suncolor;
+		video::SColor c1		= suncolor;
+		video::SColor c2		= suncolor;
 		c1.setAlpha(0.05 * 255);
 		c2.setAlpha(0.15 * 255);
 		const video::SColor colors[4] = { c1, c2, suncolor, suncolor2 };
@@ -637,10 +637,10 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize,
 			(-moonsize * 1.3f) * m_moon_params.scale, (-moonsize) * m_moon_params.scale,
 			(-moonsize) * m_moon_params.scale };
 		const float moonsizes_2[4] = { (moonsize * 1.9f) * m_moon_params.scale,
-			(moonsize * 1.3f) * m_moon_params.scale, (moonsize)*m_moon_params.scale,
+			(moonsize * 1.3f) * m_moon_params.scale, (moonsize) *m_moon_params.scale,
 			(moonsize * 0.6f) * m_moon_params.scale };
-		video::SColor c1 = mooncolor;
-		video::SColor c2 = mooncolor;
+		video::SColor c1		   = mooncolor;
+		video::SColor c2		   = mooncolor;
 		c1.setAlpha(0.05 * 255);
 		c2.setAlpha(0.15 * 255);
 		const video::SColor colors[4] = { c1, c2, mooncolor, mooncolor2 };
@@ -686,16 +686,16 @@ void Sky::draw_stars(video::IVideoDriver *driver, float wicked_time_of_day)
 	if (m_star_params.starcolor.getAlpha() < 1)
 		return;
 #if ENABLE_GLES
-	u16 *indices = new u16[m_star_params.count * 3];
+	u16 *indices			   = new u16[m_star_params.count * 3];
 	video::S3DVertex *vertices = new video::S3DVertex[m_star_params.count * 3];
 	for (u32 i = 0; i < m_star_params.count; i++) {
 		indices[i * 3 + 0] = i * 3 + 0;
 		indices[i * 3 + 1] = i * 3 + 1;
 		indices[i * 3 + 2] = i * 3 + 2;
-		v3f r = m_stars[i];
+		v3f r			   = m_stars[i];
 		core::CMatrix4<f32> a;
 		a.buildRotateFromTo(v3f(0, 1, 0), r);
-		v3f p = v3f(-d, 1, -d);
+		v3f p  = v3f(-d, 1, -d);
 		v3f p1 = v3f(d, 1, 0);
 		v3f p2 = v3f(-d, 1, d);
 		a.rotateVect(p);
@@ -704,11 +704,11 @@ void Sky::draw_stars(video::IVideoDriver *driver, float wicked_time_of_day)
 		p.rotateXYBy(wicked_time_of_day * 360 - 90);
 		p1.rotateXYBy(wicked_time_of_day * 360 - 90);
 		p2.rotateXYBy(wicked_time_of_day * 360 - 90);
-		vertices[i * 3 + 0].Pos = p;
+		vertices[i * 3 + 0].Pos	  = p;
 		vertices[i * 3 + 0].Color = starcolor;
-		vertices[i * 3 + 1].Pos = p1;
+		vertices[i * 3 + 1].Pos	  = p1;
 		vertices[i * 3 + 1].Color = starcolor;
-		vertices[i * 3 + 2].Pos = p2;
+		vertices[i * 3 + 2].Pos	  = p2;
 		vertices[i * 3 + 2].Color = starcolor;
 	}
 	driver->drawIndexedTriangleList(
@@ -716,17 +716,17 @@ void Sky::draw_stars(video::IVideoDriver *driver, float wicked_time_of_day)
 	delete[] indices;
 	delete[] vertices;
 #else
-	u16 *indices = new u16[m_star_params.count * 4];
+	u16 *indices			   = new u16[m_star_params.count * 4];
 	video::S3DVertex *vertices = new video::S3DVertex[m_star_params.count * 4];
 	for (u32 i = 0; i < m_star_params.count; i++) {
 		indices[i * 4 + 0] = i * 4 + 0;
 		indices[i * 4 + 1] = i * 4 + 1;
 		indices[i * 4 + 2] = i * 4 + 2;
 		indices[i * 4 + 3] = i * 4 + 3;
-		v3f r = m_stars[i];
+		v3f r			   = m_stars[i];
 		core::CMatrix4<f32> a;
 		a.buildRotateFromTo(v3f(0, 1, 0), r);
-		v3f p = v3f(-d, 1, -d);
+		v3f p  = v3f(-d, 1, -d);
 		v3f p1 = v3f(d, 1, -d);
 		v3f p2 = v3f(d, 1, d);
 		v3f p3 = v3f(-d, 1, d);
@@ -738,13 +738,13 @@ void Sky::draw_stars(video::IVideoDriver *driver, float wicked_time_of_day)
 		p1.rotateXYBy(wicked_time_of_day * 360 - 90);
 		p2.rotateXYBy(wicked_time_of_day * 360 - 90);
 		p3.rotateXYBy(wicked_time_of_day * 360 - 90);
-		vertices[i * 4 + 0].Pos = p;
+		vertices[i * 4 + 0].Pos	  = p;
 		vertices[i * 4 + 0].Color = starcolor;
-		vertices[i * 4 + 1].Pos = p1;
+		vertices[i * 4 + 1].Pos	  = p1;
 		vertices[i * 4 + 1].Color = starcolor;
-		vertices[i * 4 + 2].Pos = p2;
+		vertices[i * 4 + 2].Pos	  = p2;
 		vertices[i * 4 + 2].Color = starcolor;
-		vertices[i * 4 + 3].Pos = p3;
+		vertices[i * 4 + 3].Pos	  = p3;
 		vertices[i * 4 + 3].Color = starcolor;
 	}
 	driver->drawVertexPrimitiveList(vertices, m_star_params.count * 4, indices,
@@ -794,7 +794,7 @@ void Sky::setSunTexture(
 	// Ignore matching textures (with modifiers) entirely,
 	// but lets at least update the tonemap before hand.
 	m_sun_params.tonemap = sun_tonemap;
-	m_sun_tonemap = tsrc->isKnownSourceImage(m_sun_params.tonemap) ?
+	m_sun_tonemap		 = tsrc->isKnownSourceImage(m_sun_params.tonemap) ?
 			tsrc->getTexture(m_sun_params.tonemap) :
 			NULL;
 	m_materials[3].Lighting = !!m_sun_tonemap;
@@ -838,7 +838,7 @@ void Sky::setMoonTexture(
 	// Ignore matching textures (with modifiers) entirely,
 	// but lets at least update the tonemap before hand.
 	m_moon_params.tonemap = moon_tonemap;
-	m_moon_tonemap = tsrc->isKnownSourceImage(m_moon_params.tonemap) ?
+	m_moon_tonemap		  = tsrc->isKnownSourceImage(m_moon_params.tonemap) ?
 			tsrc->getTexture(m_moon_params.tonemap) :
 			NULL;
 	m_materials[4].Lighting = !!m_moon_tonemap;
@@ -891,7 +891,7 @@ void Sky::setHorizonTint(
 		video::SColor sun_tint, video::SColor moon_tint, std::string use_sun_tint)
 {
 	// Change sun and moon tinting:
-	m_sky_params.fog_sun_tint = sun_tint;
+	m_sky_params.fog_sun_tint  = sun_tint;
 	m_sky_params.fog_moon_tint = moon_tint;
 	// Faster than comparing strings every rendering frame
 	if (use_sun_tint == "default")
@@ -909,7 +909,7 @@ void Sky::addTextureToSkybox(std::string texture, int material_id, ITextureSourc
 		return;
 	// Keep a list of texture names handy.
 	m_sky_params.textures.emplace_back(texture);
-	video::ITexture *result = tsrc->getTextureForMesh(texture);
+	video::ITexture *result		 = tsrc->getTextureForMesh(texture);
 	m_materials[material_id + 5] = m_materials[0];
 	m_materials[material_id + 5].setTexture(0, result);
 	m_materials[material_id + 5].MaterialType = video::EMT_SOLID;
@@ -920,7 +920,7 @@ void Sky::setSkyDefaults()
 {
 	SkyboxDefaults sky_defaults;
 	m_sky_params.sky_color = sky_defaults.getSkyColorDefaults();
-	m_sun_params = sky_defaults.getSunDefaults();
-	m_moon_params = sky_defaults.getMoonDefaults();
-	m_star_params = sky_defaults.getStarDefaults();
+	m_sun_params		   = sky_defaults.getSunDefaults();
+	m_moon_params		   = sky_defaults.getMoonDefaults();
+	m_star_params		   = sky_defaults.getStarDefaults();
 }

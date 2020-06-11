@@ -29,8 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 
 
-MapgenSinglenode::MapgenSinglenode(MapgenParams *params, EmergeParams *emerge)
-	: Mapgen(MAPGEN_SINGLENODE, params, emerge)
+MapgenSinglenode::MapgenSinglenode(MapgenParams *params, EmergeParams *emerge) :
+	Mapgen(MAPGEN_SINGLENODE, params, emerge)
 {
 	const NodeDefManager *ndef = emerge->ndef;
 
@@ -58,8 +58,8 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data)
 			data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
-	this->vm = data->vmanip;
-	this->ndef = data->nodedef;
+	this->vm		 = data->vmanip;
+	this->ndef		 = data->nodedef;
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;

@@ -19,31 +19,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h"
 #if USE_CURSES
-#include "version.h"
-#include "terminal_chat_console.h"
-#include "porting.h"
-#include "settings.h"
-#include "util/numeric.h"
-#include "util/string.h"
-#include "chat_interface.h"
+	#include "version.h"
+	#include "terminal_chat_console.h"
+	#include "porting.h"
+	#include "settings.h"
+	#include "util/numeric.h"
+	#include "util/string.h"
+	#include "chat_interface.h"
 
 TerminalChatConsole g_term_console;
 
-// include this last to avoid any conflicts
-// (likes to set macros to common names, conflicting various stuff)
-#if CURSES_HAVE_NCURSESW_NCURSES_H
-#include <ncursesw/ncurses.h>
-#elif CURSES_HAVE_NCURSESW_CURSES_H
-#include <ncursesw/curses.h>
-#elif CURSES_HAVE_CURSES_H
-#include <curses.h>
-#elif CURSES_HAVE_NCURSES_H
-#include <ncurses.h>
-#elif CURSES_HAVE_NCURSES_NCURSES_H
-#include <ncurses/ncurses.h>
-#elif CURSES_HAVE_NCURSES_CURSES_H
-#include <ncurses/curses.h>
-#endif
+	// include this last to avoid any conflicts
+	// (likes to set macros to common names, conflicting various stuff)
+	#if CURSES_HAVE_NCURSESW_NCURSES_H
+		#include <ncursesw/ncurses.h>
+	#elif CURSES_HAVE_NCURSESW_CURSES_H
+		#include <ncursesw/curses.h>
+	#elif CURSES_HAVE_CURSES_H
+		#include <curses.h>
+	#elif CURSES_HAVE_NCURSES_H
+		#include <ncurses.h>
+	#elif CURSES_HAVE_NCURSES_NCURSES_H
+		#include <ncurses/ncurses.h>
+	#elif CURSES_HAVE_NCURSES_CURSES_H
+		#include <ncurses/curses.h>
+	#endif
 
 // Some functions to make drawing etc position independent
 static bool reformat_backend(ChatBackend *backend, int rows, int cols)
@@ -138,7 +138,7 @@ void TerminalChatConsole::typeChatMessage(const std::wstring &msg)
 
 	// Print if its a command (gets eaten by server otherwise)
 	if (msg[0] == L'/') {
-		m_chat_backend.addMessage(L"", (std::wstring)L"Issued command: " + msg);
+		m_chat_backend.addMessage(L"", (std::wstring) L"Issued command: " + msg);
 	}
 }
 
@@ -263,13 +263,13 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		// Add character to the prompt,
 		// assuming UTF-8.
 		if (IS_UTF8_MULTB_START(ch)) {
-			m_pending_utf8_bytes.append(1, (char)ch);
+			m_pending_utf8_bytes.append(1, (char) ch);
 			m_utf8_bytes_to_wait += UTF8_MULTB_START_LEN(ch) - 1;
 		} else if (m_utf8_bytes_to_wait != 0) {
-			m_pending_utf8_bytes.append(1, (char)ch);
+			m_pending_utf8_bytes.append(1, (char) ch);
 			m_utf8_bytes_to_wait--;
 			if (m_utf8_bytes_to_wait == 0) {
-				std::wstring w = utf8_to_wide(m_pending_utf8_bytes);
+				std::wstring w		 = utf8_to_wide(m_pending_utf8_bytes);
 				m_pending_utf8_bytes = "";
 				// hopefully only one char in the wstring...
 				for (size_t i = 0; i < w.size(); i++) {
@@ -297,26 +297,26 @@ void TerminalChatConsole::step(int ch)
 		ChatEvent *evt = m_chat_interface->outgoing_queue.pop_frontNoEx();
 		switch (evt->type) {
 		case CET_NICK_REMOVE:
-			m_nicks.remove(((ChatEventNick *)evt)->nick);
+			m_nicks.remove(((ChatEventNick *) evt)->nick);
 			break;
 		case CET_NICK_ADD:
-			m_nicks.push_back(((ChatEventNick *)evt)->nick);
+			m_nicks.push_back(((ChatEventNick *) evt)->nick);
 			break;
 		case CET_CHAT:
 			complete_redraw_needed = true;
 			// This is only used for direct replies from commands
 			// or for lua's print() functionality
-			m_chat_backend.addMessage(L"", ((ChatEventChat *)evt)->evt_msg);
+			m_chat_backend.addMessage(L"", ((ChatEventChat *) evt)->evt_msg);
 			break;
 		case CET_TIME_INFO:
-			ChatEventTimeInfo *tevt = (ChatEventTimeInfo *)evt;
-			m_game_time = tevt->game_time;
-			m_time_of_day = tevt->time;
+			ChatEventTimeInfo *tevt = (ChatEventTimeInfo *) evt;
+			m_game_time				= tevt->game_time;
+			m_time_of_day			= tevt->time;
 		};
 		delete evt;
 	}
 	while (!m_log_output.queue.empty()) {
-		complete_redraw_needed = true;
+		complete_redraw_needed			   = true;
 		std::pair<LogLevel, std::string> p = m_log_output.queue.pop_frontNoEx();
 		if (p.first > m_log_level)
 			continue;
@@ -356,9 +356,9 @@ void TerminalChatConsole::step(int ch)
 	int xn, yn;
 	getmaxyx(stdscr, yn, xn);
 	if (xn != m_cols || yn != m_rows) {
-		m_cols = xn;
-		m_rows = yn;
-		m_can_draw_text = reformat_backend(&m_chat_backend, m_rows, m_cols);
+		m_cols				   = xn;
+		m_rows				   = yn;
+		m_can_draw_text		   = reformat_backend(&m_chat_backend, m_rows, m_cols);
 		complete_redraw_needed = true;
 	}
 
@@ -370,8 +370,8 @@ void TerminalChatConsole::step(int ch)
 	addstr(g_version_hash);
 
 	u32 minutes = m_time_of_day % 1000;
-	u32 hours = m_time_of_day / 1000;
-	minutes = (float)minutes / 1000 * 60;
+	u32 hours	= m_time_of_day / 1000;
+	minutes		= (float) minutes / 1000 * 60;
 
 	if (m_game_time)
 		printw(" | Game %d Time of day %02d:%02d ", m_game_time, hours, minutes);
@@ -383,7 +383,7 @@ void TerminalChatConsole::step(int ch)
 	// draw prompt
 	if (!m_esc_mode) {
 		// normal prompt
-		ChatPrompt &prompt = m_chat_backend.getPrompt();
+		ChatPrompt &prompt		= m_chat_backend.getPrompt();
 		std::string prompt_text = wide_to_utf8(prompt.getVisiblePortion());
 		move(m_rows - 1, 0);
 		clrtoeol();
@@ -400,7 +400,7 @@ void TerminalChatConsole::step(int ch)
 		printw("[ESC] Toggle ESC mode |"
 			   " [CTRL+C] Shut down |"
 			   " (L) in-, (l) decrease loglevel %s",
-				Logger::getLevelLabel((LogLevel)m_log_level).c_str());
+				Logger::getLevelLabel((LogLevel) m_log_level).c_str());
 	}
 
 	refresh();

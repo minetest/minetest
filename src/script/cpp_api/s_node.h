@@ -30,7 +30,7 @@ class ServerActiveObject;
 class ScriptApiNode : virtual public ScriptApiBase, public ScriptApiNodemeta
 {
 public:
-	ScriptApiNode() = default;
+	ScriptApiNode()			 = default;
 	virtual ~ScriptApiNode() = default;
 
 	bool node_on_punch(v3s16 p, MapNode node, ServerActiveObject *puncher,

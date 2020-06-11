@@ -25,10 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 TimeTaker::TimeTaker(const std::string &name, u64 *result, TimePrecision prec)
 {
-	m_name = name;
-	m_result = result;
+	m_name		= name;
+	m_result	= result;
 	m_precision = prec;
-	m_time1 = porting::getTime(prec);
+	m_time1		= porting::getTime(prec);
 }
 
 u64 TimeTaker::stop(bool quiet)

@@ -101,7 +101,7 @@ public:
 	void raiseModified(u32 mod, u32 reason = MOD_REASON_UNKNOWN)
 	{
 		if (mod > m_modified) {
-			m_modified = mod;
+			m_modified		  = mod;
 			m_modified_reason = reason;
 			if (m_modified >= MOD_STATE_WRITE_AT_UNLOAD)
 				m_disk_timestamp = m_timestamp;
@@ -120,7 +120,7 @@ public:
 
 	inline void resetModified()
 	{
-		m_modified = MOD_STATE_CLEAN;
+		m_modified		  = MOD_STATE_CLEAN;
 		m_modified_reason = 0;
 	}
 
@@ -483,7 +483,7 @@ private:
 		  block has been modified from the one on disk.
 		- On the client, this is used for nothing.
 	*/
-	u32 m_modified = MOD_STATE_WRITE_NEEDED;
+	u32 m_modified		  = MOD_STATE_WRITE_NEEDED;
 	u32 m_modified_reason = MOD_REASON_INITIAL;
 
 	/*
@@ -507,7 +507,7 @@ private:
 	u16 m_lighting_complete = 0xFFFF;
 
 	// Whether day and night lighting differs
-	bool m_day_night_differs = false;
+	bool m_day_night_differs		 = false;
 	bool m_day_night_differs_expired = true;
 
 	bool m_generated = false;

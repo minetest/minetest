@@ -47,7 +47,7 @@ void ModApiHttp::read_http_fetch_request(lua_State *L, HTTPFetchRequest &req)
 		req.useragent = getstringfield_default(L, 1, "user_agent", "");
 	lua_pop(L, 1);
 	req.multipart = getboolfield_default(L, 1, "multipart", false);
-	req.timeout = getintfield_default(L, 1, "timeout", 3) * 1000;
+	req.timeout	  = getintfield_default(L, 1, "timeout", 3) * 1000;
 
 	// post_data: if table, post form data, otherwise raw data
 	lua_getfield(L, 1, "post_data");
@@ -171,7 +171,7 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 		return 0;
 	}
 
-	std::string mod_name = readParam<std::string>(L, -1);
+	std::string mod_name  = readParam<std::string>(L, -1);
 	std::string http_mods = g_settings->get("secure.http_mods");
 	http_mods.erase(
 			std::remove(http_mods.begin(), http_mods.end(), ' '), http_mods.end());
@@ -224,9 +224,9 @@ void ModApiHttp::Initialize(lua_State *L, int top)
 #if USE_CURL
 
 	bool isMainmenu = false;
-#ifndef SERVER
+	#ifndef SERVER
 	isMainmenu = ModApiBase::getGuiEngine(L) != nullptr;
-#endif
+	#endif
 
 	if (isMainmenu) {
 		API_FCT(get_http_api);

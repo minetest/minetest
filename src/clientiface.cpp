@@ -52,16 +52,15 @@ std::string ClientInterface::state2Name(ClientState state)
 	return statenames[state];
 }
 
-RemoteClient::RemoteClient()
-	: m_max_simul_sends(g_settings->getU16("max_simultaneous_block_sends_per_client")),
-	  m_min_time_from_building(
-			  g_settings->getFloat("full_block_send_enable_min_time_from_building")),
-	  m_max_send_distance(g_settings->getS16("max_block_send_distance")),
-	  m_block_optimize_distance(g_settings->getS16("block_send_optimize_distance")),
-	  m_max_gen_distance(g_settings->getS16("max_block_generate_distance")),
-	  m_occ_cull(g_settings->getBool("server_side_occlusion_culling"))
-{
-}
+RemoteClient::RemoteClient() :
+	m_max_simul_sends(g_settings->getU16("max_simultaneous_block_sends_per_client")),
+	m_min_time_from_building(
+			g_settings->getFloat("full_block_send_enable_min_time_from_building")),
+	m_max_send_distance(g_settings->getS16("max_block_send_distance")),
+	m_block_optimize_distance(g_settings->getS16("block_send_optimize_distance")),
+	m_max_gen_distance(g_settings->getS16("max_block_generate_distance")),
+	m_occ_cull(g_settings->getBool("server_side_occlusion_culling"))
+{}
 
 void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 {
@@ -116,7 +115,7 @@ void RemoteClient::GetNextBlocks(ServerEnvironment *env, EmergeManager *emerge,
 
 	v3f playerpos = sao->getBasePosition();
 	// if the player is attached, get the velocity from the attached object
-	LuaEntitySAO *lsao = getAttachedObject(sao, env);
+	LuaEntitySAO *lsao	   = getAttachedObject(sao, env);
 	const v3f &playerspeed = lsao ? lsao->getVelocity() : player->getSpeed();
 	v3f playerspeeddir(0, 0, 0);
 	if (playerspeed.getLength() > 1.0f * BS)
@@ -143,7 +142,7 @@ void RemoteClient::GetNextBlocks(ServerEnvironment *env, EmergeManager *emerge,
 
 	if (m_last_center != center) {
 		m_nearest_unsent_d = 0;
-		m_last_center = center;
+		m_last_center	   = center;
 	}
 
 	/*infostream<<"m_nearest_unsent_reset_timer="
@@ -152,7 +151,7 @@ void RemoteClient::GetNextBlocks(ServerEnvironment *env, EmergeManager *emerge,
 	// Reset periodically to workaround for some bugs or stuff
 	if (m_nearest_unsent_reset_timer > 20.0f) {
 		m_nearest_unsent_reset_timer = 0.0f;
-		m_nearest_unsent_d = 0;
+		m_nearest_unsent_d			 = 0;
 		//infostream<<"Resetting m_nearest_unsent_d for "
 		//		<<server->getPlayerName(peer_id)<<std::endl;
 	}
@@ -206,7 +205,7 @@ void RemoteClient::GetNextBlocks(ServerEnvironment *env, EmergeManager *emerge,
 			std::min(adjustDist(m_block_optimize_distance, prop_zoom_fov), wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 
-	s16 d_max = full_d_max;
+	s16 d_max	  = full_d_max;
 	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, prop_zoom_fov), wanted_range);
 
 	// Don't loop very much at a time, adjust with distance,
@@ -223,9 +222,9 @@ void RemoteClient::GetNextBlocks(ServerEnvironment *env, EmergeManager *emerge,
 	// limit max fov effect to 50%, 60% at 20n/s fly speed
 	camera_fov = camera_fov / (1 + dot / 300.0f);
 
-	s32 nearest_emerged_d = -1;
+	s32 nearest_emerged_d	 = -1;
 	s32 nearest_emergefull_d = -1;
-	s32 nearest_sent_d = -1;
+	s32 nearest_sent_d		 = -1;
 	//bool queue_is_full = false;
 
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
@@ -305,7 +304,7 @@ void RemoteClient::GetNextBlocks(ServerEnvironment *env, EmergeManager *emerge,
 			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
 
 			bool surely_not_found_on_disk = false;
-			bool block_is_invalid = false;
+			bool block_is_invalid		  = false;
 			if (block) {
 				// Reset usage timer, this block will be of use in the future.
 				block->resetUsageTimer();
@@ -369,7 +368,7 @@ void RemoteClient::GetNextBlocks(ServerEnvironment *env, EmergeManager *emerge,
 			/*
 				Add block to send queue
 			*/
-			PrioritySortedBlockTransfer q((float)dist, p, peer_id);
+			PrioritySortedBlockTransfer q((float) dist, p, peer_id);
 
 			dest.push_back(q);
 
@@ -386,7 +385,7 @@ queue_full_break:
 		new_nearest_unsent_d = nearest_emergefull_d;
 	} else {
 		if (d > full_d_max) {
-			new_nearest_unsent_d = 0;
+			new_nearest_unsent_d		  = 0;
 			m_nothing_to_send_pause_timer = 2.0f;
 		} else {
 			if (nearest_sent_d != -1)
@@ -427,7 +426,7 @@ void RemoteClient::SentBlock(v3s16 p)
 
 void RemoteClient::SetBlockNotSent(v3s16 p)
 {
-	m_nearest_unsent_d = 0;
+	m_nearest_unsent_d			  = 0;
 	m_nothing_to_send_pause_timer = 0;
 
 	if (m_blocks_sending.find(p) != m_blocks_sending.end())
@@ -439,7 +438,7 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 
 void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock *> &blocks)
 {
-	m_nearest_unsent_d = 0;
+	m_nearest_unsent_d			  = 0;
 	m_nothing_to_send_pause_timer = 0;
 
 	for (auto &block : blocks) {
@@ -489,7 +488,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			m_state = CS_AwaitingInit2;
 			if (chosen_mech == AUTH_MECHANISM_SRP ||
 					chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD)
-				srp_verifier_delete((SRPVerifier *)auth_data);
+				srp_verifier_delete((SRPVerifier *) auth_data);
 			chosen_mech = AUTH_MECHANISM_NONE;
 			break;
 		case CSE_Disconnect:
@@ -499,7 +498,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			m_state = CS_Denied;
 			if (chosen_mech == AUTH_MECHANISM_SRP ||
 					chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD)
-				srp_verifier_delete((SRPVerifier *)auth_data);
+				srp_verifier_delete((SRPVerifier *) auth_data);
 			chosen_mech = AUTH_MECHANISM_NONE;
 			break;
 		default:
@@ -573,7 +572,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		case CSE_SudoSuccess:
 			m_state = CS_SudoMode;
 			if (chosen_mech == AUTH_MECHANISM_SRP)
-				srp_verifier_delete((SRPVerifier *)auth_data);
+				srp_verifier_delete((SRPVerifier *) auth_data);
 			chosen_mech = AUTH_MECHANISM_NONE;
 			break;
 		/* Init GotInit2 SetDefinitionsSent SetMediaSent SetDenied */
@@ -611,10 +610,9 @@ u64 RemoteClient::uptime() const
 	return porting::getTimeS() - m_connection_time;
 }
 
-ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> &con)
-	: m_con(con), m_env(NULL), m_print_info_timer(0.0f)
-{
-}
+ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> &con) :
+	m_con(con), m_env(NULL), m_print_info_timer(0.0f)
+{}
 ClientInterface::~ClientInterface()
 {
 	/*
@@ -726,7 +724,7 @@ void ClientInterface::sendToAllCompat(
 {
 	RecursiveMutexAutoLock clientslock(m_clients_mutex);
 	for (auto &client_it : m_clients) {
-		RemoteClient *client = client_it.second;
+		RemoteClient *client	   = client_it.second;
 		NetworkPacket *pkt_to_send = nullptr;
 
 		if (client->net_proto_version >= min_proto_ver) {
@@ -838,8 +836,8 @@ void ClientInterface::CreateClient(session_t peer_id)
 		return;
 
 	// Create client
-	RemoteClient *client = new RemoteClient();
-	client->peer_id = peer_id;
+	RemoteClient *client	   = new RemoteClient();
+	client->peer_id			   = peer_id;
 	m_clients[client->peer_id] = client;
 }
 

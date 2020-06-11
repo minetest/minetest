@@ -90,8 +90,9 @@ public:
 */
 
 ClientEnvironment::ClientEnvironment(
-		ClientMap *map, ITextureSource *texturesource, Client *client)
-	: Environment(client), m_map(map), m_texturesource(texturesource), m_client(client)
+		ClientMap *map, ITextureSource *texturesource, Client *client) :
+	Environment(client),
+	m_map(map), m_texturesource(texturesource), m_client(client)
 {
 	auto *shdrsrc = m_client->getShaderSource();
 	shdrsrc->addShaderConstantSetterFactory(new CAOShaderConstantSetterFactory());
@@ -138,7 +139,7 @@ void ClientEnvironment::step(float dtime)
 
 	// Get some settings
 	bool fly_allowed = m_client->checkLocalPrivilege("fly");
-	bool free_move = fly_allowed && g_settings->getBool("free_move");
+	bool free_move	 = fly_allowed && g_settings->getBool("free_move");
 
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();
@@ -223,7 +224,7 @@ void ClientEnvironment::step(float dtime)
 					static const f32 viscosity_factor = 0.3f;
 
 					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
-					f32 dl = d_wanted.getLength();
+					f32 dl		 = d_wanted.getLength();
 					if (dl > lplayer->movement_liquid_fluidity_smooth)
 						dl = lplayer->movement_liquid_fluidity_smooth;
 
@@ -254,21 +255,21 @@ void ClientEnvironment::step(float dtime)
 		if (speed_diff.Y < 0 || info.old_speed.Y >= 0)
 			continue;
 		// Get rid of other components
-		speed_diff.X = 0;
-		speed_diff.Z = 0;
-		f32 pre_factor = 1; // 1 hp per node/s
-		f32 tolerance = BS * 14; // 5 without damage
+		speed_diff.X	= 0;
+		speed_diff.Z	= 0;
+		f32 pre_factor	= 1; // 1 hp per node/s
+		f32 tolerance	= BS * 14; // 5 without damage
 		f32 post_factor = 1; // 1 hp per node/s
 		if (info.type == COLLISION_NODE) {
 			const ContentFeatures &f = m_client->ndef()->get(m_map->getNode(info.node_p));
 			// Determine fall damage multiplier
-			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
-			pre_factor = 1.0f + (float)addp / 100.0f;
+			int addp   = itemgroup_get(f.groups, "fall_damage_add_percent");
+			pre_factor = 1.0f + (float) addp / 100.0f;
 		}
 		float speed = pre_factor * speed_diff.getLength();
 		if (speed > tolerance && !player_immortal) {
 			f32 damage_f = (speed - tolerance) / BS * post_factor;
-			u16 damage = (u16)MYMIN(damage_f + 0.5, U16_MAX);
+			u16 damage	 = (u16) MYMIN(damage_f + 0.5, U16_MAX);
 			if (damage != 0) {
 				damageLocalPlayer(damage, true);
 				m_client->getEventManager()->put(
@@ -289,7 +290,7 @@ void ClientEnvironment::step(float dtime)
 		// (day: LIGHT_SUN, night: 0)
 		MapNode node_at_lplayer(CONTENT_AIR, 0x0f, 0);
 
-		v3s16 p = lplayer->getLightPosition();
+		v3s16 p			= lplayer->getLightPosition();
 		node_at_lplayer = m_map->getNode(p);
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
@@ -301,8 +302,8 @@ void ClientEnvironment::step(float dtime)
 	*/
 
 	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
-	auto cb_state = [this, dtime, update_lighting, day_night_ratio](
-							ClientActiveObject *cao) {
+	auto cb_state		 = [this, dtime, update_lighting, day_night_ratio](
+							   ClientActiveObject *cao) {
 		// Step object
 		cao->step(dtime, this);
 
@@ -338,7 +339,7 @@ GenericCAO *ClientEnvironment::getGenericCAO(u16 id)
 {
 	ClientActiveObject *obj = getActiveObject(id);
 	if (obj && obj->getType() == ACTIVEOBJECT_TYPE_GENERIC)
-		return (GenericCAO *)obj;
+		return (GenericCAO *) obj;
 
 	return NULL;
 }
@@ -352,7 +353,7 @@ u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
 {
 	// try to reuse id's as late as possible
 	static u16 last_used_id = 0;
-	u16 startid = last_used_id;
+	u16 startid				= last_used_id;
 	for (;;) {
 		last_used_id++;
 		if (isFreeClientActiveObjectId(last_used_id, objects))
@@ -379,7 +380,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 void ClientEnvironment::addActiveObject(u16 id, u8 type, const std::string &init_data)
 {
 	ClientActiveObject *obj =
-			ClientActiveObject::create((ActiveObjectType)type, m_client, this);
+			ClientActiveObject::create((ActiveObjectType) type, m_client, this);
 	if (obj == NULL) {
 		infostream << "ClientEnvironment::addActiveObject(): "
 				   << "id=" << id << " type=" << type << ": Couldn't create object"
@@ -465,8 +466,8 @@ void ClientEnvironment::damageLocalPlayer(u16 damage, bool handle_hp)
 	}
 
 	ClientEnvEvent event;
-	event.type = CEE_PLAYER_DAMAGE;
-	event.player_damage.amount = damage;
+	event.type						   = CEE_PLAYER_DAMAGE;
+	event.player_damage.amount		   = damage;
 	event.player_damage.send_to_server = handle_hp;
 	m_client_event_queue.push(event);
 }
@@ -506,7 +507,7 @@ void ClientEnvironment::getSelectedActiveObjects(
 		v3s16 current_normal;
 		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
 					&current_intersection, &current_normal)) {
-			objects.emplace_back((s16)obj->getId(), current_intersection, current_normal,
+			objects.emplace_back((s16) obj->getId(), current_intersection, current_normal,
 					(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}

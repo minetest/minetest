@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 
 ServerInventoryManager::ServerInventoryManager() : InventoryManager()
-{
-}
+{}
 
 ServerInventoryManager::~ServerInventoryManager()
 {
@@ -89,7 +88,7 @@ void ServerInventoryManager::setInventoryModified(const InventoryLocation &loc)
 	case InventoryLocation::NODEMETA: {
 		MapEditEvent event;
 		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-		event.p = loc.p;
+		event.p	   = loc.p;
 		m_env->getMap().dispatchEvent(event);
 	} break;
 	case InventoryLocation::DETACHED: {

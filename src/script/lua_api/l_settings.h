@@ -69,7 +69,7 @@ private:
 	Settings *m_settings = nullptr;
 	std::string m_filename;
 	bool m_is_own_settings = false;
-	bool m_write_allowed = true;
+	bool m_write_allowed   = true;
 
 public:
 	LuaSettings(Settings *settings, const std::string &filename);

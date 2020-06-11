@@ -41,35 +41,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 FlagDesc flagdesc_mapgen_v5[] = { { "caverns", MGV5_CAVERNS }, { NULL, 0 } };
 
 
-MapgenV5::MapgenV5(MapgenV5Params *params, EmergeParams *emerge)
-	: MapgenBasic(MAPGEN_V5, params, emerge)
+MapgenV5::MapgenV5(MapgenV5Params *params, EmergeParams *emerge) :
+	MapgenBasic(MAPGEN_V5, params, emerge)
 {
-	spflags = params->spflags;
-	cave_width = params->cave_width;
-	large_cave_depth = params->large_cave_depth;
+	spflags			   = params->spflags;
+	cave_width		   = params->cave_width;
+	large_cave_depth   = params->large_cave_depth;
 	small_cave_num_min = params->small_cave_num_min;
 	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
 	large_cave_num_max = params->large_cave_num_max;
 	large_cave_flooded = params->large_cave_flooded;
-	cavern_limit = params->cavern_limit;
-	cavern_taper = params->cavern_taper;
-	cavern_threshold = params->cavern_threshold;
-	dungeon_ymin = params->dungeon_ymin;
-	dungeon_ymax = params->dungeon_ymax;
+	cavern_limit	   = params->cavern_limit;
+	cavern_taper	   = params->cavern_taper;
+	cavern_threshold   = params->cavern_threshold;
+	dungeon_ymin	   = params->dungeon_ymin;
+	dungeon_ymax	   = params->dungeon_ymax;
 
 	// Terrain noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
-	noise_factor = new Noise(&params->np_factor, seed, csize.X, csize.Z);
-	noise_height = new Noise(&params->np_height, seed, csize.X, csize.Z);
+	noise_factor	   = new Noise(&params->np_factor, seed, csize.X, csize.Z);
+	noise_height	   = new Noise(&params->np_height, seed, csize.X, csize.Z);
 
 	// 3D terrain noise
 	// 1-up 1-down overgeneration
 	noise_ground = new Noise(&params->np_ground, seed, csize.X, csize.Y + 2, csize.Z);
 	// 1 down overgeneration
-	MapgenBasic::np_cave1 = params->np_cave1;
-	MapgenBasic::np_cave2 = params->np_cave2;
-	MapgenBasic::np_cavern = params->np_cavern;
+	MapgenBasic::np_cave1	 = params->np_cave1;
+	MapgenBasic::np_cave2	 = params->np_cave2;
+	MapgenBasic::np_cavern	 = params->np_cavern;
 	MapgenBasic::np_dungeons = params->np_dungeons;
 }
 
@@ -83,17 +83,16 @@ MapgenV5::~MapgenV5()
 }
 
 
-MapgenV5Params::MapgenV5Params()
-	: np_filler_depth(0, 1, v3f(150, 150, 150), 261, 4, 0.7, 2.0),
-	  np_factor(0, 1, v3f(250, 250, 250), 920381, 3, 0.45, 2.0),
-	  np_height(0, 10, v3f(250, 250, 250), 84174, 4, 0.5, 2.0),
-	  np_ground(0, 40, v3f(80, 80, 80), 983240, 4, 0.55, 2.0, NOISE_FLAG_EASED),
-	  np_cave1(0, 12, v3f(61, 61, 61), 52534, 3, 0.5, 2.0),
-	  np_cave2(0, 12, v3f(67, 67, 67), 10325, 3, 0.5, 2.0),
-	  np_cavern(0, 1, v3f(384, 128, 384), 723, 5, 0.63, 2.0),
-	  np_dungeons(0.9, 0.5, v3f(500, 500, 500), 0, 2, 0.8, 2.0)
-{
-}
+MapgenV5Params::MapgenV5Params() :
+	np_filler_depth(0, 1, v3f(150, 150, 150), 261, 4, 0.7, 2.0),
+	np_factor(0, 1, v3f(250, 250, 250), 920381, 3, 0.45, 2.0),
+	np_height(0, 10, v3f(250, 250, 250), 84174, 4, 0.5, 2.0),
+	np_ground(0, 40, v3f(80, 80, 80), 983240, 4, 0.55, 2.0, NOISE_FLAG_EASED),
+	np_cave1(0, 12, v3f(61, 61, 61), 52534, 3, 0.5, 2.0),
+	np_cave2(0, 12, v3f(67, 67, 67), 10325, 3, 0.5, 2.0),
+	np_cavern(0, 1, v3f(384, 128, 384), 723, 5, 0.63, 2.0),
+	np_dungeons(0.9, 0.5, v3f(500, 500, 500), 0, 2, 0.8, 2.0)
+{}
 
 
 void MapgenV5Params::readParams(const Settings *settings)
@@ -205,16 +204,16 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 			data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
-	this->vm = data->vmanip;
-	this->ndef = data->nodedef;
+	this->vm		 = data->vmanip;
+	this->ndef		 = data->nodedef;
 	//TimeTaker t("makeChunk");
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
-	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
-	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	node_min		   = blockpos_min * MAP_BLOCKSIZE;
+	node_max		   = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	full_node_min	   = (blockpos_min - 1) * MAP_BLOCKSIZE;
+	full_node_max	   = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 
 	// Create a block-specific seed
 	blockseed = getBlockSeed2(full_node_min, seed);
@@ -283,8 +282,8 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 
 int MapgenV5::generateBaseTerrain()
 {
-	u32 index = 0;
-	u32 index2d = 0;
+	u32 index				= 0;
+	u32 index2d				= 0;
 	int stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 
 	noise_factor->perlinMap2D(node_min.X, node_min.Z);

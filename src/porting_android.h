@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #ifndef __ANDROID__
-#error this include has to be included on android port only!
+	#error this include has to be included on android port only!
 #endif
 
 #include <jni.h>

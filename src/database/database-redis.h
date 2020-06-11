@@ -23,9 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_REDIS
 
-#include <hiredis.h>
-#include <string>
-#include "database.h"
+	#include <hiredis.h>
+	#include <string>
+	#include "database.h"
 
 class Settings;
 
@@ -45,7 +45,7 @@ public:
 
 private:
 	redisContext *ctx = nullptr;
-	std::string hash = "";
+	std::string hash  = "";
 };
 
 #endif // USE_REDIS

@@ -40,7 +40,7 @@ ServerActiveObject *UnitSAO::getParent() const
 
 void UnitSAO::setArmorGroups(const ItemGroupList &armor_groups)
 {
-	m_armor_groups = armor_groups;
+	m_armor_groups		= armor_groups;
 	m_armor_groups_sent = false;
 }
 
@@ -56,8 +56,8 @@ void UnitSAO::setAnimation(
 	m_animation_range = frame_range;
 	m_animation_speed = frame_speed;
 	m_animation_blend = frame_blend;
-	m_animation_loop = frame_loop;
-	m_animation_sent = false;
+	m_animation_loop  = frame_loop;
+	m_animation_sent  = false;
 }
 
 void UnitSAO::getAnimation(
@@ -66,12 +66,12 @@ void UnitSAO::getAnimation(
 	*frame_range = m_animation_range;
 	*frame_speed = m_animation_speed;
 	*frame_blend = m_animation_blend;
-	*frame_loop = m_animation_loop;
+	*frame_loop	 = m_animation_loop;
 }
 
 void UnitSAO::setAnimationSpeed(float frame_speed)
 {
-	m_animation_speed = frame_speed;
+	m_animation_speed	   = frame_speed;
 	m_animation_speed_sent = false;
 }
 
@@ -79,7 +79,7 @@ void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotatio
 {
 	// store these so they can be updated to clients
 	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
-	m_bone_position_sent = false;
+	m_bone_position_sent  = false;
 }
 
 void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
@@ -132,12 +132,12 @@ void UnitSAO::setAttachment(
 	// breaks some things so we also give the server the most accurate representation
 	// even if players only see the client changes.
 
-	int old_parent = m_attachment_parent_id;
+	int old_parent		   = m_attachment_parent_id;
 	m_attachment_parent_id = parent_id;
-	m_attachment_bone = bone;
-	m_attachment_position = position;
-	m_attachment_rotation = rotation;
-	m_attachment_sent = false;
+	m_attachment_bone	   = bone;
+	m_attachment_position  = position;
+	m_attachment_rotation  = rotation;
+	m_attachment_sent	   = false;
 
 	if (parent_id != old_parent) {
 		onDetach(old_parent);
@@ -149,9 +149,9 @@ void UnitSAO::getAttachment(
 		int *parent_id, std::string *bone, v3f *position, v3f *rotation) const
 {
 	*parent_id = m_attachment_parent_id;
-	*bone = m_attachment_bone;
-	*position = m_attachment_position;
-	*rotation = m_attachment_rotation;
+	*bone	   = m_attachment_bone;
+	*position  = m_attachment_position;
+	*rotation  = m_attachment_rotation;
 }
 
 void UnitSAO::clearChildAttachments()

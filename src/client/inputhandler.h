@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "renderingengine.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
-#include "gui/touchscreengui.h"
+	#include "gui/touchscreengui.h"
 #endif
 
 class InputHandler;
@@ -148,7 +148,7 @@ public:
 
 	s32 getMouseWheel()
 	{
-		s32 a = mouse_wheel;
+		s32 a		= mouse_wheel;
 		mouse_wheel = 0;
 		return a;
 	}
@@ -158,14 +158,14 @@ public:
 		keyIsDown.clear();
 		keyWasDown.clear();
 
-		leftclicked = false;
-		rightclicked = false;
-		leftreleased = false;
+		leftclicked	  = false;
+		rightclicked  = false;
+		leftreleased  = false;
 		rightreleased = false;
 
-		left_active = false;
+		left_active	  = false;
 		middle_active = false;
-		right_active = false;
+		right_active  = false;
 
 		mouse_wheel = 0;
 	}
@@ -177,14 +177,14 @@ public:
 #endif
 	}
 
-	bool leftclicked = false;
-	bool rightclicked = false;
-	bool leftreleased = false;
+	bool leftclicked   = false;
+	bool rightclicked  = false;
+	bool leftreleased  = false;
 	bool rightreleased = false;
 
-	bool left_active = false;
+	bool left_active   = false;
 	bool middle_active = false;
-	bool right_active = false;
+	bool right_active  = false;
 
 	s32 mouse_wheel = 0;
 
@@ -218,27 +218,27 @@ public:
 
 	virtual ~InputHandler() = default;
 
-	virtual bool isKeyDown(GameKeyType k) = 0;
+	virtual bool isKeyDown(GameKeyType k)  = 0;
 	virtual bool wasKeyDown(GameKeyType k) = 0;
-	virtual bool cancelPressed() = 0;
+	virtual bool cancelPressed()		   = 0;
 
 	virtual void listenForKey(const KeyPress &keyCode) {}
 	virtual void dontListenForKeys() {}
 
-	virtual v2s32 getMousePos() = 0;
+	virtual v2s32 getMousePos()			   = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;
 
-	virtual bool getLeftState() = 0;
+	virtual bool getLeftState()	 = 0;
 	virtual bool getRightState() = 0;
 
-	virtual bool getLeftClicked() = 0;
-	virtual bool getRightClicked() = 0;
-	virtual void resetLeftClicked() = 0;
+	virtual bool getLeftClicked()	 = 0;
+	virtual bool getRightClicked()	 = 0;
+	virtual void resetLeftClicked()	 = 0;
 	virtual void resetRightClicked() = 0;
 
-	virtual bool getLeftReleased() = 0;
-	virtual bool getRightReleased() = 0;
-	virtual void resetLeftReleased() = 0;
+	virtual bool getLeftReleased()	  = 0;
+	virtual bool getRightReleased()	  = 0;
+	virtual void resetLeftReleased()  = 0;
 	virtual void resetRightReleased() = 0;
 
 	virtual s32 getMouseWheel() = 0;
@@ -392,10 +392,10 @@ private:
 	KeyList keydown;
 	v2s32 mousepos;
 	v2s32 mousespeed;
-	bool leftdown = false;
-	bool rightdown = false;
-	bool leftclicked = false;
-	bool rightclicked = false;
-	bool leftreleased = false;
+	bool leftdown	   = false;
+	bool rightdown	   = false;
+	bool leftclicked   = false;
+	bool rightclicked  = false;
+	bool leftreleased  = false;
 	bool rightreleased = false;
 };

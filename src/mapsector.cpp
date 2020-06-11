@@ -22,10 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "serialization.h"
 
-MapSector::MapSector(Map *parent, v2s16 pos, IGameDef *gamedef)
-	: m_parent(parent), m_pos(pos), m_gamedef(gamedef)
-{
-}
+MapSector::MapSector(Map *parent, v2s16 pos, IGameDef *gamedef) :
+	m_parent(parent), m_pos(pos), m_gamedef(gamedef)
+{}
 
 MapSector::~MapSector()
 {
@@ -60,7 +59,7 @@ MapBlock *MapSector::getBlockBuffered(s16 y)
 
 	// Cache the last result
 	m_block_cache_y = y;
-	m_block_cache = block;
+	m_block_cache	= block;
 
 	return block;
 }

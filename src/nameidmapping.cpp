@@ -40,9 +40,9 @@ void NameIdMapping::deSerialize(std::istream &is)
 	m_id_to_name.clear();
 	m_name_to_id.clear();
 	for (u32 i = 0; i < count; i++) {
-		u16 id = readU16(is);
-		std::string name = deSerializeString(is);
-		m_id_to_name[id] = name;
+		u16 id			   = readU16(is);
+		std::string name   = deSerializeString(is);
+		m_id_to_name[id]   = name;
 		m_name_to_id[name] = id;
 	}
 }

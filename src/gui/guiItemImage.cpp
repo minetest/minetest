@@ -22,11 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 GUIItemImage::GUIItemImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 		const core::rect<s32> &rectangle, const std::string &item_name,
-		gui::IGUIFont *font, Client *client)
-	: gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
-	  m_item_name(item_name), m_font(font), m_client(client), m_label(core::stringw())
-{
-}
+		gui::IGUIFont *font, Client *client) :
+	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
+	m_item_name(item_name), m_font(font), m_client(client), m_label(core::stringw())
+{}
 
 void GUIItemImage::draw()
 {

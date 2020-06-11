@@ -83,7 +83,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver, video::ITex
 	porting::mt_snprintf(rectstr, sizeof(rectstr), "%d:%d:%d:%d:%d:%d",
 			srcrect.UpperLeftCorner.X, srcrect.UpperLeftCorner.Y, srcrect.getWidth(),
 			srcrect.getHeight(), destrect.getWidth(), destrect.getHeight());
-	io::path origname = src->getName().getPath();
+	io::path origname  = src->getName().getPath();
 	io::path scalename = origname + "@guiScalingFilter:" + rectstr;
 
 	// Search for existing scaled texture.
@@ -106,7 +106,8 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver, video::ITex
 	// Create a new destination image and scale the source into it.
 	imageCleanTransparent(srcimg, 0);
 	video::IImage *destimg = driver->createImage(src->getColorFormat(),
-			core::dimension2d<u32>((u32)destrect.getWidth(), (u32)destrect.getHeight()));
+			core::dimension2d<u32>(
+					(u32) destrect.getWidth(), (u32) destrect.getHeight()));
 	imageScaleNNAA(srcimg, srcrect, destimg);
 
 #if ENABLE_GLES
@@ -114,8 +115,8 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver, video::ITex
 	// the image dimensions to the next power of 2, if necessary.
 	if (!hasNPotSupport()) {
 		video::IImage *po2img = driver->createImage(src->getColorFormat(),
-				core::dimension2d<u32>(npot2((u32)destrect.getWidth()),
-						npot2((u32)destrect.getHeight())));
+				core::dimension2d<u32>(npot2((u32) destrect.getWidth()),
+						npot2((u32) destrect.getHeight())));
 		po2img->fill(video::SColor(0, 0, 0, 0));
 		destimg->copyTo(po2img);
 		destimg->drop();
@@ -191,13 +192,13 @@ void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
 			case 1:
 				dest.UpperLeftCorner.X += middle.UpperLeftCorner.X;
 				dest.LowerRightCorner.X -= lowerRightOffset.X;
-				src.UpperLeftCorner.X = middle.UpperLeftCorner.X;
+				src.UpperLeftCorner.X  = middle.UpperLeftCorner.X;
 				src.LowerRightCorner.X = middle.LowerRightCorner.X;
 				break;
 
 			case 2:
 				dest.UpperLeftCorner.X = rect.LowerRightCorner.X - lowerRightOffset.X;
-				src.UpperLeftCorner.X = middle.LowerRightCorner.X;
+				src.UpperLeftCorner.X  = middle.LowerRightCorner.X;
 				break;
 			}
 
@@ -211,13 +212,13 @@ void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
 			case 1:
 				dest.UpperLeftCorner.Y += middle.UpperLeftCorner.Y;
 				dest.LowerRightCorner.Y -= lowerRightOffset.Y;
-				src.UpperLeftCorner.Y = middle.UpperLeftCorner.Y;
+				src.UpperLeftCorner.Y  = middle.UpperLeftCorner.Y;
 				src.LowerRightCorner.Y = middle.LowerRightCorner.Y;
 				break;
 
 			case 2:
 				dest.UpperLeftCorner.Y = rect.LowerRightCorner.Y - lowerRightOffset.Y;
-				src.UpperLeftCorner.Y = middle.LowerRightCorner.Y;
+				src.UpperLeftCorner.Y  = middle.LowerRightCorner.Y;
 				break;
 			}
 

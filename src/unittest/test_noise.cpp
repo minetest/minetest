@@ -61,7 +61,7 @@ void TestNoise::testNoise2dPoint()
 	u32 i = 0;
 	for (u32 y = 0; y != 10; y++)
 		for (u32 x = 0; x != 10; x++, i++) {
-			float actual = NoisePerlin2D(&np_normal, x, y, 1337);
+			float actual   = NoisePerlin2D(&np_normal, x, y, 1337);
 			float expected = expected_2d_results[i];
 			UASSERT(std::fabs(actual - expected) <= 0.00001);
 		}
@@ -74,7 +74,7 @@ void TestNoise::testNoise2dBulk()
 	float *noisevals = noise_normal_2d.perlinMap2D(0, 0, NULL);
 
 	for (u32 i = 0; i != 10 * 10; i++) {
-		float actual = noisevals[i];
+		float actual   = noisevals[i];
 		float expected = expected_2d_results[i];
 		UASSERT(std::fabs(actual - expected) <= 0.00001);
 	}
@@ -88,7 +88,7 @@ void TestNoise::testNoise3dPoint()
 	for (u32 z = 0; z != 10; z++)
 		for (u32 y = 0; y != 10; y++)
 			for (u32 x = 0; x != 10; x++, i++) {
-				float actual = NoisePerlin3D(&np_normal, x, y, z, 1337);
+				float actual   = NoisePerlin3D(&np_normal, x, y, z, 1337);
 				float expected = expected_3d_results[i];
 				UASSERT(std::fabs(actual - expected) <= 0.00001);
 			}
@@ -101,7 +101,7 @@ void TestNoise::testNoise3dBulk()
 	float *noisevals = noise_normal_3d.perlinMap3D(0, 0, 0, NULL);
 
 	for (u32 i = 0; i != 10 * 10 * 10; i++) {
-		float actual = noisevals[i];
+		float actual   = noisevals[i];
 		float expected = expected_3d_results[i];
 		UASSERT(std::fabs(actual - expected) <= 0.00001);
 	}

@@ -46,7 +46,7 @@ struct MainMenuData
 	bool do_reconnect = false;
 
 	// Server options
-	int selected_world = 0;
+	int selected_world			  = 0;
 	bool simple_singleplayer_mode = false;
 
 	// Data to be passed to the script

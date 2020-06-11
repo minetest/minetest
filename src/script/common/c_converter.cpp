@@ -498,7 +498,7 @@ bool getstringfield(lua_State *L, int table, const char *fieldname, std::string 
 	bool got = false;
 
 	if (check_field_or_nil(L, -1, LUA_TSTRING, fieldname)) {
-		size_t len = 0;
+		size_t len		= 0;
 		const char *ptr = lua_tolstring(L, -1, &len);
 		if (ptr) {
 			result.assign(ptr, len);
@@ -516,7 +516,7 @@ bool getfloatfield(lua_State *L, int table, const char *fieldname, float &result
 
 	if (check_field_or_nil(L, -1, LUA_TNUMBER, fieldname)) {
 		result = lua_tonumber(L, -1);
-		got = true;
+		got	   = true;
 	}
 	lua_pop(L, 1);
 	return got;
@@ -529,7 +529,7 @@ bool getboolfield(lua_State *L, int table, const char *fieldname, bool &result)
 
 	if (check_field_or_nil(L, -1, LUA_TBOOLEAN, fieldname)) {
 		result = lua_toboolean(L, -1);
-		got = true;
+		got	   = true;
 	}
 	lua_pop(L, 1);
 	return got;

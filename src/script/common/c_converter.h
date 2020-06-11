@@ -52,7 +52,7 @@ bool getintfield(lua_State *L, int table, const char *fieldname, T &result)
 	bool got = false;
 	if (check_field_or_nil(L, -1, LUA_TNUMBER, fieldname)) {
 		result = lua_tointeger(L, -1);
-		got = true;
+		got	   = true;
 	}
 	lua_pop(L, 1);
 	return got;

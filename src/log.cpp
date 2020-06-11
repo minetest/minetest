@@ -250,7 +250,7 @@ const std::string Logger::getThreadName()
 	std::map<std::thread::id, std::string>::const_iterator it;
 
 	std::thread::id id = std::this_thread::get_id();
-	it = m_thread_names.find(id);
+	it				   = m_thread_names.find(id);
 	if (it != m_thread_names.end())
 		return it->second;
 
@@ -265,8 +265,8 @@ void Logger::log(LogLevel lev, const std::string &text)
 		return;
 
 	const std::string thread_name = getThreadName();
-	const std::string label = getLevelLabel(lev);
-	const std::string timestamp = getTimestamp();
+	const std::string label		  = getLevelLabel(lev);
+	const std::string timestamp	  = getTimestamp();
 	std::ostringstream os(std::ios_base::binary);
 	os << timestamp << ": " << label << "[" << thread_name << "]: " << text;
 
@@ -371,7 +371,7 @@ void StreamLogOutput::logRaw(LogLevel lev, const std::string &line)
 void LogOutputBuffer::updateLogLevel()
 {
 	const std::string &conf_loglev = g_settings->get("chat_log_level");
-	LogLevel log_level = Logger::stringToLevel(conf_loglev);
+	LogLevel log_level			   = Logger::stringToLevel(conf_loglev);
 	if (log_level == LL_MAX) {
 		warningstream << "Supplied unrecognized chat_log_level; "
 						 "showing none."

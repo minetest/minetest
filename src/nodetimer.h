@@ -37,10 +37,9 @@ class NodeTimer
 public:
 	NodeTimer() = default;
 	NodeTimer(const v3s16 &position_) : position(position_) {}
-	NodeTimer(f32 timeout_, f32 elapsed_, v3s16 position_)
-		: timeout(timeout_), elapsed(elapsed_), position(position_)
-	{
-	}
+	NodeTimer(f32 timeout_, f32 elapsed_, v3s16 position_) :
+		timeout(timeout_), elapsed(elapsed_), position(position_)
+	{}
 	~NodeTimer() = default;
 
 	void serialize(std::ostream &os) const;
@@ -58,7 +57,7 @@ public:
 class NodeTimerList
 {
 public:
-	NodeTimerList() = default;
+	NodeTimerList()	 = default;
 	~NodeTimerList() = default;
 
 	void serialize(std::ostream &os, u8 map_format_version) const;
@@ -72,7 +71,7 @@ public:
 		if (n == m_iterators.end())
 			return NodeTimer();
 		NodeTimer t = n->second->second;
-		t.elapsed = t.timeout - (n->second->first - m_time);
+		t.elapsed	= t.timeout - (n->second->first - m_time);
 		return t;
 	}
 	// Deletes timer
@@ -98,8 +97,8 @@ public:
 	// Undefined behaviour if there already is a timer
 	void insert(NodeTimer timer)
 	{
-		v3s16 p = timer.position;
-		double trigger_time = m_time + (double)(timer.timeout - timer.elapsed);
+		v3s16 p				= timer.position;
+		double trigger_time = m_time + (double) (timer.timeout - timer.elapsed);
 		std::multimap<double, NodeTimer>::iterator it =
 				m_timers.insert(std::pair<double, NodeTimer>(trigger_time, timer));
 		m_iterators.insert(
@@ -128,5 +127,5 @@ private:
 	std::multimap<double, NodeTimer> m_timers;
 	std::map<v3s16, std::multimap<double, NodeTimer>::iterator> m_iterators;
 	double m_next_trigger_time = -1.0;
-	double m_time = 0.0;
+	double m_time			   = 0.0;
 };

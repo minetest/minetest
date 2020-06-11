@@ -21,29 +21,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_REDIS
 
-#include "database-redis.h"
+	#include "database-redis.h"
 
-#include "settings.h"
-#include "log.h"
-#include "exceptions.h"
-#include "util/string.h"
+	#include "settings.h"
+	#include "log.h"
+	#include "exceptions.h"
+	#include "util/string.h"
 
-#include <hiredis.h>
-#include <cassert>
+	#include <hiredis.h>
+	#include <cassert>
 
 
 Database_Redis::Database_Redis(Settings &conf)
 {
 	std::string tmp;
 	try {
-		tmp = conf.get("redis_address");
+		tmp	 = conf.get("redis_address");
 		hash = conf.get("redis_hash");
 	} catch (SettingNotFoundException &) {
 		throw SettingNotFoundException("Set redis_address and "
 									   "redis_hash in world.mt to use the redis backend");
 	}
 	const char *addr = tmp.c_str();
-	int port = conf.exists("redis_port") ? conf.getU16("redis_port") : 6379;
+	int port		 = conf.exists("redis_port") ? conf.getU16("redis_port") : 6379;
 	// if redis_address contains '/' assume unix socket, else hostname/ip
 	ctx = tmp.find('/') != std::string::npos ? redisConnectUnix(addr) :
 											   redisConnect(addr, port);
@@ -122,7 +122,7 @@ bool Database_Redis::saveBlock(const v3s16 &pos, const std::string &data)
 
 void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 {
-	std::string tmp = i64tos(getBlockAsInteger(pos));
+	std::string tmp	  = i64tos(getBlockAsInteger(pos));
 	redisReply *reply = static_cast<redisReply *>(
 			redisCommand(ctx, "HGET %s %s", hash.c_str(), tmp.c_str()));
 

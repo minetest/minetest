@@ -77,7 +77,7 @@ struct TextDest
 class IFormSource
 {
 public:
-	virtual ~IFormSource() = default;
+	virtual ~IFormSource()					   = default;
 	virtual const std::string &getForm() const = 0;
 	// Fill in variables in field text
 	virtual std::string resolveText(const std::string &str) { return str; }
@@ -90,10 +90,10 @@ class GUIFormSpecMenu : public GUIModalMenu
 		ListRingSpec() = default;
 
 		ListRingSpec(
-				const InventoryLocation &a_inventoryloc, const std::string &a_listname)
-			: inventoryloc(a_inventoryloc), listname(a_listname)
-		{
-		}
+				const InventoryLocation &a_inventoryloc, const std::string &a_listname) :
+			inventoryloc(a_inventoryloc),
+			listname(a_listname)
+		{}
 
 		InventoryLocation inventoryloc;
 		std::string listname;
@@ -105,13 +105,12 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 		FieldSpec(const std::string &name, const std::wstring &label,
 				const std::wstring &default_text, s32 id, int priority = 0,
-				gui::ECURSOR_ICON cursor_icon = ECI_NORMAL)
-			: fname(name), flabel(label),
-			  fdefault(unescape_enriched(translate_string(default_text))), fid(id),
-			  send(false), ftype(f_Unknown), is_exit(false), priority(priority),
-			  fcursor_icon(cursor_icon)
-		{
-		}
+				gui::ECURSOR_ICON cursor_icon = ECI_NORMAL) :
+			fname(name),
+			flabel(label), fdefault(unescape_enriched(translate_string(default_text))),
+			fid(id), send(false), ftype(f_Unknown), is_exit(false), priority(priority),
+			fcursor_icon(cursor_icon)
+		{}
 
 		std::string fname;
 		std::wstring flabel;
@@ -130,10 +129,10 @@ class GUIFormSpecMenu : public GUIModalMenu
 	{
 		TooltipSpec() = default;
 		TooltipSpec(const std::wstring &a_tooltip, irr::video::SColor a_bgcolor,
-				irr::video::SColor a_color)
-			: tooltip(translate_string(a_tooltip)), bgcolor(a_bgcolor), color(a_color)
-		{
-		}
+				irr::video::SColor a_color) :
+			tooltip(translate_string(a_tooltip)),
+			bgcolor(a_bgcolor), color(a_color)
+		{}
 
 		std::wstring tooltip;
 		irr::video::SColor bgcolor;
@@ -155,7 +154,7 @@ public:
 	void setFormSpec(const std::string &formspec_string,
 			const InventoryLocation &current_inventory_location)
 	{
-		m_formspec_string = formspec_string;
+		m_formspec_string			 = formspec_string;
 		m_current_inventory_location = current_inventory_location;
 		regenerateGui(m_screensize_old);
 	}
@@ -188,7 +187,7 @@ public:
 
 	void lockSize(bool lock, v2u32 basescreensize = v2u32(0, 0))
 	{
-		m_lock = lock;
+		m_lock			 = lock;
 		m_lockscreensize = basescreensize;
 	}
 
@@ -283,21 +282,21 @@ protected:
 	std::vector<std::pair<std::string, GUIScrollContainer *>> m_scroll_containers;
 
 	GUIInventoryList::ItemSpec *m_selected_item = nullptr;
-	u16 m_selected_amount = 0;
-	bool m_selected_dragging = false;
+	u16 m_selected_amount						= 0;
+	bool m_selected_dragging					= false;
 	ItemStack m_selected_swap;
 
 	gui::IGUIStaticText *m_tooltip_element = nullptr;
 
 	u64 m_tooltip_show_delay;
 	bool m_tooltip_append_itemname;
-	u64 m_hovered_time = 0;
+	u64 m_hovered_time	 = 0;
 	s32 m_old_tooltip_id = -1;
 
 	bool m_auto_place = false;
 
 	bool m_allowclose = true;
-	bool m_lock = false;
+	bool m_lock		  = false;
 	v2u32 m_lockscreensize;
 
 	bool m_bgnonfullscreen;
@@ -311,7 +310,7 @@ protected:
 private:
 	IFormSource *m_form_src;
 	TextDest *m_text_dst;
-	u16 m_formspec_version = 1;
+	u16 m_formspec_version		  = 1;
 	std::string m_focused_element = "";
 	JoystickController *m_joystick;
 	bool m_show_debug = false;
@@ -337,11 +336,11 @@ private:
 
 		struct
 		{
-			s32 max = 1000;
-			s32 min = 0;
-			s32 small_step = 10;
-			s32 large_step = 100;
-			s32 thumb_size = 1;
+			s32 max										  = 1000;
+			s32 min										  = 0;
+			s32 small_step								  = 10;
+			s32 large_step								  = 100;
+			s32 thumb_size								  = 1;
 			GUIScrollBar::ArrowVisibility arrow_visiblity = GUIScrollBar::DEFAULT;
 		} scrollbar_options;
 

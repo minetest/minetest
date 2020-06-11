@@ -28,16 +28,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "porting.h"
 #ifdef __ANDROID__
-#include "settings.h" // For g_settings
+	#include "settings.h" // For g_settings
 #endif
 
 namespace fs
 {
 #ifdef _WIN32 // WINDOWS
 
-#define _WIN32_WINNT 0x0501
-#include <windows.h>
-#include <shlwapi.h>
+	#define _WIN32_WINNT 0x0501
+	#include <windows.h>
+	#include <shlwapi.h>
 
 std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
@@ -65,7 +65,7 @@ std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 
 		DirListNode node;
 		node.name = FindFileData.cFileName;
-		node.dir = FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
+		node.dir  = FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
 		if (node.name != "." && node.name != "..")
 			listing.push_back(node);
 
@@ -73,7 +73,7 @@ std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 		while (FindNextFile(hFind, &FindFileData) != 0) {
 			DirListNode node;
 			node.name = FindFileData.cFileName;
-			node.dir = FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
+			node.dir  = FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
 			if (node.name != "." && node.name != "..")
 				listing.push_back(node);
 		}
@@ -182,11 +182,11 @@ std::string TempPath()
 
 #else // POSIX
 
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <unistd.h>
+	#include <sys/types.h>
+	#include <dirent.h>
+	#include <sys/stat.h>
+	#include <sys/wait.h>
+	#include <unistd.h>
 
 std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
@@ -218,10 +218,10 @@ std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 
 			Also we don't know whether symlinks are directories or not.
 		*/
-#ifdef _DIRENT_HAVE_D_TYPE
+	#ifdef _DIRENT_HAVE_D_TYPE
 		if (dirp->d_type != DT_UNKNOWN && dirp->d_type != DT_LNK)
 			isdir = (dirp->d_type == DT_DIR);
-#endif /* _DIRENT_HAVE_D_TYPE */
+	#endif /* _DIRENT_HAVE_D_TYPE */
 
 		/*
 			Was d_type DT_UNKNOWN, DT_LNK or nonexistent?
@@ -299,11 +299,11 @@ bool RecursiveDelete(const std::string &path)
 	if (child_pid == 0) {
 		// Child
 		char argv_data[3][10000];
-#ifdef __ANDROID__
+	#ifdef __ANDROID__
 		strcpy(argv_data[0], "/system/bin/rm");
-#else
+	#else
 		strcpy(argv_data[0], "/bin/rm");
-#endif
+	#endif
 		strcpy(argv_data[1], "-rf");
 		strncpy(argv_data[2], path.c_str(), sizeof(argv_data[2]) - 1);
 		char *argv[4];
@@ -358,11 +358,11 @@ std::string TempPath()
 		compatible with lua's os.tmpname which under the default
 		configuration hardcodes mkstemp("/tmp/lua_XXXXXX").
 	*/
-#ifdef __ANDROID__
+	#ifdef __ANDROID__
 	return g_settings->get("TMPFolder");
-#else
+	#else
 	return DIR_DELIM "tmp";
-#endif
+	#endif
 }
 
 #endif
@@ -404,7 +404,7 @@ bool DeletePaths(const std::vector<std::string> &paths)
 	// Go backwards to succesfully delete the output of GetRecursiveSubPaths
 	for (int i = paths.size() - 1; i >= 0; i--) {
 		const std::string &path = paths[i];
-		bool did = DeleteSingleFileOrEmptyDirectory(path);
+		bool did				= DeleteSingleFileOrEmptyDirectory(path);
 		if (!did) {
 			errorstream << "Failed to delete " << path << std::endl;
 			success = false;
@@ -421,7 +421,7 @@ bool RecursiveDeleteContent(const std::string &path)
 		if (trim(dln.name) == "." || trim(dln.name) == "..")
 			continue;
 		std::string childpath = path + DIR_DELIM + dln.name;
-		bool r = RecursiveDelete(childpath);
+		bool r				  = RecursiveDelete(childpath);
 		if (!r) {
 			errorstream << "Removing \"" << childpath << "\" failed" << std::endl;
 			return false;
@@ -464,8 +464,8 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 	}
 
 	size_t total = 0;
-	bool retval = true;
-	bool done = false;
+	bool retval	 = true;
+	bool done	 = false;
 	char readbuffer[BUFSIZ];
 	while (!done) {
 		size_t readbytes = fread(readbuffer, 1, sizeof(readbuffer), sourcefile);
@@ -473,7 +473,7 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 		if (ferror(sourcefile)) {
 			errorstream << source << ": IO error: " << strerror(errno) << std::endl;
 			retval = false;
-			done = true;
+			done   = true;
 		}
 		if (readbytes > 0) {
 			fwrite(readbuffer, 1, readbytes, targetfile);
@@ -487,7 +487,7 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 		if (ferror(targetfile)) {
 			errorstream << target << ": IO error: " << strerror(errno) << std::endl;
 			retval = false;
-			done = true;
+			done   = true;
 		}
 	}
 	infostream << "copied " << total << " bytes from " << source << " to " << target
@@ -503,7 +503,7 @@ bool CopyDir(const std::string &source, const std::string &target)
 		if (!PathExists(target)) {
 			fs::CreateAllDirs(target);
 		}
-		bool retval = true;
+		bool retval						 = true;
 		std::vector<DirListNode> content = fs::GetDirListing(source);
 
 		for (const auto &dln : content) {
@@ -527,10 +527,10 @@ bool CopyDir(const std::string &source, const std::string &target)
 
 bool PathStartsWith(const std::string &path, const std::string &prefix)
 {
-	size_t pathsize = path.size();
-	size_t pathpos = 0;
+	size_t pathsize	  = path.size();
+	size_t pathpos	  = 0;
 	size_t prefixsize = prefix.size();
-	size_t prefixpos = 0;
+	size_t prefixpos  = 0;
 	for (;;) {
 		bool delim1 = pathpos == pathsize || IsDirDelimiter(path[pathpos]);
 		bool delim2 = prefixpos == prefixsize || IsDirDelimiter(prefix[prefixpos]);
@@ -550,10 +550,10 @@ bool PathStartsWith(const std::string &path, const std::string &prefix)
 		} else {
 			size_t len = 0;
 			do {
-				char pathchar = path[pathpos + len];
+				char pathchar	= path[pathpos + len];
 				char prefixchar = prefix[prefixpos + len];
 				if (FILESYS_CASE_INSENSITIVE) {
-					pathchar = tolower(pathchar);
+					pathchar   = tolower(pathchar);
 					prefixchar = tolower(prefixchar);
 				}
 				if (pathchar != prefixchar)
@@ -602,7 +602,7 @@ std::string RemoveLastPathComponent(
 
 std::string RemoveRelativePathComponents(std::string path)
 {
-	size_t pos = path.size();
+	size_t pos			= path.size();
 	size_t dotdot_count = 0;
 	while (pos != 0) {
 		size_t component_with_delim_end = pos;

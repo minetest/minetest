@@ -34,7 +34,7 @@ public:
 	std::string getMessage()
 	{
 		std::string s = m_message;
-		m_message = "";
+		m_message	  = "";
 		if (!s.empty())
 			return std::string("[quicktune] ") + s;
 		return "";

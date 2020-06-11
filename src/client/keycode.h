@@ -51,7 +51,7 @@ protected:
 	}
 
 	irr::EKEY_CODE Key = irr::KEY_KEY_CODES_COUNT;
-	wchar_t Char = L'\0';
+	wchar_t Char	   = L'\0';
 	std::string m_name = "";
 };
 

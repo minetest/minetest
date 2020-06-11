@@ -31,11 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include "client/renderingengine.h"
 
-ClientMap::ClientMap(Client *client, MapDrawControl &control, s32 id)
-	: Map(dout_client, client),
-	  scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
-			  RenderingEngine::get_scene_manager(), id),
-	  m_client(client), m_control(control)
+ClientMap::ClientMap(Client *client, MapDrawControl &control, s32 id) :
+	Map(dout_client, client),
+	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
+			RenderingEngine::get_scene_manager(), id),
+	m_client(client), m_control(control)
 {
 	m_box = aabb3f(-BS * 1000000, -BS * 1000000, -BS * 1000000, BS * 1000000,
 			BS * 1000000, BS * 1000000);
@@ -49,8 +49,8 @@ ClientMap::ClientMap(Client *client, MapDrawControl &control, s32 id)
 	 *       (as opposed to the this local caching). This can be addressed in
 	 *       a later release.
 	 */
-	m_cache_trilinear_filter = g_settings->getBool("trilinear_filter");
-	m_cache_bilinear_filter = g_settings->getBool("bilinear_filter");
+	m_cache_trilinear_filter  = g_settings->getBool("trilinear_filter");
+	m_cache_bilinear_filter	  = g_settings->getBool("bilinear_filter");
 	m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
 }
 
@@ -61,7 +61,7 @@ MapSector *ClientMap::emergeSector(v2s16 p2d)
 
 	// Create it if it does not exist yet
 	if (!sector) {
-		sector = new MapSector(this, p2d, m_gamedef);
+		sector		   = new MapSector(this, p2d, m_gamedef);
 		m_sectors[p2d] = sector;
 	}
 
@@ -107,9 +107,9 @@ void ClientMap::updateDrawList()
 	}
 	m_drawlist.clear();
 
-	v3f camera_position = m_camera_position;
+	v3f camera_position	 = m_camera_position;
 	v3f camera_direction = m_camera_direction;
-	f32 camera_fov = m_camera_fov;
+	f32 camera_fov		 = m_camera_fov;
 
 	// Use a higher fov to accomodate faster camera movements.
 	// Blocks are cropped better when they are drawn.
@@ -142,7 +142,7 @@ void ClientMap::updateDrawList()
 
 	for (const auto &sector_it : m_sectors) {
 		MapSector *sector = sector_it.second;
-		v2s16 sp = sector->getPos();
+		v2s16 sp		  = sector->getPos();
 
 		if (!m_control.range_all) {
 			if (sp.X < p_blocks_min.X || sp.X > p_blocks_max.X || sp.Y < p_blocks_min.Z ||
@@ -240,7 +240,7 @@ struct MeshBufListList
 	{
 		// Append to the correct layer
 		std::vector<MeshBufList> &list = lists[layer];
-		const video::SMaterial &m = buf->getMaterial();
+		const video::SMaterial &m	   = buf->getMaterial();
 		for (MeshBufList &l : list) {
 			// comparing a full material is quite expensive so we don't do it if
 			// not even first texture is equal
@@ -279,12 +279,12 @@ void ClientMap::renderMap(video::IVideoDriver *driver, s32 pass)
 		Get animation parameters
 	*/
 	float animation_time = m_client->getAnimationTime();
-	int crack = m_client->getCrackLevel();
-	u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
+	int crack			 = m_client->getCrackLevel();
+	u32 daynight_ratio	 = m_client->getEnv().getDayNightRatio();
 
-	v3f camera_position = m_camera_position;
+	v3f camera_position	 = m_camera_position;
 	v3f camera_direction = m_camera_direction;
-	f32 camera_fov = m_camera_fov;
+	f32 camera_fov		 = m_camera_fov;
 
 	/*
 		Get all blocks and draw all visible ones
@@ -407,31 +407,31 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 		const NodeDefManager *ndef, u32 daylight_factor, float sunlight_min_d,
 		int *result, bool *sunlight_seen)
 {
-	int brightness_sum = 0;
+	int brightness_sum	 = 0;
 	int brightness_count = 0;
-	float distance = start_distance;
+	float distance		 = start_distance;
 	dir.normalize();
 	v3f pf = p0;
 	pf += dir * distance;
-	int noncount = 0;
-	bool nonlight_seen = false;
+	int noncount								= 0;
+	bool nonlight_seen							= false;
 	bool allow_allowing_non_sunlight_propagates = false;
-	bool allow_non_sunlight_propagates = false;
+	bool allow_non_sunlight_propagates			= false;
 	// Check content nearly at camera position
 	{
-		v3s16 p = floatToInt(p0 /*+ dir * 3*BS*/, BS);
+		v3s16 p	  = floatToInt(p0 /*+ dir * 3*BS*/, BS);
 		MapNode n = map->getNode(p);
 		if (ndef->get(n).param_type == CPT_LIGHT && !ndef->get(n).sunlight_propagates)
 			allow_allowing_non_sunlight_propagates = true;
 	}
 	// If would start at CONTENT_IGNORE, start closer
 	{
-		v3s16 p = floatToInt(pf, BS);
+		v3s16 p	  = floatToInt(pf, BS);
 		MapNode n = map->getNode(p);
 		if (n.getContent() == CONTENT_IGNORE) {
-			float newd = 2 * BS;
-			pf = p0 + dir * 2 * newd;
-			distance = newd;
+			float newd	   = 2 * BS;
+			pf			   = p0 + dir * 2 * newd;
+			distance	   = newd;
 			sunlight_min_d = 0;
 		}
 	}
@@ -440,7 +440,7 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 		distance += step;
 		step *= step_multiplier;
 
-		v3s16 p = floatToInt(pf, BS);
+		v3s16 p	  = floatToInt(pf, BS);
 		MapNode n = map->getNode(p);
 		if (allow_allowing_non_sunlight_propagates && i == 0 &&
 				ndef->get(n).param_type == CPT_LIGHT &&
@@ -493,7 +493,7 @@ int ClientMap::getBackgroundBrightness(
 	}
 
 	int sunlight_seen_count = 0;
-	float sunlight_min_d = max_d * 0.8;
+	float sunlight_min_d	= max_d * 0.8;
 	if (sunlight_min_d > 35 * BS)
 		sunlight_min_d = 35 * BS;
 	std::vector<int> values;
@@ -503,11 +503,11 @@ int ClientMap::getBackgroundBrightness(
 		a.buildRotateFromTo(v3f(0, 1, 0), z_dir);
 		v3f dir = m_camera_direction;
 		a.rotateVect(dir);
-		int br = 0;
+		int br	   = 0;
 		float step = BS * 1.5;
 		if (max_d > 35 * BS)
 			step = max_d / 35 * 1.5;
-		float off = step * z_offsets[i];
+		float off			   = step * z_offsets[i];
 		bool sunlight_seen_now = false;
 		bool ok = getVisibleBrightness(this, m_camera_position, dir, step, 1.0,
 				max_d * 0.6 + off, max_d, m_nodedef, daylight_factor, sunlight_min_d, &br,
@@ -521,7 +521,7 @@ int ClientMap::getBackgroundBrightness(
 		if (sunlight_seen_count >= 20)
 			break;
 	}
-	int brightness_sum = 0;
+	int brightness_sum	 = 0;
 	int brightness_count = 0;
 	std::sort(values.begin(), values.end());
 	u32 num_values_to_use = values.size();
@@ -572,7 +572,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	if (post_effect_color.getAlpha() != 0) {
 		// Draw a full-screen rectangle
 		video::IVideoDriver *driver = SceneManager->getVideoDriver();
-		v2u32 ss = driver->getScreenSize();
+		v2u32 ss					= driver->getScreenSize();
 		core::rect<s32> rect(0, 0, ss.X, ss.Y);
 		driver->draw2DRectangle(post_effect_color, rect);
 	}

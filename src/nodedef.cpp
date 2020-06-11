@@ -21,12 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "itemdef.h"
 #ifndef SERVER
-#include "client/mesh.h"
-#include "client/shader.h"
-#include "client/client.h"
-#include "client/renderingengine.h"
-#include "client/tile.h"
-#include <IMeshManipulator.h>
+	#include "client/mesh.h"
+	#include "client/shader.h"
+	#include "client/client.h"
+	#include "client/renderingengine.h"
+	#include "client/tile.h"
+	#include <IMeshManipulator.h>
 #endif
 #include "log.h"
 #include "settings.h"
@@ -51,9 +51,9 @@ void NodeBox::reset()
 	// default is empty
 	fixed.clear();
 	// default is sign/ladder-like
-	wall_top = aabb3f(-BS / 2, BS / 2 - BS / 16., -BS / 2, BS / 2, BS / 2, BS / 2);
+	wall_top	= aabb3f(-BS / 2, BS / 2 - BS / 16., -BS / 2, BS / 2, BS / 2, BS / 2);
 	wall_bottom = aabb3f(-BS / 2, -BS / 2, -BS / 2, BS / 2, -BS / 2 + BS / 16., BS / 2);
-	wall_side = aabb3f(-BS / 2, -BS / 2, -BS / 2, -BS / 2 + BS / 16., BS / 2, BS / 2);
+	wall_side	= aabb3f(-BS / 2, -BS / 2, -BS / 2, -BS / 2 + BS / 16., BS / 2, BS / 2);
 	// no default for other parts
 	connect_top.clear();
 	connect_bottom.clear();
@@ -138,7 +138,7 @@ void NodeBox::deSerialize(std::istream &is)
 
 	reset();
 
-	type = (enum NodeBoxType)readU8(is);
+	type = (enum NodeBoxType) readU8(is);
 
 	if (type == NODEBOX_FIXED || type == NODEBOX_LEVELED) {
 		u16 fixed_count = readU16(is);
@@ -149,12 +149,12 @@ void NodeBox::deSerialize(std::istream &is)
 			fixed.push_back(box);
 		}
 	} else if (type == NODEBOX_WALLMOUNTED) {
-		wall_top.MinEdge = readV3F32(is);
-		wall_top.MaxEdge = readV3F32(is);
+		wall_top.MinEdge	= readV3F32(is);
+		wall_top.MaxEdge	= readV3F32(is);
 		wall_bottom.MinEdge = readV3F32(is);
 		wall_bottom.MaxEdge = readV3F32(is);
-		wall_side.MinEdge = readV3F32(is);
-		wall_side.MaxEdge = readV3F32(is);
+		wall_side.MinEdge	= readV3F32(is);
+		wall_side.MaxEdge	= readV3F32(is);
 	} else if (type == NODEBOX_CONNECTED) {
 #define READBOXES(box)                                                                   \
 	{                                                                                    \
@@ -207,7 +207,7 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString(name);
 	animation.serialize(os, version);
 	bool has_scale = scale > 0;
-	u16 flags = 0;
+	u16 flags	   = 0;
 	if (backface_culling)
 		flags |= TILE_FLAG_BACKFACE_CULLING;
 	if (tileable_horizontal)
@@ -240,12 +240,12 @@ void TileDef::deSerialize(
 		throw SerializationError("unsupported TileDef version");
 	name = deSerializeString(is);
 	animation.deSerialize(is, version);
-	u16 flags = readU16(is);
-	backface_culling = flags & TILE_FLAG_BACKFACE_CULLING;
-	tileable_horizontal = flags & TILE_FLAG_TILEABLE_HORIZONTAL;
-	tileable_vertical = flags & TILE_FLAG_TILEABLE_VERTICAL;
-	has_color = flags & TILE_FLAG_HAS_COLOR;
-	bool has_scale = flags & TILE_FLAG_HAS_SCALE;
+	u16 flags			 = readU16(is);
+	backface_culling	 = flags & TILE_FLAG_BACKFACE_CULLING;
+	tileable_horizontal	 = flags & TILE_FLAG_TILEABLE_HORIZONTAL;
+	tileable_vertical	 = flags & TILE_FLAG_TILEABLE_VERTICAL;
+	has_color			 = flags & TILE_FLAG_HAS_COLOR;
+	bool has_scale		 = flags & TILE_FLAG_HAS_SCALE;
 	bool has_align_style = flags & TILE_FLAG_HAS_ALIGN_STYLE;
 	if (has_color) {
 		color.setRed(readU8(is));
@@ -261,18 +261,18 @@ void TileDef::deSerialize(
 
 void TextureSettings::readSettings()
 {
-	connected_glass = g_settings->getBool("connected_glass");
-	opaque_water = g_settings->getBool("opaque_water");
-	bool enable_shaders = g_settings->getBool("enable_shaders");
-	bool enable_bumpmapping = g_settings->getBool("enable_bumpmapping");
-	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
-	bool smooth_lighting = g_settings->getBool("smooth_lighting");
-	enable_mesh_cache = g_settings->getBool("enable_mesh_cache");
-	enable_minimap = g_settings->getBool("enable_minimap");
-	node_texture_size = g_settings->getU16("texture_min_size");
-	std::string leaves_style_str = g_settings->get("leaves_style");
+	connected_glass					   = g_settings->getBool("connected_glass");
+	opaque_water					   = g_settings->getBool("opaque_water");
+	bool enable_shaders				   = g_settings->getBool("enable_shaders");
+	bool enable_bumpmapping			   = g_settings->getBool("enable_bumpmapping");
+	bool enable_parallax_occlusion	   = g_settings->getBool("enable_parallax_occlusion");
+	bool smooth_lighting			   = g_settings->getBool("smooth_lighting");
+	enable_mesh_cache				   = g_settings->getBool("enable_mesh_cache");
+	enable_minimap					   = g_settings->getBool("enable_minimap");
+	node_texture_size				   = g_settings->getU16("texture_min_size");
+	std::string leaves_style_str	   = g_settings->get("leaves_style");
 	std::string world_aligned_mode_str = g_settings->get("world_aligned_mode");
-	std::string autoscale_mode_str = g_settings->get("autoscale_mode");
+	std::string autoscale_mode_str	   = g_settings->get("autoscale_mode");
 
 	// Mesh cache is not supported in combination with smooth lighting
 	if (smooth_lighting)
@@ -320,13 +320,13 @@ void ContentFeatures::reset()
 		Cached stuff
 	*/
 #ifndef SERVER
-	solidness = 2;
+	solidness		 = 2;
 	visual_solidness = 0;
 	backface_culling = true;
 
 #endif
-	has_on_construct = false;
-	has_on_destruct = false;
+	has_on_construct   = false;
+	has_on_destruct	   = false;
 	has_after_destruct = false;
 	/*
 		Actual data
@@ -338,8 +338,8 @@ void ContentFeatures::reset()
 	groups.clear();
 	// Unknown nodes can be dug
 	groups["dig_immediate"] = 2;
-	drawtype = NDT_NORMAL;
-	mesh = "";
+	drawtype				= NDT_NORMAL;
+	mesh					= "";
 #ifndef SERVER
 	for (auto &i : mesh_ptr)
 		i = NULL;
@@ -350,48 +350,48 @@ void ContentFeatures::reset()
 		i = TileDef();
 	for (auto &j : tiledef_special)
 		j = TileDef();
-	alpha = 255;
-	post_effect_color = video::SColor(0, 0, 0, 0);
-	param_type = CPT_NONE;
-	param_type_2 = CPT2_NONE;
-	is_ground_content = false;
-	light_propagates = false;
-	sunlight_propagates = false;
-	walkable = true;
-	pointable = true;
-	diggable = true;
-	climbable = false;
-	buildable_to = false;
-	floodable = false;
-	rightclickable = true;
-	leveled = 0;
-	leveled_max = LEVELED_MAX;
-	liquid_type = LIQUID_NONE;
-	liquid_alternative_flowing = "";
+	alpha						  = 255;
+	post_effect_color			  = video::SColor(0, 0, 0, 0);
+	param_type					  = CPT_NONE;
+	param_type_2				  = CPT2_NONE;
+	is_ground_content			  = false;
+	light_propagates			  = false;
+	sunlight_propagates			  = false;
+	walkable					  = true;
+	pointable					  = true;
+	diggable					  = true;
+	climbable					  = false;
+	buildable_to				  = false;
+	floodable					  = false;
+	rightclickable				  = true;
+	leveled						  = 0;
+	leveled_max					  = LEVELED_MAX;
+	liquid_type					  = LIQUID_NONE;
+	liquid_alternative_flowing	  = "";
 	liquid_alternative_flowing_id = CONTENT_IGNORE;
-	liquid_alternative_source = "";
-	liquid_alternative_source_id = CONTENT_IGNORE;
-	liquid_viscosity = 0;
-	liquid_renewable = true;
-	liquid_range = LIQUID_LEVEL_MAX + 1;
-	drowning = 0;
-	light_source = 0;
-	damage_per_second = 0;
-	node_box = NodeBox();
-	selection_box = NodeBox();
-	collision_box = NodeBox();
-	waving = 0;
-	legacy_facedir_simple = false;
-	legacy_wallmounted = false;
-	sound_footstep = SimpleSoundSpec();
-	sound_dig = SimpleSoundSpec("__group");
-	sound_dug = SimpleSoundSpec();
+	liquid_alternative_source	  = "";
+	liquid_alternative_source_id  = CONTENT_IGNORE;
+	liquid_viscosity			  = 0;
+	liquid_renewable			  = true;
+	liquid_range				  = LIQUID_LEVEL_MAX + 1;
+	drowning					  = 0;
+	light_source				  = 0;
+	damage_per_second			  = 0;
+	node_box					  = NodeBox();
+	selection_box				  = NodeBox();
+	collision_box				  = NodeBox();
+	waving						  = 0;
+	legacy_facedir_simple		  = false;
+	legacy_wallmounted			  = false;
+	sound_footstep				  = SimpleSoundSpec();
+	sound_dig					  = SimpleSoundSpec("__group");
+	sound_dug					  = SimpleSoundSpec();
 	connects_to.clear();
 	connects_to_ids.clear();
-	connect_sides = 0;
-	color = video::SColor(0xFFFFFFFF);
-	palette_name = "";
-	palette = NULL;
+	connect_sides		= 0;
+	color				= video::SColor(0xFFFFFFFF);
+	palette_name		= "";
+	palette				= NULL;
 	node_dig_prediction = "air";
 }
 
@@ -491,7 +491,7 @@ void ContentFeatures::correctAlpha(TileDef *tiles, int length)
 		if (tiles[i].name.empty())
 			continue;
 		std::stringstream s;
-		s << tiles[i].name << "^[noalpha^[opacity:" << ((int)alpha);
+		s << tiles[i].name << "^[noalpha^[opacity:" << ((int) alpha);
 		tiles[i].name = s.str();
 	}
 }
@@ -509,15 +509,15 @@ void ContentFeatures::deSerialize(std::istream &is)
 	u32 groups_size = readU16(is);
 	for (u32 i = 0; i < groups_size; i++) {
 		std::string name = deSerializeString(is);
-		int value = readS16(is);
-		groups[name] = value;
+		int value		 = readS16(is);
+		groups[name]	 = value;
 	}
-	param_type = (enum ContentParamType)readU8(is);
-	param_type_2 = (enum ContentParamType2)readU8(is);
+	param_type	 = (enum ContentParamType) readU8(is);
+	param_type_2 = (enum ContentParamType2) readU8(is);
 
 	// visual
-	drawtype = (enum NodeDrawType)readU8(is);
-	mesh = deSerializeString(is);
+	drawtype	 = (enum NodeDrawType) readU8(is);
+	mesh		 = deSerializeString(is);
 	visual_scale = readF32(is);
 	if (readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
@@ -533,43 +533,43 @@ void ContentFeatures::deSerialize(std::istream &is)
 	color.setRed(readU8(is));
 	color.setGreen(readU8(is));
 	color.setBlue(readU8(is));
-	palette_name = deSerializeString(is);
-	waving = readU8(is);
-	connect_sides = readU8(is);
+	palette_name		 = deSerializeString(is);
+	waving				 = readU8(is);
+	connect_sides		 = readU8(is);
 	u16 connects_to_size = readU16(is);
 	connects_to_ids.clear();
 	for (u16 i = 0; i < connects_to_size; i++)
 		connects_to_ids.push_back(readU16(is));
 	post_effect_color = readARGB8(is);
-	leveled = readU8(is);
+	leveled			  = readU8(is);
 
 	// lighting-related
-	light_propagates = readU8(is);
+	light_propagates	= readU8(is);
 	sunlight_propagates = readU8(is);
-	light_source = readU8(is);
-	light_source = MYMIN(light_source, LIGHT_MAX);
+	light_source		= readU8(is);
+	light_source		= MYMIN(light_source, LIGHT_MAX);
 
 	// map generation
 	is_ground_content = readU8(is);
 
 	// interaction
-	walkable = readU8(is);
-	pointable = readU8(is);
-	diggable = readU8(is);
-	climbable = readU8(is);
-	buildable_to = readU8(is);
-	rightclickable = readU8(is);
+	walkable		  = readU8(is);
+	pointable		  = readU8(is);
+	diggable		  = readU8(is);
+	climbable		  = readU8(is);
+	buildable_to	  = readU8(is);
+	rightclickable	  = readU8(is);
 	damage_per_second = readU32(is);
 
 	// liquid
-	liquid_type = (enum LiquidType)readU8(is);
+	liquid_type				   = (enum LiquidType) readU8(is);
 	liquid_alternative_flowing = deSerializeString(is);
-	liquid_alternative_source = deSerializeString(is);
-	liquid_viscosity = readU8(is);
-	liquid_renewable = readU8(is);
-	liquid_range = readU8(is);
-	drowning = readU8(is);
-	floodable = readU8(is);
+	liquid_alternative_source  = deSerializeString(is);
+	liquid_viscosity		   = readU8(is);
+	liquid_renewable		   = readU8(is);
+	liquid_range			   = readU8(is);
+	drowning				   = readU8(is);
+	floodable				   = readU8(is);
 
 	// node boxes
 	node_box.deSerialize(is);
@@ -583,11 +583,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	// read legacy properties
 	legacy_facedir_simple = readU8(is);
-	legacy_wallmounted = readU8(is);
+	legacy_wallmounted	  = readU8(is);
 
 	try {
 		node_dig_prediction = deSerializeString(is);
-		u8 tmp_leveled_max = readU8(is);
+		u8 tmp_leveled_max	= readU8(is);
 		if (is.eof()) /* readU8 doesn't throw exceptions so we have to do this */
 			throw SerializationError("");
 		leveled_max = tmp_leveled_max;
@@ -600,18 +600,18 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer, const TileSp
 		const TileDef &tiledef, video::SColor color, u8 material_type, u32 shader_id,
 		bool backface_culling, const TextureSettings &tsettings)
 {
-	layer->shader_id = shader_id;
-	layer->texture = tsrc->getTextureForMesh(tiledef.name, &layer->texture_id);
+	layer->shader_id	 = shader_id;
+	layer->texture		 = tsrc->getTextureForMesh(tiledef.name, &layer->texture_id);
 	layer->material_type = material_type;
 
-	bool has_scale = tiledef.scale > 0;
+	bool has_scale	   = tiledef.scale > 0;
 	bool use_autoscale = tsettings.autoscale_mode == AUTOSCALE_FORCE ||
 			(tsettings.autoscale_mode == AUTOSCALE_ENABLE && !has_scale);
 	if (use_autoscale && layer->texture) {
 		auto texture_size = layer->texture->getOriginalSize();
-		float base_size = tsettings.node_texture_size;
-		float size = std::fmin(texture_size.Width, texture_size.Height);
-		layer->scale = std::fmax(base_size, size) / base_size;
+		float base_size	  = tsettings.node_texture_size;
+		float size		  = std::fmin(texture_size.Width, texture_size.Height);
+		layer->scale	  = std::fmax(base_size, size) / base_size;
 	} else if (has_scale) {
 		layer->scale = tiledef.scale;
 	} else {
@@ -651,7 +651,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer, const TileSp
 		int frame_length_ms;
 		tiledef.animation.determineParams(
 				layer->texture->getOriginalSize(), &frame_count, &frame_length_ms, NULL);
-		layer->animation_frame_count = frame_count;
+		layer->animation_frame_count	 = frame_count;
 		layer->animation_frame_length_ms = frame_length_ms;
 	}
 
@@ -729,7 +729,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	default:
 	case NDT_NORMAL:
 		material_type = (alpha == 255) ? TILE_MATERIAL_OPAQUE : TILE_MATERIAL_ALPHA;
-		solidness = 2;
+		solidness	  = 2;
 		break;
 	case NDT_AIRLIKE:
 		solidness = 0;
@@ -749,37 +749,37 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		is_liquid = true;
 		break;
 	case NDT_GLASSLIKE:
-		solidness = 0;
+		solidness		 = 0;
 		visual_solidness = 1;
 		break;
 	case NDT_GLASSLIKE_FRAMED:
-		solidness = 0;
+		solidness		 = 0;
 		visual_solidness = 1;
 		break;
 	case NDT_GLASSLIKE_FRAMED_OPTIONAL:
-		solidness = 0;
+		solidness		 = 0;
 		visual_solidness = 1;
 		drawtype = tsettings.connected_glass ? NDT_GLASSLIKE_FRAMED : NDT_GLASSLIKE;
 		break;
 	case NDT_ALLFACES:
-		solidness = 0;
+		solidness		 = 0;
 		visual_solidness = 1;
 		break;
 	case NDT_ALLFACES_OPTIONAL:
 		if (tsettings.leaves_style == LEAVES_FANCY) {
-			drawtype = NDT_ALLFACES;
-			solidness = 0;
+			drawtype		 = NDT_ALLFACES;
+			solidness		 = 0;
 			visual_solidness = 1;
 		} else if (tsettings.leaves_style == LEAVES_SIMPLE) {
 			for (u32 j = 0; j < 6; j++) {
 				if (!tdef_spec[j].name.empty())
 					tdef[j].name = tdef_spec[j].name;
 			}
-			drawtype = NDT_GLASSLIKE;
-			solidness = 0;
+			drawtype		 = NDT_GLASSLIKE;
+			solidness		 = 0;
 			visual_solidness = 1;
 		} else {
-			drawtype = NDT_NORMAL;
+			drawtype  = NDT_NORMAL;
 			solidness = 2;
 			for (TileDef &td : tdef)
 				td.name += std::string("^[noalpha");
@@ -947,9 +947,9 @@ void NodeDefManager::clear()
 	resetNodeResolveState();
 
 	u32 initial_length = 0;
-	initial_length = MYMAX(initial_length, CONTENT_UNKNOWN + 1);
-	initial_length = MYMAX(initial_length, CONTENT_AIR + 1);
-	initial_length = MYMAX(initial_length, CONTENT_IGNORE + 1);
+	initial_length	   = MYMAX(initial_length, CONTENT_UNKNOWN + 1);
+	initial_length	   = MYMAX(initial_length, CONTENT_AIR + 1);
+	initial_length	   = MYMAX(initial_length, CONTENT_IGNORE + 1);
 	m_content_features.resize(initial_length);
 
 	// Set CONTENT_UNKNOWN
@@ -957,7 +957,7 @@ void NodeDefManager::clear()
 		ContentFeatures f;
 		f.name = "unknown";
 		// Insert directly into containers
-		content_t c = CONTENT_UNKNOWN;
+		content_t c			  = CONTENT_UNKNOWN;
 		m_content_features[c] = f;
 		addNameIdMapping(c, f.name);
 	}
@@ -965,19 +965,19 @@ void NodeDefManager::clear()
 	// Set CONTENT_AIR
 	{
 		ContentFeatures f;
-		f.name = "air";
-		f.drawtype = NDT_AIRLIKE;
-		f.param_type = CPT_LIGHT;
-		f.light_propagates = true;
+		f.name				  = "air";
+		f.drawtype			  = NDT_AIRLIKE;
+		f.param_type		  = CPT_LIGHT;
+		f.light_propagates	  = true;
 		f.sunlight_propagates = true;
-		f.walkable = false;
-		f.pointable = false;
-		f.diggable = false;
-		f.buildable_to = true;
-		f.floodable = true;
-		f.is_ground_content = true;
+		f.walkable			  = false;
+		f.pointable			  = false;
+		f.diggable			  = false;
+		f.buildable_to		  = true;
+		f.floodable			  = true;
+		f.is_ground_content	  = true;
 		// Insert directly into containers
-		content_t c = CONTENT_AIR;
+		content_t c			  = CONTENT_AIR;
 		m_content_features[c] = f;
 		addNameIdMapping(c, f.name);
 	}
@@ -985,18 +985,18 @@ void NodeDefManager::clear()
 	// Set CONTENT_IGNORE
 	{
 		ContentFeatures f;
-		f.name = "ignore";
-		f.drawtype = NDT_AIRLIKE;
-		f.param_type = CPT_NONE;
-		f.light_propagates = false;
+		f.name				  = "ignore";
+		f.drawtype			  = NDT_AIRLIKE;
+		f.param_type		  = CPT_NONE;
+		f.light_propagates	  = false;
 		f.sunlight_propagates = false;
-		f.walkable = false;
-		f.pointable = false;
-		f.diggable = false;
-		f.buildable_to = true; // A way to remove accidental CONTENT_IGNOREs
-		f.is_ground_content = true;
+		f.walkable			  = false;
+		f.pointable			  = false;
+		f.diggable			  = false;
+		f.buildable_to		  = true; // A way to remove accidental CONTENT_IGNOREs
+		f.is_ground_content	  = true;
 		// Insert directly into containers
-		content_t c = CONTENT_IGNORE;
+		content_t c			  = CONTENT_IGNORE;
 		m_content_features[c] = f;
 		addNameIdMapping(c, f.name);
 	}
@@ -1027,7 +1027,7 @@ bool NodeDefManager::getIds(const std::string &name, std::vector<content_t> &res
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
 	if (name.substr(0, 6) != "group:") {
 		content_t id = CONTENT_IGNORE;
-		bool exists = getId(name, id);
+		bool exists	 = getId(name, id);
 		if (exists)
 			result.push_back(id);
 		return exists;
@@ -1116,7 +1116,7 @@ void getNodeBoxUnion(
 				fabsf(half_processed.MinEdge.Y), fabsf(half_processed.MinEdge.Z),
 				fabsf(half_processed.MaxEdge.X), fabsf(half_processed.MaxEdge.Y),
 				fabsf(half_processed.MaxEdge.Z) };
-			f32 max = 0;
+			f32 max		 = 0;
 			for (float coord : coords) {
 				if (max < coord) {
 					max = coord;
@@ -1138,7 +1138,7 @@ void getNodeBoxUnion(
 		f32 coords[] = { fabsf(nodebox.wall_side.MinEdge.X),
 			fabsf(nodebox.wall_side.MinEdge.Z), fabsf(nodebox.wall_side.MaxEdge.X),
 			fabsf(nodebox.wall_side.MaxEdge.Z) };
-		f32 max = 0;
+		f32 max		 = 0;
 		for (float coord : coords) {
 			if (max < coord) {
 				max = coord;
@@ -1338,8 +1338,8 @@ void NodeDefManager::updateTextures(IGameDef *gamedef,
 				  "textures in node definitions"
 			   << std::endl;
 
-	Client *client = (Client *)gamedef;
-	ITextureSource *tsrc = client->tsrc();
+	Client *client		  = (Client *) gamedef;
+	ITextureSource *tsrc  = client->tsrc();
 	IShaderSource *shdsrc = client->getShaderSource();
 	scene::IMeshManipulator *meshmanip =
 			RenderingEngine::get_scene_manager()->getMeshManipulator();
@@ -1510,7 +1510,7 @@ void NodeDefManager::resolveCrossrefs()
 	for (ContentFeatures &f : m_content_features) {
 		if (f.liquid_type != LIQUID_NONE) {
 			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
-			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
+			f.liquid_alternative_source_id	= getId(f.liquid_alternative_source);
 			continue;
 		}
 		if (f.drawtype != NDT_NODEBOX || f.node_box.type != NODEBOX_CONNECTED)
@@ -1592,14 +1592,14 @@ void NodeResolver::cloneTo(NodeResolver *res) const
 	/* We don't actually do anything significant. Since the node resolving has
 	 * already completed, the class that called us will already have the
 	 * resolved IDs in its data structures (which it copies on its own) */
-	res->m_ndef = m_ndef;
+	res->m_ndef			= m_ndef;
 	res->m_resolve_done = true;
 }
 
 
 void NodeResolver::nodeResolveInternal()
 {
-	m_nodenames_idx = 0;
+	m_nodenames_idx	  = 0;
 	m_nnlistsizes_idx = 0;
 
 	resolveNodeNames();
@@ -1624,7 +1624,7 @@ bool NodeResolver::getIdFromNrBacklog(content_t *result_out, const std::string &
 
 	bool success = m_ndef->getId(name, c);
 	if (!success && !node_alt.empty()) {
-		name = node_alt;
+		name	= node_alt;
 		success = m_ndef->getId(name, c);
 	}
 

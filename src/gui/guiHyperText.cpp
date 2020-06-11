@@ -67,7 +67,7 @@ void ParsedText::Element::setStyle(StyleList &style)
 		this->hovercolor = color;
 
 	unsigned int font_size = std::atoi(style["fontsize"].c_str());
-	FontMode font_mode = FM_Standard;
+	FontMode font_mode	   = FM_Standard;
 	if (style["fontstyle"] == "mono")
 		font_mode = FM_Mono;
 
@@ -97,14 +97,14 @@ void ParsedText::Paragraph::setStyle(StyleList &style)
 ParsedText::ParsedText(const wchar_t *text)
 {
 	// Default style
-	m_root_tag.name = "root";
-	m_root_tag.style["fontsize"] = "16";
-	m_root_tag.style["fontstyle"] = "normal";
-	m_root_tag.style["bold"] = "false";
-	m_root_tag.style["italic"] = "false";
-	m_root_tag.style["underline"] = "false";
-	m_root_tag.style["halign"] = "left";
-	m_root_tag.style["color"] = "#EEEEEE";
+	m_root_tag.name				   = "root";
+	m_root_tag.style["fontsize"]   = "16";
+	m_root_tag.style["fontstyle"]  = "normal";
+	m_root_tag.style["bold"]	   = "false";
+	m_root_tag.style["italic"]	   = "false";
+	m_root_tag.style["underline"]  = "false";
+	m_root_tag.style["halign"]	   = "left";
+	m_root_tag.style["color"]	   = "#EEEEEE";
 	m_root_tag.style["hovercolor"] = "#FF0000";
 
 	m_active_tags.push_front(&m_root_tag);
@@ -113,16 +113,16 @@ ParsedText::ParsedText(const wchar_t *text)
 	// Default simple tags definitions
 	StyleList style;
 
-	style["color"] = "#0000FF";
-	style["underline"] = "true";
+	style["color"]			= "#0000FF";
+	style["underline"]		= "true";
 	m_elementtags["action"] = style;
 	style.clear();
 
-	style["bold"] = "true";
+	style["bold"]	   = "true";
 	m_elementtags["b"] = style;
 	style.clear();
 
-	style["italic"] = "true";
+	style["italic"]	   = "true";
 	m_elementtags["i"] = style;
 	style.clear();
 
@@ -130,40 +130,40 @@ ParsedText::ParsedText(const wchar_t *text)
 	m_elementtags["u"] = style;
 	style.clear();
 
-	style["fontstyle"] = "mono";
+	style["fontstyle"]	  = "mono";
 	m_elementtags["mono"] = style;
 	style.clear();
 
-	style["fontsize"] = m_root_tag.style["fontsize"];
+	style["fontsize"]		= m_root_tag.style["fontsize"];
 	m_elementtags["normal"] = style;
 	style.clear();
 
-	style["fontsize"] = "24";
+	style["fontsize"]	 = "24";
 	m_elementtags["big"] = style;
 	style.clear();
 
-	style["fontsize"] = "36";
+	style["fontsize"]		= "36";
 	m_elementtags["bigger"] = style;
 	style.clear();
 
-	style["halign"] = "center";
+	style["halign"]			  = "center";
 	m_paragraphtags["center"] = style;
 	style.clear();
 
-	style["halign"] = "justify";
+	style["halign"]			   = "justify";
 	m_paragraphtags["justify"] = style;
 	style.clear();
 
-	style["halign"] = "left";
+	style["halign"]			= "left";
 	m_paragraphtags["left"] = style;
 	style.clear();
 
-	style["halign"] = "right";
+	style["halign"]			 = "right";
 	m_paragraphtags["right"] = style;
 	style.clear();
 
-	m_element = NULL;
-	m_paragraph = NULL;
+	m_element			   = NULL;
+	m_paragraph			   = NULL;
 	m_end_paragraph_reason = ER_NONE;
 
 	parse(text);
@@ -178,7 +178,7 @@ ParsedText::~ParsedText()
 void ParsedText::parse(const wchar_t *text)
 {
 	wchar_t c;
-	u32 cursor = 0;
+	u32 cursor	= 0;
 	bool escape = false;
 
 	while ((c = text[cursor]) != L'\0') {
@@ -243,7 +243,7 @@ void ParsedText::endParagraph(EndReason reason)
 	if (!m_paragraph)
 		return;
 
-	EndReason previous = m_end_paragraph_reason;
+	EndReason previous	   = m_end_paragraph_reason;
 	m_end_paragraph_reason = reason;
 	if (m_empty_paragraph &&
 			(reason == ER_TAG || (reason == ER_NEWLINE && previous == ER_TAG))) {
@@ -272,7 +272,7 @@ void ParsedText::enterElement(ElementType type)
 
 	if (!m_element || m_element->type != type) {
 		m_paragraph->elements.emplace_back();
-		m_element = &m_paragraph->elements.back();
+		m_element		= &m_paragraph->elements.back();
 		m_element->type = type;
 		m_element->tags = m_active_tags;
 		m_element->setStyle(m_style);
@@ -297,8 +297,8 @@ void ParsedText::pushChar(wchar_t c)
 ParsedText::Tag *ParsedText::newTag(const std::string &name, const AttrsList &attrs)
 {
 	endElement();
-	Tag *newtag = new Tag();
-	newtag->name = name;
+	Tag *newtag	  = new Tag();
+	newtag->name  = name;
 	newtag->attrs = attrs;
 	m_not_root_tags.push_back(newtag);
 	return newtag;
@@ -371,7 +371,7 @@ void ParsedText::globalTag(const AttrsList &attrs)
 			if (attr.second == "none") {
 				background_type = BACKGROUND_NONE;
 			} else if (parseColorString(attr.second, color, false)) {
-				background_type = BACKGROUND_COLOR;
+				background_type	 = BACKGROUND_COLOR;
 				background_color = color;
 			}
 
@@ -393,13 +393,13 @@ void ParsedText::globalTag(const AttrsList &attrs)
 u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 {
 	// Tag name
-	bool end = false;
+	bool end		 = false;
 	std::string name = "";
-	wchar_t c = text[cursor];
+	wchar_t c		 = text[cursor];
 
 	if (c == L'/') {
 		end = true;
-		c = text[++cursor];
+		c	= text[++cursor];
 		if (c == L'\0')
 			return 0;
 	}
@@ -414,7 +414,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 	// Tag attributes
 	AttrsList attrs;
 	while (c != L'>') {
-		std::string attr_name = "";
+		std::string attr_name  = "";
 		core::stringw attr_val = L"";
 
 		while (c == ' ') {
@@ -424,7 +424,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		}
 
 		while (c != L' ' && c != L'=') {
-			attr_name += (char)c;
+			attr_name += (char) c;
 			c = text[++cursor];
 			if (c == L'\0' || c == L'>')
 				return 0;
@@ -518,12 +518,12 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 		}
 
 		if (attrs.count("angle")) {
-			std::string str = attrs["angle"];
+			std::string str				   = attrs["angle"];
 			std::vector<std::string> parts = split(str, ',');
 			if (parts.size() == 3) {
-				m_element->angle = v3s16(rangelim(stoi(parts[0]), -180, 180),
-						rangelim(stoi(parts[1]), -180, 180),
-						rangelim(stoi(parts[2]), -180, 180));
+				m_element->angle	= v3s16(rangelim(stoi(parts[0]), -180, 180),
+						   rangelim(stoi(parts[1]), -180, 180),
+						   rangelim(stoi(parts[2]), -180, 180));
 				m_element->rotation = v3s16(0, 0, 0);
 			}
 		}
@@ -532,7 +532,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 			if (attrs["rotate"] == "yes") {
 				m_element->rotation = v3s16(0, 100, 0);
 			} else {
-				std::string str = attrs["rotate"];
+				std::string str				   = attrs["rotate"];
 				std::vector<std::string> parts = split(str, ',');
 				if (parts.size() == 3) {
 					m_element->rotation = v3s16(rangelim(stoi(parts[0]), -1000, 1000),
@@ -598,8 +598,9 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 // Text Drawer
 
 TextDrawer::TextDrawer(const wchar_t *text, Client *client,
-		gui::IGUIEnvironment *environment, ISimpleTextureSource *tsrc)
-	: m_text(text), m_client(client), m_environment(environment)
+		gui::IGUIEnvironment *environment, ISimpleTextureSource *tsrc) :
+	m_text(text),
+	m_client(client), m_environment(environment)
 {
 	// Size all elements
 	for (auto &p : m_text.m_paragraphs) {
@@ -608,12 +609,12 @@ TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 			case ParsedText::ELEMENT_SEPARATOR:
 			case ParsedText::ELEMENT_TEXT:
 				if (e.font) {
-					e.dim.Width = e.font->getDimension(e.text.c_str()).Width;
+					e.dim.Width	 = e.font->getDimension(e.text.c_str()).Width;
 					e.dim.Height = e.font->getDimension(L"Yy").Height;
 #if USE_FREETYPE
 					if (e.font->getType() == irr::gui::EGFT_CUSTOM) {
 						e.baseline = e.dim.Height - 1 -
-								((irr::gui::CGUITTFont *)e.font)->getAscender() / 64;
+								((irr::gui::CGUITTFont *) e.font)->getAscender() / 64;
 					}
 #endif
 				} else {
@@ -676,7 +677,7 @@ ParsedText::Element *TextDrawer::getElementAt(core::position2d<s32> pos)
 void TextDrawer::place(const core::rect<s32> &dest_rect)
 {
 	m_floating.clear();
-	s32 y = 0;
+	s32 y		= 0;
 	s32 ymargin = m_text.margin;
 
 	// Iterator used :
@@ -699,7 +700,7 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 					e->pos.X = dest_rect.getWidth() - e->dim.Width - m_text.margin;
 
 				RectWithMargin floating;
-				floating.rect = core::rect<s32>(e->pos, e->dim);
+				floating.rect	= core::rect<s32>(e->pos, e->dim);
 				floating.margin = e->margin;
 
 				m_floating.push_back(floating);
@@ -719,11 +720,11 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 			s32 left, right;
 			s32 nexty = y;
 			do {
-				y = nexty;
+				y	  = nexty;
 				nexty = 0;
 
 				// Inner left & right
-				left = m_text.margin;
+				left  = m_text.margin;
 				right = dest_rect.getWidth() - m_text.margin;
 
 				for (const auto &f : m_floating) {
@@ -765,11 +766,11 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 			} while (nexty && right <= left);
 
 			u32 linewidth = right - left;
-			float x = left;
+			float x		  = left;
 
 			u32 charsheight = 0;
-			u32 charswidth = 0;
-			u32 wordcount = 0;
+			u32 charswidth	= 0;
+			u32 wordcount	= 0;
 
 			// Skip begining of line separators but include them in height
 			// computation.
@@ -783,7 +784,7 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 			}
 
 			std::vector<ParsedText::Element>::iterator linestart = el;
-			std::vector<ParsedText::Element>::iterator lineend = p.elements.end();
+			std::vector<ParsedText::Element>::iterator lineend	 = p.elements.end();
 
 			// First pass, find elements fitting into line
 			// (or at least one element)
@@ -812,12 +813,12 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 
 			// Second pass, compute printable line width and adjustments
 			charswidth = 0;
-			s32 top = 0;
+			s32 top	   = 0;
 			s32 bottom = 0;
 			for (auto e = linestart; e != lineend; ++e) {
 				if (e->floating == ParsedText::FLOAT_NONE) {
 					charswidth += e->dim.Width;
-					if (top < (s32)e->dim.Height - e->baseline)
+					if (top < (s32) e->dim.Height - e->baseline)
 						top = e->dim.Height - e->baseline;
 					if (bottom < e->baseline)
 						bottom = e->baseline;
@@ -833,7 +834,7 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 			case ParsedText::HALIGN_JUSTIFY:
 				if (wordcount > 1 && // Justification only if at least two words
 						!(lineend == p.elements.end())) // Don't justify last line
-					extraspace = ((float)(linewidth - charswidth)) / (wordcount - 1);
+					extraspace = ((float) (linewidth - charswidth)) / (wordcount - 1);
 				break;
 			case ParsedText::HALIGN_RIGHT:
 				x += linewidth - charswidth;
@@ -908,7 +909,7 @@ void TextDrawer::draw(
 		const core::rect<s32> &clip_rect, const core::position2d<s32> &dest_offset)
 {
 	irr::video::IVideoDriver *driver = m_environment->getVideoDriver();
-	core::position2d<s32> offset = dest_offset;
+	core::position2d<s32> offset	 = dest_offset;
 	offset.Y += m_voffset;
 
 	if (m_text.background_type == ParsedText::BACKGROUND_COLOR)
@@ -978,10 +979,10 @@ void TextDrawer::draw(
 //! constructor
 GUIHyperText::GUIHyperText(const wchar_t *text, IGUIEnvironment *environment,
 		IGUIElement *parent, s32 id, const core::rect<s32> &rectangle, Client *client,
-		ISimpleTextureSource *tsrc)
-	: IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle), m_client(client),
-	  m_vscrollbar(nullptr), m_drawer(text, client, environment, tsrc),
-	  m_text_scrollpos(0, 0)
+		ISimpleTextureSource *tsrc) :
+	IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
+	m_client(client), m_vscrollbar(nullptr), m_drawer(text, client, environment, tsrc),
+	m_text_scrollpos(0, 0)
 {
 #ifdef _DEBUG
 	setDebugName("GUIHyperText");
@@ -1087,9 +1088,9 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 								utf8_to_stringw(tag->attrs["name"]);
 						if (Parent) {
 							SEvent newEvent;
-							newEvent.EventType = EET_GUI_EVENT;
-							newEvent.GUIEvent.Caller = this;
-							newEvent.GUIEvent.Element = 0;
+							newEvent.EventType			= EET_GUI_EVENT;
+							newEvent.GUIEvent.Caller	= this;
+							newEvent.GUIEvent.Element	= 0;
 							newEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
 							Parent->OnEvent(newEvent);
 						}

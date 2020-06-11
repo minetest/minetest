@@ -102,7 +102,7 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 	lua_pushnil(L);
 	while (lua_next(L, registered_abms)) {
 		// key at index -2 and value at index -1
-		int id = lua_tonumber(L, -2);
+		int id			= lua_tonumber(L, -2);
 		int current_abm = lua_gettop(L);
 
 		std::vector<std::string> trigger_contents;
@@ -175,7 +175,7 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 	lua_pushnil(L);
 	while (lua_next(L, registered_lbms)) {
 		// key at index -2 and value at index -1
-		int id = lua_tonumber(L, -2);
+		int id			= lua_tonumber(L, -2);
 		int current_lbm = lua_gettop(L);
 
 		std::set<std::string> trigger_contents;

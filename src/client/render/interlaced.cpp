@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 
 RenderingCoreInterlaced::RenderingCoreInterlaced(
-		IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCoreStereo(_device, _client, _hud)
+		IrrlichtDevice *_device, Client *_client, Hud *_hud) :
+	RenderingCoreStereo(_device, _client, _hud)
 {
 	initMaterial();
 }
@@ -33,17 +33,17 @@ RenderingCoreInterlaced::RenderingCoreInterlaced(
 void RenderingCoreInterlaced::initMaterial()
 {
 	IShaderSource *s = client->getShaderSource();
-	mat.UseMipMaps = false;
-	mat.ZBuffer = false;
+	mat.UseMipMaps	 = false;
+	mat.ZBuffer		 = false;
 	mat.ZWriteEnable = false;
-	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC, 0);
+	u32 shader		 = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC, 0);
 	mat.MaterialType = s->getShaderInfo(shader).material;
 	for (int k = 0; k < 3; ++k) {
 		mat.TextureLayer[k].AnisotropicFilter = false;
-		mat.TextureLayer[k].BilinearFilter = false;
-		mat.TextureLayer[k].TrilinearFilter = false;
-		mat.TextureLayer[k].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		mat.TextureLayer[k].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		mat.TextureLayer[k].BilinearFilter	  = false;
+		mat.TextureLayer[k].TrilinearFilter	  = false;
+		mat.TextureLayer[k].TextureWrapU	  = video::ETC_CLAMP_TO_EDGE;
+		mat.TextureLayer[k].TextureWrapV	  = video::ETC_CLAMP_TO_EDGE;
 	}
 }
 

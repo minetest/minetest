@@ -39,7 +39,7 @@ private:
 	Uint32 H4 = 0xc3d2e1f0;
 	unsigned char bytes[64];
 	int unprocessedBytes = 0;
-	Uint32 size = 0;
+	Uint32 size			 = 0;
 	void process();
 
 public:

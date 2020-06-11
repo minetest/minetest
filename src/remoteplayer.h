@@ -61,13 +61,13 @@ public:
 	void overrideDayNightRatio(bool do_override, float ratio)
 	{
 		m_day_night_ratio_do_override = do_override;
-		m_day_night_ratio = ratio;
+		m_day_night_ratio			  = ratio;
 	}
 
 	void getDayNightRatio(bool *do_override, float *ratio)
 	{
 		*do_override = m_day_night_ratio_do_override;
-		*ratio = m_day_night_ratio;
+		*ratio		 = m_day_night_ratio;
 	}
 
 	void setHotbarImage(const std::string &name) { hud_hotbar_image = name; }
@@ -148,19 +148,19 @@ private:
 	void serializeExtraAttributes(std::string &output);
 
 	PlayerSAO *m_sao = nullptr;
-	bool m_dirty = false;
+	bool m_dirty	 = false;
 
 	static bool m_setting_cache_loaded;
 	static float m_setting_chat_message_limit_per_10sec;
 	static u16 m_setting_chat_message_limit_trigger_kick;
 
-	u32 m_last_chat_message_sent = std::time(0);
+	u32 m_last_chat_message_sent   = std::time(0);
 	float m_chat_message_allowance = 5.0f;
-	u16 m_message_rate_overhead = 0;
+	u16 m_message_rate_overhead	   = 0;
 
 	bool m_day_night_ratio_do_override = false;
 	float m_day_night_ratio;
-	std::string hud_hotbar_image = "";
+	std::string hud_hotbar_image		  = "";
 	std::string hud_hotbar_selected_image = "";
 
 	CloudParams m_cloud_params;

@@ -26,35 +26,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 
 PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
-		bool is_singleplayer)
-	: UnitSAO(env_, v3f(0, 0, 0)), m_player(player_), m_peer_id(peer_id_),
-	  m_is_singleplayer(is_singleplayer)
+		bool is_singleplayer) :
+	UnitSAO(env_, v3f(0, 0, 0)),
+	m_player(player_), m_peer_id(peer_id_), m_is_singleplayer(is_singleplayer)
 {
 	SANITY_CHECK(m_peer_id != PEER_ID_INEXISTENT);
 
-	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
-	m_prop.breath_max = PLAYER_MAX_BREATH_DEFAULT;
-	m_prop.physical = false;
+	m_prop.hp_max		= PLAYER_MAX_HP_DEFAULT;
+	m_prop.breath_max	= PLAYER_MAX_BREATH_DEFAULT;
+	m_prop.physical		= false;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
 	m_prop.selectionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
-	m_prop.pointable = true;
+	m_prop.pointable	= true;
 	// Start of default appearance, this should be overwritten by Lua
-	m_prop.visual = "upright_sprite";
+	m_prop.visual	   = "upright_sprite";
 	m_prop.visual_size = v3f(1, 2, 1);
 	m_prop.textures.clear();
 	m_prop.textures.emplace_back("player.png");
 	m_prop.textures.emplace_back("player_back.png");
 	m_prop.colors.clear();
 	m_prop.colors.emplace_back(255, 255, 255, 255);
-	m_prop.spritediv = v2s16(1, 1);
+	m_prop.spritediv  = v2s16(1, 1);
 	m_prop.eye_height = 1.625f;
 	// End of default appearance
-	m_prop.is_visible = true;
-	m_prop.backface_culling = false;
+	m_prop.is_visible			= true;
+	m_prop.backface_culling		= false;
 	m_prop.makes_footstep_sound = true;
-	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
-	m_hp = m_prop.hp_max;
-	m_breath = m_prop.breath_max;
+	m_prop.stepheight			= PLAYER_DEFAULT_STEPHEIGHT * BS;
+	m_hp						= m_prop.hp_max;
+	m_breath					= m_prop.breath_max;
 	// Disable zoom in survival mode using a value of 0
 	m_prop.zoom_fov = g_settings->getBool("creative_mode") ? 15.0f : 0.0f;
 
@@ -66,7 +66,7 @@ void PlayerSAO::finalize(RemotePlayer *player, const std::set<std::string> &priv
 {
 	assert(player);
 	m_player = player;
-	m_privs = privs;
+	m_privs	 = privs;
 }
 
 v3f PlayerSAO::getEyeOffset() const
@@ -152,8 +152,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 {
 	if (!isImmortal() && m_drowning_interval.step(dtime, 2.0f)) {
 		// Get nose/mouth position, approximate with eye position
-		v3s16 p = floatToInt(getEyePosition(), BS);
-		MapNode n = m_env->getMap().getNode(p);
+		v3s16 p					 = floatToInt(getEyePosition(), BS);
+		MapNode n				 = m_env->getMap().getNode(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If node generates drown
 		if (c.drowning > 0 && m_hp > 0) {
@@ -171,8 +171,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if (m_breathing_interval.step(dtime, 0.5f) && !isImmortal()) {
 		// Get nose/mouth position, approximate with eye position
-		v3s16 p = floatToInt(getEyePosition(), BS);
-		MapNode n = m_env->getMap().getNode(p);
+		v3s16 p					 = floatToInt(getEyePosition(), BS);
+		MapNode n				 = m_env->getMap().getNode(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If player is alive & not drowning & not in ignore & not immortal, breathe
 		if (m_breath < m_prop.breath_max && c.drowning == 0 &&
@@ -190,25 +190,25 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		// upwards in 1 node intervals, stopping below top damage point.
 		for (float dam_height = 0.1f; dam_height < dam_top; dam_height++) {
 			v3s16 p = floatToInt(m_base_position + v3f(0.0f, dam_height * BS, 0.0f), BS);
-			MapNode n = m_env->getMap().getNode(p);
+			MapNode n				 = m_env->getMap().getNode(p);
 			const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 			if (c.damage_per_second > damage_per_second) {
 				damage_per_second = c.damage_per_second;
-				nodename = c.name;
+				nodename		  = c.name;
 			}
 		}
 
 		// Top damage point
-		v3s16 ptop = floatToInt(m_base_position + v3f(0.0f, dam_top * BS, 0.0f), BS);
+		v3s16 ptop	 = floatToInt(m_base_position + v3f(0.0f, dam_top * BS, 0.0f), BS);
 		MapNode ntop = m_env->getMap().getNode(ptop);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(ntop);
 		if (c.damage_per_second > damage_per_second) {
 			damage_per_second = c.damage_per_second;
-			nodename = c.name;
+			nodename		  = c.name;
 		}
 
 		if (damage_per_second != 0 && m_hp > 0) {
-			s32 newhp = (s32)m_hp - (s32)damage_per_second;
+			s32 newhp = (s32) m_hp - (s32) damage_per_second;
 			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename);
 			setHP(newhp, reason);
 			m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
@@ -217,7 +217,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if (!m_properties_sent) {
 		m_properties_sent = true;
-		std::string str = getPropertyPacket();
+		std::string str	  = getPropertyPacket();
 		// create message and add to list
 		m_messages_out.emplace(getId(), true, str);
 		m_env->getScriptIface()->player_event(this, "properties_changed");
@@ -238,7 +238,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	// Set lag pool maximums based on estimated lag
 	const float LAG_POOL_MIN = 5.0f;
-	float lag_pool_max = m_env->getMaxLagEstimate() * 2.0f;
+	float lag_pool_max		 = m_env->getMaxLagEstimate() * 2.0f;
 	if (lag_pool_max < LAG_POOL_MIN)
 		lag_pool_max = LAG_POOL_MIN;
 	m_dig_pool.setMax(lag_pool_max);
@@ -266,7 +266,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		return;
 
 	if (m_position_not_sent) {
-		m_position_not_sent = false;
+		m_position_not_sent	  = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		v3f pos;
 		// When attached, the position is only sent to clients where the
@@ -415,7 +415,7 @@ u16 PlayerSAO::punch(v3f dir, const ToolCapabilities *toolcap,
 		}
 	}
 
-	s32 old_hp = getHP();
+	s32 old_hp			= getHP();
 	HitParams hitparams = getHitParams(m_armor_groups, toolcap, time_from_last_punch);
 
 	PlayerSAO *playersao = m_player->getPlayerSAO();
@@ -424,7 +424,7 @@ u16 PlayerSAO::punch(v3f dir, const ToolCapabilities *toolcap,
 			playersao, puncher, time_from_last_punch, toolcap, dir, hitparams.hp);
 
 	if (!damage_handled) {
-		setHP((s32)getHP() - (s32)hitparams.hp,
+		setHP((s32) getHP() - (s32) hitparams.hp,
 				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
@@ -436,7 +436,7 @@ u16 PlayerSAO::punch(v3f dir, const ToolCapabilities *toolcap,
 	actionstream << puncher->getDescription() << " (id=" << puncher->getId()
 				 << ", hp=" << puncher->getHP() << ") punched " << getDescription()
 				 << " (id=" << m_id << ", hp=" << m_hp
-				 << "), damage=" << (old_hp - (s32)getHP())
+				 << "), damage=" << (old_hp - (s32) getHP())
 				 << (damage_handled ? " (handled by Lua)" : "") << std::endl;
 
 	return hitparams.wear;
@@ -512,7 +512,7 @@ bool PlayerSAO::setWieldedItem(const ItemStack &item)
 
 void PlayerSAO::disconnected()
 {
-	m_peer_id = PEER_ID_INEXISTENT;
+	m_peer_id		  = PEER_ID_INEXISTENT;
 	m_pending_removal = true;
 }
 
@@ -538,8 +538,8 @@ void PlayerSAO::setMaxSpeedOverride(const v3f &vel)
 	else
 		m_max_speed_override += vel;
 	if (m_player) {
-		float accel = MYMIN(m_player->movement_acceleration_default,
-				m_player->movement_acceleration_air);
+		float accel				  = MYMIN(m_player->movement_acceleration_default,
+				  m_player->movement_acceleration_air);
 		m_max_speed_override_time = m_max_speed_override.getLength() / accel / BS;
 	}
 }
@@ -593,17 +593,17 @@ bool PlayerSAO::checkMovementCheat()
 	if (player_max_jump < 0.0001f)
 		player_max_jump = 0.0001f;
 
-	v3f diff = (m_base_position - m_last_good_position);
-	float d_vert = diff.Y;
-	diff.Y = 0;
-	float d_horiz = diff.getLength();
+	v3f diff			= (m_base_position - m_last_good_position);
+	float d_vert		= diff.Y;
+	diff.Y				= 0;
+	float d_horiz		= diff.getLength();
 	float required_time = d_horiz / player_max_walk;
 
 	// FIXME: Checking downwards movement is not easily possible currently,
 	//        the server could calculate speed differences to examine the gravity
 	if (d_vert > 0) {
 		// In certain cases (water, ladders) walking speed is applied vertically
-		float s = MYMAX(player_max_jump, player_max_walk);
+		float s		  = MYMAX(player_max_jump, player_max_walk);
 		required_time = MYMAX(required_time, d_vert / s);
 	}
 
@@ -611,8 +611,8 @@ bool PlayerSAO::checkMovementCheat()
 		m_last_good_position = m_base_position;
 	} else {
 		const float LAG_POOL_MIN = 5.0;
-		float lag_pool_max = m_env->getMaxLagEstimate() * 2.0;
-		lag_pool_max = MYMAX(lag_pool_max, LAG_POOL_MIN);
+		float lag_pool_max		 = m_env->getMaxLagEstimate() * 2.0;
+		lag_pool_max			 = MYMAX(lag_pool_max, LAG_POOL_MIN);
 		if (m_time_from_last_teleport > lag_pool_max) {
 			actionstream << "Server: " << m_player->getName()
 						 << " moved too fast: V=" << d_vert << ", H=" << d_horiz

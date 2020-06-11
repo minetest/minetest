@@ -43,10 +43,9 @@ public:
 
 struct ChatEventTimeInfo : public ChatEvent
 {
-	ChatEventTimeInfo(u64 a_game_time, u32 a_time)
-		: ChatEvent(CET_TIME_INFO), game_time(a_game_time), time(a_time)
-	{
-	}
+	ChatEventTimeInfo(u64 a_game_time, u32 a_time) :
+		ChatEvent(CET_TIME_INFO), game_time(a_game_time), time(a_time)
+	{}
 
 	u64 game_time;
 	u32 time;
@@ -55,21 +54,19 @@ struct ChatEventTimeInfo : public ChatEvent
 struct ChatEventNick : public ChatEvent
 {
 	ChatEventNick(ChatEventType a_type,
-			const std::string &a_nick)
-		: ChatEvent(a_type), // one of CET_NICK_ADD, CET_NICK_REMOVE
-		  nick(a_nick)
-	{
-	}
+			const std::string &a_nick) :
+		ChatEvent(a_type), // one of CET_NICK_ADD, CET_NICK_REMOVE
+		nick(a_nick)
+	{}
 
 	std::string nick;
 };
 
 struct ChatEventChat : public ChatEvent
 {
-	ChatEventChat(const std::string &a_nick, const std::wstring &an_evt_msg)
-		: ChatEvent(CET_CHAT), nick(a_nick), evt_msg(an_evt_msg)
-	{
-	}
+	ChatEventChat(const std::string &a_nick, const std::wstring &an_evt_msg) :
+		ChatEvent(CET_CHAT), nick(a_nick), evt_msg(an_evt_msg)
+	{}
 
 	std::string nick;
 	std::wstring evt_msg;

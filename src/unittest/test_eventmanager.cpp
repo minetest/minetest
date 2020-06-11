@@ -43,8 +43,8 @@ public:
 	{
 		UASSERT(e->getType() >= 0);
 		UASSERT(e->getType() < MtEvent::TYPE_MAX);
-		EventManagerTest *emt = (EventManagerTest *)data;
-		emt->m_test_value = e->getType();
+		EventManagerTest *emt = (EventManagerTest *) data;
+		emt->m_test_value	  = e->getType();
 	}
 
 	u64 getTestValue() const { return m_test_value; }

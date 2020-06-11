@@ -76,9 +76,9 @@ bool MapNode::isLightDayNightEq(const NodeDefManager *nodemgr) const
 	bool isEqual;
 
 	if (f.param_type == CPT_LIGHT) {
-		u8 day = MYMAX(f.light_source, param1 & 0x0f);
+		u8 day	 = MYMAX(f.light_source, param1 & 0x0f);
 		u8 night = MYMAX(f.light_source, (param1 >> 4) & 0x0f);
-		isEqual = day == night;
+		isEqual	 = day == night;
 	} else {
 		isEqual = true;
 	}
@@ -119,10 +119,10 @@ bool MapNode::getLightBanks(
 	// Select the brightest of [light source, propagated light]
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type == CPT_LIGHT) {
-		lightday = param1 & 0x0f;
+		lightday   = param1 & 0x0f;
 		lightnight = (param1 >> 4) & 0x0f;
 	} else {
-		lightday = 0;
+		lightday   = 0;
 		lightnight = 0;
 	}
 	if (f.light_source > lightday)
@@ -199,7 +199,7 @@ void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 			21, 20, 23, 22, 22, 21, 20, 23, 23, 22, 21, 20
 		};
 		u8 facedir = (param2 & 31) % 24;
-		u8 index = facedir * 4 + rot;
+		u8 index   = facedir * 4 + rot;
 		param2 &= ~31;
 		param2 |= rotate_facedir[index];
 	} else if (cpt2 == CPT2_WALLMOUNTED || cpt2 == CPT2_COLORED_WALLMOUNTED) {
@@ -220,8 +220,8 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 
 	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED) {
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
-		int facedir = n.getFaceDir(nodemgr, true);
-		u8 axisdir = facedir >> 2;
+		int facedir						 = n.getFaceDir(nodemgr, true);
+		u8 axisdir						 = facedir >> 2;
 		facedir &= 0x03;
 		for (aabb3f box : fixed) {
 			if (nodebox.type == NODEBOX_LEVELED)
@@ -454,8 +454,8 @@ static inline void getNeighborConnectingFace(const v3s16 &p,
 u8 MapNode::getNeighbors(v3s16 p, Map *map) const
 {
 	const NodeDefManager *nodedef = map->getNodeDefManager();
-	u8 neighbors = 0;
-	const ContentFeatures &f = nodedef->get(*this);
+	u8 neighbors				  = 0;
+	const ContentFeatures &f	  = nodedef->get(*this);
 	// locate possible neighboring nodes to connect to
 	if (f.drawtype == NDT_NODEBOX && f.node_box.type == NODEBOX_CONNECTED) {
 		v3s16 p2 = p;
@@ -545,7 +545,7 @@ u8 MapNode::getLevel(const NodeDefManager *nodemgr) const
 
 s8 MapNode::setLevel(const NodeDefManager *nodemgr, s16 level)
 {
-	s8 rest = 0;
+	s8 rest					 = 0;
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type_2 == CPT2_FLOWINGLIQUID || f.liquid_type == LIQUID_FLOWING ||
 			f.liquid_type == LIQUID_SOURCE) {
@@ -563,10 +563,10 @@ s8 MapNode::setLevel(const NodeDefManager *nodemgr, s16 level)
 		}
 	} else if (f.param_type_2 == CPT2_LEVELED) {
 		if (level < 0) { // zero means default for a leveled nodebox
-			rest = level;
+			rest  = level;
 			level = 0;
 		} else if (level > f.leveled_max) {
-			rest = level - f.leveled_max;
+			rest  = level - f.leveled_max;
 			level = f.leveled_max;
 		}
 		setParam2((level & LEVELED_MASK) | (getParam2() & ~LEVELED_MASK));
@@ -652,7 +652,7 @@ void MapNode::serializeBulk(std::ostream &os, int version, const MapNode *nodes,
 								 "version < 24 not possible");
 
 	size_t databuf_size = nodecount * (content_width + params_width);
-	u8 *databuf = new u8[databuf_size];
+	u8 *databuf			= new u8[databuf_size];
 
 	u32 start1 = content_width * nodecount;
 	u32 start2 = (content_width + 1) * nodecount;
@@ -671,7 +671,7 @@ void MapNode::serializeBulk(std::ostream &os, int version, const MapNode *nodes,
 	if (compressed)
 		compressZlib(databuf, databuf_size, os);
 	else
-		os.write((const char *)&databuf[0], databuf_size);
+		os.write((const char *) &databuf[0], databuf_size);
 
 	delete[] databuf;
 }
@@ -698,7 +698,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version, MapNode *nodes,
 									 "decompress resulted in invalid size");
 		memcpy(&databuf[0], s.c_str(), len);
 	} else {
-		is.read((char *)&databuf[0], len);
+		is.read((char *) &databuf[0], len);
 		if (is.eof() || is.fail())
 			throw SerializationError("deSerializeBulkNodes: "
 									 "failed to read bulk node data");

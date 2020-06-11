@@ -129,7 +129,7 @@ public:
 	// Returns tool wear
 	virtual u16 punch(v3f dir, const ToolCapabilities *toolcap = nullptr,
 			ServerActiveObject *puncher = nullptr,
-			float time_from_last_punch = 1000000.0f)
+			float time_from_last_punch	= 1000000.0f)
 	{
 		return 0;
 	}
@@ -145,16 +145,13 @@ public:
 	}
 	virtual void setPhysicsOverride(float physics_override_speed,
 			float physics_override_jump, float physics_override_gravity)
-	{
-	}
+	{}
 	virtual void setAnimation(
 			v2f frames, float frame_speed, float frame_blend, bool frame_loop)
-	{
-	}
+	{}
 	virtual void getAnimation(
 			v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop)
-	{
-	}
+	{}
 	virtual void setAnimationSpeed(float frame_speed) {}
 	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation) {}
 	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation) {}

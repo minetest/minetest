@@ -43,21 +43,21 @@ extern FlagDesc flagdesc_mapgen_valleys[];
 struct MapgenValleysParams : public MapgenParams
 {
 	u16 altitude_chill = 90;
-	u16 river_depth = 4;
-	u16 river_size = 5;
+	u16 river_depth	   = 4;
+	u16 river_size	   = 5;
 
-	float cave_width = 0.09f;
-	s16 large_cave_depth = -33;
-	u16 small_cave_num_min = 0;
-	u16 small_cave_num_max = 0;
-	u16 large_cave_num_min = 0;
-	u16 large_cave_num_max = 2;
+	float cave_width		 = 0.09f;
+	s16 large_cave_depth	 = -33;
+	u16 small_cave_num_min	 = 0;
+	u16 small_cave_num_max	 = 0;
+	u16 large_cave_num_min	 = 0;
+	u16 large_cave_num_max	 = 2;
 	float large_cave_flooded = 0.5f;
-	s16 cavern_limit = -256;
-	s16 cavern_taper = 192;
-	float cavern_threshold = 0.6f;
-	s16 dungeon_ymin = -31000;
-	s16 dungeon_ymax = 63;
+	s16 cavern_limit		 = -256;
+	s16 cavern_taper		 = 192;
+	float cavern_threshold	 = 0.6f;
+	s16 dungeon_ymin		 = -31000;
+	s16 dungeon_ymax		 = 63;
 
 	NoiseParams np_filler_depth;
 	NoiseParams np_inter_valley_fill;

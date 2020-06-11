@@ -44,7 +44,7 @@ void ChatBuffer::addLine(const std::wstring &name, const std::wstring &text)
 	if (m_rows > 0) {
 		// m_formatted is valid and must be kept valid
 		bool scrolled_at_bottom = (m_scroll == getBottomScrollPos());
-		u32 num_added = formatChatLine(line, m_cols, m_formatted);
+		u32 num_added			= formatChatLine(line, m_cols, m_formatted);
 		if (scrolled_at_bottom)
 			m_scroll += num_added;
 	}
@@ -85,7 +85,7 @@ void ChatBuffer::deleteOldest(u32 count)
 	bool at_bottom = (m_scroll == getBottomScrollPos());
 
 	u32 del_unformatted = 0;
-	u32 del_formatted = 0;
+	u32 del_formatted	= 0;
 
 	while (count > 0 && del_unformatted < m_unformatted.size()) {
 		++del_unformatted;
@@ -133,8 +133,8 @@ void ChatBuffer::reformat(u32 cols, u32 rows)
 {
 	if (cols == 0 || rows == 0) {
 		// Clear formatted buffer
-		m_cols = 0;
-		m_rows = 0;
+		m_cols	 = 0;
+		m_rows	 = 0;
 		m_scroll = 0;
 		m_formatted.clear();
 	} else if (cols != m_cols || rows != m_rows) {
@@ -143,8 +143,8 @@ void ChatBuffer::reformat(u32 cols, u32 rows)
 
 		// Find out the scroll position in *unformatted* lines
 		u32 restore_scroll_unformatted = 0;
-		u32 restore_scroll_formatted = 0;
-		bool at_bottom = (m_scroll == getBottomScrollPos());
+		u32 restore_scroll_formatted   = 0;
+		bool at_bottom				   = (m_scroll == getBottomScrollPos());
 		if (!at_bottom) {
 			for (s32 i = 0; i < m_scroll; ++i) {
 				if (m_formatted[i].first)
@@ -177,8 +177,8 @@ void ChatBuffer::reformat(u32 cols, u32 rows)
 
 const ChatFormattedLine &ChatBuffer::getFormattedLine(u32 row) const
 {
-	s32 index = m_scroll + (s32)row;
-	if (index >= 0 && index < (s32)m_formatted.size())
+	s32 index = m_scroll + (s32) row;
+	if (index >= 0 && index < (s32) m_formatted.size())
 		return m_formatted[index];
 
 	return m_empty_formatted_line;
@@ -191,7 +191,7 @@ void ChatBuffer::scroll(s32 rows)
 
 void ChatBuffer::scrollAbsolute(s32 scroll)
 {
-	s32 top = getTopScrollPos();
+	s32 top	   = getTopScrollPos();
 	s32 bottom = getBottomScrollPos();
 
 	m_scroll = scroll;
@@ -218,21 +218,21 @@ u32 ChatBuffer::formatChatLine(
 	std::vector<ChatFormattedFragment> next_frags;
 	ChatFormattedLine next_line;
 	ChatFormattedFragment temp_frag;
-	u32 out_column = 0;
-	u32 in_pos = 0;
+	u32 out_column			= 0;
+	u32 in_pos				= 0;
 	u32 hanging_indentation = 0;
 
 	// Format the sender name and produce fragments
 	if (!line.name.empty()) {
-		temp_frag.text = L"<";
+		temp_frag.text	 = L"<";
 		temp_frag.column = 0;
 		//temp_frag.bold = 0;
 		next_frags.push_back(temp_frag);
-		temp_frag.text = line.name;
+		temp_frag.text	 = line.name;
 		temp_frag.column = 0;
 		//temp_frag.bold = 1;
 		next_frags.push_back(temp_frag);
-		temp_frag.text = L"> ";
+		temp_frag.text	 = L"> ";
 		temp_frag.column = 0;
 		//temp_frag.bold = 0;
 		next_frags.push_back(temp_frag);
@@ -253,7 +253,7 @@ u32 ChatBuffer::formatChatLine(
 	}
 	//EnrichedString line_text(line.text);
 
-	next_line.first = true;
+	next_line.first		 = true;
 	bool text_processing = false;
 
 	// Produce fragments and layout them into lines
@@ -270,11 +270,11 @@ u32 ChatBuffer::formatChatLine(
 			} else {
 				// Fragment does not fit into current line
 				// So split it up
-				temp_frag.text = frag.text.substr(0, cols - out_column);
+				temp_frag.text	 = frag.text.substr(0, cols - out_column);
 				temp_frag.column = out_column;
 				//temp_frag.bold = frag.bold;
 				next_line.fragments.push_back(temp_frag);
-				frag.text = frag.text.substr(cols - out_column);
+				frag.text  = frag.text.substr(cols - out_column);
 				out_column = cols;
 			}
 			if (out_column == cols || text_processing) {
@@ -290,7 +290,7 @@ u32 ChatBuffer::formatChatLine(
 
 		// Produce fragment
 		if (in_pos < line.text.size()) {
-			u32 remaining_in_input = line.text.size() - in_pos;
+			u32 remaining_in_input	= line.text.size() - in_pos;
 			u32 remaining_in_output = cols - out_column;
 
 			// Determine a fragment length <= the minimum of
@@ -306,7 +306,7 @@ u32 ChatBuffer::formatChatLine(
 			if (space_pos != 0 && frag_length < remaining_in_input)
 				frag_length = space_pos + 1;
 
-			temp_frag.text = line.text.substr(in_pos, frag_length);
+			temp_frag.text	 = line.text.substr(in_pos, frag_length);
 			temp_frag.column = 0;
 			//temp_frag.bold = 0;
 			next_frags.push_back(temp_frag);
@@ -326,8 +326,8 @@ u32 ChatBuffer::formatChatLine(
 
 s32 ChatBuffer::getTopScrollPos() const
 {
-	s32 formatted_count = (s32)m_formatted.size();
-	s32 rows = (s32)m_rows;
+	s32 formatted_count = (s32) m_formatted.size();
+	s32 rows			= (s32) m_rows;
 	if (rows == 0)
 		return 0;
 
@@ -339,8 +339,8 @@ s32 ChatBuffer::getTopScrollPos() const
 
 s32 ChatBuffer::getBottomScrollPos() const
 {
-	s32 formatted_count = (s32)m_formatted.size();
-	s32 rows = (s32)m_rows;
+	s32 formatted_count = (s32) m_formatted.size();
+	s32 rows			= (s32) m_rows;
 	if (rows == 0)
 		return 0;
 
@@ -355,10 +355,9 @@ void ChatBuffer::resize(u32 scrollback)
 }
 
 
-ChatPrompt::ChatPrompt(const std::wstring &prompt, u32 history_limit)
-	: m_prompt(prompt), m_history_limit(history_limit)
-{
-}
+ChatPrompt::ChatPrompt(const std::wstring &prompt, u32 history_limit) :
+	m_prompt(prompt), m_history_limit(history_limit)
+{}
 
 void ChatPrompt::input(wchar_t ch)
 {
@@ -366,7 +365,7 @@ void ChatPrompt::input(wchar_t ch)
 	m_cursor++;
 	clampView();
 	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
+	m_nick_completion_end	= 0;
 }
 
 void ChatPrompt::input(const std::wstring &str)
@@ -375,7 +374,7 @@ void ChatPrompt::input(const std::wstring &str)
 	m_cursor += str.size();
 	clampView();
 	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
+	m_nick_completion_end	= 0;
 }
 
 void ChatPrompt::addToHistory(const std::wstring &line)
@@ -395,20 +394,20 @@ void ChatPrompt::addToHistory(const std::wstring &line)
 void ChatPrompt::clear()
 {
 	m_line.clear();
-	m_view = 0;
-	m_cursor = 0;
+	m_view					= 0;
+	m_cursor				= 0;
 	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
+	m_nick_completion_end	= 0;
 }
 
 std::wstring ChatPrompt::replace(const std::wstring &line)
 {
 	std::wstring old_line = m_line;
-	m_line = line;
+	m_line				  = line;
 	m_view = m_cursor = line.size();
 	clampView();
 	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
+	m_nick_completion_end	= 0;
 	return old_line;
 }
 
@@ -443,8 +442,8 @@ void ChatPrompt::nickCompletion(const std::list<std::string> &names, bool backwa
 	//     interval where the originally used prefix was. Cycle
 	//     through the list of completions of that prefix.
 	u32 prefix_start = m_nick_completion_start;
-	u32 prefix_end = m_nick_completion_end;
-	bool initial = (prefix_end == 0);
+	u32 prefix_end	 = m_nick_completion_end;
+	bool initial	 = (prefix_end == 0);
 	if (initial) {
 		// no previous nick completion is active
 		prefix_start = prefix_end = m_cursor;
@@ -472,7 +471,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string> &names, bool backwa
 		return;
 
 	// find a replacement string and the word that will be replaced
-	u32 word_end = prefix_end;
+	u32 word_end		  = prefix_end;
 	u32 replacement_index = 0;
 	if (!initial) {
 		while (word_end < m_line.size() && !iswspace(m_line[word_end]))
@@ -501,7 +500,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string> &names, bool backwa
 	m_cursor = prefix_start + replacement.size();
 	clampView();
 	m_nick_completion_start = prefix_start;
-	m_nick_completion_end = prefix_end;
+	m_nick_completion_end	= prefix_end;
 }
 
 void ChatPrompt::reformat(u32 cols)
@@ -510,9 +509,9 @@ void ChatPrompt::reformat(u32 cols)
 		m_cols = 0;
 		m_view = m_cursor;
 	} else {
-		s32 length = m_line.size();
+		s32 length		= m_line.size();
 		bool was_at_end = (m_view + m_cols >= length + 1);
-		m_cols = cols - m_prompt.size();
+		m_cols			= cols - m_prompt.size();
 		if (was_at_end)
 			m_view = length;
 		clampView();
@@ -534,7 +533,7 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 	s32 old_cursor = m_cursor;
 	s32 new_cursor = m_cursor;
 
-	s32 length = m_line.size();
+	s32 length	  = m_line.size();
 	s32 increment = (dir == CURSOROP_DIR_RIGHT) ? 1 : -1;
 
 	switch (scope) {
@@ -569,7 +568,7 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 
 	switch (op) {
 	case CURSOROP_MOVE:
-		m_cursor = new_cursor;
+		m_cursor	 = new_cursor;
 		m_cursor_len = 0;
 		break;
 	case CURSOROP_DELETE:
@@ -583,7 +582,7 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 		break;
 	case CURSOROP_SELECT:
 		if (scope == CURSOROP_SCOPE_LINE) {
-			m_cursor = 0;
+			m_cursor	 = 0;
 			m_cursor_len = length;
 		} else {
 			m_cursor = MYMIN(new_cursor, old_cursor);
@@ -596,7 +595,7 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 	clampView();
 
 	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
+	m_nick_completion_end	= 0;
 }
 
 void ChatPrompt::clampView()
@@ -613,10 +612,9 @@ void ChatPrompt::clampView()
 }
 
 
-ChatBackend::ChatBackend()
-	: m_console_buffer(500), m_recent_buffer(6), m_prompt(L"]", 500)
-{
-}
+ChatBackend::ChatBackend() :
+	m_console_buffer(500), m_recent_buffer(6), m_prompt(L"]", 500)
+{}
 
 void ChatBackend::addMessage(const std::wstring &name, std::wstring text)
 {
@@ -701,7 +699,7 @@ void ChatBackend::clearRecentChat()
 void ChatBackend::applySettings()
 {
 	u32 recent_lines = g_settings->getU32("recent_chat_messages");
-	recent_lines = rangelim(recent_lines, 2, 20);
+	recent_lines	 = rangelim(recent_lines, 2, 20);
 	m_recent_buffer.resize(recent_lines);
 }
 
@@ -725,5 +723,5 @@ void ChatBackend::scrollPageDown()
 
 void ChatBackend::scrollPageUp()
 {
-	m_console_buffer.scroll(-(s32)m_console_buffer.getRows());
+	m_console_buffer.scroll(-(s32) m_console_buffer.getRows());
 }

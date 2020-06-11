@@ -80,7 +80,7 @@ void ScriptApiMainMenu::handleMainMenuButtons(const StringMap &fields)
 	lua_newtable(L);
 	StringMap::const_iterator it;
 	for (it = fields.begin(); it != fields.end(); ++it) {
-		const std::string &name = it->first;
+		const std::string &name	 = it->first;
 		const std::string &value = it->second;
 		lua_pushstring(L, name.c_str());
 		lua_pushlstring(L, value.c_str(), value.size());

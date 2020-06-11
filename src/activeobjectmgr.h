@@ -33,8 +33,8 @@ class ActiveObjectMgr
 
 public:
 	virtual void step(float dtime, const std::function<void(T *)> &f) = 0;
-	virtual bool registerObject(T *obj) = 0;
-	virtual void removeObject(u16 id) = 0;
+	virtual bool registerObject(T *obj)								  = 0;
+	virtual void removeObject(u16 id)								  = 0;
 
 	T *getActiveObject(u16 id)
 	{
@@ -48,7 +48,7 @@ protected:
 	{
 		// try to reuse id's as late as possible
 		static thread_local u16 last_used_id = 0;
-		u16 startid = last_used_id;
+		u16 startid							 = last_used_id;
 		while (!isFreeId(++last_used_id)) {
 			if (last_used_id == startid)
 				return 0;

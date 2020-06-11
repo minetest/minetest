@@ -28,10 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	Debug stuff
 */
-u64 addarea_time = 0;
-u64 emerge_time = 0;
+u64 addarea_time	 = 0;
+u64 emerge_time		 = 0;
 u64 emerge_load_time = 0;
-u64 clearflag_time = 0;
+u64 clearflag_time	 = 0;
 
 VoxelManipulator::~VoxelManipulator()
 {
@@ -52,7 +52,7 @@ void VoxelManipulator::print(
 		std::ostream &o, const NodeDefManager *ndef, VoxelPrintMode mode)
 {
 	const v3s16 &em = m_area.getExtent();
-	v3s16 of = m_area.MinEdge;
+	v3s16 of		= m_area.MinEdge;
 	o << "size: " << em.X << "x" << em.Y << "x" << em.Z << " offset: (" << of.X << ","
 	  << of.Y << "," << of.Z << ")" << std::endl;
 
@@ -75,10 +75,10 @@ void VoxelManipulator::print(
 				if (f & VOXELFLAG_NO_DATA)
 					c = 'N';
 				else {
-					c = 'X';
-					MapNode n = m_data[m_area.index(x, y, z)];
+					c			= 'X';
+					MapNode n	= m_data[m_area.index(x, y, z)];
 					content_t m = n.getContent();
-					u8 pr = n.param2;
+					u8 pr		= n.param2;
 					if (mode == VOXELPRINT_MATERIAL) {
 						if (m <= 9)
 							c = m + '0';
@@ -173,12 +173,12 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 	m_area = new_area;
 
 	MapNode *old_data = m_data;
-	u8 *old_flags = m_flags;
+	u8 *old_flags	  = m_flags;
 
 	/*dstream<<"old_data="<<(int)old_data<<", new_data="<<(int)new_data
 	<<", old_flags="<<(int)m_flags<<", new_flags="<<(int)new_flags<<std::endl;*/
 
-	m_data = new_data;
+	m_data	= new_data;
 	m_flags = new_flags;
 
 	delete[] old_data;
@@ -215,12 +215,12 @@ void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea &src_area, v3s16 f
 	 * index".
 	 */
 
-	s32 src_step = src_area.getExtent().X;
+	s32 src_step  = src_area.getExtent().X;
 	s32 dest_step = m_area.getExtent().X;
-	s32 dest_mod = m_area.index(to_pos.X, to_pos.Y, to_pos.Z + 1) -
+	s32 dest_mod  = m_area.index(to_pos.X, to_pos.Y, to_pos.Z + 1) -
 			m_area.index(to_pos.X, to_pos.Y, to_pos.Z) - dest_step * size.Y;
 
-	s32 i_src = src_area.index(from_pos.X, from_pos.Y, from_pos.Z);
+	s32 i_src	= src_area.index(from_pos.X, from_pos.Y, from_pos.Z);
 	s32 i_local = m_area.index(to_pos.X, to_pos.Y, to_pos.Z);
 
 	for (s16 z = 0; z < size.Z; z++) {
@@ -239,7 +239,7 @@ void VoxelManipulator::copyTo(MapNode *dst, const VoxelArea &dst_area, v3s16 dst
 {
 	for (s16 z = 0; z < size.Z; z++)
 		for (s16 y = 0; y < size.Y; y++) {
-			s32 i_dst = dst_area.index(dst_pos.X, dst_pos.Y + y, dst_pos.Z + z);
+			s32 i_dst	= dst_area.index(dst_pos.X, dst_pos.Y + y, dst_pos.Z + z);
 			s32 i_local = m_area.index(from_pos.X, from_pos.Y + y, from_pos.Z + z);
 			for (s16 x = 0; x < size.X; x++) {
 				if (m_data[i_local].getContent() != CONTENT_IGNORE)

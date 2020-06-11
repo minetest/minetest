@@ -70,7 +70,7 @@ void TestRandom::testPseudoRandom()
 
 void TestRandom::testPseudoRandomRange()
 {
-	PseudoRandom pr((int)time(NULL));
+	PseudoRandom pr((int) time(NULL));
 
 	EXCEPTION_CHECK(PrngException, pr.range(2000, 6000));
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
@@ -99,7 +99,7 @@ void TestRandom::testPcgRandom()
 
 void TestRandom::testPcgRandomRange()
 {
-	PcgRandom pr((int)time(NULL));
+	PcgRandom pr((int) time(NULL));
 
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
@@ -138,14 +138,14 @@ void TestRandom::testPcgRandomBytes()
 
 void TestRandom::testPcgRandomNormalDist()
 {
-	static const int max = 120;
-	static const int min = -120;
-	static const int num_trials = 20;
+	static const int max		 = 120;
+	static const int min		 = -120;
+	static const int num_trials	 = 20;
 	static const u32 num_samples = 61000;
 	s32 bins[max - min + 1];
 	memset(bins, 0, sizeof(bins));
 
-	PcgRandom r(486179 + (int)time(NULL));
+	PcgRandom r(486179 + (int) time(NULL));
 
 	for (u32 i = 0; i != num_samples; i++) {
 		s32 randval = r.randNormalDist(min, max, num_trials);
@@ -156,10 +156,10 @@ void TestRandom::testPcgRandomNormalDist()
 
 	// Note that here we divide variance by the number of trials;
 	// this is because variance is a biased estimator.
-	int range = (max - min + 1);
-	float mean = (max + min) / 2;
+	int range	   = (max - min + 1);
+	float mean	   = (max + min) / 2;
 	float variance = ((range * range - 1) / 12) / num_trials;
-	float stddev = std::sqrt(variance);
+	float stddev   = std::sqrt(variance);
 
 	static const float prediction_intervals[] = {
 		0.68269f, // 1.0
@@ -172,8 +172,8 @@ void TestRandom::testPcgRandomNormalDist()
 	//// Simple normality test using the 68-95-99.7% rule
 	for (u32 i = 0; i != ARRLEN(prediction_intervals); i++) {
 		float deviations = i / 2.f + 1.f;
-		int lbound = myround(mean - deviations * stddev);
-		int ubound = myround(mean + deviations * stddev);
+		int lbound		 = myround(mean - deviations * stddev);
+		int ubound		 = myround(mean + deviations * stddev);
 		UASSERT(lbound >= min);
 		UASSERT(ubound <= max);
 
@@ -181,7 +181,7 @@ void TestRandom::testPcgRandomNormalDist()
 		for (int j = lbound; j != ubound; j++)
 			accum += bins[j - min];
 
-		float actual = (float)accum / num_samples;
+		float actual = (float) accum / num_samples;
 		UASSERT(std::fabs(actual - prediction_intervals[i]) < 0.02f);
 	}
 }

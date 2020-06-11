@@ -55,8 +55,8 @@ void EnrichedString::clear()
 	m_colors.clear();
 	m_has_background = false;
 	m_default_length = 0;
-	m_default_color = irr::video::SColor(255, 255, 255, 255);
-	m_background = irr::video::SColor(0, 0, 0, 0);
+	m_default_color	 = irr::video::SColor(255, 255, 255, 255);
+	m_background	 = irr::video::SColor(0, 0, 0, 0);
 }
 
 void EnrichedString::operator=(const wchar_t *str)
@@ -110,7 +110,7 @@ void EnrichedString::addAtEnd(const std::wstring &s, const SColor &initial_color
 			// No longer use default color after first escape
 			if (use_default) {
 				m_default_length = m_string.size();
-				use_default = false;
+				use_default		 = false;
 			}
 		} else if (parts[0] == L"b") {
 			if (parts.size() < 2) {
@@ -174,7 +174,7 @@ EnrichedString EnrichedString::substr(size_t pos, size_t len) const
 			std::vector<SColor>(m_colors.begin() + pos, m_colors.begin() + pos + len));
 
 	str.m_has_background = m_has_background;
-	str.m_background = m_background;
+	str.m_background	 = m_background;
 
 	if (pos < m_default_length)
 		str.m_default_length = std::min(m_default_length - pos, str.size());

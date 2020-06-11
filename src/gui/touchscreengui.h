@@ -154,9 +154,9 @@ private:
 	bool m_visible = true;
 
 	// settings bar timeout
-	float m_timeout = 0.0f;
-	float m_timeout_value = 3.0f;
-	bool m_initialized = false;
+	float m_timeout				  = 0.0f;
+	float m_timeout_value		  = 3.0f;
+	bool m_initialized			  = false;
 	autohide_button_bar_dir m_dir = AHBB_Dir_Right_Left;
 };
 
@@ -172,7 +172,7 @@ public:
 
 	double getYawChange()
 	{
-		double res = m_camera_yaw_change;
+		double res			= m_camera_yaw_change;
 		m_camera_yaw_change = 0;
 		return res;
 	}
@@ -211,12 +211,12 @@ private:
 
 	// value in degree
 	double m_camera_yaw_change = 0.0;
-	double m_camera_pitch = 0.0;
+	double m_camera_pitch	   = 0.0;
 
 	// forward, backward, left, right
 	touch_gui_button_id m_joystick_names[5] = { forward_id, backward_id, left_id,
 		right_id, special1_id };
-	bool m_joystick_status[5] = { false, false, false, false, false };
+	bool m_joystick_status[5]				= { false, false, false, false, false };
 
 	/*
 	 * A line starting at the camera and pointing towards the
@@ -226,18 +226,18 @@ private:
 	 */
 	line3d<f32> m_shootline;
 
-	int m_move_id = -1;
-	bool m_move_has_really_moved = false;
-	u64 m_move_downtime = 0;
+	int m_move_id					= -1;
+	bool m_move_has_really_moved	= false;
+	u64 m_move_downtime				= 0;
 	bool m_move_sent_as_mouse_event = false;
-	v2s32 m_move_downlocation = v2s32(-10000, -10000);
+	v2s32 m_move_downlocation		= v2s32(-10000, -10000);
 
-	int m_joystick_id = -1;
-	bool m_joystick_has_really_moved = false;
-	bool m_fixed_joystick = false;
-	bool m_joystick_triggers_special1 = false;
-	button_info *m_joystick_btn_off = nullptr;
-	button_info *m_joystick_btn_bg = nullptr;
+	int m_joystick_id				   = -1;
+	bool m_joystick_has_really_moved   = false;
+	bool m_fixed_joystick			   = false;
+	bool m_joystick_triggers_special1  = false;
+	button_info *m_joystick_btn_off	   = nullptr;
+	button_info *m_joystick_btn_bg	   = nullptr;
 	button_info *m_joystick_btn_center = nullptr;
 
 	button_info m_buttons[after_last_element_id];

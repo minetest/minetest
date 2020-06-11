@@ -150,7 +150,7 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 	lua_remove(L, object);
 	lua_remove(L, error_handler);
 
-	size_t len = 0;
+	size_t len	  = 0;
 	const char *s = lua_tolstring(L, -1, &len);
 	lua_pop(L, 1); // Pop static data
 	return std::string(s, len);

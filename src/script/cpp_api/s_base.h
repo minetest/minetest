@@ -154,7 +154,7 @@ private:
 
 	lua_State *m_luastack = nullptr;
 
-	IGameDef *m_gamedef = nullptr;
+	IGameDef *m_gamedef		   = nullptr;
 	Environment *m_environment = nullptr;
 #ifndef SERVER
 	GUIEngine *m_guiengine = nullptr;

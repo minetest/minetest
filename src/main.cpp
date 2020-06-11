@@ -39,22 +39,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "network/socket.h"
 #if USE_CURSES
-#include "terminal_chat_console.h"
+	#include "terminal_chat_console.h"
 #endif
 #ifndef SERVER
-#include "gui/guiMainMenu.h"
-#include "client/clientlauncher.h"
-#include "gui/guiEngine.h"
-#include "gui/mainmenumanager.h"
+	#include "gui/guiMainMenu.h"
+	#include "client/clientlauncher.h"
+	#include "gui/guiEngine.h"
+	#include "gui/mainmenumanager.h"
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
-#include "gui/touchscreengui.h"
+	#include "gui/touchscreengui.h"
 #endif
 
 #if !defined(SERVER) && (IRRLICHT_VERSION_MAJOR == 1) &&                                 \
 		(IRRLICHT_VERSION_MINOR == 8) && (IRRLICHT_VERSION_REVISION == 2)
-#error "Irrlicht 1.8.2 is known to be broken - please update Irrlicht to version >= 1.8.3"
+	#error "Irrlicht 1.8.2 is known to be broken - please update Irrlicht to version >= 1.8.3"
 #endif
 
 #define DEBUGFILE "debug.txt"
@@ -183,14 +183,14 @@ int main(int argc, char *argv[])
 #ifndef __ANDROID__
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
-#if BUILD_UNITTESTS
+	#if BUILD_UNITTESTS
 		return run_tests();
-#else
+	#else
 		errorstream
 				<< "Unittest support is not enabled in this binary. "
 				<< "If you want to enable it, compile project with BUILD_UNITTESTS=1 flag."
 				<< std::endl;
-#endif
+	#endif
 	}
 #endif
 
@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
 	ClientLauncher launcher;
 	retval = launcher.run(game_params, cmd_args) ? 0 : 1;
 #else
-	retval = 0;
+	retval							= 0;
 #endif
 
 	// Update configuration file
@@ -391,7 +391,7 @@ static void print_worldspecs(const std::vector<WorldSpec> &worldspecs, std::ostr
 
 static void print_modified_quicktune_values()
 {
-	bool header_printed = false;
+	bool header_printed			   = false;
 	std::vector<std::string> names = getQuicktuneNames();
 
 	for (const std::string &name : names) {
@@ -442,7 +442,7 @@ static bool setup_log_params(const Settings &cmd_args)
 	if (cmd_args.getFlag("trace")) {
 		dstream << _("Enabling trace level debug output") << std::endl;
 		g_logger.setTraceEnabled(true);
-		dout_con_ptr = &verbosestream; // This is somewhat old
+		dout_con_ptr			   = &verbosestream; // This is somewhat old
 		socket_enable_debug_output = true; // Sockets doesn't use log.h
 	}
 
@@ -505,7 +505,7 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 static void startup_message()
 {
 	infostream << PROJECT_NAME << " " << _("with")
-			   << " SER_FMT_VER_HIGHEST_READ=" << (int)SER_FMT_VER_HIGHEST_READ << ", "
+			   << " SER_FMT_VER_HIGHEST_READ=" << (int) SER_FMT_VER_HIGHEST_READ << ", "
 			   << g_build_info << std::endl;
 }
 
@@ -568,8 +568,8 @@ static void init_log_streams(const Settings &cmd_args)
 						 "integer value; please update your configuration."
 					  << std::endl;
 		static const char *lev_name[] = { "", "error", "action", "info", "verbose" };
-		int lev_i = atoi(conf_loglev.c_str());
-		if (lev_i < 0 || lev_i >= (int)ARRLEN(lev_name)) {
+		int lev_i					  = atoi(conf_loglev.c_str());
+		if (lev_i < 0 || lev_i >= (int) ARRLEN(lev_name)) {
 			warningstream << "Supplied invalid debug_log_level!"
 							 "  Assuming action level."
 						  << std::endl;
@@ -642,7 +642,7 @@ static bool get_world_from_cmdline(GameParams *game_params, const Settings &cmd_
 	if (!commanded_worldname.empty()) {
 		// Get information about available worlds
 		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
-		bool found = false;
+		bool found						  = false;
 		for (const WorldSpec &worldspec : worldspecs) {
 			std::string name = worldspec.name;
 			if (name == commanded_worldname) {
@@ -650,7 +650,7 @@ static bool get_world_from_cmdline(GameParams *game_params, const Settings &cmd_
 							 "command line")
 						<< std::endl;
 				commanded_world = worldspec.path;
-				found = true;
+				found			= true;
 				break;
 			}
 		}
@@ -833,7 +833,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
 
 	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes *)NULL);
+		bind_addr.setAddress((IPv6AddressBytes *) NULL);
 	}
 	try {
 		bind_addr.Resolve(bind_str.c_str());
@@ -859,7 +859,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES
-		bool name_ok = true;
+		bool name_ok		   = true;
 		std::string admin_nick = g_settings->get("name");
 
 		name_ok = name_ok && !admin_nick.empty();
@@ -969,9 +969,9 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 				*new_db = ServerMap::createDatabase(
 						migrate_to, game_params.world_path, world_mt);
 
-	u32 count = 0;
+	u32 count				= 0;
 	time_t last_update_time = 0;
-	bool &kill = *porting::signal_handler_killstatus();
+	bool &kill				= *porting::signal_handler_killstatus();
 
 	std::vector<v3s16> blocks;
 	old_db->listAllLoadableBlocks(blocks);

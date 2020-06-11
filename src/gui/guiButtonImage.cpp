@@ -31,8 +31,8 @@ using namespace gui;
 
 GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
 		gui::IGUIElement *parent, s32 id, core::rect<s32> rectangle,
-		ISimpleTextureSource *tsrc, bool noclip)
-	: GUIButton(environment, parent, id, rectangle, tsrc, noclip)
+		ISimpleTextureSource *tsrc, bool noclip) :
+	GUIButton(environment, parent, id, rectangle, tsrc, noclip)
 {
 	m_image = Environment->addImage(
 			core::rect<s32>(0, 0, rectangle.getWidth(), rectangle.getHeight()), this);

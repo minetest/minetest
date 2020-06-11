@@ -26,5 +26,5 @@ DEALINGS IN THE SOFTWARE.
 #pragma once
 
 #include <mutex>
-using MutexAutoLock = std::unique_lock<std::mutex>;
+using MutexAutoLock			 = std::unique_lock<std::mutex>;
 using RecursiveMutexAutoLock = std::unique_lock<std::recursive_mutex>;

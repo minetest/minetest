@@ -53,7 +53,7 @@ class ServerScripting;
 class ActiveBlockModifier
 {
 public:
-	ActiveBlockModifier() = default;
+	ActiveBlockModifier()		   = default;
 	virtual ~ActiveBlockModifier() = default;
 
 	// Set of contents to trigger on
@@ -454,7 +454,7 @@ private:
 	std::vector<RemotePlayer *> m_players;
 
 	PlayerDatabase *m_player_database = nullptr;
-	AuthDatabase *m_auth_database = nullptr;
+	AuthDatabase *m_auth_database	  = nullptr;
 
 	// Pseudo random generator for shuffling, etc.
 	std::mt19937 m_rgen;

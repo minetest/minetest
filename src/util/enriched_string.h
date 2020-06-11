@@ -72,7 +72,7 @@ public:
 	inline irr::video::SColor getBackground() const { return m_background; }
 	inline void setBackground(const irr::video::SColor &color)
 	{
-		m_background = color;
+		m_background	 = color;
 		m_has_background = true;
 	}
 

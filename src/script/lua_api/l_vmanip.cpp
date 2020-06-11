@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // garbage collector
 int LuaVoxelManip::gc_object(lua_State *L)
 {
-	LuaVoxelManip *o = *(LuaVoxelManip **)(lua_touserdata(L, 1));
+	LuaVoxelManip *o = *(LuaVoxelManip **) (lua_touserdata(L, 1));
 	delete o;
 
 	return 0;
@@ -44,7 +44,7 @@ int LuaVoxelManip::l_read_from_map(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	MMVManip *vm = o->vm;
+	MMVManip *vm	 = o->vm;
 
 	v3s16 bp1 = getNodeBlockPos(check_v3s16(L, 2));
 	v3s16 bp2 = getNodeBlockPos(check_v3s16(L, 3));
@@ -63,7 +63,7 @@ int LuaVoxelManip::l_get_data(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	bool use_buffer = lua_istable(L, 2);
+	bool use_buffer	 = lua_istable(L, 2);
 
 	MMVManip *vm = o->vm;
 
@@ -88,7 +88,7 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	MMVManip *vm = o->vm;
+	MMVManip *vm	 = o->vm;
 
 	if (!lua_istable(L, 2))
 		throw LuaError("VoxelManip:set_data called with missing parameter");
@@ -110,7 +110,7 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	LuaVoxelManip *o = checkobject(L, 1);
+	LuaVoxelManip *o  = checkobject(L, 1);
 	bool update_light = !lua_isboolean(L, 2) || readParam<bool>(L, 2);
 	GET_ENV_PTR;
 	ServerMap *map = &(env->getServerMap());
@@ -138,7 +138,7 @@ int LuaVoxelManip::l_get_node_at(lua_State *L)
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	v3s16 pos = check_v3s16(L, 2);
+	v3s16 pos		 = check_v3s16(L, 2);
 
 	pushnode(L, o->vm->getNodeNoExNoEmerge(pos), ndef);
 	return 1;
@@ -151,8 +151,8 @@ int LuaVoxelManip::l_set_node_at(lua_State *L)
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	v3s16 pos = check_v3s16(L, 2);
-	MapNode n = readnode(L, 3, ndef);
+	v3s16 pos		 = check_v3s16(L, 2);
+	MapNode n		 = readnode(L, 3, ndef);
 
 	o->vm->setNodeNoEmerge(pos, n);
 
@@ -165,12 +165,12 @@ int LuaVoxelManip::l_update_liquids(lua_State *L)
 
 	LuaVoxelManip *o = checkobject(L, 1);
 
-	Map *map = &(env->getMap());
+	Map *map				   = &(env->getMap());
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-	MMVManip *vm = o->vm;
+	MMVManip *vm			   = o->vm;
 
 	Mapgen mg;
-	mg.vm = vm;
+	mg.vm	= vm;
 	mg.ndef = ndef;
 
 	mg.updateLiquid(&map->m_transforming_liquid, vm->m_area.MinEdge, vm->m_area.MaxEdge);
@@ -191,14 +191,14 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	}
 
 	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	MMVManip *vm = o->vm;
+	EmergeManager *emerge	   = getServer(L)->getEmergeManager();
+	MMVManip *vm			   = o->vm;
 
-	v3s16 yblock = v3s16(0, 1, 0) * MAP_BLOCKSIZE;
-	v3s16 fpmin = vm->m_area.MinEdge;
-	v3s16 fpmax = vm->m_area.MaxEdge;
-	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) : fpmin + yblock;
-	v3s16 pmax = lua_istable(L, 3) ? check_v3s16(L, 3) : fpmax - yblock;
+	v3s16 yblock		  = v3s16(0, 1, 0) * MAP_BLOCKSIZE;
+	v3s16 fpmin			  = vm->m_area.MinEdge;
+	v3s16 fpmax			  = vm->m_area.MaxEdge;
+	v3s16 pmin			  = lua_istable(L, 2) ? check_v3s16(L, 2) : fpmin + yblock;
+	v3s16 pmax			  = lua_istable(L, 3) ? check_v3s16(L, 3) : fpmax - yblock;
 	bool propagate_shadow = !lua_isboolean(L, 4) || readParam<bool>(L, 4);
 
 	sortBoxVerticies(pmin, pmax);
@@ -206,8 +206,8 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 		throw LuaError("Specified voxel area out of VoxelManipulator bounds");
 
 	Mapgen mg;
-	mg.vm = vm;
-	mg.ndef = ndef;
+	mg.vm		   = vm;
+	mg.ndef		   = ndef;
 	mg.water_level = emerge->mgparams->water_level;
 
 	mg.calcLighting(pmin, pmax, fpmin, fpmax, propagate_shadow);
@@ -237,8 +237,8 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 	MMVManip *vm = o->vm;
 
 	v3s16 yblock = v3s16(0, 1, 0) * MAP_BLOCKSIZE;
-	v3s16 pmin = lua_istable(L, 3) ? check_v3s16(L, 3) : vm->m_area.MinEdge + yblock;
-	v3s16 pmax = lua_istable(L, 4) ? check_v3s16(L, 4) : vm->m_area.MaxEdge - yblock;
+	v3s16 pmin	 = lua_istable(L, 3) ? check_v3s16(L, 3) : vm->m_area.MinEdge + yblock;
+	v3s16 pmax	 = lua_istable(L, 4) ? check_v3s16(L, 4) : vm->m_area.MaxEdge - yblock;
 
 	sortBoxVerticies(pmin, pmax);
 	if (!vm->m_area.contains(VoxelArea(pmin, pmax)))
@@ -257,7 +257,7 @@ int LuaVoxelManip::l_get_light_data(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	MMVManip *vm = o->vm;
+	MMVManip *vm	 = o->vm;
 
 	u32 volume = vm->m_area.getVolume();
 
@@ -276,7 +276,7 @@ int LuaVoxelManip::l_set_light_data(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	MMVManip *vm = o->vm;
+	MMVManip *vm	 = o->vm;
 
 	if (!lua_istable(L, 2))
 		throw LuaError("VoxelManip:set_light_data called with missing "
@@ -300,7 +300,7 @@ int LuaVoxelManip::l_get_param2_data(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	bool use_buffer = lua_istable(L, 2);
+	bool use_buffer	 = lua_istable(L, 2);
 
 	MMVManip *vm = o->vm;
 
@@ -325,7 +325,7 @@ int LuaVoxelManip::l_set_param2_data(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	MMVManip *vm = o->vm;
+	MMVManip *vm	 = o->vm;
 
 	if (!lua_istable(L, 2))
 		throw LuaError("VoxelManip:set_param2_data called with missing "
@@ -354,7 +354,7 @@ int LuaVoxelManip::l_was_modified(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	MMVManip *vm = o->vm;
+	MMVManip *vm	 = o->vm;
 
 	lua_pushboolean(L, vm->m_is_dirty);
 
@@ -373,14 +373,12 @@ int LuaVoxelManip::l_get_emerged_area(lua_State *L)
 	return 2;
 }
 
-LuaVoxelManip::LuaVoxelManip(MMVManip *mmvm, bool is_mg_vm)
-	: is_mapgen_vm(is_mg_vm), vm(mmvm)
-{
-}
+LuaVoxelManip::LuaVoxelManip(MMVManip *mmvm, bool is_mg_vm) :
+	is_mapgen_vm(is_mg_vm), vm(mmvm)
+{}
 
 LuaVoxelManip::LuaVoxelManip(Map *map) : vm(new MMVManip(map))
-{
-}
+{}
 
 LuaVoxelManip::LuaVoxelManip(Map *map, v3s16 p1, v3s16 p2)
 {
@@ -404,12 +402,12 @@ int LuaVoxelManip::create_object(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	Map *map = &(env->getMap());
+	Map *map		 = &(env->getMap());
 	LuaVoxelManip *o = (lua_istable(L, 1) && lua_istable(L, 2)) ?
 			new LuaVoxelManip(map, check_v3s16(L, 1), check_v3s16(L, 2)) :
 			new LuaVoxelManip(map);
 
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 	return 1;
@@ -425,7 +423,7 @@ LuaVoxelManip *LuaVoxelManip::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(LuaVoxelManip **)ud; // unbox pointer
+	return *(LuaVoxelManip **) ud; // unbox pointer
 }
 
 void LuaVoxelManip::Register(lua_State *L)
@@ -456,7 +454,7 @@ void LuaVoxelManip::Register(lua_State *L)
 	lua_register(L, className, create_object);
 }
 
-const char LuaVoxelManip::className[] = "VoxelManip";
+const char LuaVoxelManip::className[]	= "VoxelManip";
 const luaL_Reg LuaVoxelManip::methods[] = { luamethod(LuaVoxelManip, read_from_map),
 	luamethod(LuaVoxelManip, get_data), luamethod(LuaVoxelManip, set_data),
 	luamethod(LuaVoxelManip, get_node_at), luamethod(LuaVoxelManip, set_node_at),

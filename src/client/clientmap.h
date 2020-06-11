@@ -57,10 +57,10 @@ public:
 
 	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
 	{
-		m_camera_position = pos;
+		m_camera_position  = pos;
 		m_camera_direction = dir;
-		m_camera_fov = fov;
-		m_camera_offset = offset;
+		m_camera_fov	   = fov;
+		m_camera_offset	   = offset;
 	}
 
 	/*
@@ -109,9 +109,9 @@ private:
 
 	MapDrawControl &m_control;
 
-	v3f m_camera_position = v3f(0, 0, 0);
+	v3f m_camera_position  = v3f(0, 0, 0);
 	v3f m_camera_direction = v3f(0, 0, 1);
-	f32 m_camera_fov = M_PI;
+	f32 m_camera_fov	   = M_PI;
 	v3s16 m_camera_offset;
 
 	std::map<v3s16, MapBlock *> m_drawlist;

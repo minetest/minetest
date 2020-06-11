@@ -30,10 +30,10 @@ public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &data);
 	// Used by the Lua API
 	LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &name,
-			const std::string &state)
-		: UnitSAO(env, pos), m_init_name(name), m_init_state(state)
-	{
-	}
+			const std::string &state) :
+		UnitSAO(env, pos),
+		m_init_name(name), m_init_state(state)
+	{}
 	~LuaEntitySAO();
 	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_LUAENTITY; }
 	ActiveObjectType getSendType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
@@ -44,7 +44,7 @@ public:
 	void getStaticData(std::string *result) const;
 	u16 punch(v3f dir, const ToolCapabilities *toolcap = nullptr,
 			ServerActiveObject *puncher = nullptr,
-			float time_from_last_punch = 1000000.0f);
+			float time_from_last_punch	= 1000000.0f);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
@@ -86,7 +86,7 @@ private:
 	v3f m_last_sent_position;
 	v3f m_last_sent_velocity;
 	v3f m_last_sent_rotation;
-	float m_last_sent_position_timer = 0.0f;
-	float m_last_sent_move_precision = 0.0f;
+	float m_last_sent_position_timer	   = 0.0f;
+	float m_last_sent_move_precision	   = 0.0f;
 	std::string m_current_texture_modifier = "";
 };

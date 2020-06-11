@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  *       regardless of the compiler.
  */
 #ifndef _MSC_VER
-#include <cstdint>
+	#include <cstdint>
 #endif
 
 #include <irrTypes.h>
@@ -38,15 +38,15 @@ namespace irr
 {
 // Irrlicht 1.8+ defines 64bit unsigned symbol in irrTypes.h
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-#ifdef _MSC_VER
+	#ifdef _MSC_VER
 // Windows
 typedef long long s64;
 typedef unsigned long long u64;
-#else
+	#else
 // Posix
 typedef int64_t s64;
 typedef uint64_t u64;
-#endif
+	#endif
 #endif
 
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 9)

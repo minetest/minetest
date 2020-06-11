@@ -22,11 +22,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 GUIBackgroundImage::GUIBackgroundImage(gui::IGUIEnvironment *env,
 		gui::IGUIElement *parent, s32 id, const core::rect<s32> &rectangle,
 		const std::string &name, const core::rect<s32> &middle,
-		ISimpleTextureSource *tsrc, bool autoclip)
-	: gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle), m_name(name),
-	  m_middle(middle), m_tsrc(tsrc), m_autoclip(autoclip)
-{
-}
+		ISimpleTextureSource *tsrc, bool autoclip) :
+	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
+	m_name(name), m_middle(middle), m_tsrc(tsrc), m_autoclip(autoclip)
+{}
 
 void GUIBackgroundImage::draw()
 {

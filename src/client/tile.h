@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 
 #if ENABLE_GLES
-#include <IVideoDriver.h>
+	#include <IVideoDriver.h>
 #endif
 
 class IGameDef;
@@ -89,9 +89,9 @@ public:
 
 	virtual ~ITextureSource() = default;
 
-	virtual u32 getTextureId(const std::string &name) = 0;
-	virtual std::string getTextureName(u32 id) = 0;
-	virtual video::ITexture *getTexture(u32 id) = 0;
+	virtual u32 getTextureId(const std::string &name)								= 0;
+	virtual std::string getTextureName(u32 id)										= 0;
+	virtual video::ITexture *getTexture(u32 id)										= 0;
 	virtual video::ITexture *getTexture(const std::string &name, u32 *id = nullptr) = 0;
 	virtual video::ITexture *getTextureForMesh(
 			const std::string &name, u32 *id = nullptr) = 0;
@@ -101,10 +101,10 @@ public:
 	 * destructed.
 	 * Should be called from the main thread.
 	 */
-	virtual Palette *getPalette(const std::string &name) = 0;
-	virtual bool isKnownSourceImage(const std::string &name) = 0;
-	virtual video::ITexture *getNormalTexture(const std::string &name) = 0;
-	virtual video::SColor getTextureAverageColor(const std::string &name) = 0;
+	virtual Palette *getPalette(const std::string &name)				   = 0;
+	virtual bool isKnownSourceImage(const std::string &name)			   = 0;
+	virtual video::ITexture *getNormalTexture(const std::string &name)	   = 0;
+	virtual video::SColor getTextureAverageColor(const std::string &name)  = 0;
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present) = 0;
 };
 
@@ -115,18 +115,18 @@ public:
 
 	virtual ~IWritableTextureSource() = default;
 
-	virtual u32 getTextureId(const std::string &name) = 0;
-	virtual std::string getTextureName(u32 id) = 0;
-	virtual video::ITexture *getTexture(u32 id) = 0;
+	virtual u32 getTextureId(const std::string &name)								= 0;
+	virtual std::string getTextureName(u32 id)										= 0;
+	virtual video::ITexture *getTexture(u32 id)										= 0;
 	virtual video::ITexture *getTexture(const std::string &name, u32 *id = nullptr) = 0;
-	virtual bool isKnownSourceImage(const std::string &name) = 0;
+	virtual bool isKnownSourceImage(const std::string &name)						= 0;
 
-	virtual void processQueue() = 0;
+	virtual void processQueue()													= 0;
 	virtual void insertSourceImage(const std::string &name, video::IImage *img) = 0;
-	virtual void rebuildImagesAndTextures() = 0;
-	virtual video::ITexture *getNormalTexture(const std::string &name) = 0;
-	virtual video::SColor getTextureAverageColor(const std::string &name) = 0;
-	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present) = 0;
+	virtual void rebuildImagesAndTextures()										= 0;
+	virtual video::ITexture *getNormalTexture(const std::string &name)			= 0;
+	virtual video::SColor getTextureAverageColor(const std::string &name)		= 0;
+	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)		= 0;
 };
 
 IWritableTextureSource *createTextureSource();
@@ -171,10 +171,10 @@ struct FrameSpec
 {
 	FrameSpec() = default;
 
-	u32 texture_id = 0;
-	video::ITexture *texture = nullptr;
+	u32 texture_id					= 0;
+	video::ITexture *texture		= nullptr;
 	video::ITexture *normal_texture = nullptr;
-	video::ITexture *flags_texture = nullptr;
+	video::ITexture *flags_texture	= nullptr;
 };
 
 #define MAX_TILE_LAYERS 2
@@ -213,7 +213,7 @@ struct TileLayer
 		case TILE_MATERIAL_WAVING_PLANTS:
 		case TILE_MATERIAL_WAVING_LIQUID_BASIC:
 			material.MaterialTypeParam = 0.5;
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			material.MaterialType	   = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
 		case TILE_MATERIAL_ALPHA:
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
@@ -253,16 +253,16 @@ struct TileLayer
 
 	// Ordered for size, please do not reorder
 
-	video::ITexture *texture = nullptr;
+	video::ITexture *texture		= nullptr;
 	video::ITexture *normal_texture = nullptr;
-	video::ITexture *flags_texture = nullptr;
+	video::ITexture *flags_texture	= nullptr;
 
 	u32 shader_id = 0;
 
 	u32 texture_id = 0;
 
 	u16 animation_frame_length_ms = 0;
-	u8 animation_frame_count = 1;
+	u8 animation_frame_count	  = 1;
 
 	u8 material_type = TILE_MATERIAL_BASIC;
 	u8 material_flags =

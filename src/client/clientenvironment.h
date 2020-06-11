@@ -49,7 +49,8 @@ enum ClientEnvEventType
 struct ClientEnvEvent
 {
 	ClientEnvEventType type;
-	union {
+	union
+	{
 		//struct{
 		//} none;
 		struct

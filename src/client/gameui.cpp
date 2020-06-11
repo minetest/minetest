@@ -72,7 +72,7 @@ void GameUI::init()
 	m_guitext_status->setVisible(false);
 
 	// Chat text
-	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
+	m_guitext_chat	   = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
 			//false, false); // Disable word wrap as of now
 			false, true, guiroot);
 	u16 chat_font_size = g_settings->getU16("chat_font_size");
@@ -97,8 +97,8 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 
 	if (m_flags.show_debug) {
 		static float drawtime_avg = 0;
-		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
-		u16 fps = 1.0 / stats.dtime_jitter.avg;
+		drawtime_avg			  = drawtime_avg * 0.95 + stats.drawtime * 0.05;
+		u16 fps					  = 1.0 / stats.dtime_jitter.avg;
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed << PROJECT_NAME_C " " << g_version_hash << " | FPS: " << fps
@@ -127,16 +127,16 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		   << ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "\xC2\xB0 "
 		   << yawToDirectionString(cam.camera_yaw)
 		   << " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "\xC2\xB0"
-		   << " | seed: " << ((u64)client->getMapSeed());
+		   << " | seed: " << ((u64) client->getMapSeed());
 
 		if (pointed_old.type == POINTEDTHING_NODE) {
-			ClientMap &map = client->getEnv().getClientMap();
+			ClientMap &map				  = client->getEnv().getClientMap();
 			const NodeDefManager *nodedef = client->getNodeDefManager();
-			MapNode n = map.getNode(pointed_old.node_undersurface);
+			MapNode n					  = map.getNode(pointed_old.node_undersurface);
 
 			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
 				os << ", pointed: " << nodedef->get(n).name
-				   << ", param2: " << (u64)n.getParam2();
+				   << ", param2: " << (u64) n.getParam2();
 			}
 		}
 
@@ -167,10 +167,10 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 	m_guitext_status->setVisible(!m_statustext.empty());
 
 	if (!m_statustext.empty()) {
-		s32 status_width = m_guitext_status->getTextWidth();
+		s32 status_width  = m_guitext_status->getTextWidth();
 		s32 status_height = m_guitext_status->getTextHeight();
-		s32 status_y = screensize.Y - 150;
-		s32 status_x = (screensize.X - status_width) / 2;
+		s32 status_y	  = screensize.Y - 150;
+		s32 status_x	  = (screensize.X - status_width) / 2;
 
 		m_guitext_status->setRelativePosition(core::rect<s32>(
 				status_x, status_y - status_height, status_x + status_width, status_y));
@@ -191,7 +191,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 
 void GameUI::initFlags()
 {
-	m_flags = GameUI::Flags();
+	m_flags			   = GameUI::Flags();
 	m_flags.show_debug = g_settings->getBool("show_debug");
 }
 
@@ -219,7 +219,7 @@ void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
 
 	core::rect<s32> chat_size(10, chat_y, window_size.X - 20, 0);
 	chat_size.LowerRightCorner.Y =
-			std::min((s32)window_size.Y, m_guitext_chat->getTextHeight() + chat_y);
+			std::min((s32) window_size.Y, m_guitext_chat->getTextHeight() + chat_y);
 
 	m_guitext_chat->setRelativePosition(chat_size);
 	setStaticText(m_guitext_chat, chat_text);
@@ -231,7 +231,7 @@ void GameUI::updateProfiler()
 {
 	if (m_profiler_current_page != 0) {
 		std::ostringstream os(std::ios_base::binary);
-		os << "   Profiler page " << (int)m_profiler_current_page
+		os << "   Profiler page " << (int) m_profiler_current_page
 		   << ", elapsed: " << g_profiler->getElapsedMs() << " ms)" << std::endl;
 
 		int lines = g_profiler->print(os, m_profiler_current_page, m_profiler_max_page);

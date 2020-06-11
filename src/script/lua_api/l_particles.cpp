@@ -51,13 +51,13 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		log_deprecated(L,
 				"Deprecated add_particle call with "
 				"individual parameters instead of definition");
-		p.pos = check_v3f(L, 1);
-		p.vel = check_v3f(L, 2);
-		p.acc = check_v3f(L, 3);
-		p.expirationtime = luaL_checknumber(L, 4);
-		p.size = luaL_checknumber(L, 5);
+		p.pos				 = check_v3f(L, 1);
+		p.vel				 = check_v3f(L, 2);
+		p.acc				 = check_v3f(L, 3);
+		p.expirationtime	 = luaL_checknumber(L, 4);
+		p.size				 = luaL_checknumber(L, 5);
 		p.collisiondetection = readParam<bool>(L, 6);
-		p.texture = luaL_checkstring(L, 7);
+		p.texture			 = luaL_checkstring(L, 7);
 		if (lua_gettop(L) == 8) // only spawn for a single player
 			playername = luaL_checkstring(L, 8);
 	} else if (lua_istable(L, 1)) {
@@ -110,7 +110,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		lua_pop(L, 1);
 
 		p.texture = getstringfield_default(L, 1, "texture", p.texture);
-		p.glow = getintfield_default(L, 1, "glow", p.glow);
+		p.glow	  = getintfield_default(L, 1, "glow", p.glow);
 
 		lua_getfield(L, 1, "node");
 		if (lua_istable(L, -1))
@@ -162,25 +162,25 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		log_deprecated(L,
 				"Deprecated add_particlespawner call with "
 				"individual parameters instead of definition");
-		p.amount = luaL_checknumber(L, 1);
-		p.time = luaL_checknumber(L, 2);
-		p.minpos = check_v3f(L, 3);
-		p.maxpos = check_v3f(L, 4);
-		p.minvel = check_v3f(L, 5);
-		p.maxvel = check_v3f(L, 6);
-		p.minacc = check_v3f(L, 7);
-		p.maxacc = check_v3f(L, 8);
-		p.minexptime = luaL_checknumber(L, 9);
-		p.maxexptime = luaL_checknumber(L, 10);
-		p.minsize = luaL_checknumber(L, 11);
-		p.maxsize = luaL_checknumber(L, 12);
+		p.amount			 = luaL_checknumber(L, 1);
+		p.time				 = luaL_checknumber(L, 2);
+		p.minpos			 = check_v3f(L, 3);
+		p.maxpos			 = check_v3f(L, 4);
+		p.minvel			 = check_v3f(L, 5);
+		p.maxvel			 = check_v3f(L, 6);
+		p.minacc			 = check_v3f(L, 7);
+		p.maxacc			 = check_v3f(L, 8);
+		p.minexptime		 = luaL_checknumber(L, 9);
+		p.maxexptime		 = luaL_checknumber(L, 10);
+		p.minsize			 = luaL_checknumber(L, 11);
+		p.maxsize			 = luaL_checknumber(L, 12);
 		p.collisiondetection = readParam<bool>(L, 13);
-		p.texture = luaL_checkstring(L, 14);
+		p.texture			 = luaL_checkstring(L, 14);
 		if (lua_gettop(L) == 15) // only spawn for a single player
 			playername = luaL_checkstring(L, 15);
 	} else if (lua_istable(L, 1)) {
 		p.amount = getintfield_default(L, 1, "amount", p.amount);
-		p.time = getfloatfield_default(L, 1, "time", p.time);
+		p.time	 = getfloatfield_default(L, 1, "time", p.time);
 
 		lua_getfield(L, 1, "minpos");
 		if (lua_istable(L, -1))
@@ -214,8 +214,8 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 
 		p.minexptime = getfloatfield_default(L, 1, "minexptime", p.minexptime);
 		p.maxexptime = getfloatfield_default(L, 1, "maxexptime", p.maxexptime);
-		p.minsize = getfloatfield_default(L, 1, "minsize", p.minsize);
-		p.maxsize = getfloatfield_default(L, 1, "maxsize", p.maxsize);
+		p.minsize	 = getfloatfield_default(L, 1, "minsize", p.minsize);
+		p.maxsize	 = getfloatfield_default(L, 1, "maxsize", p.maxsize);
 		p.collisiondetection =
 				getboolfield_default(L, 1, "collisiondetection", p.collisiondetection);
 		p.collision_removal =
@@ -235,9 +235,9 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		}
 
 		p.vertical = getboolfield_default(L, 1, "vertical", p.vertical);
-		p.texture = getstringfield_default(L, 1, "texture", p.texture);
+		p.texture  = getstringfield_default(L, 1, "texture", p.texture);
 		playername = getstringfield_default(L, 1, "playername", "");
-		p.glow = getintfield_default(L, 1, "glow", p.glow);
+		p.glow	   = getintfield_default(L, 1, "glow", p.glow);
 
 		lua_getfield(L, 1, "node");
 		if (lua_istable(L, -1))

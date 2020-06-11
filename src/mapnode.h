@@ -140,10 +140,9 @@ struct MapNode
 
 	MapNode() = default;
 
-	MapNode(content_t content, u8 a_param1 = 0, u8 a_param2 = 0) noexcept
-		: param0(content), param1(a_param1), param2(a_param2)
-	{
-	}
+	MapNode(content_t content, u8 a_param1 = 0, u8 a_param2 = 0) noexcept :
+		param0(content), param1(a_param1), param2(a_param2)
+	{}
 
 	bool operator==(const MapNode &other) const noexcept
 	{
@@ -210,7 +209,7 @@ struct MapNode
 	// 0 <= return value <= LIGHT_SUN
 	u8 getLightBlend(u32 daylight_factor, const NodeDefManager *nodemgr) const
 	{
-		u8 lightday = 0;
+		u8 lightday	  = 0;
 		u8 lightnight = 0;
 		getLightBanks(lightday, lightnight, nodemgr);
 		return blend_light(daylight_factor, lightday, lightnight);

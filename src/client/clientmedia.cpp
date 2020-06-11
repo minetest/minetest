@@ -39,10 +39,9 @@ static std::string getMediaCacheDir()
 	ClientMediaDownloader
 */
 
-ClientMediaDownloader::ClientMediaDownloader()
-	: m_media_cache(getMediaCacheDir()), m_httpfetch_caller(HTTPFETCH_DISCARD)
-{
-}
+ClientMediaDownloader::ClientMediaDownloader() :
+	m_media_cache(getMediaCacheDir()), m_httpfetch_caller(HTTPFETCH_DISCARD)
+{}
 
 ClientMediaDownloader::~ClientMediaDownloader()
 {
@@ -82,9 +81,9 @@ void ClientMediaDownloader::addFile(const std::string &name, const std::string &
 		return;
 	}
 
-	FileStatus *filestatus = new FileStatus();
-	filestatus->received = false;
-	filestatus->sha1 = sha1;
+	FileStatus *filestatus	   = new FileStatus();
+	filestatus->received	   = false;
+	filestatus->sha1		   = sha1;
 	filestatus->current_remote = -1;
 	m_files.insert(std::make_pair(name, filestatus));
 }
@@ -100,8 +99,8 @@ void ClientMediaDownloader::addRemoteServer(const std::string &baseurl)
 				   << "\" for media download" << std::endl;
 
 		RemoteServerStatus *remote = new RemoteServerStatus();
-		remote->baseurl = baseurl;
-		remote->active_count = 0;
+		remote->baseurl			   = baseurl;
+		remote->active_count	   = 0;
 		m_remotes.push_back(remote);
 	}
 
@@ -159,8 +158,8 @@ void ClientMediaDownloader::initialStep(Client *client)
 	// Check media cache
 	m_uncached_count = m_files.size();
 	for (auto &file_it : m_files) {
-		std::string name = file_it.first;
-		FileStatus *filestatus = file_it.second;
+		std::string name		= file_it.first;
+		FileStatus *filestatus	= file_it.second;
 		const std::string &sha1 = filestatus->sha1;
 
 		std::ostringstream tmp_os(std::ios_base::binary);
@@ -200,7 +199,7 @@ void ClientMediaDownloader::initialStep(Client *client)
 		// Otherwise start off by requesting each server's sha1 set
 
 		// This is the first time we use httpfetch, so alloc a caller ID
-		m_httpfetch_caller = httpfetch_caller_alloc();
+		m_httpfetch_caller	= httpfetch_caller_alloc();
 		m_httpfetch_timeout = g_settings->getS32("curl_timeout");
 
 		// Set the active fetch limit to curl_parallel_limit or 84,
@@ -239,12 +238,12 @@ void ClientMediaDownloader::initialStep(Client *client)
 						 << "\"" << std::endl;
 
 			HTTPFetchRequest fetch_request;
-			fetch_request.url = remote->baseurl + MTHASHSET_FILE_NAME;
-			fetch_request.caller = m_httpfetch_caller;
-			fetch_request.request_id = m_httpfetch_next_id; // == i
-			fetch_request.timeout = m_httpfetch_timeout;
+			fetch_request.url			  = remote->baseurl + MTHASHSET_FILE_NAME;
+			fetch_request.caller		  = m_httpfetch_caller;
+			fetch_request.request_id	  = m_httpfetch_next_id; // == i
+			fetch_request.timeout		  = m_httpfetch_timeout;
 			fetch_request.connect_timeout = m_httpfetch_timeout;
-			fetch_request.post_data = required_hash_set;
+			fetch_request.post_data		  = required_hash_set;
 			fetch_request.extra_headers.emplace_back(
 					"Content-Type: application/octet-stream");
 
@@ -353,16 +352,16 @@ s32 ClientMediaDownloader::selectRemoteServer(FileStatus *filestatus)
 	// been unsuccessfully tried before), find the one with the
 	// smallest number of currently active transfers
 
-	s32 best = 0;
-	s32 best_remote_id = filestatus->available_remotes[best];
+	s32 best			  = 0;
+	s32 best_remote_id	  = filestatus->available_remotes[best];
 	s32 best_active_count = m_remotes[best_remote_id]->active_count;
 
 	for (u32 i = 1; i < filestatus->available_remotes.size(); ++i) {
-		s32 remote_id = filestatus->available_remotes[i];
+		s32 remote_id	 = filestatus->available_remotes[i];
 		s32 active_count = m_remotes[remote_id]->active_count;
 		if (active_count < best_active_count) {
-			best = i;
-			best_remote_id = remote_id;
+			best			  = i;
+			best_remote_id	  = remote_id;
 			best_active_count = active_count;
 		}
 	}
@@ -384,7 +383,7 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 			break;
 
 		const std::string &name = files_iter->first;
-		FileStatus *filestatus = files_iter->second;
+		FileStatus *filestatus	= files_iter->second;
 
 		if (!filestatus->received && filestatus->current_remote < 0) {
 			// File has not been received yet and is not currently
@@ -401,10 +400,10 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 							  << "\"" << url << "\"" << std::endl;
 
 				HTTPFetchRequest fetch_request;
-				fetch_request.url = url;
-				fetch_request.caller = m_httpfetch_caller;
-				fetch_request.request_id = m_httpfetch_next_id;
-				fetch_request.timeout = 0; // no data timeout!
+				fetch_request.url			  = url;
+				fetch_request.caller		  = m_httpfetch_caller;
+				fetch_request.request_id	  = m_httpfetch_next_id;
+				fetch_request.timeout		  = 0; // no data timeout!
 				fetch_request.connect_timeout = m_httpfetch_timeout;
 				httpfetch_async(fetch_request);
 
@@ -441,7 +440,8 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 			if (!file.second->received)
 				file_requests.push_back(file.first);
 		}
-		assert((s32)file_requests.size() == m_uncached_count - m_uncached_received_count);
+		assert((s32) file_requests.size() ==
+				m_uncached_count - m_uncached_received_count);
 		client->request_media(file_requests);
 	}
 }
@@ -481,9 +481,9 @@ void ClientMediaDownloader::conventionalTransferDone(
 bool ClientMediaDownloader::checkAndLoad(const std::string &name, const std::string &sha1,
 		const std::string &data, bool is_from_cache, Client *client)
 {
-	const char *cached_or_received = is_from_cache ? "cached" : "received";
+	const char *cached_or_received	  = is_from_cache ? "cached" : "received";
 	const char *cached_or_received_uc = is_from_cache ? "Cached" : "Received";
-	std::string sha1_hex = hex_encode(sha1);
+	std::string sha1_hex			  = hex_encode(sha1);
 
 	// Compute actual checksum of data
 	std::string data_sha1;
@@ -491,7 +491,7 @@ bool ClientMediaDownloader::checkAndLoad(const std::string &name, const std::str
 		SHA1 data_sha1_calculator;
 		data_sha1_calculator.addBytes(data.c_str(), data.size());
 		unsigned char *data_tmpdigest = data_sha1_calculator.getDigest();
-		data_sha1.assign((char *)data_tmpdigest, 20);
+		data_sha1.assign((char *) data_tmpdigest, 20);
 		free(data_tmpdigest);
 	}
 
@@ -566,7 +566,7 @@ void ClientMediaDownloader::deSerializeHashSet(
 								 "invalid hash set file size");
 	}
 
-	const u8 *data_cstr = (const u8 *)data.c_str();
+	const u8 *data_cstr = (const u8 *) data.c_str();
 
 	u32 signature = readU32(&data_cstr[0]);
 	if (signature != MTHASHSET_FILE_SIGNATURE) {

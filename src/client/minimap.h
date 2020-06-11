@@ -84,14 +84,14 @@ struct MinimapData
 	MinimapPixel minimap_scan[MINIMAP_MAX_SX * MINIMAP_MAX_SY];
 	bool map_invalidated;
 	bool minimap_shape_round;
-	video::IImage *minimap_mask_round = nullptr;
-	video::IImage *minimap_mask_square = nullptr;
-	video::ITexture *texture = nullptr;
-	video::ITexture *heightmap_texture = nullptr;
-	video::ITexture *minimap_overlay_round = nullptr;
+	video::IImage *minimap_mask_round		= nullptr;
+	video::IImage *minimap_mask_square		= nullptr;
+	video::ITexture *texture				= nullptr;
+	video::ITexture *heightmap_texture		= nullptr;
+	video::ITexture *minimap_overlay_round	= nullptr;
 	video::ITexture *minimap_overlay_square = nullptr;
-	video::ITexture *player_marker = nullptr;
-	video::ITexture *object_marker_red = nullptr;
+	video::ITexture *player_marker			= nullptr;
+	video::ITexture *object_marker_red		= nullptr;
 };
 
 struct QueuedMinimapUpdate

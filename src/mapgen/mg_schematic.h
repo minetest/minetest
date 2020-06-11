@@ -122,7 +122,7 @@ public:
 	u32 flags = 0;
 	v3s16 size;
 	MapNode *schemdata = nullptr;
-	u8 *slice_probs = nullptr;
+	u8 *slice_probs	   = nullptr;
 };
 
 class SchematicManager : public ObjDefManager

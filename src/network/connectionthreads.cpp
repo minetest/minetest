@@ -31,20 +31,20 @@ namespace con
 /* defines used for debugging and profiling                                   */
 /******************************************************************************/
 #ifdef NDEBUG
-#define LOG(a) a
-#define PROFILE(a)
-#undef DEBUG_CONNECTION_KBPS
+	#define LOG(a) a
+	#define PROFILE(a)
+	#undef DEBUG_CONNECTION_KBPS
 #else
 /* this mutex is used to achieve log message consistency */
 std::mutex log_conthread_mutex;
-#define LOG(a)                                                                           \
-	{                                                                                    \
-		MutexAutoLock loglock(log_conthread_mutex);                                      \
-		a;                                                                               \
-	}
-#define PROFILE(a) a
-//#define DEBUG_CONNECTION_KBPS
-#undef DEBUG_CONNECTION_KBPS
+	#define LOG(a)                                                                       \
+		{                                                                                \
+			MutexAutoLock loglock(log_conthread_mutex);                                  \
+			a;                                                                           \
+		}
+	#define PROFILE(a) a
+	//#define DEBUG_CONNECTION_KBPS
+	#undef DEBUG_CONNECTION_KBPS
 #endif
 
 /* maximum number of retries for reliable packets */
@@ -65,9 +65,9 @@ static u8 readChannel(u8 *packetdata)
 /* Connection Threads                                                         */
 /******************************************************************************/
 
-ConnectionSendThread::ConnectionSendThread(unsigned int max_packet_size, float timeout)
-	: Thread("ConnectionSend"), m_max_packet_size(max_packet_size), m_timeout(timeout),
-	  m_max_data_packets_per_iteration(g_settings->getU16("max_packets_per_iteration"))
+ConnectionSendThread::ConnectionSendThread(unsigned int max_packet_size, float timeout) :
+	Thread("ConnectionSend"), m_max_packet_size(max_packet_size), m_timeout(timeout),
+	m_max_data_packets_per_iteration(g_settings->getU16("max_packets_per_iteration"))
 {
 	SANITY_CHECK(m_max_data_packets_per_iteration > 1);
 }
@@ -79,7 +79,7 @@ void *ConnectionSendThread::run()
 	LOG(dout_con << m_connection->getDesc() << "ConnectionSend thread started"
 				 << std::endl);
 
-	u64 curtime = porting::getTimeMs();
+	u64 curtime	 = porting::getTimeMs();
 	u64 lasttime = curtime;
 
 	PROFILE(std::stringstream ThreadIdentifier);
@@ -100,8 +100,8 @@ void *ConnectionSendThread::run()
 		while (m_send_sleep_semaphore.wait(0)) {
 		}
 
-		lasttime = curtime;
-		curtime = porting::getTimeMs();
+		lasttime	= curtime;
+		curtime		= porting::getTimeMs();
 		float dtime = CALC_DTIME(lasttime, curtime);
 
 		/* first resend timed-out packets */
@@ -199,7 +199,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			continue;
 		}
 
-		float resend_timeout = udpPeer->getResendTimeout();
+		float resend_timeout	  = udpPeer->getResendTimeout();
 		bool retry_count_exceeded = false;
 		for (Channel &channel : udpPeer->channels) {
 			std::list<BufferedPacket> timed_outs;
@@ -227,8 +227,8 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			for (std::list<BufferedPacket>::iterator k = timed_outs.begin();
 					k != timed_outs.end(); ++k) {
 				session_t peer_id = readPeerId(*(k->data));
-				u8 channelnum = readChannel(*(k->data));
-				u16 seqnum = readU16(&(k->data[BASE_HEADER_SIZE + 1]));
+				u8 channelnum	  = readChannel(*(k->data));
+				u16 seqnum		  = readU16(&(k->data[BASE_HEADER_SIZE + 1]));
 
 				channel.UpdateBytesLost(k->data.getSize());
 				k->resend_count++;
@@ -245,7 +245,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 							 << k->address.serializeString() << "(t/o=" << resend_timeout
 							 << "): "
 							 << "from_peer_id=" << peer_id
-							 << ", channel=" << ((int)channelnum & 0xff)
+							 << ", channel=" << ((int) channelnum & 0xff)
 							 << ", seqnum=" << seqnum << std::endl);
 
 				rawSend(*k);
@@ -352,7 +352,7 @@ bool ConnectionSendThread::rawSendAsPacket(
 		if (channel->outgoing_reliables_sent.size() < channel->getWindowSize()) {
 			LOG(dout_con << m_connection->getDesc()
 						 << " INFO: sending a reliable packet to peer_id " << peer_id
-						 << " channel: " << (u32)channelnum << " seqnum: " << seqnum
+						 << " channel: " << (u32) channelnum << " seqnum: " << seqnum
 						 << std::endl);
 			sendAsPacketReliable(p, channel);
 			return true;
@@ -360,7 +360,7 @@ bool ConnectionSendThread::rawSendAsPacket(
 
 		LOG(dout_con << m_connection->getDesc()
 					 << " INFO: queueing reliable packet for peer_id: " << peer_id
-					 << " channel: " << (u32)channelnum << " seqnum: " << seqnum
+					 << " channel: " << (u32) channelnum << " seqnum: " << seqnum
 					 << std::endl);
 		channel->queued_reliables.push(p);
 		return false;
@@ -508,7 +508,7 @@ void ConnectionSendThread::connect(Address address)
 	Address bind_addr;
 
 	if (address.isIPv6())
-		bind_addr.setAddress((IPv6AddressBytes *)NULL);
+		bind_addr.setAddress((IPv6AddressBytes *) NULL);
 	else
 		bind_addr.setAddress(0, 0, 0, 0);
 
@@ -665,7 +665,7 @@ void ConnectionSendThread::sendPackets(float dtime)
 		// first send queued reliable packets for all peers (if possible)
 		for (unsigned int i = 0; i < CHANNEL_COUNT; i++) {
 			Channel &channel = udpPeer->channels[i];
-			u16 next_to_ack = 0;
+			u16 next_to_ack	 = 0;
 
 			channel.outgoing_reliables_sent.getFirstSeqnum(next_to_ack);
 			u16 next_to_receive = 0;
@@ -763,10 +763,9 @@ void ConnectionSendThread::sendAsPacket(
 	m_outgoing_queue.push(packet);
 }
 
-ConnectionReceiveThread::ConnectionReceiveThread(unsigned int max_packet_size)
-	: Thread("ConnectionReceive")
-{
-}
+ConnectionReceiveThread::ConnectionReceiveThread(unsigned int max_packet_size) :
+	Thread("ConnectionReceive")
+{}
 
 void *ConnectionReceiveThread::run()
 {
@@ -787,8 +786,8 @@ void *ConnectionReceiveThread::run()
 	bool packet_queued = true;
 
 #ifdef DEBUG_CONNECTION_KBPS
-	u64 curtime = porting::getTimeMs();
-	u64 lasttime = curtime;
+	u64 curtime				= porting::getTimeMs();
+	u64 lasttime			= curtime;
 	float debug_print_timer = 0.0;
 #endif
 
@@ -797,8 +796,8 @@ void *ConnectionReceiveThread::run()
 		PROFILE(ScopeProfiler sp(g_profiler, ThreadIdentifier.str(), SPT_AVG));
 
 #ifdef DEBUG_CONNECTION_KBPS
-		lasttime = curtime;
-		curtime = porting::getTimeMs();
+		lasttime	= curtime;
+		curtime		= porting::getTimeMs();
 		float dtime = CALC_DTIME(lasttime, curtime);
 #endif
 
@@ -819,9 +818,9 @@ void *ConnectionReceiveThread::run()
 					continue;
 
 				float peer_current = 0.0;
-				float peer_loss = 0.0;
-				float avg_rate = 0.0;
-				float avg_loss = 0.0;
+				float peer_loss	   = 0.0;
+				float avg_rate	   = 0.0;
+				float avg_loss	   = 0.0;
 
 				for (u16 j = 0; j < CHANNEL_COUNT; j++) {
 					peer_current += peer->channels[j].getCurrentDownloadRateKB();
@@ -909,11 +908,11 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata, bool &packet
 		}
 
 		session_t peer_id = readPeerId(*packetdata);
-		u8 channelnum = readChannel(*packetdata);
+		u8 channelnum	  = readChannel(*packetdata);
 
 		if (channelnum > CHANNEL_COUNT - 1) {
 			LOG(derr_con << m_connection->getDesc() << "Receive(): Invalid channel "
-						 << (u32)channelnum << std::endl);
+						 << (u32) channelnum << std::endl);
 			return;
 		}
 
@@ -984,7 +983,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata, bool &packet
 					processPacket(channel, strippeddata, peer_id, channelnum, false);
 
 			LOG(dout_con << m_connection->getDesc() << " ProcessPacket from peer_id: "
-						 << peer_id << ", channel: " << (u32)channelnum << ", returned "
+						 << peer_id << ", channel: " << (u32) channelnum << ", returned "
 						 << resultdata.getSize() << " bytes" << std::endl);
 
 			ConnectionEvent e;
@@ -1030,13 +1029,13 @@ bool ConnectionReceiveThread::checkIncomingBuffers(
 	if (channel->incoming_reliables.getFirstSeqnum(firstseqnum)) {
 		if (firstseqnum == channel->readNextIncomingSeqNum()) {
 			BufferedPacket p = channel->incoming_reliables.popFirst();
-			peer_id = readPeerId(*p.data);
-			u8 channelnum = readChannel(*p.data);
-			u16 seqnum = readU16(&p.data[BASE_HEADER_SIZE + 1]);
+			peer_id			 = readPeerId(*p.data);
+			u8 channelnum	 = readChannel(*p.data);
+			u16 seqnum		 = readU16(&p.data[BASE_HEADER_SIZE + 1]);
 
 			LOG(dout_con << m_connection->getDesc() << "UNBUFFERING TYPE_RELIABLE"
 						 << " seqnum=" << seqnum << " peer_id=" << peer_id
-						 << " channel=" << ((int)channelnum & 0xff) << std::endl);
+						 << " channel=" << ((int) channelnum & 0xff) << std::endl);
 
 			channel->incNextIncomingSeqNum();
 
@@ -1075,7 +1074,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 	}
 
 	if (type >= PACKET_TYPE_MAX) {
-		derr_con << m_connection->getDesc() << "Got invalid type=" << ((int)type & 0xff)
+		derr_con << m_connection->getDesc() << "Got invalid type=" << ((int) type & 0xff)
 				 << std::endl;
 		throw InvalidIncomingDataException("Invalid packet type");
 	}
@@ -1110,7 +1109,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 
 		u16 seqnum = readU16(&packetdata[2]);
 		LOG(dout_con << m_connection->getDesc() << " [ CONTROLTYPE_ACK: channelnum="
-					 << ((int)channelnum & 0xff) << ", peer_id=" << peer->id
+					 << ((int) channelnum & 0xff) << ", peer_id=" << peer->id
 					 << ", seqnum=" << seqnum << " ]" << std::endl);
 
 		try {
@@ -1187,7 +1186,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 	} else {
 		LOG(derr_con << m_connection->getDesc()
 					 << "INVALID TYPE_CONTROL: invalid controltype="
-					 << ((int)controltype & 0xff) << std::endl);
+					 << ((int) controltype & 0xff) << std::endl);
 		throw InvalidIncomingDataException("Invalid control type");
 	}
 }
@@ -1246,9 +1245,9 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 	if (packetdata.getSize() < RELIABLE_HEADER_SIZE)
 		throw InvalidIncomingDataException("packetdata.getSize() < RELIABLE_HEADER_SIZE");
 
-	u16 seqnum = readU16(&packetdata[1]);
+	u16 seqnum			  = readU16(&packetdata[1]);
 	bool is_future_packet = false;
-	bool is_old_packet = false;
+	bool is_old_packet	  = false;
 
 	/* packet is within our receive window send ack */
 	if (seqnum_in_window(
@@ -1256,7 +1255,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 		m_connection->sendAck(peer->id, channelnum, seqnum);
 	} else {
 		is_future_packet = seqnum_higher(seqnum, channel->readNextIncomingSeqNum());
-		is_old_packet = seqnum_higher(channel->readNextIncomingSeqNum(), seqnum);
+		is_old_packet	 = seqnum_higher(channel->readNextIncomingSeqNum(), seqnum);
 
 		/* packet is not within receive window, don't send ack.           *
 		 * if this was a valid packet it's gonna be retransmitted         */

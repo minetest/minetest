@@ -61,7 +61,7 @@ private:
 	Client *m_client = nullptr;
 	const std::string &m_playername;
 	const std::string &m_password;
-	bool *m_aborted = nullptr;
+	bool *m_aborted				= nullptr;
 	std::wstring m_pass_confirm = L"";
 	ISimpleTextureSource *m_tsrc;
 };

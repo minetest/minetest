@@ -61,7 +61,7 @@ protected:
 public:
 	RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud);
 	RenderingCore(const RenderingCore &) = delete;
-	RenderingCore(RenderingCore &&) = delete;
+	RenderingCore(RenderingCore &&)		 = delete;
 	virtual ~RenderingCore();
 
 	RenderingCore &operator=(const RenderingCore &) = delete;

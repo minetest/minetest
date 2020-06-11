@@ -37,11 +37,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 RollbackNode::RollbackNode(Map *map, v3s16 p, IGameDef *gamedef)
 {
 	const NodeDefManager *ndef = gamedef->ndef();
-	MapNode n = map->getNode(p);
-	name = ndef->get(n).name;
-	param1 = n.param1;
-	param2 = n.param2;
-	NodeMetadata *metap = map->getNodeMetadata(p);
+	MapNode n				   = map->getNode(p);
+	name					   = ndef->get(n).name;
+	param1					   = n.param1;
+	param2					   = n.param2;
+	NodeMetadata *metap		   = map->getNodeMetadata(p);
 	if (metap) {
 		std::ostringstream os(std::ios::binary);
 		metap->serialize(os, 1); // FIXME: version bump??
@@ -136,7 +136,7 @@ bool RollbackAction::applyRevert(
 			// Make sure position is loaded from disk
 			map->emergeBlock(getContainerPos(p, MAP_BLOCKSIZE), false);
 			// Check current node
-			MapNode current_node = map->getNode(p);
+			MapNode current_node	 = map->getNode(p);
 			std::string current_name = ndef->get(current_node).name;
 			// If current node not the new node, it's bad
 			if (current_name != n_new.name) {
@@ -177,7 +177,7 @@ bool RollbackAction::applyRevert(
 				// Inform other things that the meta data has changed
 				MapEditEvent event;
 				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-				event.p = p;
+				event.p	   = p;
 				map->dispatchEvent(event);
 			} catch (InvalidPositionException &e) {
 				infostream << "RollbackAction::applyRevert(): "

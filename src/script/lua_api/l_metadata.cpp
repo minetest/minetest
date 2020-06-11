@@ -47,7 +47,7 @@ MetaDataRef *MetaDataRef::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, "MetaDataRef");
 
-	return *(MetaDataRef **)ud; // unbox pointer
+	return *(MetaDataRef **) ud; // unbox pointer
 }
 
 // Exported functions
@@ -114,8 +114,8 @@ int MetaDataRef::l_set_string(lua_State *L)
 
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	size_t len = 0;
-	const char *s = lua_tolstring(L, 3, &len);
+	size_t len		 = 0;
+	const char *s	 = lua_tolstring(L, 3, &len);
 	std::string str(s, len);
 
 	Metadata *meta = ref->getmeta(!str.empty());
@@ -153,7 +153,7 @@ int MetaDataRef::l_set_int(lua_State *L)
 
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	int a = luaL_checkint(L, 3);
+	int a			 = luaL_checkint(L, 3);
 	std::string str;
 	if (a != 0)
 		str = itos(a);
@@ -193,7 +193,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	float a = readParam<float>(L, 3);
+	float a			 = readParam<float>(L, 3);
 	std::string str;
 	if (a != 0)
 		str = ftos(a);
@@ -232,7 +232,7 @@ int MetaDataRef::l_from_table(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	MetaDataRef *ref = checkobject(L, 1);
-	int base = 2;
+	int base		 = 2;
 
 	ref->clearMeta();
 
@@ -261,7 +261,7 @@ void MetaDataRef::handleToTable(lua_State *L, Metadata *meta)
 	{
 		const StringMap &fields = meta->getStrings();
 		for (const auto &field : fields) {
-			const std::string &name = field.first;
+			const std::string &name	 = field.first;
 			const std::string &value = field.second;
 			lua_pushlstring(L, name.c_str(), name.size());
 			lua_pushlstring(L, value.c_str(), value.size());
@@ -296,9 +296,9 @@ bool MetaDataRef::handleFromTable(lua_State *L, int table, Metadata *meta)
 int MetaDataRef::l_equals(lua_State *L)
 {
 	MetaDataRef *ref1 = checkobject(L, 1);
-	Metadata *data1 = ref1->getmeta(false);
+	Metadata *data1	  = ref1->getmeta(false);
 	MetaDataRef *ref2 = checkobject(L, 2);
-	Metadata *data2 = ref2->getmeta(false);
+	Metadata *data2	  = ref2->getmeta(false);
 	if (data1 == NULL || data2 == NULL)
 		lua_pushboolean(L, data1 == data2);
 	else

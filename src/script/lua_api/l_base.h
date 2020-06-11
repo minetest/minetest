@@ -64,7 +64,7 @@ public:
 	static T *getScriptApi(lua_State *L)
 	{
 		ScriptApiBase *scriptIface = getScriptApiBase(L);
-		T *scriptIfaceDowncast = dynamic_cast<T *>(scriptIface);
+		T *scriptIfaceDowncast	   = dynamic_cast<T *>(scriptIface);
 		if (!scriptIfaceDowncast) {
 			throw LuaError("Requested unavailable ScriptApi - core engine bug!");
 		}

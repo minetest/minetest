@@ -25,12 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 #include "client/minimap.h"
 
-RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
-	  guienv(device->getGUIEnvironment()), client(_client), camera(client->getCamera()),
-	  mapper(client->getMinimap()), hud(_hud)
+RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud) :
+	device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
+	guienv(device->getGUIEnvironment()), client(_client), camera(client->getCamera()),
+	mapper(client->getMinimap()), hud(_hud)
 {
-	screensize = driver->getScreenSize();
+	screensize	 = driver->getScreenSize();
 	virtual_size = screensize;
 }
 
@@ -60,11 +60,11 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 		screensize = ss;
 		updateScreenSize();
 	}
-	skycolor = _skycolor;
-	show_hud = _show_hud;
-	show_minimap = _show_minimap;
+	skycolor		= _skycolor;
+	show_hud		= _show_hud;
+	show_minimap	= _show_minimap;
 	draw_wield_tool = _draw_wield_tool;
-	draw_crosshair = _draw_crosshair;
+	draw_crosshair	= _draw_crosshair;
 
 	beforeDraw();
 	drawAll();

@@ -25,34 +25,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define UNUSED(expr)                                                                     \
 	do {                                                                                 \
-		(void)(expr);                                                                    \
+		(void) (expr);                                                                   \
 	} while (0)
 
 #ifdef _WIN32
-#include <climits>
-#define MAX_SEMAPHORE_COUNT LONG_MAX - 1
+	#include <climits>
+	#define MAX_SEMAPHORE_COUNT LONG_MAX - 1
 #else
-#include <cerrno>
-#include <sys/time.h>
-#include <pthread.h>
-#if defined(__MACH__) && defined(__APPLE__)
-#include <mach/mach.h>
-#include <mach/task.h>
-#include <mach/semaphore.h>
-#include <sys/semaphore.h>
-#include <unistd.h>
+	#include <cerrno>
+	#include <sys/time.h>
+	#include <pthread.h>
+	#if defined(__MACH__) && defined(__APPLE__)
+		#include <mach/mach.h>
+		#include <mach/task.h>
+		#include <mach/semaphore.h>
+		#include <sys/semaphore.h>
+		#include <unistd.h>
 
-#undef sem_t
-#undef sem_init
-#undef sem_wait
-#undef sem_post
-#undef sem_destroy
-#define sem_t semaphore_t
-#define sem_init(s, p, c) semaphore_create(mach_task_self(), (s), 0, (c))
-#define sem_wait(s) semaphore_wait(*(s))
-#define sem_post(s) semaphore_signal(*(s))
-#define sem_destroy(s) semaphore_destroy(mach_task_self(), *(s))
-#endif
+		#undef sem_t
+		#undef sem_init
+		#undef sem_wait
+		#undef sem_post
+		#undef sem_destroy
+		#define sem_t semaphore_t
+		#define sem_init(s, p, c) semaphore_create(mach_task_self(), (s), 0, (c))
+		#define sem_wait(s) semaphore_wait(*(s))
+		#define sem_post(s) semaphore_signal(*(s))
+		#define sem_destroy(s) semaphore_destroy(mach_task_self(), *(s))
+	#endif
 #endif
 
 
@@ -74,12 +74,12 @@ Semaphore::~Semaphore()
 	CloseHandle(semaphore);
 #else
 	int ret = sem_destroy(&semaphore);
-#ifdef __ANDROID__
+	#ifdef __ANDROID__
 	// Workaround for broken bionic semaphore implementation!
 	assert(!ret || errno == EBUSY);
-#else
+	#else
 	assert(!ret);
-#endif
+	#endif
 	UNUSED(ret);
 #endif
 }
@@ -124,12 +124,12 @@ bool Semaphore::wait(unsigned int time_ms)
 		return false;
 	}
 #else
-#if defined(__MACH__) && defined(__APPLE__)
+	#if defined(__MACH__) && defined(__APPLE__)
 	mach_timespec_t wait_time;
-	wait_time.tv_sec = time_ms / 1000;
+	wait_time.tv_sec  = time_ms / 1000;
 	wait_time.tv_nsec = 1000000 * (time_ms % 1000);
 
-	errno = 0;
+	errno	= 0;
 	int ret = semaphore_timedwait(semaphore, wait_time);
 	switch (ret) {
 	case KERN_OPERATION_TIMED_OUT:
@@ -142,7 +142,7 @@ bool Semaphore::wait(unsigned int time_ms)
 		if (ret)
 			errno = EINVAL;
 	}
-#else
+	#else
 	int ret;
 	if (time_ms > 0) {
 		struct timespec wait_time;
@@ -163,7 +163,7 @@ bool Semaphore::wait(unsigned int time_ms)
 	} else {
 		ret = sem_trywait(&semaphore);
 	}
-#endif
+	#endif
 
 	assert(!ret || (errno == ETIMEDOUT || errno == EINTR || errno == EAGAIN));
 	return !ret;

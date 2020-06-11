@@ -79,8 +79,8 @@ protected:
 
 void TestObjDef::testHandles()
 {
-	u32 uid = 0;
-	u32 index = 0;
+	u32 uid			= 0;
+	u32 index		= 0;
 	ObjDefType type = OBJDEF_GENERIC;
 
 	ObjDefHandle handle = ObjDefManager::createHandle(9530, OBJDEF_ORE, 47);
@@ -102,27 +102,27 @@ void TestObjDef::testAddGetSetClear()
 
 	UASSERTEQ(ObjDefType, testmgr.getType(), OBJDEF_GENERIC);
 
-	obj0 = new MyObjDef;
+	obj0	   = new MyObjDef;
 	obj0->name = "foobar";
-	hObj0 = testmgr.add(obj0);
+	hObj0	   = testmgr.add(obj0);
 	UASSERT(hObj0 != OBJDEF_INVALID_HANDLE);
 	UASSERTEQ(u32, obj0->index, 0);
 
-	obj1 = new MyObjDef;
+	obj1	   = new MyObjDef;
 	obj1->name = "FooBaz";
-	hObj1 = testmgr.add(obj1);
+	hObj1	   = testmgr.add(obj1);
 	UASSERT(hObj1 != OBJDEF_INVALID_HANDLE);
 	UASSERTEQ(u32, obj1->index, 1);
 
-	obj2 = new MyObjDef;
+	obj2	   = new MyObjDef;
 	obj2->name = "asdf";
-	hObj2 = testmgr.add(obj2);
+	hObj2	   = testmgr.add(obj2);
 	UASSERT(hObj2 != OBJDEF_INVALID_HANDLE);
 	UASSERTEQ(u32, obj2->index, 2);
 
-	obj3 = new MyObjDef;
+	obj3	   = new MyObjDef;
 	obj3->name = "foobaz";
-	hObj3 = testmgr.add(obj3);
+	hObj3	   = testmgr.add(obj3);
 	UASSERT(hObj3 == OBJDEF_INVALID_HANDLE);
 
 	UASSERTEQ(size_t, testmgr.getNumObjects(), 3);
@@ -146,9 +146,9 @@ void TestObjDef::testClone()
 	ObjDef *temp1;
 	ObjDefHandle hObj;
 
-	obj = new MyObjDef;
+	obj			   = new MyObjDef;
 	obj->testvalue = 0xee00ff11;
-	hObj = testmgr.add(obj);
+	hObj		   = testmgr.add(obj);
 	UASSERT(hObj != OBJDEF_INVALID_HANDLE);
 
 	mgrcopy = testmgr.clone();

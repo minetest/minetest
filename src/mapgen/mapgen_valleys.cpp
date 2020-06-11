@@ -51,37 +51,37 @@ FlagDesc flagdesc_mapgen_valleys[] = { { "altitude_chill", MGVALLEYS_ALT_CHILL }
 	{ "altitude_dry", MGVALLEYS_ALT_DRY }, { NULL, 0 } };
 
 
-MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeParams *emerge)
-	: MapgenBasic(MAPGEN_VALLEYS, params, emerge)
+MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeParams *emerge) :
+	MapgenBasic(MAPGEN_VALLEYS, params, emerge)
 {
 	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
-	m_bgen = (BiomeGenOriginal *)biomegen;
+	m_bgen = (BiomeGenOriginal *) biomegen;
 
-	spflags = params->spflags;
-	altitude_chill = params->altitude_chill;
-	river_depth_bed = params->river_depth + 1.0f;
+	spflags			  = params->spflags;
+	altitude_chill	  = params->altitude_chill;
+	river_depth_bed	  = params->river_depth + 1.0f;
 	river_size_factor = params->river_size / 100.0f;
 
-	cave_width = params->cave_width;
-	large_cave_depth = params->large_cave_depth;
+	cave_width		   = params->cave_width;
+	large_cave_depth   = params->large_cave_depth;
 	small_cave_num_min = params->small_cave_num_min;
 	small_cave_num_max = params->small_cave_num_max;
 	large_cave_num_min = params->large_cave_num_min;
 	large_cave_num_max = params->large_cave_num_max;
 	large_cave_flooded = params->large_cave_flooded;
-	cavern_limit = params->cavern_limit;
-	cavern_taper = params->cavern_taper;
-	cavern_threshold = params->cavern_threshold;
-	dungeon_ymin = params->dungeon_ymin;
-	dungeon_ymax = params->dungeon_ymax;
+	cavern_limit	   = params->cavern_limit;
+	cavern_taper	   = params->cavern_taper;
+	cavern_threshold   = params->cavern_threshold;
+	dungeon_ymin	   = params->dungeon_ymin;
+	dungeon_ymax	   = params->dungeon_ymax;
 
 	//// 2D Terrain noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
 	noise_inter_valley_slope =
 			new Noise(&params->np_inter_valley_slope, seed, csize.X, csize.Z);
-	noise_rivers = new Noise(&params->np_rivers, seed, csize.X, csize.Z);
+	noise_rivers		 = new Noise(&params->np_rivers, seed, csize.X, csize.Z);
 	noise_terrain_height = new Noise(&params->np_terrain_height, seed, csize.X, csize.Z);
-	noise_valley_depth = new Noise(&params->np_valley_depth, seed, csize.X, csize.Z);
+	noise_valley_depth	 = new Noise(&params->np_valley_depth, seed, csize.X, csize.Z);
 	noise_valley_profile = new Noise(&params->np_valley_profile, seed, csize.X, csize.Z);
 
 	//// 3D Terrain noise
@@ -89,9 +89,9 @@ MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeParams *emerge)
 	noise_inter_valley_fill =
 			new Noise(&params->np_inter_valley_fill, seed, csize.X, csize.Y + 2, csize.Z);
 	// 1-down overgeneraion
-	MapgenBasic::np_cave1 = params->np_cave1;
-	MapgenBasic::np_cave2 = params->np_cave2;
-	MapgenBasic::np_cavern = params->np_cavern;
+	MapgenBasic::np_cave1	 = params->np_cave1;
+	MapgenBasic::np_cave2	 = params->np_cave2;
+	MapgenBasic::np_cavern	 = params->np_cavern;
 	MapgenBasic::np_dungeons = params->np_dungeons;
 }
 
@@ -108,20 +108,19 @@ MapgenValleys::~MapgenValleys()
 }
 
 
-MapgenValleysParams::MapgenValleysParams()
-	: np_filler_depth(0.0, 1.2, v3f(256, 256, 256), 1605, 3, 0.5, 2.0),
-	  np_inter_valley_fill(0.0, 1.0, v3f(256, 512, 256), 1993, 6, 0.8, 2.0),
-	  np_inter_valley_slope(0.5, 0.5, v3f(128, 128, 128), 746, 1, 1.0, 2.0),
-	  np_rivers(0.0, 1.0, v3f(256, 256, 256), -6050, 5, 0.6, 2.0),
-	  np_terrain_height(-10.0, 50.0, v3f(1024, 1024, 1024), 5202, 6, 0.4, 2.0),
-	  np_valley_depth(5.0, 4.0, v3f(512, 512, 512), -1914, 1, 1.0, 2.0),
-	  np_valley_profile(0.6, 0.50, v3f(512, 512, 512), 777, 1, 1.0, 2.0),
-	  np_cave1(0.0, 12.0, v3f(61, 61, 61), 52534, 3, 0.5, 2.0),
-	  np_cave2(0.0, 12.0, v3f(67, 67, 67), 10325, 3, 0.5, 2.0),
-	  np_cavern(0.0, 1.0, v3f(768, 256, 768), 59033, 6, 0.63, 2.0),
-	  np_dungeons(0.9, 0.5, v3f(500, 500, 500), 0, 2, 0.8, 2.0)
-{
-}
+MapgenValleysParams::MapgenValleysParams() :
+	np_filler_depth(0.0, 1.2, v3f(256, 256, 256), 1605, 3, 0.5, 2.0),
+	np_inter_valley_fill(0.0, 1.0, v3f(256, 512, 256), 1993, 6, 0.8, 2.0),
+	np_inter_valley_slope(0.5, 0.5, v3f(128, 128, 128), 746, 1, 1.0, 2.0),
+	np_rivers(0.0, 1.0, v3f(256, 256, 256), -6050, 5, 0.6, 2.0),
+	np_terrain_height(-10.0, 50.0, v3f(1024, 1024, 1024), 5202, 6, 0.4, 2.0),
+	np_valley_depth(5.0, 4.0, v3f(512, 512, 512), -1914, 1, 1.0, 2.0),
+	np_valley_profile(0.6, 0.50, v3f(512, 512, 512), 777, 1, 1.0, 2.0),
+	np_cave1(0.0, 12.0, v3f(61, 61, 61), 52534, 3, 0.5, 2.0),
+	np_cave2(0.0, 12.0, v3f(67, 67, 67), 10325, 3, 0.5, 2.0),
+	np_cavern(0.0, 1.0, v3f(768, 256, 768), 59033, 6, 0.63, 2.0),
+	np_dungeons(0.9, 0.5, v3f(500, 500, 500), 0, 2, 0.8, 2.0)
+{}
 
 
 void MapgenValleysParams::readParams(const Settings *settings)
@@ -218,15 +217,15 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	//TimeTaker t("makeChunk");
 
 	this->generating = true;
-	this->vm = data->vmanip;
-	this->ndef = data->nodedef;
+	this->vm		 = data->vmanip;
+	this->ndef		 = data->nodedef;
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
-	node_min = blockpos_min * MAP_BLOCKSIZE;
-	node_max = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
-	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
-	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	node_min		   = blockpos_min * MAP_BLOCKSIZE;
+	node_max		   = (blockpos_max + v3s16(1, 1, 1)) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
+	full_node_min	   = (blockpos_min - 1) * MAP_BLOCKSIZE;
+	full_node_max	   = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
@@ -299,19 +298,19 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 		// Unsuitable spawn point
 		return MAX_MAP_GENERATION_LIMIT;
 
-	float n_slope = NoisePerlin2D(&noise_inter_valley_slope->np, p.X, p.Y, seed);
+	float n_slope		   = NoisePerlin2D(&noise_inter_valley_slope->np, p.X, p.Y, seed);
 	float n_terrain_height = NoisePerlin2D(&noise_terrain_height->np, p.X, p.Y, seed);
-	float n_valley = NoisePerlin2D(&noise_valley_depth->np, p.X, p.Y, seed);
+	float n_valley		   = NoisePerlin2D(&noise_valley_depth->np, p.X, p.Y, seed);
 	float n_valley_profile = NoisePerlin2D(&noise_valley_profile->np, p.X, p.Y, seed);
 
-	float valley_d = n_valley * n_valley;
-	float base = n_terrain_height + valley_d;
-	float river = std::fabs(n_rivers) - river_size_factor;
-	float tv = std::fmax(river / n_valley_profile, 0.0f);
-	float valley_h = valley_d * (1.0f - std::exp(-tv * tv));
+	float valley_d	= n_valley * n_valley;
+	float base		= n_terrain_height + valley_d;
+	float river		= std::fabs(n_rivers) - river_size_factor;
+	float tv		= std::fmax(river / n_valley_profile, 0.0f);
+	float valley_h	= valley_d * (1.0f - std::exp(-tv * tv));
 	float surface_y = base + valley_h;
-	float slope = n_slope * valley_h;
-	float river_y = base - 1.0f;
+	float slope		= n_slope * valley_h;
+	float river_y	= base - 1.0f;
 
 	// Raising the maximum spawn level above 'water_level + 16' is necessary for custom
 	// parameters that set average terrain level much higher than water_level.
@@ -323,13 +322,13 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 	// space above spawn position. Avoids spawning in possibly sealed voids.
 	for (s16 y = max_spawn_y + 128; y >= water_level; y--) {
 		float n_fill = NoisePerlin3D(&noise_inter_valley_fill->np, p.X, y, p.Y, seed);
-		float surface_delta = (float)y - surface_y;
-		float density = slope * n_fill - surface_delta;
+		float surface_delta = (float) y - surface_y;
+		float density		= slope * n_fill - surface_delta;
 
 		if (density > 0.0f) { // If solid
 			// Sometimes surface level is below river water level in places that are not
 			// river channels.
-			if (y < water_level || y > max_spawn_y || y < (s16)river_y)
+			if (y < water_level || y > max_spawn_y || y < (s16) river_y)
 				// Unsuitable spawn point
 				return MAX_MAP_GENERATION_LIMIT;
 
@@ -357,16 +356,16 @@ int MapgenValleys::generateTerrain()
 
 	noise_inter_valley_fill->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
-	const v3s16 &em = vm->m_area.getExtent();
+	const v3s16 &em	  = vm->m_area.getExtent();
 	s16 surface_max_y = -MAX_MAP_GENERATION_LIMIT;
-	u32 index_2d = 0;
+	u32 index_2d	  = 0;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 		for (s16 x = node_min.X; x <= node_max.X; x++, index_2d++) {
-			float n_slope = noise_inter_valley_slope->result[index_2d];
-			float n_rivers = noise_rivers->result[index_2d];
+			float n_slope		   = noise_inter_valley_slope->result[index_2d];
+			float n_rivers		   = noise_rivers->result[index_2d];
 			float n_terrain_height = noise_terrain_height->result[index_2d];
-			float n_valley = noise_valley_depth->result[index_2d];
+			float n_valley		   = noise_valley_depth->result[index_2d];
 			float n_valley_profile = noise_valley_profile->result[index_2d];
 
 			float valley_d = n_valley * n_valley;
@@ -376,11 +375,11 @@ int MapgenValleys::generateTerrain()
 			float river = std::fabs(n_rivers) - river_size_factor;
 			// Use the curve of the function 1-exp(-(x/a)^2) to model valleys.
 			// 'valley_h' represents the height of the terrain, from the rivers.
-			float tv = std::fmax(river / n_valley_profile, 0.0f);
+			float tv	   = std::fmax(river / n_valley_profile, 0.0f);
 			float valley_h = valley_d * (1.0f - std::exp(-tv * tv));
 			// Approximate height of the terrain
 			float surface_y = base + valley_h;
-			float slope = n_slope * valley_h;
+			float slope		= n_slope * valley_h;
 			// River water surface is 1 node below river banks
 			float river_y = base - 1.0f;
 
@@ -392,14 +391,14 @@ int MapgenValleys::generateTerrain()
 						(river_depth_bed * std::sqrt(std::fmax(0.0f, 1.0f - tr * tr)));
 				// There is no logical equivalent to this using rangelim
 				surface_y = std::fmin(
-						std::fmax(base - depth, (float)(water_level - 3)), surface_y);
+						std::fmax(base - depth, (float) (water_level - 3)), surface_y);
 				slope = 0.0f;
 			}
 
 			// Optionally vary river depth according to heat and humidity
 			if (spflags & MGVALLEYS_VARY_RIVER_DEPTH) {
 				float t_heat = m_bgen->heatmap[index_2d];
-				float heat = (spflags & MGVALLEYS_ALT_CHILL) ?
+				float heat	 = (spflags & MGVALLEYS_ALT_CHILL) ?
 						// Match heat value calculated below in
 						// 'Optionally decrease heat with altitude'.
 						// In rivers, 'ground height ignoring riverbeds' is 'base'.
@@ -415,13 +414,13 @@ int MapgenValleys::generateTerrain()
 
 			// Highest solid node in column
 			s16 column_max_y = surface_y;
-			u32 index_3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
-			u32 index_data = vm->m_area.index(x, node_min.Y - 1, z);
+			u32 index_3d	 = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
+			u32 index_data	 = vm->m_area.index(x, node_min.Y - 1, z);
 
 			for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 				if (vm->m_data[index_data].getContent() == CONTENT_IGNORE) {
-					float n_fill = noise_inter_valley_fill->result[index_3d];
-					float surface_delta = (float)y - surface_y;
+					float n_fill		= noise_inter_valley_fill->result[index_3d];
+					float surface_delta = (float) y - surface_y;
 					// Density = density noise + density gradient
 					float density = slope * n_fill - surface_delta;
 
@@ -433,7 +432,7 @@ int MapgenValleys::generateTerrain()
 							column_max_y = y;
 					} else if (y <= water_level) {
 						vm->m_data[index_data] = n_water; // Water
-					} else if (y <= (s16)river_y) {
+					} else if (y <= (s16) river_y) {
 						vm->m_data[index_data] = n_river_water; // River water
 					} else {
 						vm->m_data[index_data] = n_air; // Air
@@ -449,7 +448,7 @@ int MapgenValleys::generateTerrain()
 				// Compensate to avoid increasing average humidity
 				m_bgen->humidmap[index_2d] *= 0.8f;
 				// Ground height ignoring riverbeds
-				float t_alt = std::fmax(base, (float)column_max_y);
+				float t_alt		  = std::fmax(base, (float) column_max_y);
 				float water_depth = (t_alt - base) / 4.0f;
 				m_bgen->humidmap[index_2d] *=
 						1.0f + std::pow(0.5f, std::fmax(water_depth, 1.0f));
@@ -458,7 +457,7 @@ int MapgenValleys::generateTerrain()
 			// Optionally decrease humidity with altitude
 			if (spflags & MGVALLEYS_ALT_DRY) {
 				// Ground height ignoring riverbeds
-				float t_alt = std::fmax(base, (float)column_max_y);
+				float t_alt = std::fmax(base, (float) column_max_y);
 				// Only decrease above water_level
 				if (t_alt > water_level)
 					m_bgen->humidmap[index_2d] -=
@@ -470,7 +469,7 @@ int MapgenValleys::generateTerrain()
 				// Compensate to avoid reducing the average heat
 				m_bgen->heatmap[index_2d] += 5.0f;
 				// Ground height ignoring riverbeds
-				float t_alt = std::fmax(base, (float)column_max_y);
+				float t_alt = std::fmax(base, (float) column_max_y);
 				// Only decrease above water_level
 				if (t_alt > water_level)
 					m_bgen->heatmap[index_2d] -=

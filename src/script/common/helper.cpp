@@ -76,7 +76,7 @@ float LuaHelper::readParam(lua_State *L, int index)
 	if (isNaN(L, index))
 		throw LuaError("NaN value is not allowed.");
 
-	return (float)luaL_checknumber(L, index);
+	return (float) luaL_checknumber(L, index);
 }
 
 template <>

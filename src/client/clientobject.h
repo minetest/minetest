@@ -112,7 +112,7 @@ public:
 	DistanceSortedActiveObject(ClientActiveObject *a_obj, f32 a_d)
 	{
 		obj = a_obj;
-		d = a_d;
+		d	= a_d;
 	}
 
 	bool operator<(const DistanceSortedActiveObject &other) const { return d < other.d; }

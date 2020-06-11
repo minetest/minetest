@@ -39,10 +39,9 @@ FlagDesc flagdesc_deco[] = { { "place_center_x", DECO_PLACE_CENTER_X },
 ///////////////////////////////////////////////////////////////////////////////
 
 
-DecorationManager::DecorationManager(IGameDef *gamedef)
-	: ObjDefManager(gamedef, OBJDEF_DECORATION)
-{
-}
+DecorationManager::DecorationManager(IGameDef *gamedef) :
+	ObjDefManager(gamedef, OBJDEF_DECORATION)
+{}
 
 
 size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
@@ -50,7 +49,7 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v
 	size_t nplaced = 0;
 
 	for (size_t i = 0; i != m_objects.size(); i++) {
-		Decoration *deco = (Decoration *)m_objects[i];
+		Decoration *deco = (Decoration *) m_objects[i];
 		if (!deco)
 			continue;
 
@@ -90,7 +89,7 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 	if (nspawnby == -1)
 		return true;
 
-	int nneighs = 0;
+	int nneighs					= 0;
 	static const v3s16 dirs[16] = { v3s16(0, 0, 1), v3s16(0, 0, -1), v3s16(1, 0, 0),
 		v3s16(-1, 0, 0), v3s16(1, 0, 1), v3s16(-1, 0, 1), v3s16(-1, 0, -1),
 		v3s16(1, 0, -1),
@@ -126,7 +125,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 		sidelen = carea_size;
 
 	s16 divlen = carea_size / sidelen;
-	int area = sidelen * sidelen;
+	int area   = sidelen * sidelen;
 
 	for (s16 z0 = 0; z0 < divlen; z0++)
 		for (s16 x0 = 0; x0 < divlen; x0++) {
@@ -149,10 +148,10 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			if (nval >= 10.0f) {
 				// Complete coverage. Disable random placement to avoid
 				// redundant multiple placements at one position.
-				cover = true;
+				cover	   = true;
 				deco_count = area;
 			} else {
-				float deco_count_f = (float)area * nval;
+				float deco_count_f = (float) area * nval;
 				if (deco_count_f >= 1.0f) {
 					deco_count = deco_count_f;
 				} else if (deco_count_f > 0.0f) {
@@ -251,18 +250,18 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 void Decoration::cloneTo(Decoration *def) const
 {
 	ObjDef::cloneTo(def);
-	def->flags = flags;
-	def->mapseed = mapseed;
-	def->c_place_on = c_place_on;
-	def->sidelen = sidelen;
-	def->y_min = y_min;
-	def->y_max = y_max;
-	def->fill_ratio = fill_ratio;
-	def->np = np;
-	def->c_spawnby = c_spawnby;
-	def->nspawnby = nspawnby;
+	def->flags			= flags;
+	def->mapseed		= mapseed;
+	def->c_place_on		= c_place_on;
+	def->sidelen		= sidelen;
+	def->y_min			= y_min;
+	def->y_max			= y_max;
+	def->fill_ratio		= fill_ratio;
+	def->np				= np;
+	def->c_spawnby		= c_spawnby;
+	def->nspawnby		= nspawnby;
 	def->place_offset_y = place_offset_y;
-	def->biomes = biomes;
+	def->biomes			= biomes;
 }
 
 
@@ -274,10 +273,10 @@ ObjDef *DecoSimple::clone() const
 	auto def = new DecoSimple();
 	Decoration::cloneTo(def);
 
-	def->c_decos = c_decos;
-	def->deco_height = deco_height;
+	def->c_decos		 = c_decos;
+	def->deco_height	 = deco_height;
 	def->deco_height_max = deco_height_max;
-	def->deco_param2 = deco_param2;
+	def->deco_param2	 = deco_param2;
 	def->deco_param2_max = deco_param2_max;
 
 	return def;
@@ -328,7 +327,7 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
 	const v3s16 &em = vm->m_area.getExtent();
-	u32 vi = vm->m_area.index(p);
+	u32 vi			= vm->m_area.index(p);
 
 	if (ceiling) {
 		// Ceiling decorations
@@ -381,7 +380,7 @@ ObjDef *DecoSchematic::clone() const
 	 * and not a handle. We are left with no option but to clone it ourselves.
 	 * This is a waste of memory and should be replaced with an alternative
 	 * approach sometime. */
-	def->schematic = dynamic_cast<Schematic *>(schematic->clone());
+	def->schematic	= dynamic_cast<Schematic *>(schematic->clone());
 	def->was_cloned = true;
 
 	return def;
@@ -417,8 +416,9 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceilin
 	if (p.Y < vm->m_area.MinEdge.Y)
 		return 0;
 
-	Rotation rot = (rotation == ROTATE_RAND) ? (Rotation)pr->range(ROTATE_0, ROTATE_270) :
-											   rotation;
+	Rotation rot = (rotation == ROTATE_RAND) ?
+			(Rotation) pr->range(ROTATE_0, ROTATE_270) :
+			rotation;
 
 	if (flags & DECO_PLACE_CENTER_X) {
 		if (rot == ROTATE_0 || rot == ROTATE_180)

@@ -32,20 +32,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 #if USE_FREETYPE
-#include "irrlicht_changes/CGUITTFont.h"
+	#include "irrlicht_changes/CGUITTFont.h"
 #endif
 
 inline u32 clamp_u8(s32 value)
 {
-	return (u32)MYMIN(MYMAX(value, 0), 255);
+	return (u32) MYMIN(MYMAX(value, 0), 255);
 }
 
 
 GUIChatConsole::GUIChatConsole(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
-		s32 id, ChatBackend *backend, Client *client, IMenuManager *menumgr)
-	: IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, core::rect<s32>(0, 0, 100, 100)),
-	  m_chat_backend(backend), m_client(client), m_menumgr(menumgr),
-	  m_animate_time_old(porting::getTimeMs())
+		s32 id, ChatBackend *backend, Client *client, IMenuManager *menumgr) :
+	IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, core::rect<s32>(0, 0, 100, 100)),
+	m_chat_backend(backend), m_client(client), m_menumgr(menumgr),
+	m_animate_time_old(porting::getTimeMs())
 {
 	// load background settings
 	s32 console_alpha = g_settings->getS32("console_alpha");
@@ -66,14 +66,14 @@ GUIChatConsole::GUIChatConsole(gui::IGUIEnvironment *env, gui::IGUIElement *pare
 	}
 
 	u16 chat_font_size = g_settings->getU16("chat_font_size");
-	m_font = g_fontengine->getFont(
+	m_font			   = g_fontengine->getFont(
 			chat_font_size != 0 ? chat_font_size : FONT_SIZE_UNSPECIFIED, FM_Mono);
 
 	if (!m_font) {
 		errorstream << "GUIChatConsole: Unable to load mono font" << std::endl;
 	} else {
 		core::dimension2d<u32> dim = m_font->getDimension(L"M");
-		m_fontsize = v2u32(dim.Width, dim.Height);
+		m_fontsize				   = v2u32(dim.Width, dim.Height);
 		m_font->grab();
 	}
 	m_fontsize.X = MYMAX(m_fontsize.X, 1);
@@ -93,9 +93,9 @@ void GUIChatConsole::openConsole(f32 scale)
 {
 	assert(scale > 0.0f && scale <= 1.0f);
 
-	m_open = true;
+	m_open					  = true;
 	m_desired_height_fraction = scale;
-	m_desired_height = scale * m_screensize.Y;
+	m_desired_height		  = scale * m_screensize.Y;
 	reformatConsole();
 	m_animate_time_old = porting::getTimeMs();
 	IGUIElement::setVisible(true);
@@ -148,11 +148,11 @@ void GUIChatConsole::setCursor(
 			// leave m_cursor_blink unchanged
 			m_cursor_blink_speed = blink_speed;
 		} else {
-			m_cursor_blink = 0x8000; // on
+			m_cursor_blink		 = 0x8000; // on
 			m_cursor_blink_speed = 0.0;
 		}
 	} else {
-		m_cursor_blink = 0; // off
+		m_cursor_blink		 = 0; // off
 		m_cursor_blink_speed = 0.0;
 	}
 	m_cursor_height = relative_height;
@@ -172,7 +172,7 @@ void GUIChatConsole::draw()
 		// scale current console height to new window size
 		if (m_screensize.Y != 0)
 			m_height = m_height * screensize.Y / m_screensize.Y;
-		m_screensize = screensize;
+		m_screensize	 = screensize;
 		m_desired_height = m_desired_height_fraction * m_screensize.Y;
 		reformatConsole();
 	}
@@ -282,7 +282,7 @@ void GUIChatConsole::drawText()
 			continue;
 
 		s32 line_height = m_fontsize.Y;
-		s32 y = row * line_height + m_height - m_desired_height;
+		s32 y			= row * line_height + m_height - m_desired_height;
 		if (y + line_height < 0)
 			continue;
 
@@ -314,18 +314,18 @@ void GUIChatConsole::drawPrompt()
 	if (!m_font)
 		return;
 
-	u32 row = m_chat_backend->getConsoleBuffer().getRows();
+	u32 row			= m_chat_backend->getConsoleBuffer().getRows();
 	s32 line_height = m_fontsize.Y;
-	s32 y = row * line_height + m_height - m_desired_height;
+	s32 y			= row * line_height + m_height - m_desired_height;
 
-	ChatPrompt &prompt = m_chat_backend->getPrompt();
+	ChatPrompt &prompt		 = m_chat_backend->getPrompt();
 	std::wstring prompt_text = prompt.getVisiblePortion();
 
 	// FIXME Draw string at once, not character by character
 	// That will only work with the cursor once we have a monospace font
 	for (u32 i = 0; i < prompt_text.size(); ++i) {
 		wchar_t ws[2] = { prompt_text[i], 0 };
-		s32 x = (1 + i) * m_fontsize.X;
+		s32 x		  = (1 + i) * m_fontsize.X;
 		core::rect<s32> destrect(x, y, x + m_fontsize.X, y + m_fontsize.Y);
 		m_font->draw(ws, destrect, video::SColor(255, 255, 255, 255), false, false,
 				&AbsoluteClippingRect);
@@ -335,9 +335,9 @@ void GUIChatConsole::drawPrompt()
 	if ((m_cursor_blink & 0x8000) != 0) {
 		s32 cursor_pos = prompt.getVisibleCursorPosition();
 		if (cursor_pos >= 0) {
-			s32 cursor_len = prompt.getCursorLength();
+			s32 cursor_len				= prompt.getCursorLength();
 			video::IVideoDriver *driver = Environment->getVideoDriver();
-			s32 x = (1 + cursor_pos) * m_fontsize.X;
+			s32 x						= (1 + cursor_pos) * m_fontsize.X;
 			core::rect<s32> destrect(x, y + m_fontsize.Y * (1.0 - m_cursor_height),
 					x + m_fontsize.X * MYMAX(cursor_len, 1),
 					y + m_fontsize.Y * (cursor_len ? m_cursor_height + 1 : 1));
@@ -462,10 +462,10 @@ bool GUIChatConsole::OnEvent(const SEvent &event)
 						ChatPrompt::CURSOROP_SCOPE_SELECTION);
 			}
 			IOSOperator *os_operator = Environment->getOSOperator();
-			const c8 *text = os_operator->getTextFromClipboard();
+			const c8 *text			 = os_operator->getTextFromClipboard();
 			if (!text)
 				return true;
-			std::basic_string<unsigned char> str((const unsigned char *)text);
+			std::basic_string<unsigned char> str((const unsigned char *) text);
 			prompt.input(std::wstring(str.begin(), str.end()));
 			return true;
 		} else if (event.KeyInput.Key == KEY_KEY_X && event.KeyInput.Control) {
@@ -496,13 +496,13 @@ bool GUIChatConsole::OnEvent(const SEvent &event)
 			// Tab or Shift-Tab pressed
 			// Nick completion
 			std::list<std::string> names = m_client->getConnectedPlayerNames();
-			bool backwards = event.KeyInput.Shift;
+			bool backwards				 = event.KeyInput.Shift;
 			prompt.nickCompletion(names, backwards);
 			return true;
 		} else if (!iswcntrl(event.KeyInput.Char) && !event.KeyInput.Control) {
 #if defined(__linux__) && (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9)
 			wchar_t wc = L'_';
-			mbtowc(&wc, (char *)&event.KeyInput.Char, sizeof(event.KeyInput.Char));
+			mbtowc(&wc, (char *) &event.KeyInput.Char, sizeof(event.KeyInput.Char));
 			prompt.input(wc);
 #else
 			prompt.input(event.KeyInput.Char);

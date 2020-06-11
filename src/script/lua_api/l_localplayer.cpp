@@ -27,8 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/content_cao.h"
 
 LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m) : m_localplayer(m)
-{
-}
+{}
 
 void LuaLocalPlayer::create(lua_State *L, LocalPlayer *m)
 {
@@ -43,8 +42,8 @@ void LuaLocalPlayer::create(lua_State *L, LocalPlayer *m)
 		return;
 	}
 
-	LuaLocalPlayer *o = new LuaLocalPlayer(m);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	LuaLocalPlayer *o								= new LuaLocalPlayer(m);
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 
@@ -214,7 +213,7 @@ int LuaLocalPlayer::l_get_last_look_horizontal(lua_State *L)
 // get_control(self)
 int LuaLocalPlayer::l_get_control(lua_State *L)
 {
-	LocalPlayer *player = getobject(L, 1);
+	LocalPlayer *player	   = getobject(L, 1);
 	const PlayerControl &c = player->getPlayerControl();
 
 	auto set = [L](const char *name, bool value) {
@@ -348,7 +347,7 @@ int LuaLocalPlayer::l_hud_add(lua_State *L)
 int LuaLocalPlayer::l_hud_remove(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
-	u32 id = luaL_checkinteger(L, 2);
+	u32 id				= luaL_checkinteger(L, 2);
 	HudElement *element = player->removeHud(id);
 	if (!element)
 		lua_pushboolean(L, false);
@@ -401,7 +400,7 @@ LuaLocalPlayer *LuaLocalPlayer::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(LuaLocalPlayer **)ud;
+	return *(LuaLocalPlayer **) ud;
 }
 
 LocalPlayer *LuaLocalPlayer::getobject(LuaLocalPlayer *ref)
@@ -420,7 +419,7 @@ LocalPlayer *LuaLocalPlayer::getobject(lua_State *L, int narg)
 
 int LuaLocalPlayer::gc_object(lua_State *L)
 {
-	LuaLocalPlayer *o = *(LuaLocalPlayer **)(lua_touserdata(L, 1));
+	LuaLocalPlayer *o = *(LuaLocalPlayer **) (lua_touserdata(L, 1));
 	delete o;
 	return 0;
 }
@@ -450,7 +449,7 @@ void LuaLocalPlayer::Register(lua_State *L)
 	lua_pop(L, 1); // Drop methodtable
 }
 
-const char LuaLocalPlayer::className[] = "LocalPlayer";
+const char LuaLocalPlayer::className[]	 = "LocalPlayer";
 const luaL_Reg LuaLocalPlayer::methods[] = { luamethod(LuaLocalPlayer, get_velocity),
 	luamethod(LuaLocalPlayer, get_hp), luamethod(LuaLocalPlayer, get_name),
 	luamethod(LuaLocalPlayer, get_wield_index),

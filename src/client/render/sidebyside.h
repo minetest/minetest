@@ -24,10 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class RenderingCoreSideBySide : public RenderingCoreStereo
 {
 protected:
-	video::ITexture *left = nullptr;
+	video::ITexture *left  = nullptr;
 	video::ITexture *right = nullptr;
-	bool horizontal = false;
-	bool flipped = false;
+	bool horizontal		   = false;
+	bool flipped		   = false;
 	core::dimension2du image_size;
 	v2s32 rpos;
 

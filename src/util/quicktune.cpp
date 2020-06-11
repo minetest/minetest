@@ -79,7 +79,7 @@ void setQuicktuneValue(const std::string &name, const QuicktuneValue &val)
 {
 	makeMutex();
 	MutexAutoLock lock(*g_mutex);
-	g_values[name] = val;
+	g_values[name]			= val;
 	g_values[name].modified = true;
 }
 
@@ -97,7 +97,7 @@ void updateQuicktuneValue(const std::string &name, QuicktuneValue &val)
 	if (ref.modified)
 		val = ref;
 	else {
-		ref = val;
+		ref			 = val;
 		ref.modified = false;
 	}
 }

@@ -42,7 +42,7 @@ public:
 
 	void set(u16 id, const std::string &name)
 	{
-		m_id_to_name[id] = name;
+		m_id_to_name[id]   = name;
 		m_name_to_id[name] = id;
 	}
 

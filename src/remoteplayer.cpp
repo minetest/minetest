@@ -32,8 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	RemotePlayer
 */
 // static config cache for remoteplayer
-bool RemotePlayer::m_setting_cache_loaded = false;
-float RemotePlayer::m_setting_chat_message_limit_per_10sec = 0.0f;
+bool RemotePlayer::m_setting_cache_loaded					= false;
+float RemotePlayer::m_setting_chat_message_limit_per_10sec	= 0.0f;
 u16 RemotePlayer::m_setting_chat_message_limit_trigger_kick = 0;
 
 RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef) : Player(name, idef)
@@ -47,39 +47,39 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef) : Player(nam
 	}
 	movement_acceleration_default =
 			g_settings->getFloat("movement_acceleration_default") * BS;
-	movement_acceleration_air = g_settings->getFloat("movement_acceleration_air") * BS;
+	movement_acceleration_air  = g_settings->getFloat("movement_acceleration_air") * BS;
 	movement_acceleration_fast = g_settings->getFloat("movement_acceleration_fast") * BS;
-	movement_speed_walk = g_settings->getFloat("movement_speed_walk") * BS;
-	movement_speed_crouch = g_settings->getFloat("movement_speed_crouch") * BS;
-	movement_speed_fast = g_settings->getFloat("movement_speed_fast") * BS;
-	movement_speed_climb = g_settings->getFloat("movement_speed_climb") * BS;
-	movement_speed_jump = g_settings->getFloat("movement_speed_jump") * BS;
-	movement_liquid_fluidity = g_settings->getFloat("movement_liquid_fluidity") * BS;
+	movement_speed_walk		   = g_settings->getFloat("movement_speed_walk") * BS;
+	movement_speed_crouch	   = g_settings->getFloat("movement_speed_crouch") * BS;
+	movement_speed_fast		   = g_settings->getFloat("movement_speed_fast") * BS;
+	movement_speed_climb	   = g_settings->getFloat("movement_speed_climb") * BS;
+	movement_speed_jump		   = g_settings->getFloat("movement_speed_jump") * BS;
+	movement_liquid_fluidity   = g_settings->getFloat("movement_liquid_fluidity") * BS;
 	movement_liquid_fluidity_smooth =
 			g_settings->getFloat("movement_liquid_fluidity_smooth") * BS;
 	movement_liquid_sink = g_settings->getFloat("movement_liquid_sink") * BS;
-	movement_gravity = g_settings->getFloat("movement_gravity") * BS;
+	movement_gravity	 = g_settings->getFloat("movement_gravity") * BS;
 
 	// copy defaults
-	m_cloud_params.density = 0.4f;
-	m_cloud_params.color_bright = video::SColor(229, 240, 240, 255);
+	m_cloud_params.density		 = 0.4f;
+	m_cloud_params.color_bright	 = video::SColor(229, 240, 240, 255);
 	m_cloud_params.color_ambient = video::SColor(255, 0, 0, 0);
-	m_cloud_params.height = 120.0f;
-	m_cloud_params.thickness = 16.0f;
-	m_cloud_params.speed = v2f(0.0f, -2.0f);
+	m_cloud_params.height		 = 120.0f;
+	m_cloud_params.thickness	 = 16.0f;
+	m_cloud_params.speed		 = v2f(0.0f, -2.0f);
 
 	// Skybox defaults:
 
 	SkyboxDefaults sky_defaults;
 
-	m_skybox_params.sky_color = sky_defaults.getSkyColorDefaults();
-	m_skybox_params.type = "regular";
-	m_skybox_params.clouds = true;
-	m_skybox_params.fog_sun_tint = video::SColor(255, 244, 125, 29);
+	m_skybox_params.sky_color	  = sky_defaults.getSkyColorDefaults();
+	m_skybox_params.type		  = "regular";
+	m_skybox_params.clouds		  = true;
+	m_skybox_params.fog_sun_tint  = video::SColor(255, 244, 125, 29);
 	m_skybox_params.fog_moon_tint = video::SColorf(0.5, 0.6, 0.8, 1).toSColor();
 	m_skybox_params.fog_tint_type = "default";
 
-	m_sun_params = sky_defaults.getSunDefaults();
+	m_sun_params  = sky_defaults.getSunDefaults();
 	m_moon_params = sky_defaults.getMoonDefaults();
 	m_star_params = sky_defaults.getStarDefaults();
 }
@@ -208,8 +208,8 @@ void RemotePlayer::serialize(std::ostream &os)
 const RemotePlayerChatResult RemotePlayer::canSendChatMessage()
 {
 	// Rate limit messages
-	u32 now = time(NULL);
-	float time_passed = now - m_last_chat_message_sent;
+	u32 now					 = time(NULL);
+	float time_passed		 = now - m_last_chat_message_sent;
 	m_last_chat_message_sent = now;
 
 	// If this feature is disabled

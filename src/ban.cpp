@@ -56,7 +56,7 @@ void BanManager::load()
 		std::string line;
 		std::getline(is, line, '\n');
 		Strfnd f(line);
-		std::string ip = trim(f.next("|"));
+		std::string ip	 = trim(f.next("|"));
 		std::string name = trim(f.next("|"));
 		if (!ip.empty()) {
 			m_ips[ip] = name;
@@ -113,7 +113,7 @@ std::string BanManager::getBanName(const std::string &ip)
 void BanManager::add(const std::string &ip, const std::string &name)
 {
 	MutexAutoLock lock(m_mutex);
-	m_ips[ip] = name;
+	m_ips[ip]  = name;
 	m_modified = true;
 }
 

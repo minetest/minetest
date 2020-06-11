@@ -121,11 +121,10 @@ public:
 class InvalidNoiseParamsException : public BaseException
 {
 public:
-	InvalidNoiseParamsException()
-		: BaseException("One or more noise parameters were invalid or require "
-						"too much memory")
-	{
-	}
+	InvalidNoiseParamsException() :
+		BaseException("One or more noise parameters were invalid or require "
+					  "too much memory")
+	{}
 
 	InvalidNoiseParamsException(const std::string &s) : BaseException(s) {}
 };
@@ -133,9 +132,8 @@ public:
 class InvalidPositionException : public BaseException
 {
 public:
-	InvalidPositionException()
-		: BaseException("Somebody tried to get/set something in a nonexistent position.")
-	{
-	}
+	InvalidPositionException() :
+		BaseException("Somebody tried to get/set something in a nonexistent position.")
+	{}
 	InvalidPositionException(const std::string &s) : BaseException(s) {}
 };

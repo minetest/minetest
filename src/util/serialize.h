@@ -26,17 +26,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h"
 #if HAVE_ENDIAN_H
-#ifdef _WIN32
-#define __BYTE_ORDER 0
-#define __LITTLE_ENDIAN 0
-#define __BIG_ENDIAN 1
-#elif defined(__MACH__) && defined(__APPLE__)
-#include <machine/endian.h>
-#elif defined(__FreeBSD__) || defined(__DragonFly__)
-#include <sys/endian.h>
-#else
-#include <endian.h>
-#endif
+	#ifdef _WIN32
+		#define __BYTE_ORDER 0
+		#define __LITTLE_ENDIAN 0
+		#define __BIG_ENDIAN 1
+	#elif defined(__MACH__) && defined(__APPLE__)
+		#include <machine/endian.h>
+	#elif defined(__FreeBSD__) || defined(__DragonFly__)
+		#include <sys/endian.h>
+	#else
+		#include <endian.h>
+	#endif
 #endif
 #include <cstring> // for memcpy
 #include <iostream>
@@ -52,8 +52,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // not represent the full range, but rather the largest safe range, of values on
 // all supported architectures.  Note: This definition makes assumptions on
 // platform float-to-int conversion behavior.
-#define F1000_MIN ((float)(s32)((float)(-0x7FFFFFFF - 1) / FIXEDPOINT_FACTOR))
-#define F1000_MAX ((float)(s32)((float)(0x7FFFFFFF) / FIXEDPOINT_FACTOR))
+#define F1000_MIN ((float) (s32)((float) (-0x7FFFFFFF - 1) / FIXEDPOINT_FACTOR))
+#define F1000_MAX ((float) (s32)((float) (0x7FFFFFFF) / FIXEDPOINT_FACTOR))
 
 #define STRING_MAX_LEN 0xFFFF
 #define WIDE_STRING_MAX_LEN 0xFFFF
@@ -111,20 +111,20 @@ inline void writeU64(u8 *data, u64 i)
 
 inline u16 readU16(const u8 *data)
 {
-	return ((u16)data[0] << 8) | ((u16)data[1] << 0);
+	return ((u16) data[0] << 8) | ((u16) data[1] << 0);
 }
 
 inline u32 readU32(const u8 *data)
 {
-	return ((u32)data[0] << 24) | ((u32)data[1] << 16) | ((u32)data[2] << 8) |
-			((u32)data[3] << 0);
+	return ((u32) data[0] << 24) | ((u32) data[1] << 16) | ((u32) data[2] << 8) |
+			((u32) data[3] << 0);
 }
 
 inline u64 readU64(const u8 *data)
 {
-	return ((u64)data[0] << 56) | ((u64)data[1] << 48) | ((u64)data[2] << 40) |
-			((u64)data[3] << 32) | ((u64)data[4] << 24) | ((u64)data[5] << 16) |
-			((u64)data[6] << 8) | ((u64)data[7] << 0);
+	return ((u64) data[0] << 56) | ((u64) data[1] << 48) | ((u64) data[2] << 40) |
+			((u64) data[3] << 32) | ((u64) data[4] << 24) | ((u64) data[5] << 16) |
+			((u64) data[6] << 8) | ((u64) data[7] << 0);
 }
 
 inline void writeU16(u8 *data, u16 i)
@@ -159,32 +159,32 @@ inline void writeU64(u8 *data, u64 i)
 
 inline u8 readU8(const u8 *data)
 {
-	return ((u8)data[0] << 0);
+	return ((u8) data[0] << 0);
 }
 
 inline s8 readS8(const u8 *data)
 {
-	return (s8)readU8(data);
+	return (s8) readU8(data);
 }
 
 inline s16 readS16(const u8 *data)
 {
-	return (s16)readU16(data);
+	return (s16) readU16(data);
 }
 
 inline s32 readS32(const u8 *data)
 {
-	return (s32)readU32(data);
+	return (s32) readU32(data);
 }
 
 inline s64 readS64(const u8 *data)
 {
-	return (s64)readU64(data);
+	return (s64) readU64(data);
 }
 
 inline f32 readF1000(const u8 *data)
 {
-	return (f32)readS32(data) / FIXEDPOINT_FACTOR;
+	return (f32) readS32(data) / FIXEDPOINT_FACTOR;
 }
 
 inline f32 readF32(const u8 *data)
@@ -281,22 +281,22 @@ inline void writeU8(u8 *data, u8 i)
 
 inline void writeS8(u8 *data, s8 i)
 {
-	writeU8(data, (u8)i);
+	writeU8(data, (u8) i);
 }
 
 inline void writeS16(u8 *data, s16 i)
 {
-	writeU16(data, (u16)i);
+	writeU16(data, (u16) i);
 }
 
 inline void writeS32(u8 *data, s32 i)
 {
-	writeU32(data, (u32)i);
+	writeU32(data, (u32) i);
 }
 
 inline void writeS64(u8 *data, s64 i)
 {
-	writeU64(data, (u64)i);
+	writeU64(data, (u64) i);
 }
 
 inline void writeF1000(u8 *data, f32 i)
@@ -382,14 +382,14 @@ inline void writeV3F32(u8 *data, v3f p)
 	{                                                                                    \
 		char buf[S] = { 0 };                                                             \
 		is.read(buf, sizeof(buf));                                                       \
-		return read##N((u8 *)buf);                                                       \
+		return read##N((u8 *) buf);                                                      \
 	}
 
 #define MAKE_STREAM_WRITE_FXN(T, N, S)                                                   \
 	inline void write##N(std::ostream &os, T val)                                        \
 	{                                                                                    \
 		char buf[S];                                                                     \
-		write##N((u8 *)buf, val);                                                        \
+		write##N((u8 *) buf, val);                                                       \
 		os.write(buf, sizeof(buf));                                                      \
 	}
 
@@ -695,5 +695,5 @@ inline void putLongString(std::vector<u8> *dest, const std::string &val)
 
 inline void putRawData(std::vector<u8> *dest, const void *src, size_t len)
 {
-	dest->insert(dest->end(), (u8 *)src, (u8 *)src + len);
+	dest->insert(dest->end(), (u8 *) src, (u8 *) src + len);
 }

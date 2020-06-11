@@ -140,7 +140,7 @@ void ScriptApiClient::on_formspec_input(
 	lua_newtable(L);
 	StringMap::const_iterator it;
 	for (it = fields.begin(); it != fields.end(); ++it) {
-		const std::string &name = it->first;
+		const std::string &name	 = it->first;
 		const std::string &value = it->second;
 		lua_pushstring(L, name.c_str());
 		lua_pushlstring(L, value.c_str(), value.size());
@@ -229,7 +229,7 @@ bool ScriptApiClient::on_inventory_open(Inventory *inventory)
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_inventory_open");
 
-	std::vector<const InventoryList *> lists = inventory->getLists();
+	std::vector<const InventoryList *> lists		  = inventory->getLists();
 	std::vector<const InventoryList *>::iterator iter = lists.begin();
 	lua_createtable(L, 0, lists.size());
 	for (; iter != lists.end(); iter++) {

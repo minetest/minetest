@@ -28,7 +28,7 @@ protected:
 public:
 	bool m_to_be_removed = false;
 
-	ClientSimpleObject() = default;
+	ClientSimpleObject()		  = default;
 	virtual ~ClientSimpleObject() = default;
 
 	virtual void step(float dtime) {}

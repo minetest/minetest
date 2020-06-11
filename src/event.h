@@ -37,7 +37,7 @@ public:
 		TYPE_MAX,
 	};
 
-	virtual ~MtEvent() = default;
+	virtual ~MtEvent()			 = default;
 	virtual Type getType() const = 0;
 };
 
@@ -54,7 +54,7 @@ public:
 class MtEventReceiver
 {
 public:
-	virtual ~MtEventReceiver() = default;
+	virtual ~MtEventReceiver()		 = default;
 	virtual void onEvent(MtEvent *e) = 0;
 };
 
@@ -63,8 +63,8 @@ typedef void (*event_receive_func)(MtEvent *e, void *data);
 class MtEventManager
 {
 public:
-	virtual ~MtEventManager() = default;
-	virtual void put(MtEvent *e) = 0;
+	virtual ~MtEventManager()											   = default;
+	virtual void put(MtEvent *e)										   = 0;
 	virtual void reg(MtEvent::Type type, event_receive_func f, void *data) = 0;
 	// If data==NULL, every occurence of f is deregistered.
 	virtual void dereg(MtEvent::Type type, event_receive_func f, void *data) = 0;

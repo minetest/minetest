@@ -24,9 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class RenderingCoreInterlaced : public RenderingCoreStereo
 {
 protected:
-	video::ITexture *left = nullptr;
+	video::ITexture *left  = nullptr;
 	video::ITexture *right = nullptr;
-	video::ITexture *mask = nullptr;
+	video::ITexture *mask  = nullptr;
 	video::SMaterial mat;
 
 	void initMaterial();

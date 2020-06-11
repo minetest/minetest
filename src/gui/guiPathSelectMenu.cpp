@@ -21,11 +21,11 @@
 
 GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent,
 		s32 id, IMenuManager *menumgr, const std::string &title,
-		const std::string &formname, bool is_file_select)
-	: GUIModalMenu(env, parent, id, menumgr), m_title(utf8_to_wide(title)),
-	  m_formname(formname), m_file_select_dialog(is_file_select)
-{
-}
+		const std::string &formname, bool is_file_select) :
+	GUIModalMenu(env, parent, id, menumgr),
+	m_title(utf8_to_wide(title)), m_formname(formname),
+	m_file_select_dialog(is_file_select)
+{}
 
 GUIFileSelectMenu::~GUIFileSelectMenu()
 {
@@ -69,7 +69,7 @@ void GUIFileSelectMenu::acceptInput()
 			std::string path;
 			if (!m_file_select_dialog) {
 				core::string<fschar_t> string = m_fileOpenDialog->getDirectoryName();
-				path = std::string(string.c_str());
+				path						  = std::string(string.c_str());
 			} else {
 				path = wide_to_utf8(m_fileOpenDialog->getFileName());
 			}

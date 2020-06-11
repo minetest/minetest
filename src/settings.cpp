@@ -207,7 +207,7 @@ bool Settings::updateConfigObject(
 	std::set<std::string> present_entries;
 	std::string line, name, value;
 	bool was_modified = false;
-	bool end_found = false;
+	bool end_found	  = false;
 
 	// Add any settings that exist in the config file with the current value
 	// in the object if existing
@@ -431,7 +431,7 @@ s16 Settings::getS16(const std::string &name) const
 
 u32 Settings::getU32(const std::string &name) const
 {
-	return (u32)stoi(get(name));
+	return (u32) stoi(get(name));
 }
 
 s32 Settings::getS32(const std::string &name) const
@@ -448,7 +448,7 @@ float Settings::getFloat(const std::string &name) const
 
 u64 Settings::getU64(const std::string &name) const
 {
-	u64 value = 0;
+	u64 value	  = 0;
 	std::string s = get(name);
 	std::istringstream ss(s);
 	ss >> value;
@@ -482,7 +482,7 @@ v3f Settings::getV3F(const std::string &name) const
 u32 Settings::getFlagStr(
 		const std::string &name, const FlagDesc *flagdesc, u32 *flagmask) const
 {
-	u32 flags = 0;
+	u32 flags		 = 0;
 	u32 mask_default = 0;
 
 	std::string value;
@@ -496,7 +496,7 @@ u32 Settings::getFlagStr(
 	value = get(name);
 	u32 flags_user;
 	u32 mask_user = U32_MAX;
-	flags_user = std::isdigit(value[0]) ? stoi(value) // Override default
+	flags_user	  = std::isdigit(value[0]) ? stoi(value) // Override default
 										  :
 										  readFlagString(value, flagdesc, &mask_user);
 
@@ -545,13 +545,13 @@ bool Settings::getNoiseParamsFromValue(const std::string &name, NoiseParams &np)
 	Strfnd f(value);
 
 	np.offset = stof(f.next(","));
-	np.scale = stof(f.next(","));
+	np.scale  = stof(f.next(","));
 	f.next("(");
 	np.spread.X = stof(f.next(","));
 	np.spread.Y = stof(f.next(","));
 	np.spread.Z = stof(f.next(")"));
 	f.next(",");
-	np.seed = stoi(f.next(","));
+	np.seed	   = stoi(f.next(","));
 	np.octaves = stoi(f.next(","));
 	np.persist = stof(f.next(","));
 
@@ -780,17 +780,17 @@ bool Settings::setEntry(
 
 	if (!checkNameValid(name))
 		return false;
-	if (!set_group && !checkValueValid(*(const std::string *)data))
+	if (!set_group && !checkValueValid(*(const std::string *) data))
 		return false;
 
 	{
 		MutexAutoLock lock(m_mutex);
 
 		SettingsEntry &entry = set_default ? m_defaults[name] : m_settings[name];
-		old_group = entry.group;
+		old_group			 = entry.group;
 
-		entry.value = set_group ? "" : *(const std::string *)data;
-		entry.group = set_group ? *(Settings **)data : NULL;
+		entry.value	   = set_group ? "" : *(const std::string *) data;
+		entry.group	   = set_group ? *(Settings **) data : NULL;
 		entry.is_group = set_group;
 	}
 
@@ -996,7 +996,7 @@ SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 	if (pos == std::string::npos)
 		return SPE_INVALID;
 
-	name = trim(trimmed_line.substr(0, pos));
+	name  = trim(trimmed_line.substr(0, pos));
 	value = trim(trimmed_line.substr(pos + 1));
 
 	if (value == "{")
