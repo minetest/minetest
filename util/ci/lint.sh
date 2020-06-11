@@ -5,7 +5,7 @@ function perform_lint() {
 		CLANG_FORMAT=clang-format
 	fi
 	echo "LINT: Using binary $CLANG_FORMAT"
-	CLANG_FORMAT_WHITELIST="util/ci/clang-format-whitelist.txt"
+	CLANG_FORMAT_WHITELIST="util/clang-format-whitelist.txt"
 
 	files_to_lint="$(find src/ -name '*.cpp' -or -name '*.h')"
 

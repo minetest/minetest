@@ -24,3 +24,5 @@ src/threading/thread.cpp
 src/threading/thread.h
 src/threads.h
 src/util/sha1.cpp
+src/util/base64.cpp
+src/util/md32_common.h
