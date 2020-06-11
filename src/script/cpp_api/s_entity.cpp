@@ -265,7 +265,7 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime, v3f pos, v3f rotation,
 				push_v3s16(L, colinfo.node_p);
 				lua_setfield(L, -2, "node_pos");
 			}
-			else (colinfo.type == COLLISION_OBJECT) {
+			else if (colinfo.type == COLLISION_OBJECT) {
 				push_objectRef(L, colinfo.object->getId());
 				lua_setfield(L, -2, "object");
 			}
