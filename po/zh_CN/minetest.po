@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-05-14 11:41+0000\n"
-"Last-Translator: Mivik <mivik@qq.com>\n"
+"PO-Revision-Date: 2020-06-12 13:13+0000\n"
+"Last-Translator: ferrumcccp <wushuzhen1975@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -245,7 +245,7 @@ msgstr "种子"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "警告: 最小化开发测试为开发者提供。"
+msgstr "警告: 最小化开发测试是为开发者提供的。"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -429,7 +429,7 @@ msgstr "$1 mod"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr "安装 $1 到 $2 失败"
+msgstr "无法把$1安装到$2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
@@ -1008,7 +1008,7 @@ msgstr "隐藏的调试信息和性能分析图"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
-msgstr "调试信息切换键"
+msgstr "调试信息已显示"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
@@ -1600,7 +1600,7 @@ msgstr "减小音量"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "连按两次“跳”切换飞行模式"
+msgstr "连按两次“跳”启用/禁用飞行模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -1672,31 +1672,31 @@ msgstr "开关HUD"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr "开关聊天记录"
+msgstr "启用/禁用聊天记录"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "开关快速移动模式"
+msgstr "启用/禁用快速移动模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr "开关飞行模式"
+msgstr "启用/禁用飞行模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fog"
-msgstr "开关雾"
+msgstr "启用/禁用雾"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle minimap"
-msgstr "开关小地图"
+msgstr "启用/禁用小地图"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "开关穿墙模式"
+msgstr "启用/禁用穿墙模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
-msgstr "开关仰角移动模式"
+msgstr "启用/禁用仰角移动模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1808,31 +1808,31 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
-msgstr "控制山脊形状/大小的2D噪声。"
+msgstr "控制山脊形状/大小的2D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr "控制丘陵形状/大小的2D噪声。"
+msgstr "控制丘陵形状/大小的2D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of step mountains."
-msgstr "控制平缓山形状/大小的2D噪声。"
+msgstr "控制平缓山形状/大小的2D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr "控制山脊区域的大小/频率的2D噪声。"
+msgstr "控制山脊区域的大小/频率的2D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of rolling hills."
-msgstr "控制丘陵的大小/频率的2D噪声。"
+msgstr "控制丘陵的大小/频率的2D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
-msgstr "控制平缓山的大小/频率的2D噪声。"
+msgstr "控制平缓山的大小/频率的2D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that locates the river valleys and channels."
-msgstr "确定河谷及河道位置的2D噪声。"
+msgstr "确定河谷及河道位置的2D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1844,31 +1844,31 @@ msgstr "3D 模式"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
-msgstr "定义巨型洞穴的3D噪声。"
+msgstr "定义巨型洞穴的3D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "3D noise defining mountain structure and height.\n"
 "Also defines structure of floatland mountain terrain."
 msgstr ""
-"定义山丘结构和高度的3D噪声。\n"
+"定义山丘结构和高度的3D噪点。\n"
 "也定义悬空岛山丘地形。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
-msgstr "定义河谷壁的结构的3D噪声。"
+msgstr "定义河谷壁的结构的3D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining terrain."
-msgstr "定义地形的3D噪声。"
+msgstr "定义地形的3D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
-msgstr "用于突出崖、悬崖等的3D噪声。通常变化小。"
+msgstr "用于突出崖、悬崖等的3D噪点。通常变化小。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr "确定每个地图块的地窖数量的3D噪声。"
+msgstr "确定每个地图块的地窖数量的3D噪点。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2022,7 +2022,7 @@ msgstr "添加物品名称至工具栏。"
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
-msgstr "苹果树噪音"
+msgstr "苹果树噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2105,11 +2105,11 @@ msgstr "基本权限"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise"
-msgstr "海滩噪音"
+msgstr "海滩噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise threshold"
-msgstr "海滩噪音阈值"
+msgstr "海滩噪点阈值"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -2121,11 +2121,11 @@ msgstr "绑定地址"
 
 #: src/settings_translation_file.cpp
 msgid "Biome API temperature and humidity noise parameters"
-msgstr "群落 API 温度和湿度噪声参数"
+msgstr "群落 API 温度和湿度噪点参数"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
-msgstr "生态噪声"
+msgstr "生态噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
@@ -2185,19 +2185,19 @@ msgstr "电影模式下镜头平滑"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr "镜头更新开关键"
+msgstr "镜头更新启用/禁用键"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
-msgstr "洞穴噪音"
+msgstr "洞穴噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr "洞穴噪音 #1"
+msgstr "洞穴噪点 #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr "洞穴噪音 #2"
+msgstr "洞穴噪点 #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
@@ -2205,11 +2205,11 @@ msgstr "洞穴宽度"
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
-msgstr "洞穴1噪音"
+msgstr "洞穴1噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Cave2 noise"
-msgstr "洞穴2噪音"
+msgstr "洞穴2噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern limit"
@@ -2217,7 +2217,7 @@ msgstr "大型洞穴界限"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr "大型洞穴噪音"
+msgstr "大型洞穴噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
@@ -2275,7 +2275,7 @@ msgstr "聊天消息最大长度"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr "聊天开关键"
+msgstr "聊天启用/禁用键"
 
 #: src/settings_translation_file.cpp
 msgid "Chatcommands"
@@ -2419,7 +2419,7 @@ msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
-"自动前进，通过自动前进键切换。\n"
+"自动前进，通过自动前进键启用/禁用。\n"
 "再次按下自动前进键或后退以关闭。"
 
 #: src/settings_translation_file.cpp
@@ -2455,7 +2455,8 @@ msgid ""
 "intensive noise calculations."
 msgstr ""
 "控制洞穴通道宽度，设置较小值以创建较宽通道。\n"
-"值>=10.0则完全关闭通道生成，避免大量噪声计算。"
+"值>=10.0则完全关闭通道生成，避免大量噪点\n"
+"计算。"
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -2491,7 +2492,7 @@ msgstr "伤害"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr "调试信息开关键"
+msgstr "调试信息启用/禁用键"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -2645,7 +2646,7 @@ msgstr "服务器描述，将在玩家加入时发送给玩家，并显示在服
 
 #: src/settings_translation_file.cpp
 msgid "Desert noise threshold"
-msgstr "沙漠噪声阈值"
+msgstr "沙漠噪点阈值"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2681,7 +2682,7 @@ msgstr "双击“跳跃”键飞行"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr "连按两次“跳跃”键切换飞行模式。"
+msgstr "连按两次“跳跃”键启用/禁用飞行模式。"
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
@@ -2701,7 +2702,7 @@ msgstr "地窖最小Y坐标"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
-msgstr "地窖噪声"
+msgstr "地窖噪点"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2905,16 +2906,15 @@ msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
-msgstr "系数噪音"
+msgstr "系数噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing factor"
 msgstr "坠落上下摆动系数"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font path"
-msgstr "后备字体"
+msgstr "后备字体路径"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
@@ -2975,7 +2975,7 @@ msgstr "填充深度"
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth noise"
-msgstr "填充深度噪声"
+msgstr "填充深度噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
@@ -2999,11 +2999,11 @@ msgstr "过滤"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
-msgstr "定义决定丘陵/山地范围高度的4个2D噪声的第一项。"
+msgstr "定义决定丘陵/山地范围高度的4个2D噪点的第一项。"
 
 #: src/settings_translation_file.cpp
 msgid "First of two 3D noises that together define tunnels."
-msgstr "定义决定通道的2个3D噪音的第一项。"
+msgstr "定义决定通道的2个3D噪点的第一项。"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
@@ -3031,7 +3031,7 @@ msgstr "雾开始"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr "雾开关键"
+msgstr "雾启用/禁用键"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -3116,7 +3116,7 @@ msgstr "前进键"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
-msgstr "定义决定丘陵/山地范围高度的4个2D噪声的第四项。"
+msgstr "定义决定丘陵/山地范围高度的4个2D噪点的第四项。"
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -3227,7 +3227,7 @@ msgstr "地面高度"
 
 #: src/settings_translation_file.cpp
 msgid "Ground noise"
-msgstr "地面噪声"
+msgstr "地面噪点"
 
 #: src/settings_translation_file.cpp
 msgid "HTTP mods"
@@ -3239,7 +3239,7 @@ msgstr "HUD 缩放比例系数"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr "HUD 开关键"
+msgstr "HUD启用/禁用键"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3268,11 +3268,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
-msgstr "热混合噪声"
+msgstr "热混合噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Heat noise"
-msgstr "热噪声"
+msgstr "热噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
@@ -3280,11 +3280,11 @@ msgstr "初始窗口高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
-msgstr "高度噪声"
+msgstr "高度噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
-msgstr "高度选择噪声"
+msgstr "高度选择噪点"
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
@@ -3300,19 +3300,19 @@ msgstr "山丘阈值"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness1 noise"
-msgstr "山丘噪声 #1"
+msgstr "山丘噪点 #1"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness2 noise"
-msgstr "山丘噪声 #2"
+msgstr "山丘噪点 #2"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness3 noise"
-msgstr "山丘噪声 #3"
+msgstr "山丘噪点 #3"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness4 noise"
-msgstr "山丘噪声 #4"
+msgstr "山丘噪点 #4"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -3506,11 +3506,11 @@ msgstr "生成河流多宽。"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
-msgstr "湿度混合噪声"
+msgstr "湿度混合噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity noise"
-msgstr "湿度噪声"
+msgstr "湿度噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity variation for biomes."
@@ -5143,15 +5143,15 @@ msgstr "等宽字体大小"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
-msgstr "山高度噪声"
+msgstr "山高度噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain noise"
-msgstr "山噪声"
+msgstr "山噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain variation noise"
-msgstr "山变化噪声"
+msgstr "山变化噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain zero level"
@@ -5167,7 +5167,7 @@ msgstr "鼠标灵敏度倍数。"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
-msgstr "泥土噪声"
+msgstr "泥土噪点"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5213,9 +5213,8 @@ msgid ""
 msgstr "服务器名称，将显示在提供给玩家的服务器列表。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near plane"
-msgstr "靠近裁切平面"
+msgstr "近平面"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5251,7 +5250,7 @@ msgstr "NodeTimer间隔"
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
-msgstr "噪声"
+msgstr "噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
@@ -5432,9 +5431,8 @@ msgid "Pitch move key"
 msgstr "仰角移动键"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Pitch move mode"
-msgstr "第三人称视角"
+msgstr "仰角移动模式"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5490,34 +5488,30 @@ msgstr "有\"basic_privs\"的玩家可以授予的权限"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr "剖析器"
+msgstr "性能分析"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
-msgstr "剖析器切换键"
+msgstr "性能分析启用/禁用键"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Profiling"
-msgstr "Mod 剖析"
+msgstr "Mod 性能分析"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Proportion of large caves that contain liquid."
 msgstr "包含液体的大洞穴的比例。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
-"以64个节点的云平方数表示的云区域半径。\n"
-"大于26的值将开始在云区域的拐角处产生急剧的截止。"
+"以64个节点的云立方体的数目表示的云区域半径。\n"
+"大于26的值将开始在云区域的拐角处产生尖锐的边界。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Raises terrain to make valleys around the rivers."
 msgstr "抬高地形使河流周围形成山谷。"
 
@@ -5530,7 +5524,6 @@ msgid "Range select key"
 msgstr "范围选择键"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Recent Chat Messages"
 msgstr "最近聊天消息"
 
@@ -5557,9 +5550,8 @@ msgid "Replaces the default main menu with a custom one."
 msgstr "自定义默认的主菜单界面。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Report path"
-msgstr "字体路径"
+msgstr "报告路径"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5585,22 +5577,20 @@ msgstr ""
 "READ_PLAYERINFO：32（禁止客户端调用 get_player_names）"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ridge mountain spread noise"
-msgstr "山脊扩散噪声"
+msgstr "山脊扩散噪点"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ridge noise"
-msgstr "河流噪音"
+msgstr "河流噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge underwater noise"
-msgstr "山脊地下水噪声"
+msgstr "山脊地下水噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Ridged mountain size noise"
-msgstr "山脊大小噪声"
+msgstr "山脊大小噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -5624,7 +5614,7 @@ msgstr "河流深度"
 
 #: src/settings_translation_file.cpp
 msgid "River noise"
-msgstr "河流噪音"
+msgstr "河流噪点"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
@@ -5640,11 +5630,11 @@ msgstr "回滚记录"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hill size noise"
-msgstr "山丘大小噪音"
+msgstr "山丘大小噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
-msgstr "山丘扩散噪音"
+msgstr "山丘扩散噪点"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
@@ -5711,14 +5701,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Seabed noise"
-msgstr "洞穴噪音 #1"
+msgstr "海底噪点"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Second of 4 2D noises that together define hill/mountain range height."
-msgstr "定义tunnels的最初2个3D噪音。"
+msgstr "定义山/山丘范围高度的4个2D噪点的第二项。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6257,7 +6245,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr "切换拍照模式键"
+msgstr "启用/禁用拍照模式键"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
