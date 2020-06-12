@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-06-12 13:13+0000\n"
-"Last-Translator: ferrumcccp <wushuzhen1975@icloud.com>\n"
+"Last-Translator: 青草 <qingcaomc@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -298,7 +298,7 @@ msgstr "(没有关于此设置的信息)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr "2D 噪声"
+msgstr "2D 噪点"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -774,7 +774,7 @@ msgstr "色调映射"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
-msgstr "触控阈值（px）"
+msgstr "触控阈值:（px）"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
