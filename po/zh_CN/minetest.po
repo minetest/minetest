@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
-"PO-Revision-Date: 2020-06-12 13:13+0000\n"
-"Last-Translator: Yangjun Wang <yangjunw50@outlook.com>\n"
+"PO-Revision-Date: 2020-06-13 21:08+0000\n"
+"Last-Translator: ferrumcccp <wushuzhen1975@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -298,7 +298,7 @@ msgstr "(没有关于此设置的信息)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr "2D 噪点"
+msgstr "2D 噪声"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -1180,7 +1180,7 @@ msgstr "俯仰移动模式已禁用"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr "仰角移动模式已禁用"
+msgstr "俯仰移动模式已禁用"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
@@ -1808,31 +1808,31 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
-msgstr "控制山脊形状/大小的2D噪点。"
+msgstr "控制山脊形状/大小的2D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr "控制丘陵形状/大小的2D噪点。"
+msgstr "控制波状丘陵形状/大小的2D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of step mountains."
-msgstr "控制平缓山形状/大小的2D噪点。"
+msgstr "控制平缓山形状/大小的2D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr "控制山脊区域的大小/频率的2D噪点。"
+msgstr "控制山脊区域的大小/频率的2D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of rolling hills."
-msgstr "控制丘陵的大小/频率的2D噪点。"
+msgstr "控制波状丘陵的大小/频率的2D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
-msgstr "控制平缓山的大小/频率的2D噪点。"
+msgstr "控制平缓山的大小/频率的2D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that locates the river valleys and channels."
-msgstr "确定河谷及河道位置的2D噪点。"
+msgstr "确定河谷及河道位置的2D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1844,31 +1844,31 @@ msgstr "3D 模式"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
-msgstr "定义巨型洞穴的3D噪点。"
+msgstr "定义巨型洞穴的3D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "3D noise defining mountain structure and height.\n"
 "Also defines structure of floatland mountain terrain."
 msgstr ""
-"定义山丘结构和高度的3D噪点。\n"
+"定义山丘结构和高度的3D噪声。\n"
 "也定义悬空岛山丘地形。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
-msgstr "定义河谷壁的结构的3D噪点。"
+msgstr "定义河谷壁的结构的3D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining terrain."
-msgstr "定义地形的3D噪点。"
+msgstr "定义地形的3D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
-msgstr "用于突出崖、悬崖等的3D噪点。通常变化小。"
+msgstr "用于突出崖、悬崖等的3D噪声。通常变化小。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr "确定每个地图块的地窖数量的3D噪点。"
+msgstr "确定每个地图块的地窖数量的3D噪声。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2022,7 +2022,7 @@ msgstr "添加物品名称至工具栏。"
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
-msgstr "苹果树噪点"
+msgstr "苹果树噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2105,11 +2105,11 @@ msgstr "基本权限"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise"
-msgstr "海滩噪点"
+msgstr "海滩噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Beach noise threshold"
-msgstr "海滩噪点阈值"
+msgstr "海滩噪声阈值"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -2121,11 +2121,11 @@ msgstr "绑定地址"
 
 #: src/settings_translation_file.cpp
 msgid "Biome API temperature and humidity noise parameters"
-msgstr "群落 API 温度和湿度噪点参数"
+msgstr "生物群系 API 温度和湿度噪声参数"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
-msgstr "生态噪点"
+msgstr "生物群系噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
@@ -2189,15 +2189,15 @@ msgstr "镜头更新启用/禁用键"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
-msgstr "洞穴噪点"
+msgstr "洞穴噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr "洞穴噪点 #1"
+msgstr "洞穴噪声 #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr "洞穴噪点 #2"
+msgstr "洞穴噪声 #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
@@ -2205,11 +2205,11 @@ msgstr "洞穴宽度"
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
-msgstr "洞穴1噪点"
+msgstr "洞穴1噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Cave2 noise"
-msgstr "洞穴2噪点"
+msgstr "洞穴2噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern limit"
@@ -2217,7 +2217,7 @@ msgstr "大型洞穴界限"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr "大型洞穴噪点"
+msgstr "大型洞穴噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
@@ -2455,7 +2455,7 @@ msgid ""
 "intensive noise calculations."
 msgstr ""
 "控制洞穴通道宽度，设置较小值以创建较宽通道。\n"
-"值>=10.0则完全关闭通道生成，避免大量噪点\n"
+"值>=10.0则完全关闭通道生成，避免大量噪声\n"
 "计算。"
 
 #: src/settings_translation_file.cpp
@@ -2646,7 +2646,7 @@ msgstr "服务器描述，将在玩家加入时发送给玩家，并显示在服
 
 #: src/settings_translation_file.cpp
 msgid "Desert noise threshold"
-msgstr "沙漠噪点阈值"
+msgstr "沙漠噪声阈值"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2702,7 +2702,7 @@ msgstr "地窖最小Y坐标"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
-msgstr "地窖噪点"
+msgstr "地窖噪声"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2906,7 +2906,7 @@ msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
-msgstr "系数噪点"
+msgstr "系数噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing factor"
@@ -2975,7 +2975,7 @@ msgstr "填充深度"
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth noise"
-msgstr "填充深度噪点"
+msgstr "填充深度噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
@@ -2999,11 +2999,11 @@ msgstr "过滤"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
-msgstr "定义决定丘陵/山地范围高度的4个2D噪点的第一项。"
+msgstr "定义决定丘陵/山地范围高度的4个2D噪声的第一项。"
 
 #: src/settings_translation_file.cpp
 msgid "First of two 3D noises that together define tunnels."
-msgstr "定义决定通道的2个3D噪点的第一项。"
+msgstr "定义决定通道的2个3D噪声的第一项。"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
@@ -3116,7 +3116,7 @@ msgstr "前进键"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
-msgstr "定义决定丘陵/山地范围高度的4个2D噪点的第四项。"
+msgstr "定义决定丘陵/山地范围高度的4个2D噪声的第四项。"
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -3227,7 +3227,7 @@ msgstr "地面高度"
 
 #: src/settings_translation_file.cpp
 msgid "Ground noise"
-msgstr "地面噪点"
+msgstr "地面噪声"
 
 #: src/settings_translation_file.cpp
 msgid "HTTP mods"
@@ -3268,11 +3268,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
-msgstr "热混合噪点"
+msgstr "热混合噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Heat noise"
-msgstr "热噪点"
+msgstr "热噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
@@ -3280,11 +3280,11 @@ msgstr "初始窗口高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
-msgstr "高度噪点"
+msgstr "高度噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
-msgstr "高度选择噪点"
+msgstr "高度选择噪声"
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
@@ -3300,19 +3300,19 @@ msgstr "山丘阈值"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness1 noise"
-msgstr "山丘噪点 #1"
+msgstr "山丘噪声 #1"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness2 noise"
-msgstr "山丘噪点 #2"
+msgstr "山丘噪声 #2"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness3 noise"
-msgstr "山丘噪点 #3"
+msgstr "山丘噪声 #3"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness4 noise"
-msgstr "山丘噪点 #4"
+msgstr "山丘噪声 #4"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -3506,11 +3506,11 @@ msgstr "生成河流多宽。"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
-msgstr "湿度混合噪点"
+msgstr "湿度混合噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity noise"
-msgstr "湿度噪点"
+msgstr "湿度噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity variation for biomes."
@@ -3537,7 +3537,9 @@ msgid ""
 "If disabled, \"special\" key is used to fly fast if both fly and fast mode "
 "are\n"
 "enabled."
-msgstr "如果禁用，当飞行和疾跑同时开启时“特殊”键用于急速飞行。"
+msgstr ""
+"如果禁用，当飞行和快速模式同时启用时“特殊”键用于快速\n"
+"飞行。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3566,7 +3568,9 @@ msgid ""
 "If enabled, \"special\" key instead of \"sneak\" key is used for climbing "
 "down and\n"
 "descending."
-msgstr "如果启用，“特殊”键将代替潜行键的向下攀爬和下降。"
+msgstr ""
+"如果启用，“特殊”键将代替潜行键的向下攀爬和\n"
+"下降。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3592,7 +3596,7 @@ msgstr ""
 msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
-msgstr "如果启用，则在飞行或游泳时相对于玩家的视角来移动方向。"
+msgstr "如果启用，则在飞行或游泳时相对于玩家的仰角来移动方向。"
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
@@ -3906,7 +3910,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"快速模式移动键。\n"
+"快速模式快速移动键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -3938,7 +3942,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"向左键。\n"
+"左方向键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -3948,7 +3952,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"向右键。\n"
+"右方向键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4381,7 +4385,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关自动前进键。\n"
+"启用/禁用自动前进键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4401,7 +4405,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关小地图键。\n"
+"启用/禁用小地图键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4411,7 +4415,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关快速移动键。\n"
+"启用/禁用快速移动键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4421,7 +4425,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关飞行键。\n"
+"启用/禁用飞行键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4431,7 +4435,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关穿墙模式键。\n"
+"启用/禁用穿墙模式键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4441,7 +4445,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关仰角移动模式键。\n"
+"启用/禁用俯仰移动模式键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4451,7 +4455,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关相机更新键。仅用于开发。\n"
+"启用/禁用相机更新键。仅用于开发。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4461,7 +4465,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关聊天显示键。\n"
+"启用/禁用聊天显示键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4471,7 +4475,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关调试信息键。\n"
+"启用/禁用调试信息键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4481,7 +4485,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关雾显示键。\n"
+"启用/禁用雾显示键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4491,7 +4495,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关HUD显示键。\n"
+"启用/禁用HUD显示键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4501,7 +4505,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关大型聊天控制台显示键。\n"
+"启用/禁用大型聊天控制台显示键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4511,7 +4515,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关性能分析图显示键。仅用于开发。\n"
+"启用/禁用性能分析图显示键。仅用于开发。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4521,7 +4525,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关无限视野键。\n"
+"启用/禁用无限视野键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4531,7 +4535,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关缩放（如有可能）键。\n"
+"启用/禁用缩放（如有可能）键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4821,7 +4825,7 @@ msgid ""
 "the 'jungles' flag is ignored."
 msgstr ""
 "针对v6地图生成器的属性。\n"
-"'snowboimes'启用新版5群落系统。\n"
+"'snowboimes'启用新版5生物群系系统。\n"
 "当'snowbiomes'开启使丛林自动启用，\n"
 "忽略'jungles'标签。"
 
@@ -5131,7 +5135,7 @@ msgstr "mod频道"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr "更改hud栏元素。"
+msgstr "更改hud栏元素大小。"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
@@ -5143,19 +5147,19 @@ msgstr "等宽字体大小"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
-msgstr "山高度噪点"
+msgstr "山高度噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain noise"
-msgstr "山噪点"
+msgstr "山噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain variation noise"
-msgstr "山变化噪点"
+msgstr "山变化噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain zero level"
-msgstr "山起点级"
+msgstr "山起点高度"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
@@ -5167,7 +5171,7 @@ msgstr "鼠标灵敏度倍数。"
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
-msgstr "泥土噪点"
+msgstr "泥土噪声"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5250,7 +5254,7 @@ msgstr "NodeTimer间隔"
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
-msgstr "噪点"
+msgstr "噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
@@ -5388,11 +5392,11 @@ msgstr "屏幕截图保存路径。"
 msgid ""
 "Path to shader directory. If no path is defined, default location will be "
 "used."
-msgstr "着色器目录路径。如果无路径，则使用默认路径。"
+msgstr "着色器目录路径。如果未定义路径，则使用默认路径。"
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
-msgstr "材质目录路径。所有材质都从此路径搜索。"
+msgstr "材质目录路径。所有材质都首先从此路径搜索。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5420,7 +5424,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
-msgstr "丢失窗口焦点是暂停"
+msgstr "丢失窗口焦点时暂停"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5428,11 +5432,11 @@ msgstr "物理"
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move key"
-msgstr "仰角移动键"
+msgstr "俯仰移动键"
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
-msgstr "仰角移动模式"
+msgstr "俯仰移动模式"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5459,7 +5463,7 @@ msgid ""
 "Port to connect to (UDP).\n"
 "Note that the port field in the main menu overrides this setting."
 msgstr ""
-"要连接到 （UDP） 的端口。 \n"
+"要连接到的端口（UDP）。 \n"
 "请注意，主菜单中的端口字段将覆盖此设置。"
 
 #: src/settings_translation_file.cpp
@@ -5467,19 +5471,19 @@ msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
 msgstr ""
-"按住鼠标时，防止误破坏和误放置。 \n"
-"当您意外破坏方块或意外放置方块时，可以启用此功能。"
+"按住鼠标时，防止重复破坏和重复放置。 \n"
+"当您意外地频繁破坏或放置方块时启用此功能。"
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr "阻止 mod 执行危险操作，如运行 shell 命令。"
+msgstr "阻止 mod 执行不安全操作，如运行 shell 命令。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Print the engine's profiling data in regular intervals (in seconds).\n"
 "0 = disable. Useful for developers."
 msgstr ""
-"以固定间隔（以秒为单位）打印引擎的分析数据。 \n"
+"以固定间隔（以秒为单位）打印引擎的性能分析数据。 \n"
 "0 = 禁用。对开发人员很有用。"
 
 #: src/settings_translation_file.cpp
@@ -5496,7 +5500,7 @@ msgstr "性能分析启用/禁用键"
 
 #: src/settings_translation_file.cpp
 msgid "Profiling"
-msgstr "Mod 性能分析"
+msgstr "性能分析"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -5529,7 +5533,7 @@ msgstr "最近聊天消息"
 
 #: src/settings_translation_file.cpp
 msgid "Regular font path"
-msgstr "字体路径"
+msgstr "常规字体路径"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5544,17 +5548,18 @@ msgid ""
 "Remove color codes from incoming chat messages\n"
 "Use this to stop players from being able to use color in their messages"
 msgstr ""
+"移除传入聊天消息的色彩码\n"
+"使用该设置来防止玩家在消息中使用颜色"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
-msgstr "自定义默认的主菜单界面。"
+msgstr "将默认主菜单替换为自定义主菜单。"
 
 #: src/settings_translation_file.cpp
 msgid "Report path"
 msgstr "报告路径"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Restricts the access of certain client-side functions on servers.\n"
 "Combine the byteflags below to restrict client-side features, or set to 0\n"
@@ -5568,29 +5573,31 @@ msgid ""
 "READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
 "在服务器上限制一些客户端上的功能。\n"
-"将下面的标志位结合来限制客户端功能，设置为0为无限制：\n"
-"LOAD_CLIENT_MODS：1（禁止加载客户端的 Mods）\n"
+"将下面的标志位结合来限制客户端功能，设置为0为\n"
+"无限制：\n"
+"LOAD_CLIENT_MODS：1（禁止加载客户端 mod）\n"
 "CHAT_MESSAGES：2（禁止客户端调用 send_chat_message）\n"
 "READ_ITEMDEFS：4（禁止客户端调用 get_item_def）\n"
 "READ_NODEDEFS：8（禁止客户端调用 get_node_def）\n"
-"LOOKUP_NODES_LIMIT：16（禁止客户端调用 get_node 来获取 csm_restriction_noderange）\n"
+"LOOKUP_NODES_LIMIT：16（禁止客户端 get_node 调用限制为\n"
+"csm_restriction_noderange）\n"
 "READ_PLAYERINFO：32（禁止客户端调用 get_player_names）"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge mountain spread noise"
-msgstr "山脊扩散噪点"
+msgstr "山脊扩散噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge noise"
-msgstr "河流噪点"
+msgstr "山脊噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge underwater noise"
-msgstr "山脊地下水噪点"
+msgstr "水下山脊噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Ridged mountain size noise"
-msgstr "山脊大小噪点"
+msgstr "山脊大小噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -5614,7 +5621,7 @@ msgstr "河流深度"
 
 #: src/settings_translation_file.cpp
 msgid "River noise"
-msgstr "河流噪点"
+msgstr "河流噪声"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
@@ -5630,11 +5637,11 @@ msgstr "回滚记录"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hill size noise"
-msgstr "山丘大小噪点"
+msgstr "波状丘陵大小噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
-msgstr "山丘扩散噪点"
+msgstr "波状丘陵扩散噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
@@ -5649,14 +5656,12 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "当 np_beach 超过这个值时会出现沙滩。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Save the map received by the client on disk."
 msgstr "将客户端接收到的地图保存在磁盘上。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Save window size automatically when modified."
-msgstr "当窗口大小改变时自动记忆。"
+msgstr "当窗口大小改变时自动保存。"
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -5670,6 +5675,11 @@ msgid ""
 "pixels when scaling down, at the cost of blurring some\n"
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
+"根据用户指定值缩放GUI。\n"
+"使用最近的邻近抗锯齿滤镜缩放GUI。\n"
+"这会将粗边处理光滑，并且在缩小时，\n"
+"以在非整数缩放大小下模糊化部分边界\n"
+"为代价混合像素。"
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -5684,14 +5694,12 @@ msgid "Screenshot folder"
 msgstr "截图文件夹"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "截图文件夹"
+msgstr "截图格式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "截图"
+msgstr "截图品质"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5699,19 +5707,21 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"截图品质。仅用于JPEG格式。\n"
+"1 代表最差品质，100 代表最佳品质。\n"
+"使用 0 来使用预设品质。"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
-msgstr "海底噪点"
+msgstr "海底噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Second of 4 2D noises that together define hill/mountain range height."
-msgstr "定义山/山丘范围高度的4个2D噪点的第二项。"
+msgstr "定义山/山丘范围高度的4个2D噪声的第二项。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Second of two 3D noises that together define tunnels."
-msgstr "定义tunnels的最初2个3D噪音。"
+msgstr "定义通道的2个3D噪音的第二项。"
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -5719,11 +5729,11 @@ msgstr "安全"
 
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
-msgstr ""
+msgstr "见 https://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
-msgstr ""
+msgstr "边框颜色 (红,绿,蓝) 选择框。"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
@@ -5734,7 +5744,6 @@ msgid "Selection box width"
 msgstr "选择框宽度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Selects one of 18 fractal types.\n"
 "1 = 4D \"Roundy\" Mandelbrot set.\n"
@@ -5802,7 +5811,7 @@ msgstr "服务器端口"
 
 #: src/settings_translation_file.cpp
 msgid "Server side occlusion culling"
-msgstr ""
+msgstr "服务器端遮挡删除"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
@@ -5817,10 +5826,12 @@ msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
+"设定语言。留空以使用系统语言。\n"
+"变更后须重新启动。"
 
 #: src/settings_translation_file.cpp
 msgid "Set the maximum character length of a chat message sent by clients."
-msgstr ""
+msgstr "设定客户端传送的聊天讯息的最大字符长度。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5857,24 +5868,25 @@ msgid ""
 "cards.\n"
 "This only works with the OpenGL video backend."
 msgstr ""
+"着色器允许高级视觉效果并且在一些显卡上可能会提高\n"
+"性能。\n"
+"仅用于OpenGL视频后端。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Shadow offset (in pixels) of the default font. If 0, then shadow will not be "
 "drawn."
-msgstr "字体阴影偏移，0 表示不绘制阴影。"
+msgstr "默认字体阴影偏移（单位为像素），0 表示不绘制阴影。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Shadow offset (in pixels) of the fallback font. If 0, then shadow will not "
 "be drawn."
-msgstr "字体阴影偏移，0 表示不绘制阴影。"
+msgstr "后备字体阴影偏移（单位为像素），0 表示不绘制阴影。"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr ""
+msgstr "小地图的形状。启用 = 圆形，停用 = 方形。"
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
@@ -5882,11 +5894,11 @@ msgstr "显示调试信息"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr ""
+msgstr "显示实体选择框"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr "关机消息"
+msgstr "关闭消息"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5897,6 +5909,12 @@ msgid ""
 "Altering this value is for special usage, leaving it unchanged is\n"
 "recommended."
 msgstr ""
+"地图生成器生成的地图块的大小，以地图区块（16方块）表示。\n"
+"警告！：将此值增加到大于5没有益处，而且有\n"
+"多种危险。\n"
+"减少此值增加洞穴和地窖密度。\n"
+"修改此值适用于特殊用途，建议不改变\n"
+"此值。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5904,10 +5922,13 @@ msgid ""
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
 msgstr ""
+"网格生成器的地图区块缓存大小。增加此值将会\n"
+"增加缓存命中率，减少从主线程复制数据，从而\n"
+"减少抖动。"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
-msgstr ""
+msgstr "切片 w"
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights."
@@ -5915,19 +5936,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Small cave maximum number"
-msgstr ""
+msgstr "小型洞穴最大数"
 
 #: src/settings_translation_file.cpp
 msgid "Small cave minimum number"
-msgstr ""
+msgstr "小型洞穴最小数"
 
 #: src/settings_translation_file.cpp
 msgid "Small-scale humidity variation for blending biomes on borders."
-msgstr ""
+msgstr "在边界上的混合生物群系的湿度变化。"
 
 #: src/settings_translation_file.cpp
 msgid "Small-scale temperature variation for blending biomes on borders."
-msgstr ""
+msgstr "在边界上的混合生物群系的温度变化。"
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
@@ -5938,14 +5959,16 @@ msgid ""
 "Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
+"当转动视角时让摄影机变流畅。也称为观看或鼠标流畅。\n"
+"对录影很有用。"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
+msgstr "在电影模式中让摄影机旋转变流畅。设为 0 以停用。"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
+msgstr "让旋转摄影机时较流畅。设为 0 以停用。"
 
 #: src/settings_translation_file.cpp
 msgid "Sneak key"
@@ -5957,21 +5980,19 @@ msgstr "潜行速度"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
-msgstr ""
+msgstr "潜行速度，以方块每秒为单位。"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
 msgstr "音效"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Special key"
-msgstr "潜行键"
+msgstr "特殊键"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Special key for climbing/descending"
-msgstr "攀登/降落的键"
+msgstr "用于攀登/降落的特殊键"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5980,6 +6001,10 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
+"客户端从指定的 URL 而不是使用 UDP 获取媒体。\n"
+"$filename 应该可以通过 cURL 从 $remote_media$filename 访问。\n"
+"（显然，remote_media 部份应以斜线结束）。\n"
+"没有在其中的文件将会以通常的方式获取。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6104,9 +6129,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The depth of dirt or other biome filler node."
-msgstr "泥土深度或其他过滤器"
+msgstr "泥土深度或其他生物群系过滤节点"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6427,7 +6451,7 @@ msgstr "可视范围增加键"
 
 #: src/settings_translation_file.cpp
 msgid "View zoom key"
-msgstr ""
+msgstr "检视缩放键"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
