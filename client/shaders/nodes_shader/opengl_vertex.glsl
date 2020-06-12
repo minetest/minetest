@@ -175,9 +175,6 @@ float disp_z;
 	v.z = dot(eyeVec, normal);
 	tsEyeVec = normalize (v);
 
-#if (MATERIAL_TYPE == TILE_MATERIAL_PLAIN) || (MATERIAL_TYPE == TILE_MATERIAL_PLAIN_ALPHA)
-	gl_FrontColor = gl_BackColor = vec4(1.0);
-#else
 	// Calculate color.
 	// Red, green and blue components are pre-multiplied with
 	// the brightness, so now we have to multiply these
@@ -197,5 +194,4 @@ float disp_z;
 		0.07 * brightness);
 
 	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
-#endif
 }
