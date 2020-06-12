@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-06-12 13:13+0000\n"
-"Last-Translator: IFRFSX <1079092922@qq.com>\n"
+"Last-Translator: Yangjun Wang <yangjunw50@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -1668,7 +1668,7 @@ msgstr "特殊"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr "开关HUD"
+msgstr "启用/禁用HUD"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
