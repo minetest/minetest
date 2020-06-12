@@ -327,11 +327,7 @@ void read_object_properties(lua_State *L, int index,
 
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
-
-	lua_getfield(L, -1, "shaded");
-	if (!lua_isnil(L, -1))
-		prop->shaded = lua_toboolean(L, -1);
-	lua_pop(L, 1);
+	getboolfield(L, -1, "shaded", prop->shaded);
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 }
