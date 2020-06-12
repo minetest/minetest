@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-03 23:18+0200\n"
 "PO-Revision-Date: 2020-06-12 13:13+0000\n"
-"Last-Translator: 青草 <qingcaomc@gmail.com>\n"
+"Last-Translator: IFRFSX <1079092922@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -1176,7 +1176,7 @@ msgstr "开"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr "仰角移动模式已禁用"
+msgstr "俯仰移动模式已禁用"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
