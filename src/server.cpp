@@ -2425,7 +2425,7 @@ bool Server::addMediaFile(const std::string &filename,
 		".tr",
 		NULL
 	};
-	if (removeStringEnd(filename, supported_ext).empty()){
+	if (removeStringEnd(filename, supported_ext).empty()) {
 		infostream << "Server: ignoring unsupported file extension: \""
 				<< filename << "\"" << std::endl;
 		return false;

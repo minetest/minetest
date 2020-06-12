@@ -459,9 +459,6 @@ private:
 		bool reliable = true);
 	void SendCSMRestrictionFlags(session_t peer_id);
 
-	void SendMediaPush(session_t peer_id, const std::string &raw_hash,
-		const std::string &filename, const std::string &filedata);
-
 	/*
 		Something random
 	*/
