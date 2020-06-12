@@ -172,6 +172,8 @@ void ObjectProperties::deSerialize(std::istream &is)
 	use_texture_alpha = readU8(is);
 	try {
 		damage_texture_modifier = deSerializeString(is);
-		shaded = readU8(is);
 	} catch (SerializationError &e) {}
+	u8 maybe_shaded = readU8(is);
+	if (!is.eof())
+		shaded = maybe_shaded;
 }
