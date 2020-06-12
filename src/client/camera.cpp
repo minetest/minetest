@@ -345,9 +345,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	// Smooth the camera movement when the player instantly moves upward due to stepheight
 	// Disable smoothing if climbing, swimming upwards, or flying, to avoid upwards offset
 	// of player model when seen in 3rd person view.
+	bool flying = g_settings->getBool("free_move") && m_client->checkLocalPrivilege("fly");
 	if (player_position.Y > old_player_position.Y && !player->is_climbing &&
-			!player->swimming_vertical &&
-			!(g_settings->getBool("free_move") && m_client->checkLocalPrivilege("fly"))) {
+			!player->swimming_vertical && !flying) {
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
 		f32 t = std::exp(-23 * frametime);
@@ -610,14 +610,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	const bool walking = movement_XZ && player->touching_ground;
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
 	const bool climbing = movement_Y && player->is_climbing;
-	if ((walking || swimming || climbing) &&
-			(!g_settings->getBool("free_move") || !m_client->checkLocalPrivilege("fly"))) {
+	if ((walking || swimming || climbing) && !flying) {
 		// Start animation
 		m_view_bobbing_state = 1;
 		m_view_bobbing_speed = MYMIN(speed.getLength(), 70);
-	}
-	else if (m_view_bobbing_state == 1)
-	{
+	} else if (m_view_bobbing_state == 1) {
 		// Stop animation
 		m_view_bobbing_state = 2;
 		m_view_bobbing_speed = 60;
