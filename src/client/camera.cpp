@@ -343,7 +343,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		player_position = player->getParent()->getPosition();
 
 	// Smooth the camera movement when the player instantly moves upward due to stepheight
-	if (player_position.Y > old_player_position.Y) {
+	// Disable smoothing if climbing, swimming upwards, or flying, to avoid upwards offset
+	// of player model when seen in 3rd person view.
+	if (player_position.Y > old_player_position.Y && !player->is_climbing &&
+			!player->swimming_vertical &&
+			!(g_settings->getBool("free_move") && m_client->checkLocalPrivilege("fly"))) {
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
 		f32 t = std::exp(-23 * frametime);
