@@ -579,7 +579,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		IShaderSource *shader_source = m_client->getShaderSource();
 		MaterialType material_type;
 
-		if (m_prop.shaded)
+		if (m_prop.shaded && m_prop.glow == 0)
 			material_type = (m_prop.use_texture_alpha) ?
 				TILE_MATERIAL_ALPHA : TILE_MATERIAL_BASIC;
 		else
