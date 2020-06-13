@@ -924,7 +924,9 @@ void GenericCAO::updateNodePos()
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
 	if (m_animated_meshnode) {
-		m_animated_meshnode->animateJoints();
+		if (!m_stop_animations) {
+			m_animated_meshnode->animateJoints();
+		}
 		updateBonePosition();
 	}
 
@@ -1678,6 +1680,7 @@ void GenericCAO::processMessage(const std::string &data)
 		v3f position = readV3F32(is);
 		v3f rotation = readV3F32(is);
 		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
+		m_stop_animations = readU8(is);
 
 		// updateBonePosition(); now called every step
 	} else if (cmd == AO_CMD_ATTACH_TO) {
