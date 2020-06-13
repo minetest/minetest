@@ -621,7 +621,7 @@ int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 	return 1;
 }
 
-// set_bone_position(self, std::string bone, v3f position, v3f rotation)
+// set_bone_position(self, std::string bone, v3f position, v3f rotation, bool stop_animations)
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -638,7 +638,10 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	v3f rotation = v3f(0, 0, 0);
 	if (!lua_isnil(L, 4))
 		rotation = check_v3f(L, 4);
-	co->setBonePosition(bone, position, rotation);
+	bool stop_animations = true;
+	if (lua_isboolean(L, 5))
+		stop_animations = readParam<bool>(L, 5);
+	co->setBonePosition(bone, position, rotation, stop_animations);
 	return 0;
 }
 
