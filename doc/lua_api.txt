@@ -5217,6 +5217,20 @@ Server
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 * `minetest.remove_player_auth(name)`: remove player authentication data
     * Returns boolean indicating success (false if player nonexistant)
+* `minetest.dynamic_add_media(filepath)`
+    * Adds the file at the given path to the media sent to clients by the server
+      on startup and also pushes this file to already connected clients.
+      The file must be a supported image, sound or model format. It must not be
+      modified, deleted, moved or renamed after calling this function.
+      The list of dynamically added media is not persisted.
+    * Returns boolean indicating success (duplicate files count as error)
+    * The media will be ready to use (in e.g. entity textures, sound_play)
+      immediately after calling this function.
+      Old clients that lack support for this feature will not see the media
+      unless they reconnect to the server.
+    * Since media transferred this way does not use client caching or HTTP
+      transfers, dynamic media should not be used with big files or performance
+      will suffer.
 
 Bans
 ----
