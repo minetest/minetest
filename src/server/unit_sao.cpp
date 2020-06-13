@@ -75,11 +75,12 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 	m_animation_speed_sent = false;
 }
 
-void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
+void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation, bool stop_animations)
 {
 	// store these so they can be updated to clients
 	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 	m_bone_position_sent = false;
+	m_stop_animations = stop_animations;
 }
 
 void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
@@ -110,7 +111,7 @@ void UnitSAO::sendOutdatedData()
 		m_bone_position_sent = true;
 		for (const auto &bone_pos : m_bone_position) {
 			m_messages_out.emplace(getId(), true, generateUpdateBonePositionCommand(
-				bone_pos.first, bone_pos.second.X, bone_pos.second.Y));
+				bone_pos.first, bone_pos.second.X, bone_pos.second.Y, m_stop_animations));
 		}
 	}
 
@@ -249,7 +250,7 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 }
 
 std::string UnitSAO::generateUpdateBonePositionCommand(
-		const std::string &bone, const v3f &position, const v3f &rotation)
+		const std::string &bone, const v3f &position, const v3f &rotation, const bool &stop_animations)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
@@ -258,6 +259,7 @@ std::string UnitSAO::generateUpdateBonePositionCommand(
 	os << serializeString(bone);
 	writeV3F32(os, position);
 	writeV3F32(os, rotation);
+	writeU8(os, stop_animations);
 	return os.str();
 }
 
