@@ -1822,6 +1822,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 						<< "\", cancelling." << std::endl;
 				return false;
 			}
+			
+			assert(m_itemdef_manager && m_client);
 
 			Strfnd sf(part_of_name);
 			sf.next(":");
@@ -1898,12 +1900,6 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 mc = mesh->getMeshBufferCount();
 			for (u32 j = 0; j < mc; ++j) {
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-				if (!buf) {
-					errorstream << "generateImagePart(): No heccing buf? "
-						<< "for part_of_name=\"" << part_of_name
-						<< "\", cancelling." << std::endl;
-					return false;
-				}
 				// we can modify vertices relatively fast,
 				// because these meshes are not buffered.
 				assert(buf->getHardwareMappingHint_Vertex() == scene::EHM_NEVER);
