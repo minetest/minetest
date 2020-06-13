@@ -57,7 +57,7 @@ public:
 	void setAnimationSpeed(float frame_speed);
 
 	// Bone position
-	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
+	void setBonePosition(const std::string &bone, v3f position, v3f rotation, bool stop_animations);
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
 
 	// Attachments
@@ -88,7 +88,7 @@ public:
 			bool do_interpolate, bool is_movement_end, f32 update_interval);
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
 	static std::string generateUpdateBonePositionCommand(const std::string &bone,
-			const v3f &position, const v3f &rotation);
+			const v3f &position, const v3f &rotation, const bool &stop_animations);
 	void sendPunchCommand();
 
 protected:
@@ -104,6 +104,7 @@ protected:
 
 	// Stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
+	bool m_stop_animations = true;
 
 	int m_attachment_parent_id = 0;
 
