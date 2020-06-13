@@ -157,7 +157,7 @@ public:
 	{}
 	virtual void setAnimationSpeed(float frame_speed)
 	{}
-	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
+	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation, bool stop_animations)
 	{}
 	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
 	{}
