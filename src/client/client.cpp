@@ -185,6 +185,7 @@ void Client::loadMods()
 				"\": Mod name does not follow naming conventions: "
 					"Only characters [a-z0-9_] are allowed.");
 		}
+		m_mods_by_name[mod.name] = &mod;
 		scanModIntoMemory(mod.name, mod.path);
 	}
 
@@ -205,6 +206,11 @@ void Client::loadMods()
 		m_script->on_camera_ready(m_camera);
 	if (m_minimap)
 		m_script->on_minimap_ready(m_minimap);
+}
+
+const ModSpec* Client::getModSpec(const std::string &name)
+{
+	return m_mods_by_name[name];
 }
 
 bool Client::checkBuiltinIntegrity()
@@ -254,9 +260,6 @@ const std::string &Client::getBuiltinLuaPath()
 
 const std::string &Client::getClientModsLuaPath()
 {
-	static const std::string clientmods_user_dir = porting::path_user + DIR_DELIM + "clientmods";
-	if (fs::PathExists(clientmods_user_dir))
-		return clientmods_user_dir;
 	static const std::string clientmods_dir = porting::path_share + DIR_DELIM + "clientmods";
 	return clientmods_dir;
 }

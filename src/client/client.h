@@ -428,6 +428,8 @@ public:
 			const std::string &message) override;
 	ModChannel *getModChannel(const std::string &channel) override;
 
+	const ModSpec* getModSpec(const std::string &name);
+
 	const std::string &getFormspecPrepend() const
 	{
 		return m_env.getLocalPlayer()->formspec_prepend;
@@ -585,6 +587,7 @@ private:
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
+	std::unordered_map<std::string, const ModSpec *> m_mods_by_name;
 	StringMap m_mod_vfs;
 
 	bool m_shutdown = false;

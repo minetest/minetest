@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "filesys.h"
 #include "util/string.h"
+#include "content/mods.h"
 
 #define checkCSMRestrictionFlag(flag) \
 	( getClient(L)->checkCSMRestrictionFlag(CSMRestrictionFlags::flag) )
@@ -460,7 +461,10 @@ int ModApiClient::l_store_texture(lua_State *L)
 			return 0;
 	}
 
-	std::string base_path = fs::AbsolutePath(getClient(L)->getClientModsLuaPath()) + DIR_DELIM + current_mod;
+	const ModSpec *mod = getClient(L)->getModSpec(current_mod);
+	if (!mod)
+		return 0;
+	std::string base_path = fs::AbsolutePath(mod->path);
 	std::string path = base_path + DIR_DELIM + filename;
 	
 	std::string abs_path = fs::AbsolutePath(path);
