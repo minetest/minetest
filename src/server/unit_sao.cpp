@@ -75,7 +75,8 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 	m_animation_speed_sent = false;
 }
 
-void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation, bool stop_animations)
+void UnitSAO::setBonePosition(
+		const std::string &bone, v3f position, v3f rotation, bool stop_animations)
 {
 	// store these so they can be updated to clients
 	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
@@ -249,8 +250,8 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 	return os.str();
 }
 
-std::string UnitSAO::generateUpdateBonePositionCommand(
-		const std::string &bone, const v3f &position, const v3f &rotation, const bool &stop_animations)
+std::string UnitSAO::generateUpdateBonePositionCommand(const std::string &bone,
+		const v3f &position, const v3f &rotation, const bool &stop_animations)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
