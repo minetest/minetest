@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-06-09 12:14+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -23,6 +23,10 @@ msgstr "Bangkit kembali"
 msgid "You died"
 msgstr "Anda mati"
 
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr ""
+
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
 msgstr "Suatu galat terjadi pada suatu skrip Lua:"
@@ -34,10 +38,6 @@ msgstr "Sebuah galat terjadi:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Menu utama"
-
-#: builtin/fstk/ui.lua
-msgid "Ok"
-msgstr "Oke"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -115,6 +115,10 @@ msgstr ""
 "karakter [a-z0-9_] yang dibolehkan."
 
 #: builtin/mainmenu/dlg_config_world.lua
+msgid "Find More Mods"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Mod:"
 
@@ -160,16 +164,17 @@ msgid "All packages"
 msgstr "Semua paket"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back"
-msgstr "Kembali"
-
-#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Kembali ke menu utama"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading and installing $1, please wait..."
-msgstr "Mengunduh dan memasang $1, mohon tunggu..."
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Memuat..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -214,13 +219,55 @@ msgstr "Copot"
 msgid "Update"
 msgstr "Perbarui"
 
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Dunia yang bernama \"$1\" telah ada"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Additional terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Altitude chill"
+msgstr "Dingin di ketinggian"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Altitude dry"
+msgstr "Dingin di ketinggian"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biome blending"
+msgstr "Noise bioma"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biomes"
+msgstr "Noise bioma"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caverns"
+msgstr "Noise #1 gua besar"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caves"
+msgstr "Oktaf"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Buat"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Decorations"
+msgstr "Perulangan"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -230,17 +277,100 @@ msgstr "Unduh suatu permainan, misalnya Minetest Game, dari minetest.net"
 msgid "Download one from minetest.net"
 msgstr "Unduh satu dari minetest.net"
 
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Dungeons"
+msgstr "Noise dungeon"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Flat terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floating landmasses in the sky"
+msgstr "Kepadatan gunung floatland"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floatlands (experimental)"
+msgstr "Ketinggian floatland"
+
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
 msgstr "Permainan"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Generate non-fractal terrain: Oceans and underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Hills"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Humid rivers"
+msgstr "Pengandar video"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Increases humidity around rivers"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Lakes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Low humidity and high heat causes shallow or dry rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
 msgstr "Pembuat peta"
 
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Mapgen flags"
+msgstr "Flag pembuat peta"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mapgen-specific flags"
+msgstr "Flag khusus pembuat peta v5"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mountains"
+msgstr "Noise gunung"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mud flow"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Network of tunnels and caves"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
 msgstr "Tiada permainan yang dipilih"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces heat with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces humidity with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Rivers"
+msgstr "Ukuran sungai"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Sea level rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -248,7 +378,52 @@ msgid "Seed"
 msgstr "Seed"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The minimal development test is meant for developers."
+msgid "Smooth transition between biomes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Structures appearing on the terrain (no effect on trees and jungle grass "
+"created by v6)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Structures appearing on the terrain, typically trees and plants"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle, Tundra, Taiga"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Terrain surface erosion"
+msgstr "Noise dasar medan"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Trees and jungle grass"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Vary river depth"
+msgstr "Kedalaman sungai"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Very large caverns deep in the underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Warning: The Development Test is meant for developers."
 msgstr "Peringatan: Minimal development test ditujukan untuk pengembang."
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -561,6 +736,10 @@ msgstr "Host Permainan"
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
 msgstr "Host Server"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Install games from ContentDB"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1218,6 +1397,14 @@ msgid "Sound muted"
 msgstr "Suara dibisukan"
 
 #: src/client/game.cpp
+msgid "Sound system is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Sound system is not supported on this build"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Sound unmuted"
 msgstr "Suara dibunyikan"
 
@@ -1249,7 +1436,7 @@ msgstr "Rangka kawat ditampilkan"
 msgid "Zoom currently disabled by game or mod"
 msgstr "Zum sedang dilarang oleh permainan atau mod"
 
-#: src/client/game.cpp src/gui/modalMenu.cpp
+#: src/client/game.cpp
 msgid "ok"
 msgstr "oke"
 
@@ -1856,6 +2043,11 @@ msgid "3D mode"
 msgstr "Mode 3D"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "3D mode parallax strength"
+msgstr "Kekuatan normalmap"
+
+#: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
 msgstr "Noise 3D yang mengatur gua besar."
 
@@ -1866,6 +2058,14 @@ msgid ""
 msgstr ""
 "Noise 3D yang mengatur struktur dan ketinggian gunung.\n"
 "Juga mengatur struktur dari medan gunung floatland."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D noise defining structure of floatlands.\n"
+"If altered from the default, the noise 'scale' (0.7 by default) may need\n"
+"to be adjusted, as floatland tapering functions best when this noise has\n"
+"a value range of approximately -2.0 to 2.0."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -1930,7 +2130,8 @@ msgid "ABM interval"
 msgstr "Selang waktu ABM"
 
 #: src/settings_translation_file.cpp
-msgid "Absolute limit of emerge queues"
+#, fuzzy
+msgid "Absolute limit of queued blocks to emerge"
 msgstr "Batas mutlak antrean kemunculan (emerge queues)"
 
 #: src/settings_translation_file.cpp
@@ -1980,6 +2181,16 @@ msgstr ""
 "layar 4K."
 
 #: src/settings_translation_file.cpp
+#, c-format
+msgid ""
+"Adjusts the density of the floatland layer.\n"
+"Increase value to increase density. Can be positive or negative.\n"
+"Value = 0.0: 50% of volume is floatland.\n"
+"Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
+"to be sure) creates a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Lanjutan"
 
@@ -1996,10 +2207,6 @@ msgstr ""
 "dan menengah. Nilai \"1.0\" membiarkan kurva cahaya seperti\n"
 "asalnya. Ini hanya berpengaruh kepada cahaya siang dan cahaya\n"
 "buatan. Ini punya pengaruh kecil kepada cahaya malam alami."
-
-#: src/settings_translation_file.cpp
-msgid "Altitude chill"
-msgstr "Dingin di ketinggian"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2271,8 +2478,18 @@ msgstr ""
 "tekstur. Cocok untuk layar kecil."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat font size"
+msgstr "Ukuran fon"
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Tombol obrolan"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat log level"
+msgstr "Tingkat log awakutu"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2563,6 +2780,11 @@ msgstr "Hak-hak bawaan"
 #: src/settings_translation_file.cpp
 msgid "Default report format"
 msgstr "Format laporan bawaan"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Default stack size"
+msgstr "Permainan bawaan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2925,6 +3147,16 @@ msgstr ""
 "saat diatur dengan angka yang lebih besar dari 0."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Value = 1.0 creates a uniform, linear tapering.\n"
+"Values > 1.0 create a smooth tapering suitable for the default separated\n"
+"floatlands.\n"
+"Values < 1.0 (for example 0.25) create a more defined surface level with\n"
+"flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
 msgstr "FPS (bingkai per detik) pada menu jeda"
 
@@ -3042,6 +3274,41 @@ msgid "Fixed virtual joystick"
 msgstr "Joystick virtual tetap"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland density"
+msgstr "Kepadatan gunung floatland"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland maximum Y"
+msgstr "Y maksimum dungeon"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland minimum Y"
+msgstr "Y minimum dungeon"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland noise"
+msgstr "Noise dasar floatland"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland taper exponent"
+msgstr "Pangkat gunung floatland"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland tapering distance"
+msgstr "Noise dasar floatland"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland water level"
+msgstr "Ketinggian floatland"
+
+#: src/settings_translation_file.cpp
 msgid "Fly key"
 msgstr "Tombol terbang"
 
@@ -3092,6 +3359,12 @@ msgstr "Ukuran fon cadangan bawaan dalam poin (pt)."
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font in point (pt)."
 msgstr "Ukuran fon monospace bawaan dalam poin (pt)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Font size of the recent chat text and chat prompt in point (pt).\n"
+"Value 0 will use the default font size."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3671,8 +3944,8 @@ msgid ""
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
 msgstr ""
-"Jika ukuran berkas debug.txt melebihi nilai yang diberikan (dalam megabita),"
-"\n"
+"Jika ukuran berkas debug.txt melebihi nilai yang diberikan (dalam "
+"megabita),\n"
 "berkas tersebut akan dipindah ke debug.txt.1 dan berkas debug.txt.1 lama\n"
 "akan dihapus jika ada.\n"
 "Berkas debug.txt hanya dipindah jika pengaturan ini dinyalakan."
@@ -4725,14 +4998,6 @@ msgid "Light curve low gradient"
 msgstr "Titik rendah gradasi kurva cahaya"
 
 #: src/settings_translation_file.cpp
-msgid "Limit of emerge queues on disk"
-msgstr "Batas antrean kemunculan (emerge queue) pada diska"
-
-#: src/settings_translation_file.cpp
-msgid "Limit of emerge queues to generate"
-msgstr "Batas antrean kemunculan (emerge queue) untuk dibuat"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
@@ -4805,6 +5070,11 @@ msgstr "Pengubah Blok Termuat"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
+msgstr "Batas bawah Y dungeon."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lower Y limit of floatlands."
 msgstr "Batas bawah Y dungeon."
 
 #: src/settings_translation_file.cpp
@@ -4889,9 +5159,12 @@ msgstr ""
 "flag \"jungle\" diabaikan."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers."
+"'ridges': Rivers.\n"
+"'floatlands': Floating land masses in the atmosphere.\n"
+"'caverns': Giant caves deep underground."
 msgstr ""
 "Atribut pembuatan peta khusus untuk pembuat peta v7.\n"
 "\"ridges\" menyalakan sungai."
@@ -4981,10 +5254,6 @@ msgid "Mapgen debug"
 msgstr "Awakutu pembuat peta"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen flags"
-msgstr "Flag pembuat peta"
-
-#: src/settings_translation_file.cpp
 msgid "Mapgen name"
 msgstr "Nama pembuat peta"
 
@@ -5055,17 +5324,19 @@ msgid "Maximum number of blocks that can be queued for loading."
 msgstr "Jumlah maksimum blok yang dapat diantrekan untuk dimuat."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Jumlah maksimum blok yang akan diantrekan yang akan dihasilkan.\n"
 "Atur ke kosong untuk diatur secara otomatis."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Jumlah maksimum blok yang akan diantrekan yang akan dimuat dari berkas.\n"
 "Atur ke kosong untuk diatur secara otomatis."
@@ -5161,6 +5432,10 @@ msgstr "Pesan hari ini yang ditampilkan ke pemain yang tersambung."
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
 msgstr "Metode yang digunakan untuk menyorot objek yang dipilih."
+
+#: src/settings_translation_file.cpp
+msgid "Minimal level of logging to be written to chat."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5269,8 +5544,8 @@ msgid ""
 "When starting from the main menu, this is overridden."
 msgstr ""
 "Nama pemain.\n"
-"Saat menjalankan server, klien yang tersambung dengan nama ini adalah admin."
-"\n"
+"Saat menjalankan server, klien yang tersambung dengan nama ini adalah "
+"admin.\n"
 "Saat menjalankan dari menu utama, nilai ini ditimpa."
 
 #: src/settings_translation_file.cpp
@@ -5331,11 +5606,9 @@ msgid "Number of emerge threads"
 msgstr "Jumlah utas kemunculan"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
-"WARNING: Currently there are multiple bugs that may cause crashes when\n"
-"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
-"strongly recommended this value is set to the default '1'.\n"
 "Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
@@ -5358,8 +5631,8 @@ msgstr ""
 "PERINGATAN: Penambahan jumlah utas kemunculan mempercepat mesin pembuat\n"
 "peta, tetapi dapat merusak kinerja permainan dengan mengganggu proses lain,\n"
 "terutama dalam pemain tunggal dan/atau saat menjalankan kode Lua dalam\n"
-"\"on_generated\". Untuk kebanyakan pengguna, pengaturan yang cocok adalah \"1"
-"\"."
+"\"on_generated\". Untuk kebanyakan pengguna, pengaturan yang cocok adalah "
+"\"1\"."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5432,10 +5705,6 @@ msgid "Parallax occlusion scale"
 msgstr "Skala parallax occlusion"
 
 #: src/settings_translation_file.cpp
-msgid "Parallax occlusion strength"
-msgstr "Kekuatan parallax occlusion"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path of the fallback font.\n"
 "If “freetype” setting is enabled: Must be a TrueType font.\n"
@@ -5449,8 +5718,10 @@ msgstr ""
 "Fon ini akan dipakai dalam bahasa tertentu jika tidak didukung fon bawaan."
 
 #: src/settings_translation_file.cpp
-msgid "Path to save screenshots at."
-msgstr "Jalur untuk menyimpan tangkapan layar."
+msgid ""
+"Path to save screenshots at. Can be an absolute or relative path.\n"
+"The folder will be created if it doesn't already exist."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5490,6 +5761,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
 msgstr "Jeda saat jendela hilang fokus"
+
+#: src/settings_translation_file.cpp
+msgid "Per-player limit of queued blocks load from disk"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Per-player limit of queued blocks to generate"
+msgstr "Batas antrean kemunculan (emerge queue) untuk dibuat"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5568,6 +5848,18 @@ msgstr "Tombol profiler"
 #: src/settings_translation_file.cpp
 msgid "Profiling"
 msgstr "Profiling"
+
+#: src/settings_translation_file.cpp
+msgid "Prometheus listener address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Prometheus listener address.\n"
+"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"enable metrics listener for Prometheus on that address.\n"
+"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -6085,6 +6377,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Specifies the default stack size of nodes, items and tools.\n"
+"Note that mods or games may explicitly set a stack for certain (or all) "
+"items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Spread of light curve boost range.\n"
 "Controls the width of the range to be boosted.\n"
 "Standard deviation of the light curve boost Gaussian."
@@ -6110,6 +6409,11 @@ msgid "Step mountain spread noise"
 msgstr "Noise persebaran teras gunung"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Strength of 3D mode parallax."
+msgstr "Kekuatan dari parallax."
+
+#: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
 msgstr "Kekuatan normalmap yang dibuat."
 
@@ -6124,16 +6428,26 @@ msgstr ""
 "cahaya yang dikuatkan menurut kecerahannya."
 
 #: src/settings_translation_file.cpp
-msgid "Strength of parallax."
-msgstr "Kekuatan dari parallax."
-
-#: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "Perketat pemeriksaan protokol"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
 msgstr "Buang kode warna"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Surface level of optional water placed on a solid floatland layer.\n"
+"Water is disabled by default and will only be placed if this value is set\n"
+"to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
+"upper tapering).\n"
+"***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
+"When enabling water placement the floatlands must be configured and tested\n"
+"to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
+"required value depending on 'mgv7_np_floatland'), to avoid\n"
+"server-intensive extreme water flow and to avoid vast flooding of the\n"
+"world surface below."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6267,6 +6581,7 @@ msgstr ""
 "server Anda."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6274,7 +6589,7 @@ msgid ""
 "In active blocks objects are loaded and ABMs run.\n"
 "This is also the minimum range in which active objects (mobs) are "
 "maintained.\n"
-"This should be configured together with active_object_range."
+"This should be configured together with active_object_send_range_blocks."
 msgstr ""
 "Jari-jari ruang di sekitar pemain yang menjadi blok aktif, dalam blok peta\n"
 "(16 nodus).\n"
@@ -6465,6 +6780,11 @@ msgstr "Membongkar data server yang tak terpakai"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
+msgstr "Batas atas Y dungeon."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Upper Y limit of floatlands."
 msgstr "Batas atas Y dungeon."
 
 #: src/settings_translation_file.cpp
@@ -6847,6 +7167,14 @@ msgid "Y-distance over which caverns expand to full size."
 msgstr "Jarak Y dari gua besar untuk meluas ke ukuran penuh."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Y-distance over which floatlands taper from full density to nothing.\n"
+"Tapering starts at this distance from the Y limit.\n"
+"For a solid floatland layer, this controls the height of hills/mountains.\n"
+"Must be less than or equal to half the distance between the Y limits."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
 msgstr "Ketinggian Y dari permukaan medan rata-rata."
 
@@ -6878,6 +7206,111 @@ msgstr "Batas cURL paralel"
 msgid "cURL timeout"
 msgstr "Waktu habis untuk cURL"
 
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Mode sinema"
+
+#~ msgid "Select Package File:"
+#~ msgstr "Pilih berkas paket:"
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Batas atas Y untuk lava dalam gua besar."
+
+#~ msgid "Waving Water"
+#~ msgstr "Air Berombak"
+
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "Apakah dungeon terkadang muncul dari medan."
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Dungeon yang menonjol"
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Ketinggian Y tempat bayangan floatland diperpanjang."
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "Ketinggian Y dari titik tengah floatland dan permukaan danau."
+
+#~ msgid "Waving water"
+#~ msgstr "Air berombak"
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Variasi dari ketinggian bukit dan kedalaman danau pada medan halus "
+#~ "floatland."
+
+#~ msgid ""
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr ""
+#~ "Ketinggian maksimum secara umum, di atas dan di bawah titik tengah, dari "
+#~ "gunung floatland."
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Fon ini akan digunakan pada bahasa tertentu."
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Kekuatan penguatan tengah kurva cahaya."
+
+#~ msgid "Shadow limit"
+#~ msgstr "Batas bayangan"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Jalur ke TrueTypeFont atau bitmap."
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "Kecuraman keterangan"
+
+#~ msgid "Lava depth"
+#~ msgstr "Kedalaman lava"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Dukungan IPv6."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Keburaman bayangan fon (keopakan, dari 0 sampai 255)."
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Ketinggian gunung floatland"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Noise ketinggian dasar floatland"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Gunakan pemetaan suasana (tone mapping) filmis"
+
+#~ msgid "Enable VBO"
+#~ msgstr "Gunakan VBO"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Mengatur daerah dari medan halus floatland.\n"
+#~ "Floatland halus muncul saat noise > 0."
+
+#~ msgid "Darkness sharpness"
+#~ msgstr "Kecuraman kegelapan"
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Mengatur lebar terowongan, nilai lebih kecil terowongan semakin lebar."
+
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "Atur kepadatan floatland berbentuk gunung.\n"
+#~ "Merupakan pergeseran yang ditambahkan ke nilai noise \"mgv7_np_mountain\"."
+
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Titik tengah penguatan tengah kurva cahaya."
+
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr ""
+#~ "Ubah cara gunung floatland meramping di atas dan di bawah titik tengah."
+
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
 #~ "brighter.\n"
@@ -6887,119 +7320,20 @@ msgstr "Waktu habis untuk cURL"
 #~ "Angka yang lebih tinggi lebih terang.\n"
 #~ "Pengaturan ini untuk klien saja dan diabaikan oleh peladen."
 
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr ""
-#~ "Ubah cara gunung floatland meramping di atas dan di bawah titik tengah."
+#~ msgid "Path to save screenshots at."
+#~ msgstr "Jalur untuk menyimpan tangkapan layar."
 
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Titik tengah penguatan tengah kurva cahaya."
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "Kekuatan parallax occlusion"
 
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Atur kepadatan floatland berbentuk gunung.\n"
-#~ "Merupakan pergeseran yang ditambahkan ke nilai noise \"mgv7_np_mountain\"."
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "Batas antrean kemunculan (emerge queue) pada diska"
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Mengatur lebar terowongan, nilai lebih kecil terowongan semakin lebar."
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "Mengunduh dan memasang $1, mohon tunggu..."
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "Kecuraman kegelapan"
+#~ msgid "Back"
+#~ msgstr "Kembali"
 
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Mengatur daerah dari medan halus floatland.\n"
-#~ "Floatland halus muncul saat noise > 0."
-
-#~ msgid "Enable VBO"
-#~ msgstr "Gunakan VBO"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Gunakan pemetaan suasana (tone mapping) filmis"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Noise ketinggian dasar floatland"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Noise dasar floatland"
-
-#~ msgid "Floatland level"
-#~ msgstr "Ketinggian floatland"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Kepadatan gunung floatland"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Pangkat gunung floatland"
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Ketinggian gunung floatland"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Keburaman bayangan fon (keopakan, dari 0 sampai 255)."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Dukungan IPv6."
-
-#~ msgid "Lava depth"
-#~ msgstr "Kedalaman lava"
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Kecuraman keterangan"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Jalur ke TrueTypeFont atau bitmap."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Batas bayangan"
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Kekuatan penguatan tengah kurva cahaya."
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Fon ini akan digunakan pada bahasa tertentu."
-
-#~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
-#~ msgstr ""
-#~ "Ketinggian maksimum secara umum, di atas dan di bawah titik tengah, dari "
-#~ "gunung floatland."
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr ""
-#~ "Variasi dari ketinggian bukit dan kedalaman danau pada medan halus "
-#~ "floatland."
-
-#~ msgid "Waving water"
-#~ msgstr "Air berombak"
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "Ketinggian Y dari titik tengah floatland dan permukaan danau."
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Ketinggian Y tempat bayangan floatland diperpanjang."
-
-#~ msgid "Projecting dungeons"
-#~ msgstr "Dungeon yang menonjol"
-
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "Apakah dungeon terkadang muncul dari medan."
-
-#~ msgid "Waving Water"
-#~ msgstr "Air Berombak"
-
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Batas atas Y untuk lava dalam gua besar."
-
-#~ msgid "Select Package File:"
-#~ msgstr "Pilih berkas paket:"
-
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Mode sinema"
+#~ msgid "Ok"
+#~ msgstr "Oke"

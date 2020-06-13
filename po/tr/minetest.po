@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-06-13 21:08+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
@@ -22,6 +22,10 @@ msgstr "Yeniden Canlan"
 msgid "You died"
 msgstr "Öldün"
 
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr ""
+
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
 msgstr "Lua betiğinde bir hata oluştu:"
@@ -33,10 +37,6 @@ msgstr "Bir hata oluştu:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Ana menü"
-
-#: builtin/fstk/ui.lua
-msgid "Ok"
-msgstr "Tamam"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -115,6 +115,10 @@ msgstr ""
 "Yalnızca [a-z0-9_] karakterlerine izin verilir."
 
 #: builtin/mainmenu/dlg_config_world.lua
+msgid "Find More Mods"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Mod:"
 
@@ -160,16 +164,17 @@ msgid "All packages"
 msgstr "Tüm paketler"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back"
-msgstr "Geri"
-
-#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Ana Menüye Dön"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading and installing $1, please wait..."
-msgstr "$1 indiriliyor ve kuruluyor, lütfen bekleyin..."
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Yükleniyor..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -214,13 +219,55 @@ msgstr "Kaldır"
 msgid "Update"
 msgstr "Güncelle"
 
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "\"$1\" adlı dünya zaten var"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Additional terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Altitude chill"
+msgstr "Yükseklik soğukluğu"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Altitude dry"
+msgstr "Yükseklik soğukluğu"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biome blending"
+msgstr "Biyom Gürültüsü"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biomes"
+msgstr "Biyom Gürültüsü"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caverns"
+msgstr "Oyuk gürültüsü"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caves"
+msgstr "Oktavlar"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Yarat"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Decorations"
+msgstr "Yinelemeler"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -230,17 +277,100 @@ msgstr "minetest.net'den , Minetest Game gibi, bir oyun indirin"
 msgid "Download one from minetest.net"
 msgstr "minetest.net adresinden indirin"
 
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Dungeons"
+msgstr "Zindan gürültüsü"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Flat terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floating landmasses in the sky"
+msgstr "Yüzenkara dağ yoğunluğu"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floatlands (experimental)"
+msgstr "Yüzenkara seviyesi"
+
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
 msgstr "Oyun"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Generate non-fractal terrain: Oceans and underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Hills"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Humid rivers"
+msgstr "Video sürücüsü"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Increases humidity around rivers"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Lakes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Low humidity and high heat causes shallow or dry rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
 msgstr "Mapgen"
 
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Mapgen flags"
+msgstr "Mapgen bayrakları"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mapgen-specific flags"
+msgstr "Mapgen V5'e özgü bayraklar"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mountains"
+msgstr "Dağ gürültüsü"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mud flow"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Network of tunnels and caves"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
 msgstr "Seçilen oyun yok"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces heat with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces humidity with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Rivers"
+msgstr "Nehir boyutu"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Sea level rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -248,7 +378,52 @@ msgid "Seed"
 msgstr "Tohum"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The minimal development test is meant for developers."
+msgid "Smooth transition between biomes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Structures appearing on the terrain (no effect on trees and jungle grass "
+"created by v6)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Structures appearing on the terrain, typically trees and plants"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle, Tundra, Taiga"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Terrain surface erosion"
+msgstr "Arazi taban gürültüsü"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Trees and jungle grass"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Vary river depth"
+msgstr "Nehir derinliği"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Very large caverns deep in the underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Warning: The Development Test is meant for developers."
 msgstr "Uyarı : Minimal geliştirici testi geliştiriciler içindir."
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -559,6 +734,10 @@ msgstr "Oyun Barındır"
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
 msgstr "Sunucu Barındır"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Install games from ContentDB"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1216,6 +1395,14 @@ msgid "Sound muted"
 msgstr "Ses kısık"
 
 #: src/client/game.cpp
+msgid "Sound system is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Sound system is not supported on this build"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Sound unmuted"
 msgstr "Ses açık"
 
@@ -1247,7 +1434,7 @@ msgstr "Telkafes gösteriliyor"
 msgid "Zoom currently disabled by game or mod"
 msgstr "Yakınlaştırma şu anda oyun veya mod tarafından devre dışı"
 
-#: src/client/game.cpp src/gui/modalMenu.cpp
+#: src/client/game.cpp
 msgid "ok"
 msgstr "tamam"
 
@@ -1852,6 +2039,11 @@ msgid "3D mode"
 msgstr "3D kipi"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "3D mode parallax strength"
+msgstr "Normal eşleme gücü"
+
+#: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
 msgstr "Dev oyukları belirleyen 3D gürültü."
 
@@ -1862,6 +2054,14 @@ msgid ""
 msgstr ""
 "Dağ yapısını ve yüksekliğini belirleyen 3D gürültü.\n"
 "Ayrıca yüzenkara dağ arazi yapısını da belirler."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D noise defining structure of floatlands.\n"
+"If altered from the default, the noise 'scale' (0.7 by default) may need\n"
+"to be adjusted, as floatland tapering functions best when this noise has\n"
+"a value range of approximately -2.0 to 2.0."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -1926,7 +2126,8 @@ msgid "ABM interval"
 msgstr "ABM aralığı"
 
 #: src/settings_translation_file.cpp
-msgid "Absolute limit of emerge queues"
+#, fuzzy
+msgid "Absolute limit of queued blocks to emerge"
 msgstr "Emerge sıralarının mutlak sınırı"
 
 #: src/settings_translation_file.cpp
@@ -1972,8 +2173,18 @@ msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
-"Ekranınızın (yalnızca Android/X11 olmayan) dpi yapılandırmasını ayarlayın ör:"
-" 4k ekranlar için."
+"Ekranınızın (yalnızca Android/X11 olmayan) dpi yapılandırmasını ayarlayın "
+"ör: 4k ekranlar için."
+
+#: src/settings_translation_file.cpp
+#, c-format
+msgid ""
+"Adjusts the density of the floatland layer.\n"
+"Increase value to increase density. Can be positive or negative.\n"
+"Value = 0.0: 50% of volume is floatland.\n"
+"Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
+"to be sure) creates a solid floatland layer."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1992,10 +2203,6 @@ msgstr ""
 "'1.0' değeri ışık eğrisini değiştirmeden bırakır.\n"
 "Bunun sadece gün ışığı ve suni ışık üstünde önemli bir etkisi vardır.\n"
 "doğal gece ışığı üzerinde çok az etkisi vardır."
-
-#: src/settings_translation_file.cpp
-msgid "Altitude chill"
-msgstr "Yükseklik soğukluğu"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2272,8 +2479,18 @@ msgstr ""
 "Küçük ekranlar için gerekli olabilir."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat font size"
+msgstr "Yazı tipi boyutu"
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Sohbet tuşu"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat log level"
+msgstr "Hata ayıklama günlük düzeyi"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2563,6 +2780,11 @@ msgstr "Öntanımlı yetkiler"
 #: src/settings_translation_file.cpp
 msgid "Default report format"
 msgstr "Öntanımlı rapor biçimi"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Default stack size"
+msgstr "Öntanımlı oyun"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2929,6 +3151,16 @@ msgstr ""
 "bloklar arasında görünür boşluklara neden olabilir."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Value = 1.0 creates a uniform, linear tapering.\n"
+"Values > 1.0 create a smooth tapering suitable for the default separated\n"
+"floatlands.\n"
+"Values < 1.0 (for example 0.25) create a more defined surface level with\n"
+"flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
 msgstr "Duraklat menüsünde FPS"
 
@@ -3048,6 +3280,41 @@ msgid "Fixed virtual joystick"
 msgstr "Sabit sanal joystick"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland density"
+msgstr "Yüzenkara dağ yoğunluğu"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland maximum Y"
+msgstr "Zindan maksimum Y"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland minimum Y"
+msgstr "Zindan minimum Y"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland noise"
+msgstr "Yüzenkara taban gürültüsü"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland taper exponent"
+msgstr "Yüzenkara dağ eksponenti"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland tapering distance"
+msgstr "Yüzenkara taban gürültüsü"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland water level"
+msgstr "Yüzenkara seviyesi"
+
+#: src/settings_translation_file.cpp
 msgid "Fly key"
 msgstr "Uçma tuşu"
 
@@ -3098,6 +3365,12 @@ msgstr "Yedek yazı tipinin nokta (pt) olarak boyutu."
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font in point (pt)."
 msgstr "Eş aralıklı yazı tipinin nokta (pt) olarak boyutu."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Font size of the recent chat text and chat prompt in point (pt).\n"
+"Value 0 will use the default font size."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4724,14 +4997,6 @@ msgid "Light curve low gradient"
 msgstr "Işık eğrisi düşük gradyan"
 
 #: src/settings_translation_file.cpp
-msgid "Limit of emerge queues on disk"
-msgstr "Diskte emerge sıralarının sınırı"
-
-#: src/settings_translation_file.cpp
-msgid "Limit of emerge queues to generate"
-msgstr "Üretilecek emerge sıralarının sınırı"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
@@ -4803,6 +5068,11 @@ msgstr "Blok Değiştiriciler Yükleniyor"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
+msgstr "Zindanların alt Y sınırı."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lower Y limit of floatlands."
 msgstr "Zindanların alt Y sınırı."
 
 #: src/settings_translation_file.cpp
@@ -4890,9 +5160,12 @@ msgstr ""
 "'jungles' bayrağı yok sayılır."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers."
+"'ridges': Rivers.\n"
+"'floatlands': Floating land masses in the atmosphere.\n"
+"'caverns': Giant caves deep underground."
 msgstr ""
 "Mapgen v7'ye özgü harita üretim özellikleri.\n"
 "'ridges' nehirleri etkinleştirir."
@@ -4982,10 +5255,6 @@ msgid "Mapgen debug"
 msgstr "Mapgen hata ayıklama"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen flags"
-msgstr "Mapgen bayrakları"
-
-#: src/settings_translation_file.cpp
 msgid "Mapgen name"
 msgstr "Mapgen adı"
 
@@ -5056,17 +5325,19 @@ msgid "Maximum number of blocks that can be queued for loading."
 msgstr "Yükleme için sıraya alınabilecek maksimum blok sayısı."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Üretilmesi için sıralanacak maksimum blok sayısı.\n"
 "Uygun miktarın kendiliğinden seçilmesi için boş olarak ayarlayın."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Bir dosyadan yüklenmesi için sıraya koyulacak maksimum blok sayısı.\n"
 "Uygun miktarın kendiliğinden seçilmesi için boş olarak ayarlayın."
@@ -5163,6 +5434,10 @@ msgstr "Bağlanan oyunculara görüntülenecek günün iletisi."
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
 msgstr "Seçili nesneyi vurgulamak için kullanılan yöntem."
+
+#: src/settings_translation_file.cpp
+msgid "Minimal level of logging to be written to chat."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5333,11 +5608,9 @@ msgid "Number of emerge threads"
 msgstr "Emerge iş sayısı"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
-"WARNING: Currently there are multiple bugs that may cause crashes when\n"
-"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
-"strongly recommended this value is set to the default '1'.\n"
 "Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
@@ -5437,10 +5710,6 @@ msgid "Parallax occlusion scale"
 msgstr "Paralaks oklüzyon boyutu"
 
 #: src/settings_translation_file.cpp
-msgid "Parallax occlusion strength"
-msgstr "Paralaks oklüzyon gücü"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path of the fallback font.\n"
 "If “freetype” setting is enabled: Must be a TrueType font.\n"
@@ -5455,8 +5724,10 @@ msgstr ""
 "kullanılır."
 
 #: src/settings_translation_file.cpp
-msgid "Path to save screenshots at."
-msgstr "Ekran yakalamaların kaydedileceği konum."
+msgid ""
+"Path to save screenshots at. Can be an absolute or relative path.\n"
+"The folder will be created if it doesn't already exist."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5497,6 +5768,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
 msgstr "Pencere odağı kaybolunca duraklat"
+
+#: src/settings_translation_file.cpp
+msgid "Per-player limit of queued blocks load from disk"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Per-player limit of queued blocks to generate"
+msgstr "Üretilecek emerge sıralarının sınırı"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5575,6 +5855,18 @@ msgstr "Profilciyi açma/kapama tuşu"
 #: src/settings_translation_file.cpp
 msgid "Profiling"
 msgstr "Profilleme"
+
+#: src/settings_translation_file.cpp
+msgid "Prometheus listener address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Prometheus listener address.\n"
+"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"enable metrics listener for Prometheus on that address.\n"
+"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -6090,6 +6382,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Specifies the default stack size of nodes, items and tools.\n"
+"Note that mods or games may explicitly set a stack for certain (or all) "
+"items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Spread of light curve boost range.\n"
 "Controls the width of the range to be boosted.\n"
 "Standard deviation of the light curve boost Gaussian."
@@ -6115,6 +6414,11 @@ msgid "Step mountain spread noise"
 msgstr "Step dağ yayılma gürültüsü"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Strength of 3D mode parallax."
+msgstr "Paralaks gücü."
+
+#: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
 msgstr "Üretilen normal eşlemelerin gücü."
 
@@ -6129,16 +6433,26 @@ msgstr ""
 "bir ışık eğrisi aralığı tanımlar."
 
 #: src/settings_translation_file.cpp
-msgid "Strength of parallax."
-msgstr "Paralaks gücü."
-
-#: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "Katı protokol denetleme"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
 msgstr "Renk kodlarını kaldır"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Surface level of optional water placed on a solid floatland layer.\n"
+"Water is disabled by default and will only be placed if this value is set\n"
+"to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
+"upper tapering).\n"
+"***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
+"When enabling water placement the floatlands must be configured and tested\n"
+"to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
+"required value depending on 'mgv7_np_floatland'), to avoid\n"
+"server-intensive extreme water flow and to avoid vast flooding of the\n"
+"world surface below."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6271,6 +6585,7 @@ msgstr ""
 "komutuna bakın."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6278,7 +6593,7 @@ msgid ""
 "In active blocks objects are loaded and ABMs run.\n"
 "This is also the minimum range in which active objects (mobs) are "
 "maintained.\n"
-"This should be configured together with active_object_range."
+"This should be configured together with active_object_send_range_blocks."
 msgstr ""
 "Her oyuncu çevresinde, etkin blok işlemleri uygulanacak, bloklarının "
 "hacminin\n"
@@ -6475,6 +6790,11 @@ msgstr "Kullanılmayan sunucu verilerini boşalt"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
+msgstr "Zindanların üst Y sınırı."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Upper Y limit of floatlands."
 msgstr "Zindanların üst Y sınırı."
 
 #: src/settings_translation_file.cpp
@@ -6865,6 +7185,14 @@ msgid "Y-distance over which caverns expand to full size."
 msgstr "Oyukların üstünden tam boyuta uzanacağı Y-uzaklığı."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Y-distance over which floatlands taper from full density to nothing.\n"
+"Tapering starts at this distance from the Y limit.\n"
+"For a solid floatland layer, this controls the height of hills/mountains.\n"
+"Must be less than or equal to half the distance between the Y limits."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
 msgstr "Ortalama arazi yüzeyinin Y-seviyesi."
 
@@ -6896,44 +7224,81 @@ msgstr "cURL paralel sınırı"
 msgid "cURL timeout"
 msgstr "cURL zaman aşımı"
 
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Sinematik Aç/Kapa"
+
+#~ msgid "Select Package File:"
+#~ msgstr "Paket Dosyası Seç:"
+
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Büyük mağaralardaki lavın üst sınırının Y'si."
+
+#~ msgid "Waving Water"
+#~ msgstr "Dalgalanan Su"
+
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "Zindanların bazen araziden yansıyıp yansımayacağı."
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "İzdüşüm zindanlar"
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Yüzenkara gölgelerinin uzanacağı Y-seviyesi."
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "Yüzenkara orta noktasının ve göl yüzeyinin Y-seviyesi."
+
+#~ msgid "Waving water"
+#~ msgstr "Dalgalanan su"
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Tepe yüksekliğinin ve göl derinliğinin yüzenkara düz arazide değişimi."
+
 #~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
-#~ "Işık tabloları için gama kodlamayı ayarlayın. Daha yüksek sayılar daha "
-#~ "aydınlıktır.\n"
-#~ "Bu ayar yalnızca istemci içindir ve sunucu tarafından yok sayılır."
+#~ "Yüzenkara dağların, orta noktanın altındaki ve üstündeki, tipik maksimum "
+#~ "yüksekliği."
 
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr ""
-#~ "Dağ-türü yüzerkaraların orta noktanın üstünde ve altında nasıl "
-#~ "konikleştiğini değiştirir."
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Belirli diller için bu yazı tipi kullanılacak."
 
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Işık eğrisi orta-artırmanın merkezi."
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Işık eğrisi orta-artırmanın kuvveti."
 
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Dağ-türü yüzenkaraların yoğunluğunu denetler.\n"
-#~ "'mgv7_np_mountain' gürültü değerine eklenen bir gürültü kaydırmadır."
+#~ msgid "Shadow limit"
+#~ msgstr "Gölge sınırı"
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Tünellerin genişliğini denetler, daha küçük bir değer daha geniş tüneller "
-#~ "yaratır."
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "TrueTypeFont veya bitmap konumu."
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "Karanlık keskinliği"
+#~ msgid "Lightness sharpness"
+#~ msgstr "Aydınlık keskinliği"
 
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Yüzenkara düz arazilerin alanlarını belirler.\n"
-#~ "Gürültü > 0 iken düz yüzenkaralar oluşur."
+#~ msgid "Lava depth"
+#~ msgstr "Lav derinliği"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 desteği."
+
+#~ msgid "Gamma"
+#~ msgstr "Gama"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Yazı tipi gölge saydamlığı (solukluk, 0 ve 255 arası)."
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Yüzenkara dağ yüksekliği"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Yüzenkara taban yükseklik gürültüsü"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Filmsel ton eşlemeyi etkinleştirir"
+
+#~ msgid "Enable VBO"
+#~ msgstr "VBO'yu etkinleştir"
 
 #~ msgid ""
 #~ "Deprecated, define and locate cave liquids using biome definitions "
@@ -6944,90 +7309,59 @@ msgstr "cURL zaman aşımı"
 #~ "sıvılarını tanımlayın ve bulun.\n"
 #~ "Büyük mağaralarda lav üst sınırının Y'si."
 
-#~ msgid "Enable VBO"
-#~ msgstr "VBO'yu etkinleştir"
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Yüzenkara düz arazilerin alanlarını belirler.\n"
+#~ "Gürültü > 0 iken düz yüzenkaralar oluşur."
 
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Filmsel ton eşlemeyi etkinleştirir"
+#~ msgid "Darkness sharpness"
+#~ msgstr "Karanlık keskinliği"
 
-#~ msgid "Floatland base height noise"
-#~ msgstr "Yüzenkara taban yükseklik gürültüsü"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Yüzenkara taban gürültüsü"
-
-#~ msgid "Floatland level"
-#~ msgstr "Yüzenkara seviyesi"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Yüzenkara dağ yoğunluğu"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Yüzenkara dağ eksponenti"
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Yüzenkara dağ yüksekliği"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Yazı tipi gölge saydamlığı (solukluk, 0 ve 255 arası)."
-
-#~ msgid "Gamma"
-#~ msgstr "Gama"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 desteği."
-
-#~ msgid "Lava depth"
-#~ msgstr "Lav derinliği"
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Aydınlık keskinliği"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "TrueTypeFont veya bitmap konumu."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Gölge sınırı"
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Işık eğrisi orta-artırmanın kuvveti."
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Belirli diller için bu yazı tipi kullanılacak."
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Tünellerin genişliğini denetler, daha küçük bir değer daha geniş tüneller "
+#~ "yaratır."
 
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
 #~ msgstr ""
-#~ "Yüzenkara dağların, orta noktanın altındaki ve üstündeki, tipik maksimum "
-#~ "yüksekliği."
+#~ "Dağ-türü yüzenkaraların yoğunluğunu denetler.\n"
+#~ "'mgv7_np_mountain' gürültü değerine eklenen bir gürültü kaydırmadır."
 
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Işık eğrisi orta-artırmanın merkezi."
+
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr ""
-#~ "Tepe yüksekliğinin ve göl derinliğinin yüzenkara düz arazide değişimi."
+#~ "Dağ-türü yüzerkaraların orta noktanın üstünde ve altında nasıl "
+#~ "konikleştiğini değiştirir."
 
-#~ msgid "Waving water"
-#~ msgstr "Dalgalanan su"
+#~ msgid ""
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
+#~ msgstr ""
+#~ "Işık tabloları için gama kodlamayı ayarlayın. Daha yüksek sayılar daha "
+#~ "aydınlıktır.\n"
+#~ "Bu ayar yalnızca istemci içindir ve sunucu tarafından yok sayılır."
 
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "Yüzenkara orta noktasının ve göl yüzeyinin Y-seviyesi."
+#~ msgid "Path to save screenshots at."
+#~ msgstr "Ekran yakalamaların kaydedileceği konum."
 
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Yüzenkara gölgelerinin uzanacağı Y-seviyesi."
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "Paralaks oklüzyon gücü"
 
-#~ msgid "Projecting dungeons"
-#~ msgstr "İzdüşüm zindanlar"
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "Diskte emerge sıralarının sınırı"
 
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "Zindanların bazen araziden yansıyıp yansımayacağı."
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "$1 indiriliyor ve kuruluyor, lütfen bekleyin..."
 
-#~ msgid "Waving Water"
-#~ msgstr "Dalgalanan Su"
+#~ msgid "Back"
+#~ msgstr "Geri"
 
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Büyük mağaralardaki lavın üst sınırının Y'si."
-
-#~ msgid "Select Package File:"
-#~ msgstr "Paket Dosyası Seç:"
-
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Sinematik Aç/Kapa"
+#~ msgid "Ok"
+#~ msgstr "Tamam"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-05-29 11:41+0000\n"
 "Last-Translator: Miniontoby <tobias.gaarenstroom@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -22,6 +22,10 @@ msgstr "Herboren worden"
 msgid "You died"
 msgstr "Je bent gestorven"
 
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr ""
+
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
 msgstr "Er is een fout opgetreden in een Lua script:"
@@ -33,10 +37,6 @@ msgstr "Er is een fout opgetreden:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Hoofdmenu"
-
-#: builtin/fstk/ui.lua
-msgid "Ok"
-msgstr "Oké"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -115,6 +115,10 @@ msgstr ""
 "Enkel [a-z0-9_] zijn toegestaan."
 
 #: builtin/mainmenu/dlg_config_world.lua
+msgid "Find More Mods"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Mod:"
 
@@ -160,16 +164,17 @@ msgid "All packages"
 msgstr "Alle pakketten"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back"
-msgstr "Terug"
-
-#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Terug naar hoofdmenu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading and installing $1, please wait..."
-msgstr "$1 wordt gedownload, een ogenblik geduld alstublieft..."
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Laden..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -214,13 +219,56 @@ msgstr "Verwijder"
 msgid "Update"
 msgstr "Update"
 
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Een wereld met de naam \"$1\" bestaat al"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Additional terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+#, fuzzy
+msgid "Altitude chill"
+msgstr "Temperatuurverschil vanwege hoogte"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Altitude dry"
+msgstr "Temperatuurverschil vanwege hoogte"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biome blending"
+msgstr "Biome-ruis"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biomes"
+msgstr "Biome-ruis"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caverns"
+msgstr "Grot ruis"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caves"
+msgstr "Octaven"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Maak aan"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Decorations"
+msgstr "Per soort"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -230,17 +278,100 @@ msgstr "Download een subspel, zoals Minetest Game, van minetest.net"
 msgid "Download one from minetest.net"
 msgstr "Laad er een van minetest.net"
 
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Dungeons"
+msgstr "Kerker ruis"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Flat terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floating landmasses in the sky"
+msgstr "Drijvend gebergte dichtheid"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floatlands (experimental)"
+msgstr "Waterniveau"
+
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
 msgstr "Spel"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Generate non-fractal terrain: Oceans and underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Hills"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Humid rivers"
+msgstr "Video driver"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Increases humidity around rivers"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Lakes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Low humidity and high heat causes shallow or dry rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
 msgstr "Wereldgenerator"
 
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Mapgen flags"
+msgstr "Wereldgenerator vlaggen"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mapgen-specific flags"
+msgstr "Vlaggen"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mountains"
+msgstr "Bergen ruis"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mud flow"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Network of tunnels and caves"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
 msgstr "Geen spel geselecteerd"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces heat with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces humidity with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Rivers"
+msgstr "Grootte van rivieren"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Sea level rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -248,7 +379,52 @@ msgid "Seed"
 msgstr "Kiemgetal"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The minimal development test is meant for developers."
+msgid "Smooth transition between biomes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Structures appearing on the terrain (no effect on trees and jungle grass "
+"created by v6)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Structures appearing on the terrain, typically trees and plants"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle, Tundra, Taiga"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Terrain surface erosion"
+msgstr "Terrein hoogte"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Trees and jungle grass"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Vary river depth"
+msgstr "Diepte van rivieren"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Very large caverns deep in the underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Warning: The Development Test is meant for developers."
 msgstr ""
 "Waarschuwing: Het minimale ontwikkellaars-test-spel is bedoeld voor "
 "ontwikkelaars."
@@ -562,6 +738,10 @@ msgstr "Spel Hosten"
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
 msgstr "Server Hosten"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Install games from ContentDB"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1219,6 +1399,14 @@ msgid "Sound muted"
 msgstr "Geluid gedempt"
 
 #: src/client/game.cpp
+msgid "Sound system is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Sound system is not supported on this build"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Sound unmuted"
 msgstr "Geluid niet gedempt"
 
@@ -1251,7 +1439,7 @@ msgstr "Draadframe weergegeven"
 msgid "Zoom currently disabled by game or mod"
 msgstr "Zoom momenteel uitgeschakeld door game of mod"
 
-#: src/client/game.cpp src/gui/modalMenu.cpp
+#: src/client/game.cpp
 msgid "ok"
 msgstr "oké"
 
@@ -1864,6 +2052,11 @@ msgid "3D mode"
 msgstr "3D modus"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "3D mode parallax strength"
+msgstr "Sterkte van normal-maps"
+
+#: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
 msgstr "3D geluid voor grote holtes."
 
@@ -1874,6 +2067,14 @@ msgid ""
 msgstr ""
 "3D geluid voor gebergte of hoge toppen.\n"
 "Ook voor luchtdrijvende bergen."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D noise defining structure of floatlands.\n"
+"If altered from the default, the noise 'scale' (0.7 by default) may need\n"
+"to be adjusted, as floatland tapering functions best when this noise has\n"
+"a value range of approximately -2.0 to 2.0."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -1944,7 +2145,8 @@ msgid "ABM interval"
 msgstr "Interval voor opslaan wereld"
 
 #: src/settings_translation_file.cpp
-msgid "Absolute limit of emerge queues"
+#, fuzzy
+msgid "Absolute limit of queued blocks to emerge"
 msgstr "Maximaal aantal 'emerge' blokken in de wachtrij"
 
 #: src/settings_translation_file.cpp
@@ -1994,6 +2196,16 @@ msgstr ""
 "Bijv. voor 4k schermen (niet voor X11 of Android)."
 
 #: src/settings_translation_file.cpp
+#, c-format
+msgid ""
+"Adjusts the density of the floatland layer.\n"
+"Increase value to increase density. Can be positive or negative.\n"
+"Value = 0.0: 50% of volume is floatland.\n"
+"Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
+"to be sure) creates a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Geavanceerd"
 
@@ -2010,11 +2222,6 @@ msgstr ""
 "Waarde '1.0' laat de lichtcurve ongewijzigd. \n"
 "Dit heeft alleen een significant effect op daglicht en kunstmatig \n"
 "licht, heeft het weinig effect op natuurlijk nachtlicht."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Altitude chill"
-msgstr "Temperatuurverschil vanwege hoogte"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2294,8 +2501,18 @@ msgstr ""
 "noodzakelijk voor kleinere schermen."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat font size"
+msgstr "Lettergrootte"
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Chat-toets"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat log level"
+msgstr "Debug logniveau"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2505,8 +2722,8 @@ msgid ""
 "Value >= 10.0 completely disables generation of tunnels and avoids the\n"
 "intensive noise calculations."
 msgstr ""
-"Bepaalt de breedte van tunnels, een kleinere waarde creëert bredere tunnels. "
-"\n"
+"Bepaalt de breedte van tunnels, een kleinere waarde creëert bredere "
+"tunnels. \n"
 "Waarde> = 10,0 schakelt het genereren van tunnels volledig uit en vermijdt "
 "de \n"
 "intensieve geluidsberekeningen."
@@ -2594,6 +2811,11 @@ msgstr "Standaard rechten"
 #: src/settings_translation_file.cpp
 msgid "Default report format"
 msgstr "Standaardformaat voor rapport-bestanden"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Default stack size"
+msgstr "Standaardspel"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2966,6 +3188,16 @@ msgstr ""
 "ruimtes tussen blokken tot gevolg hebben."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Value = 1.0 creates a uniform, linear tapering.\n"
+"Values > 1.0 create a smooth tapering suitable for the default separated\n"
+"floatlands.\n"
+"Values < 1.0 (for example 0.25) create a more defined surface level with\n"
+"flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
 msgstr "FPS in het pauze-menu"
 
@@ -3088,6 +3320,41 @@ msgid "Fixed virtual joystick"
 msgstr "Vaste virtuele joystick"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland density"
+msgstr "Drijvend gebergte dichtheid"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland maximum Y"
+msgstr "Dungeon maximaal Y"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland minimum Y"
+msgstr "Dungeon minimaal Y"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland noise"
+msgstr "Drijvend land basis ruis"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland taper exponent"
+msgstr "Drijvend gebergte dichtheid"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland tapering distance"
+msgstr "Drijvend land basis ruis"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland water level"
+msgstr "Waterniveau"
+
+#: src/settings_translation_file.cpp
 msgid "Fly key"
 msgstr "Vliegen toets"
 
@@ -3139,6 +3406,12 @@ msgstr "Lettergrootte van het fallback-lettertype in punt (pt)."
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font in point (pt)."
 msgstr "Lettergrootte van het monospace-lettertype in punt (pt)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Font size of the recent chat text and chat prompt in point (pt).\n"
+"Value 0 will use the default font size."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4902,14 +5175,6 @@ msgid "Light curve low gradient"
 msgstr "Lichtcurve laag verloop"
 
 #: src/settings_translation_file.cpp
-msgid "Limit of emerge queues on disk"
-msgstr "Emerge-wachtrij voor lezen"
-
-#: src/settings_translation_file.cpp
-msgid "Limit of emerge queues to generate"
-msgstr "Emerge-wachtrij voor genereren"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
@@ -4984,6 +5249,11 @@ msgstr "Geladen blokken aanpassers (LBMs)"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
+msgstr "Onderste Y-limiet van kerkers."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lower Y limit of floatlands."
 msgstr "Onderste Y-limiet van kerkers."
 
 #: src/settings_translation_file.cpp
@@ -5080,12 +5350,15 @@ msgstr ""
 "Zet \"no\" voor een vlag om hem expliciet uit te zetten."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers."
+"'ridges': Rivers.\n"
+"'floatlands': Floating land masses in the atmosphere.\n"
+"'caverns': Giant caves deep underground."
 msgstr ""
-"Kenmerken voor het genereren van kaarten die specifiek zijn voor Mapgen v7. "
-"\n"
+"Kenmerken voor het genereren van kaarten die specifiek zijn voor Mapgen "
+"v7. \n"
 "'richels' maakt de rivieren mogelijk."
 
 #: src/settings_translation_file.cpp
@@ -5188,10 +5461,6 @@ msgid "Mapgen debug"
 msgstr "Wereldgenerator debug"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen flags"
-msgstr "Wereldgenerator vlaggen"
-
-#: src/settings_translation_file.cpp
 msgid "Mapgen name"
 msgstr "Wereldgenerator"
 
@@ -5265,17 +5534,19 @@ msgid "Maximum number of blocks that can be queued for loading."
 msgstr "Maximaal aantal blokken in de wachtrij voor laden/genereren."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Maximaal aantal blokken in de wachtrij om gegenereerd te worden.\n"
 "Laat leeg om een geschikt aantal automatisch te laten berekenen."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Maximaal aantal blokken in de wachtrij om van disk geladen te worden.\n"
 "Laat leeg om een geschikt aantal automatisch te laten berekenen."
@@ -5378,6 +5649,10 @@ msgstr ""
 "Manier waarop het geselecteerde object zichtbaar wordt gemaakt.\n"
 "* box: node wordt omlijnd.\n"
 "* halo: node licht op."
+
+#: src/settings_translation_file.cpp
+msgid "Minimal level of logging to be written to chat."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5557,11 +5832,9 @@ msgid "Number of emerge threads"
 msgstr "Aantal 'emerge' threads"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
-"WARNING: Currently there are multiple bugs that may cause crashes when\n"
-"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
-"strongly recommended this value is set to the default '1'.\n"
 "Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
@@ -5669,10 +5942,6 @@ msgid "Parallax occlusion scale"
 msgstr "Parallax occlusie schaal"
 
 #: src/settings_translation_file.cpp
-msgid "Parallax occlusion strength"
-msgstr "Parallax occlusie sterkte"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path of the fallback font.\n"
 "If “freetype” setting is enabled: Must be a TrueType font.\n"
@@ -5689,8 +5958,10 @@ msgstr ""
 "standaardlettertype niet beschikbaar is."
 
 #: src/settings_translation_file.cpp
-msgid "Path to save screenshots at."
-msgstr "Pad waar screenshots bewaard worden."
+msgid ""
+"Path to save screenshots at. Can be an absolute or relative path.\n"
+"The folder will be created if it doesn't already exist."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5737,6 +6008,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
 msgstr "Pauzeer als venster focus verliest"
+
+#: src/settings_translation_file.cpp
+msgid "Per-player limit of queued blocks load from disk"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Per-player limit of queued blocks to generate"
+msgstr "Emerge-wachtrij voor genereren"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5818,6 +6098,18 @@ msgstr "Profiler aan/uit toets"
 #: src/settings_translation_file.cpp
 msgid "Profiling"
 msgstr "Profileren"
+
+#: src/settings_translation_file.cpp
+msgid "Prometheus listener address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Prometheus listener address.\n"
+"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"enable metrics listener for Prometheus on that address.\n"
+"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -6357,6 +6649,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Specifies the default stack size of nodes, items and tools.\n"
+"Note that mods or games may explicitly set a stack for certain (or all) "
+"items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Spread of light curve boost range.\n"
 "Controls the width of the range to be boosted.\n"
 "Standard deviation of the light curve boost Gaussian."
@@ -6384,6 +6683,11 @@ msgid "Step mountain spread noise"
 msgstr "Bergen ruis"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Strength of 3D mode parallax."
+msgstr "Sterkte van de parallax."
+
+#: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
 msgstr "Sterkte van de normal-maps."
 
@@ -6398,16 +6702,26 @@ msgstr ""
 "curve die wordt versterkt in helderheid."
 
 #: src/settings_translation_file.cpp
-msgid "Strength of parallax."
-msgstr "Sterkte van de parallax."
-
-#: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "Stricte protocolcontrole"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
 msgstr "Kleurcodes weghalen"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Surface level of optional water placed on a solid floatland layer.\n"
+"Water is disabled by default and will only be placed if this value is set\n"
+"to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
+"upper tapering).\n"
+"***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
+"When enabling water placement the floatlands must be configured and tested\n"
+"to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
+"required value depending on 'mgv7_np_floatland'), to avoid\n"
+"server-intensive extreme water flow and to avoid vast flooding of the\n"
+"world surface below."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6479,8 +6793,8 @@ msgid ""
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
 msgstr ""
-"Texturen op een blok kunnen worden uitgelijnd met het blok of met de wereld. "
-"\n"
+"Texturen op een blok kunnen worden uitgelijnd met het blok of met de "
+"wereld. \n"
 "De eerste modus past bij betere dingen zoals machines, meubels, enz \n"
 "dit laatste zorgt ervoor dat trappen en microblokken beter in de omgeving "
 "passen. \n"
@@ -6552,6 +6866,7 @@ msgstr ""
 "van beschikbare voorrechten op de server."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6559,7 +6874,7 @@ msgid ""
 "In active blocks objects are loaded and ABMs run.\n"
 "This is also the minimum range in which active objects (mobs) are "
 "maintained.\n"
-"This should be configured together with active_object_range."
+"This should be configured together with active_object_send_range_blocks."
 msgstr ""
 "De straal van het volume van blokken rond elke speler die onderworpen is aan "
 "de \n"
@@ -6644,8 +6959,8 @@ msgid ""
 "enabled. Also the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
-"De verticale afstand waarover de warmte met 20 daalt als 'altitude_chill' is "
-"\n"
+"De verticale afstand waarover de warmte met 20 daalt als 'altitude_chill' "
+"is \n"
 "ingeschakeld. Ook de verticale afstand waarover de vochtigheid met 10 daalt "
 "als \n"
 "'altitude_dry' is ingeschakeld."
@@ -6763,6 +7078,11 @@ msgstr "Vergeet ongebruikte server gegevens"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
+msgstr "Bovenste Y-limiet van kerkers."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Upper Y limit of floatlands."
 msgstr "Bovenste Y-limiet van kerkers."
 
 #: src/settings_translation_file.cpp
@@ -7167,6 +7487,14 @@ msgid "Y-distance over which caverns expand to full size."
 msgstr "Y-afstand waar over grotten uitbreiden tot volle grootte."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Y-distance over which floatlands taper from full density to nothing.\n"
+"Tapering starts at this distance from the Y limit.\n"
+"For a solid floatland layer, this controls the height of hills/mountains.\n"
+"Must be less than or equal to half the distance between the Y limits."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
 msgstr "Y-niveau van gemiddeld terrein oppervlak."
 
@@ -7200,6 +7528,98 @@ msgstr "Maximaal parallellisme in cURL"
 msgid "cURL timeout"
 msgstr "cURL time-out"
 
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Cinematic modus aan/uit"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Selecteer Modbestand:"
+
+#, fuzzy
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Minimale diepte van grote semi-willekeurige grotten."
+
+#~ msgid "Waving Water"
+#~ msgstr "Golvend water"
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-niveau tot waar de schaduw van drijvend land reikt."
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "Y-niveau van drijvend land middelpunt en vijver oppervlak."
+
+#~ msgid "Waving water"
+#~ msgstr "Golvend water"
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Variatie van de heuvel hoogte en vijver diepte op drijvend egaal terrein."
+
+#, fuzzy
+#~ msgid ""
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr ""
+#~ "Typisch maximum hoogte, boven en onder het middelpunt van drijvend berg "
+#~ "terrein."
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Dit font wordt gebruikt voor bepaalde talen."
+
+#~ msgid "Shadow limit"
+#~ msgstr "Schaduw limiet"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Pad van TrueType font of bitmap."
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Diepte van grote grotten"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 ondersteuning."
+
+#, fuzzy
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Fontschaduw alphawaarde (ondoorzichtigheid, tussen 0 en 255)."
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Drijvend gebergte hoogte"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Drijvend land basis hoogte ruis"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Schakelt filmisch tone-mapping in"
+
+#~ msgid "Enable VBO"
+#~ msgstr "VBO aanzetten"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Bepaalt gebieden van drijvend glijdend terrein.\n"
+#~ "Drijvend glijdend terrein ontstaat wanneer ruis > 0."
+
+#, fuzzy
+#~ msgid "Darkness sharpness"
+#~ msgstr "Steilheid Van de meren"
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Bepaalt breedte van tunnels, een kleinere waarde maakt bredere tunnels."
+
+#, fuzzy
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "Bepaalt de dichtheid van drijvende bergen.\n"
+#~ "Dit wordt bijgevoegd bij de 'np_mountain' ruis waarde."
+
 #, fuzzy
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -7210,108 +7630,20 @@ msgstr "cURL time-out"
 #~ "Deze instelling wordt enkel gebruikt door de cliënt, en wordt genegeerd "
 #~ "door de server."
 
-#, fuzzy
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Bepaalt de dichtheid van drijvende bergen.\n"
-#~ "Dit wordt bijgevoegd bij de 'np_mountain' ruis waarde."
+#~ msgid "Path to save screenshots at."
+#~ msgstr "Pad waar screenshots bewaard worden."
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Bepaalt breedte van tunnels, een kleinere waarde maakt bredere tunnels."
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "Parallax occlusie sterkte"
 
-#, fuzzy
-#~ msgid "Darkness sharpness"
-#~ msgstr "Steilheid Van de meren"
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "Emerge-wachtrij voor lezen"
 
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Bepaalt gebieden van drijvend glijdend terrein.\n"
-#~ "Drijvend glijdend terrein ontstaat wanneer ruis > 0."
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "$1 wordt gedownload, een ogenblik geduld alstublieft..."
 
-#~ msgid "Enable VBO"
-#~ msgstr "VBO aanzetten"
+#~ msgid "Back"
+#~ msgstr "Terug"
 
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Schakelt filmisch tone-mapping in"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Drijvend land basis hoogte ruis"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Drijvend land basis ruis"
-
-#, fuzzy
-#~ msgid "Floatland level"
-#~ msgstr "Waterniveau"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Drijvend gebergte dichtheid"
-
-#, fuzzy
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Drijvend gebergte dichtheid"
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Drijvend gebergte hoogte"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Fontschaduw alphawaarde (ondoorzichtigheid, tussen 0 en 255)."
-
-#, fuzzy
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 ondersteuning."
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Diepte van grote grotten"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Pad van TrueType font of bitmap."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Schaduw limiet"
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Dit font wordt gebruikt voor bepaalde talen."
-
-#, fuzzy
-#~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
-#~ msgstr ""
-#~ "Typisch maximum hoogte, boven en onder het middelpunt van drijvend berg "
-#~ "terrein."
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr ""
-#~ "Variatie van de heuvel hoogte en vijver diepte op drijvend egaal terrein."
-
-#~ msgid "Waving water"
-#~ msgstr "Golvend water"
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "Y-niveau van drijvend land middelpunt en vijver oppervlak."
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-niveau tot waar de schaduw van drijvend land reikt."
-
-#~ msgid "Waving Water"
-#~ msgstr "Golvend water"
-
-#, fuzzy
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Minimale diepte van grote semi-willekeurige grotten."
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Selecteer Modbestand:"
-
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Cinematic modus aan/uit"
+#~ msgid "Ok"
+#~ msgstr "Oké"

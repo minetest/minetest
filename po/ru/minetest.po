@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-05-12 14:46+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
@@ -11,8 +11,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
@@ -22,6 +22,10 @@ msgstr "Возродиться"
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
 msgstr "Вы умерли"
+
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -34,10 +38,6 @@ msgstr "Произошла ошибка:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Главное меню"
-
-#: builtin/fstk/ui.lua
-msgid "Ok"
-msgstr "Oк"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -115,6 +115,10 @@ msgstr ""
 "Разрешены только следующие символы: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
+msgid "Find More Mods"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Мод:"
 
@@ -160,18 +164,17 @@ msgid "All packages"
 msgstr "Все дополнения"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back"
-msgstr "Назад"
-
-#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Назад в главное меню"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading and installing $1, please wait..."
+msgid "ContentDB is not available when Minetest was compiled without cURL"
 msgstr ""
-"Загружается и устанавливается $1.\n"
-"Пожалуйста, подождите..."
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Загрузка..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -216,13 +219,55 @@ msgstr "Удалить"
 msgid "Update"
 msgstr "Обновить"
 
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Мир с названием «$1» уже существует"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Additional terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Altitude chill"
+msgstr "Высота нивального пояса"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Altitude dry"
+msgstr "Высота нивального пояса"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biome blending"
+msgstr "Шум биомов"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biomes"
+msgstr "Шум биомов"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caverns"
+msgstr "Шум пещеры"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caves"
+msgstr "Октавы"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Создать"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Decorations"
+msgstr "Итерации"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -232,17 +277,100 @@ msgstr "Скачивайте игры, такие как Minetest Game, на min
 msgid "Download one from minetest.net"
 msgstr "Вы можете скачать их на minetest.net"
 
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Dungeons"
+msgstr "Шум подземелья"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Flat terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floating landmasses in the sky"
+msgstr "Плотность гор на парящих островах"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floatlands (experimental)"
+msgstr "Уровень парящих островов"
+
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
 msgstr "Игра"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Generate non-fractal terrain: Oceans and underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Hills"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Humid rivers"
+msgstr "Видеодрайвер"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Increases humidity around rivers"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Lakes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Low humidity and high heat causes shallow or dry rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
 msgstr "Картогенератор"
 
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Mapgen flags"
+msgstr "Флаги картогенератора"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mapgen-specific flags"
+msgstr "Специальные флаги картогенератора V5"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mountains"
+msgstr "Шум гор"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mud flow"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Network of tunnels and caves"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
 msgstr "Игра не выбрана"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces heat with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces humidity with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Rivers"
+msgstr "Размер рек"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Sea level rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -250,7 +378,52 @@ msgid "Seed"
 msgstr "Зерно"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The minimal development test is meant for developers."
+msgid "Smooth transition between biomes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Structures appearing on the terrain (no effect on trees and jungle grass "
+"created by v6)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Structures appearing on the terrain, typically trees and plants"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle, Tundra, Taiga"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Terrain surface erosion"
+msgstr "Базовый шум поверхности"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Trees and jungle grass"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Vary river depth"
+msgstr "Глубина рек"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Very large caverns deep in the underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Warning: The Development Test is meant for developers."
 msgstr ""
 "Внимание: «Minimal development test» предназначен только для разработчиков."
 
@@ -566,6 +739,10 @@ msgstr "Играть (хост)"
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
 msgstr "Запустить сервер"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Install games from ContentDB"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1226,6 +1403,14 @@ msgid "Sound muted"
 msgstr "Звук отключён"
 
 #: src/client/game.cpp
+msgid "Sound system is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Sound system is not supported on this build"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Sound unmuted"
 msgstr "Звук включён"
 
@@ -1257,7 +1442,7 @@ msgstr "Отображение каркаса включено"
 msgid "Zoom currently disabled by game or mod"
 msgstr "Приближение в настоящее время отключено игрой или модом"
 
-#: src/client/game.cpp src/gui/modalMenu.cpp
+#: src/client/game.cpp
 msgid "ok"
 msgstr "OK"
 
@@ -1868,6 +2053,11 @@ msgid "3D mode"
 msgstr "3D-режим"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "3D mode parallax strength"
+msgstr "Сила карт нормалей"
+
+#: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
 msgstr "3D-шум, определяющий огромные пещеры."
 
@@ -1878,6 +2068,14 @@ msgid ""
 msgstr ""
 "3D-шум, определяющий структуру гор и их высоту.\n"
 "Также определяет структуру гор на парящих островах."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D noise defining structure of floatlands.\n"
+"If altered from the default, the noise 'scale' (0.7 by default) may need\n"
+"to be adjusted, as floatland tapering functions best when this noise has\n"
+"a value range of approximately -2.0 to 2.0."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -1941,7 +2139,8 @@ msgid "ABM interval"
 msgstr "Интервал сохранения карты"
 
 #: src/settings_translation_file.cpp
-msgid "Absolute limit of emerge queues"
+#, fuzzy
+msgid "Absolute limit of queued blocks to emerge"
 msgstr "Абсолютный лимит появляющихся запросов"
 
 #: src/settings_translation_file.cpp
@@ -1991,6 +2190,16 @@ msgstr ""
 "только для Android). Например для мониторов с разрешением в 4k."
 
 #: src/settings_translation_file.cpp
+#, c-format
+msgid ""
+"Adjusts the density of the floatland layer.\n"
+"Increase value to increase density. Can be positive or negative.\n"
+"Value = 0.0: 50% of volume is floatland.\n"
+"Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
+"to be sure) creates a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Дополнительно"
 
@@ -2009,10 +2218,6 @@ msgstr ""
 "существенное влияние только на дневной и \n"
 "искусственный свет, он очень мало влияет на \n"
 "естественный ночной свет."
-
-#: src/settings_translation_file.cpp
-msgid "Altitude chill"
-msgstr "Высота нивального пояса"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2287,8 +2492,18 @@ msgstr ""
 "быть полезно для небольших экранов."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat font size"
+msgstr "Размер шрифта"
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Кнопка чата"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat log level"
+msgstr "Отладочный уровень"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2489,8 +2704,8 @@ msgid ""
 "Value >= 10.0 completely disables generation of tunnels and avoids the\n"
 "intensive noise calculations."
 msgstr ""
-"Контролирует ширину туннелей, меньшее значение создаёт более широкие туннели."
-"\n"
+"Контролирует ширину туннелей, меньшее значение создаёт более широкие "
+"туннели.\n"
 "Значение >= 10.0 полностью отключает генерацию туннелей и позволяют "
 "избежать\n"
 "интенсивного расчёта шумов."
@@ -2578,6 +2793,11 @@ msgstr "Начальные привилегии"
 #: src/settings_translation_file.cpp
 msgid "Default report format"
 msgstr "Формат отчёта по умолчанию"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Default stack size"
+msgstr "Стандартная игра"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2943,6 +3163,16 @@ msgstr ""
 "между блоками, когда значение больше, чем 0."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Value = 1.0 creates a uniform, linear tapering.\n"
+"Values > 1.0 create a smooth tapering suitable for the default separated\n"
+"floatlands.\n"
+"Values < 1.0 (for example 0.25) create a more defined surface level with\n"
+"flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
 msgstr "Кадровая частота во время паузы"
 
@@ -3060,6 +3290,41 @@ msgid "Fixed virtual joystick"
 msgstr "Фиксация виртуального джойстика"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland density"
+msgstr "Плотность гор на парящих островах"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland maximum Y"
+msgstr "Максимальная Y подземелья"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland minimum Y"
+msgstr "Минимальная Y подземелья"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland noise"
+msgstr "Базовый шум парящих островов"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland taper exponent"
+msgstr "Экспонента гор на парящих островах"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland tapering distance"
+msgstr "Базовый шум парящих островов"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland water level"
+msgstr "Уровень парящих островов"
+
+#: src/settings_translation_file.cpp
 msgid "Fly key"
 msgstr "Клавиша полёта"
 
@@ -3110,6 +3375,12 @@ msgstr "Размер резервного шрифта в пунктах (pt)."
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font in point (pt)."
 msgstr "Размер моноширинного шрифта в пунктах (pt)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Font size of the recent chat text and chat prompt in point (pt).\n"
+"Value 0 will use the default font size."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4736,14 +5007,6 @@ msgid "Light curve low gradient"
 msgstr "Центр среднего подъёма кривой света"
 
 #: src/settings_translation_file.cpp
-msgid "Limit of emerge queues on disk"
-msgstr "Ограничение очередей emerge на диске"
-
-#: src/settings_translation_file.cpp
-msgid "Limit of emerge queues to generate"
-msgstr "Ограничение очередей emerge для генерации"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
@@ -4817,6 +5080,11 @@ msgstr "Модификаторы загружающихся блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
+msgstr "Нижний лимит Y для подземелий."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lower Y limit of floatlands."
 msgstr "Нижний лимит Y для подземелий."
 
 #: src/settings_translation_file.cpp
@@ -4903,9 +5171,12 @@ msgstr ""
 "активируются джунгли, а флаг «jungles» игнорируется."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers."
+"'ridges': Rivers.\n"
+"'floatlands': Floating land masses in the atmosphere.\n"
+"'caverns': Giant caves deep underground."
 msgstr ""
 "Атрибуты генерации карт для Mapgen v7.\n"
 "«хребты» включают реки."
@@ -4995,10 +5266,6 @@ msgid "Mapgen debug"
 msgstr "Отладка картогенератора"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen flags"
-msgstr "Флаги картогенератора"
-
-#: src/settings_translation_file.cpp
 msgid "Mapgen name"
 msgstr "Название картогенератора"
 
@@ -5072,17 +5339,19 @@ msgstr ""
 "загрузки."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Максимальное количество блоков в очереди на генерацию. Оставьте пустым для "
 "автоматического выбора подходящего значения."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Максимальное количество блоков в очереди на загрузку из файла. Оставьте "
 "пустым для автоматического выбора подходящего значения."
@@ -5179,6 +5448,10 @@ msgstr "Сообщение, отображаемое подключившимс�
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
 msgstr "Метод подсветки выделенного объекта."
+
+#: src/settings_translation_file.cpp
+msgid "Minimal level of logging to be written to chat."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5351,11 +5624,9 @@ msgid "Number of emerge threads"
 msgstr "Количество emerge-потоков"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
-"WARNING: Currently there are multiple bugs that may cause crashes when\n"
-"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
-"strongly recommended this value is set to the default '1'.\n"
 "Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
@@ -5453,10 +5724,6 @@ msgid "Parallax occlusion scale"
 msgstr "Масштаб параллаксной окклюзии"
 
 #: src/settings_translation_file.cpp
-msgid "Parallax occlusion strength"
-msgstr "Сила параллакса"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path of the fallback font.\n"
 "If “freetype” setting is enabled: Must be a TrueType font.\n"
@@ -5466,8 +5733,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Path to save screenshots at."
-msgstr "Путь для сохранения скриншотов."
+msgid ""
+"Path to save screenshots at. Can be an absolute or relative path.\n"
+"The folder will be created if it doesn't already exist."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5501,6 +5770,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
 msgstr "Пауза при потере фокуса"
+
+#: src/settings_translation_file.cpp
+msgid "Per-player limit of queued blocks load from disk"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Per-player limit of queued blocks to generate"
+msgstr "Ограничение очередей emerge для генерации"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5581,6 +5859,18 @@ msgstr "Клавиша переключения профилировщика"
 #: src/settings_translation_file.cpp
 msgid "Profiling"
 msgstr "Профилирование"
+
+#: src/settings_translation_file.cpp
+msgid "Prometheus listener address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Prometheus listener address.\n"
+"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"enable metrics listener for Prometheus on that address.\n"
+"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -6105,6 +6395,13 @@ msgstr ""
 "Файлы, которых не будет, будут скачены обычным путём."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Specifies the default stack size of nodes, items and tools.\n"
+"Note that mods or games may explicitly set a stack for certain (or all) "
+"items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Spread of light curve boost range.\n"
@@ -6131,6 +6428,11 @@ msgid "Step mountain spread noise"
 msgstr "Шаг шума распространения гор"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Strength of 3D mode parallax."
+msgstr "Сила параллакса."
+
+#: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
 msgstr "Сила сгенерированных карт нормалей."
 
@@ -6142,16 +6444,26 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Strength of parallax."
-msgstr "Сила параллакса."
-
-#: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "Строгая проверка протокола"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
 msgstr "Прятать коды цветов"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Surface level of optional water placed on a solid floatland layer.\n"
+"Water is disabled by default and will only be placed if this value is set\n"
+"to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
+"upper tapering).\n"
+"***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
+"When enabling water placement the floatlands must be configured and tested\n"
+"to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
+"required value depending on 'mgv7_np_floatland'), to avoid\n"
+"server-intensive extreme water flow and to avoid vast flooding of the\n"
+"world surface below."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6283,6 +6595,7 @@ msgstr ""
 "настройке мода."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6290,7 +6603,7 @@ msgid ""
 "In active blocks objects are loaded and ABMs run.\n"
 "This is also the minimum range in which active objects (mobs) are "
 "maintained.\n"
-"This should be configured together with active_object_range."
+"This should be configured together with active_object_send_range_blocks."
 msgstr ""
 "Радиус объёма блоков вокруг каждого игрока, в котором действуют\n"
 "активные блоки, определённые в блоках карты (16 нод).\n"
@@ -6487,6 +6800,11 @@ msgstr "Выгружать неиспользуемые сервером дан�
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
+msgstr "Верхний лимит Y для подземелий."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Upper Y limit of floatlands."
 msgstr "Верхний лимит Y для подземелий."
 
 #: src/settings_translation_file.cpp
@@ -6874,6 +7192,14 @@ msgid "Y-distance over which caverns expand to full size."
 msgstr "Y-расстояние, над которым пещеры расширяются до полного размера."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Y-distance over which floatlands taper from full density to nothing.\n"
+"Tapering starts at this distance from the Y limit.\n"
+"For a solid floatland layer, this controls the height of hills/mountains.\n"
+"Must be less than or equal to half the distance between the Y limits."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
 msgstr "Y-уровень средней поверхности рельефа."
 
@@ -6905,42 +7231,80 @@ msgstr "Лимит одновременных соединений cURL"
 msgid "cURL timeout"
 msgstr "cURL тайм-аут"
 
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Кино"
+
+#~ msgid "Select Package File:"
+#~ msgstr "Выберите файл дополнения:"
+
+#, fuzzy
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Верхний предел по Y для больших псевдослучайных пещер."
+
+#~ msgid "Waving Water"
+#~ msgstr "Волны на воде"
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Проступающие подземелья"
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-уровень, на который распространяются тени с плавающей точкой."
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "Y-уровень середины поплавка и поверхности озера."
+
+#~ msgid "Waving water"
+#~ msgstr "Волны на воде"
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Вариация высоты холмов и глубин озёр на гладкой местности парящих "
+#~ "островов."
+
 #~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
-#~ "Регулирует гамма-кодировку таблиц освещения. Более высокие значения "
-#~ "ярче.\n"
-#~ "Этот параметр предназначен только для клиента и игнорируется сервером."
+#~ "Типичная максимальная высота, выше и ниже средней точки гор парящих "
+#~ "островов."
 
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr "Управляет сужением островов горного типа ниже средней точки."
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Этот шрифт будет использован для некоторых языков."
 
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Центр среднего подъёма кривой света."
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Сила среднего подъёма кривой света."
 
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Контролирует плотность горной местности парящих островов.\n"
-#~ "Является смещением, добавляемым к значению шума 'mgv7_np_mountain'."
+#~ msgid "Shadow limit"
+#~ msgstr "Лимит теней"
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Контролирует ширину тоннелей. Меньшие значения создают более широкие "
-#~ "тоннели."
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Путь к шрифту TrueType или картинке со шрифтом."
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "Резкость темноты"
+#~ msgid "Lightness sharpness"
+#~ msgstr "Резкость освещённости"
 
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Определяет области гладкой поверхности на парящих островах.\n"
-#~ "Гладкие парящие острова появляются, когда шум больше ноля."
+#~ msgid "Lava depth"
+#~ msgstr "Глубина лавы"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Поддержка IPv6."
+
+#~ msgid "Gamma"
+#~ msgstr "Гамма"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Прозрачность тени шрифта (непрозрачность от 0 до 255)."
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Высота гор на парящих островах"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Шум базовой высоты парящих островов"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Включить кинематографическое тональное отображение"
+
+#~ msgid "Enable VBO"
+#~ msgstr "Включить объекты буфера вершин (VBO)"
 
 #~ msgid ""
 #~ "Deprecated, define and locate cave liquids using biome definitions "
@@ -6951,89 +7315,59 @@ msgstr "cURL тайм-аут"
 #~ "определений биома.\n"
 #~ "Y верхней границы лавы в больших пещерах."
 
-#~ msgid "Enable VBO"
-#~ msgstr "Включить объекты буфера вершин (VBO)"
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Определяет области гладкой поверхности на парящих островах.\n"
+#~ "Гладкие парящие острова появляются, когда шум больше ноля."
 
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Включить кинематографическое тональное отображение"
+#~ msgid "Darkness sharpness"
+#~ msgstr "Резкость темноты"
 
-#~ msgid "Floatland base height noise"
-#~ msgstr "Шум базовой высоты парящих островов"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Базовый шум парящих островов"
-
-#~ msgid "Floatland level"
-#~ msgstr "Уровень парящих островов"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Плотность гор на парящих островах"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Экспонента гор на парящих островах"
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Высота гор на парящих островах"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Прозрачность тени шрифта (непрозрачность от 0 до 255)."
-
-#~ msgid "Gamma"
-#~ msgstr "Гамма"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Поддержка IPv6."
-
-#~ msgid "Lava depth"
-#~ msgstr "Глубина лавы"
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Резкость освещённости"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Путь к шрифту TrueType или картинке со шрифтом."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Лимит теней"
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Сила среднего подъёма кривой света."
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Этот шрифт будет использован для некоторых языков."
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Контролирует ширину тоннелей. Меньшие значения создают более широкие "
+#~ "тоннели."
 
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
 #~ msgstr ""
-#~ "Типичная максимальная высота, выше и ниже средней точки гор парящих "
-#~ "островов."
+#~ "Контролирует плотность горной местности парящих островов.\n"
+#~ "Является смещением, добавляемым к значению шума 'mgv7_np_mountain'."
 
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Центр среднего подъёма кривой света."
+
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr "Управляет сужением островов горного типа ниже средней точки."
+
+#~ msgid ""
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "Вариация высоты холмов и глубин озёр на гладкой местности парящих "
-#~ "островов."
+#~ "Регулирует гамма-кодировку таблиц освещения. Более высокие значения "
+#~ "ярче.\n"
+#~ "Этот параметр предназначен только для клиента и игнорируется сервером."
 
-#~ msgid "Waving water"
-#~ msgstr "Волны на воде"
+#~ msgid "Path to save screenshots at."
+#~ msgstr "Путь для сохранения скриншотов."
 
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "Y-уровень середины поплавка и поверхности озера."
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "Сила параллакса"
 
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-уровень, на который распространяются тени с плавающей точкой."
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "Ограничение очередей emerge на диске"
 
-#~ msgid "Projecting dungeons"
-#~ msgstr "Проступающие подземелья"
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr ""
+#~ "Загружается и устанавливается $1.\n"
+#~ "Пожалуйста, подождите..."
 
-#~ msgid "Waving Water"
-#~ msgstr "Волны на воде"
+#~ msgid "Back"
+#~ msgstr "Назад"
 
-#, fuzzy
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Верхний предел по Y для больших псевдослучайных пещер."
-
-#~ msgid "Select Package File:"
-#~ msgstr "Выберите файл дополнения:"
-
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Кино"
+#~ msgid "Ok"
+#~ msgstr "Oк"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-04-29 12:38+0000\n"
 "Last-Translator: Roman Ondráček <ondracek.roman@centrum.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -22,6 +22,10 @@ msgstr "Oživit"
 msgid "You died"
 msgstr "Zemřel jsi"
 
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr ""
+
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
 msgstr "Nastala chyba v Lua skriptu:"
@@ -33,10 +37,6 @@ msgstr "Nastala chyba:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Hlavní nabídka"
-
-#: builtin/fstk/ui.lua
-msgid "Ok"
-msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -115,6 +115,10 @@ msgstr ""
 "jsou pouze znaky [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
+msgid "Find More Mods"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Mod:"
 
@@ -160,16 +164,17 @@ msgid "All packages"
 msgstr "Všechny balíčky"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back"
-msgstr "Zpět"
-
-#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Zpět do hlavní nabídky"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading and installing $1, please wait..."
-msgstr "Stahuji a instaluji $1, prosím čekejte..."
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Nahrávám..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -214,13 +219,55 @@ msgstr "Odinstalovat"
 msgid "Update"
 msgstr "Aktualizovat"
 
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Svět s názvem \"$1\" už existuje"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Additional terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Altitude chill"
+msgstr "Výškové ochlazení"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Altitude dry"
+msgstr "Výškové ochlazení"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biome blending"
+msgstr "Šum biomů"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biomes"
+msgstr "Šum biomů"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caverns"
+msgstr "Šum jeskynních dutin"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caves"
+msgstr "Oktávy"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Vytvořit"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Decorations"
+msgstr "Iterace"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -230,17 +277,99 @@ msgstr "Stáhněte si z minetest.net hru, například Minetest Game"
 msgid "Download one from minetest.net"
 msgstr "Stáhněte si jednu z minetest.net"
 
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Dungeons"
+msgstr "Šum hřbetů"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Flat terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floating landmasses in the sky"
+msgstr "Koncentrace hor na létajících ostrovech"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floatlands (experimental)"
+msgstr "Výška létajících ostrovů"
+
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
 msgstr "Hra"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Generate non-fractal terrain: Oceans and underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Hills"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Humid rivers"
+msgstr "Ovladač grafiky"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Increases humidity around rivers"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Lakes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Low humidity and high heat causes shallow or dry rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
 msgstr "Generátor mapy"
 
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Mapgen flags"
+msgstr "Nastavení generátoru mapy"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mapgen-specific flags"
+msgstr "Mapgen údolí"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mountains"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mud flow"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Network of tunnels and caves"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
 msgstr "Není vybrána žádná hra"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces heat with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces humidity with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Rivers"
+msgstr "Velikost řeky"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Sea level rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -248,7 +377,51 @@ msgid "Seed"
 msgstr "Seedové číslo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The minimal development test is meant for developers."
+msgid "Smooth transition between biomes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Structures appearing on the terrain (no effect on trees and jungle grass "
+"created by v6)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Structures appearing on the terrain, typically trees and plants"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle, Tundra, Taiga"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Terrain surface erosion"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Trees and jungle grass"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Vary river depth"
+msgstr "Hloubka řeky"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Very large caverns deep in the underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Warning: The Development Test is meant for developers."
 msgstr "Varování: \"Minimal development test\" je zamýšlen pouze pro vývojáře."
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -562,6 +735,10 @@ msgstr "Založit hru"
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
 msgstr "Založit server"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Install games from ContentDB"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1220,6 +1397,14 @@ msgid "Sound muted"
 msgstr "Zvuk vypnut"
 
 #: src/client/game.cpp
+msgid "Sound system is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Sound system is not supported on this build"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Sound unmuted"
 msgstr "Zvuk zapnut"
 
@@ -1251,7 +1436,7 @@ msgstr "Obrysy zobrazeny"
 msgid "Zoom currently disabled by game or mod"
 msgstr "Přiblížení je aktuálně zakázáno"
 
-#: src/client/game.cpp src/gui/modalMenu.cpp
+#: src/client/game.cpp
 msgid "ok"
 msgstr "OK"
 
@@ -1858,6 +2043,11 @@ msgid "3D mode"
 msgstr "Režim 3D zobrazení"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "3D mode parallax strength"
+msgstr "Síla parallax occlusion"
+
+#: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
 msgstr "3D šum určující obří jeskynní dutiny."
 
@@ -1868,6 +2058,14 @@ msgid ""
 msgstr ""
 "3D šum určující strukturu a výšku hor.\n"
 "Určuje také strukturu horského terénu na létajících ostrovech."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D noise defining structure of floatlands.\n"
+"If altered from the default, the noise 'scale' (0.7 by default) may need\n"
+"to be adjusted, as floatland tapering functions best when this noise has\n"
+"a value range of approximately -2.0 to 2.0."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -1931,7 +2129,8 @@ msgid "ABM interval"
 msgstr "Interval Aktivní Blokové Modifikace (ABM)"
 
 #: src/settings_translation_file.cpp
-msgid "Absolute limit of emerge queues"
+#, fuzzy
+msgid "Absolute limit of queued blocks to emerge"
 msgstr "Maximální počet emerge front"
 
 #: src/settings_translation_file.cpp
@@ -1981,6 +2180,16 @@ msgstr ""
 "například s 4k obrazovkami."
 
 #: src/settings_translation_file.cpp
+#, c-format
+msgid ""
+"Adjusts the density of the floatland layer.\n"
+"Increase value to increase density. Can be positive or negative.\n"
+"Value = 0.0: 50% of volume is floatland.\n"
+"Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
+"to be sure) creates a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Pokročilé"
 
@@ -1992,10 +2201,6 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Altitude chill"
-msgstr "Výškové ochlazení"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2270,8 +2475,18 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat font size"
+msgstr "Velikost písma"
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Klávesa chatu"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat log level"
+msgstr "Úroveň minimální důležitosti ladících informací"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2553,6 +2768,11 @@ msgstr "Výchozí práva"
 #: src/settings_translation_file.cpp
 msgid "Default report format"
 msgstr "Výchozí formát reportů"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Default stack size"
+msgstr "Výchozí hra"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2914,6 +3134,16 @@ msgstr ""
 "je-li nastaveno na vyšší číslo než 0."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Value = 1.0 creates a uniform, linear tapering.\n"
+"Values > 1.0 create a smooth tapering suitable for the default separated\n"
+"floatlands.\n"
+"Values < 1.0 (for example 0.25) create a more defined surface level with\n"
+"flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
 msgstr "FPS v menu pauzy"
 
@@ -3037,6 +3267,41 @@ msgid "Fixed virtual joystick"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland density"
+msgstr "Koncentrace hor na létajících ostrovech"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland maximum Y"
+msgstr "Výška hor na létajících ostrovech"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland minimum Y"
+msgstr "Výška hor na létajících ostrovech"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland noise"
+msgstr "Základní šum létajících ostrovů"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland taper exponent"
+msgstr "Koncentrace hor na létajících ostrovech"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland tapering distance"
+msgstr "Základní šum létajících ostrovů"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland water level"
+msgstr "Výška létajících ostrovů"
+
+#: src/settings_translation_file.cpp
 msgid "Fly key"
 msgstr "Klávesa létání"
 
@@ -3087,6 +3352,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font in point (pt)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Font size of the recent chat text and chat prompt in point (pt).\n"
+"Value 0 will use the default font size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4665,14 +4936,6 @@ msgid "Light curve low gradient"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Limit of emerge queues on disk"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Limit of emerge queues to generate"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
@@ -4735,6 +4998,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lower Y limit of floatlands."
+msgstr "Maximální počet emerge front"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
@@ -4823,10 +5091,19 @@ msgstr ""
 "Příznaky začínající na 'no' slouží k zakázání možnosti."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers."
+"'ridges': Rivers.\n"
+"'floatlands': Floating land masses in the atmosphere.\n"
+"'caverns': Giant caves deep underground."
 msgstr ""
+"Globální parametry generování mapy.\n"
+"V mapgenu v6 ovládal příznak 'decorations' všechny dekorace kromě\n"
+"stromů a tropické trávy. V ostatních mapgenech tento příznak řídí\n"
+"všechny dekorace.\n"
+"Neuvedené příznaky zůstávají ve výchozím stavu.\n"
+"Příznaky začínající na 'no' slouží k zakázání možnosti."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -4921,10 +5198,6 @@ msgid "Mapgen debug"
 msgstr "Ladění generátoru mapy"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen flags"
-msgstr "Nastavení generátoru mapy"
-
-#: src/settings_translation_file.cpp
 msgid "Mapgen name"
 msgstr "Jméno generátoru mapy"
 
@@ -4992,13 +5265,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5080,6 +5353,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Minimal level of logging to be written to chat."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5243,9 +5520,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"WARNING: Currently there are multiple bugs that may cause crashes when\n"
-"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
-"strongly recommended this value is set to the default '1'.\n"
 "Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
@@ -5323,10 +5597,6 @@ msgid "Parallax occlusion scale"
 msgstr "Škála parallax occlusion"
 
 #: src/settings_translation_file.cpp
-msgid "Parallax occlusion strength"
-msgstr "Síla parallax occlusion"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path of the fallback font.\n"
 "If “freetype” setting is enabled: Must be a TrueType font.\n"
@@ -5336,7 +5606,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Path to save screenshots at."
+msgid ""
+"Path to save screenshots at. Can be an absolute or relative path.\n"
+"The folder will be created if it doesn't already exist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5367,6 +5639,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Per-player limit of queued blocks load from disk"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Per-player limit of queued blocks to generate"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5437,6 +5717,18 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Prometheus listener address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Prometheus listener address.\n"
+"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"enable metrics listener for Prometheus on that address.\n"
+"Metrics can be fetch on http://127.0.0.1:30000/metrics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5924,6 +6216,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Specifies the default stack size of nodes, items and tools.\n"
+"Note that mods or games may explicitly set a stack for certain (or all) "
+"items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Spread of light curve boost range.\n"
 "Controls the width of the range to be boosted.\n"
 "Standard deviation of the light curve boost Gaussian."
@@ -5946,6 +6245,11 @@ msgid "Step mountain spread noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Strength of 3D mode parallax."
+msgstr "Síla vygenerovaných normálových map."
+
+#: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
 msgstr "Síla vygenerovaných normálových map."
 
@@ -5957,15 +6261,25 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Strength of parallax."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Surface level of optional water placed on a solid floatland layer.\n"
+"Water is disabled by default and will only be placed if this value is set\n"
+"to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
+"upper tapering).\n"
+"***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
+"When enabling water placement the floatlands must be configured and tested\n"
+"to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
+"required value depending on 'mgv7_np_floatland'), to avoid\n"
+"server-intensive extreme water flow and to avoid vast flooding of the\n"
+"world surface below."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6083,7 +6397,7 @@ msgid ""
 "In active blocks objects are loaded and ABMs run.\n"
 "This is also the minimum range in which active objects (mobs) are "
 "maintained.\n"
-"This should be configured together with active_object_range."
+"This should be configured together with active_object_send_range_blocks."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6236,6 +6550,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Upper Y limit of floatlands."
+msgstr "Maximální počet emerge front"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
@@ -6568,6 +6887,14 @@ msgid "Y-distance over which caverns expand to full size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Y-distance over which floatlands taper from full density to nothing.\n"
+"Tapering starts at this distance from the Y limit.\n"
+"For a solid floatland layer, this controls the height of hills/mountains.\n"
+"Must be less than or equal to half the distance between the Y limits."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
 msgstr ""
 
@@ -6599,14 +6926,53 @@ msgstr "cURL limit paralelních stahování"
 msgid "cURL timeout"
 msgstr "cURL timeout"
 
-#~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Plynulá kamera"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "Vybrat soubor s modem:"
+
+#~ msgid "Waving Water"
+#~ msgstr "Vlnění vody"
+
+#~ msgid "Waving water"
+#~ msgstr "Vlnění vody"
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "Hloubka velké jeskyně"
+
+#~ msgid "IPv6 support."
 #~ msgstr ""
-#~ "Upraví gamma kódování světelných tabulek. Vyšší čísla znamenají světlejší "
-#~ "hodnoty.\n"
-#~ "Toto nastavení ovlivňuje pouze klienta a serverem není použito."
+#~ "Nastavuje reálnou délku dne.\n"
+#~ "Např.: 72 = 20 minut, 360 = 4 minuty, 1 = 24 hodin, 0 = čas zůstává stále "
+#~ "stejný."
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Neprůhlednost stínu písma (od 0 do 255)."
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Šum základní výšky létajících ostrovů"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Zapne filmový tone mapping"
+
+#~ msgid "Enable VBO"
+#~ msgstr "Zapnout VBO"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Určuje oblasti létajících ostrovů s rovinný terénem.\n"
+#~ "Terén bude rovný v místech, kde hodnota šumu bude větší než 0."
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr "Ovládá šířku tunelů, menší hodnota vytváří širší tunely."
 
 #, fuzzy
 #~ msgid ""
@@ -6616,66 +6982,20 @@ msgstr "cURL timeout"
 #~ "Stanovuje hustotu horského terénu na létajících ostrovech.\n"
 #~ "Jedná se o posun přidaný k hodnotě šumu 'np_mountain'."
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr "Ovládá šířku tunelů, menší hodnota vytváří širší tunely."
-
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "Určuje oblasti létajících ostrovů s rovinný terénem.\n"
-#~ "Terén bude rovný v místech, kde hodnota šumu bude větší než 0."
+#~ "Upraví gamma kódování světelných tabulek. Vyšší čísla znamenají světlejší "
+#~ "hodnoty.\n"
+#~ "Toto nastavení ovlivňuje pouze klienta a serverem není použito."
 
-#~ msgid "Enable VBO"
-#~ msgstr "Zapnout VBO"
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "Stahuji a instaluji $1, prosím čekejte..."
 
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Zapne filmový tone mapping"
+#~ msgid "Back"
+#~ msgstr "Zpět"
 
-#~ msgid "Floatland base height noise"
-#~ msgstr "Šum základní výšky létajících ostrovů"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Základní šum létajících ostrovů"
-
-#~ msgid "Floatland level"
-#~ msgstr "Výška létajících ostrovů"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Koncentrace hor na létajících ostrovech"
-
-#, fuzzy
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Koncentrace hor na létajících ostrovech"
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Výška hor na létajících ostrovech"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Neprůhlednost stínu písma (od 0 do 255)."
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "IPv6 support."
-#~ msgstr ""
-#~ "Nastavuje reálnou délku dne.\n"
-#~ "Např.: 72 = 20 minut, 360 = 4 minuty, 1 = 24 hodin, 0 = čas zůstává stále "
-#~ "stejný."
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "Hloubka velké jeskyně"
-
-#~ msgid "Waving water"
-#~ msgstr "Vlnění vody"
-
-#~ msgid "Waving Water"
-#~ msgstr "Vlnění vody"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "Vybrat soubor s modem:"
-
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Plynulá kamera"
+#~ msgid "Ok"
+#~ msgstr "OK"
