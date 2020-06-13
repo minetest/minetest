@@ -5973,10 +5973,11 @@ object you are working with still exists.
 * `get_attach()`: returns parent, bone, position, rotation or nil if it isn't
   attached.
 * `set_detach()`
-* `set_bone_position(bone, position, rotation)`
+* `set_bone_position(bone, position, rotation, stop_animations)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
     * `rotation`: `{x=num, y=num, z=num}`
+    * `stop_animations`: stop model animation (optional) default:true
 * `get_bone_position(bone)`: returns position and rotation of the bone
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
