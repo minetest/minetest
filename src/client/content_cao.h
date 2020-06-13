@@ -102,6 +102,7 @@ private:
 	bool m_animation_loop = true;
 	// stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
+	bool m_stop_animations = true;
 
 	int m_attachment_parent_id = 0;
 	std::unordered_set<int> m_attachment_child_ids;
