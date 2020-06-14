@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-05-23 12:41+0000\n"
+"PO-Revision-Date: 2020-06-14 22:27+0000\n"
 "Last-Translator: runs <runspect@yahoo.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
@@ -24,7 +24,7 @@ msgstr "Has muerto"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "Aceptar"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -116,7 +116,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Encontrar más mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -170,11 +170,11 @@ msgstr "Volver al menú principal"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
 msgstr ""
+"ContentDB no se encuentra disponible cuando Minetest se compiló sin cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Cargando..."
+msgstr "Descargando..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -221,7 +221,7 @@ msgstr "Actualizar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Ver"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -229,45 +229,39 @@ msgstr "Ya existe un mundo llamado \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Terreno adicional"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
 msgstr "Frío de altitud"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Frío de altitud"
+msgstr "Sequedad de altitud"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biome blending"
-msgstr "Ruido de bioma"
+msgstr "Mezclado de biomas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "Ruido de bioma"
+msgstr "Biomas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "Ruido de caverna"
+msgstr "Cavernas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Octavas"
+msgstr "Cavernas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Crear"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Iteraciones"
+msgstr "Decoraciones"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -278,23 +272,20 @@ msgid "Download one from minetest.net"
 msgstr "Descarga uno desde minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Ruido de mazmorra"
+msgstr "Mazmorras"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Terreno plano"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floating landmasses in the sky"
-msgstr "Densidad de las montañas en tierras flotantes"
+msgstr "Tierras flotantes en el cielo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "Nivel de tierra flotante"
+msgstr "Tierras flotantes (experimental)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -306,20 +297,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Colinas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Humid rivers"
-msgstr "Ruido para la humedad"
+msgstr "Ríos húmedos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Incrementa humedad alrededor de los ríos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Lagos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
@@ -340,7 +330,7 @@ msgstr "Banderas planas de Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Montañas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -360,16 +350,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Reduce la humedad con la altitud"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Ruido de caverna"
+msgstr "Ríos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Ríos a nivel de mar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -378,7 +367,7 @@ msgstr "Semilla"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Transición suave entre biomas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
@@ -404,7 +393,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Erosión superficie terreno"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
@@ -2981,7 +2970,6 @@ msgid "Dungeon minimum Y"
 msgstr "Mazmorras, mín. Y"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
 msgstr "Ruido de mazmorra"
 
@@ -3477,8 +3465,8 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Desde cuán lejos se generan los bloques para los clientes, especificado\n"
-"en bloques de mapa (mapblocks, 16 nodos)."
+"Desde cuán lejos se generan los bloques para los clientes, especificado en "
+"bloques de mapa (mapblocks, 16 nodos)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5035,9 +5023,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Light curve boost"
-msgstr "Aumento medio del centro de la curva de luz."
+msgstr "Aumento medio del centro de la curva de luz"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost center"
@@ -5134,9 +5121,8 @@ msgid "Main menu script"
 msgstr "Script del menú principal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Main menu style"
-msgstr "Script del menú principal"
+msgstr "Estilo del menú principal"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5267,9 +5253,8 @@ msgid "Mapblock unload timeout"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Carpathian"
-msgstr "Generador de mapas"
+msgstr "Generador de mapas carpatiano"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5277,9 +5262,8 @@ msgid "Mapgen Carpathian specific flags"
 msgstr "Banderas planas de Mapgen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Flat"
-msgstr "Mapgen plano"
+msgstr "Generador de mapas plano"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5287,9 +5271,8 @@ msgid "Mapgen Flat specific flags"
 msgstr "Banderas planas de Mapgen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal"
-msgstr "Generador de mapas"
+msgstr "Generador de mapas fractal"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5297,9 +5280,8 @@ msgid "Mapgen Fractal specific flags"
 msgstr "Banderas planas de Mapgen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V5"
-msgstr "Generador de mapas"
+msgstr "Generador de mapas V5"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5307,9 +5289,8 @@ msgid "Mapgen V5 specific flags"
 msgstr "Banderas planas de Mapgen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V6"
-msgstr "Generador de mapas"
+msgstr "Generador de mapas V6"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5317,9 +5298,8 @@ msgid "Mapgen V6 specific flags"
 msgstr "Banderas planas de Mapgen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V7"
-msgstr "Generador de mapas"
+msgstr "Generador de mapas v7"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5981,19 +5961,16 @@ msgid "River channel depth"
 msgstr "Profundidad del relleno"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel width"
-msgstr "Profundidad del relleno"
+msgstr "Ancho de canal de río"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River depth"
-msgstr "Profundidad del relleno"
+msgstr "Profundidad de río"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise"
-msgstr "Ruido de caverna"
+msgstr "Ruido de río"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
@@ -6062,14 +6039,12 @@ msgid "Screenshot folder"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "Captura de pantalla"
+msgstr "Formato de captura de pantalla"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "Captura de pantalla"
+msgstr "Calidad de captura de pantalla"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6230,9 +6205,8 @@ msgstr ""
 "Requiere habilitar sombreadores."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shader path"
-msgstr "Sombreadores"
+msgstr "Ruta de sombreador"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6349,9 +6323,8 @@ msgid "Sound"
 msgstr "Sonido"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Special key"
-msgstr "Tecla sigilo"
+msgstr "Tecla especial"
 
 #: src/settings_translation_file.cpp
 msgid "Special key for climbing/descending"
@@ -6679,9 +6652,8 @@ msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Undersampling"
-msgstr "Renderizado:"
+msgstr "Renderizado"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6745,9 +6717,8 @@ msgid "VSync"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Valley depth"
-msgstr "Profundidad del relleno"
+msgstr "Profundidad del valle"
 
 #: src/settings_translation_file.cpp
 msgid "Valley fill"
@@ -6877,9 +6848,8 @@ msgid "Water surface level of the world."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving Nodes"
-msgstr "Movimiento de hojas"
+msgstr "Movimiento de nodos"
 
 #: src/settings_translation_file.cpp
 msgid "Waving leaves"
@@ -7003,9 +6973,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "World start time"
-msgstr "Nombre del mundo"
+msgstr "Tiempo comienzo mundo"
 
 #: src/settings_translation_file.cpp
 msgid ""
