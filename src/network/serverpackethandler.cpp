@@ -1262,13 +1262,23 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			}
 
 			pointed_object->rightClick(playersao);
-		} else if (m_script->item_OnPlace(
-				selected_item, playersao, pointed)) {
-			// Placement was handled in lua
+		} else {
+			// Need to save the selected_item because item_OnPlace
+			// changes the referenced selected_item
+			ItemStack old_selected_item = selected_item;
+			// Handle placement in lua
+			if (m_script->item_OnPlace(
+					selected_item, playersao, pointed)) {
+				// If the last item was placed, launch item_OnUnwield()
+				if (selected_item.count == 0) {
+					m_script->item_OnUnwield(
+							old_selected_item, playersao);
+				}
 
-			// Apply returned ItemStack
-			if (playersao->setWieldedItem(selected_item)) {
-				SendInventory(playersao, true);
+				// Apply returned ItemStack
+				if (playersao->setWieldedItem(selected_item)) {
+					SendInventory(playersao, true);
+				}
 			}
 		}
 

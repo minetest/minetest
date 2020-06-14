@@ -531,6 +531,17 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		}
 	}
 
+	if (from_inv.type == InventoryLocation::PLAYER || to_inv.type == InventoryLocation::PLAYER){
+		// if it's moved in the selected slot and there are no items like such already
+		if (to_i == player->getWieldIndex() &&
+			to_stack_was.name != src_item.name)
+			PLAYER_TO_SA(player)->item_OnWield(src_item, player);
+		// if the whole stack is moved away from the selected slot
+		else if (from_i == player->getWieldIndex() &&
+				 count == from_stack_was.count)
+			PLAYER_TO_SA(player)->item_OnUnwield(src_item, player);
+	}
+
 	mgr->setInventoryModified(from_inv);
 	if (inv_from != inv_to)
 		mgr->setInventoryModified(to_inv);
@@ -679,6 +690,11 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 			if (item2.count != actually_dropped_count)
 				errorstream<<"Could not take dropped count of items"<<std::endl;
+
+			// If players drop the last item in the stack they had in hand
+			if (from_i == player->getWieldIndex() &&
+					(src_item.count - actually_dropped_count == 0))
+				PLAYER_TO_SA(player)->item_OnUnwield(item2, player);
 		}
 
 		src_item.count = actually_dropped_count;
