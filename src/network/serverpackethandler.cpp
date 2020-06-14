@@ -883,7 +883,7 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 	if (!playersao->isDead())
 		return;
 
-	RespawnPlayer(peer_id);
+	RespawnPlayer(playersao);
 
 	actionstream << player->getName() << " respawns at "
 			<< PP(playersao->getBasePosition() / BS) << std::endl;

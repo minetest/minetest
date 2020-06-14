@@ -392,7 +392,7 @@ private:
 
 	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
-	void SendPlayerHP(session_t peer_id);
+	void SendPlayerHP(PlayerSAO *playersao);
 
 	void SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
 		f32 animation_speed);
@@ -463,8 +463,7 @@ private:
 		Something random
 	*/
 
-	void DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason);
-	void RespawnPlayer(session_t peer_id);
+	void RespawnPlayer(PlayerSAO *playersao);
 	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(RemotePlayer *player);
 	bool checkInteractDistance(RemotePlayer *player, const f32 d, const std::string &what);
