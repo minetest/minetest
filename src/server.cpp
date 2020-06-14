@@ -1046,10 +1046,6 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	// Send inventory
 	SendInventory(playersao, false);
 
-	// Send death screen
-	if (playersao->isDead())
-		SendDeathscreen(peer_id, false, v3f(0,0,0));
-
 	// Send HP and breath
 	if (g_settings->getBool("enable_damage")) {
 		SendPlayerHP(playersao);
@@ -1339,8 +1335,6 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason 
 
 		// Trigger scripted stuff
 		m_script->on_dieplayer(playersao, reason);
-
-		SendDeathscreen(playersao->getPeerID(), false, v3f(0,0,0));
 	}
 
 	SendPlayerHP(playersao);
@@ -1379,14 +1373,6 @@ void Server::SendAccessDenied_Legacy(session_t peer_id,const std::wstring &reaso
 {
 	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED_LEGACY, 0, peer_id);
 	pkt << reason;
-	Send(&pkt);
-}
-
-void Server::SendDeathscreen(session_t peer_id, bool set_camera_point_target,
-		v3f camera_point_target)
-{
-	NetworkPacket pkt(TOCLIENT_DEATHSCREEN, 1 + sizeof(v3f), peer_id);
-	pkt << set_camera_point_target << camera_point_target;
 	Send(&pkt);
 }
 
@@ -2698,26 +2684,6 @@ void Server::sendDetachedInventories(session_t peer_id, bool incremental)
 /*
 	Something random
 */
-
-void Server::RespawnPlayer(PlayerSAO *playersao)
-{
-	infostream << "Server::RespawnPlayer(): Player "
-			<< playersao->getPlayer()->getName()
-			<< " respawns" << std::endl;
-
-	playersao->setHP(playersao->accessObjectProperties()->hp_max,
-			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
-	playersao->setBreath(playersao->accessObjectProperties()->breath_max);
-
-	bool repositioned = m_script->on_respawnplayer(playersao);
-	if (!repositioned) {
-		// setPos will send the new position to client
-		playersao->setPos(findSpawnPos());
-	}
-
-	SendPlayerHP(playersao);
-}
-
 
 void Server::DenySudoAccess(session_t peer_id)
 {

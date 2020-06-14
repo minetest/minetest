@@ -801,6 +801,18 @@ int ModApiMapgen::l_get_spawn_level(lua_State *L)
 }
 
 
+// find_spawn_pos()
+int ModApiMapgen::l_find_spawn_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	v3f pos = getServer(L)->findSpawnPos();
+	pushFloatPos(L, pos);
+
+	return 1;
+}
+
+
 int ModApiMapgen::l_get_mapgen_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1845,6 +1857,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(get_biome_data);
 	API_FCT(get_mapgen_object);
 	API_FCT(get_spawn_level);
+	API_FCT(find_spawn_pos);
 
 	API_FCT(get_mapgen_params);
 	API_FCT(set_mapgen_params);

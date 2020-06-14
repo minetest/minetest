@@ -349,10 +349,6 @@ do
 	}
 end
 
--- TOSERVER_RESPAWN
-
-minetest_client_commands[0x38] = { "RESPAWN", 2 }
-
 -- TOSERVER_INTERACT
 
 do
@@ -930,35 +926,6 @@ end
 -- TOCLIENT_FOV
 
 minetest_server_commands[0x36] = { "FOV", 2 }
-
--- TOCLIENT_DEATHSCREEN
-
-do
-	local f_set_camera_point_target = ProtoField.bool(
-		"minetest.server.deathscreen_set_camera_point_target",
-		"Set camera point target")
-	local f_camera_point_target_x = ProtoField.int32(
-		"minetest.server.deathscreen_camera_point_target_x",
-		"Camera point target X", base.DEC)
-	local f_camera_point_target_y = ProtoField.int32(
-		"minetest.server.deathscreen_camera_point_target_y",
-		"Camera point target Y", base.DEC)
-	local f_camera_point_target_z = ProtoField.int32(
-		"minetest.server.deathscreen_camera_point_target_z",
-		"Camera point target Z", base.DEC)
-
-	minetest_server_commands[0x37] = {
-		"DEATHSCREEN", 15,
-		{ f_set_camera_point_target, f_camera_point_target_x,
-		  f_camera_point_target_y, f_camera_point_target_z},
-		function(buffer, pinfo, tree, t)
-			t:add(f_set_camera_point_target, buffer(2,1))
-			t:add(f_camera_point_target_x, buffer(3,4))
-			t:add(f_camera_point_target_y, buffer(7,4))
-			t:add(f_camera_point_target_z, buffer(11,4))
-		end
-	}
-end
 
 -- TOCLIENT_MEDIA
 

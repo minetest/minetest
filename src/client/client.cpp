@@ -1268,12 +1268,6 @@ void Client::sendDamage(u16 damage)
 	Send(&pkt);
 }
 
-void Client::sendRespawn()
-{
-	NetworkPacket pkt(TOSERVER_RESPAWN, 0);
-	Send(&pkt);
-}
-
 void Client::sendReady()
 {
 	NetworkPacket pkt(TOSERVER_CLIENT_READY,

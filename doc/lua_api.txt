@@ -4940,6 +4940,9 @@ Environment access
     * The spawn level returned is for a player spawn in unmodified terrain.
     * The spawn level is intentionally above terrain level to cope with
       full-node biome 'dust' nodes.
+* `minetest.find_spawn_pos()`
+    * Returns a suitable spawn position.
+    * This function uses `minetest.get_spawn_level` so the same points apply.
 
 Mod channels
 ------------
@@ -5013,6 +5016,14 @@ Formspec
         * `"INV"`: something failed
         * `"CHG"`: has been changed
         * `"VAL"`: not changed
+* `minetest.show_death_formspec(player, death_reason)`
+    * This function is called to show the death formspec when a player dies.
+    * It can be overridden to show a custom death formspec.
+    * `player` is an [`ObjectRef`] and `death_reason` is a
+      `PlayerHPChangeReason` table (see `minetest.register_on_player_hpchange`).
+    * It should show a formspec with the name `builtin:death`.
+    * The player will be respawned when the "quit" field is received (see
+      `minetest.register_on_player_receive_fields`).
 
 Item handling
 -------------
@@ -5403,6 +5414,10 @@ Misc.
 * `minetest.is_player(obj)`: boolean, whether `obj` is a player
 * `minetest.player_exists(name)`: boolean, whether player exists
   (regardless of online status)
+* `minetest.respawn_player(player)`
+    * Resets a player's HP and breath and spawns them in a new position.
+    * Use `minetest.register_on_respawnplayer` to disable regular player
+      placement.
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
     * `name`: `"breath"` or `"health"`
