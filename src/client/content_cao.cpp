@@ -1510,6 +1510,7 @@ bool GenericCAO::visualExpiryRequired(const ObjectProperties &new_) const
 	return old.backface_culling != new_.backface_culling ||
 		old.is_visible != new_.is_visible ||
 		old.mesh != new_.mesh ||
+		old.shaded != new_.shaded ||
 		old.use_texture_alpha != new_.use_texture_alpha ||
 		old.visual != new_.visual ||
 		old.visual_size != new_.visual_size ||
