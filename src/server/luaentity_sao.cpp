@@ -360,8 +360,16 @@ u16 LuaEntitySAO::punch(v3f dir,
 			&tool_item,
 			time_from_last_punch);
 
+	ItemStack old_selected_item;
+	puncher->getWieldedItem(&old_selected_item, nullptr);
+
 	bool damage_handled = m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
 			time_from_last_punch, toolcap, dir, result.did_punch ? result.damage : 0);
+
+	puncher->getWieldedItem(&selected_item, nullptr);
+	// If LUA script added something to the selected slot launch item_OnWield
+	if (old_selected_item != selected_item)
+		puncher->getEnv()->getScriptIface()->item_OnWield(selected_item, puncher);
 
 	if (!damage_handled) {
 		if (result.did_punch) {
