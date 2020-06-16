@@ -11,7 +11,7 @@ Description of formspec language to show your menu is in lua_api.txt
 Callbacks
 ---------
 
-core.buttonhandler(fields): called when a button is pressed.
+core.button_handler(fields): called when a button is pressed.
 ^ fields = {name1 = value1, name2 = value2, ...}
 core.event_handler(event)
 ^ event: "MenuQuit", "KeyEnter", "ExitButton" or "EditBoxEnter"
