@@ -55,6 +55,17 @@ minetest.register_entity("testentities:mesh", {
 	},
 })
 
+minetest.register_entity("testentities:mesh_unshaded", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "testnodes_pyramid.obj",
+		textures = {
+			"testnodes_mesh_stripes2.png"
+		},
+		shaded = false,
+	},
+})
+
 -- Advanced visual tests
 
 -- A test entity for testing animated and yaw-modulated sprites
@@ -71,4 +82,3 @@ minetest.register_entity("testentities:yawsprite", {
 		self.object:set_sprite({x=0, y=0}, 1, 0, true)
 	end,
 })
-

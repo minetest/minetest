@@ -537,11 +537,13 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaderinfo.base_material = video::EMT_SOLID;
 		break;
 	case TILE_MATERIAL_ALPHA:
+	case TILE_MATERIAL_PLAIN_ALPHA:
 	case TILE_MATERIAL_LIQUID_TRANSPARENT:
 	case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
 		shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		break;
 	case TILE_MATERIAL_BASIC:
+	case TILE_MATERIAL_PLAIN:
 	case TILE_MATERIAL_WAVING_LEAVES:
 	case TILE_MATERIAL_WAVING_PLANTS:
 	case TILE_MATERIAL_WAVING_LIQUID_BASIC:
@@ -644,9 +646,11 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		"TILE_MATERIAL_WAVING_LIQUID_BASIC",
 		"TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT",
 		"TILE_MATERIAL_WAVING_LIQUID_OPAQUE",
+		"TILE_MATERIAL_PLAIN",
+		"TILE_MATERIAL_PLAIN_ALPHA",
 	};
 
-	for (int i = 0; i < 10; i++){
+	for (int i = 0; i < 12; i++){
 		shaders_header += "#define ";
 		shaders_header += materialTypes[i];
 		shaders_header += " ";

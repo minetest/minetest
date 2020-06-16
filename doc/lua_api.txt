@@ -6644,6 +6644,9 @@ Player properties need to be saved manually.
 
         damage_texture_modifier = "^[brighten",
         -- Texture modifier to be applied for a short duration when object is hit
+
+        shaded = true,
+        -- Setting this to 'false' disables diffuse lighting of entity
     }
 
 Entity definition
