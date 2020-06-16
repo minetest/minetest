@@ -48,9 +48,10 @@ end
 
 local tabs = {}
 
-tabs.settings = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
-tabs.content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua")
-tabs.credits  = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
+tabs.settings     = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
+tabs.content      = dofile(menupath .. DIR_DELIM .. "tab_content.lua")
+tabs.credits      = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
+tabs.client_mods  = dofile(menupath .. DIR_DELIM .. "tab_client_mods.lua")
 if menustyle == "simple" then
 	tabs.simple_main = dofile(menupath .. DIR_DELIM .. "tab_simple_main.lua")
 else
@@ -135,6 +136,7 @@ local function init_globals()
 	end
 
 	tv_main:add(tabs.content)
+	tv_main:add(tabs.client_mods)
 	tv_main:add(tabs.settings)
 	tv_main:add(tabs.credits)
 
