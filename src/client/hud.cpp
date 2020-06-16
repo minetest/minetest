@@ -612,8 +612,7 @@ void Hud::drawHotbar(u16 playeritem) {
 
 void Hud::drawCrosshair()
 {
-	if (can_draw_object_crosshair)
-	{
+	if (can_draw_object_crosshair) {
 		if (use_object_crosshair_image) {
 			video::ITexture *object_crosshair = tsrc->getTexture("object_crosshair.png");
 			v2u32 size  = object_crosshair->getOriginalSize();
