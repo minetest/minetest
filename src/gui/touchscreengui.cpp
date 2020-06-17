@@ -1043,7 +1043,7 @@ void TouchScreenGUI::applyJoystickStatus()
 		if (i == 4 && !m_joystick_triggers_special1)
 			continue;
 
-		SEvent translated;
+		SEvent translated{};
 		translated.EventType            = irr::EET_KEY_INPUT_EVENT;
 		translated.KeyInput.Key         = id2keycode(m_joystick_names[i]);
 		translated.KeyInput.PressedDown = false;
