@@ -1945,10 +1945,9 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				false 	// Copy memory
 			);
 
-			// Somewhere here there was a SEGFAULT
 			rt->unlock(); // wondering whether this is required
 			driver->removeTexture(rt);
-			// rt->drop(); isn't required; now it doesn't seem to segfault anymore
+			// rt->drop(); isn't required; not segfaulting anymore
 
 			if (!baseimg) {
 				errorstream << "generateImagePart(): Could not create image "
