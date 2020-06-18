@@ -540,6 +540,10 @@ u32 TextureSource::getTextureId(const std::string &name)
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
 
+// Draw a normalmap on top of another one
+static void blit_normalmap(video::IImage *src, video::IImage *dst,
+		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
+
 // Like blit_with_alpha, but only modifies destination pixels that
 // are fully opaque
 static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
@@ -1194,16 +1198,17 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 					video::SColor(255,255,255,255),
 					NULL);*/
 
+			auto blit = normalmap_found ? blit_normalmap : blit_with_alpha;
 			core::dimension2d<u32> dim_dst = baseimg->getDimension();
 			if (dim == dim_dst) {
-				blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
+				blit(image, baseimg, pos_from, pos_to, dim);
 			} else if (dim.Width * dim.Height < dim_dst.Width * dim_dst.Height) {
 				// Upscale overlying image
 				video::IImage *scaled_image = RenderingEngine::get_video_driver()->
 					createImage(video::ECF_A8R8G8B8, dim_dst);
 				image->copyToScaling(scaled_image);
 
-				blit_with_alpha(scaled_image, baseimg, pos_from, pos_to, dim_dst);
+				blit(scaled_image, baseimg, pos_from, pos_to, dim_dst);
 				scaled_image->drop();
 			} else {
 				// Upscale base image
@@ -1213,7 +1218,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				baseimg->drop();
 				baseimg = scaled_base;
 
-				blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
+				blit(image, baseimg, pos_from, pos_to, dim);
 			}
 		}
 		//cleanup
@@ -1893,6 +1898,31 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
 		dst_c = blitPixel(src_c, dst_c, src_c.getAlpha());
 		dst->setPixel(dst_x, dst_y, dst_c);
+	}
+}
+
+/*
+	Draw a normalmap on top of an another one;
+	the the alpha channel of the normalmap is the heightmap.
+*/
+static void blit_normalmap(video::IImage *src, video::IImage *dst,
+		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
+{
+	for (u32 y0=0; y0<size.Y; y0++)
+	for (u32 x0=0; x0<size.X; x0++)
+	{
+		s32 src_x = src_pos.X + x0;
+		s32 src_y = src_pos.Y + y0;
+		s32 dst_x = dst_pos.X + x0;
+		s32 dst_y = dst_pos.Y + y0;
+		video::SColor src_c = src->getPixel(src_x, src_y);
+		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
+		// Choose the normal vector and height of the higher pixel;
+		// in case of equal height, choose the dst pixel
+		if (dst_c.getAlpha() >= src_c.getAlpha())
+			dst->setPixel(dst_x, dst_y, dst_c);
+		else
+			dst->setPixel(dst_x, dst_y, src_c);
 	}
 }
 
