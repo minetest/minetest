@@ -63,8 +63,8 @@ ServerScripting::ServerScripting(Server* server):
 	if (g_settings->getBool("secure.enable_security")) {
 		initializeSecurity();
 	} else {
-		warningstream << "\\!/ Disabling mod security should not be done, as it allows any mod to "
-				<< "access the host computer."
+		warningstream << "\\!/ Mod security should never be disabled, as it allows any mod to "
+				<< "access the host machine."
 				<< "Mods should use minetest.request_insecure_environment() instead \\!/" << std::endl;
 	}
 
