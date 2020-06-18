@@ -1506,6 +1506,9 @@ bool GenericCAO::visualExpiryRequired(const ObjectProperties &new_) const
 	 * - glow:          handled by updateLight()
 	 * - any other properties that do not change appearance
 	 */
+
+	bool uses_legacy_texture = new_.wield_item.empty() &&
+		(new_.visual == "wielditem" || new_.visual == "item");
 	// Ordered to compare primitive types before std::vectors
 	return old.backface_culling != new_.backface_culling ||
 		old.is_visible != new_.is_visible ||
@@ -1515,7 +1518,8 @@ bool GenericCAO::visualExpiryRequired(const ObjectProperties &new_) const
 		old.visual != new_.visual ||
 		old.visual_size != new_.visual_size ||
 		old.wield_item != new_.wield_item ||
-		old.colors != new_.colors;
+		old.colors != new_.colors ||
+		(uses_legacy_texture && old.textures != new_.textures);
 }
 
 void GenericCAO::processMessage(const std::string &data)
