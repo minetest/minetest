@@ -121,7 +121,7 @@ function core.register_item(name, itemdef)
 	-- Check inventory_image dependencies
 	if type(itemdef.inventory_image) == "string" then
 		for itemname in itemdef.inventory_image:gmatch("%[item:([A-z_]+:[A-z_]+)") do
-			assert(core.registered_items[itemname], 'Item "'..itemname..'" is required for the inventory image and not registered yet')
+			assert(core.registered_items[itemname], 'Item "'..itemname..'" is referenced but not registered yet')
 		end
 	end
 
