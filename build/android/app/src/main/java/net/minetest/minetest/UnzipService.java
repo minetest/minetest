@@ -55,16 +55,34 @@ public class UnzipService extends IntentService {
 		super("net.minetest.minetest.UnzipService");
 	}
 
-	private void isDir(String dir, String location) {
+	private void createDir(String dir, String location) {
 		File f = new File(location, dir);
 		if (!f.isDirectory())
 			f.mkdirs();
 	}
 
+	private void deleteRecursive(File fileOrDirectory) {
+		if (fileOrDirectory.isDirectory())
+			for (File child : fileOrDirectory.listFiles())
+				deleteRecursive(child);
+
+		fileOrDirectory.delete();
+	}
+
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		createNotification();
-		unzip(intent);
+
+		String zip = intent.getStringExtra(EXTRA_KEY_IN_FILE);
+		String location = Environment.getExternalStorageDirectory() + File.separator + "Minetest" + File.separator;
+
+		// Delete LICENSE.txt if it is a directory
+		// This is caused by Minetest versions pre-5.3.0
+		File licenseFile = new File(location, "LICENSE.txt");
+		if (licenseFile.isDirectory())
+			deleteRecursive(licenseFile);
+
+		unzip(zip, location);
 	}
 
 	private void createNotification() {
@@ -98,22 +116,21 @@ public class UnzipService extends IntentService {
 		mNotifyManager.notify(id, builder.build());
 	}
 
-	private void unzip(Intent intent) {
-		String zip = intent.getStringExtra(EXTRA_KEY_IN_FILE);
-		isDir("Minetest", Environment.getExternalStorageDirectory().toString());
-		String location = Environment.getExternalStorageDirectory() + File.separator + "Minetest" + File.separator;
+	private void unzip(String zip, String location) {
+		createDir("Minetest", Environment.getExternalStorageDirectory().toString());
+
 		int per = 0;
 		int size = getSummarySize(zip);
 		File zipFile = new File(zip);
 		int readLen;
 		byte[] readBuffer = new byte[8192];
 		try (FileInputStream fileInputStream = new FileInputStream(zipFile);
-		     ZipInputStream zipInputStream = new ZipInputStream(fileInputStream)) {
+				ZipInputStream zipInputStream = new ZipInputStream(fileInputStream)) {
 			ZipEntry ze;
 			while ((ze = zipInputStream.getNextEntry()) != null) {
 				if (ze.isDirectory()) {
 					++per;
-					isDir(ze.getName(), location);
+					createDir(ze.getName(), location);
 				} else {
 					publishProgress(100 * ++per / size);
 					try (OutputStream outputStream = new FileOutputStream(location + ze.getName())) {
