@@ -738,7 +738,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 		 * android would provide this information but Irrlicht guys don't
 		 * wanna design a efficient interface
 		 */
-		id_status toadd;
+		id_status toadd{};
 		toadd.id = event.TouchInput.ID;
 		toadd.X  = event.TouchInput.X;
 		toadd.Y  = event.TouchInput.Y;
