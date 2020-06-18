@@ -738,7 +738,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 		 * android would provide this information but Irrlicht guys don't
 		 * wanna design a efficient interface
 		 */
-		id_status toadd;
+		id_status toadd{};
 		toadd.id = event.TouchInput.ID;
 		toadd.X  = event.TouchInput.X;
 		toadd.Y  = event.TouchInput.Y;
@@ -1043,7 +1043,7 @@ void TouchScreenGUI::applyJoystickStatus()
 		if (i == 4 && !m_joystick_triggers_special1)
 			continue;
 
-		SEvent translated;
+		SEvent translated{};
 		translated.EventType            = irr::EET_KEY_INPUT_EVENT;
 		translated.KeyInput.Key         = id2keycode(m_joystick_names[i]);
 		translated.KeyInput.PressedDown = false;
