@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-06-19 23:01+0000\n"
-"Last-Translator: Hamlet <hamlatmesehub@riseup.net>\n"
+"Last-Translator: Shuli <carlo.8.ottolini@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -96,15 +96,15 @@ msgstr "Disattiva tutto"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Disabilita pacchetto mod"
+msgstr "Disattiva raccolta di mod"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Abilita tutto"
+msgstr "Attiva tutto"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Abilita pacchetto mod"
+msgstr "Attiva raccolta di mod"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
