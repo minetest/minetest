@@ -1457,6 +1457,7 @@ void GenericCAO::updateBonePosition()
 		if (bone && bone->getParent() == m_animated_meshnode) {
 			// Update entire skeleton.
 			bone->updateAbsolutePositionOfAllChildren();
+			break;
 		}
 	}
 }
