@@ -351,11 +351,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		player_position.Y = oldy * t + newy * (1-t);
 	}
 
-	// Set player node transformation
-	m_playernode->setPosition(player_position);
-	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
-	m_playernode->updateAbsolutePosition();
-
 	// Get camera tilt timer (hurt animation)
 	float cameratilt = fabs(fabs(player->hurt_tilt_timer-0.75)-0.75);
 
@@ -378,26 +373,46 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		fall_bobbing *= m_cache_fall_bobbing_amount;
 	}
 
-	// Calculate and translate the head SceneNode offsets
-	{
-		v3f eye_offset = player->getEyeOffset();
-		if (m_camera_mode == CAMERA_MODE_FIRST)
-			eye_offset += player->eye_offset_first;
-		else
-			eye_offset += player->eye_offset_third;
-
-		// Set head node transformation
-		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
-		m_headnode->setPosition(eye_offset);
-		m_headnode->setRotation(v3f(player->getPitch(), 0,
-			cameratilt * player->hurt_tilt_strength));
-		m_headnode->updateAbsolutePosition();
-	}
-
 	// Compute relative camera position and target
 	v3f rel_cam_pos = v3f(0,0,0);
 	v3f rel_cam_target = v3f(0,0,1);
 	v3f rel_cam_up = v3f(0,1,0);
+	v3f view(player->getPitch(), 0, cameratilt * player->hurt_tilt_strength);
+
+	// Calculate and translate the head SceneNode offsets
+	v3f eye_offset = player->getEyeOffset();
+	if (m_camera_mode == CAMERA_MODE_FIRST)
+		eye_offset += player->eye_offset_first;
+	else
+		eye_offset += player->eye_offset_third;
+
+	// Set head node transformation
+	eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
+
+	if (player->getParent())
+	{	
+		v3f angles = player->getParent()->getSceneNode()->getAbsoluteTransformation().getRotationDegrees();
+		irr::core::quaternion rotator;
+		rotator.set(angles * core::DEGTORAD);
+
+		rel_cam_target = rotator * rel_cam_target;
+		rel_cam_up = rotator * rel_cam_up;
+		eye_offset = rotator * eye_offset;
+		view.Y = -1 * player->getYaw();
+
+		rel_cam_pos.normalize();
+//		view = rotator * view;
+	} else {
+		m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
+	}
+
+	// Set player node transformation
+	m_playernode->setPosition(player_position);
+	m_playernode->updateAbsolutePosition();
+
+	m_headnode->setPosition(eye_offset);
+	m_headnode->setRotation(view);
+	m_headnode->updateAbsolutePosition();
 
 	if (m_cache_view_bobbing_amount != 0.0f && m_view_bobbing_anim != 0.0f &&
 		m_camera_mode < CAMERA_MODE_THIRD) {
