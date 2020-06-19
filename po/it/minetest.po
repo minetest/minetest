@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-04-29 12:38+0000\n"
-"Last-Translator: Matteo Gheza <matteo.gheza07@gmail.com>\n"
+"PO-Revision-Date: 2020-06-19 23:01+0000\n"
+"Last-Translator: Hamlet <hamlatmesehub@riseup.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -12,11 +12,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0.2\n"
+"X-Generator: Weblate 4.1.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Ricompari"
+msgstr "Ricomincia"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -24,7 +24,7 @@ msgstr "Sei morto"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "Ok"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -116,7 +116,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Trova più mod"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -169,12 +169,11 @@ msgstr "Torna al Menu Principale"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB non è disponibile quando Minetest viene compilato senza cuRL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Caricamento..."
+msgstr "Scaricamento..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -221,7 +220,7 @@ msgstr "Aggiorna"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Vedi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -229,72 +228,63 @@ msgstr "Un mondo chiamato \"$1\" esiste già"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Terreno aggiuntivo"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr "Raffreddamento altitudine"
+msgstr "Raffreddamento da altitudine"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Raffreddamento altitudine"
+msgstr "Siccità da altitudine"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biome blending"
-msgstr "Rumore biomi"
+msgstr "Miscelatura biomi"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "Rumore biomi"
+msgstr "Biomi"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "Rumore della caverna"
+msgstr "Caverne"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Ottave"
+msgstr "Grotte"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Crea"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Iterazioni"
+msgstr "Decorazioni"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "Scarica un gioco, per esempio Minetest Game, da minetest.net"
+msgstr "Scarica un gioco, come Minetest Game, da minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
 msgstr "Scaricane uno da minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Rumore per le segrete"
+msgstr "Sotterranei"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Terreno piatto"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floating landmasses in the sky"
-msgstr "Densità montuosa delle terre fluttuanti"
+msgstr "Pietre miliari fluttuanti nel cielo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "Livello delle terre fluttuanti"
+msgstr "Terre fluttuanti (sperimentale)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -302,28 +292,27 @@ msgstr "Gioco"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Generare terreno non-frattale: oceani e sottoterra"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Colline"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Humid rivers"
-msgstr "Driver video"
+msgstr "Fiumi umidi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Aumenta l'umidità attorno ai fiumi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Laghi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Bassa umidità e calore elevato producono fiumi bassi o secchi"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -334,22 +323,20 @@ msgid "Mapgen flags"
 msgstr "Valori del generatore mappa"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Valori specifici del generatore di mappe v5"
+msgstr "Valori specifici del generatore di mappe"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mountains"
-msgstr "Rumore montano"
+msgstr "Montagne"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Colata di fango"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Rete di gallerie e grotte"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -357,74 +344,73 @@ msgstr "Nessun gioco selezionato"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Diminuisce il calore con l'altitudine"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Diminuisce l'umidità con l'altitudine"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Dimensione dei fiumi"
+msgstr "Fiumi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Fiumi a livello del mare"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr "Seme di generazione"
+msgstr "Seme"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Transizione uniforme tra biomi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Strutture che compaiono sul terreno (nessun effetto su alberi ed erba della "
+"giungla creati dal v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Strutture che compaiono sul terreno, tipicamente alberi e piante"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Temperato, Deserto"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Temperato, Deserto, Giungla"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Temperato, Deserto, Giungla, Tundra, Taiga"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Terrain surface erosion"
-msgstr "Rumore di base del terreno"
+msgstr "Erosione della superficie del terreno"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Alberi ed erba della giungla"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Vary river depth"
-msgstr "Profondità dei fiumi"
+msgstr "Diversifica la profondità dei fiumi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Caverne davvero grandi in profondità sottoterra"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
-msgstr "Avvertimento: il Minimal Development Test è rivolto agli sviluppatori."
+msgstr ""
+"Avvertimento: il Minimal Development Test è inteso per gli sviluppatori."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -436,13 +422,13 @@ msgstr "Non hai nessun gioco installato."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Sei sicuro di volere eliminare \"$1\"?"
+msgstr "Sei sicuro di volere cancellare \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr "Elimina"
+msgstr "Cancella"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -454,7 +440,7 @@ msgstr "pkgmgr: percorso non valido \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "Vuoi eliminare il mondo \"$1\"?"
+msgstr "Cancellare il mondo \"$1\"?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -462,15 +448,15 @@ msgstr "Accetta"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Rinomina il pacchetto mod:"
+msgstr "Rinominare il pacchetto di mod:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
-"Questo pacchetto mod ha un nome esplicito datogli nel suo modpack.conf che "
-"ignorerà qualsiasi rinominazione qui effettuata."
+"Questo pacchetto di mod ha un nome esplicito datogli nel suo modpack.conf "
+"che ignorerà qualsiasi rinominazione qui effettuata."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -498,7 +484,7 @@ msgstr "Modifica"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr "Abilitat*"
+msgstr "Abilitato"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
@@ -510,7 +496,7 @@ msgstr "Ottave"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr "Spostamento"
+msgstr "Scarto"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
@@ -526,7 +512,7 @@ msgstr "Per favore inserisci un numero valido."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "Ripristina predefiniti"
+msgstr "Ripristina"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -739,7 +725,7 @@ msgstr "Ospita un server"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Installa giochi dal ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1398,11 +1384,11 @@ msgstr "Suono disattivato"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Il sistema audio è disabilitato"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Il sistema audio non è supportato su questa build"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -2053,9 +2039,8 @@ msgid "3D mode"
 msgstr "Modalità 3D"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D mode parallax strength"
-msgstr "Intensità normalmap"
+msgstr "Intensità della modalità 3D di parallasse"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2142,9 +2127,8 @@ msgid "ABM interval"
 msgstr "Intervallo ABM"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Absolute limit of queued blocks to emerge"
-msgstr "Limite assoluto di code emerge"
+msgstr "Limite assoluto di blocchi in coda da fare apparire"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -2497,18 +2481,16 @@ msgstr ""
 "Potrebbe servire per gli schermi più piccoli."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat font size"
-msgstr "Dimensione del carattere"
+msgstr "Dimensione del carattere dell'area di messaggistica"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Tasto della chat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat log level"
-msgstr "Livello del registro di debug"
+msgstr "Livello del registro dell'area di messaggistica"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2768,9 +2750,8 @@ msgid "Dec. volume key"
 msgstr "Tasto dim. volume"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Decrease this to increase liquid resistance to movement."
-msgstr "Va diminuito per aumentare la resistenza al movimento nel liquido."
+msgstr "Diminuisci questo per aumentare la resistenza dei liquidi al movimento."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2805,9 +2786,8 @@ msgid "Default report format"
 msgstr "Formato di rapporto predefinito"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default stack size"
-msgstr "Gioco predefinito"
+msgstr "Dimensione predefinita della pila"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3090,14 +3070,14 @@ msgstr ""
 "Per esempio: 0 per nessun ondeggiamento, 1.0 per normale, 2.0 per doppio."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable/disable running an IPv6 server.\n"
 "Ignored if bind_address is set.\n"
 "Needs enable_ipv6 to be enabled."
 msgstr ""
 "Abilita/Disabilita l'esecuzione di un server IPv6.\n"
-"Ignorata se si imposta bind_address."
+"Ignorata se si imposta bind_address.\n"
+"Richiede enable_ipv6 per essere abilitata."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3160,6 +3140,10 @@ msgid ""
 "sound controls will be non-functional.\n"
 "Changing this setting requires a restart."
 msgstr ""
+"Abilita il sistema audio.\n"
+"Se disabilitato, disabilita completamente tutti i suoni ovunque rendendo i "
+"controlli audio nel gioco non funzionanti.\n"
+"Cambiare questa impostazione richiede un riavvio.\n"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
