@@ -188,10 +188,11 @@ public:
 		return m_matrixnode->getRelativeTransformationMatrix();
 	}
 
-	inline const core::matrix4 &getAbsolutePosRotMatrix() const
+	inline const core::matrix4 *getAbsolutePosRotMatrix() const
 	{
-		assert(m_matrixnode);
-		return m_matrixnode->getAbsoluteTransformation();
+		if (!m_matrixnode)
+			return nullptr;
+		return &m_matrixnode->getAbsoluteTransformation();
 	}
 
 	inline f32 getStepHeight() const
