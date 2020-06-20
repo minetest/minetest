@@ -2451,31 +2451,14 @@ bool Server::addMediaFile(const std::string &filename,
 	// Ok, attempt to load the file and add to cache
 
 	// Read data
-	std::ifstream fis(filepath.c_str(), std::ios_base::binary);
-	if (!fis.good()) {
-		errorstream << "Server::addMediaFile(): Could not open \""
-				<< filename << "\" for reading" << std::endl;
-		return false;
-	}
 	std::string filedata;
-	bool bad = false;
-	for (;;) {
-		char buf[1024];
-		fis.read(buf, sizeof(buf));
-		std::streamsize len = fis.gcount();
-		filedata.append(buf, len);
-		if (fis.eof())
-			break;
-		if (!fis.good()) {
-			bad = true;
-			break;
-		}
-	}
-	if (bad) {
+	if (!fs::ReadFile(filepath, filedata)) {
 		errorstream << "Server::addMediaFile(): Failed to read \""
-				<< filename << "\"" << std::endl;
+					<< filename << "\" for reading" << std::endl;
 		return false;
-	} else if (filedata.empty()) {
+	}
+
+	if (filedata.empty()) {
 		errorstream << "Server::addMediaFile(): Empty file \""
 				<< filepath << "\"" << std::endl;
 		return false;
@@ -3906,7 +3889,7 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, suffix)) {
 			std::string data;
-			if (fs::ReadTextFile(i.second.path, data)) {
+			if (fs::ReadFile(i.second.path, data)) {
 				translations->loadTranslation(data);
 			}
 		}
