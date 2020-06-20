@@ -3895,17 +3895,20 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	if (lang_code.empty())
 		return nullptr;
 
-	auto *it = server_translations.find(lang_code);
+	auto it = server_translations.find(lang_code);
 	if (it != server_translations.end())
 		return &it->second; // Already loaded
 
 	// [] will create an entry
-	auto translations = &server_translations[lang_code];
+	auto *translations = &server_translations[lang_code];
 
 	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, suffix)) {
-			translations->loadTranslation(fs::ReadTextFile(i.second.path));
+			std::string data;
+			if (fs::ReadTextFile(i.second.path, data)) {
+				translations->loadTranslation(data);
+			}
 		}
 	}
 

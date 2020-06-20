@@ -128,7 +128,7 @@ const char *GetFilenameFromPath(const char *path);
 
 bool safeWriteToFile(const std::string &path, const std::string &content);
 
-std::string &&ReadTextFile(const std::string &path);
+bool ReadTextFile(const std::string &path, std::string &out);
 
 bool Rename(const std::string &from, const std::string &to);
 
