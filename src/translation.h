@@ -30,11 +30,6 @@ extern Translations *g_client_translations;
 class Translations
 {
 public:
-	Translations() = default;
-	~Translations() {
-		clear();
-	}
-
 	void loadTranslation(const std::string &data);
 	void clear();
 	const std::wstring &getTranslation(
