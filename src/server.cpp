@@ -3890,10 +3890,17 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 	}
 }
 
-void Server::loadTranslationLanguage(const std::string &lang_code)
+Translations *Server::getTranslationLanguage(const std::string &lang_code)
 {
-	if (g_server_translations->count(lang_code))
-		return; // Already loaded
+	if (lang_code.empty())
+		return nullptr;
+
+	auto it = server_translations.find(lang_code);
+	if (it != server_translations.end())
+		return &it->second; // Already loaded
+
+	// [] will create an entry
+	auto translations = &server_translations[lang_code];
 
 	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {
@@ -3902,7 +3909,9 @@ void Server::loadTranslationLanguage(const std::string &lang_code)
 			std::string data((std::istreambuf_iterator<char>(t)),
 			std::istreambuf_iterator<char>());
 
-			(*g_server_translations)[lang_code].loadTranslation(data);
+			translations->loadTranslation(data);
 		}
 	}
+
+	return translations;
 }
