@@ -61,9 +61,6 @@ task prepareAssets() {
 	copy {
 		from "${projRoot}/builtin" into "${assetsFolder}/builtin"
 	}
-	copy {
-		from "${projRoot}/mods" into "${assetsFolder}/mods"
-	}
 	/*copy {
 		// ToDo: fix Minetest shaders that currently don't work with OpenGL ES
 		from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
