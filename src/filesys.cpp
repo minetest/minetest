@@ -750,6 +750,15 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	return true;
 }
 
+std::string &&ReadTextFile(const std::string &path)
+{
+	std::ifstream t(path);
+	std::string data((std::istreambuf_iterator<char>(t)),
+					 std::istreambuf_iterator<char>());
+
+	return std::move(data);
+}
+
 bool Rename(const std::string &from, const std::string &to)
 {
 	return rename(from.c_str(), to.c_str()) == 0;
