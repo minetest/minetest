@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"
+#include "translation.h"
 #include <string>
 #include <list>
 #include <map>
