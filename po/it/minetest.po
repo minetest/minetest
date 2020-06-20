@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-06-22 17:56+0000\n"
-"Last-Translator: Hamlet <hamlatmesehub@riseup.net>\n"
+"Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Ricomincia"
+msgstr "Rinasci"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -111,7 +111,7 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Impossibile abilitare il mod \"$1\" poiché contiene caratteri non ammessi. "
+"Impossibile abilitare la mod \"$1\" poiché contiene caratteri non ammessi. "
 "Sono ammessi solo i caratteri [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -128,7 +128,7 @@ msgstr "Nessuna dipendenza (facoltativa)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "Non è stata fornita nessuna descrizione del gioco."
+msgstr "Non è stata fornita alcuna descrizione del gioco."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
@@ -177,7 +177,7 @@ msgstr "Scaricamento..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr "Impossibile scaricere $1"
+msgstr "Impossibile scaricare $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
