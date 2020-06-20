@@ -411,7 +411,6 @@ private:
 	void parseTable(parserData* data, const std::string &element);
 	void parseTextList(parserData* data, const std::string &element);
 	void parseDropDown(parserData* data, const std::string &element);
-	void parseDropDownIndexEvent(const std::string &element);
 	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
 	void parsePwdField(parserData* data, const std::string &element);
 	void parseField(parserData* data, const std::string &element, const std::string &type);

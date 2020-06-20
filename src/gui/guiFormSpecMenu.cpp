@@ -1320,16 +1320,18 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 
 void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
-	if ((parts.size() == 5) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if (parts.size() == 5 || parts.size() == 6 ||
+		(parts.size() > 6 && m_formspec_version > FORMSPEC_API_VERSION))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
 		std::string name = parts[2];
-		std::vector<std::string> items = split(parts[3],',');
-		std::string str_initial_selection;
-		str_initial_selection = parts[4];
+		std::vector<std::string> items = split(parts[3], ',');
+		std::string str_initial_selection = parts[4];
+
+		if (parts.size() >= 6 && is_yes(parts[5]))
+			m_dropdown_index_event[name] = true;
 
 		MY_CHECKPOS("dropdown",0);
 
@@ -1396,18 +1398,8 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 
 		return;
 	}
-	errorstream << "Invalid dropdown element(" << parts.size() << "): '"
-				<< element << "'"  << std::endl;
-}
-
-void GUIFormSpecMenu::parseDropDownIndexEvent(const std::string &element)
-{
-	std::vector<std::string> parts = split(element, ';');
-	if (parts.size() == 2 ||
-		(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION))
-	{
-		m_dropdown_index_event[parts[0]] = is_yes(parts[1]);
-	}
+	errorstream << "Invalid dropdown element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
@@ -2764,11 +2756,6 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
-	if (type == "dropdown_index_event") {
-		parseDropDownIndexEvent(description);
-		return;
-	}
-
 	if (type == "field_close_on_enter") {
 		parseFieldCloseOnEnter(data, description);
 		return;
@@ -3744,8 +3731,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					s32 selected = e->getSelected();
 					if (selected >= 0) {
 						if (m_dropdown_index_event.find(s.fname) !=
-							m_dropdown_index_event.end())
-						{
+								m_dropdown_index_event.end()) {
 							fields[name] = std::to_string(selected + 1);
 						} else {
 							std::vector<std::string> *dropdown_values =
