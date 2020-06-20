@@ -241,7 +241,7 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 		std::string contents;
 		if (!fs::ReadFile(real_path, contents)) {
 			errorstream << "Client::scanModSubfolder(): Can't read file \""
-						<< real_path << "\"." << std::endl;
+					<< real_path << "\"." << std::endl;
 			continue;
 		}
 

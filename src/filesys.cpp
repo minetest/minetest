@@ -752,23 +752,15 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 
 bool ReadFile(const std::string &path, std::string &out)
 {
-	// Read data
-	std::ifstream fis(path, std::ios_base::binary);
-	if (!fis.good())
+	std::ifstream is(path, std::ios::binary | std::ios::ate);
+	if (!is.good()) {
 		return false;
-
-	for (;;) {
-		char buf[1024];
-		fis.read(buf, sizeof(buf));
-		std::streamsize len = fis.gcount();
-		out.append(buf, len);
-
-		if (fis.eof())
-			break;
-
-		if (!fis.good())
-			return false;
 	}
+
+	auto size = is.tellg();
+	out = std::string(size, '\0');
+	is.seekg(0);
+	is.read(&out[0], size);
 
 	return true;
 }
