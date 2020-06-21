@@ -47,9 +47,7 @@ build/.cmake/
 /screenshots
 /sounds
 /mods/*
-!/mods/minetest/
-/mods/minetest/*
-!/mods/minetest/mods_here.txt
+!/mods/mods_here.txt
 /worlds
 /world/
 /clientmods/*
