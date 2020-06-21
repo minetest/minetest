@@ -655,7 +655,7 @@ Minetest namespace reference
    restrictions applied to the current mod.
    * If a flag in this table is set to true, the feature is RESTRICTED.
    * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
-                   `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
+                   `read_nodedefs`, `lookup_nodes`, `read_playerinfo`, `store_textures`
 
 ### Logging
 * `minetest.debug(...)`
@@ -836,6 +836,7 @@ Call these functions only at load time!
         * Only subfolders of the CSM folder are allowed
         * Path needs to exist except for the image to be stored
         * Filetype needs to be supported (see supported media types)
+    * Returns success (`true` or `nil`, requires `CSM_RF_STORE_TEXTURES`)
     * Example: `minetest.store_texture("[item:default:dirt", "default_dirt.png")`
 
 ### Storage API

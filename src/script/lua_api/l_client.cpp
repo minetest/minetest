@@ -61,6 +61,7 @@ const static CSMFlagDesc flagdesc_csm_restriction[] = {
 	{"read_nodedefs",     CSM_RF_READ_NODEDEFS},
 	{"lookup_nodes",      CSM_RF_LOOKUP_NODES},
 	{"read_playerinfo",   CSM_RF_READ_PLAYERINFO},
+	{"store_textures",   CSM_RF_STORE_TEXTURES},
 	{NULL,      0}
 };
 
@@ -447,6 +448,9 @@ int ModApiClient::l_get_csm_restrictions(lua_State *L)
 // store_texture(texture, path)
 int ModApiClient::l_store_texture(lua_State *L)
 {
+	if (checkCSMRestrictionFlag(CSM_RF_STORE_TEXTURES))
+		return 0;
+
 	const std::string texturename = luaL_checkstring(L, 1);
 	const std::string filename = luaL_checkstring(L, 2);
 	
