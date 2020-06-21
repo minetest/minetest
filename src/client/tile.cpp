@@ -1932,7 +1932,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				draw2DImageFilterScaled(driver, overlay_texture, res_rect, srcrect, &res_rect, 0, true);
 			}
 
-			driver->setRenderTarget(0, false, false, 0);
+			driver->setRenderTarget(nullptr, false, false, video::SColor());
 			driver->setTransform(video::ETS_VIEW, oldViewMat);
 			driver->setTransform(video::ETS_PROJECTION, oldProjMat);
 			driver->setTransform(video::ETS_WORLD, oldWorldMat);
