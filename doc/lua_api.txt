@@ -2318,16 +2318,23 @@ Elements
 
 ### `label[<X>,<Y>;<label>]`
 
-* The label formspec element displays the text set in `label`
-  at the specified position.
+* Displays the text `label` at the specified position.
 * **Note**: If the new coordinate system is enabled, labels are
   positioned from the center of the text, not the top.
 * The text is displayed directly without automatic line breaking,
-  so label should not be used for big text chunks.  Newlines can be
+  so label should not be used for big text chunks. Newlines can be
   used to make labels multiline.
 * **Note**: With the new coordinate system, newlines are spaced with
   half a coordinate.  With the old system, newlines are spaced 2/5 of
   an inventory slot.
+
+### `label[<X>,<Y>;<label>;<W>,<H>]`
+
+* Displays the text `label` at the specified position with a width and height
+  for alignment (see [Styling Formspecs]) and text clipping.
+**Note:**: Requires formspec version 4 or higher.
+* The text has no automatic line breaking or scrolling, but newlines can be added for
+  forced line breaks.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
 * Displays a static formatted text with hyperlinks.
@@ -2794,6 +2801,9 @@ Some types may inherit styles from parent types.
     * font - Sets font type. See button `font` property for more information.
     * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* label (additional properties, sized labels only)
+    * halign - `left/center/right`: Horizontal alignment of text. Default `left`.
+    * valign - `top/center/bottom`: Vertical alignment of text. Default `center`.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
     * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.

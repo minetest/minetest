@@ -1765,94 +1765,143 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 
 void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
-	if ((parts.size() == 2) ||
-		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if (parts.size() == 2 || parts.size() == 3 ||
+		(parts.size() > 3 && m_formspec_version > FORMSPEC_API_VERSION))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
 		std::string text = parts[1];
 
-		MY_CHECKPOS("label",0);
+		MY_CHECKPOS("label", 0);
 
-		if(!data->explicit_size)
-			warningstream<<"invalid use of label without a size[] element"<<std::endl;
+		if (!data->explicit_size)
+			warningstream << "Invalid use of label without a size[] element" << std::endl;
 
-		std::vector<std::string> lines = split(text, '\n');
+		core::rect<s32> rect;
 
 		auto style = getDefaultStyleForElement("label", "");
 		gui::IGUIFont *font = style.getFont();
 		if (!font)
 			font = m_font;
 
-		for (unsigned int i = 0; i != lines.size(); i++) {
-			std::wstring wlabel_colors = translate_string(
-				utf8_to_wide(unescape_string(lines[i])));
-			// Without color escapes to get the font dimensions
-			std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
+		if (parts.size() >= 3) {
+			std::vector<std::string> v_geom = split(parts[2], ',');
+			MY_CHECKGEOM("label", 2);
 
-			core::rect<s32> rect;
+			v2s32 pos;
+			v2s32 geom;
 
 			if (data->real_coordinates) {
-				// Lines are spaced at the distance of 1/2 imgsize.
-				// This alows lines that line up with the new elements
-				// easily without sacrificing good line distance.  If
-				// it was one whole imgsize, it would have too much
-				// spacing.
-				v2s32 pos = getRealCoordinateBasePos(v_pos);
-
-				// Labels are positioned by their center, not their top.
-				pos.Y += (((float) imgsize.Y) / -2) + (((float) imgsize.Y) * i / 2);
-
-				rect = core::rect<s32>(
-					pos.X, pos.Y,
-					pos.X + font->getDimension(wlabel_plain.c_str()).Width,
-					pos.Y + imgsize.Y);
-
+				pos = getRealCoordinateBasePos(v_pos);
+				geom = getRealCoordinateGeometry(v_geom);
 			} else {
-				// Lines are spaced at the nominal distance of
-				// 2/5 inventory slot, even if the font doesn't
-				// quite match that.  This provides consistent
-				// form layout, at the expense of sometimes
-				// having sub-optimal spacing for the font.
-				// We multiply by 2 and then divide by 5, rather
-				// than multiply by 0.4, to get exact results
-				// in the integer cases: 0.4 is not exactly
-				// representable in binary floating point.
+				pos = getElementBasePos(&v_pos);
+				pos -= padding;
+				pos.Y += m_btn_height;
 
-				v2s32 pos = getElementBasePos(nullptr);
-				pos.X += stof(v_pos[0]) * spacing.X;
-				pos.Y += (stof(v_pos[1]) + 7.0f / 30.0f) * spacing.Y;
-
-				pos.Y += ((float) i) * spacing.Y * 2.0 / 5.0;
-
-				rect = core::rect<s32>(
-					pos.X, pos.Y - m_btn_height,
-					pos.X + font->getDimension(wlabel_plain.c_str()).Width,
-					pos.Y + m_btn_height);
+				geom.X = (stof(v_geom[0]) * spacing.X) - (spacing.X - imgsize.X);
+				geom.Y = (stof(v_geom[1]) * (float)imgsize.Y) - (spacing.Y-imgsize.Y);
 			}
+
+			rect = core::rect<s32>(pos.X, pos.Y, pos.X + geom.X, pos.Y + geom.Y);
+
+			std::wstring wlabel = translate_string(utf8_to_wide(unescape_string(text)));
 
 			FieldSpec spec(
 				"",
-				wlabel_colors,
+				wlabel,
 				L"",
-				258 + m_fields.size(),
-				4
+				258 + m_fields.size()
 			);
 			gui::IGUIStaticText *e = gui::StaticText::add(Environment,
-					spec.flabel.c_str(), rect, false, false, data->current_parent,
-					spec.fid);
-			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
+				spec.flabel.c_str(), rect, false, false, data->current_parent,
+				spec.fid);
 
 			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR,
+				video::SColor(0xFFFFFFFF)));
 			e->setOverrideFont(font);
+			e->setTextAlignment(
+				style.getAlignment(StyleSpec::HALIGN, gui::EGUIA_UPPERLEFT),
+				style.getAlignment(StyleSpec::VALIGN, gui::EGUIA_CENTER)
+			);
 
 			m_fields.push_back(spec);
 
 			// labels should let events through
 			e->grab();
 			m_clickthrough_elements.push_back(e);
+		} else {
+			std::vector<std::string> lines = split(text, '\n');
+
+			for (size_t i = 0; i < lines.size(); i++) {
+				std::wstring wlabel_colors = translate_string(
+					utf8_to_wide(unescape_string(lines[i])));
+				// Without color escapes to get the font dimensions
+				std::wstring wlabel_plain = unescape_enriched(wlabel_colors);
+
+				if (data->real_coordinates) {
+					// Lines are spaced at the distance of 1/2 imgsize.
+					// This alows lines that line up with the new elements
+					// easily without sacrificing good line distance.  If
+					// it was one whole imgsize, it would have too much
+					// spacing.
+					v2s32 pos = getRealCoordinateBasePos(v_pos);
+
+					// Labels are positioned by their center, not their top.
+					pos.Y += (((float) imgsize.Y) / -2) + (((float) imgsize.Y) * i / 2);
+
+					rect = core::rect<s32>(
+						pos.X, pos.Y,
+						pos.X + m_font->getDimension(wlabel_plain.c_str()).Width,
+						pos.Y + imgsize.Y);
+
+				} else {
+					// Lines are spaced at the nominal distance of
+					// 2/5 inventory slot, even if the font doesn't
+					// quite match that.  This provides consistent
+					// form layout, at the expense of sometimes
+					// having sub-optimal spacing for the font.
+					// We multiply by 2 and then divide by 5, rather
+					// than multiply by 0.4, to get exact results
+					// in the integer cases: 0.4 is not exactly
+					// representable in binary floating point.
+
+					v2s32 pos = getElementBasePos(nullptr);
+					pos.X += stof(v_pos[0]) * spacing.X;
+					pos.Y += (stof(v_pos[1]) + 7.0f / 30.0f) * spacing.Y;
+
+					pos.Y += ((float) i) * spacing.Y * 2.0 / 5.0;
+
+					rect = core::rect<s32>(
+						pos.X, pos.Y - m_btn_height,
+						pos.X + m_font->getDimension(wlabel_plain.c_str()).Width,
+						pos.Y + m_btn_height);
+				}
+
+				FieldSpec spec(
+					"",
+					wlabel_colors,
+					L"",
+					258 + m_fields.size(),
+					4
+				);
+				gui::IGUIStaticText *e = gui::StaticText::add(Environment,
+						spec.flabel.c_str(), rect, false, false, data->current_parent,
+						spec.fid);
+				e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
+
+				auto style = getDefaultStyleForElement("label", spec.fname);
+				e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+				e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+
+				m_fields.push_back(spec);
+
+				// labels should let events through
+				e->grab();
+				m_clickthrough_elements.push_back(e);
+			}
 		}
 
 		return;
