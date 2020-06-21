@@ -8,13 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-06-22 17:56+0000\n"
+"Last-Translator: GunChleoc <fios@foramnagaidhlig.net>\n"
+"Language-Team: Gaelic <https://hosted.weblate.org/projects/minetest/minetest/"
+"gd/>\n"
 "Language: gd\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : "
+"(n > 2 && n < 20) ? 2 : 3;\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -38,7 +42,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "Prìomh chlàr-taice"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -57,12 +61,14 @@ msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr " "
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr " "
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
@@ -73,8 +79,9 @@ msgid "We only support protocol version $1."
 msgstr ""
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr " "
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
@@ -98,7 +105,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "Gun eisimeileachd chruaidh"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -230,11 +237,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Aibhnean air àirde na mara"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "Aibhnean"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -246,7 +253,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Tìr air fhleòd san speur"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -266,19 +273,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Aibhnean boga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Nì seo an tìr nas buige faisg air aibhnean"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Caochail doimhne nan aibhnean"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Adhbharaichidh saoghal tioram is teth aibhnean tana no tioram"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -372,11 +379,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Brataich gineadair nam mapa"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr ""
+msgstr "Brataich shònraichte do ghineadair nam mapa"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The Development Test is meant for developers."
@@ -397,7 +404,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "Gineadair nam mapa"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -621,6 +628,7 @@ msgstr ""
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
 msgstr ""
+"Stàladh: Faidhle dhen t-seòrsa “$1” ris nach eil taic no tasglann bhriste"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
@@ -628,7 +636,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "Pacaidean air an stàladh:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -688,7 +696,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Stàlaich geamannan o ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
@@ -752,7 +760,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr ""
+msgstr "Seòladh / Port"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
@@ -893,7 +901,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
-msgstr ""
+msgstr "Sgrìn:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
@@ -954,6 +962,8 @@ msgstr ""
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr ""
+"Airson sgàileadairean a chur an comas, feumaidh tu draibhear OpenGL a "
+"chleachdadh."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -1008,8 +1018,9 @@ msgid "Connection error (timed out?)"
 msgstr ""
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr " "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1020,8 +1031,9 @@ msgid "No world selected and no address provided. Nothing to do."
 msgstr ""
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr " "
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
@@ -1041,7 +1053,7 @@ msgstr ""
 #. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "no"
 
 #: src/client/game.cpp
 msgid "Shutting down..."
@@ -1114,15 +1126,15 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
-msgstr ""
+msgstr "Tha am modh sgiathaidh an comas"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr ""
+msgstr "Tha am modh sgiathaidh an comas (an aire: gun sochair “fly”)"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
-msgstr ""
+msgstr "Tha am modh sgiathaidh à comas"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
@@ -1138,7 +1150,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr ""
+msgstr "Tha am modh luath an comas (an aire: gun sochair “fast”)"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
@@ -1146,19 +1158,19 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled"
-msgstr ""
+msgstr "Tha am modh gun bhearradh an comas"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
+msgstr "Tha am modh gun bhearradh an comas (an aire: gun sochair “noclip”)"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "Tha am modh gun bhearradh à comas"
 
 #: src/client/game.cpp
 msgid "Cinematic mode enabled"
-msgstr ""
+msgstr "Tha am modh film an comas"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -1243,7 +1255,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "Tha astar na faicsinn cho mòr sa ghabhas: %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -1301,6 +1313,20 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"Stiùireadh:\n"
+"- %s: gluais an comhair a’ bheòil\n"
+"- %s: gluais an comhair a’ chùil\n"
+"- %s: gluais dhan taobh clì\n"
+"- %s: gluais dhan taobh deas\n"
+"- %s: leum/sreap\n"
+"- %s: tàislich/dìrich\n"
+"- %s: leig às nì\n"
+"- %s: an tasgadh\n"
+"- Luchag: tionndaidh/coimhead\n"
+"- Putan clì na luchaige: geàrr/buail\n"
+"- Putan deas na luchaige: cuir ann/cleachd\n"
+"- Cuibhle na luchaige: tagh nì\n"
+"- %s: cabadaich\n"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1328,27 +1354,30 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "Fiosrachadh mun gheama:"
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "- Mode: "
-msgstr ""
+msgstr " "
 
 #: src/client/game.cpp
 msgid "Remote server"
 msgstr ""
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "- Address: "
-msgstr ""
+msgstr " "
 
 #: src/client/game.cpp
 msgid "Hosting server"
 msgstr ""
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "- Port: "
-msgstr ""
+msgstr " "
 
 #: src/client/game.cpp
 msgid "Singleplayer"
@@ -1364,24 +1393,28 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "- Damage: "
-msgstr ""
+msgstr "– Dochann: "
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "- Creative Mode: "
-msgstr ""
+msgstr " "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
+#, fuzzy
 msgid "- PvP: "
-msgstr ""
+msgstr " "
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "- Public: "
-msgstr ""
+msgstr " "
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "- Server Name: "
-msgstr ""
+msgstr " "
 
 #: src/client/game.cpp
 msgid ""
@@ -1391,7 +1424,7 @@ msgstr ""
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "Tha a’ chabadaich ’ga shealltainn"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -1436,7 +1469,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Backspace"
-msgstr ""
+msgstr "Backspace"
 
 #: src/client/keycode.cpp
 msgid "Tab"
@@ -1559,7 +1592,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr ""
+msgstr "4 air pada nan àireamhan"
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
@@ -1575,7 +1608,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr ""
+msgstr "8 air pada nan àireamhan"
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
@@ -1619,7 +1652,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "Control clì"
 
 #: src/client/keycode.cpp
 msgid "Right Control"
@@ -1709,7 +1742,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "Thoir gnogag dhùbailte air “leum” airson sgiathadh a thoglachadh"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
@@ -1721,7 +1754,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "brùth air iuchair"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
@@ -1741,7 +1774,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "Tàislich"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -1769,7 +1802,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr ""
+msgstr "Toglaich sgiathadh"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
@@ -1781,7 +1814,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr ""
+msgstr "Toglaich am modh gun bhearradh"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
@@ -1817,7 +1850,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr ""
+msgstr "Meudaich an t-astar"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
@@ -1860,8 +1893,9 @@ msgid "Change"
 msgstr ""
 
 #: src/gui/guiVolumeChange.cpp
+#, fuzzy
 msgid "Sound Volume: "
-msgstr ""
+msgstr " "
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
@@ -1875,14 +1909,14 @@ msgstr ""
 #. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "Cuir a-steach "
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "gd"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -1898,16 +1932,22 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"Ma tha seo an comas, ’s urrainn dhut blocaichean a chur ann far a bheil thu ’"
+"nad sheasamh (co chois + àirde do shùil).\n"
+"Bidh seo feumail nuair a bhios tu ag obair le bogsaichean nòd ann an "
+"raointean beaga."
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "Sgiathadh"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
+"’S urrainn dhan chluicheadair sgiathadh gun bhuaidh na iom-tharraing air.\n"
+"Bidh feum air sochair “fly” air an fhrithealaiche."
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
@@ -1918,6 +1958,8 @@ msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
 msgstr ""
+"Ma tha seo an comas, bidh an gluasad a-rèir pids a’ chluicheadair rè "
+"sgiathaidh no snàimh."
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
@@ -1928,10 +1970,12 @@ msgid ""
 "Fast movement (via the \"special\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"Gluasad luath (leis an iuchair “shònraichte”).\n"
+"Bidh feum air sochair “fast” air an fhrithealaiche."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "Gun bhearradh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1939,6 +1983,9 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Ma tha seo an comas còmhla ris a’ mhodh sgiathaidh, ’s urrainn dhan "
+"chluicheadair sgiathadh tro nòdan soladach.\n"
+"Bidh feum air sochair “noclip” on fhrithealaiche."
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
@@ -1992,18 +2039,21 @@ msgid ""
 "down and\n"
 "descending."
 msgstr ""
+"Ma tha seo an comas, thèid iuchair “shònraichte” seach “tàisleachaidh” a "
+"chleachdadh\n"
+"airson dìreadh."
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr ""
+msgstr "Thoir gnogag dhùbailte airson leum no sgiathadh"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr ""
+msgstr "Toglaichidh gnogag dhùbailte air iuchair an leuma am modh sgiathaidh."
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "Sgiathaich an-còmhnaidh ’s gu luath"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2011,6 +2061,9 @@ msgid ""
 "are\n"
 "enabled."
 msgstr ""
+"Ma tha seo à comas, thèid iuchair “shònraichte” a chleachdadh airson "
+"sgiathadh\n"
+"ma tha an dà chuid am modh sgiathaidh ’s am modh luadh an comas."
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
@@ -2157,6 +2210,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a ghluaiseas an cluicheadair dhan taobh chlì.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -2168,6 +2224,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a ghluaiseas an cluicheadair dhan taobh deas.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
@@ -2182,7 +2241,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sneak key"
-msgstr ""
+msgstr "Iuchair an tàisleachaidh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2192,6 +2251,11 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair airson tàisleachadh.\n"
+"Tha i ‘ga cleachdadh airson dìreadh agus dìreadh san uisge ma bhios "
+"aux1_descends à comas.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
@@ -2214,6 +2278,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a ghluaiseas gu luath sa mhodh luath.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -2257,7 +2324,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "Iuchair an sgiathaidh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2265,6 +2332,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thoglaicheas an sgiathadh.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move key"
@@ -2290,7 +2360,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
-msgstr ""
+msgstr "Iuchair modha gun bhearradh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2298,10 +2368,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thoglaicheas am modh gun bhearradh.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
-msgstr ""
+msgstr "Iuchair air adhart a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2309,10 +2382,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an ath-nì air a’ ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar previous key"
-msgstr ""
+msgstr "Iuchair air ais a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2320,6 +2396,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an nì roimhe air a’ ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Mute key"
@@ -2418,7 +2497,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 1 key"
-msgstr ""
+msgstr "Iuchair air slot 1 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2426,10 +2505,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas a’ chiad slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 2 key"
-msgstr ""
+msgstr "Iuchair air slot 2 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2437,10 +2519,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an dàrna slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 3 key"
-msgstr ""
+msgstr "Iuchair air slot 3 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2448,10 +2533,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an treas slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 4 key"
-msgstr ""
+msgstr "Iuchair air slot 4 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2459,10 +2547,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an ceathramh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 5 key"
-msgstr ""
+msgstr "Iuchair air slot 5 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2470,10 +2561,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an còigeamh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 6 key"
-msgstr ""
+msgstr "Iuchair air slot 6 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2481,10 +2575,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an siathamh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 7 key"
-msgstr ""
+msgstr "Iuchair air slot 7 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2492,10 +2589,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an seachdamh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 8 key"
-msgstr ""
+msgstr "Iuchair air slot 8 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2503,10 +2603,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an t-ochdamh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 9 key"
-msgstr ""
+msgstr "Iuchair air slot 9 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2514,10 +2617,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an naoidheamh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 10 key"
-msgstr ""
+msgstr "Iuchair air slot 10 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2525,10 +2631,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an deicheamh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 11 key"
-msgstr ""
+msgstr "Iuchair air slot 11 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2536,10 +2645,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an 11mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 12 key"
-msgstr ""
+msgstr "Iuchair air slot 12 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2547,10 +2659,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an 12mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 13 key"
-msgstr ""
+msgstr "Iuchair air slot 13 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2558,10 +2673,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an 13mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 14 key"
-msgstr ""
+msgstr "Iuchair air slot 14 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2569,10 +2687,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an 14mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 15 key"
-msgstr ""
+msgstr "Iuchair air slot 15 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2580,10 +2701,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an 15mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 16 key"
-msgstr ""
+msgstr "Iuchair air slot 16 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2591,10 +2715,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an 16mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 17 key"
-msgstr ""
+msgstr "Iuchair air slot 17 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2602,10 +2729,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an 17mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 18 key"
-msgstr ""
+msgstr "Iuchair air slot 18 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2613,10 +2743,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an 18mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 19 key"
-msgstr ""
+msgstr "Iuchair air slot 19 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2624,10 +2757,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas an 19mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 20 key"
-msgstr ""
+msgstr "Iuchair air slot 20 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2635,10 +2771,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 20mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 21 key"
-msgstr ""
+msgstr "Iuchair air slot 21 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2646,10 +2785,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 21mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 22 key"
-msgstr ""
+msgstr "Iuchair air slot 22 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2657,10 +2799,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 22mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 23 key"
-msgstr ""
+msgstr "Iuchair air slot 23 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2668,10 +2813,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 23mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 24 key"
-msgstr ""
+msgstr "Iuchair air slot 24 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2679,10 +2827,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 24mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 25 key"
-msgstr ""
+msgstr "Iuchair air slot 25 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2690,10 +2841,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 25mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 26 key"
-msgstr ""
+msgstr "Iuchair air slot 26 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2701,10 +2855,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 26mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 27 key"
-msgstr ""
+msgstr "Iuchair air slot 27 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2712,10 +2869,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 27mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 28 key"
-msgstr ""
+msgstr "Iuchair air slot 28 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2723,10 +2883,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 28mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 29 key"
-msgstr ""
+msgstr "Iuchair air slot 29 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2734,10 +2897,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 29mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 30 key"
-msgstr ""
+msgstr "Iuchair air slot 30 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2745,10 +2911,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 30mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 31 key"
-msgstr ""
+msgstr "Iuchair air slot 31 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2756,10 +2925,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 31mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 32 key"
-msgstr ""
+msgstr "Iuchair air slot 32 a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2767,6 +2939,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"An iuchair a thaghas am 32mh slot dhen ghrad-bhàr.\n"
+"Faic http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -2825,7 +3000,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "Iuchair toglachadh an fhiosrachaidh dì-bhugachaidh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3081,7 +3256,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
-msgstr ""
+msgstr "Mapadh tòna film"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3174,6 +3349,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
 msgstr ""
+"Claonadh na h-èifeachd occlusion na paraileig air fheadh, seo sgèile/2 mar "
+"as àbhaist."
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
@@ -3225,7 +3402,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Waving leaves"
-msgstr ""
+msgstr "Crathadh duillich"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3285,6 +3462,8 @@ msgid ""
 "formspec is\n"
 "open."
 msgstr ""
+"Fosgail clàr-taice a’ chuir ’na stad nuair a chailleas an uinneag am fòcas.\n"
+"Cha dèid a chur ’na stad nuair a bhios formspec fosgailte."
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -3374,6 +3553,11 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
+"Atharraichidh seo lùb an t-solais a’ cur “gamma correction” air.\n"
+"Nì luachan nas àirde an solas meadhanach no fann nas soilleire.\n"
+"Fàgaidh luach “1.0” lùb an t-solais mar a tha i.\n"
+"Chan eil buaidh mhòr aige ach air solas an latha is na h-oidhche fuadaine,\n"
+"agus cha mhòr nach bi buaidh air solas oidhche nàdarra idir."
 
 #: src/settings_translation_file.cpp
 msgid "Light curve low gradient"
@@ -3384,6 +3568,8 @@ msgid ""
 "Gradient of light curve at minimum light level.\n"
 "Controls the contrast of the lowest light levels."
 msgstr ""
+"Caisead lùb an t-solais aig an ìre as fainne.\n"
+"Stiùirichidh seo iomsgaradh an t-solais fhainn."
 
 #: src/settings_translation_file.cpp
 msgid "Light curve high gradient"
@@ -3394,6 +3580,8 @@ msgid ""
 "Gradient of light curve at maximum light level.\n"
 "Controls the contrast of the highest light levels."
 msgstr ""
+"Caisead lùb an t-solais aig an ìre as soilleire.\n"
+"Stiùirichidh seo iomsgaradh an t-solais shoilleir."
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost"
@@ -3415,6 +3603,8 @@ msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
+"Meadhan rainse meudachadh lùb an t-solais.\n"
+"Is 0.0 an ìre as fhainne agus 1.0 an ìre as soilleire air an solas."
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost spread"
@@ -3437,7 +3627,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "Dràibhear video"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3472,7 +3662,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing factor"
-msgstr ""
+msgstr "Factar bogadaich an tuiteim"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3612,13 +3802,17 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
-msgstr ""
+msgstr "Leud as motha a’ ghrad-bhàr"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
+"A’ chuid as motha dhen uinneag làithreach a thèid a chleachdadh airson a’ "
+"ghrad-bhàr.\n"
+"Tha seo feumail ma dh’fheumas tu rudeigin a shealltainn taobh deas no clì "
+"air a’ ghrad-bhàr."
 
 #: src/settings_translation_file.cpp
 msgid "HUD scale factor"
@@ -3683,6 +3877,10 @@ msgid ""
 "False = 128\n"
 "Usable to make minimap smoother on slower machines."
 msgstr ""
+"True = 256\n"
+"False = 128\n"
+"Gabhaidh a chleachdadh airson am meanbh-mhapa a dhèanamh nas rèidhe air "
+"uidheaman slaodach."
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -3727,7 +3925,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
-msgstr ""
+msgstr "Dèan gach lionn trìd-dhoilleir"
 
 #: src/settings_translation_file.cpp
 msgid "World-aligned textures mode"
@@ -3905,7 +4103,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
-msgstr ""
+msgstr "Slighe dhan chlò aon-leud"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4235,7 +4433,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Ainmich am frithealaiche"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically report to the serverlist."
@@ -4436,25 +4634,28 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr ""
+msgstr "Sochairean tùsail"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The privileges that new users automatically get.\n"
 "See /privs in game for a full list on your server and mod configuration."
 msgstr ""
+"Na sochairean a gheibh cleachdaichean ùra gu fèin-obrachail.\n"
+"Faic /privs sa gheama airson liosta slàn air rèiteachadh an fhrithealaiche ’"
+"s nan tuilleadan agad."
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
-msgstr ""
+msgstr "Sochairean bunasach"
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
-msgstr ""
+msgstr "Sochairean as urrainn do chluicheadairean le basic_privs a cheadachadh"
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
-msgstr ""
+msgstr "Astar tar-chur nan cluicheadairean gun chuingeachadh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4469,6 +4670,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+"Mìnichidh seo an t-astar as motha airson tar-chur chluicheadairean ann am "
+"bloca (0 = gun chuingeachadh)."
 
 #: src/settings_translation_file.cpp
 msgid "Player versus player"
@@ -4477,6 +4680,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
 msgstr ""
+"Co-dhiù am faod cluicheadairean càch a chèile a leòn ’s a mharbhadh gus nach "
+"fhaod."
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
@@ -4701,15 +4906,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
-msgstr ""
+msgstr "Luaths na coiseachd is sgiathaidh, ann an nòd gach diog."
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
-msgstr ""
+msgstr "Luaths an tàisleachaidh"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
-msgstr ""
+msgstr "Luaths an tàisleachaidh ann an nòd gach diog."
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
@@ -4718,6 +4923,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr ""
+"Luaths na coiseachd, sgiathaidh is sreap sa mhodh luath, ann an nòd gach "
+"diog."
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -4855,7 +5062,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
-msgstr ""
+msgstr "Leig seachad mearachdan an t-saoghail"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4888,7 +5095,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
-msgstr ""
+msgstr "Eadaramh nan ùrachaidhean air an lionn ann an diog."
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
@@ -4924,7 +5131,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client side modding restrictions"
-msgstr ""
+msgstr "Cuingeachadh tuilleadain air a’ chliant"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5115,7 +5322,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
-msgstr ""
+msgstr "Ìre an loga dì-bhugachaidh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5128,6 +5335,14 @@ msgid ""
 "-    info\n"
 "-    verbose"
 msgstr ""
+"Ìre an loga a thèid a sgrìobhadh gu debug.txt:\n"
+"-    <bàn> (gun logadh)\n"
+"-    none (teachdaireachdan gun ìre)\n"
+"-    error\n"
+"-    warning\n"
+"-    action\n"
+"-    info\n"
+"-    verbose"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -5143,11 +5358,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat log level"
-msgstr ""
+msgstr "Ìre loga na cabadaich"
 
 #: src/settings_translation_file.cpp
 msgid "Minimal level of logging to be written to chat."
-msgstr ""
+msgstr "An ìre as lugha dhen loga a thèid a sgrìobhadh dhan chabadaich."
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
@@ -5232,7 +5447,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
-msgstr ""
+msgstr "Ainm gineadair nam mapa"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5241,14 +5456,19 @@ msgid ""
 "Current mapgens in a highly unstable state:\n"
 "-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
+"Ainm air gineadair nam mapa a thèid a chleachdadh airson saoghal ùr a "
+"chruthachadh.\n"
+"Tar-aithnidh cruthachadh saoghail ùir sa phrìomh chlàr-taice seo.\n"
+"Seo gineadairean nam mapa a tha glè neo-sheasmhach aig an àm seo:\n"
+"-    floatlands roghainneil aig v7 (à comas o thùs)."
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "Àirde an uisge"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr ""
+msgstr "Àirde uachdar an uisge air an t-saoghal."
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
@@ -5259,10 +5479,12 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
+"An t-astar on a thèid blocaichean a ghintinn dha na cliantan, ann am bloca "
+"mapa (16 nòdan)."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
-msgstr ""
+msgstr "Cuingeachadh gintinn mapa"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5270,6 +5492,10 @@ msgid ""
 "Only mapchunks completely within the mapgen limit are generated.\n"
 "Value is stored per-world."
 msgstr ""
+"Cuingeachadh gintinn mapa, ann an nòd, sa h-uile 6 comhair o (0, 0, 0).\n"
+"Cha dèid ach cnapan mapa a tha am broinn cuingeachadh gineadair nam mapa a "
+"ghintinn.\n"
+"Thèid luach fa leth a stòradh air gach saoghal."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5277,6 +5503,11 @@ msgid ""
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
+"Buadhan gintinn mapa uile-choitcheann.\n"
+"Ann an gineadair nam mapa v6, stiùirichidh bratach “decorations” sgeadachadh "
+"seach craobhan is feur  dlùth-choille\n"
+"agus ann an gineadairean nam mapa eile, stiùirichidh a’ bhratach seo a h-"
+"uile sgeadachadh."
 
 #: src/settings_translation_file.cpp
 msgid "Biome API temperature and humidity noise parameters"
@@ -5316,15 +5547,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
-msgstr ""
+msgstr "Gineadair nam mapa V5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5 specific flags"
-msgstr ""
+msgstr "Brataich shònraichte do ghineadair nam mapa V5"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen v5."
-msgstr ""
+msgstr "Buadhan gintinn mapa a tha sònraichte do ghineadair nam mapa v5."
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
@@ -5352,6 +5583,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of small caves per mapchunk."
 msgstr ""
+"An àireamh as lugha de dh’uamhan beaga air thuaiream anns gach cnap mapa."
 
 #: src/settings_translation_file.cpp
 msgid "Small cave maximum number"
@@ -5360,6 +5592,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of small caves per mapchunk."
 msgstr ""
+"An àireamh as motha de dh’uamhan beaga air thuaiream anns gach cnap mapa."
 
 #: src/settings_translation_file.cpp
 msgid "Large cave minimum number"
@@ -5368,6 +5601,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
 msgstr ""
+"An àireamh as lugha de dh’uamhan mòra air thuaiream anns gach cnap mapa."
 
 #: src/settings_translation_file.cpp
 msgid "Large cave maximum number"
@@ -5376,6 +5610,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of large caves per mapchunk."
 msgstr ""
+"An àireamh as motha de dh’uamhan mòra air thuaiream anns gach cnap mapa."
 
 #: src/settings_translation_file.cpp
 msgid "Large cave proportion flooded"
@@ -5391,7 +5626,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of cavern upper limit."
-msgstr ""
+msgstr "Àirde-Y aig crìoch àrd nan uamhan."
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
@@ -5453,7 +5688,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
-msgstr ""
+msgstr "Àirde-Y aig uachdar cuibheasach a’ chrutha-thìre."
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
@@ -5494,14 +5729,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
+"Riasladh 3D a mhìnicheas an àireamh dhe thuill-dhubha anns gach cnap mapa."
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6"
-msgstr ""
+msgstr "Gineadair nam mapa V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6 specific flags"
-msgstr ""
+msgstr "Brataich shònraichte do ghineadair nam mapa V6"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5510,6 +5746,11 @@ msgid ""
 "When the 'snowbiomes' flag is enabled jungles are automatically enabled and\n"
 "the 'jungles' flag is ignored."
 msgstr ""
+"Buadhan gintinn mapa a tha sònraichte do ghineadair nam mapa  v6.\n"
+"Cuiridh a’ bhratach “snowbiomes” siostam 5 ùr nam bitheom an comas.\n"
+"Nuair a bhios a’ bhratach “snowbiomes” an comas, thèid dlùth-choilltean a "
+"chur an comas gu fèin-obrachail \n"
+"agus a’ bhratach “jungles” a leigeil seachad."
 
 #: src/settings_translation_file.cpp
 msgid "Desert noise threshold"
@@ -5535,7 +5776,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of lower terrain and seabed."
-msgstr ""
+msgstr "Àirde-Y a’ chrutha-thìre ìosal agus grunnd na mara."
 
 #: src/settings_translation_file.cpp
 msgid "Terrain higher noise"
@@ -5543,7 +5784,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of higher terrain that creates cliffs."
-msgstr ""
+msgstr "Àirde-Y a’ chrutha-thìre nas àirde a chruthaicheas creagan."
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
@@ -5607,11 +5848,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7"
-msgstr ""
+msgstr "Gineadair nam mapa V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7 specific flags"
-msgstr ""
+msgstr "Brataich shònraichte do ghineadair nam mapa V7"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5620,16 +5861,22 @@ msgid ""
 "'floatlands': Floating land masses in the atmosphere.\n"
 "'caverns': Giant caves deep underground."
 msgstr ""
+"Buadhan gintinn mapa a tha sònraichte do ghineadair nam mapa v7.\n"
+"“ridges”: Aibhnean.\n"
+"“floatlands”: Tìr air fhleòd san àile.\n"
+"“caverns”: Uamhan mòra domhainn fon talamh."
 
 #: src/settings_translation_file.cpp
 msgid "Mountain zero level"
-msgstr ""
+msgstr "Àirde neoini nam beanntan"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Y of mountain density gradient zero level. Used to shift mountains "
 "vertically."
 msgstr ""
+"Y air àirde neoini air caisead dùmhlachd nam beanntan. Thèid seo a "
+"chleachdadh airson beanntan a thogail gu h-inghearach."
 
 #: src/settings_translation_file.cpp
 msgid "Floatland minimum Y"
@@ -5649,7 +5896,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Floatland tapering distance"
-msgstr ""
+msgstr "Astar cinn-chaoil air tìr air fhleòd"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5658,10 +5905,17 @@ msgid ""
 "For a solid floatland layer, this controls the height of hills/mountains.\n"
 "Must be less than or equal to half the distance between the Y limits."
 msgstr ""
+"Seo an t-astar-Y eadar an dùbhlachd làn ’s an òir air cinn-chaoil na tìre "
+"air fhleòd.\n"
+"Tòsichidh na cinn-chaoil aig an astar seo on chrìoch Y.\n"
+"Airson breath tìre air fhleòd sholadach, stiùirichidh seo àirde nan cnoc/nam "
+"beanntan.\n"
+"Feumaidh e a bhith nas lugha na no co-ionnann ris an dàrna leth dhen astar "
+"eadar na crìochan Y."
 
 #: src/settings_translation_file.cpp
 msgid "Floatland taper exponent"
-msgstr ""
+msgstr "Easponant cinn-chaoil air tìr air fhleòd"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5672,10 +5926,18 @@ msgid ""
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
 msgstr ""
+"An t-easponant aig cinn-chaoil na tìre air fhleòd. Atharraichidh seo giùlnan "
+"nan ceann-caol.\n"
+"Cruthaichidh luach = 1.0 cinn-chaoil aon-fhillte loidhneach.\n"
+"Cruthaichidh luachan > 1.0 cinn-chaoil rèidhe\n"
+"a bhios freagarrach dha na cinn-chaoill sgaraichte thùsail.\n"
+"Cruthaichidh luachan < 1.0 (can 0.25) uachdar nas mionaidiche le tìr-ìosal "
+"nas rèidhe a bhios freagarrach\n"
+"do bhreath tìre air fhleòd sholadach."
 
 #: src/settings_translation_file.cpp
 msgid "Floatland density"
-msgstr ""
+msgstr "Dùmhlachd na tìre air fhleòd"
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -5689,7 +5951,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Floatland water level"
-msgstr ""
+msgstr "Àirde an uisge air tìr air fhleòd"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5704,6 +5966,21 @@ msgid ""
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
 "world surface below."
 msgstr ""
+"Àirde uachdar an uisge roghainneil a thèid a chur air breath tìre air fhleòd "
+"soladaiche.\n"
+"Tha uisge à comas o thùs agus cha dèid gin a chur ach\n"
+"ma tha an luach seo nas àirde na “mgv7_floatland_ymax” − "
+"“mgv7_floatland_taper”\n"
+"(seo toiseach a’ chinn-chaoil).\n"
+"***RABHADH, CUNNART AIR SAOGHLAN IS DÈANADAS AN FHRITHEALAICHE***:\n"
+"Ma chuireas tu cur ann uisge an comas, feumaidh tu an tìr air fhleòd a "
+"rèiteachadh ’s a chur fo dheuchainn a dhèanamh cinnteach gu bheil e ’na "
+"breath sholadach\n"
+"’s tu a’ cur 2.0 air “mgv7_floatland_density”\n"
+"(no luach riatanach eile a-rèir “mgv7_np_floatland”)\n"
+"ach an seachnaich thu sruthadh uisge anabarrach a chuireas ealach air an "
+"fhrithealaiche ’s ach an seachnaich thu tuil mhòr air uachdar na tìre "
+"foidhpe."
 
 #: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
@@ -5737,7 +6014,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
-msgstr ""
+msgstr "Mìnichidh seo structar sruth nan aibhnean mòra."
 
 #: src/settings_translation_file.cpp
 msgid "Mountain noise"
@@ -5748,6 +6025,8 @@ msgid ""
 "3D noise defining mountain structure and height.\n"
 "Also defines structure of floatland mountain terrain."
 msgstr ""
+"Riasladh 3D a mhìnicheas structar is àirde nam beanntan.\n"
+"Mìnichidh e cruth-tìre nam beanntan air tìr air fhleòd cuideachd."
 
 #: src/settings_translation_file.cpp
 msgid "Ridge noise"
@@ -5755,11 +6034,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
-msgstr ""
+msgstr "Riasladh 3D a mhìnicheas structar ballachan sgoltaidhean-aibhne."
 
 #: src/settings_translation_file.cpp
 msgid "Floatland noise"
-msgstr ""
+msgstr "Riasladh na tìre air fhleòd"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5768,50 +6047,56 @@ msgid ""
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
+"Riasladh 3D a mhìnicheas structar na tìre air fhleòd.\n"
+"Mura cleachd thu an luach tùsail, dh’fhaoidte gum fheàirrde thu gleus a chur "
+"air “scale” an riaslaidh (0.7 o thùs)\n"
+", on a dh’obraicheas foincseanan cinn-chaoil as fheàrr\n"
+"nuair a bhios an riasladh seo eadar mu -2.0 agus 2.0."
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian"
-msgstr ""
+msgstr "Gineadair nam mapa Carpathian"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian specific flags"
-msgstr ""
+msgstr "Brataich shònraichte do ghineadair nam mapa Carpathian"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
+"Buadhan gintinn mapa a tha sònraichte do ghineadair nam mapa Carpathian."
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
-msgstr ""
+msgstr "Àirde bhunasach a’ ghrunnda"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
-msgstr ""
+msgstr "Mìnichidh seo àirde bhunasach a’ ghrunnda."
 
 #: src/settings_translation_file.cpp
 msgid "River channel width"
-msgstr ""
+msgstr "Leud sruth nan aibhnean"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
-msgstr ""
+msgstr "Mìnichidh seo leud sruth nan aibhnean."
 
 #: src/settings_translation_file.cpp
 msgid "River channel depth"
-msgstr ""
+msgstr "Doimhne sruth nan aibhnean"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
-msgstr ""
+msgstr "Mìnichidh seo doimhne sruth nan aibhnean."
 
 #: src/settings_translation_file.cpp
 msgid "River valley width"
-msgstr ""
+msgstr "Leud gleanntan aibhne"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river valley."
-msgstr ""
+msgstr "Mìnichidh seo leud gleanntan nan aibhnean."
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness1 noise"
@@ -5875,7 +6160,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr ""
+msgstr "Riasladh 2D a stiùiricheas cruth/meud nan cnoc."
 
 #: src/settings_translation_file.cpp
 msgid "Ridged mountain size noise"
@@ -5895,11 +6180,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River noise"
-msgstr ""
+msgstr "Riasladh aibhnean"
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that locates the river valleys and channels."
-msgstr ""
+msgstr "Riasladh 2D a shuidhicheas glinn is sruthan nan aibhnean."
 
 #: src/settings_translation_file.cpp
 msgid "Mountain variation noise"
@@ -5911,21 +6196,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat"
-msgstr ""
+msgstr "Gineadair nam mapa Flat"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat specific flags"
-msgstr ""
+msgstr "Brataich shònraichte do ghineadair nam mapa Flat"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen Flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
+"Buadhan gintinn mapa a tha sònraichte do ghineadair nam mapa Flat.\n"
+"’S urrainn dhut lochan is cnuic ghanna a chur ris an t-saoghal rèidh."
 
 #: src/settings_translation_file.cpp
 msgid "Ground level"
-msgstr ""
+msgstr "Àirde a’ ghrunnda"
 
 #: src/settings_translation_file.cpp
 msgid "Y of flat ground."
@@ -5979,11 +6266,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal"
-msgstr ""
+msgstr "Gineadair nam mapa Fractal"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal specific flags"
-msgstr ""
+msgstr "Brataich shònraichte do ghineadair nam mapa Fractal"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5991,6 +6278,9 @@ msgid ""
 "'terrain' enables the generation of non-fractal terrain:\n"
 "ocean, islands and underground."
 msgstr ""
+"Buadhan gintinn mapa a tha sònraichte do ghineadair nam mapa Fractal.\n"
+"Cuiridh “terrain” gintinn crutha-tìre nach eil fractalach an comas:\n"
+"cuan, eileanan is fon talamh."
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -6030,6 +6320,11 @@ msgid ""
 "increases processing load.\n"
 "At iterations = 20 this mapgen has a similar load to mapgen V7."
 msgstr ""
+"Ath-thriall an fhoincsein ath-chùrsaiche.\n"
+"Ma mheudaicheas tu seo, bidh barrachd mion-chruthan air\n"
+"ach bi barrachd eallaich air a’ phròiseasadh cuideachd.\n"
+"Ma tha ath-thriall = 20, bidh an t-eallach aig gineadair nam mapa seo "
+"coltach ri eallach gineadair nam mapa V7."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6122,15 +6417,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
-msgstr ""
+msgstr "Àirde-Y aig grunnd na mara."
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
-msgstr ""
+msgstr "Gineadair nam mapa Valleys"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys specific flags"
-msgstr ""
+msgstr "Brataich shònraichte do ghineadair nam mapa Valleys"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6141,6 +6436,12 @@ msgid ""
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
 msgstr ""
+"Buadhan gintinn mapa a tha sònraichte do ghineadair nam mapa Valleys.\n"
+"“altitude_chill”: Bidh tìr àrd nas fhuaire.\n"
+"“humid_rivers”: Bidh an tìr nas buige faisg air aibhnean.\n"
+"“vary_river_depth”: Ma tha seo an comas, bidh aibhnean nas tana agus tioram "
+"aig amannan ma tha an saoghal tioram no teth.\n"
+"’“altitude_dry”: Bidh tìr àrd nas tiorma."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6163,19 +6464,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River depth"
-msgstr ""
+msgstr "Doimhne nan aibhnean"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
-msgstr ""
+msgstr "Dè cho domhainn ’s a bhios aibhnean."
 
 #: src/settings_translation_file.cpp
 msgid "River size"
-msgstr ""
+msgstr "Meud nan aibhnean"
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
-msgstr ""
+msgstr "Dè cho leathann ’s a bhios aibhnean."
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
@@ -6208,6 +6509,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers."
 msgstr ""
+"Àrdaichidh seo an cruth-tìre airson glinn a chruthachadh timcheall air na "
+"h-aibhnean."
 
 #: src/settings_translation_file.cpp
 msgid "Valley fill"
@@ -6223,7 +6526,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
-msgstr ""
+msgstr "Meudaichidh seo na glinn."
 
 #: src/settings_translation_file.cpp
 msgid "Valley slope"
@@ -6231,7 +6534,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "Meud nan cnapan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6242,14 +6545,21 @@ msgid ""
 "Altering this value is for special usage, leaving it unchanged is\n"
 "recommended."
 msgstr ""
+"Meud nan cnapan mapa a thèid a ghintinn le gineadair nam mapa, ann am bloca "
+"mapa (16 nòd).\n"
+"RABHADH: Chan fhaigh thu buannachd ach cunnartan à luach nas àirde na 5.\n"
+"Le luach nas lugha, gheibh thu barrachd uamhan is thuill-dubha.\n"
+"Chan fhiach atharrachadh an luach seo ach air adhbhar sònraichte ’s "
+"mholamaid\n"
+"nach atharraich thu e."
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
-msgstr ""
+msgstr "Dì-bhugachadh gineadair nam mapa"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
-msgstr ""
+msgstr "Dumpaich fiosrachadh dì-bhugachaidh aig gineadair nam mapa."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -6299,7 +6609,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Online Content Repository"
-msgstr ""
+msgstr "Ionad-tasgaidh susbaint air loidhne"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
