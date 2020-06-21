@@ -55,6 +55,8 @@ public:
 		BORDERCOLORS,
 		BORDERWIDTHS,
 		SOUND,
+		SPACING,
+		SIZE,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -119,6 +121,10 @@ public:
 			return BORDERWIDTHS;
 		} else if (name == "sound") {
 			return SOUND;
+		} else if (name == "spacing") {
+			return SPACING;
+		} else if (name == "size") {
+			return SIZE;
 		} else {
 			return NONE;
 		}
@@ -257,6 +263,19 @@ public:
 		irr::core::rect<s32> rect;
 		parseRect(val, &rect);
 		return rect;
+	}
+
+	irr::core::vector2d<f32> getVector2f(Property prop, irr::core::vector2d<f32> def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty())
+			return def;
+
+		irr::core::vector2d<f32> vec;
+		if (!parseVector2f(val, &vec))
+			return def;
+
+		return vec;
 	}
 
 	irr::core::vector2d<s32> getVector2i(Property prop, irr::core::vector2d<s32> def) const
@@ -432,6 +451,29 @@ private:
 		return true;
 	}
 
+	bool parseVector2f(const std::string &value, irr::core::vector2d<f32> *parsed_vec) const
+	{
+		irr::core::vector2d<f32> vec;
+		std::vector<std::string> v_vector = split(value, ',');
+
+		if (v_vector.size() == 1) {
+			f32 x = stof(v_vector[0]);
+			vec.X = x;
+			vec.Y = x;
+		} else if (v_vector.size() == 2) {
+			vec.X = stof(v_vector[0]);
+			vec.Y =	stof(v_vector[1]);
+		} else {
+			warningstream << "Invalid vector2d string format: \"" << value
+					<< "\"" << std::endl;
+			return false;
+		}
+
+		*parsed_vec = vec;
+
+		return true;
+	}
+
 	bool parseVector2i(const std::string &value, irr::core::vector2d<s32> *parsed_vec) const
 	{
 		irr::core::vector2d<s32> vec;
@@ -442,10 +484,8 @@ private:
 			vec.X = x;
 			vec.Y = x;
 		} else if (v_vector.size() == 2) {
-			s32 x = stoi(v_vector[0]);
-			s32 y =	stoi(v_vector[1]);
-			vec.X = x;
-			vec.Y = y;
+			vec.X = stoi(v_vector[0]);
+			vec.Y =	stoi(v_vector[1]);
 		} else {
 			warningstream << "Invalid vector2d string format: \"" << value
 					<< "\"" << std::endl;

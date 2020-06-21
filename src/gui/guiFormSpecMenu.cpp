@@ -497,19 +497,39 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 			3
 		);
 
-		v2f32 slot_spacing = data->real_coordinates ?
-				v2f32(imgsize.X * 1.25f, imgsize.Y * 1.25f) : spacing;
+		auto style = getDefaultStyleForElement("list", spec.fname);
 
-		v2s32 pos = data->real_coordinates ? getRealCoordinateBasePos(v_pos)
-				: getElementBasePos(&v_pos);
+		v2f32 slot_scale = style.getVector2f(StyleSpec::SIZE, v2f32(0, 0));
+		v2s32 slot_size(
+			slot_scale.X <= 0 ? imgsize.X : slot_scale.X * imgsize.X,
+			slot_scale.Y <= 0 ? imgsize.Y : slot_scale.Y * imgsize.Y
+		);
+
+		v2f32 slot_spacing = style.getVector2f(StyleSpec::SPACING, v2f32(-1, -1));
+		if (data->real_coordinates) {
+			slot_spacing.X = slot_spacing.X < 0 ? imgsize.X * 1.25f :
+					slot_spacing.X * imgsize.X + imgsize.X;
+			slot_spacing.Y = slot_spacing.Y < 0 ? imgsize.Y * 1.25f :
+					slot_spacing.Y * imgsize.Y + imgsize.Y;
+		} else {
+			slot_spacing.X = slot_spacing.X < 0 ? spacing.X :
+					slot_spacing.X * spacing.X;
+			slot_spacing.Y = slot_spacing.Y < 0 ? spacing.Y :
+					slot_spacing.Y * spacing.Y;
+		}
+
+		v2s32 pos = data->real_coordinates ? getRealCoordinateBasePos(v_pos) :
+				getElementBasePos(&v_pos);
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
 				pos.X + (geom.X - 1) * slot_spacing.X + imgsize.X,
 				pos.Y + (geom.Y - 1) * slot_spacing.Y + imgsize.Y);
 
 		GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
-				spec.fid, rect, m_invmgr, loc, listname, geom, start_i, imgsize,
+				spec.fid, rect, m_invmgr, loc, listname, geom, start_i, slot_size,
 				slot_spacing, this, data->inventorylist_options, m_font);
+
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
 		m_inventorylists.push_back(e);
 		m_fields.push_back(spec);
