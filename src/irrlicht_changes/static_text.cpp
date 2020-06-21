@@ -85,14 +85,13 @@ void StaticText::draw()
 
 		core::rect<s32> r = frameRect;
 		s32 height_line = font->getDimension(L"A").Height + font->getKerningHeight();
-		s32 height_total = height_line * BrokenText.size();
 		if (VAlign == EGUIA_CENTER && WordWrap)
 		{
-			r.UpperLeftCorner.Y = r.getCenter().Y - (height_total / 2);
+			r.UpperLeftCorner.Y = r.getCenter().Y - (getTextHeight() / 2);
 		}
 		else if (VAlign == EGUIA_LOWERRIGHT)
 		{
-			r.UpperLeftCorner.Y = r.LowerRightCorner.Y - height_total;
+			r.UpperLeftCorner.Y = r.LowerRightCorner.Y - getTextHeight();
 		}
 		if (HAlign == EGUIA_LOWERRIGHT)
 		{
