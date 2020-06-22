@@ -76,41 +76,37 @@ void RenderingCoreEquirectangular::processImages()
 			double y = cos(phi);
 			double z = cos(theta) * sin(phi);
 
-			double a = fmax(fmax(abs(x), abs(y)), abs(z));
-
-			double xx = x / a;
-			double yy = y / a;
-			double zz = z / a;
+			double a = fmax(fmax(fabs(x), fabs(y)), fabs(z));
 
 			u32 xPixel = 0;
 			u32 yPixel = 0;
 			u32 yTemp = 0;
 			int selected_face = -1;
 
-			if (xx == 1) {
+			if (a == x) { // X-
+				selected_face = 1;
 				xPixel = ((-1 * tan(atan(z / x)) + 1.0) / 2.0) * dims;
 				yTemp = ((tan(atan(y / x)) + 1.0) / 2.0) * dims;
-				selected_face = 1; // X-
-			} else if (xx == -1) {
+			} else if (a == -x) { // X+
+				selected_face = 0;
 				xPixel = ((-1 * tan(atan(z / x)) + 1.0) / 2.0) * dims;
 				yTemp = ((-1 * tan(atan(y / x)) + 1.0) / 2.0) * dims;
-				selected_face = 0; // X+
-			} else if (yy == 1) {
+			} else if (a == y) { // Y+
+				selected_face = 2;
 				xPixel = ((tan(atan(x / y)) + 1.0) / 2.0) * dims;
 				yTemp = ((-1 * tan(atan(z / y)) + 1.0) / 2.0) * dims;
-				selected_face = 2; // Y+
-			} else if (yy == -1) {
+			} else if (a == -y) { // Y-
+				selected_face = 3;
 				xPixel = ((-1 * tan(atan(x / y)) + 1.0) / 2.0) * dims;
 				yTemp = ((-1 * tan(atan(z / y)) + 1.0) / 2.0) * dims;
-				selected_face = 3; // Y-
-			} else if (zz == 1) {
+			} else if (a == z) { // Z-
+				selected_face = 5;
 				xPixel = ((tan(atan(x / z)) + 1.0) / 2.0) * dims;
 				yTemp = ((tan(atan(y / z)) + 1.0) / 2.0) * dims;
-				selected_face = 5; // Z-
-			} else if (zz == -1) {
+			} else if (a == -z) { // Z+
+				selected_face = 4;
 				xPixel = ((tan(atan(x / z)) + 1.0) / 2.0) * dims;
 				yTemp = ((-1 * tan(atan(y / z)) + 1.0) / 2.0) * dims;
-				selected_face = 4; // Z+
 			}
 
 			xPixel = fmin(xPixel, dims - 1);
