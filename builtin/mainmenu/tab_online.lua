@@ -323,6 +323,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				fav.address == fields.te_address and
 				fav.port    == fields.te_port then
 
+			serverlistmgr.add_favorite(fav)
+
 			gamedata.servername        = fav.name
 			gamedata.serverdescription = fav.description
 
@@ -334,6 +336,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		else
 			gamedata.servername        = ""
 			gamedata.serverdescription = ""
+
+			serverlistmgr.add_favorite({
+				address = fields.te_address,
+				port = fields.te_port,
+			})
 		end
 
 		core.settings:set("address",     fields.te_address)
