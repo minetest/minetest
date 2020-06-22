@@ -86,7 +86,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	if menudata.search_result then
 		for i = 1, #menudata.search_result do
-			local favs = core.get_favorites("local")
+			local favs = serverlistmgr.get_favorites()
 			local server = menudata.search_result[i]
 
 			for fav_id = 1, #favs do
@@ -103,7 +103,7 @@ local function get_formspec(tabview, name, tabdata)
 			retval = retval .. render_serverlist_row(server, server.is_favorite)
 		end
 	elseif #menudata.favorites > 0 then
-		local favs = core.get_favorites("local")
+		local favs = serverlistmgr.get_favorites()
 		if #favs > 0 then
 			for i = 1, #favs do
 			for j = 1, #menudata.favorites do
@@ -177,7 +177,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		if event.type == "CHG" then
 			if event.row <= #serverlist then
 				gamedata.fav = false
-				local favs = core.get_favorites("local")
+				local favs = serverlistmgr.get_favorites()
 				local address = fav.address
 				local port    = fav.port
 				gamedata.serverdescription = fav.description
@@ -234,8 +234,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		local current_favourite = core.get_table_index("favourites")
 		if not current_favourite then return end
 
-		core.delete_favorite(current_favourite)
-		asyncOnlineFavourites()
+		serverlistmgr.delete_favorite(current_favourite)
+		serverlistmgr.sync()
 		tabdata.fav_selected = nil
 
 		core.settings:set("address", "")
@@ -305,7 +305,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_mp_refresh then
-		asyncOnlineFavourites()
+		serverlistmgr.sync()
 		return true
 	end
 
@@ -347,7 +347,7 @@ end
 
 local function on_change(type, old_tab, new_tab)
 	if type == "LEAVE" then return end
-	asyncOnlineFavourites()
+	serverlistmgr.sync()
 end
 
 --------------------------------------------------------------------------------

@@ -62,24 +62,6 @@ function image_column(tooltip, flagname)
 		"5=" .. core.formspec_escape(defaulttexturedir .. "server_ping_1.png")
 end
 
---------------------------------------------------------------------------------
-function order_favorite_list(list)
-	local res = {}
-	--orders the favorite list after support
-	for i = 1, #list do
-		local fav = list[i]
-		if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
-			res[#res + 1] = fav
-		end
-	end
-	for i = 1, #list do
-		local fav = list[i]
-		if not is_server_protocol_compat(fav.proto_min, fav.proto_max) then
-			res[#res + 1] = fav
-		end
-	end
-	return res
-end
 
 --------------------------------------------------------------------------------
 function render_serverlist_row(spec, is_favorite)
@@ -224,41 +206,6 @@ function menu_handle_key_up_down(fields, textlist, settingname)
 		return true
 	end
 	return false
-end
-
---------------------------------------------------------------------------------
-function asyncOnlineFavourites()
-	if not menudata.public_known then
-		menudata.public_known = {{
-			name = fgettext("Loading..."),
-			description = fgettext_ne("Try reenabling public serverlist and check your internet connection.")
-		}}
-	end
-	menudata.favorites = menudata.public_known
-	menudata.favorites_is_public = true
-
-	if not menudata.public_downloading then
-		menudata.public_downloading = true
-	else
-		return
-	end
-
-	core.handle_async(
-		function(param)
-			return core.get_favorites("online")
-		end,
-		nil,
-		function(result)
-			menudata.public_downloading = nil
-			local favs = order_favorite_list(result)
-			if favs[1] then
-				menudata.public_known = favs
-				menudata.favorites = menudata.public_known
-				menudata.favorites_is_public = true
-			end
-			core.event_handler("Refresh")
-		end
-	)
 end
 
 --------------------------------------------------------------------------------

@@ -487,14 +487,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		start_data.socket_port = myrand_range(49152, 65535);
 	} else {
 		g_settings->set("name", start_data.name);
-		if (!start_data.address.empty()) {
-			ServerListSpec server;
-			server["name"]        = server_name;
-			server["address"]     = start_data.address;
-			server["port"]        = itos(start_data.socket_port);
-			server["description"] = server_description;
-			ServerList::insert(server);
-		}
 	}
 
 	if (start_data.name.length() > PLAYERNAME_SIZE - 1) {
