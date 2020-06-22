@@ -230,3 +230,10 @@ void ModApiHttp::Initialize(lua_State *L, int top)
 
 #endif
 }
+
+void ModApiHttp::InitializeAsync(lua_State *L, int top)
+{
+#if USE_CURL
+	API_FCT(get_http_api);
+#endif
+}
