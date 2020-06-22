@@ -73,6 +73,7 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 	asyncEngine.registerStateInitializer(registerLuaClasses);
 	asyncEngine.registerStateInitializer(ModApiMainMenu::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiHttp::InitializeAsync);
 
 	// Initialize async environment
 	//TODO possibly make number of async threads configurable
