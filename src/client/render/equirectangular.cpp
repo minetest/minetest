@@ -78,35 +78,35 @@ void RenderingCoreEquirectangular::processImages()
 
 			double a = fmax(fmax(fabs(x), fabs(y)), fabs(z));
 
-			u32 xPixel = 0;
+			u32 xPixel = dims;
 			u32 yPixel = 0;
-			u32 yTemp = 0;
+			u32 yTemp = dims;
 			int selected_face = -1;
 
 			if (a == x) { // X-
 				selected_face = 1;
-				xPixel = ((-1 * tan(atan(z / x)) + 1.0) / 2.0) * dims;
-				yTemp = ((tan(atan(y / x)) + 1.0) / 2.0) * dims;
+				xPixel *= ((-1 * tan(atan(z / x)) + 1.0) / 2.0);
+				yTemp *= ((tan(atan(y / x)) + 1.0) / 2.0);
 			} else if (a == -x) { // X+
 				selected_face = 0;
-				xPixel = ((-1 * tan(atan(z / x)) + 1.0) / 2.0) * dims;
-				yTemp = ((-1 * tan(atan(y / x)) + 1.0) / 2.0) * dims;
+				xPixel *= ((-1 * tan(atan(z / x)) + 1.0) / 2.0);
+				yTemp *= ((-1 * tan(atan(y / x)) + 1.0) / 2.0);
 			} else if (a == y) { // Y+
 				selected_face = 2;
-				xPixel = ((tan(atan(x / y)) + 1.0) / 2.0) * dims;
-				yTemp = ((-1 * tan(atan(z / y)) + 1.0) / 2.0) * dims;
+				xPixel *= ((tan(atan(x / y)) + 1.0) / 2.0);
+				yTemp *= ((-1 * tan(atan(z / y)) + 1.0) / 2.0);
 			} else if (a == -y) { // Y-
 				selected_face = 3;
-				xPixel = ((-1 * tan(atan(x / y)) + 1.0) / 2.0) * dims;
-				yTemp = ((-1 * tan(atan(z / y)) + 1.0) / 2.0) * dims;
+				xPixel *= ((-1 * tan(atan(x / y)) + 1.0) / 2.0);
+				yTemp *= ((-1 * tan(atan(z / y)) + 1.0) / 2.0);
 			} else if (a == z) { // Z-
 				selected_face = 5;
-				xPixel = ((tan(atan(x / z)) + 1.0) / 2.0) * dims;
-				yTemp = ((tan(atan(y / z)) + 1.0) / 2.0) * dims;
+				xPixel *= ((tan(atan(x / z)) + 1.0) / 2.0);
+				yTemp *= ((tan(atan(y / z)) + 1.0) / 2.0);
 			} else if (a == -z) { // Z+
 				selected_face = 4;
-				xPixel = ((tan(atan(x / z)) + 1.0) / 2.0) * dims;
-				yTemp = ((-1 * tan(atan(y / z)) + 1.0) / 2.0) * dims;
+				xPixel *= ((tan(atan(x / z)) + 1.0) / 2.0);
+				yTemp *= ((-1 * tan(atan(y / z)) + 1.0) / 2.0);
 			}
 
 			xPixel = fmin(xPixel, dims - 1);
@@ -114,7 +114,7 @@ void RenderingCoreEquirectangular::processImages()
 			yPixel = dims - 1 - yPixel;
 
 			if (selected_face == 2 || selected_face == 3) {
-				pixel[j * dims * 4 + i] = pixelf[selected_face][xPixel * dims + (dims - 1 - yPixel)];
+				pixel[j * dims * 4 + i] = pixelf[selected_face][(xPixel + 1) * dims - 1 - yPixel];
 			} else {
 				pixel[j * dims * 4 + i] = pixelf[selected_face][yPixel * dims + xPixel];
 			}
