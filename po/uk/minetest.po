@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-22 17:56+0000\n"
-"Last-Translator: Fixer <artem.brz@gmail.com>\n"
+"PO-Revision-Date: 2020-06-26 10:41+0000\n"
+"Last-Translator: Andrii Muliar <andrew.muliar@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -173,7 +173,6 @@ msgid "ContentDB is not available when Minetest was compiled without cURL"
 msgstr "ContentDB не є доступним коли Minetest не містить підтримку cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
 msgstr "Завантаження..."
 
@@ -226,7 +225,7 @@ msgstr "Вид"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Світ з такою назвою  \"$1\" вже існує"
+msgstr "Світ з такою назвою \"$1\" вже існує"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -234,15 +233,15 @@ msgstr "Додаткова місцевість"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "Висота снігового поясу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "Пояс посухи"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "Змішування біомів"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
@@ -253,9 +252,8 @@ msgid "Caverns"
 msgstr "Печери"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Октави"
+msgstr "Печери"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -264,7 +262,7 @@ msgstr "Створити"
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Decorations"
-msgstr "Інформація:"
+msgstr "Інформація"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -280,7 +278,7 @@ msgstr "Підземелля"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Рівнина"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
@@ -288,7 +286,7 @@ msgstr "Плаваючі земельні масиви в небі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Висячі острови"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -296,7 +294,7 @@ msgstr "Гра"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Генерувати нефрактальну місцевість: Океани та підземелля"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -317,6 +315,7 @@ msgstr "Озера"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
+"Низька вологість та висока спека спричиняють мілководні або пересохлі річки"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -324,12 +323,11 @@ msgstr "Генератор світу"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Прапори Генератору світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Генератор світу: фрактальний"
+msgstr "Властивості генератору світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -356,13 +354,12 @@ msgid "Reduces humidity with altitude"
 msgstr "Зменшує вологість з висотою"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Річковий шум"
+msgstr "Річки"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Річки Рівня моря"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -1622,8 +1619,9 @@ msgid "Numpad 9"
 msgstr "Num 9"
 
 #: src/client/keycode.cpp
+#, fuzzy
 msgid "OEM Clear"
-msgstr "OEM Clear"
+msgstr "Почистити OEM"
 
 #: src/client/keycode.cpp
 msgid "Page down"
@@ -4728,40 +4726,46 @@ msgid "Mapgen Valleys specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen debug"
-msgstr ""
+msgstr "Налагодження генерації світу"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen name"
-msgstr ""
+msgstr "Назва генерації світу"
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
-msgstr ""
+msgstr "Максимальна відстань генерації блоків"
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Max liquids processed per step."
-msgstr ""
+msgstr "Максимальна кількість рідин, оброблених на крок."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Max. packets per iteration"
-msgstr ""
+msgstr "Максимальна кількість пакетів за одну ітерацію"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Максимальна кількість кадрів в секунду (FPS)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Maximum FPS when game is paused."
-msgstr ""
+msgstr "Максимум FPS при паузі."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -6384,11 +6388,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of lower terrain and seabed."
-msgstr ""
+msgstr "Y-Рівень нижнього рельєфу та морського дна."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
-msgstr ""
+msgstr "Y-Рівень морського дна."
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
