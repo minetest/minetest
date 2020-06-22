@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <vector>
 #include <SMaterial.h>
-#include <memory>
 #include "util/numeric.h"
 #include "config.h"
 
@@ -284,7 +283,7 @@ struct TileLayer
 	//! If true, the tile has its own color.
 	bool has_color = false;
 
-	std::shared_ptr<std::vector<FrameSpec>> frames = nullptr;
+	std::vector<FrameSpec> *frames = nullptr;
 
 	/*!
 	 * The color of the tile, or if the tile does not own
