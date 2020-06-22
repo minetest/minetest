@@ -16,7 +16,6 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 serverlistmgr = {}
-local _favorites
 
 --------------------------------------------------------------------------------
 local function order_favorite_list(list)
@@ -39,42 +38,49 @@ end
 
 --------------------------------------------------------------------------------
 function serverlistmgr.sync()
-	if not menudata.public_known then
-		menudata.public_known = {{
+	if not serverlistmgr.public_known then
+		serverlistmgr.public_known = {{
 			name = fgettext("Loading..."),
 			description = fgettext_ne("Try reenabling public serverlist and check your internet connection.")
 		}}
 	end
-	menudata.favorites = menudata.public_known
-	menudata.favorites_is_public = true
+	serverlistmgr.favorites = serverlistmgr.public_known
+	serverlistmgr.favorites_is_public = true
 
-	if not menudata.public_downloading then
-		menudata.public_downloading = true
+	if not serverlistmgr.public_downloading then
+		serverlistmgr.public_downloading = true
 	else
 		return
 	end
 
 	core.handle_async(
 		function(param)
-			-- TODO
+			local http = core.get_http_api()
+			local url = ("%s/list?proto_version_min=%d&proto_version_max=%d"):format(
+				core.settings:get("serverlist_url"),
+				core.get_min_supp_proto(),
+				core.get_max_supp_proto())
+
+			local response = http.fetch_sync({ url = url })
+			if not response.succeeded then
+				return {}
+			end
+
+			local retval = core.parse_json(response.data)
+			return retval and retval.list or {}
 		end,
 		nil,
 		function(result)
-			menudata.public_downloading = nil
+			serverlistmgr.public_downloading = nil
 			local favs = order_favorite_list(result)
 			if favs[1] then
-				menudata.public_known = favs
-				menudata.favorites = menudata.public_known
-				menudata.favorites_is_public = true
+				serverlistmgr.public_known = favs
+				serverlistmgr.favorites = serverlistmgr.public_known
+				serverlistmgr.favorites_is_public = true
 			end
 			core.event_handler("Refresh")
 		end
 	)
-end
-
---------------------------------------------------------------------------------
-function serverlistmgr.get_online(current_favourite)
-	return online
 end
 
 --------------------------------------------------------------------------------
@@ -92,7 +98,7 @@ local function save_favorites(favorites)
 
 	local path = get_favorites_path()
 	core.create_dir(path)
-	core.safe_write_file(path, core.write_json(favorites))
+	core.safe_file_write(path, core.write_json(favorites))
 end
 
 --------------------------------------------------------------------------------
@@ -128,26 +134,36 @@ local function read_favorites()
 				return line and line:trim()
 			end
 
-			if pop():lower() == "[SERVER]" then
+			if pop():lower() == "[server]" then
 				local name = pop()
 				local address = pop()
-				local port = pop()
+				local port = tonumber(pop())
 				local description = pop()
 
+				if name == "" then
+					name = nil
+				end
+
+				if description == "" then
+					description = nil
+				end
+
 				if not address or #address < 3 then
-					core.log("warning", "Malformed favourites file, missing address at line " .. i)
+					core.log("warning", "Malformed favorites file, missing address at line " .. i)
 				end
 				if not port or port < 1 or port > 65535 then
-					core.log("warning", "Malformed favourites file, missing port at line " .. i)
+					core.log("warning", "Malformed favorites file, missing port at line " .. i)
 				end
-				if name:upper() == "[SERVER]" or address:upper() == "[SERVER]" or port:upper() == "[SERVER]" then
-					core.log("warning", "Potentially malformed favourites file, overran at line " .. i)
+				if (name and name:upper() == "[SERVER]") or
+						(address and address:upper() == "[SERVER]") or
+						(description and description:upper() == "[SERVER]") then
+					core.log("warning", "Potentially malformed favorites file, overran at line " .. i)
 				end
 
 				favorites[#favorites + 1] = {
 					name = name,
 					address = address,
-					port = tonumber(port),
+					port = port,
 					description = description
 				}
 			end
@@ -160,36 +176,44 @@ local function read_favorites()
 end
 
 --------------------------------------------------------------------------------
-local function delete_favorite(favorites, current_favourite)
-
-end
-
---------------------------------------------------------------------------------
-function serverlistmgr.get_favorites(current_favourite)
-	if _favorites then
-		return _favorites
+local function delete_favorite(favorites, current_favorite)
+	for i=1, #favorites do
+		local fav = favorites[i]
+		if fav.address == current_favorite.address and fav.port == current_favorite.port then
+			table.remove(favorites, i)
+			return
+		end
 	end
 
-	_favorites = read_favorites(json)
-	return _favorites or {}
+	core.log("warning", "Could not delete favorite, it was not found.")
 end
 
 --------------------------------------------------------------------------------
-function serverlistmgr.add_favorite(current_favourite)
+function serverlistmgr.get_favorites(current_favorite)
+	if menudata.favorites then
+		return menudata.favorites
+	end
+
+	menudata.favorites = read_favorites()
+	return menudata.favorites or {}
+end
+
+--------------------------------------------------------------------------------
+function serverlistmgr.add_favorite(current_favorite)
 	local favorites = serverlistmgr.get_favorites()
-	delete_favorite(favorites, current_favourite)
+	delete_favorite(favorites, current_favorite)
 	table.insert(favorites, {
-		name = current_favourite.name,
-		address = current_favourite.address,
-		port = tonumber(current_favourite.port),
-		description = current_favourite.description,
+		name = current_favorite.name,
+		address = current_favorite.address,
+		port = tonumber(current_favorite.port),
+		description = current_favorite.description,
 	})
 	save_favorites(favorites)
 end
 
 --------------------------------------------------------------------------------
-function serverlistmgr.delete_favorite(current_favourite)
+function serverlistmgr.delete_favorite(current_favorite)
 	local favorites = serverlistmgr.get_favorites()
-	delete_favorite(favorites, current_favourite)
+	delete_favorite(favorites, current_favorite)
 	save_favorites(favorites)
 end

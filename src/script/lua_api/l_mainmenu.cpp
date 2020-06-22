@@ -952,5 +952,7 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	//API_FCT(extract_zip); //TODO remove dependency to GuiEngine
 	API_FCT(may_modify_path);
 	API_FCT(download_file);
+	API_FCT(get_min_supp_proto);
+	API_FCT(get_max_supp_proto);
 	//API_FCT(gettext); (gettext lib isn't threadsafe)
 }
