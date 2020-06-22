@@ -90,8 +90,10 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u16 screen_h = g_settings->getU16("screen_h");
 
 	if (g_settings->get("3d_mode") == "equirectangular" &&
-			!g_settings->getBool("360video_save"))
+			!g_settings->getBool("360video_save")) {
+		screen_h = (screen_h / 2) * 2;
 		screen_w = 2 * screen_h;
+	}
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
