@@ -152,6 +152,7 @@ Mod directory structure
     │   ├── models
     │   ├── textures
     │   │   ├── modname_stuff.png
+    │   │   ├── modname_stuff_normal.png
     │   │   └── modname_something_else.png
     │   ├── sounds
     │   ├── media
@@ -377,6 +378,38 @@ stripping out the file extension:
 
 * e.g. `foomod_foothing.png`
 * e.g. `foomod_foothing`
+
+
+Normalmap Textures
+------------------
+
+If shaders and bumpmapping or parallax occlusion is enabled, Minetest tries
+to load normalmap textures.
+Those textures have to end with `_normal.png` and start with the same name
+as their corresponding albedo texture.
+For example a normalmap for `foomod_foothing.png` has to be called
+`foomod_foothing_normal.png`.
+The sRGB R, G and B colour values of a normalmap pixel are each linearly
+mapped from `{0, ..., 255}` to `[-1, 1]` and, taken together,
+define the normal vector.
+The alpha channel defines the heightmap for parallax occlusion.
+To be save, the alpha values should always bigger than zero because the colour
+values, which define the normal vector,
+may be undefined for image formats where colour is discarded in fully
+transparent pixels.
+If Minetest cannot find the normalmap corresponding to an albedo texture
+and the `generate_normalmaps` setting is enabled,
+the height and normal vectors are roughly approximated with
+the brightness of the albedo texture's pixels.
+
+Bumpmapping and parallax occlusion are currently experimental features:
+
+* Bumpmapping in Minetest happens in an obscure way; there are no light sources
+  defined in the shaders except the sunlight direction.
+* Parallax occlusion with relief-mapping mode does not yet work correctly
+  together with Minetest's Fastfaces.
+* The normalmap files must end with `.png`, so jpeg files are not supported.
+
 
 Texture modifiers
 -----------------
