@@ -265,40 +265,40 @@ public:
 		return rect;
 	}
 
-	irr::core::vector2d<f32> getVector2f(Property prop, irr::core::vector2d<f32> def) const
+	v2f32 getVector2f(Property prop, v2f32 def) const
 	{
 		const auto &val = properties[prop];
 		if (val.empty())
 			return def;
 
-		irr::core::vector2d<f32> vec;
+		v2f32 vec;
 		if (!parseVector2f(val, &vec))
 			return def;
 
 		return vec;
 	}
 
-	irr::core::vector2d<s32> getVector2i(Property prop, irr::core::vector2d<s32> def) const
+	v2s32 getVector2i(Property prop, v2s32 def) const
 	{
 		const auto &val = properties[prop];
 		if (val.empty())
 			return def;
 
-		irr::core::vector2d<s32> vec;
-		if (!parseVector2i(val, &vec))
+		v2f32 vec;
+		if (!parseVector2f(val, &vec))
 			return def;
 
-		return vec;
+		return v2s32(vec.X, vec.Y);
 	}
 
-	irr::core::vector2d<s32> getVector2i(Property prop) const
+	v2s32 getVector2i(Property prop) const
 	{
 		const auto &val = properties[prop];
 		FATAL_ERROR_IF(val.empty(), "Unexpected missing property");
 
-		irr::core::vector2d<s32> vec;
-		parseVector2i(val, &vec);
-		return vec;
+		v2f32 vec;
+		parseVector2f(val, &vec);
+		return v2s32(vec.X, vec.Y);
 	}
 
 	gui::IGUIFont *getFont() const
@@ -451,9 +451,9 @@ private:
 		return true;
 	}
 
-	bool parseVector2f(const std::string &value, irr::core::vector2d<f32> *parsed_vec) const
+	bool parseVector2f(const std::string &value, v2f32 *parsed_vec) const
 	{
-		irr::core::vector2d<f32> vec;
+		v2f32 vec;
 		std::vector<std::string> v_vector = split(value, ',');
 
 		if (v_vector.size() == 1) {
@@ -464,30 +464,7 @@ private:
 			vec.X = stof(v_vector[0]);
 			vec.Y =	stof(v_vector[1]);
 		} else {
-			warningstream << "Invalid vector2d string format: \"" << value
-					<< "\"" << std::endl;
-			return false;
-		}
-
-		*parsed_vec = vec;
-
-		return true;
-	}
-
-	bool parseVector2i(const std::string &value, irr::core::vector2d<s32> *parsed_vec) const
-	{
-		irr::core::vector2d<s32> vec;
-		std::vector<std::string> v_vector = split(value, ',');
-
-		if (v_vector.size() == 1) {
-			s32 x = stoi(v_vector[0]);
-			vec.X = x;
-			vec.Y = x;
-		} else if (v_vector.size() == 2) {
-			vec.X = stoi(v_vector[0]);
-			vec.Y =	stoi(v_vector[1]);
-		} else {
-			warningstream << "Invalid vector2d string format: \"" << value
+			warningstream << "Invalid 2d vector string format: \"" << value
 					<< "\"" << std::endl;
 			return false;
 		}
