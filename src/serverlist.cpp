@@ -261,11 +261,11 @@ void sendAnnounce(AnnounceAction action,
 
 	HTTPFetchRequest fetch_request;
 	fetch_request.url = g_settings->get("serverlist_url") + std::string("/announce");
-	fetch_request.post_fields["json"] = fastWriteJson(server);
+	fetch_request.method = HTTP_POST;
+	fetch_request.fields["json"] = fastWriteJson(server);
 	fetch_request.multipart = true;
 	httpfetch_async(fetch_request);
 }
 #endif
 
 } // namespace ServerList
-
