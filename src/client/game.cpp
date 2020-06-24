@@ -1173,6 +1173,10 @@ void Game::shutdown()
 	if (formspec)
 		formspec->quitMenu();
 
+#ifdef HAVE_TOUCHSCREENGUI
+	g_touchscreengui->hide();
+#endif
+
 	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
 
 	if (clouds)
@@ -2486,7 +2490,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->joystick.getAxisWithoutDead(JA_FORWARD_MOVE)
 	);
 
-	u32 keypress_bits =
+	u32 keypress_bits = (
 			( (u32)(isKeyDown(KeyType::FORWARD)                       & 0x1) << 0) |
 			( (u32)(isKeyDown(KeyType::BACKWARD)                      & 0x1) << 1) |
 			( (u32)(isKeyDown(KeyType::LEFT)                          & 0x1) << 2) |
@@ -2495,7 +2499,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 			( (u32)(isKeyDown(KeyType::SPECIAL1)                      & 0x1) << 5) |
 			( (u32)(isKeyDown(KeyType::SNEAK)                         & 0x1) << 6) |
 			( (u32)(input->getLeftState()                             & 0x1) << 7) |
-			( (u32)(input->getRightState()                            & 0x1) << 8
+			( (u32)(input->getRightState()                            & 0x1) << 8) |
+			( (u32)(isKeyDown(KeyType::ZOOM)                          & 0x1) << 9)
 		);
 
 #ifdef ANDROID
@@ -2806,7 +2811,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		// Shows the mesh skybox
 		sky->setVisible(true);
 		// Update mesh based skybox colours if applicable.
-		sky->setSkyColors(*event->set_sky);
+		sky->setSkyColors(event->set_sky->sky_color);
 		sky->setHorizonTint(
 			event->set_sky->fog_sun_tint,
 			event->set_sky->fog_moon_tint,

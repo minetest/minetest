@@ -3560,6 +3560,10 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 	tooltip_offset_y  = 0;
 	if (m_pointer.X > (s32)screenSize.X / 2)
 		tooltip_offset_x = -(tooltip_offset_x + tooltip_width);
+
+	// Hide tooltip after ETIE_LEFT_UP
+	if (m_pointer.X == 0)
+		return;
 #endif
 
 	// Calculate and set the tooltip position

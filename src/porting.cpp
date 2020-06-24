@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if defined(__FreeBSD__)  || defined(__NetBSD__) || defined(__DragonFly__)
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
+	extern char **environ;
 #elif defined(_WIN32)
 	#include <windows.h>
 	#include <wincrypt.h>
@@ -48,6 +49,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #if defined(__ANDROID__)
 	#include "porting_android.h"
+#endif
+#if defined(__APPLE__)
+	// For _NSGetEnviron()
+	// Related: https://gitlab.haskell.org/ghc/ghc/issues/2458
+	#include <crt_externs.h>
 #endif
 
 #include "config.h"
@@ -718,7 +724,8 @@ bool openURL(const std::string &url)
 	return true;
 #elif defined(__APPLE__)
 	const char *argv[] = {"open", url.c_str(), NULL};
-	return posix_spawnp(NULL, "open", NULL, NULL, (char**)argv, environ) == 0;
+	return posix_spawnp(NULL, "open", NULL, NULL, (char**)argv,
+		(*_NSGetEnviron())) == 0;
 #else
 	const char *argv[] = {"xdg-open", url.c_str(), NULL};
 	return posix_spawnp(NULL, "xdg-open", NULL, NULL, (char**)argv, environ) == 0;

@@ -328,6 +328,26 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 	src_mesh->setBoundingBox(bbox);
 }
 
+bool checkMeshNormals(scene::IMesh *mesh)
+{
+	u32 buffer_count = mesh->getMeshBufferCount();
+
+	for (u32 i = 0; i < buffer_count; i++) {
+		scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
+
+		// Here we intentionally check only first normal, assuming that if buffer
+		// has it valid, then most likely all other ones are fine too. We can
+		// check all of the normals to have length, but it seems like an overkill
+		// hurting the performance and covering only really weird broken models.
+		f32 length = buffer->getNormal(0).getLength();
+
+		if (!std::isfinite(length) || length < 1e-10f)
+			return false;
+	}
+
+	return true;
+}
+
 scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 {
 	switch (mesh_buffer->getVertexType()) {

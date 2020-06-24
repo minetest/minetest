@@ -1603,14 +1603,14 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 	}
 }
 
-ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
+bool ServerEnvironment::getActiveObjectMessage(ActiveObjectMessage *dest)
 {
 	if(m_active_object_messages.empty())
-		return ActiveObjectMessage(0);
+		return false;
 
-	ActiveObjectMessage message = m_active_object_messages.front();
+	*dest = std::move(m_active_object_messages.front());
 	m_active_object_messages.pop();
-	return message;
+	return true;
 }
 
 void ServerEnvironment::getSelectedActiveObjects(
@@ -2089,6 +2089,7 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 
 	if (name == "dummy")
 		return new Database_Dummy();
+
 #if USE_POSTGRESQL
 	if (name == "postgresql") {
 		std::string connect_string;
@@ -2096,6 +2097,12 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 		return new PlayerDatabasePostgreSQL(connect_string);
 	}
 #endif
+
+#if USE_LEVELDB
+	if (name == "leveldb")
+		return new PlayerDatabaseLevelDB(savedir);
+#endif
+
 	if (name == "files")
 		return new PlayerDatabaseFiles(savedir + DIR_DELIM + "players");
 
@@ -2116,7 +2123,7 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 	if (!world_mt.exists("player_backend")) {
 		errorstream << "Please specify your current backend in world.mt:"
 			<< std::endl
-			<< "	player_backend = {files|sqlite3|postgresql}"
+			<< "	player_backend = {files|sqlite3|leveldb|postgresql}"
 			<< std::endl;
 		return false;
 	}

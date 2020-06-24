@@ -35,6 +35,15 @@ if enable_gamebar then
 		end
 
 		local function game_buttonbar_button_handler(fields)
+			if fields.game_open_cdb then
+				local maintab = ui.find_by_name("maintab")
+				local dlg = create_store_dlg("game")
+				dlg:set_parent(maintab)
+				maintab:hide()
+				dlg:show()
+				return true
+			end
+
 			for key,value in pairs(fields) do
 				for j=1,#pkgmgr.games,1 do
 					if ("game_btnbar_" .. pkgmgr.games[j].id == key) then
@@ -87,6 +96,9 @@ if enable_gamebar then
 			end
 			btnbar:add_button(btn_name, text, image, tooltip)
 		end
+
+		local plus_image = core.formspec_escape(defaulttexturedir .. "plus.png")
+		btnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))
 	end
 else
 	function current_game()

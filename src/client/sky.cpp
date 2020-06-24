@@ -907,9 +907,9 @@ void Sky::setStarCount(u16 star_count, bool force_update)
 	}
 }
 
-void Sky::setSkyColors(const SkyboxParams sky)
+void Sky::setSkyColors(const SkyColor &sky_color)
 {
-	m_sky_params.sky_color = sky.sky_color;
+	m_sky_params.sky_color = sky_color;
 }
 
 void Sky::setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,

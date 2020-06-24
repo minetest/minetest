@@ -371,7 +371,9 @@ void ContentFeatures::reset()
 	leveled_max = LEVELED_MAX;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
+	liquid_alternative_flowing_id = CONTENT_IGNORE;
 	liquid_alternative_source = "";
+	liquid_alternative_source_id = CONTENT_IGNORE;
 	liquid_viscosity = 0;
 	liquid_renewable = true;
 	liquid_range = LIQUID_LEVEL_MAX+1;
@@ -606,8 +608,9 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	layer->material_type = material_type;
 
 	bool has_scale = tiledef.scale > 0;
-	if (((tsettings.autoscale_mode == AUTOSCALE_ENABLE) && !has_scale) ||
-			(tsettings.autoscale_mode == AUTOSCALE_FORCE)) {
+	bool use_autoscale = tsettings.autoscale_mode == AUTOSCALE_FORCE ||
+		(tsettings.autoscale_mode == AUTOSCALE_ENABLE && !has_scale);
+	if (use_autoscale && layer->texture) {
 		auto texture_size = layer->texture->getOriginalSize();
 		float base_size = tsettings.node_texture_size;
 		float size = std::fmin(texture_size.Width, texture_size.Height);
@@ -1444,6 +1447,10 @@ void NodeDefManager::deSerialize(std::istream &is)
 		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);
 		fixSelectionBoxIntUnion();
 	}
+
+	// Since liquid_alternative_flowing_id and liquid_alternative_source_id
+	// are not sent, resolve them client-side too.
+	resolveCrossrefs();
 }
 
 
@@ -1504,15 +1511,28 @@ void NodeDefManager::resetNodeResolveState()
 	m_pending_resolve_callbacks.clear();
 }
 
-void NodeDefManager::mapNodeboxConnections()
+static void removeDupes(std::vector<content_t> &list)
+{
+	std::sort(list.begin(), list.end());
+	auto new_end = std::unique(list.begin(), list.end());
+	list.erase(new_end, list.end());
+}
+
+void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
+		if (f.liquid_type != LIQUID_NONE) {
+			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
+			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
+			continue;
+		}
 		if (f.drawtype != NDT_NODEBOX || f.node_box.type != NODEBOX_CONNECTED)
 			continue;
 
 		for (const std::string &name : f.connects_to) {
 			getIds(name, f.connects_to_ids);
 		}
+		removeDupes(f.connects_to_ids);
 	}
 }
 

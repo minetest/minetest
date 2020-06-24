@@ -181,8 +181,7 @@ public:
 
 	void addToScene(ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
-	void updateLight(u8 light_at_pos);
-	v3s16 getLightPosition();
+	void updateLight(u32 day_night_ratio);
 	void updateNodePos();
 
 	void step(float dtime, ClientEnvironment *env);
@@ -254,13 +253,8 @@ void TestCAO::removeFromScene(bool permanent)
 	m_node = NULL;
 }
 
-void TestCAO::updateLight(u8 light_at_pos)
+void TestCAO::updateLight(u32 day_night_ratio)
 {
-}
-
-v3s16 TestCAO::getLightPosition()
-{
-	return floatToInt(m_position, BS);
 }
 
 void TestCAO::updateNodePos()
@@ -475,6 +469,7 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 			parent->addAttachmentChild(m_id);
 	}
 
+
 	updateAttachments();
 }
 
@@ -582,10 +577,16 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 	if (m_enable_shaders) {
 		IShaderSource *shader_source = m_client->getShaderSource();
-		u32 shader_id = shader_source->getShader(
-				"object_shader",
-				(m_prop.use_texture_alpha) ? TILE_MATERIAL_ALPHA : TILE_MATERIAL_BASIC,
-				NDT_NORMAL);
+		MaterialType material_type;
+
+		if (m_prop.shaded && m_prop.glow == 0)
+			material_type = (m_prop.use_texture_alpha) ?
+				TILE_MATERIAL_ALPHA : TILE_MATERIAL_BASIC;
+		else
+			material_type = (m_prop.use_texture_alpha) ?
+				TILE_MATERIAL_PLAIN_ALPHA : TILE_MATERIAL_PLAIN;
+
+		u32 shader_id = shader_source->getShader("object_shader", material_type, NDT_NORMAL);
 		m_material_type = shader_source->getShaderInfo(shader_id).material;
 	} else {
 		m_material_type = (m_prop.use_texture_alpha) ?
@@ -713,6 +714,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		mesh->drop();
 
 		m_meshnode->setScale(m_prop.visual_size);
+		m_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
+			m_prop.backface_culling);
 
 		setSceneNodeMaterial(m_meshnode);
 	} else if (m_prop.visual == "mesh") {
@@ -723,6 +726,14 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 				addAnimatedMeshSceneNode(mesh, m_matrixnode);
 			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
+
+			if (!checkMeshNormals(mesh)) {
+				infostream << "GenericCAO: recalculating normals for mesh "
+					<< m_prop.mesh << std::endl;
+				m_smgr->getMeshManipulator()->
+						recalculateNormals(mesh, true, false);
+			}
+
 			m_animated_meshnode->animateJoints(); // Needed for some animations
 			m_animated_meshnode->setScale(m_prop.visual_size);
 
@@ -774,15 +785,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	if (node && m_matrixnode)
 		node->setParent(m_matrixnode);
 
-	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
-		// Add nametag
-		v3f pos;
-		pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
-		m_nametag = m_client->getCamera()->addNametag(node,
-			m_prop.nametag, m_prop.nametag_color,
-			pos);
-	}
-
+	updateNametag();
 	updateNodePos();
 	updateAnimation();
 	updateBonePosition();
@@ -790,34 +793,32 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	setNodeLight(m_last_light);
 }
 
-void GenericCAO::updateLight(u8 light_at_pos)
-{
-	// Don't update light of attached one
-	if (getParent() != NULL) {
-		return;
-	}
-
-	updateLightNoCheck(light_at_pos);
-
-	// Update light of all children
-	for (u16 i : m_attachment_child_ids) {
-		ClientActiveObject *obj = m_env->getActiveObject(i);
-		if (obj) {
-			obj->updateLightNoCheck(light_at_pos);
-		}
-	}
-}
-
-void GenericCAO::updateLightNoCheck(u8 light_at_pos)
+void GenericCAO::updateLight(u32 day_night_ratio)
 {
 	if (m_glow < 0)
 		return;
 
-	u8 li = decode_light(light_at_pos + m_glow);
+	u8 light_at_pos = 0;
+	bool pos_ok = false;
 
-	if (li != m_last_light)	{
-		m_last_light = li;
-		setNodeLight(li);
+	v3s16 pos[3];
+	u16 npos = getLightPosition(pos);
+	for (u16 i = 0; i < npos; i++) {
+		bool this_ok;
+		MapNode n = m_env->getMap().getNode(pos[i], &this_ok);
+		if (this_ok) {
+			u8 this_light = n.getLightBlend(day_night_ratio, m_client->ndef());
+			light_at_pos = MYMAX(light_at_pos, this_light);
+			pos_ok = true;
+		}
+	}
+	if (!pos_ok)
+		light_at_pos = blend_light(day_night_ratio, LIGHT_SUN, 0);
+
+	u8 light = decode_light(light_at_pos + m_glow);
+	if (light != m_last_light) {
+		m_last_light = light;
+		setNodeLight(light);
 	}
 }
 
@@ -832,19 +833,20 @@ void GenericCAO::setNodeLight(u8 light)
 	}
 
 	if (m_enable_shaders) {
-		scene::ISceneNode *node = getSceneNode();
-
-		if (node == nullptr)
-			return;
-
 		if (m_prop.visual == "upright_sprite") {
+			if (!m_meshnode)
+				return;
+
 			scene::IMesh *mesh = m_meshnode->getMesh();
 			for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-				video::SMaterial &material = buf->getMaterial();
-				material.EmissiveColor = color;
+				buf->getMaterial().EmissiveColor = color;
 			}
 		} else {
+			scene::ISceneNode *node = getSceneNode();
+			if (!node)
+				return;
+
 			for (u32 i = 0; i < node->getMaterialCount(); ++i) {
 				video::SMaterial &material = node->getMaterial(i);
 				material.EmissiveColor = color;
@@ -861,12 +863,49 @@ void GenericCAO::setNodeLight(u8 light)
 	}
 }
 
-v3s16 GenericCAO::getLightPosition()
+u16 GenericCAO::getLightPosition(v3s16 *pos)
 {
-	if (m_is_player)
-		return floatToInt(m_position + v3f(0, 0.5 * BS, 0), BS);
+	const auto &box = m_prop.collisionbox;
+	pos[0] = floatToInt(m_position + box.MinEdge * BS, BS);
+	pos[1] = floatToInt(m_position + box.MaxEdge * BS, BS);
 
-	return floatToInt(m_position, BS);
+	// Skip center pos if it falls into the same node as Min or MaxEdge
+	if ((box.MaxEdge - box.MinEdge).getLengthSQ() < 3.0f)
+		return 2;
+	pos[2] = floatToInt(m_position + box.getCenter() * BS, BS);
+	return 3;
+}
+
+void GenericCAO::updateNametag()
+{
+	if (m_is_local_player) // No nametag for local player
+		return;
+
+	if (m_prop.nametag.empty()) {
+		// Delete nametag
+		if (m_nametag) {
+			m_client->getCamera()->removeNametag(m_nametag);
+			m_nametag = nullptr;
+		}
+		return;
+	}
+
+	scene::ISceneNode *node = getSceneNode();
+	if (!node)
+		return;
+
+	v3f pos;
+	pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
+	if (!m_nametag) {
+		// Add nametag
+		m_nametag = m_client->getCamera()->addNametag(node,
+			m_prop.nametag, m_prop.nametag_color, pos);
+	} else {
+		// Update nametag
+		m_nametag->nametag_text = m_prop.nametag;
+		m_nametag->nametag_color = m_prop.nametag_color;
+		m_nametag->nametag_pos = pos;
+	}
 }
 
 void GenericCAO::updateNodePos()
@@ -894,7 +933,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		m_animated_meshnode->animateJoints();
 		updateBonePosition();
 	}
-	
+
 	// Handle model animations and update positions instantly to prevent lags
 	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
@@ -1376,7 +1415,7 @@ void GenericCAO::updateBonePosition()
 			bone->setRotation(it.second.Y);
 		}
 	}
-	
+
 	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
 	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
 		irr::scene::IBoneSceneNode *bone = m_animated_meshnode->getJointNode(i);
@@ -1400,7 +1439,7 @@ void GenericCAO::updateBonePosition()
 		// and update the bones transformation.
 		v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
 		float offset = fabsf(bone_rot.X - bone->getRotation().X);
-		if (offset > 179.9f && offset < 180.1f) { 
+		if (offset > 179.9f && offset < 180.1f) {
 			bone->setRotation(bone_rot);
 			bone->updateAbsolutePosition();
 		}
@@ -1427,15 +1466,17 @@ void GenericCAO::updateAttachments()
 
 	if (!parent) { // Detach or don't attach
 		if (m_matrixnode) {
+			v3s16 camera_offset = m_env->getCameraOffset();
 			v3f old_pos = getPosition();
 
 			m_matrixnode->setParent(m_smgr->getRootSceneNode());
-			getPosRotMatrix().setTranslation(old_pos);
+			getPosRotMatrix().setTranslation(old_pos - intToFloat(camera_offset, BS));
 			m_matrixnode->updateAbsolutePosition();
 		}
 	}
 	else // Attach
 	{
+		parent->updateAttachments();
 		scene::ISceneNode *parent_node = parent->getSceneNode();
 		scene::IAnimatedMeshSceneNode *parent_animated_mesh_node =
 				parent->getAnimatedMeshSceneNode();
@@ -1445,6 +1486,7 @@ void GenericCAO::updateAttachments()
 
 		if (m_matrixnode && parent_node) {
 			m_matrixnode->setParent(parent_node);
+			parent_node->updateAbsolutePosition();
 			getPosRotMatrix().setTranslation(m_attachment_position);
 			//setPitchYawRoll(getPosRotMatrix(), m_attachment_rotation);
 			// use Irrlicht eulers instead
@@ -1454,13 +1496,30 @@ void GenericCAO::updateAttachments()
 	}
 }
 
-void GenericCAO::readAOMessageProperties(std::istream &is)
+bool GenericCAO::visualExpiryRequired(const ObjectProperties &new_) const
 {
-	// Reset object properties first
-	m_prop = ObjectProperties();
+	const ObjectProperties &old = m_prop;
+	/* Visuals do not need to be expired for:
+	 * - nametag props: handled by updateNametag()
+	 * - textures:      handled by updateTextures()
+	 * - sprite props:  handled by updateTexturePos()
+	 * - glow:          handled by updateLight()
+	 * - any other properties that do not change appearance
+	 */
 
-	// Then read the whole new stream
-	m_prop.deSerialize(is);
+	bool uses_legacy_texture = new_.wield_item.empty() &&
+		(new_.visual == "wielditem" || new_.visual == "item");
+	// Ordered to compare primitive types before std::vectors
+	return old.backface_culling != new_.backface_culling ||
+		old.is_visible != new_.is_visible ||
+		old.mesh != new_.mesh ||
+		old.shaded != new_.shaded ||
+		old.use_texture_alpha != new_.use_texture_alpha ||
+		old.visual != new_.visual ||
+		old.visual_size != new_.visual_size ||
+		old.wield_item != new_.wield_item ||
+		old.colors != new_.colors ||
+		(uses_legacy_texture && old.textures != new_.textures);
 }
 
 void GenericCAO::processMessage(const std::string &data)
@@ -1470,14 +1529,22 @@ void GenericCAO::processMessage(const std::string &data)
 	// command
 	u8 cmd = readU8(is);
 	if (cmd == AO_CMD_SET_PROPERTIES) {
-		readAOMessageProperties(is);
+		ObjectProperties newprops;
+		newprops.deSerialize(is);
+
+		// Check what exactly changed
+		bool expire_visuals = visualExpiryRequired(newprops);
+		bool textures_changed = m_prop.textures != newprops.textures;
+
+		// Apply changes
+		m_prop = std::move(newprops);
 
 		m_selection_box = m_prop.selectionbox;
 		m_selection_box.MinEdge *= BS;
 		m_selection_box.MaxEdge *= BS;
 
-		m_tx_size.X = 1.0 / m_prop.spritediv.X;
-		m_tx_size.Y = 1.0 / m_prop.spritediv.Y;
+		m_tx_size.X = 1.0f / m_prop.spritediv.X;
+		m_tx_size.Y = 1.0f / m_prop.spritediv.Y;
 
 		if(!m_initial_tx_basepos_set){
 			m_initial_tx_basepos_set = true;
@@ -1497,7 +1564,18 @@ void GenericCAO::processMessage(const std::string &data)
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
 			m_prop.nametag = m_name;
 
-		expireVisuals();
+		if (expire_visuals) {
+			expireVisuals();
+		} else {
+			infostream << "GenericCAO: properties updated but expiring visuals"
+				<< " not necessary" << std::endl;
+			if (textures_changed) {
+				// don't update while punch texture modifier is active
+				if (m_reset_textures_timer < 0)
+					updateTextures(m_current_texture_modifier);
+			}
+			updateNametag();
+		}
 	} else if (cmd == AO_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
@@ -1669,22 +1747,14 @@ void GenericCAO::processMessage(const std::string &data)
 			int rating = readS16(is);
 			m_armor_groups[name] = rating;
 		}
-	} else if (cmd == AO_CMD_UPDATE_NAMETAG_ATTRIBUTES) {
-		// Deprecated, for backwards compatibility only.
-		readU8(is); // version
-		m_prop.nametag_color = readARGB8(is);
-		if (m_nametag != NULL) {
-			m_nametag->nametag_color = m_prop.nametag_color;
-			v3f pos;
-			pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
-			m_nametag->nametag_pos = pos;
-		}
 	} else if (cmd == AO_CMD_SPAWN_INFANT) {
 		u16 child_id = readU16(is);
 		u8 type = readU8(is); // maybe this will be useful later
 		(void)type;
 
 		addAttachmentChild(child_id);
+	} else if (cmd == AO_CMD_OBSOLETE1) {
+		// Don't do anything and also don't log a warning
 	} else {
 		warningstream << FUNCTION_NAME
 			<< ": unknown command or outdated client \""

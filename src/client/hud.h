@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_HUD_HEADER
-#define CLIENT_HUD_HEADER
+#pragma once
 
 #include <vector>
 #include <IGUIFont.h>
@@ -93,6 +92,7 @@ private:
 	void drawItem(const ItemStack &item, const core::rect<s32> &rect, bool selected);
 
 	float m_hud_scaling; // cached minetest setting
+	float m_scale_factor;
 	v3s16 m_camera_offset;
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
@@ -147,4 +147,3 @@ void drawItemStack(
 		const v3s16 &angle,
 		const v3s16 &rotation_speed);
 
-#endif

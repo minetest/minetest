@@ -1069,7 +1069,7 @@ Node drawtypes
 
 There are a bunch of different looking node types.
 
-Look for examples in `games/minimal` or `games/minetest_game`.
+Look for examples in `games/devtest` or `games/minetest_game`.
 
 * `normal`
     * A node-sized cube.
@@ -1666,6 +1666,7 @@ to games.
     * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
     * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
+  or if their feet are in the node. Note: not supported for `new_move = false`
 * `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids
@@ -2705,13 +2706,17 @@ Some types may inherit styles from parent types.
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
     * bgcolor_hovered - color when hovered. Defaults to a lighter bgcolor when not provided.
+        * This is deprecated, use states instead.
     * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
+        * This is deprecated, use states instead.
     * bgimg - standard background image. Defaults to none.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+        * This is deprecated, use states instead.
     * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
                      See background9[] documentation for more details. This property also pads the
                      button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
+        * This is deprecated, use states instead.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * content_offset - 2d vector, shifts the position of the button's content without resizing it.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -2740,7 +2745,9 @@ Some types may inherit styles from parent types.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
     * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
+        * This is deprecated, use states instead.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
+        * This is deprecated, use states instead.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -3005,6 +3012,24 @@ For the following functions `x` can be either a vector or a number:
     * Returns a scaled vector or Schur product.
 * `vector.divide(v, x)`:
     * Returns a scaled vector or Schur quotient.
+
+For the following functions `a` is an angle in radians and `r` is a rotation
+vector ({x = <pitch>, y = <yaw>, z = <roll>}) where pitch, yaw and roll are
+angles in radians.
+
+* `vector.rotate(v, r)`:
+    * Applies the rotation `r` to `v` and returns the result.
+    * `vector.rotate({x = 0, y = 0, z = 1}, r)` and
+      `vector.rotate({x = 0, y = 1, z = 0}, r)` return vectors pointing
+      forward and up relative to an entity's rotation `r`.
+* `vector.rotate_around_axis(v1, v2, a)`:
+    * Returns `v1` rotated around axis `v2` by `a` radians according to
+      the right hand rule.
+* `vector.dir_to_rotation(direction[, up])`:
+    * Returns a rotation vector for `direction` pointing forward using `up`
+      as the up vector.
+    * If `up` is omitted, the roll of the returned vector defaults to zero.
+    * Otherwise `direction` and `up` need to be vectors in a 90 degree angle to each other.
 
 
 
@@ -4374,7 +4399,7 @@ Call these functions only at load time!
     * Called after generating a piece of world. Modifying nodes inside the area
       is a bit faster than usually.
 * `minetest.register_on_newplayer(function(ObjectRef))`
-    * Called after a new player has been created
+    * Called when a new player enters the world for the first time
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
     * Note: This callback is invoked even if the punched player is dead.
@@ -4415,19 +4440,23 @@ Call these functions only at load time!
     * Called _before_ repositioning of player occurs
     * return true in func to disable regular player placement
 * `minetest.register_on_prejoinplayer(function(name, ip))`
-    * Called before a player joins the game
-    * If it returns a string, the player is disconnected with that string as
+    * Called when a client connects to the server, prior to authentication
+    * If it returns a string, the client is disconnected with that string as
       reason.
-* `minetest.register_on_joinplayer(function(ObjectRef))`
+* `minetest.register_on_joinplayer(function(ObjectRef, last_login))`
     * Called when a player joins the game
+    * `last_login`: The timestamp of the previous login, or nil if player is new
 * `minetest.register_on_leaveplayer(function(ObjectRef, timed_out))`
     * Called when a player leaves the game
     * `timed_out`: True for timeout, false for other reasons.
+* `minetest.register_on_authplayer(function(name, ip, is_success))`
+    * Called when a client attempts to log into an account.
+    * `name`: The name of the account being authenticated.
+    * `ip`: The IP address of the client
+    * `is_success`: Whether the client was successfully authenticated
+    * For newly registered accounts, `is_success` will always be true
 * `minetest.register_on_auth_fail(function(name, ip))`
-    * Called when a client attempts to log into an account but supplies the
-      wrong password.
-    * `ip`: The IP address of the client.
-    * `name`: The account the client attempted to log into.
+    * Deprecated: use `minetest.register_on_authplayer(name, ip, is_success)` instead.
 * `minetest.register_on_cheat(function(ObjectRef, cheat))`
     * Called when a player cheats
     * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:
@@ -4490,7 +4519,7 @@ Call these functions only at load time!
     * The same as before, except that it is called before the player crafts, to
       make craft prediction, and it should not change anything.
 * `minetest.register_allow_player_inventory_action(function(player, action, inventory, inventory_info))`
-    * Determinates how much of a stack may be taken, put or moved to a
+    * Determines how much of a stack may be taken, put or moved to a
       player inventory.
     * `player` (type `ObjectRef`) is the player who modified the inventory
       `inventory` (type `InvRef`).
@@ -5194,6 +5223,20 @@ Server
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 * `minetest.remove_player_auth(name)`: remove player authentication data
     * Returns boolean indicating success (false if player nonexistant)
+* `minetest.dynamic_add_media(filepath)`
+    * Adds the file at the given path to the media sent to clients by the server
+      on startup and also pushes this file to already connected clients.
+      The file must be a supported image, sound or model format. It must not be
+      modified, deleted, moved or renamed after calling this function.
+      The list of dynamically added media is not persisted.
+    * Returns boolean indicating success (duplicate files count as error)
+    * The media will be ready to use (in e.g. entity textures, sound_play)
+      immediately after calling this function.
+      Old clients that lack support for this feature will not see the media
+      unless they reconnect to the server.
+    * Since media transferred this way does not use client caching or HTTP
+      transfers, dynamic media should not be used with big files or performance
+      will suffer.
 
 Bans
 ----
@@ -5449,7 +5492,7 @@ Misc.
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
-* `minetest.decode_base64(string)`: returns string
+* `minetest.decode_base64(string)`: returns string or nil for invalid base64
     * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returning `true` restricts the player `name` from modifying (i.e. digging,
@@ -5471,6 +5514,13 @@ Misc.
 * `minetest.record_protection_violation(pos, name)`
     * This function calls functions registered with
       `minetest.register_on_protection_violation`.
+* `minetest.is_creative_enabled(name)`: returns boolean
+    * Returning `true` means that Creative Mode is enabled for player `name`.
+    * `name` will be `""` for non-players or if the player is unknown.
+    * This function should be overridden by Creative Mode-related mods to
+      implement a per-player Creative Mode.
+    * By default, this function returns `true` if the setting
+      `creative_mode` is `true` and `false` otherwise.
 * `minetest.is_area_protected(pos1, pos2, player_name, interval)`
     * Returns the position of the first node that `player_name` may not modify
       in the specified cuboid between `pos1` and `pos2`.
@@ -6062,13 +6112,14 @@ object you are working with still exists.
 * `get_formspec_prepend(formspec)`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with boolean value representing the pressed
-      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up.
+      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up, zoom.
     * example: `{jump=false, right=true, left=false, LMB=false, RMB=false,
-      sneak=true, aux1=false, down=false, up=false}`
+      sneak=true, aux1=false, down=false, up=false, zoom=false}`
+    * The `zoom` field is available since 5.3
 * `get_player_control_bits()`: returns integer with bit packed player pressed
   keys.
     * bit nr/meaning: 0/up, 1/down, 2/left, 3/right, 4/jump, 5/aux1, 6/sneak,
-      7/LMB, 8/RMB
+      7/LMB, 8/RMB, 9/zoom (zoom available since 5.3)
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
@@ -6599,6 +6650,9 @@ Player properties need to be saved manually.
 
         damage_texture_modifier = "^[brighten",
         -- Texture modifier to be applied for a short duration when object is hit
+
+        shaded = true,
+        -- Setting this to 'false' disables diffuse lighting of entity
     }
 
 Entity definition
@@ -6929,7 +6983,7 @@ Used by `minetest.register_node`.
 
         visual_scale = 1.0,
         -- Supported for drawtypes "plantlike", "signlike", "torchlike",
-        -- "firelike", "mesh".
+        -- "firelike", "mesh", "nodebox", "allfaces".
         -- For plantlike and firelike, the image will start at the bottom of the
         -- node. For torchlike, the image will start at the surface to which the
         -- node "attaches". For the other drawtypes the image will be centered
@@ -7443,6 +7497,10 @@ Biome definition
 
 Used by `minetest.register_biome`.
 
+The maximum number of biomes that can be used is 65535. However, using an
+excessive number of biomes will slow down map generation. Depending on desired
+performance and computing power the practical limit is much lower.
+
     {
         name = "tundra",
 
@@ -7827,6 +7885,8 @@ Used by `minetest.add_particle`.
 
         size = 1,
         -- Scales the visual size of the particle texture.
+        -- If `node` is set, size can be set to 0 to spawn a randomly-sized
+        -- particle (just like actual node dig particles).
 
         collisiondetection = false,
         -- If true collides with `walkable` nodes and, depending on the
@@ -7845,6 +7905,7 @@ Used by `minetest.add_particle`.
         -- If true faces player using y axis only
 
         texture = "image.png",
+        -- The texture of the particle
 
         playername = "singleplayer",
         -- Optional, if specified spawns particle only on the player's client
@@ -7855,6 +7916,17 @@ Used by `minetest.add_particle`.
         glow = 0
         -- Optional, specify particle self-luminescence in darkness.
         -- Values 0-14.
+
+        node = {name = "ignore", param2 = 0},
+        -- Optional, if specified the particle will have the same appearance as
+        -- node dig particles for the given node.
+        -- `texture` and `animation` will be ignored if this is set.
+
+        node_tile = 0,
+        -- Optional, only valid in combination with `node`
+        -- If set to a valid number 1-6, specifies the tile from which the
+        -- particle texture is picked.
+        -- Otherwise, the default behavior is used. (currently: any random tile)
     }
 
 
@@ -7884,7 +7956,9 @@ Used by `minetest.add_particlespawner`.
         maxsize = 1,
         -- The particles' properties are random values between the min and max
         -- values.
-        -- pos, velocity, acceleration, expirationtime, size
+        -- applies to: pos, velocity, acceleration, expirationtime, size
+        -- If `node` is set, min and maxsize can be set to 0 to spawn
+        -- randomly-sized particles (just like actual node dig particles).
 
         collisiondetection = false,
         -- If true collide with `walkable` nodes and, depending on the
@@ -7907,6 +7981,7 @@ Used by `minetest.add_particlespawner`.
         -- If true face player using y axis only
 
         texture = "image.png",
+        -- The texture of the particle
 
         playername = "singleplayer",
         -- Optional, if specified spawns particles only on the player's client
@@ -7917,6 +7992,17 @@ Used by `minetest.add_particlespawner`.
         glow = 0
         -- Optional, specify particle self-luminescence in darkness.
         -- Values 0-14.
+
+        node = {name = "ignore", param2 = 0},
+        -- Optional, if specified the particles will have the same appearance as
+        -- node dig particles for the given node.
+        -- `texture` and `animation` will be ignored if this is set.
+
+        node_tile = 0,
+        -- Optional, only valid in combination with `node`
+        -- If set to a valid number 1-6, specifies the tile from which the
+        -- particle texture is picked.
+        -- Otherwise, the default behavior is used. (currently: any random tile)
     }
 
 `HTTPRequest` definition

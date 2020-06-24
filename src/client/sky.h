@@ -94,7 +94,7 @@ public:
 		m_bgcolor = bgcolor;
 		m_skycolor = skycolor;
 	}
-	void setSkyColors(const SkyboxParams sky);
+	void setSkyColors(const SkyColor &sky_color);
 	void setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,
 		std::string use_sun_tint);
 	void setInClouds(bool clouds) { m_in_clouds = clouds; }

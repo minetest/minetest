@@ -323,7 +323,7 @@ core.register_entity(":__builtin:falling_node", {
 					z = vel.z
 				})
 				self.object:set_pos(vector.add(self.object:get_pos(),
-					{x = 0, y = -0.2, z = 0}))
+					{x = 0, y = -0.5, z = 0}))
 			end
 			return
 		elseif bcn.name == "ignore" then

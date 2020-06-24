@@ -206,8 +206,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 				// All-surfaces decorations
 				// Check biome of column
 				if (mg->biomemap && !biomes.empty()) {
-					std::unordered_set<u8>::const_iterator iter =
-						biomes.find(mg->biomemap[mapindex]);
+					auto iter = biomes.find(mg->biomemap[mapindex]);
 					if (iter == biomes.end())
 						continue;
 				}
@@ -259,8 +258,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 					continue;
 
 				if (mg->biomemap && !biomes.empty()) {
-					std::unordered_set<u8>::const_iterator iter =
-						biomes.find(mg->biomemap[mapindex]);
+					auto iter = biomes.find(mg->biomemap[mapindex]);
 					if (iter == biomes.end())
 						continue;
 				}

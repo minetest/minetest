@@ -344,10 +344,10 @@ void RemoteClient::GetNextBlocks (
 			}
 
 			/*
-				If block has been marked to not exist on disk (dummy)
-				and generating new ones is not wanted, skip block.
+				If block has been marked to not exist on disk (dummy) or is
+				not generated and generating new ones is not wanted, skip block.
 			*/
-			if (!generate && surely_not_found_on_disk) {
+			if (!generate && (surely_not_found_on_disk || block_is_invalid)) {
 				// get next one.
 				continue;
 			}

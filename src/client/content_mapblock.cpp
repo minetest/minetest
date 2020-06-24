@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <cmath>
 #include "content_mapblock.h"
 #include "util/numeric.h"
 #include "util/directiontables.h"
@@ -366,6 +367,7 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	TileSpec *tiles, int tile_count)
 {
+	bool scale = std::fabs(f->visual_scale - 1.0f) > 1e-3f;
 	f32 texture_coord_buf[24];
 	f32 dx1 = box.MinEdge.X;
 	f32 dy1 = box.MinEdge.Y;
@@ -373,6 +375,14 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	f32 dx2 = box.MaxEdge.X;
 	f32 dy2 = box.MaxEdge.Y;
 	f32 dz2 = box.MaxEdge.Z;
+	if (scale) {
+		if (!txc) { // generate texture coords before scaling
+			generateCuboidTextureCoords(box, texture_coord_buf);
+			txc = texture_coord_buf;
+		}
+		box.MinEdge *= f->visual_scale;
+		box.MaxEdge *= f->visual_scale;
+	}
 	box.MinEdge += origin;
 	box.MaxEdge += origin;
 	if (!txc) {
@@ -405,8 +415,8 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 
 	MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y + 1, p.Z));
 	MapNode nbottom = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y - 1, p.Z));
-	c_flowing = nodedef->getId(f->liquid_alternative_flowing);
-	c_source = nodedef->getId(f->liquid_alternative_source);
+	c_flowing = f->liquid_alternative_flowing_id;
+	c_source = f->liquid_alternative_source_id;
 	top_is_same_liquid = (ntop.getContent() == c_flowing) || (ntop.getContent() == c_source);
 	draw_liquid_bottom = (nbottom.getContent() != c_flowing) && (nbottom.getContent() != c_source);
 	if (draw_liquid_bottom) {
@@ -1323,7 +1333,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	std::vector<aabb3f> boxes;
 	n.getNodeBoxes(nodedef, &boxes, neighbors_set);
-	for (const auto &box : boxes)
+	for (auto &box : boxes)
 		drawAutoLightedCuboid(box, nullptr, tiles, 6);
 }
 

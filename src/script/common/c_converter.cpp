@@ -28,6 +28,7 @@ extern "C" {
 #include "common/c_converter.h"
 #include "common/c_internal.h"
 #include "constants.h"
+#include <set>
 
 
 #define CHECK_TYPE(index, name, type) { \
@@ -458,11 +459,36 @@ size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result
 
 bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname)
 {
-	if (lua_isnil(L, index))
+	static thread_local std::set<u64> warned_msgs;
+
+	int t = lua_type(L, index);
+	if (t == LUA_TNIL)
 		return false;
 
-	CHECK_TYPE(index, std::string("field \"") + fieldname + '"', type);
-	return true;
+	if (t == type)
+		return true;
+
+	// Check coercion types
+	if (type == LUA_TNUMBER) {
+		if (lua_isnumber(L, index))
+			return true;
+	} else if (type == LUA_TSTRING) {
+		if (lua_isstring(L, index))
+			return true;
+	}
+
+	// Types mismatch. Log unique line.
+	std::string backtrace = std::string("Invalid field ") + fieldname +
+		" (expected " + lua_typename(L, type) +
+		" got " + lua_typename(L, t) + ").\n" + script_get_backtrace(L);
+
+	u64 hash = murmur_hash_64_ua(backtrace.data(), backtrace.length(), 0xBADBABE);
+	if (warned_msgs.find(hash) == warned_msgs.end()) {
+		errorstream << backtrace << std::endl;
+		warned_msgs.insert(hash);
+	}
+
+	return false;
 }
 
 bool getstringfield(lua_State *L, int table,
