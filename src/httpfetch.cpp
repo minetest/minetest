@@ -312,18 +312,18 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 	}
 	else {
 		switch (request.method) {
-			case HTTP_GET:
-				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-				break;
-			case HTTP_POST:
-				curl_easy_setopt(curl, CURLOPT_POST, 1);
-				break;
-			case HTTP_PUT:
-				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
-				break;
-			case HTTP_DELETE:
-				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-				break;
+		case HTTP_GET:
+			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+			break;
+		case HTTP_POST:
+			curl_easy_setopt(curl, CURLOPT_POST, 1);
+			break;
+		case HTTP_PUT:
+			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+			break;
+		case HTTP_DELETE:
+			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+			break;
 		}
 		if (request.method != HTTP_GET) {
 			if (!request.raw_data.empty()) {
