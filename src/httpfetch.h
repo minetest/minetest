@@ -66,7 +66,7 @@ struct HTTPFetchRequest
 	// Fields of the request
 	StringMap fields;
 
-	// Raw data of the request overrides ields
+	// Raw data of the request overrides fields
 	std::string raw_data;
 
 	// If not empty, should contain entries such as "Accept: text/html"
