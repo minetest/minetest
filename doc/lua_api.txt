@@ -2379,6 +2379,13 @@ Elements
 * When clicked, fields will be sent and the form will quit.
 * Same as `image_button` in all other respects.
 
+### `make_toggleable[<name>;<state>]`
+
+* Changes any type of button into a toggleable on/off button
+* `name`: Name of the button to make toggleable
+* `state`: `true` if the button should be toggled on by default
+* **Note**: This element must come after the button it makes toggleable
+
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 
 * Scrollable item list showing arbitrary text elements
@@ -2806,6 +2813,8 @@ Some types may inherit styles from parent types.
 * *all elements*
     * default - Equivalent to providing no states
 * button, button_exit, image_button, item_image_button
+    * checked - Active when the button is toggled on
+        * **Note**: Only applicable to buttons made toggleable with `make_toggleable[]`
     * hovered - Active when the mouse is hovering over the element
     * pressed - Active when the button is pressed
 
@@ -4522,7 +4531,7 @@ Call these functions only at load time!
     * Called when the server received input from `player` in a formspec with
       the given `formname`. Specifically, this is called on any of the
       following events:
-          * a button was pressed,
+          * a button was pressed or toggled,
           * Enter was pressed while the focus was on a text field
           * a checkbox was toggled,
           * something was selected in a dropdown list,
@@ -4536,8 +4545,11 @@ Call these functions only at load time!
       the `name` parameter as index for each. The value depends on the
       formspec element type:
         * `animated_image`: Returns the index of the current frame.
-        * `button` and variants: If pressed, contains the user-facing button
-          text as value. If not pressed, is `nil`
+        * `button` and variants:
+            * If toggleable by `make_toggleable`, returns `"true"` if
+              toggled on, `"false"` if toggled off, or `nil` if not toggled.
+            * If not toggleable and is pressed, contains the user-facing
+              button text as a value. If not pressed, is `nil`.
         * `field`, `textarea` and variants: Text in the field
         * `dropdown`: Either the index or value, depending on the `index event`
           dropdown argument.

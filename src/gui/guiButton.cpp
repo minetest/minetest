@@ -34,7 +34,7 @@ GUIButton::GUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 	OverrideColorEnabled(false), OverrideColor(video::SColor(101,255,255,255)),
 	ClickTime(0), HoverTime(0), FocusTime(0),
 	ClickShiftState(false), ClickControlState(false),
-	IsPushButton(false), Pressed(false),
+	IsPushButton(false), Pressed(false), Toggled(false),
 	UseAlphaChannel(false), DrawBorder(true), ScaleImage(false), TSrc(tsrc)
 {
 	setNotClipped(noclip);
@@ -139,14 +139,10 @@ bool GUIButton::OnEvent(const SEvent& event)
 		if (event.KeyInput.PressedDown &&
 			(event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE))
 		{
-			if (!IsPushButton)
-				setPressed(true);
-			else
-				setPressed(!Pressed);
-
+			setPressed(true);
 			return true;
 		}
-		if (Pressed && !IsPushButton && event.KeyInput.PressedDown && event.KeyInput.Key == KEY_ESCAPE)
+		if (Pressed && event.KeyInput.PressedDown && event.KeyInput.Key == KEY_ESCAPE)
 		{
 			setPressed(false);
 			return true;
@@ -155,9 +151,9 @@ bool GUIButton::OnEvent(const SEvent& event)
 		if (!event.KeyInput.PressedDown && Pressed &&
 			(event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE))
 		{
-
-			if (!IsPushButton)
-				setPressed(false);
+			setPressed(false);
+			if (IsPushButton)
+				setToggled(!Toggled);
 
 			if (Parent)
 			{
@@ -179,8 +175,7 @@ bool GUIButton::OnEvent(const SEvent& event)
 		{
 			if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
 			{
-				if (!IsPushButton)
-					setPressed(false);
+				setPressed(false);
 				FocusTime = (u32)porting::getTimeMs();
 			}
 			else if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUSED)
@@ -198,7 +193,7 @@ bool GUIButton::OnEvent(const SEvent& event)
 		{
 			// Sometimes formspec elements can receive mouse events when the
 			// mouse is outside of the formspec. Thus, we test the position here.
-			if ( !IsPushButton && AbsoluteClippingRect.isPointInside(
+			if ( AbsoluteClippingRect.isPointInside(
 						core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ))) {
 				setPressed(true);
 			}
@@ -209,23 +204,20 @@ bool GUIButton::OnEvent(const SEvent& event)
 		if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
 		{
 			bool wasPressed = Pressed;
+			bool wasToggled = Toggled;
 
 			if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ) ) )
 			{
-				if (!IsPushButton)
-					setPressed(false);
+				setPressed(false);
 				return true;
 			}
 
-			if (!IsPushButton)
-				setPressed(false);
-			else
-			{
-				setPressed(!Pressed);
-			}
+			setPressed(false);
+			if (IsPushButton)
+				setToggled(!Toggled);
 
 			if ((!IsPushButton && wasPressed && Parent) ||
-				(IsPushButton && wasPressed != Pressed))
+				(IsPushButton && wasToggled != Toggled))
 			{
 				ClickShiftState = event.MouseInput.Shift;
 				ClickControlState = event.MouseInput.Control;
@@ -269,7 +261,7 @@ void GUIButton::draw()
 
 	if (DrawBorder)
 	{
-		if (!Pressed)
+		if (!Pressed && !Toggled)
 		{
 			// PATCH
 			skin->drawColored3DButtonPaneStandard(this, AbsoluteRect,
@@ -300,7 +292,7 @@ void GUIButton::draw()
 		pos.X -= sourceRect.getWidth() / 2;
 		pos.Y -= sourceRect.getHeight() / 2;
 
-		if ( Pressed )
+		if ( Pressed || Toggled )
 		{
 			// Create a pressed-down effect by moving the image when it looks identical to the unpressed state image
 			EGUI_BUTTON_IMAGE_STATE unpressedState = getImageState(false);
@@ -339,7 +331,7 @@ void GUIButton::draw()
 		if (isEnabled())
 		{
 			// pressed / unpressed animation
-			EGUI_BUTTON_STATE state = Pressed ? EGBS_BUTTON_DOWN : EGBS_BUTTON_UP;
+			EGUI_BUTTON_STATE state = Pressed || Toggled ? EGBS_BUTTON_DOWN : EGBS_BUTTON_UP;
 			drawSprite(state, ClickTime, pos);
 
 			// focused / unfocused animation
@@ -562,7 +554,7 @@ void GUIButton::setText(const wchar_t* text)
 // END PATCH
 
 //! Sets if the button should behave like a push button. Which means it
-//! can be in two states: Normal or Pressed. With a click on the button,
+//! can be in two states: Normal or Toggled. With a click on the button,
 //! the user can change the state of the button.
 void GUIButton::setIsPushButton(bool isPushButton)
 {
@@ -582,6 +574,21 @@ bool GUIButton::isHovered() const
 {
 	IGUIElement *hovered = Environment->getHovered();
 	return  hovered == this || (hovered != nullptr && hovered->getParent() == this);
+}
+
+//! Sets the toggled state of the button if this is a pushbutton
+void GUIButton::setToggled(bool toggled)
+{
+	if (Toggled != toggled) {
+		Toggled = toggled;
+		setFromState();
+	}
+}
+
+//! Returns the toggled state of the button if this is a pushbutton
+bool GUIButton::isToggled() const
+{
+	return Toggled;
 }
 // END PATCH
 
@@ -740,36 +747,38 @@ void GUIButton::setFromState()
 	if (isHovered())
 		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_HOVERED);
 
+	if (isToggled())
+		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_CHECKED);
+
 	setFromStyle(StyleSpec::getStyleFromStatePropagation(Styles, state));
 }
 
 //! Set element properties from a StyleSpec
-void GUIButton::setFromStyle(const StyleSpec& style)
+void GUIButton::setFromStyle(const StyleSpec &style)
 {
 	bool hovered = (style.getState() & StyleSpec::STATE_HOVERED) != 0;
 	bool pressed = (style.getState() & StyleSpec::STATE_PRESSED) != 0;
+	bool toggled = (style.getState() & StyleSpec::STATE_CHECKED) != 0;
 
 	if (style.isNotDefault(StyleSpec::BGCOLOR)) {
-
 		setColor(style.getColor(StyleSpec::BGCOLOR));
 
 		// If we have a propagated hover/press color, we need to automatically
 		// lighten/darken it
 		if (!Styles[style.getState()].isNotDefault(StyleSpec::BGCOLOR)) {
 			for (size_t i = 0; i < 4; i++) {
-				if (pressed) {
+				if (pressed || (toggled && !hovered)) {
 					Colors[i] = multiplyColorValue(Colors[i], COLOR_PRESSED_MOD);
 				} else if (hovered) {
 					Colors[i] = multiplyColorValue(Colors[i], COLOR_HOVERED_MOD);
 				}
 			}
 		}
-
 	} else {
 		for (size_t i = 0; i < 4; i++) {
 			video::SColor base =
 					Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
-			if (pressed) {
+			if (pressed || (toggled && !hovered)) {
 				Colors[i] = multiplyColorValue(base, COLOR_PRESSED_MOD);
 			} else if (hovered) {
 				Colors[i] = multiplyColorValue(base, COLOR_HOVERED_MOD);
@@ -813,9 +822,8 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 	core::vector2d<s32> defaultPressOffset(
 			skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X),
 			skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y));
-	ContentOffset = style.getVector2i(StyleSpec::CONTENT_OFFSET, isPressed()
-			? defaultPressOffset
-			: core::vector2d<s32>(0));
+	ContentOffset = style.getVector2i(StyleSpec::CONTENT_OFFSET,
+			pressed || toggled ? defaultPressOffset : core::vector2d<s32>(0));
 
 	core::rect<s32> childBounds(
 				Padding.UpperLeftCorner.X + ContentOffset.X,
@@ -829,7 +837,7 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 }
 
 //! Set the styles used for each state
-void GUIButton::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES>& styles)
+void GUIButton::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &styles)
 {
 	Styles = styles;
 	setFromState();

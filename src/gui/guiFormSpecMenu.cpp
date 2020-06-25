@@ -1031,6 +1031,43 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 	errorstream<< "Invalid button element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
+void GUIFormSpecMenu::parseMakeToggleable(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() != 2 &&
+			!(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION)) {
+		errorstream << "Invalid make_toggleable element(" << parts.size()
+			<< "): '" << element << "'" << std::endl;
+		return;
+	}
+
+	const std::string &name = parts[0];
+	bool is_toggled = is_yes(parts[1]);
+
+	GUIButton *button = nullptr;
+
+	for (const FieldSpec &spec : m_fields) {
+		if (spec.fname == name) {
+			gui::IGUIElement *elem = getElementFromId(spec.fid, true);
+			if (elem != nullptr && elem->getType() == gui::EGUIET_BUTTON) {
+				button = static_cast<GUIButton *>(elem);
+				break;
+			}
+		}
+	}
+
+	if (button == nullptr) {
+		errorstream << "Invalid make_toggleable element: Button '" << name
+			<< "' not found" << std::endl;
+		return;
+	}
+
+	button->setIsPushButton(true);
+	button->setToggled(is_toggled);
+	return;
+}
+
 void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element,';');
@@ -2882,6 +2919,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "make_toggleable") {
+		parseMakeToggleable(data, description);
+		return;
+	}
+
 	// Ignore others
 	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
 			<< std::endl;
@@ -3746,7 +3788,23 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 			if (s.send) {
 				std::string name = s.fname;
 				if (s.ftype == f_Button) {
-					fields[name] = wide_to_utf8(s.flabel);
+					// No dynamic cast possible due to some distributions shipped
+					// without rtti support in Irrlicht
+					IGUIElement *element = getElementFromId(s.fid, true);
+					GUIButton *e = nullptr;
+					if (element != nullptr && element->getType() == gui::EGUIET_BUTTON)
+						e = static_cast<GUIButton *>(element);
+
+					if (e != nullptr) {
+						if (e->isPushButton()) {
+							if (e->isToggled())
+								fields[name] = "true";
+							else
+								fields[name] = "false";
+						} else {
+							fields[name] = wide_to_utf8(s.flabel);
+						}
+					}
 				} else if (s.ftype == f_Table) {
 					GUITable *table = getTable(s.fname);
 					if (table) {

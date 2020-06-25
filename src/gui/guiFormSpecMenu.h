@@ -409,6 +409,7 @@ private:
 	void parseItemImage(parserData* data, const std::string &element);
 	void parseButton(parserData* data, const std::string &element,
 			const std::string &typ);
+	void parseMakeToggleable(parserData *data, const std::string &element);
 	void parseBackground(parserData* data, const std::string &element);
 	void parseTableOptions(parserData* data, const std::string &element);
 	void parseTableColumns(parserData* data, const std::string &element);

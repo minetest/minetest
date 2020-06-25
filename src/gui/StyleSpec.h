@@ -56,10 +56,11 @@ public:
 	enum State
 	{
 		STATE_DEFAULT = 0,
-		STATE_HOVERED = 1 << 0,
-		STATE_PRESSED = 1 << 1,
-		NUM_STATES = 1 << 2,
-		STATE_INVALID = 1 << 3,
+		STATE_CHECKED = 1 << 0,
+		STATE_HOVERED = 1 << 1,
+		STATE_PRESSED = 1 << 2,
+		NUM_STATES = 1 << 3,
+		STATE_INVALID = 1 << 4,
 	};
 
 private:
@@ -128,6 +129,8 @@ public:
 	{
 		if (name == "default") {
 			return STATE_DEFAULT;
+		} else if (name == "checked") {
+			return STATE_CHECKED;
 		} else if (name == "hovered") {
 			return STATE_HOVERED;
 		} else if (name == "pressed") {

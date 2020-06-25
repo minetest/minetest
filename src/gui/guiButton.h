@@ -169,7 +169,7 @@ public:
 	//! Checks whether the button is a push button
 	virtual bool isPushButton() const override;
 
-	//! Sets the pressed state of the button if this is a pushbutton
+	//! Sets the pressed state of the button
 	virtual void setPressed(bool pressed=true) override;
 
 	//! Returns if the button is currently pressed
@@ -178,6 +178,12 @@ public:
 	// PATCH
 	//! Returns if this element (or one of its direct children) is hovered
 	bool isHovered() const;
+
+	//! Sets the toggled state of the button if this is a pushbutton
+	virtual void setToggled(bool toggled=true);
+
+	//! Returns the toggled state of the button if this is a pushbutton
+	virtual bool isToggled() const;
 	// END PATCH
 
 	//! Sets if the button should use the skin to draw its border
@@ -224,10 +230,10 @@ public:
 	void setFromState();
 
 	//! Set element properties from a StyleSpec
-	virtual void setFromStyle(const StyleSpec& style);
+	virtual void setFromStyle(const StyleSpec &style);
 
 	//! Set the styles used for each state
-	void setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES>& styles);
+	void setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &styles);
 	// END PATCH
 
 
@@ -330,6 +336,8 @@ private:
 
 	video::SColor Colors[4];
 	// PATCH
+	bool Toggled;
+
 	bool WasHovered = false;
 	ISimpleTextureSource *TSrc;
 
