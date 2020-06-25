@@ -43,6 +43,6 @@ end
 
 function core.remove_after(num)
 	if jobs[num] then
-		jobs[num] = nil
+		jobs[num].func = function() end
 	end
 end
