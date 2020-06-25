@@ -636,6 +636,16 @@ the word "`alpha`", then each texture pixel will contain the RGB of
 `<color>` and the alpha of `<color>` multiplied by the alpha of the
 texture pixel.
 
+#### `[colorizehsl:<hue>:<saturation>:<lightness>`
+
+Colorize the texture to the given hue. All pixels will be converted
+to the specified hue while retaining their saturation and lightness, like
+"Colorize" in GIMP. Saturation and lightness can optionally be adjusted.
+
+`<hue>` should be from -180 to +180
+
+`<saturation>` and `<lightness>` are optional, and both from -100 to +100
+
 #### `[multiply:<color>`
 
 Multiplies texture colors with the given color.
@@ -643,6 +653,53 @@ Multiplies texture colors with the given color.
 Result is more like what you'd expect if you put a color on top of another
 color, meaning white surfaces get a lot of your new color while black parts
 don't change very much.
+
+#### `[screen:<color>`
+
+Apply a Screen blend with the given color. A Screen blend is the inverse of
+a Multiply blend, lightening images instead of darkening them.
+
+`<color>` is specified as a `ColorString`.
+
+#### `[hsl:<hue>:<saturation>:<lightness>`
+
+Adjust the hue, saturation, and lightness of the texture. Like
+"Hue-Saturation" in GIMP, but with 0 as the mid-point.
+
+`<hue>` should be from -180 to +180
+
+`<saturation>` and `<lightness>` are optional, and both from -100 to +100
+
+#### `[contrast:<contrast>:<brightness>`
+
+Adjust the brightness and contrast of the texture. Conceptually like
+GIMP's "Brightness-Contrast" feature but allows brightness to be wound 
+all the way up to white or down to black.
+
+`<contrast>` and `<brightness>` are both values from -127 to +127.
+
+`<brightness>` is optional.
+
+#### `[overlay:<file>`
+
+Applies an Overlay blend with the two textures, like the Overlay layer mode 
+in GIMP. Overlay is the same as Hard light but with the role of the two 
+textures swapped, see the `[hardlight` modifier description for more detail
+about these blend modes.
+
+#### `[hardlight:<file>`
+
+Applies a Hard light blend with the two textures, like the Hard light layer 
+mode in GIMP. 
+
+Hard light combines Multiply and Screen blend modes. Light parts of the 
+`<file>` texture will lighten (screen) the base texture, and dark parts of the
+`<file>` texture will darken (multiply) the base texture. This can be useful
+for applying embossing or chiselled effects to textures. A Hard light with the
+same texture looks like an S-curve.
+
+Hard light is the same as Overlay but with the roles of the two textures
+swapped, i.e. `A.png^[hardlight:B.png` is the same as `B.png^[overlay:A.png`
 
 #### `[png:<base64>`
 
