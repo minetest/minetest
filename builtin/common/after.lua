@@ -38,4 +38,11 @@ function core.after(after, func, ...)
 		mod_origin = core.get_last_run_mod()
 	}
 	time_next = math.min(time_next, expire)
+	return #jobs
+end
+
+function core.remove_after(num)
+	if jobs[num] then
+		jobs[num] = nil
+	end
 end
