@@ -90,7 +90,8 @@ RELEASE_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
 echo "Current Minetest version: $RELEASE_VERSION"
 echo "Current Android version code: $ANDROID_VERSION_CODE"
 
-NEW_ANDROID_VERSION_CODE=$(expr $ANDROID_VERSION_CODE + 1)
+# +1 for ARM and +1 for ARM64 APKs
+NEW_ANDROID_VERSION_CODE=$(expr $ANDROID_VERSION_CODE + 2)
 NEW_ANDROID_VERSION_CODE=$(prompt_for_number "Set android version code" $NEW_ANDROID_VERSION_CODE)
 
 echo
