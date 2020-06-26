@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-22 17:56+0000\n"
-"Last-Translator: runs <runspect@yahoo.es>\n"
+"PO-Revision-Date: 2020-06-27 20:41+0000\n"
+"Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/minetest/"
 "minetest/gl/>\n"
 "Language: gl\n"
@@ -1885,7 +1885,7 @@ msgstr ""
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "gl"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
