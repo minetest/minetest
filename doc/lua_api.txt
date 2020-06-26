@@ -6644,15 +6644,19 @@ Player properties need to be saved manually.
 
         static_save = true,
         -- If false, never save this object statically. It will simply be
-        -- deleted when the block gets unloaded.
+        -- deleted when the block it is in gets deactivated
+        -- (the active_block_range is left).
         -- The get_staticdata() callback is never called then.
         -- Defaults to 'true'.
+        -- Note: Since deactivated blocks might still be kept loaded, you
+        -- can not use an LBM to respawn entities when they're bound to a node.
 
         damage_texture_modifier = "^[brighten",
         -- Texture modifier to be applied for a short duration when object is hit
 
         shaded = true,
         -- Setting this to 'false' disables diffuse lighting of entity
+
     }
 
 Entity definition
