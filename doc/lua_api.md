@@ -654,12 +654,22 @@ Result is more like what you'd expect if you put a color on top of another
 color, meaning white surfaces get a lot of your new color while black parts
 don't change very much.
 
+A Multiply blend can be applied between two textures by using the overlay 
+modifier with a brightness adjustment:
+
+    textureA.png^[contrast:0:-64^[overlay:textureB.png
+
 #### `[screen:<color>`
 
 Apply a Screen blend with the given color. A Screen blend is the inverse of
 a Multiply blend, lightening images instead of darkening them.
 
 `<color>` is specified as a `ColorString`.
+
+A Screen blend can be applied between two textures by using the overlay 
+modifier with a brightness adjustment:
+
+    textureA.png^[contrast:0:64^[overlay:textureB.png
 
 #### `[hsl:<hue>:<saturation>:<lightness>`
 
