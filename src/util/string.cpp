@@ -890,7 +890,7 @@ std::wstring translate_string(const std::wstring &s)
 #endif
 }
 
-static const std::wstring disallowed_dir_names[] {
+static const std::array<std::wstring, 22> disallowed_dir_names = {
 	// Problematic filenames from here:
 	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
 	L"CON",
@@ -916,28 +916,26 @@ static const std::wstring disallowed_dir_names[] {
 	L"LPT8",
 	L"LPT9",
 };
-static const int disallowed_name_count = 22;
 
 /**
  * List of characters that are blacklisted from created directories
  */
-static const wchar_t disallowed_path_chars[] {
-    // Problematic characters from here:
-    // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
-    '<',
-    '>',
-    ':',
-    '\"',
-    '/',
-    '\\',
-    '|',
-    '?',
-    '*',
+static const std::array<wchar_t, 10> disallowed_path_chars = {
+	// Problematic characters from here:
+	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
+	'<',
+	'>',
+	':',
+	'\"',
+	'/',
+	'\\',
+	'|',
+	'?',
+	'*',
 
-    // Disallowed to avoid patterns that resolve into path segments, like '..'
-    '.',
+	// Disallowed to avoid patterns that resolve into path segments, like '..'
+	'.',
 };
-static const int disallowed_char_count = 10;
 
 /**
  * Sanitize the name of a new directory. This consists of two stages:
@@ -949,8 +947,8 @@ std::string sanitizeDirName(const std::string &str, const std::string &unsafe_pr
 {
 	std::wstring tmp = utf8_to_wide(str);
 
-	for(int i = 0; i < disallowed_name_count; ++i) {
-		if (str_equal(tmp, disallowed_dir_names[i], true)) {
+	for(std::wstring disallowed_name : disallowed_dir_names) {
+		if (str_equal(tmp, disallowed_name, true)) {
 			tmp = utf8_to_wide(unsafe_prefix) + tmp;
 		}
 	}
@@ -962,8 +960,8 @@ std::string sanitizeDirName(const std::string &str, const std::string &unsafe_pr
 		if (tmp[i] < 32) {
 			is_valid = false;
 		} else if (tmp[i] < 128) {
-			for (int j = 0; j < disallowed_char_count; ++j) {
-				if (tmp[i] == disallowed_path_chars[j]) {
+			for (wchar_t disallowed_char : disallowed_path_chars) {
+				if (tmp[i] == disallowed_char) {
 					is_valid = false;
 					break;
 				}
