@@ -2357,14 +2357,18 @@ static void apply_brightness_contrast(video::IImage *dst, v2u32 dst_pos, v2u32 s
 {
 	video::SColor dst_c;
 	// Only allow normalized contrast to get as high as 127/128 to avoid infinite slope.
-	// (we could technically allow -128/128 as that would just result in 0 slope)
+	// (we could technically allow -128/128 here as that would just result in 0 slope)
 	double norm_c = core::clamp(contrast,   -127, 127) / 128.0;
 	double norm_b = core::clamp(brightness, -127, 127) / 127.0;
+	
+	// Scale brightness so its range is -127.5 to 127.5, otherwise brightness
+	// adjustments will outputs values from 0.5 to 254.5 instead of 0 to 255.
+	double scaled_b = brightness * 127.5 / 127;
 
 	// Calculate a contrast slope such that that no colors will get clamped due 
 	// to the brightness setting.
 	// This allows the texture modifier to used as a brightness modifier without
-	// the user having to calculate a contrast to avoid clamping at that brightness.
+	// the user having to calculate a contrast to avoid clipping at that brightness.
 	double slope = 1 - std::fabs(norm_b);
 	
 	// Apply the user's contrast adjustment to the calculated slope, such that 
@@ -2376,8 +2380,12 @@ static void apply_brightness_contrast(video::IImage *dst, v2u32 dst_pos, v2u32 s
 	slope = std::tan(angle);
 
 	double c = slope <= 1
-		? -slope * 127.5 + 127.5 + brightness    // shift up/down when slope is horiz.
-		: -slope * (127.5 - brightness) + 127.5; // shift left/right when slope is vert.
+		? -slope * 127.5 + 127.5 + scaled_b    // shift up/down when slope is horiz.
+		: -slope * (127.5 - scaled_b) + 127.5; // shift left/right when slope is vert.
+
+	// add 0.5 to c so that when the final result is cast to int, it is effectively 
+	// rounded rather than trunc'd.
+	c += 0.5;
 
 	for (u32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
 	for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
