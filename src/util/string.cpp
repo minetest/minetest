@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "translation.h"
 
 #include <algorithm>
+#include <array>
 #include <sstream>
 #include <iomanip>
 #include <map>
