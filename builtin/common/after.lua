@@ -31,20 +31,18 @@ function core.after(after, func, ...)
 	assert(tonumber(after) and type(func) == "function",
 		"Invalid minetest.after invocation")
 	local expire = time + after
-	jobs[#jobs + 1] = {
+	local new_job = {
 		func = func,
 		expire = expire,
 		arg = {...},
 		mod_origin = core.get_last_run_mod()
 	}
+	jobs[#jobs + 1] = new_job
 	time_next = math.min(time_next, expire)
-	return #jobs, expire
+	return new_job
 end
 
 function core.remove_after(num, expire)
-	if jobs[num] and jobs[num].expire == expire then
-		jobs[num].func = function() end
-		return true
-	end
-	return false
+	assert(type(job) == "table", "Invalid minetest.remove_after job table")
+	job.func = function() end
 end
