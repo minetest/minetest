@@ -43,6 +43,5 @@ function core.after(after, func, ...)
 end
 
 function core.remove_after(num, expire)
-	assert(type(job) == "table", "Invalid minetest.remove_after job table")
 	job.func = function() end
 end
