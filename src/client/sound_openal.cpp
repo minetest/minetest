@@ -623,7 +623,7 @@ public:
 		}
 		float current_gain = getSoundGain(soundid);
 		gain = rangelim(gain, 0, 1);
-		step = ( gain - current_gain ) > 0 ? abs(step) : -abs(step);
+		step = gain - current_gain > 0 ? abs(step) : -abs(step);
 		m_sounds_fading[soundid] = FadeState(step, current_gain, gain);
 	}
 
