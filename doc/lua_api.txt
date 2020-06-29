@@ -5197,7 +5197,7 @@ Timing
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
 
-* `job.cancel()`
+* `job:cancel()`
     * Removes already registered minetest.after function and replaces
     it with a cancel function instead.
 
