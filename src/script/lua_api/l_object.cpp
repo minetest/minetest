@@ -583,6 +583,39 @@ int ObjectRef::l_get_eye_offset(lua_State *L)
 	return 2;
 }
 
+// set_eye_attach_state(self, state)
+int ObjectRef::l_set_eye_attach_state(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	
+	// Init at default state
+	char state = 1;
+	
+	if (!lua_isnil(L, 2))
+		state = readParam<s16>(L, 2);
+
+	getServer(L)->setPlayerEyeAttachState(player, state);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_eye_attach_state(self)
+int ObjectRef::l_get_eye_attach_state(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	
+	lua_pushnumber(L, player->eye_attach_state);
+	return 2;
+}
+
 // send_mapblock(self, pos)
 int ObjectRef::l_send_mapblock(lua_State *L)
 {
@@ -2356,6 +2389,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_local_animation),
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
+	luamethod(ObjectRef, set_eye_attach_state),
+	luamethod(ObjectRef, get_eye_attach_state),
 	luamethod(ObjectRef, send_mapblock),
 	{0,0}
 };

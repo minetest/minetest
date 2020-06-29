@@ -215,6 +215,7 @@ public:
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
+	void handleCommand_EyeAttachState(NetworkPacket* pkt);
 	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
 	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
 	void handleCommand_ModChannelSignal(NetworkPacket *pkt);

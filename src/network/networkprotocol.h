@@ -762,7 +762,12 @@ enum ToClientCommand
 		u8[len] formspec
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x62,
+	TOCLIENT_EYE_ATTACH_STATE = 0x62,
+	/*
+		char state
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x63,
 };
 
 enum ToServerCommand

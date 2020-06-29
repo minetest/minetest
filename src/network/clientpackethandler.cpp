@@ -1388,6 +1388,18 @@ void Client::handleCommand_EyeOffset(NetworkPacket* pkt)
 	*pkt >> player->eye_offset_first >> player->eye_offset_third;
 }
 
+void Client::handleCommand_EyeAttachState(NetworkPacket* pkt)
+{
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+
+	// Reset so that camera attachment
+	// hierarchy is reset for new state
+	player->eyes_attached = false;
+
+	*pkt >> player->eye_attach_state;
+}
+
 void Client::handleCommand_UpdatePlayerList(NetworkPacket* pkt)
 {
 	u8 type;

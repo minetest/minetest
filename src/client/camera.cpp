@@ -334,14 +334,81 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	// Get player position
 	// Smooth the movement when walking up stairs
 	v3f old_player_position = m_playernode->getPosition();
-	v3f player_position = player->getPosition();
+	v3f player_position;
+
+	bool eyes_attached = player->eyes_attached;
+	char eye_rotationstate = player->eye_attach_state;
+
+	// Calculate and translate the head SceneNode offsets
+	v3f eye_offset = player->getEyeOffset();
+	if (m_camera_mode == CAMERA_MODE_FIRST)
+		eye_offset += player->eye_offset_first;
+	else
+		eye_offset += player->eye_offset_third;
+
+	// Get camera tilt timer (hurt animation)
+	float cameratilt = fabs(fabs(player->hurt_tilt_timer-0.75)-0.75);	
+
+	v3f body_rot = v3f(0, -1 * player->getYaw(), 0);
+	v3f head_rot = v3f(player->getPitch(), 0,
+		cameratilt * player->hurt_tilt_strength);
 
 	// This is worse than `LocalPlayer::getPosition()` but
 	// mods expect the player head to be at the parent's position
 	// plus eye height.
-	if (player->getParent())
-		player_position = player->getParent()->getPosition();
+	ClientActiveObject *player_parent = player->getParent();
 
+	if (!player_parent)
+	{
+		player_position = player->getPosition();
+		if (eyes_attached)
+		{
+			eyes_attached = false;
+			scene::ISceneManager *smgr = RenderingEngine::get_scene_manager();
+			m_playernode->setParent(smgr->getRootSceneNode());
+			m_headnode->setParent(m_playernode);
+		}
+	} else {
+		switch (eye_rotationstate)
+		{
+			case 1:
+				player_position = player_parent->getPosition();
+			break;
+			case 2:
+				if (!eyes_attached)
+				{
+					eyes_attached = true;
+					m_playernode->setParent(player->getParent()->getSceneNode());
+				}
+				player_position = v3f(0,0,0);
+			break;
+			case 3:
+				if (!eyes_attached)
+				{
+					eyes_attached = true;
+					scene::ISceneManager *smgr = RenderingEngine::get_scene_manager();
+					m_headnode->setParent(smgr->getRootSceneNode());
+					m_playernode->setParent(player_parent->getSceneNode());
+					m_playernode->setPosition(eye_offset);
+					m_playernode->updateAbsolutePosition();
+				}
+				player_position = eye_offset;
+				eye_offset = player_parent->getPosition() + m_playernode->getAbsolutePosition() - player_parent->getSceneNode()->getAbsolutePosition();
+				head_rot.Y = body_rot.Y;
+			break;
+			case 4:
+				if (!eyes_attached)
+				{
+					eyes_attached = true;
+					m_playernode->setParent(player->getParent()->getSceneNode());
+				}
+				player_position = v3f(0,0,0);
+				body_rot = v3f(0,0,0);
+				head_rot = v3f(0,0,0);
+			break;
+		}	
+	}
+	
 	if(player->touching_ground &&
 			player_position.Y > old_player_position.Y)
 	{
@@ -350,9 +417,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		f32 t = std::exp(-23 * frametime);
 		player_position.Y = oldy * t + newy * (1-t);
 	}
-
-	// Get camera tilt timer (hurt animation)
-	float cameratilt = fabs(fabs(player->hurt_tilt_timer-0.75)-0.75);
 
 	// Fall bobbing animation
 	float fall_bobbing = 0;
@@ -377,41 +441,17 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	v3f rel_cam_pos = v3f(0,0,0);
 	v3f rel_cam_target = v3f(0,0,1);
 	v3f rel_cam_up = v3f(0,1,0);
-	v3f view(player->getPitch(), 0, cameratilt * player->hurt_tilt_strength);
-
-	// Calculate and translate the head SceneNode offsets
-	v3f eye_offset = player->getEyeOffset();
-	if (m_camera_mode == CAMERA_MODE_FIRST)
-		eye_offset += player->eye_offset_first;
-	else
-		eye_offset += player->eye_offset_third;
 
 	// Set head node transformation
 	eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
 
-	if (player->getParent())
-	{	
-		v3f angles = player->getParent()->getSceneNode()->getAbsoluteTransformation().getRotationDegrees();
-		irr::core::quaternion rotator;
-		rotator.set(angles * core::DEGTORAD);
-
-		rel_cam_target = rotator * rel_cam_target;
-		rel_cam_up = rotator * rel_cam_up;
-		eye_offset = rotator * eye_offset;
-		view.Y = -1 * player->getYaw();
-
-		rel_cam_pos.normalize();
-//		view = rotator * view;
-	} else {
-		m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
-	}
-
 	// Set player node transformation
 	m_playernode->setPosition(player_position);
-	m_playernode->updateAbsolutePosition();
+	m_playernode->setRotation(body_rot);
+	m_playernode->updateAbsolutePosition();	
 
 	m_headnode->setPosition(eye_offset);
-	m_headnode->setRotation(view);
+	m_headnode->setRotation(head_rot);
 	m_headnode->updateAbsolutePosition();
 
 	if (m_cache_view_bobbing_amount != 0.0f && m_view_bobbing_anim != 0.0f &&
@@ -458,6 +498,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 	// Compute absolute camera position and target
 	m_headnode->getAbsoluteTransformation().transformVect(m_camera_position, rel_cam_pos);
+	
+	if (player_parent && (eye_rotationstate == 2 || eye_rotationstate == 4))
+	{
+		v3f temp_pos = m_headnode->getAbsolutePosition() - m_playernode->getAbsolutePosition();
+		m_camera_position = player->getParent()->getPosition() + temp_pos;
+	}
+	
 	m_headnode->getAbsoluteTransformation().rotateVect(m_camera_direction, rel_cam_target - rel_cam_pos);
 
 	v3f abs_cam_up;

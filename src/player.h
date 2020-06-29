@@ -159,6 +159,19 @@ public:
 	v3f eye_offset_first;
 	v3f eye_offset_third;
 
+	// Eye rotation state for when player attached to an object
+	// States:
+	// 1 = default float head at parent origin with eye offset
+	// 2 = rotate camera pos, target, and up about parent origin 
+	//     at eye_offset radius (player free to move camera)
+	// 3 = rotate camera pos about parent origin but get target
+	//     and up vectors in their absolute directions
+	// 4 = rotate camera about parent origin but fix camera
+	//     view strictly to the defined target direction (target
+	//     direction direction is rotated/relative to parent rotation)
+	char eye_attach_state = 2;
+	bool eyes_attached = false;
+
 	Inventory inventory;
 
 	f32 movement_acceleration_default;

@@ -1844,6 +1844,13 @@ void Server::SendEyeOffset(session_t peer_id, v3f first, v3f third)
 	Send(&pkt);
 }
 
+void Server::SendEyeAttachState(session_t peer_id, char state)
+{
+	NetworkPacket pkt(TOCLIENT_EYE_ATTACH_STATE, 0, peer_id);
+	pkt << state;
+	Send(&pkt);
+}
+
 void Server::SendPlayerPrivileges(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -3324,6 +3331,13 @@ void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3
 	player->eye_offset_first = first;
 	player->eye_offset_third = third;
 	SendEyeOffset(player->getPeerId(), first, third);
+}
+
+void Server::setPlayerEyeAttachState(RemotePlayer *player, const char &state)
+{
+	sanity_check(player);
+	player->eye_attach_state = state;
+	SendEyeAttachState(player->getPeerId(), state);
 }
 
 void Server::setSky(RemotePlayer *player, const SkyboxParams &params)

@@ -374,6 +374,12 @@ private:
 
 	// get_eye_offset(self)
 	static int l_get_eye_offset(lua_State *L);
+	
+	// set_eye_attach_state(self, state)
+	static int l_set_eye_attach_state(lua_State *L);
+
+	// get_eye_attach_state(self)
+	static int l_get_eye_attach_state(lua_State *L);
 
 	// set_nametag_attributes(self, attributes)
 	static int l_set_nametag_attributes(lua_State *L);
