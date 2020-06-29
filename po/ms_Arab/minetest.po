@@ -8,114 +8,118 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-07-08 20:47+0000\n"
+"Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
+"Yasuyoshi <translation@mnh48.moe>\n"
+"Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
+"minetest/ms_Arab/>\n"
 "Language: ms_Arab\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "اندا تله منيڠݢل"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "لاهير سمولا"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "ڤلاين ڤرماءينن ممينت اندا اونتوق مڽمبوڠ سمولا:"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "سمبوڠ سمولا"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "مينو اوتام"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "برلاکوڽ رالت دالم سکريڤ Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "تله برلاکوڽ رالت:"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "سدڠ ممواتکن..."
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "چوب اکتيفکن سمولا سناراي ڤلاين عوام فان ڤريقسا سمبوڠن اينترنيت اندا."
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "ڤلاين ڤرماءينن مڽوکوڠ ڤروتوکول ۏرسي $1 هيڠݢ $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "ڤلاين ڤرماءينن مڠواتکواساکن ڤروتوکول ۏرسي $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "کامي مڽوکوڠ ڤروتوکول ۏرسي $1 هيڠݢ $2."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "کامي هاڽ مڽوکوڠ ڤروتوکول ۏرسي $1."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "ۏرسي ڤروتوکول تيدق سراسي. "
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "دنيا:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "تيادا ڤريهل ڤيک مودس ترسديا."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "تيادا ڤريهل ڤرماءينن ترسديا."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "مودس:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "تيادا کبرݢنتوڠن (ڤيليهن)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "تيادا کبرݢنتوڠن واجب"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "کبرݢنتوڠن ڤيليهن:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr ""
+msgstr "کبرݢنتوڠن:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "تيادا کبرݢنتوڠن ڤيليهن"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "سيمڤن"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
@@ -125,386 +129,392 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "باتل"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "چاري مودس لاءين"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "لومڤوهکن ڤيک مودس"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "بوليهکن ڤيک مودس"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "دبوليهکن"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "لومڤوهکن سموا"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "ممبوليهکن سموا"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
+"ݢاݢل اونتوق ممبوليهکن مودس \"$1\" کران اي مڠندوڠي اکسارا يڠ تيدق دبنرکن. هاڽ "
+"اکسارا [a-z0-9_] سهاج يڠ دبنرکن."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "سيستم ContentDB تيدق ترسديا اڤابيلا Minetest دکومڤيل تنڤ cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "سموا ڤاکيج"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "ڤرماءينن"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr ""
+msgstr "مودس"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "ڤيک تيکستور"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "ݢاݢل مموات تورون $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "چاري"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr ""
+msgstr "کمبالي کمينو اوتام"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "تيادا حاصيل"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "تيادا ڤاکيج يڠ بوليه دامبيل"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr ""
+msgstr "مموات تورون..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "ڤاسڠ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "کمس کيني"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "ڽهڤاسڠ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "ليهت"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "ݢوا بسر"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "ݢوا ݢرݢاسي يڠ ساڠت مندالم باواه تانه"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "سوڠاي ارس لاءوت"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "سوڠاي"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "ݢونوڠ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "تانه تراڤوڠ (دالم اوجيکاجي)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "جيسيم بومي تراڤوڠ اتس لاڠيت"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "کديڠينن التيتود"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "کورڠکن هاب مڠيکوت التيتود"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "ککريڠن التيتود"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "کورڠکن کلمبڤن مڠيکوت التيتود"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "سوڠاي لمبڤ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "تيڠکتکن کلمبڤن سکيتر سوڠاي"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "کدالمن سوڠاي برباݢاي"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "کلمبڤن رنده دان هاب تيڠݢي مڽببکن سوڠاي چيتيق اتاو کريڠ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "بوکيت"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "تاسيق"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "روڤ بومي تمبهن"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "جان روڤ بومي بوکن-فراکتل: لاءوتن دان باواه تانه"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "ڤوکوق دان رومڤوت هوتن"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "روڤ بومي رات"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "اليرن لومڤور"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "هاکيسن ڤرموکاءن روڤ بومي"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "اقليم سدرهان⹁ ݢورون⹁ هوتن⹁ توندرا⹁ تايݢ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "اقليم سدرهان⹁ ݢورون⹁ هوتن"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "اقليم سدرهان⹁ ݢورون"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "اندا تيدق مماسڠ سبارڠ ڤرماءينن."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "موات تورون ساتو دري minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "ݢوا"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "کوروڠن باواه تانه"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "هياسن"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"ستروکتور يڠ مونچول اتس روڤ بومي (تيادا کسن ڤد ڤوکوق دان رومڤوت هوتن دچيڤت "
+"اوليه v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "ستروکتور يڠ مونچول اتس روڤ بومي⹁ بياساڽ ڤوکوق دان تومبوهن"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "جاريڠن تروووڠ دان ݢوا"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "بيوم"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "ڤڽباتين بيوم"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "ڤراليهن لمبوت دانتارا بيوم"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "بنديرا جان ڤتا"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr ""
+msgstr "بنديرا خصوص جان ڤتا"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The Development Test is meant for developers."
-msgstr ""
+msgstr "امرن: The Development Test هاڽله اونتوق کݢوناءن ڤمباڠون."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
+msgstr "موات تورون ڤرماءينن⹁ چونتوهڽ Minetest Game⹁ دري minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "نام دنيا"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr ""
+msgstr "بنيه"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "جاناءن ڤتا"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "ڤرماءينن"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "چيڤت"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "دنيا برنام \"$1\" تله وجود"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr ""
+msgstr "تيادا ڤرماءينن دڤيليه"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "ادکه امدا ڤستي اندا ايڠين ممادم \"$1\"؟"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "ڤادم"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "pkgmgr: ݢاݢل ممادم \"$1\""
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr ""
+msgstr "pkgmgr: لالوان تيدق صح \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "ڤادم دنيا \"$1\"؟"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "تريما"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"ڤيک مودس اين ممڤوڽاءي نام خصوص دبريکن دالم فايل modpack.conf ميليقڽ يڠ اکن "
+"مڠاتسي سبارڠ ڤناماءن سمولا دسين."
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "نامکن سمولا ڤيک مودس:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr ""
+msgstr "دلومڤوهکن"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "دبوليهکن"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "لاير"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "اوفسيت"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "سکال"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr ""
+msgstr "سيبرن X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr ""
+msgstr "سيبرن Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr ""
+msgstr "هيڠر 2D"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr ""
+msgstr "سيبرن Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "اوکتف"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr ""
+msgstr "ڤنروسن"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
-msgstr ""
+msgstr "لاکوناريتي"
 
 #. ~ "defaults" is a noise parameter flag.
 #. It describes the default processing options
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr ""
+msgstr "لالاي"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -512,7 +522,7 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "تومڤول"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -520,516 +530,516 @@ msgstr ""
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr ""
+msgstr "نيلاي مطلق"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(تيادا ڤريهل اونتوق تتڤن يڠ دبري)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "سيلا ماسوقکن اينتيݢر يڠ صح."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr ""
+msgstr "نيلاي مستيله سکورڠ-کورڠڽ $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr ""
+msgstr "نيلاي مستيله تيدق لبيه درڤد $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "سيلا ماسوقکن نومبور يڠ صح."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr ""
+msgstr "ڤيليه ديريکتوري"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr ""
+msgstr "ڤيليه فايل"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< کمبالي کهلامن تتڤن"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "ايديت"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "ڤوليهکن تتڤن اصل"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "تونجوقکن نام تيکنيکل"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "$1 (دبوليهکن)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr ""
+msgstr "ݢاݢل مماسڠ $1 سباݢاي ڤيک تيکستور"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "ݢاݢل مماسڠ $1 ڤد $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
-msgstr ""
+msgstr "تيدق جومڤ مودس اتاو ڤيک مودس يڠ صح"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a modpack as a $1"
-msgstr ""
+msgstr "ݢاݢل مماسڠ ڤيک مودس سباݢاي $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find suitable folder name for modpack $1"
-msgstr ""
+msgstr "ڤاسڠ مودس: تيدق جومڤ نام فولدر يڠ سسواي اونتوق ڤيک مودس $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a mod as a $1"
-msgstr ""
+msgstr "ݢاݢل مماسڠ مودس سباݢاي $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr ""
+msgstr "ڤاسڠ مودس: ݢاݢل منچاري نام مودس سبنر اونتوق: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a game as a $1"
-msgstr ""
+msgstr "ݢاݢل مماسڠ ڤرماءينن سباݢاي $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: file: \"$1\""
-msgstr ""
+msgstr "ڤاسڠ: فايل: \"$1\""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unsupported file type \"$1\" or broken archive"
-msgstr ""
+msgstr "ڤاسڠ: جنيس فايل \"$1\" تيدق دسوکوڠ اتاو ارکيب روسق"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr ""
+msgstr "$1 مودس"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "ڤاکيج دڤاسڠ:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "لايري کندوڠن دالم تالين"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr ""
+msgstr "تيادا ڤريهل ڤاکيج ترسديا"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "نامکن سمولا"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "تيادا کبرݢنتوڠن."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr ""
+msgstr "لومڤوهکن ڤيک تيکستور"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr ""
+msgstr "ݢونا ڤيک تيکستور"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "معلومت:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr ""
+msgstr "ڽهڤاسڠ ڤاکيج"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr ""
+msgstr "کندوڠن"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr ""
+msgstr "ڤڠهرݢاءن"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "ڤمباڠون تراس"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "ڤڽومبڠ اکتيف"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "ڤمباڠون تراس تردهولو"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "ڤڽومبڠ تردهولو"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "ڤاسڠکن ڤرماءينن درڤد ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
-msgstr ""
+msgstr "کونفيݢوراسي"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr ""
+msgstr "بوات بارو"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr ""
+msgstr "ڤيليه دنيا:"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "مود کرياتيف"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "بوليه چدرا"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr ""
+msgstr "هوس ڤلاين"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr ""
+msgstr "هوس ڤرماءينن"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr ""
+msgstr "اومومکن ڤلاين"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
-msgstr ""
+msgstr "نام\\کات لالوان"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr ""
+msgstr "علامت ايکتن"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
-msgstr ""
+msgstr "ڤورت"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr ""
+msgstr "ڤورت ڤلاين"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr ""
+msgstr "مولا ماءين"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "تيادا دنيا دچيڤت اتاو دڤيليه!"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr ""
+msgstr "مولاکن ڤرماءينن"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr ""
+msgstr "علامت \\ ڤورت"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
-msgstr ""
+msgstr "نام \\ کات لالوان"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr ""
+msgstr "سمبوڠ"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr ""
+msgstr "ڤادم کݢمرن"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
-msgstr ""
+msgstr "کݢمرن"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Ping"
-msgstr ""
+msgstr "ڤيڠ"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "مود کرياتيف"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr ""
+msgstr "بوليه چدرا"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr ""
+msgstr "بوليه برلاوان PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr ""
+msgstr "سرتاءي ڤرماءينن"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
-msgstr ""
+msgstr "داون لݢڤ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
-msgstr ""
+msgstr "داون ريڠکس"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "داون براݢم"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr ""
+msgstr "کرڠک نود"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr ""
+msgstr "تونجولن نود"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr ""
+msgstr "تيادا"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr ""
+msgstr "تيادا تاڤيسن"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "ڤناڤيسن بيلينيار"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "ڤناڤيسن تريلينيار"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr ""
+msgstr "تيادا ڤتا ميڤ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr ""
+msgstr "ڤتا ميڤ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "ڤتا ميڤ + ڤناڤيسن انيسو"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "اداکه اندا ماهو سيت سمولا دنيا ڤماءين ڤرساورڠن؟"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
-msgstr ""
+msgstr "ياء"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
-msgstr ""
+msgstr "تيدق"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "ڤنچهاياءن لمبوت"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
+msgstr "ڤرتيکل"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "اوان 3D"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr ""
+msgstr "اءير لݢڤ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
-msgstr ""
+msgstr "کاچ برسمبوڠن"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "جالينن:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "انتيالياس:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
-msgstr ""
+msgstr "سکرين:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr ""
+msgstr "اءوتوسيمڤن سايز سکرين"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr ""
+msgstr "ڤمبايڠ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr ""
+msgstr "ڤمبايڠ (تيدق ترسديا)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Reset singleplayer world"
-msgstr ""
+msgstr "سيت سمولا دنيا ڤماءين ڤرساورڠن"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "توکر ککونچي"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr ""
+msgstr "سموا تتڤن"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
-msgstr ""
+msgstr "نيلاي امبڠ سنتوهن: (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bump Mapping"
-msgstr ""
+msgstr "ڤمتاءن بيڠݢول"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr ""
+msgstr "ڤمتاءن تونا"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normal Maps"
-msgstr ""
+msgstr "جان ڤتا نورمل"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "اوکلوسي ڤارالکس"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr ""
+msgstr "چچاءير برݢلورا"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
-msgstr ""
+msgstr "داءون برݢويڠ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr ""
+msgstr "تومبوهن برݢويڠ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "اونتوق ممبوليهکن ڤمبايڠ⹁ ڤماچو OpenGL مستي دݢوناکن."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "تتڤن"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr ""
+msgstr "مولا ماءين ساورڠ"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr ""
+msgstr "کونفيݢوراسي مودس"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
-msgstr ""
+msgstr "اوتام"
 
 #: src/client/client.cpp
 msgid "Connection timed out."
-msgstr ""
+msgstr "سمبوڠن تامت تيمڤوه."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "سدڠ ممواتکن تيکستور..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "سدڠ ممبينا سمولا ڤمبايڠ..."
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "سدڠ مڠاولکن نود..."
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "مڠاولکن نود"
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "سلساي!"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "مينو اوتام"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "نام ڤماءين ترلالو ڤنجڠ."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "رالت دالم ڤڽمبوڠن (تامت تيمڤوه؟)"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "فايل کات لالوان يڠ دسدياکن ݢاݢل دبوک: "
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "سيلا ڤيليه سواتو نام!"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "تيادا دنيا دڤيليه اتاو تيادا علامت دبري. تيادا اڤ بوليه دلاکوکن."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "لالوان دنيا دبري تيدق وجود: "
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "تيدق جومڤ اتاو تيدق بوليه مواتکن ڤرماءينن \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "سڤيسيفيکاسي ڤرماءينن تيدق صح."
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string. Put either "no" or "yes"
@@ -1041,231 +1051,231 @@ msgstr ""
 #. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "yes"
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "سدڠ منوتوڤ..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "سدڠ منچيڤت ڤلاين..."
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "سدڠ منچيڤت کليئن..."
 
 #: src/client/game.cpp
 msgid "Resolving address..."
-msgstr ""
+msgstr "سدڠ مڽلسايکن علامت..."
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
-msgstr ""
+msgstr "سدڠ مڽمبوڠ کڤد ڤلاين..."
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "سدڠ منتعريفکن ايتم..."
 
 #: src/client/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "سدڠ منتعريفکن نود..."
 
 #: src/client/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "سدڠ ممواتکن ميديا..."
 
 #: src/client/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/client/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr ""
+msgstr "سکريڤ ڤيهق کليئن دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Sound muted"
-msgstr ""
+msgstr "بوڽي دبيسوکن"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
-msgstr ""
+msgstr "بوڽي دڽهبيسوکن"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "سيستم بوڽي دلومڤوهکن"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "ککواتن بوڽي داوبه کڤد %d%%"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "سيستم بوڽي تيدق دسوکوڠ دبيناءن اين"
 
 #: src/client/game.cpp
 msgid "ok"
-msgstr ""
+msgstr "اوکي"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
-msgstr ""
+msgstr "مود تربڠ دبوليهکن"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr ""
+msgstr "مود تربڠ دبوليهکن (نوت: تيادا کأيستيميواءن 'تربڠ')"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
-msgstr ""
+msgstr "مود تربڠ دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr ""
+msgstr "مود ڤرݢرقن ڤيچ دبوليهکن"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr ""
+msgstr "مود ڤرݢرقن ڤيچ دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled"
-msgstr ""
+msgstr "مود ڤرݢرقن ڤنتس دبوليهکن"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr ""
+msgstr "مود ڤرݢرقن ڤنتس دبوليهکن (نوت: تيادا کأيستيميواءن 'ڤرݢرقن ڤنتس')"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
-msgstr ""
+msgstr "مود ڤرݢرقن ڤنتس دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled"
-msgstr ""
+msgstr "مود تمبوس بلوک دبوليهکن"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
+msgstr "مود تمبوس بلوک دبوليهکن (نوت: تيادا کأيستيميواءن 'تمبوس بلوک')"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "مود تمبوس بلوک دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Cinematic mode enabled"
-msgstr ""
+msgstr "مود سينماتيک دبوليهکن"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
-msgstr ""
+msgstr "مود سينماتيک دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Automatic forward enabled"
-msgstr ""
+msgstr "ڤرݢرقن اءوتوماتيک دبوليهکن"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
-msgstr ""
+msgstr "ڤرݢرقن اءوتوماتيک دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x1"
-msgstr ""
+msgstr "ڤتا ميني دالم مود ڤرموکاءن⹁ زوم 1x"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x2"
-msgstr ""
+msgstr "ڤتا ميني دالم مود ڤرموکاءن⹁ زوم 2x"
 
 #: src/client/game.cpp
 msgid "Minimap in surface mode, Zoom x4"
-msgstr ""
+msgstr "ڤتا ميني دالم مود ڤرموکاءن⹁ زوم 4x"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x1"
-msgstr ""
+msgstr "ڤتا ميني دالم مود رادر⹁ زوم 1x"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x2"
-msgstr ""
+msgstr "ڤتا ميني دالم مود رادر⹁ زوم 2x"
 
 #: src/client/game.cpp
 msgid "Minimap in radar mode, Zoom x4"
-msgstr ""
+msgstr "ڤتا ميني دالم مود رادر⹁ زوم 4x"
 
 #: src/client/game.cpp
 msgid "Minimap hidden"
-msgstr ""
+msgstr "ڤتا ميني دسمبوڽيکن"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
+msgstr "ڤتا ميني دلومڤوهکن اوليه ڤرماءينن اتاو مودس"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
-msgstr ""
+msgstr "کابوت دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Fog enabled"
-msgstr ""
+msgstr "کابوت دبوليهکن"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
-msgstr ""
+msgstr "معلومت ڽهڤڤيجت دتونجوقکن"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
-msgstr ""
+msgstr "ݢراف ڤمبوکه دتونجوقکن"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr ""
+msgstr "رڠک داواي دتونجوقکن"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
+msgstr "معلومت ڽهڤڤيجت⹁ ݢراف ڤمبوکه⹁ دان رڠک داواي دسمبوڽيکن"
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "معلومت ڽهڤڤيجت دان ݢراف ڤمبوکه دسمبوڽيکن"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
-msgstr ""
+msgstr "کمس کيني کاميرا دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
-msgstr ""
+msgstr "کمس کيني کاميرا دبوليهکن"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "جارق ڤندڠ براد دتاهڤ مکسيموم: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
-msgstr ""
+msgstr "جارق ڤندڠ دتوکر ک%d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr ""
+msgstr "جارق ڤندڠ براد دتاهڤ مينيموم: %d"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "جارق ڤندڠ تنڤ حد دبوليهکن"
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "جارق ڤندڠ تنڤ حد دلومڤوهکن"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr ""
+msgstr "زوم سدڠ دلومڤوهکن اوليه ڤرماءينن اتاو مودس"
 
 #: src/client/game.cpp
 msgid ""
@@ -1282,6 +1292,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"کاولن اصل:\n"
+"تيادا مينو کليهتن:\n"
+"- تکن سکالي: اکتيفکن بوتڠ\n"
+"- تکن دوا کالي: لتق بارڠ\\ݢونا سسواتو\n"
+"- تاريق دڠن جاري: ليهت سکليليڠ\n"
+"مينو\\اينۏينتوري کليهتن:\n"
+"- تکن برݢندا (لوار کاوسن اينۏينتوري):\n"
+" -->توتوڤ\n"
+"- تکن تيندنن⹁ تکن سلوت:\n"
+" --> ڤينده تيندنن\n"
+"- سنتوه دان تاريق⹁ تکن سکرين ڤاکاي جاري کدوا\n"
+" --> لتق ساتو ايتم دري تيندنن کدالم سلوت\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1301,381 +1323,397 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"کاولن:\n"
+"- %s: برݢرق کدڤن\n"
+"- %s: برݢرق کبلاکڠ\n"
+"- %s: برݢرق ککيري\n"
+"- %s: برݢرق ککانن\n"
+"- %s: لومڤت\\ناءيق اتس\n"
+"- %s: سلينڤ\\تورون باواه\n"
+"- %s: جاتوهکن ايتم\n"
+"- %s: اينۏينتوري\n"
+"- تتيکوس: ڤوسيڠ\\ليهت سکليليڠ\n"
+"- تتيکوس کيري: ݢالي\\کتوق\n"
+"- تتيکوس کانن: لتق\\ݢونا\n"
+"- رودا تتيکوس: ڤيليه ايتم\n"
+"- %s: سيمبڠ\n"
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "تروسکن"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "توکر کات لالوان"
 
 #: src/client/game.cpp
 msgid "Game paused"
-msgstr ""
+msgstr "ڤرماءينن دجيداکن"
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "ککواتن بوڽي"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "کلوار کمينو"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "کلوار تروس ڤرماءينن"
 
 #: src/client/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "معلومت ڤرماءينن:"
 
 #: src/client/game.cpp
 msgid "- Mode: "
-msgstr ""
+msgstr "- مود: "
 
 #: src/client/game.cpp
 msgid "Remote server"
-msgstr ""
+msgstr "ڤلاين جارق جاءوه"
 
 #: src/client/game.cpp
 msgid "- Address: "
-msgstr ""
+msgstr "- علامت: "
 
 #: src/client/game.cpp
 msgid "Hosting server"
-msgstr ""
+msgstr "مڠهوس ڤلاين"
 
 #: src/client/game.cpp
 msgid "- Port: "
-msgstr ""
+msgstr "- ڤورت: "
 
 #: src/client/game.cpp
 msgid "Singleplayer"
-msgstr ""
+msgstr "ڤماءين ڤرسأورڠن"
 
 #: src/client/game.cpp
 msgid "On"
-msgstr ""
+msgstr "بوک"
 
 #: src/client/game.cpp
 msgid "Off"
-msgstr ""
+msgstr "توتوڤ"
 
 #: src/client/game.cpp
 msgid "- Damage: "
-msgstr ""
+msgstr "- بوليه چدرا "
 
 #: src/client/game.cpp
 msgid "- Creative Mode: "
-msgstr ""
+msgstr "- مود کرياتيف: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "- PvP: "
 
 #: src/client/game.cpp
 msgid "- Public: "
-msgstr ""
+msgstr "- عوام: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr ""
+msgstr "- نام ڤلاين: "
 
 #: src/client/game.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"ڤريقسا فايل debug.txt اونتوق معلومت لنجوت."
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "سيمبڠ دتونجوقکن"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
-msgstr ""
+msgstr "سيمبڠ دسمبوڽيکن"
 
 #: src/client/gameui.cpp
 msgid "HUD shown"
-msgstr ""
+msgstr "ڤاڤر ڤندو (HUD) دتونجوقکن"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
-msgstr ""
+msgstr "ڤاڤر ڤندو (HUD) دسمبوڽيکن"
 
 #: src/client/gameui.cpp
 #, c-format
 msgid "Profiler shown (page %d of %d)"
-msgstr ""
+msgstr "ڤمبوکه دتونجوقکن (هلامن %d دري %d)"
 
 #: src/client/gameui.cpp
 msgid "Profiler hidden"
-msgstr ""
+msgstr "ڤمبوکه دسمبوڽيکن"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "بوتڠ کيري"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "بوتڠ کانن"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
-msgstr ""
+msgstr "بوتڠ تڠه"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
-msgstr ""
+msgstr "بوتڠ X نومبور 1"
 
 #: src/client/keycode.cpp
 msgid "X Button 2"
-msgstr ""
+msgstr "بوتڠ X نومبور 2"
 
 #: src/client/keycode.cpp
 msgid "Backspace"
-msgstr ""
+msgstr "Backspace"
 
 #: src/client/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Clear"
-msgstr ""
+msgstr "ڤادم"
 
 #: src/client/keycode.cpp
 msgid "Return"
-msgstr ""
+msgstr "Enter"
 
 #: src/client/keycode.cpp
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/client/keycode.cpp
 msgid "Control"
-msgstr ""
+msgstr "Ctrl"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: src/client/keycode.cpp
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
-msgstr ""
+msgstr "کونچي حروف بسر"
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "سلاڠ"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "Page up"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "Page down"
 
 #: src/client/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/client/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr ""
+msgstr "ککيري"
 
 #: src/client/keycode.cpp
 msgid "Up"
-msgstr ""
+msgstr "اتس"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr ""
+msgstr "ککانن"
 
 #: src/client/keycode.cpp
 msgid "Down"
-msgstr ""
+msgstr "باواه"
 
 #. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr ""
+msgstr "Select"
 
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr ""
+msgstr "Print Screen"
 
 #: src/client/keycode.cpp
 msgid "Execute"
-msgstr ""
+msgstr "لاکوکن"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
-msgstr ""
+msgstr "تڠکڤ ݢمبر سکرين"
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Insert"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "بنتوان"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
-msgstr ""
+msgstr "Windows کيري"
 
 #: src/client/keycode.cpp
 msgid "Right Windows"
-msgstr ""
+msgstr "Windows کانن"
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr ""
+msgstr "ڤد اڠک 0"
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr ""
+msgstr "ڤد اڠک 1"
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr ""
+msgstr "ڤد اڠک 2"
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr ""
+msgstr "ڤد اڠک 3"
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr ""
+msgstr "ڤد اڠک 4"
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr ""
+msgstr "ڤد اڠک 5"
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr ""
+msgstr "ڤد اڠک 6"
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr ""
+msgstr "ڤد اڠک 7"
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr ""
+msgstr "ڤد اڠک 8"
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr ""
+msgstr "ڤد اڠک 9"
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr ""
+msgstr "ڤد اڠک *"
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr ""
+msgstr "ڤد اڠک +"
 
 #: src/client/keycode.cpp
 msgid "Numpad ."
-msgstr ""
+msgstr "ڤد اڠک ."
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr ""
+msgstr "ڤد اڠک -"
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr ""
+msgstr "ڤد اڠک /"
 
 #: src/client/keycode.cpp
 msgid "Num Lock"
-msgstr ""
+msgstr "کونچي اڠک"
 
 #: src/client/keycode.cpp
 msgid "Scroll Lock"
-msgstr ""
+msgstr "کونچي تاتل"
 
 #: src/client/keycode.cpp
 msgid "Left Shift"
-msgstr ""
+msgstr "Shift کيري"
 
 #: src/client/keycode.cpp
 msgid "Right Shift"
-msgstr ""
+msgstr "Shift کانن"
 
 #: src/client/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "Ctrl کيري"
 
 #: src/client/keycode.cpp
 msgid "Right Control"
-msgstr ""
+msgstr "Ctrl کانن"
 
 #: src/client/keycode.cpp
 msgid "Left Menu"
-msgstr ""
+msgstr "مينو کيري"
 
 #: src/client/keycode.cpp
 msgid "Right Menu"
-msgstr ""
+msgstr "مينو کانن"
 
 #: src/client/keycode.cpp
 msgid "IME Escape"
-msgstr ""
+msgstr "IME - کلوار"
 
 #: src/client/keycode.cpp
 msgid "IME Convert"
-msgstr ""
+msgstr "IME - توکر"
 
 #: src/client/keycode.cpp
 msgid "IME Nonconvert"
-msgstr ""
+msgstr "IME - تيدقتوکر"
 
 #: src/client/keycode.cpp
 msgid "IME Accept"
-msgstr ""
+msgstr "IME - تريما"
 
 #: src/client/keycode.cpp
 msgid "IME Mode Change"
-msgstr ""
+msgstr "IME - توکر مود"
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "اڤليکاسي"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "تيدور"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
-msgstr ""
+msgstr "ڤادم EOF"
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr ""
+msgstr "مولا ماءين"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Zoom"
-msgstr ""
+msgstr "زوم"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
-msgstr ""
+msgstr "ڤادم OEM"
 
 #: src/gui/guiConfirmRegistration.cpp
 #, c-format
@@ -1686,211 +1724,216 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
+"اندا اکن سرتاءي ڤلاين دڠن نام \"%s\" اونتوق کالي ڤرتام.\n"
+"جيک اندا تروسکن⹁ اکاءون بهارو دڠن معلومت اندا اکن دچيڤت دڤلاين اين.\n"
+"سيلا تايڤ سمولا کات لالوان اندا دان کليک 'دفتر دان سرتاءي' اونتوق صحکن "
+"ڤنچيڤتاءن اکاءون⹁ اتاو کليک 'باتل' اونتوق ممباتلکن."
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
-msgstr ""
+msgstr "دفتر دان سرتاءي"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "کات لالوان تيدق ڤادن!"
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr ""
+msgstr "تروسکن"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"ايکتن ککونچي. (جيک مينو اين برسليرق⹁ ڤادم سستڠه بندا دري فايل minetest.conf)"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "\"Special\" = climb down"
-msgstr ""
+msgstr "\"ايستيميوا\" = ڤنجت تورون"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "تکن دوا کالي \"لومڤت\" اونتوق منوݢول تربڠ"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
-msgstr ""
+msgstr "لومڤت أوتوماتيک"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr ""
+msgstr "ککونچي تله دݢوناکن اونتوق فوڠسي لاءين"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "تکن ککونچي"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "کدڤن"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "کبلاکڠ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Special"
-msgstr ""
+msgstr "ايستيميوا"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "لومڤت"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "سلينڤ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "جاتوهکن"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr ""
+msgstr "اينۏينتوري"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
-msgstr ""
+msgstr "ايتم سبلومڽ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
-msgstr ""
+msgstr "ايتم ستروسڽ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
-msgstr ""
+msgstr "توکر کاميرا"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle minimap"
-msgstr ""
+msgstr "توݢول ڤتا ميني"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr ""
+msgstr "توݢول تربڠ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
-msgstr ""
+msgstr "توݢول ڤرݢرقن منچورم"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr ""
+msgstr "توݢول ڤرݢرقن ڤنتس"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr ""
+msgstr "توݢول تمبوس بلوک"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "بيسو"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
-msgstr ""
+msgstr "ڤرلاهنکن بوڽي"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
-msgstr ""
+msgstr "کواتکن بوڽي"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
-msgstr ""
+msgstr "أوتوڤرݢرقن"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr ""
+msgstr "سيمبڠ"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Screenshot"
-msgstr ""
+msgstr "تڠکڤ لاير"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr ""
+msgstr "جارق ڤميليهن"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr ""
+msgstr "کورڠکن جارق"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr ""
+msgstr "ناءيقکن جارق"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "کونسول"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "ارهن"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
-msgstr ""
+msgstr "ارهن تمڤتن"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr ""
+msgstr "توݢول ڤاڤر ڤندو (HUD)"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr ""
+msgstr "توݢول لوݢ سيمبڠ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fog"
-msgstr ""
+msgstr "توݢول کابوت"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr ""
+msgstr "کات لالوان لام"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr ""
+msgstr "کات لالوان بارو"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "صحکن کات لالوان"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
-msgstr ""
+msgstr "توکر"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr ""
+msgstr "ککواتن بوڽي: "
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
-msgstr ""
+msgstr "کلوار"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr ""
+msgstr "دبيسوکن"
 
 #. ~ Imperative, as in "Enter/type in text".
 #. Don't forget the space.
 #: src/gui/modalMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "ماسوقکن "
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "ms_Arab"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
-msgstr ""
+msgstr "کاولن"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr ""
+msgstr "بينا دالم ڤماءين"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1898,40 +1941,48 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"جيک دبوليهکن⹁ اندا بوليه ملتق بلوک دکدودوقن برديري (کاکي + ارس مات).\n"
+"اين ساڠت برݢونا اڤابيلا بکرجا دڠن کوتق نود دکاوسن يڠ کچيل."
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "تربڠ"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
+"ڤماءين بوليه تربڠ تنڤ ترکسن دڠن ݢراۏيتي.\n"
+"اين ممرلوکن کأيستيميواءن \"تربڠ\" دالم ڤلاين ڤرماءينن ترسبوت."
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
-msgstr ""
+msgstr "مود ڤرݢرقن ڤيچ"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
 msgstr ""
+"جيک دبوليهکن⹁ اي ممبواتکن اره ڤرݢرقن ريلاتيف دڠن ڤيچ ڤماءين اڤابيلا تربڠ "
+"اتاو برنڠ."
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "ڤرݢرقن ڤنتس"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via the \"special\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"برݢرق ڤنتس (دڠن ککونچي \"ايستيميوا\").\n"
+"اين ممرلوکن کأيستيميواءن \"ڤرݢرقن ڤنتس\" دالم ڤلاين ڤرماءينن ترسبوت."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "تمبوس بلوک"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1939,52 +1990,58 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"جيک دبوليهکن برسام مود تربڠ⹁ ڤماءين بوليه تربڠ منروسي نود ڤڤجل.\n"
+"اين ممرلوکن کأيستيميواءن \"تمبوس بلوک\" دالم ڤلاين ڤرماءينن ترسبوت."
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
-msgstr ""
+msgstr "مود سينماتيک"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
+"ملمبوتکن کاميرا اڤابيلا مليهت سکليليڠ. جوݢ دکنلي سباݢاي ڤلمبوتن ڤڠليهتن اتاو "
+"ڤلمبوتن تتيکوس.\n"
+"برݢونا اونتوق مراکم ۏيديو."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "ڤلمبوتن کاميرا"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
+msgstr "ملمبوتکن ڤموترن کاميرا. سيت سباݢاي 0 اونتوق ملومڤوهکنڽ."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "ڤلمبوتن کاميرا دالم مود سينماتيک"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
 msgstr ""
+"ملمبوتکن ڤموترن کاميرا دالم مود سينماتيک. سيت سباݢاي 0 اونتوق ملومڤوهکنڽ."
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "تتيکوس سوڠسڠ"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "مڽوڠسڠکن ڤرݢرقن تتيکوس منݢق."
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "کڤيکاءن تتيکوس"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "ڤندارب کڤيکاءن تتيکوس."
 
 #: src/settings_translation_file.cpp
 msgid "Special key for climbing/descending"
-msgstr ""
+msgstr "ککونچي اونتوق ممنجت\\منورون"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1992,18 +2049,20 @@ msgid ""
 "down and\n"
 "descending."
 msgstr ""
+"جيک دبوليهکن⹁ ککونچي \"ايستيميوا\" اکن دݢوناکن اونتوق ڤنجت کباوه دان\n"
+"تورون دالم مود تربڠ⹁ مڠݢنتيکن ککونچي \"سلينڤ\"."
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr ""
+msgstr "تکن \"لومڤت\" دوا کالي اونتوق تربڠ"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr ""
+msgstr "تکن بوتڠ \"لومڤت\" سچارا چڤت دوا کالي اونتوق منوݢول مود تربڠ."
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "سنتياس تربڠ دان برݢرق ڤنتس"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2011,10 +2070,12 @@ msgid ""
 "are\n"
 "enabled."
 msgstr ""
+"جيک دلومڤوهکن⹁ ککونچي \"ايستيميوا\" اکن دݢوناکن اونتوق تربڠ لاجو\n"
+"سکيراڽ کدوا-دوا مود تربڠ دان مود ڤرݢرقن ڤنتس دبوليهکن."
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "سلڠ ڤڠاولڠن کليک کانن"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2022,60 +2083,69 @@ msgid ""
 "right\n"
 "mouse button."
 msgstr ""
+"جومله ماس دالم ساءت دامبيل اونتوق ملاکوکن کليک کانن يڠ براولڠ اڤابيلا\n"
+"ڤماءين منکن بوتڠ تتيکوس کانن تنڤ ملڤسکنڽ."
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
-msgstr ""
+msgstr "لومڤت هالڠن ساتو-نود سچارا أوروماتيک."
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
-msgstr ""
+msgstr "ڤڠݢالين دان ڤلتقن سلامت"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
 msgstr ""
+"منچݢه ݢالي دان ڤلتقن درڤد براولڠ کتيک تروس منکن بوتڠ تتيکوس.\n"
+"بوليهکن تتڤن اين اڤابيلا اندا ݢالي اتاو لتق سچارا تيدق سڠاج ترلالو کرڤ."
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
+msgstr "اينڤوت راوق"
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
+msgstr "ممبوليهکن اينڤوت ڤڠݢونا سچارا راوق (هاڽ اونتوق ڤرچوباءن)."
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "کدڤن برتروسن"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
+"ڤرݢرقن کدڤن برتروسن⹁ دتوݢول اوليه ککونچي أوتوڤرݢرقن.\n"
+"تکن ککونچي أوتوڤرݢرقن لاݢي اتاو ڤرݢرقن کبلاکڠ اونتوق ملومڤوهکنڽ."
 
 #: src/settings_translation_file.cpp
 msgid "Touch screen threshold"
-msgstr ""
+msgstr "نيلاي امبڠ سکرين سنتوه"
 
 #: src/settings_translation_file.cpp
 msgid "The length in pixels it takes for touch screen interaction to start."
-msgstr ""
+msgstr "ڤنجڠ دالم ڤيکسيل اونتوق ممولاکن اينتراکسي سکرين سنتوه."
 
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
-msgstr ""
+msgstr "کايو بديق ماي تتڤ"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "(Android) Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
+"(Android) منتڤکن کدودوقن کايو بديق ماي.\n"
+"جيک دلومڤوهکن⹁ کدودوقن تڠه اونتوق کايو بديق ماي اکن دتنتوکن برداسرکن کدودوقن "
+"سنتوهن ڤرتام."
 
 #: src/settings_translation_file.cpp
 msgid "Virtual joystick triggers aux button"
-msgstr ""
+msgstr "کايو بديق ماي مميچو بوتڠ aux"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2083,50 +2153,57 @@ msgid ""
 "If enabled, virtual joystick will also tap \"aux\" button when out of main "
 "circle."
 msgstr ""
+"(Android) ݢوناکن کايو بديق ماي اونتوق ڤيچو بوتڠ \"aux\".\n"
+"جيک دبوليهکن⹁ کايو بديق ماي جوݢ اکن منکن بوتڠ \"aux\" اڤابيلا براد دلوار "
+"بولتن اوتام."
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
-msgstr ""
+msgstr "ممبوليهکن کايو بديق"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick ID"
-msgstr ""
+msgstr "ID کايو بديق"
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
-msgstr ""
+msgstr "ڤڠنل ڤستي کايو بديق يڠ دݢوناکن"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
-msgstr ""
+msgstr "جنيس کايو بديق"
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
-msgstr ""
+msgstr "جنيس کايو بديق"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
-msgstr ""
+msgstr "سلڠ ماس ڤڠاولڠن بوتڠ کايو بديق"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
+"سلڠ ماس دالم ساءت⹁ دامبيل انتارا ڤريستيوا يڠ براولڠن\n"
+"اڤابيلا منکن کومبيناسي بوتڠ کايو بديق."
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
-msgstr ""
+msgstr "کڤيکاءن فروستوم کايو بديق"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "ingame view frustum around."
 msgstr ""
+"کڤيکاءن ڤکسي کايو بديق اونتوق مڠݢرقکن\n"
+"فروستوم ڤڠليهتن دالم ڤرماءينن."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
-msgstr ""
+msgstr "ککونچي کدڤن"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2134,10 +2211,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مڠݢرقکن ڤماءين کدڤن.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
-msgstr ""
+msgstr "ککونچي کبلاکڠ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2146,10 +2226,14 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مڠݢرقکن ڤماءين کبلاکڠ.\n"
+"جوݢ اکن ملومڤوهکن أوتوڤرݢرقن⹁ اڤابيلا اکتيف.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
-msgstr ""
+msgstr "ککونچي ککيري"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2157,10 +2241,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مڠݢرقکن ڤماءين ککيري.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
-msgstr ""
+msgstr "ککومچي ککانن"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2168,10 +2255,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مڠݢرقکن ڤماءين ککانن.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
-msgstr ""
+msgstr "ککونچي لومڤت"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2179,10 +2269,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق ملومڤت.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Sneak key"
-msgstr ""
+msgstr "ککونچي سلينڤ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2192,10 +2285,15 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مڽلينڤ.\n"
+"جوݢ دݢوناکن اونتوق تورون باواه کتيک ممنجت دان دالم اءير جيک تتڤن "
+"aux1_descends دلومڤوهکن.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
-msgstr ""
+msgstr "ککونچي اينۏينتوري"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2203,10 +2301,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق ممبوک اينۏينتوري.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Special key"
-msgstr ""
+msgstr "ککونچي ايستيميوا"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2214,10 +2315,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق برݢرق ڤنتس دالم مود ڤرݢرقن ڤنتس.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
-msgstr ""
+msgstr "ککونچي سيمبڠ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2225,10 +2329,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق ممبوک تتيڠکڤ سيمبڠ.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
-msgstr ""
+msgstr "ککونچي ارهن"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2236,6 +2343,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق ممبوک تتيڠکڤ سيمبڠ اونتوق مناءيڤ ارهن.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2243,10 +2353,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق ممبوک تتيڠکڤ سيمبڠ اونتوق مناءيڤ ارهن تمڤتن.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
-msgstr ""
+msgstr "ککونچي جارق ڤميليهن"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2254,10 +2367,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منوݢول جارق ڤندڠن تيادا حد.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "ککونچي تربڠ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2265,10 +2381,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منوݢول مود تربڠ.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move key"
-msgstr ""
+msgstr "ککونچي ڤرݢرقن ڤيچ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2276,10 +2395,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منوݢول مود ڤرݢرقن ڤيچ.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr ""
+msgstr "ککونچي ڤرݢرقن ڤنتس"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2287,10 +2409,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منوݢول مود ڤرݢرقن ڤنتس.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
-msgstr ""
+msgstr "ککونچي تمبوس بلوک"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2298,10 +2423,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منوݢول مود تمبوس بلوک.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
-msgstr ""
+msgstr "ککونچي ايتم ستروسڽ دالم هوتبر"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2309,10 +2437,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه ايتم ستروسڽ ددالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar previous key"
-msgstr ""
+msgstr "ککونچي ايتم سبلومڽ دالم هوتبر"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2320,10 +2451,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه بارڠ سبلومڽ دهوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Mute key"
-msgstr ""
+msgstr "ککونچي بيسو"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2331,10 +2465,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق ممبيسوکن ڤرماءينن.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Inc. volume key"
-msgstr ""
+msgstr "ککونچي کواتکن بوڽي"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2342,10 +2479,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مڠواتکن بوڽي.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Dec. volume key"
-msgstr ""
+msgstr "ککونچي ڤرلاهنکن بوڽي"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2353,10 +2493,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق ممڤرلاهنکن بوڽي.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Automatic forward key"
-msgstr ""
+msgstr "ککونچي أوتوڤرݢرقن"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2364,10 +2507,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منوݢول أوتوڤرݢرقن.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode key"
-msgstr ""
+msgstr "ککونچي مود سينماتيک"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2375,10 +2521,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منوݢول مود سينماتيک.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
-msgstr ""
+msgstr "ککونچي ڤتا ميني"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2386,6 +2535,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منوݢول ڤاڤرن ڤتا ميني.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2393,10 +2545,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منڠکڤ ݢمبر لاير.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr ""
+msgstr "ککونچي جاتوهکن ايتم"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2404,10 +2559,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منجاتوهکن ايتم يڠ سدڠ دڤيليه.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "View zoom key"
-msgstr ""
+msgstr "ککونچي زوم ڤندڠن"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2415,10 +2573,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مڠݢوناکن ڤندڠن زوم اڤابيلا دبنرکن.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 1 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 1"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2426,10 +2587,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ڤرتام دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 2 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 2"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2437,10 +2601,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-2 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 3 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2448,10 +2615,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-3 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 4 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 4"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2459,10 +2629,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-4 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 5 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 5"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2470,10 +2643,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-5 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 6 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 6"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2481,10 +2657,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-6 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 7 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 7"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2492,10 +2671,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-7 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 8 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 8"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2503,10 +2685,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-8 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 9 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 9"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2514,10 +2699,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-9 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 10 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 10"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2525,10 +2713,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-10 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 11 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 11"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2536,10 +2727,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-11 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 12 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 12"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2547,10 +2741,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-12 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 13 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 13"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2558,10 +2755,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-13 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 14 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 14"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2569,10 +2769,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-14 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 15 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 15"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2580,10 +2783,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-15 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 16 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 16"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2591,10 +2797,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-16 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 17 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 17"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2602,10 +2811,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-17 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 18 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 18"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2613,10 +2825,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-18 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 19 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 19"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2624,10 +2839,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-19 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 20 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 20"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2635,10 +2853,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-20 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 21 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 21"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2646,10 +2867,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-21 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 22 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 22"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2657,10 +2881,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-22 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 23 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 23"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2668,10 +2895,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-23 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 24 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 24"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2679,10 +2909,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-24 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 25 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 25"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2690,10 +2923,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-25 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 26 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 26"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2701,10 +2937,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-26 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 27 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 27"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2712,10 +2951,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-27 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 28 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 28"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2723,10 +2965,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-28 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 29 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 29"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2734,10 +2979,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-29 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 30 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 30"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2745,10 +2993,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-30 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 31 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 31"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2756,10 +3007,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-31 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar slot 32 key"
-msgstr ""
+msgstr "ککونچي سلوت هوتبر 32"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2767,10 +3021,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق مميليه سلوت ک-32 دالم هوتبر.\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr ""
+msgstr "ککونچي منوݢول ڤاڤر ڤندو (HUD)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2778,6 +3035,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"ککونچي اونتوق منوݢول ڤاڤر ڤندو (HUD).\n"
+"ليهت http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
@@ -3622,11 +3882,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "HUD scale factor"
-msgstr ""
+msgstr "فکتور سکالا ڤاڤر ڤندو (HUD)"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
+msgstr "مڠاوبه سايز ايليمن ڤالڠ ڤاڤر ڤندو (hudbar)."
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
