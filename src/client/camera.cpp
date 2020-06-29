@@ -336,9 +336,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	v3f old_player_position = m_playernode->getPosition();
 	v3f player_position;
 
-	bool eyes_attached = player->eyes_attached;
-	char eye_rotationstate = player->eye_attach_state;
-
 	// Calculate and translate the head SceneNode offsets
 	v3f eye_offset = player->getEyeOffset();
 	if (m_camera_mode == CAMERA_MODE_FIRST)
@@ -361,31 +358,31 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (!player_parent)
 	{
 		player_position = player->getPosition();
-		if (eyes_attached)
+		if (player->eyes_attached)
 		{
-			eyes_attached = false;
+			player->eyes_attached = false;
 			scene::ISceneManager *smgr = RenderingEngine::get_scene_manager();
 			m_playernode->setParent(smgr->getRootSceneNode());
 			m_headnode->setParent(m_playernode);
 		}
 	} else {
-		switch (eye_rotationstate)
+		switch (player->eye_attach_state)
 		{
 			case 1:
 				player_position = player_parent->getPosition();
 			break;
 			case 2:
-				if (!eyes_attached)
+				if (!player->eyes_attached)
 				{
-					eyes_attached = true;
+					player->eyes_attached = true;
 					m_playernode->setParent(player->getParent()->getSceneNode());
 				}
 				player_position = v3f(0,0,0);
 			break;
 			case 3:
-				if (!eyes_attached)
+				if (!player->eyes_attached)
 				{
-					eyes_attached = true;
+					player->eyes_attached = true;
 					scene::ISceneManager *smgr = RenderingEngine::get_scene_manager();
 					m_headnode->setParent(smgr->getRootSceneNode());
 					m_playernode->setParent(player_parent->getSceneNode());
@@ -397,9 +394,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 				head_rot.Y = body_rot.Y;
 			break;
 			case 4:
-				if (!eyes_attached)
+				if (!player->eyes_attached)
 				{
-					eyes_attached = true;
+					player->eyes_attached = true;
 					m_playernode->setParent(player->getParent()->getSceneNode());
 				}
 				player_position = v3f(0,0,0);
@@ -408,7 +405,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 			break;
 		}	
 	}
-	
+
 	if(player->touching_ground &&
 			player_position.Y > old_player_position.Y)
 	{
@@ -498,13 +495,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 	// Compute absolute camera position and target
 	m_headnode->getAbsoluteTransformation().transformVect(m_camera_position, rel_cam_pos);
-	
-	if (player_parent && (eye_rotationstate == 2 || eye_rotationstate == 4))
+
+	if (player_parent && (player->eye_attach_state == 2 || player->eye_attach_state == 4))
 	{
 		v3f temp_pos = m_headnode->getAbsolutePosition() - m_playernode->getAbsolutePosition();
 		m_camera_position = player->getParent()->getPosition() + temp_pos;
 	}
-	
+
 	m_headnode->getAbsoluteTransformation().rotateVect(m_camera_direction, rel_cam_target - rel_cam_pos);
 
 	v3f abs_cam_up;
