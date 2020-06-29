@@ -35,14 +35,12 @@ function core.after(after, func, ...)
 		func = func,
 		expire = expire,
 		arg = {...},
-		mod_origin = core.get_last_run_mod()
+		mod_origin = core.get_last_run_mod(),
+		cancel = function(self)
+			self.func = function() end
+		end
 	}
 	jobs[#jobs + 1] = new_job
 	time_next = math.min(time_next, expire)
-	return new_job
-end
-
-function core.remove_after(job)
-	assert(type(job) == "table", "Invalid minetest.remove_after job table")
-	job.func = function() end
+	return { cancel = function() new_job.func = function() end end }
 end
