@@ -155,7 +155,7 @@ bool GUIModalMenu::DoubleClickDetection(const SEvent event)
 			return false;
 		}
 
-		SEvent* translated = new SEvent();
+		SEvent *translated = new SEvent();
 		assert(translated != 0);
 		// translate doubleclick to escape
 		memset(translated, 0, sizeof(SEvent));
