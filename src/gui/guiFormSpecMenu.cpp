@@ -99,7 +99,7 @@ inline u32 clamp_u8(s32 value)
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
 		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
-		const std::string &formspecPrepend):
+		const std::string &formspecPrepend, bool remap_dbl_click):
 	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr),
 	m_invmgr(client),
 	m_tsrc(tsrc),
@@ -116,6 +116,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
 	m_tooltip_append_itemname = g_settings->getBool("tooltip_append_itemname");
+
+	m_remap_dbl_click = remap_dbl_click;
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()

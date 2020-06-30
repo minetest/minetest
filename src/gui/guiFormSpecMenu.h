@@ -154,7 +154,8 @@ public:
 			ISimpleTextureSource *tsrc,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
-			const std::string &formspecPrepend);
+			const std::string &formspecPrepend,
+			bool remap_dbl_click = true);
 
 	~GUIFormSpecMenu();
 
