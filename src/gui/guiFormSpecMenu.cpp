@@ -99,8 +99,7 @@ inline u32 clamp_u8(s32 value)
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
 		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
-		const std::string &formspecPrepend,
-		bool remap_dbl_click):
+		const std::string &formspecPrepend):
 	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr),
 	m_invmgr(client),
 	m_tsrc(tsrc),
@@ -108,19 +107,12 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 	m_formspec_prepend(formspecPrepend),
 	m_form_src(fsrc),
 	m_text_dst(tdst),
-	m_joystick(joystick),
-	m_remap_dbl_click(remap_dbl_click)
+	m_joystick(joystick)
 {
 	current_keys_pending.key_down = false;
 	current_keys_pending.key_up = false;
 	current_keys_pending.key_enter = false;
 	current_keys_pending.key_escape = false;
-
-	m_doubleclickdetect[0].time = 0;
-	m_doubleclickdetect[1].time = 0;
-
-	m_doubleclickdetect[0].pos = v2s32(0, 0);
-	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
 	m_tooltip_append_itemname = g_settings->getBool("tooltip_append_itemname");
@@ -3800,17 +3792,6 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 	}
 }
 
-static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
-{
-	while (tocheck) {
-		if (tocheck == parent) {
-			return true;
-		}
-		tocheck = tocheck->getParent();
-	}
-	return false;
-}
-
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
 	// The IGUITabControl renders visually using the skin's selected
@@ -3868,22 +3849,6 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		if (hovered && isMyChild(hovered)) {
 			hovered->OnEvent(event);
 			return event.MouseInput.Event == EMIE_MOUSE_WHEEL;
-		}
-	}
-
-	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
-		s32 x = event.MouseInput.X;
-		s32 y = event.MouseInput.Y;
-		gui::IGUIElement *hovered =
-			Environment->getRootGUIElement()->getElementFromPoint(
-				core::position2d<s32>(x, y));
-		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-			m_old_tooltip_id = -1;
-		}
-		if (!isChild(hovered, this)) {
-			if (DoubleClickDetection(event)) {
-				return true;
-			}
 		}
 	}
 

@@ -154,8 +154,7 @@ public:
 			ISimpleTextureSource *tsrc,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
-			const std::string &formspecPrepend,
-			bool remap_dbl_click = true);
+			const std::string &formspecPrepend);
 
 	~GUIFormSpecMenu();
 
@@ -453,14 +452,6 @@ private:
 
 	int m_btn_height;
 	gui::IGUIFont *m_font = nullptr;
-
-	/* If true, remap a double-click (or double-tap) action to ESC. This is so
-	 * that, for example, Android users can double-tap to close a formspec.
-	*
-	 * This value can (currently) only be set by the class constructor
-	 * and the default value for the setting is true.
-	 */
-	bool m_remap_dbl_click;
 };
 
 class FormspecFormSource: public IFormSource
