@@ -3909,64 +3909,6 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	return GUIModalMenu::preprocessEvent(event);
 }
 
-/******************************************************************************/
-bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
-{
-	/* The following code is for capturing double-clicks of the mouse button
-	 * and translating the double-click into an EET_KEY_INPUT_EVENT event
-	 * -- which closes the form -- under some circumstances.
-	 *
-	 * There have been many github issues reporting this as a bug even though it
-	 * was an intended feature.  For this reason, remapping the double-click as
-	 * an ESC must be explicitly set when creating this class via the
-	 * /p remap_dbl_click parameter of the constructor.
-	 */
-
-	if (!m_remap_dbl_click)
-		return false;
-
-	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-		m_doubleclickdetect[0].pos  = m_doubleclickdetect[1].pos;
-		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
-
-		m_doubleclickdetect[1].pos  = m_pointer;
-		m_doubleclickdetect[1].time = porting::getTimeMs();
-	}
-	else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
-		u64 delta = porting::getDeltaMs(m_doubleclickdetect[0].time, porting::getTimeMs());
-		if (delta > 400) {
-			return false;
-		}
-
-		double squaredistance =
-				m_doubleclickdetect[0].pos
-				.getDistanceFromSQ(m_doubleclickdetect[1].pos);
-
-		if (squaredistance > (30*30)) {
-			return false;
-		}
-
-		SEvent* translated = new SEvent();
-		assert(translated != 0);
-		//translate doubleclick to escape
-		memset(translated, 0, sizeof(SEvent));
-		translated->EventType = irr::EET_KEY_INPUT_EVENT;
-		translated->KeyInput.Key         = KEY_ESCAPE;
-		translated->KeyInput.Control     = false;
-		translated->KeyInput.Shift       = false;
-		translated->KeyInput.PressedDown = true;
-		translated->KeyInput.Char        = 0;
-		OnEvent(*translated);
-
-		// no need to send the key up event as we're already deleted
-		// and no one else did notice this event
-		delete translated;
-		return true;
-	}
-
-	return false;
-}
-
 void GUIFormSpecMenu::tryClose()
 {
 	if (m_allowclose) {

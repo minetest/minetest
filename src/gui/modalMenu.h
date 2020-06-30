@@ -38,8 +38,11 @@ public:
 class GUIModalMenu : public gui::IGUIElement
 {
 public:
-	GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent, s32 id,
-		IMenuManager *menumgr);
+	GUIModalMenu(gui::IGUIEnvironment* env,
+				 gui::IGUIElement* parent,
+				 s32 id,
+				 IMenuManager *menumgr,
+				 bool remap_dbl_click = true);
 	virtual ~GUIModalMenu();
 
 	void allowFocusRemoval(bool allow);
@@ -61,6 +64,30 @@ public:
 protected:
 	virtual std::wstring getLabelByID(s32 id) = 0;
 	virtual std::string getNameByID(s32 id) = 0;
+
+	/***************************************/
+	/**
+	 * check if event is part of a double click
+	 * @param event event to evaluate
+	 * @return true/false if a doubleclick was detected
+	 */
+	bool DoubleClickDetection(const SEvent event);
+
+	struct clickpos
+	{
+		v2s32 pos;
+		s64 time;
+	};
+	clickpos m_doubleclickdetect[2];
+
+	/* If true, remap a double-click (or double-tap) action to ESC. This is so
+	 * that, for example, Android users can double-tap to close a formspec.
+	*
+	 * This value can (currently) only be set by the class constructor
+	 * and the default value for the setting is true.
+	 */
+	bool m_remap_dbl_click;
+	/***************************************/
 
 	v2s32 m_pointer;
 	v2s32 m_old_pointer;  // Mouse position after previous mouse event
