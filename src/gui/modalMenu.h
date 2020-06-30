@@ -38,11 +38,8 @@ public:
 class GUIModalMenu : public gui::IGUIElement
 {
 public:
-	GUIModalMenu(gui::IGUIEnvironment* env,
-				 gui::IGUIElement* parent,
-				 s32 id,
-				 IMenuManager *menumgr,
-				 bool remap_dbl_click = true);
+	GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent, s32 id,
+		IMenuManager *menumgr, bool remap_dbl_click = true);
 	virtual ~GUIModalMenu();
 
 	void allowFocusRemoval(bool allow);
@@ -65,7 +62,6 @@ protected:
 	virtual std::wstring getLabelByID(s32 id) = 0;
 	virtual std::string getNameByID(s32 id) = 0;
 
-	/***************************************/
 	/**
 	 * check if event is part of a double click
 	 * @param event event to evaluate
@@ -87,7 +83,6 @@ protected:
 	 * and the default value for the setting is true.
 	 */
 	bool m_remap_dbl_click;
-	/***************************************/
 
 	v2s32 m_pointer;
 	v2s32 m_old_pointer;  // Mouse position after previous mouse event
