@@ -136,29 +136,28 @@ bool GUIModalMenu::DoubleClickDetection(const SEvent event)
 		return false;
 
 	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-		m_doubleclickdetect[0].pos  = m_doubleclickdetect[1].pos;
+		m_doubleclickdetect[0].pos = m_doubleclickdetect[1].pos;
 		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
 
-		m_doubleclickdetect[1].pos  = m_pointer;
+		m_doubleclickdetect[1].pos = m_pointer;
 		m_doubleclickdetect[1].time = porting::getTimeMs();
-	}
-	else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
-		u64 delta = porting::getDeltaMs(m_doubleclickdetect[0].time, porting::getTimeMs());
+	} else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
+		u64 delta = porting::getDeltaMs(
+			m_doubleclickdetect[0].time, porting::getTimeMs());
 		if (delta > 400) {
 			return false;
 		}
 
-		double squaredistance =
-				m_doubleclickdetect[0].pos
-						.getDistanceFromSQ(m_doubleclickdetect[1].pos);
+		double squaredistance = m_doubleclickdetect[0].pos.
+			getDistanceFromSQ(m_doubleclickdetect[1].pos);
 
-		if (squaredistance > (30*30)) {
+		if (squaredistance > (30 * 30)) {
 			return false;
 		}
 
 		SEvent* translated = new SEvent();
 		assert(translated != 0);
-		//translate doubleclick to escape
+		// translate doubleclick to escape
 		memset(translated, 0, sizeof(SEvent));
 		translated->EventType = irr::EET_KEY_INPUT_EVENT;
 		translated->KeyInput.Key         = KEY_ESCAPE;
