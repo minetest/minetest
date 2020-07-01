@@ -120,7 +120,8 @@ void GUIModalMenu::removeChildren()
 	}
 }
 
-bool GUIModalMenu::DoubleClickDetection(const SEvent event)
+// clang-format off
+bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
 {
 	/* The following code is for capturing double-clicks of the mouse button
 	 * and translating the double-click into an EET_KEY_INPUT_EVENT event
@@ -155,26 +156,23 @@ bool GUIModalMenu::DoubleClickDetection(const SEvent event)
 			return false;
 		}
 
-		SEvent *translated = new SEvent();
-		assert(translated != 0);
+		SEvent translated = SEvent();
 		// translate doubleclick to escape
-		memset(translated, 0, sizeof(SEvent));
-		translated->EventType = irr::EET_KEY_INPUT_EVENT;
-		translated->KeyInput.Key         = KEY_ESCAPE;
-		translated->KeyInput.Control     = false;
-		translated->KeyInput.Shift       = false;
-		translated->KeyInput.PressedDown = true;
-		translated->KeyInput.Char        = 0;
-		OnEvent(*translated);
+		memset(&translated, 0, sizeof(SEvent));
+		translated.EventType            = EET_KEY_INPUT_EVENT;
+		translated.KeyInput.Key         = KEY_ESCAPE;
+		translated.KeyInput.Control     = false;
+		translated.KeyInput.Shift       = false;
+		translated.KeyInput.PressedDown = true;
+		translated.KeyInput.Char        = 0;
+		OnEvent(translated);
 
-		// no need to send the key up event as we're already deleted
-		// and no one else did notice this event
-		delete translated;
 		return true;
 	}
 
 	return false;
 }
+// clang-format on
 
 static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 {
