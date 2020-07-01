@@ -5190,6 +5190,19 @@ Sounds
       the sound volume.
     * `gain` the target gain for the fade.
 
+Sounds Locator
+--------------
+
+It's common for a mod to reuse the sounds from another mod.
+The sounds locator is used to find sounds without needing to depend on another mod.
+
+* `minetest.register_node_sounds(names, spec)`
+    * Register a node sound set, see sounds in a node definition.
+* `minetest.find_node_sounds(names [, overrides])`
+    * Checks each name in order, and returns the first node sound set.
+    * `names` is a string or table of names.
+    * `overrides` is an optional table of overrides.
+
 Timing
 ------
 
