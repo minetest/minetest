@@ -3960,7 +3960,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	*/
 	if (mapper && m_game_ui->m_flags.show_minimap && m_game_ui->m_flags.show_hud) {
 		mapper->setPos(floatToInt(player->getPosition(), BS));
-		mapper->setAngle(player->getYaw());
+		mapper->setAngle(player->abs_camera_yaw);
 	}
 
 	/*

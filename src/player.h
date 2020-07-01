@@ -171,6 +171,7 @@ public:
 	//     direction direction is rotated/relative to parent rotation)
 	char eye_attach_state = 2;
 	bool eyes_attached = false;
+	float abs_camera_yaw = 0.0f;
 
 	Inventory inventory;
 
