@@ -69,13 +69,6 @@ protected:
 	 */
 	bool DoubleClickDetection(const SEvent &event);
 
-	struct clickpos
-	{
-		v2s32 pos;
-		s64 time;
-	};
-	clickpos m_doubleclickdetect[2];
-
 	v2s32 m_pointer;
 	v2s32 m_old_pointer;  // Mouse position after previous mouse event
 	v2u32 m_screensize_old;
@@ -87,7 +80,15 @@ protected:
 #ifdef HAVE_TOUCHSCREENGUI
 	bool m_touchscreen_visible = true;
 #endif
+
 private:
+	struct clickpos
+	{
+		v2s32 pos;
+		s64 time;
+	};
+	clickpos m_doubleclickdetect[2];
+
 	IMenuManager *m_menumgr;
 	/* If true, remap a double-click (or double-tap) action to ESC. This is so
 	 * that, for example, Android users can double-tap to close a formspec.
