@@ -79,11 +79,11 @@ The game directory can contain the following files:
       e.g. `disallowed_mapgen_settings = mgv5_spflags`
       These settings are hidden for this game in the world creation
       dialog and game start menu.
-    * `author`: The author of the game. It only appears when installed from
+    * `author`: The author of the game. It only appears when downloaded from
                 ContentDB.
     * `release`: The ID corresponding to the version of the mod. It only
-                 appears when installed from ContentDB.
-    * `title`: The title set on ContentDB. It only appears when installed
+                 appears when downloaded from ContentDB.
+    * `title`: The title set on ContentDB. It only appears when downloaded
                from ContentDB.
 * `minetest.conf`:
   Used to set default settings when running this game.
@@ -143,11 +143,11 @@ The file is a key-value store of modpack details.
 * `name`: The modpack name.
 * `description`: Description of mod to be shown in the Mods tab of the main
                  menu.
-* `author`: The author of the modpack. It only appears when installed from
+* `author`: The author of the modpack. It only appears when downloaded from
             ContentDB.
 * `release`: The ID corresponding to the version of the modpack. It only
-             appears when installed from ContentDB.
-* `title`: The title set on ContentDB. It only appears when installed from
+             appears when downloaded from ContentDB.
+* `title`: The title set on ContentDB. It only appears when downloaded from
            ContentDB.
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
@@ -188,11 +188,11 @@ A `Settings` file that provides meta information about the mod.
              loaded before this mod.
 * `optional_depends`: A comma separated list of optional dependencies.
                       Like a dependency, but no error if the mod doesn't exist.
-* `author`: The author of the mod. It only appears when installed from
+* `author`: The author of the mod. It only appears when downloaded from
             ContentDB.
 * `release`: The ID corresponding to the version of the mod. It only appears
-             when installed from ContentDB.
-* `title`: The title set on ContentDB. It only appears when installed from
+             when downloaded from ContentDB.
+* `title`: The title set on ContentDB. It only appears when downloaded from
            ContentDB.
 
 Note: to support 0.4.x, please also provide depends.txt.
