@@ -155,7 +155,7 @@ bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
 			return false;
 		}
 
-		SEvent translated;
+		SEvent translated{};
 		// translate doubleclick to escape
 		translated.EventType            = EET_KEY_INPUT_EVENT;
 		translated.KeyInput.Key         = KEY_ESCAPE;
