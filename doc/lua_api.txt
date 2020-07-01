@@ -5202,6 +5202,8 @@ The sounds locator is used to find sounds without needing to depend on another m
     * Checks each name in order, and returns the first node sound set.
     * `names` is a string or table of names.
     * `overrides` is an optional table of overrides.
+* `minetest.get_node_sound_defaults()`
+* `minetest.set_node_sound_defaults(spec)`
 
 Timing
 ------
@@ -7157,6 +7159,9 @@ Used by `minetest.register_node`.
         sounds = {
             -- Definition of node sounds to be played at various events.
             -- All fields in this table are optional.
+
+            -- For getting sounds from another mod,
+            -- see minetest.find_node_sounds() in [Sound Locator]
 
             footstep = <SimpleSoundSpec>,
             -- If walkable, played when object walks on it. If node is
