@@ -138,11 +138,6 @@ void TerminalChatConsole::typeChatMessage(const std::wstring &msg)
 	// Send to server
 	m_chat_interface->command_queue.push_back(
 		new ChatEventChat(m_nick, msg));
-
-	// Print if its a command (gets eaten by server otherwise)
-	if (msg[0] == L'/') {
-		m_chat_backend.addMessage(L"", (std::wstring)L"Issued command: " + msg);
-	}
 }
 
 void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
