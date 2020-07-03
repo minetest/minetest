@@ -2562,7 +2562,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 						<< "'" << std::endl;
 				property_warned.insert(propname);
 			}
-			return false;
+			continue;
 		}
 
 		spec.set(prop, value);
@@ -2603,7 +2603,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 			}
 		}
 
-		if(!state_valid) {
+		if (!state_valid) {
 			// Skip this selector
 			continue;
 		}
