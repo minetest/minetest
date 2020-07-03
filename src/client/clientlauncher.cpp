@@ -452,7 +452,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		return false;
 	}
 
-	if (menudata.name.empty() && !simple_singleplayer_mode) {
+	if (RenderingEngine::run() && menudata.name.empty() && !simple_singleplayer_mode) {
 		error_message = gettext("Please choose a name!");
 		errorstream << error_message << std::endl;
 		return false;
