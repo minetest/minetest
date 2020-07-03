@@ -459,12 +459,9 @@ void Client::step(float dtime)
 	/*
 		Handle environment
 	*/
-	// Control local player (0ms)
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
-	player->applyControl(dtime, &m_env);
 
-	// Step environment
+	// Step environment (also handles player controls)
 	m_env.step(dtime);
 	m_sound->step(dtime);
 
