@@ -32,15 +32,15 @@ public:
 
 	~ClientLauncher();
 
-	bool run(GameParams &game_params, const Settings &cmd_args);
+	bool run(GameStartData &start_data, const Settings &cmd_args);
 
-protected:
-	void init_args(GameParams &game_params, const Settings &cmd_args);
+private:
+	void init_args(GameStartData &start_data, const Settings &cmd_args);
 	bool init_engine();
 	void init_input();
 
 	bool launch_game(std::string &error_message, bool reconnect_requested,
-		GameParams &game_params, const Settings &cmd_args);
+		GameStartData &start_data, const Settings &cmd_args);
 
 	void main_menu(MainMenuData *menudata);
 
@@ -49,11 +49,8 @@ protected:
 	bool list_video_modes = false;
 	bool skip_main_menu = false;
 	bool random_input = false;
-	GameStartData start_data{};
 	InputHandler *input = nullptr;
 	MyEventReceiver *receiver = nullptr;
 	gui::IGUISkin *skin = nullptr;
 	gui::IGUIFont *font = nullptr;
-	SubgameSpec gamespec;
-	WorldSpec worldspec;
 };

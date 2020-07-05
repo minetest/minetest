@@ -56,6 +56,17 @@ bool isMenuActive()
 // Passed to menus to allow disconnecting and exiting
 MainGameCallback *g_gamecallback = nullptr;
 
+static void dump_start_data(const GameStartData &data)
+{
+	std::cout <<
+		"\ndedicated   " << (int)data.is_dedicated_server <<
+		"\nport        " << data.socket_port <<
+		"\nworld_path  " << data.world_path <<
+		"\nworld game  " << data.world_spec.gameid <<
+		"\ngame path   " << data.game_spec.path <<
+		"\nplayer name " << data.name <<
+		"\naddress     " << data.address << std::endl;
+}
 
 ClientLauncher::~ClientLauncher()
 {
@@ -74,9 +85,15 @@ ClientLauncher::~ClientLauncher()
 }
 
 
-bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
+bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 {
-	init_args(game_params, cmd_args);
+	/* This function is called when a client must be started.
+	 * Covered cases:
+	 *   - Singleplayer (address but map provided)
+	 *   - Join server (no map but address provided)
+	*/
+
+	init_args(start_data, cmd_args);
 
 	// List video modes if requested
 	if (list_video_modes)
@@ -216,7 +233,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 				core::rect<s32>(0, 0, 10000, 10000));
 
 			bool game_has_run = launch_game(error_message, reconnect_requested,
-				game_params, cmd_args);
+				start_data, cmd_args);
 
 			// Reset the reconnect_requested flag
 			reconnect_requested = false;
@@ -249,14 +266,14 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 			g_touchscreengui = receiver->m_touchscreengui;
 #endif
 
+			dump_start_data(start_data);
 			the_game(
 				kill,
 				input,
 				start_data,
 				error_message,
 				chat_backend,
-				&reconnect_requested,
-				gamespec
+				&reconnect_requested
 			);
 			RenderingEngine::get_scene_manager()->clear();
 
@@ -298,22 +315,21 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	return retval;
 }
 
-void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args)
+void ClientLauncher::init_args(GameStartData &start_data, const Settings &cmd_args)
 {
-
+	dump_start_data(start_data);
 	skip_main_menu = cmd_args.getFlag("go");
 
-	// FIXME: This is confusing (but correct)
-
-	/* If world_path is set then override it unless skipping the main menu using
-	 * the --go command line param. Else, give preference to the address
-	 * supplied on the command line
-	 */
 	start_data.address = g_settings->get("address");
-	if (!game_params.world_path.empty())
-		start_data.address = "";
-	else if (cmd_args.exists("address"))
+	if (cmd_args.exists("address")) {
+		// Join a remote server
 		start_data.address = cmd_args.get("address");
+		start_data.world_path.clear();
+	}
+	if (!start_data.world_path.empty()) {
+		// Start a singleplayer instance
+		start_data.address = "";
+	}
 
 	start_data.name = g_settings->get("name");
 	if (cmd_args.exists("name"))
@@ -360,7 +376,7 @@ void ClientLauncher::init_input()
 }
 
 bool ClientLauncher::launch_game(std::string &error_message,
-		bool reconnect_requested, GameParams &game_params,
+		bool reconnect_requested, GameStartData &start_data,
 		const Settings &cmd_args)
 {
 	// Prepare and check the start data to launch a game
@@ -384,15 +400,17 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 	// If a world was commanded, append and select it
 	// This is provieded by "get_world_from_cmdline()", main.cpp
-	if (!game_params.world_path.empty()) {
-		worldspec.gameid = getWorldGameId(game_params.world_path, true);
-		worldspec.name = _("[--world parameter]");
+	if (!start_data.world_path.empty()) {
+		auto &spec = start_data.world_spec;
 
-		if (worldspec.gameid.empty()) {	// Create new
-			worldspec.gameid = g_settings->get("default_game");
-			worldspec.name += " [new]";
+		spec.path = start_data.world_path;
+		spec.gameid = getWorldGameId(spec.path, true);
+		spec.name = _("[--world parameter]");
+
+		if (spec.gameid.empty()) {	// Create new
+			spec.gameid = g_settings->get("default_game");
+			spec.name += " [new]";
 		}
-		worldspec.path = game_params.world_path;
 	}
 
 	/* Show the GUI menu
@@ -400,12 +418,12 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	std::string server_name, server_description;
 	if (!skip_main_menu) {
 		// Initialize menu data
-		// TODO: Merge MainMenuData with GameStartData
+		// TODO: Re-use existing structs (GameStartData)
 		MainMenuData menudata;
 		menudata.address                         = start_data.address;
 		menudata.name                            = start_data.name;
 		menudata.password                        = start_data.password;
-		menudata.port                            = itos(game_params.socket_port);
+		menudata.port                            = itos(start_data.socket_port);
 		menudata.script_data.errormessage        = "";
 		menudata.script_data.reconnect_requested = reconnect_requested;
 
@@ -425,7 +443,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 		int newport = stoi(menudata.port);
 		if (newport != 0)
-			game_params.socket_port = newport;
+			start_data.socket_port = newport;
 
 		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 
@@ -433,7 +451,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 				&& menudata.selected_world < (int)worldspecs.size()) {
 			g_settings->set("selected_world_path",
 					worldspecs[menudata.selected_world].path);
-			worldspec = worldspecs[menudata.selected_world];
+			start_data.world_spec = worldspecs[menudata.selected_world];
 		}
 
 		start_data.address = menudata.address;
@@ -449,7 +467,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	if (!RenderingEngine::run())
 		return false;
 
-	std::cout << start_data.address << std::endl;
 	if (!start_data.isSinglePlayer() && start_data.name.empty()) {
 		error_message = gettext("Please choose a name!");
 		errorstream << error_message << std::endl;
@@ -461,13 +478,13 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		assert(!skip_main_menu);
 		start_data.name = "singleplayer";
 		start_data.password = "";
-		start_data.port = myrand_range(49152, 65535);
+		start_data.socket_port = myrand_range(49152, 65535);
 	} else {
 		g_settings->set("name", start_data.name);
 		ServerListSpec server;
 		server["name"]        = server_name;
 		server["address"]     = start_data.address;
-		server["port"]        = itos(start_data.port);
+		server["port"]        = itos(start_data.socket_port);
 		server["description"] = server_description;
 		ServerList::insert(server);
 	}
@@ -479,6 +496,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		return false;
 	}
 
+	auto &worldspec = start_data.world_spec;
 	infostream << "Selected world: " << worldspec.name
 	           << " [" << worldspec.path << "]" << std::endl;
 
@@ -498,8 +516,8 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		}
 
 		// Load gamespec for required game
-		gamespec = findWorldSubgame(worldspec.path);
-		if (!gamespec.isValid() && !game_params.game_spec.isValid()) {
+		start_data.game_spec = findWorldSubgame(worldspec.path);
+		if (!start_data.game_spec.isValid()) {
 			error_message = gettext("Could not find or load game \"")
 					+ worldspec.gameid + "\"";
 			errorstream << error_message << std::endl;
@@ -509,15 +527,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		if (porting::signal_handler_killstatus())
 			return true;
 
-		if (game_params.game_spec.isValid() &&
-				game_params.game_spec.id != worldspec.gameid) {
-			warningstream << "Overriding gamespec from \""
-			            << worldspec.gameid << "\" to \""
-			            << game_params.game_spec.id << "\"" << std::endl;
-			gamespec = game_params.game_spec;
-		}
-
-		if (!gamespec.isValid()) {
+		if (!start_data.game_spec.isValid()) {
 			error_message = gettext("Invalid gamespec.");
 			error_message += " (world.gameid=" + worldspec.gameid + ")";
 			errorstream << error_message << std::endl;
@@ -525,8 +535,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		}
 	}
 
-	start_data.map_dir = worldspec.path;
-	start_data.port = game_params.socket_port;
+	start_data.world_path = start_data.world_spec.path;
 	return true;
 }
 

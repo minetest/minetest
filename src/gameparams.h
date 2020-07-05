@@ -34,20 +34,16 @@ struct GameParams
 };
 
 // Information processed by main menu
-struct GameStartData {
+struct GameStartData : GameParams {
 	GameStartData() = default;
 
 	bool isSinglePlayer() const
 	{ return address.empty(); }
-	void setSinglePlayer()
-	{ address.clear(); }
-
-	bool isServer() const
-	{ return !map_dir.empty() && !address.empty(); }
 
 	std::string name;
 	std::string password;
-	std::string map_dir;
 	std::string address;
-	u16 port;
+
+	// "world_path" must be kept in sync!
+	WorldSpec world_spec;
 };

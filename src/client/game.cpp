@@ -675,8 +675,7 @@ public:
 			const GameStartData &game_params,
 			std::string &error_message,
 			bool *reconnect,
-			ChatBackend *chat_backend,
-			const SubgameSpec &gamespec); // Used for local game
+			ChatBackend *chat_backend);
 
 	void run();
 	void shutdown();
@@ -1013,8 +1012,7 @@ bool Game::startup(bool *kill,
 		const GameStartData &start_data,
 		std::string &error_message,
 		bool *reconnect,
-		ChatBackend *chat_backend,
-		const SubgameSpec &gamespec)
+		ChatBackend *chat_backend)
 {
 
 	// "cache"
@@ -1046,7 +1044,8 @@ bool Game::startup(bool *kill,
 	g_client_translations->clear();
 
 	// address can change if simple_singleplayer_mode
-	if (!init(start_data.map_dir, start_data.address, start_data.port, gamespec))
+	if (!init(start_data.world_spec.path, start_data.address,
+			start_data.socket_port, start_data.game_spec))
 		return false;
 
 	if (!createClient(start_data))
@@ -1457,7 +1456,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 
 	showOverlayMessage(N_("Resolving address..."), 0, 15);
 
-	Address connect_address(0, 0, 0, 0, start_data.port);
+	Address connect_address(0, 0, 0, 0, start_data.socket_port);
 
 	try {
 		connect_address.Resolve(start_data.address.c_str());
@@ -4249,8 +4248,7 @@ void the_game(bool *kill,
 		const GameStartData &start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,
-		bool *reconnect_requested,
-		const SubgameSpec &gamespec) // Used for local game
+		bool *reconnect_requested) // Used for local game
 {
 	Game game;
 
@@ -4262,7 +4260,7 @@ void the_game(bool *kill,
 	try {
 
 		if (game.startup(kill, input, start_data, error_message,
-				reconnect_requested, &chat_backend, gamespec)) {
+				reconnect_requested, &chat_backend)) {
 			game.run();
 		}
 

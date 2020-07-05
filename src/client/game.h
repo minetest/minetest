@@ -48,5 +48,4 @@ void the_game(bool *kill,
 		const GameStartData &start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,
-		bool *reconnect_requested,
-		const SubgameSpec &gamespec); // Used for local game
+		bool *reconnect_requested);
