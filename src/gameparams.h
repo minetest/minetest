@@ -38,11 +38,12 @@ struct GameStartData : GameParams {
 	GameStartData() = default;
 
 	bool isSinglePlayer() const
-	{ return address.empty(); }
+	{ return address.empty() && !local_server; }
 
 	std::string name;
 	std::string password;
 	std::string address;
+	bool local_server;
 
 	// "world_path" must be kept in sync!
 	WorldSpec world_spec;

@@ -56,17 +56,20 @@ bool isMenuActive()
 // Passed to menus to allow disconnecting and exiting
 MainGameCallback *g_gamecallback = nullptr;
 
+#if 0
+// This can be helpful for the next code cleanup
 static void dump_start_data(const GameStartData &data)
 {
 	std::cout <<
 		"\ndedicated   " << (int)data.is_dedicated_server <<
 		"\nport        " << data.socket_port <<
-		"\nworld_path  " << data.world_path <<
+		"\nworld_path  " << data.world_spec.path <<
 		"\nworld game  " << data.world_spec.gameid <<
 		"\ngame path   " << data.game_spec.path <<
 		"\nplayer name " << data.name <<
 		"\naddress     " << data.address << std::endl;
 }
+#endif
 
 ClientLauncher::~ClientLauncher()
 {
@@ -91,6 +94,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	 * Covered cases:
 	 *   - Singleplayer (address but map provided)
 	 *   - Join server (no map but address provided)
+	 *   - Local server (for main menu only)
 	*/
 
 	init_args(start_data, cmd_args);
@@ -266,7 +270,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			g_touchscreengui = receiver->m_touchscreengui;
 #endif
 
-			dump_start_data(start_data);
 			the_game(
 				kill,
 				input,
@@ -317,7 +320,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 void ClientLauncher::init_args(GameStartData &start_data, const Settings &cmd_args)
 {
-	dump_start_data(start_data);
 	skip_main_menu = cmd_args.getFlag("go");
 
 	start_data.address = g_settings->get("address");
@@ -380,6 +382,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		const Settings &cmd_args)
 {
 	// Prepare and check the start data to launch a game
+	std::string error_message_lua = error_message;
 	error_message.clear();
 
 	if (cmd_args.exists("password"))
@@ -416,6 +419,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	/* Show the GUI menu
 	 */
 	std::string server_name, server_description;
+	start_data.local_server = false;
 	if (!skip_main_menu) {
 		// Initialize menu data
 		// TODO: Re-use existing structs (GameStartData)
@@ -424,7 +428,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		menudata.name                            = start_data.name;
 		menudata.password                        = start_data.password;
 		menudata.port                            = itos(start_data.socket_port);
-		menudata.script_data.errormessage        = "";
+		menudata.script_data.errormessage        = error_message_lua;
 		menudata.script_data.reconnect_requested = reconnect_requested;
 
 		main_menu(&menudata);
@@ -445,23 +449,24 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		if (newport != 0)
 			start_data.socket_port = newport;
 
+		// Update world information using main menu data
 		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 
-		if (menudata.selected_world >= 0
-				&& menudata.selected_world < (int)worldspecs.size()) {
+		int world_index = menudata.selected_world;
+		if (world_index >= 0 && world_index < (int)worldspecs.size()) {
 			g_settings->set("selected_world_path",
-					worldspecs[menudata.selected_world].path);
-			start_data.world_spec = worldspecs[menudata.selected_world];
+					worldspecs[world_index].path);
+			start_data.world_spec = worldspecs[world_index];
 		}
 
-		start_data.address = menudata.address;
 		start_data.name = menudata.name;
-		if (menudata.simple_singleplayer_mode)
-			start_data.address.clear();
-		else
-			start_data.address = std::move(menudata.address);
+		start_data.password = menudata.password;
+		start_data.address = std::move(menudata.address);
 		server_name = menudata.servername;
 		server_description = menudata.serverdescription;
+
+		start_data.local_server = !menudata.simple_singleplayer_mode &&
+			start_data.address.empty();
 	}
 
 	if (!RenderingEngine::run())
@@ -475,18 +480,19 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 	// If using simple singleplayer mode, override
 	if (start_data.isSinglePlayer()) {
-		assert(!skip_main_menu);
 		start_data.name = "singleplayer";
 		start_data.password = "";
 		start_data.socket_port = myrand_range(49152, 65535);
 	} else {
 		g_settings->set("name", start_data.name);
-		ServerListSpec server;
-		server["name"]        = server_name;
-		server["address"]     = start_data.address;
-		server["port"]        = itos(start_data.socket_port);
-		server["description"] = server_description;
-		ServerList::insert(server);
+		if (!start_data.address.empty()) {
+			ServerListSpec server;
+			server["name"]        = server_name;
+			server["address"]     = start_data.address;
+			server["port"]        = itos(start_data.socket_port);
+			server["description"] = server_description;
+			ServerList::insert(server);
+		}
 	}
 
 	if (start_data.name.length() > PLAYERNAME_SIZE - 1) {
@@ -500,7 +506,8 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	infostream << "Selected world: " << worldspec.name
 	           << " [" << worldspec.path << "]" << std::endl;
 
-	if (start_data.isSinglePlayer()) { // If local game
+	if (start_data.address.empty()) {
+		// For singleplayer and local server
 		if (worldspec.path.empty()) {
 			error_message = gettext("No world selected and no address "
 					"provided. Nothing to do.");
