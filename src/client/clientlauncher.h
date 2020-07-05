@@ -48,23 +48,12 @@ protected:
 
 	bool list_video_modes = false;
 	bool skip_main_menu = false;
-	bool use_freetype = false;
 	bool random_input = false;
-	std::string address = "";
-	std::string playername = "";
-	std::string password = "";
+	GameStartData start_data{};
 	InputHandler *input = nullptr;
 	MyEventReceiver *receiver = nullptr;
 	gui::IGUISkin *skin = nullptr;
 	gui::IGUIFont *font = nullptr;
 	SubgameSpec gamespec;
 	WorldSpec worldspec;
-	bool simple_singleplayer_mode = false;
-
-	// These are set up based on the menu and other things
-	// TODO: Are these required since there's already playername, password, etc
-	std::string current_playername = "inv£lid";
-	std::string current_password = "";
-	std::string current_address = "does-not-exist";
-	int current_port = 0;
 };

@@ -23,10 +23,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct SubgameSpec;
 
+// Information provided from "main"
 struct GameParams
 {
+
 	u16 socket_port;
 	std::string world_path;
 	SubgameSpec game_spec;
 	bool is_dedicated_server;
+};
+
+// Information processed by main menu
+struct GameStartData {
+	GameStartData() = default;
+
+	bool isSinglePlayer() const
+	{ return address.empty(); }
+	void setSinglePlayer()
+	{ address.clear(); }
+
+	bool isServer() const
+	{ return !map_dir.empty() && !address.empty(); }
+
+	std::string name;
+	std::string password;
+	std::string map_dir;
+	std::string address;
+	u16 port;
 };

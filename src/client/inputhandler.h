@@ -219,6 +219,11 @@ public:
 
 	virtual ~InputHandler() = default;
 
+	virtual bool isRandom() const
+	{
+		return false;
+	}
+
 	virtual bool isKeyDown(GameKeyType k) = 0;
 	virtual bool wasKeyDown(GameKeyType k) = 0;
 	virtual bool cancelPressed() = 0;
@@ -371,6 +376,11 @@ class RandomInputHandler : public InputHandler
 {
 public:
 	RandomInputHandler() = default;
+
+	bool isRandom() const
+	{
+		return true;
+	}
 
 	virtual bool isKeyDown(GameKeyType k) { return keydown[keycache.key[k]]; }
 	virtual bool wasKeyDown(GameKeyType k) { return false; }
