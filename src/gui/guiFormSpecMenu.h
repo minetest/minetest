@@ -26,6 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "inventorymanager.h"
 #include "modalMenu.h"
+#include "formspec/FieldSpec.h" // For FieldSpec
+#include "formspec/ListRingSpec.h" // For ListRingSpec
+#include "formspec/TooltipSpec.h" // For TooltipSpec
 #include "guiInventoryList.h"
 #include "guiScrollBar.h"
 #include "guiTable.h"
@@ -35,132 +38,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
 
+class Client;
+class GUIScrollBar;
+class GUIScrollContainer;
+class FormSource;
 class InventoryManager;
 class ISimpleTextureSource;
-class Client;
+class ITextDest;
 class TexturePool;
-class GUIScrollContainer;
 
-typedef enum {
-	f_Button,
-	f_Table,
-	f_TabHeader,
-	f_CheckBox,
-	f_DropDown,
-	f_ScrollBar,
-	f_Box,
-	f_ItemImage,
-	f_HyperText,
-	f_AnimatedImage,
-	f_Unknown
-} FormspecFieldType;
-
-typedef enum {
-	quit_mode_no,
-	quit_mode_accept,
-	quit_mode_cancel
-} FormspecQuitMode;
-
-struct TextDest
-{
-	virtual ~TextDest() = default;
-
-	// This is deprecated I guess? -celeron55
-	virtual void gotText(const std::wstring &text) {}
-	virtual void gotText(const StringMap &fields) = 0;
-
-	std::string m_formname;
-};
-
-class IFormSource
-{
-public:
-	virtual ~IFormSource() = default;
-	virtual const std::string &getForm() const = 0;
-	// Fill in variables in field text
-	virtual std::string resolveText(const std::string &str) { return str; }
+enum class FormspecQuitMode {
+	NO,
+	ACCEPT,
+	CANCEL,
 };
 
 class GUIFormSpecMenu : public GUIModalMenu
 {
-	struct ListRingSpec
-	{
-		ListRingSpec() = default;
-
-		ListRingSpec(const InventoryLocation &a_inventoryloc,
-				const std::string &a_listname):
-			inventoryloc(a_inventoryloc),
-			listname(a_listname)
-		{
-		}
-
-		InventoryLocation inventoryloc;
-		std::string listname;
-	};
-
-	struct FieldSpec
-	{
-		FieldSpec() = default;
-
-		FieldSpec(const std::string &name, const std::wstring &label,
-				const std::wstring &default_text, s32 id, int priority = 0,
-				gui::ECURSOR_ICON cursor_icon = ECI_NORMAL) :
-			fname(name),
-			flabel(label),
-			fdefault(unescape_enriched(translate_string(default_text))),
-			fid(id),
-			send(false),
-			ftype(f_Unknown),
-			is_exit(false),
-			priority(priority),
-			fcursor_icon(cursor_icon)
-		{
-		}
-
-		std::string fname;
-		std::wstring flabel;
-		std::wstring fdefault;
-		s32 fid;
-		bool send;
-		FormspecFieldType ftype;
-		bool is_exit;
-		// Draw priority for formspec version < 3
-		int priority;
-		core::rect<s32> rect;
-		gui::ECURSOR_ICON fcursor_icon;
-	};
-
-	struct TooltipSpec
-	{
-		TooltipSpec() = default;
-		TooltipSpec(const std::wstring &a_tooltip, irr::video::SColor a_bgcolor,
-				irr::video::SColor a_color):
-			tooltip(translate_string(a_tooltip)),
-			bgcolor(a_bgcolor),
-			color(a_color)
-		{
-		}
-
-		std::wstring tooltip;
-		irr::video::SColor bgcolor;
-		irr::video::SColor color;
-	};
-
 public:
 	GUIFormSpecMenu(JoystickController *joystick,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			Client *client,
 			ISimpleTextureSource *tsrc,
-			IFormSource* fs_src,
-			TextDest* txt_dst,
+			FormSource* fs_src,
+			ITextDest* txt_dst,
 			const std::string &formspecPrepend,
 			bool remap_dbl_click = true);
 
 	~GUIFormSpecMenu();
 
 	static void create(GUIFormSpecMenu *&cur_formspec, Client *client,
-		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
+		JoystickController *joystick, FormSource *fs_src, ITextDest *txt_dest,
 		const std::string &formspecPrepend);
 
 	void setFormSpec(const std::string &formspec_string,
@@ -183,18 +92,10 @@ public:
 	}
 
 	// form_src is deleted by this GUIFormSpecMenu
-	void setFormSource(IFormSource *form_src)
-	{
-		delete m_form_src;
-		m_form_src = form_src;
-	}
+	void setFormSource(FormSource *form_src);
 
 	// text_dst is deleted by this GUIFormSpecMenu
-	void setTextDest(TextDest *text_dst)
-	{
-		delete m_text_dst;
-		m_text_dst = text_dst;
-	}
+	void setTextDest(ITextDest *text_dst);
 
 	void allowClose(bool value)
 	{
@@ -345,8 +246,8 @@ protected:
 	video::SColor m_default_tooltip_color;
 
 private:
-	IFormSource        *m_form_src;
-	TextDest           *m_text_dst;
+	FormSource         *m_form_src;
+	ITextDest          *m_text_dst;
 	std::string         m_last_formname;
 	u16                 m_formspec_version = 1;
 	std::string         m_focused_element = "";
@@ -459,27 +360,4 @@ private:
 
 	int m_btn_height;
 	gui::IGUIFont *m_font = nullptr;
-};
-
-class FormspecFormSource: public IFormSource
-{
-public:
-	FormspecFormSource(const std::string &formspec):
-		m_formspec(formspec)
-	{
-	}
-
-	~FormspecFormSource() = default;
-
-	void setForm(const std::string &formspec)
-	{
-		m_formspec = formspec;
-	}
-
-	const std::string &getForm() const
-	{
-		return m_formspec;
-	}
-
-	std::string m_formspec;
 };

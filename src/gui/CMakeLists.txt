@@ -1,3 +1,5 @@
+add_subdirectory(formspec)
+
 set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiAnimatedImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiBackgroundImage.cpp
@@ -24,5 +26,6 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/intlGUIEditBox.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/modalMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/profilergraph.cpp
+	${gui_FORMSPEC_SRCS}
 	PARENT_SCOPE
 )

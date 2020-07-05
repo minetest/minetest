@@ -42,6 +42,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "gameparams.h"
 #include "gettext.h"
+#include "gui/formspec/FormspecFormSource.h" // For FormspecFormSource
+#include "gui/formspec/FormSource.h" // For FormSource
+#include "gui/formspec/ITextDest.h" // For ITextDest
 #include "gui/guiChatConsole.h"
 #include "gui/guiConfirmRegistration.h"
 #include "gui/guiFormSpecMenu.h"
@@ -81,8 +84,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Text input system
 */
 
-struct TextDestNodeMetadata : public TextDest
+class TextDestNodeMetadata : public ITextDest
 {
+public:
 	TextDestNodeMetadata(v3s16 p, Client *client)
 	{
 		m_p = p;
@@ -103,12 +107,14 @@ struct TextDestNodeMetadata : public TextDest
 		m_client->sendNodemetaFields(m_p, "", fields);
 	}
 
+private:
 	v3s16 m_p;
 	Client *m_client;
 };
 
-struct TextDestPlayerInventory : public TextDest
+class TextDestPlayerInventory : public ITextDest
 {
+public:
 	TextDestPlayerInventory(Client *client)
 	{
 		m_client = client;
@@ -124,11 +130,13 @@ struct TextDestPlayerInventory : public TextDest
 		m_client->sendInventoryFields(m_formname, fields);
 	}
 
+private:
 	Client *m_client;
 };
 
-struct LocalFormspecHandler : public TextDest
+class LocalFormspecHandler : public ITextDest
 {
+public:
 	LocalFormspecHandler(const std::string &formname)
 	{
 		m_formname = formname;
@@ -190,12 +198,13 @@ struct LocalFormspecHandler : public TextDest
 			m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
+private:
 	Client *m_client = nullptr;
 };
 
 /* Form update callback */
 
-class NodeMetadataFormSource: public IFormSource
+class NodeMetadataFormSource: public FormSource
 {
 public:
 	NodeMetadataFormSource(ClientMap *map, v3s16 p):
@@ -228,7 +237,7 @@ public:
 	v3s16 m_p;
 };
 
-class PlayerInventoryFormSource: public IFormSource
+class PlayerInventoryFormSource: public FormSource
 {
 public:
 	PlayerInventoryFormSource(Client *client):
@@ -2070,7 +2079,7 @@ void Game::openInventory()
 
 	if (!client->modsLoaded()
 			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
-		TextDest *txt_dst = new TextDestPlayerInventory(client);
+		ITextDest *txt_dst = new TextDestPlayerInventory(client);
 		auto *&formspec = m_game_ui->updateFormspec("");
 		GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,
 			txt_dst, client->getFormspecPrepend());
@@ -2615,7 +2624,7 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 	} else {
 		FormspecFormSource *fs_src =
 			new FormspecFormSource(*(event->show_formspec.formspec));
-		TextDestPlayerInventory *txt_dst =
+		ITextDest *txt_dst =
 			new TextDestPlayerInventory(client, *(event->show_formspec.formname));
 
 		auto *&formspec = m_game_ui->updateFormspec(*(event->show_formspec.formname));
@@ -3348,7 +3357,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 		NodeMetadataFormSource *fs_src = new NodeMetadataFormSource(
 			&client->getEnv().getClientMap(), nodepos);
-		TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
+		ITextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
 
 		auto *&formspec = m_game_ui->updateFormspec("");
 		GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,

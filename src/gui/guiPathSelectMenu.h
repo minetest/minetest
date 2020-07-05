@@ -23,7 +23,8 @@
 
 #include "modalMenu.h"
 #include "IGUIFileOpenDialog.h"
-#include "guiFormSpecMenu.h" //required because of TextDest only !!!
+
+class ITextDest;
 
 class GUIFileSelectMenu : public GUIModalMenu
 {
@@ -42,7 +43,7 @@ public:
 
 	bool OnEvent(const SEvent &event);
 
-	void setTextDest(TextDest *dest) { m_text_dst = dest; }
+	void setTextDest(ITextDest *dest) { m_text_dst = dest; }
 
 protected:
 	std::wstring getLabelByID(s32 id) { return L""; }
@@ -56,7 +57,7 @@ private:
 
 	gui::IGUIFileOpenDialog *m_fileOpenDialog = nullptr;
 
-	TextDest *m_text_dst = nullptr;
+	ITextDest *m_text_dst = nullptr;
 
 	std::string m_formname;
 	bool m_file_select_dialog;

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <ICameraSceneNode.h>
 #include "client/renderingengine.h"
+#include "formspec/FormspecFormSource.h" // For FormspecFormSource
 #include "scripting_mainmenu.h"
 #include "util/numeric.h"
 #include "config.h"

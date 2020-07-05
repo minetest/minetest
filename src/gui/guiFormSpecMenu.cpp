@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #include <cstdlib>
 #include <algorithm>
 #include <iterator>
@@ -40,6 +39,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h" // ITextureSource
 #include "client/hud.h" // drawItemStack
 #include "filesys.h"
+#include "formspec/FormSource.h" // For FormSource
+#include "formspec/ITextDest.h" // For ITextDest
 #include "gettime.h"
 #include "gettext.h"
 #include "scripting_server.h"
@@ -94,7 +95,7 @@ inline u32 clamp_u8(s32 value)
 
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
-		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
+		Client *client, ISimpleTextureSource *tsrc, FormSource *fsrc, ITextDest *tdst,
 		const std::string &formspecPrepend, bool remap_dbl_click):
 	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr, remap_dbl_click),
 	m_invmgr(client),
@@ -141,7 +142,7 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 }
 
 void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
-	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
+	JoystickController *joystick, FormSource *fs_src, ITextDest *txt_dest,
 	const std::string &formspecPrepend)
 {
 	if (cur_formspec == nullptr) {
@@ -162,6 +163,18 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 		cur_formspec->setFormSource(fs_src);
 		cur_formspec->setTextDest(txt_dest);
 	}
+}
+
+void GUIFormSpecMenu::setFormSource(FormSource *form_src)
+{
+	delete m_form_src;
+	m_form_src = form_src;
+}
+
+void GUIFormSpecMenu::setTextDest(ITextDest *text_dst)
+{
+	delete m_text_dst;
+	m_text_dst = text_dst;
 }
 
 void GUIFormSpecMenu::removeChildren()
@@ -2676,7 +2689,7 @@ void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 			return; // Never focus on resizing
 
 		bool force_focus = parts.size() >= 2 && is_yes(parts[1]);
-		if (force_focus || m_text_dst->m_formname != m_last_formname)
+		if (force_focus || m_text_dst->getFormName() != m_last_formname)
 			setFocus(parts[0]);
 
 		return;
@@ -2897,7 +2910,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	parserData mydata;
 
 	// Preserve stuff only on same form, not on a new form.
-	if (m_text_dst->m_formname == m_last_formname) {
+	if (m_text_dst->getFormName() == m_last_formname) {
 		// Preserve tables/textlists
 		for (auto &m_table : m_tables) {
 			std::string tablename = m_table.first.fname;
@@ -2910,7 +2923,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		if (focused_element && focused_element->getParent() == this) {
 			s32 focused_id = focused_element->getID();
 			if (focused_id > 257) {
-				for (const GUIFormSpecMenu::FieldSpec &field : m_fields) {
+				for (const FieldSpec &field : m_fields) {
 					if (field.fid == focused_id) {
 						m_focused_element = field.fname;
 						break;
@@ -3297,7 +3310,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// Formname and regeneration setting
 	if (!m_is_form_regenerated) {
 		// Only set previous form name if we purposefully showed a new formspec
-		m_last_formname = m_text_dst->m_formname;
+		m_last_formname = m_text_dst->getFormName();
 		m_is_form_regenerated = true;
 	}
 }
@@ -3701,17 +3714,17 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	return ItemStack();
 }
 
-void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
+void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=FormspecQuitMode::NO)
 {
 	if(m_text_dst)
 	{
 		StringMap fields;
 
-		if (quitmode == quit_mode_accept) {
+		if (quitmode == FormspecQuitMode::ACCEPT) {
 			fields["quit"] = "true";
 		}
 
-		if (quitmode == quit_mode_cancel) {
+		if (quitmode == FormspecQuitMode::CANCEL) {
 			fields["quit"] = "true";
 			m_text_dst->gotText(fields);
 			return;
@@ -3742,7 +3755,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 			current_keys_pending.key_escape = false;
 		}
 
-		for (const GUIFormSpecMenu::FieldSpec &s : m_fields) {
+		for (const FieldSpec &s : m_fields) {
 			if (s.send) {
 				std::string name = s.fname;
 				if (s.ftype == f_Button) {
@@ -3914,7 +3927,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 				tryClose();
 			} else if (m_joystick->wasKeyDown(KeyType::JUMP)) {
 				if (m_allowclose) {
-					acceptInput(quit_mode_accept);
+					acceptInput(FormspecQuitMode::ACCEPT);
 					quitMenu();
 				}
 			}
@@ -3929,7 +3942,7 @@ void GUIFormSpecMenu::tryClose()
 {
 	if (m_allowclose) {
 		doPause = false;
-		acceptInput(quit_mode_cancel);
+		acceptInput(FormspecQuitMode::CANCEL);
 		quitMenu();
 	} else {
 		m_text_dst->gotText(L"MenuQuit");
@@ -3990,7 +4003,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					break;
 			}
 			if (current_keys_pending.key_enter && m_allowclose) {
-				acceptInput(quit_mode_accept);
+				acceptInput(FormspecQuitMode::ACCEPT);
 				quitMenu();
 			} else {
 				acceptInput();
@@ -4384,7 +4397,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_TAB_CHANGED
 				&& isVisible()) {
 			// find the element that was clicked
-			for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
+			for (FieldSpec &s : m_fields) {
 				if ((s.ftype == f_TabHeader) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
 					s.send = true;
@@ -4411,7 +4424,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			if (caller_id == 257) {
 				if (m_allowclose) {
-					acceptInput(quit_mode_accept);
+					acceptInput(FormspecQuitMode::ACCEPT);
 					quitMenu();
 				} else {
 					acceptInput();
@@ -4422,7 +4435,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 
 			// find the element that was clicked
-			for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
+			for (FieldSpec &s : m_fields) {
 				// if its a button, set the send field so
 				// lua knows which button was pressed
 
@@ -4433,7 +4446,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.send = true;
 					if (s.is_exit) {
 						if (m_allowclose) {
-							acceptInput(quit_mode_accept);
+							acceptInput(FormspecQuitMode::ACCEPT);
 							quitMenu();
 						} else {
 							m_text_dst->gotText(L"ExitButton");
@@ -4441,23 +4454,23 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						return true;
 					}
 
-					acceptInput(quit_mode_no);
+					acceptInput(FormspecQuitMode::NO);
 					s.send = false;
 					return true;
 
 				} else if (s.ftype == f_DropDown) {
 					// only send the changed dropdown
-					for (GUIFormSpecMenu::FieldSpec &s2 : m_fields) {
+					for (FieldSpec &s2 : m_fields) {
 						if (s2.ftype == f_DropDown) {
 							s2.send = false;
 						}
 					}
 					s.send = true;
-					acceptInput(quit_mode_no);
+					acceptInput(FormspecQuitMode::NO);
 
 					// revert configuration to make sure dropdowns are sent on
 					// regular button click
-					for (GUIFormSpecMenu::FieldSpec &s2 : m_fields) {
+					for (FieldSpec &s2 : m_fields) {
 						if (s2.ftype == f_DropDown) {
 							s2.send = true;
 						}
@@ -4465,7 +4478,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					return true;
 				} else if (s.ftype == f_ScrollBar) {
 					s.fdefault = L"Changed";
-					acceptInput(quit_mode_no);
+					acceptInput(FormspecQuitMode::NO);
 					s.fdefault = L"";
 				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
 					s.send = true;
@@ -4484,7 +4497,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER) {
 			if (event.GUIEvent.Caller->getID() > 257) {
 				bool close_on_enter = true;
-				for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
+				for (FieldSpec &s : m_fields) {
 					if (s.ftype == f_Unknown &&
 							s.fid == event.GUIEvent.Caller->getID()) {
 						current_field_enter_pending = s.fname;
@@ -4499,7 +4512,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				if (m_allowclose && close_on_enter) {
 					current_keys_pending.key_enter = true;
-					acceptInput(quit_mode_accept);
+					acceptInput(FormspecQuitMode::ACCEPT);
 					quitMenu();
 				} else {
 					current_keys_pending.key_enter = true;
@@ -4514,7 +4527,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			int current_id = event.GUIEvent.Caller->getID();
 			if (current_id > 257) {
 				// find the element that was clicked
-				for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
+				for (FieldSpec &s : m_fields) {
 					// if it's a table, set the send field
 					// so lua knows which table was changed
 					if ((s.ftype == f_Table) && (s.fid == current_id)) {
@@ -4546,7 +4559,7 @@ std::string GUIFormSpecMenu::getNameByID(s32 id)
 }
 
 
-const GUIFormSpecMenu::FieldSpec *GUIFormSpecMenu::getSpecByID(s32 id)
+const FieldSpec *GUIFormSpecMenu::getSpecByID(s32 id)
 {
 	for (FieldSpec &spec : m_fields) {
 		if (spec.fid == id)

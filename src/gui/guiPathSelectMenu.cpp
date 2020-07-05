@@ -18,6 +18,7 @@
  */
 
 #include "guiPathSelectMenu.h"
+#include "gui/formspec/ITextDest.h" // For ITextDest
 
 GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,

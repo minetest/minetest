@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFormSpecMenu.h"
 #include "client/sound.h"
 #include "client/tile.h"
+#include "formspec/ITextDest.h" // For ITextDest
 #include "util/enriched_string.h"
 
 /******************************************************************************/
@@ -49,6 +50,7 @@ typedef struct {
 /******************************************************************************/
 /* forward declarations                                                       */
 /******************************************************************************/
+class FormspecFormSource;
 class GUIEngine;
 class MainMenuScripting;
 class Clouds;
@@ -58,8 +60,8 @@ struct MainMenuData;
 /* declarations                                                               */
 /******************************************************************************/
 
-/** GUIEngine specific implementation of TextDest used within guiFormSpecMenu */
-class TextDestGuiEngine : public TextDest
+/** GUIEngine specific implementation of ITextDest used within guiFormSpecMenu */
+class TextDestGuiEngine : public ITextDest
 {
 public:
 	/**
