@@ -29,8 +29,8 @@ struct ListRingSpec
 
 	ListRingSpec(const InventoryLocation &a_inventoryloc,
 			const std::string &a_listname):
-		inventoryloc(a_inventoryloc),
-		listname(a_listname)
+			inventoryloc(a_inventoryloc),
+			listname(a_listname)
 	{
 	}
 
