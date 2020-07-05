@@ -123,8 +123,6 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 		table_it.second->drop();
 	for (auto &inventorylist_it : m_inventorylists)
 		inventorylist_it->drop();
-	for (auto &checkbox_it : m_checkboxes)
-		checkbox_it.second->drop();
 	for (auto &scrollbar_it : m_scrollbars)
 		scrollbar_it.second->drop();
 	for (auto &background_it : m_backgrounds)
@@ -632,8 +630,6 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 			Environment->setFocus(e);
 		}
 
-		e->grab();
-		m_checkboxes.emplace_back(spec, e);
 		m_fields.push_back(spec);
 		return;
 	}
@@ -2943,8 +2939,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		table_it.second->drop();
 	for (auto &inventorylist_it : m_inventorylists)
 		inventorylist_it->drop();
-	for (auto &checkbox_it : m_checkboxes)
-		checkbox_it.second->drop();
 	for (auto &scrollbar_it : m_scrollbars)
 		scrollbar_it.second->drop();
 	for (auto &background_it : m_backgrounds)
@@ -2971,7 +2965,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_inventorylists.clear();
 	m_backgrounds.clear();
 	m_tables.clear();
-	m_checkboxes.clear();
 	m_scrollbars.clear();
 	m_fields.clear();
 	m_tooltips.clear();

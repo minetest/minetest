@@ -212,7 +212,6 @@ protected:
 	std::unordered_map<std::string, bool> m_dropdown_index_event;
 	std::vector<FieldSpec> m_fields;
 	std::vector<std::pair<FieldSpec, GUITable *>> m_tables;
-	std::vector<std::pair<FieldSpec, gui::IGUICheckBox *>> m_checkboxes;
 	std::map<std::string, TooltipSpec> m_tooltips;
 	std::vector<std::pair<gui::IGUIElement *, TooltipSpec>> m_tooltip_rects;
 	std::vector<std::pair<FieldSpec, GUIScrollBar *>> m_scrollbars;
