@@ -33,6 +33,11 @@ struct HTTPFetchResult;
 #define MTHASHSET_FILE_SIGNATURE 0x4d544853 // 'MTHS'
 #define MTHASHSET_FILE_NAME "index.mth"
 
+// Store file into media cache (unless it exists already)
+// Validating the hash is responsibility of the caller
+bool clientMediaUpdateCache(const std::string &raw_hash,
+	const std::string &filedata);
+
 class ClientMediaDownloader
 {
 public:

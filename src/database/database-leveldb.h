@@ -45,6 +45,21 @@ private:
 	leveldb::DB *m_database;
 };
 
+class PlayerDatabaseLevelDB : public PlayerDatabase
+{
+public:
+	PlayerDatabaseLevelDB(const std::string &savedir);
+	~PlayerDatabaseLevelDB();
+
+	void savePlayer(RemotePlayer *player);
+	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
+	bool removePlayer(const std::string &name);
+	void listPlayers(std::vector<std::string> &res);
+
+private:
+	leveldb::DB *m_database;
+};
+
 class AuthDatabaseLevelDB : public AuthDatabase
 {
 public:

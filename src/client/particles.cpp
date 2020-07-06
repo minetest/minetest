@@ -349,7 +349,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 	const core::matrix4 *attached_absolute_pos_rot_matrix = nullptr;
 	if (m_attached_id) {
 		if (GenericCAO *attached = dynamic_cast<GenericCAO *>(env->getActiveObject(m_attached_id))) {
-			attached_absolute_pos_rot_matrix = &attached->getAbsolutePosRotMatrix();
+			attached_absolute_pos_rot_matrix = attached->getAbsolutePosRotMatrix();
 		} else {
 			unloaded = true;
 		}

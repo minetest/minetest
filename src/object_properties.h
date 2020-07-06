@@ -61,6 +61,7 @@ struct ObjectProperties
 	float eye_height = 1.625f;
 	float zoom_fov = 0.0f;
 	bool use_texture_alpha = false;
+	bool shaded = true;
 
 	ObjectProperties();
 	std::string dump();

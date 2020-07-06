@@ -82,8 +82,16 @@ bool FileCache::update(const std::string &name, const std::string &data)
 	std::string path = m_dir + DIR_DELIM + name;
 	return updateByPath(path, data);
 }
+
 bool FileCache::load(const std::string &name, std::ostream &os)
 {
 	std::string path = m_dir + DIR_DELIM + name;
 	return loadByPath(path, os);
+}
+
+bool FileCache::exists(const std::string &name)
+{
+	std::string path = m_dir + DIR_DELIM + name;
+	std::ifstream fis(path.c_str(), std::ios_base::binary);
+	return fis.good();
 }

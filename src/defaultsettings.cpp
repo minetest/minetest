@@ -451,6 +451,7 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("high_precision_fpu", "true");
 	settings->setDefault("enable_console", "false");
+	settings->setDefault("screen_dpi", "72");
 
 	// Altered settings for macOS
 #if defined(__MACH__) && defined(__APPLE__)
@@ -464,7 +465,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("touchtarget", "true");
-	settings->setDefault("TMPFolder", porting::getDataPath("tmp" DIR_DELIM));
+	settings->setDefault("TMPFolder", porting::path_cache);
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux", "false");
@@ -486,8 +487,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("curl_verify_cert","false");
 
 	// Apply settings according to screen size
-	float x_inches = ((double) porting::getDisplaySize().X /
-			(160 * porting::getDisplayDensity()));
+	float x_inches = (float) porting::getDisplaySize().X /
+			(160.f * porting::getDisplayDensity());
 
 	if (x_inches < 3.7f) {
 		settings->setDefault("hud_scaling", "0.6");
@@ -503,8 +504,5 @@ void set_default_settings(Settings *settings)
 		settings->setDefault("mono_font_size", "14");
 	}
 	// Tablets >= 6.0 use non-Android defaults for these settings
-#else
-	settings->setDefault("screen_dpi", "72");
 #endif
 }
-

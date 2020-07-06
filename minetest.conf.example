@@ -254,7 +254,7 @@
 #    Key for toggling display of minimap.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
-# keymap_minimap = KEY_F9
+# keymap_minimap = KEY_KEY_V
 
 #    Key for taking screenshots.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -469,7 +469,7 @@
 #    Key for switching between first- and third-person camera.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
-# keymap_camera_mode = KEY_F7
+# keymap_camera_mode = KEY_KEY_C
 
 #    Key for increasing the viewing range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -635,10 +635,6 @@
 #    1 = relief mapping (slower, more accurate).
 #    type: int min: 0 max: 1
 # parallax_occlusion_mode = 1
-
-#    Strength of parallax.
-#    type: float
-# 3d_paralax_strength = 0.025
 
 #    Number of parallax occlusion iterations.
 #    type: int
@@ -822,6 +818,10 @@
 #    Note that the interlaced mode requires shaders to be enabled.
 #    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside, crossview, pageflip
 # 3d_mode = none
+
+#    Strength of 3D mode parallax.
+#    type: float
+# 3d_paralax_strength = 0.025
 
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
 #    type: float min: 0.1 max: 1
@@ -1071,9 +1071,15 @@
 #    type: filepath
 # fallback_font_path = fonts/DroidSansFallbackFull.ttf
 
-#    Path to save screenshots at.
+#    Font size of the recent chat text and chat prompt in point (pt).
+#    Value 0 will use the default font size.
+#    type: int
+# chat_font_size = 0
+
+#    Path to save screenshots at. Can be an absolute or relative path.
+#    The folder will be created if it doesn't already exist.
 #    type: path
-# screenshot_path =
+# screenshot_path = screenshots
 
 #    Format of screenshots.
 #    type: enum values: png, jpg, bmp, pcx, ppm, tga
@@ -1135,6 +1141,13 @@
 #    Note that the port field in the main menu overrides this setting.
 #    type: int min: 1 max: 65535
 # remote_port = 30000
+
+#    Prometheus listener address.
+#    If minetest is compiled with ENABLE_PROMETHEUS option enabled,
+#    enable metrics listener for Prometheus on that address.
+#    Metrics can be fetch on http://127.0.0.1:30000/metrics
+#    type: string
+# prometheus_listener_address = 127.0.0.1:30000
 
 #    Save the map received by the client on disk.
 #    type: bool
@@ -1292,6 +1305,11 @@
 #    type: int
 # item_entity_ttl = 900
 
+#    Specifies the default stack size of nodes, items and tools.
+#    Note that mods or games may explicitly set a stack for certain (or all) items.
+#    type: int
+# default_stack_max = 99
+
 #    Enable players getting damage and dying.
 #    type: bool
 # enable_damage = false
@@ -1382,7 +1400,7 @@
 #    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
-#    This should be configured together with active_object_range.
+#    This should be configured together with active_object_send_range_blocks.
 #    type: int
 # active_block_range = 3
 
@@ -1662,7 +1680,7 @@
 
 #    Set the language. Leave empty to use the system language.
 #    A restart is required after changing this.
-#    type: enum values: , ar, ca, cs, da, de, dv, el, eo, es, et, eu, fil, fr, hu, id, it, ja, ja_KS, jbo, kk, kn, lo, lt, ms, my, nb, nl, nn, pl, pt, pt_BR, ro, ru, sl, sr_Cyrl, sv, sw, th, tr, uk, vi
+#    type: enum values: , ar, ca, cs, da, de, dv, el, en, eo, es, et, eu, fil, fr, hu, id, it, ja, ja_KS, jbo, kk, kn, lo, lt, ms, my, nb, nl, nn, pl, pt, pt_BR, ro, ru, sl, sr_Cyrl, sv, sw, th, tr, uk, vi
 # language =
 
 #    Level of logging to be written to debug.txt:
@@ -1682,6 +1700,10 @@
 #    debug.txt is only moved if this setting is positive.
 #    type: int
 # debug_log_size_max = 50
+
+#    Minimal level of logging to be written to chat.
+#    type: enum values: , none, error, warning, action, info, verbose
+# chat_log_level = error
 
 #    Enable IPv6 support (for both client and server).
 #    Required for IPv6 connections to work at all.
@@ -2149,13 +2171,60 @@
 ## Mapgen V7
 
 #    Map generation attributes specific to Mapgen v7.
-#    'ridges' enables the rivers.
+#    'ridges': Rivers.
+#    'floatlands': Floating land masses in the atmosphere.
+#    'caverns': Giant caves deep underground.
 #    type: flags possible values: mountains, ridges, floatlands, caverns, nomountains, noridges, nofloatlands, nocaverns
 # mgv7_spflags = mountains,ridges,nofloatlands,caverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 #    type: int
 # mgv7_mount_zero_level = 0
+
+#    Lower Y limit of floatlands.
+#    type: int
+# mgv7_floatland_ymin = 1024
+
+#    Upper Y limit of floatlands.
+#    type: int
+# mgv7_floatland_ymax = 4096
+
+#    Y-distance over which floatlands taper from full density to nothing.
+#    Tapering starts at this distance from the Y limit.
+#    For a solid floatland layer, this controls the height of hills/mountains.
+#    Must be less than or equal to half the distance between the Y limits.
+#    type: int
+# mgv7_floatland_taper = 256
+
+#    Exponent of the floatland tapering. Alters the tapering behaviour.
+#    Value = 1.0 creates a uniform, linear tapering.
+#    Values > 1.0 create a smooth tapering suitable for the default separated
+#    floatlands.
+#    Values < 1.0 (for example 0.25) create a more defined surface level with
+#    flatter lowlands, suitable for a solid floatland layer.
+#    type: float
+# mgv7_float_taper_exp = 2.0
+
+#    Adjusts the density of the floatland layer.
+#    Increase value to increase density. Can be positive or negative.
+#    Value = 0.0: 50% of volume is floatland.
+#    Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test
+#    to be sure) creates a solid floatland layer.
+#    type: float
+# mgv7_floatland_density = -0.6
+
+#    Surface level of optional water placed on a solid floatland layer.
+#    Water is disabled by default and will only be placed if this value is set
+#    to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the
+#    upper tapering).
+#    ***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:
+#    When enabling water placement the floatlands must be configured and tested
+#    to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other
+#    required value depending on 'mgv7_np_floatland'), to avoid
+#    server-intensive extreme water flow and to avoid vast flooding of the
+#    world surface below.
+#    type: int
+# mgv7_floatland_ywater = -31000
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -2325,6 +2394,22 @@
 #    octaves     = 4,
 #    persistence = 0.75,
 #    lacunarity  = 2.0,
+#    flags       = 
+# }
+
+#    3D noise defining structure of floatlands.
+#    If altered from the default, the noise 'scale' (0.7 by default) may need
+#    to be adjusted, as floatland tapering functions best when this noise has
+#    a value range of approximately -2.0 to 2.0.
+#    type: noise_params_3d
+# mgv7_np_floatland = {
+#    offset      = 0,
+#    scale       = 0.7,
+#    spread      = (384, 96, 384),
+#    seed        = 1009,
+#    octaves     = 4,
+#    persistence = 0.75,
+#    lacunarity  = 1.618,
 #    flags       = 
 # }
 

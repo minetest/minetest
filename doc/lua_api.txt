@@ -2706,13 +2706,17 @@ Some types may inherit styles from parent types.
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
     * bgcolor_hovered - color when hovered. Defaults to a lighter bgcolor when not provided.
+        * This is deprecated, use states instead.
     * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
+        * This is deprecated, use states instead.
     * bgimg - standard background image. Defaults to none.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+        * This is deprecated, use states instead.
     * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
                      See background9[] documentation for more details. This property also pads the
                      button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
+        * This is deprecated, use states instead.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * content_offset - 2d vector, shifts the position of the button's content without resizing it.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -2741,7 +2745,9 @@ Some types may inherit styles from parent types.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
     * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
+        * This is deprecated, use states instead.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
+        * This is deprecated, use states instead.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -5217,6 +5223,20 @@ Server
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 * `minetest.remove_player_auth(name)`: remove player authentication data
     * Returns boolean indicating success (false if player nonexistant)
+* `minetest.dynamic_add_media(filepath)`
+    * Adds the file at the given path to the media sent to clients by the server
+      on startup and also pushes this file to already connected clients.
+      The file must be a supported image, sound or model format. It must not be
+      modified, deleted, moved or renamed after calling this function.
+      The list of dynamically added media is not persisted.
+    * Returns boolean indicating success (duplicate files count as error)
+    * The media will be ready to use (in e.g. entity textures, sound_play)
+      immediately after calling this function.
+      Old clients that lack support for this feature will not see the media
+      unless they reconnect to the server.
+    * Since media transferred this way does not use client caching or HTTP
+      transfers, dynamic media should not be used with big files or performance
+      will suffer.
 
 Bans
 ----
@@ -6092,13 +6112,14 @@ object you are working with still exists.
 * `get_formspec_prepend(formspec)`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with boolean value representing the pressed
-      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up.
+      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up, zoom.
     * example: `{jump=false, right=true, left=false, LMB=false, RMB=false,
-      sneak=true, aux1=false, down=false, up=false}`
+      sneak=true, aux1=false, down=false, up=false, zoom=false}`
+    * The `zoom` field is available since 5.3
 * `get_player_control_bits()`: returns integer with bit packed player pressed
   keys.
     * bit nr/meaning: 0/up, 1/down, 2/left, 3/right, 4/jump, 5/aux1, 6/sneak,
-      7/LMB, 8/RMB
+      7/LMB, 8/RMB, 9/zoom (zoom available since 5.3)
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
@@ -6629,6 +6650,9 @@ Player properties need to be saved manually.
 
         damage_texture_modifier = "^[brighten",
         -- Texture modifier to be applied for a short duration when object is hit
+
+        shaded = true,
+        -- Setting this to 'false' disables diffuse lighting of entity
     }
 
 Entity definition

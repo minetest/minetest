@@ -113,6 +113,7 @@ local function place_nodes(param)
 	table.sort(nodes)
 	minetest.chat_send_player(name, "Placing nodes …")
 	local nodes_placed = 0
+	local aborted = false
 	for n=1, #nodes do
 		local itemstring = nodes[n]
 		local def = minetest.registered_nodes[itemstring]

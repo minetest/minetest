@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-03-31 10:14+0000\n"
 "Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
@@ -22,6 +22,10 @@ msgstr "Renaskiĝi"
 msgid "You died"
 msgstr "Vi mortis"
 
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr ""
+
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
 msgstr "Eraris Lua-skripto:"
@@ -33,10 +37,6 @@ msgstr "Eraro okazis:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Ĉefmenuo"
-
-#: builtin/fstk/ui.lua
-msgid "Ok"
-msgstr "Bone"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -114,6 +114,10 @@ msgstr ""
 "signoj a–z kaj 0–9 estas permesataj."
 
 #: builtin/mainmenu/dlg_config_world.lua
+msgid "Find More Mods"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Modifaĵo:"
 
@@ -159,16 +163,17 @@ msgid "All packages"
 msgstr "Ĉiuj pakaĵoj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back"
-msgstr "Reeniri"
-
-#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Reeniri al ĉefmenuo"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading and installing $1, please wait..."
-msgstr "Elŝutante kaj instalante $1, bonvolu atendi…"
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Enlegante…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -213,13 +218,55 @@ msgstr "Malinstali"
 msgid "Update"
 msgstr "Ĝisdatigi"
 
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Mondo kun nomo «$1» jam ekzistas"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Additional terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Altitude chill"
+msgstr "Alteca malvarmiĝo"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Altitude dry"
+msgstr "Alteca malvarmiĝo"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biome blending"
+msgstr "Klimata bruo"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biomes"
+msgstr "Klimata bruo"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caverns"
+msgstr "Bruo de kavernoj"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caves"
+msgstr "Oktavoj"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Krei"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Decorations"
+msgstr "Ripetoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -229,17 +276,100 @@ msgstr "Elŝuti ludon, ekzemple minetest_game, el minetest.net"
 msgid "Download one from minetest.net"
 msgstr "Elŝutu ludon el minetest.net"
 
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Dungeons"
+msgstr "Bruo de forgeskeloj"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Flat terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floating landmasses in the sky"
+msgstr "Denseco de fluginsulaj montoj"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floatlands (experimental)"
+msgstr "Alteco de fluginsuloj"
+
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
 msgstr "Ludo"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Generate non-fractal terrain: Oceans and underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Hills"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Humid rivers"
+msgstr "Videa pelilo"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Increases humidity around rivers"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Lakes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Low humidity and high heat causes shallow or dry rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
 msgstr "Mondestigilo"
 
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Mapgen flags"
+msgstr "Parametroj de mondestigilo"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mapgen-specific flags"
+msgstr "Parametroj specialaj por Mondestigilo v5"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mountains"
+msgstr "Bruo de montoj"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mud flow"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Network of tunnels and caves"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
 msgstr "Neniu ludo estas elektita"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces heat with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces humidity with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Rivers"
+msgstr "Grandeco de riveroj"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Sea level rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -247,7 +377,52 @@ msgid "Seed"
 msgstr "Fontnombro"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The minimal development test is meant for developers."
+msgid "Smooth transition between biomes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Structures appearing on the terrain (no effect on trees and jungle grass "
+"created by v6)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Structures appearing on the terrain, typically trees and plants"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle, Tundra, Taiga"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Terrain surface erosion"
+msgstr "Bruo de terena bazo"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Trees and jungle grass"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Vary river depth"
+msgstr "Rivera profundo"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Very large caverns deep in the underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Warning: The Development Test is meant for developers."
 msgstr ""
 "Averto: La minimuma programista testo estas intencita por programistoj."
 
@@ -560,6 +735,10 @@ msgstr "Gastigi ludon"
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
 msgstr "Gastigi servilon"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Install games from ContentDB"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1217,6 +1396,14 @@ msgid "Sound muted"
 msgstr "Silentigite"
 
 #: src/client/game.cpp
+msgid "Sound system is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Sound system is not supported on this build"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Sound unmuted"
 msgstr "Malsilentigite"
 
@@ -1248,7 +1435,7 @@ msgstr "Dratostaro montrita"
 msgid "Zoom currently disabled by game or mod"
 msgstr "Zomado nuntempe malŝaltita de ludo aŭ modifaĵo"
 
-#: src/client/game.cpp src/gui/modalMenu.cpp
+#: src/client/game.cpp
 msgid "ok"
 msgstr "bone"
 
@@ -1854,6 +2041,11 @@ msgid "3D mode"
 msgstr "3d-a reĝimo"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "3D mode parallax strength"
+msgstr "Normalmapa potenco"
+
+#: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
 msgstr "3d-a bruo difinanta grandegajn kavernojn."
 
@@ -1864,6 +2056,14 @@ msgid ""
 msgstr ""
 "3d-a bruo difinanta montan strukturon kaj altecon.\n"
 "Ankaŭ difinas strukturon de montoj sur fluginsuloj."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D noise defining structure of floatlands.\n"
+"If altered from the default, the noise 'scale' (0.7 by default) may need\n"
+"to be adjusted, as floatland tapering functions best when this noise has\n"
+"a value range of approximately -2.0 to 2.0."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -1928,7 +2128,8 @@ msgid "ABM interval"
 msgstr "Intertempo de ABM (aktiva modifilo de monderoj)"
 
 #: src/settings_translation_file.cpp
-msgid "Absolute limit of emerge queues"
+#, fuzzy
+msgid "Absolute limit of queued blocks to emerge"
 msgstr "Maksimumo de mondestigaj vicoj"
 
 #: src/settings_translation_file.cpp
@@ -1978,6 +2179,16 @@ msgstr ""
 "kvarmilaj ekranoj."
 
 #: src/settings_translation_file.cpp
+#, c-format
+msgid ""
+"Adjusts the density of the floatland layer.\n"
+"Increase value to increase density. Can be positive or negative.\n"
+"Value = 0.0: 50% of volume is floatland.\n"
+"Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
+"to be sure) creates a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Specialaj"
 
@@ -1994,10 +2205,6 @@ msgstr ""
 "Valoro «1.0» lasas la luman kurbon neŝanĝita.\n"
 "Ĉi tio nur grave efikas sur taglumo kaj artlumo; ĝi nur\n"
 "tre malmulte efikas sur natura noktlumo."
-
-#: src/settings_translation_file.cpp
-msgid "Altitude chill"
-msgstr "Alteca malvarmiĝo"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2272,8 +2479,18 @@ msgstr ""
 "Povus esti bezona por malgrandaj ekranoj."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat font size"
+msgstr "Tipara grandeco"
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Babila klavo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat log level"
+msgstr "Erarserĉa protokola nivelo"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2563,6 +2780,11 @@ msgstr "Implicitaj rajtoj"
 #: src/settings_translation_file.cpp
 msgid "Default report format"
 msgstr "Implicita raporta formo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Default stack size"
+msgstr "Norma ludo"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2928,6 +3150,16 @@ msgstr ""
 "je nombro super 0."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Value = 1.0 creates a uniform, linear tapering.\n"
+"Values > 1.0 create a smooth tapering suitable for the default separated\n"
+"floatlands.\n"
+"Values < 1.0 (for example 0.25) create a more defined surface level with\n"
+"flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
 msgstr "Kadroj sekunde en paŭza menuo"
 
@@ -3048,6 +3280,41 @@ msgid "Fixed virtual joystick"
 msgstr "Fiksita virtuala stirstango"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland density"
+msgstr "Denseco de fluginsulaj montoj"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland maximum Y"
+msgstr "Maksimuma Y de forgeskelo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland minimum Y"
+msgstr "Minimuma Y de forgeskeloj"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland noise"
+msgstr "Baza bruo de fluginsuloj"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland taper exponent"
+msgstr "Eksponento de fluginsulaj montoj"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland tapering distance"
+msgstr "Baza bruo de fluginsuloj"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland water level"
+msgstr "Alteco de fluginsuloj"
+
+#: src/settings_translation_file.cpp
 msgid "Fly key"
 msgstr "Fluga klavo"
 
@@ -3098,6 +3365,12 @@ msgstr "Grandeco de la reenpaŝa tiparo, punkte (pt)."
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font in point (pt)."
 msgstr "Grandeco de la egallarĝa tiparo, punkte (pt)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Font size of the recent chat text and chat prompt in point (pt).\n"
+"Value 0 will use the default font size."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4712,14 +4985,6 @@ msgid "Light curve low gradient"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Limit of emerge queues on disk"
-msgstr "Limo de viceroj enlegotaj de disko"
-
-#: src/settings_translation_file.cpp
-msgid "Limit of emerge queues to generate"
-msgstr "Limo de viceroj estigotaj"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
@@ -4791,6 +5056,11 @@ msgstr "Enlegante Modifilojn de Monderoj"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
+msgstr "Suba Y-limo de forgeskeloj."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lower Y limit of floatlands."
 msgstr "Suba Y-limo de forgeskeloj."
 
 #: src/settings_translation_file.cpp
@@ -4876,9 +5146,12 @@ msgstr ""
 "kaj la flago «jungles» estas malatentata."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers."
+"'ridges': Rivers.\n"
+"'floatlands': Floating land masses in the atmosphere.\n"
+"'caverns': Giant caves deep underground."
 msgstr ""
 "Mapestigilaj ecoj speciale por Mapestigilo v7.\n"
 "«ridges» ŝaltas la riverojn."
@@ -4968,10 +5241,6 @@ msgid "Mapgen debug"
 msgstr "Mapestigila erarserĉilo"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen flags"
-msgstr "Parametroj de mondestigilo"
-
-#: src/settings_translation_file.cpp
 msgid "Mapgen name"
 msgstr "Nomo de mondestigilo"
 
@@ -5044,17 +5313,19 @@ msgid "Maximum number of blocks that can be queued for loading."
 msgstr "Maksimuma nombro da mondopecoj atendantaj legon."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Maksimumo nombro de mondopecoj atendantaj estigon.\n"
 "Vakigu por memaga elekto de ĝusta kvanto."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Maksimuma nombro de atendantaj mondopecoj legotaj de loka dosiero.\n"
 "Agordi vake por memaga elekto de ĝusta nombro."
@@ -5150,6 +5421,10 @@ msgstr "Tagmesaĝo montrota al konektantaj ludantoj."
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
 msgstr "Metodo emfazi elektitan objekton."
+
+#: src/settings_translation_file.cpp
+msgid "Minimal level of logging to be written to chat."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5321,11 +5596,9 @@ msgid "Number of emerge threads"
 msgstr "Nombro da mondestigaj fadenoj"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
-"WARNING: Currently there are multiple bugs that may cause crashes when\n"
-"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
-"strongly recommended this value is set to the default '1'.\n"
 "Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
@@ -5426,10 +5699,6 @@ msgid "Parallax occlusion scale"
 msgstr "Skalo de paralaksa ombrigo"
 
 #: src/settings_translation_file.cpp
-msgid "Parallax occlusion strength"
-msgstr "Potenco de paralaksa ombrigo"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path of the fallback font.\n"
 "If “freetype” setting is enabled: Must be a TrueType font.\n"
@@ -5445,8 +5714,10 @@ msgstr ""
 "disponeblas."
 
 #: src/settings_translation_file.cpp
-msgid "Path to save screenshots at."
-msgstr "Dosierindiko por konservi ekrankopiojn."
+msgid ""
+"Path to save screenshots at. Can be an absolute or relative path.\n"
+"The folder will be created if it doesn't already exist."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5489,6 +5760,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
 msgstr "Paŭzigi je perdita fokuso de la fenestro"
+
+#: src/settings_translation_file.cpp
+msgid "Per-player limit of queued blocks load from disk"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Per-player limit of queued blocks to generate"
+msgstr "Limo de viceroj estigotaj"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5567,6 +5847,18 @@ msgstr "Profilila baskula klavo"
 #: src/settings_translation_file.cpp
 msgid "Profiling"
 msgstr "Profilado"
+
+#: src/settings_translation_file.cpp
+msgid "Prometheus listener address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Prometheus listener address.\n"
+"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"enable metrics listener for Prometheus on that address.\n"
+"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -6078,6 +6370,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Specifies the default stack size of nodes, items and tools.\n"
+"Note that mods or games may explicitly set a stack for certain (or all) "
+"items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Spread of light curve boost range.\n"
 "Controls the width of the range to be boosted.\n"
 "Standard deviation of the light curve boost Gaussian."
@@ -6103,6 +6402,11 @@ msgid "Step mountain spread noise"
 msgstr "Bruo de disvastiĝo de terasaj montoj"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Strength of 3D mode parallax."
+msgstr "Potenco de paralakso."
+
+#: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
 msgstr "Forteco de estigitaj normalmapoj."
 
@@ -6117,16 +6421,26 @@ msgstr ""
 "de la luma kurbo, kies heleco estas pliigita."
 
 #: src/settings_translation_file.cpp
-msgid "Strength of parallax."
-msgstr "Potenco de paralakso."
-
-#: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "Severa kontrolo de protokoloj"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
 msgstr "Forpreni kolorkodojn"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Surface level of optional water placed on a solid floatland layer.\n"
+"Water is disabled by default and will only be placed if this value is set\n"
+"to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
+"upper tapering).\n"
+"***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
+"When enabling water placement the floatlands must be configured and tested\n"
+"to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
+"required value depending on 'mgv7_np_floatland'), to avoid\n"
+"server-intensive extreme water flow and to avoid vast flooding of the\n"
+"world surface below."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6265,7 +6579,7 @@ msgid ""
 "In active blocks objects are loaded and ABMs run.\n"
 "This is also the minimum range in which active objects (mobs) are "
 "maintained.\n"
-"This should be configured together with active_object_range."
+"This should be configured together with active_object_send_range_blocks."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6449,6 +6763,11 @@ msgstr "Mallegi neuzatajn servilajn datenojn"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
+msgstr "Supra Y-limo de forgeskeloj."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Upper Y limit of floatlands."
 msgstr "Supra Y-limo de forgeskeloj."
 
 #: src/settings_translation_file.cpp
@@ -6826,6 +7145,14 @@ msgid "Y-distance over which caverns expand to full size."
 msgstr "Y-distanco trans kiu kavernoj etendiĝas al plena grandeco."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Y-distance over which floatlands taper from full density to nothing.\n"
+"Tapering starts at this distance from the Y limit.\n"
+"For a solid floatland layer, this controls the height of hills/mountains.\n"
+"Must be less than or equal to half the distance between the Y limits."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
 msgstr "Y-nivelo de mezuma terena surfaco."
 
@@ -6857,40 +7184,70 @@ msgstr "Samtempa limo de cURL"
 msgid "cURL timeout"
 msgstr "cURL tempolimo"
 
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Baskuligi glitan vidpunkton"
+
+#~ msgid "Select Package File:"
+#~ msgstr "Elekti pakaĵan dosieron:"
+
+#, fuzzy
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y de supera limo de grandaj kvazaŭ-hazardaj kavernoj."
+
+#~ msgid "Waving Water"
+#~ msgstr "Ondanta akvo"
+
+#~ msgid "Projecting dungeons"
+#~ msgstr "Planante forgeskelojn"
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-nivelo kien etendiĝas ombroj de fluginsuloj."
+
+#~ msgid "Waving water"
+#~ msgstr "Ondanta akvo"
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Variaĵo de alteco de montetoj kaj profundeco de lagoj sur glata tereno de "
+#~ "fluginsuloj."
+
 #~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
-#~ "Alĝustigi la gamaan kodadon al la lumtabeloj. Pli altaj nombroj estas pli "
-#~ "helaj.\n"
-#~ "Ĉi tiu agordo estas klientflanka, kaj serviloj ĝin malatentos."
+#~ "Ordinara plejalto, super kaj sub la mezpunkto, de fluginsulaj montoj."
 
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr ""
-#~ "Ŝanĝas kiel montecaj fluginsuloj maldikiĝas super kaj sub la mezpunkto."
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Tiu ĉi tiparo uziĝos por iuj lingvoj."
 
-#~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
-#~ msgstr ""
-#~ "Regas densecon de montecaj fluginsuloj.\n"
-#~ "Temas pri deŝovo de la brua valoro «np_mountain»."
+#~ msgid "Shadow limit"
+#~ msgstr "Limo por ombroj"
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Regas larĝecon de tuneloj; pli malgranda valoro kreas pri larĝajn "
-#~ "tunelojn."
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Dosierindiko al tiparo «TrueType» aŭ bitbildo."
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "Akreco de mallumo"
+#~ msgid "Lightness sharpness"
+#~ msgstr "Akreco de heleco"
 
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Difinas zonojn de glata tereno sur fluginsuloj.\n"
-#~ "Glataj fluginsuloj okazas kiam bruo superas nulon."
+#~ msgid "Lava depth"
+#~ msgstr "Lafo-profundeco"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Subteno de IPv6."
+
+#~ msgid "Gamma"
+#~ msgstr "Helĝustigo"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Maltravidebleco de tipara ombro (inter 0 kaj 255)."
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Alteco de fluginsulaj montoj"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Bruo de baza alteco de fluginsuloj"
+
+#~ msgid "Enable VBO"
+#~ msgstr "Ŝalti VBO(Vertex Buffer Object)"
 
 #~ msgid ""
 #~ "Deprecated, define and locate cave liquids using biome definitions "
@@ -6901,79 +7258,55 @@ msgstr "cURL tempolimo"
 #~ "difinoj\n"
 #~ "Y de supra limo de lafo en grandaj kavernoj."
 
-#~ msgid "Enable VBO"
-#~ msgstr "Ŝalti VBO(Vertex Buffer Object)"
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Difinas zonojn de glata tereno sur fluginsuloj.\n"
+#~ "Glataj fluginsuloj okazas kiam bruo superas nulon."
 
-#~ msgid "Floatland base height noise"
-#~ msgstr "Bruo de baza alteco de fluginsuloj"
+#~ msgid "Darkness sharpness"
+#~ msgstr "Akreco de mallumo"
 
-#~ msgid "Floatland base noise"
-#~ msgstr "Baza bruo de fluginsuloj"
-
-#~ msgid "Floatland level"
-#~ msgstr "Alteco de fluginsuloj"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Denseco de fluginsulaj montoj"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Eksponento de fluginsulaj montoj"
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Alteco de fluginsulaj montoj"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Maltravidebleco de tipara ombro (inter 0 kaj 255)."
-
-#~ msgid "Gamma"
-#~ msgstr "Helĝustigo"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Subteno de IPv6."
-
-#~ msgid "Lava depth"
-#~ msgstr "Lafo-profundeco"
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Akreco de heleco"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Dosierindiko al tiparo «TrueType» aŭ bitbildo."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Limo por ombroj"
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Tiu ĉi tiparo uziĝos por iuj lingvoj."
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Regas larĝecon de tuneloj; pli malgranda valoro kreas pri larĝajn "
+#~ "tunelojn."
 
 #~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
 #~ msgstr ""
-#~ "Ordinara plejalto, super kaj sub la mezpunkto, de fluginsulaj montoj."
+#~ "Regas densecon de montecaj fluginsuloj.\n"
+#~ "Temas pri deŝovo de la brua valoro «np_mountain»."
 
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr ""
-#~ "Variaĵo de alteco de montetoj kaj profundeco de lagoj sur glata tereno de "
-#~ "fluginsuloj."
+#~ "Ŝanĝas kiel montecaj fluginsuloj maldikiĝas super kaj sub la mezpunkto."
 
-#~ msgid "Waving water"
-#~ msgstr "Ondanta akvo"
+#~ msgid ""
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
+#~ msgstr ""
+#~ "Alĝustigi la gamaan kodadon al la lumtabeloj. Pli altaj nombroj estas pli "
+#~ "helaj.\n"
+#~ "Ĉi tiu agordo estas klientflanka, kaj serviloj ĝin malatentos."
 
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-nivelo kien etendiĝas ombroj de fluginsuloj."
+#~ msgid "Path to save screenshots at."
+#~ msgstr "Dosierindiko por konservi ekrankopiojn."
 
-#~ msgid "Projecting dungeons"
-#~ msgstr "Planante forgeskelojn"
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "Potenco de paralaksa ombrigo"
 
-#~ msgid "Waving Water"
-#~ msgstr "Ondanta akvo"
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "Limo de viceroj enlegotaj de disko"
 
-#, fuzzy
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Y de supera limo de grandaj kvazaŭ-hazardaj kavernoj."
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "Elŝutante kaj instalante $1, bonvolu atendi…"
 
-#~ msgid "Select Package File:"
-#~ msgstr "Elekti pakaĵan dosieron:"
+#~ msgid "Back"
+#~ msgstr "Reeniri"
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Baskuligi glitan vidpunkton"
+#~ msgid "Ok"
+#~ msgstr "Bone"

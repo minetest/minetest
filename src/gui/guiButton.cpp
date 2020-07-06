@@ -789,13 +789,12 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 	setDrawBorder(style.getBool(StyleSpec::BORDER, true));
 	setUseAlphaChannel(style.getBool(StyleSpec::ALPHA, true));
 
-	const core::position2di buttonCenter(AbsoluteRect.getCenter());
-	core::position2d<s32> geom(buttonCenter);
 	if (style.isNotDefault(StyleSpec::BGIMG)) {
 		video::ITexture *texture = style.getTexture(StyleSpec::BGIMG,
 				getTextureSource());
 		setImage(guiScalingImageButton(
-				Environment->getVideoDriver(), texture, geom.X, geom.Y));
+				Environment->getVideoDriver(), texture,
+						AbsoluteRect.getWidth(), AbsoluteRect.getHeight()));
 		setScaleImage(true);
 	} else {
 		setImage(nullptr);

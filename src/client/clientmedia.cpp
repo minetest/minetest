@@ -35,6 +35,15 @@ static std::string getMediaCacheDir()
 	return porting::path_cache + DIR_DELIM + "media";
 }
 
+bool clientMediaUpdateCache(const std::string &raw_hash, const std::string &filedata)
+{
+	FileCache media_cache(getMediaCacheDir());
+	std::string sha1_hex = hex_encode(raw_hash);
+	if (!media_cache.exists(sha1_hex))
+		return media_cache.update(sha1_hex, filedata);
+	return true;
+}
+
 /*
 	ClientMediaDownloader
 */
@@ -558,7 +567,6 @@ bool ClientMediaDownloader::checkAndLoad(
 
 	return true;
 }
-
 
 /*
 	Minetest Hashset File Format

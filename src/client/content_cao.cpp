@@ -162,6 +162,15 @@ static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
 	matrix.setTextureScale(txs, tys);
 }
 
+// Evaluate transform chain recursively; irrlicht does not do this for us
+static void updatePositionRecursive(scene::ISceneNode *node)
+{
+	scene::ISceneNode *parent = node->getParent();
+	if (parent)
+		updatePositionRecursive(parent);
+	node->updateAbsolutePosition();
+}
+
 /*
 	TestCAO
 */
@@ -577,10 +586,16 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 	if (m_enable_shaders) {
 		IShaderSource *shader_source = m_client->getShaderSource();
-		u32 shader_id = shader_source->getShader(
-				"object_shader",
-				(m_prop.use_texture_alpha) ? TILE_MATERIAL_ALPHA : TILE_MATERIAL_BASIC,
-				NDT_NORMAL);
+		MaterialType material_type;
+
+		if (m_prop.shaded && m_prop.glow == 0)
+			material_type = (m_prop.use_texture_alpha) ?
+				TILE_MATERIAL_ALPHA : TILE_MATERIAL_BASIC;
+		else
+			material_type = (m_prop.use_texture_alpha) ?
+				TILE_MATERIAL_PLAIN_ALPHA : TILE_MATERIAL_PLAIN;
+
+		u32 shader_id = shader_source->getShader("object_shader", material_type, NDT_NORMAL);
 		m_material_type = shader_source->getShaderInfo(shader_id).material;
 	} else {
 		m_material_type = (m_prop.use_texture_alpha) ?
@@ -923,11 +938,6 @@ void GenericCAO::updateNodePos()
 
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
-	if (m_animated_meshnode) {
-		m_animated_meshnode->animateJoints();
-		updateBonePosition();
-	}
-
 	// Handle model animations and update positions instantly to prevent lags
 	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
@@ -1136,6 +1146,18 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		rot_translator.val_current = m_rotation;
 		updateNodePos();
+	}
+
+	if (m_animated_meshnode) {
+		// Everything must be updated; the whole transform
+		// chain as well as the animated mesh node.
+		// Otherwise, bone attachments would be relative to
+		// a position that's one frame old.
+		if (m_matrixnode)
+			updatePositionRecursive(m_matrixnode);
+		m_animated_meshnode->updateAbsolutePosition();
+		m_animated_meshnode->animateJoints();
+		updateBonePosition();
 	}
 }
 
@@ -1438,6 +1460,18 @@ void GenericCAO::updateBonePosition()
 			bone->updateAbsolutePosition();
 		}
 	}
+	// The following is needed for set_bone_pos to propagate to
+	// attached objects correctly.
+	// Irrlicht ought to do this, but doesn't when using EJUOR_CONTROL.
+	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
+		auto bone = m_animated_meshnode->getJointNode(i);
+		// Look for the root bone.
+		if (bone && bone->getParent() == m_animated_meshnode) {
+			// Update entire skeleton.
+			bone->updateAbsolutePositionOfAllChildren();
+			break;
+		}
+	}
 }
 
 void GenericCAO::updateAttachments()
@@ -1500,15 +1534,20 @@ bool GenericCAO::visualExpiryRequired(const ObjectProperties &new_) const
 	 * - glow:          handled by updateLight()
 	 * - any other properties that do not change appearance
 	 */
+
+	bool uses_legacy_texture = new_.wield_item.empty() &&
+		(new_.visual == "wielditem" || new_.visual == "item");
 	// Ordered to compare primitive types before std::vectors
 	return old.backface_culling != new_.backface_culling ||
 		old.is_visible != new_.is_visible ||
 		old.mesh != new_.mesh ||
+		old.shaded != new_.shaded ||
 		old.use_texture_alpha != new_.use_texture_alpha ||
 		old.visual != new_.visual ||
 		old.visual_size != new_.visual_size ||
 		old.wield_item != new_.wield_item ||
-		old.colors != new_.colors;
+		old.colors != new_.colors ||
+		(uses_legacy_texture && old.textures != new_.textures);
 }
 
 void GenericCAO::processMessage(const std::string &data)
