@@ -232,19 +232,26 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"collectgarbage",
 		"DIR_DELIM",
 		"error",
-		"getfenv",
+		// getfenv can be used to escape the sandbox
+		// getmetatable can be used to escape the sandbox
 		"ipairs",
 		"next",
 		"pairs",
 		"pcall",
 		"print",
+
+		// These are technically unsafe as they bypass metadata,
+		// but that's fine as it doesn't allowing escaping the sandbox
 		"rawequal",
 		"rawget",
 		"rawset",
+
 		"select",
+
+		// Unsafe as they can mess with other code, but this doesn't allow escaping so is fine
 		"setfenv",
-		// getmetatable can be used to escape the sandbox
 		"setmetatable",
+
 		"tonumber",
 		"tostring",
 		"type",
@@ -270,13 +277,6 @@ void ScriptApiSecurity::initializeSecurityClient()
 
 #if USE_LUAJIT
 	static const char *jit_whitelist[] = {
-		"arch",
-		"flush",
-		"off",
-		"on",
-		"opt",
-		"os",
-		"status",
 		"version",
 		"version_num",
 	};
@@ -302,8 +302,6 @@ void ScriptApiSecurity::initializeSecurityClient()
 	SECURE_API(g, loadstring);
 	SECURE_API(g, require);
 	lua_pop(L, 2);
-
-
 
 	// Copy safe OS functions
 	lua_getglobal(L, "os");
