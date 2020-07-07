@@ -1173,10 +1173,6 @@ void Game::shutdown()
 	if (formspec)
 		formspec->quitMenu();
 
-#ifdef HAVE_TOUCHSCREENGUI
-	g_touchscreengui->hide();
-#endif
-
 	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
 
 	if (clouds)
@@ -1324,12 +1320,7 @@ bool Game::createClient(const std::string &playername,
 		return false;
 
 	bool could_connect, connect_aborted;
-#ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui) {
-		g_touchscreengui->init(texture_src);
-		g_touchscreengui->hide();
-	}
-#endif
+
 	if (!connectToServer(playername, password, address, port,
 			&could_connect, &connect_aborted))
 		return false;
@@ -1452,13 +1443,6 @@ bool Game::initGui()
 		errorstream << *error_message << std::endl;
 		return false;
 	}
-
-#ifdef HAVE_TOUCHSCREENGUI
-
-	if (g_touchscreengui)
-		g_touchscreengui->show();
-
-#endif
 
 	return true;
 }
@@ -1853,17 +1837,7 @@ void Game::processUserInput(f32 dtime)
 	// Reset input if window not active or some menu is active
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
 		input->clear();
-#ifdef HAVE_TOUCHSCREENGUI
-		g_touchscreengui->hide();
-#endif
 	}
-#ifdef HAVE_TOUCHSCREENGUI
-	else if (g_touchscreengui) {
-		/* on touchscreengui step may generate own input events which ain't
-		 * what we want in case we just did clear them */
-		g_touchscreengui->step(dtime);
-	}
-#endif
 
 	if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen()) {
 		gui_chat_console->closeConsoleAtOnce();
@@ -1871,14 +1845,6 @@ void Game::processUserInput(f32 dtime)
 
 	// Input handler step() (used by the random input generator)
 	input->step(dtime);
-
-#ifdef __ANDROID__
-	auto formspec = m_game_ui->getFormspecGUI();
-	if (formspec)
-		formspec->getAndroidUIInput();
-	else
-		handleAndroidChatInput();
-#endif
 
 	// Increase timer for double tap of "keymap_jump"
 	if (m_cache_doubletap_jump && runData.jump_timer <= 0.2f)
@@ -2433,27 +2399,19 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 {
-#ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui) {
-		cam->camera_yaw   += g_touchscreengui->getYawChange();
-		cam->camera_pitch  = g_touchscreengui->getPitch();
-	} else {
-#endif
-		v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
-		v2s32 dist = input->getMousePos() - center;
 
-		if (m_invert_mouse || camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
-			dist.Y = -dist.Y;
-		}
+	v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
+	v2s32 dist = input->getMousePos() - center;
 
-		cam->camera_yaw   -= dist.X * m_cache_mouse_sensitivity;
-		cam->camera_pitch += dist.Y * m_cache_mouse_sensitivity;
-
-		if (dist.X != 0 || dist.Y != 0)
-			input->setMousePos(center.X, center.Y);
-#ifdef HAVE_TOUCHSCREENGUI
+	if (m_invert_mouse || camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
+		dist.Y = -dist.Y;
 	}
-#endif
+
+	cam->camera_yaw   -= dist.X * m_cache_mouse_sensitivity;
+	cam->camera_pitch += dist.Y * m_cache_mouse_sensitivity;
+
+	if (dist.X != 0 || dist.Y != 0)
+		input->setMousePos(center.X, center.Y);
 
 	if (m_cache_enable_joysticks) {
 		f32 c = m_cache_joystick_frustum_sensitivity * (1.f / 32767.f) * dtime;
@@ -3065,19 +3023,6 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		break;
 	}
 	shootline.end = shootline.start + camera_direction * BS * d;
-
-#ifdef HAVE_TOUCHSCREENGUI
-
-	if ((g_settings->getBool("touchtarget")) && (g_touchscreengui)) {
-		shootline = g_touchscreengui->getShootline();
-		// Scale shootline to the acual distance the player can reach
-		shootline.end = shootline.start
-			+ shootline.getVector().normalize() * BS * d;
-		shootline.start += intToFloat(camera_offset, BS);
-		shootline.end += intToFloat(camera_offset, BS);
-	}
-
-#endif
 
 	PointedThing pointed = updatePointedThing(shootline,
 			selected_def.liquids_pointable,
@@ -3918,12 +3863,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	bool draw_crosshair = (
 			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 			(camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
-#ifdef HAVE_TOUCHSCREENGUI
-	try {
-		draw_crosshair = !g_settings->getBool("touchtarget");
-	} catch (SettingNotFoundException) {
-	}
-#endif
+
 	RenderingEngine::draw_scene(skycolor, m_game_ui->m_flags.show_hud,
 			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
 
