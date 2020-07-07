@@ -48,10 +48,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/mainmenumanager.h"
 #endif
 
-#ifdef HAVE_TOUCHSCREENGUI
-	#include "gui/touchscreengui.h"
-#endif
-
 #if !defined(SERVER) && \
 	(IRRLICHT_VERSION_MAJOR == 1) && \
 	(IRRLICHT_VERSION_MINOR == 8) && \
