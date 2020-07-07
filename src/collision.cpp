@@ -527,6 +527,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				is_collision = false;
 
 			CollisionInfo info;
+			if (is_collision) {
+				info.new_pos = *pos_f / BS;
+			}
+
 			if (nearest_info.isObject())
 				info.type = COLLISION_OBJECT;
 			else

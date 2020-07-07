@@ -2050,7 +2050,7 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 	lua_createtable(L, res.collisions.size(), 0);
 	int i = 1;
 	for (const auto &c : res.collisions) {
-		lua_createtable(L, 0, 5);
+		lua_createtable(L, 0, 6);
 
 		lua_pushstring(L, collision_type_str[c.type]);
 		lua_setfield(L, -2, "type");
@@ -2072,6 +2072,9 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 
 		push_v3f(L, c.new_speed / BS);
 		lua_setfield(L, -2, "new_velocity");
+
+		push_v3f(L, c.new_pos);
+		lua_setfield(L, -2, "new_pos");
 
 		lua_rawseti(L, -2, i++);
 	}
