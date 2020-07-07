@@ -983,11 +983,6 @@ msgid "Tone Mapping"
 msgstr "Tonmappning"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Touchthreshold: (px)"
-msgstr "Touch-tröskel (px)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Trilinjärt filter"
 

@@ -962,10 +962,6 @@ msgid "Tone Mapping"
 msgstr "Танальнае адлюстраванне"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr "Сэнсарны парог: (px)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Трылінейны фільтр"
 

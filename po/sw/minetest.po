@@ -1008,11 +1008,6 @@ msgid "Tone Mapping"
 msgstr "Ramani ya toni"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Touchthreshold: (px)"
-msgstr "Touchthreshold (px)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Kichujio trilinear"
 

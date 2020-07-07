@@ -946,10 +946,6 @@ msgid "Tone Mapping"
 msgstr "टोन मैपिंग"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr "छूने की त्रिज्या : (px)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "त्रिरेखीय फिल्टर"
 

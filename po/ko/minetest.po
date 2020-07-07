@@ -1006,11 +1006,6 @@ msgid "Tone Mapping"
 msgstr "톤 매핑"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Touchthreshold: (px)"
-msgstr "터치임계값 (픽셀)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "선형 필터"
 

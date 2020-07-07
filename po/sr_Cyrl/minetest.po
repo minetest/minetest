@@ -1003,11 +1003,6 @@ msgid "Tone Mapping"
 msgstr "Тонско Мапирање"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Touchthreshold: (px)"
-msgstr "Праг додиривања (px)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Трилинеарни филтер"
 

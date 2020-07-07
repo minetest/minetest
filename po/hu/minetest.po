@@ -960,10 +960,6 @@ msgid "Tone Mapping"
 msgstr "Tónus rajzolás"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr "Érintésküszöb (px)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Trilineáris szűrés"
 

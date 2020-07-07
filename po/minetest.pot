@@ -921,10 +921,6 @@ msgid "All Settings"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Bump Mapping"
 msgstr ""
 

@@ -960,10 +960,6 @@ msgid "Tone Mapping"
 msgstr "Tone-Mapping"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr "Berührungsempfindlichkeit: (px)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Trilinearer Filter"
 

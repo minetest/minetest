@@ -950,10 +950,6 @@ msgid "Tone Mapping"
 msgstr "Тоновий шейдер"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr "Чутливість дотику: (пкс)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Трилінійна фільтрація"
 

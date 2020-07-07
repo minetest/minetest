@@ -955,10 +955,6 @@ msgid "Tone Mapping"
 msgstr "Barvno preslikavanje"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Trilinearni filter"
 

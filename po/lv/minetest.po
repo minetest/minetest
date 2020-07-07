@@ -954,10 +954,6 @@ msgid "Tone Mapping"
 msgstr "Toņu atbilstība"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr "Pieskārienslieksnis: (px)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Trilineārais filtrs"
 

@@ -995,7 +995,7 @@ msgid "Tone Mapping"
 msgstr "Mip-текстуралоо"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
+
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua

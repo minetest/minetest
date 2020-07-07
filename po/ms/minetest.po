@@ -958,10 +958,6 @@ msgid "Tone Mapping"
 msgstr "Pemetaan Tona"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr "Nilai Ambang Sentuhan: (px)"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Penapisan Trilinear"
 
