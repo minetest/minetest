@@ -90,19 +90,13 @@ void Database_PostgreSQL::connectToDatabase()
 	initStatements();
 }
 
-void Database_PostgreSQL::pingDatabase()
+void Database_PostgreSQL::verifyDatabase()
 {
-	// Verify DB connection with ping
-	try {
-		ping();
-	} catch (const DatabaseException &e) {
-		// If ping failed, show the error and try reconnect
-		PQreset(m_conn);
+	if (PQstatus(m_conn) == CONNECTION_OK)
+		return;
 
-		errorstream << e.what() << std::endl
-			<< "Reconnecting to database " << m_connect_string << std::endl;
-		connectToDatabase();
-	}
+	PQreset(m_conn);
+	ping();
 }
 
 void Database_PostgreSQL::ping()
@@ -157,7 +151,7 @@ void Database_PostgreSQL::createTableIfNotExists(const std::string &table_name,
 
 void Database_PostgreSQL::beginSave()
 {
-	pingDatabase();
+	verifyDatabase();
 	checkResults(PQexec(m_conn, "BEGIN;"));
 }
 
@@ -238,7 +232,7 @@ bool MapDatabasePostgreSQL::saveBlock(const v3s16 &pos, const std::string &data)
 		return false;
 	}
 
-	pingDatabase();
+	verifyDatabase();
 
 	s32 x, y, z;
 	x = htonl(pos.X);
@@ -262,7 +256,7 @@ bool MapDatabasePostgreSQL::saveBlock(const v3s16 &pos, const std::string &data)
 
 void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	s32 x, y, z;
 	x = htonl(pos.X);
@@ -286,7 +280,7 @@ void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 
 bool MapDatabasePostgreSQL::deleteBlock(const v3s16 &pos)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	s32 x, y, z;
 	x = htonl(pos.X);
@@ -304,7 +298,7 @@ bool MapDatabasePostgreSQL::deleteBlock(const v3s16 &pos)
 
 void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	PGresult *results = execPrepared("list_all_loadable_blocks", 0,
 		NULL, NULL, NULL, false, false);
@@ -446,7 +440,7 @@ void PlayerDatabasePostgreSQL::initStatements()
 
 bool PlayerDatabasePostgreSQL::playerDataExists(const std::string &playername)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	const char *values[] = { playername.c_str() };
 	PGresult *results = execPrepared("load_player", 1, values, false);
@@ -462,7 +456,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	if (!sao)
 		return;
 
-	pingDatabase();
+	verifyDatabase();
 
 	v3f pos = sao->getBasePosition();
 	std::string pitch = ftos(sao->getLookPitch());
@@ -546,7 +540,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 {
 	sanity_check(sao);
-	pingDatabase();
+	verifyDatabase();
 
 	const char *values[] = { player->getName() };
 	PGresult *results = execPrepared("load_player", 1, values, false, false);
@@ -621,7 +615,7 @@ bool PlayerDatabasePostgreSQL::removePlayer(const std::string &name)
 	if (!playerDataExists(name))
 		return false;
 
-	pingDatabase();
+	verifyDatabase();
 
 	const char *values[] = { name.c_str() };
 	execPrepared("remove_player", 1, values);
@@ -631,7 +625,7 @@ bool PlayerDatabasePostgreSQL::removePlayer(const std::string &name)
 
 void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	PGresult *results = execPrepared("load_player_list", 0, NULL, false);
 

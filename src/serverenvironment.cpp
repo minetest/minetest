@@ -1228,11 +1228,6 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
-	if (m_database_check_interval.step(dtime, 10.0f)) {
-		m_auth_database->pingDatabase();
-		m_player_database->pingDatabase();
-		m_map->pingDatabase();
-	}
 	/*
 		Manage active block list
 	*/
