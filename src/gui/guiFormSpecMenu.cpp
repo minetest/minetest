@@ -3456,22 +3456,12 @@ void GUIFormSpecMenu::drawMenu()
 			NULL, m_client, IT_ROT_HOVERED);
 	}
 
-/* TODO find way to show tooltips on touchscreen */
-#ifndef HAVE_TOUCHSCREENGUI
-	m_pointer = RenderingEngine::get_raw_device()->getCursorControl()->getPosition();
-#endif
-
 	/*
 		Draw fields/buttons tooltips and update the mouse cursor
 	*/
 	gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
 
-#ifndef HAVE_TOUCHSCREENGUI
-	gui::ICursorControl *cursor_control = RenderingEngine::get_raw_device()->
-			getCursorControl();
-	gui::ECURSOR_ICON current_cursor_icon = cursor_control->getActiveIcon();
-#endif
 	bool hovered_element_found = false;
 
 	if (hovered != NULL) {
@@ -3507,12 +3497,6 @@ void GUIFormSpecMenu::drawMenu()
 							m_tooltips[field.fname].bgcolor);
 				}
 
-#ifndef HAVE_TOUCHSCREENGUI
-				if (field.ftype != f_HyperText && // Handled directly in guiHyperText
-						current_cursor_icon != field.fcursor_icon)
-					cursor_control->setActiveIcon(field.fcursor_icon);
-#endif
-
 				hovered_element_found = true;
 
 				break;
@@ -3521,11 +3505,6 @@ void GUIFormSpecMenu::drawMenu()
 	}
 
 	if (!hovered_element_found) {
-		// no element is hovered
-#ifndef HAVE_TOUCHSCREENGUI
-		if (current_cursor_icon != ECI_NORMAL)
-			cursor_control->setActiveIcon(ECI_NORMAL);
-#endif
 	}
 
 	m_tooltip_element->draw();

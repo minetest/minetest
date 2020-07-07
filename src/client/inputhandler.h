@@ -25,10 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "keycode.h"
 #include "renderingengine.h"
 
-#ifdef HAVE_TOUCHSCREENGUI
-#include "gui/touchscreengui.h"
-#endif
-
 class InputHandler;
 
 /****************************************************************************
@@ -171,11 +167,8 @@ public:
 		mouse_wheel = 0;
 	}
 
-	MyEventReceiver()
-	{
-#ifdef HAVE_TOUCHSCREENGUI
-		m_touchscreengui = NULL;
-#endif
+	MyEventReceiver(){
+		
 	}
 
 	bool leftclicked = false;
@@ -190,10 +183,6 @@ public:
 	s32 mouse_wheel = 0;
 
 	JoystickController *joystick = nullptr;
-
-#ifdef HAVE_TOUCHSCREENGUI
-	TouchScreenGUI *m_touchscreengui;
-#endif
 
 private:
 	// The current state of keys

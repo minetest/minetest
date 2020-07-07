@@ -99,11 +99,6 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		React to nothing here if a menu is active
 	*/
 	if (isMenuActive()) {
-#ifdef HAVE_TOUCHSCREENGUI
-		if (m_touchscreengui) {
-			m_touchscreengui->Toggle(false);
-		}
-#endif
 		return g_menumgr.preprocessEvent(event);
 	}
 
@@ -120,14 +115,6 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 			return true;
 		}
 	}
-
-#ifdef HAVE_TOUCHSCREENGUI
-	// case of touchscreengui we have to handle different events
-	if (m_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
-		m_touchscreengui->translateEvent(event);
-		return true;
-	}
-#endif
 
 	if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
 		/* TODO add a check like:

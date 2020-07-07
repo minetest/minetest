@@ -45,9 +45,6 @@ GUIConfirmRegistration::GUIConfirmRegistration(gui::IGUIEnvironment *env,
 		m_client(client), m_playername(playername), m_password(password),
 		m_aborted(aborted), m_tsrc(tsrc)
 {
-#ifdef __ANDROID__
-	m_touchscreen_visible = false;
-#endif
 }
 
 GUIConfirmRegistration::~GUIConfirmRegistration()

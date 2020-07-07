@@ -37,10 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "wieldmesh.h"
 #include "client/renderingengine.h"
 
-#ifdef HAVE_TOUCHSCREENGUI
-#include "gui/touchscreengui.h"
-#endif
-
 Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
@@ -199,10 +195,6 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction)
 {
-#ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui && inv_offset == 0)
-		g_touchscreengui->resetHud();
-#endif
 
 	s32 height  = m_hotbar_imagesize + m_padding * 2;
 	s32 width   = (itemcount - inv_offset) * (m_hotbar_imagesize + m_padding * 2);
@@ -263,11 +255,6 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 		}
 
 		drawItem(mainlist->getItem(i), (imgrect + pos + steppos), (i + 1) == selectitem);
-
-#ifdef HAVE_TOUCHSCREENGUI
-		if (g_touchscreengui)
-			g_touchscreengui->registerHudItem(i, (imgrect + pos + steppos));
-#endif
 	}
 }
 
