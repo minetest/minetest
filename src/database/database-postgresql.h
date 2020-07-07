@@ -152,7 +152,7 @@ public:
 	AuthDatabasePostgreSQL(const std::string &connect_string);
 	virtual ~AuthDatabasePostgreSQL() = default;
 
-	virtual void pingDatabase() { Database_PostgreSQL::pingDatabase(); }
+	virtual void verifyDatabase() { Database_PostgreSQL::verifyDatabase(); }
 
 	virtual bool getAuth(const std::string &name, AuthEntry &res);
 	virtual bool saveAuth(const AuthEntry &authEntry);

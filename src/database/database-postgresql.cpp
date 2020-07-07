@@ -678,7 +678,7 @@ void AuthDatabasePostgreSQL::initStatements()
 
 bool AuthDatabasePostgreSQL::getAuth(const std::string &name, AuthEntry &res)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	const char *values[] = { name.c_str() };
 	PGresult *result = execPrepared("auth_read", 1, values, false, false);
@@ -710,7 +710,7 @@ bool AuthDatabasePostgreSQL::getAuth(const std::string &name, AuthEntry &res)
 
 bool AuthDatabasePostgreSQL::saveAuth(const AuthEntry &authEntry)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	beginSave();
 
@@ -732,7 +732,7 @@ bool AuthDatabasePostgreSQL::saveAuth(const AuthEntry &authEntry)
 
 bool AuthDatabasePostgreSQL::createAuth(AuthEntry &authEntry)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	std::string lastLoginStr = itos(authEntry.last_login);
 	const char *values[] = {
@@ -764,7 +764,7 @@ bool AuthDatabasePostgreSQL::createAuth(AuthEntry &authEntry)
 
 bool AuthDatabasePostgreSQL::deleteAuth(const std::string &name)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	const char *values[] = { name.c_str() };
 	execPrepared("auth_delete", 1, values);
@@ -775,7 +775,7 @@ bool AuthDatabasePostgreSQL::deleteAuth(const std::string &name)
 
 void AuthDatabasePostgreSQL::listNames(std::vector<std::string> &res)
 {
-	pingDatabase();
+	verifyDatabase();
 
 	PGresult *results = execPrepared("auth_list_names", 0,
 		NULL, NULL, NULL, false, false);
