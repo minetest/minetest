@@ -24,10 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "settings.h"
 
-#ifdef HAVE_TOUCHSCREENGUI
-#include "touchscreengui.h"
-#endif
-
 GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 		IMenuManager *menumgr) :
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
@@ -93,10 +89,6 @@ void GUIModalMenu::quitMenu()
 	Environment->removeFocus(this);
 	m_menumgr->deletingMenu(this);
 	this->remove();
-#ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui && m_touchscreen_visible)
-		g_touchscreengui->show();
-#endif
 }
 
 void GUIModalMenu::removeChildren()

@@ -70,9 +70,6 @@ protected:
 	v2s32 m_down_pos;
 	std::string m_jni_field_name;
 #endif
-#ifdef HAVE_TOUCHSCREENGUI
-	bool m_touchscreen_visible = true;
-#endif
 private:
 	IMenuManager *m_menumgr;
 	// This might be necessary to expose to the implementation if it
