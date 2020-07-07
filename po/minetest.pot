@@ -2053,14 +2053,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Touch screen threshold"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touch screen interaction to start."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
 msgstr ""
 

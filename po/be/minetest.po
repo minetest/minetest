@@ -6540,11 +6540,6 @@ msgid "The identifier of the joystick to use"
 msgstr "Ідэнтыфікатар джойсціка для выкарыстання"
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touch screen interaction to start."
-msgstr ""
-"Адлегласць у пікселях, з якой пачынаецца ўзаемадзеянне з сэнсарных экранам."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "The maximum height of the surface of waving liquids.\n"
 "4.0 = Wave height is two nodes.\n"
@@ -6707,10 +6702,6 @@ msgstr "Клавіша пераключэння рэжыму камеры"
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "Затрымка падказкі"
-
-#: src/settings_translation_file.cpp
-msgid "Touch screen threshold"
-msgstr "Парог сэнсарнага экрана"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"

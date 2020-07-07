@@ -40,8 +40,6 @@ fake_function() {
 	gettext("Enable random user input (only used for testing).");
 	gettext("Continuous forward");
 	gettext("Continuous forward movement, toggled by autoforward key.\nPress the autoforward key again or the backwards movement to disable.");
-	gettext("Touch screen threshold");
-	gettext("The length in pixels it takes for touch screen interaction to start.");
 	gettext("Fixed virtual joystick");
 	gettext("(Android) Fixes the position of virtual joystick.\nIf disabled, virtual joystick will center to first-touch's position.");
 	gettext("Virtual joystick triggers aux button");

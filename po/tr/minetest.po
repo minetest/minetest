@@ -6548,12 +6548,6 @@ msgid "The identifier of the joystick to use"
 msgstr "Kullanılacak joystick'in tanımlayıcısı"
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touch screen interaction to start."
-msgstr ""
-"Dokunmatik ekran etkileşiminin başlaması için gereken piksel cinsinde "
-"uzunluk."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "The maximum height of the surface of waving liquids.\n"
 "4.0 = Wave height is two nodes.\n"
@@ -6727,10 +6721,6 @@ msgstr "Kamera kipi değiştirme tuşu"
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "İpucu gecikmesi"
-
-#: src/settings_translation_file.cpp
-msgid "Touch screen threshold"
-msgstr "Dokunmatik ekran eşiği"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"

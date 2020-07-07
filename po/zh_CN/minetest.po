@@ -6451,10 +6451,6 @@ msgid "The identifier of the joystick to use"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touch screen interaction to start."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "The maximum height of the surface of waving liquids.\n"
 "4.0 = Wave height is two nodes.\n"
@@ -6583,11 +6579,6 @@ msgstr "启用/禁用拍照模式键"
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "工具提示延迟"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Touch screen threshold"
-msgstr "海滩噪音阈值"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
