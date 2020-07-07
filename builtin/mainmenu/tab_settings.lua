@@ -234,14 +234,6 @@ local function formspec(tabview, name, tabdata)
 		.. fgettext("All Settings") .. "]"
 
 
-	if core.settings:get("touchscreen_threshold") ~= nil then
-		tab_string = tab_string ..
-			"label[4.3,4.2;" .. fgettext("Touchthreshold: (px)") .. "]" ..
-			"dropdown[4.25,4.65;3.5;dd_touchthreshold;0,10,20,30,40,50;" ..
-			((tonumber(core.settings:get("touchscreen_threshold")) / 10) + 1) ..
-			"]box[4.0,4.5;3.75,1.0;#999999]"
-	end
-
 	if shaders_enabled then
 		tab_string = tab_string ..
 			"checkbox[8.25,0.5;cb_bumpmapping;" .. fgettext("Bump Mapping") .. ";"
@@ -355,10 +347,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.show_keys_menu()
 		return true
 	end
-	if fields["cb_touchscreen_target"] then
-		core.settings:set("touchtarget", fields["cb_touchscreen_target"])
-		return true
-	end
+
 	if fields["btn_reset_singleplayer"] then
 		showconfirm_reset(this)
 		return true
@@ -408,10 +397,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["dd_antialiasing"] then
 		core.settings:set("fsaa",
 			antialiasing_fname_to_name(fields["dd_antialiasing"]))
-		ddhandled = true
-	end
-	if fields["dd_touchthreshold"] then
-		core.settings:set("touchscreen_threshold", fields["dd_touchthreshold"])
 		ddhandled = true
 	end
 
