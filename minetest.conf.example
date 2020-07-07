@@ -98,15 +98,6 @@
 #    type: bool
 # continuous_forward = false
 
-#    The length in pixels it takes for touch screen interaction to start.
-#    type: int min: 0 max: 100
-# touchscreen_threshold = 20
-
-#    (Android) Fixes the position of virtual joystick.
-#    If disabled, virtual joystick will center to first-touch's position.
-#    type: bool
-# fixed_virtual_joystick = false
-
 #    (Android) Use virtual joystick to trigger "aux" button.
 #    If enabled, virtual joystick will also tap "aux" button when out of main circle.
 #    type: bool
