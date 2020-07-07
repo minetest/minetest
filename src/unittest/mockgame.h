@@ -31,7 +31,7 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name)
 		UNIMPLEMENTED(0)
 	virtual const std::vector<ModSpec> &getMods() const
-		UNIMPLEMENTED(std::vector<ModSpec>())
+		UNIMPLEMENTED(m_modspec)
 	virtual const ModSpec* getModSpec(const std::string &modname) const
 		UNIMPLEMENTED(NULL)
 	virtual std::string getModStoragePath() const
@@ -57,6 +57,7 @@ protected:
 
 	std::ostream &dout;
 	NodeDefManager m_ndef;
+	std::vector<ModSpec> m_modspec;
 };
 
 class MockMap: public Map

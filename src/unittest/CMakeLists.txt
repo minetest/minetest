@@ -1,4 +1,5 @@
 set (UNITTEST_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/mockgame.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_address.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_authdatabase.cpp

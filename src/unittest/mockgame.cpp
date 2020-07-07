@@ -2,7 +2,7 @@
 #include "nodedef.h"
 
 MockGameDef::MockGameDef(std::ostream &dout):
-	dout(dout), m_ndef()
+	dout(dout), m_ndef(), m_modspec()
 {
 	ContentFeatures cf;
 	cf.name = "X";
@@ -12,7 +12,7 @@ MockGameDef::MockGameDef(std::ostream &dout):
         m_ndef.set(cf.name, cf);
 }
 
-bool MockMap::CreateSector(v2s16 p2d, string definition)
+bool MockMap::CreateSector(const v2s16 &p2d, const std::string &definition)
 {
 	// Create a MapSector using the definition.
 	const NodeDefManager  &ndef = *m_gamedef.ndef();
