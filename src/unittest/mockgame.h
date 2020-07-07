@@ -1,8 +1,11 @@
 #include <iostream>
 
+#include "content/mods.h"
 #include "environment.h"
 #include "gamedef.h"
 #include "map.h"
+#include "mapblock.h"
+#include "nodedef.h"
 
 /*
         MapEditEvent
@@ -10,7 +13,7 @@
 
 #define MAPTYPE_MOCK 3
 
-#include UNIMPLEMENTED(retval) { warn_unimplemented(__FUNCTION__); return retval; }
+#define UNIMPLEMENTED(retval){warn_unimplemented(__FUNCTION__); return retval; }
 
 class MockGameDef: public IGameDef
 {
@@ -21,7 +24,7 @@ public:
 
 	virtual const NodeDefManager* getNodeDefManager()
 	{
-		return m_ndef;
+		return &m_ndef;
 	}
 
 	virtual ICraftDefManager* getCraftDefManager() UNIMPLEMENTED(NULL)
@@ -47,7 +50,7 @@ public:
 		UNIMPLEMENTED(NULL)
 
 protected:
-        void warn_unimplemented(string function)
+        void warn_unimplemented(const std::string &function) const
 	{
 		dout << "Warning: Implement " << function << std::endl;
 	}
@@ -72,14 +75,14 @@ public:
 		out << "MockMap: ";
 	}
 
-	bool CreateSector(v2s16 p2d, string definition);
+	bool CreateSector(const v2s16 &p2d, const std::string &definition);
 };
 
 class MockEnvironment: public Environment
 {
 public:
 	MockEnvironment(std::ostream &dout):
-		Environment(new MockMap(dout)),
+		Environment(new MockGameDef(dout)),
 		m_map(dout, m_gamedef) {}
 	virtual void step(f32 dtime) {}
 	virtual Map &getMap() { return m_map; }
