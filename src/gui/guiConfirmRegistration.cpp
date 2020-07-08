@@ -222,7 +222,7 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 
 	if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST && isVisible()) {
 		if (!canTakeFocus(event.GUIEvent.Element)) {
-			dstream << "GUIConfirmRegistration: Not allowing focus change."
+			infostream << "GUIConfirmRegistration: Not allowing focus change."
 				<< std::endl;
 			// Returning true disables focus change
 			return true;

@@ -236,7 +236,7 @@ bool GUIPasswordChange::OnEvent(const SEvent &event)
 		if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST &&
 				isVisible()) {
 			if (!canTakeFocus(event.GUIEvent.Element)) {
-				dstream << "GUIPasswordChange: Not allowing focus change."
+				infostream << "GUIPasswordChange: Not allowing focus change."
 					<< std::endl;
 				// Returning true disables focus change
 				return true;
