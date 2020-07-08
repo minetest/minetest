@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-07-08 20:47+0000\n"
-"Last-Translator: daretmavi <marian.virec@gmail.com>\n"
+"Last-Translator: rubenwardy <rw@rubenwardy.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
 "Language: sk\n"
@@ -1898,7 +1898,7 @@ msgstr ""
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "sk"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
