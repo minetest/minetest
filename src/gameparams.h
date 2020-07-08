@@ -26,6 +26,7 @@ struct SubgameSpec;
 // Information provided from "main"
 struct GameParams
 {
+	GameParams() = default;
 
 	u16 socket_port;
 	std::string world_path;
@@ -37,8 +38,7 @@ struct GameParams
 struct GameStartData : GameParams {
 	GameStartData() = default;
 
-	bool isSinglePlayer() const
-	{ return address.empty() && !local_server; }
+	bool isSinglePlayer() const { return address.empty() && !local_server; }
 
 	std::string name;
 	std::string password;
