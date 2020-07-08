@@ -261,6 +261,47 @@ void GUIFormSpecMenu::setInitialFocus()
 		Environment->setFocus(*(children.begin()));
 }
 
+u16 GUIFormSpecMenu::dropItems(u16 dropCount)
+{
+	if (dropCount == 0) {
+		dropCount = m_selected_amount;
+	}
+
+	// Send IAction::Drop
+	if (!m_selected_item) {
+		return 0;
+	}
+	assert(m_selected_item->isValid());
+
+	Inventory *inv_selected = m_invmgr->getInventory(m_selected_item->inventoryloc);
+	assert(inv_selected != nullptr);
+
+	InventoryList *list_from = inv_selected->getList(m_selected_item->listname);
+	assert(list_from != nullptr);
+
+	ItemStack stack_from = list_from->getItem(m_selected_item->i);
+
+	// Check how many items can be dropped
+	dropCount = MYMIN(dropCount, stack_from.count);
+	assert(dropCount <= m_selected_amount);
+	if (dropCount == 0) {
+		return 0;
+	}
+
+	// stack_from.count = dropCount;
+	m_selected_amount -= dropCount;
+
+	infostream << "Handing IAction::Drop to manager" << std::endl;
+	IDropAction *a = new IDropAction();
+	a->count = dropCount;
+	a->from_inv = m_selected_item->inventoryloc;
+	a->from_list = m_selected_item->listname;
+	a->from_i = m_selected_item->i;
+	m_invmgr->inventoryAction(a);
+
+	return dropCount;
+}
+
 GUITable* GUIFormSpecMenu::getTable(const std::string &tablename)
 {
 	for (auto &table : m_tables) {
@@ -3909,6 +3950,42 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		}
 	}
 
+	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+		s32 x = event.MouseInput.X;
+		s32 y = event.MouseInput.Y;
+		gui::IGUIElement *hovered =
+			Environment->getRootGUIElement()->getElementFromPoint(
+				core::position2d<s32>(x, y));
+		if (!isChild(hovered, this) && m_selected_item != nullptr) {
+			// Handle item dropping
+			switch(event.MouseInput.Event) {
+				case EMIE_LMOUSE_PRESSED_DOWN:
+					dropItems();
+				break;
+				case EMIE_MMOUSE_PRESSED_DOWN:
+					dropItems(10);
+				break;
+				case EMIE_RMOUSE_PRESSED_DOWN:
+					dropItems(1);
+				break;
+				case EMIE_LMOUSE_LEFT_UP:
+				case EMIE_MMOUSE_LEFT_UP:
+				case EMIE_RMOUSE_LEFT_UP:
+					if (m_selected_dragging) {
+						dropItems();
+					}
+				break;
+				case EMIE_MOUSE_WHEEL:
+					if (event.MouseInput.Wheel > 0) {
+						dropItems(1);
+					}
+				break;
+
+				default: break;
+			}
+		}
+	}
+
 	if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
 		/* TODO add a check like:
 		if (event.JoystickEvent != joystick_we_listen_for)
@@ -4110,10 +4187,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		// from s to the next inventory ring.
 		u32 shift_move_amount = 0;
 
-		// Set this number to a positive value to generate a drop action
-		// from m_selected_item.
-		u32 drop_amount = 0;
-
 		// Set this number to a positive value to generate a craft action at s.
 		u32 craft_amount = 0;
 
@@ -4180,15 +4253,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 							move_amount = 0;
 						}
 					}
-				} else if (!getAbsoluteClippingRect().isPointInside(m_pointer)
-						&& button != BET_WHEEL_DOWN) {
-					// Clicked outside of the window: drop
-					if (button == BET_RIGHT || button == BET_WHEEL_UP)
-						drop_amount = 1;
-					else if (button == BET_MIDDLE)
-						drop_amount = MYMIN(m_selected_amount, 10);
-					else  // left
-						drop_amount = m_selected_amount;
 				}
 			}
 		break;
@@ -4204,9 +4268,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						// Dragged to different slot: move all selected
 						move_amount = m_selected_amount;
 					}
-				} else if (!getAbsoluteClippingRect().isPointInside(m_pointer)) {
-					// Dragged outside of window: drop all selected
-					drop_amount = m_selected_amount;
 				}
 			}
 
@@ -4335,27 +4396,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				a->move_somewhere = true;
 				m_invmgr->inventoryAction(a);
 			} while (0);
-		} else if (drop_amount > 0) {
-			// Send IAction::Drop
-
-			assert(m_selected_item && m_selected_item->isValid());
-			assert(inv_selected);
-			InventoryList *list_from = inv_selected->getList(m_selected_item->listname);
-			assert(list_from);
-			ItemStack stack_from = list_from->getItem(m_selected_item->i);
-
-			// Check how many items can be dropped
-			drop_amount = stack_from.count = MYMIN(drop_amount, stack_from.count);
-			assert(drop_amount > 0 && drop_amount <= m_selected_amount);
-			m_selected_amount -= drop_amount;
-
-			infostream << "Handing IAction::Drop to manager" << std::endl;
-			IDropAction *a = new IDropAction();
-			a->count = drop_amount;
-			a->from_inv = m_selected_item->inventoryloc;
-			a->from_list = m_selected_item->listname;
-			a->from_i = m_selected_item->i;
-			m_invmgr->inventoryAction(a);
 		} else if (craft_amount > 0) {
 			assert(s.isValid());
 

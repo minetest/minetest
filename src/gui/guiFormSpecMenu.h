@@ -141,6 +141,10 @@ public:
 		m_hovered_item_tooltips.emplace_back(name);
 	}
 
+	//! Drop a number of items from the selected itemstack into the world.
+	//! \param dropCount The number of items to drop, or 0 to drop all.
+	u16 dropItems(u16 dropCount = 0);
+
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
