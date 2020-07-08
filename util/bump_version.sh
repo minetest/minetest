@@ -23,7 +23,7 @@ prompt_for_number() {
 perform_release() {
 	sed -i -re "s/^set\(DEVELOPMENT_BUILD TRUE\)$/set(DEVELOPMENT_BUILD FALSE)/" CMakeLists.txt
 
-	sed -i -re "s/versionCode [0-9]+$/versionCode $NEW_ANDROID_VERSION_CODE/" build/android/build.gradle
+	sed -i -re "s/\"versionCode\", [0-9]+/\"versionCode\", $NEW_ANDROID_VERSION_CODE/" build/android/build.gradle
 
 	sed -i '/\<release/s/\(version\)="[^"]*"/\1="'"$RELEASE_VERSION"'"/' misc/net.minetest.minetest.appdata.xml
 
@@ -78,12 +78,12 @@ cd ${0%/*}/..
 grep -q -E '^set\(VERSION_MAJOR [0-9]+\)$' CMakeLists.txt
 grep -q -E '^set\(VERSION_MINOR [0-9]+\)$' CMakeLists.txt
 grep -q -E '^set\(VERSION_PATCH [0-9]+\)$' CMakeLists.txt
-grep -q -E 'versionCode [0-9]+$' build/android/build.gradle
+grep -q -E '\("versionCode", [0-9]+\)' build/android/build.gradle
 
 VERSION_MAJOR=$(grep -E '^set\(VERSION_MAJOR [0-9]+\)$' CMakeLists.txt | tr -dC 0-9)
 VERSION_MINOR=$(grep -E '^set\(VERSION_MINOR [0-9]+\)$' CMakeLists.txt | tr -dC 0-9)
 VERSION_PATCH=$(grep -E '^set\(VERSION_PATCH [0-9]+\)$' CMakeLists.txt | tr -dC 0-9)
-ANDROID_VERSION_CODE=$(grep -E 'versionCode [0-9]+$' build/android/build.gradle | tr -dC 0-9)
+ANDROID_VERSION_CODE=$(grep -E '"versionCode", [0-9]+' build/android/build.gradle | tr -dC 0-9)
 
 RELEASE_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
 
