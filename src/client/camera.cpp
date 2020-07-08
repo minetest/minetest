@@ -216,7 +216,7 @@ void Camera::step(f32 dtime)
 	}
 
 	if (m_digging_button != -1) {
-		f32 offset = dtime * 3.5f;
+		f32 offset = dtime * 5.f;
 		float m_digging_anim_was = m_digging_anim;
 		m_digging_anim += offset;
 		if (m_digging_anim >= 1)
@@ -578,8 +578,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	{
 		f32 digfrac = m_digging_anim;
 		wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
-		wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
-		wield_position.Z += 25 * 0.5;
+		wield_position.Y += 40 * sin(digfrac * 1.8 * M_PI);
+		wield_position.Z += 30 * 0.5;
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
 		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
