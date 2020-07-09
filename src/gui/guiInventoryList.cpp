@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiInventoryList.h"
 #include "guiFormSpecMenu.h"
+#include "formspec/FormspecInventoryContext.h"
 #include "client/hud.h"
 #include "client/client.h"
 
@@ -34,6 +35,8 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	const v2s32 &slot_size,
 	const v2f32 &slot_spacing,
 	GUIFormSpecMenu *fs_menu,
+	FormspecInventoryContext *context,
+	Client *client,
 	const Options &options,
 	gui::IGUIFont *font) :
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
@@ -45,6 +48,8 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	m_slot_size(slot_size),
 	m_slot_spacing(slot_spacing),
 	m_fs_menu(fs_menu),
+	m_context(context),
+	m_client(client),
 	m_options(options),
 	m_font(font),
 	m_hovered_i(-1),
@@ -82,7 +87,6 @@ void GUIInventoryList::draw()
 	m_already_warned = false;
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
-	Client *client = m_fs_menu->getClient();
 	const ItemSpec *selected_item = m_fs_menu->getSelectedItem();
 
 	core::rect<s32> imgrect(0, 0, m_slot_size.X, m_slot_size.Y);
@@ -148,13 +152,10 @@ void GUIInventoryList::draw()
 		if (!item.empty()) {
 			// Draw item stack
 			drawItemStack(driver, m_font, item, rect, &AbsoluteClippingRect,
-					client, rotation_kind);
+					m_client, rotation_kind);
 			// Add hovering tooltip
 			if (hovering && !selected_item) {
-				std::string tooltip = item.getDescription(client->idef());
-				if (m_fs_menu->doTooltipAppendItemname())
-					tooltip += "\n[" + item.name + "]";
-				m_fs_menu->addHoveredItemTooltip(tooltip);
+				m_context->addHoveredItem(item);
 			}
 		}
 	}
@@ -166,7 +167,7 @@ bool GUIInventoryList::OnEvent(const SEvent &event)
 {
 	if (event.EventType != EET_MOUSE_INPUT_EVENT) {
 		if (event.EventType == EET_GUI_EVENT &&
-				event.GUIEvent.EventType == EGET_ELEMENT_LEFT) {
+				event.GUIEvent.EventType == gui::EGET_ELEMENT_LEFT) {
 			// element is no longer hovered
 			m_hovered_i = -1;
 		}

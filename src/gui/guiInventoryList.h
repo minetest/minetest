@@ -19,35 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "formspec/ItemSpec.h"
 #include "inventorymanager.h"
 #include "irrlichttypes_extrabloated.h"
 #include "util/string.h"
 
+class FormspecInventoryContext;
 class GUIFormSpecMenu;
 
 class GUIInventoryList : public gui::IGUIElement
 {
 public:
-	struct ItemSpec
-	{
-		ItemSpec() = default;
-
-		ItemSpec(const InventoryLocation &a_inventoryloc,
-				const std::string &a_listname,
-				s32 a_i) :
-			inventoryloc(a_inventoryloc),
-			listname(a_listname),
-			i(a_i)
-		{
-		}
-
-		bool isValid() const { return i != -1; }
-
-		InventoryLocation inventoryloc;
-		std::string listname;
-		s32 i = -1;
-	};
-
 	// options for inventorylists that are setable with the lua api
 	struct Options {
 		// whether a one-pixel border for the slots should be drawn and its color
@@ -70,6 +52,8 @@ public:
 		const v2s32 &slot_size,
 		const v2f32 &slot_spacing,
 		GUIFormSpecMenu *fs_menu,
+		FormspecInventoryContext *context,
+		Client *client,
 		const Options &options,
 		gui::IGUIFont *font);
 
@@ -117,8 +101,9 @@ private:
 	// specifies how large the space between slots is (space between is spacing-size)
 	const v2f32 m_slot_spacing;
 
-	// the GUIFormSpecMenu can have an item selected and co.
 	GUIFormSpecMenu *m_fs_menu;
+	FormspecInventoryContext *m_context;
+	Client *m_client;
 
 	Options m_options;
 

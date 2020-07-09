@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h" // drawItemStack
 #include "filesys.h"
 #include "formspec/FormSource.h" // For FormSource
+#include "formspec/FormspecInventoryContext.h" // For FormspecInventoryContext
 #include "formspec/ITextDest.h" // For ITextDest
 #include "gettime.h"
 #include "gettext.h"
@@ -113,6 +114,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
 	m_tooltip_append_itemname = g_settings->getBool("tooltip_append_itemname");
+
+	m_invctx = new FormspecInventoryContext();
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
@@ -137,6 +140,7 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 	delete m_selected_item;
 	delete m_form_src;
 	delete m_text_dst;
+	delete m_invctx;
 }
 
 void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
@@ -556,7 +560,7 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 
 		GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
 				spec.fid, rect, m_invmgr, loc, listname, geom, start_i, imgsize,
-				slot_spacing, this, data->inventorylist_options, m_font);
+				slot_spacing, this, m_invctx, m_client, data->inventorylist_options, m_font);
 
 		m_inventorylists.push_back(e);
 		m_fields.push_back(spec);
@@ -3419,18 +3423,18 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 }
 #endif
 
-GUIInventoryList::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
+ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 {
 	core::rect<s32> imgrect(0, 0, imgsize.X, imgsize.Y);
 
 	for (const GUIInventoryList *e : m_inventorylists) {
 		s32 item_index = e->getItemIndexAtPos(p);
 		if (item_index != -1)
-			return GUIInventoryList::ItemSpec(e->getInventoryloc(), e->getListname(),
+			return ItemSpec(e->getInventoryloc(), e->getListname(),
 					item_index);
 	}
 
-	return GUIInventoryList::ItemSpec(InventoryLocation(), "", -1);
+	return ItemSpec(InventoryLocation(), "", -1);
 }
 
 void GUIFormSpecMenu::drawSelectedItem()
@@ -3473,8 +3477,6 @@ void GUIFormSpecMenu::drawMenu()
 	sanity_check(skin != NULL);
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
-
-	m_hovered_item_tooltips.clear();
 
 	updateSelectedItem();
 
@@ -3530,17 +3532,24 @@ void GUIFormSpecMenu::drawMenu()
 		e->setVisible(false);
 
 	// Draw hovered item tooltips
-	for (const std::string &tooltip : m_hovered_item_tooltips) {
+	std::vector<ItemStack> hoveredItems = m_invctx->getHoveredItems();
+	for (const ItemStack &item : hoveredItems) {
+		std::string tooltip = item.getDescription(m_client->idef());
+		if (m_tooltip_append_itemname) {
+			tooltip += "\n[" + item.name + "]";
+		}
 		showTooltip(utf8_to_wide(tooltip), m_default_tooltip_color,
 				m_default_tooltip_bgcolor);
 	}
 
-	if (m_hovered_item_tooltips.empty()) {
+	if (hoveredItems.empty()) {
 		// reset rotation time
 		drawItemStack(driver, m_font, ItemStack(),
 			core::rect<s32>(v2s32(0, 0), v2s32(0, 0)),
 			NULL, m_client, IT_ROT_HOVERED);
 	}
+
+	m_invctx->clearHoveredItems();
 
 /* TODO find way to show tooltips on touchscreen */
 #ifndef HAVE_TOUCHSCREENGUI
@@ -3624,7 +3633,6 @@ void GUIFormSpecMenu::drawMenu()
 	skin->setFont(old_font);
 }
 
-
 void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 	const irr::video::SColor &color, const irr::video::SColor &bgcolor)
 {
@@ -3696,7 +3704,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 				continue;
 
 			// Grab selected item from the crafting result list
-			m_selected_item = new GUIInventoryList::ItemSpec;
+			m_selected_item = new ItemSpec;
 			m_selected_item->inventoryloc = e->getInventoryloc();
 			m_selected_item->listname = "craftresult";
 			m_selected_item->i = 0;
@@ -4096,7 +4104,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		m_old_tooltip_id = -1;
 		updateSelectedItem();
-		GUIInventoryList::ItemSpec s = getItemAtPos(m_pointer);
+		ItemSpec s = getItemAtPos(m_pointer);
 
 		Inventory *inv_selected = NULL;
 		Inventory *inv_s = NULL;
@@ -4206,7 +4214,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			} else if (!m_selected_item) {
 				if (s_count && button != BET_WHEEL_UP) {
 					// Non-empty stack has been clicked: select or shift-move it
-					m_selected_item = new GUIInventoryList::ItemSpec(s);
+					m_selected_item = new ItemSpec(s);
 
 					u32 count;
 					if (button == BET_RIGHT)

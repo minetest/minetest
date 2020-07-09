@@ -42,6 +42,7 @@ class Client;
 class GUIScrollBar;
 class GUIScrollContainer;
 class FormSource;
+class FormspecInventoryContext;
 class InventoryManager;
 class ISimpleTextureSource;
 class ITextDest;
@@ -116,12 +117,7 @@ public:
 		m_focused_element = elementname;
 	}
 
-	Client *getClient() const
-	{
-		return m_client;
-	}
-
-	const GUIInventoryList::ItemSpec *getSelectedItem() const
+	const ItemSpec *getSelectedItem() const
 	{
 		return m_selected_item;
 	}
@@ -129,16 +125,6 @@ public:
 	const u16 getSelectedAmount() const
 	{
 		return m_selected_amount;
-	}
-
-	bool doTooltipAppendItemname() const
-	{
-		return m_tooltip_append_itemname;
-	}
-
-	void addHoveredItemTooltip(const std::string &name)
-	{
-		m_hovered_item_tooltips.emplace_back(name);
 	}
 
 	//! Drop a number of items from the selected itemstack into the world.
@@ -150,7 +136,7 @@ public:
 	*/
 	void regenerateGui(v2u32 screensize);
 
-	GUIInventoryList::ItemSpec getItemAtPos(v2s32 p) const;
+	ItemSpec getItemAtPos(v2s32 p) const;
 	void drawSelectedItem();
 	void drawMenu();
 	void updateSelectedItem();
@@ -198,6 +184,7 @@ protected:
 	std::stack<v2f32> container_stack;
 
 	InventoryManager *m_invmgr;
+	FormspecInventoryContext *m_invctx;
 	ISimpleTextureSource *m_tsrc;
 	Client *m_client;
 
@@ -223,7 +210,7 @@ protected:
 	std::vector<gui::IGUIElement *> m_clickthrough_elements;
 	std::vector<std::pair<std::string, GUIScrollContainer *>> m_scroll_containers;
 
-	GUIInventoryList::ItemSpec *m_selected_item = nullptr;
+	ItemSpec *m_selected_item = nullptr;
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
@@ -296,7 +283,6 @@ private:
 
 	fs_key_pendig current_keys_pending;
 	std::string current_field_enter_pending = "";
-	std::vector<std::string> m_hovered_item_tooltips;
 
 	void parseElement(parserData* data, const std::string &element);
 
