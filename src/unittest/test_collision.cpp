@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 
 #include "collision.h"
+#include "log.h"
 #include "mockgame.h"
 
 class TestCollision : public TestBase {
@@ -184,33 +185,32 @@ void TestCollision::testAxisAlignedCollision()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void setDef(std::string &definition, s16 x, s16 y, s16 z, char c)
-{
-	s16 b = y / MAP_BLOCKSIZE;
-        y -= b * MAP_BLOCKSIZE;
-	definition[b * MapBlock::nodecount + z * MapBlock::zstride + y * MapBlock::ystride + x] = c;
-}
-
 void TestCollision::testCollisionMoveSimple()
 {
-	std::string definition(MapBlock::nodecount, ' ');
-        setDef(definition, 12, 10, 10, 'S');
-        setDef(definition, 13, 10, 10, 'S');
-        setDef(definition, 11, 11, 10, 'S');
-        setDef(definition, 12, 11, 10, 'S');
-        setDef(definition, 13, 11, 10, 'S');
+	// Create test environment
 	MockEnvironment env(std::cerr);
-	env.getMockMap().CreateSector(v2s16(0,0), definition);
-	aabb3f box_0(9.5f, 9.5f, 9.5f, 10.5f, 10.5f, 10.5f);
-	v3f pos_f(10.f, 10.f, 10.f);
-	v3f speed_f(3.f, 0.f, 0.f);
+	ContentFeatures cf;
+	cf.name = "solid";
+	cf.walkable = true;
+	content_t solid = env.getMockGameDef()->registerContent(cf.name, cf);
+	MockMap &map = env.getMockMap();
 	
-//	UASSERT(collisionMoveSimple(&env, env.getGameDef(),
-//                BS*0.25, box_0,
-//                0.0f, 0.5f,
-//                &pos_f, &speed_f,
-//                v3f(), NULL,
-//                false).collides);
-//	UASSERT(pos_f.equals(v3f(11.f, 10.f, 10.f), 0.01));
-//	UASSERT(speed_f.equals(v3f(), 0.01));
+	map.setMockNode(v3s16(12, 10, 10), solid);
+
+	// Set up test
+	aabb3f box_0(-.5f * BS, -.5f * BS, -.5f * BS, .5f * BS, .5f * BS, .5f * BS);
+	v3f pos_f(10.f * BS, 10.f * BS, 10.f * BS);
+	v3f speed_f(3.f * BS, 0.f * BS, 0.f * BS);
+	
+	// Run test
+	collisionMoveResult res = collisionMoveSimple(&env, env.getGameDef(),
+		BS*0.25, box_0,
+		0.0f, 0.5f,
+		&pos_f, &speed_f,
+		v3f(), nullptr,
+		false);
+	rawstream << "Now at (" << pos_f.X << ',' << pos_f.Y << ',' << pos_f.Z << ')' << std::endl;
+	UASSERT(res.collides);
+	UASSERT(pos_f.equals(v3f(11.f * BS, 10.f * BS, 10.f * BS), 0.01));
+	UASSERT(speed_f.equals(v3f(), 0.01));
 }

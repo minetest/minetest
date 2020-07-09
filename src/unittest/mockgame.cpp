@@ -3,46 +3,39 @@
 #include "mockgame.h"
 #include "nodedef.h"
 
-MockGameDef::MockGameDef(std::ostream &dout):
-	dout(dout), m_ndef(), m_modspec()
+MapSector * MockMap::emergeSector(v2s16 p)
 {
-	ContentFeatures cf;
-	cf.name = "X";
-        m_ndef.set(cf.name, cf);
-        cf.name = " ";
-        cf.walkable = false;
-        m_ndef.set(cf.name, cf);
+	MapSector *sector = getSectorNoGenerateNoLock(p);
+
+	if (sector) return sector;
+
+	sector = new MapSector(this, p, m_gamedef);
+	m_sectors[p] = sector;
+	return sector;
 }
 
-bool MockMap::CreateSector(const v2s16 &p2d, const std::string &definition)
+MapBlock * MockMap::emergeBlock(v3s16 p, bool create_blank)
 {
-	// Create a MapSector using the definition.
-	const NodeDefManager  &ndef = *m_gamedef->ndef();
-	MapSector *sector = new MapSector(this, p2d, m_gamedef);
-	content_t solid, air;
+	MapBlock *block = getBlockNoCreateNoEx(p);
 
-	ndef.getId("S", solid);
-	ndef.getId(" ", air);
-	size_t len = definition.length();
-        size_t p = 0;
-        s16 y=0;
-        while(p < len)
-	{
-		MapBlock *bl = sector->createBlankBlock(y++);
-		MapNode *n = bl->getData();
-        	for(int i=0; i < bl->nodecount; i++, p++, n++)
-			switch(definition[p])
-			{
-			case 'S':
-				n->setContent(solid);
-				break;
-			default:
-				n->setContent(air);
-			}
-	}
+	if(block != nullptr)
+		return block;
 
-	// Append it onto m_sectors
-	m_sectors[p2d] = sector;
-	return true;
+	// Get the MapSector
+	MapSector *sector = emergeSector(v2s16(p.X, p.Z));
+
+	// Create the block and fill with air
+	block = sector->createBlankBlock(p.Y);
+	block->reallocate();
+	MapNode *n = block->getData();
+        for(u32 i=0; i < block->nodecount; i++, n++)
+		n->setContent(CONTENT_AIR);
+	return block;
 }
 
+void MockMap::setMockNode(v3s16 p, content_t c)
+{
+	emergeBlock(getNodeBlockPos(p));
+	MapNode n(c);
+	setNode(p, n);
+}

@@ -4,7 +4,6 @@
 #include "environment.h"
 #include "gamedef.h"
 #include "map.h"
-#include "mapblock.h"
 #include "nodedef.h"
 
 /*
@@ -18,22 +17,23 @@
 class MockGameDef: public IGameDef
 {
 public:
-	MockGameDef(std::ostream &dout);
+	MockGameDef(std::ostream &dout):
+		dout(dout), m_ndef(), m_modspec() {};
 
-	virtual IItemDefManager* getItemDefManager() UNIMPLEMENTED(NULL)
+	virtual IItemDefManager* getItemDefManager() UNIMPLEMENTED(nullptr)
 
 	virtual const NodeDefManager* getNodeDefManager()
 	{
 		return &m_ndef;
 	}
 
-	virtual ICraftDefManager* getCraftDefManager() UNIMPLEMENTED(NULL)
+	virtual ICraftDefManager* getCraftDefManager() UNIMPLEMENTED(nullptr)
 	virtual u16 allocateUnknownNodeId(const std::string &name)
 		UNIMPLEMENTED(0)
 	virtual const std::vector<ModSpec> &getMods() const
 		UNIMPLEMENTED(m_modspec)
 	virtual const ModSpec* getModSpec(const std::string &modname) const
-		UNIMPLEMENTED(NULL)
+		UNIMPLEMENTED(nullptr)
 	virtual std::string getModStoragePath() const
 		UNIMPLEMENTED("")
 	virtual bool registerModStorage(ModMetadata *storage)
@@ -47,7 +47,11 @@ public:
 	virtual bool sendModChannelMessage(const std::string &channel,
 		const std::string &message) UNIMPLEMENTED(false)
 	virtual ModChannel *getModChannel(const std::string &channel)
-		UNIMPLEMENTED(NULL)
+		UNIMPLEMENTED(nullptr)
+	content_t registerContent(const std::string &name, const ContentFeatures &def)
+	{
+		return m_ndef.set(name, def);
+	}
 
 protected:
         void warn_unimplemented(const std::string &function) const
@@ -75,8 +79,10 @@ public:
 	{
 		out << "MockMap: ";
 	}
-
-	bool CreateSector(const v2s16 &p2d, const std::string &definition);
+	
+	virtual MapSector * emergeSector(v2s16 p);
+	virtual MapBlock * emergeBlock(v3s16 p, bool create_blank=true);
+	void setMockNode(v3s16 p, content_t c);
 };
 
 class MockEnvironment: public Environment
@@ -90,6 +96,10 @@ public:
 	virtual void getSelectedActiveObjects(const core::line3d<f32> &shootline_on_map,
                         std::vector<PointedThing> &objects) {}
 	MockMap &getMockMap() { return m_map; }
+	MockGameDef *getMockGameDef()
+	{
+		return dynamic_cast<MockGameDef *>(m_gamedef);
+	}
 protected:
 	MockMap m_map;
 	
