@@ -22,18 +22,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mockgame.h"
 #include "nodedef.h"
 
-MapSector * MockMap::emergeSector(v2s16 p)
+MapSector *MockMap::emergeSector(v2s16 p)
 {
 	MapSector *sector = getSectorNoGenerateNoLock(p);
 
-	if (sector) return sector;
+	if (sector)
+		return sector;
 
 	sector = new MapSector(this, p, m_gamedef);
 	m_sectors[p] = sector;
 	return sector;
 }
 
-MapBlock * MockMap::emergeBlock(v3s16 p, bool create_blank)
+MapBlock *MockMap::emergeBlock(v3s16 p, bool create_blank)
 {
 	MapBlock *block = getBlockNoCreateNoEx(p);
 
@@ -47,7 +48,7 @@ MapBlock * MockMap::emergeBlock(v3s16 p, bool create_blank)
 	block = sector->createBlankBlock(p.Y);
 	block->reallocate();
 	MapNode *n = block->getData();
-        for(u32 i=0; i < block->nodecount; i++, n++)
+        for(u32 i = 0; i < block->nodecount; i++, n++)
 		n->setContent(CONTENT_AIR);
 	return block;
 }
