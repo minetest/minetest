@@ -4365,7 +4365,8 @@ Call these functions only at load time!
       by default.
     * To allow players with `basic_privs` to grant, see the `basic_privs`
       minetest.conf setting.
-    * To modify an already registered privilege just edit the value found in minetest.registered_privileges
+    * Registered privileges can be modified directly in
+      `minetest.registered_privileges`.
 * `minetest.register_authentication_handler(authentication handler definition)`
     * Registers an auth handler that overrides the builtin one.
     * This function can be called by a single mod once only.
@@ -5618,7 +5619,8 @@ Global tables
     * Map of registered tool definitions, indexed by name
 * `minetest.registered_entities`
     * Map of registered entity prototypes, indexed by name
-    * You can use this to change the values of already registered entities
+    * Values in this table may be modified directly.
+      Note: the new values will only affect newly spawned entities.
 * `minetest.object_refs`
     * Map of object references, indexed by active object id
 * `minetest.luaentities`
@@ -5649,7 +5651,7 @@ Global tables
     * Map of registered chat command definitions, indexed by name
 * `minetest.registered_privileges`
     * Map of registered privilege definitions, indexed by name
-    * You can use this to change the values of already registered privileges
+    * Registered privileges can be modified directly in this table.
 
 ### Registered callback tables
 
