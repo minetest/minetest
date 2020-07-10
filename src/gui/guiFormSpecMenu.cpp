@@ -1318,19 +1318,20 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 	errorstream<< "Invalid textlist element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-
 void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
-	if ((parts.size() == 5) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if (parts.size() == 5 || parts.size() == 6 ||
+		(parts.size() > 6 && m_formspec_version > FORMSPEC_API_VERSION))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
 		std::string name = parts[2];
-		std::vector<std::string> items = split(parts[3],',');
-		std::string str_initial_selection;
-		str_initial_selection = parts[4];
+		std::vector<std::string> items = split(parts[3], ',');
+		std::string str_initial_selection = parts[4];
+
+		if (parts.size() >= 6 && is_yes(parts[5]))
+			m_dropdown_index_event[name] = true;
 
 		MY_CHECKPOS("dropdown",0);
 
@@ -1397,8 +1398,8 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 
 		return;
 	}
-	errorstream << "Invalid dropdown element(" << parts.size() << "): '"
-				<< element << "'"  << std::endl;
+	errorstream << "Invalid dropdown element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
@@ -1414,8 +1415,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 4) ||
-		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if (parts.size() == 4 ||
+		(parts.size() > 4 && m_formspec_version > FORMSPEC_API_VERSION))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
@@ -2940,6 +2941,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	theme_by_name.clear();
 	theme_by_type.clear();
 	m_clickthrough_elements.clear();
+	field_close_on_enter.clear();
+	m_dropdown_index_event.clear();
 
 	m_bgnonfullscreen = true;
 	m_bgfullscreen = false;
@@ -3727,10 +3730,14 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					}
 					s32 selected = e->getSelected();
 					if (selected >= 0) {
-						std::vector<std::string> *dropdown_values =
-							getDropDownValues(s.fname);
-						if (dropdown_values && selected < (s32)dropdown_values->size()) {
-							fields[name] = (*dropdown_values)[selected];
+						if (m_dropdown_index_event.find(s.fname) !=
+								m_dropdown_index_event.end()) {
+							fields[name] = std::to_string(selected + 1);
+						} else {
+							std::vector<std::string> *dropdown_values =
+								getDropDownValues(s.fname);
+							if (dropdown_values && selected < (s32)dropdown_values->size())
+								fields[name] = (*dropdown_values)[selected];
 						}
 					}
 				} else if (s.ftype == f_TabHeader) {

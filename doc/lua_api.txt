@@ -2443,7 +2443,7 @@ Elements
 * `color` is color specified as a `ColorString`.
   If the alpha component is left blank, the box will be semitransparent.
 
-### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
 * **Important note**: There are two different operation modes:
@@ -2454,8 +2454,12 @@ Elements
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
+* `index event` (optional, allowed parameter since formspec version 4): Specifies the
+  event field value for selected items.
+    * `true`: Selected item index
+    * `false` (default): Selected item value
 
-### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
 * **Important note**: This syntax for dropdowns can only be used with the
@@ -2468,6 +2472,10 @@ Elements
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
+* `index event` (optional, allowed parameter since formspec version 4): Specifies the
+  event field value for selected items.
+    * `true`: Selected item index
+    * `false` (default): Selected item value
 
 ### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
 
@@ -4491,7 +4499,8 @@ Call these functions only at load time!
         * `button` and variants: If pressed, contains the user-facing button
           text as value. If not pressed, is `nil`
         * `field`, `textarea` and variants: Text in the field
-        * `dropdown`: Text of selected item
+        * `dropdown`: Either the index or value, depending on the `index event`
+          dropdown argument.
         * `tabheader`: Tab index, starting with `"1"` (only if tab changed)
         * `checkbox`: `"true"` if checked, `"false"` if unchecked
         * `textlist`: See `minetest.explode_textlist_event`
