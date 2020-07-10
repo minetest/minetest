@@ -72,13 +72,6 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	u32 cross_a = rangelim(g_settings->getS32("crosshair_alpha"), 0, 255);
 	crosshair_argb = video::SColor(cross_a, cross_r, cross_g, cross_b);
 
-	v3f object_crosshair_color = g_settings->getV3F("object_crosshair_color");
-	u32 selecind_r = rangelim(myround(object_crosshair_color.X), 0, 255);
-	u32 selecind_g = rangelim(myround(object_crosshair_color.Y), 0, 255);
-	u32 selecind_b = rangelim(myround(object_crosshair_color.Z), 0, 255);
-	u32 selecind_a = rangelim(g_settings->getS32("object_crosshair_alpha"), 0, 255);
-	object_crosshair_argb = video::SColor(selecind_a, selecind_r, selecind_g, selecind_b);
-
 	v3f selectionbox_color = g_settings->getV3F("selectionbox_color");
 	u32 sbox_r = rangelim(myround(selectionbox_color.X), 0, 255);
 	u32 sbox_g = rangelim(myround(selectionbox_color.Y), 0, 255);
@@ -612,7 +605,7 @@ void Hud::drawHotbar(u16 playeritem) {
 
 void Hud::drawCrosshair()
 {
-	if (can_draw_object_crosshair) {
+	if (pointing_at_object) {
 		if (use_object_crosshair_image) {
 			video::ITexture *object_crosshair = tsrc->getTexture("object_crosshair.png");
 			v2u32 size  = object_crosshair->getOriginalSize();
@@ -620,22 +613,24 @@ void Hud::drawCrosshair()
 					m_displaycenter.Y - (size.Y / 2));
 			driver->draw2DImage(object_crosshair, lsize,
 					core::rect<s32>(0, 0, size.X, size.Y),
-					nullptr, object_crosshair_argb, true);
+					nullptr, crosshair_argb, true);
 		} else {
 			driver->draw2DLine(
 					m_displaycenter - v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
 					OBJECT_CROSSHAIR_LINE_SIZE),
 					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
-					OBJECT_CROSSHAIR_LINE_SIZE),
-					object_crosshair_argb);
+					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
 			driver->draw2DLine(
 					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
 					-OBJECT_CROSSHAIR_LINE_SIZE),
 					m_displaycenter + v2s32(-OBJECT_CROSSHAIR_LINE_SIZE,
-					OBJECT_CROSSHAIR_LINE_SIZE),
-					object_crosshair_argb);
+					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
 		}
-	} else if (use_crosshair_image) {
+
+		return;
+	}
+
+	if (use_crosshair_image) {
 		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
 		v2u32 size  = crosshair->getOriginalSize();
 		v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),

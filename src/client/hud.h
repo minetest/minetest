@@ -44,7 +44,6 @@ public:
 	ITextureSource *tsrc;
 
 	video::SColor crosshair_argb;
-	video::SColor object_crosshair_argb;
 	video::SColor selectionbox_argb;
 
 	bool use_crosshair_image = false;

@@ -741,16 +741,12 @@ selectionbox_color (Selection box color) string (0,0,0)
 selectionbox_width (Selection box width) int 2 1 5
 
 #    Crosshair color (R,G,B).
+#    Also controls the object crosshair color
 crosshair_color (Crosshair color) string (255,255,255)
 
 #    Crosshair alpha (opaqueness, between 0 and 255).
+#    Also controls the object crosshair color
 crosshair_alpha (Crosshair alpha) int 255 0 255
-
-#    Object crosshair color (R,G,B).
-object_crosshair_color (Object Crosshair color) string (255,255,255)
-
-#    Object crosshair alpha (opaqueness, between 0 and 255).
-object_crosshair_alpha (Object Crosshair alpha) int 255 0 255
 
 #    Maximum number of recent chat messages to show
 recent_chat_messages (Recent Chat Messages) int 6 2 20
