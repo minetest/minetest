@@ -26,85 +26,41 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 
 /*
-       MapEditEvent
+	MapEditEvent
 */
 
 #define MAPTYPE_MOCK 3
 
-#define UNIMPLEMENTED(retval)				\
-	warn_unimplemented(__FUNCTION__);	\
+#define UNIMPLEMENTED(retval)						\
+	warn_unimplemented(__FUNCTION__);				\
 	return retval;
 
 class MockGameDef : public IGameDef
 {
 public:
-	MockGameDef(std::ostream &dout) : dout(dout), m_ndef(), m_modspec() {};
+	MockGameDef(std::ostream &dout) : dout(dout), m_ndef(), m_modspec(){};
 
-	virtual IItemDefManager *getItemDefManager()
-	{
-		UNIMPLEMENTED(nullptr)
-	}
+	virtual IItemDefManager *getItemDefManager() { UNIMPLEMENTED(nullptr) }
 
-	virtual const NodeDefManager *getNodeDefManager()
-	{
-		return &m_ndef;
-	}
+	virtual const NodeDefManager *getNodeDefManager() { return &m_ndef; }
 
-	virtual ICraftDefManager *getCraftDefManager()
-	{
-		UNIMPLEMENTED(nullptr)
-	}
-
-	virtual u16 allocateUnknownNodeId(const std::string &name)
-	{
-		UNIMPLEMENTED(0)
-	}
-
-	virtual const std::vector<ModSpec> &getMods() const
-	{
-		UNIMPLEMENTED(m_modspec)
-	}
-
-	virtual const ModSpec *getModSpec(const std::string &modname) const
-	{
-		UNIMPLEMENTED(nullptr)
-	}
-
-	virtual std::string getModStoragePath() const
-	{
-		UNIMPLEMENTED("")
-	}
-
-	virtual bool registerModStorage(ModMetadata *storage)
-	{
-		UNIMPLEMENTED(false)
-	}
-
-	virtual void unregisterModStorage(const std::string &name)
-	{
-		UNIMPLEMENTED(;)
-	}
-
-	virtual bool joinModChannel(const std::string &channel)
-	{
-		UNIMPLEMENTED(false)
-	}
-
-	virtual bool leaveModChannel(const std::string &channel)
-	{
-		UNIMPLEMENTED(false)
-	}
+	virtual ICraftDefManager *getCraftDefManager() { UNIMPLEMENTED(nullptr) }
+	virtual u16 allocateUnknownNodeId(const std::string &name) { UNIMPLEMENTED(0) }
+	virtual const std::vector<ModSpec> &getMods() const { UNIMPLEMENTED(m_modspec) }
+	virtual const ModSpec *getModSpec(const std::string &modname) const { UNIMPLEMENTED(nullptr) }
+	virtual std::string getModStoragePath() const { UNIMPLEMENTED("") }
+	virtual bool registerModStorage(ModMetadata *storage) { UNIMPLEMENTED(false) }
+	virtual void unregisterModStorage(const std::string &name) { UNIMPLEMENTED(;) }
+	virtual bool joinModChannel(const std::string &channel) { UNIMPLEMENTED(false) }
+	virtual bool leaveModChannel(const std::string &channel) { UNIMPLEMENTED(false) }
 
 	virtual bool sendModChannelMessage(const std::string &channel,
-		const std::string &message)
+			const std::string &message)
 	{
 		UNIMPLEMENTED(false)
 	}
 
-	virtual ModChannel *getModChannel(const std::string &channel)
-	{
-		UNIMPLEMENTED(nullptr)
-	}
+	virtual ModChannel *getModChannel(const std::string &channel) { UNIMPLEMENTED(nullptr) }
 
 	content_t registerContent(const std::string &name, const ContentFeatures &def)
 	{
@@ -130,7 +86,7 @@ public:
 	virtual s32 mapType() const { return MAPTYPE_MOCK; }
 
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
-        virtual void PrintInfo(std::ostream &out) { out << "MockMap: "; }
+	virtual void PrintInfo(std::ostream &out) { out << "MockMap: "; }
 	
 	virtual MapSector *emergeSector(v2s16 p);
 	virtual MapBlock *emergeBlock(v3s16 p, bool create_blank=true);
@@ -149,7 +105,7 @@ public:
 	virtual Map &getMap() { return m_map; }
 
 	virtual void getSelectedActiveObjects(const core::line3d<f32> &shootline_on_map,
-                        std::vector<PointedThing> &objects)
+			std::vector<PointedThing> &objects)
 	{
 	}
 
