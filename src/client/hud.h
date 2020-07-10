@@ -54,7 +54,7 @@ public:
 	std::string hotbar_selected_image = "";
 	bool use_hotbar_selected_image = false;
 
-	bool can_draw_object_crosshair = false;
+	bool pointing_at_object = false;
 
 	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 			Inventory *inventory);
