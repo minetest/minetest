@@ -48,7 +48,7 @@ MapBlock *MockMap::emergeBlock(v3s16 p, bool create_blank)
 	block = sector->createBlankBlock(p.Y);
 	block->reallocate();
 	MapNode *n = block->getData();
-	for(u32 i = 0; i < block->nodecount; i++, n++)
+	for (u32 i = 0; i < block->nodecount; i++, n++)
 		n->setContent(CONTENT_AIR);
 	return block;
 }
