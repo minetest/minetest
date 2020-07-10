@@ -31,8 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define MAPTYPE_MOCK 3
 
-#define UNIMPLEMENTED(retval)								\
-	warn_unimplemented(__FUNCTION__);						\
+#define UNIMPLEMENTED(retval)                                                            \
+	warn_unimplemented(__FUNCTION__);                                                \
 	return retval;
 
 class MockGameDef : public IGameDef
@@ -65,10 +65,8 @@ public:
 		UNIMPLEMENTED(false)
 	}
 
-	virtual ModChannel *getModChannel(const std::string &channel)
-	{
-		UNIMPLEMENTED(nullptr)
-	}
+	virtual ModChannel *getModChannel(const std::string &channel){
+			UNIMPLEMENTED(nullptr)}
 
 	content_t registerContent(const std::string &name, const ContentFeatures &def)
 	{
