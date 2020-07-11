@@ -4341,7 +4341,7 @@ Utilities
           -- Whether Collision info is available to an objects' on_step (5.3.0)
           object_step_has_moveresult = true,
           -- Whether get_velocity() and add_velocity() can be used on players (5.4.0)
-          object_step_has_moveresult = true,
+          direct_velocity_on_players = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -6121,6 +6121,7 @@ object you are working with still exists.
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
     * In comparison to using get_velocity, adding the velocity and then using
       set_velocity, add_velocity is supposed to avoid synchronization problems.
+      Additionally, players also do not support set_velocity.
     * If a player:
         * Does not apply during free_move.
         * Note that since the player speed is normalized at each move step,
