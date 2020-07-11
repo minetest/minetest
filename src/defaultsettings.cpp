@@ -358,11 +358,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("disallow_empty_password", "false");
 	settings->setDefault("disable_anticheat", "false");
 	settings->setDefault("enable_rollback_recording", "false");
-#ifdef NDEBUG
-	settings->setDefault("deprecated_lua_api_handling", "legacy");
-#else
 	settings->setDefault("deprecated_lua_api_handling", "log");
-#endif
 
 	settings->setDefault("kick_msg_shutdown", "Server shutting down.");
 	settings->setDefault("kick_msg_crash", "This server has experienced an internal error. You will now be disconnected.");
