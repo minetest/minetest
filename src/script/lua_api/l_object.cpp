@@ -863,12 +863,20 @@ int ObjectRef::l_add_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
+	v3f vel = checkFloatPos(L, 2);
+
 	LuaEntitySAO *co = getluaobject(ref);
-	if (!co)
+	if (co) {
+		co->addVelocity(vel);
 		return 0;
-	v3f pos = checkFloatPos(L, 2);
-	// Do it
-	co->addVelocity(pos);
+	}
+
+	PlayerSAO *player = getplayersao(ref);
+	if (player) {
+		player->setMaxSpeedOverride(vel);
+		getServer(L)->SendPlayerSpeed(player->getPeerID(), vel);
+	}
+
 	return 0;
 }
 
@@ -877,11 +885,22 @@ int ObjectRef::l_get_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
+
 	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
-	// Do it
-	v3f v = co->getVelocity();
-	pushFloatPos(L, v);
+	if (co != NULL) {
+		// Do it
+		v3f v = co->getVelocity();
+		pushFloatPos(L, v);
+		return 1;
+	}
+
+	RemotePlayer *player = getplayer(ref);
+	if (player != NULL) {
+		push_v3f(L, player->getSpeed() / BS);
+		return 1;
+	}
+
+	lua_pushnil(L);
 	return 1;
 }
 
@@ -1086,32 +1105,20 @@ int ObjectRef::l_get_player_name(lua_State *L)
 int ObjectRef::l_get_player_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == NULL) {
-		lua_pushnil(L);
-		return 1;
-	}
-	// Do it
-	push_v3f(L, player->getSpeed() / BS);
-	return 1;
+
+	log_deprecated(L, "Deprecated call to get_player_velocity, use get_velocity instead.");
+
+	return l_get_velocity(L);
 }
 
 // add_player_velocity(self, {x=num, y=num, z=num})
 int ObjectRef::l_add_player_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	v3f vel = checkFloatPos(L, 2);
 
-	PlayerSAO *co = getplayersao(ref);
-	if (!co)
-		return 0;
+	log_deprecated(L, "Deprecated call to add_player_velocity, use add_velocity instead.");
 
-	// Do it
-	co->setMaxSpeedOverride(vel);
-	getServer(L)->SendPlayerSpeed(co->getPeerID(), vel);
-	return 0;
+	return l_add_velocity(L);
 }
 
 // get_look_dir(self)
