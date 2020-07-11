@@ -41,6 +41,16 @@ enum CollisionAxis
 	COLLISION_AXIS_Z,
 };
 
+enum CollisionFace
+{
+	COLLISION_FACE_MIN_X,
+	COLLISION_FACE_MIN_Y,
+	COLLISION_FACE_MIN_Z,
+	COLLISION_FACE_MAX_X,
+	COLLISION_FACE_MAX_Y,
+	COLLISION_FACE_MAX_Z,
+};
+
 struct CollisionInfo
 {
 	CollisionInfo() = default;

@@ -70,21 +70,86 @@ struct NearbyCollisionInfo {
 
 typedef std::pair<f32, std::vector<u32>> BoxIndex;
 
+struct ActiveBox
+{
+	u32 id;	// Identifier of the box, count in insertion order.
+	f32 location[6];	// Location of each defined vertex, CollisionFace order.
+				// Undefined vertices should be set to 0.f.
+
+	ActiveBox() = default;
+
+	ActiveBox(u32 id, CollisionFace a_face, f32 a_loc, CollisionFace b_face, f32 b_loc) :
+			id(id)
+	{
+		location[a_face] = a_loc;
+		location[b_face] = b_loc;
+	}
+
+	ActiveBox(const ActiveBox &other) : id(other.id)
+	{
+		location[COLLISION_FACE_MIN_X] = other.location[COLLISION_FACE_MIN_X];
+		location[COLLISION_FACE_MIN_Y] = other.location[COLLISION_FACE_MIN_Y];
+		location[COLLISION_FACE_MIN_Z] = other.location[COLLISION_FACE_MIN_Z];
+		location[COLLISION_FACE_MAX_X] = other.location[COLLISION_FACE_MAX_X];
+		location[COLLISION_FACE_MAX_Y] = other.location[COLLISION_FACE_MAX_Y];
+		location[COLLISION_FACE_MAX_Z] = other.location[COLLISION_FACE_MAX_Z];
+	}
+
+	// Merges location detail from another ActiveBox.
+	inline ActiveBox &merge(const ActiveBox &other)
+	{
+		//UASSERT(id == other.id);
+		//UASSERT(location[COLLISION_FACE_MIN_X] == 0.f || other.location[COLLISION_FACE_MIN_X] == 0.f);
+		//UASSERT(location[COLLISION_FACE_MIN_Y] == 0.f || other.location[COLLISION_FACE_MIN_Y] == 0.f);
+		//UASSERT(location[COLLISION_FACE_MIN_Z] == 0.f || other.location[COLLISION_FACE_MIN_Z] == 0.f);
+		//UASSERT(location[COLLISION_FACE_MAX_X] == 0.f || other.location[COLLISION_FACE_MAX_X] == 0.f);
+		//UASSERT(location[COLLISION_FACE_MAX_Y] == 0.f || other.location[COLLISION_FACE_MAX_Y] == 0.f);
+		//UASSERT(location[COLLISION_FACE_MAX_Z] == 0.f || other.location[COLLISION_FACE_MAX_Z] == 0.f);
+		location[COLLISION_FACE_MIN_X] += other.location[COLLISION_FACE_MIN_X];
+		location[COLLISION_FACE_MIN_Y] += other.location[COLLISION_FACE_MIN_Y];
+		location[COLLISION_FACE_MIN_Z] += other.location[COLLISION_FACE_MIN_Z];
+		location[COLLISION_FACE_MAX_X] += other.location[COLLISION_FACE_MAX_X];
+		location[COLLISION_FACE_MAX_Y] += other.location[COLLISION_FACE_MAX_Y];
+		location[COLLISION_FACE_MAX_Z] += other.location[COLLISION_FACE_MAX_Z];
+		return *this;
+	}
+
+	inline ActiveBox &merge(CollisionFace face, f32 loc)
+	{
+		location[face] = loc;
+		return *this;
+	}
+};
+
 class BoxSet
 {
 public:
 	BoxSet(aabb3f current) : m_current(current) {}
 
 	u32 add(aabb3f box);
-	static u32 intersect(std::vector<u32> *a, std::vector<u32> *b, std::vector<u32> *dest);
+	static u32 intersect(
+		std::vector<ActiveBox> *dest,
+		CollisionFace a_face, f32 a_loc, const std::vector<u32> *a,
+		CollisionFace b_face, f32 b_loc, const std::vector<u32> *b);
+	static u32 intersect(
+		std::vector<ActiveBox> *dest,
+		CollisionFace a_face, f32 a_loc, const std::vector<u32> *a);
+	static u32 intersect(std::vector<ActiveBox> *dest, const std::vector<ActiveBox> *a);
+	static u32 intersect(std::vector<ActiveBox> *dest, const std::vector<ActiveBox> *a, const std::vector<ActiveBox> *b);
+	static bool intersects(const std::vector<ActiveBox> *a, const std::vector<u32> *b);
+	bool currentCollisions(std::vector<u32> *collisions, f32 displacement[6], f32 tolerance = 0.f) const;
 
 protected:
 	static std::vector<u32> *find(std::vector<BoxIndex> *v, f32 x);
+	void evaluateCollision(const ActiveBox &box, f32 *displacement) const;
+	static bool search(const std::vector<ActiveBox> *active, const std::vector<BoxIndex> *index, float start, float *displacement);
+	static bool searchBack(const std::vector<ActiveBox> *active, const std::vector<BoxIndex> *index, float start, float *displacement);
+
 	u32 m_size;
 	aabb3f m_current;
-	std::vector<u32> m_active_x; // Boxes that overlap with m_current in X
-	std::vector<u32> m_active_y;
-	std::vector<u32> m_active_z;
+	std::vector<ActiveBox> m_active_x; // Boxes that overlap with m_current in X
+	std::vector<ActiveBox> m_active_y;
+	std::vector<ActiveBox> m_active_z;
 	std::vector<BoxIndex> m_index_min_x;
 	std::vector<BoxIndex> m_index_min_y;
 	std::vector<BoxIndex> m_index_min_z;
@@ -652,11 +717,17 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 u32 BoxSet::add(aabb3f box)
 {
 	if (box.MinEdge.X < m_current.MaxEdge.X && box.MaxEdge.X > m_current.MinEdge.X)
-		m_active_x.push_back(m_size);
+		m_active_x.emplace_back(
+				m_size, COLLISION_FACE_MIN_X, box.MinEdge.X,
+				COLLISION_FACE_MAX_X, box.MaxEdge.X);
 	if (box.MinEdge.Y < m_current.MaxEdge.Y && box.MaxEdge.Y > m_current.MinEdge.Y)
-		m_active_y.push_back(m_size);
+		m_active_y.emplace_back(
+				m_size, COLLISION_FACE_MIN_Y, box.MinEdge.Y,
+				COLLISION_FACE_MAX_Y, box.MaxEdge.Y);
 	if (box.MinEdge.Z < m_current.MaxEdge.Z && box.MaxEdge.Z > m_current.MinEdge.Z)
-		m_active_z.push_back(m_size);
+		m_active_z.emplace_back(
+				m_size, COLLISION_FACE_MIN_Z, box.MinEdge.Z,
+				COLLISION_FACE_MAX_Z, box.MaxEdge.Z);
 
 	// Add box to correct indexes.
 	find(&m_index_min_x, box.MinEdge.X)->push_back(m_size);
@@ -670,8 +741,114 @@ u32 BoxSet::add(aabb3f box)
 	return m_size++;
 }
 
+// Look for overlap or near overlap (strictly less than tolerance distance of overlapping).
+// Update a list of all boxes that we overlap, because these need to be
+// mapped to the collided nodes/objects at a higher level.
+// For each face, update the maximal amount of overlap between that face of
+// m_current and any box.
+// In the case of near overlap, that maximal amount will be negative.
+// Return true if there are any collisions or near collisions.
+bool BoxSet::currentCollisions(std::vector<u32> *collisions, f32 displacement[6], f32 tolerance) const
+{
+	displacement[COLLISION_FACE_MIN_X] = -tolerance;
+	displacement[COLLISION_FACE_MIN_Y] = -tolerance;
+	displacement[COLLISION_FACE_MIN_Z] = -tolerance;
+	displacement[COLLISION_FACE_MAX_X] = -tolerance;
+	displacement[COLLISION_FACE_MAX_Y] = -tolerance;
+	displacement[COLLISION_FACE_MAX_Z] = -tolerance;
+
+	bool collide = false;
+	std::vector<ActiveBox> active_2, active_3;
+
+	// X-axis collisions
+	if (intersect(&active_2, &m_active_y, &m_active_z))
+	{	// Collisions are possible.
+		if(intersect(&active_3, &m_active_x, &active_2))
+		{
+			collide = true;
+
+			// active_3 contains all true collisions.
+			for (u32 i = 0; i < active_3.size(); i++)
+			{
+				collisions->push_back(active_3.at(i).id);
+				evaluateCollision(active_3.at(i), displacement);
+			}
+		}
+
+		// A near collision of type COLLISION_FACE_MAX_X will be present
+		// in active_2 and in m_index_min_x between
+		// m_current.MaxEdge.X and m_current.MaxEdge.X + tolerance.
+
+		collide |= search(&active_2, &m_index_min_x, m_current.MaxEdge.X, &displacement[COLLISION_FACE_MAX_X]);
+		collide |= searchBack(&active_2, &m_index_max_x, m_current.MinEdge.X, &displacement[COLLISION_FACE_MIN_X]);
+	}
+
+	// Y-axis collisions
+	if (intersect(&active_2, &m_active_x, &m_active_z))
+	{
+		collide |= search(&active_2, &m_index_min_y, m_current.MaxEdge.Y, &displacement[COLLISION_FACE_MAX_Y]);
+		collide |= searchBack(&active_2, &m_index_max_y, m_current.MinEdge.Y, &displacement[COLLISION_FACE_MIN_Y]);
+	}
+	
+	// Z-axis collisions
+	if (intersect(&active_2, &m_active_x, &m_active_y))
+	{
+		collide |= search(&active_2, &m_index_min_z, m_current.MaxEdge.Z, &displacement[COLLISION_FACE_MAX_Z]);
+		collide |= searchBack(&active_2, &m_index_max_z, m_current.MinEdge.Z, &displacement[COLLISION_FACE_MIN_Z]);
+	}
+
+	return collide;
+}
+
+inline bool displacement_max(f32 displacement[6], CollisionFace face, f32 offset)
+{
+	if (offset <= displacement[face])
+		return false;
+
+	displacement[face] = offset;
+	return true;
+}
+
+// Compare centers to decide the orientation of the collision.
+// The collision will be marked such that the higher level logic should
+// direct the entity away from the center of the collided box.
+// If the entity is at the center of the box, both faces are considered to 
+// have collided.
+void BoxSet::evaluateCollision(const ActiveBox &box, f32 *displacement) const
+{
+	f32 minX = box.location[COLLISION_FACE_MIN_X];
+	f32 minY = box.location[COLLISION_FACE_MIN_Y];
+	f32 minZ = box.location[COLLISION_FACE_MIN_Z];
+	f32 maxX = box.location[COLLISION_FACE_MAX_X];
+	f32 maxY = box.location[COLLISION_FACE_MAX_Y];
+	f32 maxZ = box.location[COLLISION_FACE_MAX_Z];
+	v3f offset = v3f(minX + maxX, minY + maxY, minZ + maxZ) - m_current.MinEdge - m_current.MaxEdge;
+
+	if (offset.X <= 0.f)
+		displacement_max(displacement, COLLISION_FACE_MIN_X, maxX - m_current.MinEdge.X);
+
+	if (offset.Y <= 0.f)
+		displacement_max(displacement, COLLISION_FACE_MIN_Y, maxY - m_current.MinEdge.Y);
+
+	if (offset.Z <= 0.f)
+		displacement_max(displacement, COLLISION_FACE_MAX_Z, maxZ - m_current.MinEdge.Z);
+
+	if (offset.X >= 0.f)
+		displacement_max(displacement, COLLISION_FACE_MAX_X, m_current.MinEdge.X - maxX);
+
+	if (offset.Y >= 0.f)
+		displacement_max(displacement, COLLISION_FACE_MAX_Y, m_current.MinEdge.Y - maxY);
+
+	if (offset.Z >= 0.f)
+		displacement_max(displacement, COLLISION_FACE_MIN_Z, m_current.MinEdge.Z - maxZ);
+}
+
 bool compareIndex(BoxIndex a, f32 b)
 {	return a.first < b;
+}
+
+bool compareIndexBack(BoxIndex a, f32 b)
+{	return a.first > b;
 }
 
 std::vector<u32> *BoxSet::find(std::vector<BoxIndex> *v, f32 x)
@@ -690,4 +867,150 @@ std::vector<u32> *BoxSet::find(std::vector<BoxIndex> *v, f32 x)
 		return &i->second;
 
 	return &v->emplace(i, x, std::vector<u32>())->second;
+}
+
+u32 BoxSet::intersect(
+		std::vector<ActiveBox> *dest,
+		CollisionFace a_face, f32 a_loc, const std::vector<u32> *a,
+		CollisionFace b_face, f32 b_loc, const std::vector<u32> *b)
+{
+	dest->clear(); // Normally superfluous, but ensures sorted contents invariant.
+	u32 ai=0, bi=0;
+
+	while (ai < a->size() && bi < b->size())
+		if (a->at(ai) < b->at(bi))
+			ai++;
+		else if(a->at(ai) > b->at(bi))
+			bi++;
+		else
+		{
+			dest->emplace_back(a->at(ai++), a_face, a_loc, b_face, b_loc);
+			bi++;
+		}
+
+	return dest->size();
+}
+
+u32 BoxSet::intersect(std::vector<ActiveBox> *dest, const std::vector<ActiveBox> *a, const std::vector<ActiveBox> *b)
+{
+	u32 ai=0, bi=0;
+
+	while (ai < a->size() && bi < b->size())
+		if (a->at(ai).id < b->at(bi).id)
+			ai++;
+		else if(a->at(ai).id > b->at(bi).id)
+			bi++;
+		else
+		{
+			dest->emplace_back(a->at(ai++));
+			dest->back().merge(b->at(bi++));
+		}
+
+	return dest->size();
+}
+
+u32 BoxSet::intersect(
+		std::vector<ActiveBox> *dest,
+		CollisionFace a_face, f32 a_loc, const std::vector<u32> *a)
+{
+	dest->clear(); // Normally superfluous, but ensures sorted contents invariant.
+	u32 n=0, ai=0, di=0;
+
+	while (ai < a->size() && di < dest->size())
+		if (a->at(ai) < dest->at(di).id)
+			ai++;
+		else if(a->at(ai) > dest->at(di).id)
+			di++;
+		else
+		{
+			// Not necessary if n == di, but faster to copy than to check.
+			dest->at(n++) = dest->at(di++).merge(a_face, a_loc);
+		}
+
+	dest->resize(n);
+	return n;
+}
+
+u32 BoxSet::intersect(std::vector<ActiveBox> *dest, const std::vector<ActiveBox>  *a)
+{
+	u32 n=0, ai=0, di=0;
+
+	while (ai < a->size() && di < dest->size())
+		if (a->at(ai).id < dest->at(di).id)
+			ai++;
+		else if(a->at(ai).id > dest->at(di).id)
+			di++;
+		else
+		{
+			// Not necessary if n == di, but faster to copy than to check.
+			dest->at(n++) = dest->at(di++).merge(a->at(ai++));
+		}
+
+	dest->resize(n);
+	return n;
+}
+
+bool BoxSet::intersects(const std::vector<ActiveBox> *a, const std::vector<u32> *b)
+{
+	u32 ai=0, bi=0;
+
+	while (ai < a->size() && bi < b->size())
+		if (a->at(ai).id < b->at(bi))
+			ai++;
+		else if(a->at(ai).id > b->at(bi))
+			bi++;
+		else
+			return true;
+
+	return false;
+}
+
+bool BoxSet::search(const std::vector<ActiveBox> *active, const std::vector<BoxIndex> *index, float start, float *displacement)
+{
+	if (*displacement > 0.f || index->empty())
+		return false;
+
+	// 1. Use binary search to find start in index.
+	std::vector<BoxIndex>::const_iterator i = std::lower_bound(
+			index->begin(), index->end(), start, compareIndex);
+
+	// 2. Loop through index from that location until -*displacement has elapsed.
+	f32 stop = start - *displacement;
+
+	for (; i < index->end() && i->first < stop; i++)
+		// 3. intersect active with the set at that location.
+		if (intersects(active, &i->second))
+		{
+			// 4. If there is anything in the intersection, update *displacement and return true.
+			*displacement = start - i->first;
+			return true;
+		}
+
+	// 5. If reach end of loop, return false.
+	return false;
+}
+
+bool BoxSet::searchBack(const std::vector<ActiveBox> *active, const std::vector<BoxIndex> *index, float start, float *displacement)
+{
+	if (*displacement > 0.f || index->empty())
+		return false;
+
+	// 1. Use binary search to find start in index.
+	std::vector<BoxIndex>::const_reverse_iterator i = std::lower_bound(
+			index->rbegin(), index->rend(), start, compareIndexBack);
+
+	// 2. Loop through index from that location until -*displacement has elapsed.
+	f32 stop = start + *displacement;
+
+	for (; i < index->rend() && i->first > stop; i++)
+		// 3. intersect active with the set at that location.
+		if (intersects(active, &i->second))
+		{
+			// 4. If there is anything in the intersection, update *displacement and return true.
+			*displacement = i->first - start;
+			return true;
+		}
+
+	// 5. If reach end of loop, return false.
+	return false;
 }
