@@ -17,8 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <algorithm>
 #include "collision.h"
 #include <cmath>
+#include "log.h"
 #include "mapblock.h"
 #include "map.h"
 #include "nodedef.h"
@@ -64,6 +66,31 @@ struct NearbyCollisionInfo {
 	int bouncy;
 	v3s16 position;
 	aabb3f box;
+};
+
+typedef std::pair<f32, std::vector<u32>> BoxIndex;
+
+class BoxSet
+{
+public:
+	BoxSet(aabb3f current) : m_current(current) {}
+
+	u32 add(aabb3f box);
+	static u32 intersect(std::vector<u32> *a, std::vector<u32> *b, std::vector<u32> *dest);
+
+protected:
+	static std::vector<u32> *find(std::vector<BoxIndex> *v, f32 x);
+	u32 m_size;
+	aabb3f m_current;
+	std::vector<u32> m_active_x; // Boxes that overlap with m_current in X
+	std::vector<u32> m_active_y;
+	std::vector<u32> m_active_z;
+	std::vector<BoxIndex> m_index_min_x;
+	std::vector<BoxIndex> m_index_min_y;
+	std::vector<BoxIndex> m_index_min_z;
+	std::vector<BoxIndex> m_index_max_x;
+	std::vector<BoxIndex> m_index_max_y;
+	std::vector<BoxIndex> m_index_max_z;
 };
 
 // Helper functions:
@@ -265,6 +292,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	/*
 		Collect node boxes in movement range
 	*/
+	aabb3f startbox = box_0;
+	startbox.MinEdge += *pos_f;
+	startbox.MaxEdge += *pos_f;
+	BoxSet boxes(startbox);
+
 	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
@@ -342,12 +374,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				box.MinEdge += posf;
 				box.MaxEdge += posf;
 				cinfo.emplace_back(false, n_bouncy_value, p, box);
+				boxes.add(box);
 			}
 		} else {
 			// Collide with unloaded nodes (position invalid) and loaded
 			// CONTENT_IGNORE nodes (position valid)
 			aabb3f box = getNodeBox(p, BS);
 			cinfo.emplace_back(true, 0, p, box);
+			boxes.add(box);
 		}
 	}
 
@@ -416,7 +450,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (object && object->collideWithObjects()) {
 				aabb3f object_collisionbox;
 				if (object->getCollisionBox(&object_collisionbox))
+				{
 					cinfo.emplace_back(object, 0, object_collisionbox);
+					boxes.add(object_collisionbox);
+				}
 			}
 		}
 #ifndef SERVER
@@ -429,6 +466,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				lplayer_collisionbox.MaxEdge += lplayer_pos;
 				ActiveObject *obj = (ActiveObject*) lplayer->getCAO();
 				cinfo.emplace_back(obj, 0, lplayer_collisionbox);
+				boxes.add(lplayer_collisionbox);
 			}
 		}
 #endif
@@ -609,4 +647,41 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	}
 
 	return result;
+}
+
+u32 BoxSet::add(aabb3f box)
+{
+	if (box.MinEdge.X < m_current.MaxEdge.X && box.MaxEdge.X > m_current.MinEdge.X)
+		m_active_x.push_back(m_size);
+	if (box.MinEdge.Y < m_current.MaxEdge.Y && box.MaxEdge.Y > m_current.MinEdge.Y)
+		m_active_y.push_back(m_size);
+	if (box.MinEdge.Z < m_current.MaxEdge.Z && box.MaxEdge.Z > m_current.MinEdge.Z)
+		m_active_z.push_back(m_size);
+
+	// Add box to correct indexes.
+	find(&m_index_min_x, box.MinEdge.X)->push_back(m_size);
+	find(&m_index_min_y, box.MinEdge.Y)->push_back(m_size);
+	find(&m_index_min_z, box.MinEdge.Z)->push_back(m_size);
+	find(&m_index_max_x, box.MaxEdge.X)->push_back(m_size);
+	find(&m_index_max_y, box.MaxEdge.Y)->push_back(m_size);
+	find(&m_index_max_z, box.MaxEdge.Z)->push_back(m_size);
+
+	// Return the id.
+	return m_size++;
+}
+
+bool compareIndex(BoxIndex a, f32 b)
+{	return a.first < b;
+}
+
+std::vector<u32> *BoxSet::find(std::vector<BoxIndex> *v, f32 x)
+{
+	std::vector<BoxIndex>::iterator i;
+
+	i = std::lower_bound(v->begin(), v->end(), x, compareIndex);
+
+	if (i != nullptr && i->first == x)
+		return &i->second;
+
+	return &v->emplace(i, x, std::vector<u32>())->second;
 }
