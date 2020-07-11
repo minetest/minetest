@@ -676,11 +676,17 @@ bool compareIndex(BoxIndex a, f32 b)
 
 std::vector<u32> *BoxSet::find(std::vector<BoxIndex> *v, f32 x)
 {
+	if (v->empty())
+	{
+		v->emplace_back(x, std::vector<u32>());
+		return &v->begin()->second;
+	}
+
 	std::vector<BoxIndex>::iterator i;
 
 	i = std::lower_bound(v->begin(), v->end(), x, compareIndex);
 
-	if (i != nullptr && i->first == x)
+	if (i->first == x)
 		return &i->second;
 
 	return &v->emplace(i, x, std::vector<u32>())->second;
