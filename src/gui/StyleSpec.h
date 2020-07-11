@@ -259,9 +259,7 @@ public:
 		if (!size.empty()) {
 			int calc_size = 1;
 
-			if (size.size() == 0) {
-				calc_size = 0;
-			} else if (size[0] == '*') {
+			if (size[0] == '*') {
 				std::string new_size = size.substr(1); // Remove '*' (invalid for stof)
 				calc_size = stof(new_size) * g_fontengine->getFontSize(spec.mode);
 			} else if (size[0] == '+' || size[0] == '-') {
