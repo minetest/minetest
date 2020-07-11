@@ -4340,6 +4340,8 @@ Utilities
           pathfinder_works = true,
           -- Whether Collision info is available to an objects' on_step (5.3.0)
           object_step_has_moveresult = true,
+          -- Whether get_velocity() and add_velocity() can be used on players (5.4.0)
+          object_step_has_moveresult = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -6114,6 +6116,7 @@ object you are working with still exists.
 
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
+* `get_velocity()`: returns the velocity, a vector.
 * `add_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
     * In comparison to using get_velocity, adding the velocity and then using
@@ -6125,7 +6128,6 @@ object you are working with still exists.
           (see: physics overrides) will cause existing X/Z velocity to be reduced.
         * Example: `add_velocity({x=0, y=6.5, z=0})` is equivalent to
           pressing the jump key (assuming default settings)
-* `get_velocity()`: returns the velocity, a vector.
 * `move_to(pos, continuous=false)`
     * Does an interpolated move for Lua entities for visually smooth transitions.
     * If `continuous` is true, the Lua entity will not be moved to the current
