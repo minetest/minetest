@@ -541,6 +541,23 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		Collision detection
 	*/
 
+	f32 cdist[6];
+	std::vector<u32> cid;
+	if (boxes.currentCollisions(&cid, cdist, 15.f))
+	{
+		rawstream
+				<< "Collisions "
+				<< cdist[0] << ','
+				<< cdist[1] << ','
+				<< cdist[2] << ','
+				<< cdist[3] << ','
+				<< cdist[4] << ','
+				<< cdist[5] << '\t';
+		for(u32 i = 0; i < cid.size(); i++)
+			rawstream << cid[i] << ',';
+		rawstream << std::endl;
+	}
+
 	f32 d = 0.0f;
 
 	int loopcount = 0;
