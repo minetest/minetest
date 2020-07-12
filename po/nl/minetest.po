@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-05-29 11:41+0000\n"
-"Last-Translator: Miniontoby <tobias.gaarenstroom@gmail.com>\n"
+"PO-Revision-Date: 2020-07-08 20:47+0000\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,7 +24,7 @@ msgstr "Je bent gestorven"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "Oke"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -116,7 +116,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Zoek Meer Mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -170,11 +170,11 @@ msgstr "Terug naar hoofdmenu"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
 msgstr ""
+"ContentDB is niet beschikbaar wanneer Minetest compileert is zonder cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Laden..."
+msgstr "Downloaden..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -1066,7 +1066,7 @@ msgstr "Het gespecificeerde wereld-pad bestaat niet: "
 #. When in doubt, test your translation.
 #: src/client/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "needs_fallback_font"
+msgstr "no"
 
 #: src/client/game.cpp
 msgid ""
@@ -1228,7 +1228,7 @@ msgstr ""
 "- aanraken stapel of vak:\n"
 " --> stapel verplaatsen\n"
 "- aanraken & slepen, tik met tweede vinger\n"
-"  --> plaats enkel object in vak\n"
+" --> plaats enkel object in vak\n"
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
@@ -2122,10 +2122,8 @@ msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
-"Vooringesteld kiemgetal voor de wereld. Indien leeg, wordt een willekeurige\n"
-"waarde gekozen.\n"
-"Wanneer vanuit het hoofdmenu een nieuwe wereld gecreëerd wordt, kan een\n"
-"ander kiemgetal gekozen worden."
+"Een gekozen kaartzaad voor een nieuwe kaart, laat leeg voor willekeurig. \n"
+"Wordt overschreven bij het creëren van een nieuwe wereld in het hoofdmenu."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
@@ -2192,8 +2190,8 @@ msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
-"Aangepaste DPI (dots per inch) instelling voor het scherm.\n"
-"Bijv. voor 4k schermen (niet voor X11 of Android)."
+"Pas de dpi-configuratie aan op uw scherm (alleen niet X11 / Android), b.v. "
+"voor 4k-schermen."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2624,9 +2622,9 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Lijst van mods die HTTP mogen gebruiken. Deze mods kunnen gegevens uploaden\n"
-"naar en downloaden van het internet.\n"
-"Gescheiden door komma's."
+"Door komma's gescheiden lijst met mods die toegang hebben tot HTTP API's, "
+"die \n"
+"sta hen toe om gegevens van / naar internet te uploaden en te downloaden."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3639,9 +3637,8 @@ msgid ""
 msgstr ""
 "Laat de profiler zichzelf profileren:\n"
 "* Profileer een lege functie.\n"
-"   Dit geeft een schatting van de CPU-tijd die door de profiler zelf "
-"gebruikt wordt,\n"
-"   ten koste van één extra functie-aanroep.\n"
+" Dit geeft een schatting van de CPU-tijd die door de profiler zelf gebruikt "
+"wordt (+1 functie-aanroep).\n"
 "* Profileer de code die de statistieken ververst."
 
 #: src/settings_translation_file.cpp
@@ -3902,9 +3899,8 @@ msgid "Hotbar slot 9 key"
 msgstr "Toets voor volgend gebruikte tool"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "How deep to make rivers."
-msgstr "Diepte van de rivieren"
+msgstr "Diepte van de rivieren."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3926,9 +3922,8 @@ msgstr ""
 "geheugen."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "How wide to make rivers."
-msgstr "Breedte van rivieren"
+msgstr "Breedte van rivieren."
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
@@ -6125,9 +6120,8 @@ msgstr ""
 "Waarden groter dan 26 hebben scherpe wolkenranden tot gevolg."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Raises terrain to make valleys around the rivers."
-msgstr "Verhoogt het terrein om rond de rivieren valleien te maken"
+msgstr "Verhoogt het terrein om rond de rivieren valleien te maken."
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
@@ -6566,9 +6560,8 @@ msgid "Slice w"
 msgstr "Slice w"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Slope and fill work together to modify the heights."
-msgstr "Helling en vulling bepalen in combinatie de hoogte"
+msgstr "Helling en vulling bepalen in combinatie de hoogte."
 
 #: src/settings_translation_file.cpp
 msgid "Small cave maximum number"
@@ -6817,17 +6810,15 @@ msgstr ""
 " als '/profiler save' wordt aangeroepen zonder expliciet formaat."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The depth of dirt or other biome filler node."
-msgstr "De diepte van aarde of andersoortige toplaag"
+msgstr "De diepte van aarde of andersoortige toplaag."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved to."
 msgstr ""
-"Het pad, ten opzichte van het wereld-pad, waar profilerings-gegevens worden "
-"opgeslagen.\n"
+"Het bestand pad ten opzichte van de wereldfolder waar profilerings-gegevens "
+"worden opgeslagen."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"

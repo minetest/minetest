@@ -2443,7 +2443,7 @@ Elements
 * `color` is color specified as a `ColorString`.
   If the alpha component is left blank, the box will be semitransparent.
 
-### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
 * **Important note**: There are two different operation modes:
@@ -2454,8 +2454,12 @@ Elements
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
+* `index event` (optional, allowed parameter since formspec version 4): Specifies the
+  event field value for selected items.
+    * `true`: Selected item index
+    * `false` (default): Selected item value
 
-### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
 * **Important note**: This syntax for dropdowns can only be used with the
@@ -2468,6 +2472,10 @@ Elements
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
+* `index event` (optional, allowed parameter since formspec version 4): Specifies the
+  event field value for selected items.
+    * `true`: Selected item index
+    * `false` (default): Selected item value
 
 ### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
 
@@ -2484,7 +2492,7 @@ Elements
 * There are two ways to use it:
     1. handle the changed event (only changed scrollbar is available)
     2. read the value on pressing a button (all scrollbars are available)
-* `orientation`:  `vertical`/`horizontal`
+* `orientation`: `vertical`/`horizontal`. Default horizontal.
 * Fieldname data is transferred to Lua
 * Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
@@ -2597,6 +2605,28 @@ Elements
     * If a state is provided, the style will only take effect when the element is in that state.
     * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
+
+### `set_focus[<name>;<force>]`
+
+* Sets the focus to the element with the same `name` parameter.
+* **Note**: This element must be placed before the element it focuses.
+* `force` (optional, default `false`): By default, focus is not applied for
+  re-sent formspecs with the same name so that player-set focus is kept.
+  `true` sets the focus to the specified element for every sent formspec.
+* The following elements have the ability to be focused:
+    * checkbox
+    * button
+    * button_exit
+    * image_button
+    * image_button_exit
+    * item_image_button
+    * table
+    * textlist
+    * dropdown
+    * field
+    * pwdfield
+    * textarea
+    * scrollbar
 
 Migrating to Real Coordinates
 -----------------------------
@@ -2717,6 +2747,18 @@ Some types may inherit styles from parent types.
                      button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
         * This is deprecated, use states instead.
+    * font - Sets font type. This is a comma separated list of options. Valid options:
+      * Main font type options. These cannot be combined with each other:
+        * `normal`: Default font
+        * `mono`: Monospaced font
+      * Font modification options. If used without a main font type, `normal` is used:
+        * `bold`: Makes font bold.
+        * `italic`: Makes font italic.
+      Default `normal`.
+    * font_size - Sets font size. Default is user-set. Can have multiple values:
+      * `<number>`: Sets absolute font size to `number`.
+      * `+<number>`/`-<number>`: Offsets default font size by `number` points.
+      * `*<number>`: Multiplies default font size by `number`, similar to CSS `em`.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * content_offset - 2d vector, shifts the position of the button's content without resizing it.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -2728,11 +2770,15 @@ Some types may inherit styles from parent types.
 * scrollbar
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * table, textlist
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * dropdown
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * field, pwdfield, textarea
     * border - set to false to hide the textbox background and border. Default true.
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 * image
@@ -2741,6 +2787,8 @@ Some types may inherit styles from parent types.
 * item_image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to false.
 * label, vertlabel
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
@@ -4477,7 +4525,7 @@ Call these functions only at load time!
           * a button was pressed,
           * Enter was pressed while the focus was on a text field
           * a checkbox was toggled,
-          * something was selecteed in a drop-down list,
+          * something was selected in a dropdown list,
           * a different tab was selected,
           * selection was changed in a textlist or table,
           * an entry was double-clicked in a textlist or table,
@@ -4491,7 +4539,8 @@ Call these functions only at load time!
         * `button` and variants: If pressed, contains the user-facing button
           text as value. If not pressed, is `nil`
         * `field`, `textarea` and variants: Text in the field
-        * `dropdown`: Text of selected item
+        * `dropdown`: Either the index or value, depending on the `index event`
+          dropdown argument.
         * `tabheader`: Tab index, starting with `"1"` (only if tab changed)
         * `checkbox`: `"true"` if checked, `"false"` if unchecked
         * `textlist`: See `minetest.explode_textlist_event`

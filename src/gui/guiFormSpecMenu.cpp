@@ -24,8 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <limits>
 #include <sstream>
 #include "guiFormSpecMenu.h"
-#include "guiScrollBar.h"
-#include "guiTable.h"
 #include "constants.h"
 #include "gamedef.h"
 #include "client/keycode.h"
@@ -64,9 +62,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEditBoxWithScrollbar.h"
 #include "guiInventoryList.h"
 #include "guiItemImage.h"
-#include "guiScrollBar.h"
 #include "guiScrollContainer.h"
-#include "guiTable.h"
 #include "intlGUIEditBox.h"
 #include "guiHyperText.h"
 
@@ -619,7 +615,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		auto style = getDefaultStyleForElement("checkbox", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
-		if (spec.fname == data->focused_fieldname) {
+		if (spec.fname == m_focused_element) {
 			Environment->setFocus(e);
 		}
 
@@ -694,6 +690,10 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 		s32 scrollbar_size = is_horizontal ? dim.X : dim.Y;
 
 		e->setPageSize(scrollbar_size * (max - min + 1) / data->scrollbar_options.thumb_size);
+
+		if (spec.fname == m_focused_element) {
+			Environment->setFocus(e);
+		}
 
 		m_scrollbars.emplace_back(spec,e);
 		m_fields.push_back(spec);
@@ -1021,7 +1021,7 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
 		e->setStyles(style);
 
-		if (spec.fname == data->focused_fieldname) {
+		if (spec.fname == m_focused_element) {
 			Environment->setFocus(e);
 		}
 
@@ -1210,7 +1210,7 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 		GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
 				rect, m_tsrc);
 
-		if (spec.fname == data->focused_fieldname) {
+		if (spec.fname == m_focused_element) {
 			Environment->setFocus(e);
 		}
 
@@ -1287,7 +1287,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 		GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
 				rect, m_tsrc);
 
-		if (spec.fname == data->focused_fieldname) {
+		if (spec.fname == m_focused_element) {
 			Environment->setFocus(e);
 		}
 
@@ -1310,19 +1310,20 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 	errorstream<< "Invalid textlist element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
-
 void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
-	if ((parts.size() == 5) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if (parts.size() == 5 || parts.size() == 6 ||
+		(parts.size() > 6 && m_formspec_version > FORMSPEC_API_VERSION))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
 		std::string name = parts[2];
-		std::vector<std::string> items = split(parts[3],',');
-		std::string str_initial_selection;
-		str_initial_selection = parts[4];
+		std::vector<std::string> items = split(parts[3], ',');
+		std::string str_initial_selection = parts[4];
+
+		if (parts.size() >= 6 && is_yes(parts[5]))
+			m_dropdown_index_event[name] = true;
 
 		MY_CHECKPOS("dropdown",0);
 
@@ -1364,7 +1365,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 		gui::IGUIComboBox *e = Environment->addComboBox(rect, data->current_parent,
 				spec.fid);
 
-		if (spec.fname == data->focused_fieldname) {
+		if (spec.fname == m_focused_element) {
 			Environment->setFocus(e);
 		}
 
@@ -1389,8 +1390,8 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 
 		return;
 	}
-	errorstream << "Invalid dropdown element(" << parts.size() << "): '"
-				<< element << "'"  << std::endl;
+	errorstream << "Invalid dropdown element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
@@ -1406,8 +1407,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 4) ||
-		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if (parts.size() == 4 ||
+		(parts.size() > 4 && m_formspec_version > FORMSPEC_API_VERSION))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_geom = split(parts[1],',');
@@ -1451,7 +1452,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		gui::IGUIEditBox *e = Environment->addEditBox(0, rect, true,
 				data->current_parent, spec.fid);
 
-		if (spec.fname == data->focused_fieldname) {
+		if (spec.fname == m_focused_element) {
 			Environment->setFocus(e);
 		}
 
@@ -1469,6 +1470,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+		e->setOverrideFont(style.getFont());
 
 		irr::SEvent evt;
 		evt.EventType            = EET_KEY_INPUT_EVENT;
@@ -1528,7 +1530,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 	auto style = getDefaultStyleForElement(is_multiline ? "textarea" : "field", spec.fname);
 
 	if (e) {
-		if (is_editable && spec.fname == data->focused_fieldname)
+		if (is_editable && spec.fname == m_focused_element)
 			Environment->setFocus(e);
 
 		if (is_multiline) {
@@ -1552,6 +1554,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 		if (style.get(StyleSpec::BGCOLOR, "") == "transparent") {
 			e->setDrawBackground(false);
 		}
+		e->setOverrideFont(style.getFont());
 
 		e->drop();
 	}
@@ -1765,6 +1768,11 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 		std::vector<std::string> lines = split(text, '\n');
 
+		auto style = getDefaultStyleForElement("label", "");
+		gui::IGUIFont *font = style.getFont();
+		if (!font)
+			font = m_font;
+
 		for (unsigned int i = 0; i != lines.size(); i++) {
 			std::wstring wlabel_colors = translate_string(
 				utf8_to_wide(unescape_string(lines[i])));
@@ -1786,7 +1794,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y,
-					pos.X + m_font->getDimension(wlabel_plain.c_str()).Width,
+					pos.X + font->getDimension(wlabel_plain.c_str()).Width,
 					pos.Y + imgsize.Y);
 
 			} else {
@@ -1808,7 +1816,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y - m_btn_height,
-					pos.X + m_font->getDimension(wlabel_plain.c_str()).Width,
+					pos.X + font->getDimension(wlabel_plain.c_str()).Width,
 					pos.Y + m_btn_height);
 			}
 
@@ -1824,9 +1832,9 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 					spec.fid);
 			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 
-			auto style = getDefaultStyleForElement("label", spec.fname);
 			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+			e->setOverrideFont(font);
 
 			m_fields.push_back(spec);
 
@@ -1854,6 +1862,11 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 
 		MY_CHECKPOS("vertlabel",1);
 
+		auto style = getDefaultStyleForElement("vertlabel", "", "label");
+		gui::IGUIFont *font = style.getFont();
+		if (!font)
+			font = m_font;
+
 		v2s32 pos;
 		core::rect<s32> rect;
 
@@ -1867,7 +1880,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 			// isn't quite tall enough and cuts off the text.
 			rect = core::rect<s32>(pos.X, pos.Y,
 				pos.X + imgsize.X,
-				pos.Y + font_line_height(m_font) *
+				pos.Y + font_line_height(font) *
 				(text.length() + 1));
 
 		} else {
@@ -1879,7 +1892,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 			rect = core::rect<s32>(
 				pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
 				pos.X+15, pos.Y +
-					font_line_height(m_font) *
+					font_line_height(font) *
 					(text.length() + 1) +
 					((imgsize.Y/2) - m_btn_height));
 		}
@@ -1904,9 +1917,9 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 				rect, false, false, data->current_parent, spec.fid);
 		e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 
-		auto style = getDefaultStyleForElement("vertlabel", spec.fname, "label");
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+		e->setOverrideFont(font);
 
 		m_fields.push_back(spec);
 
@@ -1977,7 +1990,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 		GUIButtonImage *e = GUIButtonImage::addButton(Environment, rect, m_tsrc,
 				data->current_parent, spec.fid, spec.flabel.c_str());
 
-		if (spec.fname == data->focused_fieldname) {
+		if (spec.fname == m_focused_element) {
 			Environment->setFocus(e);
 		}
 
@@ -2090,10 +2103,6 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 				irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_LOWERRIGHT);
 		e->setTabHeight(geom.Y);
 
-		if (spec.fname == data->focused_fieldname) {
-			Environment->setFocus(e);
-		}
-
 		auto style = getDefaultStyleForElement("tabheader", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, true));
 
@@ -2185,7 +2194,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 		auto style = getStyleForElement("item_image_button", spec_btn.fname, "image_button");
 		e_btn->setStyles(style);
 
-		if (spec_btn.fname == data->focused_fieldname) {
+		if (spec_btn.fname == m_focused_element) {
 			Environment->setFocus(e_btn);
 		}
 
@@ -2554,7 +2563,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 						<< "'" << std::endl;
 				property_warned.insert(propname);
 			}
-			return false;
+			continue;
 		}
 
 		spec.set(prop, value);
@@ -2595,7 +2604,7 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 			}
 		}
 
-		if(!state_valid) {
+		if (!state_valid) {
 			// Skip this selector
 			continue;
 		}
@@ -2654,6 +2663,27 @@ bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, b
 	}
 
 	return true;
+}
+
+void GUIFormSpecMenu::parseSetFocus(const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() <= 2 ||
+		(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION))
+	{
+		if (m_is_form_regenerated)
+			return; // Never focus on resizing
+
+		bool force_focus = parts.size() >= 2 && is_yes(parts[1]);
+		if (force_focus || m_text_dst->m_formname != m_last_formname)
+			setFocus(parts[0]);
+
+		return;
+	}
+
+	errorstream << "Invalid set_focus element (" << parts.size() << "): '" << element
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
@@ -2847,6 +2877,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "set_focus") {
+		parseSetFocus(description);
+		return;
+	}
+
 	// Ignore others
 	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
 			<< std::endl;
@@ -2854,36 +2889,38 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 {
-	/* useless to regenerate without a screensize */
+	// Useless to regenerate without a screensize
 	if ((screensize.X <= 0) || (screensize.Y <= 0)) {
 		return;
 	}
 
 	parserData mydata;
 
-	//preserve tables
-	for (auto &m_table : m_tables) {
-		std::string tablename = m_table.first.fname;
-		GUITable *table = m_table.second;
-		mydata.table_dyndata[tablename] = table->getDynamicData();
-	}
+	// Preserve stuff only on same form, not on a new form.
+	if (m_text_dst->m_formname == m_last_formname) {
+		// Preserve tables/textlists
+		for (auto &m_table : m_tables) {
+			std::string tablename = m_table.first.fname;
+			GUITable *table = m_table.second;
+			mydata.table_dyndata[tablename] = table->getDynamicData();
+		}
 
-	//set focus
-	if (!m_focused_element.empty())
-		mydata.focused_fieldname = m_focused_element;
-
-	//preserve focus
-	gui::IGUIElement *focused_element = Environment->getFocus();
-	if (focused_element && focused_element->getParent() == this) {
-		s32 focused_id = focused_element->getID();
-		if (focused_id > 257) {
-			for (const GUIFormSpecMenu::FieldSpec &field : m_fields) {
-				if (field.fid == focused_id) {
-					mydata.focused_fieldname = field.fname;
-					break;
+		// Preserve focus
+		gui::IGUIElement *focused_element = Environment->getFocus();
+		if (focused_element && focused_element->getParent() == this) {
+			s32 focused_id = focused_element->getID();
+			if (focused_id > 257) {
+				for (const GUIFormSpecMenu::FieldSpec &field : m_fields) {
+					if (field.fid == focused_id) {
+						m_focused_element = field.fname;
+						break;
+					}
 				}
 			}
 		}
+	} else {
+		// Don't keep old focus value
+		m_focused_element = "";
 	}
 
 	// Remove children
@@ -2932,6 +2969,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	theme_by_name.clear();
 	theme_by_type.clear();
 	m_clickthrough_elements.clear();
+	field_close_on_enter.clear();
+	m_dropdown_index_event.clear();
 
 	m_bgnonfullscreen = true;
 	m_bgfullscreen = false;
@@ -3242,8 +3281,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
-	//set initial focus if parser didn't set it
-	focused_element = Environment->getFocus();
+	// Set initial focus if parser didn't set it
+	gui::IGUIElement *focused_element = Environment->getFocus();
 	if (!focused_element
 			|| !isMyChild(focused_element)
 			|| focused_element->getType() == gui::EGUIET_TAB_CONTROL)
@@ -3254,6 +3293,13 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// legacy sorting
 	if (m_formspec_version < 3)
 		legacySortElements(legacy_sort_start);
+
+	// Formname and regeneration setting
+	if (!m_is_form_regenerated) {
+		// Only set previous form name if we purposefully showed a new formspec
+		m_last_formname = m_text_dst->m_formname;
+		m_is_form_regenerated = true;
+	}
 }
 
 void GUIFormSpecMenu::legacySortElements(core::list<IGUIElement *>::Iterator from)
@@ -3371,6 +3417,7 @@ void GUIFormSpecMenu::drawMenu()
 		const std::string &newform = m_form_src->getForm();
 		if (newform != m_formspec_string) {
 			m_formspec_string = newform;
+			m_is_form_regenerated = false;
 			regenerateGui(m_screensize_old);
 		}
 	}
@@ -3719,10 +3766,14 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					}
 					s32 selected = e->getSelected();
 					if (selected >= 0) {
-						std::vector<std::string> *dropdown_values =
-							getDropDownValues(s.fname);
-						if (dropdown_values && selected < (s32)dropdown_values->size()) {
-							fields[name] = (*dropdown_values)[selected];
+						if (m_dropdown_index_event.find(s.fname) !=
+								m_dropdown_index_event.end()) {
+							fields[name] = std::to_string(selected + 1);
+						} else {
+							std::vector<std::string> *dropdown_values =
+								getDropDownValues(s.fname);
+							if (dropdown_values && selected < (s32)dropdown_values->size())
+								fields[name] = (*dropdown_values)[selected];
 						}
 					}
 				} else if (s.ftype == f_TabHeader) {

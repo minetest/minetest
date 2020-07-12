@@ -317,6 +317,18 @@ ContentFeatures::ContentFeatures()
 	reset();
 }
 
+ContentFeatures::~ContentFeatures()
+{
+#ifndef SERVER
+	for (u16 j = 0; j < 6; j++) {
+		delete tiles[j].layers[0].frames;
+		delete tiles[j].layers[1].frames;
+	}
+	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
+		delete special_tiles[j].layers[0].frames;
+#endif
+}
+
 void ContentFeatures::reset()
 {
 	/*
@@ -662,7 +674,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	} else {
 		std::ostringstream os(std::ios::binary);
 		if (!layer->frames) {
-			layer->frames = std::make_shared<std::vector<FrameSpec>>();
+			layer->frames = new std::vector<FrameSpec>();
 		}
 		layer->frames->resize(frame_count);
 

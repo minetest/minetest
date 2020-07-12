@@ -333,12 +333,12 @@ function store.get_formspec(dlgdata)
 			"button[0.375,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
 
 			"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
-			"image_button[0,0;0.8,0.8;", defaulttexturedir, "start_icon.png;pstart;]",
-			"image_button[0.8,0;0.8,0.8;", defaulttexturedir, "prev_icon.png;pback;]",
+			"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
+			"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
 			"style[pagenum;border=false]",
 			"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
-			"image_button[3.6,0;0.8,0.8;", defaulttexturedir, "next_icon.png;pnext;]",
-			"image_button[4.4,0;0.8,0.8;", defaulttexturedir, "end_icon.png;pend;]",
+			"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
+			"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
 			"container_end[]",
 
 			"container_end[]",

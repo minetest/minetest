@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-05-12 14:46+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2020-06-18 13:41+0000\n"
+"Last-Translator: Maksim Gamarnik <MoNTE48@mail.ua>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.1.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -25,7 +25,7 @@ msgstr "Вы умерли"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "ОК"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -116,7 +116,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Больше Модов"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -169,7 +169,7 @@ msgstr "Назад в главное меню"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB недоступен, когда Minetest скомпилирован без cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -221,7 +221,7 @@ msgstr "Обновить"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Вид"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -229,7 +229,7 @@ msgstr "Мир с названием «$1» уже существует"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Дополнительная местность"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -284,7 +284,7 @@ msgstr "Шум подземелья"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Плоская местность"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -306,7 +306,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Холмы"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -319,7 +319,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Озёра"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
@@ -349,7 +349,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Сеть туннелей и пещер"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -357,11 +357,11 @@ msgstr "Игра не выбрана"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Уменьшает жару с высотой"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Уменьшает влажность с высотой"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -379,7 +379,7 @@ msgstr "Зерно"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Плавный переход между биомами"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
@@ -410,7 +410,7 @@ msgstr "Базовый шум поверхности"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Деревья и Джунгли-трава"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -742,7 +742,7 @@ msgstr "Запустить сервер"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Установите игры из ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1404,11 +1404,11 @@ msgstr "Звук отключён"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Звук отключён"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Звук не поддерживается в этой сборке"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"

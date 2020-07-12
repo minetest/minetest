@@ -788,6 +788,7 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 	setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 	setDrawBorder(style.getBool(StyleSpec::BORDER, true));
 	setUseAlphaChannel(style.getBool(StyleSpec::ALPHA, true));
+	setOverrideFont(style.getFont());
 
 	if (style.isNotDefault(StyleSpec::BGIMG)) {
 		video::ITexture *texture = style.getTexture(StyleSpec::BGIMG,

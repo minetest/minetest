@@ -409,7 +409,7 @@ struct ContentFeatures
 	*/
 
 	ContentFeatures();
-	~ContentFeatures() = default;
+	~ContentFeatures();
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);

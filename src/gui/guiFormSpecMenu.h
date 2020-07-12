@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiInventoryList.h"
+#include "guiScrollBar.h"
 #include "guiTable.h"
 #include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
@@ -37,7 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class InventoryManager;
 class ISimpleTextureSource;
 class Client;
-class GUIScrollBar;
 class TexturePool;
 class GUIScrollContainer;
 
@@ -168,6 +168,7 @@ public:
 	{
 		m_formspec_string = formspec_string;
 		m_current_inventory_location = current_inventory_location;
+		m_is_form_regenerated = false;
 		regenerateGui(m_screensize_old);
 	}
 
@@ -299,10 +300,15 @@ protected:
 	std::string m_formspec_prepend;
 	InventoryLocation m_current_inventory_location;
 
+	// Default true because we can't control regeneration on resizing, but
+	// we can control cases when the formspec is shown intentionally.
+	bool m_is_form_regenerated = true;
+
 	std::vector<GUIInventoryList *> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
 	std::vector<gui::IGUIElement *> m_backgrounds;
 	std::unordered_map<std::string, bool> field_close_on_enter;
+	std::unordered_map<std::string, bool> m_dropdown_index_event;
 	std::vector<FieldSpec> m_fields;
 	std::vector<std::pair<FieldSpec, GUITable *>> m_tables;
 	std::vector<std::pair<FieldSpec, gui::IGUICheckBox *>> m_checkboxes;
@@ -338,10 +344,10 @@ protected:
 	video::SColor m_default_tooltip_bgcolor;
 	video::SColor m_default_tooltip_color;
 
-
 private:
 	IFormSource        *m_form_src;
 	TextDest           *m_text_dst;
+	std::string         m_last_formname;
 	u16                 m_formspec_version = 1;
 	std::string         m_focused_element = "";
 	JoystickController *m_joystick;
@@ -358,7 +364,6 @@ private:
 		core::rect<s32> rect;
 		v2s32 basepos;
 		v2u32 screensize;
-		std::string focused_fieldname;
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
 		gui::IGUIElement *current_parent = nullptr;
@@ -438,6 +443,7 @@ private:
 	bool parseAnchorDirect(parserData *data, const std::string &element);
 	void parseAnchor(parserData *data, const std::string &element);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
+	void parseSetFocus(const std::string &element);
 
 	void tryClose();
 

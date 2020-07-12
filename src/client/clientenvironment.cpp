@@ -216,6 +216,9 @@ void ClientEnvironment::step(float dtime)
 		*/
 
 		{
+			// Control local player
+			lplayer->applyControl(dtime_part, this);
+
 			// Apply physics
 			if (!free_move && !is_climbing) {
 				// Gravity
