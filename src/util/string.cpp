@@ -921,22 +921,7 @@ static const std::array<std::wstring, 22> disallowed_dir_names = {
 /**
  * List of characters that are blacklisted from created directories
  */
-static const std::array<wchar_t, 10> disallowed_path_chars = {
-	// Problematic characters from here:
-	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
-	'<',
-	'>',
-	':',
-	'\"',
-	'/',
-	'\\',
-	'|',
-	'?',
-	'*',
-
-	// Disallowed to avoid patterns that resolve into path segments, like '..'
-	'.',
-};
+static const std::wstring disallowed_path_chars = L"<>:\"/\\|?*.";
 
 /**
  * Sanitize the name of a new directory. This consists of two stages:
@@ -944,35 +929,30 @@ static const std::array<wchar_t, 10> disallowed_path_chars = {
  *	and add a prefix to them
  * 2. Remove 'unsafe' characters from the name by replacing them with '_'
  */
-std::string sanitizeDirName(const std::string &str, const std::string &unsafe_prefix)
+std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix)
 {
-	std::wstring tmp = utf8_to_wide(str);
+	std::wstring safe_name = utf8_to_wide(str);
 
 	for(std::wstring disallowed_name : disallowed_dir_names) {
-		if (str_equal(tmp, disallowed_name, true)) {
-			tmp = utf8_to_wide(unsafe_prefix) + tmp;
+		if (str_equal(safe_name, disallowed_name, true)) {
+			safe_name = utf8_to_wide(optional_prefix) + safe_name;
 		}
 	}
 
-	for(unsigned long i = 0; i < tmp.length(); i++) {
+	for (unsigned long i = 0; i < safe_name.length(); i++) {
 		bool is_valid = true;
 
 		// Unlikely, but control characters should always be blacklisted
-		if (tmp[i] < 32) {
+		if (safe_name[i] < 32) {
 			is_valid = false;
-		} else if (tmp[i] < 128) {
-			for (wchar_t disallowed_char : disallowed_path_chars) {
-				if (tmp[i] == disallowed_char) {
-					is_valid = false;
-					break;
-				}
-			}
+		} else if (safe_name[i] < 128) {
+			is_valid = disallowed_path_chars.find_first_of(safe_name[i]) == std::wstring::npos;
 		}
 
 		if (!is_valid) {
-			tmp[i] = '_';
+			safe_name[i] = '_';
 		}
 	}
 
-	return wide_to_utf8(tmp);
+	return wide_to_utf8(safe_name);
 }

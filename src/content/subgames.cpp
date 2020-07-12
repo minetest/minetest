@@ -307,12 +307,12 @@ std::vector<WorldSpec> getAvailableWorlds()
 }
 
 bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
-		const SubgameSpec &gamespec, bool mustCreateNew, std::string *error)
+		const SubgameSpec &gamespec, bool create_world, std::string *error)
 {
 	std::string final_path = path;
 
 	// If we're creating a new world, ensure that the path isn't already taken
-	if (mustCreateNew) {
+	if (create_world) {
 		int counter = 1;
 		while (fs::PathExists(final_path) && counter < MAX_WORLD_NAMES) {
 			final_path = path + "_" + std::to_string(counter);

@@ -91,4 +91,4 @@ std::vector<WorldSpec> getAvailableWorlds();
 // loads the subgame's config and creates world directory
 // and world.mt if they don't exist
 bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
-		const SubgameSpec &gamespec, bool mustCreateNew, std::string *error);
+		const SubgameSpec &gamespec, bool create_world, std::string *error);
