@@ -2747,6 +2747,18 @@ Some types may inherit styles from parent types.
                      button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
         * This is deprecated, use states instead.
+    * font - Sets font type. This is a comma separated list of options. Valid options:
+      * Main font type options. These cannot be combined with each other:
+        * `normal`: Default font
+        * `mono`: Monospaced font
+      * Font modification options. If used without a main font type, `normal` is used:
+        * `bold`: Makes font bold.
+        * `italic`: Makes font italic.
+      Default `normal`.
+    * font_size - Sets font size. Default is user-set. Can have multiple values:
+      * `<number>`: Sets absolute font size to `number`.
+      * `+<number>`/`-<number>`: Offsets default font size by `number` points.
+      * `*<number>`: Multiplies default font size by `number`, similar to CSS `em`.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * content_offset - 2d vector, shifts the position of the button's content without resizing it.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -2758,11 +2770,15 @@ Some types may inherit styles from parent types.
 * scrollbar
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * table, textlist
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * dropdown
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * field, pwdfield, textarea
     * border - set to false to hide the textbox background and border. Default true.
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 * image
@@ -2771,6 +2787,8 @@ Some types may inherit styles from parent types.
 * item_image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to false.
 * label, vertlabel
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.

@@ -24,8 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <limits>
 #include <sstream>
 #include "guiFormSpecMenu.h"
-#include "guiScrollBar.h"
-#include "guiTable.h"
 #include "constants.h"
 #include "gamedef.h"
 #include "client/keycode.h"
@@ -64,9 +62,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEditBoxWithScrollbar.h"
 #include "guiInventoryList.h"
 #include "guiItemImage.h"
-#include "guiScrollBar.h"
 #include "guiScrollContainer.h"
-#include "guiTable.h"
 #include "intlGUIEditBox.h"
 #include "guiHyperText.h"
 
@@ -1482,6 +1478,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+		e->setOverrideFont(style.getFont());
 
 		irr::SEvent evt;
 		evt.EventType            = EET_KEY_INPUT_EVENT;
@@ -1565,6 +1562,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 		if (style.get(StyleSpec::BGCOLOR, "") == "transparent") {
 			e->setDrawBackground(false);
 		}
+		e->setOverrideFont(style.getFont());
 
 		e->drop();
 	}
@@ -1778,6 +1776,11 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 		std::vector<std::string> lines = split(text, '\n');
 
+		auto style = getDefaultStyleForElement("label", "");
+		gui::IGUIFont *font = style.getFont();
+		if (!font)
+			font = m_font;
+
 		for (unsigned int i = 0; i != lines.size(); i++) {
 			std::wstring wlabel_colors = translate_string(
 				utf8_to_wide(unescape_string(lines[i])));
@@ -1799,7 +1802,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y,
-					pos.X + m_font->getDimension(wlabel_plain.c_str()).Width,
+					pos.X + font->getDimension(wlabel_plain.c_str()).Width,
 					pos.Y + imgsize.Y);
 
 			} else {
@@ -1821,7 +1824,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 				rect = core::rect<s32>(
 					pos.X, pos.Y - m_btn_height,
-					pos.X + m_font->getDimension(wlabel_plain.c_str()).Width,
+					pos.X + font->getDimension(wlabel_plain.c_str()).Width,
 					pos.Y + m_btn_height);
 			}
 
@@ -1837,9 +1840,9 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 					spec.fid);
 			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 
-			auto style = getDefaultStyleForElement("label", spec.fname);
 			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 			e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+			e->setOverrideFont(font);
 
 			m_fields.push_back(spec);
 
@@ -1867,6 +1870,11 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 
 		MY_CHECKPOS("vertlabel",1);
 
+		auto style = getDefaultStyleForElement("vertlabel", "", "label");
+		gui::IGUIFont *font = style.getFont();
+		if (!font)
+			font = m_font;
+
 		v2s32 pos;
 		core::rect<s32> rect;
 
@@ -1880,7 +1888,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 			// isn't quite tall enough and cuts off the text.
 			rect = core::rect<s32>(pos.X, pos.Y,
 				pos.X + imgsize.X,
-				pos.Y + font_line_height(m_font) *
+				pos.Y + font_line_height(font) *
 				(text.length() + 1));
 
 		} else {
@@ -1892,7 +1900,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 			rect = core::rect<s32>(
 				pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
 				pos.X+15, pos.Y +
-					font_line_height(m_font) *
+					font_line_height(font) *
 					(text.length() + 1) +
 					((imgsize.Y/2) - m_btn_height));
 		}
@@ -1917,9 +1925,9 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 				rect, false, false, data->current_parent, spec.fid);
 		e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 
-		auto style = getDefaultStyleForElement("vertlabel", spec.fname, "label");
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+		e->setOverrideFont(font);
 
 		m_fields.push_back(spec);
 
