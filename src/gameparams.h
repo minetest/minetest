@@ -35,7 +35,8 @@ struct GameParams
 };
 
 // Information processed by main menu
-struct GameStartData : GameParams {
+struct GameStartData : GameParams
+{
 	GameStartData() = default;
 
 	bool isSinglePlayer() const { return address.empty() && !local_server; }
