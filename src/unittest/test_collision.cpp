@@ -40,6 +40,7 @@ public:
 	void testCollisionMoveSimple_stepuproom();
 	void testCollisionMoveSimple_longclimb();
 	void testCollisionMoveSimple_bouncy();
+	void testCollisionMoveSimple_corner();
 };
 
 static TestCollision g_test_instance;
@@ -56,6 +57,7 @@ void TestCollision::runTests(IGameDef *gamedef)
 	TEST(testCollisionMoveSimple_stepuproom);
 	TEST(testCollisionMoveSimple_longclimb);
 	TEST(testCollisionMoveSimple_bouncy);
+	TEST(testCollisionMoveSimple_corner);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -492,5 +494,35 @@ void TestCollision::testCollisionMoveSimple_bouncy()
 	rawstream << "Now at (" << pos_f.X << ',' << pos_f.Y << ',' << pos_f.Z << ')' << std::endl;
 	UASSERT(!res.collides);
 	UASSERT(pos_f.equals(v3f(8.f * BS, 10.f * BS, 10.f * BS), 0.01));
+	UASSERT(speed_f.equals(v3f(), 0.01));
+}
+
+void TestCollision::testCollisionMoveSimple_corner()
+{
+	// Create test environment
+	MockEnvironment env(std::cerr);
+	ContentFeatures cf;
+	cf.name = "solid";
+	cf.walkable = true;
+	content_t solid = env.getMockGameDef()->registerContent(cf.name, cf);
+	MockMap &map = env.getMockMap();
+	
+	map.setMockNode(v3s16(12, 10, 12), solid);
+
+	// Set up test
+	aabb3f box_0(-.5f * BS, -.5f * BS, -.5f * BS, .5f * BS, .5f * BS, .5f * BS);
+	v3f pos_f(10.f * BS, 10.f * BS, 10.f * BS);
+	v3f speed_f(4.f * BS, 0.f * BS, 4.f * BS);
+	
+	// Run simple test
+	collisionMoveResult res = collisionMoveSimple(&env, env.getGameDef(),
+		BS*0.25, box_0,
+		0.0f, 0.5f,
+		&pos_f, &speed_f,
+		v3f(), nullptr,
+		false);
+	rawstream << "Now at (" << pos_f.X << ',' << pos_f.Y << ',' << pos_f.Z << ')' << std::endl;
+	UASSERT(res.collides);
+	UASSERT(pos_f.equals(v3f(11.f * BS, 10.f * BS, 11.f * BS), 0.01));
 	UASSERT(speed_f.equals(v3f(), 0.01));
 }
