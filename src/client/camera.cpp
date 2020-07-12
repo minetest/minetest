@@ -378,7 +378,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 					m_playernode->setParent(player->getParent()->getSceneNode());
 				}
 				player_position = v3f(0,0,0);
-//				player->setYaw(player->getYaw() + player->getParent()->getSceneNode()->getAbsoluteTransformation().getRotationDegrees().Y);
 			break;
 			case 3:
 				if (!player->eyes_attached)
@@ -496,8 +495,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 	// Compute absolute camera position and target
 	m_headnode->getAbsoluteTransformation().transformVect(m_camera_position, rel_cam_pos);
-
 	m_headnode->getAbsoluteTransformation().rotateVect(m_camera_direction, rel_cam_target - rel_cam_pos);
+	player->camera_direction = m_camera_direction;
+
+//	std::cout << m_camera_direction.X << " " << m_camera_direction.Y << " " << m_camera_direction.Z << std::endl;
 
 	if (player_parent && (player->eye_attach_state == 2 || player->eye_attach_state == 4))
 	{
@@ -506,10 +507,23 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	}
 	
 	// Get absolute camera yaw by projecting the direction vector onto the xz plane
-	v3f xz_plane_normal = v3f(0,1,0);
-	v3f projected_dir = m_camera_direction - (m_camera_direction.dotProduct(xz_plane_normal)) * xz_plane_normal;
-	player->abs_camera_yaw = (atan2(projected_dir.Z, projected_dir.X) * core::RADTODEG - 90);
-
+//	v3f xz_plane_normal = v3f(0,1,0);
+//	v3f projected_dir = m_camera_direction - (m_camera_direction.dotProduct(xz_plane_normal)) * xz_plane_normal;
+//	player->abs_camera_yaw = (atan2(projected_dir.Z, projected_dir.X) * core::RADTODEG - 90);
+//	abs_cam_yaw = player->abs_camera_yaw;
+//
+//	float temp_yaw = atan2(-m_camera_direction.X, -m_camera_direction.Z) * core::RADTODEG;
+//	
+//	std::cout << abs_cam_yaw << " " << temp_yaw << std::endl;
+	
+	player->abs_camera_yaw = 360 - ((-(atan2(m_camera_direction.X, -m_camera_direction.Z) * core::RADTODEG)) + 180);
+	abs_cam_yaw = player->abs_camera_yaw;
+	
+	player->abs_camera_pitch = -asin(-m_camera_direction.Y) * core::RADTODEG;
+	abs_cam_pitch = player->abs_camera_pitch;
+	
+	std::cout << player->abs_camera_yaw << " " << player->abs_camera_pitch << std::endl;
+	
 	v3f abs_cam_up;
 	m_headnode->getAbsoluteTransformation().rotateVect(abs_cam_up, rel_cam_up);
 

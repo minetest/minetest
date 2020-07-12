@@ -343,7 +343,7 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 		s16 player_ao_range = std::min(active_object_range, playersao->getWantedRange());
 		// only do this if this would add blocks
 		if (player_ao_range > active_block_range) {
-			v3f camera_dir = v3f(0,0,1);
+			v3f camera_dir = v3f(0,0,1); //playersao->m_player->camera_direction;//playersao->getPlayer()->camera_direction;
 			camera_dir.rotateYZBy(playersao->getLookPitch());
 			camera_dir.rotateXZBy(playersao->getRotation().Y);
 			fillViewConeBlock(pos,

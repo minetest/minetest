@@ -178,13 +178,13 @@ public:
 	float getZoomFOV() const;
 
 	inline Metadata &getMeta() { return m_meta; }
-
+	RemotePlayer *m_player = nullptr;
 private:
 	std::string getPropertyPacket();
 	void unlinkPlayerSessionAndSave();
 	std::string generateUpdatePhysicsOverrideCommand() const;
 
-	RemotePlayer *m_player = nullptr;
+	
 	session_t m_peer_id = 0;
 
 	// Cheat prevention

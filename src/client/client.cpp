@@ -935,8 +935,8 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 {
 	v3f pf           = myplayer->getPosition() * 100;
 	v3f sf           = myplayer->getSpeed() * 100;
-	s32 pitch        = myplayer->getPitch() * 100;
-	s32 yaw          = myplayer->getYaw() * 100;
+	s32 pitch        = myplayer->abs_camera_pitch * 100;
+	s32 yaw          = myplayer->abs_camera_yaw * 100;
 	u32 keyPressed   = myplayer->keyPressed;
 	// scaled by 80, so that pi can fit into a u8
 	u8 fov           = clientMap->getCameraFov() * 80;
@@ -1317,7 +1317,7 @@ void Client::sendPlayerPos()
 	player->last_position     = player->getPosition();
 	player->last_speed        = player->getSpeed();
 	player->last_pitch        = player->getPitch();
-	player->last_yaw          = player->getYaw();
+	player->last_yaw          = player->abs_camera_yaw;
 	player->last_keyPressed   = player->keyPressed;
 	player->last_camera_fov   = camera_fov;
 	player->last_wanted_range = wanted_range;

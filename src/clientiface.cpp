@@ -135,6 +135,8 @@ void RemoteClient::GetNextBlocks (
 	// Camera position and direction
 	v3f camera_pos = sao->getEyePosition();
 	v3f camera_dir = v3f(0,0,1);
+//	camera_dir = sao->getPlayer()->camera_direction;
+//	std::cout << sao->m_player->camera_direction.X << " " << sao->m_player->camera_direction.Y << " " << sao->m_player->camera_direction.Z << std::endl;
 	camera_dir.rotateYZBy(sao->getLookPitch());
 	camera_dir.rotateXZBy(sao->getRotation().Y);
 

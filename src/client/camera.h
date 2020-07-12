@@ -174,7 +174,8 @@ public:
 	void drawNametags();
 
 	inline void addArmInertia(f32 player_yaw);
-
+	float abs_cam_yaw = 0.0f;
+	float abs_cam_pitch = 0.0f;
 private:
 	// Nodes
 	scene::ISceneNode *m_playernode = nullptr;

@@ -169,9 +169,11 @@ public:
 	// 4 = rotate camera about parent origin but fix camera
 	//     view strictly to the defined target direction (target
 	//     direction direction is rotated/relative to parent rotation)
-	char eye_attach_state = 2;
+	char eye_attach_state = 4;
 	bool eyes_attached = false;
 	float abs_camera_yaw = 0.0f;
+	float abs_camera_pitch = 0.0f;
+	v3f camera_direction = v3f(0,0,0);
 
 	Inventory inventory;
 
