@@ -946,7 +946,8 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
 		if (safe_name[i] < 32) {
 			is_valid = false;
 		} else if (safe_name[i] < 128) {
-			is_valid = disallowed_path_chars.find_first_of(safe_name[i]) == std::wstring::npos;
+			is_valid = disallowed_path_chars.find_first_of(safe_name[i])
+					== std::wstring::npos;
 		}
 
 		if (!is_valid) {
