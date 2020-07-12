@@ -2492,7 +2492,7 @@ Elements
 * There are two ways to use it:
     1. handle the changed event (only changed scrollbar is available)
     2. read the value on pressing a button (all scrollbars are available)
-* `orientation`:  `vertical`/`horizontal`
+* `orientation`: `vertical`/`horizontal`. Default horizontal.
 * Fieldname data is transferred to Lua
 * Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
@@ -2605,6 +2605,28 @@ Elements
     * If a state is provided, the style will only take effect when the element is in that state.
     * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
+
+### `set_focus[<name>;<force>]`
+
+* Sets the focus to the element with the same `name` parameter.
+* **Note**: This element must be placed before the element it focuses.
+* `force` (optional, default `false`): By default, focus is not applied for
+  re-sent formspecs with the same name so that player-set focus is kept.
+  `true` sets the focus to the specified element for every sent formspec.
+* The following elements have the ability to be focused:
+    * checkbox
+    * button
+    * button_exit
+    * image_button
+    * image_button_exit
+    * item_image_button
+    * table
+    * textlist
+    * dropdown
+    * field
+    * pwdfield
+    * textarea
+    * scrollbar
 
 Migrating to Real Coordinates
 -----------------------------
@@ -4485,7 +4507,7 @@ Call these functions only at load time!
           * a button was pressed,
           * Enter was pressed while the focus was on a text field
           * a checkbox was toggled,
-          * something was selecteed in a drop-down list,
+          * something was selected in a dropdown list,
           * a different tab was selected,
           * selection was changed in a textlist or table,
           * an entry was double-clicked in a textlist or table,
