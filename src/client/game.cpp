@@ -3393,6 +3393,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		} else {
 			node = map.getNode(p, &is_valid_position);
 			if (is_valid_position && !nodedef->get(node).buildable_to) {
+				soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
 				// Report to server
 				client->interact(INTERACT_PLACE, pointed);
 				return false;
@@ -3465,6 +3466,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			pp = p + v3s16(0, -1, 0);
 
 		if (!nodedef->get(map.getNode(pp)).walkable) {
+			soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
 			// Report to server
 			client->interact(INTERACT_PLACE, pointed);
 			return false;
