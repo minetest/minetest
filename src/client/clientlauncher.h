@@ -52,5 +52,4 @@ private:
 	InputHandler *input = nullptr;
 	MyEventReceiver *receiver = nullptr;
 	gui::IGUISkin *skin = nullptr;
-	gui::IGUIFont *font = nullptr;
 };
