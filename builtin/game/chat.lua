@@ -457,7 +457,7 @@ local function teleport_to_player(name, target_name)
 	if not target then
 		return false, "Cannot get target player with name " .. target_name
 	end
-	p = find_free_position_near(target:get_pos())
+	local p = find_free_position_near(target:get_pos())
 	teleportee:set_pos(p)
 	return true, "Teleporting " .. name .. " to " .. target_name .. " at " ..
 		core.pos_to_string(p)
