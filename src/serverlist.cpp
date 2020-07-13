@@ -257,8 +257,14 @@ void sendAnnounce(AnnounceAction action,
 		if (lag)
 			server["lag"] = lag;
 	}
+	
+	if (action ==  AA_START) {
+		actionstream << "Announcing " << action << " to " << g_settings->get("serverlist_url") << std::endl;
+	} else {
+		infostream << "Announcing " << action << " to " << g_settings->get("serverlist_url") << std::endl;
+	}		
 
-	actionstream << "Announcing " << action << " to " << g_settings->get("serverlist_url") << std::endl;
+	
 	HTTPFetchRequest fetch_request;
 	fetch_request.url = g_settings->get("serverlist_url") + std::string("/announce");
 	fetch_request.post_fields["json"] = fastWriteJson(server);
