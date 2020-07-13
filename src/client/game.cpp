@@ -876,7 +876,6 @@ private:
 	bool *reconnect_requested;
 	scene::ISceneNode *skybox;
 
-	bool random_input;
 	bool simple_singleplayer_mode;
 	/* End 'cache' */
 
