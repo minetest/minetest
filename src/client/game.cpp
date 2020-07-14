@@ -34,11 +34,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clouds.h"
 #include "config.h"
 #include "content_cao.h"
+#include "content/subgames.h"
 #include "client/event_manager.h"
 #include "fontengine.h"
 #include "itemdef.h"
 #include "log.h"
 #include "filesys.h"
+#include "gameparams.h"
 #include "gettext.h"
 #include "gui/guiChatConsole.h"
 #include "gui/guiConfirmRegistration.h"
@@ -669,19 +671,11 @@ public:
 	~Game();
 
 	bool startup(bool *kill,
-			bool random_input,
 			InputHandler *input,
-			const std::string &map_dir,
-			const std::string &playername,
-			const std::string &password,
-			// If address is "", local server is used and address is updated
-			std::string *address,
-			u16 port,
+			const GameStartData &game_params,
 			std::string &error_message,
 			bool *reconnect,
-			ChatBackend *chat_backend,
-			const SubgameSpec &gamespec,    // Used for local game
-			bool simple_singleplayer_mode);
+			ChatBackend *chat_backend);
 
 	void run();
 	void shutdown();
@@ -691,21 +685,18 @@ protected:
 	void extendedResourceCleanup();
 
 	// Basic initialisation
-	bool init(const std::string &map_dir, std::string *address,
-			u16 port,
-			const SubgameSpec &gamespec);
+	bool init(const std::string &map_dir, const std::string &address,
+			u16 port, const SubgameSpec &gamespec);
 	bool initSound();
 	bool createSingleplayerServer(const std::string &map_dir,
-			const SubgameSpec &gamespec, u16 port, std::string *address);
+			const SubgameSpec &gamespec, u16 port);
 
 	// Client creation
-	bool createClient(const std::string &playername,
-			const std::string &password, std::string *address, u16 port);
+	bool createClient(const GameStartData &start_data);
 	bool initGui();
 
 	// Client connection
-	bool connectToServer(const std::string &playername,
-			const std::string &password, std::string *address, u16 port,
+	bool connectToServer(const GameStartData &start_data,
 			bool *connect_ok, bool *aborted);
 	bool getServerContent(bool *aborted);
 
@@ -885,7 +876,6 @@ private:
 	bool *reconnect_requested;
 	scene::ISceneNode *skybox;
 
-	bool random_input;
 	bool simple_singleplayer_mode;
 	/* End 'cache' */
 
@@ -1017,28 +1007,21 @@ Game::~Game()
 }
 
 bool Game::startup(bool *kill,
-		bool random_input,
 		InputHandler *input,
-		const std::string &map_dir,
-		const std::string &playername,
-		const std::string &password,
-		std::string *address,     // can change if simple_singleplayer_mode
-		u16 port,
+		const GameStartData &start_data,
 		std::string &error_message,
 		bool *reconnect,
-		ChatBackend *chat_backend,
-		const SubgameSpec &gamespec,
-		bool simple_singleplayer_mode)
+		ChatBackend *chat_backend)
 {
+
 	// "cache"
 	this->device              = RenderingEngine::get_raw_device();
 	this->kill                = kill;
 	this->error_message       = &error_message;
 	this->reconnect_requested = reconnect;
-	this->random_input        = random_input;
 	this->input               = input;
 	this->chat_backend        = chat_backend;
-	this->simple_singleplayer_mode = simple_singleplayer_mode;
+	this->simple_singleplayer_mode = start_data.isSinglePlayer();
 
 	input->keycache.populate();
 
@@ -1059,10 +1042,12 @@ bool Game::startup(bool *kill,
 
 	g_client_translations->clear();
 
-	if (!init(map_dir, address, port, gamespec))
+	// address can change if simple_singleplayer_mode
+	if (!init(start_data.world_spec.path, start_data.address,
+			start_data.socket_port, start_data.game_spec))
 		return false;
 
-	if (!createClient(playername, password, address, port))
+	if (!createClient(start_data))
 		return false;
 
 	RenderingEngine::initialize(client, hud);
@@ -1221,7 +1206,7 @@ void Game::shutdown()
 
 bool Game::init(
 		const std::string &map_dir,
-		std::string *address,
+		const std::string &address,
 		u16 port,
 		const SubgameSpec &gamespec)
 {
@@ -1245,8 +1230,8 @@ bool Game::init(
 		return false;
 
 	// Create a server if not connecting to an existing one
-	if (address->empty()) {
-		if (!createSingleplayerServer(map_dir, gamespec, port, address))
+	if (address.empty()) {
+		if (!createSingleplayerServer(map_dir, gamespec, port))
 			return false;
 	}
 
@@ -1281,7 +1266,7 @@ bool Game::initSound()
 }
 
 bool Game::createSingleplayerServer(const std::string &map_dir,
-		const SubgameSpec &gamespec, u16 port, std::string *address)
+		const SubgameSpec &gamespec, u16 port)
 {
 	showOverlayMessage(N_("Creating server..."), 0, 5);
 
@@ -1314,8 +1299,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	return true;
 }
 
-bool Game::createClient(const std::string &playername,
-		const std::string &password, std::string *address, u16 port)
+bool Game::createClient(const GameStartData &start_data)
 {
 	showOverlayMessage(N_("Creating client..."), 0, 10);
 
@@ -1330,8 +1314,7 @@ bool Game::createClient(const std::string &playername,
 		g_touchscreengui->hide();
 	}
 #endif
-	if (!connectToServer(playername, password, address, port,
-			&could_connect, &connect_aborted))
+	if (!connectToServer(start_data, &could_connect, &connect_aborted))
 		return false;
 
 	if (!could_connect) {
@@ -1463,8 +1446,7 @@ bool Game::initGui()
 	return true;
 }
 
-bool Game::connectToServer(const std::string &playername,
-		const std::string &password, std::string *address, u16 port,
+bool Game::connectToServer(const GameStartData &start_data,
 		bool *connect_ok, bool *connection_aborted)
 {
 	*connect_ok = false;	// Let's not be overly optimistic
@@ -1473,10 +1455,10 @@ bool Game::connectToServer(const std::string &playername,
 
 	showOverlayMessage(N_("Resolving address..."), 0, 15);
 
-	Address connect_address(0, 0, 0, 0, port);
+	Address connect_address(0, 0, 0, 0, start_data.socket_port);
 
 	try {
-		connect_address.Resolve(address->c_str());
+		connect_address.Resolve(start_data.address.c_str());
 
 		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
 			//connect_address.Resolve("localhost");
@@ -1503,7 +1485,8 @@ bool Game::connectToServer(const std::string &playername,
 		return false;
 	}
 
-	client = new Client(playername.c_str(), password, *address,
+	client = new Client(start_data.name.c_str(),
+			start_data.password, start_data.address,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
 			connect_address.isIPv6(), m_game_ui.get());
@@ -1574,13 +1557,13 @@ bool Game::connectToServer(const std::string &playername,
 				} else {
 					registration_confirmation_shown = true;
 					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
-						   &g_menumgr, client, playername, password,
+						   &g_menumgr, client, start_data.name, start_data.password,
 						   connection_aborted, texture_src))->drop();
 				}
 			} else {
 				wait_time += dtime;
 				// Only time out if we aren't waiting for the server we started
-				if (!address->empty() && wait_time > 10) {
+				if (!start_data.isSinglePlayer() && wait_time > 10) {
 					*error_message = "Connection timed out.";
 					errorstream << *error_message << std::endl;
 					break;
@@ -2399,10 +2382,10 @@ void Game::checkZoomEnabled()
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
 	if ((device->isWindowActive() && device->isWindowFocused()
-			&& !isMenuActive()) || random_input) {
+			&& !isMenuActive()) || input->isRandom()) {
 
 #ifndef __ANDROID__
-		if (!random_input) {
+		if (!input->isRandom()) {
 			// Mac OSX gets upset if this is set every frame
 			if (device->getCursorControl()->isVisible())
 				device->getCursorControl()->setVisible(false);
@@ -3349,7 +3332,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	}
 
 	// formspec in meta
-	if (meta && !meta->getString("formspec").empty() && !random_input
+	if (meta && !meta->getString("formspec").empty() && !input->isRandom()
 			&& !isKeyDown(KeyType::SNEAK)) {
 		// on_rightclick callbacks are called anyway
 		if (nodedef_manager->get(map.getNode(nodepos)).rightclickable)
@@ -4260,19 +4243,11 @@ void Game::showPauseMenu()
 /****************************************************************************/
 
 void the_game(bool *kill,
-		bool random_input,
 		InputHandler *input,
-		const std::string &map_dir,
-		const std::string &playername,
-		const std::string &password,
-		const std::string &address,         // If empty local server is created
-		u16 port,
-
+		const GameStartData &start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,
-		bool *reconnect_requested,
-		const SubgameSpec &gamespec,        // Used for local game
-		bool simple_singleplayer_mode)
+		bool *reconnect_requested) // Used for local game
 {
 	Game game;
 
@@ -4280,14 +4255,11 @@ void the_game(bool *kill,
 	 * is created then this is updated and we don't want to change the value
 	 * passed to us by the calling function
 	 */
-	std::string server_address = address;
 
 	try {
 
-		if (game.startup(kill, random_input, input, map_dir,
-				playername, password, &server_address, port, error_message,
-				reconnect_requested, &chat_backend, gamespec,
-				simple_singleplayer_mode)) {
+		if (game.startup(kill, input, start_data, error_message,
+				reconnect_requested, &chat_backend)) {
 			game.run();
 		}
 
