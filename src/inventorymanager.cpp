@@ -372,7 +372,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	} else {
 		dst_can_put_count = allowPut(src_item, player);
 		src_can_take_count = allowTake(src_item, player);
-
+		
+		bool swap_expected = allow_swap;
 		allow_swap = allow_swap
 			&& (src_can_take_count == -1 || src_can_take_count >= src_item.count)
 			&& (dst_can_put_count == -1 || dst_can_put_count >= src_item.count);
@@ -390,6 +391,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				&& (dst_can_put == -1 || dst_can_put >= dst_item.count);
 			swapDirections();
 		}
+		if (swap_expected != allow_swap)
+			src_can_take_count = dst_can_put_count = 0;
 	}
 
 	int old_count = count;
