@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-07-06 21:41+0000\n"
+"PO-Revision-Date: 2020-07-17 08:41+0000\n"
 "Last-Translator: Tirifto <tirifto@posteo.cz>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
@@ -168,12 +168,11 @@ msgstr "Reeniri al ĉefmenuo"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB ne estas disponebla per Minetest kodotradukita sen cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Enlegante…"
+msgstr "Elŝutante…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -334,7 +333,7 @@ msgstr "Montoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Fluo de koto"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
@@ -726,7 +725,7 @@ msgstr "Gastigi servilon"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Instali ludojn de ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -2051,6 +2050,10 @@ msgid ""
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
+"3d-bruo difinanta la strukturon de fluginsuloj.\n"
+"Ŝanĝite de la implicita valoro, la bruo «scale» (implicite 0.7) eble\n"
+"bezonos alĝustigon, ĉar maldikigaj funkcioj de fluginsuloj funkcias\n"
+"plej bone kiam la bruo havas valoron inter -2.0 kaj 2.0."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -2115,9 +2118,8 @@ msgid "ABM interval"
 msgstr "Intertempo de ABM (aktiva modifilo de monderoj)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Absolute limit of queued blocks to emerge"
-msgstr "Maksimumo de mondestigaj vicoj"
+msgstr "Absoluta maksimumo de atendantaj estigotaj monderoj"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -2174,6 +2176,11 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"Alĝustigas densecon de la fluginsula tavolo.\n"
+"Plialtigu la valoron por pliigi densecon. Eblas plusa aŭ minusa.\n"
+"Valoro = 0.0: 50% de volumeno estas fluginsuloj.\n"
+"Valoro = 2.0 (povas esti pli alta, depende de «mgv7_np_floatland»; ĉiam\n"
+"kontrolu certige) kreas solidan tavolon de fluginsulaĵo."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2474,9 +2481,8 @@ msgid "Chat key"
 msgstr "Babila klavo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat log level"
-msgstr "Erarserĉa protokola nivelo"
+msgstr "Babileja protokola nivelo"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2768,9 +2774,8 @@ msgid "Default report format"
 msgstr "Implicita raporta formo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default stack size"
-msgstr "Norma ludo"
+msgstr "Implicita grandeco de la kolumno"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3144,6 +3149,13 @@ msgid ""
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
 msgstr ""
+"Eksponento de maldikigo de fluginsuloj. Ŝanĝas la konduton\n"
+"de maldikigo.\n"
+"Valoro = 1.0 kreas unuforman, linearan maldikigon.\n"
+"Valoroj > 1.0 kreas glatan maldikigon taŭgan por la implicitaj apartaj\n"
+"fluginsuloj.\n"
+"Valoroj < 1.0 (ekzemple 0.25) kreas pli difinitan ternivelon kun\n"
+"pli plataj malaltejoj, taŭgaj por solida tavolo de fluginsulaĵo."
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
@@ -3266,39 +3278,32 @@ msgid "Fixed virtual joystick"
 msgstr "Fiksita virtuala stirstango"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland density"
-msgstr "Denseco de fluginsulaj montoj"
+msgstr "Denseco de fluginsuloj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland maximum Y"
-msgstr "Maksimuma Y de forgeskelo"
+msgstr "Maksimuma Y de fluginsuloj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland minimum Y"
-msgstr "Minimuma Y de forgeskeloj"
+msgstr "Minimuma Y de fluginsuloj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland noise"
-msgstr "Baza bruo de fluginsuloj"
+msgstr "Bruo de fluginsuloj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland taper exponent"
-msgstr "Eksponento de fluginsulaj montoj"
+msgstr "Eksponento de maldikigo de fluginsuloj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland tapering distance"
-msgstr "Baza bruo de fluginsuloj"
+msgstr "Distanco de maldikigo de fluginsuloj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland water level"
-msgstr "Alteco de fluginsuloj"
+msgstr "Akvonivelo de fluginsuloj"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
@@ -3357,6 +3362,8 @@ msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
 msgstr ""
+"Grandeco de tiparo de freŝa babila teksto kaj babilujo en punktoj (pt).\n"
+"Valoro 0 uzos la implicitan grandecon de tiparo."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3490,6 +3497,10 @@ msgid ""
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations."
 msgstr ""
+"Ĉieaj atributoj de mondestigo.\n"
+"En mondestigo v6, la parametro «decorations» regas ĉiujn ornamojn\n"
+"krom arboj kaj ĝangala herbo; en ĉiuj ailaj mondestigiloj, ĉi tiu parametro\n"
+"regas ĉiujn ornamojn."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4035,7 +4046,7 @@ msgstr "Dosierindiko al kursiva egallarĝa tiparo"
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
-msgstr ""
+msgstr "Daŭro de lasita portaĵo"
 
 #: src/settings_translation_file.cpp
 msgid "Iterations"
@@ -5045,9 +5056,8 @@ msgid "Lower Y limit of dungeons."
 msgstr "Suba Y-limo de forgeskeloj."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lower Y limit of floatlands."
-msgstr "Suba Y-limo de forgeskeloj."
+msgstr "Suba Y-limo de fluginsuloj."
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
@@ -5132,15 +5142,16 @@ msgstr ""
 "kaj la flago «jungles» estas malatentata."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "'ridges': Rivers.\n"
 "'floatlands': Floating land masses in the atmosphere.\n"
 "'caverns': Giant caves deep underground."
 msgstr ""
-"Mapestigilaj ecoj speciale por Mapestigilo v7.\n"
-"«ridges» ŝaltas la riverojn."
+"Mapestigaj ecoj speciale por Mapestigilo v7.\n"
+"«ridges»: Riveroj.\n"
+"«floatlands»: Flugantaj teramasoj en la atmosfero.\n"
+"«caverns»: Grandaj kavernegoj profunde sub tero."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -5299,22 +5310,20 @@ msgid "Maximum number of blocks that can be queued for loading."
 msgstr "Maksimuma nombro da mondopecoj atendantaj legon."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "This limit is enforced per player."
 msgstr ""
 "Maksimumo nombro de mondopecoj atendantaj estigon.\n"
-"Vakigu por memaga elekto de ĝusta kvanto."
+"Ĉi tiu limo estas devigata al ĉiu ludanto aparte."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
 msgstr ""
 "Maksimuma nombro de atendantaj mondopecoj legotaj de loka dosiero.\n"
-"Agordi vake por memaga elekto de ĝusta nombro."
+"Ĉi tiu limo estas devigata al ĉiu ludanto aparte."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5410,7 +5419,7 @@ msgstr "Metodo emfazi elektitan objekton."
 
 #: src/settings_translation_file.cpp
 msgid "Minimal level of logging to be written to chat."
-msgstr ""
+msgstr "Minimuma nivelo de protokolado skribota al la babilujo."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5529,9 +5538,8 @@ msgid ""
 msgstr "Nomo de la servilo, montrota al ludantoj kaj en la listo de serviloj."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near plane"
-msgstr "Proksime tonda ebeno"
+msgstr "Proksima ebeno"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5704,6 +5712,8 @@ msgid ""
 "Path to save screenshots at. Can be an absolute or relative path.\n"
 "The folder will be created if it doesn't already exist."
 msgstr ""
+"Dosierindiko por konservotaj ekrankopioj. Povas esti absoluta\n"
+"aŭ relativa. La dosierujo estos kreita, se ĝi ne jam ekzistas."
 
 #: src/settings_translation_file.cpp
 msgid ""
