@@ -95,28 +95,20 @@ inline u32 clamp_u8(s32 value)
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
 		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
-		const std::string &formspecPrepend,
-		bool remap_dbl_click):
-	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr),
+		const std::string &formspecPrepend, bool remap_dbl_click):
+	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr, remap_dbl_click),
 	m_invmgr(client),
 	m_tsrc(tsrc),
 	m_client(client),
 	m_formspec_prepend(formspecPrepend),
 	m_form_src(fsrc),
 	m_text_dst(tdst),
-	m_joystick(joystick),
-	m_remap_dbl_click(remap_dbl_click)
+	m_joystick(joystick)
 {
 	current_keys_pending.key_down = false;
 	current_keys_pending.key_up = false;
 	current_keys_pending.key_enter = false;
 	current_keys_pending.key_escape = false;
-
-	m_doubleclickdetect[0].time = 0;
-	m_doubleclickdetect[1].time = 0;
-
-	m_doubleclickdetect[0].pos = v2s32(0, 0);
-	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
 	m_tooltip_append_itemname = g_settings->getBool("tooltip_append_itemname");
@@ -3851,17 +3843,6 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 	}
 }
 
-static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
-{
-	while (tocheck) {
-		if (tocheck == parent) {
-			return true;
-		}
-		tocheck = tocheck->getParent();
-	}
-	return false;
-}
-
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
 	// The IGUITabControl renders visually using the skin's selected
@@ -3922,22 +3903,6 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		}
 	}
 
-	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
-		s32 x = event.MouseInput.X;
-		s32 y = event.MouseInput.Y;
-		gui::IGUIElement *hovered =
-			Environment->getRootGUIElement()->getElementFromPoint(
-				core::position2d<s32>(x, y));
-		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-			m_old_tooltip_id = -1;
-		}
-		if (!isChild(hovered, this)) {
-			if (DoubleClickDetection(event)) {
-				return true;
-			}
-		}
-	}
-
 	if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
 		/* TODO add a check like:
 		if (event.JoystickEvent != joystick_we_listen_for)
@@ -3958,64 +3923,6 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	}
 
 	return GUIModalMenu::preprocessEvent(event);
-}
-
-/******************************************************************************/
-bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
-{
-	/* The following code is for capturing double-clicks of the mouse button
-	 * and translating the double-click into an EET_KEY_INPUT_EVENT event
-	 * -- which closes the form -- under some circumstances.
-	 *
-	 * There have been many github issues reporting this as a bug even though it
-	 * was an intended feature.  For this reason, remapping the double-click as
-	 * an ESC must be explicitly set when creating this class via the
-	 * /p remap_dbl_click parameter of the constructor.
-	 */
-
-	if (!m_remap_dbl_click)
-		return false;
-
-	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-		m_doubleclickdetect[0].pos  = m_doubleclickdetect[1].pos;
-		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
-
-		m_doubleclickdetect[1].pos  = m_pointer;
-		m_doubleclickdetect[1].time = porting::getTimeMs();
-	}
-	else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
-		u64 delta = porting::getDeltaMs(m_doubleclickdetect[0].time, porting::getTimeMs());
-		if (delta > 400) {
-			return false;
-		}
-
-		double squaredistance =
-				m_doubleclickdetect[0].pos
-				.getDistanceFromSQ(m_doubleclickdetect[1].pos);
-
-		if (squaredistance > (30*30)) {
-			return false;
-		}
-
-		SEvent* translated = new SEvent();
-		assert(translated != 0);
-		//translate doubleclick to escape
-		memset(translated, 0, sizeof(SEvent));
-		translated->EventType = irr::EET_KEY_INPUT_EVENT;
-		translated->KeyInput.Key         = KEY_ESCAPE;
-		translated->KeyInput.Control     = false;
-		translated->KeyInput.Shift       = false;
-		translated->KeyInput.PressedDown = true;
-		translated->KeyInput.Char        = 0;
-		OnEvent(*translated);
-
-		// no need to send the key up event as we're already deleted
-		// and no one else did notice this event
-		delete translated;
-		return true;
-	}
-
-	return false;
 }
 
 void GUIFormSpecMenu::tryClose()

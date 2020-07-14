@@ -28,14 +28,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "touchscreengui.h"
 #endif
 
-GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
-		IMenuManager *menumgr) :
+// clang-format off
+GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
+	s32 id, IMenuManager *menumgr, bool remap_dbl_click) :
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0, 0, 100, 100)),
 #ifdef __ANDROID__
 		m_jni_field_name(""),
 #endif
-		m_menumgr(menumgr)
+		m_menumgr(menumgr),
+		m_remap_dbl_click(remap_dbl_click)
 {
 	m_gui_scale = g_settings->getFloat("gui_scaling");
 #ifdef __ANDROID__
@@ -45,6 +47,12 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, 
 	setVisible(true);
 	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);
+
+	m_doubleclickdetect[0].time = 0;
+	m_doubleclickdetect[1].time = 0;
+
+	m_doubleclickdetect[0].pos = v2s32(0, 0);
+	m_doubleclickdetect[1].pos = v2s32(0, 0);
 }
 // clang-format on
 
@@ -110,6 +118,69 @@ void GUIModalMenu::removeChildren()
 	for (gui::IGUIElement *i : children_copy) {
 		i->remove();
 	}
+}
+
+// clang-format off
+bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
+{
+	/* The following code is for capturing double-clicks of the mouse button
+	 * and translating the double-click into an EET_KEY_INPUT_EVENT event
+	 * -- which closes the form -- under some circumstances.
+	 *
+	 * There have been many github issues reporting this as a bug even though it
+	 * was an intended feature.  For this reason, remapping the double-click as
+	 * an ESC must be explicitly set when creating this class via the
+	 * /p remap_dbl_click parameter of the constructor.
+	 */
+
+	if (!m_remap_dbl_click)
+		return false;
+
+	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+		m_doubleclickdetect[0].pos = m_doubleclickdetect[1].pos;
+		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
+
+		m_doubleclickdetect[1].pos = m_pointer;
+		m_doubleclickdetect[1].time = porting::getTimeMs();
+	} else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
+		u64 delta = porting::getDeltaMs(
+			m_doubleclickdetect[0].time, porting::getTimeMs());
+		if (delta > 400)
+			return false;
+
+		double squaredistance = m_doubleclickdetect[0].pos.
+			getDistanceFromSQ(m_doubleclickdetect[1].pos);
+
+		if (squaredistance > (30 * 30)) {
+			return false;
+		}
+
+		SEvent translated{};
+		// translate doubleclick to escape
+		translated.EventType            = EET_KEY_INPUT_EVENT;
+		translated.KeyInput.Key         = KEY_ESCAPE;
+		translated.KeyInput.Control     = false;
+		translated.KeyInput.Shift       = false;
+		translated.KeyInput.PressedDown = true;
+		translated.KeyInput.Char        = 0;
+		OnEvent(translated);
+
+		return true;
+	}
+
+	return false;
+}
+// clang-format on
+
+static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
+{
+	while (tocheck) {
+		if (tocheck == parent) {
+			return true;
+		}
+		tocheck = tocheck->getParent();
+	}
+	return false;
 }
 
 bool GUIModalMenu::preprocessEvent(const SEvent &event)
@@ -245,6 +316,19 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 		}
 	}
 #endif
+
+	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+		s32 x = event.MouseInput.X;
+		s32 y = event.MouseInput.Y;
+		gui::IGUIElement *hovered =
+				Environment->getRootGUIElement()->getElementFromPoint(
+						core::position2d<s32>(x, y));
+		if (!isChild(hovered, this)) {
+			if (DoubleClickDetection(event)) {
+				return true;
+			}
+		}
+	}
 	return false;
 }
 
