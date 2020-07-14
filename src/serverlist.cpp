@@ -259,10 +259,10 @@ void sendAnnounce(AnnounceAction action,
 	}
 
 	if (action == AA_START) {
-		actionstream << "Announcing " << action << " to " <<
+		actionstream << "Announcing " << aa_names[action] << " to " <<
 			g_settings->get("serverlist_url") << std::endl;
 	} else {
-		infostream << "Announcing " << action << " to " <<
+		infostream << "Announcing " << aa_names[action] << " to " <<
 			g_settings->get("serverlist_url") << std::endl;
 	}
 
