@@ -45,11 +45,15 @@ public:
 
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
+
 	bool use_crosshair_image = false;
+	bool use_object_crosshair_image = false;
 	std::string hotbar_image = "";
 	bool use_hotbar_image = false;
 	std::string hotbar_selected_image = "";
 	bool use_hotbar_selected_image = false;
+
+	bool pointing_at_object = false;
 
 	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 			Inventory *inventory);

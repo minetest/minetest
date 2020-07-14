@@ -741,9 +741,11 @@ selectionbox_color (Selection box color) string (0,0,0)
 selectionbox_width (Selection box width) int 2 1 5
 
 #    Crosshair color (R,G,B).
+#    Also controls the object crosshair color
 crosshair_color (Crosshair color) string (255,255,255)
 
 #    Crosshair alpha (opaqueness, between 0 and 255).
+#    Also controls the object crosshair color
 crosshair_alpha (Crosshair alpha) int 255 0 255
 
 #    Maximum number of recent chat messages to show
@@ -817,7 +819,8 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 
 #    Show entity selection boxes
-show_entity_selectionbox (Show entity selection boxes) bool true
+#    A restart is required after changing this.
+show_entity_selectionbox (Show entity selection boxes) bool false
 
 [*Menus]
 

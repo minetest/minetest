@@ -3176,11 +3176,14 @@ PointedThing Game::updatePointedThing(
 	const NodeDefManager *nodedef = map.getNodeDefManager();
 
 	runData.selected_object = NULL;
+	hud->pointing_at_object = false;
 
 	RaycastState s(shootline, look_for_object, liquids_pointable);
 	PointedThing result;
 	env.continueRaycast(&s, &result);
 	if (result.type == POINTEDTHING_OBJECT) {
+		hud->pointing_at_object = true;
+
 		runData.selected_object = client->getEnv().getActiveObject(result.object_id);
 		aabb3f selection_box;
 		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox() &&

@@ -41,6 +41,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/touchscreengui.h"
 #endif
 
+#define OBJECT_CROSSHAIR_LINE_SIZE 8
+#define CROSSHAIR_LINE_SIZE 10
+
 Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
@@ -76,6 +79,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	selectionbox_argb = video::SColor(255, sbox_r, sbox_g, sbox_b);
 
 	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
+	use_object_crosshair_image = tsrc->isKnownSourceImage("object_crosshair.png");
 
 	m_selection_boxes.clear();
 	m_halo_boxes.clear();
@@ -601,6 +605,31 @@ void Hud::drawHotbar(u16 playeritem) {
 
 void Hud::drawCrosshair()
 {
+	if (pointing_at_object) {
+		if (use_object_crosshair_image) {
+			video::ITexture *object_crosshair = tsrc->getTexture("object_crosshair.png");
+			v2u32 size  = object_crosshair->getOriginalSize();
+			v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
+					m_displaycenter.Y - (size.Y / 2));
+			driver->draw2DImage(object_crosshair, lsize,
+					core::rect<s32>(0, 0, size.X, size.Y),
+					nullptr, crosshair_argb, true);
+		} else {
+			driver->draw2DLine(
+					m_displaycenter - v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE),
+					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+			driver->draw2DLine(
+					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					-OBJECT_CROSSHAIR_LINE_SIZE),
+					m_displaycenter + v2s32(-OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+		}
+
+		return;
+	}
+
 	if (use_crosshair_image) {
 		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
 		v2u32 size  = crosshair->getOriginalSize();
@@ -608,12 +637,12 @@ void Hud::drawCrosshair()
 				m_displaycenter.Y - (size.Y / 2));
 		driver->draw2DImage(crosshair, lsize,
 				core::rect<s32>(0, 0, size.X, size.Y),
-				0, crosshair_argb, true);
+				nullptr, crosshair_argb, true);
 	} else {
-		driver->draw2DLine(m_displaycenter - v2s32(10, 0),
-				m_displaycenter + v2s32(10, 0), crosshair_argb);
-		driver->draw2DLine(m_displaycenter - v2s32(0, 10),
-				m_displaycenter + v2s32(0, 10), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(CROSSHAIR_LINE_SIZE, 0),
+				m_displaycenter + v2s32(CROSSHAIR_LINE_SIZE, 0), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(0, CROSSHAIR_LINE_SIZE),
+				m_displaycenter + v2s32(0, CROSSHAIR_LINE_SIZE), crosshair_argb);
 	}
 }
 
