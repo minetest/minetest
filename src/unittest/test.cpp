@@ -263,6 +263,7 @@ bool run_tests()
 	g_logger.setLevelSilenced(LL_ERROR, true);
 
 	u32 num_modules_failed     = 0;
+	u32 num_total_tests_exp_failed = 0;
 	u32 num_total_tests_failed = 0;
 	u32 num_total_tests_run    = 0;
 	std::vector<TestBase *> &testmods = TestManager::getTestModules();
@@ -270,8 +271,10 @@ bool run_tests()
 		if (!testmods[i]->testModule(&gamedef))
 			num_modules_failed++;
 
+		num_total_tests_exp_failed += testmods[i]->num_tests_exp_failed;
 		num_total_tests_failed += testmods[i]->num_tests_failed;
 		num_total_tests_run += testmods[i]->num_tests_run;
+		rawstream << num_total_tests_exp_failed << std::endl;
 	}
 
 	u64 tdiff = porting::getTimeMs() - t1;
@@ -285,8 +288,9 @@ bool run_tests()
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
 		<< "Unit Test Results: " << overall_status << std::endl
 		<< "    " << num_modules_failed << " / " << testmods.size()
-		<< " failed modules (" << num_total_tests_failed << " / "
-		<< num_total_tests_run << " failed individual tests)." << std::endl
+		<< " failed modules (" << num_total_tests_failed << " + " 
+		<< num_total_tests_exp_failed << " / "
+		<< num_total_tests_run << " failed + expected failed individual tests)." << std::endl
 		<< "    Testing took " << tdiff << "ms total." << std::endl
 		<< "++++++++++++++++++++++++++++++++++++++++"
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
@@ -308,8 +312,8 @@ bool TestBase::testModule(IGameDef *gamedef)
 
 	u64 tdiff = porting::getTimeMs() - t1;
 	rawstream << "======== Module " << getName() << " "
-		<< (num_tests_failed ? "failed" : "passed") << " (" << num_tests_failed
-		<< " failures / " << num_tests_run << " tests) - " << tdiff
+		<< (num_tests_failed ? "failed" : (num_tests_exp_failed ? "expected-failed" : "passed")) << " (" << num_tests_failed
+		<< " failures + " << num_tests_exp_failed << " expected failures / " << num_tests_run << " tests) - " << tdiff
 		<< "ms" << std::endl;
 
 	if (!m_test_dir.empty())

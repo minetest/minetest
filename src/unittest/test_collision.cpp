@@ -290,9 +290,9 @@ void TestCollision::testCollisionMoveSimple_ceiling()
 		v3f(), nullptr,
 		false);
 	rawstream << "Now at (" << pos_f.X << ',' << pos_f.Y << ',' << pos_f.Z << ')' << std::endl;
-	UASSERT(res.collides);
-	UASSERT(pos_f.equals(v3f(11.f * BS, 10.f * BS, 10.f * BS), 0.01));
-	UASSERT(speed_f.equals(v3f(), 0.01));
+	UASSERT_EXP(res.collides);
+	UASSERT_EXP(pos_f.equals(v3f(11.f * BS, 10.f * BS, 10.f * BS), 0.01));
+	UASSERT_EXP(speed_f.equals(v3f(), 0.01));
 }
 
 void TestCollision::testCollisionMoveSimple_giantstepup()
@@ -322,9 +322,9 @@ void TestCollision::testCollisionMoveSimple_giantstepup()
 		v3f(), nullptr,
 		false);
 	rawstream << "Now at (" << pos_f.X << ',' << pos_f.Y << ',' << pos_f.Z << ')' << std::endl;
-	UASSERT(!res.collides);
-	UASSERT(pos_f.equals(v3f(12.f * BS, 13.f * BS, 10.f * BS), 0.01));
-	UASSERT(speed_f.equals(v3f(4.f, 0.f, 0.f) * BS, 0.01));
+	UASSERT_EXP(!res.collides);
+	UASSERT_EXP(pos_f.equals(v3f(12.f * BS, 13.f * BS, 10.f * BS), 0.01));
+	UASSERT_EXP(speed_f.equals(v3f(4.f, 0.f, 0.f) * BS, 0.01));
 }
 
 void TestCollision::testCollisionMoveSimple_giantceiling()
@@ -425,9 +425,9 @@ void TestCollision::testCollisionMoveSimple_longclimb()
 		v3f(), nullptr,
 		false);
 	rawstream << "Now at (" << pos_f.X << ',' << pos_f.Y << ',' << pos_f.Z << ')' << std::endl;
-	UASSERT(res.collides);
-	UASSERT(pos_f.equals(v3f(13.f * BS, 12.f * BS, 10.f * BS), 0.01));
-	UASSERT(speed_f.equals(v3f(), 0.01));
+	UASSERT_EXP(res.collides);
+	UASSERT_EXP(pos_f.equals(v3f(13.f * BS, 12.f * BS, 10.f * BS), 0.01));
+	UASSERT_EXP(speed_f.equals(v3f(), 0.01));
 }
 
 void TestCollision::testCollisionMoveSimple_shortstepup()
@@ -492,9 +492,9 @@ void TestCollision::testCollisionMoveSimple_bouncy()
 		v3f(), nullptr,
 		false);
 	rawstream << "Now at (" << pos_f.X << ',' << pos_f.Y << ',' << pos_f.Z << ')' << std::endl;
-	UASSERT(!res.collides);
-	UASSERT(pos_f.equals(v3f(8.f * BS, 10.f * BS, 10.f * BS), 0.01));
-	UASSERT(speed_f.equals(v3f(), 0.01));
+	UASSERT_EXP(!res.collides);
+	UASSERT_EXP(pos_f.equals(v3f(8.f * BS, 10.f * BS, 10.f * BS), 0.01));
+	UASSERT_EXP(speed_f.equals(v3f(), 0.01));
 }
 
 void TestCollision::testCollisionMoveSimple_corner()
@@ -522,7 +522,7 @@ void TestCollision::testCollisionMoveSimple_corner()
 		v3f(), nullptr,
 		false);
 	rawstream << "Now at (" << pos_f.X << ',' << pos_f.Y << ',' << pos_f.Z << ')' << std::endl;
-	UASSERT(res.collides);
-	UASSERT(pos_f.equals(v3f(11.f * BS, 10.f * BS, 11.f * BS), 0.01));
-	UASSERT(speed_f.equals(v3f(), 0.01));
+	UASSERT_EXP(res.collides);
+	UASSERT_EXP(pos_f.equals(v3f(11.f * BS, 10.f * BS, 11.f * BS), 0.01));
+	UASSERT_EXP(speed_f.equals(v3f(), 0.01));
 }
