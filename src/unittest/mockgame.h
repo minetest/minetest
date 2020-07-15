@@ -107,6 +107,7 @@ public:
 	{
 	}
 
+	virtual ~MockEnvironment() { delete m_gamedef; }
 	virtual void step(f32 dtime) {}
 	virtual Map &getMap() { return m_map; }
 
