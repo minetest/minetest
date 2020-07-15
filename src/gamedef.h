@@ -48,7 +48,7 @@ struct ModSpec;
 class IGameDef
 {
 public:
-	~IGameDef() = default;
+	virtual ~IGameDef() = default;
 
 	// These are thread-safe IF they are not edited while running threads.
 	// Thus, first they are set up and then they are only read.
