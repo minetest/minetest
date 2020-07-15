@@ -40,6 +40,8 @@ class MockGameDef : public IGameDef
 public:
 	MockGameDef(std::ostream &dout) : dout(dout), m_ndef(), m_modspec(){};
 
+	virtual ~MockGameDef() = default;
+
 	virtual IItemDefManager *getItemDefManager() { UNIMPLEMENTED(nullptr) }
 
 	virtual const NodeDefManager *getNodeDefManager() { return &m_ndef; }
@@ -88,6 +90,7 @@ class MockMap : public Map
 {
 public:
 	MockMap(std::ostream &dout, IGameDef *gamedef) : Map(dout, gamedef) {}
+	~MockMap() = default;
 
 	virtual s32 mapType() const { return MAPTYPE_MOCK; }
 
