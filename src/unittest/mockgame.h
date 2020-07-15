@@ -90,7 +90,7 @@ class MockMap : public Map
 {
 public:
 	MockMap(std::ostream &dout, IGameDef *gamedef) : Map(dout, gamedef) {}
-	~MockMap() = default;
+	virtual ~MockMap() = default;
 
 	virtual s32 mapType() const { return MAPTYPE_MOCK; }
 
