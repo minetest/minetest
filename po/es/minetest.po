@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-07-15 18:47+0000\n"
-"Last-Translator: Vicente Carrasco Alvarez <vicente.carrasco@usach.cl>\n"
+"PO-Revision-Date: 2020-09-19 15:31+0000\n"
+"Last-Translator: Agustin Calderon <agustin25901@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -2021,15 +2021,13 @@ msgstr ""
 "escarpadas."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that controls the size/occurrence of rolling hills."
-msgstr "Ruido 2D para controlar el tamaño/aparición de las colinas."
+msgstr "Ruido 2D que controla el tamaño/aparición de las colinas ondulantes."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that controls the size/occurrence of step mountain ranges."
 msgstr ""
-"Ruido 2D para controlar las rangos de tamaño/aparición de las montañas "
+"Ruido 2D que controla el tamaño/aparición de los intervalos de montañas "
 "inclinadas."
 
 #: src/settings_translation_file.cpp
@@ -2401,7 +2399,6 @@ msgid "Bumpmapping"
 msgstr "Mapeado de relieve"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
@@ -2409,9 +2406,10 @@ msgid ""
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
 "Distancia de la cámara 'cerca del plano delimitador' en nodos, entre 0 y "
-"0,5.\n"
-"La mayoría de los usuarios no necesitarán cambiar esto.\n"
-"El aumento puede reducir los artefactos en GPU más débiles.\n"
+"0,25.\n"
+"Solo funciona en plataformas GLES. La mayoría de los usuarios no necesitarán "
+"cambiar esto.\n"
+"Aumentarlo puede reducir el artifacting en GPU más débiles.\n"
 "0.1 = Predeterminado, 0,25 = Buen valor para comprimidos más débiles."
 
 #: src/settings_translation_file.cpp
@@ -2488,24 +2486,21 @@ msgid ""
 "necessary for smaller screens."
 msgstr ""
 "Cambia la UI del menú principal:\n"
-"-\tCompleto:\tMúltiples mundos, elección de juegos y texturas, etc.\n"
-"-\tSimple:\tUn solo mundo, sin elección de juegos o texturas.\n"
-"Puede ser necesario en pantallas pequeñas.\n"
-"-\tAutomático:\tSimple en Android, completo en otras plataformas."
+"-   Completo: Múltiples mundos, elección de juegos y texturas, etc.\n"
+"-   Simple: Un solo mundo, sin elección de juegos o texturas.\n"
+"Puede ser necesario en pantallas pequeñas."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat font size"
-msgstr "Tamaño de la fuente"
+msgstr "Tamaño de la fuente del chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Tecla del Chat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat log level"
-msgstr "Nivel de registro de depuración"
+msgstr "Nivel de registro del chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2615,8 +2610,9 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Lista separada por comas de mods que son permitidos de acceder a APIs de "
-"HTTP, las cuales les permiten subir y descargar archivos al/desde internet."
+"Lista (separada por comas) de mods a los que se les permite acceder a APIs "
+"de HTTP, las cuales \n"
+"les permiten subir y descargar archivos al/desde internet."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2686,8 +2682,9 @@ msgid ""
 "72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged."
 msgstr ""
 "Controla la duración del ciclo día/noche.\n"
-"Ejemplos: 72 = 20min, 360 = 4min, 1 = 24hora, 0 = día/noche/lo que sea se "
-"queda inalterado."
+"Ejemplos: \n"
+"72 = 20min, 360 = 4min, 1 = 24hs, 0 = día/noche/lo que sea se queda "
+"inalterado."
 
 #: src/settings_translation_file.cpp
 msgid "Controls sinking speed in liquid."
@@ -2800,7 +2797,7 @@ msgstr "Formato de Reporte por defecto"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Default stack size"
-msgstr "Juego por defecto"
+msgstr "Tamaño por defecto del stack (Montón)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2909,8 +2906,8 @@ msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
 msgstr ""
-"Descripción del servidor, que se muestra cuando los jugadores se unen, y en\n"
-"la lista de servidores."
+"Descripción del servidor, que se muestra en la lista de servidores y cuando "
+"los jugadores se unen."
 
 #: src/settings_translation_file.cpp
 msgid "Desert noise threshold"
@@ -3088,7 +3085,6 @@ msgstr ""
 "Necesita habilitar enable_ipv6 para ser activado."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enables Hable's 'Uncharted 2' filmic tone mapping.\n"
 "Simulates the tone curve of photographic film and how this approximates the\n"
@@ -3251,8 +3247,9 @@ msgid ""
 "the\n"
 "Multiplayer Tab."
 msgstr ""
-"Fichero en client/serverlist/ que contiene sus servidores favoritos que se "
-"mostrarán en la página de Multijugador."
+"Archivo en client/serverlist/ que contiene sus servidores favoritos "
+"mostrados en la \n"
+"página de Multijugador."
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth"
@@ -3273,9 +3270,10 @@ msgid ""
 "light edge to transparent textures. Apply this filter to clean that up\n"
 "at texture load time."
 msgstr ""
-"Las texturas filtradas pueden mezclar los valores RGB de los vecinos\n"
-"completamete tranparentes, los cuales los optimizadores de ficheros\n"
-"PNG usualmente descartan, lo que a veces resulta en un borde claro u\n"
+"Las texturas filtradas pueden mezclar valores RGB con sus vecinos "
+"completamente transparentes, \n"
+"los cuales los optimizadores de PNG usualmente descartan, lo que a veces "
+"resulta en un borde claro u\n"
 "oscuro en las texturas transparentes. Aplica éste filtro para limpiar ésto\n"
 "al cargar las texturas."
 
@@ -3472,11 +3470,10 @@ msgstr ""
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
-"Desde cuán lejos se envían bloques a los clientes, especificado en\n"
-"bloques de mapa (mapblocks, 16 nodos)."
+"Desde cuán lejos se envían bloques a los clientes, especificado en bloques "
+"de mapa (mapblocks, 16 nodos)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes).\n"
 "\n"
@@ -3488,8 +3485,8 @@ msgstr ""
 "\n"
 "Establecer esto a más de 'active_block_range' tambien causará que\n"
 "el servidor mantenga objetos activos hasta ésta distancia en la dirección\n"
-"que el jugador está mirando. (Ésto puede evitar que los\n"
-"enemigos desaparezcan)"
+"que el jugador está mirando. (Ésto puede evitar que los enemigos "
+"desaparezcan)"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -3524,7 +3521,6 @@ msgid "Global callbacks"
 msgstr "Llamadas globales"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -3532,13 +3528,9 @@ msgid ""
 msgstr ""
 "Atributos del generador de mapas globales.\n"
 "En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
-"todos los elementos decorativos excepto los árboles y la hierba de la "
-"jungla, en todos los otros generadores de mapas esta opción controla todas "
-"las decoraciones.\n"
-"Las opciones que no son incluidas en el texto con la cadena de opciones no "
-"serán modificadas y mantendrán su valor por defecto.\n"
-"Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
-"inhabilitar esas opciones."
+"todos los elementos decorativos excepto los árboles \n"
+"y la hierba de la jungla, en todos los otros generadores de mapas esta "
+"opción controla todas las decoraciones."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3600,7 +3592,6 @@ msgstr ""
 "desarrolladores de mods)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Have the profiler instrument itself:\n"
 "* Instrument an empty function.\n"
@@ -3612,7 +3603,7 @@ msgstr ""
 "* Instrumente una función vacía.\n"
 "Esto estima la sobrecarga, que la instrumentación está agregando (+1 llamada "
 "de función).\n"
-"* Instrumente el muestreador que se utiliza para actualizar las estadísticas."
+"* Instrumente el sampler que se utiliza para actualizar las estadísticas."
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
@@ -3893,7 +3884,6 @@ msgstr ""
 "habilitados."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled the server will perform map block occlusion culling based on\n"
 "on the eye position of the player. This can reduce the number of blocks\n"
@@ -3902,11 +3892,11 @@ msgid ""
 "so that the utility of noclip mode is reduced."
 msgstr ""
 "Si está habilitado, el servidor realizará la selección de la oclusión del "
-"bloque del mapa basado en\n"
+"bloque del mapa basado\n"
 "en la posición del ojo del jugador. Esto puede reducir el número de bloques\n"
-"enviados al cliente en un 50-80%. El cliente ya no recibirá la mayoría de "
-"las invisibles\n"
-"para que la utilidad del modo nocturno se reduzca."
+"enviados al cliente en un 50-80%. El cliente ya no recibirá lo mas "
+"invisible\n"
+"por lo que la utilidad del modo \"NoClip\" se reduce."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3951,7 +3941,6 @@ msgstr ""
 "Actívelo sólo si sabe lo que hace."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
@@ -4291,7 +4280,6 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for moving the player backward.\n"
 "Will also disable autoforward, when active.\n"
@@ -4299,6 +4287,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tecla para desplazar el jugador hacia atrás.\n"
+"Cuando esté activa, También desactivará el desplazamiento automático hacia "
+"adelante.\n"
 "Véase http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -4965,7 +4955,7 @@ msgstr "Idioma"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
-msgstr ""
+msgstr "Profundidad de cueva grande"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave maximum number"
@@ -5164,37 +5154,19 @@ msgid "Map generation attributes specific to Mapgen Carpathian."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen Flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
-"Atributos del generador de mapas globales.\n"
-"En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
-"todos los elementos decorativos excepto los árboles y la hierba de la "
-"jungla, en todos los otros generadores de mapas esta opción controla todas "
-"las decoraciones.\n"
-"Las opciones que no son incluidas en el texto con la cadena de opciones no "
-"serán modificadas y mantendrán su valor por defecto.\n"
-"Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
-"inhabilitar esas opciones."
+"Atributos de generación de mapa específicos para generador de mapas planos.\n"
+"Ocasionalmente pueden agregarse lagos y colinas al mundo plano."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen Fractal.\n"
 "'terrain' enables the generation of non-fractal terrain:\n"
 "ocean, islands and underground."
 msgstr ""
-"Atributos del generador de mapas globales.\n"
-"En el generador de mapas V6 la opción (o marcador) \"decorations\" controla "
-"todos los elementos decorativos excepto los árboles y la hierba de la "
-"jungla, en todos los otros generadores de mapas esta opción controla todas "
-"las decoraciones.\n"
-"Las opciones que no son incluidas en el texto con la cadena de opciones no "
-"serán modificadas y mantendrán su valor por defecto.\n"
-"Las opciones que comienzan con el prefijo \"no\" son utilizadas para "
-"inhabilitar esas opciones."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5693,7 +5665,7 @@ msgstr "Contenido del repositorio en linea"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
-msgstr ""
+msgstr "Líquidos opacos"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5866,7 +5838,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiling"
-msgstr ""
+msgstr "Perfilando"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
