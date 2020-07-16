@@ -153,9 +153,7 @@ int MetaDataRef::l_set_int(lua_State *L)
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 	int a = luaL_checkint(L, 3);
-	std::string str;
-	if (a != 0)
-		str = itos(a);
+	std::string str = itos(a);
 
 	Metadata *meta = ref->getmeta(true);
 	if (meta == NULL || str == meta->getString(name))
@@ -193,9 +191,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 	float a = readParam<float>(L, 3);
-	std::string str;
-	if (a != 0)
-		str = ftos(a);
+	std::string str = ftos(a);
 
 	Metadata *meta = ref->getmeta(true);
 	if (meta == NULL || str == meta->getString(name))
