@@ -177,6 +177,17 @@ void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player,
 	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
+void ScriptApiPlayer::on_removeplayer(const std::string &name)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_removeplayers
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_removeplayers");
+	lua_pushstring(L, name.c_str());
+	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void ScriptApiPlayer::on_cheat(ServerActiveObject *player,
 		const std::string &cheat_type)
 {

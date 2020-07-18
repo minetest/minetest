@@ -34,6 +34,7 @@ local register_functions = {
 	register_on_prejoinplayer = 0,
 	register_on_joinplayer = 0,
 	register_on_leaveplayer = 0,
+	register_on_removeplayer = 0,
 	register_on_cheat = 0,
 	register_on_chat_message = 0,
 	register_on_player_receive_fields = 0,

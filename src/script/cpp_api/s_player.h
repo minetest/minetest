@@ -43,6 +43,7 @@ public:
 	bool can_bypass_userlimit(const std::string &name, const std::string &ip);
 	void on_joinplayer(ServerActiveObject *player, s64 last_login);
 	void on_leaveplayer(ServerActiveObject *player, bool timeout);
+	void on_removeplayer(const std::string &name);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
 	bool on_punchplayer(ServerActiveObject *player, ServerActiveObject *hitter,
 			float time_from_last_punch, const ToolCapabilities *toolcap,

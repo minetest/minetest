@@ -546,7 +546,11 @@ void ServerEnvironment::removePlayer(RemotePlayer *player)
 
 bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 {
-	return m_player_database->removePlayer(name);
+	if (m_player_database->removePlayer(name)) {
+		m_script->on_removeplayer(name);
+		return true;
+	}
+	return false;
 }
 
 void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,

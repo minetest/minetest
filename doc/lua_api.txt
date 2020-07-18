@@ -4497,6 +4497,9 @@ Call these functions only at load time!
 * `minetest.register_on_leaveplayer(function(ObjectRef, timed_out))`
     * Called when a player leaves the game
     * `timed_out`: True for timeout, false for other reasons.
+* `minetest.register_on_removeplayer(function(name))`
+    * Called after minetest.remove_player
+    * Remove player data in databases or mod storages on this callback
 * `minetest.register_on_authplayer(function(name, ip, is_success))`
     * Called when a client attempts to log into an account.
     * `name`: The name of the account being authenticated.
