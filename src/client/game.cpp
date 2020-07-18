@@ -1162,7 +1162,10 @@ void Game::shutdown()
 	g_touchscreengui->hide();
 #endif
 
+#ifndef _MSC_VER
+	// calling draw_load_screen while deinitalizing crashes graphic driver.
 	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
+#endif // !_MSC_VER
 
 	if (clouds)
 		clouds->drop();
