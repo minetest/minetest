@@ -1225,6 +1225,7 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 
 		auto style = getDefaultStyleForElement("table", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+		e->setOverrideFont(style.getFont());
 
 		m_tables.emplace_back(spec, e);
 		m_fields.push_back(spec);
@@ -1302,6 +1303,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 
 		auto style = getDefaultStyleForElement("textlist", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+		e->setOverrideFont(style.getFont());
 
 		m_tables.emplace_back(spec, e);
 		m_fields.push_back(spec);
