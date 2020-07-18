@@ -381,7 +381,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		// run the "allow" callbacks a second time with swapped inventories
 		if (allow_swap) {
 			ItemStack dst_item = list_to->getItem(to_i);
-			dst_item.count = dst_can_put_count;
 			swapDirections();
 
 			int src_can_take = allowPut(dst_item, player);
