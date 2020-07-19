@@ -17,9 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <irrTypes.h>
 #include <unordered_map>
 #include <vector>
+
+#include "irrlichttypes_bloated.h"
 
 /**
  * Inverted indices are normally used for large scale information retrieval like
@@ -124,7 +125,7 @@ enum CollisionFace
 class IndexListIterator
 {
 public:
-	IndexListIterator() = default;
+	IndexListIterator() {}
 	virtual ~IndexListIterator() {}
 	bool hasNext() { return m_hasnext; }
 	u32 peek() { return m_next; }
@@ -142,10 +143,11 @@ public:
 	// Go forward until m_next >= id.
 	// Returns true if the end of list was not reached.
 	virtual bool skipForward(u32 id) { return false; }
+	
+	// Backwards sort to get min heap behavior from max heap implementation.
+	static bool compare(IndexListIterator *a, IndexListIterator *b) { return a->peek() > b->peek(); }
 
 protected:
-	CollisionFace m_face;
-	f32 m_offset;
 	bool m_hasnext;
 	u32 m_next;
 };
@@ -187,13 +189,12 @@ public:
 		return m_hasnext;
 	}
 
-	// Backwards sort to get min heap behavior from max heap implementation.	static bool compare(SingleIndexListIterator *a, SingleIndexListIterator *b) { return *a->iter > *b->iter; }
-};
+
 protected:
 	CollisionFace m_face;
 	f32 m_offset;
-	const std:vector<u32> *m_list;
-	std:vector<u32>::const_iterator m_iter; // Iterator positioned at next
+	const std::vector<u32> *m_list;
+	std::vector<u32>::const_iterator m_iter; // Iterator positioned at next
 	CollisionFace m_next_face;
 };
 
@@ -218,7 +219,7 @@ public:
 	void add(IndexListIterator *iter)
 	{
 		if (iter->hasNext())
-			m_set.push_back(iter);
+			m_set->push_back(iter);
 	}
 
 	// Return an IndexListIterator over the union/intersection of sources.
@@ -233,7 +234,7 @@ protected:
 class IndexListIteratorDifference : public IndexListIterator
 {
 public:
-	IndexListiIteratorDifference(IndexListIterator *a, IndexListIterator *b) :
+	IndexListIteratorDifference(IndexListIterator *a, IndexListIterator *b) :
 			m_iter_a(a), m_iter_b(b)
 	{
 		if (a->hasNext())
@@ -310,19 +311,18 @@ public:
 
 	// Get the open interval (a, b) or the closed interval [b, a] from
 	// the specified face into the provided set.
-	void getInterval(CollisionFace face, f32 offset a, f32 offset b, IndexListIteratorSet *set);
+	void getInterval(CollisionFace face, f32 a, f32 b, IndexListIteratorSet *set);
 	// Get [a, b) or (b, a]
-	void getHalfOpenInterval(CollisionFace face, f32 offset a, f32 offset b, IndexListIteratorSet *set);
+	void getHalfOpenInterval(CollisionFace face, f32 a, f32 b, IndexListIteratorSet *set);
 
 protected:
 	std::vector<u32> *findAttributeIndex(CollisionFace face, f32 offset);
-	static bool lowerCompare(AttributeIndex a, f32 offset) { return a.first < offset); }
-	static bool lowerCompareBack(AttributeIndex a, f32 offset) { return a.first > offset); }
-	static bool upperCompare(f32 offset, AttributeIndex b) { return b.first > offset); }
-	static bool upperCompareBack(f32 offset, AttributeIndex b) { return b.first < offset); }
+	void addToSet(CollisionFace face, u32 a, u32 b, IndexListIteratorSet *set);
+	static bool lowerCompare(AttributeIndex a, f32 offset) { return a.first < offset; }
+	static bool lowerCompareBack(AttributeIndex a, f32 offset) { return a.first > offset; }
+	static bool upperCompare(f32 offset, AttributeIndex b) { return b.first > offset; }
+	static bool upperCompareBack(f32 offset, AttributeIndex b) { return b.first < offset; }
 
-public:
-protected:
 	std::vector<AttributeIndex> m_index[6];
 	u32 m_count;
 	v3f m_maxWidth;
@@ -331,16 +331,29 @@ protected:
 // Detail for each collision box in the context.
 struct CollisionContextDetail
 {
-	u8 valid_faces;
+	u16 valid_faces;
 	f32 face_offset[6];
 
-	CollisionContextDetail(u8 face_mask, CollisionFace face, f32 offset) : valid_faces(face_mask)
+	CollisionContextDetail(u16 face_mask, CollisionFace face, f32 offset) : valid_faces(face_mask)
 	{
 		face_offset[face] = offset;
 	}
 
-	CollisionContextDetail() = default;
-	CollisionContextDetail(CollisionContextDetail &&move) = default;
+	CollisionContextDetail() {}
+
+	CollisionContextDetail(const CollisionContextDetail &copy) :
+			valid_faces(copy.valid_faces),
+			face_offset{
+					copy.face_offset[0], copy.face_offset[1], copy.face_offset[2],
+					copy.face_offset[3], copy.face_offset[4], copy.face_offset[5]
+				} {}
+
+	CollisionContextDetail(CollisionContextDetail &&move) :
+			valid_faces(move.valid_faces),
+			face_offset{
+					move.face_offset[0], move.face_offset[1], move.face_offset[2],
+					move.face_offset[3], move.face_offset[4], move.face_offset[5]
+				} {}
 };
 
 class CollisionContext
@@ -354,51 +367,25 @@ public:
 	// Get the bitmask of valid faces. For each valid face, put the
 	// distance between that face of the entity and the opposing face
 	// of the collision box.
-	u8 getValidFaces(u32 id, f32[6] offset) const
+	u16 getValidFaces(u32 id, f32 offset[6]) const
 	{
 		std::unordered_map<u32, CollisionContextDetail>::const_iterator  entry = m_active.find(id);
 		if (entry == m_active.end())
 			return 0;
 
-		u8 valid = entry->valid_faces;
+		u16 valid = entry->second.valid_faces;
 		for (u32 f = 0; f < 6; f++)
-			if (valid & collisionBitmask[f])
-				offset[f] = m_face_offset[f] - entry->face_offset[f];
+			if ((valid & setBitmask[f]) == setBitmask[f])
+				offset[f] = m_face_offset[f] - entry->second.face_offset[f];
 		return valid;
 	}
 
-	// Match NodeDef.
-	static const u16 setBitmask[] = {
-			1 | 128,	// COLLISION_MAX_Y
-			2 | 128,	// COLLISION_MIN_Y
-			4 | 256,	// COLLISION_MIN_Z
-			8 | 64,	// COLLISION_MIN_X
-			16 | 256,	// COLLISION_MAX_Z
-			32 | 64,	// COLLISION_MAX_X
-			64,	// COLLISION_FACE_X
-			128,	// COLLISION_FACE_Y
-			256,	// COLLISION_FACE_Z
-			64 | 128 | 256,	// COLLISION_FACE_XYZ
-		};
-	static const u16 unsetBitmask[] = {
-			1 | 2 | 128,	// COLLISION_MAX_Y
-			1 | 2 | 128,	// COLLISION_MIN_Y
-			4 | 16 | 256,	// COLLISION_MIN_Z
-			8 | 32 | 64,	// COLLISION_MIN_X
-			4 | 16 | 256,	// COLLISION_MAX_Z
-			8 | 32 | 64,	// COLLISION_MAX_X
-		};
-	static const CollisionFace opposingFace[] = {
-			COLLISION_BOX_MIN_Y,
-			COLLISION_BOX_MAX_Y,
-			COLLISION_BOX_MAX_Z,
-			COLLISION_BOX_MAX_X,
-			COLLISION_BOX_MIN_Z,
-			COLLISION_BOX_MIN_X,
-		};
+	static const u16 setBitmask[];
+	static const u16 unsetBitmask[];
+	static const CollisionFace opposingFace[];
 
 protected:
-	f32[6] m_face_offset;
+	f32 m_face_offset[6];
 	std::unordered_map<u32, CollisionContextDetail> m_active;
 	std::vector<u32> collisions;
 };
