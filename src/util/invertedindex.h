@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 
 #include "irrlichttypes_bloated.h"
+#include "log.h"
 
 /**
  * Inverted indices are normally used for large scale information retrieval like
@@ -125,7 +126,7 @@ enum CollisionFace
 class IndexListIterator
 {
 public:
-	IndexListIterator() {}
+	IndexListIterator() { rawstream << "Creating " << this << " with flag " << m_allocated << std::endl; }
 	virtual ~IndexListIterator() {}
 	bool hasNext() { return m_hasnext; }
 	u32 peek() { return m_next; }
@@ -147,14 +148,30 @@ public:
 	// Backwards sort to get min heap behavior from max heap implementation.
 	static bool compare(IndexListIterator *a, IndexListIterator *b) { return a->peek() > b->peek(); }
 
+	// Flag whether this object was allocated and should be deleted.
+	IndexListIterator *markAllocated()
+	{
+		rawstream << "Allocated " << this << std::endl;
+		m_allocated = true;
+		return this;
+	}
+
+	bool wasAllocated()
+	{
+		rawstream << "Deleting " << this << std::endl;
+		return m_allocated;
+	}
+
 protected:
-	bool m_hasnext;
+	bool m_hasnext = false;
 	u32 m_next;
+	bool m_allocated = false;
 };
 
 class SingleIndexListIterator : public IndexListIterator
 {
 public:
+	// This object does NOT take responsibility for deleting vec.
 	SingleIndexListIterator(CollisionFace face, f32 offset, const std::vector<u32> *vec) :
 			m_face(face), m_offset(offset), m_list(vec), m_iter(vec->begin())
 	{
@@ -206,14 +223,16 @@ public:
 	~IndexListIteratorSet()
 	{
 		for(u32 i = 0; i < m_set->size(); i++)
-			delete m_set->at(i);
+			if (m_set->at(i)->wasAllocated())
+				delete m_set->at(i);
 		delete m_set;
 	}
 
 	void add(CollisionFace face, f32 offset, const std::vector<u32> *vec)
 	{
 		if (!vec->empty())
-			m_set->push_back(new SingleIndexListIterator(face, offset, vec));
+			m_set->push_back((new SingleIndexListIterator(face, offset, vec))->markAllocated());
+
 	}
 
 	void add(IndexListIterator *iter)
@@ -243,14 +262,18 @@ public:
 
 	virtual ~IndexListIteratorDifference()
 	{
-		delete m_iter_a;
-		delete m_iter_b;
+		if (m_iter_a->wasAllocated())
+			delete m_iter_a;
+		if (m_iter_b->wasAllocated())
+			delete m_iter_b;
 	}
 
 	bool restart(IndexListIterator *a, IndexListIterator *b)
 	{
-		delete m_iter_a;
-		delete m_iter_b;
+		if (m_iter_a->wasAllocated())
+			delete m_iter_a;
+		if (m_iter_b->wasAllocated())
+			delete m_iter_b;
 		m_iter_a = a;
 		m_iter_b = b;
 		if (a->hasNext())

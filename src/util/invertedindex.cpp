@@ -31,8 +31,10 @@ public:
 
 	virtual ~DualIndexListIteratorUnion()
 	{
-		delete m_set[0];
-		delete m_set[1];
+		if (m_set[0]->wasAllocated())
+			delete m_set[0];
+		if (m_set[1]->wasAllocated())
+			delete m_set[1];
 	}
 
 	virtual CollisionFace nextFace(f32 *offset = nullptr)
@@ -130,8 +132,10 @@ public:
 
 	virtual ~DualIndexListIteratorIntersection()
 	{
-		delete m_iter_a;
-		delete m_iter_b;
+		if (m_iter_a->wasAllocated())
+			delete m_iter_a;
+		if (m_iter_b->wasAllocated())
+			delete m_iter_b;
 	}
 
 	virtual CollisionFace nextFace(f32 *offset = nullptr)
@@ -205,10 +209,10 @@ public:
 	virtual ~MultiIndexListIteratorUnion()
 	{
 		for(u32 i = 0; i < m_set->size(); i++)
-			delete m_set->at(i);
+			if (m_set->at(i)->wasAllocated())
+				delete m_set->at(i);
 
 		delete m_set;
-		m_set = nullptr;
 	}
 
 	virtual CollisionFace nextFace(f32 *offset = nullptr)
@@ -222,7 +226,8 @@ public:
 			std::push_heap(m_set->begin(), m_set->end(), IndexListIterator::compare);
 		else
 		{
-			delete m_set->back();
+			if (m_set->back()->wasAllocated())
+				delete m_set->back();
 			m_set->pop_back();
 		}
 
@@ -239,7 +244,8 @@ public:
 				std::push_heap(m_set->begin(), m_set->end(), IndexListIterator::compare);
 			else
 			{
-				delete m_set->back();
+				if (m_set->back()->wasAllocated())
+					delete m_set->back();
 				m_set->pop_back();
 			}
 		}
@@ -256,7 +262,8 @@ public:
 				std::push_heap(m_set->begin(), m_set->end(), IndexListIterator::compare);
 			else
 			{
-				delete m_set->back();
+				if (m_set->back()->wasAllocated())
+					delete m_set->back();
 				m_set->pop_back();
 			}
 		}
@@ -292,10 +299,10 @@ public:
 	virtual ~MultiIndexListIteratorIntersection()
 	{
 		for(u32 i = 0; i < m_set->size(); i++)
-			delete m_set->at(i);
+			if (m_set->at(i)->wasAllocated())
+				delete m_set->at(i);
 
 		delete m_set;
-		m_set = nullptr;
 	}
 
 	virtual CollisionFace nextFace(f32 *offset = nullptr)
@@ -336,7 +343,8 @@ protected:
 			std::push_heap(m_set->begin(), m_set->end(), IndexListIterator::compare);
 		} else
 		{
-			delete m_set->back();
+			if (m_set->back()->wasAllocated())
+				delete m_set->back();
 			m_set->pop_back();
 		}
 	}
@@ -353,7 +361,8 @@ protected:
 			std::push_heap(m_set->begin(), m_set->end(), IndexListIterator::compare);
 		} else
 		{
-			delete m_set->back();
+			if (m_set->back()->wasAllocated())
+				delete m_set->back();
 			m_set->pop_back();
 		}
 	}
@@ -378,7 +387,7 @@ IndexListIterator *IndexListIteratorSet::getUnion()
 	switch(m_set->size())
 	{
 	case 0:
-		return new IndexListIterator();
+		return (new IndexListIterator())->markAllocated();
 
 	case 1:
 		iter = m_set->back();
@@ -386,12 +395,12 @@ IndexListIterator *IndexListIteratorSet::getUnion()
 		return iter;
 
 	case 2:
-		iter = new DualIndexListIteratorUnion(m_set->front(), m_set->back());
+		iter = (new DualIndexListIteratorUnion(m_set->front(), m_set->back()))->markAllocated();
 		m_set->clear();
 		return iter;
 
 	default:
-		iter =  new MultiIndexListIteratorUnion(m_set);
+		iter =  (new MultiIndexListIteratorUnion(m_set))->markAllocated();
 		m_set = new std::vector<IndexListIterator *>();
 		return iter;
 	}
@@ -404,7 +413,7 @@ IndexListIterator *IndexListIteratorSet::getIntersection()
 	switch(m_set->size())
 	{
 	case 0:
-		return new IndexListIterator();
+		return (new IndexListIterator())->markAllocated();
 
 	case 1:
 		iter = m_set->back();
@@ -412,12 +421,12 @@ IndexListIterator *IndexListIteratorSet::getIntersection()
 		return iter;
 
 	case 2:
-		iter = new DualIndexListIteratorIntersection(m_set->front(), m_set->back());
+		iter = (new DualIndexListIteratorIntersection(m_set->front(), m_set->back()))->markAllocated();
 		m_set->clear();
 		return iter;
 
 	default:
-		iter =  new MultiIndexListIteratorIntersection(m_set);
+		iter = (new MultiIndexListIteratorIntersection(m_set))->markAllocated();
 		m_set = new std::vector<IndexListIterator *>();
 		return iter;
 	}
