@@ -558,7 +558,7 @@ std::vector<u32> *InvertedIndex::findAttributeIndex(CollisionFace face, f32 offs
 		return &i->second;
 
 	// TODO: verify that emplace().second is true.
-	return &idx.emplace(i, offset, std::vector<u33>())->second;
+	return &idx.emplace(i, offset, std::vector<u32>())->second;
 }
 
 // Match NodeDef.
