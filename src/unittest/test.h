@@ -65,16 +65,6 @@ class TestExpFailedException : public std::exception {
 	}
 
 // Asserts the specified condition is true, or fails the current unit test
-// This failure is expected, and does not stop a build.
-#define UASSERT_EXP(x)                                              \
-	if (!(x)) {                                                 \
-		rawstream << "Test assertion failed (but expected): " #x << std::endl  \
-			<< "    at " << fs::GetFilenameFromPath(__FILE__)   \
-			<< ":" << __LINE__ << std::endl;                    \
-		throw TestExpFailedException();                            \
-	}
-
-// Asserts the specified condition is true, or fails the current unit test
 // and prints the format specifier fmt
 #define UTEST(x, fmt, ...)                                               \
 	if (!(x)) {                                                          \
@@ -84,18 +74,6 @@ class TestExpFailedException : public std::exception {
 			<< "    at " << fs::GetFilenameFromPath(__FILE__)            \
 			<< ":" << __LINE__ << std::endl;                             \
 		throw TestFailedException();                                     \
-	}
-
-// Asserts the specified condition is true, or fails the current unit test
-// and prints the format specifier fmt
-#define UTEST_EXP(x, fmt, ...)                                               \
-	if (!(x)) {                                                          \
-		char utest_buf[1024];                                            \
-		snprintf(utest_buf, sizeof(utest_buf), fmt, __VA_ARGS__);        \
-		rawstream << "Test assertion failed (but expected): " << utest_buf << std::endl \
-			<< "    at " << fs::GetFilenameFromPath(__FILE__)            \
-			<< ":" << __LINE__ << std::endl;                             \
-		throw TestExpFailedException();                                     \
 	}
 
 // Asserts the comparison specified by CMP is true, or fails the current unit test
@@ -114,25 +92,7 @@ class TestExpFailedException : public std::exception {
 	}                                                                     \
 }
 
-// Asserts the comparison specified by CMP is true, or fails the current unit test
-#define UASSERTCMP_EXP(T, CMP, actual, expected) {                            \
-	T a = (actual);                                                       \
-	T e = (expected);                                                     \
-	if (!(a CMP e)) {                                                     \
-		rawstream                                                         \
-			<< "Test assertion failed (but expected): " << #actual << " " << #CMP << " " \
-			<< #expected << std::endl                                     \
-			<< "    at " << fs::GetFilenameFromPath(__FILE__) << ":"      \
-			<< __LINE__ << std::endl                                      \
-			<< "    actual:   " << a << std::endl << "    expected: "     \
-			<< e << std::endl;                                            \
-		throw TestExpFailedException();                                      \
-	}                                                                     \
-}
-
 #define UASSERTEQ(T, actual, expected) UASSERTCMP(T, ==, actual, expected)
-
-#define UASSERTEQ_EXP(T, actual, expected) UASSERTCMP_EXP(T, ==, actual, expected)
 
 // UASSERTs that the specified exception occurs
 #define EXCEPTION_CHECK(EType, code) {    \
@@ -145,16 +105,13 @@ class TestExpFailedException : public std::exception {
 	UASSERT(exception_thrown);            \
 }
 
-// UASSERT_EXPs that the specified exception occurs
-#define EXCEPTION_CHECK_EXP(EType, code) {    \
-	bool exception_thrown = false;        \
-	try {                                 \
-		code;                             \
-	} catch (EType &e) {                  \
-		exception_thrown = true;          \
-	}                                     \
-	UASSERT_EXP(exception_thrown);            \
-}
+// Calls an code containing assertion macros, but treats failures as expected failures.
+#define EXPECT_FAIL(code) 	\
+	try {	\
+		code;	\
+	} catch (TestFailedException &e) {	\
+		throw TestExpFailedException();	\
+	}
 
 class IGameDef;
 
