@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "guiInventoryList.h"
-#include "guiFormSpecMenu.h"
 #include "formspec/FormspecInventoryContext.h"
 #include "client/hud.h"
 #include "client/client.h"
@@ -34,7 +33,6 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	const s32 start_item_i,
 	const v2s32 &slot_size,
 	const v2f32 &slot_spacing,
-	GUIFormSpecMenu *fs_menu,
 	FormspecInventoryContext *context,
 	Client *client,
 	const Options &options,
@@ -47,7 +45,6 @@ GUIInventoryList::GUIInventoryList(gui::IGUIEnvironment *env,
 	m_start_item_i(start_item_i),
 	m_slot_size(slot_size),
 	m_slot_spacing(slot_spacing),
-	m_fs_menu(fs_menu),
 	m_context(context),
 	m_client(client),
 	m_options(options),
@@ -87,7 +84,7 @@ void GUIInventoryList::draw()
 	m_already_warned = false;
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
-	const ItemSpec *selected_item = m_fs_menu->getSelectedItem();
+	const ItemSpec *selected_item = m_context->getSelection();
 
 	core::rect<s32> imgrect(0, 0, m_slot_size.X, m_slot_size.Y);
 	v2s32 base_pos = AbsoluteRect.UpperLeftCorner;
@@ -147,7 +144,7 @@ void GUIInventoryList::draw()
 
 		// layer 1
 		if (selected)
-			item.takeItem(m_fs_menu->getSelectedAmount());
+			item.takeItem(m_context->getSelectedAmount());
 
 		if (!item.empty()) {
 			// Draw item stack

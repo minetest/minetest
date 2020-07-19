@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 
 class FormspecInventoryContext;
-class GUIFormSpecMenu;
 
 class GUIInventoryList : public gui::IGUIElement
 {
@@ -51,7 +50,6 @@ public:
 		const s32 start_item_i,
 		const v2s32 &slot_size,
 		const v2f32 &slot_spacing,
-		GUIFormSpecMenu *fs_menu,
 		FormspecInventoryContext *context,
 		Client *client,
 		const Options &options,
@@ -101,7 +99,6 @@ private:
 	// specifies how large the space between slots is (space between is spacing-size)
 	const v2f32 m_slot_spacing;
 
-	GUIFormSpecMenu *m_fs_menu;
 	FormspecInventoryContext *m_context;
 	Client *m_client;
 

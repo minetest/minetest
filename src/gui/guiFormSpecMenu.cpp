@@ -100,6 +100,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		const std::string &formspecPrepend, bool remap_dbl_click):
 	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr, remap_dbl_click),
 	m_invmgr(client),
+	m_invctx(new FormspecInventoryContext()),
 	m_tsrc(tsrc),
 	m_client(client),
 	m_formspec_prepend(formspecPrepend),
@@ -114,8 +115,6 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
 	m_tooltip_append_itemname = g_settings->getBool("tooltip_append_itemname");
-
-	m_invctx = new FormspecInventoryContext();
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
@@ -137,7 +136,6 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 	for (auto &scroll_container_it : m_scroll_containers)
 		scroll_container_it.second->drop();
 
-	delete m_selected_item;
 	delete m_form_src;
 	delete m_text_dst;
 	delete m_invctx;
@@ -268,39 +266,39 @@ void GUIFormSpecMenu::setInitialFocus()
 u16 GUIFormSpecMenu::dropItems(u16 dropCount)
 {
 	if (dropCount == 0) {
-		dropCount = m_selected_amount;
+		dropCount = m_invctx->getSelectedAmount();
 	}
 
 	// Send IAction::Drop
-	if (!m_selected_item) {
+	ItemSpec *selectedItem;
+	if (!m_invctx->getSelectionIfValid(&selectedItem)) {
 		return 0;
 	}
-	assert(m_selected_item->isValid());
 
-	Inventory *inv_selected = m_invmgr->getInventory(m_selected_item->inventoryloc);
+	Inventory *inv_selected = m_invmgr->getInventory(selectedItem->inventoryloc);
 	assert(inv_selected != nullptr);
 
-	InventoryList *list_from = inv_selected->getList(m_selected_item->listname);
+	InventoryList *list_from = inv_selected->getList(selectedItem->listname);
 	assert(list_from != nullptr);
 
-	ItemStack stack_from = list_from->getItem(m_selected_item->i);
+	ItemStack stack_from = list_from->getItem(selectedItem->i);
 
 	// Check how many items can be dropped
 	dropCount = MYMIN(dropCount, stack_from.count);
-	assert(dropCount <= m_selected_amount);
+	assert(dropCount <= m_invctx->getSelectedAmount());
 	if (dropCount == 0) {
 		return 0;
 	}
 
 	// stack_from.count = dropCount;
-	m_selected_amount -= dropCount;
+	m_invctx->setSelectedAmount(m_invctx->getSelectedAmount() - dropCount);
 
 	infostream << "Handing IAction::Drop to manager" << std::endl;
 	IDropAction *a = new IDropAction();
 	a->count = dropCount;
-	a->from_inv = m_selected_item->inventoryloc;
-	a->from_list = m_selected_item->listname;
-	a->from_i = m_selected_item->i;
+	a->from_inv = selectedItem->inventoryloc;
+	a->from_list = selectedItem->listname;
+	a->from_i = selectedItem->i;
 	m_invmgr->inventoryAction(a);
 
 	return dropCount;
@@ -560,7 +558,7 @@ void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
 
 		GUIInventoryList *e = new GUIInventoryList(Environment, data->current_parent,
 				spec.fid, rect, m_invmgr, loc, listname, geom, start_i, imgsize,
-				slot_spacing, this, m_invctx, m_client, data->inventorylist_options, m_font);
+				slot_spacing, m_invctx, m_client, data->inventorylist_options, m_font);
 
 		m_inventorylists.push_back(e);
 		m_fields.push_back(spec);
@@ -3441,7 +3439,8 @@ void GUIFormSpecMenu::drawSelectedItem()
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
-	if (!m_selected_item) {
+	ItemSpec *selectedItem;
+	if (!m_invctx->getSelectionIfValid(&selectedItem)) {
 		// reset rotation time
 		drawItemStack(driver, m_font, ItemStack(),
 				core::rect<s32>(v2s32(0, 0), v2s32(0, 0)), NULL,
@@ -3449,12 +3448,12 @@ void GUIFormSpecMenu::drawSelectedItem()
 		return;
 	}
 
-	Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
+	Inventory *inv = m_invmgr->getInventory(selectedItem->inventoryloc);
 	sanity_check(inv);
-	InventoryList *list = inv->getList(m_selected_item->listname);
+	InventoryList *list = inv->getList(selectedItem->listname);
 	sanity_check(list);
-	ItemStack stack = list->getItem(m_selected_item->i);
-	stack.count = m_selected_amount;
+	ItemStack stack = list->getItem(selectedItem->i);
+	stack.count = m_invctx->getSelectedAmount();
 
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
@@ -3685,7 +3684,8 @@ void GUIFormSpecMenu::updateSelectedItem()
 	verifySelectedItem();
 
 	// If craftresult is nonempty and nothing else is selected, select it now.
-	if (!m_selected_item) {
+	ItemSpec *selectedItem;
+	if (!m_invctx->getSelectionIfValid(&selectedItem)) {
 		for (const GUIInventoryList *e : m_inventorylists) {
 			if (e->getListname() != "craftpreview")
 				continue;
@@ -3704,19 +3704,20 @@ void GUIFormSpecMenu::updateSelectedItem()
 				continue;
 
 			// Grab selected item from the crafting result list
-			m_selected_item = new ItemSpec;
-			m_selected_item->inventoryloc = e->getInventoryloc();
-			m_selected_item->listname = "craftresult";
-			m_selected_item->i = 0;
-			m_selected_amount = item.count;
+			selectedItem = new ItemSpec;
+			selectedItem->inventoryloc = e->getInventoryloc();
+			selectedItem->listname = "craftresult";
+			selectedItem->i = 0;
+			m_invctx->setSelection(selectedItem);
+			m_invctx->setSelectedAmount(item.count);
 			m_selected_dragging = false;
 			break;
 		}
 	}
 
 	// If craftresult is selected, keep the whole stack selected
-	if (m_selected_item && m_selected_item->listname == "craftresult")
-		m_selected_amount = verifySelectedItem().count;
+	if (m_invctx->getSelectionIfValid(&selectedItem) && selectedItem->listname == "craftresult")
+		m_invctx->setSelectedAmount(verifySelectedItem().count);
 }
 
 ItemStack GUIFormSpecMenu::verifySelectedItem()
@@ -3726,19 +3727,21 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	// If the selected stack has become smaller, adjust m_selected_amount.
 	// Return the selected stack.
 
-	if (m_selected_item) {
-		if (m_selected_item->isValid()) {
-			Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
-			if (inv) {
-				InventoryList *list = inv->getList(m_selected_item->listname);
-				if (list && (u32) m_selected_item->i < list->getSize()) {
-					ItemStack stack = list->getItem(m_selected_item->i);
+	ItemSpec *selectedItem = m_invctx->getSelection();
+
+	if (selectedItem != nullptr) {
+		if (selectedItem->isValid()) {
+			Inventory *inv = m_invmgr->getInventory(selectedItem->inventoryloc);
+			if (inv != nullptr) {
+				InventoryList *list = inv->getList(selectedItem->listname);
+				if (list && (u32) selectedItem->i < list->getSize()) {
+					ItemStack stack = list->getItem(selectedItem->i);
 					if (!m_selected_swap.empty()) {
 						if (m_selected_swap.name == stack.name &&
 								m_selected_swap.count == stack.count)
 							m_selected_swap.clear();
 					} else {
-						m_selected_amount = std::min(m_selected_amount, stack.count);
+						m_invctx->setSelectedAmount(std::min(m_invctx->getSelectedAmount(), stack.count));
 					}
 
 					if (!stack.empty())
@@ -3748,9 +3751,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 		}
 
 		// selection was not valid
-		delete m_selected_item;
-		m_selected_item = nullptr;
-		m_selected_amount = 0;
+		m_invctx->setSelection(nullptr);
 		m_selected_dragging = false;
 	}
 	return ItemStack();
@@ -3964,7 +3965,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(x, y));
-		if (!isChild(hovered, this) && m_selected_item != nullptr) {
+		if (!isChild(hovered, this) && m_invctx->hasValidSelection()) {
 			// Handle item dropping
 			switch(event.MouseInput.Event) {
 				case EMIE_LMOUSE_PRESSED_DOWN:
@@ -4110,10 +4111,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		Inventory *inv_s = NULL;
 		InventoryList *list_s = NULL;
 
-		if (m_selected_item) {
-			inv_selected = m_invmgr->getInventory(m_selected_item->inventoryloc);
+		ItemSpec *selectedItem;
+		if (m_invctx->getSelectionIfValid(&selectedItem)) {
+			inv_selected = m_invmgr->getInventory(selectedItem->inventoryloc);
 			sanity_check(inv_selected);
-			sanity_check(inv_selected->getList(m_selected_item->listname) != NULL);
+			sanity_check(inv_selected->getList(selectedItem->listname) != NULL);
 		}
 
 		u32 s_count = 0;
@@ -4149,10 +4151,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			s_count = list_s->getItem(s.i).count;
 		} while(0);
 
-		bool identical = m_selected_item && s.isValid() &&
+		bool identical = selectedItem && s.isValid() &&
 			(inv_selected == inv_s) &&
-			(m_selected_item->listname == s.listname) &&
-			(m_selected_item->i == s.i);
+			(selectedItem->listname == s.listname) &&
+			(selectedItem->i == s.i);
 
 		ButtonEventType button = BET_LEFT;
 		ButtonEventType updown = BET_OTHER;
@@ -4188,7 +4190,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 
 		// Set this number to a positive value to generate a move action
-		// from m_selected_item to s.
+		// from selectedItem to s.
 		u32 move_amount = 0;
 
 		// Set this number to a positive value to generate a move action
@@ -4211,10 +4213,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if (s.isValid() && s.listname == "craftpreview") {
 				// Craft preview has been clicked: craft
 				craft_amount = (button == BET_MIDDLE ? 10 : 1);
-			} else if (!m_selected_item) {
+			} else if (selectedItem == nullptr) {
 				if (s_count && button != BET_WHEEL_UP) {
 					// Non-empty stack has been clicked: select or shift-move it
-					m_selected_item = new ItemSpec(s);
+					m_invctx->setSelection(new ItemSpec(s));
 
 					u32 count;
 					if (button == BET_RIGHT)
@@ -4228,7 +4230,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					if (!event.MouseInput.Shift) {
 						// no shift: select item
-						m_selected_amount = count;
+						m_invctx->setSelectedAmount(count);
 						m_selected_dragging = button != BET_WHEEL_DOWN;
 						m_auto_place = false;
 					} else {
@@ -4236,28 +4238,29 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						shift_move_amount = button == BET_RIGHT ? 1 : count;
 					}
 				}
-			} else { // m_selected_item != NULL
-				assert(m_selected_amount >= 1);
+			} else { // selectedItem != nullptr
+				u16 selected_amount = m_invctx->getSelectedAmount();
+				assert(selected_amount >= 1);
 
 				if (s.isValid()) {
 					// Clicked a slot: move
 					if (button == BET_RIGHT || button == BET_WHEEL_UP)
 						move_amount = 1;
 					else if (button == BET_MIDDLE)
-						move_amount = MYMIN(m_selected_amount, 10);
+						move_amount = MYMIN(selected_amount, 10);
 					else if (button == BET_LEFT)
-						move_amount = m_selected_amount;
+						move_amount = m_invctx->getSelectedAmount();
 					// else wheeldown
 
 					if (identical) {
 						if (button == BET_WHEEL_DOWN) {
-							if (m_selected_amount < s_count)
-								++m_selected_amount;
+							if (selected_amount < s_count)
+								m_invctx->setSelectedAmount(selected_amount + 1);
 						} else {
-							if (move_amount >= m_selected_amount)
-								m_selected_amount = 0;
+							if (move_amount >= m_invctx->getSelectedAmount())
+								m_invctx->setSelectedAmount(0);
 							else
-								m_selected_amount -= move_amount;
+								m_invctx->setSelectedAmount(selected_amount - move_amount);
 							move_amount = 0;
 						}
 					}
@@ -4270,11 +4273,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			//infostream<<"Mouse button "<<button<<" released at p=("
 			//	<<p.X<<","<<p.Y<<")"<<std::endl;
 
-			if (m_selected_dragging && m_selected_item) {
+			if (m_selected_dragging && selectedItem) {
 				if (s.isValid()) {
 					if (!identical) {
 						// Dragged to different slot: move all selected
-						move_amount = m_selected_amount;
+						move_amount = m_invctx->getSelectedAmount();
 					}
 				}
 			}
@@ -4283,24 +4286,24 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			// Keep track of whether the mouse button be released
 			// One click is drag without dropping. Click + release
 			// + click changes to drop item when moved mode
-			if (m_selected_item)
+			if (selectedItem)
 				m_auto_place = true;
 		break;
 		case BET_MOVE:
 			// Mouse has been moved and rmb is down and mouse pointer just
 			// entered a new inventory field (checked in the entry-if, this
 			// is the only action here that is generated by mouse movement)
-			if (m_selected_item && s.isValid() && s.listname != "craftpreview") {
+			if (selectedItem && s.isValid() && s.listname != "craftpreview") {
 				// Move 1 item
 				// TODO: middle mouse to move 10 items might be handy
 				if (m_auto_place) {
 					// Only move an item if the destination slot is empty
 					// or contains the same item type as what is going to be
 					// moved
-					InventoryList *list_from = inv_selected->getList(m_selected_item->listname);
+					InventoryList *list_from = inv_selected->getList(selectedItem->listname);
 					InventoryList *list_to = list_s;
 					assert(list_from && list_to);
-					ItemStack stack_from = list_from->getItem(m_selected_item->i);
+					ItemStack stack_from = list_from->getItem(selectedItem->i);
 					ItemStack stack_to = list_to->getItem(s.i);
 					if (stack_to.empty() || stack_to.name == stack_from.name)
 						move_amount = 1;
@@ -4315,14 +4318,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (move_amount > 0) {
 			// Send IAction::Move
 
-			assert(m_selected_item && m_selected_item->isValid());
+			assert(m_invctx->hasValidSelection());
 			assert(s.isValid());
 
 			assert(inv_selected && inv_s);
-			InventoryList *list_from = inv_selected->getList(m_selected_item->listname);
+			InventoryList *list_from = inv_selected->getList(selectedItem->listname);
 			InventoryList *list_to = list_s;
 			assert(list_from && list_to);
-			ItemStack stack_from = list_from->getItem(m_selected_item->i);
+			ItemStack stack_from = list_from->getItem(selectedItem->i);
 			ItemStack stack_to = list_to->getItem(s.i);
 
 			// Check how many items can be moved
@@ -4335,7 +4338,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					leftover.name == stack_from.name) {
 
 				if (m_selected_swap.empty()) {
-					m_selected_amount = stack_to.count;
+					m_invctx->setSelectedAmount(stack_to.count);
 					m_selected_dragging = false;
 
 					// WARNING: BLACK MAGIC, BUT IN A REDUCED SET
@@ -4347,21 +4350,21 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 			// Source stack goes fully into destination stack
 			else if (leftover.empty()) {
-				m_selected_amount -= move_amount;
+				m_invctx->setSelectedAmount(m_invctx->getSelectedAmount() - move_amount);
 			}
 			// Source stack goes partly into destination stack
 			else {
 				move_amount -= leftover.count;
-				m_selected_amount -= move_amount;
+				m_invctx->setSelectedAmount(m_invctx->getSelectedAmount() - move_amount);
 			}
 
 			if (move) {
 				infostream << "Handing IAction::Move to manager" << std::endl;
 				IMoveAction *a = new IMoveAction();
 				a->count = move_amount;
-				a->from_inv = m_selected_item->inventoryloc;
-				a->from_list = m_selected_item->listname;
-				a->from_i = m_selected_item->i;
+				a->from_inv = selectedItem->inventoryloc;
+				a->from_list = selectedItem->listname;
+				a->from_i = selectedItem->i;
 				a->to_inv = s.inventoryloc;
 				a->to_list = s.listname;
 				a->to_i = s.i;
@@ -4409,8 +4412,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			// if there are no items selected or the selected item
 			// belongs to craftresult list, proceed with crafting
-			if (!m_selected_item ||
-					!m_selected_item->isValid() || m_selected_item->listname == "craftresult") {
+			if (!selectedItem ||
+					!selectedItem->isValid() || selectedItem->listname == "craftresult") {
 
 				assert(inv_s);
 
@@ -4424,11 +4427,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 
 		// If m_selected_amount has been decreased to zero, deselect
-		if (m_selected_amount == 0) {
+		if (m_invctx->getSelectedAmount() == 0) {
 			m_selected_swap.clear();
-			delete m_selected_item;
-			m_selected_item = nullptr;
-			m_selected_amount = 0;
+			m_invctx->setSelection(nullptr);
 			m_selected_dragging = false;
 		}
 		m_old_pointer = m_pointer;

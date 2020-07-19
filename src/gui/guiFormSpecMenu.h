@@ -117,16 +117,6 @@ public:
 		m_focused_element = elementname;
 	}
 
-	const ItemSpec *getSelectedItem() const
-	{
-		return m_selected_item;
-	}
-
-	const u16 getSelectedAmount() const
-	{
-		return m_selected_amount;
-	}
-
 	//! Drop a number of items from the selected itemstack into the world.
 	//! \param dropCount The number of items to drop, or 0 to drop all.
 	u16 dropItems(u16 dropCount = 0);
@@ -210,8 +200,6 @@ protected:
 	std::vector<gui::IGUIElement *> m_clickthrough_elements;
 	std::vector<std::pair<std::string, GUIScrollContainer *>> m_scroll_containers;
 
-	ItemSpec *m_selected_item = nullptr;
-	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
 
