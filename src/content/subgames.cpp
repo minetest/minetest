@@ -306,8 +306,8 @@ std::vector<WorldSpec> getAvailableWorlds()
 	return worlds;
 }
 
-bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
-		const SubgameSpec &gamespec, bool create_world, std::string *error)
+void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
+		const SubgameSpec &gamespec, bool create_world)
 {
 	std::string final_path = path;
 
@@ -320,10 +320,7 @@ bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		}
 
 		if (fs::PathExists(final_path)) {
-			if (error != nullptr) {
-				*error = "Too many similar filenames";
-			}
-			return false;
+			throw BaseException("Too many similar filenames");
 		}
 	}
 
@@ -355,10 +352,7 @@ bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
 
 		if (!conf.updateConfigFile(worldmt_path.c_str())) {
-			if (error != nullptr) {
-				*error = "Failed to update the config file";
-			}
-			return false;
+			throw BaseException("Failed to update the config file");
 		}
 	}
 
@@ -366,7 +360,7 @@ bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	std::string map_meta_path = final_path + DIR_DELIM + "map_meta.txt";
 	if (!fs::PathExists(map_meta_path)) {
 		verbosestream << "Creating map_meta.txt (" << map_meta_path << ")"
-			      << std::endl;
+				  << std::endl;
 		std::ostringstream oss(std::ios_base::binary);
 
 		Settings conf;
@@ -379,5 +373,4 @@ bool loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 
 		fs::safeWriteToFile(map_meta_path, oss.str());
 	}
-	return true;
 }
