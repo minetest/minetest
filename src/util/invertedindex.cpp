@@ -307,17 +307,25 @@ public:
 
 	virtual CollisionFace nextFace(f32 *offset = nullptr)
 	{
-		if (m_set->empty() || m_set->front()->peek() > m_next)
+		if (m_set->front()->peek() > m_next)
 			return COLLISION_FACE_NONE;
 
 		CollisionFace face = m_set->front()->nextFace(offset);
-		forwardFirst();
+		
+		while (face == COLLISION_FACE_NONE)
+		{
+			forwardFirst();
+			if (m_set->empty() || m_set->front()->peek() > m_next)
+				return COLLISION_FACE_NONE;
+			face = m_set->front()->nextFace(offset);
+		}
+			
 		return face;
 	}
 
 	virtual bool forward()
 	{
-		while (!m_set->empty() && m_set->front()->peek() == m_next)
+		while (!m_last && !m_set->empty() && m_set->front()->peek() == m_next)
 			forwardFirst();
 		
 		return update();
@@ -325,8 +333,9 @@ public:
 			
 	virtual bool skipForward(u32 id)
 	{
-		while (!m_set->empty() && m_set->front()->peek() < id)
+		while (!m_last && !m_set->empty() && m_set->front()->peek() < id)
 			skipForwardFirst(id);
+
 		return update();
 	}
 			
@@ -343,6 +352,7 @@ protected:
 			std::push_heap(m_set->begin(), m_set->end(), IndexListIterator::compare);
 		} else
 		{
+			m_last = true;
 			if (m_set->back()->wasAllocated())
 				delete m_set->back();
 			m_set->pop_back();
@@ -361,6 +371,7 @@ protected:
 			std::push_heap(m_set->begin(), m_set->end(), IndexListIterator::compare);
 		} else
 		{
+			m_last = true;
 			if (m_set->back()->wasAllocated())
 				delete m_set->back();
 			m_set->pop_back();
@@ -369,15 +380,18 @@ protected:
 
 	bool update()
 	{
-		while (!m_set->empty() && m_set->front()->peek() != m_max)
+
+		while (!m_last && !m_set->empty() && m_set->front()->peek() != m_max)
 			skipForwardFirst(m_max);
+
 		m_next = m_max;
-		return m_hasnext = !m_set->empty();
+		return m_hasnext = !m_last;
 	}
 		
 	// Invariant: m_set contains iterators that have not reached end.
 	std::vector<IndexListIterator *> *m_set;
 	u32 m_max;
+	bool m_last = false;
 };
 
 IndexListIterator *IndexListIteratorSet::getUnion()
