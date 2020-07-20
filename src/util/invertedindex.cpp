@@ -42,6 +42,7 @@ public:
 		if (m_current & CURRENT_A)
 		{
 			CollisionFace face = m_set[0]->nextFace(offset);
+
 			if (face == COLLISION_FACE_NONE)
 				m_current &= ~CURRENT_A;
 			else
@@ -65,9 +66,9 @@ public:
 
 	virtual bool skipForward(u32 id)
 	{
-		if (m_current & MATCH_A)
+		if (m_set[0]->hasNext())
 			m_set[0]->skipForward(id);
-		if (m_current & MATCH_B)
+		if (m_set[1]->hasNext())
 			m_set[1]->skipForward(id);
 		return update();
 	}
@@ -78,10 +79,8 @@ protected:
 		if (!m_set[0]->hasNext())
 		{
 			if (!m_set[1]->hasNext())
-			{
-				m_current = 0;
 				return m_hasnext = false;
-			} else
+			else
 			{
 				m_current = MATCH_B | CURRENT_B;
 				m_next = m_set[1]->peek();
@@ -91,8 +90,8 @@ protected:
 
 		if (!m_set[1]->hasNext())
 		{
-			m_current = MATCH_A | CURRENT_B;
-				m_next = m_set[0]->peek();
+			m_current = MATCH_A | CURRENT_A;
+			m_next = m_set[0]->peek();
 			return m_hasnext = true;
 		}
 
@@ -103,6 +102,7 @@ protected:
 		// skipping 0 for now and only returning the item at 1.
 		m_next = m_set[0]->peek();
 		u32 b = m_set[1]->peek();
+
 		if (m_next < b)
 			m_current = MATCH_A | CURRENT_A;
 		else if (b < m_next)
@@ -111,6 +111,7 @@ protected:
 			m_current = MATCH_B | CURRENT_B;
 		} else
 			m_current = MATCH_A | CURRENT_A | MATCH_B | CURRENT_B;
+
 		return m_hasnext = true;
 	}
 

@@ -126,7 +126,7 @@ enum CollisionFace
 class IndexListIterator
 {
 public:
-	IndexListIterator() { rawstream << "Creating " << this << " with flag " << m_allocated << std::endl; }
+	IndexListIterator() {}
 	virtual ~IndexListIterator() {}
 	bool hasNext() { return m_hasnext; }
 	u32 peek() { return m_next; }
@@ -151,16 +151,11 @@ public:
 	// Flag whether this object was allocated and should be deleted.
 	IndexListIterator *markAllocated()
 	{
-		rawstream << "Allocated " << this << std::endl;
 		m_allocated = true;
 		return this;
 	}
 
-	bool wasAllocated()
-	{
-		rawstream << "Deleting " << this << std::endl;
-		return m_allocated;
-	}
+	bool wasAllocated() { return m_allocated; }
 
 protected:
 	bool m_hasnext = false;
