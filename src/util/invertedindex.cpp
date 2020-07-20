@@ -171,12 +171,12 @@ protected:
 		m_next = m_iter_a->peek();
 		u32 b = m_iter_b->peek();
 
-		while (m_hasnext != b)
-			if (m_hasnext < b)
+		while (m_next != b)
+			if (m_next < b)
 			{
 				if (!m_iter_a->skipForward(b))
 					return m_hasnext = false;
-				m_hasnext = m_iter_a->peek();
+				m_next = m_iter_a->peek();
 			} else
 			{
 				if (!m_iter_b->skipForward(m_next))
