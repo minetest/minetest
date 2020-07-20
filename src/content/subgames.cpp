@@ -360,7 +360,7 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	std::string map_meta_path = final_path + DIR_DELIM + "map_meta.txt";
 	if (!fs::PathExists(map_meta_path)) {
 		verbosestream << "Creating map_meta.txt (" << map_meta_path << ")"
-				  << std::endl;
+			      << std::endl;
 		std::ostringstream oss(std::ios_base::binary);
 
 		Settings conf;
