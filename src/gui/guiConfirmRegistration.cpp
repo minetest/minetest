@@ -73,7 +73,11 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
+#ifdef __ANDROID__
+	const float s = m_gui_scale * porting::getDisplayDensity() / 2;
+#else
 	const float s = m_gui_scale;
+#endif
 	DesiredRect = core::rect<s32>(
 		screensize.X / 2 - 600 * s / 2,
 		screensize.Y / 2 - 360 * s / 2,
@@ -257,12 +261,19 @@ bool GUIConfirmRegistration::getAndroidUIInput()
 	if (!hasAndroidUIInput() || m_jni_field_name != "password")
 		return false;
 
-	std::string text = porting::getInputDialogValue();
-	gui::IGUIElement *e = getElementFromId(ID_confirmPassword);
-	if (e)
-		e->setText(utf8_to_wide(text).c_str());
+	// still waiting
+	if (porting::getInputDialogState() == -1)
+		return true;
 
 	m_jni_field_name.clear();
+
+	gui::IGUIElement *e = getElementFromId(ID_confirmPassword);
+
+	if (!e || e->getType() != irr::gui::EGUIET_EDIT_BOX)
+		return false;
+
+	std::string text = porting::getInputDialogValue();
+	e->setText(utf8_to_wide(text).c_str());
 	return false;
 }
 #endif
