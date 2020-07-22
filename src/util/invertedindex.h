@@ -319,10 +319,27 @@ public:
 	s32 lowerAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
 	s32 upperAttributeBound(CollisionFace face, f32 offset) const;
 	s32 upperAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
-	s32 lowerBackAttributeBound(CollisionFace face, f32 offset) const;
-	s32 lowerBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
-	s32 upperBackAttributeBound(CollisionFace face, f32 offset) const;
-	s32 upperBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
+
+	inline s32 lowerBackAttributeBound(CollisionFace face, f32 offset) const
+	{
+		return upperAttributeBound(face, offset) - 1;
+	}
+
+	inline s32 lowerBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const
+	{
+		return upperAttributeBound(face, offset, end - 1, begin - 1) - 1;
+	}
+
+	inline s32 upperBackAttributeBound(CollisionFace face, f32 offset) const
+	{
+		return lowerAttributeBound(face, offset) - 1;
+	}
+
+	inline s32 upperBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const
+	{
+		return upperAttributeBound(face, offset, end - 1, begin - 1) - 1;
+	}
+
 
 	// Get the AttributeIndex for a handle.
 	const AttributeIndex *getAttributeIndex(CollisionFace face, u32 handle) const;

@@ -513,31 +513,6 @@ s32 InvertedIndex::upperAttributeBound(CollisionFace face, f32 offset, u32 begin
 	return std::upper_bound(idx.begin() + begin, idx.end() + end, offset, upperCompare) - idx.begin();
 }
 
-// TODO: Reimplement using forward bounds -1
-s32 InvertedIndex::lowerBackAttributeBound(CollisionFace face, f32 offset) const
-{
-	const std::vector<AttributeIndex> &idx=m_index[face];
-	return idx.rend() - std::lower_bound(idx.rbegin(), idx.rend(), offset, lowerCompareBack);
-}
-
-s32 InvertedIndex::lowerBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const
-{
-	const std::vector<AttributeIndex> &idx=m_index[face];
-	return idx.rend() - std::lower_bound(idx.rbegin() + end, idx.rend() - begin, offset, lowerCompareBack);
-}
-
-s32 InvertedIndex::upperBackAttributeBound(CollisionFace face, f32 offset) const
-{
-	const std::vector<AttributeIndex> &idx=m_index[face];
-	return idx.rend() - std::upper_bound(idx.rbegin(), idx.rend(), offset, upperCompareBack);
-}
-
-s32 InvertedIndex::upperBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const
-{
-	const std::vector<AttributeIndex> &idx=m_index[face];
-	return idx.rend() - std::upper_bound(idx.rbegin() + end, idx.rend() - begin, offset, upperCompareBack);
-}
-
 const AttributeIndex *InvertedIndex::getAttributeIndex(CollisionFace face, u32 handle) const
 {
 	return &m_index[face].at(handle);
