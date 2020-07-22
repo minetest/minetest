@@ -36,6 +36,8 @@ public:
 	void testIndexListIteratorSet_intersection();
 	void testIndexListIteratorSet_intersection1();
 	void testIndexListIteratorSet_intersection2();
+	void testIndexListIteratorDifference();
+	void testInvertedIndex();
 
 protected:
 	static const std::vector<u32> cases[];
@@ -52,6 +54,8 @@ void TestInvertedIndex::runTests(IGameDef *gamedef)
 	TEST(testIndexListIteratorSet_intersection);
 	TEST(testIndexListIteratorSet_intersection1);
 	TEST(testIndexListIteratorSet_intersection2);
+	TEST(testIndexListIteratorDifference);
+	TEST(testInvertedIndex);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -229,6 +233,48 @@ void TestInvertedIndex::testIndexListIteratorSet_intersection2()
 	UASSERT(!iter->skipForward(200));
 }
 
+void TestInvertedIndex::testIndexListIteratorDifference()
+{
+	SingleIndexListIterator
+			twos(COLLISION_FACE_MIN_Y, 1.f, &cases[1]),
+			threes(COLLISION_FACE_MIN_Y, 1.f, &cases[2]);
+	IndexListIteratorDifference iter(&twos, &threes); // 4, 8, 10, 14, 16, 20, 22, 26, 28, 32, 34, 36, 38, 40
+	f32 offset;
+	UASSERT(iter.hasNext());
+	UASSERTEQ(CollisionFace, iter.nextFace(&offset), COLLISION_FACE_MIN_Y);
+	UASSERTEQ(f32, offset, 1.0f);
+	UASSERTEQ(CollisionFace, iter.nextFace(&offset), COLLISION_FACE_NONE);
+	UASSERTEQ(u32, iter.peek(), 4);
+	UASSERT(iter.forward());
+	UASSERT(iter.hasNext());
+	UASSERTEQ(CollisionFace, iter.nextFace(&offset), COLLISION_FACE_MIN_Y);
+	UASSERTEQ(f32, offset, 1.0f);
+	UASSERTEQ(CollisionFace, iter.nextFace(&offset), COLLISION_FACE_NONE);
+	UASSERTEQ(u32, iter.peek(), 8);
+	UASSERT(iter.forward());
+	UASSERT(iter.hasNext());
+	UASSERTEQ(CollisionFace, iter.nextFace(&offset), COLLISION_FACE_MIN_Y);
+	UASSERTEQ(f32, offset, 1.0f);
+	UASSERTEQ(CollisionFace, iter.nextFace(&offset), COLLISION_FACE_NONE);
+	UASSERTEQ(u32, iter.peek(), 10);
+	UASSERT(iter.skipForward(15));
+	UASSERTEQ(CollisionFace, iter.nextFace(&offset), COLLISION_FACE_MIN_Y);
+	UASSERTEQ(f32, offset, 1.0f);
+	UASSERTEQ(CollisionFace, iter.nextFace(&offset), COLLISION_FACE_NONE);
+	UASSERTEQ(u32, iter.peek(), 16);
+	UASSERT(iter.skipForward(24));
+	UASSERTEQ(u32, iter.peek(), 26);
+	UASSERT(iter.forward());
+	UASSERTEQ(u32, iter.peek(), 28);
+	UASSERT(iter.forward());
+	UASSERTEQ(u32, iter.peek(), 32);
+	UASSERT(iter.skipForward(37));
+	UASSERTEQ(u32, iter.peek(), 38);
+	UASSERT(iter.forward());
+	UASSERTEQ(u32, iter.peek(), 40);
+	UASSERT(!iter.forward());
+}
+
 void TestInvertedIndex::testIndexListIteratorSet_union()
 {
 	SingleIndexListIterator one(COLLISION_FACE_MIN_X, 1.0f, &cases[1]);
@@ -346,6 +392,61 @@ void TestInvertedIndex::testIndexListIteratorSet_intersection()
 	UASSERT(!iter->forward());
 	UASSERT(!iter->hasNext());
 	delete iter;
+}
+
+void TestInvertedIndex::testInvertedIndex()
+{
+	InvertedIndex index;
+
+	index.index(aabb3f(-.5f, -.5f, -.5f, .5f, .5f, .5f));
+	index.index(aabb3f(0.f, -.5f, .5f, 1.5f, 2.5f, .65f));
+	index.index(aabb3f(.3f, .5f, -.5f, .5f, 1.5f, .6f));
+	index.index(aabb3f(.0f, .0f, .0f, 2.5f, .5f, 1.5f));
+	index.index(aabb3f(17.f, -.5f, -3.5f, 18.f, .5f, -1.5f));
+	// MaxX -.5 (0) 0. (1,3) .3 (2) 17. (4)
+	// MaxY -.5 (0,1,4) 0. (3) .5 (2)
+	// MaxZ -3.5 (4) -.5 (0,2) 0. (3) .5 (1) 
+	// MinX (which is the MaxX of the box) .5 (0,2) 1.5 (1) 2.5 (3) 18. (4)
+	// MinY .5 (0,3,4) 1.5 (2) 1.5 (1)
+	// MinZ -1.5 (4) .5 (0) .6 (2) .65 (1) 
+	// MaxWidth 2.5 3. 2.
+	UASSERT(index.getMaxWidth().equals(v3f(2.5f, 3.f, 2.f), .001f));
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, -1.f), 0);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, -.5f), 0);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, -.4f), 1);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 0.f), 1);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 0.1f), 2);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 0.3f), 2);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 1.f), 3);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 17.f), 3);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 17.1f), 4);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, -1.f), 0);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, -.5f), 1);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, -.4f), 1);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 0.f), 2);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 0.1f), 2);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 0.3f), 3);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 1.f), 3);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 17.f), 4);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 17.1f), 4);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, -1.f), -1);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, -.5f), 0);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, -.4f), 0);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 0.f), 1);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 0.1f), 1);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 0.3f), 2);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 1.f), 2);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 17.f), 3);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 17.1f), 3);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, -1.f), -1);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, -.5f), -1);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, -.4f), 0);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 0.f), 0);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 0.1f), 1);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 0.3f), 1);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 1.f), 2);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 17.f), 2);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 17.1f), 3);
 }
 
 const std::vector<u32> TestInvertedIndex::cases[] = {

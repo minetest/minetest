@@ -315,14 +315,14 @@ public:
 	v3f getMaxWidth() const { return m_maxWidth; }
 	
 	// Get handles for offset ranges.
-	u32 lowerAttributeBound(CollisionFace face, f32 offset) const;
-	u32 lowerAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
-	u32 upperAttributeBound(CollisionFace face, f32 offset) const;
-	u32 upperAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
-	u32 lowerBackAttributeBound(CollisionFace face, f32 offset) const;
-	u32 lowerBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
-	u32 upperBackAttributeBound(CollisionFace face, f32 offset) const;
-	u32 upperBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
+	s32 lowerAttributeBound(CollisionFace face, f32 offset) const;
+	s32 lowerAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
+	s32 upperAttributeBound(CollisionFace face, f32 offset) const;
+	s32 upperAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
+	s32 lowerBackAttributeBound(CollisionFace face, f32 offset) const;
+	s32 lowerBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
+	s32 upperBackAttributeBound(CollisionFace face, f32 offset) const;
+	s32 upperBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const;
 
 	// Get the AttributeIndex for a handle.
 	const AttributeIndex *getAttributeIndex(CollisionFace face, u32 handle) const;
