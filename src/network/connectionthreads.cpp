@@ -845,11 +845,9 @@ void *ConnectionReceiveThread::run()
 
 			std::vector<session_t> peerids = m_connection->getPeerIDs();
 
-			for (auto i = peerids.begin();
-					i != peerids.end();
-					i++)
+			for (auto id : peerids)
 			{
-				PeerHelper peer = m_connection->getPeerNoEx(*i);
+				PeerHelper peer = m_connection->getPeerNoEx(id);
 				if (!peer)
 					continue;
 
