@@ -498,7 +498,7 @@ s32 InvertedIndex::lowerAttributeBound(CollisionFace face, f32 offset) const
 s32 InvertedIndex::lowerAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const
 {
 	const std::vector<AttributeIndex> &idx=m_index[face];
-	return std::lower_bound(idx.begin() + begin, idx.end() + end, offset, lowerCompare) - idx.begin();
+	return std::lower_bound(idx.begin() + begin, idx.begin() + end, offset, lowerCompare) - idx.begin();
 }
 
 s32 InvertedIndex::upperAttributeBound(CollisionFace face, f32 offset) const
@@ -510,7 +510,7 @@ s32 InvertedIndex::upperAttributeBound(CollisionFace face, f32 offset) const
 s32 InvertedIndex::upperAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const
 {
 	const std::vector<AttributeIndex> &idx=m_index[face];
-	return std::upper_bound(idx.begin() + begin, idx.end() + end, offset, upperCompare) - idx.begin();
+	return std::upper_bound(idx.begin() + begin, idx.begin() + end, offset, upperCompare) - idx.begin();
 }
 
 const AttributeIndex *InvertedIndex::getAttributeIndex(CollisionFace face, u32 handle) const

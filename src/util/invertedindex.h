@@ -327,7 +327,7 @@ public:
 
 	inline s32 lowerBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const
 	{
-		return upperAttributeBound(face, offset, end - 1, begin - 1) - 1;
+		return upperAttributeBound(face, offset, end + 1, begin + 1) - 1;
 	}
 
 	inline s32 upperBackAttributeBound(CollisionFace face, f32 offset) const
@@ -337,7 +337,7 @@ public:
 
 	inline s32 upperBackAttributeBound(CollisionFace face, f32 offset, u32 begin, u32 end) const
 	{
-		return upperAttributeBound(face, offset, end - 1, begin - 1) - 1;
+		return lowerAttributeBound(face, offset, end + 1, begin + 1) - 1;
 	}
 
 

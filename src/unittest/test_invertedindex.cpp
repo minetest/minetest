@@ -447,6 +447,42 @@ void TestInvertedIndex::testInvertedIndex()
 	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 1.f), 2);
 	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 17.f), 2);
 	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 17.1f), 3);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, -1.f, 0, 4), 0);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, -.5f, 0, 4), 0);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, -.4f, 0, 4), 1);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 0.f, 0, 4), 1);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 0.1f, 0, 4), 2);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 0.3f, 0, 4), 2);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 1.f, 0, 4), 3);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 17.f, 0, 4), 3);
+	UASSERTEQ(s32, index.lowerAttributeBound(COLLISION_BOX_MIN_X, 17.1f, 0, 4), 4);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, -1.f, 0, 4), 0);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, -.5f, 0, 4), 1);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, -.4f, 0, 4), 1);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 0.f, 0, 4), 2);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 0.1f, 0, 4), 2);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 0.3f, 0, 4), 3);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 1.f, 0, 4), 3);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 17.f, 0, 4), 4);
+	UASSERTEQ(s32, index.upperAttributeBound(COLLISION_BOX_MIN_X, 17.1f, 0, 4), 4);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, -1.f, 3, -1), -1);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, -.5f, 3, -1), 0);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, -.4f, 3, -1), 0);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 0.f, 3, -1), 1);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 0.1f, 3, -1), 1);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 0.3f, 3, -1), 2);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 1.f, 3, -1), 2);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 17.f, 3, -1), 3);
+	UASSERTEQ(s32, index.lowerBackAttributeBound(COLLISION_BOX_MIN_X, 17.1f, 3, -1), 3);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, -1.f, 3, -1), -1);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, -.5f, 3, -1), -1);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, -.4f, 3, -1), 0);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 0.f, 3, -1), 0);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 0.1f, 3, -1), 1);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 0.3f, 3, -1), 1);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 1.f, 3, -1), 2);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 17.f, 3, -1), 2);
+	UASSERTEQ(s32, index.upperBackAttributeBound(COLLISION_BOX_MIN_X, 17.1f, 3, -1), 3);
 }
 
 const std::vector<u32> TestInvertedIndex::cases[] = {
