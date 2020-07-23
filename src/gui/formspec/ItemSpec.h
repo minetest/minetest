@@ -7,12 +7,10 @@ struct ItemSpec
 {
 	ItemSpec() = default;
 
-	ItemSpec(const InventoryLocation &a_inventoryloc,
-			const std::string &a_listname,
+	ItemSpec(const InventoryLocation &a_inventoryloc, const std::string &a_listname,
 			s32 a_i) :
-		inventoryloc(a_inventoryloc),
-		listname(a_listname),
-		i(a_i)
+			inventoryloc(a_inventoryloc),
+			listname(a_listname), i(a_i)
 	{
 	}
 

@@ -28,7 +28,7 @@ bool FormspecInventoryContext::hasValidSelection()
 	return m_selected_item != nullptr && m_selected_item->isValid();
 }
 
-void FormspecInventoryContext::setSelection(ItemSpec* selection)
+void FormspecInventoryContext::setSelection(ItemSpec *selection)
 {
 	if (m_selected_item != nullptr) {
 		delete m_selected_item;
@@ -37,7 +37,7 @@ void FormspecInventoryContext::setSelection(ItemSpec* selection)
 	m_selected_item = selection;
 
 	// If we're clearing the selection, the selected amount is no longer valid
-	if (!hasValidSelection ()) {
+	if (!hasValidSelection()) {
 		m_selected_amount = 0;
 	}
 }
