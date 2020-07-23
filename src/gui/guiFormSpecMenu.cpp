@@ -3924,7 +3924,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(x, y));
-		if (!isChild(hovered, this) && m_invctx->hasValidSelection()) {
+		if (!isMyChild(hovered) && m_invctx->hasValidSelection()) {
 			// Handle item dropping
 			switch(event.MouseInput.Event) {
 				case EMIE_LMOUSE_PRESSED_DOWN:
