@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 
 #include "invertedindex.h"
+#include "log.h"
 
 class DualIndexListIteratorUnion : public IndexListIterator
 {
@@ -515,18 +516,23 @@ s32 InvertedIndex::upperAttributeBound(CollisionFace face, f32 offset, u32 begin
 
 const AttributeIndex *InvertedIndex::getAttributeIndex(CollisionFace face, u32 handle) const
 {
+	rawstream << "getAttributeIndex " << m_index[face].size() << std::endl;
 	return &m_index[face].at(handle);
 }
 
 void InvertedIndex::addToSet(CollisionFace face, u32 a, u32 b, IndexListIteratorSet *set)
 {
+	rawstream << "adding (" << a << ", " << b << ") (";
 	if (b < a)
 		std::swap(a, b);
+	rawstream << a << ", " << b << ")";
 	while (a < b)
 	{
+		rawstream << ' ' << a;
 		AttributeIndex &idx = m_index[face].at(a++);
 		set->add(face, idx.first, &idx.second);
 	}
+	rawstream << std::endl;
 }
 
 void InvertedIndex::getInterval(CollisionFace face, f32 a, f32 b, IndexListIteratorSet *set)
@@ -549,6 +555,7 @@ std::vector<u32> *InvertedIndex::findAttributeIndex(CollisionFace face, f32 offs
 	if (idx.empty())
 	{
 		idx.emplace_back(offset, std::vector<u32>());
+		rawstream << "Emplaced " << face << " " << offset << " " << idx.front().second.size() << std::endl;
 		return &idx.front().second;
 	}
 
@@ -557,8 +564,9 @@ std::vector<u32> *InvertedIndex::findAttributeIndex(CollisionFace face, f32 offs
 	if (i->first == offset)
 		return &i->second;
 
-	// TODO: verify that emplace().second is true.
-	return &idx.emplace(i, offset, std::vector<u32>())->second;
+	std::vector<u32> *vec = &idx.emplace(i, offset, std::vector<u32>())->second;
+	rawstream << "Emplaced " << face << " " << offset << " " << vec->size() << std::endl;
+	return vec;
 }
 
 // Match NodeDef.

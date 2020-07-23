@@ -359,7 +359,7 @@ protected:
 	static bool upperCompareBack(f32 offset, AttributeIndex b) { return b.first < offset; }
 
 	std::vector<AttributeIndex> m_index[6];
-	u32 m_count;
+	u32 m_count = 0;
 	v3f m_maxWidth;
 };
 
