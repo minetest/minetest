@@ -33,10 +33,7 @@ public:
 	virtual void gotText(const std::wstring &text) {}
 	virtual void gotText(const StringMap &fields) = 0;
 
-	virtual const std::string &getFormName() const
-	{
-		return m_formname;
-	}
+	virtual const std::string &getFormName() const { return m_formname; }
 
 protected:
 	std::string m_formname;
