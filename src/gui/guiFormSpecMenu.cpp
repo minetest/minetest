@@ -263,47 +263,6 @@ void GUIFormSpecMenu::setInitialFocus()
 		Environment->setFocus(*(children.begin()));
 }
 
-u16 GUIFormSpecMenu::dropItems(u16 dropCount)
-{
-	if (dropCount == 0) {
-		dropCount = m_invctx->getSelectedAmount();
-	}
-
-	// Send IAction::Drop
-	ItemSpec *selectedItem;
-	if (!m_invctx->getSelectionIfValid(&selectedItem)) {
-		return 0;
-	}
-
-	Inventory *inv_selected = m_invmgr->getInventory(selectedItem->inventoryloc);
-	assert(inv_selected != nullptr);
-
-	InventoryList *list_from = inv_selected->getList(selectedItem->listname);
-	assert(list_from != nullptr);
-
-	ItemStack stack_from = list_from->getItem(selectedItem->i);
-
-	// Check how many items can be dropped
-	dropCount = MYMIN(dropCount, stack_from.count);
-	assert(dropCount <= m_invctx->getSelectedAmount());
-	if (dropCount == 0) {
-		return 0;
-	}
-
-	// stack_from.count = dropCount;
-	m_invctx->setSelectedAmount(m_invctx->getSelectedAmount() - dropCount);
-
-	infostream << "Handing IAction::Drop to manager" << std::endl;
-	IDropAction *a = new IDropAction();
-	a->count = dropCount;
-	a->from_inv = selectedItem->inventoryloc;
-	a->from_list = selectedItem->listname;
-	a->from_i = selectedItem->i;
-	m_invmgr->inventoryAction(a);
-
-	return dropCount;
-}
-
 GUITable* GUIFormSpecMenu::getTable(const std::string &tablename)
 {
 	for (auto &table : m_tables) {
@@ -4408,22 +4367,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				m_invmgr->inventoryAction(a);
 			} while (0);
 		} else if (craft_amount > 0) {
-			assert(s.isValid());
-
-			// if there are no items selected or the selected item
-			// belongs to craftresult list, proceed with crafting
-			if (!selectedItem ||
-					!selectedItem->isValid() || selectedItem->listname == "craftresult") {
-
-				assert(inv_s);
-
-				// Send IACTION_CRAFT
-				infostream << "Handing IACTION_CRAFT to manager" << std::endl;
-				ICraftAction *a = new ICraftAction();
-				a->count = craft_amount;
-				a->craft_inv = s.inventoryloc;
-				m_invmgr->inventoryAction(a);
-			}
+			craftItems(s.inventoryloc, craft_amount);
 		}
 
 		// If m_selected_amount has been decreased to zero, deselect
@@ -4584,6 +4528,81 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
+}
+
+/**
+ * Drop a number of items from the current selection into the world
+ * @param drop_amount The number of items to drop, or 0 to drop the entire stack
+ */
+u16 GUIFormSpecMenu::dropItems(u16 drop_amount)
+{
+	if (drop_amount == 0) {
+		drop_amount = m_invctx->getSelectedAmount();
+	}
+
+	// Send IAction::Drop
+	ItemSpec *selectedItem;
+	if (!m_invctx->getSelectionIfValid(&selectedItem)) {
+		return 0;
+	}
+
+	Inventory *inv_selected = m_invmgr->getInventory(selectedItem->inventoryloc);
+	assert(inv_selected != nullptr);
+
+	InventoryList *list_from = inv_selected->getList(selectedItem->listname);
+	assert(list_from != nullptr);
+
+	ItemStack stack_from = list_from->getItem(selectedItem->i);
+
+	// Check how many items can be dropped
+	drop_amount = MYMIN(drop_amount, stack_from.count);
+	assert(drop_amount <= m_invctx->getSelectedAmount());
+	if (drop_amount == 0) {
+		return 0;
+	}
+
+	// stack_from.count = drop_amount;
+	m_invctx->setSelectedAmount(m_invctx->getSelectedAmount() - drop_amount);
+
+	infostream << "Handing IAction::Drop to manager" << std::endl;
+	IDropAction *a = new IDropAction();
+	a->count = drop_amount;
+	a->from_inv = selectedItem->inventoryloc;
+	a->from_list = selectedItem->listname;
+	a->from_i = selectedItem->i;
+	m_invmgr->inventoryAction(a);
+
+	return drop_amount;
+}
+
+/**
+ * Craft a number of items from a specified crafting inventory
+ * @param inv InventoryLocation pointing to the crafting inventory
+ * @param craft_amount The number of items to craft
+ */
+void GUIFormSpecMenu::craftItems(InventoryLocation inv, u16 craft_amount)
+{
+	// Verify that we're crafting at least one item
+	if (craft_amount == 0) {
+		return;
+	}
+
+	// Verify that we don't have a selection, or the selection is the
+	// craft result.
+	ItemSpec *selectedItem;
+	if (m_invctx->getSelectionIfValid(&selectedItem)
+			&& selectedItem->listname != "craftresult") {
+		return;
+	}
+
+	assert(m_invmgr->getInventory(inv) != nullptr);
+
+	// Send IACTION_CRAFT
+	infostream << "Handing IACTION_CRAFT to manager" << std::endl;
+	ICraftAction *a = new ICraftAction();
+	a->count = craft_amount;
+	a->craft_inv = inv;
+	m_invmgr->inventoryAction(a);
 }
 
 /**

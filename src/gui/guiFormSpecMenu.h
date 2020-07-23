@@ -117,10 +117,6 @@ public:
 		m_focused_element = elementname;
 	}
 
-	//! Drop a number of items from the selected itemstack into the world.
-	//! \param dropCount The number of items to drop, or 0 to drop all.
-	u16 dropItems(u16 dropCount = 0);
-
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
@@ -146,6 +142,19 @@ public:
 #endif
 
 protected:
+	/**
+	 * Drop a number of items from the current selection into the world
+	 * @param drop_amount The number of items to drop, or 0 to drop the entire stack
+	 */
+	u16 dropItems(u16 drop_amount = 0);
+
+	/**
+	 * Craft a number of items from a specified crafting inventory
+	 * @param inv InventoryLocation pointing to the crafting inventory
+	 * @param craft_amount The number of items to craft
+	 */
+	void craftItems(InventoryLocation inv, u16 craft_amount);
+
 	v2s32 getBasePos() const
 	{
 			return padding + offset + AbsoluteRect.UpperLeftCorner;
