@@ -1454,10 +1454,10 @@ void MapblockMeshGenerator::generate()
 	}
 }
 
-void MapblockMeshGenerator::renderSingle(content_t node)
+void MapblockMeshGenerator::renderSingle(content_t node, u8 param2)
 {
 	p = {0, 0, 0};
-	n = MapNode(node, 0xff, 0x00);
+	n = MapNode(node, 0xff, param2);
 	f = &nodedef->get(n);
 	drawNode();
 }
