@@ -8017,7 +8017,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
         -- Timeout for connection in seconds. Default is 3 seconds.
 
         method = "GET", "POST", "PUT" or "DELETE"
-        -- The http method to use
+        -- The http method to use. Defaults to "GET".
 
         data = "Raw request data string" OR {field1 = "data1", field2 = "data2"},
         -- Data for the POST, PUT or DELETE request.
