@@ -420,6 +420,23 @@ struct ContentFeatures
 	/*
 		Some handy methods
 	*/
+	bool needsBackfaceCulling() const {
+		switch (drawtype) {
+			case NDT_TORCHLIKE:
+			case NDT_SIGNLIKE:
+			case NDT_FIRELIKE:
+			case NDT_RAILLIKE:
+			case NDT_PLANTLIKE:
+			case NDT_PLANTLIKE_ROOTED:
+			case NDT_MESH: {
+				return false;
+			}
+			default: {
+				return true;
+			}
+		}
+	}
+
 	bool isLiquid() const{
 		return (liquid_type != LIQUID_NONE);
 	}

@@ -311,7 +311,7 @@ scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<It
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);
 	u8 param2 = 0;
 	if (f.param_type_2 == CPT2_WALLMOUNTED ||
-	    f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		if (f.drawtype == NDT_TORCHLIKE)
 			param2 = 1;
 		else if (f.drawtype == NDT_SIGNLIKE ||
@@ -380,21 +380,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	// Handle nodes
 	// See also CItemDefManager::createClientCached()
 	if (def.type == ITEM_NODE) {
-		// Disable backface culling for the drawtypes below
-		bool cull_backface = true;
-		switch (f.drawtype) {
-		case NDT_TORCHLIKE:
-		case NDT_SIGNLIKE:
-		case NDT_FIRELIKE:
-		case NDT_RAILLIKE:
-		case NDT_PLANTLIKE:
-		case NDT_PLANTLIKE_ROOTED:
-		case NDT_MESH:
-			cull_backface = false;
-			break;
-		default:
-			break;
-		}
+		bool cull_backface = f.needsBackfaceCulling();
 
 		// Select rendering method
 		switch (f.drawtype) {
@@ -524,21 +510,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	// Shading is on by default
 	result->needs_shading = true;
 
-	// Disable backface culling for the drawtypes below
-	bool cull_backface = true;
-	switch (f.drawtype) {
-	case NDT_TORCHLIKE:
-	case NDT_SIGNLIKE:
-	case NDT_FIRELIKE:
-	case NDT_RAILLIKE:
-	case NDT_PLANTLIKE:
-	case NDT_PLANTLIKE_ROOTED:
-	case NDT_MESH:
-		cull_backface = false;
-		break;
-	default:
-		break;
-	}
+	bool cull_backface = f.needsBackfaceCulling();
 
 	// If inventory_image is defined, it overrides everything else
 	if (!def.inventory_image.empty()) {
