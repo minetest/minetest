@@ -75,8 +75,8 @@ void TestCollisionQuery::testCollisionContext()
 	u16 MaxZ = CollisionContext::setBitmask[COLLISION_FACE_MAX_Z];
 	f32 offset[6];
 	UASSERTEQ(u16, ctx.getValidFaces(0, offset), MinX|MaxX|MinZ|MaxZ);
-	UASSERTEQ(u16, ctx.getValidFaces(1, offset), MinX|MaxX|MinY);
-	UASSERTEQ(u16, ctx.getValidFaces(2, offset), MinX|MaxX|MinY|MinZ|MaxZ);
+	UASSERTEQ(u16, ctx.getValidFaces(1, offset), MinX|MaxX|MinY|MaxY);
+	UASSERTEQ(u16, ctx.getValidFaces(2, offset), MinX|MaxX|MinY|MaxY|MinZ|MaxZ);
 	UASSERTEQ(u16, ctx.getValidFaces(3, offset), MinX|MaxX|MinZ|MaxZ);
 	UASSERTEQ(u16, ctx.getValidFaces(4, offset), 0);
 }

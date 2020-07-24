@@ -380,31 +380,3 @@ protected:
 	v3f m_maxWidth;
 	static unsigned char m_hash[SHA224_DIGEST_LENGTH];
 };
-
-// Detail for each collision box in the context.
-struct CollisionContextDetail
-{
-	u16 valid_faces;
-	f32 face_offset[6];
-
-	CollisionContextDetail(u16 face_mask, CollisionFace face, f32 offset) : valid_faces(face_mask)
-	{
-		face_offset[face] = offset;
-	}
-
-	CollisionContextDetail() {}
-
-	CollisionContextDetail(const CollisionContextDetail &copy) :
-			valid_faces(copy.valid_faces),
-			face_offset{
-					copy.face_offset[0], copy.face_offset[1], copy.face_offset[2],
-					copy.face_offset[3], copy.face_offset[4], copy.face_offset[5]
-				} {}
-
-	CollisionContextDetail(CollisionContextDetail &&move) :
-			valid_faces(move.valid_faces),
-			face_offset{
-					move.face_offset[0], move.face_offset[1], move.face_offset[2],
-					move.face_offset[3], move.face_offset[4], move.face_offset[5]
-				} {}
-};
