@@ -74,11 +74,12 @@ public:
 		return valid;
 	}
 
-	static const u16 setBitmask[];
-	static const u16 unsetBitmask[];
+	static const u16 testBitmask[];
 	static const CollisionFace opposingFace[];
 
 protected:
+	static const u16 setBitmask[];
+	static const u16 unsetBitmask[];
 	f32 m_face_offset[6] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 	std::unordered_map<u32, CollisionContextDetail> m_active;
 	std::vector<u32> collisions;

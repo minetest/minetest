@@ -67,12 +67,12 @@ void TestCollisionQuery::testCollisionContext()
 	// MinX has collided by .3
 	// MinY has collided by .5
 	// MaxZ has collided by .8
-	u16 MinX = CollisionContext::setBitmask[COLLISION_FACE_MIN_X];
-	u16 MinY = CollisionContext::setBitmask[COLLISION_FACE_MIN_Y];
-	u16 MinZ = CollisionContext::setBitmask[COLLISION_FACE_MIN_Z];
-	u16 MaxX = CollisionContext::setBitmask[COLLISION_FACE_MAX_X];
-	u16 MaxY = CollisionContext::setBitmask[COLLISION_FACE_MAX_Y];
-	u16 MaxZ = CollisionContext::setBitmask[COLLISION_FACE_MAX_Z];
+	u16 MinX = CollisionContext::testBitmask[COLLISION_FACE_MIN_X];
+	u16 MinY = CollisionContext::testBitmask[COLLISION_FACE_MIN_Y];
+	u16 MinZ = CollisionContext::testBitmask[COLLISION_FACE_MIN_Z];
+	u16 MaxX = CollisionContext::testBitmask[COLLISION_FACE_MAX_X];
+	u16 MaxY = CollisionContext::testBitmask[COLLISION_FACE_MAX_Y];
+	u16 MaxZ = CollisionContext::testBitmask[COLLISION_FACE_MAX_Z];
 	f32 offset[6];
 	UASSERTEQ(u16, ctx.getValidFaces(0, offset), MinX|MaxX|MinZ|MaxZ);
 	UASSERTEQ(u16, ctx.getValidFaces(1, offset), MinX|MaxX|MinY|MaxY);

@@ -23,6 +23,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 // Match NodeDef.
+const u16 CollisionContext::testBitmask[] = {
+		1,	// COLLISION_MAX_Y
+		2,	// COLLISION_MIN_Y
+		4,	// COLLISION_MIN_Z
+		8, // COLLISION_MIN_X
+		16,       // COLLISION_MAX_Z
+		32,	// COLLISION_MAX_X
+		64,     // COLLISION_FACE_X
+		128,    // COLLISION_FACE_Y
+		256,    // COLLISION_FACE_Z
+		64 | 128 | 256, // COLLISION_FACE_XYZ
+	};
 const u16 CollisionContext::setBitmask[] = {
 		1 | 128,	// COLLISION_MAX_Y
 		2 | 128,	// COLLISION_MIN_Y
@@ -30,10 +42,6 @@ const u16 CollisionContext::setBitmask[] = {
 		8 | 64, // COLLISION_MIN_X
 		16 | 256,       // COLLISION_MAX_Z
 		32 | 64,	// COLLISION_MAX_X
-		64,     // COLLISION_FACE_X
-		128,    // COLLISION_FACE_Y
-		256,    // COLLISION_FACE_Z
-		64 | 128 | 256, // COLLISION_FACE_XYZ
 	};
 const u16 CollisionContext::unsetBitmask[] = {
 		1 | 2 | 128,    // COLLISION_MAX_Y
