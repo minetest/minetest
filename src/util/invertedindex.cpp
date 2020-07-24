@@ -561,7 +561,7 @@ std::vector<u32> *InvertedIndex::findAttributeIndex(CollisionFace face, f32 offs
 
 	std::vector<AttributeIndex>::iterator i = std::lower_bound(idx.begin(), idx.end(), offset, lowerCompare);
 
-	if (i->first == offset)
+	if (i != idx.end() && i->first == offset)
 		return &i->second;
 
 	std::vector<u32> *vec = &idx.emplace(i, offset, std::vector<u32>())->second;

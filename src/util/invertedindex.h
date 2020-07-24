@@ -370,10 +370,10 @@ public:
 protected:
 	std::vector<u32> *findAttributeIndex(CollisionFace face, f32 offset);
 	void addToSet(CollisionFace face, u32 a, u32 b, IndexListIteratorSet *set);
-	static bool lowerCompare(AttributeIndex a, f32 offset) { return a.first < offset; }
-	static bool lowerCompareBack(AttributeIndex a, f32 offset) { return a.first > offset; }
-	static bool upperCompare(f32 offset, AttributeIndex b) { return b.first > offset; }
-	static bool upperCompareBack(f32 offset, AttributeIndex b) { return b.first < offset; }
+	static bool lowerCompare(const AttributeIndex &a, f32 offset) { return a.first < offset; }
+	static bool lowerCompareBack(const AttributeIndex &a, f32 offset) { return a.first > offset; }
+	static bool upperCompare(f32 offset, const AttributeIndex &b) { return b.first > offset; }
+	static bool upperCompareBack(f32 offset, const AttributeIndex &b) { return b.first < offset; }
 
 	std::vector<AttributeIndex> m_index[6];
 	u32 m_count = 0;
