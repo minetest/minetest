@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "log.h"
+#include "util/sha2.h"
 
 /**
  * Inverted indices are normally used for large scale information retrieval like
@@ -201,7 +202,6 @@ public:
 		return m_hasnext;
 	}
 
-
 protected:
 	CollisionFace m_face;
 	f32 m_offset;
@@ -350,6 +350,23 @@ public:
 	// Get [a, b) or (b, a]
 	void getHalfOpenInterval(CollisionFace face, f32 a, f32 b, IndexListIteratorSet *set);
 
+	void getHash(unsigned char *hash) const
+	{
+		SHA256_CTX c;
+		SHA256_Init(&c);
+		for (u32 f = 0; f < 6; f++)
+		{
+			SHA256_Update(&c, &m_index[f].front(), sizeof(m_index[f].front()) * m_index[f].size());
+			for (u32 i = 0; i < m_index[f].size(); i++)
+			{
+				const std::vector<u32> &idx = m_index[f].at(i).second;
+				SHA256_Update(&c, &idx.front(), sizeof(idx.front()) * idx.size());
+			}
+		}
+		
+		SHA256_Final(hash, &c);
+	}
+
 protected:
 	std::vector<u32> *findAttributeIndex(CollisionFace face, f32 offset);
 	void addToSet(CollisionFace face, u32 a, u32 b, IndexListIteratorSet *set);
@@ -361,6 +378,7 @@ protected:
 	std::vector<AttributeIndex> m_index[6];
 	u32 m_count = 0;
 	v3f m_maxWidth;
+	static unsigned char m_hash[SHA224_DIGEST_LENGTH];
 };
 
 // Detail for each collision box in the context.
