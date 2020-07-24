@@ -23,26 +23,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/invertedindex.h"
 
 // Detail for each collision box in the context.
-struct CollisionContextDetail
+struct CollisionQueryContextDetail
 {
 	u16 valid_faces = 0;
 	f32 face_offset[6] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
-	CollisionContextDetail(u16 face_mask, CollisionFace face, f32 offset) : valid_faces(face_mask)
+	CollisionQueryContextDetail(u16 face_mask, CollisionFace face, f32 offset) : valid_faces(face_mask)
 	{
 		face_offset[face] = offset;
 	}
 
-	CollisionContextDetail() {}
+	CollisionQueryContextDetail() {}
 
-	CollisionContextDetail(const CollisionContextDetail &copy) :
+	CollisionQueryContextDetail(const CollisionQueryContextDetail &copy) :
 			valid_faces(copy.valid_faces),
 			face_offset{
 					copy.face_offset[0], copy.face_offset[1], copy.face_offset[2],
 					copy.face_offset[3], copy.face_offset[4], copy.face_offset[5]
 				} {}
 
-	CollisionContextDetail(CollisionContextDetail &&move) :
+	CollisionQueryContextDetail(CollisionQueryContextDetail &&move) :
 			valid_faces(move.valid_faces),
 			face_offset{
 					move.face_offset[0], move.face_offset[1], move.face_offset[2],
@@ -50,10 +50,10 @@ struct CollisionContextDetail
 				} {}
 };
 
-class CollisionContext
+class CollisionQueryContext
 {
 public:
-	CollisionContext(aabb3f box, InvertedIndex *index);
+	CollisionQueryContext(aabb3f box, InvertedIndex *index);
 
 	u32 addIndexList(IndexListIterator *index);
 	u32 subtractIndexList(IndexListIterator *index);
@@ -63,7 +63,7 @@ public:
 	// of the collision box.
 	u16 getValidFaces(u32 id, f32 offset[6]) const
 	{
-		std::unordered_map<u32, CollisionContextDetail>::const_iterator  entry = m_active.find(id);
+		std::unordered_map<u32, CollisionQueryContextDetail>::const_iterator  entry = m_active.find(id);
 		if (entry == m_active.end())
 			return 0;
 
@@ -81,7 +81,7 @@ protected:
 	static const u16 setBitmask[];
 	static const u16 unsetBitmask[];
 	f32 m_face_offset[6] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
-	std::unordered_map<u32, CollisionContextDetail> m_active;
+	std::unordered_map<u32, CollisionQueryContextDetail> m_active;
 	std::vector<u32> collisions;
 };
 

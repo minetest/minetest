@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 // Match NodeDef.
-const u16 CollisionContext::testBitmask[] = {
+const u16 CollisionQueryContext::testBitmask[] = {
 		1,	// COLLISION_MAX_Y
 		2,	// COLLISION_MIN_Y
 		4,	// COLLISION_MIN_Z
@@ -35,7 +35,7 @@ const u16 CollisionContext::testBitmask[] = {
 		256,    // COLLISION_FACE_Z
 		64 | 128 | 256, // COLLISION_FACE_XYZ
 	};
-const u16 CollisionContext::setBitmask[] = {
+const u16 CollisionQueryContext::setBitmask[] = {
 		1 | 128,	// COLLISION_MAX_Y
 		2 | 128,	// COLLISION_MIN_Y
 		4 | 256,	// COLLISION_MIN_Z
@@ -43,7 +43,7 @@ const u16 CollisionContext::setBitmask[] = {
 		16 | 256,       // COLLISION_MAX_Z
 		32 | 64,	// COLLISION_MAX_X
 	};
-const u16 CollisionContext::unsetBitmask[] = {
+const u16 CollisionQueryContext::unsetBitmask[] = {
 		1 | 2 | 128,    // COLLISION_MAX_Y
 		1 | 2 | 128,    // COLLISION_MIN_Y
 		4 | 16 | 256,   // COLLISION_MIN_Z
@@ -51,7 +51,7 @@ const u16 CollisionContext::unsetBitmask[] = {
 		4 | 16 | 256,   // COLLISION_MAX_Z
 		8 | 32 | 64,    // COLLISION_MAX_X
 	};
-const CollisionFace CollisionContext::opposingFace[] = {
+const CollisionFace CollisionQueryContext::opposingFace[] = {
 		COLLISION_BOX_MIN_Y,
 		COLLISION_BOX_MAX_Y,
 		COLLISION_BOX_MAX_Z,
@@ -60,7 +60,7 @@ const CollisionFace CollisionContext::opposingFace[] = {
 		COLLISION_BOX_MIN_X,
 	};
 
-CollisionContext::CollisionContext(aabb3f box, InvertedIndex *index)
+CollisionQueryContext::CollisionQueryContext(aabb3f box, InvertedIndex *index)
 {
 	// Store face offsets for the box.
 	m_face_offset[COLLISION_FACE_MIN_X] = box.MinEdge.X;
@@ -109,7 +109,7 @@ CollisionContext::CollisionContext(aabb3f box, InvertedIndex *index)
 	addIndexList(&diff);
 }
 
-u32 CollisionContext::addIndexList(IndexListIterator *index)
+u32 CollisionQueryContext::addIndexList(IndexListIterator *index)
 {
 	u32 count = 0;
 
@@ -142,7 +142,7 @@ u32 CollisionContext::addIndexList(IndexListIterator *index)
 	return count;
 }
 
-u32 CollisionContext::subtractIndexList(IndexListIterator *index)
+u32 CollisionQueryContext::subtractIndexList(IndexListIterator *index)
 {
 	u32 count = 0;
 	if (index->hasNext())

@@ -31,7 +31,7 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testCollisionContext();
+	void testCollisionQueryContext();
 
 protected:
 	static const std::vector<u32> cases[];
@@ -41,12 +41,12 @@ static TestCollisionQuery g_test_instance;
 
 void TestCollisionQuery::runTests(IGameDef *gamedef)
 {
-	TEST(testCollisionContext);
+	TEST(testCollisionQueryContext);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestCollisionQuery::testCollisionContext()
+void TestCollisionQuery::testCollisionQueryContext()
 {
 	InvertedIndex index;
 
@@ -62,17 +62,20 @@ void TestCollisionQuery::testCollisionContext()
 	// MaxY .5 (0,3,4) 1.5 (2) 1.5 (1)
 	// MaxZ -1.5 (4) .5 (0) .6 (2) .65 (1) 
 	// MaxWidth 2.5 3. 2.
-	CollisionContext ctx(aabb3f(0.2f, 1.0f, -.5f, 1.f, 2.5f, .3f), &index);
+	CollisionQueryContext ctx(aabb3f(0.2f, 1.0f, -.5f, 1.f, 2.5f, .3f), &index);
 	// Collides with box 2 only
 	// MinX has collided by .3
 	// MinY has collided by .5
 	// MaxZ has collided by .8
-	u16 MinX = CollisionContext::testBitmask[COLLISION_FACE_MIN_X];
-	u16 MinY = CollisionContext::testBitmask[COLLISION_FACE_MIN_Y];
-	u16 MinZ = CollisionContext::testBitmask[COLLISION_FACE_MIN_Z];
-	u16 MaxX = CollisionContext::testBitmask[COLLISION_FACE_MAX_X];
-	u16 MaxY = CollisionContext::testBitmask[COLLISION_FACE_MAX_Y];
-	u16 MaxZ = CollisionContext::testBitmask[COLLISION_FACE_MAX_Z];
+	u16 MX = CollisionQueryContext::testBitmask[COLLISION_FACE_X];
+	u16 MY = CollisionQueryContext::testBitmask[COLLISION_FACE_Y];
+	u16 MZ = CollisionQueryContext::testBitmask[COLLISION_FACE_Z];
+	u16 MinX = CollisionQueryContext::testBitmask[COLLISION_FACE_MIN_X] | MX;
+	u16 MinY = CollisionQueryContext::testBitmask[COLLISION_FACE_MIN_Y] | MY;
+	u16 MinZ = CollisionQueryContext::testBitmask[COLLISION_FACE_MIN_Z] | MZ;
+	u16 MaxX = CollisionQueryContext::testBitmask[COLLISION_FACE_MAX_X] | MX;
+	u16 MaxY = CollisionQueryContext::testBitmask[COLLISION_FACE_MAX_Y] | MY;
+	u16 MaxZ = CollisionQueryContext::testBitmask[COLLISION_FACE_MAX_Z] | MZ;
 	f32 offset[6];
 	UASSERTEQ(u16, ctx.getValidFaces(0, offset), MinX|MaxX|MinZ|MaxZ);
 	UASSERTEQ(u16, ctx.getValidFaces(1, offset), MinX|MaxX|MinY|MaxY);
