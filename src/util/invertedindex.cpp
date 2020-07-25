@@ -469,6 +469,13 @@ u32 InvertedIndex::index(const aabb3f box)
 	// Assign id to box
 	u32 id = m_count++;
 
+	// Update max width.
+	v3f width = box.MaxEdge - box.MinEdge;
+
+	if (!width.X || !width.Y || !width.Z)
+		// The algorithms will *not* work if there is a collision with a 0-width box.
+		return id;
+
 	// Add box to indices.
 	findAttributeIndex(COLLISION_BOX_MIN_X, box.MinEdge.X)->push_back(id);
 	findAttributeIndex(COLLISION_BOX_MIN_Y, box.MinEdge.Y)->push_back(id);
@@ -477,8 +484,6 @@ u32 InvertedIndex::index(const aabb3f box)
 	findAttributeIndex(COLLISION_BOX_MAX_Y, box.MaxEdge.Y)->push_back(id);
 	findAttributeIndex(COLLISION_BOX_MAX_Z, box.MaxEdge.Z)->push_back(id);
 
-	// Update max width.
-	v3f width = box.MaxEdge - box.MinEdge;
 	if (width.X > m_maxWidth.X)
 		m_maxWidth.X = width.X;
 	if (width.Y > m_maxWidth.Y)
