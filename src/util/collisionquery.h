@@ -50,12 +50,25 @@ struct CollisionQueryContextDetail
 				} {}
 };
 
+struct Collision
+{
+	u16 context_id;
+	CollisionFace face;
+	u32 id;
+	f32 offset;
+	f32 dtime; // Time of the collision *if* known otherwise 0
+	Collision(u16 ctx, CollisionFace face, u32 id, f32 offset, f32 dtime) :
+			context_id(ctx), face(face), id(id), offset(offset), dtime(dtime) {}
+};
+
+// CollisionQueryContext does not have any time awareness, so it will set
+// dtime=0 in any returned Collisions.
 class CollisionQueryContext
 {
 public:
-	CollisionQueryContext(aabb3f box, InvertedIndex *index);
+	CollisionQueryContext(u16 context_id, aabb3f box, InvertedIndex *index, std::vector<Collision> *collisions=nullptr);
 
-	u32 addIndexList(IndexListIterator *index);
+	u32 addIndexList(IndexListIterator *index, std::vector<Collision> *collisions=nullptr, u16 faces_init=0);
 	u32 subtractIndexList(IndexListIterator *index);
 
 	// Get the bitmask of valid faces. For each valid face, put the
@@ -74,15 +87,20 @@ public:
 		return valid;
 	}
 
+protected:
+	u32 registerCollision(u32 id, u16 faces, const f32 *offsets, std::vector<Collision> *collisions);
+	u32 registerCollision(u32 id, u16 faces, const f32 *offsets, std::vector<Collision> *collisions, CollisionFace min, CollisionFace max);
+
+public:
 	static const u16 testBitmask[];
 	static const CollisionFace opposingFace[];
 
 protected:
 	static const u16 setBitmask[];
 	static const u16 unsetBitmask[];
+	u16 m_ctx;
 	f32 m_face_offset[6] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 	std::unordered_map<u32, CollisionQueryContextDetail> m_active;
-	std::vector<u32> collisions;
 };
 
 /* TODO *

@@ -60,7 +60,8 @@ const CollisionFace CollisionQueryContext::opposingFace[] = {
 		COLLISION_BOX_MIN_X,
 	};
 
-CollisionQueryContext::CollisionQueryContext(aabb3f box, InvertedIndex *index)
+CollisionQueryContext::CollisionQueryContext(u16 ctx, aabb3f box, InvertedIndex *index, std::vector<Collision> *collisions) :
+		m_ctx(ctx)
 {
 	// Store face offsets for the box.
 	m_face_offset[COLLISION_FACE_MIN_X] = box.MinEdge.X;
@@ -106,16 +107,20 @@ CollisionQueryContext::CollisionQueryContext(aabb3f box, InvertedIndex *index)
 	index->getInterval(COLLISION_FACE_MAX_Z, box.MinEdge.Z - width.Z, box.MaxEdge.Z, &pos);
 	index->getInterval(COLLISION_FACE_MIN_Z, box.MinEdge.Z - width.Z * 2, box.MinEdge.Z, &neg);
 	diff.restart(pos.getUnion(), neg.getUnion());
-	addIndexList(&diff);
+	addIndexList(&diff, collisions, ~0);
+	// TODO: This will generate a MaxZ collision for every overlapping box.
+	// Check to see if it should be replaced with a MinZ collision.
+	// Add the correct X and Y collisions.
 }
 
-u32 CollisionQueryContext::addIndexList(IndexListIterator *index)
+u32 CollisionQueryContext::addIndexList(IndexListIterator *index, std::vector<Collision> *collisions, u16 faces_init)
 {
 	u32 count = 0;
 
 	if (index->hasNext())
 		do
 		{	
+			u16 faces = faces_init;
 			u32 id = index->peek();
 			f32 offset;
 			CollisionFace face = index->nextFace(&offset);
@@ -126,6 +131,7 @@ u32 CollisionQueryContext::addIndexList(IndexListIterator *index)
 
 			while (face != COLLISION_FACE_NONE)
 			{
+				faces |= setBitmask[face];
 				m_active[id].valid_faces |= setBitmask[face];
 				m_active[id].face_offset[face] = offset;
 				
@@ -133,12 +139,47 @@ u32 CollisionQueryContext::addIndexList(IndexListIterator *index)
 			}
 
 			if ((m_active[id].valid_faces & setBitmask[COLLISION_FACE_XYZ]) == setBitmask[COLLISION_FACE_XYZ])
-			{
-				collisions.push_back(id);
-				count++;
-			}
+				count += registerCollision(id, faces, m_active[id].face_offset, collisions);
 		} while (index->forward());
 
+	return count;
+}
+
+u32 CollisionQueryContext::registerCollision(u32 id, u16 faces, const f32 *offsets, std::vector<Collision> *collisions)
+{
+	u32 count = 0;
+
+	if (faces & testBitmask[COLLISION_FACE_X])
+		count += registerCollision(id, faces, offsets, collisions, COLLISION_FACE_MIN_X, COLLISION_FACE_MAX_X);
+		
+	if (faces & testBitmask[COLLISION_FACE_Y])
+		count += registerCollision(id, faces, offsets, collisions, COLLISION_FACE_MIN_Y, COLLISION_FACE_MAX_Y);
+		
+	if (faces & testBitmask[COLLISION_FACE_Z])
+		count += registerCollision(id, faces, offsets, collisions, COLLISION_FACE_MIN_Z, COLLISION_FACE_MAX_Z);
+
+	return count;
+}
+		
+u32 CollisionQueryContext::registerCollision(u32 id, u16 faces, const f32 *offsets, std::vector<Collision> *collisions, CollisionFace min, CollisionFace max)
+{
+	u32 count = 0;
+	f32 min_off = offsets[min] - m_face_offset[min];
+	f32 max_off = m_face_offset[max] - offsets[max];
+	bool min_test = faces & testBitmask[min];
+	bool max_test = faces & testBitmask[max];
+
+	if (min_test && (!max_test || min_off >= max_off))
+	{
+
+		collisions->emplace_back(m_ctx, min, id, min_off, 0);
+		count++;
+	}
+	if (max_test && (!min_test || max_off >= min_off))
+	{
+		collisions->emplace_back(m_ctx, max, id, max_off, 0);
+		count++;
+	}
 	return count;
 }
 

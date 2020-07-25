@@ -55,18 +55,10 @@ void TestCollisionQuery::testCollisionQueryContext()
 	index.index(aabb3f(.3f, .5f, -.5f, .5f, 1.5f, .6f));
 	index.index(aabb3f(.0f, .0f, .0f, 2.5f, .5f, 1.5f));
 	index.index(aabb3f(17.f, -.5f, -3.5f, 18.f, .5f, -1.5f));
-	// MinX -.5 (0) 0. (1,3) .3 (2) 17. (4)
-	// MinY -.5 (0,1,4) 0. (3) .5 (2)
-	// MinZ -3.5 (4) -.5 (0,2) 0. (3) .5 (1) 
-	// MaxX .5 (0,2) 1.5 (1) 2.5 (3) 18. (4)
-	// MaxY .5 (0,3,4) 1.5 (2) 1.5 (1)
-	// MaxZ -1.5 (4) .5 (0) .6 (2) .65 (1) 
-	// MaxWidth 2.5 3. 2.
-	CollisionQueryContext ctx(aabb3f(0.2f, 1.0f, -.5f, 1.f, 2.5f, .3f), &index);
+
+	std::vector<Collision> collisions;
+	CollisionQueryContext ctx(75, aabb3f(0.2f, 1.0f, -.5f, 1.f, 2.5f, .3f), &index, &collisions);
 	// Collides with box 2 only
-	// MinX has collided by .3
-	// MinY has collided by .5
-	// MaxZ has collided by .8
 	u16 MX = CollisionQueryContext::testBitmask[COLLISION_FACE_X];
 	u16 MY = CollisionQueryContext::testBitmask[COLLISION_FACE_Y];
 	u16 MZ = CollisionQueryContext::testBitmask[COLLISION_FACE_Z];
@@ -82,6 +74,22 @@ void TestCollisionQuery::testCollisionQueryContext()
 	UASSERTEQ(u16, ctx.getValidFaces(2, offset), MinX|MaxX|MinY|MaxY|MinZ|MaxZ);
 	UASSERTEQ(u16, ctx.getValidFaces(3, offset), MinX|MaxX|MinZ|MaxZ);
 	UASSERTEQ(u16, ctx.getValidFaces(4, offset), 0);
+	UASSERTEQ(u32, collisions.size(), 3);
+	UASSERTEQ(u32, collisions.at(0).context_id, 75);
+	UASSERTEQ(u32, collisions.at(0).face, COLLISION_FACE_MAX_X);
+	UASSERTEQ(u32, collisions.at(0).id, 2);
+	UASSERT(irr::core::equals(collisions.at(0).offset, 0.7f));
+	UASSERTEQ(f32, collisions.at(0).dtime, 0);
+	UASSERTEQ(u32, collisions.at(1).context_id, 75);
+	UASSERTEQ(u32, collisions.at(1).face, COLLISION_FACE_MAX_Y);
+	UASSERTEQ(u32, collisions.at(1).id, 2);
+	UASSERT(irr::core::equals(collisions.at(1).offset, 2.f));
+	UASSERTEQ(f32, collisions.at(1).dtime, 0);
+	UASSERTEQ(u32, collisions.at(2).context_id, 75);
+	UASSERTEQ(u32, collisions.at(2).face, COLLISION_FACE_MIN_Z);
+	UASSERTEQ(u32, collisions.at(2).id, 2);
+	UASSERT(irr::core::equals(collisions.at(2).offset, 1.1f));
+	UASSERTEQ(f32, collisions.at(2).dtime, 0);
 }
 
 const std::vector<u32> TestCollisionQuery::cases[] = {
