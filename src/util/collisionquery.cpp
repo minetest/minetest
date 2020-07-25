@@ -138,7 +138,7 @@ u32 CollisionQueryContext::addIndexList(IndexListIterator *index, std::vector<Co
 				face = index->nextFace(&offset);
 			}
 
-			if ((m_active[id].valid_faces & setBitmask[COLLISION_FACE_XYZ]) == setBitmask[COLLISION_FACE_XYZ])
+			if (collisions && (m_active[id].valid_faces & testBitmask[COLLISION_FACE_XYZ]) == testBitmask[COLLISION_FACE_XYZ])
 				count += registerCollision(id, faces, m_active[id].face_offset, collisions);
 		} while (index->forward());
 
