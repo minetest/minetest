@@ -3902,30 +3902,28 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 			}
 		}
 	}
-	// Mouse wheel and move events: send to hovered element instead of focused
-	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
-			(event.MouseInput.Event == EMIE_MOUSE_WHEEL ||
-			(event.MouseInput.Event == EMIE_MOUSE_MOVED &&
-			event.MouseInput.ButtonStates == 0))) {
-		s32 x = event.MouseInput.X;
-		s32 y = event.MouseInput.Y;
-		gui::IGUIElement *hovered =
-			Environment->getRootGUIElement()->getElementFromPoint(
-				core::position2d<s32>(x, y));
-		if (hovered && isMyChild(hovered)) {
-			hovered->OnEvent(event);
-			return event.MouseInput.Event == EMIE_MOUSE_WHEEL;
-		}
-	}
 
 	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
 		s32 x = event.MouseInput.X;
 		s32 y = event.MouseInput.Y;
+		core::position2d<s32> mouse_pos(x, y);
 		gui::IGUIElement *hovered =
-			Environment->getRootGUIElement()->getElementFromPoint(
-				core::position2d<s32>(x, y));
-		if (!isMyChild(hovered) && m_invctx->hasValidSelection()) {
-			// Handle item dropping
+			Environment->getRootGUIElement()->getElementFromPoint(mouse_pos);
+
+		// Mouse wheel and move events: send to hovered element instead of focused
+		if ((event.MouseInput.Event == EMIE_MOUSE_WHEEL ||
+				(event.MouseInput.Event == EMIE_MOUSE_MOVED &&
+				event.MouseInput.ButtonStates == 0))) {
+			if (hovered && isMyChild(hovered)) {
+				hovered->OnEvent(event);
+				return event.MouseInput.Event == EMIE_MOUSE_WHEEL;
+			}
+		}
+
+		// Handle item dropping
+		if (!isMyChild(hovered) &&
+				!AbsoluteClippingRect.isPointInside(mouse_pos) &&
+				m_invctx->hasValidSelection()) {
 			switch(event.MouseInput.Event) {
 				case EMIE_LMOUSE_PRESSED_DOWN:
 					dropItems();
