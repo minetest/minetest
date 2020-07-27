@@ -7217,10 +7217,13 @@ Used by `minetest.register_node`.
             -- Node was placed. Also played after falling
 
             place_failed = <SimpleSoundSpec>,
-            -- When node placement failed
+            -- When node placement failed.
+            -- Note: This happens if the _built-in_ node placement failed.
+            -- This sound will still be played if the node is placed in the
+            -- `on_place` callback manually.
 
             fall = <SimpleSoundSpec>,
-            -- When node starts to fall
+            -- When node starts to fall or is detached
         },
 
         drop = "",
