@@ -1,15 +1,17 @@
 set (UNITTEST_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/mockgame.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_address.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_authdatabase.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_activeobject.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_areastore.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_ban.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/test_collision.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_collisionquery.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_compression.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_connection.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_filepath.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_inventory.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_invertedindex.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irrptr.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_map_settings_manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_mapnode.cpp

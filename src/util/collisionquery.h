@@ -50,15 +50,24 @@ struct CollisionQueryContextDetail
 				} {}
 };
 
+enum CollisionType
+{
+	COLLISION_ENTRY,
+	COLLISION_STATIC,
+	COLLISION_EXIT,
+};
+
 struct Collision
 {
 	u16 context_id;
+	CollisionType type;
 	CollisionFace face;
 	u32 id;
-	f32 offset;
+	f32 overlap;
 	f32 dtime; // Time of the collision *if* known otherwise 0
-	Collision(u16 ctx, CollisionFace face, u32 id, f32 offset, f32 dtime) :
-			context_id(ctx), face(face), id(id), offset(offset), dtime(dtime) {}
+	Collision() : context_id(), type(), face(), id(), overlap(), dtime() {}
+	Collision(u16 ctx, CollisionFace face, u32 id, f32 overlap, f32 dtime, CollisionType type=COLLISION_ENTRY) :
+			context_id(ctx), type(type), face(face), id(id), overlap(overlap), dtime(dtime) {}
 };
 
 // CollisionQueryContext does not have any time awareness, so it will set
@@ -66,30 +75,20 @@ struct Collision
 class CollisionQueryContext
 {
 public:
-	CollisionQueryContext(u16 context_id, aabb3f box, InvertedIndex *index, std::vector<Collision> *collisions=nullptr);
+	CollisionQueryContext(u16 context_id, aabb3f box, const InvertedIndex *index, std::vector<Collision> *collisions=nullptr);
 
-	u32 addIndexList(IndexListIterator *index, std::vector<Collision> *collisions=nullptr, u16 faces_init=0);
-	u32 subtractIndexList(IndexListIterator *index);
-
-	// Get the bitmask of valid faces. For each valid face, put the
-	// distance between that face of the entity and the opposing face
-	// of the collision box.
-	u16 getValidFaces(u32 id, f32 offset[6]) const
-	{
-		std::unordered_map<u32, CollisionQueryContextDetail>::const_iterator  entry = m_active.find(id);
-		if (entry == m_active.end())
-			return 0;
-
-		u16 valid = entry->second.valid_faces;
-		for (u32 f = 0; f < 6; f++)
-			if ((valid & setBitmask[f]) == setBitmask[f])
-				offset[f] = m_face_offset[f] - entry->second.face_offset[f];
-		return valid;
-	}
+	const InvertedIndex *getInvertedIndex() { return m_index; }
+	f32 getFaceOffset(CollisionFace face) { return m_face_offset[face]; }
+	u32 moveAdd(CollisionFace face, f32 offset, const std::vector<u32> *ids, std::vector<Collision> *collisions, f32 dtime=0);
+	u32 moveRemove(CollisionFace face, f32 offset, const std::vector<u32> *ids, std::vector<Collision> *collisions, f32 dtime=0);
+	u32 add(CollisionFace face, u32 begin, u32 end, std::vector<Collision> *collisions=nullptr, f32 dtime=0, CollisionType type=COLLISION_ENTRY);
+	u32 add(CollisionFace face, f32 offset, const std::vector<u32> *ids, std::vector<Collision> *collisions=nullptr, f32 dtime=0, CollisionType type=COLLISION_ENTRY);
+	u32 remove(CollisionFace face, u32 begin, u32 end, std::vector<Collision> *collisions=nullptr, f32 dtime=0, CollisionType type=COLLISION_EXIT);
+	u32 remove(CollisionFace face, f32 offset, const std::vector<u32> *ids, std::vector<Collision> *collisions=nullptr, f32 dtime=0, CollisionType type=COLLISION_EXIT);
 
 protected:
-	u32 registerCollision(u32 id, u16 faces, const f32 *offsets, std::vector<Collision> *collisions);
-	u32 registerCollision(u32 id, u16 faces, const f32 *offsets, std::vector<Collision> *collisions, CollisionFace min, CollisionFace max);
+	u32 init(CollisionFace min_face, f32 min_offset, CollisionFace max_face, f32 max_offset, f32 width, std::vector<Collision> *collisions);
+	u32 registerCollision(u32 id, CollisionFace face, std::vector<Collision> *collisions, f32 dtime=0, CollisionType type=COLLISION_ENTRY) const;
 
 public:
 	static const u16 testBitmask[];
@@ -98,66 +97,34 @@ public:
 protected:
 	static const u16 setBitmask[];
 	static const u16 unsetBitmask[];
-	u16 m_ctx;
-	f32 m_face_offset[6] = {0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+	const InvertedIndex *m_index;
+	const u16 m_ctx;
+	f32 m_face_offset[6];
+	f32 m_width[6];
 	std::unordered_map<u32, CollisionQueryContextDetail> m_active;
 };
 
-/* TODO *
-struct IndexScan
+class CollisionQuery
 {
-	CollisionFace face;
-	f32 time;
-	// Physics can be incorporated with a function instead of scale.
-	const f32 begin;
-	const f32 timeScale;
-	u32 handle;
-	const i32 increment;
-	const u32 end;
-	AttributeIndex *next;
+public:
+	CollisionQuery(CollisionQueryContext *context, f32 dtime, bool context_owner=false) : m_context(context), m_dtime(dtime), m_endtime(dtime), m_context_owner(context_owner) {}
 
-	IndexScan(CollisionFace face, f32 time, f32 begin, f32 timeScale, u32 handle, i32 increment, u32 end) :
-			face(face), time(time), begin(begin), timeScale(timeScale),
-			handle(handle), increment(increment), end(end) {}
-	IndexScan(const IndexScan &other) = default;
-};
-
-class QueryScan
-{
-	QueryScan(InvertedIndex *index) : m_index(index) {}
-
-	// Scan the offsets in interval [begin, end)
-	bool addScan(CollisionFace face, f32 begin, f32 velocity, f32 dtime);
-
-	// Perform the scan.
-	// You MUST call these function is order.
-	// nextFace() will tell you what face, if any, the next AttributeIndex
-	// involves. COLLISION_FACE_NONE will indicate the scan is done.
-	CollisionFace nextFace()
+	virtual ~CollisionQuery()
 	{
-		if (m_scans.empty())
-			return COLLISION_FACE_NONE;
-		if (!heap)
-			std::make_heap(m_scans->begin(), m_scans->end(), compare);
-		return m_index->front().face;
+		if (m_context_owner)
+			delete m_context;
 	}
 
-	// If nextFace() did not return COLLISION_FACE_NONE, optionally call
-	// nextTime() to get the specific 
-	f32 nextTime() const
-	{
-		return m_index->front().time;
-	}
+	f32 estimate() const { return m_dtime; }
+	virtual u32 getCollisions(f32 dtime, std::vector<Collision> *collisions=nullptr) { return 0; }
 
-	// If nextFace() did not return COLLISION_FACE_NONE, call next() to
-	// get the AttributeIndex. nextTime() should not be called after this
-	// until nextFace() is called.
-	AttributeIndex *next();
+	// Factory functions
+	static CollisionQuery *getLinearQuery(aabb3f box, f32 dtime, v3f velocity, InvertedIndex *index, std::vector<Collision> *collisions=nullptr);
+	static CollisionQuery *get1dQuery(aabb3f box, f32 dtime, CollisionFace face, f32 velocity, InvertedIndex *index, std::vector<Collision> *collisions=nullptr);
 
 protected:
-	static bool compare(IndexScan a, IndexScan b) { return a.time < b.time; }
-	InvertedIndex *m_index;
-	std::vector<IndexScan> m_scans;
-	bool m_heap;
-}
-* TODO */
+	CollisionQueryContext *m_context;
+	f32 m_dtime;
+	f32 m_endtime;
+	bool m_context_owner;
+};

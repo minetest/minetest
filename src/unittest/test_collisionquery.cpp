@@ -32,6 +32,7 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testCollisionQueryContext();
+	void testForwardQuery();
 
 protected:
 	static const std::vector<u32> cases[];
@@ -42,6 +43,7 @@ static TestCollisionQuery g_test_instance;
 void TestCollisionQuery::runTests(IGameDef *gamedef)
 {
 	TEST(testCollisionQueryContext);
+	TEST(testForwardQuery);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,37 +61,48 @@ void TestCollisionQuery::testCollisionQueryContext()
 	std::vector<Collision> collisions;
 	CollisionQueryContext ctx(75, aabb3f(0.2f, 1.0f, -.5f, 1.f, 2.5f, .3f), &index, &collisions);
 	// Collides with box 2 only
-	u16 MX = CollisionQueryContext::testBitmask[COLLISION_FACE_X];
-	u16 MY = CollisionQueryContext::testBitmask[COLLISION_FACE_Y];
-	u16 MZ = CollisionQueryContext::testBitmask[COLLISION_FACE_Z];
-	u16 MinX = CollisionQueryContext::testBitmask[COLLISION_FACE_MIN_X] | MX;
-	u16 MinY = CollisionQueryContext::testBitmask[COLLISION_FACE_MIN_Y] | MY;
-	u16 MinZ = CollisionQueryContext::testBitmask[COLLISION_FACE_MIN_Z] | MZ;
-	u16 MaxX = CollisionQueryContext::testBitmask[COLLISION_FACE_MAX_X] | MX;
-	u16 MaxY = CollisionQueryContext::testBitmask[COLLISION_FACE_MAX_Y] | MY;
-	u16 MaxZ = CollisionQueryContext::testBitmask[COLLISION_FACE_MAX_Z] | MZ;
-	f32 offset[6];
-	UASSERTEQ(u16, ctx.getValidFaces(0, offset), MinX|MaxX|MinZ|MaxZ);
-	UASSERTEQ(u16, ctx.getValidFaces(1, offset), MinX|MaxX|MinY|MaxY);
-	UASSERTEQ(u16, ctx.getValidFaces(2, offset), MinX|MaxX|MinY|MaxY|MinZ|MaxZ);
-	UASSERTEQ(u16, ctx.getValidFaces(3, offset), MinX|MaxX|MinZ|MaxZ);
-	UASSERTEQ(u16, ctx.getValidFaces(4, offset), 0);
+
 	UASSERTEQ(u32, collisions.size(), 3);
 	UASSERTEQ(u32, collisions.at(0).context_id, 75);
 	UASSERTEQ(u32, collisions.at(0).face, COLLISION_FACE_MAX_X);
 	UASSERTEQ(u32, collisions.at(0).id, 2);
-	UASSERT(irr::core::equals(collisions.at(0).offset, 0.7f));
+	UASSERT(irr::core::equals(collisions.at(0).overlap, 0.7f));
 	UASSERTEQ(f32, collisions.at(0).dtime, 0);
 	UASSERTEQ(u32, collisions.at(1).context_id, 75);
 	UASSERTEQ(u32, collisions.at(1).face, COLLISION_FACE_MAX_Y);
 	UASSERTEQ(u32, collisions.at(1).id, 2);
-	UASSERT(irr::core::equals(collisions.at(1).offset, 2.f));
+	UASSERT(irr::core::equals(collisions.at(1).overlap, 2.f));
 	UASSERTEQ(f32, collisions.at(1).dtime, 0);
 	UASSERTEQ(u32, collisions.at(2).context_id, 75);
 	UASSERTEQ(u32, collisions.at(2).face, COLLISION_FACE_MIN_Z);
 	UASSERTEQ(u32, collisions.at(2).id, 2);
-	UASSERT(irr::core::equals(collisions.at(2).offset, 1.1f));
+	UASSERT(irr::core::equals(collisions.at(2).overlap, 1.1f));
 	UASSERTEQ(f32, collisions.at(2).dtime, 0);
+}
+
+void TestCollisionQuery::testForwardQuery()
+{
+	InvertedIndex index;
+
+	index.index(aabb3f(-.5f, -.5f, -.5f, .5f, .5f, .5f));
+	index.index(aabb3f(0.f, -.5f, .5f, 1.5f, 2.5f, .65f));
+	index.index(aabb3f(.3f, .5f, -.5f, .5f, 1.5f, .6f));
+	index.index(aabb3f(.0f, .0f, .0f, 2.5f, .5f, 1.5f));
+	index.index(aabb3f(17.f, -.5f, -3.5f, 18.f, .5f, -1.5f));
+
+	// Query should collide with box 2 at dtime 0.05
+	CollisionQuery *query = CollisionQuery::get1dQuery(aabb3f(-2.f, 0.5f, -1.f, -1.f, 1.5f, 0), 0.1f, COLLISION_FACE_X, 26.f, &index);
+	// Possible collision at -.5
+	f32 next_dtime = query->estimate();
+	UASSERT(irr::core::equals(next_dtime, .5f/26.f));
+	UASSERTEQ(u32, query->getCollisions(next_dtime), 0);
+	next_dtime = query->estimate();
+	UASSERT(irr::core::equals(next_dtime, 1.f/26.f));
+	UASSERTEQ(u32, query->getCollisions(next_dtime), 0);
+	next_dtime = query->estimate();
+	UASSERT(irr::core::equals(next_dtime, 1.3f/26.f));
+	UASSERTEQ(u32, query->getCollisions(next_dtime), 1);
+	delete query;
 }
 
 const std::vector<u32> TestCollisionQuery::cases[] = {

@@ -60,157 +60,295 @@ const CollisionFace CollisionQueryContext::opposingFace[] = {
 		COLLISION_BOX_MIN_X,
 	};
 
-CollisionQueryContext::CollisionQueryContext(u16 ctx, aabb3f box, InvertedIndex *index, std::vector<Collision> *collisions) :
-		m_ctx(ctx)
+CollisionQueryContext::CollisionQueryContext(u16 ctx, aabb3f box, const InvertedIndex *index, std::vector<Collision> *collisions) :
+		m_index(index), m_ctx(ctx)
+{
+	v3f width = index->getMaxWidth();
+	u32 base;
+	if (collisions)
+		base = collisions->size();
+
+	init(COLLISION_FACE_MIN_X, box.MinEdge.X, COLLISION_FACE_MAX_X, box.MaxEdge.X, width.X, collisions);
+	init(COLLISION_FACE_MIN_Y, box.MinEdge.Y, COLLISION_FACE_MAX_Y, box.MaxEdge.Y, width.Y, collisions);
+	init(COLLISION_FACE_MIN_Z, box.MinEdge.Z, COLLISION_FACE_MAX_Z, box.MaxEdge.Z, width.Z, collisions);
+	
+	if (collisions)
+	{
+		if (m_active.empty())
+		{
+			// All collisions were ephemeral
+			collisions->resize(base);
+			return;
+		}
+
+		u32 i = base;
+		while (i < collisions->size())
+		{
+			// Compress, keeping only true collisions.
+			u32 id = collisions->at(base).id;
+			if (m_active.find(id) != m_active.end() && (m_active[id].valid_faces & COLLISION_FACE_XYZ) == COLLISION_FACE_XYZ)
+				collisions->at(base++) = collisions->at(i);
+			i++;
+		}
+		collisions->resize(base);
+	}
+}
+
+u32 CollisionQueryContext::init(CollisionFace min_face, f32 min_offset, CollisionFace max_face, f32 max_offset, f32 width, std::vector<Collision> *collisions)
 {
 	// Store face offsets for the box.
-	m_face_offset[COLLISION_FACE_MIN_X] = box.MinEdge.X;
-	m_face_offset[COLLISION_FACE_MIN_Y] = box.MinEdge.Y;
-	m_face_offset[COLLISION_FACE_MIN_Z] = box.MinEdge.Z;
-	m_face_offset[COLLISION_FACE_MAX_X] = box.MaxEdge.X;
-	m_face_offset[COLLISION_FACE_MAX_Y] = box.MaxEdge.Y;
-	m_face_offset[COLLISION_FACE_MAX_Z] = box.MaxEdge.Z;
+	m_face_offset[min_face] = min_offset;
+	m_face_offset[max_face] = max_offset;
 
-	// Search the InvertedIndex for boxes that overlap with this box
-	// on any one dimension.
-	// Criteria: box.min - maxwidth < collision.min < box.max
-	// && box.min < collision.max < box.max + maxwidth
-	v3f width = index->getMaxWidth();
+	// Store widths for the box, to ensure a stable width during movement.
+	m_width[min_face] = max_offset - min_offset;
+	m_width[max_face] = min_offset - max_offset;
 
-	IndexListIteratorSet pos, neg;
+	u32 min_handle0 = m_index->lowerAttributeBound(min_face, min_offset - width);
+	u32 min_handle1 = m_index->lowerAttributeBound(min_face, min_offset);
+	u32 min_handle3 = m_index->upperAttributeBound(min_face, max_offset + width);
+	u32 max_handle0 = m_index->lowerAttributeBound(max_face, min_offset - width);
+	u32 max_handle2 = m_index->upperAttributeBound(max_face, max_offset);
+	u32 max_handle3 = m_index->upperAttributeBound(max_face, max_offset + width);
 
-	index->getInterval(COLLISION_FACE_MIN_X, box.MinEdge.X, box.MaxEdge.X + width.X, &pos);
-	index->getInterval(COLLISION_FACE_MAX_X, box.MaxEdge.X, box.MaxEdge.X + 2 * width.X, &neg);
-	IndexListIteratorDifference diff(pos.getUnion(), neg.getUnion());
-	addIndexList(&diff);
-
-	index->getInterval(COLLISION_FACE_MAX_X, box.MinEdge.X - width.X, box.MaxEdge.X, &pos);
-	index->getInterval(COLLISION_FACE_MIN_X, box.MinEdge.X - width.X * 2, box.MinEdge.X, &neg);
-	diff.restart(pos.getUnion(), neg.getUnion());
-	addIndexList(&diff);
-
-	index->getInterval(COLLISION_FACE_MIN_Y, box.MinEdge.Y, box.MaxEdge.Y + width.Y, &pos);
-	index->getInterval(COLLISION_FACE_MAX_Y, box.MaxEdge.Y, box.MaxEdge.Y + 2 * width.Y, &neg);
-	diff.restart(pos.getUnion(), neg.getUnion());
-	addIndexList(&diff);
-
-	index->getInterval(COLLISION_FACE_MAX_Y, box.MinEdge.Y - width.Y, box.MaxEdge.Y, &pos);
-	index->getInterval(COLLISION_FACE_MIN_Y, box.MinEdge.Y - width.Y * 2, box.MinEdge.Y, &neg);
-	diff.restart(pos.getUnion(), neg.getUnion());
-	addIndexList(&diff);
-
-	index->getInterval(COLLISION_FACE_MIN_Z, box.MinEdge.Z, box.MaxEdge.Z + width.Z, &pos);
-	index->getInterval(COLLISION_FACE_MAX_Z, box.MaxEdge.Z, box.MaxEdge.Z + 2 * width.Z, &neg);
-	diff.restart(pos.getUnion(), neg.getUnion());
-	addIndexList(&diff);
-
-	index->getInterval(COLLISION_FACE_MAX_Z, box.MinEdge.Z - width.Z, box.MaxEdge.Z, &pos);
-	index->getInterval(COLLISION_FACE_MIN_Z, box.MinEdge.Z - width.Z * 2, box.MinEdge.Z, &neg);
-	diff.restart(pos.getUnion(), neg.getUnion());
-	addIndexList(&diff, collisions, ~0);
-	// TODO: This will generate a MaxZ collision for every overlapping box.
-	// Check to see if it should be replaced with a MinZ collision.
-	// Add the correct X and Y collisions.
-}
-
-u32 CollisionQueryContext::addIndexList(IndexListIterator *index, std::vector<Collision> *collisions, u16 faces_init)
-{
-	u32 count = 0;
-
-	if (index->hasNext())
-		do
-		{	
-			u16 faces = faces_init;
-			u32 id = index->peek();
-			f32 offset;
-			CollisionFace face = index->nextFace(&offset);
-			
-
-			if (face != COLLISION_FACE_NONE && m_active.find(id) == m_active.end())
-				m_active.emplace(std::piecewise_construct, std::tuple<u32>(id), std::tuple<>());
-
-			while (face != COLLISION_FACE_NONE)
-			{
-				faces |= setBitmask[face];
-				m_active[id].valid_faces |= setBitmask[face];
-				m_active[id].face_offset[face] = offset;
-				
-				face = index->nextFace(&offset);
-			}
-
-			if (collisions && (m_active[id].valid_faces & testBitmask[COLLISION_FACE_XYZ]) == testBitmask[COLLISION_FACE_XYZ])
-				count += registerCollision(id, faces, m_active[id].face_offset, collisions);
-		} while (index->forward());
-
+	u32 count = add(min_face, min_handle1, min_handle3, collisions, 0, COLLISION_STATIC)
+			+ add(max_face, max_handle0, max_handle2, collisions, 0, COLLISION_STATIC); 
+	remove(min_face, min_handle0, min_handle1); 
+	remove(max_face, max_handle2, max_handle3); 
 	return count;
 }
 
-u32 CollisionQueryContext::registerCollision(u32 id, u16 faces, const f32 *offsets, std::vector<Collision> *collisions)
+u32 CollisionQueryContext::moveAdd(CollisionFace face, f32 offset, const std::vector<u32> *ids, std::vector<Collision> *collisions, f32 dtime)
 {
-	u32 count = 0;
+	// Move the face
+	m_face_offset[face] = offset;
+	m_face_offset[opposingFace[face]] = offset + m_width[face];
 
-	if (faces & testBitmask[COLLISION_FACE_X])
-		count += registerCollision(id, faces, offsets, collisions, COLLISION_FACE_MIN_X, COLLISION_FACE_MAX_X);
-		
-	if (faces & testBitmask[COLLISION_FACE_Y])
-		count += registerCollision(id, faces, offsets, collisions, COLLISION_FACE_MIN_Y, COLLISION_FACE_MAX_Y);
-		
-	if (faces & testBitmask[COLLISION_FACE_Z])
-		count += registerCollision(id, faces, offsets, collisions, COLLISION_FACE_MIN_Z, COLLISION_FACE_MAX_Z);
-
-	return count;
+	// Add to the context
+	return add(face, offset, ids, collisions, dtime, COLLISION_ENTRY);
 }
-		
-u32 CollisionQueryContext::registerCollision(u32 id, u16 faces, const f32 *offsets, std::vector<Collision> *collisions, CollisionFace min, CollisionFace max)
+
+u32 CollisionQueryContext::moveRemove(CollisionFace face, f32 offset, const std::vector<u32> *ids, std::vector<Collision> *collisions, f32 dtime)
+{
+	// Move the face
+	m_face_offset[face] = offset;
+	m_face_offset[opposingFace[face]] = offset + m_width[face];
+
+	// Add to the context
+	return remove(face, offset, ids, collisions, dtime, COLLISION_EXIT);
+}
+
+u32 CollisionQueryContext::add(CollisionFace face, u32 begin, u32 end, std::vector<Collision> *collisions, f32 dtime, CollisionType type)
 {
 	u32 count = 0;
-	f32 min_off = offsets[min] - m_face_offset[min];
-	f32 max_off = m_face_offset[max] - offsets[max];
-	bool min_test = faces & testBitmask[min];
-	bool max_test = faces & testBitmask[max];
-
-	if (min_test && (!max_test || min_off >= max_off))
+	while (begin < end)
 	{
-
-		collisions->emplace_back(m_ctx, min, id, min_off, 0);
-		count++;
-	}
-	if (max_test && (!min_test || max_off >= min_off))
-	{
-		collisions->emplace_back(m_ctx, max, id, max_off, 0);
-		count++;
+		const AttributeIndex *ai = m_index->getAttributeIndex(face, begin++);
+		count += add(face, ai->first, &ai->second, collisions, type);
 	}
 	return count;
 }
 
-u32 CollisionQueryContext::subtractIndexList(IndexListIterator *index)
+u32 CollisionQueryContext::add(CollisionFace face, f32 offset, const std::vector<u32> *ids, std::vector<Collision> *collisions, f32 dtime, CollisionType type)
 {
 	u32 count = 0;
-	if (index->hasNext())
-		do
-		{	
-			u32 id = index->peek();
-			CollisionFace face = index->nextFace();
 
-			if (face != COLLISION_FACE_NONE && m_active.find(id) == m_active.end())
-				continue;
+	// Process each box.
+	for (u32 i = 0; i < ids->size(); i++)
+	{
+		u32 id = ids->at(i);
+		if (m_active.empty() || m_active.find(id) == m_active.end())
+			m_active.emplace(std::piecewise_construct, std::tuple<u32>(id), std::tuple<>());
 
-			while (face != COLLISION_FACE_NONE)
-			{
-				if ((m_active[id].valid_faces & setBitmask[COLLISION_FACE_XYZ]) == setBitmask[COLLISION_FACE_XYZ])
-					count++;
+		m_active.at(id).valid_faces |= setBitmask[face];
+		m_active.at(id).face_offset[face] = offset;
 
-				m_active[id].valid_faces &= ~unsetBitmask[face];
-				m_active[id].face_offset[face] = 0.f;
-				m_active[id].face_offset[opposingFace[face]] = 0.f;
-				
-				face = index->nextFace();
-			}
-
-			if (!m_active[id].valid_faces)
-				m_active.erase(id);
-		} while (index->forward());
+		if ((m_active.at(id).valid_faces & testBitmask[COLLISION_FACE_XYZ]) == testBitmask[COLLISION_FACE_XYZ])
+		{
+			rawstream << "Collision noticed at " << m_active.at(id).valid_faces << std::endl;
+			count += registerCollision(id, face, collisions, dtime, type);
+		}
+	}
 
 	return count;
 }
 
+u32 CollisionQueryContext::remove(CollisionFace face, u32 begin, u32 end, std::vector<Collision> *collisions, f32 dtime, CollisionType type)
+{
+	u32 count = 0;
+	while (begin < end)
+	{
+		const AttributeIndex *ai = m_index->getAttributeIndex(face, begin++);
+		count += remove(face, ai->first, &ai->second, collisions, type);
+	}
+	return count;
+}
+
+u32 CollisionQueryContext::remove(CollisionFace face, f32 offset, const std::vector<u32> *ids, std::vector<Collision> *collisions, f32 dtime, CollisionType type)
+{
+	u32 count = 0;
+
+	// Process each box.
+	for (u32 i = 0; i < ids->size(); i++)
+	{
+		u32 id = ids->at(i);
+		if (m_active.empty() || m_active.find(id) == m_active.end())
+			m_active.emplace(std::piecewise_construct, std::tuple<u32>(id), std::tuple<>());
+
+		m_active.at(id).face_offset[face] = offset;
+
+		if ((m_active.at(id).valid_faces & testBitmask[COLLISION_FACE_XYZ]) == testBitmask[COLLISION_FACE_XYZ])
+		{
+			rawstream << "Collision noticed at " << m_active.at(id).valid_faces << std::endl;
+			count += registerCollision(id, face, collisions, dtime, type);
+		}
+
+		m_active.at(id).valid_faces |= unsetBitmask[face];
+		if (!m_active.at(id).valid_faces)
+			m_active.erase(id);
+	}
+
+	return count;
+}
+
+u32 CollisionQueryContext::registerCollision(u32 id, CollisionFace face, std::vector<Collision> *collisions, f32 dtime, CollisionType type) const
+{
+	u32 count = 0;
+	const CollisionQueryContextDetail &detail = m_active.at(id);
+
+	for (int f = 0; f < 6; f++)
+	{
+		CollisionFace ff = static_cast<CollisionFace>(f);
+		f32 overlap =  detail.face_offset[f] - m_face_offset[f];
+		if (ff == face || ((detail.valid_faces & testBitmask[f]) && irr::core::equals(overlap, 0.f)))
+		{	
+			rawstream << "Collision time " << dtime << " face " << ff << " box " << id << std::endl;
+			if (collisions)
+			{
+				if (ff == COLLISION_FACE_MAX_X || ff == COLLISION_FACE_MAX_Y || ff == COLLISION_FACE_MAX_Z)
+					overlap = -overlap;
+				collisions->emplace_back(m_ctx, ff, id, overlap, dtime, type);
+			}
+			count++;
+		}
+	}
+	return count;
+}
+
+class ForwardQuery : public CollisionQuery
+{
+public:
+	ForwardQuery(CollisionQueryContext *ctx, CollisionFace face, f32 v, f32 dtime, bool context_owner=false) : CollisionQuery(ctx, dtime, context_owner), m_face(face), m_scale(1.f/v)
+	{
+		m_offset = ctx->getFaceOffset(face);
+		init(v);
+		update();
+	}
+	
+	virtual u32 getCollisions(f32 dtime, std::vector<Collision> *collisions)
+	{
+		const InvertedIndex *index = m_context->getInvertedIndex();
+		bool notdone = true;
+		u32 count = 0;
+		while (notdone && m_dtime <= dtime)
+		{
+			const AttributeIndex *ai = index->getAttributeIndex(m_face, m_handle);
+			count += m_context->moveAdd(m_face, ai->first, &ai->second, collisions, m_dtime);
+			advance();
+			notdone = update();
+		}
+		return count;
+	}
+	
+protected:
+	virtual void init(f32 v)
+	{
+		const InvertedIndex *index = m_context->getInvertedIndex();
+		m_handle = index->lowerAttributeBound(m_face, m_offset);
+		m_end = index->upperAttributeBound(m_face, m_offset + v * m_endtime);
+	}
+	virtual void advance() { m_handle++; }
+	virtual bool update()
+	{
+		if (m_handle < m_end)
+		{
+			const InvertedIndex *index = m_context->getInvertedIndex();
+			m_dtime = (index->getAttributeIndex(m_face, m_handle)->first - m_offset) * m_scale;
+			return true;
+		}
+
+		m_dtime = m_end;
+		return false;
+	}
+		
+	CollisionFace m_face;
+	f32 m_scale;
+	f32 m_offset;
+	u32 m_handle;
+	u32 m_end;
+};
+
+class BackwardQuery : public ForwardQuery
+{
+public:
+	// v should be negative
+	BackwardQuery(CollisionQueryContext *ctx, CollisionFace face, f32 v, f32 dtime, bool context_owner=false) : ForwardQuery(ctx, face, v, dtime, context_owner) {}
+	
+protected:
+	virtual void init(f32 v)
+	{
+		const InvertedIndex *index = m_context->getInvertedIndex();
+		m_handle = index->lowerBackAttributeBound(m_face, m_offset);
+		m_end = index->upperBackAttributeBound(m_face, m_offset + v * m_endtime);
+	}
+	virtual void advance() { m_handle--; }
+	virtual bool update()
+	{
+		if (m_handle > m_end)
+		{
+			const InvertedIndex *index = m_context->getInvertedIndex();
+			m_dtime = (index->getAttributeIndex(m_face, m_handle)->first - m_offset) * m_scale;
+			return true;
+		}
+
+		m_dtime = m_end;
+		return false;
+	}
+		
+};
+
+
+
+/* TODO
+CollisionQuery *CollisionQuery::getLinearQuery(aabb3f box, f32 dtime, v3f velocity, InvertedIndex *index, std::vector<Collision> *collisions)
+{
+	return nullptr;
+}
+*/
+
+CollisionQuery *CollisionQuery::get1dQuery(aabb3f box, f32 dtime, CollisionFace face, f32 velocity, InvertedIndex *index, std::vector<Collision> *collisions)
+{
+	CollisionQueryContext *c = new CollisionQueryContext(0, box, index, collisions);
+
+	if (velocity < 0)
+	{
+		if (face == COLLISION_FACE_X)
+			face = COLLISION_FACE_MIN_X;
+		else if (face == COLLISION_FACE_Y)
+			face = COLLISION_FACE_MIN_Y;
+		else if (face == COLLISION_FACE_Z)
+			face = COLLISION_FACE_MIN_Z;
+		return new BackwardQuery(c, face, velocity, dtime, true);
+	}
+	if (velocity > 0)
+	{
+		if (face == COLLISION_FACE_X)
+			face = COLLISION_FACE_MAX_X;
+		else if (face == COLLISION_FACE_Y)
+			face = COLLISION_FACE_MAX_Y;
+		else if (face == COLLISION_FACE_Z)
+			face = COLLISION_FACE_MAX_Z;
+		return new ForwardQuery(c, face, velocity, dtime, true);
+	}
+	return new CollisionQuery(c, dtime, true);
+}
