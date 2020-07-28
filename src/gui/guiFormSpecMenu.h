@@ -322,7 +322,6 @@ protected:
 	GUIInventoryList::ItemSpec *m_selected_item = nullptr;
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
-	ItemStack m_selected_swap;
 
 	gui::IGUIStaticText *m_tooltip_element = nullptr;
 

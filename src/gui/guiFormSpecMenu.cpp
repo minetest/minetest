@@ -3678,13 +3678,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 				InventoryList *list = inv->getList(m_selected_item->listname);
 				if (list && (u32) m_selected_item->i < list->getSize()) {
 					ItemStack stack = list->getItem(m_selected_item->i);
-					if (!m_selected_swap.empty()) {
-						if (m_selected_swap.name == stack.name &&
-								m_selected_swap.count == stack.count)
-							m_selected_swap.clear();
-					} else {
-						m_selected_amount = std::min(m_selected_amount, stack.count);
-					}
+					m_selected_amount = std::min(m_selected_amount, stack.count);
 
 					if (!stack.empty())
 						return stack;
@@ -4258,17 +4252,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			// they are swapped
 			if (leftover.count == stack_from.count &&
 					leftover.name == stack_from.name) {
-
-				if (m_selected_swap.empty()) {
-					m_selected_amount = stack_to.count;
-					m_selected_dragging = false;
-
-					// WARNING: BLACK MAGIC, BUT IN A REDUCED SET
-					// Skip next validation checks due async inventory calls
-					m_selected_swap = stack_to;
-				} else {
-					move = false;
-				}
+				m_selected_amount = stack_to.count;
+				m_selected_dragging = false;
 			}
 			// Source stack goes fully into destination stack
 			else if (leftover.empty()) {
@@ -4371,7 +4356,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		// If m_selected_amount has been decreased to zero, deselect
 		if (m_selected_amount == 0) {
-			m_selected_swap.clear();
 			delete m_selected_item;
 			m_selected_item = nullptr;
 			m_selected_amount = 0;

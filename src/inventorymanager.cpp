@@ -546,12 +546,6 @@ void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 	if (!inv_from || !inv_to)
 		return;
 
-	InventoryLocation current_player;
-	current_player.setCurrentPlayer();
-	Inventory *inv_player = mgr->getInventory(current_player);
-	if (inv_from != inv_player || inv_to != inv_player)
-		return;
-
 	InventoryList *list_from = inv_from->getList(from_list);
 	InventoryList *list_to = inv_to->getList(to_list);
 	if (!list_from || !list_to)
