@@ -81,10 +81,9 @@ The game directory can contain the following files:
       dialog and game start menu.
     * `author`: The author of the game. It only appears when downloaded from
                 ContentDB.
-    * `release`: The ID corresponding to the version of the mod. It only
-                 appears when downloaded from ContentDB.
-    * `title`: The title set on ContentDB. It only appears when downloaded
-               from ContentDB.
+    * `release`: Ignore this: Should only ever be set by ContentDB, as it is
+                 an internal ID used to track versions.
+    * `title`: A human-readable title.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -145,10 +144,9 @@ The file is a key-value store of modpack details.
                  menu.
 * `author`: The author of the modpack. It only appears when downloaded from
             ContentDB.
-* `release`: The ID corresponding to the version of the modpack. It only
-             appears when downloaded from ContentDB.
-* `title`: The title set on ContentDB. It only appears when downloaded from
-           ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title.
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
@@ -190,10 +188,9 @@ A `Settings` file that provides meta information about the mod.
                       Like a dependency, but no error if the mod doesn't exist.
 * `author`: The author of the mod. It only appears when downloaded from
             ContentDB.
-* `release`: The ID corresponding to the version of the mod. It only appears
-             when downloaded from ContentDB.
-* `title`: The title set on ContentDB. It only appears when downloaded from
-           ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title.
 
 Note: to support 0.4.x, please also provide depends.txt.
 
