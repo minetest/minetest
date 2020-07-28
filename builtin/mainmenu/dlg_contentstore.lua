@@ -505,8 +505,9 @@ function store.handle_submit(this, fields)
 		end
 
 		if fields["view_" .. i] then
-			local url = ("%s/packages/%s?protocol_version=%d"):format(
-					core.settings:get("contentdb_url"), package.id, core.get_max_supp_proto())
+			local url = ("%s/packages/%s/%s?protocol_version=%d"):format(
+					core.settings:get("contentdb_url"),
+					package.author, package.name, core.get_max_supp_proto())
 			core.open_url(url)
 			return true
 		end
