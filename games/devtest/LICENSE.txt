@@ -1,0 +1,4 @@
+License information for Development Test
+----------------------------------------
+
+The same license as for Minetest applies.

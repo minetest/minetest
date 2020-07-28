@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Belarusian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2019-11-19 23:04+0000\n"
 "Last-Translator: Viktar Vauchkevich <victorenator@gmail.com>\n"
 "Language-Team: Belarusian <https://hosted.weblate.org/projects/minetest/"
@@ -23,6 +23,10 @@ msgstr "Адрадзіцца"
 msgid "You died"
 msgstr "Вы загінулі"
 
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr ""
+
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
 msgstr "Адбылася памылка ў Lua-скрыпце:"
@@ -34,10 +38,6 @@ msgstr "Адбылася памылка:"
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Галоўнае меню"
-
-#: builtin/fstk/ui.lua
-msgid "Ok"
-msgstr "Добра"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -116,6 +116,10 @@ msgstr ""
 "сімвалы. Дапускаюцца толькі [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
+msgid "Find More Mods"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Мадыфікацыя:"
 
@@ -161,16 +165,17 @@ msgid "All packages"
 msgstr "Усе пакункі"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back"
-msgstr "Назад"
-
-#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Вярнуцца ў галоўнае меню"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading and installing $1, please wait..."
-msgstr "Спампоўванне і ўсталёўка $1. Калі ласка, пачакайце…"
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Загрузка…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -215,13 +220,55 @@ msgstr "Выдаліць"
 msgid "Update"
 msgstr "Абнавіць"
 
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "Свет з назвай \"$1\" ужо існуе"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Additional terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Altitude chill"
+msgstr "Вышыня нівальнага поясу"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Altitude dry"
+msgstr "Вышыня нівальнага поясу"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biome blending"
+msgstr "Шум біёму"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biomes"
+msgstr "Шум біёму"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caverns"
+msgstr "Шум пячор"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caves"
+msgstr "Актавы"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Стварыць"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Decorations"
+msgstr "Ітэрацыі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -231,17 +278,100 @@ msgstr "Спампоўвайце гульні кшталту «Minetest Game», 
 msgid "Download one from minetest.net"
 msgstr "Спампаваць з minetest.net"
 
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Dungeons"
+msgstr "Шум падзямелля"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Flat terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floating landmasses in the sky"
+msgstr "Шчыльнасць гор лятучых астравоў"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floatlands (experimental)"
+msgstr "Узровень лятучых астравоў"
+
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
 msgstr "Гульня"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Generate non-fractal terrain: Oceans and underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Hills"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Humid rivers"
+msgstr "Відэадрайвер"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Increases humidity around rivers"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Lakes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Low humidity and high heat causes shallow or dry rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
 msgstr "Генератар мапы"
 
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Mapgen flags"
+msgstr "Генератар мапы: параметры"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mapgen-specific flags"
+msgstr "Адмысловыя параметры генератара мапы 5"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mountains"
+msgstr "Шум гор"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mud flow"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Network of tunnels and caves"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
 msgstr "Гульня не абраная"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces heat with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces humidity with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Rivers"
+msgstr "Памер рэк"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Sea level rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -249,7 +379,52 @@ msgid "Seed"
 msgstr "Зерне"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The minimal development test is meant for developers."
+msgid "Smooth transition between biomes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Structures appearing on the terrain (no effect on trees and jungle grass "
+"created by v6)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Structures appearing on the terrain, typically trees and plants"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle, Tundra, Taiga"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Terrain surface erosion"
+msgstr "Базавы шум рэльефу"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Trees and jungle grass"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Vary river depth"
+msgstr "Глыбіня рэк"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Very large caverns deep in the underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Warning: The Development Test is meant for developers."
 msgstr ""
 "Увага: \"The minimal development test\" прызначаны толькі распрацоўшчыкам."
 
@@ -564,6 +739,10 @@ msgstr "Гуляць (сервер)"
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
 msgstr "Сервер"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Install games from ContentDB"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1221,6 +1400,14 @@ msgid "Sound muted"
 msgstr "Гук адключаны"
 
 #: src/client/game.cpp
+msgid "Sound system is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Sound system is not supported on this build"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Sound unmuted"
 msgstr "Гук уключаны"
 
@@ -1252,7 +1439,7 @@ msgstr "Каркас паказваецца"
 msgid "Zoom currently disabled by game or mod"
 msgstr "Павелічэнне зараз выключана гульнёй альбо мадыфікацыяй"
 
-#: src/client/game.cpp src/gui/modalMenu.cpp
+#: src/client/game.cpp
 msgid "ok"
 msgstr "добра"
 
@@ -1859,6 +2046,11 @@ msgid "3D mode"
 msgstr "3D-рэжым"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "3D mode parallax strength"
+msgstr "Моц мапы нармаляў"
+
+#: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
 msgstr "3D-шум, што вызначае гіганцкія гроты."
 
@@ -1869,6 +2061,14 @@ msgid ""
 msgstr ""
 "3D-шум, што вызначае структуру і вышыню гор.\n"
 "Таксама вызначае структуру горнага рэльефу лятучых астравоў."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D noise defining structure of floatlands.\n"
+"If altered from the default, the noise 'scale' (0.7 by default) may need\n"
+"to be adjusted, as floatland tapering functions best when this noise has\n"
+"a value range of approximately -2.0 to 2.0."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -1932,7 +2132,8 @@ msgid "ABM interval"
 msgstr "Інтэрвал захавання мапы"
 
 #: src/settings_translation_file.cpp
-msgid "Absolute limit of emerge queues"
+#, fuzzy
+msgid "Absolute limit of queued blocks to emerge"
 msgstr "Абсалютны ліміт чаргі запытаў"
 
 #: src/settings_translation_file.cpp
@@ -1982,6 +2183,16 @@ msgstr ""
 "(не толькі X11/Android), напрыклад, для 4k-экранаў."
 
 #: src/settings_translation_file.cpp
+#, c-format
+msgid ""
+"Adjusts the density of the floatland layer.\n"
+"Increase value to increase density. Can be positive or negative.\n"
+"Value = 0.0: 50% of volume is floatland.\n"
+"Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
+"to be sure) creates a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Пашыраныя"
 
@@ -1993,10 +2204,6 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Altitude chill"
-msgstr "Вышыня нівальнага поясу"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2276,8 +2483,18 @@ msgstr ""
 "Прадвызначана: simple для Android, full для ўсіх астатніх."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat font size"
+msgstr "Памер шрыфту"
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Клавіша размовы"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat log level"
+msgstr "Узровень журнала адладкі"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2562,6 +2779,11 @@ msgstr "Прадвызначаныя прывілеі"
 #: src/settings_translation_file.cpp
 msgid "Default report format"
 msgstr "Прадвызначаны фармат справаздачы"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Default stack size"
+msgstr "Прадвызначаная гульня"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2914,6 +3136,16 @@ msgstr ""
 "паміж блокамі пры значэнні большым за 0."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Value = 1.0 creates a uniform, linear tapering.\n"
+"Values > 1.0 create a smooth tapering suitable for the default separated\n"
+"floatlands.\n"
+"Values < 1.0 (for example 0.25) create a more defined surface level with\n"
+"flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
 msgstr "FPS у меню паўзы"
 
@@ -3034,6 +3266,41 @@ msgid "Fixed virtual joystick"
 msgstr "Фіксацыя віртуальнага джойсціка"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland density"
+msgstr "Шчыльнасць гор лятучых астравоў"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland maximum Y"
+msgstr "Максімальная Y падзямелля"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland minimum Y"
+msgstr "Мінімальная Y падзямелля"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland noise"
+msgstr "Базавы шум лятучых астравоў"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland taper exponent"
+msgstr "Шчыльнасць гор лятучых астравоў"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland tapering distance"
+msgstr "Базавы шум лятучых астравоў"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland water level"
+msgstr "Узровень лятучых астравоў"
+
+#: src/settings_translation_file.cpp
 msgid "Fly key"
 msgstr "Клавіша палёту"
 
@@ -3083,6 +3350,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font in point (pt)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Font size of the recent chat text and chat prompt in point (pt).\n"
+"Value 0 will use the default font size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4715,14 +4988,6 @@ msgid "Light curve low gradient"
 msgstr "Цэнтр сярэдняга ўздыму крывой святла"
 
 #: src/settings_translation_file.cpp
-msgid "Limit of emerge queues on disk"
-msgstr "Абмежаванне чэргаў на дыску"
-
-#: src/settings_translation_file.cpp
-msgid "Limit of emerge queues to generate"
-msgstr "Абмежаванне чэргаў на генерацыю"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
@@ -4795,6 +5060,11 @@ msgstr "Загрузка мадыфікатараў блокаў"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
+msgstr "Ніжні ліміт Y для падзямелляў."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lower Y limit of floatlands."
 msgstr "Ніжні ліміт Y для падзямелляў."
 
 #: src/settings_translation_file.cpp
@@ -4882,9 +5152,12 @@ msgstr ""
 "а параметр «jungles» ігнаруецца."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers."
+"'ridges': Rivers.\n"
+"'floatlands': Floating land masses in the atmosphere.\n"
+"'caverns': Giant caves deep underground."
 msgstr ""
 "Атрыбуты генерацыі для генератара 7.\n"
 "«ridges» уключае рэкі."
@@ -4974,10 +5247,6 @@ msgid "Mapgen debug"
 msgstr "Генератар мапы: адладка"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen flags"
-msgstr "Генератар мапы: параметры"
-
-#: src/settings_translation_file.cpp
 msgid "Mapgen name"
 msgstr "Назва генератара мапы"
 
@@ -5049,17 +5318,19 @@ msgid "Maximum number of blocks that can be queued for loading."
 msgstr "Максімальная колькасць блокаў, што можна дадаць у чаргу загрузкі."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Максімальная колькасць блокаў, што можна дадаць у чаргу генерацыі.\n"
 "Пакінце пустым для аўтаматычнага выбару неабходнага значэння."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "Максімальная колькасць блокаў у чарзе на загрузку з файла.\n"
 "Пакінце пустым для аўтаматычнага выбару неабходнага значэння."
@@ -5157,6 +5428,10 @@ msgstr "Паведамленне, якое паказваецца для гул�
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
 msgstr "Метад падсвятлення абранага аб'екта."
+
+#: src/settings_translation_file.cpp
+msgid "Minimal level of logging to be written to chat."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5330,11 +5605,9 @@ msgid "Number of emerge threads"
 msgstr "Колькасць узнікаючых патокаў"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
-"WARNING: Currently there are multiple bugs that may cause crashes when\n"
-"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
-"strongly recommended this value is set to the default '1'.\n"
 "Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
@@ -5433,10 +5706,6 @@ msgid "Parallax occlusion scale"
 msgstr "Маштаб паралакснай аклюзіі"
 
 #: src/settings_translation_file.cpp
-msgid "Parallax occlusion strength"
-msgstr "Інтэнсіўнасць паралакснай аклюзіі"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path of the fallback font.\n"
 "If “freetype” setting is enabled: Must be a TrueType font.\n"
@@ -5446,8 +5715,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Path to save screenshots at."
-msgstr "Каталог для захоўвання здымкаў экрана."
+msgid ""
+"Path to save screenshots at. Can be an absolute or relative path.\n"
+"The folder will be created if it doesn't already exist."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5480,6 +5751,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
 msgstr "Паўза пры страце фокусу"
+
+#: src/settings_translation_file.cpp
+msgid "Per-player limit of queued blocks load from disk"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Per-player limit of queued blocks to generate"
+msgstr "Абмежаванне чэргаў на генерацыю"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5560,6 +5840,18 @@ msgstr "Клавіша пераключэння прафіліроўшчыка"
 #: src/settings_translation_file.cpp
 msgid "Profiling"
 msgstr "Прафіляванне"
+
+#: src/settings_translation_file.cpp
+msgid "Prometheus listener address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Prometheus listener address.\n"
+"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"enable metrics listener for Prometheus on that address.\n"
+"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -6082,6 +6374,13 @@ msgstr ""
 "Недасяжныя файлы будуць спампоўвацца звычайным чынам."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Specifies the default stack size of nodes, items and tools.\n"
+"Note that mods or games may explicitly set a stack for certain (or all) "
+"items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Spread of light curve boost range.\n"
@@ -6108,6 +6407,11 @@ msgid "Step mountain spread noise"
 msgstr "Крок шуму распаўсюджвання гор"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Strength of 3D mode parallax."
+msgstr "Моц паралакса."
+
+#: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
 msgstr "Моц згенераваных мапаў нармаляў."
 
@@ -6119,16 +6423,26 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Strength of parallax."
-msgstr "Моц паралакса."
-
-#: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "Строгая праверка пратакола"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
 msgstr "Прыбіраць коды колераў"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Surface level of optional water placed on a solid floatland layer.\n"
+"Water is disabled by default and will only be placed if this value is set\n"
+"to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
+"upper tapering).\n"
+"***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
+"When enabling water placement the floatlands must be configured and tested\n"
+"to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
+"required value depending on 'mgv7_np_floatland'), to avoid\n"
+"server-intensive extreme water flow and to avoid vast flooding of the\n"
+"world surface below."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6256,6 +6570,7 @@ msgstr ""
 "Глядзіце поўны спіс прывілеяў у /privs."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6263,7 +6578,7 @@ msgid ""
 "In active blocks objects are loaded and ABMs run.\n"
 "This is also the minimum range in which active objects (mobs) are "
 "maintained.\n"
-"This should be configured together with active_object_range."
+"This should be configured together with active_object_send_range_blocks."
 msgstr ""
 "Радыус аб'ёму блокаў вакол кожнага гульца, у якім дзейнічаюць\n"
 "актыўныя блокі, вызначаны ў блоках мапы (16 блокаў).\n"
@@ -6457,6 +6772,11 @@ msgstr "Выгрузіць невыкарыстоўваемыя даныя се�
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
+msgstr "Верхні ліміт Y для падзямелляў."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Upper Y limit of floatlands."
 msgstr "Верхні ліміт Y для падзямелляў."
 
 #: src/settings_translation_file.cpp
@@ -6840,6 +7160,14 @@ msgid "Y-distance over which caverns expand to full size."
 msgstr "Y-адлегласць, на якой пячора пашырыцца да поўнага памеру."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Y-distance over which floatlands taper from full density to nothing.\n"
+"Tapering starts at this distance from the Y limit.\n"
+"For a solid floatland layer, this controls the height of hills/mountains.\n"
+"Must be less than or equal to half the distance between the Y limits."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
 msgstr "Y-узровень сярэдняй паверхні рэльефу."
 
@@ -6872,130 +7200,40 @@ msgid "cURL timeout"
 msgstr "Таймаўт cURL"
 
 #~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ "Map generation attributes specific to Mapgen v5.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Наладка гама-кадавання для светлавых табліц. Высокія значэнні — больш "
-#~ "ярчэйшыя.\n"
-#~ "Гэты параметр прызначаны толькі для кліента і ігнаруецца серверам."
+#~ "Атрыбуты генерацыі мапы для генератара мапы 5.\n"
+#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
+#~ "Атрыбуты, што пачынаюцца з 'no' выкарыстоўваюцца для іх выключэння."
 
-#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
-#~ msgstr "Кіруе звужэннем астравоў горнага тыпу ніжэй сярэдняй кропкі."
-
-#~ msgid "Center of light curve mid-boost."
-#~ msgstr "Цэнтр сярэдняга ўздыму крывой святла."
+#~ msgid "Toggle Cinematic"
+#~ msgstr "Кінематаграфічнасць"
 
 #~ msgid ""
-#~ "Controls the density of mountain-type floatlands.\n"
-#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ "Map generation attributes specific to Mapgen Carpathian.\n"
+#~ "Flags that are not enabled are not modified from the default.\n"
+#~ "Flags starting with 'no' are used to explicitly disable them."
 #~ msgstr ""
-#~ "Кіруе шчыльнасцю горнага рэльефу лятучых астравоў.\n"
-#~ "Гэты зрух дадаецца да значэння 'np_mountain'."
+#~ "Атрыбуты генерацыі мапы для генератара мапы \"Карпаты\".\n"
+#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
+#~ "Атрыбуты, што пачынаюцца з \"no\", выкарыстоўваюцца для іх выключэння."
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr ""
-#~ "Кіруе шырынёй тунэляў. Меншае значэнне стварае больш шырокія тунэлі."
+#~ msgid "Content Store"
+#~ msgstr "Крама дадаткаў"
 
-#~ msgid "Darkness sharpness"
-#~ msgstr "Рэзкасць цемры"
+#~ msgid "Select Package File:"
+#~ msgstr "Абраць файл пакунка:"
 
-#~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
-#~ msgstr ""
-#~ "Вызначае вобласці гладкага рэльефу лятучых астравоў.\n"
-#~ "Гладкая паверхня з'яўляецца, калі шум больш нуля."
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "Y верхняга ліміту лавы ў шырокіх пячорах."
 
-#~ msgid ""
-#~ "Deprecated, define and locate cave liquids using biome definitions "
-#~ "instead.\n"
-#~ "Y of upper limit of lava in large caves."
-#~ msgstr ""
-#~ "Састарэлы. Вызначае і размяшчае пячорныя вадкасці з выкарыстаннем "
-#~ "азначэнняў біёму.\n"
-#~ "Y верхняй мяжы лавы ў вялікіх пячорах."
-
-#~ msgid "Enable VBO"
-#~ msgstr "Уключыць VBO"
-
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "Уключае кінематаграфічнае танальнае адлюстраванне"
-
-#~ msgid "Floatland base height noise"
-#~ msgstr "Шум базавай вышыні лятучых астравоў"
-
-#~ msgid "Floatland base noise"
-#~ msgstr "Базавы шум лятучых астравоў"
-
-#~ msgid "Floatland level"
-#~ msgstr "Узровень лятучых астравоў"
-
-#~ msgid "Floatland mountain density"
-#~ msgstr "Шчыльнасць гор лятучых астравоў"
-
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "Шчыльнасць гор лятучых астравоў"
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "Вышыня гор на лятучых астравоў"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "Празрыстасць цені шрыфту (ад 0 да 255)."
-
-#~ msgid "Gamma"
-#~ msgstr "Гама"
-
-#~ msgid "IPv6 support."
-#~ msgstr "Падтрымка IPv6."
-
-#~ msgid "Lava depth"
-#~ msgstr "Глыбіня лавы"
-
-#~ msgid "Lightness sharpness"
-#~ msgstr "Рэзкасць паваротлівасці"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "Шлях да TrueTypeFont ці растравага шрыфту."
-
-#~ msgid "Shadow limit"
-#~ msgstr "Ліміт ценяў"
-
-#~ msgid "Strength of light curve mid-boost."
-#~ msgstr "Моц сярэдняга ўздыму крывой святла."
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "Гэты шрыфт будзе выкарыстоўваецца для некаторых моў."
-
-#~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
-#~ msgstr ""
-#~ "Тыповая максімальная вышыня, вышэй і ніжэй сярэдняй кропкі гор лятучых "
-#~ "астравоў."
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr ""
-#~ "Варыяцыя вышыні пагоркаў і глыбінь азёр на гладкай мясцовасці лятучых "
-#~ "астравоў."
-
-#~ msgid "Waving water"
+#~ msgid "Waving Water"
 #~ msgstr "Хваляванне вады"
 
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "Y-узровень сярэдняй кропкі і паверхні азёр лятучых астравоў."
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "Y-узровень, да якога распаўсюджваюцца цені лятучых астравоў."
-
-#~ msgid ""
-#~ "If enabled together with fly mode, makes move directions relative to the "
-#~ "player's pitch."
-#~ msgstr ""
-#~ "Калі ўключана адначасова з рэжымам палёту, то вызначае напрамак руху "
-#~ "адносна кроку гульца."
-
-#~ msgid "Projecting dungeons"
-#~ msgstr "Праектаванне падзямелляў"
+#~ msgid "Whether dungeons occasionally project from the terrain."
+#~ msgstr "Выступ падзямелляў па-над рэльефам."
 
 #~ msgid ""
 #~ "Map generation attributes specific to Mapgen v7.\n"
@@ -7008,38 +7246,134 @@ msgstr "Таймаўт cURL"
 #~ "Нявызначаныя параметры прадвызначана не змяняюцца.\n"
 #~ "Параметры, што пачынаюцца з \"no\", выкарыстоўваюцца для выключэння."
 
-#~ msgid "Whether dungeons occasionally project from the terrain."
-#~ msgstr "Выступ падзямелляў па-над рэльефам."
+#~ msgid "Projecting dungeons"
+#~ msgstr "Праектаванне падзямелляў"
 
-#~ msgid "Waving Water"
+#~ msgid ""
+#~ "If enabled together with fly mode, makes move directions relative to the "
+#~ "player's pitch."
+#~ msgstr ""
+#~ "Калі ўключана адначасова з рэжымам палёту, то вызначае напрамак руху "
+#~ "адносна кроку гульца."
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "Y-узровень, да якога распаўсюджваюцца цені лятучых астравоў."
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "Y-узровень сярэдняй кропкі і паверхні азёр лятучых астравоў."
+
+#~ msgid "Waving water"
 #~ msgstr "Хваляванне вады"
 
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "Y верхняга ліміту лавы ў шырокіх пячорах."
-
-#~ msgid "Select Package File:"
-#~ msgstr "Абраць файл пакунка:"
-
-#~ msgid "Content Store"
-#~ msgstr "Крама дадаткаў"
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr ""
+#~ "Варыяцыя вышыні пагоркаў і глыбінь азёр на гладкай мясцовасці лятучых "
+#~ "астравоў."
 
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen Carpathian.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
-#~ "Атрыбуты генерацыі мапы для генератара мапы \"Карпаты\".\n"
-#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
-#~ "Атрыбуты, што пачынаюцца з \"no\", выкарыстоўваюцца для іх выключэння."
+#~ "Тыповая максімальная вышыня, вышэй і ніжэй сярэдняй кропкі гор лятучых "
+#~ "астравоў."
 
-#~ msgid "Toggle Cinematic"
-#~ msgstr "Кінематаграфічнасць"
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "Гэты шрыфт будзе выкарыстоўваецца для некаторых моў."
+
+#~ msgid "Strength of light curve mid-boost."
+#~ msgstr "Моц сярэдняга ўздыму крывой святла."
+
+#~ msgid "Shadow limit"
+#~ msgstr "Ліміт ценяў"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "Шлях да TrueTypeFont ці растравага шрыфту."
+
+#~ msgid "Lightness sharpness"
+#~ msgstr "Рэзкасць паваротлівасці"
+
+#~ msgid "Lava depth"
+#~ msgstr "Глыбіня лавы"
+
+#~ msgid "IPv6 support."
+#~ msgstr "Падтрымка IPv6."
+
+#~ msgid "Gamma"
+#~ msgstr "Гама"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "Празрыстасць цені шрыфту (ад 0 да 255)."
+
+#~ msgid "Floatland mountain height"
+#~ msgstr "Вышыня гор на лятучых астравоў"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "Шум базавай вышыні лятучых астравоў"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "Уключае кінематаграфічнае танальнае адлюстраванне"
+
+#~ msgid "Enable VBO"
+#~ msgstr "Уключыць VBO"
 
 #~ msgid ""
-#~ "Map generation attributes specific to Mapgen v5.\n"
-#~ "Flags that are not enabled are not modified from the default.\n"
-#~ "Flags starting with 'no' are used to explicitly disable them."
+#~ "Deprecated, define and locate cave liquids using biome definitions "
+#~ "instead.\n"
+#~ "Y of upper limit of lava in large caves."
 #~ msgstr ""
-#~ "Атрыбуты генерацыі мапы для генератара мапы 5.\n"
-#~ "Нявызначаныя атрыбуты прадвызначана не змяняюцца.\n"
-#~ "Атрыбуты, што пачынаюцца з 'no' выкарыстоўваюцца для іх выключэння."
+#~ "Састарэлы. Вызначае і размяшчае пячорныя вадкасці з выкарыстаннем "
+#~ "азначэнняў біёму.\n"
+#~ "Y верхняй мяжы лавы ў вялікіх пячорах."
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
+#~ msgstr ""
+#~ "Вызначае вобласці гладкага рэльефу лятучых астравоў.\n"
+#~ "Гладкая паверхня з'яўляецца, калі шум больш нуля."
+
+#~ msgid "Darkness sharpness"
+#~ msgstr "Рэзкасць цемры"
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr ""
+#~ "Кіруе шырынёй тунэляў. Меншае значэнне стварае больш шырокія тунэлі."
+
+#~ msgid ""
+#~ "Controls the density of mountain-type floatlands.\n"
+#~ "Is a noise offset added to the 'mgv7_np_mountain' noise value."
+#~ msgstr ""
+#~ "Кіруе шчыльнасцю горнага рэльефу лятучых астравоў.\n"
+#~ "Гэты зрух дадаецца да значэння 'np_mountain'."
+
+#~ msgid "Center of light curve mid-boost."
+#~ msgstr "Цэнтр сярэдняга ўздыму крывой святла."
+
+#~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
+#~ msgstr "Кіруе звужэннем астравоў горнага тыпу ніжэй сярэдняй кропкі."
+
+#~ msgid ""
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
+#~ msgstr ""
+#~ "Наладка гама-кадавання для светлавых табліц. Высокія значэнні — больш "
+#~ "ярчэйшыя.\n"
+#~ "Гэты параметр прызначаны толькі для кліента і ігнаруецца серверам."
+
+#~ msgid "Path to save screenshots at."
+#~ msgstr "Каталог для захоўвання здымкаў экрана."
+
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "Інтэнсіўнасць паралакснай аклюзіі"
+
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "Абмежаванне чэргаў на дыску"
+
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "Спампоўванне і ўсталёўка $1. Калі ласка, пачакайце…"
+
+#~ msgid "Back"
+#~ msgstr "Назад"
+
+#~ msgid "Ok"
+#~ msgstr "Добра"

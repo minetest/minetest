@@ -18,9 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/tile.h" // ITextureSource
+#include "client/fontengine.h"
 #include "debug.h"
 #include "irrlichttypes_extrabloated.h"
 #include "util/string.h"
+#include <algorithm>
 #include <array>
 
 #pragma once
@@ -46,6 +48,8 @@ public:
 		ALPHA,
 		CONTENT_OFFSET,
 		PADDING,
+		FONT,
+		FONT_SIZE,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -98,6 +102,10 @@ public:
 			return CONTENT_OFFSET;
 		} else if (name == "padding") {
 			return PADDING;
+		} else if (name == "font") {
+			return FONT;
+		} else if (name == "font_size") {
+			return FONT_SIZE;
 		} else {
 			return NONE;
 		}
@@ -223,6 +231,47 @@ public:
 		irr::core::vector2d<s32> vec;
 		parseVector2i(val, &vec);
 		return vec;
+	}
+
+	gui::IGUIFont *getFont() const
+	{
+		FontSpec spec(FONT_SIZE_UNSPECIFIED, FM_Standard, false, false);
+
+		const std::string &font = properties[FONT];
+		const std::string &size = properties[FONT_SIZE];
+
+		if (font.empty() && size.empty())
+			return nullptr;
+
+		std::vector<std::string> modes = split(font, ',');
+
+		for (size_t i = 0; i < modes.size(); i++) {
+			if (modes[i] == "normal")
+				spec.mode = FM_Standard;
+			else if (modes[i] == "mono")
+				spec.mode = FM_Mono;
+			else if (modes[i] == "bold")
+				spec.bold = true;
+			else if (modes[i] == "italic")
+				spec.italic = true;
+		}
+
+		if (!size.empty()) {
+			int calc_size = 1;
+
+			if (size[0] == '*') {
+				std::string new_size = size.substr(1); // Remove '*' (invalid for stof)
+				calc_size = stof(new_size) * g_fontengine->getFontSize(spec.mode);
+			} else if (size[0] == '+' || size[0] == '-') {
+				calc_size = stoi(size) + g_fontengine->getFontSize(spec.mode);
+			} else {
+				calc_size = stoi(size);
+			}
+
+			spec.size = (unsigned)std::min(std::max(calc_size, 1), 999);
+		}
+
+		return g_fontengine->getFont(spec);
 	}
 
 	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc,

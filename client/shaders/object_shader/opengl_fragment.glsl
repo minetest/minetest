@@ -145,8 +145,10 @@ void main(void)
 
 	vec4 col = vec4(color.rgb, base.a);
 
+	col.rgb *= gl_Color.rgb;
+
 	col.rgb *= emissiveColor.rgb * vIDiff;
-		
+
 #ifdef ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
 #endif

@@ -159,6 +159,7 @@ EmergeManager::EmergeManager(Server *server)
 		nthreads = 1;
 
 	m_qlimit_total = g_settings->getU16("emergequeue_limit_total");
+	// FIXME: these fallback values are probably not good
 	if (!g_settings->getU16NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
 		m_qlimit_diskonly = nthreads * 5 + 1;
 	if (!g_settings->getU16NoEx("emergequeue_limit_generate", m_qlimit_generate))

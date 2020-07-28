@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2015-2018 paramat
+Copyright (C) 2015-2020 paramat
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -146,7 +146,7 @@ ObjDef *OreScatter::clone() const
 
 
 void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -170,7 +170,7 @@ void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 index = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
-			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
+			auto it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -208,7 +208,7 @@ ObjDef *OreSheet::clone() const
 
 
 void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 4234);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -237,7 +237,7 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			continue;
 
 		if (biomemap && !biomes.empty()) {
-			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
+			auto it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -285,7 +285,7 @@ ObjDef *OrePuff::clone() const
 
 
 void OrePuff::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 4234);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -312,7 +312,7 @@ void OrePuff::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			continue;
 
 		if (biomemap && !biomes.empty()) {
-			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
+			auto it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -366,7 +366,7 @@ ObjDef *OreBlob::clone() const
 
 
 void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 2404);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -388,7 +388,7 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 bmapidx = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
-			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[bmapidx]);
+			auto it = biomes.find(biomemap[bmapidx]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -451,7 +451,7 @@ ObjDef *OreVein::clone() const
 
 
 void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 520);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -485,7 +485,7 @@ void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 bmapidx = sizex * (z - nmin.Z) + (x - nmin.X);
-			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[bmapidx]);
+			auto it = biomes.find(biomemap[bmapidx]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -532,7 +532,7 @@ ObjDef *OreStratum::clone() const
 
 
 void OreStratum::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
 {
 	PcgRandom pr(blockseed + 4234);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -560,7 +560,7 @@ void OreStratum::generate(MMVManip *vm, int mapseed, u32 blockseed,
 	for (int z = nmin.Z; z <= nmax.Z; z++)
 	for (int x = nmin.X; x <= nmax.X; x++, index++) {
 		if (biomemap && !biomes.empty()) {
-			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
+			auto it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}

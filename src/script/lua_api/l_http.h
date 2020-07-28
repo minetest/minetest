@@ -32,6 +32,9 @@ private:
 	static void read_http_fetch_request(lua_State *L, HTTPFetchRequest &req);
 	static void push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool completed = true);
 
+	// http_fetch_sync({url=, timeout=, post_data=})
+	static int l_http_fetch_sync(lua_State *L);
+
 	// http_fetch_async({url=, timeout=, post_data=})
 	static int l_http_fetch_async(lua_State *L);
 
@@ -40,8 +43,12 @@ private:
 
 	// request_http_api()
 	static int l_request_http_api(lua_State *L);
+
+	// get_http_api()
+	static int l_get_http_api(lua_State *L);
 #endif
 
 public:
 	static void Initialize(lua_State *L, int top);
+	static void InitializeAsync(lua_State *L, int top);
 };

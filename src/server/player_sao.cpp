@@ -120,26 +120,26 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeLongString(getPropertyPacket()); // message 1
 	msg_os << serializeLongString(generateUpdateArmorGroupsCommand()); // 2
 	msg_os << serializeLongString(generateUpdateAnimationCommand()); // 3
-	for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
-			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-		msg_os << serializeLongString(generateUpdateBonePositionCommand((*ii).first,
-			(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
+	for (const auto &bone_pos : m_bone_position) {
+		msg_os << serializeLongString(generateUpdateBonePositionCommand(
+			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // m_bone_position.size
 	}
 	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
 	msg_os << serializeLongString(generateUpdatePhysicsOverrideCommand()); // 5
-	// (AO_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
-	msg_os << serializeLongString(generateUpdateNametagAttributesCommand(m_prop.nametag_color)); // 6
-	int message_count = 6 + m_bone_position.size();
-	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
-			ii != m_attachment_child_ids.end(); ++ii) {
-		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
+
+	int message_count = 5 + m_bone_position.size();
+
+	for (const auto &id : getAttachmentChildIds()) {
+		if (ServerActiveObject *obj = m_env->getActiveObject(id)) {
 			message_count++;
-			msg_os << serializeLongString(obj->generateUpdateInfantCommand(*ii, protocol_version));
+			msg_os << serializeLongString(obj->generateUpdateInfantCommand(
+				id, protocol_version));
 		}
 	}
 
 	writeU8(os, message_count);
-	os.write(msg_os.str().c_str(), msg_os.str().size());
+	std::string serialized = msg_os.str();
+	os.write(serialized.c_str(), serialized.size());
 
 	// return result
 	return os.str();
@@ -223,17 +223,16 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, str);
 		m_env->getScriptIface()->player_event(this, "properties_changed");
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
 	if (m_attachment_parent_id && !isAttached()) {
-		m_attachment_parent_id = 0;
-		m_attachment_bone = "";
-		m_attachment_position = v3f(0.0f, 0.0f, 0.0f);
-		m_attachment_rotation = v3f(0.0f, 0.0f, 0.0f);
+		// This is handled when objects are removed from the map
+		warningstream << "PlayerSAO::step() id=" << m_id <<
+			" is attached to nonexistent parent. This is a bug." << std::endl;
+		clearParentAttachment();
 		setBasePosition(m_last_good_position);
 		m_env->getGameDef()->SendMovePlayer(m_peer_id);
 	}
@@ -293,42 +292,13 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_messages_out.emplace(getId(), false, str);
 	}
 
-	if (!m_armor_groups_sent) {
-		m_armor_groups_sent = true;
-		// create message and add to list
-		m_messages_out.emplace(getId(), true, generateUpdateArmorGroupsCommand());
-	}
-
 	if (!m_physics_override_sent) {
 		m_physics_override_sent = true;
 		// create message and add to list
 		m_messages_out.emplace(getId(), true, generateUpdatePhysicsOverrideCommand());
 	}
 
-	if (!m_animation_sent) {
-		m_animation_sent = true;
-		// create message and add to list
-		m_messages_out.emplace(getId(), true, generateUpdateAnimationCommand());
-	}
-
-	if (!m_bone_position_sent) {
-		m_bone_position_sent = true;
-		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
-				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-			std::string str = generateUpdateBonePositionCommand((*ii).first,
-					(*ii).second.X, (*ii).second.Y);
-			// create message and add to list
-			m_messages_out.emplace(getId(), true, str);
-		}
-	}
-
-	if (!m_attachment_sent) {
-		m_attachment_sent = true;
-		std::string str = generateUpdateAttachmentCommand();
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
+	sendOutdatedData();
 }
 
 std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const

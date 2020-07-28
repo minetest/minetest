@@ -427,6 +427,7 @@ set(common_SRCS
 	noise.cpp
 	objdef.cpp
 	object_properties.cpp
+	particles.cpp
 	pathfinder.cpp
 	player.cpp
 	porting.cpp

@@ -1,5 +1,5 @@
 --Minetest
---Copyright (C) 2018 rubenwardy
+--Copyright (C) 2018-20 rubenwardy
 --
 --This program is free software; you can redistribute it and/or modify
 --it under the terms of the GNU Lesser General Public License as published by
@@ -15,8 +15,17 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+if not minetest.get_http_api then
+	function create_store_dlg()
+		return messagebox("store",
+				fgettext("ContentDB is not available when Minetest was compiled without cURL"))
+	end
+	return
+end
+
 local store = { packages = {}, packages_full = {} }
-local package_dialog = {}
+
+local http = minetest.get_http_api()
 
 -- Screenshot
 local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
@@ -44,19 +53,15 @@ local filter_types_type = {
 }
 
 
-
-
 local function download_package(param)
 	if core.download_file(param.package.url, param.filename) then
 		return {
-			package = param.package,
 			filename = param.filename,
 			successful = true,
 		}
 	else
 		core.log("error", "downloading " .. dump(param.package.url) .. " failed")
 		return {
-			package = param.package,
 			successful = false,
 		}
 	end
@@ -70,9 +75,9 @@ local function start_install(calling_dialog, package)
 
 	local function callback(result)
 		if result.successful then
-			local path, msg = pkgmgr.install(result.package.type,
-					result.filename, result.package.name,
-					result.package.path)
+			local path, msg = pkgmgr.install(package.type,
+					result.filename, package.name,
+					package.path)
 			if not path then
 				gamedata.errormessage = msg
 			else
@@ -80,33 +85,33 @@ local function start_install(calling_dialog, package)
 
 				local conf_path
 				local name_is_title = false
-				if result.package.type == "mod" then
+				if package.type == "mod" then
 					local actual_type = pkgmgr.get_folder_type(path)
 					if actual_type.type == "modpack" then
 						conf_path = path .. DIR_DELIM .. "modpack.conf"
 					else
 						conf_path = path .. DIR_DELIM .. "mod.conf"
 					end
-				elseif result.package.type == "game" then
+				elseif package.type == "game" then
 					conf_path = path .. DIR_DELIM .. "game.conf"
 					name_is_title = true
-				elseif result.package.type == "txp" then
+				elseif package.type == "txp" then
 					conf_path = path .. DIR_DELIM .. "texture_pack.conf"
 				end
 
 				if conf_path then
 					local conf = Settings(conf_path)
 					if name_is_title then
-						conf:set("name",   result.package.title)
+						conf:set("name",   package.title)
 					else
-						conf:set("title",  result.package.title)
-						conf:set("name",   result.package.name)
+						conf:set("title",  package.title)
+						conf:set("name",   package.name)
 					end
 					if not conf:get("description") then
-						conf:set("description", result.package.short_description)
+						conf:set("description", package.short_description)
 					end
-					conf:set("author",     result.package.author)
-					conf:set("release",    result.package.release)
+					conf:set("author",     package.author)
+					conf:set("release",    package.release)
 					conf:write()
 				end
 			end
@@ -115,37 +120,22 @@ local function start_install(calling_dialog, package)
 			gamedata.errormessage = fgettext("Failed to download $1", package.name)
 		end
 
-		if gamedata.errormessage == nil then
-			core.button_handler({btn_hidden_close_download=result})
-		else
-			core.button_handler({btn_hidden_close_download={successful=false}})
-		end
+		package.downloading = false
+		ui.update()
 	end
+
+	package.downloading = true
 
 	if not core.handle_async(download_package, params, callback) then
 		core.log("error", "ERROR: async event failed")
 		gamedata.errormessage = fgettext("Failed to download $1", package.name)
+		return
 	end
+end
 
-	local new_dlg = dialog_create("store_downloading",
-		function(data)
-			return "size[7,2]label[0.25,0.75;" ..
-				fgettext("Downloading and installing $1, please wait...", data.title) .. "]"
-		end,
-		function(this,fields)
-			if fields["btn_hidden_close_download"] ~= nil then
-				this:delete()
-				return true
-			end
-
-			return false
-		end,
-		nil)
-
-	new_dlg:set_parent(calling_dialog)
-	new_dlg.data.title = package.title
-	calling_dialog:hide()
-	new_dlg:show()
+local function get_file_extension(path)
+	local parts = path:split(".")
+	return parts[#parts]
 end
 
 local function get_screenshot(package)
@@ -156,8 +146,9 @@ local function get_screenshot(package)
 	end
 
 	-- Get tmp screenshot path
+	local ext = get_file_extension(package.thumbnail)
 	local filepath = screenshot_dir .. DIR_DELIM ..
-		package.type .. "-" .. package.author .. "-" .. package.name .. ".png"
+		("%s-%s-%s.%s"):format(package.type, package.author, package.name, ext)
 
 	-- Return if already downloaded
 	local file = io.open(filepath, "r")
@@ -195,84 +186,12 @@ local function get_screenshot(package)
 	return defaulttexturedir .. "loading_screenshot.png"
 end
 
-
-
-function package_dialog.get_formspec()
-	local package = package_dialog.package
-
-	store.update_paths()
-
-	local formspec = {
-		"size[9,4;true]",
-		"image[0,1;4.5,3;", core.formspec_escape(get_screenshot(package)), ']',
-		"label[3.8,1;",
-		minetest.colorize(mt_color_green, core.formspec_escape(package.title)), "\n",
-		minetest.colorize('#BFBFBF', "by " .. core.formspec_escape(package.author)), "]",
-		"textarea[4,2;5.3,2;;;", core.formspec_escape(package.short_description), "]",
-		"button[0,0;2,1;back;", fgettext("Back"), "]",
-	}
-
-	if not package.path then
-		formspec[#formspec + 1] = "button[7,0;2,1;install;"
-		formspec[#formspec + 1] = fgettext("Install")
-		formspec[#formspec + 1] = "]"
-	elseif package.installed_release < package.release then
-		-- The install_ action also handles updating
-		formspec[#formspec + 1] = "button[7,0;2,1;install;"
-		formspec[#formspec + 1] = fgettext("Update")
-		formspec[#formspec + 1] = "]"
-		formspec[#formspec + 1] = "button[5,0;2,1;uninstall;"
-		formspec[#formspec + 1] = fgettext("Uninstall")
-		formspec[#formspec + 1] = "]"
-	else
-		formspec[#formspec + 1] = "button[7,0;2,1;uninstall;"
-		formspec[#formspec + 1] = fgettext("Uninstall")
-		formspec[#formspec + 1] = "]"
-	end
-
-	return table.concat(formspec, "")
-end
-
-function package_dialog.handle_submit(this, fields)
-	if fields.back then
-		this:delete()
-		return true
-	end
-
-	if fields.install then
-		start_install(this, package_dialog.package)
-		return true
-	end
-
-	if fields.uninstall then
-		local dlg_delmod = create_delete_content_dlg(package_dialog.package)
-		dlg_delmod:set_parent(this)
-		this:hide()
-		dlg_delmod:show()
-		return true
-	end
-
-	return false
-end
-
-function package_dialog.create(package)
-	package_dialog.package = package
-	return dialog_create("package_view",
-		package_dialog.get_formspec,
-		package_dialog.handle_submit,
-		nil)
-end
-
 function store.load()
-	local tmpdir = os.tempfolder()
-	local target = tmpdir .. DIR_DELIM .. "packages.json"
-
-	assert(core.create_dir(tmpdir))
-
-	local base_url     = core.settings:get("contentdb_url")
+	local version = core.get_version()
+	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto()
+		core.get_max_supp_proto() .. "&engine_version=" .. version.string
 
 	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
@@ -281,31 +200,29 @@ function store.load()
 		end
 	end
 
-	core.download_file(url, target)
+	local timeout = tonumber(minetest.settings:get("curl_file_download_timeout"))
+	local response = http.fetch_sync({ url = url, timeout = timeout })
+	if not response.succeeded then
+		return
+	end
 
-	local file = io.open(target, "r")
-	if file then
-		store.packages_full = core.parse_json(file:read("*all")) or {}
-		file:close()
+	store.packages_full = core.parse_json(response.data) or {}
 
-		for _, package in pairs(store.packages_full) do
-			package.url = base_url .. "/packages/" ..
+	for _, package in pairs(store.packages_full) do
+		package.url = base_url .. "/packages/" ..
 				package.author .. "/" .. package.name ..
 				"/releases/" .. package.release .. "/download/"
 
-			local name_len = #package.name
-			if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
-				package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
-			else
-				package.id = package.author:lower() .. "/" .. package.name
-			end
+		local name_len = #package.name
+		if package.type == "game" and name_len > 5 and package.name:sub(name_len - 4) == "_game" then
+			package.id = package.author:lower() .. "/" .. package.name:sub(1, name_len - 5)
+		else
+			package.id = package.author:lower() .. "/" .. package.name
 		end
-
-		store.packages = store.packages_full
-		store.loaded = true
 	end
 
-	core.delete_dir(tmpdir)
+	store.packages = store.packages_full
+	store.loaded = true
 end
 
 function store.update_paths()
@@ -395,34 +312,35 @@ function store.get_formspec(dlgdata)
 		cur_page = 1
 	end
 
+	local W = 15.75
+	local H = 9.5
+
 	local formspec
 	if #store.packages_full > 0 then
 		formspec = {
-			"size[12,7;true]",
+			"formspec_version[3]",
+			"size[15.75,9.5]",
 			"position[0.5,0.55]",
-			"field[0.2,0.1;7.8,1;search_string;;",
-			core.formspec_escape(search_string), "]",
+			"container[0.375,0.375]",
+			"field[0,0;10.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
 			"field_close_on_enter[search_string;false]",
-			"button[7.7,-0.2;2,1;search;",
-			fgettext("Search"), "]",
-			"dropdown[9.7,-0.1;2.4;type;",
-			table.concat(filter_types_titles, ","),
-			";", filter_type, "]",
-			-- "textlist[0,1;2.4,5.6;a;",
-			-- table.concat(taglist, ","), "]",
+			"button[10.225,0;2,0.8;search;", fgettext("Search"), "]",
+			"dropdown[12.6,0;2.4,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
+			"container_end[]",
 
 			-- Page nav buttons
-			"container[0,",
-			num_per_page + 1.5, "]",
-			"button[-0.1,0;3,1;back;",
-			fgettext("Back to Main Menu"), "]",
-			"button[7.1,0;1,1;pstart;<<]",
-			"button[8.1,0;1,1;pback;<]",
-			"label[9.2,0.2;",
-			tonumber(cur_page), " / ",
-			tonumber(dlgdata.pagemax), "]",
-			"button[10.1,0;1,1;pnext;>]",
-			"button[11.1,0;1,1;pend;>>]",
+			"container[0,", H - 0.8 - 0.375, "]",
+			"button[0.375,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
+
+			"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
+			"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
+			"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
+			"style[pagenum;border=false]",
+			"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
+			"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
+			"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
+			"container_end[]",
+
 			"container_end[]",
 		}
 
@@ -433,73 +351,84 @@ function store.get_formspec(dlgdata)
 		end
 	else
 		formspec = {
-			"size[12,7;true]",
+			"size[12,7]",
 			"position[0.5,0.55]",
 			"label[4,3;", fgettext("No packages could be retrieved"), "]",
-			"button[-0.1,",
-			num_per_page + 1.5,
-			";3,1;back;",
-			fgettext("Back to Main Menu"), "]",
+			"container[0,", H - 0.8 - 0.375, "]",
+			"button[0,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
+			"container_end[]",
 		}
 	end
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
 		local package = store.packages[i]
-		formspec[#formspec + 1] = "container[0.5,"
-		formspec[#formspec + 1] = (i - start_idx) * 1.1 + 1
+		formspec[#formspec + 1] = "container[0.375,"
+		formspec[#formspec + 1] = (i - start_idx) * 1.375 + (2*0.375 + 0.8)
 		formspec[#formspec + 1] = "]"
 
 		-- image
-		formspec[#formspec + 1] = "image[-0.4,0;1.5,1;"
+		formspec[#formspec + 1] = "image[0,0;1.5,1;"
 		formspec[#formspec + 1] = core.formspec_escape(get_screenshot(package))
 		formspec[#formspec + 1] = "]"
 
 		-- title
-		formspec[#formspec + 1] = "label[1,-0.1;"
+		formspec[#formspec + 1] = "label[1.875,0.1;"
 		formspec[#formspec + 1] = core.formspec_escape(
 				minetest.colorize(mt_color_green, package.title) ..
 				minetest.colorize("#BFBFBF", " by " .. package.author))
 		formspec[#formspec + 1] = "]"
 
-		-- description
-		if package.path and package.installed_release < package.release then
-			formspec[#formspec + 1] = "textarea[1.25,0.3;7.5,1;;;"
-		else
-			formspec[#formspec + 1] = "textarea[1.25,0.3;9,1;;;"
-		end
-		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
-		formspec[#formspec + 1] = "]"
-
 		-- buttons
-		if not package.path then
-			formspec[#formspec + 1] = "button[9.9,0;1.5,1;install_"
+		local description_width = W - 0.375*5 - 1 - 2*1.5
+		formspec[#formspec + 1] = "container["
+		formspec[#formspec + 1] = W - 0.375*2
+		formspec[#formspec + 1] = ",0.1]"
+
+		if package.downloading then
+			formspec[#formspec + 1] = "style[download;border=false]"
+
+			formspec[#formspec + 1] = "button[-3.5,0;2,0.8;download;"
+			formspec[#formspec + 1] = fgettext("Downloading...")
+			formspec[#formspec + 1] = "]"
+		elseif not package.path then
+			formspec[#formspec + 1] = "button[-3,0;1.5,0.8;install_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Install")
 			formspec[#formspec + 1] = "]"
 		else
 			if package.installed_release < package.release then
+				description_width = description_width - 1.5
+
 				-- The install_ action also handles updating
-				formspec[#formspec + 1] = "button[8.4,0;1.5,1;install_"
+				formspec[#formspec + 1] = "button[-4.5,0;1.5,0.8;install_"
 				formspec[#formspec + 1] = tostring(i)
 				formspec[#formspec + 1] = ";"
 				formspec[#formspec + 1] = fgettext("Update")
 				formspec[#formspec + 1] = "]"
 			end
 
-			formspec[#formspec + 1] = "button[9.9,0;1.5,1;uninstall_"
+			formspec[#formspec + 1] = "button[-3,0;1.5,0.8;uninstall_"
 			formspec[#formspec + 1] = tostring(i)
 			formspec[#formspec + 1] = ";"
 			formspec[#formspec + 1] = fgettext("Uninstall")
 			formspec[#formspec + 1] = "]"
 		end
 
-		--formspec[#formspec + 1] = "button[9.9,0;1.5,1;view_"
-		--formspec[#formspec + 1] = tostring(i)
-		--formspec[#formspec + 1] = ";"
-		--formspec[#formspec + 1] = fgettext("View")
-		--formspec[#formspec + 1] = "]"
+		formspec[#formspec + 1] = "button[-1.5,0;1.5,0.8;view_"
+		formspec[#formspec + 1] = tostring(i)
+		formspec[#formspec + 1] = ";"
+		formspec[#formspec + 1] = fgettext("View")
+		formspec[#formspec + 1] = "]"
+		formspec[#formspec + 1] = "container_end[]"
+
+		-- description
+		formspec[#formspec + 1] = "textarea[1.855,0.3;"
+		formspec[#formspec + 1] = tostring(description_width)
+		formspec[#formspec + 1] = ",0.8;;;"
+		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
+		formspec[#formspec + 1] = "]"
 
 		formspec[#formspec + 1] = "container_end[]"
 	end
@@ -576,10 +505,9 @@ function store.handle_submit(this, fields)
 		end
 
 		if fields["view_" .. i] then
-			local dlg = package_dialog.create(package)
-			dlg:set_parent(this)
-			this:hide()
-			dlg:show()
+			local url = ("%s/packages/%s?protocol_version=%d"):format(
+					core.settings:get("contentdb_url"), package.id, core.get_max_supp_proto())
+			core.open_url(url)
 			return true
 		end
 	end
@@ -594,6 +522,17 @@ function create_store_dlg(type)
 
 	search_string = ""
 	cur_page = 1
+
+	if type then
+		-- table.indexof does not work on tables that contain `nil`
+		for i, v in pairs(filter_types_type) do
+			if v == type then
+				filter_type = i
+				break
+			end
+		end
+	end
+
 	store.filter_packages(search_string)
 
 	return dialog_create("store",

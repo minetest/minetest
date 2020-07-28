@@ -1,8 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2013-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2015-2018 paramat
+Copyright (C) 2010-2020 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2015-2020 paramat
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_DECORATIONS 0x20
 #define MG_BIOMES      0x40
 
-typedef u8 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
 class Settings;
 class MMVManip;

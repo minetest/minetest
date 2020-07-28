@@ -326,8 +326,10 @@ struct ContentFeatures
 	std::vector<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
-	// Flowing liquid or snow, value = default level
+	// Flowing liquid or leveled nodebox, value = default level
 	u8 leveled;
+	// Maximum value for leveled nodes
+	u8 leveled_max;
 
 	// --- LIGHTING-RELATED ---
 
@@ -366,8 +368,10 @@ struct ContentFeatures
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
 	std::string liquid_alternative_flowing;
+	content_t liquid_alternative_flowing_id;
 	// If the content is liquid, this is the source version of the liquid.
 	std::string liquid_alternative_source;
+	content_t liquid_alternative_source_id;
 	// Viscosity for fluid flow, ranging from 1 to 7, with
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
@@ -405,7 +409,7 @@ struct ContentFeatures
 	*/
 
 	ContentFeatures();
-	~ContentFeatures() = default;
+	~ContentFeatures();
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
@@ -421,12 +425,28 @@ struct ContentFeatures
 	/*
 		Some handy methods
 	*/
+	bool needsBackfaceCulling() const
+	{
+		switch (drawtype) {
+		case NDT_TORCHLIKE:
+		case NDT_SIGNLIKE:
+		case NDT_FIRELIKE:
+		case NDT_RAILLIKE:
+		case NDT_PLANTLIKE:
+		case NDT_PLANTLIKE_ROOTED:
+		case NDT_MESH:
+			return false;
+		default:
+			return true;
+		}
+	}
+
 	bool isLiquid() const{
 		return (liquid_type != LIQUID_NONE);
 	}
 	bool sameLiquid(const ContentFeatures &f) const{
 		if(!isLiquid() || !f.isLiquid()) return false;
-		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
+		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
 	}
 
 	int getGroup(const std::string &group) const
@@ -639,10 +659,11 @@ public:
 	void resetNodeResolveState();
 
 	/*!
-	 * Resolves the IDs to which connecting nodes connect from names.
+	 * Resolves (caches the IDs) cross-references between nodes,
+	 * like liquid alternatives.
 	 * Must be called after node registration has finished!
 	 */
-	void mapNodeboxConnections();
+	void resolveCrossrefs();
 
 private:
 	/*!

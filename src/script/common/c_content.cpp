@@ -164,7 +164,7 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "usable");
 	lua_pushboolean(L, i.liquids_pointable);
 	lua_setfield(L, -2, "liquids_pointable");
-	if (i.type == ITEM_TOOL) {
+	if (i.tool_capabilities) {
 		push_tool_capabilities(L, *i.tool_capabilities);
 		lua_setfield(L, -2, "tool_capabilities");
 	}
@@ -327,6 +327,7 @@ void read_object_properties(lua_State *L, int index,
 
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
+	getboolfield(L, -1, "shaded", prop->shaded);
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 }
@@ -411,6 +412,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "zoom_fov");
 	lua_pushboolean(L, prop->use_texture_alpha);
 	lua_setfield(L, -2, "use_texture_alpha");
+	lua_pushboolean(L, prop->shaded);
+	lua_setfield(L, -2, "shaded");
 	lua_pushlstring(L, prop->damage_texture_modifier.c_str(), prop->damage_texture_modifier.size());
 	lua_setfield(L, -2, "damage_texture_modifier");
 }
@@ -694,6 +697,8 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	f.liquid_range = getintfield_default(L, index,
 			"liquid_range", f.liquid_range);
 	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
+	f.leveled_max = getintfield_default(L, index,
+			"leveled_max", f.leveled_max);
 
 	getboolfield(L, index, "liquid_renewable", f.liquid_renewable);
 	f.drowning = getintfield_default(L, index,
@@ -860,6 +865,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "post_effect_color");
 	lua_pushnumber(L, c.leveled);
 	lua_setfield(L, -2, "leveled");
+	lua_pushnumber(L, c.leveled_max);
+	lua_setfield(L, -2, "leveled_max");
 	lua_pushboolean(L, c.sunlight_propagates);
 	lua_setfield(L, -2, "sunlight_propagates");
 	lua_pushnumber(L, c.light_source);

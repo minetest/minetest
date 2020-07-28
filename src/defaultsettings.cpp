@@ -225,7 +225,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
-	settings->setDefault("show_entity_selectionbox", "true");
+	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "2.2");
@@ -321,8 +321,12 @@ void set_default_settings(Settings *settings)
 
 	std::string font_size_str = std::to_string(DEFAULT_FONT_SIZE);
 #endif
+	// General font settings
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
+	settings->setDefault("chat_font_size", "0"); // Default "font_size"
+
+	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
 #ifdef __ANDROID__
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, android_default");
@@ -400,6 +404,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("debug_log_size_max", "50");
+	settings->setDefault("chat_log_level", "error");
 	settings->setDefault("emergequeue_limit_total", "512");
 	settings->setDefault("emergequeue_limit_diskonly", "64");
 	settings->setDefault("emergequeue_limit_generate", "64");
@@ -446,6 +451,7 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("high_precision_fpu", "true");
 	settings->setDefault("enable_console", "false");
+	settings->setDefault("screen_dpi", "72");
 
 	// Altered settings for macOS
 #if defined(__MACH__) && defined(__APPLE__)
@@ -459,7 +465,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("touchtarget", "true");
-	settings->setDefault("TMPFolder", porting::getDataPath("tmp" DIR_DELIM));
+	settings->setDefault("TMPFolder", porting::path_cache);
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux", "false");
@@ -481,8 +487,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("curl_verify_cert","false");
 
 	// Apply settings according to screen size
-	float x_inches = ((double) porting::getDisplaySize().X /
-			(160 * porting::getDisplayDensity()));
+	float x_inches = (float) porting::getDisplaySize().X /
+			(160.f * porting::getDisplayDensity());
 
 	if (x_inches < 3.7f) {
 		settings->setDefault("hud_scaling", "0.6");
@@ -498,8 +504,5 @@ void set_default_settings(Settings *settings)
 		settings->setDefault("mono_font_size", "14");
 	}
 	// Tablets >= 6.0 use non-Android defaults for these settings
-#else
-	settings->setDefault("screen_dpi", "72");
 #endif
 }
-
