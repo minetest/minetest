@@ -309,8 +309,7 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
 		// request.post_fields must now *never* be
 		// modified until CURLOPT_HTTPPOST is cleared
-	}
-	else {
+	} else {
 		switch (request.method) {
 		case HTTP_GET:
 			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
@@ -331,8 +330,7 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 						request.raw_data.size());
 				curl_easy_setopt(curl, CURLOPT_POSTFIELDS,
 						request.raw_data.c_str());
-			}
-			else if (!request.fields.empty()) {
+			} else if (!request.fields.empty()) {
 				std::string str;
 				for (auto &field : request.fields) {
 					if (!str.empty())
