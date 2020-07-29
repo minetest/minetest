@@ -8071,11 +8071,13 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
         timeout = 10,
         -- Timeout for connection in seconds. Default is 3 seconds.
 
-        post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
-        -- Optional, if specified a POST request with post_data is performed.
+        method = "GET", "POST", "PUT" or "DELETE"
+        -- The http method to use. Defaults to "GET".
+
+        data = "Raw request data string" OR {field1 = "data1", field2 = "data2"},
+        -- Data for the POST, PUT or DELETE request.
         -- Accepts both a string and a table. If a table is specified, encodes
         -- table as x-www-form-urlencoded key-value pairs.
-        -- If post_data is not specified, a GET request is performed instead.
 
         user_agent = "ExampleUserAgent",
         -- Optional, if specified replaces the default minetest user agent with
@@ -8089,6 +8091,10 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
         multipart = boolean
         -- Optional, if true performs a multipart HTTP request.
         -- Default is false.
+        -- Post only, data must be array
+
+        post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
+        -- Deprecated, use `data` instead. Forces `method = "POST"`.
     }
 
 `HTTPRequestResult` definition
