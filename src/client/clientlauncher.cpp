@@ -327,13 +327,13 @@ void ClientLauncher::init_args(GameStartData &start_data, const Settings &cmd_ar
 		// Join a remote server
 		start_data.address = cmd_args.get("address");
 		start_data.world_path.clear();
+		start_data.name = g_settings->get("name");
 	}
 	if (!start_data.world_path.empty()) {
 		// Start a singleplayer instance
 		start_data.address = "";
 	}
 
-	start_data.name = g_settings->get("name");
 	if (cmd_args.exists("name"))
 		start_data.name = cmd_args.get("name");
 
@@ -419,7 +419,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	/* Show the GUI menu
 	 */
 	std::string server_name, server_description;
-	start_data.local_server = false;
 	if (!skip_main_menu) {
 		// Initialize menu data
 		// TODO: Re-use existing structs (GameStartData)
@@ -467,6 +466,9 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 		start_data.local_server = !menudata.simple_singleplayer_mode &&
 			start_data.address.empty();
+	} else {
+		start_data.local_server = !start_data.world_path.empty() &&
+			start_data.address.empty() && !start_data.name.empty();
 	}
 
 	if (!RenderingEngine::run())
