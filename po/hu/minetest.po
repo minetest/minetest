@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-22 17:56+0000\n"
+"PO-Revision-Date: 2020-12-05 15:29+0000\n"
 "Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,7 +24,7 @@ msgstr "Meghaltál"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -169,7 +169,7 @@ msgstr "Vissza a főmenübe"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "A ContentDB nem elérhető, ha a Minetest cURL nélkül lett lefordítva"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -231,9 +231,8 @@ msgid "Additional terrain"
 msgstr "További terep"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Altitude chill"
-msgstr "Hőmérsékletcsökkenés a magassággal"
+msgstr "Hőmérséklet-csökkenés a magassággal"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
@@ -272,13 +271,12 @@ msgid "Download one from minetest.net"
 msgstr "Letöltés a minetest.net címről"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Tömlöc zaj"
+msgstr "Tömlöcök"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Lapos terep"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
@@ -293,8 +291,9 @@ msgid "Game"
 msgstr "Játék"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Nem-fraktál terep generálása: Óceánok és földalatti rész"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -372,14 +371,17 @@ msgid "Smooth transition between biomes"
 msgstr "Sima átmenet a biomok között"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"A terepen megjelenő struktúrák (nincs hatása a fákra és a dzsungelfűre, "
+"amelyet a v6 készített)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "A terepen megjelenő struktúrák, általában fák és növények"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
@@ -396,7 +398,7 @@ msgstr "Mérsékelt, Sivatag, Dzsungel, Tundra, Tajga"
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Terrain surface erosion"
-msgstr "Terep alapzaj"
+msgstr "Terepfelület erózió"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
@@ -1950,7 +1952,6 @@ msgstr ""
 "gombot ha kint van a fő körből."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world center in units of 'scale'.\n"
 "Can be used to move a desired point to (0, 0) to create a\n"
@@ -1961,13 +1962,6 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"A fraktál (X,Y,Z) eltolása a világ középpontjától, 'scale' egységekben.\n"
-"Egy megfelelő, alacsony magasságú keletkezési pont (0, 0) közelébe "
-"mozgatására használható.\n"
-"Az alapértelmezés megfelelő Mandelbrot-halmazokhoz, a szerkesztés Julia-"
-"halmazok esetén szükséges.\n"
-"Körülbelül -2 és 2 közötti érték. Szorozd be 'scale'-lel, hogy kockákban "
-"kapd meg az eltolást."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2027,9 +2021,8 @@ msgid "3D mode"
 msgstr "3D mód"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D mode parallax strength"
-msgstr "Parallax Occlusion hatás ereje"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2112,9 +2105,8 @@ msgid "ABM interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Absolute limit of queued blocks to emerge"
-msgstr "A világgeneráló szálak számának abszolút határa"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -2227,17 +2219,16 @@ msgid "Apple trees noise"
 msgstr "Almafa zaj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Arm inertia"
 msgstr "Kar tehetetlenség"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Arm inertia, gives a more realistic movement of\n"
 "the arm when the camera moves."
 msgstr ""
 "A kar tehetetlensége reálisabb mozgást biztosít\n"
+"a karnak, amikor a kamera mozog.\n"
 "a karnak, amikor a kamera mozog."
 
 #: src/settings_translation_file.cpp
@@ -2284,7 +2275,6 @@ msgid "Autosave screen size"
 msgstr "Képernyőméret automatikus mentése"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Autoscaling mode"
 msgstr "Automatikus méretezés mód"
 
@@ -2349,9 +2339,8 @@ msgid "Bold and italic monospace font path"
 msgstr "Félkövér dőlt monospace betűtípus útvonal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bold font path"
-msgstr "Betűtípus helye"
+msgstr "Félkövér betűtípus útvonala"
 
 #: src/settings_translation_file.cpp
 msgid "Bold monospace font path"
@@ -3293,11 +3282,11 @@ msgstr "Köd váltása gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
-msgstr ""
+msgstr "Félkövér betűtípus alapértelmezetten"
 
 #: src/settings_translation_file.cpp
 msgid "Font italic by default"
-msgstr ""
+msgstr "Dőlt betűtípus alapértelmezetten"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
