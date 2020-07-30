@@ -51,6 +51,8 @@ struct ShaderInfo {
 	NodeDrawType drawtype = NDT_NORMAL;
 	MaterialType material_type = TILE_MATERIAL_BASIC;
 
+	bool shader_failed = false;
+
 	ShaderInfo() = default;
 	virtual ~ShaderInfo() = default;
 };

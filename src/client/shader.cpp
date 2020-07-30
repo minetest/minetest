@@ -469,7 +469,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 	infostream<<"getShaderIdDirect(): "
 			<<"Returning id="<<id<<" for name \""<<name<<"\""<<std::endl;
 
-	return id;
+	return info.shader_failed ? 0 : id;
 }
 
 
@@ -561,6 +561,8 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	if (!driver->queryFeature(video::EVDF_ARB_GLSL)) {
 		errorstream << "Shaders are enabled but GLSL is not supported by the driver\n";
+		shaderinfo.shader_failed = true;
+
 		return shaderinfo;
 	}
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
@@ -709,6 +711,8 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		dumpShaderProgram(warningstream, "Vertex", vertex_shader);
 		dumpShaderProgram(warningstream, "Fragment", fragment_shader);
 		dumpShaderProgram(warningstream, "Geometry", geometry_shader);
+		shaderinfo.shader_failed = true;
+
 		return shaderinfo;
 	}
 

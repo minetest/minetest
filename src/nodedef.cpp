@@ -906,6 +906,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	u32 tile_shader = shdsrc->getShader("nodes_shader", material_type, drawtype);
 
+	if (!tile_shader)
+		client->setFatalError("Failed to compile nodes_shader! Check the log for details.");
+
 	MaterialType overlay_material = material_type;
 	if (overlay_material == TILE_MATERIAL_OPAQUE)
 		overlay_material = TILE_MATERIAL_BASIC;
@@ -913,6 +916,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		overlay_material = TILE_MATERIAL_LIQUID_TRANSPARENT;
 
 	u32 overlay_shader = shdsrc->getShader("nodes_shader", overlay_material, drawtype);
+
+	if (!overlay_shader)
+		client->setFatalError("Failed to compile nodes_shader! Check the log for details.");
 
 	// Tiles (fill in f->tiles[])
 	for (u16 j = 0; j < 6; j++) {
@@ -935,6 +941,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			special_material = TILE_MATERIAL_WAVING_LEAVES;
 	}
 	u32 special_shader = shdsrc->getShader("nodes_shader", special_material, drawtype);
+
+	if (!special_shader)
+		client->setFatalError("Failed to compile nodes_shader! Check the log for details.");
 
 	// Special tiles (fill in f->special_tiles[])
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)

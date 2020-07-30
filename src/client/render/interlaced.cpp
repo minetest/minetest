@@ -41,6 +41,10 @@ void RenderingCoreInterlaced::initMaterial()
 	mat.ZWriteEnable = false;
 #endif
 	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
+
+	if (!shader)
+		client->setFatalError("Failed to compile 3d_interlaced_merge! Check the log for details.");
+
 	mat.MaterialType = s->getShaderInfo(shader).material;
 	for (int k = 0; k < 3; ++k) {
 		mat.TextureLayer[k].AnisotropicFilter = false;
