@@ -6077,15 +6077,15 @@ object you are working with still exists.
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
 * `get_texture_mod()` returns current texture modifier
-* `set_sprite(p, num_frames, framelength, select_horiz_by_yawpitch)`
-    * Select sprite from spritesheet with optional animation and Dungeon Master
-      style texture selection based on yaw relative to camera
-    * `p`: {x=number, y=number}, the coordinate of the first frame
-      (x: column, y: row), default: `{x=0, y=0}`
-    * `num_frames`: number, default: `1`
-    * `framelength`: number, default: `0.2`
-    * `select_horiz_by_yawpitch`: boolean, this was once used for the Dungeon
-      Master mob, default: `false`
+* `set_sprite(p, num_frames, framelength, select_x_by_camera)`
+    * Specifies and starts a sprite animation
+    * Animations iterate along the frame `y` position.
+    * `p`: {x=column number, y=row number}, the coordinate of the first frame
+      default: `{x=0, y=0}`
+    * `num_frames`: Total frames in the texture, default: `1`
+    * `framelength`: Time per animated frame in seconds, default: `0.2`
+    * `select_x_by_camera`: Only for visual = `sprite`. Changes the frame `x`
+      position according to the view direction. default: `false`.
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 
