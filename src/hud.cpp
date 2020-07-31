@@ -18,7 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "hud.h"
-#include <cmath>
+#include "network/networkpacket.h"
+#include "script/common/c_content.h"
+#include "script/common/c_converter.h"
 
 const struct EnumString es_HudElementType[] =
 {
@@ -61,3 +63,114 @@ const struct EnumString es_HudBuiltinElement[] =
 	{HUD_FLAG_MINIMAP_RADAR_VISIBLE, "minimap_radar"},
 	{0, NULL},
 };
+
+
+HudElement *HudElement::create(HudElementType type)
+{
+	HudElement *e;
+
+	switch (type){
+	case HUD_ELEM_IMAGE:
+		e = new HudElementImage();
+		break;
+	case HUD_ELEM_TEXT:
+		e = new HudElementText();
+		break;
+	case HUD_ELEM_STATBAR:
+		e = new HudElementStatbar();
+		break;
+	case HUD_ELEM_INVENTORY:
+		e = new HudElementInventory();
+		break;
+	case HUD_ELEM_WAYPOINT:
+		e = new HudElementWaypoint();
+		break;
+	case HUD_ELEM_IMAGE_WAYPOINT:
+		e = new HudElementWaypoint();
+		break;
+	default:
+		e = new HudElement();
+		break;
+	}
+
+	e->m_type = type;
+	return e;
+}
+
+void HudElement::pushLua(lua_State *L)
+{
+	push_v2f(L, pos);
+	lua_setfield(L, -2, "position");
+
+	push_v2f(L, offset);
+	lua_setfield(L, -2, "offset");
+
+	push_v2f(L, align);
+	lua_setfield(L, -2, "alignment");
+
+	lua_pushnumber(L, z_index);
+	lua_setfield(L, -2, "z_index");
+}
+
+void HudElement::readLua(lua_State *L)
+{
+	lua_getfield(L, 2, "position");
+	pos = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "offset");
+	offset = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "align");
+	align = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
+	z_index = MYMAX(S16_MIN, MYMIN(S16_MAX,
+			getintfield_default(L, 2, "z_index", 0)));
+}
+
+void HudElementImage::deSerialize(NetworkPacket *pkt, u16 proto_ver)
+{
+	u32 u32_;
+	v3f v3f_;
+	v2s32 v2s32_;
+	std::string str_;
+
+	*pkt >> pos >> str_ >> scale
+		>> texture >> u32_ >> u32_ // text, number, item
+		>> u32_ >> align >> offset >> v3f_ // dir, world_pos
+		>> v2s32_ >> z_index >> str_; // size, text2
+}
+
+void HudElementImage::serialize(NetworkPacket *pkt, u16 proto_ver)
+{
+	std::string str_;
+
+	*pkt << pos << str_ << scale
+		<< texture << (u32)0 << (u32)0 // text, number, item
+		<< (u32)0<< align << offset << v3f() // dir, world_pos
+		<< v2s32()<< z_index << str_;  // size, text2
+}
+
+void HudElementImage::pushLua(lua_State *L)
+{
+	HudElement::pushLua(L);
+
+	lua_pushstring(L, text.c_str());
+	lua_setfield(L, -2, "text");
+
+	push_v2f(L, scale);
+	lua_setfield(L, -2, "scale");
+}
+
+void HudElementImage::readLua(lua_State *L)
+{
+	HudElement::readLua(L);
+
+	texture = getstringfield_default(L, 2, "text", "");
+
+	lua_getfield(L, 2, "scale");
+	scale = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+}

@@ -60,7 +60,8 @@ enum HudElementType {
 	HUD_ELEM_STATBAR   = 2,
 	HUD_ELEM_INVENTORY = 3,
 	HUD_ELEM_WAYPOINT  = 4,
-	HUD_ELEM_IMAGE_WAYPOINT = 5
+	HUD_ELEM_IMAGE_WAYPOINT = 5,
+	HUD_ELEM_MAX = 6,
 };
 
 enum HudElementStat {
@@ -79,24 +80,120 @@ enum HudElementStat {
 	HUD_STAT_TEXT2,
 };
 
-struct HudElement {
-	HudElementType type;
+extern const EnumString es_HudElementType[];
+extern const EnumString es_HudElementStat[];
+extern const EnumString es_HudBuiltinElement[];
+
+class NetworkPacket;
+struct lua_State;
+
+class HudElement {
+public:
+	HudElementType getType() const { return m_type; }
+
+	virtual void deSerialize(NetworkPacket *pkt, u16 proto_ver) {};
+	virtual void serialize(NetworkPacket *pkt, u16 proto_ver) {};
+	virtual void pushLua(lua_State *L);
+	virtual void readLua(lua_State *L);
+
 	v2f pos;
+	v2f offset;
+	v2f align;
+	s16 z_index = 0;
+
+	///// TO REMOVE
+	HudElementType type;
 	std::string name;
 	v2f scale;
 	std::string text;
 	u32 number;
 	u32 item;
 	u32 dir;
-	v2f align;
-	v2f offset;
 	v3f world_pos;
 	v2s32 size;
-	s16 z_index = 0;
 	std::string text2;
+	////
+
+protected:
+	HudElement() {}
+	static HudElement *create(HudElementType type);
+
+private:
+	HudElementType m_type;
 };
 
-extern const EnumString es_HudElementType[];
-extern const EnumString es_HudElementStat[];
-extern const EnumString es_HudBuiltinElement[];
+class HudElementImage : public HudElement {
+public:
+	HudElementImage() {};
+
+	void deSerialize(NetworkPacket *pkt, u16 proto_ver);
+	void serialize(NetworkPacket *pkt, u16 proto_ver);
+	void pushLua(lua_State *L);
+	void readLua(lua_State *L);
+
+	std::string texture; // text
+	v2f scale;
+};
+
+class HudElementText : public HudElement {
+public:
+	HudElementText() {};
+
+	void deSerialize(NetworkPacket *pkt, u16 proto_ver);
+	void serialize(NetworkPacket *pkt, u16 proto_ver);
+	void pushLua(lua_State *L);
+	void readLua(lua_State *L);
+
+	std::string text;
+	s32 size;   // v2s32 size
+	v2f scale;
+};
+
+class HudElementStatbar : public HudElement {
+public:
+	HudElementStatbar() {};
+
+	void deSerialize(NetworkPacket *pkt, u16 proto_ver);
+	void serialize(NetworkPacket *pkt, u16 proto_ver);
+	void pushLua(lua_State *L);
+	void readLua(lua_State *L);
+
+	u32 count;     // number
+	u32 max_count; // item
+	u32 dir;
+	v2s32 size;
+	std::string fgtexture;   // text
+	std::string bgtexture; // text2
+};
+
+class HudElementInventory : public HudElement {
+public:
+	HudElementInventory() {};
+
+	void deSerialize(NetworkPacket *pkt, u16 proto_ver);
+	void serialize(NetworkPacket *pkt, u16 proto_ver);
+	void pushLua(lua_State *L);
+	void readLua(lua_State *L);
+
+	u32 item_count;     // number
+	u32 selected_index; // item
+	u32 dir;
+};
+
+class HudElementWaypoint : public HudElement {
+public:
+	HudElementWaypoint() {};
+
+	void deSerialize(NetworkPacket *pkt, u16 proto_ver);
+	void serialize(NetworkPacket *pkt, u16 proto_ver);
+	void pushLua(lua_State *L);
+	void readLua(lua_State *L);
+
+	v3f world_pos;
+	u32 color;     // number
+	u32 precision; // item
+	std::string text; // name
+	std::string unit; // text
+};
+
 
