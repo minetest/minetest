@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-07-13 15:59+0000\n"
-"Last-Translator: J. Lavoie <j.lavoie@net-c.ca>\n"
+"PO-Revision-Date: 2020-08-01 11:12+0000\n"
+"Last-Translator: florian deschenaux <deschenf@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -766,7 +766,7 @@ msgstr "Démarrer"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr "Adresse / Port :"
+msgstr "Adresse / Port"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
@@ -782,7 +782,7 @@ msgstr "Dégâts activés"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr "Supprimer favori :"
+msgstr "Supprimer favori"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
@@ -1158,19 +1158,19 @@ msgid ""
 "- %s: chat\n"
 msgstr ""
 "Contrôles:\n"
-"- %s : avancer\n"
-"- %s : reculer\n"
-"- %s : à gauche\n"
-"- %s : à droite\n"
-"- %s : sauter/grimper\n"
-"- %s : marcher lentement/descendre\n"
-"- %s : lâcher l'objet en main\n"
-"- %s : inventaire\n"
+"- %s: avancer\n"
+"- %s: reculer\n"
+"- %s: à gauche\n"
+"- %s: à droite\n"
+"- %s: sauter/grimper\n"
+"- %s: marcher lentement/descendre\n"
+"- %s: lâcher l'objet en main\n"
+"- %s: inventaire\n"
 "- Souris : tourner/regarder\n"
 "- Souris gauche : creuser/attaquer\n"
 "- Souris droite : placer/utiliser\n"
 "- Molette souris : sélectionner objet\n"
-"- %s : discuter\n"
+"- %s: discuter\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -2026,7 +2026,7 @@ msgstr "Bruit 2D contrôlant la taille et la fréquence des plateaux montagneux.
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that locates the river valleys and channels."
-msgstr "Bruit 2D qui localise les vallées fluviales et les canaux"
+msgstr "Bruit 2D qui localise les vallées fluviales et les canaux."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -3888,7 +3888,7 @@ msgid ""
 "are\n"
 "enabled."
 msgstr ""
-"Si désactivé, la touche \"special\" est utilisée si  le vole et le mode "
+"Si désactivé, la touche \"special\" est utilisée si le vole et le mode "
 "rapide sont tous les deux activés."
 
 #: src/settings_translation_file.cpp
@@ -7196,7 +7196,6 @@ msgid "Whether to fog out the end of the visible area."
 msgstr "Détermine la visibilité de la brume au bout de l'aire visible."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Whether to mute sounds. You can unmute sounds at any time, unless the\n"
 "sound system is disabled (enable_sound=false).\n"
@@ -7204,10 +7203,10 @@ msgid ""
 "pause menu."
 msgstr ""
 "S'il faut mettre les sons en sourdine. Vous pouvez désactiver les sons à "
-"tout moment, sauf si le\n"
+"tout moment, sauf si\n"
 "le système de sonorisation est désactivé (enable_sound=false).\n"
 "Dans le jeu, vous pouvez passer en mode silencieux avec la touche de mise en "
-"sourdine ou en utilisant la\n"
+"sourdine ou en utilisant le\n"
 "menu pause."
 
 #: src/settings_translation_file.cpp
