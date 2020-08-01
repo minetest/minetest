@@ -419,7 +419,14 @@ static void getNodeVertexDirs(const v3s16 &dir, v3s16 *vertex_dirs)
 	u8 idx = (dir.X + 2 * dir.Y + 3 * dir.Z) & 7;
 	idx = (idx - 1) * 4;
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
 	memcpy(vertex_dirs, &vertex_dirs_table[idx], 4 * sizeof(v3s16));
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 }
 
 static void getNodeTextureCoords(v3f base, const v3f &scale, const v3s16 &dir, float *u, float *v)
