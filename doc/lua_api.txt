@@ -2582,7 +2582,7 @@ Elements
         * `span=<value>`: number of following columns to affect
           (default: infinite).
 
-### `style[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
+### `style[<selector 1>,<selector 2>,...;<prop1>;<prop2>;...]`
 
 * Set the style for the element(s) matching `selector` by name.
 * `selector` can be one of:
@@ -2595,7 +2595,7 @@ Elements
 * See [Styling Formspecs].
 
 
-### `style_type[<selector 1>,<selector 2>;<prop1>;<prop2>;...]`
+### `style_type[<selector 1>,<selector 2>,...;<prop1>;<prop2>;...]`
 
 * Set the style for the element(s) matching `selector` by type.
 * `selector` can be one of:
@@ -2605,6 +2605,17 @@ Elements
     * If a state is provided, the style will only take effect when the element is in that state.
     * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
+
+### `group[<name>;<group 1>,<group 2>,...]
+
+* Groups or names the following element, helpful for styling and other such purposes.
+* `name`: The name to set for the next element. Leave blank to not set a name.
+    * **Note**: Only works on elements without a name parameter, e.g. `label`. If the
+      element does have a name parameter, this name is ignored.
+* `group` (optional): List of group names. Can be used for styling all of one group of
+  elements. Leave blank to not add any groups.
+* **Note**: This element cannot name or group any elements that are simply customization,
+  e.g. `real_coordinates` or `scrollbaroptions`, as well as `container`.
 
 ### `set_focus[<name>;<force>]`
 
@@ -2668,10 +2679,8 @@ Styling Formspecs
 
 Formspec elements can be themed using the style elements:
 
-    style[<name 1>,<name 2>;<prop1>;<prop2>;...]
-    style[<name 1>:<state>,<name 2>:<state>;<prop1>;<prop2>;...]
-    style_type[<type 1>,<type 2>;<prop1>;<prop2>;...]
-    style_type[<type 1>:<state>,<type 2>:<state>;<prop1>;<prop2>;...]
+    style[<selector 1>,<selector 2>;<prop1>;<prop2>;...]
+    style_type[<selector 1>,<selector 2>;<prop1>;<prop2>;...]
 
 Where a prop is:
 
@@ -2688,12 +2697,22 @@ A name/type can optionally be a comma separated list of names/types, like so:
     world_delete,world_create,world_configure
     button,image_button
 
-A `*` type can be used to select every element in the formspec.
+A `*` can be used to select every element in the formspec.
+
+A `^` prefix can be used to select a type in `style` and a name in `style_type`. This is useful for when
+a specific type and name have the same style, so it doesn't have to be repeated. For example:
+
+	style[world_select,^button;textcolor=lightgray]
+	style_type[button,image_button,item_image_button,^search_box;border=false;noclip=true]
+
+A group of elements set with the `group` element can be styled together with the `&` prefix:
+
+	&world_buttons,&config_checkboxes
 
 Any name/type in the list can also be accompanied by a `+`-separated list of states, like so:
 
     world_delete:hovered+pressed
-    button:pressed
+    button:pressed,button:hovered
 
 States allow you to apply styles in response to changes in the element, instead of applying at all times.
 
@@ -2701,6 +2720,35 @@ Setting a property to nothing will reset it to the default value. For example:
 
     style_type[button;bgimg=button.png;bgimg_pressed=button_pressed.png;border=false]
     style[btn_exit;bgimg=;bgimg_pressed=;border=;bgcolor=red]
+
+
+### Selector Precedence
+
+If multiple selectors set the same property for the same element, then certain selectors will take
+higher precedence over the others. For instance, for the following formspec definition:
+
+	style_type[button;bgcolor=red]
+	style[btn_name;bgcolor=yellow]
+	button[0,0;3,1;btn_name;Button]
+
+The name selector will take precedence over the type selector, and the button will be yellow.
+Note that, if two selectors of the same precedence style the same element, the latter will
+override the former.
+
+The full precedence chart is as follows, lowest to highest:
+
+* Universal selector (`*`)
+* Type selector (`style_type`, `style` with `^`)
+* Inherited type selector (e.g. `button_exit` takes precedence over `button`)
+* Group selector (`&`)
+* Name selector (`style`, `style_type` with `^`)
+
+In addition to normal selectors, state selectors have precedence as well. A higher state selector
+will override a lower one. From lowest to highest:
+
+* `default` or no state
+* `hovered`
+* `pressed`
 
 
 ### Supported Element Types
@@ -2719,7 +2767,7 @@ Some types may inherit styles from parent types.
 * pwdfield, inherits from field
 * textarea
 * label
-* vertlabel, inherits from field
+* vertlabel, inherits from label
 * image_button
 * item_image_button
 * tabheader

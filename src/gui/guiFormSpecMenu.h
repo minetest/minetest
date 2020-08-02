@@ -102,10 +102,11 @@ class GUIFormSpecMenu : public GUIModalMenu
 	{
 		FieldSpec() = default;
 
-		FieldSpec(const std::string &name, const std::wstring &label,
-				const std::wstring &default_text, s32 id, int priority = 0,
-				gui::ECURSOR_ICON cursor_icon = ECI_NORMAL) :
+		FieldSpec(const std::string &name, const std::vector<std::string> &group,
+				const std::wstring &label, const std::wstring &default_text,
+				s32 id, int priority = 0, gui::ECURSOR_ICON cursor_icon = ECI_NORMAL) :
 			fname(name),
+			fgroup(group),
 			flabel(label),
 			fdefault(unescape_enriched(translate_string(default_text))),
 			fid(id),
@@ -118,6 +119,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		}
 
 		std::string fname;
+		std::vector<std::string> fgroup;
 		std::wstring flabel;
 		std::wstring fdefault;
 		s32 fid;
@@ -278,12 +280,15 @@ protected:
 
 	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_type;
 	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_name;
+	std::unordered_map<std::string, std::vector<StyleSpec>> theme_by_group;
 	std::unordered_set<std::string> property_warned;
 
 	StyleSpec getDefaultStyleForElement(const std::string &type,
-			const std::string &name="", const std::string &parent_type="");
+			const std::string &name, const std::vector<std::string> &group,
+			const std::string &parent_type="");
 	std::array<StyleSpec, StyleSpec::NUM_STATES> getStyleForElement(const std::string &type,
-			const std::string &name="", const std::string &parent_type="");
+			const std::string &name, const std::vector<std::string> &group,
+			const std::string &parent_type="");
 
 	v2s32 padding;
 	v2f32 spacing;
@@ -379,6 +384,9 @@ private:
 			GUIScrollBar::ArrowVisibility arrow_visiblity = GUIScrollBar::DEFAULT;
 		} scrollbar_options;
 
+		std::string next_name;
+		std::vector<std::string> next_group;
+
 		// used to restore table selection/scroll/treeview state
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 	} parserData;
@@ -408,7 +416,7 @@ private:
 	void parseAnimatedImage(parserData *data, const std::string &element);
 	void parseItemImage(parserData* data, const std::string &element);
 	void parseButton(parserData* data, const std::string &element,
-			const std::string &typ);
+			const std::string &type);
 	void parseBackground(parserData* data, const std::string &element);
 	void parseTableOptions(parserData* data, const std::string &element);
 	void parseTableColumns(parserData* data, const std::string &element);
@@ -444,6 +452,7 @@ private:
 	void parseAnchor(parserData *data, const std::string &element);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
+	void parseGroup(parserData *data, const std::string &element);
 
 	void tryClose();
 
