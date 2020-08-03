@@ -289,8 +289,17 @@ protected:
 	v2f32 spacing;
 	v2s32 imgsize;
 	v2s32 offset;
+
+	enum ContainerType {
+		CONTAINER_UNSIZED,
+		CONTAINER_SIZED,
+		CONTAINER_SCROLL
+	};
+	std::vector<std::pair<ContainerType, v2f32>> container_stack;
 	v2f32 pos_offset;
-	std::stack<v2f32> container_stack;
+
+	void pushContainer(ContainerType type, v2f32 next_offset = v2f32(0.0f, 0.0f));
+	ContainerType popContainer();
 
 	InventoryManager *m_invmgr;
 	ISimpleTextureSource *m_tsrc;
@@ -398,9 +407,8 @@ private:
 
 	void parseSize(parserData* data, const std::string &element);
 	void parseContainer(parserData* data, const std::string &element);
-	void parseContainerEnd(parserData* data);
+	void parseEnd(parserData* data);
 	void parseScrollContainer(parserData *data, const std::string &element);
-	void parseScrollContainerEnd(parserData *data);
 	void parseList(parserData* data, const std::string &element);
 	void parseListRing(parserData* data, const std::string &element);
 	void parseCheckbox(parserData* data, const std::string &element);

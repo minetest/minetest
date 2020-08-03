@@ -240,6 +240,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		new element: scroll_container[]
 	FORMSPEC VERSION 4:
 		Allow dropdown indexing events
+		Sized and clipped containers, single end[] element for all containers.
 */
 #define FORMSPEC_API_VERSION 4
 

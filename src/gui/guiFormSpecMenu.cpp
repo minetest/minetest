@@ -318,28 +318,87 @@ void GUIFormSpecMenu::parseSize(parserData* data, const std::string &element)
 
 void GUIFormSpecMenu::parseContainer(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element, ',');
+	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() >= 2) {
-		if (parts[1].find(';') != std::string::npos)
-			parts[1] = parts[1].substr(0, parts[1].find(';'));
-
-		container_stack.push(pos_offset);
-		pos_offset.X += stof(parts[0]);
-		pos_offset.Y += stof(parts[1]);
+	if ((parts.size() > 1 && m_formspec_version < 4) ||
+			(parts.size() > 2 && m_formspec_version <= FORMSPEC_API_VERSION)) {
+		errorstream << "Invalid container element (" << parts.size() << "): '"
+				<< element << "'" << std::endl;
 		return;
 	}
-	errorstream<< "Invalid container start element (" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	if (parts.size() >= 2) {
+		std::vector<std::string> v_pos  = split(parts[0], ',');
+		std::vector<std::string> v_geom = split(parts[1], ',');
+
+		MY_CHECKPOS("container", 0);
+		MY_CHECKGEOM("container", 1);
+
+		v2s32 pos = getRealCoordinateBasePos(v_pos);
+		v2s32 geom = getRealCoordinateGeometry(v_geom);
+
+		core::rect<s32> rect(pos, pos + geom);
+
+		FieldSpec spec(
+			"",
+			L"",
+			L"",
+			258 + m_fields.size()
+		);
+
+		gui::IGUIElement *e = new gui::IGUIElement(EGUIET_ELEMENT, Environment,
+			data->current_parent, spec.fid, rect);
+
+		auto style = getDefaultStyleForElement("container", spec.fname);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+
+		data->current_parent = e;
+		e->drop();
+
+		m_fields.push_back(spec);
+
+		pushContainer(CONTAINER_SIZED);
+	} else {
+		std::vector<std::string> v_pos = split(parts[0], ',');
+		pushContainer(CONTAINER_UNSIZED, v2f32(stof(v_pos[0]), stof(v_pos[1])));
+	}
 }
 
-void GUIFormSpecMenu::parseContainerEnd(parserData* data)
+void GUIFormSpecMenu::parseEnd(parserData *data)
 {
 	if (container_stack.empty()) {
-		errorstream<< "Invalid container end element, no matching container start element"  << std::endl;
-	} else {
-		pos_offset = container_stack.top();
-		container_stack.pop();
+		errorstream << "Invalid container end element; no matching container "
+				"start element" << std::endl;
+		return;
 	}
+
+	ContainerType type = popContainer();
+
+	switch (type) {
+		case CONTAINER_SIZED:
+			data->current_parent = data->current_parent->getParent();
+			break;
+		case CONTAINER_SCROLL:
+			data->current_parent = data->current_parent->getParent()->getParent();
+			break;
+		default:
+			break;
+	}
+}
+
+void GUIFormSpecMenu::pushContainer(ContainerType type, v2f32 next_offset)
+{
+	container_stack.emplace_back(type, pos_offset);
+	pos_offset = next_offset;
+}
+
+GUIFormSpecMenu::ContainerType GUIFormSpecMenu::popContainer()
+{
+	auto last = container_stack.back();
+	pos_offset = last.second;
+	container_stack.pop_back();
+
+	return last.first;
 }
 
 void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &element)
@@ -348,8 +407,8 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &
 
 	if (parts.size() < 4 ||
 			(parts.size() > 5 && m_formspec_version <= FORMSPEC_API_VERSION)) {
-		errorstream << "Invalid scroll_container start element (" << parts.size()
-				<< "): '" << element << "'" << std::endl;
+		errorstream << "Invalid scroll_container element (" << parts.size() << "): '"
+				<< element << "'" << std::endl;
 		return;
 	}
 
@@ -400,42 +459,18 @@ void GUIFormSpecMenu::parseScrollContainer(parserData *data, const std::string &
 	GUIScrollContainer *mover = new GUIScrollContainer(Environment,
 			clipper, spec_mover.fid, rect_mover, orientation, scroll_factor);
 
+	auto style = getDefaultStyleForElement("scroll_container", spec_mover.fname,
+			"container");
+	clipper->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+
 	data->current_parent = mover;
 
-	m_scroll_containers.emplace_back(scrollbar_name, mover);
-
 	m_fields.push_back(spec_mover);
+	m_scroll_containers.emplace_back(scrollbar_name, mover);
 
 	clipper->drop();
 
-	// remove interferring offset of normal containers
-	container_stack.push(pos_offset);
-	pos_offset.X = 0.0f;
-	pos_offset.Y = 0.0f;
-}
-
-void GUIFormSpecMenu::parseScrollContainerEnd(parserData *data)
-{
-	if (data->current_parent == this || data->current_parent->getParent() == this ||
-			container_stack.empty()) {
-		errorstream << "Invalid scroll_container end element, "
-				<< "no matching scroll_container start element" << std::endl;
-		return;
-	}
-
-	if (pos_offset.getLengthSQ() != 0.0f) {
-		// pos_offset is only set by containers and scroll_containers.
-		// scroll_containers always set it to 0,0 which means that if it is
-		// not 0,0, it is a normal container that was opened last, not a
-		// scroll_container
-		errorstream << "Invalid scroll_container end element, "
-				<< "an inner container was left open" << std::endl;
-		return;
-	}
-
-	data->current_parent = data->current_parent->getParent()->getParent();
-	pos_offset = container_stack.top();
-	container_stack.pop();
+	pushContainer(CONTAINER_SCROLL);
 }
 
 void GUIFormSpecMenu::parseList(parserData *data, const std::string &element)
@@ -2707,8 +2742,8 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
-	if (type == "container_end") {
-		parseContainerEnd(data);
+	if (type == "end" || type == "container_end" || type == "scroll_container_end") {
+		parseEnd(data);
 		return;
 	}
 
@@ -2869,11 +2904,6 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	if (type == "scroll_container") {
 		parseScrollContainer(data, description);
-		return;
-	}
-
-	if (type == "scroll_container_end") {
-		parseScrollContainerEnd(data);
 		return;
 	}
 
@@ -3203,7 +3233,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
 
-	pos_offset = v2f32();
+	container_stack.clear();
+	pos_offset = v2f32(0.0f, 0.0f);
 
 	// used for formspec versions < 3
 	core::list<IGUIElement *>::Iterator legacy_sort_start = Children.getLast();
@@ -3234,13 +3265,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		parseElement(&mydata, elements[i]);
 	}
 
-	if (mydata.current_parent != this) {
-		errorstream << "Invalid formspec string: scroll_container was never closed!"
+	if (!container_stack.empty())
+		errorstream << "Invalid formspec string: container was never closed."
 			<< std::endl;
-	} else if (!container_stack.empty()) {
-		errorstream << "Invalid formspec string: container was never closed!"
-			<< std::endl;
-	}
 
 	// get the scrollbar elements for scroll_containers
 	for (const std::pair<std::string, GUIScrollContainer *> &c : m_scroll_containers) {

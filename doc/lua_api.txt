@@ -2114,18 +2114,26 @@ Elements
 * For information on converting forms to the new coordinate system, see `Migrating
   to Real Coordinates`.
 
-### `container[<X>,<Y>]`
+### `container[<X>,<Y>;<W>,<H>]`
 
 * Start of a container block, moves all physical elements in the container by
   (X, Y).
-* Must have matching `container_end`
-* Containers can be nested, in which case the offsets are added
-  (child containers are relative to parent containers)
+* `W`/`H` (optional): The width and height of the container. If defined, the container
+  has a width and height, and any elements extending outside of the container are
+  clipped to the container rectangle. Requires formspec version >= 4.
+* Must have a matching `end[]` element.
+* Containers can be nested, in which case the offsets are added, meaning the
+  child containers are relative to the parent containers.
+
+### `end[]`
+* End of any type of container; following elements are no longer bound to the
+  last opened container.
 
 ### `container_end[]`
 
 * End of a container, following elements are no longer relative to this
   container.
+* Deprecated; use `end[]` for all containers
 
 ### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
 
@@ -2136,6 +2144,7 @@ Elements
   * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
 * `orientation`: possible values are `vertical` and `horizontal`.
 * `scroll factor`: optional, defaults to `0.1`.
+* Must have a matching `end[]` element.
 * Nesting is possible.
 * Some elements might work a little different if they are in a scroll_container.
 * Note: If you want the scroll_container to actually work, you also need to add a
@@ -2146,6 +2155,7 @@ Elements
 
 * End of a scroll_container, following elements are no longer bound to this
   container.
+* Deprecated; use `end[]` for all containers
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 
@@ -2711,6 +2721,8 @@ Some types may inherit styles from parent types.
 * button
 * button_exit, inherits from button
 * checkbox
+* container
+* scroll_container, inherits from container
 * scrollbar
 * table
 * textlist
@@ -2767,6 +2779,9 @@ Some types may inherit styles from parent types.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+* container, scroll_container
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+        * Note: Doesn't apply to unsized containers which do not clip ever
 * scrollbar
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * table, textlist
