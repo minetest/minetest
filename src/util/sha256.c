@@ -18,13 +18,13 @@ const char SHA256_version[] = "SHA-256" OPENSSL_VERSION_PTEXT;
 unsigned static char cleanse_ctr = 0;
 static void OPENSSL_cleanse(void *ptr, size_t len)
 {
-    unsigned char *p = ptr;
+    unsigned char *p = (unsigned char *)ptr;
     size_t loop = len, ctr = cleanse_ctr;
     while (loop--) {
         *(p++) = (unsigned char)ctr;
         ctr += (17 + ((size_t)p & 0xF));
     }
-    p = memchr(ptr, (unsigned char)ctr, len);
+    p = (unsigned char *)memchr(ptr, (unsigned char)ctr, len);
     if (p)
         ctr += (63 + (size_t)p);
     cleanse_ctr = (unsigned char)ctr;
@@ -262,7 +262,7 @@ static void sha256_block_data_order(SHA256_CTX *ctx, const void *in,
     unsigned MD32_REG_T a, b, c, d, e, f, g, h, s0, s1, T1;
     SHA_LONG X[16];
     int i;
-    const unsigned char *data = in;
+    const unsigned char *data = (const unsigned char *)in;
     const union {
         long one;
         char little;
