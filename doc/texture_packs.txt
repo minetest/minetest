@@ -195,11 +195,27 @@ Here are targets you can choose from:
 | bottom        | y- face                                           |
 | sides         | x-, x+, z-, z+ faces                              |
 | all           | All faces. You can also use '*' instead of 'all'. |
+| special1      | The first entry in the special_tiles list         |
+| special2      | The second entry in the special_tiles list        |
+| special3      | The third entry in the special_tiles list         |
+| special4      | The fourth entry in the special_tiles list        |
+| special5      | The fifth entry in the special_tiles list         |
+| special6      | The sixth entry in the special_tiles list         |
 | inventory     | The inventory texture                             |
 | wield         | The texture used when held by the player          |
 
 Nodes support all targets, but other items only support 'inventory'
-and 'wield'
+and 'wield'.
+
+### Using the special targets
+
+The special* targets only apply to specific drawtypes:
+
+* `flowingliquid`: special1 sets the top texture, special2 sets the side texture
+* `allfaces_optional`: special1 is used by simple mode, see below
+* `glasslike_framed`: When containing a liquid, special1 sets the liquid texture
+* `glasslike_framed_optional`: Same as `glasslike_framed`
+* `plantlike_rooted`: special1 sets the plant's texture
 
 Designing leaves textures for the leaves rendering options
 ----------------------------------------------------------

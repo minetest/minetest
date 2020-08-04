@@ -261,6 +261,11 @@ struct TileDef
 		NodeDrawType drawtype);
 };
 
+// Defines the number of special tiles per nodedef
+//
+// NOTE: When changing this value, the enum entries of OverrideTarget and
+//       parser in TextureOverrideSource must be updated so that all special
+//       tiles can be overridden.
 #define CF_SPECIAL_COUNT 6
 
 struct ContentFeatures

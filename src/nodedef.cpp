@@ -1337,6 +1337,7 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 
 		ContentFeatures &nodedef = m_content_features[id];
 
+		// Override tiles
 		if (texture_override.hasTarget(OverrideTarget::TOP))
 			nodedef.tiledef[0].name = texture_override.texture;
 
@@ -1354,6 +1355,26 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 
 		if (texture_override.hasTarget(OverrideTarget::FRONT))
 			nodedef.tiledef[5].name = texture_override.texture;
+
+
+		// Override special tiles, if applicable
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_1))
+			nodedef.tiledef_special[0].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_2))
+			nodedef.tiledef_special[1].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_3))
+			nodedef.tiledef_special[2].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_4))
+			nodedef.tiledef_special[3].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_5))
+			nodedef.tiledef_special[4].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_6))
+			nodedef.tiledef_special[5].name = texture_override.texture;
 	}
 }
 
