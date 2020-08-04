@@ -201,7 +201,7 @@ Download minetest_game, without using Git:
 Build a version that runs directly from the source directory:
 
     cmake . -DRUN_IN_PLACE=TRUE
-    make -j$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null)
+    make -j$(nproc)
 
 Run it:
 
