@@ -355,6 +355,8 @@ private:
 
 	typedef struct {
 		bool explicit_size;
+		bool enable_prepends;
+		std::vector<std::string> no_prepend_elements;
 		bool real_coordinates;
 		u8 simple_field_count;
 		v2f invsize;
@@ -394,7 +396,7 @@ private:
 	std::string current_field_enter_pending = "";
 	std::vector<std::string> m_hovered_item_tooltips;
 
-	void parseElement(parserData* data, const std::string &element);
+	void parseElement(parserData* data, const std::string &element, bool in_prepend);
 
 	void parseSize(parserData* data, const std::string &element);
 	void parseContainer(parserData* data, const std::string &element);
@@ -442,6 +444,7 @@ private:
 	void parsePosition(parserData *data, const std::string &element);
 	bool parseAnchorDirect(parserData *data, const std::string &element);
 	void parseAnchor(parserData *data, const std::string &element);
+	bool parseNoPrepend(parserData *data, const std::string &element);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
 

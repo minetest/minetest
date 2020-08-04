@@ -2098,10 +2098,11 @@ Elements
 * `position` and `anchor` elements need suitable values to avoid a formspec
   extending off the game window due to particular game window sizes.
 
-### `no_prepend[]`
+### `no_prepend[<exclude 1>,<exclude 2>,...]`
 
 * Must be used after the `size`, `position`, and `anchor` elements (if present).
-* Disables player:set_formspec_prepend() from applying to this formspec.
+* `exclude`: List of element types in `player:set_formspec_prepend()` to exclude
+  from the formspec. If blank, all elements are excluded.
 
 ### `real_coordinates[<bool>]`
 

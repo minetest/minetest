@@ -2529,6 +2529,31 @@ void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
 			<< "'" << std::endl;
 }
 
+bool GUIFormSpecMenu::parseNoPrepend(parserData *data, const std::string &element)
+{
+	if (element.empty())
+		return false;
+
+	std::vector<std::string> parts = split(element, '[');
+
+	if (parts.size() != 2)
+		return false;
+
+	if (trim(parts[0]) != "no_prepend")
+		return false;
+
+	std::string description = parts[1];
+
+	if (description.empty()) {
+		data->enable_prepends = false;
+	} else {
+		data->enable_prepends = true;
+		data->no_prepend_elements = split(description, ',');
+	}
+
+	return true;
+}
+
 bool GUIFormSpecMenu::parseStyle(parserData *data, const std::string &element, bool style_type)
 {
 	std::vector<std::string> parts = split(element, ';');
@@ -2686,13 +2711,11 @@ void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 		<< "'" << std::endl;
 }
 
-void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
+void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element,
+		bool in_prepend)
 {
 	//some prechecks
 	if (element.empty())
-		return;
-
-	if (parseVersionDirect(element))
 		return;
 
 	size_t pos = element.find('[');
@@ -2701,6 +2724,13 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	std::string type = trim(element.substr(0, pos));
 	std::string description = element.substr(pos+1);
+
+	if (in_prepend) {
+		for (size_t i = 0; i < data->no_prepend_elements.size(); i++) {
+			if (type == data->no_prepend_elements[i])
+				return;
+		}
+	}
 
 	if (type == "container") {
 		parseContainer(data, description);
@@ -3018,14 +3048,11 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 
 	std::vector<std::string> elements = split(m_formspec_string,']');
-	unsigned int i = 0;
+	size_t i = 0;
 
 	/* try to read version from first element only */
-	if (!elements.empty()) {
-		if (parseVersionDirect(elements[0])) {
-			i++;
-		}
-	}
+	if (parseVersionDirect(elements[0]))
+		i++;
 
 	/* we need size first in order to calculate image scale */
 	mydata.explicit_size = false;
@@ -3050,15 +3077,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 
 	/* "no_prepend" element is always after "position" (or  "size" element) if it used */
-	bool enable_prepends = true;
 	for (; i < elements.size(); i++) {
-		if (elements[i].empty())
-			break;
-
-		std::vector<std::string> parts = split(elements[i], '[');
-		if (trim(parts[0]) == "no_prepend")
-			enable_prepends = false;
-		else
+		if (!parseNoPrepend(&mydata, elements[i]))
 			break;
 	}
 
@@ -3208,15 +3228,22 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// used for formspec versions < 3
 	core::list<IGUIElement *>::Iterator legacy_sort_start = Children.getLast();
 
-	if (enable_prepends) {
-		// Backup the coordinates so that prepends can use the coordinates of choice.
+	if (mydata.enable_prepends) {
+		// Backup the coordinates and version so that prepends can use the
+		// coordinates and version of choice.
 		bool rc_backup = mydata.real_coordinates;
+		mydata.real_coordinates = false;
+
 		u16 version_backup = m_formspec_version;
-		mydata.real_coordinates = false; // Old coordinates by default.
+		m_formspec_version = 1;
 
 		std::vector<std::string> prepend_elements = split(m_formspec_prepend, ']');
-		for (const auto &element : prepend_elements)
-			parseElement(&mydata, element);
+		size_t i = 0;
+		if (parseVersionDirect(prepend_elements[0]))
+			i++;
+
+		for (; i < prepend_elements.size(); i++)
+			parseElement(&mydata, prepend_elements[i], true);
 
 		// legacy sorting for formspec versions < 3
 		if (m_formspec_version >= 3)
@@ -3231,7 +3258,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 
 	for (; i< elements.size(); i++) {
-		parseElement(&mydata, elements[i]);
+		parseElement(&mydata, elements[i], false);
 	}
 
 	if (mydata.current_parent != this) {
