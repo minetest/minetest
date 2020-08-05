@@ -328,7 +328,7 @@ void GUIButton::draw()
 				middle.LowerRightCorner.Y += texture->getOriginalSize().Height;
 			draw2DImage9Slice(driver, texture,
 					ScaleImage ? AbsoluteRect : core::rect<s32>(pos, sourceRect.getSize()),
-					middle, &AbsoluteClippingRect, image_colors);
+					sourceRect, middle, &AbsoluteClippingRect, image_colors);
 		}
 		// END PATCH
 	}
