@@ -10,12 +10,7 @@
 
 
 #define SIZE_DIV  6                       // Divide default button size by this value for specifying maximum change of the button size when hovering. The division is necessary for keeping the proportions.
-#define MAX_WIDTH(w)  (w / SIZE_DIV)      // Maximum change of the button width.
-#define MAX_HEIGHT(h)  (h / SIZE_DIV)     // Maximum change of the button height.
 #define SIZE_CHANGE_DIV  4
-#define SIZE_CHANGE_WIDTH(w)  (w / SIZE_CHANGE_DIV)
-#define SIZE_CHANGE_HEIGHT(h)  (h / SIZE_CHANGE_DIV)
-
 
 class GUIButton;
 class ButtonSmoothScaleThread;
