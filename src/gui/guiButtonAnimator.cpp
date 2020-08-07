@@ -1,7 +1,6 @@
 
 #include "guiButtonAnimator.h"
 #include "guiButton.h"
-#include "log.h"
 
 
 GUIButtonAnimator::GUIButtonAnimator(const string& tname, const array<s32, 2> default_size, GUIButton* but)
@@ -9,17 +8,12 @@ GUIButtonAnimator::GUIButtonAnimator(const string& tname, const array<s32, 2> de
 {
     m_thread = new ButtonSmoothScaleThread(tname, this);
     
-    infostream << "default_size[0]: " << default_size[0] << "\n";
-    infostream << "default_size[1]: " << default_size[1] << "\n";
     m_end_size[0] = default_size[0]/SIZE_DIV + default_size[0];
     m_end_size[1] = default_size[1]/SIZE_DIV + default_size[1];
         
-    infostream << "m_end_size[0] - m_default_size[1]: " << (m_end_size[0] - m_default_size[0]) << "\n";
     m_size_change[0] = (m_end_size[0] - m_default_size[0])/SIZE_CHANGE_DIV;
     m_size_change[1] = (m_end_size[1] - m_default_size[1])/SIZE_CHANGE_DIV;
     
-    infostream << "m_size_change[0]: " << m_size_change[0] << "\n";
-    infostream << "m_size_change[1]: " << m_size_change[1] << "\n";
 }
 
 GUIButtonAnimator::~GUIButtonAnimator()
@@ -50,13 +44,9 @@ void* ButtonSmoothScaleThread::run() {
         s32 new_w = (anim_type == m_button_anim->ANIMATION_SCALEUP ? cur_w + size_change[0] : cur_w - size_change[0]);
         s32 new_h = (anim_type == m_button_anim->ANIMATION_SCALEUP ? cur_h + size_change[1] : cur_h - size_change[1]);
         
-        infostream << "new_w: " << new_w << "\n";
-        infostream << "new_h: " << new_h << "\n";
         m_button_anim->m_button->setRelRectSize(new_w, new_h);
                 
         ++iter;
-        infostream << iter << "\n";
-        infostream << "current width: " << rel_pos.getWidth() << ", current height: " << rel_pos.getHeight() << "\n";
                 
         this_thread::sleep_for(chrono::milliseconds{20});
                 
