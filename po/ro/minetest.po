@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Romanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-04 16:41+0000\n"
-"Last-Translator: f0roots <f0rootss@gmail.com>\n"
+"PO-Revision-Date: 2020-08-09 19:32+0000\n"
+"Last-Translator: Larissa Piklor <larissa.piklor@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ro/>\n"
 "Language: ro\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -25,7 +25,7 @@ msgstr "Ai murit"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -117,7 +117,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Căutare Mai Multe Moduri"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -173,9 +173,8 @@ msgid "ContentDB is not available when Minetest was compiled without cURL"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Se încarcă..."
+msgstr "Descărcare..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -222,7 +221,7 @@ msgstr "Actualizare"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Vizualizare"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -230,7 +229,7 @@ msgstr "O lume cu numele \"$1\" deja există"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Teren suplimentar"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -242,33 +241,28 @@ msgid "Altitude dry"
 msgstr "Altitudine de frisoane"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biome blending"
-msgstr "Biome zgomot"
+msgstr "Amestec de biom"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "Biome zgomot"
+msgstr "Biomuri"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "Pragul cavernei"
+msgstr "Caverne"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Octava"
+msgstr "Peșteri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Creează"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Informații:"
+msgstr "Decorațiuni"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -279,21 +273,20 @@ msgid "Download one from minetest.net"
 msgstr "Descărcați unul de pe minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Zgomotul temnițelor"
+msgstr "Temnițe"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Teren plat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Mase de teren plutitoare în cer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Terenuri plutitoare (experimental)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -301,27 +294,28 @@ msgstr "Joc"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Generare terenuri fără fracturi: Oceane și sub pământ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Dealuri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Râuri umede"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Mărește umiditea în jurul râurilor"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Lacuri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
+"Umiditatea redusă și căldura ridicată cauzează râuri superficiale sau uscate"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -332,21 +326,20 @@ msgid "Mapgen flags"
 msgstr "Steagurile Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Steaguri specifice Mapgen V5"
+msgstr "Steaguri specifice Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Munți"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Curgere de noroi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Rețea de tunele și peșteri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -354,20 +347,19 @@ msgstr "Nici un joc selectat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Reduce căldura cu altitudinea"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Reduce umiditatea cu altitudinea"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Zgomotul râului"
+msgstr "Râuri"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Râuri la nivelul mării"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -376,51 +368,51 @@ msgstr "Seminţe"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Tranziție lină între biomi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Structuri care apar pe teren (fără efect asupra copacilor și a ierbii de "
+"junglă creați de v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Structuri care apar pe teren, tipic copaci și plante"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Temperat, Deșert"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Temperat, Deșert, Junglă"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Temperat, Deșert, Junglă, Tundră, Taiga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Eroziunea suprafeței terenului"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Copaci și iarbă de junglă"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Adâncimea râului variază"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Caverne foarte mari adânc în pământ"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
-msgstr ""
-"Avertisment: Testul de dezvoltare minimă este destinat dezvoltatorilor."
+msgstr "Avertisment: Testul de dezvoltare este destinat dezvoltatorilor."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -735,7 +727,7 @@ msgstr "Găzduiește Server"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Instalarea jocurilor din ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1394,11 +1386,11 @@ msgstr "Sunet dezactivat"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Sistem audio dezactivat"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Sistemul audio nu e suportat în această construcție"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -2045,7 +2037,7 @@ msgstr "Mod 3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode parallax strength"
-msgstr ""
+msgstr "Mod 3D putere paralaxă"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
