@@ -539,7 +539,7 @@ core.register_chatcommand("set", {
 				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
 			end
 			core.settings:set(setname, setvalue)
-			return true, setname .. " = " .. setvalue
+			return true, "Setted: " .. setname .. " = " .. setvalue
 		end
 
 		setname = string.match(param, "([^ ]+)")
