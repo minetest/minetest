@@ -770,7 +770,7 @@ core.register_chatcommand("pulverize", {
 		core.log("action", name .. " pulverized \"" ..
 			wielded_item:get_name() .. " " .. wielded_item:get_count() .. "\"")
 		player:set_wielded_item(nil)
-		return true, player .. "'s item was pulverized."
+		return true, name .. "'s item was pulverized."
 	end,
 })
 
