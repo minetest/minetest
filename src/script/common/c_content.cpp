@@ -1991,7 +1991,7 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 		case HUD_STAT_ITEM:
 			elem->item = luaL_checknumber(L, 4);
 			if (elem->type == HUD_ELEM_WAYPOINT && statstr == "precision")
-			    elem->item = elem->item + 1;
+				elem->item++;
 			*value = &elem->item;
 			break;
 		case HUD_STAT_DIR:
