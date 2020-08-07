@@ -57,6 +57,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiBackgroundImage.h"
 #include "guiBox.h"
 #include "guiButton.h"
+#include "guiButtonAnimator.h"
 #include "guiButtonImage.h"
 #include "guiButtonItemImage.h"
 #include "guiEditBoxWithScrollbar.h"
@@ -1020,7 +1021,16 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 
 		auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
 		e->setStyles(style);
-
+        
+        /*auto scaleup_found = std::find_if(parts.begin(), parts.end(), [&](const std::string& v_elem) {
+            std::vector<std::string> v_scaleup = split(v_elem, '=');
+            return (v_scaleup.at(0) == "scaleup_hovered" && v_scaleup.at(1) == "true");
+        });
+        
+        if (scaleup_found != parts.end())
+            e->m_button_animator = new GUIButtonAnimator("bsst_main_" + e->getID(), {pos.X+geom.X, pos.Y+geom.Y}, e);
+        */
+        
 		if (spec.fname == m_focused_element) {
 			Environment->setFocus(e);
 		}

@@ -36,6 +36,7 @@ public:
 		BGCOLOR,
 		BGCOLOR_HOVERED, // Note: Deprecated property
 		BGCOLOR_PRESSED, // Note: Deprecated property
+        SCALEUP_HOVERED,
 		NOCLIP,
 		BORDER,
 		BGIMG,
@@ -78,7 +79,9 @@ public:
 			return BGCOLOR_HOVERED;
 		} else if (name == "bgcolor_pressed") {
 			return BGCOLOR_PRESSED;
-		} else if (name == "noclip") {
+		} else if (name == "scaleup_hovered") {
+            return SCALEUP_HOVERED;
+        } else if (name == "noclip") {
 			return NOCLIP;
 		} else if (name == "border") {
 			return BORDER;

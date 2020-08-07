@@ -2747,6 +2747,7 @@ Some types may inherit styles from parent types.
                      button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
         * This is deprecated, use states instead.
+    * scaleup_hovered - Scale up the button smoothly when hovered. Default to false.
     * font - Sets font type. This is a comma separated list of options. Valid options:
       * Main font type options. These cannot be combined with each other:
         * `normal`: Default font

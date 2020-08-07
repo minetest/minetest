@@ -67,6 +67,7 @@ using namespace irr;
 
 #endif
 
+class GUIButtonAnimator;
 class ISimpleTextureSource;
 
 class GUIButton : public gui::IGUIButton
@@ -142,6 +143,9 @@ public:
 	virtual void setSprite(gui::EGUI_BUTTON_STATE state, s32 index,
 						   video::SColor color=video::SColor(255,255,255,255),
 						   bool loop=false, bool scale=false);
+    
+    // Sets size of the relative rectangle
+    virtual void setRelRectSize(s32 w, s32 h);
 
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 8)
 	void setSprite(gui::EGUI_BUTTON_STATE state, s32 index, video::SColor color, bool loop) override {
@@ -236,7 +240,9 @@ public:
 			const core::rect<s32>& rectangle, ISimpleTextureSource *tsrc,
 			IGUIElement* parent, s32 id, const wchar_t* text,
 			const wchar_t *tooltiptext=L"");
-
+    
+    // Button Animator, directly used in GUIButton::setFromStyle() method to set corresponding animation
+    GUIButtonAnimator* m_button_animator=nullptr;
 protected:
 	void drawSprite(gui::EGUI_BUTTON_STATE state, u32 startTime, const core::position2di& center);
 	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed) const;

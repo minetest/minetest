@@ -15,6 +15,9 @@
 #include "porting.h"
 #include "StyleSpec.h"
 #include "util/numeric.h"
+#include <cmath>
+#include "log.h"
+#include "guiButtonAnimator.h"
 
 using namespace irr;
 using namespace gui;
@@ -101,6 +104,36 @@ void GUIButton::setSprite(EGUI_BUTTON_STATE state, s32 index, video::SColor colo
 	ButtonSprites[(u32)state].Color	= color;
 	ButtonSprites[(u32)state].Loop	= loop;
 	ButtonSprites[(u32)state].Scale = scale;
+}
+
+// Sets size of the relative rectangle
+void GUIButton::setRelRectSize(s32 w, s32 h) {
+    auto rel_rect = getRelativePosition();
+    auto pos1 = rel_rect.UpperLeftCorner;
+    auto pos2 = rel_rect.LowerRightCorner;
+    auto cur_w = rel_rect.getWidth();
+    auto cur_h = rel_rect.getHeight();
+    
+    s32 diff_w = std::abs(w - cur_w)/2;
+    s32 diff_h = std::abs(h - cur_h)/2;
+    infostream << "diff_w: " << diff_w << "\n";
+    infostream << "diff_h: " << diff_h << "\n";
+    
+    infostream << "-x: " << (cur_w < w ? pos1.X-diff_w : (cur_w > w ? pos1.X+diff_w : pos1.X)) << "\n";
+    infostream << "-y: " << (cur_h < h ? pos1.Y-diff_h : (cur_h > h ? pos1.Y+diff_h : pos1.Y)) << "\n";
+    infostream << "x: " << (cur_w < w ? pos2.X+diff_w : (cur_w > w ? pos2.X-diff_w : pos2.X)) << "\n";
+    infostream << "y: " << (cur_h < h ? pos2.Y+diff_h : (cur_h > h ? pos2.Y-diff_h : pos2.Y)) << "\n";
+    core::rect<s32> new_rect{
+        cur_w < w ? pos1.X-diff_w : (cur_w > w ? pos1.X+diff_w : pos1.X),
+        cur_h < h ? pos1.Y-diff_h : (cur_h > h ? pos1.Y+diff_h : pos1.Y),
+        cur_w < w ? pos2.X+diff_w : (cur_w > w ? pos2.X-diff_w : pos2.X),
+        cur_h < h ? pos2.Y+diff_h : (cur_h > h ? pos2.Y-diff_h : pos2.Y)
+    };
+    
+    setRelativePosition(new_rect);
+    
+    StaticText->setTextAlignment(EGUIA_CENTER, EGUIA_CENTER);
+    updateAbsolutePosition();
 }
 
 //! Get the sprite-index for the given state or -1 when no sprite is set
@@ -746,6 +779,7 @@ void GUIButton::setFromState()
 //! Set element properties from a StyleSpec
 void GUIButton::setFromStyle(const StyleSpec& style)
 {
+    bool def = (style.getState() == StyleSpec::STATE_DEFAULT);
 	bool hovered = (style.getState() & StyleSpec::STATE_HOVERED) != 0;
 	bool pressed = (style.getState() & StyleSpec::STATE_PRESSED) != 0;
 
@@ -778,7 +812,22 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 			}
 		}
 	}
-
+    
+    if (style.isNotDefault(StyleSpec::SCALEUP_HOVERED) && !m_button_animator) {
+        core::rect<s32> rect = getRelativePosition();
+        m_button_animator = new GUIButtonAnimator("bsst_main_" + getID(), {rect.getWidth(), rect.getHeight()}, this);
+    }
+    
+    if (m_button_animator) {
+        if (hovered) {
+            m_button_animator->smoothScale(m_button_animator->ANIMATION_SCALEUP);
+        }
+        else if (def) {
+            infostream << "default\n";
+            m_button_animator->smoothScale(m_button_animator->ANIMATION_SCALEDOWN);
+        }
+    }
+    
 	if (style.isNotDefault(StyleSpec::TEXTCOLOR)) {
 		setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR));
 	} else {

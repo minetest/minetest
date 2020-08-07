@@ -125,6 +125,7 @@ end
 local function dlg_confirm_reset_formspec(data)
 	return  "size[8,3]" ..
 		"label[1,1;" .. fgettext("Are you sure to reset your singleplayer world?") .. "]" ..
+        "style_type[button:hovered;scaleup_hovered=true]" ..
 		"button[1,2;2.6,0.5;dlg_reset_singleplayer_confirm;" .. fgettext("Yes") .. "]" ..
 		"button[4,2;2.8,0.5;dlg_reset_singleplayer_cancel;" .. fgettext("No") .. "]"
 end
