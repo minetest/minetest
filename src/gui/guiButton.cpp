@@ -16,7 +16,6 @@
 #include "StyleSpec.h"
 #include "util/numeric.h"
 #include <cmath>
-#include "log.h"
 #include "guiButtonAnimator.h"
 
 using namespace irr;
@@ -116,13 +115,7 @@ void GUIButton::setRelRectSize(s32 w, s32 h) {
     
     s32 diff_w = std::abs(w - cur_w)/2;
     s32 diff_h = std::abs(h - cur_h)/2;
-    infostream << "diff_w: " << diff_w << "\n";
-    infostream << "diff_h: " << diff_h << "\n";
     
-    infostream << "-x: " << (cur_w < w ? pos1.X-diff_w : (cur_w > w ? pos1.X+diff_w : pos1.X)) << "\n";
-    infostream << "-y: " << (cur_h < h ? pos1.Y-diff_h : (cur_h > h ? pos1.Y+diff_h : pos1.Y)) << "\n";
-    infostream << "x: " << (cur_w < w ? pos2.X+diff_w : (cur_w > w ? pos2.X-diff_w : pos2.X)) << "\n";
-    infostream << "y: " << (cur_h < h ? pos2.Y+diff_h : (cur_h > h ? pos2.Y-diff_h : pos2.Y)) << "\n";
     core::rect<s32> new_rect{
         cur_w < w ? pos1.X-diff_w : (cur_w > w ? pos1.X+diff_w : pos1.X),
         cur_h < h ? pos1.Y-diff_h : (cur_h > h ? pos1.Y+diff_h : pos1.Y),
@@ -823,7 +816,6 @@ void GUIButton::setFromStyle(const StyleSpec& style)
             m_button_animator->smoothScale(m_button_animator->ANIMATION_SCALEUP);
         }
         else if (def) {
-            infostream << "default\n";
             m_button_animator->smoothScale(m_button_animator->ANIMATION_SCALEDOWN);
         }
     }
