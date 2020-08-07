@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-08-09 19:32+0000\n"
-"Last-Translator: Samuel Carvalho de Araújo <samuelnegro12345@gmail.com>\n"
+"Last-Translator: Vinicius Martins <vinicius.martins@lapada.ifce.edu.br>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -24,7 +24,7 @@ msgstr "Você morreu"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -117,7 +117,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Encontre Mais Mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -170,12 +170,11 @@ msgstr "Voltar ao menu principal"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB não está disponível quando Minetest é compilado sem cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Carregando..."
+msgstr "Baixando..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -222,7 +221,7 @@ msgstr "Atualizar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Vizualizar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -230,7 +229,7 @@ msgstr "Já existe um mundo com o nome \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Terreno adicional"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -246,28 +245,24 @@ msgid "Biome blending"
 msgstr "Ruído do bioma"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "Ruído do bioma"
+msgstr "Biomas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "Barulho da caverna"
+msgstr "Cavernas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Octavos"
+msgstr "Cavernas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Criar"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Monitorização"
+msgstr "Decorações"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -278,23 +273,20 @@ msgid "Download one from minetest.net"
 msgstr "Baixe um apartir do site minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Y mínimo da dungeon"
+msgstr "Masmorras (Dungeons)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Terreno plano"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floating landmasses in the sky"
-msgstr "Densidade da Ilha Flutuante montanhosa"
+msgstr "Ilhas flutuantes"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "Nível de água"
+msgstr "Ilhas flutuantes (experimental)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -302,28 +294,27 @@ msgstr "Jogo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Excluir Oceanos e subterrâneos do fractal"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Montanhas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Humid rivers"
-msgstr "Driver de vídeo"
+msgstr "Rios húmidos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Alta humidade perto dos rios"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Lagos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Baixa umidade e calor elevado resultam em rios rasos ou secos"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -334,22 +325,20 @@ msgid "Mapgen flags"
 msgstr "Flags do gerador de mundo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Flags específicas do gerador de mundo V5"
+msgstr "Parâmetros específicos do gerador de mundo V5"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mountains"
-msgstr "Ruído da montanha"
+msgstr "Montanhas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Fluxo de lama"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Conectar túneis e cavernas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -357,20 +346,19 @@ msgstr "Nenhum jogo selecionado"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Reduz calor com altitude"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Reduz humidade com altitude"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Tamanho do Rio"
+msgstr "Rios"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Rios ao nível do mar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -379,50 +367,49 @@ msgstr "Seed"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Transição suave entre biomas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Estruturas que aparecem no terreno (sem efeito em árvores e grama da selva "
+"criada pelo v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Estruturas que aparecem no terreno, geralmente árvores e plantas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Temperado, Deserto"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Temperado, Deserto, Selva"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Temperado, Deserto, Selva, Tundra, Floresta Boreal"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Terrain surface erosion"
-msgstr "Altura do terreno"
+msgstr "Altura da erosão de terreno"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Árvores e grama da selva"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Vary river depth"
-msgstr "Profundidade do Rio"
+msgstr "Rios profundos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Cavernas bastante profundas"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
 msgstr ""
 "Aviso: O game \"minimal development test\" apenas serve para desenvolvedores."
@@ -741,7 +728,7 @@ msgstr "Criar Servidor"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Instalar jogos do ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -973,9 +960,8 @@ msgid "Waving Leaves"
 msgstr "Folhas Balançam"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Nós que balancam"
+msgstr "Líquidos com ondas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -1415,11 +1401,11 @@ msgstr "Som mutado"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Som do sistema está desabilitado"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Som do sistema não é suportado nesta versão"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -1754,7 +1740,7 @@ msgid "Register and Join"
 msgstr "Registrar e entrar"
 
 #: src/gui/guiConfirmRegistration.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "You are about to join this server with the name \"%s\" for the first time.\n"
 "If you proceed, a new account using your credentials will be created on this "
@@ -1762,11 +1748,12 @@ msgid ""
 "Please retype your password and click 'Register and Join' to confirm account "
 "creation, or click 'Cancel' to abort."
 msgstr ""
-"Você está prestes a entrar no servidor em %1$s com o nome \"%2$s\" pela "
-"primeira vez. Se continuar, uma nova conta usando suas credenciais será "
-"criada neste servidor.\n"
-"Por favor, redigite sua senha e clique registrar e entrar para confirmar a "
-"criação da conta ou clique em cancelar para abortar."
+"Você está prestes a entrar no servidor com o nome \"%s\" pela primeira vez. "
+"\n"
+"Se continuar, uma nova conta usando suas credenciais será criada neste "
+"servidor.\n"
+"Por favor, confirme sua senha e clique em \"Registrar e Entrar\" para "
+"confirmar a criação da conta, ou clique em \"Cancelar\" para abortar."
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -1911,9 +1898,8 @@ msgid "Toggle noclip"
 msgstr "Alternar noclip"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle pitchmove"
-msgstr "Ativar histórico de conversa"
+msgstr "Ativar Voar seguindo a câmera"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -1980,7 +1966,6 @@ msgstr ""
 "estiver fora do circulo principal."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world center in units of 'scale'.\n"
 "Can be used to move a desired point to (0, 0) to create a\n"
@@ -1991,13 +1976,15 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"(X,Y,Z) Espaço do fractal a partir centro do mundo em unidades de 'escala'.\n"
-"Pode ser usado para mover um ponto desejado para (0, 0) para criar um ponto "
-"de spawn apropriado, ou para permitir zoom em um ponto desejado aumentando "
-"sua escala.\n"
-"O padrão é configurado para ponto de spawn mandelbrot, pode ser necessário "
-"altera-lo em outras situações.\n"
-"Variam de -2 a 2. Multiplica por \"escala\" para compensação de nós."
+"(X,Y,Z) offset do fractal a partir centro do mundo em unidades de 'escala'.\n"
+"Pode ser usado para mover um ponto desejado para (0, 0) para criar um \n"
+"Ponto de spawn flexível, ou para permitir zoom em um ponto desejado "
+"aumentando sua escala.\n"
+"O padrão é configurado com ponto de spawn Mandelbrot\n"
+"usando os parâmetros padrão, pode ser necessário altera-lo em outras \n"
+"situações.\n"
+"Variam aproximadamente de -2 a 2. Multiplicando a escala pelo offset de "
+"blocos."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3569,19 +3556,16 @@ msgid "HUD toggle key"
 msgstr "Tecla de comutação HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    legacy: (try to) mimic old behaviour (default for release).\n"
 "-    log: mimic and log backtrace of deprecated call (default for debug).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
-"Manipulação para chamadas de API Lua reprovados:\n"
-"-    legacy: (tentar) imitar o comportamento antigo (padrão para a "
-"liberação).\n"
-"-    log: imitação e log de retraçamento da chamada reprovada (padrão para "
-"depuração).\n"
-"-    error: abortar no uso da chamada reprovada (sugerido para "
+"Lidando com funções obsoletas da API Lua:\n"
+"-...legacy: (tenta) imitar o comportamento antigo (padrão para release).\n"
+"-...log: Imita e gera log das funções obsoletas (padrão para debug).\n"
+"-...error: Aborta quando chama uma função obsoleta (sugerido para "
 "desenvolvedores de mods)."
 
 #: src/settings_translation_file.cpp
