@@ -375,7 +375,7 @@ core.register_chatcommand("auth_reload", {
 	privs = {server=true},
 	func = function(name, param)
 		local done = core.auth_reload()
-		return done, (done and "Done." or "Failed.")
+		return done, (done and "Reload authentication data done." or "Reload authentication data failed.")
 	end,
 })
 
@@ -548,7 +548,7 @@ core.register_chatcommand("set", {
 			if not setvalue then
 				setvalue = "<not set>"
 			end
-			return true, setname .. " = " .. setvalue
+			return true, "Setted: " .. setname .. " = " .. setvalue
 		end
 
 		return false, "Invalid parameters (see /help set)."
@@ -770,7 +770,7 @@ core.register_chatcommand("pulverize", {
 		core.log("action", name .. " pulverized \"" ..
 			wielded_item:get_name() .. " " .. wielded_item:get_count() .. "\"")
 		player:set_wielded_item(nil)
-		return true, "An item was pulverized."
+		return true, player .. "'s item was pulverized."
 	end,
 })
 
@@ -923,7 +923,7 @@ core.register_chatcommand("time", {
 		end
 		core.set_timeofday((hour * 60 + minute) / 1440)
 		core.log("action", ("%s sets time to %d:%02d"):format(name, hour, minute))
-		return true, "Time of day changed."
+		return true, ("Time of day changed to %d:%02d."):format(hour, minute)
 	end,
 })
 
@@ -1056,7 +1056,7 @@ core.register_chatcommand("msg", {
 				.. ": " .. message)
 		core.chat_send_player(sendto, "DM from " .. name .. ": "
 				.. message)
-		return true, "Message sent."
+		return true, "Message sent to " .. sendto .. "."
 	end,
 })
 
