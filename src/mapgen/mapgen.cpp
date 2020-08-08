@@ -58,6 +58,7 @@ FlagDesc flagdesc_mapgen[] = {
 	{"light",       MG_LIGHT},
 	{"decorations", MG_DECORATIONS},
 	{"biomes",      MG_BIOMES},
+	{"ores",        MG_ORES},
 	{NULL,          0}
 };
 
@@ -217,7 +218,7 @@ void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hid
 void Mapgen::setDefaultSettings(Settings *settings)
 {
 	settings->setDefault("mg_flags", flagdesc_mapgen,
-		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES);
+		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES | MG_ORES);
 
 	for (int i = 0; i < (int)MAPGEN_INVALID; ++i) {
 		MapgenParams *params = createMapgenParams((MapgenType)i);
