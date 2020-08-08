@@ -548,7 +548,7 @@ core.register_chatcommand("set", {
 			if not setvalue then
 				setvalue = "<not set>"
 			end
-			return true, "Setted: " .. setname .. " = " .. setvalue
+			return true, "Set: " .. setname .. " = " .. setvalue
 		end
 
 		return false, "Invalid parameters (see /help set)."
