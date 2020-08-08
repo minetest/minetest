@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-13 21:08+0000\n"
-"Last-Translator: ferrumcccp <wushuzhen1975@icloud.com>\n"
+"PO-Revision-Date: 2020-08-12 22:32+0000\n"
+"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,7 +24,7 @@ msgstr "您已死亡"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -112,7 +112,7 @@ msgstr "无法启用 mod \"$1\"：因为包含有不支持的字符。只允许 
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "寻找更多mod"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -165,12 +165,11 @@ msgstr "返回主菜单"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "在没有cURL的情况下编译Minetest时，ContentDB不可用"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "载入中..."
+msgstr "下载中..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -217,7 +216,7 @@ msgstr "更新"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "视野"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -225,45 +224,39 @@ msgstr "名为 \"$1\" 的世界已经存在"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "额外地形"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
 msgstr "高地寒冷"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "高地寒冷"
+msgstr "高地干燥"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biome blending"
-msgstr "生物群系噪声"
+msgstr "生物群系融合"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "生物群系噪声"
+msgstr "生物群系"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "大型洞穴噪声"
+msgstr "大型洞穴"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "八音"
+msgstr "洞穴"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "创建"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "迭代"
+msgstr "装饰"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -274,51 +267,48 @@ msgid "Download one from minetest.net"
 msgstr "从 minetest.net 下载一个"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "地窖噪声"
+msgstr "地窖"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "平坦地形"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "空中漂浮的陆地"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "水级别"
+msgstr "悬空岛（实验性）"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr "游戏"
+msgstr "子游戏"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "生成非分形地形：海洋和地底"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "丘陵"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Humid rivers"
-msgstr "视频驱动程序"
+msgstr "潮湿河流"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "增加河流周边湿度"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "湖"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "低湿度和高温导致浅而干燥的河流"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -329,22 +319,20 @@ msgid "Mapgen flags"
 msgstr "地图生成器标志"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "地图生成器 v5 标签"
+msgstr "地图生成器专用标签"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mountains"
-msgstr "山噪声"
+msgstr "山"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "泥流"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "通道和洞穴网络"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -352,16 +340,15 @@ msgstr "未选择游戏"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "随海拔高度降低热量"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "随海拔高度降低湿度"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "河流大小"
+msgstr "河流"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
@@ -940,7 +927,7 @@ msgstr "平滑光照"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr "纹理:"
+msgstr "材质:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -1182,7 +1169,7 @@ msgstr "建立服务器...."
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr "隐藏的调试信息和性能分析图"
+msgstr "调试信息和性能分析图已隐藏"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
@@ -1190,7 +1177,7 @@ msgstr "调试信息已显示"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr "隐藏调试信息，性能分析图，和线框"
+msgstr "调试信息、性能分析图和线框已隐藏"
 
 #: src/client/game.cpp
 msgid ""
@@ -1242,7 +1229,7 @@ msgstr "快速模式已禁用"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled"
-msgstr "快速移动模式已启用"
+msgstr "快速模式已启用"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
@@ -1362,7 +1349,7 @@ msgstr "俯仰移动模式已禁用"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
-msgstr "显示性能分析图"
+msgstr "性能分析图已显示"
 
 #: src/client/game.cpp
 msgid "Remote server"
@@ -1862,7 +1849,7 @@ msgstr "启用/禁用聊天记录"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "启用/禁用快速移动模式"
+msgstr "启用/禁用快速模式"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
@@ -2192,7 +2179,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr "保持高速飞行"
+msgstr "保持飞行和快速模式"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2359,7 +2346,7 @@ msgstr "粗体等宽字体路径"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr "建立内部玩家"
+msgstr "在玩家内部搭建"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
@@ -3161,7 +3148,7 @@ msgstr "后备字体大小"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr "快速移动键"
+msgstr "快速键"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -4667,7 +4654,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"开关电影模式键。\n"
+"启用/禁用电影模式键。\n"
 "见http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -6419,7 +6406,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
-msgstr "纹理路径"
+msgstr "材质路径"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6803,7 +6790,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking and flying speed, in nodes per second."
-msgstr ""
+msgstr "步行和飞行速度，单位为方块每秒。"
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
@@ -6811,7 +6798,7 @@ msgstr "步行速度"
 
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
-msgstr ""
+msgstr "快速模式下的步行、飞行和攀爬速度，单位为方块每秒。"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
