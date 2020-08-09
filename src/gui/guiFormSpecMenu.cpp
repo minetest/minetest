@@ -2926,6 +2926,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_inventorylists.clear();
 	m_backgrounds.clear();
 	m_tables.clear();
+	m_scrollbars.clear();
 	m_fields.clear();
 	m_tooltips.clear();
 	m_tooltip_rects.clear();
