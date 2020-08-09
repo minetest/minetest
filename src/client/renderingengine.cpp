@@ -491,8 +491,6 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 	if (cloud_menu_background) {
 		g_menuclouds->step(dtime * 3);
 		g_menuclouds->render();
-		get_video_driver()->beginScene(
-				true, true, video::SColor(255, 140, 186, 250));
 		g_menucloudsmgr->drawAll();
 	}
 
