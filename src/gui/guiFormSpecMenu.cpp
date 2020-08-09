@@ -615,9 +615,10 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 		auto style = getDefaultStyleForElement("checkbox", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
-		if (spec.fname == m_focused_element) {
+		if (spec.fname == m_focused_element)
 			Environment->setFocus(e);
-		}
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
 
 		e->grab();
 		m_checkboxes.emplace_back(spec, e);
@@ -691,9 +692,10 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 
 		e->setPageSize(scrollbar_size * (max - min + 1) / data->scrollbar_options.thumb_size);
 
-		if (spec.fname == m_focused_element) {
+		if (spec.fname == m_focused_element)
 			Environment->setFocus(e);
-		}
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
 
 		m_scrollbars.emplace_back(spec,e);
 		m_fields.push_back(spec);
@@ -1021,9 +1023,10 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 		auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
 		e->setStyles(style);
 
-		if (spec.fname == m_focused_element) {
+		if (spec.fname == m_focused_element)
 			Environment->setFocus(e);
-		}
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
 
 		m_fields.push_back(spec);
 		return;
@@ -1210,9 +1213,10 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 		GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
 				rect, m_tsrc);
 
-		if (spec.fname == m_focused_element) {
+		if (spec.fname == m_focused_element)
 			Environment->setFocus(e);
-		}
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
 
 		e->setTable(data->table_options, data->table_columns, items);
 
@@ -1287,9 +1291,10 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 		GUITable *e = new GUITable(Environment, data->current_parent, spec.fid,
 				rect, m_tsrc);
 
-		if (spec.fname == m_focused_element) {
+		if (spec.fname == m_focused_element)
 			Environment->setFocus(e);
-		}
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
 
 		e->setTextList(items, is_yes(str_transparent));
 
@@ -1365,9 +1370,10 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 		gui::IGUIComboBox *e = Environment->addComboBox(rect, data->current_parent,
 				spec.fid);
 
-		if (spec.fname == m_focused_element) {
+		if (spec.fname == m_focused_element)
 			Environment->setFocus(e);
-		}
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
 
 		for (const std::string &item : items) {
 			e->addItem(unescape_translate(unescape_string(
@@ -1452,9 +1458,10 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		gui::IGUIEditBox *e = Environment->addEditBox(0, rect, true,
 				data->current_parent, spec.fid);
 
-		if (spec.fname == m_focused_element) {
+		if (spec.fname == m_focused_element)
 			Environment->setFocus(e);
-		}
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
 
 		if (label.length() >= 1) {
 			int font_height = g_fontengine->getTextHeight();
@@ -1469,7 +1476,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data, const std::string &element
 		auto style = getDefaultStyleForElement("pwdfield", name, "field");
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
-		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, e->isEnabled() ?
+			video::SColor(255, 255, 255, 255) : video::SColor(255, 127, 127, 127)));
 		e->setOverrideFont(style.getFont());
 
 		irr::SEvent evt;
@@ -1532,6 +1540,8 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 	if (e) {
 		if (is_editable && spec.fname == m_focused_element)
 			Environment->setFocus(e);
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
 
 		if (is_multiline) {
 			e->setMultiLine(true);
@@ -1550,7 +1560,8 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 		e->setDrawBorder(style.getBool(StyleSpec::BORDER, true));
-		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+		e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, e->isEnabled() ?
+			video::SColor(255, 255, 255, 255) : video::SColor(255, 127, 127, 127)));
 		if (style.get(StyleSpec::BGCOLOR, "") == "transparent") {
 			e->setDrawBackground(false);
 		}
@@ -1990,9 +2001,10 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 		GUIButtonImage *e = GUIButtonImage::addButton(Environment, rect, m_tsrc,
 				data->current_parent, spec.fid, spec.flabel.c_str());
 
-		if (spec.fname == m_focused_element) {
+		if (spec.fname == m_focused_element)
 			Environment->setFocus(e);
-		}
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
 
 		auto style = getStyleForElement("image_button", spec.fname);
 
@@ -2120,6 +2132,9 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 				(tab_index < (int) buttons.size()))
 			e->setActiveTab(tab_index);
 
+		if (data->disabled_elements.find(spec.fname) != data->disabled_elements.end())
+			e->setEnabled(false);
+
 		m_fields.push_back(spec);
 		return;
 	}
@@ -2194,9 +2209,10 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 		auto style = getStyleForElement("item_image_button", spec_btn.fname, "image_button");
 		e_btn->setStyles(style);
 
-		if (spec_btn.fname == m_focused_element) {
+		if (spec_btn.fname == m_focused_element)
 			Environment->setFocus(e_btn);
-		}
+		if (data->disabled_elements.find(spec_btn.fname) != data->disabled_elements.end())
+			e_btn->setEnabled(false);
 
 		spec_btn.ftype = f_Button;
 		rect += data->basepos-padding;
@@ -2686,6 +2702,14 @@ void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 		<< "'" << std::endl;
 }
 
+void GUIFormSpecMenu::parseSetDisabled(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ',');
+
+	for (size_t i = 0; i < parts.size(); i++)
+		data->disabled_elements[parts[i]] = true;
+}
+
 void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 {
 	//some prechecks
@@ -2882,6 +2906,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "set_disabled") {
+		parseSetDisabled(data, description);
+		return;
+	}
+
 	// Ignore others
 	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
 			<< std::endl;
@@ -2907,7 +2936,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 		// Preserve focus
 		gui::IGUIElement *focused_element = Environment->getFocus();
-		if (focused_element && focused_element->getParent() == this) {
+		if (focused_element) {
 			s32 focused_id = focused_element->getID();
 			if (focused_id > 257) {
 				for (const GUIFormSpecMenu::FieldSpec &field : m_fields) {

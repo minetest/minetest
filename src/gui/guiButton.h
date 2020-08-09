@@ -330,7 +330,11 @@ private:
 
 	video::SColor Colors[4];
 	// PATCH
+	bool WasFocused = false;
+	bool Focused = false;
 	bool WasHovered = false;
+	bool WasEnabled = true;
+
 	ISimpleTextureSource *TSrc;
 
 	gui::IGUIStaticText *StaticText;

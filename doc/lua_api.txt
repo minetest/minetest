@@ -2614,19 +2614,39 @@ Elements
   re-sent formspecs with the same name so that player-set focus is kept.
   `true` sets the focus to the specified element for every sent formspec.
 * The following elements have the ability to be focused:
-    * checkbox
     * button
     * button_exit
+    * checkbox
+    * dropdown
+    * field
     * image_button
     * image_button_exit
     * item_image_button
+    * pwdfield
+    * scrollbar
     * table
+    * textarea
     * textlist
+
+### `set_disabled[<name 1>,<name 2>,...]`
+
+* Makes the named elements disabled and unresponsive to user input.
+* **Note**: This element must be placed before the elements it disables.
+* The following elements can be disabled:
+    * button
+    * button_exit
+    * checkbox
     * dropdown
     * field
+    * image_button
+    * image_button_exit
+    * item_image_button
     * pwdfield
-    * textarea
     * scrollbar
+    * tabheader
+    * table
+    * textarea
+    * textlist
 
 Migrating to Real Coordinates
 -----------------------------
@@ -2805,9 +2825,11 @@ Some types may inherit styles from parent types.
 
 * *all elements*
     * default - Equivalent to providing no states
-* button, button_exit, image_button, item_image_button
+* button, button_exit, image_button, image_button_exit, item_image_button
+    * focused - Active when the element has focus
     * hovered - Active when the mouse is hovering over the element
-    * pressed - Active when the button is pressed
+    * pressed - Active when the element is pressed
+    * disabled - Active when the element is disabled with the `set_disabled[]` element
 
 Markup Language
 ---------------

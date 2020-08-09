@@ -367,6 +367,7 @@ private:
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
 		gui::IGUIElement *current_parent = nullptr;
+		std::unordered_map<std::string, bool> disabled_elements;
 
 		GUIInventoryList::Options inventorylist_options;
 
@@ -444,6 +445,7 @@ private:
 	void parseAnchor(parserData *data, const std::string &element);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
+	void parseSetDisabled(parserData *data, const std::string &element);
 
 	void tryClose();
 

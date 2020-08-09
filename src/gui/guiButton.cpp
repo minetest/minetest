@@ -130,9 +130,6 @@ bool GUIButton::getSpriteScale(EGUI_BUTTON_STATE state) const
 //! called if an event happened.
 bool GUIButton::OnEvent(const SEvent& event)
 {
-	if (!isEnabled())
-		return IGUIElement::OnEvent(event);
-
 	switch(event.EventType)
 	{
 	case EET_KEY_INPUT_EVENT:
@@ -159,7 +156,7 @@ bool GUIButton::OnEvent(const SEvent& event)
 			if (!IsPushButton)
 				setPressed(false);
 
-			if (Parent)
+			if (Parent && isEnabled())
 			{
 				ClickShiftState = event.KeyInput.Shift;
 				ClickControlState = event.KeyInput.Control;
@@ -199,7 +196,7 @@ bool GUIButton::OnEvent(const SEvent& event)
 			// Sometimes formspec elements can receive mouse events when the
 			// mouse is outside of the formspec. Thus, we test the position here.
 			if ( !IsPushButton && AbsoluteClippingRect.isPointInside(
-						core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ))) {
+					core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ))) {
 				setPressed(true);
 			}
 
@@ -224,8 +221,8 @@ bool GUIButton::OnEvent(const SEvent& event)
 				setPressed(!Pressed);
 			}
 
-			if ((!IsPushButton && wasPressed && Parent) ||
-				(IsPushButton && wasPressed != Pressed))
+			if (Parent && isEnabled() && ((!IsPushButton && wasPressed) ||
+				(IsPushButton && wasPressed != Pressed)))
 			{
 				ClickShiftState = event.MouseInput.Shift;
 				ClickControlState = event.MouseInput.Control;
@@ -245,7 +242,7 @@ bool GUIButton::OnEvent(const SEvent& event)
 		break;
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 
@@ -256,10 +253,25 @@ void GUIButton::draw()
 		return;
 
 	// PATCH
-	// Track hovered state, if it has changed then we need to update the style.
+	// Track hovered, focused, and enabled states; if any have changed, then we
+	// need to update the style.
+
+	// For some reason, `has/getFocus` is only the same pointer as `this` when the
+	// element is tabbed to or set with `setFocus`. The same is true for lost/received
+	// focus events. We also want to have focus when the button is interacted with, so
+	// we check the IDs, which (for some unknown reason) are the same even when the
+	// pointer is different.
+	Focused = Environment->getFocus() != nullptr &&
+			Environment->getFocus()->getID() == getID();
+
 	bool hovered = isHovered();
-	if (hovered != WasHovered) {
+	bool enabled = isEnabled();
+
+	if (Focused != WasFocused || hovered != WasHovered || enabled != WasEnabled) {
+		WasFocused = Focused;
 		WasHovered = hovered;
+		WasEnabled = enabled;
+
 		setFromState();
 	}
 
@@ -269,20 +281,18 @@ void GUIButton::draw()
 
 	if (DrawBorder)
 	{
-		if (!Pressed)
+		// PATCH
+		if (Pressed && isEnabled())
 		{
-			// PATCH
-			skin->drawColored3DButtonPaneStandard(this, AbsoluteRect,
+			skin->drawColored3DButtonPanePressed(this, AbsoluteRect,
 					&AbsoluteClippingRect, Colors);
-			// END PATCH
 		}
 		else
 		{
-			// PATCH
-			skin->drawColored3DButtonPanePressed(this, AbsoluteRect,
+			skin->drawColored3DButtonPaneStandard(this, AbsoluteRect,
 					&AbsoluteClippingRect, Colors);
-			// END PATCH
 		}
+		// END PATCH
 	}
 
 	const core::position2di buttonCenter(AbsoluteRect.getCenter());
@@ -734,11 +744,14 @@ void GUIButton::setFromState()
 {
 	StyleSpec::State state = StyleSpec::STATE_DEFAULT;
 
-	if (isPressed())
-		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_PRESSED);
-
+	if (Focused)
+		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_FOCUSED);
 	if (isHovered())
 		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_HOVERED);
+	if (isPressed())
+		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_PRESSED);
+	if (!isEnabled())
+		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_DISABLED);
 
 	setFromStyle(StyleSpec::getStyleFromStatePropagation(Styles, state));
 }
@@ -748,6 +761,7 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 {
 	bool hovered = (style.getState() & StyleSpec::STATE_HOVERED) != 0;
 	bool pressed = (style.getState() & StyleSpec::STATE_PRESSED) != 0;
+	bool disabled = (style.getState() & StyleSpec::STATE_DISABLED) != 0;
 
 	if (style.isNotDefault(StyleSpec::BGCOLOR)) {
 
@@ -756,11 +770,12 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 		// If we have a propagated hover/press color, we need to automatically
 		// lighten/darken it
 		if (!Styles[style.getState()].isNotDefault(StyleSpec::BGCOLOR)) {
-			for (size_t i = 0; i < 4; i++) {
-				if (pressed) {
-					Colors[i] = multiplyColorValue(Colors[i], COLOR_PRESSED_MOD);
-				} else if (hovered) {
-					Colors[i] = multiplyColorValue(Colors[i], COLOR_HOVERED_MOD);
+			if (!disabled) {
+				for (size_t i = 0; i < 4; i++) {
+					if (pressed)
+						Colors[i] = multiplyColorValue(Colors[i], COLOR_PRESSED_MOD);
+					else if (hovered)
+						Colors[i] = multiplyColorValue(Colors[i], COLOR_HOVERED_MOD);
 				}
 			}
 		}
@@ -769,12 +784,12 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 		for (size_t i = 0; i < 4; i++) {
 			video::SColor base =
 					Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
-			if (pressed) {
-				Colors[i] = multiplyColorValue(base, COLOR_PRESSED_MOD);
-			} else if (hovered) {
-				Colors[i] = multiplyColorValue(base, COLOR_HOVERED_MOD);
-			} else {
-				Colors[i] = base;
+			Colors[i] = base;
+			if (!disabled) {
+				if (pressed)
+					Colors[i] = multiplyColorValue(base, COLOR_PRESSED_MOD);
+				else if (hovered)
+					Colors[i] = multiplyColorValue(base, COLOR_HOVERED_MOD);
 			}
 		}
 	}
@@ -782,7 +797,10 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 	if (style.isNotDefault(StyleSpec::TEXTCOLOR)) {
 		setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR));
 	} else {
-		setOverrideColor(video::SColor(255,255,255,255));
+		if (disabled)
+			setOverrideColor(video::SColor(255, 127, 127, 127));
+		else
+			setOverrideColor(video::SColor(255, 255, 255, 255));
 		OverrideColorEnabled = false;
 	}
 	setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -810,12 +828,11 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 			Padding.LowerRightCorner + BgMiddle.LowerRightCorner);
 
 	GUISkin* skin = dynamic_cast<GUISkin*>(Environment->getSkin());
-	core::vector2d<s32> defaultPressOffset(
+	core::vector2d<s32> default_press_offset(
 			skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X),
 			skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y));
-	ContentOffset = style.getVector2i(StyleSpec::CONTENT_OFFSET, isPressed()
-			? defaultPressOffset
-			: core::vector2d<s32>(0));
+	ContentOffset = style.getVector2i(StyleSpec::CONTENT_OFFSET,
+			isPressed() && isEnabled() ? default_press_offset : core::vector2d<s32>(0));
 
 	core::rect<s32> childBounds(
 				Padding.UpperLeftCorner.X + ContentOffset.X,
