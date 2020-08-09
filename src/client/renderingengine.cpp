@@ -491,16 +491,19 @@ void RenderingEngine::_draw_load_screen(const std::wstring &text,
 	if (cloud_menu_background) {
 		g_menuclouds->step(dtime * 3);
 		g_menuclouds->render();
+		get_video_driver()->beginScene(
+				true, true, video::SColor(255, 140, 186, 250));
 		g_menucloudsmgr->drawAll();
 	}
 
-	video::ITexture *texture = tsrc->getTexture("loadscreen_bg.png");
+	video::ITexture *texture = tsrc->isKnownSourceImage("loadscreen_bg.png") ?
+		tsrc->getTexture("loadscreen_bg.png") : nullptr;
 	if (texture) {
-		v2u32 sourcesize = texture->getOriginalSize();
+		const v2u32 &sourcesize = texture->getOriginalSize();
 		draw2DImageFilterScaled(driver, texture,
 			core::rect<s32>(0, 0, screensize.X, screensize.Y),
 			core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-			0, 0, true);			
+			0, 0, true);
 	}
 
 	// draw progress bar
