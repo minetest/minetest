@@ -156,6 +156,11 @@ For Alpine users:
 
     sudo apk add build-base irrlicht-dev cmake bzip2-dev libpng-dev jpeg-dev libxxf86vm-dev mesa-dev sqlite-dev libogg-dev libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev gmp-dev jsoncpp-dev luajit-dev
 
+For OpenBSD users:
+
+    doas pkg_add cmake curl doxygen gmp irrlicht jsoncpp libvorbis luajit openal sqlite3
+
+
 #### Download
 
 You can install Git for easily keeping your copy up to date.
