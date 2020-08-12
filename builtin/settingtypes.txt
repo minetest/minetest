@@ -1282,6 +1282,10 @@ active_block_mgmt_interval (Active block management interval) float 2.0
 #    Length of time between Active Block Modifier (ABM) execution cycles
 abm_interval (ABM interval) float 1.0
 
+#    The time budget allowed for ABMs to execute on each step
+#    (as a fraction of the ABM Interval)
+abm_time_budget (ABM time budget) float 0.2 0.1 0.9
+
 #    Length of time between NodeTimer execution cycles
 nodetimer_interval (NodeTimer interval) float 0.2
 
