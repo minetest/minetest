@@ -5622,7 +5622,8 @@ Global tables
 * `minetest.registered_entities`
     * Map of registered entity prototypes, indexed by name
     * Values in this table may be modified directly.
-      Note: the new values will only affect entities spawned afterwards
+      Note: changes to initial properties will only affect entities spawned afterwards,
+      as they are only read when spawning.
 * `minetest.object_refs`
     * Map of object references, indexed by active object id
 * `minetest.luaentities`
