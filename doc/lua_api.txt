@@ -4295,7 +4295,8 @@ Call these functions only at load time!
 * `minetest.register_entity(name, entity definition)`
     * Registered entities can be modified directly in
       `minetest.registered_entities`.
-      Note: the new values will only affect entities spawned afterwards.
+      Note: changes to initial properties will only affect entities spawned afterwards,
+      as they are only read when spawning.
 * `minetest.register_abm(abm definition)`
 * `minetest.register_lbm(lbm definition)`
 * `minetest.register_alias(alias, original_name)`
