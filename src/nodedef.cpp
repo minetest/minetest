@@ -695,9 +695,54 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		}
 	}
 }
-#endif
 
-#ifndef SERVER
+bool ContentFeatures::textureAlphaCheck(ITextureSource *tsrc, const TileDef *tiles, int length)
+{
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	static thread_local bool long_warning_printed = false;
+	std::set<std::string> seen;
+	for (int i = 0; i < length; i++) {
+		if (seen.find(tiles[i].name) != seen.end())
+			continue;
+		seen.insert(tiles[i].name);
+
+		// Load the texture and see if there's any transparent pixels
+		video::ITexture *texture = tsrc->getTexture(tiles[i].name);
+		video::IImage *image = driver->createImage(texture,
+			core::position2d<s32>(0, 0), texture->getOriginalSize());
+		if (!image)
+			continue;
+		core::dimension2d<u32> dim = image->getDimension();
+		bool ok = true;
+		for (u16 x = 0; x < dim.Width; x++) {
+			for (u16 y = 0; y < dim.Height; y++) {
+				if (image->getPixel(x, y).getAlpha() < 255) {
+					ok = false;
+					goto break_loop;
+				}
+			}
+		}
+
+break_loop:
+		image->drop();
+		if (!ok) {
+			warningstream << "Texture \"" << tiles[i].name << "\" of "
+				<< name << " has transparent pixels, assuming "
+				"use_texture_alpha = true." << std::endl;
+			if (!long_warning_printed) {
+				warningstream << "  This warning can be a false-positive if "
+					"unused pixels in the texture are transparent. However if "
+					"it is meant to be transparent, you *MUST* update the "
+					"nodedef and set use_texture_alpha = true! This compatibility "
+					"code will be removed in a few releases." << std::endl;
+				long_warning_printed = true;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
 bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype)
 {
 	if (style == ALIGN_STYLE_WORLD)
@@ -814,13 +859,19 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		break;
 	case NDT_MESH:
 	case NDT_NODEBOX:
+		if (alpha == 255 && textureAlphaCheck(tsrc, tdef, 6))
+			alpha = 0;
+
 		solidness = 0;
 		if (waving == 1)
 			material_type = TILE_MATERIAL_WAVING_PLANTS;
 		else if (waving == 2)
 			material_type = TILE_MATERIAL_WAVING_LEAVES;
 		else if (waving == 3)
-			material_type = TILE_MATERIAL_WAVING_LIQUID_BASIC;
+			material_type = (alpha == 255) ? TILE_MATERIAL_WAVING_LIQUID_OPAQUE :
+				TILE_MATERIAL_WAVING_LIQUID_BASIC;
+		else if (alpha == 255)
+			material_type = TILE_MATERIAL_OPAQUE;
 		break;
 	case NDT_TORCHLIKE:
 	case NDT_SIGNLIKE:

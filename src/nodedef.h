@@ -418,6 +418,7 @@ struct ContentFeatures
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
+
 	/*!
 	 * Since vertex alpha is no longer supported, this method
 	 * adds opacity directly to the texture pixels.
@@ -426,6 +427,17 @@ struct ContentFeatures
 	 * \param length length of tiles
 	 */
 	void correctAlpha(TileDef *tiles, int length);
+
+#ifndef SERVER
+	/*
+	 * Checks if any tile texture has any transparent pixels.
+	 * Prints a warning and returns true if that is the case, false otherwise.
+	 * This is supposed to be used for use_texture_alpha backwards compatibility.
+	 */
+	bool textureAlphaCheck(ITextureSource *tsrc, const TileDef *tiles,
+		int length);
+#endif
+	
 
 	/*
 		Some handy methods

@@ -7065,6 +7065,8 @@ Used by `minetest.register_node`.
 
         use_texture_alpha = false,
         -- Use texture's alpha channel
+        -- If this is set to false, the node will be rendered fully opaque
+        -- regardless of any texture transparency.
 
         palette = "palette.png",
         -- The node's `param2` is used to select a pixel from the image.
