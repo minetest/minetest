@@ -822,8 +822,11 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	if (parts.size() >= 4)
 		parseRect(parts[3], &middle);
 
-	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, this, spec.fid,
-		rect, name, 1, 0, middle, m_tsrc);
+	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent,
+		spec.fid, rect);
+
+	e->setImage(m_tsrc->getTexture(name));
+	e->setImageMiddle(middle);
 
 	auto style = getDefaultStyleForElement("image", spec.fname);
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
@@ -881,9 +884,13 @@ void GUIFormSpecMenu::parseAnimatedImage(parserData *data, const std::string &el
 	if (parts.size() >= 8)
 		parseRect(parts[7], &middle);
 
-	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent, spec.fid,
-		rect, texture_name, frame_count, frame_duration, middle, m_tsrc);
+	GUIAnimatedImage *e = new GUIAnimatedImage(Environment, data->current_parent,
+		spec.fid, rect);
 
+	e->setImage(m_tsrc->getTexture(texture_name));
+	e->setImageMiddle(middle);
+	e->setFrameDuration(frame_duration);
+	e->setFrameCount(frame_count);
 	if (parts.size() >= 7)
 		e->setFrameIndex(stoi(parts[6]) - 1);
 
@@ -1077,32 +1084,9 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 		clip = true;
 	}
 
-<<<<<<< HEAD
 	core::rect<s32> middle;
-	if (parts.size() >= 5) {
-		std::vector<std::string> v_middle = split(parts[4], ',');
-		if (v_middle.size() == 1) {
-			s32 x = stoi(v_middle[0]);
-			middle.UpperLeftCorner = core::vector2di(x, x);
-			middle.LowerRightCorner = core::vector2di(-x, -x);
-		} else if (v_middle.size() == 2) {
-			s32 x = stoi(v_middle[0]);
-			s32 y =	stoi(v_middle[1]);
-			middle.UpperLeftCorner = core::vector2di(x, y);
-			middle.LowerRightCorner = core::vector2di(-x, -y);
-			// `-x` is interpreted as `w - x`
-		} else if (v_middle.size() == 4) {
-			middle.UpperLeftCorner = core::vector2di(stoi(v_middle[0]), stoi(v_middle[1]));
-			middle.LowerRightCorner = core::vector2di(stoi(v_middle[2]), stoi(v_middle[3]));
-		} else {
-			warningstream << "Invalid rectangle given to middle param of background[] element" << std::endl;
-		}
-	}
-=======
-		core::rect<s32> middle;
-		if (parts.size() >= 5)
-			parseRect(parts[4], &middle);
->>>>>>> becdc5bda... FormSpec: 9-slice images and animated_images
+	if (parts.size() >= 5)
+		parseRect(parts[4], &middle);
 
 	if (!data->explicit_size && !clip)
 		warningstream << "invalid use of unclipped background without a size[] element" << std::endl;

@@ -2289,7 +2289,7 @@ Version History
 * Formspec version 5 (5.5.0):
   * Added padding[] element
 * Formspec version 6 (5.5.0):
-  * Add nine-slice images and animated_images
+  * Add nine-slice images, animated_images, and fgimg_middle
 
 Elements
 --------
@@ -3086,6 +3086,8 @@ Some types may inherit styles from parent types.
         * This is deprecated, use states instead.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
         * This is deprecated, use states instead.
+    * fgimg_middle - Makes the fgimg textures render in 9-sliced mode and defines the middle rect.
+                     See background9[] documentation for more details.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
     * sound - a sound to be played when triggered.
 * scrollbar

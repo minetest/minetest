@@ -171,9 +171,17 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 
 void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
 		const core::rect<s32> &destrect, const core::rect<s32> &srcrect,
-		const core::rect<s32> &middle, const core::rect<s32> *cliprect,
+		const core::rect<s32> &middlerect, const core::rect<s32> *cliprect,
 		const video::SColor *const colors)
 {
+	// `-x` is interpreted as `w - x`
+	core::rect<s32> middle = middlerect;
+
+	if (middlerect.LowerRightCorner.X < 0)
+		middle.LowerRightCorner.X += srcrect.getWidth();
+	if (middlerect.LowerRightCorner.Y < 0)
+		middle.LowerRightCorner.Y += srcrect.getWidth();
+
 	core::vector2di lower_right_offset = core::vector2di(srcrect.getWidth(),
 			srcrect.getHeight()) - middle.LowerRightCorner;
 

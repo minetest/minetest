@@ -56,13 +56,7 @@ void GUIBackgroundImage::draw()
 		const video::SColor colors[] = {color, color, color, color};
 		draw2DImageFilterScaled(driver, texture, rect, srcrect, nullptr, colors, true);
 	} else {
-		core::rect<s32> middle = m_middle;
-		// `-x` is interpreted as `w - x`
-		if (middle.LowerRightCorner.X < 0)
-			middle.LowerRightCorner.X += texture->getOriginalSize().Width;
-		if (middle.LowerRightCorner.Y < 0)
-			middle.LowerRightCorner.Y += texture->getOriginalSize().Height;
-		draw2DImage9Slice(driver, texture, rect, srcrect, middle);
+		draw2DImage9Slice(driver, texture, rect, srcrect, m_middle);
 	}
 
 	IGUIElement::draw();
