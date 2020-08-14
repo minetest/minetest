@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-08-14 02:30+0000\n"
-"Last-Translator: Brian Gaucher <brianphineasgaucher@gmail.com>\n"
+"Last-Translator: Olivier Dragon <odragon@videotron.ca>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -577,7 +577,7 @@ msgstr "Valeur absolue"
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr "par défaut"
+msgstr "Paramètres par défaut"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -1780,7 +1780,7 @@ msgstr "Console"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr "Plage de visualisation"
+msgstr "Reduire champ vision"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1888,7 +1888,7 @@ msgstr "Activer/désactiver vol vertical"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr "appuyez sur une touche"
+msgstr "Appuyez sur une touche"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -6532,6 +6532,19 @@ msgid ""
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
 "world surface below."
 msgstr ""
+"Niveau de la surface de l'eau (facultative) placée sur une couche solide de "
+"terre suspendue.\n"
+"L'eau est désactivée par défaut et ne sera placée que si cette valeur est\n"
+"fixée à plus de 'mgv7_floatland_ymax' - 'mgv7_floatland_taper'\n"
+"(début de l’effilage du haut)\n"
+"***ATTENTION, DANGER POTENTIEL AU MONDES ET AUX PERFORMANCES DES SERVEURS*** "
+":\n"
+"Lorsque le placement de l'eau est activé, les île volantes doivent être\n"
+"configurées avec une couche solide en mettant 'mgv7_floatland_density' à 2."
+"0\n"
+"(ou autre valeur dépendante de 'mgv7_np_floatland'), pour éviter\n"
+"les chutes d'eaux énormes qui surchargent les serveurs et pourraient\n"
+"inonder les terres en dessous."
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6668,7 +6681,6 @@ msgstr ""
 "Entrer /privs dans le jeu pour voir une liste complète des privilèges."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6679,12 +6691,11 @@ msgid ""
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
 "Le rayon du volume de blocs autour de chaque joueur soumis à la\n"
-"truc de bloc actif, indiqué dans mapblocks (16 noeuds).\n"
-"Dans les blocs actifs, les objets sont chargés et les guichets automatiques "
-"sont exécutés.\n"
+"matière de bloc actif, indiqué dans mapblocks (16 nœuds).\n"
+"Dans les blocs actifs, les objets sont chargés et les ABMs sont exécutés.\n"
 "C'est également la plage minimale dans laquelle les objets actifs (mobs) "
 "sont conservés.\n"
-"Ceci devrait être configuré avec active_object_range."
+"Ceci devrait être configuré avec 'active_object_send_range_blocks'."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6860,7 +6871,6 @@ msgid "Undersampling"
 msgstr "Sous-échantillonage"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using a lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -6868,11 +6878,12 @@ msgid ""
 "image.\n"
 "Higher values result in a less detailed image."
 msgstr ""
-"Le sous-échantillonage ressemble à l'utilisation d'une définition d'écran\n"
-"plus faible, mais il ne s'applique qu'au rendu 3D, gardant l'interface "
-"intacte.\n"
+"Le sous-échantillonage ressemble à l'utilisation d'une résolution d'écran "
+"inférieure,\n"
+"mais il ne s'applique qu'au rendu 3D, gardant l'interface usager intacte.\n"
 "Cela peut donner lieu à un bonus de performance conséquent, au détriment de "
-"la qualité d'image."
+"la qualité d'image.\n"
+"Les valeurs plus élevées réduisent la qualité du détail des images."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6887,9 +6898,8 @@ msgid "Upper Y limit of dungeons."
 msgstr "Limite haute Y des donjons."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Upper Y limit of floatlands."
-msgstr "Limite haute Y des donjons."
+msgstr "Limite en Y des îles volantes."
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
@@ -7031,13 +7041,12 @@ msgid "Volume"
 msgstr "Volume du son"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Volume of all sounds.\n"
 "Requires the sound system to be enabled."
 msgstr ""
-"Active l'occlusion parallaxe.\n"
-"Nécessite les shaders pour être activé."
+"Volume de tous les sons.\n"
+"Exige que le son du système soit activé."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7083,24 +7092,20 @@ msgid "Waving leaves"
 msgstr "Feuilles d'arbres mouvantes"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids"
 msgstr "Liquides ondulants"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave height"
 msgstr "Hauteur des vagues"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave speed"
 msgstr "Vitesse de mouvement des liquides"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wavelength"
-msgstr "Durée du mouvement des liquides"
+msgstr "Espacement des vagues de liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
@@ -7130,7 +7135,6 @@ msgstr ""
 "qui ne supportent pas le chargement des textures depuis le matériel."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
@@ -7144,28 +7148,29 @@ msgid ""
 msgstr ""
 "En utilisant le filtrage bilinéaire/trilinéaire/anisotrope, les textures de "
 "basse résolution\n"
-"peuvent être floutées, agrandissez-les donc automatiquement avec "
-"l'interpolation du plus proche voisin\n"
-"pour garder des pixels nets. Ceci détermine la taille de la texture "
-"minimale\n"
-"pour les textures agrandies ; les valeurs plus hautes rendent les textures "
-"plus détaillées, mais nécessitent\n"
+"peuvent être brouillées.  Elles seront donc automatiquement agrandies avec l'"
+"interpolation\n"
+"du plus proche voisin pour garder des pixels moins floues. Ceci détermine la "
+"taille de la texture minimale\n"
+"pour les textures agrandies ; les valeurs plus hautes rendent plus "
+"détaillées, mais nécessitent\n"
 "plus de mémoire. Les puissances de 2 sont recommandées. Définir une valeur "
 "supérieure à 1 peut ne pas\n"
 "avoir d'effet visible sauf si le filtrage bilinéaire / trilinéaire / "
 "anisotrope est activé.\n"
-"ceci est également utilisée comme taille de texture de nœud par défaut pour\n"
+"Ceci est également utilisée comme taille de texture de nœud par défaut pour\n"
 "l'agrandissement des textures basé sur le monde."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Whether FreeType fonts are used, requires FreeType support to be compiled "
 "in.\n"
 "If disabled, bitmap and XML vectors fonts are used instead."
 msgstr ""
 "Détermine l'utilisation des polices Freetype. Nécessite une compilation avec "
-"le support Freetype."
+"le support Freetype.\n"
+"Si désactivée, des polices bitmap et en vecteurs XML seront utilisé en "
+"remplacement."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
@@ -7298,6 +7303,11 @@ msgid ""
 "For a solid floatland layer, this controls the height of hills/mountains.\n"
 "Must be less than or equal to half the distance between the Y limits."
 msgstr ""
+"Hauteur-Y à laquelle les îles volantes commence à rétrécir.\n"
+"L'effilage comment à cette distance de la limite en Y.\n"
+"Pour une courche solide de terre suspendue, ceci contrôle la hauteur des "
+"montagnes.\n"
+"Doit être égale ou moindre à la moitié de la distance entre les limites Y."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
