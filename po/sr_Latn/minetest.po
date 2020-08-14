@@ -8,114 +8,120 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2020-08-15 23:32+0000\n"
+"Last-Translator: Milos <milosfilic97@gmail.com>\n"
+"Language-Team: Serbian (latin) <https://hosted.weblate.org/projects/minetest/"
+"minetest/sr_Latn/>\n"
 "Language: sr_Latn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "Umro/la si."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Vrati se u zivot"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Server je zahtevao ponovno povezivanje:"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "Ponovno povezivanje"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "Glavni meni"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Doslo je do greske u Lua skripti:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "Doslo je do greske:"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "Ucitavanje..."
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Pokusajte ponovo omoguciti javnu listu servera i proverite vasu internet "
+"vezu."
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Server podrzava protokol verzije izmedju $1 ili $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Server primenjuje protokol verzije $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Mi podrzavamo protokol verzija izmedju verzije $1 i $2."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Mi samo podrzavamo protokol verzije $1."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Protokol verzija neuskladjena. "
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "Svet:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr ""
+msgstr "Opis modpack-a nije prilozen."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "Opis igre nije prilozen."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "Nema (opcionih) zavisnosti"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "Bez teskih zavisnosti"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Neobavezne zavisnosti:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr ""
+msgstr "Zavisnosti:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "Bez neobaveznih zavisnosti"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "Sacuvaj"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
@@ -125,254 +131,258 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "Ponisti"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Nadji jos modova"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "Onemoguci modpack"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "Omoguci modpack"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "Omoguceno"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "Onemoguci sve"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "Omoguci sve"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
+"Nije omogucen mod \"$1\" jer sadrzi nedozvoljene simbole. Samo simboli [a-z, "
+"0-9_] su dozvoljeni."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB je nedostupan kada je Minetest sastavljen bez cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Svi paketi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "Igre"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr ""
+msgstr "Modovi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "Pakovanja tekstura"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "Neuspelo preuzimanje $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "Trazi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr ""
+msgstr "Nazad na Glavni meni"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Bez rezultata"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Nema paketa za preuzeti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr ""
+msgstr "Preuzimanje..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "Instalirati"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Azuriranje"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "Deinstaliraj"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Pogled"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "Pecine"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Veoma velike pecine duboko ispod zemlje"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Reke na nivou mora"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "Reke"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Planine"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Lebdece zemlje (eksperimentalno)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Lebdece zemaljske mase na nebu"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "Nadmorska visina"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Smanjuje toplotu sa visinom"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "Visina suva"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Smanjuje vlaznost sa visinom"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Vlazne reke"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Povecana vlaznost oko reka"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Razlicita dubina reke"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Niska vlaga i visoka toplota uzrokuju plitke ili suve reke"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Brda"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Jezera"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Dodatni teren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Stvaranje ne-fraktalnog terena: Okeani i podzemlje"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Drveca i trava dzungle"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Ravan teren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Protok blata"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Povrsinska erozija terena"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Umereno,Pustinja,Dzungla,Tundra,Tajga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Umereno,Pustinja,Dzungla"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Umereno,Pustinja"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "Nema instaliranih igara."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Preuzmi jednu sa minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "Pecine"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "Tamnice"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "Dekoracije"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Konstrukcije koje se pojavljuju na terenu (nema efekta na drveca i travu "
+"dzungle koje je stvorio v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Konstrukcije koje se pojavljuju na terenu , obicno drvece i biljke"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Mreza tunela i pecina"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "Biomi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "Mesanje bioma"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Glatki prelaz izmedju bioma"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Mapgen zastave"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
