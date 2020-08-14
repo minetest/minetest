@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-08-14 02:46+0000\n"
-"Last-Translator: Brian Gaucher <brianphineasgaucher@gmail.com>\n"
+"PO-Revision-Date: 2020-08-30 19:38+0000\n"
+"Last-Translator: Olivier Dragon <odragon@videotron.ca>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -1157,20 +1157,20 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
-"Contrôles:\n"
-"- %s: avancer\n"
-"- %s: reculer\n"
-"- %s: à gauche\n"
-"- %s: à droite\n"
-"- %s: sauter/grimper\n"
-"- %s: marcher lentement/descendre\n"
-"- %s: lâcher l'objet en main\n"
-"- %s: inventaire\n"
+"Contrôles :\n"
+"- %s : avancer\n"
+"- %s : reculer\n"
+"- %s : à gauche\n"
+"- %s : à droite\n"
+"- %s : sauter/grimper\n"
+"- %s : marcher lentement/descendre\n"
+"- %s : lâcher l'objet en main\n"
+"- %s : inventaire\n"
 "- Souris : tourner/regarder\n"
 "- Souris gauche : creuser/attaquer\n"
 "- Souris droite : placer/utiliser\n"
 "- Molette souris : sélectionner objet\n"
-"- %s: discuter\n"
+"- %s : discuter\n"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1243,7 +1243,7 @@ msgstr "Vitesse en mode rapide activée"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr "Vitesse en mode rapide activée (note: pas de privilège 'fast')"
+msgstr "Vitesse en mode rapide activée (note : pas de privilège 'fast')"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
@@ -1255,7 +1255,7 @@ msgstr "Mode vol activé"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr "Mode vol activé (note: pas de privilège 'fly')"
+msgstr "Mode vol activé (note : pas de privilège 'fly')"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
@@ -1335,7 +1335,7 @@ msgstr "Collisions désactivées"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr "Collisions activées (note: pas de privilège 'noclip')"
+msgstr "Collisions activées (note : pas de privilège 'noclip')"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1961,17 +1961,18 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"(X,Y,Z) de décalage fractal à partir du centre du monde en unités « échelle "
-"».\n"
+"(X,Y,Z) de décalage du fractal à partir du centre du monde en unités « "
+"échelle ».\n"
 "Peut être utilisé pour déplacer un point désiré à (0, 0) pour créer une\n"
 "zone d'apparition convenable, ou pour autoriser à « zoomer » sur un\n"
 "point désiré en augmentant l'« échelle ».\n"
-"La valeur par défaut est adaptée pour créer un zone d'apparition convenable "
+"La valeur par défaut est adaptée pour créer une zone d'apparition convenable "
 "pour les ensembles\n"
-"de Mandelbrot avec des paramètres par défaut, elle peut nécessité une "
+"de Mandelbrot crées avec des paramètres par défaut. Elle peut nécessiter une "
 "modification dans\n"
 "d'autres situations.\n"
-"Portée environ -2 à 2. Multiplier par « échelle » pour le décalage des nœuds."
+"La gamme est d'environ -2 à 2. Multiplier par « échelle » pour le décalage "
+"en nœuds."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2375,15 +2376,15 @@ msgstr "Chemin de la police en gras et en italique"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic monospace font path"
-msgstr "Chemin de la police Monospace"
+msgstr "Chemin de la police Monospace en gras et en italique"
 
 #: src/settings_translation_file.cpp
 msgid "Bold font path"
-msgstr "Chemin de police audacieux"
+msgstr "Chemin du fichier de police en gras"
 
 #: src/settings_translation_file.cpp
 msgid "Bold monospace font path"
-msgstr "Chemin de police monospace audacieux"
+msgstr "Chemin de la police Monospace en gras"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -2404,11 +2405,13 @@ msgid ""
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Caméra « près de la coupure de distance » dans les nœuds, entre 0 et 0,25.\n"
-"Fonctionne uniquement sur plateformes GLES.\n"
+"Distance en nœuds du plan de coupure rapproché de la caméra, entre 0 et 0,25."
+"\n"
+"Ne fonctionne uniquement que sur les plateformes GLES.\n"
 "La plupart des utilisateurs n’auront pas besoin de changer cela.\n"
-"L’augmentation peut réduire les anomalies sur des petites cartes graphique.\n"
-"0,1 par défaut, 0,25 bonne valeur pour des composants faibles."
+"L’augmentation peut réduire les anomalies sur des cartes graphique plus "
+"faibles.\n"
+"0,1 par défaut, 0,25 est une bonne valeur pour des composants faibles."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -3061,7 +3064,7 @@ msgstr ""
 "Activer l'usage d'un serveur de média distant (si pourvu par le serveur).\n"
 "Les serveurs de média distants offrent un moyen significativement plus "
 "rapide de télécharger\n"
-"des données média (ex.: textures) lors de la connexion au serveur."
+"des données média (ex. : textures) lors de la connexion au serveur."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3606,7 +3609,7 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
-"Auto-instrumentaliser le profileur:\n"
+"Auto-instrumentaliser le profileur :\n"
 "* Instrumentalise une fonction vide.\n"
 "La surcharge sera évaluée. (l'auto-instrumentalisation ajoute 1 appel de "
 "fonction à chaque fois).\n"
@@ -3651,11 +3654,11 @@ msgstr "Bruit de collines1"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness2 noise"
-msgstr "Bruit de colline2"
+msgstr "Bruit de collines2"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness3 noise"
-msgstr "Bruit de colline3"
+msgstr "Bruit de collines3"
 
 #: src/settings_translation_file.cpp
 msgid "Hilliness4 noise"
@@ -4147,9 +4150,9 @@ msgid ""
 msgstr ""
 "Réglage Julia uniquement.\n"
 "La composante W de la constante hypercomplexe.\n"
-"Transforme la forme de la fractale.\n"
+"Modifie la forme de la fractale.\n"
 "N'a aucun effet sur les fractales 3D.\n"
-"Portée environ -2 à 2."
+"Gamme d'environ -2 à 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4981,8 +4984,8 @@ msgid ""
 "Length of liquid waves.\n"
 "Requires waving liquids to be enabled."
 msgstr ""
-"Longueur des vagues liquides.\n"
-"Nécessite que liquides ondulatoires soit activé."
+"Longueur des vagues de liquides.\n"
+"Nécessite que les liquides ondulatoires soit activé."
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between Active Block Modifier (ABM) execution cycles"
@@ -5062,7 +5065,7 @@ msgstr ""
 "Nombre limite de requête HTTP en parallèle. Affecte :\n"
 "-  L'obtention de média si le serveur utilise l'option remote_media.\n"
 "-  Le téléchargement de la liste des serveurs et l'annonce du serveur.\n"
-"-  Les téléchargements effectués par le menu (ex.: gestionnaire de mods).\n"
+"-  Les téléchargements effectués par le menu (ex. : gestionnaire de mods).\n"
 "Prend seulement effet si Minetest est compilé avec cURL."
 
 #: src/settings_translation_file.cpp
@@ -5158,7 +5161,8 @@ msgid ""
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
 "Attributs de terrain spécifiques au générateur de monde plat.\n"
-"Des lacs et des collines occasionnels peuvent être ajoutés au monde plat."
+"Des lacs et des collines peuvent être occasionnellement ajoutés au monde "
+"plat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5455,7 +5459,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
-"Délais maximaux de téléchargement d'un fichier (ex.: un mod), établi en "
+"Délais maximaux de téléchargement d'un fichier (ex. : un mod), établi en "
 "millisecondes."
 
 #: src/settings_translation_file.cpp
@@ -6139,7 +6143,7 @@ msgid ""
 "Use 0 for default quality."
 msgstr ""
 "Qualité de capture d'écran. Utilisé uniquement pour le format JPEG.\n"
-"1 signifie mauvaise qualité; 100 signifie la meilleure qualité.\n"
+"1 signifie mauvaise qualité ; 100 signifie la meilleure qualité.\n"
 "Utilisez 0 pour la qualité par défaut."
 
 #: src/settings_translation_file.cpp
@@ -6352,12 +6356,12 @@ msgid ""
 msgstr ""
 "Taille des mapchunks générés par mapgen, indiquée dans les mapblocks (16 "
 "nœuds).\n"
-"ATTENTION !: Il n’ya aucun avantage, et il y a plusieurs dangers, dans\n"
+"ATTENTION ! : Il n’y a aucun avantage, et plusieurs dangers, à\n"
 "augmenter cette valeur au-dessus de 5.\n"
 "Réduire cette valeur augmente la densité de cavernes et de donjons.\n"
-"La modification de cette valeur est réservée à un usage spécial, elle reste "
-"inchangée.\n"
-"conseillé."
+"La modification de cette valeur est réservée à un usage spécial.  Il est "
+"conseillé\n"
+"de la laisser inchangée."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6692,8 +6696,8 @@ msgid ""
 msgstr ""
 "Le rayon du volume de blocs autour de chaque joueur soumis à la\n"
 "matière de bloc actif, indiqué dans mapblocks (16 nœuds).\n"
-"Dans les blocs actifs, les objets sont chargés et les ABMs sont exécutés.\n"
-"C'est également la plage minimale dans laquelle les objets actifs (mobs) "
+"Les objets sont chargés et les ABMs sont exécutés dans les blocs actifs.\n"
+"C'est également la distance minimale pour laquelle les objets actifs (mobs) "
 "sont conservés.\n"
 "Ceci devrait être configuré avec 'active_object_send_range_blocks'."
 
@@ -7119,7 +7123,7 @@ msgid ""
 msgstr ""
 "Quand gui_scaling_filter est activé, tous les images du GUI sont\n"
 "filtrées dans Minetest, mais quelques images sont générées directement\n"
-"par le matériel (ex.: textures des blocs dans l'inventaire)."
+"par le matériel (ex. : textures des blocs dans l'inventaire)."
 
 #: src/settings_translation_file.cpp
 msgid ""
