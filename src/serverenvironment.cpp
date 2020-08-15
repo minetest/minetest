@@ -1190,6 +1190,56 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		<< " in " << num_blocks_cleared << " blocks" << std::endl;
 }
 
+void ServerEnvironment::upgradeMapBlocks(int version)
+{
+	version = rangelim(version, SER_FMT_VER_LOWEST_WRITE, SER_FMT_VER_HIGHEST_WRITE);
+
+	std::vector<v3s16> loadable_blocks;
+	m_map->listAllLoadableBlocks(loadable_blocks);
+
+	s32 unload_interval = g_settings->getS32("max_clearobjects_extra_loaded_blocks");
+	unload_interval = MYMAX(unload_interval, 1);
+
+	actionstream << "upgradeMapBlocks(): "
+		<< "Now upgrading up to " << loadable_blocks.size()
+		<< " blocks older than version " << version << std::endl;
+
+	u32 num_blocks_checked = 0;
+	u32 num_blocks_updated = 0;
+	for (const v3s16 &pos : loadable_blocks) {
+		MapBlock *block = m_map->emergeBlock(pos, false);
+		if (!block) {
+			errorstream << "upgradeMapBlocks(): "
+				<< "Failed to emerge block " << PP(pos) << std::endl;
+			continue;
+		}
+
+		num_blocks_checked++;
+
+		if (block->getVersionDisk() < version) {
+			// Mark as modified. MapBlock::serialize() will write the newest format.
+			block->raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SER_FMT_UPGRADE);
+			num_blocks_updated++;
+		}
+
+		if (num_blocks_checked % unload_interval == 0) {
+			m_map->unloadUnreferencedBlocks();
+
+			float percent = 100.0f * (float)num_blocks_checked /
+				loadable_blocks.size();
+			actionstream << "upgradeMapBlocks(): "
+				<< "Updated " << num_blocks_updated << " / " << num_blocks_checked
+				<< " checked blocks (" << percent << "%)" << std::endl;
+		}
+	}
+
+	m_map->unloadUnreferencedBlocks();
+
+	actionstream << "upgradeMapBlocks(): "
+		<< "Finished: Updated " << num_blocks_updated << " out of "
+		<< num_blocks_checked << " blocks" << std::endl;
+}
+
 void ServerEnvironment::step(float dtime)
 {
 	ScopeProfiler sp2(g_profiler, "ServerEnv::step()", SPT_AVG);

@@ -1039,6 +1039,24 @@ core.register_chatcommand("clearobjects", {
 	end,
 })
 
+core.register_chatcommand("upgrade-mapblocks", {
+	params = "[version_threshold]",
+	description = "Upgrade all old MapBlocks below the specified version.",
+	privs = {server=true},
+	func = function(name, param)
+		local version_threshold = tonumber(param) or 0
+
+		core.log("action", name .. " upgrades all mapblocks")
+		core.chat_send_all("Upgrading mapblocks. This may take a long time."
+				.. " You may experience a timeout. (by "
+				.. name .. ")")
+		core.upgrade_mapblocks(version_threshold)
+		core.log("action", "MapBlock upgrade done.")
+		core.chat_send_all("*** MapBlock upgrade done.")
+		return true
+	end,
+})
+
 core.register_chatcommand("msg", {
 	params = "<name> <message>",
 	description = "Send a direct message to a player",

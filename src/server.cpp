@@ -327,8 +327,10 @@ Server::~Server()
 	}
 
 	// Delete things in the reverse order of creation
-	delete m_emerge;
 	delete m_env;
+	// ServerEnvironment::deactivateFarObjects
+	// requires EmergeManager to be alive
+	delete m_emerge;
 	delete m_rollback;
 	delete m_banmanager;
 	delete m_itemdef;

@@ -1046,6 +1046,20 @@ int ModApiEnvMod::l_clear_objects(lua_State *L)
 	return 0;
 }
 
+// upgrade_mapblocks(threshold_version)
+// Upgrade all mapblocks below the threshold version
+int ModApiEnvMod::l_upgrade_mapblocks(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	// Range is sanity-checked in ServerEnvironment::upgradeMapBlocks
+	int version = luaL_checkint(L, 1);
+	env->upgradeMapBlocks(version);
+
+	return 0;
+}
+
+
 // line_of_sight(pos1, pos2) -> true/false, pos
 int ModApiEnvMod::l_line_of_sight(lua_State *L)
 {
@@ -1387,6 +1401,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(get_perlin_map);
 	API_FCT(get_voxel_manip);
 	API_FCT(clear_objects);
+	API_FCT(upgrade_mapblocks);
 	API_FCT(spawn_tree);
 	API_FCT(find_path);
 	API_FCT(line_of_sight);

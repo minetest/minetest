@@ -1257,7 +1257,8 @@ movement_gravity (Gravity) float 9.81
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
 deprecated_lua_api_handling (Deprecated Lua API handling) enum legacy legacy,log,error
 
-#    Number of extra blocks that can be loaded by /clearobjects at once.
+#    Number of simultaneously loaded blocks when /clearobjects or
+#    /upgradeblocks is used.
 #    This is a trade-off between sqlite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
 max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096

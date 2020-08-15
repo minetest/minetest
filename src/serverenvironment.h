@@ -332,6 +332,9 @@ public:
 	// Clear objects, loading and going through every MapBlock
 	void clearObjects(ClearObjectsMode mode);
 
+	// Load and check every MapBlock for an update
+	void upgradeMapBlocks(int version);
+
 	// This makes stuff happen
 	void step(f32 dtime);
 

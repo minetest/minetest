@@ -64,7 +64,8 @@ class VoxelManipulator;
 #define MOD_REASON_STATIC_DATA_CHANGED       (1 << 17)
 #define MOD_REASON_EXPIRE_DAYNIGHTDIFF       (1 << 18)
 #define MOD_REASON_VMANIP                    (1 << 19)
-#define MOD_REASON_UNKNOWN                   (1 << 20)
+#define MOD_REASON_SER_FMT_UPGRADE           (1 << 20)
+#define MOD_REASON_UNKNOWN                   (1 << 21)
 
 ////
 //// MapBlock itself
@@ -487,6 +488,11 @@ public:
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
 
+	inline u8 getVersionDisk() const
+	{
+		return m_version_disk;
+	}
+
 	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
 private:
@@ -618,6 +624,9 @@ private:
 		the list of blocks to be drawn.
 	*/
 	int m_refcount = 0;
+
+	// Version read out by the last deSerialize() from the disk
+	u8 m_version_disk = 0;
 };
 
 typedef std::vector<MapBlock*> MapBlockVect;

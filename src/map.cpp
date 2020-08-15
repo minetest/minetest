@@ -1223,10 +1223,10 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 		conf.set("backend", "sqlite3");
 	}
 	std::string backend = conf.get("backend");
-	dbase = createDatabase(backend, savedir, conf);
+	m_db_rw = createDatabase(backend, savedir, conf);
 	if (conf.exists("readonly_backend")) {
 		std::string readonly_dir = savedir + DIR_DELIM + "readonly";
-		dbase_ro = createDatabase(conf.get("readonly_backend"), readonly_dir, conf);
+		m_db_ro = createDatabase(conf.get("readonly_backend"), readonly_dir, conf);
 	}
 	if (!conf.updateConfigFile(conf_path.c_str()))
 		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
@@ -1299,20 +1299,8 @@ ServerMap::~ServerMap()
 	/*
 		Close database if it was opened
 	*/
-	delete dbase;
-	delete dbase_ro;
-
-#if 0
-	/*
-		Free all MapChunks
-	*/
-	core::map<v2s16, MapChunk*>::Iterator i = m_chunks.getIterator();
-	for(; i.atEnd() == false; i++)
-	{
-		MapChunk *chunk = i.getNode()->getValue();
-		delete chunk;
-	}
-#endif
+	delete m_db_rw;
+	delete m_db_ro;
 }
 
 MapgenParams *ServerMap::getMapgenParams()
@@ -1325,11 +1313,6 @@ MapgenParams *ServerMap::getMapgenParams()
 u64 ServerMap::getSeed()
 {
 	return getMapgenParams()->seed;
-}
-
-s16 ServerMap::getWaterLevel()
-{
-	return getMapgenParams()->water_level;
 }
 
 bool ServerMap::blockpos_over_mapgen_limit(v3s16 p)
@@ -1732,59 +1715,6 @@ void ServerMap::updateVManip(v3s16 pos)
 	vm->m_is_dirty = true;
 }
 
-s16 ServerMap::findGroundLevel(v2s16 p2d)
-{
-#if 0
-	/*
-		Uh, just do something random...
-	*/
-	// Find existing map from top to down
-	s16 max=63;
-	s16 min=-64;
-	v3s16 p(p2d.X, max, p2d.Y);
-	for(; p.Y>min; p.Y--)
-	{
-		MapNode n = getNodeNoEx(p);
-		if(n.getContent() != CONTENT_IGNORE)
-			break;
-	}
-	if(p.Y == min)
-		goto plan_b;
-	// If this node is not air, go to plan b
-	if(getNodeNoEx(p).getContent() != CONTENT_AIR)
-		goto plan_b;
-	// Search existing walkable and return it
-	for(; p.Y>min; p.Y--)
-	{
-		MapNode n = getNodeNoEx(p);
-		if(content_walkable(n.d) && n.getContent() != CONTENT_IGNORE)
-			return p.Y;
-	}
-
-	// Move to plan b
-plan_b:
-#endif
-
-	/*
-		Determine from map generator noise functions
-	*/
-
-	s16 level = m_emerge->getGroundLevelAtPoint(p2d);
-	return level;
-
-	//double level = base_rock_level_2d(m_seed, p2d) + AVERAGE_MUD_AMOUNT;
-	//return (s16)level;
-}
-
-void ServerMap::createDirs(const std::string &path)
-{
-	if (!fs::CreateAllDirs(path)) {
-		m_dout<<"ServerMap: Failed to create directory "
-				<<"\""<<path<<"\""<<std::endl;
-		throw BaseException("ServerMap failed to create directory");
-	}
-}
-
 void ServerMap::save(ModifiedState save_level)
 {
 	if (!m_map_saving_enabled) {
@@ -1859,9 +1789,9 @@ void ServerMap::save(ModifiedState save_level)
 
 void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	dbase->listAllLoadableBlocks(dst);
-	if (dbase_ro)
-		dbase_ro->listAllLoadableBlocks(dst);
+	m_db_rw->listAllLoadableBlocks(dst);
+	if (m_db_ro)
+		m_db_ro->listAllLoadableBlocks(dst);
 }
 
 void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
@@ -1909,17 +1839,17 @@ MapDatabase *ServerMap::createDatabase(
 
 void ServerMap::beginSave()
 {
-	dbase->beginSave();
+	m_db_rw->beginSave();
 }
 
 void ServerMap::endSave()
 {
-	dbase->endSave();
+	m_db_rw->endSave();
 }
 
 bool ServerMap::saveBlock(MapBlock *block)
 {
-	return saveBlock(block, dbase);
+	return saveBlock(block, m_db_rw);
 }
 
 bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
@@ -1952,7 +1882,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	return ret;
 }
 
-void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
+void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector)
 {
 	try {
 		std::istringstream is(*blob, std::ios_base::binary);
@@ -1964,11 +1894,9 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			throw SerializationError("ServerMap::loadBlock(): Failed"
 					" to read MapBlock version");
 
-		MapBlock *block = NULL;
+		MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
 		bool created_new = false;
-		block = sector->getBlockNoCreateNoEx(p3d.Y);
-		if(block == NULL)
-		{
+		if (!block) {
 			block = sector->createBlankBlockNoInsert(p3d.Y);
 			created_new = true;
 		}
@@ -1983,17 +1911,11 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			scanner.scan(block, &m_transforming_liquid);
 		}
 
-		/*
-			Save blocks loaded in old format in new format
-		*/
-
-		//if(version < SER_FMT_VER_HIGHEST_READ || save_after_load)
-		// Only save if asked to; no need to update version
-		if(save_after_load)
-			saveBlock(block);
-
-		// We just loaded it from, so it's up-to-date.
-		block->resetModified();
+		// Upgrade ancient mapblock versions on the fly
+		if (version < SER_FMT_VER_LOWEST_WRITE)
+			block->raiseModified(MOD_STATE_WRITE_AT_UNLOAD, MOD_REASON_SER_FMT_UPGRADE);
+		else
+			block->resetModified();
 	}
 	catch(SerializationError &e)
 	{
@@ -2020,13 +1942,13 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
 	std::string ret;
-	dbase->loadBlock(blockpos, &ret);
+	m_db_rw->loadBlock(blockpos, &ret);
 	if (!ret.empty()) {
-		loadBlock(&ret, blockpos, createSector(p2d), false);
-	} else if (dbase_ro) {
-		dbase_ro->loadBlock(blockpos, &ret);
+		loadBlock(&ret, blockpos, createSector(p2d));
+	} else if (m_db_ro) {
+		m_db_ro->loadBlock(blockpos, &ret);
 		if (!ret.empty()) {
-			loadBlock(&ret, blockpos, createSector(p2d), false);
+			loadBlock(&ret, blockpos, createSector(p2d));
 		}
 	} else {
 		return NULL;
@@ -2053,7 +1975,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 
 bool ServerMap::deleteBlock(v3s16 blockpos)
 {
-	if (!dbase->deleteBlock(blockpos))
+	if (!m_db_rw->deleteBlock(blockpos))
 		return false;
 
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);

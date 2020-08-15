@@ -374,15 +374,6 @@ public:
 	*/
 	MapBlock *getBlockOrEmerge(v3s16 p3d);
 
-	// Helper for placing objects on ground level
-	s16 findGroundLevel(v2s16 p2d);
-
-	/*
-		Misc. helper functions for fiddling with directory and file
-		names when saving
-	*/
-	void createDirs(const std::string &path);
-
 	/*
 		Database functions
 	*/
@@ -402,7 +393,7 @@ public:
 	static bool saveBlock(MapBlock *block, MapDatabase *db);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
-	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
+	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector);
 
 	bool deleteBlock(v3s16 blockpos);
 
@@ -414,7 +405,6 @@ public:
 	bool isSavingEnabled(){ return m_map_saving_enabled; }
 
 	u64 getSeed();
-	s16 getWaterLevel();
 
 	/*!
 	 * Fixes lighting in one map block.
@@ -435,21 +425,13 @@ private:
 	std::string m_savedir;
 	bool m_map_saving_enabled;
 
-#if 0
-	// Chunk size in MapSectors
-	// If 0, chunks are disabled.
-	s16 m_chunksize;
-	// Chunks
-	core::map<v2s16, MapChunk*> m_chunks;
-#endif
-
 	/*
 		Metadata is re-written on disk only if this is true.
 		This is reset to false when written on disk.
 	*/
 	bool m_map_metadata_changed = true;
-	MapDatabase *dbase = nullptr;
-	MapDatabase *dbase_ro = nullptr;
+	MapDatabase *m_db_rw = nullptr;
+	MapDatabase *m_db_ro = nullptr;
 
 	MetricCounterPtr m_save_time_counter;
 };

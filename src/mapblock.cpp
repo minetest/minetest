@@ -365,6 +365,9 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 
 	FATAL_ERROR_IF(version < SER_FMT_VER_LOWEST_WRITE, "Serialisation version error");
 
+	if (disk)
+		m_version_disk = version;
+
 	// First byte
 	u8 flags = 0;
 	if(is_underground)
@@ -457,6 +460,9 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())<<std::endl);
 
 	m_day_night_differs_expired = false;
+
+	if (disk)
+		m_version_disk = version;
 
 	if(version <= 21)
 	{
