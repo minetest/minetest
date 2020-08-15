@@ -1258,7 +1258,7 @@ movement_gravity (Gravity) float 9.81
 deprecated_lua_api_handling (Deprecated Lua API handling) enum legacy legacy,log,error
 
 #    Number of simultaneously loaded blocks when /clearobjects or
-#    /upgradeblocks is used.
+#    /upgrade-mapblocks is used.
 #    This is a trade-off between sqlite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
 max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096
