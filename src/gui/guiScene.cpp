@@ -162,7 +162,7 @@ inline void GUIScene::calcOptimalDistance()
 	f32 max_width = width > depth ? width : depth;
 
 	const scene::SViewFrustum *f = m_cam->getViewFrustum();
-	f32 far = m_cam->getFarValue();
+	f32 cam_far = m_cam->getFarValue();
 	f32 far_width = core::line3df(f->getFarLeftUp(), f->getFarRightUp()).getLength();
 	f32 far_height = core::line3df(f->getFarLeftUp(), f->getFarLeftDown()).getLength();
 
@@ -172,9 +172,9 @@ inline void GUIScene::calcOptimalDistance()
 	f32 dist;
 
 	if (zoomX < zoomY)
-		dist = (max_width / (far_width / far)) + (0.5f * max_width);
+		dist = (max_width / (far_width / cam_far)) + (0.5f * max_width);
 	else
-		dist = (height / (far_height / far)) + (0.5f * max_width);
+		dist = (height / (far_height / cam_far)) + (0.5f * max_width);
 
 	m_cam_distance = dist;
 	m_update_cam = true;
