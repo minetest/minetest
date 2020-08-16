@@ -362,6 +362,11 @@ inline void writeF32(u8 *data, f32 i)
 	throw SerializationError("writeF32: Unreachable code");
 }
 
+inline void writeF32(u8 *data, double i)
+{
+	writeF32(data, (f32)i);
+}
+
 inline void writeD1000(u8 *data, double i)
 {
 	// The limits are relevant to the 32 bit destination, not the float precision.
@@ -369,7 +374,7 @@ inline void writeD1000(u8 *data, double i)
 	writeS32(data, i * FIXEDPOINT_FACTOR);
 }
 
-inline void writeF32(u8 *data, double i)
+inline void writeD(u8 *data, double i)
 {
 	f32 base = (f32)i;
 	writeF32(&data[0], base);
@@ -425,6 +430,18 @@ inline void writeV3F32(u8 *data, v3f p)
 	writeF32(&data[0], p.X);
 	writeF32(&data[4], p.Y);
 	writeF32(&data[8], p.Z);
+
+inline void writeV2F32(u8 *data, v2d p)
+{
+	writeF32(&data[0], (f32)p.X);
+	writeF32(&data[4], (f32)p.Y);
+}
+
+inline void writeV3F32(u8 *data, v3d p)
+{
+	writeF32(&data[0], (f32)p.X);
+	writeF32(&data[4], (f32)p.Y);
+	writeF32(&data[8], (f32)p.Z);
 }
 
 inline void writeV3D1000(u8 *data, v3d p)
@@ -501,6 +518,7 @@ MAKE_STREAM_WRITE_FXN(s32,   S32,      4);
 MAKE_STREAM_WRITE_FXN(s64,   S64,      8);
 MAKE_STREAM_WRITE_FXN(f32,   F1000,    4);
 MAKE_STREAM_WRITE_FXN(f32,   F32,      4);
+MAKE_STREAM_WRITE_FXN(double,   F32,      4);
 MAKE_STREAM_WRITE_FXN(double,   D1000,    4);
 MAKE_STREAM_WRITE_FXN(double,   D,      8);
 MAKE_STREAM_WRITE_FXN(v2s16, V2S16,    4);
@@ -510,6 +528,8 @@ MAKE_STREAM_WRITE_FXN(v3s32, V3S32,   12);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F1000, 12);
 MAKE_STREAM_WRITE_FXN(v2f,   V2F32,    8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
+MAKE_STREAM_WRITE_FXN(v2d,   V2F32,    8);
+MAKE_STREAM_WRITE_FXN(v3d,   V3F32,   12);
 MAKE_STREAM_WRITE_FXN(v3d,   V3D1000, 12);
 MAKE_STREAM_WRITE_FXN(v2d,   V2D,    16);
 MAKE_STREAM_WRITE_FXN(v3d,   V3D,   24);
