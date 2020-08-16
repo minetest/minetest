@@ -1039,7 +1039,7 @@ core.register_chatcommand("clearobjects", {
 	end,
 })
 
-core.register_chatcommand("upgrade-mapblocks", {
+core.register_chatcommand("upgrade_mapblocks", {
 	params = "[version_threshold]",
 	description = "Upgrade all old MapBlocks below the specified version.",
 	privs = {server=true},
