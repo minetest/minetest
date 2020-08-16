@@ -295,17 +295,9 @@ inline v3d readV3D1000(const u8 *data)
 	return p;
 }
 
-inline v2d readV2D(const u8 *data)
-{
-	v2f d;
-	p.X = readD(&data[0]);
-	p.Y = readD(&data[8]);
-	return p;
-}
-
 inline v3d readV3D(const u8 *data)
 {
-	v3f p;
+	v3d p;
 	p.X = readD(&data[0]);
 	p.Y = readD(&data[8]);
 	p.Z = readD(&data[16]);
@@ -431,12 +423,6 @@ inline void writeV3F32(u8 *data, v3f p)
 	writeF32(&data[4], p.Y);
 	writeF32(&data[8], p.Z);
 
-inline void writeV2F32(u8 *data, v2d p)
-{
-	writeF32(&data[0], (f32)p.X);
-	writeF32(&data[4], (f32)p.Y);
-}
-
 inline void writeV3F32(u8 *data, v3d p)
 {
 	writeF32(&data[0], (f32)p.X);
@@ -449,12 +435,6 @@ inline void writeV3D1000(u8 *data, v3d p)
 	writeD1000(&data[0], p.X);
 	writeD1000(&data[4], p.Y);
 	writeD1000(&data[8], p.Z);
-}
-
-inline void writeV2D(u8 *data, v2d p)
-{
-	writeD(&data[0], p.X);
-	writeD(&data[8], p.Y);
 }
 
 inline void writeV3D(u8 *data, v3f p)
@@ -504,7 +484,6 @@ MAKE_STREAM_READ_FXN(v3f,   V3F1000, 12);
 MAKE_STREAM_READ_FXN(v2f,   V2F32,    8);
 MAKE_STREAM_READ_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_READ_FXN(v3d,   V3D1000, 12);
-MAKE_STREAM_READ_FXN(v2d,   V2D,    16);
 MAKE_STREAM_READ_FXN(v3d,   V3D,   24);
 MAKE_STREAM_READ_FXN(video::SColor, ARGB8, 4);
 
@@ -528,10 +507,8 @@ MAKE_STREAM_WRITE_FXN(v3s32, V3S32,   12);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F1000, 12);
 MAKE_STREAM_WRITE_FXN(v2f,   V2F32,    8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
-MAKE_STREAM_WRITE_FXN(v2d,   V2F32,    8);
 MAKE_STREAM_WRITE_FXN(v3d,   V3F32,   12);
 MAKE_STREAM_WRITE_FXN(v3d,   V3D1000, 12);
-MAKE_STREAM_WRITE_FXN(v2d,   V2D,    16);
 MAKE_STREAM_WRITE_FXN(v3d,   V3D,   24);
 MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 
