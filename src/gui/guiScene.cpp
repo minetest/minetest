@@ -19,11 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiScene.h"
 
-#include <IGUIEnvironment.h>
 #include <SViewFrustum.h>
 #include <IAnimatedMeshSceneNode.h>
 #include <ILightSceneNode.h>
-#include "irrlichttypes.h"
 
 static const v2f rotation_bound{60.f, 300.f};
 

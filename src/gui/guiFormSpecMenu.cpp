@@ -2697,6 +2697,7 @@ void GUIFormSpecMenu::parseMesh(parserData *data, const std::string &element)
 			<< "'" << std::endl;
 		return;
 	}
+
 	parts.resize(std::max((s32)parts.size(), 7));
 
 	std::vector<std::string> v_pos = split(parts[0], ',');
@@ -2750,12 +2751,11 @@ void GUIFormSpecMenu::parseMesh(parserData *data, const std::string &element)
 	for (u32 i = 0; i < textures.size() && i < meshnode->getMaterialCount(); ++i)
 		e->setTexture(i, m_tsrc->getTexture(textures[i]));
 
-	e->enableMouseControl(mousectrl);
-
 	if (vec_rot.size() >= 2)
 		e->setRotation(v2f(stof(vec_rot[0]), stof(vec_rot[1])));
 
 	e->enableContinuousRotation(inf_rotation);
+	e->enableMouseControl(mousectrl);
 
 	auto style = getStyleForElement("mesh", spec.fname);
 	e->setStyles(style);
