@@ -191,6 +191,11 @@ inline f32 readF1000(const u8 *data)
 	return (f32)readS32(data) / FIXEDPOINT_FACTOR;
 }
 
+inline double readD1000(const u8 *data)
+{
+	return (double)readS32(data) / FIXEDPOINT_FACTOR;
+}
+
 inline f32 readF32(const u8 *data)
 {
 	u32 u = readU32(data);
@@ -208,6 +213,11 @@ inline f32 readF32(const u8 *data)
 		return readF32(data);
 	}
 	throw SerializationError("readF32: Unreachable code");
+}
+
+inline double readD(const u8 *data)
+{
+	return (double)readF32(&data[0]) + readF32(&data[4]);
 }
 
 inline video::SColor readARGB8(const u8 *data)
@@ -276,6 +286,32 @@ inline v3f readV3F32(const u8 *data)
 	return p;
 }
 
+inline v3d readV3D1000(const u8 *data)
+{
+	v3d p;
+	p.X = readD1000(&data[0]);
+	p.Y = readD1000(&data[4]);
+	p.Z = readD1000(&data[8]);
+	return p;
+}
+
+inline v2d readV2D(const u8 *data)
+{
+	v2f d;
+	p.X = readD(&data[0]);
+	p.Y = readD(&data[8]);
+	return p;
+}
+
+inline v3d readV3D(const u8 *data)
+{
+	v3f p;
+	p.X = readD(&data[0]);
+	p.Y = readD(&data[8]);
+	p.Z = readD(&data[16]);
+	return p;
+}
+
 /////////////// write routines ////////////////
 
 inline void writeU8(u8 *data, u8 i)
@@ -324,6 +360,20 @@ inline void writeF32(u8 *data, f32 i)
 		return writeF32(data, i);
 	}
 	throw SerializationError("writeF32: Unreachable code");
+}
+
+inline void writeD1000(u8 *data, double i)
+{
+	// The limits are relevant to the 32 bit destination, not the float precision.
+	assert(i >= F1000_MIN && i <= F1000_MAX);
+	writeS32(data, i * FIXEDPOINT_FACTOR);
+}
+
+inline void writeF32(u8 *data, double i)
+{
+	f32 base = (f32)i;
+	writeF32(&data[0], base);
+	writeF32(&data[4], i - base);
 }
 
 inline void writeARGB8(u8 *data, video::SColor p)
@@ -377,6 +427,26 @@ inline void writeV3F32(u8 *data, v3f p)
 	writeF32(&data[8], p.Z);
 }
 
+inline void writeV3D1000(u8 *data, v3d p)
+{
+	writeD1000(&data[0], p.X);
+	writeD1000(&data[4], p.Y);
+	writeD1000(&data[8], p.Z);
+}
+
+inline void writeV2D(u8 *data, v2d p)
+{
+	writeD(&data[0], p.X);
+	writeD(&data[8], p.Y);
+}
+
+inline void writeV3D(u8 *data, v3f p)
+{
+	writeD(&data[0], p.X);
+	writeD(&data[8], p.Y);
+	writeD(&data[16], p.Z);
+}
+
 ////
 //// Iostream wrapper for data read/write
 ////
@@ -407,6 +477,8 @@ MAKE_STREAM_READ_FXN(s32,   S32,      4);
 MAKE_STREAM_READ_FXN(s64,   S64,      8);
 MAKE_STREAM_READ_FXN(f32,   F1000,    4);
 MAKE_STREAM_READ_FXN(f32,   F32,      4);
+MAKE_STREAM_READ_FXN(double,   D1000,    4);
+MAKE_STREAM_READ_FXN(double,   D,      8);
 MAKE_STREAM_READ_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_READ_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_READ_FXN(v2s32, V2S32,    8);
@@ -414,6 +486,9 @@ MAKE_STREAM_READ_FXN(v3s32, V3S32,   12);
 MAKE_STREAM_READ_FXN(v3f,   V3F1000, 12);
 MAKE_STREAM_READ_FXN(v2f,   V2F32,    8);
 MAKE_STREAM_READ_FXN(v3f,   V3F32,   12);
+MAKE_STREAM_READ_FXN(v3d,   V3D1000, 12);
+MAKE_STREAM_READ_FXN(v2d,   V2D,    16);
+MAKE_STREAM_READ_FXN(v3d,   V3D,   24);
 MAKE_STREAM_READ_FXN(video::SColor, ARGB8, 4);
 
 MAKE_STREAM_WRITE_FXN(u8,    U8,       1);
@@ -426,6 +501,8 @@ MAKE_STREAM_WRITE_FXN(s32,   S32,      4);
 MAKE_STREAM_WRITE_FXN(s64,   S64,      8);
 MAKE_STREAM_WRITE_FXN(f32,   F1000,    4);
 MAKE_STREAM_WRITE_FXN(f32,   F32,      4);
+MAKE_STREAM_WRITE_FXN(double,   D1000,    4);
+MAKE_STREAM_WRITE_FXN(double,   D,      8);
 MAKE_STREAM_WRITE_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_WRITE_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_WRITE_FXN(v2s32, V2S32,    8);
@@ -433,6 +510,9 @@ MAKE_STREAM_WRITE_FXN(v3s32, V3S32,   12);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F1000, 12);
 MAKE_STREAM_WRITE_FXN(v2f,   V2F32,    8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
+MAKE_STREAM_WRITE_FXN(v3d,   V3D1000, 12);
+MAKE_STREAM_WRITE_FXN(v2d,   V2D,    16);
+MAKE_STREAM_WRITE_FXN(v3d,   V3D,   24);
 MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 
 ////
@@ -523,11 +603,13 @@ public:
 	MAKE_BUFREADER_GETNOEX_FXN(s32,   S32,      4);
 	MAKE_BUFREADER_GETNOEX_FXN(s64,   S64,      8);
 	MAKE_BUFREADER_GETNOEX_FXN(f32,   F1000,    4);
+	MAKE_BUFREADER_GETNOEX_FXN(double,   D1000,    4);
 	MAKE_BUFREADER_GETNOEX_FXN(v2s16, V2S16,    4);
 	MAKE_BUFREADER_GETNOEX_FXN(v3s16, V3S16,    6);
 	MAKE_BUFREADER_GETNOEX_FXN(v2s32, V2S32,    8);
 	MAKE_BUFREADER_GETNOEX_FXN(v3s32, V3S32,   12);
 	MAKE_BUFREADER_GETNOEX_FXN(v3f,   V3F1000, 12);
+	MAKE_BUFREADER_GETNOEX_FXN(v3d,   V3D1000, 12);
 	MAKE_BUFREADER_GETNOEX_FXN(video::SColor, ARGB8, 4);
 
 	bool getStringNoEx(std::string *val);
@@ -544,11 +626,13 @@ public:
 	MAKE_BUFREADER_GET_FXN(s32,           S32);
 	MAKE_BUFREADER_GET_FXN(s64,           S64);
 	MAKE_BUFREADER_GET_FXN(f32,           F1000);
+	MAKE_BUFREADER_GET_FXN(double,        D1000);
 	MAKE_BUFREADER_GET_FXN(v2s16,         V2S16);
 	MAKE_BUFREADER_GET_FXN(v3s16,         V3S16);
 	MAKE_BUFREADER_GET_FXN(v2s32,         V2S32);
 	MAKE_BUFREADER_GET_FXN(v3s32,         V3S32);
 	MAKE_BUFREADER_GET_FXN(v3f,           V3F1000);
+	MAKE_BUFREADER_GET_FXN(v3d,           V3D1000);
 	MAKE_BUFREADER_GET_FXN(video::SColor, ARGB8);
 	MAKE_BUFREADER_GET_FXN(std::string,   String);
 	MAKE_BUFREADER_GET_FXN(std::wstring,  WideString);
@@ -635,6 +719,11 @@ inline void putF1000(std::vector<u8> *dest, f32 val)
 	putS32(dest, val * FIXEDPOINT_FACTOR);
 }
 
+inline void putD1000(std::vector<u8> *dest, double val)
+{
+	putS32(dest, val * FIXEDPOINT_FACTOR);
+}
+
 inline void putV2S16(std::vector<u8> *dest, v2s16 val)
 {
 	putS16(dest, val.X);
@@ -666,6 +755,13 @@ inline void putV3F1000(std::vector<u8> *dest, v3f val)
 	putF1000(dest, val.X);
 	putF1000(dest, val.Y);
 	putF1000(dest, val.Z);
+}
+
+inline void putV3D1000(std::vector<u8> *dest, v3d val)
+{
+	putD1000(dest, val.X);
+	putD1000(dest, val.Y);
+	putD1000(dest, val.Z);
 }
 
 inline void putARGB8(std::vector<u8> *dest, video::SColor val)
