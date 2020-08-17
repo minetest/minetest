@@ -330,6 +330,8 @@ void set_default_settings(Settings *settings)
 
 	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("contentdb_max_concurrent_downloads", "3");
+
 #ifdef __ANDROID__
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, android_default");
 #else

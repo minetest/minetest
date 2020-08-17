@@ -2220,3 +2220,6 @@ contentdb_url (ContentDB URL) string https://content.minetest.net
 #    These flags are independent from Minetest versions,
 #    so see a full list at https://content.minetest.net/help/content_flags/
 contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_default
+
+#    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
+contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3
