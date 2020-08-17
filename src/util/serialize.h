@@ -422,6 +422,7 @@ inline void writeV3F32(u8 *data, v3f p)
 	writeF32(&data[0], p.X);
 	writeF32(&data[4], p.Y);
 	writeF32(&data[8], p.Z);
+}
 
 inline void writeV3F32(u8 *data, v3d p)
 {
