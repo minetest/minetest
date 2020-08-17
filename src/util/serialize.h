@@ -438,7 +438,7 @@ inline void writeV3D1000(u8 *data, v3d p)
 	writeD1000(&data[8], p.Z);
 }
 
-inline void writeV3D(u8 *data, v3f p)
+inline void writeV3D(u8 *data, v3d p)
 {
 	writeD(&data[0], p.X);
 	writeD(&data[8], p.Y);

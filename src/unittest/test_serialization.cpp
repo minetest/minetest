@@ -45,12 +45,14 @@ public:
 	void testStringLengthLimits();
 	void testBufReader();
 	void testFloatFormat();
+	void testDoubleFormat();
 
 	std::string teststring2;
 	std::wstring teststring2_w;
 	std::string teststring2_w_encoded;
 
 	static const u8 test_serialized_data[12 * 13 - 8];
+	static const double test_double_data[];
 };
 
 static TestSerialization g_test_instance;
@@ -73,6 +75,7 @@ void TestSerialization::runTests(IGameDef *gamedef)
 	TEST(testStringLengthLimits);
 	TEST(testBufReader);
 	TEST(testFloatFormat);
+	TEST(testDoubleFormat);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -708,6 +711,42 @@ void TestSerialization::testFloatFormat()
 		UASSERT(test_single(i));
 }
 
+void TestSerialization::testDoubleFormat()
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	for (int i = 0; i < 150; i++)
+	{
+		writeD1000(os, test_double_data[i]);
+		writeD(os, test_double_data[i]);
+		writeF32(os, test_double_data[i]);
+		writeF32(os, test_double_data[i]);
+	}
+	for (int i = 0; i < 150; i += 3)
+	{
+		v3d p(test_double_data[i], test_double_data[i+1], test_double_data[i+2]);
+		writeV3D1000(os, p);
+		writeV3D(os, p);
+		writeV3F32(os, p);
+		writeV3F32(os, v3f((f32)p.X, (f32)p.Y, (f32)p.Z));
+	}
+
+	std::istringstream is(os.str(), std::ios_base::binary);
+	for (int i = 0; i < 150; i++)
+	{
+		UASSERT(irr::core::equals(readD1000(is), test_double_data[i], 0.0005));
+		UASSERT(irr::core::equals(readD(is), test_double_data[i], 1.5e-8));
+		UASSERT(readF32(is) == readF32(is));
+	}
+	for (int i = 0; i < 150; i += 3)
+	{
+		v3d p(test_double_data[i], test_double_data[i+1], test_double_data[i+2]);
+		UASSERT(p.equals(readV3D1000(is), 0.0005));
+		UASSERT(p.equals(readV3D(is), 1.5e-8));
+		UASSERT(readV3F32(is) == readV3F32(is));
+	}
+}
+
 const u8 TestSerialization::test_serialized_data[12 * 13 - 8] = {
 	0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc,
 	0xdd, 0xee, 0xff, 0x80, 0x75, 0x30, 0xff, 0xff, 0xff, 0xfa, 0xff, 0xff,
@@ -722,4 +761,37 @@ const u8 TestSerialization::test_serialized_data[12 * 13 - 8] = {
 	0xfd, 0x0f, 0xe4, 0xff, 0x80, 0x32, 0x80, 0x00, 0x00, 0x00, 0x17, 0x73,
 	0x6f, 0x6d, 0x65, 0x20, 0x6c, 0x6f, 0x6e, 0x67, 0x65, 0x72, 0x20, 0x73,
 	0x74, 0x72, 0x69, 0x6e, 0x67, 0x20, 0x68, 0x65, 0x72, 0x65, 0xF0, 0x0D,
+};
+
+const double TestSerialization::test_double_data[] = {
+	-16131.26789, -99.9309116, -12234.23762, -26729.93114, -12685.38472,
+	-27709.60151, -19240.13443, 29197.36426, -12444.92151, -22762.81007,
+	-18417.92435, -10870.37175, -4308.983026, -9875.596165, -29040.95346,
+	25270.46533, -25701.98492, -10910.86165, 25693.90276, 5912.171371,
+	15460.13208, 23938.55639, -9640.844721, 24655.44249, 66.69525239,
+	-18315.99044, 757.7224709, 13350.45634, -29867.86728, -26874.39932,
+	-21969.66307, 21484.45576, 23979.4328, 4983.785807, -8912.94693,
+	-16788.39344, -25633.56625, -31893.71107, -22140.93791, 23606.00351,
+	1253.457666, -5548.898773, 11214.72366, -18668.5665, -19063.33975,
+	27168.07547, -6544.885639, -30843.2287, 8867.172141, -19067.04993,
+	2520.649661, -31264.4239, 790.7114849, -31295.69114, -31502.09435,
+	-10068.27859, 25272.31296, 27006.65061, -4560.445655, 29709.04585,
+	-18810.9435, 24208.63772, 1037.778844, -8551.73457, -139.36837,
+	6378.401169, -21586.52826, 2392.316728, 10339.30306, 2602.217762,
+	-16543.63241, 3452.215348, -5052.729414, 27754.37573, -6267.750871,
+	-31263.53093, -28867.22373, 27424.5577, 6055.484632, -10638.92572,
+	26040.17251, 21618.48183, -31728.45456, -24832.81613, 14621.65348,
+	-208.9047649, -12690.72575, 18673.7416, 2121.614764, -10872.65718,
+	-9492.393825, 23164.19495, 1500.03944, -7025.277525, 742.8997793,
+	21909.90821, 24020.09571, 19936.11069, 747.1412911, -5996.252865,
+	-25094.33894, -3818.651907, -28666.71829, 11628.62356, -16234.66167,
+	5532.954396, -21140.74802, -5820.149489, 13139.47337, 1836.375751,
+	-4207.14269, 15368.7331, 894.6214134, -17387.46178, 12456.45156,
+	25537.86348, -3228.231299, -20135.87424, -23387.74476, -20203.38124,
+	20125.49106, -23279.01326, 7905.803486, -11120.79458, 10041.37951,
+	16061.55622, -5998.705562, 15009.95211, -9386.972708, 12276.28204,
+	-15165.18555, 16537.88528, 24970.45794, 3120.97778, -7446.72183,
+	-9895.564273, 6174.826066, 20719.76119, -13482.643, 29994.82279,
+	25556.24809, 8574.760033, 20264.25058, -26199.98694, 13597.41647,
+	22857.54563, 20977.39509, 18009.99258, -14577.99117, -1240.162216,
 };
