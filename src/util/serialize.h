@@ -693,13 +693,13 @@ inline void putF32(std::vector<u8> *dest, f32 val)
 
 inline void putF64(std::vector<u8> *dest, double val)
 {
-	// i contains 54 significant bits (53 bits of value plus the sign bit)
+	// val contains 54 significant bits (53 bits of value plus the sign bit)
 	// We need about 33 of them for correct movement logic.
-	f32 base = (f32)i;
+	f32 base = (f32)val;
 	// Base contains the most significant 25 bits of i.
 	putF32(dest, base);
-	// As a double, i - base contains the next 25 most significant bits, for a total of 50.
-	putF32(dest, i - base);
+	// As a double, val - base contains the next 25 most significant bits, for a total of 50.
+	putF32(dest, val - base);
 }
 
 inline void putV2S16(std::vector<u8> *dest, v2s16 val)
