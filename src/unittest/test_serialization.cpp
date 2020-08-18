@@ -714,46 +714,33 @@ void TestSerialization::testFloatFormat()
 void TestSerialization::testDoubleFormat()
 {
 	std::ostringstream os(std::ios_base::binary);
+	std::vector[u8] vec;
 
 	for (int i = 0; i < 150; i++)
 	{
-		writeD1000(os, test_double_data[i]);
-		writeD(os, test_double_data[i]);
-		writeF32(os, test_double_data[i]);
-		writeF32(os, test_double_data[i]);
+		writeF64(os, test_double_data[i]);
+		putF64(vec, test_double_data[i]);
 	}
-	for (int i = 0; i < 150; i += 3)
-	{
-		v3d p(test_double_data[i], test_double_data[i+1], test_double_data[i+2]);
-		writeV3D1000(os, p);
-		writeV3D(os, p);
-		writeV3F32(os, p);
-		writeV3F32(os, v3f((f32)p.X, (f32)p.Y, (f32)p.Z));
-	}
+
+	v3d p(test_double_data[0], test_double_data[1], test_double_data[2]);
+	writeV3F64(os, p);
+	putV3F64(vec, p);
 
 	std::istringstream is(os.str(), std::ios_base::binary);
 	for (int i = 0; i < 150; i++)
 	{
-		double actual;
                 double expected = test_double_data[i];
-                actual = readD1000(is);
-		UTEST(irr::core::equals(actual, expected, 0.001), "readD1000[%d] %f == %f delta %f", i, actual, expected, actual - expected );
-		actual = readD(is);
-		UTEST(irr::core::equals(actual, expected, 0.0005), "readD[%d] %f == %f delta %f", i, actual, expected, actual - expected );
-		UASSERTEQ(f32, readF32(is), readF32(is));
+		double actual = readF64(is);
+		UTEST(irr::core::equals(actual, expected, 0.0005), "readF64[%d] %f == %f delta %f", i, actual, expected, actual - expected );
+		actual = getF64(vec);
+		UTEST(irr::core::equals(actual, expected, 0.0005), "getF64[%d] %f == %f delta %f", i, actual, expected, actual - expected );
 	}
-	for (int i = 0; i < 150; i += 3)
-	{
-		v3d a;
-		v3d p(test_double_data[i], test_double_data[i+1], test_double_data[i+2]);
-		a = readV3D1000(is);
-		UTEST(p.equals(a, 0.001), "readV3D1000[%d] (%f, %f, %f) == (%f, %f, %f) delta (%f, %f, %f)", i, a.X, a.Y, a.Z, p.X, p.Y, p.Z, a.X - p.X, a.Y - p.Y, a.Z - p.Z);
-		a = readV3D(is);
-		UTEST(p.equals(a, 1.5e-8), "readV3D[%d] (%f, %f, %f) == (%f, %f, %f) delta (%f, %f, %f)", i, a.X, a.Y, a.Z, p.X, p.Y, p.Z, a.X - p.X, a.Y - p.Y, a.Z - p.Z);
-		v3f af = readV3F32(is);
-		v3f bf = readV3F32(is);
-		UTEST(af == bf, "readV3F32[%d] (%f, %f, %f) == (%f, %f, %f) delta (%f, %f, %f)", i, af.X, af.Y, af.Z, bf.X, bf.Y, bf.Z, af.X - bf.X, af.Y - bf.Y, af.Z - bf.Z);
-	}
+
+	v3d p(test_double_data[0], test_double_data[1], test_double_data[2]);
+	v3d a = readV3F64(is);
+	UTEST(p.equals(a, 1.5e-8), "readV3F64 (%f, %f, %f) == (%f, %f, %f) delta (%f, %f, %f)", a.X, a.Y, a.Z, p.X, p.Y, p.Z, a.X - p.X, a.Y - p.Y, a.Z - p.Z);
+	a = getV3F64(vec);
+	UTEST(p.equals(a, 1.5e-8), "getV3F64 (%f, %f, %f) == (%f, %f, %f) delta (%f, %f, %f)", a.X, a.Y, a.Z, p.X, p.Y, p.Z, a.X - p.X, a.Y - p.Y, a.Z - p.Z);
 }
 
 const u8 TestSerialization::test_serialized_data[12 * 13 - 8] = {
