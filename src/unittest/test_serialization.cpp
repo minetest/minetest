@@ -714,32 +714,33 @@ void TestSerialization::testFloatFormat()
 void TestSerialization::testDoubleFormat()
 {
 	std::ostringstream os(std::ios_base::binary);
-	std::vector[u8] vec;
+	std::vector<u8> vec;
 
 	for (int i = 0; i < 150; i++)
 	{
 		writeF64(os, test_double_data[i]);
-		putF64(vec, test_double_data[i]);
+		putF64(&vec, test_double_data[i]);
 	}
 
 	v3d p(test_double_data[0], test_double_data[1], test_double_data[2]);
 	writeV3F64(os, p);
-	putV3F64(vec, p);
+	putV3F64(&vec, p);
 
 	std::istringstream is(os.str(), std::ios_base::binary);
+	BufReader buf(&vec.front(), vec.size());
+
 	for (int i = 0; i < 150; i++)
 	{
                 double expected = test_double_data[i];
 		double actual = readF64(is);
 		UTEST(irr::core::equals(actual, expected, 0.0005), "readF64[%d] %f == %f delta %f", i, actual, expected, actual - expected );
-		actual = getF64(vec);
+		actual = buf.getF64();
 		UTEST(irr::core::equals(actual, expected, 0.0005), "getF64[%d] %f == %f delta %f", i, actual, expected, actual - expected );
 	}
 
-	v3d p(test_double_data[0], test_double_data[1], test_double_data[2]);
 	v3d a = readV3F64(is);
 	UTEST(p.equals(a, 1.5e-8), "readV3F64 (%f, %f, %f) == (%f, %f, %f) delta (%f, %f, %f)", a.X, a.Y, a.Z, p.X, p.Y, p.Z, a.X - p.X, a.Y - p.Y, a.Z - p.Z);
-	a = getV3F64(vec);
+	a = buf.getV3F64();
 	UTEST(p.equals(a, 1.5e-8), "getV3F64 (%f, %f, %f) == (%f, %f, %f) delta (%f, %f, %f)", a.X, a.Y, a.Z, p.X, p.Y, p.Z, a.X - p.X, a.Y - p.Y, a.Z - p.Z);
 }
 
