@@ -617,6 +617,7 @@ public:
 		// Ignore the command if step isn't valid.
 		if (step == 0)
 			return;
+		float current_gain = getSoundGain(soundid);
 		step = gain - current_gain > 0 ? abs(step) : -abs(step);
 		if (m_sounds_fading.find(soundid) != m_sounds_fading.end()) {
 			auto current_fade = m_sounds_fading[soundid];
@@ -625,7 +626,6 @@ public:
 				return;
 			m_sounds_fading.erase(soundid);
 		}
-		float current_gain = getSoundGain(soundid);
 		gain = rangelim(gain, 0, 1);
 		m_sounds_fading[soundid] = FadeState(step, current_gain, gain);
 	}
