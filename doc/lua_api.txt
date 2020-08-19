@@ -5188,6 +5188,8 @@ Sounds
     * `step` determines how fast a sound will fade.
       The gain will change by this much per second,
       until it reaches the target gain.
+      Note: Older versions used a signed step. This is deprecated, but old
+      code will still work. (the client uses abs(step) to correct it)
     * `gain` the target gain for the fade.
       Fading to zero will delete the sound.
 

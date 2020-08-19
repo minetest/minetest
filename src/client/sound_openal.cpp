@@ -614,36 +614,41 @@ public:
 
 	void fadeSound(int soundid, float step, float gain)
 	{
+		// Ignore the command if step isn't valid.
 		if (step == 0)
 			return;
+		step = gain - current_gain > 0 ? abs(step) : -abs(step);
 		if (m_sounds_fading.find(soundid) != m_sounds_fading.end()) {
-			if(m_sounds_fading[soundid].target_gain == gain)
+			auto current_fade = m_sounds_fading[soundid];
+			// Do not replace the fade if it's equivalent.
+			if (current_fade.target_gain == gain && current_fade.step == step)
 				return;
 			m_sounds_fading.erase(soundid);
 		}
 		float current_gain = getSoundGain(soundid);
 		gain = rangelim(gain, 0, 1);
-		step = gain - current_gain > 0 ? abs(step) : -abs(step);
 		m_sounds_fading[soundid] = FadeState(step, current_gain, gain);
 	}
 
 	void doFades(float dtime)
 	{
 		for (auto i = m_sounds_fading.begin(); i != m_sounds_fading.end();) {
-			i->second.current_gain += (i->second.step * dtime);
+			FadeState& fade = i->second;
+			assert(fade.step != 0);
+			fade.current_gain += (fade.step * dtime);
 
-			if (i->second.step < 0.f)
-				i->second.current_gain = std::max(i->second.current_gain, i->second.target_gain);
+			if (fade.step < 0.f)
+				fade.current_gain = std::max(fade.current_gain, fade.target_gain);
 			else
-				i->second.current_gain = std::min(i->second.current_gain, i->second.target_gain);
+				fade.current_gain = std::min(fade.current_gain, fade.target_gain);
 
-			if (i->second.current_gain <= 0.f)
+			if (fade.current_gain <= 0.f)
 				stopSound(i->first);
 			else
-				updateSoundGain(i->first, i->second.current_gain);
+				updateSoundGain(i->first, fade.current_gain);
 
 			// The increment must happen during the erase call, or else it'll segfault.
-			if (i->second.current_gain == i->second.target_gain)
+			if (fade.current_gain == fade.target_gain)
 				m_sounds_fading.erase(i++);
 			else
 				i++;
