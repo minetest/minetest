@@ -3112,42 +3112,42 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			// and default scaling (1.00).
 			use_imgsize = 0.5555 * screen_dpi * gui_scaling;
 		} else {
-			// In variable-size mode, we prefer to make the
-			// inventory image size 1/15 of screen height,
-			// multiplied by the gui_scaling config parameter.
-			// If the preferred size won't fit the whole
-			// form on the screen, either horizontally or
-			// vertically, then we scale it down to fit.
-			// (The magic numbers in the computation of what
-			// fits arise from the scaling factors in the
-			// following stanza, including the form border,
-			// help text space, and 0.1 inventory slot spare.)
-			// However, a minimum size is also set, that
-			// the image size can't be less than 0.3 inch
-			// multiplied by gui_scaling, even if this means
-			// the form doesn't fit the screen.
+			// Variables for the maximum imgsize that can fit in the screen.
+			double fitx_imgsize;
+			double fity_imgsize;
+
+			// Pad the screensize with 5% of the screensize on all sides to ensure
+			// that even the largest formspecs don't touch the screen borders.
+			v2f padded_screensize(
+				mydata.screensize.X * 0.9f,
+				mydata.screensize.Y * 0.9f
+			);
+
+			if (mydata.real_coordinates) {
+				fitx_imgsize = padded_screensize.X / mydata.invsize.X;
+				fity_imgsize = padded_screensize.Y / mydata.invsize.Y;
+			} else {
+				// The maximum imgsize in the old coordinate system also needs to
+				// factor in padding and spacing along with 0.1 inventory slot spare
+				// and help text space, hence the magic numbers.
+				fitx_imgsize = padded_screensize.X /
+						((5.0 / 4.0) * (0.5 + mydata.invsize.X));
+				fity_imgsize = padded_screensize.Y /
+						((15.0 / 13.0) * (0.85 + mydata.invsize.Y));
+			}
+
 #ifdef __ANDROID__
-			// For mobile devices these magic numbers are
-			// different and forms should always use the
-			// maximum screen space available.
-			double prefer_imgsize = mydata.screensize.Y / 10 * gui_scaling;
-			double fitx_imgsize = mydata.screensize.X /
-				((12.0 / 8.0) * (0.5 + mydata.invsize.X));
-			double fity_imgsize = mydata.screensize.Y /
-				((15.0 / 11.0) * (0.85 + mydata.invsize.Y));
-			use_imgsize = MYMIN(prefer_imgsize,
-					MYMIN(fitx_imgsize, fity_imgsize));
+			// In Android, the preferred imgsize should be larger to accommodate the
+			// smaller screensize.
+			double prefer_imgsize = padded_screensize.Y / 10 * gui_scaling;
 #else
-			double prefer_imgsize = mydata.screensize.Y / 15 * gui_scaling;
-			double fitx_imgsize = mydata.screensize.X /
-				((5.0 / 4.0) * (0.5 + mydata.invsize.X));
-			double fity_imgsize = mydata.screensize.Y /
-				((15.0 / 13.0) * (0.85 * mydata.invsize.Y));
-			double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
-			double min_imgsize = 0.3 * screen_dpi * gui_scaling;
-			use_imgsize = MYMAX(min_imgsize, MYMIN(prefer_imgsize,
-				MYMIN(fitx_imgsize, fity_imgsize)));
+			// Desktop computers have more space, so try to fit 15 coordinates.
+			double prefer_imgsize = padded_screensize.Y / 15 * gui_scaling;
 #endif
+			// Try to use the preferred imgsize, but if that's bigger than the maximum
+			// size, use the maximum size.
+			use_imgsize = std::min(prefer_imgsize,
+					std::min(fitx_imgsize, fity_imgsize));
 		}
 
 		// Everything else is scaled in proportion to the
