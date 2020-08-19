@@ -5238,9 +5238,12 @@ Sounds
 * `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
-      Negative step will lower the sound volume, positive step will increase
-      the sound volume.
+      The gain will change by this much per second,
+      until it reaches the target gain.
+      Note: Older versions used a signed step. This is deprecated, but old
+      code will still work. (the client uses abs(step) to correct it)
     * `gain` the target gain for the fade.
+      Fading to zero will delete the sound.
 
 Timing
 ------
