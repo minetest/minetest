@@ -2211,16 +2211,16 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 
 void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
 	if ((parts.size() == 3) ||
 		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
+		std::vector<std::string> v_geom = split(parts[1], ',');
 
-		MY_CHECKPOS("box",0);
-		MY_CHECKGEOM("box",1);
+		MY_CHECKPOS("box", 0);
+		MY_CHECKGEOM("box", 1);
 
 		v2s32 pos;
 		v2s32 geom;
@@ -2234,36 +2234,43 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 			geom.Y = stof(v_geom[1]) * spacing.Y;
 		}
 
+		FieldSpec spec(
+			"",
+			L"",
+			L"",
+			258 + m_fields.size(),
+			-2
+		);
+		spec.ftype = f_Box;
+
+		auto style = getDefaultStyleForElement("box", spec.fname);
+
 		video::SColor tmp_color;
+		std::array<video::SColor, 4> colors;
+		std::array<video::SColor, 4> bordercolors = {0x0, 0x0, 0x0, 0x0};
+		std::array<s32, 4> borderwidths = {0, 0, 0, 0};
 
-		if (parseColorString(parts[2], tmp_color, false, 0x8C)) {
-			FieldSpec spec(
-				"",
-				L"",
-				L"",
-				258 + m_fields.size(),
-				-2
-			);
-			spec.ftype = f_Box;
-
-			core::rect<s32> rect(pos, pos + geom);
-
-			GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid,
-					rect, tmp_color);
-
-			auto style = getDefaultStyleForElement("box", spec.fname);
-			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
-
-			e->drop();
-
-			m_fields.push_back(spec);
-
+		if (parseColorString(parts[2], tmp_color, true, 0x8C)) {
+			colors = {tmp_color, tmp_color, tmp_color, tmp_color};
 		} else {
-			errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'  INVALID COLOR"  << std::endl;
+			colors = style.getColorArray(StyleSpec::COLORS, {0x0, 0x0, 0x0, 0x0});
+			bordercolors = style.getColorArray(StyleSpec::BORDERCOLORS,
+				{0x0, 0x0, 0x0, 0x0});
+			borderwidths = style.getIntArray(StyleSpec::BORDERWIDTHS, {0, 0, 0, 0});
 		}
+
+		core::rect<s32> rect(pos, pos + geom);
+
+		GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid, rect,
+			colors, bordercolors, borderwidths);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
+		e->drop();
+
+		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid Box element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)

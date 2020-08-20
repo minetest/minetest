@@ -2442,6 +2442,8 @@ Elements
 * Simple colored box
 * `color` is color specified as a `ColorString`.
   If the alpha component is left blank, the box will be semitransparent.
+  If the color is not specified, the box will use the options specified by
+  its style. If the color is specified, all styling options will be ignored.
 
 ### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
@@ -2708,21 +2710,23 @@ Setting a property to nothing will reset it to the default value. For example:
 Some types may inherit styles from parent types.
 
 * animated_image, inherits from image
+* box
 * button
 * button_exit, inherits from button
 * checkbox
-* scrollbar
-* table
-* textlist
 * dropdown
 * field
-* pwdfield, inherits from field
-* textarea
-* label
-* vertlabel, inherits from field
+* image
 * image_button
 * item_image_button
+* label
+* pwdfield, inherits from field
+* scrollbar
 * tabheader
+* table
+* textarea
+* textlist
+* vertlabel, inherits from label
 
 
 ### Valid Properties
@@ -2731,7 +2735,18 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * box
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-        * Default to false in formspec_version version 3 or higher
+        * Defaults to false in formspec_version version 3 or higher
+    * **Note**: `colors`, `bordercolors`, and `borderwidths` accept multiple input types:
+        * Single value (e.g. `#FF0`): All corners/borders.
+        * Two values (e.g. `red,#FFAAFF`): top-left and bottom-right,top-right and bottom-left/
+          top and bottom,left and right.
+        * Four values (e.g. `blue,#A0F,green,#FFFA`): top-left/top and rotates clockwise.
+        * These work similarly to CSS borders.
+    * colors - `ColorString`. Sets the color(s) of the box corners. Default `black`.
+    * bordercolors - `ColorString`. Sets the color(s) of the borders. Default `black`.
+    * borderwidths - Integer. Sets the width(s) of the borders in pixels. If the width is
+      negative, the border will extend inside the box, whereas positive extends outside
+      the box. A width of zero results in no border; this is default.
 * button, button_exit, image_button, item_image_button
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
@@ -2767,12 +2782,6 @@ Some types may inherit styles from parent types.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* scrollbar
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* table, textlist
-    * font - Sets font type. See button `font` property for more information.
-    * font_size - Sets font size. See button `font_size` property for more information.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * dropdown
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * field, pwdfield, textarea
@@ -2797,9 +2806,15 @@ Some types may inherit styles from parent types.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
         * This is deprecated, use states instead.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
+* scrollbar
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+* table, textlist
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 
 ### Valid States
 
