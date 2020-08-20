@@ -83,8 +83,8 @@ void set_light_table(float gamma)
 		light_LUT[i] = rangelim((s32)(255.0f * brightness), 0, 255);
 
 		// Ensure light brightens with each level
-		if (i > 0 && light_LUT[i] <= light_LUT[i - 1]) {
-			light_LUT[i] = std::min((u8) 254, light_LUT[i - 1]) + 1;
+		if (i > 0 && light_LUT[i - 1] < 255 && light_LUT[i] <= light_LUT[i - 1]) {
+			light_LUT[i] = light_LUT[i - 1] + 1;
 		}
 	}
 }
