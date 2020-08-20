@@ -442,12 +442,14 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				if (!client->getMinimap())
 					break;
 				// Draw a minimap of size "size"
-				core::rect<s32> rect(0, 0, e->size.X, e->size.Y);
+				v2s32 dstsize(e->size.X * m_scale_factor,
+				              e->size.Y * m_scale_factor);
 				// (no percent size as minimap would likely be anamorphosed)
-				v2s32 offset(
-						(e->align.X - 1.0) * e->size.X / 2,
-						(e->align.Y - 1.0) * e->size.Y / 2);
-				rect += pos + offset + v2s32(e->offset.X, e->offset.Y);
+				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
+				             (e->align.Y - 1.0) * dstsize.Y / 2);
+				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
+				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
+				                             e->offset.Y * m_scale_factor);
 				client->getMinimap()->drawMinimap(rect);
 				break; }
 			default:
