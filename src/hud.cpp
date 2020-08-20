@@ -41,12 +41,14 @@ const struct EnumString es_HudElementStat[] =
 	{HUD_STAT_TEXT,   "text"},
 	{HUD_STAT_NUMBER, "number"},
 	{HUD_STAT_ITEM,   "item"},
+	{HUD_STAT_ITEM,   "precision"},
 	{HUD_STAT_DIR,    "direction"},
 	{HUD_STAT_ALIGN,  "alignment"},
 	{HUD_STAT_OFFSET, "offset"},
 	{HUD_STAT_WORLD_POS, "world_pos"},
 	{HUD_STAT_SIZE,    "size"},
 	{HUD_STAT_Z_INDEX, "z_index"},
+	{HUD_STAT_TEXT2,   "text2"},
 	{0, NULL},
 };
 

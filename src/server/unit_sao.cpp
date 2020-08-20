@@ -88,6 +88,39 @@ void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotat
 	*rotation = m_bone_position[bone].Y;
 }
 
+// clang-format off
+void UnitSAO::sendOutdatedData()
+{
+	if (!m_armor_groups_sent) {
+		m_armor_groups_sent = true;
+		m_messages_out.emplace(getId(), true, generateUpdateArmorGroupsCommand());
+	}
+
+	if (!m_animation_sent) {
+		m_animation_sent = true;
+		m_animation_speed_sent = true;
+		m_messages_out.emplace(getId(), true, generateUpdateAnimationCommand());
+	} else if (!m_animation_speed_sent) {
+		// Animation speed is also sent when 'm_animation_sent == false'
+		m_animation_speed_sent = true;
+		m_messages_out.emplace(getId(), true, generateUpdateAnimationSpeedCommand());
+	}
+
+	if (!m_bone_position_sent) {
+		m_bone_position_sent = true;
+		for (const auto &bone_pos : m_bone_position) {
+			m_messages_out.emplace(getId(), true, generateUpdateBonePositionCommand(
+				bone_pos.first, bone_pos.second.X, bone_pos.second.Y));
+		}
+	}
+
+	if (!m_attachment_sent) {
+		m_attachment_sent = true;
+		m_messages_out.emplace(getId(), true, generateUpdateAttachmentCommand());
+	}
+}
+// clang-format on
+
 void UnitSAO::setAttachment(
 		int parent_id, const std::string &bone, v3f position, v3f rotation)
 {

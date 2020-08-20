@@ -23,8 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <vector>
 
+typedef u16 override_t;
+
 //! Bitmask enum specifying what a texture override should apply to
-enum class OverrideTarget : u8
+enum class OverrideTarget : override_t
 {
 	INVALID = 0,
 	TOP = 1 << 0,
@@ -35,23 +37,33 @@ enum class OverrideTarget : u8
 	BACK = 1 << 5,
 	INVENTORY = 1 << 6,
 	WIELD = 1 << 7,
+	SPECIAL_1 = 1 << 8,
+	SPECIAL_2 = 1 << 9,
+	SPECIAL_3 = 1 << 10,
+	SPECIAL_4 = 1 << 11,
+	SPECIAL_5 = 1 << 12,
+	SPECIAL_6 = 1 << 13,
 
+	// clang-format off
 	SIDES = LEFT | RIGHT | FRONT | BACK,
 	ALL_FACES = TOP | BOTTOM | SIDES,
+	ALL_SPECIAL = SPECIAL_1 | SPECIAL_2 | SPECIAL_3 | SPECIAL_4 | SPECIAL_5 | SPECIAL_6,
+	NODE_TARGETS = ALL_FACES | ALL_SPECIAL,
 	ITEM_TARGETS = INVENTORY | WIELD,
+	// clang-format on
 };
 
 struct TextureOverride
 {
 	std::string id;
 	std::string texture;
-	u8 target;
+	override_t target;
 
 	// Helper function for checking if an OverrideTarget is found in
 	// a TextureOverride without casting
 	inline bool hasTarget(OverrideTarget overrideTarget) const
 	{
-		return (target & static_cast<u8>(overrideTarget)) != 0;
+		return (target & static_cast<override_t>(overrideTarget)) != 0;
 	}
 };
 

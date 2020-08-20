@@ -36,12 +36,12 @@ public:
 	void beginSave();
 	void endSave();
 
-	// Open and initialize the database if needed
-	virtual void pingDatabase();
-
 	bool initialized() const { return m_initialized; }
 protected:
 	Database_SQLite3(const std::string &savedir, const std::string &dbname);
+
+	// Open and initialize the database if needed
+	void verifyDatabase();
 
 	// Convertors
 	inline void str_to_sqlite(sqlite3_stmt *s, int iCol, const std::string &str) const
@@ -146,8 +146,6 @@ public:
 	MapDatabaseSQLite3(const std::string &savedir);
 	virtual ~MapDatabaseSQLite3();
 
-	virtual void pingDatabase() { Database_SQLite3::pingDatabase(); }
-
 	bool saveBlock(const v3s16 &pos, const std::string &data);
 	void loadBlock(const v3s16 &pos, std::string *block);
 	bool deleteBlock(const v3s16 &pos);
@@ -174,8 +172,6 @@ class PlayerDatabaseSQLite3 : private Database_SQLite3, public PlayerDatabase
 public:
 	PlayerDatabaseSQLite3(const std::string &savedir);
 	virtual ~PlayerDatabaseSQLite3();
-
-	virtual void pingDatabase() { Database_SQLite3::pingDatabase(); }
 
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
@@ -211,8 +207,6 @@ class AuthDatabaseSQLite3 : private Database_SQLite3, public AuthDatabase
 public:
 	AuthDatabaseSQLite3(const std::string &savedir);
 	virtual ~AuthDatabaseSQLite3();
-
-	virtual void pingDatabase() { Database_SQLite3::pingDatabase(); }
 
 	virtual bool getAuth(const std::string &name, AuthEntry &res);
 	virtual bool saveAuth(const AuthEntry &authEntry);

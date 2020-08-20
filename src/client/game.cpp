@@ -34,11 +34,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clouds.h"
 #include "config.h"
 #include "content_cao.h"
+#include "content/subgames.h"
 #include "client/event_manager.h"
 #include "fontengine.h"
 #include "itemdef.h"
 #include "log.h"
 #include "filesys.h"
+#include "gameparams.h"
 #include "gettext.h"
 #include "gui/guiChatConsole.h"
 #include "gui/guiConfirmRegistration.h"
@@ -602,7 +604,6 @@ public:
 #endif
 
 /****************************************************************************
-
  ****************************************************************************/
 
 const float object_hit_delay = 0.2;
@@ -623,15 +624,15 @@ struct GameRunData {
 	u16 new_playeritem;
 	PointedThing pointed_old;
 	bool digging;
-	bool ldown_for_dig;
+	bool punching;
+	bool btn_down_for_dig;
 	bool dig_instantly;
 	bool digging_blocked;
-	bool left_punch;
 	bool reset_jump_timer;
 	float nodig_delay_timer;
 	float dig_time;
 	float dig_time_complete;
-	float repeat_rightclick_timer;
+	float repeat_place_timer;
 	float object_hit_delay_timer;
 	float time_from_last_punch;
 	ClientActiveObject *selected_object;
@@ -669,19 +670,11 @@ public:
 	~Game();
 
 	bool startup(bool *kill,
-			bool random_input,
 			InputHandler *input,
-			const std::string &map_dir,
-			const std::string &playername,
-			const std::string &password,
-			// If address is "", local server is used and address is updated
-			std::string *address,
-			u16 port,
+			const GameStartData &game_params,
 			std::string &error_message,
 			bool *reconnect,
-			ChatBackend *chat_backend,
-			const SubgameSpec &gamespec,    // Used for local game
-			bool simple_singleplayer_mode);
+			ChatBackend *chat_backend);
 
 	void run();
 	void shutdown();
@@ -691,21 +684,18 @@ protected:
 	void extendedResourceCleanup();
 
 	// Basic initialisation
-	bool init(const std::string &map_dir, std::string *address,
-			u16 port,
-			const SubgameSpec &gamespec);
+	bool init(const std::string &map_dir, const std::string &address,
+			u16 port, const SubgameSpec &gamespec);
 	bool initSound();
 	bool createSingleplayerServer(const std::string &map_dir,
-			const SubgameSpec &gamespec, u16 port, std::string *address);
+			const SubgameSpec &gamespec, u16 port);
 
 	// Client creation
-	bool createClient(const std::string &playername,
-			const std::string &password, std::string *address, u16 port);
+	bool createClient(const GameStartData &start_data);
 	bool initGui();
 
 	// Client connection
-	bool connectToServer(const std::string &playername,
-			const std::string &password, std::string *address, u16 port,
+	bool connectToServer(const GameStartData &start_data,
 			bool *connect_ok, bool *aborted);
 	bool getServerContent(bool *aborted);
 
@@ -796,6 +786,14 @@ protected:
 	{
 		return input->wasKeyDown(k);
 	}
+	inline bool wasKeyPressed(GameKeyType k)
+	{
+		return input->wasKeyPressed(k);
+	}
+	inline bool wasKeyReleased(GameKeyType k)
+	{
+		return input->wasKeyReleased(k);
+	}
 
 #ifdef __ANDROID__
 	void handleAndroidChatInput();
@@ -855,6 +853,7 @@ private:
 	SoundMaker *soundmaker = nullptr;
 
 	ChatBackend *chat_backend = nullptr;
+	LogOutputBuffer m_chat_log_buf;
 
 	EventManager *eventmgr = nullptr;
 	QuicktuneShortcutter *quicktune = nullptr;
@@ -884,7 +883,6 @@ private:
 	bool *reconnect_requested;
 	scene::ISceneNode *skybox;
 
-	bool random_input;
 	bool simple_singleplayer_mode;
 	/* End 'cache' */
 
@@ -909,7 +907,7 @@ private:
 	bool m_cache_enable_free_move;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
-	f32  m_repeat_right_click_time;
+	f32  m_repeat_place_time;
 	f32  m_cache_cam_smoothing;
 	f32  m_cache_fog_start;
 
@@ -926,6 +924,7 @@ private:
 };
 
 Game::Game() :
+	m_chat_log_buf(g_logger),
 	m_game_ui(new GameUI())
 {
 	g_settings->registerChangedCallback("doubletap_jump",
@@ -942,7 +941,7 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("repeat_rightclick_time",
+	g_settings->registerChangedCallback("repeat_place_time",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("noclip",
 		&settingChangedCallback, this);
@@ -1000,7 +999,7 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("mouse_sensitivity",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("repeat_rightclick_time",
+	g_settings->deregisterChangedCallback("repeat_place_time",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("noclip",
 		&settingChangedCallback, this);
@@ -1015,28 +1014,21 @@ Game::~Game()
 }
 
 bool Game::startup(bool *kill,
-		bool random_input,
 		InputHandler *input,
-		const std::string &map_dir,
-		const std::string &playername,
-		const std::string &password,
-		std::string *address,     // can change if simple_singleplayer_mode
-		u16 port,
+		const GameStartData &start_data,
 		std::string &error_message,
 		bool *reconnect,
-		ChatBackend *chat_backend,
-		const SubgameSpec &gamespec,
-		bool simple_singleplayer_mode)
+		ChatBackend *chat_backend)
 {
+
 	// "cache"
 	this->device              = RenderingEngine::get_raw_device();
 	this->kill                = kill;
 	this->error_message       = &error_message;
 	this->reconnect_requested = reconnect;
-	this->random_input        = random_input;
 	this->input               = input;
 	this->chat_backend        = chat_backend;
-	this->simple_singleplayer_mode = simple_singleplayer_mode;
+	this->simple_singleplayer_mode = start_data.isSinglePlayer();
 
 	input->keycache.populate();
 
@@ -1057,10 +1049,12 @@ bool Game::startup(bool *kill,
 
 	g_client_translations->clear();
 
-	if (!init(map_dir, address, port, gamespec))
+	// address can change if simple_singleplayer_mode
+	if (!init(start_data.world_spec.path, start_data.address,
+			start_data.socket_port, start_data.game_spec))
 		return false;
 
-	if (!createClient(playername, password, address, port))
+	if (!createClient(start_data))
 		return false;
 
 	RenderingEngine::initialize(client, hud);
@@ -1171,6 +1165,10 @@ void Game::shutdown()
 	if (formspec)
 		formspec->quitMenu();
 
+#ifdef HAVE_TOUCHSCREENGUI
+	g_touchscreengui->hide();
+#endif
+
 	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
 
 	if (clouds)
@@ -1192,6 +1190,7 @@ void Game::shutdown()
 
 	chat_backend->addMessage(L"", L"# Disconnected.");
 	chat_backend->addMessage(L"", L"");
+	m_chat_log_buf.clear();
 
 	if (client) {
 		client->Stop();
@@ -1214,7 +1213,7 @@ void Game::shutdown()
 
 bool Game::init(
 		const std::string &map_dir,
-		std::string *address,
+		const std::string &address,
 		u16 port,
 		const SubgameSpec &gamespec)
 {
@@ -1238,8 +1237,8 @@ bool Game::init(
 		return false;
 
 	// Create a server if not connecting to an existing one
-	if (address->empty()) {
-		if (!createSingleplayerServer(map_dir, gamespec, port, address))
+	if (address.empty()) {
+		if (!createSingleplayerServer(map_dir, gamespec, port))
 			return false;
 	}
 
@@ -1274,7 +1273,7 @@ bool Game::initSound()
 }
 
 bool Game::createSingleplayerServer(const std::string &map_dir,
-		const SubgameSpec &gamespec, u16 port, std::string *address)
+		const SubgameSpec &gamespec, u16 port)
 {
 	showOverlayMessage(N_("Creating server..."), 0, 5);
 
@@ -1302,14 +1301,12 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	}
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr, false);
-	server->init();
 	server->start();
 
 	return true;
 }
 
-bool Game::createClient(const std::string &playername,
-		const std::string &password, std::string *address, u16 port)
+bool Game::createClient(const GameStartData &start_data)
 {
 	showOverlayMessage(N_("Creating client..."), 0, 10);
 
@@ -1324,8 +1321,7 @@ bool Game::createClient(const std::string &playername,
 		g_touchscreengui->hide();
 	}
 #endif
-	if (!connectToServer(playername, password, address, port,
-			&could_connect, &connect_aborted))
+	if (!connectToServer(start_data, &could_connect, &connect_aborted))
 		return false;
 
 	if (!could_connect) {
@@ -1455,8 +1451,7 @@ bool Game::initGui()
 	return true;
 }
 
-bool Game::connectToServer(const std::string &playername,
-		const std::string &password, std::string *address, u16 port,
+bool Game::connectToServer(const GameStartData &start_data,
 		bool *connect_ok, bool *connection_aborted)
 {
 	*connect_ok = false;	// Let's not be overly optimistic
@@ -1465,10 +1460,10 @@ bool Game::connectToServer(const std::string &playername,
 
 	showOverlayMessage(N_("Resolving address..."), 0, 15);
 
-	Address connect_address(0, 0, 0, 0, port);
+	Address connect_address(0, 0, 0, 0, start_data.socket_port);
 
 	try {
-		connect_address.Resolve(address->c_str());
+		connect_address.Resolve(start_data.address.c_str());
 
 		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
 			//connect_address.Resolve("localhost");
@@ -1495,7 +1490,8 @@ bool Game::connectToServer(const std::string &playername,
 		return false;
 	}
 
-	client = new Client(playername.c_str(), password, *address,
+	client = new Client(start_data.name.c_str(),
+			start_data.password, start_data.address,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
 			connect_address.isIPv6(), m_game_ui.get());
@@ -1566,13 +1562,13 @@ bool Game::connectToServer(const std::string &playername,
 				} else {
 					registration_confirmation_shown = true;
 					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
-						   &g_menumgr, client, playername, password,
+						   &g_menumgr, client, start_data.name, start_data.password,
 						   connection_aborted, texture_src))->drop();
 				}
 			} else {
 				wait_time += dtime;
 				// Only time out if we aren't waiting for the server we started
-				if (!address->empty() && wait_time > 10) {
+				if (!start_data.isSinglePlayer() && wait_time > 10) {
 					*error_message = "Connection timed out.";
 					errorstream << *error_message << std::endl;
 					break;
@@ -2376,10 +2372,10 @@ void Game::checkZoomEnabled()
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
 	if ((device->isWindowActive() && device->isWindowFocused()
-			&& !isMenuActive()) || random_input) {
+			&& !isMenuActive()) || input->isRandom()) {
 
 #ifndef __ANDROID__
-		if (!random_input) {
+		if (!input->isRandom()) {
 			// Mac OSX gets upset if this is set every frame
 			if (device->getCursorControl()->isVisible())
 				device->getCursorControl()->setVisible(false);
@@ -2459,15 +2455,15 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::SPECIAL1),
 		isKeyDown(KeyType::SNEAK),
 		isKeyDown(KeyType::ZOOM),
-		input->getLeftState(),
-		input->getRightState(),
+		isKeyDown(KeyType::DIG),
+		isKeyDown(KeyType::PLACE),
 		cam.camera_pitch,
 		cam.camera_yaw,
 		input->joystick.getAxisWithoutDead(JA_SIDEWARD_MOVE),
 		input->joystick.getAxisWithoutDead(JA_FORWARD_MOVE)
 	);
 
-	u32 keypress_bits =
+	u32 keypress_bits = (
 			( (u32)(isKeyDown(KeyType::FORWARD)                       & 0x1) << 0) |
 			( (u32)(isKeyDown(KeyType::BACKWARD)                      & 0x1) << 1) |
 			( (u32)(isKeyDown(KeyType::LEFT)                          & 0x1) << 2) |
@@ -2475,8 +2471,9 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 			( (u32)(isKeyDown(KeyType::JUMP)                          & 0x1) << 4) |
 			( (u32)(isKeyDown(KeyType::SPECIAL1)                      & 0x1) << 5) |
 			( (u32)(isKeyDown(KeyType::SNEAK)                         & 0x1) << 6) |
-			( (u32)(input->getLeftState()                             & 0x1) << 7) |
-			( (u32)(input->getRightState()                            & 0x1) << 8
+			( (u32)(isKeyDown(KeyType::DIG)                           & 0x1) << 7) |
+			( (u32)(isKeyDown(KeyType::PLACE)                         & 0x1) << 8) |
+			( (u32)(isKeyDown(KeyType::ZOOM)                          & 0x1) << 9)
 		);
 
 #ifdef ANDROID
@@ -2656,6 +2653,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 		delete event->hudadd.offset;
 		delete event->hudadd.world_pos;
 		delete event->hudadd.size;
+		delete event->hudadd.text2;
 		return;
 	}
 
@@ -2673,6 +2671,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->world_pos = *event->hudadd.world_pos;
 	e->size = *event->hudadd.size;
 	e->z_index = event->hudadd.z_index;
+	e->text2  = *event->hudadd.text2;
 	hud_server_to_client[server_id] = player->addHud(e);
 
 	delete event->hudadd.pos;
@@ -2683,6 +2682,7 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	delete event->hudadd.offset;
 	delete event->hudadd.world_pos;
 	delete event->hudadd.size;
+	delete event->hudadd.text2;
 }
 
 void Game::handleClientEvent_HudRemove(ClientEvent *event, CameraOrientation *cam)
@@ -2755,6 +2755,10 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 		case HUD_STAT_Z_INDEX:
 			e->z_index = event->hudchange.data;
 			break;
+
+		case HUD_STAT_TEXT2:
+			e->text2 = *event->hudchange.sdata;
+			break;
 	}
 
 	delete event->hudchange.v3fdata;
@@ -2780,7 +2784,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		// Shows the mesh skybox
 		sky->setVisible(true);
 		// Update mesh based skybox colours if applicable.
-		sky->setSkyColors(*event->set_sky);
+		sky->setSkyColors(event->set_sky->sky_color);
 		sky->setHorizonTint(
 			event->set_sky->fog_sun_tint,
 			event->set_sky->fog_moon_tint,
@@ -2880,18 +2884,9 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 void Game::updateChat(f32 dtime, const v2u32 &screensize)
 {
-	// Add chat log output for errors to be shown in chat
-	static LogOutputBuffer chat_log_error_buf(g_logger, LL_ERROR);
-
 	// Get new messages from error log buffer
-	while (!chat_log_error_buf.empty()) {
-		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
-		if (!g_settings->getBool("disable_escape_sequences")) {
-			error_message.insert(0, L"\x1b(c@red)");
-			error_message.append(L"\x1b(c@white)");
-		}
-		chat_backend->addMessage(L"", error_message);
-	}
+	while (!m_chat_log_buf.empty())
+		chat_backend->addMessage(L"", utf8_to_wide(m_chat_log_buf.get()));
 
 	// Get new messages from client
 	std::wstring message;
@@ -3059,7 +3054,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	PointedThing pointed = updatePointedThing(shootline,
 			selected_def.liquids_pointable,
-			!runData.ldown_for_dig,
+			!runData.btn_down_for_dig,
 			camera_offset);
 
 	if (pointed != runData.pointed_old) {
@@ -3067,20 +3062,18 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		hud->updateSelectionMesh(camera_offset);
 	}
 
-	if (runData.digging_blocked && !input->getLeftState()) {
-		// allow digging again if button is not pressed
+	// Allow digging again if button is not pressed
+	if (runData.digging_blocked && !isKeyDown(KeyType::DIG))
 		runData.digging_blocked = false;
-	}
 
 	/*
 		Stop digging when
-		- releasing left mouse button
+		- releasing dig button
 		- pointing away from node
 	*/
 	if (runData.digging) {
-		if (input->getLeftReleased()) {
-			infostream << "Left button released"
-					<< " (stopped digging)" << std::endl;
+		if (wasKeyReleased(KeyType::DIG)) {
+			infostream << "Dig button released (stopped digging)" << std::endl;
 			runData.digging = false;
 		} else if (pointed != runData.pointed_old) {
 			if (pointed.type == POINTEDTHING_NODE
@@ -3090,8 +3083,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 				// Still pointing to the same node, but a different face.
 				// Don't reset.
 			} else {
-				infostream << "Pointing away from node"
-						<< " (stopped digging)" << std::endl;
+				infostream << "Pointing away from node (stopped digging)" << std::endl;
 				runData.digging = false;
 				hud->updateSelectionMesh(camera_offset);
 			}
@@ -3102,55 +3094,57 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			client->setCrack(-1, v3s16(0, 0, 0));
 			runData.dig_time = 0.0;
 		}
-	} else if (runData.dig_instantly && input->getLeftReleased()) {
-		// Remove e.g. torches faster when clicking instead of holding LMB
+	} else if (runData.dig_instantly && wasKeyReleased(KeyType::DIG)) {
+		// Remove e.g. torches faster when clicking instead of holding dig button
 		runData.nodig_delay_timer = 0;
 		runData.dig_instantly = false;
 	}
 
-	if (!runData.digging && runData.ldown_for_dig && !input->getLeftState()) {
-		runData.ldown_for_dig = false;
-	}
+	if (!runData.digging && runData.btn_down_for_dig && !isKeyDown(KeyType::DIG))
+		runData.btn_down_for_dig = false;
 
-	runData.left_punch = false;
+	runData.punching = false;
 
 	soundmaker->m_player_leftpunch_sound.name = "";
 
 	// Prepare for repeating, unless we're not supposed to
-	if (input->getRightState() && !g_settings->getBool("safe_dig_and_place"))
-		runData.repeat_rightclick_timer += dtime;
+	if (isKeyDown(KeyType::PLACE) && !g_settings->getBool("safe_dig_and_place"))
+		runData.repeat_place_timer += dtime;
 	else
-		runData.repeat_rightclick_timer = 0;
+		runData.repeat_place_timer = 0;
 
-	if (selected_def.usable && input->getLeftState()) {
-		if (input->getLeftClicked() && (!client->modsLoaded()
-				|| !client->getScript()->on_item_use(selected_item, pointed)))
+	if (selected_def.usable && isKeyDown(KeyType::DIG)) {
+		if (wasKeyPressed(KeyType::DIG) && (!client->modsLoaded() ||
+				!client->getScript()->on_item_use(selected_item, pointed)))
 			client->interact(INTERACT_USE, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		v3f player_position  = player->getPosition();
 		handlePointingAtObject(pointed, tool_item, player_position, show_debug);
-	} else if (input->getLeftState()) {
+	} else if (isKeyDown(KeyType::DIG)) {
 		// When button is held down in air, show continuous animation
-		runData.left_punch = true;
+		runData.punching = true;
 		// Run callback even though item is not usable
-		if (input->getLeftClicked() && client->modsLoaded())
+		if (wasKeyPressed(KeyType::DIG) && client->modsLoaded())
 			client->getScript()->on_item_use(selected_item, pointed);
-	} else if (input->getRightClicked()) {
+	} else if (wasKeyPressed(KeyType::PLACE)) {
 		handlePointingAtNothing(selected_item);
 	}
 
 	runData.pointed_old = pointed;
 
-	if (runData.left_punch || input->getLeftClicked())
-		camera->setDigging(0); // left click animation
+	if (runData.punching || wasKeyPressed(KeyType::DIG))
+		camera->setDigging(0); // dig animation
 
-	input->resetLeftClicked();
-	input->resetRightClicked();
+	input->clearWasKeyPressed();
+	input->clearWasKeyReleased();
 
-	input->resetLeftReleased();
-	input->resetRightReleased();
+	input->joystick.clearWasKeyDown(KeyType::MOUSE_L);
+	input->joystick.clearWasKeyDown(KeyType::MOUSE_R);
+
+	input->joystick.clearWasKeyReleased(KeyType::MOUSE_L);
+	input->joystick.clearWasKeyReleased(KeyType::MOUSE_R);
 }
 
 
@@ -3171,11 +3165,14 @@ PointedThing Game::updatePointedThing(
 	const NodeDefManager *nodedef = map.getNodeDefManager();
 
 	runData.selected_object = NULL;
+	hud->pointing_at_object = false;
 
 	RaycastState s(shootline, look_for_object, liquids_pointable);
 	PointedThing result;
 	env.continueRaycast(&s, &result);
 	if (result.type == POINTEDTHING_OBJECT) {
+		hud->pointing_at_object = true;
+
 		runData.selected_object = client->getEnv().getActiveObject(result.object_id);
 		aabb3f selection_box;
 		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox() &&
@@ -3247,7 +3244,7 @@ PointedThing Game::updatePointedThing(
 
 void Game::handlePointingAtNothing(const ItemStack &playerItem)
 {
-	infostream << "Right Clicked in Air" << std::endl;
+	infostream << "Attempted to place item while pointing at nothing" << std::endl;
 	PointedThing fauxPointed;
 	fauxPointed.type = POINTEDTHING_NOTHING;
 	client->interact(INTERACT_ACTIVATE, fauxPointed);
@@ -3266,7 +3263,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 	ClientMap &map = client->getEnv().getClientMap();
 
-	if (runData.nodig_delay_timer <= 0.0 && input->getLeftState()
+	if (runData.nodig_delay_timer <= 0.0 && isKeyDown(KeyType::DIG)
 			&& !runData.digging_blocked
 			&& client->checkPrivilege("interact")) {
 		handleDigging(pointed, nodepos, selected_item, hand_item, dtime);
@@ -3287,13 +3284,14 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		}
 	}
 
-	if ((input->getRightClicked() ||
-			runData.repeat_rightclick_timer >= m_repeat_right_click_time) &&
+	if ((wasKeyPressed(KeyType::PLACE) ||
+			runData.repeat_place_timer >= m_repeat_place_time) &&
 			client->checkPrivilege("interact")) {
-		runData.repeat_rightclick_timer = 0;
-		infostream << "Ground right-clicked" << std::endl;
+		runData.repeat_place_timer = 0;
+		infostream << "Place button pressed while looking at ground" << std::endl;
 
-		camera->setDigging(1);  // right click animation (always shown for feedback)
+		// Placing animation (always shown for feedback)
+		camera->setDigging(1);
 
 		soundmaker->m_player_rightpunch_sound = SimpleSoundSpec();
 
@@ -3327,7 +3325,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	}
 
 	// formspec in meta
-	if (meta && !meta->getString("formspec").empty() && !random_input
+	if (meta && !meta->getString("formspec").empty() && !input->isRandom()
 			&& !isKeyDown(KeyType::SNEAK)) {
 		// on_rightclick callbacks are called anyway
 		if (nodedef_manager->get(map.getNode(nodepos)).rightclickable)
@@ -3359,8 +3357,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	}
 
 	verbosestream << "Node placement prediction for "
-		<< selected_def.name << " is "
-		<< prediction << std::endl;
+		<< selected_def.name << " is " << prediction << std::endl;
 	v3s16 p = neighbourpos;
 
 	// Place inside node itself if buildable_to
@@ -3371,6 +3368,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		} else {
 			node = map.getNode(p, &is_valid_position);
 			if (is_valid_position && !nodedef->get(node).buildable_to) {
+				soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
 				// Report to server
 				client->interact(INTERACT_PLACE, pointed);
 				return false;
@@ -3443,6 +3441,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			pp = p + v3s16(0, -1, 0);
 
 		if (!nodedef->get(map.getNode(pp)).walkable) {
+			soundmaker->m_player_rightpunch_sound = selected_def.sound_place_failed;
 			// Report to server
 			client->interact(INTERACT_PLACE, pointed);
 			return false;
@@ -3519,7 +3518,7 @@ void Game::handlePointingAtObject(const PointedThing &pointed,
 
 	m_game_ui->setInfoText(infotext);
 
-	if (input->getLeftState()) {
+	if (isKeyDown(KeyType::DIG)) {
 		bool do_punch = false;
 		bool do_punch_damage = false;
 
@@ -3529,12 +3528,12 @@ void Game::handlePointingAtObject(const PointedThing &pointed,
 			runData.object_hit_delay_timer = object_hit_delay;
 		}
 
-		if (input->getLeftClicked())
+		if (wasKeyPressed(KeyType::DIG))
 			do_punch = true;
 
 		if (do_punch) {
-			infostream << "Left-clicked object" << std::endl;
-			runData.left_punch = true;
+			infostream << "Punched object" << std::endl;
+			runData.punching = true;
 		}
 
 		if (do_punch_damage) {
@@ -3549,8 +3548,8 @@ void Game::handlePointingAtObject(const PointedThing &pointed,
 			if (!disable_send)
 				client->interact(INTERACT_START_DIGGING, pointed);
 		}
-	} else if (input->getRightClicked()) {
-		infostream << "Right-clicked object" << std::endl;
+	} else if (wasKeyDown(KeyType::PLACE)) {
+		infostream << "Pressed place button while pointing at object" << std::endl;
 		client->interact(INTERACT_PLACE, pointed);  // place
 	}
 }
@@ -3596,7 +3595,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			return;
 		client->interact(INTERACT_START_DIGGING, pointed);
 		runData.digging = true;
-		runData.ldown_for_dig = true;
+		runData.btn_down_for_dig = true;
 	}
 
 	if (!runData.dig_instantly) {
@@ -3690,7 +3689,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		client->setCrack(-1, nodepos);
 	}
 
-	camera->setDigging(0);  // left click animation
+	camera->setDigging(0);  // Dig animation
 }
 
 
@@ -4029,7 +4028,7 @@ void Game::readSettings()
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity");
 	m_cache_joystick_frustum_sensitivity = g_settings->getFloat("joystick_frustum_sensitivity");
-	m_repeat_right_click_time            = g_settings->getFloat("repeat_rightclick_time");
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time");
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
@@ -4121,30 +4120,32 @@ void Game::showPauseMenu()
 		"- %s: move backwards\n"
 		"- %s: move left\n"
 		"- %s: move right\n"
-		"- %s: jump/climb\n"
-		"- %s: sneak/go down\n"
+		"- %s: jump/climb up\n"
+		"- %s: dig/punch\n"
+		"- %s: place/use\n"
+		"- %s: sneak/climb down\n"
 		"- %s: drop item\n"
 		"- %s: inventory\n"
 		"- Mouse: turn/look\n"
-		"- Mouse left: dig/punch\n"
-		"- Mouse right: place/use\n"
 		"- Mouse wheel: select item\n"
 		"- %s: chat\n"
 	);
 
-	 char control_text_buf[600];
+	char control_text_buf[600];
 
-	 porting::mt_snprintf(control_text_buf, sizeof(control_text_buf), control_text_template.c_str(),
-			GET_KEY_NAME(keymap_forward),
-			GET_KEY_NAME(keymap_backward),
-			GET_KEY_NAME(keymap_left),
-			GET_KEY_NAME(keymap_right),
-			GET_KEY_NAME(keymap_jump),
-			GET_KEY_NAME(keymap_sneak),
-			GET_KEY_NAME(keymap_drop),
-			GET_KEY_NAME(keymap_inventory),
-			GET_KEY_NAME(keymap_chat)
-			);
+	porting::mt_snprintf(control_text_buf, sizeof(control_text_buf), control_text_template.c_str(),
+		GET_KEY_NAME(keymap_forward),
+		GET_KEY_NAME(keymap_backward),
+		GET_KEY_NAME(keymap_left),
+		GET_KEY_NAME(keymap_right),
+		GET_KEY_NAME(keymap_jump),
+		GET_KEY_NAME(keymap_dig),
+		GET_KEY_NAME(keymap_place),
+		GET_KEY_NAME(keymap_sneak),
+		GET_KEY_NAME(keymap_drop),
+		GET_KEY_NAME(keymap_inventory),
+		GET_KEY_NAME(keymap_chat)
+	);
 
 	std::string control_text = std::string(control_text_buf);
 	str_formspec_escape(control_text);
@@ -4238,19 +4239,11 @@ void Game::showPauseMenu()
 /****************************************************************************/
 
 void the_game(bool *kill,
-		bool random_input,
 		InputHandler *input,
-		const std::string &map_dir,
-		const std::string &playername,
-		const std::string &password,
-		const std::string &address,         // If empty local server is created
-		u16 port,
-
+		const GameStartData &start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,
-		bool *reconnect_requested,
-		const SubgameSpec &gamespec,        // Used for local game
-		bool simple_singleplayer_mode)
+		bool *reconnect_requested) // Used for local game
 {
 	Game game;
 
@@ -4258,14 +4251,11 @@ void the_game(bool *kill,
 	 * is created then this is updated and we don't want to change the value
 	 * passed to us by the calling function
 	 */
-	std::string server_address = address;
 
 	try {
 
-		if (game.startup(kill, random_input, input, map_dir,
-				playername, password, &server_address, port, error_message,
-				reconnect_requested, &chat_backend, gamespec,
-				simple_singleplayer_mode)) {
+		if (game.startup(kill, input, start_data, error_message,
+				reconnect_requested, &chat_backend)) {
 			game.run();
 		}
 

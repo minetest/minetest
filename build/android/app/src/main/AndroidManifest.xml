@@ -23,12 +23,12 @@
 
 		<meta-data
 			android:name="android.max_aspect"
-			android:value="3" />
+			android:value="3.0" />
 
 		<activity
 			android:name=".MainActivity"
 			android:configChanges="orientation|keyboardHidden|navigation|screenSize"
-			android:maxAspectRatio="3"
+			android:maxAspectRatio="3.0"
 			android:screenOrientation="sensorLandscape"
 			android:theme="@style/AppTheme">
 			<intent-filter>
@@ -42,7 +42,7 @@
 			android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize"
 			android:hardwareAccelerated="true"
 			android:launchMode="singleTask"
-			android:maxAspectRatio="3"
+			android:maxAspectRatio="3.0"
 			android:screenOrientation="sensorLandscape"
 			android:theme="@style/AppTheme">
 			<intent-filter>
@@ -55,7 +55,7 @@
 
 		<activity
 			android:name=".InputDialogActivity"
-			android:maxAspectRatio="3"
+			android:maxAspectRatio="3.0"
 			android:theme="@style/InputTheme" />
 
 		<service

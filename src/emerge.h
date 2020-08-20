@@ -44,6 +44,7 @@ class OreManager;
 class DecorationManager;
 class SchematicManager;
 class Server;
+class ModApiMapgen;
 
 // Structure containing inputs/outputs for chunk generation
 struct BlockMakeData {
@@ -86,7 +87,36 @@ struct BlockEmergeData {
 	EmergeCallbackList callbacks;
 };
 
+class EmergeParams {
+	friend class EmergeManager;
+public:
+	EmergeParams() = delete;
+	~EmergeParams();
+	DISABLE_CLASS_COPY(EmergeParams);
+
+	const NodeDefManager *ndef; // shared
+	bool enable_mapgen_debug_info;
+
+	u32 gen_notify_on;
+	const std::set<u32> *gen_notify_on_deco_ids; // shared
+
+	BiomeManager *biomemgr;
+	OreManager *oremgr;
+	DecorationManager *decomgr;
+	SchematicManager *schemmgr;
+
+private:
+	EmergeParams(EmergeManager *parent, const BiomeManager *biomemgr,
+		const OreManager *oremgr, const DecorationManager *decomgr,
+		const SchematicManager *schemmgr);
+};
+
 class EmergeManager {
+	/* The mod API needs unchecked access to allow:
+	 * - using decomgr or oremgr to place decos/ores
+	 * - using schemmgr to load and place schematics
+	 */
+	friend class ModApiMapgen;
 public:
 	const NodeDefManager *ndef;
 	bool enable_mapgen_debug_info;
@@ -106,16 +136,21 @@ public:
 	// Environment is not created until after script initialization.
 	MapSettingsManager *map_settings_mgr;
 
-	// Managers of various map generation-related components
-	BiomeManager *biomemgr;
-	OreManager *oremgr;
-	DecorationManager *decomgr;
-	SchematicManager *schemmgr;
-
 	// Methods
 	EmergeManager(Server *server);
 	~EmergeManager();
 	DISABLE_CLASS_COPY(EmergeManager);
+
+	// no usage restrictions
+	const BiomeManager *getBiomeManager() const { return biomemgr; }
+	const OreManager *getOreManager() const { return oremgr; }
+	const DecorationManager *getDecorationManager() const { return decomgr; }
+	const SchematicManager *getSchematicManager() const { return schemmgr; }
+	// only usable before mapgen init
+	BiomeManager *getWritableBiomeManager();
+	OreManager *getWritableOreManager();
+	DecorationManager *getWritableDecorationManager();
+	SchematicManager *getWritableSchematicManager();
 
 	void initMapgens(MapgenParams *mgparams);
 
@@ -159,6 +194,13 @@ private:
 	u16 m_qlimit_total;
 	u16 m_qlimit_diskonly;
 	u16 m_qlimit_generate;
+
+	// Managers of various map generation-related components
+	// Note that each Mapgen gets a copy(!) of these to work with
+	BiomeManager *biomemgr;
+	OreManager *oremgr;
+	DecorationManager *decomgr;
+	SchematicManager *schemmgr;
 
 	// Requires m_queue_mutex held
 	EmergeThread *getOptimalThread();

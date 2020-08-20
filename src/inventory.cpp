@@ -56,28 +56,31 @@ ItemStack::ItemStack(const std::string &name_, u16 count_,
 		count = 1;
 }
 
-void ItemStack::serialize(std::ostream &os) const
+void ItemStack::serialize(std::ostream &os, bool serialize_meta) const
 {
 	if (empty())
 		return;
 
 	// Check how many parts of the itemstring are needed
 	int parts = 1;
-	if(count != 1)
-		parts = 2;
-	if(wear != 0)
-		parts = 3;
 	if (!metadata.empty())
 		parts = 4;
+	else if (wear != 0)
+		parts = 3;
+	else if (count != 1)
+		parts = 2;
 
-	os<<serializeJsonStringIfNeeded(name);
-	if(parts >= 2)
-		os<<" "<<count;
-	if(parts >= 3)
-		os<<" "<<wear;
+	os << serializeJsonStringIfNeeded(name);
+	if (parts >= 2)
+		os << " " << count;
+	if (parts >= 3)
+		os << " " << wear;
 	if (parts >= 4) {
 		os << " ";
-		metadata.serialize(os);
+		if (serialize_meta)
+			metadata.serialize(os);
+		else
+			os << "<metadata size=" << metadata.size() << ">";
 	}
 }
 
@@ -240,10 +243,10 @@ void ItemStack::deSerialize(const std::string &str, IItemDefManager *itemdef)
 	deSerialize(is, itemdef);
 }
 
-std::string ItemStack::getItemString() const
+std::string ItemStack::getItemString(bool include_meta) const
 {
 	std::ostringstream os(std::ios::binary);
-	serialize(os);
+	serialize(os, include_meta);
 	return os.str();
 }
 

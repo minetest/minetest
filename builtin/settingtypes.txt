@@ -42,10 +42,10 @@
 #            Flags are always separated by comma without spaces.
 #            - default possible_flags
 #   * noise_params_2d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>, <lacunarity>[, <default flags>]
 #            - default
 #   * noise_params_3d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>, <lacunarity>[, <default flags>]
 #            - default
 #   * v3f:
 #            Format is (<X>, <Y>, <Z>)
@@ -110,9 +110,9 @@ doubletap_jump (Double tap jump for fly) bool false
 #    enabled.
 always_fly_fast (Always fly and fast) bool true
 
-#    The time in seconds it takes between repeated right clicks when holding the right
-#    mouse button.
-repeat_rightclick_time (Rightclick repetition interval) float 0.25 0.001
+#    The time in seconds it takes between repeated node placements when holding
+#    the place button.
+repeat_place_time (Place repetition interval) float 0.25 0.001
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -181,6 +181,14 @@ keymap_jump (Jump key) key KEY_SPACE
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_sneak (Sneak key) key KEY_LSHIFT
+
+#    Key for digging.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_dig (Dig key) key KEY_LBUTTON
+
+#    Key for placing.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_place (Place key) key KEY_RBUTTON
 
 #    Key for opening the inventory.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -561,9 +569,6 @@ enable_parallax_occlusion (Parallax occlusion) bool false
 #    1 = relief mapping (slower, more accurate).
 parallax_occlusion_mode (Parallax occlusion mode) int 1 0 1
 
-#    Strength of parallax.
-3d_paralax_strength (Parallax occlusion strength) float 0.025
-
 #    Number of parallax occlusion iterations.
 parallax_occlusion_iterations (Parallax occlusion iterations) int 4
 
@@ -713,6 +718,9 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03
 #    Note that the interlaced mode requires shaders to be enabled.
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,crossview,pageflip
 
+#    Strength of 3D mode parallax.
+3d_paralax_strength (3D mode parallax strength) float 0.025
+
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
 console_height (Console height) float 0.6 0.1 1.0
 
@@ -741,9 +749,11 @@ selectionbox_color (Selection box color) string (0,0,0)
 selectionbox_width (Selection box width) int 2 1 5
 
 #    Crosshair color (R,G,B).
+#    Also controls the object crosshair color
 crosshair_color (Crosshair color) string (255,255,255)
 
 #    Crosshair alpha (opaqueness, between 0 and 255).
+#    Also controls the object crosshair color
 crosshair_alpha (Crosshair alpha) int 255 0 255
 
 #    Maximum number of recent chat messages to show
@@ -817,7 +827,8 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 
 #    Show entity selection boxes
-show_entity_selectionbox (Show entity selection boxes) bool true
+#    A restart is required after changing this.
+show_entity_selectionbox (Show entity selection boxes) bool false
 
 [*Menus]
 
@@ -902,6 +913,10 @@ fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
 #    If “freetype” setting is disabled: Must be a bitmap or XML vectors font.
 #    This font will be used for certain languages or if the default font is unavailable.
 fallback_font_path (Fallback font path) filepath fonts/DroidSansFallbackFull.ttf
+
+#    Font size of the recent chat text and chat prompt in point (pt).
+#    Value 0 will use the default font size.
+chat_font_size (Chat font size) int 0
 
 #    Path to save screenshots at. Can be an absolute or relative path.
 #    The folder will be created if it doesn't already exist.
@@ -1160,7 +1175,7 @@ active_object_send_range_blocks (Active object send range) int 4
 #    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
-#    This should be configured together with active_object_range.
+#    This should be configured together with active_object_send_range_blocks.
 active_block_range (Active block range) int 3
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
@@ -1266,6 +1281,10 @@ active_block_mgmt_interval (Active block management interval) float 2.0
 
 #    Length of time between Active Block Modifier (ABM) execution cycles
 abm_interval (ABM interval) float 1.0
+
+#    The time budget allowed for ABMs to execute on each step
+#    (as a fraction of the ABM Interval)
+abm_time_budget (ABM time budget) float 0.2 0.1 0.9
 
 #    Length of time between NodeTimer execution cycles
 nodetimer_interval (NodeTimer interval) float 0.2
@@ -1400,6 +1419,9 @@ debug_log_level (Debug log level) enum action ,none,error,warning,action,info,ve
 #    deleting an older debug.txt.1 if it exists.
 #    debug.txt is only moved if this setting is positive.
 debug_log_size_max (Debug log file size threshold) int 50
+
+#    Minimal level of logging to be written to chat.
+chat_log_level (Chat log level) enum error ,none,error,warning,action,info,verbose
 
 #    Enable IPv6 support (for both client and server).
 #    Required for IPv6 connections to work at all.
@@ -1604,11 +1626,52 @@ mgv6_np_apple_trees (Apple trees noise) noise_params_2d 0, 1, (100, 100, 100), 3
 [*Mapgen V7]
 
 #    Map generation attributes specific to Mapgen v7.
-#    'ridges' enables the rivers.
+#    'ridges': Rivers.
+#    'floatlands': Floating land masses in the atmosphere.
+#    'caverns': Giant caves deep underground.
 mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 mgv7_mount_zero_level (Mountain zero level) int 0
+
+#    Lower Y limit of floatlands.
+mgv7_floatland_ymin (Floatland minimum Y) int 1024
+
+#    Upper Y limit of floatlands.
+mgv7_floatland_ymax (Floatland maximum Y) int 4096
+
+#    Y-distance over which floatlands taper from full density to nothing.
+#    Tapering starts at this distance from the Y limit.
+#    For a solid floatland layer, this controls the height of hills/mountains.
+#    Must be less than or equal to half the distance between the Y limits.
+mgv7_floatland_taper (Floatland tapering distance) int 256
+
+#    Exponent of the floatland tapering. Alters the tapering behaviour.
+#    Value = 1.0 creates a uniform, linear tapering.
+#    Values > 1.0 create a smooth tapering suitable for the default separated
+#    floatlands.
+#    Values < 1.0 (for example 0.25) create a more defined surface level with
+#    flatter lowlands, suitable for a solid floatland layer.
+mgv7_float_taper_exp (Floatland taper exponent) float 2.0
+
+#    Adjusts the density of the floatland layer.
+#    Increase value to increase density. Can be positive or negative.
+#    Value = 0.0: 50% of volume is floatland.
+#    Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test
+#    to be sure) creates a solid floatland layer.
+mgv7_floatland_density (Floatland density) float -0.6
+
+#    Surface level of optional water placed on a solid floatland layer.
+#    Water is disabled by default and will only be placed if this value is set
+#    to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the
+#    upper tapering).
+#    ***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:
+#    When enabling water placement the floatlands must be configured and tested
+#    to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other
+#    required value depending on 'mgv7_np_floatland'), to avoid
+#    server-intensive extreme water flow and to avoid vast flooding of the
+#    world surface below.
+mgv7_floatland_ywater (Floatland water level) int -31000
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -1678,6 +1741,12 @@ mgv7_np_mountain (Mountain noise) noise_params_3d -0.6, 1, (250, 350, 250), 5333
 
 #    3D noise defining structure of river canyon walls.
 mgv7_np_ridge (Ridge noise) noise_params_3d 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+
+#    3D noise defining structure of floatlands.
+#    If altered from the default, the noise 'scale' (0.7 by default) may need
+#    to be adjusted, as floatland tapering functions best when this noise has
+#    a value range of approximately -2.0 to 2.0.
+mgv7_np_floatland (Floatland noise) noise_params_3d 0, 0.7, (384, 96, 384), 1009, 4, 0.75, 1.618
 
 #    3D noise defining giant caverns.
 mgv7_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
@@ -1803,7 +1872,7 @@ mgcarpathian_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 50
 
 #    Map generation attributes specific to Mapgen Flat.
 #    Occasional lakes and hills can be added to the flat world.
-mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills lakes,hills,nolakes,nohills
+mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills,nocaverns lakes,hills,caverns,nolakes,nohills,nocaverns
 
 #    Y of flat ground.
 mgflat_ground_level (Ground level) int 8
@@ -1847,6 +1916,15 @@ mgflat_hill_threshold (Hill threshold) float 0.45
 #    Controls steepness/height of hills.
 mgflat_hill_steepness (Hill steepness) float 64.0
 
+#    Y-level of cavern upper limit.
+mgflat_cavern_limit (Cavern limit) int -256
+
+#    Y-distance over which caverns expand to full size.
+mgflat_cavern_taper (Cavern taper) int 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+mgflat_cavern_threshold (Cavern threshold) float 0.7
+
 #    Lower Y limit of dungeons.
 mgflat_dungeon_ymin (Dungeon minimum Y) int -31000
 
@@ -1866,6 +1944,9 @@ mgflat_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5
 
 #    Second of two 3D noises that together define tunnels.
 mgflat_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+#    3D noise defining giant caverns.
+mgflat_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    3D noise that determines number of dungeons per mapchunk.
 mgflat_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
@@ -2109,20 +2190,17 @@ chunksize (Chunk size) int 5
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.
-emergequeue_limit_total (Absolute limit of emerge queues) int 512
+emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 512
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
-#    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_diskonly (Limit of emerge queues on disk) int 64
+#    This limit is enforced per player.
+emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 64
 
 #    Maximum number of blocks to be queued that are to be generated.
-#    Set to blank for an appropriate amount to be chosen automatically.
-emergequeue_limit_generate (Limit of emerge queues to generate) int 64
+#    This limit is enforced per player.
+emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 64
 
 #    Number of emerge threads to use.
-#    WARNING: Currently there are multiple bugs that may cause crashes when
-#    'num_emerge_threads' is larger than 1. Until this warning is removed it is
-#    strongly recommended this value is set to the default '1'.
 #    Value 0:
 #    -    Automatic selection. The number of emerge threads will be
 #    -    'number of processors - 2', with a lower limit of 1.
@@ -2146,3 +2224,6 @@ contentdb_url (ContentDB URL) string https://content.minetest.net
 #    These flags are independent from Minetest versions,
 #    so see a full list at https://content.minetest.net/help/content_flags/
 contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_default
+
+#    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
+contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3

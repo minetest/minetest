@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "localplayer.h"
-#include "tileanimation.h"
+#include "../particles.h"
 
 struct ClientEvent;
 class ParticleManager;
@@ -38,21 +38,11 @@ class Particle : public scene::ISceneNode
 		IGameDef* gamedef,
 		LocalPlayer *player,
 		ClientEnvironment *env,
-		v3f pos,
-		v3f velocity,
-		v3f acceleration,
-		float expirationtime,
-		float size,
-		bool collisiondetection,
-		bool collision_removal,
-		bool object_collision,
-		bool vertical,
+		const ParticleParameters &p,
 		video::ITexture *texture,
 		v2f texpos,
 		v2f texsize,
-		const struct TileAnimationParams &anim,
-		u8 glow,
-		video::SColor color = video::SColor(0xFFFFFFFF)
+		video::SColor color
 	);
 	~Particle() = default;
 
@@ -119,20 +109,9 @@ class ParticleSpawner
 public:
 	ParticleSpawner(IGameDef* gamedef,
 		LocalPlayer *player,
-		u16 amount,
-		float time,
-		v3f minp, v3f maxp,
-		v3f minvel, v3f maxvel,
-		v3f minacc, v3f maxacc,
-		float minexptime, float maxexptime,
-		float minsize, float maxsize,
-		bool collisiondetection,
-		bool collision_removal,
-		bool object_collision,
+		const ParticleSpawnerParameters &p,
 		u16 attached_id,
-		bool vertical,
 		video::ITexture *texture,
-		const struct TileAnimationParams &anim, u8 glow,
 		ParticleManager* p_manager);
 
 	~ParticleSpawner() = default;
@@ -140,7 +119,7 @@ public:
 	void step(float dtime, ClientEnvironment *env);
 
 	bool get_expired ()
-	{ return (m_amount <= 0) && m_spawntime != 0; }
+	{ return p.amount <= 0 && p.time != 0; }
 
 private:
 	void spawnParticle(ClientEnvironment *env, float radius,
@@ -150,27 +129,10 @@ private:
 	float m_time;
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
-	u16 m_amount;
-	float m_spawntime;
-	v3f m_minpos;
-	v3f m_maxpos;
-	v3f m_minvel;
-	v3f m_maxvel;
-	v3f m_minacc;
-	v3f m_maxacc;
-	float m_minexptime;
-	float m_maxexptime;
-	float m_minsize;
-	float m_maxsize;
+	ParticleSpawnerParameters p;
 	video::ITexture *m_texture;
 	std::vector<float> m_spawntimes;
-	bool m_collisiondetection;
-	bool m_collision_removal;
-	bool m_object_collision;
-	bool m_vertical;
 	u16 m_attached_id;
-	struct TileAnimationParams m_animation;
-	u8 m_glow;
 };
 
 /**
@@ -197,8 +159,8 @@ public:
 	/**
 	 * This function is only used by client particle spawners
 	 *
-	 * We don't need to check the particle spawner list because client ID will n
-	 * ever overlap (u64)
+	 * We don't need to check the particle spawner list because client ID will
+	 * never overlap (u64)
 	 * @return new id
 	 */
 	u64 generateSpawnerId()
@@ -207,9 +169,15 @@ public:
 	}
 
 protected:
+	static bool getNodeParticleParams(const MapNode &n, const ContentFeatures &f,
+		ParticleParameters &p, video::ITexture **texture, v2f &texpos,
+		v2f &texsize, video::SColor *color, u8 tilenum = 0);
+
 	void addParticle(Particle* toadd);
 
 private:
+	void addParticleSpawner(u64 id, ParticleSpawner *toadd);
+	void deleteParticleSpawner(u64 id);
 
 	void stepParticles(float dtime);
 	void stepSpawners(float dtime);

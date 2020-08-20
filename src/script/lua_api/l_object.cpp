@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
+#include "server/serverinventorymgr.h"
 
 /*
 	ObjectRef
@@ -289,7 +290,7 @@ int ObjectRef::l_get_inventory(lua_State *L)
 	if (co == NULL) return 0;
 	// Do it
 	InventoryLocation loc = co->getInventoryLocation();
-	if (getServer(L)->getInventory(loc) != NULL)
+	if (getServerInventoryMgr(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L); // An object may have no inventory (nil)
@@ -1454,10 +1455,17 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "aux1");
 	lua_pushboolean(L, control.sneak);
 	lua_setfield(L, -2, "sneak");
-	lua_pushboolean(L, control.LMB);
+	lua_pushboolean(L, control.dig);
+	lua_setfield(L, -2, "dig");
+	lua_pushboolean(L, control.place);
+	lua_setfield(L, -2, "place");
+	// Legacy fields to ensure mod compatibility
+	lua_pushboolean(L, control.dig);
 	lua_setfield(L, -2, "LMB");
-	lua_pushboolean(L, control.RMB);
+	lua_pushboolean(L, control.place);
 	lua_setfield(L, -2, "RMB");
+	lua_pushboolean(L, control.zoom);
+	lua_setfield(L, -2, "zoom");
 	return 1;
 }
 
@@ -2172,9 +2180,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 		ratio = readParam<float>(L, 2);
 	}
 
-	if (!getServer(L)->overrideDayNightRatio(player, do_override, ratio))
-		return 0;
-
+	getServer(L)->overrideDayNightRatio(player, do_override, ratio);
 	lua_pushboolean(L, true);
 	return 1;
 }

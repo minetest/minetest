@@ -110,6 +110,7 @@ std::string serializeString(const std::string &plain)
 
 	if (plain.size() > STRING_MAX_LEN)
 		throw SerializationError("String too long for serializeString");
+	s.reserve(2 + plain.size());
 
 	writeU16((u8 *)&buf[0], plain.size());
 	s.append(buf, 2);
@@ -131,13 +132,11 @@ std::string deSerializeString(std::istream &is)
 	if (s_size == 0)
 		return s;
 
-	Buffer<char> buf2(s_size);
-	is.read(&buf2[0], s_size);
+	s.resize(s_size);
+	is.read(&s[0], s_size);
 	if (is.gcount() != s_size)
 		throw SerializationError("deSerializeString: couldn't read all chars");
 
-	s.reserve(s_size);
-	s.append(&buf2[0], s_size);
 	return s;
 }
 
@@ -152,6 +151,7 @@ std::string serializeWideString(const std::wstring &plain)
 
 	if (plain.size() > WIDE_STRING_MAX_LEN)
 		throw SerializationError("String too long for serializeWideString");
+	s.reserve(2 + 2 * plain.size());
 
 	writeU16((u8 *)buf, plain.size());
 	s.append(buf, 2);
@@ -196,13 +196,14 @@ std::wstring deSerializeWideString(std::istream &is)
 
 std::string serializeLongString(const std::string &plain)
 {
+	std::string s;
 	char buf[4];
 
 	if (plain.size() > LONG_STRING_MAX_LEN)
 		throw SerializationError("String too long for serializeLongString");
+	s.reserve(4 + plain.size());
 
 	writeU32((u8*)&buf[0], plain.size());
-	std::string s;
 	s.append(buf, 4);
 	s.append(plain);
 	return s;
@@ -227,13 +228,11 @@ std::string deSerializeLongString(std::istream &is)
 			"string too long: " + itos(s_size) + " bytes");
 	}
 
-	Buffer<char> buf2(s_size);
-	is.read(&buf2[0], s_size);
+	s.resize(s_size);
+	is.read(&s[0], s_size);
 	if ((u32)is.gcount() != s_size)
 		throw SerializationError("deSerializeLongString: couldn't read all chars");
 
-	s.reserve(s_size);
-	s.append(&buf2[0], s_size);
 	return s;
 }
 

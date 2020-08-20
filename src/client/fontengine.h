@@ -124,6 +124,9 @@ public:
 	/** get default font size */
 	unsigned int getDefaultFontSize();
 
+	/** get font size for a specific mode */
+	unsigned int getFontSize(FontMode mode);
+
 	/** initialize font engine */
 	void initialize(Settings* main_settings, gui::IGUIEnvironment* env);
 

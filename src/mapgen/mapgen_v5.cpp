@@ -44,7 +44,7 @@ FlagDesc flagdesc_mapgen_v5[] = {
 };
 
 
-MapgenV5::MapgenV5(MapgenV5Params *params, EmergeManager *emerge)
+MapgenV5::MapgenV5(MapgenV5Params *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_V5, params, emerge)
 {
 	spflags            = params->spflags;

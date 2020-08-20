@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_HUD_HEADER
-#define CLIENT_HUD_HEADER
+#pragma once
 
 #include <vector>
 #include <IGUIFont.h>
@@ -46,11 +45,15 @@ public:
 
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
+
 	bool use_crosshair_image = false;
+	bool use_object_crosshair_image = false;
 	std::string hotbar_image = "";
 	bool use_hotbar_image = false;
 	std::string hotbar_selected_image = "";
 	bool use_hotbar_selected_image = false;
+
+	bool pointing_at_object = false;
 
 	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 			Inventory *inventory);
@@ -84,8 +87,9 @@ public:
 
 private:
 	bool calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos);
-	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, const std::string &texture,
-			s32 count, v2s32 offset, v2s32 size = v2s32());
+	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
+			const std::string &texture, const std::string& bgtexture,
+			s32 count, s32 maxcount, v2s32 offset, v2s32 size = v2s32());
 
 	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 			s32 inv_offset, InventoryList *mainlist, u16 selectitem,
@@ -94,6 +98,7 @@ private:
 	void drawItem(const ItemStack &item, const core::rect<s32> &rect, bool selected);
 
 	float m_hud_scaling; // cached minetest setting
+	float m_scale_factor;
 	v3s16 m_camera_offset;
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
@@ -148,4 +153,3 @@ void drawItemStack(
 		const v3s16 &angle,
 		const v3s16 &rotation_speed);
 
-#endif
