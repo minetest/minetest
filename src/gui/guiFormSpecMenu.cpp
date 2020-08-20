@@ -1740,7 +1740,7 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 
 	FieldSpec spec(
 		name,
-		utf8_to_wide(unescape_string(text)),
+		translate_string(utf8_to_wide(unescape_string(text))),
 		L"",
 		258 + m_fields.size()
 	);
