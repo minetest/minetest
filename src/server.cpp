@@ -2494,19 +2494,25 @@ void Server::fillMediaCache()
 
 	// Collect all media file paths
 	std::vector<std::string> paths;
-	m_modmgr->getModsMediaPaths(paths);
-	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	// The paths are ordered in descending priority
 	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
+	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	m_modmgr->getModsMediaPaths(paths);
 
 	// Collect media file information from paths into cache
 	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
 		for (const fs::DirListNode &dln : dirlist) {
-			if (dln.dir) // Ignore dirs
+			if (dln.dir) // Ignore dirs (already in paths)
 				continue;
+
+			const std::string &filename = dln.name;
+			if (m_media.find(filename) != m_media.end()) // Do not override
+				continue;
+
 			std::string filepath = mediapath;
-			filepath.append(DIR_DELIM).append(dln.name);
-			addMediaFile(dln.name, filepath);
+			filepath.append(DIR_DELIM).append(filename);
+			addMediaFile(filename, filepath);
 		}
 	}
 
