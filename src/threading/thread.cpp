@@ -219,7 +219,7 @@ void Thread::setName(const std::string &name)
 
 #elif defined(__NetBSD__)
 
-	pthread_setname_np(pthread_self(), name.c_str());
+	pthread_setname_np(pthread_self(), "%s", const_cast<char*>(name.c_str()));
 
 #elif defined(__APPLE__)
 
