@@ -85,7 +85,7 @@ void set_light_table(float gamma)
 
 		// Ensure light brightens with each level
 		if (i > 0 && light_LUT[i] <= light_LUT[i - 1]) {
-			light_LUT[i] = std::min((u8) 254, light_LUT[i - 1]) + 1;
+			light_LUT[i] = std::min((u8)254, light_LUT[i - 1]) + 1;
 		}
 	}
 }
