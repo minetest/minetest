@@ -317,10 +317,6 @@ else()
 			set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 		endif(NOT HAIKU AND NOT APPLE)
 
-		if (HAIKU)
-			set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} intl network)
-		endif()
-
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
@@ -355,6 +351,10 @@ else()
 	if (ICONV_LIBRARY)
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} ${ICONV_LIBRARY})
 	endif()
+	if (HAIKU)
+		set(PLATFORM_LIBS ${PLATFORM_LIBS} intl network)
+	endif()
+
 endif()
 
 check_include_files(endian.h HAVE_ENDIAN_H)
