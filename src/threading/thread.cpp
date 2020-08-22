@@ -225,6 +225,10 @@ void Thread::setName(const std::string &name)
 
 	pthread_setname_np(name.c_str());
 
+#elif defined(__HAIKU__)
+
+	rename_thread(find_thread(NULL), name.c_str());
+
 #elif defined(_MSC_VER)
 
 	// Windows itself doesn't support thread names,

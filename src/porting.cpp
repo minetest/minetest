@@ -56,6 +56,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <crt_externs.h>
 #endif
 
+#if defined(__HAIKU__)
+        #include <FindDirectory.h>
+#endif
+
 #include "config.h"
 #include "debug.h"
 #include "filesys.h"
@@ -321,6 +325,12 @@ bool getCurrentExecPath(char *buf, size_t len)
 	return true;
 }
 
+#elif defined(__HAIKU__)
+
+bool getCurrentExecPath(char *buf, size_t len)
+{
+	return find_path(B_APP_IMAGE_SYMBOL, B_FIND_PATH_IMAGE_PATH, NULL, buf, len) == B_OK;
+}
 
 //// Solaris
 #elif defined(__sun) || defined(sun)
