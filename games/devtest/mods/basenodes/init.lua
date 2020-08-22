@@ -124,7 +124,8 @@ minetest.register_node("basenodes:pine_needles", {
 })
 
 minetest.register_node("basenodes:water_source", {
-	description = "Water Source",
+	description = "Water Source".."\n"..
+		"Drowning damage: 1",
 	drawtype = "liquid",
 	tiles = {"default_water.png"},
 	special_tiles = {
@@ -148,7 +149,8 @@ minetest.register_node("basenodes:water_source", {
 })
 
 minetest.register_node("basenodes:water_flowing", {
-	description = "Flowing Water",
+	description = "Flowing Water".."\n"..
+		"Drowning damage: 1",
 	drawtype = "flowingliquid",
 	tiles = {"default_water_flowing.png"},
 	special_tiles = {
@@ -173,7 +175,8 @@ minetest.register_node("basenodes:water_flowing", {
 })
 
 minetest.register_node("basenodes:river_water_source", {
-	description = "River Water Source",
+	description = "River Water Source".."\n"..
+		"Drowning damage: 1",
 	drawtype = "liquid",
 	tiles = { "default_river_water.png" },
 	special_tiles = {
@@ -199,7 +202,8 @@ minetest.register_node("basenodes:river_water_source", {
 })
 
 minetest.register_node("basenodes:river_water_flowing", {
-	description = "Flowing River Water",
+	description = "Flowing River Water".."\n"..
+		"Drowning damage: 1",
 	drawtype = "flowingliquid",
 	tiles = {"default_river_water_flowing.png"},
 	special_tiles = {
@@ -226,7 +230,9 @@ minetest.register_node("basenodes:river_water_flowing", {
 })
 
 minetest.register_node("basenodes:lava_flowing", {
-	description = "Flowing Lava",
+	description = "Flowing Lava".."\n"..
+		"4 damage per second".."\n"..
+		"Drowning damage: 1",
 	drawtype = "flowingliquid",
 	tiles = {"default_lava_flowing.png"},
 	special_tiles = {
@@ -251,7 +257,9 @@ minetest.register_node("basenodes:lava_flowing", {
 })
 
 minetest.register_node("basenodes:lava_source", {
-	description = "Lava Source",
+	description = "Lava Source".."\n"..
+		"4 damage per second".."\n"..
+		"Drowning damage: 1",
 	drawtype = "liquid",
 	tiles = { "default_lava.png" },
 	special_tiles = {
@@ -290,7 +298,8 @@ minetest.register_node("basenodes:mossycobble", {
 })
 
 minetest.register_node("basenodes:apple", {
-	description = "Apple",
+	description = "Apple".."\n"..
+		"Food (+2)",
 	drawtype = "plantlike",
 	tiles ={"default_apple.png"},
 	inventory_image = "default_apple.png",

@@ -3,7 +3,7 @@
 
 local phasearmor = {
 	[0]={icy=100},
-	[1]={firy=100},
+	[1]={fiery=100},
 	[2]={fleshy=100},
 	[3]={immortal=1},
 	[4]={punch_operable=1},
