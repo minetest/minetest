@@ -141,6 +141,7 @@ void main(void)
 		uv += dist * ds;
 	}
 #endif
+#endif
 
 #if USE_NORMALMAPS == 1
 	if (normalTexturePresent) {
