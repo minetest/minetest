@@ -76,11 +76,6 @@ float intensity(vec3 color)
 	return (color.r + color.g + color.b) / 3.0;
 }
 
-float get_rgb_height(vec2 uv)
-{
-	return intensity(texture2D(baseTexture, uv).rgb);
-}
-
 vec4 get_normal_map(vec2 uv)
 {
 	vec4 bump = texture2D(normalTexture, uv).rgba;
@@ -113,19 +108,6 @@ float find_intersection(vec2 dp, vec2 ds)
 		}
 	}
 	return best_depth;
-}
-
-float find_intersectionRGB(vec2 dp, vec2 ds)
-{
-	const float depth_step = 1.0 / 24.0;
-	float depth = 1.0;
-	for (int i = 0 ; i < 24 ; i++) {
-		float h = get_rgb_height(dp + ds * depth);
-		if (h >= depth)
-			break;
-		depth -= depth_step;
-	}
-	return depth;
 }
 
 void main(void)

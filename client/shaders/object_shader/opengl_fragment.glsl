@@ -79,15 +79,6 @@ float intensity(vec3 color)
 	return (color.r + color.g + color.b) / 3.0;
 }
 
-float get_rgb_height(vec2 uv)
-{
-	if (texSeamless) {
-		return intensity(texture2D(baseTexture, uv).rgb);
-	} else {
-		return intensity(texture2D(baseTexture, clamp(uv, 0.0, 0.999)).rgb);
-	}
-}
-
 vec4 get_normal_map(vec2 uv)
 {
 	vec4 bump = texture2D(normalTexture, uv).rgba;
