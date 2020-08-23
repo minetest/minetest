@@ -304,6 +304,8 @@ void Minimap::setModeIndex(size_t index)
 		m_current_mode_index = 0;
 	}
 
+	data->map_invalidated = true;
+
 	if (m_minimap_update_thread)
 		m_minimap_update_thread->deferUpdate();
 }
