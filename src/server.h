@@ -131,7 +131,8 @@ public:
 		bool simple_singleplayer_mode,
 		Address bind_addr,
 		bool dedicated,
-		ChatInterface *iface = nullptr
+		ChatInterface *iface = nullptr,
+		std::string *on_shutdown_errmsg = nullptr
 	);
 	~Server();
 	DISABLE_CLASS_COPY(Server);
@@ -595,6 +596,10 @@ private:
 
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
+
+	// if a mod-error occurs in the on_shutdown callback, the error message will
+	// be written into this
+	std::string *const m_on_shutdown_errmsg;
 
 	/*
 		Map edit event queue. Automatically receives all map edits.
