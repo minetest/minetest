@@ -48,6 +48,23 @@ describe("vector", function()
 		assert.same({ x = 41, y = 52, z = 63 }, vector.offset(vector.new(1, 2, 3), 40, 50, 60))
 	end)
 
+	it("to_string()", function()
+		local v = vector.new(1, 2, 3.14)
+		assert.same("(1, 2, 3.14)", vector.to_string(v))
+	end)
+
+	it("from_string()", function()
+		local v = vector.new(1, 2, 3.14)
+		assert.same(v, vector.from_string("(1, 2, 3.14)"))
+		assert.same(v, vector.from_string("(1,2 ,3.14)"))
+		assert.same(v, vector.from_string("(1,2,3.14,)"))
+		assert.same(v, vector.from_string("(1 2 3.14)"))
+		assert.same(v, vector.from_string("( 1, 2, 3.14 )"))
+		assert.same(v, vector.from_string(" ( 1, 2, 3.14) "))
+		assert.same(v, vector.from_string("(0,0,0) ( 1, 2, 3.14) ", 8))
+		assert.same(nil, vector.from_string("nothing"))
+	end)
+
 	-- This function is needed because of floating point imprecision.
 	local function almost_equal(a, b)
 		if type(a) == "number" then

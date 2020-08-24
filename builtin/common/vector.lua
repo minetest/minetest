@@ -143,6 +143,22 @@ function vector.offset(v, x, y, z)
 		z = v.z + z}
 end
 
+function vector.to_string(v)
+	return string.format("(%g, %g, %g)", v.x, v.y, v.z)
+end
+
+function vector.from_string(s, init)
+	local x, y, z = string.match(s, "%s*%(%s*([^%s,]+)%s*[,%s]%s*([^%s,]+)%s*[,%s]" ..
+			"%s*([^%s,]+)%s*[,%s]?%s*%)%s*", init)
+	x = tonumber(x)
+	y = tonumber(y)
+	z = tonumber(z)
+	if not (x and y and z) then
+		return nil
+	end
+	return {x = x, y = y, z = z}
+end
+
 function vector.sort(a, b)
 	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},
 		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
