@@ -119,13 +119,12 @@ end
 
 
 function core.get_position_from_hash(hash)
-	local pos = {}
-	pos.x = (hash % 65536) - 32768
+	local x = (hash % 65536) - 32768
 	hash  = math.floor(hash / 65536)
-	pos.y = (hash % 65536) - 32768
+	local y = (hash % 65536) - 32768
 	hash  = math.floor(hash / 65536)
-	pos.z = (hash % 65536) - 32768
-	return pos
+	local z = (hash % 65536) - 32768
+	return vector.new(x, y, z)
 end
 
 
@@ -215,7 +214,7 @@ function core.is_area_protected(minp, maxp, player_name, interval)
 			local y = math.floor(yf + 0.5)
 			for xf = minp.x, maxp.x, d.x do
 				local x = math.floor(xf + 0.5)
-				local pos = {x = x, y = y, z = z}
+				local pos = vector.new(x, y, z)
 				if core.is_protected(pos, player_name) then
 					return pos
 				end
