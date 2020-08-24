@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Portuguese (Brazil) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-08-12 22:32+0000\n"
-"Last-Translator: Alexsandro Thomas <alexsandrogthomas@gmail.com>\n"
+"PO-Revision-Date: 2020-08-27 13:43+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -221,7 +221,7 @@ msgstr "Atualizar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr "Vizualizar"
+msgstr "Vista"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -293,7 +293,7 @@ msgstr "Jogo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr "Excluir Oceanos e subterrâneos do fractal"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -305,7 +305,7 @@ msgstr "Rios húmidos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr "Alta humidade perto dos rios"
+msgstr "Aumenta a humidade perto de rios"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -313,7 +313,7 @@ msgstr "Lagos"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr "Baixa umidade e calor elevado resultam em rios rasos ou secos"
+msgstr "Baixa humidade e calor elevado resultam em rios rasos ou secos"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -398,7 +398,7 @@ msgstr "Altura da erosão de terreno"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr "Árvores e grama da selva"
+msgstr "Árvores e relva da selva"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
@@ -1400,7 +1400,7 @@ msgstr "Som mutado"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr "Som do sistema está desabilitado"
+msgstr "Som do sistema está desativado"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
@@ -2071,7 +2071,8 @@ msgid ""
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
 "Ruído 3D definindo as estruturas de terras flutuantes\n"
-"Se alterar do padrão, a 'escala' do ruído (0.7 por padrão) pode precisar\n"
+"Se alterar da predefinição, a 'escala' do ruído (0.7 por predefinição) pode "
+"precisar\n"
 "ser ajustada, já que o afunilamento das terras flutuantes funciona melhor "
 "quando o ruído tem\n"
 "um valor entre -2.0 e 2.0."
