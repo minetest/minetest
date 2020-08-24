@@ -71,11 +71,6 @@ void get_texture_flags()
 	}
 }
 
-float intensity(vec3 color)
-{
-	return (color.r + color.g + color.b) / 3.0;
-}
-
 vec4 get_normal_map(vec2 uv)
 {
 	vec4 bump = texture2D(normalTexture, uv).rgba;
