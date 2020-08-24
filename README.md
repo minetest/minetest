@@ -68,7 +68,7 @@ Some can be changed in the key config dialog in the settings tab.
 | P                             | Enable/disable pitch move mode                                 |
 | J                             | Enable/disable fast mode (needs fast privilege)                |
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
-| E                             | Move fast in fast mode                                         |
+| E                             | Aux1 (Move fast in fast mode. Games may add special features)  |
 | C                             | Cycle through camera modes                                     |
 | V                             | Cycle through minimap modes                                    |
 | Shift + V                     | Change minimap orientation                                     |

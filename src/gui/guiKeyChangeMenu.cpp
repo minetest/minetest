@@ -46,7 +46,7 @@ enum
 	GUI_ID_KEY_BACKWARD_BUTTON,
 	GUI_ID_KEY_LEFT_BUTTON,
 	GUI_ID_KEY_RIGHT_BUTTON,
-	GUI_ID_KEY_USE_BUTTON,
+	GUI_ID_KEY_AUX1_BUTTON,
 	GUI_ID_KEY_FLY_BUTTON,
 	GUI_ID_KEY_FAST_BUTTON,
 	GUI_ID_KEY_JUMP_BUTTON,
@@ -177,7 +177,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, option_w, 30 * s);
 			rect += topleft + v2s32(option_x, option_y);
-			const wchar_t *text = wgettext("\"Special\" = climb down");
+			const wchar_t *text = wgettext("\"Aux1\" = climb down");
 			Environment->addCheckBox(g_settings->getBool("aux1_descends"), rect, this,
 					GUI_ID_CB_AUX1_DESCENDS, text);
 			delete[] text;
@@ -416,7 +416,7 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_BACKWARD_BUTTON,  wgettext("Backward"),         "keymap_backward");
 	this->add_key(GUI_ID_KEY_LEFT_BUTTON,      wgettext("Left"),             "keymap_left");
 	this->add_key(GUI_ID_KEY_RIGHT_BUTTON,     wgettext("Right"),            "keymap_right");
-	this->add_key(GUI_ID_KEY_USE_BUTTON,       wgettext("Special"),          "keymap_special1");
+	this->add_key(GUI_ID_KEY_AUX1_BUTTON,      wgettext("Aux1"),             "keymap_aux1");
 	this->add_key(GUI_ID_KEY_JUMP_BUTTON,      wgettext("Jump"),             "keymap_jump");
 	this->add_key(GUI_ID_KEY_SNEAK_BUTTON,     wgettext("Sneak"),            "keymap_sneak");
 	this->add_key(GUI_ID_KEY_DROP_BUTTON,      wgettext("Drop"),             "keymap_drop");

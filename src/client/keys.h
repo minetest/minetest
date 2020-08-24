@@ -32,7 +32,7 @@ public:
 		LEFT,
 		RIGHT,
 		JUMP,
-		SPECIAL1,
+		AUX1,
 		SNEAK,
 		AUTOFORWARD,
 		DIG,

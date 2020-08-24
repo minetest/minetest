@@ -79,7 +79,7 @@ JoystickLayout create_default_layout()
 
 	// Accessible without any modifier pressed
 	JLO_B_PB(KeyType::JUMP,       bm | 1 << 0, 1 << 0);
-	JLO_B_PB(KeyType::SPECIAL1,   bm | 1 << 1, 1 << 1);
+	JLO_B_PB(KeyType::AUX1,       bm | 1 << 1, 1 << 1);
 
 	// Accessible with start button not pressed, but four pressed
 	// TODO find usage for button 0
@@ -126,11 +126,11 @@ JoystickLayout create_xbox_layout()
 	// 4 Buttons
 	JLO_B_PB(KeyType::JUMP,        1 << 0,  1 << 0); // A/green
 	JLO_B_PB(KeyType::ESC,         1 << 1,  1 << 1); // B/red
-	JLO_B_PB(KeyType::SPECIAL1,    1 << 2,  1 << 2); // X/blue
+	JLO_B_PB(KeyType::AUX1,        1 << 2,  1 << 2); // X/blue
 	JLO_B_PB(KeyType::INVENTORY,   1 << 3,  1 << 3); // Y/yellow
 
 	// Analog Sticks
-	JLO_B_PB(KeyType::SPECIAL1,    1 << 11, 1 << 11); // left
+	JLO_B_PB(KeyType::AUX1,        1 << 11, 1 << 11); // left
 	JLO_B_PB(KeyType::SNEAK,       1 << 12, 1 << 12); // right
 
 	// Triggers
