@@ -3062,10 +3062,12 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns in order minp, maxp vectors of the cuboid defined by `v1`, `v2`.
 * `vector.angle(v1, v2)`:
     * Returns the angle between `v1` and `v2` in radians.
-* `vector.dot(v1, v2)`
-    * Returns the dot product of `v1` and `v2`
-* `vector.cross(v1, v2)`
-    * Returns the cross product of `v1` and `v2`
+* `vector.dot(v1, v2)`:
+    * Returns the dot product of `v1` and `v2`.
+* `vector.cross(v1, v2)`:
+    * Returns the cross product of `v1` and `v2`.
+* `vector.offset(v, x, y, z)`:
+    * Returns the sum of the vectors `v` and `{x = x, y = y, z = z}`.
 
 For the following functions `x` can be either a vector or a number:
 
