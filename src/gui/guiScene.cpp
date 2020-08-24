@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SViewFrustum.h>
 #include <IAnimatedMeshSceneNode.h>
 #include <ILightSceneNode.h>
+#include "porting.h"
 
 GUIScene::GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
 		   gui::IGUIElement *parent, core::recti rect, s32 id)
@@ -39,23 +40,26 @@ GUIScene::GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
 	m_smgr->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 }
 
+GUIScene::~GUIScene()
+{
+	setMesh(nullptr);
+
+	m_smgr->drop();
+}
+
 scene::IAnimatedMeshSceneNode *GUIScene::setMesh(scene::IAnimatedMesh *mesh)
 {
-	if (!mesh) {
-		if (m_mesh) {
-			m_mesh->remove();
-			m_mesh = nullptr;
-		}
-		return m_mesh;
-	} else if (m_mesh) {
+	if (m_mesh) {
 		m_mesh->remove();
 		m_mesh = nullptr;
 	}
 
+	if (!mesh)
+		return nullptr;
+
 	m_mesh = m_smgr->addAnimatedMeshSceneNode(mesh);
 	m_mesh->setPosition(-m_mesh->getBoundingBox().getCenter());
 	m_mesh->animateJoints();
-
 	return m_mesh;
 }
 
@@ -73,6 +77,13 @@ void GUIScene::setTexture(u32 idx, video::ITexture *texture)
 
 void GUIScene::draw()
 {
+	// Control rotation speed based on time
+	u64 new_time = porting::getTimeMs();
+	u64 dtime_ms = 0;
+	if (m_last_time != 0)
+		dtime_ms = porting::getDeltaMs(m_last_time, new_time);
+	m_last_time = new_time;
+
 	core::rect<s32> oldViewPort = m_driver->getViewPort();
 	m_driver->setViewPort(getAbsoluteClippingRect());
 	core::recti borderRect = Environment->getRootGUIElement()->getAbsoluteClippingRect();
@@ -93,19 +104,17 @@ void GUIScene::draw()
 
 	cameraLoop();
 
-	if (m_inf_rot || (!m_inf_rot && !has_rotated)) {
-		rotateCamera(v3f(0.f, m_custom_rot.Y * -0.5f, 0.f));
-
-		if (!m_inf_rot)
-			has_rotated = true;
-	}
+	// Continuous rotation
+	if (m_inf_rot)
+		rotateCamera(v3f(0.f, -0.03f * (float)dtime_ms, 0.f));
 
 	m_smgr->drawAll();
 
-	if (m_mesh) {
+	if (m_initial_rotation && m_mesh) {
+		rotateCamera(v3f(m_custom_rot.X, m_custom_rot.Y, 0.f));
 		calcOptimalDistance();
-		rotateCamera(v3f(m_custom_rot.X, 0.f, 0.f));
-		m_mesh = nullptr;
+
+		m_initial_rotation = false;
 	}
 
 	m_driver->setViewPort(oldViewPort);
@@ -141,9 +150,8 @@ bool GUIScene::OnEvent(const SEvent &event)
 
 void GUIScene::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &styles)
 {
-	m_styles = styles;
 	StyleSpec::State state = StyleSpec::STATE_DEFAULT;
-	StyleSpec style = StyleSpec::getStyleFromStatePropagation(m_styles, state);
+	StyleSpec style = StyleSpec::getStyleFromStatePropagation(styles, state);
 
 	setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 	setBackgroundColor(style.getColor(StyleSpec::BGCOLOR, m_bgcolor));

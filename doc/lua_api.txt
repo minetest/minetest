@@ -2807,7 +2807,7 @@ Some types may inherit styles from parent types.
     * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
-* mesh
+* model
     * bgcolor - color, sets background color.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher

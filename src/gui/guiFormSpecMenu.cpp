@@ -2715,7 +2715,7 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	std::vector<std::string> textures = split(parts[3], ',');
 	std::vector<std::string> vec_rot = split(parts[4], ',');
 	bool inf_rotation = is_yes(parts[5]);
-	bool mousectrl = !is_yes(parts[6]) || parts[6].empty(); // default true
+	bool mousectrl = is_yes(parts[6]) || parts[6].empty(); // default true
 
 	MY_CHECKPOS("model", 0);
 	MY_CHECKGEOM("model", 1);

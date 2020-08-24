@@ -31,7 +31,7 @@ public:
 	GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
 		 gui::IGUIElement *parent, core::recti rect, s32 id = -1);
 
-	~GUIScene() { m_smgr->drop(); };
+	~GUIScene();
 
 	scene::IAnimatedMeshSceneNode *setMesh(scene::IAnimatedMesh *mesh = nullptr);
 	void setTexture(u32 idx, video::ITexture *texture);
@@ -49,15 +49,13 @@ private:
 	void updateTargetPos();
 	void updateCamera(scene::ISceneNode *target);
 	void setCameraRotation(v3f rot);
-	// true indicates that the rotation was corrected
+	/// @return true indicates that the rotation was corrected
 	bool correctBounds(v3f &rot);
 	void cameraLoop();
 
 	void updateCameraPos() { m_cam_pos = m_cam->getPosition(); };
 	v3f getCameraRotation() const { return (m_cam_pos - m_target_pos).getHorizontalAngle(); };
 	void rotateCamera(const v3f &delta) { setCameraRotation(getCameraRotation() + delta); };
-
-	std::array<StyleSpec, StyleSpec::NUM_STATES> m_styles;
 
 	scene::ISceneManager *m_smgr;
 	video::IVideoDriver *m_driver;
@@ -67,17 +65,21 @@ private:
 
 	f32 m_cam_distance = 50.f;
 
+	u64 m_last_time = 0;
+
 	v3f m_cam_pos;
 	v3f m_target_pos;
 	v3f m_last_target_pos;
+	// Cursor positions
 	v2f m_curr_pos;
 	v2f m_last_pos;
+	// Initial rotation
 	v2f m_custom_rot;
 
 	bool m_mouse_ctrl = true;
 	bool m_update_cam = false;
 	bool m_inf_rot    = false;
-	bool has_rotated  = false;
+	bool m_initial_rotation = true;
 
 	video::SColor m_bgcolor = 0;
 };
