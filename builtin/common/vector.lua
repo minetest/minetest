@@ -112,6 +112,7 @@ function vector.subtract(a, b)
 			z = a.z - b}
 	end
 end
+vector.sub = vector.subtract
 
 function vector.multiply(a, b)
 	if type(b) == "table" then
@@ -124,6 +125,7 @@ function vector.multiply(a, b)
 			z = a.z * b}
 	end
 end
+vector.mul = vector.multiply
 
 function vector.divide(a, b)
 	if type(b) == "table" then
@@ -136,6 +138,7 @@ function vector.divide(a, b)
 			z = a.z / b}
 	end
 end
+vector.div = vector.divide
 
 function vector.sort(a, b)
 	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},

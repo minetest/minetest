@@ -3073,13 +3073,13 @@ For the following functions `x` can be either a vector or a number:
     * Returns a vector.
     * If `x` is a vector: Returns the sum of `v` and `x`.
     * If `x` is a number: Adds `x` to each component of `v`.
-* `vector.subtract(v, x)`:
+* `vector.subtract(v, x)` or `vector.sub(v, x)`:
     * Returns a vector.
     * If `x` is a vector: Returns the difference of `v` subtracted by `x`.
     * If `x` is a number: Subtracts `x` from each component of `v`.
-* `vector.multiply(v, x)`:
+* `vector.multiply(v, x)` or `vector.mul(v, x)`:
     * Returns a scaled vector or Schur product.
-* `vector.divide(v, x)`:
+* `vector.divide(v, x)` or `vector.div(v, x)`:
     * Returns a scaled vector or Schur quotient.
 
 For the following functions `a` is an angle in radians and `r` is a rotation

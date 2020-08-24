@@ -41,7 +41,26 @@ describe("vector", function()
 	end)
 
 	it("add()", function()
-		assert.same({ x = 2, y = 4, z = 6 }, vector.add(vector.new(1, 2, 3), { x = 1, y = 2, z = 3 }))
+		assert.same({x = 2, y = 4, z = 6}, vector.add(vector.new(1, 2, 3), {x = 1, y = 2, z = 3}))
+		assert.same({x = 3, y = 4, z = 5}, vector.add(vector.new(1, 2, 3), 2))
+	end)
+
+	it("subtract()", function()
+		assert.same({x = 0, y = 2, z = 0}, vector.subtract(vector.new(1, 4, 3), {x = 1, y = 2, z = 3}))
+		assert.same({x = 0, y = 2, z = 0}, vector.sub(vector.new(1, 4, 3), {x = 1, y = 2, z = 3}))
+		assert.same({x = 0, y = 3, z = 2}, vector.sub(vector.new(1, 4, 3), 1))
+	end)
+
+	it("multiply()", function()
+		assert.same({x = 2, y = 8, z = 6}, vector.multiply(vector.new(1, 4, 3), 2))
+		assert.same({x = 2, y = 8, z = 6}, vector.mul(vector.new(1, 4, 3), 2))
+		assert.same({x = 1, y = 8, z = 9}, vector.mul(vector.new(1, 4, 3), {x = 1, y = 2, z = 3}))
+	end)
+
+	it("divide()", function()
+		assert.same({x = 0.5, y = 2, z = 1.5}, vector.divide(vector.new(1, 4, 3), 2))
+		assert.same({x = 0.5, y = 2, z = 1.5}, vector.div(vector.new(1, 4, 3), 2))
+		assert.same({x = 1, y = 2, z = 1}, vector.div(vector.new(1, 4, 3), {x = 1, y = 2, z = 3}))
 	end)
 
 	-- This function is needed because of floating point imprecision.
