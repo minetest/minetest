@@ -148,6 +148,32 @@ function vector.sort(a, b)
 		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
 end
 
+local function vector_pairs_next(v, i)
+	if not i then
+		return "x", v.x
+	elseif i == "x" then
+		return "y", v.y
+	elseif i == "y" then
+		return "z", v.z
+	end
+end
+function vector.pairs(v)
+	return vector_pairs_next, v, nil
+end
+
+local function vector_ipairs_next(v, i)
+	if not i then
+		return 1, v.x
+	elseif i == 1 then
+		return 2, v.y
+	elseif i == 2 then
+		return 3, v.z
+	end
+end
+function vector.ipairs(v)
+	return vector_ipairs_next, v, nil
+end
+
 local function sin(x)
 	if x % math.pi == 0 then
 		return 0

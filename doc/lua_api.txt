@@ -3116,6 +3116,11 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns the cross product of `v1` and `v2`.
 * `vector.offset(v, x, y, z)`:
     * Returns the sum of the vectors `v` and `{x = x, y = y, z = z}`.
+* `vector.pairs(v)`:
+    * Iterates over key-value pairs where the keys are "x", "y" and "z".
+    * It is recommended to use this instead of `pairs`.
+* `vector.ipairs(v)`:
+    * Iterates over key-value pairs where the keys are 1, 2 and 3.
 
 For the following functions `x` can be either a vector or a number:
 

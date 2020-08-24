@@ -48,6 +48,24 @@ describe("vector", function()
 		assert.same({ x = 41, y = 52, z = 63 }, vector.offset(vector.new(1, 2, 3), 40, 50, 60))
 	end)
 
+	it("pairs()", function()
+		local out = {}
+		local vec = vector.new(10, 20, 30)
+		for k, v in vector.pairs(vec) do
+			out[k] = v
+		end
+		assert.same({x = 10, y = 20, z = 30}, out)
+	end)
+
+	it("ipairs()", function()
+		local out = {}
+		local vec = vector.new(10, 20, 30)
+		for k, v in vector.ipairs(vec) do
+			out[k] = v
+		end
+		assert.same({10, 20, 30}, out)
+	end)
+
 	-- This function is needed because of floating point imprecision.
 	local function almost_equal(a, b)
 		if type(a) == "number" then
