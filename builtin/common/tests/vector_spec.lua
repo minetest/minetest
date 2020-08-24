@@ -31,6 +31,21 @@ describe("vector", function()
 		end)
 	end)
 
+	it("zero()", function()
+		assert.same({x = 0, y = 0, z = 0}, vector.zero())
+		assert.same(vector.new(), vector.zero())
+		assert.equal(vector.new(), vector.zero())
+		assert.is_true(vector.check(vector.zero()))
+	end)
+
+	it("copy()", function()
+		local v = vector.new(1, 2, 3)
+		assert.same(v, vector.copy(v))
+		assert.same(vector.new(v), vector.copy(v))
+		assert.equal(vector.new(v), vector.copy(v))
+		assert.is_true(vector.check(vector.copy(v)))
+	end)
+
 	it("indexes", function()
 		local some_vector = vector.new(24, 42, 13)
 		assert.equal(24, some_vector[1])
@@ -114,25 +129,25 @@ describe("vector", function()
 	end)
 
 	it("equals()", function()
-			local function assertE(a, b)
-				assert.is_true(vector.equals(a, b))
-			end
-			local function assertNE(a, b)
-				assert.is_false(vector.equals(a, b))
-			end
+		local function assertE(a, b)
+			assert.is_true(vector.equals(a, b))
+		end
+		local function assertNE(a, b)
+			assert.is_false(vector.equals(a, b))
+		end
 
-			assertE({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-			assertE({x = -1, y = 0, z = 1}, {x = -1, y = 0, z = 1})
-			assertE({x = -1, y = 0, z = 1}, vector.new(-1, 0, 1))
-			local a = {x = 2, y = 4, z = -10}
-			assertE(a, a)
-			assertNE({x = -1, y = 0, z = 1}, a)
+		assertE({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+		assertE({x = -1, y = 0, z = 1}, {x = -1, y = 0, z = 1})
+		assertE({x = -1, y = 0, z = 1}, vector.new(-1, 0, 1))
+		local a = {x = 2, y = 4, z = -10}
+		assertE(a, a)
+		assertNE({x = -1, y = 0, z = 1}, a)
 
-			assert.equal(vector.new(1, 2, 3), vector.new(1, 2, 3))
-			assert.is_true(vector.new(1, 2, 3):equals(vector.new(1, 2, 3)))
-			assert.not_equal(vector.new(1, 2, 3), vector.new(1, 2, 4))
-			assert.is_true(vector.new(1, 2, 3) == vector.new(1, 2, 3))
-			assert.is_false(vector.new(1, 2, 3) == vector.new(1, 3, 3))
+		assert.equal(vector.new(1, 2, 3), vector.new(1, 2, 3))
+		assert.is_true(vector.new(1, 2, 3):equals(vector.new(1, 2, 3)))
+		assert.not_equal(vector.new(1, 2, 3), vector.new(1, 2, 4))
+		assert.is_true(vector.new(1, 2, 3) == vector.new(1, 2, 3))
+		assert.is_false(vector.new(1, 2, 3) == vector.new(1, 3, 3))
 	end)
 
 	it("metatable is same", function()
