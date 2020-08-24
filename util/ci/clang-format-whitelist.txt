@@ -183,6 +183,8 @@ src/gui/guiMainMenu.h
 src/gui/guiPasswordChange.cpp
 src/gui/guiPathSelectMenu.cpp
 src/gui/guiPathSelectMenu.h
+src/gui/guiScene.cpp
+src/gui/guiScene.h
 src/gui/guiScrollBar.cpp
 src/gui/guiSkin.cpp
 src/gui/guiSkin.h

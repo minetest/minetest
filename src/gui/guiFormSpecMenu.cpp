@@ -65,6 +65,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiScrollContainer.h"
 #include "intlGUIEditBox.h"
 #include "guiHyperText.h"
+#include "guiScene.h"
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -2695,6 +2696,83 @@ void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 		<< "'" << std::endl;
 }
 
+void GUIFormSpecMenu::parseMesh(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() < 4 || (parts.size() > 7 &&
+			m_formspec_version <= FORMSPEC_API_VERSION)) {
+		errorstream << "Invalid mesh element (" << parts.size() << "): '" << element
+			<< "'" << std::endl;
+		return;
+	}
+
+	parts.resize(std::max((s32)parts.size(), 7));
+
+	std::vector<std::string> v_pos = split(parts[0], ',');
+	std::vector<std::string> v_geom = split(parts[1], ',');
+	std::string meshstr = unescape_string(parts[2]);
+	std::vector<std::string> textures = split(parts[3], ',');
+	std::vector<std::string> vec_rot = split(parts[4], ',');
+	bool inf_rotation = is_yes(parts[5]);
+	bool mousectrl = parts[6].empty() ? true : is_yes(parts[6]); // default true
+    
+    MY_CHECKPOS("mesh", 0);
+	MY_CHECKGEOM("mesh", 1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = stof(v_geom[0]) * (float)imgsize.X;
+		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
+	}
+
+	if (!data->explicit_size)
+		warningstream << "invalid use of mesh without a size[] element" << std::endl;
+
+	scene::IAnimatedMesh *mesh = m_client->getMesh(meshstr);
+
+	if (!mesh) {
+		errorstream << "Invalid mesh element: Unable to load mesh:"
+				<< std::endl << "\t" << meshstr << std::endl;
+		return;
+	}
+
+	FieldSpec spec(
+		meshstr,
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+
+	core::rect<s32> rect(pos, pos + geom);
+
+	GUIScene *e = new GUIScene(Environment, RenderingEngine::get_scene_manager(),
+			data->current_parent, rect, spec.fid);
+
+	auto meshnode = e->setMesh(mesh);
+
+	for (u32 i = 0; i < textures.size() && i < meshnode->getMaterialCount(); ++i)
+		e->setTexture(i, m_tsrc->getTexture(textures[i]));
+
+	if (vec_rot.size() == 2)
+		e->setRotation(v2f(stof(vec_rot[0]), stof(vec_rot[1])));
+
+	e->enableContinuousRotation(inf_rotation);
+	e->enableMouseControl(mousectrl);
+
+	auto style = getStyleForElement("mesh", spec.fname);
+	e->setStyles(style);
+	e->drop();
+
+	m_fields.push_back(spec);
+}
+
 void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 {
 	//some prechecks
@@ -2891,6 +2969,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "mesh") {
+		parseMesh(data, description);
+		return;
+	}
+	
 	// Ignore others
 	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
 			<< std::endl;

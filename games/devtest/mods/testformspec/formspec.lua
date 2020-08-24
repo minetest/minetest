@@ -328,7 +328,32 @@ Number]
 			animated_image[5.5,0.5;5,2;;testformspec_animation.png;4;100]
 			animated_image[5.5,2.75;5,2;;testformspec_animation.jpg;4;100]
 		]],
-
+    
+    -- Scenes
+    [[
+            formspec_version[4]
+            size[12,13]
+            style[testformspec_character.b3d;bgcolor=blue]
+            mesh[1.5, 1.5;2, 3;testformspec_character.b3d;testformspec_character.png;0,360;false;true]
+            style[testformspec_grand_piano.b3d;bgcolor=violet]
+            mesh[5,1;3,3;testformspec_grand_piano.b3d;testformspec_grand_piano.png;0,360;false;true]
+            style[testformspec_oerkki.b3d;bgcolor=green]
+            mesh[1,5;2,3;testformspec_oerkki.b3d;testformspec_oerkki.png;0,360;false;true]
+            style[testformspec_dungeon_master.b3d;bgcolor=orange]
+            mesh[4.5,4.5;3,3;testformspec_dungeon_master.b3d;testformspec_dungeon_master2.png;0,360;false;true]
+            style[testformspec_lava_flan.x;bgcolor=yellow]
+            mesh[9,2;2,3;testformspec_lava_flan.x;testformspec_lava_flan3.png;0,360;false;true]
+            style[testformspec_tree_monster.b3d;bgcolor=red]
+            mesh[1.5,8.5;2,3;testformspec_tree_monster.b3d;testformspec_tree_monster2.png;0,360;false;true]
+            style[testformspec_sand_monster.b3d;bgcolor=orange]
+            mesh[4,8;2,3;testformspec_sand_monster.b3d;testformspec_sand_monster.png;0,360;false;true]
+            style[testformspec_stone_monster.b3d;bgcolor=grey]
+            mesh[6,8;2,3;testformspec_stone_monster.b3d;testformspec_stone_monster.png;0,360;false;true]
+            style[testformspec_mese_monster.x;bgcolor=yellow]
+            mesh[9,7;3,3;testformspec_mese_monster.x;testformspec_mese_monster.png;0,360;false;true]
+            style[testformspec_spider.b3d;bgcolor=cyan]
+            mesh[7.5,11.25;3,1;testformspec_spider.b3d;testformspec_spider_mese.png;0,360;false;true]
+      ]],
 	-- Scroll containers
 		"formspec_version[3]size[12,13]" ..
 		scroll_fs,
@@ -337,7 +362,7 @@ Number]
 local function show_test_formspec(pname, page_id)
 	page_id = page_id or 2
 
-	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Anim,ScrollC;" .. page_id .. ";false;false]"
+	local fs = pages[page_id] .. "tabheader[0,0;8,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Anim,Scenes,ScrollC;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end
