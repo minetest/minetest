@@ -7,8 +7,6 @@ local gamepath   = scriptpath .. "game".. DIR_DELIM
 -- not exposed to outer context
 local builtin_shared = {}
 
-dofile(commonpath .. "vector.lua")
-
 dofile(gamepath .. "constants.lua")
 assert(loadfile(gamepath .. "item.lua"))(builtin_shared)
 dofile(gamepath .. "register.lua")

@@ -1,15 +1,43 @@
 
 vector = {}
 
+local metatable = {}
+vector.metatable = metatable
+
+-- only called when rawget(v, key) returns nil
+function metatable.__index(v, key)
+	if key == 1 then
+		return rawget(v, "x")
+	elseif key == 2 then
+		return rawget(v, "y")
+	elseif key == 3 then
+		return rawget(v, "z")
+	end
+	return vector[key]
+end
+
+-- only called when rawget(v, key) returns nil
+function metatable.__newindex(v, key, value)
+	if key == 1 then
+		rawset(v, "x", value)
+	elseif key == 2 then
+		rawset(v, "y", value)
+	elseif key == 3 then
+		rawset(v, "z", value)
+	else
+		rawset(v, key, value)
+	end
+end
+
 function vector.new(a, b, c)
 	if type(a) == "table" then
 		assert(a.x and a.y and a.z, "Invalid vector passed to vector.new()")
-		return {x=a.x, y=a.y, z=a.z}
+		return setmetatable({x = a.x, y = a.y, z = a.z}, metatable)
 	elseif a then
 		assert(b and c, "Invalid arguments for vector.new()")
-		return {x=a, y=b, z=c}
+		return setmetatable({x = a, y = b, z = c}, metatable)
 	end
-	return {x=0, y=0, z=0}
+	return setmetatable({x = 0, y = 0, z = 0}, metatable)
 end
 
 function vector.equals(a, b)
@@ -17,6 +45,7 @@ function vector.equals(a, b)
 	       a.y == b.y and
 	       a.z == b.z
 end
+metatable.__eq = vector.equals
 
 function vector.length(v)
 	return math.hypot(v.x, math.hypot(v.y, v.z))
@@ -25,34 +54,34 @@ end
 function vector.normalize(v)
 	local len = vector.length(v)
 	if len == 0 then
-		return {x=0, y=0, z=0}
+		return setmetatable({x = 0, y = 0, z = 0}, metatable)
 	else
 		return vector.divide(v, len)
 	end
 end
 
 function vector.floor(v)
-	return {
+	return setmetatable({
 		x = math.floor(v.x),
 		y = math.floor(v.y),
 		z = math.floor(v.z)
-	}
+	}, metatable)
 end
 
 function vector.round(v)
-	return {
+	return setmetatable({
 		x = math.floor(v.x + 0.5),
 		y = math.floor(v.y + 0.5),
 		z = math.floor(v.z + 0.5)
-	}
+	}, metatable)
 end
 
 function vector.apply(v, func)
-	return {
+	return setmetatable({
 		x = func(v.x),
 		y = func(v.y),
 		z = func(v.z)
-	}
+	}, metatable)
 end
 
 function vector.distance(a, b)
@@ -63,11 +92,7 @@ function vector.distance(a, b)
 end
 
 function vector.direction(pos1, pos2)
-	return vector.normalize({
-		x = pos2.x - pos1.x,
-		y = pos2.y - pos1.y,
-		z = pos2.z - pos1.z
-	})
+	return vector.normalize(vector.subtract(pos2, pos1))
 end
 
 function vector.angle(a, b)
@@ -82,58 +107,170 @@ function vector.dot(a, b)
 end
 
 function vector.cross(a, b)
-	return {
+	return setmetatable({
 		x = a.y * b.z - a.z * b.y,
 		y = a.z * b.x - a.x * b.z,
 		z = a.x * b.y - a.y * b.x
-	}
+	}, metatable)
+end
+
+function metatable.__unm(v)
+	return setmetatable({x = -v.x, y = -v.y, z = -v.z}, metatable)
 end
 
 function vector.add(a, b)
 	if type(b) == "table" then
-		return {x = a.x + b.x,
+		return setmetatable({
+			x = a.x + b.x,
 			y = a.y + b.y,
-			z = a.z + b.z}
+			z = a.z + b.z
+		}, metatable)
 	else
-		return {x = a.x + b,
+		return setmetatable({
+			x = a.x + b,
 			y = a.y + b,
-			z = a.z + b}
+			z = a.z + b
+		}, metatable)
+	end
+end
+function metatable.__add(a, b)
+	if type(b) == "table" then
+		if type(a) == "table" then
+			return setmetatable({
+				x = a.x + b.x,
+				y = a.y + b.y,
+				z = a.z + b.z
+			}, metatable)
+		else
+			return setmetatable({
+				x = a + b.x,
+				y = a + b.y,
+				z = a + b.z
+			}, metatable)
+		end
+	else
+		return setmetatable({
+			x = a.x + b,
+			y = a.y + b,
+			z = a.z + b
+		}, metatable)
 	end
 end
 
 function vector.subtract(a, b)
 	if type(b) == "table" then
-		return {x = a.x - b.x,
+		return setmetatable({
+			x = a.x - b.x,
 			y = a.y - b.y,
-			z = a.z - b.z}
+			z = a.z - b.z
+		}, metatable)
 	else
-		return {x = a.x - b,
+		return setmetatable({
+			x = a.x - b,
 			y = a.y - b,
-			z = a.z - b}
+			z = a.z - b
+		}, metatable)
+	end
+end
+function metatable.__sub(a, b)
+	if type(b) == "table" then
+		if type(a) == "table" then
+			return setmetatable({
+				x = a.x - b.x,
+				y = a.y - b.y,
+				z = a.z - b.z
+			}, metatable)
+		else
+			return setmetatable({
+				x = a - b.x,
+				y = a - b.y,
+				z = a - b.z
+			}, metatable)
+		end
+	else
+		return setmetatable({
+			x = a.x - b,
+			y = a.y - b,
+			z = a.z - b
+		}, metatable)
 	end
 end
 
 function vector.multiply(a, b)
 	if type(b) == "table" then
-		return {x = a.x * b.x,
+		return setmetatable({
+			x = a.x * b.x,
 			y = a.y * b.y,
-			z = a.z * b.z}
+			z = a.z * b.z
+		}, metatable)
 	else
-		return {x = a.x * b,
+		return setmetatable({
+			x = a.x * b,
 			y = a.y * b,
-			z = a.z * b}
+			z = a.z * b
+		}, metatable)
+	end
+end
+function metatable.__mul(a, b)
+	if type(b) == "table" then
+		if type(a) == "table" then
+			return setmetatable({
+				x = a.x * b.x,
+				y = a.y * b.y,
+				z = a.z * b.z
+			}, metatable)
+		else
+			return setmetatable({
+				x = a * b.x,
+				y = a * b.y,
+				z = a * b.z
+			}, metatable)
+		end
+	else
+		return setmetatable({
+			x = a.x * b,
+			y = a.y * b,
+			z = a.z * b
+		}, metatable)
 	end
 end
 
 function vector.divide(a, b)
 	if type(b) == "table" then
-		return {x = a.x / b.x,
+		return setmetatable({
+			x = a.x / b.x,
 			y = a.y / b.y,
-			z = a.z / b.z}
+			z = a.z / b.z
+		}, metatable)
 	else
-		return {x = a.x / b,
+		return setmetatable({
+			x = a.x / b,
 			y = a.y / b,
-			z = a.z / b}
+			z = a.z / b
+		}, metatable)
+	end
+end
+function metatable.__div(a, b)
+	if type(b) == "table" then
+		if type(a) == "table" then
+			return setmetatable({
+				x = a.x / b.x,
+				y = a.y / b.y,
+				z = a.z / b.z
+			}, metatable)
+		else
+			return setmetatable({
+				x = a / b.x,
+				y = a / b.y,
+				z = a / b.z
+			}, metatable)
+		end
+	else
+		return setmetatable({
+			x = a.x / b,
+			y = a.y / b,
+			z = a.z / b
+		}, metatable)
 	end
 end
 
@@ -144,8 +281,16 @@ function vector.offset(v, x, y, z)
 end
 
 function vector.sort(a, b)
-	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},
-		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
+	return setmetatable({
+			x = math.min(a.x, b.x),
+			y = math.min(a.y, b.y),
+			z = math.min(a.z, b.z)
+		}, metatable),
+		setmetatable({
+			x = math.max(a.x, b.x),
+			y = math.max(a.y, b.y),
+			z = math.max(a.z, b.z)
+		}, metatable)
 end
 
 local function sin(x)
@@ -213,7 +358,7 @@ end
 
 function vector.dir_to_rotation(forward, up)
 	forward = vector.normalize(forward)
-	local rot = {x = math.asin(forward.y), y = -math.atan2(forward.x, forward.z), z = 0}
+	local rot = vector.new(math.asin(forward.y), -math.atan2(forward.x, forward.z), 0)
 	if not up then
 		return rot
 	end

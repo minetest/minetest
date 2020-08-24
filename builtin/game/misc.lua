@@ -117,7 +117,7 @@ end
 
 
 function core.get_position_from_hash(hash)
-	local pos = {}
+	local pos = vector.new()
 	pos.x = (hash % 65536) - 32768
 	hash  = math.floor(hash / 65536)
 	pos.y = (hash % 65536) - 32768
