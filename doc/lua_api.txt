@@ -399,11 +399,6 @@ because the colour values, which define the normal vector,
 may be undefined for image formats where colour is discarded in fully
 transparent pixels.
 
-If Minetest cannot find the normalmap for a texture and the
-`generate_normalmaps` setting is enabled,
-the height and normal vectors are roughly approximated with
-the brightness of the texture's pixels.
-
 Bumpmapping and parallax occlusion are currently experimental features:
 
 * Bumpmapping in Minetest happens in an obscure way; there are no light sources
