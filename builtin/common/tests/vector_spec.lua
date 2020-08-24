@@ -44,6 +44,12 @@ describe("vector", function()
 		assert.same({ x = 2, y = 4, z = 6 }, vector.add(vector.new(1, 2, 3), { x = 1, y = 2, z = 3 }))
 	end)
 
+	it("add_assign()", function()
+		local v = vector.new(1, 2, 3)
+		vector.add_assign(v, {x = 1, y = 2, z = 3})
+		assert.same({x = 2, y = 4, z = 6}, v)
+	end)
+
 	-- This function is needed because of floating point imprecision.
 	local function almost_equal(a, b)
 		if type(a) == "number" then

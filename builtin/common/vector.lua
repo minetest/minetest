@@ -55,6 +55,12 @@ function vector.apply(v, func)
 	}
 end
 
+function vector.apply_assign(v, func)
+	v.x = func(v.x)
+	v.y = func(v.y)
+	v.z = func(v.z)
+end
+
 function vector.distance(a, b)
 	local x = a.x - b.x
 	local y = a.y - b.y
@@ -134,6 +140,54 @@ function vector.divide(a, b)
 		return {x = a.x / b,
 			y = a.y / b,
 			z = a.z / b}
+	end
+end
+
+function vector.add_assign(a, b)
+	if type(b) == "table" then
+		a.x = a.x + b.x
+		a.y = a.y + b.y
+		a.z = a.z + b.z
+	else
+		a.x = a.x + b
+		a.y = a.y + b
+		a.z = a.z + b
+	end
+end
+
+function vector.sub_assign(a, b)
+	if type(b) == "table" then
+		a.x = a.x - b.x
+		a.y = a.y - b.y
+		a.z = a.z - b.z
+	else
+		a.x = a.x - b
+		a.y = a.y - b
+		a.z = a.z - b
+	end
+end
+
+function vector.mul_assign(a, b)
+	if type(b) == "table" then
+		a.x = a.x * b.x
+		a.y = a.y * b.y
+		a.z = a.z * b.z
+	else
+		a.x = a.x * b
+		a.y = a.y * b
+		a.z = a.z * b
+	end
+end
+
+function vector.div_assign(a, b)
+	if type(b) == "table" then
+		a.x = a.x / b.x
+		a.y = a.y / b.y
+		a.z = a.z / b.z
+	else
+		a.x = a.x / b
+		a.y = a.y / b
+		a.z = a.z / b
 	end
 end
 

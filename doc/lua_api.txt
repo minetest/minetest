@@ -3056,6 +3056,8 @@ For the following functions, `v`, `v1`, `v2` are vectors,
 * `vector.apply(v, func)`:
     * Returns a vector where the function `func` has been applied to each
       component.
+* `vector.apply_assign(v, func)`:
+    * Does the same as `vector.apply` but works in-place.
 * `vector.equals(v1, v2)`:
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:
@@ -3081,6 +3083,14 @@ For the following functions `x` can be either a vector or a number:
     * Returns a scaled vector or Schur product.
 * `vector.divide(v, x)`:
     * Returns a scaled vector or Schur quotient.
+* `vector.add_assign(v, x)`:
+    * Does the same as `vector.add` but works in-place.
+* `vector.sub_assign(v, x)`:
+    * Does the same as `vector.subtract` but works in-place.
+* `vector.mul_assign(v, x)`:
+    * Does the same as `vector.multiply` but works in-place.
+* `vector.div_assign(v, x)`:
+    * Does the same as `vector.divide` but works in-place.
 
 For the following functions `a` is an angle in radians and `r` is a rotation
 vector ({x = <pitch>, y = <yaw>, z = <roll>}) where pitch, yaw and roll are
