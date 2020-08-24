@@ -329,8 +329,8 @@ Number]
 			animated_image[5.5,2.75;5,2;;testformspec_animation.jpg;4;100]
 
 			style[testformspec_character.b3d;bgcolor=black]
-			mesh[0.5,6;4,4;testformspec_character.b3d;testformspec_character.png]
-			mesh[5,6;4,4;testformspec_chest.obj;default_chest_top.png,default_chest_top.png,default_chest_side.png,default_chest_side.png,default_chest_front.png,default_chest_inside.png;30,1;true;false]
+			model[0.5,6;4,4;testformspec_character.b3d;testformspec_character.png]
+			model[5,6;4,4;testformspec_chest.obj;default_chest_top.png,default_chest_top.png,default_chest_side.png,default_chest_side.png,default_chest_front.png,default_chest_inside.png;30,1;true;false]
 		]],
 
 	-- Scroll containers

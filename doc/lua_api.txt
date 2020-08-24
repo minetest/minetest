@@ -2226,14 +2226,15 @@ Elements
 * `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
 * `frame start` (Optional): The index of the frame to start on. Default `1`.
 
-### `mesh[<X>,<Y>;<W>,<H>;<mesh name>;<texture names>;<rotation X>,<rotation Y>;<continuous rotation>;<mouse control>]`
+### `model[<X>,<Y>;<W>,<H>;<mesh name>;<texture names>;<rotation X,Y>;<continuous>;<mouse control>]`
 
 * Show a mesh model.
 * `mesh name`: The mesh model to use.
 * `texture names`: The mesh textures to use according to the mesh materials.
    Texture names must be separated by commas.
-* `rotation {X,Y}` (Optional): Set a given rotation to the camera.
-* `continuous rotation` (Optional): Whether the rotation is continuous. Default `false`.
+* `rotation {X,Y}` (Optional): Initial rotation of the camera.
+  The axes are euler angles in degrees.
+* `continuous` (Optional): Whether the rotation is continuous. Default `false`.
 * `mouse control` (Optional): Whether the model can be controlled with the mouse. Default `true`.
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`

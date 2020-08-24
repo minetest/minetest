@@ -443,7 +443,7 @@ private:
 	void parseAnchor(parserData *data, const std::string &element);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
-	void parseMesh(parserData *data, const std::string &element);
+	void parseModel(parserData *data, const std::string &element);
 
 	void tryClose();
 

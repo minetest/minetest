@@ -2696,13 +2696,13 @@ void GUIFormSpecMenu::parseSetFocus(const std::string &element)
 		<< "'" << std::endl;
 }
 
-void GUIFormSpecMenu::parseMesh(parserData *data, const std::string &element)
+void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
 
 	if (parts.size() < 4 || (parts.size() > 7 &&
 			m_formspec_version <= FORMSPEC_API_VERSION)) {
-		errorstream << "Invalid mesh element (" << parts.size() << "): '" << element
+		errorstream << "Invalid model element (" << parts.size() << "): '" << element
 			<< "'" << std::endl;
 		return;
 	}
@@ -2715,10 +2715,10 @@ void GUIFormSpecMenu::parseMesh(parserData *data, const std::string &element)
 	std::vector<std::string> textures = split(parts[3], ',');
 	std::vector<std::string> vec_rot = split(parts[4], ',');
 	bool inf_rotation = is_yes(parts[5]);
-	bool mousectrl = !is_yes(parts[6]); // default true
+	bool mousectrl = !is_yes(parts[6]) || parts[6].empty(); // default true
 
-	MY_CHECKPOS("mesh", 0);
-	MY_CHECKGEOM("mesh", 1);
+	MY_CHECKPOS("model", 0);
+	MY_CHECKGEOM("model", 1);
 
 	v2s32 pos;
 	v2s32 geom;
@@ -2733,12 +2733,12 @@ void GUIFormSpecMenu::parseMesh(parserData *data, const std::string &element)
 	}
 
 	if (!data->explicit_size)
-		warningstream << "invalid use of mesh without a size[] element" << std::endl;
+		warningstream << "invalid use of model without a size[] element" << std::endl;
 
 	scene::IAnimatedMesh *mesh = m_client->getMesh(meshstr);
 
 	if (!mesh) {
-		errorstream << "Invalid mesh element: Unable to load mesh:"
+		errorstream << "Invalid model element: Unable to load mesh:"
 				<< std::endl << "\t" << meshstr << std::endl;
 		return;
 	}
@@ -2766,7 +2766,7 @@ void GUIFormSpecMenu::parseMesh(parserData *data, const std::string &element)
 	e->enableContinuousRotation(inf_rotation);
 	e->enableMouseControl(mousectrl);
 
-	auto style = getStyleForElement("mesh", spec.fname);
+	auto style = getStyleForElement("model", spec.fname);
 	e->setStyles(style);
 	e->drop();
 
@@ -2969,8 +2969,8 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
-	if (type == "mesh") {
-		parseMesh(data, description);
+	if (type == "model") {
+		parseModel(data, description);
 		return;
 	}
 

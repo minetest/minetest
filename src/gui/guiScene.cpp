@@ -23,8 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IAnimatedMeshSceneNode.h>
 #include <ILightSceneNode.h>
 
-static const v2f rotation_bound{60.f, 300.f};
-
 GUIScene::GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
 		   gui::IGUIElement *parent, core::recti rect, s32 id)
 	: IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rect)
@@ -200,12 +198,7 @@ void GUIScene::updateTargetPos()
 
 void GUIScene::setCameraRotation(v3f rot)
 {
-	if (rot.X < 90.f) {
-		if (rot.X > rotation_bound.X)
-			rot.X = rotation_bound.X;
-	} else if (rot.X < rotation_bound.Y) {
-		rot.X = rotation_bound.Y;
-	}
+	correctBounds(rot);
 
 	core::matrix4 mat;
 	mat.setRotationDegrees(rot);
@@ -218,18 +211,24 @@ void GUIScene::setCameraRotation(v3f rot)
 	m_update_cam = false;
 }
 
-void GUIScene::checkBounds()
+bool GUIScene::correctBounds(v3f &rot)
 {
-	v3f cam_angle = getCameraRotation();
-	if (cam_angle.X < 90.f) {
-	        if (cam_angle.X > rotation_bound.X) {
-			cam_angle.X = rotation_bound.X;
-			setCameraRotation(cam_angle);
+	static const float ROTATION_MAX_1 = 60.0f;
+	static const float ROTATION_MAX_2 = 300.0f;
+
+	// Limit and correct the rotation when needed
+	if (rot.X < 90.f) {
+		if (rot.X > ROTATION_MAX_1) {
+			rot.X = ROTATION_MAX_1;
+			return true;
 		}
-	} else if (cam_angle.X < rotation_bound.Y) {
-		cam_angle.X = rotation_bound.Y;
-		setCameraRotation(cam_angle);
+	} else if (rot.X < ROTATION_MAX_2) {
+		rot.X = ROTATION_MAX_2;
+		return true;
 	}
+
+	// Not modified
+	return false;
 }
 
 void GUIScene::cameraLoop()
@@ -242,7 +241,10 @@ void GUIScene::cameraLoop()
 
 	if (m_update_cam) {
 		m_cam_pos = m_target_pos + (m_cam_pos - m_target_pos).normalize() * m_cam_distance;
-		checkBounds();
+
+		v3f rot = getCameraRotation();
+		if (correctBounds(rot))
+			setCameraRotation(rot);
 
 		m_cam->setPosition(m_cam_pos);
 		m_cam->setTarget(m_target_pos);

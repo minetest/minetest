@@ -49,7 +49,8 @@ private:
 	void updateTargetPos();
 	void updateCamera(scene::ISceneNode *target);
 	void setCameraRotation(v3f rot);
-	void checkBounds();
+	// true indicates that the rotation was corrected
+	bool correctBounds(v3f &rot);
 	void cameraLoop();
 
 	void updateCameraPos() { m_cam_pos = m_cam->getPosition(); };
