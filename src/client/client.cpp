@@ -57,6 +57,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "game.h"
 #include "chatmessage.h"
 #include "translation.h"
+#include "startup_screen.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -1714,8 +1715,8 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 			targs->last_time_ms = time_ms;
 			std::basic_stringstream<wchar_t> strm;
 			strm << targs->text_base << " " << targs->last_percent << "%...";
-			RenderingEngine::draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
-				72 + (u16) ((18. / 100.) * (double) targs->last_percent), true);
+			g_startup_screen->setMessage(strm.str().c_str(),
+				72 + (u16) ((18. / 100.) * (double) targs->last_percent));
 		}
 }
 
@@ -1735,21 +1736,21 @@ void Client::afterContentReceived()
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
-	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 70);
+	g_startup_screen->setMessage(text, 70);
 	m_tsrc->rebuildImagesAndTextures();
 	delete[] text;
 
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
 	text = wgettext("Rebuilding shaders...");
-	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 71);
+	g_startup_screen->setMessage(text, 71);
 	m_shsrc->rebuildShaders();
 	delete[] text;
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
 	text = wgettext("Initializing nodes...");
-	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
+	g_startup_screen->setMessage(text, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	for (const auto &path : getTextureDirs()) {
 		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
@@ -1782,7 +1783,7 @@ void Client::afterContentReceived()
 		m_script->on_client_ready(m_env.getLocalPlayer());
 
 	text = wgettext("Done!");
-	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 100);
+	g_startup_screen->setMessage(text, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
 	delete[] text;
 }

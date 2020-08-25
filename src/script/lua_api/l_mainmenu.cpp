@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_mainmenu.h"
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
+#include "common/c_converter.h" // For read_color
+#include "client/startup_screen.h"
 #include "cpp_api/s_async.h"
 #include "gui/guiEngine.h"
 #include "gui/guiMainMenu.h"
@@ -161,10 +163,53 @@ int ModApiMainMenu::l_close(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_set_background(lua_State *L)
+int ModApiMainMenu::l_set_background_type(lua_State *L)
 {
-	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
+	sanity_check(g_startup_screen != NULL);
+
+	std::string backgroundtype(luaL_checkstring(L, 1));
+
+	if (backgroundtype == "sky")
+		g_startup_screen->setBackgroundType(StartupScreen::BT_SKY);
+
+	if (backgroundtype == "color")
+		g_startup_screen->setBackgroundType(StartupScreen::BT_COLOR);
+
+	if (backgroundtype == "texture")
+		g_startup_screen->setBackgroundType(StartupScreen::BT_TEXTURE);
+
+	return 0;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_set_background_color(lua_State *L)
+{
+	sanity_check(g_startup_screen != NULL);
+
+	std::string backgroundcolor(luaL_checkstring(L, 1));
+	video::SColor color;
+	if (!read_color(L, 2, &color))
+		return 0;
+
+	if (backgroundcolor == "background")
+		g_startup_screen->setColor(StartupScreen::COLOR_BACKGROUND, color);
+
+	if (backgroundcolor == "sky")
+		g_startup_screen->setColor(StartupScreen::COLOR_SKY, color);
+
+	if (backgroundcolor == "clouds")
+		g_startup_screen->setColor(StartupScreen::COLOR_CLOUDS, color);
+
+	if (backgroundcolor == "message")
+		g_startup_screen->setColor(StartupScreen::COLOR_MESSAGE, color);
+
+	return 0;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_set_background_texture(lua_State *L)
+{
+	sanity_check(g_startup_screen != NULL);
 
 	std::string backgroundlevel(luaL_checkstring(L, 1));
 	std::string texturename(luaL_checkstring(L, 2));
@@ -182,40 +227,31 @@ int ModApiMainMenu::l_set_background(lua_State *L)
 	}
 
 	if (backgroundlevel == "background") {
-		retval |= engine->setTexture(TEX_LAYER_BACKGROUND, texturename,
-				tile_image, minsize);
+		retval |= g_startup_screen->setTexture(
+				StartupScreen::TEX_LAYER_BACKGROUND, 
+				texturename, tile_image, minsize);
 	}
 
 	if (backgroundlevel == "overlay") {
-		retval |= engine->setTexture(TEX_LAYER_OVERLAY, texturename,
-				tile_image, minsize);
+		retval |= g_startup_screen->setTexture(
+				StartupScreen::TEX_LAYER_OVERLAY, 
+				texturename, tile_image, minsize);
 	}
 
 	if (backgroundlevel == "header") {
-		retval |= engine->setTexture(TEX_LAYER_HEADER,  texturename,
-				tile_image, minsize);
+		retval |= g_startup_screen->setTexture(
+				StartupScreen::TEX_LAYER_HEADER,
+				texturename, tile_image, minsize);
 	}
 
 	if (backgroundlevel == "footer") {
-		retval |= engine->setTexture(TEX_LAYER_FOOTER, texturename,
-				tile_image, minsize);
+		retval |= g_startup_screen->setTexture(
+				StartupScreen::TEX_LAYER_FOOTER,
+				texturename, tile_image, minsize);
 	}
 
 	lua_pushboolean(L,retval);
 	return 1;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_set_clouds(lua_State *L)
-{
-	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
-
-	bool value = readParam<bool>(L,1);
-
-	engine->m_clouds_enabled = value;
-
-	return 0;
 }
 
 /******************************************************************************/
@@ -1098,7 +1134,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 {
 	API_FCT(update_formspec);
 	API_FCT(set_formspec_prepend);
-	API_FCT(set_clouds);
 	API_FCT(get_textlist_index);
 	API_FCT(get_table_index);
 	API_FCT(get_worlds);
@@ -1111,7 +1146,9 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(create_world);
 	API_FCT(delete_world);
 	API_FCT(delete_favorite);
-	API_FCT(set_background);
+	API_FCT(set_background_type);
+	API_FCT(set_background_color);
+	API_FCT(set_background_texture);
 	API_FCT(set_topleft_text);
 	API_FCT(get_mapgen_names);
 	API_FCT(get_modpath);

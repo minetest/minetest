@@ -100,7 +100,11 @@ private:
 
 	static int l_get_table_index(lua_State *L);
 
-	static int l_set_background(lua_State *L);
+	static int l_set_background_type(lua_State *L);
+
+	static int l_set_background_color(lua_State *L);
+
+	static int l_set_background_texture(lua_State *L);
 
 	static int l_update_formspec(lua_State *L);
 

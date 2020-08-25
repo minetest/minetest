@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"     // For TextureSource
 #include "client/keys.h"
 #include "client/joystick_controller.h"
+#include "client/startup_screen.h"
 #include "clientmap.h"
 #include "clouds.h"
 #include "config.h"
@@ -71,6 +72,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "script/scripting_client.h"
 #include "hud.h"
+
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
@@ -772,9 +774,6 @@ protected:
 	// Misc
 	void limitFps(FpsControl *fps_timings, f32 *dtime);
 
-	void showOverlayMessage(const char *msg, float dtime, int percent,
-			bool draw_clouds = true);
-
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
 
@@ -1169,7 +1168,7 @@ void Game::shutdown()
 	g_touchscreengui->hide();
 #endif
 
-	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
+	g_startup_screen->setMessage(N_("Shutting down..."), 0);
 
 	if (clouds)
 		clouds->drop();
@@ -1218,8 +1217,7 @@ bool Game::init(
 		const SubgameSpec &gamespec)
 {
 	texture_src = createTextureSource();
-
-	showOverlayMessage(N_("Loading..."), 0, 0);
+	g_startup_screen->setMessage(N_("Loading..."), 0);
 
 	shader_src = createShaderSource();
 
@@ -1275,7 +1273,7 @@ bool Game::initSound()
 bool Game::createSingleplayerServer(const std::string &map_dir,
 		const SubgameSpec &gamespec, u16 port)
 {
-	showOverlayMessage(N_("Creating server..."), 0, 5);
+	g_startup_screen->setMessage(N_("Creating server..."), 5);
 
 	std::string bind_str = g_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
@@ -1308,7 +1306,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 
 bool Game::createClient(const GameStartData &start_data)
 {
-	showOverlayMessage(N_("Creating client..."), 0, 10);
+	g_startup_screen->setMessage(N_("Creating client..."), 10);
 
 	draw_control = new MapDrawControl;
 	if (!draw_control)
@@ -1460,7 +1458,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 	*connection_aborted = false;
 	bool local_server_mode = false;
 
-	showOverlayMessage(N_("Resolving address..."), 0, 15);
+	g_startup_screen->setMessage(N_("Resolving address..."), 15);
 
 	Address connect_address(0, 0, 0, 0, start_data.socket_port);
 
@@ -1560,7 +1558,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			if (client->m_is_registration_confirmation_state) {
 				if (registration_confirmation_shown) {
 					// Keep drawing the GUI
-					RenderingEngine::draw_menu_scene(guienv, dtime, true);
+					g_startup_screen->step(false);
 				} else {
 					registration_confirmation_shown = true;
 					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
@@ -1577,7 +1575,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 				}
 
 				// Update status
-				showOverlayMessage(N_("Connecting to server..."), dtime, 20);
+				g_startup_screen->setMessage(N_("Connecting to server..."), 20);
 			}
 		}
 	} catch (con::PeerNotFoundException &e) {
@@ -1634,17 +1632,9 @@ bool Game::getServerContent(bool *aborted)
 		int progress = 25;
 
 		if (!client->itemdefReceived()) {
-			const wchar_t *text = wgettext("Item definitions...");
-			progress = 25;
-			RenderingEngine::draw_load_screen(text, guienv, texture_src,
-				dtime, progress);
-			delete[] text;
+			g_startup_screen->setMessage(N_("Item definitions..."), 25);
 		} else if (!client->nodedefReceived()) {
-			const wchar_t *text = wgettext("Node definitions...");
-			progress = 30;
-			RenderingEngine::draw_load_screen(text, guienv, texture_src,
-				dtime, progress);
-			delete[] text;
+			g_startup_screen->setMessage(N_("Node definitions..."), 30);
 		} else {
 			std::stringstream message;
 			std::fixed(message);
@@ -1664,10 +1654,8 @@ bool Game::getServerContent(bool *aborted)
 
 				message << " (" << cur << ' ' << cur_unit << ")";
 			}
-
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
-			RenderingEngine::draw_load_screen(utf8_to_wide(message.str()), guienv,
-				texture_src, dtime, progress);
+			g_startup_screen->setMessage(message.str().c_str(), progress);
 		}
 	}
 
@@ -4021,14 +4009,6 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 		*dtime = 0;
 
 	fps_timings->last_time = time;
-}
-
-void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_clouds)
-{
-	const wchar_t *wmsg = wgettext(msg);
-	RenderingEngine::draw_load_screen(wmsg, guienv, texture_src, dtime, percent,
-		draw_clouds);
-	delete[] wmsg;
 }
 
 void Game::settingChangedCallback(const std::string &setting_name, void *data)

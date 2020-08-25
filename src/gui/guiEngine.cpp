@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEngine.h"
 
 #include <IGUIStaticText.h>
-#include <ICameraSceneNode.h>
 #include "client/renderingengine.h"
+#include "client/startup_screen.h"
 #include "scripting_mainmenu.h"
 #include "util/numeric.h"
 #include "config.h"
@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMainMenu.h"
 #include "sound.h"
 #include "client/sound_openal.h"
-#include "client/clouds.h"
 #include "httpfetch.h"
 #include "log.h"
 #include "client/fontengine.h"
@@ -131,10 +130,6 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	m_data(data),
 	m_kill(kill)
 {
-	//initialize texture pointers
-	for (image_definition &texture : m_textures) {
-		texture.texture = NULL;
-	}
 	// is deleted by guiformspec!
 	m_buttonhandler = new TextDestGuiEngine(this);
 
@@ -230,49 +225,9 @@ bool GUIEngine::loadMainMenuScript()
 /******************************************************************************/
 void GUIEngine::run()
 {
-	// Always create clouds because they may or may not be
-	// needed based on the game selected
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-
-	cloudInit();
-
 	unsigned int text_height = g_fontengine->getTextHeight();
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
-		g_settings->getU16("screen_h"));
-
-	static const video::SColor sky_color(255, 140, 186, 250);
-
-	// Reset fog color
-	{
-		video::SColor fog_color;
-		video::E_FOG_TYPE fog_type = video::EFT_FOG_LINEAR;
-		f32 fog_start = 0;
-		f32 fog_end = 0;
-		f32 fog_density = 0;
-		bool fog_pixelfog = false;
-		bool fog_rangefog = false;
-		driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density,
-				fog_pixelfog, fog_rangefog);
-
-		driver->setFog(sky_color, fog_type, fog_start, fog_end, fog_density,
-				fog_pixelfog, fog_rangefog);
-	}
-
 	while (RenderingEngine::run() && (!m_startgame) && (!m_kill)) {
-
-		const irr::core::dimension2d<u32> &current_screen_size =
-			RenderingEngine::get_video_driver()->getScreenSize();
-		// Verify if window size has changed and save it if it's the case
-		// Ensure evaluating settings->getBool after verifying screensize
-		// First condition is cheaper
-		if (previous_screen_size != current_screen_size &&
-				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
-				g_settings->getBool("autosave_screensize")) {
-			g_settings->setU16("screen_w", current_screen_size.Width);
-			g_settings->setU16("screen_h", current_screen_size.Height);
-			previous_screen_size = current_screen_size;
-		}
 
 		//check if we need to update the "upper left corner"-text
 		if (text_height != g_fontengine->getTextHeight()) {
@@ -280,28 +235,7 @@ void GUIEngine::run()
 			text_height = g_fontengine->getTextHeight();
 		}
 
-		driver->beginScene(true, true, sky_color);
-
-		if (m_clouds_enabled)
-		{
-			cloudPreProcess();
-			drawOverlay(driver);
-		}
-		else
-			drawBackground(driver);
-
-		drawHeader(driver);
-		drawFooter(driver);
-
-		RenderingEngine::get_gui_env()->drawAll();
-
-		driver->endScene();
-
-		if (m_clouds_enabled)
-			cloudPostProcess();
-		else
-			sleep_ms(25);
-
+		g_startup_screen->step(true);
 		m_script->step();
 
 #ifdef __ANDROID__
@@ -323,70 +257,7 @@ GUIEngine::~GUIEngine()
 
 	m_irr_toplefttext->setText(L"");
 
-	//clean up texture pointers
-	for (image_definition &texture : m_textures) {
-		if (texture.texture)
-			RenderingEngine::get_video_driver()->removeTexture(texture.texture);
-	}
-
 	delete m_texture_source;
-
-	if (m_cloud.clouds)
-		m_cloud.clouds->drop();
-}
-
-/******************************************************************************/
-void GUIEngine::cloudInit()
-{
-	m_cloud.clouds = new Clouds(m_smgr, -1, rand());
-	m_cloud.clouds->setHeight(100.0f);
-	m_cloud.clouds->update(v3f(0, 0, 0), video::SColor(255,240,240,255));
-
-	m_cloud.camera = m_smgr->addCameraSceneNode(0,
-				v3f(0,0,0), v3f(0, 60, 100));
-	m_cloud.camera->setFarValue(10000);
-
-	m_cloud.lasttime = RenderingEngine::get_timer_time();
-}
-
-/******************************************************************************/
-void GUIEngine::cloudPreProcess()
-{
-	u32 time = RenderingEngine::get_timer_time();
-
-	if(time > m_cloud.lasttime)
-		m_cloud.dtime = (time - m_cloud.lasttime) / 1000.0;
-	else
-		m_cloud.dtime = 0;
-
-	m_cloud.lasttime = time;
-
-	m_cloud.clouds->step(m_cloud.dtime*3);
-	m_cloud.clouds->render();
-	m_smgr->drawAll();
-}
-
-/******************************************************************************/
-void GUIEngine::cloudPostProcess()
-{
-	float fps_max = g_settings->getFloat("pause_fps_max");
-	// Time of frame without fps limit
-	u32 busytime_u32;
-
-	// not using getRealTime is necessary for wine
-	u32 time = RenderingEngine::get_timer_time();
-	if(time > m_cloud.lasttime)
-		busytime_u32 = time - m_cloud.lasttime;
-	else
-		busytime_u32 = 0;
-
-	// FPS limiter
-	u32 frametime_min = 1000./fps_max;
-
-	if (busytime_u32 < frametime_min) {
-		u32 sleeptime = frametime_min - busytime_u32;
-		RenderingEngine::get_raw_device()->sleep(sleeptime);
-	}
 }
 
 /******************************************************************************/
@@ -395,160 +266,6 @@ void GUIEngine::setFormspecPrepend(const std::string &fs)
 	if (m_menu) {
 		m_menu->setFormspecPrepend(fs);
 	}
-}
-
-
-/******************************************************************************/
-void GUIEngine::drawBackground(video::IVideoDriver *driver)
-{
-	v2u32 screensize = driver->getScreenSize();
-
-	video::ITexture* texture = m_textures[TEX_LAYER_BACKGROUND].texture;
-
-	/* If no texture, draw background of solid color */
-	if(!texture){
-		video::SColor color(255,80,58,37);
-		core::rect<s32> rect(0, 0, screensize.X, screensize.Y);
-		driver->draw2DRectangle(color, rect, NULL);
-		return;
-	}
-
-	v2u32 sourcesize = texture->getOriginalSize();
-
-	if (m_textures[TEX_LAYER_BACKGROUND].tile)
-	{
-		v2u32 tilesize(
-				MYMAX(sourcesize.X,m_textures[TEX_LAYER_BACKGROUND].minsize),
-				MYMAX(sourcesize.Y,m_textures[TEX_LAYER_BACKGROUND].minsize));
-		for (unsigned int x = 0; x < screensize.X; x += tilesize.X )
-		{
-			for (unsigned int y = 0; y < screensize.Y; y += tilesize.Y )
-			{
-				draw2DImageFilterScaled(driver, texture,
-					core::rect<s32>(x, y, x+tilesize.X, y+tilesize.Y),
-					core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-					NULL, NULL, true);
-			}
-		}
-		return;
-	}
-
-	/* Draw background texture */
-	draw2DImageFilterScaled(driver, texture,
-		core::rect<s32>(0, 0, screensize.X, screensize.Y),
-		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-		NULL, NULL, true);
-}
-
-/******************************************************************************/
-void GUIEngine::drawOverlay(video::IVideoDriver *driver)
-{
-	v2u32 screensize = driver->getScreenSize();
-
-	video::ITexture* texture = m_textures[TEX_LAYER_OVERLAY].texture;
-
-	/* If no texture, draw nothing */
-	if(!texture)
-		return;
-
-	/* Draw background texture */
-	v2u32 sourcesize = texture->getOriginalSize();
-	draw2DImageFilterScaled(driver, texture,
-		core::rect<s32>(0, 0, screensize.X, screensize.Y),
-		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
-		NULL, NULL, true);
-}
-
-/******************************************************************************/
-void GUIEngine::drawHeader(video::IVideoDriver *driver)
-{
-	core::dimension2d<u32> screensize = driver->getScreenSize();
-
-	video::ITexture* texture = m_textures[TEX_LAYER_HEADER].texture;
-
-	/* If no texture, draw nothing */
-	if(!texture)
-		return;
-
-	f32 mult = (((f32)screensize.Width / 2.0)) /
-			((f32)texture->getOriginalSize().Width);
-
-	v2s32 splashsize(((f32)texture->getOriginalSize().Width) * mult,
-			((f32)texture->getOriginalSize().Height) * mult);
-
-	// Don't draw the header if there isn't enough room
-	s32 free_space = (((s32)screensize.Height)-320)/2;
-
-	if (free_space > splashsize.Y) {
-		core::rect<s32> splashrect(0, 0, splashsize.X, splashsize.Y);
-		splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
-				((free_space/2)-splashsize.Y/2)+10);
-
-	video::SColor bgcolor(255,50,50,50);
-
-	draw2DImageFilterScaled(driver, texture, splashrect,
-		core::rect<s32>(core::position2d<s32>(0,0),
-		core::dimension2di(texture->getOriginalSize())),
-		NULL, NULL, true);
-	}
-}
-
-/******************************************************************************/
-void GUIEngine::drawFooter(video::IVideoDriver *driver)
-{
-	core::dimension2d<u32> screensize = driver->getScreenSize();
-
-	video::ITexture* texture = m_textures[TEX_LAYER_FOOTER].texture;
-
-	/* If no texture, draw nothing */
-	if(!texture)
-		return;
-
-	f32 mult = (((f32)screensize.Width)) /
-			((f32)texture->getOriginalSize().Width);
-
-	v2s32 footersize(((f32)texture->getOriginalSize().Width) * mult,
-			((f32)texture->getOriginalSize().Height) * mult);
-
-	// Don't draw the footer if there isn't enough room
-	s32 free_space = (((s32)screensize.Height)-320)/2;
-
-	if (free_space > footersize.Y) {
-		core::rect<s32> rect(0,0,footersize.X,footersize.Y);
-		rect += v2s32(screensize.Width/2,screensize.Height-footersize.Y);
-		rect -= v2s32(footersize.X/2, 0);
-
-		draw2DImageFilterScaled(driver, texture, rect,
-			core::rect<s32>(core::position2d<s32>(0,0),
-			core::dimension2di(texture->getOriginalSize())),
-			NULL, NULL, true);
-	}
-}
-
-/******************************************************************************/
-bool GUIEngine::setTexture(texture_layer layer, const std::string &texturepath,
-		bool tile_image, unsigned int minsize)
-{
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-
-	if (m_textures[layer].texture) {
-		driver->removeTexture(m_textures[layer].texture);
-		m_textures[layer].texture = NULL;
-	}
-
-	if (texturepath.empty() || !fs::PathExists(texturepath)) {
-		return false;
-	}
-
-	m_textures[layer].texture = driver->getTexture(texturepath.c_str());
-	m_textures[layer].tile    = tile_image;
-	m_textures[layer].minsize = minsize;
-
-	if (!m_textures[layer].texture) {
-		return false;
-	}
-
-	return true;
 }
 
 /******************************************************************************/

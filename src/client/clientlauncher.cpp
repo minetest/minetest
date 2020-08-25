@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "gui/mainmenumanager.h"
-#include "clouds.h"
+#include "startup_screen.h"
 #include "server.h"
 #include "filesys.h"
 #include "gui/guiMainMenu.h"
@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "serverlist.h"
 #include "gui/guiEngine.h"
-#include "fontengine.h"
 #include "clientlauncher.h"
 #include "version.h"
 #include "renderingengine.h"
@@ -144,7 +143,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
 	guienv = RenderingEngine::get_gui_env();
-	skin = RenderingEngine::get_gui_env()->getSkin();
+	skin = guienv->getSkin();
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
 	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 30, 30, 30));
@@ -184,16 +183,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255, 96, 134, 49));
 #endif
 
-	// Create the menu clouds
-	if (!g_menucloudsmgr)
-		g_menucloudsmgr = RenderingEngine::get_scene_manager()->createNewSceneManager();
-	if (!g_menuclouds)
-		g_menuclouds = new Clouds(g_menucloudsmgr, -1, rand());
-	g_menuclouds->setHeight(100.0f);
-	g_menuclouds->update(v3f(0, 0, 0), video::SColor(255, 240, 240, 255));
-	scene::ICameraSceneNode* camera;
-	camera = g_menucloudsmgr->addCameraSceneNode(NULL, v3f(0, 0, 0), v3f(0, 60, 100));
-	camera->setFarValue(10000);
+	g_startup_screen = new StartupScreen();
+	g_startup_screen->step(false);
 
 	/*
 		GUI stuff
@@ -216,13 +207,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	while (RenderingEngine::run() && !*kill &&
 		!g_gamecallback->shutdown_requested) {
-		// Set the window caption
-		const wchar_t *text = wgettext("Main Menu");
-		RenderingEngine::get_raw_device()->
-			setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
-			L" " + utf8_to_wide(g_version_hash) +
-			L" [" + text + L"]").c_str());
-		delete[] text;
 
 		try {	// This is used for catching disconnects
 
@@ -280,6 +264,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			);
 			RenderingEngine::get_scene_manager()->clear();
 
+			g_startup_screen->clearMessage();
+
+
 #ifdef HAVE_TOUCHSCREENGUI
 			delete g_touchscreengui;
 			g_touchscreengui = NULL;
@@ -312,8 +299,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		}
 	} // Menu-game loop
 
-	g_menuclouds->drop();
-	g_menucloudsmgr->drop();
+	delete g_startup_screen;
 
 	return retval;
 }

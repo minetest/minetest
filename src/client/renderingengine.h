@@ -102,20 +102,6 @@ public:
 		return s_singleton->m_device->getGUIEnvironment();
 	}
 
-	inline static void draw_load_screen(const std::wstring &text,
-			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
-			float dtime = 0, int percent = 0, bool clouds = true)
-	{
-		s_singleton->_draw_load_screen(
-				text, guienv, tsrc, dtime, percent, clouds);
-	}
-
-	inline static void draw_menu_scene(
-			gui::IGUIEnvironment *guienv, float dtime, bool clouds)
-	{
-		s_singleton->_draw_menu_scene(guienv, dtime, clouds);
-	}
-
 	inline static void draw_scene(video::SColor skycolor, bool show_hud,
 			bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
 	{
@@ -140,13 +126,6 @@ public:
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
 private:
-	void _draw_load_screen(const std::wstring &text, gui::IGUIEnvironment *guienv,
-			ITextureSource *tsrc, float dtime = 0, int percent = 0,
-			bool clouds = true);
-
-	void _draw_menu_scene(gui::IGUIEnvironment *guienv, float dtime = 0,
-			bool clouds = true);
-
 	void _draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
 			bool draw_wield_tool, bool draw_crosshair);
 

@@ -55,14 +55,14 @@ function mm_texture.reset()
 
 	mm_texture.clear("header")
 	mm_texture.clear("footer")
-	core.set_clouds(false)
+	core.set_background_type("texture")
 
 	mm_texture.set_generic("footer")
 	mm_texture.set_generic("header")
 
 	if not have_bg then
 		if core.settings:get_bool("menu_clouds") then
-			core.set_clouds(true)
+			core.set_background_type("sky")
 		else
 			mm_texture.set_dirt_bg()
 		end
@@ -84,12 +84,12 @@ function mm_texture.update_game(gamedetails)
 
 	mm_texture.clear("header")
 	mm_texture.clear("footer")
-	core.set_clouds(false)
+	core.set_background_type("texture")
 
 	if not have_bg then
 
 		if core.settings:get_bool("menu_clouds") then
-			core.set_clouds(true)
+			core.set_background_type("sky")
 		else
 			mm_texture.set_dirt_bg()
 		end
@@ -103,7 +103,7 @@ end
 
 --------------------------------------------------------------------------------
 function mm_texture.clear(identifier)
-	core.set_background(identifier,"")
+	core.set_background_texture(identifier,"")
 end
 
 --------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ function mm_texture.set_generic(identifier)
 	if mm_texture.texturepack ~= nil then
 		local path = mm_texture.texturepack .. DIR_DELIM .."menu_" ..
 										identifier .. ".png"
-		if core.set_background(identifier,path) then
+		if core.set_background_texture(identifier,path) then
 			return true
 		end
 	end
@@ -120,7 +120,7 @@ function mm_texture.set_generic(identifier)
 	if mm_texture.defaulttexturedir ~= nil then
 		local path = mm_texture.defaulttexturedir .. DIR_DELIM .."menu_" ..
 										identifier .. ".png"
-		if core.set_background(identifier,path) then
+		if core.set_background_texture(identifier,path) then
 			return true
 		end
 	end
@@ -138,7 +138,7 @@ function mm_texture.set_game(identifier, gamedetails)
 	if mm_texture.texturepack ~= nil then
 		local path = mm_texture.texturepack .. DIR_DELIM ..
 			gamedetails.id .. "_menu_" .. identifier .. ".png"
-		if core.set_background(identifier, path) then
+		if core.set_background_texture(identifier, path) then
 			return true
 		end
 	end
@@ -164,7 +164,7 @@ function mm_texture.set_game(identifier, gamedetails)
 
 	local path = gamedetails.path .. DIR_DELIM .. "menu" ..
 		DIR_DELIM .. filename
-	if core.set_background(identifier, path) then
+	if core.set_background_texture(identifier, path) then
 		return true
 	end
 
@@ -174,12 +174,12 @@ end
 function mm_texture.set_dirt_bg()
 	if mm_texture.texturepack ~= nil then
 		local path = mm_texture.texturepack .. DIR_DELIM .."default_dirt.png"
-		if core.set_background("background", path, true, 128) then
+		if core.set_background_texture("background", path, true, 128) then
 			return true
 		end
 	end
 
 	-- Use universal fallback texture in textures/base/pack
 	local minimalpath = defaulttexturedir .. "menu_bg.png"
-	core.set_background("background", minimalpath, true, 128)
+	core.set_background_texture("background", minimalpath, true, 128)
 end

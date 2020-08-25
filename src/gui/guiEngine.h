@@ -29,24 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/enriched_string.h"
 
 /******************************************************************************/
-/* Typedefs and macros                                                        */
-/******************************************************************************/
-/** texture layer ids */
-typedef enum {
-	TEX_LAYER_BACKGROUND = 0,
-	TEX_LAYER_OVERLAY,
-	TEX_LAYER_HEADER,
-	TEX_LAYER_FOOTER,
-	TEX_LAYER_MAX
-} texture_layer;
-
-typedef struct {
-	video::ITexture *texture = nullptr;
-	bool             tile;
-	unsigned int     minsize;
-} image_definition;
-
-/******************************************************************************/
 /* forward declarations                                                       */
 /******************************************************************************/
 class GUIEngine;
@@ -223,43 +205,11 @@ private:
 	void setFormspecPrepend(const std::string &fs);
 
 	/**
-	 * draw background layer
-	 * @param driver to use for drawing
-	 */
-	void drawBackground(video::IVideoDriver *driver);
-	/**
-	 * draw overlay layer
-	 * @param driver to use for drawing
-	 */
-	void drawOverlay(video::IVideoDriver *driver);
-	/**
-	 * draw header layer
-	 * @param driver to use for drawing
-	 */
-	void drawHeader(video::IVideoDriver *driver);
-	/**
-	 * draw footer layer
-	 * @param driver to use for drawing
-	 */
-	void drawFooter(video::IVideoDriver *driver);
-
-	/**
-	 * load a texture for a specified layer
-	 * @param layer draw layer to specify texture
-	 * @param texturepath full path of texture to load
-	 */
-	bool setTexture(texture_layer layer, const std::string &texturepath,
-			bool tile_image, unsigned int minsize);
-
-	/**
 	 * download a file using curl
 	 * @param url url to download
 	 * @param target file to store to
 	 */
 	static bool downloadFile(const std::string &url, const std::string &target);
-
-	/** array containing pointers to current specified texture layers */
-	image_definition m_textures[TEX_LAYER_MAX];
 
 	/**
 	 * specify text to appear as top left string
@@ -272,29 +222,8 @@ private:
 	/** and text that is in it */
 	EnrichedString m_toplefttext;
 
-	/** initialize cloud subsystem */
-	void cloudInit();
-	/** do preprocessing for cloud subsystem */
-	void cloudPreProcess();
-	/** do postprocessing for cloud subsystem */
-	void cloudPostProcess();
-
-	/** internam data required for drawing clouds */
-	struct clouddata {
-		/** delta time since last cloud processing */
-		f32     dtime;
-		/** absolute time of last cloud processing */
-		u32     lasttime;
-		/** pointer to cloud class */
-		Clouds *clouds = nullptr;
-		/** camera required for drawing clouds */
-		scene::ICameraSceneNode *camera = nullptr;
-	};
-
 	/** is drawing of clouds enabled atm */
-	bool        m_clouds_enabled = true;
-	/** data used to draw clouds */
-	clouddata   m_cloud;
+//	bool        m_clouds_enabled = true;
 
 	/** start playing a sound and return handle */
 	s32 playSound(const SimpleSoundSpec &spec, bool looped);

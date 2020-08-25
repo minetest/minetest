@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <irrlicht.h>
 #include "fontengine.h"
 #include "client.h"
-#include "clouds.h"
 #include "util/numeric.h"
 #include "guiscalingfilter.h"
 #include "localplayer.h"
@@ -464,100 +463,6 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 
 #endif
 	return true;
-}
-
-/*
-	Draws a screen with a single text on it.
-	Text will be removed when the screen is drawn the next time.
-	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
-*/
-void RenderingEngine::_draw_load_screen(const std::wstring &text,
-		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
-		int percent, bool clouds)
-{
-	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
-
-	v2s32 textsize(g_fontengine->getTextWidth(text), g_fontengine->getLineHeight());
-	v2s32 center(screensize.X / 2, screensize.Y / 2);
-	core::rect<s32> textrect(center - textsize / 2, center + textsize / 2);
-
-	gui::IGUIStaticText *guitext =
-			guienv->addStaticText(text.c_str(), textrect, false, false);
-	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
-
-	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
-	if (cloud_menu_background) {
-		g_menuclouds->step(dtime * 3);
-		g_menuclouds->render();
-		get_video_driver()->beginScene(
-				true, true, video::SColor(255, 140, 186, 250));
-		g_menucloudsmgr->drawAll();
-	} else
-		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
-
-	// draw progress bar
-	if ((percent >= 0) && (percent <= 100)) {
-		video::ITexture *progress_img = tsrc->getTexture("progress_bar.png");
-		video::ITexture *progress_img_bg =
-				tsrc->getTexture("progress_bar_bg.png");
-
-		if (progress_img && progress_img_bg) {
-#ifndef __ANDROID__
-			const core::dimension2d<u32> &img_size =
-					progress_img_bg->getSize();
-			u32 imgW = rangelim(img_size.Width, 200, 600);
-			u32 imgH = rangelim(img_size.Height, 24, 72);
-#else
-			const core::dimension2d<u32> img_size(256, 48);
-			float imgRatio = (float)img_size.Height / img_size.Width;
-			u32 imgW = screensize.X / 2.2f;
-			u32 imgH = floor(imgW * imgRatio);
-#endif
-			v2s32 img_pos((screensize.X - imgW) / 2,
-					(screensize.Y - imgH) / 2);
-
-			draw2DImageFilterScaled(get_video_driver(), progress_img_bg,
-					core::rect<s32>(img_pos.X, img_pos.Y,
-							img_pos.X + imgW,
-							img_pos.Y + imgH),
-					core::rect<s32>(0, 0, img_size.Width,
-							img_size.Height),
-					0, 0, true);
-
-			draw2DImageFilterScaled(get_video_driver(), progress_img,
-					core::rect<s32>(img_pos.X, img_pos.Y,
-							img_pos.X + (percent * imgW) / 100,
-							img_pos.Y + imgH),
-					core::rect<s32>(0, 0,
-							(percent * img_size.Width) / 100,
-							img_size.Height),
-					0, 0, true);
-		}
-	}
-
-	guienv->drawAll();
-	get_video_driver()->endScene();
-	guitext->remove();
-}
-
-/*
-	Draws the menu scene including (optional) cloud background.
-*/
-void RenderingEngine::_draw_menu_scene(gui::IGUIEnvironment *guienv,
-		float dtime, bool clouds)
-{
-	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
-	if (cloud_menu_background) {
-		g_menuclouds->step(dtime * 3);
-		g_menuclouds->render();
-		get_video_driver()->beginScene(
-				true, true, video::SColor(255, 140, 186, 250));
-		g_menucloudsmgr->drawAll();
-	} else
-		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
-
-	guienv->drawAll();
-	get_video_driver()->endScene();
 }
 
 std::vector<core::vector3d<u32>> RenderingEngine::getSupportedVideoModes()

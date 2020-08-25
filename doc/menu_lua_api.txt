@@ -174,12 +174,17 @@ core.set_formspec_prepend(formspec)
 GUI
 ---
 
-core.set_background(type, texturepath,[tile],[minsize])
+core.set_background_type(type)
+^ type: "color", "texture" or "sky"
+^ Set type of background for startup screen
+core.set_background_color(type, color)
+^ type: "background", "sky", "clouds" or "message"
+^ color: color spec of the color to be set to that startup screen element
+core.set_background_texture(type, texturepath,[tile],[minsize])
 ^ type: "background", "overlay", "header" or "footer"
 ^ tile: tile the image instead of scaling (background only)
 ^ minsize: minimum tile size, images are scaled to at least this size prior
 ^   doing tiling (background only)
-core.set_clouds(<true/false>)
 core.set_topleft_text(text)
 core.show_keys_menu()
 core.show_path_select_dialog(formname, caption, is_file_select)
