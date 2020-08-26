@@ -170,13 +170,13 @@ int ModApiMainMenu::l_set_background_type(lua_State *L)
 	std::string backgroundtype(luaL_checkstring(L, 1));
 
 	if (backgroundtype == "sky")
-		g_startup_screen->setBackgroundType(StartupScreen::BT_SKY);
+		g_startup_screen->setBackgroundType(StartupScreen::Background::SKY);
 
 	if (backgroundtype == "color")
-		g_startup_screen->setBackgroundType(StartupScreen::BT_COLOR);
+		g_startup_screen->setBackgroundType(StartupScreen::Background::COLOR);
 
 	if (backgroundtype == "texture")
-		g_startup_screen->setBackgroundType(StartupScreen::BT_TEXTURE);
+		g_startup_screen->setBackgroundType(StartupScreen::Background::TEXTURE);
 
 	return 0;
 }
@@ -192,16 +192,16 @@ int ModApiMainMenu::l_set_background_color(lua_State *L)
 		return 0;
 
 	if (backgroundcolor == "background")
-		g_startup_screen->setColor(StartupScreen::COLOR_BACKGROUND, color);
+		g_startup_screen->setColor(StartupScreen::Color::BACKGROUND, color);
 
 	if (backgroundcolor == "sky")
-		g_startup_screen->setColor(StartupScreen::COLOR_SKY, color);
+		g_startup_screen->setColor(StartupScreen::Color::SKY, color);
 
 	if (backgroundcolor == "clouds")
-		g_startup_screen->setColor(StartupScreen::COLOR_CLOUDS, color);
+		g_startup_screen->setColor(StartupScreen::Color::CLOUDS, color);
 
 	if (backgroundcolor == "message")
-		g_startup_screen->setColor(StartupScreen::COLOR_MESSAGE, color);
+		g_startup_screen->setColor(StartupScreen::Color::MESSAGE, color);
 
 	return 0;
 }
@@ -228,25 +228,25 @@ int ModApiMainMenu::l_set_background_texture(lua_State *L)
 
 	if (backgroundlevel == "background") {
 		retval |= g_startup_screen->setTexture(
-				StartupScreen::TEX_LAYER_BACKGROUND, 
+				StartupScreen::Texture::BACKGROUND,
 				texturename, tile_image, minsize);
 	}
 
 	if (backgroundlevel == "overlay") {
 		retval |= g_startup_screen->setTexture(
-				StartupScreen::TEX_LAYER_OVERLAY, 
+				StartupScreen::Texture::OVERLAY,
 				texturename, tile_image, minsize);
 	}
 
 	if (backgroundlevel == "header") {
 		retval |= g_startup_screen->setTexture(
-				StartupScreen::TEX_LAYER_HEADER,
+				StartupScreen::Texture::HEADER,
 				texturename, tile_image, minsize);
 	}
 
 	if (backgroundlevel == "footer") {
 		retval |= g_startup_screen->setTexture(
-				StartupScreen::TEX_LAYER_FOOTER,
+				StartupScreen::Texture::FOOTER,
 				texturename, tile_image, minsize);
 	}
 

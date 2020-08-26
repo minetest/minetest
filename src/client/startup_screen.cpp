@@ -39,20 +39,18 @@ StartupScreen::StartupScreen():
 	m_tsrc = new MenuTextureSource(m_driver);
 
 	// Initialize colors
-	m_colors[COLOR_BACKGROUND] = video::SColor(255, 80, 58, 37);
-	m_colors[COLOR_SKY]        = video::SColor(255, 140, 186, 250);
-	m_colors[COLOR_CLOUDS]     = video::SColor(255, 240, 240, 255);
-	m_colors[COLOR_MESSAGE]    = video::SColor(255, 240, 240, 255);
+	setColor(Color::BACKGROUND, video::SColor(255, 80, 58, 37));
+	setColor(Color::SKY,        video::SColor(255, 140, 186, 250));
+	setColor(Color::CLOUDS,     video::SColor(255, 240, 240, 255));
+	setColor(Color::MESSAGE,    video::SColor(255, 240, 240, 255));
 
 	// Initialize texture pointers
-	for (image_definition &texture : m_textures) {
+	for (TextureDefinition &texture : m_textures)
 		texture.texture = nullptr;
-	}
 
 	// Default textures for progress bar
-	setTexture(TEX_LAYER_PROGRESS_FG, "textures/base/pack/progress_bar.png");
-	setTexture(TEX_LAYER_PROGRESS_BG, "textures/base/pack/progress_bar_bg.png");
-
+	setTexture(Texture::PROGRESS_FG, "textures/base/pack/progress_bar.png");
+	setTexture(Texture::PROGRESS_BG, "textures/base/pack/progress_bar_bg.png");
 
 	m_last_time = RenderingEngine::get_timer_time();
 
@@ -61,7 +59,7 @@ StartupScreen::StartupScreen():
 		g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
 
-	setBackgroundType(BT_SKY);
+	setBackgroundType(Background::SKY);
 }
 
 /**********************************************************************/
@@ -71,7 +69,7 @@ StartupScreen::~StartupScreen()
 	shutdownClouds();
 
 	// Clean up texture pointers
-	for (image_definition &texture : m_textures) {
+	for (TextureDefinition &texture : m_textures) {
 		if (texture.texture)
 			RenderingEngine::get_video_driver()->removeTexture(texture.texture);
 	}
@@ -81,43 +79,47 @@ StartupScreen::~StartupScreen()
 }
 
 /**********************************************************************/
-void StartupScreen::setBackgroundType(backgroundType background_type)
+void StartupScreen::setBackgroundType(Background type)
 {
-	if (m_background_type == background_type)
+	if (m_background_type == type)
 		return;
 
 	// Shutdown old background
-	if (m_background_type == BT_SKY)
-		shutdownClouds();
+	if (m_background_type == Background::SKY) {
+		// Dont shut down clouds, avoid discontinuity if Lua turns it off and on again
+		// shutdownClouds();
+	}
 
-	m_background_type = background_type;
+	m_background_type = type;
 
 	// Start new background
-	if (m_background_type == BT_SKY)
+	if (m_background_type == Background::SKY) {
 		startupClouds();
+	}
 }
 
 
 /**********************************************************************/
-bool StartupScreen::setTexture(textureLayer layer,
+bool StartupScreen::setTexture(Texture type,
 		const std::string &texturepath,
 		bool tile_image,
 		unsigned int minsize)
 {
-	if (m_textures[layer].texture) {
-		m_driver->removeTexture(m_textures[layer].texture);
-		m_textures[layer].texture = NULL;
+	int itype = static_cast<int>(type);
+	if (m_textures[itype].texture) {
+		m_driver->removeTexture(m_textures[itype].texture);
+		m_textures[itype].texture = NULL;
 	}
 
 	if (texturepath.empty() || !fs::PathExists(texturepath)) {
 		return false;
 	}
 
-	m_textures[layer].texture = m_driver->getTexture(texturepath.c_str());
-	m_textures[layer].tile    = tile_image;
-	m_textures[layer].minsize = minsize;
+	m_textures[itype].texture = m_driver->getTexture(texturepath.c_str());
+	m_textures[itype].tile    = tile_image;
+	m_textures[itype].minsize = minsize;
 
-	if (!m_textures[layer].texture) {
+	if (!m_textures[itype].texture) {
 		return false;
 	}
 
@@ -151,12 +153,12 @@ void StartupScreen::startupClouds()
 	if (!m_clouds) {
 		m_clouds = new Clouds(m_cloudsmgr, -1, rand());
 		m_clouds->setHeight(100.0f);
-		m_clouds->update(v3f(0, 0, 0), m_colors[COLOR_CLOUDS]);
+		m_clouds->update(v3f(0, 0, 0), getColor(Color::CLOUDS));
 		scene::ICameraSceneNode* camera;
 		camera = m_cloudsmgr->addCameraSceneNode(NULL, v3f(0, 0, 0),
 				v3f(0, 60, 100));
 		camera->setFarValue(10000);
-		m_driver->setFog(m_colors[COLOR_SKY], video::EFT_FOG_LINEAR,
+		m_driver->setFog(getColor(Color::SKY), video::EFT_FOG_LINEAR,
 				50.0f, 100.0f, 0, true, false);
 	}
 }
@@ -183,18 +185,20 @@ void StartupScreen::drawClouds(float dtime)
 /**********************************************************************/
 void StartupScreen::drawBackgroundTexture()
 {
-	video::ITexture* texture = m_textures[TEX_LAYER_BACKGROUND].texture;
+	TextureDefinition txtDef = getTexture(Texture::BACKGROUND);
+
+	video::ITexture* texture = txtDef.texture;
 
 	if(!texture)
 		return;
 
 	v2u32 sourcesize = texture->getOriginalSize();
 
-	if (m_textures[TEX_LAYER_BACKGROUND].tile) {
+	if (txtDef.tile) {
 		/* Draw tiled background texture */
 		v2u32 tilesize(
-				MYMAX(sourcesize.X,m_textures[TEX_LAYER_BACKGROUND].minsize),
-				MYMAX(sourcesize.Y,m_textures[TEX_LAYER_BACKGROUND].minsize));
+				MYMAX(sourcesize.X, txtDef.minsize),
+				MYMAX(sourcesize.Y, txtDef.minsize));
 		for (unsigned int x = 0; x < m_screensize.X; x += tilesize.X )
 		{
 			for (unsigned int y = 0; y < m_screensize.Y; y += tilesize.Y )
@@ -217,7 +221,7 @@ void StartupScreen::drawBackgroundTexture()
 /**********************************************************************/
 void StartupScreen::drawOverlay()
 {
-	video::ITexture* texture = m_textures[TEX_LAYER_OVERLAY].texture;
+	video::ITexture* texture = getTexture(Texture::OVERLAY).texture;
 
 	/* If no texture, draw nothing */
 	if(!texture)
@@ -234,7 +238,7 @@ void StartupScreen::drawOverlay()
 /**********************************************************************/
 void StartupScreen::drawHeader()
 {
-	video::ITexture* texture = m_textures[TEX_LAYER_HEADER].texture;
+	video::ITexture* texture = getTexture(Texture::HEADER).texture;
 
 	/* If no texture, draw nothing */
 	if(!texture)
@@ -264,7 +268,7 @@ void StartupScreen::drawHeader()
 /**********************************************************************/
 void StartupScreen::drawFooter()
 {
-	video::ITexture* texture = m_textures[TEX_LAYER_FOOTER].texture;
+	video::ITexture* texture = getTexture(Texture::FOOTER).texture;
 
 	/* If no texture, draw nothing */
 	if(!texture)
@@ -300,9 +304,9 @@ void StartupScreen::drawProgressBar()
 	// draw progress bar
 	if ((m_percent >= 0) && (m_percent <= 100)) {
 		video::ITexture *progress_img =
-				m_textures[TEX_LAYER_PROGRESS_FG].texture;
+				getTexture(Texture::PROGRESS_FG).texture;
 		video::ITexture *progress_img_bg =
-				m_textures[TEX_LAYER_PROGRESS_BG].texture;
+				getTexture(Texture::PROGRESS_BG).texture;
 
 		if (progress_img && progress_img_bg) {
 #ifndef __ANDROID__
@@ -343,7 +347,7 @@ void StartupScreen::drawProgressBar()
 	// Draw message
 	if (m_message != L"") {
 		g_fontengine->getFont()->draw(m_message.c_str(), textrect,
-			m_colors[COLOR_MESSAGE], true, true);
+			getColor(Color::MESSAGE), true, true);
 	}
 }
 
@@ -351,15 +355,15 @@ void StartupScreen::drawProgressBar()
 void StartupScreen::drawAll(float dtime)
 {
 	switch (m_background_type) {
-		case BT_COLOR:
-			m_driver->beginScene(true, true, m_colors[COLOR_BACKGROUND]);
+		case Background::COLOR:
+			m_driver->beginScene(true, true, getColor(Color::BACKGROUND));
 			break;
-		case BT_TEXTURE:
-			m_driver->beginScene(true, true, m_colors[COLOR_BACKGROUND]);
+		case Background::TEXTURE:
+			m_driver->beginScene(true, true, getColor(Color::BACKGROUND));
 			drawBackgroundTexture();
 			break;
-		case BT_SKY:
-			m_driver->beginScene(true, true, m_colors[COLOR_SKY]);
+		case Background::SKY:
+			m_driver->beginScene(true, true, getColor(Color::SKY));
 			drawClouds(dtime);
 			drawOverlay(); // ??
 			break;

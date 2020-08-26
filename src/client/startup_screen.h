@@ -26,46 +26,47 @@ namespace irr{namespace scene{class ISceneManager;}}
 class StartupScreen;
 extern StartupScreen *g_startup_screen;
 
-typedef struct {
+struct TextureDefinition {
 	video::ITexture *texture = nullptr;
 	bool             tile;
 	unsigned int     minsize;
-} image_definition;
+};
 
 class StartupScreen {
 public:
 	StartupScreen();
 	~StartupScreen();
 
-	enum backgroundType {
-		BT_COLOR,
-		BT_TEXTURE,
-		BT_SKY
+	enum class Background {
+		COLOR,   // TO
+		TEXTURE, // BE
+		SKY      // COMMENTED
 	};
 
-	enum textureLayer {
-		TEX_LAYER_BACKGROUND = 0,
-		TEX_LAYER_OVERLAY,
-		TEX_LAYER_HEADER,
-		TEX_LAYER_FOOTER,
-		TEX_LAYER_PROGRESS_FG,
-		TEX_LAYER_PROGRESS_BG,
-		TEX_LAYER_MAX
+	enum class Texture {
+		BACKGROUND = 0, //
+		OVERLAY,        // TO
+		HEADER,         // BE
+		FOOTER,         // COMMENTED
+		PROGRESS_FG,    //
+		PROGRESS_BG,    //
+		Count
 	};
 
-	enum colorType {
-		COLOR_BACKGROUND = 0,
-		COLOR_SKY,
-		COLOR_CLOUDS,
-		COLOR_MESSAGE,
-		COLOR_MAX
+	enum class Color {
+		BACKGROUND = 0, //
+		SKY,            // TO
+		CLOUDS,         // BE
+		MESSAGE,        // COMMENTED
+		Count           //
 	};
 
 	// Startup screen customization
-	void setBackgroundType(backgroundType background_type);
-	bool setTexture(textureLayer layer, const std::string &texturepath,
+	void setBackgroundType(Background type);
+	bool setTexture(Texture type, const std::string &texturepath,
 			bool tile_image = false, unsigned int minsize = 0);
-	inline void setColor(colorType type, const video::SColor &color) { m_colors[type] = color; };
+	inline void setColor(Color type, const video::SColor &color)
+		{ m_colors[static_cast<int>(type)] = color; };
 
 	// Loading message and progress management
 	void setMessage(const wchar_t *msg, int percent);
@@ -76,6 +77,11 @@ public:
 	void step(bool limitFps);
 
 protected:
+	// Access to customizations
+	inline const TextureDefinition& getTexture(Texture type) 
+		{ return m_textures[static_cast<int>(type)]; };
+	inline const video::SColor& getColor(Color type)
+		{ return m_colors[static_cast<int>(type)]; };
 
 	// Clouds scene
 	void startupClouds();
@@ -102,9 +108,9 @@ protected:
 	void setWindowsCaption();
 
 	// Background type, custom textures and colors
-	backgroundType m_background_type = BT_COLOR;
-	image_definition m_textures[TEX_LAYER_MAX];
-	video::SColor m_colors[COLOR_MAX];
+	Background        m_background_type = Background::COLOR;
+	TextureDefinition m_textures[static_cast<int>(Texture::Count)];
+	video::SColor     m_colors[static_cast<int>(Color::Count)];
 
 	// Internal variables
 	video::IVideoDriver *m_driver;
