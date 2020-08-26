@@ -3067,12 +3067,17 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns the dot product of `v1` and `v2`
 * `vector.cross(v1, v2)`
     * Returns the cross product of `v1` and `v2`
-* `vector.add(v1, v2)`:
-    * Returns the sum of both vectors.
-    * Deprecated: If `v2` is a number: Adds `v2` to each component of `v1`.
-* `vector.subtract(v1, v2)`:
-    * Returns the difference of `v1` subtracted by `v2`.
-    * Deprecated: If `v2` is a number: Subtracts `v2` from each component of `v1`.
+
+For the following functions `x` can be either a vector or a number:
+
+* `vector.add(v, x)`:
+    * Returns a vector.
+    * If `x` is a vector: Returns the sum of `v` and `x`.
+    * If `x` is a number: Adds `x` to each component of `v`.
+* `vector.subtract(v, x)`:
+    * Returns a vector.
+    * If `x` is a vector: Returns the difference of `v` subtracted by `x`.
+    * If `x` is a number: Subtracts `x` from each component of `v`.
 * `vector.multiply(v, s)`:
     * Returns a scaled vector.
     * Deprecated: If `s` is a vector: Returns the Schur product.
