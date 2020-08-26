@@ -638,9 +638,21 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			setBillboardTextureMatrix(m_spritenode,
 					txs, tys, 0, 0);
 		}
+		// Adjust the position according to the collision box
+		v3f collis_size = v3f(
+			abs(m_prop.collisionbox.MaxEdge.X - m_prop.collisionbox.MinEdge.X),
+			abs(m_prop.collisionbox.MaxEdge.Y - m_prop.collisionbox.MinEdge.Y),
+			abs(m_prop.collisionbox.MaxEdge.Z - m_prop.collisionbox.MinEdge.Z));
+		v3f collis_center = (m_prop.collisionbox.MinEdge + collis_size / 2.0) * BS;
+		m_spritenode->setPosition(collis_center);
 	} else if (m_prop.visual == "upright_sprite") {
 		grabMatrixNode();
 		scene::SMesh *mesh = new scene::SMesh();
+		v2f collis_size = v2f(
+			abs(m_prop.collisionbox.MaxEdge.X - m_prop.collisionbox.MinEdge.X),
+			abs(m_prop.collisionbox.MaxEdge.Y - m_prop.collisionbox.MinEdge.Y));
+		v2f d0 = (v2f(m_prop.collisionbox.MinEdge.X, m_prop.collisionbox.MinEdge.Y)
+			+ collis_size / 2.0) * BS;
 		double dx = BS * m_prop.visual_size.X / 2;
 		double dy = BS * m_prop.visual_size.Y / 2;
 		video::SColor c(0xFFFFFFFF);
@@ -648,16 +660,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		{ // Front
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 			video::S3DVertex vertices[4] = {
-				video::S3DVertex(-dx, -dy, 0, 0,0,1, c, 1,1),
-				video::S3DVertex( dx, -dy, 0, 0,0,1, c, 0,1),
-				video::S3DVertex( dx,  dy, 0, 0,0,1, c, 0,0),
-				video::S3DVertex(-dx,  dy, 0, 0,0,1, c, 1,0),
+				video::S3DVertex(-dx + d0.X, -dy + d0.Y, 0, 0,0,1, c, 1,1),
+				video::S3DVertex( dx + d0.X, -dy + d0.Y, 0, 0,0,1, c, 0,1),
+				video::S3DVertex( dx + d0.X,  dy + d0.Y, 0, 0,0,1, c, 0,0),
+				video::S3DVertex(-dx + d0.X,  dy + d0.Y, 0, 0,0,1, c, 1,0),
 			};
-			if (m_is_player) {
-				// Move minimal Y position to 0 (feet position)
-				for (video::S3DVertex &vertex : vertices)
-					vertex.Pos.Y += dy;
-			}
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
 			// Set material
@@ -679,16 +686,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		{ // Back
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 			video::S3DVertex vertices[4] = {
-				video::S3DVertex( dx,-dy, 0, 0,0,-1, c, 1,1),
-				video::S3DVertex(-dx,-dy, 0, 0,0,-1, c, 0,1),
-				video::S3DVertex(-dx, dy, 0, 0,0,-1, c, 0,0),
-				video::S3DVertex( dx, dy, 0, 0,0,-1, c, 1,0),
+				video::S3DVertex( dx + d0.X, -dy + d0.Y, 0, 0,0,-1, c, 1,1),
+				video::S3DVertex(-dx + d0.X, -dy + d0.Y, 0, 0,0,-1, c, 0,1),
+				video::S3DVertex(-dx + d0.X,  dy + d0.Y, 0, 0,0,-1, c, 0,0),
+				video::S3DVertex( dx + d0.X,  dy + d0.Y, 0, 0,0,-1, c, 1,0),
 			};
-			if (m_is_player) {
-				// Move minimal Y position to 0 (feet position)
-				for (video::S3DVertex &vertex : vertices)
-					vertex.Pos.Y += dy;
-			}
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
 			// Set material
