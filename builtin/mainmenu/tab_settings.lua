@@ -122,56 +122,6 @@ local function antialiasing_fname_to_name(fname)
 	return 0
 end
 
-local function dlg_confirm_reset_formspec(data)
-	return  "size[8,3]" ..
-		"label[1,1;" .. fgettext("Are you sure to reset your singleplayer world?") .. "]" ..
-		"button[1,2;2.6,0.5;dlg_reset_singleplayer_confirm;" .. fgettext("Yes") .. "]" ..
-		"button[4,2;2.8,0.5;dlg_reset_singleplayer_cancel;" .. fgettext("No") .. "]"
-end
-
-local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
-
-	if fields["dlg_reset_singleplayer_confirm"] ~= nil then
-		local worldlist = core.get_worlds()
-		local found_singleplayerworld = false
-
-		for i = 1, #worldlist do
-			if worldlist[i].name == "singleplayerworld" then
-				found_singleplayerworld = true
-				gamedata.worldindex = i
-			end
-		end
-
-		if found_singleplayerworld then
-			core.delete_world(gamedata.worldindex)
-		end
-
-		core.create_world("singleplayerworld", 1)
-		worldlist = core.get_worlds()
-
-		for i = 1, #worldlist do
-			if worldlist[i].name == "singleplayerworld" then
-				gamedata.worldindex = i
-			end
-		end
-	end
-
-	this.parent:show()
-	this:hide()
-	this:delete()
-	return true
-end
-
-local function showconfirm_reset(tabview)
-	local new_dlg = dialog_create("reset_spworld",
-		dlg_confirm_reset_formspec,
-		dlg_confirm_reset_btnhandler,
-		nil)
-	new_dlg:set_parent(tabview)
-	tabview:hide()
-	new_dlg:show()
-end
-
 local function formspec(tabview, name, tabdata)
 	local tab_string =
 		"box[0,0;3.75,4.5;#999999]" ..
@@ -218,16 +168,9 @@ local function formspec(tabview, name, tabdata)
 					fgettext("Shaders (unavailable)")) .. "]"
 	end
 
-	if core.settings:get("main_menu_style") == "simple" then
-		-- 'Reset singleplayer world' only functions with simple menu
-		tab_string = tab_string ..
-			"button[8,4.75;3.95,1;btn_reset_singleplayer;"
-			.. fgettext("Reset singleplayer world") .. "]"
-	else
-		tab_string = tab_string ..
-			"button[8,4.75;3.95,1;btn_change_keys;"
-			.. fgettext("Change Keys") .. "]"
-	end
+	tab_string = tab_string ..
+		"button[8,4.75;3.95,1;btn_change_keys;"
+		.. fgettext("Change Keys") .. "]"
 
 	tab_string = tab_string ..
 		"button[0,4.75;3.95,1;btn_advanced_settings;"
@@ -357,10 +300,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_touchscreen_target"] then
 		core.settings:set("touchtarget", fields["cb_touchscreen_target"])
-		return true
-	end
-	if fields["btn_reset_singleplayer"] then
-		showconfirm_reset(this)
 		return true
 	end
 
