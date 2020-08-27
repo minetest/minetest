@@ -6100,6 +6100,9 @@ object you are working with still exists.
 * `set_yaw(radians)`: sets the yaw (heading).
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
+    * Set a texture modifier to the base texture, for sprites and meshes.
+    * When calling `set_texture_mod` again, the previous one is discarded.
+    * `mod` the texture modifier. See [Texture modifiers].
 * `get_texture_mod()` returns current texture modifier
 * `set_sprite(p, num_frames, framelength, select_x_by_camera)`
     * Specifies and starts a sprite animation
@@ -6110,6 +6113,12 @@ object you are working with still exists.
     * `framelength`: Time per animated frame in seconds, default: `0.2`
     * `select_x_by_camera`: Only for visual = `sprite`. Changes the frame `x`
       position according to the view direction. default: `false`.
+        * First column:  subject facing the camera
+        * Second column: subject looking to the left
+        * Third column:  subject backing the camera
+        * Fourth column: subject looking to the right
+        * Fifth column:  subject viewed from above
+        * Sixth column:  subject viewed from below
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 
