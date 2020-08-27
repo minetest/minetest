@@ -120,10 +120,12 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /** GUIEngine                                                                 */
 /******************************************************************************/
 GUIEngine::GUIEngine(JoystickController *joystick,
+		StartupScreen *startup_screen,
 		gui::IGUIElement *parent,
 		IMenuManager *menumgr,
 		MainMenuData *data,
 		bool &kill) :
+	m_startup_screen(startup_screen),
 	m_parent(parent),
 	m_menumanager(menumgr),
 	m_smgr(RenderingEngine::get_scene_manager()),
@@ -235,7 +237,7 @@ void GUIEngine::run()
 			text_height = g_fontengine->getTextHeight();
 		}
 
-		g_startup_screen->step(true);
+		m_startup_screen->step(true);
 		m_script->step();
 
 #ifdef __ANDROID__

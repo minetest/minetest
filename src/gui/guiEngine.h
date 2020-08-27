@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 class GUIEngine;
 class MainMenuScripting;
-class Clouds;
+class StartupScreen;
 struct MainMenuData;
 
 /******************************************************************************/
@@ -131,6 +131,7 @@ public:
 	 * @param data struct to transfer data to main game handling
 	 */
 	GUIEngine(JoystickController *joystick,
+			StartupScreen *startup_screen,
 			gui::IGUIElement *parent,
 			IMenuManager *menumgr,
 			MainMenuData *data,
@@ -159,6 +160,14 @@ public:
 	unsigned int queueAsync(const std::string &serialized_fct,
 			const std::string &serialized_params);
 
+	/**
+	 * return pointer to startup screen instance
+	 */
+	StartupScreen *getStartupScreen()
+	{
+		return m_startup_screen;
+	}
+
 private:
 
 	/** find and run the main menu script */
@@ -170,6 +179,8 @@ private:
 	/** update size of topleftext element */
 	void updateTopLeftTextSize();
 
+	/** startup screen background */
+	StartupScreen           *m_startup_screen = nullptr;
 	/** parent gui element */
 	gui::IGUIElement        *m_parent = nullptr;
 	/** manager to add menus to */
@@ -221,9 +232,6 @@ private:
 	irr::gui::IGUIStaticText *m_irr_toplefttext = nullptr;
 	/** and text that is in it */
 	EnrichedString m_toplefttext;
-
-	/** is drawing of clouds enabled atm */
-//	bool        m_clouds_enabled = true;
 
 	/** start playing a sound and return handle */
 	s32 playSound(const SimpleSoundSpec &spec, bool looped);

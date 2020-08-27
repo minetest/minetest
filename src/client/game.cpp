@@ -673,6 +673,7 @@ public:
 
 	bool startup(bool *kill,
 			InputHandler *input,
+			StartupScreen *startup_screen,
 			const GameStartData &game_params,
 			std::string &error_message,
 			bool *reconnect,
@@ -835,6 +836,7 @@ private:
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	InputHandler *input = nullptr;
+	StartupScreen *startup_screen = nullptr;
 
 	Client *client = nullptr;
 	Server *server = nullptr;
@@ -1014,6 +1016,7 @@ Game::~Game()
 
 bool Game::startup(bool *kill,
 		InputHandler *input,
+		StartupScreen *startup_screen,
 		const GameStartData &start_data,
 		std::string &error_message,
 		bool *reconnect,
@@ -1026,6 +1029,7 @@ bool Game::startup(bool *kill,
 	this->error_message       = &error_message;
 	this->reconnect_requested = reconnect;
 	this->input               = input;
+	this->startup_screen      = startup_screen;
 	this->chat_backend        = chat_backend;
 	this->simple_singleplayer_mode = start_data.isSinglePlayer();
 
@@ -1168,7 +1172,7 @@ void Game::shutdown()
 	g_touchscreengui->hide();
 #endif
 
-	g_startup_screen->setMessage(N_("Shutting down..."), 0);
+	startup_screen->setMessage(N_("Shutting down..."), 0);
 
 	if (clouds)
 		clouds->drop();
@@ -1217,7 +1221,7 @@ bool Game::init(
 		const SubgameSpec &gamespec)
 {
 	texture_src = createTextureSource();
-	g_startup_screen->setMessage(N_("Loading..."), 0);
+	startup_screen->setMessage(N_("Loading..."), 0);
 
 	shader_src = createShaderSource();
 
@@ -1273,7 +1277,7 @@ bool Game::initSound()
 bool Game::createSingleplayerServer(const std::string &map_dir,
 		const SubgameSpec &gamespec, u16 port)
 {
-	g_startup_screen->setMessage(N_("Creating server..."), 5);
+	startup_screen->setMessage(N_("Creating server..."), 5);
 
 	std::string bind_str = g_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
@@ -1306,7 +1310,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 
 bool Game::createClient(const GameStartData &start_data)
 {
-	g_startup_screen->setMessage(N_("Creating client..."), 10);
+	startup_screen->setMessage(N_("Creating client..."), 10);
 
 	draw_control = new MapDrawControl;
 	if (!draw_control)
@@ -1458,7 +1462,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 	*connection_aborted = false;
 	bool local_server_mode = false;
 
-	g_startup_screen->setMessage(N_("Resolving address..."), 15);
+	startup_screen->setMessage(N_("Resolving address..."), 15);
 
 	Address connect_address(0, 0, 0, 0, start_data.socket_port);
 
@@ -1494,7 +1498,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			start_data.password, start_data.address,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
-			connect_address.isIPv6(), m_game_ui.get());
+			connect_address.isIPv6(), m_game_ui.get(), startup_screen);
 
 	if (!client)
 		return false;
@@ -1558,7 +1562,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			if (client->m_is_registration_confirmation_state) {
 				if (registration_confirmation_shown) {
 					// Keep drawing the GUI
-					g_startup_screen->step(false);
+					startup_screen->step(false);
 				} else {
 					registration_confirmation_shown = true;
 					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
@@ -1575,7 +1579,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 				}
 
 				// Update status
-				g_startup_screen->setMessage(N_("Connecting to server..."), 20);
+				startup_screen->setMessage(N_("Connecting to server..."), 20);
 			}
 		}
 	} catch (con::PeerNotFoundException &e) {
@@ -1632,9 +1636,9 @@ bool Game::getServerContent(bool *aborted)
 		int progress = 25;
 
 		if (!client->itemdefReceived()) {
-			g_startup_screen->setMessage(N_("Item definitions..."), 25);
+			startup_screen->setMessage(N_("Item definitions..."), 25);
 		} else if (!client->nodedefReceived()) {
-			g_startup_screen->setMessage(N_("Node definitions..."), 30);
+			startup_screen->setMessage(N_("Node definitions..."), 30);
 		} else {
 			std::stringstream message;
 			std::fixed(message);
@@ -1655,7 +1659,7 @@ bool Game::getServerContent(bool *aborted)
 				message << " (" << cur << ' ' << cur_unit << ")";
 			}
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
-			g_startup_screen->setMessage(message.str().c_str(), progress);
+			startup_screen->setMessage(message.str().c_str(), progress);
 		}
 	}
 
@@ -4237,6 +4241,7 @@ void Game::showPauseMenu()
 
 void the_game(bool *kill,
 		InputHandler *input,
+		StartupScreen *startup_screen,
 		const GameStartData &start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,
@@ -4251,8 +4256,8 @@ void the_game(bool *kill,
 
 	try {
 
-		if (game.startup(kill, input, start_data, error_message,
-				reconnect_requested, &chat_backend)) {
+		if (game.startup(kill, input, startup_screen, start_data,
+				error_message, reconnect_requested, &chat_backend)) {
 			game.run();
 		}
 

@@ -99,7 +99,9 @@ Client::Client(
 		ISoundManager *sound,
 		MtEventManager *event,
 		bool ipv6,
-		GameUI *game_ui
+		GameUI *game_ui,
+		StartupScreen *startup_screen
+
 ):
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
@@ -122,6 +124,7 @@ Client::Client(
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
 	m_game_ui(game_ui),
+	m_startup_screen(startup_screen),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
@@ -1694,6 +1697,7 @@ typedef struct TextureUpdateArgs {
 	u16 last_percent;
 	const wchar_t* text_base;
 	ITextureSource *tsrc;
+	StartupScreen *startup_screen;
 } TextureUpdateArgs;
 
 void texture_update_progress(void *args, u32 progress, u32 max_progress)
@@ -1715,7 +1719,7 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 			targs->last_time_ms = time_ms;
 			std::basic_stringstream<wchar_t> strm;
 			strm << targs->text_base << " " << targs->last_percent << "%...";
-			g_startup_screen->setMessage(strm.str().c_str(),
+			targs->startup_screen->setMessage(strm.str().c_str(),
 				72 + (u16) ((18. / 100.) * (double) targs->last_percent));
 		}
 }
@@ -1736,21 +1740,21 @@ void Client::afterContentReceived()
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
-	g_startup_screen->setMessage(text, 70);
+	m_startup_screen->setMessage(text, 70);
 	m_tsrc->rebuildImagesAndTextures();
 	delete[] text;
 
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
 	text = wgettext("Rebuilding shaders...");
-	g_startup_screen->setMessage(text, 71);
+	m_startup_screen->setMessage(text, 71);
 	m_shsrc->rebuildShaders();
 	delete[] text;
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
 	text = wgettext("Initializing nodes...");
-	g_startup_screen->setMessage(text, 72);
+	m_startup_screen->setMessage(text, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	for (const auto &path : getTextureDirs()) {
 		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
@@ -1769,6 +1773,7 @@ void Client::afterContentReceived()
 	tu_args.last_percent = 0;
 	tu_args.text_base =  wgettext("Initializing nodes");
 	tu_args.tsrc = m_tsrc;
+	tu_args.startup_screen = m_startup_screen;
 	m_nodedef->updateTextures(this, texture_update_progress, &tu_args);
 	delete[] tu_args.text_base;
 
@@ -1783,7 +1788,7 @@ void Client::afterContentReceived()
 		m_script->on_client_ready(m_env.getLocalPlayer());
 
 	text = wgettext("Done!");
-	g_startup_screen->setMessage(text, 100);
+	m_startup_screen->setMessage(text, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
 	delete[] text;
 }

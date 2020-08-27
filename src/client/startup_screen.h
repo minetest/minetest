@@ -17,14 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#pragma once
+
 #include <string>
 
 class Clouds;
 class MenuTextureSource;
 namespace irr{namespace scene{class ISceneManager;}}
-
-class StartupScreen;
-extern StartupScreen *g_startup_screen;
 
 struct TextureDefinition {
 	video::ITexture *texture = nullptr;

@@ -26,6 +26,7 @@ class InputHandler;
 class ChatBackend;  /* to avoid having to include chat.h */
 struct SubgameSpec;
 struct GameStartData;
+class StartupScreen;
 
 struct Jitter {
 	f32 max, min, avg, counter, max_sample, min_sample, max_fraction;
@@ -45,6 +46,7 @@ struct CameraOrientation {
 
 void the_game(bool *kill,
 		InputHandler *input,
+		StartupScreen *startup_screen,
 		const GameStartData &start_data,
 		std::string &error_message,
 		ChatBackend &chat_backend,

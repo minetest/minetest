@@ -29,8 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "filesys.h"
 
-StartupScreen *g_startup_screen;
-
 /**********************************************************************/
 StartupScreen::StartupScreen():
 	m_driver(RenderingEngine::get_video_driver())

@@ -64,6 +64,7 @@ class NetworkPacket;
 namespace con {
 class Connection;
 }
+class StartupScreen;
 
 enum LocalClientState {
 	LC_Created,
@@ -124,7 +125,8 @@ public:
 			ISoundManager *sound,
 			MtEventManager *event,
 			bool ipv6,
-			GameUI *game_ui
+			GameUI *game_ui,
+			StartupScreen *startup_screen
 	);
 
 	~Client();
@@ -579,6 +581,8 @@ private:
 	LocalClientState m_state;
 
 	GameUI *m_game_ui;
+
+	StartupScreen *m_startup_screen;
 
 	// Used for saving server map to disk client-side
 	MapDatabase *m_localdb = nullptr;

@@ -165,18 +165,21 @@ int ModApiMainMenu::l_close(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_set_background_type(lua_State *L)
 {
-	sanity_check(g_startup_screen != NULL);
+	GUIEngine* engine = getGuiEngine(L);
+	sanity_check(engine != NULL);
+	StartupScreen *startup_screen = engine->getStartupScreen();
+	sanity_check(startup_screen != NULL);
 
 	std::string backgroundtype(luaL_checkstring(L, 1));
 
 	if (backgroundtype == "sky")
-		g_startup_screen->setBackgroundType(StartupScreen::Background::SKY);
+		startup_screen->setBackgroundType(StartupScreen::Background::SKY);
 
 	if (backgroundtype == "color")
-		g_startup_screen->setBackgroundType(StartupScreen::Background::COLOR);
+		startup_screen->setBackgroundType(StartupScreen::Background::COLOR);
 
 	if (backgroundtype == "texture")
-		g_startup_screen->setBackgroundType(StartupScreen::Background::TEXTURE);
+		startup_screen->setBackgroundType(StartupScreen::Background::TEXTURE);
 
 	return 0;
 }
@@ -184,7 +187,10 @@ int ModApiMainMenu::l_set_background_type(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_set_background_color(lua_State *L)
 {
-	sanity_check(g_startup_screen != NULL);
+	GUIEngine* engine = getGuiEngine(L);
+	sanity_check(engine != NULL);
+	StartupScreen *startup_screen = engine->getStartupScreen();
+	sanity_check(startup_screen != NULL);
 
 	std::string backgroundcolor(luaL_checkstring(L, 1));
 	video::SColor color;
@@ -192,16 +198,16 @@ int ModApiMainMenu::l_set_background_color(lua_State *L)
 		return 0;
 
 	if (backgroundcolor == "background")
-		g_startup_screen->setColor(StartupScreen::Color::BACKGROUND, color);
+		startup_screen->setColor(StartupScreen::Color::BACKGROUND, color);
 
 	if (backgroundcolor == "sky")
-		g_startup_screen->setColor(StartupScreen::Color::SKY, color);
+		startup_screen->setColor(StartupScreen::Color::SKY, color);
 
 	if (backgroundcolor == "clouds")
-		g_startup_screen->setColor(StartupScreen::Color::CLOUDS, color);
+		startup_screen->setColor(StartupScreen::Color::CLOUDS, color);
 
 	if (backgroundcolor == "message")
-		g_startup_screen->setColor(StartupScreen::Color::MESSAGE, color);
+		startup_screen->setColor(StartupScreen::Color::MESSAGE, color);
 
 	return 0;
 }
@@ -209,7 +215,10 @@ int ModApiMainMenu::l_set_background_color(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_set_background_texture(lua_State *L)
 {
-	sanity_check(g_startup_screen != NULL);
+	GUIEngine* engine = getGuiEngine(L);
+	sanity_check(engine != NULL);
+	StartupScreen *startup_screen = engine->getStartupScreen();
+	sanity_check(startup_screen != NULL);
 
 	std::string backgroundlevel(luaL_checkstring(L, 1));
 	std::string texturename(luaL_checkstring(L, 2));
@@ -227,25 +236,25 @@ int ModApiMainMenu::l_set_background_texture(lua_State *L)
 	}
 
 	if (backgroundlevel == "background") {
-		retval |= g_startup_screen->setTexture(
+		retval |= startup_screen->setTexture(
 				StartupScreen::Texture::BACKGROUND,
 				texturename, tile_image, minsize);
 	}
 
 	if (backgroundlevel == "overlay") {
-		retval |= g_startup_screen->setTexture(
+		retval |= startup_screen->setTexture(
 				StartupScreen::Texture::OVERLAY,
 				texturename, tile_image, minsize);
 	}
 
 	if (backgroundlevel == "header") {
-		retval |= g_startup_screen->setTexture(
+		retval |= startup_screen->setTexture(
 				StartupScreen::Texture::HEADER,
 				texturename, tile_image, minsize);
 	}
 
 	if (backgroundlevel == "footer") {
-		retval |= g_startup_screen->setTexture(
+		retval |= startup_screen->setTexture(
 				StartupScreen::Texture::FOOTER,
 				texturename, tile_image, minsize);
 	}

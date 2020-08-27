@@ -52,4 +52,5 @@ private:
 	InputHandler *input = nullptr;
 	MyEventReceiver *receiver = nullptr;
 	gui::IGUISkin *skin = nullptr;
+	StartupScreen *m_startup_screen = nullptr;
 };

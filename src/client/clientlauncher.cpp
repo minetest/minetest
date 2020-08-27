@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "gui/mainmenumanager.h"
-#include "startup_screen.h"
 #include "server.h"
 #include "filesys.h"
 #include "gui/guiMainMenu.h"
@@ -33,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "renderingengine.h"
 #include "network/networkexceptions.h"
+#include "client/startup_screen.h"
 
 #if USE_SOUND
 	#include "sound_openal.h"
@@ -183,8 +183,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	skin->setColor(gui::EGDC_FOCUSED_EDITABLE, video::SColor(255, 96, 134, 49));
 #endif
 
-	g_startup_screen = new StartupScreen();
-	g_startup_screen->step(false);
+	m_startup_screen = new StartupScreen();
+	m_startup_screen->step(false);
 
 	/*
 		GUI stuff
@@ -257,6 +257,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			the_game(
 				kill,
 				input,
+				m_startup_screen,
 				start_data,
 				error_message,
 				chat_backend,
@@ -264,7 +265,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			);
 			RenderingEngine::get_scene_manager()->clear();
 
-			g_startup_screen->clearMessage();
+			m_startup_screen->clearMessage();
 
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -299,7 +300,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		}
 	} // Menu-game loop
 
-	delete g_startup_screen;
+	delete m_startup_screen;
 
 	return retval;
 }
@@ -557,7 +558,7 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 #endif
 
 	/* show main menu */
-	GUIEngine mymenu(&input->joystick, guiroot, &g_menumgr, menudata, *kill);
+	GUIEngine mymenu(&input->joystick, m_startup_screen, guiroot, &g_menumgr, menudata, *kill);
 
 	/* leave scene manager in a clean state */
 	RenderingEngine::get_scene_manager()->clear();
