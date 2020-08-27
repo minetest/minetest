@@ -558,11 +558,39 @@ void PlayerSAO::setMaxSpeedOverride(const v3f &vel)
 
 bool PlayerSAO::checkMovementCheat()
 {
-	if (isAttached() || m_is_singleplayer ||
+	if (m_is_singleplayer ||
 			g_settings->getBool("disable_anticheat")) {
 		m_last_good_position = m_base_position;
 		return false;
 	}
+
+	if (isAttached()) {
+		int parent_id;
+		std::string bone;
+		v3f attachment_pos, attachment_rot;
+		getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot);
+		UnitSAO *parent = (UnitSAO *)getParent();
+		v3f pos = getBasePosition();
+		f32 radius = sqrt(attachment_pos.X * attachment_pos.X + attachment_pos.Z * attachment_pos.Z);
+		v3f parent_pos = parent->getBasePosition();
+		f32 parent_rot = parent->getRadYawDep() + acos(1 / radius);
+		attachment_pos.X = cos(parent_rot) * radius;
+		attachment_pos.Z = sin(parent_rot) * radius;
+		attachment_pos *= 3;
+		v3f supposed_pos = parent_pos - attachment_pos;
+		v3f diffvec = pos - supposed_pos;
+		int diff = abs(diffvec.X) + abs(diffvec.Y) + abs(diffvec.Z);
+		if (diff > 10) {
+			setBasePosition(supposed_pos);
+			actionstream << "Server: " << m_player->getName()
+					<< " moved away from parent;"
+					<< " resetting position." << std::endl;
+			return true;
+		}
+		else
+			return false;
+	}
+
 
 	bool cheated = false;
 	/*
