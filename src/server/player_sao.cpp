@@ -564,12 +564,16 @@ bool PlayerSAO::checkMovementCheat()
 		return false;
 	}
 
-	if (isAttached()) {
+	ServerActiveObject *parentSAO = getParent();
+
+	if (parentSAO) {
+		UnitSAO *parent = dynamic_cast<UnitSAO *>(parentSAO);
+		if (! parent)
+			return false;
 		int parent_id;
 		std::string bone;
 		v3f attachment_pos, attachment_rot;
 		getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot);
-		UnitSAO *parent = (UnitSAO *)getParent();
 		v3f pos = getBasePosition();
 		f32 radius = sqrt(attachment_pos.X * attachment_pos.X + attachment_pos.Z * attachment_pos.Z);
 		v3f parent_pos = parent->getBasePosition();
@@ -587,8 +591,7 @@ bool PlayerSAO::checkMovementCheat()
 					<< " resetting position." << std::endl;
 			return true;
 		}
-		else
-			return false;
+		return false;
 	}
 
 
