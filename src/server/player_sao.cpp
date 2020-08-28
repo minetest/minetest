@@ -587,7 +587,7 @@ bool PlayerSAO::checkMovementCheat()
 		if (diff > 10) {
 			setBasePosition(supposed_pos);
 			actionstream << "Server: " << m_player->getName()
-					<< " moved away from parent;"
+					<< " moved away from parent; diff=" << diff
 					<< " resetting position." << std::endl;
 			return true;
 		}
