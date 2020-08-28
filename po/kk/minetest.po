@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Kazakh (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-07-06 21:41+0000\n"
+"PO-Revision-Date: 2020-09-09 01:23+0000\n"
 "Last-Translator: Fontan 030 <pomanfedurin@gmail.com>\n"
 "Language-Team: Kazakh <https://hosted.weblate.org/projects/minetest/minetest/"
 "kk/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -823,7 +823,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "Бисызықты фильтрация"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bump Mapping"
@@ -875,7 +875,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr ""
+msgstr "Жоқ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -891,7 +891,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
+msgstr "Бөлшектер"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Reset singleplayer world"
@@ -923,7 +923,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Текстурлеу:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -939,7 +939,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "Үшсызықты фильтрация"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -963,7 +963,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
-msgstr ""
+msgstr "Басты мәзір"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
@@ -1098,7 +1098,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Құпия сөзді өзгерту"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -6056,7 +6056,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "Видеодрайвер"
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing factor"
@@ -6111,7 +6111,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
-msgstr ""
+msgstr "Жүру жылдамдығы"
 
 #: src/settings_translation_file.cpp
 msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
@@ -6276,7 +6276,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y of upper limit of large caves."
-msgstr ""
+msgstr "Үлкен үңгірлердің жоғарғы шегінің Y координаты."
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
