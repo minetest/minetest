@@ -398,8 +398,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	/* Modify count according to collected data */
 	count = src_item.count;
-	if (src_can_take_count != -1 && count > src_can_take_count)
-		count = src_can_take_count;
 	if (dst_can_put_count != -1 && count > dst_can_put_count)
 		count = dst_can_put_count;
 	/* Limit according to source item count */
