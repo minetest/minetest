@@ -1101,26 +1101,6 @@ int ObjectRef::l_get_player_name(lua_State *L)
 	return 1;
 }
 
-// get_player_velocity(self)
-int ObjectRef::l_get_player_velocity(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	log_deprecated(L, "Deprecated call to get_player_velocity, use get_velocity instead.");
-
-	return l_get_velocity(L);
-}
-
-// add_player_velocity(self, {x=num, y=num, z=num})
-int ObjectRef::l_add_player_velocity(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	log_deprecated(L, "Deprecated call to add_player_velocity, use add_velocity instead.");
-
-	return l_add_velocity(L);
-}
-
 // get_look_dir(self)
 int ObjectRef::l_get_look_dir(lua_State *L)
 {
@@ -2295,10 +2275,14 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_properties),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
-	// LuaEntitySAO-only
+
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
 	luamethod(ObjectRef, add_velocity),
 	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
+	{"get_player_velocity", ObjectRef::l_get_velocity},
+	{"add_player_velocity", ObjectRef::l_add_velocity},
+
+	// LuaEntitySAO-only
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),
@@ -2314,8 +2298,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, is_player_connected),
 	luamethod(ObjectRef, get_player_name),
-	luamethod(ObjectRef, get_player_velocity),
-	luamethod(ObjectRef, add_player_velocity),
+
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),
