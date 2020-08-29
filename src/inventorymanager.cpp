@@ -366,6 +366,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	if (from_inv == to_inv) {
 		// Move action within the same inventory
 		src_can_take_count = allowMove(src_item.count, player);
+
+		bool swap_expected = allow_swap;
 		allow_swap = allow_swap
 			&& (src_can_take_count == -1 || src_can_take_count >= src_item.count);
 		if (allow_swap) {
@@ -375,9 +377,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			allow_swap = allow_swap
 				&& (dst_can_put_count == -1 || dst_can_put_count >= try_put_count);
 			swapDirections();
-		} else {
-			dst_can_put_count = src_can_take_count;
 		}
+		if (swap_expected != allow_swap)
+			src_can_take_count = dst_can_put_count = 0;
 	} else {
 		// Take from one inventory, put into another
 		dst_can_put_count = allowPut(src_item, player);
