@@ -88,11 +88,10 @@ void TestServerShutdownState::testReset()
 void TestServerShutdownState::testTrigger()
 {
 	Server::ShutdownState ss;
-	Server::ShutdownInformation info {
-		.should_reconnect = true,
-		.countdown_message = "testcountdown @1.",
-		.message = "testtrigger",
-		.delay = 3.0f
+	Server::ShutdownInformation info {.should_reconnect = true,
+			.countdown_message = "testcountdown @1.",
+			.message = "testtrigger",
+			.delay = 3.0f
 	};
 	ss.trigger(info);
 	UASSERT(!ss.is_requested);
@@ -105,11 +104,10 @@ void TestServerShutdownState::testTick()
 {
 	std::unique_ptr<FakeServer> fakeServer(new FakeServer());
 	Server::ShutdownState ss;
-	Server::ShutdownInformation info {
-		.should_reconnect = true,
-		.countdown_message = "testcountdown @1.",
-		.message = "testtrigger",
-		.delay = 28.0f
+	Server::ShutdownInformation info {.should_reconnect = true,
+			.countdown_message = "testcountdown @1.",
+			.message = "testtrigger",
+			.delay = 28.0f
 	};
 	ss.trigger(info);
 	ss.tick(0.0f, fakeServer.get());
