@@ -1451,7 +1451,23 @@ Same as `image`, but does not accept a `position`; the position is instead deter
 * `world_pos`: World position of the waypoint.
 * `offset`: offset in pixels from position.
 
+### `compass`
 
+Displays an image oriented or translated according to current heading direction.
+
+* `size`: The size of this element. Negative values represent percentage
+  of the screen; e.g. `x=-100` means 100% (width).
+* `scale`: Scale of the translated image (used only for dir = 2 or dir = 3).
+* `text`: The name of the texture to use.
+* `alignment`: The alignment of the image.
+* `offset`: Offset in pixels from position.
+* `dir`: How the image is rotated/translated:
+  * 0 - Rotate as heading direction
+  * 1 - Rotate in reverse direction
+  * 2 - Translate as landscape direction
+  * 3 - Translate in reverse direction
+
+If translation is chosen, texture is repeated horizontally to fill the whole element.
 
 Representations of simple things
 ================================
@@ -7968,7 +7984,7 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
     {
         hud_elem_type = "image",  -- See HUD element types
-        -- Type of element, can be "image", "text", "statbar", or "inventory"
+        -- Type of element, can be "image", "text", "statbar", "inventory" or "compass"
 
         position = {x=0.5, y=0.5},
         -- Left corner position of element
