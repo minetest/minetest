@@ -574,15 +574,10 @@ bool PlayerSAO::checkMovementCheat()
 		std::string bone;
 		v3f attachment_pos, attachment_rot;
 		getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot);
-		v3f pos = getBasePosition();
 		v3f parent_pos = parent->getBasePosition();
-		f32 parent_rot = parent->getRadYawDep();
-		v3f supposed_pos = parent_pos + attachment_pos * v3f(-3, 3, -3);
-		supposed_pos.rotateXZBy(90 + core::radToDeg(parent_rot), parent_pos);
-		v3f diffvec = pos - supposed_pos;
-		f32 diff = diffvec.getLength();
+		f32 diff = (getBasePosition() - parent_pos).getLength() - (attachment_pos * 3).getLength();
 		if (diff > 10) {
-			setBasePosition(supposed_pos);
+			setBasePosition(parent_pos);
 			actionstream << "Server: " << m_player->getName()
 					<< " moved away from parent; diff=" << diff
 					<< " resetting position." << std::endl;
