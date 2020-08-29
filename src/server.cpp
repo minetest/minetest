@@ -2453,7 +2453,7 @@ bool Server::addMediaFile(const std::string &filename,
 	// Read data
 	std::string filedata;
 	if (!fs::ReadFile(filepath, filedata)) {
-		errorstream << "Server::addMediaFile(): Failed to read \""
+		errorstream << "Server::addMediaFile(): Failed to open \""
 					<< filename << "\" for reading" << std::endl;
 		return false;
 	}

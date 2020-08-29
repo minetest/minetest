@@ -758,7 +758,7 @@ bool ReadFile(const std::string &path, std::string &out)
 	}
 
 	auto size = is.tellg();
-	out = std::string(size, '\0');
+	out.resize(size);
 	is.seekg(0);
 	is.read(&out[0], size);
 
