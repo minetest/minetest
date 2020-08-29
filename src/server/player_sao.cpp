@@ -575,16 +575,21 @@ bool PlayerSAO::checkMovementCheat()
 		v3f attachment_pos, attachment_rot;
 		getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot);
 		v3f pos = getBasePosition();
-		f32 radius = sqrt(attachment_pos.X * attachment_pos.X + attachment_pos.Z * attachment_pos.Z);
 		v3f parent_pos = parent->getBasePosition();
-		f32 parent_rot = parent->getRadYawDep() + acos(1 / radius);
-		attachment_pos.X = cos(parent_rot) * radius;
-		attachment_pos.Z = sin(parent_rot) * radius;
-		attachment_pos *= 3;
-		v3f supposed_pos = parent_pos - attachment_pos;
+		f32 parent_rot = parent->getRadYawDep();
+		attachment_pos *= -3;
+		attachment_pos.Y *= -1;
+		v3f supposed_pos = parent_pos + attachment_pos;
+		supposed_pos.rotateXZBy(90 + parent_rot * 180 / core::PI, parent_pos);
 		v3f diffvec = pos - supposed_pos;
-		int diff = abs(diffvec.X) + abs(diffvec.Y) + abs(diffvec.Z);
-		if (diff > 10) {
+		f32 diff = abs(diffvec.X) + abs(diffvec.Y) + abs(diffvec.Z);
+		actionstream
+			<< "parent_pos " << parent_pos.X << " " << parent_pos.Y << " " << parent_pos.Z << std::endl
+			<< "pos " << pos.X << " " << pos.Y << " " << pos.Z << std::endl
+			<< "supposed_pos " << supposed_pos.X << " " << supposed_pos.Y << " " << supposed_pos.Z << std::endl
+			<< "attachment_pos " << attachment_pos.X << " " << attachment_pos.Y << " " << attachment_pos.Z << std::endl
+			;
+		if (diff > 1) {
 			setBasePosition(supposed_pos);
 			actionstream << "Server: " << m_player->getName()
 					<< " moved away from parent; diff=" << diff
