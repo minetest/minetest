@@ -20,11 +20,11 @@ local function get_formspec(tabview, name, tabdata)
 	-- Update the cached supported proto info,
 	-- it may have changed after a change by the settings menu.
 	common_update_cached_supp_proto()
-	local fav_selected
+	local selected
 	if menudata.search_result then
-		fav_selected = menudata.search_result[tabdata.fav_selected]
+		selected = menudata.search_result[tabdata.selected]
 	else
-		fav_selected = serverlistmgr.favorites[tabdata.fav_selected]
+		selected = serverlistmgr.servers[tabdata.selected]
 	end
 
 	if not tabdata.search_for then
@@ -57,12 +57,12 @@ local function get_formspec(tabview, name, tabdata)
 		-- Connect
 		"button[9.88,4.9;2.3,1;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
-	if tabdata.fav_selected and fav_selected then
+	if tabdata.selected and selected then
 		if gamedata.fav then
 			retval = retval .. "button[7.73,4.9;2.3,1;btn_delete_favorite;" ..
 				fgettext("Del. Favorite") .. "]"
 		end
-		if fav_selected.description then
+		if selected.description then
 			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
 				core.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
 		end
@@ -102,29 +102,30 @@ local function get_formspec(tabview, name, tabdata)
 
 			retval = retval .. render_serverlist_row(server, server.is_favorite)
 		end
-	elseif #serverlistmgr.favorites > 0 then
+	elseif #serverlistmgr.servers > 0 then
 		local favs = serverlistmgr.get_favorites()
 		if #favs > 0 then
 			for i = 1, #favs do
-			for j = 1, #serverlistmgr.favorites do
-				if serverlistmgr.favorites[j].address == favs[i].address and
-						serverlistmgr.favorites[j].port == favs[i].port then
-					table.insert(serverlistmgr.favorites, i, table.remove(serverlistmgr.favorites, j))
+				for j = 1, #serverlistmgr.servers do
+					if serverlistmgr.servers[j].address == favs[i].address and
+							serverlistmgr.servers[j].port == favs[i].port then
+						table.insert(serverlistmgr.servers, i, table.remove(serverlistmgr.servers, j))
+					end
 				end
-			end
-				if favs[i].address ~= serverlistmgr.favorites[i].address then
-					table.insert(serverlistmgr.favorites, i, favs[i])
+				if favs[i].address ~= serverlistmgr.servers[i].address then
+					table.insert(serverlistmgr.servers, i, favs[i])
 				end
 			end
 		end
-		retval = retval .. render_serverlist_row(serverlistmgr.favorites[1], (#favs > 0))
-		for i = 2, #serverlistmgr.favorites do
-			retval = retval .. "," .. render_serverlist_row(serverlistmgr.favorites[i], (i <= #favs))
+
+		retval = retval .. render_serverlist_row(serverlistmgr.servers[1], (#favs > 0))
+		for i = 2, #serverlistmgr.servers do
+			retval = retval .. "," .. render_serverlist_row(serverlistmgr.servers[i], (i <= #favs))
 		end
 	end
 
-	if tabdata.fav_selected then
-		retval = retval .. ";" .. tabdata.fav_selected .. "]"
+	if tabdata.selected then
+		retval = retval .. ";" .. tabdata.selected .. "]"
 	else
 		retval = retval .. ";0]"
 	end
@@ -134,7 +135,7 @@ end
 
 --------------------------------------------------------------------------------
 local function main_button_handler(tabview, fields, name, tabdata)
-	local serverlist = menudata.search_result or serverlistmgr.favorites
+	local serverlist = menudata.search_result or serverlistmgr.servers
 
 	if fields.te_name then
 		gamedata.playername = fields.te_name
@@ -147,8 +148,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		if event.type == "DCL" then
 			if event.row <= #serverlist then
-				if serverlistmgr.favorites_is_public and
-						not is_server_protocol_compat_or_error(
+				if not is_server_protocol_compat_or_error(
 							fav.proto_min, fav.proto_max) then
 					return true
 				end
@@ -193,7 +193,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 					core.settings:set("address", address)
 					core.settings:set("remote_port", port)
 				end
-				tabdata.fav_selected = event.row
+				tabdata.selected = event.row
 			end
 			return true
 		end
@@ -206,15 +206,15 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		if fav_idx then
 			if fields.key_up and fav_idx > 1 then
 				fav_idx = fav_idx - 1
-			elseif fields.key_down and fav_idx < #serverlistmgr.favorites then
+			elseif fields.key_down and fav_idx < #serverlistmgr.servers then
 				fav_idx = fav_idx + 1
 			end
 		else
 			fav_idx = 1
 		end
 
-		if not serverlistmgr.favorites or not fav then
-			tabdata.fav_selected = 0
+		if not serverlistmgr.servers or not fav then
+			tabdata.selected = 0
 			return true
 		end
 
@@ -226,7 +226,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			core.settings:set("remote_port", port)
 		end
 
-		tabdata.fav_selected = fav_idx
+		tabdata.selected = fav_idx
 		return true
 	end
 
@@ -234,9 +234,9 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		local current_favorite = core.get_table_index("favorites")
 		if not current_favorite then return end
 
-		serverlistmgr.delete_favorite(serverlistmgr.favorites[current_favorite])
+		serverlistmgr.delete_favorite(serverlistmgr.servers[current_favorite])
 		serverlistmgr.sync()
-		tabdata.fav_selected = nil
+		tabdata.selected = nil
 
 		core.settings:set("address", "")
 		core.settings:set("remote_port", "30000")
@@ -244,11 +244,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields.btn_mp_search or fields.key_enter_field == "te_search" then
-		tabdata.fav_selected = 1
+		tabdata.selected = 1
 		local input = fields.te_search:lower()
 		tabdata.search_for = fields.te_search
 
-		if #serverlistmgr.favorites < 2 then
+		if #serverlistmgr.servers < 2 then
 			return true
 		end
 
@@ -268,8 +268,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		-- Search the serverlist
 		local search_result = {}
-		for i = 1, #serverlistmgr.favorites do
-			local server = serverlistmgr.favorites[i]
+		for i = 1, #serverlistmgr.servers do
+			local server = serverlistmgr.servers[i]
 			local found = 0
 			for k = 1, #keywords do
 				local keyword = keywords[k]
@@ -286,7 +286,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				end
 			end
 			if found > 0 then
-				local points = (#serverlistmgr.favorites - i) / 5 + found
+				local points = (#serverlistmgr.servers - i) / 5 + found
 				server.points = points
 				table.insert(search_result, server)
 			end
@@ -328,8 +328,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			gamedata.servername        = fav.name
 			gamedata.serverdescription = fav.description
 
-			if serverlistmgr.favorites_is_public and
-					not is_server_protocol_compat_or_error(
+			if not is_server_protocol_compat_or_error(
 						fav.proto_min, fav.proto_max) then
 				return true
 			end

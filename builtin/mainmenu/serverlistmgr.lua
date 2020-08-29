@@ -36,22 +36,21 @@ local function order_favorite_list(list)
 	return res
 end
 
+local public_downloading = false
+
 --------------------------------------------------------------------------------
 function serverlistmgr.sync()
-	if not serverlistmgr.public_known then
-		serverlistmgr.public_known = {{
+	if not serverlistmgr.servers then
+		serverlistmgr.servers = {{
 			name = fgettext("Loading..."),
 			description = fgettext_ne("Try reenabling public serverlist and check your internet connection.")
 		}}
 	end
-	serverlistmgr.favorites = serverlistmgr.public_known
-	serverlistmgr.favorites_is_public = true
 
-	if not serverlistmgr.public_downloading then
-		serverlistmgr.public_downloading = true
-	else
+	if public_downloading then
 		return
 	end
+	public_downloading = true
 
 	core.handle_async(
 		function(param)
@@ -71,12 +70,10 @@ function serverlistmgr.sync()
 		end,
 		nil,
 		function(result)
-			serverlistmgr.public_downloading = nil
+			public_downloading = nil
 			local favs = order_favorite_list(result)
 			if favs[1] then
-				serverlistmgr.public_known = favs
-				serverlistmgr.favorites = serverlistmgr.public_known
-				serverlistmgr.favorites_is_public = true
+				serverlistmgr.servers = favs
 			end
 			core.event_handler("Refresh")
 		end
@@ -189,13 +186,13 @@ local function delete_favorite(favorites, current_favorite)
 end
 
 --------------------------------------------------------------------------------
-function serverlistmgr.get_favorites(current_favorite)
-	if menudata.favorites then
-		return menudata.favorites
+function serverlistmgr.get_favorites()
+	if serverlistmgr.favorites then
+		return serverlistmgr.favorites
 	end
 
-	menudata.favorites = read_favorites()
-	return menudata.favorites or {}
+	serverlistmgr.favorites = read_favorites()
+	return serverlistmgr.favorites or {}
 end
 
 --------------------------------------------------------------------------------
