@@ -352,10 +352,19 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	bool allow_swap = !list_to->itemFits(to_i, src_item, &restitem)
 		&& restitem.count == src_item.count
 		&& !caused_by_move_somewhere;
+
 	// Shift-click: Cannot fill this stack, proceed with next slot
 	if (caused_by_move_somewhere && restitem.count == src_item.count)
 		return;
+
+	if (allow_swap) {
+		// Swap will affect the entire stack if it can performed.
+		src_item = list_from->getItem(from_i);
+		count = src_item.count;
+	}
+
 	if (from_inv == to_inv) {
+		// Move action within the same inventory
 		src_can_take_count = allowMove(src_item.count, player);
 		allow_swap = allow_swap
 			&& (src_can_take_count == -1 || src_can_take_count >= src_item.count);
@@ -370,6 +379,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			dst_can_put_count = src_can_take_count;
 		}
 	} else {
+		// Take from one inventory, put into another
 		dst_can_put_count = allowPut(src_item, player);
 		src_can_take_count = allowTake(src_item, player);
 		
@@ -398,6 +408,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	/* Modify count according to collected data */
 	count = src_item.count;
+	if (src_can_take_count != -1 && count > src_can_take_count)
+		count = src_can_take_count;
 	if (dst_can_put_count != -1 && count > dst_can_put_count)
 		count = dst_can_put_count;
 	/* Limit according to source item count */
