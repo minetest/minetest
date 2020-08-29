@@ -582,7 +582,7 @@ bool PlayerSAO::checkMovementCheat()
 		v3f supposed_pos = parent_pos + attachment_pos;
 		supposed_pos.rotateXZBy(90 + parent_rot * 180 / core::PI, parent_pos);
 		v3f diffvec = pos - supposed_pos;
-		f32 diff = abs(diffvec.X) + abs(diffvec.Y) + abs(diffvec.Z);
+		f32 diff = diffvec.getLength();
 		if (diff > 10) {
 			setBasePosition(supposed_pos);
 			actionstream << "Server: " << m_player->getName()
