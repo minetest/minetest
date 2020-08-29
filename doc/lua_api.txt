@@ -152,6 +152,7 @@ Mod directory structure
     │   ├── models
     │   ├── textures
     │   │   ├── modname_stuff.png
+    │   │   ├── modname_stuff_normal.png
     │   │   ├── modname_something_else.png
     │   │   ├── subfolder_foo
     │   │   │   ├── modname_more_stuff.png
@@ -383,6 +384,36 @@ stripping out the file extension:
 
 * e.g. `foomod_foothing.png`
 * e.g. `foomod_foothing`
+
+
+Normalmap Textures
+------------------
+
+If shaders and bumpmapping or parallax occlusion is enabled, Minetest tries
+to load normalmaps.
+Those image files have to end with `_normal.png` and start with the same name
+as their corresponding texture.
+For example a normalmap for `foomod_foothing.png` has to be called
+`foomod_foothing_normal.png`.
+
+The sRGB R, G and B colour values of a normalmap pixel are each directly
+mapped from `{0, ..., 255}` to `[-1, 1]` and, taken together,
+define the normal vector.
+The alpha channel defines the heightmap for parallax occlusion.
+To be safe, the alpha values should always be bigger than zero
+because the colour values, which define the normal vector,
+may be undefined for image formats where colour is discarded in fully
+transparent pixels.
+
+Bumpmapping and parallax occlusion are currently experimental features:
+
+* Bumpmapping in Minetest happens in an obscure way; there are no light sources
+  defined in the shaders except the sunlight direction.
+* Parallax occlusion with relief-mapping mode does not yet work correctly
+  together with Minetest's Fastfaces.
+* The normalmap files must end with `.png`, so other image files are not
+  supported.
+
 
 Texture modifiers
 -----------------
