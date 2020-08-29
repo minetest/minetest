@@ -629,14 +629,14 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		if (ma->from_inv != ma->to_inv)
 			m_inventory_mgr->setInventoryModified(ma->to_inv);
 
-		bool from_inv_is_current_player = ma->from_inv.type == InventoryLocation::CURRENT_PLAYER;
+		bool from_inv_is_current_player = false;
 		if (ma->from_inv.type == InventoryLocation::PLAYER) {
 			if (ma->from_inv.name != player->getName())
 				return;
 			from_inv_is_current_player = true;
 		}
 		
-		bool to_inv_is_current_player = ma->to_inv.type == InventoryLocation::CURRENT_PLAYER;
+		bool to_inv_is_current_player = false;
 		if (ma->to_inv.type == InventoryLocation::PLAYER) {
 			if (ma->to_inv.name != player->getName())
 				return;
