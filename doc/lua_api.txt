@@ -153,7 +153,11 @@ Mod directory structure
     │   ├── textures
     │   │   ├── modname_stuff.png
     │   │   ├── modname_stuff_normal.png
-    │   │   └── modname_something_else.png
+    │   │   ├── modname_something_else.png
+    │   │   ├── subfolder_foo
+    │   │   │   ├── modname_more_stuff.png
+    │   │   │   └── another_subfolder
+    │   │   └── bar_subfolder
     │   ├── sounds
     │   ├── media
     │   ├── locale
@@ -222,18 +226,20 @@ registered callbacks.
 `minetest.settings` can be used to read custom or existing settings at load
 time, if necessary. (See [`Settings`])
 
-### `models`
-
-Models for entities or meshnodes.
-
-### `textures`, `sounds`, `media`
+### `textures`, `sounds`, `media`, `models`, `locale`
 
 Media files (textures, sounds, whatever) that will be transferred to the
-client and will be available for use by the mod.
+client and will be available for use by the mod and translation files for
+the clients (see [Translations]).
 
-### `locale`
+It is suggested to use the folders for the purpous they are thought for,
+eg. put textures into `textures`, translation files into `locale`,
+models for entities or meshnodes into `models` et cetera.
 
-Translation files for the clients. (See [Translations])
+These folders and subfolders can contain subfolders.
+Subfolders with names starting with `_` or `.` are ignored.
+If a subfolder contains a media file with the same name as a media file
+in one of its parents, the parent's file is used.
 
 Naming conventions
 ------------------
@@ -2473,6 +2479,8 @@ Elements
 * Simple colored box
 * `color` is color specified as a `ColorString`.
   If the alpha component is left blank, the box will be semitransparent.
+  If the color is not specified, the box will use the options specified by
+  its style. If the color is specified, all styling options will be ignored.
 
 ### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
@@ -2739,21 +2747,23 @@ Setting a property to nothing will reset it to the default value. For example:
 Some types may inherit styles from parent types.
 
 * animated_image, inherits from image
+* box
 * button
 * button_exit, inherits from button
 * checkbox
-* scrollbar
-* table
-* textlist
 * dropdown
 * field
-* pwdfield, inherits from field
-* textarea
-* label
-* vertlabel, inherits from field
+* image
 * image_button
 * item_image_button
+* label
+* pwdfield, inherits from field
+* scrollbar
 * tabheader
+* table
+* textarea
+* textlist
+* vertlabel, inherits from label
 
 
 ### Valid Properties
@@ -2762,7 +2772,18 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * box
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-        * Default to false in formspec_version version 3 or higher
+        * Defaults to false in formspec_version version 3 or higher
+    * **Note**: `colors`, `bordercolors`, and `borderwidths` accept multiple input types:
+        * Single value (e.g. `#FF0`): All corners/borders.
+        * Two values (e.g. `red,#FFAAFF`): top-left and bottom-right,top-right and bottom-left/
+          top and bottom,left and right.
+        * Four values (e.g. `blue,#A0F,green,#FFFA`): top-left/top and rotates clockwise.
+        * These work similarly to CSS borders.
+    * colors - `ColorString`. Sets the color(s) of the box corners. Default `black`.
+    * bordercolors - `ColorString`. Sets the color(s) of the borders. Default `black`.
+    * borderwidths - Integer. Sets the width(s) of the borders in pixels. If the width is
+      negative, the border will extend inside the box, whereas positive extends outside
+      the box. A width of zero results in no border; this is default.
 * button, button_exit, image_button, item_image_button
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
@@ -2798,12 +2819,6 @@ Some types may inherit styles from parent types.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* scrollbar
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* table, textlist
-    * font - Sets font type. See button `font` property for more information.
-    * font_size - Sets font size. See button `font_size` property for more information.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * dropdown
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * field, pwdfield, textarea
@@ -2828,9 +2843,15 @@ Some types may inherit styles from parent types.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
         * This is deprecated, use states instead.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
+* scrollbar
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+* table, textlist
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 
 ### Valid States
 
@@ -3072,10 +3093,12 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns in order minp, maxp vectors of the cuboid defined by `v1`, `v2`.
 * `vector.angle(v1, v2)`:
     * Returns the angle between `v1` and `v2` in radians.
-* `vector.dot(v1, v2)`
-    * Returns the dot product of `v1` and `v2`
-* `vector.cross(v1, v2)`
-    * Returns the cross product of `v1` and `v2`
+* `vector.dot(v1, v2)`:
+    * Returns the dot product of `v1` and `v2`.
+* `vector.cross(v1, v2)`:
+    * Returns the cross product of `v1` and `v2`.
+* `vector.offset(v, x, y, z)`:
+    * Returns the sum of the vectors `v` and `{x = x, y = y, z = z}`.
 
 For the following functions `x` can be either a vector or a number:
 
@@ -5269,9 +5292,12 @@ Sounds
 * `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
-      Negative step will lower the sound volume, positive step will increase
-      the sound volume.
+      The gain will change by this much per second,
+      until it reaches the target gain.
+      Note: Older versions used a signed step. This is deprecated, but old
+      code will still work. (the client uses abs(step) to correct it)
     * `gain` the target gain for the fade.
+      Fading to zero will delete the sound.
 
 Timing
 ------
@@ -6107,16 +6133,25 @@ object you are working with still exists.
 * `set_yaw(radians)`: sets the yaw (heading).
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
+    * Set a texture modifier to the base texture, for sprites and meshes.
+    * When calling `set_texture_mod` again, the previous one is discarded.
+    * `mod` the texture modifier. See [Texture modifiers].
 * `get_texture_mod()` returns current texture modifier
-* `set_sprite(p, num_frames, framelength, select_horiz_by_yawpitch)`
-    * Select sprite from spritesheet with optional animation and Dungeon Master
-      style texture selection based on yaw relative to camera
-    * `p`: {x=number, y=number}, the coordinate of the first frame
-      (x: column, y: row), default: `{x=0, y=0}`
-    * `num_frames`: number, default: `1`
-    * `framelength`: number, default: `0.2`
-    * `select_horiz_by_yawpitch`: boolean, this was once used for the Dungeon
-      Master mob, default: `false`
+* `set_sprite(p, num_frames, framelength, select_x_by_camera)`
+    * Specifies and starts a sprite animation
+    * Animations iterate along the frame `y` position.
+    * `p`: {x=column number, y=row number}, the coordinate of the first frame
+      default: `{x=0, y=0}`
+    * `num_frames`: Total frames in the texture, default: `1`
+    * `framelength`: Time per animated frame in seconds, default: `0.2`
+    * `select_x_by_camera`: Only for visual = `sprite`. Changes the frame `x`
+      position according to the view direction. default: `false`.
+        * First column:  subject facing the camera
+        * Second column: subject looking to the left
+        * Third column:  subject backing the camera
+        * Fourth column: subject looking to the right
+        * Fifth column:  subject viewed from above
+        * Sixth column:  subject viewed from below
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 
@@ -6194,15 +6229,23 @@ object you are working with still exists.
     * Only affects formspecs shown after this is called.
 * `get_formspec_prepend(formspec)`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
-    * The table consists of fields with boolean value representing the pressed
-      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up, zoom.
-    * example: `{jump=false, right=true, left=false, LMB=false, RMB=false,
-      sneak=true, aux1=false, down=false, up=false, zoom=false}`
-    * The `zoom` field is available since 5.3
+    * The table consists of fields with the following boolean values
+      representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
+      `aux1`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
+    * The fields `LMB` and `RMB` are equal to `dig` and `place` respectively,
+      and exist only to preserve backwards compatibility.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
-  keys.
-    * bit nr/meaning: 0/up, 1/down, 2/left, 3/right, 4/jump, 5/aux1, 6/sneak,
-      7/LMB, 8/RMB, 9/zoom (zoom available since 5.3)
+  keys. Bits:
+    * 0 - up
+    * 1 - down
+    * 2 - left
+    * 3 - right
+    * 4 - jump
+    * 5 - aux1
+    * 6 - sneak
+    * 7 - dig
+    * 8 - place
+    * 9 - zoom
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
@@ -7096,6 +7139,8 @@ Used by `minetest.register_node`.
 
         use_texture_alpha = false,
         -- Use texture's alpha channel
+        -- If this is set to false, the node will be rendered fully opaque
+        -- regardless of any texture transparency.
 
         palette = "palette.png",
         -- The node's `param2` is used to select a pixel from the image.
@@ -8102,11 +8147,13 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
         timeout = 10,
         -- Timeout for connection in seconds. Default is 3 seconds.
 
-        post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
-        -- Optional, if specified a POST request with post_data is performed.
+        method = "GET", "POST", "PUT" or "DELETE"
+        -- The http method to use. Defaults to "GET".
+
+        data = "Raw request data string" OR {field1 = "data1", field2 = "data2"},
+        -- Data for the POST, PUT or DELETE request.
         -- Accepts both a string and a table. If a table is specified, encodes
         -- table as x-www-form-urlencoded key-value pairs.
-        -- If post_data is not specified, a GET request is performed instead.
 
         user_agent = "ExampleUserAgent",
         -- Optional, if specified replaces the default minetest user agent with
@@ -8120,6 +8167,10 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
         multipart = boolean
         -- Optional, if true performs a multipart HTTP request.
         -- Default is false.
+        -- Post only, data must be array
+
+        post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
+        -- Deprecated, use `data` instead. Forces `method = "POST"`.
     }
 
 `HTTPRequestResult` definition

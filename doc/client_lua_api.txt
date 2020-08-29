@@ -1100,8 +1100,8 @@ Methods:
        aux1 = boolean,
        sneak = boolean,
        zoom = boolean,
-       LMB = boolean,
-       RMB = boolean,
+       dig = boolean,
+       place = boolean,
     }
 ```
 

@@ -1455,9 +1455,14 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "aux1");
 	lua_pushboolean(L, control.sneak);
 	lua_setfield(L, -2, "sneak");
-	lua_pushboolean(L, control.LMB);
+	lua_pushboolean(L, control.dig);
+	lua_setfield(L, -2, "dig");
+	lua_pushboolean(L, control.place);
+	lua_setfield(L, -2, "place");
+	// Legacy fields to ensure mod compatibility
+	lua_pushboolean(L, control.dig);
 	lua_setfield(L, -2, "LMB");
-	lua_pushboolean(L, control.RMB);
+	lua_pushboolean(L, control.place);
 	lua_setfield(L, -2, "RMB");
 	lua_pushboolean(L, control.zoom);
 	lua_setfield(L, -2, "zoom");
@@ -2294,6 +2299,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_rotation),
 	luamethod(ObjectRef, get_rotation),
 	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
+	luamethod(ObjectRef, get_texture_mod),
 	luamethod_aliased(ObjectRef, set_sprite, setsprite),
 	luamethod(ObjectRef, get_entity_name),
 	luamethod(ObjectRef, get_luaentity),

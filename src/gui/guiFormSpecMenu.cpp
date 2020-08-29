@@ -1225,6 +1225,7 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 
 		auto style = getDefaultStyleForElement("table", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+		e->setOverrideFont(style.getFont());
 
 		m_tables.emplace_back(spec, e);
 		m_fields.push_back(spec);
@@ -1302,6 +1303,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data, const std::string &element
 
 		auto style = getDefaultStyleForElement("textlist", name);
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+		e->setOverrideFont(style.getFont());
 
 		m_tables.emplace_back(spec, e);
 		m_fields.push_back(spec);
@@ -1738,7 +1740,7 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 
 	FieldSpec spec(
 		name,
-		utf8_to_wide(unescape_string(text)),
+		translate_string(utf8_to_wide(unescape_string(text))),
 		L"",
 		258 + m_fields.size()
 	);
@@ -2209,16 +2211,16 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 
 void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 {
-	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> parts = split(element, ';');
 
 	if ((parts.size() == 3) ||
 		((parts.size() > 3) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
-		std::vector<std::string> v_pos = split(parts[0],',');
-		std::vector<std::string> v_geom = split(parts[1],',');
+		std::vector<std::string> v_pos = split(parts[0], ',');
+		std::vector<std::string> v_geom = split(parts[1], ',');
 
-		MY_CHECKPOS("box",0);
-		MY_CHECKGEOM("box",1);
+		MY_CHECKPOS("box", 0);
+		MY_CHECKGEOM("box", 1);
 
 		v2s32 pos;
 		v2s32 geom;
@@ -2232,36 +2234,43 @@ void GUIFormSpecMenu::parseBox(parserData* data, const std::string &element)
 			geom.Y = stof(v_geom[1]) * spacing.Y;
 		}
 
+		FieldSpec spec(
+			"",
+			L"",
+			L"",
+			258 + m_fields.size(),
+			-2
+		);
+		spec.ftype = f_Box;
+
+		auto style = getDefaultStyleForElement("box", spec.fname);
+
 		video::SColor tmp_color;
+		std::array<video::SColor, 4> colors;
+		std::array<video::SColor, 4> bordercolors = {0x0, 0x0, 0x0, 0x0};
+		std::array<s32, 4> borderwidths = {0, 0, 0, 0};
 
-		if (parseColorString(parts[2], tmp_color, false, 0x8C)) {
-			FieldSpec spec(
-				"",
-				L"",
-				L"",
-				258 + m_fields.size(),
-				-2
-			);
-			spec.ftype = f_Box;
-
-			core::rect<s32> rect(pos, pos + geom);
-
-			GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid,
-					rect, tmp_color);
-
-			auto style = getDefaultStyleForElement("box", spec.fname);
-			e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
-
-			e->drop();
-
-			m_fields.push_back(spec);
-
+		if (parseColorString(parts[2], tmp_color, true, 0x8C)) {
+			colors = {tmp_color, tmp_color, tmp_color, tmp_color};
 		} else {
-			errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'  INVALID COLOR"  << std::endl;
+			colors = style.getColorArray(StyleSpec::COLORS, {0x0, 0x0, 0x0, 0x0});
+			bordercolors = style.getColorArray(StyleSpec::BORDERCOLORS,
+				{0x0, 0x0, 0x0, 0x0});
+			borderwidths = style.getIntArray(StyleSpec::BORDERWIDTHS, {0, 0, 0, 0});
 		}
+
+		core::rect<s32> rect(pos, pos + geom);
+
+		GUIBox *e = new GUIBox(Environment, data->current_parent, spec.fid, rect,
+			colors, bordercolors, borderwidths);
+		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, m_formspec_version < 3));
+		e->drop();
+
+		m_fields.push_back(spec);
 		return;
 	}
-	errorstream<< "Invalid Box element(" << parts.size() << "): '" << element << "'"  << std::endl;
+	errorstream << "Invalid Box element(" << parts.size() << "): '" << element
+		<< "'" << std::endl;
 }
 
 void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &element)
@@ -3110,42 +3119,42 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			// and default scaling (1.00).
 			use_imgsize = 0.5555 * screen_dpi * gui_scaling;
 		} else {
-			// In variable-size mode, we prefer to make the
-			// inventory image size 1/15 of screen height,
-			// multiplied by the gui_scaling config parameter.
-			// If the preferred size won't fit the whole
-			// form on the screen, either horizontally or
-			// vertically, then we scale it down to fit.
-			// (The magic numbers in the computation of what
-			// fits arise from the scaling factors in the
-			// following stanza, including the form border,
-			// help text space, and 0.1 inventory slot spare.)
-			// However, a minimum size is also set, that
-			// the image size can't be less than 0.3 inch
-			// multiplied by gui_scaling, even if this means
-			// the form doesn't fit the screen.
+			// Variables for the maximum imgsize that can fit in the screen.
+			double fitx_imgsize;
+			double fity_imgsize;
+
+			// Pad the screensize with 5% of the screensize on all sides to ensure
+			// that even the largest formspecs don't touch the screen borders.
+			v2f padded_screensize(
+				mydata.screensize.X * 0.9f,
+				mydata.screensize.Y * 0.9f
+			);
+
+			if (mydata.real_coordinates) {
+				fitx_imgsize = padded_screensize.X / mydata.invsize.X;
+				fity_imgsize = padded_screensize.Y / mydata.invsize.Y;
+			} else {
+				// The maximum imgsize in the old coordinate system also needs to
+				// factor in padding and spacing along with 0.1 inventory slot spare
+				// and help text space, hence the magic numbers.
+				fitx_imgsize = padded_screensize.X /
+						((5.0 / 4.0) * (0.5 + mydata.invsize.X));
+				fity_imgsize = padded_screensize.Y /
+						((15.0 / 13.0) * (0.85 + mydata.invsize.Y));
+			}
+
 #ifdef __ANDROID__
-			// For mobile devices these magic numbers are
-			// different and forms should always use the
-			// maximum screen space available.
-			double prefer_imgsize = mydata.screensize.Y / 10 * gui_scaling;
-			double fitx_imgsize = mydata.screensize.X /
-				((12.0 / 8.0) * (0.5 + mydata.invsize.X));
-			double fity_imgsize = mydata.screensize.Y /
-				((15.0 / 11.0) * (0.85 + mydata.invsize.Y));
-			use_imgsize = MYMIN(prefer_imgsize,
-					MYMIN(fitx_imgsize, fity_imgsize));
+			// In Android, the preferred imgsize should be larger to accommodate the
+			// smaller screensize.
+			double prefer_imgsize = padded_screensize.Y / 10 * gui_scaling;
 #else
-			double prefer_imgsize = mydata.screensize.Y / 15 * gui_scaling;
-			double fitx_imgsize = mydata.screensize.X /
-				((5.0 / 4.0) * (0.5 + mydata.invsize.X));
-			double fity_imgsize = mydata.screensize.Y /
-				((15.0 / 13.0) * (0.85 * mydata.invsize.Y));
-			double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
-			double min_imgsize = 0.3 * screen_dpi * gui_scaling;
-			use_imgsize = MYMAX(min_imgsize, MYMIN(prefer_imgsize,
-				MYMIN(fitx_imgsize, fity_imgsize)));
+			// Desktop computers have more space, so try to fit 15 coordinates.
+			double prefer_imgsize = padded_screensize.Y / 15 * gui_scaling;
 #endif
+			// Try to use the preferred imgsize, but if that's bigger than the maximum
+			// size, use the maximum size.
+			use_imgsize = std::min(prefer_imgsize,
+					std::min(fitx_imgsize, fity_imgsize));
 		}
 
 		// Everything else is scaled in proportion to the
@@ -3474,10 +3483,14 @@ void GUIFormSpecMenu::drawMenu()
 		e->setVisible(true);
 
 	/*
-		Call base class
-		(This is where all the drawing happens.)
+		This is where all the drawing happens.
 	*/
-	gui::IGUIElement::draw();
+	core::list<IGUIElement*>::Iterator it = Children.begin();
+	for (; it != Children.end(); ++it)
+		if ((*it)->isNotClipped() ||
+				AbsoluteClippingRect.isRectCollided(
+						(*it)->getAbsolutePosition()))
+			(*it)->draw();
 
 	for (gui::IGUIElement *e : m_clickthrough_elements)
 		e->setVisible(false);

@@ -1034,7 +1034,7 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"This server has experienced an internal error. You will now be disconnected."
 };
 
-enum PlayerListModifer: u8
+enum PlayerListModifer : u8
 {
 	PLAYER_LIST_INIT,
 	PLAYER_LIST_ADD,

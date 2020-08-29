@@ -48,7 +48,7 @@ struct FontSpec {
 
 	u16 getHash()
 	{
-		return (mode << 2) | (bold << 1) | italic;
+		return (mode << 2) | (static_cast<u8>(bold) << 1) | static_cast<u8>(italic);
 	}
 
 	unsigned int size;

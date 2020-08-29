@@ -1354,8 +1354,8 @@ void ServerEnvironment::step(float dtime)
 		std::shuffle(output.begin(), output.end(), m_rgen);
 
 		int i = 0;
-		// The time budget for ABMs is 20%.
-		u32 max_time_ms = m_cache_abm_interval * 1000 / 5;
+		// determine the time budget for ABMs
+		u32 max_time_ms = m_cache_abm_interval * 1000 * m_cache_abm_time_budget;
 		for (const v3s16 &p : output) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if (!block)

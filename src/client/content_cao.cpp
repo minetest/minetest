@@ -975,13 +975,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			if (controls.sneak && walking)
 				new_speed /= 2;
 
-			if (walking && (controls.LMB || controls.RMB)) {
+			if (walking && (controls.dig || controls.place)) {
 				new_anim = player->local_animations[3];
 				player->last_animation = WD_ANIM;
-			} else if(walking) {
+			} else if (walking) {
 				new_anim = player->local_animations[1];
 				player->last_animation = WALK_ANIM;
-			} else if(controls.LMB || controls.RMB) {
+			} else if (controls.dig || controls.place) {
 				new_anim = player->local_animations[2];
 				player->last_animation = DIG_ANIM;
 			}
@@ -1004,9 +1004,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 			// Update local player animations
 			if ((player->last_animation != old_anim ||
-				m_animation_speed != old_anim_speed) &&
-				player->last_animation != NO_ANIM && allow_update)
-					updateAnimation();
+					m_animation_speed != old_anim_speed) &&
+					player->last_animation != NO_ANIM && allow_update)
+				updateAnimation();
 
 		}
 	}
@@ -1176,6 +1176,7 @@ void GenericCAO::updateTexturePos()
 		int row = m_tx_basepos.Y;
 		int col = m_tx_basepos.X;
 
+		// Yawpitch goes rightwards
 		if (m_tx_select_horiz_by_yawpitch) {
 			if (cam_to_entity.Y > 0.75)
 				col += 5;
@@ -1205,6 +1206,27 @@ void GenericCAO::updateTexturePos()
 		float txs = m_tx_size.X;
 		float tys = m_tx_size.Y;
 		setBillboardTextureMatrix(m_spritenode, txs, tys, col, row);
+	}
+
+	else if (m_meshnode) {
+		if (m_prop.visual == "upright_sprite") {
+			int row = m_tx_basepos.Y;
+			int col = m_tx_basepos.X;
+
+			// Animation goes downwards
+			row += m_anim_frame;
+
+			const auto &tx = m_tx_size;
+			v2f t[4] = { // cf. vertices in GenericCAO::addToScene()
+				tx * v2f(col+1, row+1),
+				tx * v2f(col, row+1),
+				tx * v2f(col, row),
+				tx * v2f(col+1, row),
+			};
+			auto mesh = m_meshnode->getMesh();
+			setMeshBufferTextureCoords(mesh->getMeshBuffer(0), t, 4);
+			setMeshBufferTextureCoords(mesh->getMeshBuffer(1), t, 4);
+		}
 	}
 }
 
@@ -1247,7 +1269,7 @@ void GenericCAO::updateTextures(std::string mod)
 		}
 	}
 
-	if (m_animated_meshnode) {
+	else if (m_animated_meshnode) {
 		if (m_prop.visual == "mesh") {
 			for (u32 i = 0; i < m_prop.textures.size() &&
 					i < m_animated_meshnode->getMaterialCount(); ++i) {
@@ -1296,8 +1318,8 @@ void GenericCAO::updateTextures(std::string mod)
 			}
 		}
 	}
-	if(m_meshnode)
-	{
+
+	else if (m_meshnode) {
 		if(m_prop.visual == "cube")
 		{
 			for (u32 i = 0; i < 6; ++i)

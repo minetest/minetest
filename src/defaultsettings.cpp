@@ -73,6 +73,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_right", "KEY_KEY_D");
 	settings->setDefault("keymap_jump", "KEY_SPACE");
 	settings->setDefault("keymap_sneak", "KEY_LSHIFT");
+	settings->setDefault("keymap_dig", "KEY_LBUTTON");
+	settings->setDefault("keymap_place", "KEY_RBUTTON");
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
 	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
 	settings->setDefault("keymap_inventory", "KEY_KEY_I");
@@ -269,7 +271,7 @@ void set_default_settings(Settings *settings)
 	// Input
 	settings->setDefault("invert_mouse", "false");
 	settings->setDefault("mouse_sensitivity", "0.2");
-	settings->setDefault("repeat_rightclick_time", "0.25");
+	settings->setDefault("repeat_place_time", "0.25");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");
 	settings->setDefault("aux1_descends", "false");
@@ -288,7 +290,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 
 	// Main menu
-	settings->setDefault("main_menu_style", "full");
 	settings->setDefault("main_menu_path", "");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
 
@@ -328,6 +329,8 @@ void set_default_settings(Settings *settings)
 
 	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("contentdb_max_concurrent_downloads", "3");
+
 #ifdef __ANDROID__
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, android_default");
 #else
@@ -399,6 +402,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("active_block_mgmt_interval", "2.0");
 	settings->setDefault("abm_interval", "1.0");
+	settings->setDefault("abm_time_budget", "0.2");
 	settings->setDefault("nodetimer_interval", "0.2");
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");

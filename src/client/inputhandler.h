@@ -144,6 +144,14 @@ public:
 		return b;
 	}
 
+	// Checks whether a key was just pressed. State will be cleared
+	// in the subsequent iteration of Game::processPlayerInteraction
+	bool WasKeyPressed(const KeyPress &keycode) const { return keyWasPressed[keycode]; }
+
+	// Checks whether a key was just released. State will be cleared
+	// in the subsequent iteration of Game::processPlayerInteraction
+	bool WasKeyReleased(const KeyPress &keycode) const { return keyWasReleased[keycode]; }
+
 	void listenForKey(const KeyPress &keyCode) { keysListenedFor.set(keyCode); }
 	void dontListenForKeys() { keysListenedFor.clear(); }
 
@@ -158,17 +166,20 @@ public:
 	{
 		keyIsDown.clear();
 		keyWasDown.clear();
-
-		leftclicked = false;
-		rightclicked = false;
-		leftreleased = false;
-		rightreleased = false;
-
-		left_active = false;
-		middle_active = false;
-		right_active = false;
+		keyWasPressed.clear();
+		keyWasReleased.clear();
 
 		mouse_wheel = 0;
+	}
+
+	void clearWasKeyPressed()
+	{
+		keyWasPressed.clear();
+	}
+
+	void clearWasKeyReleased()
+	{
+		keyWasReleased.clear();
 	}
 
 	MyEventReceiver()
@@ -177,15 +188,6 @@ public:
 		m_touchscreengui = NULL;
 #endif
 	}
-
-	bool leftclicked = false;
-	bool rightclicked = false;
-	bool leftreleased = false;
-	bool rightreleased = false;
-
-	bool left_active = false;
-	bool middle_active = false;
-	bool right_active = false;
 
 	s32 mouse_wheel = 0;
 
@@ -198,8 +200,16 @@ public:
 private:
 	// The current state of keys
 	KeyList keyIsDown;
-	// Whether a key has been pressed or not
+
+	// Whether a key was down
 	KeyList keyWasDown;
+
+	// Whether a key has just been pressed
+	KeyList keyWasPressed;
+
+	// Whether a key has just been released
+	KeyList keyWasReleased;
+
 	// List of keys we listen for
 	// TODO perhaps the type of this is not really
 	// performant as KeyList is designed for few but
@@ -226,26 +236,18 @@ public:
 
 	virtual bool isKeyDown(GameKeyType k) = 0;
 	virtual bool wasKeyDown(GameKeyType k) = 0;
+	virtual bool wasKeyPressed(GameKeyType k) = 0;
+	virtual bool wasKeyReleased(GameKeyType k) = 0;
 	virtual bool cancelPressed() = 0;
+
+	virtual void clearWasKeyPressed() {}
+	virtual void clearWasKeyReleased() {}
 
 	virtual void listenForKey(const KeyPress &keyCode) {}
 	virtual void dontListenForKeys() {}
 
 	virtual v2s32 getMousePos() = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;
-
-	virtual bool getLeftState() = 0;
-	virtual bool getRightState() = 0;
-
-	virtual bool getLeftClicked() = 0;
-	virtual bool getRightClicked() = 0;
-	virtual void resetLeftClicked() = 0;
-	virtual void resetRightClicked() = 0;
-
-	virtual bool getLeftReleased() = 0;
-	virtual bool getRightReleased() = 0;
-	virtual void resetLeftReleased() = 0;
-	virtual void resetRightReleased() = 0;
 
 	virtual s32 getMouseWheel() = 0;
 
@@ -275,9 +277,25 @@ public:
 	{
 		return m_receiver->WasKeyDown(keycache.key[k]) || joystick.wasKeyDown(k);
 	}
+	virtual bool wasKeyPressed(GameKeyType k)
+	{
+		return m_receiver->WasKeyPressed(keycache.key[k]) || joystick.wasKeyReleased(k);
+	}
+	virtual bool wasKeyReleased(GameKeyType k)
+	{
+		return m_receiver->WasKeyReleased(keycache.key[k]) || joystick.wasKeyReleased(k);
+	}
 	virtual bool cancelPressed()
 	{
 		return wasKeyDown(KeyType::ESC) || m_receiver->WasKeyDown(CancelKey);
+	}
+	virtual void clearWasKeyPressed()
+	{
+		m_receiver->clearWasKeyPressed();
+	}
+	virtual void clearWasKeyReleased()
+	{
+		m_receiver->clearWasKeyReleased();
 	}
 	virtual void listenForKey(const KeyPress &keyCode)
 	{
@@ -306,59 +324,6 @@ public:
 		}
 	}
 
-	virtual bool getLeftState()
-	{
-		return m_receiver->left_active || joystick.isKeyDown(KeyType::MOUSE_L);
-	}
-	virtual bool getRightState()
-	{
-		return m_receiver->right_active || joystick.isKeyDown(KeyType::MOUSE_R);
-	}
-
-	virtual bool getLeftClicked()
-	{
-		return m_receiver->leftclicked ||
-		       joystick.getWasKeyDown(KeyType::MOUSE_L);
-	}
-	virtual bool getRightClicked()
-	{
-		return m_receiver->rightclicked ||
-		       joystick.getWasKeyDown(KeyType::MOUSE_R);
-	}
-
-	virtual void resetLeftClicked()
-	{
-		m_receiver->leftclicked = false;
-		joystick.clearWasKeyDown(KeyType::MOUSE_L);
-	}
-	virtual void resetRightClicked()
-	{
-		m_receiver->rightclicked = false;
-		joystick.clearWasKeyDown(KeyType::MOUSE_R);
-	}
-
-	virtual bool getLeftReleased()
-	{
-		return m_receiver->leftreleased ||
-		       joystick.wasKeyReleased(KeyType::MOUSE_L);
-	}
-	virtual bool getRightReleased()
-	{
-		return m_receiver->rightreleased ||
-		       joystick.wasKeyReleased(KeyType::MOUSE_R);
-	}
-
-	virtual void resetLeftReleased()
-	{
-		m_receiver->leftreleased = false;
-		joystick.clearWasKeyReleased(KeyType::MOUSE_L);
-	}
-	virtual void resetRightReleased()
-	{
-		m_receiver->rightreleased = false;
-		joystick.clearWasKeyReleased(KeyType::MOUSE_R);
-	}
-
 	virtual s32 getMouseWheel() { return m_receiver->getMouseWheel(); }
 
 	void clear()
@@ -384,22 +349,11 @@ public:
 
 	virtual bool isKeyDown(GameKeyType k) { return keydown[keycache.key[k]]; }
 	virtual bool wasKeyDown(GameKeyType k) { return false; }
+	virtual bool wasKeyPressed(GameKeyType k) { return false; }
+	virtual bool wasKeyReleased(GameKeyType k) { return false; }
 	virtual bool cancelPressed() { return false; }
 	virtual v2s32 getMousePos() { return mousepos; }
 	virtual void setMousePos(s32 x, s32 y) { mousepos = v2s32(x, y); }
-
-	virtual bool getLeftState() { return leftdown; }
-	virtual bool getRightState() { return rightdown; }
-
-	virtual bool getLeftClicked() { return leftclicked; }
-	virtual bool getRightClicked() { return rightclicked; }
-	virtual void resetLeftClicked() { leftclicked = false; }
-	virtual void resetRightClicked() { rightclicked = false; }
-
-	virtual bool getLeftReleased() { return leftreleased; }
-	virtual bool getRightReleased() { return rightreleased; }
-	virtual void resetLeftReleased() { leftreleased = false; }
-	virtual void resetRightReleased() { rightreleased = false; }
 
 	virtual s32 getMouseWheel() { return 0; }
 
@@ -411,10 +365,4 @@ private:
 	KeyList keydown;
 	v2s32 mousepos;
 	v2s32 mousespeed;
-	bool leftdown = false;
-	bool rightdown = false;
-	bool leftclicked = false;
-	bool rightclicked = false;
-	bool leftreleased = false;
-	bool rightreleased = false;
 };
