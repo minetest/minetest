@@ -583,13 +583,7 @@ bool PlayerSAO::checkMovementCheat()
 		supposed_pos.rotateXZBy(90 + parent_rot * 180 / core::PI, parent_pos);
 		v3f diffvec = pos - supposed_pos;
 		f32 diff = abs(diffvec.X) + abs(diffvec.Y) + abs(diffvec.Z);
-		actionstream
-			<< "parent_pos " << parent_pos.X << " " << parent_pos.Y << " " << parent_pos.Z << std::endl
-			<< "pos " << pos.X << " " << pos.Y << " " << pos.Z << std::endl
-			<< "supposed_pos " << supposed_pos.X << " " << supposed_pos.Y << " " << supposed_pos.Z << std::endl
-			<< "attachment_pos " << attachment_pos.X << " " << attachment_pos.Y << " " << attachment_pos.Z << std::endl
-			;
-		if (diff > 1) {
+		if (diff > 10) {
 			setBasePosition(supposed_pos);
 			actionstream << "Server: " << m_player->getName()
 					<< " moved away from parent; diff=" << diff
