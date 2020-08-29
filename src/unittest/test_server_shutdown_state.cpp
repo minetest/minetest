@@ -88,7 +88,7 @@ void TestServerShutdownState::testReset()
 void TestServerShutdownState::testTrigger()
 {
 	Server::ShutdownState ss;
-	Server::ShutdownInformation info {.should_reconnect = true,
+	Server::ShutdownInformation info{.should_reconnect = true,
 			.countdown_message = "testcountdown @1.",
 			.message = "testtrigger",
 			.delay = 3.0f
@@ -104,7 +104,7 @@ void TestServerShutdownState::testTick()
 {
 	std::unique_ptr<FakeServer> fakeServer(new FakeServer());
 	Server::ShutdownState ss;
-	Server::ShutdownInformation info {.should_reconnect = true,
+	Server::ShutdownInformation info{.should_reconnect = true,
 			.countdown_message = "testcountdown @1.",
 			.message = "testtrigger",
 			.delay = 28.0f
