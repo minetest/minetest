@@ -577,10 +577,8 @@ bool PlayerSAO::checkMovementCheat()
 		v3f pos = getBasePosition();
 		v3f parent_pos = parent->getBasePosition();
 		f32 parent_rot = parent->getRadYawDep();
-		attachment_pos *= -3;
-		attachment_pos.Y *= -1;
-		v3f supposed_pos = parent_pos + attachment_pos;
-		supposed_pos.rotateXZBy(90 + parent_rot * 180 / core::PI, parent_pos);
+		v3f supposed_pos = parent_pos + attachment_pos * v3f(-3, 3, -3);
+		supposed_pos.rotateXZBy(90 + core::radToDeg(parent_rot), parent_pos);
 		v3f diffvec = pos - supposed_pos;
 		f32 diff = diffvec.getLength();
 		if (diff > 10) {
