@@ -7026,6 +7026,13 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         liquids_pointable = false,
 
+        light_source = 0,
+        -- When used for nodes: Defines amount of light emitted by node.
+        -- Otherwise: Defines texture glow when viewed as a dropped item
+        -- To set the maximum (14), use the value 'minetest.LIGHT_MAX'.
+        -- A value outside the range 0 to minetest.LIGHT_MAX causes undefined
+        -- behavior.
+
         -- See "Tools" section for an example including explanation
         tool_capabilities = {
             full_punch_interval = 1.0,
@@ -7224,12 +7231,6 @@ Used by `minetest.register_node`.
 
         drowning = 0,
         -- Player will take this amount of damage if no bubbles are left
-
-        light_source = 0,
-        -- Amount of light emitted by node.
-        -- To set the maximum (14), use the value 'minetest.LIGHT_MAX'.
-        -- A value outside the range 0 to minetest.LIGHT_MAX causes undefined
-        -- behavior.
 
         damage_per_second = 0,
         -- If player is inside node, this damage is caused
