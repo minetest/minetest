@@ -377,6 +377,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			allow_swap = allow_swap
 				&& (dst_can_put_count == -1 || dst_can_put_count >= try_put_count);
 			swapDirections();
+		} else {
+			dst_can_put_count = src_can_take_count;
 		}
 		if (swap_expected != allow_swap)
 			src_can_take_count = dst_can_put_count = 0;
@@ -547,9 +549,13 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	// Source = destination => move
 	if (from_inv == to_inv) {
 		onMove(count, player);
-		swapDirections();
-		onMove(dst_can_put_count, player);
-		swapDirections();
+		if (did_swap) {
+			// Item is now placed in source list
+			src_item = list_from->getItem(from_i);
+			swapDirections();
+			onMove(src_item.count, player);
+			swapDirections();
+		}
 		mgr->setInventoryModified(from_inv);
 	} else {
 		onPutAndOnTake(src_item, player);
