@@ -617,6 +617,25 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		where the client made a bad prediction.
 	*/
 
+	const bool player_has_interact = checkPriv(player->getName(), "interact");
+
+	auto check_inv_access = [player, player_has_interact] (
+			const InventoryLocation &loc) -> bool {
+		if (loc.type == InventoryLocation::CURRENT_PLAYER)
+			return false; // Code error case
+		if (loc.type == InventoryLocation::PLAYER) {
+			// Allow access to own inventory in all cases
+			return loc.name == player->getName();
+		}
+
+		if (!player_has_interact) {
+			infostream << "Cannot modify foreign inventory: "
+					<< "No interact privilege" << std::endl;
+			return false;
+		}
+		return true;
+	};
+
 	/*
 		Handle restrictions and special cases of the move action
 	*/
@@ -630,21 +649,13 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		if (ma->from_inv != ma->to_inv)
 			m_inventory_mgr->setInventoryModified(ma->to_inv);
 
-		bool from_inv_is_current_player = false;
-		if (ma->from_inv.type == InventoryLocation::PLAYER) {
-			if (ma->from_inv.name != player->getName())
-				return;
-			from_inv_is_current_player = true;
+		if (!check_inv_access(ma->from_inv) ||
+				!check_inv_access(ma->to_inv)) {
+			delete a;
+			return;
 		}
 
-		bool to_inv_is_current_player = false;
-		if (ma->to_inv.type == InventoryLocation::PLAYER) {
-			if (ma->to_inv.name != player->getName())
-				return;
-			to_inv_is_current_player = true;
-		}
-
-		InventoryLocation *remote = from_inv_is_current_player ?
+		InventoryLocation *remote = ma->from_inv.type == InventoryLocation::PLAYER ?
 			&ma->to_inv : &ma->from_inv;
 
 		// Check for out-of-range interaction
@@ -652,8 +663,10 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 			v3f node_pos   = intToFloat(remote->p, BS);
 			v3f player_pos = player->getPlayerSAO()->getEyePosition();
 			f32 d = player_pos.getDistanceFrom(node_pos);
-			if (!checkInteractDistance(player, d, "inventory"))
+			if (!checkInteractDistance(player, d, "inventory")) {
+				delete a;
 				return;
+			}
 		}
 
 		/*
@@ -676,17 +689,6 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 					<< (ma->from_inv.dump()) << ":" << ma->from_list
 					<< " to " << (ma->to_inv.dump()) << ":" << ma->to_list
 					<< " because dst is " << ma->to_list << std::endl;
-			delete a;
-			return;
-		}
-
-		// Disallow moving items in elsewhere than player's inventory
-		// if not allowed to interact
-		if (!checkPriv(player->getName(), "interact") &&
-				(!from_inv_is_current_player ||
-				!to_inv_is_current_player)) {
-			infostream << "Cannot move outside of player's inventory: "
-					<< "No interact privilege" << std::endl;
 			delete a;
 			return;
 		}
@@ -713,7 +715,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		}
 
 		// Disallow dropping items if not allowed to interact
-		if (!checkPriv(player->getName(), "interact")) {
+		if (!player_has_interact || !check_inv_access(da->from_inv)) {
 			delete a;
 			return;
 		}
@@ -737,17 +739,22 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 		m_inventory_mgr->setInventoryModified(ca->craft_inv);
 
-		//bool craft_inv_is_current_player =
-		//	(ca->craft_inv.type == InventoryLocation::PLAYER) &&
-		//	(ca->craft_inv.name == player->getName());
-
 		// Disallow crafting if not allowed to interact
-		if (!checkPriv(player->getName(), "interact")) {
+		if (!player_has_interact) {
 			infostream << "Cannot craft: "
 					<< "No interact privilege" << std::endl;
 			delete a;
 			return;
 		}
+
+		if (!check_inv_access(ca->craft_inv)) {
+			delete a;
+			return;
+		}
+	} else {
+		// Unknown action. Ignored.
+		delete a;
+		return;
 	}
 
 	// Do the action
