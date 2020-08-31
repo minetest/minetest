@@ -119,9 +119,9 @@ struct ServerPlayingSound
 
 struct MinimapMode {
 	u16 type = 0;
-	std::string label = "";
+	std::string label;
 	u16 size = 0;
-	std::string texture = "";
+	std::string texture;
 	u16 scale = 1;
 };
 
@@ -338,13 +338,14 @@ public:
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
 
+	void SendMinimapModes(session_t peer_id,
+			std::vector<MinimapMode> &modes,
+			size_t wanted_mode);
+
 	void sendDetachedInventories(session_t peer_id, bool incremental);
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
-
-	void SendMinimapModes(session_t peer_id, std::vector<MinimapMode> modes,
-			size_t wanted_mode);
 
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
