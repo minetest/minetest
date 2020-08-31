@@ -6317,19 +6317,19 @@ object you are working with still exists.
 * `hud_get_hotbar_selected_image`: returns texturename
 * `set_minimap_modes({mode, mode, ...}, selected_mode)`
     * Overrides the available minimap modes (and toggle order), and changes the
-	selected mode.
+    selected mode.
     * `mode` is a table consisting of up to four fields:
         * `type`: Available type:
             * `off`: Minimap off
             * `surface`: Minimap in surface mode
             * `radar`: Minimap in radar mode
-            * `texture`: Texture to be displayed instead of terrain map (texture
-            is centered around 0,0 and can be scaled). Texture size is limited
-			to 512 x 512 pixel.
+            * `texture`: Texture to be displayed instead of terrain map
+              (texture is centered around 0,0 and can be scaled).
+              Texture size is limited to 512 x 512 pixel.
         * `label`: Optional label to display on minimap mode toggle
           The translation must be handled within the mod.
         * `size`: Sidelength or diameter, in number of nodes, of the terrain
-		displayed in minimap
+          displayed in minimap
         * `texture`: Only for texture type, name of the texture to display
         * `scale`: Only for texture type, scale of the texture map in nodes per
           pixel (for example a `scale` of 2 means each pixel represents a 2x2
