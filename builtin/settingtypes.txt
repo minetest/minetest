@@ -1446,12 +1446,6 @@ curl_file_download_timeout (cURL file download timeout) int 300000
 #    Makes DirectX work with LuaJIT. Disable if it causes troubles.
 high_precision_fpu (High-precision FPU) bool true
 
-#    Changes the main menu UI:
-#    -   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no game or texture pack choosers. May be
-#                necessary for smaller screens.
-main_menu_style (Main menu style) enum full full,simple
-
 #    Replaces the default main menu with a custom one.
 main_menu_script (Main menu script) string
 

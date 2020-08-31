@@ -313,11 +313,12 @@ void GUIButton::draw()
 
 		// PATCH
 		video::ITexture* texture = ButtonImages[(u32)imageState].Texture;
+		video::SColor image_colors[] = { BgColor, BgColor, BgColor, BgColor };
 		if (BgMiddle.getArea() == 0) {
 			driver->draw2DImage(texture,
 					ScaleImage? AbsoluteRect : core::rect<s32>(pos, sourceRect.getSize()),
 					sourceRect, &AbsoluteClippingRect,
-					0, UseAlphaChannel);
+					image_colors, UseAlphaChannel);
 		} else {
 			core::rect<s32> middle = BgMiddle;
 			// `-x` is interpreted as `w - x`
@@ -327,7 +328,7 @@ void GUIButton::draw()
 				middle.LowerRightCorner.Y += texture->getOriginalSize().Height;
 			draw2DImage9Slice(driver, texture,
 					ScaleImage ? AbsoluteRect : core::rect<s32>(pos, sourceRect.getSize()),
-					middle, &AbsoluteClippingRect);
+					middle, &AbsoluteClippingRect, image_colors);
 		}
 		// END PATCH
 	}
@@ -722,6 +723,8 @@ GUIButton* GUIButton::addButton(IGUIEnvironment *environment,
 
 void GUIButton::setColor(video::SColor color)
 {
+	BgColor = color;
+
 	float d = 0.65f;
 	for (size_t i = 0; i < 4; i++) {
 		video::SColor base = Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);
@@ -750,22 +753,26 @@ void GUIButton::setFromStyle(const StyleSpec& style)
 	bool pressed = (style.getState() & StyleSpec::STATE_PRESSED) != 0;
 
 	if (style.isNotDefault(StyleSpec::BGCOLOR)) {
-
 		setColor(style.getColor(StyleSpec::BGCOLOR));
 
 		// If we have a propagated hover/press color, we need to automatically
 		// lighten/darken it
 		if (!Styles[style.getState()].isNotDefault(StyleSpec::BGCOLOR)) {
-			for (size_t i = 0; i < 4; i++) {
 				if (pressed) {
-					Colors[i] = multiplyColorValue(Colors[i], COLOR_PRESSED_MOD);
+					BgColor = multiplyColorValue(BgColor, COLOR_PRESSED_MOD);
+
+					for (size_t i = 0; i < 4; i++)
+						Colors[i] = multiplyColorValue(Colors[i], COLOR_PRESSED_MOD);
 				} else if (hovered) {
-					Colors[i] = multiplyColorValue(Colors[i], COLOR_HOVERED_MOD);
+					BgColor = multiplyColorValue(BgColor, COLOR_HOVERED_MOD);
+
+					for (size_t i = 0; i < 4; i++)
+						Colors[i] = multiplyColorValue(Colors[i], COLOR_HOVERED_MOD);
 				}
-			}
 		}
 
 	} else {
+		BgColor = video::SColor(255, 255, 255, 255);
 		for (size_t i = 0; i < 4; i++) {
 			video::SColor base =
 					Environment->getSkin()->getColor((gui::EGUI_DEFAULT_COLOR)i);

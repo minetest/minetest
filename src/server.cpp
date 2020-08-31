@@ -213,7 +213,8 @@ Server::Server(
 		bool simple_singleplayer_mode,
 		Address bind_addr,
 		bool dedicated,
-		ChatInterface *iface
+		ChatInterface *iface,
+		std::string *on_shutdown_errmsg
 	):
 	m_bind_addr(bind_addr),
 	m_path_world(path_world),
@@ -232,6 +233,7 @@ Server::Server(
 	m_thread(new ServerThread(this)),
 	m_clients(m_con),
 	m_admin_chat(iface),
+	m_on_shutdown_errmsg(on_shutdown_errmsg),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	if (m_path_world.empty())
@@ -314,7 +316,18 @@ Server::~Server()
 
 		// Execute script shutdown hooks
 		infostream << "Executing shutdown hooks" << std::endl;
-		m_script->on_shutdown();
+		try {
+			m_script->on_shutdown();
+		} catch (ModError &e) {
+			errorstream << "ModError: " << e.what() << std::endl;
+			if (m_on_shutdown_errmsg) {
+				if (m_on_shutdown_errmsg->empty()) {
+					*m_on_shutdown_errmsg = std::string("ModError: ") + e.what();
+				} else {
+					*m_on_shutdown_errmsg += std::string("\nModError: ") + e.what();
+				}
+			}
+		}
 
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
@@ -2494,19 +2507,25 @@ void Server::fillMediaCache()
 
 	// Collect all media file paths
 	std::vector<std::string> paths;
-	m_modmgr->getModsMediaPaths(paths);
-	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	// The paths are ordered in descending priority
 	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
+	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	m_modmgr->getModsMediaPaths(paths);
 
 	// Collect media file information from paths into cache
 	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
 		for (const fs::DirListNode &dln : dirlist) {
-			if (dln.dir) // Ignore dirs
+			if (dln.dir) // Ignore dirs (already in paths)
 				continue;
+
+			const std::string &filename = dln.name;
+			if (m_media.find(filename) != m_media.end()) // Do not override
+				continue;
+
 			std::string filepath = mediapath;
-			filepath.append(DIR_DELIM).append(dln.name);
-			addMediaFile(dln.name, filepath);
+			filepath.append(DIR_DELIM).append(filename);
+			addMediaFile(filename, filepath);
 		}
 	}
 

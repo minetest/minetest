@@ -1740,7 +1740,7 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 
 	FieldSpec spec(
 		name,
-		utf8_to_wide(unescape_string(text)),
+		translate_string(utf8_to_wide(unescape_string(text))),
 		L"",
 		258 + m_fields.size()
 	);
@@ -3483,10 +3483,14 @@ void GUIFormSpecMenu::drawMenu()
 		e->setVisible(true);
 
 	/*
-		Call base class
-		(This is where all the drawing happens.)
+		This is where all the drawing happens.
 	*/
-	gui::IGUIElement::draw();
+	core::list<IGUIElement*>::Iterator it = Children.begin();
+	for (; it != Children.end(); ++it)
+		if ((*it)->isNotClipped() ||
+				AbsoluteClippingRect.isRectCollided(
+						(*it)->getAbsolutePosition()))
+			(*it)->draw();
 
 	for (gui::IGUIElement *e : m_clickthrough_elements)
 		e->setVisible(false);

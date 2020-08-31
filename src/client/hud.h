@@ -97,6 +97,12 @@ private:
 
 	void drawItem(const ItemStack &item, const core::rect<s32> &rect, bool selected);
 
+	void drawCompassTranslate(HudElement *e, video::ITexture *texture,
+			const core::rect<s32> &rect, int way);
+
+	void drawCompassRotate(HudElement *e, video::ITexture *texture,
+			const core::rect<s32> &rect, int way);
+
 	float m_hud_scaling; // cached minetest setting
 	float m_scale_factor;
 	v3s16 m_camera_offset;
@@ -116,6 +122,8 @@ private:
 	v3f m_selected_face_normal;
 
 	video::SMaterial m_selection_material;
+
+	scene::SMeshBuffer m_rotation_mesh_buffer;
 
 	enum
 	{
