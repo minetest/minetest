@@ -152,7 +152,12 @@ Mod directory structure
     │   ├── models
     │   ├── textures
     │   │   ├── modname_stuff.png
-    │   │   └── modname_something_else.png
+    │   │   ├── modname_stuff_normal.png
+    │   │   ├── modname_something_else.png
+    │   │   ├── subfolder_foo
+    │   │   │   ├── modname_more_stuff.png
+    │   │   │   └── another_subfolder
+    │   │   └── bar_subfolder
     │   ├── sounds
     │   ├── media
     │   ├── locale
@@ -221,18 +226,20 @@ registered callbacks.
 `minetest.settings` can be used to read custom or existing settings at load
 time, if necessary. (See [`Settings`])
 
-### `models`
-
-Models for entities or meshnodes.
-
-### `textures`, `sounds`, `media`
+### `textures`, `sounds`, `media`, `models`, `locale`
 
 Media files (textures, sounds, whatever) that will be transferred to the
-client and will be available for use by the mod.
+client and will be available for use by the mod and translation files for
+the clients (see [Translations]).
 
-### `locale`
+It is suggested to use the folders for the purpous they are thought for,
+eg. put textures into `textures`, translation files into `locale`,
+models for entities or meshnodes into `models` et cetera.
 
-Translation files for the clients. (See [Translations])
+These folders and subfolders can contain subfolders.
+Subfolders with names starting with `_` or `.` are ignored.
+If a subfolder contains a media file with the same name as a media file
+in one of its parents, the parent's file is used.
 
 Naming conventions
 ------------------
@@ -377,6 +384,36 @@ stripping out the file extension:
 
 * e.g. `foomod_foothing.png`
 * e.g. `foomod_foothing`
+
+
+Normalmap Textures
+------------------
+
+If shaders and bumpmapping or parallax occlusion is enabled, Minetest tries
+to load normalmaps.
+Those image files have to end with `_normal.png` and start with the same name
+as their corresponding texture.
+For example a normalmap for `foomod_foothing.png` has to be called
+`foomod_foothing_normal.png`.
+
+The sRGB R, G and B colour values of a normalmap pixel are each directly
+mapped from `{0, ..., 255}` to `[-1, 1]` and, taken together,
+define the normal vector.
+The alpha channel defines the heightmap for parallax occlusion.
+To be safe, the alpha values should always be bigger than zero
+because the colour values, which define the normal vector,
+may be undefined for image formats where colour is discarded in fully
+transparent pixels.
+
+Bumpmapping and parallax occlusion are currently experimental features:
+
+* Bumpmapping in Minetest happens in an obscure way; there are no light sources
+  defined in the shaders except the sunlight direction.
+* Parallax occlusion with relief-mapping mode does not yet work correctly
+  together with Minetest's Fastfaces.
+* The normalmap files must end with `.png`, so other image files are not
+  supported.
+
 
 Texture modifiers
 -----------------
@@ -1414,7 +1451,23 @@ Same as `image`, but does not accept a `position`; the position is instead deter
 * `world_pos`: World position of the waypoint.
 * `offset`: offset in pixels from position.
 
+### `compass`
 
+Displays an image oriented or translated according to current heading direction.
+
+* `size`: The size of this element. Negative values represent percentage
+  of the screen; e.g. `x=-100` means 100% (width).
+* `scale`: Scale of the translated image (used only for dir = 2 or dir = 3).
+* `text`: The name of the texture to use.
+* `alignment`: The alignment of the image.
+* `offset`: Offset in pixels from position.
+* `dir`: How the image is rotated/translated:
+  * 0 - Rotate as heading direction
+  * 1 - Rotate in reverse direction
+  * 2 - Translate as landscape direction
+  * 3 - Translate in reverse direction
+
+If translation is chosen, texture is repeated horizontally to fill the whole element.
 
 Representations of simple things
 ================================
@@ -2442,8 +2495,10 @@ Elements
 * Simple colored box
 * `color` is color specified as a `ColorString`.
   If the alpha component is left blank, the box will be semitransparent.
+  If the color is not specified, the box will use the options specified by
+  its style. If the color is specified, all styling options will be ignored.
 
-### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
 * **Important note**: There are two different operation modes:
@@ -2454,8 +2509,12 @@ Elements
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
+* `index event` (optional, allowed parameter since formspec version 4): Specifies the
+  event field value for selected items.
+    * `true`: Selected item index
+    * `false` (default): Selected item value
 
-### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
 * **Important note**: This syntax for dropdowns can only be used with the
@@ -2468,6 +2527,10 @@ Elements
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
+* `index event` (optional, allowed parameter since formspec version 4): Specifies the
+  event field value for selected items.
+    * `true`: Selected item index
+    * `false` (default): Selected item value
 
 ### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
 
@@ -2484,7 +2547,7 @@ Elements
 * There are two ways to use it:
     1. handle the changed event (only changed scrollbar is available)
     2. read the value on pressing a button (all scrollbars are available)
-* `orientation`:  `vertical`/`horizontal`
+* `orientation`: `vertical`/`horizontal`. Default horizontal.
 * Fieldname data is transferred to Lua
 * Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
@@ -2598,6 +2661,28 @@ Elements
     * All provided states must be active for the style to apply.
 * See [Styling Formspecs].
 
+### `set_focus[<name>;<force>]`
+
+* Sets the focus to the element with the same `name` parameter.
+* **Note**: This element must be placed before the element it focuses.
+* `force` (optional, default `false`): By default, focus is not applied for
+  re-sent formspecs with the same name so that player-set focus is kept.
+  `true` sets the focus to the specified element for every sent formspec.
+* The following elements have the ability to be focused:
+    * checkbox
+    * button
+    * button_exit
+    * image_button
+    * image_button_exit
+    * item_image_button
+    * table
+    * textlist
+    * dropdown
+    * field
+    * pwdfield
+    * textarea
+    * scrollbar
+
 Migrating to Real Coordinates
 -----------------------------
 
@@ -2678,21 +2763,23 @@ Setting a property to nothing will reset it to the default value. For example:
 Some types may inherit styles from parent types.
 
 * animated_image, inherits from image
+* box
 * button
 * button_exit, inherits from button
 * checkbox
-* scrollbar
-* table
-* textlist
 * dropdown
 * field
-* pwdfield, inherits from field
-* textarea
-* label
-* vertlabel, inherits from field
+* image
 * image_button
 * item_image_button
+* label
+* pwdfield, inherits from field
+* scrollbar
 * tabheader
+* table
+* textarea
+* textlist
+* vertlabel, inherits from label
 
 
 ### Valid Properties
@@ -2701,18 +2788,45 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * box
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-        * Default to false in formspec_version version 3 or higher
+        * Defaults to false in formspec_version version 3 or higher
+    * **Note**: `colors`, `bordercolors`, and `borderwidths` accept multiple input types:
+        * Single value (e.g. `#FF0`): All corners/borders.
+        * Two values (e.g. `red,#FFAAFF`): top-left and bottom-right,top-right and bottom-left/
+          top and bottom,left and right.
+        * Four values (e.g. `blue,#A0F,green,#FFFA`): top-left/top and rotates clockwise.
+        * These work similarly to CSS borders.
+    * colors - `ColorString`. Sets the color(s) of the box corners. Default `black`.
+    * bordercolors - `ColorString`. Sets the color(s) of the borders. Default `black`.
+    * borderwidths - Integer. Sets the width(s) of the borders in pixels. If the width is
+      negative, the border will extend inside the box, whereas positive extends outside
+      the box. A width of zero results in no border; this is default.
 * button, button_exit, image_button, item_image_button
     * alpha - boolean, whether to draw alpha in bgimg. Default true.
     * bgcolor - color, sets button tint.
     * bgcolor_hovered - color when hovered. Defaults to a lighter bgcolor when not provided.
+        * This is deprecated, use states instead.
     * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
+        * This is deprecated, use states instead.
     * bgimg - standard background image. Defaults to none.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+        * This is deprecated, use states instead.
     * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
                      See background9[] documentation for more details. This property also pads the
                      button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
+        * This is deprecated, use states instead.
+    * font - Sets font type. This is a comma separated list of options. Valid options:
+      * Main font type options. These cannot be combined with each other:
+        * `normal`: Default font
+        * `mono`: Monospaced font
+      * Font modification options. If used without a main font type, `normal` is used:
+        * `bold`: Makes font bold.
+        * `italic`: Makes font italic.
+      Default `normal`.
+    * font_size - Sets font size. Default is user-set. Can have multiple values:
+      * `<number>`: Sets absolute font size to `number`.
+      * `+<number>`/`-<number>`: Offsets default font size by `number` points.
+      * `*<number>`: Multiplies default font size by `number`, similar to CSS `em`.
     * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
     * content_offset - 2d vector, shifts the position of the button's content without resizing it.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
@@ -2721,14 +2835,12 @@ Some types may inherit styles from parent types.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* scrollbar
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* table, textlist
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * dropdown
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * field, pwdfield, textarea
     * border - set to false to hide the textbox background and border. Default true.
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
 * image
@@ -2737,15 +2849,25 @@ Some types may inherit styles from parent types.
 * item_image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to false.
 * label, vertlabel
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * image_button (additional properties)
     * fgimg - standard image. Defaults to none.
     * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
+        * This is deprecated, use states instead.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
+        * This is deprecated, use states instead.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
+* scrollbar
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+* table, textlist
+    * font - Sets font type. See button `font` property for more information.
+    * font_size - Sets font size. See button `font_size` property for more information.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 
 ### Valid States
 
@@ -2987,10 +3109,12 @@ For the following functions, `v`, `v1`, `v2` are vectors,
     * Returns in order minp, maxp vectors of the cuboid defined by `v1`, `v2`.
 * `vector.angle(v1, v2)`:
     * Returns the angle between `v1` and `v2` in radians.
-* `vector.dot(v1, v2)`
-    * Returns the dot product of `v1` and `v2`
-* `vector.cross(v1, v2)`
-    * Returns the cross product of `v1` and `v2`
+* `vector.dot(v1, v2)`:
+    * Returns the dot product of `v1` and `v2`.
+* `vector.cross(v1, v2)`:
+    * Returns the cross product of `v1` and `v2`.
+* `vector.offset(v, x, y, z)`:
+    * Returns the sum of the vectors `v` and `{x = x, y = y, z = z}`.
 
 For the following functions `x` can be either a vector or a number:
 
@@ -4471,7 +4595,7 @@ Call these functions only at load time!
           * a button was pressed,
           * Enter was pressed while the focus was on a text field
           * a checkbox was toggled,
-          * something was selecteed in a drop-down list,
+          * something was selected in a dropdown list,
           * a different tab was selected,
           * selection was changed in a textlist or table,
           * an entry was double-clicked in a textlist or table,
@@ -4485,7 +4609,8 @@ Call these functions only at load time!
         * `button` and variants: If pressed, contains the user-facing button
           text as value. If not pressed, is `nil`
         * `field`, `textarea` and variants: Text in the field
-        * `dropdown`: Text of selected item
+        * `dropdown`: Either the index or value, depending on the `index event`
+          dropdown argument.
         * `tabheader`: Tab index, starting with `"1"` (only if tab changed)
         * `checkbox`: `"true"` if checked, `"false"` if unchecked
         * `textlist`: See `minetest.explode_textlist_event`
@@ -4707,12 +4832,15 @@ Environment access
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * `search_center` is an optional boolean (default: `false`)
       If true `pos` is also checked for the nodes
-* `minetest.find_nodes_in_area(pos1, pos2, nodenames)`: returns a list of
-  positions.
+* `minetest.find_nodes_in_area(pos1, pos2, nodenames, [grouped])`
+    * `pos1` and `pos2` are the min and max positions of the area to search.
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
-    * First return value: Table with all node positions
-    * Second return value: Table with the count of each node with the node name
-      as index.
+    * If `grouped` is true the return value is a table indexed by node name
+      which contains lists of positions.
+    * If `grouped` is false or absent the return values are as follows:
+      first value: Table with all node positions
+      second value: Table with the count of each node with the node name
+      as index
     * Area volume is limited to 4,096,000 nodes
 * `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a
   list of positions.
@@ -5180,9 +5308,12 @@ Sounds
 * `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
-      Negative step will lower the sound volume, positive step will increase
-      the sound volume.
+      The gain will change by this much per second,
+      until it reaches the target gain.
+      Note: Older versions used a signed step. This is deprecated, but old
+      code will still work. (the client uses abs(step) to correct it)
     * `gain` the target gain for the fade.
+      Fading to zero will delete the sound.
 
 Timing
 ------
@@ -6018,16 +6149,25 @@ object you are working with still exists.
 * `set_yaw(radians)`: sets the yaw (heading).
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
+    * Set a texture modifier to the base texture, for sprites and meshes.
+    * When calling `set_texture_mod` again, the previous one is discarded.
+    * `mod` the texture modifier. See [Texture modifiers].
 * `get_texture_mod()` returns current texture modifier
-* `set_sprite(p, num_frames, framelength, select_horiz_by_yawpitch)`
-    * Select sprite from spritesheet with optional animation and Dungeon Master
-      style texture selection based on yaw relative to camera
-    * `p`: {x=number, y=number}, the coordinate of the first frame
-      (x: column, y: row), default: `{x=0, y=0}`
-    * `num_frames`: number, default: `1`
-    * `framelength`: number, default: `0.2`
-    * `select_horiz_by_yawpitch`: boolean, this was once used for the Dungeon
-      Master mob, default: `false`
+* `set_sprite(p, num_frames, framelength, select_x_by_camera)`
+    * Specifies and starts a sprite animation
+    * Animations iterate along the frame `y` position.
+    * `p`: {x=column number, y=row number}, the coordinate of the first frame
+      default: `{x=0, y=0}`
+    * `num_frames`: Total frames in the texture, default: `1`
+    * `framelength`: Time per animated frame in seconds, default: `0.2`
+    * `select_x_by_camera`: Only for visual = `sprite`. Changes the frame `x`
+      position according to the view direction. default: `false`.
+        * First column:  subject facing the camera
+        * Second column: subject looking to the left
+        * Third column:  subject backing the camera
+        * Fourth column: subject looking to the right
+        * Fifth column:  subject viewed from above
+        * Sixth column:  subject viewed from below
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 
@@ -6105,15 +6245,23 @@ object you are working with still exists.
     * Only affects formspecs shown after this is called.
 * `get_formspec_prepend(formspec)`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
-    * The table consists of fields with boolean value representing the pressed
-      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down, up, zoom.
-    * example: `{jump=false, right=true, left=false, LMB=false, RMB=false,
-      sneak=true, aux1=false, down=false, up=false, zoom=false}`
-    * The `zoom` field is available since 5.3
+    * The table consists of fields with the following boolean values
+      representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
+      `aux1`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
+    * The fields `LMB` and `RMB` are equal to `dig` and `place` respectively,
+      and exist only to preserve backwards compatibility.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
-  keys.
-    * bit nr/meaning: 0/up, 1/down, 2/left, 3/right, 4/jump, 5/aux1, 6/sneak,
-      7/LMB, 8/RMB, 9/zoom (zoom available since 5.3)
+  keys. Bits:
+    * 0 - up
+    * 1 - down
+    * 2 - left
+    * 3 - right
+    * 4 - jump
+    * 5 - aux1
+    * 6 - sneak
+    * 7 - dig
+    * 8 - place
+    * 9 - zoom
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
@@ -6879,6 +7027,13 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         liquids_pointable = false,
 
+        light_source = 0,
+        -- When used for nodes: Defines amount of light emitted by node.
+        -- Otherwise: Defines texture glow when viewed as a dropped item
+        -- To set the maximum (14), use the value 'minetest.LIGHT_MAX'.
+        -- A value outside the range 0 to minetest.LIGHT_MAX causes undefined
+        -- behavior.
+
         -- See "Tools" section for an example including explanation
         tool_capabilities = {
             full_punch_interval = 1.0,
@@ -7008,6 +7163,8 @@ Used by `minetest.register_node`.
 
         use_texture_alpha = false,
         -- Use texture's alpha channel
+        -- If this is set to false, the node will be rendered fully opaque
+        -- regardless of any texture transparency.
 
         palette = "palette.png",
         -- The node's `param2` is used to select a pixel from the image.
@@ -7075,12 +7232,6 @@ Used by `minetest.register_node`.
 
         drowning = 0,
         -- Player will take this amount of damage if no bubbles are left
-
-        light_source = 0,
-        -- Amount of light emitted by node.
-        -- To set the maximum (14), use the value 'minetest.LIGHT_MAX'.
-        -- A value outside the range 0 to minetest.LIGHT_MAX causes undefined
-        -- behavior.
 
         damage_per_second = 0,
         -- If player is inside node, this damage is caused
@@ -7160,10 +7311,13 @@ Used by `minetest.register_node`.
             -- Node was placed. Also played after falling
 
             place_failed = <SimpleSoundSpec>,
-            -- When node placement failed
+            -- When node placement failed.
+            -- Note: This happens if the _built-in_ node placement failed.
+            -- This sound will still be played if the node is placed in the
+            -- `on_place` callback manually.
 
             fall = <SimpleSoundSpec>,
-            -- When node starts to fall
+            -- When node starts to fall or is detached
         },
 
         drop = "",
@@ -7832,7 +7986,7 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
     {
         hud_elem_type = "image",  -- See HUD element types
-        -- Type of element, can be "image", "text", "statbar", or "inventory"
+        -- Type of element, can be "image", "text", "statbar", "inventory" or "compass"
 
         position = {x=0.5, y=0.5},
         -- Left corner position of element
@@ -8011,11 +8165,13 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
         timeout = 10,
         -- Timeout for connection in seconds. Default is 3 seconds.
 
-        post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
-        -- Optional, if specified a POST request with post_data is performed.
+        method = "GET", "POST", "PUT" or "DELETE"
+        -- The http method to use. Defaults to "GET".
+
+        data = "Raw request data string" OR {field1 = "data1", field2 = "data2"},
+        -- Data for the POST, PUT or DELETE request.
         -- Accepts both a string and a table. If a table is specified, encodes
         -- table as x-www-form-urlencoded key-value pairs.
-        -- If post_data is not specified, a GET request is performed instead.
 
         user_agent = "ExampleUserAgent",
         -- Optional, if specified replaces the default minetest user agent with
@@ -8029,6 +8185,10 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
         multipart = boolean
         -- Optional, if true performs a multipart HTTP request.
         -- Default is false.
+        -- Post only, data must be array
+
+        post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
+        -- Deprecated, use `data` instead. Forces `method = "POST"`.
     }
 
 `HTTPRequestResult` definition

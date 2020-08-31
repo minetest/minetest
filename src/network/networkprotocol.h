@@ -238,8 +238,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
 		box[] and image[] elements enable clipping by default
 		new element: scroll_container[]
+	FORMSPEC VERSION 4:
+		Allow dropdown indexing events
 */
-#define FORMSPEC_API_VERSION 3
+#define FORMSPEC_API_VERSION 4
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -1032,7 +1034,7 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"This server has experienced an internal error. You will now be disconnected."
 };
 
-enum PlayerListModifer: u8
+enum PlayerListModifer : u8
 {
 	PLAYER_LIST_INIT,
 	PLAYER_LIST_ADD,

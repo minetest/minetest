@@ -459,12 +459,9 @@ void Client::step(float dtime)
 	/*
 		Handle environment
 	*/
-	// Control local player (0ms)
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
-	player->applyControl(dtime, &m_env);
 
-	// Step environment
+	// Step environment (also handles player controls)
 	m_env.step(dtime);
 	m_sound->step(dtime);
 
@@ -1310,7 +1307,7 @@ void Client::sendPlayerPos()
 			player->last_pitch        == player->getPitch()    &&
 			player->last_yaw          == player->getYaw()      &&
 			player->last_keyPressed   == player->keyPressed    &&
-			player->last_camera_fov   == camera_fov              &&
+			player->last_camera_fov   == camera_fov            &&
 			player->last_wanted_range == wanted_range)
 		return;
 

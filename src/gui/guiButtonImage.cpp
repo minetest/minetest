@@ -62,13 +62,12 @@ void GUIButtonImage::setFromStyle(const StyleSpec& style)
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 
-	const core::position2di buttonCenter(AbsoluteRect.getCenter());
-	core::position2d<s32> geom(buttonCenter);
 	if (style.isNotDefault(StyleSpec::FGIMG)) {
 		video::ITexture *texture = style.getTexture(StyleSpec::FGIMG,
 				getTextureSource());
 
-		setForegroundImage(guiScalingImageButton(driver, texture, geom.X, geom.Y));
+		setForegroundImage(guiScalingImageButton(driver, texture,
+			AbsoluteRect.getWidth(), AbsoluteRect.getHeight()));
 		setScaleImage(true);
 	} else {
 		setForegroundImage(nullptr);

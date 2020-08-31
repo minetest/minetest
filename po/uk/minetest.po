@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-02 00:46+0000\n"
-"Last-Translator: Rostyslav <info@ubilling.net.ua>\n"
+"PO-Revision-Date: 2020-06-26 10:41+0000\n"
+"Last-Translator: Maksim Gamarnik <MoNTE48@mail.ua>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -25,7 +25,7 @@ msgstr "Ви загинули"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "ОК"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -117,7 +117,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Знайти Більше Модів"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -170,10 +170,9 @@ msgstr "Назад в Головне Меню"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB не є доступним коли Minetest не містить підтримку cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
 msgstr "Завантаження..."
 
@@ -222,40 +221,39 @@ msgstr "Оновити"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Вид"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Світ з такою назвою  \"$1\" вже існує"
+msgstr "Світ з такою назвою \"$1\" вже існує"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Додаткова місцевість"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "Висота снігового поясу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "Пояс посухи"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "Змішування біомів"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "Біоми"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "Печери"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Октави"
+msgstr "Печери"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -264,7 +262,7 @@ msgstr "Створити"
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Decorations"
-msgstr "Інформація:"
+msgstr "Інформація"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -276,19 +274,19 @@ msgstr "Завантажте з minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "Підземелля"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Рівнина"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Плаваючі земельні масиви в небі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Висячі острови"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -296,27 +294,27 @@ msgstr "Гра"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Генерувати нефрактальну місцевість: Океани та підземелля"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Пагорби"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Вологі ріки"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Підвищує вологість навколо річок"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Озера"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Низька вологість і велика спека спричиняють мілководні або сухі річки"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -324,24 +322,23 @@ msgstr "Генератор світу"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Прапори Генератору світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Генератор світу: фрактальний"
+msgstr "Властивості генератору світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Гори"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Грязьовий потік"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Мережа тунелів і печер"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -349,20 +346,19 @@ msgstr "Гру не вибрано"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Зменшує тепло з висотою"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Зменшує вологість з висотою"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Річковий шум"
+msgstr "Річки"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Річки Рівня моря"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -371,7 +367,7 @@ msgstr "Зерно"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Плавний перехід між біомами"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
@@ -381,15 +377,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Споруди, що з’являються на місцевості, зазвичай дерева та рослини"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Помірний, пустеля"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Помірного Поясу, Пустелі, Джунглі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
@@ -1622,8 +1618,9 @@ msgid "Numpad 9"
 msgstr "Num 9"
 
 #: src/client/keycode.cpp
+#, fuzzy
 msgid "OEM Clear"
-msgstr "OEM Clear"
+msgstr "Почистити OEM"
 
 #: src/client/keycode.cpp
 msgid "Page down"
@@ -4728,40 +4725,46 @@ msgid "Mapgen Valleys specific flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen debug"
-msgstr ""
+msgstr "Налагодження генерації світу"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen name"
-msgstr ""
+msgstr "Назва генерації світу"
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
-msgstr ""
+msgstr "Максимальна відстань генерації блоків"
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Max liquids processed per step."
-msgstr ""
+msgstr "Максимальна кількість рідин, оброблених на крок."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Max. packets per iteration"
-msgstr ""
+msgstr "Максимальна кількість пакетів за одну ітерацію"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Максимальна кількість кадрів в секунду (FPS)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Maximum FPS when game is paused."
-msgstr ""
+msgstr "Максимум FPS при паузі."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -6025,7 +6028,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
-msgstr ""
+msgstr "Необмежена відстань передачі гравця"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
@@ -6033,7 +6036,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
-msgstr ""
+msgstr "Верхня межа р підземель."
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of floatlands."
@@ -6384,11 +6387,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of lower terrain and seabed."
-msgstr ""
+msgstr "Y-Рівень нижнього рельєфу та морського дна."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of seabed."
-msgstr ""
+msgstr "Y-Рівень морського дна."
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"

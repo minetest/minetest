@@ -309,6 +309,8 @@ inline const char *getPlatformName()
 	#else
 		"SunOS"
 	#endif
+#elif defined(__HAIKU__)
+	"Haiku"
 #elif defined(__CYGWIN__)
 	"Cygwin"
 #elif defined(__unix__) || defined(__unix)

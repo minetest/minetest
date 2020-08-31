@@ -955,8 +955,9 @@
 # autoscale_mode = disable
 
 #    Show entity selection boxes
+#    A restart is required after changing this.
 #    type: bool
-# show_entity_selectionbox = true
+# show_entity_selectionbox = false
 
 ## Menus
 
@@ -3374,4 +3375,3 @@
 #    so see a full list at https://content.minetest.net/help/content_flags/
 #    type: string
 # contentdb_flag_blacklist = nonfree, desktop_default
-

@@ -28,6 +28,7 @@ const struct EnumString es_HudElementType[] =
 	{HUD_ELEM_INVENTORY, "inventory"},
 	{HUD_ELEM_WAYPOINT,  "waypoint"},
 	{HUD_ELEM_IMAGE_WAYPOINT, "image_waypoint"},
+	{HUD_ELEM_COMPASS,   "compass"},
 	{0, NULL},
 };
 
@@ -40,6 +41,7 @@ const struct EnumString es_HudElementStat[] =
 	{HUD_STAT_TEXT,   "text"},
 	{HUD_STAT_NUMBER, "number"},
 	{HUD_STAT_ITEM,   "item"},
+	{HUD_STAT_ITEM,   "precision"},
 	{HUD_STAT_DIR,    "direction"},
 	{HUD_STAT_ALIGN,  "alignment"},
 	{HUD_STAT_OFFSET, "offset"},

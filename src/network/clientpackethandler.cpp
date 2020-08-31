@@ -208,6 +208,9 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		m_access_denied_reconnect = reconnect & 1;
 	} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
 		*pkt >> m_access_denied_reason;
+	} else if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
+		m_access_denied_reason = accessDeniedStrings[denyCode];
+		m_access_denied_reconnect = true;
 	} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
 		m_access_denied_reason = accessDeniedStrings[denyCode];
 	} else {

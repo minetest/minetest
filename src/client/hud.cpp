@@ -41,6 +41,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/touchscreengui.h"
 #endif
 
+#define OBJECT_CROSSHAIR_LINE_SIZE 8
+#define CROSSHAIR_LINE_SIZE 10
+
 Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
@@ -76,6 +79,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	selectionbox_argb = video::SColor(255, sbox_r, sbox_g, sbox_b);
 
 	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
+	use_object_crosshair_image = tsrc->isKnownSourceImage("object_crosshair.png");
 
 	m_selection_boxes.clear();
 	m_halo_boxes.clear();
@@ -110,6 +114,28 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	} else {
 		m_selection_material.MaterialType = video::EMT_SOLID;
 	}
+
+	// Prepare mesh for compass drawing
+	m_rotation_mesh_buffer.Vertices.set_used(4);
+	m_rotation_mesh_buffer.Indices.set_used(6);
+
+	video::SColor white(255, 255, 255, 255);
+	v3f normal(0.f, 0.f, 1.f);
+
+	m_rotation_mesh_buffer.Vertices[0] = video::S3DVertex(v3f(-1.f, -1.f, 0.f), normal, white, v2f(0.f, 1.f));
+	m_rotation_mesh_buffer.Vertices[1] = video::S3DVertex(v3f(-1.f,  1.f, 0.f), normal, white, v2f(0.f, 0.f));
+	m_rotation_mesh_buffer.Vertices[2] = video::S3DVertex(v3f( 1.f,  1.f, 0.f), normal, white, v2f(1.f, 0.f));
+	m_rotation_mesh_buffer.Vertices[3] = video::S3DVertex(v3f( 1.f, -1.f, 0.f), normal, white, v2f(1.f, 1.f));
+
+	m_rotation_mesh_buffer.Indices[0] = 0;
+	m_rotation_mesh_buffer.Indices[1] = 1;
+	m_rotation_mesh_buffer.Indices[2] = 2;
+	m_rotation_mesh_buffer.Indices[3] = 2;
+	m_rotation_mesh_buffer.Indices[4] = 3;
+	m_rotation_mesh_buffer.Indices[5] = 0;
+
+	m_rotation_mesh_buffer.getMaterial().Lighting = false;
+	m_rotation_mesh_buffer.getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 }
 
 Hud::~Hud()
@@ -419,6 +445,54 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
 				break; }
+			case HUD_ELEM_COMPASS: {
+				video::ITexture *texture = tsrc->getTexture(e->text);
+				if (!texture)
+					continue;
+
+				// Positionning :
+				v2s32 dstsize(e->size.X, e->size.Y);
+				if (e->size.X < 0)
+					dstsize.X = m_screensize.X * (e->size.X * -0.01);
+				if (e->size.Y < 0)
+					dstsize.Y = m_screensize.Y * (e->size.Y * -0.01);
+
+				if (dstsize.X <= 0 || dstsize.Y <= 0)
+					return; // Avoid zero divides
+
+				// Angle according to camera view
+				v3f fore(0.f, 0.f, 1.f);
+				scene::ICameraSceneNode *cam = RenderingEngine::get_scene_manager()->getActiveCamera();
+				cam->getAbsoluteTransformation().rotateVect(fore);
+				int angle = - fore.getHorizontalAngle().Y;
+
+				// Limit angle and ajust with given offset
+				angle = (angle + (int)e->number) % 360;
+
+				core::rect<s32> dstrect(0, 0, dstsize.X, dstsize.Y);
+				dstrect += pos + v2s32(
+								(e->align.X - 1.0) * dstsize.X / 2,
+								(e->align.Y - 1.0) * dstsize.Y / 2) +
+						v2s32(e->offset.X * m_hud_scaling, e->offset.Y * m_hud_scaling);
+
+				switch (e->dir) {
+				case HUD_COMPASS_ROTATE:
+					drawCompassRotate(e, texture, dstrect, angle);
+					break;
+				case HUD_COMPASS_ROTATE_REVERSE:
+					drawCompassRotate(e, texture, dstrect, -angle);
+					break;
+				case HUD_COMPASS_TRANSLATE:
+					drawCompassTranslate(e, texture, dstrect, angle);
+					break;
+				case HUD_COMPASS_TRANSLATE_REVERSE:
+					drawCompassTranslate(e, texture, dstrect, -angle);
+					break;
+				default:
+					break;
+				}
+
+				break; }
 			default:
 				infostream << "Hud::drawLuaElements: ignoring drawform " << e->type <<
 					" of hud element ID " << i << " due to unrecognized type" << std::endl;
@@ -426,6 +500,76 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 	}
 }
 
+void Hud::drawCompassTranslate(HudElement *e, video::ITexture *texture,
+		const core::rect<s32> &rect, int angle)
+{
+	const video::SColor color(255, 255, 255, 255);
+	const video::SColor colors[] = {color, color, color, color};
+
+	// Compute source image scaling
+	core::dimension2di imgsize(texture->getOriginalSize());
+	core::rect<s32> srcrect(0, 0, imgsize.Width, imgsize.Height);
+
+	v2s32 dstsize(rect.getHeight() * e->scale.X * imgsize.Width / imgsize.Height,
+			rect.getHeight() * e->scale.Y);
+
+	// Avoid infinite loop
+	if (dstsize.X <= 0 || dstsize.Y <= 0)
+		return;
+
+	core::rect<s32> tgtrect(0, 0, dstsize.X, dstsize.Y);
+	tgtrect +=  v2s32(
+				(rect.getWidth() - dstsize.X) / 2,
+				(rect.getHeight() - dstsize.Y) / 2) +
+			rect.UpperLeftCorner;
+
+	int offset = angle * dstsize.X / 360;
+
+	tgtrect += v2s32(offset, 0);
+
+	// Repeat image as much as needed
+	while (tgtrect.UpperLeftCorner.X > rect.UpperLeftCorner.X)
+		tgtrect -= v2s32(dstsize.X, 0);
+
+	draw2DImageFilterScaled(driver, texture, tgtrect, srcrect, &rect, colors, true);
+	tgtrect += v2s32(dstsize.X, 0);
+
+	while (tgtrect.UpperLeftCorner.X < rect.LowerRightCorner.X) {
+		draw2DImageFilterScaled(driver, texture, tgtrect, srcrect, &rect, colors, true);
+		tgtrect += v2s32(dstsize.X, 0);
+	}
+}
+
+void Hud::drawCompassRotate(HudElement *e, video::ITexture *texture,
+		const core::rect<s32> &rect, int angle)
+{
+	core::dimension2di imgsize(texture->getOriginalSize());
+
+	core::rect<s32> oldViewPort = driver->getViewPort();
+	core::matrix4 oldProjMat = driver->getTransform(video::ETS_PROJECTION);
+	core::matrix4 oldViewMat = driver->getTransform(video::ETS_VIEW);
+
+	core::matrix4 Matrix;
+	Matrix.makeIdentity();
+	Matrix.setRotationDegrees(v3f(0.f, 0.f, angle));
+
+	driver->setViewPort(rect);
+	driver->setTransform(video::ETS_PROJECTION, core::matrix4());
+	driver->setTransform(video::ETS_VIEW, core::matrix4());
+	driver->setTransform(video::ETS_WORLD, Matrix);
+
+	video::SMaterial &material = m_rotation_mesh_buffer.getMaterial();
+	material.TextureLayer[0].Texture = texture;
+	driver->setMaterial(material);
+	driver->drawMeshBuffer(&m_rotation_mesh_buffer);
+
+	driver->setTransform(video::ETS_WORLD, core::matrix4());
+	driver->setTransform(video::ETS_VIEW, oldViewMat);
+	driver->setTransform(video::ETS_PROJECTION, oldProjMat);
+
+	// restore the view area
+	driver->setViewPort(oldViewPort);
+}
 
 void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 		const std::string &texture, const std::string &bgtexture,
@@ -601,6 +745,31 @@ void Hud::drawHotbar(u16 playeritem) {
 
 void Hud::drawCrosshair()
 {
+	if (pointing_at_object) {
+		if (use_object_crosshair_image) {
+			video::ITexture *object_crosshair = tsrc->getTexture("object_crosshair.png");
+			v2u32 size  = object_crosshair->getOriginalSize();
+			v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
+					m_displaycenter.Y - (size.Y / 2));
+			driver->draw2DImage(object_crosshair, lsize,
+					core::rect<s32>(0, 0, size.X, size.Y),
+					nullptr, crosshair_argb, true);
+		} else {
+			driver->draw2DLine(
+					m_displaycenter - v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE),
+					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+			driver->draw2DLine(
+					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					-OBJECT_CROSSHAIR_LINE_SIZE),
+					m_displaycenter + v2s32(-OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+		}
+
+		return;
+	}
+
 	if (use_crosshair_image) {
 		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
 		v2u32 size  = crosshair->getOriginalSize();
@@ -608,12 +777,12 @@ void Hud::drawCrosshair()
 				m_displaycenter.Y - (size.Y / 2));
 		driver->draw2DImage(crosshair, lsize,
 				core::rect<s32>(0, 0, size.X, size.Y),
-				0, crosshair_argb, true);
+				nullptr, crosshair_argb, true);
 	} else {
-		driver->draw2DLine(m_displaycenter - v2s32(10, 0),
-				m_displaycenter + v2s32(10, 0), crosshair_argb);
-		driver->draw2DLine(m_displaycenter - v2s32(0, 10),
-				m_displaycenter + v2s32(0, 10), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(CROSSHAIR_LINE_SIZE, 0),
+				m_displaycenter + v2s32(CROSSHAIR_LINE_SIZE, 0), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(0, CROSSHAIR_LINE_SIZE),
+				m_displaycenter + v2s32(0, CROSSHAIR_LINE_SIZE), crosshair_argb);
 	}
 }
 

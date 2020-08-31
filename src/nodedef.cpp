@@ -317,6 +317,18 @@ ContentFeatures::ContentFeatures()
 	reset();
 }
 
+ContentFeatures::~ContentFeatures()
+{
+#ifndef SERVER
+	for (u16 j = 0; j < 6; j++) {
+		delete tiles[j].layers[0].frames;
+		delete tiles[j].layers[1].frames;
+	}
+	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
+		delete special_tiles[j].layers[0].frames;
+#endif
+}
+
 void ContentFeatures::reset()
 {
 	/*
@@ -662,7 +674,7 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	} else {
 		std::ostringstream os(std::ios::binary);
 		if (!layer->frames) {
-			layer->frames = std::make_shared<std::vector<FrameSpec>>();
+			layer->frames = new std::vector<FrameSpec>();
 		}
 		layer->frames->resize(frame_count);
 
@@ -683,9 +695,54 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 		}
 	}
 }
-#endif
 
-#ifndef SERVER
+bool ContentFeatures::textureAlphaCheck(ITextureSource *tsrc, const TileDef *tiles, int length)
+{
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	static thread_local bool long_warning_printed = false;
+	std::set<std::string> seen;
+	for (int i = 0; i < length; i++) {
+		if (seen.find(tiles[i].name) != seen.end())
+			continue;
+		seen.insert(tiles[i].name);
+
+		// Load the texture and see if there's any transparent pixels
+		video::ITexture *texture = tsrc->getTexture(tiles[i].name);
+		video::IImage *image = driver->createImage(texture,
+			core::position2d<s32>(0, 0), texture->getOriginalSize());
+		if (!image)
+			continue;
+		core::dimension2d<u32> dim = image->getDimension();
+		bool ok = true;
+		for (u16 x = 0; x < dim.Width; x++) {
+			for (u16 y = 0; y < dim.Height; y++) {
+				if (image->getPixel(x, y).getAlpha() < 255) {
+					ok = false;
+					goto break_loop;
+				}
+			}
+		}
+
+break_loop:
+		image->drop();
+		if (!ok) {
+			warningstream << "Texture \"" << tiles[i].name << "\" of "
+				<< name << " has transparent pixels, assuming "
+				"use_texture_alpha = true." << std::endl;
+			if (!long_warning_printed) {
+				warningstream << "  This warning can be a false-positive if "
+					"unused pixels in the texture are transparent. However if "
+					"it is meant to be transparent, you *MUST* update the "
+					"nodedef and set use_texture_alpha = true! This compatibility "
+					"code will be removed in a few releases." << std::endl;
+				long_warning_printed = true;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
 bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype)
 {
 	if (style == ALIGN_STYLE_WORLD)
@@ -802,13 +859,19 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		break;
 	case NDT_MESH:
 	case NDT_NODEBOX:
+		if (alpha == 255 && textureAlphaCheck(tsrc, tdef, 6))
+			alpha = 0;
+
 		solidness = 0;
 		if (waving == 1)
 			material_type = TILE_MATERIAL_WAVING_PLANTS;
 		else if (waving == 2)
 			material_type = TILE_MATERIAL_WAVING_LEAVES;
 		else if (waving == 3)
-			material_type = TILE_MATERIAL_WAVING_LIQUID_BASIC;
+			material_type = (alpha == 255) ? TILE_MATERIAL_WAVING_LIQUID_OPAQUE :
+				TILE_MATERIAL_WAVING_LIQUID_BASIC;
+		else if (alpha == 255)
+			material_type = TILE_MATERIAL_OPAQUE;
 		break;
 	case NDT_TORCHLIKE:
 	case NDT_SIGNLIKE:
@@ -1325,6 +1388,7 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 
 		ContentFeatures &nodedef = m_content_features[id];
 
+		// Override tiles
 		if (texture_override.hasTarget(OverrideTarget::TOP))
 			nodedef.tiledef[0].name = texture_override.texture;
 
@@ -1342,6 +1406,26 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 
 		if (texture_override.hasTarget(OverrideTarget::FRONT))
 			nodedef.tiledef[5].name = texture_override.texture;
+
+
+		// Override special tiles, if applicable
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_1))
+			nodedef.tiledef_special[0].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_2))
+			nodedef.tiledef_special[1].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_3))
+			nodedef.tiledef_special[2].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_4))
+			nodedef.tiledef_special[3].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_5))
+			nodedef.tiledef_special[4].name = texture_override.texture;
+
+		if (texture_override.hasTarget(OverrideTarget::SPECIAL_6))
+			nodedef.tiledef_special[5].name = texture_override.texture;
 	}
 }
 

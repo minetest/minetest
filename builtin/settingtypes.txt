@@ -110,9 +110,9 @@ doubletap_jump (Double tap jump for fly) bool false
 #    enabled.
 always_fly_fast (Always fly and fast) bool true
 
-#    The time in seconds it takes between repeated right clicks when holding the right
-#    mouse button.
-repeat_rightclick_time (Rightclick repetition interval) float 0.25 0.001
+#    The time in seconds it takes between repeated node placements when holding
+#    the place button.
+repeat_place_time (Place repetition interval) float 0.25 0.001
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -181,6 +181,14 @@ keymap_jump (Jump key) key KEY_SPACE
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_sneak (Sneak key) key KEY_LSHIFT
+
+#    Key for digging.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_dig (Dig key) key KEY_LBUTTON
+
+#    Key for placing.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_place (Place key) key KEY_RBUTTON
 
 #    Key for opening the inventory.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -741,9 +749,11 @@ selectionbox_color (Selection box color) string (0,0,0)
 selectionbox_width (Selection box width) int 2 1 5
 
 #    Crosshair color (R,G,B).
+#    Also controls the object crosshair color
 crosshair_color (Crosshair color) string (255,255,255)
 
 #    Crosshair alpha (opaqueness, between 0 and 255).
+#    Also controls the object crosshair color
 crosshair_alpha (Crosshair alpha) int 255 0 255
 
 #    Maximum number of recent chat messages to show
@@ -817,7 +827,8 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 
 #    Show entity selection boxes
-show_entity_selectionbox (Show entity selection boxes) bool true
+#    A restart is required after changing this.
+show_entity_selectionbox (Show entity selection boxes) bool false
 
 [*Menus]
 
@@ -1271,6 +1282,10 @@ active_block_mgmt_interval (Active block management interval) float 2.0
 #    Length of time between Active Block Modifier (ABM) execution cycles
 abm_interval (ABM interval) float 1.0
 
+#    The time budget allowed for ABMs to execute on each step
+#    (as a fraction of the ABM Interval)
+abm_time_budget (ABM time budget) float 0.2 0.1 0.9
+
 #    Length of time between NodeTimer execution cycles
 nodetimer_interval (NodeTimer interval) float 0.2
 
@@ -1430,12 +1445,6 @@ curl_file_download_timeout (cURL file download timeout) int 300000
 
 #    Makes DirectX work with LuaJIT. Disable if it causes troubles.
 high_precision_fpu (High-precision FPU) bool true
-
-#    Changes the main menu UI:
-#    -   Full:  Multiple singleplayer worlds, game choice, texture pack chooser, etc.
-#    -   Simple: One singleplayer world, no game or texture pack choosers. May be
-#                necessary for smaller screens.
-main_menu_style (Main menu style) enum full full,simple
 
 #    Replaces the default main menu with a custom one.
 main_menu_script (Main menu script) string
@@ -1857,7 +1866,7 @@ mgcarpathian_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 50
 
 #    Map generation attributes specific to Mapgen Flat.
 #    Occasional lakes and hills can be added to the flat world.
-mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills lakes,hills,nolakes,nohills
+mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills,nocaverns lakes,hills,caverns,nolakes,nohills,nocaverns
 
 #    Y of flat ground.
 mgflat_ground_level (Ground level) int 8
@@ -1901,6 +1910,15 @@ mgflat_hill_threshold (Hill threshold) float 0.45
 #    Controls steepness/height of hills.
 mgflat_hill_steepness (Hill steepness) float 64.0
 
+#    Y-level of cavern upper limit.
+mgflat_cavern_limit (Cavern limit) int -256
+
+#    Y-distance over which caverns expand to full size.
+mgflat_cavern_taper (Cavern taper) int 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+mgflat_cavern_threshold (Cavern threshold) float 0.7
+
 #    Lower Y limit of dungeons.
 mgflat_dungeon_ymin (Dungeon minimum Y) int -31000
 
@@ -1920,6 +1938,9 @@ mgflat_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5
 
 #    Second of two 3D noises that together define tunnels.
 mgflat_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+#    3D noise defining giant caverns.
+mgflat_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    3D noise that determines number of dungeons per mapchunk.
 mgflat_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2, 0.8, 2.0
@@ -2197,3 +2218,6 @@ contentdb_url (ContentDB URL) string https://content.minetest.net
 #    These flags are independent from Minetest versions,
 #    so see a full list at https://content.minetest.net/help/content_flags/
 contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_default
+
+#    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
+contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3

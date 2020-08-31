@@ -57,7 +57,6 @@ task prepareAssets() {
 	}
 	copy {
 		from "${projRoot}/doc/lgpl-2.1.txt" into "${assetsFolder}"
-		rename("lgpl-2.1.txt", "LICENSE.txt")
 	}
 	copy {
 		from "${projRoot}/builtin" into "${assetsFolder}/builtin"

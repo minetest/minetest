@@ -162,6 +162,15 @@ static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
 	matrix.setTextureScale(txs, tys);
 }
 
+// Evaluate transform chain recursively; irrlicht does not do this for us
+static void updatePositionRecursive(scene::ISceneNode *node)
+{
+	scene::ISceneNode *parent = node->getParent();
+	if (parent)
+		updatePositionRecursive(parent);
+	node->updateAbsolutePosition();
+}
+
 /*
 	TestCAO
 */
@@ -929,11 +938,6 @@ void GenericCAO::updateNodePos()
 
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
-	if (m_animated_meshnode) {
-		m_animated_meshnode->animateJoints();
-		updateBonePosition();
-	}
-
 	// Handle model animations and update positions instantly to prevent lags
 	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
@@ -971,13 +975,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			if (controls.sneak && walking)
 				new_speed /= 2;
 
-			if (walking && (controls.LMB || controls.RMB)) {
+			if (walking && (controls.dig || controls.place)) {
 				new_anim = player->local_animations[3];
 				player->last_animation = WD_ANIM;
-			} else if(walking) {
+			} else if (walking) {
 				new_anim = player->local_animations[1];
 				player->last_animation = WALK_ANIM;
-			} else if(controls.LMB || controls.RMB) {
+			} else if (controls.dig || controls.place) {
 				new_anim = player->local_animations[2];
 				player->last_animation = DIG_ANIM;
 			}
@@ -1000,9 +1004,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 			// Update local player animations
 			if ((player->last_animation != old_anim ||
-				m_animation_speed != old_anim_speed) &&
-				player->last_animation != NO_ANIM && allow_update)
-					updateAnimation();
+					m_animation_speed != old_anim_speed) &&
+					player->last_animation != NO_ANIM && allow_update)
+				updateAnimation();
 
 		}
 	}
@@ -1143,6 +1147,18 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		rot_translator.val_current = m_rotation;
 		updateNodePos();
 	}
+
+	if (m_animated_meshnode) {
+		// Everything must be updated; the whole transform
+		// chain as well as the animated mesh node.
+		// Otherwise, bone attachments would be relative to
+		// a position that's one frame old.
+		if (m_matrixnode)
+			updatePositionRecursive(m_matrixnode);
+		m_animated_meshnode->updateAbsolutePosition();
+		m_animated_meshnode->animateJoints();
+		updateBonePosition();
+	}
 }
 
 void GenericCAO::updateTexturePos()
@@ -1160,6 +1176,7 @@ void GenericCAO::updateTexturePos()
 		int row = m_tx_basepos.Y;
 		int col = m_tx_basepos.X;
 
+		// Yawpitch goes rightwards
 		if (m_tx_select_horiz_by_yawpitch) {
 			if (cam_to_entity.Y > 0.75)
 				col += 5;
@@ -1189,6 +1206,27 @@ void GenericCAO::updateTexturePos()
 		float txs = m_tx_size.X;
 		float tys = m_tx_size.Y;
 		setBillboardTextureMatrix(m_spritenode, txs, tys, col, row);
+	}
+
+	else if (m_meshnode) {
+		if (m_prop.visual == "upright_sprite") {
+			int row = m_tx_basepos.Y;
+			int col = m_tx_basepos.X;
+
+			// Animation goes downwards
+			row += m_anim_frame;
+
+			const auto &tx = m_tx_size;
+			v2f t[4] = { // cf. vertices in GenericCAO::addToScene()
+				tx * v2f(col+1, row+1),
+				tx * v2f(col, row+1),
+				tx * v2f(col, row),
+				tx * v2f(col+1, row),
+			};
+			auto mesh = m_meshnode->getMesh();
+			setMeshBufferTextureCoords(mesh->getMeshBuffer(0), t, 4);
+			setMeshBufferTextureCoords(mesh->getMeshBuffer(1), t, 4);
+		}
 	}
 }
 
@@ -1231,7 +1269,7 @@ void GenericCAO::updateTextures(std::string mod)
 		}
 	}
 
-	if (m_animated_meshnode) {
+	else if (m_animated_meshnode) {
 		if (m_prop.visual == "mesh") {
 			for (u32 i = 0; i < m_prop.textures.size() &&
 					i < m_animated_meshnode->getMaterialCount(); ++i) {
@@ -1280,8 +1318,8 @@ void GenericCAO::updateTextures(std::string mod)
 			}
 		}
 	}
-	if(m_meshnode)
-	{
+
+	else if (m_meshnode) {
 		if(m_prop.visual == "cube")
 		{
 			for (u32 i = 0; i < 6; ++i)
@@ -1442,6 +1480,18 @@ void GenericCAO::updateBonePosition()
 		if (offset > 179.9f && offset < 180.1f) {
 			bone->setRotation(bone_rot);
 			bone->updateAbsolutePosition();
+		}
+	}
+	// The following is needed for set_bone_pos to propagate to
+	// attached objects correctly.
+	// Irrlicht ought to do this, but doesn't when using EJUOR_CONTROL.
+	for (u32 i = 0; i < m_animated_meshnode->getJointCount(); ++i) {
+		auto bone = m_animated_meshnode->getJointNode(i);
+		// Look for the root bone.
+		if (bone && bone->getParent() == m_animated_meshnode) {
+			// Update entire skeleton.
+			bone->updateAbsolutePositionOfAllChildren();
+			break;
 		}
 	}
 }

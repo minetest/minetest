@@ -219,11 +219,15 @@ void Thread::setName(const std::string &name)
 
 #elif defined(__NetBSD__)
 
-	pthread_setname_np(pthread_self(), name.c_str());
+	pthread_setname_np(pthread_self(), "%s", const_cast<char*>(name.c_str()));
 
 #elif defined(__APPLE__)
 
 	pthread_setname_np(name.c_str());
+
+#elif defined(__HAIKU__)
+
+	rename_thread(find_thread(NULL), name.c_str());
 
 #elif defined(_MSC_VER)
 

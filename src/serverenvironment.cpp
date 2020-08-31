@@ -1228,11 +1228,6 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
-	if (m_database_check_interval.step(dtime, 10.0f)) {
-		m_auth_database->pingDatabase();
-		m_player_database->pingDatabase();
-		m_map->pingDatabase();
-	}
 	/*
 		Manage active block list
 	*/
@@ -1359,8 +1354,8 @@ void ServerEnvironment::step(float dtime)
 		std::shuffle(output.begin(), output.end(), m_rgen);
 
 		int i = 0;
-		// The time budget for ABMs is 20%.
-		u32 max_time_ms = m_cache_abm_interval * 1000 / 5;
+		// determine the time budget for ABMs
+		u32 max_time_ms = m_cache_abm_interval * 1000 * m_cache_abm_time_budget;
 		for (const v3s16 &p : output) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if (!block)
