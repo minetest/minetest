@@ -6874,6 +6874,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- users using the setting "default_stack_max"
         stack_max = 99,
 
+        -- Range in (diagonal) blocks. A value of -1 disables pointing.
         range = 4.0,
 
         liquids_pointable = false,

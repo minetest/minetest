@@ -3061,7 +3061,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	case CAMERA_MODE_THIRD_FRONT:
 		shootline.start = camera->getHeadPosition();
 		// prevent player pointing anything in front-view
-		d = 0;
+		d = d == -1 ? d : 0;
 		break;
 	}
 	shootline.end = shootline.start + camera_direction * BS * d;
@@ -3079,10 +3079,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 #endif
 
-	PointedThing pointed = updatePointedThing(shootline,
-			selected_def.liquids_pointable,
-			!runData.ldown_for_dig,
-			camera_offset);
+	PointedThing pointed;
+	if (d != -1) pointed = updatePointedThing(shootline, selected_def.liquids_pointable,
+			!runData.ldown_for_dig, camera_offset);
 
 	if (pointed != runData.pointed_old) {
 		infostream << "Pointing at " << pointed.dump() << std::endl;

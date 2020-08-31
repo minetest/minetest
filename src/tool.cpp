@@ -297,6 +297,9 @@ PunchDamageResult getPunchDamage(
 f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand)
 {
 	float max_d = def_selected.range;
+	if (max_d == -1)
+		return max_d;
+
 	float max_d_hand = def_hand.range;
 
 	if (max_d < 0 && max_d_hand >= 0)
