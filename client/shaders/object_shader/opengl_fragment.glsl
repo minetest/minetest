@@ -129,6 +129,14 @@ void main(void)
 
 	vec4 base = texture2D(baseTexture, uv).rgba;
 
+#ifdef USE_DISCARD
+	// If alpha is zero, we can just discard the pixel. This fixes transparency
+	// on GPUs like GC7000L, where GL_ALPHA_TEST is not implemented in mesa.
+	if (base.a == 0.0) {
+		discard;
+	}
+#endif
+
 #ifdef ENABLE_BUMPMAPPING
 	if (use_normalmap) {
 		vec3 L = normalize(lightVec);
@@ -145,8 +153,10 @@ void main(void)
 
 	vec4 col = vec4(color.rgb, base.a);
 
+	col.rgb *= gl_Color.rgb;
+
 	col.rgb *= emissiveColor.rgb * vIDiff;
-		
+
 #ifdef ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
 #endif

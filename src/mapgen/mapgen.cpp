@@ -106,8 +106,8 @@ STATIC_ASSERT(
 //// Mapgen
 ////
 
-Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
-	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
+Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge) :
+	gennotify(emerge->gen_notify_on, emerge->gen_notify_on_deco_ids)
 {
 	id           = mapgenid;
 	water_level  = params->water_level;
@@ -156,7 +156,7 @@ const char *Mapgen::getMapgenName(MapgenType mgtype)
 
 
 Mapgen *Mapgen::createMapgen(MapgenType mgtype, MapgenParams *params,
-	EmergeManager *emerge)
+	EmergeParams *emerge)
 {
 	switch (mgtype) {
 	case MAPGEN_CARPATHIAN:
@@ -585,7 +585,7 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 //// MapgenBasic
 ////
 
-MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge)
+MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
 	this->m_emerge = emerge;
@@ -642,6 +642,8 @@ MapgenBasic::~MapgenBasic()
 {
 	delete biomegen;
 	delete []heightmap;
+
+	delete m_emerge; // destroying EmergeParams is our responsibility
 }
 
 
@@ -974,7 +976,7 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 ////
 
 GenerateNotifier::GenerateNotifier(u32 notify_on,
-	std::set<u32> *notify_on_deco_ids)
+	const std::set<u32> *notify_on_deco_ids)
 {
 	m_notify_on = notify_on;
 	m_notify_on_deco_ids = notify_on_deco_ids;
@@ -987,7 +989,8 @@ void GenerateNotifier::setNotifyOn(u32 notify_on)
 }
 
 
-void GenerateNotifier::setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids)
+void GenerateNotifier::setNotifyOnDecoIds(
+	const std::set<u32> *notify_on_deco_ids)
 {
 	m_notify_on_deco_ids = notify_on_deco_ids;
 }
@@ -999,7 +1002,7 @@ bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos, u32 id)
 		return false;
 
 	if (type == GENNOTIFY_DECORATION &&
-		m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->end())
+		m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->cend())
 		return false;
 
 	GenNotifyEvent gne;

@@ -123,6 +123,12 @@ public:
 	// Autoscroll to make the selected row fully visible
 	void setSelected(s32 index);
 
+	//! Sets another skin independent font. If this is set to zero, the button uses the font of the skin.
+	virtual void setOverrideFont(gui::IGUIFont *font = nullptr);
+
+	//! Gets the override font (if any)
+	virtual gui::IGUIFont *getOverrideFont() const;
+
 	/* Get selection, scroll position and opened (sub)trees */
 	DynamicData getDynamicData() const;
 

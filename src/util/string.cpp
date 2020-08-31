@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "translation.h"
 
 #include <algorithm>
+#include <array>
 #include <sstream>
 #include <iomanip>
 #include <map>
@@ -693,10 +694,12 @@ void str_replace(std::string &str, char from, char to)
  * before filling it again.
  */
 
-void translate_all(const std::wstring &s, size_t &i, std::wstring &res);
+void translate_all(const std::wstring &s, size_t &i,
+		Translations *translations, std::wstring &res);
 
-void translate_string(const std::wstring &s, const std::wstring &textdomain,
-		size_t &i, std::wstring &res) {
+void translate_string(const std::wstring &s, Translations *translations,
+		const std::wstring &textdomain, size_t &i, std::wstring &res)
+{
 	std::wostringstream output;
 	std::vector<std::wstring> args;
 	int arg_number = 1;
@@ -750,7 +753,7 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 			if (arg_number >= 10) {
 				errorstream << "Ignoring too many arguments to translation" << std::endl;
 				std::wstring arg;
-				translate_all(s, i, arg);
+				translate_all(s, i, translations, arg);
 				args.push_back(arg);
 				continue;
 			}
@@ -758,7 +761,7 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 			output << arg_number;
 			++arg_number;
 			std::wstring arg;
-			translate_all(s, i, arg);
+			translate_all(s, i, translations, arg);
 			args.push_back(arg);
 		} else {
 			// This is an escape sequence *inside* the template string to translate itself.
@@ -767,8 +770,13 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 		}
 	}
 
+	std::wstring toutput;
 	// Translate the template.
-	std::wstring toutput = g_translations->getTranslation(textdomain, output.str());
+	if (translations != nullptr)
+		toutput = translations->getTranslation(
+				textdomain, output.str());
+	else
+		toutput = output.str();
 
 	// Put back the arguments in the translated template.
 	std::wostringstream result;
@@ -802,7 +810,9 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 	res = result.str();
 }
 
-void translate_all(const std::wstring &s, size_t &i, std::wstring &res) {
+void translate_all(const std::wstring &s, size_t &i,
+		Translations *translations, std::wstring &res)
+{
 	std::wostringstream output;
 	while (i < s.length()) {
 		// Not an escape sequence: just add the character.
@@ -851,7 +861,7 @@ void translate_all(const std::wstring &s, size_t &i, std::wstring &res) {
 			if (parts.size() > 1)
 				textdomain = parts[1];
 			std::wstring translated;
-			translate_string(s, textdomain, i, translated);
+			translate_string(s, translations, textdomain, i, translated);
 			output << translated;
 		} else {
 			// Another escape sequence, such as colors. Preserve it.
@@ -862,9 +872,88 @@ void translate_all(const std::wstring &s, size_t &i, std::wstring &res) {
 	res = output.str();
 }
 
-std::wstring translate_string(const std::wstring &s) {
+// Translate string server side
+std::wstring translate_string(const std::wstring &s, Translations *translations)
+{
 	size_t i = 0;
 	std::wstring res;
-	translate_all(s, i, res);
+	translate_all(s, i, translations, res);
 	return res;
+}
+
+// Translate string client side
+std::wstring translate_string(const std::wstring &s)
+{
+#ifdef SERVER
+	return translate_string(s, nullptr);
+#else
+	return translate_string(s, g_client_translations);
+#endif
+}
+
+static const std::array<std::wstring, 22> disallowed_dir_names = {
+	// Problematic filenames from here:
+	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
+	L"CON",
+	L"PRN",
+	L"AUX",
+	L"NUL",
+	L"COM1",
+	L"COM2",
+	L"COM3",
+	L"COM4",
+	L"COM5",
+	L"COM6",
+	L"COM7",
+	L"COM8",
+	L"COM9",
+	L"LPT1",
+	L"LPT2",
+	L"LPT3",
+	L"LPT4",
+	L"LPT5",
+	L"LPT6",
+	L"LPT7",
+	L"LPT8",
+	L"LPT9",
+};
+
+/**
+ * List of characters that are blacklisted from created directories
+ */
+static const std::wstring disallowed_path_chars = L"<>:\"/\\|?*.";
+
+/**
+ * Sanitize the name of a new directory. This consists of two stages:
+ * 1. Check for 'reserved filenames' that can't be used on some filesystems
+ *	and add a prefix to them
+ * 2. Remove 'unsafe' characters from the name by replacing them with '_'
+ */
+std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix)
+{
+	std::wstring safe_name = utf8_to_wide(str);
+
+	for (std::wstring disallowed_name : disallowed_dir_names) {
+		if (str_equal(safe_name, disallowed_name, true)) {
+			safe_name = utf8_to_wide(optional_prefix) + safe_name;
+			break;
+		}
+	}
+
+	for (unsigned long i = 0; i < safe_name.length(); i++) {
+		bool is_valid = true;
+
+		// Unlikely, but control characters should always be blacklisted
+		if (safe_name[i] < 32) {
+			is_valid = false;
+		} else if (safe_name[i] < 128) {
+			is_valid = disallowed_path_chars.find_first_of(safe_name[i])
+					== std::wstring::npos;
+		}
+
+		if (!is_valid)
+			safe_name[i] = '_';
+	}
+
+	return wide_to_utf8(safe_name);
 }

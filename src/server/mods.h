@@ -20,7 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "content/mods.h"
+#include <memory>
 
+class MetricsBackend;
+class MetricCounter;
 class ServerScripting;
 
 /**

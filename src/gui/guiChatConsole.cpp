@@ -74,7 +74,9 @@ GUIChatConsole::GUIChatConsole(
 		m_background_color.setBlue(clamp_u8(myround(console_color.Z)));
 	}
 
-	m_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
+	u16 chat_font_size = g_settings->getU16("chat_font_size");
+	m_font = g_fontengine->getFont(chat_font_size != 0 ?
+		chat_font_size : FONT_SIZE_UNSPECIFIED, FM_Mono);
 
 	if (!m_font) {
 		errorstream << "GUIChatConsole: Unable to load mono font" << std::endl;
@@ -543,7 +545,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			if (prompt.getCursorLength() <= 0)
 				return true;
 			std::wstring wselected = prompt.getSelection();
-			std::string selected(wselected.begin(), wselected.end());
+			std::string selected = wide_to_utf8(wselected);
 			Environment->getOSOperator()->copyToClipboard(selected.c_str());
 			return true;
 		}
@@ -573,7 +575,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			if (prompt.getCursorLength() <= 0)
 				return true;
 			std::wstring wselected = prompt.getSelection();
-			std::string selected(wselected.begin(), wselected.end());
+			std::string selected = wide_to_utf8(wselected);
 			Environment->getOSOperator()->copyToClipboard(selected.c_str());
 			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,

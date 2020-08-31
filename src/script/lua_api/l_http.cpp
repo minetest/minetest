@@ -49,17 +49,40 @@ void ModApiHttp::read_http_fetch_request(lua_State *L, HTTPFetchRequest &req)
 	req.multipart = getboolfield_default(L, 1, "multipart", false);
 	req.timeout = getintfield_default(L, 1, "timeout", 3) * 1000;
 
-	// post_data: if table, post form data, otherwise raw data
+	lua_getfield(L, 1, "method");
+	if (lua_isstring(L, -1)) {
+		std::string mth = getstringfield_default(L, 1, "method", "");
+		if (mth == "GET")
+			req.method = HTTP_GET;
+		else if (mth == "POST")
+			req.method = HTTP_POST;
+		else if (mth == "PUT")
+			req.method = HTTP_PUT;
+		else if (mth == "DELETE")
+			req.method = HTTP_DELETE;
+	}
+	lua_pop(L, 1);
+
+	// post_data: if table, post form data, otherwise raw data DEPRECATED use data and method instead
 	lua_getfield(L, 1, "post_data");
+	if (lua_isnil(L, 2)) {
+		lua_pop(L, 1);
+		lua_getfield(L, 1, "data");
+	}
+	else {
+		req.method = HTTP_POST;
+	}
+
 	if (lua_istable(L, 2)) {
 		lua_pushnil(L);
 		while (lua_next(L, 2) != 0) {
-			req.post_fields[readParam<std::string>(L, -2)] = readParam<std::string>(L, -1);
+			req.fields[readParam<std::string>(L, -2)] = readParam<std::string>(L, -1);
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, 2)) {
-		req.post_data = readParam<std::string>(L, 2);
+		req.raw_data = readParam<std::string>(L, 2);
 	}
+
 	lua_pop(L, 1);
 
 	lua_getfield(L, 1, "extra_headers");
@@ -81,6 +104,24 @@ void ModApiHttp::push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool
 	setboolfield(L, -1, "completed", completed);
 	setintfield(L, -1, "code", res.response_code);
 	setstringfield(L, -1, "data", res.data);
+}
+
+// http_api.fetch_sync(HTTPRequest definition)
+int ModApiHttp::l_http_fetch_sync(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	HTTPFetchRequest req;
+	read_http_fetch_request(L, req);
+
+	infostream << "Mod performs HTTP request with URL " << req.url << std::endl;
+
+	HTTPFetchResult res;
+	httpfetch_sync(req, res);
+
+	push_http_fetch_result(L, res, true);
+
+	return 1;
 }
 
 // http_api.fetch_async(HTTPRequest definition)
@@ -180,11 +221,42 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 
 	return 1;
 }
+
+int ModApiHttp::l_get_http_api(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	lua_newtable(L);
+	HTTP_API(fetch_async);
+	HTTP_API(fetch_async_get);
+	HTTP_API(fetch_sync);
+
+	return 1;
+}
+
 #endif
 
 void ModApiHttp::Initialize(lua_State *L, int top)
 {
 #if USE_CURL
-	API_FCT(request_http_api);
+
+	bool isMainmenu = false;
+#ifndef SERVER
+	isMainmenu = ModApiBase::getGuiEngine(L) != nullptr;
+#endif
+
+	if (isMainmenu) {
+		API_FCT(get_http_api);
+	} else {
+		API_FCT(request_http_api);
+	}
+
+#endif
+}
+
+void ModApiHttp::InitializeAsync(lua_State *L, int top)
+{
+#if USE_CURL
+	API_FCT(get_http_api);
 #endif
 }

@@ -44,6 +44,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_POSTGRESQL
 #include "database/database-postgresql.h"
 #endif
+#if USE_LEVELDB
+#include "database/database-leveldb.h"
+#endif
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
 
@@ -621,6 +624,9 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 
 void ServerEnvironment::saveMeta()
 {
+	if (!m_meta_loaded)
+		return;
+
 	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
 	// Open file and serialize
@@ -647,6 +653,9 @@ void ServerEnvironment::saveMeta()
 
 void ServerEnvironment::loadMeta()
 {
+	SANITY_CHECK(!m_meta_loaded);
+	m_meta_loaded = true;
+
 	// If file doesn't exist, load default environment metadata
 	if (!fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt")) {
 		infostream << "ServerEnvironment: Loading default environment metadata"
@@ -1219,11 +1228,6 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
-	if (m_database_check_interval.step(dtime, 10.0f)) {
-		m_auth_database->pingDatabase();
-		m_player_database->pingDatabase();
-		m_map->pingDatabase();
-	}
 	/*
 		Manage active block list
 	*/
@@ -1350,8 +1354,8 @@ void ServerEnvironment::step(float dtime)
 		std::shuffle(output.begin(), output.end(), m_rgen);
 
 		int i = 0;
-		// The time budget for ABMs is 20%.
-		u32 max_time_ms = m_cache_abm_interval * 1000 / 5;
+		// determine the time budget for ABMs
+		u32 max_time_ms = m_cache_abm_interval * 1000 * m_cache_abm_time_budget;
 		for (const v3s16 &p : output) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if (!block)
@@ -1594,14 +1598,14 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 	}
 }
 
-ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
+bool ServerEnvironment::getActiveObjectMessage(ActiveObjectMessage *dest)
 {
 	if(m_active_object_messages.empty())
-		return ActiveObjectMessage(0);
+		return false;
 
-	ActiveObjectMessage message = m_active_object_messages.front();
+	*dest = std::move(m_active_object_messages.front());
 	m_active_object_messages.pop();
-	return message;
+	return true;
 }
 
 void ServerEnvironment::getSelectedActiveObjects(
@@ -1614,6 +1618,8 @@ void ServerEnvironment::getSelectedActiveObjects(
 	const v3f line_vector = shootline_on_map.getVector();
 
 	for (auto obj : objs) {
+		if (obj->isGone())
+			continue;
 		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
@@ -2078,6 +2084,7 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 
 	if (name == "dummy")
 		return new Database_Dummy();
+
 #if USE_POSTGRESQL
 	if (name == "postgresql") {
 		std::string connect_string;
@@ -2085,6 +2092,12 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 		return new PlayerDatabasePostgreSQL(connect_string);
 	}
 #endif
+
+#if USE_LEVELDB
+	if (name == "leveldb")
+		return new PlayerDatabaseLevelDB(savedir);
+#endif
+
 	if (name == "files")
 		return new PlayerDatabaseFiles(savedir + DIR_DELIM + "players");
 
@@ -2105,7 +2118,7 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 	if (!world_mt.exists("player_backend")) {
 		errorstream << "Please specify your current backend in world.mt:"
 			<< std::endl
-			<< "	player_backend = {files|sqlite3|postgresql}"
+			<< "	player_backend = {files|sqlite3|leveldb|postgresql}"
 			<< std::endl;
 		return false;
 	}
@@ -2184,8 +2197,21 @@ AuthDatabase *ServerEnvironment::openAuthDatabase(
 	if (name == "sqlite3")
 		return new AuthDatabaseSQLite3(savedir);
 
+#if USE_POSTGRESQL
+	if (name == "postgresql") {
+		std::string connect_string;
+		conf.getNoEx("pgsql_auth_connection", connect_string);
+		return new AuthDatabasePostgreSQL(connect_string);
+	}
+#endif
+
 	if (name == "files")
 		return new AuthDatabaseFiles(savedir);
+
+#if USE_LEVELDB
+	if (name == "leveldb")
+		return new AuthDatabaseLevelDB(savedir);
+#endif
 
 	throw BaseException(std::string("Database backend ") + name + " not supported.");
 }

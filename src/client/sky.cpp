@@ -252,35 +252,10 @@ void Sky::render()
 		if (m_visible) {
 			driver->setMaterial(m_materials[1]);
 			for (u32 j = 0; j < 4; j++) {
-				video::SColor c = cloudyfogcolor.getInterpolated(m_skycolor, 0.45);
-				vertices[0] = video::S3DVertex(-1, 0.08, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, 0.08, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, 0.12, -1, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1, 0.12, -1, 0, 0, 1, c, t, o);
-				for (video::S3DVertex &vertex : vertices) {
-					if (j == 0)
-						// Don't switch
-						{}
-					else if (j == 1)
-						// Switch from -Z (south) to +X (east)
-						vertex.Pos.rotateXZBy(90);
-					else if (j == 2)
-						// Switch from -Z (south) to -X (west)
-						vertex.Pos.rotateXZBy(-90);
-					else
-						// Switch from -Z (south) to +Z (north)
-						vertex.Pos.rotateXZBy(-180);
-				}
-				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-			}
-
-			// Draw far cloudy fog thing at and below all horizons
-			for (u32 j = 0; j < 4; j++) {
-				video::SColor c = cloudyfogcolor;
-				vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 0, 1, c, t, t);
-				vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 0, 1, c, o, t);
-				vertices[2] = video::S3DVertex( 1, 0.08, -1, 0, 0, 1, c, o, o);
-				vertices[3] = video::S3DVertex(-1, 0.08, -1, 0, 0, 1, c, t, o);
+				vertices[0] = video::S3DVertex(-1, -0.02, -1, 0, 0, 1, m_bgcolor, t, t);
+				vertices[1] = video::S3DVertex( 1, -0.02, -1, 0, 0, 1, m_bgcolor, o, t);
+				vertices[2] = video::S3DVertex( 1, 0.45, -1, 0, 0, 1, m_skycolor, o, o);
+				vertices[3] = video::S3DVertex(-1, 0.45, -1, 0, 0, 1, m_skycolor, t, o);
 				for (video::S3DVertex &vertex : vertices) {
 					if (j == 0)
 						// Don't switch
@@ -529,7 +504,7 @@ void Sky::update(float time_of_day, float time_brightness,
 				pointcolor_sun_f.g = pointcolor_light *
 					(float)m_materials[3].EmissiveColor.getGreen() / 255;
 			} else if (!m_default_tint) {
-				pointcolor_sun_f = m_sky_params.sun_tint;
+				pointcolor_sun_f = m_sky_params.fog_sun_tint;
 			} else {
 				pointcolor_sun_f.r = pointcolor_light * 1;
 				pointcolor_sun_f.b = pointcolor_light *
@@ -548,9 +523,9 @@ void Sky::update(float time_of_day, float time_brightness,
 				);
 			} else {
 				pointcolor_moon_f = video::SColorf(
-					(m_sky_params.moon_tint.getRed() / 255) * pointcolor_light,
-					(m_sky_params.moon_tint.getGreen() / 255) * pointcolor_light,
-					(m_sky_params.moon_tint.getBlue() / 255) * pointcolor_light,
+					(m_sky_params.fog_moon_tint.getRed() / 255) * pointcolor_light,
+					(m_sky_params.fog_moon_tint.getGreen() / 255) * pointcolor_light,
+					(m_sky_params.fog_moon_tint.getBlue() / 255) * pointcolor_light,
 					1
 				);
 			}
@@ -932,17 +907,17 @@ void Sky::setStarCount(u16 star_count, bool force_update)
 	}
 }
 
-void Sky::setSkyColors(const SkyboxParams sky)
+void Sky::setSkyColors(const SkyColor &sky_color)
 {
-	m_sky_params.sky_color = sky.sky_color;
+	m_sky_params.sky_color = sky_color;
 }
 
 void Sky::setHorizonTint(video::SColor sun_tint, video::SColor moon_tint,
 		std::string use_sun_tint)
 {
 	// Change sun and moon tinting:
-	m_sky_params.sun_tint = sun_tint;
-	m_sky_params.moon_tint = moon_tint;
+	m_sky_params.fog_sun_tint = sun_tint;
+	m_sky_params.fog_moon_tint = moon_tint;
 	// Faster than comparing strings every rendering frame
 	if (use_sun_tint == "default")
 		m_default_tint = true;

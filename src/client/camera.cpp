@@ -86,6 +86,51 @@ Camera::~Camera()
 	m_wieldmgr->drop();
 }
 
+void Camera::notifyFovChange()
+{
+	LocalPlayer *player = m_client->getEnv().getLocalPlayer();
+	assert(player);
+
+	PlayerFovSpec spec = player->getFov();
+
+	/*
+	 * Update m_old_fov_degrees first - it serves as the starting point of the
+	 * upcoming transition.
+	 *
+	 * If an FOV transition is already active, mark current FOV as the start of
+	 * the new transition. If not, set it to the previous transition's target FOV.
+	 */
+	if (m_fov_transition_active)
+		m_old_fov_degrees = m_curr_fov_degrees;
+	else
+		m_old_fov_degrees = m_server_sent_fov ? m_target_fov_degrees : m_cache_fov;
+
+	/*
+	 * Update m_server_sent_fov next - it corresponds to the target FOV of the
+	 * upcoming transition.
+	 *
+	 * Set it to m_cache_fov, if server-sent FOV is 0. Otherwise check if
+	 * server-sent FOV is a multiplier, and multiply it with m_cache_fov instead
+	 * of overriding.
+	 */
+	if (spec.fov == 0.0f) {
+		m_server_sent_fov = false;
+		m_target_fov_degrees = m_cache_fov;
+	} else {
+		m_server_sent_fov = true;
+		m_target_fov_degrees = spec.is_multiplier ? m_cache_fov * spec.fov : spec.fov;
+	}
+
+	if (spec.transition_time > 0.0f)
+		m_fov_transition_active = true;
+
+	// If FOV smooth transition is active, initialize required variables
+	if (m_fov_transition_active) {
+		m_transition_time = spec.transition_time;
+		m_fov_diff = m_target_fov_degrees - m_old_fov_degrees;
+	}
+}
+
 bool Camera::successfullyCreated(std::string &error_message)
 {
 	if (!m_playernode) {
@@ -297,9 +342,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (player->getParent())
 		player_position = player->getParent()->getPosition();
 
-	if(player->touching_ground &&
-			player_position.Y > old_player_position.Y)
-	{
+	// Smooth the camera movement when the player instantly moves upward due to stepheight.
+	// To smooth the 'not touching_ground' stepheight, smoothing is necessary when jumping
+	// or swimming (for when moving from liquid to land).
+	// Disable smoothing if climbing or flying, to avoid upwards offset of player model
+	// when seen in 3rd person view.
+	bool flying = g_settings->getBool("free_move") && m_client->checkLocalPrivilege("fly");
+	if (player_position.Y > old_player_position.Y && !player->is_climbing && !flying) {
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
 		f32 t = std::exp(-23 * frametime);
@@ -462,35 +511,40 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		m_camera_position = my_cp;
 
 	/*
-	 * Apply server-sent FOV. If server doesn't enforce FOV,
-	 * check for zoom and set to zoom FOV.
-	 * Otherwise, default to m_cache_fov
+	 * Apply server-sent FOV, instantaneous or smooth transition.
+	 * If not, check for zoom and set to zoom FOV.
+	 * Otherwise, default to m_cache_fov.
 	 */
+	if (m_fov_transition_active) {
+		// Smooth FOV transition
+		// Dynamically calculate FOV delta based on frametimes
+		f32 delta = (frametime / m_transition_time) * m_fov_diff;
+		m_curr_fov_degrees += delta;
 
-	f32 fov_degrees;
-	PlayerFovSpec fov_spec = player->getFov();
-	if (fov_spec.fov > 0.0f) {
-		// If server-sent FOV is a multiplier, multiply
-		// it with m_cache_fov instead of overriding
-		if (fov_spec.is_multiplier)
-			fov_degrees = m_cache_fov * fov_spec.fov;
-		else
-			fov_degrees = fov_spec.fov;
+		// Mark transition as complete if target FOV has been reached
+		if ((m_fov_diff > 0.0f && m_curr_fov_degrees >= m_target_fov_degrees) ||
+				(m_fov_diff < 0.0f && m_curr_fov_degrees <= m_target_fov_degrees)) {
+			m_fov_transition_active = false;
+			m_curr_fov_degrees = m_target_fov_degrees;
+		}
+	} else if (m_server_sent_fov) {
+		// Instantaneous FOV change
+		m_curr_fov_degrees = m_target_fov_degrees;
 	} else if (player->getPlayerControl().zoom && player->getZoomFOV() > 0.001f) {
 		// Player requests zoom, apply zoom FOV
-		fov_degrees = player->getZoomFOV();
+		m_curr_fov_degrees = player->getZoomFOV();
 	} else {
 		// Set to client's selected FOV
-		fov_degrees = m_cache_fov;
+		m_curr_fov_degrees = m_cache_fov;
 	}
-	fov_degrees = rangelim(fov_degrees, 1.0f, 160.0f);
+	m_curr_fov_degrees = rangelim(m_curr_fov_degrees, 1.0f, 160.0f);
 
 	// FOV and aspect ratio
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
 	m_aspect = (f32) window_size.X / (f32) window_size.Y;
-	m_fov_y = fov_degrees * M_PI / 180.0;
+	m_fov_y = m_curr_fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
-	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
+	m_fov_y *= core::clamp(sqrt(16./10. / m_aspect), 1.0, 1.4);
 	m_fov_x = 2 * atan(m_aspect * tan(0.5 * m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
@@ -557,14 +611,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	const bool walking = movement_XZ && player->touching_ground;
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
 	const bool climbing = movement_Y && player->is_climbing;
-	if ((walking || swimming || climbing) &&
-			(!g_settings->getBool("free_move") || !m_client->checkLocalPrivilege("fly"))) {
+	if ((walking || swimming || climbing) && !flying) {
 		// Start animation
 		m_view_bobbing_state = 1;
 		m_view_bobbing_speed = MYMIN(speed.getLength(), 70);
-	}
-	else if (m_view_bobbing_state == 1)
-	{
+	} else if (m_view_bobbing_state == 1) {
 		// Stop animation
 		m_view_bobbing_state = 2;
 		m_view_bobbing_speed = 60;

@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <vector>
 #include <SMaterial.h>
-#include <memory>
 #include "util/numeric.h"
 #include "config.h"
 #include "itemdef.h"
@@ -157,6 +156,8 @@ enum MaterialType{
 	TILE_MATERIAL_WAVING_LIQUID_BASIC,
 	TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT,
 	TILE_MATERIAL_WAVING_LIQUID_OPAQUE,
+	TILE_MATERIAL_PLAIN,
+	TILE_MATERIAL_PLAIN_ALPHA
 };
 
 // Material flags
@@ -277,7 +278,7 @@ struct TileLayer
 	u32 texture_id = 0;
 
 	u16 animation_frame_length_ms = 0;
-	u8 animation_frame_count = 1;
+	u16 animation_frame_count = 1;
 
 	u8 material_type = TILE_MATERIAL_BASIC;
 	u8 material_flags =
@@ -289,7 +290,7 @@ struct TileLayer
 	//! If true, the tile has its own color.
 	bool has_color = false;
 
-	std::shared_ptr<std::vector<FrameSpec>> frames = nullptr;
+	std::vector<FrameSpec> *frames = nullptr;
 
 	/*!
 	 * The color of the tile, or if the tile does not own

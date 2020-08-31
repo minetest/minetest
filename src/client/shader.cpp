@@ -38,6 +38,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "client/tile.h"
 
+#if ENABLE_GLES
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+#include <GLES/gl.h>
+#else
+#include <GLES2/gl2.h>
+#endif
+#else
+#include <GL/gl.h>
+#endif
+
 /*
 	A cache from shader name to shader path
 */
@@ -537,11 +547,13 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaderinfo.base_material = video::EMT_SOLID;
 		break;
 	case TILE_MATERIAL_ALPHA:
+	case TILE_MATERIAL_PLAIN_ALPHA:
 	case TILE_MATERIAL_LIQUID_TRANSPARENT:
 	case TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT:
 		shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		break;
 	case TILE_MATERIAL_BASIC:
+	case TILE_MATERIAL_PLAIN:
 	case TILE_MATERIAL_WAVING_LEAVES:
 	case TILE_MATERIAL_WAVING_PLANTS:
 	case TILE_MATERIAL_WAVING_LIQUID_BASIC:
@@ -605,6 +617,14 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	// Create shaders header
 	std::string shaders_header = "#version 120\n";
 
+#ifdef __unix__
+	// For renderers that should use discard instead of GL_ALPHA_TEST
+	const char* gl_renderer = (const char*)glGetString(GL_RENDERER);
+	if (strstr(gl_renderer, "GC7000")) {
+		shaders_header += "#define USE_DISCARD\n";
+	}
+#endif
+
 	static const char* drawTypes[] = {
 		"NDT_NORMAL",
 		"NDT_AIRLIKE",
@@ -644,9 +664,11 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		"TILE_MATERIAL_WAVING_LIQUID_BASIC",
 		"TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT",
 		"TILE_MATERIAL_WAVING_LIQUID_OPAQUE",
+		"TILE_MATERIAL_PLAIN",
+		"TILE_MATERIAL_PLAIN_ALPHA",
 	};
 
-	for (int i = 0; i < 10; i++){
+	for (int i = 0; i < 12; i++){
 		shaders_header += "#define ";
 		shaders_header += materialTypes[i];
 		shaders_header += " ";

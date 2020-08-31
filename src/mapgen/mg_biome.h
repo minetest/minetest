@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2014-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2014-2018 paramat
+Copyright (C) 2014-2020 paramat
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -32,7 +32,7 @@ class BiomeManager;
 //// Biome
 ////
 
-typedef u8 biome_t;
+typedef u16 biome_t;
 
 #define BIOME_NONE ((biome_t)0)
 
@@ -42,6 +42,8 @@ enum BiomeType {
 
 class Biome : public ObjDef, public NodeResolver {
 public:
+	ObjDef *clone() const;
+
 	u32 flags;
 
 	content_t c_top;
@@ -88,6 +90,7 @@ struct BiomeParams {
 	s32 seed;
 };
 
+// WARNING: this class is not thread-safe
 class BiomeGen {
 public:
 	virtual ~BiomeGen() = default;
@@ -191,6 +194,8 @@ public:
 	BiomeManager(Server *server);
 	virtual ~BiomeManager() = default;
 
+	BiomeManager *clone() const;
+
 	const char *getObjectTitle() const
 	{
 		return "biome";
@@ -226,12 +231,15 @@ public:
 
 	// For BiomeGen type 'BiomeGenOriginal'
 	float getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
-		NoiseParams &np_heat_blend, u64 seed);
+		NoiseParams &np_heat_blend, u64 seed) const;
 	float getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
-		NoiseParams &np_humidity_blend, u64 seed);
-	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, v3s16 pos);
+		NoiseParams &np_humidity_blend, u64 seed) const;
+	const Biome *getBiomeFromNoiseOriginal(float heat, float humidity,
+		v3s16 pos) const;
 
 private:
+	BiomeManager() {};
+
 	Server *m_server;
 
 };

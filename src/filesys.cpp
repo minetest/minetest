@@ -691,6 +691,12 @@ std::string AbsolutePath(const std::string &path)
 const char *GetFilenameFromPath(const char *path)
 {
 	const char *filename = strrchr(path, DIR_DELIM_CHAR);
+	// Consistent with IsDirDelimiter this function handles '/' too
+	if (DIR_DELIM_CHAR != '/') {
+		const char *tmp = strrchr(path, '/');
+		if (tmp && tmp > filename)
+			filename = tmp;
+	}
 	return filename ? filename + 1 : path;
 }
 

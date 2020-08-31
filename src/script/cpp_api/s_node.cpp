@@ -94,7 +94,7 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 	};
 
 bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
-		ServerActiveObject *puncher, PointedThing pointed)
+		ServerActiveObject *puncher, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

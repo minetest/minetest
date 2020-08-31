@@ -43,6 +43,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static net.minetest.minetest.UnzipService.ACTION_FAILURE;
+import static net.minetest.minetest.UnzipService.ACTION_PROGRESS;
+import static net.minetest.minetest.UnzipService.ACTION_UPDATE;
+import static net.minetest.minetest.UnzipService.FAILURE;
+import static net.minetest.minetest.UnzipService.SUCCESS;
+
 public class MainActivity extends AppCompatActivity {
 	private final static int versionCode = BuildConfig.VERSION_CODE;
 	private final static int PERMISSIONS = 1;
@@ -58,14 +64,17 @@ public class MainActivity extends AppCompatActivity {
 		public void onReceive(Context context, Intent intent) {
 			int progress = 0;
 			if (intent != null)
-				progress = intent.getIntExtra(UnzipService.ACTION_PROGRESS, 0);
+				progress = intent.getIntExtra(ACTION_PROGRESS, 0);
 			if (progress >= 0) {
 				if (mProgressBar != null) {
 					mProgressBar.setVisibility(View.VISIBLE);
 					mProgressBar.setProgress(progress);
 				}
 				mTextView.setVisibility(View.VISIBLE);
-			} else
+			} else if (progress == FAILURE) {
+				Toast.makeText(MainActivity.this, intent.getStringExtra(ACTION_FAILURE), Toast.LENGTH_LONG).show();
+				finish();
+			} else if (progress == SUCCESS)
 				startNative();
 		}
 	};
@@ -74,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		IntentFilter filter = new IntentFilter(UnzipService.ACTION_UPDATE);
+		IntentFilter filter = new IntentFilter(ACTION_UPDATE);
 		registerReceiver(myReceiver, filter);
 		mProgressBar = findViewById(R.id.progressBar);
 		mTextView = findViewById(R.id.textView);
@@ -129,6 +138,11 @@ public class MainActivity extends AppCompatActivity {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(intent);
+	}
+
+	@Override
+	public void onBackPressed() {
+		// Prevent abrupt interruption when copy game files from assets
 	}
 
 	@Override

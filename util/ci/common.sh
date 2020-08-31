@@ -1,21 +1,5 @@
 #!/bin/bash -e
 
-set_linux_compiler_env() {
-	if [[ "${COMPILER}" == "gcc-6" ]]; then
-		export CC=gcc-6
-		export CXX=g++-6
-	elif [[ "${COMPILER}" == "gcc-8" ]]; then
-		export CC=gcc-8
-		export CXX=g++-8
-	elif [[ "${COMPILER}" == "clang-3.9" ]]; then
-		export CC=clang-3.9
-		export CXX=clang++-3.9
-	elif [[ "${COMPILER}" == "clang-9" ]]; then
-		export CC=clang-9
-		export CXX=clang++-9
-	fi
-}
-
 # Linux build only
 install_linux_deps() {
 	local pkgs=(libirrlicht-dev cmake libbz2-dev libpng-dev \

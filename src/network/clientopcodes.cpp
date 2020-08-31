@@ -68,7 +68,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_TIME_OF_DAY",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_TimeOfDay }, // 0x29
 	{ "TOCLIENT_CSM_RESTRICTION_FLAGS",    TOCLIENT_STATE_CONNECTED, &Client::handleCommand_CSMRestrictionFlags }, // 0x2A
 	{ "TOCLIENT_PLAYER_SPEED",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_PlayerSpeed }, // 0x2B
-	null_command_handler,
+	{ "TOCLIENT_MEDIA_PUSH",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_MediaPush }, // 0x2C
 	null_command_handler,
 	null_command_handler,
 	{ "TOCLIENT_CHAT_MESSAGE",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ChatMessage }, // 0x2F

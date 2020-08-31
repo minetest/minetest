@@ -203,6 +203,15 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 		setMeshBufferColor(mesh->getMeshBuffer(j), color);
 }
 
+void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count)
+{
+	const u32 stride = getVertexPitchFromType(buf->getVertexType());
+	assert(buf->getVertexCount() >= count);
+	u8 *vertices = (u8 *) buf->getVertices();
+	for (u32 i = 0; i < count; i++)
+		((video::S3DVertex*) (vertices + i * stride))->TCoords = uv[i];
+}
+
 template <typename F>
 static void applyToMesh(scene::IMesh *mesh, const F &fn)
 {
@@ -326,6 +335,26 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 			bbox.addInternalBox(buf->getBoundingBox());
 	}
 	src_mesh->setBoundingBox(bbox);
+}
+
+bool checkMeshNormals(scene::IMesh *mesh)
+{
+	u32 buffer_count = mesh->getMeshBufferCount();
+
+	for (u32 i = 0; i < buffer_count; i++) {
+		scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
+
+		// Here we intentionally check only first normal, assuming that if buffer
+		// has it valid, then most likely all other ones are fine too. We can
+		// check all of the normals to have length, but it seems like an overkill
+		// hurting the performance and covering only really weird broken models.
+		f32 length = buffer->getNormal(0).getLength();
+
+		if (!std::isfinite(length) || length < 1e-10f)
+			return false;
+	}
+
+	return true;
 }
 
 scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)

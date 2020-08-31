@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
+#include "util/string.h"
+#include "translation.h"
 #ifndef SERVER
 #include "client/client.h"
 #endif
@@ -527,13 +529,13 @@ int ModApiEnvMod::l_set_node_level(lua_State *L)
 
 // add_node_level(pos, level)
 // pos = {x=num, y=num, z=num}
-// level: 0..63
+// level: -127..127
 int ModApiEnvMod::l_add_node_level(lua_State *L)
 {
 	GET_ENV_PTR;
 
 	v3s16 pos = read_v3s16(L, 1);
-	u8 level = 1;
+	s16 level = 1;
 	if(lua_isnumber(L, 2))
 		level = lua_tonumber(L, 2);
 	MapNode n = env->getMap().getNode(pos);
@@ -587,19 +589,19 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	// pos
 	v3f pos = checkFloatPos(L, 1);
-	// content
 	const char *name = luaL_checkstring(L, 2);
-	// staticdata
 	const char *staticdata = luaL_optstring(L, 3, "");
-	// Do it
+
 	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
 	int objectid = env->addActiveObject(obj);
 	// If failed to add, return nothing (reads as nil)
 	if(objectid == 0)
 		return 0;
-	// Return ObjectRef
+
+	// If already deleted (can happen in on_activate), return nil
+	if (obj->isGone())
+		return 0;
 	getScriptApiBase(L)->objectrefGetOrCreate(L, obj);
 	return 1;
 }
@@ -750,43 +752,50 @@ int ModApiEnvMod::l_get_gametime(lua_State *L)
 	return 1;
 }
 
-
-// find_node_near(pos, radius, nodenames, search_center) -> pos or nil
-// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
-int ModApiEnvMod::l_find_node_near(lua_State *L)
+void ModApiEnvMod::collectNodeIds(lua_State *L, int idx, const NodeDefManager *ndef,
+	std::vector<content_t> &filter)
 {
-	GET_PLAIN_ENV_PTR;
-
-	const NodeDefManager *ndef = env->getGameDef()->ndef();
-	v3s16 pos = read_v3s16(L, 1);
-	int radius = luaL_checkinteger(L, 2);
-	std::vector<content_t> filter;
-	if (lua_istable(L, 3)) {
+	if (lua_istable(L, idx)) {
 		lua_pushnil(L);
-		while (lua_next(L, 3) != 0) {
+		while (lua_next(L, idx) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
 			ndef->getIds(readParam<std::string>(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
-	} else if (lua_isstring(L, 3)) {
+	} else if (lua_isstring(L, idx)) {
 		ndef->getIds(readParam<std::string>(L, 3), filter);
 	}
+}
+
+// find_node_near(pos, radius, nodenames, [search_center]) -> pos or nil
+// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+int ModApiEnvMod::l_find_node_near(lua_State *L)
+{
+	GET_PLAIN_ENV_PTR;
+
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+	Map &map = env->getMap();
+
+	v3s16 pos = read_v3s16(L, 1);
+	int radius = luaL_checkinteger(L, 2);
+	std::vector<content_t> filter;
+	collectNodeIds(L, 3, ndef, filter);
 
 	int start_radius = (lua_isboolean(L, 4) && readParam<bool>(L, 4)) ? 0 : 1;
 
 #ifndef SERVER
 	// Client API limitations
-	if (getClient(L))
-		radius = getClient(L)->CSMClampRadius(pos, radius);
+	if (Client *client = getClient(L))
+		radius = client->CSMClampRadius(pos, radius);
 #endif
 
 	for (int d = start_radius; d <= radius; d++) {
-		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
+		const std::vector<v3s16> &list = FacePositionCache::getFacePositions(d);
 		for (const v3s16 &i : list) {
 			v3s16 p = pos + i;
-			content_t c = env->getMap().getNode(p).getContent();
+			content_t c = map.getNode(p).getContent();
 			if (CONTAINS(filter, c)) {
 				push_v3s16(L, p);
 				return 1;
@@ -796,8 +805,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	return 0;
 }
 
-// find_nodes_in_area(minp, maxp, nodenames) -> list of positions
-// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+// find_nodes_in_area(minp, maxp, nodenames, [grouped])
 int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 {
 	GET_PLAIN_ENV_PTR;
@@ -807,11 +815,12 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	sortBoxVerticies(minp, maxp);
 
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
+	Map &map = env->getMap();
 
 #ifndef SERVER
-	if (getClient(L)) {
-		minp = getClient(L)->CSMClampPos(minp);
-		maxp = getClient(L)->CSMClampPos(maxp);
+	if (Client *client = getClient(L)) {
+		minp = client->CSMClampPos(minp);
+		maxp = client->CSMClampPos(maxp);
 	}
 #endif
 
@@ -824,45 +833,79 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	}
 
 	std::vector<content_t> filter;
-	if (lua_istable(L, 3)) {
-		lua_pushnil(L);
-		while (lua_next(L, 3) != 0) {
-			// key at index -2 and value at index -1
-			luaL_checktype(L, -1, LUA_TSTRING);
-			ndef->getIds(readParam<std::string>(L, -1), filter);
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
+	collectNodeIds(L, 3, ndef, filter);
+
+	bool grouped = lua_isboolean(L, 4) && readParam<bool>(L, 4);
+
+	if (grouped) {
+		// create the table we will be returning
+		lua_createtable(L, 0, filter.size());
+		int base = lua_gettop(L);
+
+		// create one table for each filter
+		std::vector<u32> idx;
+		idx.resize(filter.size());
+		for (u32 i = 0; i < filter.size(); i++)
+			lua_newtable(L);
+
+		v3s16 p;
+		for (p.X = minp.X; p.X <= maxp.X; p.X++)
+		for (p.Y = minp.Y; p.Y <= maxp.Y; p.Y++)
+		for (p.Z = minp.Z; p.Z <= maxp.Z; p.Z++) {
+			content_t c = map.getNode(p).getContent();
+
+			auto it = std::find(filter.begin(), filter.end(), c);
+			if (it != filter.end()) {
+				// Calculate index of the table and append the position
+				u32 filt_index = it - filter.begin();
+				push_v3s16(L, p);
+				lua_rawseti(L, base + 1 + filt_index, ++idx[filt_index]);
+			}
 		}
-	} else if (lua_isstring(L, 3)) {
-		ndef->getIds(readParam<std::string>(L, 3), filter);
-	}
 
-	std::vector<u32> individual_count;
-	individual_count.resize(filter.size());
+		// last filter table is at top of stack
+		u32 i = filter.size() - 1;
+		do {
+			if (idx[i] == 0) {
+				// No such node found -> drop the empty table
+				lua_pop(L, 1);
+			} else {
+				// This node was found -> put table into the return table
+				lua_setfield(L, base, ndef->get(filter[i]).name.c_str());
+			}
+		} while (i-- != 0);
 
-	lua_newtable(L);
-	u64 i = 0;
-	for (s16 x = minp.X; x <= maxp.X; x++)
-	for (s16 y = minp.Y; y <= maxp.Y; y++)
-	for (s16 z = minp.Z; z <= maxp.Z; z++) {
-		v3s16 p(x, y, z);
-		content_t c = env->getMap().getNode(p).getContent();
+		assert(lua_gettop(L) == base);
+		return 1;
+	} else {
+		std::vector<u32> individual_count;
+		individual_count.resize(filter.size());
 
-		std::vector<content_t>::iterator it = std::find(filter.begin(), filter.end(), c);
-		if (it != filter.end()) {
-			push_v3s16(L, p);
-			lua_rawseti(L, -2, ++i);
+		lua_newtable(L);
+		u32 i = 0;
+		v3s16 p;
+		for (p.X = minp.X; p.X <= maxp.X; p.X++)
+		for (p.Y = minp.Y; p.Y <= maxp.Y; p.Y++)
+		for (p.Z = minp.Z; p.Z <= maxp.Z; p.Z++) {
+			content_t c = env->getMap().getNode(p).getContent();
 
-			u32 filt_index = it - filter.begin();
-			individual_count[filt_index]++;
+			auto it = std::find(filter.begin(), filter.end(), c);
+			if (it != filter.end()) {
+				push_v3s16(L, p);
+				lua_rawseti(L, -2, ++i);
+
+				u32 filt_index = it - filter.begin();
+				individual_count[filt_index]++;
+			}
 		}
+
+		lua_createtable(L, 0, filter.size());
+		for (u32 i = 0; i < filter.size(); i++) {
+			lua_pushinteger(L, individual_count[i]);
+			lua_setfield(L, -2, ndef->get(filter[i]).name.c_str());
+		}
+		return 2;
 	}
-	lua_newtable(L);
-	for (u32 i = 0; i < filter.size(); i++) {
-		lua_pushnumber(L, individual_count[i]);
-		lua_setfield(L, -2, ndef->get(filter[i]).name.c_str());
-	}
-	return 2;
 }
 
 // find_nodes_in_area_under_air(minp, maxp, nodenames) -> list of positions
@@ -883,11 +926,12 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	sortBoxVerticies(minp, maxp);
 
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
+	Map &map = env->getMap();
 
 #ifndef SERVER
-	if (getClient(L)) {
-		minp = getClient(L)->CSMClampPos(minp);
-		maxp = getClient(L)->CSMClampPos(maxp);
+	if (Client *client = getClient(L)) {
+		minp = client->CSMClampPos(minp);
+		maxp = client->CSMClampPos(maxp);
 	}
 #endif
 
@@ -900,33 +944,21 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	}
 
 	std::vector<content_t> filter;
-
-	if (lua_istable(L, 3)) {
-		lua_pushnil(L);
-		while (lua_next(L, 3) != 0) {
-			// key at index -2 and value at index -1
-			luaL_checktype(L, -1, LUA_TSTRING);
-			ndef->getIds(readParam<std::string>(L, -1), filter);
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
-		}
-	} else if (lua_isstring(L, 3)) {
-		ndef->getIds(readParam<std::string>(L, 3), filter);
-	}
+	collectNodeIds(L, 3, ndef, filter);
 
 	lua_newtable(L);
-	u64 i = 0;
-	for (s16 x = minp.X; x <= maxp.X; x++)
-	for (s16 z = minp.Z; z <= maxp.Z; z++) {
-		s16 y = minp.Y;
-		v3s16 p(x, y, z);
-		content_t c = env->getMap().getNode(p).getContent();
-		for (; y <= maxp.Y; y++) {
-			v3s16 psurf(x, y + 1, z);
-			content_t csurf = env->getMap().getNode(psurf).getContent();
+	u32 i = 0;
+	v3s16 p;
+	for (p.X = minp.X; p.X <= maxp.X; p.X++)
+	for (p.Z = minp.Z; p.Z <= maxp.Z; p.Z++) {
+		p.Y = minp.Y;
+		content_t c = map.getNode(p).getContent();
+		for (; p.Y <= maxp.Y; p.Y++) {
+			v3s16 psurf(p.X, p.Y + 1, p.Z);
+			content_t csurf = map.getNode(psurf).getContent();
 			if (c != CONTENT_AIR && csurf == CONTENT_AIR &&
 					CONTAINS(filter, c)) {
-				push_v3s16(L, v3s16(x, y, z));
+				push_v3s16(L, p);
 				lua_rawseti(L, -2, ++i);
 			}
 			c = csurf;
@@ -1302,6 +1334,19 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	return 0;
 }
 
+// get_translated_string(lang_code, string)
+int ModApiEnvMod::l_get_translated_string(lua_State * L)
+{
+	GET_ENV_PTR;
+	std::string lang_code = luaL_checkstring(L, 1);
+	std::string string = luaL_checkstring(L, 2);
+	getServer(L)->loadTranslationLanguage(lang_code);
+	string = wide_to_utf8(translate_string(utf8_to_wide(string),
+			&(*g_server_translations)[lang_code]));
+	lua_pushstring(L, string.c_str());
+	return 1;
+}
+
 void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
@@ -1349,6 +1394,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
+	API_FCT(get_translated_string);
 }
 
 void ModApiEnvMod::InitializeClient(lua_State *L, int top)

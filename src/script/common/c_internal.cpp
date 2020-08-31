@@ -157,9 +157,9 @@ static void script_log(lua_State *L, const std::string &message,
 
 void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
 {
-	static bool configured = false;
-	static bool do_log     = false;
-	static bool do_error   = false;
+	static thread_local bool configured = false;
+	static thread_local bool do_log = false;
+	static thread_local bool do_error = false;
 
 	// Only read settings on first call
 	if (!configured) {
@@ -167,9 +167,10 @@ void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
 		if (value == "log") {
 			do_log = true;
 		} else if (value == "error") {
-			do_log   = true;
+			do_log = true;
 			do_error = true;
 		}
+		configured = true;
 	}
 
 	if (do_log)

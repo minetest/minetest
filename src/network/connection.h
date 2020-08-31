@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "networkprotocol.h"
 #include <iostream>
 #include <fstream>
-#include <list>
+#include <vector>
 #include <map>
 
 class NetworkPacket;
@@ -612,16 +612,16 @@ class Peer {
 		struct rttstats {
 			float jitter_min = FLT_MAX;
 			float jitter_max = 0.0f;
-			float jitter_avg = -2.0f;
+			float jitter_avg = -1.0f;
 			float min_rtt = FLT_MAX;
 			float max_rtt = 0.0f;
-			float avg_rtt = -2.0f;
+			float avg_rtt = -1.0f;
 
 			rttstats() = default;
 		};
 
 		rttstats m_rtt;
-		float m_last_rtt = -2.0f;
+		float m_last_rtt = -1.0f;
 
 		// current usage count
 		unsigned int m_usage = 0;
@@ -795,7 +795,7 @@ protected:
 
 	void PrintInfo(std::ostream &out);
 
-	std::list<session_t> getPeerIDs()
+	std::vector<session_t> getPeerIDs()
 	{
 		MutexAutoLock peerlock(m_peers_mutex);
 		return m_peer_ids;
@@ -816,7 +816,7 @@ private:
 	u32 m_protocol_id;
 
 	std::map<session_t, Peer *> m_peers;
-	std::list<session_t> m_peer_ids;
+	std::vector<session_t> m_peer_ids;
 	std::mutex m_peers_mutex;
 
 	std::unique_ptr<ConnectionSendThread> m_sendThread;

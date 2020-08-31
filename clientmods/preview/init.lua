@@ -79,7 +79,7 @@ core.register_on_item_use(function(itemstack, pointed_thing)
 		return false
 	end
 
-	local pos = vector.add(core.localplayer:get_pos(), core.camera:get_offset())
+	local pos = core.camera:get_pos()
 	local pos2 = vector.add(pos, vector.multiply(core.camera:get_look_dir(), 100))
 
 	local rc = core.raycast(pos, pos2)

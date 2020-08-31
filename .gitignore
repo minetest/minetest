@@ -40,7 +40,7 @@ build/.cmake/
 ## Non-static Minetest directories or symlinks to these
 /bin/
 /games/*
-!/games/minimal/
+!/games/devtest/
 /cache
 /textures/*
 !/textures/base/
@@ -102,3 +102,5 @@ cmake_config.h
 cmake_config_githash.h
 CMakeDoxy*
 compile_commands.json
+*.apk
+*.zip
