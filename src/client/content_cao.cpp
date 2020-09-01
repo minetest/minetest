@@ -1756,7 +1756,6 @@ void GenericCAO::processMessage(const std::string &data)
 		if (force_visibility) {
 			m_is_visible = true;
 			m_force_visible = true;
-			std::cout << "forced visible, " << bone << std::endl;
 		}
 		// localplayer itself can't be attached to localplayer
 		else if (!m_is_local_player) {
@@ -1765,13 +1764,11 @@ void GenericCAO::processMessage(const std::string &data)
 			m_is_visible = (!m_attached_to_local) ||
 				(m_client->getCamera()->getCameraMode() != CAMERA_MODE_FIRST);
 			m_force_visible = false;
-			std::cout << "not forced visible" << std::endl;
 		}
 		else {
 			// Local players need to have this set, otherwise first person
 			// attachments fail.
 			m_is_visible = true;
-			std::cout << "player was forced visible" << std::endl;
 		}
 	} else if (cmd == AO_CMD_PUNCHED) {
 		u16 result_hp = readU16(is);
