@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-08-12 22:32+0000\n"
-"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
+"PO-Revision-Date: 2020-11-21 04:52+0000\n"
+"Last-Translator: IFRFSX <1079092922@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -351,8 +351,9 @@ msgid "Rivers"
 msgstr "河流"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Sea level rivers"
-msgstr ""
+msgstr "海平面河流"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -361,43 +362,41 @@ msgstr "种子"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "生物群落之间的平滑过渡"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
-msgstr ""
+msgstr "出现在地形上的结构（对v6创建的树木和丛林草没有影响）"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "出现在地形上的结构，通常是树木和植物"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "温带，沙漠"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "温带，沙漠，丛林"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "温带，沙漠，丛林，苔原，泰加林带"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Terrain surface erosion"
-msgstr "地形高度"
+msgstr "地形表面腐烂"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "树木和丛林草"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Vary river depth"
-msgstr "河流深度"
+msgstr "改变河的深度"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
@@ -2039,6 +2038,10 @@ msgid ""
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
+"悬空岛的3D噪波定义结构。\n"
+"如果改变了默认值，噪波“scale”(默认为0.7)可能需要\n"
+"调整，因为当这个噪波的值范围大约为-2.0到2.0时，\n"
+"悬空岛逐渐变窄的函数最好。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -2158,6 +2161,10 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"调整悬空岛层的密度。\n"
+"增加值以增加密度。可以是正值或负值。\n"
+"Value = 0.0: 容积的50%是floatland。\n"
+"Value = 2.0  （可以更高，取决于“mgv7_np_floatland”，始终测试以确定）创建一个坚实的悬空岛层。"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -3113,6 +3120,11 @@ msgid ""
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
 msgstr ""
+"悬空岛锥度的指数，更改锥度的行为。\n"
+"值等于1.0，创建一个统一的，线性锥度。\n"
+"值大于1.0，创建一个平滑的、合适的锥度，默认分隔的悬空岛。\n"
+"值小于1.0，（例如0.25）创建一个带有平坦低地的更加轮廓分明的表面级别，\n"
+"适用于固体悬空岛层。"
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
