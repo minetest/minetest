@@ -2950,9 +2950,8 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 
 		camera->toggleCameraMode();
 
-		// Disable hiding the player as starting or joining
-		// a world will always render an invisible player model.
-		//playercao->setVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
+		// Make the player visible depending on camera mode.
+		playercao->hideMeshTexture();
 		playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	}
 

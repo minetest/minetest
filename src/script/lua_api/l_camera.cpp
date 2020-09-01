@@ -63,8 +63,8 @@ int LuaCamera::l_set_camera_mode(lua_State *L)
 		return 0;
 
 	camera->setCameraMode((CameraMode)((int)lua_tonumber(L, 2)));
-	// Fix player becoming invisible when in first person.
-	playercao->setVisible(true);
+	// Make the player visible depending on camera mode.
+	playercao->hideMeshTexture();
 	playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	return 0;
 }
