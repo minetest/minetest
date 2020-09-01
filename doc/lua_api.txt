@@ -3080,7 +3080,8 @@ Internally, it is implemented as a table with the 3 fields
 `x`, `y` and `z`. Example: `{x = 0, y = 1, z = 0}`.
 
 For the following functions, `v`, `v1`, `v2` are vectors,
-`p1`, `p2` are positions:
+`p1`, `p2` are positions,
+`s` is a scalar (a number):
 
 * `vector.new(a[, b, c])`:
     * Returns a vector.
@@ -3126,10 +3127,12 @@ For the following functions `x` can be either a vector or a number:
     * Returns a vector.
     * If `x` is a vector: Returns the difference of `v` subtracted by `x`.
     * If `x` is a number: Subtracts `x` from each component of `v`.
-* `vector.multiply(v, x)`:
-    * Returns a scaled vector or Schur product.
-* `vector.divide(v, x)`:
-    * Returns a scaled vector or Schur quotient.
+* `vector.multiply(v, s)`:
+    * Returns a scaled vector.
+    * Deprecated: If `s` is a vector: Returns the Schur product.
+* `vector.divide(v, s)`:
+    * Returns a scaled vector.
+    * Deprecated: If `s` is a vector: Returns the Schur quotient.
 
 For the following functions `a` is an angle in radians and `r` is a rotation
 vector ({x = <pitch>, y = <yaw>, z = <roll>}) where pitch, yaw and roll are
