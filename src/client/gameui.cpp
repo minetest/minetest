@@ -159,7 +159,21 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 
 	m_guitext2->setVisible(m_flags.show_debug);
 
+	core::recti inforect = m_guitext_info->getAbsoluteClippingRect();
 	setStaticText(m_guitext_info, m_infotext.c_str());
+
+	m_guitext_info->setRelativePosition(core::position2di(
+		// Checks to see if infotext will fit between middle and right side of screen
+		// If it doesn't then it will overlap with the crosshair on non-mobile devices
+		screensize.X/4 < u32(inforect.getWidth()/2) ?
+				screensize.X - inforect.getWidth() :
+				(screensize.X * 3/4) - (inforect.getWidth()/2),
+		screensize.Y/2 - inforect.getHeight()/2
+	));
+
+	// Used for testing
+	m_guitext_info->setBackgroundColor(video::SColor(0x55555522));
+
 	m_guitext_info->setVisible(m_flags.show_hud && g_menumgr.menuCount() == 0);
 
 	static const float statustext_time_max = 1.5f;
@@ -257,7 +271,7 @@ void GameUI::updateProfiler()
 		core::position2di upper_left(6, 50);
 		core::position2di lower_right = upper_left;
 		lower_right.X += size.Width + 10;
-		lower_right.Y += size.Height; 
+		lower_right.Y += size.Height;
 
 		m_guitext_profiler->setRelativePosition(core::rect<s32>(upper_left, lower_right));
 	}
