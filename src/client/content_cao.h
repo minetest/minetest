@@ -124,6 +124,7 @@ private:
 	float m_step_distance_counter = 0.0f;
 	u8 m_last_light = 255;
 	bool m_is_visible = false;
+	bool m_force_visible = false;
 	s8 m_glow = 0;
 	// Material
 	video::E_MATERIAL_TYPE m_material_type;
@@ -213,6 +214,11 @@ public:
 	inline void setVisible(bool toset)
 	{
 		m_is_visible = toset;
+	}
+
+	inline bool isForcedVisible() const
+	{
+		return m_force_visible;
 	}
 
 	void setChildrenVisible(bool toset);

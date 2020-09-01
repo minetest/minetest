@@ -664,7 +664,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	return 2;
 }
 
-// set_attach(self, parent, bone, position, rotation)
+// set_attach(self, parent, bone, position, rotation, force_visible)
 int ObjectRef::l_set_attach(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -687,7 +687,8 @@ int ObjectRef::l_set_attach(lua_State *L)
 	std::string bone;
 	v3f position = v3f(0, 0, 0);
 	v3f rotation = v3f(0, 0, 0);
-	co->getAttachment(&parent_id, &bone, &position, &rotation);
+	bool force_visible;
+	co->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
 	if (parent_id) {
 		ServerActiveObject *old_parent = env->getActiveObject(parent_id);
 		old_parent->removeAttachmentChild(co->getId());
@@ -702,7 +703,10 @@ int ObjectRef::l_set_attach(lua_State *L)
 	rotation = v3f(0, 0, 0);
 	if (!lua_isnil(L, 5))
 		rotation = read_v3f(L, 5);
-	co->setAttachment(parent->getId(), bone, position, rotation);
+	force_visible = false;
+	if (!lua_isnil(L, 6))
+		force_visible = readParam<bool>(L, 6);
+	co->setAttachment(parent->getId(), bone, position, rotation, force_visible);
 	parent->addAttachmentChild(co->getId());
 	return 0;
 }
@@ -722,7 +726,8 @@ int ObjectRef::l_get_attach(lua_State *L)
 	std::string bone;
 	v3f position = v3f(0, 0, 0);
 	v3f rotation = v3f(0, 0, 0);
-	co->getAttachment(&parent_id, &bone, &position, &rotation);
+	bool force_visible;
+	co->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
 	if (!parent_id)
 		return 0;
 	ServerActiveObject *parent = env->getActiveObject(parent_id);
@@ -731,6 +736,7 @@ int ObjectRef::l_get_attach(lua_State *L)
 	lua_pushlstring(L, bone.c_str(), bone.size());
 	push_v3f(L, position);
 	push_v3f(L, rotation);
+	lua_pushboolean(L, force_visible);
 	return 4;
 }
 

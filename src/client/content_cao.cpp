@@ -455,9 +455,12 @@ void GenericCAO::setChildrenVisible(bool toset)
 {
 	for (u16 cao_id : m_attachment_child_ids) {
 		GenericCAO *obj = m_env->getGenericCAO(cao_id);
-		if (obj) {
-			obj->setVisible(toset);
-		}
+		if (obj)
+			// Check if the entity is forced to appear in first person.
+			if (obj->isForcedVisible())
+				obj->setVisible(obj->isForcedVisible());
+			else
+				obj->setVisible(toset);
 	}
 }
 
@@ -477,8 +480,6 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 		if (parent)
 			parent->addAttachmentChild(m_id);
 	}
-
-
 	updateAttachments();
 }
 
@@ -498,7 +499,7 @@ void GenericCAO::clearChildAttachments()
 		int child_id = *m_attachment_child_ids.begin();
 
 		if (ClientActiveObject *child = m_env->getActiveObject(child_id))
-			child->setAttachment(0, "", v3f(), v3f());
+			child->setAttachment(0, "", v3f(), v3f(), false);
 
 		removeAttachmentChild(child_id);
 	}
@@ -1746,12 +1747,32 @@ void GenericCAO::processMessage(const std::string &data)
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F32(is);
 		v3f rotation = readV3F32(is);
+		bool force_visibility = false;
+		force_visibility = readU8(is);
 
 		setAttachment(parent_id, bone, position, rotation);
 
+		// Forcibly show attachments if required by set_attach
+		if (force_visibility) {
+			m_is_visible = true;
+			m_force_visible = true;
+			std::cout << "forced visible, " << bone << std::endl;
+		}
 		// localplayer itself can't be attached to localplayer
-		if (!m_is_local_player)
-			m_is_visible = !m_attached_to_local;
+		else if (!m_is_local_player) {
+			// Objects attached to the local player should be hidden in first person
+			// provided the forced boolean isn't set.
+			m_is_visible = (!m_attached_to_local) ||
+				(m_client->getCamera()->getCameraMode() != CAMERA_MODE_FIRST);
+			m_force_visible = false;
+			std::cout << "not forced visible" << std::endl;
+		}
+		else {
+			// Local players need to have this set, otherwise first person
+			// attachments fail.
+			m_is_visible = true;
+			std::cout << "player was forced visible" << std::endl;
+		}
 	} else if (cmd == AO_CMD_PUNCHED) {
 		u16 result_hp = readU16(is);
 

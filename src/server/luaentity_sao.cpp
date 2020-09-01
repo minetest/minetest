@@ -240,7 +240,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 		msg_os << serializeLongString(generateUpdateBonePositionCommand(
 			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // m_bone_position.size
 	}
-	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
+	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 5
 
 	int message_count = 4 + m_bone_position.size();
 
