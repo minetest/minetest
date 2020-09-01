@@ -230,7 +230,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
-	settings->setDefault("ambient_occlusion_gamma", "2.2");
+	settings->setDefault("ambient_occlusion_gamma", "1.8");
 #if ENABLE_GLES
 	settings->setDefault("enable_shaders", "false");
 #else
