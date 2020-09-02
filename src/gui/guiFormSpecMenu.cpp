@@ -2700,7 +2700,7 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() < 4 || (parts.size() > 7 &&
+	if (parts.size() < 5 || (parts.size() > 8 &&
 			m_formspec_version <= FORMSPEC_API_VERSION)) {
 		errorstream << "Invalid model element (" << parts.size() << "): '" << element
 			<< "'" << std::endl;
@@ -2711,11 +2711,12 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 
 	std::vector<std::string> v_pos = split(parts[0], ',');
 	std::vector<std::string> v_geom = split(parts[1], ',');
-	std::string meshstr = unescape_string(parts[2]);
-	std::vector<std::string> textures = split(parts[3], ',');
-	std::vector<std::string> vec_rot = split(parts[4], ',');
-	bool inf_rotation = is_yes(parts[5]);
-	bool mousectrl = is_yes(parts[6]) || parts[6].empty(); // default true
+	std::string name = unescape_string(parts[2]);
+	std::string meshstr = unescape_string(parts[3]);
+	std::vector<std::string> textures = split(parts[4], ',');
+	std::vector<std::string> vec_rot = split(parts[5], ',');
+	bool inf_rotation = is_yes(parts[6]);
+	bool mousectrl = is_yes(parts[7]) || parts[7].empty(); // default true
 
 	MY_CHECKPOS("model", 0);
 	MY_CHECKGEOM("model", 1);
@@ -2744,7 +2745,7 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	}
 
 	FieldSpec spec(
-		meshstr,
+		name,
 		L"",
 		L"",
 		258 + m_fields.size()
