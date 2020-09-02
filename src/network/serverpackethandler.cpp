@@ -600,8 +600,8 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		<< std::endl;
 	std::istringstream is(datastring, std::ios_base::binary);
 	// Create an action
-	InventoryAction *a = InventoryAction::deSerialize(is);
-	if (!a) {
+	std::unique_ptr<InventoryAction> a(InventoryAction::deSerialize(is));
+	if (!a.get()) {
 		infostream << "TOSERVER_INVENTORY_ACTION: "
 				<< "InventoryAction::deSerialize() returned NULL"
 				<< std::endl;
@@ -622,7 +622,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	auto check_inv_access = [player, player_has_interact] (
 			const InventoryLocation &loc) -> bool {
 		if (loc.type == InventoryLocation::CURRENT_PLAYER)
-			return false; // Code error case
+			return false; // Only used internally on the client, never sent
 		if (loc.type == InventoryLocation::PLAYER) {
 			// Allow access to own inventory in all cases
 			return loc.name == player->getName();
@@ -640,7 +640,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		Handle restrictions and special cases of the move action
 	*/
 	if (a->getType() == IAction::Move) {
-		IMoveAction *ma = (IMoveAction*)a;
+		IMoveAction *ma = (IMoveAction*)a.get();
 
 		ma->from_inv.applyCurrentPlayer(player->getName());
 		ma->to_inv.applyCurrentPlayer(player->getName());
@@ -650,10 +650,8 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 			m_inventory_mgr->setInventoryModified(ma->to_inv);
 
 		if (!check_inv_access(ma->from_inv) ||
-				!check_inv_access(ma->to_inv)) {
-			delete a;
+				!check_inv_access(ma->to_inv))
 			return;
-		}
 
 		InventoryLocation *remote = ma->from_inv.type == InventoryLocation::PLAYER ?
 			&ma->to_inv : &ma->from_inv;
@@ -663,10 +661,8 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 			v3f node_pos   = intToFloat(remote->p, BS);
 			v3f player_pos = player->getPlayerSAO()->getEyePosition();
 			f32 d = player_pos.getDistanceFrom(node_pos);
-			if (!checkInteractDistance(player, d, "inventory")) {
-				delete a;
+			if (!checkInteractDistance(player, d, "inventory"))
 				return;
-			}
 		}
 
 		/*
@@ -677,7 +673,6 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 					<< (ma->from_inv.dump()) << ":" << ma->from_list
 					<< " to " << (ma->to_inv.dump()) << ":" << ma->to_list
 					<< " because src is " << ma->from_list << std::endl;
-			delete a;
 			return;
 		}
 
@@ -689,7 +684,6 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 					<< (ma->from_inv.dump()) << ":" << ma->from_list
 					<< " to " << (ma->to_inv.dump()) << ":" << ma->to_list
 					<< " because dst is " << ma->to_list << std::endl;
-			delete a;
 			return;
 		}
 	}
@@ -697,7 +691,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		Handle restrictions and special cases of the drop action
 	*/
 	else if (a->getType() == IAction::Drop) {
-		IDropAction *da = (IDropAction*)a;
+		IDropAction *da = (IDropAction*)a.get();
 
 		da->from_inv.applyCurrentPlayer(player->getName());
 
@@ -710,22 +704,18 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 			infostream << "Ignoring IDropAction from "
 					<< (da->from_inv.dump()) << ":" << da->from_list
 					<< " because src is " << da->from_list << std::endl;
-			delete a;
 			return;
 		}
 
 		// Disallow dropping items if not allowed to interact
-		if (!player_has_interact || !check_inv_access(da->from_inv)) {
-			delete a;
+		if (!player_has_interact || !check_inv_access(da->from_inv))
 			return;
-		}
 
 		// Disallow dropping items if dead
 		if (playersao->isDead()) {
 			infostream << "Ignoring IDropAction from "
 					<< (da->from_inv.dump()) << ":" << da->from_list
 					<< " because player is dead." << std::endl;
-			delete a;
 			return;
 		}
 	}
@@ -733,7 +723,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		Handle restrictions and special cases of the craft action
 	*/
 	else if (a->getType() == IAction::Craft) {
-		ICraftAction *ca = (ICraftAction*)a;
+		ICraftAction *ca = (ICraftAction*)a.get();
 
 		ca->craft_inv.applyCurrentPlayer(player->getName());
 
@@ -743,24 +733,18 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		if (!player_has_interact) {
 			infostream << "Cannot craft: "
 					<< "No interact privilege" << std::endl;
-			delete a;
 			return;
 		}
 
-		if (!check_inv_access(ca->craft_inv)) {
-			delete a;
+		if (!check_inv_access(ca->craft_inv))
 			return;
-		}
 	} else {
 		// Unknown action. Ignored.
-		delete a;
 		return;
 	}
 
 	// Do the action
 	a->apply(m_inventory_mgr.get(), playersao, this);
-	// Eat the action
-	delete a;
 }
 
 void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
