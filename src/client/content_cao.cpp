@@ -1888,67 +1888,27 @@ void GenericCAO::hideMeshTexture()
 {
 	if (!m_is_local_player)
 		return;
-	// We check against all pointers because we cannot be sure one might not
-	// be dropped before doing this check. Hopefully there's a better way of
-	// handling something like this without breaking everything.
-	if (m_animated_meshnode) {
-		if (m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST) {
-			// Hide the mesh by culling faces with normals facing
-			// the camera. Serious hackyness but it works for our
-			// purposes. This also preserves the skeletal armature.
-			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-				true);
-			m_animated_meshnode->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-				true);
-		} else {
-			// Restore mesh visibility.
-			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-				m_prop.backface_culling);
-			m_animated_meshnode->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-				false);
-		}
-	}
-	if (m_spritenode) {
-		if (m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST) {
-			m_spritenode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-				true);
-			m_spritenode->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-				true);
-		}
-		else {
-			m_spritenode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-				m_prop.backface_culling);
-			m_spritenode->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-				false);
-		}
-	}
-	if (m_meshnode) {
-		if (m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST) {
-			m_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-				true);
-			m_meshnode->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-				true);
-		}
-		else {
-			m_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-				m_prop.backface_culling);
-			m_meshnode->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-				false);
-		}
-	}
-	if (m_wield_meshnode) {
-		if (m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST) {
-			m_wield_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-				true);
-			m_wield_meshnode->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-				true);
-		}
-		else {
-			m_wield_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-				m_prop.backface_culling);
-			m_wield_meshnode->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-				false);
-		}
+
+	// Grab the active player scene node so we know there's
+	// at least a mesh to occlude from the camera.
+	irr::scene::ISceneNode *playercao = getSceneNode();
+	if (!playercao)
+		return;
+
+	if (m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST) {
+		// Hide the mesh by culling faces with normals facing
+		// the camera. Serious hackyness but it works for our
+		// purposes. This also preserves the skeletal armature.
+		playercao->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
+			true);
+		playercao->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
+			true);
+	} else {
+		// Restore mesh visibility.
+		playercao->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
+			m_prop.backface_culling);
+		playercao->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
+			false);
 	}
 }
 
