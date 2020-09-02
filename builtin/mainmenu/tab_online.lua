@@ -34,7 +34,8 @@ local function get_formspec(tabview, name, tabdata)
 	local retval =
 		-- Search
 		"field[0.15,0.075;5.91,1;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
-		"button[5.62,-0.25;1.5,1;btn_mp_search;" .. fgettext("Search") .. "]" ..
+        "image_button[5.63,-.165;.83,.83;" .. core.formspec_escape(defaulttexturedir .. "clear.png") .. ";btn_mp_clear;]" ..
+		"image_button[6.3,-.165;.83,.83;" .. core.formspec_escape(defaulttexturedir .. "search.png") .. ";btn_mp_search;]" ..
 		"image_button[6.97,-.165;.83,.83;" .. core.formspec_escape(defaulttexturedir .. "refresh.png")
 			.. ";btn_mp_refresh;]" ..
 
@@ -85,6 +86,7 @@ local function get_formspec(tabview, name, tabdata)
 		"table[-0.15,0.6;7.75,5.15;favourites;"
 
 	if menudata.search_result then
+        minetest.debug("Search field has been cleared!")
 		for i = 1, #menudata.search_result do
 			local favs = core.get_favorites("local")
 			local server = menudata.search_result[i]
@@ -242,7 +244,13 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		core.settings:set("remote_port", "30000")
 		return true
 	end
-
+    
+    if fields.btn_mp_clear then
+        tabdata.search_for = ""
+        menudata.search_result = nil
+        return true
+    end
+    
 	if fields.btn_mp_search or fields.key_enter_field == "te_search" then
 		tabdata.fav_selected = 1
 		local input = fields.te_search:lower()
