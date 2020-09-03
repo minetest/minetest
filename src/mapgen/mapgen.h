@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
 #define MG_BIOMES      0x40
+#define MG_ORES        0x80
 
 typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
