@@ -114,23 +114,23 @@ local function get_formspec(tabview, name, tabdata)
 				)
 
 	retval = retval ..
-			"button[4,3.95;2.6,1;world_delete;".. fgettext("Delete") .. "]" ..
-			"button[6.5,3.95;2.8,1;world_configure;".. fgettext("Configure") .. "]" ..
-			"button[9.2,3.95;2.5,1;world_create;".. fgettext("New") .. "]" ..
-			"label[4,-0.25;".. fgettext("Select World:") .. "]"..
+			"button[4,3.9;2.65,1;world_delete;".. fgettext("Delete") .. "]" ..
+			"button[6.525,3.9;2.65,1;world_configure;".. fgettext("Configure") .. "]" ..
+			"button[9.05,3.9;2.65,1;world_create;".. fgettext("New") .. "]" ..
+			"label[4,-0.1;".. fgettext("Select World:") .. "]"..
 			"checkbox[0.25,-0.20;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
 			dump(core.settings:get_bool("creative_mode")) .. "]"..
 			"checkbox[0.25,0.25;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
 			dump(core.settings:get_bool("enable_damage")) .. "]"..
 			"checkbox[0.25,0.7;cb_server;".. fgettext("Host Server") ..";" ..
 			dump(core.settings:get_bool("enable_server")) .. "]" ..
-			"textlist[4,0.25;7.5,3.7;sp_worlds;" ..
+			"textlist[4,0.4;7.5,3.5;sp_worlds;" ..
 			menu_render_worldlist() ..
 			";" .. index .. "]"
 
 	if core.settings:get_bool("enable_server") then
 		retval = retval ..
-				"button[8.5,4.8;3.2,1;play;".. fgettext("Host Game") .. "]" ..
+				"button[7.75,4.8;3.95,1;play;".. fgettext("Host Game") .. "]" ..
 				"checkbox[0.25,1.15;cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
 				dump(core.settings:get_bool("server_announce")) .. "]" ..
 				"field[0.55,2.9;3.5,0.5;te_playername;" .. fgettext("Name") .. ";" ..
@@ -151,7 +151,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 	else
 		retval = retval ..
-				"button[8.5,4.8;3.2,1;play;" .. fgettext("Play Game") .. "]"
+				"button[7.75,4.8;3.95,1;play;" .. fgettext("Play Game") .. "]"
 	end
 
 	return retval
