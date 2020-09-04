@@ -636,7 +636,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 				return;
 			from_inv_is_current_player = true;
 		}
-		
+
 		bool to_inv_is_current_player = false;
 		if (ma->to_inv.type == InventoryLocation::PLAYER) {
 			if (ma->to_inv.name != player->getName())
@@ -869,6 +869,15 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	*pkt >> item;
 
+	if (item >= player->getHotbarItemcount()) {
+		actionstream << "Player: " << player->getName()
+			<< " tried to access item=" << item
+			<< " out of hotbar_itemcount="
+			<< player->getHotbarItemcount()
+			<< "; ignoring." << std::endl;
+		return;
+	}
+
 	playersao->getPlayer()->setWieldIndex(item);
 }
 
@@ -984,6 +993,16 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	v3f player_pos = playersao->getLastGoodPosition();
 
 	// Update wielded item
+
+	if (item_i >= player->getHotbarItemcount()) {
+		actionstream << "Player: " << player->getName()
+			<< " tried to access item=" << item_i
+			<< " out of hotbar_itemcount="
+			<< player->getHotbarItemcount()
+			<< "; ignoring." << std::endl;
+		return;
+	}
+
 	playersao->getPlayer()->setWieldIndex(item_i);
 
 	// Get pointed to object (NULL if not POINTEDTYPE_OBJECT)
