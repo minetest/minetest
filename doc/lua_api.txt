@@ -5888,6 +5888,31 @@ An `InvRef` is a reference to an inventory.
   `minetest.get_inventory(location)`.
     * returns `{type="undefined"}` in case location is not known
 
+### Callbacks
+
+Detached & nodemeta inventories provide the following callbacks for move actions:
+
+#### Before
+
+The `allow_*` callbacks return how many items can be moved.
+
+* `allow_move`/`allow_metadata_inventory_move`: Moving items in the inventory
+* `allow_take`/`allow_metadata_inventory_take`: Taking items from the inventory
+* `allow_put`/`allow_metadata_inventory_put`: Putting items to the inventory
+
+#### After
+
+The `on_*` callbacks are called after the items have been placed in the inventories.
+
+* `on_move`/`on_metadata_inventory_move`: Moving items in the inventory
+* `on_take`/`on_metadata_inventory_take`: Taking items from the inventory
+* `on_put`/`on_metadata_inventory_put`: Putting items to the inventory
+
+#### Swapping
+
+When a player tries to put an item to a place where another item is, the items are *swapped*.
+This means that all callbacks will be called twice (once for each action).
+
 `ItemStack`
 -----------
 
