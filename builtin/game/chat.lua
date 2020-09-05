@@ -539,7 +539,7 @@ core.register_chatcommand("set", {
 				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
 			end
 			core.settings:set(setname, setvalue)
-			return true, "Setted: " .. setname .. " = " .. setvalue
+			return true, "Set: " .. setname .. " = " .. setvalue
 		end
 
 		setname = string.match(param, "([^ ]+)")
@@ -767,10 +767,12 @@ core.register_chatcommand("pulverize", {
 		if wielded_item:is_empty() then
 			return false, "Unable to pulverize, no item in hand."
 		end
+		local item = wielded_item:get_name()
+		local count = wielded_item:get_count()
 		core.log("action", name .. " pulverized \"" ..
-			wielded_item:get_name() .. " " .. wielded_item:get_count() .. "\"")
+			item .. " " .. count .. "\"")
 		player:set_wielded_item(nil)
-		return true, name .. "'s item was pulverized."
+		return true, "Your item ("..item.." "..count..") was pulverized."
 	end,
 })
 
@@ -912,7 +914,7 @@ core.register_chatcommand("time", {
 			-- Backward compatibility.
 			core.set_timeofday((new_time % 24000) / 24000)
 			core.log("action", name .. " sets time to " .. new_time)
-			return true, "Time of day changed."
+			return true, "Time of day changed to "..tostring(new_time).."."
 		end
 		hour = tonumber(hour)
 		minute = tonumber(minute)
@@ -1056,7 +1058,7 @@ core.register_chatcommand("msg", {
 				.. ": " .. message)
 		core.chat_send_player(sendto, "DM from " .. name .. ": "
 				.. message)
-		return true, "Message sent to " .. sendto .. "."
+		return true, "DM to " .. name .. ": " .. message
 	end,
 })
 
