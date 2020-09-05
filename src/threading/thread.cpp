@@ -161,11 +161,6 @@ bool Thread::wait()
 }
 
 
-bool Thread::kill()
-{
-	return true;
-}
-
 
 bool Thread::getReturnValue(void **ret)
 {
