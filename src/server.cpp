@@ -2441,6 +2441,8 @@ bool Server::addMediaFile(const std::string &filename,
 		".x", ".b3d", ".md2", ".obj",
 		// Custom translation file format
 		".tr",
+		// Vertex, Geometry & Fragment Shaders
+		".vs.glsl", ".gs.glsl", ".fs.glsl",
 		NULL
 	};
 	if (removeStringEnd(filename, supported_ext).empty()) {
