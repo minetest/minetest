@@ -45,7 +45,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <GLES2/gl2.h>
 #endif
 #else
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/gl.h>
+#include <GL/glu.h>
+#endif
 #endif
 
 /*
