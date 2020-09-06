@@ -7,21 +7,28 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+	<!--
+		`android:requestLegacyExternalStorage="true"` is workaround for using `/sdcard`
+		instead of the `getFilesDir()` patch for assets. Check link below for more information:
+		https://developer.android.com/training/data-storage/compatibility
+	-->
+
 	<application
 		android:allowBackup="false"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/label"
 		android:resizeableActivity="false"
+		android:requestLegacyExternalStorage="true"
 		tools:ignore="UnusedAttribute">
 
 		<meta-data
 			android:name="android.max_aspect"
-			android:value="3" />
+			android:value="3.0" />
 
 		<activity
 			android:name=".MainActivity"
 			android:configChanges="orientation|keyboardHidden|navigation|screenSize"
-			android:maxAspectRatio="3"
+			android:maxAspectRatio="3.0"
 			android:screenOrientation="sensorLandscape"
 			android:theme="@style/AppTheme">
 			<intent-filter>
@@ -35,7 +42,7 @@
 			android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize"
 			android:hardwareAccelerated="true"
 			android:launchMode="singleTask"
-			android:maxAspectRatio="3"
+			android:maxAspectRatio="3.0"
 			android:screenOrientation="sensorLandscape"
 			android:theme="@style/AppTheme">
 			<intent-filter>
@@ -48,7 +55,7 @@
 
 		<activity
 			android:name=".InputDialogActivity"
-			android:maxAspectRatio="3"
+			android:maxAspectRatio="3.0"
 			android:theme="@style/InputTheme" />
 
 		<service

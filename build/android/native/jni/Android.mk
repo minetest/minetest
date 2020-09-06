@@ -164,6 +164,7 @@ LOCAL_SRC_FILES := \
 	../../../src/noise.cpp                          \
 	../../../src/objdef.cpp                         \
 	../../../src/object_properties.cpp              \
+	../../../src/particles.cpp                      \
 	../../../src/pathfinder.cpp                     \
 	../../../src/player.cpp                         \
 	../../../src/porting.cpp                        \

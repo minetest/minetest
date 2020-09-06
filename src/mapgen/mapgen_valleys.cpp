@@ -54,7 +54,7 @@ FlagDesc flagdesc_mapgen_valleys[] = {
 };
 
 
-MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeManager *emerge)
+MapgenValleys::MapgenValleys(MapgenValleysParams *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_VALLEYS, params, emerge)
 {
 	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
@@ -268,7 +268,8 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Dungeon creation
 	if (flags & MG_DUNGEONS)

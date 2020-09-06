@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool ScriptApiServer::getAuth(const std::string &playername,
 		std::string *dst_password,
-		std::set<std::string> *dst_privs)
+		std::set<std::string> *dst_privs,
+		s64 *dst_last_login)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -43,8 +44,7 @@ bool ScriptApiServer::getAuth(const std::string &playername,
 	luaL_checktype(L, -1, LUA_TTABLE);
 
 	std::string password;
-	bool found = getstringfield(L, -1, "password", password);
-	if (!found)
+	if (!getstringfield(L, -1, "password", password))
 		throw LuaError("Authentication handler didn't return password");
 	if (dst_password)
 		*dst_password = password;
@@ -54,7 +54,13 @@ bool ScriptApiServer::getAuth(const std::string &playername,
 		throw LuaError("Authentication handler didn't return privilege table");
 	if (dst_privs)
 		readPrivileges(-1, *dst_privs);
-	lua_pop(L, 1);
+	lua_pop(L, 1);  // Remove key from privs table
+
+	s64 last_login;
+	if(!getintfield(L, -1, "last_login", last_login))
+		throw LuaError("Authentication handler didn't return last_login");
+	if (dst_last_login)
+		*dst_last_login = (s64)last_login;
 
 	return true;
 }

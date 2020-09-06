@@ -37,32 +37,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Utility
 */
 
-v3f random_v3f(v3f min, v3f max)
+static f32 random_f32(f32 min, f32 max)
+{
+	return rand() / (float)RAND_MAX * (max - min) + min;
+}
+
+static v3f random_v3f(v3f min, v3f max)
 {
 	return v3f(
-		rand() / (float)RAND_MAX * (max.X - min.X) + min.X,
-		rand() / (float)RAND_MAX * (max.Y - min.Y) + min.Y,
-		rand() / (float)RAND_MAX * (max.Z - min.Z) + min.Z);
+		random_f32(min.X, max.X),
+		random_f32(min.Y, max.Y),
+		random_f32(min.Z, max.Z));
 }
+
+/*
+	Particle
+*/
 
 Particle::Particle(
 	IGameDef *gamedef,
 	LocalPlayer *player,
 	ClientEnvironment *env,
-	v3f pos,
-	v3f velocity,
-	v3f acceleration,
-	float expirationtime,
-	float size,
-	bool collisiondetection,
-	bool collision_removal,
-	bool object_collision,
-	bool vertical,
+	const ParticleParameters &p,
 	video::ITexture *texture,
 	v2f texpos,
 	v2f texsize,
-	const struct TileAnimationParams &anim,
-	u8 glow,
 	video::SColor color
 ):
 	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
@@ -81,33 +80,28 @@ Particle::Particle(
 	m_material.setTexture(0, texture);
 	m_texpos = texpos;
 	m_texsize = texsize;
-	m_animation = anim;
+	m_animation = p.animation;
 
 	// Color
 	m_base_color = color;
 	m_color = color;
 
 	// Particle related
-	m_pos = pos;
-	m_velocity = velocity;
-	m_acceleration = acceleration;
-	m_expiration = expirationtime;
+	m_pos = p.pos;
+	m_velocity = p.vel;
+	m_acceleration = p.acc;
+	m_expiration = p.expirationtime;
 	m_player = player;
-	m_size = size;
-	m_collisiondetection = collisiondetection;
-	m_collision_removal = collision_removal;
-	m_object_collision = object_collision;
-	m_vertical = vertical;
-	m_glow = glow;
+	m_size = p.size;
+	m_collisiondetection = p.collisiondetection;
+	m_collision_removal = p.collision_removal;
+	m_object_collision = p.object_collision;
+	m_vertical = p.vertical;
+	m_glow = p.glow;
 
 	// Irrlicht stuff
-	m_collisionbox = aabb3f(
-		-size / 2,
-		-size / 2,
-		-size / 2,
-		 size / 2,
-		 size / 2,
-		 size / 2);
+	const float c = p.size / 2;
+	m_collisionbox = aabb3f(-c, -c, -c, c, c, c);
 	this->setAutomaticCulling(scene::EAC_OFF);
 
 	// Init lighting
@@ -255,52 +249,22 @@ void Particle::updateVertices()
 ParticleSpawner::ParticleSpawner(
 	IGameDef *gamedef,
 	LocalPlayer *player,
-	u16 amount,
-	float time,
-	v3f minpos, v3f maxpos,
-	v3f minvel, v3f maxvel,
-	v3f minacc, v3f maxacc,
-	float minexptime, float maxexptime,
-	float minsize, float maxsize,
-	bool collisiondetection,
-	bool collision_removal,
-	bool object_collision,
+	const ParticleSpawnerParameters &p,
 	u16 attached_id,
-	bool vertical,
 	video::ITexture *texture,
-	const struct TileAnimationParams &anim,
-	u8 glow,
 	ParticleManager *p_manager
 ):
-	m_particlemanager(p_manager)
+	m_particlemanager(p_manager), p(p)
 {
 	m_gamedef = gamedef;
 	m_player = player;
-	m_amount = amount;
-	m_spawntime = time;
-	m_minpos = minpos;
-	m_maxpos = maxpos;
-	m_minvel = minvel;
-	m_maxvel = maxvel;
-	m_minacc = minacc;
-	m_maxacc = maxacc;
-	m_minexptime = minexptime;
-	m_maxexptime = maxexptime;
-	m_minsize = minsize;
-	m_maxsize = maxsize;
-	m_collisiondetection = collisiondetection;
-	m_collision_removal = collision_removal;
-	m_object_collision = object_collision;
 	m_attached_id = attached_id;
-	m_vertical = vertical;
 	m_texture = texture;
 	m_time = 0;
-	m_animation = anim;
-	m_glow = glow;
 
-	for (u16 i = 0; i <= m_amount; i++)
-	{
-		float spawntime = (float)rand() / (float)RAND_MAX * m_spawntime;
+	m_spawntimes.reserve(p.amount + 1);
+	for (u16 i = 0; i <= p.amount; i++) {
+		float spawntime = rand() / (float)RAND_MAX * p.time;
 		m_spawntimes.push_back(spawntime);
 	}
 }
@@ -309,7 +273,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	const core::matrix4 *attached_absolute_pos_rot_matrix)
 {
 	v3f ppos = m_player->getPosition() / BS;
-	v3f pos = random_v3f(m_minpos, m_maxpos);
+	v3f pos = random_v3f(p.minpos, p.maxpos);
 
 	// Need to apply this first or the following check
 	// will be wrong for attached spawners
@@ -326,41 +290,51 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	if (pos.getDistanceFrom(ppos) > radius)
 		return;
 
-	v3f vel = random_v3f(m_minvel, m_maxvel);
-	v3f acc = random_v3f(m_minacc, m_maxacc);
+	// Parameters for the single particle we're about to spawn
+	ParticleParameters pp;
+	pp.pos = pos;
+
+	pp.vel = random_v3f(p.minvel, p.maxvel);
+	pp.acc = random_v3f(p.minacc, p.maxacc);
 
 	if (attached_absolute_pos_rot_matrix) {
 		// Apply attachment rotation
-		attached_absolute_pos_rot_matrix->rotateVect(vel);
-		attached_absolute_pos_rot_matrix->rotateVect(acc);
+		attached_absolute_pos_rot_matrix->rotateVect(pp.vel);
+		attached_absolute_pos_rot_matrix->rotateVect(pp.acc);
 	}
 
-	float exptime = rand() / (float)RAND_MAX
-		* (m_maxexptime - m_minexptime)
-		+ m_minexptime;
+	pp.expirationtime = random_f32(p.minexptime, p.maxexptime);
+	p.copyCommon(pp);
 
-	float size = rand() / (float)RAND_MAX
-		* (m_maxsize - m_minsize)
-		+ m_minsize;
+	video::ITexture *texture;
+	v2f texpos, texsize;
+	video::SColor color(0xFFFFFFFF);
+
+	if (p.node.getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &f =
+			m_particlemanager->m_env->getGameDef()->ndef()->get(p.node);
+		if (!ParticleManager::getNodeParticleParams(p.node, f, pp, &texture,
+				texpos, texsize, &color, p.node_tile))
+			return;
+	} else {
+		texture = m_texture;
+		texpos = v2f(0.0f, 0.0f);
+		texsize = v2f(1.0f, 1.0f);
+	}
+
+	// Allow keeping default random size
+	if (p.maxsize > 0.0f)
+		pp.size = random_f32(p.minsize, p.maxsize);
 
 	m_particlemanager->addParticle(new Particle(
 		m_gamedef,
 		m_player,
 		env,
-		pos,
-		vel,
-		acc,
-		exptime,
-		size,
-		m_collisiondetection,
-		m_collision_removal,
-		m_object_collision,
-		m_vertical,
-		m_texture,
-		v2f(0.0, 0.0),
-		v2f(1.0, 1.0),
-		m_animation,
-		m_glow
+		pp,
+		texture,
+		texpos,
+		texsize,
+		color
 	));
 }
 
@@ -375,18 +349,17 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 	const core::matrix4 *attached_absolute_pos_rot_matrix = nullptr;
 	if (m_attached_id) {
 		if (GenericCAO *attached = dynamic_cast<GenericCAO *>(env->getActiveObject(m_attached_id))) {
-			attached_absolute_pos_rot_matrix = &attached->getAbsolutePosRotMatrix();
+			attached_absolute_pos_rot_matrix = attached->getAbsolutePosRotMatrix();
 		} else {
 			unloaded = true;
 		}
 	}
 
-	if (m_spawntime != 0) {
+	if (p.time != 0) {
 		// Spawner exists for a predefined timespan
-		for (std::vector<float>::iterator i = m_spawntimes.begin();
-				i != m_spawntimes.end();) {
-			if ((*i) <= m_time && m_amount > 0) {
-				--m_amount;
+		for (auto i = m_spawntimes.begin(); i != m_spawntimes.end(); ) {
+			if ((*i) <= m_time && p.amount > 0) {
+				--p.amount;
 
 				// Pretend to, but don't actually spawn a particle if it is
 				// attached to an unloaded object or distant from player.
@@ -405,13 +378,16 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 		if (unloaded)
 			return;
 
-		for (int i = 0; i <= m_amount; i++) {
+		for (int i = 0; i <= p.amount; i++) {
 			if (rand() / (float)RAND_MAX < dtime)
 				spawnParticle(env, radius, attached_absolute_pos_rot_matrix);
 		}
 	}
 }
 
+/*
+	ParticleManager
+*/
 
 ParticleManager::ParticleManager(ClientEnvironment *env) :
 	m_env(env)
@@ -479,97 +455,104 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 {
 	switch (event->type) {
 		case CE_DELETE_PARTICLESPAWNER: {
-			MutexAutoLock lock(m_spawner_list_lock);
-			if (m_particle_spawners.find(event->delete_particlespawner.id) !=
-					m_particle_spawners.end()) {
-				delete m_particle_spawners.find(event->delete_particlespawner.id)->second;
-				m_particle_spawners.erase(event->delete_particlespawner.id);
-			}
+			deleteParticleSpawner(event->delete_particlespawner.id);
 			// no allocated memory in delete event
 			break;
 		}
 		case CE_ADD_PARTICLESPAWNER: {
-			{
-				MutexAutoLock lock(m_spawner_list_lock);
-				if (m_particle_spawners.find(event->add_particlespawner.id) !=
-						m_particle_spawners.end()) {
-					delete m_particle_spawners.find(event->add_particlespawner.id)->second;
-					m_particle_spawners.erase(event->add_particlespawner.id);
-				}
-			}
+			deleteParticleSpawner(event->add_particlespawner.id);
+
+			const ParticleSpawnerParameters &p = *event->add_particlespawner.p;
 
 			video::ITexture *texture =
-				client->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
+				client->tsrc()->getTextureForMesh(p.texture);
 
 			auto toadd = new ParticleSpawner(client, player,
-					event->add_particlespawner.amount,
-					event->add_particlespawner.spawntime,
-					*event->add_particlespawner.minpos,
-					*event->add_particlespawner.maxpos,
-					*event->add_particlespawner.minvel,
-					*event->add_particlespawner.maxvel,
-					*event->add_particlespawner.minacc,
-					*event->add_particlespawner.maxacc,
-					event->add_particlespawner.minexptime,
-					event->add_particlespawner.maxexptime,
-					event->add_particlespawner.minsize,
-					event->add_particlespawner.maxsize,
-					event->add_particlespawner.collisiondetection,
-					event->add_particlespawner.collision_removal,
-					event->add_particlespawner.object_collision,
+					p,
 					event->add_particlespawner.attached_id,
-					event->add_particlespawner.vertical,
 					texture,
-					event->add_particlespawner.animation,
-					event->add_particlespawner.glow,
 					this);
 
-			/* delete allocated content of event */
-			delete event->add_particlespawner.minpos;
-			delete event->add_particlespawner.maxpos;
-			delete event->add_particlespawner.minvel;
-			delete event->add_particlespawner.maxvel;
-			delete event->add_particlespawner.minacc;
-			delete event->add_particlespawner.texture;
-			delete event->add_particlespawner.maxacc;
+			addParticleSpawner(event->add_particlespawner.id, toadd);
 
-			{
-				MutexAutoLock lock(m_spawner_list_lock);
-				m_particle_spawners[event->add_particlespawner.id] = toadd;
-			}
+			delete event->add_particlespawner.p;
 			break;
 		}
 		case CE_SPAWN_PARTICLE: {
-			video::ITexture *texture =
-				client->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
+			ParticleParameters &p = *event->spawn_particle;
 
-			Particle *toadd = new Particle(client, player, m_env,
-					*event->spawn_particle.pos,
-					*event->spawn_particle.vel,
-					*event->spawn_particle.acc,
-					event->spawn_particle.expirationtime,
-					event->spawn_particle.size,
-					event->spawn_particle.collisiondetection,
-					event->spawn_particle.collision_removal,
-					event->spawn_particle.object_collision,
-					event->spawn_particle.vertical,
-					texture,
-					v2f(0.0, 0.0),
-					v2f(1.0, 1.0),
-					event->spawn_particle.animation,
-					event->spawn_particle.glow);
+			video::ITexture *texture;
+			v2f texpos, texsize;
+			video::SColor color(0xFFFFFFFF);
 
-			addParticle(toadd);
+			f32 oldsize = p.size;
 
-			delete event->spawn_particle.pos;
-			delete event->spawn_particle.vel;
-			delete event->spawn_particle.acc;
-			delete event->spawn_particle.texture;
+			if (p.node.getContent() != CONTENT_IGNORE) {
+				const ContentFeatures &f = m_env->getGameDef()->ndef()->get(p.node);
+				if (!getNodeParticleParams(p.node, f, p, &texture, texpos,
+						texsize, &color, p.node_tile))
+					texture = nullptr;
+			} else {
+				texture = client->tsrc()->getTextureForMesh(p.texture);
+				texpos = v2f(0.0f, 0.0f);
+				texsize = v2f(1.0f, 1.0f);
+			}
 
+			// Allow keeping default random size
+			if (oldsize > 0.0f)
+				p.size = oldsize;
+
+			if (texture) {
+				Particle *toadd = new Particle(client, player, m_env,
+						p, texture, texpos, texsize, color);
+
+				addParticle(toadd);
+			}
+
+			delete event->spawn_particle;
 			break;
 		}
 		default: break;
 	}
+}
+
+bool ParticleManager::getNodeParticleParams(const MapNode &n,
+	const ContentFeatures &f, ParticleParameters &p, video::ITexture **texture,
+	v2f &texpos, v2f &texsize, video::SColor *color, u8 tilenum)
+{
+	// No particles for "airlike" nodes
+	if (f.drawtype == NDT_AIRLIKE)
+		return false;
+
+	// Texture
+	u8 texid;
+	if (tilenum > 0 && tilenum <= 6)
+		texid = tilenum - 1;
+	else
+		texid = rand() % 6;
+	const TileLayer &tile = f.tiles[texid].layers[0];
+	p.animation.type = TAT_NONE;
+
+	// Only use first frame of animated texture
+	if (tile.material_flags & MATERIAL_FLAG_ANIMATION)
+		*texture = (*tile.frames)[0].texture;
+	else
+		*texture = tile.texture;
+
+	float size = (rand() % 8) / 64.0f;
+	p.size = BS * size;
+	if (tile.scale)
+		size /= tile.scale;
+	texsize = v2f(size * 2.0f, size * 2.0f);
+	texpos.X = (rand() % 64) / 64.0f - texsize.X;
+	texpos.Y = (rand() % 64) / 64.0f - texsize.Y;
+
+	if (tile.has_color)
+		*color = tile.color;
+	else
+		n.getColor(f, color);
+
+	return true;
 }
 
 // The final burst of particles when a node is finally dug, *not* particles
@@ -593,73 +576,41 @@ void ParticleManager::addDiggingParticles(IGameDef *gamedef,
 void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
-	// No particles for "airlike" nodes
-	if (f.drawtype == NDT_AIRLIKE)
+	ParticleParameters p;
+	video::ITexture *texture;
+	v2f texpos, texsize;
+	video::SColor color;
+
+	if (!getNodeParticleParams(n, f, p, &texture, texpos, texsize, &color))
 		return;
 
-	// Texture
-	u8 texid = myrand_range(0, 5);
-	const TileLayer &tile = f.tiles[texid].layers[0];
-	video::ITexture *texture;
-	struct TileAnimationParams anim;
-	anim.type = TAT_NONE;
-
-	// Only use first frame of animated texture
-	if (tile.material_flags & MATERIAL_FLAG_ANIMATION)
-		texture = (*tile.frames)[0].texture;
-	else
-		texture = tile.texture;
-
-	float size = (rand() % 8) / 64.0f;
-	float visual_size = BS * size;
-	if (tile.scale)
-		size /= tile.scale;
-	v2f texsize(size * 2.0f, size * 2.0f);
-	v2f texpos;
-	texpos.X = (rand() % 64) / 64.0f - texsize.X;
-	texpos.Y = (rand() % 64) / 64.0f - texsize.Y;
+	p.expirationtime = (rand() % 100) / 100.0f;
 
 	// Physics
-	v3f velocity(
+	p.vel = v3f(
 		(rand() % 150) / 50.0f - 1.5f,
 		(rand() % 150) / 50.0f,
 		(rand() % 150) / 50.0f - 1.5f
 	);
-	v3f acceleration(
+	p.acc = v3f(
 		0.0f,
 		-player->movement_gravity * player->physics_override_gravity / BS,
 		0.0f
 	);
-	v3f particlepos = v3f(
+	p.pos = v3f(
 		(f32)pos.X + (rand() % 100) / 200.0f - 0.25f,
 		(f32)pos.Y + (rand() % 100) / 200.0f - 0.25f,
 		(f32)pos.Z + (rand() % 100) / 200.0f - 0.25f
 	);
 
-	video::SColor color;
-	if (tile.has_color)
-		color = tile.color;
-	else
-		n.getColor(f, &color);
-
 	Particle *toadd = new Particle(
 		gamedef,
 		player,
 		m_env,
-		particlepos,
-		velocity,
-		acceleration,
-		(rand() % 100) / 100.0f, // expiration time
-		visual_size,
-		true,
-		false,
-		false,
-		false,
+		p,
 		texture,
 		texpos,
 		texsize,
-		anim,
-		0,
 		color);
 
 	addParticle(toadd);
@@ -669,4 +620,21 @@ void ParticleManager::addParticle(Particle *toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 	m_particles.push_back(toadd);
+}
+
+
+void ParticleManager::addParticleSpawner(u64 id, ParticleSpawner *toadd)
+{
+	MutexAutoLock lock(m_spawner_list_lock);
+	m_particle_spawners[id] = toadd;
+}
+
+void ParticleManager::deleteParticleSpawner(u64 id)
+{
+	MutexAutoLock lock(m_spawner_list_lock);
+	auto it = m_particle_spawners.find(id);
+	if (it != m_particle_spawners.end()) {
+		delete it->second;
+		m_particle_spawners.erase(it);
+	}
 }

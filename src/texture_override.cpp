@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <fstream>
 
+#define override_cast static_cast<override_t>
+
 TextureOverrideSource::TextureOverrideSource(std::string filepath)
 {
 	std::ifstream infile(filepath.c_str());
@@ -56,25 +58,37 @@ TextureOverrideSource::TextureOverrideSource(std::string filepath)
 		std::vector<std::string> targets = str_split(splitted[1], ',');
 		for (const std::string &target : targets) {
 			if (target == "top")
-				texture_override.target |= static_cast<u8>(OverrideTarget::TOP);
+				texture_override.target |= override_cast(OverrideTarget::TOP);
 			else if (target == "bottom")
-				texture_override.target |= static_cast<u8>(OverrideTarget::BOTTOM);
+				texture_override.target |= override_cast(OverrideTarget::BOTTOM);
 			else if (target == "left")
-				texture_override.target |= static_cast<u8>(OverrideTarget::LEFT);
+				texture_override.target |= override_cast(OverrideTarget::LEFT);
 			else if (target == "right")
-				texture_override.target |= static_cast<u8>(OverrideTarget::RIGHT);
+				texture_override.target |= override_cast(OverrideTarget::RIGHT);
 			else if (target == "front")
-				texture_override.target |= static_cast<u8>(OverrideTarget::FRONT);
+				texture_override.target |= override_cast(OverrideTarget::FRONT);
 			else if (target == "back")
-				texture_override.target |= static_cast<u8>(OverrideTarget::BACK);
+				texture_override.target |= override_cast(OverrideTarget::BACK);
 			else if (target == "inventory")
-				texture_override.target |= static_cast<u8>(OverrideTarget::INVENTORY);
+				texture_override.target |= override_cast(OverrideTarget::INVENTORY);
 			else if (target == "wield")
-				texture_override.target |= static_cast<u8>(OverrideTarget::WIELD);
+				texture_override.target |= override_cast(OverrideTarget::WIELD);
+			else if (target == "special1")
+				texture_override.target |= override_cast(OverrideTarget::SPECIAL_1);
+			else if (target == "special2")
+				texture_override.target |= override_cast(OverrideTarget::SPECIAL_2);
+			else if (target == "special3")
+				texture_override.target |= override_cast(OverrideTarget::SPECIAL_3);
+			else if (target == "special4")
+				texture_override.target |= override_cast(OverrideTarget::SPECIAL_4);
+			else if (target == "special5")
+				texture_override.target |= override_cast(OverrideTarget::SPECIAL_5);
+			else if (target == "special6")
+				texture_override.target |= override_cast(OverrideTarget::SPECIAL_6);
 			else if (target == "sides")
-				texture_override.target |= static_cast<u8>(OverrideTarget::SIDES);
+				texture_override.target |= override_cast(OverrideTarget::SIDES);
 			else if (target == "all" || target == "*")
-				texture_override.target |= static_cast<u8>(OverrideTarget::ALL_FACES);
+				texture_override.target |= override_cast(OverrideTarget::ALL_FACES);
 			else {
 				// Report invalid target
 				warningstream << filepath << ":" << line_index
@@ -85,7 +99,7 @@ TextureOverrideSource::TextureOverrideSource(std::string filepath)
 		}
 
 		// If there are no valid targets, skip adding this override
-		if (texture_override.target == static_cast<u8>(OverrideTarget::INVALID)) {
+		if (texture_override.target == override_cast(OverrideTarget::INVALID)) {
 			continue;
 		}
 
@@ -112,7 +126,7 @@ std::vector<TextureOverride> TextureOverrideSource::getNodeTileOverrides()
 	std::vector<TextureOverride> found_overrides;
 
 	for (const TextureOverride &texture_override : m_overrides) {
-		if (texture_override.hasTarget(OverrideTarget::ALL_FACES))
+		if (texture_override.hasTarget(OverrideTarget::NODE_TARGETS))
 			found_overrides.push_back(texture_override);
 	}
 

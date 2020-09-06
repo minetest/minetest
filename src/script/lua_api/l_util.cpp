@@ -44,7 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // log([level,] text)
 // Writes a line to the logger.
-// The one-argument version logs to infostream.
+// The one-argument version logs to LL_NONE.
 // The two-argument version accepts a log level.
 // Either the special case "deprecated" for deprecation notices, or any specified in
 // Logger::stringToLevel(name).
@@ -318,9 +318,13 @@ int ModApiUtil::l_decode_base64(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	size_t size;
-	const char *data = luaL_checklstring(L, 1, &size);
+	const char *d = luaL_checklstring(L, 1, &size);
+	const std::string data = std::string(d, size);
 
-	std::string out = base64_decode(std::string(data, size));
+	if (!base64_is_valid(data))
+		return 0;
+
+	std::string out = base64_decode(data);
 
 	lua_pushlstring(L, out.data(), out.size());
 	return 1;

@@ -18,10 +18,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/tile.h" // ITextureSource
+#include "client/fontengine.h"
 #include "debug.h"
 #include "irrlichttypes_extrabloated.h"
 #include "util/string.h"
+#include <algorithm>
 #include <array>
+#include <vector>
 
 #pragma once
 
@@ -44,6 +47,13 @@ public:
 		FGIMG_HOVERED, // Note: Deprecated property
 		FGIMG_PRESSED, // Note: Deprecated property
 		ALPHA,
+		CONTENT_OFFSET,
+		PADDING,
+		FONT,
+		FONT_SIZE,
+		COLORS,
+		BORDERCOLORS,
+		BORDERWIDTHS,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -92,6 +102,20 @@ public:
 			return FGIMG_PRESSED;
 		} else if (name == "alpha") {
 			return ALPHA;
+		} else if (name == "content_offset") {
+			return CONTENT_OFFSET;
+		} else if (name == "padding") {
+			return PADDING;
+		} else if (name == "font") {
+			return FONT;
+		} else if (name == "font_size") {
+			return FONT_SIZE;
+		} else if (name == "colors") {
+			return COLORS;
+		} else if (name == "bordercolors") {
+			return BORDERCOLORS;
+		} else if (name == "borderwidths") {
+			return BORDERWIDTHS;
 		} else {
 			return NONE;
 		}
@@ -173,6 +197,42 @@ public:
 		return color;
 	}
 
+	std::array<video::SColor, 4> getColorArray(Property prop,
+		std::array<video::SColor, 4> def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty())
+			return def;
+
+		std::vector<std::string> strs;
+		if (!parseArray(val, strs))
+			return def;
+
+		for (size_t i = 0; i <= 3; i++) {
+			video::SColor color;
+			if (parseColorString(strs[i], color, false, 0xff))
+				def[i] = color;
+		}
+
+		return def;
+	}
+
+	std::array<s32, 4> getIntArray(Property prop, std::array<s32, 4> def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty())
+			return def;
+
+		std::vector<std::string> strs;
+		if (!parseArray(val, strs))
+			return def;
+
+		for (size_t i = 0; i <= 3; i++)
+			def[i] = stoi(strs[i]);
+
+		return def;
+	}
+
 	irr::core::rect<s32> getRect(Property prop, irr::core::rect<s32> def) const
 	{
 		const auto &val = properties[prop];
@@ -194,6 +254,70 @@ public:
 		irr::core::rect<s32> rect;
 		parseRect(val, &rect);
 		return rect;
+	}
+
+	irr::core::vector2d<s32> getVector2i(Property prop, irr::core::vector2d<s32> def) const
+	{
+		const auto &val = properties[prop];
+		if (val.empty())
+			return def;
+
+		irr::core::vector2d<s32> vec;
+		if (!parseVector2i(val, &vec))
+			return def;
+
+		return vec;
+	}
+
+	irr::core::vector2d<s32> getVector2i(Property prop) const
+	{
+		const auto &val = properties[prop];
+		FATAL_ERROR_IF(val.empty(), "Unexpected missing property");
+
+		irr::core::vector2d<s32> vec;
+		parseVector2i(val, &vec);
+		return vec;
+	}
+
+	gui::IGUIFont *getFont() const
+	{
+		FontSpec spec(FONT_SIZE_UNSPECIFIED, FM_Standard, false, false);
+
+		const std::string &font = properties[FONT];
+		const std::string &size = properties[FONT_SIZE];
+
+		if (font.empty() && size.empty())
+			return nullptr;
+
+		std::vector<std::string> modes = split(font, ',');
+
+		for (size_t i = 0; i < modes.size(); i++) {
+			if (modes[i] == "normal")
+				spec.mode = FM_Standard;
+			else if (modes[i] == "mono")
+				spec.mode = FM_Mono;
+			else if (modes[i] == "bold")
+				spec.bold = true;
+			else if (modes[i] == "italic")
+				spec.italic = true;
+		}
+
+		if (!size.empty()) {
+			int calc_size = 1;
+
+			if (size[0] == '*') {
+				std::string new_size = size.substr(1); // Remove '*' (invalid for stof)
+				calc_size = stof(new_size) * g_fontengine->getFontSize(spec.mode);
+			} else if (size[0] == '+' || size[0] == '-') {
+				calc_size = stoi(size) + g_fontengine->getFontSize(spec.mode);
+			} else {
+				calc_size = stoi(size);
+			}
+
+			spec.size = (unsigned)std::min(std::max(calc_size, 1), 999);
+		}
+
+		return g_fontengine->getFont(spec);
 	}
 
 	video::ITexture *getTexture(Property prop, ISimpleTextureSource *tsrc,
@@ -256,6 +380,24 @@ public:
 	}
 
 private:
+	bool parseArray(const std::string &value, std::vector<std::string> &arr) const
+	{
+		std::vector<std::string> strs = split(value, ',');
+
+		if (strs.size() == 1) {
+			arr = {strs[0], strs[0], strs[0], strs[0]};
+		} else if (strs.size() == 2) {
+			arr = {strs[0], strs[1], strs[0], strs[1]};
+		} else if (strs.size() == 4) {
+			arr = strs;
+		} else {
+			warningstream << "Invalid array size (" << strs.size()
+					<< " arguments): \"" << value << "\"" << std::endl;
+			return false;
+		}
+		return true;
+	}
+
 	bool parseRect(const std::string &value, irr::core::rect<s32> *parsed_rect) const
 	{
 		irr::core::rect<s32> rect;
@@ -283,6 +425,31 @@ private:
 		}
 
 		*parsed_rect = rect;
+
+		return true;
+	}
+
+	bool parseVector2i(const std::string &value, irr::core::vector2d<s32> *parsed_vec) const
+	{
+		irr::core::vector2d<s32> vec;
+		std::vector<std::string> v_vector = split(value, ',');
+
+		if (v_vector.size() == 1) {
+			s32 x = stoi(v_vector[0]);
+			vec.X = x;
+			vec.Y = x;
+		} else if (v_vector.size() == 2) {
+			s32 x = stoi(v_vector[0]);
+			s32 y =	stoi(v_vector[1]);
+			vec.X = x;
+			vec.Y = y;
+		} else {
+			warningstream << "Invalid vector2d string format: \"" << value
+					<< "\"" << std::endl;
+			return false;
+		}
+
+		*parsed_vec = vec;
 
 		return true;
 	}

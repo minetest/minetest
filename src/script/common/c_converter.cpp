@@ -28,15 +28,15 @@ extern "C" {
 #include "common/c_converter.h"
 #include "common/c_internal.h"
 #include "constants.h"
+#include <set>
 
 
 #define CHECK_TYPE(index, name, type) { \
 		int t = lua_type(L, (index)); \
 		if (t != (type)) { \
-			std::string traceback = script_get_backtrace(L); \
 			throw LuaError(std::string("Invalid ") + (name) + \
 				" (expected " + lua_typename(L, (type)) + \
-				" got " + lua_typename(L, t) + ").\n" + traceback); \
+				" got " + lua_typename(L, t) + ")."); \
 		} \
 	}
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
@@ -457,12 +457,55 @@ size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result
 	Table field getters
 */
 
+#if defined(__MINGW32__) && !defined(__MINGW64__)
+/* MinGW 32-bit somehow crashes in the std::set destructor when this
+ * variable is thread-local, so just don't do that. */
+static std::set<u64> warned_msgs;
+#endif
+
+bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname)
+{
+#if !defined(__MINGW32__) || defined(__MINGW64__)
+	thread_local std::set<u64> warned_msgs;
+#endif
+
+	int t = lua_type(L, index);
+	if (t == LUA_TNIL)
+		return false;
+
+	if (t == type)
+		return true;
+
+	// Check coercion types
+	if (type == LUA_TNUMBER) {
+		if (lua_isnumber(L, index))
+			return true;
+	} else if (type == LUA_TSTRING) {
+		if (lua_isstring(L, index))
+			return true;
+	}
+
+	// Types mismatch. Log unique line.
+	std::string backtrace = std::string("Invalid field ") + fieldname +
+		" (expected " + lua_typename(L, type) +
+		" got " + lua_typename(L, t) + ").\n" + script_get_backtrace(L);
+
+	u64 hash = murmur_hash_64_ua(backtrace.data(), backtrace.length(), 0xBADBABE);
+	if (warned_msgs.find(hash) == warned_msgs.end()) {
+		errorstream << backtrace << std::endl;
+		warned_msgs.insert(hash);
+	}
+
+	return false;
+}
+
 bool getstringfield(lua_State *L, int table,
 		const char *fieldname, std::string &result)
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
-	if(lua_isstring(L, -1)){
+
+	if (check_field_or_nil(L, -1, LUA_TSTRING, fieldname)) {
 		size_t len = 0;
 		const char *ptr = lua_tolstring(L, -1, &len);
 		if (ptr) {
@@ -479,7 +522,8 @@ bool getfloatfield(lua_State *L, int table,
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
-	if(lua_isnumber(L, -1)){
+
+	if (check_field_or_nil(L, -1, LUA_TNUMBER, fieldname)) {
 		result = lua_tonumber(L, -1);
 		got = true;
 	}
@@ -492,7 +536,8 @@ bool getboolfield(lua_State *L, int table,
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
-	if(lua_isboolean(L, -1)){
+
+	if (check_field_or_nil(L, -1, LUA_TBOOLEAN, fieldname)){
 		result = lua_toboolean(L, -1);
 		got = true;
 	}
@@ -509,17 +554,6 @@ size_t getstringlistfield(lua_State *L, int table, const char *fieldname,
 
 	lua_pop(L, 1);
 	return num_strings_read;
-}
-
-std::string checkstringfield(lua_State *L, int table,
-		const char *fieldname)
-{
-	lua_getfield(L, table, fieldname);
-	CHECK_TYPE(-1, std::string("field \"") + fieldname + '"', LUA_TSTRING);
-	size_t len;
-	const char *s = lua_tolstring(L, -1, &len);
-	lua_pop(L, 1);
-	return std::string(s, len);
 }
 
 std::string getstringfield_default(lua_State *L, int table,

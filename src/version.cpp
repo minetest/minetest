@@ -30,4 +30,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 const char *g_version_string = VERSION_STRING;
 const char *g_version_hash = VERSION_GITHASH;
-const char *g_build_info = BUILD_INFO;
+const char *g_build_info =
+	"BUILD_TYPE=" BUILD_TYPE "\n"
+	"RUN_IN_PLACE=" STR(RUN_IN_PLACE) "\n"
+	"USE_GETTEXT=" STR(USE_GETTEXT) "\n"
+	"USE_SOUND=" STR(USE_SOUND) "\n"
+	"USE_CURL=" STR(USE_CURL) "\n"
+	"USE_FREETYPE=" STR(USE_FREETYPE) "\n"
+	"USE_LUAJIT=" STR(USE_LUAJIT) "\n"
+	"STATIC_SHAREDIR=" STR(STATIC_SHAREDIR)
+#if USE_GETTEXT && defined(STATIC_LOCALEDIR)
+	"\n" "STATIC_LOCALEDIR=" STR(STATIC_LOCALEDIR)
+#endif
+;

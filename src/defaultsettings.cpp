@@ -73,6 +73,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_right", "KEY_KEY_D");
 	settings->setDefault("keymap_jump", "KEY_SPACE");
 	settings->setDefault("keymap_sneak", "KEY_LSHIFT");
+	settings->setDefault("keymap_dig", "KEY_LBUTTON");
+	settings->setDefault("keymap_place", "KEY_RBUTTON");
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
 	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
 	settings->setDefault("keymap_inventory", "KEY_KEY_I");
@@ -80,7 +82,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_cmd", "/");
 	settings->setDefault("keymap_cmd_local", ".");
-	settings->setDefault("keymap_minimap", "KEY_F9");
+	settings->setDefault("keymap_minimap", "KEY_KEY_V");
 	settings->setDefault("keymap_console", "KEY_F10");
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
@@ -103,7 +105,7 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("keymap_toggle_debug", "KEY_F5");
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
-	settings->setDefault("keymap_camera_mode", "KEY_F7");
+	settings->setDefault("keymap_camera_mode", "KEY_KEY_C");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
@@ -225,10 +227,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
-	settings->setDefault("show_entity_selectionbox", "true");
+	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
-	settings->setDefault("ambient_occlusion_gamma", "2.2");
+	settings->setDefault("ambient_occlusion_gamma", "1.8");
 #if ENABLE_GLES
 	settings->setDefault("enable_shaders", "false");
 #else
@@ -269,7 +271,7 @@ void set_default_settings(Settings *settings)
 	// Input
 	settings->setDefault("invert_mouse", "false");
 	settings->setDefault("mouse_sensitivity", "0.2");
-	settings->setDefault("repeat_rightclick_time", "0.25");
+	settings->setDefault("repeat_place_time", "0.25");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");
 	settings->setDefault("aux1_descends", "false");
@@ -288,7 +290,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 
 	// Main menu
-	settings->setDefault("main_menu_style", "full");
 	settings->setDefault("main_menu_path", "");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
 
@@ -321,9 +322,15 @@ void set_default_settings(Settings *settings)
 
 	std::string font_size_str = std::to_string(DEFAULT_FONT_SIZE);
 #endif
+	// General font settings
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
+	settings->setDefault("chat_font_size", "0"); // Default "font_size"
+
+	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("contentdb_max_concurrent_downloads", "3");
+
 #ifdef __ANDROID__
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, android_default");
 #else
@@ -334,6 +341,9 @@ void set_default_settings(Settings *settings)
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
 	settings->setDefault("strip_color_codes", "false");
+#if USE_PROMETHEUS
+	settings->setDefault("prometheus_listener_address", "127.0.0.1:30000");
+#endif
 
 	// Network
 	settings->setDefault("enable_ipv6", "true");
@@ -392,11 +402,13 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("active_block_mgmt_interval", "2.0");
 	settings->setDefault("abm_interval", "1.0");
+	settings->setDefault("abm_time_budget", "0.2");
 	settings->setDefault("nodetimer_interval", "0.2");
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("debug_log_size_max", "50");
+	settings->setDefault("chat_log_level", "error");
 	settings->setDefault("emergequeue_limit_total", "512");
 	settings->setDefault("emergequeue_limit_diskonly", "64");
 	settings->setDefault("emergequeue_limit_generate", "64");
@@ -445,6 +457,7 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("high_precision_fpu", "true");
 	settings->setDefault("enable_console", "false");
+	settings->setDefault("screen_dpi", "72");
 
 	// Altered settings for macOS
 #if defined(__MACH__) && defined(__APPLE__)
@@ -458,7 +471,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("touchtarget", "true");
-	settings->setDefault("TMPFolder", porting::getDataPath("tmp" DIR_DELIM));
+	settings->setDefault("TMPFolder", porting::path_cache);
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux", "false");
@@ -480,8 +493,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("curl_verify_cert","false");
 
 	// Apply settings according to screen size
-	float x_inches = ((double) porting::getDisplaySize().X /
-			(160 * porting::getDisplayDensity()));
+	float x_inches = (float) porting::getDisplaySize().X /
+			(160.f * porting::getDisplayDensity());
 
 	if (x_inches < 3.7f) {
 		settings->setDefault("hud_scaling", "0.6");
@@ -497,8 +510,5 @@ void set_default_settings(Settings *settings)
 		settings->setDefault("mono_font_size", "14");
 	}
 	// Tablets >= 6.0 use non-Android defaults for these settings
-#else
-	settings->setDefault("screen_dpi", "72");
 #endif
 }
-

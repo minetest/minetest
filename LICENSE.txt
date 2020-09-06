@@ -21,6 +21,12 @@ ShadowNinja:
 
 paramat:
   textures/base/pack/menu_header.png
+  textures/base/pack/next_icon.png
+  textures/base/pack/prev_icon.png
+
+rubenwardy, paramat:
+  textures/base/pack/start_icon.png
+  textures/base/pack/end_icon.png
 
 erlehmann:
   misc/minetest-icon-24x24.png

@@ -32,7 +32,10 @@ MapSettingsManager::MapSettingsManager(Settings *user_settings,
 	m_user_settings(user_settings)
 {
 	assert(m_user_settings != NULL);
+
 	Mapgen::setDefaultSettings(m_map_settings);
+	// This inherits the combined defaults provided by loadGameConfAndInitWorld.
+	m_map_settings->overrideDefaults(user_settings);
 }
 
 
@@ -181,9 +184,7 @@ MapgenParams *MapSettingsManager::makeMapgenParams()
 	params->mgtype = mgtype;
 
 	// Load the rest of the mapgen params from our active settings
-	params->MapgenParams::readParams(m_user_settings);
 	params->MapgenParams::readParams(m_map_settings);
-	params->readParams(m_user_settings);
 	params->readParams(m_map_settings);
 
 	// Hold onto our params

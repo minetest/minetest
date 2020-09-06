@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 23:18+0200\n"
+"POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-01-29 13:50+0000\n"
 "Last-Translator: pan93412 <pan93412@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -22,6 +22,10 @@ msgstr "重生"
 msgid "You died"
 msgstr "您已死亡"
 
+#: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
+msgid "OK"
+msgstr ""
+
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
 msgstr "Lua 指令稿發生錯誤："
@@ -33,10 +37,6 @@ msgstr "發生錯誤："
 #: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "主選單"
-
-#: builtin/fstk/ui.lua
-msgid "Ok"
-msgstr "確定"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -111,6 +111,10 @@ msgid ""
 msgstr "無法啟用 Mod「$1」，因為其包含了不允許的字元。只能有 [a-z0-9_] 字元。"
 
 #: builtin/mainmenu/dlg_config_world.lua
+msgid "Find More Mods"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Mod："
 
@@ -156,16 +160,17 @@ msgid "All packages"
 msgstr "所有套件"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back"
-msgstr "返回"
-
-#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "返回主選單"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading and installing $1, please wait..."
-msgstr "正在下載並安裝 $1，請稍候……"
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "正在載入..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -210,13 +215,55 @@ msgstr "解除安裝"
 msgid "Update"
 msgstr "更新"
 
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "View"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "名為「$1」的世界已存在"
 
 #: builtin/mainmenu/dlg_create_world.lua
+msgid "Additional terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Altitude chill"
+msgstr "寒冷海拔"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Altitude dry"
+msgstr "寒冷海拔"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biome blending"
+msgstr "生物雜訊"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Biomes"
+msgstr "生物雜訊"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caverns"
+msgstr "洞穴雜訊"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Caves"
+msgstr "倍頻程"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "建立"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Decorations"
+msgstr "迭代"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -226,17 +273,100 @@ msgstr "從 minetest.net 下載遊戲，例如 Minetest Game"
 msgid "Download one from minetest.net"
 msgstr "從 minetest.net 下載一個"
 
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Dungeons"
+msgstr "地城雜訊"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Flat terrain"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floating landmasses in the sky"
+msgstr "浮地山密度"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Floatlands (experimental)"
+msgstr "浮地高度"
+
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
 msgstr "遊戲"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Generate non-fractal terrain: Oceans and underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Hills"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Humid rivers"
+msgstr "顯示卡驅動程式"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Increases humidity around rivers"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Lakes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Low humidity and high heat causes shallow or dry rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
 msgstr "地圖產生器"
 
+#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+msgid "Mapgen flags"
+msgstr "Mapgen 旗標"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mapgen-specific flags"
+msgstr "Mapgen v5 特別旗標"
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Mountains"
+msgstr "山雜訊"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mud flow"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Network of tunnels and caves"
+msgstr ""
+
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
 msgstr "未選擇遊戲"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces heat with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Reduces humidity with altitude"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Rivers"
+msgstr "河流大小"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Sea level rivers"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -244,7 +374,52 @@ msgid "Seed"
 msgstr "種子"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The minimal development test is meant for developers."
+msgid "Smooth transition between biomes"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid ""
+"Structures appearing on the terrain (no effect on trees and jungle grass "
+"created by v6)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Structures appearing on the terrain, typically trees and plants"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Temperate, Desert, Jungle, Tundra, Taiga"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Terrain surface erosion"
+msgstr "地形基礎高度"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Trees and jungle grass"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Vary river depth"
+msgstr "河流深度"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Very large caverns deep in the underground"
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
+msgid "Warning: The Development Test is meant for developers."
 msgstr "警告：最小化的開發測試僅供開發者使用。"
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -556,6 +731,10 @@ msgstr "主持遊戲"
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
 msgstr "主機伺服器"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Install games from ContentDB"
+msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1213,6 +1392,14 @@ msgid "Sound muted"
 msgstr "已靜音"
 
 #: src/client/game.cpp
+msgid "Sound system is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Sound system is not supported on this build"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Sound unmuted"
 msgstr "已取消靜音"
 
@@ -1244,7 +1431,7 @@ msgstr "已顯示線框"
 msgid "Zoom currently disabled by game or mod"
 msgstr "遠近調整目前已被遊戲或模組停用"
 
-#: src/client/game.cpp src/gui/modalMenu.cpp
+#: src/client/game.cpp
 msgid "ok"
 msgstr "確定"
 
@@ -1837,6 +2024,11 @@ msgid "3D mode"
 msgstr "3D 模式"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "3D mode parallax strength"
+msgstr "法線貼圖強度"
+
+#: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
 msgstr "定義大型洞穴時用的雜訊值。"
 
@@ -1847,6 +2039,14 @@ msgid ""
 msgstr ""
 "定義高山結構與高度所用的 3D 雜訊值。\n"
 "同時用來定義空島山地形結構。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D noise defining structure of floatlands.\n"
+"If altered from the default, the noise 'scale' (0.7 by default) may need\n"
+"to be adjusted, as floatland tapering functions best when this noise has\n"
+"a value range of approximately -2.0 to 2.0."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -1909,7 +2109,8 @@ msgid "ABM interval"
 msgstr "ABM 間隔"
 
 #: src/settings_translation_file.cpp
-msgid "Absolute limit of emerge queues"
+#, fuzzy
+msgid "Absolute limit of queued blocks to emerge"
 msgstr "發生佇列的絕對限制"
 
 #: src/settings_translation_file.cpp
@@ -1957,6 +2158,16 @@ msgid ""
 msgstr "調整您螢幕的 DPI 設定（並不只有 X11/Android）例如 4K 螢幕。"
 
 #: src/settings_translation_file.cpp
+#, c-format
+msgid ""
+"Adjusts the density of the floatland layer.\n"
+"Increase value to increase density. Can be positive or negative.\n"
+"Value = 0.0: 50% of volume is floatland.\n"
+"Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
+"to be sure) creates a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "進階"
 
@@ -1968,10 +2179,6 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Altitude chill"
-msgstr "寒冷海拔"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -2242,8 +2449,18 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat font size"
+msgstr "字型大小"
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "聊天按鍵"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chat log level"
+msgstr "除錯記錄等級"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2521,6 +2738,11 @@ msgstr "預設特權"
 #: src/settings_translation_file.cpp
 msgid "Default report format"
 msgstr "缺省報告格式"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Default stack size"
+msgstr "預設遊戲"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2875,6 +3097,16 @@ msgstr ""
 "也許會造成在方塊間有視覺空隙。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Value = 1.0 creates a uniform, linear tapering.\n"
+"Values > 1.0 create a smooth tapering suitable for the default separated\n"
+"floatlands.\n"
+"Values < 1.0 (for example 0.25) create a more defined surface level with\n"
+"flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
 msgstr "在暫停選單中的 FPS"
 
@@ -2996,6 +3228,41 @@ msgid "Fixed virtual joystick"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland density"
+msgstr "浮地山密度"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland maximum Y"
+msgstr "浮地山高度"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland minimum Y"
+msgstr "浮地山高度"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland noise"
+msgstr "浮地基礎噪音"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland taper exponent"
+msgstr "浮地山密度"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland tapering distance"
+msgstr "浮地基礎噪音"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland water level"
+msgstr "浮地高度"
+
+#: src/settings_translation_file.cpp
 msgid "Fly key"
 msgstr "飛行按鍵"
 
@@ -3045,6 +3312,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size of the monospace font in point (pt)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Font size of the recent chat text and chat prompt in point (pt).\n"
+"Value 0 will use the default font size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4638,14 +4911,6 @@ msgid "Light curve low gradient"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Limit of emerge queues on disk"
-msgstr "在磁碟上出現佇列的限制"
-
-#: src/settings_translation_file.cpp
-msgid "Limit of emerge queues to generate"
-msgstr "要生成的出現佇列的限制"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
@@ -4719,6 +4984,11 @@ msgstr "正在載入方塊調整器"
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lower Y limit of floatlands."
+msgstr "大型偽隨機洞穴的 Y 上限。"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
@@ -4803,10 +5073,17 @@ msgstr ""
 "以「no」開頭的旗標字串將會用於明確的停用它們。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' enables the rivers."
+"'ridges': Rivers.\n"
+"'floatlands': Floating land masses in the atmosphere.\n"
+"'caverns': Giant caves deep underground."
 msgstr ""
+"專用於 Mapgen flat 的地圖生成屬性。\n"
+"可能會有少數的湖泊或是丘陵會在扁平的世界中生成。\n"
+"未在旗標字串中指定的旗標將不會自預設值修改。\n"
+"以「no」開頭的旗標字串將會用於明確的停用它們。"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -4907,10 +5184,6 @@ msgid "Mapgen debug"
 msgstr "Mapgen 除錯"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen flags"
-msgstr "Mapgen 旗標"
-
-#: src/settings_translation_file.cpp
 msgid "Mapgen name"
 msgstr "Mapgen 名稱"
 
@@ -4976,17 +5249,19 @@ msgid "Maximum number of blocks that can be queued for loading."
 msgstr "可被放進佇列內等待載入的最大區塊數。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "可被放進佇列內等待生成的最大區塊數。\n"
 "將其設定留空則會自動選擇適當的值。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
-"Set to blank for an appropriate amount to be chosen automatically."
+"This limit is enforced per player."
 msgstr ""
 "可被放進佇列內等待從檔案載入的最大區塊數。\n"
 "將其設定留空則會自動選擇適當的值。"
@@ -5079,6 +5354,10 @@ msgstr "每日訊息會在玩家連線時顯示。"
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
 msgstr "用於突顯物件的方法。"
+
+#: src/settings_translation_file.cpp
+msgid "Minimal level of logging to be written to chat."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5248,9 +5527,6 @@ msgstr "出現的執行緒數"
 #: src/settings_translation_file.cpp
 msgid ""
 "Number of emerge threads to use.\n"
-"WARNING: Currently there are multiple bugs that may cause crashes when\n"
-"'num_emerge_threads' is larger than 1. Until this warning is removed it is\n"
-"strongly recommended this value is set to the default '1'.\n"
 "Value 0:\n"
 "-    Automatic selection. The number of emerge threads will be\n"
 "-    'number of processors - 2', with a lower limit of 1.\n"
@@ -5331,10 +5607,6 @@ msgid "Parallax occlusion scale"
 msgstr "視差遮蔽係數"
 
 #: src/settings_translation_file.cpp
-msgid "Parallax occlusion strength"
-msgstr "視差遮蔽強度"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path of the fallback font.\n"
 "If “freetype” setting is enabled: Must be a TrueType font.\n"
@@ -5344,8 +5616,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Path to save screenshots at."
-msgstr "儲存螢幕截圖的路徑。"
+msgid ""
+"Path to save screenshots at. Can be an absolute or relative path.\n"
+"The folder will be created if it doesn't already exist."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5376,6 +5650,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Per-player limit of queued blocks load from disk"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Per-player limit of queued blocks to generate"
+msgstr "要生成的出現佇列的限制"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5451,6 +5734,18 @@ msgstr "分析器切換鍵"
 #: src/settings_translation_file.cpp
 msgid "Profiling"
 msgstr "分析"
+
+#: src/settings_translation_file.cpp
+msgid "Prometheus listener address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Prometheus listener address.\n"
+"If minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"enable metrics listener for Prometheus on that address.\n"
+"Metrics can be fetch on http://127.0.0.1:30000/metrics"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -5961,6 +6256,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Specifies the default stack size of nodes, items and tools.\n"
+"Note that mods or games may explicitly set a stack for certain (or all) "
+"items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Spread of light curve boost range.\n"
 "Controls the width of the range to be boosted.\n"
 "Standard deviation of the light curve boost Gaussian."
@@ -5985,6 +6287,11 @@ msgid "Step mountain spread noise"
 msgstr "山雜訊"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Strength of 3D mode parallax."
+msgstr "視差強度。"
+
+#: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
 msgstr "生成之一般地圖的強度。"
 
@@ -5996,15 +6303,25 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Strength of parallax."
-msgstr "視差強度。"
-
-#: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "嚴格協議檢查"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Surface level of optional water placed on a solid floatland layer.\n"
+"Water is disabled by default and will only be placed if this value is set\n"
+"to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
+"upper tapering).\n"
+"***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
+"When enabling water placement the floatlands must be configured and tested\n"
+"to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
+"required value depending on 'mgv7_np_floatland'), to avoid\n"
+"server-intensive extreme water flow and to avoid vast flooding of the\n"
+"world surface below."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6133,7 +6450,7 @@ msgid ""
 "In active blocks objects are loaded and ABMs run.\n"
 "This is also the minimum range in which active objects (mobs) are "
 "maintained.\n"
-"This should be configured together with active_object_range."
+"This should be configured together with active_object_send_range_blocks."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6309,6 +6626,11 @@ msgstr "卸除未使用的伺服器資料"
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Upper Y limit of floatlands."
+msgstr "大型偽隨機洞穴的 Y 上限。"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
@@ -6678,6 +7000,14 @@ msgid "Y-distance over which caverns expand to full size."
 msgstr "洞穴拓展至全尺寸的 Y 距離。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Y-distance over which floatlands taper from full density to nothing.\n"
+"Tapering starts at this distance from the Y limit.\n"
+"For a solid floatland layer, this controls the height of hills/mountains.\n"
+"Must be less than or equal to half the distance between the Y limits."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
 msgstr "平均地形表面的 Y 高度。"
 
@@ -6711,13 +7041,81 @@ msgstr "cURL 並行限制"
 msgid "cURL timeout"
 msgstr "cURL 逾時"
 
+#~ msgid "Toggle Cinematic"
+#~ msgstr "切換過場動畫"
+
+#, fuzzy
+#~ msgid "Select Package File:"
+#~ msgstr "選取 Mod 檔案："
+
+#, fuzzy
+#~ msgid "Y of upper limit of lava in large caves."
+#~ msgstr "大型偽隨機洞穴的 Y 上限。"
+
+#~ msgid "Waving Water"
+#~ msgstr "波動的水"
+
+#~ msgid "Y-level to which floatland shadows extend."
+#~ msgstr "浮地陰影擴展的 Y 高度。"
+
+#~ msgid "Y-level of floatland midpoint and lake surface."
+#~ msgstr "浮地中點與湖表面的 Y 高度。"
+
+#~ msgid "Waving water"
+#~ msgstr "波動的水"
+
+#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
+#~ msgstr "在平整浮地地形的山丘高度與湖泊深度變化。"
+
+#, fuzzy
 #~ msgid ""
-#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
-#~ "brighter.\n"
-#~ "This setting is for the client only and is ignored by the server."
+#~ "Typical maximum height, above and below midpoint, of floatland mountains."
+#~ msgstr "浮地山區域的典型最大高度，高於與低於中點。"
+
+#~ msgid "This font will be used for certain languages."
+#~ msgstr "這個字型將會被用於特定的語言。"
+
+#~ msgid "Shadow limit"
+#~ msgstr "陰影限制"
+
+#~ msgid "Path to TrueTypeFont or bitmap."
+#~ msgstr "TrueType 字型或點陣字的路徑。"
+
+#, fuzzy
+#~ msgid "Lava depth"
+#~ msgstr "大型洞穴深度"
+
+#~ msgid "IPv6 support."
+#~ msgstr "IPv6 支援。"
+
+#~ msgid "Gamma"
+#~ msgstr "Gamma"
+
+#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
+#~ msgstr "字型陰影 alpha（不透明度，介於 0 到 255）。"
+
+#~ msgid "Floatland base height noise"
+#~ msgstr "浮地基礎高度噪音"
+
+#~ msgid "Enables filmic tone mapping"
+#~ msgstr "啟用電影色調映射"
+
+#~ msgid "Enable VBO"
+#~ msgstr "啟用 VBO"
+
+#~ msgid ""
+#~ "Defines areas of floatland smooth terrain.\n"
+#~ "Smooth floatlands occur when noise > 0."
 #~ msgstr ""
-#~ "調整亮度表的伽瑪編碼。較高的數值會較亮。\n"
-#~ "這個設定是給客戶端使用的，會被伺服器忽略。"
+#~ "定義浮地的平整地形區。\n"
+#~ "平整的浮地會在噪音 > 0 時產生。"
+
+#, fuzzy
+#~ msgid "Darkness sharpness"
+#~ msgstr "湖泊坡度"
+
+#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+#~ msgstr "控制隧道的寬度，較小的值會創造出較寬的隧道。"
 
 #, fuzzy
 #~ msgid ""
@@ -6727,94 +7125,28 @@ msgstr "cURL 逾時"
 #~ "控制山地的浮地密度。\n"
 #~ "是加入到 'np_mountain' 噪音值的補償。"
 
-#~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-#~ msgstr "控制隧道的寬度，較小的值會創造出較寬的隧道。"
-
-#, fuzzy
-#~ msgid "Darkness sharpness"
-#~ msgstr "湖泊坡度"
-
 #~ msgid ""
-#~ "Defines areas of floatland smooth terrain.\n"
-#~ "Smooth floatlands occur when noise > 0."
+#~ "Adjust the gamma encoding for the light tables. Higher numbers are "
+#~ "brighter.\n"
+#~ "This setting is for the client only and is ignored by the server."
 #~ msgstr ""
-#~ "定義浮地的平整地形區。\n"
-#~ "平整的浮地會在噪音 > 0 時產生。"
+#~ "調整亮度表的伽瑪編碼。較高的數值會較亮。\n"
+#~ "這個設定是給客戶端使用的，會被伺服器忽略。"
 
-#~ msgid "Enable VBO"
-#~ msgstr "啟用 VBO"
+#~ msgid "Path to save screenshots at."
+#~ msgstr "儲存螢幕截圖的路徑。"
 
-#~ msgid "Enables filmic tone mapping"
-#~ msgstr "啟用電影色調映射"
+#~ msgid "Parallax occlusion strength"
+#~ msgstr "視差遮蔽強度"
 
-#~ msgid "Floatland base height noise"
-#~ msgstr "浮地基礎高度噪音"
+#~ msgid "Limit of emerge queues on disk"
+#~ msgstr "在磁碟上出現佇列的限制"
 
-#~ msgid "Floatland base noise"
-#~ msgstr "浮地基礎噪音"
+#~ msgid "Downloading and installing $1, please wait..."
+#~ msgstr "正在下載並安裝 $1，請稍候……"
 
-#~ msgid "Floatland level"
-#~ msgstr "浮地高度"
+#~ msgid "Back"
+#~ msgstr "返回"
 
-#~ msgid "Floatland mountain density"
-#~ msgstr "浮地山密度"
-
-#, fuzzy
-#~ msgid "Floatland mountain exponent"
-#~ msgstr "浮地山密度"
-
-#~ msgid "Floatland mountain height"
-#~ msgstr "浮地山高度"
-
-#~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-#~ msgstr "字型陰影 alpha（不透明度，介於 0 到 255）。"
-
-#~ msgid "Gamma"
-#~ msgstr "Gamma"
-
-#~ msgid "IPv6 support."
-#~ msgstr "IPv6 支援。"
-
-#, fuzzy
-#~ msgid "Lava depth"
-#~ msgstr "大型洞穴深度"
-
-#~ msgid "Path to TrueTypeFont or bitmap."
-#~ msgstr "TrueType 字型或點陣字的路徑。"
-
-#~ msgid "Shadow limit"
-#~ msgstr "陰影限制"
-
-#~ msgid "This font will be used for certain languages."
-#~ msgstr "這個字型將會被用於特定的語言。"
-
-#, fuzzy
-#~ msgid ""
-#~ "Typical maximum height, above and below midpoint, of floatland mountains."
-#~ msgstr "浮地山區域的典型最大高度，高於與低於中點。"
-
-#~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
-#~ msgstr "在平整浮地地形的山丘高度與湖泊深度變化。"
-
-#~ msgid "Waving water"
-#~ msgstr "波動的水"
-
-#~ msgid "Y-level of floatland midpoint and lake surface."
-#~ msgstr "浮地中點與湖表面的 Y 高度。"
-
-#~ msgid "Y-level to which floatland shadows extend."
-#~ msgstr "浮地陰影擴展的 Y 高度。"
-
-#~ msgid "Waving Water"
-#~ msgstr "波動的水"
-
-#, fuzzy
-#~ msgid "Y of upper limit of lava in large caves."
-#~ msgstr "大型偽隨機洞穴的 Y 上限。"
-
-#, fuzzy
-#~ msgid "Select Package File:"
-#~ msgstr "選取 Mod 檔案："
-
-#~ msgid "Toggle Cinematic"
-#~ msgstr "切換過場動畫"
+#~ msgid "Ok"
+#~ msgstr "確定"

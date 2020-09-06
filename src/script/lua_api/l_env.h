@@ -187,6 +187,14 @@ private:
 	// stops forceloading a position
 	static int l_forceload_free_block(lua_State *L);
 
+	// Get a string translated server side
+	static int l_get_translated_string(lua_State * L);
+
+	/* Helpers */
+
+	static void collectNodeIds(lua_State *L, int idx,
+		const NodeDefManager *ndef, std::vector<content_t> &filter);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeClient(lua_State *L, int top);

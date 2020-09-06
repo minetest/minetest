@@ -49,7 +49,7 @@ FlagDesc flagdesc_mapgen_carpathian[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeManager *emerge)
+MapgenCarpathian::MapgenCarpathian(MapgenCarpathianParams *params, EmergeParams *emerge)
 	: MapgenBasic(MAPGEN_CARPATHIAN, params, emerge)
 {
 	base_level       = params->base_level;
@@ -315,7 +315,8 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons
 	if (flags & MG_DUNGEONS)
