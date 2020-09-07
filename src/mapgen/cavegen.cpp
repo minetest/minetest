@@ -1,8 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2010-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2015-2018 paramat
+Copyright (C) 2010-2020 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2015-2020 paramat
+Copyright (C) 2010-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -69,7 +69,7 @@ CavesNoiseIntersection::~CavesNoiseIntersection()
 
 
 void CavesNoiseIntersection::generateCaves(MMVManip *vm,
-	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+	v3s16 nmin, v3s16 nmax, biome_t *biomemap)
 {
 	assert(vm);
 	assert(biomemap);

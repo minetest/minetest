@@ -109,6 +109,28 @@ private:
 	VoxelArea *m_ignorevariable;
 };
 
+EmergeParams::~EmergeParams()
+{
+	infostream << "EmergeParams: destroying " << this << std::endl;
+	// Delete everything that was cloned on creation of EmergeParams
+	delete biomemgr;
+	delete oremgr;
+	delete decomgr;
+	delete schemmgr;
+}
+
+EmergeParams::EmergeParams(EmergeManager *parent, const BiomeManager *biomemgr,
+	const OreManager *oremgr, const DecorationManager *decomgr,
+	const SchematicManager *schemmgr) :
+	ndef(parent->ndef),
+	enable_mapgen_debug_info(parent->enable_mapgen_debug_info),
+	gen_notify_on(parent->gen_notify_on),
+	gen_notify_on_deco_ids(&parent->gen_notify_on_deco_ids),
+	biomemgr(biomemgr->clone()), oremgr(oremgr->clone()),
+	decomgr(decomgr->clone()), schemmgr(schemmgr->clone())
+{
+}
+
 ////
 //// EmergeManager
 ////
@@ -137,6 +159,7 @@ EmergeManager::EmergeManager(Server *server)
 		nthreads = 1;
 
 	m_qlimit_total = g_settings->getU16("emergequeue_limit_total");
+	// FIXME: these fallback values are probably not good
 	if (!g_settings->getU16NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
 		m_qlimit_diskonly = nthreads * 5 + 1;
 	if (!g_settings->getU16NoEx("emergequeue_limit_generate", m_qlimit_generate))
@@ -182,14 +205,48 @@ EmergeManager::~EmergeManager()
 }
 
 
+BiomeManager *EmergeManager::getWritableBiomeManager()
+{
+	FATAL_ERROR_IF(!m_mapgens.empty(),
+		"Writable managers can only be returned before mapgen init");
+	return biomemgr;
+}
+
+OreManager *EmergeManager::getWritableOreManager()
+{
+	FATAL_ERROR_IF(!m_mapgens.empty(),
+		"Writable managers can only be returned before mapgen init");
+	return oremgr;
+}
+
+DecorationManager *EmergeManager::getWritableDecorationManager()
+{
+	FATAL_ERROR_IF(!m_mapgens.empty(),
+		"Writable managers can only be returned before mapgen init");
+	return decomgr;
+}
+
+SchematicManager *EmergeManager::getWritableSchematicManager()
+{
+	FATAL_ERROR_IF(!m_mapgens.empty(),
+		"Writable managers can only be returned before mapgen init");
+	return schemmgr;
+}
+
+
 void EmergeManager::initMapgens(MapgenParams *params)
 {
 	FATAL_ERROR_IF(!m_mapgens.empty(), "Mapgen already initialised.");
 
 	mgparams = params;
 
-	for (u32 i = 0; i != m_threads.size(); i++)
-		m_mapgens.push_back(Mapgen::createMapgen(params->mgtype, params, this));
+	for (u32 i = 0; i != m_threads.size(); i++) {
+		EmergeParams *p = new EmergeParams(
+			this, biomemgr, oremgr, decomgr, schemmgr);
+		infostream << "EmergeManager: Created params " << p
+			<< " for thread " << i << std::endl;
+		m_mapgens.push_back(Mapgen::createMapgen(params->mgtype, params, p));
+	}
 }
 
 
@@ -199,8 +256,9 @@ Mapgen *EmergeManager::getCurrentMapgen()
 		return nullptr;
 
 	for (u32 i = 0; i != m_threads.size(); i++) {
-		if (m_threads[i]->isCurrentThread())
-			return m_threads[i]->m_mapgen;
+		EmergeThread *t = m_threads[i];
+		if (t->isRunning() && t->isCurrentThread())
+			return t->m_mapgen;
 	}
 
 	return nullptr;
@@ -586,8 +644,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 	/*
 		Clear generate notifier events
 	*/
-	Mapgen *mg = m_emerge->getCurrentMapgen();
-	mg->gennotify.clearEvents();
+	m_mapgen->gennotify.clearEvents();
 
 	EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
 

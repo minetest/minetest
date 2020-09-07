@@ -130,7 +130,7 @@ void ToolCapabilities::serializeJson(std::ostream &os) const
 	root["punch_attack_uses"] = punch_attack_uses;
 
 	Json::Value groupcaps_object;
-	for (auto groupcap : groupcaps) {
+	for (const auto &groupcap : groupcaps) {
 		groupcap.second.toJson(groupcaps_object[groupcap.first]);
 	}
 	root["groupcaps"] = groupcaps_object;

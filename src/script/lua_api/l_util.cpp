@@ -318,9 +318,13 @@ int ModApiUtil::l_decode_base64(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	size_t size;
-	const char *data = luaL_checklstring(L, 1, &size);
+	const char *d = luaL_checklstring(L, 1, &size);
+	const std::string data = std::string(d, size);
 
-	std::string out = base64_decode(std::string(data, size));
+	if (!base64_is_valid(data))
+		return 0;
+
+	std::string out = base64_decode(data);
 
 	lua_pushlstring(L, out.data(), out.size());
 	return 1;

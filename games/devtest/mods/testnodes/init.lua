@@ -1,0 +1,10 @@
+local path = minetest.get_modpath(minetest.get_current_modname())
+
+dofile(path.."/drawtypes.lua")
+dofile(path.."/meshes.lua")
+dofile(path.."/nodeboxes.lua")
+dofile(path.."/param2.lua")
+dofile(path.."/properties.lua")
+dofile(path.."/liquids.lua")
+dofile(path.."/light.lua")
+dofile(path.."/textures.lua")

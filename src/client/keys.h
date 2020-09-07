@@ -35,6 +35,8 @@ public:
 		SPECIAL1,
 		SNEAK,
 		AUTOFORWARD,
+		DIG,
+		PLACE,
 
 		ESC,
 

@@ -618,7 +618,7 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 
 	std::string path = porting::path_user + DIR_DELIM
 			"worlds" + DIR_DELIM
-			+ name;
+			+ sanitizeDirName(name, "world_");
 
 	std::vector<SubgameSpec> games = getAvailableGames();
 
@@ -626,10 +626,11 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 			(gameidx < (int) games.size())) {
 
 		// Create world if it doesn't exist
-		if (!loadGameConfAndInitWorld(path, games[gameidx])) {
-			lua_pushstring(L, "Failed to initialize world");
-		} else {
+		try {
+			loadGameConfAndInitWorld(path, name, games[gameidx], true);
 			lua_pushnil(L);
+		} catch (const BaseException &e) {
+			lua_pushstring(L, (std::string("Failed to initialize world: ") + e.what()).c_str());
 		}
 	} else {
 		lua_pushstring(L, "Invalid game index");
@@ -1064,6 +1065,14 @@ int ModApiMainMenu::l_get_max_supp_proto(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_open_url(lua_State *L)
+{
+	std::string url = luaL_checkstring(L, 1);
+	lua_pushboolean(L, porting::openURL(url));
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_do_async_callback(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
@@ -1125,6 +1134,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_screen_info);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
+	API_FCT(open_url);
 	API_FCT(do_async_callback);
 }
 

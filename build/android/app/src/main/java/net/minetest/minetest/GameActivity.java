@@ -22,6 +22,7 @@ package net.minetest.minetest;
 
 import android.app.NativeActivity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -116,5 +117,10 @@ public class GameActivity extends NativeActivity {
 
 	public int getDisplayWidth() {
 		return getResources().getDisplayMetrics().widthPixels;
+	}
+
+	public void openURL(String url) {
+		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		startActivity(browserIntent);
 	}
 }

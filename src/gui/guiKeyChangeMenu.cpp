@@ -360,7 +360,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		{
 			if (!canTakeFocus(event.GUIEvent.Element))
 			{
-				dstream << "GUIMainMenu: Not allowing focus change."
+				infostream << "GUIKeyChangeMenu: Not allowing focus change."
 				<< std::endl;
 				// Returning true disables focus change
 				return true;

@@ -2,12 +2,11 @@ apply plugin: 'com.android.application'
 android {
 	compileSdkVersion 29
 	buildToolsVersion '29.0.3'
-	ndkVersion '21.0.6113669'
+	ndkVersion '21.1.6352462'
 	defaultConfig {
 		applicationId 'net.minetest.minetest'
 		minSdkVersion 16
-		//noinspection OldTargetApi
-		targetSdkVersion 28 // Workaround for using `/sdcard` instead of the `data` patch for assets
+		targetSdkVersion 29
 		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 		versionCode project.versionCode
 	}
@@ -58,7 +57,6 @@ task prepareAssets() {
 	}
 	copy {
 		from "${projRoot}/doc/lgpl-2.1.txt" into "${assetsFolder}"
-		rename("lgpl-2.1.txt", "LICENSE.txt")
 	}
 	copy {
 		from "${projRoot}/builtin" into "${assetsFolder}/builtin"
@@ -83,6 +81,8 @@ task prepareAssets() {
 	copy {
 		from "${projRoot}/textures" into "${assetsFolder}/textures"
 	}
+
+	file("${assetsFolder}/.nomedia").text = "";
 
 	task zipAssets(type: Zip) {
 		archiveName "Minetest.zip"

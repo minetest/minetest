@@ -309,6 +309,8 @@ inline const char *getPlatformName()
 	#else
 		"SunOS"
 	#endif
+#elif defined(__HAIKU__)
+	"Haiku"
 #elif defined(__CYGWIN__)
 	"Cygwin"
 #elif defined(__unix__) || defined(__unix)
@@ -329,6 +331,9 @@ bool secure_rand_fill_buf(void *buf, size_t len);
 void attachOrCreateConsole();
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
+
+bool openURL(const std::string &url);
+
 } // namespace porting
 
 #ifdef __ANDROID__

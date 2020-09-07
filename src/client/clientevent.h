@@ -21,8 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include "irrlichttypes_bloated.h"
-#include "hud.h"
-#include "skyparams.h"
+
+struct ParticleParameters;
+struct ParticleSpawnerParameters;
+struct SkyboxParams;
+struct SunParams;
+struct MoonParams;
+struct StarParams;
 
 enum ClientEventType : u8
 {
@@ -77,44 +82,12 @@ struct ClientEvent
 		} show_formspec;
 		// struct{
 		//} textures_updated;
+		ParticleParameters *spawn_particle;
 		struct
 		{
-			v3f *pos;
-			v3f *vel;
-			v3f *acc;
-			f32 expirationtime;
-			f32 size;
-			bool collisiondetection;
-			bool collision_removal;
-			bool object_collision;
-			bool vertical;
-			std::string *texture;
-			struct TileAnimationParams animation;
-			u8 glow;
-		} spawn_particle;
-		struct
-		{
-			u16 amount;
-			f32 spawntime;
-			v3f *minpos;
-			v3f *maxpos;
-			v3f *minvel;
-			v3f *maxvel;
-			v3f *minacc;
-			v3f *maxacc;
-			f32 minexptime;
-			f32 maxexptime;
-			f32 minsize;
-			f32 maxsize;
-			bool collisiondetection;
-			bool collision_removal;
-			bool object_collision;
+			ParticleSpawnerParameters *p;
 			u16 attached_id;
-			bool vertical;
-			std::string *texture;
 			u64 id;
-			struct TileAnimationParams animation;
-			u8 glow;
 		} add_particlespawner;
 		struct
 		{
@@ -136,6 +109,7 @@ struct ClientEvent
 			v3f *world_pos;
 			v2s32 *size;
 			s16 z_index;
+			std::string *text2;
 		} hudadd;
 		struct
 		{

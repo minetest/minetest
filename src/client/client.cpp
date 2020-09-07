@@ -64,6 +64,14 @@ extern gui::IGUIEnvironment* guienv;
 	Utility classes
 */
 
+u32 PacketCounter::sum() const
+{
+	u32 n = 0;
+	for (const auto &it : m_packets)
+		n += it.second;
+	return n;
+}
+
 void PacketCounter::print(std::ostream &o) const
 {
 	for (const auto &it : m_packets) {
@@ -357,9 +365,11 @@ void Client::step(float dtime)
 		if(counter <= 0.0f)
 		{
 			counter = 30.0f;
+			u32 sum = m_packetcounter.sum();
+			float avg = sum / counter;
 
-			infostream << "Client packetcounter (" << m_packetcounter_timer
-					<< "s):"<<std::endl;
+			infostream << "Client packetcounter (" << counter << "s): "
+					<< "sum=" << sum << " avg=" << avg << "/s" << std::endl;
 			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
@@ -449,12 +459,9 @@ void Client::step(float dtime)
 	/*
 		Handle environment
 	*/
-	// Control local player (0ms)
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player);
-	player->applyControl(dtime, &m_env);
 
-	// Step environment
+	// Step environment (also handles player controls)
 	m_env.step(dtime);
 	m_sound->step(dtime);
 
@@ -660,11 +667,9 @@ void Client::step(float dtime)
 	}
 }
 
-bool Client::loadMedia(const std::string &data, const std::string &filename)
+bool Client::loadMedia(const std::string &data, const std::string &filename,
+	bool from_media_push)
 {
-	// Silly irrlicht's const-incorrectness
-	Buffer<char> data_rw(data.c_str(), data.size());
-
 	std::string name;
 
 	const char *image_ext[] = {
@@ -679,6 +684,9 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 
 		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
 		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
+
+		// Silly irrlicht's const-incorrectness
+		Buffer<char> data_rw(data.c_str(), data.size());
 
 		// Create an irrlicht memory file
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
@@ -717,7 +725,6 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		".x", ".b3d", ".md2", ".obj",
 		NULL
 	};
-
 	name = removeStringEnd(filename, model_ext);
 	if (!name.empty()) {
 		verbosestream<<"Client: Storing model into memory: "
@@ -734,6 +741,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
+		if (from_media_push)
+			return false;
 		TRACESTREAM(<< "Client: Loading translation: "
 				<< "\"" << filename << "\"" << std::endl);
 		g_client_translations->loadTranslation(data);
@@ -1298,7 +1307,7 @@ void Client::sendPlayerPos()
 			player->last_pitch        == player->getPitch()    &&
 			player->last_yaw          == player->getYaw()      &&
 			player->last_keyPressed   == player->keyPressed    &&
-			player->last_camera_fov   == camera_fov              &&
+			player->last_camera_fov   == camera_fov            &&
 			player->last_wanted_range == wanted_range)
 		return;
 

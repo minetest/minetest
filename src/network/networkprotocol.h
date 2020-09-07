@@ -238,8 +238,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
 		box[] and image[] elements enable clipping by default
 		new element: scroll_container[]
+	FORMSPEC VERSION 4:
+		Allow dropdown indexing events
 */
-#define FORMSPEC_API_VERSION 3
+#define FORMSPEC_API_VERSION 4
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -322,6 +324,15 @@ enum ToClientCommand
 	/*
 		v3f added_vel
 	 */
+
+	TOCLIENT_MEDIA_PUSH = 0x2C,
+	/*
+		std::string raw_hash
+		std::string filename
+		bool should_be_cached
+		u32 len
+		char filedata[len]
+	*/
 
 	// (oops, there is some gap here)
 
@@ -560,10 +571,10 @@ enum ToClientCommand
 		u32 id
 		u8 type
 		v2f1000 pos
-		u32 len
+		u16 len
 		u8[len] name
 		v2f1000 scale
-		u32 len2
+		u16 len2
 		u8[len2] text
 		u32 number
 		u32 item
@@ -573,6 +584,8 @@ enum ToClientCommand
 		v3f1000 world_pos
 		v2s32 size
 		s16 z_index
+		u16 len3
+		u8[len3] text2
 	*/
 
 	TOCLIENT_HUDRM = 0x4a,
@@ -634,9 +647,9 @@ enum ToClientCommand
 		u8[4] night_sky (ARGB)
 		u8[4] night_horizon (ARGB)
 		u8[4] indoors (ARGB)
-		u8[4] sun_tint (ARGB)
-		u8[4] moon_tint (ARGB)
-		std::string tint_type
+		u8[4] fog_sun_tint (ARGB)
+		u8[4] fog_moon_tint (ARGB)
+		std::string fog_tint_type
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
@@ -1021,7 +1034,7 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"This server has experienced an internal error. You will now be disconnected."
 };
 
-enum PlayerListModifer: u8
+enum PlayerListModifer : u8
 {
 	PLAYER_LIST_INIT,
 	PLAYER_LIST_ADD,

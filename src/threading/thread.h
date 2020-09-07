@@ -36,6 +36,10 @@ DEALINGS IN THE SOFTWARE.
 	#include <sys/thread.h> // for tid_t
 #endif
 
+#ifdef __HAIKU__
+	#include <kernel/OS.h>
+#endif
+
 /*
  * On platforms using pthreads, these five priority classes correlate to
  * even divisions between the minimum and maximum reported thread priority.
