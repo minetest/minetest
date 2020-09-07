@@ -146,6 +146,8 @@ private:
 	static int l_register_alias_raw(lua_State *L);
 	static int l_get_content_id(lua_State *L);
 	static int l_get_name_from_content_id(lua_State *L);
+	static int l_register_wield_animation(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };

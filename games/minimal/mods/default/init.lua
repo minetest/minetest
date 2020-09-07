@@ -46,6 +46,37 @@ minetest.register_item(":", {
 	}
 })
 
+minetest.register_wield_animation({
+	name = "poke2",
+	duration = 0.5,
+	translation = {
+		nodes = {
+			[0] = {x=0,y=0,z=0},
+			[1] = {x=0,y=-10,z=0},
+			[2] = {x=-50,y=20,z=50},
+			[3] = {x=0,y=-10,z=0},
+			[4] = {x=0,y=0,z=0},
+		},
+		indices = {
+			[0] = {duration=1.0,offset=0,length=2},
+			[1] = {duration=1.0,offset=2,length=2},
+		},
+	},
+	rotation = {
+		nodes = {
+			[0] = {x=0,y=0,z=0},
+			[1] = {x=0,y=0,z=90},
+			[2] = {x=0,y=0,z=90},
+			[3] = {x=0,y=0,z=90},
+			[4] = {x=0,y=0,z=0},
+		},
+		indices = {
+			[0] = {duration=1.0,offset=0,length=2},
+			[1] = {duration=1.0,offset=2,length=2},
+		},
+	}
+})
+
 --
 -- Picks
 --
@@ -53,6 +84,7 @@ minetest.register_item(":", {
 minetest.register_tool("default:pick_wood", {
 	description = "Wooden Pickaxe",
 	inventory_image = "default_tool_woodpick.png",
+	wield_animation = "poke2",
 	tool_capabilities = {
 		max_drop_level=0,
 		groupcaps={
@@ -64,6 +96,7 @@ minetest.register_tool("default:pick_wood", {
 minetest.register_tool("default:pick_stone", {
 	description = "Stone Pickaxe",
 	inventory_image = "default_tool_stonepick.png",
+	wield_animation = "poke",
 	tool_capabilities = {
 		max_drop_level=0,
 		groupcaps={
@@ -105,6 +138,7 @@ minetest.register_tool("default:pick_mese", {
 minetest.register_tool("default:shovel_wood", {
 	description = "Wooden Shovel",
 	inventory_image = "default_tool_woodshovel.png",
+	wield_animation = "dig",
 	tool_capabilities = {
 		max_drop_level=0,
 		groupcaps={
@@ -116,6 +150,7 @@ minetest.register_tool("default:shovel_wood", {
 minetest.register_tool("default:shovel_stone", {
 	description = "Stone Shovel",
 	inventory_image = "default_tool_stoneshovel.png",
+	wield_animation = "dig",
 	tool_capabilities = {
 		max_drop_level=0,
 		groupcaps={
@@ -127,6 +162,7 @@ minetest.register_tool("default:shovel_stone", {
 minetest.register_tool("default:shovel_steel", {
 	description = "Steel Shovel",
 	inventory_image = "default_tool_steelshovel.png",
+	wield_animation = "dig",
 	tool_capabilities = {
 		max_drop_level=1,
 		groupcaps={

@@ -229,12 +229,14 @@ private:
 	// Fall view bobbing
 	f32 m_view_bobbing_fall = 0.0f;
 
-	// Digging animation frame (0 <= m_digging_anim < 1)
+	// Digging animation frame, in seconds
+	// (0 <= m_digging_anim < m_wield_animation.getDuration())
 	f32 m_digging_anim = 0.0f;
 	// If -1, no digging animation
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button = -1;
+	std::string m_wield_animation = "";
 
 	// Animation when changing wielded item
 	f32 m_wield_change_timer = 0.125f;

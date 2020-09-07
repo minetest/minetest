@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "sound.h"
 #include "texture_override.h" // TextureOverride
+#include <vector>
+#include "wieldanimation.h"
 class IGameDef;
 class Client;
 struct ToolCapabilities;
@@ -62,11 +64,13 @@ struct ItemDefinition
 	*/
 	std::string inventory_image; // Optional for nodes, mandatory for tools/craftitems
 	std::string inventory_overlay; // Overlay of inventory_image.
+	std::string wield_animation;   // Named wield animation
 	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
 	std::string wield_overlay; // Overlay of wield_image.
 	std::string palette_image; // If specified, the item will be colorized based on this
 	video::SColor color; // The fallback color of the node.
 	v3f wield_scale;
+	WieldAnimation animation;
 
 	/*
 		Item stack and interaction properties

@@ -1227,6 +1227,7 @@ bool Game::init(
 	itemdef_manager = createItemDefManager();
 	nodedef_manager = createNodeDefManager();
 
+
 	eventmgr = new EventManager();
 	quicktune = new QuicktuneShortcutter();
 
