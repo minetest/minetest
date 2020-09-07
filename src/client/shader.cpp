@@ -45,7 +45,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <GLES2/gl2.h>
 #endif
 #else
+#ifndef __APPLE__
 #include <GL/gl.h>
+#else
+#define GL_SILENCE_DEPRECATION
+#include <OpenGL/gl.h>
+#endif
 #endif
 
 /*
