@@ -653,8 +653,19 @@ int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 	return 1; /* number of results */
 }
 
+int ModApiItemMod::l_register_wield_animation(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	luaL_checktype(L, 1, LUA_TTABLE);
+	int table = 1;
+
+	read_wield_animation(L, table);
+	return 0; /* number of results */
+}
+
 void ModApiItemMod::Initialize(lua_State *L, int top)
 {
+	API_FCT(register_wield_animation);
 	API_FCT(register_item_raw);
 	API_FCT(unregister_item_raw);
 	API_FCT(register_alias_raw);

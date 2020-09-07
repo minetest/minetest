@@ -33,7 +33,6 @@ extern "C" {
 
 #include <iostream>
 #include <vector>
-
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
 #include "itemgroup.h"
@@ -48,6 +47,7 @@ class NodeDefManager;
 struct PointedThing;
 struct ItemStack;
 struct ItemDefinition;
+
 struct ToolCapabilities;
 struct ObjectProperties;
 struct SimpleSoundSpec;
@@ -108,6 +108,7 @@ void               push_item_definition      (lua_State *L,
                                               const ItemDefinition &i);
 void               push_item_definition_full (lua_State *L,
                                               const ItemDefinition &i);
+void read_wield_animation(lua_State *L, int index);
 
 void               read_object_properties    (lua_State *L, int index,
                                               ServerActiveObject *sao,

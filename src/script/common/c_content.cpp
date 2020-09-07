@@ -34,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "server/player_sao.h"
 #include "util/pointedthing.h"
+#include <utility>
+#include <algorithm>
 #include "debug.h" // For FATAL_ERROR
 #include <json/json.h>
 
@@ -60,6 +62,7 @@ void read_item_definition(lua_State* L, int index,
 	getstringfield(L, index, "inventory_overlay", def.inventory_overlay);
 	getstringfield(L, index, "wield_image", def.wield_image);
 	getstringfield(L, index, "wield_overlay", def.wield_overlay);
+	getstringfield(L, index, "wield_animation", def.wield_animation);
 	getstringfield(L, index, "palette", def.palette_image);
 
 	// Read item color.
@@ -122,7 +125,113 @@ void read_item_definition(lua_State* L, int index,
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
 }
+/******************************************************************************/
+void read_wield_animation(lua_State *L, int index)
+{
 
+	if (index < 0)
+		index = lua_gettop(L) + 1 + index;
+	std::string name;
+	getstringfield(L, index, "name", name);
+	if (WieldAnimation::repository.size() == 0)
+		WieldAnimation::fillRepository();
+	if (WieldAnimation::repository.find(name) != WieldAnimation::repository.end()) {
+		WieldAnimation::repository.erase(name);
+	}
+	WieldAnimation &anim = WieldAnimation::repository[name];
+	anim.name = name;
+	float totalDuration;
+	getfloatfield(L, index, "duration", totalDuration);
+	lua_getfield(L, index, "translation");
+	if (lua_istable(L, -1)) {
+		int table_translation = lua_gettop(L);
+		lua_pushnil(L);
+		lua_getfield(L, table_translation, "nodes");
+		if (lua_istable(L, -1)) {
+			int table_nodes = lua_gettop(L);
+			lua_pushnil(L);
+			std::vector<std::pair<int, v3f>> nodes;
+			while (lua_next(L, table_nodes) != 0) {
+				int i = luaL_checkinteger(L, -2);
+				v3f node = check_v3f(L, -1);
+				std::pair<int, v3f> unorderedNode(i, node);
+				nodes.push_back(unorderedNode);
+				lua_pop(L, 1);
+			}
+			sort(nodes.begin(), nodes.end());
+			for (std::size_t i = 0; i < nodes.size(); i++) {
+				anim.m_translationspline.addNode(nodes[i].second);
+			}
+		}
+		lua_pop(L, 1);
+		lua_getfield(L, table_translation, "indices");
+		if (lua_istable(L, -1)) {
+			int table_indices = lua_gettop(L);
+			lua_pushnil(L);
+			while (lua_next(L, table_indices) != 0) {
+				if (lua_istable(L, -1)) {
+					float duration;
+					u32 offset = 0;
+					u32 length = 0;
+					getfloatfield(L, -1, "duration", duration);
+					getintfield(L, -1, "offset", offset);
+					getintfield(L, -1, "length", length);
+					anim.m_translationspline.addIndex(duration, offset, length);
+				}
+				lua_pop(L, 1);
+			}
+		}
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "rotation");
+	if (lua_istable(L, -1)) {
+		int table_rotation = lua_gettop(L);
+		lua_pushnil(L);
+		lua_getfield(L, table_rotation, "nodes");
+		if (lua_istable(L, -1)) {
+			int table_nodes = lua_gettop(L);
+			lua_pushnil(L);
+			std::vector<std::pair<int, v3f>> nodes;
+			while (lua_next(L, table_nodes) != 0) {
+				int i = luaL_checkinteger(L, -2);
+				v3f node = check_v3f(L, -1);
+				std::pair<int, v3f> unorderedNode(i, node);
+				nodes.push_back(unorderedNode);
+				lua_pop(L, 1);
+			}
+			sort(nodes.begin(), nodes.end());
+			for (std::size_t i = 0; i < nodes.size(); i++) {
+				anim.m_rotationspline.addNode(
+						WieldAnimation::quatFromAngles(
+								nodes[i].second.X,
+								nodes[i].second.Y,
+								nodes[i].second.Z));
+			}
+		}
+		lua_getfield(L, table_rotation, "indices");
+		if (lua_istable(L, -1)) {
+			int table_indices = lua_gettop(L);
+			lua_pushnil(L);
+			while (lua_next(L, table_indices) != 0) {
+				if (lua_istable(L, -1)) {
+					float duration;
+					u32 offset = 0;
+					u32 length = 0;
+					getfloatfield(L, -1, "duration", duration);
+					getintfield(L, -1, "offset", offset);
+					getintfield(L,-1, "length", length);
+					anim.m_rotationspline.addIndex(duration, offset, length);
+				}
+				lua_pop(L, 1);
+			}
+		}
+		lua_pop(L, 1);
+	}
+	anim.setDuration(totalDuration);
+	lua_pop(L, 1);
+}
 /******************************************************************************/
 void push_item_definition(lua_State *L, const ItemDefinition &i)
 {
