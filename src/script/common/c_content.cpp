@@ -164,7 +164,7 @@ void read_wield_animation(lua_State *L, int index)
 				nodes.push_back(unorderedNode);
 				lua_pop(L, 1);
 			}
-			sort(nodes.begin(), nodes.end());
+			std::sort(nodes.begin(), nodes.end());
 			for (int i = 0; i < nodes.size(); i++) {
 				anim.m_translationspline.addNode(nodes[i].second);
 			}
@@ -207,7 +207,7 @@ void read_wield_animation(lua_State *L, int index)
 				nodes.push_back(unorderedNode);
 				lua_pop(L, 1);
 			}
-			sort(nodes.begin(), nodes.end());
+			std::sort(nodes.begin(), nodes.end());
 			for (int i = 0; i < nodes.size(); i++) {
 				anim.m_rotationspline.addNode(
 						WieldAnimation::quatFromAngles(
