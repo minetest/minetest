@@ -47,7 +47,7 @@ FlagDesc flagdesc_mapgen_fractal[] = {
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeParams *emerge)
+MapgenFractal::MapgenFractal(MapgenFractalParams *params, EmergeManager *emerge)
 	: MapgenBasic(MAPGEN_FRACTAL, params, emerge)
 {
 	spflags            = params->spflags;
@@ -250,8 +250,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered ores
-	if (flags & MG_ORES)
-		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons
 	if (flags & MG_DUNGEONS)

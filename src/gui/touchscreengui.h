@@ -80,22 +80,21 @@ typedef enum
 } autohide_button_bar_dir;
 
 #define MIN_DIG_TIME_MS 500
+#define MAX_TOUCH_COUNT 64
 #define BUTTON_REPEAT_DELAY 0.2f
+
 #define SETTINGS_BAR_Y_OFFSET 5
 #define RARE_CONTROLS_BAR_Y_OFFSET 5
 
-// Very slow button repeat frequency
-#define SLOW_BUTTON_REPEAT 1.0f
-
-extern const char **button_imagenames;
-extern const char **joystick_imagenames;
+extern const char **touchgui_button_imagenames;
+extern const char **touchgui_joystick_imagenames;
 
 struct button_info
 {
 	float repeatcounter;
 	float repeatdelay;
 	irr::EKEY_CODE keycode;
-	std::vector<size_t> ids;
+	std::vector<int> ids;
 	IGUIButton *guibutton = nullptr;
 	bool immediate_release;
 
@@ -110,8 +109,8 @@ public:
 	AutoHideButtonBar(IrrlichtDevice *device, IEventReceiver *receiver);
 
 	void init(ISimpleTextureSource *tsrc, const char *starter_img, int button_id,
-			const v2s32 &UpperLeft, const v2s32 &LowerRight,
-			autohide_button_bar_dir dir, float timeout);
+			v2s32 UpperLeft, v2s32 LowerRight, autohide_button_bar_dir dir,
+			float timeout);
 
 	~AutoHideButtonBar();
 
@@ -125,6 +124,9 @@ public:
 
 	// detect settings bar button events
 	bool isButton(const SEvent &event);
+
+	// handle released hud buttons
+	bool isReleaseButton(int eventID);
 
 	// step handler
 	void step(float dtime);
@@ -180,7 +182,7 @@ public:
 
 	double getPitch() { return m_camera_pitch; }
 
-	/*
+	/*!
 	 * Returns a line which describes what the player is pointing at.
 	 * The starting point and looking direction are significant,
 	 * the line should be scaled to match its length to the actual distance
@@ -204,10 +206,9 @@ private:
 	IEventReceiver *m_receiver;
 	ISimpleTextureSource *m_texturesource;
 	v2u32 m_screensize;
-	s32 button_size;
 	double m_touchscreen_threshold;
 	std::map<int, rect<s32>> m_hud_rects;
-	std::map<size_t, irr::EKEY_CODE> m_hud_ids;
+	std::map<int, irr::EKEY_CODE> m_hud_ids;
 	bool m_visible; // is the gui visible
 
 	// value in degree
@@ -219,7 +220,7 @@ private:
 			forward_id, backward_id, left_id, right_id, special1_id};
 	bool m_joystick_status[5] = {false, false, false, false, false};
 
-	/*
+	/*!
 	 * A line starting at the camera and pointing towards the
 	 * selected object.
 	 * The line ends on the camera's far plane.
@@ -247,24 +248,23 @@ private:
 	touch_gui_button_id getButtonID(s32 x, s32 y);
 
 	// gui button by eventID
-	touch_gui_button_id getButtonID(size_t eventID);
+	touch_gui_button_id getButtonID(int eventID);
 
 	// check if a button has changed
 	void handleChangedButton(const SEvent &event);
 
 	// initialize a button
-	void initButton(touch_gui_button_id id, const rect<s32> &button_rect,
-			const std::wstring &caption, bool immediate_release,
+	void initButton(touch_gui_button_id id, rect<s32> button_rect,
+			std::wstring caption, bool immediate_release,
 			float repeat_delay = BUTTON_REPEAT_DELAY);
 
 	// initialize a joystick button
-	button_info *initJoystickButton(touch_gui_button_id id,
-			const rect<s32> &button_rect, int texture_id,
-			bool visible = true);
+	button_info *initJoystickButton(touch_gui_button_id id, rect<s32> button_rect,
+			int texture_id, bool visible = true);
 
 	struct id_status
 	{
-		size_t id;
+		int id;
 		int X;
 		int Y;
 	};
@@ -273,21 +273,27 @@ private:
 	std::vector<id_status> m_known_ids;
 
 	// handle a button event
-	void handleButtonEvent(touch_gui_button_id bID, size_t eventID, bool action);
+	void handleButtonEvent(touch_gui_button_id bID, int eventID, bool action);
 
 	// handle pressed hud buttons
 	bool isHUDButton(const SEvent &event);
+
+	// handle released hud buttons
+	bool isReleaseHUDButton(int eventID);
 
 	// handle double taps
 	bool doubleTapDetection();
 
 	// handle release event
-	void handleReleaseEvent(size_t evt_id);
+	void handleReleaseEvent(int evt_id);
 
 	// apply joystick status
 	void applyJoystickStatus();
 
-	// double-click detection variables
+	// get size of regular gui control button
+	int getGuiButtonSize();
+
+	// doubleclick detection variables
 	struct key_event
 	{
 		u64 down_time;
@@ -296,9 +302,9 @@ private:
 	};
 
 	// array for saving last known position of a pointer
-	std::map<size_t, v2s32> m_pointerpos;
+	v2s32 m_pointerpos[MAX_TOUCH_COUNT];
 
-	// array for double tap detection
+	// array for doubletap detection
 	key_event m_key_events[2];
 
 	// settings bar
@@ -307,5 +313,4 @@ private:
 	// rare controls bar
 	AutoHideButtonBar m_rarecontrolsbar;
 };
-
 extern TouchScreenGUI *g_touchscreengui;

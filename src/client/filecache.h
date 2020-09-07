@@ -33,7 +33,6 @@ public:
 
 	bool update(const std::string &name, const std::string &data);
 	bool load(const std::string &name, std::ostream &os);
-	bool exists(const std::string &name);
 
 private:
 	std::string m_dir;

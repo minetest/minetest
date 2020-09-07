@@ -94,12 +94,11 @@ public:
 		m_packets.clear();
 	}
 
-	u32 sum() const;
 	void print(std::ostream &o) const;
 
 private:
 	// command, count
-	std::map<u16, u32> m_packets;
+	std::map<u16, u16> m_packets;
 };
 
 class ClientScripting;
@@ -222,7 +221,6 @@ public:
 	void handleCommand_FormspecPrepend(NetworkPacket *pkt);
 	void handleCommand_CSMRestrictionFlags(NetworkPacket *pkt);
 	void handleCommand_PlayerSpeed(NetworkPacket *pkt);
-	void handleCommand_MediaPush(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -377,8 +375,7 @@ public:
 
 	// The following set of functions is used by ClientMediaDownloader
 	// Insert a media file appropriately into the appropriate manager
-	bool loadMedia(const std::string &data, const std::string &filename,
-		bool from_media_push = false);
+	bool loadMedia(const std::string &data, const std::string &filename);
 	// Send a request for conventional media transfer
 	void request_media(const std::vector<std::string> &file_requests);
 
@@ -490,7 +487,6 @@ private:
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;
 	bool m_minimap_disabled_by_server = false;
-
 	// Server serialization version
 	u8 m_server_ser_ver;
 
@@ -532,6 +528,7 @@ private:
 	AuthMechanism m_chosen_auth_mech;
 	void *m_auth_data = nullptr;
 
+
 	bool m_access_denied = false;
 	bool m_access_denied_reconnect = false;
 	std::string m_access_denied_reason = "";
@@ -540,10 +537,7 @@ private:
 	bool m_nodedef_received = false;
 	bool m_activeobjects_received = false;
 	bool m_mods_loaded = false;
-
 	ClientMediaDownloader *m_media_downloader;
-	// Set of media filenames pushed by server at runtime
-	std::unordered_set<std::string> m_media_pushed_files;
 
 	// time_of_day speed approximation for old protocol
 	bool m_time_of_day_set = false;

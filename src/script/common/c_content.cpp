@@ -279,7 +279,7 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "usable");
 	lua_pushboolean(L, i.liquids_pointable);
 	lua_setfield(L, -2, "liquids_pointable");
-	if (i.tool_capabilities) {
+	if (i.type == ITEM_TOOL) {
 		push_tool_capabilities(L, *i.tool_capabilities);
 		lua_setfield(L, -2, "tool_capabilities");
 	}
@@ -468,9 +468,6 @@ void read_object_properties(lua_State *L, int index,
 
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
-	getboolfield(L, -1, "shaded", prop->shaded);
-
-	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 }
 
 /******************************************************************************/
@@ -553,10 +550,6 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "zoom_fov");
 	lua_pushboolean(L, prop->use_texture_alpha);
 	lua_setfield(L, -2, "use_texture_alpha");
-	lua_pushboolean(L, prop->shaded);
-	lua_setfield(L, -2, "shaded");
-	lua_pushlstring(L, prop->damage_texture_modifier.c_str(), prop->damage_texture_modifier.size());
-	lua_setfield(L, -2, "damage_texture_modifier");
 }
 
 /******************************************************************************/
@@ -838,8 +831,6 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	f.liquid_range = getintfield_default(L, index,
 			"liquid_range", f.liquid_range);
 	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
-	f.leveled_max = getintfield_default(L, index,
-			"leveled_max", f.leveled_max);
 
 	getboolfield(L, index, "liquid_renewable", f.liquid_renewable);
 	f.drowning = getintfield_default(L, index,
@@ -1006,8 +997,6 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "post_effect_color");
 	lua_pushnumber(L, c.leveled);
 	lua_setfield(L, -2, "leveled");
-	lua_pushnumber(L, c.leveled_max);
-	lua_setfield(L, -2, "leveled_max");
 	lua_pushboolean(L, c.sunlight_propagates);
 	lua_setfield(L, -2, "sunlight_propagates");
 	lua_pushnumber(L, c.light_source);
@@ -2023,7 +2012,6 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->dir     = getintfield_default(L, 2, "direction", 0);
 	elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX,
 			getintfield_default(L, 2, "z_index", 0)));
-	elem->text2   = getstringfield_default(L, 2, "text2", "");
 
 	// Deprecated, only for compatibility's sake
 	if (elem->dir == 0)
@@ -2092,18 +2080,14 @@ void push_hud_element(lua_State *L, HudElement *elem)
 
 	lua_pushnumber(L, elem->z_index);
 	lua_setfield(L, -2, "z_index");
-
-	lua_pushstring(L, elem->text2.c_str());
-	lua_setfield(L, -2, "text2");
 }
 
 HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 {
 	HudElementStat stat = HUD_STAT_NUMBER;
-	std::string statstr;
 	if (lua_isstring(L, 3)) {
 		int statint;
-		statstr = lua_tostring(L, 3);
+		std::string statstr = lua_tostring(L, 3);
 		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
 				(HudElementStat)statint : stat;
 	}
@@ -2131,8 +2115,6 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 			break;
 		case HUD_STAT_ITEM:
 			elem->item = luaL_checknumber(L, 4);
-			if (elem->type == HUD_ELEM_WAYPOINT && statstr == "precision")
-				elem->item++;
 			*value = &elem->item;
 			break;
 		case HUD_STAT_DIR:
@@ -2158,10 +2140,6 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 		case HUD_STAT_Z_INDEX:
 			elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX, luaL_checknumber(L, 4)));
 			*value = &elem->z_index;
-			break;
-		case HUD_STAT_TEXT2:
-			elem->text2 = luaL_checkstring(L, 4);
-			*value = &elem->text2;
 			break;
 	}
 	return stat;
@@ -2206,16 +2184,13 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 		if (c.type == COLLISION_NODE) {
 			push_v3s16(L, c.node_p);
 			lua_setfield(L, -2, "node_pos");
-		} else if (c.type == COLLISION_OBJECT) {
-			push_objectRef(L, c.object->getId());
-			lua_setfield(L, -2, "object");
 		}
 
 		push_v3f(L, c.old_speed / BS);
-		lua_setfield(L, -2, "old_velocity");
+		lua_setfield(L, -2, "old_speed");
 
 		push_v3f(L, c.new_speed / BS);
-		lua_setfield(L, -2, "new_velocity");
+		lua_setfield(L, -2, "new_speed");
 
 		lua_rawseti(L, -2, i++);
 	}

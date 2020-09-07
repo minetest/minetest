@@ -147,7 +147,7 @@ bool ScriptApiPlayer::can_bypass_userlimit(const std::string &name, const std::s
 	return lua_toboolean(L, -1);
 }
 
-void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player, s64 last_login)
+void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -156,11 +156,7 @@ void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player, s64 last_login)
 	lua_getfield(L, -1, "registered_on_joinplayers");
 	// Call callbacks
 	objectrefGetOrCreate(L, player);
-	if (last_login != -1)
-		lua_pushinteger(L, last_login);
-	else
-		lua_pushnil(L);
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player,
@@ -220,19 +216,16 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 	runCallbacks(3, RUN_CALLBACKS_MODE_OR_SC);
 }
 
-void ScriptApiPlayer::on_authplayer(const std::string &name, const std::string &ip, bool is_success)
+void ScriptApiPlayer::on_auth_failure(const std::string &name, const std::string &ip)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_authplayers
+	// Get core.registered_on_auth_failure
 	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_authplayers");
-
-	// Call callbacks
+	lua_getfield(L, -1, "registered_on_auth_fail");
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
-	lua_pushboolean(L, is_success);
-	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::pushMoveArguments(

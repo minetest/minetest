@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-	GameStartData game_params;
+	GameParams game_params;
 #ifdef SERVER
 	porting::attachOrCreateConsole();
 	game_params.is_dedicated_server = true;
@@ -604,14 +604,10 @@ static bool game_configure(GameParams *game_params, const Settings &cmd_args)
 
 static void game_configure_port(GameParams *game_params, const Settings &cmd_args)
 {
-	if (cmd_args.exists("port")) {
+	if (cmd_args.exists("port"))
 		game_params->socket_port = cmd_args.getU16("port");
-	} else {
-		if (game_params->is_dedicated_server)
-			game_params->socket_port = g_settings->getU16("port");
-		else
-			game_params->socket_port = g_settings->getU16("remote_port");
-	}
+	else
+		game_params->socket_port = g_settings->getU16("port");
 
 	if (game_params->socket_port == 0)
 		game_params->socket_port = DEFAULT_SERVER_PORT;
@@ -891,6 +887,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec,
 					false, bind_addr, true, &iface);
+			server.init();
 
 			g_term_console.setup(&iface, &kill, admin_nick);
 
@@ -925,6 +922,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec, false,
 				bind_addr, true);
+			server.init();
 			server.start();
 
 			// Run server

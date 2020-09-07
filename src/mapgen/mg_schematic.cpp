@@ -43,21 +43,12 @@ SchematicManager::SchematicManager(Server *server) :
 }
 
 
-SchematicManager *SchematicManager::clone() const
-{
-	auto mgr = new SchematicManager();
-	assert(mgr);
-	ObjDefManager::cloneTo(mgr);
-	return mgr;
-}
-
-
 void SchematicManager::clear()
 {
 	EmergeManager *emerge = m_server->getEmergeManager();
 
 	// Remove all dangling references in Decorations
-	DecorationManager *decomgr = emerge->getWritableDecorationManager();
+	DecorationManager *decomgr = emerge->decomgr;
 	for (size_t i = 0; i != decomgr->getNumObjects(); i++) {
 		Decoration *deco = (Decoration *)decomgr->getRaw(i);
 
@@ -86,25 +77,6 @@ Schematic::~Schematic()
 	delete []slice_probs;
 }
 
-ObjDef *Schematic::clone() const
-{
-	auto def = new Schematic();
-	ObjDef::cloneTo(def);
-	NodeResolver::cloneTo(def);
-
-	def->c_nodes = c_nodes;
-	def->flags = flags;
-	def->size = size;
-	FATAL_ERROR_IF(!schemdata, "Schematic can only be cloned after loading");
-	u32 nodecount = size.X * size.Y * size.Z;
-	def->schemdata = new MapNode[nodecount];
-	memcpy(def->schemdata, schemdata, sizeof(MapNode) * nodecount);
-	def->slice_probs = new u8[size.Y];
-	memcpy(def->slice_probs, slice_probs, sizeof(u8) * size.Y);
-
-	return def;
-}
-
 
 void Schematic::resolveNodeNames()
 {
@@ -121,7 +93,6 @@ void Schematic::resolveNodeNames()
 
 void Schematic::blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_place)
 {
-	assert(schemdata && slice_probs);
 	sanity_check(m_ndef != NULL);
 
 	int xstride = 1;
@@ -206,7 +177,7 @@ bool Schematic::placeOnVManip(MMVManip *vm, v3s16 p, u32 flags,
 	Rotation rot, bool force_place)
 {
 	assert(vm != NULL);
-	assert(schemdata && slice_probs);
+	assert(schemdata != NULL);
 	sanity_check(m_ndef != NULL);
 
 	//// Determine effective rotation and effective schematic dimensions
@@ -359,7 +330,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 
 
 bool Schematic::serializeToMts(std::ostream *os,
-	const std::vector<std::string> &names) const
+	const std::vector<std::string> &names)
 {
 	std::ostream &ss = *os;
 
@@ -383,8 +354,7 @@ bool Schematic::serializeToMts(std::ostream *os,
 
 
 bool Schematic::serializeToLua(std::ostream *os,
-	const std::vector<std::string> &names, bool use_comments,
-	u32 indent_spaces) const
+	const std::vector<std::string> &names, bool use_comments, u32 indent_spaces)
 {
 	std::ostream &ss = *os;
 

@@ -261,11 +261,6 @@ struct TileDef
 		NodeDrawType drawtype);
 };
 
-// Defines the number of special tiles per nodedef
-//
-// NOTE: When changing this value, the enum entries of OverrideTarget and
-//       parser in TextureOverrideSource must be updated so that all special
-//       tiles can be overridden.
 #define CF_SPECIAL_COUNT 6
 
 struct ContentFeatures
@@ -331,10 +326,8 @@ struct ContentFeatures
 	std::vector<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
-	// Flowing liquid or leveled nodebox, value = default level
+	// Flowing liquid or snow, value = default level
 	u8 leveled;
-	// Maximum value for leveled nodes
-	u8 leveled_max;
 
 	// --- LIGHTING-RELATED ---
 
@@ -373,10 +366,8 @@ struct ContentFeatures
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
 	std::string liquid_alternative_flowing;
-	content_t liquid_alternative_flowing_id;
 	// If the content is liquid, this is the source version of the liquid.
 	std::string liquid_alternative_source;
-	content_t liquid_alternative_source_id;
 	// Viscosity for fluid flow, ranging from 1 to 7, with
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
@@ -414,11 +405,10 @@ struct ContentFeatures
 	*/
 
 	ContentFeatures();
-	~ContentFeatures();
+	~ContentFeatures() = default;
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
-
 	/*!
 	 * Since vertex alpha is no longer supported, this method
 	 * adds opacity directly to the texture pixels.
@@ -428,42 +418,15 @@ struct ContentFeatures
 	 */
 	void correctAlpha(TileDef *tiles, int length);
 
-#ifndef SERVER
-	/*
-	 * Checks if any tile texture has any transparent pixels.
-	 * Prints a warning and returns true if that is the case, false otherwise.
-	 * This is supposed to be used for use_texture_alpha backwards compatibility.
-	 */
-	bool textureAlphaCheck(ITextureSource *tsrc, const TileDef *tiles,
-		int length);
-#endif
-	
-
 	/*
 		Some handy methods
 	*/
-	bool needsBackfaceCulling() const
-	{
-		switch (drawtype) {
-		case NDT_TORCHLIKE:
-		case NDT_SIGNLIKE:
-		case NDT_FIRELIKE:
-		case NDT_RAILLIKE:
-		case NDT_PLANTLIKE:
-		case NDT_PLANTLIKE_ROOTED:
-		case NDT_MESH:
-			return false;
-		default:
-			return true;
-		}
-	}
-
 	bool isLiquid() const{
 		return (liquid_type != LIQUID_NONE);
 	}
 	bool sameLiquid(const ContentFeatures &f) const{
 		if(!isLiquid() || !f.isLiquid()) return false;
-		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
+		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
 	}
 
 	int getGroup(const std::string &group) const
@@ -676,11 +639,10 @@ public:
 	void resetNodeResolveState();
 
 	/*!
-	 * Resolves (caches the IDs) cross-references between nodes,
-	 * like liquid alternatives.
+	 * Resolves the IDs to which connecting nodes connect from names.
 	 * Must be called after node registration has finished!
 	 */
-	void resolveCrossrefs();
+	void mapNodeboxConnections();
 
 private:
 	/*!
@@ -776,9 +738,6 @@ public:
 	NodeResolver();
 	virtual ~NodeResolver();
 	virtual void resolveNodeNames() = 0;
-
-	// required because this class is used as mixin for ObjDef
-	void cloneTo(NodeResolver *res) const;
 
 	bool getIdFromNrBacklog(content_t *result_out,
 		const std::string &node_alt, content_t c_fallback,

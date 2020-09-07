@@ -72,11 +72,3 @@ files["builtin/mainmenu"] = {
 		"PLATFORM",
 	},
 }
-
-files["builtin/common/tests"] = {
-	read_globals = {
-		"describe",
-		"it",
-		"assert",
-	},
-}

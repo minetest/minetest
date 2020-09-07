@@ -84,7 +84,7 @@ class MapgenValleys : public MapgenBasic {
 public:
 
 	MapgenValleys(MapgenValleysParams *params,
-		EmergeParams *emerge);
+		EmergeManager *emerge);
 	~MapgenValleys();
 
 	virtual MapgenType getType() const { return MAPGEN_VALLEYS; }

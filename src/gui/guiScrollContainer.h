@@ -32,8 +32,6 @@ public:
 
 	virtual bool OnEvent(const SEvent &event) override;
 
-	virtual void draw() override;
-
 	inline void onScrollEvent(gui::IGUIElement *caller)
 	{
 		if (caller == m_scrollbar)

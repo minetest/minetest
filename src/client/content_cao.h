@@ -68,6 +68,7 @@ struct SmoothTranslatorWrappedv3f : SmoothTranslator<v3f>
 class GenericCAO : public ClientActiveObject
 {
 private:
+	void readAOMessageProperties(std::istream &is);
 	// Only set at initialization
 	std::string m_name = "";
 	bool m_is_player = false;
@@ -130,8 +131,6 @@ private:
 	// Settings
 	bool m_enable_shaders = false;
 
-	bool visualExpiryRequired(const ObjectProperties &newprops) const;
-
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
 
@@ -188,11 +187,10 @@ public:
 		return m_matrixnode->getRelativeTransformationMatrix();
 	}
 
-	inline const core::matrix4 *getAbsolutePosRotMatrix() const
+	inline const core::matrix4 &getAbsolutePosRotMatrix() const
 	{
-		if (!m_matrixnode)
-			return nullptr;
-		return &m_matrixnode->getAbsoluteTransformation();
+		assert(m_matrixnode);
+		return m_matrixnode->getAbsoluteTransformation();
 	}
 
 	inline f32 getStepHeight() const
@@ -237,16 +235,13 @@ public:
 		m_visuals_expired = true;
 	}
 
-	void updateLight(u32 day_night_ratio);
+	void updateLight(u8 light_at_pos);
+
+	void updateLightNoCheck(u8 light_at_pos);
 
 	void setNodeLight(u8 light);
 
-	/* Get light position(s).
-	 * returns number of positions written into pos[], which must have space
-	 * for at least 3 vectors. */
-	u16 getLightPosition(v3s16 *pos);
-
-	void updateNametag();
+	v3s16 getLightPosition();
 
 	void updateNodePos();
 

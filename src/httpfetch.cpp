@@ -294,11 +294,13 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oss);
 	}
 
-	// Set data from fields or raw_data
-	if (request.multipart) {
+	// Set POST (or GET) data
+	if (request.post_fields.empty() && request.post_data.empty()) {
+		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+	} else if (request.multipart) {
 		curl_httppost *last = NULL;
-		for (StringMap::iterator it = request.fields.begin();
-				it != request.fields.end(); ++it) {
+		for (StringMap::iterator it = request.post_fields.begin();
+				it != request.post_fields.end(); ++it) {
 			curl_formadd(&post, &last,
 					CURLFORM_NAMELENGTH, it->first.size(),
 					CURLFORM_PTRNAME, it->first.c_str(),
@@ -309,42 +311,28 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
 		// request.post_fields must now *never* be
 		// modified until CURLOPT_HTTPPOST is cleared
+	} else if (request.post_data.empty()) {
+		curl_easy_setopt(curl, CURLOPT_POST, 1);
+		std::string str;
+		for (auto &post_field : request.post_fields) {
+			if (!str.empty())
+				str += "&";
+			str += urlencode(post_field.first);
+			str += "=";
+			str += urlencode(post_field.second);
+		}
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
+				str.size());
+		curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS,
+				str.c_str());
 	} else {
-		switch (request.method) {
-		case HTTP_GET:
-			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-			break;
-		case HTTP_POST:
-			curl_easy_setopt(curl, CURLOPT_POST, 1);
-			break;
-		case HTTP_PUT:
-			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
-			break;
-		case HTTP_DELETE:
-			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-			break;
-		}
-		if (request.method != HTTP_GET) {
-			if (!request.raw_data.empty()) {
-				curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
-						request.raw_data.size());
-				curl_easy_setopt(curl, CURLOPT_POSTFIELDS,
-						request.raw_data.c_str());
-			} else if (!request.fields.empty()) {
-				std::string str;
-				for (auto &field : request.fields) {
-					if (!str.empty())
-						str += "&";
-					str += urlencode(field.first);
-					str += "=";
-					str += urlencode(field.second);
-				}
-				curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
-						str.size());
-				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS,
-						str.c_str());
-			}
-		}
+		curl_easy_setopt(curl, CURLOPT_POST, 1);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
+				request.post_data.size());
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS,
+				request.post_data.c_str());
+		// request.post_data must now *never* be
+		// modified until CURLOPT_POSTFIELDS is cleared
 	}
 	// Set additional HTTP headers
 	for (const std::string &extra_header : request.extra_headers) {

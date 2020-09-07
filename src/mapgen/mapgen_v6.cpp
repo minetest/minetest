@@ -54,7 +54,7 @@ FlagDesc flagdesc_mapgen_v6[] = {
 /////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV6::MapgenV6(MapgenV6Params *params, EmergeParams *emerge)
+MapgenV6::MapgenV6(MapgenV6Params *params, EmergeManager *emerge)
 	: Mapgen(MAPGEN_V6, params, emerge)
 {
 	m_emerge = emerge;
@@ -160,8 +160,6 @@ MapgenV6::~MapgenV6()
 	delete noise_humidity;
 
 	delete[] heightmap;
-
-	delete m_emerge; // our responsibility
 }
 
 
@@ -652,8 +650,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	if (flags & MG_ORES)
-		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)

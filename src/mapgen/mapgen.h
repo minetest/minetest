@@ -1,8 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2020 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2015-2020 paramat
-Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2010-2018 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2018 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2018 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -37,9 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
 #define MG_BIOMES      0x40
-#define MG_ORES        0x80
 
-typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+typedef u8 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
 class Settings;
 class MMVManip;
@@ -52,7 +51,6 @@ class Biome;
 class BiomeGen;
 struct BiomeParams;
 class BiomeManager;
-class EmergeParams;
 class EmergeManager;
 class MapBlock;
 class VoxelManipulator;
@@ -89,10 +87,10 @@ struct GenNotifyEvent {
 class GenerateNotifier {
 public:
 	GenerateNotifier() = default;
-	GenerateNotifier(u32 notify_on, const std::set<u32> *notify_on_deco_ids);
+	GenerateNotifier(u32 notify_on, std::set<u32> *notify_on_deco_ids);
 
 	void setNotifyOn(u32 notify_on);
-	void setNotifyOnDecoIds(const std::set<u32> *notify_on_deco_ids);
+	void setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids);
 
 	bool addEvent(GenNotifyType type, v3s16 pos, u32 id=0);
 	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map);
@@ -100,7 +98,7 @@ public:
 
 private:
 	u32 m_notify_on = 0;
-	const std::set<u32> *m_notify_on_deco_ids;
+	std::set<u32> *m_notify_on_deco_ids;
 	std::list<GenNotifyEvent> m_notify_events;
 };
 
@@ -178,7 +176,7 @@ public:
 	GenerateNotifier gennotify;
 
 	Mapgen() = default;
-	Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge);
+	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~Mapgen() = default;
 	DISABLE_CLASS_COPY(Mapgen);
 
@@ -217,7 +215,7 @@ public:
 	static MapgenType getMapgenType(const std::string &mgname);
 	static const char *getMapgenName(MapgenType mgtype);
 	static Mapgen *createMapgen(MapgenType mgtype, MapgenParams *params,
-		EmergeParams *emerge);
+		EmergeManager *emerge);
 	static MapgenParams *createMapgenParams(MapgenType mgtype);
 	static void getMapgenNames(std::vector<const char *> *mgnames, bool include_hidden);
 	static void setDefaultSettings(Settings *settings);
@@ -245,7 +243,7 @@ private:
 */
 class MapgenBasic : public Mapgen {
 public:
-	MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerge);
+	MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~MapgenBasic();
 
 	virtual void generateBiomes();
@@ -256,7 +254,7 @@ public:
 	virtual void generateDungeons(s16 max_stone_y);
 
 protected:
-	EmergeParams *m_emerge;
+	EmergeManager *m_emerge;
 	BiomeManager *m_bmgr;
 
 	Noise *noise_filler_depth;

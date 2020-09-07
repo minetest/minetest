@@ -351,10 +351,6 @@ else()
 	if (ICONV_LIBRARY)
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} ${ICONV_LIBRARY})
 	endif()
-	if (HAIKU)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} intl network)
-	endif()
-
 endif()
 
 check_include_files(endian.h HAVE_ENDIAN_H)
@@ -431,7 +427,6 @@ set(common_SRCS
 	noise.cpp
 	objdef.cpp
 	object_properties.cpp
-	particles.cpp
 	pathfinder.cpp
 	player.cpp
 	porting.cpp

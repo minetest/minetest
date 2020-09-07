@@ -1,6 +1,6 @@
 #!/bin/bash
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-gameid=devtest
+gameid=minimal
 minetest=$dir/../bin/minetest
 testspath=$dir/../tests
 worldpath=$testspath/testworld_$gameid

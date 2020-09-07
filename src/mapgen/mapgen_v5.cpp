@@ -44,7 +44,7 @@ FlagDesc flagdesc_mapgen_v5[] = {
 };
 
 
-MapgenV5::MapgenV5(MapgenV5Params *params, EmergeParams *emerge)
+MapgenV5::MapgenV5(MapgenV5Params *params, EmergeManager *emerge)
 	: MapgenBasic(MAPGEN_V5, params, emerge)
 {
 	spflags            = params->spflags;
@@ -257,8 +257,7 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered ores
-	if (flags & MG_ORES)
-		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons and desert temples
 	if (flags & MG_DUNGEONS)

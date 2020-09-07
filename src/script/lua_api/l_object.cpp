@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_server.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
-#include "server/serverinventorymgr.h"
 
 /*
 	ObjectRef
@@ -290,7 +289,7 @@ int ObjectRef::l_get_inventory(lua_State *L)
 	if (co == NULL) return 0;
 	// Do it
 	InventoryLocation loc = co->getInventoryLocation();
-	if (getServerInventoryMgr(L)->getInventory(loc) != NULL)
+	if (getServer(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L); // An object may have no inventory (nil)
@@ -1455,17 +1454,10 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "aux1");
 	lua_pushboolean(L, control.sneak);
 	lua_setfield(L, -2, "sneak");
-	lua_pushboolean(L, control.dig);
-	lua_setfield(L, -2, "dig");
-	lua_pushboolean(L, control.place);
-	lua_setfield(L, -2, "place");
-	// Legacy fields to ensure mod compatibility
-	lua_pushboolean(L, control.dig);
+	lua_pushboolean(L, control.LMB);
 	lua_setfield(L, -2, "LMB");
-	lua_pushboolean(L, control.place);
+	lua_pushboolean(L, control.RMB);
 	lua_setfield(L, -2, "RMB");
-	lua_pushboolean(L, control.zoom);
-	lua_setfield(L, -2, "zoom");
 	return 1;
 }
 
@@ -1790,19 +1782,19 @@ int ObjectRef::l_set_sky(lua_State *L)
 			lua_pop(L, 1);
 
 			// Prevent flickering clouds at dawn/dusk:
-			skybox_params.fog_sun_tint = video::SColor(255, 255, 255, 255);
+			skybox_params.sun_tint = video::SColor(255, 255, 255, 255);
 			lua_getfield(L, -1, "fog_sun_tint");
-			read_color(L, -1, &skybox_params.fog_sun_tint);
+			read_color(L, -1, &skybox_params.sun_tint);
 			lua_pop(L, 1);
 
-			skybox_params.fog_moon_tint = video::SColor(255, 255, 255, 255);
+			skybox_params.moon_tint = video::SColor(255, 255, 255, 255);
 			lua_getfield(L, -1, "fog_moon_tint");
-			read_color(L, -1, &skybox_params.fog_moon_tint);
+			read_color(L, -1, &skybox_params.moon_tint);
 			lua_pop(L, 1);
 
 			lua_getfield(L, -1, "fog_tint_type");
 			if (!lua_isnil(L, -1))
-				skybox_params.fog_tint_type = luaL_checkstring(L, -1);
+				skybox_params.tint_type = luaL_checkstring(L, -1);
 			lua_pop(L, 1);
 
 			// Because we need to leave the "sky_color" table.
@@ -1920,12 +1912,12 @@ int ObjectRef::l_get_sky_color(lua_State *L)
 		push_ARGB8(L, skybox_params.sky_color.indoors);
 		lua_setfield(L, -2, "indoors");
 	}
-	push_ARGB8(L, skybox_params.fog_sun_tint);
-	lua_setfield(L, -2, "fog_sun_tint");
-	push_ARGB8(L, skybox_params.fog_moon_tint);
-	lua_setfield(L, -2, "fog_moon_tint");
-	lua_pushstring(L, skybox_params.fog_tint_type.c_str());
-	lua_setfield(L, -2, "fog_tint_type");
+	push_ARGB8(L, skybox_params.sun_tint);
+	lua_setfield(L, -2, "sun_tint");
+	push_ARGB8(L, skybox_params.moon_tint);
+	lua_setfield(L, -2, "moon_tint");
+	lua_pushstring(L, skybox_params.tint_type.c_str());
+	lua_setfield(L, -2, "tint_type");
 	return 1;
 }
 
@@ -2180,7 +2172,9 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 		ratio = readParam<float>(L, 2);
 	}
 
-	getServer(L)->overrideDayNightRatio(player, do_override, ratio);
+	if (!getServer(L)->overrideDayNightRatio(player, do_override, ratio))
+		return 0;
+
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -2299,7 +2293,6 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_rotation),
 	luamethod(ObjectRef, get_rotation),
 	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
-	luamethod(ObjectRef, get_texture_mod),
 	luamethod_aliased(ObjectRef, set_sprite, setsprite),
 	luamethod(ObjectRef, get_entity_name),
 	luamethod(ObjectRef, get_luaentity),

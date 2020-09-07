@@ -41,6 +41,7 @@ core.builtin_auth_handler = {
 		return {
 			password = auth_entry.password,
 			privileges = privileges,
+			-- Is set to nil if unknown
 			last_login = auth_entry.last_login,
 		}
 	end,
@@ -52,7 +53,7 @@ core.builtin_auth_handler = {
 			name = name,
 			password = password,
 			privileges = core.string_to_privs(core.settings:get("default_privs")),
-			last_login = -1,  -- Defer login time calculation until record_login (called by on_joinplayer)
+			last_login = os.time(),
 		})
 	end,
 	delete_auth = function(name)

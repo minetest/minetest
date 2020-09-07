@@ -28,15 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HTTPFETCH_DISCARD 0
 #define HTTPFETCH_SYNC 1
 
-//  Methods
-enum HttpMethod : u8
-{
-	HTTP_GET,
-	HTTP_POST,
-	HTTP_PUT,
-	HTTP_DELETE,
-};
-
 struct HTTPFetchRequest
 {
 	std::string url = "";
@@ -59,15 +50,12 @@ struct HTTPFetchRequest
 	// application/x-www-form-urlencoded.  POST-only.
 	bool multipart = false;
 
-	//  The Method to use default = GET
-	//  Avaible methods GET, POST, PUT, DELETE
-	HttpMethod method = HTTP_GET;
+	// POST fields.  Fields are escaped properly.
+	// If this is empty a GET request is done instead.
+	StringMap post_fields;
 
-	// Fields of the request
-	StringMap fields;
-
-	// Raw data of the request overrides fields
-	std::string raw_data;
+	// Raw POST data, overrides post_fields.
+	std::string post_data;
 
 	// If not empty, should contain entries such as "Accept: text/html"
 	std::vector<std::string> extra_headers;

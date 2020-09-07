@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class InputHandler;
 class ChatBackend;  /* to avoid having to include chat.h */
 struct SubgameSpec;
-struct GameStartData;
 
 struct Jitter {
 	f32 max, min, avg, counter, max_sample, min_sample, max_fraction;
@@ -42,10 +41,16 @@ struct CameraOrientation {
 	f32 camera_pitch;  // "up/down"
 };
 
-
 void the_game(bool *kill,
+		bool random_input,
 		InputHandler *input,
-		const GameStartData &start_data,
+		const std::string &map_dir,
+		const std::string &playername,
+		const std::string &password,
+		const std::string &address, // If "", local server is used
+		u16 port,
 		std::string &error_message,
 		ChatBackend &chat_backend,
-		bool *reconnect_requested);
+		bool *reconnect_requested,
+		const SubgameSpec &gamespec, // Used for local game
+		bool simple_singleplayer_mode);

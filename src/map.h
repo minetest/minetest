@@ -387,6 +387,7 @@ public:
 		Database functions
 	*/
 	static MapDatabase *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
+	void pingDatabase();
 
 	// Call these before and after saving of blocks
 	void beginSave();

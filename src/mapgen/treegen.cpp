@@ -148,6 +148,10 @@ treegen::error spawn_ltree(ServerMap *map, v3s16 p0,
 treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 	const NodeDefManager *ndef, TreeDef tree_definition)
 {
+	MapNode dirtnode(ndef->getId("mapgen_dirt"));
+	if (dirtnode == CONTENT_IGNORE)
+		errorstream << "Treegen (make_ltree): Mapgen alias 'mapgen_dirt' is invalid!" << std::endl;
+
 	s32 seed;
 	if (tree_definition.explicit_seed)
 		seed = tree_definition.seed + 14002;
@@ -225,43 +229,43 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 		axiom = temp;
 	}
 
-	// Add trunk nodes below a wide trunk to avoid gaps when tree is on sloping ground
+	//make sure tree is not floating in the air
 	if (tree_definition.trunk_type == "double") {
-		tree_trunk_placement(
+		tree_node_placement(
 			vmanip,
 			v3f(position.X + 1, position.Y - 1, position.Z),
-			tree_definition
+			dirtnode
 		);
-		tree_trunk_placement(
+		tree_node_placement(
 			vmanip,
 			v3f(position.X, position.Y - 1, position.Z + 1),
-			tree_definition
+			dirtnode
 		);
-		tree_trunk_placement(
+		tree_node_placement(
 			vmanip,
 			v3f(position.X + 1, position.Y - 1, position.Z + 1),
-			tree_definition
+			dirtnode
 		);
 	} else if (tree_definition.trunk_type == "crossed") {
-		tree_trunk_placement(
+		tree_node_placement(
 			vmanip,
 			v3f(position.X + 1, position.Y - 1, position.Z),
-			tree_definition
+			dirtnode
 		);
-		tree_trunk_placement(
+		tree_node_placement(
 			vmanip,
 			v3f(position.X - 1, position.Y - 1, position.Z),
-			tree_definition
+			dirtnode
 		);
-		tree_trunk_placement(
+		tree_node_placement(
 			vmanip,
 			v3f(position.X, position.Y - 1, position.Z + 1),
-			tree_definition
+			dirtnode
 		);
-		tree_trunk_placement(
+		tree_node_placement(
 			vmanip,
 			v3f(position.X, position.Y - 1, position.Z - 1),
-			tree_definition
+			dirtnode
 		);
 	}
 
@@ -368,7 +372,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 					!tree_definition.thin_branches)) {
 				tree_trunk_placement(
 					vmanip,
-					v3f(position.X + 1, position.Y, position.Z),
+					v3f(position.X +1 , position.Y, position.Z),
 					tree_definition
 				);
 				tree_trunk_placement(

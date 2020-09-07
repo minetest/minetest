@@ -443,9 +443,6 @@ core.register_chatcommand("teleport", {
 			end
 			local teleportee = core.get_player_by_name(name)
 			if teleportee then
-				if teleportee:get_attach() then
-					return false, "Can't teleport, you're attached to an object!"
-				end
 				teleportee:set_pos(p)
 				return true, "Teleporting to "..core.pos_to_string(p)
 			end
@@ -463,9 +460,6 @@ core.register_chatcommand("teleport", {
 		end
 
 		if teleportee and p then
-			if teleportee:get_attach() then
-				return false, "Can't teleport, you're attached to an object!"
-			end
 			p = find_free_position_near(p)
 			teleportee:set_pos(p)
 			return true, "Teleporting to " .. target_name
@@ -486,9 +480,6 @@ core.register_chatcommand("teleport", {
 			teleportee = core.get_player_by_name(teleportee_name)
 		end
 		if teleportee and p.x and p.y and p.z then
-			if teleportee:get_attach() then
-				return false, "Can't teleport, player is attached to an object!"
-			end
 			teleportee:set_pos(p)
 			return true, "Teleporting " .. teleportee_name
 					.. " to " .. core.pos_to_string(p)
@@ -507,9 +498,6 @@ core.register_chatcommand("teleport", {
 			end
 		end
 		if teleportee and p then
-			if teleportee:get_attach() then
-				return false, "Can't teleport, player is attached to an object!"
-			end
 			p = find_free_position_near(p)
 			teleportee:set_pos(p)
 			return true, "Teleporting " .. teleportee_name
@@ -789,7 +777,7 @@ core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
 			.. " within the time specified by <seconds>. Default: range = 0,"
-			.. " seconds = 86400 = 24h, limit = 5. Set <seconds> to inf for no time limit",
+			.. " seconds = 86400 = 24h, limit = 5",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -840,7 +828,7 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
-	description = "Revert actions of a player. Default for <seconds> is 60. Set <seconds> to inf for no time limit",
+	description = "Revert actions of a player. Default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.settings:get_bool("enable_rollback_recording") then
@@ -1068,12 +1056,12 @@ core.register_chatcommand("last-login", {
 			param = name
 		end
 		local pauth = core.get_auth_handler().get_auth(param)
-		if pauth and pauth.last_login and pauth.last_login ~= -1 then
+		if pauth and pauth.last_login then
 			-- Time in UTC, ISO 8601 format
-			return true, param.."'s last login time was " ..
+			return true, "Last login time was " ..
 				os.date("!%Y-%m-%dT%H:%M:%SZ", pauth.last_login)
 		end
-		return false, param.."'s last login time is unknown"
+		return false, "Last login time is unknown"
 	end,
 })
 

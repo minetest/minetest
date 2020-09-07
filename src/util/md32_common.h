@@ -109,8 +109,6 @@
  *                                      <appro@fy.chalmers.se>
  */
 
-#pragma once
-
 #if !defined(DATA_ORDER_IS_BIG_ENDIAN) && !defined(DATA_ORDER_IS_LITTLE_ENDIAN)
 # error "DATA_ORDER must be defined!"
 #endif
@@ -301,7 +299,7 @@
 
 int HASH_UPDATE(HASH_CTX *c, const void *data_, size_t len)
 {
-    const unsigned char *data = (const unsigned char *)data_;
+    const unsigned char *data = data_;
     unsigned char *p;
     HASH_LONG l;
     size_t n;

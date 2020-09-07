@@ -37,15 +37,6 @@ int LuaItemStack::gc_object(lua_State *L)
 	return 0;
 }
 
-// __tostring metamethod
-int LuaItemStack::mt_tostring(lua_State *L)
-{
-	LuaItemStack *o = checkobject(L, 1);
-	std::string itemstring = o->m_stack.getItemString(false);
-	lua_pushfstring(L, "ItemStack(\"%s\")", itemstring.c_str());
-	return 1;
-}
-
 // is_empty(self) -> true/false
 int LuaItemStack::l_is_empty(lua_State *L)
 {
@@ -442,9 +433,12 @@ int LuaItemStack::create(lua_State *L, const ItemStack &item)
 	return 1;
 }
 
-LuaItemStack *LuaItemStack::checkobject(lua_State *L, int narg)
+LuaItemStack* LuaItemStack::checkobject(lua_State *L, int narg)
 {
-	return *(LuaItemStack **)luaL_checkudata(L, narg, className);
+	luaL_checktype(L, narg, LUA_TUSERDATA);
+	void *ud = luaL_checkudata(L, narg, className);
+	if(!ud) luaL_typerror(L, narg, className);
+	return *(LuaItemStack**)ud;  // unbox pointer
 }
 
 void LuaItemStack::Register(lua_State *L)
@@ -454,10 +448,9 @@ void LuaItemStack::Register(lua_State *L)
 	luaL_newmetatable(L, className);
 	int metatable = lua_gettop(L);
 
-	// hide metatable from Lua getmetatable()
 	lua_pushliteral(L, "__metatable");
 	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
+	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
 
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);
@@ -467,16 +460,12 @@ void LuaItemStack::Register(lua_State *L)
 	lua_pushcfunction(L, gc_object);
 	lua_settable(L, metatable);
 
-	lua_pushliteral(L, "__tostring");
-	lua_pushcfunction(L, mt_tostring);
-	lua_settable(L, metatable);
-
 	lua_pop(L, 1);  // drop metatable
 
 	luaL_openlib(L, 0, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
-	// Can be created from Lua (ItemStack(itemstack or itemstring or table or nil))
+	// Can be created from Lua (LuaItemStack(itemstack or itemstring or table or nil))
 	lua_register(L, className, create_object);
 }
 

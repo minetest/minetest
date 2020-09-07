@@ -56,18 +56,6 @@ bool GUIScrollContainer::OnEvent(const SEvent &event)
 	return IGUIElement::OnEvent(event);
 }
 
-void GUIScrollContainer::draw()
-{
-	if (isVisible()) {
-		core::list<IGUIElement *>::Iterator it = Children.begin();
-		for (; it != Children.end(); ++it)
-			if ((*it)->isNotClipped() ||
-					AbsoluteClippingRect.isRectCollided(
-							(*it)->getAbsolutePosition()))
-				(*it)->draw();
-	}
-}
-
 void GUIScrollContainer::updateScrolling()
 {
 	s32 pos = m_scrollbar->getPos();

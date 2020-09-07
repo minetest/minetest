@@ -144,7 +144,7 @@ void ConnectionSendThread::Trigger()
 
 bool ConnectionSendThread::packetsQueued()
 {
-	std::vector<session_t> peerIds = m_connection->getPeerIDs();
+	std::list<session_t> peerIds = m_connection->getPeerIDs();
 
 	if (!m_outgoing_queue.empty() && !peerIds.empty())
 		return true;
@@ -171,8 +171,8 @@ bool ConnectionSendThread::packetsQueued()
 
 void ConnectionSendThread::runTimeouts(float dtime)
 {
-	std::vector<session_t> timeouted_peers;
-	std::vector<session_t> peerIds = m_connection->getPeerIDs();
+	std::list<session_t> timeouted_peers;
+	std::list<session_t> peerIds = m_connection->getPeerIDs();
 
 	for (session_t &peerId : peerIds) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerId);
@@ -336,9 +336,11 @@ bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 	if (!peer) {
-		LOG(errorstream << m_connection->getDesc()
-			<< " dropped " << (reliable ? "reliable " : "")
-			<< "packet for non existent peer_id: " << peer_id << std::endl);
+		LOG(dout_con << m_connection->getDesc()
+			<< " INFO: dropped packet for non existent peer_id: "
+			<< peer_id << std::endl);
+		FATAL_ERROR_IF(!reliable,
+			"Trying to send raw packet reliable but no peer found!");
 		return false;
 	}
 	Channel *channel = &(dynamic_cast<UDPPeer *>(&peer)->channels[channelnum]);
@@ -548,7 +550,7 @@ void ConnectionSendThread::disconnect()
 
 
 	// Send to all
-	std::vector<session_t> peerids = m_connection->getPeerIDs();
+	std::list<session_t> peerids = m_connection->getPeerIDs();
 
 	for (session_t peerid : peerids) {
 		sendAsPacket(peerid, 0, data, false);
@@ -620,7 +622,7 @@ void ConnectionSendThread::sendReliable(ConnectionCommand &c)
 
 void ConnectionSendThread::sendToAll(u8 channelnum, const SharedBuffer<u8> &data)
 {
-	std::vector<session_t> peerids = m_connection->getPeerIDs();
+	std::list<session_t> peerids = m_connection->getPeerIDs();
 
 	for (session_t peerid : peerids) {
 		send(peerid, channelnum, data);
@@ -629,7 +631,7 @@ void ConnectionSendThread::sendToAll(u8 channelnum, const SharedBuffer<u8> &data
 
 void ConnectionSendThread::sendToAllReliable(ConnectionCommand &c)
 {
-	std::vector<session_t> peerids = m_connection->getPeerIDs();
+	std::list<session_t> peerids = m_connection->getPeerIDs();
 
 	for (session_t peerid : peerids) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerid);
@@ -643,8 +645,8 @@ void ConnectionSendThread::sendToAllReliable(ConnectionCommand &c)
 
 void ConnectionSendThread::sendPackets(float dtime)
 {
-	std::vector<session_t> peerIds = m_connection->getPeerIDs();
-	std::vector<session_t> pendingDisconnect;
+	std::list<session_t> peerIds = m_connection->getPeerIDs();
+	std::list<session_t> pendingDisconnect;
 	std::map<session_t, bool> pending_unreliable;
 
 	const unsigned int peer_packet_quota = m_iteration_packets_avaialble
@@ -843,11 +845,13 @@ void *ConnectionReceiveThread::run()
 		if (debug_print_timer > 20.0) {
 			debug_print_timer -= 20.0;
 
-			std::vector<session_t> peerids = m_connection->getPeerIDs();
+			std::list<session_t> peerids = m_connection->getPeerIDs();
 
-			for (auto id : peerids)
+			for (std::list<session_t>::iterator i = peerids.begin();
+					i != peerids.end();
+					i++)
 			{
-				PeerHelper peer = m_connection->getPeerNoEx(id);
+				PeerHelper peer = m_connection->getPeerNoEx(*i);
 				if (!peer)
 					continue;
 
@@ -1037,7 +1041,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 bool ConnectionReceiveThread::getFromBuffers(session_t &peer_id, SharedBuffer<u8> &dst)
 {
-	std::vector<session_t> peerids = m_connection->getPeerIDs();
+	std::list<session_t> peerids = m_connection->getPeerIDs();
 
 	for (session_t peerid : peerids) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerid);

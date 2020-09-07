@@ -289,9 +289,9 @@ public:
 
 	/*
 		Get the next message emitted by some active object.
-		Returns false if no messages are available, true otherwise.
+		Returns a message with id=0 if no messages are available.
 	*/
-	bool getActiveObjectMessage(ActiveObjectMessage *dest);
+	ActiveObjectMessage getActiveObjectMessage();
 
 	virtual void getSelectedActiveObjects(
 		const core::line3d<f32> &shootline_on_map,
@@ -436,11 +436,10 @@ private:
 	IntervalLimiter m_object_management_interval;
 	// List of active blocks
 	ActiveBlockList m_active_blocks;
+	IntervalLimiter m_database_check_interval;
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
-	// Whether the variables below have been read from file yet
-	bool m_meta_loaded = false;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time = 0;

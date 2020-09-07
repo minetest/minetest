@@ -90,13 +90,19 @@ void Database_PostgreSQL::connectToDatabase()
 	initStatements();
 }
 
-void Database_PostgreSQL::verifyDatabase()
+void Database_PostgreSQL::pingDatabase()
 {
-	if (PQstatus(m_conn) == CONNECTION_OK)
-		return;
+	// Verify DB connection with ping
+	try {
+		ping();
+	} catch (const DatabaseException &e) {
+		// If ping failed, show the error and try reconnect
+		PQreset(m_conn);
 
-	PQreset(m_conn);
-	ping();
+		errorstream << e.what() << std::endl
+			<< "Reconnecting to database " << m_connect_string << std::endl;
+		connectToDatabase();
+	}
 }
 
 void Database_PostgreSQL::ping()
@@ -151,7 +157,7 @@ void Database_PostgreSQL::createTableIfNotExists(const std::string &table_name,
 
 void Database_PostgreSQL::beginSave()
 {
-	verifyDatabase();
+	pingDatabase();
 	checkResults(PQexec(m_conn, "BEGIN;"));
 }
 
@@ -232,7 +238,7 @@ bool MapDatabasePostgreSQL::saveBlock(const v3s16 &pos, const std::string &data)
 		return false;
 	}
 
-	verifyDatabase();
+	pingDatabase();
 
 	s32 x, y, z;
 	x = htonl(pos.X);
@@ -256,7 +262,7 @@ bool MapDatabasePostgreSQL::saveBlock(const v3s16 &pos, const std::string &data)
 
 void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	s32 x, y, z;
 	x = htonl(pos.X);
@@ -280,7 +286,7 @@ void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 
 bool MapDatabasePostgreSQL::deleteBlock(const v3s16 &pos)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	s32 x, y, z;
 	x = htonl(pos.X);
@@ -298,7 +304,7 @@ bool MapDatabasePostgreSQL::deleteBlock(const v3s16 &pos)
 
 void MapDatabasePostgreSQL::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	PGresult *results = execPrepared("list_all_loadable_blocks", 0,
 		NULL, NULL, NULL, false, false);
@@ -440,7 +446,7 @@ void PlayerDatabasePostgreSQL::initStatements()
 
 bool PlayerDatabasePostgreSQL::playerDataExists(const std::string &playername)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	const char *values[] = { playername.c_str() };
 	PGresult *results = execPrepared("load_player", 1, values, false);
@@ -456,7 +462,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	if (!sao)
 		return;
 
-	verifyDatabase();
+	pingDatabase();
 
 	v3f pos = sao->getBasePosition();
 	std::string pitch = ftos(sao->getLookPitch());
@@ -540,7 +546,7 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 {
 	sanity_check(sao);
-	verifyDatabase();
+	pingDatabase();
 
 	const char *values[] = { player->getName() };
 	PGresult *results = execPrepared("load_player", 1, values, false, false);
@@ -615,7 +621,7 @@ bool PlayerDatabasePostgreSQL::removePlayer(const std::string &name)
 	if (!playerDataExists(name))
 		return false;
 
-	verifyDatabase();
+	pingDatabase();
 
 	const char *values[] = { name.c_str() };
 	execPrepared("remove_player", 1, values);
@@ -625,7 +631,7 @@ bool PlayerDatabasePostgreSQL::removePlayer(const std::string &name)
 
 void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	PGresult *results = execPrepared("load_player_list", 0, NULL, false);
 
@@ -678,7 +684,7 @@ void AuthDatabasePostgreSQL::initStatements()
 
 bool AuthDatabasePostgreSQL::getAuth(const std::string &name, AuthEntry &res)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	const char *values[] = { name.c_str() };
 	PGresult *result = execPrepared("auth_read", 1, values, false, false);
@@ -710,7 +716,7 @@ bool AuthDatabasePostgreSQL::getAuth(const std::string &name, AuthEntry &res)
 
 bool AuthDatabasePostgreSQL::saveAuth(const AuthEntry &authEntry)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	beginSave();
 
@@ -732,7 +738,7 @@ bool AuthDatabasePostgreSQL::saveAuth(const AuthEntry &authEntry)
 
 bool AuthDatabasePostgreSQL::createAuth(AuthEntry &authEntry)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	std::string lastLoginStr = itos(authEntry.last_login);
 	const char *values[] = {
@@ -764,7 +770,7 @@ bool AuthDatabasePostgreSQL::createAuth(AuthEntry &authEntry)
 
 bool AuthDatabasePostgreSQL::deleteAuth(const std::string &name)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	const char *values[] = { name.c_str() };
 	execPrepared("auth_delete", 1, values);
@@ -775,7 +781,7 @@ bool AuthDatabasePostgreSQL::deleteAuth(const std::string &name)
 
 void AuthDatabasePostgreSQL::listNames(std::vector<std::string> &res)
 {
-	verifyDatabase();
+	pingDatabase();
 
 	PGresult *results = execPrepared("auth_list_names", 0,
 		NULL, NULL, NULL, false, false);

@@ -45,11 +45,6 @@ Server *ModApiBase::getServer(lua_State *L)
 	return getScriptApiBase(L)->getServer();
 }
 
-ServerInventoryManager *ModApiBase::getServerInventoryMgr(lua_State *L)
-{
-	return getScriptApiBase(L)->getServer()->getInventoryMgr();
-}
-
 #ifndef SERVER
 Client *ModApiBase::getClient(lua_State *L)
 {

@@ -73,11 +73,7 @@ void GUIConfirmRegistration::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-#ifdef __ANDROID__
-	const float s = m_gui_scale * porting::getDisplayDensity() / 2;
-#else
 	const float s = m_gui_scale;
-#endif
 	DesiredRect = core::rect<s32>(
 		screensize.X / 2 - 600 * s / 2,
 		screensize.Y / 2 - 360 * s / 2,
@@ -226,7 +222,7 @@ bool GUIConfirmRegistration::OnEvent(const SEvent &event)
 
 	if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST && isVisible()) {
 		if (!canTakeFocus(event.GUIEvent.Element)) {
-			infostream << "GUIConfirmRegistration: Not allowing focus change."
+			dstream << "GUIConfirmRegistration: Not allowing focus change."
 				<< std::endl;
 			// Returning true disables focus change
 			return true;
@@ -261,19 +257,12 @@ bool GUIConfirmRegistration::getAndroidUIInput()
 	if (!hasAndroidUIInput() || m_jni_field_name != "password")
 		return false;
 
-	// still waiting
-	if (porting::getInputDialogState() == -1)
-		return true;
+	std::string text = porting::getInputDialogValue();
+	gui::IGUIElement *e = getElementFromId(ID_confirmPassword);
+	if (e)
+		e->setText(utf8_to_wide(text).c_str());
 
 	m_jni_field_name.clear();
-
-	gui::IGUIElement *e = getElementFromId(ID_confirmPassword);
-
-	if (!e || e->getType() != irr::gui::EGUIET_EDIT_BOX)
-		return false;
-
-	std::string text = porting::getInputDialogValue();
-	e->setText(utf8_to_wide(text).c_str());
 	return false;
 }
 #endif

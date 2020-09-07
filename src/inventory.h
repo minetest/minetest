@@ -40,13 +40,13 @@ struct ItemStack
 	~ItemStack() = default;
 
 	// Serialization
-	void serialize(std::ostream &os, bool serialize_meta = true) const;
+	void serialize(std::ostream &os) const;
 	// Deserialization. Pass itemdef unless you don't want aliases resolved.
 	void deSerialize(std::istream &is, IItemDefManager *itemdef = NULL);
 	void deSerialize(const std::string &s, IItemDefManager *itemdef = NULL);
 
 	// Returns the string used for inventory
-	std::string getItemString(bool include_meta = true) const;
+	std::string getItemString() const;
 	// Returns the tooltip
 	std::string getDescription(IItemDefManager *itemdef) const;
 

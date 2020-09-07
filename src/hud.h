@@ -18,7 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
+#ifndef HUD_HEADER
+#define HUD_HEADER
 
 #include "irrlichttypes_extrabloated.h"
 #include <string>
@@ -60,8 +61,7 @@ enum HudElementType {
 	HUD_ELEM_STATBAR   = 2,
 	HUD_ELEM_INVENTORY = 3,
 	HUD_ELEM_WAYPOINT  = 4,
-	HUD_ELEM_IMAGE_WAYPOINT = 5,
-	HUD_ELEM_COMPASS   = 6
+	HUD_ELEM_IMAGE_WAYPOINT = 5
 };
 
 enum HudElementStat {
@@ -77,14 +77,6 @@ enum HudElementStat {
 	HUD_STAT_WORLD_POS,
 	HUD_STAT_SIZE,
 	HUD_STAT_Z_INDEX,
-	HUD_STAT_TEXT2,
-};
-
-enum HudCompassDir {
-	HUD_COMPASS_ROTATE = 0,
-	HUD_COMPASS_ROTATE_REVERSE,
-	HUD_COMPASS_TRANSLATE,
-	HUD_COMPASS_TRANSLATE_REVERSE,
 };
 
 struct HudElement {
@@ -101,10 +93,10 @@ struct HudElement {
 	v3f world_pos;
 	v2s32 size;
 	s16 z_index = 0;
-	std::string text2;
 };
 
 extern const EnumString es_HudElementType[];
 extern const EnumString es_HudElementStat[];
 extern const EnumString es_HudBuiltinElement[];
 
+#endif

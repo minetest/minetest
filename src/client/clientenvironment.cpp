@@ -216,9 +216,6 @@ void ClientEnvironment::step(float dtime)
 		*/
 
 		{
-			// Control local player
-			lplayer->applyControl(dtime_part, this);
-
 			// Apply physics
 			if (!free_move && !is_climbing) {
 				// Gravity
@@ -323,8 +320,21 @@ void ClientEnvironment::step(float dtime)
 		// Step object
 		cao->step(dtime, this);
 
-		if (update_lighting)
-			cao->updateLight(day_night_ratio);
+		if (update_lighting) {
+			// Update lighting
+			u8 light = 0;
+			bool pos_ok;
+
+			// Get node at head
+			v3s16 p = cao->getLightPosition();
+			MapNode n = this->m_map->getNode(p, &pos_ok);
+			if (pos_ok)
+				light = n.getLightBlend(day_night_ratio, m_client->ndef());
+			else
+				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
+
+			cao->updateLight(light);
+		}
 	};
 
 	m_ao_manager.step(dtime, cb_state);
@@ -392,7 +402,18 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	object->addToScene(m_texturesource);
 
 	// Update lighting immediately
-	object->updateLight(getDayNightRatio());
+	u8 light = 0;
+	bool pos_ok;
+
+	// Get node at head
+	v3s16 p = object->getLightPosition();
+	MapNode n = m_map->getNode(p, &pos_ok);
+	if (pos_ok)
+		light = n.getLightBlend(getDayNightRatio(), m_client->ndef());
+	else
+		light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+
+	object->updateLight(light);
 	return object->getId();
 }
 

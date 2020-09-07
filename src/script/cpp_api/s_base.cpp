@@ -187,9 +187,7 @@ void ScriptApiBase::loadScript(const std::string &script_path)
 	}
 	ok = ok && !lua_pcall(L, 0, 0, error_handler);
 	if (!ok) {
-		const char *error_msg = lua_tostring(L, -1);
-		if (!error_msg)
-			error_msg = "(error object is not a string)";
+		std::string error_msg = readParam<std::string>(L, -1);
 		lua_pop(L, 2); // Pop error message and error handler
 		throw ModError("Failed to load and run script from " +
 				script_path + ":\n" + error_msg);
@@ -221,9 +219,7 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 	if (ok)
 		ok = !lua_pcall(L, 0, 0, error_handler);
 	if (!ok) {
-		const char *error_msg = lua_tostring(L, -1);
-		if (!error_msg)
-			error_msg = "(error object is not a string)";
+		std::string error_msg = luaL_checkstring(L, -1);
 		lua_pop(L, 2); // Pop error message and error handler
 		throw ModError("Failed to load and run mod \"" +
 				mod_name + "\":\n" + error_msg);

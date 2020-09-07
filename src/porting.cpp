@@ -25,39 +25,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "porting.h"
 
-#if defined(__FreeBSD__)  || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
+#if defined(__FreeBSD__)  || defined(__NetBSD__) || defined(__DragonFly__)
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
-	extern char **environ;
 #elif defined(_WIN32)
 	#include <windows.h>
 	#include <wincrypt.h>
 	#include <algorithm>
 	#include <shlwapi.h>
-	#include <shellapi.h>
 #endif
 #if !defined(_WIN32)
 	#include <unistd.h>
 	#include <sys/utsname.h>
-	#if !defined(__ANDROID__)
-		#include <spawn.h>
-	#endif
 #endif
 #if defined(__hpux)
 	#define _PSTAT64
 	#include <sys/pstat.h>
-#endif
-#if defined(__ANDROID__)
-	#include "porting_android.h"
-#endif
-#if defined(__APPLE__)
-	// For _NSGetEnviron()
-	// Related: https://gitlab.haskell.org/ghc/ghc/issues/2458
-	#include <crt_externs.h>
-#endif
-
-#if defined(__HAIKU__)
-        #include <FindDirectory.h>
 #endif
 
 #include "config.h"
@@ -65,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "util/string.h"
+#include "settings.h"
 #include <list>
 #include <cstdarg>
 #include <cstdio>
@@ -325,12 +309,6 @@ bool getCurrentExecPath(char *buf, size_t len)
 	return true;
 }
 
-#elif defined(__HAIKU__)
-
-bool getCurrentExecPath(char *buf, size_t len)
-{
-	return find_path(B_APP_IMAGE_SYMBOL, B_FIND_PATH_IMAGE_PATH, NULL, buf, len) == B_OK;
-}
 
 //// Solaris
 #elif defined(__sun) || defined(sun)
@@ -717,29 +695,6 @@ int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 #endif // _MSC_VER
 	va_end(args);
 	return c;
-}
-
-bool openURL(const std::string &url)
-{
-	if ((url.substr(0, 7) != "http://" && url.substr(0, 8) != "https://") ||
-			url.find_first_of("\r\n") != std::string::npos) {
-		errorstream << "Invalid url: " << url << std::endl;
-		return false;
-	}
-
-#if defined(_WIN32)
-	return (intptr_t)ShellExecuteA(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL) > 32;
-#elif defined(__ANDROID__)
-	openURLAndroid(url);
-	return true;
-#elif defined(__APPLE__)
-	const char *argv[] = {"open", url.c_str(), NULL};
-	return posix_spawnp(NULL, "open", NULL, NULL, (char**)argv,
-		(*_NSGetEnviron())) == 0;
-#else
-	const char *argv[] = {"xdg-open", url.c_str(), NULL};
-	return posix_spawnp(NULL, "xdg-open", NULL, NULL, (char**)argv, environ) == 0;
-#endif
 }
 
 // Load performance counter frequency only once at startup

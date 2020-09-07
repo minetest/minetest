@@ -20,11 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package net.minetest.minetest;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
+import android.util.Log;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,14 +33,14 @@ import java.lang.ref.WeakReference;
 
 public class CopyZipTask extends AsyncTask<String, Void, String> {
 
-	private final WeakReference<AppCompatActivity> activityRef;
+	private final WeakReference<Context> contextRef;
 
-	CopyZipTask(AppCompatActivity activity) {
-		activityRef = new WeakReference<>(activity);
+	CopyZipTask(Context context) {
+		contextRef = new WeakReference<>(context);
 	}
 
 	protected String doInBackground(String... params) {
-		copyAsset(params[0]);
+		copyAssets(params);
 		return params[0];
 	}
 
@@ -50,16 +49,20 @@ public class CopyZipTask extends AsyncTask<String, Void, String> {
 		startUnzipService(result);
 	}
 
-	private void copyAsset(String zipName) {
+	private void copyAsset(String zipName) throws IOException {
 		String filename = zipName.substring(zipName.lastIndexOf("/") + 1);
-		try (InputStream in = activityRef.get().getAssets().open(filename);
+		try (InputStream in = contextRef.get().getAssets().open(filename);
 		     OutputStream out = new FileOutputStream(zipName)) {
 			copyFile(in, out);
+		}
+	}
+
+	private void copyAssets(String[] zips) {
+		try {
+			for (String zipName : zips)
+				copyAsset(zipName);
 		} catch (IOException e) {
-			AppCompatActivity activity = activityRef.get();
-			if (activity != null) {
-				activity.runOnUiThread(() -> Toast.makeText(activityRef.get(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show());
-			}
+			Log.e("CopyZipTask", e.getLocalizedMessage());
 			cancel(true);
 		}
 	}
@@ -72,11 +75,8 @@ public class CopyZipTask extends AsyncTask<String, Void, String> {
 	}
 
 	private void startUnzipService(String file) {
-		Intent intent = new Intent(activityRef.get(), UnzipService.class);
+		Intent intent = new Intent(contextRef.get(), UnzipService.class);
 		intent.putExtra(UnzipService.EXTRA_KEY_IN_FILE, file);
-		AppCompatActivity activity = activityRef.get();
-		if (activity != null) {
-			activity.startService(intent);
-		}
+		contextRef.get().startService(intent);
 	}
 }
