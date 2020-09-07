@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <vector>
 #include <iostream>
+using namespace irr::core;
 
 struct SplineIndex
 {
@@ -199,5 +200,5 @@ T SplineSequence<T>::_interpolate(T &bottom, T &top, float alpha) const
 
 // quaternions have a special interpolation
 template <>
-core::quaternion SplineSequence<core::quaternion>::_interpolate(
-		core::quaternion &bottom, core::quaternion &top, float alpha) const;
+quaternion SplineSequence<core::quaternion>::_interpolate(
+		quaternion &bottom, core::quaternion &top, float alpha) const;

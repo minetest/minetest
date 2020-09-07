@@ -712,12 +712,13 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 	cam->setFarValue(1000);
 	if (translation != NULL)
 	{
-		irr::core::matrix4 startMatrix = cam->getAbsoluteTransformation();
-		irr::core::vector3df focusPoint = (cam->getTarget()
+		matrix4 startMatrix = cam->getAbsoluteTransformation();
+		vector3df focusPoint =
+				(cam->getTarget()
 				- cam->getAbsolutePosition()).setLength(1)
 				+ cam->getAbsolutePosition();
 
-		irr::core::vector3df camera_pos =
+		vector3df camera_pos =
 				(startMatrix * *translation).getTranslation();
 		cam->setPosition(camera_pos);
 		cam->setTarget(focusPoint);
@@ -727,7 +728,7 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 
 void Camera::drawNametags()
 {
-	core::matrix4 trans = m_cameranode->getProjectionMatrix();
+	irr::core::matrix4 trans = m_cameranode->getProjectionMatrix();
 	trans *= m_cameranode->getViewMatrix();
 
 	for (std::list<Nametag *>::const_iterator

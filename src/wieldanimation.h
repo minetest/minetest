@@ -31,7 +31,7 @@ public:
 	float getDuration() const;
 	// call this *after* filling the splines
 	void setDuration(float duration);
-	static core::quaternion quatFromAngles(float pitch, float yaw, float roll);
+	static quaternion quatFromAngles(float pitch, float yaw, float roll);
 
 	static const WieldAnimation &getNamed(const std::string &name);
 
