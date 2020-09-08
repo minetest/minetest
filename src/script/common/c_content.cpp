@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <utility>
 #include "debug.h" // For FATAL_ERROR
 #include <json/json.h>
+#include <algorithm>
 
 struct EnumString es_TileAnimationType[] =
 {
@@ -74,13 +75,6 @@ void read_item_definition(lua_State* L, int index,
 		def.wield_scale = check_v3f(L, -1);
 	}
 	lua_pop(L, 1);
-	/*
-	lua_getfield(L, index, "wield_keyframes");
-	if (lua_istable(L, -1)) {
-		read_wield_keyframes(L, -1, def.keyframes);
-	}
-	lua_pop(L, 1);
-	*/
 
 	int stack_max = getintfield_default(L, index, "stack_max", def.stack_max);
 	def.stack_max = rangelim(stack_max, 1, U16_MAX);

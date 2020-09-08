@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
+#include <quaternion.h>
 #include <iostream>
 #include "util/serialize.h"
 #include "splinesequence.h"
@@ -27,7 +28,7 @@ class WieldAnimation
 public:
 	std::string name;
 	v3f getTranslationAt(float time) const;
-	core::quaternion getRotationAt(float time) const;
+	quaternion getRotationAt(float time) const;
 	float getDuration() const;
 	// call this *after* filling the splines
 	void setDuration(float duration);
@@ -36,7 +37,7 @@ public:
 	static const WieldAnimation &getNamed(const std::string &name);
 
 	SplineSequence<v3f> m_translationspline;
-	SplineSequence<core::quaternion> m_rotationspline;
+	SplineSequence<quaternion> m_rotationspline;
 	float m_duration;
 
 	static std::unordered_map<std::string, WieldAnimation> repository;

@@ -712,13 +712,13 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 	cam->setFarValue(1000);
 	if (translation != NULL)
 	{
-		matrix4 startMatrix = cam->getAbsoluteTransformation();
-		vector3df focusPoint =
+		irr::core::matrix4 startMatrix = cam->getAbsoluteTransformation();
+		irr::core::vector3df focusPoint =
 				(cam->getTarget()
 				- cam->getAbsolutePosition()).setLength(1)
 				+ cam->getAbsolutePosition();
 
-		vector3df camera_pos =
+		irr::core::vector3df camera_pos =
 				(startMatrix * *translation).getTranslation();
 		cam->setPosition(camera_pos);
 		cam->setTarget(focusPoint);
