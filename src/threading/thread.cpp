@@ -33,6 +33,8 @@ DEALINGS IN THE SOFTWARE.
 	#include <sys/prctl.h>
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 	#include <pthread_np.h>
+#elif defined(__NetBSD__)
+	#include <sched.h>
 #elif defined(_MSC_VER)
 	struct THREADNAME_INFO {
 		DWORD dwType;     // Must be 0x1000
@@ -285,7 +287,14 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 	CPU_SET(proc_number, &cpuset);
 
 	return pthread_setaffinity_np(getThreadHandle(), sizeof(cpuset), &cpuset) == 0;
+#elif defined(__NetBSD__)
 
+	cpuset_t *cpuset = cpuset_create();
+	if (cpuset == NULL)
+		return false;
+	int r = pthread_setaffinity_np(getThreadHandle(), cpuset_size(cpuset), cpuset);
+	cpuset_destroy(cpuset);
+	return r == 0;
 #elif defined(__sun) || defined(sun)
 
 	return processor_bind(P_LWPID, P_MYID, proc_number, NULL) == 0
