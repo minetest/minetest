@@ -64,7 +64,7 @@ int LuaCamera::l_set_camera_mode(lua_State *L)
 
 	camera->setCameraMode((CameraMode)((int)lua_tonumber(L, 2)));
 	// Make the player visible depending on camera mode.
-	playercao->hideMeshTexture();
+	playercao->updateMeshCulling();
 	playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	return 0;
 }

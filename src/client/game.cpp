@@ -2951,7 +2951,7 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 		camera->toggleCameraMode();
 
 		// Make the player visible depending on camera mode.
-		playercao->hideMeshTexture();
+		playercao->updateMeshCulling();
 		playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	}
 

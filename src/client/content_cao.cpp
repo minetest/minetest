@@ -455,12 +455,13 @@ void GenericCAO::setChildrenVisible(bool toset)
 {
 	for (u16 cao_id : m_attachment_child_ids) {
 		GenericCAO *obj = m_env->getGenericCAO(cao_id);
-		if (obj)
+		if (obj) {
 			// Check if the entity is forced to appear in first person.
 			if (obj->isForcedVisible())
 				obj->setVisible(obj->isForcedVisible());
 			else
 				obj->setVisible(toset);
+		}
 	}
 }
 
@@ -801,7 +802,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	updateBonePosition();
 	updateAttachments();
 	setNodeLight(m_last_light);
-	hideMeshTexture();
+	updateMeshCulling();
 }
 
 void GenericCAO::updateLight(u32 day_night_ratio)
@@ -1413,6 +1414,9 @@ void GenericCAO::updateTextures(std::string mod)
 				setMeshColor(mesh, m_prop.colors[0]);
 		}
 	}
+	// Prevent showing the player after changing texture
+	if (m_is_local_player)
+		updateMeshCulling();
 }
 
 void GenericCAO::updateAnimation()
@@ -1748,25 +1752,21 @@ void GenericCAO::processMessage(const std::string &data)
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F32(is);
 		v3f rotation = readV3F32(is);
-		bool force_visibility = false;
-		force_visibility = readU8(is);
+		m_force_visible = readU8(is); // Returns false for EOF
 
 		setAttachment(parent_id, bone, position, rotation);
 
 		// Forcibly show attachments if required by set_attach
-		if (force_visibility) {
+		if (m_force_visible)
 			m_is_visible = true;
-			m_force_visible = true;
-		}
 		// localplayer itself can't be attached to localplayer
 		else if (!m_is_local_player) {
-			// Objects attached to the local player should be hidden in first person
-			// provided the forced boolean isn't set.
-			m_is_visible = (!m_attached_to_local) ||
-				(m_client->getCamera()->getCameraMode() != CAMERA_MODE_FIRST);
+			// Objects attached to the local player should be hidden in first
+			// person provided the forced boolean isn't set.
+			m_is_visible = !m_attached_to_local ||
+				m_client->getCamera()->getCameraMode() != CAMERA_MODE_FIRST;
 			m_force_visible = false;
-		}
-		else {
+		} else {
 			// Local players need to have this set,
 			// otherwise first person attachments fail.
 			m_is_visible = true;
@@ -1884,30 +1884,30 @@ std::string GenericCAO::debugInfoText()
 	return os.str();
 }
 
-void GenericCAO::hideMeshTexture()
+void GenericCAO::updateMeshCulling()
 {
 	if (!m_is_local_player)
 		return;
 
 	// Grab the active player scene node so we know there's
 	// at least a mesh to occlude from the camera.
-	irr::scene::ISceneNode *playercao = getSceneNode();
-	if (!playercao)
+	irr::scene::ISceneNode *node = getSceneNode();
+	if (!node)
 		return;
 
 	if (m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST) {
 		// Hide the mesh by culling faces with normals facing
 		// the camera. Serious hackyness but it works for our
 		// purposes. This also preserves the skeletal armature.
-		playercao->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
+		node->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 			true);
-		playercao->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
+		node->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
 			true);
 	} else {
 		// Restore mesh visibility.
-		playercao->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
+		node->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 			m_prop.backface_culling);
-		playercao->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
+		node->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
 			false);
 	}
 }

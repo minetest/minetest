@@ -703,9 +703,7 @@ int ObjectRef::l_set_attach(lua_State *L)
 	rotation = v3f(0, 0, 0);
 	if (!lua_isnil(L, 5))
 		rotation = read_v3f(L, 5);
-	force_visible = false;
-	if (!lua_isnil(L, 6))
-		force_visible = readParam<bool>(L, 6);
+	force_visible = readParam<bool>(L, 6, false);
 	co->setAttachment(parent->getId(), bone, position, rotation, force_visible);
 	parent->addAttachmentChild(co->getId());
 	return 0;
@@ -737,7 +735,7 @@ int ObjectRef::l_get_attach(lua_State *L)
 	push_v3f(L, position);
 	push_v3f(L, rotation);
 	lua_pushboolean(L, force_visible);
-	return 4;
+	return 5;
 }
 
 // set_detach(self)

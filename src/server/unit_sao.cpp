@@ -122,7 +122,7 @@ void UnitSAO::sendOutdatedData()
 // clang-format on
 
 void UnitSAO::setAttachment(int parent_id, const std::string &bone,
-			v3f position, v3f rotation, bool force_visible)
+		v3f position, v3f rotation, bool force_visible)
 {
 	// Attachments need to be handled on both the server and client.
 	// If we just attach on the server, we can only copy the position of the parent.
@@ -147,7 +147,7 @@ void UnitSAO::setAttachment(int parent_id, const std::string &bone,
 }
 
 void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-			v3f *rotation, bool *force_visible) const
+		v3f *rotation, bool *force_visible) const
 {
 	*parent_id = m_attachment_parent_id;
 	*bone = m_attachment_bone;

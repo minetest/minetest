@@ -282,5 +282,5 @@ public:
 		return m_prop.infotext;
 	}
 
-	void hideMeshTexture();
+	void updateMeshCulling();
 };
