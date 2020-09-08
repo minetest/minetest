@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // For FATAL_ERROR
 #include <json/json.h>
 #include <algorithm>
-#include <wieldanimation.h>
+#include "wieldanimation.h"
 
 struct EnumString es_TileAnimationType[] =
 {
