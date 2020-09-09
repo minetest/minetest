@@ -322,8 +322,8 @@ public:
 	bool removeNode(v3s16 p);
 	bool swapNode(v3s16 p, const MapNode &n);
 
-	// Find the dalyight value at pos with Septh First Search
-	u8 findSunlight(v3s16 pos);
+	// Find the daylight value at pos with a Depth First Search
+	u8 findSunlight(v3s16 pos) const;
 
 	// Find all active objects inside a radius around a point
 	void getObjectsInsideRadius(std::vector<ServerActiveObject *> &objects, const v3f &pos, float radius,
@@ -372,8 +372,6 @@ private:
 			const std::string &savedir, const Settings &conf);
 	static AuthDatabase *openAuthDatabase(const std::string &name,
 			const std::string &savedir, const Settings &conf);
-
-
 	/*
 		Internal ActiveObject interface
 		-------------------------------------------

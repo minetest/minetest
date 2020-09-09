@@ -419,9 +419,8 @@ int ModApiEnvMod::l_get_natural_light(lua_State *L)
 
 	bool is_position_ok;
 	MapNode n = env->getMap().getNode(pos, &is_position_ok);
-	if (!is_position_ok) {
+	if (!is_position_ok)
 		return 0;
-	}
 
 	// If the daylight is 0, nothing needs to be calculated
 	u8 daylight = n.param1 & 0x0f;
@@ -430,10 +429,13 @@ int ModApiEnvMod::l_get_natural_light(lua_State *L)
 		return 1;
 	}
 
-	u32 time_of_day = env->getTimeOfDay();
-	if(lua_isnumber(L, 2))
+	u32 time_of_day;
+	if (lua_isnumber(L, 2)) {
 		time_of_day = 24000.0 * lua_tonumber(L, 2);
-	time_of_day %= 24000;
+		time_of_day %= 24000;
+	} else {
+		time_of_day = env->getTimeOfDay();
+	}
 	u32 dnr = time_to_daynight_ratio(time_of_day, true);
 
 	// If it's the same as the artificial light, the sunlight needs to be

@@ -1066,7 +1066,7 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
-u8 ServerEnvironment::findSunlight(v3s16 pos)
+u8 ServerEnvironment::findSunlight(v3s16 pos) const
 {
 	// Returns a unique 64 bit unsigned int for a v3s16 position
 	auto get_node_position_key = [&](v3s16 pos) -> u64 {
