@@ -1068,6 +1068,13 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 
 u8 ServerEnvironment::findSunlight(v3s16 pos)
 {
+	// Returns a unique 64 bit unsigned int for a v3s16 position
+	auto get_node_position_key = [&](v3s16 pos) -> u64 {
+		return pos.Z * 0x10000uLL * 0x10000uLL
+			+ pos.Y * 0x10000uLL
+			+ pos.X;
+	};
+
 	// Directions for neighbouring nodes with specified order
 	static const v3s16 dirs[] = {
 		v3s16(-1, 0, 0), v3s16(1, 0, 0), v3s16(0, 0, -1), v3s16(0, 0, 1),
@@ -1093,8 +1100,11 @@ u8 ServerEnvironment::findSunlight(v3s16 pos)
 		for (v3s16 off : dirs) {
 			v3s16 p = pos + off;
 			u64 h = get_node_position_key(p);
+
+			// Do not walk p multiple times unless the distance to the start
+			// position is shorter
 			auto it = dists.find(h);
-			if (it != dists.end() && dist < it->second)
+			if (it != dists.end() && dist >= it->second)
 				continue;
 
 			// Position to walk
@@ -1112,6 +1122,9 @@ u8 ServerEnvironment::findSunlight(v3s16 pos)
 				// Sunlight could have come from here
 				dists[h] = dist;
 				u8 daylight = node.param1 & 0x0f;
+				// In the special case where sunlight shines from above and thus
+				// does not decrease with upwards distance, daylight is always
+				// bigger than nightlight, which never reaches 15
 				int possible_finlight = daylight - dist;
 				if (possible_finlight <= found_light)
 					// Light from here cannot make a brighter light at pos than
@@ -1123,7 +1136,7 @@ u8 ServerEnvironment::findSunlight(v3s16 pos)
 					// Found a valid daylight
 					found_light = possible_finlight;
 				else
-					// Sunlight may be darker, so walk it's neighbours
+					// Sunlight may be darker, so walk the neighbours
 					stack.push({p, dist});
 			} else {
 				// Do not test propagation here again
