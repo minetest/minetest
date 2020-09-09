@@ -28,6 +28,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 	#include <alc.h>
 	//#include <alext.h>
 #elif defined(__APPLE__)
+	#define OPENAL_DEPRECATED
 	#include <OpenAL/al.h>
 	#include <OpenAL/alc.h>
 	//#include <OpenAL/alext.h>
