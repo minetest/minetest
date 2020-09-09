@@ -92,10 +92,6 @@ Thread::~Thread()
 # endif
 		wait();
 #endif
-
-		m_retval       = nullptr;
-		m_joinable     = false;
-		m_request_stop = false;
 	}
 
 	// Make sure start finished mutex is unlocked before it's destroyed
