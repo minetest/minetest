@@ -420,8 +420,7 @@ int ModApiEnvMod::l_get_natural_light(lua_State *L)
 	bool is_position_ok;
 	MapNode n = env->getMap().getNode(pos, &is_position_ok);
 	if (!is_position_ok) {
-		lua_pushnil(L);
-		return 1;
+		return 0;
 	}
 
 	// If the daylight is 0, nothing needs to be calculated
