@@ -234,10 +234,6 @@ void ClientMediaDownloader::initialStep(Client *client)
 		m_httpfetch_active_limit = g_settings->getS32("curl_parallel_limit");
 		m_httpfetch_active_limit = MYMAX(m_httpfetch_active_limit, 84);
 
-		// Write a list of hashes that we need. This will be POSTed
-		// to the server using Content-Type: application/octet-stream
-		std::string required_hash_set = serializeRequiredHashSet();
-
 		// minor fixme: this loop ignores m_httpfetch_active_limit
 
 		// another minor fixme, unlikely to matter in normal usage:
@@ -260,10 +256,6 @@ void ClientMediaDownloader::initialStep(Client *client)
 			fetch_request.request_id = m_httpfetch_next_id; // == i
 			fetch_request.timeout = m_httpfetch_timeout;
 			fetch_request.connect_timeout = m_httpfetch_timeout;
-			fetch_request.method = HTTP_POST;
-			fetch_request.raw_data = required_hash_set;
-			fetch_request.extra_headers.emplace_back(
-				"Content-Type: application/octet-stream");
 
 			// Encapsulate possible IPv6 plain address in []
 			std::string addr = client->getAddressName();
@@ -582,26 +574,6 @@ bool ClientMediaDownloader::checkAndLoad(
 	1 - Initial version
 */
 
-std::string ClientMediaDownloader::serializeRequiredHashSet()
-{
-	std::ostringstream os(std::ios::binary);
-
-	writeU32(os, MTHASHSET_FILE_SIGNATURE); // signature
-	writeU16(os, 1);                        // version
-
-	// Write list of hashes of files that have not been
-	// received (found in cache) yet
-	for (std::map<std::string, FileStatus*>::iterator
-			it = m_files.begin();
-			it != m_files.end(); ++it) {
-		if (!it->second->received) {
-			FATAL_ERROR_IF(it->second->sha1.size() != 20, "Invalid SHA1 size");
-			os << it->second->sha1;
-		}
-	}
-
-	return os.str();
-}
 
 void ClientMediaDownloader::deSerializeHashSet(const std::string &data,
 		std::set<std::string> &result)
