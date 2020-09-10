@@ -5198,8 +5198,7 @@ Timing
     * Optional: Variable number of arguments that are passed to `func`
 
 * `job:cancel()`
-    * Removes already registered minetest.after function and replaces
-    it with a cancel function instead.
+    * Cancels the job function from being called
 
 Server
 ------
