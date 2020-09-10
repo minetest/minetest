@@ -36,9 +36,6 @@ function core.after(after, func, ...)
 		expire = expire,
 		arg = {...},
 		mod_origin = core.get_last_run_mod(),
-		cancel = function(self)
-			self.func = function() end
-		end
 	}
 	jobs[#jobs + 1] = new_job
 	time_next = math.min(time_next, expire)
