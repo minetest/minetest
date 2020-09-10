@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-09-11 20:24+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"Last-Translator: Célio Rodrigues <celiorodrigues@refreshbubbles.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
 "minetest/pt/>\n"
 "Language: pt\n"
@@ -2749,9 +2749,8 @@ msgid "Dec. volume key"
 msgstr "Tecla de dimin. de som"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Decrease this to increase liquid resistance to movement."
-msgstr "Diminue isto para aumentar a resistência do líquido ao movimento."
+msgstr "Diminuir isto para aumentar a resistência do líquido ao movimento."
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
