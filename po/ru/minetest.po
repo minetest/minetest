@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-07-23 18:41+0000\n"
-"Last-Translator: Maksim Gamarnik <MoNTE48@mail.ua>\n"
+"PO-Revision-Date: 2020-10-22 14:28+0000\n"
+"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -157,7 +157,7 @@ msgstr "Мир:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "включен"
+msgstr "включено"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -232,10 +232,9 @@ msgstr "Дополнительная местность"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr "Высота нивального пояса"
+msgstr "Высота над уровнем моря"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
 msgstr "Высота нивального пояса"
 
@@ -285,7 +284,7 @@ msgstr "Парящие острова на небе"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Парящие острова (экспериментально)"
+msgstr "Парящие острова (экспериментальный)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -379,7 +378,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr "Структуры, появляющиеся на местности, обычно деревья и растения"
+msgstr "Структуры, появляющиеся на поверхности, типично деревья и растения"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
@@ -395,7 +394,7 @@ msgstr "Умеренный пояс, Пустыня, Джунгли, Тундр�
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr "Поверхностная эрозия"
+msgstr "Разрушение поверхности местности"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
@@ -456,8 +455,8 @@ msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
-"Этот модпак имеет явное имя, указанное в modpack.conf, который переопределит "
-"любое переименование здесь."
+"Этот пакет модов имеет имя, явно указанное в modpack.conf, которое не "
+"изменится от переименования здесь."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -513,7 +512,7 @@ msgstr "Пожалуйста, введите допустимое число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "Сброс настроек"
+msgstr "Восстановить стандартные настройки"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -576,7 +575,7 @@ msgstr "абсолютная величина"
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr "стандартные"
+msgstr "Базовый"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -596,7 +595,7 @@ msgstr "$1 модов"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr "Не удалось установить $1 в $2"
+msgstr "Невозможно установить $1 в $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install Mod: Unable to find real mod name for: $1"
@@ -728,7 +727,7 @@ msgstr "Запустить сервер"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr "Установите игры из ContentDB"
+msgstr "Установить игры из ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -780,9 +779,7 @@ msgstr "Урон включён"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr ""
-"Убрать из\n"
-"избранных"
+msgstr "Убрать из избранного"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
@@ -951,7 +948,7 @@ msgstr "Тональное отображение"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold: (px)"
-msgstr "Порог чувствительности: (px)"
+msgstr "Чувствительность: (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -1108,7 +1105,7 @@ msgstr "Автобег включён"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
-msgstr "Обновление камеры отключено"
+msgstr "Обновление камеры выключено"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
@@ -1527,7 +1524,7 @@ msgstr "Insert"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr "Влево"
+msgstr "Лево"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1552,7 +1549,7 @@ msgstr "Левый Win"
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
-msgstr "Menu"
+msgstr "Контекстное меню"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1766,11 +1763,11 @@ msgstr "Назад"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
-msgstr "Камера"
+msgstr "Изменить камеру"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr "Сообщение"
+msgstr "Чат"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
@@ -1802,11 +1799,11 @@ msgstr "Вперёд"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr "Видимость +"
+msgstr "Увеличить видимость"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
-msgstr "Громкость +"
+msgstr "Увеличить громкость"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -1828,11 +1825,11 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
-msgstr "Команда клиента"
+msgstr "Локальная команда"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr "Звук"
+msgstr "Заглушить"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
@@ -1844,7 +1841,7 @@ msgstr "Пред. предмет"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr "Видимость"
+msgstr "Дальность прорисовки"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Screenshot"
@@ -1856,15 +1853,15 @@ msgstr "Красться"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Special"
-msgstr "Использовать"
+msgstr "Особенный"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr "Игровой интерфейс"
+msgstr "Вкл/выкл игровой интерфейс"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr "Чат"
+msgstr "Вкл/выкл историю чата"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -2077,8 +2074,7 @@ msgstr "Трёхмерный шум, определяющий рельеф ме�
 
 #: src/settings_translation_file.cpp
 msgid "3D noise for mountain overhangs, cliffs, etc. Usually small variations."
-msgstr ""
-"3D-шум для горных выступов, скал и т. д. В основном небольшие вариации."
+msgstr "3D шум для горных выступов, скал и т. д. В основном небольшие вариации."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
@@ -2126,7 +2122,7 @@ msgstr "Сообщение, которое будет показано всем 
 
 #: src/settings_translation_file.cpp
 msgid "ABM interval"
-msgstr "Интервал сохранения карты"
+msgstr "ABM интервал"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2162,9 +2158,9 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
-"Адрес, к которому присоединиться.\n"
-"Оставьте это поле, чтобы запустить локальный сервер.\n"
-"ПРИМЕЧАНИЕ: это поле адреса перезапишет эту настройку в главном меню."
+"Адрес, к которому нужно присоединиться.\n"
+"Оставьте это поле пустым, чтобы запустить локальный сервер.\n"
+"Обратите внимание, что поле адреса в главном меню перезапишет эту настройку."
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
@@ -2296,15 +2292,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Automatic forward key"
-msgstr "Клавиша авто-вперёд"
+msgstr "Автоматическая кнопка вперед"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
-msgstr "Автоматически запрыгивать на препятствия высотой в одну ноду."
+msgstr "Автоматический подъем на одиночные блоки."
 
 #: src/settings_translation_file.cpp
 msgid "Automatically report to the serverlist."
-msgstr "Автоматически анонсировать в список серверов."
+msgstr "Автоматическая жалоба на сервер-лист."
 
 #: src/settings_translation_file.cpp
 msgid "Autosave screen size"
@@ -2312,7 +2308,7 @@ msgstr "Запоминать размер окна"
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
-msgstr "Режим автомасштабирования"
+msgstr "Режим автоматического масштабирования"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2320,7 +2316,7 @@ msgstr "Клавиша назад"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
-msgstr "Уровень земли"
+msgstr "Базовый уровень земли"
 
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
@@ -2372,7 +2368,7 @@ msgstr "Путь к жирному и курсивному шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic monospace font path"
-msgstr "Путь к жирному и курсиву моноширинного шрифта"
+msgstr "Путь к жирному и курсивному моноширинному шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Bold font path"
@@ -5562,9 +5558,8 @@ msgid ""
 msgstr "Имя сервера, отображаемое при входе и в списке серверов."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Near plane"
-msgstr "Близкая плоскость отсечения"
+msgstr "Ближняя плоскость"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -5615,7 +5610,6 @@ msgid "Number of emerge threads"
 msgstr "Количество emerge-потоков"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
 "Value 0:\n"
@@ -5631,14 +5625,14 @@ msgstr ""
 "Количество возникающих потоков для использования.\n"
 "Значение 0:\n"
 "-    Автоматический выбор. Количество потоков будет\n"
-"-    «число процессоров - 2», минимально — 1.\n"
+"-    'число процессоров - 2', минимально — 1.\n"
 "Любое другое значение:\n"
 "-    Указывает количество потоков, минимально — 1.\n"
 "ВНИМАНИЕ: Увеличение числа потоков улучшает быстродействие движка\n"
 "картогенератора, но может снижать производительность игры, мешая другим\n"
-"процессам, особенно в одиночной игре и при запуске кода Lua в «on_generated»."
+"процессам, особенно в одиночной игре и при запуске кода Lua в 'on_generated'."
 "\n"
-"Для большинства пользователей наилучшим значением может быть «1»."
+"Для большинства пользователей наилучшим значением может быть '1'."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6627,7 +6621,6 @@ msgstr ""
 "настройке мода."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6637,12 +6630,13 @@ msgid ""
 "maintained.\n"
 "This should be configured together with active_object_send_range_blocks."
 msgstr ""
-"Радиус объёма блоков вокруг каждого игрока, в котором действуют\n"
-"активные блоки, определённые в блоках карты (16 нод).\n"
-"В активных блоках загружаются объекты и работает ABM.\n"
-"Также это минимальный диапазон, в котором обрабатываются активные объекты "
+"Радиус объёма блоков вокруг каждого игрока, на которого распространяется "
+"действие\n"
+"активного материала блока, указанного в mapblocks (16 узлов).\n"
+"В активные блоки загружаются объекты и запускаются ПРО.\n"
+"Это также минимальный диапазон, в котором поддерживаются активные объекты "
 "(мобы).\n"
-"Необходимо настраивать вместе с active_object_range."
+"Это должно быть настроено вместе с active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
 msgid ""
