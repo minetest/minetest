@@ -73,7 +73,28 @@ Thread::Thread(const std::string &name) :
 
 Thread::~Thread()
 {
-	kill();
+	// kill the thread if running
+	if (!m_running) {
+		wait();
+	} else {
+
+		m_running = false;
+
+#if defined(_WIN32)
+		// See https://msdn.microsoft.com/en-us/library/hh920601.aspx#thread__native_handle_method
+		TerminateThread((HANDLE) m_thread_obj->native_handle(), 0);
+		CloseHandle((HANDLE) m_thread_obj->native_handle());
+#else
+		// We need to pthread_kill instead on Android since NDKv5's pthread
+		// implementation is incomplete.
+# ifdef __ANDROID__
+		pthread_kill(getThreadHandle(), SIGKILL);
+# else
+		pthread_cancel(getThreadHandle());
+# endif
+		wait();
+#endif
+	}
 
 	// Make sure start finished mutex is unlocked before it's destroyed
 	if (m_start_finished_mutex.try_lock())
@@ -137,37 +158,6 @@ bool Thread::wait()
 	return true;
 }
 
-
-bool Thread::kill()
-{
-	if (!m_running) {
-		wait();
-		return false;
-	}
-
-	m_running = false;
-
-#if defined(_WIN32)
-	// See https://msdn.microsoft.com/en-us/library/hh920601.aspx#thread__native_handle_method
-	TerminateThread((HANDLE) m_thread_obj->native_handle(), 0);
-	CloseHandle((HANDLE) m_thread_obj->native_handle());
-#else
-	// We need to pthread_kill instead on Android since NDKv5's pthread
-	// implementation is incomplete.
-# ifdef __ANDROID__
-	pthread_kill(getThreadHandle(), SIGKILL);
-# else
-	pthread_cancel(getThreadHandle());
-# endif
-	wait();
-#endif
-
-	m_retval       = nullptr;
-	m_joinable     = false;
-	m_request_stop = false;
-
-	return true;
-}
 
 
 bool Thread::getReturnValue(void **ret)
