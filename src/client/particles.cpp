@@ -239,7 +239,7 @@ void Particle::updateVertices()
 			vertex.Pos.rotateXZBy(m_player->getYaw());
 		}
 		m_box.addInternalPoint(vertex.Pos);
-		setPosition(m_pos*BS - intToFloat(camera_offset, BS));
+		vertex.Pos += m_pos*BS - intToFloat(camera_offset, BS);
 	}
 }
 
