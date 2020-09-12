@@ -43,6 +43,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
+#include "string.h"
+#include "client/shader.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -1512,7 +1514,9 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 	}
 
 	// Actually load media
-	loadMedia(filedata, filename, true);
+	bool success = loadMedia(filedata, filename, true);
+	if (success && str_ends_with(filename, ".glsl"))
+		m_shsrc->rebuildShaders();
 	m_media_pushed_files.insert(filename);
 
 	// Cache file for the next time when this client joins the same server
