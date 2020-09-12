@@ -145,19 +145,22 @@ public:
 			errorstream << "Unsupported shader type: " << filename << std::endl;
 			return;
 		}
-		if (program.length() > 10000) {
-			errorstream << "Rejecting long shader (> 10k chars): " << filename << std::endl;
+		if (program.length() > 65000) {
+			errorstream << "Rejecting long shader (> 65kB): " << filename << std::endl;
 			return;
 		}
 
-		const std::regex line_comments("//.*?\n");
+		static const std::regex line_comments("//.*?\n", std::regex::optimize);
 		const std::string no_line_comments = std::regex_replace(program, line_comments, "");
-		const std::regex multiline_comments("/\\*.*?\\*\n");
+		static const std::regex multiline_comments("/\\*.*?\\*\n", std::regex::optimize);
 		const std::string no_comments = std::regex_replace(no_line_comments, multiline_comments, "");
-		const std::regex long_identifier_or_keyword("[a-zA-Z][a-zA-Z0-9]{32,}");
+		static const std::regex long_identifier_or_keyword("[a-zA-Z][a-zA-Z0-9]{32,}", std::regex::optimize);
 		std::smatch match;
 		if (std::regex_search(no_comments, match, long_identifier_or_keyword)) {
-			errorstream << "Rejecting shader with long identifier (> 32 chars): " << match.str(0) << " in " << filename << std::endl;
+			std::string identifier = match.str(0);
+			if (identifier.length() > 128)
+				identifier = identifier.substr(0, 128) + "...";
+			errorstream << "Rejecting shader with long identifier (> 32 chars): " << identifier << " in " << filename << std::endl;
 			return;
 		}
 		insert(filename.substr(0, filename.length() - 8), "opengl_" + type + ".glsl", program, false);
