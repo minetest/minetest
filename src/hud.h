@@ -108,3 +108,12 @@ extern const EnumString es_HudElementType[];
 extern const EnumString es_HudElementStat[];
 extern const EnumString es_HudBuiltinElement[];
 
+// Minimap stuff
+
+enum MinimapType {
+	MINIMAP_TYPE_OFF,
+	MINIMAP_TYPE_SURFACE,
+	MINIMAP_TYPE_RADAR,
+	MINIMAP_TYPE_TEXTURE,
+};
+

@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "../hud.h"
 #include "irrlichttypes_extrabloated.h"
 #include "util/thread.h"
 #include "voxel.h"
@@ -32,13 +33,6 @@ class IShaderSource;
 
 #define MINIMAP_MAX_SX 512
 #define MINIMAP_MAX_SY 512
-
-enum MinimapType {
-	MINIMAP_TYPE_OFF,
-	MINIMAP_TYPE_SURFACE,
-	MINIMAP_TYPE_RADAR,
-	MINIMAP_TYPE_TEXTURE,
-};
 
 enum MinimapShape {
 	MINIMAP_SHAPE_SQUARE,

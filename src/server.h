@@ -118,7 +118,7 @@ struct ServerPlayingSound
 };
 
 struct MinimapMode {
-	u16 type = 0;
+	MinimapType type = MINIMAP_TYPE_OFF;
 	std::string label;
 	u16 size = 0;
 	std::string texture;
