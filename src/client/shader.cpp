@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <regex>
 #include "shader.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
@@ -140,8 +141,25 @@ public:
 			type = "geometry";
 		else if (str_ends_with(filename, ".fs.glsl"))
 			type = "fragment";
-		else
+		else {
 			errorstream << "Unsupported shader type: " << filename << std::endl;
+			return;
+		}
+		if (program.length() > 10000) {
+			errorstream << "Rejecting long shader (> 10k chars): " << filename << std::endl;
+			return;
+		}
+
+		const std::regex line_comments("//.*?\n");
+		const std::string no_line_comments = std::regex_replace(program, line_comments, "");
+		const std::regex multiline_comments("/\\*.*?\\*\n");
+		const std::string no_comments = std::regex_replace(no_line_comments, multiline_comments, "");
+		const std::regex long_identifier_or_keyword("[a-zA-Z][a-zA-Z0-9]{32,}");
+		std::smatch match;
+		if (std::regex_search(no_comments, match, long_identifier_or_keyword)) {
+			errorstream << "Rejecting shader with long identifier (> 32 chars): " << match.str(0) << " in " << filename << std::endl;
+			return;
+		}
 		insert(filename.substr(0, filename.length() - 8), "opengl_" + type + ".glsl", program, false);
 	}
 
