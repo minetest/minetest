@@ -579,7 +579,7 @@ void Client::step(float dtime)
 		if (m_media_downloader->isDone()) {
 			delete m_media_downloader;
 			m_media_downloader = NULL;
-			m_shsrc->rebuildShaders();
+			// No need to rebuild shaders as this is done later anyways
 		}
 	}
 
@@ -769,7 +769,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 			bool found_localhost = server_address.isLocalhost() && std::find(server_list.begin(),
 					server_list.end(), "localhost") != server_list.end();
 			if (!found_address && !found_localhost)
-				return true;
+				return false;
 		}
 		TRACESTREAM(<< "Client: Loading shader: "
 				<< "\"" << filename << "\"" << std::endl);
