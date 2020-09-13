@@ -16,8 +16,9 @@
 --   1. Recursively find and record multiple references and recursion.
 --   2. Recursively dump the value into a string.
 -- @param x Value to serialize (nil is allowed).
+-- @param strip_userdata Whether userdata should be stripped
 -- @return load()able string containing the value.
-function core.serialize(x)
+function core.serialize(x, strip_userdata)
 	local local_index  = 1  -- Top index of the "_" local table in the dump
 	-- table->nil/1/2 set of tables seen.
 	-- nil = not seen, 1 = seen once, 2 = seen multiple times.
@@ -115,8 +116,9 @@ function core.serialize(x)
 	function dump_val(x)
 		local  tp = type(x)
 		if     x  == nil        then return "nil"
+		elseif x  == true       then return "true"
+		elseif x  == false      then return "false"
 		elseif tp == "string"   then return string.format("%q", x)
-		elseif tp == "boolean"  then return x and "true" or "false"
 		elseif tp == "function" then
 			return string.format("loadstring(%q)", string.dump(x))
 		elseif tp == "number"   then
@@ -140,6 +142,8 @@ function core.serialize(x)
 				end
 			end
 			return "{"..table.concat(vals, ", ").."}"
+		elseif tp == "userdata" and strip_userdata then
+			return "nil"
 		else
 			error("Can't serialize data of type "..tp)
 		end
