@@ -5448,9 +5448,10 @@ Misc.
            values.
     * Example: `write_json({10, {a = false}})`,
       returns `"[10, {\"a\": false}]"`
-* `minetest.serialize(table)`: returns a string
+* `minetest.serialize(table, strip_userdata)`: returns a string
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
+    * If `strip_userdata` is set to a truthy value, userdata will be "stripped" (replaced by `nil`)
     * Example: `serialize({foo='bar'})`, returns `'return { ["foo"] = "bar" }'`
 * `minetest.deserialize(string[, safe])`: returns a table
     * Convert a string returned by `minetest.serialize` into a table
