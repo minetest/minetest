@@ -76,6 +76,7 @@ Particle::Particle(
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_material.setFlag(video::EMF_FOG_ENABLE, true);
+	m_material.setFlag(video::EMF_ZWRITE_ENABLE, true);
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	m_material.setTexture(0, texture);
 	m_texpos = texpos;
@@ -170,6 +171,10 @@ void Particle::step(float dtime)
 
 	// Update model
 	updateVertices();
+
+	// Update position
+	v3s16 camera_offset = m_env->getCameraOffset();
+	setPosition(m_pos*BS - intToFloat(camera_offset, BS));
 }
 
 void Particle::updateLight()
@@ -227,7 +232,7 @@ void Particle::updateVertices()
 	m_vertices[3] = video::S3DVertex(-m_size / 2, m_size / 2,
 		0, 0, 0, 0, m_color, tx0, ty0);
 
-	v3s16 camera_offset = m_env->getCameraOffset();
+	m_box.reset(v3f());
 	for (video::S3DVertex &vertex : m_vertices) {
 		if (m_vertical) {
 			v3f ppos = m_player->getPosition()/BS;
@@ -238,7 +243,6 @@ void Particle::updateVertices()
 			vertex.Pos.rotateXZBy(m_player->getYaw());
 		}
 		m_box.addInternalPoint(vertex.Pos);
-		vertex.Pos += m_pos*BS - intToFloat(camera_offset, BS);
 	}
 }
 
