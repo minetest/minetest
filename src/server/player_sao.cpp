@@ -575,7 +575,7 @@ bool PlayerSAO::checkMovementCheat()
 		v3f attachment_pos, attachment_rot;
 		getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot);
 		v3f parent_pos = parent->getBasePosition();
-		f32 diff = (getBasePosition() - parent_pos).getLength() - (attachment_pos * 3).getLength();
+		f32 diff = m_base_position.getDistanceFromSQ(parent_pos) - attachment_pos.getLengthSQ() * 9.0f;
 		if (diff > 10) {
 			setBasePosition(parent_pos);
 			actionstream << "Server: " << m_player->getName()
