@@ -62,12 +62,12 @@ Where `<gameid>` is unique to each game.
 The game directory can contain the following files:
 
 * `game.conf`, with the following keys:
-    * `name`: Required, human readable name  e.g. `name = Minetest`
+    * `name`: Required, a human readable title to address the game, e.g. `name = Minetest`.
     * `description`: Short description to be shown in the content tab
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
-      Mapgens not in this list are removed from the list of mapgens for
-      the game.
+      Mapgens not in this list are removed from the list of mapgens for the
+      game.
       If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
@@ -79,6 +79,10 @@ The game directory can contain the following files:
       e.g. `disallowed_mapgen_settings = mgv5_spflags`
       These settings are hidden for this game in the world creation
       dialog and game start menu.
+    * `author`: The author of the game. It only appears when downloaded from
+                ContentDB.
+    * `release`: Ignore this: Should only ever be set by ContentDB, as it is
+                 an internal ID used to track versions.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -134,9 +138,15 @@ Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
 The file is a key-value store of modpack details.
 
-* `name`: The modpack name.
+* `name`: The modpack name. Allows Minetest to determine the modpack name even
+          if the folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
                  menu.
+* `author`: The author of the modpack. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the modpack.
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
@@ -181,6 +191,11 @@ A `Settings` file that provides meta information about the mod.
              loaded before this mod.
 * `optional_depends`: A comma separated list of optional dependencies.
                       Like a dependency, but no error if the mod doesn't exist.
+* `author`: The author of the mod. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the mod.
 
 Note: to support 0.4.x, please also provide depends.txt.
 
