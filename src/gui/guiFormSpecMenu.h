@@ -39,6 +39,7 @@ class InventoryManager;
 class ISimpleTextureSource;
 class Client;
 class GUIScrollContainer;
+class ISoundManager;
 
 typedef enum {
 	f_Button,
@@ -127,6 +128,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		int priority;
 		core::rect<s32> rect;
 		gui::ECURSOR_ICON fcursor_icon;
+		std::string sound;
 	};
 
 	struct TooltipSpec
@@ -151,6 +153,7 @@ public:
 			IMenuManager *menumgr,
 			Client *client,
 			ISimpleTextureSource *tsrc,
+			ISoundManager *sound_manager,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
 			const std::string &formspecPrepend,
@@ -160,7 +163,7 @@ public:
 
 	static void create(GUIFormSpecMenu *&cur_formspec, Client *client,
 		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
-		const std::string &formspecPrepend);
+		const std::string &formspecPrepend, ISoundManager *sound_manager);
 
 	void setFormSpec(const std::string &formspec_string,
 			const InventoryLocation &current_inventory_location)
@@ -293,6 +296,7 @@ protected:
 
 	InventoryManager *m_invmgr;
 	ISimpleTextureSource *m_tsrc;
+	ISoundManager *m_sound_manager;
 	Client *m_client;
 
 	std::string m_formspec_string;
