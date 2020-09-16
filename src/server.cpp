@@ -2451,31 +2451,14 @@ bool Server::addMediaFile(const std::string &filename,
 	// Ok, attempt to load the file and add to cache
 
 	// Read data
-	std::ifstream fis(filepath.c_str(), std::ios_base::binary);
-	if (!fis.good()) {
-		errorstream << "Server::addMediaFile(): Could not open \""
-				<< filename << "\" for reading" << std::endl;
-		return false;
-	}
 	std::string filedata;
-	bool bad = false;
-	for (;;) {
-		char buf[1024];
-		fis.read(buf, sizeof(buf));
-		std::streamsize len = fis.gcount();
-		filedata.append(buf, len);
-		if (fis.eof())
-			break;
-		if (!fis.good()) {
-			bad = true;
-			break;
-		}
-	}
-	if (bad) {
-		errorstream << "Server::addMediaFile(): Failed to read \""
-				<< filename << "\"" << std::endl;
+	if (!fs::ReadFile(filepath, filedata)) {
+		errorstream << "Server::addMediaFile(): Failed to open \""
+					<< filename << "\" for reading" << std::endl;
 		return false;
-	} else if (filedata.empty()) {
+	}
+
+	if (filedata.empty()) {
 		errorstream << "Server::addMediaFile(): Empty file \""
 				<< filepath << "\"" << std::endl;
 		return false;
@@ -3890,19 +3873,27 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 	}
 }
 
-void Server::loadTranslationLanguage(const std::string &lang_code)
+Translations *Server::getTranslationLanguage(const std::string &lang_code)
 {
-	if (g_server_translations->count(lang_code))
-		return; // Already loaded
+	if (lang_code.empty())
+		return nullptr;
+
+	auto it = server_translations.find(lang_code);
+	if (it != server_translations.end())
+		return &it->second; // Already loaded
+
+	// [] will create an entry
+	auto *translations = &server_translations[lang_code];
 
 	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, suffix)) {
-			std::ifstream t(i.second.path);
-			std::string data((std::istreambuf_iterator<char>(t)),
-			std::istreambuf_iterator<char>());
-
-			(*g_server_translations)[lang_code].loadTranslation(data);
+			std::string data;
+			if (fs::ReadFile(i.second.path, data)) {
+				translations->loadTranslation(data);
+			}
 		}
 	}
+
+	return translations;
 }

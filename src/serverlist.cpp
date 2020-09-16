@@ -52,15 +52,7 @@ std::vector<ServerListSpec> getLocal()
 {
 	std::string path = ServerList::getFilePath();
 	std::string liststring;
-	if (fs::PathExists(path)) {
-		std::ifstream istream(path.c_str());
-		if (istream.is_open()) {
-			std::ostringstream ostream;
-			ostream << istream.rdbuf();
-			liststring = ostream.str();
-			istream.close();
-		}
-	}
+	fs::ReadFile(path, liststring);
 
 	return deSerialize(liststring);
 }

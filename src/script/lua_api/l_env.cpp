@@ -1340,9 +1340,9 @@ int ModApiEnvMod::l_get_translated_string(lua_State * L)
 	GET_ENV_PTR;
 	std::string lang_code = luaL_checkstring(L, 1);
 	std::string string = luaL_checkstring(L, 2);
-	getServer(L)->loadTranslationLanguage(lang_code);
-	string = wide_to_utf8(translate_string(utf8_to_wide(string),
-			&(*g_server_translations)[lang_code]));
+
+	auto *translations = getServer(L)->getTranslationLanguage(lang_code);
+	string = wide_to_utf8(translate_string(utf8_to_wide(string), translations));
 	lua_pushstring(L, string.c_str());
 	return 1;
 }

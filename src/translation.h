@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 class Translations;
-extern std::unordered_map<std::string, Translations> *g_server_translations;
 #ifndef SERVER
 extern Translations *g_client_translations;
 #endif
@@ -31,10 +30,6 @@ extern Translations *g_client_translations;
 class Translations
 {
 public:
-	Translations() = default;
-
-	~Translations();
-
 	void loadTranslation(const std::string &data);
 	void clear();
 	const std::wstring &getTranslation(
