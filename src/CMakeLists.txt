@@ -441,6 +441,7 @@ set(common_SRCS
 	serverenvironment.cpp
 	serverlist.cpp
 	settings.cpp
+	splinesequence.cpp
 	staticobject.cpp
 	terminal_chat_console.cpp
 	texture_override.cpp
@@ -451,6 +452,7 @@ set(common_SRCS
 	voxel.cpp
 	voxelalgorithms.cpp
 	hud.cpp
+	wieldanimation.cpp
 	${common_network_SRCS}
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
