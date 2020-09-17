@@ -38,8 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "client/tile.h"
 
-
-=======
 #if ENABLE_GLES
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 #include <GLES/gl.h>
