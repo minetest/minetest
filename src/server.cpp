@@ -2480,6 +2480,68 @@ bool Server::SendBlock(session_t peer_id, const v3s16 &blockpos)
 	return true;
 }
 
+bool Server::addMediaFile(const std::string &filename,
+	const std::string &filepath, std::string *filedata_to,
+	std::string *digest_to)
+{
+	// If name contains illegal characters, ignore the file
+	if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
+		infostream << "Server: ignoring illegal file name: \""
+				<< filename << "\"" << std::endl;
+		return false;
+	}
+	// If name is not in a supported format, ignore it
+	const char *supported_ext[] = {
+		".png", ".jpg", ".bmp", ".tga",
+		".pcx", ".ppm", ".psd", ".wal", ".rgb",
+		".ogg",
+		".x", ".b3d", ".md2", ".obj",
+		// Custom translation file format
+		".tr",
+		NULL
+	};
+	if (removeStringEnd(filename, supported_ext).empty()) {
+		infostream << "Server: ignoring unsupported file extension: \""
+				<< filename << "\"" << std::endl;
+		return false;
+	}
+	// Ok, attempt to load the file and add to cache
+
+	// Read data
+	std::string filedata;
+	if (!fs::ReadFile(filepath, filedata)) {
+		errorstream << "Server::addMediaFile(): Failed to open \""
+					<< filename << "\" for reading" << std::endl;
+		return false;
+	}
+
+	if (filedata.empty()) {
+		errorstream << "Server::addMediaFile(): Empty file \""
+				<< filepath << "\"" << std::endl;
+		return false;
+	}
+
+	SHA1 sha1;
+	sha1.addBytes(filedata.c_str(), filedata.length());
+
+	unsigned char *digest = sha1.getDigest();
+	std::string sha1_base64 = base64_encode(digest, 20);
+	std::string sha1_hex = hex_encode((char*) digest, 20);
+	if (digest_to)
+		*digest_to = std::string((char*) digest, 20);
+	free(digest);
+
+	// Put in list
+	m_media[filename] = MediaInfo(filepath, sha1_base64);
+	verbosestream << "Server: " << sha1_hex << " is " << filename
+			<< std::endl;
+
+	if (filedata_to)
+		*filedata_to = std::move(filedata);
+	return true;
+}
+
+
 void Server::fillMediaCache()
 {
 	infostream<<"Server: Calculating media file checksums"<<std::endl;
@@ -3974,19 +4036,27 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 	}
 }
 
-void Server::loadTranslationLanguage(const std::string &lang_code)
+Translations *Server::getTranslationLanguage(const std::string &lang_code)
 {
-	if (g_server_translations->count(lang_code))
-		return; // Already loaded
+	if (lang_code.empty())
+		return nullptr;
+
+	auto it = server_translations.find(lang_code);
+	if (it != server_translations.end())
+		return &it->second; // Already loaded
+
+	// [] will create an entry
+	auto *translations = &server_translations[lang_code];
 
 	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, suffix)) {
-			std::ifstream t(i.second.path);
-			std::string data((std::istreambuf_iterator<char>(t)),
-			std::istreambuf_iterator<char>());
-
-			(*g_server_translations)[lang_code].loadTranslation(data);
+			std::string data;
+			if (fs::ReadFile(i.second.path, data)) {
+				translations->loadTranslation(data);
+			}
 		}
 	}
+
+	return translations;
 }

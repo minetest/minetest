@@ -74,20 +74,6 @@ void get_texture_flags()
 	}
 }
 
-float intensity(vec3 color)
-{
-	return (color.r + color.g + color.b) / 3.0;
-}
-
-float get_rgb_height(vec2 uv)
-{
-	if (texSeamless) {
-		return intensity(texture2D(baseTexture, uv).rgb);
-	} else {
-		return intensity(texture2D(baseTexture, clamp(uv, 0.0, 0.999)).rgb);
-	}
-}
-
 vec4 get_normal_map(vec2 uv)
 {
 	vec4 bump = texture2D(normalTexture, uv).rgba;
@@ -106,23 +92,6 @@ void main(void)
 #if USE_NORMALMAPS == 1
 	if (normalTexturePresent) {
 		bump = get_normal_map(uv);
-		use_normalmap = true;
-	}
-#endif
-
-#if GENERATE_NORMALMAPS == 1
-	if (normalTexturePresent == false) {
-		float tl = get_rgb_height(vec2(uv.x - SAMPLE_STEP, uv.y + SAMPLE_STEP));
-		float t  = get_rgb_height(vec2(uv.x - SAMPLE_STEP, uv.y - SAMPLE_STEP));
-		float tr = get_rgb_height(vec2(uv.x + SAMPLE_STEP, uv.y + SAMPLE_STEP));
-		float r  = get_rgb_height(vec2(uv.x + SAMPLE_STEP, uv.y));
-		float br = get_rgb_height(vec2(uv.x + SAMPLE_STEP, uv.y - SAMPLE_STEP));
-		float b  = get_rgb_height(vec2(uv.x, uv.y - SAMPLE_STEP));
-		float bl = get_rgb_height(vec2(uv.x -SAMPLE_STEP, uv.y - SAMPLE_STEP));
-		float l  = get_rgb_height(vec2(uv.x - SAMPLE_STEP, uv.y));
-		float dX = (tr + 2.0 * r + br) - (tl + 2.0 * l + bl);
-		float dY = (bl + 2.0 * b + br) - (tl + 2.0 * t + tr);
-		bump = vec4(normalize(vec3 (dX, dY, NORMALMAPS_STRENGTH)), 1.0);
 		use_normalmap = true;
 	}
 #endif

@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"
+#include "translation.h"
 #include <string>
 #include <list>
 #include <map>
@@ -359,8 +360,8 @@ public:
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
 
-	// Load translations for a language
-	void loadTranslationLanguage(const std::string &lang_code);
+	// Get or load translations for a language
+	Translations *getTranslationLanguage(const std::string &lang_code);
 
 	// Bind address
 	Address m_bind_addr;
@@ -583,6 +584,8 @@ private:
 
 	// Mods
 	std::unique_ptr<ServerModManager> m_modmgr;
+
+	std::unordered_map<std::string, Translations> server_translations;
 
 	/*
 		Threads

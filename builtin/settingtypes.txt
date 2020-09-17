@@ -535,21 +535,9 @@ tone_mapping (Filmic tone mapping) bool false
 
 [***Bumpmapping]
 
-#    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack
-#    or need to be auto-generated.
+#    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack.
 #    Requires shaders to be enabled.
 enable_bumpmapping (Bumpmapping) bool false
-
-#    Enables on the fly normalmap generation (Emboss effect).
-#    Requires bumpmapping to be enabled.
-generate_normalmaps (Generate normalmaps) bool false
-
-#    Strength of generated normalmaps.
-normalmaps_strength (Normalmaps strength) float 0.6
-
-#    Defines sampling step of texture.
-#    A higher value results in smoother normal maps.
-normalmaps_smooth (Normalmaps sampling) int 0 0 2
 
 [***Parallax Occlusion]
 

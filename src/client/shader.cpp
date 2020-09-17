@@ -38,6 +38,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "client/tile.h"
 
+
+=======
+#if ENABLE_GLES
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+#include <GLES/gl.h>
+#else
+#include <GLES2/gl2.h>
+#endif
+#else
+#ifndef __APPLE__
+#include <GL/gl.h>
+#else
+#define GL_SILENCE_DEPRECATION
+#include <OpenGL/gl.h>
+#endif
+#endif
+
 /*
 	A cache from shader name to shader path
 */
@@ -659,34 +676,6 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaders_header += "\n";
 	shaders_header += "#define DRAW_TYPE ";
 	shaders_header += itos(drawtype);
-	shaders_header += "\n";
-
-	if (g_settings->getBool("generate_normalmaps")) {
-		shaders_header += "#define GENERATE_NORMALMAPS 1\n";
-	} else {
-		shaders_header += "#define GENERATE_NORMALMAPS 0\n";
-	}
-	shaders_header += "#define NORMALMAPS_STRENGTH ";
-	shaders_header += ftos(g_settings->getFloat("normalmaps_strength"));
-	shaders_header += "\n";
-	float sample_step;
-	int smooth = (int)g_settings->getFloat("normalmaps_smooth");
-	switch (smooth){
-	case 0:
-		sample_step = 0.0078125; // 1.0 / 128.0
-		break;
-	case 1:
-		sample_step = 0.00390625; // 1.0 / 256.0
-		break;
-	case 2:
-		sample_step = 0.001953125; // 1.0 / 512.0
-		break;
-	default:
-		sample_step = 0.0078125;
-		break;
-	}
-	shaders_header += "#define SAMPLE_STEP ";
-	shaders_header += ftos(sample_step);
 	shaders_header += "\n";
 
 	if (g_settings->getBool("enable_bumpmapping"))

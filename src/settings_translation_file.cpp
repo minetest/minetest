@@ -242,13 +242,7 @@ fake_function() {
 	gettext("Enables Hable's 'Uncharted 2' filmic tone mapping.\nSimulates the tone curve of photographic film and how this approximates the\nappearance of high dynamic range images. Mid-range contrast is slightly\nenhanced, highlights and shadows are gradually compressed.");
 	gettext("Bumpmapping");
 	gettext("Bumpmapping");
-	gettext("Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack\nor need to be auto-generated.\nRequires shaders to be enabled.");
-	gettext("Generate normalmaps");
-	gettext("Enables on the fly normalmap generation (Emboss effect).\nRequires bumpmapping to be enabled.");
-	gettext("Normalmaps strength");
-	gettext("Strength of generated normalmaps.");
-	gettext("Normalmaps sampling");
-	gettext("Defines sampling step of texture.\nA higher value results in smoother normal maps.");
+	gettext("Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack.\nRequires shaders to be enabled.");
 	gettext("Parallax Occlusion");
 	gettext("Parallax occlusion");
 	gettext("Enables parallax occlusion mapping.\nRequires shaders to be enabled.");
