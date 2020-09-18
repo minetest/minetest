@@ -20,9 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
-#include "inventory.h"  // ItemStack
+#include "inventory.h" // ItemStack
 
-class LuaItemStack : public ModApiBase {
+class LuaItemStack : public ModApiBase
+{
 private:
 	ItemStack m_stack;
 
@@ -114,8 +115,8 @@ private:
 	// Returns leftover item stack
 	static int l_add_item(lua_State *L);
 
-	// item_fits(self, itemstack or itemstring or table or nil) -> true/false, itemstack
-	// First return value is true iff the new item fits fully into the stack
+	// item_fits(self, itemstack or itemstring or table or nil) -> true/false,
+	// itemstack First return value is true iff the new item fits fully into the stack
 	// Second return value is the would-be-left-over item stack
 	static int l_item_fits(lua_State *L);
 
@@ -129,26 +130,28 @@ public:
 	LuaItemStack(const ItemStack &item);
 	~LuaItemStack() = default;
 
-	const ItemStack& getItem() const;
-	ItemStack& getItem();
+	const ItemStack &getItem() const;
+	ItemStack &getItem();
 
 	// LuaItemStack(itemstack or itemstring or table or nil)
 	// Creates an LuaItemStack and leaves it on top of stack
 	static int create_object(lua_State *L);
 	// Not callable from Lua
 	static int create(lua_State *L, const ItemStack &item);
-	static LuaItemStack* checkobject(lua_State *L, int narg);
+	static LuaItemStack *checkobject(lua_State *L, int narg);
 	static void Register(lua_State *L);
-
 };
 
-class ModApiItemMod : public ModApiBase {
+class ModApiItemMod : public ModApiBase
+{
 private:
 	static int l_register_item_raw(lua_State *L);
 	static int l_unregister_item_raw(lua_State *L);
 	static int l_register_alias_raw(lua_State *L);
 	static int l_get_content_id(lua_State *L);
 	static int l_get_name_from_content_id(lua_State *L);
+	static int l_register_wield_animation(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };

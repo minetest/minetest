@@ -31,15 +31,13 @@ struct MapDrawControl;
 class Client;
 class WieldMeshSceneNode;
 
-struct Nametag {
-	Nametag(scene::ISceneNode *a_parent_node,
-			const std::string &a_nametag_text,
-			const video::SColor &a_nametag_color,
-			const v3f &a_nametag_pos):
-		parent_node(a_parent_node),
-		nametag_text(a_nametag_text),
-		nametag_color(a_nametag_color),
-		nametag_pos(a_nametag_pos)
+struct Nametag
+{
+	Nametag(scene::ISceneNode *a_parent_node, const std::string &a_nametag_text,
+			const video::SColor &a_nametag_color, const v3f &a_nametag_pos) :
+			parent_node(a_parent_node),
+			nametag_text(a_nametag_text), nametag_color(a_nametag_color),
+			nametag_pos(a_nametag_pos)
 	{
 	}
 	scene::ISceneNode *parent_node;
@@ -48,12 +46,17 @@ struct Nametag {
 	v3f nametag_pos;
 };
 
-enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
+enum CameraMode
+{
+	CAMERA_MODE_FIRST,
+	CAMERA_MODE_THIRD,
+	CAMERA_MODE_THIRD_FRONT
+};
 
 /*
-	Client camera class, manages the player and camera scene nodes, the viewing distance
-	and performs view bobbing etc. It also displays the wielded tool in front of the
-	first-person camera.
+	Client camera class, manages the player and camera scene nodes, the viewing
+   distance and performs view bobbing etc. It also displays the wielded tool in front of
+   the first-person camera.
 */
 class Camera
 {
@@ -63,54 +66,30 @@ public:
 
 	// Get camera scene node.
 	// It has the eye transformation, pitch and view bobbing applied.
-	inline scene::ICameraSceneNode* getCameraNode() const
-	{
-		return m_cameranode;
-	}
+	inline scene::ICameraSceneNode *getCameraNode() const { return m_cameranode; }
 
 	// Get the camera position (in absolute scene coordinates).
 	// This has view bobbing applied.
-	inline v3f getPosition() const
-	{
-		return m_camera_position;
-	}
+	inline v3f getPosition() const { return m_camera_position; }
 
 	// Returns the absolute position of the head SceneNode in the world
-	inline v3f getHeadPosition() const
-	{
-		return m_headnode->getAbsolutePosition();
-	}
+	inline v3f getHeadPosition() const { return m_headnode->getAbsolutePosition(); }
 
 	// Get the camera direction (in absolute camera coordinates).
 	// This has view bobbing applied.
-	inline v3f getDirection() const
-	{
-		return m_camera_direction;
-	}
+	inline v3f getDirection() const { return m_camera_direction; }
 
 	// Get the camera offset
-	inline v3s16 getOffset() const
-	{
-		return m_camera_offset;
-	}
+	inline v3s16 getOffset() const { return m_camera_offset; }
 
 	// Horizontal field of view
-	inline f32 getFovX() const
-	{
-		return m_fov_x;
-	}
+	inline f32 getFovX() const { return m_fov_x; }
 
 	// Vertical field of view
-	inline f32 getFovY() const
-	{
-		return m_fov_y;
-	}
+	inline f32 getFovY() const { return m_fov_y; }
 
 	// Get maximum of getFovX() and getFovY()
-	inline f32 getFovMax() const
-	{
-		return MYMAX(m_fov_x, m_fov_y);
-	}
+	inline f32 getFovMax() const { return MYMAX(m_fov_x, m_fov_y); }
 
 	// Notify about new server-sent FOV and initialize smooth FOV transition
 	void notifyFovChange();
@@ -123,7 +102,7 @@ public:
 
 	// Update the camera from the local player's position.
 	// busytime is used to adjust the viewing range.
-	void update(LocalPlayer* player, f32 frametime, f32 busytime,
+	void update(LocalPlayer *player, f32 frametime, f32 busytime,
 			f32 tool_reload_ratio);
 
 	// Update render distance
@@ -139,10 +118,11 @@ public:
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
 	// Warning: This clears the Z buffer.
-	void drawWieldedTool(irr::core::matrix4* translation=NULL);
+	void drawWieldedTool(irr::core::matrix4 *translation = NULL);
 
 	// Toggle the current camera mode
-	void toggleCameraMode() {
+	void toggleCameraMode()
+	{
 		if (m_camera_mode == CAMERA_MODE_FIRST)
 			m_camera_mode = CAMERA_MODE_THIRD;
 		else if (m_camera_mode == CAMERA_MODE_THIRD)
@@ -152,20 +132,14 @@ public:
 	}
 
 	// Set the current camera mode
-	inline void setCameraMode(CameraMode mode)
-	{
-		m_camera_mode = mode;
-	}
+	inline void setCameraMode(CameraMode mode) { m_camera_mode = mode; }
 
-	//read the current camera mode
-	inline CameraMode getCameraMode()
-	{
-		return m_camera_mode;
-	}
+	// read the current camera mode
+	inline CameraMode getCameraMode() { return m_camera_mode; }
 
 	Nametag *addNametag(scene::ISceneNode *parent_node,
-		const std::string &nametag_text, video::SColor nametag_color,
-		const v3f &pos);
+			const std::string &nametag_text, video::SColor nametag_color,
+			const v3f &pos);
 
 	void removeNametag(Nametag *nametag);
 
@@ -185,7 +159,7 @@ private:
 	WieldMeshSceneNode *m_wieldnode = nullptr;
 
 	// draw control
-	MapDrawControl& m_draw_control;
+	MapDrawControl &m_draw_control;
 
 	Client *m_client;
 
@@ -229,12 +203,14 @@ private:
 	// Fall view bobbing
 	f32 m_view_bobbing_fall = 0.0f;
 
-	// Digging animation frame (0 <= m_digging_anim < 1)
+	// Digging animation frame, in seconds
+	// (0 <= m_digging_anim < m_wield_animation.getDuration())
 	f32 m_digging_anim = 0.0f;
 	// If -1, no digging animation
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button = -1;
+	std::string m_wield_animation = "";
 
 	// Animation when changing wielded item
 	f32 m_wield_change_timer = 0.125f;
