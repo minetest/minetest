@@ -72,8 +72,7 @@ template <typename T> inline std::vector<T> SplineSequence<T>::getNodes()
 	return this->nodes;
 }
 
-template <typename T>
-inline std::vector<SplineIndex> SplineSequence<T>::getIndices()
+template <typename T> inline std::vector<SplineIndex> SplineSequence<T>::getIndices()
 {
 	return this->indices;
 }
@@ -155,8 +154,8 @@ template <typename T> void SplineSequence<T>::interpolate(T &result, float alpha
 	typename std::vector<T>::const_iterator end = start;
 	end += index->length;
 	// std::cout << "Start: " << start->X << " " << start->Y << " " << start->Z <<
-	// std::endl; std::cout << "End:   " << end->X << " " << end->Y << " " << end->Z <<
-	// std::endl; std::cout << "Ends: " << *start << " " << *end << std::endl;
+	// std::endl; std::cout << "End:   " << end->X << " " << end->Y << " " << end->Z
+	// << std::endl; std::cout << "Ends: " << *start << " " << *end << std::endl;
 	// these are both inclusive, but vector's range constructor
 	// excludes the end -> advance by one
 	end++;
@@ -165,8 +164,8 @@ template <typename T> void SplineSequence<T>::interpolate(T &result, float alpha
 	for (unsigned int degree = index->length; degree > 0; degree--) {
 		for (unsigned int i = 0; i < degree; i++) {
 			// std::cout << "Interpolating alpha " << alpha << ", degree " <<
-			// degree << ", step " << i << std::endl; std::cout << "Before " <<
-			// workspace[i] << " onto " << workspace[i+1] << std::endl;
+			// degree << ", step " << i << std::endl; std::cout << "Before "
+			// << workspace[i] << " onto " << workspace[i+1] << std::endl;
 			workspace[i] = _interpolate(
 					workspace[i], workspace[i + 1], alpha);
 			//_interpolate(workspace[i], alpha, index->length);
