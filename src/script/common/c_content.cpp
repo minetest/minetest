@@ -237,7 +237,6 @@ void read_wield_animation(lua_State *L, int index)
 		lua_pop(L, 1);
 	}
 	anim.setDuration(totalDuration);
-	WieldAnimation comp = WieldAnimation::repository["poke"];
 	lua_pop(L, 1);
 }
 /******************************************************************************/
