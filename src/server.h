@@ -453,6 +453,8 @@ private:
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
 
+	bool addMediaFile(const std::string &filename, const std::string &filepath, std::string *filedata_to, std::string *digest_to);
+	
 	void fillMediaCache();
 	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
 	void sendRequestedMedia(session_t peer_id,
