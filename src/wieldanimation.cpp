@@ -14,7 +14,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #include "wieldanimation.h"
 
 v3f WieldAnimation::getTranslationAt(float time) const
@@ -140,7 +139,6 @@ void WieldAnimation::fillRepository()
 			.addNode(quatFromAngles(0.0f, 0.0f, 0.0f));
 	poke.m_rotationspline.addIndex(1.0, 0, 2).addIndex(1.0, 2, 2);
 	poke.setDuration(0.5f);
-
 }
 
 void WieldAnimation::serialize(std::ostream &os, u16 protocol_version)
@@ -197,7 +195,7 @@ WieldAnimation WieldAnimation::deSerialize(std::istream &is)
 	u32 rotationNodes_size = readU32(is);
 	for (u32 i = 0; i < rotationNodes_size; i++) {
 		v3f node = readV3F32(is);
-		anim.m_rotationspline.addNode(quatFromAngles(node.X,node.Y, node.Z));
+		anim.m_rotationspline.addNode(quatFromAngles(node.X, node.Y, node.Z));
 	}
 	u32 rotationIndex_size = readU32(is);
 	for (u32 i = 0; i < rotationIndex_size; i++) {
