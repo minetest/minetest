@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-09-19 15:31+0000\n"
-"Last-Translator: Agustin Calderon <agustin25901@gmail.com>\n"
+"PO-Revision-Date: 2020-09-22 03:39+0000\n"
+"Last-Translator: Jo <joaquinfc@protonmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -1953,7 +1953,6 @@ msgstr ""
 "del círculo principal."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world center in units of 'scale'.\n"
 "Can be used to move a desired point to (0, 0) to create a\n"
@@ -1964,16 +1963,19 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"Desvío (X,Y,Z) del fractal desde el centro del mundo en unidades de "
-"'escala'.\n"
-"Puede ser utilizado para mover el punto deseado (0, 0) para crear un\n"
+"Desvío (X,Y,Z) del fractal desde el centro del mundo en unidades de 'escala'."
+"\n"
+"Puede ser utilizado para mover el punto deseado al inicio de coordenadas (0, "
+"0) para crear un\n"
 "punto de aparición mejor, o permitir 'ampliar' en un punto deseado si\n"
 "se incrementa la 'escala'.\n"
-"El valor por defecto está ajustado para un punto de aparición adecuado para\n"
-"los conjuntos Madelbrot con parámetros por defecto, podría ser necesario\n"
-"modificarlo para otras situaciones.\n"
-"El rango de está comprendido entre -2 y 2. Multiplicar por 'escala' para el\n"
-"desvío en nodos."
+"El valor por defecto está ajustado para un punto de aparición adecuado para "
+"\n"
+"los conjuntos Madelbrot\n"
+"Con parámetros por defecto, podría ser necesariomodificarlo para otras \n"
+"situaciones.\n"
+"El rango de está comprendido entre -2 y 2. Multiplicar por la 'escala' para "
+"el desvío en nodos."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2014,11 +2016,8 @@ msgid "2D noise that controls the shape/size of step mountains."
 msgstr "Ruido 2D para controlar la forma/tamaño de las montañas inclinadas."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr ""
-"Ruido 2D que controla los rangos de tamaño/aparición de las montañas "
-"escarpadas."
+msgstr "Ruido 2D que controla el tamaño/aparición de cordilleras montañosas."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of rolling hills."
@@ -2031,9 +2030,8 @@ msgstr ""
 "inclinadas."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "2D noise that locates the river valleys and channels."
-msgstr "Ruido 2D para controlar la forma/tamaño de las colinas."
+msgstr "Ruido 2D para ubicar los ríos, valles y canales."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2044,9 +2042,8 @@ msgid "3D mode"
 msgstr "Modo 3D"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D mode parallax strength"
-msgstr "Oclusión de paralaje"
+msgstr "Fuerza de paralaje en modo 3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2141,9 +2138,8 @@ msgid "ABM interval"
 msgstr "Intervalo ABM"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Absolute limit of queued blocks to emerge"
-msgstr "Limite absoluto de colas emergentes"
+msgstr "Límite absoluto de bloques en proceso"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -4989,7 +4985,7 @@ msgstr "Numero mínimo de cuevas grandes"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave proportion flooded"
-msgstr ""
+msgstr "Proporción de cuevas grandes inundadas"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5022,24 +5018,30 @@ msgid ""
 "updated over\n"
 "network."
 msgstr ""
+"Duración de un tick del servidor y el intervalo en el que los objetos se "
+"actualizan generalmente sobre la\n"
+"red."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Length of liquid waves.\n"
 "Requires waving liquids to be enabled."
 msgstr ""
+"Longitud de las ondas líquidas.\n"
+"Requiere que se habiliten los líquidos ondulados."
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between Active Block Modifier (ABM) execution cycles"
 msgstr ""
+"Período de tiempo entre ciclos de ejecución de Active Block Modifier (ABM)"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Cantidad de tiempo entre ciclos de ejecución de NodeTimer"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between active block management cycles"
-msgstr ""
+msgstr "Periodo de tiempo entre ciclos de gestión de bloques activos"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5052,6 +5054,14 @@ msgid ""
 "-    info\n"
 "-    verbose"
 msgstr ""
+"Nivel de registro que se escribirá en debug.txt:\n"
+"-   <nada> (sin registro)\n"
+"-   ninguno (mensajes sin nivel)\n"
+"-   error\n"
+"-   advertencia\n"
+"-   acción\n"
+"-   información\n"
+"-   detallado"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost"
