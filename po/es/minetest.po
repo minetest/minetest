@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-09-19 15:31+0000\n"
-"Last-Translator: Agustin Calderon <agustin25901@gmail.com>\n"
+"Last-Translator: Jo <joaquinfc@protonmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -2067,6 +2067,12 @@ msgid ""
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
+"Ruido 3D que define las estructuras flotantes.\n"
+"Si se altera la escala de ruido por defecto (0,7), puede ser necesario "
+"ajustarla, \n"
+"los valores de ruido que definen la estrechez de islas flotantes funcionan "
+"mejor \n"
+"cuando están en un rango de aproximadamente -2.0 a 2.0."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -2194,6 +2200,12 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"Ajusta la densidad de la isla flotante.\n"
+"Incrementar el valor para incrementar la densidad. Este puede ser negativo o "
+"positivo\n"
+"Valor = 0.0: 50% del volumen está flotando \n"
+"Valor = 2.0 (puede ser mayor dependiendo de 'mgv7_np_floatland',\n"
+"siempre pruébelo para asegurarse) crea una isla flotante compacta."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2795,9 +2807,8 @@ msgid "Default report format"
 msgstr "Formato de Reporte por defecto"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default stack size"
-msgstr "Tamaño por defecto del stack (Montón)."
+msgstr "Tamaño por defecto del stack (Montón)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3389,6 +3400,9 @@ msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
 msgstr ""
+"El tamaño de la fuente del texto del chat reciente y el indicador del chat "
+"en punto (pt).\n"
+"El valor 0 utilizará el tamaño de fuente predeterminado."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4856,6 +4870,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tecla para activar/desactivar la actualización de la cámara. Solo usada para "
+"desarrollo\n"
+"Ver http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4906,6 +4924,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tecla para activar/desactivar la consola de chat larga.\n"
+"Ver http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4940,6 +4961,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
 msgstr ""
+"Expulsa a los jugadores que enviaron más de X mensajes cada 10 segundos."
 
 #: src/settings_translation_file.cpp
 msgid "Lake steepness"
