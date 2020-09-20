@@ -113,23 +113,10 @@ public:
 	bool parseConfigLines(std::istream &is, const std::string &end = "");
 	void writeLines(std::ostream &os, u32 tab_depth=0) const;
 
-	SettingsParseEvent parseConfigObject(const std::string &line,
-		const std::string &end, std::string &name, std::string &value);
-	bool updateConfigObject(std::istream &is, std::ostream &os,
-		const std::string &end, u32 tab_depth=0);
-
-	static bool checkNameValid(const std::string &name);
-	static bool checkValueValid(const std::string &value);
-	static std::string getMultiline(std::istream &is, size_t *num_lines=NULL);
-	static void printEntry(std::ostream &os, const std::string &name,
-		const SettingsEntry &entry, u32 tab_depth=0);
-
 	/***********
 	 * Getters *
 	 ***********/
 
-	const SettingsEntry &getEntry(const std::string &name) const;
-	const SettingsEntry &getEntryDefault(const std::string &name) const;
 	Settings *getGroup(const std::string &name) const;
 	const std::string &get(const std::string &name) const;
 	const std::string &getDefault(const std::string &name) const;
@@ -144,10 +131,6 @@ public:
 	v3f getV3F(const std::string &name) const;
 	u32 getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 			u32 *flagmask) const;
-	// N.B. if getStruct() is used to read a non-POD aggregate type,
-	// the behavior is undefined.
-	bool getStruct(const std::string &name, const std::string &format,
-			void *out, size_t olen) const;
 	bool getNoiseParams(const std::string &name, NoiseParams &np) const;
 	bool getNoiseParamsFromValue(const std::string &name, NoiseParams &np) const;
 	bool getNoiseParamsFromGroup(const std::string &name, NoiseParams &np) const;
@@ -161,8 +144,6 @@ public:
 	 * Getters that don't throw exceptions *
 	 ***************************************/
 
-	bool getEntryNoEx(const std::string &name, SettingsEntry &val) const;
-	bool getEntryDefaultNoEx(const std::string &name, SettingsEntry &val) const;
 	bool getGroupNoEx(const std::string &name, Settings *&val) const;
 	bool getNoEx(const std::string &name, std::string &val) const;
 	bool getDefaultNoEx(const std::string &name, std::string &val) const;
@@ -206,16 +187,11 @@ public:
 		const FlagDesc *flagdesc = nullptr, u32 flagmask = U32_MAX);
 	bool setNoiseParams(const std::string &name, const NoiseParams &np,
 		bool set_default=false);
-	// N.B. if setStruct() is used to write a non-POD aggregate type,
-	// the behavior is undefined.
-	bool setStruct(const std::string &name, const std::string &format, void *value);
 
 	// remove a setting
 	bool remove(const std::string &name);
 	void clear();
 	void clearDefaults();
-	void updateValue(const Settings &other, const std::string &name);
-	void update(const Settings &other);
 
 	/**************
 	 * Miscellany *
@@ -232,6 +208,31 @@ public:
 		SettingsChangedCallback cbf, void *userdata = NULL);
 
 private:
+	/***********************
+	 * Reading and writing *
+	 ***********************/
+
+	SettingsParseEvent parseConfigObject(const std::string &line,
+		const std::string &end, std::string &name, std::string &value);
+	bool updateConfigObject(std::istream &is, std::ostream &os,
+		const std::string &end, u32 tab_depth=0);
+
+	static bool checkNameValid(const std::string &name);
+	static bool checkValueValid(const std::string &value);
+	static std::string getMultiline(std::istream &is, size_t *num_lines=NULL);
+	static void printEntry(std::ostream &os, const std::string &name,
+		const SettingsEntry &entry, u32 tab_depth=0);
+
+	/***********
+	 * Getters *
+	 ***********/
+
+	const SettingsEntry &getEntry(const std::string &name) const;
+	const SettingsEntry &getEntryDefault(const std::string &name) const;
+
+	// Allow TestSettings to run sanity checks using private functions.
+	friend class TestSettings;
+
 	void updateNoLock(const Settings &other);
 	void clearNoLock();
 	void clearDefaultsNoLock();
