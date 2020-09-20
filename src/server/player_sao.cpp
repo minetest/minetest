@@ -109,7 +109,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 
 	// Protocol >= 15
 	writeU8(os, 1); // version
-	os << serializeString(m_player->getName()); // name
+	os << serializeString16(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeS16(os, getId()); // id
 	writeV3F32(os, m_base_position);
@@ -117,22 +117,22 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	writeU16(os, getHP());
 
 	std::ostringstream msg_os(std::ios::binary);
-	msg_os << serializeLongString(getPropertyPacket()); // message 1
-	msg_os << serializeLongString(generateUpdateArmorGroupsCommand()); // 2
-	msg_os << serializeLongString(generateUpdateAnimationCommand()); // 3
+	msg_os << serializeString32(getPropertyPacket()); // message 1
+	msg_os << serializeString32(generateUpdateArmorGroupsCommand()); // 2
+	msg_os << serializeString32(generateUpdateAnimationCommand()); // 3
 	for (const auto &bone_pos : m_bone_position) {
-		msg_os << serializeLongString(generateUpdateBonePositionCommand(
+		msg_os << serializeString32(generateUpdateBonePositionCommand(
 			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // m_bone_position.size
 	}
-	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
-	msg_os << serializeLongString(generateUpdatePhysicsOverrideCommand()); // 5
+	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4
+	msg_os << serializeString32(generateUpdatePhysicsOverrideCommand()); // 5
 
 	int message_count = 5 + m_bone_position.size();
 
 	for (const auto &id : getAttachmentChildIds()) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(id)) {
 			message_count++;
-			msg_os << serializeLongString(obj->generateUpdateInfantCommand(
+			msg_os << serializeString32(obj->generateUpdateInfantCommand(
 				id, protocol_version));
 		}
 	}

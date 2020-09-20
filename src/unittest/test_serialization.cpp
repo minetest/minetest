@@ -44,7 +44,7 @@ public:
 	std::wstring teststring2_w;
 	std::string teststring2_w_encoded;
 
-	static const u8 test_serialized_data[12 * 13 - 8];
+	static const u8 test_serialized_data[12 * 11 - 2];
 };
 
 static TestSerialization g_test_instance;
@@ -91,21 +91,21 @@ void TestSerialization::buildTestStrings()
 void TestSerialization::testSerializeString()
 {
 	// Test blank string
-	UASSERT(serializeString("") == mkstr("\0\0"));
+	UASSERT(serializeString16("") == mkstr("\0\0"));
 
 	// Test basic string
-	UASSERT(serializeString("Hello world!") == mkstr("\0\14Hello world!"));
+	UASSERT(serializeString16("Hello world!") == mkstr("\0\14Hello world!"));
 
 	// Test character range
-	UASSERT(serializeString(teststring2) == mkstr("\1\0") + teststring2);
+	UASSERT(serializeString16(teststring2) == mkstr("\1\0") + teststring2);
 }
 
 void TestSerialization::testDeSerializeString()
 {
 	// Test deserialize
 	{
-		std::istringstream is(serializeString(teststring2), std::ios::binary);
-		UASSERT(deSerializeString(is) == teststring2);
+		std::istringstream is(serializeString16(teststring2), std::ios::binary);
+		UASSERT(deSerializeString16(is) == teststring2);
 		UASSERT(!is.eof());
 		is.get();
 		UASSERT(is.eof());
@@ -114,34 +114,34 @@ void TestSerialization::testDeSerializeString()
 	// Test deserialize an incomplete length specifier
 	{
 		std::istringstream is(mkstr("\x53"), std::ios::binary);
-		EXCEPTION_CHECK(SerializationError, deSerializeString(is));
+		EXCEPTION_CHECK(SerializationError, deSerializeString16(is));
 	}
 
 	// Test deserialize a string with incomplete data
 	{
 		std::istringstream is(mkstr("\x00\x55 abcdefg"), std::ios::binary);
-		EXCEPTION_CHECK(SerializationError, deSerializeString(is));
+		EXCEPTION_CHECK(SerializationError, deSerializeString16(is));
 	}
 }
 
 void TestSerialization::testSerializeLongString()
 {
 	// Test blank string
-	UASSERT(serializeLongString("") == mkstr("\0\0\0\0"));
+	UASSERT(serializeString32("") == mkstr("\0\0\0\0"));
 
 	// Test basic string
-	UASSERT(serializeLongString("Hello world!") == mkstr("\0\0\0\14Hello world!"));
+	UASSERT(serializeString32("Hello world!") == mkstr("\0\0\0\14Hello world!"));
 
 	// Test character range
-	UASSERT(serializeLongString(teststring2) == mkstr("\0\0\1\0") + teststring2);
+	UASSERT(serializeString32(teststring2) == mkstr("\0\0\1\0") + teststring2);
 }
 
 void TestSerialization::testDeSerializeLongString()
 {
 	// Test deserialize
 	{
-		std::istringstream is(serializeLongString(teststring2), std::ios::binary);
-		UASSERT(deSerializeLongString(is) == teststring2);
+		std::istringstream is(serializeString32(teststring2), std::ios::binary);
+		UASSERT(deSerializeString32(is) == teststring2);
 		UASSERT(!is.eof());
 		is.get();
 		UASSERT(is.eof());
@@ -150,19 +150,19 @@ void TestSerialization::testDeSerializeLongString()
 	// Test deserialize an incomplete length specifier
 	{
 		std::istringstream is(mkstr("\x53"), std::ios::binary);
-		EXCEPTION_CHECK(SerializationError, deSerializeLongString(is));
+		EXCEPTION_CHECK(SerializationError, deSerializeString32(is));
 	}
 
 	// Test deserialize a string with incomplete data
 	{
 		std::istringstream is(mkstr("\x00\x00\x00\x05 abc"), std::ios::binary);
-		EXCEPTION_CHECK(SerializationError, deSerializeLongString(is));
+		EXCEPTION_CHECK(SerializationError, deSerializeString32(is));
 	}
 
 	// Test deserialize a string with a length too large
 	{
 		std::istringstream is(mkstr("\xFF\xFF\xFF\xFF blah"), std::ios::binary);
-		EXCEPTION_CHECK(SerializationError, deSerializeLongString(is));
+		EXCEPTION_CHECK(SerializationError, deSerializeString32(is));
 	}
 }
 
@@ -235,19 +235,17 @@ void TestSerialization::testStreamRead()
 	UASSERT(readF1000(is) == F1000_MIN);
 	UASSERT(readF1000(is) == F1000_MAX);
 
-	UASSERT(deSerializeString(is) == "foobar!");
+	UASSERT(deSerializeString16(is) == "foobar!");
 
 	UASSERT(readV2S16(is) == v2s16(500, 500));
 	UASSERT(readV3S16(is) == v3s16(4207, 604, -30));
 	UASSERT(readV2S32(is) == v2s32(1920, 1080));
 	UASSERT(readV3S32(is) == v3s32(-400, 6400054, 290549855));
 
-	UASSERT(deSerializeWideString(is) == L"\x02~woof~\x5455");
-
 	UASSERT(readV3F1000(is) == v3f(500, 10024.2f, -192.54f));
 	UASSERT(readARGB8(is) == video::SColor(255, 128, 50, 128));
 
-	UASSERT(deSerializeLongString(is) == "some longer string here");
+	UASSERT(deSerializeString32(is) == "some longer string here");
 
 	UASSERT(is.rdbuf()->in_avail() == 2);
 	UASSERT(readU16(is) == 0xF00D);
@@ -275,7 +273,7 @@ void TestSerialization::testStreamWrite()
 	writeF1000(os, F1000_MIN);
 	writeF1000(os, F1000_MAX);
 
-	os << serializeString("foobar!");
+	os << serializeString16("foobar!");
 
 	data = os.str();
 	UASSERT(data.size() < sizeof(test_serialized_data));
@@ -286,12 +284,10 @@ void TestSerialization::testStreamWrite()
 	writeV2S32(os, v2s32(1920, 1080));
 	writeV3S32(os, v3s32(-400, 6400054, 290549855));
 
-	os << serializeWideString(L"\x02~woof~\x5455");
-
 	writeV3F1000(os, v3f(500, 10024.2f, -192.54f));
 	writeARGB8(os, video::SColor(255, 128, 50, 128));
 
-	os << serializeLongString("some longer string here");
+	os << serializeString32("some longer string here");
 
 	writeU16(os, 0xF00D);
 
@@ -384,7 +380,7 @@ void TestSerialization::testFloatFormat()
 		UASSERT(test_single(i));
 }
 
-const u8 TestSerialization::test_serialized_data[12 * 13 - 8] = {
+const u8 TestSerialization::test_serialized_data[12 * 11 - 2] = {
 	0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc,
 	0xdd, 0xee, 0xff, 0x80, 0x75, 0x30, 0xff, 0xff, 0xff, 0xfa, 0xff, 0xff,
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xd5, 0x00, 0x00, 0xd1, 0x1e, 0xee, 0x1e,
@@ -392,9 +388,7 @@ const u8 TestSerialization::test_serialized_data[12 * 13 - 8] = {
 	0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, 0x21, 0x01, 0xf4, 0x01, 0xf4, 0x10,
 	0x6f, 0x02, 0x5c, 0xff, 0xe2, 0x00, 0x00, 0x07, 0x80, 0x00, 0x00, 0x04,
 	0x38, 0xff, 0xff, 0xfe, 0x70, 0x00, 0x61, 0xa8, 0x36, 0x11, 0x51, 0x70,
-	0x5f, 0x00, 0x08, 0x00,
-	0x02, 0x00, 0x7e, 0x00,  'w', 0x00,  'o', 0x00,  'o', 0x00,  'f', 0x00, // \x02~woof~\x5455
-	0x7e, 0x54, 0x55, 0x00, 0x07, 0xa1, 0x20, 0x00, 0x98, 0xf5, 0x08, 0xff,
+	0x5f, 0x00, 0x07, 0xa1, 0x20, 0x00, 0x98, 0xf5, 0x08, 0xff,
 	0xfd, 0x0f, 0xe4, 0xff, 0x80, 0x32, 0x80, 0x00, 0x00, 0x00, 0x17, 0x73,
 	0x6f, 0x6d, 0x65, 0x20, 0x6c, 0x6f, 0x6e, 0x67, 0x65, 0x72, 0x20, 0x73,
 	0x74, 0x72, 0x69, 0x6e, 0x67, 0x20, 0x68, 0x65, 0x72, 0x65, 0xF0, 0x0D,

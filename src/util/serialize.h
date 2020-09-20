@@ -440,16 +440,16 @@ MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 ////
 
 // Creates a string with the length as the first two bytes
-std::string serializeString(const std::string &plain);
+std::string serializeString16(const std::string &plain);
 
 // Reads a string with the length as the first two bytes
-std::string deSerializeString(std::istream &is);
+std::string deSerializeString16(std::istream &is);
 
 // Creates a string with the length as the first four bytes
-std::string serializeLongString(const std::string &plain);
+std::string serializeString32(const std::string &plain);
 
 // Reads a string with the length as the first four bytes
-std::string deSerializeLongString(std::istream &is);
+std::string deSerializeString32(std::istream &is);
 
 // Creates a string encoded in JSON format (almost equivalent to a C string literal)
 std::string serializeJsonString(const std::string &plain);

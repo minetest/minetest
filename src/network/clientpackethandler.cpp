@@ -497,7 +497,7 @@ void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
 			if (!is.good())
 				break;
 
-			std::string message = deSerializeString(is);
+			std::string message = deSerializeString16(is);
 
 			// Pass on to the environment
 			m_env.processActiveObjectMessage(id, message);
@@ -994,7 +994,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	p.minsize            = readF32(is);
 	p.maxsize            = readF32(is);
 	p.collisiondetection = readU8(is);
-	p.texture            = deSerializeLongString(is);
+	p.texture            = deSerializeString32(is);
 
 	server_id = readU32(is);
 
@@ -1207,11 +1207,11 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 
 		SkyboxParams skybox;
 		skybox.bgcolor = video::SColor(readARGB8(is));
-		skybox.type = std::string(deSerializeString(is));
+		skybox.type = std::string(deSerializeString16(is));
 		u16 count = readU16(is);
 
 		for (size_t i = 0; i < count; i++)
-			skybox.textures.emplace_back(deSerializeString(is));
+			skybox.textures.emplace_back(deSerializeString16(is));
 
 		skybox.clouds = true;
 		try {

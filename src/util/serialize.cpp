@@ -35,13 +35,13 @@ FloatType g_serialize_f32_type = FLOATTYPE_UNKNOWN;
 //// String
 ////
 
-std::string serializeString(const std::string &plain)
+std::string serializeString16(const std::string &plain)
 {
 	std::string s;
 	char buf[2];
 
 	if (plain.size() > STRING_MAX_LEN)
-		throw SerializationError("String too long for serializeString");
+		throw SerializationError("String too long for serializeString16");
 	s.reserve(2 + plain.size());
 
 	writeU16((u8 *)&buf[0], plain.size());
@@ -51,14 +51,14 @@ std::string serializeString(const std::string &plain)
 	return s;
 }
 
-std::string deSerializeString(std::istream &is)
+std::string deSerializeString16(std::istream &is)
 {
 	std::string s;
 	char buf[2];
 
 	is.read(buf, 2);
 	if (is.gcount() != 2)
-		throw SerializationError("deSerializeString: size not read");
+		throw SerializationError("deSerializeString16: size not read");
 
 	u16 s_size = readU16((u8 *)buf);
 	if (s_size == 0)
@@ -67,66 +67,17 @@ std::string deSerializeString(std::istream &is)
 	s.resize(s_size);
 	is.read(&s[0], s_size);
 	if (is.gcount() != s_size)
-		throw SerializationError("deSerializeString: couldn't read all chars");
+		throw SerializationError("deSerializeString16: couldn't read all chars");
 
 	return s;
 }
 
-////
-//// Wide String
-////
-
-std::string serializeWideString(const std::wstring &plain)
-{
-	std::string s;
-	char buf[2];
-
-	if (plain.size() > WIDE_STRING_MAX_LEN)
-		throw SerializationError("String too long for serializeWideString");
-	s.reserve(2 + 2 * plain.size());
-
-	writeU16((u8 *)buf, plain.size());
-	s.append(buf, 2);
-
-	for (wchar_t i : plain) {
-		writeU16((u8 *)buf, i);
-		s.append(buf, 2);
-	}
-	return s;
-}
-
-std::wstring deSerializeWideString(std::istream &is)
-{
-	std::wstring s;
-	char buf[2];
-
-	is.read(buf, 2);
-	if (is.gcount() != 2)
-		throw SerializationError("deSerializeWideString: size not read");
-
-	u16 s_size = readU16((u8 *)buf);
-	if (s_size == 0)
-		return s;
-
-	s.reserve(s_size);
-	for (u32 i = 0; i < s_size; i++) {
-		is.read(&buf[0], 2);
-		if (is.gcount() != 2) {
-			throw SerializationError(
-				"deSerializeWideString: couldn't read all chars");
-		}
-
-		wchar_t c16 = readU16((u8 *)buf);
-		s.append(&c16, 1);
-	}
-	return s;
-}
 
 ////
 //// Long String
 ////
 
-std::string serializeLongString(const std::string &plain)
+std::string serializeString32(const std::string &plain)
 {
 	std::string s;
 	char buf[4];
@@ -141,7 +92,7 @@ std::string serializeLongString(const std::string &plain)
 	return s;
 }
 
-std::string deSerializeLongString(std::istream &is)
+std::string deSerializeString32(std::istream &is)
 {
 	std::string s;
 	char buf[4];
