@@ -371,7 +371,7 @@ void GenericCAO::processInitData(const std::string &data)
 	}
 
 	// PROTOCOL_VERSION >= 37
-	m_name = deSerializeString(is);
+	m_name = deSerializeString16(is);
 	m_is_player = readU8(is);
 	m_id = readU16(is);
 	m_position = readV3F32(is);
@@ -381,7 +381,7 @@ void GenericCAO::processInitData(const std::string &data)
 	const u8 num_messages = readU8(is);
 
 	for (int i = 0; i < num_messages; i++) {
-		std::string message = deSerializeLongString(is);
+		std::string message = deSerializeString32(is);
 		processMessage(message);
 	}
 
@@ -1657,7 +1657,7 @@ void GenericCAO::processMessage(const std::string &data)
 		rot_translator.update(m_rotation, false, update_interval);
 		updateNodePos();
 	} else if (cmd == AO_CMD_SET_TEXTURE_MOD) {
-		std::string mod = deSerializeString(is);
+		std::string mod = deSerializeString16(is);
 
 		// immediately reset a engine issued texture modifier if a mod sends a different one
 		if (m_reset_textures_timer > 0) {
@@ -1735,7 +1735,7 @@ void GenericCAO::processMessage(const std::string &data)
 		m_animation_speed = readF32(is);
 		updateAnimationSpeed();
 	} else if (cmd == AO_CMD_SET_BONE_POSITION) {
-		std::string bone = deSerializeString(is);
+		std::string bone = deSerializeString16(is);
 		v3f position = readV3F32(is);
 		v3f rotation = readV3F32(is);
 		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
@@ -1743,7 +1743,7 @@ void GenericCAO::processMessage(const std::string &data)
 		// updateBonePosition(); now called every step
 	} else if (cmd == AO_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);
-		std::string bone = deSerializeString(is);
+		std::string bone = deSerializeString16(is);
 		v3f position = readV3F32(is);
 		v3f rotation = readV3F32(is);
 
@@ -1793,7 +1793,7 @@ void GenericCAO::processMessage(const std::string &data)
 		int armor_groups_size = readU16(is);
 		for(int i=0; i<armor_groups_size; i++)
 		{
-			std::string name = deSerializeString(is);
+			std::string name = deSerializeString16(is);
 			int rating = readS16(is);
 			m_armor_groups[name] = rating;
 		}

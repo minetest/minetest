@@ -28,7 +28,7 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	writeF32(os, expirationtime);
 	writeF32(os, size);
 	writeU8(os, collisiondetection);
-	os << serializeLongString(texture);
+	os << serializeString32(texture);
 	writeU8(os, vertical);
 	writeU8(os, collision_removal);
 	animation.serialize(os, 6); /* NOT the protocol ver */
@@ -47,7 +47,7 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 	expirationtime     = readF32(is);
 	size               = readF32(is);
 	collisiondetection = readU8(is);
-	texture            = deSerializeLongString(is);
+	texture            = deSerializeString32(is);
 	vertical           = readU8(is);
 	collision_removal  = readU8(is);
 	animation.deSerialize(is, 6); /* NOT the protocol ver */
