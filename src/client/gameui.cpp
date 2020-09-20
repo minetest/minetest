@@ -73,7 +73,7 @@ void GameUI::init()
 
 	// At the middle of the screen
 	// Object infos are shown in this
-	unsigned int chat_font_height = m_guitext_chat->getActiveFont()->getDimension(L"Ay").Height;
+	u32 chat_font_height = m_guitext_chat->getActiveFont()->getDimension(L"Ay").Height;
 	m_guitext_info = gui::StaticText::add(guienv, L"",
 		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) +
 			v2s32(100, chat_font_height *
