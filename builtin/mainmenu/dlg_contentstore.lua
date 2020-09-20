@@ -505,12 +505,12 @@ function store.handle_submit(this, fields)
 		return true
 	end
     
-    if fields.clear then
-        search_string = ""
-        cur_page = 1
-        store.filter_packages("")
-        return true
-    end
+    	if fields.clear then
+        	search_string = ""
+        	cur_page = 1
+        	store.filter_packages("")
+        	return true
+    	end
     
 	if fields.back then
 		this:delete()
