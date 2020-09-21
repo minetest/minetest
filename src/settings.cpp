@@ -824,13 +824,21 @@ bool Settings::setDefault(const std::string &name, const std::string &value)
 
 bool Settings::setGroup(const std::string &name, Settings *group)
 {
-	return setEntry(name, &group, true, false);
+	// Settings must own the group pointer
+	// avoid double-free by copying the source
+	Settings *copy = new Settings();
+	*copy = *group;
+	return setEntry(name, &copy, true, false);
 }
 
 
 bool Settings::setGroupDefault(const std::string &name, Settings *group)
 {
-	return setEntry(name, &group, true, true);
+	// Settings must own the group pointer
+	// avoid double-free by copying the source
+	Settings *copy = new Settings();
+	*copy = *group;
+	return setEntry(name, &copy, true, true);
 }
 
 
