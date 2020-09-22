@@ -44,6 +44,8 @@ public:
 	const char *sym() const;
 	const char *name() const;
 
+	irr::EKEY_CODE keycode() const { return Key; }
+
 protected:
 	static bool valid_kcode(irr::EKEY_CODE k)
 	{
@@ -54,6 +56,17 @@ protected:
 	wchar_t Char = L'\0';
 	std::string m_name = "";
 };
+
+namespace std
+{
+    template <> struct hash<KeyPress>
+    {
+		size_t operator()(const KeyPress &key) const
+		{
+			return key.keycode();
+		}
+    };
+}
 
 extern const KeyPress EscapeKey;
 extern const KeyPress CancelKey;
