@@ -24,12 +24,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IEventReceiver.h>
 #include <string>
 
+class KeyPress;
+namespace std
+{
+	template <> struct hash<KeyPress>;
+}
+
 /* A key press, consisting of either an Irrlicht keycode
    or an actual char */
 
 class KeyPress
 {
 public:
+	friend struct std::hash<KeyPress>;
+
 	KeyPress() = default;
 
 	KeyPress(const char *name);
@@ -43,8 +51,6 @@ public:
 
 	const char *sym() const;
 	const char *name() const;
-
-	irr::EKEY_CODE keycode() const { return Key; }
 
 protected:
 	static bool valid_kcode(irr::EKEY_CODE k)
@@ -63,7 +69,7 @@ namespace std
     {
 		size_t operator()(const KeyPress &key) const
 		{
-			return key.keycode();
+			return key.Key;
 		}
     };
 }
