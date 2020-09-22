@@ -1850,6 +1850,9 @@ void Game::processUserInput(f32 dtime)
 	}
 #endif
 
+	if (input->rawEventPending() && client->modsLoaded())
+		client->getScript()->on_event(input->getRawEvent());
+
 	if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen()) {
 		gui_chat_console->closeConsoleAtOnce();
 	}
@@ -3900,6 +3903,9 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 #endif
 	RenderingEngine::draw_scene(skycolor, m_game_ui->m_flags.show_hud,
 			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
+
+	if (client->modsLoaded())
+		client->getScript()->on_draw(dtime, driver, texture_src);
 
 	/*
 		Profiler graph

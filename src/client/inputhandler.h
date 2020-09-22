@@ -116,6 +116,14 @@ public:
 		keyWasReleased.clear();
 	}
 
+	const SEvent &getRawEvent()
+	{
+		raw_event_pending = false;
+		return raw_event;
+	}
+
+	bool rawEventPending() const { return raw_event_pending; }
+
 	MyEventReceiver()
 	{
 #ifdef HAVE_TOUCHSCREENGUI
@@ -146,6 +154,13 @@ private:
 
 	//! List of keys we listen for
 	std::unordered_set<KeyPress> keysListenedFor;
+
+	//! The raw event stored for usage with `minetest.register_on_event`
+	//! If the active event is a key event, `Shift` indicates whether the key's state of
+	//! being down or up is being repeated instead of its normal meaning.
+	SEvent raw_event;
+	//! Whether the raw event is waiting to be used or not
+	bool raw_event_pending = false;
 };
 
 class InputHandler
@@ -184,6 +199,9 @@ public:
 	virtual void step(float dtime) {}
 
 	virtual void clear() {}
+
+	virtual SEvent getRawEvent() { return SEvent(); }
+	virtual bool rawEventPending() const { return false; }
 
 	JoystickController joystick;
 	KeyCache keycache;
@@ -260,6 +278,15 @@ public:
 	{
 		joystick.clear();
 		m_receiver->clearInput();
+	}
+
+	virtual SEvent getRawEvent() override
+	{
+		return m_receiver->getRawEvent();
+	}
+	virtual bool rawEventPending() const override
+	{
+		return m_receiver->rawEventPending();
 	}
 
 private:

@@ -734,6 +734,44 @@ Call these functions only at load time!
     * Called when the local player open inventory
     * Newest functions are called first
     * If any function returns true, inventory doesn't open
+* `minetest.register_on_draw(function(dtime, drawer))`
+    * Called every frame after the engine is finished drawing for custom drawing to
+      the screen. Code used here must be fast to ensure the framerate doesn't drop.
+    * `dtime`: Time in seconds since the last frame.
+    * `drawer`: A `ScreenDrawer`
+* `minetest.register_on_event(function(event))`
+    * Called every time an event (e.g. keyboard or mouse input) is fired after the engine uses it.
+    * If this function returns `true`, all events handlers registered after this one will not be called.
+    * To get the state of all events at the current time, use `minetest.get_event_state`.
+    * `event`: A table describing the event. Table keys (most are only valid for one event type):
+        * event - The input type of the event. The value will be one of "key", "mouse", "touch",
+          or "joystick".
+        * Key event only table keys:
+            * type - The type of the key event. Can be "press", "release", or  "repeat" (which
+              means the key was held down and started repeating).
+            * keycode - The keycode of the key that was inputted. See `keycodes.txt` for a full
+              list of keycodes.
+            * keymap - If the key inputted is mapped to a specific key setting, this will contain
+              that setting's name minus the `keymap_` prefix. For instance, if `KEY_KEY_W` is mapped
+              to `keymap_forward`, then this will have the value `forward`. Otherwise, it is `nil`.
+            * char - If the key inputted has a character associated with it, then that character is
+              returned here. Shift for capital letters is taken into account. `nil` for other keys
+              or when the key event type is "release".
+        * Mouse event only table keys:
+            * type - The type of the mouse event. Can be "click", "release", "move", or "scroll".
+            * pos - For "move", the position of the mouse after the move.
+            * button - For "click" and "release", the mouse button that was clicked. Can be "left",
+              "right", or "middle".
+            * clicks - For "click", this is the number of times the mouse button was pressed in
+              quick succession, e.g. 2 for double clicking. Does not extend past 3 clicks.
+            * scroll - For "scroll", the amount that has been scrolled. Positive for up, negative for
+              down. For scroll wheels, this is likely just 1 and -1, but for things like touchpads,
+              it can be greater or even decimal depending on the scroll speed.
+        * Touch event only table keys:
+            * To be implemented
+        * Joystick event only table keys:
+            * To be implemented
+
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
@@ -820,6 +858,45 @@ Call these functions only at load time!
     * Clears the out chat queue
 * `minetest.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
+* `minetest.get_event_state()`
+    * Returns a table of the current state of all events at the current time.
+    * To get the events as they are fired, use `minetest.register_on_event`.
+    * The returned table looks like this:
+    ```
+    {
+        -- Sub-table of the keyboard state
+        key = {
+            -- Table of currently pressed keys. Both keycodes and keymaps are in the same table.
+            -- In this example, "W" and "Shift" are held down, and "W" is bound to "keymap_forward".
+            pressed = {
+                ["KEY_KEY_W"] = true,
+                ["forward"] = true,
+                ["KEY_LSHIFT"] = true
+            }
+        }
+
+        -- Sub-table of the mouse state
+        mouse = {
+            -- The current position of the mouse.
+            pos = {x = 0, y = 0},
+
+            -- True if the left, right, or middle mouse buttons are down, false if up.
+            left = true,
+            right = false,
+            middle = false
+        }
+
+        -- Sub-table of the touchscreen state
+        touch = {
+            -- To be implemented
+        }
+
+        -- Sub-table of the joystick state
+        joystick = {
+            -- To be implemented
+        }
+    }
+    ```
 
 ### Privileges
 * `minetest.get_privilege_list()`
@@ -1286,6 +1363,58 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 	protocol_version = 30             -- Will not be accurate at start up as the client might not be connected to the server yet, in that case it will be 0.
 }
 ```
+
+`ScreenDrawer`
+--------------
+
+An interface for drawing to and getting information about the screen.
+All positions/sizes are of the form `{x=<x pos/width>, y=<y pos/height>}`, and all rectangles
+are of the form `{x=<x pos>, y=<y pos>, w=<width>, h=<height>}`. Values are in pixels.
+
+### Methods
+* `get_window_size()` -> size: Returns the size of the Minetest window.
+* `draw_rect(rect, color[, clip_rect])`: Draws a filled rectangle.
+    * `rect`: The rectangle to draw.
+    * `color`: The color to make the rectangle.
+    * `clip_rect` (optional): If specified, any part of the filled rectangle that extends out
+      of this rectangle will not be drawn.
+* `draw_image(rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor])`: Draws an image.
+    * `rect`: The rectangle to draw the image in. The image will be stretched to fit.
+    * `texture`: The name of the texture to draw. Can have texture modifiers.
+    * `clip_rect` (optional): If specified, any part of the image that extends out of this
+      rectangle will not be drawn.
+    * `middle_rect` (optional): Defines the 9-slice rectangle for the image. If nil, the image
+      will be drawn normally. Negative widths and heights are added to the width and height of
+      the texture, allowing it to be used as the distance from the far end.
+      See https://en.wikipedia.org/wiki/9-slice_scaling for more information.
+    * `from_rect` (optional): Defines a rectangular sub-image of the texture which will be drawn
+      instead of the entire texture. If nil, the whole image is drawn. Negative widths and heights
+      are added to the width and height of the texture, allowing it to be used as the distance
+      from the far end.
+    * `recolor` (optional): The color to recolor the image to when drawing.
+* `get_image_size(texture)` -> size: Returns the size of the specified texture with optional
+  texture modifiers.
+* `draw_text(pos, text[, clip_rect][, style])`: Draws text.
+    * `pos`: The position of the top left of the text.
+    * `text`: The text to draw. Newlines are converted to spaces. Color escape codes are stripped.
+    * `clip_rect` (optional): If specified, any part of the text that extends out of this
+      rectangle will not be drawn.
+    * `style` (optional): A table of text styling options. Possible keys:
+        * color - The color of the text. Default white.
+        * font - What font to use. Can be "normal" or "mono". Default "normal".
+        * size - What size the font should be in pts. The default is user-set.
+            * **Note**: It is recommended to make the size relative to the user-set font size,
+              which can be gotten with `get_font_size`.
+        * bold - Whether the text should be bold. Default false.
+        * italic - Whether the text should be italicized. Default false.
+        * underline - Whether the text should be underlined. Default false.
+        * strikethrough - Whether the text should be crossed out. Default false.
+* `get_text_size(text[, style])` -> size: Gets the size of the text if it were to be drawn.
+    * `text`: The text to get the size of. Newlines are converted to spaces.
+    * `style`: Styling table. This can affect the space the font takes on the screen. This is the
+      same as used in `draw_text`.
+* `get_font_size(font)` -> size: Gets the user-set font size for the specified font in pts.
+    * `font`: One of the fonts in `draw_text`'s `font` styling parameter.
 
 ### HUD Definition (`hud_add`, `hud_get`)
 ```lua

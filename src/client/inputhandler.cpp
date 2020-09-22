@@ -97,6 +97,13 @@ void KeyCache::populate()
 
 bool MyEventReceiver::OnEvent(const SEvent &event)
 {
+	// ALways check if the key has been repeated
+	bool key_repeated =
+		event.EventType == EET_KEY_INPUT_EVENT &&
+		raw_event.EventType == EET_KEY_INPUT_EVENT &&
+		event.KeyInput.Key == raw_event.KeyInput.Key &&
+		event.KeyInput.PressedDown == raw_event.KeyInput.PressedDown;
+
 	/*
 		React to nothing here if a menu is active
 	*/
@@ -108,6 +115,11 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 #endif
 		return g_menumgr.preprocessEvent(event);
 	}
+
+	raw_event = event;
+	if (event.EventType == EET_KEY_INPUT_EVENT)
+		raw_event.KeyInput.Shift = key_repeated;
+	raw_event_pending = true;
 
 	// Remember whether each key is down or up
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {

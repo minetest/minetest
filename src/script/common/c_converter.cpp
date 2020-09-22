@@ -144,6 +144,30 @@ v2s32 read_v2s32(lua_State *L, int index)
 	return p;
 }
 
+core::recti read_recti(lua_State *L, int index)
+{
+	core::recti r;
+	CHECK_TYPE(index, "rectangle", LUA_TTABLE);
+
+	lua_getfield(L, index, "x");
+	r.UpperLeftCorner.X = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	r.UpperLeftCorner.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "w");
+	r.LowerRightCorner.X = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "h");
+	r.LowerRightCorner.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	r.LowerRightCorner += r.UpperLeftCorner;
+
+	return r;
+}
+
 v2f read_v2f(lua_State *L, int index)
 {
 	v2f p;

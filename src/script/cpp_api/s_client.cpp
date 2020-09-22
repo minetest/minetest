@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "s_item.h"
+#include "client/keycode.h"
+#include "script/lua_api/l_drawer.h"
 
 void ScriptApiClient::on_mods_loaded()
 {
@@ -123,6 +125,137 @@ void ScriptApiClient::environment_step(float dtime)
 		getClient()->setFatalError(std::string("Client environment_step: ") + e.what() + "\n"
 				+ script_get_backtrace(L));
 	}
+}
+
+void ScriptApiClient::on_draw(float dtime, video::IVideoDriver *driver,
+	ISimpleTextureSource *tsrc)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_draw");
+
+	lua_pushnumber(L, dtime);
+	LuaScreenDrawer::create_object(L, driver, tsrc);
+
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
+
+void ScriptApiClient::on_event(const SEvent &event)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_event");
+
+	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+		const SEvent::SMouseInput &mouse = event.MouseInput;
+
+		lua_createtable(L, 0, 3);
+
+		// Event type
+		lua_pushstring(L, "mouse");
+		lua_setfield(L, -2, "event");
+
+		// Mouse event descriptions
+		struct EventDesc {
+			const char *type;
+			const char *button;
+			int clicks;
+		};
+		// Has same order as EMOUSE_INPUT_EVENT
+		const EventDesc descs[EMIE_COUNT] = {
+			{"click", "left", 1},
+			{"click", "right", 1},
+			{"click", "middle", 1},
+			{"release", "left", 0},
+			{"release", "right", 0},
+			{"release", "middle", 0},
+			{"move", nullptr, 0},
+			{"scroll", nullptr, 0},
+			{"click", "left", 2},
+			{"click", "right", 2},
+			{"click", "middle", 2},
+			{"click", "left", 3},
+			{"click", "right", 3},
+			{"click", "middle", 3}
+		};
+		const EventDesc &desc = descs[mouse.Event];
+
+		// Mouse event type
+		lua_pushstring(L, desc.type);
+		lua_setfield(L, -2, "type");
+
+		// If applicable, the mouse button that was clicked/released
+		if (desc.button != nullptr) {
+			lua_pushstring(L, desc.button);
+			lua_setfield(L, -2, "button");
+		}
+
+		// If applicable, how many times the mouse was clicked (like doubleclick)
+		if (desc.clicks != 0) {
+			lua_pushinteger(L, desc.clicks);
+			lua_setfield(L, -2, "clicks");
+		}
+
+		// Mouse position, if applicable
+		if (mouse.Event == EMIE_MOUSE_MOVED) {
+			push_v2s32(L, v2s32(mouse.X, mouse.Y));
+			lua_setfield(L, -2, "pos");
+		}
+
+		// Mouse wheel, if applicable
+		if (mouse.Event == EMIE_MOUSE_WHEEL) {
+			lua_pushnumber(L, mouse.Wheel);
+			lua_setfield(L, -2, "scroll");
+		}
+	} else if (event.EventType == EET_KEY_INPUT_EVENT) {
+		const SEvent::SKeyInput &key = event.KeyInput;
+		KeyPress key_press(key);
+
+		lua_createtable(L, 0, 3);
+
+		// Event type
+		lua_pushstring(L, "key");
+		lua_setfield(L, -2, "event");
+
+		// Whether the key was pressed, released, or repeated (held pressed down)
+		if (key.PressedDown) {
+			if (key.Shift) // Shift means the key is repeating in this case
+				lua_pushstring(L, "repeat");
+			else
+				lua_pushstring(L, "press");
+		} else {
+			lua_pushstring(L, "release");
+		}
+		lua_setfield(L, -2, "type");
+
+		// Name of the key
+		lua_pushstring(L, key_press.sym());
+		lua_setfield(L, -2, "keycode");
+
+		// Keymap setting name, if applicable
+		for (const auto keymap_it : g_settings->getKeymapNames()) {
+			if (key_press == getKeySetting(keymap_it.c_str())) {
+				lua_pushstring(L, keymap_it.substr(7).c_str());
+				lua_setfield(L, -2, "keymap");
+				break;
+			}
+		}
+
+		// Character assigned to the key, if applicable
+		if (key.Char) {
+			std::string char_str = wide_to_utf8(std::wstring(1, key.Char));
+			// Sometimes `wide_to_utf8` fails for some characters, so check for this
+			if (char_str != "<invalid wstring>") {
+				lua_pushlstring(L, char_str.c_str(), char_str.size());
+				lua_setfield(L, -2, "char");
+			}
+		}
+	}
+
+	// Call callback; stop event propagation on the first `return true`.
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
 }
 
 void ScriptApiClient::on_formspec_input(const std::string &formname,

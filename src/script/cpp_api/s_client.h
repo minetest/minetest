@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "cpp_api/s_base.h"
 #include "mapnode.h"
+#include "irrlichttypes_extrabloated.h"
 #include "itemdef.h"
 #include "util/string.h"
 #include "util/pointedthing.h"
@@ -51,6 +52,8 @@ public:
 	void on_hp_modification(int32_t newhp);
 	void on_death();
 	void environment_step(float dtime);
+	void on_draw(float dtime, video::IVideoDriver *driver, ISimpleTextureSource *tsrc);
+	void on_event(const SEvent &event);
 	void on_formspec_input(const std::string &formname, const StringMap &fields);
 
 	bool on_dignode(v3s16 p, MapNode node);
