@@ -65,13 +65,13 @@ protected:
 
 namespace std
 {
-    template <> struct hash<KeyPress>
-    {
+	template <> struct hash<KeyPress>
+	{
 		size_t operator()(const KeyPress &key) const
 		{
 			return key.Key;
 		}
-    };
+	};
 }
 
 extern const KeyPress EscapeKey;
