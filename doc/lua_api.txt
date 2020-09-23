@@ -5336,9 +5336,12 @@ Sounds
 Timing
 ------
 
-* `minetest.after(time, func, ...)`
+* `minetest.after(time, func, ...)` : returns job table to use as below.
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+
+* `job:cancel()`
+    * Cancels the job function from being called
 
 Server
 ------
