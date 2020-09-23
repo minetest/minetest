@@ -62,12 +62,12 @@ Where `<gameid>` is unique to each game.
 The game directory can contain the following files:
 
 * `game.conf`, with the following keys:
-    * `name`: Required, human readable name  e.g. `name = Minetest`
+    * `name`: Required, a human readable title to address the game, e.g. `name = Minetest`.
     * `description`: Short description to be shown in the content tab
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
-      Mapgens not in this list are removed from the list of mapgens for
-      the game.
+      Mapgens not in this list are removed from the list of mapgens for the
+      game.
       If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
@@ -79,6 +79,10 @@ The game directory can contain the following files:
       e.g. `disallowed_mapgen_settings = mgv5_spflags`
       These settings are hidden for this game in the world creation
       dialog and game start menu.
+    * `author`: The author of the game. It only appears when downloaded from
+                ContentDB.
+    * `release`: Ignore this: Should only ever be set by ContentDB, as it is
+                 an internal ID used to track versions.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -134,9 +138,15 @@ Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
 The file is a key-value store of modpack details.
 
-* `name`: The modpack name.
+* `name`: The modpack name. Allows Minetest to determine the modpack name even
+          if the folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
                  menu.
+* `author`: The author of the modpack. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the modpack.
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
@@ -181,6 +191,11 @@ A `Settings` file that provides meta information about the mod.
              loaded before this mod.
 * `optional_depends`: A comma separated list of optional dependencies.
                       Like a dependency, but no error if the mod doesn't exist.
+* `author`: The author of the mod. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the mod.
 
 Note: to support 0.4.x, please also provide depends.txt.
 
@@ -3230,6 +3245,14 @@ Helper functions
     * `random_func` defaults to `math.random`. This function receives two
       integers as arguments and should return a random integer inclusively
       between them.
+* `table.find(table, value, start, end)`:
+    * Iterates over `table` and returns a list with keys of each entry `value` in the table.
+    * `start` and `end` determine a range of the iterating.
+    * Allows 'not to blow out' code with common algorithms and provides to do the same by call of the single function.
+* `table.find_if(table, func, start, end)`:
+    * Works similarly as `table.find` above, but instead checking of entry of the given value, 
+    this applies `func` to every element.
+    * Returns a table with keys of each value if applied function to them returned true.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
@@ -5887,6 +5910,31 @@ An `InvRef` is a reference to an inventory.
 * `get_location()`: returns a location compatible to
   `minetest.get_inventory(location)`.
     * returns `{type="undefined"}` in case location is not known
+
+### Callbacks
+
+Detached & nodemeta inventories provide the following callbacks for move actions:
+
+#### Before
+
+The `allow_*` callbacks return how many items can be moved.
+
+* `allow_move`/`allow_metadata_inventory_move`: Moving items in the inventory
+* `allow_take`/`allow_metadata_inventory_take`: Taking items from the inventory
+* `allow_put`/`allow_metadata_inventory_put`: Putting items to the inventory
+
+#### After
+
+The `on_*` callbacks are called after the items have been placed in the inventories.
+
+* `on_move`/`on_metadata_inventory_move`: Moving items in the inventory
+* `on_take`/`on_metadata_inventory_take`: Taking items from the inventory
+* `on_put`/`on_metadata_inventory_put`: Putting items to the inventory
+
+#### Swapping
+
+When a player tries to put an item to a place where another item is, the items are *swapped*.
+This means that all callbacks will be called twice (once for each action).
 
 `ItemStack`
 -----------
