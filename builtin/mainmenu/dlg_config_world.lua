@@ -73,9 +73,17 @@ local function get_formspec(data)
 		"label[0.5,0;" .. fgettext("World:") .. "]" ..
 		"label[1.75,0;" .. data.worldspec.name .. "]"
 
-	if mod.is_modpack or mod.type == "game" then
-		local info = minetest.formspec_escape(
-			core.get_content_info(mod.path).description)
+	if mod.is_modpack or mod.type == "game" or mod.type == "world" then
+		local info
+		if mod.path then
+			info = minetest.formspec_escape(
+				core.get_content_info(mod.path).description)
+		elseif mod.type == "game" then
+		       info = fgettext("In world game mods.")
+		elseif mod.type == "world" then
+		       info = fgettext("In world mods.")
+		end
+
 		if info == "" then
 			if mod.is_modpack then
 				info = fgettext("No modpack description provided.")

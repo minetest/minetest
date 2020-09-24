@@ -371,11 +371,14 @@ function pkgmgr.render_packagelist(render_list)
 		end
 
 		retval[#retval + 1] = color
-		if v.modpack ~= nil or v.loc == "game" then
-			retval[#retval + 1] = "1"
-		else
-			retval[#retval + 1] = "0"
+		local indent = 0
+		if v.modpack ~= nil then
+			indent = indent + 1
 		end
+		if v.loc == "game" or v.loc == "world" then
+			indent = indent + 1
+		end
+		retval[#retval + 1] = indent
 		retval[#retval + 1] = core.formspec_escape(v.list_name or v.name)
 	end
 
@@ -676,44 +679,89 @@ function pkgmgr.preparemodlist(data)
 
 	local global_mods = {}
 	local game_mods = {}
+	local world_mods = {}
 
-	--read global mods
-	local modpath = core.get_modpath()
-
-	if modpath ~= nil and
-		modpath ~= "" then
-		get_mods(modpath,global_mods)
+	-- read world game mods (i.e. there's a "game/mods" folder inside the world directory)
+	-- (if those exist no mods other than worldmods are considered)
+	if data.worldpath ~= nil then
+		get_mods(data.worldpath .. DIR_DELIM .. "game" .. DIR_DELIM .. "mods", game_mods)
 	end
-
-	for i=1,#global_mods,1 do
-		global_mods[i].type = "mod"
-		global_mods[i].loc = "global"
-		retval[#retval + 1] = global_mods[i]
-	end
-
-	--read game mods
-	local gamespec = pkgmgr.find_by_gameid(data.gameid)
-	pkgmgr.get_game_mods(gamespec, game_mods)
 
 	if #game_mods > 0 then
-		-- Add title
-		retval[#retval + 1] = {
-			type = "game",
-			is_game_content = true,
-			name = fgettext("$1 mods", gamespec.name),
-			path = gamespec.path
-		}
-	end
+		if #game_mods > 0 then
+			-- Add title
+			retval[#retval + 1] = {
+				type = "game",
+				is_game_content = true,
+				name = fgettext("World game mods"),
+			}
+		end
 
-	for i=1,#game_mods,1 do
-		game_mods[i].type = "mod"
-		game_mods[i].loc = "game"
-		game_mods[i].is_game_content = true
-		retval[#retval + 1] = game_mods[i]
+		for i=1,#game_mods,1 do
+			game_mods[i].type = "mod"
+			game_mods[i].loc = "game"
+			game_mods[i].is_game_content = true
+			retval[#retval + 1] = game_mods[i]
+		end
+	else
+		--read global mods
+		local modpath = core.get_modpath()
+
+		if modpath ~= nil and
+			modpath ~= "" then
+			get_mods(modpath,global_mods)
+		end
+
+		for i=1,#global_mods,1 do
+			global_mods[i].type = "mod"
+			global_mods[i].loc = "global"
+			retval[#retval + 1] = global_mods[i]
+		end
+
+		--read game mods
+		local gamespec = pkgmgr.find_by_gameid(data.gameid)
+		pkgmgr.get_game_mods(gamespec, game_mods)
+
+		if #game_mods > 0 then
+			-- Add title
+			retval[#retval + 1] = {
+				type = "game",
+				is_game_content = true,
+				name = fgettext("$1 mods", gamespec.name),
+				path = gamespec.path
+			}
+		end
+
+		for i=1,#game_mods,1 do
+			game_mods[i].type = "mod"
+			game_mods[i].loc = "game"
+			game_mods[i].is_game_content = true
+			retval[#retval + 1] = game_mods[i]
+		end
+
 	end
 
 	if data.worldpath == nil then
 		return retval
+	end
+
+	-- read world mods
+	get_mods(data.worldpath .. DIR_DELIM .. "worldmods", world_mods)
+
+	if #world_mods > 0 then
+		-- Add title
+		retval[#retval + 1] = {
+			type = "world",
+			is_game_content = true,
+			name = fgettext("World mods"),
+		}
+	end
+
+	for i=1,#world_mods,1 do
+		world_mods[i].type = "mod"
+		world_mods[i].loc = "world"
+		world_mods[i].is_game_content = true
+		retval[#retval + 1] = world_mods[i]
 	end
 
 	--read world mod configuration

@@ -286,12 +286,19 @@ end
 function sort_mod_list(self)
 
 	table.sort(self.m_processed_list, function(a, b)
-		-- Show game mods at bottom
+		-- Show game and world mods at bottom
 		if a.type ~= b.type or a.loc ~= b.loc then
-			if b.type == "game" then
+			if b.loc == "game" then
+				return true
+			elseif b.type == "game" then
 				return a.loc ~= "game"
+			elseif b.loc == "world" then
+				return a.loc ~= "game" and a.type ~= "game"
+			elseif b.type == "world" then
+				return a.loc ~= "game" and a.type ~= "game" and a.loc ~= "world"
+			else
+				return false
 			end
-			return b.loc == "game"
 		end
 		-- If in same or no modpack, sort by name
 		if a.modpack == b.modpack then
