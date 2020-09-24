@@ -21,6 +21,8 @@ core.EMERGE_GENERATED   = 4
 -- constants.h
 -- Size of mapblocks in nodes
 core.MAP_BLOCKSIZE = 16
+-- Maximum map generation limit
+core.MAX_MAP_GENERATION_LIMIT = 31000
 -- Default maximal HP of a player
 core.PLAYER_MAX_HP_DEFAULT = 20
 -- Default maximal breath of a player

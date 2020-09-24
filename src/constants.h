@@ -64,6 +64,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // I really don't want to make every algorithm to check if it's going near
 // the limit or not, so this is lower.
 // This is the maximum value the setting map_generation_limit can be
+// If changed, this constant as defined in builtin/game/constants.lua must
+// also be changed.
 #define MAX_MAP_GENERATION_LIMIT (31000)
 
 // Size of node in floating-point units
@@ -74,6 +76,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BS 10.0f
 
 // Dimension of a MapBlock
+// If changed, this constant as defined in builtin/game/constants.lua must
+// also be changed.
 #define MAP_BLOCKSIZE 16
 // This makes mesh updates too slow, as many meshes are updated during
 // the main loop (related to TempMods and day/night)
