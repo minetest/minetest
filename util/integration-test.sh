@@ -14,7 +14,7 @@ EOF
 
 docker run --rm -i \
 	-v ${CFG}:/etc/minetest/minetest.conf \
-  -v $(pwd)/games:/usr/local/share/minetest/games \
+	-v $(pwd)/games:/usr/local/share/minetest/games \
 	-v ${MINETEST_VOLUME}:/var/lib/minetest/.minetest \
 	minetest
 
