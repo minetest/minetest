@@ -7,6 +7,7 @@ docker run --rm -i -v ${MINETEST_VOLUME}:/minetest alpine /bin/sh -c "chown -R 3
 
 # settings
 cat <<EOF > ${CFG}
+ devtest_unittests_autostart = true
  enable_integration_test = true
  default_game = devtest
 EOF
