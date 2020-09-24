@@ -1,0 +1,37 @@
+name: build
+
+# build on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - '**/CMakeLists.txt'
+      - 'cmake/Modules/**'
+      - 'util/buildbot/**'
+      - 'util/ci/**'
+      - '.github/workflows/**.yml'
+
+jobs:
+  integration-test:
+    name: "Docker integration test"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and test docker image
+        run: |
+          docker build . -t minetest
+          ./util/integration-test.sh
