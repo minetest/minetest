@@ -113,6 +113,7 @@ private:
 	gui::IGUIStaticText *m_guitext2 = nullptr; // Second line of debug text
 
 	gui::IGUIStaticText *m_guitext_info = nullptr; // At the middle of the screen
+	gui::IGUIStaticText *m_guitext_info_excess = nullptr; // Ellipsis if infotext is too long
 	std::wstring m_infotext;
 
 	gui::IGUIStaticText *m_guitext_status = nullptr;

@@ -112,3 +112,4 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define TTF_DEFAULT_FONT_SIZE (16)
 #define DEFAULT_FONT_SIZE (10)
+#define INFOTEXT_LINES (6)

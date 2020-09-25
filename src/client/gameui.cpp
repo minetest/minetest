@@ -71,14 +71,27 @@ void GameUI::init()
 			chat_font_size, FM_Unspecified));
 	}
 
-	// At the middle of the screen
-	// Object infos are shown in this
+	// Infotext of nodes and objects.
+	// If in debug mode, object debug infos shown here, too.
+	// Located on the left on the screen, below chat.
 	u32 chat_font_height = m_guitext_chat->getActiveFont()->getDimension(L"Ay").Height;
+	u16 info_offset = chat_font_height *
+		(g_settings->getU16("recent_chat_messages") + 3);
+
 	m_guitext_info = gui::StaticText::add(guienv, L"",
-		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) +
-			v2s32(100, chat_font_height *
-			(g_settings->getU16("recent_chat_messages") + 3)),
+		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * INFOTEXT_LINES)
+			+ v2s32(100, info_offset),
 			false, true, guiroot);
+
+	// Add ellipsis at end if text above was too long
+	m_guitext_info_excess = gui::StaticText::add(guienv, L"",
+		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight())
+			+ v2s32(100, info_offset +
+			(g_fontengine->getTextHeight() * INFOTEXT_LINES)),
+			false, true, guiroot);
+	/*~ This is an ellipsis which is written when the text in the infotext GUI
+	element is too long */
+	setStaticText(m_guitext_info_excess, wgettext("(...)"));
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
 	m_guitext_status = gui::StaticText::add(guienv, L"<Status>",
@@ -165,7 +178,14 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 	m_guitext2->setVisible(m_flags.show_basic_debug);
 
 	setStaticText(m_guitext_info, m_infotext.c_str());
-	m_guitext_info->setVisible(m_flags.show_hud && g_menumgr.menuCount() == 0);
+	bool info_visible = m_flags.show_hud && g_menumgr.menuCount() == 0;
+	m_guitext_info->setVisible(info_visible);
+	// Enable infotext ellipsis if infotext is too long to fit in box
+	if ((m_guitext_info->getTextHeight()) > g_fontengine->getTextHeight() * INFOTEXT_LINES) {
+		m_guitext_info_excess->setVisible(info_visible);
+	} else {
+		m_guitext_info_excess->setVisible(false);
+	}
 
 	static const float statustext_time_max = 1.5f;
 
