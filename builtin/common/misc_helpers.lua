@@ -530,6 +530,7 @@ function table.find(t, e, i, j)
             for i1, v1 in pairs(e1) do
                 if v1 ~= e2[i1] then
                     is_elem_exists = false
+                    break
                 end  
             end
                     
