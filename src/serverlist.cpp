@@ -245,10 +245,17 @@ void sendAnnounce(AnnounceAction action,
 		for (const ModSpec &mod : mods) {
 			server["mods"].append(mod.name);
 		}
-		actionstream << "Announcing to " << g_settings->get("serverlist_url") << std::endl;
 	} else if (action == AA_UPDATE) {
 		if (lag)
 			server["lag"] = lag;
+	}
+
+	if (action == AA_START) {
+		actionstream << "Announcing " << aa_names[action] << " to " <<
+			g_settings->get("serverlist_url") << std::endl;
+	} else {
+		infostream << "Announcing " << aa_names[action] << " to " <<
+			g_settings->get("serverlist_url") << std::endl;
 	}
 
 	HTTPFetchRequest fetch_request;
