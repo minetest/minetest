@@ -2338,7 +2338,7 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 	block->serializeNetworkSpecific(os);
 	std::string s = os.str();
 
-	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + 2 + s.size(), peer_id);
+	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + s.size(), peer_id);
 
 	pkt << block->getPos();
 	pkt.putRawString(s.c_str(), s.size());
