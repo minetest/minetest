@@ -24,9 +24,11 @@ import android.content.Context;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.appcompat.widget.AppCompatEditText;
+
 import java.util.Objects;
 
-public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText {
+public class CustomEditText extends AppCompatEditText {
 	public CustomEditText(Context context) {
 		super(context);
 	}
