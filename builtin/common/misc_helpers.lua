@@ -538,7 +538,8 @@ function table.find(t, e, i, j)
     end}
   
     if type(e) == "table" then
-        setmetatable(table.copy(e), mt)
+        e = table.copy(e)
+        setmetatable(e, mt)
     end
     
     local iter = 0
@@ -547,7 +548,8 @@ function table.find(t, e, i, j)
         iter = iter + 1
         
         if type(v) == "table" then
-            setmetatable(table.copy(v), mt)
+            v = table.copy(v)
+            setmetatable(v, mt)
         end
         if not(iter < i or iter > j) and e == v then
             table.insert(findings, k)
