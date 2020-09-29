@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Portuguese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-09-11 20:24+0000\n"
-"Last-Translator: Célio Rodrigues <celiorodrigues@refreshbubbles.com>\n"
+"PO-Revision-Date: 2020-12-10 19:29+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
 "minetest/pt/>\n"
 "Language: pt\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -44,7 +44,7 @@ msgstr "Reconectar"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "O servidor requisitou uma reconexão:"
+msgstr "O servidor solicitou uma reconexão :"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
@@ -432,7 +432,7 @@ msgstr "Eliminar"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "pkgmgr: não foi possível excluir \"$1\""
+msgstr "pkgmgr: não foi possível apagar \"$1\""
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
@@ -587,7 +587,7 @@ msgstr "amenizado"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr "$1 (Habilitado)"
+msgstr "$1 (Ativado)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
@@ -686,7 +686,7 @@ msgstr "Desenvolvedores Principais"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr "Créditos"
+msgstr "Méritos"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -1096,15 +1096,15 @@ msgstr "Nome do servidor: "
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
-msgstr "Avanço automático para frente desabilitado"
+msgstr "Avanço automático desativado"
 
 #: src/client/game.cpp
 msgid "Automatic forward enabled"
-msgstr "Avanço automático para frente habilitado"
+msgstr "Avanço automático para frente ativado"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
-msgstr "Atualização da camera desabilitada"
+msgstr "Atualização da camera desativada"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
@@ -1116,15 +1116,15 @@ msgstr "Mudar palavra-passe"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
-msgstr "Modo cinemático desabilitado"
+msgstr "Modo cinemático desativado"
 
 #: src/client/game.cpp
 msgid "Cinematic mode enabled"
-msgstr "Modo cinemático habilitado"
+msgstr "Modo cinemático ativado"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr "Scripting de cliente está desabilitado"
+msgstr "O scripting de cliente está desativado"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
@@ -1217,11 +1217,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr "Alcance de visualização ilimitado desabilitado"
+msgstr "Alcance de visualização ilimitado desativado"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr "Alcance de visualização ilimitado habilitado"
+msgstr "Alcance de visualização ilimitado ativado"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1233,31 +1233,31 @@ msgstr "Sair para o S.O"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
-msgstr "Modo rápido desabilitado"
+msgstr "Modo rápido desativado"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled"
-msgstr "Modo rápido habilitado"
+msgstr "Modo rápido ativado"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr "Modo rápido habilitado(note: sem privilégio 'fast')"
+msgstr "Modo rápido ativado (note: sem privilégio 'fast')"
 
 #: src/client/game.cpp
 msgid "Fly mode disabled"
-msgstr "Modo voo desabilitado"
+msgstr "Modo voo desativado"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
-msgstr "Modo voo habilitado"
+msgstr "Modo voo ativado"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr "Modo voo habilitado(note: sem privilegio 'fly')"
+msgstr "Modo voo ativado (note: sem privilégio 'fly')"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
-msgstr "Névoa desabilitada"
+msgstr "Névoa desativada"
 
 #: src/client/game.cpp
 msgid "Fog enabled"
@@ -1293,7 +1293,7 @@ msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr "Minipapa atualmente desabilitado por jogo ou mod"
+msgstr "Minipapa atualmente desativado por jogo ou mod"
 
 #: src/client/game.cpp
 msgid "Minimap hidden"
@@ -1325,15 +1325,15 @@ msgstr "Minimapa em modo de superfície, zoom 4x"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr "Modo atravessar paredes desabilitado"
+msgstr "Modo de atravessar paredes desativado"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled"
-msgstr "Modo atravessar paredes habilitado"
+msgstr "Modo atravessar paredes ativado"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr "Modo atravessar paredes habilitado(note: sem privilégio 'noclip')"
+msgstr "Modo atravessar paredes ativado (note: sem privilégio 'noclip')"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1349,11 +1349,11 @@ msgstr "Ligado"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr "Modo movimento pitch desabilitado"
+msgstr "Modo movimento pitch desativado"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr "Modo movimento pitch habilitado"
+msgstr "Modo movimento pitch ativado"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
@@ -1421,7 +1421,7 @@ msgstr "Mostrar wireframe"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr "Zoom atualmente desabilitado por jogo ou mod"
+msgstr "Zoom atualmente desativado por jogo ou mod"
 
 #: src/client/game.cpp
 msgid "ok"
@@ -1934,7 +1934,7 @@ msgid ""
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
 "(Android) Corrige a posição do joystick virtual.\n"
-"Se desabilitado, o joystick virtual vai centralizar na posição do primeiro "
+"Se desativado, o joystick virtual vai centralizar na posição do primeiro "
 "toque."
 
 #: src/settings_translation_file.cpp
@@ -1944,8 +1944,8 @@ msgid ""
 "circle."
 msgstr ""
 "(Android) Use joystick virtual para ativar botão \"aux\".\n"
-"Se habilitado, o joystick virtual vai também clicar no botão \"aux\" quando "
-"estiver fora do circulo principal."
+"Se ativado, o joystick virtual vai também clicar no botão \"aux\" quando "
+"estiver fora do círculo principal."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2092,14 +2092,14 @@ msgid ""
 msgstr ""
 "Suporte de 3D.\n"
 "Modos atualmente suportados:\n"
-"-    none: Nenhum efeito 3D.\n"
-"-    anaglyph: Sistema de cor Ciano/Magenta (Óculos 3D azul vermelho).\n"
-"-    interlaced: Sistema interlaçado (Óculos com lentes polarizadas).\n"
-"-    topbottom: Divide o ecrã em dois: um em cima e outro em baixo.\n"
-"-    sidebyside: Divide o ecrã em dois: lado a lado.\n"
+"-    none: nenhum efeito 3D.\n"
+"-    anaglyph: sistema de cor Ciano/Magenta (Óculos 3D azul vermelho).\n"
+"-    interlaced: sistema interlaçado (Óculos com lentes polarizadas).\n"
+"-    topbottom: divide o ecrã em dois: um em cima e outro em baixo.\n"
+"-    sidebyside: divide o ecrã em dois: lado a lado.\n"
 " -   crossview: 3D de olhos cruzados.\n"
-" -   pageflip: Quadbuffer baseado em 3D.\n"
-"Note que o modo interlaçado requer que o sombreamento esteja habilitado."
+" -   pageflip: quadbuffer baseado em 3D.\n"
+"Note que o modo interlaçado requer que sombreamentos estejam ativados."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3202,7 +3202,7 @@ msgstr "Sombra da fonte alternativa"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow alpha"
-msgstr "Canal de opacidade  sombra da fonte alternativa"
+msgstr "Canal de opacidade sombra da fonte alternativa"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font size"
@@ -3586,11 +3586,11 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
-"Tem o instrumento de registro em si:\n"
+"Fazer que o profiler instrumente si próprio:\n"
 "* Monitorar uma função vazia.\n"
-"Isto estima a sobrecarga, que o istrumento está adicionando  (+1 Chamada de "
+"Isto estima a sobrecarga, que o instrumento está a adicionar (+1 chamada de "
 "função).\n"
-"* Monitorar o amostrador que está sendo usado para atualizar as estatísticas."
+"* Monitorar o sampler que está a ser usado para atualizar as estatísticas."
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
@@ -3862,8 +3862,8 @@ msgid ""
 "are\n"
 "enabled."
 msgstr ""
-"Se estiver desabilitado, a tecla \"especial será usada para voar rápido se "
-"modo voo e rápido estiverem habilitados."
+"Se estiver desativado, a tecla \"especial será usada para voar rápido se "
+"modo voo e rápido estiverem ativados."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3873,10 +3873,13 @@ msgid ""
 "invisible\n"
 "so that the utility of noclip mode is reduced."
 msgstr ""
-"Se habilitado, o servidor executará a seleção de oclusão de bloco de mapa "
-"com base na posição do olho do jogador. Isso pode reduzir o número de blocos "
-"enviados ao cliente de 50 a 80%. O cliente não será mais mais invisível, de "
-"modo que a utilidade do modo \"noclip\" (modo intangível) será reduzida."
+"Se ativado, o servidor executará a seleção de oclusão de bloco de mapa com "
+"base \n"
+"na posição do olho do jogador. Isso pode reduzir o número de blocos enviados "
+"ao \n"
+"cliente de 50 a 80%. O cliente ja não será invisível, de modo que a "
+"utilidade do \n"
+"modo \"noclip\" (modo intangível) será reduzida."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3894,15 +3897,15 @@ msgid ""
 "down and\n"
 "descending."
 msgstr ""
-"Se habilitado, a tecla \"especial\" em vez de \"esgueirar\" servirá para "
-"usada descer."
+"Se ativado, a tecla \"especial\" em vez de \"esgueirar\" servirá para usada "
+"descer."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
-"Se habilitado, as ações são registradas para reversão.\n"
+"Se ativado, as ações são registadas para reversão.\n"
 "Esta opção só é lido quando o servidor é iniciado."
 
 #: src/settings_translation_file.cpp
@@ -3922,8 +3925,8 @@ msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
 msgstr ""
-"Se habilitado, faz com que os movimentos sejam relativos ao pitch do jogador "
-"quando voando ou nadando."
+"Se ativado, faz com que os movimentos sejam relativos ao pitch do jogador "
+"quando a voar ou a nadar."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
@@ -3946,8 +3949,9 @@ msgid ""
 "limited\n"
 "to this distance from the player to the node."
 msgstr ""
-"Se a restrição de CSM para alcançe de nós está habilitado, chamadas get_node "
-"são limitadas a está distancia do player até o nó."
+"Se a restrição de CSM para o alcançe de nós está ativado, chamadas get_node "
+"são \n"
+"limitadas a está distancia do jogador até o nó."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5159,11 +5163,11 @@ msgid ""
 "'altitude_dry': Reduces humidity with altitude."
 msgstr ""
 "Atributos de geração de mapa específicos ao gerador Valleys.\n"
-"'altitude_chill':Reduz o calor com a altitude.\n"
-"'humid_rivers':Aumenta a umidade em volta dos rios.\n"
-"'profundidade_variada_rios': Se habilitado, baixa umidade e alto calor faz "
-"com que que rios se tornem mais rasos e eventualmente sumam.\n"
-"'altitude_dry': Reduz a umidade com a altitude."
+"'altitude_chill': Reduz o calor com a altitude.\n"
+"'humid_rivers': Aumenta a humidade à volta de rios.\n"
+"'profundidade_variada_rios': se ativado, baixa a humidade e alto calor faz \n"
+"com que rios se tornem mais rasos e eventualmente sumam.\n"
+"'altitude_dry': reduz a humidade com a altitude."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen v5."
@@ -5225,7 +5229,7 @@ msgstr "Gerador de mundo Carpathian"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian specific flags"
-msgstr "Flags específicas do gerador de mundo  Carpathian"
+msgstr "Flags específicas do gerador do mundo Carpathian"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat"
@@ -5860,8 +5864,8 @@ msgid ""
 "Print the engine's profiling data in regular intervals (in seconds).\n"
 "0 = disable. Useful for developers."
 msgstr ""
-"Intervalo de impressão de dados do analisador (em segundos). 0 = "
-"desabilitado. Útil para desenvolvedores."
+"Intervalo de impressão de dados do analisador (em segundos). 0 = desativado. "
+"Útil para desenvolvedores."
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
@@ -5965,15 +5969,13 @@ msgstr ""
 "Restringe o acesso de certas funções a nível de cliente em servidores.\n"
 "Combine os byflags abaixo par restringir recursos de nível de cliente, ou "
 "coloque 0 para nenhuma restrição:\n"
-"LOAD_CLIENT_MODS: 1 (desabilita o carregamento de mods de cliente)\n"
-"CHAT_MESSAGES: 2 (desabilita a chamada send_chat_message no lado do "
-"cliente)\n"
-"READ_ITEMDEFS: 4 (desabilita a chamada get_item_def no lado do cliente)\n"
-"READ_NODEDEFS: 8 (desabilita a chamada get_node_def no lado do cliente)\n"
+"LOAD_CLIENT_MODS: 1 (desativa o carregamento de mods de cliente)\n"
+"CHAT_MESSAGES: 2 (desativa a chamada send_chat_message no lado do cliente)\n"
+"READ_ITEMDEFS: 4 (desativa a chamada get_item_def no lado do cliente)\n"
+"READ_NODEDEFS: 8 (desativa a chamada get_node_def no lado do cliente)\n"
 "LOOKUP_NODES_LIMIT: 16 (limita a chamada get_node no lado do cliente para "
 "csm_restriction_noderange)\n"
-"READ_PLAYERINFO: 32 (desabilita a chamada get_player_names no lado do "
-"cliente)"
+"READ_PLAYERINFO: 32 (desativa a chamada get_player_names no lado do cliente)"
 
 #: src/settings_translation_file.cpp
 msgid "Ridge mountain spread noise"
@@ -6169,7 +6171,7 @@ msgstr ""
 "7 = Conjunto de mandelbrot \"Variation\" 4D.\n"
 "8 = Conjunto de julia \"Variation\" 4D.\n"
 "9 = Conjunto de mandelbrot \"Mandelbrot/Mandelbar\" 3D.\n"
-"10 = Conjunto de julia  \"Mandelbrot/Mandelbar\" 3D.\n"
+"10 = Conjunto de julia \"Mandelbrot/Mandelbar\" 3D.\n"
 "11 = Conjunto de mandelbrot \"Árvore de natal\" 3D.\n"
 "12 = Conjunto de julia \"Árvore de natal\" 3D..\n"
 "13 = Conjunto de mandelbrot \"Bulbo de Mandelbrot\" 3D.\n"
@@ -6702,9 +6704,9 @@ msgid ""
 "enabled. Also the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
-"A distancia vertical onde o calor cai por 20 caso 'altitude_chill' esteja "
-"habilitado. Também é a distancia vertical onde a umidade cai por 10 se "
-"'altitude_dry' estiver habilitado."
+"A distância vertical onde o calor cai por 20 caso 'altitude_chill' esteja \n"
+"ativado. Também é a distância vertical onde a humidade cai por 10 se \n"
+"'altitude_dry' estiver ativado."
 
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
@@ -7203,7 +7205,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Y of upper limit of large caves."
-msgstr "Limite Y máximo de grandes  cavernas."
+msgstr "Limite Y máximo de grandes cavernas."
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
