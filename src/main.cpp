@@ -512,7 +512,7 @@ static bool read_config_file(const Settings &cmd_args)
 	sanity_check(g_settings_path == "");	// Sanity check
 
 	if (cmd_args.exists("config")) {
-		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
+		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str(), true);
 		if (!r) {
 			errorstream << "Could not read configuration from \""
 			            << cmd_args.get("config") << "\"" << std::endl;
@@ -534,7 +534,7 @@ static bool read_config_file(const Settings &cmd_args)
 #endif
 
 		for (const std::string &filename : filenames) {
-			bool r = g_settings->readConfigFile(filename.c_str());
+			bool r = g_settings->readConfigFile(filename.c_str(), true);
 			if (r) {
 				g_settings_path = filename;
 				break;

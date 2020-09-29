@@ -118,21 +118,29 @@ std::string Settings::getMultiline(std::istream &is, size_t *num_lines)
 }
 
 
-bool Settings::readConfigFile(const char *filename)
+bool Settings::readConfigFile(const char *filename, bool allowSecureSettings)
 {
 	std::ifstream is(filename);
 	if (!is.good())
 		return false;
 
-	return parseConfigLines(is, "");
+	return parseConfigLines(is, "", allowSecureSettings);
 }
 
 
-bool Settings::parseConfigLines(std::istream &is, const std::string &end)
+bool Settings::parseConfigLines(std::istream &is, const std::string &end, bool allowSecureSettings)
 {
 	MutexAutoLock lock(m_mutex);
 
 	std::string line, name, value;
+
+	auto checkSetting = [&]() {
+		if (!allowSecureSettings && name.compare(0, 7, "secure.") == 0) {
+			errorstream << "Secure setting " << name << " isn't allowed, so was ignored." << std::endl;
+			return false;
+		}
+		return true;
+	};
 
 	while (is.good()) {
 		std::getline(is, line);
@@ -144,11 +152,17 @@ bool Settings::parseConfigLines(std::istream &is, const std::string &end)
 		case SPE_COMMENT:
 			break;
 		case SPE_KVPAIR:
+			if (!checkSetting())
+				break;
+
 			m_settings[name] = SettingsEntry(value);
 			break;
 		case SPE_END:
 			return true;
 		case SPE_GROUP: {
+			if (!checkSetting())
+				break;
+
 			Settings *group = new Settings;
 			if (!group->parseConfigLines(is, "}")) {
 				delete group;
@@ -158,6 +172,9 @@ bool Settings::parseConfigLines(std::istream &is, const std::string &end)
 			break;
 		}
 		case SPE_MULTILINE:
+			if (!checkSetting())
+				break;
+
 			m_settings[name] = SettingsEntry(getMultiline(is));
 			break;
 		}

@@ -104,13 +104,13 @@ public:
 	 ***********************/
 
 	// Read configuration file.  Returns success.
-	bool readConfigFile(const char *filename);
-	//Updates configuration file.  Returns success.
+	bool readConfigFile(const char *filename, bool allowSecureSettings = false);
+	// Updates configuration file.  Returns success.
 	bool updateConfigFile(const char *filename);
 	// NOTE: Types of allowed_options are ignored.  Returns success.
 	bool parseCommandLine(int argc, char *argv[],
 			std::map<std::string, ValueSpec> &allowed_options);
-	bool parseConfigLines(std::istream &is, const std::string &end = "");
+	bool parseConfigLines(std::istream &is, const std::string &end = "", bool allowSecureSettings = false);
 	void writeLines(std::ostream &os, u32 tab_depth=0) const;
 
 	SettingsParseEvent parseConfigObject(const std::string &line,
