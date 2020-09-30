@@ -1893,8 +1893,8 @@ void GenericCAO::updateMeshCulling()
 		return;
 
 	if (m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST) {
-		// Hide the mesh by culling faces with normals facing
-		// the camera. Serious hackyness but it works for our
+		// Hide the mesh by culling both front and
+		// back faces. Serious hackyness but it works for our
 		// purposes. This also preserves the skeletal armature.
 		node->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 			true);
