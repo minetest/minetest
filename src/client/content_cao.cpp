@@ -457,10 +457,7 @@ void GenericCAO::setChildrenVisible(bool toset)
 		GenericCAO *obj = m_env->getGenericCAO(cao_id);
 		if (obj) {
 			// Check if the entity is forced to appear in first person.
-			if (obj->isForcedVisible())
-				obj->setVisible(obj->isForcedVisible());
-			else
-				obj->setVisible(toset);
+			obj->setVisible(obj->isForcedVisible() ? true : toset);
 		}
 	}
 }
