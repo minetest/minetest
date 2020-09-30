@@ -569,7 +569,8 @@ bool PlayerSAO::checkMovementCheat()
 			int parent_id;
 			std::string bone;
 			v3f attachment_rot;
-			getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot);
+			bool force_visible;
+			getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot, &force_visible);
 		}
 
 		v3f parent_pos = parent->getBasePosition();
