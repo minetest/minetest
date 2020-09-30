@@ -22,7 +22,8 @@ end
 -- Lets light through, but not sunlight, leading to a
 -- reduction in light level when light passes through
 minetest.register_node("testnodes:sunlight_filter", {
-	description = S("Sunlight Filter"),
+	description = S("Sunlight Filter") .."\n"..
+		S("Lets light through, but weakens sunlight"),
 	paramtype = "light",
 
 
@@ -35,7 +36,8 @@ minetest.register_node("testnodes:sunlight_filter", {
 
 -- Lets light and sunlight through without obstruction
 minetest.register_node("testnodes:sunlight_propagator", {
-	description = S("Sunlight Propagator"),
+	description = S("Sunlight Propagator") .."\n"..
+		S("Lets all light through"),
 	paramtype = "light",
 	sunlight_propagates = true,
 

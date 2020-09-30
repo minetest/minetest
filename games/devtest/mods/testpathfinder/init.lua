@@ -121,7 +121,11 @@ end
 -- Sneak+punch: Select pathfinding algorithm
 -- Place: Select destination node
 minetest.register_tool("testpathfinder:testpathfinder", {
-	description = S("Pathfinder Tester"),
+	description = S("Pathfinder Tester") .."\n"..
+		S("Finds path between 2 points") .."\n"..
+		S("Place on node: Select destination") .."\n"..
+		S("Punch: Find path from here") .."\n"..
+		S("Sneak+Punch: Change algorithm"),
 	inventory_image = "testpathfinder_testpathfinder.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = find_path_or_set_algorithm,

@@ -1,7 +1,8 @@
 -- Bucket: Punch liquid source or flowing liquid to collect it
 
 minetest.register_tool("bucket:bucket", {
-	description = "Bucket",
+	description = "Bucket".."\n"..
+		"Picks up liquid nodes",
 	inventory_image = "bucket.png",
 	stack_max = 1,
 	liquids_pointable = true,

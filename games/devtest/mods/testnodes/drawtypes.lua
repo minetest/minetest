@@ -514,6 +514,15 @@ local scale = function(subname, desc_double, desc_half)
 	minetest.register_node("testnodes:"..subname.."_half", def)
 end
 
+scale("allfaces",
+	S("Double-sized Allfaces Drawtype Test Node"),
+	S("Half-sized Allfaces Drawtype Test Node"))
+scale("allfaces_optional",
+	S("Double-sized Allfaces Optional Drawtype Test Node"),
+	S("Half-sized Allfaces Optional Drawtype Test Node"))
+scale("allfaces_optional_waving",
+	S("Double-sized Waving Allfaces Optional Drawtype Test Node"),
+	S("Half-sized Waving Allfaces Optional Drawtype Test Node"))
 scale("plantlike",
 	S("Double-sized Plantlike Drawtype Test Node"),
 	S("Half-sized Plantlike Drawtype Test Node"))

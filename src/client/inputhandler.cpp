@@ -112,7 +112,7 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	// Remember whether each key is down or up
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
 		const KeyPress &keyCode = event.KeyInput;
-		if (keysListenedFor[keyCode]) {
+		if (keysListenedFor.count(keyCode)) {
 				// If the key is being held down then the OS may
 				// send a continuous stream of keydown events.
 				// In this case, we don't want to let this
@@ -120,15 +120,15 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 				// certain actions to repeat constantly.
 			if (event.KeyInput.PressedDown) {
 				if (!IsKeyDown(keyCode)) {
-					keyWasDown.set(keyCode);
-					keyWasPressed.set(keyCode);
+					keyWasDown.insert(keyCode);
+					keyWasPressed.insert(keyCode);
 				}
-				keyIsDown.set(keyCode);
+				keyIsDown.insert(keyCode);
 			} else {
 				if (IsKeyDown(keyCode))
-					keyWasReleased.set(keyCode);
+					keyWasReleased.insert(keyCode);
 
-				keyIsDown.unset(keyCode);
+				keyIsDown.erase(keyCode);
 			}
 
 			return true;
@@ -153,36 +153,36 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		switch (event.MouseInput.Event) {
 		case EMIE_LMOUSE_PRESSED_DOWN:
 			key = "KEY_LBUTTON";
-			keyIsDown.set(key);
-			keyWasDown.set(key);
-			keyWasPressed.set(key);
+			keyIsDown.insert(key);
+			keyWasDown.insert(key);
+			keyWasPressed.insert(key);
 			break;
 		case EMIE_MMOUSE_PRESSED_DOWN:
 			key = "KEY_MBUTTON";
-			keyIsDown.set(key);
-			keyWasDown.set(key);
-			keyWasPressed.set(key);
+			keyIsDown.insert(key);
+			keyWasDown.insert(key);
+			keyWasPressed.insert(key);
 			break;
 		case EMIE_RMOUSE_PRESSED_DOWN:
 			key = "KEY_RBUTTON";
-			keyIsDown.set(key);
-			keyWasDown.set(key);
-			keyWasPressed.set(key);
+			keyIsDown.insert(key);
+			keyWasDown.insert(key);
+			keyWasPressed.insert(key);
 			break;
 		case EMIE_LMOUSE_LEFT_UP:
 			key = "KEY_LBUTTON";
-			keyIsDown.unset(key);
-			keyWasReleased.set(key);
+			keyIsDown.erase(key);
+			keyWasReleased.insert(key);
 			break;
 		case EMIE_MMOUSE_LEFT_UP:
 			key = "KEY_MBUTTON";
-			keyIsDown.unset(key);
-			keyWasReleased.set(key);
+			keyIsDown.erase(key);
+			keyWasReleased.insert(key);
 			break;
 		case EMIE_RMOUSE_LEFT_UP:
 			key = "KEY_RBUTTON";
-			keyIsDown.unset(key);
-			keyWasReleased.set(key);
+			keyIsDown.erase(key);
+			keyWasReleased.insert(key);
 			break;
 		case EMIE_MOUSE_WHEEL:
 			mouse_wheel += event.MouseInput.Wheel;
@@ -235,7 +235,11 @@ void RandomInputHandler::step(float dtime)
 		i.counter -= dtime;
 		if (i.counter < 0.0) {
 			i.counter = 0.1 * Rand(1, i.time_max);
-			keydown.toggle(getKeySetting(i.key.c_str()));
+			KeyPress k = getKeySetting(i.key.c_str());
+			if (keydown.count(k))
+				keydown.erase(k);
+			else
+				keydown.insert(k);
 		}
 	}
 	{

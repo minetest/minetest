@@ -250,7 +250,8 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons
 	if (flags & MG_DUNGEONS)

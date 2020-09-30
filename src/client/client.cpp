@@ -238,18 +238,13 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 		infostream << "Client::scanModSubfolder(): Loading \"" << real_path
 				<< "\" as \"" << vfs_path << "\"." << std::endl;
 
-		std::ifstream is(real_path, std::ios::binary | std::ios::ate);
-		if(!is.good()) {
+		std::string contents;
+		if (!fs::ReadFile(real_path, contents)) {
 			errorstream << "Client::scanModSubfolder(): Can't read file \""
 					<< real_path << "\"." << std::endl;
 			continue;
 		}
-		auto size = is.tellg();
-		std::string contents(size, '\0');
-		is.seekg(0);
-		is.read(&contents[0], size);
 
-		infostream << "  size: " << size << " bytes" << std::endl;
 		m_mod_vfs.emplace(vfs_path, contents);
 	}
 }

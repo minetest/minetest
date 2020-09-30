@@ -62,12 +62,12 @@ Where `<gameid>` is unique to each game.
 The game directory can contain the following files:
 
 * `game.conf`, with the following keys:
-    * `name`: Required, human readable name  e.g. `name = Minetest`
+    * `name`: Required, a human readable title to address the game, e.g. `name = Minetest`.
     * `description`: Short description to be shown in the content tab
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
-      Mapgens not in this list are removed from the list of mapgens for
-      the game.
+      Mapgens not in this list are removed from the list of mapgens for the
+      game.
       If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
@@ -79,6 +79,10 @@ The game directory can contain the following files:
       e.g. `disallowed_mapgen_settings = mgv5_spflags`
       These settings are hidden for this game in the world creation
       dialog and game start menu.
+    * `author`: The author of the game. It only appears when downloaded from
+                ContentDB.
+    * `release`: Ignore this: Should only ever be set by ContentDB, as it is
+                 an internal ID used to track versions.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -134,9 +138,15 @@ Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
 The file is a key-value store of modpack details.
 
-* `name`: The modpack name.
+* `name`: The modpack name. Allows Minetest to determine the modpack name even
+          if the folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
                  menu.
+* `author`: The author of the modpack. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the modpack.
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
@@ -181,6 +191,11 @@ A `Settings` file that provides meta information about the mod.
              loaded before this mod.
 * `optional_depends`: A comma separated list of optional dependencies.
                       Like a dependency, but no error if the mod doesn't exist.
+* `author`: The author of the mod. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the mod.
 
 Note: to support 0.4.x, please also provide depends.txt.
 
@@ -3080,7 +3095,8 @@ Internally, it is implemented as a table with the 3 fields
 `x`, `y` and `z`. Example: `{x = 0, y = 1, z = 0}`.
 
 For the following functions, `v`, `v1`, `v2` are vectors,
-`p1`, `p2` are positions:
+`p1`, `p2` are positions,
+`s` is a scalar (a number):
 
 * `vector.new(a[, b, c])`:
     * Returns a vector.
@@ -3126,10 +3142,12 @@ For the following functions `x` can be either a vector or a number:
     * Returns a vector.
     * If `x` is a vector: Returns the difference of `v` subtracted by `x`.
     * If `x` is a number: Subtracts `x` from each component of `v`.
-* `vector.multiply(v, x)`:
-    * Returns a scaled vector or Schur product.
-* `vector.divide(v, x)`:
-    * Returns a scaled vector or Schur quotient.
+* `vector.multiply(v, s)`:
+    * Returns a scaled vector.
+    * Deprecated: If `s` is a vector: Returns the Schur product.
+* `vector.divide(v, s)`:
+    * Returns a scaled vector.
+    * Deprecated: If `s` is a vector: Returns the Schur quotient.
 
 For the following functions `a` is an angle in radians and `r` is a rotation
 vector ({x = <pitch>, y = <yaw>, z = <roll>}) where pitch, yaw and roll are
@@ -5318,9 +5336,12 @@ Sounds
 Timing
 ------
 
-* `minetest.after(time, func, ...)`
+* `minetest.after(time, func, ...)` : returns job table to use as below.
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+
+* `job:cancel()`
+    * Cancels the job function from being called
 
 Server
 ------
@@ -5884,6 +5905,31 @@ An `InvRef` is a reference to an inventory.
 * `get_location()`: returns a location compatible to
   `minetest.get_inventory(location)`.
     * returns `{type="undefined"}` in case location is not known
+
+### Callbacks
+
+Detached & nodemeta inventories provide the following callbacks for move actions:
+
+#### Before
+
+The `allow_*` callbacks return how many items can be moved.
+
+* `allow_move`/`allow_metadata_inventory_move`: Moving items in the inventory
+* `allow_take`/`allow_metadata_inventory_take`: Taking items from the inventory
+* `allow_put`/`allow_metadata_inventory_put`: Putting items to the inventory
+
+#### After
+
+The `on_*` callbacks are called after the items have been placed in the inventories.
+
+* `on_move`/`on_metadata_inventory_move`: Moving items in the inventory
+* `on_take`/`on_metadata_inventory_take`: Taking items from the inventory
+* `on_put`/`on_metadata_inventory_put`: Putting items to the inventory
+
+#### Swapping
+
+When a player tries to put an item to a place where another item is, the items are *swapped*.
+This means that all callbacks will be called twice (once for each action).
 
 `ItemStack`
 -----------

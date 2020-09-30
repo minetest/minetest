@@ -8,15 +8,8 @@
 		<item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">shortEdges</item>
 	</style>
 
-	<style name="InputTheme" parent="Theme.AppCompat.DayNight.Dialog">
-		<item name="windowNoTitle">true</item>
-		<item name="android:windowBackground">@android:color/transparent</item>
-	</style>
-
-	<style name="CustomProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+	<style name="CustomProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
 		<item name="android:indeterminateOnly">false</item>
-		<item name="android:minHeight">10dip</item>
-		<item name="android:maxHeight">20dip</item>
 	</style>
 
 </resources>

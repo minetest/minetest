@@ -3,13 +3,13 @@ local F = minetest.formspec_escape
 
 -- TODO: Add a Node Metadata tool
 
--- Param 2 Tool: Set param2 value of tools
--- Punch: +1
--- Punch+Shift:	+8
--- Place: -1
--- Place+Shift:	-8
 minetest.register_tool("testtools:param2tool", {
-	description = S("Param2 Tool"),
+	description = S("Param2 Tool") .."\n"..
+		S("Modify param2 value of nodes") .."\n"..
+		S("Punch: +1") .."\n"..
+		S("Sneak+Punch: +8") .."\n"..
+		S("Place: -1") .."\n"..
+		S("Sneak+Place: -8"),
 	inventory_image = "testtools_param2tool.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
@@ -47,7 +47,11 @@ minetest.register_tool("testtools:param2tool", {
 })
 
 minetest.register_tool("testtools:node_setter", {
-	description = S("Node Setter"),
+	description = S("Node Setter") .."\n"..
+		S("Replace pointed node with something else") .."\n"..
+		S("Punch: Select pointed node") .."\n"..
+		S("Place on node: Replace node with selected node") .."\n"..
+		S("Place in air: Manually select a node"),
 	inventory_image = "testtools_node_setter.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
@@ -125,7 +129,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 end)
 
 minetest.register_tool("testtools:remover", {
-	description = S("Remover"),
+	description = S("Remover") .."\n"..
+		S("Punch: Remove pointed node or object"),
 	inventory_image = "testtools_remover.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
@@ -136,13 +141,17 @@ minetest.register_tool("testtools:remover", {
 			local obj = pointed_thing.ref
 			if not obj:is_player() then
 				obj:remove()
+			else
+				minetest.chat_send_player(user:get_player_name(), S("Can't remove players!"))
 			end
 		end
 	end,
 })
 
 minetest.register_tool("testtools:falling_node_tool", {
-	description = S("Falling Node Tool"),
+	description = S("Falling Node Tool") .."\n"..
+		S("Punch: Make pointed node fall") .."\n"..
+		S("Place: Move pointed node 2 units upwards, then make it fall"),
 	inventory_image = "testtools_falling_node_tool.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_place = function(itemstack, user, pointed_thing)
@@ -191,7 +200,11 @@ minetest.register_tool("testtools:falling_node_tool", {
 })
 
 minetest.register_tool("testtools:rotator", {
-	description = S("Entity Rotator"),
+	description = S("Entity Rotator") .. "\n" ..
+		S("Rotate pointed entity") .."\n"..
+		S("Punch: Yaw") .."\n"..
+		S("Sneak+Punch: Pitch") .."\n"..
+		S("Aux1+Punch: Roll"),
 	inventory_image = "testtools_entity_rotator.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
@@ -244,7 +257,12 @@ local mover_config = function(itemstack, user, pointed_thing)
 end
 
 minetest.register_tool("testtools:object_mover", {
-	description = S("Object Mover"),
+	description = S("Object Mover") .."\n"..
+		S("Move pointed object towards or away from you") .."\n"..
+		S("Punch: Move by distance").."\n"..
+		S("Sneak+Punch: Move by negative distance").."\n"..
+		S("Place: Increase distance").."\n"..
+		S("Sneak+Place: Decrease distance"),
 	inventory_image = "testtools_object_mover.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_place = mover_config,
@@ -287,7 +305,10 @@ minetest.register_tool("testtools:object_mover", {
 
 
 minetest.register_tool("testtools:entity_scaler", {
-	description = S("Entity Visual Scaler"),
+	description = S("Entity Visual Scaler") .."\n"..
+		S("Scale visual size of entities") .."\n"..
+		S("Punch: Increase size") .."\n"..
+		S("Sneak+Punch: Decrease scale"),
 	inventory_image = "testtools_entity_scaler.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
@@ -342,14 +363,21 @@ local function get_entity_list()
 	return entity_list
 end
 minetest.register_tool("testtools:entity_spawner", {
-	description = S("Entity Spawner"),
+	description = S("Entity Spawner") .."\n"..
+		S("Spawns entities") .."\n"..
+		S("Punch: Select entity to spawn") .."\n"..
+		S("Place: Spawn selected entity"),
 	inventory_image = "testtools_entity_spawner.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_place = function(itemstack, user, pointed_thing)
 		local name = user:get_player_name()
-		if selections[name] and pointed_thing.type == "node" then
-			local pos = pointed_thing.above
-			minetest.add_entity(pos, get_entity_list()[selections[name]])
+		if pointed_thing.type == "node" then
+			if selections[name] then
+				local pos = pointed_thing.above
+				minetest.add_entity(pos, get_entity_list()[selections[name]])
+			else
+				minetest.chat_send_player(name, S("Select an entity first (with punch key)!"))
+			end
 		end
 	end,
 	on_use = function(itemstack, user, pointed_thing)
@@ -435,7 +463,10 @@ local editor_formspec = function(playername, obj, value, sel)
 end
 
 minetest.register_tool("testtools:object_editor", {
-	description = S("Object Property Editor"),
+	description = S("Object Property Editor") .."\n"..
+		S("Edit properties of objects") .."\n"..
+		S("Punch object: Edit object") .."\n"..
+		S("Punch air: Edit yourself"),
 	inventory_image = "testtools_object_editor.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
@@ -515,7 +546,14 @@ local attacher_config = function(itemstack, user, pointed_thing)
 end
 
 minetest.register_tool("testtools:object_attacher", {
-	description = S("Object Attacher"),
+	description = S("Object Attacher") .."\n"..
+		S("Attach object to another") .."\n"..
+		S("Punch objects to first select parent object, then the child object to attach") .."\n"..
+		S("Punch air to select yourself") .."\n"..
+		S("Place: Incease attachment Y offset") .."\n"..
+		S("Sneak+Place: Decease attachment Y offset") .."\n"..
+		S("Aux1+Place: Incease attachment rotation") .."\n"..
+		S("Aux1+Sneak+Place: Decrease attachment rotation"),
 	inventory_image = "testtools_object_attacher.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_place = attacher_config,

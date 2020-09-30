@@ -192,8 +192,8 @@ public:
 		bool set_group, bool set_default);
 	bool set(const std::string &name, const std::string &value);
 	bool setDefault(const std::string &name, const std::string &value);
-	bool setGroup(const std::string &name, Settings *group);
-	bool setGroupDefault(const std::string &name, Settings *group);
+	bool setGroup(const std::string &name, const Settings &group);
+	bool setGroupDefault(const std::string &name, const Settings &group);
 	bool setBool(const std::string &name, bool value);
 	bool setS16(const std::string &name, s16 value);
 	bool setU16(const std::string &name, u16 value);
