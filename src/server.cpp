@@ -1803,7 +1803,7 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 {
 	NetworkPacket pkt(TOCLIENT_SET_LIGHTING,
 			4, peer_id);
-	
+
 	pkt << lighting.shadow_intensity;
 
 	Send(&pkt);
@@ -2472,8 +2472,8 @@ bool Server::addMediaFile(const std::string &filename,
 		".png", ".jpg", ".bmp", ".tga",
 		".ogg",
 		".x", ".b3d", ".obj",
-		// Custom translation file format
-		".tr",
+		// Translation file format
+		".tr", ".po", ".mo",
 		NULL
 	};
 	if (removeStringEnd(filename, supported_ext).empty()) {
@@ -2556,13 +2556,22 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 
 	u16 media_sent = 0;
-	std::string lang_suffix;
-	lang_suffix.append(".").append(lang_code).append(".tr");
+	std::string translation_formats[3] = { ".tr", ".po", ".mo" };
+	std::string lang_suffixes[3];
+	for (size_t i = 0; i < 3; i++) {
+		lang_suffixes[i].append(".").append(lang_code).append(translation_formats[i]);
+	}
 	for (const auto &i : m_media) {
 		if (i.second.no_announce)
 			continue;
-		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
-			continue;
+		bool ok = true;
+		for (size_t j = 0; j < 3; j++) {
+			if (str_ends_with(i.first, translation_formats[j]) && !str_ends_with(i.first, lang_suffixes[j])) {
+				ok = false;
+				break;
+			}
+		}
+		if (!ok) continue;
 		media_sent++;
 	}
 
@@ -2571,8 +2580,14 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 	for (const auto &i : m_media) {
 		if (i.second.no_announce)
 			continue;
-		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
-			continue;
+		bool ok = true;
+		for (size_t j = 0; j < 3; j++) {
+			if (str_ends_with(i.first, translation_formats[j]) && !str_ends_with(i.first, lang_suffixes[j])) {
+				ok = false;
+				break;
+			}
+		}
+		if (!ok) continue;
 		pkt << i.first << i.second.sha1_digest;
 	}
 
@@ -3294,7 +3309,7 @@ bool Server::hudSetFlags(RemotePlayer *player, u32 flags, u32 mask)
 	u32 new_hud_flags = (player->hud_flags & ~mask) | flags;
 	if (new_hud_flags == player->hud_flags) // no change
 		return true;
-	
+
 	SendHUDSetFlags(player->getPeerId(), flags, mask);
 	player->hud_flags = new_hud_flags;
 

@@ -133,6 +133,16 @@ std::string wide_to_utf8(const std::wstring &input)
 	return out;
 }
 
+void wide_add_codepoint(std::wstring &result, char32_t codepoint)
+{
+	if ((0xD800 <= codepoint && codepoint <= 0xDFFF) || (0x10FFFF < codepoint)) {
+		// Invalid codepoint, replace with unicode replacement character
+		result.push_back(0xFFFD);
+		return;
+	}
+	result.push_back(codepoint);
+}
+
 #else // _WIN32
 
 std::wstring utf8_to_wide(const std::string &input)
@@ -157,6 +167,29 @@ std::string wide_to_utf8(const std::wstring &input)
 	std::string out(outbuf);
 	delete[] outbuf;
 	return out;
+}
+
+void wide_add_codepoint(std::wstring &result, char32_t codepoint)
+{
+	if (codepoint < 0x10000) {
+		if (0xD800 <= codepoint && codepoint <= 0xDFFF) {
+			// Invalid codepoint, part of a surrogate pair
+			// Replace with unicode replacement character
+			result.put(0xFFFD);
+			return;
+		} 
+		result.push_back((wchar_t) codepoint);
+		return;
+	}
+	codepoint -= 0x10000;
+	if (codepoint >= 0x100000) {
+		// original codepoint was above 0x10FFFF, so invalid
+		// replace with unicode replacement character
+		result.put(0xFFFD);
+		return;
+	}
+	result.push_back((wchar_t) ((codepoint >> 10) | 0xD800));
+	result.push_back((wchar_t) ((codepoint & 0x3FF) | 0xDC00));
 }
 
 #endif // _WIN32
