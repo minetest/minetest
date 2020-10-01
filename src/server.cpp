@@ -2537,8 +2537,8 @@ bool Server::addMediaFile(const std::string &filename,
 		".png", ".jpg", ".bmp", ".tga",
 		".ogg",
 		".x", ".b3d", ".obj", ".gltf", ".glb",
-		// Custom translation file format
-		".tr",
+		// Translation file formats
+		".tr", ".po", ".mo",
 		NULL
 	};
 	if (removeStringEnd(filename, supported_ext).empty()) {
@@ -2621,14 +2621,20 @@ void Server::fillMediaCache()
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
 {
-	std::string lang_suffix = ".";
-	lang_suffix.append(lang_code).append(".tr");
+	std::string translation_formats[3] = { ".tr", ".po", ".mo" };
+	std::string lang_suffixes[3];
+	for (size_t i = 0; i < 3; i++) {
+		lang_suffixes[i].append(".").append(lang_code).append(translation_formats[i]);
+  }
 
-	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
+  auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
 		if (info.no_announce)
 			return false;
-		if (str_ends_with(name, ".tr") && !str_ends_with(name, lang_suffix))
-			return false;
+		for (size_t j = 0; j < 3; j++) {
+			if (str_ends_with(name, translation_formats[j]) && !str_ends_with(name, lang_suffixes[j])) {
+				return false;
+			}
+		}
 		return true;
 	};
 
@@ -4172,7 +4178,7 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 		if (str_ends_with(i.first, suffix)) {
 			std::string data;
 			if (fs::ReadFile(i.second.path, data, true)) {
-				translations->loadTranslation(data);
+				translations->loadTranslation(i.first, data);
 			}
 		}
 	}

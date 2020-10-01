@@ -842,7 +842,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 	}
 
 	const char *translate_ext[] = {
-		".tr", NULL
+		".tr", ".po", ".mo", NULL
 	};
 	name = removeStringEnd(filename, translate_ext);
 	if (!name.empty()) {
@@ -850,7 +850,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 			return false;
 		TRACESTREAM(<< "Client: Loading translation: "
 				<< "\"" << filename << "\"" << std::endl);
-		g_client_translations->loadTranslation(data);
+		g_client_translations->loadTranslation(filename, data);
 		return true;
 	}
 
