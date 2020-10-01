@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unordered_map>
+#include <map>
 #include <string>
 
 class Translations;
@@ -30,11 +31,16 @@ extern Translations *g_client_translations;
 class Translations
 {
 public:
-	void loadTranslation(const std::string &data);
+	void loadTranslation(const std::string &filename, const std::string &data);
 	void clear();
 	const std::wstring &getTranslation(
 			const std::wstring &textdomain, const std::wstring &s);
 
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;
+
+	std::wstring unescapeC(const std::wstring &str);
+	void loadPoEntry(const std::map<std::wstring, std::wstring> &entry);
+	void loadTrTranslation(const std::string &data);
+	void loadPoTranslation(const std::string &data);
 };
