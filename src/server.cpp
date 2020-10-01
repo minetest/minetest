@@ -2508,9 +2508,17 @@ void Server::fillMediaCache()
 				continue;
 
 			const std::string &filename = dln.name;
-			if (m_media.find(filename) != m_media.end()) // Do not override
-				continue;
+			if (m_media.find(filename) != m_media.end()) // Do not override parent texture
+			{
+				std::string parentpath = m_media.find(filename)->second.path;
 
+				// remove filename and / in front of it from path
+				parentpath = parentpath.substr(0, (parentpath.size()-filename.size())-1);
+
+				// Make sure parent is a parent and not a texture in another mod
+				if (mediapath.find(parentpath.substr(0, parentpath.find_last_of('/'))) == 0)
+					continue;
+			}
 			std::string filepath = mediapath;
 			filepath.append(DIR_DELIM).append(filename);
 			addMediaFile(filename, filepath);
