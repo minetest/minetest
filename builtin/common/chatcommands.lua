@@ -105,8 +105,8 @@ if INIT == "client" then
 	})
 else
 	core.register_chatcommand("help", {
-		params = "[all | privs | <cmd>]",
-		description = "Get help for commands or list privileges",
+		params = "[all | privs | mods | <cmd>]",
+		description = "Get help for commands, list privileges/mods",
 		func = do_help_cmd,
 	})
 end

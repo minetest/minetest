@@ -20,6 +20,14 @@ local LIST_FORMSPEC_DESCRIPTION = [[
 		button_exit[5,7;3,1;quit;%s]
 	]]
 
+local LIST_FORMSPEC_MODSLIST = [[
+        size[6,8]
+        label[0,-0.1;%s]
+        tablecolumns[color;tree;text]
+        table[0,0.5;6,7;modslist;%s;0]
+        button_exit[1.5,7.5;3,1;quit;%s]
+    ]]
+
 local formspec_escape = core.formspec_escape
 local check_player_privs = core.check_player_privs
 
@@ -108,6 +116,174 @@ local function build_privs_formspec(name)
 end
 
 
+-- Checks whether the mod with the given name is a separate mod or a part of a modpack
+local function is_mod_sep_or_part_of_mp(modname)
+    local modpath = core.get_modpath(modname)
+    local find_ptn = "[^" .. DIR_DELIM .. "]*.$"
+    local modpart = modpath:match(find_ptn)
+    local mp_part = modpath:sub(1, modpath:len()-modpart:len()-1):match(find_ptn)
+    
+    if mp_part ~= "mods" then   -- this is inside of the modpack!
+        return mp_part, modpart
+    else                        -- this is a just separate mod!
+        return modpart
+    end
+    
+end
+
+
+-- Returns a list with the modpack`s mods
+local function get_modpack_mods(mp_name)
+    local modnames = core.get_modnames()
+    
+    local modlist = {}
+    for i, mname in ipairs(modnames) do
+        local mpath = core.get_modpath(mname) 
+        if mpath:match(DIR_DELIM .. mp_name .. DIR_DELIM) then
+            table.insert(modlist, mname)
+        end
+    end
+    
+    return modlist
+end
+      
+
+-- MODS FORMSPEC
+
+local function build_mods_formspec()
+    local modslist = core.get_modnames()
+    local mps_and_smods = {}
+    
+    local rows = {}
+    rows[1] = "#FFF,0,Mod or Modpack Name"
+    for i = 1, #modslist do
+        local mp, mod = is_mod_sep_or_part_of_mp(modslist[i])
+        
+        if mod then
+            if #table.find(mps_and_smods, {mp, "modpack"}) == 0 then
+                mps_and_smods[#mps_and_smods+1] = {mp, "modpack"}
+            end
+        else
+            mps_and_smods[#mps_and_smods+1] = {mp, "separate_mod"}
+        end
+    end
+    
+    table.sort(mps_and_smods, function(e1, e2) return e1[1] < e2[1] end)
+    for j = 1, #mps_and_smods do
+        rows[#rows+1] = ("%s, 0, %s"):format(COLOR_BLUE, mps_and_smods[j][1])
+        
+        if mps_and_smods[j][2] == "modpack" then
+            for _, mname in ipairs(get_modpack_mods(mps_and_smods[j][1])) do
+                rows[#rows+1] = ("%s, 1, %s"):format(COLOR_GREEN, mname)
+            end
+        end
+    end
+        
+        
+                
+                
+    --[[for i, modname in ipairs(modslist) do
+        local mp, mod = is_mod_sep_or_part_of_mp(modname)
+        core.debug("Modpack Or Mod: " .. mp .. ", Mod: " .. (mod or ""))
+        
+        if mod then
+            if not mps_and_smods[mp] then 
+                mps_and_smods[mp] = {mod}
+                rows[#rows+1] = ("%s, 0, %s"):format(COLOR_BLUE, mp)
+            else
+                mps_and_smods[mp][#mps_and_smods[mp]+1] = mod
+                rows[#rows+1] = ("%s, 1, %s"):format(COLOR_GREEN, mod)
+            end
+        else
+            mps_and_smods[mp] = mp
+            rows[#rows+1] = ("%s, 0, %s"):format(COLOR_BLUE, mp)
+        end
+    end]]
+    
+    --[[for mname_i, mname in pairs(mps_and_smods) do
+        rows[#rows+1] = ("%s, 0, %s"):format(COLOR_BLUE, mname_i)
+        
+        if mname_i ~= mname then
+            for j, modname2 in ipairs(mname) do
+                rows[#rows+1] = ("%s, 1, %s"):format(COLOR_GREEN, modname2)
+            end
+        end
+    end]]
+    
+    return LIST_FORMSPEC_MODSLIST:format(
+            "List of installed mods:",
+            table.concat(rows, ","),
+            "Close"
+        )
+        
+end
+
+        
+--[[local function build_mods_formspec()
+    local modslist = core.get_modnames()
+    
+    local rows = {}
+    rows[1] = "#FFF,0,Mod"
+    local find_ptn = "[^" .. DIR_DELIM .. "]*.$"
+    for i, modname in ipairs(modslist) do
+        local mp, mod = is_mod_sep_or_part_of_mp(modname)
+        
+        if mod then
+            rows[#rows+1] = ("%s, 0, %s"):format(COLOR_BLUE, mp)
+            
+            for j, modname2 in ipairs(modslist) do
+                local mp2, mod2 = is_mod_sep_or_part_of_mp(modname2)
+                if mp2 == mp then
+                    rows[#rows+1] = ("%s, 1, %s"):format(COLOR_GREEN, mod2)
+                    table.remove(modslist, modname2)
+                end
+            end
+        else
+             rows[#rows+1] = ("%s, 0, %s"):format(COLOR_BLUE, mp)
+        end
+    end
+    
+    return LIST_FORMSPEC_MODSLIST:format(
+            "List of installed mods:",
+            table.concat(rows, ","),
+            "Close"
+        )
+end
+        local modpath = core.get_modpath(modname)
+        
+        core.debug("MODPATH: " .. modpath)
+        local m1 = modpath:match(find_ptn)
+        core.debug("mod1: " .. m1)
+        local m2 = modpath:sub(1, modpath:len()-m1:len()-1):match(find_ptn)
+        core.debug("mod2: " .. m2)
+        
+        if m2 ~= "mods" then      --  if true, this is a modpack
+            rows[#rows+1] = ("%s, 0, %s"):format(COLOR_BLUE, m2)
+            
+            --  Then searching out its components
+            for j=i+1, #modslist do
+                local modname2 = modslist[j]
+                local modpath2 = core.get_modpath(modname2)
+                local m3 = modpath2:match(find_ptn)
+                local m4 = modpath:sub(1, modpath2:len()-m3:len()-1):match(find_ptn)
+                
+                if m4 == m2 then
+                    rows[#rows+1] = ("%s, 1, %s"):format(COLOR_GREEN, m3)
+                end
+            end
+        else        -- Otherwise, this is a mod
+            rows[#rows+1] = ("%s, 0, %s"):format(COLOR_BLUE, m1)
+        end
+    end
+    
+    return LIST_FORMSPEC_MODSLIST:format(
+            "List of installed mods:",
+            table.concat(rows, ","),
+            "Close"
+        )
+end]]
+
+
 -- DETAILED CHAT COMMAND INFORMATION
 
 core.register_on_player_receive_fields(function(player, formname, fields)
@@ -139,6 +315,15 @@ help_command.func = function(name, param)
 			return true
 		end
 	end
+    
+    if param == "mods" then
+        core.show_formspec(name, "__builtin:help_mods",
+            build_mods_formspec())
+        if name ~= admin then
+            return true
+        end
+    end
+    
 	if param == "" or param == "all" then
 		core.show_formspec(name, "__builtin:help_cmds",
 			build_chatcommands_formspec(name))

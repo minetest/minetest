@@ -516,6 +516,65 @@ function table.shuffle(t, from, to, random)
 	end
 end
 
+function table.find(t, e, i, j)
+	i = i or 1
+	j = j or #t
+
+    	local mt = {__eq = function(e1, e2)
+     		if type(e2) ~= "table" then
+                	return false
+            	end
+
+            	local is_elem_exists = true
+            	for i1, v1 in pairs(e1) do
+                	if v1 ~= e2[i1] then
+                    		is_elem_exists = false
+                    		break
+                	end  
+            	end
+
+            	return is_elem_exists
+    	end}
+
+    	if type(e) == "table" then
+        	e = table.copy(e)
+        	setmetatable(e, mt)
+    	end
+
+    	local iter = 0
+    	local findings = {}
+    	for k, v in pairs(t) do
+        	iter = iter + 1
+
+        	if type(v) == "table" then
+           		v = table.copy(v)
+            		setmetatable(v, mt)
+        	end
+        	if not(iter < i or iter > j) and e == v then
+            		table.insert(findings, k)
+        	end
+    	end
+
+    	return findings
+end
+
+
+function table.find_if(t, func, i, j)
+    	i = i or 1
+    	j = j or #t
+
+    	local iter = 0
+    	local satisf_keys = {}
+    	for k, v in pairs(t) do
+        	iter = iter + 1
+
+        	if not(iter < i or iter > j) and func(v) then
+            		table.insert(satisf_keys, v)
+        	end
+    	end
+
+    	return satisf_keys
+end
 
 --------------------------------------------------------------------------------
 -- mainmenu only functions
