@@ -802,7 +802,7 @@ void Server::AsyncRunStep(bool initial_step)
 					// u16 id
 					// std::string data
 					buffer.append(idbuf, sizeof(idbuf));
-					buffer.append(serializeString(aom.datastring));
+					buffer.append(serializeString16(aom.datastring));
 				}
 			}
 			/*
@@ -1993,7 +1993,7 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 		writeU8((u8*)buf, type);
 		data.append(buf, 1);
 
-		data.append(serializeLongString(
+		data.append(serializeString32(
 			obj->getClientInitializationData(client->net_proto_version)));
 
 		// Add to known objects

@@ -45,7 +45,13 @@ Settings::~Settings()
 
 Settings & Settings::operator += (const Settings &other)
 {
-	update(other);
+	if (&other == this)
+		return *this;
+
+	MutexAutoLock lock(m_mutex);
+	MutexAutoLock lock2(other.m_mutex);
+
+	updateNoLock(other);
 
 	return *this;
 }
@@ -512,25 +518,6 @@ u32 Settings::getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 	return flags;
 }
 
-// N.B. if getStruct() is used to read a non-POD aggregate type,
-// the behavior is undefined.
-bool Settings::getStruct(const std::string &name, const std::string &format,
-	void *out, size_t olen) const
-{
-	std::string valstr;
-
-	try {
-		valstr = get(name);
-	} catch (SettingNotFoundException &e) {
-		return false;
-	}
-
-	if (!deSerializeStringToStruct(valstr, format, out, olen))
-		return false;
-
-	return true;
-}
-
 
 bool Settings::getNoiseParams(const std::string &name, NoiseParams &np) const
 {
@@ -546,6 +533,7 @@ bool Settings::getNoiseParamsFromValue(const std::string &name,
 	if (!getNoEx(name, value))
 		return false;
 
+	// Format: f32,f32,(f32,f32,f32),s32,s32,f32[,f32]
 	Strfnd f(value);
 
 	np.offset   = stof(f.next(","));
@@ -614,28 +602,6 @@ std::vector<std::string> Settings::getNames() const
 /***************************************
  * Getters that don't throw exceptions *
  ***************************************/
-
-bool Settings::getEntryNoEx(const std::string &name, SettingsEntry &val) const
-{
-	try {
-		val = getEntry(name);
-		return true;
-	} catch (SettingNotFoundException &e) {
-		return false;
-	}
-}
-
-
-bool Settings::getEntryDefaultNoEx(const std::string &name, SettingsEntry &val) const
-{
-	try {
-		val = getEntryDefault(name);
-		return true;
-	} catch (SettingNotFoundException &e) {
-		return false;
-	}
-}
-
 
 bool Settings::getGroupNoEx(const std::string &name, Settings *&val) const
 {
@@ -908,17 +874,6 @@ bool Settings::setFlagStr(const std::string &name, u32 flags,
 }
 
 
-bool Settings::setStruct(const std::string &name, const std::string &format,
-	void *value)
-{
-	std::string structstr;
-	if (!serializeStructToString(&structstr, format, value))
-		return false;
-
-	return set(name, structstr);
-}
-
-
 bool Settings::setNoiseParams(const std::string &name,
 	const NoiseParams &np, bool set_default)
 {
@@ -968,32 +923,6 @@ void Settings::clearDefaults()
 	MutexAutoLock lock(m_mutex);
 	clearDefaultsNoLock();
 }
-
-void Settings::updateValue(const Settings &other, const std::string &name)
-{
-	if (&other == this)
-		return;
-
-	MutexAutoLock lock(m_mutex);
-
-	try {
-		m_settings[name] = other.get(name);
-	} catch (SettingNotFoundException &e) {
-	}
-}
-
-
-void Settings::update(const Settings &other)
-{
-	if (&other == this)
-		return;
-
-	MutexAutoLock lock(m_mutex);
-	MutexAutoLock lock2(other.m_mutex);
-
-	updateNoLock(other);
-}
-
 
 SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 	const std::string &end, std::string &name, std::string &value)
