@@ -39,8 +39,11 @@ public:
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;
 
+	void addTranslation(const std::wstring &textdomain, const std::wstring &original, const std::wstring &translated);
 	std::wstring unescapeC(const std::wstring &str);
 	void loadPoEntry(const std::map<std::wstring, std::wstring> &entry);
+	void loadMoEntry(const std::string &orignal, const std::string &translated);
 	void loadTrTranslation(const std::string &data);
 	void loadPoTranslation(const std::string &data);
+	void loadMoTranslation(const std::string &data);
 };
