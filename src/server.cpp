@@ -4013,7 +4013,7 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 		if (str_ends_with(i.first, suffix)) {
 			std::string data;
 			if (fs::ReadFile(i.second.path, data)) {
-				translations->loadTranslation(data);
+				translations->loadTranslation(i.first, data);
 			}
 		}
 	}
