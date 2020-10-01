@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unordered_map>
+#include <map>
 #include <string>
+#include <vector>
 
 class Translations;
 #ifndef SERVER
@@ -30,11 +32,26 @@ extern Translations *g_client_translations;
 class Translations
 {
 public:
-	void loadTranslation(const std::string &data);
+	void loadTranslation(const std::string &filename, const std::string &data);
 	void clear();
-	const std::wstring &getTranslation(const std::wstring &textdomain,
-		const std::wstring &s) const;
+	const std::wstring &getTranslation(
+			const std::wstring &textdomain, const std::wstring &s) const;
+	const std::wstring &getPluralTranslation(const std::wstring &textdomain,
+			const std::wstring &s, unsigned long int number) const;
 
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;
+	std::unordered_map<std::wstring, std::vector<std::wstring>> m_plural_translations;
+
+	void addTranslation(const std::wstring &textdomain, const std::wstring &original,
+			const std::wstring &translated);
+	void addPluralTranslation(const std::wstring &textdomain,
+			const std::wstring &original,
+			std::vector<std::wstring> &translated);
+	std::wstring unescapeC(const std::wstring &str);
+	void loadPoEntry(const std::map<std::wstring, std::wstring> &entry);
+	void loadMoEntry(const std::string &orignal, const std::string &translated);
+	void loadTrTranslation(const std::string &data);
+	void loadPoTranslation(const std::string &data);
+	void loadMoTranslation(const std::string &data);
 };
