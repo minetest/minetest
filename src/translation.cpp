@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "translation.h"
 #include "log.h"
+#include "util/hex.h"
 #include "util/string.h"
 #include <unordered_map>
 
@@ -38,7 +39,7 @@ void Translations::clear()
 const std::wstring &Translations::getTranslation(
 		const std::wstring &textdomain, const std::wstring &s)
 {
-	std::wstring key = textdomain + L"|" + s;
+	std::wstring key = textdomain + L"|"; key.append(s);
 	try {
 		return m_translations.at(key);
 	} catch (const std::out_of_range &) {
@@ -48,6 +49,19 @@ const std::wstring &Translations::getTranslation(
 		// Silence that warning in the future
 		m_translations[key] = s;
 		return s;
+	}
+}
+
+void Translations::addTranslation(
+		const std::wstring &textdomain, const std::wstring &original, const std::wstring &translated)
+{
+	std::wstring key = textdomain + L"|"; key.append(original);
+	if (translated.empty()) {
+		errorstream << "Ignoring empty translation for \""
+		            << wide_to_utf8(original) << "\"" << std::endl;
+		m_translations[key] = original;
+	} else {
+		m_translations[key] = translated;
 	}
 }
 
@@ -149,15 +163,7 @@ void Translations::loadTrTranslation(const std::string &data)
 			}
 		}
 
-		std::wstring oword1 = word1.str(), oword2 = word2.str();
-		if (!oword2.empty()) {
-			std::wstring translation_index = textdomain + L"|";
-			translation_index.append(oword1);
-			m_translations[translation_index] = oword2;
-		} else {
-			infostream << "Ignoring empty translation for \""
-				<< wide_to_utf8(oword1) << "\"" << std::endl;
-		}
+		addTranslation(textdomain, word1.str(), word2.str());
 	}
 }
 
@@ -279,14 +285,14 @@ std::wstring Translations::unescapeC(const std::wstring &str) {
 void Translations::loadPoEntry(const std::map<std::wstring, std::wstring> &entry) {
 	// Process an entry from a PO file and add it to the translation table
 	// Assumes that entry[L"msgid"] is always defined
-	std::wstring translation_index;
+	std::wstring textdomain;
 	auto ctx = entry.find(L"msgctx");
 	if (ctx != entry.end()) {
-		translation_index = ctx->second + L"|";
+		textdomain = ctx->second;
 	} else {
-		translation_index = L"|";
+		textdomain = L"";
 	}
-	translation_index.append(entry.at(L"msgid"));
+	std::wstring original = entry.at(L"msgid");
 
 	auto plural = entry.find(L"msgid_plural");
 	if (plural == entry.end()) {
@@ -295,7 +301,7 @@ void Translations::loadPoEntry(const std::map<std::wstring, std::wstring> &entry
 			errorstream << "Could not load translation: entry for msgid \"" << wide_to_utf8(entry.at(L"msgid")) << "\" does not contain a msgstr field" << std::endl;
 			return;
 		}
-		m_translations[translation_index] = translated->second;
+		addTranslation(textdomain, original, translated->second);
 	} else {
 		errorstream << "Translations with plurals are unsupported for now" << std::endl;
 	}
@@ -371,14 +377,106 @@ void Translations::loadPoTranslation(const std::string &data) {
 	}
 }
 
+void Translations::loadMoEntry(const std::string &original, const std::string &translated) {
+	std::wstring textdomain = L"";
+	size_t found;
+	std::string noriginal = original;
+	found = original.find('\x04'); // EOT character
+	if (found != std::string::npos) {
+		textdomain = utf8_to_wide(original.substr(0, found));
+		noriginal = original.substr(found + 1);
+	}
+
+	found = noriginal.find('\0');
+	if (found != std::string::npos) {
+		errorstream << "Translations with plurals are unsupported for now" << std::endl;
+		return;
+	} else {
+		addTranslation(textdomain, utf8_to_wide(noriginal), utf8_to_wide(translated));
+	}
+}
+
+inline u32 readVarEndian(bool is_be, const char *data)
+{
+	if (is_be) {
+		return
+			((u32)data[0] << 24) | ((u32)data[1] << 16) |
+			((u32)data[2] <<  8) | ((u32)data[3] <<  0);
+	} else {
+		return
+			((u32)data[0] <<  0) | ((u32)data[1] <<  8) |
+			((u32)data[2] << 16) | ((u32)data[3] << 24);
+	}
+}
+
+void Translations::loadMoTranslation(const std::string &data) {
+	size_t length = data.length();
+	const char* cdata = data.c_str();
+
+	if (length < 20) {
+		errorstream << "Ignoring too short mo file" << std::endl;
+		return;
+	}
+
+	u32 magic = readVarEndian(false, cdata);
+	bool is_be;
+	if (magic == 0x950412de) {
+		is_be = false;
+	} else if (magic == 0xde120495) {
+		is_be = true;
+	} else {
+		errorstream << "Bad magic number for mo file: 0x" << hex_encode(cdata, 4) << std::endl;
+		return;
+	}
+
+	u32 revision = readVarEndian(is_be, cdata + 4);
+	if (revision != 0) {
+		errorstream << "Unknown revision " << revision << " for mo file" << std::endl;
+		return;
+	}
+
+	u32 nstring = readVarEndian(is_be, cdata + 8);
+	u32 original_offset = readVarEndian(is_be, cdata + 12);
+	u32 translated_offset = readVarEndian(is_be, cdata + 16);
+
+	if (length < original_offset + 8 * nstring || length < translated_offset + 8 * nstring) {
+		errorstream << "Ignoring truncated mo file" << std::endl;
+		return;
+	}
+
+	for (u32 i = 0; i < nstring; i++) {
+		u32 original_len = readVarEndian(is_be, cdata + original_offset + 8 * i);
+		u32 original_off = readVarEndian(is_be, cdata + original_offset + 8 * i + 4);
+		u32 translated_len = readVarEndian(is_be, cdata + translated_offset + 8 * i);
+		u32 translated_off = readVarEndian(is_be, cdata + translated_offset + 8 * i + 4);
+		
+		if (length < original_off + original_len || length < translated_off + translated_len) {
+			errorstream << "Ignoring translation out of mo file" << std::endl;
+			continue;
+		}
+
+		const std::string original(cdata + original_off, original_len);
+		const std::string translated(cdata + translated_off, translated_len);
+
+		loadMoEntry(original, translated);
+	}
+	
+	warningstream << "mo files are unsupported for now" << std::endl;
+	return;
+}
+
 void Translations::loadTranslation(const std::string &filename, const std::string &data) {
 	const char *trExtension[] = { ".tr", NULL };
 	const char *poExtension[] = { ".po", NULL };
+	const char *moExtension[] = { ".mo", NULL };
 	if (!removeStringEnd(filename, trExtension).empty()) {
 		loadTrTranslation(data);
 		return;
 	} else if (!removeStringEnd(filename, poExtension).empty()) {
 		loadPoTranslation(data);
+		return;
+	} else if (!removeStringEnd(filename, moExtension).empty()) {
+		loadMoTranslation(data);
 		return;
 	} else {
 		errorstream << "loadTranslation called with invalid filename: \"" << filename << "\"" << std::endl;
