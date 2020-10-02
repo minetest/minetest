@@ -407,6 +407,22 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 
 	if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
+		irr::EKEY_CODE key_code = irr::KEY_KEY_CODES_COUNT;
+		wchar_t key_char = L'\0';
+		if (event.KeyInput.Char == L'\0' || event.KeyInput.Control
+				|| iswcntrl(event.KeyInput.Char)) {
+			/*
+				Separate the control characters. This includes:
+				* L'\0'     Home, Page Down
+				* Control   Combinations (Ctrl + A, Ctrl + U)
+				* iswcntrl  ASCII-Controls (Backspace \0x08)
+			*/
+			key_code = event.KeyInput.Key;
+		} else {
+			// Normal text characters
+			key_char = event.KeyInput.Char;
+		}
+
 		// Key input
 		if (KeyPress(event.KeyInput) == getKeySetting("keymap_console")) {
 			closeConsole();
@@ -417,25 +433,20 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			return true;
 		}
 
-		if (event.KeyInput.Key == KEY_ESCAPE) {
+		switch (key_code) {
+		case KEY_ESCAPE:
 			closeConsoleAtOnce();
 			m_close_on_enter = false;
 			// inhibit open so the_game doesn't reopen immediately
 			m_open_inhibited = 1; // so the ESCAPE button doesn't open the "pause menu"
 			return true;
-		}
-		else if(event.KeyInput.Key == KEY_PRIOR)
-		{
+		case KEY_PRIOR:
 			m_chat_backend->scrollPageUp();
 			return true;
-		}
-		else if(event.KeyInput.Key == KEY_NEXT)
-		{
+		case KEY_NEXT:
 			m_chat_backend->scrollPageDown();
 			return true;
-		}
-		else if(event.KeyInput.Key == KEY_RETURN)
-		{
+		case KEY_RETURN: {
 			prompt.addToHistory(prompt.getLine());
 			std::wstring text = prompt.replace(L"");
 			m_client->typeChatMessage(text);
@@ -445,22 +456,18 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			}
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_UP)
-		{
+		case KEY_UP:
 			// Up pressed
 			// Move back in history
 			prompt.historyPrev();
 			return true;
-		}
-		else if(event.KeyInput.Key == KEY_DOWN)
-		{
+		case KEY_DOWN:
 			// Down pressed
 			// Move forward in history
 			prompt.historyNext();
 			return true;
-		}
-		else if(event.KeyInput.Key == KEY_LEFT || event.KeyInput.Key == KEY_RIGHT)
-		{
+		case KEY_LEFT:
+		case KEY_RIGHT: {
 			// Left/right pressed
 			// Move/select character/word to the left depending on control and shift keys
 			ChatPrompt::CursorOp op = event.KeyInput.Shift ?
@@ -475,8 +482,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			prompt.cursorOperation(op, dir, scope);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_HOME)
-		{
+		case KEY_HOME:
 			// Home pressed
 			// move to beginning of line
 			prompt.cursorOperation(
@@ -484,9 +490,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			return true;
-		}
-		else if(event.KeyInput.Key == KEY_END)
-		{
+		case KEY_END:
 			// End pressed
 			// move to end of line
 			prompt.cursorOperation(
@@ -494,9 +498,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			return true;
-		}
-		else if(event.KeyInput.Key == KEY_BACK)
-		{
+		case KEY_BACK: {
 			// Backspace or Ctrl-Backspace pressed
 			// delete character / word to the left
 			ChatPrompt::CursorOpScope scope =
@@ -509,8 +511,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				scope);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_DELETE)
-		{
+		case KEY_DELETE: {
 			// Delete or Ctrl-Delete pressed
 			// delete character / word to the right
 			ChatPrompt::CursorOpScope scope =
@@ -523,91 +524,101 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				scope);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_KEY_A && event.KeyInput.Control)
-		{
-			// Ctrl-A pressed
-			// Select all text
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_SELECT,
-				ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			return true;
-		}
-		else if(event.KeyInput.Key == KEY_KEY_C && event.KeyInput.Control)
-		{
-			// Ctrl-C pressed
-			// Copy text to clipboard
-			if (prompt.getCursorLength() <= 0)
-				return true;
-			std::wstring wselected = prompt.getSelection();
-			std::string selected = wide_to_utf8(wselected);
-			Environment->getOSOperator()->copyToClipboard(selected.c_str());
-			return true;
-		}
-		else if(event.KeyInput.Key == KEY_KEY_V && event.KeyInput.Control)
-		{
-			// Ctrl-V pressed
-			// paste text from clipboard
-			if (prompt.getCursorLength() > 0) {
-				// Delete selected section of text
-				prompt.cursorOperation(
-					ChatPrompt::CURSOROP_DELETE,
-					ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
-					ChatPrompt::CURSOROP_SCOPE_SELECTION);
-			}
-			IOSOperator *os_operator = Environment->getOSOperator();
-			const c8 *text = os_operator->getTextFromClipboard();
-			if (!text)
-				return true;
-			std::basic_string<unsigned char> str((const unsigned char*)text);
-			prompt.input(std::wstring(str.begin(), str.end()));
-			return true;
-		}
-		else if(event.KeyInput.Key == KEY_KEY_X && event.KeyInput.Control)
-		{
-			// Ctrl-X pressed
-			// Cut text to clipboard
-			if (prompt.getCursorLength() <= 0)
-				return true;
-			std::wstring wselected = prompt.getSelection();
-			std::string selected = wide_to_utf8(wselected);
-			Environment->getOSOperator()->copyToClipboard(selected.c_str());
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
-				ChatPrompt::CURSOROP_SCOPE_SELECTION);
-			return true;
-		}
-		else if(event.KeyInput.Key == KEY_KEY_U && event.KeyInput.Control)
-		{
-			// Ctrl-U pressed
-			// kill line to left end
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			return true;
-		}
-		else if(event.KeyInput.Key == KEY_KEY_K && event.KeyInput.Control)
-		{
-			// Ctrl-K pressed
-			// kill line to right end
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			return true;
-		}
-		else if(event.KeyInput.Key == KEY_TAB)
-		{
+		case KEY_TAB: {
 			// Tab or Shift-Tab pressed
 			// Nick completion
 			std::list<std::string> names = m_client->getConnectedPlayerNames();
 			bool backwards = event.KeyInput.Shift;
 			prompt.nickCompletion(names, backwards);
 			return true;
-		} else if (!iswcntrl(event.KeyInput.Char) && !event.KeyInput.Control) {
-			prompt.input(event.KeyInput.Char);
+		}
+		default: break;
+		}
+
+		if (event.KeyInput.Control) {
+			switch (key_code) {
+			case KEY_KEY_A:
+				// Ctrl-A pressed
+				// Select all text
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_SELECT,
+					ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
+					ChatPrompt::CURSOROP_SCOPE_LINE);
+				return true;
+			case KEY_KEY_C: {
+				// Ctrl-C pressed
+				// Copy text to clipboard
+				if (prompt.getCursorLength() <= 0)
+					return true;
+				std::wstring wselected = prompt.getSelection();
+				std::string selected = wide_to_utf8(wselected);
+				Environment->getOSOperator()->copyToClipboard(selected.c_str());
+				return true;
+			}
+			case KEY_KEY_V: {
+				// Ctrl-V pressed
+				// paste text from clipboard
+				if (prompt.getCursorLength() > 0) {
+					// Delete selected section of text
+					prompt.cursorOperation(
+						ChatPrompt::CURSOROP_DELETE,
+						ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
+						ChatPrompt::CURSOROP_SCOPE_SELECTION);
+				}
+				IOSOperator *os_operator = Environment->getOSOperator();
+				const c8 *text = os_operator->getTextFromClipboard();
+				if (!text)
+					return true;
+				std::basic_string<unsigned char> str((const unsigned char*)text);
+				prompt.input(std::wstring(str.begin(), str.end()));
+				return true;
+			}
+			case KEY_KEY_X: {
+				// Ctrl-X pressed
+				// Cut text to clipboard
+				if (prompt.getCursorLength() <= 0)
+					return true;
+				std::wstring wselected = prompt.getSelection();
+				std::string selected = wide_to_utf8(wselected);
+				Environment->getOSOperator()->copyToClipboard(selected.c_str());
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_DELETE,
+					ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
+					ChatPrompt::CURSOROP_SCOPE_SELECTION);
+				return true;
+			}
+			case KEY_KEY_U:
+				// Ctrl-U pressed
+				// kill line to left end
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_DELETE,
+					ChatPrompt::CURSOROP_DIR_LEFT,
+					ChatPrompt::CURSOROP_SCOPE_LINE);
+				return true;
+			case KEY_KEY_K:
+				// Ctrl-K pressed
+				// kill line to right end
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_DELETE,
+					ChatPrompt::CURSOROP_DIR_RIGHT,
+					ChatPrompt::CURSOROP_SCOPE_LINE);
+				return true;
+			default: break;
+			}
+		}
+
+		if (event.KeyInput.Key == KEY_TAB) {
+			// Tab or Shift-Tab pressed
+			// Nick completion
+			std::list<std::string> names = m_client->getConnectedPlayerNames();
+			bool backwards = event.KeyInput.Shift;
+			prompt.nickCompletion(names, backwards);
+			return true;
+		}
+	
+		// Unhandled characters that are not controls
+		if (key_char != L'\0') {
+			prompt.input(key_char);
 			return true;
 		}
 	}
