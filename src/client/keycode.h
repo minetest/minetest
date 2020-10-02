@@ -42,7 +42,7 @@ public:
 
 	KeyPress(const char *name);
 
-	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character = false);
+	KeyPress(const irr::SEvent::SKeyInput &in);
 
 	bool operator==(const KeyPress &o) const
 	{
@@ -69,7 +69,7 @@ namespace std
 	{
 		size_t operator()(const KeyPress &key) const
 		{
-			return key.Key;
+			return KeyPress::valid_kcode(key.Key) ? (size_t)key.Key << 24 : (size_t)key.Char;
 		}
 	};
 }

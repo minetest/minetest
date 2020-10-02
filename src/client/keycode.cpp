@@ -319,22 +319,29 @@ KeyPress::KeyPress(const char *name)
 	warningstream << "KeyPress: Unknown key '" << name << "', falling back to first char.";
 }
 
-KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
+KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
 {
-	if (prefer_character)
-		Key = irr::KEY_KEY_CODES_COUNT;
-	else
-		Key = in.Key;
-	Char = in.Char;
+	// Avoid setting "Char" and "Key" at the same time to avoid confusion
+	bool prefer_character = in.Shift;
 
-	try {
-		if (valid_kcode(Key))
-			m_name = lookup_keykey(Key).Name;
-		else
-			m_name = lookup_keychar(Char).Name;
-	} catch (UnknownKeycode &e) {
-		m_name = "";
-	};
+	// Look up by the printed character first
+	if (in.Char != L'\0') {
+		try {
+			m_name = lookup_keychar(in.Char).Name;
+			Char = in.Char;
+			if (prefer_character)
+				return;
+		} catch (UnknownKeycode &e) {}
+	}
+
+	// Irrlicht-specific key as fallback
+	if (valid_kcode(in.Key)) {
+		try {
+			m_name = lookup_keykey(in.Key).Name;
+			Key = in.Key;
+			return;
+		} catch (UnknownKeycode &e) {}
+	}
 }
 
 const char *KeyPress::sym() const

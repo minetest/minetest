@@ -101,10 +101,11 @@ void TestKeycode::testCreateFromSKeyInput()
 	UASSERTEQ_STR(k.sym(), "?");
 
 	// prefer_character mode
-	in.Key = irr::KEY_COMMA;
-	in.Char = L'G';
-	k = KeyPress(in, true);
-	UASSERTEQ_STR(k.sym(), "KEY_KEY_G");
+	in.Key = irr::KEY_KEY_7;
+	in.Char = L'/';
+	in.Shift = true;
+	k = KeyPress(in);
+	UASSERTEQ_STR(k.sym(), "/");
 }
 
 void TestKeycode::testCompare()

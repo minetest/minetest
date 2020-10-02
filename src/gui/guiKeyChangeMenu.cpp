@@ -295,20 +295,12 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 	if (event.EventType == EET_KEY_INPUT_EVENT && active_key
 			&& event.KeyInput.PressedDown) {
 
-		bool prefer_character = shift_down;
-		KeyPress kp(event.KeyInput, prefer_character);
+		KeyPress kp(event.KeyInput);
 
 		if (event.KeyInput.Key == irr::KEY_DELETE)
 			kp = KeyPress(""); // To erase key settings
 		else if (event.KeyInput.Key == irr::KEY_ESCAPE)
 			kp = active_key->key; // Cancel
-
-		bool shift_went_down = false;
-		if(!shift_down &&
-				(event.KeyInput.Key == irr::KEY_SHIFT ||
-				event.KeyInput.Key == irr::KEY_LSHIFT ||
-				event.KeyInput.Key == irr::KEY_RSHIFT))
-			shift_went_down = true;
 
 		// Display Key already in use message
 		bool key_in_use = false;
@@ -341,10 +333,10 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			delete[] text;
 
 			// Allow characters made with shift
-			if (shift_went_down){
-				shift_down = true;
+			if (event.KeyInput.Key == irr::KEY_SHIFT ||
+					event.KeyInput.Key == irr::KEY_LSHIFT ||
+					event.KeyInput.Key == irr::KEY_RSHIFT)
 				return false;
-			}
 
 			active_key = nullptr;
 			return true;
@@ -387,7 +379,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					}
 					FATAL_ERROR_IF(!active_key, "Key setting not found");
 
-					shift_down = false;
 					const wchar_t *text = wgettext("press key");
 					active_key->button->setText(text);
 					delete[] text;

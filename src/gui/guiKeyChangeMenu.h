@@ -71,8 +71,6 @@ private:
 
 	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
-	bool shift_down = false;
-
 	key_setting *active_key = nullptr;
 	gui::IGUIStaticText *key_used_text = nullptr;
 	std::vector<key_setting *> key_settings;
