@@ -193,6 +193,15 @@ core.register_chatcommand("text", {
 	end,
 })
 
+core.register_chatcommand("count_items", {
+	func = function()
+		local count = 0
+		for _ in pairs(minetest.get_item_defs()) do
+			count = count + 1
+		end
+		return true, count .. " items are currently registered"
+	end
+})
 
 core.register_on_mods_loaded(function()
 	core.log("Yeah preview mod is loaded with other CSM mods.")
