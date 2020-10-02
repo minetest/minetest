@@ -197,3 +197,12 @@ core.register_chatcommand("text", {
 core.register_on_mods_loaded(function()
 	core.log("Yeah preview mod is loaded with other CSM mods.")
 end)
+
+core.register_chatcommand("store_character", {
+	func = function()
+		if core.store_texture("character.png", "character.png") then
+			return true, "Stored character texture"
+		end
+		return false, "Storing character texture failed"
+	end
+})

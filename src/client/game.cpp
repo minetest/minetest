@@ -1520,6 +1520,8 @@ bool Game::connectToServer(const std::string &playername,
 	client->connect(connect_address,
 		simple_singleplayer_mode || local_server_mode);
 
+	texture_src->m_client = client;
+
 	/*
 		Wait for server to accept connection
 	*/

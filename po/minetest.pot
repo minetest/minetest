@@ -4939,6 +4939,7 @@ msgid ""
 "LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\n"
 "csm_restriction_noderange)\n"
 "READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
+"STORE_TEXTURES: 64 (disable store_texture call client-side)"
 msgstr ""
 
 #: src/settings_translation_file.cpp

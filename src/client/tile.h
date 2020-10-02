@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IVideoDriver.h>
 #endif
 
+class Client;
 class IGameDef;
 struct TileSpec;
 struct TileDef;
@@ -130,6 +131,8 @@ public:
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
+
+	Client* m_client;
 };
 
 IWritableTextureSource *createTextureSource();

@@ -54,6 +54,7 @@ build/.cmake/
 /world/
 /clientmods/*
 !/clientmods/preview/
+/clientmods/preview/character.png
 /client/mod_storage/
 
 ## Configuration/log files
