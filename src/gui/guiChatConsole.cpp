@@ -438,7 +438,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			return true;
 		}
 
-		switch (key_code) { 
+		switch (key_code) {
 		case KEY_ESCAPE:
 			closeConsoleAtOnce();
 			m_close_on_enter = false;
@@ -616,7 +616,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		if (key_char != L'\0') {
 			#if defined(__linux__) && (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9)
 				wchar_t wc = L'_';
-				mbtowc( &wc, (char *) &key_char, sizeof(key_char) );
+				mbtowc(&wc, (char *)&key_char, sizeof(key_char));
 				prompt.input(wc);
 			#else
 				prompt.input(key_char);

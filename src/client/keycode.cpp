@@ -339,6 +339,7 @@ KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
 		try {
 			m_name = lookup_keykey(in.Key).Name;
 			Key = in.Key;
+			Char = L'\0';
 			return;
 		} catch (UnknownKeycode &e) {}
 	}

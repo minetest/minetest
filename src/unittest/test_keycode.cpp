@@ -119,6 +119,7 @@ void TestKeycode::testCompare()
 	irr::SEvent::SKeyInput in;
 	in.Key = irr::KEY_PLUS;
 	in.Char = L'=';
+	in.Shift = true;
 	UASSERT(KeyPress("=") == KeyPress(in));
 
 	// Matching keycode suffices
@@ -126,5 +127,8 @@ void TestKeycode::testCompare()
 	in.Key = in2.Key = irr::KEY_OEM_CLEAR;
 	in.Char = L'\0';
 	in2.Char = L';';
-	UASSERT(KeyPress(in) == KeyPress(in2));
+	KeyPress kp1(in);
+	KeyPress kp2(in2);
+	UASSERT(kp1 == kp2);
+	UASSERT(std::hash<KeyPress>{}(kp1) == std::hash<KeyPress>{}(kp2));
 }
