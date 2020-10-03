@@ -2280,9 +2280,9 @@ luaL_Reg ObjectRef::methods[] = {
 
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
 	luamethod(ObjectRef, add_velocity),
+	{"add_player_velocity", ObjectRef::l_add_velocity},
 	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
 	{"get_player_velocity", ObjectRef::l_get_velocity},
-	{"add_player_velocity", ObjectRef::l_add_velocity},
 
 	// LuaEntitySAO-only
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
