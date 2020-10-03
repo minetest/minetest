@@ -4340,6 +4340,8 @@ Utilities
           pathfinder_works = true,
           -- Whether Collision info is available to an objects' on_step (5.3.0)
           object_step_has_moveresult = true,
+          -- Whether get_velocity() and add_velocity() can be used on players (5.4.0)
+          direct_velocity_on_players = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -6118,6 +6120,19 @@ object you are working with still exists.
 
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
+* `get_velocity()`: returns the velocity, a vector.
+* `add_velocity(vel)`
+    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
+    * In comparison to using get_velocity, adding the velocity and then using
+      set_velocity, add_velocity is supposed to avoid synchronization problems.
+      Additionally, players also do not support set_velocity.
+    * If a player:
+        * Does not apply during free_move.
+        * Note that since the player speed is normalized at each move step,
+          increasing e.g. Y velocity beyond what would usually be achieved
+          (see: physics overrides) will cause existing X/Z velocity to be reduced.
+        * Example: `add_velocity({x=0, y=6.5, z=0})` is equivalent to
+          pressing the jump key (assuming default settings)
 * `move_to(pos, continuous=false)`
     * Does an interpolated move for Lua entities for visually smooth transitions.
     * If `continuous` is true, the Lua entity will not be moved to the current
@@ -6189,11 +6204,6 @@ object you are working with still exists.
       no effect and returning `nil`.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-* `add_velocity(vel)`
-    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-    * In comparison to using get_velocity, adding the velocity and then using
-      set_velocity, add_velocity is supposed to avoid synchronization problems.
-* `get_velocity()`: returns the velocity, a vector
 * `set_acceleration(acc)`
     * `acc` is a vector
 * `get_acceleration()`: returns the acceleration, a vector
@@ -6229,16 +6239,9 @@ object you are working with still exists.
 #### Player only (no-op for other objects)
 
 * `get_player_name()`: returns `""` if is not a player
-* `get_player_velocity()`: returns `nil` if is not a player, otherwise a
+* `get_player_velocity()`: **DEPRECATED**, use get_velocity() instead.
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
-* `add_player_velocity(vel)`
-    * Adds to player velocity, this happens client-side and only once.
-    * Does not apply during free_move.
-    * Note that since the player speed is normalized at each move step,
-      increasing e.g. Y velocity beyond what would usually be achieved
-      (see: physics overrides) will cause existing X/Z velocity to be reduced.
-    * Example: `add_player_velocity({x=0, y=6.5, z=0})` is equivalent to
-      pressing the jump key (assuming default settings)
+* `add_player_velocity(vel)`: **DEPRECATED**, use add_velocity(vel) instead.
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_vertical()`: pitch in radians
     * Angle ranges between -pi/2 and pi/2, which are straight up and down

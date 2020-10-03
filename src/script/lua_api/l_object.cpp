@@ -863,12 +863,21 @@ int ObjectRef::l_add_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	LuaEntitySAO *co = getluaobject(ref);
-	if (!co)
+	v3f vel = checkFloatPos(L, 2);
+
+	ServerActiveObject *obj = getobject(ref);
+	if (obj == nullptr)
 		return 0;
-	v3f pos = checkFloatPos(L, 2);
-	// Do it
-	co->addVelocity(pos);
+
+	if (obj->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
+		LuaEntitySAO *co = dynamic_cast<LuaEntitySAO*>(obj);
+		co->addVelocity(vel);
+	} else if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		PlayerSAO *player = dynamic_cast<PlayerSAO*>(obj);
+		player->setMaxSpeedOverride(vel);
+		getServer(L)->SendPlayerSpeed(player->getPeerID(), vel);
+	}
+
 	return 0;
 }
 
@@ -877,11 +886,23 @@ int ObjectRef::l_get_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
-	// Do it
-	v3f v = co->getVelocity();
-	pushFloatPos(L, v);
+
+	ServerActiveObject *obj = getobject(ref);
+	if (obj == nullptr)
+		return 0;
+
+	if (obj->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
+		LuaEntitySAO *co = dynamic_cast<LuaEntitySAO*>(obj);
+		v3f v = co->getVelocity();
+		pushFloatPos(L, v);
+		return 1;
+	} else if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		RemotePlayer *player = dynamic_cast<PlayerSAO*>(obj)->getPlayer();
+		push_v3f(L, player->getSpeed() / BS);
+		return 1;
+	}
+
+	lua_pushnil(L);
 	return 1;
 }
 
@@ -1080,38 +1101,6 @@ int ObjectRef::l_get_player_name(lua_State *L)
 	// Do it
 	lua_pushstring(L, player->getName());
 	return 1;
-}
-
-// get_player_velocity(self)
-int ObjectRef::l_get_player_velocity(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == NULL) {
-		lua_pushnil(L);
-		return 1;
-	}
-	// Do it
-	push_v3f(L, player->getSpeed() / BS);
-	return 1;
-}
-
-// add_player_velocity(self, {x=num, y=num, z=num})
-int ObjectRef::l_add_player_velocity(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	v3f vel = checkFloatPos(L, 2);
-
-	PlayerSAO *co = getplayersao(ref);
-	if (!co)
-		return 0;
-
-	// Do it
-	co->setMaxSpeedOverride(vel);
-	getServer(L)->SendPlayerSpeed(co->getPeerID(), vel);
-	return 0;
 }
 
 // get_look_dir(self)
@@ -2288,10 +2277,14 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_properties),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
-	// LuaEntitySAO-only
+
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
 	luamethod(ObjectRef, add_velocity),
+	{"add_player_velocity", ObjectRef::l_add_velocity},
 	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
+	{"get_player_velocity", ObjectRef::l_get_velocity},
+
+	// LuaEntitySAO-only
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),
@@ -2307,8 +2300,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, is_player_connected),
 	luamethod(ObjectRef, get_player_name),
-	luamethod(ObjectRef, get_player_velocity),
-	luamethod(ObjectRef, add_player_velocity),
+
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),
