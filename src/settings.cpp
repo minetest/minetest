@@ -1039,14 +1039,15 @@ void Settings::deregisterChangedCallback(const std::string &name,
 	}
 }
 
-void Settings::removeSecureSettings() {
+void Settings::removeSecureSettings()
+{
 	for (const auto &name : getNames()) {
 		if (name.compare(0, 7, "secure.") != 0)
 			continue;
 
 		errorstream << "Secure setting " << name
-					<< " isn't allowed, so was ignored."
-					<< std::endl;
+				<< " isn't allowed, so was ignored."
+				<< std::endl;
 		remove(name);
 	}
 }
