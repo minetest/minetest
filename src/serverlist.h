@@ -24,8 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-typedef Json::Value ServerListSpec;
-
 namespace ServerList
 {
 #if USE_CURL
