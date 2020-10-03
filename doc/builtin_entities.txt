@@ -14,7 +14,7 @@ Default behaviour:
 
 * Falls down in a straight line (gravity = `movement_gravity` setting)
 * Collides with `walkable` node
-* Collides with all physical objects but players
+* Collides with all physical objects except players
 * If the node group `float=1` is set, it also collides with liquid nodes
 * When it hits a solid (=`walkable`) node, it will try to place itself as a
   node, replacing the node above.
