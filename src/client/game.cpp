@@ -3996,9 +3996,10 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 	else
 		fps_timings->busy_time = 0;
 
-	u32 frametime_min = 1000 / (g_menumgr.pausesGame()
-			? g_settings->getFloat("pause_fps_max")
-			: g_settings->getFloat("fps_max"));
+	u32 frametime_min = 1000 / (
+		device->isWindowFocused() && !g_menumgr.pausesGame()
+			? g_settings->getFloat("fps_max")
+			: g_settings->getFloat("fps_max_unfocused"));
 
 	if (fps_timings->busy_time < frametime_min) {
 		fps_timings->sleep_time = frametime_min - fps_timings->busy_time;

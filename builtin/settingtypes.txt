@@ -606,8 +606,8 @@ arm_inertia (Arm inertia) bool true
 #    to not waste CPU power for no benefit.
 fps_max (Maximum FPS) int 60 1
 
-#    Maximum FPS when game is paused.
-pause_fps_max (FPS in pause menu) int 20 1
+#    Maximum FPS when the window is not focused, or when the game is paused.
+fps_max_unfocused (FPS when unfocused or paused) int 20 1
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
 #    open.
