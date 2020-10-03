@@ -5767,6 +5767,9 @@ Global tables
     * Map of registered tool definitions, indexed by name
 * `minetest.registered_entities`
     * Map of registered entity prototypes, indexed by name
+    * Values in this table may be modified directly.
+      Note: changes to initial properties will only affect entities spawned afterwards,
+      as they are only read when spawning.
 * `minetest.object_refs`
     * Map of object references, indexed by active object id
 * `minetest.luaentities`
@@ -5797,6 +5800,7 @@ Global tables
     * Map of registered chat command definitions, indexed by name
 * `minetest.registered_privileges`
     * Map of registered privilege definitions, indexed by name
+    * Registered privileges can be modified directly in this table.
 
 ### Registered callback tables
 
