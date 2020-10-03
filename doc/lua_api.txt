@@ -7949,6 +7949,8 @@ Used by `minetest.register_chatcommand`.
 
         func = function(name, param),
         -- Called when command is run. Returns boolean success and text output.
+        -- Special case: The help message is shown to the player if `func`
+        -- returns false without a text output.
     }
 
 Note that in params, use of symbols is as follows:
