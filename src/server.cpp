@@ -3492,6 +3492,7 @@ bool Server::dynamicAddMedia(const std::string &filepath)
 	pkt << raw_hash << filename << (bool) true;
 	pkt.putLongString(filedata);
 
+	bool is_shader = str_ends_with(filename, ".glsl");
 	auto client_ids = m_clients.getClientIDs(CS_DefinitionsSent);
 	for (session_t client_id : client_ids) {
 		/*
@@ -3503,6 +3504,9 @@ bool Server::dynamicAddMedia(const std::string &filepath)
 			- channel 1 (HUD)
 			- channel 0 (everything else: e.g. play_sound, object messages)
 		*/
+		if (is_shader && m_clients.getProtocolVersion(client_id) <= 39)
+			continue;
+
 		m_clients.send(client_id, 1, &pkt, true);
 		m_clients.send(client_id, 0, &pkt, true);
 	}

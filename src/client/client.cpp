@@ -773,7 +773,10 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 		}
 		TRACESTREAM(<< "Client: Loading shader: "
 				<< "\"" << filename << "\"" << std::endl);
-		return m_shsrc->setShaderMedia(filename, data);
+		bool success = m_shsrc->setShaderMedia(filename, data);
+		if (success && from_media_push)
+			m_shsrc->rebuildShaders();
+		return success;
 	}
 
 	errorstream << "Client: Don't know how to load file \""
