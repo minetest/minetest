@@ -377,4 +377,7 @@ private:
 
 	// send_mapblock(pos)
 	static int l_send_mapblock(lua_State *L);
+
+	// set_minimap_modes(self, modes, wanted_mode)
+	static int l_set_minimap_modes(lua_State *L);
 };

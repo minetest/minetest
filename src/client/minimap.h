@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "../hud.h"
 #include "irrlichttypes_extrabloated.h"
 #include "util/thread.h"
 #include "voxel.h"
@@ -33,26 +34,18 @@ class IShaderSource;
 #define MINIMAP_MAX_SX 512
 #define MINIMAP_MAX_SY 512
 
-enum MinimapMode {
-	MINIMAP_MODE_OFF,
-	MINIMAP_MODE_SURFACEx1,
-	MINIMAP_MODE_SURFACEx2,
-	MINIMAP_MODE_SURFACEx4,
-	MINIMAP_MODE_RADARx1,
-	MINIMAP_MODE_RADARx2,
-	MINIMAP_MODE_RADARx4,
-	MINIMAP_MODE_COUNT,
-};
-
 enum MinimapShape {
 	MINIMAP_SHAPE_SQUARE,
 	MINIMAP_SHAPE_ROUND,
 };
 
 struct MinimapModeDef {
-	bool is_radar;
+	MinimapType type;
+	std::string label;
 	u16 scan_height;
 	u16 map_size;
+	std::string texture;
+	u16 scale;
 };
 
 struct MinimapPixel {
@@ -69,12 +62,9 @@ struct MinimapMapblock {
 };
 
 struct MinimapData {
-	bool is_radar;
-	MinimapMode mode;
+	MinimapModeDef mode;
 	v3s16 pos;
 	v3s16 old_pos;
-	u16 scan_height;
-	u16 map_size;
 	MinimapPixel minimap_scan[MINIMAP_MAX_SX * MINIMAP_MAX_SY];
 	bool map_invalidated;
 	bool minimap_shape_round;
@@ -127,12 +117,22 @@ public:
 	v3s16 getPos() const { return data->pos; }
 	void setAngle(f32 angle);
 	f32 getAngle() const { return m_angle; }
-	void setMinimapMode(MinimapMode mode);
-	MinimapMode getMinimapMode() const { return data->mode; }
 	void toggleMinimapShape();
 	void setMinimapShape(MinimapShape shape);
 	MinimapShape getMinimapShape();
 
+	void clearModes() { m_modes.clear(); };
+	void addMode(MinimapModeDef mode);
+	void addMode(MinimapType type, u16 size = 0, std::string label = "",
+			std::string texture = "", u16 scale = 1);
+
+	void setModeIndex(size_t index);
+	size_t getModeIndex() const { return m_current_mode_index; };
+	size_t getMaxModeIndex() const { return m_modes.size() - 1; };
+	void nextMode();
+
+	void setModesFromString(std::string modes_string);
+	MinimapModeDef getModeDef() const { return data->mode; }
 
 	video::ITexture *getMinimapTexture();
 
@@ -144,6 +144,7 @@ public:
 
 	void updateActiveMarkers();
 	void drawMinimap();
+	void drawMinimap(core::rect<s32> rect);
 
 	video::IVideoDriver *driver;
 	Client* client;
@@ -153,9 +154,11 @@ private:
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
 	const NodeDefManager *m_ndef;
-	MinimapUpdateThread *m_minimap_update_thread;
+	MinimapUpdateThread *m_minimap_update_thread = nullptr;
 	scene::SMeshBuffer *m_meshbuffer;
 	bool m_enable_shaders;
+	std::vector<MinimapModeDef> m_modes;
+	size_t m_current_mode_index;
 	u16 m_surface_mode_scan_height;
 	f32 m_angle;
 	std::mutex m_mutex;

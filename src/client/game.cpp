@@ -1416,11 +1416,9 @@ bool Game::createClient(const GameStartData &start_data)
 	}
 
 	mapper = client->getMinimap();
-	if (mapper) {
-		mapper->setMinimapMode(MINIMAP_MODE_OFF);
-		if (client->modsLoaded())
-			client->getScript()->on_minimap_ready(mapper);
-	}
+
+	if (mapper && client->modsLoaded())
+		client->getScript()->on_minimap_ready(mapper);
 
 	return true;
 }
@@ -2222,52 +2220,37 @@ void Game::toggleMinimap(bool shift_pressed)
 	if (!mapper || !m_game_ui->m_flags.show_hud || !g_settings->getBool("enable_minimap"))
 		return;
 
-	if (shift_pressed) {
+	if (shift_pressed)
 		mapper->toggleMinimapShape();
-		return;
-	}
+	else
+		mapper->nextMode();
 
+	// TODO: When legacy minimap is deprecated, keep only HUD minimap stuff here
+
+	// Not so satisying code to keep compatibility with old fixed mode system
+	// -->
 	u32 hud_flags = client->getEnv().getLocalPlayer()->hud_flags;
 
-	MinimapMode mode = MINIMAP_MODE_OFF;
-	if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) {
-		mode = mapper->getMinimapMode();
-		mode = (MinimapMode)((int)mode + 1);
-		// If radar is disabled and in, or switching to, radar mode
-		if (!(hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE) && mode > 3)
-			mode = MINIMAP_MODE_OFF;
-	}
+	if (!(hud_flags & HUD_FLAG_MINIMAP_VISIBLE)) {
+		m_game_ui->m_flags.show_minimap = false;
+	} else {
 
-	m_game_ui->m_flags.show_minimap = true;
-	switch (mode) {
-		case MINIMAP_MODE_SURFACEx1:
-			m_game_ui->showTranslatedStatusText("Minimap in surface mode, Zoom x1");
-			break;
-		case MINIMAP_MODE_SURFACEx2:
-			m_game_ui->showTranslatedStatusText("Minimap in surface mode, Zoom x2");
-			break;
-		case MINIMAP_MODE_SURFACEx4:
-			m_game_ui->showTranslatedStatusText("Minimap in surface mode, Zoom x4");
-			break;
-		case MINIMAP_MODE_RADARx1:
-			m_game_ui->showTranslatedStatusText("Minimap in radar mode, Zoom x1");
-			break;
-		case MINIMAP_MODE_RADARx2:
-			m_game_ui->showTranslatedStatusText("Minimap in radar mode, Zoom x2");
-			break;
-		case MINIMAP_MODE_RADARx4:
-			m_game_ui->showTranslatedStatusText("Minimap in radar mode, Zoom x4");
-			break;
-		default:
-			mode = MINIMAP_MODE_OFF;
-			m_game_ui->m_flags.show_minimap = false;
-			if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE)
-				m_game_ui->showTranslatedStatusText("Minimap hidden");
-			else
-				m_game_ui->showTranslatedStatusText("Minimap currently disabled by game or mod");
-	}
+	// If radar is disabled, try to find a non radar mode or fall back to 0
+		if (!(hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE))
+			while (mapper->getModeIndex() &&
+					mapper->getModeDef().type == MINIMAP_TYPE_RADAR)
+				mapper->nextMode();
 
-	mapper->setMinimapMode(mode);
+		m_game_ui->m_flags.show_minimap = mapper->getModeDef().type !=
+				MINIMAP_TYPE_OFF;
+	}
+	// <--
+	// End of 'not so satifying code'
+	if ((hud_flags & HUD_FLAG_MINIMAP_VISIBLE) ||
+			(hud && hud->hasElementOfType(HUD_ELEM_MINIMAP)))
+		m_game_ui->showStatusText(utf8_to_wide(mapper->getModeDef().label));
+	else
+		m_game_ui->showTranslatedStatusText("Minimap currently disabled by game or mod");
 }
 
 void Game::toggleFog()
@@ -3954,7 +3937,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Update minimap pos and rotation
 	*/
-	if (mapper && m_game_ui->m_flags.show_minimap && m_game_ui->m_flags.show_hud) {
+	if (mapper && m_game_ui->m_flags.show_hud) {
 		mapper->setPos(floatToInt(player->getPosition(), BS));
 		mapper->setAngle(player->getYaw());
 	}

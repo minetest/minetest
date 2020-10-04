@@ -1484,6 +1484,15 @@ Displays an image oriented or translated according to current heading direction.
 
 If translation is chosen, texture is repeated horizontally to fill the whole element.
 
+### `minimap`
+
+Displays a minimap on the HUD.
+
+* `size`: Size of the minimap to display. Minimap should be a square to avoid
+  distortion.
+* `alignment`: The alignment of the minimap.
+* `offset`: offset in pixels from position.
+
 Representations of simple things
 ================================
 
@@ -6366,6 +6375,27 @@ object you are working with still exists.
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
+* `set_minimap_modes({mode, mode, ...}, selected_mode)`
+    * Overrides the available minimap modes (and toggle order), and changes the
+    selected mode.
+    * `mode` is a table consisting of up to four fields:
+        * `type`: Available type:
+            * `off`: Minimap off
+            * `surface`: Minimap in surface mode
+            * `radar`: Minimap in radar mode
+            * `texture`: Texture to be displayed instead of terrain map
+              (texture is centered around 0,0 and can be scaled).
+              Texture size is limited to 512 x 512 pixel.
+        * `label`: Optional label to display on minimap mode toggle
+          The translation must be handled within the mod.
+        * `size`: Sidelength or diameter, in number of nodes, of the terrain
+          displayed in minimap
+        * `texture`: Only for texture type, name of the texture to display
+        * `scale`: Only for texture type, scale of the texture map in nodes per
+          pixel (for example a `scale` of 2 means each pixel represents a 2x2
+          nodes square)
+    * `selected_mode` is the mode index to be selected after modes have been changed
+    (0 is the first mode).
 * `set_sky(parameters)`
     * `parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
@@ -8047,7 +8077,8 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
     {
         hud_elem_type = "image",  -- See HUD element types
-        -- Type of element, can be "image", "text", "statbar", "inventory" or "compass"
+        -- Type of element, can be "image", "text", "statbar", "inventory",
+        -- "compass" or "minimap"
 
         position = {x=0.5, y=0.5},
         -- Left corner position of element

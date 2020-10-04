@@ -118,6 +118,14 @@ struct ServerPlayingSound
 	std::unordered_set<session_t> clients; // peer ids
 };
 
+struct MinimapMode {
+	MinimapType type = MINIMAP_TYPE_OFF;
+	std::string label;
+	u16 size = 0;
+	std::string texture;
+	u16 scale = 1;
+};
+
 class Server : public con::PeerHandler, public MapEventReceiver,
 		public IGameDef
 {
@@ -330,6 +338,10 @@ public:
 	void SendMovePlayer(session_t peer_id);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
+
+	void SendMinimapModes(session_t peer_id,
+			std::vector<MinimapMode> &modes,
+			size_t wanted_mode);
 
 	void sendDetachedInventories(session_t peer_id, bool incremental);
 

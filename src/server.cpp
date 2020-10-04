@@ -2662,6 +2662,23 @@ void Server::sendRequestedMedia(session_t peer_id,
 	}
 }
 
+void Server::SendMinimapModes(session_t peer_id,
+		std::vector<MinimapMode> &modes, size_t wanted_mode)
+{
+	RemotePlayer *player = m_env->getPlayer(peer_id);
+	assert(player);
+	if (player->getPeerId() == PEER_ID_INEXISTENT)
+		return;
+
+	NetworkPacket pkt(TOCLIENT_MINIMAP_MODES, 0, peer_id);
+	pkt << (u16)modes.size() << (u16)wanted_mode;
+
+	for (auto &mode : modes)
+		pkt << (u16)mode.type << mode.label << mode.size << mode.texture << mode.scale;
+
+	Send(&pkt);
+}
+
 void Server::sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id)
 {
 	NetworkPacket pkt(TOCLIENT_DETACHED_INVENTORY, 0, peer_id);

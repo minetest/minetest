@@ -2199,6 +2199,67 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 	return 1;
 }
 
+// set_minimap_modes(self, modes, modeindex)
+int ObjectRef::l_set_minimap_modes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	// Arg 1 should be a player
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	// Arg 2 should be a table (of tables)
+	if (!lua_istable(L, 2)) {
+		return 0;
+	}
+
+	// Arg 3 should be a number
+	s16 wantedmode = lua_tonumber(L, 3);
+
+	std::vector<MinimapMode> modes;
+
+	lua_pushnil(L);
+	while (lua_next(L, 2) != 0) {
+		/* key is at index -2, value is at index -1 */
+		if (lua_istable(L, -1)) {
+			bool ok = true;
+			MinimapMode mode;
+			std::string type = getstringfield_default(L, -1, "type", "");
+			if (type == "off")
+				mode.type = MINIMAP_TYPE_OFF;
+			else if (type == "surface")
+				mode.type = MINIMAP_TYPE_SURFACE;
+			else if (type == "radar")
+				mode.type = MINIMAP_TYPE_RADAR;
+			else if (type == "texture") {
+				mode.type = MINIMAP_TYPE_TEXTURE;
+				mode.texture = getstringfield_default(L, -1, "texture", "");
+				mode.scale = getintfield_default(L, -1, "scale", 1);
+			} else {
+				warningstream << "Minimap mode of unknown type \"" << type.c_str()
+					<< "\" ignored.\n" << std::endl;
+				ok = false;
+			}
+
+			if (ok) {
+				mode.label = getstringfield_default(L, -1, "label", "");
+				// Size is limited to 512. Performance gets poor if size too large, and
+				// segfaults have been experienced.
+				mode.size = rangelim(getintfield_default(L, -1, "size", 0), 1, 512);
+				modes.push_back(mode);
+			}
+		}
+		/* removes 'value'; keeps 'key' for next iteration */
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1); // Remove key
+
+	getServer(L)->SendMinimapModes(player->getPeerId(), modes, wantedmode);
+	return 0;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -2359,5 +2420,6 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
 	luamethod(ObjectRef, send_mapblock),
+	luamethod(ObjectRef, set_minimap_modes),
 	{0,0}
 };
