@@ -368,21 +368,6 @@ bool isFreeClientActiveObjectId(const u16 id,
 
 }
 
-u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
-{
-	// try to reuse id's as late as possible
-	static u16 last_used_id = 0;
-	u16 startid = last_used_id;
-	for(;;) {
-		last_used_id ++;
-		if (isFreeClientActiveObjectId(last_used_id, objects))
-			return last_used_id;
-
-		if (last_used_id == startid)
-			return 0;
-	}
-}
-
 u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 {
 	// Register object. If failed return zero id

@@ -94,8 +94,6 @@ public:
 	// Delete lines older than maxAge.
 	void deleteByAge(f32 maxAge);
 
-	// Get number of columns, 0 if reformat has not been called yet.
-	u32 getColumns() const;
 	// Get number of rows, 0 if reformat has not been called yet.
 	u32 getRows() const;
 	// Update console size and reformat all formatted lines.
@@ -110,8 +108,6 @@ public:
 	void scrollAbsolute(s32 scroll);
 	// Scroll to bottom of buffer (newest)
 	void scrollBottom();
-	// Scroll to top of buffer (oldest)
-	void scrollTop();
 
 	// Format a chat line for the given number of columns.
 	// Appends the formatted lines to the destination array and

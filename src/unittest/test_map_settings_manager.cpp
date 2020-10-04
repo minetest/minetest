@@ -65,31 +65,6 @@ void check_noise_params(const NoiseParams *np1, const NoiseParams *np2)
 }
 
 
-std::string read_file_to_string(const std::string &filepath)
-{
-	std::string buf;
-	FILE *f = fopen(filepath.c_str(), "rb");
-	if (!f)
-		return "";
-
-	fseek(f, 0, SEEK_END);
-
-	long filesize = ftell(f);
-	if (filesize == -1) {
-		fclose(f);
-		return "";
-	}
-	rewind(f);
-
-	buf.resize(filesize);
-
-	UASSERTEQ(size_t, fread(&buf[0], 1, filesize, f), 1);
-
-	fclose(f);
-	return buf;
-}
-
-
 void TestMapSettingsManager::makeUserConfig(Settings *conf)
 {
 	conf->set("mg_name", "v7");
@@ -199,7 +174,8 @@ void TestMapSettingsManager::testMapSettingsManager()
 	};
 
 	SHA1 ctx;
-	std::string metafile_contents = read_file_to_string(test_mapmeta_path);
+	std::string metafile_contents;
+	UASSERT(fs::ReadFile(test_mapmeta_path, metafile_contents));
 	ctx.addBytes(&metafile_contents[0], metafile_contents.size());
 	unsigned char *sha1_result = ctx.getDigest();
 	int resultdiff = memcmp(sha1_result, expected_contents_hash, 20);
