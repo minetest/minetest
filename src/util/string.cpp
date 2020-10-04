@@ -641,13 +641,20 @@ void str_replace(std::string &str, char from, char to)
  * We get the argument "White", translated, and create a template string with "@1" instead of it.
  * We finally get the template "@1 Wool" that was used in the beginning, which we translate
  * before filling it again.
+ *
+ * The \x1bT marking the beginning of a translated string allows two '@'-separated arguments:
+ * - The first one is the textdomain/context in which the string is to be translated. Most often,
+ *   this is the name of the mod which asked for the translation.
+ * - The second argument, if present, should be an integer; it is used to decide which plural form
+ *   to use, for languages containing several plural forms.
  */
 
 void translate_all(const std::wstring &s, size_t &i,
 		Translations *translations, std::wstring &res);
 
 void translate_string(const std::wstring &s, Translations *translations,
-		const std::wstring &textdomain, size_t &i, std::wstring &res)
+		const std::wstring &textdomain, size_t &i, std::wstring &res,
+		bool use_plural, unsigned long int number)
 {
 	std::wostringstream output;
 	std::vector<std::wstring> args;
@@ -722,11 +729,16 @@ void translate_string(const std::wstring &s, Translations *translations,
 
 	std::wstring toutput;
 	// Translate the template.
-	if (translations != nullptr)
-		toutput = translations->getTranslation(
-				textdomain, output.str());
-	else
+	if (translations != nullptr) {
+		if (use_plural)
+			toutput = translations->getPluralTranslation(
+					textdomain, output.str(), number);
+		else
+			toutput = translations->getTranslation(
+					textdomain, output.str());
+	} else {
 		toutput = output.str();
+	}
 
 	// Put back the arguments in the translated template.
 	std::wostringstream result;
@@ -808,10 +820,37 @@ void translate_all(const std::wstring &s, size_t &i,
 		} else if (parts[0] == L"T") {
 			// Beginning of translated string.
 			std::wstring textdomain;
+			bool use_plural = false;
+			unsigned long int number = 0;
 			if (parts.size() > 1)
 				textdomain = parts[1];
+			if (parts.size() > 2 && parts[2] != L"") {
+				// parts[2] should contain a number used for selecting
+				// the plural form.
+				// However, we can't blindly cast it to an unsigned long int,
+				// as it might be too large for that.
+				//
+				// We follow the advice of gettext and reduce integers larger than 1000000
+				// to something in the range [1000000, 2000000), with the same last 6 digits.
+				//
+				// https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
+				unsigned long int max = 1000000;
+
+				use_plural = true;
+				number = 0;
+				for (char c : parts[2]) {
+					if (L'0' <= c && c <= L'9') {
+						number = (10 * number + (unsigned long int)(c - L'0'));
+						if (number >= 2 * max) number = (number % max) + max;
+					} else {
+						// Invalid number
+						use_plural = false;
+						break;
+					}
+				}
+			}
 			std::wstring translated;
-			translate_string(s, translations, textdomain, i, translated);
+			translate_string(s, translations, textdomain, i, translated, use_plural, number);
 			output << translated;
 		} else {
 			// Another escape sequence, such as colors. Preserve it.

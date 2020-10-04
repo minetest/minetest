@@ -34,6 +34,7 @@ Translations *g_client_translations = &client_translations;
 void Translations::clear()
 {
 	m_translations.clear();
+	m_plural_translations.clear();
 }
 
 const std::wstring &Translations::getTranslation(
@@ -52,6 +53,59 @@ const std::wstring &Translations::getTranslation(
 	}
 }
 
+const std::wstring &Translations::getPluralTranslation(
+		const std::wstring &textdomain, const std::wstring &s, unsigned long int number)
+{
+	std::wstring key = textdomain + L"|"; key.append(s);
+
+	/*~ DO NOT TRANSLATE THIS LITERALLY!
+	This is a special string which needs to be translated to the translation plural identifier.
+
+	If you edit the po file directly, you should see the following:
+
+		msgid "0"
+		msgid_plural "1"
+		msgstr[0] ...
+		...
+		msgstr[n] ...
+
+	You then need to translate msgstr[i] to the string containing the integer i, like this:
+
+		msgstr[0] "0"
+
+
+	If you edit the po file using weblate or another po file editor, the translations should normally
+	be 0, 1, ... in this order. In case of doubt, the translations for each case should match the value
+	returned by the formula for Plural-Forms. */
+	std::string ns = ngettext("0", "1", number);
+	unsigned int n = 0;
+	static bool warned = false;
+	if (ns.length() == 1 && '0' <= ns[0] && ns[0] <= '9') {
+		n = ns[0] - '0';
+	} else if (!warned) {
+		warned = true;
+		errorstream << "Translations: plurals are not translated correctly in the current language; got \""
+		            << ns << "\" instead of the integer selecting which plural to use" << std::endl;
+	}
+
+	// Create the vector if it doesn't exist
+	std::vector<std::wstring> v = m_plural_translations[key];
+	if (n < v.size()) {
+		return v[n];
+	} else {
+		verbosestream << "Translations: can't find translation for string \""
+		              << wide_to_utf8(s) << "\" in textdomain \""
+		              << wide_to_utf8(textdomain) << "\" and number "
+		              << number << std::endl;
+		// Silence that warning in the future
+		while (v.size() <= n) {
+			v.push_back(s);
+		}
+		return s;
+	}
+}
+
+
 void Translations::addTranslation(
 		const std::wstring &textdomain, const std::wstring &original, const std::wstring &translated)
 {
@@ -64,6 +118,14 @@ void Translations::addTranslation(
 		m_translations[key] = translated;
 	}
 }
+
+void Translations::addPluralTranslation(
+		const std::wstring &textdomain, const std::wstring &original, std::vector<std::wstring> &translated)
+{
+	std::wstring key = textdomain + L"|"; key.append(original);
+	m_plural_translations[key] = translated;
+}
+
 
 void Translations::loadTrTranslation(const std::string &data)
 {
@@ -298,12 +360,23 @@ void Translations::loadPoEntry(const std::map<std::wstring, std::wstring> &entry
 	if (plural == entry.end()) {
 		auto translated = entry.find(L"msgstr");
 		if (translated == entry.end()) {
-			errorstream << "Could not load translation: entry for msgid \"" << wide_to_utf8(entry.at(L"msgid")) << "\" does not contain a msgstr field" << std::endl;
+			errorstream << "Could not load translation: entry for msgid \"" << wide_to_utf8(original) << "\" does not contain a msgstr field" << std::endl;
 			return;
 		}
 		addTranslation(textdomain, original, translated->second);
 	} else {
-		errorstream << "Translations with plurals are unsupported for now" << std::endl;
+		std::vector<std::wstring> translations;
+		for (int i = 0; ; i++) {
+			auto translated = entry.find(L"msgstr[" + std::to_wstring(i) + L"]");
+			if (translated == entry.end()) break;
+			translations.push_back(translated->second);
+		}
+		if (translations.size() == 0) {
+			errorstream << "Could not load translation: entry for msgid\"" << wide_to_utf8(original) << "\" does not contain a msgstr[0] field" << std::endl;
+			return;
+		}
+		addPluralTranslation(textdomain, original, translations);
+		addPluralTranslation(textdomain, plural->second, translations);
 	}
 }
 
@@ -389,8 +462,9 @@ void Translations::loadMoEntry(const std::string &original, const std::string &t
 
 	found = noriginal.find('\0');
 	if (found != std::string::npos) {
-		errorstream << "Translations with plurals are unsupported for now" << std::endl;
-		return;
+		std::vector<std::wstring> translations = str_split(utf8_to_wide(translated), L'\0');
+		addPluralTranslation(textdomain, utf8_to_wide(noriginal.substr(0, found)), translations);
+		addPluralTranslation(textdomain, utf8_to_wide(noriginal.substr(found + 1)), translations);
 	} else {
 		addTranslation(textdomain, utf8_to_wide(noriginal), utf8_to_wide(translated));
 	}

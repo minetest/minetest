@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_map>
 #include <map>
 #include <string>
+#include <vector>
 
 class Translations;
 #ifndef SERVER
@@ -35,12 +36,17 @@ public:
 	void clear();
 	const std::wstring &getTranslation(
 			const std::wstring &textdomain, const std::wstring &s);
+	const std::wstring &getPluralTranslation(
+			const std::wstring &textdomain, const std::wstring &s, unsigned long int number);
 
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;
+	std::unordered_map<std::wstring, std::vector<std::wstring>> m_plural_translations;
 
 	void addTranslation(const std::wstring &textdomain, const std::wstring &original,
 			const std::wstring &translated);
+	void addPluralTranslation(const std::wstring &textdomain, const std::wstring &original,
+			std::vector<std::wstring> &translated);
 	std::wstring unescapeC(const std::wstring &str);
 	void loadPoEntry(const std::map<std::wstring, std::wstring> &entry);
 	void loadMoEntry(const std::string &orignal, const std::string &translated);
