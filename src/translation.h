@@ -45,7 +45,8 @@ private:
 
 	void addTranslation(const std::wstring &textdomain, const std::wstring &original,
 			const std::wstring &translated);
-	void addPluralTranslation(const std::wstring &textdomain, const std::wstring &original,
+	void addPluralTranslation(const std::wstring &textdomain,
+			const std::wstring &original,
 			std::vector<std::wstring> &translated);
 	std::wstring unescapeC(const std::wstring &str);
 	void loadPoEntry(const std::map<std::wstring, std::wstring> &entry);
