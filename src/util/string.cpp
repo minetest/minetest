@@ -175,7 +175,7 @@ void wide_add_codepoint(std::wstring &result, char32_t codepoint)
 		if (0xD800 <= codepoint && codepoint <= 0xDFFF) {
 			// Invalid codepoint, part of a surrogate pair
 			// Replace with unicode replacement character
-			result.put(0xFFFD);
+			result.push_back(0xFFFD);
 			return;
 		} 
 		result.push_back((wchar_t) codepoint);
@@ -185,7 +185,7 @@ void wide_add_codepoint(std::wstring &result, char32_t codepoint)
 	if (codepoint >= 0x100000) {
 		// original codepoint was above 0x10FFFF, so invalid
 		// replace with unicode replacement character
-		result.put(0xFFFD);
+		result.push_back(0xFFFD);
 		return;
 	}
 	result.push_back((wchar_t) ((codepoint >> 10) | 0xD800));
