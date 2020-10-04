@@ -36,8 +36,8 @@ public:
 	void clear();
 	const std::wstring &getTranslation(
 			const std::wstring &textdomain, const std::wstring &s);
-	const std::wstring &getPluralTranslation(
-			const std::wstring &textdomain, const std::wstring &s, unsigned long int number);
+	const std::wstring &getPluralTranslation(const std::wstring &textdomain,
+			const std::wstring &s, unsigned long int number);
 
 private:
 	std::unordered_map<std::wstring, std::wstring> m_translations;
