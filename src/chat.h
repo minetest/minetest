@@ -108,6 +108,8 @@ public:
 	void scrollAbsolute(s32 scroll);
 	// Scroll to bottom of buffer (newest)
 	void scrollBottom();
+	// Scroll to top of buffer (oldest)
+	void scrollTop();
 
 	// Format a chat line for the given number of columns.
 	// Appends the formatted lines to the destination array and
