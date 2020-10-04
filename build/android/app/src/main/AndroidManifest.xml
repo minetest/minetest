@@ -17,8 +17,8 @@
 		android:allowBackup="false"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/label"
-		android:resizeableActivity="false"
 		android:requestLegacyExternalStorage="true"
+		android:resizeableActivity="false"
 		tools:ignore="UnusedAttribute">
 
 		<meta-data
@@ -52,11 +52,6 @@
 				android:name="android.app.lib_name"
 				android:value="Minetest" />
 		</activity>
-
-		<activity
-			android:name=".InputDialogActivity"
-			android:maxAspectRatio="3.0"
-			android:theme="@style/InputTheme" />
 
 		<service
 			android:name=".UnzipService"

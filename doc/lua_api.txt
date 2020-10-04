@@ -62,12 +62,12 @@ Where `<gameid>` is unique to each game.
 The game directory can contain the following files:
 
 * `game.conf`, with the following keys:
-    * `name`: Required, human readable name  e.g. `name = Minetest`
+    * `name`: Required, a human readable title to address the game, e.g. `name = Minetest`.
     * `description`: Short description to be shown in the content tab
     * `allowed_mapgens = <comma-separated mapgens>`
       e.g. `allowed_mapgens = v5,v6,flat`
-      Mapgens not in this list are removed from the list of mapgens for
-      the game.
+      Mapgens not in this list are removed from the list of mapgens for the
+      game.
       If not specified, all mapgens are allowed.
     * `disallowed_mapgens = <comma-separated mapgens>`
       e.g. `disallowed_mapgens = v5,v6,flat`
@@ -79,6 +79,10 @@ The game directory can contain the following files:
       e.g. `disallowed_mapgen_settings = mgv5_spflags`
       These settings are hidden for this game in the world creation
       dialog and game start menu.
+    * `author`: The author of the game. It only appears when downloaded from
+                ContentDB.
+    * `release`: Ignore this: Should only ever be set by ContentDB, as it is
+                 an internal ID used to track versions.
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -134,9 +138,15 @@ Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
 The file is a key-value store of modpack details.
 
-* `name`: The modpack name.
+* `name`: The modpack name. Allows Minetest to determine the modpack name even
+          if the folder is wrongly named.
 * `description`: Description of mod to be shown in the Mods tab of the main
                  menu.
+* `author`: The author of the modpack. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the modpack.
 
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
@@ -181,6 +191,11 @@ A `Settings` file that provides meta information about the mod.
              loaded before this mod.
 * `optional_depends`: A comma separated list of optional dependencies.
                       Like a dependency, but no error if the mod doesn't exist.
+* `author`: The author of the mod. It only appears when downloaded from
+            ContentDB.
+* `release`: Ignore this: Should only ever be set by ContentDB, as it is an
+             internal ID used to track versions.
+* `title`: A human-readable title to address the mod.
 
 Note: to support 0.4.x, please also provide depends.txt.
 
@@ -1497,6 +1512,15 @@ Displays an image oriented or translated according to current heading direction.
   * 3 - Translate in reverse direction
 
 If translation is chosen, texture is repeated horizontally to fill the whole element.
+
+### `minimap`
+
+Displays a minimap on the HUD.
+
+* `size`: Size of the minimap to display. Minimap should be a square to avoid
+  distortion.
+* `alignment`: The alignment of the minimap.
+* `offset`: offset in pixels from position.
 
 Representations of simple things
 ================================
@@ -4354,6 +4378,8 @@ Utilities
           pathfinder_works = true,
           -- Whether Collision info is available to an objects' on_step (5.3.0)
           object_step_has_moveresult = true,
+          -- Whether get_velocity() and add_velocity() can be used on players (5.4.0)
+          direct_velocity_on_players = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -4620,6 +4646,11 @@ Call these functions only at load time!
     * Called always when a player says something
     * Return `true` to mark the message as handled, which means that it will
       not be sent to other players.
+* `minetest.register_on_chatcommand(function(name, command, params))`
+    * Called always when a chatcommand is triggered, before `minetest.registered_chatcommands`
+      is checked to see if the command exists, but after the input is parsed.
+    * Return `true` to mark the command as handled, which means that the default
+      handlers will be prevented.
 * `minetest.register_on_player_receive_fields(function(player, formname, fields))`
     * Called when the server received input from `player` in a formspec with
       the given `formname`. Specifically, this is called on any of the
@@ -5350,9 +5381,12 @@ Sounds
 Timing
 ------
 
-* `minetest.after(time, func, ...)`
+* `minetest.after(time, func, ...)` : returns job table to use as below.
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+
+* `job:cancel()`
+    * Cancels the job function from being called
 
 Server
 ------
@@ -5773,6 +5807,9 @@ Global tables
     * Map of registered tool definitions, indexed by name
 * `minetest.registered_entities`
     * Map of registered entity prototypes, indexed by name
+    * Values in this table may be modified directly.
+      Note: changes to initial properties will only affect entities spawned afterwards,
+      as they are only read when spawning.
 * `minetest.object_refs`
     * Map of object references, indexed by active object id
 * `minetest.luaentities`
@@ -5803,6 +5840,7 @@ Global tables
     * Map of registered chat command definitions, indexed by name
 * `minetest.registered_privileges`
     * Map of registered privilege definitions, indexed by name
+    * Registered privileges can be modified directly in this table.
 
 ### Registered callback tables
 
@@ -6120,6 +6158,19 @@ object you are working with still exists.
 
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
+* `get_velocity()`: returns the velocity, a vector.
+* `add_velocity(vel)`
+    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
+    * In comparison to using get_velocity, adding the velocity and then using
+      set_velocity, add_velocity is supposed to avoid synchronization problems.
+      Additionally, players also do not support set_velocity.
+    * If a player:
+        * Does not apply during free_move.
+        * Note that since the player speed is normalized at each move step,
+          increasing e.g. Y velocity beyond what would usually be achieved
+          (see: physics overrides) will cause existing X/Z velocity to be reduced.
+        * Example: `add_velocity({x=0, y=6.5, z=0})` is equivalent to
+          pressing the jump key (assuming default settings)
 * `move_to(pos, continuous=false)`
     * Does an interpolated move for Lua entities for visually smooth transitions.
     * If `continuous` is true, the Lua entity will not be moved to the current
@@ -6154,12 +6205,14 @@ object you are working with still exists.
   `frame_loop`.
 * `set_animation_frame_speed(frame_speed)`
     * `frame_speed`: number, default: `15.0`
-* `set_attach(parent, bone, position, rotation)`
+* `set_attach(parent, bone, position, rotation, forced_visible)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
     * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
-* `get_attach()`: returns parent, bone, position, rotation or nil if it isn't
-  attached.
+    * `forced_visible`: Boolean to control whether the attached entity 
+       should appear in first person.
+* `get_attach()`: returns parent, bone, position, rotation, forced_visible, 
+    or nil if it isn't attached.
 * `set_detach()`
 * `set_bone_position(bone, position, rotation)`
     * `bone`: string
@@ -6191,11 +6244,6 @@ object you are working with still exists.
       no effect and returning `nil`.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-* `add_velocity(vel)`
-    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-    * In comparison to using get_velocity, adding the velocity and then using
-      set_velocity, add_velocity is supposed to avoid synchronization problems.
-* `get_velocity()`: returns the velocity, a vector
 * `set_acceleration(acc)`
     * `acc` is a vector
 * `get_acceleration()`: returns the acceleration, a vector
@@ -6231,16 +6279,9 @@ object you are working with still exists.
 #### Player only (no-op for other objects)
 
 * `get_player_name()`: returns `""` if is not a player
-* `get_player_velocity()`: returns `nil` if is not a player, otherwise a
+* `get_player_velocity()`: **DEPRECATED**, use get_velocity() instead.
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
-* `add_player_velocity(vel)`
-    * Adds to player velocity, this happens client-side and only once.
-    * Does not apply during free_move.
-    * Note that since the player speed is normalized at each move step,
-      increasing e.g. Y velocity beyond what would usually be achieved
-      (see: physics overrides) will cause existing X/Z velocity to be reduced.
-    * Example: `add_player_velocity({x=0, y=6.5, z=0})` is equivalent to
-      pressing the jump key (assuming default settings)
+* `add_player_velocity(vel)`: **DEPRECATED**, use add_velocity(vel) instead.
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_vertical()`: pitch in radians
     * Angle ranges between -pi/2 and pi/2, which are straight up and down
@@ -6363,6 +6404,27 @@ object you are working with still exists.
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
+* `set_minimap_modes({mode, mode, ...}, selected_mode)`
+    * Overrides the available minimap modes (and toggle order), and changes the
+    selected mode.
+    * `mode` is a table consisting of up to four fields:
+        * `type`: Available type:
+            * `off`: Minimap off
+            * `surface`: Minimap in surface mode
+            * `radar`: Minimap in radar mode
+            * `texture`: Texture to be displayed instead of terrain map
+              (texture is centered around 0,0 and can be scaled).
+              Texture size is limited to 512 x 512 pixel.
+        * `label`: Optional label to display on minimap mode toggle
+          The translation must be handled within the mod.
+        * `size`: Sidelength or diameter, in number of nodes, of the terrain
+          displayed in minimap
+        * `texture`: Only for texture type, name of the texture to display
+        * `scale`: Only for texture type, scale of the texture map in nodes per
+          pixel (for example a `scale` of 2 means each pixel represents a 2x2
+          nodes square)
+    * `selected_mode` is the mode index to be selected after modes have been changed
+    (0 is the first mode).
 * `set_sky(parameters)`
     * `parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
@@ -7960,6 +8022,8 @@ Used by `minetest.register_chatcommand`.
 
         func = function(name, param),
         -- Called when command is run. Returns boolean success and text output.
+        -- Special case: The help message is shown to the player if `func`
+        -- returns false without a text output.
     }
 
 Note that in params, use of symbols is as follows:
@@ -8042,7 +8106,8 @@ Used by `Player:hud_add`. Returned by `Player:hud_get`.
 
     {
         hud_elem_type = "image",  -- See HUD element types
-        -- Type of element, can be "image", "text", "statbar", "inventory" or "compass"
+        -- Type of element, can be "image", "text", "statbar", "inventory",
+        -- "compass" or "minimap"
 
         position = {x=0.5, y=0.5},
         -- Left corner position of element

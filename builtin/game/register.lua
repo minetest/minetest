@@ -584,6 +584,7 @@ core.unregister_biome = make_wrap_deregistration(core.register_biome,
 		core.clear_registered_biomes, core.registered_biomes)
 
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
+core.registered_on_chatcommands, core.register_on_chatcommand = make_registration()
 core.registered_globalsteps, core.register_globalstep = make_registration()
 core.registered_playerevents, core.register_playerevent = make_registration()
 core.registered_on_mods_loaded, core.register_on_mods_loaded = make_registration()

@@ -75,14 +75,6 @@ public:
 	bool stop();
 
 	/*
-	 * Immediately terminates the thread.
-	 * This should be used with extreme caution, as the thread will not have
-	 * any opportunity to release resources it may be holding (such as memory
-	 * or locks).
-	 */
-	bool kill();
-
-	/*
 	 * Waits for thread to finish.
 	 * Note:  This does not stop a thread, you have to do this on your own.
 	 * Returns false immediately if the thread is not started or has been waited

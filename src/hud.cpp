@@ -29,6 +29,7 @@ const struct EnumString es_HudElementType[] =
 	{HUD_ELEM_WAYPOINT,  "waypoint"},
 	{HUD_ELEM_IMAGE_WAYPOINT, "image_waypoint"},
 	{HUD_ELEM_COMPASS,   "compass"},
+	{HUD_ELEM_MINIMAP,   "minimap"},
 	{0, NULL},
 };
 

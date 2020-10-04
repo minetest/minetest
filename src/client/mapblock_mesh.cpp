@@ -1044,7 +1044,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_use_tangent_vertices = data->m_use_tangent_vertices;
 	m_enable_vbo = g_settings->getBool("enable_vbo");
 
-	if (g_settings->getBool("enable_minimap")) {
+	if (data->m_client->getMinimap()) {
 		m_minimap_mapblock = new MinimapMapblock;
 		m_minimap_mapblock->getMinimapNodes(
 			&data->m_vmanip, data->m_blockpos * MAP_BLOCKSIZE);

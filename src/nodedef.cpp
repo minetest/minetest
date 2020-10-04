@@ -207,7 +207,7 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 	u8 version = 6;
 	writeU8(os, version);
 
-	os << serializeString(name);
+	os << serializeString16(name);
 	animation.serialize(os, version);
 	bool has_scale = scale > 0;
 	u16 flags = 0;
@@ -241,7 +241,7 @@ void TileDef::deSerialize(std::istream &is, u8 contentfeatures_version,
 	int version = readU8(is);
 	if (version < 6)
 		throw SerializationError("unsupported TileDef version");
-	name = deSerializeString(is);
+	name = deSerializeString16(is);
 	animation.deSerialize(is, version);
 	u16 flags = readU16(is);
 	backface_culling = flags & TILE_FLAG_BACKFACE_CULLING;
@@ -416,10 +416,10 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, version);
 
 	// general
-	os << serializeString(name);
+	os << serializeString16(name);
 	writeU16(os, groups.size());
 	for (const auto &group : groups) {
-		os << serializeString(group.first);
+		os << serializeString16(group.first);
 		writeS16(os, group.second);
 	}
 	writeU8(os, param_type);
@@ -427,7 +427,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 
 	// visual
 	writeU8(os, drawtype);
-	os << serializeString(mesh);
+	os << serializeString16(mesh);
 	writeF32(os, visual_scale);
 	writeU8(os, 6);
 	for (const TileDef &td : tiledef)
@@ -442,7 +442,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, color.getRed());
 	writeU8(os, color.getGreen());
 	writeU8(os, color.getBlue());
-	os << serializeString(palette_name);
+	os << serializeString16(palette_name);
 	writeU8(os, waving);
 	writeU8(os, connect_sides);
 	writeU16(os, connects_to_ids.size());
@@ -470,8 +470,8 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 
 	// liquid
 	writeU8(os, liquid_type);
-	os << serializeString(liquid_alternative_flowing);
-	os << serializeString(liquid_alternative_source);
+	os << serializeString16(liquid_alternative_flowing);
+	os << serializeString16(liquid_alternative_source);
 	writeU8(os, liquid_viscosity);
 	writeU8(os, liquid_renewable);
 	writeU8(os, liquid_range);
@@ -492,7 +492,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
 
-	os << serializeString(node_dig_prediction);
+	os << serializeString16(node_dig_prediction);
 	writeU8(os, leveled_max);
 }
 
@@ -519,11 +519,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 		throw SerializationError("unsupported ContentFeatures version");
 
 	// general
-	name = deSerializeString(is);
+	name = deSerializeString16(is);
 	groups.clear();
 	u32 groups_size = readU16(is);
 	for (u32 i = 0; i < groups_size; i++) {
-		std::string name = deSerializeString(is);
+		std::string name = deSerializeString16(is);
 		int value = readS16(is);
 		groups[name] = value;
 	}
@@ -532,7 +532,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	// visual
 	drawtype = (enum NodeDrawType) readU8(is);
-	mesh = deSerializeString(is);
+	mesh = deSerializeString16(is);
 	visual_scale = readF32(is);
 	if (readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
@@ -548,7 +548,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	color.setRed(readU8(is));
 	color.setGreen(readU8(is));
 	color.setBlue(readU8(is));
-	palette_name = deSerializeString(is);
+	palette_name = deSerializeString16(is);
 	waving = readU8(is);
 	connect_sides = readU8(is);
 	u16 connects_to_size = readU16(is);
@@ -578,8 +578,8 @@ void ContentFeatures::deSerialize(std::istream &is)
 
 	// liquid
 	liquid_type = (enum LiquidType) readU8(is);
-	liquid_alternative_flowing = deSerializeString(is);
-	liquid_alternative_source = deSerializeString(is);
+	liquid_alternative_flowing = deSerializeString16(is);
+	liquid_alternative_source = deSerializeString16(is);
 	liquid_viscosity = readU8(is);
 	liquid_renewable = readU8(is);
 	liquid_range = readU8(is);
@@ -601,7 +601,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	legacy_wallmounted = readU8(is);
 
 	try {
-		node_dig_prediction = deSerializeString(is);
+		node_dig_prediction = deSerializeString16(is);
 		u8 tmp_leveled_max = readU8(is);
 		if (is.eof()) /* readU8 doesn't throw exceptions so we have to do this */
 			throw SerializationError("");
@@ -1472,7 +1472,7 @@ void NodeDefManager::serialize(std::ostream &os, u16 protocol_version) const
 		// strict version incompatibilities
 		std::ostringstream wrapper_os(std::ios::binary);
 		f->serialize(wrapper_os, protocol_version);
-		os2<<serializeString(wrapper_os.str());
+		os2<<serializeString16(wrapper_os.str());
 
 		// must not overflow
 		u16 next = count + 1;
@@ -1480,7 +1480,7 @@ void NodeDefManager::serialize(std::ostream &os, u16 protocol_version) const
 		count++;
 	}
 	writeU16(os, count);
-	os << serializeLongString(os2.str());
+	os << serializeString32(os2.str());
 }
 
 
@@ -1491,13 +1491,13 @@ void NodeDefManager::deSerialize(std::istream &is)
 	if (version != 1)
 		throw SerializationError("unsupported NodeDefinitionManager version");
 	u16 count = readU16(is);
-	std::istringstream is2(deSerializeLongString(is), std::ios::binary);
+	std::istringstream is2(deSerializeString32(is), std::ios::binary);
 	ContentFeatures f;
 	for (u16 n = 0; n < count; n++) {
 		u16 i = readU16(is2);
 
 		// Read it from the string wrapper
-		std::string wrapper = deSerializeString(is2);
+		std::string wrapper = deSerializeString16(is2);
 		std::istringstream wrapper_is(wrapper, std::ios::binary);
 		f.deSerialize(wrapper_is);
 

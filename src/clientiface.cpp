@@ -80,10 +80,11 @@ LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env)
 	int id;
 	std::string bone;
 	v3f dummy;
-	sao->getAttachment(&id, &bone, &dummy, &dummy);
+	bool force_visible;
+	sao->getAttachment(&id, &bone, &dummy, &dummy, &force_visible);
 	ServerActiveObject *ao = env->getActiveObject(id);
 	while (id && ao) {
-		ao->getAttachment(&id, &bone, &dummy, &dummy);
+		ao->getAttachment(&id, &bone, &dummy, &dummy, &force_visible);
 		if (id)
 			ao = env->getActiveObject(id);
 	}

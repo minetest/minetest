@@ -52,15 +52,7 @@ std::vector<ServerListSpec> getLocal()
 {
 	std::string path = ServerList::getFilePath();
 	std::string liststring;
-	if (fs::PathExists(path)) {
-		std::ifstream istream(path.c_str());
-		if (istream.is_open()) {
-			std::ostringstream ostream;
-			ostream << istream.rdbuf();
-			liststring = ostream.str();
-			istream.close();
-		}
-	}
+	fs::ReadFile(path, liststring);
 
 	return deSerialize(liststring);
 }
@@ -253,10 +245,17 @@ void sendAnnounce(AnnounceAction action,
 		for (const ModSpec &mod : mods) {
 			server["mods"].append(mod.name);
 		}
-		actionstream << "Announcing to " << g_settings->get("serverlist_url") << std::endl;
 	} else if (action == AA_UPDATE) {
 		if (lag)
 			server["lag"] = lag;
+	}
+
+	if (action == AA_START) {
+		actionstream << "Announcing " << aa_names[action] << " to " <<
+			g_settings->get("serverlist_url") << std::endl;
+	} else {
+		infostream << "Announcing " << aa_names[action] << " to " <<
+			g_settings->get("serverlist_url") << std::endl;
 	}
 
 	HTTPFetchRequest fetch_request;

@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "wieldmesh.h"
 #include "client/renderingengine.h"
+#include "client/minimap.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "gui/touchscreengui.h"
@@ -297,6 +298,18 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 }
 
+bool Hud::hasElementOfType(HudElementType type)
+{
+	for (size_t i = 0; i != player->maxHudId(); i++) {
+		HudElement *e = player->getHud(i);
+		if (!e)
+			continue;
+		if (e->type == type)
+			return true;
+	}
+	return false;
+}
+
 // Calculates screen position of waypoint. Returns true if waypoint is visible (in front of the player), else false.
 bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos)
 {
@@ -491,7 +504,22 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				default:
 					break;
 				}
-
+				break; }
+			case HUD_ELEM_MINIMAP: {
+				if (e->size.X <= 0 || e->size.Y <= 0)
+					break;
+				if (!client->getMinimap())
+					break;
+				// Draw a minimap of size "size"
+				v2s32 dstsize(e->size.X * m_scale_factor,
+				              e->size.Y * m_scale_factor);
+				// (no percent size as minimap would likely be anamorphosed)
+				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
+				             (e->align.Y - 1.0) * dstsize.Y / 2);
+				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
+				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
+				                             e->offset.Y * m_scale_factor);
+				client->getMinimap()->drawMinimap(rect);
 				break; }
 			default:
 				infostream << "Hud::drawLuaElements: ignoring drawform " << e->type <<

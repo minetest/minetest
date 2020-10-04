@@ -205,7 +205,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Updated set_sky packet
 		Adds new sun, moon and stars packets
 	PROTOCOL VERSION 40:
-		Shader media packets
+		Shaders supported as media files
+		Minimap modes
 */
 
 #define LATEST_PROTOCOL_VERSION 40
@@ -766,7 +767,18 @@ enum ToClientCommand
 		u8[len] formspec
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x62,
+	TOCLIENT_MINIMAP_MODES = 0x62,
+	/*
+		u16 count // modes
+		u16 mode  // wanted current mode index after change
+		for each mode
+			u16 type
+			std::string label
+			u16 size
+			std::string extra
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x63,
 };
 
 enum ToServerCommand
