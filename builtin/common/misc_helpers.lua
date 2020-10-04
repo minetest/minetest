@@ -600,7 +600,7 @@ local function translate(textdomain, str, num, ...)
 	local start_seq
 	if textdomain == "" and num == "" then
 		start_seq = ESCAPE_CHAR .. "T"
-	else if num == "" then
+	elseif num == "" then
 		start_seq = ESCAPE_CHAR .. "(T@" .. textdomain .. ")"
 	else
 		start_seq = ESCAPE_CHAR .. "(T@" .. textdomain .. "@" .. num .. ")"
