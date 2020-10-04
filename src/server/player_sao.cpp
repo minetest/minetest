@@ -122,10 +122,10 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeString32(generateUpdateAnimationCommand()); // 3
 	for (const auto &bone_pos : m_bone_position) {
 		msg_os << serializeString32(generateUpdateBonePositionCommand(
-			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // m_bone_position.size
+			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // 3 + N
 	}
-	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4
-	msg_os << serializeString32(generateUpdatePhysicsOverrideCommand()); // 5
+	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4 + m_bone_position.size
+	msg_os << serializeString32(generateUpdatePhysicsOverrideCommand()); // 5 + m_bone_position.size
 
 	int message_count = 5 + m_bone_position.size();
 
@@ -569,7 +569,8 @@ bool PlayerSAO::checkMovementCheat()
 			int parent_id;
 			std::string bone;
 			v3f attachment_rot;
-			getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot);
+			bool force_visible;
+			getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot, &force_visible);
 		}
 
 		v3f parent_pos = parent->getBasePosition();

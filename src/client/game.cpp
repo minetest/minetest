@@ -2950,7 +2950,8 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 
 		camera->toggleCameraMode();
 
-		playercao->setVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
+		// Make the player visible depending on camera mode.
+		playercao->updateMeshCulling();
 		playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	}
 
