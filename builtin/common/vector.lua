@@ -1,43 +1,42 @@
+--[[
+Vector helpers
+Note: The vector.*-functions must be able to accept old vectors that had no
+      metatables and looked like this: {x = 42, y = 13, z = 0}
+]]
 
 vector = {}
 
 local metatable = {}
 vector.metatable = metatable
 
+local xyz = {"x", "y", "z"}
+
 -- only called when rawget(v, key) returns nil
 function metatable.__index(v, key)
-	if key == 1 then
-		return rawget(v, "x")
-	elseif key == 2 then
-		return rawget(v, "y")
-	elseif key == 3 then
-		return rawget(v, "z")
-	end
-	return vector[key]
+	return rawget(v, xyz[key]) or vector[key]
 end
 
 -- only called when rawget(v, key) returns nil
 function metatable.__newindex(v, key, value)
-	if key == 1 then
-		rawset(v, "x", value)
-	elseif key == 2 then
-		rawset(v, "y", value)
-	elseif key == 3 then
-		rawset(v, "z", value)
-	else
-		rawset(v, key, value)
-	end
+	rawset(v, xyz[key] or key, value)
+end
+
+-- constructors
+
+local function fast_new(x, y, z)
+	local v = setmetatable({x = x, y = y, z = z}, metatable)
+	return v
 end
 
 function vector.new(a, b, c)
 	if type(a) == "table" then
 		assert(a.x and a.y and a.z, "Invalid vector passed to vector.new()")
-		return setmetatable({x = a.x, y = a.y, z = a.z}, metatable)
+		return fast_new(a.x, a.y, a.z)
 	elseif a then
 		assert(b and c, "Invalid arguments for vector.new()")
-		return setmetatable({x = a, y = b, z = c}, metatable)
+		return fast_new(a, b, c)
 	end
-	return setmetatable({x = 0, y = 0, z = 0}, metatable)
+	return fast_new(0, 0, 0)
 end
 
 function vector.equals(a, b)
@@ -47,41 +46,40 @@ function vector.equals(a, b)
 end
 metatable.__eq = vector.equals
 
+-- unary operations
+
 function vector.length(v)
 	return math.hypot(v.x, math.hypot(v.y, v.z))
 end
+-- Note: we can not use __len because it is already used for primitive table length
 
 function vector.normalize(v)
 	local len = vector.length(v)
 	if len == 0 then
-		return setmetatable({x = 0, y = 0, z = 0}, metatable)
+		return fast_new(0, 0, 0)
 	else
 		return vector.divide(v, len)
 	end
 end
 
 function vector.floor(v)
-	return setmetatable({
-		x = math.floor(v.x),
-		y = math.floor(v.y),
-		z = math.floor(v.z)
-	}, metatable)
+	return vector.apply(v, math.floor)
 end
 
 function vector.round(v)
-	return setmetatable({
-		x = math.floor(v.x + 0.5),
-		y = math.floor(v.y + 0.5),
-		z = math.floor(v.z + 0.5)
-	}, metatable)
+	return fast_new(
+		math.floor(v.x + 0.5),
+		math.floor(v.y + 0.5),
+		math.floor(v.z + 0.5)
+	)
 end
 
 function vector.apply(v, func)
-	return setmetatable({
-		x = func(v.x),
-		y = func(v.y),
-		z = func(v.z)
-	}, metatable)
+	return fast_new(
+		func(v.x),
+		func(v.y),
+		func(v.z)
+	)
 end
 
 function vector.distance(a, b)
@@ -92,7 +90,7 @@ function vector.distance(a, b)
 end
 
 function vector.direction(pos1, pos2)
-	return vector.normalize(vector.subtract(pos2, pos1))
+	return vector.subtract(pos2, pos1):normalize()
 end
 
 function vector.angle(a, b)
@@ -107,192 +105,133 @@ function vector.dot(a, b)
 end
 
 function vector.cross(a, b)
-	return setmetatable({
-		x = a.y * b.z - a.z * b.y,
-		y = a.z * b.x - a.x * b.z,
-		z = a.x * b.y - a.y * b.x
-	}, metatable)
+	return fast_new(
+		a.y * b.z - a.z * b.y,
+		a.z * b.x - a.x * b.z,
+		a.x * b.y - a.y * b.x
+	)
 end
 
 function metatable.__unm(v)
-	return setmetatable({x = -v.x, y = -v.y, z = -v.z}, metatable)
+	return fast_new(-v.x, -v.y, -v.z)
 end
+
+-- add, sub, mul, div operations
 
 function vector.add(a, b)
 	if type(b) == "table" then
-		return setmetatable({
-			x = a.x + b.x,
-			y = a.y + b.y,
-			z = a.z + b.z
-		}, metatable)
+		return fast_new(
+			a.x + b.x,
+			a.y + b.y,
+			a.z + b.z
+		)
 	else
-		return setmetatable({
-			x = a.x + b,
-			y = a.y + b,
-			z = a.z + b
-		}, metatable)
+		return fast_new(
+			a.x + b,
+			a.y + b,
+			a.z + b
+		)
 	end
 end
 function metatable.__add(a, b)
-	if type(b) == "table" then
-		if type(a) == "table" then
-			return setmetatable({
-				x = a.x + b.x,
-				y = a.y + b.y,
-				z = a.z + b.z
-			}, metatable)
-		else
-			return setmetatable({
-				x = a + b.x,
-				y = a + b.y,
-				z = a + b.z
-			}, metatable)
-		end
-	else
-		return setmetatable({
-			x = a.x + b,
-			y = a.y + b,
-			z = a.z + b
-		}, metatable)
-	end
+	return fast_new(
+		a.x + b.x,
+		a.y + b.y,
+		a.z + b.z
+	)
 end
 
 function vector.subtract(a, b)
 	if type(b) == "table" then
-		return setmetatable({
-			x = a.x - b.x,
-			y = a.y - b.y,
-			z = a.z - b.z
-		}, metatable)
+		return fast_new(
+			a.x - b.x,
+			a.y - b.y,
+			a.z - b.z
+		)
 	else
-		return setmetatable({
-			x = a.x - b,
-			y = a.y - b,
-			z = a.z - b
-		}, metatable)
+		return fast_new(
+			a.x - b,
+			a.y - b,
+			a.z - b
+		)
 	end
 end
 function metatable.__sub(a, b)
-	if type(b) == "table" then
-		if type(a) == "table" then
-			return setmetatable({
-				x = a.x - b.x,
-				y = a.y - b.y,
-				z = a.z - b.z
-			}, metatable)
-		else
-			return setmetatable({
-				x = a - b.x,
-				y = a - b.y,
-				z = a - b.z
-			}, metatable)
-		end
-	else
-		return setmetatable({
-			x = a.x - b,
-			y = a.y - b,
-			z = a.z - b
-		}, metatable)
-	end
+	return fast_new(
+		a.x - b.x,
+		a.y - b.y,
+		a.z - b.z
+	)
 end
 
 function vector.multiply(a, b)
 	if type(b) == "table" then
-		return setmetatable({
-			x = a.x * b.x,
-			y = a.y * b.y,
-			z = a.z * b.z
-		}, metatable)
+		return fast_new(
+			a.x * b.x,
+			a.y * b.y,
+			a.z * b.z
+		)
 	else
-		return setmetatable({
-			x = a.x * b,
-			y = a.y * b,
-			z = a.z * b
-		}, metatable)
+		return fast_new(
+			a.x * b,
+			a.y * b,
+			a.z * b
+		)
 	end
 end
 function metatable.__mul(a, b)
-	if type(b) == "table" then
-		if type(a) == "table" then
-			return setmetatable({
-				x = a.x * b.x,
-				y = a.y * b.y,
-				z = a.z * b.z
-			}, metatable)
-		else
-			return setmetatable({
-				x = a * b.x,
-				y = a * b.y,
-				z = a * b.z
-			}, metatable)
-		end
+	if type(a) == "table" then
+		return fast_new(
+			a.x * b,
+			a.y * b,
+			a.z * b
+		)
 	else
-		return setmetatable({
-			x = a.x * b,
-			y = a.y * b,
-			z = a.z * b
-		}, metatable)
+		return fast_new(
+			a * b.x,
+			a * b.y,
+			a * b.z
+		)
 	end
 end
 
 function vector.divide(a, b)
 	if type(b) == "table" then
-		return setmetatable({
-			x = a.x / b.x,
-			y = a.y / b.y,
-			z = a.z / b.z
-		}, metatable)
+		return fast_new(
+			a.x / b.x,
+			a.y / b.y,
+			a.z / b.z
+		)
 	else
-		return setmetatable({
-			x = a.x / b,
-			y = a.y / b,
-			z = a.z / b
-		}, metatable)
+		return fast_new(
+			a.x / b,
+			a.y / b,
+			a.z / b
+		)
 	end
 end
 function metatable.__div(a, b)
-	if type(b) == "table" then
-		if type(a) == "table" then
-			return setmetatable({
-				x = a.x / b.x,
-				y = a.y / b.y,
-				z = a.z / b.z
-			}, metatable)
-		else
-			return setmetatable({
-				x = a / b.x,
-				y = a / b.y,
-				z = a / b.z
-			}, metatable)
-		end
-	else
-		return setmetatable({
-			x = a.x / b,
-			y = a.y / b,
-			z = a.z / b
-		}, metatable)
-	end
+	-- scalar/vector makes no sense
+	return fast_new(
+		a.x / b,
+		a.y / b,
+		a.z / b
+	)
 end
 
+-- misc stuff
+
 function vector.offset(v, x, y, z)
-	return setmetatable({
-		x = v.x + x,
-		y = v.y + y,
-		z = v.z + z
-	}, metatable)
+	return fast_new(
+		v.x + x,
+		v.y + y,
+		v.z + z
+	)
 end
 
 function vector.sort(a, b)
-	return setmetatable({
-			x = math.min(a.x, b.x),
-			y = math.min(a.y, b.y),
-			z = math.min(a.z, b.z)
-		}, metatable),
-		setmetatable({
-			x = math.max(a.x, b.x),
-			y = math.max(a.y, b.y),
-			z = math.max(a.z, b.z)
-		}, metatable)
+	return fast_new(math.min(a.x, b.x), math.min(a.y, b.y), math.min(a.z, b.z)),
+		fast_new(math.max(a.x, b.x), math.max(a.y, b.y), math.max(a.z, b.z))
 end
 
 function vector.is_vector(v)
