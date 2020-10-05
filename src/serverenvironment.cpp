@@ -1068,13 +1068,6 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 
 u8 ServerEnvironment::findSunlight(v3s16 pos) const
 {
-	// Returns a unique 64 bit unsigned int for a v3s16 position
-	auto get_node_position_key = [&](v3s16 pos) -> u64 {
-		return pos.Z * 0x10000uLL * 0x10000uLL
-			+ pos.Y * 0x10000uLL
-			+ pos.X;
-	};
-
 	// Directions for neighbouring nodes with specified order
 	static const v3s16 dirs[] = {
 		v3s16(-1, 0, 0), v3s16(1, 0, 0), v3s16(0, 0, -1), v3s16(0, 0, 1),
@@ -1093,8 +1086,8 @@ u8 ServerEnvironment::findSunlight(v3s16 pos) const
 	std::stack<stack_entry> stack;
 	stack.push({pos, 0});
 
-	std::unordered_map<u64, s8> dists;
-	dists[get_node_position_key(pos)] = 0;
+	std::unordered_map<s64, s8> dists;
+	dists[MapDatabase::getBlockAsInteger(pos)] = 0;
 
 	while (!stack.empty()) {
 		struct stack_entry e = stack.top();
@@ -1105,7 +1098,7 @@ u8 ServerEnvironment::findSunlight(v3s16 pos) const
 
 		for (const v3s16& off : dirs) {
 			v3s16 neighborPos = currentPos + off;
-			u64 neighborHash = get_node_position_key(neighborPos);
+			s64 neighborHash = MapDatabase::getBlockAsInteger(neighborPos);
 
 			// Do not walk neighborPos multiple times unless the distance to the start
 			// position is shorter
