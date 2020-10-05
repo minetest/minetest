@@ -1665,11 +1665,6 @@ ClientEvent *Client::getClientEvent()
 	return event;
 }
 
-bool Client::connectedToServer()
-{
-	return m_con->Connected();
-}
-
 const Address Client::getServerAddress()
 {
 	return m_con->GetPeerAddress(PEER_ID_SERVER);
