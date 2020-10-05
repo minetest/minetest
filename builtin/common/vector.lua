@@ -275,9 +275,11 @@ function metatable.__div(a, b)
 end
 
 function vector.offset(v, x, y, z)
-	return {x = v.x + x,
+	return setmetatable({
+		x = v.x + x,
 		y = v.y + y,
-		z = v.z + z}
+		z = v.z + z
+	}, metatable)
 end
 
 function vector.sort(a, b)
@@ -291,6 +293,10 @@ function vector.sort(a, b)
 			y = math.max(a.y, b.y),
 			z = math.max(a.z, b.z)
 		}, metatable)
+end
+
+function vector.is_vector(v)
+	return getmetatable(v) == metatable
 end
 
 local function sin(x)

@@ -3162,6 +3162,9 @@ vectors are written like this: `(x, y, z)`:
     * Returns the cross product of `v1` and `v2`.
 * `vector.offset(v, x, y, z)`:
     * Returns the sum of the vectors `v` and `(0, 0, 0)`.
+* `vector.is_vector(v)`:
+    * Returns `true` iff `v` is a real vector, eg. created by a `vector.*` function.
+    * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
 
 For the following functions `x` can be either a vector or a number:
 
