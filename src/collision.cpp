@@ -281,8 +281,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		MYMAX(pos_f->Y, newpos_f.Y),
 		MYMAX(pos_f->Z, newpos_f.Z)
 	);
-	v3s16 min = floatToInt(minpos_f + box_0.MinEdge, BS) - v3s16(1, 1, 1);
-	v3s16 max = floatToInt(maxpos_f + box_0.MaxEdge, BS) + v3s16(1, 1, 1);
+	v3s16 min = floatToInt(minpos_f + box_0.MinEdge, BS) - v3s16(speed_f->X < 0, speed_f->Y < 0, speed_f->Z < 0);
+	v3s16 max = floatToInt(maxpos_f + box_0.MaxEdge, BS) + v3s16(speed_f->X > 0, speed_f->Y > 0, speed_f->Z > 0);
 
 	bool any_position_valid = false;
 
