@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-29 07:53+0000\n"
-"Last-Translator: Agastya <acagastya@outlook.com>\n"
+"PO-Revision-Date: 2020-10-06 14:26+0000\n"
+"Last-Translator: Eyekay49 <satvikpatwardhan@gmail.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/minetest/minetest/"
 "hi/>\n"
 "Language: hi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -29,7 +29,7 @@ msgstr "आपकी मौत हो गयी"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr "Okay"
+msgstr "ठीक है"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -172,10 +172,9 @@ msgstr "वापस मुख्य पृष्ठ पर जाएं"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "cURL के बगैर कंपाइल होने के कारण Content DB उपलब्ध नहीं है"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
 msgstr "लोड हो रहा है ..."
 
@@ -232,32 +231,31 @@ msgstr "\"$1\" नामक दुनिया पहले से ही है
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "अतिरिक्त भूमि"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "ऊंचाई की ठंडक"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "ऊंचाई का सूखापन"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "बायोम परिवर्तन नज़र न आना (Biome Blending)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "बायोम"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "गुफाएं"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "सप्टक (आक्टेव)"
+msgstr "गुफाएं"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -277,19 +275,19 @@ msgstr "आप किसी भी खेल को minetest.net से डा�
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "कालकोठरियां"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "समतल भूमि"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "आसमान में तैरते हुए भूमि-खंड"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "फ्लोटलैंड्स (आसमान में तैरते हुए भूमि-खंड) (प्रायोगिक)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -297,11 +295,11 @@ msgstr "खेल"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Non-fractal भूमि तैयार हो : समुद्र व भूमि के नीचे"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "छोटे पहाड़"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
@@ -370,13 +368,13 @@ msgstr "बीज"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "बायोम के बीच में धीरे-धीरे परिवर्तन"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
-msgstr ""
+msgstr "भूमि पर बनावटें (v6 के पेड़ व जंगली घास पर कोई असर नहीं)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
@@ -404,17 +402,17 @@ msgstr "पेड़ और जंगल की घास"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "नदी की गहराईयों में अंतर"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
 msgstr ""
-"चेतावनी : न्यूनतम विकास खेल (Minimal development test) खेल बनाने वालों के लिए है।"
+"चेतावनी : न्यूनतम विकास खेल (Minimal development test) खेल बनाने वालों के लि"
+"ए है।"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -1716,7 +1714,7 @@ msgstr "ज़ूम"
 
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr "पासवर्ड अलग अलग हैं!"
+msgstr "पासवर्ड अलग-अलग हैं!"
 
 #: src/gui/guiConfirmRegistration.cpp
 msgid "Register and Join"
