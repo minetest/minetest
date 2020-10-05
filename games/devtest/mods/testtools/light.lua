@@ -12,12 +12,11 @@ minetest.register_tool("testtools:lighttool", {
 		end
 
 		local node = minetest.get_node(pos)
-		local daytime = node.param1 % 16
+		local time = minetest.get_timeofday()
 		local sunlight = minetest.get_natural_light(pos)
 		local artificial = minetest.get_artificial_light(node.param1)
-
-		local message = ("daytime %d | sunlight %d | artificial %d")
-				:format(daytime, sunlight, artificial)
+		local message = ("param1 0x%02x | time %.5f | sunlight %d | artificial %d")
+				:format(node.param1, time, sunlight, artificial)
 		minetest.chat_send_player(user:get_player_name(), message)
 	end
 })
