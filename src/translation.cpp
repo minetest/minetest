@@ -260,7 +260,7 @@ std::wstring Translations::unescapeC(const std::wstring &str) {
 			case L'\'': result.push_back(L'\''); break;
 			case L'"': result.push_back(L'"'); break;
 			case L'?': result.push_back(L'?'); break;
-			case L'0' ... L'7': {
+			case L'0': case L'1': case L'2': case L'3': case L'4': case L'5': case L'6': case L'7': {
 				size_t j = 0;
 				wchar_t c = 0;
 				for (; j < 3 && i+j < str.length() && L'0' <= str[i+j] && str[i+j] <= L'7'; j++) {
