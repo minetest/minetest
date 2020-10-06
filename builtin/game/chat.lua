@@ -522,7 +522,7 @@ core.register_chatcommand("teleport", {
 			return teleport_to_player(teleportee_name, target_name)
 		end
 
-		return false, 'Invalid parameters "' .. param .. '"; see /help teleport'
+		return false
 	end,
 })
 
