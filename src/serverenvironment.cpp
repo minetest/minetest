@@ -1066,6 +1066,91 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
+u8 ServerEnvironment::findSunlight(v3s16 pos) const
+{
+	// Directions for neighbouring nodes with specified order
+	static const v3s16 dirs[] = {
+		v3s16(-1, 0, 0), v3s16(1, 0, 0), v3s16(0, 0, -1), v3s16(0, 0, 1),
+		v3s16(0, -1, 0), v3s16(0, 1, 0)
+	};
+
+	const NodeDefManager *ndef = m_server->ndef();
+
+	// found_light remembers the highest known sunlight value at pos
+	u8 found_light = 0;
+
+	struct stack_entry {
+		v3s16 pos;
+		s16 dist;
+	};
+	std::stack<stack_entry> stack;
+	stack.push({pos, 0});
+
+	std::unordered_map<s64, s8> dists;
+	dists[MapDatabase::getBlockAsInteger(pos)] = 0;
+
+	while (!stack.empty()) {
+		struct stack_entry e = stack.top();
+		stack.pop();
+
+		v3s16 currentPos = e.pos;
+		s8 dist = e.dist + 1;
+
+		for (const v3s16& off : dirs) {
+			v3s16 neighborPos = currentPos + off;
+			s64 neighborHash = MapDatabase::getBlockAsInteger(neighborPos);
+
+			// Do not walk neighborPos multiple times unless the distance to the start
+			// position is shorter
+			auto it = dists.find(neighborHash);
+			if (it != dists.end() && dist >= it->second)
+				continue;
+
+			// Position to walk
+			bool is_position_ok;
+			MapNode node = m_map->getNode(neighborPos, &is_position_ok);
+			if (!is_position_ok) {
+				// This happens very rarely because the map at currentPos is loaded
+				m_map->emergeBlock(neighborPos, false);
+				node = m_map->getNode(neighborPos, &is_position_ok);
+				if (!is_position_ok)
+					continue;  // not generated
+			}
+
+			const ContentFeatures &def = ndef->get(node);
+			if (!def.sunlight_propagates) {
+				// Do not test propagation here again
+				dists[neighborHash] = -1;
+				continue;
+			}
+
+			// Sunlight could have come from here
+			dists[neighborHash] = dist;
+			u8 daylight = node.param1 & 0x0f;
+
+			// In the special case where sunlight shines from above and thus
+			// does not decrease with upwards distance, daylight is always
+			// bigger than nightlight, which never reaches 15
+			int possible_finlight = daylight - dist;
+			if (possible_finlight <= found_light) {
+				// Light from here cannot make a brighter light at currentPos than
+				// found_light
+				continue;
+			}
+
+			u8 nightlight = node.param1 >> 4;
+			if (daylight > nightlight) {
+				// Found a valid daylight
+				found_light = possible_finlight;
+			} else {
+				// Sunlight may be darker, so walk the neighbours
+				stack.push({neighborPos, dist});
+			}
+		}
+	}
+	return found_light;
+}
+
 void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 {
 	infostream << "ServerEnvironment::clearObjects(): "
