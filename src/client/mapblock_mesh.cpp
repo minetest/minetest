@@ -394,7 +394,9 @@ static void getNodeVertexDirs(const v3s16 &dir, v3s16 *vertex_dirs)
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
+#if __GNUC__ > 7
 #pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
 #endif
 	memcpy(vertex_dirs, &vertex_dirs_table[idx], 4 * sizeof(v3s16));
 #if defined(__GNUC__) && !defined(__clang__)
