@@ -430,7 +430,7 @@ local function find_free_position_near(pos)
 	for _, d in ipairs(tries) do
 		local p = vector.add(pos, d)
 		local n = core.get_node_or_nil(p)
-		if n and n.name then
+		if n then
 			local def = core.registered_nodes[n.name]
 			if def and not def.walkable then
 				return p
