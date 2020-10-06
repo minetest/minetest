@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/hex.h"
 #include "util/string.h"
+#include "gettext.h"
 #include <unordered_map>
 
 
