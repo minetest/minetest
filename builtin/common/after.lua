@@ -31,11 +31,13 @@ function core.after(after, func, ...)
 	assert(tonumber(after) and type(func) == "function",
 		"Invalid minetest.after invocation")
 	local expire = time + after
-	jobs[#jobs + 1] = {
+	local new_job = {
 		func = func,
 		expire = expire,
 		arg = {...},
-		mod_origin = core.get_last_run_mod()
+		mod_origin = core.get_last_run_mod(),
 	}
+	jobs[#jobs + 1] = new_job
 	time_next = math.min(time_next, expire)
+	return { cancel = function() new_job.func = function() end end }
 end

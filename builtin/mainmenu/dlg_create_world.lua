@@ -61,6 +61,7 @@ local flag_checkboxes = {
 		fgettext("Low humidity and high heat causes shallow or dry rivers") },
 	},
 	flat = {
+		cb_caverns,
 		{ "hills", fgettext("Hills"), "hills" },
 		{ "lakes", fgettext("Lakes"), "lakes" },
 	},

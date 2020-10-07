@@ -28,6 +28,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 	#include <alc.h>
 	//#include <alext.h>
 #elif defined(__APPLE__)
+	#define OPENAL_DEPRECATED
 	#include <OpenAL/al.h>
 	#include <OpenAL/alc.h>
 	//#include <OpenAL/alext.h>
@@ -337,14 +338,12 @@ private:
 	};
 
 	std::unordered_map<int, FadeState> m_sounds_fading;
-	float m_fade_delay;
 public:
 	OpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher):
 		m_fetcher(fetcher),
 		m_device(smg->m_device.get()),
 		m_context(smg->m_context.get()),
-		m_next_id(1),
-		m_fade_delay(0)
+		m_next_id(1)
 	{
 		infostream << "Audio: Initialized: OpenAL " << std::endl;
 	}
@@ -616,38 +615,45 @@ public:
 
 	void fadeSound(int soundid, float step, float gain)
 	{
-		m_sounds_fading[soundid] = FadeState(step, getSoundGain(soundid), gain);
+		// Ignore the command if step isn't valid.
+		if (step == 0)
+			return;
+		float current_gain = getSoundGain(soundid);
+		step = gain - current_gain > 0 ? abs(step) : -abs(step);
+		if (m_sounds_fading.find(soundid) != m_sounds_fading.end()) {
+			auto current_fade = m_sounds_fading[soundid];
+			// Do not replace the fade if it's equivalent.
+			if (current_fade.target_gain == gain && current_fade.step == step)
+				return;
+			m_sounds_fading.erase(soundid);
+		}
+		gain = rangelim(gain, 0, 1);
+		m_sounds_fading[soundid] = FadeState(step, current_gain, gain);
 	}
 
 	void doFades(float dtime)
 	{
-		m_fade_delay += dtime;
+		for (auto i = m_sounds_fading.begin(); i != m_sounds_fading.end();) {
+			FadeState& fade = i->second;
+			assert(fade.step != 0);
+			fade.current_gain += (fade.step * dtime);
 
-		if (m_fade_delay < 0.1f)
-			return;
-
-		float chkGain = 0;
-		for (auto i = m_sounds_fading.begin();
-				i != m_sounds_fading.end();) {
-			if (i->second.step < 0.f)
-				chkGain = -(i->second.current_gain);
+			if (fade.step < 0.f)
+				fade.current_gain = std::max(fade.current_gain, fade.target_gain);
 			else
-				chkGain = i->second.current_gain;
+				fade.current_gain = std::min(fade.current_gain, fade.target_gain);
 
-			if (chkGain < i->second.target_gain) {
-				i->second.current_gain += (i->second.step * m_fade_delay);
-				i->second.current_gain = rangelim(i->second.current_gain, 0, 1);
+			if (fade.current_gain <= 0.f)
+				stopSound(i->first);
+			else
+				updateSoundGain(i->first, fade.current_gain);
 
-				updateSoundGain(i->first, i->second.current_gain);
-				++i;
-			} else {
-				if (i->second.target_gain <= 0.f)
-					stopSound(i->first);
-
+			// The increment must happen during the erase call, or else it'll segfault.
+			if (fade.current_gain == fade.target_gain)
 				m_sounds_fading.erase(i++);
-			}
+			else
+				i++;
 		}
-		m_fade_delay = 0;
 	}
 
 	bool soundExists(int sound)

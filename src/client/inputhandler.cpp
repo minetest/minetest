@@ -37,6 +37,8 @@ void KeyCache::populate()
 	key[KeyType::JUMP] = getKeySetting("keymap_jump");
 	key[KeyType::SPECIAL1] = getKeySetting("keymap_special1");
 	key[KeyType::SNEAK] = getKeySetting("keymap_sneak");
+	key[KeyType::DIG] = getKeySetting("keymap_dig");
+	key[KeyType::PLACE] = getKeySetting("keymap_place");
 
 	key[KeyType::AUTOFORWARD] = getKeySetting("keymap_autoforward");
 
@@ -110,58 +112,82 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	// Remember whether each key is down or up
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
 		const KeyPress &keyCode = event.KeyInput;
-		if (keysListenedFor[keyCode]) {
+		if (keysListenedFor.count(keyCode)) {
+				// If the key is being held down then the OS may
+				// send a continuous stream of keydown events.
+				// In this case, we don't want to let this
+				// stream reach the application as it will cause
+				// certain actions to repeat constantly.
 			if (event.KeyInput.PressedDown) {
-				keyIsDown.set(keyCode);
-				keyWasDown.set(keyCode);
+				if (!IsKeyDown(keyCode)) {
+					keyWasDown.insert(keyCode);
+					keyWasPressed.insert(keyCode);
+				}
+				keyIsDown.insert(keyCode);
 			} else {
-				keyIsDown.unset(keyCode);
+				if (IsKeyDown(keyCode))
+					keyWasReleased.insert(keyCode);
+
+				keyIsDown.erase(keyCode);
 			}
+
 			return true;
 		}
-	}
 
 #ifdef HAVE_TOUCHSCREENGUI
-	// case of touchscreengui we have to handle different events
-	if (m_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
+	} else if (m_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
+		// In case of touchscreengui, we have to handle different events
 		m_touchscreengui->translateEvent(event);
 		return true;
-	}
 #endif
 
-	if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+	} else if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
 		/* TODO add a check like:
 		if (event.JoystickEvent != joystick_we_listen_for)
 			return false;
 		*/
 		return joystick->handleEvent(event.JoystickEvent);
-	}
-	// handle mouse events
-	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-		if (isMenuActive()) {
-			left_active = false;
-			middle_active = false;
-			right_active = false;
-		} else {
-			left_active = event.MouseInput.isLeftPressed();
-			middle_active = event.MouseInput.isMiddlePressed();
-			right_active = event.MouseInput.isRightPressed();
-
-			if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-				leftclicked = true;
-			}
-			if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
-				rightclicked = true;
-			}
-			if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
-				leftreleased = true;
-			}
-			if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP) {
-				rightreleased = true;
-			}
-			if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
-				mouse_wheel += event.MouseInput.Wheel;
-			}
+	} else if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+		// Handle mouse events
+		KeyPress key;
+		switch (event.MouseInput.Event) {
+		case EMIE_LMOUSE_PRESSED_DOWN:
+			key = "KEY_LBUTTON";
+			keyIsDown.insert(key);
+			keyWasDown.insert(key);
+			keyWasPressed.insert(key);
+			break;
+		case EMIE_MMOUSE_PRESSED_DOWN:
+			key = "KEY_MBUTTON";
+			keyIsDown.insert(key);
+			keyWasDown.insert(key);
+			keyWasPressed.insert(key);
+			break;
+		case EMIE_RMOUSE_PRESSED_DOWN:
+			key = "KEY_RBUTTON";
+			keyIsDown.insert(key);
+			keyWasDown.insert(key);
+			keyWasPressed.insert(key);
+			break;
+		case EMIE_LMOUSE_LEFT_UP:
+			key = "KEY_LBUTTON";
+			keyIsDown.erase(key);
+			keyWasReleased.insert(key);
+			break;
+		case EMIE_MMOUSE_LEFT_UP:
+			key = "KEY_MBUTTON";
+			keyIsDown.erase(key);
+			keyWasReleased.insert(key);
+			break;
+		case EMIE_RMOUSE_LEFT_UP:
+			key = "KEY_RBUTTON";
+			keyIsDown.erase(key);
+			keyWasReleased.insert(key);
+			break;
+		case EMIE_MOUSE_WHEEL:
+			mouse_wheel += event.MouseInput.Wheel;
+			break;
+		default: break;
 		}
 	} else if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
 		static const LogLevel irr_loglev_conv[] = {
@@ -188,38 +214,32 @@ s32 RandomInputHandler::Rand(s32 min, s32 max)
 	return (myrand() % (max - min + 1)) + min;
 }
 
+struct RandomInputHandlerSimData {
+	std::string key;
+	float counter;
+	int time_max;
+};
+
 void RandomInputHandler::step(float dtime)
 {
-	{
-		static float counter1 = 0;
-		counter1 -= dtime;
-		if (counter1 < 0.0) {
-			counter1 = 0.1 * Rand(1, 40);
-			keydown.toggle(getKeySetting("keymap_jump"));
-		}
-	}
-	{
-		static float counter1 = 0;
-		counter1 -= dtime;
-		if (counter1 < 0.0) {
-			counter1 = 0.1 * Rand(1, 40);
-			keydown.toggle(getKeySetting("keymap_special1"));
-		}
-	}
-	{
-		static float counter1 = 0;
-		counter1 -= dtime;
-		if (counter1 < 0.0) {
-			counter1 = 0.1 * Rand(1, 40);
-			keydown.toggle(getKeySetting("keymap_forward"));
-		}
-	}
-	{
-		static float counter1 = 0;
-		counter1 -= dtime;
-		if (counter1 < 0.0) {
-			counter1 = 0.1 * Rand(1, 40);
-			keydown.toggle(getKeySetting("keymap_left"));
+	static RandomInputHandlerSimData rnd_data[] = {
+		{ "keymap_jump", 0.0f, 40 },
+		{ "keymap_special1", 0.0f, 40 },
+		{ "keymap_forward", 0.0f, 40 },
+		{ "keymap_left", 0.0f, 40 },
+		{ "keymap_dig", 0.0f, 30 },
+		{ "keymap_place", 0.0f, 15 }
+	};
+
+	for (auto &i : rnd_data) {
+		i.counter -= dtime;
+		if (i.counter < 0.0) {
+			i.counter = 0.1 * Rand(1, i.time_max);
+			KeyPress k = getKeySetting(i.key.c_str());
+			if (keydown.count(k))
+				keydown.erase(k);
+			else
+				keydown.insert(k);
 		}
 	}
 	{
@@ -228,30 +248,6 @@ void RandomInputHandler::step(float dtime)
 		if (counter1 < 0.0) {
 			counter1 = 0.1 * Rand(1, 20);
 			mousespeed = v2s32(Rand(-20, 20), Rand(-15, 20));
-		}
-	}
-	{
-		static float counter1 = 0;
-		counter1 -= dtime;
-		if (counter1 < 0.0) {
-			counter1 = 0.1 * Rand(1, 30);
-			leftdown = !leftdown;
-			if (leftdown)
-				leftclicked = true;
-			if (!leftdown)
-				leftreleased = true;
-		}
-	}
-	{
-		static float counter1 = 0;
-		counter1 -= dtime;
-		if (counter1 < 0.0) {
-			counter1 = 0.1 * Rand(1, 15);
-			rightdown = !rightdown;
-			if (rightdown)
-				rightclicked = true;
-			if (!rightdown)
-				rightreleased = true;
 		}
 	}
 	mousepos += mousespeed;

@@ -149,15 +149,15 @@ void TestSettings::testAllSettings()
 	UASSERT(group->getS16("a") == 5);
 	UASSERT(fabs(group->getFloat("bb") - 2.5) < 0.001);
 
-	Settings *group3 = new Settings;
-	group3->set("cat", "meow");
-	group3->set("dog", "woof");
+	Settings group3;
+	group3.set("cat", "meow");
+	group3.set("dog", "woof");
 
-	Settings *group2 = new Settings;
-	group2->setS16("num_apples", 4);
-	group2->setS16("num_oranges", 53);
-	group2->setGroup("animals", group3);
-	group2->set("animals", "cute"); //destroys group 3
+	Settings group2;
+	group2.setS16("num_apples", 4);
+	group2.setS16("num_oranges", 53);
+	group2.setGroup("animals", group3);
+	group2.set("animals", "cute"); //destroys group 3
 	s.setGroup("groupy_thing", group2);
 
 	// Test set failure conditions

@@ -36,10 +36,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "wieldmesh.h"
 #include "client/renderingengine.h"
+#include "client/minimap.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "gui/touchscreengui.h"
 #endif
+
+#define OBJECT_CROSSHAIR_LINE_SIZE 8
+#define CROSSHAIR_LINE_SIZE 10
 
 Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory)
@@ -51,6 +55,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	this->inventory   = inventory;
 
 	m_hud_scaling      = g_settings->getFloat("hud_scaling");
+	m_scale_factor     = m_hud_scaling * RenderingEngine::getDisplayDensity();
 	m_hotbar_imagesize = std::floor(HOTBAR_IMAGE_SIZE *
 		RenderingEngine::getDisplayDensity() + 0.5f);
 	m_hotbar_imagesize *= m_hud_scaling;
@@ -75,6 +80,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	selectionbox_argb = video::SColor(255, sbox_r, sbox_g, sbox_b);
 
 	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
+	use_object_crosshair_image = tsrc->isKnownSourceImage("object_crosshair.png");
 
 	m_selection_boxes.clear();
 	m_halo_boxes.clear();
@@ -109,6 +115,28 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	} else {
 		m_selection_material.MaterialType = video::EMT_SOLID;
 	}
+
+	// Prepare mesh for compass drawing
+	m_rotation_mesh_buffer.Vertices.set_used(4);
+	m_rotation_mesh_buffer.Indices.set_used(6);
+
+	video::SColor white(255, 255, 255, 255);
+	v3f normal(0.f, 0.f, 1.f);
+
+	m_rotation_mesh_buffer.Vertices[0] = video::S3DVertex(v3f(-1.f, -1.f, 0.f), normal, white, v2f(0.f, 1.f));
+	m_rotation_mesh_buffer.Vertices[1] = video::S3DVertex(v3f(-1.f,  1.f, 0.f), normal, white, v2f(0.f, 0.f));
+	m_rotation_mesh_buffer.Vertices[2] = video::S3DVertex(v3f( 1.f,  1.f, 0.f), normal, white, v2f(1.f, 0.f));
+	m_rotation_mesh_buffer.Vertices[3] = video::S3DVertex(v3f( 1.f, -1.f, 0.f), normal, white, v2f(1.f, 1.f));
+
+	m_rotation_mesh_buffer.Indices[0] = 0;
+	m_rotation_mesh_buffer.Indices[1] = 1;
+	m_rotation_mesh_buffer.Indices[2] = 2;
+	m_rotation_mesh_buffer.Indices[3] = 2;
+	m_rotation_mesh_buffer.Indices[4] = 3;
+	m_rotation_mesh_buffer.Indices[5] = 0;
+
+	m_rotation_mesh_buffer.getMaterial().Lighting = false;
+	m_rotation_mesh_buffer.getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 }
 
 Hud::~Hud()
@@ -213,9 +241,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 
 	// Position of upper left corner of bar
-	v2s32 pos = screen_offset;
-	pos.X *= m_hud_scaling * RenderingEngine::getDisplayDensity();
-	pos.Y *= m_hud_scaling * RenderingEngine::getDisplayDensity();
+	v2s32 pos = screen_offset * m_scale_factor;
 	pos += upperleftpos;
 
 	// Store hotbar_image in member variable, used by drawItem()
@@ -272,6 +298,18 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	}
 }
 
+bool Hud::hasElementOfType(HudElementType type)
+{
+	for (size_t i = 0; i != player->maxHudId(); i++) {
+		HudElement *e = player->getHud(i);
+		if (!e)
+			continue;
+		if (e->type == type)
+			return true;
+	}
+	return false;
+}
+
 // Calculates screen position of waypoint. Returns true if waypoint is visible (in front of the player), else false.
 bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos)
 {
@@ -320,20 +358,40 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 		switch (e->type) {
 			case HUD_ELEM_TEXT: {
 				irr::gui::IGUIFont *textfont = font;
+				unsigned int font_size = g_fontengine->getDefaultFontSize();
+
 				if (e->size.X > 0)
-					textfont = g_fontengine->getFont(
-						e->size.X * g_fontengine->getDefaultFontSize());
+					font_size *= e->size.X;
+
+				if (font_size != g_fontengine->getDefaultFontSize())
+					textfont = g_fontengine->getFont(font_size);
 
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
-				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
 				std::wstring text = unescape_translate(utf8_to_wide(e->text));
 				core::dimension2d<u32> textsize = textfont->getDimension(text.c_str());
+#ifdef __ANDROID__
+				// The text size on Android is not proportional with the actual scaling
+				irr::gui::IGUIFont *font_scaled = font_size <= 3 ?
+					textfont : g_fontengine->getFont(font_size - 3);
+				if (e->offset.X < -20)
+					textsize = font_scaled->getDimension(text.c_str());
+#endif
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
-				v2s32 offs(e->offset.X, e->offset.Y);
-				textfont->draw(text.c_str(), size + pos + offset + offs, color);
+				core::rect<s32> size(0, 0, e->scale.X * m_scale_factor,
+				                     text_height * e->scale.Y * m_scale_factor);
+				v2s32 offs(e->offset.X * m_scale_factor,
+				           e->offset.Y * m_scale_factor);
+#ifdef __ANDROID__
+				if (e->offset.X < -20)
+					font_scaled->draw(text.c_str(), size + pos + offset + offs, color);
+				else
+#endif
+				{
+					textfont->draw(text.c_str(), size + pos + offset + offs, color);
+				}
 				break; }
 			case HUD_ELEM_STATBAR: {
 				v2s32 offs(e->offset.X, e->offset.Y);
@@ -385,8 +443,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				const video::SColor color(255, 255, 255, 255);
 				const video::SColor colors[] = {color, color, color, color};
 				core::dimension2di imgsize(texture->getOriginalSize());
-				v2s32 dstsize(imgsize.Width * e->scale.X,
-				              imgsize.Height * e->scale.Y);
+				v2s32 dstsize(imgsize.Width * e->scale.X * m_scale_factor,
+				              imgsize.Height * e->scale.Y * m_scale_factor);
 				if (e->scale.X < 0)
 					dstsize.X = m_screensize.X * (e->scale.X * -0.01);
 				if (e->scale.Y < 0)
@@ -394,10 +452,74 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
 				             (e->align.Y - 1.0) * dstsize.Y / 2);
 				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
-				rect += pos + offset + v2s32(e->offset.X, e->offset.Y);
+				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
+				                             e->offset.Y * m_scale_factor);
 				draw2DImageFilterScaled(driver, texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
+				break; }
+			case HUD_ELEM_COMPASS: {
+				video::ITexture *texture = tsrc->getTexture(e->text);
+				if (!texture)
+					continue;
+
+				// Positionning :
+				v2s32 dstsize(e->size.X, e->size.Y);
+				if (e->size.X < 0)
+					dstsize.X = m_screensize.X * (e->size.X * -0.01);
+				if (e->size.Y < 0)
+					dstsize.Y = m_screensize.Y * (e->size.Y * -0.01);
+
+				if (dstsize.X <= 0 || dstsize.Y <= 0)
+					return; // Avoid zero divides
+
+				// Angle according to camera view
+				v3f fore(0.f, 0.f, 1.f);
+				scene::ICameraSceneNode *cam = RenderingEngine::get_scene_manager()->getActiveCamera();
+				cam->getAbsoluteTransformation().rotateVect(fore);
+				int angle = - fore.getHorizontalAngle().Y;
+
+				// Limit angle and ajust with given offset
+				angle = (angle + (int)e->number) % 360;
+
+				core::rect<s32> dstrect(0, 0, dstsize.X, dstsize.Y);
+				dstrect += pos + v2s32(
+								(e->align.X - 1.0) * dstsize.X / 2,
+								(e->align.Y - 1.0) * dstsize.Y / 2) +
+						v2s32(e->offset.X * m_hud_scaling, e->offset.Y * m_hud_scaling);
+
+				switch (e->dir) {
+				case HUD_COMPASS_ROTATE:
+					drawCompassRotate(e, texture, dstrect, angle);
+					break;
+				case HUD_COMPASS_ROTATE_REVERSE:
+					drawCompassRotate(e, texture, dstrect, -angle);
+					break;
+				case HUD_COMPASS_TRANSLATE:
+					drawCompassTranslate(e, texture, dstrect, angle);
+					break;
+				case HUD_COMPASS_TRANSLATE_REVERSE:
+					drawCompassTranslate(e, texture, dstrect, -angle);
+					break;
+				default:
+					break;
+				}
+				break; }
+			case HUD_ELEM_MINIMAP: {
+				if (e->size.X <= 0 || e->size.Y <= 0)
+					break;
+				if (!client->getMinimap())
+					break;
+				// Draw a minimap of size "size"
+				v2s32 dstsize(e->size.X * m_scale_factor,
+				              e->size.Y * m_scale_factor);
+				// (no percent size as minimap would likely be anamorphosed)
+				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
+				             (e->align.Y - 1.0) * dstsize.Y / 2);
+				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
+				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
+				                             e->offset.Y * m_scale_factor);
+				client->getMinimap()->drawMinimap(rect);
 				break; }
 			default:
 				infostream << "Hud::drawLuaElements: ignoring drawform " << e->type <<
@@ -406,6 +528,76 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 	}
 }
 
+void Hud::drawCompassTranslate(HudElement *e, video::ITexture *texture,
+		const core::rect<s32> &rect, int angle)
+{
+	const video::SColor color(255, 255, 255, 255);
+	const video::SColor colors[] = {color, color, color, color};
+
+	// Compute source image scaling
+	core::dimension2di imgsize(texture->getOriginalSize());
+	core::rect<s32> srcrect(0, 0, imgsize.Width, imgsize.Height);
+
+	v2s32 dstsize(rect.getHeight() * e->scale.X * imgsize.Width / imgsize.Height,
+			rect.getHeight() * e->scale.Y);
+
+	// Avoid infinite loop
+	if (dstsize.X <= 0 || dstsize.Y <= 0)
+		return;
+
+	core::rect<s32> tgtrect(0, 0, dstsize.X, dstsize.Y);
+	tgtrect +=  v2s32(
+				(rect.getWidth() - dstsize.X) / 2,
+				(rect.getHeight() - dstsize.Y) / 2) +
+			rect.UpperLeftCorner;
+
+	int offset = angle * dstsize.X / 360;
+
+	tgtrect += v2s32(offset, 0);
+
+	// Repeat image as much as needed
+	while (tgtrect.UpperLeftCorner.X > rect.UpperLeftCorner.X)
+		tgtrect -= v2s32(dstsize.X, 0);
+
+	draw2DImageFilterScaled(driver, texture, tgtrect, srcrect, &rect, colors, true);
+	tgtrect += v2s32(dstsize.X, 0);
+
+	while (tgtrect.UpperLeftCorner.X < rect.LowerRightCorner.X) {
+		draw2DImageFilterScaled(driver, texture, tgtrect, srcrect, &rect, colors, true);
+		tgtrect += v2s32(dstsize.X, 0);
+	}
+}
+
+void Hud::drawCompassRotate(HudElement *e, video::ITexture *texture,
+		const core::rect<s32> &rect, int angle)
+{
+	core::dimension2di imgsize(texture->getOriginalSize());
+
+	core::rect<s32> oldViewPort = driver->getViewPort();
+	core::matrix4 oldProjMat = driver->getTransform(video::ETS_PROJECTION);
+	core::matrix4 oldViewMat = driver->getTransform(video::ETS_VIEW);
+
+	core::matrix4 Matrix;
+	Matrix.makeIdentity();
+	Matrix.setRotationDegrees(v3f(0.f, 0.f, angle));
+
+	driver->setViewPort(rect);
+	driver->setTransform(video::ETS_PROJECTION, core::matrix4());
+	driver->setTransform(video::ETS_VIEW, core::matrix4());
+	driver->setTransform(video::ETS_WORLD, Matrix);
+
+	video::SMaterial &material = m_rotation_mesh_buffer.getMaterial();
+	material.TextureLayer[0].Texture = texture;
+	driver->setMaterial(material);
+	driver->drawMeshBuffer(&m_rotation_mesh_buffer);
+
+	driver->setTransform(video::ETS_WORLD, core::matrix4());
+	driver->setTransform(video::ETS_VIEW, oldViewMat);
+	driver->setTransform(video::ETS_PROJECTION, oldProjMat);
+
+	// restore the view area
+	driver->setViewPort(oldViewPort);
+}
 
 void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 		const std::string &texture, const std::string &bgtexture,
@@ -427,12 +619,15 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 	core::dimension2di dstd;
 	if (size == v2s32()) {
 		dstd = srcd;
+		dstd.Height *= m_scale_factor;
+		dstd.Width  *= m_scale_factor;
+		offset.X *= m_scale_factor;
+		offset.Y *= m_scale_factor;
 	} else {
-		float size_factor = m_hud_scaling * RenderingEngine::getDisplayDensity();
-		dstd.Height = size.Y * size_factor;
-		dstd.Width  = size.X * size_factor;
-		offset.X *= size_factor;
-		offset.Y *= size_factor;
+		dstd.Height = size.Y * m_scale_factor;
+		dstd.Width  = size.X * m_scale_factor;
+		offset.X *= m_scale_factor;
+		offset.Y *= m_scale_factor;
 	}
 
 	v2s32 p = pos;
@@ -555,7 +750,7 @@ void Hud::drawHotbar(u16 playeritem) {
 	v2s32 pos = centerlowerpos - v2s32(width / 2, m_hotbar_imagesize + m_padding * 3);
 
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
-	if ( (float) width / (float) window_size.X <=
+	if ((float) width / (float) window_size.X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
 			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0);
@@ -578,6 +773,31 @@ void Hud::drawHotbar(u16 playeritem) {
 
 void Hud::drawCrosshair()
 {
+	if (pointing_at_object) {
+		if (use_object_crosshair_image) {
+			video::ITexture *object_crosshair = tsrc->getTexture("object_crosshair.png");
+			v2u32 size  = object_crosshair->getOriginalSize();
+			v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
+					m_displaycenter.Y - (size.Y / 2));
+			driver->draw2DImage(object_crosshair, lsize,
+					core::rect<s32>(0, 0, size.X, size.Y),
+					nullptr, crosshair_argb, true);
+		} else {
+			driver->draw2DLine(
+					m_displaycenter - v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE),
+					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+			driver->draw2DLine(
+					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
+					-OBJECT_CROSSHAIR_LINE_SIZE),
+					m_displaycenter + v2s32(-OBJECT_CROSSHAIR_LINE_SIZE,
+					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+		}
+
+		return;
+	}
+
 	if (use_crosshair_image) {
 		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
 		v2u32 size  = crosshair->getOriginalSize();
@@ -585,12 +805,12 @@ void Hud::drawCrosshair()
 				m_displaycenter.Y - (size.Y / 2));
 		driver->draw2DImage(crosshair, lsize,
 				core::rect<s32>(0, 0, size.X, size.Y),
-				0, crosshair_argb, true);
+				nullptr, crosshair_argb, true);
 	} else {
-		driver->draw2DLine(m_displaycenter - v2s32(10, 0),
-				m_displaycenter + v2s32(10, 0), crosshair_argb);
-		driver->draw2DLine(m_displaycenter - v2s32(0, 10),
-				m_displaycenter + v2s32(0, 10), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(CROSSHAIR_LINE_SIZE, 0),
+				m_displaycenter + v2s32(CROSSHAIR_LINE_SIZE, 0), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(0, CROSSHAIR_LINE_SIZE),
+				m_displaycenter + v2s32(0, CROSSHAIR_LINE_SIZE), crosshair_argb);
 	}
 }
 
@@ -607,12 +827,10 @@ void Hud::drawSelectionMesh()
 		// Draw 3D selection boxes
 		video::SMaterial oldmaterial = driver->getMaterial2D();
 		driver->setMaterial(m_selection_material);
-		for (std::vector<aabb3f>::const_iterator
-				i = m_selection_boxes.begin();
-				i != m_selection_boxes.end(); ++i) {
+		for (auto & selection_box : m_selection_boxes) {
 			aabb3f box = aabb3f(
-				i->MinEdge + m_selection_pos_with_offset,
-				i->MaxEdge + m_selection_pos_with_offset);
+				selection_box.MinEdge + m_selection_pos_with_offset,
+				selection_box.MaxEdge + m_selection_pos_with_offset);
 
 			u32 r = (selectionbox_argb.getRed() *
 					m_selection_mesh_color.getRed() / 255);

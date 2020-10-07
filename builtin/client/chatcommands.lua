@@ -23,6 +23,11 @@ core.register_on_sending_chat_message(function(message)
 		return true
 	end
 
+	-- Run core.registered_on_chatcommand callbacks.
+	if core.run_callbacks(core.registered_on_chatcommand, 5, cmd, param) then
+		return true
+	end
+
 	local cmd_def = core.registered_chatcommands[cmd]
 	if cmd_def then
 		core.set_last_run_mod(cmd_def.mod_origin)

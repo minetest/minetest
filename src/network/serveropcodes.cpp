@@ -167,7 +167,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_TIME_OF_DAY",              0, true }, // 0x29
 	{ "TOCLIENT_CSM_RESTRICTION_FLAGS",    0, true }, // 0x2A
 	{ "TOCLIENT_PLAYER_SPEED",             0, true }, // 0x2B
-	null_command_factory, // 0x2C
+	{ "TOCLIENT_MEDIA_PUSH",               0, true }, // 0x2C (sent over channel 1 too)
 	null_command_factory, // 0x2D
 	null_command_factory, // 0x2E
 	{ "TOCLIENT_CHAT_MESSAGE",             0, true }, // 0x2F
@@ -221,4 +221,5 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory, // 0x5f
 	{ "TOSERVER_SRP_BYTES_S_B",            0, true }, // 0x60
 	{ "TOCLIENT_FORMSPEC_PREPEND",         0, true }, // 0x61
+	{ "TOCLIENT_MINIMAP_MODES",            0, true }, // 0x62
 };

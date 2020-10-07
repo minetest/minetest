@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "scripting_client.h"
 #include "mapblock_mesh.h"
-#include "event.h"
+#include "mtevent.h"
 #include "collision.h"
 #include "nodedef.h"
 #include "profiler.h"
@@ -216,6 +216,9 @@ void ClientEnvironment::step(float dtime)
 		*/
 
 		{
+			// Control local player
+			lplayer->applyControl(dtime_part, this);
+
 			// Apply physics
 			if (!free_move && !is_climbing) {
 				// Gravity
@@ -320,21 +323,8 @@ void ClientEnvironment::step(float dtime)
 		// Step object
 		cao->step(dtime, this);
 
-		if (update_lighting) {
-			// Update lighting
-			u8 light = 0;
-			bool pos_ok;
-
-			// Get node at head
-			v3s16 p = cao->getLightPosition();
-			MapNode n = this->m_map->getNode(p, &pos_ok);
-			if (pos_ok)
-				light = n.getLightBlend(day_night_ratio, m_client->ndef());
-			else
-				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
-
-			cao->updateLight(light);
-		}
+		if (update_lighting)
+			cao->updateLight(day_night_ratio);
 	};
 
 	m_ao_manager.step(dtime, cb_state);
@@ -378,21 +368,6 @@ bool isFreeClientActiveObjectId(const u16 id,
 
 }
 
-u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
-{
-	// try to reuse id's as late as possible
-	static u16 last_used_id = 0;
-	u16 startid = last_used_id;
-	for(;;) {
-		last_used_id ++;
-		if (isFreeClientActiveObjectId(last_used_id, objects))
-			return last_used_id;
-
-		if (last_used_id == startid)
-			return 0;
-	}
-}
-
 u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 {
 	// Register object. If failed return zero id
@@ -402,18 +377,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	object->addToScene(m_texturesource);
 
 	// Update lighting immediately
-	u8 light = 0;
-	bool pos_ok;
-
-	// Get node at head
-	v3s16 p = object->getLightPosition();
-	MapNode n = m_map->getNode(p, &pos_ok);
-	if (pos_ok)
-		light = n.getLightBlend(getDayNightRatio(), m_client->ndef());
-	else
-		light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
-
-	object->updateLight(light);
+	object->updateLight(getDayNightRatio());
 	return object->getId();
 }
 

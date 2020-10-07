@@ -42,8 +42,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 		u8 version2 = 0;
 		u8 version = readU8(is);
 
-		name = deSerializeString(is);
-		state = deSerializeLongString(is);
+		name = deSerializeString16(is);
+		state = deSerializeString32(is);
 
 		if (version < 1)
 			break;
@@ -119,17 +119,15 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
+		m_messages_out.emplace(getId(), true, str);
 	}
 
 	// If attached, check that our parent is still there. If it isn't, detach.
-	if(m_attachment_parent_id && !isAttached())
-	{
-		m_attachment_parent_id = 0;
-		m_attachment_bone = "";
-		m_attachment_position = v3f(0,0,0);
-		m_attachment_rotation = v3f(0,0,0);
+	if (m_attachment_parent_id && !isAttached()) {
+		// This is handled when objects are removed from the map
+		warningstream << "LuaEntitySAO::step() id=" << m_id <<
+			" is attached to nonexistent parent. This is a bug." << std::endl;
+		clearParentAttachment();
 		sendPosition(false, true);
 	}
 
@@ -218,47 +216,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if (!m_armor_groups_sent) {
-		m_armor_groups_sent = true;
-		// create message and add to list
-		m_messages_out.emplace(getId(), true, generateUpdateArmorGroupsCommand());
-	}
-
-	if (!m_animation_sent) {
-		m_animation_sent = true;
-		std::string str = generateUpdateAnimationCommand();
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
-
-	if (!m_animation_speed_sent) {
-		m_animation_speed_sent = true;
-		std::string str = generateUpdateAnimationSpeedCommand();
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
-
-	if (!m_bone_position_sent) {
-		m_bone_position_sent = true;
-		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
-				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
-			std::string str = generateUpdateBonePositionCommand((*ii).first,
-					(*ii).second.X, (*ii).second.Y);
-			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
-		}
-	}
-
-	if (!m_attachment_sent) {
-		m_attachment_sent = true;
-		std::string str = generateUpdateAttachmentCommand();
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
+	sendOutdatedData();
 }
 
 std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
@@ -267,7 +225,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 
 	// PROTOCOL_VERSION >= 37
 	writeU8(os, 1); // version
-	os << serializeString(""); // name
+	os << serializeString16(""); // name
 	writeU8(os, 0); // is_player
 	writeU16(os, getId()); //id
 	writeV3F32(os, m_base_position);
@@ -275,31 +233,31 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	writeU16(os, m_hp);
 
 	std::ostringstream msg_os(std::ios::binary);
-	msg_os << serializeLongString(getPropertyPacket()); // message 1
-	msg_os << serializeLongString(generateUpdateArmorGroupsCommand()); // 2
-	msg_os << serializeLongString(generateUpdateAnimationCommand()); // 3
-	for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
-			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-		msg_os << serializeLongString(generateUpdateBonePositionCommand((*ii).first,
-				(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
+	msg_os << serializeString32(getPropertyPacket()); // message 1
+	msg_os << serializeString32(generateUpdateArmorGroupsCommand()); // 2
+	msg_os << serializeString32(generateUpdateAnimationCommand()); // 3
+	for (const auto &bone_pos : m_bone_position) {
+		msg_os << serializeString32(generateUpdateBonePositionCommand(
+			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // 3 + N
 	}
-	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
+	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4 + m_bone_position.size
+
 	int message_count = 4 + m_bone_position.size();
-	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
-			(ii != m_attachment_child_ids.end()); ++ii) {
-		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
+
+	for (const auto &id : getAttachmentChildIds()) {
+		if (ServerActiveObject *obj = m_env->getActiveObject(id)) {
 			message_count++;
-			// TODO after a protocol bump: only send the object initialization data
-			// to older clients (superfluous since this message exists)
-			msg_os << serializeLongString(obj->generateUpdateInfantCommand(*ii, protocol_version));
+			msg_os << serializeString32(obj->generateUpdateInfantCommand(
+				id, protocol_version));
 		}
 	}
 
-	msg_os << serializeLongString(generateSetTextureModCommand());
+	msg_os << serializeString32(generateSetTextureModCommand());
 	message_count++;
 
 	writeU8(os, message_count);
-	os.write(msg_os.str().c_str(), msg_os.str().size());
+	std::string serialized = msg_os.str();
+	os.write(serialized.c_str(), serialized.size());
 
 	// return result
 	return os.str();
@@ -312,14 +270,14 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	// version must be 1 to keep backwards-compatibility. See version2
 	writeU8(os, 1);
 	// name
-	os<<serializeString(m_init_name);
+	os<<serializeString16(m_init_name);
 	// state
 	if(m_registered){
 		std::string state = m_env->getScriptIface()->
 			luaentity_GetStaticdata(m_id);
-		os<<serializeLongString(state);
+		os<<serializeString32(state);
 	} else {
-		os<<serializeLongString(m_init_state);
+		os<<serializeString32(m_init_state);
 	}
 	writeU16(os, m_hp);
 	writeV3F1000(os, m_velocity);
@@ -478,7 +436,7 @@ std::string LuaEntitySAO::generateSetTextureModCommand() const
 	// command
 	writeU8(os, AO_CMD_SET_TEXTURE_MOD);
 	// parameters
-	os << serializeString(m_current_texture_modifier);
+	os << serializeString16(m_current_texture_modifier);
 	return os.str();
 }
 

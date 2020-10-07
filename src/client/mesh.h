@@ -58,6 +58,13 @@ void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color);
 */
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
 
+
+/*
+	Sets texture coords for vertices in the mesh buffer.
+	`uv[]` must have `count` elements
+*/
+void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count);
+
 /*
 	Set a constant color for an animated mesh
 */
@@ -120,6 +127,12 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 	Update bounding box for a mesh.
 */
 void recalculateBoundingBox(scene::IMesh *src_mesh);
+
+/*
+	Check if mesh has valid normals and return true if it does.
+	We assume normal to be valid when it's 0 < length < Inf. and not NaN
+ */
+bool checkMeshNormals(scene::IMesh *mesh);
 
 /*
 	Vertex cache optimization according to the Forsyth paper:

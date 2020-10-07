@@ -122,56 +122,6 @@ local function antialiasing_fname_to_name(fname)
 	return 0
 end
 
-local function dlg_confirm_reset_formspec(data)
-	return  "size[8,3]" ..
-		"label[1,1;" .. fgettext("Are you sure to reset your singleplayer world?") .. "]" ..
-		"button[1,2;2.6,0.5;dlg_reset_singleplayer_confirm;" .. fgettext("Yes") .. "]" ..
-		"button[4,2;2.8,0.5;dlg_reset_singleplayer_cancel;" .. fgettext("No") .. "]"
-end
-
-local function dlg_confirm_reset_btnhandler(this, fields, dialogdata)
-
-	if fields["dlg_reset_singleplayer_confirm"] ~= nil then
-		local worldlist = core.get_worlds()
-		local found_singleplayerworld = false
-
-		for i = 1, #worldlist do
-			if worldlist[i].name == "singleplayerworld" then
-				found_singleplayerworld = true
-				gamedata.worldindex = i
-			end
-		end
-
-		if found_singleplayerworld then
-			core.delete_world(gamedata.worldindex)
-		end
-
-		core.create_world("singleplayerworld", 1)
-		worldlist = core.get_worlds()
-
-		for i = 1, #worldlist do
-			if worldlist[i].name == "singleplayerworld" then
-				gamedata.worldindex = i
-			end
-		end
-	end
-
-	this.parent:show()
-	this:hide()
-	this:delete()
-	return true
-end
-
-local function showconfirm_reset(tabview)
-	local new_dlg = dialog_create("reset_spworld",
-		dlg_confirm_reset_formspec,
-		dlg_confirm_reset_btnhandler,
-		nil)
-	new_dlg:set_parent(tabview)
-	tabview:hide()
-	new_dlg:show()
-end
-
 local function formspec(tabview, name, tabdata)
 	local tab_string =
 		"box[0,0;3.75,4.5;#999999]" ..
@@ -218,16 +168,9 @@ local function formspec(tabview, name, tabdata)
 					fgettext("Shaders (unavailable)")) .. "]"
 	end
 
-	if core.settings:get("main_menu_style") == "simple" then
-		-- 'Reset singleplayer world' only functions with simple menu
-		tab_string = tab_string ..
-			"button[8,4.75;3.95,1;btn_reset_singleplayer;"
-			.. fgettext("Reset singleplayer world") .. "]"
-	else
-		tab_string = tab_string ..
-			"button[8,4.75;3.95,1;btn_change_keys;"
-			.. fgettext("Change Keys") .. "]"
-	end
+	tab_string = tab_string ..
+		"button[8,4.75;3.95,1;btn_change_keys;"
+		.. fgettext("Change Keys") .. "]"
 
 	tab_string = tab_string ..
 		"button[0,4.75;3.95,1;btn_advanced_settings;"
@@ -248,15 +191,13 @@ local function formspec(tabview, name, tabdata)
 					.. dump(core.settings:get_bool("enable_bumpmapping")) .. "]" ..
 			"checkbox[8.25,1;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
 					.. dump(core.settings:get_bool("tone_mapping")) .. "]" ..
-			"checkbox[8.25,1.5;cb_generate_normalmaps;" .. fgettext("Generate Normal Maps") .. ";"
-					.. dump(core.settings:get_bool("generate_normalmaps")) .. "]" ..
-			"checkbox[8.25,2;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
+			"checkbox[8.25,1.5;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
 					.. dump(core.settings:get_bool("enable_parallax_occlusion")) .. "]" ..
-			"checkbox[8.25,2.5;cb_waving_water;" .. fgettext("Waving Liquids") .. ";"
+			"checkbox[8.25,2;cb_waving_water;" .. fgettext("Waving Liquids") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_water")) .. "]" ..
-			"checkbox[8.25,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
+			"checkbox[8.25,2.5;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
-			"checkbox[8.25,3.5;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
+			"checkbox[8.25,3;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
 	else
 		tab_string = tab_string ..
@@ -265,14 +206,12 @@ local function formspec(tabview, name, tabdata)
 			"label[8.38,1.2;" .. core.colorize("#888888",
 					fgettext("Tone Mapping")) .. "]" ..
 			"label[8.38,1.7;" .. core.colorize("#888888",
-					fgettext("Generate Normal Maps")) .. "]" ..
-			"label[8.38,2.2;" .. core.colorize("#888888",
 					fgettext("Parallax Occlusion")) .. "]" ..
-			"label[8.38,2.7;" .. core.colorize("#888888",
+			"label[8.38,2.2;" .. core.colorize("#888888",
 					fgettext("Waving Liquids")) .. "]" ..
-			"label[8.38,3.2;" .. core.colorize("#888888",
+			"label[8.38,2.7;" .. core.colorize("#888888",
 					fgettext("Waving Leaves")) .. "]" ..
-			"label[8.38,3.7;" .. core.colorize("#888888",
+			"label[8.38,3.2;" .. core.colorize("#888888",
 					fgettext("Waving Plants")) .. "]"
 	end
 
@@ -332,10 +271,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.settings:set("tone_mapping", fields["cb_tonemapping"])
 		return true
 	end
-	if fields["cb_generate_normalmaps"] then
-		core.settings:set("generate_normalmaps", fields["cb_generate_normalmaps"])
-		return true
-	end
 	if fields["cb_parallax"] then
 		core.settings:set("enable_parallax_occlusion", fields["cb_parallax"])
 		return true
@@ -357,10 +292,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_touchscreen_target"] then
 		core.settings:set("touchtarget", fields["cb_touchscreen_target"])
-		return true
-	end
-	if fields["btn_reset_singleplayer"] then
-		showconfirm_reset(this)
 		return true
 	end
 

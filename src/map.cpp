@@ -62,8 +62,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Map
 */
 
-Map::Map(std::ostream &dout, IGameDef *gamedef):
-	m_dout(dout),
+Map::Map(IGameDef *gamedef):
 	m_gamedef(gamedef),
 	m_nodedef(gamedef->ndef())
 {
@@ -478,6 +477,16 @@ void Map::PrintInfo(std::ostream &out)
 
 #define WATER_DROP_BOOST 4
 
+const static v3s16 liquid_6dirs[6] = {
+	// order: upper before same level before lower
+	v3s16( 0, 1, 0),
+	v3s16( 0, 0, 1),
+	v3s16( 1, 0, 0),
+	v3s16( 0, 0,-1),
+	v3s16(-1, 0, 0),
+	v3s16( 0,-1, 0)
+};
+
 enum NeighborType : u8 {
 	NEIGHBOR_UPPER,
 	NEIGHBOR_SAME_LEVEL,
@@ -587,7 +596,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		/*
 			Collect information about the environment
 		 */
-		const v3s16 *dirs = g_6dirs;
 		NodeNeighbor sources[6]; // surrounding sources
 		int num_sources = 0;
 		NodeNeighbor flows[6]; // surrounding flowing liquid nodes
@@ -601,16 +609,16 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		for (u16 i = 0; i < 6; i++) {
 			NeighborType nt = NEIGHBOR_SAME_LEVEL;
 			switch (i) {
-				case 1:
+				case 0:
 					nt = NEIGHBOR_UPPER;
 					break;
-				case 4:
+				case 5:
 					nt = NEIGHBOR_LOWER;
 					break;
 				default:
 					break;
 			}
-			v3s16 npos = p0 + dirs[i];
+			v3s16 npos = p0 + liquid_6dirs[i];
 			NodeNeighbor nb(getNode(npos), nt, npos);
 			const ContentFeatures &cfnb = m_nodedef->get(nb.n);
 			switch (m_nodedef->get(nb.n.getContent()).liquid_type) {
@@ -646,14 +654,18 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 						neutrals[num_neutrals++] = nb;
 					} else {
 						// Do not count bottom source, it will screw things up
-						if(dirs[i].Y != -1)
+						if(nt != NEIGHBOR_LOWER)
 							sources[num_sources++] = nb;
 					}
 					break;
 				case LIQUID_FLOWING:
-					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
-					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = cfnb.liquid_alternative_flowing_id;
+					if (nb.t != NEIGHBOR_SAME_LEVEL ||
+						(nb.n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK) {
+						// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
+						// but exclude falling liquids on the same level, they cannot flow here anyway
+						if (liquid_kind == CONTENT_AIR)
+							liquid_kind = cfnb.liquid_alternative_flowing_id;
+					}
 					if (cfnb.liquid_alternative_flowing_id != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
@@ -1188,7 +1200,7 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 */
 ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 		EmergeManager *emerge, MetricsBackend *mb):
-	Map(dout_server, gamedef),
+	Map(gamedef),
 	settings_mgr(g_settings, savedir + DIR_DELIM + "map_meta.txt"),
 	m_emerge(emerge)
 {
@@ -1312,11 +1324,6 @@ MapgenParams *ServerMap::getMapgenParams()
 u64 ServerMap::getSeed()
 {
 	return getMapgenParams()->seed;
-}
-
-s16 ServerMap::getWaterLevel()
-{
-	return getMapgenParams()->water_level;
 }
 
 bool ServerMap::blockpos_over_mapgen_limit(v3s16 p)
@@ -1719,59 +1726,6 @@ void ServerMap::updateVManip(v3s16 pos)
 	vm->m_is_dirty = true;
 }
 
-s16 ServerMap::findGroundLevel(v2s16 p2d)
-{
-#if 0
-	/*
-		Uh, just do something random...
-	*/
-	// Find existing map from top to down
-	s16 max=63;
-	s16 min=-64;
-	v3s16 p(p2d.X, max, p2d.Y);
-	for(; p.Y>min; p.Y--)
-	{
-		MapNode n = getNodeNoEx(p);
-		if(n.getContent() != CONTENT_IGNORE)
-			break;
-	}
-	if(p.Y == min)
-		goto plan_b;
-	// If this node is not air, go to plan b
-	if(getNodeNoEx(p).getContent() != CONTENT_AIR)
-		goto plan_b;
-	// Search existing walkable and return it
-	for(; p.Y>min; p.Y--)
-	{
-		MapNode n = getNodeNoEx(p);
-		if(content_walkable(n.d) && n.getContent() != CONTENT_IGNORE)
-			return p.Y;
-	}
-
-	// Move to plan b
-plan_b:
-#endif
-
-	/*
-		Determine from map generator noise functions
-	*/
-
-	s16 level = m_emerge->getGroundLevelAtPoint(p2d);
-	return level;
-
-	//double level = base_rock_level_2d(m_seed, p2d) + AVERAGE_MUD_AMOUNT;
-	//return (s16)level;
-}
-
-void ServerMap::createDirs(const std::string &path)
-{
-	if (!fs::CreateAllDirs(path)) {
-		m_dout<<"ServerMap: Failed to create directory "
-				<<"\""<<path<<"\""<<std::endl;
-		throw BaseException("ServerMap failed to create directory");
-	}
-}
-
 void ServerMap::save(ModifiedState save_level)
 {
 	if (!m_map_saving_enabled) {
@@ -1892,11 +1846,6 @@ MapDatabase *ServerMap::createDatabase(
 	#endif
 
 	throw BaseException(std::string("Database backend ") + name + " not supported.");
-}
-
-void ServerMap::pingDatabase()
-{
-	dbase->pingDatabase();
 }
 
 void ServerMap::beginSave()

@@ -43,7 +43,8 @@ local function get_chest_formspec(page)
 end
 
 minetest.register_node("chest_of_everything:chest", {
-	description = "Chest of Everything",
+	description = "Chest of Everything" .. "\n" ..
+		"Grants access to all items",
 	tiles ={"chest_of_everything_chest.png^[sheet:2x2:0,0", "chest_of_everything_chest.png^[sheet:2x2:0,0",
 		"chest_of_everything_chest.png^[sheet:2x2:1,0", "chest_of_everything_chest.png^[sheet:2x2:1,0",
 		"chest_of_everything_chest.png^[sheet:2x2:1,0", "chest_of_everything_chest.png^[sheet:2x2:0,1"},

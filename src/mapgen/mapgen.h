@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
 #define MG_BIOMES      0x40
+#define MG_ORES        0x80
 
 typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
@@ -87,11 +88,9 @@ struct GenNotifyEvent {
 
 class GenerateNotifier {
 public:
+	// Use only for temporary Mapgen objects with no map generation!
 	GenerateNotifier() = default;
 	GenerateNotifier(u32 notify_on, const std::set<u32> *notify_on_deco_ids);
-
-	void setNotifyOn(u32 notify_on);
-	void setNotifyOnDecoIds(const std::set<u32> *notify_on_deco_ids);
 
 	bool addEvent(GenNotifyType type, v3s16 pos, u32 id=0);
 	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map);
@@ -99,7 +98,7 @@ public:
 
 private:
 	u32 m_notify_on = 0;
-	const std::set<u32> *m_notify_on_deco_ids;
+	const std::set<u32> *m_notify_on_deco_ids = nullptr;
 	std::list<GenNotifyEvent> m_notify_events;
 };
 
@@ -185,7 +184,6 @@ public:
 
 	static u32 getBlockSeed(v3s16 p, s32 seed);
 	static u32 getBlockSeed2(v3s16 p, s32 seed);
-	s16 findGroundLevelFull(v2s16 p2d);
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
 	s16 findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax);
 	void updateHeightmap(v3s16 nmin, v3s16 nmax);

@@ -42,20 +42,21 @@ import java.util.zip.ZipInputStream;
 public class UnzipService extends IntentService {
 	public static final String ACTION_UPDATE = "net.minetest.minetest.UPDATE";
 	public static final String ACTION_PROGRESS = "net.minetest.minetest.PROGRESS";
+	public static final String ACTION_FAILURE = "net.minetest.minetest.FAILURE";
 	public static final String EXTRA_KEY_IN_FILE = "file";
 	public static final int SUCCESS = -1;
 	public static final int FAILURE = -2;
-	private static final String TAG = "UnzipService";
 	private final int id = 1;
 	private NotificationManager mNotifyManager;
 	private boolean isSuccess = true;
+	private String failureMessage;
 
 	public UnzipService() {
 		super("net.minetest.minetest.UnzipService");
 	}
 
 	private void isDir(String dir, String location) {
-		File f = new File(location + dir);
+		File f = new File(location, dir);
 		if (!f.isDirectory())
 			f.mkdirs();
 	}
@@ -99,7 +100,8 @@ public class UnzipService extends IntentService {
 
 	private void unzip(Intent intent) {
 		String zip = intent.getStringExtra(EXTRA_KEY_IN_FILE);
-		String location = Environment.getExternalStorageDirectory() + "/Minetest/";
+		isDir("Minetest", Environment.getExternalStorageDirectory().toString());
+		String location = Environment.getExternalStorageDirectory() + File.separator + "Minetest" + File.separator;
 		int per = 0;
 		int size = getSummarySize(zip);
 		File zipFile = new File(zip);
@@ -124,13 +126,14 @@ public class UnzipService extends IntentService {
 			}
 		} catch (IOException e) {
 			isSuccess = false;
-			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			failureMessage = e.getLocalizedMessage();
 		}
 	}
 
 	private void publishProgress(int progress) {
 		Intent intentUpdate = new Intent(ACTION_UPDATE);
 		intentUpdate.putExtra(ACTION_PROGRESS, progress);
+		if (!isSuccess) intentUpdate.putExtra(ACTION_FAILURE, failureMessage);
 		sendBroadcast(intentUpdate);
 	}
 

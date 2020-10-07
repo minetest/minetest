@@ -29,14 +29,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 // clang-format off
-GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent, s32 id,
-		IMenuManager *menumgr) :
+GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
+	s32 id, IMenuManager *menumgr, bool remap_dbl_click) :
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0, 0, 100, 100)),
 #ifdef __ANDROID__
 		m_jni_field_name(""),
 #endif
-		m_menumgr(menumgr)
+		m_menumgr(menumgr),
+		m_remap_dbl_click(remap_dbl_click)
 {
 	m_gui_scale = g_settings->getFloat("gui_scaling");
 #ifdef __ANDROID__
@@ -46,6 +47,12 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent, 
 	setVisible(true);
 	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);
+
+	m_doubleclickdetect[0].time = 0;
+	m_doubleclickdetect[1].time = 0;
+
+	m_doubleclickdetect[0].pos = v2s32(0, 0);
+	m_doubleclickdetect[1].pos = v2s32(0, 0);
 }
 // clang-format on
 
@@ -113,6 +120,69 @@ void GUIModalMenu::removeChildren()
 	}
 }
 
+// clang-format off
+bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
+{
+	/* The following code is for capturing double-clicks of the mouse button
+	 * and translating the double-click into an EET_KEY_INPUT_EVENT event
+	 * -- which closes the form -- under some circumstances.
+	 *
+	 * There have been many github issues reporting this as a bug even though it
+	 * was an intended feature.  For this reason, remapping the double-click as
+	 * an ESC must be explicitly set when creating this class via the
+	 * /p remap_dbl_click parameter of the constructor.
+	 */
+
+	if (!m_remap_dbl_click)
+		return false;
+
+	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+		m_doubleclickdetect[0].pos = m_doubleclickdetect[1].pos;
+		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
+
+		m_doubleclickdetect[1].pos = m_pointer;
+		m_doubleclickdetect[1].time = porting::getTimeMs();
+	} else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
+		u64 delta = porting::getDeltaMs(
+			m_doubleclickdetect[0].time, porting::getTimeMs());
+		if (delta > 400)
+			return false;
+
+		double squaredistance = m_doubleclickdetect[0].pos.
+			getDistanceFromSQ(m_doubleclickdetect[1].pos);
+
+		if (squaredistance > (30 * 30)) {
+			return false;
+		}
+
+		SEvent translated{};
+		// translate doubleclick to escape
+		translated.EventType            = EET_KEY_INPUT_EVENT;
+		translated.KeyInput.Key         = KEY_ESCAPE;
+		translated.KeyInput.Control     = false;
+		translated.KeyInput.Shift       = false;
+		translated.KeyInput.PressedDown = true;
+		translated.KeyInput.Char        = 0;
+		OnEvent(translated);
+
+		return true;
+	}
+
+	return false;
+}
+// clang-format on
+
+static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
+{
+	while (tocheck) {
+		if (tocheck == parent) {
+			return true;
+		}
+		tocheck = tocheck->getParent();
+	}
+	return false;
+}
+
 bool GUIModalMenu::preprocessEvent(const SEvent &event)
 {
 #ifdef __ANDROID__
@@ -153,8 +223,8 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			if (((gui::IGUIEditBox *)hovered)->isPasswordBox())
 				type = 3;
 
-			porting::showInputDialog(gettext("ok"), "",
-				wide_to_utf8(((gui::IGUIEditBox *)hovered)->getText()),	type);
+			porting::showInputDialog(gettext("OK"), "",
+				wide_to_utf8(((gui::IGUIEditBox *)hovered)->getText()), type);
 			return retval;
 		}
 	}
@@ -167,17 +237,16 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 
 		if (!root) {
 			errorstream << "GUIModalMenu::preprocessEvent"
-			            << " unable to get root element" << std::endl;
+				    << " unable to get root element" << std::endl;
 			return false;
 		}
-		gui::IGUIElement *hovered = root->getElementFromPoint(
-			core::position2d<s32>(event.TouchInput.X, event.TouchInput.Y));
+		gui::IGUIElement *hovered =
+				root->getElementFromPoint(core::position2d<s32>(
+						event.TouchInput.X, event.TouchInput.Y));
 
 		translated.MouseInput.X = event.TouchInput.X;
 		translated.MouseInput.Y = event.TouchInput.Y;
 		translated.MouseInput.Control = false;
-
-		bool dont_send_event = false;
 
 		if (event.TouchInput.touchedCount == 1) {
 			switch (event.TouchInput.Event) {
@@ -205,11 +274,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 				m_down_pos = v2s32(0, 0);
 				break;
 			default:
-				dont_send_event = true;
-				// this is not supposed to happen
-				errorstream << "GUIModalMenu::preprocessEvent"
-				            << " unexpected usecase Event="
-				            << event.TouchInput.Event << std::endl;
+				break;
 			}
 		} else if ((event.TouchInput.touchedCount == 2) &&
 				(event.TouchInput.Event == ETIE_PRESSED_DOWN)) {
@@ -219,51 +284,51 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			translated.MouseInput.ButtonStates = EMBSM_LEFT | EMBSM_RIGHT;
 			translated.MouseInput.X = m_pointer.X;
 			translated.MouseInput.Y = m_pointer.Y;
-			if (hovered) {
+			if (hovered)
 				hovered->OnEvent(translated);
-			}
 
 			translated.MouseInput.Event = EMIE_RMOUSE_LEFT_UP;
 			translated.MouseInput.ButtonStates = EMBSM_LEFT;
 
-			if (hovered) {
+			if (hovered)
 				hovered->OnEvent(translated);
-			}
-			dont_send_event = true;
-		}
-		// ignore unhandled 2 touch events ... accidental moving for example
-		else if (event.TouchInput.touchedCount == 2) {
-			dont_send_event = true;
-		}
-		else if (event.TouchInput.touchedCount > 2) {
-			errorstream << "GUIModalMenu::preprocessEvent"
-			            << " to many multitouch events "
-			            << event.TouchInput.touchedCount << " ignoring them"
-			            << std::endl;
-		}
 
-		if (dont_send_event) {
+			return true;
+		} else {
+			// ignore unhandled 2 touch events (accidental moving for example)
 			return true;
 		}
 
 		// check if translated event needs to be preprocessed again
-		if (preprocessEvent(translated)) {
+		if (preprocessEvent(translated))
 			return true;
-		}
+
 		if (hovered) {
 			grab();
 			bool retval = hovered->OnEvent(translated);
 
-			if (event.TouchInput.Event == ETIE_LEFT_UP) {
+			if (event.TouchInput.Event == ETIE_LEFT_UP)
 				// reset pointer
 				m_pointer = v2s32(0, 0);
-			}
+
 			drop();
 			return retval;
 		}
 	}
-	// clang-format on
 #endif
+
+	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+		s32 x = event.MouseInput.X;
+		s32 y = event.MouseInput.Y;
+		gui::IGUIElement *hovered =
+				Environment->getRootGUIElement()->getElementFromPoint(
+						core::position2d<s32>(x, y));
+		if (!isChild(hovered, this)) {
+			if (DoubleClickDetection(event)) {
+				return true;
+			}
+		}
+	}
 	return false;
 }
 
@@ -271,14 +336,12 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 bool GUIModalMenu::hasAndroidUIInput()
 {
 	// no dialog shown
-	if (m_jni_field_name.empty()) {
+	if (m_jni_field_name.empty())
 		return false;
-	}
 
 	// still waiting
-	if (porting::getInputDialogState() == -1) {
+	if (porting::getInputDialogState() == -1)
 		return true;
-	}
 
 	// no value abort dialog processing
 	if (porting::getInputDialogState() != 0) {

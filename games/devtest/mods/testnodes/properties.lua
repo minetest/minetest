@@ -56,9 +56,16 @@ minetest.register_node("testnodes:attached_wallmounted", {
 minetest.register_node("testnodes:nojump", {
 	description = S("Non-jumping Node"),
 	groups = {disable_jump=1, dig_immediate=3},
-
-
 	tiles = {"testnodes_nojump_top.png", "testnodes_nojump_side.png"},
+})
+
+-- Jump disabled plant
+minetest.register_node("testnodes:nojump_walkable", {
+	description = S("Non-jumping Plant Node"),
+	drawtype = "plantlike",
+	groups = {disable_jump=1, dig_immediate=3},
+	walkable = false,
+	tiles = {"testnodes_nojump_top.png"},
 })
 
 -- Climbable up and down with jump and sneak keys

@@ -63,11 +63,6 @@ struct MeshMakeData
 	void fill(MapBlock *block);
 
 	/*
-		Set up with only a single node at (1,1,1)
-	*/
-	void fillSingleNode(MapNode *node);
-
-	/*
 		Set the (node) position of a crack
 	*/
 	void setCrack(int crack_level, v3s16 crack_pos);

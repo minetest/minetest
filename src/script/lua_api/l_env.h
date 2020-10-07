@@ -56,6 +56,11 @@ private:
 	// timeofday: nil = current time, 0 = night, 0.5 = day
 	static int l_get_node_light(lua_State *L);
 
+	// get_natural_light(pos, timeofday)
+	// pos = {x=num, y=num, z=num}
+	// timeofday: nil = current time, 0 = night, 0.5 = day
+	static int l_get_natural_light(lua_State *L);
+
 	// place_node(pos, node)
 	// pos = {x=num, y=num, z=num}
 	static int l_place_node(lua_State *L);
@@ -189,6 +194,11 @@ private:
 
 	// Get a string translated server side
 	static int l_get_translated_string(lua_State * L);
+
+	/* Helpers */
+
+	static void collectNodeIds(lua_State *L, int idx,
+		const NodeDefManager *ndef, std::vector<content_t> &filter);
 
 public:
 	static void Initialize(lua_State *L, int top);

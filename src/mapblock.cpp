@@ -668,13 +668,13 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			// Ignore errors
 			try {
 				if (version <= 15) {
-					std::string data = deSerializeString(is);
+					std::string data = deSerializeString16(is);
 					std::istringstream iss(data, std::ios_base::binary);
 					content_nodemeta_deserialize_legacy(iss,
 						&m_node_metadata, &m_node_timers,
 						m_gamedef->idef());
 				} else {
-					//std::string data = deSerializeLongString(is);
+					//std::string data = deSerializeString32(is);
 					std::ostringstream oss(std::ios_base::binary);
 					decompressZlib(is, oss);
 					std::istringstream iss(oss.str(), std::ios_base::binary);

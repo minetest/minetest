@@ -61,17 +61,6 @@ void GameUI::init()
 	m_guitext2 = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0), false,
 		false, guiroot);
 
-	// At the middle of the screen
-	// Object infos are shown in this
-	m_guitext_info = gui::StaticText::add(guienv, L"",
-		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5)
-			+ v2s32(100, 200), false, true, guiroot);
-
-	// Status text (displays info when showing and hiding GUI stuff, etc.)
-	m_guitext_status = gui::StaticText::add(guienv, L"<Status>",
-		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
-	m_guitext_status->setVisible(false);
-
 	// Chat text
 	m_guitext_chat = gui::StaticText::add(guienv, L"", core::rect<s32>(0, 0, 0, 0),
 		//false, false); // Disable word wrap as of now
@@ -81,6 +70,20 @@ void GameUI::init()
 		m_guitext_chat->setOverrideFont(g_fontengine->getFont(
 			chat_font_size, FM_Unspecified));
 	}
+
+	// At the middle of the screen
+	// Object infos are shown in this
+	u32 chat_font_height = m_guitext_chat->getActiveFont()->getDimension(L"Ay").Height;
+	m_guitext_info = gui::StaticText::add(guienv, L"",
+		core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) +
+			v2s32(100, chat_font_height *
+			(g_settings->getU16("recent_chat_messages") + 3)),
+			false, true, guiroot);
+
+	// Status text (displays info when showing and hiding GUI stuff, etc.)
+	m_guitext_status = gui::StaticText::add(guienv, L"<Status>",
+		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
+	m_guitext_status->setVisible(false);
 
 	// Profiler text (size is updated when text is updated)
 	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
@@ -133,9 +136,9 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< "pos: (" << (player_position.X / BS)
 			<< ", " << (player_position.Y / BS)
 			<< ", " << (player_position.Z / BS)
-			<< ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "\xC2\xB0 "
+			<< ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
 			<< yawToDirectionString(cam.camera_yaw)
-			<< " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "\xC2\xB0"
+			<< " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "°"
 			<< " | seed: " << ((u64)client->getMapSeed());
 
 		if (pointed_old.type == POINTEDTHING_NODE) {

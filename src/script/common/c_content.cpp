@@ -330,6 +330,7 @@ void read_object_properties(lua_State *L, int index,
 
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
+	getboolfield(L, -1, "shaded", prop->shaded);
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 }
@@ -414,6 +415,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "zoom_fov");
 	lua_pushboolean(L, prop->use_texture_alpha);
 	lua_setfield(L, -2, "use_texture_alpha");
+	lua_pushboolean(L, prop->shaded);
+	lua_setfield(L, -2, "shaded");
 	lua_pushlstring(L, prop->damage_texture_modifier.c_str(), prop->damage_texture_modifier.size());
 	lua_setfield(L, -2, "damage_texture_modifier");
 }
@@ -1959,9 +1962,10 @@ void push_hud_element(lua_State *L, HudElement *elem)
 HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 {
 	HudElementStat stat = HUD_STAT_NUMBER;
+	std::string statstr;
 	if (lua_isstring(L, 3)) {
 		int statint;
-		std::string statstr = lua_tostring(L, 3);
+		statstr = lua_tostring(L, 3);
 		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
 				(HudElementStat)statint : stat;
 	}
@@ -1989,6 +1993,8 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 			break;
 		case HUD_STAT_ITEM:
 			elem->item = luaL_checknumber(L, 4);
+			if (elem->type == HUD_ELEM_WAYPOINT && statstr == "precision")
+				elem->item++;
 			*value = &elem->item;
 			break;
 		case HUD_STAT_DIR:

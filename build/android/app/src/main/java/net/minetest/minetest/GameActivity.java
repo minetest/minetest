@@ -25,8 +25,16 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AlertDialog;
+
+import java.util.Objects;
 
 public class GameActivity extends NativeActivity {
 	static {
@@ -34,8 +42,8 @@ public class GameActivity extends NativeActivity {
 		System.loadLibrary("Minetest");
 	}
 
-	private int messageReturnCode;
-	private String messageReturnValue;
+	private int messageReturnCode = -1;
+	private String messageReturnValue = "";
 
 	public static native void putMessageBoxResult(String text);
 
@@ -43,8 +51,6 @@ public class GameActivity extends NativeActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		messageReturnCode = -1;
-		messageReturnValue = "";
 	}
 
 	private void makeFullScreen() {
@@ -73,29 +79,46 @@ public class GameActivity extends NativeActivity {
 		// Ignore the back press so Minetest can handle it
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == 101) {
-			if (resultCode == RESULT_OK) {
-				String text = data.getStringExtra("text");
-				messageReturnCode = 0;
-				messageReturnValue = text;
-			} else
-				messageReturnCode = 1;
-		}
+	public void showDialog(String acceptButton, String hint, String current, int editType) {
+		runOnUiThread(() -> showDialogUI(hint, current, editType));
 	}
 
-	public void showDialog(String acceptButton, String hint, String current, int editType) {
-		Intent intent = new Intent(this, InputDialogActivity.class);
-		Bundle params = new Bundle();
-		params.putString("acceptButton", acceptButton);
-		params.putString("hint", hint);
-		params.putString("current", current);
-		params.putInt("editType", editType);
-		intent.putExtras(params);
-		startActivityForResult(intent, 101);
-		messageReturnValue = "";
-		messageReturnCode = -1;
+	private void showDialogUI(String hint, String current, int editType) {
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		EditText editText = new CustomEditText(this);
+		builder.setView(editText);
+		AlertDialog alertDialog = builder.create();
+		editText.requestFocus();
+		editText.setHint(hint);
+		editText.setText(current);
+		final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+		Objects.requireNonNull(imm).toggleSoftInput(InputMethodManager.SHOW_FORCED,
+				InputMethodManager.HIDE_IMPLICIT_ONLY);
+		if (editType == 1)
+			editText.setInputType(InputType.TYPE_CLASS_TEXT |
+					InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+		else if (editType == 3)
+			editText.setInputType(InputType.TYPE_CLASS_TEXT |
+					InputType.TYPE_TEXT_VARIATION_PASSWORD);
+		else
+			editText.setInputType(InputType.TYPE_CLASS_TEXT);
+		editText.setSelection(editText.getText().length());
+		editText.setOnKeyListener((view, KeyCode, event) -> {
+			if (KeyCode == KeyEvent.KEYCODE_ENTER) {
+				imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+				messageReturnCode = 0;
+				messageReturnValue = editText.getText().toString();
+				alertDialog.dismiss();
+				return true;
+			}
+			return false;
+		});
+		alertDialog.show();
+		alertDialog.setOnCancelListener(dialog -> {
+			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+			messageReturnValue = current;
+			messageReturnCode = -1;
+		});
 	}
 
 	public int getDialogState() {

@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "porting.h"
 
-#if defined(__FreeBSD__)  || defined(__NetBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__)  || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
 	extern char **environ;
@@ -54,6 +54,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	// For _NSGetEnviron()
 	// Related: https://gitlab.haskell.org/ghc/ghc/issues/2458
 	#include <crt_externs.h>
+#endif
+
+#if defined(__HAIKU__)
+        #include <FindDirectory.h>
 #endif
 
 #include "config.h"
@@ -321,6 +325,12 @@ bool getCurrentExecPath(char *buf, size_t len)
 	return true;
 }
 
+#elif defined(__HAIKU__)
+
+bool getCurrentExecPath(char *buf, size_t len)
+{
+	return find_path(B_APP_IMAGE_SYMBOL, B_FIND_PATH_IMAGE_PATH, NULL, buf, len) == B_OK;
+}
 
 //// Solaris
 #elif defined(__sun) || defined(sun)

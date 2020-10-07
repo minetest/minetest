@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
+#include "util/sha1.h"
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
@@ -207,6 +208,9 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		m_access_denied_reconnect = reconnect & 1;
 	} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
 		*pkt >> m_access_denied_reason;
+	} else if (denyCode == SERVER_ACCESSDENIED_TOO_MANY_USERS) {
+		m_access_denied_reason = accessDeniedStrings[denyCode];
+		m_access_denied_reconnect = true;
 	} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
 		m_access_denied_reason = accessDeniedStrings[denyCode];
 	} else {
@@ -493,7 +497,7 @@ void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
 			if (!is.good())
 				break;
 
-			std::string message = deSerializeString(is);
+			std::string message = deSerializeString16(is);
 
 			// Pass on to the environment
 			m_env.processActiveObjectMessage(id, message);
@@ -990,7 +994,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	p.minsize            = readF32(is);
 	p.maxsize            = readF32(is);
 	p.collisiondetection = readU8(is);
-	p.texture            = deSerializeLongString(is);
+	p.texture            = deSerializeString32(is);
 
 	server_id = readU32(is);
 
@@ -1160,15 +1164,24 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	m_minimap_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
 	bool m_minimap_radar_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE);
 
+	// Not so satisying code to keep compatibility with old fixed mode system
+	// -->
+
 	// Hide minimap if it has been disabled by the server
 	if (m_minimap && m_minimap_disabled_by_server && was_minimap_visible)
 		// defers a minimap update, therefore only call it if really
 		// needed, by checking that minimap was visible before
-		m_minimap->setMinimapMode(MINIMAP_MODE_OFF);
+		m_minimap->setModeIndex(0);
 
-	// Switch to surface mode if radar disabled by server
-	if (m_minimap && m_minimap_radar_disabled_by_server && was_minimap_radar_visible)
-		m_minimap->setMinimapMode(MINIMAP_MODE_SURFACEx1);
+	// If radar has been disabled, try to find a non radar mode or fall back to 0
+	if (m_minimap && m_minimap_radar_disabled_by_server
+			&& was_minimap_radar_visible) {
+		while (m_minimap->getModeIndex() > 0 &&
+				m_minimap->getModeDef().type == MINIMAP_TYPE_RADAR)
+			m_minimap->nextMode();
+	}
+	// <--
+	// End of 'not so satifying code'
 }
 
 void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
@@ -1203,11 +1216,11 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 
 		SkyboxParams skybox;
 		skybox.bgcolor = video::SColor(readARGB8(is));
-		skybox.type = std::string(deSerializeString(is));
+		skybox.type = std::string(deSerializeString16(is));
 		u16 count = readU16(is);
 
 		for (size_t i = 0; i < count; i++)
-			skybox.textures.emplace_back(deSerializeString(is));
+			skybox.textures.emplace_back(deSerializeString16(is));
 
 		skybox.clouds = true;
 		try {
@@ -1471,6 +1484,51 @@ void Client::handleCommand_PlayerSpeed(NetworkPacket *pkt)
 	player->addVelocity(added_vel);
 }
 
+void Client::handleCommand_MediaPush(NetworkPacket *pkt)
+{
+	std::string raw_hash, filename, filedata;
+	bool cached;
+
+	*pkt >> raw_hash >> filename >> cached;
+	filedata = pkt->readLongString();
+
+	if (raw_hash.size() != 20 || filedata.empty() || filename.empty() ||
+			!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
+		throw PacketError("Illegal filename, data or hash");
+	}
+
+	verbosestream << "Server pushes media file \"" << filename << "\" with "
+		<< filedata.size() << " bytes of data (cached=" << cached
+		<< ")" << std::endl;
+
+	if (m_media_pushed_files.count(filename) != 0) {
+		// Silently ignore for synchronization purposes
+		return;
+	}
+
+	// Compute and check checksum of data
+	std::string computed_hash;
+	{
+		SHA1 ctx;
+		ctx.addBytes(filedata.c_str(), filedata.size());
+		unsigned char *buf = ctx.getDigest();
+		computed_hash.assign((char*) buf, 20);
+		free(buf);
+	}
+	if (raw_hash != computed_hash) {
+		verbosestream << "Hash of file data mismatches, ignoring." << std::endl;
+		return;
+	}
+
+	// Actually load media
+	loadMedia(filedata, filename, true);
+	m_media_pushed_files.insert(filename);
+
+	// Cache file for the next time when this client joins the same server
+	if (cached)
+		clientMediaUpdateCache(raw_hash, filedata);
+}
+
 /*
  * Mod channels
  */
@@ -1561,4 +1619,31 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	// If signal is valid, forward it to client side mods
 	if (valid_signal)
 		m_script->on_modchannel_signal(channel, signal);
+}
+
+void Client::handleCommand_MinimapModes(NetworkPacket *pkt)
+{
+	u16 count; // modes
+	u16 mode;  // wanted current mode index after change
+
+	*pkt >> count >> mode;
+
+	if (m_minimap)
+		m_minimap->clearModes();
+
+	for (size_t index = 0; index < count; index++) {
+		u16 type;
+		std::string label;
+		u16 size;
+		std::string texture;
+		u16 scale;
+
+		*pkt >> type >> label >> size >> texture >> scale;
+
+		if (m_minimap)
+			m_minimap->addMode(MinimapType(type), size, label, texture, scale);
+	}
+
+	if (m_minimap)
+		m_minimap->setModeIndex(mode);
 }

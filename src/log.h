@@ -192,13 +192,7 @@ extern std::ostream null_stream;
 
 extern std::ostream *dout_con_ptr;
 extern std::ostream *derr_con_ptr;
-extern std::ostream *dout_server_ptr;
 extern std::ostream *derr_server_ptr;
-
-#ifndef SERVER
-extern std::ostream *dout_client_ptr;
-extern std::ostream *derr_client_ptr;
-#endif
 
 extern Logger g_logger;
 
@@ -222,8 +216,4 @@ extern std::ostream dstream;
 
 #define dout_con (*dout_con_ptr)
 #define derr_con (*derr_con_ptr)
-#define dout_server (*dout_server_ptr)
 
-#ifndef SERVER
-	#define dout_client (*dout_client_ptr)
-#endif

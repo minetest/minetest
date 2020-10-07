@@ -76,8 +76,6 @@ namespace treegen {
 		const NodeDefManager *ndef, const TreeDef &tree_definition);
 
 	// L-System tree gen helper functions
-	void tree_node_placement(MMVManip &vmanip, v3f p0,
-		MapNode node);
 	void tree_trunk_placement(MMVManip &vmanip, v3f p0,
 		TreeDef &tree_definition);
 	void tree_leaves_placement(MMVManip &vmanip, v3f p0,

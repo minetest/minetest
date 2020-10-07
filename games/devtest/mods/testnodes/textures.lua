@@ -62,6 +62,12 @@ for a=1,#alphas do
 		},
 		alpha = alpha,
 
+
+		liquidtype = "source",
+		liquid_range = 0,
+		liquid_viscosity = 0,
+		liquid_alternative_source = "testnodes:alpha_"..alpha,
+		liquid_alternative_flowing = "testnodes:alpha_"..alpha,
 		groups = { dig_immediate = 3 },
 	})
 end

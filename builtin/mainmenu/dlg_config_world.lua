@@ -23,7 +23,49 @@ local function modname_valid(name)
 	return not name:find("[^a-z0-9_]")
 end
 
+local function init_data(data)
+	data.list = filterlist.create(
+		pkgmgr.preparemodlist,
+		pkgmgr.comparemod,
+		function(element, uid)
+			if element.name == uid then
+				return true
+			end
+		end,
+		function(element, criteria)
+			if criteria.hide_game and
+					element.is_game_content then
+				return false
+			end
+
+			if criteria.hide_modpackcontents and
+					element.modpack ~= nil then
+				return false
+			end
+			return true
+		end,
+		{
+			worldpath = data.worldspec.path,
+			gameid = data.worldspec.gameid
+		})
+
+	if data.selected_mod > data.list:size() then
+		data.selected_mod = 0
+	end
+
+	data.list:set_filtercriteria({
+		hide_game = data.hide_gamemods,
+		hide_modpackcontents = data.hide_modpackcontents
+	})
+	data.list:add_sort_mechanism("alphabetic", sort_mod_list)
+	data.list:set_sortmode("alphabetic")
+end
+
 local function get_formspec(data)
+	if not data.list then
+		init_data(data)
+	end
+
 	local mod = data.list:get_list()[data.selected_mod] or {name = ""}
 
 	local retval =
@@ -85,11 +127,14 @@ local function get_formspec(data)
 			end
 		end
 	end
+
 	retval = retval ..
 		"button[3.25,7;2.5,0.5;btn_config_world_save;" ..
 		fgettext("Save") .. "]" ..
 		"button[5.75,7;2.5,0.5;btn_config_world_cancel;" ..
-		fgettext("Cancel") .. "]"
+		fgettext("Cancel") .. "]" ..
+		"button[9,7;2.5,0.5;btn_config_world_cdb;" ..
+		fgettext("Find More Mods") .. "]"
 
 	if mod.name ~= "" and not mod.is_game_content then
 		if mod.is_modpack then
@@ -198,6 +243,16 @@ local function handle_buttons(this, fields)
 		return true
 	end
 
+	if fields.btn_config_world_cdb then
+		this.data.list = nil
+
+		local dlg = create_store_dlg("mod")
+		dlg:set_parent(this)
+		this:hide()
+		dlg:show()
+		return true
+	end
+
 	if fields.btn_enable_all_mods then
 		local list = this.data.list:get_raw_list()
 
@@ -246,44 +301,6 @@ function create_configure_world_dlg(worldidx)
 		dlg:delete()
 		return
 	end
-
-	dlg.data.list = filterlist.create(
-		pkgmgr.preparemodlist,
-		pkgmgr.comparemod,
-		function(element, uid)
-			if element.name == uid then
-				return true
-			end
-		end,
-		function(element, criteria)
-			if criteria.hide_game and
-					element.is_game_content then
-				return false
-			end
-
-			if criteria.hide_modpackcontents and
-					element.modpack ~= nil then
-				return false
-			end
-			return true
-		end,
-		{
-			worldpath = dlg.data.worldspec.path,
-			gameid = dlg.data.worldspec.gameid
-		}
-	)
-
-
-	if dlg.data.selected_mod > dlg.data.list:size() then
-		dlg.data.selected_mod = 0
-	end
-
-	dlg.data.list:set_filtercriteria({
-		hide_game = dlg.data.hide_gamemods,
-		hide_modpackcontents = dlg.data.hide_modpackcontents
-	})
-	dlg.data.list:add_sort_mechanism("alphabetic", sort_mod_list)
-	dlg.data.list:set_sortmode("alphabetic")
 
 	return dlg
 end

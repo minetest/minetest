@@ -151,6 +151,12 @@ function core.setting_get_pos(name)
 end
 
 
+-- See l_env.cpp for the other functions
+function core.get_artificial_light(param1)
+	return math.floor(param1 / 16)
+end
+
+
 -- To be overriden by protection mods
 
 function core.is_protected(pos, name)
@@ -164,6 +170,12 @@ function core.record_protection_violation(pos, name)
 	end
 end
 
+-- To be overridden by Creative mods
+
+local creative_mode_cache = core.settings:get_bool("creative_mode")
+function core.is_creative_enabled(name)
+	return creative_mode_cache
+end
 
 -- Checks if specified volume intersects a protected volume
 

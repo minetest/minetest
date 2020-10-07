@@ -36,7 +36,7 @@ ClientMap::ClientMap(
 		MapDrawControl &control,
 		s32 id
 ):
-	Map(dout_client, client),
+	Map(client),
 	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
 		RenderingEngine::get_scene_manager(), id),
 	m_client(client),

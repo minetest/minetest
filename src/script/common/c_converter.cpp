@@ -28,6 +28,7 @@ extern "C" {
 #include "common/c_converter.h"
 #include "common/c_internal.h"
 #include "constants.h"
+#include <set>
 
 
 #define CHECK_TYPE(index, name, type) { \
@@ -456,13 +457,46 @@ size_t read_stringlist(lua_State *L, int index, std::vector<std::string> *result
 	Table field getters
 */
 
+#if defined(__MINGW32__) && !defined(__MINGW64__)
+/* MinGW 32-bit somehow crashes in the std::set destructor when this
+ * variable is thread-local, so just don't do that. */
+static std::set<u64> warned_msgs;
+#endif
+
 bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname)
 {
-	if (lua_isnil(L, index))
+#if !defined(__MINGW32__) || defined(__MINGW64__)
+	thread_local std::set<u64> warned_msgs;
+#endif
+
+	int t = lua_type(L, index);
+	if (t == LUA_TNIL)
 		return false;
 
-	CHECK_TYPE(index, std::string("field \"") + fieldname + '"', type);
-	return true;
+	if (t == type)
+		return true;
+
+	// Check coercion types
+	if (type == LUA_TNUMBER) {
+		if (lua_isnumber(L, index))
+			return true;
+	} else if (type == LUA_TSTRING) {
+		if (lua_isstring(L, index))
+			return true;
+	}
+
+	// Types mismatch. Log unique line.
+	std::string backtrace = std::string("Invalid field ") + fieldname +
+		" (expected " + lua_typename(L, type) +
+		" got " + lua_typename(L, t) + ").\n" + script_get_backtrace(L);
+
+	u64 hash = murmur_hash_64_ua(backtrace.data(), backtrace.length(), 0xBADBABE);
+	if (warned_msgs.find(hash) == warned_msgs.end()) {
+		errorstream << backtrace << std::endl;
+		warned_msgs.insert(hash);
+	}
+
+	return false;
 }
 
 bool getstringfield(lua_State *L, int table,
@@ -639,51 +673,6 @@ size_t write_array_slice_float(
 	for (u32 x = pmin.X; x != pmax.X; x++) {
 		u32 i = z * zstride + y * ystride + x;
 		lua_pushnumber(L, data[i]);
-		lua_rawseti(L, table_index, elem_index);
-		elem_index++;
-	}
-
-	return elem_index - 1;
-}
-
-
-size_t write_array_slice_u16(
-	lua_State *L,
-	int table_index,
-	u16 *data,
-	v3u16 data_size,
-	v3u16 slice_offset,
-	v3u16 slice_size)
-{
-	v3u16 pmin, pmax(data_size);
-
-	if (slice_offset.X > 0) {
-		slice_offset.X--;
-		pmin.X = slice_offset.X;
-		pmax.X = MYMIN(slice_offset.X + slice_size.X, data_size.X);
-	}
-
-	if (slice_offset.Y > 0) {
-		slice_offset.Y--;
-		pmin.Y = slice_offset.Y;
-		pmax.Y = MYMIN(slice_offset.Y + slice_size.Y, data_size.Y);
-	}
-
-	if (slice_offset.Z > 0) {
-		slice_offset.Z--;
-		pmin.Z = slice_offset.Z;
-		pmax.Z = MYMIN(slice_offset.Z + slice_size.Z, data_size.Z);
-	}
-
-	const u32 ystride = data_size.X;
-	const u32 zstride = data_size.X * data_size.Y;
-
-	u32 elem_index = 1;
-	for (u32 z = pmin.Z; z != pmax.Z; z++)
-	for (u32 y = pmin.Y; y != pmax.Y; y++)
-	for (u32 x = pmin.X; x != pmax.X; x++) {
-		u32 i = z * zstride + y * ystride + x;
-		lua_pushinteger(L, data[i]);
 		lua_rawseti(L, table_index, elem_index);
 		elem_index++;
 	}
