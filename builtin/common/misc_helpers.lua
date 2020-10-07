@@ -486,6 +486,17 @@ function table.copy(t, seen)
 end
 
 
+function table.len(t)
+    local counter = 0
+    
+    for i, v in pairs(t) do
+        counter = counter + 1
+    end
+    
+    return counter
+end
+
+
 function table.insert_all(t, other)
 	for i=1, #other do
 		t[#t + 1] = other[i]
