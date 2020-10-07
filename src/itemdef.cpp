@@ -164,8 +164,8 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	writeARGB8(os, color);
 	os << serializeString16(inventory_overlay);
 	os << serializeString16(wield_overlay);
-  
-  os << serializeString16(short_description);
+
+	os << serializeString16(short_description);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
