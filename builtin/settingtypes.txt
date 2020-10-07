@@ -1136,6 +1136,10 @@ enable_rollback_recording (Rollback recording) bool false
 #    @name, @message, @timestamp (optional)
 chat_message_format (Chat message format) string <@name> @message
 
+#    If the execution of a chatcommand takes longer than this specified time in
+#    seconds, add the time information to the chatcommand message
+chatcommand_msg_time_threshold (Chatcommand time message threshold) float 0.01
+
 #    A message to be displayed to all clients when the server shuts down.
 kick_msg_shutdown (Shutdown message) string Server shutting down.
 
