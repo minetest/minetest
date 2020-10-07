@@ -487,13 +487,13 @@ end
 
 
 function table.len(t)
-    local counter = 0
+    	local counter = 0
     
-    for i, v in pairs(t) do
-        counter = counter + 1
-    end
+    	for i, v in pairs(t) do
+        	counter = counter + 1
+    	end
     
-    return counter
+    	return counter
 end
 
 
