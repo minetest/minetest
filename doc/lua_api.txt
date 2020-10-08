@@ -434,7 +434,9 @@ Texture modifiers
 -----------------
 
 There are various texture modifiers that can be used
-to generate textures on-the-fly.
+to let the client generate textures on-the-fly.
+The modifiers are applied directly in sRGB colorspace,
+i.e. without gamma-correction.
 
 ### Texture overlaying
 
