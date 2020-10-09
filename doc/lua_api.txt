@@ -2054,6 +2054,8 @@ Some of the values in the key-value store are handled specially:
 
 * `description`: Set the item stack's description. Defaults to
   `idef.description`.
+* `short_description`: Set the item stack's short description. Defaults
+   to `idef.short_description`.
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
   current color from the palette.
@@ -5994,6 +5996,8 @@ an itemstring, a table or `nil`.
   stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
 * `get_description()`: returns the description shown in inventory list tooltips.
+* `get_short_description()`: returns the short description.
+    * Unlike the description, this does not include new lines.
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
@@ -7096,6 +7100,12 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
     {
         description = "Steel Axe",
+        -- Can contain new lines. "\n" has to be used as new line character.
+        -- Defaults to the item's name.
+
+        short_description = "Steel Axe",
+        -- Must not contain new lines.
+        -- Defaults to the first line of description.
 
         groups = {},
         -- key = name, value = rating; rating = 1..3.

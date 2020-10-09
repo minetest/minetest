@@ -193,6 +193,16 @@ int LuaItemStack::l_get_description(lua_State *L)
 	return 1;
 }
 
+// get_short_description(self)
+int LuaItemStack::l_get_short_description(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	std::string desc = o->m_stack.getShortDescription(getGameDef(L)->idef());
+	lua_pushstring(L, desc.c_str());
+	return 1;
+}
+
 // clear(self) -> true
 int LuaItemStack::l_clear(lua_State *L)
 {
@@ -493,6 +503,7 @@ const luaL_Reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, get_metadata),
 	luamethod(LuaItemStack, set_metadata),
 	luamethod(LuaItemStack, get_description),
+	luamethod(LuaItemStack, get_short_description),
 	luamethod(LuaItemStack, clear),
 	luamethod(LuaItemStack, replace),
 	luamethod(LuaItemStack, to_string),
