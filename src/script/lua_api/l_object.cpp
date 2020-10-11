@@ -763,7 +763,6 @@ int ObjectRef::l_get_children(lua_State *L)
 	return 1;
 }
 
-
 // set_detach(self)
 int ObjectRef::l_set_detach(lua_State *L)
 {
