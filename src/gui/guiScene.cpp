@@ -122,26 +122,21 @@ void GUIScene::draw()
 
 bool GUIScene::OnEvent(const SEvent &event)
 {
-	if (m_mouse_ctrl) {
-		switch(event.EventType) {
-		case EET_MOUSE_INPUT_EVENT:
-			if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-				m_last_pos = v2f((f32)event.MouseInput.X, (f32)event.MouseInput.Y);
+	if (m_mouse_ctrl && event.EventType == EET_MOUSE_INPUT_EVENT) {
+		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+			m_last_pos = v2f((f32)event.MouseInput.X, (f32)event.MouseInput.Y);
+			return true;
+		} else if (event.MouseInput.Event == EMIE_MOUSE_MOVED) {
+			if (event.MouseInput.isLeftPressed()) {
+				m_curr_pos = v2f((f32)event.MouseInput.X, (f32)event.MouseInput.Y);
+
+				rotateCamera(v3f(
+					m_last_pos.Y - m_curr_pos.Y,
+					m_curr_pos.X - m_last_pos.X, 0.f));
+
+				m_last_pos = m_curr_pos;
 				return true;
-			} else if (event.MouseInput.Event == EMIE_MOUSE_MOVED) {
-				if (event.MouseInput.isLeftPressed()) {
-					m_curr_pos = v2f((f32)event.MouseInput.X, (f32)event.MouseInput.Y);
-
-					rotateCamera(v3f(
-						m_last_pos.Y - m_curr_pos.Y,
-						m_curr_pos.X - m_last_pos.X, 0.f));
-
-					m_last_pos = m_curr_pos;
-					return true;
-				}
 			}
-			break;
-		default: break;
 		}
 	}
 
@@ -221,8 +216,8 @@ void GUIScene::setCameraRotation(v3f rot)
 
 bool GUIScene::correctBounds(v3f &rot)
 {
-	static const float ROTATION_MAX_1 = 60.0f;
-	static const float ROTATION_MAX_2 = 300.0f;
+	const float ROTATION_MAX_1 = 60.0f;
+	const float ROTATION_MAX_2 = 300.0f;
 
 	// Limit and correct the rotation when needed
 	if (rot.X < 90.f) {
