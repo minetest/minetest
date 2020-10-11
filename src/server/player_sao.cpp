@@ -457,20 +457,28 @@ u16 PlayerSAO::punch(v3f dir,
 
 void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 {
-	s32 oldhp = m_hp;
+	if (hp == (s32)m_hp)
+		return; // Nothing to do
 
-	hp = rangelim(hp, 0, m_prop.hp_max);
+	if (m_hp <= 0 && hp < (s32)m_hp)
+		return; // Cannot take more damage
 
-	if (oldhp != hp) {
-		s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - oldhp, reason);
+	if (m_hp >= m_prop.hp_max && hp > (s32)m_hp)
+		return; // Cannot heal more
+
+	{
+		s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - m_hp, reason);
 		if (hp_change == 0)
 			return;
 
-		hp = rangelim(oldhp + hp_change, 0, m_prop.hp_max);
+		hp = m_hp + hp_change;
 	}
 
+	s32 oldhp = m_hp;
+	hp = rangelim(hp, 0, m_prop.hp_max);
+
 	if (hp < oldhp && isImmortal())
-		return;
+		return; // Only allow healing immortal players
 
 	m_hp = hp;
 
