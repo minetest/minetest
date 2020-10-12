@@ -9,7 +9,6 @@ varying vec3 vPosition;
 varying vec3 worldPosition;
 
 varying vec3 eyeVec;
-varying vec3 lightVec;
 varying float vIDiff;
 
 const float e = 2.718281828459;
@@ -33,10 +32,6 @@ void main(void)
 	vPosition = gl_Position.xyz;
 	vNormal = gl_Normal;
 	worldPosition = (mWorld * gl_Vertex).xyz;
-
-	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
-
-	lightVec = sunPosition - worldPosition;
 	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_PLAIN) || (MATERIAL_TYPE == TILE_MATERIAL_PLAIN_ALPHA)

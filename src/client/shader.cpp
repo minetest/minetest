@@ -688,35 +688,6 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaders_header += itos(drawtype);
 	shaders_header += "\n";
 
-	if (g_settings->getBool("enable_bumpmapping"))
-		shaders_header += "#define ENABLE_BUMPMAPPING\n";
-
-	if (g_settings->getBool("enable_parallax_occlusion")){
-		int mode = g_settings->getFloat("parallax_occlusion_mode");
-		float scale = g_settings->getFloat("parallax_occlusion_scale");
-		float bias = g_settings->getFloat("parallax_occlusion_bias");
-		int iterations = g_settings->getFloat("parallax_occlusion_iterations");
-		shaders_header += "#define ENABLE_PARALLAX_OCCLUSION\n";
-		shaders_header += "#define PARALLAX_OCCLUSION_MODE ";
-		shaders_header += itos(mode);
-		shaders_header += "\n";
-		shaders_header += "#define PARALLAX_OCCLUSION_SCALE ";
-		shaders_header += ftos(scale);
-		shaders_header += "\n";
-		shaders_header += "#define PARALLAX_OCCLUSION_BIAS ";
-		shaders_header += ftos(bias);
-		shaders_header += "\n";
-		shaders_header += "#define PARALLAX_OCCLUSION_ITERATIONS ";
-		shaders_header += itos(iterations);
-		shaders_header += "\n";
-	}
-
-	shaders_header += "#define USE_NORMALMAPS ";
-	if (g_settings->getBool("enable_bumpmapping") || g_settings->getBool("enable_parallax_occlusion"))
-		shaders_header += "1\n";
-	else
-		shaders_header += "0\n";
-
 	if (g_settings->getBool("enable_waving_water")){
 		shaders_header += "#define ENABLE_WAVING_WATER 1\n";
 		shaders_header += "#define WATER_WAVE_HEIGHT ";

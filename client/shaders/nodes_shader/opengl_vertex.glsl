@@ -18,10 +18,6 @@ varying vec3 vPosition;
 varying vec3 worldPosition;
 
 varying vec3 eyeVec;
-varying vec3 lightVec;
-varying vec3 tsEyeVec;
-varying vec3 tsLightVec;
-varying float area_enable_parallax;
 
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
@@ -86,21 +82,9 @@ float snoise(vec3 p)
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
-	//TODO: make offset depending on view angle and parallax uv displacement
-	//thats for textures that doesnt align vertically, like dirt with grass
-	//gl_TexCoord[0].y += 0.008;
 
-	//Allow parallax/relief mapping only for certain kind of nodes
-	//Variable is also used to control area of the effect
-#if (DRAW_TYPE == NDT_NORMAL || DRAW_TYPE == NDT_LIQUID || DRAW_TYPE == NDT_FLOWINGLIQUID)
-	area_enable_parallax = 1.0;
-#else
-	area_enable_parallax = 0.0;
-#endif
-
-
-float disp_x;
-float disp_z;
+	float disp_x;
+	float disp_z;
 // OpenGL < 4.3 does not support continued preprocessor lines
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
 	vec4 pos2 = mWorld * gl_Vertex;
@@ -148,32 +132,7 @@ float disp_z;
 
 	vPosition = gl_Position.xyz;
 
-	// Don't generate heightmaps when too far from the eye
-	float dist = distance (vec3(0.0, 0.0, 0.0), vPosition);
-	if (dist > 150.0) {
-		area_enable_parallax = 0.0;
-	}
-
-	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
-
-	vec3 normal, tangent, binormal;
-	normal = normalize(gl_NormalMatrix * gl_Normal);
-	tangent = normalize(gl_NormalMatrix * gl_MultiTexCoord1.xyz);
-	binormal = normalize(gl_NormalMatrix * gl_MultiTexCoord2.xyz);
-
-	vec3 v;
-
-	lightVec = sunPosition - worldPosition;
-	v.x = dot(lightVec, tangent);
-	v.y = dot(lightVec, binormal);
-	v.z = dot(lightVec, normal);
-	tsLightVec = normalize (v);
-
 	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
-	v.x = dot(eyeVec, tangent);
-	v.y = dot(eyeVec, binormal);
-	v.z = dot(eyeVec, normal);
-	tsEyeVec = normalize (v);
 
 	// Calculate color.
 	// Red, green and blue components are pre-multiplied with
