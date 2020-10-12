@@ -269,7 +269,7 @@ void ModsResolver::run()
 		// Setup the optional list based on what was actually seen
 		for (std::string modname : mod.optdepends) {
 			if (seenMods.count(modname) > 0) {
-				mod.unsatisfied_optdepends.push_back(modname);
+				mod.unsatisfied_optdepends.insert(modname);
 			}
 		}
 
