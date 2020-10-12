@@ -112,9 +112,10 @@ class ModConfiguration
 {
 public:
 	// checks if all dependencies are fullfilled.
-	bool isConsistent() const {
+	bool isConsistent() const
+	{
 		return m_unsatisfied_mods.empty() &&
-					 m_mods_with_unsatisfied_optionals.empty();
+		       m_mods_with_unsatisfied_optionals.empty();
 	}
 
 	const std::vector<ModSpec> &getMods() const { return m_sorted_mods; }
