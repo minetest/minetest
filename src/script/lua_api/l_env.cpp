@@ -751,7 +751,8 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 
 	// Do it
 	float timeofday_f = readParam<float>(L, 1);
-	sanity_check(timeofday_f >= 0.0 && timeofday_f <= 1.0);
+	luaL_argcheck(L, timeofday_f >= 0.0 && timeofday_f <= 1.0, 1,
+		"value must be between 0 and 1");
 	int timeofday_mh = (int)(timeofday_f * 24000.0);
 	// This should be set directly in the environment but currently
 	// such changes aren't immediately sent to the clients, so call
