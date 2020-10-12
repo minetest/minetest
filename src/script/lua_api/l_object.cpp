@@ -750,9 +750,6 @@ int ObjectRef::l_get_children(lua_State *L)
 
 	//Do it
 	const std::unordered_set<int> child_ids = sao->getAttachmentChildIds();
-	if (child_ids.empty())
-		return 0;
-
 	int i = 0;
 	lua_createtable(L, child_ids.size(), 0);
 	for (const int &id : child_ids) {
