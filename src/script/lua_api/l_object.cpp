@@ -745,14 +745,13 @@ int ObjectRef::l_get_children(lua_State *L)
 
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *sao = getobject(ref);
-	if (sao == NULL)
+	if (sao == nullptr)
 		return 0;
 
-	//Do it
 	const std::unordered_set<int> child_ids = sao->getAttachmentChildIds();
 	int i = 0;
 	lua_createtable(L, child_ids.size(), 0);
-	for (const int &id : child_ids) {
+	for (const int id : child_ids) {
 		ServerActiveObject *child = env->getActiveObject(id);
 		getScriptApiBase(L)->objectrefGetOrCreate(L, child);
 		lua_rawseti(L, -2, ++i);
