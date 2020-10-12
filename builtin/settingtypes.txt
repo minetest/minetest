@@ -546,31 +546,6 @@ shader_path (Shader path) path
 #    enhanced, highlights and shadows are gradually compressed.
 tone_mapping (Filmic tone mapping) bool false
 
-[***Bumpmapping]
-
-#    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack.
-#    Requires shaders to be enabled.
-enable_bumpmapping (Bumpmapping) bool false
-
-[***Parallax Occlusion]
-
-#    Enables parallax occlusion mapping.
-#    Requires shaders to be enabled.
-enable_parallax_occlusion (Parallax occlusion) bool false
-
-#    0 = parallax occlusion with slope information (faster).
-#    1 = relief mapping (slower, more accurate).
-parallax_occlusion_mode (Parallax occlusion mode) int 1 0 1
-
-#    Number of parallax occlusion iterations.
-parallax_occlusion_iterations (Parallax occlusion iterations) int 4
-
-#    Overall scale of parallax occlusion effect.
-parallax_occlusion_scale (Parallax occlusion scale) float 0.08
-
-#    Overall bias of parallax occlusion effect, usually scale/2.
-parallax_occlusion_bias (Parallax occlusion bias) float 0.04
-
 [***Waving Nodes]
 
 #    Set to true to enable waving liquids (like water).

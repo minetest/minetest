@@ -35,11 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(Client *client, bool use_shaders,
-		bool use_tangent_vertices):
+MeshMakeData::MeshMakeData(Client *client, bool use_shaders):
 	m_client(client),
-	m_use_shaders(use_shaders),
-	m_use_tangent_vertices(use_tangent_vertices)
+	m_use_shaders(use_shaders)
 {}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
@@ -1016,7 +1014,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	for (auto &m : m_mesh)
 		m = new scene::SMesh();
 	m_enable_shaders = data->m_use_shaders;
-	m_use_tangent_vertices = data->m_use_tangent_vertices;
 	m_enable_vbo = g_settings->getBool("enable_vbo");
 
 	if (data->m_client->getMinimap()) {
@@ -1170,28 +1167,12 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 			scene::SMesh *mesh = (scene::SMesh *)m_mesh[layer];
 
-			// Create meshbuffer, add to mesh
-			if (m_use_tangent_vertices) {
-				scene::SMeshBufferTangents *buf =
-						new scene::SMeshBufferTangents();
-				buf->Material = material;
-				buf->Vertices.reallocate(p.vertices.size());
-				buf->Indices.reallocate(p.indices.size());
-				for (const video::S3DVertex &v: p.vertices)
-					buf->Vertices.push_back(video::S3DVertexTangents(v.Pos, v.Color, v.TCoords));
-				for (u16 i: p.indices)
-					buf->Indices.push_back(i);
-				buf->recalculateBoundingBox();
-				mesh->addMeshBuffer(buf);
-				buf->drop();
-			} else {
-				scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-				buf->Material = material;
-				buf->append(&p.vertices[0], p.vertices.size(),
-					&p.indices[0], p.indices.size());
-				mesh->addMeshBuffer(buf);
-				buf->drop();
-			}
+			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+			buf->Material = material;
+			buf->append(&p.vertices[0], p.vertices.size(),
+				&p.indices[0], p.indices.size());
+			mesh->addMeshBuffer(buf);
+			buf->drop();
 		}
 
 		/*
@@ -1200,12 +1181,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		m_camera_offset = camera_offset;
 		translateMesh(m_mesh[layer],
 			intToFloat(data->m_blockpos * MAP_BLOCKSIZE - camera_offset, BS));
-
-		if (m_use_tangent_vertices) {
-			scene::IMeshManipulator* meshmanip =
-				RenderingEngine::get_scene_manager()->getMeshManipulator();
-			meshmanip->recalculateTangents(m_mesh[layer], true, false, false);
-		}
 
 		if (m_mesh[layer]) {
 #if 0
