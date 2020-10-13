@@ -124,12 +124,6 @@ void ClientMap::updateDrawList()
 
 	v3f camera_position = m_camera_position;
 	v3f camera_direction = m_camera_direction;
-	f32 camera_fov = m_camera_fov;
-
-	// Use a higher fov to accomodate faster camera movements.
-	// Blocks are cropped better when they are drawn.
-	// Or maybe they aren't? Well whatever.
-	camera_fov *= 1.2;
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
 	v3s16 p_blocks_min;
@@ -190,7 +184,7 @@ void ClientMap::updateDrawList()
 
 			float d = 0.0;
 			if (!isBlockInSight(block->getPos(), camera_position,
-					camera_direction, camera_fov, range, &d))
+					camera_direction, m_camera_fov, range, &d))
 				continue;
 
 
