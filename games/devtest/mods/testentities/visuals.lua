@@ -91,7 +91,6 @@ minetest.register_entity("testentities:nametag", {
 
 	on_activate = function(self, staticdata)
 		if staticdata ~= "" then
-			print(staticdata)
 			self.color = minetest.deserialize(staticdata).color
 		else
 			self.color = {
