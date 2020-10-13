@@ -143,6 +143,9 @@ private:
 	// get_attach(self)
 	static int l_get_attach(lua_State *L);
 
+	// get_children(self)
+	static int l_get_children(lua_State *L);
+
 	// set_detach(self)
 	static int l_set_detach(lua_State *L);
 

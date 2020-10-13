@@ -6206,6 +6206,8 @@ object you are working with still exists.
        should appear in first person.
 * `get_attach()`: returns parent, bone, position, rotation, forced_visible, 
     or nil if it isn't attached.
+* `get_children()`: returns a list of ObjectRefs that are attached to the
+    object.
 * `set_detach()`
 * `set_bone_position(bone, position, rotation)`
     * `bone`: string

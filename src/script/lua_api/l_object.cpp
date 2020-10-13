@@ -738,6 +738,27 @@ int ObjectRef::l_get_attach(lua_State *L)
 	return 5;
 }
 
+// get_children(self)
+int ObjectRef::l_get_children(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	const std::unordered_set<int> child_ids = sao->getAttachmentChildIds();
+	int i = 0;
+	lua_createtable(L, child_ids.size(), 0);
+	for (const int id : child_ids) {
+		ServerActiveObject *child = env->getActiveObject(id);
+		getScriptApiBase(L)->objectrefGetOrCreate(L, child);
+		lua_rawseti(L, -2, ++i);
+	}
+	return 1;
+}
+
 // set_detach(self)
 int ObjectRef::l_set_detach(lua_State *L)
 {
@@ -2337,6 +2358,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_bone_position),
 	luamethod(ObjectRef, set_attach),
 	luamethod(ObjectRef, get_attach),
+	luamethod(ObjectRef, get_children),
 	luamethod(ObjectRef, set_detach),
 	luamethod(ObjectRef, set_properties),
 	luamethod(ObjectRef, get_properties),
