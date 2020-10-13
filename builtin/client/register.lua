@@ -5,7 +5,7 @@ local getinfo = debug.getinfo
 debug.getinfo = nil
 
 -- Runs given callbacks
--- Note: this function is also called from C
+-- Note: this function is also called from C++
 -- @param callbacks: a table with registered callbacks, like `core.registered_on_*`
 -- @param mode: a RunCallbacksMode, as defined in src/script/common/c_internal.h
 -- @param ...: arguments for the callback
