@@ -4,6 +4,16 @@
 -- Misc. API functions
 --
 
+-- @spec core.kick_player(String, String) :: Boolean
+function core.kick_player(player_name, reason)
+	if type(reason) == "string" then
+		reason = "Kicked: " .. reason
+	else
+		reason = "Kicked."
+	end
+	return core.disconnect_player(player_name, reason)
+end
+
 function core.check_player_privs(name, ...)
 	if core.is_player(name) then
 		name = name:get_player_name()
