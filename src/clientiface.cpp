@@ -99,7 +99,6 @@ void RemoteClient::GetNextBlocks (
 {
 	// Increment timers
 	m_nothing_to_send_pause_timer -= dtime;
-	m_nearest_unsent_reset_timer += dtime;
 
 	if (m_nothing_to_send_pause_timer >= 0)
 		return;
@@ -154,14 +153,6 @@ void RemoteClient::GetNextBlocks (
 	/*infostream<<"m_nearest_unsent_reset_timer="
 			<<m_nearest_unsent_reset_timer<<std::endl;*/
 
-	// Reset periodically to workaround for some bugs or stuff
-	if (m_nearest_unsent_reset_timer > 20.0f) {
-		m_nearest_unsent_reset_timer = 0.0f;
-		m_nearest_unsent_d = 0;
-		//infostream<<"Resetting m_nearest_unsent_d for "
-		//		<<server->getPlayerName(peer_id)<<std::endl;
-	}
-
 	//s16 last_nearest_unsent_d = m_nearest_unsent_d;
 	s16 d_start = m_nearest_unsent_d;
 
@@ -212,15 +203,8 @@ void RemoteClient::GetNextBlocks (
 		wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 
-	s16 d_max = full_d_max;
 	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, prop_zoom_fov),
 		wanted_range);
-
-	// Don't loop very much at a time, adjust with distance,
-	// do more work per RTT with greater distances.
-	s16 max_d_increment_at_time = full_d_max / 9 + 1;
-	if (d_max > d_start + max_d_increment_at_time)
-		d_max = d_start + max_d_increment_at_time;
 
 	// cos(angle between velocity and camera) * |velocity|
 	// Limit to 0.0f in case player moves backwards.
@@ -238,7 +222,7 @@ void RemoteClient::GetNextBlocks (
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
 
 	s16 d;
-	for (d = d_start; d <= d_max; d++) {
+	for (d = d_start; d <= full_d_max; d++) {
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
 			box
