@@ -491,12 +491,10 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 }
 
 /******************************************************************************/
-ContentFeatures read_content_features(lua_State *L, int index)
+void read_content_features(lua_State *L, ContentFeatures &f, int index)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-
-	ContentFeatures f;
 
 	/* Cache existence of some callbacks */
 	lua_getfield(L, index, "on_construct");
@@ -800,7 +798,6 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	getstringfield(L, index, "node_dig_prediction",
 		f.node_dig_prediction);
 
-	return f;
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)
