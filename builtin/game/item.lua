@@ -547,7 +547,7 @@ function core.handle_node_drops(pos, drops, digger)
 	end
 end
 
-function core.node_dig(pos, node, digger)
+function core.node_dig(pos, node, digger, old_pt)
 	local diggername = user_name(digger)
 	local log = make_log(diggername)
 	local def = core.registered_nodes[node.name]
@@ -579,7 +579,7 @@ function core.node_dig(pos, node, digger)
 		local tp = wielded:get_tool_capabilities()
 		local dp = core.get_dig_params(def and def.groups, tp)
 		if wdef and wdef.after_use then
-			wielded = wdef.after_use(wielded, digger, node, dp) or wielded
+			wielded = wdef.after_use(wielded, digger, node, dp, old_pt) or wielded
 		else
 			-- Wear out tool
 			if not core.is_creative_enabled(diggername) then

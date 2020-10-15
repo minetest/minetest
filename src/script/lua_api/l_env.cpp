@@ -498,7 +498,7 @@ int ModApiEnvMod::l_dig_node(lua_State *L)
 	}
 	// Dig it out with a NULL digger (appears in Lua as a
 	// non-functional ObjectRef)
-	bool success = scriptIfaceNode->node_on_dig(pos, n, NULL);
+	bool success = scriptIfaceNode->node_on_dig(pos, n, NULL, PointedThing());
 	lua_pushboolean(L, success);
 	return 1;
 }

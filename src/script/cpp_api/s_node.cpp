@@ -117,7 +117,7 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 }
 
 bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
-		ServerActiveObject *digger)
+		ServerActiveObject *digger, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -133,7 +133,8 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 	push_v3s16(L, p);
 	pushnode(L, node, ndef);
 	objectrefGetOrCreate(L, digger);
-	PCALL_RES(lua_pcall(L, 3, 0, error_handler));
+	pushPointedThing(pointed);
+	PCALL_RES(lua_pcall(L, 4, 0, error_handler));
 	lua_pop(L, 1);  // Pop error handler
 	return true;
 }

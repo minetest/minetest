@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_nodemeta.h"
 #include "util/string.h"
+#include "util/pointedthing.h"
 
 struct MapNode;
 class ServerActiveObject;
@@ -38,7 +39,7 @@ public:
 	bool node_on_punch(v3s16 p, MapNode node,
 			ServerActiveObject *puncher, const PointedThing &pointed);
 	bool node_on_dig(v3s16 p, MapNode node,
-			ServerActiveObject *digger);
+			ServerActiveObject *digger, const PointedThing &pointed);
 	void node_on_construct(v3s16 p, MapNode node);
 	void node_on_destruct(v3s16 p, MapNode node);
 	bool node_on_flood(v3s16 p, MapNode node, MapNode newnode);

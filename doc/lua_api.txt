@@ -5343,7 +5343,7 @@ Defaults for the `on_punch` and `on_dig` node definition callbacks
 
 * `minetest.node_punch(pos, node, puncher, pointed_thing)`
     * Calls functions registered by `minetest.register_on_punchnode()`
-* `minetest.node_dig(pos, node, digger)`
+* `minetest.node_dig(pos, node, digger, pointed_thing)`
     * Checks if node can be dug, puts item into inventory, removes node
     * Calls functions registered by `minetest.registered_on_dignodes()`
 
@@ -7223,7 +7223,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- The user may be any ObjectRef or nil.
         -- The default functions handle regular use cases.
 
-        after_use = function(itemstack, user, node, digparams),
+        after_use = function(itemstack, user, node, digparams, pointed_thing),
         -- default: nil
         -- If defined, should return an itemstack and will be called instead of
         -- wearing out the tool. If returns nil, does nothing.
