@@ -3945,6 +3945,26 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		End scene
 	*/
+	if (client->getNewMeshCount() > 1000) {
+		/*
+		Remove all mesh HW buffers after we loaded a number of new meshes.
+		(New meshes cause a bunch of old meshes to become invisible.)
+
+		Work around for a quirk in Irrlicht where a HW buffer is only
+		released after 20000 iterations (triggered from endScene()).
+		Without this, loaded but unused meshes will retain their HW
+		buffers for at least 5 minutes, at which point looking up the HW buffers
+		becomes a bottleneck and the framerate drops (as much as 30%).
+
+		There are no other public Irrlicht APIs that allow interacting with the
+		Hw buffers without tracking the status of every individual mesh.
+
+		The HW buffers for _visible_ meshes will be reinitialized in the next frame.
+		*/
+		infostream << "Game::updateFrame(): Removing all HW buffers." << std::endl;
+		driver->removeAllHardwareBuffers();
+		client->resetNewMeshCount();
+	}
 	driver->endScene();
 
 	stats->drawtime = tt_draw.stop(true);

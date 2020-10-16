@@ -435,6 +435,12 @@ public:
 	{
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}
+	u32 getNewMeshCount() {
+		return m_new_mesh_count;
+	}
+	void resetNewMeshCount() {
+		m_new_mesh_count = 0;
+	}
 private:
 	void loadMods();
 	bool checkBuiltinIntegrity();
@@ -600,4 +606,5 @@ private:
 	u32 m_csm_restriction_noderange = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+	u32 m_new_mesh_count = 0;
 };

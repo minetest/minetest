@@ -558,6 +558,8 @@ void Client::step(float dtime)
 				blocks_to_ack.emplace_back(r.p);
 			}
 		}
+		m_new_mesh_count += num_processed_meshes;
+
 		if (blocks_to_ack.size() > 0) {
 				// Acknowledge block(s)
 				sendGotBlocks(blocks_to_ack);
