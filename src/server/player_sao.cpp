@@ -463,9 +463,6 @@ void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 	if (m_hp <= 0 && hp < (s32)m_hp)
 		return; // Cannot take more damage
 
-	if (m_hp >= m_prop.hp_max && hp > (s32)m_hp)
-		return; // Cannot heal more
-
 	{
 		s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - m_hp, reason);
 		if (hp_change == 0)
@@ -478,7 +475,7 @@ void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 	hp = rangelim(hp, 0, m_prop.hp_max);
 
 	if (hp < oldhp && isImmortal())
-		return; // Only allow healing immortal players
+		return; // Do not allow immortal players to be damaged
 
 	m_hp = hp;
 
