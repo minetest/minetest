@@ -187,31 +187,23 @@ local function formspec(tabview, name, tabdata)
 
 	if shaders_enabled then
 		tab_string = tab_string ..
-			"checkbox[8.25,0.5;cb_bumpmapping;" .. fgettext("Bump Mapping") .. ";"
-					.. dump(core.settings:get_bool("enable_bumpmapping")) .. "]" ..
-			"checkbox[8.25,1;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
+			"checkbox[8.25,0.5;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
 					.. dump(core.settings:get_bool("tone_mapping")) .. "]" ..
-			"checkbox[8.25,1.5;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
-					.. dump(core.settings:get_bool("enable_parallax_occlusion")) .. "]" ..
-			"checkbox[8.25,2;cb_waving_water;" .. fgettext("Waving Liquids") .. ";"
+			"checkbox[8.25,1;cb_waving_water;" .. fgettext("Waving Liquids") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_water")) .. "]" ..
-			"checkbox[8.25,2.5;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
+			"checkbox[8.25,1.5;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
-			"checkbox[8.25,3;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
+			"checkbox[8.25,2;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
 	else
 		tab_string = tab_string ..
 			"label[8.38,0.7;" .. core.colorize("#888888",
-					fgettext("Bump Mapping")) .. "]" ..
-			"label[8.38,1.2;" .. core.colorize("#888888",
 					fgettext("Tone Mapping")) .. "]" ..
-			"label[8.38,1.7;" .. core.colorize("#888888",
-					fgettext("Parallax Occlusion")) .. "]" ..
-			"label[8.38,2.2;" .. core.colorize("#888888",
+			"label[8.38,1.2;" .. core.colorize("#888888",
 					fgettext("Waving Liquids")) .. "]" ..
-			"label[8.38,2.7;" .. core.colorize("#888888",
+			"label[8.38,1.7;" .. core.colorize("#888888",
 					fgettext("Waving Leaves")) .. "]" ..
-			"label[8.38,3.2;" .. core.colorize("#888888",
+			"label[8.38,2.2;" .. core.colorize("#888888",
 					fgettext("Waving Plants")) .. "]"
 	end
 
@@ -263,16 +255,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		end
 		return true
 	end
-	if fields["cb_bumpmapping"] then
-		core.settings:set("enable_bumpmapping", fields["cb_bumpmapping"])
-		return true
-	end
 	if fields["cb_tonemapping"] then
 		core.settings:set("tone_mapping", fields["cb_tonemapping"])
-		return true
-	end
-	if fields["cb_parallax"] then
-		core.settings:set("enable_parallax_occlusion", fields["cb_parallax"])
 		return true
 	end
 	if fields["cb_waving_water"] then

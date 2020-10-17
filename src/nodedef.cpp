@@ -266,9 +266,6 @@ void TextureSettings::readSettings()
 {
 	connected_glass                = g_settings->getBool("connected_glass");
 	opaque_water                   = g_settings->getBool("opaque_water");
-	bool enable_shaders            = g_settings->getBool("enable_shaders");
-	bool enable_bumpmapping        = g_settings->getBool("enable_bumpmapping");
-	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
 	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
@@ -281,8 +278,6 @@ void TextureSettings::readSettings()
 	if (smooth_lighting)
 		enable_mesh_cache = false;
 
-	use_normal_texture = enable_shaders &&
-		(enable_bumpmapping || enable_parallax_occlusion);
 	if (leaves_style_str == "fancy") {
 		leaves_style = LEAVES_FANCY;
 	} else if (leaves_style_str == "simple") {
@@ -635,10 +630,6 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 	if (!tile.world_aligned)
 		layer->scale = 1;
 
-	// Normal texture and shader flags texture
-	if (tsettings.use_normal_texture) {
-		layer->normal_texture = tsrc->getNormalTexture(tiledef.name);
-	}
 	layer->flags_texture = tsrc->getShaderFlagsTexture(layer->normal_texture ? true : false);
 
 	// Material flags

@@ -45,10 +45,8 @@ struct MeshMakeData
 
 	Client *m_client;
 	bool m_use_shaders;
-	bool m_use_tangent_vertices;
 
-	MeshMakeData(Client *client, bool use_shaders,
-			bool use_tangent_vertices = false);
+	MeshMakeData(Client *client, bool use_shaders);
 
 	/*
 		Copy block data manually (to allow optimizations by the caller)
@@ -136,7 +134,6 @@ private:
 	IShaderSource *m_shdrsrc;
 
 	bool m_enable_shaders;
-	bool m_use_tangent_vertices;
 	bool m_enable_vbo;
 
 	// Must animate() be called before rendering?
