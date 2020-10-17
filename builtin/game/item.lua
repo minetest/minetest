@@ -552,7 +552,7 @@ function core.node_dig(pos, node, digger, old_pt)
 	local log = make_log(diggername)
 	local def = core.registered_nodes[node.name]
 	if def and (not def.diggable or
-			(def.can_dig and not def.can_dig(pos, digger))) then
+			(def.can_dig and not def.can_dig(pos, digger, old_pt))) then
 		log("info", diggername .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. core.pos_to_string(pos))
@@ -633,7 +633,7 @@ function core.node_dig(pos, node, digger, old_pt)
 		-- Copy pos and node because callback can modify them
 		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
-		def.after_dig_node(pos_copy, node_copy, oldmetadata, digger)
+		def.after_dig_node(pos_copy, node_copy, oldmetadata, digger, old_pt)
 	end
 
 	-- Run script hook
@@ -646,7 +646,7 @@ function core.node_dig(pos, node, digger, old_pt)
 		-- Copy pos and node because callback can modify them
 		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
-		callback(pos_copy, node_copy, digger)
+		callback(pos_copy, node_copy, digger, old_pt)
 	end
 end
 

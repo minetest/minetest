@@ -4540,8 +4540,11 @@ Call these functions only at load time!
     * `placer` may be any valid ObjectRef or nil.
     * **Not recommended**; use `on_construct` or `after_place_node` in node
       definition whenever possible.
-* `minetest.register_on_dignode(function(pos, oldnode, digger))`
+* `minetest.register_on_dignode(function(pos, oldnode, digger, pointed_thing))`
     * Called when a node has been dug.
+    * The pointed_thing should be the node dug, but it can also be of 
+      type "nothing" or nil, eg, if node_dig was called without the
+      player actually mining a node.
     * **Not recommended**; Use `on_destruct` or `after_dig_node` in node
       definition whenever possible.
 * `minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing))`
@@ -7531,14 +7534,20 @@ Used by `minetest.register_node`.
         -- `placer` may be any valid ObjectRef or nil.
         -- default: nil
 
-        after_dig_node = function(pos, oldnode, oldmetadata, digger),
+        after_dig_node = function(pos, oldnode, oldmetadata, digger, pointed_thing),
         -- oldmetadata is in table format.
+        -- The pointed_thing should be the node dug, but it can also be of 
+        -- type "nothing" or nil, eg, if node_dig was called without the
+        -- player actually mining a node.
         -- Called after destructing node when node was dug using
         -- minetest.node_dig / minetest.dig_node.
         -- default: nil
 
-        can_dig = function(pos, [player]),
+        can_dig = function(pos, [player], pointed_thing),
         -- Returns true if node can be dug, or false if not.
+        -- The pointed_thing should be the node dug, but it can also be of 
+        -- type "nothing" or nil, eg, if node_dig was called without the
+        -- player actually mining a node.
         -- default: nil
 
         on_punch = function(pos, node, puncher, pointed_thing),
