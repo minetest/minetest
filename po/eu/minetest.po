@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-07-08 20:47+0000\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
+"PO-Revision-Date: 2020-10-18 21:26+0000\n"
+"Last-Translator: Osoitz <oelkoro@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/minetest/minetest/"
 "eu/>\n"
 "Language: eu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.3.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -29,7 +29,7 @@ msgstr "Hil zara"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "Ados"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -732,7 +732,7 @@ msgstr "Zerbitzari ostalaria"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Instalatu ContentDB-ko jolasak"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -764,7 +764,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr ""
+msgstr "Hasi partida"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
@@ -776,7 +776,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "Sormen modua"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
@@ -792,7 +792,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr ""
+msgstr "Elkartu partidara"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
@@ -825,7 +825,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr ""
+msgstr "Ezarpen guztiak"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -921,7 +921,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "Ezarpenak"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
@@ -1071,11 +1071,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "- Creative Mode: "
-msgstr ""
+msgstr "- Sormen modua: "
 
 #: src/client/game.cpp
 msgid "- Damage: "
-msgstr ""
+msgstr "- Kaltea: "
 
 #: src/client/game.cpp
 msgid "- Mode: "
@@ -2566,7 +2566,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Creative"
-msgstr ""
+msgstr "Sormena"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -2590,7 +2590,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
-msgstr ""
+msgstr "Kaltea"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2820,7 +2820,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable creative mode for new created maps."
-msgstr ""
+msgstr "Gaitu sormen modua mapa sortu berrietan."
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks"
@@ -2836,7 +2836,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr ""
+msgstr "Ahalbidetu jokalariek kaltea jasotzea eta hiltzea."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -5060,7 +5060,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Online Content Repository"
-msgstr ""
+msgstr "Sareko eduki biltegia"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5810,7 +5810,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
-msgstr ""
+msgstr "Eduki biltegiaren URL helbidea"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6262,7 +6262,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
-msgstr ""
+msgstr "Jokalariak elkarren artean hil daitezkeen ala ez."
 
 #: src/settings_translation_file.cpp
 msgid ""
