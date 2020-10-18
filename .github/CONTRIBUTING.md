@@ -45,11 +45,9 @@ Contributions are welcome! Here's how you can help:
 
 ### Important note about automated GitHub checks
 
-When you submit a pull request, GitHub automatically runs checks on the Minetest Engine combined with your changes. One of these checks is called 'cpp lint / clang format', which checks code formatting.
-Because formatting for readability requires human judgement this check often fails and often makes unsuitable formatting requests which make code readability worse.
+When you submit a pull request, GitHub automatically runs checks on the Minetest Engine combined with your changes. One of these checks is called 'cpp lint / clang format', which checks code formatting. Because formatting for readability requires human judgement this check often fails and often makes unsuitable formatting requests which make code readability worse.
 
-If this check fails, look at the details to check for any clear mistakes and correct those. However you should not apply everything ClangFormat requests, ignore requests that make code readability worse and any other clearly unsuitable requests.
-Discuss with a core developer if in any doubt and for how to progress.
+If this check fails, look at the details to check for any clear mistakes and correct those. However, you should not apply everything ClangFormat requests. Ignore requests that make code readability worse and any other clearly unsuitable requests. Discuss in the pull request with a core developer about how to progress.
 
 ## Issues
 
