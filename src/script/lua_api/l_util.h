@@ -92,6 +92,9 @@ private:
 	// encode_base64(string)
 	static int l_encode_base64(lua_State *L);
 
+	// is_valid_base64(string)
+	static int l_is_valid_base64(lua_State *L);
+
 	// decode_base64(string)
 	static int l_decode_base64(lua_State *L);
 
