@@ -6504,7 +6504,7 @@ object you are working with still exists.
   per player.
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_eye_offset()`: returns first and third person offsets as tables.
+* `get_eye_offset()`: returns first and third person offsets.
 * `send_mapblock(blockpos)`:
     * Sends a server-side loaded mapblock to the player.
     * Returns `false` if failed.
