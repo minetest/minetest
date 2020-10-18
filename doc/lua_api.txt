@@ -6227,7 +6227,7 @@ object you are working with still exists.
 * `set_sprite(p, num_frames, framelength, select_x_by_camera)`
     * Specifies and starts a sprite animation
     * Animations iterate along the frame `y` position.
-    * `p`: {x=column number, y=row number}, the coordinate of the first frame
+    * `p`: {x=column number, y=row number}, the coordinate of the first frame,
       default: `{x=0, y=0}`
     * `num_frames`: Total frames in the texture, default: `1`
     * `framelength`: Time per animated frame in seconds, default: `0.2`
@@ -6391,8 +6391,8 @@ object you are working with still exists.
           nodes square)
     * `selected_mode` is the mode index to be selected after modes have been changed
     (0 is the first mode).
-* `set_sky(skybox_parameters)`
-    * `skybox_parameters` is a table with the following optional fields:
+* `set_sky(sky_parameters)`
+    * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
