@@ -33,6 +33,8 @@ static const std::string base64_chars =
 		"abcdefghijklmnopqrstuvwxyz"
 		"0123456789+/";
 
+static const std::string base64_chars_padding_1 = "AEIMQUYcgkosw048";
+static const std::string base64_chars_padding_2 = "AQgw";
 
 static inline bool is_base64(unsigned char c)
 {
@@ -46,8 +48,12 @@ bool base64_is_valid(std::string const& s)
 		if (!is_base64(s[i]))
 			break;
 	// number of padding characters needs to match
-	if (s.size() - i != 3 - ((s.size() + 3) % 4))
+	unsigned char padding = 3 - ((s.size() + 3) % 4);
+	if (s.size() - i != padding
+			|| (padding == 1 && base64_chars_padding_1.find(s[i - 1]) == -1)
+			|| (padding == 2 && base64_chars_padding_2.find(s[i - 1]) == -1))
 		return false;
+
 	// remaining characters (max. 2) may only be padding
 	for (; i < s.size(); ++i)
 		if (s[i] != '=')
