@@ -33,9 +33,22 @@ static const std::string base64_chars =
 		"abcdefghijklmnopqrstuvwxyz"
 		"0123456789+/";
 
-
 static inline bool is_base64(unsigned char c) {
 	return (isalnum(c) || (c == '+') || (c == '/'));
+}
+
+static inline unsigned char base64_value(unsigned char c)
+{
+	if (c == '+')
+		return 62;
+	if (c == '/')
+		return 63;
+	if (c > 'a')
+		return c - 'a' + 25;
+	if (c > 'A')
+		return c - 'A';
+	if (c > '0')
+		return c - '0' + 50;
 }
 
 bool base64_is_valid(std::string const& s)
@@ -102,7 +115,7 @@ std::string base64_decode(std::string const& encoded_string) {
 		char_array_4[i++] = encoded_string[in_]; in_++;
 		if (i ==4) {
 			for (i = 0; i <4; i++)
-				char_array_4[i] = base64_chars.find(char_array_4[i]);
+				char_array_4[i] = base64_value(char_array_4[i]);
 
 			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
 			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
@@ -119,7 +132,7 @@ std::string base64_decode(std::string const& encoded_string) {
 			char_array_4[j] = 0;
 
 		for (j = 0; j <4; j++)
-			char_array_4[j] = base64_chars.find(char_array_4[j]);
+			char_array_4[j] = base64_value(char_array_4[j]);
 
 		char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
 		char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
