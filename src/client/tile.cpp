@@ -1812,6 +1812,157 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			baseimg->drop();
 			baseimg = img;
 		}
+		/*
+			[item:modname:itemname:WxH
+			Renders an item to texture, width and height are optional
+		*/
+		else if (part_of_name.substr(0,6) == "[item:") {
+			if (baseimg != NULL) {
+				errorstream << "generateImagePart(): baseimg != NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+			if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
+				errorstream << "generateImagePart(): No rendertarget support "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			assert(m_itemdef_manager && m_client);
+
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			std::string modname = sf.next(":");
+			std::string itemname = sf.next(":");
+			const std::string item = modname + ":" + itemname;
+			const std::string w = sf.next("x");
+			u32 width = g_settings->getU16("item_rtt_speedup_resolution");
+			u32 height = width;
+			if (w != "") {
+				width = stoi(w);
+				const std::string h = sf.next("");
+				if (h != "")
+					height = stoi(h);
+				else
+					height = width;
+			}
+
+			const ItemDefinition &def = m_itemdef_manager->get(item);
+			ItemMesh *imesh = m_itemdef_manager->getWieldMesh(item, m_client);
+
+			if (!imesh || !imesh->mesh) {
+				errorstream << "generateImagePart(): No mesh available for item "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			const core::dimension2d<u32> img_dim(width, height);
+			const core::rect<s32> res_rect(0, 0, width, height);
+
+			core::rect<s32> oldViewPort = driver->getViewPort();
+			core::matrix4 oldProjMat = driver->getTransform(video::ETS_PROJECTION);
+			core::matrix4 oldViewMat = driver->getTransform(video::ETS_VIEW);
+			core::matrix4 oldWorldMat = driver->getTransform(video::ETS_WORLD);
+
+			video::ITexture* rt = driver->addRenderTargetTexture(img_dim, "render_invimg", video::ECF_A8R8G8B8);
+			if (!rt) {
+				errorstream << "generateImagePart(): Generating rendertarget failed "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+			driver->setRenderTarget(rt, true, true, video::SColor(0,0,0,0));
+
+			scene::IMesh *mesh = imesh->mesh;
+			driver->clearZBuffer();
+
+			core::matrix4 ProjMatrix;
+			ProjMatrix.buildProjectionMatrixOrthoLH(2.0f, 2.0f, -1.0f, 100.0f);
+
+			core::matrix4 ViewMatrix;
+			ViewMatrix.buildProjectionMatrixOrthoLH(2.0f, 2.0f, -1.0f, 100.0f);
+			ViewMatrix.setTranslation(core::vector3df(
+				1.0f * (res_rect.LowerRightCorner.X + res_rect.UpperLeftCorner.X -
+						res_rect.LowerRightCorner.X - res_rect.UpperLeftCorner.X) /
+						res_rect.getWidth(),
+				1.0f * (res_rect.LowerRightCorner.Y + res_rect.UpperLeftCorner.Y -
+						res_rect.LowerRightCorner.Y - res_rect.UpperLeftCorner.Y) /
+						res_rect.getHeight(),
+				0.0f));
+
+			driver->setTransform(video::ETS_PROJECTION, ProjMatrix);
+			driver->setTransform(video::ETS_VIEW, ViewMatrix);
+
+			core::matrix4 matrix;
+			matrix.makeIdentity();
+
+			driver->setTransform(video::ETS_WORLD, matrix);
+			driver->setViewPort(res_rect);
+
+			video::SColor basecolor = def.color;
+
+			u32 mc = mesh->getMeshBufferCount();
+			for (u32 j = 0; j < mc; ++j) {
+				scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+				// we can modify vertices relatively fast,
+				// because these meshes are not buffered.
+				assert(buf->getHardwareMappingHint_Vertex() == scene::EHM_NEVER);
+				video::SColor c = basecolor;
+
+				if (imesh->buffer_colors.size() > j) {
+					ItemPartColor *p = &imesh->buffer_colors[j];
+					if (p->override_base)
+						c = p->color;
+				}
+
+				if (imesh->needs_shading)
+					colorizeMeshBuffer(buf, &c);
+				else
+					setMeshBufferColor(buf, c);
+
+				video::SMaterial &material = buf->getMaterial();
+				material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+				material.Lighting = false;
+				driver->setMaterial(material);
+				driver->drawMeshBuffer(buf);
+			}
+
+			// draw the inventory_overlay
+			if (def.type == ITEM_NODE && def.inventory_image.empty() &&
+					!def.inventory_overlay.empty()) {
+				video::ITexture *overlay_texture = getTexture(def.inventory_overlay);
+				core::dimension2d<u32> dimens = overlay_texture->getOriginalSize();
+				core::rect<s32> srcrect(0, 0, dimens.Width, dimens.Height);
+				draw2DImageFilterScaled(driver, overlay_texture, res_rect, srcrect, &res_rect, 0, true);
+			}
+
+			driver->setRenderTarget(nullptr, false, false, video::SColor());
+			driver->setTransform(video::ETS_VIEW, oldViewMat);
+			driver->setTransform(video::ETS_PROJECTION, oldProjMat);
+			driver->setTransform(video::ETS_WORLD, oldWorldMat);
+			driver->setViewPort(oldViewPort);
+
+			baseimg = driver->createImageFromData(
+				rt->getColorFormat(),
+				rt->getSize(),
+				rt->lock(),
+				false 	// copy memory
+			);
+
+			rt->unlock(); // wondering whether this is required
+			driver->removeTexture(rt);
+			// rt->drop(); isn't required
+
+			if (!baseimg) {
+				errorstream << "generateImagePart(): Could not create image "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+		}
 		else
 		{
 			errorstream << "generateImagePart(): Invalid "

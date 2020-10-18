@@ -958,6 +958,11 @@
 #    type: bool
 # show_entity_selectionbox = true
 
+#    Speed up item rendering through RTT (render-to-texture)
+#    Resolutions in pixels
+#    type: int min: 1 max: 1024
+# item_rtt_speedup_resolution = 128
+
 ## Menus
 
 #    Use a cloud animation for the main menu background.

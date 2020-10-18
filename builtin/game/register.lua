@@ -118,6 +118,13 @@ function core.register_item(name, itemdef)
 	end
 	itemdef.name = name
 
+	-- Check inventory_image dependencies
+	if type(itemdef.inventory_image) == "string" then
+		for itemname in itemdef.inventory_image:gmatch("%[item:([A-z_]+:[A-z_]+)") do
+			assert(core.registered_items[itemname], 'Item "'..itemname..'" is referenced but not registered yet')
+		end
+	end
+
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		-- Use the nodebox as selection box if it's not set manually
