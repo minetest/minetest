@@ -48,7 +48,7 @@ struct FontSpec {
 
 	u16 getHash()
 	{
-		return (mode << 2) | (bold << 1) | italic;
+		return (mode << 2) | (static_cast<u8>(bold) << 1) | static_cast<u8>(italic);
 	}
 
 	unsigned int size;
@@ -123,6 +123,9 @@ public:
 
 	/** get default font size */
 	unsigned int getDefaultFontSize();
+
+	/** get font size for a specific mode */
+	unsigned int getFontSize(FontMode mode);
 
 	/** initialize font engine */
 	void initialize(Settings* main_settings, gui::IGUIEnvironment* env);

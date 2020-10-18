@@ -45,6 +45,9 @@ local filter_types_titles = {
 	fgettext("Texture packs"),
 }
 
+local number_downloading = 0
+local download_queue = {}
+
 local filter_types_type = {
 	nil,
 	"game",
@@ -67,11 +70,13 @@ local function download_package(param)
 	end
 end
 
-local function start_install(calling_dialog, package)
+local function start_install(package)
 	local params = {
 		package = package,
 		filename = os.tempfolder() .. "_MODNAME_" .. package.name .. ".zip",
 	}
+
+	number_downloading = number_downloading + 1
 
 	local function callback(result)
 		if result.successful then
@@ -121,15 +126,36 @@ local function start_install(calling_dialog, package)
 		end
 
 		package.downloading = false
+
+		number_downloading = number_downloading - 1
+
+		local next = download_queue[1]
+		if next then
+			table.remove(download_queue, 1)
+
+			start_install(next)
+		end
+
 		ui.update()
 	end
 
+	package.queued = false
 	package.downloading = true
 
 	if not core.handle_async(download_package, params, callback) then
 		core.log("error", "ERROR: async event failed")
 		gamedata.errormessage = fgettext("Failed to download $1", package.name)
 		return
+	end
+end
+
+local function queue_download(package)
+	local max_concurrent_downloads = tonumber(minetest.settings:get("contentdb_max_concurrent_downloads"))
+	if number_downloading < max_concurrent_downloads then
+		start_install(package)
+	else
+		table.insert(download_queue, package)
+		package.queued = true
 	end
 end
 
@@ -279,7 +305,7 @@ function store.filter_packages(query)
 		table.insert(keywords, word)
 	end
 
-	local function matches_keywords(package, keywords)
+	local function matches_keywords(package)
 		for k = 1, #keywords do
 			local keyword = keywords[k]
 
@@ -296,7 +322,7 @@ function store.filter_packages(query)
 
 	store.packages = {}
 	for _, package in pairs(store.packages_full) do
-		if (query == "" or matches_keywords(package, keywords)) and
+		if (query == "" or matches_keywords(package)) and
 				(filter_type == 1 or package.type == filter_types_type[filter_type]) then
 			store.packages[#store.packages + 1] = package
 		end
@@ -321,11 +347,14 @@ function store.get_formspec(dlgdata)
 			"formspec_version[3]",
 			"size[15.75,9.5]",
 			"position[0.5,0.55]",
+
+			"style[status;border=false]",
+
 			"container[0.375,0.375]",
-			"field[0,0;10.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
+			"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
 			"field_close_on_enter[search_string;false]",
-			"button[10.225,0;2,0.8;search;", fgettext("Search"), "]",
-			"dropdown[12.6,0;2.4,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
+			"button[7.225,0;2,0.8;search;", fgettext("Search"), "]",
+			"dropdown[9.6,0;2.4,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
 			"container_end[]",
 
 			-- Page nav buttons
@@ -333,16 +362,45 @@ function store.get_formspec(dlgdata)
 			"button[0.375,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
 
 			"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
-			"image_button[0,0;0.8,0.8;", defaulttexturedir, "start_icon.png;pstart;]",
-			"image_button[0.8,0;0.8,0.8;", defaulttexturedir, "prev_icon.png;pback;]",
+			"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
+			"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
 			"style[pagenum;border=false]",
 			"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
-			"image_button[3.6,0;0.8,0.8;", defaulttexturedir, "next_icon.png;pnext;]",
-			"image_button[4.4,0;0.8,0.8;", defaulttexturedir, "end_icon.png;pend;]",
+			"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
+			"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
 			"container_end[]",
 
 			"container_end[]",
 		}
+
+		if number_downloading > 0 then
+			formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;status;"
+			if #download_queue > 0 then
+				formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
+			else
+				formspec[#formspec + 1] = fgettext("$1 downloading...", number_downloading)
+			end
+			formspec[#formspec + 1] = "]"
+		else
+			local num_avail_updates = 0
+			for i=1, #store.packages_full do
+				local package = store.packages_full[i]
+				if package.path and package.installed_release < package.release and
+						not (package.downloading or package.queued) then
+					num_avail_updates = num_avail_updates + 1
+				end
+			end
+
+			if num_avail_updates == 0 then
+				formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;status;"
+				formspec[#formspec + 1] = fgettext("No updates")
+				formspec[#formspec + 1] = "]"
+			else
+				formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;update_all;"
+				formspec[#formspec + 1] = fgettext("Update All [$1]", num_avail_updates)
+				formspec[#formspec + 1] = "]"
+			end
+		end
 
 		if #store.packages == 0 then
 			formspec[#formspec + 1] = "label[4,3;"
@@ -386,10 +444,12 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = ",0.1]"
 
 		if package.downloading then
-			formspec[#formspec + 1] = "style[download;border=false]"
-
-			formspec[#formspec + 1] = "button[-3.5,0;2,0.8;download;"
+			formspec[#formspec + 1] = "button[-3.5,0;2,0.8;status;"
 			formspec[#formspec + 1] = fgettext("Downloading...")
+			formspec[#formspec + 1] = "]"
+		elseif package.queued then
+			formspec[#formspec + 1] = "button[-3.5,0;2,0.8;status;"
+			formspec[#formspec + 1] = fgettext("Queued")
 			formspec[#formspec + 1] = "]"
 		elseif not package.path then
 			formspec[#formspec + 1] = "button[-3,0;1.5,0.8;install_"
@@ -485,6 +545,17 @@ function store.handle_submit(this, fields)
 		end
 	end
 
+	if fields.update_all then
+		for i=1, #store.packages_full do
+			local package = store.packages_full[i]
+			if package.path and package.installed_release < package.release and
+					not (package.downloading or package.queued) then
+				queue_download(package)
+			end
+		end
+		return true
+	end
+
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	assert(start_idx ~= nil)
 	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
@@ -492,7 +563,7 @@ function store.handle_submit(this, fields)
 		assert(package)
 
 		if fields["install_" .. i] then
-			start_install(this, package)
+			queue_download(package)
 			return true
 		end
 
@@ -505,8 +576,9 @@ function store.handle_submit(this, fields)
 		end
 
 		if fields["view_" .. i] then
-			local url = ("%s/packages/%s?protocol_version=%d"):format(
-					core.settings:get("contentdb_url"), package.id, core.get_max_supp_proto())
+			local url = ("%s/packages/%s/%s?protocol_version=%d"):format(
+					core.settings:get("contentdb_url"),
+					package.author, package.name, core.get_max_supp_proto())
 			core.open_url(url)
 			return true
 		end

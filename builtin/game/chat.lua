@@ -58,6 +58,11 @@ core.register_on_chat_message(function(name, message)
 
 	param = param or ""
 
+	-- Run core.registered_on_chatcommands callbacks.
+	if core.run_callbacks(core.registered_on_chatcommands, 5, name, cmd, param) then
+		return true
+	end
+
 	local cmd_def = core.registered_chatcommands[cmd]
 	if not cmd_def then
 		core.chat_send_player(name, "-!- Invalid command: " .. cmd)
@@ -66,8 +71,17 @@ core.register_on_chat_message(function(name, message)
 	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
 	if has_privs then
 		core.set_last_run_mod(cmd_def.mod_origin)
-		local _, result = cmd_def.func(name, param)
-		if result then
+		local success, result = cmd_def.func(name, param)
+		if success == false and result == nil then
+			core.chat_send_player(name, "-!- Invalid command usage")
+			local help_def = core.registered_chatcommands["help"]
+			if help_def then
+				local _, helpmsg = help_def.func(name, cmd)
+				if helpmsg then
+					core.chat_send_player(name, helpmsg)
+				end
+			end
+		elseif result then
 			core.chat_send_player(name, result)
 		end
 	else
@@ -1070,10 +1084,10 @@ core.register_chatcommand("last-login", {
 		local pauth = core.get_auth_handler().get_auth(param)
 		if pauth and pauth.last_login and pauth.last_login ~= -1 then
 			-- Time in UTC, ISO 8601 format
-			return true, "Last login time was " ..
+			return true, param.."'s last login time was " ..
 				os.date("!%Y-%m-%dT%H:%M:%SZ", pauth.last_login)
 		end
-		return false, "Last login time is unknown"
+		return false, param.."'s last login time is unknown"
 	end,
 })
 

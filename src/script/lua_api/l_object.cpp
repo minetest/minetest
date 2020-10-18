@@ -664,7 +664,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	return 2;
 }
 
-// set_attach(self, parent, bone, position, rotation)
+// set_attach(self, parent, bone, position, rotation, force_visible)
 int ObjectRef::l_set_attach(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -687,7 +687,8 @@ int ObjectRef::l_set_attach(lua_State *L)
 	std::string bone;
 	v3f position = v3f(0, 0, 0);
 	v3f rotation = v3f(0, 0, 0);
-	co->getAttachment(&parent_id, &bone, &position, &rotation);
+	bool force_visible;
+	co->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
 	if (parent_id) {
 		ServerActiveObject *old_parent = env->getActiveObject(parent_id);
 		old_parent->removeAttachmentChild(co->getId());
@@ -702,7 +703,8 @@ int ObjectRef::l_set_attach(lua_State *L)
 	rotation = v3f(0, 0, 0);
 	if (!lua_isnil(L, 5))
 		rotation = read_v3f(L, 5);
-	co->setAttachment(parent->getId(), bone, position, rotation);
+	force_visible = readParam<bool>(L, 6, false);
+	co->setAttachment(parent->getId(), bone, position, rotation, force_visible);
 	parent->addAttachmentChild(co->getId());
 	return 0;
 }
@@ -722,7 +724,8 @@ int ObjectRef::l_get_attach(lua_State *L)
 	std::string bone;
 	v3f position = v3f(0, 0, 0);
 	v3f rotation = v3f(0, 0, 0);
-	co->getAttachment(&parent_id, &bone, &position, &rotation);
+	bool force_visible;
+	co->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
 	if (!parent_id)
 		return 0;
 	ServerActiveObject *parent = env->getActiveObject(parent_id);
@@ -731,7 +734,29 @@ int ObjectRef::l_get_attach(lua_State *L)
 	lua_pushlstring(L, bone.c_str(), bone.size());
 	push_v3f(L, position);
 	push_v3f(L, rotation);
-	return 4;
+	lua_pushboolean(L, force_visible);
+	return 5;
+}
+
+// get_children(self)
+int ObjectRef::l_get_children(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	const std::unordered_set<int> child_ids = sao->getAttachmentChildIds();
+	int i = 0;
+	lua_createtable(L, child_ids.size(), 0);
+	for (const int id : child_ids) {
+		ServerActiveObject *child = env->getActiveObject(id);
+		getScriptApiBase(L)->objectrefGetOrCreate(L, child);
+		lua_rawseti(L, -2, ++i);
+	}
+	return 1;
 }
 
 // set_detach(self)
@@ -863,12 +888,21 @@ int ObjectRef::l_add_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	LuaEntitySAO *co = getluaobject(ref);
-	if (!co)
+	v3f vel = checkFloatPos(L, 2);
+
+	ServerActiveObject *obj = getobject(ref);
+	if (obj == nullptr)
 		return 0;
-	v3f pos = checkFloatPos(L, 2);
-	// Do it
-	co->addVelocity(pos);
+
+	if (obj->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
+		LuaEntitySAO *co = dynamic_cast<LuaEntitySAO*>(obj);
+		co->addVelocity(vel);
+	} else if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		PlayerSAO *player = dynamic_cast<PlayerSAO*>(obj);
+		player->setMaxSpeedOverride(vel);
+		getServer(L)->SendPlayerSpeed(player->getPeerID(), vel);
+	}
+
 	return 0;
 }
 
@@ -877,11 +911,23 @@ int ObjectRef::l_get_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	LuaEntitySAO *co = getluaobject(ref);
-	if (co == NULL) return 0;
-	// Do it
-	v3f v = co->getVelocity();
-	pushFloatPos(L, v);
+
+	ServerActiveObject *obj = getobject(ref);
+	if (obj == nullptr)
+		return 0;
+
+	if (obj->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
+		LuaEntitySAO *co = dynamic_cast<LuaEntitySAO*>(obj);
+		v3f v = co->getVelocity();
+		pushFloatPos(L, v);
+		return 1;
+	} else if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		RemotePlayer *player = dynamic_cast<PlayerSAO*>(obj)->getPlayer();
+		push_v3f(L, player->getSpeed() / BS);
+		return 1;
+	}
+
+	lua_pushnil(L);
 	return 1;
 }
 
@@ -1080,38 +1126,6 @@ int ObjectRef::l_get_player_name(lua_State *L)
 	// Do it
 	lua_pushstring(L, player->getName());
 	return 1;
-}
-
-// get_player_velocity(self)
-int ObjectRef::l_get_player_velocity(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == NULL) {
-		lua_pushnil(L);
-		return 1;
-	}
-	// Do it
-	push_v3f(L, player->getSpeed() / BS);
-	return 1;
-}
-
-// add_player_velocity(self, {x=num, y=num, z=num})
-int ObjectRef::l_add_player_velocity(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	v3f vel = checkFloatPos(L, 2);
-
-	PlayerSAO *co = getplayersao(ref);
-	if (!co)
-		return 0;
-
-	// Do it
-	co->setMaxSpeedOverride(vel);
-	getServer(L)->SendPlayerSpeed(co->getPeerID(), vel);
-	return 0;
 }
 
 // get_look_dir(self)
@@ -1455,9 +1469,14 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	lua_setfield(L, -2, "aux1");
 	lua_pushboolean(L, control.sneak);
 	lua_setfield(L, -2, "sneak");
-	lua_pushboolean(L, control.LMB);
+	lua_pushboolean(L, control.dig);
+	lua_setfield(L, -2, "dig");
+	lua_pushboolean(L, control.place);
+	lua_setfield(L, -2, "place");
+	// Legacy fields to ensure mod compatibility
+	lua_pushboolean(L, control.dig);
 	lua_setfield(L, -2, "LMB");
-	lua_pushboolean(L, control.RMB);
+	lua_pushboolean(L, control.place);
 	lua_setfield(L, -2, "RMB");
 	lua_pushboolean(L, control.zoom);
 	lua_setfield(L, -2, "zoom");
@@ -2201,6 +2220,67 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 	return 1;
 }
 
+// set_minimap_modes(self, modes, modeindex)
+int ObjectRef::l_set_minimap_modes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	// Arg 1 should be a player
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	// Arg 2 should be a table (of tables)
+	if (!lua_istable(L, 2)) {
+		return 0;
+	}
+
+	// Arg 3 should be a number
+	s16 wantedmode = lua_tonumber(L, 3);
+
+	std::vector<MinimapMode> modes;
+
+	lua_pushnil(L);
+	while (lua_next(L, 2) != 0) {
+		/* key is at index -2, value is at index -1 */
+		if (lua_istable(L, -1)) {
+			bool ok = true;
+			MinimapMode mode;
+			std::string type = getstringfield_default(L, -1, "type", "");
+			if (type == "off")
+				mode.type = MINIMAP_TYPE_OFF;
+			else if (type == "surface")
+				mode.type = MINIMAP_TYPE_SURFACE;
+			else if (type == "radar")
+				mode.type = MINIMAP_TYPE_RADAR;
+			else if (type == "texture") {
+				mode.type = MINIMAP_TYPE_TEXTURE;
+				mode.texture = getstringfield_default(L, -1, "texture", "");
+				mode.scale = getintfield_default(L, -1, "scale", 1);
+			} else {
+				warningstream << "Minimap mode of unknown type \"" << type.c_str()
+					<< "\" ignored.\n" << std::endl;
+				ok = false;
+			}
+
+			if (ok) {
+				mode.label = getstringfield_default(L, -1, "label", "");
+				// Size is limited to 512. Performance gets poor if size too large, and
+				// segfaults have been experienced.
+				mode.size = rangelim(getintfield_default(L, -1, "size", 0), 1, 512);
+				modes.push_back(mode);
+			}
+		}
+		/* removes 'value'; keeps 'key' for next iteration */
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1); // Remove key
+
+	getServer(L)->SendMinimapModes(player->getPeerId(), modes, wantedmode);
+	return 0;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -2278,15 +2358,20 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_bone_position),
 	luamethod(ObjectRef, set_attach),
 	luamethod(ObjectRef, get_attach),
+	luamethod(ObjectRef, get_children),
 	luamethod(ObjectRef, set_detach),
 	luamethod(ObjectRef, set_properties),
 	luamethod(ObjectRef, get_properties),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
-	// LuaEntitySAO-only
+
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
 	luamethod(ObjectRef, add_velocity),
+	{"add_player_velocity", ObjectRef::l_add_velocity},
 	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
+	{"get_player_velocity", ObjectRef::l_get_velocity},
+
+	// LuaEntitySAO-only
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),
@@ -2294,6 +2379,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_rotation),
 	luamethod(ObjectRef, get_rotation),
 	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
+	luamethod(ObjectRef, get_texture_mod),
 	luamethod_aliased(ObjectRef, set_sprite, setsprite),
 	luamethod(ObjectRef, get_entity_name),
 	luamethod(ObjectRef, get_luaentity),
@@ -2301,8 +2387,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, is_player_connected),
 	luamethod(ObjectRef, get_player_name),
-	luamethod(ObjectRef, get_player_velocity),
-	luamethod(ObjectRef, add_player_velocity),
+
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),
@@ -2357,5 +2442,6 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
 	luamethod(ObjectRef, send_mapblock),
+	luamethod(ObjectRef, set_minimap_modes),
 	{0,0}
 };

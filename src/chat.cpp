@@ -123,14 +123,14 @@ void ChatBuffer::deleteByAge(f32 maxAge)
 	deleteOldest(count);
 }
 
-u32 ChatBuffer::getColumns() const
-{
-	return m_cols;
-}
-
 u32 ChatBuffer::getRows() const
 {
 	return m_rows;
+}
+
+void ChatBuffer::scrollTop()
+{
+	m_scroll = getTopScrollPos();
 }
 
 void ChatBuffer::reformat(u32 cols, u32 rows)
@@ -218,11 +218,6 @@ void ChatBuffer::scrollAbsolute(s32 scroll)
 void ChatBuffer::scrollBottom()
 {
 	m_scroll = getBottomScrollPos();
-}
-
-void ChatBuffer::scrollTop()
-{
-	m_scroll = getTopScrollPos();
 }
 
 u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,

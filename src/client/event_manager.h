@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "event.h"
+#include "mtevent.h"
 #include <list>
 #include <map>
 

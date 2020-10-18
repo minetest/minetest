@@ -34,8 +34,9 @@ static const std::string base64_chars =
 		"0123456789+/";
 
 
-static inline bool is_base64(unsigned char c) {
-	return (isalnum(c) || (c == '+') || (c == '/'));
+static inline bool is_base64(unsigned char c)
+{
+	return isalnum(c) || c == '+' || c == '/' || c == '=';
 }
 
 bool base64_is_valid(std::string const& s)

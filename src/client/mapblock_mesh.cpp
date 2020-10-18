@@ -35,11 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(Client *client, bool use_shaders,
-		bool use_tangent_vertices):
+MeshMakeData::MeshMakeData(Client *client, bool use_shaders):
 	m_client(client),
-	m_use_shaders(use_shaders),
-	m_use_tangent_vertices(use_tangent_vertices)
+	m_use_shaders(use_shaders)
 {}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
@@ -79,33 +77,6 @@ void MeshMakeData::fill(MapBlock *block)
 		if(b)
 			fillBlockData(dir, b->getData());
 	}
-}
-
-void MeshMakeData::fillSingleNode(MapNode *node)
-{
-	m_blockpos = v3s16(0,0,0);
-
-	v3s16 blockpos_nodes = v3s16(0,0,0);
-	VoxelArea area(blockpos_nodes-v3s16(1,1,1)*MAP_BLOCKSIZE,
-			blockpos_nodes+v3s16(1,1,1)*MAP_BLOCKSIZE*2-v3s16(1,1,1));
-	s32 volume = area.getVolume();
-	s32 our_node_index = area.index(1,1,1);
-
-	// Allocate this block + neighbors
-	m_vmanip.clear();
-	m_vmanip.addArea(area);
-
-	// Fill in data
-	MapNode *data = new MapNode[volume];
-	for(s32 i = 0; i < volume; i++)
-	{
-		if (i == our_node_index)
-			data[i] = *node;
-		else
-			data[i] = MapNode(CONTENT_AIR, LIGHT_MAX, 0);
-	}
-	m_vmanip.copyFrom(data, area, area.MinEdge, area.MinEdge, area.getExtent());
-	delete[] data;
 }
 
 void MeshMakeData::setCrack(int crack_level, v3s16 crack_pos)
@@ -419,7 +390,16 @@ static void getNodeVertexDirs(const v3s16 &dir, v3s16 *vertex_dirs)
 	u8 idx = (dir.X + 2 * dir.Y + 3 * dir.Z) & 7;
 	idx = (idx - 1) * 4;
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#if __GNUC__ > 7
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
+#endif
 	memcpy(vertex_dirs, &vertex_dirs_table[idx], 4 * sizeof(v3s16));
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 }
 
 static void getNodeTextureCoords(v3f base, const v3f &scale, const v3s16 &dir, float *u, float *v)
@@ -1034,10 +1014,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	for (auto &m : m_mesh)
 		m = new scene::SMesh();
 	m_enable_shaders = data->m_use_shaders;
-	m_use_tangent_vertices = data->m_use_tangent_vertices;
 	m_enable_vbo = g_settings->getBool("enable_vbo");
 
-	if (g_settings->getBool("enable_minimap")) {
+	if (data->m_client->getMinimap()) {
 		m_minimap_mapblock = new MinimapMapblock;
 		m_minimap_mapblock->getMinimapNodes(
 			&data->m_vmanip, data->m_blockpos * MAP_BLOCKSIZE);
@@ -1188,28 +1167,12 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 			scene::SMesh *mesh = (scene::SMesh *)m_mesh[layer];
 
-			// Create meshbuffer, add to mesh
-			if (m_use_tangent_vertices) {
-				scene::SMeshBufferTangents *buf =
-						new scene::SMeshBufferTangents();
-				buf->Material = material;
-				buf->Vertices.reallocate(p.vertices.size());
-				buf->Indices.reallocate(p.indices.size());
-				for (const video::S3DVertex &v: p.vertices)
-					buf->Vertices.push_back(video::S3DVertexTangents(v.Pos, v.Color, v.TCoords));
-				for (u16 i: p.indices)
-					buf->Indices.push_back(i);
-				buf->recalculateBoundingBox();
-				mesh->addMeshBuffer(buf);
-				buf->drop();
-			} else {
-				scene::SMeshBuffer *buf = new scene::SMeshBuffer();
-				buf->Material = material;
-				buf->append(&p.vertices[0], p.vertices.size(),
-					&p.indices[0], p.indices.size());
-				mesh->addMeshBuffer(buf);
-				buf->drop();
-			}
+			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+			buf->Material = material;
+			buf->append(&p.vertices[0], p.vertices.size(),
+				&p.indices[0], p.indices.size());
+			mesh->addMeshBuffer(buf);
+			buf->drop();
 		}
 
 		/*
@@ -1218,12 +1181,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		m_camera_offset = camera_offset;
 		translateMesh(m_mesh[layer],
 			intToFloat(data->m_blockpos * MAP_BLOCKSIZE - camera_offset, BS));
-
-		if (m_use_tangent_vertices) {
-			scene::IMeshManipulator* meshmanip =
-				RenderingEngine::get_scene_manager()->getMeshManipulator();
-			meshmanip->recalculateTangents(m_mesh[layer], true, false, false);
-		}
 
 		if (m_mesh[layer]) {
 #if 0

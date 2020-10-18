@@ -61,6 +61,7 @@ local flag_checkboxes = {
 		fgettext("Low humidity and high heat causes shallow or dry rivers") },
 	},
 	flat = {
+		cb_caverns,
 		{ "hills", fgettext("Hills"), "hills" },
 		{ "lakes", fgettext("Lakes"), "lakes" },
 	},
@@ -362,10 +363,18 @@ local function create_world_buttonhandler(this, fields)
 		local gameindex = core.get_textlist_index("games")
 
 		if gameindex ~= nil then
+			-- For unnamed worlds use the generated name 'world<number>',
+			-- where the number increments: it is set to 1 larger than the largest
+			-- generated name number found.
 			if worldname == "" then
-				local random_number = math.random(10000, 99999)
-				local random_world_name = "Unnamed" .. random_number
-				worldname = random_world_name
+				local worldnum_max = 0
+				for _, world in ipairs(menudata.worldlist:get_list()) do
+					if world.name:match("^world%d+$") then
+						local worldnum = tonumber(world.name:sub(6))
+						worldnum_max = math.max(worldnum_max, worldnum)
+					end
+				end
+				worldname = "world" .. worldnum_max + 1
 			end
 
 			core.settings:set("fixed_map_seed", fields["te_seed"])

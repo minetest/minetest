@@ -107,7 +107,8 @@ minetest.register_node("soundstuff:footstep_climbable", {
 
 
 minetest.register_craftitem("soundstuff:eat", {
-	description = "Eat Sound Item",
+	description = "Eat Sound Item".."\n"..
+		"Makes a sound when 'eaten' (with punch key)",
 	inventory_image = "soundstuff_eat.png",
 	on_use = minetest.item_eat(0),
 	sound = {
@@ -116,7 +117,9 @@ minetest.register_craftitem("soundstuff:eat", {
 })
 
 minetest.register_tool("soundstuff:breaks", {
-	description = "Break Sound Tool",
+	description = "Break Sound Tool".."\n"..
+		"Digs cracky=3 and more".."\n"..
+		"Makes a sound when it breaks",
 	inventory_image = "soundstuff_node_dug.png",
 	sound = {
 		breaks = { name = "soundstuff_mono", gain = 1.0 },
