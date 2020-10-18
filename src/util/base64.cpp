@@ -45,8 +45,8 @@ bool base64_is_valid(std::string const& s)
 	for (; i < s.size(); ++i)
 		if (!is_base64(s[i]))
 			break;
-	// can't have more than two padding characters
-	if (s.size() - i < 2)
+	// number of padding characters needs to match
+	if (s.size() - i != 3 - (s.size() % 4))
 		return false;
 	// remaining characters (max. 2) may only be padding
 	for (; i < s.size(); ++i)
