@@ -40,8 +40,16 @@ static inline bool is_base64(unsigned char c) {
 
 bool base64_is_valid(std::string const& s)
 {
-	for (char i : s)
-		if (!is_base64(i))
+	int i = 0;
+	for (; i < s.size(); ++i)
+		if (!is_base64(s[i]))
+			break;
+	// can't have more than two padding characters
+	if (s.size() - i < 2)
+		return false;
+	// remaining characters (max. 2) may only be padding
+	for (; i < s.size(); ++i)
+		if (s[i] != '=')
 			return false;
 	return true;
 }
