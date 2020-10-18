@@ -2245,16 +2245,13 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
-{
-	//infostream<<"ObjectRef created for id="<<m_object->getId()<<std::endl;
-}
+{}
 
 // Creates an ObjectRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
 void ObjectRef::create(lua_State *L, ServerActiveObject *object)
 {
 	ObjectRef *obj = new ObjectRef(object);
-	//infostream<<"ObjectRef::create: obj="<<obj<<std::endl;
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = obj;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
