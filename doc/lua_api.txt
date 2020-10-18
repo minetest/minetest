@@ -6500,8 +6500,8 @@ object you are working with still exists.
     * `frame_speed` sets the animations frame speed. Default is 30.
 * `get_local_animation()`: returns idle, walk, dig, dig+walk tables and
   `frame_speed`.
-* `set_eye_offset(firstperson, thirdperson)`: defines offset value
-  for camera per player, as a table.
+* `set_eye_offset(firstperson, thirdperson)`: defines offset value for camera
+  per player.
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_eye_offset()`: returns first and third person offsets as tables.
