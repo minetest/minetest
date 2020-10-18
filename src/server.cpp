@@ -213,7 +213,8 @@ Server::Server(
 		bool simple_singleplayer_mode,
 		Address bind_addr,
 		bool dedicated,
-		ChatInterface *iface
+		ChatInterface *iface,
+		std::string *on_shutdown_errmsg
 	):
 	m_bind_addr(bind_addr),
 	m_path_world(path_world),
@@ -232,6 +233,7 @@ Server::Server(
 	m_thread(new ServerThread(this)),
 	m_clients(m_con),
 	m_admin_chat(iface),
+	m_on_shutdown_errmsg(on_shutdown_errmsg),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	if (m_path_world.empty())
@@ -314,7 +316,18 @@ Server::~Server()
 
 		// Execute script shutdown hooks
 		infostream << "Executing shutdown hooks" << std::endl;
-		m_script->on_shutdown();
+		try {
+			m_script->on_shutdown();
+		} catch (ModError &e) {
+			errorstream << "ModError: " << e.what() << std::endl;
+			if (m_on_shutdown_errmsg) {
+				if (m_on_shutdown_errmsg->empty()) {
+					*m_on_shutdown_errmsg = std::string("ModError: ") + e.what();
+				} else {
+					*m_on_shutdown_errmsg += std::string("\nModError: ") + e.what();
+				}
+			}
+		}
 
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
@@ -356,8 +369,13 @@ void Server::init()
 	infostream << "- game:   " << m_gamespec.path << std::endl;
 
 	// Create world if it doesn't exist
-	if (!loadGameConfAndInitWorld(m_path_world, m_gamespec))
-		throw ServerError("Failed to initialize world");
+	try {
+		loadGameConfAndInitWorld(m_path_world,
+				fs::GetFilenameFromPath(m_path_world.c_str()),
+				m_gamespec, false);
+	} catch (const BaseException &e) {
+		throw ServerError(std::string("Failed to initialize world: ") + e.what());
+	}
 
 	// Create emerge manager
 	m_emerge = new EmergeManager(this);
@@ -635,7 +653,12 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 	m_clients.step(dtime);
 
-	m_lag_gauge->increment((m_lag_gauge->get() > dtime ? -1 : 1) * dtime/100);
+	// increase/decrease lag gauge gradually
+	if (m_lag_gauge->get() > dtime) {
+		m_lag_gauge->decrement(dtime/100);
+	} else {
+		m_lag_gauge->increment(dtime/100);
+	}
 #if USE_CURL
 	// send masterserver announce
 	{
@@ -779,7 +802,7 @@ void Server::AsyncRunStep(bool initial_step)
 					// u16 id
 					// std::string data
 					buffer.append(idbuf, sizeof(idbuf));
-					buffer.append(serializeString(aom.datastring));
+					buffer.append(serializeString16(aom.datastring));
 				}
 			}
 			/*
@@ -1970,7 +1993,7 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 		writeU8((u8*)buf, type);
 		data.append(buf, 1);
 
-		data.append(serializeLongString(
+		data.append(serializeString32(
 			obj->getClientInitializationData(client->net_proto_version)));
 
 		// Add to known objects
@@ -2315,7 +2338,7 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 	block->serializeNetworkSpecific(os);
 	std::string s = os.str();
 
-	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + 2 + s.size(), peer_id);
+	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + s.size(), peer_id);
 
 	pkt << block->getPos();
 	pkt.putRawString(s.c_str(), s.size());
@@ -2433,31 +2456,14 @@ bool Server::addMediaFile(const std::string &filename,
 	// Ok, attempt to load the file and add to cache
 
 	// Read data
-	std::ifstream fis(filepath.c_str(), std::ios_base::binary);
-	if (!fis.good()) {
-		errorstream << "Server::addMediaFile(): Could not open \""
-				<< filename << "\" for reading" << std::endl;
-		return false;
-	}
 	std::string filedata;
-	bool bad = false;
-	for (;;) {
-		char buf[1024];
-		fis.read(buf, sizeof(buf));
-		std::streamsize len = fis.gcount();
-		filedata.append(buf, len);
-		if (fis.eof())
-			break;
-		if (!fis.good()) {
-			bad = true;
-			break;
-		}
-	}
-	if (bad) {
-		errorstream << "Server::addMediaFile(): Failed to read \""
-				<< filename << "\"" << std::endl;
+	if (!fs::ReadFile(filepath, filedata)) {
+		errorstream << "Server::addMediaFile(): Failed to open \""
+					<< filename << "\" for reading" << std::endl;
 		return false;
-	} else if (filedata.empty()) {
+	}
+
+	if (filedata.empty()) {
 		errorstream << "Server::addMediaFile(): Empty file \""
 				<< filepath << "\"" << std::endl;
 		return false;
@@ -2489,19 +2495,25 @@ void Server::fillMediaCache()
 
 	// Collect all media file paths
 	std::vector<std::string> paths;
-	m_modmgr->getModsMediaPaths(paths);
-	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	// The paths are ordered in descending priority
 	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
+	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	m_modmgr->getModsMediaPaths(paths);
 
 	// Collect media file information from paths into cache
 	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
 		for (const fs::DirListNode &dln : dirlist) {
-			if (dln.dir) // Ignore dirs
+			if (dln.dir) // Ignore dirs (already in paths)
 				continue;
+
+			const std::string &filename = dln.name;
+			if (m_media.find(filename) != m_media.end()) // Do not override
+				continue;
+
 			std::string filepath = mediapath;
-			filepath.append(DIR_DELIM).append(dln.name);
-			addMediaFile(dln.name, filepath);
+			filepath.append(DIR_DELIM).append(filename);
+			addMediaFile(filename, filepath);
 		}
 	}
 
@@ -2648,6 +2660,23 @@ void Server::sendRequestedMedia(session_t peer_id,
 				<< " size="  << pkt.getSize() << std::endl;
 		Send(&pkt);
 	}
+}
+
+void Server::SendMinimapModes(session_t peer_id,
+		std::vector<MinimapMode> &modes, size_t wanted_mode)
+{
+	RemotePlayer *player = m_env->getPlayer(peer_id);
+	assert(player);
+	if (player->getPeerId() == PEER_ID_INEXISTENT)
+		return;
+
+	NetworkPacket pkt(TOCLIENT_MINIMAP_MODES, 0, peer_id);
+	pkt << (u16)modes.size() << (u16)wanted_mode;
+
+	for (auto &mode : modes)
+		pkt << (u16)mode.type << mode.label << mode.size << mode.texture << mode.scale;
+
+	Send(&pkt);
 }
 
 void Server::sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id)
@@ -3866,19 +3895,27 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 	}
 }
 
-void Server::loadTranslationLanguage(const std::string &lang_code)
+Translations *Server::getTranslationLanguage(const std::string &lang_code)
 {
-	if (g_server_translations->count(lang_code))
-		return; // Already loaded
+	if (lang_code.empty())
+		return nullptr;
+
+	auto it = server_translations.find(lang_code);
+	if (it != server_translations.end())
+		return &it->second; // Already loaded
+
+	// [] will create an entry
+	auto *translations = &server_translations[lang_code];
 
 	std::string suffix = "." + lang_code + ".tr";
 	for (const auto &i : m_media) {
 		if (str_ends_with(i.first, suffix)) {
-			std::ifstream t(i.second.path);
-			std::string data((std::istreambuf_iterator<char>(t)),
-			std::istreambuf_iterator<char>());
-
-			(*g_server_translations)[lang_code].loadTranslation(data);
+			std::string data;
+			if (fs::ReadFile(i.second.path, data)) {
+				translations->loadTranslation(data);
+			}
 		}
 	}
+
+	return translations;
 }

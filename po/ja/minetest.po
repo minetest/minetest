@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-04-05 05:27+0000\n"
+"PO-Revision-Date: 2020-06-15 22:41+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.1\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,7 +24,7 @@ msgstr "死んでしまった"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -114,7 +114,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "他のModを探す"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -167,12 +167,11 @@ msgstr "メインメニューへ戻る"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "MinetestがcURLなしでコンパイルされた場合、コンテンツDBは使用できません"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "読み込み中..."
+msgstr "ダウンロード中..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -219,7 +218,7 @@ msgstr "更新"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "見る"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -227,45 +226,39 @@ msgstr "ワールド名「$1」は既に存在します"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "追加の地形"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr "高所の寒さ"
+msgstr "高所で低温"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "高所の寒さ"
+msgstr "高所で乾燥"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biome blending"
-msgstr "バイオームノイズ"
+msgstr "バイオームの交錯"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "バイオームノイズ"
+msgstr "バイオーム"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "大きな洞窟ノイズ"
+msgstr "大きな洞窟"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "オクターブ"
+msgstr "洞窟"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "作成"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "繰り返し"
+msgstr "デコレーション"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -276,23 +269,20 @@ msgid "Download one from minetest.net"
 msgstr "minetest.netからダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "ダンジョンノイズ"
+msgstr "ダンジョン"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "平らな地形"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floating landmasses in the sky"
-msgstr "浮遊大陸の山の密度"
+msgstr "空に浮かぶ大陸"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "浮遊大陸の水位"
+msgstr "浮遊大陸（実験的）"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -300,54 +290,51 @@ msgstr "ゲーム"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "非フラクタルな地形の生成: 海と地下"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "丘"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Humid rivers"
-msgstr "ビデオドライバ"
+msgstr "湿気のある川"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "川周辺の湿度を上げる"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "湖"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "低湿度と高熱は浅いまたは乾燥した川をもたらす"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "マップジェネレ-タ"
+msgstr "マップジェネレータ"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
 msgstr "マップジェネレータフラグ"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "マップジェネレータ V5 固有のフラグ"
+msgstr "マップジェネレータ固有のフラグ"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mountains"
-msgstr "山ノイズ"
+msgstr "山"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "泥流"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "トンネルと洞窟の繋がり"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -355,20 +342,19 @@ msgstr "ゲームが選択されていません"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "高度で熱を低下"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "高度で湿度を低下"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "川のサイズ"
+msgstr "川"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "海面の高さの川"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -377,52 +363,49 @@ msgstr "Seed値"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "バイオーム間の円滑な移行"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
-msgstr ""
+msgstr "地形上に現れる構造物（v6によって生成された木やジャングルの草に影響なし）"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "地形上に現れる構造物、通常は木や植物"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "温帯、砂漠"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "温帯、砂漠、ジャングル"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "温帯、砂漠、ジャングル、ツンドラ、タイガ"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Terrain surface erosion"
-msgstr "地形基準ノイズ"
+msgstr "地形表面の侵食"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "木とジャングルの草"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Vary river depth"
-msgstr "川の深さ"
+msgstr "川の深さを多様にする"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "地下深くにある非常に大きな洞窟"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
-msgstr "警告: minimal development testは開発者用です。"
+msgstr "警告: The Development Testは開発者用です。"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -735,7 +718,7 @@ msgstr "ホストサーバ"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "コンテンツDBからゲームをインストール"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1211,7 +1194,7 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"デフォルトの操作:\n"
+"既定の操作:\n"
 "タッチ操作:\n"
 "- シングルタップ: ブロックの破壊\n"
 "- ダブルタップ: 設置/使用\n"
@@ -1394,11 +1377,11 @@ msgstr "消音"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "サウンドシステムは無効"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "このビルドではサウンド システムがサポートされていない"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -2039,9 +2022,8 @@ msgid "3D mode"
 msgstr "3Dモード"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D mode parallax strength"
-msgstr "法線マップの強さ"
+msgstr "3Dモード視差強度"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2062,6 +2044,10 @@ msgid ""
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
+"浮遊大陸の構造を定義する3Dノイズ。\n"
+"既定から変更すると、ノイズの「スケール」（規定では 0.7）の調整が\n"
+"必要になる場合があり、このノイズの値の範囲は約 -2.0 ~ 2.0 で\n"
+"浮遊大陸の先細りが最も良く機能します。"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -2124,9 +2110,8 @@ msgid "ABM interval"
 msgstr "ABMの間隔"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Absolute limit of queued blocks to emerge"
-msgstr "出現するキューの絶対的な制限値"
+msgstr "キューに入れられたブロックが出現する絶対制限"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -2182,6 +2167,11 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"浮遊大陸層の密度を調整します。\n"
+"密度を高めるために値を増やします。正または負の値を指定できます。\n"
+"値 = 0.0: 50% が浮遊大陸です。\n"
+"値 = 2.0（'mgv7_np_floatland' によって高くなる場合があります、常に\n"
+"念のためテスト）浮遊大陸層を密に作成します。"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2473,18 +2463,16 @@ msgstr ""
 "テクスチャパックの選択はありません。小さな画面で必要かもしれません。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat font size"
-msgstr "フォントの大きさ"
+msgstr "チャットのフォントサイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "チャットキー"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat log level"
-msgstr "デバッグログのレベル"
+msgstr "チャットログのレベル"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2774,9 +2762,8 @@ msgid "Default report format"
 msgstr "既定のレポート形式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default stack size"
-msgstr "標準ゲーム"
+msgstr "既定のスタック数"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3143,6 +3130,12 @@ msgid ""
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
 msgstr ""
+"浮遊大陸の先細り指数。先細りの動作を変更します。\n"
+"値 = 1.0は、均一で線形な先細りを作成します。\n"
+"値 > 1.0は、規定の分離された浮遊大陸に適した滑らかな先細りを\n"
+"作成します。\n"
+"値 < 1.0（例 0.25）は、より明確な表面レベルで平坦な低地を\n"
+"作成し、密な浮遊大陸層に適しています。"
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
@@ -3262,37 +3255,30 @@ msgid "Fixed virtual joystick"
 msgstr "バーチャルパッドを固定"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland density"
-msgstr "浮遊大陸の山の密度"
+msgstr "浮遊大陸の密度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland maximum Y"
-msgstr "ダンジョンの最大Y"
+msgstr "浮遊大陸の最大 Y"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland minimum Y"
-msgstr "ダンジョンの最小Y"
+msgstr "浮遊大陸の最小 Y"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland noise"
-msgstr "浮遊大陸の基準ノイズ"
+msgstr "浮遊大陸ノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland taper exponent"
-msgstr "浮遊大陸の山指数"
+msgstr "浮遊大陸の先細り指数"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland tapering distance"
-msgstr "浮遊大陸の基準ノイズ"
+msgstr "浮遊大陸の先細り距離"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland water level"
 msgstr "浮遊大陸の水位"
 
@@ -3353,6 +3339,8 @@ msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
 msgstr ""
+"最近のチャットテキストとチャットプロンプトのフォントサイズ（ポイント）。\n"
+"値 0 は規定のフォントサイズを使用します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5050,9 +5038,8 @@ msgid "Lower Y limit of dungeons."
 msgstr "ダンジョンのY値の下限。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lower Y limit of floatlands."
-msgstr "ダンジョンのY値の下限。"
+msgstr "浮遊大陸の Y の下限。"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
@@ -5134,7 +5121,6 @@ msgstr ""
 "'jungles' フラグは無視されます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "'ridges': Rivers.\n"
@@ -5142,7 +5128,9 @@ msgid ""
 "'caverns': Giant caves deep underground."
 msgstr ""
 "マップジェネレータ v7 に固有のマップ生成属性。\n"
-"'ridges' は川ができるようにします。"
+"'ridges': 川。\n"
+"'floatlands': 空に浮かぶ大陸。\n"
+"'caverns': 地下深くの巨大な洞窟。"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -5297,22 +5285,20 @@ msgid "Maximum number of blocks that can be queued for loading."
 msgstr "読み込みのためにキューに入れることができる最大ブロック数。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "This limit is enforced per player."
 msgstr ""
-"生成されるキューに入れる最大ブロック数。\n"
-"適切な量を自動的に選択するには、空白を設定します。"
+"生成されてキューに入れられる最大ブロック数。\n"
+"この制限はプレイヤーごとに適用されます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
 msgstr ""
-"ファイルから読み込まれるキューに入れる最大ブロック数。\n"
-"適切な量を自動的に選択するには、空白を設定します。"
+"ファイルから読み込まれてキューに入れられる最大ブロック数。\n"
+"この制限はプレイヤーごとに適用されます。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5406,7 +5392,7 @@ msgstr "選択したオブジェクトを強調表示するために使用され
 
 #: src/settings_translation_file.cpp
 msgid "Minimal level of logging to be written to chat."
-msgstr ""
+msgstr "チャットに書き込まれる最小限のログレベル。"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5577,7 +5563,6 @@ msgid "Number of emerge threads"
 msgstr "出現するスレッド数"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
 "Value 0:\n"
@@ -5591,9 +5576,6 @@ msgid ""
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 "使用する出現スレッド数。\n"
-"警告: 'num_emerge_threads' が 1 より大きいときにクラッシュを引き起こす\n"
-"可能性のあるバグが現在複数あります。この警告が削除されるまでは\n"
-"この値を規定の '1' に設定することを強くお勧めします。\n"
 "値 0:\n"
 "-    自動選択。 出現スレッド数は\n"
 "-    'プロセッサー数 - 2'、下限は 1 です。\n"
@@ -5695,6 +5677,8 @@ msgid ""
 "Path to save screenshots at. Can be an absolute or relative path.\n"
 "The folder will be created if it doesn't already exist."
 msgstr ""
+"スクリーンショットを保存するパス。絶対パスまたは相対パスを指定できます。\n"
+"フォルダーが存在しない場合は作成されます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5744,12 +5728,11 @@ msgstr "ウィンドウフォーカス喪失時に一時停止"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks load from disk"
-msgstr ""
+msgstr "ファイルから読み込まれるキューブロックのプレイヤーごとの制限"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Per-player limit of queued blocks to generate"
-msgstr "生成されて出現するキューの制限"
+msgstr "生成されるキューブロックのプレイヤーごとの制限"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -5829,7 +5812,7 @@ msgstr "プロファイリング"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
-msgstr ""
+msgstr "プロメテウスリスナーのアドレス"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5838,6 +5821,10 @@ msgid ""
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetch on http://127.0.0.1:30000/metrics"
 msgstr ""
+"プロメテウスリスナーのアドレス。\n"
+"minetest が ENABLE_PROMETHEUS オプションを有効にしてコンパイルされている場合、\n"
+"そのアドレスのプロメテウスのメトリックスリスナーを有効にします。\n"
+"メトリックは http://127.0.0.1:30000/metrics で取得可能"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
@@ -6355,6 +6342,9 @@ msgid ""
 "Note that mods or games may explicitly set a stack for certain (or all) "
 "items."
 msgstr ""
+"既定のノード、アイテム、ツールのスタック数を指定します。\n"
+"Mod またはゲームは、特定の（またはすべての）アイテムのスタック数を\n"
+"明示的に設定する場合があることに注意してください。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6383,9 +6373,8 @@ msgid "Step mountain spread noise"
 msgstr "ステップマウンテンの広がりノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Strength of 3D mode parallax."
-msgstr "視差の強さです。"
+msgstr "3Dモード視差の強さです。"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -6422,6 +6411,14 @@ msgid ""
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
 "world surface below."
 msgstr ""
+"密な浮遊大陸層に配置されるオプションの水の表面レベル。\n"
+"水は規定で無効になっており、この値が 'mgv7_floatland_ymax' - 'mgv7_floatland_taper'\n"
+"（上部の先細り開始点）より上に設定されている場合にのみ配置されます。\n"
+"***警告、サーバーのパフォーマンスへの潜在的な危険性***：\n"
+"水の配置を有効にする場合、浮遊大陸を密な層にするために\n"
+"'mgv7_floatland_density' を2.0（または 'mgv7_np_floatland' に応じて他の必要な値）に\n"
+"設定して、サーバーに集中する極端な水の流れを避け、下の世界表面への大規模な\n"
+"洪水を避けるようにテストする必要があります。"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6553,7 +6550,6 @@ msgstr ""
 "してください。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The radius of the volume of blocks around every player that is subject to "
 "the\n"
@@ -6567,7 +6563,7 @@ msgstr ""
 "マップブロック（16ノード）で定めます。\n"
 "アクティブブロックのオブジェクトはロードされ、ABMが実行されます。\n"
 "これはアクティブオブジェクト（モブ）が維持される最小範囲でもあります。\n"
-"これは active_object_range と一緒に設定する必要があります。"
+"これは active_object_send_range_blocks と一緒に設定する必要があります。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6748,9 +6744,8 @@ msgid "Upper Y limit of dungeons."
 msgstr "ダンジョンのY値の上限。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Upper Y limit of floatlands."
-msgstr "ダンジョンのY値の上限。"
+msgstr "浮遊大陸の Y の上限。"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
@@ -7143,6 +7138,10 @@ msgid ""
 "For a solid floatland layer, this controls the height of hills/mountains.\n"
 "Must be less than or equal to half the distance between the Y limits."
 msgstr ""
+"完全な密度からゼロまでの浮遊大陸先細りの Y距離。\n"
+"先細りは、Y制限からこの距離で始まります。\n"
+"密な浮遊大陸層の場合、これは丘/山の高さを制御します。\n"
+"Y制限間の距離の半分以下でなければなりません。"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."

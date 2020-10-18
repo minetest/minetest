@@ -136,11 +136,6 @@ void GUIChatConsole::closeConsoleAtOnce()
 	recalculateConsolePosition();
 }
 
-f32 GUIChatConsole::getDesiredHeight() const
-{
-	return m_desired_height_fraction;
-}
-
 void GUIChatConsole::replaceAndAddToHistory(const std::wstring &line)
 {
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
@@ -545,7 +540,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			if (prompt.getCursorLength() <= 0)
 				return true;
 			std::wstring wselected = prompt.getSelection();
-			std::string selected(wselected.begin(), wselected.end());
+			std::string selected = wide_to_utf8(wselected);
 			Environment->getOSOperator()->copyToClipboard(selected.c_str());
 			return true;
 		}
@@ -575,7 +570,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			if (prompt.getCursorLength() <= 0)
 				return true;
 			std::wstring wselected = prompt.getSelection();
-			std::string selected(wselected.begin(), wselected.end());
+			std::string selected = wide_to_utf8(wselected);
 			Environment->getOSOperator()->copyToClipboard(selected.c_str());
 			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,

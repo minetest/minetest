@@ -54,8 +54,9 @@ core.register_entity(":__builtin:item", {
 		local max_count = stack:get_stack_max()
 		local count = math.min(stack:get_count(), max_count)
 		local size = 0.2 + 0.1 * (count / max_count) ^ (1 / 3)
-		local def = core.registered_nodes[itemname]
-		local glow = def and math.floor(def.light_source / 2 + 0.5)
+		local def = core.registered_items[itemname]
+		local glow = def and def.light_source and
+			math.floor(def.light_source / 2 + 0.5)
 
 		self.object:set_properties({
 			is_visible = true,

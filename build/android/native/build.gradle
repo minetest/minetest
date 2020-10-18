@@ -1,16 +1,16 @@
 apply plugin: 'com.android.library'
-import org.ajoberstar.grgit.Grgit
+apply plugin: 'de.undercouch.download'
 
 android {
 	compileSdkVersion 29
-	buildToolsVersion '29.0.3'
-	ndkVersion '21.1.6352462'
+	buildToolsVersion '30.0.2'
+	ndkVersion '21.3.6528147'
 	defaultConfig {
 		minSdkVersion 16
 		targetSdkVersion 29
 		externalNativeBuild {
 			ndkBuild {
-				arguments '-j8',
+				arguments '-j' + Runtime.getRuntime().availableProcessors(),
 						"versionMajor=${versionMajor}",
 						"versionMinor=${versionMinor}",
 						"versionPatch=${versionPatch}",
@@ -45,15 +45,54 @@ android {
 	}
 }
 
-task cloneGitRepo() {
-	def destination = file('deps')
-	if(!destination.exists()) {
-		def grgit = Grgit.clone(
-				dir: destination,
-				uri: 'https://github.com/minetest/minetest_android_deps_binaries'
-		)
-		grgit.close()
+// get precompiled deps
+def folder = 'minetest_android_deps_binaries'
+
+task downloadDeps(type: Download) {
+	src 'https://github.com/minetest/' + folder + '/archive/master.zip'
+	dest new File(buildDir, 'deps.zip')
+	overwrite false
+}
+
+task getDeps(dependsOn: downloadDeps, type: Copy) {
+	def deps = file('deps')
+	def f = file("$buildDir/" + folder + "-master")
+
+	if (!deps.exists() && !f.exists()) {
+		from zipTree(downloadDeps.dest)
+		into buildDir
+	}
+
+	doLast {
+		if (!deps.exists()) {
+			file(f).renameTo(file(deps))
+		}
 	}
 }
 
-preBuild.dependsOn cloneGitRepo
+// get sqlite
+def sqlite_ver = '3320200'
+task downloadSqlite(dependsOn: getDeps, type: Download) {
+	src 'https://www.sqlite.org/2020/sqlite-amalgamation-' + sqlite_ver + '.zip'
+	dest new File(buildDir, 'sqlite.zip')
+	overwrite false
+}
+
+task getSqlite(dependsOn: downloadSqlite, type: Copy) {
+	def sqlite = file('deps/Android/sqlite')
+	def f = file("$buildDir/sqlite-amalgamation-" + sqlite_ver)
+
+	if (!sqlite.exists() && !f.exists()) {
+		from zipTree(downloadSqlite.dest)
+		into buildDir
+	}
+
+	doLast {
+		if (!sqlite.exists()) {
+			file(f).renameTo(file(sqlite))
+		}
+	}
+}
+
+preBuild.dependsOn getDeps
+preBuild.dependsOn getSqlite

@@ -261,6 +261,7 @@ jobs:
           cmake ${{matrix.config.generator}}  `
           -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"  `
           -DCMAKE_BUILD_TYPE=Release  `
+          -DENABLE_POSTGRESQL=OFF  `
           -DRUN_IN_PLACE=${{ contains(matrix.type, 'portable') }} .
 
       - name: Build

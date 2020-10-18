@@ -258,6 +258,20 @@ std::string ItemStack::getDescription(IItemDefManager *itemdef) const
 	return desc.empty() ? name : desc;
 }
 
+std::string ItemStack::getShortDescription(IItemDefManager *itemdef) const
+{
+	std::string desc = metadata.getString("short_description");
+	if (desc.empty())
+		desc = getDefinition(itemdef).short_description;
+	if (!desc.empty())
+		return desc;
+	// no short_description because of old server version or modified builtin
+	// return first line of description
+	std::stringstream sstr(getDescription(itemdef));
+	std::getline(sstr, desc, '\n');
+	return desc;
+}
+
 
 ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
 {
@@ -732,17 +746,17 @@ void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u32 count)
 u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
 		u32 count, bool swap_if_needed, bool *did_swap)
 {
-	if(this == dest && i == dest_i)
+	if (this == dest && i == dest_i)
 		return count;
 
 	// Take item from source list
 	ItemStack item1;
-	if(count == 0)
+	if (count == 0)
 		item1 = changeItem(i, ItemStack());
 	else
 		item1 = takeItem(i, count);
 
-	if(item1.empty())
+	if (item1.empty())
 		return 0;
 
 	// Try to add the item to destination list
@@ -750,8 +764,7 @@ u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
 	item1 = dest->addItem(dest_i, item1);
 
 	// If something is returned, the item was not fully added
-	if(!item1.empty())
-	{
+	if (!item1.empty()) {
 		// If olditem is returned, nothing was added.
 		bool nothing_added = (item1.count == oldcount);
 

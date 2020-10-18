@@ -137,6 +137,12 @@ function vector.divide(a, b)
 	end
 end
 
+function vector.offset(v, x, y, z)
+	return {x = v.x + x,
+		y = v.y + y,
+		z = v.z + z}
+end
+
 function vector.sort(a, b)
 	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},
 		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}

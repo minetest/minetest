@@ -33,6 +33,8 @@ DEALINGS IN THE SOFTWARE.
 	#include <sys/prctl.h>
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 	#include <pthread_np.h>
+#elif defined(__NetBSD__)
+	#include <sched.h>
 #elif defined(_MSC_VER)
 	struct THREADNAME_INFO {
 		DWORD dwType;     // Must be 0x1000
@@ -71,7 +73,28 @@ Thread::Thread(const std::string &name) :
 
 Thread::~Thread()
 {
-	kill();
+	// kill the thread if running
+	if (!m_running) {
+		wait();
+	} else {
+
+		m_running = false;
+
+#if defined(_WIN32)
+		// See https://msdn.microsoft.com/en-us/library/hh920601.aspx#thread__native_handle_method
+		TerminateThread((HANDLE) m_thread_obj->native_handle(), 0);
+		CloseHandle((HANDLE) m_thread_obj->native_handle());
+#else
+		// We need to pthread_kill instead on Android since NDKv5's pthread
+		// implementation is incomplete.
+# ifdef __ANDROID__
+		pthread_kill(getThreadHandle(), SIGKILL);
+# else
+		pthread_cancel(getThreadHandle());
+# endif
+		wait();
+#endif
+	}
 
 	// Make sure start finished mutex is unlocked before it's destroyed
 	if (m_start_finished_mutex.try_lock())
@@ -136,37 +159,6 @@ bool Thread::wait()
 }
 
 
-bool Thread::kill()
-{
-	if (!m_running) {
-		wait();
-		return false;
-	}
-
-	m_running = false;
-
-#if defined(_WIN32)
-	// See https://msdn.microsoft.com/en-us/library/hh920601.aspx#thread__native_handle_method
-	TerminateThread((HANDLE) m_thread_obj->native_handle(), 0);
-	CloseHandle((HANDLE) m_thread_obj->native_handle());
-#else
-	// We need to pthread_kill instead on Android since NDKv5's pthread
-	// implementation is incomplete.
-# ifdef __ANDROID__
-	pthread_kill(getThreadHandle(), SIGKILL);
-# else
-	pthread_cancel(getThreadHandle());
-# endif
-	wait();
-#endif
-
-	m_retval       = nullptr;
-	m_joinable     = false;
-	m_request_stop = false;
-
-	return true;
-}
-
 
 bool Thread::getReturnValue(void **ret)
 {
@@ -219,11 +211,15 @@ void Thread::setName(const std::string &name)
 
 #elif defined(__NetBSD__)
 
-	pthread_setname_np(pthread_self(), name.c_str());
+	pthread_setname_np(pthread_self(), "%s", const_cast<char*>(name.c_str()));
 
 #elif defined(__APPLE__)
 
 	pthread_setname_np(name.c_str());
+
+#elif defined(__HAIKU__)
+
+	rename_thread(find_thread(NULL), name.c_str());
 
 #elif defined(_MSC_VER)
 
@@ -281,7 +277,14 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 	CPU_SET(proc_number, &cpuset);
 
 	return pthread_setaffinity_np(getThreadHandle(), sizeof(cpuset), &cpuset) == 0;
+#elif defined(__NetBSD__)
 
+	cpuset_t *cpuset = cpuset_create();
+	if (cpuset == NULL)
+		return false;
+	int r = pthread_setaffinity_np(getThreadHandle(), cpuset_size(cpuset), cpuset);
+	cpuset_destroy(cpuset);
+	return r == 0;
 #elif defined(__sun) || defined(sun)
 
 	return processor_bind(P_LWPID, P_MYID, proc_number, NULL) == 0

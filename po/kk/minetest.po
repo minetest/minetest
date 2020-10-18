@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Kazakh (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-13 21:08+0000\n"
+"PO-Revision-Date: 2020-07-06 21:41+0000\n"
 "Last-Translator: Fontan 030 <pomanfedurin@gmail.com>\n"
 "Language-Team: Kazakh <https://hosted.weblate.org/projects/minetest/minetest/"
 "kk/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -28,11 +28,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Lua скриптінде қате кездесті:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "Қате кездесті:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "Жүктелуде..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -82,7 +82,7 @@ msgstr ""
 #: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
 #: src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "Болдырмау"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
@@ -116,7 +116,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Мод:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
@@ -124,7 +124,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr ""
+msgstr "Ойын сипаттамасы жоқ."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
@@ -153,7 +153,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "қосылған"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -178,7 +178,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "Ойындар"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
@@ -187,7 +187,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr ""
+msgstr "Модтар"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -200,7 +200,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "Іздеу"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -208,7 +208,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "Жою"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
@@ -304,7 +304,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Көлдер"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
@@ -421,7 +421,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "Жою"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -531,7 +531,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
@@ -539,7 +539,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
@@ -547,7 +547,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
@@ -654,7 +654,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "Атауын өзгерту"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
@@ -795,7 +795,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D бұлттар"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
@@ -855,7 +855,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
-msgstr ""
+msgstr "Жоқ"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -955,7 +955,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
-msgstr ""
+msgstr "Иә"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -1015,7 +1015,7 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Ойыншының аты тым ұзын."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1118,7 +1118,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Жалғастыру"
 
 #: src/client/game.cpp
 #, c-format
@@ -1221,7 +1221,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Fog enabled"
-msgstr ""
+msgstr "Тұман қосылды"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1954,7 +1954,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr ""
+msgstr "3D бұлттар"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
@@ -3202,7 +3202,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FreeType fonts"
-msgstr ""
+msgstr "FreeType қаріптері"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3277,11 +3277,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "Графика"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Гравитация"
 
 #: src/settings_translation_file.cpp
 msgid "Ground level"

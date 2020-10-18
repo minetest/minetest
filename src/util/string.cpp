@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "translation.h"
 
 #include <algorithm>
+#include <array>
 #include <sstream>
 #include <iomanip>
 #include <map>
@@ -888,4 +889,71 @@ std::wstring translate_string(const std::wstring &s)
 #else
 	return translate_string(s, g_client_translations);
 #endif
+}
+
+static const std::array<std::wstring, 22> disallowed_dir_names = {
+	// Problematic filenames from here:
+	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
+	L"CON",
+	L"PRN",
+	L"AUX",
+	L"NUL",
+	L"COM1",
+	L"COM2",
+	L"COM3",
+	L"COM4",
+	L"COM5",
+	L"COM6",
+	L"COM7",
+	L"COM8",
+	L"COM9",
+	L"LPT1",
+	L"LPT2",
+	L"LPT3",
+	L"LPT4",
+	L"LPT5",
+	L"LPT6",
+	L"LPT7",
+	L"LPT8",
+	L"LPT9",
+};
+
+/**
+ * List of characters that are blacklisted from created directories
+ */
+static const std::wstring disallowed_path_chars = L"<>:\"/\\|?*.";
+
+/**
+ * Sanitize the name of a new directory. This consists of two stages:
+ * 1. Check for 'reserved filenames' that can't be used on some filesystems
+ *	and add a prefix to them
+ * 2. Remove 'unsafe' characters from the name by replacing them with '_'
+ */
+std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix)
+{
+	std::wstring safe_name = utf8_to_wide(str);
+
+	for (std::wstring disallowed_name : disallowed_dir_names) {
+		if (str_equal(safe_name, disallowed_name, true)) {
+			safe_name = utf8_to_wide(optional_prefix) + safe_name;
+			break;
+		}
+	}
+
+	for (unsigned long i = 0; i < safe_name.length(); i++) {
+		bool is_valid = true;
+
+		// Unlikely, but control characters should always be blacklisted
+		if (safe_name[i] < 32) {
+			is_valid = false;
+		} else if (safe_name[i] < 128) {
+			is_valid = disallowed_path_chars.find_first_of(safe_name[i])
+					== std::wstring::npos;
+		}
+
+		if (!is_valid)
+			safe_name[i] = '_';
+	}
+
+	return wide_to_utf8(safe_name);
 }

@@ -1028,7 +1028,7 @@ void GUIEditBoxWithScrollBar::breakText()
 	s32 last_line_start = 0;
 	s32 size = Text.size();
 	s32 length = 0;
-	s32 el_width = RelativeRect.getWidth() - 6;
+	s32 el_width = RelativeRect.getWidth() - m_scrollbar_width - 10;
 	wchar_t c;
 
 	for (s32 i = 0; i < size; ++i) {
@@ -1398,8 +1398,6 @@ void GUIEditBoxWithScrollBar::createVScrollBar()
 		skin = Environment->getSkin();
 
 	m_scrollbar_width = skin ? skin->getSize(gui::EGDS_SCROLLBAR_SIZE) : 16;
-
-	RelativeRect.LowerRightCorner.X -= m_scrollbar_width + 4;
 
 	irr::core::rect<s32> scrollbarrect = m_frame_rect;
 	scrollbarrect.UpperLeftCorner.X += m_frame_rect.getWidth() - m_scrollbar_width;

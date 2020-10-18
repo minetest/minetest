@@ -58,6 +58,13 @@ void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color);
 */
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
 
+
+/*
+	Sets texture coords for vertices in the mesh buffer.
+	`uv[]` must have `count` elements
+*/
+void setMeshBufferTextureCoords(scene::IMeshBuffer *buf, const v2f *uv, u32 count);
+
 /*
 	Set a constant color for an animated mesh
 */
