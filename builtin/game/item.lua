@@ -551,8 +551,11 @@ function core.node_dig(pos, node, digger, old_pt)
 	local diggername = user_name(digger)
 	local log = make_log(diggername)
 	local def = core.registered_nodes[node.name]
+	-- Copy pos and pointed_thing because the callback can modify them.
+	local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
+	local pt_copy = old_pt and table.copy(old_pt)
 	if def and (not def.diggable or
-			(def.can_dig and not def.can_dig(pos, digger, old_pt))) then
+			(def.can_dig and not def.can_dig(pos_copy, digger, pt_copy))) then
 		log("info", diggername .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. core.pos_to_string(pos))
@@ -579,7 +582,10 @@ function core.node_dig(pos, node, digger, old_pt)
 		local tp = wielded:get_tool_capabilities()
 		local dp = core.get_dig_params(def and def.groups, tp)
 		if wdef and wdef.after_use then
-			wielded = wdef.after_use(wielded, digger, node, dp, old_pt) or wielded
+			-- Copy node and pointed_thing because the callback can modify them.
+			local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
+			local pt_copy = old_pt and table.copy(old_pt)
+			wielded = wdef.after_use(wielded, digger, node_copy, dp, pt_copy) or wielded
 		else
 			-- Wear out tool
 			if not core.is_creative_enabled(diggername) then
@@ -630,10 +636,11 @@ function core.node_dig(pos, node, digger, old_pt)
 
 	-- Run callback
 	if def and def.after_dig_node then
-		-- Copy pos and node because callback can modify them
+		-- Copy pos, node and pointed_thing because callback can modify them
 		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
-		def.after_dig_node(pos_copy, node_copy, oldmetadata, digger, old_pt)
+		local pt_copy = old_pt and table.copy(old_pt)
+		def.after_dig_node(pos_copy, node_copy, oldmetadata, digger, pt_copy)
 	end
 
 	-- Run script hook
@@ -643,10 +650,11 @@ function core.node_dig(pos, node, digger, old_pt)
 			core.set_last_run_mod(origin.mod)
 		end
 
-		-- Copy pos and node because callback can modify them
+		-- Copy pos, node and pointed_thing because callback can modify them
 		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
-		callback(pos_copy, node_copy, digger, old_pt)
+		local pt_copy = old_pt and table.copy(old_pt)
+		callback(pos_copy, node_copy, digger, pt_copy)
 	end
 end
 
