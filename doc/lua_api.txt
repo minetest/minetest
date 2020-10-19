@@ -6880,6 +6880,10 @@ Player properties need to be saved manually.
 
         shaded = true,
         -- Setting this to 'false' disables diffuse lighting of entity
+
+        show_on_minimap = false,
+        -- Defaults to true for players, false for other entities.
+        -- If set to true the entity will show as a marker on the minimap.
     }
 
 Entity definition

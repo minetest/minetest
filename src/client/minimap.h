@@ -48,6 +48,13 @@ struct MinimapModeDef {
 	u16 scale;
 };
 
+struct MinimapMarker {
+	MinimapMarker(scene::ISceneNode *parent_node):
+		parent_node(parent_node)
+	{
+	}
+	scene::ISceneNode *parent_node;
+};
 struct MinimapPixel {
 	//! The topmost node that the minimap displays.
 	MapNode n;
@@ -142,6 +149,9 @@ public:
 
 	scene::SMeshBuffer *getMinimapMeshBuffer();
 
+	MinimapMarker* addMarker(scene::ISceneNode *parent_node);
+	void removeMarker(MinimapMarker **marker);
+
 	void updateActiveMarkers();
 	void drawMinimap();
 	void drawMinimap(core::rect<s32> rect);
@@ -162,5 +172,6 @@ private:
 	u16 m_surface_mode_scan_height;
 	f32 m_angle;
 	std::mutex m_mutex;
+	std::list<MinimapMarker*> m_markers;
 	std::list<v2f> m_active_markers;
 };
