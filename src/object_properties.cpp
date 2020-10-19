@@ -70,6 +70,7 @@ std::string ObjectProperties::dump()
 	os << ", use_texture_alpha=" << use_texture_alpha;
 	os << ", damage_texture_modifier=" << damage_texture_modifier;
 	os << ", shaded=" << shaded;
+	os << ", show_on_minimap=" << show_on_minimap;
 	return os.str();
 }
 
@@ -118,6 +119,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU8(os, use_texture_alpha);
 	os << serializeString16(damage_texture_modifier);
 	writeU8(os, shaded);
+	writeU8(os, show_on_minimap);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -174,7 +176,11 @@ void ObjectProperties::deSerialize(std::istream &is)
 		damage_texture_modifier = deSerializeString16(is);
 		u8 tmp = readU8(is);
 		if (is.eof())
-			throw SerializationError("");
+			return;
 		shaded = tmp;
+		tmp = readU8(is);
+		if (is.eof())
+			return;
+		show_on_minimap = tmp;
 	} catch (SerializationError &e) {}
 }

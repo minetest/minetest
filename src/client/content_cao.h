@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Camera;
 class Client;
 struct Nametag;
+struct MinimapMarker;
 
 /*
 	SmoothTranslator
@@ -84,6 +85,7 @@ private:
 	scene::IBillboardSceneNode *m_spritenode = nullptr;
 	scene::IDummyTransformationSceneNode *m_matrixnode = nullptr;
 	Nametag *m_nametag = nullptr;
+	MinimapMarker *m_marker = nullptr;
 	v3f m_position = v3f(0.0f, 10.0f * BS, 0);
 	v3f m_velocity;
 	v3f m_acceleration;
@@ -253,6 +255,8 @@ public:
 	u16 getLightPosition(v3s16 *pos);
 
 	void updateNametag();
+
+	void updateMarker();
 
 	void updateNodePos();
 

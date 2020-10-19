@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <cmath>
 #include "client/shader.h"
+#include "client/minimap.h"
 
 class Settings;
 struct ToolCapabilities;
@@ -566,6 +567,9 @@ void GenericCAO::removeFromScene(bool permanent)
 		m_client->getCamera()->removeNametag(m_nametag);
 		m_nametag = nullptr;
 	}
+
+	if (m_marker && m_client->getMinimap())
+		m_client->getMinimap()->removeMarker(&m_marker);
 }
 
 void GenericCAO::addToScene(ITextureSource *tsrc)
@@ -794,6 +798,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		node->setParent(m_matrixnode);
 
 	updateNametag();
+	updateMarker();
 	updateNodePos();
 	updateAnimation();
 	updateBonePosition();
@@ -883,6 +888,23 @@ u16 GenericCAO::getLightPosition(v3s16 *pos)
 		return 2;
 	pos[2] = floatToInt(m_position + box.getCenter() * BS, BS);
 	return 3;
+}
+
+void GenericCAO::updateMarker()
+{
+	if (!m_prop.show_on_minimap) {
+		if (m_marker)
+			m_client->getMinimap()->removeMarker(&m_marker);
+		return;
+	}
+
+	if (m_marker)
+		return;
+
+	scene::ISceneNode *node = getSceneNode();
+	if (!node)
+		return;
+	m_marker = m_client->getMinimap()->addMarker(node);
 }
 
 void GenericCAO::updateNametag()
@@ -1576,6 +1598,8 @@ void GenericCAO::processMessage(const std::string &data)
 	u8 cmd = readU8(is);
 	if (cmd == AO_CMD_SET_PROPERTIES) {
 		ObjectProperties newprops;
+		newprops.show_on_minimap = m_is_player; // default
+
 		newprops.deSerialize(is);
 
 		// Check what exactly changed
@@ -1609,6 +1633,8 @@ void GenericCAO::processMessage(const std::string &data)
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
 			m_prop.nametag = m_name;
+		if (m_is_local_player)
+			m_prop.show_on_minimap = false;
 
 		if (expire_visuals) {
 			expireVisuals();
@@ -1621,6 +1647,7 @@ void GenericCAO::processMessage(const std::string &data)
 					updateTextures(m_current_texture_modifier);
 			}
 			updateNametag();
+			updateMarker();
 		}
 	} else if (cmd == AO_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.

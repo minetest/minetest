@@ -1972,8 +1972,8 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		// force_delete might be overriden per object
 		bool force_delete = _force_delete;
 
-		// Do not deactivate if static data creation not allowed
-		if (!force_delete && !obj->isStaticAllowed())
+		// Do not deactivate if disallowed
+		if (!force_delete && !obj->shouldUnload())
 			return false;
 
 		// removeRemovedObjects() is responsible for these
@@ -2002,7 +2002,10 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		}
 
 		// If block is still active, don't remove
-		if (!force_delete && m_active_blocks.contains(blockpos_o))
+		bool still_active = obj->isStaticAllowed() ?
+			m_active_blocks.contains(blockpos_o) :
+			getMap().getBlockNoCreateNoEx(blockpos_o) != nullptr;
+		if (!force_delete && still_active)
 			return false;
 
 		verbosestream << "ServerEnvironment::deactivateFarObjects(): "
