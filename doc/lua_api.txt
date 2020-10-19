@@ -6224,11 +6224,11 @@ object you are working with still exists.
     * When calling `set_texture_mod` again, the previous one is discarded.
     * `mod` the texture modifier. See [Texture modifiers].
 * `get_texture_mod()` returns current texture modifier
-* `set_sprite(p, num_frames, framelength, select_x_by_camera)`
+* `set_sprite(start_frame, num_frames, framelength, select_x_by_camera)`
     * Specifies and starts a sprite animation
     * Animations iterate along the frame `y` position.
-    * `p`: {x=column number, y=row number}, the coordinate of the first frame,
-      default: `{x=0, y=0}`
+    * `start_frame`: {x=column number, y=row number}, the coordinate of the
+      first frame, default: `{x=0, y=0}`
     * `num_frames`: Total frames in the texture, default: `1`
     * `framelength`: Time per animated frame in seconds, default: `0.2`
     * `select_x_by_camera`: Only for visual = `sprite`. Changes the frame `x`

@@ -957,7 +957,7 @@ int ObjectRef::l_get_texture_mod(lua_State *L)
 	return 1;
 }
 
-// set_sprite(self, p, num_frames, framelength, select_x_by_camera)
+// set_sprite(self, start_frame, num_frames, framelength, select_x_by_camera)
 int ObjectRef::l_set_sprite(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -966,12 +966,12 @@ int ObjectRef::l_set_sprite(lua_State *L)
 	if (entitysao == nullptr)
 		return 0;
 
-	v2s16 p                 = lua_isnil(L, 2) ? v2s16(0,0) : readParam<v2s16>(L, 2);
+	v2s16 start_frame       = lua_isnil(L, 2) ? v2s16(0,0) : readParam<v2s16>(L, 2);
 	int num_frames          = lua_isnil(L, 3) ? 1 : luaL_checkint(L, 3);
 	float framelength       = lua_isnil(L, 4) ? 0.2 : lua_tonumber(L, 4);
-	bool select_x_by_camera = lua_isnil(L, 5) ? false : readParam<bool>(L, 5);
+	bool select_x_by_camera = readParam<bool>(L, 5, false);
 
-	entitysao->setSprite(p, num_frames, framelength, select_x_by_camera);
+	entitysao->setSprite(start_frame, num_frames, framelength, select_x_by_camera);
 	return 0;
 }
 
