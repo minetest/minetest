@@ -1,5 +1,7 @@
+varying mediump vec2 varTexCoord;
+
 void main(void)
 {
-	gl_TexCoord[0] = gl_MultiTexCoord0;
-	gl_Position = gl_Vertex;
+	varTexCoord = inTexCoord0;
+	gl_Position = inVertexPosition;
 }

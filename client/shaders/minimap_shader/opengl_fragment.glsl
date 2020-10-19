@@ -2,11 +2,12 @@ uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
 uniform vec3 yawVec;
 
-varying vec4 varColor;
+varying lowp vec4 varColor;
+varying mediump vec2 varTexCoord;
 
 void main (void)
 {
-	vec2 uv = gl_TexCoord[0].st;
+	vec2 uv = varTexCoord.st;
 
 	//texture sampling rate
 	const float step = 1.0 / 256.0;

@@ -15,7 +15,8 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-varying vec4 varColor;
+varying lowp vec4 varColor;
+varying mediump vec2 varTexCoord;
 varying vec3 eyeVec;
 
 const float fogStart = FOG_START;
@@ -56,7 +57,7 @@ vec4 applyToneMapping(vec4 color)
 void main(void)
 {
 	vec3 color;
-	vec2 uv = gl_TexCoord[0].st;
+	vec2 uv = varTexCoord.st;
 
 	vec4 base = texture2D(baseTexture, uv).rgba;
 #ifdef USE_DISCARD

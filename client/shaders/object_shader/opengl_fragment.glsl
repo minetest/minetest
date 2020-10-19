@@ -8,7 +8,8 @@ uniform vec3 eyePosition;
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec3 worldPosition;
-varying vec4 varColor;
+varying lowp vec4 varColor;
+varying mediump vec2 varTexCoord;
 
 varying vec3 eyeVec;
 varying float vIDiff;
@@ -53,7 +54,7 @@ vec4 applyToneMapping(vec4 color)
 void main(void)
 {
 	vec3 color;
-	vec2 uv = gl_TexCoord[0].st;
+	vec2 uv = varTexCoord.st;
 
 	vec4 base = texture2D(baseTexture, uv).rgba;
 

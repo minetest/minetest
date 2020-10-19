@@ -1,4 +1,3 @@
-uniform mat4 mWorldViewProj;
 uniform mat4 mWorld;
 
 uniform vec3 eyePosition;
@@ -7,7 +6,8 @@ uniform float animationTimer;
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec3 worldPosition;
-varying vec4 varColor;
+varying lowp vec4 varColor;
+varying mediump vec2 varTexCoord;
 
 varying vec3 eyeVec;
 varying float vIDiff;
@@ -27,23 +27,23 @@ float directional_ambient(vec3 normal)
 
 void main(void)
 {
-	gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
-	gl_Position = mWorldViewProj * gl_Vertex;
+	varTexCoord = (mTexture * inTexCoord0).st;
+	gl_Position = mWorldViewProj * inVertexPosition;
 
 	vPosition = gl_Position.xyz;
-	vNormal = gl_Normal;
-	worldPosition = (mWorld * gl_Vertex).xyz;
-	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
+	vNormal = inVertexNormal;
+	worldPosition = (mWorld * inVertexPosition).xyz;
+	eyeVec = -(mWorldView * inVertexPosition).xyz;
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_PLAIN) || (MATERIAL_TYPE == TILE_MATERIAL_PLAIN_ALPHA)
 	vIDiff = 1.0;
 #else
 	// This is intentional comparison with zero without any margin.
 	// If normal is not equal to zero exactly, then we assume it's a valid, just not normalized vector
-	vIDiff = length(gl_Normal) == 0.0
+	vIDiff = length(inVertexNormal) == 0.0
 		? 1.0
-		: directional_ambient(normalize(gl_Normal));
+		: directional_ambient(normalize(inVertexNormal));
 #endif
 
-	varColor = gl_Color;
+	varColor = inVertexColor;
 }

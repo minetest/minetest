@@ -258,10 +258,17 @@ public:
 		video::IVideoDriver *driver = services->getVideoDriver();
 		sanity_check(driver);
 
+		// Set world matrix
+		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
+		if (is_highlevel)
+			m_world.set(*reinterpret_cast<float(*)[16]>(world.pointer()), services);
+		else
+			services->setVertexShaderConstant(world.pointer(), 4, 4);
+
 		// Set clip matrix
 		core::matrix4 worldView;
 		worldView = driver->getTransform(video::ETS_VIEW);
-		worldView *= driver->getTransform(video::ETS_WORLD);
+		worldView *= world;
 		core::matrix4 worldViewProj;
 		worldViewProj = driver->getTransform(video::ETS_PROJECTION);
 		worldViewProj *= worldView;
@@ -269,13 +276,6 @@ public:
 			m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
 		else
 			services->setVertexShaderConstant(worldViewProj.pointer(), 0, 4);
-
-		// Set world matrix
-		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
-		if (is_highlevel)
-			m_world.set(*reinterpret_cast<float(*)[16]>(world.pointer()), services);
-		else
-			services->setVertexShaderConstant(world.pointer(), 4, 4);
 
 #if ENABLE_GLES
 		if (is_highlevel) {
@@ -662,41 +662,43 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaders_header =
 			"#version 100\n"
 			;
-	} else {
-		shaders_header =
-			"#version 120\n"
-			;
-	}
-		vertex_header =
-				"uniform highp mat4 mWorldView;\n"
-				"uniform mat4 mTexture[1];\n"
-				"uniform mat3 mNormal;\n"
-				"attribute highp vec4 inVertexPosition;\n"
-				"attribute vec3 inVertexNormal;\n"
-				"attribute vec4 inVertexColor;\n"
-				"attribute vec4 inTexCoord0;\n"
-	/* 			"attribute vec4 inTexCoord1;\n" */
-				"attribute vec4 inVertexTangent;\n"
-				"attribute vec4 inVertexBinormal;\n"
-				"varying mediump vec4 varTexCoord[1];\n"
-				"#define gl_TexCoord varTexCoord\n"
-				"\n"
-				"#define gl_ModelViewMatrix mWorldView\n"
-				"#define gl_TextureMatrix mTexture\n"
-				"#define gl_NormalMatrix mNormal\n"
-				"#define gl_Vertex inVertexPosition\n"
-				"#define gl_Normal inVertexNormal\n"
-				"#define gl_Color inVertexColor\n"
-				"#define gl_MultiTexCoord0 inTexCoord0\n"
-				"#define gl_MultiTexCoord1 inVertexTangent\n"
-				"#define gl_MultiTexCoord2 inVertexBinormal\n"
-				;
-		pixel_header =
-			"precision mediump float;\n"
-			"varying mediump vec4 varTexCoord[1];\n"
-			"#define gl_TexCoord varTexCoord\n"
-			;
+		vertex_header = R"(
+			uniform highp mat4 mWorldView;
+			uniform highp mat4 mWorldViewProj;
+			uniform mediump mat4 mTexture;
+			uniform mediump mat3 mNormal;
 
+			attribute highp vec4 inVertexPosition;
+			attribute lowp vec4 inVertexColor;
+			attribute mediump vec4 inTexCoord0;
+			attribute mediump vec3 inVertexNormal;
+			attribute mediump vec4 inVertexTangent;
+			attribute mediump vec4 inVertexBinormal;
+			)";
+		pixel_header = R"(
+			precision mediump float;
+			)";
+	} else {
+		shaders_header = R"(
+			#version 120
+			#define lowp
+			#define mediump
+			#define highp
+			)";
+		vertex_header = R"(
+			#define mWorldView gl_ModelViewMatrix
+			#define mWorldViewProj gl_ModelViewProjectionMatrix
+			#define mTexture (gl_TextureMatrix[0])
+			#define mNormal gl_NormalMatrix
+
+			#define inVertexPosition gl_Vertex
+			#define inVertexColor gl_Color
+			#define inTexCoord0 gl_MultiTexCoord0
+			#define inVertexNormal gl_Normal
+			#define inVertexTangent gl_MultiTexCoord1
+			#define inVertexBinormal gl_MultiTexCoord2
+			)";
+	}
 
 	bool use_discard = use_gles;
 #ifdef __unix__
@@ -805,17 +807,11 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	const c8* pixel_program_ptr = 0;
 	const c8* geometry_program_ptr = 0;
 	if (!vertex_program.empty()) {
-		if (use_gles)
-			vertex_program = shaders_header + vertex_header + vertex_program;
-		else
-			vertex_program = shaders_header + vertex_program;
+		vertex_program = shaders_header + vertex_header + vertex_program;
 		vertex_program_ptr = vertex_program.c_str();
 	}
 	if (!pixel_program.empty()) {
-		if (use_gles)
-			pixel_program = shaders_header + pixel_header + pixel_program;
-		else
-			pixel_program = shaders_header + pixel_program;
+		pixel_program = shaders_header + pixel_header + pixel_program;
 		pixel_program_ptr = pixel_program.c_str();
 	}
 	if (!geometry_program.empty()) {
