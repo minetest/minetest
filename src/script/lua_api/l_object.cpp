@@ -474,13 +474,8 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	v3f offset_first = v3f(0, 0, 0);
-	v3f offset_third = v3f(0, 0, 0);
-
-	if (!lua_isnil(L, 2))
-		offset_first = read_v3f(L, 2);
-	if (!lua_isnil(L, 3))
-		offset_third = read_v3f(L, 3);
+	v3f offset_first = read_v3f(L, 2);
+	v3f offset_third = read_v3f(L, 3);
 
 	// Prevent abuse of offset values (keep player always visible)
 	offset_third.X = rangelim(offset_third.X,-10,10);
@@ -554,8 +549,8 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 		return 0;
 
 	std::string bone = readParam<std::string>(L, 2);
-	v3f position = !lua_isnil(L, 3) ? check_v3f(L, 3) : v3f(0, 0, 0);
-	v3f rotation = !lua_isnil(L, 4) ? check_v3f(L, 4) : v3f(0, 0, 0);
+	v3f position = check_v3f(L, 3);
+	v3f rotation = check_v3f(L, 4);
 
 	sao->setBonePosition(bone, position, rotation);
 	return 0;
@@ -606,9 +601,9 @@ int ObjectRef::l_set_attach(lua_State *L)
 		old_parent->removeAttachmentChild(sao->getId());
 	}
 
-	bone      = lua_isnil(L, 3) ? ""           : readParam<std::string>(L, 3);
-	position  = lua_isnil(L, 4) ? v3f(0, 0, 0) : read_v3f(L, 4);
-	rotation  = lua_isnil(L, 5) ? v3f(0, 0, 0) : read_v3f(L, 5);
+	bone      = readParam<std::string>(L, 3, "");
+	position  = read_v3f(L, 4);
+	rotation  = read_v3f(L, 5);
 	force_visible = readParam<bool>(L, 6, false);
 
 	sao->setAttachment(parent->getId(), bone, position, rotation, force_visible);
@@ -706,7 +701,7 @@ int ObjectRef::l_get_properties(lua_State *L)
 		return 0;
 
 	ObjectProperties *prop = sao->accessObjectProperties();
-	if (!prop)
+	if (prop == nullptr)
 		return 0;
 
 	push_object_properties(L, prop);
