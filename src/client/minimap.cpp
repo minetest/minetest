@@ -252,6 +252,10 @@ Minimap::~Minimap()
 	driver->removeTexture(data->minimap_overlay_square);
 	driver->removeTexture(data->object_marker_red);
 
+	for (MinimapMarker *m : m_markers)
+		delete m;
+	m_markers.clear();
+
 	delete data;
 	delete m_minimap_update_thread;
 }
@@ -678,21 +682,34 @@ void Minimap::drawMinimap(core::rect<s32> rect) {
 	}
 }
 
+MinimapMarker* Minimap::addMarker(scene::ISceneNode *parent_node)
+{
+	MinimapMarker *m = new MinimapMarker(parent_node);
+	m_markers.push_back(m);
+	return m;
+}
+
+void Minimap::removeMarker(MinimapMarker **m)
+{
+	m_markers.remove(*m);
+	delete *m;
+	*m = nullptr;
+}
+
 void Minimap::updateActiveMarkers()
 {
 	video::IImage *minimap_mask = data->minimap_shape_round ?
 		data->minimap_mask_round : data->minimap_mask_square;
 
-	const std::list<Nametag *> &nametags = client->getCamera()->getNametags();
-
 	m_active_markers.clear();
+	v3f cam_offset = intToFloat(client->getCamera()->getOffset(), BS);
+	v3s16 pos_offset = data->pos - v3s16(data->mode.map_size / 2,
+			data->mode.scan_height / 2,
+			data->mode.map_size / 2);
 
-	for (Nametag *nametag : nametags) {
-		v3s16 pos = floatToInt(nametag->parent_node->getAbsolutePosition() +
-			intToFloat(client->getCamera()->getOffset(), BS), BS);
-		pos -= data->pos - v3s16(data->mode.map_size / 2,
-				data->mode.scan_height / 2,
-				data->mode.map_size / 2);
+	for (MinimapMarker *marker : m_markers) {
+		v3s16 pos = floatToInt(marker->parent_node->getAbsolutePosition() +
+			cam_offset, BS) - pos_offset;
 		if (pos.X < 0 || pos.X > data->mode.map_size ||
 				pos.Y < 0 || pos.Y > data->mode.scan_height ||
 				pos.Z < 0 || pos.Z > data->mode.map_size) {
