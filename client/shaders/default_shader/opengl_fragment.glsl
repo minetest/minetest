@@ -1,4 +1,4 @@
-varying lowp vec4 varColor;
+varying vec4 varColor;
 
 void main(void)
 {

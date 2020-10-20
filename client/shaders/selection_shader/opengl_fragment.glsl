@@ -1,7 +1,7 @@
 uniform sampler2D baseTexture;
 
-varying lowp vec4 varColor;
-varying mediump vec2 varTexCoord;
+varying vec4 varColor;
+varying vec2 varTexCoord;
 
 void main(void)
 {
