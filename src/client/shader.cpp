@@ -681,6 +681,9 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	} else {
 		shaders_header = R"(
 			#version 120
+			#define lowp
+			#define mediump
+			#define highp
 			)";
 		vertex_header = R"(
 			#define mWorldView gl_ModelViewMatrix

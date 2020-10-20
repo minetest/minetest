@@ -15,8 +15,8 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-varying vec4 varColor;
-varying vec2 varTexCoord;
+varying lowp vec4 varColor;
+varying mediump vec2 varTexCoord;
 varying vec3 eyeVec;
 
 const float fogStart = FOG_START;

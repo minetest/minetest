@@ -1,7 +1,7 @@
 uniform mat4 mWorld;
 
-varying vec4 varColor;
-varying vec2 varTexCoord;
+varying lowp vec4 varColor;
+varying mediump vec2 varTexCoord;
 
 void main(void)
 {
