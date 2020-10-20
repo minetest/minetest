@@ -707,7 +707,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	if (strstr(gl_renderer, "GC7000"))
 		use_discard = true;
 #endif
-	if (use_discard)
+	if (use_discard && shaderinfo.base_material != video::EMT_SOLID)
 		shaders_header += "#define USE_DISCARD\n";
 
 	static const char* drawTypes[] = {
