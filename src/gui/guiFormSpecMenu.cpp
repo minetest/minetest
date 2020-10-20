@@ -2149,7 +2149,6 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 		std::string label = parts[4];
 
 		label = unescape_string(label);
-		item_name = unescape_string(item_name);
 
 		MY_CHECKPOS("itemimagebutton",0);
 		MY_CHECKGEOM("itemimagebutton",1);
