@@ -115,7 +115,6 @@ int ObjectRef::l_remove(lua_State *L)
 }
 
 // get_pos(self)
-// returns: {x=num, y=num, z=num}
 int ObjectRef::l_get_pos(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -143,7 +142,7 @@ int ObjectRef::l_set_pos(lua_State *L)
 	return 0;
 }
 
-// move_to(self, pos, continuous=false)
+// move_to(self, pos, continuous)
 int ObjectRef::l_move_to(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -199,7 +198,7 @@ int ObjectRef::l_punch(lua_State *L)
 	return 1;
 }
 
-// right_click(self, clicker); clicker = an another ObjectRef
+// right_click(self, clicker)
 int ObjectRef::l_right_click(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -327,7 +326,7 @@ int ObjectRef::l_get_wielded_item(lua_State *L)
 	return 1;
 }
 
-// set_wielded_item(self, itemstack or itemstring or table or nil)
+// set_wielded_item(self, item)
 int ObjectRef::l_set_wielded_item(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
