@@ -354,6 +354,8 @@ void GenericCAO::initialize(const std::string &data)
 			m_is_local_player = true;
 			m_is_visible = false;
 			player->setCAO(this);
+
+			m_prop.show_on_minimap = false;
 		}
 	}
 
