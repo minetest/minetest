@@ -26,19 +26,23 @@ The goals aren't in any particular order.
 
 The implementation of Minetest's renderer is questionable, in terms of
 correctness.
-Work is needed to fix bugs and glitches, such as transparency sorting.
-There are also performance issues (particles, general view distance).
+Work is needed to fix bugs and glitches, such as
+[transparency sorting](https://github.com/minetest/minetest/issues/95).
+There are also performance issues (
+[particles](https://github.com/minetest/minetest/issues/1414#issuecomment-701213269),
+[general view distance](https://github.com/minetest/minetest/issues/7222)).
 
-Once these issues are fixed, more features can be added such as water shaders,
-shadows, and improved lighting.
+The priority is fixing these issues. Once that is done, fancier features
+can be worked on, such as water shaders, shadows, and improved lighting.
 
 Irrlicht may be a limiting factor when it comes to implementing this goal, in
 which case it may need to be maintained internally or removed.
 
 ### 2.2 Internal code refactoring
 
-In order to ensure sustainable development, Minetest's code needs to be refactored
-and improved. This will remove code rot and allow for more efficient development.
+In order to ensure sustainable development, Minetest's code needs to be
+[refactored and improved](https://github.com/minetest/minetest/pulls?q=is%3Aopen+sort%3Aupdated-desc+label%3A%22Code+quality%22+).
+This will remove code rot and allow for more efficient development.
 
 ### 2.3 UI Improvements
 
@@ -52,5 +56,7 @@ doesn't do a very good job at selling Minetest or explaining what it is.
 
 ### 2.4 Object and entity improvements
 
-There are still a significant number of issues with objects. Collisions,
-performance, API convenience, and discrepancies between players and entities.
+There are still a significant number of issues with objects.
+Collisions,
+[performance](https://github.com/minetest/minetest/issues/6453),
+API convenience, and discrepancies between players and entities.
