@@ -10,13 +10,31 @@ Contributions are welcome! Here's how you can help:
 
 ## Code
 
-1. [Fork](https://help.github.com/articles/fork-a-repo/) the repository and [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
+1. [Fork](https://help.github.com/articles/fork-a-repo/) the repository and
+   [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
 
-2. Before you start coding, consider opening an [issue at Github](https://github.com/minetest/minetest/issues) to discuss the suitability and implementation of your intended contribution with the core developers. If you are planning to start some very significant coding, you would benefit from first discussing on our IRC development channel [#minetest-dev](http://www.minetest.net/irc/). Note that a proper IRC client is required to speak on this channel.
+2. Before you start coding, consider opening an
+   [issue at Github](https://github.com/minetest/minetest/issues) to discuss the
+   suitability and implementation of your intended contribution with the core
+   developers.
+
+   Any Pull Request that isn't a bug fix and isn't covered by
+   [the roadmap](../doc/direction.md) will be closed within a week unless it
+   receives a concept approval from a Core Developer. For this reason, it is
+   recommended that you open an issue for any such pull requests before doing
+   the work, to avoid disappointment.
+
+   You may also benefit from discussing on our IRC development channel
+   [#minetest-dev](http://www.minetest.net/irc/). Note that a proper IRC client
+   is required to speak on this channel.
 
 3. Start coding!
-    - Refer to the [Lua API](https://github.com/minetest/minetest/blob/master/doc/lua_api.txt), [Developer Wiki](http://dev.minetest.net/Main_Page) and other [documentation](https://github.com/minetest/minetest/tree/master/doc).
-    - Follow the [C/C++](http://dev.minetest.net/Code_style_guidelines) and [Lua](http://dev.minetest.net/Lua_code_style_guidelines) code style guidelines.
+    - Refer to the
+      [Lua API](https://github.com/minetest/minetest/blob/master/doc/lua_api.txt),
+      [Developer Wiki](http://dev.minetest.net/Main_Page) and other
+      [documentation](https://github.com/minetest/minetest/tree/master/doc).
+    - Follow the [C/C++](http://dev.minetest.net/Code_style_guidelines) and
+      [Lua](http://dev.minetest.net/Lua_code_style_guidelines) code style guidelines.
     - Check your code works as expected and document any changes to the Lua API.
 
 4. Commit & [push](https://help.github.com/articles/pushing-to-a-remote/) your changes to a new branch (not `master`, one change per branch)
@@ -33,69 +51,115 @@ Contributions are welcome! Here's how you can help:
 
 5. Once you are happy with your changes, submit a pull request.
      - Open the [pull-request form](https://github.com/minetest/minetest/pull/new/master).
-     - Add a description explaining what you've done (or if it's a work-in-progress - what you need to do).
+     - Add a description explaining what you've done (or if it's a
+       work-in-progress - what you need to do).
+     - Make sure to fill out the pull request template.
 
 ### A pull-request is considered merge-able when:
 
-1. It follows the roadmap in some way and fits the whole picture of the project: [roadmap introduction](http://c55.me/blog/?p=1491), [roadmap continued](https://forum.minetest.net/viewtopic.php?t=9177)
+1. It follows [the roadmap](../doc/direction.md) in some way and fits the whole
+   picture of the project.
 2. It works.
-3. It follows the code style for [C/C++](http://dev.minetest.net/Code_style_guidelines) or [Lua](http://dev.minetest.net/Lua_code_style_guidelines).
-4. The code's interfaces are well designed, regardless of other aspects that might need more work in the future.
+3. It follows the code style for
+   [C/C++](http://dev.minetest.net/Code_style_guidelines) or
+   [Lua](http://dev.minetest.net/Lua_code_style_guidelines).
+4. The code's interfaces are well designed, regardless of other aspects that
+   might need more work in the future.
 5. It uses protocols and formats which include the required compatibility.
 
 ### Important note about automated GitHub checks
 
-When you submit a pull request, GitHub automatically runs checks on the Minetest Engine combined with your changes. One of these checks is called 'cpp lint / clang format', which checks code formatting. Because formatting for readability requires human judgement this check often fails and often makes unsuitable formatting requests which make code readability worse.
+When you submit a pull request, GitHub automatically runs checks on the Minetest
+Engine combined with your changes. One of these checks is called 'cpp lint /
+clang format', which checks code formatting. Because formatting for readability
+requires human judgement this check often fails and often makes unsuitable
+formatting requests which make code readability worse.
 
-If this check fails, look at the details to check for any clear mistakes and correct those. However, you should not apply everything ClangFormat requests. Ignore requests that make code readability worse and any other clearly unsuitable requests. Discuss in the pull request with a core developer about how to progress.
+If this check fails, look at the details to check for any clear mistakes and
+correct those. However, you should not apply everything ClangFormat requests.
+Ignore requests that make code readability worse and any other clearly
+unsuitable requests. Discuss in the pull request with a core developer about how
+to progress.
 
 ## Issues
 
-If you experience an issue, we would like to know the details - especially when a stable release is on the way.
+If you experience an issue, we would like to know the details - especially when
+a stable release is on the way.
 
 1. Do a quick search on GitHub to check if the issue has already been reported.
-2. Is it an issue with the Minetest *engine*? If not, report it [elsewhere](http://www.minetest.net/development/#reporting-issues).
-3. [Open an issue](https://github.com/minetest/minetest/issues/new) and describe the issue you are having - you could include:
+2. Is it an issue with the Minetest *engine*? If not, report it
+   [elsewhere](http://www.minetest.net/development/#reporting-issues).
+3. [Open an issue](https://github.com/minetest/minetest/issues/new) and describe
+   the issue you are having - you could include:
      - Error logs (check the bottom of the `debug.txt` file).
      - Screenshots.
      - Ways you have tried to solve the issue, and whether they worked or not.
      - Your Minetest version and the content (games, mods or texture packs) you have installed.
      - Your platform (e.g. Windows 10 or Ubuntu 15.04 x64).
 
-After reporting you should aim to answer questions or clarifications as this helps pinpoint the cause of the issue (if you don't do this your issue may be closed after 1 month).
+After reporting you should aim to answer questions or clarifications as this
+helps pinpoint the cause of the issue (if you don't do this your issue may be
+closed after 1 month).
 
 ## Feature requests
 
-Feature requests are welcome but take a moment to see if your idea follows the roadmap in some way and fits the whole picture of the project: [roadmap introduction](http://c55.me/blog/?p=1491), [roadmap continued](https://forum.minetest.net/viewtopic.php?t=9177). You should provide a clear explanation with as much detail as possible.
+Feature requests are welcome but take a moment to see if your idea follows
+[the roadmap](../doc/direction.md) in some way and fits the whole picture of
+the project. You should provide a clear explanation with as much detail as
+possible.
 
 ## Translations
 
-The core translations of Minetest are performed using Weblate. You can access the project page with a list of current languages [here](https://hosted.weblate.org/projects/minetest/minetest/).
+The core translations of Minetest are performed using Weblate. You can access
+the project page with a list of current languages
+[here](https://hosted.weblate.org/projects/minetest/minetest/).
 
-Builtin (the component which contains things like server messages, chat command descriptions, privilege descriptions) is translated separately; it needs to be translated by editing a `.tr` text file. See [Translation](https://dev.minetest.net/Translation) for more information.
+Builtin (the component which contains things like server messages, chat command
+descriptions, privilege descriptions) is translated separately; it needs to be
+translated by editing a `.tr` text file. See
+[Translation](https://dev.minetest.net/Translation) for more information.
 
 ## Donations
 
-If you'd like to monetarily support Minetest development, you can find donation methods on [our website](http://www.minetest.net/development/#donate).
+If you'd like to monetarily support Minetest development, you can find donation
+methods on [our website](http://www.minetest.net/development/#donate).
 
 # Maintaining
 
-*This is a concise version of the [Rules & Guidelines](http://dev.minetest.net/Category:Rules_and_Guidelines) on the developer wiki.*
+* This is a concise version of the
+  [Rules & Guidelines](http://dev.minetest.net/Category:Rules_and_Guidelines) on the developer wiki.*
 
 These notes are for those who have push access Minetest (core developers / maintainers).
 
 - See the [project organisation](http://dev.minetest.net/Organisation) for the people involved.
 
+## Concept approvals and roadmaps
+
+If a Pull Request is not a bug fix:
+
+* If it matches a goal in [the roadmap](../doc/direction.md), then the PR should
+  be labelled as "Roadmap" and the goal stated by number in the description.
+* If it doesn't match a goal, then it needs to receive a concept approval within
+  a week of being opened to remain open. This 1 week deadline does not apply to
+  PRs opened before the roadmap was adopted; instead, they may remain open or be
+  closed as needed. Use the "Concept Approved" label. Issues can be marked as
+  "Concept Approved" to give preapproval to future PRs.
+
 ## Reviewing pull requests
 
-Pull requests should be reviewed and, if appropriate, checked if they achieve their intended purpose. You can show that you are in the process of, or will review the pull request by commenting *"Looks good"* or something similar.
+Pull requests should be reviewed and, if appropriate, checked if they achieve
+their intended purpose. You can show that you are in the process of, or will
+review the pull request by commenting *"Looks good"* or something similar.
 
 **If the pull-request is not [merge-able](#a-pull-request-is-considered-merge-able-when):**
 
-Submit a comment explaining to the author what they need to change to make the pull-request merge-able.
+Submit a comment explaining to the author what they need to change to make the
+pull-request merge-able.
 
-- If the author comments or makes changes to the pull-request, it can be reviewed again.
-- If no response is made from the author within 1 month (when improvements are suggested or a question is asked), it can be closed.
+- If the author comments or makes changes to the pull-request, it can be
+  reviewed again.
+- If no response is made from the author within 1 month (when improvements are
+  suggested or a question is asked), it can be closed.
 
 **If the pull-request is [merge-able](#a-pull-request-is-considered-merge-able-when):**
 
