@@ -1487,17 +1487,24 @@ void GenericCAO::updateBonePosition()
 		if (!bone)
 			continue;
 
+		//If bone is manually positioned there is no need to perform the bug check
+		bool skip = false;
+		for (auto &it : m_bone_position) {
+			if (it.first == bone->getName()) {
+				skip = true;
+				break;
+			}
+		}
+		if (skip)
+			continue;
+
 		// Workaround for Irrlicht bug
 		// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
 		// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone to the proper position
 		// and update the bones transformation.
 		v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
-		float offset_X = fabsf(bone_rot.X - bone->getRotation().X);
-		float offset_Y = fabsf(bone_rot.Y - bone->getRotation().Y);
-		float offset_Z = fabsf(bone_rot.Z - bone->getRotation().Z);
-		if ((offset_X > 179.9f && offset_X < 180.1f)
-				|| (offset_Y > 179.9f && offset_Y < 180.1f)
-				|| (offset_Z > 179.9f && offset_Z < 180.1f)) {
+		float offset = fabsf(bone_rot.X - bone->getRotation().X);
+		if (offset > 179.9f && offset < 180.1f) {
 			bone->setRotation(bone_rot);
 			bone->updateAbsolutePosition();
 		}
