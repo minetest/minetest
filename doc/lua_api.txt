@@ -6217,18 +6217,18 @@ object you are working with still exists.
     * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
       and Z is roll (bank).
 * `get_rotation()`: returns the rotation, a vector (radians)
-* `set_yaw(radians)`: sets the yaw (heading).
+* `set_yaw(yaw)`: sets the yaw in radians (heading).
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
     * Set a texture modifier to the base texture, for sprites and meshes.
     * When calling `set_texture_mod` again, the previous one is discarded.
     * `mod` the texture modifier. See [Texture modifiers].
 * `get_texture_mod()` returns current texture modifier
-* `set_sprite(p, num_frames, framelength, select_x_by_camera)`
+* `set_sprite(start_frame, num_frames, framelength, select_x_by_camera)`
     * Specifies and starts a sprite animation
     * Animations iterate along the frame `y` position.
-    * `p`: {x=column number, y=row number}, the coordinate of the first frame
-      default: `{x=0, y=0}`
+    * `start_frame`: {x=column number, y=row number}, the coordinate of the
+      first frame, default: `{x=0, y=0}`
     * `num_frames`: Total frames in the texture, default: `1`
     * `framelength`: Time per animated frame in seconds, default: `0.2`
     * `select_x_by_camera`: Only for visual = `sprite`. Changes the frame `x`
@@ -6391,8 +6391,8 @@ object you are working with still exists.
           nodes square)
     * `selected_mode` is the mode index to be selected after modes have been changed
     (0 is the first mode).
-* `set_sky(parameters)`
-    * `parameters` is a table with the following optional fields:
+* `set_sky(sky_parameters)`
+    * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
@@ -6436,8 +6436,8 @@ object you are working with still exists.
 * `get_sky()`: returns base_color, type, table of textures, clouds.
 * `get_sky_color()`: returns a table with the `sky_color` parameters as in
     `set_sky`.
-* `set_sun(parameters)`:
-    * `parameters` is a table with the following optional fields:
+* `set_sun(sun_parameters)`:
+    * `sun_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the sun is visible.
             (default: `true`)
         * `texture`: A regular texture for the sun. Setting to `""`
@@ -6451,8 +6451,8 @@ object you are working with still exists.
         * `scale`: Float controlling the overall size of the sun. (default: `1`)
 * `get_sun()`: returns a table with the current sun parameters as in
     `set_sun`.
-* `set_moon(parameters)`:
-    * `parameters` is a table with the following optional fields:
+* `set_moon(moon_parameters)`:
+    * `moon_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the moon is visible.
             (default: `true`)
         * `texture`: A regular texture for the moon. Setting to `""`
@@ -6462,8 +6462,8 @@ object you are working with still exists.
         * `scale`: Float controlling the overall size of the moon (default: `1`)
 * `get_moon()`: returns a table with the current moon parameters as in
     `set_moon`.
-* `set_stars(parameters)`:
-    * `parameters` is a table with the following optional fields:
+* `set_stars(star_parameters)`:
+    * `star_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
             (default: `true`)
         * `count`: Integer number to set the number of stars in
@@ -6475,8 +6475,8 @@ object you are working with still exists.
         * `scale`: Float controlling the overall size of the stars (default: `1`)
 * `get_stars()`: returns a table with the current stars parameters as in
     `set_stars`.
-* `set_clouds(parameters)`: set cloud parameters
-    * `parameters` is a table with the following optional fields:
+* `set_clouds(cloud_parameters)`: set cloud parameters
+    * `cloud_parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
         * `color`: basic cloud color with alpha channel, ColorSpec
           (default `#fff0f0e5`).
@@ -6494,21 +6494,17 @@ object you are working with still exists.
       amount.
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
-* `set_local_animation(stand/idle, walk, dig, walk+dig, frame_speed=frame_speed)`:
-  set animation for player model in third person view
-
-      set_local_animation({x=0, y=79},  -- stand/idle animation key frames
-          {x=168, y=187},  -- walk animation key frames
-          {x=189, y=198},  -- dig animation key frames
-          {x=200, y=219},  -- walk+dig animation key frames
-          frame_speed=30)  -- animation frame speed
-* `get_local_animation()`: returns stand, walk, dig, dig+walk tables and
+* `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
+  set animation for player model in third person view.
+    * Every animation equals to a `{x=starting frame, y=ending frame}` table.
+    * `frame_speed` sets the animations frame speed. Default is 30.
+* `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
   `frame_speed`.
-* `set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})`: defines offset value for
-  camera per player.
+* `set_eye_offset(firstperson, thirdperson)`: defines offset vectors for camera
+  per player.
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_eye_offset()`: returns `offset_first` and `offset_third`
+* `get_eye_offset()`: returns first and third person offsets.
 * `send_mapblock(blockpos)`:
     * Sends a server-side loaded mapblock to the player.
     * Returns `false` if failed.
