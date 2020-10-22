@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-10-22 14:28+0000\n"
-"Last-Translator: Nikita Epifanov <nikgreens@protonmail.com>\n"
+"Last-Translator: Tiller Luna <t.luna@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -61,7 +61,7 @@ msgstr "Сервер требует протокол версии $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Сервер поддерживает версии протокола между $1 и $2. "
+msgstr "Сервер поддерживает версии протокола с $1 по $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -74,7 +74,7 @@ msgstr "Мы поддерживаем только протокол версии
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "Мы поддерживаем версии протоколов между $1 и $2."
+msgstr "Поддерживаются только протоколы версий с $1 по $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
@@ -618,8 +618,7 @@ msgstr "Установка мода: файл \"$1\""
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod or modpack"
 msgstr ""
-"Установка мода: не удаётся найти подходящий каталог для мода или пакета "
-"модов $1"
+"Установка мода: не удаётся найти подходящий каталог для мода или пакета модов"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -872,7 +871,7 @@ msgstr "Нет"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr "Без фильтрации (пиксельное)"
+msgstr "Без фильтрации"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -1255,7 +1254,7 @@ msgstr "Режим полёта включён"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr "Режим полёта включён (но: нет привилегии «fly»)"
+msgstr "Режим полёта включён (но нет привилегии «fly»)"
 
 #: src/client/game.cpp
 msgid "Fog disabled"
@@ -1335,7 +1334,7 @@ msgstr "Режим прохождения сквозь стены включён
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr "Режим прохождения сквозь стены включён (но: нет привилегии «noclip»)"
+msgstr "Режим прохождения сквозь стены включён (но нет привилегии «noclip»)"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
