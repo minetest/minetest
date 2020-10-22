@@ -127,8 +127,8 @@ void ScriptApiClient::environment_step(float dtime)
 	}
 }
 
-void ScriptApiClient::on_draw(float dtime, video::IVideoDriver *driver,
-	ISimpleTextureSource *tsrc)
+void ScriptApiClient::on_draw(float dtime, ISimpleTextureSource *tsrc,
+	Client *client)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -136,7 +136,7 @@ void ScriptApiClient::on_draw(float dtime, video::IVideoDriver *driver,
 	lua_getfield(L, -1, "registered_on_draw");
 
 	lua_pushnumber(L, dtime);
-	LuaScreenDrawer::create_object(L, driver, tsrc);
+	LuaScreenDrawer::create_object(L, tsrc, client);
 
 	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }

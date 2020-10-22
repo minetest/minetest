@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "client/fontengine.h"
 #include "client/guiscalingfilter.h"
+#include "client/renderingengine.h"
+#include "hud.h"
 #include "l_drawer.h"
 #include "l_internal.h"
 #include "script/common/c_converter.h"
@@ -37,11 +39,7 @@ int LuaScreenDrawer::l_get_window_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	if (drawer == nullptr)
-		return 0;
-
-	core::dimension2d<u32> size = drawer->driver->getScreenSize();
+	core::dimension2d<u32> size = RenderingEngine::get_video_driver()->getScreenSize();
 	push_v2f(L, v2f(size.Width, size.Height));
 
 	return 1;
@@ -52,19 +50,16 @@ int LuaScreenDrawer::l_draw_rect(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	if (drawer == nullptr)
-		return 0;
-
 	core::recti rect = read_recti(L, 2);
 	video::SColor color(0);
 	read_color(L, 3, &color);
 
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	if (lua_istable(L, 4)) {
 		core::recti clip_rect = read_recti(L, 4);
-		drawer->driver->draw2DRectangle(color, rect, &clip_rect);
+		driver->draw2DRectangle(color, rect, &clip_rect);
 	} else {
-		drawer->driver->draw2DRectangle(color, rect);
+		driver->draw2DRectangle(color, rect);
 	}
 
 	return 0;
@@ -94,11 +89,11 @@ int LuaScreenDrawer::l_draw_image(lua_State *L)
 	if (lua_istable(L, 6)) {
 		from_rect = read_recti(L, 6);
 
-		// `-x` is interpreted as `w - x`. Also account for `read_recti` adding `w` to `x`.
+		// `-x` is interpreted as `w - x`.
 		if (from_rect.LowerRightCorner.X < from_rect.UpperLeftCorner.X)
-			from_rect.LowerRightCorner.X += (s32)size.Width - from_rect.UpperLeftCorner.X;
+			from_rect.LowerRightCorner.X += (s32)size.Width;
 		if (from_rect.LowerRightCorner.Y < from_rect.UpperLeftCorner.Y)
-			from_rect.LowerRightCorner.Y += (s32)size.Height - from_rect.UpperLeftCorner.Y;
+			from_rect.LowerRightCorner.Y += (s32)size.Height;
 	} else {
 		from_rect = core::rect<s32>(core::position2d<s32>(0, 0),
 			core::dimension2di(size.Width, size.Height));
@@ -109,18 +104,19 @@ int LuaScreenDrawer::l_draw_image(lua_State *L)
 		read_color(L, 7, &color);
 	const video::SColor colors[] = {color, color, color, color};
 
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	if (lua_istable(L, 5)) {
 		core::recti middle_rect = read_recti(L, 5);
 
 		if (middle_rect.LowerRightCorner.X < middle_rect.UpperLeftCorner.X)
-			middle_rect.LowerRightCorner.X += (s32)size.Width - middle_rect.UpperLeftCorner.X;
+			middle_rect.LowerRightCorner.X += from_rect.getWidth();
 		if (middle_rect.LowerRightCorner.Y < middle_rect.UpperLeftCorner.Y)
-			middle_rect.LowerRightCorner.Y += (s32)size.Height - middle_rect.UpperLeftCorner.Y;
+			middle_rect.LowerRightCorner.Y += from_rect.getHeight();
 
-		draw2DImage9Slice(drawer->driver, texture, rect, from_rect, middle_rect,
+		draw2DImage9Slice(driver, texture, rect, from_rect, middle_rect,
 			clip_ptr, colors);
 	} else {
-		draw2DImageFilterScaled(drawer->driver, texture, rect, from_rect,
+		draw2DImageFilterScaled(driver, texture, rect, from_rect,
 			clip_ptr, colors, true);
 	}
 
@@ -184,10 +180,6 @@ int LuaScreenDrawer::l_draw_text(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	if (drawer == nullptr)
-		return 0;
-
 	core::recti rect;
 	rect.UpperLeftCorner = read_v2s32(L, 2);
 
@@ -235,6 +227,8 @@ int LuaScreenDrawer::l_draw_text(lua_State *L)
 		baseline = size.Height - 1 - ((gui::CGUITTFont *)font)->getAscender() / 64;
 #endif
 
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+
 	if (underline) {
 		s32 line_pos = rect.LowerRightCorner.Y - (baseline >> 1);
 		core::recti line_rect(
@@ -244,7 +238,7 @@ int LuaScreenDrawer::l_draw_text(lua_State *L)
 			line_pos + (baseline >> 3)
 		);
 
-		drawer->driver->draw2DRectangle(color, line_rect, clip_ptr);
+		driver->draw2DRectangle(color, line_rect, clip_ptr);
 	}
 
 	if (strike) {
@@ -256,7 +250,7 @@ int LuaScreenDrawer::l_draw_text(lua_State *L)
 			line_pos + (baseline >> 3)
 		);
 
-		drawer->driver->draw2DRectangle(color, line_rect, clip_ptr);
+		driver->draw2DRectangle(color, line_rect, clip_ptr);
 	}
 
 	return 0;
@@ -266,10 +260,6 @@ int LuaScreenDrawer::l_draw_text(lua_State *L)
 int LuaScreenDrawer::l_get_text_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	if (drawer == nullptr)
-		return 0;
 
 	std::wstring text = utf8_to_wide(
 		unescape_enriched(readParam<std::string>(L, 2)));
@@ -292,10 +282,6 @@ int LuaScreenDrawer::l_get_font_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	if (drawer == nullptr)
-		return 0;
-
 	std::string font = readParam<std::string>(L, 2);
 
 	// We'll assume that the fallback font has about the same size as the others
@@ -308,13 +294,45 @@ int LuaScreenDrawer::l_get_font_size(lua_State *L)
 	return 1;
 }
 
-int LuaScreenDrawer::create_object(lua_State *L, video::IVideoDriver *driver,
-	ISimpleTextureSource *tsrc)
+// draw_item(self, rect, item[, clip_rect][, angle])
+int LuaScreenDrawer::l_draw_item(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaScreenDrawer *drawer = checkobject(L, 1);
+	if (drawer == nullptr)
+		return 0;
+
+	core::recti rect = read_recti(L, 2);
+
+	IItemDefManager *idef = drawer->client->idef();
+	ItemStack item;
+	item.deSerialize(readParam<std::string>(L, 3), idef);
+
+	core::recti clip_rect;
+	core::recti *clip_ptr = nullptr;
+	if (lua_istable(L, 4)) {
+		clip_rect = read_recti(L, 4);
+		clip_ptr = &clip_rect;
+	}
+
+	v3s16 angle;
+	if (lua_istable(L, 4))
+		angle = read_v3s16(L, 5);
+
+	drawItemStack(RenderingEngine::get_video_driver(), g_fontengine->getFont(), item,
+		rect, clip_ptr, drawer->client, IT_ROT_NONE, angle, v3s16());
+
+	return 0;
+}
+
+int LuaScreenDrawer::create_object(lua_State *L, ISimpleTextureSource *tsrc,
+	Client *client)
 {
 	LuaScreenDrawer *drawer = new LuaScreenDrawer;
 
-	drawer->driver = driver;
 	drawer->tsrc = tsrc;
+	drawer->client = client;
 
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = drawer;
 	luaL_getmetatable(L, className);
@@ -375,5 +393,6 @@ const luaL_Reg LuaScreenDrawer::methods[] =
 	luamethod(LuaScreenDrawer, draw_text),
 	luamethod(LuaScreenDrawer, get_text_size),
 	luamethod(LuaScreenDrawer, get_font_size),
+	luamethod(LuaScreenDrawer, draw_item),
 	{ 0, 0 }
 };

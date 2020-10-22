@@ -1368,8 +1368,11 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 --------------
 
 An interface for drawing to and getting information about the screen.
-All positions/sizes are of the form `{x=<x pos/width>, y=<y pos/height>}`, and all rectangles
-are of the form `{x=<x pos>, y=<y pos>, w=<width>, h=<height>}`. Values are in pixels.
+Definitions for various types:
+* position/size - `{x=<x pos/width>, y=<y pos/height>}`
+* rectangle - `{x=<x pos>, y=<y pos>, w=<width>, h=<height>}`
+* 3D position/angle - `{x=<x pos/angle>, y=<y pos/angle>, z=<z pos/angle>}`
+Positions, sizes, and rectangles are in pixels, and angles are in degrees.
 
 ### Methods
 * `get_window_size()` -> size: Returns the size of the Minetest window.
@@ -1415,6 +1418,16 @@ are of the form `{x=<x pos>, y=<y pos>, w=<width>, h=<height>}`. Values are in p
       same as used in `draw_text`.
 * `get_font_size(font)` -> size: Gets the user-set font size for the specified font in pts.
     * `font`: One of the fonts in `draw_text`'s `font` styling parameter.
+* `draw_item(rect, item[, clip_rect][, angle])`: Draws an item(stack)
+    * `rect`: The rectangle to fit the item inside. Note that items with certain angles that extend
+      past this rectangle will be clipped to it.
+    * `item`: The itemstring of the item to draw with optional metadata.
+    * `clip_rect` (optional): If specified, any part of the item that extends out of this rectangle
+      will not be drawn.
+    * `angle` (optional): Sets the 3D angle of the item along each axis. Tools and craftitems face
+      forward by default while nodes have the angle `{x=-30, y=45, z=0}` from the forward position
+      by default to show off more faces of the node. Only works if `inventory_items_animations` is
+      set to true.
 
 ### HUD Definition (`hud_add`, `hud_get`)
 ```lua

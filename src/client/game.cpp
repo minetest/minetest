@@ -3905,7 +3905,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
 
 	if (client->modsLoaded())
-		client->getScript()->on_draw(dtime, driver, texture_src);
+		client->getScript()->on_draw(dtime, texture_src, client);
 
 	/*
 		Profiler graph

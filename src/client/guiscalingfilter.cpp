@@ -175,32 +175,26 @@ void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
 		const core::rect<s32> &middlerect, const core::rect<s32> *cliprect,
 		const video::SColor *const colors)
 {
-	// `-x` is interpreted as `w - x`
-	core::rect<s32> middle = middlerect;
-
-	if (middlerect.LowerRightCorner.X < 0)
-		middle.LowerRightCorner.X += srcrect.getWidth();
-	if (middlerect.LowerRightCorner.Y < 0)
-		middle.LowerRightCorner.Y += srcrect.getWidth();
-
 	core::vector2di lower_right_offset = core::vector2di(srcrect.getWidth(),
-			srcrect.getHeight()) - middle.LowerRightCorner;
+			srcrect.getHeight()) - middlerect.LowerRightCorner;
 
-	for (size_t y = 0; y < 3; ++y) {
-		for (size_t x = 0; x < 3; ++x) {
-			core::rect<s32> src = srcrect;
-			core::rect<s32> dest = destrect;
+	for (size_t y = 0; y < 3; y++) {
+		for (size_t x = 0; x < 3; x++) {
+			core::recti src = srcrect;
+			core::recti dest = destrect;
 
 			switch (x) {
 			case 0:
-				dest.LowerRightCorner.X = destrect.UpperLeftCorner.X + middle.UpperLeftCorner.X;
-				src.LowerRightCorner.X = srcrect.UpperLeftCorner.X + middle.UpperLeftCorner.X;
+				dest.LowerRightCorner.X = destrect.UpperLeftCorner.X +
+					middlerect.UpperLeftCorner.X;
+				src.LowerRightCorner.X = srcrect.UpperLeftCorner.X +
+					middlerect.UpperLeftCorner.X;
 				break;
 
 			case 1:
-				dest.UpperLeftCorner.X += middle.UpperLeftCorner.X;
+				dest.UpperLeftCorner.X += middlerect.UpperLeftCorner.X;
 				dest.LowerRightCorner.X -= lower_right_offset.X;
-				src.UpperLeftCorner.X += middle.UpperLeftCorner.X;
+				src.UpperLeftCorner.X += middlerect.UpperLeftCorner.X;
 				src.LowerRightCorner.X -= lower_right_offset.X;
 				break;
 
@@ -212,14 +206,16 @@ void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
 
 			switch (y) {
 			case 0:
-				dest.LowerRightCorner.Y = destrect.UpperLeftCorner.Y + middle.UpperLeftCorner.Y;
-				src.LowerRightCorner.Y = srcrect.UpperLeftCorner.Y + middle.UpperLeftCorner.Y;
+				dest.LowerRightCorner.Y = destrect.UpperLeftCorner.Y +
+					middlerect.UpperLeftCorner.Y;
+				src.LowerRightCorner.Y = srcrect.UpperLeftCorner.Y +
+					middlerect.UpperLeftCorner.Y;
 				break;
 
 			case 1:
-				dest.UpperLeftCorner.Y += middle.UpperLeftCorner.Y;
+				dest.UpperLeftCorner.Y += middlerect.UpperLeftCorner.Y;
 				dest.LowerRightCorner.Y -= lower_right_offset.Y;
-				src.UpperLeftCorner.Y += middle.UpperLeftCorner.Y;
+				src.UpperLeftCorner.Y += middlerect.UpperLeftCorner.Y;
 				src.LowerRightCorner.Y -= lower_right_offset.Y;
 				break;
 

@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "client/client.h"
 #include "client/tile.h"
 #include "irrlichttypes_extrabloated.h"
 #include "lua_api/l_base.h"
@@ -30,8 +31,8 @@ private:
 	static const char className[];
 	static const luaL_Reg methods[];
 
-	video::IVideoDriver *driver;
 	ISimpleTextureSource *tsrc;
+	Client *client;
 
 	static int gc_object(lua_State *L);
 
@@ -46,10 +47,12 @@ private:
 	static int l_get_text_size(lua_State *L);
 	static int l_get_font_size(lua_State *L);
 
+	static int l_draw_item(lua_State *L);
+
 public:
 	//! Creates the object and leaves it at the top of the stack
-	static int create_object(lua_State *L, video::IVideoDriver *driver,
-		ISimpleTextureSource *tsrc);
+	static int create_object(lua_State *L, ISimpleTextureSource *tsrc,
+		Client *client);
 
 	static LuaScreenDrawer *checkobject(lua_State *L, int narg);
 
