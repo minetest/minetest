@@ -155,6 +155,12 @@ private:
 	// get_properties(self)
 	static int l_get_properties(lua_State *L);
 
+	// set_player_hidden(self, visible)
+	static int l_set_player_hidden(lua_State *L);
+
+	// get_player_hidden(self)
+	static int l_get_player_hidden(lua_State *L);
+
 	// is_player(self)
 	static int l_is_player(lua_State *L);
 

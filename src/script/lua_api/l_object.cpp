@@ -806,6 +806,36 @@ int ObjectRef::l_get_properties(lua_State *L)
 	return 1;
 }
 
+// set_player_hidden(self, visible)
+int ObjectRef::l_set_player_hidden(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+  RemotePlayer *player = getplayer(ref);
+	if (sao == nullptr || player == nullptr)
+		return 0;
+
+	bool visible = !readParam<bool>(L, 2);
+
+	sao->setVisible(visible);
+	getServer(L)->sendFakeJoinLeaveMessage(player->getName(), visible);
+	return 1;
+}
+
+// get_player_hidden(self)
+int ObjectRef::l_get_player_hidden(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	lua_pushboolean(L, !sao->getVisible());
+	return 1;
+}
+
 // is_player(self)
 int ObjectRef::l_is_player(lua_State *L)
 {
@@ -2362,6 +2392,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_detach),
 	luamethod(ObjectRef, set_properties),
 	luamethod(ObjectRef, get_properties),
+	luamethod(ObjectRef, set_player_hidden),
+	luamethod(ObjectRef, get_player_hidden),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
 

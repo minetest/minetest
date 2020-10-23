@@ -3122,8 +3122,14 @@ std::wstring Server::getStatusString()
 
 			// Get name of player
 			std::wstring name = L"unknown";
-			if (player)
-				name = narrow_to_wide(player->getName());
+			if (!player)
+				continue;
+
+			PlayerSAO *sao = player->getPlayerSAO();
+			if (sao && !sao->getVisible())
+				continue;
+
+			name = narrow_to_wide(player->getName());
 
 			// Add name to information string
 			if (!first)

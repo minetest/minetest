@@ -434,7 +434,7 @@ static bool within(const core::matrix4 &m1, const core::matrix4 &m2,
 	const f32 *M1 = m1.pointer();
 	const f32 *M2 = m2.pointer();
 	for (int i = 0; i < 16; i++)
-		if (! within(M1[i], M2[i], precision))
+		if (!within(M1[i], M2[i], precision))
 			return false;
 	return true;
 }

@@ -1609,6 +1609,12 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 
 	m_ao_manager.getAddedActiveObjectsAroundPos(playersao->getBasePosition(), radius_f,
 		player_radius_f, current_objects, added_objects);
+
+	if (!playersao->getVisible()) {
+		const u16 id = playersao->getId();
+		if (current_objects.find(id) == current_objects.end())
+			added_objects.push(id);
+	}
 }
 
 /*
@@ -1643,7 +1649,7 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 			continue;
 		}
 
-		if (object->isGone()) {
+		if (object->isGone() || (!object->getVisible() && playersao != object)) {
 			removed_objects.push(id);
 			continue;
 		}

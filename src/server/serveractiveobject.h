@@ -154,6 +154,9 @@ public:
 	virtual u16 getHP() const
 	{ return 0; }
 
+	inline void setVisible(bool visible) { m_visible = visible; }
+	inline const bool getVisible() const { return m_visible; }
+
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
 	virtual const ItemGroupList &getArmorGroups() const
@@ -252,6 +255,8 @@ public:
 protected:
 	virtual void onAttach(int parent_id) {}
 	virtual void onDetach(int parent_id) {}
+
+	bool m_visible = true;
 
 	ServerEnvironment *m_env;
 	v3f m_base_position;

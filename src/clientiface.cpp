@@ -685,7 +685,11 @@ void ClientInterface::UpdatePlayerList()
 		for (session_t i : clients) {
 			RemotePlayer *player = m_env->getPlayer(i);
 
-			if (player == NULL)
+			if (!player)
+				continue;
+
+			PlayerSAO *sao = player->getPlayerSAO();
+			if (sao && !sao->getVisible())
 				continue;
 
 			infostream << "* " << player->getName() << "\t";
@@ -786,6 +790,18 @@ ClientState ClientInterface::getClientState(session_t peer_id)
 		return CS_Invalid;
 
 	return n->second->getState();
+}
+
+void ClientInterface::sendFakeJoinLeaveMessage(const std::string &player_name,
+		bool in_game)
+{
+	NetworkPacket notice(TOCLIENT_UPDATE_PLAYER_LIST, 0,
+		PEER_ID_INEXISTENT);
+	notice << (u8) (in_game ? PLAYER_LIST_ADD : PLAYER_LIST_REMOVE)
+		<< (u16) 1 << player_name;
+	sendToAll(&notice);
+
+	UpdatePlayerList();
 }
 
 void ClientInterface::setPlayerName(session_t peer_id, const std::string &name)

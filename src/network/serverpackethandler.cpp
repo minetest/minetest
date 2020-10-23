@@ -401,7 +401,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);
 	list_pkt << (u8) PLAYER_LIST_INIT << (u16) players.size();
 	for (const std::string &player: players) {
-		list_pkt <<  player;
+		list_pkt << player;
 	}
 	m_clients.send(peer_id, 0, &list_pkt, true);
 
