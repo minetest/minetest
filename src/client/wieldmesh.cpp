@@ -305,7 +305,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 
 scene::SMesh *createSpecialNodeMesh(Client *client, content_t id, std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
-	MeshMakeData mesh_make_data(client, false, false);
+	MeshMakeData mesh_make_data(client, false);
 	MeshCollector collector;
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector);

@@ -55,6 +55,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t p
 	m_prop.backface_culling = false;
 	m_prop.makes_footstep_sound = true;
 	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
+	m_prop.show_on_minimap = true;
 	m_hp = m_prop.hp_max;
 	m_breath = m_prop.breath_max;
 	// Disable zoom in survival mode using a value of 0
@@ -109,7 +110,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 
 	// Protocol >= 15
 	writeU8(os, 1); // version
-	os << serializeString(m_player->getName()); // name
+	os << serializeString16(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeS16(os, getId()); // id
 	writeV3F32(os, m_base_position);
@@ -117,22 +118,22 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	writeU16(os, getHP());
 
 	std::ostringstream msg_os(std::ios::binary);
-	msg_os << serializeLongString(getPropertyPacket()); // message 1
-	msg_os << serializeLongString(generateUpdateArmorGroupsCommand()); // 2
-	msg_os << serializeLongString(generateUpdateAnimationCommand()); // 3
+	msg_os << serializeString32(getPropertyPacket()); // message 1
+	msg_os << serializeString32(generateUpdateArmorGroupsCommand()); // 2
+	msg_os << serializeString32(generateUpdateAnimationCommand()); // 3
 	for (const auto &bone_pos : m_bone_position) {
-		msg_os << serializeLongString(generateUpdateBonePositionCommand(
-			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // m_bone_position.size
+		msg_os << serializeString32(generateUpdateBonePositionCommand(
+			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // 3 + N
 	}
-	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
-	msg_os << serializeLongString(generateUpdatePhysicsOverrideCommand()); // 5
+	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4 + m_bone_position.size
+	msg_os << serializeString32(generateUpdatePhysicsOverrideCommand()); // 5 + m_bone_position.size
 
 	int message_count = 5 + m_bone_position.size();
 
 	for (const auto &id : getAttachmentChildIds()) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(id)) {
 			message_count++;
-			msg_os << serializeLongString(obj->generateUpdateInfantCommand(
+			msg_os << serializeString32(obj->generateUpdateInfantCommand(
 				id, protocol_version));
 		}
 	}
@@ -568,9 +569,33 @@ void PlayerSAO::setMaxSpeedOverride(const v3f &vel)
 
 bool PlayerSAO::checkMovementCheat()
 {
-	if (isAttached() || m_is_singleplayer ||
+	if (m_is_singleplayer ||
 			g_settings->getBool("disable_anticheat")) {
 		m_last_good_position = m_base_position;
+		return false;
+	}
+	if (UnitSAO *parent = dynamic_cast<UnitSAO *>(getParent())) {
+		v3f attachment_pos;
+		{
+			int parent_id;
+			std::string bone;
+			v3f attachment_rot;
+			bool force_visible;
+			getAttachment(&parent_id, &bone, &attachment_pos, &attachment_rot, &force_visible);
+		}
+
+		v3f parent_pos = parent->getBasePosition();
+		f32 diff = m_base_position.getDistanceFromSQ(parent_pos) - attachment_pos.getLengthSQ();
+		const f32 maxdiff = 4.0f * BS; // fair trade-off value for various latencies
+
+		if (diff > maxdiff * maxdiff) {
+			setBasePosition(parent_pos);
+			actionstream << "Server: " << m_player->getName()
+					<< " moved away from parent; diff=" << sqrtf(diff) / BS
+					<< " resetting position." << std::endl;
+			return true;
+		}
+		// Player movement is locked to the entity. Skip further checks
 		return false;
 	}
 

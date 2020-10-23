@@ -170,10 +170,11 @@ void ModApiBase::markAliasDeprecated(luaL_Reg *reg)
 			m_deprecated_wrappers.emplace(
 				std::pair<std::string, luaL_Reg>(reg->name, original_reg));
 			reg->func = l_deprecated_function;
+		} else {
+			last_func = reg->func;
+			last_name = reg->name;
 		}
 
-		last_func = reg->func;
-		last_name = reg->name;
 		++reg;
 	}
 }

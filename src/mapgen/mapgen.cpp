@@ -244,26 +244,6 @@ u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 }
 
 
-// Returns Y one under area minimum if not found
-s16 Mapgen::findGroundLevelFull(v2s16 p2d)
-{
-	const v3s16 &em = vm->m_area.getExtent();
-	s16 y_nodes_max = vm->m_area.MaxEdge.Y;
-	s16 y_nodes_min = vm->m_area.MinEdge.Y;
-	u32 i = vm->m_area.index(p2d.X, y_nodes_max, p2d.Y);
-	s16 y;
-
-	for (y = y_nodes_max; y >= y_nodes_min; y--) {
-		MapNode &n = vm->m_data[i];
-		if (ndef->get(n).walkable)
-			break;
-
-		VoxelArea::add_y(em, i, -1);
-	}
-	return (y >= y_nodes_min) ? y : y_nodes_min - 1;
-}
-
-
 // Returns -MAX_MAP_GENERATION_LIMIT if not found
 s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 {
@@ -980,19 +960,6 @@ GenerateNotifier::GenerateNotifier(u32 notify_on,
 	const std::set<u32> *notify_on_deco_ids)
 {
 	m_notify_on = notify_on;
-	m_notify_on_deco_ids = notify_on_deco_ids;
-}
-
-
-void GenerateNotifier::setNotifyOn(u32 notify_on)
-{
-	m_notify_on = notify_on;
-}
-
-
-void GenerateNotifier::setNotifyOnDecoIds(
-	const std::set<u32> *notify_on_deco_ids)
-{
 	m_notify_on_deco_ids = notify_on_deco_ids;
 }
 

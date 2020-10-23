@@ -723,7 +723,8 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	for (auto &glass_tile : glass_tiles)
 		glass_tile = tiles[4];
 
-	u8 param2 = n.getParam2();
+	// Only respect H/V merge bits when paramtype2 = "glasslikeliquidlevel" (liquid tank)
+	u8 param2 = (f->param_type_2 == CPT2_GLASSLIKE_LIQUID_LEVEL) ? n.getParam2() : 0;
 	bool H_merge = !(param2 & 128);
 	bool V_merge = !(param2 & 64);
 	param2 &= 63;

@@ -258,6 +258,20 @@ std::string ItemStack::getDescription(IItemDefManager *itemdef) const
 	return desc.empty() ? name : desc;
 }
 
+std::string ItemStack::getShortDescription(IItemDefManager *itemdef) const
+{
+	std::string desc = metadata.getString("short_description");
+	if (desc.empty())
+		desc = getDefinition(itemdef).short_description;
+	if (!desc.empty())
+		return desc;
+	// no short_description because of old server version or modified builtin
+	// return first line of description
+	std::stringstream sstr(getDescription(itemdef));
+	std::getline(sstr, desc, '\n');
+	return desc;
+}
+
 
 ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
 {

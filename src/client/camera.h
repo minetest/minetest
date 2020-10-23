@@ -171,8 +171,6 @@ public:
 
 	void removeNametag(Nametag *nametag);
 
-	const std::list<Nametag *> &getNametags() { return m_nametags; }
-
 	void drawNametags();
 
 	inline void addArmInertia(f32 player_yaw);

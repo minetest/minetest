@@ -34,10 +34,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // The maximum number of identical world names allowed
 #define MAX_WORLD_NAMES 100
 
+namespace
+{
+
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 {
 	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
 	return conf.readConfigFile(conf_path.c_str());
+}
+
 }
 
 struct GameFindPath
@@ -330,8 +335,11 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	// files that were loaded before.
 	g_settings->clearDefaults();
 	set_default_settings(g_settings);
+
 	Settings game_defaults;
 	getGameMinetestConfig(gamespec.path, game_defaults);
+	game_defaults.removeSecureSettings();
+
 	g_settings->overrideDefaults(&game_defaults);
 
 	infostream << "Initializing world at " << final_path << std::endl;

@@ -364,7 +364,6 @@ private:
 	std::set<v3s16> m_blocks_sent;
 	s16 m_nearest_unsent_d = 0;
 	v3s16 m_last_center;
-	float m_nearest_unsent_reset_timer = 0.0f;
 
 	const u16 m_max_simul_sends;
 	const float m_min_time_from_building;

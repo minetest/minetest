@@ -686,6 +686,11 @@ Call these functions only at load time!
     * Adds definition to minetest.registered_chatcommands
 * `minetest.unregister_chatcommand(name)`
     * Unregisters a chatcommands registered with register_chatcommand.
+* `minetest.register_on_chatcommand(function(command, params))`
+    * Called always when a chatcommand is triggered, before `minetest.registered_chatcommands`
+      is checked to see if that the command exists, but after the input is parsed.
+    * Return `true` to mark the command as handled, which means that the default
+      handlers will be prevented.
 * `minetest.register_on_death(function())`
     * Called when the local player dies
 * `minetest.register_on_hp_modification(function(hp))`

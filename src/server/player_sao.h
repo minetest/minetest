@@ -83,6 +83,7 @@ public:
 	void addedToEnvironment(u32 dtime_s);
 	void removingFromEnvironment();
 	bool isStaticAllowed() const { return false; }
+	bool shouldUnload() const { return false; }
 	std::string getClientInitializationData(u16 protocol_version);
 	void getStaticData(std::string *result) const;
 	void step(float dtime, bool send_recommended);

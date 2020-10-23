@@ -55,10 +55,6 @@ public:
 	// Set whether to close the console after the user presses enter.
 	void setCloseOnEnter(bool close) { m_close_on_enter = close; }
 
-	// Return the desired height (fraction of screen size)
-	// Zero if the console is closed or getting closed
-	f32 getDesiredHeight() const;
-
 	// Replace actual line when adding the actual to the history (if there is any)
 	void replaceAndAddToHistory(const std::wstring &line);
 
