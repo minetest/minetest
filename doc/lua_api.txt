@@ -6122,6 +6122,11 @@ object you are working with still exists.
 
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
+* `move_to(pos, continuous=false)`
+    * Does an interpolated move for Lua entities for visually smooth transitions.
+    * If `continuous` is true, the Lua entity will not be moved to the current
+      position before starting the interpolated move.
+    * For players this does the same as `set_pos`,`continuous` is ignored.
 * `get_velocity()`: returns the velocity, a vector.
 * `add_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
@@ -6135,16 +6140,11 @@ object you are working with still exists.
           (see: physics overrides) will cause existing X/Z velocity to be reduced.
         * Example: `add_velocity({x=0, y=6.5, z=0})` is equivalent to
           pressing the jump key (assuming default settings)
-* `move_to(pos, continuous=false)`
-    * Does an interpolated move for Lua entities for visually smooth transitions.
-    * If `continuous` is true, the Lua entity will not be moved to the current
-      position before starting the interpolated move.
-    * For players this does the same as `set_pos`,`continuous` is ignored.
 * `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
     * `puncher` = another `ObjectRef`,
     * `time_from_last_punch` = time since last punch action of the puncher
     * `direction`: can be `nil`
-* `right_click(clicker)`; `clicker` is another `ObjectRef`
+* `right_click(clicker)`: `clicker` is another `ObjectRef`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
     * See reason in register_on_player_hpchange
@@ -6158,36 +6158,35 @@ object you are working with still exists.
 * `get_wielded_item()`: returns an `ItemStack`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if
   successful.
-* `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
+* `set_armor_groups(groups)`: sets armor group ratings.
+* `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and
+  `frame_loop`.
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
     * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
     * `frame_speed`: number, default: `15.0`
     * `frame_blend`: number, default: `0.0`
     * `frame_loop`: boolean, default: `true`
-* `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and
-  `frame_loop`.
 * `set_animation_frame_speed(frame_speed)`
     * `frame_speed`: number, default: `15.0`
+* `get_bone_position(bone)`: returns position and rotation of the bone
+* `set_bone_position(bone, position, rotation)`
+    * `bone`: string
+    * `position`: `{x=num, y=num, z=num}` (relative)
+    * `rotation`: `{x=num, y=num, z=num}`
+* `get_attach()`: returns parent, bone, position, rotation, forced_visible, 
+    or nil if it isn't attached.
 * `set_attach(parent, bone, position, rotation, forced_visible)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
     * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
     * `forced_visible`: Boolean to control whether the attached entity 
        should appear in first person.
-* `get_attach()`: returns parent, bone, position, rotation, forced_visible, 
-    or nil if it isn't attached.
 * `get_children()`: returns a list of ObjectRefs that are attached to the
     object.
 * `set_detach()`
-* `set_bone_position(bone, position, rotation)`
-    * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}`
-* `get_bone_position(bone)`: returns position and rotation of the bone
-* `set_properties(object property table)`
 * `get_properties()`: returns object property table
-* `is_player()`: returns true for players, false otherwise
+* `set_properties(object property table)`
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object
     * {
@@ -6201,6 +6200,7 @@ object you are working with still exists.
         color = ColorSpec,
         text = "My Nametag",
       }
+* `is_player()`: returns true for players, false otherwise
 
 #### Lua entity only (no-op for other objects)
 
@@ -6210,20 +6210,20 @@ object you are working with still exists.
       no effect and returning `nil`.
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
+* `get_acceleration()`: returns the acceleration, a vector
 * `set_acceleration(acc)`
     * `acc` is a vector
-* `get_acceleration()`: returns the acceleration, a vector
+* `get_rotation()`: returns the rotation, a vector (radians)
 * `set_rotation(rot)`
     * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
       and Z is roll (bank).
-* `get_rotation()`: returns the rotation, a vector (radians)
-* `set_yaw(yaw)`: sets the yaw in radians (heading).
 * `get_yaw()`: returns number in radians
+* `set_yaw(yaw)`: sets the yaw in radians (heading).
+* `get_texture_mod()` returns current texture modifier
 * `set_texture_mod(mod)`
     * Set a texture modifier to the base texture, for sprites and meshes.
     * When calling `set_texture_mod` again, the previous one is discarded.
     * `mod` the texture modifier. See [Texture modifiers].
-* `get_texture_mod()` returns current texture modifier
 * `set_sprite(start_frame, num_frames, framelength, select_x_by_camera)`
     * Specifies and starts a sprite animation
     * Animations iterate along the frame `y` position.
@@ -6248,34 +6248,10 @@ object you are working with still exists.
 * `get_player_velocity()`: **DEPRECATED**, use get_velocity() instead.
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
 * `add_player_velocity(vel)`: **DEPRECATED**, use add_velocity(vel) instead.
-* `get_look_dir()`: get camera direction as a unit vector
-* `get_look_vertical()`: pitch in radians
-    * Angle ranges between -pi/2 and pi/2, which are straight up and down
-      respectively.
-* `get_look_horizontal()`: yaw in radians
-    * Angle is counter-clockwise from the +z direction.
-* `set_look_vertical(radians)`: sets look pitch
-    * radians: Angle from looking forward, where positive is downwards.
-* `set_look_horizontal(radians)`: sets look yaw
-    * radians: Angle from the +z direction, where positive is counter-clockwise.
-* `get_look_pitch()`: pitch in radians - Deprecated as broken. Use
-  `get_look_vertical`.
-    * Angle ranges between -pi/2 and pi/2, which are straight down and up
-      respectively.
-* `get_look_yaw()`: yaw in radians - Deprecated as broken. Use
-  `get_look_horizontal`.
-    * Angle is counter-clockwise from the +x direction.
-* `set_look_pitch(radians)`: sets look pitch - Deprecated. Use
-  `set_look_vertical`.
-* `set_look_yaw(radians)`: sets look yaw - Deprecated. Use
-  `set_look_horizontal`.
-* `get_breath()`: returns player's breath
-* `set_breath(value)`: sets player's breath
-    * values:
-        * `0`: player is drowning
-        * max: bubbles bar is not shown
-        * See [Object properties] for more information
-    * Is limited to range 0 ... 65535 (2^16 - 1)
+* `get_fov()`: Returns the following:
+    * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
+    * Boolean indicating whether the FOV value is a multiplier.
+    * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
 * `set_fov(fov, is_multiplier, transition_time)`: Sets player's FOV
     * `fov`: FOV value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
@@ -6284,30 +6260,32 @@ object you are working with still exists.
       Interpreted as the time (in seconds) to reach target FOV.
       If set to 0, FOV change is instantaneous. Defaults to 0.
     * Set `fov` to 0 to clear FOV override.
-* `get_fov()`: Returns the following:
-    * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
-    * Boolean indicating whether the FOV value is a multiplier.
-    * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
-* `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
-    * Sets an extra attribute with value on player.
-    * `value` must be a string, or a number which will be converted to a
-      string.
-    * If `value` is `nil`, remove attribute from player.
-* `get_attribute(attribute)`:  DEPRECATED, use get_meta() instead
-    * Returns value (a string) for extra attribute.
-    * Returns `nil` if no attribute found.
-* `get_meta()`: Returns a PlayerMetaRef.
-* `set_inventory_formspec(formspec)`
-    * Redefine player's inventory form
-    * Should usually be called in `on_joinplayer`
-* `get_inventory_formspec()`: returns a formspec string
-* `set_formspec_prepend(formspec)`:
-    * the formspec string will be added to every formspec shown to the user,
-      except for those with a no_prepend[] tag.
-    * This should be used to set style elements such as background[] and
-      bgcolor[], any non-style elements (eg: label) may result in weird behaviour.
-    * Only affects formspecs shown after this is called.
-* `get_formspec_prepend(formspec)`: returns a formspec string.
+* `get_look_dir()`: get camera direction as a unit vector
+* `get_look_pitch()`: **DEPRECATED as BROKEN** pitch in radians. Use
+  `get_look_vertical`.
+    * Angle ranges between -pi/2 and pi/2, which are straight down and up
+      respectively.
+* `get_look_yaw()`: **DEPRECATED as BROKEN** yaw in radians. Use
+  `get_look_horizontal`.
+    * Angle is counter-clockwise from the +x direction.
+* `set_look_pitch(radians)`: **DEPRECATED** sets look pitch. Use
+  `set_look_vertical` instead.
+* `set_look_yaw(radians)`: **DEPRECATED** sets look yaw. Use
+  `set_look_horizontal` instead.
+* `get_look_horizontal()`: yaw in radians
+    * Angle is counter-clockwise from the +z direction.
+* `get_look_vertical()`: pitch in radians
+    * Angle ranges between -pi/2 and pi/2, which are straight up and down
+      respectively.
+* `set_look_horizontal(radians)`: sets look yaw
+    * radians: Angle from the +z direction, where positive is counter-clockwise.
+* `set_look_vertical(radians)`: sets look pitch
+    * radians: Angle from looking forward, where positive is downwards.
+* `get_eye_offset()`: returns first and third person offsets.
+* `set_eye_offset(firstperson, thirdperson)`: defines offset vectors for camera
+  per player.
+    * in first person view
+    * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with the following boolean values
       representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
@@ -6326,6 +6304,7 @@ object you are working with still exists.
     * 7 - dig
     * 8 - place
     * 9 - zoom
+* `get_physics_override()`: returns the table given to `set_physics_override`
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
@@ -6337,7 +6316,39 @@ object you are working with still exists.
           (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behaviour (default: `true`)
-* `get_physics_override()`: returns the table given to `set_physics_override`
+* `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
+  `frame_speed`.
+* `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
+  set animation for player model in third person view.
+    * Every animation equals to a `{x=starting frame, y=ending frame}` table.
+    * `frame_speed` sets the animations frame speed. Default is 30.
+* `get_breath()`: returns player's breath
+* `set_breath(value)`: sets player's breath
+    * values:
+        * `0`: player is drowning
+        * max: bubbles bar is not shown
+        * See [Object properties] for more information
+    * Is limited to range 0 ... 65535 (2^16 - 1)
+* `get_attribute(attribute)`:  **DEPRECATED**, use get_meta() instead
+    * Returns value (a string) for extra attribute.
+* `set_attribute(attribute, value)`:  **DEPRECATED**, use get_meta() instead
+    * Sets an extra attribute with value on player.
+    * `value` must be a string, or a number which will be converted to a
+      string.
+    * If `value` is `nil`, remove attribute from player.
+    * Returns `nil` if no attribute found.
+* `get_meta()`: Returns a PlayerMetaRef.
+* `get_inventory_formspec()`: returns a formspec string
+* `set_inventory_formspec(formspec)`
+    * Redefine player's inventory form
+    * Should usually be called in `on_joinplayer`
+* `get_formspec_prepend(formspec)`: returns a formspec string.
+* `set_formspec_prepend(formspec)`:
+    * the formspec string will be added to every formspec shown to the user,
+      except for those with a no_prepend[] tag.
+    * This should be used to set style elements such as background[] and
+      bgcolor[], any non-style elements (eg: label) may result in weird behaviour.
+    * Only affects formspecs shown after this is called.
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
 * `hud_remove(id)`: remove the HUD element of the specified id
@@ -6346,6 +6357,8 @@ object you are working with still exists.
     * element `stat` values:
       `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
+* `hud_get_flags()`: returns a table of player HUD flags with boolean values.
+    * See `hud_set_flags` for a list of flags that can be toggled.
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
         * hotbar
@@ -6359,17 +6372,15 @@ object you are working with still exists.
     * `minimap`: Modifies the client's permission to view the minimap.
       The client may locally elect to not view the minimap.
     * `minimap_radar` is only usable when `minimap` is true
-* `hud_get_flags()`: returns a table of player HUD flags with boolean values.
-    * See `hud_set_flags` for a list of flags that can be toggled.
+* `hud_get_hotbar_itemcount()`: returns number of visible items
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `32`
-* `hud_get_hotbar_itemcount`: returns number of visible items
+* `hud_get_hotbar_image()`: returns texturename
 * `hud_set_hotbar_image(texturename)`
     * sets background image for hotbar
-* `hud_get_hotbar_image`: returns texturename
+* `hud_get_hotbar_selected_image`: returns texturename
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
-* `hud_get_hotbar_selected_image`: returns texturename
 * `set_minimap_modes({mode, mode, ...}, selected_mode)`
     * Overrides the available minimap modes (and toggle order), and changes the
     selected mode.
@@ -6391,6 +6402,7 @@ object you are working with still exists.
           nodes square)
     * `selected_mode` is the mode index to be selected after modes have been changed
     (0 is the first mode).
+* `get_sky()`: returns base_color, type, table of textures, clouds.
 * `set_sky(sky_parameters)`
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
@@ -6433,9 +6445,10 @@ object you are working with still exists.
                 abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
                 `"default"` uses the classic Minetest sun and moon tinting.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
-* `get_sky()`: returns base_color, type, table of textures, clouds.
 * `get_sky_color()`: returns a table with the `sky_color` parameters as in
     `set_sky`.
+* `get_sun()`: returns a table with the current sun parameters as in
+    `set_sun`.
 * `set_sun(sun_parameters)`:
     * `sun_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the sun is visible.
@@ -6449,8 +6462,8 @@ object you are working with still exists.
         * `sunrise_visible`: Boolean for whether the sunrise texture is visible.
             (default: `true`)
         * `scale`: Float controlling the overall size of the sun. (default: `1`)
-* `get_sun()`: returns a table with the current sun parameters as in
-    `set_sun`.
+* `get_moon()`: returns a table with the current moon parameters as in
+    `set_moon`.
 * `set_moon(moon_parameters)`:
     * `moon_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the moon is visible.
@@ -6460,8 +6473,8 @@ object you are working with still exists.
         * `tonemap`: A 512x1 texture containing the tonemap for the moon
             (default: `"moon_tonemap.png"`)
         * `scale`: Float controlling the overall size of the moon (default: `1`)
-* `get_moon()`: returns a table with the current moon parameters as in
-    `set_moon`.
+* `get_stars()`: returns a table with the current stars parameters as in
+    `set_stars`.
 * `set_stars(star_parameters)`:
     * `star_parameters` is a table with the following optional fields:
         * `visible`: Boolean for whether the stars are visible.
@@ -6473,8 +6486,8 @@ object you are working with still exists.
             alpha channel is used to set overall star brightness.
             (default: `#ebebff69`)
         * `scale`: Float controlling the overall size of the stars (default: `1`)
-* `get_stars()`: returns a table with the current stars parameters as in
-    `set_stars`.
+* `get_clouds()`: returns a table with the current cloud parameters as in
+  `set_clouds`.
 * `set_clouds(cloud_parameters)`: set cloud parameters
     * `cloud_parameters` is a table with the following optional fields:
         * `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
@@ -6487,24 +6500,11 @@ object you are working with still exists.
         * `thickness`: cloud thickness in nodes (default `16`)
         * `speed`: 2D cloud speed + direction in nodes per second
           (default `{x=0, z=-2}`).
-* `get_clouds()`: returns a table with the current cloud parameters as in
-  `set_clouds`.
+* `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
       amount.
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
-* `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
-* `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
-  set animation for player model in third person view.
-    * Every animation equals to a `{x=starting frame, y=ending frame}` table.
-    * `frame_speed` sets the animations frame speed. Default is 30.
-* `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
-  `frame_speed`.
-* `set_eye_offset(firstperson, thirdperson)`: defines offset vectors for camera
-  per player.
-    * in first person view
-    * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_eye_offset()`: returns first and third person offsets.
 * `send_mapblock(blockpos)`:
     * Sends a server-side loaded mapblock to the player.
     * Returns `false` if failed.
