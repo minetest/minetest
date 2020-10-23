@@ -336,6 +336,10 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	bool touching_ground_was = touching_ground;
 	touching_ground = result.touching_ground;
+	if (touching_ground && m_speed.Y < 0.0f) {
+		m_speed.Y = 0.0f;
+		setSpeed(m_speed);
+	}
 	bool sneak_can_jump = false;
 
 	// Max. distance (X, Z) over border for sneaking determined by collision box
