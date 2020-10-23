@@ -761,7 +761,8 @@ protected:
 			bool look_for_object, const v3s16 &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed,
-			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
+			const ItemStack &selected_item, const ItemStack &hand_item,
+			const ItemStack &place_item, f32 dtime);
 	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 			const v3f &player_position, bool show_debug);
 	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
@@ -3032,10 +3033,12 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		Calculate what block is the crosshair pointing to
 	*/
 
-	ItemStack selected_item, hand_item;
+	ItemStack selected_item, hand_item, left_item, use_item;
 	const ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
+	player->getLeftWieldedItem(&left_item, &use_item, itemdef_manager);
 
 	const ItemDefinition &selected_def = selected_item.getDefinition(itemdef_manager);
+		
 	f32 d = getToolRange(selected_def, hand_item.getDefinition(itemdef_manager));
 
 	core::line3d<f32> shootline;
@@ -3136,7 +3139,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 				!client->getScript()->on_item_use(selected_item, pointed)))
 			client->interact(INTERACT_USE, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
-		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
+		handlePointingAtNode(pointed, selected_item, hand_item, use_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		v3f player_position  = player->getPosition();
 		handlePointingAtObject(pointed, tool_item, player_position, show_debug);
@@ -3147,7 +3150,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		if (wasKeyPressed(KeyType::DIG) && client->modsLoaded())
 			client->getScript()->on_item_use(selected_item, pointed);
 	} else if (wasKeyPressed(KeyType::PLACE)) {
-		handlePointingAtNothing(selected_item);
+		handlePointingAtNothing(use_item);
 	}
 
 	runData.pointed_old = pointed;
@@ -3270,7 +3273,8 @@ void Game::handlePointingAtNothing(const ItemStack &playerItem)
 
 
 void Game::handlePointingAtNode(const PointedThing &pointed,
-	const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime)
+	const ItemStack &selected_item, const ItemStack &hand_item,
+	const ItemStack &place_item, f32 dtime)
 {
 	v3s16 nodepos = pointed.node_undersurface;
 	v3s16 neighbourpos = pointed.node_abovesurface;
@@ -3309,7 +3313,10 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		infostream << "Place button pressed while looking at ground" << std::endl;
 
 		// Placing animation (always shown for feedback)
-		camera->setDigging(1);
+		if (place_item == selected_item)
+			camera->setDigging(1);
+		else
+			camera->setDiggingLeft(1);
 
 		soundmaker->m_player_rightpunch_sound = SimpleSoundSpec();
 
@@ -3317,8 +3324,8 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		// make that happen
 		// And also set the sound and send the interact
 		// But first check for meta formspec and rightclickable
-		auto &def = selected_item.getDefinition(itemdef_manager);
-		bool placed = nodePlacement(def, selected_item, nodepos, neighbourpos,
+		auto &def = place_item.getDefinition(itemdef_manager);
+		bool placed = nodePlacement(def, place_item, nodepos, neighbourpos,
 			pointed, meta);
 
 		if (placed && client->modsLoaded())
@@ -3849,9 +3856,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	if (client->updateWieldedItem()) {
 		// Update wielded tool
-		ItemStack selected_item, hand_item;
+		ItemStack selected_item, hand_item, left_item;
 		ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
 		camera->wield(tool_item);
+		player->getLeftWieldedItem(&left_item, nullptr, itemdef_manager);
+		camera->wieldLeft(left_item);
 	}
 
 	/*

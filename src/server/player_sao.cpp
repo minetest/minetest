@@ -522,6 +522,16 @@ bool PlayerSAO::setWieldedItem(const ItemStack &item)
 	return false;
 }
 
+bool PlayerSAO::setLeftWieldedItem(const ItemStack &item)
+{
+	InventoryList *llist = m_player->inventory.getList("left_hand");
+	if (llist) {
+		llist->changeItem(0, item);
+		return true;
+	}
+	return false;
+}
+
 void PlayerSAO::disconnected()
 {
 	m_peer_id = PEER_ID_INEXISTENT;

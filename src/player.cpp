@@ -113,6 +113,33 @@ ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 	return (hand && selected->name.empty()) ? *hand : *selected;
 }
 
+bool Player::getLeftWieldedItem(ItemStack *left, ItemStack *use, IItemDefManager *itemdef_manager) const
+{
+	assert(left);
+	
+	ItemStack selected;
+	
+	const InventoryList *mlist = inventory.getList("main");
+	const InventoryList *llist = inventory.getList("left_hand");
+
+	if (llist)
+		*left = llist->getItem(0);
+	
+	if (mlist && m_wield_index < mlist->getSize())
+		selected = mlist->getItem(m_wield_index);
+	
+	const ItemDefinition &selected_def = selected.getDefinition(itemdef_manager);
+	const ItemDefinition &left_def = left->getDefinition(itemdef_manager);
+	
+	bool use_left_hand = selected_def.node_placement_prediction == ""
+		&& left_def.node_placement_prediction != "";
+	
+	if (use)
+		*use = use_left_hand ? *left : selected;
+	
+	return use_left_hand;
+}
+
 u32 Player::addHud(HudElement *toadd)
 {
 	MutexAutoLock lock(m_mutex);

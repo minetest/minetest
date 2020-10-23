@@ -62,6 +62,10 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr, -1, false);
 	m_wieldnode->setItem(ItemStack(), m_client);
 	m_wieldnode->drop(); // m_wieldmgr grabbed it
+	
+	m_left_wieldnode = new WieldMeshSceneNode(m_wieldmgr, -1, false);
+	m_left_wieldnode->setItem(ItemStack(), m_client);
+	m_left_wieldnode->drop();
 
 	/* TODO: Add a callback function so these can be updated when a setting
 	 *       changes.  At this point in time it doesn't matter (e.g. /set
@@ -143,6 +147,8 @@ bool Camera::successfullyCreated(std::string &error_message)
 		error_message = "Failed to create the wielded item scene manager";
 	} else if (!m_wieldnode) {
 		error_message = "Failed to create the wielded item scene node";
+	} else if (!m_left_wieldnode) {
+		error_message = "Failed to create the left wielded item scene node";
 	} else {
 		error_message.clear();
 	}
@@ -174,6 +180,12 @@ void Camera::step(f32 dtime)
 
 	if (m_wield_change_timer >= 0 && was_under_zero)
 		m_wieldnode->setItem(m_wield_item_next, m_client);
+		
+	bool left_was_under_zero = m_left_wield_change_timer < 0;
+	m_left_wield_change_timer = MYMIN(m_left_wield_change_timer + dtime, 0.125);
+
+	if (m_left_wield_change_timer >= 0 && left_was_under_zero)
+		m_left_wieldnode->setItem(m_left_wield_item_next, m_client);
 
 	if (m_view_bobbing_state != 0)
 	{
@@ -230,6 +242,26 @@ void Camera::step(f32 dtime)
 			if (m_digging_button == 0) {
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
 			} else if(m_digging_button == 1) {
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
+			}
+		}
+	}
+	
+	if (m_left_digging_button != -1) {
+		f32 offset = dtime * 3.5f;
+		float m_left_digging_anim_was = m_left_digging_anim;
+		m_left_digging_anim += offset;
+		if (m_left_digging_anim >= 1)
+		{
+			m_left_digging_anim = 0;
+			m_left_digging_button = -1;
+		}
+		float lim = 0.15;
+		if(m_left_digging_anim_was < lim && m_left_digging_anim >= lim)
+		{
+			if (m_left_digging_button == 0) {
+				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
+			} else if(m_left_digging_button == 1) {
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
 			}
 		}
@@ -598,6 +630,47 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 	m_wieldnode->setNodeLightColor(player->light_color);
 
+	// Left wield Item
+	v3f left_wield_position = v3f(m_wieldmesh_offset.X - 110, m_wieldmesh_offset.Y, 65);
+	v3f left_wield_rotation = v3f(-100, 120, -100);
+	left_wield_position.Y += fabs(m_left_wield_change_timer)*320 - 40;
+	if(m_left_digging_anim < 0.05 || m_left_digging_anim > 0.5)
+	{
+		f32 frac = 1.0;
+		if(m_left_digging_anim > 0.5)
+			frac = 2.0 * (m_left_digging_anim - 0.5);
+		f32 ratiothing = std::pow((1.0f - tool_reload_ratio), 0.5f);
+		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
+		left_wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7f);
+		left_wield_position.X += frac * 35.0 * pow(ratiothing2, 1.1f);
+		left_wield_rotation.Y += frac * 70.0 * pow(ratiothing2, 1.4f);
+	}
+	if (m_left_digging_button != -1)
+	{
+		f32 digfrac = m_left_digging_anim;
+		left_wield_position.X += 50 * sin(pow(digfrac, 0.8f) * M_PI);
+		left_wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
+		left_wield_position.Z -= 25 * 0.5;
+
+		core::quaternion quat_begin(left_wield_rotation * core::DEGTORAD);
+		core::quaternion quat_end(v3f(-80, 30, -100) * core::DEGTORAD);
+		core::quaternion quat_slerp;
+		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
+		quat_slerp.toEuler(left_wield_rotation);
+		left_wield_rotation *= core::RADTODEG;
+	} else {
+		f32 bobfrac = my_modf(m_view_bobbing_anim);
+		left_wield_position.X += sin(bobfrac*M_PI*2.0) * 3.0;
+		left_wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
+	}
+	m_left_wieldnode->setPosition(left_wield_position);
+	m_left_wieldnode->setRotation(left_wield_rotation);
+
+	m_left_wieldnode->setNodeLightColor(player->light_color);
+	m_left_wieldnode->setVisible(
+		(m_left_wield_item_next.name != "" && m_left_wield_change_timer > 0)
+		|| (m_left_wield_item_old.name != "" &&  m_left_wield_change_timer < 0));
+	
 	// Set render distance
 	updateViewingRange();
 
@@ -648,6 +721,12 @@ void Camera::setDigging(s32 button)
 		m_digging_button = button;
 }
 
+void Camera::setDiggingLeft(s32 button)
+{
+	if (m_left_digging_button == -1)
+		m_left_digging_button = button;
+}
+
 void Camera::wield(const ItemStack &item)
 {
 	if (item.name != m_wield_item_next.name ||
@@ -657,6 +736,19 @@ void Camera::wield(const ItemStack &item)
 			m_wield_change_timer = -m_wield_change_timer;
 		else if (m_wield_change_timer == 0)
 			m_wield_change_timer = -0.001;
+	}
+}
+
+void Camera::wieldLeft(const ItemStack &item)
+{
+	if (item.name != m_left_wield_item_next.name ||
+			item.metadata != m_left_wield_item_next.metadata) {
+		m_left_wield_item_old = m_left_wield_item_next;
+		m_left_wield_item_next = item;
+		if (m_left_wield_change_timer > 0)
+			m_left_wield_change_timer = -m_left_wield_change_timer;
+		else if (m_left_wield_change_timer == 0)
+			m_left_wield_change_timer = -0.001;
 	}
 }
 

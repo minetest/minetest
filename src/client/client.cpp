@@ -1430,6 +1430,8 @@ bool Client::updateWieldedItem()
 		list->setModified(false);
 	if (auto *list = player->inventory.getList("hand"))
 		list->setModified(false);
+	if (auto *list = player->inventory.getList("left_hand"))
+		list->setModified(false);
 
 	return true;
 }
