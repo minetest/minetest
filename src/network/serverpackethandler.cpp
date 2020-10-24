@@ -921,7 +921,7 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 	return true;
 }
 
-bool Server::checkInteractDirection(RemotePlayer *player, v3f target_pos)
+bool Server::checkInteractDirection(RemotePlayer *player, v3f target_pos, const std::string &what)
 {
 	auto sao = player->getPlayerSAO();
 
@@ -931,7 +931,15 @@ bool Server::checkInteractDirection(RemotePlayer *player, v3f target_pos)
 
 	v3f directionToTarget = target_pos - sao->getBasePosition();
 
-	return directionToTarget.dotProduct(lookDirection) > 0.f;
+	bool isOk = directionToTarget.dotProduct(lookDirection) > 0.f;
+	if (!isOk) {
+		actionstream << "Player " << player->getName()
+					 << " tried to access " << what
+					 << " whilst facing the wrong direction; ignoring." << std::endl;
+		// Call callbacks
+		m_script->on_cheat(player->getPlayerSAO(), "interacted_wrong_direction");
+	}
+	return isOk;
 }
 
 void Server::handleCommand_Interact(NetworkPacket *pkt)
@@ -1063,7 +1071,9 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		}
 		float d = playersao->getEyePosition().getDistanceFrom(target_pos);
 
-		bool isOk = checkInteractDistance(player, d, pointed.dump()) && checkInteractDirection(player, target_pos);
+		const auto what = pointed.dump();
+		bool isOk = checkInteractDistance(player, d, what) &&
+				checkInteractDirection(player, target_pos, what);
 		if (!isOk) {
 			if (pointed.type == POINTEDTHING_NODE) {
 				// Re-send block to revert change on client-side
