@@ -77,6 +77,5 @@ public:
 
 	static int l_deprecated_function(lua_State *L, const char *good, const char *bad, lua_CFunction func);
 private:
-	// <old_name> = { <new_name>, <new_function> }
 	static bool m_error_deprecated_calls;
 };

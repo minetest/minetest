@@ -109,7 +109,7 @@ int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char
 	u64 start_time = porting::getTimeUs();
 	lua_Debug ar;
 
-	// Combine name with line and script backtrace
+	// Get caller name with line and script backtrace
 	FATAL_ERROR_IF(!lua_getstack(L, 1, &ar), "lua_getstack() failed");
 	FATAL_ERROR_IF(!lua_getinfo(L, "Sl", &ar), "lua_getinfo() failed");
 
