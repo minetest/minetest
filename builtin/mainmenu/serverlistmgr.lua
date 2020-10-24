@@ -99,20 +99,7 @@ local function save_favorites(favorites)
 end
 
 --------------------------------------------------------------------------------
-local function read_favorites()
-	local path = get_favorites_path()
-
-	if path:sub(#path - 4):lower() == ".json" then
-		local file = io.open(path, "r")
-		if file then
-			local json = file:read("*all")
-			file:close()
-			return core.parse_json(json)
-		end
-
-		path = path:sub(1, #path - 5) .. ".txt"
-	end
-
+function serverlistmgr.read_legacy_favorites(path)
 	local file = io.open(path, "r")
 	if file then
 		local lines = {}
@@ -170,6 +157,24 @@ local function read_favorites()
 	end
 
 	return nil
+end
+
+--------------------------------------------------------------------------------
+local function read_favorites()
+	local path = get_favorites_path()
+
+	if path:sub(#path - 4):lower() == ".json" then
+		local file = io.open(path, "r")
+		if file then
+			local json = file:read("*all")
+			file:close()
+			return core.parse_json(json)
+		end
+
+		path = path:sub(1, #path - 5) .. ".txt"
+	end
+
+	return serverlistmgr.read_legacy_favorites(path)
 end
 
 --------------------------------------------------------------------------------
