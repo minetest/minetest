@@ -125,7 +125,7 @@ enum class DeprecatedHandlingMode {
  *
  * @return DeprecatedHandlingMode
  */
-DeprecatedHandlingMode getDeprecatedLuaAPIHandlingMode();
+DeprecatedHandlingMode get_deprecated_handling_node();
 
 void log_deprecated(lua_State *L, const std::string &message,
 	int stack_depth=1);
