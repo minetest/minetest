@@ -15,6 +15,48 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local function goto_next_button(self, btn_pos, i)
+	if self.orientation == "horizontal" then
+		btn_pos.x = self.pos.x + --base pos
+		(i - self.startbutton) * self.btn_size +       --button offset
+		self.btn_initial_offset
+	else
+		btn_pos.x = self.pos.x + (self.btn_size * 0.05)
+	end
+
+	if self.orientation == "vertical" then
+		btn_pos.y = self.pos.y + --base pos
+		(i - self.startbutton) * self.btn_size +       --button offset
+		self.btn_initial_offset
+	else
+		btn_pos.y = self.pos.y + (self.btn_size * 0.05)
+	end
+end
+
+local function is_pos_out_of_bounds(self, btn_pos)
+	return (self.orientation == "vertical" and
+			(btn_pos.y + self.btn_size <= self.pos.y + self.size.y)) or
+			(self.orientation == "horizontal" and
+			(btn_pos.x + self.btn_size <= self.pos.x + self.size.x))
+end
+
+local function get_buttons_per_page(self)
+	local i = 1
+	local buttons = 0
+	while true do
+		local btn_pos = {}
+
+		goto_next_button(self, btn_pos, i)
+
+		if is_pos_out_of_bounds(self, btn_pos) then
+			buttons = buttons + 1
+		else
+			break
+		end
+		i = i + 1
+	end
+	return buttons
+end
 
 local function buttonbar_formspec(self)
 
@@ -25,42 +67,26 @@ local function buttonbar_formspec(self)
 	local formspec = string.format("box[%f,%f;%f,%f;%s]",
 			self.pos.x,self.pos.y ,self.size.x,self.size.y,self.bgcolor)
 
+	local buttons = 0
 	for i=self.startbutton,#self.buttons,1 do
 		local btn_name = self.buttons[i].name
 		local btn_pos = {}
 
-		if self.orientation == "horizontal" then
-			btn_pos.x = self.pos.x + --base pos
-			(i - self.startbutton) * self.btn_size +       --button offset
-			self.btn_initial_offset
-		else
-			btn_pos.x = self.pos.x + (self.btn_size * 0.05)
-		end
+		goto_next_button(self, btn_pos, i)
 
-		if self.orientation == "vertical" then
-			btn_pos.y = self.pos.y + --base pos
-			(i - self.startbutton) * self.btn_size +       --button offset
-			self.btn_initial_offset
-		else
-			btn_pos.y = self.pos.y + (self.btn_size * 0.05)
-		end
+		if is_pos_out_of_bounds(self, btn_pos) then
+			local borders="true"
 
-		if (self.orientation == "vertical" and
-			(btn_pos.y + self.btn_size <= self.pos.y + self.size.y)) or
-			(self.orientation == "horizontal" and
-			(btn_pos.x + self.btn_size <= self.pos.x + self.size.x)) then
+			if self.buttons[i].image ~= nil then
+				borders="false"
+			end
 
-		local borders="true"
-
-		if self.buttons[i].image ~= nil then
-			borders="false"
-		end
-
-		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;%s;%s;%s;true;%s]tooltip[%s;%s]",
-					btn_pos.x, btn_pos.y, self.btn_size, self.btn_size,
-					self.buttons[i].image, btn_name, self.buttons[i].caption,
-					borders, btn_name, self.buttons[i].tooltip)
+			formspec = formspec ..
+				string.format("image_button[%f,%f;%f,%f;%s;%s;%s;true;%s]tooltip[%s;%s]",
+						btn_pos.x, btn_pos.y, self.btn_size, self.btn_size,
+						self.buttons[i].image, btn_name, self.buttons[i].caption,
+						borders, btn_name, self.buttons[i].tooltip)
+			buttons = buttons + 1
 		else
 			--print("end of displayable buttons: orientation: " .. self.orientation)
 			--print( "button_end: " .. (btn_pos.y + self.btn_size - (self.btn_size * 0.05)))
@@ -112,14 +138,14 @@ end
 local function buttonbar_buttonhandler(self, fields)
 
 	if fields["btnbar_inc_" .. self.name] ~= nil and
-		self.startbutton < #self.buttons then
+		self.startbutton + self.step_size < #self.buttons then
 
-		self.startbutton = self.startbutton + 1
+		self.startbutton = self.startbutton + self.step_size
 		return true
 	end
 
 	if fields["btnbar_dec_" .. self.name] ~= nil and self.startbutton > 1 then
-		self.startbutton = self.startbutton - 1
+		self.startbutton = math.max(1, self.startbutton - self.step_size)
 		return true
 	end
 
@@ -207,6 +233,8 @@ function buttonbar_create(name, cbf_buttonhandler, pos, orientation, size)
 
 	self.userbuttonhandler = cbf_buttonhandler
 	self.buttons = {}
+
+	self.step_size = get_buttons_per_page(self)
 
 	setmetatable(self,buttonbar_metatable)
 
