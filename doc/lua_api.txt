@@ -6123,6 +6123,11 @@ object you are working with still exists.
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
 * `get_velocity()`: returns the velocity, a vector.
+* `move_to(pos, continuous=false)`
+    * Does an interpolated move for Lua entities for visually smooth transitions.
+    * If `continuous` is true, the Lua entity will not be moved to the current
+      position before starting the interpolated move.
+    * For players this does the same as `set_pos`,`continuous` is ignored.
 * `add_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
     * In comparison to using get_velocity, adding the velocity and then using
@@ -6135,16 +6140,11 @@ object you are working with still exists.
           (see: physics overrides) will cause existing X/Z velocity to be reduced.
         * Example: `add_velocity({x=0, y=6.5, z=0})` is equivalent to
           pressing the jump key (assuming default settings)
-* `move_to(pos, continuous=false)`
-    * Does an interpolated move for Lua entities for visually smooth transitions.
-    * If `continuous` is true, the Lua entity will not be moved to the current
-      position before starting the interpolated move.
-    * For players this does the same as `set_pos`,`continuous` is ignored.
 * `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
     * `puncher` = another `ObjectRef`,
     * `time_from_last_punch` = time since last punch action of the puncher
     * `direction`: can be `nil`
-* `right_click(clicker)`; `clicker` is another `ObjectRef`
+* `right_click(clicker)`: `clicker` is another `ObjectRef`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp, reason)`: set number of hitpoints (2 * number of hearts).
     * See reason in register_on_player_hpchange
@@ -6158,7 +6158,7 @@ object you are working with still exists.
 * `get_wielded_item()`: returns an `ItemStack`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if
   successful.
-* `set_armor_groups({group1=rating, group2=rating, ...})`
+* `set_armor_groups(groups)`: sets armor group ratings.
 * `get_armor_groups()`: returns a table with the armor group ratings
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
     * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
@@ -6187,7 +6187,6 @@ object you are working with still exists.
 * `get_bone_position(bone)`: returns position and rotation of the bone
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
-* `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object
     * {
@@ -6201,6 +6200,7 @@ object you are working with still exists.
         color = ColorSpec,
         text = "My Nametag",
       }
+* `is_player()`: returns true for players, false otherwise
 
 #### Lua entity only (no-op for other objects)
 
@@ -6239,7 +6239,7 @@ object you are working with still exists.
         * Fourth column: subject looking to the right
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
-* `get_entity_name()` (**Deprecated**: Will be removed in a future version)
+* `get_entity_name()` (**DEPRECATED**: Will be removed in a future version)
 * `get_luaentity()`
 
 #### Player only (no-op for other objects)
@@ -6258,16 +6258,16 @@ object you are working with still exists.
     * radians: Angle from looking forward, where positive is downwards.
 * `set_look_horizontal(radians)`: sets look yaw
     * radians: Angle from the +z direction, where positive is counter-clockwise.
-* `get_look_pitch()`: pitch in radians - Deprecated as broken. Use
+* `get_look_pitch()`: **DEPRECATED as BROKEN** pitch in radians. Use
   `get_look_vertical`.
     * Angle ranges between -pi/2 and pi/2, which are straight down and up
       respectively.
-* `get_look_yaw()`: yaw in radians - Deprecated as broken. Use
+* `get_look_yaw()`: **DEPRECATED as BROKEN** yaw in radians. Use
   `get_look_horizontal`.
     * Angle is counter-clockwise from the +x direction.
-* `set_look_pitch(radians)`: sets look pitch - Deprecated. Use
+* `set_look_pitch(radians)`: **DEPRECATED** sets look pitch. Use
   `set_look_vertical`.
-* `set_look_yaw(radians)`: sets look yaw - Deprecated. Use
+* `set_look_yaw(radians)`: **DEPRECATED** sets look yaw. Use
   `set_look_horizontal`.
 * `get_breath()`: returns player's breath
 * `set_breath(value)`: sets player's breath
@@ -6363,13 +6363,13 @@ object you are working with still exists.
     * See `hud_set_flags` for a list of flags that can be toggled.
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `32`
-* `hud_get_hotbar_itemcount`: returns number of visible items
+* `hud_get_hotbar_itemcount()`: returns number of visible items
 * `hud_set_hotbar_image(texturename)`
     * sets background image for hotbar
-* `hud_get_hotbar_image`: returns texturename
+* `hud_get_hotbar_image()`: returns texturename
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
-* `hud_get_hotbar_selected_image`: returns texturename
+* `hud_get_hotbar_selected_image()`: returns texturename
 * `set_minimap_modes({mode, mode, ...}, selected_mode)`
     * Overrides the available minimap modes (and toggle order), and changes the
     selected mode.

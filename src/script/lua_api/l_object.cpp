@@ -158,6 +158,53 @@ int ObjectRef::l_move_to(lua_State *L)
 	return 0;
 }
 
+// get_velocity(self)
+int ObjectRef::l_get_velocity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	if (sao->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
+		LuaEntitySAO *entitysao = dynamic_cast<LuaEntitySAO*>(sao);
+		v3f vel = entitysao->getVelocity();
+		pushFloatPos(L, vel);
+		return 1;
+	} else if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		RemotePlayer *player = dynamic_cast<PlayerSAO*>(sao)->getPlayer();
+		push_v3f(L, player->getSpeed() / BS);
+		return 1;
+	}
+
+	lua_pushnil(L);
+	return 1;
+}
+
+// add_velocity(self, velocity)
+int ObjectRef::l_add_velocity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	v3f vel = checkFloatPos(L, 2);
+
+	if (sao->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
+		LuaEntitySAO *entitysao = dynamic_cast<LuaEntitySAO*>(sao);
+		entitysao->addVelocity(vel);
+	} else if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		PlayerSAO *playersao = dynamic_cast<PlayerSAO*>(sao);
+		playersao->setMaxSpeedOverride(vel);
+		getServer(L)->SendPlayerSpeed(playersao->getPeerID(), vel);
+	}
+
+	return 0;
+}
+
 // punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
 int ObjectRef::l_punch(lua_State *L)
 {
@@ -422,103 +469,6 @@ int ObjectRef::l_get_animation(lua_State *L)
 	return 4;
 }
 
-// set_local_animation(self, idle, walk, dig, walk_while_dig, frame_speed)
-int ObjectRef::l_set_local_animation(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
-		return 0;
-
-	v2s32 frames[4];
-	for (int i=0;i<4;i++) {
-		if (!lua_isnil(L, 2+1))
-			frames[i] = read_v2s32(L, 2+i);
-	}
-	float frame_speed = lua_isnil(L, 6) ? 30 : readParam<float>(L, 6);
-
-	getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed);
-	lua_pushboolean(L, true);
-	return 1;
-}
-
-// get_local_animation(self)
-int ObjectRef::l_get_local_animation(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
-		return 0;
-
-	v2s32 frames[4];
-	float frame_speed;
-	player->getLocalAnimations(frames, &frame_speed);
-
-	for (const v2s32 &frame : frames) {
-		push_v2s32(L, frame);
-	}
-
-	lua_pushnumber(L, frame_speed);
-	return 5;
-}
-
-// set_eye_offset(self, firstperson, thirdperson)
-int ObjectRef::l_set_eye_offset(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
-		return 0;
-
-	v3f offset_first = read_v3f(L, 2);
-	v3f offset_third = read_v3f(L, 3);
-
-	// Prevent abuse of offset values (keep player always visible)
-	offset_third.X = rangelim(offset_third.X,-10,10);
-	offset_third.Z = rangelim(offset_third.Z,-5,5);
-	/* TODO: if possible: improve the camera collision detection to allow Y <= -1.5) */
-	offset_third.Y = rangelim(offset_third.Y,-10,15); //1.5*BS
-
-	getServer(L)->setPlayerEyeOffset(player, offset_first, offset_third);
-	lua_pushboolean(L, true);
-	return 1;
-}
-
-// get_eye_offset(self)
-int ObjectRef::l_get_eye_offset(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
-		return 0;
-
-	push_v3f(L, player->eye_offset_first);
-	push_v3f(L, player->eye_offset_third);
-	return 2;
-}
-
-// send_mapblock(self, pos)
-int ObjectRef::l_send_mapblock(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	if (player == nullptr)
-		return 0;
-
-	v3s16 pos = read_v3s16(L, 2);
-
-	session_t peer_id = player->getPeerId();
-	bool r = getServer(L)->SendBlock(peer_id, pos);
-
-	lua_pushboolean(L, r);
-	return 1;
-}
-
 // set_animation_frame_speed(self, frame_speed)
 int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 {
@@ -707,16 +657,6 @@ int ObjectRef::l_get_properties(lua_State *L)
 	return 1;
 }
 
-// is_player(self)
-int ObjectRef::l_is_player(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	RemotePlayer *player = getplayer(ref);
-	lua_pushboolean(L, (player != nullptr));
-	return 1;
-}
-
 // set_nametag_attributes(self, attributes)
 int ObjectRef::l_set_nametag_attributes(lua_State *L)
 {
@@ -769,6 +709,16 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 	return 1;
 }
 
+// is_player(self)
+int ObjectRef::l_is_player(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	lua_pushboolean(L, (player != nullptr));
+	return 1;
+}
+
 /* LuaEntitySAO-only */
 
 // set_velocity(self, velocity)
@@ -784,53 +734,6 @@ int ObjectRef::l_set_velocity(lua_State *L)
 
 	sao->setVelocity(vel);
 	return 0;
-}
-
-// add_velocity(self, velocity)
-int ObjectRef::l_add_velocity(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	ServerActiveObject *sao = getobject(ref);
-	if (sao == nullptr)
-		return 0;
-
-	v3f vel = checkFloatPos(L, 2);
-
-	if (sao->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
-		LuaEntitySAO *entitysao = dynamic_cast<LuaEntitySAO*>(sao);
-		entitysao->addVelocity(vel);
-	} else if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		PlayerSAO *playersao = dynamic_cast<PlayerSAO*>(sao);
-		playersao->setMaxSpeedOverride(vel);
-		getServer(L)->SendPlayerSpeed(playersao->getPeerID(), vel);
-	}
-
-	return 0;
-}
-
-// get_velocity(self)
-int ObjectRef::l_get_velocity(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	ServerActiveObject *sao = getobject(ref);
-	if (sao == nullptr)
-		return 0;
-
-	if (sao->getType() == ACTIVEOBJECT_TYPE_LUAENTITY) {
-		LuaEntitySAO *entitysao = dynamic_cast<LuaEntitySAO*>(sao);
-		v3f vel = entitysao->getVelocity();
-		pushFloatPos(L, vel);
-		return 1;
-	} else if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		RemotePlayer *player = dynamic_cast<PlayerSAO*>(sao)->getPlayer();
-		push_v3f(L, player->getSpeed() / BS);
-		return 1;
-	}
-
-	lua_pushnil(L);
-	return 1;
 }
 
 // set_acceleration(self, acceleration)
@@ -979,9 +882,11 @@ int ObjectRef::l_set_sprite(lua_State *L)
 int ObjectRef::l_get_entity_name(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
+	log_deprecated(L,"Deprecated call to \"get_entity_name");
+
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
-	log_deprecated(L,"Deprecated call to \"get_entity_name");
 	if (entitysao == nullptr)
 		return 0;
 
@@ -1205,6 +1110,85 @@ int ObjectRef::l_get_fov(lua_State *L)
 	lua_pushboolean(L, fov_spec.is_multiplier);
 	lua_pushnumber(L, fov_spec.transition_time);
 	return 3;
+}
+
+// get_eye_offset(self)
+int ObjectRef::l_get_eye_offset(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	push_v3f(L, player->eye_offset_first);
+	push_v3f(L, player->eye_offset_third);
+	return 2;
+}
+
+// set_eye_offset(self, firstperson, thirdperson)
+int ObjectRef::l_set_eye_offset(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	v3f offset_first = read_v3f(L, 2);
+	v3f offset_third = read_v3f(L, 3);
+
+	// Prevent abuse of offset values (keep player always visible)
+	offset_third.X = rangelim(offset_third.X,-10,10);
+	offset_third.Z = rangelim(offset_third.Z,-5,5);
+	/* TODO: if possible: improve the camera collision detection to allow Y <= -1.5) */
+	offset_third.Y = rangelim(offset_third.Y,-10,15); //1.5*BS
+
+	getServer(L)->setPlayerEyeOffset(player, offset_first, offset_third);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_local_animation(self)
+int ObjectRef::l_get_local_animation(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	v2s32 frames[4];
+	float frame_speed;
+	player->getLocalAnimations(frames, &frame_speed);
+
+	for (const v2s32 &frame : frames) {
+		push_v2s32(L, frame);
+	}
+
+	lua_pushnumber(L, frame_speed);
+	return 5;
+}
+
+// set_local_animation(self, idle, walk, dig, walk_while_dig, frame_speed)
+int ObjectRef::l_set_local_animation(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	v2s32 frames[4];
+	for (int i=0;i<4;i++) {
+		if (!lua_isnil(L, 2+1))
+			frames[i] = read_v2s32(L, 2+i);
+	}
+	float frame_speed = lua_isnil(L, 6) ? 30 : readParam<float>(L, 6);
+
+	getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed);
+	lua_pushboolean(L, true);
+	return 1;
 }
 
 // set_breath(self, breath)
@@ -2237,6 +2221,24 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 	return 0;
 }
 
+// send_mapblock(self, pos)
+int ObjectRef::l_send_mapblock(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	v3s16 pos = read_v3s16(L, 2);
+
+	session_t peer_id = player->getPeerId();
+	bool r = getServer(L)->SendBlock(peer_id, pos);
+
+	lua_pushboolean(L, r);
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {}
@@ -2290,6 +2292,10 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod_aliased(ObjectRef, get_pos, getpos),
 	luamethod_aliased(ObjectRef, set_pos, setpos),
 	luamethod_aliased(ObjectRef, move_to, moveto),
+	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
+	{"get_player_velocity", ObjectRef::l_get_velocity},
+	luamethod(ObjectRef, add_velocity),
+	{"add_player_velocity", ObjectRef::l_add_velocity},
 	luamethod(ObjectRef, punch),
 	luamethod(ObjectRef, right_click),
 	luamethod(ObjectRef, set_hp),
@@ -2314,14 +2320,10 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_properties),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
-
-	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
-	luamethod(ObjectRef, add_velocity),
-	{"add_player_velocity", ObjectRef::l_add_velocity},
-	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
-	{"get_player_velocity", ObjectRef::l_get_velocity},
+	luamethod(ObjectRef, is_player),
 
 	// LuaEntitySAO-only
+	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),
@@ -2335,7 +2337,6 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_luaentity),
 
 	// Player-only
-	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, get_player_name),
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
@@ -2348,6 +2349,10 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_look_pitch),
 	luamethod(ObjectRef, get_fov),
 	luamethod(ObjectRef, set_fov),
+	luamethod(ObjectRef, get_eye_offset),
+	luamethod(ObjectRef, set_eye_offset),
+	luamethod(ObjectRef, get_local_animation),
+	luamethod(ObjectRef, set_local_animation),
 	luamethod(ObjectRef, get_breath),
 	luamethod(ObjectRef, set_breath),
 	luamethod(ObjectRef, get_attribute),
@@ -2386,11 +2391,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_clouds),
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, get_day_night_ratio),
-	luamethod(ObjectRef, set_local_animation),
-	luamethod(ObjectRef, get_local_animation),
-	luamethod(ObjectRef, set_eye_offset),
-	luamethod(ObjectRef, get_eye_offset),
-	luamethod(ObjectRef, send_mapblock),
 	luamethod(ObjectRef, set_minimap_modes),
+	luamethod(ObjectRef, send_mapblock),
 	{0,0}
 };

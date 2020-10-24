@@ -77,6 +77,12 @@ private:
 	// move_to(self, pos, continuous)
 	static int l_move_to(lua_State *L);
 
+	// get_velocity(self)
+	static int l_get_velocity(lua_State *L);
+
+	// add_velocity(self, velocity)
+	static int l_add_velocity(lua_State *L);
+
 	// punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
 	static int l_punch(lua_State *L);
 
@@ -149,6 +155,12 @@ private:
 	// get_properties(self)
 	static int l_get_properties(lua_State *L);
 
+	// set_nametag_attributes(self, attributes)
+	static int l_set_nametag_attributes(lua_State *L);
+
+	// get_nametag_attributes(self)
+	static int l_get_nametag_attributes(lua_State *L);
+
 	// is_player(self)
 	static int l_is_player(lua_State *L);
 
@@ -156,12 +168,6 @@ private:
 
 	// set_velocity(self, velocity)
 	static int l_set_velocity(lua_State *L);
-
-	// add_velocity(self, velocity)
-	static int l_add_velocity(lua_State *L);
-
-	// get_velocity(self)
-	static int l_get_velocity(lua_State *L);
 
 	// set_acceleration(self, acceleration)
 	static int l_set_acceleration(lua_State *L);
@@ -202,9 +208,6 @@ private:
 	// get_player_name(self)
 	static int l_get_player_name(lua_State *L);
 
-	// get_fov(self)
-	static int l_get_fov(lua_State *L);
-
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L);
 
@@ -225,6 +228,9 @@ private:
 	// set_fov(self, degrees, is_multiplier, transition_time)
 	static int l_set_fov(lua_State *L);
 
+	// get_fov(self)
+	static int l_get_fov(lua_State *L);
+
 	// set_look_vertical(self, radians)
 	static int l_set_look_vertical(lua_State *L);
 
@@ -238,6 +244,18 @@ private:
 	// DEPRECATED
 	// set_look_yaw(self, radians)
 	static int l_set_look_yaw(lua_State *L);
+
+	// get_eye_offset(self)
+	static int l_get_eye_offset(lua_State *L);
+
+	// set_eye_offset(self, firstperson, thirdperson)
+	static int l_set_eye_offset(lua_State *L);
+
+	// get_local_animation(self)
+	static int l_get_local_animation(lua_State *L);
+
+	// set_local_animation(self, idle, walk, dig, walk_while_dig, frame_speed)
+	static int l_set_local_animation(lua_State *L);
 
 	// set_breath(self, breath)
 	static int l_set_breath(lua_State *L);
@@ -277,14 +295,11 @@ private:
 	// hud_add(self, id, form)
 	static int l_hud_add(lua_State *L);
 
-	// hud_rm(self, id)
+	// hud_remove(self, id)
 	static int l_hud_remove(lua_State *L);
 
 	// hud_change(self, id, stat, data)
 	static int l_hud_change(lua_State *L);
-
-	// hud_get_next_id(self)
-	static u32 hud_get_next_id(lua_State *L);
 
 	// hud_get(self, id)
 	static int l_hud_get(lua_State *L);
@@ -351,24 +366,6 @@ private:
 
 	// get_day_night_ratio(self)
 	static int l_get_day_night_ratio(lua_State *L);
-
-	// set_local_animation(self, idle, walk, dig, walk_while_dig, frame_speed)
-	static int l_set_local_animation(lua_State *L);
-
-	// get_local_animation(self)
-	static int l_get_local_animation(lua_State *L);
-
-	// set_eye_offset(self, firstperson, thirdperson)
-	static int l_set_eye_offset(lua_State *L);
-
-	// get_eye_offset(self)
-	static int l_get_eye_offset(lua_State *L);
-
-	// set_nametag_attributes(self, attributes)
-	static int l_set_nametag_attributes(lua_State *L);
-
-	// get_nametag_attributes(self)
-	static int l_get_nametag_attributes(lua_State *L);
 
 	// send_mapblock(pos)
 	static int l_send_mapblock(lua_State *L);
