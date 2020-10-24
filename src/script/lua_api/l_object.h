@@ -367,9 +367,9 @@ private:
 	// get_day_night_ratio(self)
 	static int l_get_day_night_ratio(lua_State *L);
 
-	// send_mapblock(pos)
-	static int l_send_mapblock(lua_State *L);
-
 	// set_minimap_modes(self, modes, wanted_mode)
 	static int l_set_minimap_modes(lua_State *L);
+
+	// send_mapblock(pos)
+	static int l_send_mapblock(lua_State *L);
 };
