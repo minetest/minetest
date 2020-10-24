@@ -100,11 +100,13 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 	return true;
 }
 
-bool ModApiBase::m_error_deprecated_calls = false;
-
 int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char *bad, lua_CFunction func)
 {
 	thread_local std::vector<u64> deprecated_logged;
+
+	DeprecatedHandlingMode deprecatedHandlingMode = getDeprecatedLuaAPIHandlingMode();
+	if (deprecatedHandlingMode == DeprecatedHandlingMode::Ignore)
+		return func(L);
 
 	u64 start_time = porting::getTimeUs();
 	lua_Debug ar;
@@ -125,7 +127,7 @@ int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char
 		warningstream << "Call to deprecated function '"  << bad << "', please use '"
 			<< good << "' at " << backtrace << std::endl;
 
-		if (m_error_deprecated_calls)
+		if (deprecatedHandlingMode == DeprecatedHandlingMode::Error)
 			script_error(L, LUA_ERRRUN, NULL, NULL);
 	}
 
@@ -134,3 +136,4 @@ int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char
 
 	return func(L);
 }
+

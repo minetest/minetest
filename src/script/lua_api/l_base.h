@@ -41,7 +41,6 @@ class Environment;
 class ServerInventoryManager;
 
 class ModApiBase : protected LuaHelper {
-
 public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
 	static Server*          getServer(lua_State *L);
@@ -76,6 +75,4 @@ public:
 			int top);
 
 	static int l_deprecated_function(lua_State *L, const char *good, const char *bad, lua_CFunction func);
-private:
-	static bool m_error_deprecated_calls;
 };

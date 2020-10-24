@@ -155,24 +155,28 @@ static void script_log(lua_State *L, const std::string &message,
 		infostream << script_get_backtrace(L) << std::endl;
 }
 
-void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
-{
+DeprecatedHandlingMode getDeprecatedLuaAPIHandlingMode() {
 	static thread_local bool configured = false;
-	static thread_local bool do_log = false;
-	static thread_local bool do_error = false;
+	static thread_local DeprecatedHandlingMode ret = DeprecatedHandlingMode::Ignore;
 
 	// Only read settings on first call
 	if (!configured) {
 		std::string value = g_settings->get("deprecated_lua_api_handling");
 		if (value == "log") {
-			do_log = true;
+			ret = DeprecatedHandlingMode::Log;
 		} else if (value == "error") {
-			do_log = true;
-			do_error = true;
+			ret = DeprecatedHandlingMode::Error;
 		}
 		configured = true;
 	}
 
+	return ret;
+}
+
+void log_deprecated(lua_State *L, const std::string &message, int stack_depth)
+{
+	DeprecatedHandlingMode mode = getDeprecatedLuaAPIHandlingMode();
+	bool do_log = mode != DeprecatedHandlingMode::Ignore;
 	if (do_log)
-		script_log(L, message, warningstream, do_error, stack_depth);
+		script_log(L, message, warningstream, mode == DeprecatedHandlingMode::Error, stack_depth);
 }

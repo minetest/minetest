@@ -114,5 +114,18 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 void script_run_callbacks_f(lua_State *L, int nargs,
 	RunCallbacksMode mode, const char *fxn);
 
+enum class DeprecatedHandlingMode {
+	Ignore,
+	Log,
+	Error
+};
+
+/**
+ * Reads `deprecated_lua_api_handling` in settings, returns cached value.
+ *
+ * @return DeprecatedHandlingMode
+ */
+DeprecatedHandlingMode getDeprecatedLuaAPIHandlingMode();
+
 void log_deprecated(lua_State *L, const std::string &message,
 	int stack_depth=1);

@@ -36,12 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		}}
 
 #define luamethod_aliased(class, name, alias) \
-		{#name, class::l_##name},             \
+		luamethod(class, name),               \
 		luamethod_dep(class, name, alias)
-
-#define luamethod_aliased2(class, name, alias1, alias2) \
-		luamethod_aliased(class, name, alias1),         \
-		luamethod_dep(class, name, alias2)
 
 #define API_FCT(name) registerFunction(L, #name, l_##name, top)
 
