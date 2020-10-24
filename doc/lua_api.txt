@@ -6288,6 +6288,17 @@ object you are working with still exists.
     * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
     * Boolean indicating whether the FOV value is a multiplier.
     * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
+* `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
+  set animation for player model in third person view.
+    * Every animation equals to a `{x=starting frame, y=ending frame}` table.
+    * `frame_speed` sets the animations frame speed. Default is 30.
+* `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
+  `frame_speed`.
+* `set_eye_offset(firstperson, thirdperson)`: defines offset vectors for camera
+  per player.
+    * in first person view
+    * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
+* `get_eye_offset()`: returns first and third person offsets.
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a
@@ -6494,17 +6505,6 @@ object you are working with still exists.
       amount.
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
-* `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
-  set animation for player model in third person view.
-    * Every animation equals to a `{x=starting frame, y=ending frame}` table.
-    * `frame_speed` sets the animations frame speed. Default is 30.
-* `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
-  `frame_speed`.
-* `set_eye_offset(firstperson, thirdperson)`: defines offset vectors for camera
-  per player.
-    * in first person view
-    * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_eye_offset()`: returns first and third person offsets.
 * `send_mapblock(blockpos)`:
     * Sends a server-side loaded mapblock to the player.
     * Returns `false` if failed.
