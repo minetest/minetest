@@ -921,6 +921,19 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 	return true;
 }
 
+bool Server::checkInteractDirection(RemotePlayer *player, v3f target_pos)
+{
+	auto sao = player->getPlayerSAO();
+
+	float pitch = sao->getRadLookPitchDep();
+	float yaw = sao->getRadYawDep();
+	v3f lookDirection(std::cos(pitch) * std::cos(yaw), std::sin(pitch), std::cos(pitch) * std::sin(yaw));
+
+	v3f directionToTarget = target_pos - sao->getBasePosition();
+
+	return directionToTarget.dotProduct(lookDirection) > 0.f;
+}
+
 void Server::handleCommand_Interact(NetworkPacket *pkt)
 {
 	/*
@@ -1050,12 +1063,14 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		}
 		float d = playersao->getEyePosition().getDistanceFrom(target_pos);
 
-		if (!checkInteractDistance(player, d, pointed.dump())
-				&& pointed.type == POINTEDTHING_NODE) {
-			// Re-send block to revert change on client-side
-			RemoteClient *client = getClient(peer_id);
-			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
-			client->SetBlockNotSent(blockpos);
+		bool isOk = checkInteractDistance(player, d, pointed.dump()) && checkInteractDirection(player, target_pos);
+		if (!isOk) {
+			if (pointed.type == POINTEDTHING_NODE) {
+				// Re-send block to revert change on client-side
+				RemoteClient *client = getClient(peer_id);
+				v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
+				client->SetBlockNotSent(blockpos);
+			}
 			return;
 		}
 	}
