@@ -64,10 +64,9 @@ task prepareAssets() {
 	copy {
 		from "${projRoot}/builtin" into "${assetsFolder}/builtin"
 	}
-	/*copy {
-		// ToDo: fix Minetest shaders that currently don't work with OpenGL ES
+	copy {
 		from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
-	}*/
+	}
 	copy {
 		from "../native/deps/Android/Irrlicht/shaders" into "${assetsFolder}/client/shaders/Irrlicht"
 	}
