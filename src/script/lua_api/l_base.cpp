@@ -104,8 +104,8 @@ int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char
 {
 	thread_local std::vector<u64> deprecated_logged;
 
-	DeprecatedHandlingMode deprecatedHandlingMode = get_deprecated_handling_node();
-	if (deprecatedHandlingMode == DeprecatedHandlingMode::Ignore)
+	DeprecatedHandlingMode dep_mode = get_deprecated_handling_node();
+	if (dep_mode == DeprecatedHandlingMode::Ignore)
 		return func(L);
 
 	u64 start_time = porting::getTimeUs();
@@ -127,7 +127,7 @@ int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char
 		warningstream << "Call to deprecated function '"  << bad << "', please use '"
 			<< good << "' at " << backtrace << std::endl;
 
-		if (deprecatedHandlingMode == DeprecatedHandlingMode::Error)
+		if (dep_mode == DeprecatedHandlingMode::Error)
 			script_error(L, LUA_ERRRUN, NULL, NULL);
 	}
 
