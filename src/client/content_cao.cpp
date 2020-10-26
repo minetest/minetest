@@ -1841,8 +1841,6 @@ void GenericCAO::processMessage(const std::string &data)
 		(void)type;
 
 		addAttachmentChild(child_id);
-	} else if (cmd == AO_CMD_OBSOLETE1) {
-		// Don't do anything and also don't log a warning
 	} else {
 		warningstream << FUNCTION_NAME
 			<< ": unknown command or outdated client \""

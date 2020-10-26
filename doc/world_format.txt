@@ -493,18 +493,7 @@ Static objects are persistent freely moving objects in the world.
 
 Object types:
 1: Test object
-2: Item
-3: Rat (obsolete)
-4: Oerkki (obsolete)
-5: Firefly (obsolete)
-6: MobV2 (obsolete)
 7: LuaEntity
-
-1: Item:
-  u8 version
-  version 0:
-    u16 len
-    u8[len] itemstring
 
 7: LuaEntity:
   u8 compatibility_byte (always 1)
