@@ -6258,16 +6258,16 @@ object you are working with still exists.
     * radians: Angle from looking forward, where positive is downwards.
 * `set_look_horizontal(radians)`: sets look yaw
     * radians: Angle from the +z direction, where positive is counter-clockwise.
-* `get_look_pitch()`: **DEPRECATED as BROKEN** pitch in radians. Use
+* `get_look_pitch()`: pitch in radians. **DEPRECATED as BROKEN**, use
   `get_look_vertical`.
     * Angle ranges between -pi/2 and pi/2, which are straight down and up
       respectively.
-* `get_look_yaw()`: **DEPRECATED as BROKEN** yaw in radians. Use
+* `get_look_yaw()`: yaw in radians. **DEPRECATED as BROKEN**, use
   `get_look_horizontal`.
     * Angle is counter-clockwise from the +x direction.
-* `set_look_pitch(radians)`: **DEPRECATED** sets look pitch. Use
+* `set_look_pitch(radians)`: sets look pitch. **DEPRECATED**, use
   `set_look_vertical`.
-* `set_look_yaw(radians)`: **DEPRECATED** sets look yaw. Use
+* `set_look_yaw(radians)`: sets look yaw. **DEPRECATED**, use
   `set_look_horizontal`.
 * `get_breath()`: returns player's breath
 * `set_breath(value)`: sets player's breath
