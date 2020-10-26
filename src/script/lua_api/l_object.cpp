@@ -764,8 +764,7 @@ int ObjectRef::l_remove(lua_State *L)
 	entitysao->clearChildAttachments();
 	entitysao->clearParentAttachment();
 
-	verbosestream << "ObjectRef::l_remove(): id=" << entitysao->getId() 
-		<< std::endl;
+	verbosestream << "ObjectRef::l_remove(): id=" << entitysao->getId() << std::endl;
 	entitysao->m_pending_removal = true;
 	return 0;
 }
