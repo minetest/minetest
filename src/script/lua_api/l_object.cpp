@@ -94,26 +94,6 @@ int ObjectRef::gc_object(lua_State *L) {
 	return 0;
 }
 
-// remove(self)
-int ObjectRef::l_remove(lua_State *L)
-{
-	GET_ENV_PTR;
-
-	ObjectRef *ref = checkobject(L, 1);
-	ServerActiveObject *sao = getobject(ref);
-	if (sao == nullptr)
-		return 0;
-	if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-		return 0;
-
-	sao->clearChildAttachments();
-	sao->clearParentAttachment();
-
-	verbosestream << "ObjectRef::l_remove(): id=" << sao->getId() << std::endl;
-	sao->m_pending_removal = true;
-	return 0;
-}
-
 // get_pos(self)
 int ObjectRef::l_get_pos(lua_State *L)
 {
@@ -770,6 +750,25 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 }
 
 /* LuaEntitySAO-only */
+
+// remove(self)
+int ObjectRef::l_remove(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *entitysao = getluaobject(ref);
+	if (entitysao == nullptr)
+		return 0;
+
+	entitysao->clearChildAttachments();
+	entitysao->clearParentAttachment();
+
+	verbosestream << "ObjectRef::l_remove(): id=" << entitysao->getId() 
+		<< std::endl;
+	entitysao->m_pending_removal = true;
+	return 0;
+}
 
 // set_velocity(self, velocity)
 int ObjectRef::l_set_velocity(lua_State *L)
@@ -2286,7 +2285,6 @@ void ObjectRef::Register(lua_State *L)
 const char ObjectRef::className[] = "ObjectRef";
 luaL_Reg ObjectRef::methods[] = {
 	// ServerActiveObject
-	luamethod(ObjectRef, remove),
 	luamethod_aliased(ObjectRef, get_pos, getpos),
 	luamethod_aliased(ObjectRef, set_pos, setpos),
 	luamethod_aliased(ObjectRef, move_to, moveto),
@@ -2322,6 +2320,7 @@ luaL_Reg ObjectRef::methods[] = {
 	{"get_player_velocity", ObjectRef::l_get_velocity},
 
 	// LuaEntitySAO-only
+	luamethod(ObjectRef, remove),
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),

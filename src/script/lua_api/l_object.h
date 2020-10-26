@@ -65,9 +65,6 @@ private:
 	// garbage collector
 	static int gc_object(lua_State *L);
 
-	// remove(self)
-	static int l_remove(lua_State *L);
-
 	// get_pos(self)
 	static int l_get_pos(lua_State *L);
 
@@ -153,6 +150,9 @@ private:
 	static int l_is_player(lua_State *L);
 
 	/* LuaEntitySAO-only */
+
+	// remove(self)
+	static int l_remove(lua_State *L);
 
 	// set_velocity(self, velocity)
 	static int l_set_velocity(lua_State *L);
