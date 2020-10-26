@@ -169,10 +169,10 @@ int ObjectRef::l_punch(lua_State *L)
 	if (sao == nullptr || puncher == nullptr)
 		return 0;
 
-	float time_from_last_punch = lua_isnil(L, 3) ?
+	float time_from_last_punch = lua_type(L, 3) == LUA_TNONE ?
 		1000000.0f : readParam<float>(L,3);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
-	v3f dir = lua_isnil(L, 5) ?
+	v3f dir = lua_type(L, 5) == LUA_TNONE ?
 		sao->getBasePosition() - puncher->getBasePosition() : check_v3f(L, 5);
 
 	dir.normalize();
@@ -383,18 +383,10 @@ int ObjectRef::l_set_animation(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	v2f frames = v2f(1, 1);
-	if (!lua_isnil(L, 2))
-		frames = readParam<v2f>(L, 2);
-	float frame_speed = 15;
-	if (!lua_isnil(L, 3))
-		frame_speed = lua_tonumber(L, 3);
-	float frame_blend = 0;
-	if (!lua_isnil(L, 4))
-		frame_blend = lua_tonumber(L, 4);
-	bool frame_loop = true;
-	if (lua_isboolean(L, 5))
-		frame_loop = readParam<bool>(L, 5);
+	v2f frames = lua_type(L, 2) == LUA_TNONE ? v2f(1, 1) : readParam<v2f>(L, 2);
+	float frame_speed = lua_type(L, 3) == LUA_TNONE ? 15 : readParam<float>(L, 3);
+	float frame_blend = lua_type(L, 4) == LUA_TNONE ? 0  : readParam<float>(L, 4);
+	bool frame_loop = readParam<bool>(L, 5, true);
 
 	sao->setAnimation(frames, frame_speed, frame_blend, frame_loop);
 	return 0;
@@ -436,7 +428,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 		if (!lua_isnil(L, 2+1))
 			frames[i] = read_v2s32(L, 2+i);
 	}
-	float frame_speed = lua_isnil(L, 6) ? 30 : readParam<float>(L, 6);
+	float frame_speed = lua_type(L, 6) == LUA_TNONE ? 30 : readParam<float>(L, 6);
 
 	getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed);
 	lua_pushboolean(L, true);
@@ -528,7 +520,7 @@ int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	if (!lua_isnil(L, 2)) {
+	if (lua_type(L, 2) != LUA_TNONE && !lua_isnil(L, 2)) {
 		float frame_speed = readParam<float>(L, 2);
 		sao->setAnimationSpeed(frame_speed);
 		lua_pushboolean(L, true);
@@ -965,9 +957,10 @@ int ObjectRef::l_set_sprite(lua_State *L)
 	if (entitysao == nullptr)
 		return 0;
 
-	v2s16 start_frame       = lua_isnil(L, 2) ? v2s16(0,0) : readParam<v2s16>(L, 2);
-	int num_frames          = lua_isnil(L, 3) ? 1 : luaL_checkint(L, 3);
-	float framelength       = lua_isnil(L, 4) ? 0.2 : lua_tonumber(L, 4);
+	v2s16 start_frame = lua_type(L, 2) == LUA_TNONE ?
+		v2s16(0,0) : readParam<v2s16>(L, 2);
+	int num_frames    = lua_type(L, 3) == LUA_TNONE ? 1 : luaL_checkint(L, 3);
+	float framelength = lua_type(L, 4) == LUA_TNONE ? 0.2f : readParam<float>(L, 4);
 	bool select_x_by_camera = readParam<bool>(L, 5, false);
 
 	entitysao->setSprite(start_frame, num_frames, framelength, select_x_by_camera);
@@ -1249,7 +1242,7 @@ int ObjectRef::l_set_attribute(lua_State *L)
 		return 0;
 
 	std::string attr = luaL_checkstring(L, 2);
-	if (lua_isnil(L, 3)) {
+	if (lua_type(L, 3) == LUA_TNONE || lua_isnil(L, 3)) {
 		playersao->getMeta().removeString(attr);
 	} else {
 		std::string value = luaL_checkstring(L, 3);
@@ -1707,8 +1700,9 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 	if (lua_istable(L, 2) && !is_colorspec) {
 		lua_getfield(L, 2, "base_color");
-		if (!lua_isnil(L, -1))
+		if (!lua_isnil(L, -1)) {
 			read_color(L, -1, &sky_params.bgcolor);
+		}
 		lua_pop(L, 1);
 
 		lua_getfield(L, 2, "type");

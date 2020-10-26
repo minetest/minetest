@@ -56,7 +56,7 @@ template <> bool LuaHelper::readParam(lua_State *L, int index)
 
 template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &default_value)
 {
-	if (lua_isnil(L, index))
+	if (lua_type(L, index) == LUA_TNONE)
 		return default_value;
 
 	return lua_toboolean(L, index) != 0;
