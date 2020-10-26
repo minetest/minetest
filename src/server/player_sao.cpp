@@ -146,6 +146,11 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	return os.str();
 }
 
+void PlayerSAO::getStaticData(std::string * result) const
+{
+	FATAL_ERROR("This function shall not be called for PlayerSAO");
+}
+
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
 	if (!isImmortal() && m_drowning_interval.step(dtime, 2.0f)) {
