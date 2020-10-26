@@ -384,8 +384,8 @@ int ObjectRef::l_set_animation(lua_State *L)
 		return 0;
 
 	v2f frames = lua_type(L, 2) == LUA_TNONE ? v2f(1, 1) : readParam<v2f>(L, 2);
-	float frame_speed = lua_type(L, 3) == LUA_TNONE ? 15 : readParam<float>(L, 3);
-	float frame_blend = lua_type(L, 4) == LUA_TNONE ? 0  : readParam<float>(L, 4);
+	float frame_speed = lua_type(L, 3) == LUA_TNONE ? 15f : readParam<float>(L, 3);
+	float frame_blend = lua_type(L, 4) == LUA_TNONE ? 0f  : readParam<float>(L, 4);
 	bool frame_loop = readParam<bool>(L, 5, true);
 
 	sao->setAnimation(frames, frame_speed, frame_blend, frame_loop);
@@ -428,7 +428,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 		if (!lua_isnil(L, 2+1))
 			frames[i] = read_v2s32(L, 2+i);
 	}
-	float frame_speed = lua_type(L, 6) == LUA_TNONE ? 30 : readParam<float>(L, 6);
+	float frame_speed = lua_type(L, 6) == LUA_TNONE ? 30f : readParam<float>(L, 6);
 
 	getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed);
 	lua_pushboolean(L, true);
