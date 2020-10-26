@@ -171,93 +171,69 @@ void ClientEnvironment::step(float dtime)
 
 	// Maximum time increment (for collision detection etc)
 	// time = distance / speed
-	f32 dtime_max_increment = 1;
+	f32 dtime_min_step = 1;
 	if(player_speed > 0.001)
-		dtime_max_increment = position_max_increment / player_speed;
+		dtime_min_step = position_max_increment / player_speed;
 
 	// Maximum time increment is 10ms or lower
-	if(dtime_max_increment > 0.01)
-		dtime_max_increment = 0.01;
+	if(dtime_min_step > 0.01)
+		dtime_min_step = 0.01;
 
 	// Don't allow overly huge dtime
 	if(dtime > 0.5)
 		dtime = 0.5;
 
-	f32 dtime_downcount = dtime;
-
 	/*
 		Stuff that has a maximum time increment
 	*/
 
-	u32 loopcount = 0;
-	do
-	{
-		loopcount++;
-
-		f32 dtime_part;
-		if(dtime_downcount > dtime_max_increment)
-		{
-			dtime_part = dtime_max_increment;
-			dtime_downcount -= dtime_part;
-		}
-		else
-		{
-			dtime_part = dtime_downcount;
-			/*
-				Setting this to 0 (no -=dtime_part) disables an infinite loop
-				when dtime_part is so small that dtime_downcount -= dtime_part
-				does nothing
-			*/
-			dtime_downcount = 0;
-		}
-
+	u32 steps = ceil(dtime / dtime_min_step);
+	f32 dtime_part = dtime / steps;
+	for (; steps > 0; --steps) {
 		/*
 			Handle local player
 		*/
+		// Apply physics
+		if (!free_move && !is_climbing) {
+			// Gravity
+			v3f speed = lplayer->getSpeed();
+			if (!lplayer->in_liquid)
+				speed.Y -= lplayer->movement_gravity *
+					lplayer->physics_override_gravity * dtime_part * 2.0f;
 
-		{
-			// Apply physics
-			if (!free_move && !is_climbing) {
-				// Gravity
-				v3f speed = lplayer->getSpeed();
-				if (!lplayer->in_liquid)
-					speed.Y -= lplayer->movement_gravity *
-						lplayer->physics_override_gravity * dtime_part * 2.0f;
+			// Liquid floating / sinking
+			if (lplayer->in_liquid && !lplayer->swimming_vertical &&
+					!lplayer->swimming_pitch)
+				speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
 
-				// Liquid floating / sinking
-				if (lplayer->in_liquid && !lplayer->swimming_vertical &&
-						!lplayer->swimming_pitch)
-					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
+			// Liquid resistance
+			if (lplayer->in_liquid_stable || lplayer->in_liquid) {
+				// How much the node's viscosity blocks movement, ranges
+				// between 0 and 1. Should match the scale at which viscosity
+				// increase affects other liquid attributes.
+				static const f32 viscosity_factor = 0.3f;
 
-				// Liquid resistance
-				if (lplayer->in_liquid_stable || lplayer->in_liquid) {
-					// How much the node's viscosity blocks movement, ranges
-					// between 0 and 1. Should match the scale at which viscosity
-					// increase affects other liquid attributes.
-					static const f32 viscosity_factor = 0.3f;
+				v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
+				f32 dl = d_wanted.getLength();
+				if (dl > lplayer->movement_liquid_fluidity_smooth)
+					dl = lplayer->movement_liquid_fluidity_smooth;
 
-					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
-					f32 dl = d_wanted.getLength();
-					if (dl > lplayer->movement_liquid_fluidity_smooth)
-						dl = lplayer->movement_liquid_fluidity_smooth;
-
-					dl *= (lplayer->liquid_viscosity * viscosity_factor) +
-						(1 - viscosity_factor);
-					v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
-					speed += d;
-				}
-
-				lplayer->setSpeed(speed);
+				dl *= (lplayer->liquid_viscosity * viscosity_factor) +
+					(1 - viscosity_factor);
+				v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
+				speed += d;
 			}
 
-			/*
-				Move the lplayer.
-				This also does collision detection.
-			*/
-			lplayer->move(dtime_part, this, position_max_increment,
-				&player_collisions);
+			lplayer->setSpeed(speed);
 		}
-	} while (dtime_downcount > 0.001);
+
+		/*
+			Move the lplayer.
+			This also does collision detection.
+		*/
+		lplayer->move(dtime_part, this, position_max_increment,
+			&player_collisions);
+	}
 
 	bool player_immortal = lplayer->getCAO() && lplayer->getCAO()->isImmortal();
 
