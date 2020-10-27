@@ -125,12 +125,21 @@ public:
 		assert(isStaticAllowed());
 		*result = "";
 	}
+
 	/*
 		Return false in here to never save and instead remove object
 		on unload. getStaticData() will not be called in that case.
 	*/
 	virtual bool isStaticAllowed() const
 	{return true;}
+
+	/*
+		Return false here to never unload the object.
+		isStaticAllowed && shouldUnload -> unload when out of active block range
+		!isStaticAllowed && shouldUnload -> unload when block is unloaded
+	*/
+	virtual bool shouldUnload() const
+	{ return true; }
 
 	// Returns tool wear
 	virtual u16 punch(v3f dir,

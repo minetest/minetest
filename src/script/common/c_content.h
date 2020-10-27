@@ -67,7 +67,8 @@ struct collisionMoveResult;
 
 extern struct EnumString es_TileAnimationType[];
 
-ContentFeatures    read_content_features     (lua_State *L, int index);
+void               read_content_features     (lua_State *L, ContentFeatures &f,
+                                              int index);
 void               push_content_features     (lua_State *L,
                                               const ContentFeatures &c);
 

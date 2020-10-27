@@ -24,12 +24,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IEventReceiver.h>
 #include <string>
 
+class KeyPress;
+namespace std
+{
+	template <> struct hash<KeyPress>;
+}
+
 /* A key press, consisting of either an Irrlicht keycode
    or an actual char */
 
 class KeyPress
 {
 public:
+	friend struct std::hash<KeyPress>;
+
 	KeyPress() = default;
 
 	KeyPress(const char *name);
@@ -54,6 +62,17 @@ protected:
 	wchar_t Char = L'\0';
 	std::string m_name = "";
 };
+
+namespace std
+{
+	template <> struct hash<KeyPress>
+	{
+		size_t operator()(const KeyPress &key) const
+		{
+			return key.Key;
+		}
+	};
+}
 
 extern const KeyPress EscapeKey;
 extern const KeyPress CancelKey;

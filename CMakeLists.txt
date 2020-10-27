@@ -16,7 +16,7 @@ set(CLANG_MINIMUM_VERSION "3.4")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 5)
-set(VERSION_MINOR 3)
+set(VERSION_MINOR 4)
 set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
@@ -249,15 +249,15 @@ cpack_add_component(Docs
 
 cpack_add_component(SUBGAME_MINETEST_GAME
 	DISPLAY_NAME "Minetest Game"
-	DESCRIPTION "The official subgame for the Minetest engine, that can easily extended by mods."
-	GROUP "Subgames"
+	DESCRIPTION "The default game bundled in the Minetest engine. Mainly used as a modding base."
+	GROUP "Games"
 )
 
 cpack_add_component(SUBGAME_MINIMAL
 	DISPLAY_NAME "Development Test"
-	DESCRIPTION "A minimal test game helping to develop the engine."
+	DESCRIPTION "A basic testing environment used for engine development and sometimes for testing mods."
 	DISABLED #DISABLED does not mean it is disabled, and is just not selected by default.
-	GROUP "Subgames"
+	GROUP "Games"
 )
 
 cpack_add_component_group(Subgames

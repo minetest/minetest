@@ -23,9 +23,8 @@ Basically, just create a world and start. A few important things to note:
 * Use the `/infplace` command to toggle infinite node placement in-game
 * Use the Param2 Tool to change the param2 of nodes; it's useful to experiment with the various drawtype test nodes
 * Check out the game settings and server commands for additional tests and features
-* Creative Mode does nothing (apart from default engine behavior)
 
-Confused by a certain node or item? Check out for inline code comments.
+Confused by a certain node or item? Check out for inline code comments. The usages of most tools are explained in their tooltips.
 
 ### Example tests
 

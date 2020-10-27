@@ -94,8 +94,6 @@ public:
 	// Delete lines older than maxAge.
 	void deleteByAge(f32 maxAge);
 
-	// Get number of columns, 0 if reformat has not been called yet.
-	u32 getColumns() const;
 	// Get number of rows, 0 if reformat has not been called yet.
 	u32 getRows() const;
 	// Update console size and reformat all formatted lines.

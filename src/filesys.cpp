@@ -750,6 +750,21 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	return true;
 }
 
+bool ReadFile(const std::string &path, std::string &out)
+{
+	std::ifstream is(path, std::ios::binary | std::ios::ate);
+	if (!is.good()) {
+		return false;
+	}
+
+	auto size = is.tellg();
+	out.resize(size);
+	is.seekg(0);
+	is.read(&out[0], size);
+
+	return true;
+}
+
 bool Rename(const std::string &from, const std::string &to)
 {
 	return rename(from.c_str(), to.c_str()) == 0;

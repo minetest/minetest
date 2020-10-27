@@ -73,6 +73,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_right", "KEY_KEY_D");
 	settings->setDefault("keymap_jump", "KEY_SPACE");
 	settings->setDefault("keymap_sneak", "KEY_LSHIFT");
+	settings->setDefault("keymap_dig", "KEY_LBUTTON");
+	settings->setDefault("keymap_place", "KEY_RBUTTON");
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
 	settings->setDefault("keymap_zoom", "KEY_KEY_Z");
 	settings->setDefault("keymap_inventory", "KEY_KEY_I");
@@ -163,7 +165,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("tooltip_show_delay", "400");
 	settings->setDefault("tooltip_append_itemname", "false");
 	settings->setDefault("fps_max", "60");
-	settings->setDefault("pause_fps_max", "20");
+	settings->setDefault("fps_max_unfocused", "20");
 	settings->setDefault("viewing_range", "100");
 #if ENABLE_GLES
 	settings->setDefault("near_plane", "0.1");
@@ -225,11 +227,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
-	settings->setDefault("show_entity_selectionbox", "true");
+	settings->setDefault("show_entity_selectionbox", "false");
 	settings->setDefault("item_rtt_speedup_resolution", "128");
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
-	settings->setDefault("ambient_occlusion_gamma", "2.2");
+	settings->setDefault("ambient_occlusion_gamma", "1.8");
 #if ENABLE_GLES
 	settings->setDefault("enable_shaders", "false");
 #else
@@ -250,15 +252,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("tone_mapping", "false");
-	settings->setDefault("enable_bumpmapping", "false");
-	settings->setDefault("enable_parallax_occlusion", "false");
-	settings->setDefault("generate_normalmaps", "false");
-	settings->setDefault("normalmaps_strength", "0.6");
-	settings->setDefault("normalmaps_smooth", "1");
-	settings->setDefault("parallax_occlusion_mode", "1");
-	settings->setDefault("parallax_occlusion_iterations", "4");
-	settings->setDefault("parallax_occlusion_scale", "0.08");
-	settings->setDefault("parallax_occlusion_bias", "0.04");
 	settings->setDefault("enable_waving_water", "false");
 	settings->setDefault("water_wave_height", "1.0");
 	settings->setDefault("water_wave_length", "20.0");
@@ -270,7 +263,7 @@ void set_default_settings(Settings *settings)
 	// Input
 	settings->setDefault("invert_mouse", "false");
 	settings->setDefault("mouse_sensitivity", "0.2");
-	settings->setDefault("repeat_rightclick_time", "0.25");
+	settings->setDefault("repeat_place_time", "0.25");
 	settings->setDefault("safe_dig_and_place", "false");
 	settings->setDefault("random_input", "false");
 	settings->setDefault("aux1_descends", "false");
@@ -289,7 +282,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 
 	// Main menu
-	settings->setDefault("main_menu_style", "full");
 	settings->setDefault("main_menu_path", "");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
 
@@ -329,6 +321,8 @@ void set_default_settings(Settings *settings)
 
 	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");
+	settings->setDefault("contentdb_max_concurrent_downloads", "3");
+
 #ifdef __ANDROID__
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, android_default");
 #else
@@ -400,6 +394,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("active_block_mgmt_interval", "2.0");
 	settings->setDefault("abm_interval", "1.0");
+	settings->setDefault("abm_time_budget", "0.2");
 	settings->setDefault("nodetimer_interval", "0.2");
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");
@@ -452,6 +447,7 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("high_precision_fpu", "true");
 	settings->setDefault("enable_console", "false");
+	settings->setDefault("screen_dpi", "72");
 
 	// Altered settings for macOS
 #if defined(__MACH__) && defined(__APPLE__)
@@ -465,7 +461,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("touchtarget", "true");
-	settings->setDefault("TMPFolder", porting::getDataPath("tmp" DIR_DELIM));
+	settings->setDefault("TMPFolder", porting::path_cache);
 	settings->setDefault("touchscreen_threshold","20");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux", "false");
@@ -476,7 +472,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("fps_max", "30");
-	settings->setDefault("pause_fps_max", "10");
+	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("max_objects_per_block", "20");
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("server_map_save_interval", "15");
@@ -487,8 +483,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("curl_verify_cert","false");
 
 	// Apply settings according to screen size
-	float x_inches = ((double) porting::getDisplaySize().X /
-			(160 * porting::getDisplayDensity()));
+	float x_inches = (float) porting::getDisplaySize().X /
+			(160.f * porting::getDisplayDensity());
 
 	if (x_inches < 3.7f) {
 		settings->setDefault("hud_scaling", "0.6");
@@ -504,8 +500,5 @@ void set_default_settings(Settings *settings)
 		settings->setDefault("mono_font_size", "14");
 	}
 	// Tablets >= 6.0 use non-Android defaults for these settings
-#else
-	settings->setDefault("screen_dpi", "72");
 #endif
 }
-

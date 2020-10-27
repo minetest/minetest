@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "scripting_client.h"
 #include "mapblock_mesh.h"
-#include "event.h"
+#include "mtevent.h"
 #include "collision.h"
 #include "nodedef.h"
 #include "profiler.h"
@@ -216,6 +216,9 @@ void ClientEnvironment::step(float dtime)
 		*/
 
 		{
+			// Control local player
+			lplayer->applyControl(dtime_part, this);
+
 			// Apply physics
 			if (!free_move && !is_climbing) {
 				// Gravity
@@ -363,21 +366,6 @@ bool isFreeClientActiveObjectId(const u16 id,
 {
 	return id != 0 && objects.find(id) == objects.end();
 
-}
-
-u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
-{
-	// try to reuse id's as late as possible
-	static u16 last_used_id = 0;
-	u16 startid = last_used_id;
-	for(;;) {
-		last_used_id ++;
-		if (isFreeClientActiveObjectId(last_used_id, objects))
-			return last_used_id;
-
-		if (last_used_id == startid)
-			return 0;
-	}
 }
 
 u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)

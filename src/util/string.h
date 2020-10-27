@@ -746,3 +746,11 @@ inline irr::core::stringw utf8_to_stringw(const std::string &input)
 	std::wstring str = utf8_to_wide(input);
 	return irr::core::stringw(str.c_str());
 }
+
+/**
+ * Sanitize the name of a new directory. This consists of two stages:
+ * 1. Check for 'reserved filenames' that can't be used on some filesystems
+ *    and prefix them
+ * 2. Remove 'unsafe' characters from the name by replacing them with '_'
+ */
+std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix);

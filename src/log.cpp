@@ -97,16 +97,7 @@ LogBuffer verbose_buf(g_logger, LL_VERBOSE);
 std::ostream *dout_con_ptr = &null_stream;
 std::ostream *derr_con_ptr = &verbosestream;
 
-// Server
-std::ostream *dout_server_ptr = &infostream;
-std::ostream *derr_server_ptr = &errorstream;
-
-#ifndef SERVER
-// Client
-std::ostream *dout_client_ptr = &infostream;
-std::ostream *derr_client_ptr = &errorstream;
-#endif
-
+// Common streams
 std::ostream rawstream(&raw_buf);
 std::ostream dstream(&none_buf);
 std::ostream errorstream(&error_buf);
