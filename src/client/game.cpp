@@ -3071,8 +3071,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 #endif
 
 	PointedThing pointed;
-	if (d != -1) pointed = updatePointedThing(shootline, selected_def.liquids_pointable,
-			!runData.down_for_dig, camera_offset);
+	if (d != -1)
+		pointed = updatePointedThing(shootline,
+				selected_def.liquids_pointable,
+				!runData.btn_down_for_dig,
+				camera_offset);
 
 	if (pointed != runData.pointed_old) {
 		infostream << "Pointing at " << pointed.dump() << std::endl;
