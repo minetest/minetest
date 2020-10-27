@@ -52,9 +52,6 @@ MeshUpdateQueue::MeshUpdateQueue(Client *client):
 	m_client(client)
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
-	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
-		g_settings->getBool("enable_bumpmapping") ||
-		g_settings->getBool("enable_parallax_occlusion"));
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
 	m_meshgen_block_cache_size = g_settings->getS32("meshgen_block_cache_size");
 }
@@ -207,8 +204,7 @@ CachedMapBlockData* MeshUpdateQueue::getCachedBlock(const v3s16 &p)
 
 void MeshUpdateQueue::fillDataFromMapBlockCache(QueuedMeshUpdate *q)
 {
-	MeshMakeData *data = new MeshMakeData(m_client, m_cache_enable_shaders,
-			m_cache_use_tangent_vertices);
+	MeshMakeData *data = new MeshMakeData(m_client, m_cache_enable_shaders);
 	q->data = data;
 
 	data->fillBlockDataBegin(q->p);

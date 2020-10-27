@@ -186,6 +186,21 @@ unsigned int FontEngine::getDefaultFontSize()
 	return m_default_size[m_currentMode];
 }
 
+unsigned int FontEngine::getFontSize(FontMode mode)
+{
+	if (m_currentMode == FM_Simple) {
+		if (mode == FM_Mono || mode == FM_SimpleMono)
+			return m_default_size[FM_SimpleMono];
+		else
+			return m_default_size[FM_Simple];
+	}
+
+	if (mode == FM_Unspecified)
+		return m_default_size[FM_Standard];
+
+	return m_default_size[mode];
+}
+
 /******************************************************************************/
 void FontEngine::readSettings()
 {

@@ -44,7 +44,8 @@ minetest.register_node("experimental:callback_node", {
 })
 
 minetest.register_tool("experimental:privatizer", {
-	description = "Node Meta Privatizer",
+	description = "Node Meta Privatizer".."\n"..
+		"Punch: Marks 'infotext' and 'formspec' meta fields of chest as private",
 	inventory_image = "experimental_tester_tool_1.png",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)
@@ -67,7 +68,8 @@ minetest.register_tool("experimental:privatizer", {
 })
 
 minetest.register_tool("experimental:particle_spawner", {
-	description = "Particle Spawner",
+	description = "Particle Spawner".."\n"..
+		"Punch: Spawn random test particle",
 	inventory_image = "experimental_tester_tool_1.png^[invert:g",
 	groups = { testtool = 1, disable_repair = 1 },
 	on_use = function(itemstack, user, pointed_thing)

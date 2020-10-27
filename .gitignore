@@ -104,3 +104,5 @@ cmake_config.h
 cmake_config_githash.h
 CMakeDoxy*
 compile_commands.json
+*.apk
+*.zip

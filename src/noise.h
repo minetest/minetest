@@ -29,6 +29,13 @@
 #include "exceptions.h"
 #include "util/string.h"
 
+#if defined(RANDOM_MIN)
+#undef RANDOM_MIN
+#endif
+#if defined(RANDOM_MAX)
+#undef RANDOM_MAX
+#endif
+
 extern FlagDesc flagdesc_noiseparams[];
 
 // Note: this class is not polymorphic so that its high level of

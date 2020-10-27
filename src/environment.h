@@ -147,6 +147,7 @@ protected:
 	float m_cache_active_block_mgmt_interval;
 	float m_cache_abm_interval;
 	float m_cache_nodetimer_interval;
+	float m_cache_abm_time_budget;
 
 	IGameDef *m_gamedef;
 

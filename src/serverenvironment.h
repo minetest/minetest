@@ -322,6 +322,9 @@ public:
 	bool removeNode(v3s16 p);
 	bool swapNode(v3s16 p, const MapNode &n);
 
+	// Find the daylight value at pos with a Depth First Search
+	u8 findSunlight(v3s16 pos) const;
+
 	// Find all active objects inside a radius around a point
 	void getObjectsInsideRadius(std::vector<ServerActiveObject *> &objects, const v3f &pos, float radius,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
@@ -436,7 +439,6 @@ private:
 	IntervalLimiter m_object_management_interval;
 	// List of active blocks
 	ActiveBlockList m_active_blocks;
-	IntervalLimiter m_database_check_interval;
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;

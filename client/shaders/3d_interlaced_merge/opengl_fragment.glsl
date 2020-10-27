@@ -6,9 +6,11 @@ uniform sampler2D textureFlags;
 #define rightImage normalTexture
 #define maskImage textureFlags
 
+varying mediump vec2 varTexCoord;
+
 void main(void)
 {
-	vec2 uv = gl_TexCoord[0].st;
+	vec2 uv = varTexCoord.st;
 	vec4 left = texture2D(leftImage, uv).rgba;
 	vec4 right = texture2D(rightImage, uv).rgba;
 	vec4 mask = texture2D(maskImage, uv).rgba;

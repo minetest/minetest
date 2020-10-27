@@ -629,7 +629,11 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 {
 #ifndef SERVER
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
+#if INDIRECT_SCRIPTAPI_RIDX
+	ScriptApiBase *script = (ScriptApiBase *) *(void**)(lua_touserdata(L, -1));
+#else
 	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
+#endif
 	lua_pop(L, 1);
 
 	// Client implementation

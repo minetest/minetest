@@ -1,0 +1,3 @@
+This is for testing loading textures from subfolders.
+If it works correctly, the default_grass_side.png file in this folder is used but
+default_grass.png is not overwritten by the file in this folder.

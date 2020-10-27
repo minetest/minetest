@@ -17,18 +17,18 @@
 		android:allowBackup="false"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/label"
-		android:resizeableActivity="false"
 		android:requestLegacyExternalStorage="true"
+		android:resizeableActivity="false"
 		tools:ignore="UnusedAttribute">
 
 		<meta-data
 			android:name="android.max_aspect"
-			android:value="3" />
+			android:value="3.0" />
 
 		<activity
 			android:name=".MainActivity"
 			android:configChanges="orientation|keyboardHidden|navigation|screenSize"
-			android:maxAspectRatio="3"
+			android:maxAspectRatio="3.0"
 			android:screenOrientation="sensorLandscape"
 			android:theme="@style/AppTheme">
 			<intent-filter>
@@ -42,7 +42,7 @@
 			android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize"
 			android:hardwareAccelerated="true"
 			android:launchMode="singleTask"
-			android:maxAspectRatio="3"
+			android:maxAspectRatio="3.0"
 			android:screenOrientation="sensorLandscape"
 			android:theme="@style/AppTheme">
 			<intent-filter>
@@ -52,11 +52,6 @@
 				android:name="android.app.lib_name"
 				android:value="Minetest" />
 		</activity>
-
-		<activity
-			android:name=".InputDialogActivity"
-			android:maxAspectRatio="3"
-			android:theme="@style/InputTheme" />
 
 		<service
 			android:name=".UnzipService"

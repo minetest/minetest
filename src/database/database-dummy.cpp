@@ -22,6 +22,7 @@ Dummy database class
 */
 
 #include "database-dummy.h"
+#include "remoteplayer.h"
 
 
 bool Database_Dummy::saveBlock(const v3s16 &pos, const std::string &data)
@@ -57,3 +58,25 @@ void Database_Dummy::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	}
 }
 
+void Database_Dummy::savePlayer(RemotePlayer *player)
+{
+	m_player_database.insert(player->getName());
+}
+
+bool Database_Dummy::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
+{
+	return m_player_database.find(player->getName()) != m_player_database.end();
+}
+
+bool Database_Dummy::removePlayer(const std::string &name)
+{
+	m_player_database.erase(name);
+	return true;
+}
+
+void Database_Dummy::listPlayers(std::vector<std::string> &res)
+{
+	for (const auto &player : m_player_database) {
+		res.emplace_back(player);
+	}
+}

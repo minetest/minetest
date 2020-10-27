@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "scripting_client.h"
 #include "mapblock_mesh.h"
-#include "event.h"
+#include "mtevent.h"
 #include "collision.h"
 #include "nodedef.h"
 #include "profiler.h"
@@ -193,38 +193,43 @@ void ClientEnvironment::step(float dtime)
 		/*
 			Handle local player
 		*/
-		// Apply physics
-		if (!free_move && !is_climbing) {
-			// Gravity
-			v3f speed = lplayer->getSpeed();
-			if (!lplayer->in_liquid)
-				speed.Y -= lplayer->movement_gravity *
-					lplayer->physics_override_gravity * dtime_part * 2.0f;
+		{
+			// Control local player
+			lplayer->applyControl(dtime_part, this);
 
-			// Liquid floating / sinking
-			if (lplayer->in_liquid && !lplayer->swimming_vertical &&
-					!lplayer->swimming_pitch)
-				speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
+			// Apply physics
+			if (!free_move && !is_climbing) {
+				// Gravity
+				v3f speed = lplayer->getSpeed();
+				if (!lplayer->in_liquid)
+					speed.Y -= lplayer->movement_gravity *
+						lplayer->physics_override_gravity * dtime_part * 2.0f;
 
-			// Liquid resistance
-			if (lplayer->in_liquid_stable || lplayer->in_liquid) {
-				// How much the node's viscosity blocks movement, ranges
-				// between 0 and 1. Should match the scale at which viscosity
-				// increase affects other liquid attributes.
-				static const f32 viscosity_factor = 0.3f;
+				// Liquid floating / sinking
+				if (lplayer->in_liquid && !lplayer->swimming_vertical &&
+						!lplayer->swimming_pitch)
+					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
 
-				v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
-				f32 dl = d_wanted.getLength();
-				if (dl > lplayer->movement_liquid_fluidity_smooth)
-					dl = lplayer->movement_liquid_fluidity_smooth;
+				// Liquid resistance
+				if (lplayer->in_liquid_stable || lplayer->in_liquid) {
+					// How much the node's viscosity blocks movement, ranges
+					// between 0 and 1. Should match the scale at which viscosity
+					// increase affects other liquid attributes.
+					static const f32 viscosity_factor = 0.3f;
 
-				dl *= (lplayer->liquid_viscosity * viscosity_factor) +
-					(1 - viscosity_factor);
-				v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
-				speed += d;
+					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
+					f32 dl = d_wanted.getLength();
+					if (dl > lplayer->movement_liquid_fluidity_smooth)
+						dl = lplayer->movement_liquid_fluidity_smooth;
+
+					dl *= (lplayer->liquid_viscosity * viscosity_factor) +
+						(1 - viscosity_factor);
+					v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
+					speed += d;
+				}
+
+				lplayer->setSpeed(speed);
 			}
-
-			lplayer->setSpeed(speed);
 		}
 
 		/*
@@ -339,21 +344,6 @@ bool isFreeClientActiveObjectId(const u16 id,
 {
 	return id != 0 && objects.find(id) == objects.end();
 
-}
-
-u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
-{
-	// try to reuse id's as late as possible
-	static u16 last_used_id = 0;
-	u16 startid = last_used_id;
-	for(;;) {
-		last_used_id ++;
-		if (isFreeClientActiveObjectId(last_used_id, objects))
-			return last_used_id;
-
-		if (last_used_id == startid)
-			return 0;
-	}
 }
 
 u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)

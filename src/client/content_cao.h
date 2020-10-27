@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Camera;
 class Client;
 struct Nametag;
+struct MinimapMarker;
 
 /*
 	SmoothTranslator
@@ -84,6 +85,7 @@ private:
 	scene::IBillboardSceneNode *m_spritenode = nullptr;
 	scene::IDummyTransformationSceneNode *m_matrixnode = nullptr;
 	Nametag *m_nametag = nullptr;
+	MinimapMarker *m_marker = nullptr;
 	v3f m_position = v3f(0.0f, 10.0f * BS, 0);
 	v3f m_velocity;
 	v3f m_acceleration;
@@ -124,6 +126,7 @@ private:
 	float m_step_distance_counter = 0.0f;
 	u8 m_last_light = 255;
 	bool m_is_visible = false;
+	bool m_force_visible = false;
 	s8 m_glow = 0;
 	// Material
 	video::E_MATERIAL_TYPE m_material_type;
@@ -215,6 +218,11 @@ public:
 		m_is_visible = toset;
 	}
 
+	inline bool isForcedVisible() const
+	{
+		return m_force_visible;
+	}
+
 	void setChildrenVisible(bool toset);
 	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
 	void getAttachment(int *parent_id, std::string *bone, v3f *position,
@@ -248,6 +256,8 @@ public:
 
 	void updateNametag();
 
+	void updateMarker();
+
 	void updateNodePos();
 
 	void step(float dtime, ClientEnvironment *env);
@@ -275,4 +285,6 @@ public:
 	{
 		return m_prop.infotext;
 	}
+
+	void updateMeshCulling();
 };

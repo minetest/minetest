@@ -52,6 +52,7 @@ core.register_entity(":__builtin:falling_node", {
 	floats = false,
 
 	set_node = function(self, node, meta)
+		node.param2 = node.param2 or 0
 		self.node = node
 		meta = meta or {}
 		if type(meta.to_table) == "function" then

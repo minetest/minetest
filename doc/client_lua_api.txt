@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.3.0
+Minetest Lua Client Modding API Reference 5.4.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -686,6 +686,11 @@ Call these functions only at load time!
     * Adds definition to minetest.registered_chatcommands
 * `minetest.unregister_chatcommand(name)`
     * Unregisters a chatcommands registered with register_chatcommand.
+* `minetest.register_on_chatcommand(function(command, params))`
+    * Called always when a chatcommand is triggered, before `minetest.registered_chatcommands`
+      is checked to see if that the command exists, but after the input is parsed.
+    * Return `true` to mark the command as handled, which means that the default
+      handlers will be prevented.
 * `minetest.register_on_death(function())`
     * Called when the local player dies
 * `minetest.register_on_hp_modification(function(hp))`
@@ -768,12 +773,15 @@ Call these functions only at load time!
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * `search_center` is an optional boolean (default: `false`)
       If true `pos` is also checked for the nodes
-* `minetest.find_nodes_in_area(pos1, pos2, nodenames)`: returns a list of
-  positions.
+* `minetest.find_nodes_in_area(pos1, pos2, nodenames, [grouped])`
+    * `pos1` and `pos2` are the min and max positions of the area to search.
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
-    * First return value: Table with all node positions
-    * Second return value: Table with the count of each node with the node name
-      as index.
+    * If `grouped` is true the return value is a table indexed by node name
+      which contains lists of positions.
+    * If `grouped` is false or absent the return values are as follows:
+      first value: Table with all node positions
+      second value: Table with the count of each node with the node name
+      as index
     * Area volume is limited to 4,096,000 nodes
 * `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a
   list of positions.
@@ -1097,8 +1105,8 @@ Methods:
        aux1 = boolean,
        sneak = boolean,
        zoom = boolean,
-       LMB = boolean,
-       RMB = boolean,
+       dig = boolean,
+       place = boolean,
     }
 ```
 

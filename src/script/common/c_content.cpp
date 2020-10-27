@@ -56,6 +56,7 @@ void read_item_definition(lua_State* L, int index,
 			es_ItemType, ITEM_NONE);
 	getstringfield(L, index, "name", def.name);
 	getstringfield(L, index, "description", def.description);
+	getstringfield(L, index, "short_description", def.short_description);
 	getstringfield(L, index, "inventory_image", def.inventory_image);
 	getstringfield(L, index, "inventory_overlay", def.inventory_overlay);
 	getstringfield(L, index, "wield_image", def.wield_image);
@@ -142,6 +143,8 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "name");
 	lua_pushstring(L, i.description.c_str());
 	lua_setfield(L, -2, "description");
+	lua_pushstring(L, i.short_description.c_str());
+	lua_setfield(L, -2, "short_description");
 	lua_pushstring(L, type.c_str());
 	lua_setfield(L, -2, "type");
 	lua_pushstring(L, i.inventory_image.c_str());
@@ -328,6 +331,7 @@ void read_object_properties(lua_State *L, int index,
 	getfloatfield(L, -1, "zoom_fov", prop->zoom_fov);
 	getboolfield(L, -1, "use_texture_alpha", prop->use_texture_alpha);
 	getboolfield(L, -1, "shaded", prop->shaded);
+	getboolfield(L, -1, "show_on_minimap", prop->show_on_minimap);
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
 }
@@ -416,6 +420,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "shaded");
 	lua_pushlstring(L, prop->damage_texture_modifier.c_str(), prop->damage_texture_modifier.size());
 	lua_setfield(L, -2, "damage_texture_modifier");
+	lua_pushboolean(L, prop->show_on_minimap);
+	lua_setfield(L, -2, "show_on_minimap");
 }
 
 /******************************************************************************/
@@ -488,12 +494,10 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 }
 
 /******************************************************************************/
-ContentFeatures read_content_features(lua_State *L, int index)
+void read_content_features(lua_State *L, ContentFeatures &f, int index)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-
-	ContentFeatures f;
 
 	/* Cache existence of some callbacks */
 	lua_getfield(L, index, "on_construct");
@@ -797,7 +801,6 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	getstringfield(L, index, "node_dig_prediction",
 		f.node_dig_prediction);
 
-	return f;
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)
@@ -1959,9 +1962,10 @@ void push_hud_element(lua_State *L, HudElement *elem)
 HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 {
 	HudElementStat stat = HUD_STAT_NUMBER;
+	std::string statstr;
 	if (lua_isstring(L, 3)) {
 		int statint;
-		std::string statstr = lua_tostring(L, 3);
+		statstr = lua_tostring(L, 3);
 		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
 				(HudElementStat)statint : stat;
 	}
@@ -1989,6 +1993,8 @@ HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
 			break;
 		case HUD_STAT_ITEM:
 			elem->item = luaL_checknumber(L, 4);
+			if (elem->type == HUD_ELEM_WAYPOINT && statstr == "precision")
+				elem->item++;
 			*value = &elem->item;
 			break;
 		case HUD_STAT_DIR:

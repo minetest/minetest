@@ -1269,7 +1269,8 @@ bool Connection::deletePeer(session_t peer_id, bool timeout)
 			return false;
 		peer = m_peers[peer_id];
 		m_peers.erase(peer_id);
-		m_peer_ids.remove(peer_id);
+		auto it = std::find(m_peer_ids.begin(), m_peer_ids.end(), peer_id);
+		m_peer_ids.erase(it);
 	}
 
 	Address peer_address;

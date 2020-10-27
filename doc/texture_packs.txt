@@ -72,7 +72,12 @@ by texture packs. All existing fallback textures can be found in the directory
 * `crosshair.png`
     * the crosshair texture in the center of the screen. The settings
       `crosshair_color` and `crosshair_alpha` are used to create a cross
-      when no texture was found
+      when no texture is found.
+
+* `object_crosshair.png`
+    * the crosshair seen when pointing at an object. The settings
+    `crosshair_color` and `crosshair_alpha` are used to create a cross
+    when no texture is found.
 
 * `halo.png`: used for the node highlighting mesh
 
@@ -85,6 +90,7 @@ by texture packs. All existing fallback textures can be found in the directory
 * `minimap_mask_square.png`: mask used for the square minimap
 * `minimap_overlay_round.png`: overlay texture for the round minimap
 * `minimap_overlay_square.png`: overlay texture for the square minimap
+* `no_texture_airlike.png`: fallback inventory image for airlike nodes
 * `object_marker_red.png`: texture for players on the minimap
 * `player_marker.png`: texture for the own player on the square minimap
 
@@ -189,11 +195,27 @@ Here are targets you can choose from:
 | bottom        | y- face                                           |
 | sides         | x-, x+, z-, z+ faces                              |
 | all           | All faces. You can also use '*' instead of 'all'. |
+| special1      | The first entry in the special_tiles list         |
+| special2      | The second entry in the special_tiles list        |
+| special3      | The third entry in the special_tiles list         |
+| special4      | The fourth entry in the special_tiles list        |
+| special5      | The fifth entry in the special_tiles list         |
+| special6      | The sixth entry in the special_tiles list         |
 | inventory     | The inventory texture                             |
 | wield         | The texture used when held by the player          |
 
 Nodes support all targets, but other items only support 'inventory'
-and 'wield'
+and 'wield'.
+
+### Using the special targets
+
+The special* targets only apply to specific drawtypes:
+
+* `flowingliquid`: special1 sets the top texture, special2 sets the side texture
+* `allfaces_optional`: special1 is used by simple mode, see below
+* `glasslike_framed`: When containing a liquid, special1 sets the liquid texture
+* `glasslike_framed_optional`: Same as `glasslike_framed`
+* `plantlike_rooted`: special1 sets the plant's texture
 
 Designing leaves textures for the leaves rendering options
 ----------------------------------------------------------

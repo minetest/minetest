@@ -1,0 +1,42 @@
+name: android
+
+# build on c/cpp changes or workflow changes
+on:
+  push:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - 'build/android/**'
+      - '.github/workflows/android.yml'
+  pull_request:
+    paths:
+      - 'lib/**.[ch]'
+      - 'lib/**.cpp'
+      - 'src/**.[ch]'
+      - 'src/**.cpp'
+      - 'build/android/**'
+      - '.github/workflows/android.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Build with Gradle
+      run: cd build/android; ./gradlew assemblerelease
+    - name: Save armeabi artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Minetest-armeabi-v7a.apk
+        path: build/android/app/build/outputs/apk/release/app-armeabi-v7a-release-unsigned.apk
+    - name: Save arm64 artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Minetest-arm64-v8a.apk
+        path: build/android/app/build/outputs/apk/release/app-arm64-v8a-release-unsigned.apk
