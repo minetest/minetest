@@ -425,7 +425,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 
 	v2s32 frames[4];
 	for (int i=0;i<4;i++) {
-		if (!lua_isnil(L, 2+1))
+		if (!lua_isnoneornil(L, 2+1))
 			frames[i] = read_v2s32(L, 2+i);
 	}
 	float frame_speed = lua_isnone(L, 6) ? 30.0f : readParam<float>(L, 6);
