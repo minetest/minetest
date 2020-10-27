@@ -354,7 +354,7 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	ItemGlua_type(L, 5) == LUA_TNONEroupList groups;
+	ItemGroupList groups;
 
 	read_groups(L, 2, groups);
 	sao->setArmorGroups(groups);
