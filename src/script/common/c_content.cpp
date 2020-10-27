@@ -197,7 +197,7 @@ void read_object_properties(lua_State *L, int index,
 			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP);
 			sao->setHP(prop->hp_max, reason);
 			if (sao->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-				sao->getEnv()->getGameDef()->SendPlayerHPOrDie((PlayerSAO *)sao, reason);
+				sao->getEnv()->getGameDef()->SendPlayerHPOrDie((PlayerSAO *)sao, reason, false);
 		}
 	}
 

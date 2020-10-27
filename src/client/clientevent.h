@@ -62,6 +62,7 @@ struct ClientEvent
 		struct
 		{
 			u16 amount;
+			bool effect;
 		} player_damage;
 		struct
 		{

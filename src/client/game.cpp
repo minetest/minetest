@@ -2584,7 +2584,7 @@ void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation 
 		client->getScript()->on_damage_taken(event->player_damage.amount);
 
 	// Damage flash and hurt tilt are not used at death
-	if (client->getHP() > 0) {
+	if (client->getHP() > 0 && event->player_damage.effect) {
 		runData.damage_flash += 95.0f + 3.2f * event->player_damage.amount;
 		runData.damage_flash = MYMIN(runData.damage_flash, 127.0f);
 

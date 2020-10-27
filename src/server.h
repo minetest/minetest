@@ -322,7 +322,7 @@ public:
 
 	void printToConsoleOnly(const std::string &text);
 
-	void SendPlayerHPOrDie(PlayerSAO *player, const PlayerHPChangeReason &reason);
+	void SendPlayerHPOrDie(PlayerSAO *player, const PlayerHPChangeReason &reason, bool effect = true);
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO *playerSAO, bool incremental);
 	void SendMovePlayer(session_t peer_id);
@@ -375,7 +375,7 @@ private:
 	void init();
 
 	void SendMovement(session_t peer_id);
-	void SendHP(session_t peer_id, u16 hp);
+	void SendHP(session_t peer_id, u16 hp, bool effect = true);
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason, bool reconnect = false);
@@ -392,7 +392,7 @@ private:
 
 	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
-	void SendPlayerHP(session_t peer_id);
+	void SendPlayerHP(session_t peer_id, bool effect = true);
 
 	void SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
 		f32 animation_speed);

@@ -537,8 +537,6 @@ void Client::handleCommand_Fov(NetworkPacket *pkt)
 
 	*pkt >> fov >> is_multiplier;
 
-	// Wrap transition_time extraction within a
-	// try-catch to preserve backwards compat
 	try {
 		*pkt >> transition_time;
 	} catch (PacketError &e) {};
@@ -565,10 +563,13 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 		m_script->on_hp_modification(hp);
 
 	if (hp < oldhp) {
-		// Add to ClientEvent queue
 		ClientEvent *event = new ClientEvent();
 		event->type = CE_PLAYER_DAMAGE;
 		event->player_damage.amount = oldhp - hp;
+		event->player_damage.effect = true;
+		try {
+			*pkt >> event->player_damage.effect;
+		} catch (PacketError &e) {};
 		m_client_event_queue.push(event);
 	}
 }

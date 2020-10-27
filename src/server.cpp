@@ -1326,7 +1326,7 @@ void Server::SendMovement(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason &reason)
+void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason &reason, bool effect)
 {
 	if (playersao->isImmortal())
 		return;
@@ -1335,15 +1335,15 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao, const PlayerHPChangeReason 
 	bool is_alive = playersao->getHP() > 0;
 
 	if (is_alive)
-		SendPlayerHP(peer_id);
+		SendPlayerHP(peer_id, effect);
 	else
 		DiePlayer(peer_id, reason);
 }
 
-void Server::SendHP(session_t peer_id, u16 hp)
+void Server::SendHP(session_t peer_id, u16 hp, bool effect)
 {
-	NetworkPacket pkt(TOCLIENT_HP, 1, peer_id);
-	pkt << hp;
+	NetworkPacket pkt(TOCLIENT_HP, 3, peer_id);
+	pkt << hp << effect;
 	Send(&pkt);
 }
 
@@ -1773,12 +1773,12 @@ void Server::SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed)
 	}
 }
 
-void Server::SendPlayerHP(session_t peer_id)
+void Server::SendPlayerHP(session_t peer_id, bool effect)
 {
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	assert(playersao);
 
-	SendHP(peer_id, playersao->getHP());
+	SendHP(peer_id, playersao->getHP(), effect);
 	m_script->player_event(playersao,"health_changed");
 
 	// Send to other clients
