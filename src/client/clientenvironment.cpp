@@ -191,45 +191,44 @@ void ClientEnvironment::step(float dtime)
 	f32 dtime_part = dtime / steps;
 	for (; steps > 0; --steps) {
 		/*
-			Handle local player
+			Local player handling
 		*/
-		{
-			// Control local player
-			lplayer->applyControl(dtime_part, this);
 
-			// Apply physics
-			if (!free_move && !is_climbing) {
-				// Gravity
-				v3f speed = lplayer->getSpeed();
-				if (!lplayer->in_liquid)
-					speed.Y -= lplayer->movement_gravity *
-						lplayer->physics_override_gravity * dtime_part * 2.0f;
+		// Control local player
+		lplayer->applyControl(dtime_part, this);
 
-				// Liquid floating / sinking
-				if (lplayer->in_liquid && !lplayer->swimming_vertical &&
-						!lplayer->swimming_pitch)
-					speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
+		// Apply physics
+		if (!free_move && !is_climbing) {
+			// Gravity
+			v3f speed = lplayer->getSpeed();
+			if (!lplayer->in_liquid)
+				speed.Y -= lplayer->movement_gravity *
+					lplayer->physics_override_gravity * dtime_part * 2.0f;
 
-				// Liquid resistance
-				if (lplayer->in_liquid_stable || lplayer->in_liquid) {
-					// How much the node's viscosity blocks movement, ranges
-					// between 0 and 1. Should match the scale at which viscosity
-					// increase affects other liquid attributes.
-					static const f32 viscosity_factor = 0.3f;
+			// Liquid floating / sinking
+			if (lplayer->in_liquid && !lplayer->swimming_vertical &&
+					!lplayer->swimming_pitch)
+				speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
 
-					v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
-					f32 dl = d_wanted.getLength();
-					if (dl > lplayer->movement_liquid_fluidity_smooth)
-						dl = lplayer->movement_liquid_fluidity_smooth;
+			// Liquid resistance
+			if (lplayer->in_liquid_stable || lplayer->in_liquid) {
+				// How much the node's viscosity blocks movement, ranges
+				// between 0 and 1. Should match the scale at which viscosity
+				// increase affects other liquid attributes.
+				static const f32 viscosity_factor = 0.3f;
 
-					dl *= (lplayer->liquid_viscosity * viscosity_factor) +
-						(1 - viscosity_factor);
-					v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
-					speed += d;
-				}
+				v3f d_wanted = -speed / lplayer->movement_liquid_fluidity;
+				f32 dl = d_wanted.getLength();
+				if (dl > lplayer->movement_liquid_fluidity_smooth)
+					dl = lplayer->movement_liquid_fluidity_smooth;
 
-				lplayer->setSpeed(speed);
+				dl *= (lplayer->liquid_viscosity * viscosity_factor) +
+					(1 - viscosity_factor);
+				v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
+				speed += d;
 			}
+
+			lplayer->setSpeed(speed);
 		}
 
 		/*
