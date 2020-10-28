@@ -137,6 +137,8 @@ void ClientMap::updateDrawList()
 	u32 blocks_in_range_with_mesh = 0;
 	// Number of blocks occlusion culled
 	u32 blocks_occlusion_culled = 0;
+	// farthest distance
+	float farthest_dist = 0;
 
 	// No occlusion culling when free_move is on and camera is
 	// inside ground
@@ -205,6 +207,8 @@ void ClientMap::updateDrawList()
 				blocks_occlusion_culled++;
 				continue;
 			}
+			if (d > farthest_dist)
+				farthest_dist = d;
 
 			// This block is in range. Reset usage timer.
 			block->resetUsageTimer();
@@ -219,6 +223,7 @@ void ClientMap::updateDrawList()
 		if (sector_blocks_drawn != 0)
 			m_last_drawn_sectors.insert(sp);
 	}
+	m_control.farthest_dist = farthest_dist;
 
 	g_profiler->avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);

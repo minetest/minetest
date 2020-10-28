@@ -33,6 +33,7 @@ struct MapDrawControl
 	float wanted_range = 0.0f;
 	// show a wire frame for debugging
 	bool show_wireframe = false;
+	float farthest_dist = 0.0f;
 };
 
 class Client;

@@ -3703,7 +3703,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	if (draw_control->range_all) {
 		runData.fog_range = 100000 * BS;
 	} else {
-		runData.fog_range = draw_control->wanted_range * BS;
+		float new_range = std::min(draw_control->wanted_range * BS, draw_control->farthest_dist);
+		new_range = std::max(new_range, draw_control->wanted_range * BS / 4);
+		runData.fog_range = new_range > runData.fog_range ?
+			runData.fog_range * 0.95f + new_range * 0.05f :
+			runData.fog_range * 0.8f + new_range * 0.2f;
 	}
 
 	/*
