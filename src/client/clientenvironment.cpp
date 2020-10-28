@@ -171,13 +171,13 @@ void ClientEnvironment::step(float dtime)
 
 	// Maximum time increment (for collision detection etc)
 	// time = distance / speed
-	f32 dtime_min_step = 1;
+	f32 dtime_max_increment = 1;
 	if(player_speed > 0.001)
-		dtime_min_step = position_max_increment / player_speed;
+		dtime_max_increment = position_max_increment / player_speed;
 
 	// Maximum time increment is 10ms or lower
-	if(dtime_min_step > 0.01)
-		dtime_min_step = 0.01;
+	if(dtime_max_increment > 0.01)
+		dtime_max_increment = 0.01;
 
 	// Don't allow overly huge dtime
 	if(dtime > 0.5)
@@ -187,7 +187,7 @@ void ClientEnvironment::step(float dtime)
 		Stuff that has a maximum time increment
 	*/
 
-	u32 steps = ceil(dtime / dtime_min_step);
+	u32 steps = ceil(dtime / dtime_max_increment);
 	f32 dtime_part = dtime / steps;
 	for (; steps > 0; --steps) {
 		/*
