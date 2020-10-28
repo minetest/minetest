@@ -747,7 +747,7 @@ Call these functions only at load time!
         * event - The input type of the event. The value will be one of "key", "mouse", "touch",
           or "joystick".
         * Key event only table keys:
-            * type - The type of the key event. Can be "press", "release", or  "repeat" (which
+            * type - The type of the key event. Can be "press", "release", or "repeat" (which
               means the key was held down and started repeating).
             * keycode - The keycode of the key that was inputted. See `keycodes.txt` for a full
               list of keycodes.
@@ -1372,13 +1372,17 @@ Definitions for various types:
 * position/size - `{x=<x pos/width>, y=<y pos/height>}`
 * rectangle - `{x=<x pos>, y=<y pos>, w=<width>, h=<height>}`
 * 3D position/angle - `{x=<x pos/angle>, y=<y pos/angle>, z=<z pos/angle>}`
+* color - Always a `ColorSpec`
 Positions, sizes, and rectangles are in pixels, and angles are in degrees.
 
 ### Methods
 * `get_window_size()` -> size: Returns the size of the Minetest window.
 * `draw_rect(rect, color[, clip_rect])`: Draws a filled rectangle.
     * `rect`: The rectangle to draw.
-    * `color`: The color to make the rectangle.
+    * `color`: Can be one of two things:
+        * A single color: The whole rectangle will be filled with this color
+        * An array of four colors: The rectangle will be drawn with a gradient. Each corner is
+          assigned one of the colors, which start at the top left corner and go clockwise.
     * `clip_rect` (optional): If specified, any part of the filled rectangle that extends out
       of this rectangle will not be drawn.
 * `draw_image(rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor])`: Draws an image.

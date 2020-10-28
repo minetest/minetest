@@ -51,15 +51,31 @@ int LuaScreenDrawer::l_draw_rect(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	core::recti rect = read_recti(L, 2);
-	video::SColor color(0);
-	read_color(L, 3, &color);
+
+	core::recti clip_rect;
+	core::recti *clip_ptr = nullptr;
+	if (lua_istable(L, 4)) {
+		clip_rect = read_recti(L, 4);
+		clip_ptr = &clip_rect;
+	}
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (lua_istable(L, 4)) {
-		core::recti clip_rect = read_recti(L, 4);
-		driver->draw2DRectangle(color, rect, &clip_rect);
+
+	// Draw with a gradient if it is an _array_ of four colors as a table with
+	// keys might be a ColorSpec in table form
+	if (lua_istable(L, 3) && lua_objlen(L, 3) == 4) {
+		video::SColor colors[4] = {0x0, 0x0, 0x0, 0x0};
+		for (size_t i = 0; i < 4; i++) {
+			lua_rawgeti(L, 3, i + 1);
+			read_color(L, -1, &colors[i]);
+			lua_pop(L, 1);
+		}
+		driver->draw2DRectangle(rect, colors[0], colors[1], colors[3], colors[2],
+			clip_ptr);
 	} else {
-		driver->draw2DRectangle(color, rect);
+		video::SColor color(0x0);
+		read_color(L, 3, &color);
+		driver->draw2DRectangle(color, rect, clip_ptr);
 	}
 
 	return 0;
@@ -99,7 +115,7 @@ int LuaScreenDrawer::l_draw_image(lua_State *L)
 			core::dimension2di(size.Width, size.Height));
 	}
 
-	video::SColor color(255, 255, 255, 255);
+	video::SColor color(0xFFFFFFFF);
 	if (!lua_isnil(L, 7))
 		read_color(L, 7, &color);
 	const video::SColor colors[] = {color, color, color, color};
