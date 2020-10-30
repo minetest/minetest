@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-06-09 12:14+0000\n"
-"Last-Translator: Mikołaj Zaremba <mikolajzaremba03@gmail.com>\n"
+"PO-Revision-Date: 2020-10-31 19:26+0000\n"
+"Last-Translator: ResuUman <aparat2@wp.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.1-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -238,9 +238,8 @@ msgid "Altitude chill"
 msgstr "Wysokość mrozu"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Wysokość mrozu"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -267,9 +266,8 @@ msgid "Create"
 msgstr "Utwórz"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Iteracje"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -280,9 +278,8 @@ msgid "Download one from minetest.net"
 msgstr "Ściągnij taką z minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Minimalna wartość Y lochu"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
@@ -294,9 +291,8 @@ msgid "Floating landmasses in the sky"
 msgstr "Gęstość gór na latających wyspach"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "Poziom wznoszonego terenu"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -321,7 +317,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Jeziora"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
@@ -341,9 +337,8 @@ msgid "Mapgen-specific flags"
 msgstr "Generator mapy flat flagi"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mountains"
-msgstr "Szum góry"
+msgstr "Góry"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -2388,7 +2383,7 @@ msgstr "Ścieżka czcionki typu Monospace"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Bold font path"
-msgstr "Ścieżka czcionki"
+msgstr "Ścieżka fontu pogrubionego."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2853,14 +2848,13 @@ msgstr ""
 "Wyższa wartość reprezentuje łagodniejszą mapę normalnych."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the base ground level."
-msgstr "Określa obszary drzewiaste oraz ich gęstość."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Defines the depth of the river channel."
-msgstr "Określa obszary drzewiaste oraz ich gęstość."
+msgstr "Określa głębokość rzek."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -2876,7 +2870,7 @@ msgstr "Określa strukturę kanałów rzecznych."
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Defines the width of the river valley."
-msgstr "Określa obszary na których drzewa mają jabłka."
+msgstr "Określa szerokość doliny rzecznej."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2977,15 +2971,15 @@ msgid "Dungeon minimum Y"
 msgstr "Minimalna wartość Y lochu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "Minimalna wartość Y lochu"
+msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable IPv6 support (for both client and server).\n"
 "Required for IPv6 connections to work at all."
-msgstr ""
+msgstr "Włącz protokół sieciowy IPv6 (dla gry oraz dla jej serwera)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3069,10 +3063,13 @@ msgstr ""
 "jeżeli następuje połączenie z serwerem."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable vertex buffer objects.\n"
 "This should greatly improve graphics performance."
 msgstr ""
+"Uaktywnij \"vertex buffer objects\" aby zmniejszyć wymagania wobec karty "
+"grafiki."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3328,9 +3325,8 @@ msgid "Floatland tapering distance"
 msgstr "Podstawowy szum wznoszącego się terenu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland water level"
-msgstr "Poziom wznoszonego terenu"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
