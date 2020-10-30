@@ -1,0 +1,16 @@
+version: "3.3"
+services:
+  minetest:
+    # If you want to build from the cloned source, uncomment the build line and comment the image line.
+    # build: .
+    image: registry.gitlab.com/minetest/minetest/server:latest
+    volumes:
+      - minetest_conf:/etc/minetest
+      - minetest_var_lib:/root/
+    ports:
+      - 30000:30000/udp
+    restart: unless-stopped
+
+volumes:
+    minetest_conf:
+    minetest_var_lib:
