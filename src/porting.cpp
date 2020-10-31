@@ -719,25 +719,26 @@ int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 	return c;
 }
 
-bool openURL(const std::string &url)
+bool openURI(const std::string &uri, bool enforce_http_url)
 {
-	if ((url.substr(0, 7) != "http://" && url.substr(0, 8) != "https://") ||
-			url.find_first_of("\r\n") != std::string::npos) {
-		errorstream << "Invalid url: " << url << std::endl;
+	if (enforce_http_url &&
+			((uri.substr(0, 7) != "http://" && uri.substr(0, 8) != "https://") ||
+			uri.find_first_of("\r\n") != std::string::npos)) {
+		errorstream << "Invalid url: " << uri << std::endl;
 		return false;
 	}
 
 #if defined(_WIN32)
-	return (intptr_t)ShellExecuteA(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL) > 32;
+	return (intptr_t)ShellExecuteA(NULL, NULL, uri.c_str(), NULL, NULL, SW_SHOWNORMAL) > 32;
 #elif defined(__ANDROID__)
-	openURLAndroid(url);
+	openURIAndroid(uri);
 	return true;
 #elif defined(__APPLE__)
-	const char *argv[] = {"open", url.c_str(), NULL};
+	const char *argv[] = {"open", uri.c_str(), NULL};
 	return posix_spawnp(NULL, "open", NULL, NULL, (char**)argv,
 		(*_NSGetEnviron())) == 0;
 #else
-	const char *argv[] = {"xdg-open", url.c_str(), NULL};
+	const char *argv[] = {"xdg-open", uri.c_str(), NULL};
 	return posix_spawnp(NULL, "xdg-open", NULL, NULL, (char**)argv, environ) == 0;
 #endif
 }

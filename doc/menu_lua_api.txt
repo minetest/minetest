@@ -43,8 +43,12 @@ core.get_max_supp_proto()
 core.open_url(url)
 ^ opens the URL in a web browser, returns false on failure.
 ^ Must begin with http:// or https://
+core.open_dir(path)
+^ opens the path in the system file browser/explorer, returns false on failure.
+^ Must be an existing directory.
 core.get_version() (possible in async calls)
 ^ returns current core version
+
 
 
 Filesystem

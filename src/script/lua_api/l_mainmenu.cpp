@@ -1067,7 +1067,21 @@ int ModApiMainMenu::l_get_max_supp_proto(lua_State *L)
 int ModApiMainMenu::l_open_url(lua_State *L)
 {
 	std::string url = luaL_checkstring(L, 1);
-	lua_pushboolean(L, porting::openURL(url));
+	lua_pushboolean(L, porting::openURI(url));
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_open_dir(lua_State *L)
+{
+	std::string path = luaL_checkstring(L, 1);
+
+	if (!fs::IsDir(path)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	lua_pushboolean(L, porting::openURI(path, false));
 	return 1;
 }
 
@@ -1134,6 +1148,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(open_url);
+	API_FCT(open_dir);
 	API_FCT(do_async_callback);
 }
 

@@ -332,7 +332,7 @@ void attachOrCreateConsole();
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
 
-bool openURL(const std::string &url);
+bool openURI(const std::string &uri, bool enforce_http_url=true);
 
 } // namespace porting
 
