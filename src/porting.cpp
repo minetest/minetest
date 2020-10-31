@@ -719,11 +719,15 @@ int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 	return c;
 }
 
+inline bool checkIsURL(const std::string &uri)
+{
+	return (uri.substr(0, 7) == "http://" || uri.substr(0, 8) == "https://") &&
+			uri.find_first_of("\r\n") == std::string::npos;
+}
+
 bool openURI(const std::string &uri, bool enforce_http_url)
 {
-	if (enforce_http_url &&
-			((uri.substr(0, 7) != "http://" && uri.substr(0, 8) != "https://") ||
-			uri.find_first_of("\r\n") != std::string::npos)) {
+	if (enforce_http_url && !checkIsURL(uri)) {
 		errorstream << "Invalid url: " << uri << std::endl;
 		return false;
 	}

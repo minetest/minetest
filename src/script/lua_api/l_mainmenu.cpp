@@ -687,6 +687,14 @@ int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
 
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_user_path(lua_State *L)
+{
+	std::string path = fs::RemoveRelativePathComponents(porting::path_user);
+	lua_pushstring(L, path.c_str());
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_modpath(lua_State *L)
 {
 	std::string modpath = fs::RemoveRelativePathComponents(
@@ -1127,6 +1135,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(set_background);
 	API_FCT(set_topleft_text);
 	API_FCT(get_mapgen_names);
+	API_FCT(get_user_path);
 	API_FCT(get_modpath);
 	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
@@ -1159,6 +1168,7 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_games);
 	API_FCT(get_favorites);
 	API_FCT(get_mapgen_names);
+	API_FCT(get_user_path);
 	API_FCT(get_modpath);
 	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
