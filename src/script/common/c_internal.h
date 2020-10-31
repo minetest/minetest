@@ -125,7 +125,14 @@ enum class DeprecatedHandlingMode {
  *
  * @return DeprecatedHandlingMode
  */
-DeprecatedHandlingMode get_deprecated_handling_node();
+DeprecatedHandlingMode get_deprecated_handling_mode();
 
+/**
+ * Handles a deprecation warning based on user settings
+ *
+ * @param L Lua State
+ * @param message The deprecation method
+ * @param stack_depth How far on the stack to the first user function (ie: not builtin or core)
+ */
 void log_deprecated(lua_State *L, const std::string &message,
 	int stack_depth=1);

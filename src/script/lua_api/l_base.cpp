@@ -104,7 +104,7 @@ int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char
 {
 	thread_local std::vector<u64> deprecated_logged;
 
-	DeprecatedHandlingMode dep_mode = get_deprecated_handling_node();
+	DeprecatedHandlingMode dep_mode = get_deprecated_handling_mode();
 	if (dep_mode == DeprecatedHandlingMode::Ignore)
 		return func(L);
 
