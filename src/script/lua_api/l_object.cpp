@@ -2278,7 +2278,6 @@ void ObjectRef::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	markAliasDeprecated(methods);
 	luaL_openlib(L, 0, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
@@ -2316,10 +2315,9 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_nametag_attributes),
 
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
-	luamethod(ObjectRef, add_velocity),
-	{"add_player_velocity", ObjectRef::l_add_velocity},
+	luamethod_aliased(ObjectRef, add_velocity, add_player_velocity),
 	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
-	{"get_player_velocity", ObjectRef::l_get_velocity},
+	luamethod_dep(ObjectRef, get_velocity, get_player_velocity),
 
 	// LuaEntitySAO-only
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),
