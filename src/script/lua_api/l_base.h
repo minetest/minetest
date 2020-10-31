@@ -74,5 +74,18 @@ public:
 			lua_CFunction func,
 			int top);
 
+	/**
+	 * A wrapper for deprecated functions.
+	 *
+	 * When called, handles the deprecation according to user settings and then calls `func`.
+	 *
+	 * @throws Lua Error if required by the user settings.
+	 *
+	 * @param L Lua state
+	 * @param good Name of good function/method
+	 * @param bad Name of deprecated function/method
+	 * @param func Actual implementation of function
+	 * @return value from `func`
+	 */
 	static int l_deprecated_function(lua_State *L, const char *good, const char *bad, lua_CFunction func);
 };
