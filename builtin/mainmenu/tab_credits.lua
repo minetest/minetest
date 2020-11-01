@@ -119,7 +119,7 @@ return {
 
 		if PLATFORM ~= "Android" then
 			fs = fs .. "tooltip[userdata;" ..
-					fgettext("Opens the directory which contains user-provided worlds, games, mods, " ..
+					fgettext("Opens the directory that contains user-provided worlds, games, mods,\n" ..
 							"and texture packs in a file manager / explorer.") .. "]"
 			fs = fs .. "button[0,4.75;3.5,1;userdata;" .. fgettext("Open User Data Directory") .. "]"
 		end
