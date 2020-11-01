@@ -36,7 +36,7 @@ variables:
     - cp misc/debpkg-control build/deb/minetest/DEBIAN/control
     - cp -Rp artifact/minetest/usr build/deb/minetest/
   script:
-    - git clone $MINETEST_GAME_REPO build/deb/minetest/usr/share/minetest/games/minetest
+    - git clone $MINETEST_GAME_REPO build/deb/minetest/usr/share/minetest/games/minetest_game
     - rm -Rf build/deb/minetest/usr/share/minetest/games/minetest/.git
     - sed -i 's/DATEPLACEHOLDER/'$(date +%y.%m.%d)'/g' build/deb/minetest/DEBIAN/control
     - sed -i 's/LEVELDB_PLACEHOLDER/'$LEVELDB_PKG'/g' build/deb/minetest/DEBIAN/control
@@ -302,3 +302,29 @@ pages:
       - public
   only:
     - master
+
+package:appimage-client:
+  stage: package
+  image: appimagecrafters/appimage-builder
+  dependencies:
+    - build:ubuntu-18.04
+  before_script:
+    - apt-get update -y
+    - apt-get install -y git wget
+    # Collect files
+    - mkdir AppDir
+    - cp -a artifact/minetest/usr/ AppDir/usr/
+    - rm AppDir/usr/bin/minetestserver
+    - cp -R clientmods AppDir/usr/share/minetest
+  script:
+    - git clone $MINETEST_GAME_REPO AppDir/usr/share/minetest/games/minetest_game
+    - rm -Rf AppDir/usr/share/minetest/games/minetest/.git
+    - export VERSION=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
+    # Remove PrefersNonDefaultGPU=true
+    - sed -i '/PrefersNonDefaultGPU=true/d' AppDir/usr/share/applications/net.minetest.minetest.desktop
+    - appimage-builder --skip-test
+  artifacts:
+    when: on_success
+    expire_in: 90 day
+    paths:
+      - ./*.AppImage
