@@ -754,7 +754,7 @@ bool open_url(const std::string &url)
 bool open_directory(const std::string &path)
 {
 	if (!fs::IsDir(path)) {
-		errorstream << "Unable to open directory as it does not exist. Path=" << path << std::endl;
+		errorstream << "Unable to open directory as it does not exist: " << path << std::endl;
 		return false;
 	}
 
