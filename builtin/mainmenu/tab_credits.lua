@@ -100,10 +100,10 @@ return {
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
-		local fs = "image[0.75,0.75;" .. core.formspec_escape(logofile) .. "]" ..
+		local fs = "image[0.75,0.5;2.2,2.2;" .. core.formspec_escape(logofile) .. "]" ..
 			"style[label_button;border=false]" ..
-			"button[0.5,2.25;2.5,2;label_button;" .. version.project .. " " .. version.string .. "]" ..
-			"button[0.75,3;2,2;homepage;minetest.net]" ..
+			"button[0.5,2;2.5,2;label_button;" .. version.project .. " " .. version.string .. "]" ..
+			"button[0.75,2.75;2,2;homepage;minetest.net]" ..
 			"tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[3.5,-0.25;8.5,6.05;list_credits;" ..
