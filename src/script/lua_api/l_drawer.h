@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <vector>
 #include "client/client.h"
 #include "client/tile.h"
 #include "irrlichttypes_extrabloated.h"
@@ -33,6 +34,7 @@ private:
 
 	ISimpleTextureSource *tsrc;
 	Client *client;
+	std::vector<video::ITexture *> renderers;
 
 	static int gc_object(lua_State *L);
 
@@ -48,6 +50,10 @@ private:
 	static int l_get_font_size(lua_State *L);
 
 	static int l_draw_item(lua_State *L);
+
+	static int l_can_use_effects(lua_State *L);
+	static int l_start_effect(lua_State *L);
+	static int l_draw_effect(lua_State *L);
 
 public:
 	//! Creates the object and leaves it at the top of the stack

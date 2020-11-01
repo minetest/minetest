@@ -342,6 +342,64 @@ int LuaScreenDrawer::l_draw_item(lua_State *L)
 	return 0;
 }
 
+// can_use_effects(self)
+int LuaScreenDrawer::l_can_use_effects(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	lua_pushboolean(L, RenderingEngine::get_video_driver()->
+		queryFeature(video::EVDF_RENDER_TO_TARGET));
+	return 1;
+}
+
+// start_effect(self)
+int LuaScreenDrawer::l_start_effect(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaScreenDrawer *drawer = checkobject(L, 1);
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (drawer == nullptr || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
+		return 0;
+
+	video::ITexture *render = driver->addRenderTargetTexture(driver->getScreenSize());
+	drawer->renderers.push_back(render);
+	driver->setRenderTarget(render, true, false);
+
+	return 0;
+}
+
+// draw_effect(self, recolor)
+int LuaScreenDrawer::l_draw_effect(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaScreenDrawer *drawer = checkobject(L, 1);
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (drawer == nullptr || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET) ||
+			drawer->renderers.size() == 0)
+		return 0;
+
+	video::ITexture *rendered = drawer->renderers.back();
+	drawer->renderers.pop_back();
+
+	if (drawer->renderers.size() == 0)
+		driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
+	else
+		driver->setRenderTarget(drawer->renderers.back(), false, false);
+
+	core::recti rect(core::vector2di(), driver->getScreenSize());
+
+	video::SColor color(0xFFFFFFFF);
+	if (!lua_isnil(L, 2))
+		read_color(L, 2, &color);
+	const video::SColor colors[] = {color, color, color, color};
+
+	draw2DImageFilterScaled(driver, rendered, rect, rect, nullptr, colors, true);
+
+	return 0;
+}
+
 int LuaScreenDrawer::create_object(lua_State *L, ISimpleTextureSource *tsrc,
 	Client *client)
 {
@@ -410,5 +468,8 @@ const luaL_Reg LuaScreenDrawer::methods[] =
 	luamethod(LuaScreenDrawer, get_text_size),
 	luamethod(LuaScreenDrawer, get_font_size),
 	luamethod(LuaScreenDrawer, draw_item),
+	luamethod(LuaScreenDrawer, can_use_effects),
+	luamethod(LuaScreenDrawer, start_effect),
+	luamethod(LuaScreenDrawer, draw_effect),
 	{ 0, 0 }
 };
