@@ -32,12 +32,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define luamethod_dep(class, good, bad)                                     \
 		{#bad, [](lua_State *L) -> int {                                    \
-			return l_deprecated_function(L, #bad, #good, &class::l_##good); \
+			return l_deprecated_function(L, #good, #bad, &class::l_##good); \
 		}}
 
-#define luamethod_aliased(class, name, alias) \
-		luamethod(class, name),               \
-		luamethod_dep(class, name, alias)
+#define luamethod_aliased(class, good, bad) \
+		luamethod(class, good),               \
+		luamethod_dep(class, good, bad)
 
 #define API_FCT(name) registerFunction(L, #name, l_##name, top)
 
