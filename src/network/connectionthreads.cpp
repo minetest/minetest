@@ -956,8 +956,11 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 			// command was sent reliably.
 		}
 
-		/* The peer was not found in our lists. Add it. */
 		if (peer_id == PEER_ID_INEXISTENT) {
+			/* Ignore it if we are a client */
+			if (m_connection->ConnectedToServer())
+				return;
+			/* The peer was not found in our lists. Add it. */
 			peer_id = m_connection->createPeer(sender, MTP_MINETEST_RELIABLE_UDP, 0);
 		}
 
