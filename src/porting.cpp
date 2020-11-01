@@ -719,16 +719,10 @@ int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...)
 	return c;
 }
 
-inline bool checkIsURL(const std::string &uri)
+static bool open_uri(const std::string &uri)
 {
-	return (uri.substr(0, 7) == "http://" || uri.substr(0, 8) == "https://") &&
-			uri.find_first_of("\r\n") == std::string::npos;
-}
-
-bool openURI(const std::string &uri, bool enforce_http_url)
-{
-	if (enforce_http_url && !checkIsURL(uri)) {
-		errorstream << "Invalid url: " << uri << std::endl;
+	if (uri.find_first_of("\r\n") != std::string::npos) {
+		errorstream << "Unable to open URI as it is invalid, contains new line: " << uri << std::endl;
 		return false;
 	}
 
@@ -745,6 +739,26 @@ bool openURI(const std::string &uri, bool enforce_http_url)
 	const char *argv[] = {"xdg-open", uri.c_str(), NULL};
 	return posix_spawnp(NULL, "xdg-open", NULL, NULL, (char**)argv, environ) == 0;
 #endif
+}
+
+bool open_url(const std::string &url)
+{
+	if (url.substr(0, 7) != "http://" && url.substr(0, 8) != "https://") {
+		errorstream << "Unable to open browser as URL is missing schema: " << url << std::endl;
+		return false;
+	}
+
+	return open_uri(url);
+}
+
+bool open_directory(const std::string &path)
+{
+	if (!fs::IsDir(path)) {
+		errorstream << "Unable to open directory as it does not exist. Path=" << path << std::endl;
+		return false;
+	}
+
+	return open_uri(path);
 }
 
 // Load performance counter frequency only once at startup

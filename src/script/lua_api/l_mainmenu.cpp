@@ -1075,7 +1075,7 @@ int ModApiMainMenu::l_get_max_supp_proto(lua_State *L)
 int ModApiMainMenu::l_open_url(lua_State *L)
 {
 	std::string url = luaL_checkstring(L, 1);
-	lua_pushboolean(L, porting::openURI(url));
+	lua_pushboolean(L, porting::open_url(url));
 	return 1;
 }
 
@@ -1083,13 +1083,7 @@ int ModApiMainMenu::l_open_url(lua_State *L)
 int ModApiMainMenu::l_open_dir(lua_State *L)
 {
 	std::string path = luaL_checkstring(L, 1);
-
-	if (!fs::IsDir(path)) {
-		lua_pushboolean(L, false);
-		return 1;
-	}
-
-	lua_pushboolean(L, porting::openURI(path, false));
+	lua_pushboolean(L, porting::open_directory(path));
 	return 1;
 }
 
