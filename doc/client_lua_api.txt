@@ -734,11 +734,11 @@ Call these functions only at load time!
     * Called when the local player open inventory
     * Newest functions are called first
     * If any function returns true, inventory doesn't open
-* `minetest.register_on_draw(function(dtime, drawer))`
+* `minetest.register_on_draw(function(dtime))`
     * Called every frame after the engine is finished drawing for custom drawing to
       the screen. Code used here must be fast to ensure the framerate doesn't drop.
+    * To actually draw to the screen, see [Drawing].
     * `dtime`: Time in seconds since the last frame.
-    * `drawer`: A `ScreenDrawer`
 * `minetest.register_on_event(function(event))`
     * Called every time an event (e.g. keyboard or mouse input) is fired after the engine uses it.
     * If this function returns `true`, all events handlers registered after this one will not be called.
@@ -897,6 +897,97 @@ Call these functions only at load time!
         }
     }
     ```
+
+### Drawing
+
+Functions for drawing to the screen and getting information about drawable things.
+
+Definitions for various types:
+* position/size - `{x=<x pos/width>, y=<y pos/height>}`
+* rectangle - `{x=<x pos>, y=<y pos>, w=<width>, h=<height>}`
+* 3D position/angle - `{x=<x pos/angle>, y=<y pos/angle>, z=<z pos/angle>}`
+* color - Always a `ColorSpec`
+Positions, sizes, and rectangles are in pixels, and angles are in degrees.
+
+* `drawer.get_window_size()` -> size: Returns the size of the Minetest window.
+* `drawer.draw_rect(rect, color[, clip_rect])`: Draws a filled rectangle.
+    * `rect`: The rectangle to draw.
+    * `color`: Can be one of two things:
+        * A single color: The whole rectangle will be filled with this color
+        * An array of four colors: The rectangle will be drawn with a gradient. Each corner is
+          assigned one of the colors, which start at the top left corner and go clockwise.
+    * `clip_rect` (optional): If specified, any part of the filled rectangle that extends out
+      of this rectangle will not be drawn.
+    * Has no effect outside of `minetest.register_on_draw`.
+* `drawer.draw_texture(rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor])`:
+  Draws an image.
+    * `rect`: The rectangle to draw the image in. The image will be stretched to fit.
+    * `texture`: The name of the texture to draw. Can have texture modifiers.
+    * `clip_rect` (optional): If specified, any part of the image that extends out of this
+      rectangle will not be drawn.
+    * `middle_rect` (optional): Defines the 9-slice rectangle for the image. If nil, the image
+      will be drawn normally. Negative widths and heights are added to the width and height of
+      the texture, allowing it to be used as the distance from the far end.
+      See https://en.wikipedia.org/wiki/9-slice_scaling for more information.
+    * `from_rect` (optional): Defines a rectangular sub-image of the texture which will be drawn
+      instead of the entire texture. If nil, the whole image is drawn. Negative widths and heights
+      are added to the width and height of the texture, allowing it to be used as the distance
+      from the far end.
+    * `recolor` (optional): The color to recolor the image to when drawing.
+    * Has no effect outside of `minetest.register_on_draw`.
+* `drawer.get_texture_size(texture)` -> size: Returns the size of the specified texture with
+  optional texture modifiers.
+* `drawer.draw_text(pos, text[, clip_rect][, style])`: Draws text.
+    * `pos`: The position of the top left of the text.
+    * `text`: The text to draw. Newlines and '\0' are converted to spaces. Color escape codes
+      are stripped.
+    * `clip_rect` (optional): If specified, any part of the text that extends out of this
+      rectangle will not be drawn.
+    * `style` (optional): A table of text styling options. Possible keys:
+        * color - The color of the text. Default white.
+        * font - What font to use. Can be "normal" or "mono". Default "normal". If the fallback font
+          is used for the current locale, this option will be overridden.
+        * size - What size the font should be in pts. The default is user-set.
+            * **Note**: It is recommended to make the size relative to the user-set font size,
+              which can be gotten with `get_font_size`.
+        * bold - Whether the text should be bold. Default false.
+        * italic - Whether the text should be italicized. Default false.
+        * underline - Whether the text should be underlined. Default false.
+        * strikethrough - Whether the text should be crossed out. Default false.
+    * Has no effect outside of `minetest.register_on_draw`.
+* `drawer.get_text_size(text[, style])` -> size: Gets the size of the text if it were to be drawn.
+    * `text`: The text to get the size of. Newlines and '\0' are converted to spaces. Color escape
+      codes are stripped.
+    * `style`: Styling table. This can affect the space the font takes on the screen. This is the
+      same as used in `drawer.draw_text`.
+    * The text height will always be the same for each font style regardless of the string provided.
+* `drawer.get_font_size(font)` -> size: Gets the user-set font size for the specified font in pts.
+    * `font`: One of the fonts in `drawer.draw_text`'s `font` styling parameter.
+* `drawer.draw_item(rect, item[, clip_rect][, angle])`: Draws an item(stack)
+    * `rect`: The rectangle to fit the item inside. Note that items with certain angles that extend
+      past this rectangle will be clipped to it.
+    * `item`: The itemstring of the item to draw with optional metadata.
+    * `clip_rect` (optional): If specified, any part of the item that extends out of this rectangle
+      will not be drawn.
+    * `angle` (optional): Sets the 3D angle of the item along each axis. Tools and craftitems face
+      forward by default while nodes have the angle `{x=-30, y=45, z=0}` from the forward position
+      by default to show off more faces of the node. Only works if `inventory_items_animations` is
+      set to true.
+    * Has no effect outside of `minetest.register_on_draw`.
+* `drawer.start_effect()`: Starts a drawing hook for special drawing effects.
+    * All drawing drawn after this function call will be drawn to a hidden texture instead of the
+      screen. This texture can be drawn with special effect with `drawer.draw_effect()`
+    * Effects can be nested so that inner effects will be drawn to the outer effect texture. The
+      last effect to be started will be the first to be drawn.
+    * Has no effect outside of `minetest.register_on_draw`. Any hook not drawn by the end of all
+      the callbacks will be discarded.
+* `drawer.draw_effect([recolor])`: Draws the contents of a hook started with `drawer.start_effect`
+  with special effects.
+    * `recolor` (optional): The color to recolor the hook to when drawing.
+* `drawer.effects_supported()` -> bool: Returns true if drawing hooks with `drawer.start_effect`
+  and `drawer.draw_effect` are supported by the graphics card.
+    * Low end graphics cards may not support this feature, in which case hooks are ignored and
+      drawing proceeds like normal.
 
 ### Privileges
 * `minetest.get_privilege_list()`
@@ -1363,75 +1454,6 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 	protocol_version = 30             -- Will not be accurate at start up as the client might not be connected to the server yet, in that case it will be 0.
 }
 ```
-
-`ScreenDrawer`
---------------
-
-An interface for drawing to and getting information about the screen.
-Definitions for various types:
-* position/size - `{x=<x pos/width>, y=<y pos/height>}`
-* rectangle - `{x=<x pos>, y=<y pos>, w=<width>, h=<height>}`
-* 3D position/angle - `{x=<x pos/angle>, y=<y pos/angle>, z=<z pos/angle>}`
-* color - Always a `ColorSpec`
-Positions, sizes, and rectangles are in pixels, and angles are in degrees.
-
-### Methods
-* `get_window_size()` -> size: Returns the size of the Minetest window.
-* `draw_rect(rect, color[, clip_rect])`: Draws a filled rectangle.
-    * `rect`: The rectangle to draw.
-    * `color`: Can be one of two things:
-        * A single color: The whole rectangle will be filled with this color
-        * An array of four colors: The rectangle will be drawn with a gradient. Each corner is
-          assigned one of the colors, which start at the top left corner and go clockwise.
-    * `clip_rect` (optional): If specified, any part of the filled rectangle that extends out
-      of this rectangle will not be drawn.
-* `draw_image(rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor])`: Draws an image.
-    * `rect`: The rectangle to draw the image in. The image will be stretched to fit.
-    * `texture`: The name of the texture to draw. Can have texture modifiers.
-    * `clip_rect` (optional): If specified, any part of the image that extends out of this
-      rectangle will not be drawn.
-    * `middle_rect` (optional): Defines the 9-slice rectangle for the image. If nil, the image
-      will be drawn normally. Negative widths and heights are added to the width and height of
-      the texture, allowing it to be used as the distance from the far end.
-      See https://en.wikipedia.org/wiki/9-slice_scaling for more information.
-    * `from_rect` (optional): Defines a rectangular sub-image of the texture which will be drawn
-      instead of the entire texture. If nil, the whole image is drawn. Negative widths and heights
-      are added to the width and height of the texture, allowing it to be used as the distance
-      from the far end.
-    * `recolor` (optional): The color to recolor the image to when drawing.
-* `get_image_size(texture)` -> size: Returns the size of the specified texture with optional
-  texture modifiers.
-* `draw_text(pos, text[, clip_rect][, style])`: Draws text.
-    * `pos`: The position of the top left of the text.
-    * `text`: The text to draw. Newlines are converted to spaces. Color escape codes are stripped.
-    * `clip_rect` (optional): If specified, any part of the text that extends out of this
-      rectangle will not be drawn.
-    * `style` (optional): A table of text styling options. Possible keys:
-        * color - The color of the text. Default white.
-        * font - What font to use. Can be "normal" or "mono". Default "normal".
-        * size - What size the font should be in pts. The default is user-set.
-            * **Note**: It is recommended to make the size relative to the user-set font size,
-              which can be gotten with `get_font_size`.
-        * bold - Whether the text should be bold. Default false.
-        * italic - Whether the text should be italicized. Default false.
-        * underline - Whether the text should be underlined. Default false.
-        * strikethrough - Whether the text should be crossed out. Default false.
-* `get_text_size(text[, style])` -> size: Gets the size of the text if it were to be drawn.
-    * `text`: The text to get the size of. Newlines are converted to spaces.
-    * `style`: Styling table. This can affect the space the font takes on the screen. This is the
-      same as used in `draw_text`.
-* `get_font_size(font)` -> size: Gets the user-set font size for the specified font in pts.
-    * `font`: One of the fonts in `draw_text`'s `font` styling parameter.
-* `draw_item(rect, item[, clip_rect][, angle])`: Draws an item(stack)
-    * `rect`: The rectangle to fit the item inside. Note that items with certain angles that extend
-      past this rectangle will be clipped to it.
-    * `item`: The itemstring of the item to draw with optional metadata.
-    * `clip_rect` (optional): If specified, any part of the item that extends out of this rectangle
-      will not be drawn.
-    * `angle` (optional): Sets the 3D angle of the item along each axis. Tools and craftitems face
-      forward by default while nodes have the angle `{x=-30, y=45, z=0}` from the forward position
-      by default to show off more faces of the node. Only works if `inventory_items_animations` is
-      set to true.
 
 ### HUD Definition (`hud_add`, `hud_get`)
 ```lua

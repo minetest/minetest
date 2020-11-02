@@ -97,7 +97,7 @@ void KeyCache::populate()
 
 bool MyEventReceiver::OnEvent(const SEvent &event)
 {
-	// ALways check if the key has been repeated
+	// Always check if the key has been repeated
 	bool key_repeated =
 		event.EventType == EET_KEY_INPUT_EVENT &&
 		raw_event.EventType == EET_KEY_INPUT_EVENT &&

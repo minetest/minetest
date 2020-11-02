@@ -25,42 +25,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "lua_api/l_base.h"
 
-//! Lua interface for drawing to and getting attributes about the screen
-class LuaScreenDrawer : public ModApiBase
+class ModApiDrawer : public ModApiBase
 {
 private:
-	static const char className[];
-	static const luaL_Reg methods[];
-
-	ISimpleTextureSource *tsrc;
-	Client *client;
+	bool in_callback;
 	std::vector<video::ITexture *> renderers;
-
-	static int gc_object(lua_State *L);
 
 	static int l_get_window_size(lua_State *L);
 
 	static int l_draw_rect(lua_State *L);
-	static int l_draw_image(lua_State *L);
-	static int l_get_image_size(lua_State *L);
+	static int l_draw_texture(lua_State *L);
+	static int l_get_texture_size(lua_State *L);
 
-	static gui::IGUIFont *get_font(lua_State *L);
+	static gui::IGUIFont *get_font(lua_State *L, int index);
 	static int l_draw_text(lua_State *L);
 	static int l_get_text_size(lua_State *L);
 	static int l_get_font_size(lua_State *L);
 
 	static int l_draw_item(lua_State *L);
 
-	static int l_can_use_effects(lua_State *L);
 	static int l_start_effect(lua_State *L);
 	static int l_draw_effect(lua_State *L);
+	static int l_effects_supported(lua_State *L);
 
 public:
-	//! Creates the object and leaves it at the top of the stack
-	static int create_object(lua_State *L, ISimpleTextureSource *tsrc,
-		Client *client);
+	static void Initialize(lua_State *L, int top);
 
-	static LuaScreenDrawer *checkobject(lua_State *L, int narg);
-
-	static void Register(lua_State *L);
+	static void start_callback();
+	static void end_callback();
 };

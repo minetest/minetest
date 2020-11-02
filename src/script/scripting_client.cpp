@@ -68,7 +68,6 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	LuaItemStack::Register(L);
 	ItemStackMetaRef::Register(L);
 	LuaRaycast::Register(L);
-	LuaScreenDrawer::Register(L);
 	StorageRef::Register(L);
 	LuaMinimap::Register(L);
 	NodeMetaRef::RegisterClient(L);
@@ -82,6 +81,10 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	ModApiEnvMod::InitializeClient(L, top);
 	ModApiChannels::Initialize(L, top);
 	ModApiParticlesLocal::Initialize(L, top);
+
+	lua_newtable(L);
+	ModApiDrawer::Initialize(L, lua_gettop(L));
+	lua_setglobal(L, "drawer");
 }
 
 void ClientScripting::on_client_ready(LocalPlayer *localplayer)

@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstdint>
 #endif
 
-class Client;
 class ClientEnvironment;
 
 class ScriptApiClient : virtual public ScriptApiBase
@@ -53,7 +52,7 @@ public:
 	void on_hp_modification(int32_t newhp);
 	void on_death();
 	void environment_step(float dtime);
-	void on_draw(float dtime, ISimpleTextureSource *tsrc, Client *client);
+	void on_draw(float dtime);
 	void on_event(const SEvent &event);
 	void on_formspec_input(const std::string &formname, const StringMap &fields);
 

@@ -23,19 +23,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/fontengine.h"
 #include "client/guiscalingfilter.h"
 #include "client/renderingengine.h"
+#include "gettext.h"
 #include "hud.h"
 #include "l_drawer.h"
 #include "l_internal.h"
 #include "script/common/c_converter.h"
 #include "settings.h"
 #include "util/string.h"
-
 #if USE_FREETYPE
 #include "irrlicht_changes/CGUITTFont.h"
 #endif
 
-// get_window_size(self) -> {x = width, y = height}
-int LuaScreenDrawer::l_get_window_size(lua_State *L)
+ModApiDrawer s_drawer;
+
+// get_window_size() -> {x = width, y = height}
+int ModApiDrawer::l_get_window_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -45,17 +47,20 @@ int LuaScreenDrawer::l_get_window_size(lua_State *L)
 	return 1;
 }
 
-// draw_rect(self, rect, color[, clip_rect])
-int LuaScreenDrawer::l_draw_rect(lua_State *L)
+// draw_rect(rect, color[, clip_rect])
+int ModApiDrawer::l_draw_rect(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	core::recti rect = read_recti(L, 2);
+	if (!s_drawer.in_callback)
+		return 0;
+
+	core::recti rect = read_recti(L, 1);
 
 	core::recti clip_rect;
 	core::recti *clip_ptr = nullptr;
-	if (lua_istable(L, 4)) {
-		clip_rect = read_recti(L, 4);
+	if (lua_istable(L, 3)) {
+		clip_rect = read_recti(L, 3);
 		clip_ptr = &clip_rect;
 	}
 
@@ -63,10 +68,10 @@ int LuaScreenDrawer::l_draw_rect(lua_State *L)
 
 	// Draw with a gradient if it is an _array_ of four colors as a table with
 	// keys might be a ColorSpec in table form
-	if (lua_istable(L, 3) && lua_objlen(L, 3) == 4) {
+	if (lua_istable(L, 2) && lua_objlen(L, 2) == 4) {
 		video::SColor colors[4] = {0x0, 0x0, 0x0, 0x0};
 		for (size_t i = 0; i < 4; i++) {
-			lua_rawgeti(L, 3, i + 1);
+			lua_rawgeti(L, 2, i + 1);
 			read_color(L, -1, &colors[i]);
 			lua_pop(L, 1);
 		}
@@ -74,36 +79,36 @@ int LuaScreenDrawer::l_draw_rect(lua_State *L)
 			clip_ptr);
 	} else {
 		video::SColor color(0x0);
-		read_color(L, 3, &color);
+		read_color(L, 2, &color);
 		driver->draw2DRectangle(color, rect, clip_ptr);
 	}
 
 	return 0;
 }
 
-// draw_image(self, rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor])
-int LuaScreenDrawer::l_draw_image(lua_State *L)
+// draw_texture(rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor])
+int ModApiDrawer::l_draw_texture(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	if (drawer == nullptr)
+	if (!s_drawer.in_callback)
 		return 0;
 
-	core::recti rect = read_recti(L, 2);
-	video::ITexture *texture = drawer->tsrc->getTexture(readParam<std::string>(L, 3));
+	core::recti rect = read_recti(L, 1);
+	video::ITexture *texture = getClient(L)->tsrc()->getTexture(
+		readParam<std::string>(L, 2));
 
 	core::recti clip_rect;
 	core::recti *clip_ptr = nullptr;
-	if (lua_istable(L, 4)) {
-		clip_rect = read_recti(L, 4);
+	if (lua_istable(L, 3)) {
+		clip_rect = read_recti(L, 3);
 		clip_ptr = &clip_rect;
 	}
 
 	core::recti from_rect;
 	core::dimension2d<u32> size = texture->getOriginalSize();
-	if (lua_istable(L, 6)) {
-		from_rect = read_recti(L, 6);
+	if (lua_istable(L, 5)) {
+		from_rect = read_recti(L, 5);
 
 		// `-x` is interpreted as `w - x`.
 		if (from_rect.LowerRightCorner.X < from_rect.UpperLeftCorner.X)
@@ -116,13 +121,13 @@ int LuaScreenDrawer::l_draw_image(lua_State *L)
 	}
 
 	video::SColor color(0xFFFFFFFF);
-	if (!lua_isnil(L, 7))
-		read_color(L, 7, &color);
+	if (!lua_isnil(L, 6))
+		read_color(L, 6, &color);
 	const video::SColor colors[] = {color, color, color, color};
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (lua_istable(L, 5)) {
-		core::recti middle_rect = read_recti(L, 5);
+	if (lua_istable(L, 4)) {
+		core::recti middle_rect = read_recti(L, 4);
 
 		if (middle_rect.LowerRightCorner.X < middle_rect.UpperLeftCorner.X)
 			middle_rect.LowerRightCorner.X += from_rect.getWidth();
@@ -139,92 +144,97 @@ int LuaScreenDrawer::l_draw_image(lua_State *L)
 	return 0;
 }
 
-// get_image_size(self, texture) -> {x = width, y = height}
-int LuaScreenDrawer::l_get_image_size(lua_State *L)
+// get_texture_size(texture) -> {x = width, y = height}
+int ModApiDrawer::l_get_texture_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	if (drawer == nullptr)
-		return 0;
-
-	core::dimension2d<u32> size =
-		drawer->tsrc->getTexture(readParam<std::string>(L, 2))->getOriginalSize();
+	core::dimension2d<u32> size = getClient(L)->tsrc()->
+		getTexture(readParam<std::string>(L, 2))->getOriginalSize();
 	push_v2f(L, v2f(size.Width, size.Height));
 
 	return 1;
 }
 
-// Create an IGUIFont. The font style table should be at the top of the stack.
-gui::IGUIFont *LuaScreenDrawer::get_font(lua_State *L)
+// Create an IGUIFont from a font styling table.
+gui::IGUIFont *ModApiDrawer::get_font(lua_State *L, int index)
 {
 	FontSpec spec(FONT_SIZE_UNSPECIFIED, FM_Standard, false, false);
 
-	lua_getfield(L, -1, "font");
-	std::string font = readParam<std::string>(L, -1);
-	if (font == "mono")
-		spec.mode = FM_Mono;
-	lua_pop(L, 1);
+	if (is_yes(gettext("needs_fallback_font"))) {
+		spec.mode = FM_Fallback;
+	} else {
+		lua_getfield(L, index, "font");
+		std::string font = readParam<std::string>(L, -1, "");
+		if (font == "mono")
+			spec.mode = FM_Mono;
+		lua_pop(L, 1);
+	}
 
-	lua_getfield(L, -1, "bold");
+	lua_getfield(L, index, "bold");
 	if (lua_toboolean(L, -1))
 		spec.bold = true;
 	lua_pop(L, 1);
 
-	lua_getfield(L, -1, "italic");
+	lua_getfield(L, index, "italic");
 	if (lua_toboolean(L, -1))
 		spec.italic = true;
 	lua_pop(L, 1);
 
-	lua_getfield(L, -1, "size");
+	lua_getfield(L, index, "size");
 	if (lua_isnumber(L, -1)) {
 		spec.size = std::min(std::max((int)lua_tointeger(L, -1), 1), 999);
 	} else {
-		if (spec.mode == FM_Mono)
+		if (spec.mode == FM_Standard)
+			spec.size = g_settings->getU16("font_size");
+		else if (spec.mode == FM_Mono)
 			spec.size = g_settings->getU16("mono_font_size");
 		else
-			spec.size = g_settings->getU16("font_size");
+			spec.size = g_settings->getU16("fallback_font_size");
 	}
 	lua_pop(L, 1);
 
 	return g_fontengine->getFont(spec);
 }
 
-// draw_text(self, pos, text[, clip_rect][, style])
+// draw_text(pos, text[, clip_rect][, style])
 // style = {color, font, size, bold, italic, underline, strike}
-int LuaScreenDrawer::l_draw_text(lua_State *L)
+int ModApiDrawer::l_draw_text(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
+	if (!s_drawer.in_callback)
+		return 0;
+
 	core::recti rect;
-	rect.UpperLeftCorner = read_v2s32(L, 2);
+	rect.UpperLeftCorner = read_v2s32(L, 1);
 
 	std::wstring text = utf8_to_wide(
-		unescape_enriched(readParam<std::string>(L, 3)));
+		unescape_enriched(readParam<std::string>(L, 2)));
 	for (size_t i = 0; i < text.size(); i++) {
-		if (text[i] == L'\0')
+		if (text[i] == L'\n' || text[i] == L'\0')
 			text[i] = L' ';
 	}
 
 	core::recti clip_rect;
 	core::recti *clip_ptr = nullptr;
-	if (lua_istable(L, 4)) {
-		clip_rect = read_recti(L, 4);
+	if (lua_istable(L, 3)) {
+		clip_rect = read_recti(L, 3);
 		clip_ptr = &clip_rect;
 	}
 
-	gui::IGUIFont *font = get_font(L);
+	gui::IGUIFont *font = get_font(L, 4);
 
-	lua_getfield(L, -1, "color");
+	lua_getfield(L, 4, "color");
 	video::SColor color(0xFFFFFFFF);
 	read_color(L, -1, &color);
 	lua_pop(L, 1);
 
-	lua_getfield(L, -1, "underline");
+	lua_getfield(L, 4, "underline");
 	bool underline = lua_toboolean(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, -1, "strike");
+	lua_getfield(L, 4, "strike");
 	bool strike = lua_toboolean(L, -1);
 	lua_pop(L, 1);
 
@@ -272,19 +282,19 @@ int LuaScreenDrawer::l_draw_text(lua_State *L)
 	return 0;
 }
 
-// get_text_size(self, text[, style]) -> {x = width, y = height}
-int LuaScreenDrawer::l_get_text_size(lua_State *L)
+// get_text_size(text[, style]) -> {x = width, y = height}
+int ModApiDrawer::l_get_text_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	std::wstring text = utf8_to_wide(
-		unescape_enriched(readParam<std::string>(L, 2)));
+		unescape_enriched(readParam<std::string>(L, 1)));
 	for (size_t i = 0; i < text.size(); i++) {
-		if (text[i] == L'\0')
+		if (text[i] == L'\n' || text[i] == L'\0')
 			text[i] = L' ';
 	}
 
-	gui::IGUIFont *font = get_font(L);
+	gui::IGUIFont *font = get_font(L, 2);
 
 	core::dimension2d<u32> size = font->getDimension(text.c_str());
 	size.Height += font->getKerningHeight();
@@ -293,57 +303,104 @@ int LuaScreenDrawer::l_get_text_size(lua_State *L)
 	return 1;
 }
 
-// get_font_size(self, font) -> size
-int LuaScreenDrawer::l_get_font_size(lua_State *L)
+// get_font_size(font) -> size
+int ModApiDrawer::l_get_font_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	std::string font = readParam<std::string>(L, 2);
-
-	// We'll assume that the fallback font has about the same size as the others
-	// because there's no way to check if it will be used.
-	if (font == "mono")
-		lua_pushinteger(L, g_settings->getU16("mono_font_size"));
-	else
-		lua_pushinteger(L, g_settings->getU16("font_size"));
+	if (is_yes(gettext("needs_fallback_font"))) {
+		lua_pushinteger(L, g_settings->getU16("fallback_font_size"));
+	} else {
+		std::string font = readParam<std::string>(L, 1);
+		if (font == "mono")
+			lua_pushinteger(L, g_settings->getU16("mono_font_size"));
+		else
+			lua_pushinteger(L, g_settings->getU16("font_size"));
+	}
 
 	return 1;
 }
 
-// draw_item(self, rect, item[, clip_rect][, angle])
-int LuaScreenDrawer::l_draw_item(lua_State *L)
+// draw_item(rect, item[, clip_rect][, angle])
+int ModApiDrawer::l_draw_item(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	if (drawer == nullptr)
+	if (!s_drawer.in_callback)
 		return 0;
 
-	core::recti rect = read_recti(L, 2);
+	core::recti rect = read_recti(L, 1);
 
-	IItemDefManager *idef = drawer->client->idef();
+	Client *client = getClient(L);
+	IItemDefManager *idef = client->idef();
 	ItemStack item;
-	item.deSerialize(readParam<std::string>(L, 3), idef);
+	item.deSerialize(readParam<std::string>(L, 2), idef);
 
 	core::recti clip_rect;
 	core::recti *clip_ptr = nullptr;
-	if (lua_istable(L, 4)) {
-		clip_rect = read_recti(L, 4);
+	if (lua_istable(L, 3)) {
+		clip_rect = read_recti(L, 3);
 		clip_ptr = &clip_rect;
 	}
 
 	v3s16 angle;
 	if (lua_istable(L, 4))
-		angle = read_v3s16(L, 5);
+		angle = read_v3s16(L, 4);
 
 	drawItemStack(RenderingEngine::get_video_driver(), g_fontengine->getFont(), item,
-		rect, clip_ptr, drawer->client, IT_ROT_NONE, angle, v3s16());
+		rect, clip_ptr, client, IT_ROT_NONE, angle, v3s16());
 
 	return 0;
 }
 
-// can_use_effects(self)
-int LuaScreenDrawer::l_can_use_effects(lua_State *L)
+// start_effect()
+int ModApiDrawer::l_start_effect(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (!s_drawer.in_callback || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
+		return 0;
+
+	video::ITexture *render = driver->addRenderTargetTexture(driver->getScreenSize());
+	s_drawer.renderers.push_back(render);
+	driver->setRenderTarget(render, true, false);
+
+	return 0;
+}
+
+// draw_effect(recolor)
+int ModApiDrawer::l_draw_effect(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (!s_drawer.in_callback || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET) ||
+			s_drawer.renderers.size() == 0)
+		return 0;
+
+	video::ITexture *rendered = s_drawer.renderers.back();
+	s_drawer.renderers.pop_back();
+
+	if (s_drawer.renderers.size() == 0)
+		driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
+	else
+		driver->setRenderTarget(s_drawer.renderers.back(), false, false);
+
+	core::recti rect(core::vector2di(), driver->getScreenSize());
+
+	video::SColor color(0xFFFFFFFF);
+	if (!lua_isnil(L, 1))
+		read_color(L, 1, &color);
+	const video::SColor colors[] = {color, color, color, color};
+
+	draw2DImageFilterScaled(driver, rendered, rect, rect, nullptr, colors, true);
+
+	return 0;
+}
+
+// effects_supported() -> bool
+int ModApiDrawer::l_effects_supported(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -352,124 +409,30 @@ int LuaScreenDrawer::l_can_use_effects(lua_State *L)
 	return 1;
 }
 
-// start_effect(self)
-int LuaScreenDrawer::l_start_effect(lua_State *L)
+void ModApiDrawer::Initialize(lua_State *L, int top)
 {
-	NO_MAP_LOCK_REQUIRED;
-
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (drawer == nullptr || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
-		return 0;
-
-	video::ITexture *render = driver->addRenderTargetTexture(driver->getScreenSize());
-	drawer->renderers.push_back(render);
-	driver->setRenderTarget(render, true, false);
-
-	return 0;
-}
-
-// draw_effect(self, recolor)
-int LuaScreenDrawer::l_draw_effect(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	LuaScreenDrawer *drawer = checkobject(L, 1);
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (drawer == nullptr || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET) ||
-			drawer->renderers.size() == 0)
-		return 0;
-
-	video::ITexture *rendered = drawer->renderers.back();
-	drawer->renderers.pop_back();
-
-	if (drawer->renderers.size() == 0)
-		driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
-	else
-		driver->setRenderTarget(drawer->renderers.back(), false, false);
-
-	core::recti rect(core::vector2di(), driver->getScreenSize());
-
-	video::SColor color(0xFFFFFFFF);
-	if (!lua_isnil(L, 2))
-		read_color(L, 2, &color);
-	const video::SColor colors[] = {color, color, color, color};
-
-	draw2DImageFilterScaled(driver, rendered, rect, rect, nullptr, colors, true);
-
-	return 0;
-}
-
-int LuaScreenDrawer::create_object(lua_State *L, ISimpleTextureSource *tsrc,
-	Client *client)
-{
-	LuaScreenDrawer *drawer = new LuaScreenDrawer;
-
-	drawer->tsrc = tsrc;
-	drawer->client = client;
-
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = drawer;
-	luaL_getmetatable(L, className);
-	lua_setmetatable(L, -2);
-	return 1;
-}
-
-LuaScreenDrawer *LuaScreenDrawer::checkobject(lua_State *L, int narg)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *drawer = luaL_checkudata(L, narg, className);
-	if (drawer == nullptr)
-		luaL_typerror(L, narg, className);
-	return *(LuaScreenDrawer **)drawer;
-}
-
-int LuaScreenDrawer::gc_object(lua_State *L)
-{
-	LuaScreenDrawer *drawer = *(LuaScreenDrawer **)(lua_touserdata(L, 1));
-	delete drawer;
-	return 0;
-}
-
-void LuaScreenDrawer::Register(lua_State *L)
-{
-	lua_newtable(L);
-	int methodtable = lua_gettop(L);
-	luaL_newmetatable(L, className);
-	int metatable = lua_gettop(L);
-
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__index");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
-	lua_settable(L, metatable);
-
-	lua_pop(L, 1);
-
-	luaL_openlib(L, 0, methods, 0);
-	lua_pop(L, 1);
-}
-
-const char LuaScreenDrawer::className[] = "ScreenDrawer";
-const luaL_Reg LuaScreenDrawer::methods[] =
-{
-	luamethod(LuaScreenDrawer, get_window_size),
-	luamethod(LuaScreenDrawer, draw_rect),
-	luamethod(LuaScreenDrawer, draw_image),
-	luamethod(LuaScreenDrawer, get_image_size),
-	luamethod(LuaScreenDrawer, draw_text),
-	luamethod(LuaScreenDrawer, get_text_size),
-	luamethod(LuaScreenDrawer, get_font_size),
-	luamethod(LuaScreenDrawer, draw_item),
-	luamethod(LuaScreenDrawer, can_use_effects),
-	luamethod(LuaScreenDrawer, start_effect),
-	luamethod(LuaScreenDrawer, draw_effect),
-	{ 0, 0 }
+	API_FCT(get_window_size);
+	API_FCT(draw_rect);
+	API_FCT(draw_texture);
+	API_FCT(get_texture_size);
+	API_FCT(draw_text);
+	API_FCT(get_text_size);
+	API_FCT(get_font_size);
+	API_FCT(draw_item);
+	API_FCT(start_effect);
+	API_FCT(draw_effect);
+	API_FCT(effects_supported);
 };
+
+void ModApiDrawer::start_callback()
+{
+	s_drawer.in_callback = true;
+}
+
+void ModApiDrawer::end_callback()
+{
+	s_drawer.in_callback = false;
+	RenderingEngine::get_video_driver()->setRenderTarget(
+		video::ERT_FRAME_BUFFER, false, false);
+	s_drawer.renderers.clear();
+}

@@ -127,8 +127,7 @@ void ScriptApiClient::environment_step(float dtime)
 	}
 }
 
-void ScriptApiClient::on_draw(float dtime, ISimpleTextureSource *tsrc,
-	Client *client)
+void ScriptApiClient::on_draw(float dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -136,9 +135,10 @@ void ScriptApiClient::on_draw(float dtime, ISimpleTextureSource *tsrc,
 	lua_getfield(L, -1, "registered_on_draw");
 
 	lua_pushnumber(L, dtime);
-	LuaScreenDrawer::create_object(L, tsrc, client);
 
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	ModApiDrawer::start_callback();
+	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	ModApiDrawer::end_callback();
 }
 
 void ScriptApiClient::on_event(const SEvent &event)
