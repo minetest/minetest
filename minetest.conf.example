@@ -602,37 +602,6 @@
 #    type: bool
 # tone_mapping = false
 
-#### Bumpmapping
-
-#    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack.
-#    Requires shaders to be enabled.
-#    type: bool
-# enable_bumpmapping = false
-
-#### Parallax Occlusion
-
-#    Enables parallax occlusion mapping.
-#    Requires shaders to be enabled.
-#    type: bool
-# enable_parallax_occlusion = false
-
-#    0 = parallax occlusion with slope information (faster).
-#    1 = relief mapping (slower, more accurate).
-#    type: int min: 0 max: 1
-# parallax_occlusion_mode = 1
-
-#    Number of parallax occlusion iterations.
-#    type: int
-# parallax_occlusion_iterations = 4
-
-#    Overall scale of parallax occlusion effect.
-#    type: float
-# parallax_occlusion_scale = 0.08
-
-#    Overall bias of parallax occlusion effect, usually scale/2.
-#    type: float
-# parallax_occlusion_bias = 0.04
-
 #### Waving Nodes
 
 #    Set to true to enable waving liquids (like water).
