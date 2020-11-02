@@ -226,22 +226,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
                                // base64-encoded SHA-1 (27+\0).
 
-/*
-	Changes by FORMSPEC_API_VERSION:
-
-	FORMSPEC VERSION 1:
-		(too much)
-	FORMSPEC VERSION 2:
-		Forced real coordinates
-		background9[]: 9-slice scaling parameters
-	FORMSPEC VERSION 3:
-		Formspec elements are drawn in the order of definition
-		bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
-		box[] and image[] elements enable clipping by default
-		new element: scroll_container[]
-	FORMSPEC VERSION 4:
-		Allow dropdown indexing events
-*/
+// See also: Formspec Version History in doc/lua_api.txt
 #define FORMSPEC_API_VERSION 4
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
