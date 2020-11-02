@@ -423,7 +423,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 
 	v2s32 frames[4];
 	for (int i=0;i<4;i++) {
-		if (!lua_isnoneornil(L, 2+1))
+		if (!lua_isnil(L, 2+1))
 			frames[i] = read_v2s32(L, 2+i);
 	}
 	float frame_speed = readParam<float>(L, 6, 30.0f);
@@ -518,7 +518,7 @@ int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	if (!lua_isnoneornil(L, 2)) {
+	if (!lua_isnil(L, 2)) {
 		float frame_speed = readParam<float>(L, 2);
 		sao->setAnimationSpeed(frame_speed);
 		lua_pushboolean(L, true);
@@ -1239,7 +1239,7 @@ int ObjectRef::l_set_attribute(lua_State *L)
 		return 0;
 
 	std::string attr = luaL_checkstring(L, 2);
-	if (lua_isnoneornil(L, 3)) {
+	if (lua_isnil(L, 3)) {
 		playersao->getMeta().removeString(attr);
 	} else {
 		std::string value = luaL_checkstring(L, 3);
