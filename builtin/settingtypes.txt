@@ -1220,10 +1220,10 @@ movement_gravity (Gravity) float 9.81
 [**Advanced]
 
 #    Handling for deprecated Lua API calls:
-#    -    legacy: (try to) mimic old behaviour (default for release).
-#    -    log: mimic and log backtrace of deprecated call (default for debug).
+#    -    none: Do not log deprecated calls
+#    -    log: mimic and log backtrace of deprecated call (default).
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
-deprecated_lua_api_handling (Deprecated Lua API handling) enum legacy legacy,log,error
+deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,error
 
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and
