@@ -446,6 +446,7 @@ scene::ISceneNode *GenericCAO::getSceneNode() const
 	if (m_spritenode) {
 		return m_spritenode;
 	}
+	
 	return NULL;
 }
 
@@ -557,6 +558,10 @@ void GenericCAO::removeFromScene(bool permanent)
 		m_spritenode->remove();
 		m_spritenode->drop();
 		m_spritenode = nullptr;
+	} else if (m_linenode) {
+		m_linenode->remove();
+		m_linenode->drop();
+		m_linenode = nullptr;
 	}
 
 	if (m_matrixnode) {
@@ -785,6 +790,19 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 		m_wield_meshnode->setScale(m_prop.visual_size / 2.0f);
 		m_wield_meshnode->setColor(video::SColor(0xFFFFFFFF));
+	} else if (m_prop.visual == "line") {
+		m_linenode = new LineSceneNode(RenderingEngine::get_scene_manager());
+		m_linenode->simple = true;
+		// m_linenode->mat.ZBuffer = video::ECFN_ALWAYS;
+		// m_linenode->mat.ZWriteEnable = false;
+		m_linenode->mat.Lighting = false;
+		m_linenode->wrap_texture = true;
+		m_linenode->src_point.position = v3f( 0, 0, 0 );
+		m_linenode->src_point.color = video::SColor(0xFF00FFFF);
+		m_linenode->src_point.width = 4;
+		m_linenode->dst_point.width = 4;
+		m_linenode->dst_point.color = video::SColor(0xFFFF8000);
+		m_linenode->dst_point.position = v3f( 0, 100, 0 );
 	} else {
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 				<<"\" not supported"<<std::endl;
@@ -1066,7 +1084,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	scene::ISceneNode *node = getSceneNode();
 	if (node)
 		node->setVisible(m_is_visible);
-
+	
 	if(getParent() != NULL) // Attachments should be glued to their parent by Irrlicht
 	{
 		// Set these for later
@@ -1182,6 +1200,16 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		m_animated_meshnode->updateAbsolutePosition();
 		m_animated_meshnode->animateJoints();
 		updateBonePosition();
+	}
+	
+		
+	if (m_linenode) {
+		if (m_matrixnode) {
+			m_linenode->src_point.position = m_matrixnode->getAbsolutePosition();
+		} else {
+			m_linenode->src_point.position = m_position;
+		}
+		m_linenode->recalculateBounds();
 	}
 }
 
@@ -1435,6 +1463,21 @@ void GenericCAO::updateTextures(std::string mod)
 				setMeshColor(mesh, m_prop.colors[0]);
 		}
 	}
+	
+	else if (m_linenode) {
+		std::string tname = "unknown_object.png";
+		if (!m_prop.textures.empty())
+			tname = m_prop.textures[0];
+		tname += mod;
+		m_linenode->mat.setTexture(0, tsrc->getTextureForMesh(tname));
+		// m_linenode->mat.MaterialType = m_material_type;
+		// m_linenode->mat.MaterialTypeParam = 0.5f;
+		m_linenode->mat.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
+		m_linenode->mat.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
+		m_linenode->mat.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+		
+	}
+	
 	// Prevent showing the player after changing texture
 	if (m_is_local_player)
 		updateMeshCulling();
