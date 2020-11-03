@@ -2571,7 +2571,9 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 				break;
 			}
 		}
-		if (!ok) continue;
+		if (!ok) {
+			continue;
+		}
 		media_sent++;
 	}
 
@@ -2587,7 +2589,9 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 				break;
 			}
 		}
-		if (!ok) continue;
+		if (!ok) {
+			continue;
+		}
 		pkt << i.first << i.second.sha1_digest;
 	}
 

@@ -266,8 +266,9 @@ std::wstring Translations::unescapeC(const std::wstring &str) {
 				for (; j < 3 && i+j < str.length() && L'0' <= str[i+j] && str[i+j] <= L'7'; j++) {
 					c = c * 8 + (str[i+j] - L'0');
 				}
-				if (c <= 0xff)
+				if (c <= 0xff) {
 					result.push_back(c);
+				}
 				i += j;
 				continue;
 			}
@@ -289,7 +290,9 @@ std::wstring Translations::unescapeC(const std::wstring &str) {
 				// If character fits in 16 bits and is not part of surrogate pair, insert it.
 				// Otherwise, silently drop it: this is valid since \x escape sequences with
 				// values above 0xff are implementation-defined
-				if ((c < 0xd800) || (0xe000 <= c && c <= 0xffff)) result.push_back(c);
+				if ((c < 0xd800) || (0xe000 <= c && c <= 0xffff)) {
+					result.push_back(c);
+				}
 				i += j;
 				continue;
 			}
@@ -310,7 +313,9 @@ std::wstring Translations::unescapeC(const std::wstring &str) {
 						break;
 					}
 				}
-				if (ok) wide_add_codepoint(result, c);
+				if (ok) {
+					wide_add_codepoint(result, c);
+				}
 				i += 4;
 				continue;
 			}
@@ -331,7 +336,9 @@ std::wstring Translations::unescapeC(const std::wstring &str) {
 						break;
 					}
 				}
-				if (ok) wide_add_codepoint(result, c);
+				if (ok) {
+					wide_add_codepoint(result, c);
+				}
 				i += 8;
 				continue;
 			}
@@ -546,15 +553,11 @@ void Translations::loadTranslation(const std::string &filename, const std::strin
 	const char *moExtension[] = { ".mo", NULL };
 	if (!removeStringEnd(filename, trExtension).empty()) {
 		loadTrTranslation(data);
-		return;
 	} else if (!removeStringEnd(filename, poExtension).empty()) {
 		loadPoTranslation(data);
-		return;
 	} else if (!removeStringEnd(filename, moExtension).empty()) {
 		loadMoTranslation(data);
-		return;
 	} else {
 		errorstream << "loadTranslation called with invalid filename: \"" << filename << "\"" << std::endl;
-		return;
 	}
 }

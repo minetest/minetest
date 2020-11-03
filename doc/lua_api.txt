@@ -3697,10 +3697,10 @@ Two functions are provided to translate strings: `minetest.translate` and
 
 * `minetest.translate_n(textdomain, str, str_plural, n, ...)` translates the
    string `str` with the given `textdomain` for disambiguaion. The value of
-   `n` is used to decide whether to use the singular or the plural version of
-   the string. Depending on the locale of the client, the choice between singular
-   and plural might be more complicated, but the choice will be done automatically
-   using the value of `n`.
+   `n`, which must be a nonnegative integer, is used to decide whether to use
+   the singular or the plural version of the string. Depending on the locale of
+   the client, the choice between singular and plural might be more complicated,
+   but the choice will be done automatically using the value of `n`.
 
    You can read https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
    for more details on the differences of plurals between languages.
