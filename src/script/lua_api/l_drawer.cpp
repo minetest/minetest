@@ -369,7 +369,7 @@ int ModApiDrawer::l_start_effect(lua_State *L)
 	return 0;
 }
 
-// draw_effect(recolor)
+// draw_effect([recolor])
 int ModApiDrawer::l_draw_effect(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -399,6 +399,50 @@ int ModApiDrawer::l_draw_effect(lua_State *L)
 	return 0;
 }
 
+// TEMP_TRANSFORM(rect, texture, transform)
+int ModApiDrawer::l_TEMP_TRANSFORM(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	if (!s_drawer.in_callback)
+		return 0;
+
+	core::recti rect = read_recti(L, 1);
+	video::ITexture *texture = getClient(L)->tsrc()->getTexture(
+		readParam<std::string>(L, 2));
+
+	f32 m_data[16];
+	for (size_t i = 0; i < 16; i++) {
+		lua_rawgeti(L, 3, i + 1);
+		m_data[i] = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+	}
+	core::matrix4 transform;
+	transform.setM(m_data);
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+
+	core::rect<s32> old_viewport = driver->getViewPort();
+	core::matrix4 old_proj_mat = driver->getTransform(video::ETS_PROJECTION);
+	core::matrix4 old_view_mat = driver->getTransform(video::ETS_VIEW);
+
+	driver->setViewPort(rect);
+	driver->setTransform(video::ETS_PROJECTION, core::IdentityMatrix);
+	driver->setTransform(video::ETS_VIEW, core::IdentityMatrix);
+	driver->setTransform(video::ETS_WORLD, transform);
+
+	video::SMaterial &material = s_drawer.effects_mesh.getMaterial();
+	material.TextureLayer[0].Texture = texture;
+	driver->setMaterial(material);
+	driver->drawMeshBuffer(&s_drawer.effects_mesh);
+
+	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+	driver->setTransform(video::ETS_VIEW, old_view_mat);
+	driver->setTransform(video::ETS_PROJECTION, old_proj_mat);
+
+	driver->setViewPort(old_viewport);
+}
+
 // effects_supported() -> bool
 int ModApiDrawer::l_effects_supported(lua_State *L)
 {
@@ -407,6 +451,38 @@ int ModApiDrawer::l_effects_supported(lua_State *L)
 	lua_pushboolean(L, RenderingEngine::get_video_driver()->
 		queryFeature(video::EVDF_RENDER_TO_TARGET));
 	return 1;
+}
+
+ModApiDrawer::ModApiDrawer()
+{
+	in_callback = false;
+
+	// Prepare effects mesh for transformations
+	effects_mesh.Vertices.set_used(4);
+	effects_mesh.Indices.set_used(6);
+
+	video::SColor white(255, 255, 255, 255);
+	v3f normal(0.f, 0.f, 1.f);
+
+	effects_mesh.Vertices[0] =
+		video::S3DVertex(v3f(-1.f, -1.f, 0.f), normal, white, v2f(0.f, 1.f));
+	effects_mesh.Vertices[1] =
+		video::S3DVertex(v3f(-1.f,  1.f, 0.f), normal, white, v2f(0.f, 0.f));
+	effects_mesh.Vertices[2] =
+		video::S3DVertex(v3f( 1.f,  1.f, 0.f), normal, white, v2f(1.f, 0.f));
+	effects_mesh.Vertices[3] =
+		video::S3DVertex(v3f( 1.f, -1.f, 0.f), normal, white, v2f(1.f, 1.f));
+
+	effects_mesh.Indices[0] = 0;
+	effects_mesh.Indices[1] = 1;
+	effects_mesh.Indices[2] = 2;
+	effects_mesh.Indices[3] = 2;
+	effects_mesh.Indices[4] = 3;
+	effects_mesh.Indices[5] = 0;
+
+	video::SMaterial &material = effects_mesh.getMaterial();
+	material.Lighting = false;
+	material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 }
 
 void ModApiDrawer::Initialize(lua_State *L, int top)
@@ -422,6 +498,7 @@ void ModApiDrawer::Initialize(lua_State *L, int top)
 	API_FCT(start_effect);
 	API_FCT(draw_effect);
 	API_FCT(effects_supported);
+	API_FCT(TEMP_TRANSFORM);
 };
 
 void ModApiDrawer::start_callback()

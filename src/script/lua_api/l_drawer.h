@@ -30,6 +30,7 @@ class ModApiDrawer : public ModApiBase
 private:
 	bool in_callback;
 	std::vector<video::ITexture *> renderers;
+	scene::SMeshBuffer effects_mesh;
 
 	static int l_get_window_size(lua_State *L);
 
@@ -47,8 +48,11 @@ private:
 	static int l_start_effect(lua_State *L);
 	static int l_draw_effect(lua_State *L);
 	static int l_effects_supported(lua_State *L);
+	static int l_TEMP_TRANSFORM(lua_State *L);
 
 public:
+	ModApiDrawer();
+
 	static void Initialize(lua_State *L, int top);
 
 	static void start_callback();
