@@ -1050,8 +1050,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		}
 		float d = playersao->getEyePosition().getDistanceFrom(target_pos);
 
-		const auto what = pointed.dump();
-		if (!checkInteractDistance(player, d, what)) {
+		if (!checkInteractDistance(player, d, pointed.dump())) {
 			if (pointed.type == POINTEDTHING_NODE) {
 				// Re-send block to revert change on client-side
 				RemoteClient *client = getClient(peer_id);
