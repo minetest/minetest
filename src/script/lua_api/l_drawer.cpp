@@ -36,6 +36,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ModApiDrawer s_drawer;
 
+bool ModApiDrawer::can_draw()
+{
+	return s_drawer.in_callback || s_drawer.in_texture;
+}
+
+video::ITexture *ModApiDrawer::get_texture(lua_State *L, const std::string &name)
+{
+	auto it = s_drawer.textures.find(name);
+	if (it != s_drawer.textures.end())
+		return it->second;
+	else
+		return getClient(L)->tsrc()->getTexture(name);
+}
+
 // get_window_size() -> {x = width, y = height}
 int ModApiDrawer::l_get_window_size(lua_State *L)
 {
@@ -52,7 +66,7 @@ int ModApiDrawer::l_draw_rect(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	if (!s_drawer.in_callback)
+	if (!can_draw())
 		return 0;
 
 	core::recti rect = read_recti(L, 1);
@@ -91,12 +105,11 @@ int ModApiDrawer::l_draw_texture(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	if (!s_drawer.in_callback)
+	if (!can_draw())
 		return 0;
 
 	core::recti rect = read_recti(L, 1);
-	video::ITexture *texture = getClient(L)->tsrc()->getTexture(
-		readParam<std::string>(L, 2));
+	video::ITexture *texture = get_texture(L, readParam<std::string>(L, 2));
 
 	core::recti clip_rect;
 	core::recti *clip_ptr = nullptr;
@@ -149,8 +162,8 @@ int ModApiDrawer::l_get_texture_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	core::dimension2d<u32> size = getClient(L)->tsrc()->
-		getTexture(readParam<std::string>(L, 2))->getOriginalSize();
+	core::dimension2d<u32> size =
+		get_texture(L, readParam<std::string>(L, 1))->getOriginalSize();
 	push_v2f(L, v2f(size.Width, size.Height));
 
 	return 1;
@@ -203,7 +216,7 @@ int ModApiDrawer::l_draw_text(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	if (!s_drawer.in_callback)
+	if (!can_draw())
 		return 0;
 
 	core::recti rect;
@@ -326,7 +339,7 @@ int ModApiDrawer::l_draw_item(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	if (!s_drawer.in_callback)
+	if (!can_draw())
 		return 0;
 
 	core::recti rect = read_recti(L, 1);
@@ -353,13 +366,201 @@ int ModApiDrawer::l_draw_item(lua_State *L)
 	return 0;
 }
 
-// start_effect()
+// create_texture(name[, size]) -> success[, error_message]
+int ModApiDrawer::l_create_texture(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	if (!s_drawer.can_render_to_texture) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Driver doesn't support render textures");
+		return 2;
+	}
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+
+	std::string name = readParam<std::string>(L, 1);
+	if (s_drawer.textures.count(name)) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Texture name already taken");
+		return 2;
+	}
+
+	core::dimension2d<u32> size = driver->getScreenSize();
+	if (lua_istable(L, 2)) {
+		core::vector2di temp = read_v2s32(L, 2);
+		size = core::dimension2d<u32>(temp.X, temp.Y);
+	}
+
+	video::ITexture *texture = driver->addRenderTargetTexture(size, "");
+	if (texture == nullptr) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Render texture could not be created");
+		return 1;
+	}
+	s_drawer.textures[name] = texture;
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// delete_texture(name) -> success[, error_message]
+int ModApiDrawer::l_delete_texture(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	if (!s_drawer.can_render_to_texture) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Driver doesn't support render textures");
+		return 2;
+	}
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+
+	std::string name = readParam<std::string>(L, 1);
+
+	auto it = s_drawer.textures.find(name);
+	if (it == s_drawer.textures.end()) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Texture doesn't exist");
+		return 2;
+	}
+	if (name == s_drawer.render_texture) {
+		driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
+		s_drawer.in_texture = false;
+	}
+
+	driver->removeTexture(it->second);
+	s_drawer.textures.erase(it);
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// rename_texture(name, new_name) -> success[, error_message]
+int ModApiDrawer::l_rename_texture(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	if (!s_drawer.can_render_to_texture) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Driver doesn't support render textures");
+		return 2;
+	}
+
+	std::string name = readParam<std::string>(L, 1);
+	std::string new_name = readParam<std::string>(L, 2);
+
+	auto it = s_drawer.textures.find(name);
+	if (it == s_drawer.textures.end()) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Texture doesn't exist");
+		return 2;
+	}
+	if (s_drawer.textures.count(new_name)) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Texture name already taken");
+		return 2;
+	}
+
+	s_drawer.textures[new_name] = it->second;
+	s_drawer.textures.erase(it);
+	if (name == s_drawer.render_texture)
+		s_drawer.render_texture = new_name;
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// texture_exists(name) -> bool[, error_message]
+int ModApiDrawer::l_texture_exists(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	if (!s_drawer.can_render_to_texture) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Driver doesn't support render textures");
+		return 2;
+	}
+
+	lua_pushboolean(L, s_drawer.textures.count(readParam<std::string>(L, 1)));
+	return 1;
+}
+
+// can_render_to_texture() -> bool
+int ModApiDrawer::l_can_render_to_texture(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	lua_pushboolean(L, s_drawer.can_render_to_texture);
+	return 1;
+}
+
+// set_render_texture(name) -> success[, error_message]
+int ModApiDrawer::l_set_render_texture(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (!s_drawer.can_render_to_texture) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Driver doesn't support render textures");
+		return 2;
+	}
+
+	if (lua_isstring(L, 1)) {
+		std::string name = readParam<std::string>(L, 1);
+
+		auto it = s_drawer.textures.find(name);
+		if (it == s_drawer.textures.end()) {
+			lua_pushboolean(L, false);
+			lua_pushstring(L, "Texture doesn't exist");
+			return 2;
+		}
+
+		if (!driver->setRenderTarget(it->second, true, false)) {
+			lua_pushboolean(L, false);
+			lua_pushstring(L, "Could not set render target texture");
+			return 2;
+		}
+
+		s_drawer.render_texture = name;
+		s_drawer.in_texture = true;
+	} else {
+		driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
+		s_drawer.in_texture = false;
+	}
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_render_texture() -> name[, error_message]
+int ModApiDrawer::l_get_render_texture(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	if (!s_drawer.can_render_to_texture) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, "Driver doesn't support render textures");
+		return 2;
+	}
+
+	if (s_drawer.in_texture)
+		lua_pushstring(L, s_drawer.render_texture.c_str());
+	else
+		lua_pushboolean(L, false);
+
+	return 1;
+}
+
+/* // start_effect()
 int ModApiDrawer::l_start_effect(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!s_drawer.in_callback || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
+	if (!can_draw() || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
 		return 0;
 
 	video::ITexture *render = driver->addRenderTargetTexture(driver->getScreenSize());
@@ -375,7 +576,7 @@ int ModApiDrawer::l_draw_effect(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!s_drawer.in_callback || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET) ||
+	if (!can_draw() || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET) ||
 			s_drawer.renderers.size() == 0)
 		return 0;
 
@@ -397,19 +598,18 @@ int ModApiDrawer::l_draw_effect(lua_State *L)
 	draw2DImageFilterScaled(driver, rendered, rect, rect, nullptr, colors, true);
 
 	return 0;
-}
+} */
 
 // TEMP_TRANSFORM(rect, texture, transform)
 int ModApiDrawer::l_TEMP_TRANSFORM(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	if (!s_drawer.in_callback)
+	if (!can_draw())
 		return 0;
 
 	core::recti rect = read_recti(L, 1);
-	video::ITexture *texture = getClient(L)->tsrc()->getTexture(
-		readParam<std::string>(L, 2));
+	video::ITexture *texture = get_texture(L, readParam<std::string>(L, 2));
 
 	f32 m_data[16];
 	for (size_t i = 0; i < 16; i++) {
@@ -441,21 +641,14 @@ int ModApiDrawer::l_TEMP_TRANSFORM(lua_State *L)
 	driver->setTransform(video::ETS_PROJECTION, old_proj_mat);
 
 	driver->setViewPort(old_viewport);
-}
 
-// effects_supported() -> bool
-int ModApiDrawer::l_effects_supported(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	lua_pushboolean(L, RenderingEngine::get_video_driver()->
-		queryFeature(video::EVDF_RENDER_TO_TARGET));
-	return 1;
+	return 0;
 }
 
 ModApiDrawer::ModApiDrawer()
 {
 	in_callback = false;
+	in_texture = false;
 
 	// Prepare effects mesh for transformations
 	effects_mesh.Vertices.set_used(4);
@@ -495,15 +688,21 @@ void ModApiDrawer::Initialize(lua_State *L, int top)
 	API_FCT(get_text_size);
 	API_FCT(get_font_size);
 	API_FCT(draw_item);
-	API_FCT(start_effect);
-	API_FCT(draw_effect);
-	API_FCT(effects_supported);
+	API_FCT(can_render_to_texture);
+	API_FCT(create_texture);
+	API_FCT(delete_texture);
+	API_FCT(rename_texture);
+	API_FCT(texture_exists);
+	API_FCT(set_render_texture);
+	API_FCT(get_render_texture);
 	API_FCT(TEMP_TRANSFORM);
 };
 
 void ModApiDrawer::start_callback()
 {
 	s_drawer.in_callback = true;
+	s_drawer.can_render_to_texture =
+		RenderingEngine::get_video_driver()->queryFeature(video::EVDF_RENDER_TO_TARGET);
 }
 
 void ModApiDrawer::end_callback()
@@ -511,5 +710,4 @@ void ModApiDrawer::end_callback()
 	s_drawer.in_callback = false;
 	RenderingEngine::get_video_driver()->setRenderTarget(
 		video::ERT_FRAME_BUFFER, false, false);
-	s_drawer.renderers.clear();
 }

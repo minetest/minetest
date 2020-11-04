@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <vector>
+#include <unordered_map>
 #include "client/client.h"
 #include "client/tile.h"
 #include "irrlichttypes_extrabloated.h"
@@ -29,8 +29,16 @@ class ModApiDrawer : public ModApiBase
 {
 private:
 	bool in_callback;
-	std::vector<video::ITexture *> renderers;
+	bool in_texture;
+
+	bool can_render_to_texture;
+	std::unordered_map<std::string, video::ITexture *> textures;
+	std::string render_texture;
+
 	scene::SMeshBuffer effects_mesh;
+
+	static bool can_draw();
+	static video::ITexture *get_texture(lua_State *L, const std::string &name);
 
 	static int l_get_window_size(lua_State *L);
 
@@ -45,9 +53,17 @@ private:
 
 	static int l_draw_item(lua_State *L);
 
-	static int l_start_effect(lua_State *L);
-	static int l_draw_effect(lua_State *L);
-	static int l_effects_supported(lua_State *L);
+	static int l_create_texture(lua_State *L);
+	static int l_delete_texture(lua_State *L);
+	static int l_rename_texture(lua_State *L);
+	static int l_texture_exists(lua_State *L);
+
+	static int l_can_render_to_texture(lua_State *L);
+	static int l_set_render_texture(lua_State *L);
+	static int l_get_render_texture(lua_State *L);
+
+	// static int l_start_effect(lua_State *L);
+	// static int l_draw_effect(lua_State *L);
 	static int l_TEMP_TRANSFORM(lua_State *L);
 
 public:
