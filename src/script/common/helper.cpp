@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include <sstream>
 #include <irr_v2d.h>
+#include <irr_v3d.h>
 #include "c_types.h"
 #include "c_internal.h"
 
@@ -54,17 +55,14 @@ template <> bool LuaHelper::readParam(lua_State *L, int index)
 	return lua_toboolean(L, index) != 0;
 }
 
-template <> bool LuaHelper::readParam(lua_State *L, int index, const bool &default_value)
-{
-	if (lua_isnil(L, index))
-		return default_value;
-
-	return lua_toboolean(L, index) != 0;
-}
-
 template <> s16 LuaHelper::readParam(lua_State *L, int index)
 {
 	return lua_tonumber(L, index);
+}
+
+template <> int LuaHelper::readParam(lua_State *L, int index)
+{
+	return luaL_checkint(L, index);
 }
 
 template <> float LuaHelper::readParam(lua_State *L, int index)
@@ -105,24 +103,30 @@ template <> v2f LuaHelper::readParam(lua_State *L, int index)
 	return p;
 }
 
+template <> v3f LuaHelper::readParam(lua_State *L, int index)
+{
+	v3f p;
+	CHECK_POS_TAB(index);
+	lua_getfield(L, index, "x");
+	CHECK_POS_COORD("x");
+	p.X = readParam<float>(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	CHECK_POS_COORD("y");
+	p.Y = readParam<float>(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "z");
+	CHECK_POS_COORD("z");
+	p.Z = readParam<float>(L, -1);
+	lua_pop(L, 1);
+	return p;
+}
+
 template <> std::string LuaHelper::readParam(lua_State *L, int index)
 {
 	size_t length;
 	std::string result;
 	const char *str = luaL_checklstring(L, index, &length);
 	result.assign(str, length);
-	return result;
-}
-
-template <>
-std::string LuaHelper::readParam(
-		lua_State *L, int index, const std::string &default_value)
-{
-	std::string result;
-	const char *str = lua_tostring(L, index);
-	if (str)
-		result.append(str);
-	else
-		result = default_value;
 	return result;
 }

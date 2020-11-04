@@ -169,11 +169,9 @@ int ObjectRef::l_punch(lua_State *L)
 	if (sao == nullptr || puncher == nullptr)
 		return 0;
 
-	float time_from_last_punch = lua_isnil(L, 3) ?
-		1000000.0f : readParam<float>(L,3);
+	float time_from_last_punch = readParam<float>(L, 3, 1000000.0f);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
-	v3f dir = lua_isnil(L, 5) ?
-		sao->getBasePosition() - puncher->getBasePosition() : check_v3f(L, 5);
+	v3f dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
 
 	dir.normalize();
 	u16 src_original_hp = sao->getHP();
@@ -383,20 +381,12 @@ int ObjectRef::l_set_animation(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	v2f frames = v2f(1, 1);
-	if (!lua_isnil(L, 2))
-		frames = readParam<v2f>(L, 2);
-	float frame_speed = 15;
-	if (!lua_isnil(L, 3))
-		frame_speed = lua_tonumber(L, 3);
-	float frame_blend = 0;
-	if (!lua_isnil(L, 4))
-		frame_blend = lua_tonumber(L, 4);
-	bool frame_loop = true;
-	if (lua_isboolean(L, 5))
-		frame_loop = readParam<bool>(L, 5);
+	v2f frame_range   = readParam<v2f>(L,  2, v2f(1, 1));
+	float frame_speed = readParam<float>(L, 3, 15.0f);
+	float frame_blend = readParam<float>(L, 4, 0.0f);
+	bool frame_loop   = readParam<bool>(L, 5, true);
 
-	sao->setAnimation(frames, frame_speed, frame_blend, frame_loop);
+	sao->setAnimation(frame_range, frame_speed, frame_blend, frame_loop);
 	return 0;
 }
 
@@ -436,7 +426,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 		if (!lua_isnil(L, 2+1))
 			frames[i] = read_v2s32(L, 2+i);
 	}
-	float frame_speed = lua_isnil(L, 6) ? 30 : readParam<float>(L, 6);
+	float frame_speed = readParam<float>(L, 6, 30.0f);
 
 	getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed);
 	lua_pushboolean(L, true);
@@ -965,9 +955,9 @@ int ObjectRef::l_set_sprite(lua_State *L)
 	if (entitysao == nullptr)
 		return 0;
 
-	v2s16 start_frame       = lua_isnil(L, 2) ? v2s16(0,0) : readParam<v2s16>(L, 2);
-	int num_frames          = lua_isnil(L, 3) ? 1 : luaL_checkint(L, 3);
-	float framelength       = lua_isnil(L, 4) ? 0.2 : lua_tonumber(L, 4);
+	v2s16 start_frame = readParam<v2s16>(L, 2, v2s16(0,0));
+	int num_frames    = readParam<int>(L, 3, 1);
+	float framelength = readParam<float>(L, 4, 0.2f);
 	bool select_x_by_camera = readParam<bool>(L, 5, false);
 
 	entitysao->setSprite(start_frame, num_frames, framelength, select_x_by_camera);
