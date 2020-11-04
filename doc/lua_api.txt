@@ -2272,6 +2272,18 @@ Elements
 * `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
 * `frame start` (Optional): The index of the frame to start on. Default `1`.
 
+### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>]`
+
+* Show a mesh model.
+* `name`: Element name that can be used for styling
+* `mesh`: The mesh model to use.
+* `textures`: The mesh textures to use according to the mesh materials.
+   Texture names must be separated by commas.
+* `rotation {X,Y}` (Optional): Initial rotation of the camera.
+  The axes are euler angles in degrees.
+* `continuous` (Optional): Whether the rotation is continuous. Default `false`.
+* `mouse control` (Optional): Whether the model can be controlled with the mouse. Default `true`.
+
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
 * Show an inventory image of registered item/node
@@ -2842,6 +2854,10 @@ Some types may inherit styles from parent types.
     * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+* model
+    * bgcolor - color, sets background color.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+        * Default to false in formspec_version version 3 or higher
 * image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher
