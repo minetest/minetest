@@ -482,7 +482,6 @@ private:
 	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(RemotePlayer *player);
 	bool checkInteractDistance(RemotePlayer *player, const f32 d, const std::string &what);
-	bool checkInteractDirection(RemotePlayer *player, v3f target_pos, const std::string &what);
 
 	void handleChatInterfaceEvent(ChatEvent *evt);
 
