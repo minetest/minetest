@@ -6185,10 +6185,11 @@ object you are working with still exists.
   `frame_loop`.
 * `set_animation_frame_speed(frame_speed)`
     * `frame_speed`: number, default: `15.0`
-* `set_attach(parent, bone, position, rotation, forced_visible)`
+* `set_attach(parent, bone[, position, rotation, forced_visible])`
     * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
+    * `position`: `{x=num, y=num, z=num}`, relative, default `{x=0, y=0, z=0}`
+    * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees.
+      Default `{x=0, y=0, z=0}`.
     * `forced_visible`: Boolean to control whether the attached entity 
        should appear in first person.
 * `get_attach()`: returns parent, bone, position, rotation, forced_visible, 
@@ -6196,10 +6197,10 @@ object you are working with still exists.
 * `get_children()`: returns a list of ObjectRefs that are attached to the
     object.
 * `set_detach()`
-* `set_bone_position(bone, position, rotation)`
+* `set_bone_position(bone[, position, rotation])`
     * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}`
+    * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
+    * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
 * `get_bone_position(bone)`: returns position and rotation of the bone
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
@@ -6516,8 +6517,8 @@ object you are working with still exists.
     * `frame_speed` sets the animations frame speed. Default is 30.
 * `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
   `frame_speed`.
-* `set_eye_offset(firstperson, thirdperson)`: defines offset vectors for camera
-  per player.
+* `set_eye_offset([firstperson, thirdperson])`: defines offset vectors for
+  camera per player. When a field is not specified is `{x=0, y=0, z=0}` by default.
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_eye_offset()`: returns first and third person offsets.
