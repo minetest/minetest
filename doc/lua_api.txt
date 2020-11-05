@@ -6189,7 +6189,7 @@ object you are working with still exists.
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}`, relative, default `{x=0, y=0, z=0}`
     * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees.
-      Default `{x=0, y=0, z=0}`.
+      Default `{x=0, y=0, z=0}`
     * `forced_visible`: Boolean to control whether the attached entity 
        should appear in first person. Default `false`.
 * `get_attach()`: returns parent, bone, position, rotation, forced_visible, 
@@ -6518,7 +6518,7 @@ object you are working with still exists.
 * `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
   `frame_speed`.
 * `set_eye_offset([firstperson, thirdperson])`: defines offset vectors for
-  camera per player. When a field is not specified is `{x=0, y=0, z=0}` by default.
+  camera per player. An argument defaults to `{x=0, y=0, z=0}` if unspecified.
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_eye_offset()`: returns first and third person offsets.
