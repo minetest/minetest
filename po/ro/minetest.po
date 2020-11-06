@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Romanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-08-09 19:32+0000\n"
-"Last-Translator: Larissa Piklor <larissa.piklor@gmail.com>\n"
+"PO-Revision-Date: 2020-11-24 11:29+0000\n"
+"Last-Translator: Nicolae Crefelean <kneekoo@yahoo.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ro/>\n"
 "Language: ro\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -41,11 +41,11 @@ msgstr "Meniul principal"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Reconectează-te"
+msgstr "Reconectare"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Serverul cere o reconectare :"
+msgstr "Serverul cere o reconectare:"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
@@ -61,7 +61,7 @@ msgstr "Serverul forțează versiunea protocolului $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Acest Server suporta versiunile protocolului intre $1 si $2. "
+msgstr "Serverul permite versiuni ale protocolului între $1 și $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -71,7 +71,7 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Suportam doar versiunea de protocol $1."
+msgstr "Permitem doar versiunea de protocol $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
@@ -97,7 +97,7 @@ msgstr "Dezactivează toate"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "Dezactiveaza pachet mod"
+msgstr "Dezactivează modpack-ul"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -105,7 +105,7 @@ msgstr "Activează tot"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Activeaza pachet mod"
+msgstr "Activează modpack-ul"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -117,7 +117,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Căutare Mai Multe Moduri"
+msgstr "Găsește mai multe modificări"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -170,7 +170,7 @@ msgstr "Înapoi la meniul principal"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB nu este disponibilă când Minetest e compilat fără cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -178,7 +178,7 @@ msgstr "Descărcare..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr "Nu a putut descărca $1"
+msgstr "Nu s-a putut descărca $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -192,7 +192,7 @@ msgstr "Instalează"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "Moduri"
+msgstr "Modificări"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -200,7 +200,7 @@ msgstr "Nu s-au putut prelua pachete"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr "Fara rezultate"
+msgstr "Fără rezultate"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
@@ -209,7 +209,7 @@ msgstr "Caută"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr "Pachete de textură"
+msgstr "Pachete de texturi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -225,7 +225,7 @@ msgstr "Vizualizare"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "O lume cu numele \"$1\" deja există"
+msgstr "Deja există o lume numită \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -233,12 +233,11 @@ msgstr "Teren suplimentar"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr "Altitudine de frisoane"
+msgstr "Răcire la altitudine"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Altitudine de frisoane"
+msgstr "Ariditate la altitudine"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
@@ -266,7 +265,7 @@ msgstr "Decorațiuni"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "Descărcați un joc, cum ar fi Minetest Game, de pe minetest.net"
+msgstr "Descărcați un joc, precum Minetest Game, de pe minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -2058,6 +2057,10 @@ msgid ""
 "to be adjusted, as floatland tapering functions best when this noise has\n"
 "a value range of approximately -2.0 to 2.0."
 msgstr ""
+"Zgomot 3D care definește structura insulelor plutitoare (floatlands).\n"
+"Dacă este modificată valoarea implicită, 'scala' (0.7) ar putea trebui\n"
+"să fie ajustată, formarea floatland funcționează optim cu un zgomot\n"
+"în intervalul aproximativ -2.0 până la 2.0."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
@@ -2125,9 +2128,8 @@ msgid "ABM interval"
 msgstr "Interval ABM"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Absolute limit of queued blocks to emerge"
-msgstr "Limita absolută a cozilor emergente"
+msgstr "Limita absolută a cozilor de blocuri procesate"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -2184,6 +2186,13 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
+"Ajustează densitatea stratului floatland.\n"
+"Mărește valoarea pentru creșterea densității. Poate fi pozitivă sau negativă."
+"\n"
+"Valoarea = 0.0: 50% din volum este floatland.\n"
+"Valoarea = 2.0 (poate fi mai mare în funcție de 'mgv7_np_floatland'; "
+"testați\n"
+"pentru siguranță) va crea un strat solid floatland."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2405,61 +2414,63 @@ msgstr "Netezirea camerei"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "Cameră fluidă în modul cinematic"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Tasta de comutare a actualizării camerei"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
-msgstr ""
+msgstr "Zgomotul peșterilor"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Zgomotul 1 al peșterilor"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Zgomotul 2 al peșterilor"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
-msgstr ""
+msgstr "Lățime peșteri"
 
 #: src/settings_translation_file.cpp
 msgid "Cave1 noise"
-msgstr ""
+msgstr "Zgomot peșteri1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave2 noise"
-msgstr ""
+msgstr "Zgomot peșteri2"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern limit"
-msgstr ""
+msgstr "Limita cavernelor"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr ""
+msgstr "Zgomotul cavernelor"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
-msgstr ""
+msgstr "Subțiere caverne"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern threshold"
-msgstr "Pragul cavernei"
+msgstr "Pragul cavernelor"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern upper limit"
-msgstr ""
+msgstr "Limita superioară a cavernelor"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
+"Centrul razei de amplificare a curbei de lumină.\n"
+"Aici 0.0 este nivelul minim de lumină, iar 1.0 este nivelul maxim."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2470,23 +2481,27 @@ msgid ""
 "be\n"
 "necessary for smaller screens."
 msgstr ""
+"Modifică interfața meniului principal:\n"
+"-   Complet:  Lumi multiple singleplayer, selector de joc, selector de "
+"texturi etc.\n"
+"-   Simplu:  Doar o lume singleplayer, fără selectoare de joc sau texturi.\n"
+"Poate fi necesar pentru ecrane mai mici."
 
 #: src/settings_translation_file.cpp
 msgid "Chat font size"
-msgstr ""
+msgstr "Dimensiunea fontului din chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Tasta de chat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat log level"
-msgstr "Cheia de comutare a chatului"
+msgstr "Nivelul de raportare în chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
-msgstr ""
+msgstr "Limita mesajelor din chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message format"
@@ -2498,7 +2513,7 @@ msgstr "Pragul de lansare a mesajului de chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
-msgstr ""
+msgstr "Lungimea maximă a unui mesaj din chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
@@ -2510,7 +2525,7 @@ msgstr "Comenzi de chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "Dimensiunea unui chunk"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
@@ -2522,7 +2537,7 @@ msgstr "Tasta modului cinematografic"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
-msgstr ""
+msgstr "Texturi transparente curate"
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2530,7 +2545,7 @@ msgstr "Client"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "Client și server"
 
 #: src/settings_translation_file.cpp
 msgid "Client modding"
@@ -2542,11 +2557,11 @@ msgstr "Restricții de modificare de partea clientului"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr ""
+msgstr "Restricția razei de căutare a nodurilor în clienți"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Viteza escaladării"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
@@ -2558,7 +2573,7 @@ msgstr "Nori"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Norii sunt un efect pe client."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -2578,12 +2593,22 @@ msgid ""
 "These flags are independent from Minetest versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
+"Listă separată de virgule cu etichete de ascuns din depozitul de conținut.\n"
+"\"nonfree\" se poate folosi pentru ascunderea pachetelor care nu sunt "
+"'software liber',\n"
+"conform definiției Free Software Foundation.\n"
+"Puteți specifica și clasificarea conținutului.\n"
+"Aceste etichete nu depind de versiunile Minetest.\n"
+"Puteți vedea lista completă la https://content.minetest.net/help/"
+"content_flags/"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"Listă separată de virgule, cu modificări care au acces la API-uri HTTP,\n"
+"care la permit încărcarea și descărcarea de date în/din internet."
 
 #: src/settings_translation_file.cpp
 msgid ""
