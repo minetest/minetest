@@ -394,6 +394,12 @@ private:
 	std::set<v3s16> m_blocks_modified;
 
 	/*
+		Blocks that have already been occlusion culled, so
+		that we can avoid doing the expensive calculation again.
+	 */
+	std::set<v3s16> m_blocks_culled;
+
+	/*
 		Count of excess GotBlocks().
 		There is an excess amount because the client sometimes
 		gets a block so late that the server sends it again,

@@ -175,6 +175,7 @@ void RemoteClient::GetNextBlocks (
 	if (m_last_center != center) {
 		m_nearest_unsent_d = 0;
 		m_last_center = center;
+		m_blocks_culled.clear();
 	}
 	// reset the unsent distance if the view angle has changed more that 10% of the fov
 	// (this matches isBlockInSight which allows for an extra 10%)
@@ -293,6 +294,9 @@ void RemoteClient::GetNextBlocks (
 			if (m_blocks_sent.find(p) != m_blocks_sent.end())
 				continue;
 
+			if (m_blocks_culled.find(p) != m_blocks_culled.end())
+				continue;
+
 			/*
 				Check if map has this block
 			*/
@@ -321,6 +325,7 @@ void RemoteClient::GetNextBlocks (
 
 				if (m_occ_cull && !block_not_found &&
 						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
+					m_blocks_culled.insert(p);
 					continue;
 				}
 			}
@@ -415,8 +420,10 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 
 	// remove the block from sending and sent sets,
 	// and mark as modified if found
-	if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
+	if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0) {
 		m_blocks_modified.insert(p);
+		m_blocks_culled.clear();
+	}
 }
 
 void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
@@ -427,8 +434,10 @@ void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 		v3s16 p = block.first;
 		// remove the block from sending and sent sets,
 		// and mark as modified if found
-		if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
+		if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0) {
 			m_blocks_modified.insert(p);
+			m_blocks_culled.clear();
+		}
 	}
 }
 
