@@ -79,6 +79,10 @@ core.register_entity(":__builtin:falling_node", {
 		-- Cache whether we're supposed to float on water
 		self.floats = core.get_item_group(node.name, "float") ~= 0
 
+		-- Vars for set_properties
+		local props = {}
+		local set_props = false
+
 		-- Set entity visuals
 		if def.drawtype == "torchlike" or def.drawtype == "signlike" then
 			local textures
@@ -98,13 +102,12 @@ core.register_entity(":__builtin:falling_node", {
 				local s = def.visual_scale
 				vsize = {x = s, y = s, z = s}
 			end
-			self.object:set_properties({
-				is_visible = true,
-				visual = "upright_sprite",
-				visual_size = vsize,
-				textures = textures,
-				glow = def.light_source,
-			})
+			set_props = true
+			props.is_visible = true
+			props.visual = "upright_sprite"
+			props.visual_size = vsize
+			props.textures = textures
+			props.glow = def.light_source
 		elseif def.drawtype ~= "airlike" then
 			local itemstring = node.name
 			if core.is_colored_paramtype(def.paramtype2) then
@@ -116,12 +119,11 @@ core.register_entity(":__builtin:falling_node", {
 				local s = def.visual_scale * SCALE
 				vsize = {x = s, y = s, z = s}
 			end
-			self.object:set_properties({
-				is_visible = true,
-				wield_item = itemstring,
-				visual_size = vsize,
-				glow = def.light_source,
-			})
+			set_props = true
+			props.is_visible = true
+			props.wield_item = itemstring
+			props.visual_size = vsize
+			props.glow = def.light_source
 		end
 
 		-- Set collision box (certain nodeboxes only for now)
@@ -136,10 +138,20 @@ core.register_entity(":__builtin:falling_node", {
 				if def.paramtype2 == "leveled" and (self.node.level or 0) > 0 then
 					box[5] = -0.5 + self.node.level / 64
 				end
-				self.object:set_properties({
-					collisionbox = box
-				})
+				set_props = true
+				props.collisionbox = box
 			end
+		end
+
+		-- Only walkable nodes collide
+		if not def.walkable then
+			set_props = true
+			props.collide_with_objects = false
+		end
+
+		-- Set all properties at once
+		if set_props then
+			self.object:set_properties(props)
 		end
 
 		-- Rotate entity
