@@ -290,7 +290,7 @@ public:
 
 	// Attach an existing line visual to another CAO.
 	// The CAO may be ourselves too.
-	void attachLineTo(int object_id);
+	// void attachLineTo(int object_id);
 
 	void updateMeshCulling();
 };

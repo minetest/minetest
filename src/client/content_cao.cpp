@@ -1974,22 +1974,22 @@ void GenericCAO::updateMeshCulling()
 	}
 }
 
-void GenericCAO::attachLineTo(int object_id)
-{
-	m_line_target = object_id;
-}
+// void GenericCAO::attachLineTo(int object_id)
+// {
+	// m_line_target = object_id;
+// }
 
-void GenericCAO::updateLineTarget()
-{
-	m_linenode->dst_point.target = m_env->getActiveObject(m_line_target);
-}
+// void GenericCAO::updateLineTarget()
+// {
+	// m_linenode->dst_point.target = m_env->getActiveObject(m_line_target);
+// }
 
-void GenericCAO::updateLineOffset()
-{
-	auto offset = intToFloat(m_env->getCameraOffset(), BS);
-	m_linenode->dst_point.offset = offset;
-	m_linenode->src_point.offset = offset;
-}
+// void GenericCAO::updateLineOffset()
+// {
+	// auto offset = intToFloat(m_env->getCameraOffset(), BS);
+	// m_linenode->dst_point.offset = offset;
+	// m_linenode->src_point.offset = offset;
+// }
 
 // Prototype
 GenericCAO proto_GenericCAO(NULL, NULL);
