@@ -1050,12 +1050,13 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		}
 		float d = playersao->getEyePosition().getDistanceFrom(target_pos);
 
-		if (!checkInteractDistance(player, d, pointed.dump())
-				&& pointed.type == POINTEDTHING_NODE) {
-			// Re-send block to revert change on client-side
-			RemoteClient *client = getClient(peer_id);
-			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
-			client->SetBlockNotSent(blockpos);
+		if (!checkInteractDistance(player, d, pointed.dump())) {
+			if (pointed.type == POINTEDTHING_NODE) {
+				// Re-send block to revert change on client-side
+				RemoteClient *client = getClient(peer_id);
+				v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
+				client->SetBlockNotSent(blockpos);
+			}
 			return;
 		}
 	}
