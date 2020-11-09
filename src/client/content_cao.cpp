@@ -799,8 +799,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		m_linenode->wrap_texture = true;
 		m_linenode->src_point.position = v3f( 0, 0, 0 );
 		m_linenode->src_point.color = video::SColor(0xFF00FFFF);
-		m_linenode->src_point.width = 4;
-		m_linenode->dst_point.width = 4;
+		m_linenode->src_point.width = 2;
+		m_linenode->dst_point.width = 2;
 		m_linenode->dst_point.color = video::SColor(0xFFFF8000);
 		m_linenode->dst_point.position = v3f( 0, 100, 0 );
 	} else {
@@ -1972,6 +1972,23 @@ void GenericCAO::updateMeshCulling()
 		node->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
 			false);
 	}
+}
+
+void GenericCAO::attachLineTo(int object_id)
+{
+	m_line_target = object_id;
+}
+
+void GenericCAO::updateLineTarget()
+{
+	m_linenode->dst_point.target = m_env->getActiveObject(m_line_target);
+}
+
+void GenericCAO::updateLineOffset()
+{
+	auto offset = intToFloat(m_env->getCameraOffset(), BS);
+	m_linenode->dst_point.offset = offset;
+	m_linenode->src_point.offset = offset;
 }
 
 // Prototype
