@@ -36,7 +36,7 @@ ClientMap::ClientMap(
 		MapDrawControl &control,
 		s32 id
 ):
-	Map(dout_client, client),
+	Map(client),
 	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
 		RenderingEngine::get_scene_manager(), id),
 	m_client(client),
@@ -122,20 +122,17 @@ void ClientMap::updateDrawList()
 	}
 	m_drawlist.clear();
 
-	v3f camera_position = m_camera_position;
-	v3f camera_direction = m_camera_direction;
-	f32 camera_fov = m_camera_fov;
-
-	// Use a higher fov to accomodate faster camera movements.
-	// Blocks are cropped better when they are drawn.
-	// Or maybe they aren't? Well whatever.
-	camera_fov *= 1.2;
+	const v3f camera_position = m_camera_position;
+	const v3f camera_direction = m_camera_direction;
+	const f32 camera_fov = m_camera_fov;
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
 
+	// Number of blocks currently loaded by the client
+	u32 blocks_loaded = 0;
 	// Number of blocks with mesh in rendering range
 	u32 blocks_in_range_with_mesh = 0;
 	// Number of blocks occlusion culled
@@ -160,6 +157,7 @@ void ClientMap::updateDrawList()
 		MapSector *sector = sector_it.second;
 		v2s16 sp = sector->getPos();
 
+		blocks_loaded += sector->size();
 		if (!m_control.range_all) {
 			if (sp.X < p_blocks_min.X || sp.X > p_blocks_max.X ||
 					sp.Y < p_blocks_min.Z || sp.Y > p_blocks_max.Z)
@@ -181,8 +179,12 @@ void ClientMap::updateDrawList()
 				if not seen on display
 			*/
 
-			if (block->mesh)
+			if (block->mesh) {
 				block->mesh->updateCameraOffset(m_camera_offset);
+			} else {
+				// Ignore if mesh doesn't exist
+				continue;
+			}
 
 			float range = 100000 * BS;
 			if (!m_control.range_all)
@@ -191,13 +193,6 @@ void ClientMap::updateDrawList()
 			float d = 0.0;
 			if (!isBlockInSight(block->getPos(), camera_position,
 					camera_direction, camera_fov, range, &d))
-				continue;
-
-
-			/*
-				Ignore if mesh doesn't exist
-			*/
-			if (!block->mesh)
 				continue;
 
 			blocks_in_range_with_mesh++;
@@ -228,6 +223,7 @@ void ClientMap::updateDrawList()
 	g_profiler->avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
+	g_profiler->avg("MapBlocks loaded [#]", blocks_loaded);
 }
 
 struct MeshBufList
@@ -293,13 +289,13 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	/*
 		Get animation parameters
 	*/
-	float animation_time = m_client->getAnimationTime();
-	int crack = m_client->getCrackLevel();
-	u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
+	const float animation_time = m_client->getAnimationTime();
+	const int crack = m_client->getCrackLevel();
+	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 
-	v3f camera_position = m_camera_position;
-	v3f camera_direction = m_camera_direction;
-	f32 camera_fov = m_camera_fov;
+	const v3f camera_position = m_camera_position;
+	const v3f camera_direction = m_camera_direction;
+	const f32 camera_fov = m_camera_fov;
 
 	/*
 		Get all blocks and draw all visible ones

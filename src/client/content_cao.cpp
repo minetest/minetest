@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <cmath>
 #include "client/shader.h"
+#include "client/minimap.h"
 
 class Settings;
 struct ToolCapabilities;
@@ -353,6 +354,8 @@ void GenericCAO::initialize(const std::string &data)
 			m_is_local_player = true;
 			m_is_visible = false;
 			player->setCAO(this);
+
+			m_prop.show_on_minimap = false;
 		}
 	}
 
@@ -566,6 +569,9 @@ void GenericCAO::removeFromScene(bool permanent)
 		m_client->getCamera()->removeNametag(m_nametag);
 		m_nametag = nullptr;
 	}
+
+	if (m_marker && m_client->getMinimap())
+		m_client->getMinimap()->removeMarker(&m_marker);
 }
 
 void GenericCAO::addToScene(ITextureSource *tsrc)
@@ -794,6 +800,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		node->setParent(m_matrixnode);
 
 	updateNametag();
+	updateMarker();
 	updateNodePos();
 	updateAnimation();
 	updateBonePosition();
@@ -883,6 +890,26 @@ u16 GenericCAO::getLightPosition(v3s16 *pos)
 		return 2;
 	pos[2] = floatToInt(m_position + box.getCenter() * BS, BS);
 	return 3;
+}
+
+void GenericCAO::updateMarker()
+{
+	if (!m_client->getMinimap())
+		return;
+
+	if (!m_prop.show_on_minimap) {
+		if (m_marker)
+			m_client->getMinimap()->removeMarker(&m_marker);
+		return;
+	}
+
+	if (m_marker)
+		return;
+
+	scene::ISceneNode *node = getSceneNode();
+	if (!node)
+		return;
+	m_marker = m_client->getMinimap()->addMarker(node);
 }
 
 void GenericCAO::updateNametag()
@@ -1463,17 +1490,24 @@ void GenericCAO::updateBonePosition()
 		if (!bone)
 			continue;
 
+		//If bone is manually positioned there is no need to perform the bug check
+		bool skip = false;
+		for (auto &it : m_bone_position) {
+			if (it.first == bone->getName()) {
+				skip = true;
+				break;
+			}
+		}
+		if (skip)
+			continue;
+
 		// Workaround for Irrlicht bug
 		// We check each bone to see if it has been rotated ~180deg from its expected position due to a bug in Irricht
 		// when using EJUOR_CONTROL joint control. If the bug is detected we update the bone to the proper position
 		// and update the bones transformation.
 		v3f bone_rot = bone->getRelativeTransformation().getRotationDegrees();
-		float offset_X = fabsf(bone_rot.X - bone->getRotation().X);
-		float offset_Y = fabsf(bone_rot.Y - bone->getRotation().Y);
-		float offset_Z = fabsf(bone_rot.Z - bone->getRotation().Z);
-		if ((offset_X > 179.9f && offset_X < 180.1f)
-				|| (offset_Y > 179.9f && offset_Y < 180.1f)
-				|| (offset_Z > 179.9f && offset_Z < 180.1f)) {
+		float offset = fabsf(bone_rot.X - bone->getRotation().X);
+		if (offset > 179.9f && offset < 180.1f) {
 			bone->setRotation(bone_rot);
 			bone->updateAbsolutePosition();
 		}
@@ -1576,6 +1610,8 @@ void GenericCAO::processMessage(const std::string &data)
 	u8 cmd = readU8(is);
 	if (cmd == AO_CMD_SET_PROPERTIES) {
 		ObjectProperties newprops;
+		newprops.show_on_minimap = m_is_player; // default
+
 		newprops.deSerialize(is);
 
 		// Check what exactly changed
@@ -1609,6 +1645,8 @@ void GenericCAO::processMessage(const std::string &data)
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
 			m_prop.nametag = m_name;
+		if (m_is_local_player)
+			m_prop.show_on_minimap = false;
 
 		if (expire_visuals) {
 			expireVisuals();
@@ -1621,6 +1659,7 @@ void GenericCAO::processMessage(const std::string &data)
 					updateTextures(m_current_texture_modifier);
 			}
 			updateNametag();
+			updateMarker();
 		}
 	} else if (cmd == AO_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.

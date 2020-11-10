@@ -158,7 +158,6 @@ public:
 	int node_texture_size;
 	bool opaque_water;
 	bool connected_glass;
-	bool use_normal_texture;
 	bool enable_mesh_cache;
 	bool enable_minimap;
 

@@ -127,6 +127,7 @@ minetest.register_node("basenodes:water_source", {
 	description = "Water Source".."\n"..
 		"Drowning damage: 1",
 	drawtype = "liquid",
+	waving = 3,
 	tiles = {"default_water.png"},
 	special_tiles = {
 		{name = "default_water.png", backface_culling = false},
@@ -152,6 +153,7 @@ minetest.register_node("basenodes:water_flowing", {
 	description = "Flowing Water".."\n"..
 		"Drowning damage: 1",
 	drawtype = "flowingliquid",
+	waving = 3,
 	tiles = {"default_water_flowing.png"},
 	special_tiles = {
 		{name = "default_water_flowing.png", backface_culling = false},
@@ -178,6 +180,7 @@ minetest.register_node("basenodes:river_water_source", {
 	description = "River Water Source".."\n"..
 		"Drowning damage: 1",
 	drawtype = "liquid",
+	waving = 3,
 	tiles = { "default_river_water.png" },
 	special_tiles = {
 		{name = "default_river_water.png", backface_culling = false},
@@ -205,6 +208,7 @@ minetest.register_node("basenodes:river_water_flowing", {
 	description = "Flowing River Water".."\n"..
 		"Drowning damage: 1",
 	drawtype = "flowingliquid",
+	waving = 3,
 	tiles = {"default_river_water_flowing.png"},
 	special_tiles = {
 		{name = "default_river_water_flowing.png", backface_culling = false},

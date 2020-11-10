@@ -6,7 +6,7 @@
 
 Tool types:
 
-* Hand: basic tool/weapon (just for convenience, not optimized for testing)
+* Hand: basic tool/weapon (special capabilities in creative mode)
 * Pickaxe: dig cracky
 * Axe: dig choppy
 * Shovel: dig crumbly
@@ -24,21 +24,49 @@ Tool materials:
 ]]
 
 -- The hand
-minetest.register_item(":", {
-	type = "none",
-	wield_image = "wieldhand.png",
-	wield_scale = {x=1,y=1,z=2.5},
-	tool_capabilities = {
-		full_punch_interval = 1.0,
-		max_drop_level = 0,
-		groupcaps = {
-			crumbly = {times={[3]=1.50}, uses=0, maxlevel=0},
-			snappy = {times={[3]=1.50}, uses=0, maxlevel=0},
-			oddly_breakable_by_hand = {times={[1]=7.00,[2]=4.00,[3]=2.00}, uses=0, maxlevel=0},
-		},
-		damage_groups = {fleshy=1},
-	}
-})
+if minetest.settings:get_bool("creative_mode") then
+	local digtime = 42
+	local caps = {times = {digtime, digtime, digtime}, uses = 0, maxlevel = 256}
+
+	minetest.register_item(":", {
+		type = "none",
+		wield_image = "wieldhand.png",
+		wield_scale = {x = 1, y = 1, z = 2.5},
+		range = 10,
+		tool_capabilities = {
+			full_punch_interval = 0.5,
+			max_drop_level = 3,
+			groupcaps = {
+				crumbly = caps,
+				cracky  = caps,
+				snappy  = caps,
+				choppy  = caps,
+				oddly_breakable_by_hand = caps,
+				-- dig_immediate group doesn't use value 1. Value 3 is instant dig
+				dig_immediate =
+					{times = {[2] = digtime, [3] = 0}, uses = 0, maxlevel = 256},
+			},
+			damage_groups = {fleshy = 10},
+		}
+	})
+else
+	minetest.register_item(":", {
+		type = "none",
+		wield_image = "wieldhand.png",
+		wield_scale = {x = 1, y = 1, z = 2.5},
+		tool_capabilities = {
+			full_punch_interval = 0.9,
+			max_drop_level = 0,
+			groupcaps = {
+				crumbly = {times = {[2] = 3.00, [3] = 0.70}, uses = 0, maxlevel = 1},
+				snappy = {times = {[3] = 0.40}, uses = 0, maxlevel = 1},
+				oddly_breakable_by_hand =
+					{times = {[1] = 3.50, [2] = 2.00, [3] = 0.70}, uses = 0}
+			},
+			damage_groups = {fleshy = 1},
+		}
+	})
+end
 
 -- Mese Pickaxe: special tool that digs "everything" instantly
 minetest.register_tool("basetools:pick_mese", {

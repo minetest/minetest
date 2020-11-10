@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 android {
 	compileSdkVersion 29
-	buildToolsVersion '29.0.3'
-	ndkVersion '21.1.6352462'
+	buildToolsVersion '30.0.2'
+	ndkVersion '21.3.6528147'
 	defaultConfig {
 		applicationId 'net.minetest.minetest'
 		minSdkVersion 16
@@ -11,8 +11,11 @@ android {
 		versionCode project.versionCode
 	}
 
+	// load properties
 	Properties props = new Properties()
-	props.load(new FileInputStream(file('../local.properties')))
+	def propfile = file('../local.properties')
+	if (propfile.exists())
+		props.load(new FileInputStream(propfile))
 
 	if (props.getProperty('keystore') != null) {
 		signingConfigs {
@@ -61,10 +64,9 @@ task prepareAssets() {
 	copy {
 		from "${projRoot}/builtin" into "${assetsFolder}/builtin"
 	}
-	/*copy {
-		// ToDo: fix Minetest shaders that currently don't work with OpenGL ES
+	copy {
 		from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
-	}*/
+	}
 	copy {
 		from "../native/deps/Android/Irrlicht/shaders" into "${assetsFolder}/client/shaders/Irrlicht"
 	}
@@ -107,5 +109,5 @@ android.applicationVariants.all { variant ->
 
 dependencies {
 	implementation project(':native')
-	implementation 'androidx.appcompat:appcompat:1.1.0'
+	implementation 'androidx.appcompat:appcompat:1.2.0'
 }

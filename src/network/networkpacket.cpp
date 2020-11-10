@@ -223,13 +223,6 @@ NetworkPacket& NetworkPacket::operator>>(char& dst)
 	return *this;
 }
 
-char NetworkPacket::getChar(u32 offset)
-{
-	checkReadOffset(offset, 1);
-
-	return readU8(&m_data[offset]);
-}
-
 NetworkPacket& NetworkPacket::operator<<(char src)
 {
 	checkDataSize(1);

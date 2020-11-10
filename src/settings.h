@@ -207,6 +207,8 @@ public:
 	void deregisterChangedCallback(const std::string &name,
 		SettingsChangedCallback cbf, void *userdata = NULL);
 
+	void removeSecureSettings();
+
 private:
 	/***********************
 	 * Reading and writing *

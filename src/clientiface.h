@@ -364,7 +364,7 @@ private:
 	std::set<v3s16> m_blocks_sent;
 	s16 m_nearest_unsent_d = 0;
 	v3s16 m_last_center;
-	float m_nearest_unsent_reset_timer = 0.0f;
+	v3f m_last_camera_dir;
 
 	const u16 m_max_simul_sends;
 	const float m_min_time_from_building;
@@ -384,10 +384,10 @@ private:
 	std::map<v3s16, float> m_blocks_sending;
 
 	/*
-		Blocks that have been modified since last sending them.
-		These blocks will not be marked as sent, even if the
-		client reports it has received them to account for blocks
-		that are being modified while on the line.
+		Blocks that have been modified since blocks were
+		sent to the client last (getNextBlocks()).
+		This is used to reset the unsent distance, so that
+		modified blocks are resent to the client.
 
 		List of block positions.
 	*/

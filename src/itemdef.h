@@ -56,6 +56,7 @@ struct ItemDefinition
 	ItemType type;
 	std::string name; // "" = hand
 	std::string description; // Shown in tooltip.
+	std::string short_description;
 
 	/*
 		Visual properties

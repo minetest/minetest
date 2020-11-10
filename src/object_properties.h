@@ -62,6 +62,7 @@ struct ObjectProperties
 	float zoom_fov = 0.0f;
 	bool use_texture_alpha = false;
 	bool shaded = true;
+	bool show_on_minimap = false;
 
 	ObjectProperties();
 	std::string dump();

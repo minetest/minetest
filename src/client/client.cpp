@@ -326,6 +326,8 @@ Client::~Client()
 	}
 
 	delete m_minimap;
+	m_minimap = nullptr;
+
 	delete m_media_downloader;
 }
 
@@ -1693,11 +1695,6 @@ ClientEvent *Client::getClientEvent()
 	ClientEvent *event = m_client_event_queue.front();
 	m_client_event_queue.pop();
 	return event;
-}
-
-bool Client::connectedToServer()
-{
-	return m_con->Connected();
 }
 
 const Address Client::getServerAddress()

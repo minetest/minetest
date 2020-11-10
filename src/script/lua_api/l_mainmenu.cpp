@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "convert_json.h"
-#include "content/packages.h"
 #include "content/content.h"
 #include "content/subgames.h"
 #include "serverlist.h"
