@@ -1919,13 +1919,23 @@ void GenericCAO::updateMeshCulling()
 	if (!m_is_local_player)
 		return;
 
-	// Grab the active player scene node so we know there's
-	// at least a mesh to occlude from the camera.
+	const bool hidden = m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST;
+
+	if (m_meshnode && m_prop.visual == "upright_sprite") {
+		u32 buffers = m_meshnode->getMesh()->getMeshBufferCount();
+		for (u32 i = 0; i < buffers; i++) {
+			video::SMaterial &mat = m_meshnode->getMesh()->getMeshBuffer(i)->getMaterial();
+			// upright sprite has no backface culling
+			mat.setFlag(video::EMF_FRONT_FACE_CULLING, hidden);
+		}
+		return;
+	}
+
 	irr::scene::ISceneNode *node = getSceneNode();
 	if (!node)
 		return;
 
-	if (m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST) {
+	if (hidden) {
 		// Hide the mesh by culling both front and
 		// back faces. Serious hackyness but it works for our
 		// purposes. This also preserves the skeletal armature.
