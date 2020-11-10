@@ -894,6 +894,9 @@ u16 GenericCAO::getLightPosition(v3s16 *pos)
 
 void GenericCAO::updateMarker()
 {
+	if (!m_client->getMinimap())
+		return;
+
 	if (!m_prop.show_on_minimap) {
 		if (m_marker)
 			m_client->getMinimap()->removeMarker(&m_marker);

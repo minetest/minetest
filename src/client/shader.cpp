@@ -734,7 +734,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaders_header += "#define ";
 		shaders_header += drawTypes[i];
 		shaders_header += " ";
-		shaders_header += std::to_string(i);
+		shaders_header += itos(i);
 		shaders_header += "\n";
 	}
 
@@ -757,15 +757,15 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaders_header += "#define ";
 		shaders_header += materialTypes[i];
 		shaders_header += " ";
-		shaders_header += std::to_string(i);
+		shaders_header += itos(i);
 		shaders_header += "\n";
 	}
 
 	shaders_header += "#define MATERIAL_TYPE ";
-	shaders_header += std::to_string(material_type);
+	shaders_header += itos(material_type);
 	shaders_header += "\n";
 	shaders_header += "#define DRAW_TYPE ";
-	shaders_header += std::to_string(drawtype);
+	shaders_header += itos(drawtype);
 	shaders_header += "\n";
 
 	if (g_settings->getBool("enable_waving_water")){

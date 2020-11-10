@@ -209,6 +209,13 @@ void RemoteClient::GetNextBlocks (
 	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, prop_zoom_fov),
 		wanted_range);
 
+	s16 d_max = full_d_max;
+
+	// Don't loop very much at a time
+	s16 max_d_increment_at_time = 2;
+	if (d_max > d_start + max_d_increment_at_time)
+		d_max = d_start + max_d_increment_at_time;
+
 	// cos(angle between velocity and camera) * |velocity|
 	// Limit to 0.0f in case player moves backwards.
 	f32 dot = rangelim(camera_dir.dotProduct(playerspeed), 0.0f, 300.0f);
@@ -225,7 +232,7 @@ void RemoteClient::GetNextBlocks (
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
 
 	s16 d;
-	for (d = d_start; d <= full_d_max; d++) {
+	for (d = d_start; d <= d_max; d++) {
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
 			box

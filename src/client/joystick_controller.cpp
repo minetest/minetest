@@ -74,8 +74,8 @@ JoystickLayout create_default_layout()
 
 	// Accessible without four modifier button pressed
 	// regardless whether start is pressed or not
-	JLO_B_PB(KeyType::MOUSE_L,    fb | 1 << 4, 1 << 4);
-	JLO_B_PB(KeyType::MOUSE_R,    fb | 1 << 5, 1 << 5);
+	JLO_B_PB(KeyType::DIG,        fb | 1 << 4, 1 << 4);
+	JLO_B_PB(KeyType::PLACE,      fb | 1 << 5, 1 << 5);
 
 	// Accessible without any modifier pressed
 	JLO_B_PB(KeyType::JUMP,       bm | 1 << 0, 1 << 0);
@@ -83,9 +83,9 @@ JoystickLayout create_default_layout()
 
 	// Accessible with start button not pressed, but four pressed
 	// TODO find usage for button 0
-	JLO_B_PB(KeyType::DROP,       bm | 1 << 1, fb | 1 << 1);
-	JLO_B_PB(KeyType::SCROLL_UP,  bm | 1 << 4, fb | 1 << 4);
-	JLO_B_PB(KeyType::SCROLL_DOWN,bm | 1 << 5, fb | 1 << 5);
+	JLO_B_PB(KeyType::DROP,        bm | 1 << 1, fb | 1 << 1);
+	JLO_B_PB(KeyType::HOTBAR_PREV, bm | 1 << 4, fb | 1 << 4);
+	JLO_B_PB(KeyType::HOTBAR_NEXT, bm | 1 << 5, fb | 1 << 5);
 
 	// Accessible with start button and four pressed
 	// TODO find usage for buttons 0, 1 and 4, 5
@@ -99,8 +99,8 @@ JoystickLayout create_default_layout()
 	JLO_A_PB(KeyType::RIGHT,    0, -1, 1024);
 
 	// Scroll buttons
-	JLO_A_PB(KeyType::SCROLL_UP,   2, -1, 1024);
-	JLO_A_PB(KeyType::SCROLL_DOWN, 5, -1, 1024);
+	JLO_A_PB(KeyType::HOTBAR_PREV, 2, -1, 1024);
+	JLO_A_PB(KeyType::HOTBAR_NEXT, 5, -1, 1024);
 
 	return jlo;
 }
@@ -134,10 +134,10 @@ JoystickLayout create_xbox_layout()
 	JLO_B_PB(KeyType::SNEAK,       1 << 12, 1 << 12); // right
 
 	// Triggers
-	JLO_B_PB(KeyType::MOUSE_L,     1 << 6,  1 << 6); // lt
-	JLO_B_PB(KeyType::MOUSE_R,     1 << 7,  1 << 7); // rt
-	JLO_B_PB(KeyType::SCROLL_UP,   1 << 4,  1 << 4); // lb
-	JLO_B_PB(KeyType::SCROLL_DOWN, 1 << 5,  1 << 5); // rb
+	JLO_B_PB(KeyType::DIG,         1 << 6,  1 << 6); // lt
+	JLO_B_PB(KeyType::PLACE,       1 << 7,  1 << 7); // rt
+	JLO_B_PB(KeyType::HOTBAR_PREV, 1 << 4,  1 << 4); // lb
+	JLO_B_PB(KeyType::HOTBAR_NEXT, 1 << 5,  1 << 5); // rb
 
 	// D-PAD
 	JLO_B_PB(KeyType::ZOOM,        1 << 15, 1 << 15); // up

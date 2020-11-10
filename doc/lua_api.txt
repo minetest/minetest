@@ -6190,9 +6190,9 @@ object you are working with still exists.
     * `position`: `{x=num, y=num, z=num}`, relative, default `{x=0, y=0, z=0}`
     * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees.
       Default `{x=0, y=0, z=0}`
-    * `forced_visible`: Boolean to control whether the attached entity 
+    * `forced_visible`: Boolean to control whether the attached entity
        should appear in first person. Default `false`.
-* `get_attach()`: returns parent, bone, position, rotation, forced_visible, 
+* `get_attach()`: returns parent, bone, position, rotation, forced_visible,
     or nil if it isn't attached.
 * `get_children()`: returns a list of ObjectRefs that are attached to the
     object.
