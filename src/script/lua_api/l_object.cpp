@@ -1413,20 +1413,34 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	if (playersao == nullptr)
 		return 0;
 
-	luaL_checktype(L, 2, LUA_TTABLE);
-	playersao->m_physics_override_speed = getfloatfield_default(
-			L, 2, "speed", playersao->m_physics_override_speed);
-	playersao->m_physics_override_jump = getfloatfield_default(
-			L, 2, "jump", playersao->m_physics_override_jump);
-	playersao->m_physics_override_gravity = getfloatfield_default(
-			L, 2, "gravity", playersao->m_physics_override_gravity);
-	playersao->m_physics_override_sneak = getboolfield_default(
-			L, 2, "sneak", playersao->m_physics_override_sneak);
-	playersao->m_physics_override_sneak_glitch = getboolfield_default(
-			L, 2, "sneak_glitch", playersao->m_physics_override_sneak_glitch);
-	playersao->m_physics_override_new_move = getboolfield_default(
-			L, 2, "new_move", playersao->m_physics_override_new_move);
-	playersao->m_physics_override_sent = false;
+	if (lua_istable(L, 2)) {
+		bool modified = false;
+		modified |= getfloatfield(L, 2, "speed", playersao->m_physics_override_speed);
+		modified |= getfloatfield(L, 2, "jump", playersao->m_physics_override_jump);
+		modified |= getfloatfield(L, 2, "gravity", playersao->m_physics_override_gravity);
+		modified |= getboolfield(L, 2, "sneak", playersao->m_physics_override_sneak);
+		modified |= getboolfield(L, 2, "sneak_glitch", playersao->m_physics_override_sneak_glitch);
+		modified |= getboolfield(L, 2, "new_move", playersao->m_physics_override_new_move);
+		if (modified)
+			playersao->m_physics_override_sent = false;
+	} else {
+		// old, non-table format
+		// TODO: Remove this code after version 5.4.0
+		log_deprecated(L, "Deprecated use of set_physics_override(num, num, num)");
+
+		if (!lua_isnil(L, 2)) {
+			playersao->m_physics_override_speed = lua_tonumber(L, 2);
+			playersao->m_physics_override_sent = false;
+		}
+		if (!lua_isnil(L, 3)) {
+			playersao->m_physics_override_jump = lua_tonumber(L, 3);
+			playersao->m_physics_override_sent = false;
+		}
+		if (!lua_isnil(L, 4)) {
+			playersao->m_physics_override_gravity = lua_tonumber(L, 4);
+			playersao->m_physics_override_sent = false;
+		}
+	}
 	return 0;
 }
 
