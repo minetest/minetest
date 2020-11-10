@@ -93,14 +93,14 @@ JoystickLayout create_default_layout()
 	// Now about the buttons simulated by the axes
 
 	// Movement buttons, important for vessels
-	JLO_A_PB(KeyType::FORWARD,  1,  1, 1024);
-	JLO_A_PB(KeyType::BACKWARD, 1, -1, 1024);
-	JLO_A_PB(KeyType::LEFT,     0,  1, 1024);
-	JLO_A_PB(KeyType::RIGHT,    0, -1, 1024);
+	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_dead_border);
 
 	// Scroll buttons
-	JLO_A_PB(KeyType::HOTBAR_PREV, 2, -1, 1024);
-	JLO_A_PB(KeyType::HOTBAR_NEXT, 5, -1, 1024);
+	JLO_A_PB(KeyType::HOTBAR_PREV, 2, -1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::HOTBAR_NEXT, 5, -1, jlo.axes_dead_border);
 
 	return jlo;
 }
@@ -146,10 +146,10 @@ JoystickLayout create_xbox_layout()
 	JLO_B_PB(KeyType::FREEMOVE,    1 << 16, 1 << 16); // down
 
 	// Movement buttons, important for vessels
-	JLO_A_PB(KeyType::FORWARD,  1,  1, 1024);
-	JLO_A_PB(KeyType::BACKWARD, 1, -1, 1024);
-	JLO_A_PB(KeyType::LEFT,     0,  1, 1024);
-	JLO_A_PB(KeyType::RIGHT,    0, -1, 1024);
+	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_dead_border);
 
 	return jlo;
 }
