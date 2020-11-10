@@ -251,8 +251,7 @@ void JoystickController::clear()
 s16 JoystickController::getAxisWithoutDead(JoystickAxis axis)
 {
 	s16 v = m_axes_vals[axis];
-	if (((v > 0) && (v < m_layout.axes_dead_border)) ||
-			((v < 0) && (v > -m_layout.axes_dead_border)))
+	if (abs(v) < m_layout.axes_dead_border)
 		return 0;
 	return v;
 }
