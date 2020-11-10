@@ -3134,8 +3134,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	input->clearWasKeyPressed();
 	input->clearWasKeyReleased();
 
-	input->joystick.clearWasKeyDown(KeyType::DIG);
-	input->joystick.clearWasKeyDown(KeyType::PLACE);
+	input->joystick.clearWasKeyPressed(KeyType::DIG);
+	input->joystick.clearWasKeyPressed(KeyType::PLACE);
 
 	input->joystick.clearWasKeyReleased(KeyType::DIG);
 	input->joystick.clearWasKeyReleased(KeyType::PLACE);

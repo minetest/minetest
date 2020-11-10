@@ -219,16 +219,19 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 
 	for (size_t i = 0; i < KeyType::INTERNAL_ENUM_COUNT; i++) {
 		if (keys_pressed[i]) {
-			if (!m_past_pressed_keys[i] &&
+			if (!m_past_keys_pressed[i] &&
 					m_past_pressed_time[i] < m_internal_time - doubling_dtime) {
-				m_past_pressed_keys[i] = true;
+				m_past_keys_pressed[i] = true;
 				m_past_pressed_time[i] = m_internal_time;
 			}
-		} else if (m_pressed_keys[i]) {
-			m_past_released_keys[i] = true;
+		} else if (m_keys_down[i]) {
+			m_keys_released[i] = true;
 		}
 
-		m_pressed_keys[i] = keys_pressed[i];
+		if (keys_pressed[i] && !(m_keys_down[i]))
+			m_keys_pressed[i] = true;
+
+		m_keys_down[i] = keys_pressed[i];
 	}
 
 	for (size_t i = 0; i < JA_COUNT; i++) {
@@ -236,15 +239,15 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 		m_axes_vals[i] = ax_la.invert * ev.Axis[ax_la.axis_id];
 	}
 
-
 	return true;
 }
 
 void JoystickController::clear()
 {
-	m_pressed_keys.reset();
-	m_past_pressed_keys.reset();
-	m_past_released_keys.reset();
+	m_keys_pressed.reset();
+	m_keys_down.reset();
+	m_past_keys_pressed.reset();
+	m_keys_released.reset();
 	memset(m_axes_vals, 0, sizeof(m_axes_vals));
 }
 
