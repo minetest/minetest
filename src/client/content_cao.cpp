@@ -460,18 +460,20 @@ void GenericCAO::setChildrenVisible(bool toset)
 		GenericCAO *obj = m_env->getGenericCAO(cao_id);
 		if (obj) {
 			// Check if the entity is forced to appear in first person.
-			obj->setVisible(obj->isForcedVisible() ? true : toset);
+			obj->setVisible(obj->m_force_visible ? true : toset);
 		}
 	}
 }
 
-void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
+void GenericCAO::setAttachment(int parent_id, const std::string &bone,
+		v3f position, v3f rotation, bool force_visible)
 {
 	int old_parent = m_attachment_parent_id;
 	m_attachment_parent_id = parent_id;
 	m_attachment_bone = bone;
 	m_attachment_position = position;
 	m_attachment_rotation = rotation;
+	m_force_visible = force_visible;
 
 	ClientActiveObject *parent = m_env->getActiveObject(parent_id);
 
@@ -482,15 +484,30 @@ void GenericCAO::setAttachment(int parent_id, const std::string &bone, v3f posit
 			parent->addAttachmentChild(m_id);
 	}
 	updateAttachments();
+
+	// Forcibly show attachments if required by set_attach
+	if (m_force_visible) {
+		m_is_visible = true;
+	} else if (!m_is_local_player) {
+		// Objects attached to the local player should be hidden in first person
+		m_is_visible = !m_attached_to_local ||
+			m_client->getCamera()->getCameraMode() != CAMERA_MODE_FIRST;
+		m_force_visible = false;
+	} else {
+		// Local players need to have this set,
+		// otherwise first person attachments fail.
+		m_is_visible = true;
+	}
 }
 
 void GenericCAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-	v3f *rotation) const
+	v3f *rotation, bool *force_visible) const
 {
 	*parent_id = m_attachment_parent_id;
 	*bone = m_attachment_bone;
 	*position = m_attachment_position;
 	*rotation = m_attachment_rotation;
+	*force_visible = m_force_visible;
 }
 
 void GenericCAO::clearChildAttachments()
@@ -509,9 +526,9 @@ void GenericCAO::clearChildAttachments()
 void GenericCAO::clearParentAttachment()
 {
 	if (m_attachment_parent_id)
-		setAttachment(0, "", m_attachment_position, m_attachment_rotation);
+		setAttachment(0, "", m_attachment_position, m_attachment_rotation, false);
 	else
-		setAttachment(0, "", v3f(), v3f());
+		setAttachment(0, "", v3f(), v3f(), false);
 }
 
 void GenericCAO::addAttachmentChild(int child_id)
@@ -1781,25 +1798,9 @@ void GenericCAO::processMessage(const std::string &data)
 		std::string bone = deSerializeString16(is);
 		v3f position = readV3F32(is);
 		v3f rotation = readV3F32(is);
-		m_force_visible = readU8(is); // Returns false for EOF
+		bool force_visible = readU8(is); // Returns false for EOF
 
-		setAttachment(parent_id, bone, position, rotation);
-
-		// Forcibly show attachments if required by set_attach
-		if (m_force_visible)
-			m_is_visible = true;
-		// localplayer itself can't be attached to localplayer
-		else if (!m_is_local_player) {
-			// Objects attached to the local player should be hidden in first
-			// person provided the forced boolean isn't set.
-			m_is_visible = !m_attached_to_local ||
-				m_client->getCamera()->getCameraMode() != CAMERA_MODE_FIRST;
-			m_force_visible = false;
-		} else {
-			// Local players need to have this set,
-			// otherwise first person attachments fail.
-			m_is_visible = true;
-		}
+		setAttachment(parent_id, bone, position, rotation, force_visible);
 	} else if (cmd == AO_CMD_PUNCHED) {
 		u16 result_hp = readU16(is);
 
