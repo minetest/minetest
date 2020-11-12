@@ -537,7 +537,7 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	std::string bone = readParam<std::string>(L, 2);
+	std::string bone = readParam<std::string>(L, 2, "");
 	v3f position = readParam<v3f>(L, 3, v3f(0, 0, 0));
 	v3f rotation = readParam<v3f>(L, 4, v3f(0, 0, 0));
 
@@ -554,7 +554,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	std::string bone = readParam<std::string>(L, 2);
+	std::string bone = readParam<std::string>(L, 2, "");
 
 	v3f position = v3f(0, 0, 0);
 	v3f rotation = v3f(0, 0, 0);
@@ -578,10 +578,10 @@ int ObjectRef::l_set_attach(lua_State *L)
 	if (sao == parent)
 		throw LuaError("ObjectRef::set_attach: attaching object to itself is not allowed.");
 
-	int parent_id = 0;
+	int parent_id;
 	std::string bone;
-	v3f position = v3f(0, 0, 0);
-	v3f rotation = v3f(0, 0, 0);
+	v3f position;
+	v3f rotation;
 	bool force_visible;
 
 	sao->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
@@ -609,10 +609,10 @@ int ObjectRef::l_get_attach(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	int parent_id = 0;
+	int parent_id;
 	std::string bone;
-	v3f position = v3f(0, 0, 0);
-	v3f rotation = v3f(0, 0, 0);
+	v3f position;
+	v3f rotation;
 	bool force_visible;
 
 	sao->getAttachment(&parent_id, &bone, &position, &rotation, &force_visible);
