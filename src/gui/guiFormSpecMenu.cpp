@@ -3790,7 +3790,6 @@ void GUIFormSpecMenu::updateSelectedItem()
 			m_selected_item->listname = "craftresult";
 			m_selected_item->i = 0;
 			m_selected_amount = item.count;
-			m_selected_dragging = false;
 			break;
 		}
 	}
@@ -4196,7 +4195,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		bool identical = m_selected_item && s.isValid() &&
 			(inv_selected == inv_s) &&
-			(m_selected_item->listname == s.listname) &&
+			(m_selected_item->listname == s.listname || (m_selected_item->listname == "craftresult" && s.listname == "craftpreview")) &&
 			(m_selected_item->i == s.i);
 
 		ButtonEventType button = BET_LEFT;
@@ -4502,6 +4501,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				a->count = craft_amount;
 				a->craft_inv = s.inventoryloc;
 				m_invmgr->inventoryAction(a);
+				if (!m_selected_item)
+					m_selected_dragging = button != BET_WHEEL_DOWN && button != BET_WHEEL_UP;
+				updateSelectedItem();
 			}
 		}
 

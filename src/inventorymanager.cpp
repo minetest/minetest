@@ -925,6 +925,15 @@ void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 {
 	// Optional InventoryAction operation that is run on the client
 	// to make lag less apparent.
+
+	Inventory *inv_craft = mgr->getInventory(craft_inv);
+	if (!inv_craft)
+		return;
+	InventoryList *list_craftpreview = inv_craft->getList("craftpreview");
+	InventoryList *list_craftresult = inv_craft->getList("craftresult");
+	if (!list_craftpreview || !list_craftresult || list_craftpreview->getSize() != 1 || list_craftresult->getSize() < 1)
+		return;
+	list_craftresult->addItem(list_craftpreview->getItem(0));
 }
 
 
@@ -963,4 +972,3 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 
 	return found;
 }
-
