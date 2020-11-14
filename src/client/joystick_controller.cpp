@@ -48,7 +48,7 @@ JoystickLayout create_default_layout()
 {
 	JoystickLayout jlo;
 
-	jlo.axes_dead_border = 1024;
+	jlo.axes_dead_border = g_settings->getU16("joystick_deadzone");
 
 	const JoystickAxisLayout axes[JA_COUNT] = {
 		{0, 1}, // JA_SIDEWARD_MOVE

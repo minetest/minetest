@@ -279,6 +279,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("joystick_type", "");
 	settings->setDefault("repeat_joystick_button_time", "0.17");
 	settings->setDefault("joystick_frustum_sensitivity", "170");
+	settings->setDefault("joystick_deadzone", "2048");
 
 	// Main menu
 	settings->setDefault("main_menu_path", "");

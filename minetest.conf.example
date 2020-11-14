@@ -129,6 +129,9 @@
 #    type: float min: 0.001
 # repeat_joystick_button_time = 0.17
 
+#    The deadzone of the joystick
+# joystick_deadzone = 2048
+
 #    The sensitivity of the joystick axes for moving the
 #    ingame view frustum around.
 #    type: float
