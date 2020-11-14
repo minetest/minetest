@@ -96,7 +96,7 @@ struct JoystickLayout {
 	std::vector<JoystickButtonCmb> button_keys;
 	std::vector<JoystickAxisCmb> axis_keys;
 	JoystickAxisLayout axes[JA_COUNT];
-	s16 axes_dead_border;
+	s16 axes_deadzone;
 };
 
 class JoystickController {

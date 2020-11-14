@@ -48,7 +48,7 @@ JoystickLayout create_default_layout()
 {
 	JoystickLayout jlo;
 
-	jlo.axes_dead_border = g_settings->getU16("joystick_deadzone");
+	jlo.axes_deadzone = g_settings->getU16("joystick_deadzone");
 
 	const JoystickAxisLayout axes[JA_COUNT] = {
 		{0, 1}, // JA_SIDEWARD_MOVE
@@ -93,14 +93,14 @@ JoystickLayout create_default_layout()
 	// Now about the buttons simulated by the axes
 
 	// Movement buttons, important for vessels
-	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_dead_border);
-	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_dead_border);
-	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_dead_border);
-	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_deadzone);
 
 	// Scroll buttons
-	JLO_A_PB(KeyType::HOTBAR_PREV, 2, -1, jlo.axes_dead_border);
-	JLO_A_PB(KeyType::HOTBAR_NEXT, 5, -1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::HOTBAR_PREV, 2, -1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::HOTBAR_NEXT, 5, -1, jlo.axes_deadzone);
 
 	return jlo;
 }
@@ -109,7 +109,7 @@ JoystickLayout create_xbox_layout()
 {
 	JoystickLayout jlo;
 
-	jlo.axes_dead_border = 7000;
+	jlo.axes_deadzone = 7000;
 
 	const JoystickAxisLayout axes[JA_COUNT] = {
 		{0, 1}, // JA_SIDEWARD_MOVE
@@ -146,10 +146,10 @@ JoystickLayout create_xbox_layout()
 	JLO_B_PB(KeyType::FREEMOVE,    1 << 16, 1 << 16); // down
 
 	// Movement buttons, important for vessels
-	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_dead_border);
-	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_dead_border);
-	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_dead_border);
-	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_dead_border);
+	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_deadzone);
 
 	return jlo;
 }
@@ -254,7 +254,7 @@ void JoystickController::clear()
 s16 JoystickController::getAxisWithoutDead(JoystickAxis axis)
 {
 	s16 v = m_axes_vals[axis];
-	if (abs(v) < m_layout.axes_dead_border)
+	if (abs(v) < m_layout.axes_deadzone)
 		return 0;
 	return v;
 }
