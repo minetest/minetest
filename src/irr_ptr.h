@@ -38,16 +38,6 @@ class irr_ptr
 {
 	ReferenceCounted *value = nullptr;
 
-	/** Drops stored pointer replacing it with the given one.
-	 * @note Copy semantics: reference counter *is* increased.
-	 */
-	void grab(ReferenceCounted *object)
-	{
-		if (object)
-			object->grab();
-		reset(object);
-	}
-
 public:
 	irr_ptr() {}
 
@@ -134,4 +124,50 @@ public:
 			value->drop();
 		value = object;
 	}
+
+	/** Drops stored pointer replacing it with the given one.
+	 * @note Copy semantics: reference counter *is* increased.
+	 */
+	void grab(ReferenceCounted *object) noexcept
+	{
+		if (object)
+			object->grab();
+		reset(object);
+	}
 };
+
+template <typename ReferenceCounted>
+bool operator==(const irr_ptr<ReferenceCounted> &a, const irr_ptr<ReferenceCounted> &b)
+{
+	return a.get() == b.get();
+}
+
+template <typename ReferenceCounted>
+bool operator==(const irr_ptr<ReferenceCounted> &a, const ReferenceCounted *b)
+{
+	return a.get() == b;
+}
+
+template <typename ReferenceCounted>
+bool operator==(const ReferenceCounted *a, const irr_ptr<ReferenceCounted> &b)
+{
+	return a == b.get();
+}
+
+template <typename ReferenceCounted>
+bool operator!=(const irr_ptr<ReferenceCounted> &a, const irr_ptr<ReferenceCounted> &b)
+{
+	return a.get() != b.get();
+}
+
+template <typename ReferenceCounted>
+bool operator!=(const irr_ptr<ReferenceCounted> &a, const ReferenceCounted *b)
+{
+	return a.get() != b;
+}
+
+template <typename ReferenceCounted>
+bool operator!=(const ReferenceCounted *a, const irr_ptr<ReferenceCounted> &b)
+{
+	return a != b.get();
+}
