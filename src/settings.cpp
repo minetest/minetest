@@ -985,28 +985,39 @@ void Settings::setDefault(const std::string &name, const FlagDesc *flagdesc,
 	setDefault(name, writeFlagString(flags, flagdesc, U32_MAX));
 }
 
+void Settings::overrideDefault(const std::string &key, const SettingsEntry &entry)
+{
+	if (entry.is_group) {
+		setGroupDefault(key, *entry.group);
+		return;
+	}
+	const FlagDesc *flagdesc = getFlagDescFallback(key);
+	if (flagdesc) {
+		// Only override explicit flags
+		u32 myflags = std::isdigit(m_defaults[key].value[0])
+			? stoi(m_defaults[key].value)
+			: readFlagString(m_defaults[key].value, flagdesc, nullptr);
+
+		u32 mask = U32_MAX; // If digit, override all flags
+		u32 otherflags = std::isdigit(entry.value[0])
+			? stoi(entry.value)
+			: readFlagString(entry.value, flagdesc, &mask);
+
+		setDefault(key, flagdesc,
+				(myflags & ~mask) | (otherflags & mask));
+		return;
+	}
+	// Also covers FlagDesc settings
+	setDefault(key, entry.value);
+}
+
 void Settings::overrideDefaults(Settings *other)
 {
-	for (const auto &setting : other->m_settings) {
-		if (setting.second.is_group) {
-			setGroupDefault(setting.first, *setting.second.group);
-			continue;
-		}
-		const FlagDesc *flagdesc = getFlagDescFallback(setting.first);
-		if (flagdesc) {
-			// Flags cannot be copied directly.
-			// 1) Get the current set flags
-			u32 flags = getFlagStr(setting.first, flagdesc, nullptr);
-			// 2) Set the flags as defaults
-			other->setDefault(setting.first, flagdesc, flags);
-			// 3) Get the newly set flags and override the default setting value
-			setDefault(setting.first, flagdesc,
-				other->getFlagStr(setting.first, flagdesc, nullptr));
-			continue;
-		}
-		// Also covers FlagDesc settings
-		setDefault(setting.first, setting.second.value);
-	}
+	for (const auto &setting : other->m_defaults)
+		overrideDefault(setting.first, setting.second);
+
+	for (const auto &setting : other->m_settings)
+		overrideDefault(setting.first, setting.second);
 }
 
 const FlagDesc *Settings::getFlagDescFallback(const std::string &name) const

@@ -232,6 +232,12 @@ private:
 	const SettingsEntry &getEntry(const std::string &name) const;
 	const SettingsEntry &getEntryDefault(const std::string &name) const;
 
+	/**************
+	 * Miscellany *
+	 **************/
+
+	void overrideDefault(const std::string &key, const SettingsEntry &entry);
+
 	// Allow TestSettings to run sanity checks using private functions.
 	friend class TestSettings;
 
