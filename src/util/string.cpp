@@ -834,7 +834,7 @@ void translate_all(const std::wstring &s, size_t &i,
 				// to something in the range [1000000, 2000000), with the same last 6 digits.
 				//
 				// https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
-				unsigned long int max = 1000000;
+				constexpr unsigned long int max = 1000000;
 
 				use_plural = true;
 				number = 0;
