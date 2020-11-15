@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-10-31 19:26+0000\n"
-"Last-Translator: Liet Kynes <sissi90@gmail.com>\n"
+"PO-Revision-Date: 2021-01-10 01:32+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -220,7 +220,7 @@ msgstr "Oppdater"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Vis"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -280,11 +280,11 @@ msgstr "Flatt terreng"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Flytende landmasser på himmelen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Flytlandene (eksperimentelt)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -304,15 +304,15 @@ msgstr "Fuktige elver"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Øker fuktigheten rundt elver"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Innsjøer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Lav fuktighet og høy varme fører til små eller tørre elver"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -320,7 +320,7 @@ msgstr "Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Mapgen-flagg"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -329,7 +329,7 @@ msgstr "Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Fjell"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -337,7 +337,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Nettverk av tuneller og huler"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -345,11 +345,11 @@ msgstr "Intet spill valgt"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Reduserer varme ettersom høyden øker"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Reduserer fuktighet ettersom høyden øker"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
@@ -357,7 +357,7 @@ msgstr "Elver"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Havnivåelver"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -396,7 +396,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Trær og jungelgress"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
@@ -466,7 +466,7 @@ msgstr "2D-støy"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Tilbake til instillinger"
+msgstr "< Tilbake til innstillinger"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -721,7 +721,7 @@ msgstr "Vertstjener"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Installer spill fra ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1379,12 +1379,13 @@ msgid "Sound muted"
 msgstr "Lyd av"
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Lydsystem avskrudd"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Lydsystem støttes ikke på dette bygget"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -1440,12 +1441,12 @@ msgstr ""
 
 #: src/client/gameui.cpp
 msgid "Profiler hidden"
-msgstr ""
+msgstr "Profiler skjult"
 
 #: src/client/gameui.cpp
 #, c-format
 msgid "Profiler shown (page %d of %d)"
-msgstr ""
+msgstr "Profiler vises (side %d av %d)"
 
 #: src/client/keycode.cpp
 msgid "Apps"
@@ -2027,7 +2028,7 @@ msgstr "3D-modus"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode parallax strength"
-msgstr ""
+msgstr "Parallaksestyrke i 3D-modus"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2245,7 +2246,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr "Spør om å koble til igjen etter kræsj"
+msgstr "Spør om å koble til igjen etter krasj"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2680,7 +2681,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr "Kræsjmelding"
+msgstr "Krasjmelding"
 
 #: src/settings_translation_file.cpp
 msgid "Creative"
