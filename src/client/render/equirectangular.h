@@ -28,15 +28,16 @@ protected:
 	core::dimension2du image_size;
 	core::dimension2du output_size;
 	core::dimension2du cubemap_size;
+	core::dimension2du cubeatlas_size;
+	video::ITexture *cubeAtlas;
 	video::ITexture *renderOutput;
+	video::SMaterial mat;
 	bool saveAsImage;
 
 	void initTextures() override;
 	void clearTextures() override;
 
 	void drawAll() override;
-
-	void processImages();
 
 public:
 	RenderingCoreEquirectangular(IrrlichtDevice *_device, Client *_client, Hud *_hud);

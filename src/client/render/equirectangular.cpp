@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/camera.h"
 #include "client/hud.h"
+#include "client/shader.h"
 #include "filesys.h"
 #include "porting.h"
 #include "settings.h"
@@ -38,11 +39,28 @@ RenderingCoreEquirectangular::RenderingCoreEquirectangular(
 			g_settings->getU32("360video_size") : screensize.Y;
 	output_size = {sz * 2, sz};
 	cubemap_size = {sz / 2, sz / 2};
+	cubeatlas_size = {sz * 3 / 2, sz};
+
+	IWritableShaderSource *s = client->getShaderSource();
+	mat.UseMipMaps = false;
+	mat.ZBuffer = false;
+	mat.ZWriteEnable = false;
+	u32 shader = s->getShader("equirectangular_merge", TILE_MATERIAL_BASIC, 0);
+	mat.MaterialType = s->getShaderInfo(shader).material;
+	mat.TextureLayer[0].AnisotropicFilter = false;
+	mat.TextureLayer[0].BilinearFilter = false;
+	mat.TextureLayer[0].TrilinearFilter = false;
+	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 }
 
 void RenderingCoreEquirectangular::initTextures()
 {
 	RenderingCoreCubeMap::initTextures(cubemap_size);
+
+	cubeAtlas = driver->addRenderTargetTexture(
+			cubeatlas_size, "3d_render_cubeatlas", video::ECF_A8R8G8B8);
+	mat.TextureLayer[0].Texture = cubeAtlas;
 
 	renderOutput = driver->addRenderTargetTexture(
 			output_size, "3d_render_eq", video::ECF_A8R8G8B8);
@@ -52,79 +70,8 @@ void RenderingCoreEquirectangular::clearTextures()
 {
 	RenderingCoreCubeMap::clearTextures();
 
+	driver->removeTexture(cubeAtlas);
 	driver->removeTexture(renderOutput);
-}
-
-void RenderingCoreEquirectangular::processImages()
-{
-	u32 *pixel = (u32 *) renderOutput->lock();
-	u32 *pixelf[6];
-
-	for (int i = 0; i < 6; i ++)
-		pixelf[i] = (u32 *) faces[i]->lock();
-
-	u32 dims = output_size.Width / 4;
-	for (u32 j = 0; j < dims * 2; j ++) {
-		double v = 1.0 - (double) j / (dims * 2);
-		double phi = v * core::PI;
-
-		for (u32 i = 0; i < dims * 4; i ++) {
-			double u = (double) i / (dims * 4);
-			double theta = u * 2 * core::PI;
-
-			double x = sin(theta) * sin(phi);
-			double y = cos(phi);
-			double z = cos(theta) * sin(phi);
-
-			double a = fmax(fmax(fabs(x), fabs(y)), fabs(z));
-
-			u32 xPixel = dims;
-			u32 yPixel = 0;
-			u32 yTemp = dims;
-			int selected_face = -1;
-
-			if (a == x) { // X-
-				selected_face = 1;
-				xPixel *= ((-1 * tan(atan(z / x)) + 1.0) / 2.0);
-				yTemp *= ((tan(atan(y / x)) + 1.0) / 2.0);
-			} else if (a == -x) { // X+
-				selected_face = 0;
-				xPixel *= ((-1 * tan(atan(z / x)) + 1.0) / 2.0);
-				yTemp *= ((-1 * tan(atan(y / x)) + 1.0) / 2.0);
-			} else if (a == y) { // Y+
-				selected_face = 2;
-				xPixel *= ((tan(atan(x / y)) + 1.0) / 2.0);
-				yTemp *= ((-1 * tan(atan(z / y)) + 1.0) / 2.0);
-			} else if (a == -y) { // Y-
-				selected_face = 3;
-				xPixel *= ((-1 * tan(atan(x / y)) + 1.0) / 2.0);
-				yTemp *= ((-1 * tan(atan(z / y)) + 1.0) / 2.0);
-			} else if (a == z) { // Z-
-				selected_face = 5;
-				xPixel *= ((tan(atan(x / z)) + 1.0) / 2.0);
-				yTemp *= ((tan(atan(y / z)) + 1.0) / 2.0);
-			} else if (a == -z) { // Z+
-				selected_face = 4;
-				xPixel *= ((tan(atan(x / z)) + 1.0) / 2.0);
-				yTemp *= ((-1 * tan(atan(y / z)) + 1.0) / 2.0);
-			}
-
-			xPixel = fmin(xPixel, dims - 1);
-			yPixel = fmin(yTemp, dims - 1);
-			yPixel = dims - 1 - yPixel;
-
-			if (selected_face == 2 || selected_face == 3) {
-				pixel[j * dims * 4 + i] = pixelf[selected_face][(xPixel + 1) * dims - 1 - yPixel];
-			} else {
-				pixel[j * dims * 4 + i] = pixelf[selected_face][yPixel * dims + xPixel];
-			}
-		}
-	}
-
-	for (int i = 0; i < 6; i ++)
-		faces[i]->unlock();
-
-	renderOutput->unlock();
 }
 
 void RenderingCoreEquirectangular::drawAll()
@@ -143,7 +90,25 @@ void RenderingCoreEquirectangular::drawAll()
 	}
 	camera->m_enable_draw_wielded_tool = true;
 
-	processImages();
+	driver->setRenderTarget(cubeAtlas, false, false, skycolor);
+	for (int i = 0; i < 6; i ++)
+		driver->draw2DImage(faces[i], v2s32(
+				(i % 3) * cubemap_size.Width, (i / 3) * cubemap_size.Height));
+
+	driver->setRenderTarget(renderOutput, false, false, skycolor);
+	static const video::S3DVertex vertices[4] = {
+		video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
+				video::SColor(255, 0, 255, 255), 1.0, 0.0),
+		video::S3DVertex(-1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
+				video::SColor(255, 255, 0, 255), 0.0, 0.0),
+		video::S3DVertex(-1.0, 1.0, 0.0, 0.0, 0.0, -1.0,
+				video::SColor(255, 255, 255, 0), 0.0, 1.0),
+		video::S3DVertex(1.0, 1.0, 0.0, 0.0, 0.0, -1.0,
+				video::SColor(255, 255, 255, 255), 1.0, 1.0),
+	};
+	static const u16 indices[6] = {0, 1, 2, 2, 3, 0};
+	driver->setMaterial(mat);
+	driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
 
 	if (saveAsImage) {
 		video::IImage *const raw_image = driver->createImageFromData(
@@ -175,7 +140,7 @@ void RenderingCoreEquirectangular::drawAll()
 			filename = filename_base + (serial > 0 ? ("_" + itos(serial)) : "") + filename_ext;
 			std::ifstream tmp(filename.c_str());
 			if (!tmp.good())
-				break; // File did not apparently exist, we'll go with it.
+				break; // File did not apparently exist, so we'll go with it.
 			serial ++;
 		}
 

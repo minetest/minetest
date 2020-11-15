@@ -748,7 +748,7 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03
 #    -    crossview: Cross-eyed 3d
 #    -    pageflip: quadbuffer based 3d.
 #    -    equirectangular: equirectangular projection for 360 degree output
-#    Note that the interlaced mode requires shaders to be enabled.
+#    Note that the interlaced and equirectangular mode requires shaders to be enabled.
 #    Equirectangular mode will force screen's width to be double of screen's height.
 #    Setting to equirectangular mode requires restart.
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,crossview,pageflip,equirectangular
