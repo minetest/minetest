@@ -26,10 +26,3 @@ class Settings;
  * @param settings pointer to settings
  */
 void set_default_settings(Settings *settings);
-
-/**
- * override a default settings by settings from another settings element
- * @param settings target settings pointer
- * @param from source settings pointer
- */
-void override_default_settings(Settings *settings, Settings *from);
