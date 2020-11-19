@@ -106,7 +106,11 @@ void GUIInventoryList::draw()
 			&& selected_item->i == item_i;
 		core::rect<s32> clipped_rect(rect);
 		clipped_rect.clipAgainst(AbsoluteClippingRect);
+#ifdef __ANDROID__
+		bool hovering = false;
+#else
 		bool hovering = m_hovered_i == item_i;
+#endif
 		ItemRotationKind rotation_kind = selected ? IT_ROT_SELECTED :
 			(hovering ? IT_ROT_HOVERED : IT_ROT_NONE);
 
