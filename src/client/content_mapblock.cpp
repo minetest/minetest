@@ -17,16 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <cmath>
 #include "content_mapblock.h"
-#include "util/numeric.h"
 #include "util/directiontables.h"
-#include "mapblock_mesh.h"
 #include "settings.h"
-#include "nodedef.h"
-#include "client/tile.h"
 #include "mesh.h"
-#include <IMeshManipulator.h>
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
 #include "client.h"

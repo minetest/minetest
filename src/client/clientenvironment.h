@@ -22,13 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include <ISceneManager.h>
 #include "clientobject.h"
-#include "util/numeric.h"
 #include "activeobjectmgr.h"
+#include "scripting_client.h"
 
 class ClientSimpleObject;
 class ClientMap;
-class ClientScripting;
-class ClientActiveObject;
 class GenericCAO;
 class LocalPlayer;
 

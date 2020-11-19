@@ -18,39 +18,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "content_cao.h"
-#include <IBillboardSceneNode.h>
-#include <ICameraSceneNode.h>
-#include <ITextSceneNode.h>
-#include <IMeshManipulator.h>
-#include <IAnimatedMeshSceneNode.h>
 #include "client/client.h"
 #include "client/renderingengine.h"
-#include "client/sound.h"
-#include "client/tile.h"
-#include "util/basic_macros.h"
-#include "util/numeric.h" // For IntervalLimiter & setPitchYawRoll
-#include "util/serialize.h"
-#include "camera.h" // CameraModes
 #include "collision.h"
 #include "content_cso.h"
-#include "environment.h"
-#include "itemdef.h"
-#include "localplayer.h"
 #include "map.h"
 #include "mesh.h"
-#include "nodedef.h"
-#include "serialization.h" // For decompressZlib
 #include "settings.h"
 #include "sound.h"
 #include "tool.h"
 #include "wieldmesh.h"
-#include <algorithm>
-#include <cmath>
 #include "client/shader.h"
 #include "client/minimap.h"
-
-class Settings;
-struct ToolCapabilities;
 
 std::unordered_map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
@@ -307,8 +286,6 @@ void TestCAO::processMessage(const std::string &data)
 /*
 	GenericCAO
 */
-
-#include "clientobject.h"
 
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
 		ClientActiveObject(0, client, env)

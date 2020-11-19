@@ -19,16 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <map>
-#include "irrlichttypes_extrabloated.h"
 #include "clientobject.h"
 #include "object_properties.h"
-#include "itemgroup.h"
 #include "constants.h"
+#include "client.h"
 #include <cassert>
 
-class Camera;
-class Client;
 struct Nametag;
 struct MinimapMarker;
 

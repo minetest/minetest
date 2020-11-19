@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class InputHandler;
 class ChatBackend;  /* to avoid having to include chat.h */
-struct SubgameSpec;
 struct GameStartData;
 
 struct Jitter {

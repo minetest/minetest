@@ -23,10 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <gettext.h>
 #include "gui/mainmenumanager.h"
 #include "gui/guiChatConsole.h"
-#include "util/pointedthing.h"
 #include "client.h"
 #include "clientmap.h"
-#include "fontengine.h"
 #include "nodedef.h"
 #include "profiler.h"
 #include "renderingengine.h"

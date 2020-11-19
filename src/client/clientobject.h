@@ -21,16 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "activeobject.h"
+#include "itemstackmetadata.h"
 #include <unordered_map>
 #include <unordered_set>
-
 
 class ClientEnvironment;
 class ITextureSource;
 class Client;
-class IGameDef;
-class LocalPlayer;
-struct ItemStack;
 class WieldMeshSceneNode;
 
 class ClientActiveObject : public ActiveObject

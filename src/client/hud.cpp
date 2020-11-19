@@ -20,17 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client/hud.h"
-#include <cmath>
-#include "settings.h"
-#include "util/numeric.h"
-#include "log.h"
 #include "client.h"
-#include "inventory.h"
 #include "shader.h"
-#include "client/tile.h"
-#include "localplayer.h"
-#include "camera.h"
-#include "porting.h"
 #include "fontengine.h"
 #include "guiscalingfilter.h"
 #include "mesh.h"

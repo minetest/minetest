@@ -20,31 +20,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "clientenvironment.h"
-#include "irrlichttypes_extrabloated.h"
-#include <ostream>
-#include <map>
-#include <set>
-#include <vector>
-#include <unordered_set>
-#include "clientobject.h"
 #include "gamedef.h"
 #include "inventorymanager.h"
-#include "localplayer.h"
 #include "client/hud.h"
 #include "particles.h"
-#include "mapnode.h"
-#include "tileanimation.h"
 #include "mesh_generator_thread.h"
 #include "network/address.h"
 #include "network/peerhandler.h"
-#include <fstream>
+#include "chatmessage.h"
+#include "camera.h"
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
 struct ClientEvent;
-struct MeshMakeData;
-struct ChatMessage;
-class MapBlockMesh;
 class IWritableTextureSource;
 class IWritableShaderSource;
 class IWritableItemDefManager;
@@ -58,8 +46,6 @@ class MtEventManager;
 struct PointedThing;
 class MapDatabase;
 class Minimap;
-struct MinimapMapblock;
-class Camera;
 class NetworkPacket;
 namespace con {
 class Connection;

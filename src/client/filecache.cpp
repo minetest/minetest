@@ -19,14 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "filecache.h"
-
-#include "network/networkprotocol.h"
 #include "log.h"
 #include "filesys.h"
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <cstdlib>
 
 bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 {

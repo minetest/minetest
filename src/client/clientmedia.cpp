@@ -20,15 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmedia.h"
 #include "httpfetch.h"
 #include "client.h"
-#include "filecache.h"
 #include "filesys.h"
-#include "log.h"
-#include "porting.h"
 #include "settings.h"
 #include "util/hex.h"
-#include "util/serialize.h"
 #include "util/sha1.h"
-#include "util/string.h"
 
 static std::string getMediaCacheDir()
 {

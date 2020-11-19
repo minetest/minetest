@@ -19,11 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <map>
-#include <vector>
 #include "util/basic_macros.h"
-#include <IGUIFont.h>
-#include <IGUISkin.h>
 #include <IGUIEnvironment.h>
 #include "settings.h"
 

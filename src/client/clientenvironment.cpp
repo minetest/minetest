@@ -17,25 +17,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "util/serialize.h"
-#include "util/pointedthing.h"
 #include "client.h"
 #include "clientenvironment.h"
 #include "clientsimpleobject.h"
 #include "clientmap.h"
-#include "scripting_client.h"
 #include "mapblock_mesh.h"
 #include "mtevent.h"
 #include "collision.h"
 #include "nodedef.h"
 #include "profiler.h"
 #include "raycast.h"
-#include "voxelalgorithms.h"
 #include "settings.h"
 #include "shader.h"
 #include "content_cao.h"
 #include <algorithm>
-#include "client/renderingengine.h"
 
 /*
 	CAOShaderConstantSetter
@@ -336,13 +331,6 @@ GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
 		return (GenericCAO*) obj;
 
 	return NULL;
-}
-
-bool isFreeClientActiveObjectId(const u16 id,
-	ClientActiveObjectMap &objects)
-{
-	return id != 0 && objects.find(id) == objects.end();
-
 }
 
 u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)

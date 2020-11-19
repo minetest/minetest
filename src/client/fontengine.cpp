@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "fontengine.h"
-#include <cmath>
 #include "client/renderingengine.h"
 #include "config.h"
 #include "porting.h"

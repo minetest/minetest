@@ -18,12 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "joystick_controller.h"
-#include "irrlichttypes_extrabloated.h"
-#include "keys.h"
 #include "settings.h"
-#include "gettime.h"
 #include "porting.h"
-#include "util/string.h"
 
 bool JoystickButtonCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 {
@@ -44,7 +40,7 @@ bool JoystickAxisCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 #define JLO_B_PB(A, B, C)    jlo.button_keys.emplace_back(A, B, C)
 #define JLO_A_PB(A, B, C, D) jlo.axis_keys.emplace_back(A, B, C, D)
 
-JoystickLayout create_default_layout()
+static JoystickLayout create_default_layout()
 {
 	JoystickLayout jlo;
 

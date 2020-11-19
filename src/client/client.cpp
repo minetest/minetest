@@ -58,7 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "translation.h"
 
-extern gui::IGUIEnvironment* guienv;
+extern gui::IGUIEnvironment *guienv;
 
 /*
 	Utility classes
@@ -926,7 +926,7 @@ void Client::Send(NetworkPacket* pkt)
 }
 
 // Will fill up 12 + 12 + 4 + 4 + 4 bytes
-void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
+static void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
 {
 	v3f pf           = myplayer->getPosition() * 100;
 	v3f sf           = myplayer->getSpeed() * 100;
@@ -1688,7 +1688,7 @@ typedef struct TextureUpdateArgs {
 	ITextureSource *tsrc;
 } TextureUpdateArgs;
 
-void texture_update_progress(void *args, u32 progress, u32 max_progress)
+static void texture_update_progress(void *args, u32 progress, u32 max_progress)
 {
 		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
 		u16 cur_percent = ceil(progress / (double) max_progress * 100.);

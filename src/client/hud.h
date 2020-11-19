@@ -21,8 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <vector>
-#include <IGUIFont.h>
-#include "irr_aabb3d.h"
 #include "../hud.h"
 
 class Client;

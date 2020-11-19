@@ -20,10 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <string>
-#include "irrlichttypes_bloated.h"
 
 struct ParticleParameters;
-struct ParticleSpawnerParameters;
 struct SkyboxParams;
 struct SunParams;
 struct MoonParams;

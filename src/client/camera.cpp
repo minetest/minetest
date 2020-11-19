@@ -18,22 +18,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "camera.h"
-#include "debug.h"
 #include "client.h"
-#include "config.h"
-#include "map.h"
 #include "clientmap.h"     // MapDrawControl
-#include "player.h"
 #include <cmath>
 #include "client/renderingengine.h"
-#include "settings.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
 #include "sound.h"
 #include "mtevent.h"
 #include "nodedef.h"
-#include "util/numeric.h"
-#include "constants.h"
 #include "fontengine.h"
 #include "script/scripting_client.h"
 
@@ -154,7 +147,7 @@ bool Camera::successfullyCreated(std::string &error_message)
 }
 
 // Returns the fractional part of x
-inline f32 my_modf(f32 x)
+static inline f32 my_modf(f32 x)
 {
 	double dummy;
 	return modf(x, &dummy);

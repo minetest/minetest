@@ -20,20 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 
 #include <algorithm>
-#include <ICameraSceneNode.h>
-#include <IrrCompileConfig.h>
-#include "util/string.h"
-#include "util/container.h"
 #include "util/thread.h"
 #include "filesys.h"
 #include "settings.h"
-#include "mesh.h"
-#include "gamedef.h"
 #include "util/strfnd.h"
 #include "imagefilters.h"
 #include "guiscalingfilter.h"
 #include "renderingengine.h"
-
 
 #if ENABLE_GLES
 #ifdef _IRR_COMPILE_WITH_OGLES1_

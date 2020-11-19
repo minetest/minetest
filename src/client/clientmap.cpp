@@ -23,11 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMaterialRenderer.h>
 #include <matrix4.h>
 #include "mapsector.h"
-#include "mapblock.h"
 #include "profiler.h"
-#include "settings.h"
-#include "camera.h"               // CameraModes
-#include "util/basic_macros.h"
 #include <algorithm>
 #include "client/renderingengine.h"
 
