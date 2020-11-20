@@ -24,6 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*             not being a script/modapi file!!!!!!!!                         */
 /******************************************************************************/
 /******************************************************************************/
+
+// Notice: All functions in this file that have been superseded by LuaHelper
+// functions (e.g. readParam, pushParam, etc.) are now deprecated.
+
 #pragma once
 
 #include <vector>

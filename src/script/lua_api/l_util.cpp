@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "util/sha1.h"
 #include <algorithm>
+#include <cmath>
 
 
 // log([level,] text)
@@ -244,7 +245,7 @@ int ModApiUtil::l_is_nan(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	lua_pushboolean(L, isNaN(L, 1));
+	lua_pushboolean(L, std::isnan(lua_tonumber(L, 1)));
 	return 1;
 }
 
