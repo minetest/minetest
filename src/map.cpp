@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "map.h"
-#include "mapsector.h"
 #include "mapblock.h"
 #include "filesys.h"
 #include "voxel.h"
@@ -71,10 +70,10 @@ Map::Map(IGameDef *gamedef):
 Map::~Map()
 {
 	/*
-		Free all MapSectors
+		Free all MapBlocks
 	*/
-	for (auto &sector : m_sectors) {
-		delete sector.second;
+	for (const auto &it : m_blocks) {
+		delete it.second;
 	}
 }
 
@@ -95,40 +94,12 @@ void Map::dispatchEvent(const MapEditEvent &event)
 	}
 }
 
-MapSector * Map::getSectorNoGenerateNoLock(v2s16 p)
-{
-	if(m_sector_cache != NULL && p == m_sector_cache_p){
-		MapSector * sector = m_sector_cache;
-		return sector;
-	}
-
-	std::map<v2s16, MapSector*>::iterator n = m_sectors.find(p);
-
-	if (n == m_sectors.end())
-		return NULL;
-
-	MapSector *sector = n->second;
-
-	// Cache the last result
-	m_sector_cache_p = p;
-	m_sector_cache = sector;
-
-	return sector;
-}
-
-MapSector * Map::getSectorNoGenerate(v2s16 p)
-{
-	return getSectorNoGenerateNoLock(p);
-}
-
 MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
 {
-	v2s16 p2d(p3d.X, p3d.Z);
-	MapSector * sector = getSectorNoGenerate(p2d);
-	if(sector == NULL)
+	auto it = m_blocks.find(p3d);
+	if (it == m_blocks.end())
 		return NULL;
-	MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
-	return block;
+	return it->second;
 }
 
 MapBlock * Map::getBlockNoCreate(v3s16 p3d)
@@ -137,6 +108,26 @@ MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 	if(block == NULL)
 		throw InvalidPositionException();
 	return block;
+}
+
+MapBlock * Map::createBlankBlockNoInsert(v3s16 p3d)
+{
+	return new MapBlock(this, p3d, m_gamedef);
+}
+
+MapBlock * Map::createBlankBlock(v3s16 p3d)
+{
+	MapBlock *block = createBlankBlockNoInsert(p3d);
+
+	m_blocks[p3d] = block;
+
+	return block;
+}
+
+void Map::insertBlock(MapBlock *block)
+{
+	// Insert into container
+	m_blocks[block->getPos()] = block;
 }
 
 bool Map::isNodeUnderground(v3s16 p)
@@ -304,11 +295,9 @@ bool Map::removeNodeWithEvent(v3s16 p)
 }
 
 struct TimeOrderedMapBlock {
-	MapSector *sect;
 	MapBlock *block;
 
-	TimeOrderedMapBlock(MapSector *sect, MapBlock *block) :
-		sect(sect),
+	TimeOrderedMapBlock(MapBlock *block) :
 		block(block)
 	{}
 
@@ -329,7 +318,6 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 	// Profile modified reasons
 	Profiler modprofiler;
 
-	std::vector<v2s16> sector_deletion_queue;
 	u32 deleted_blocks_count = 0;
 	u32 saved_blocks_count = 0;
 	u32 block_count_all = 0;
@@ -338,59 +326,46 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 
 	// If there is no practical limit, we spare creation of mapblock_queue
 	if (max_loaded_blocks == U32_MAX) {
-		for (auto &sector_it : m_sectors) {
-			MapSector *sector = sector_it.second;
+		std::vector<MapBlock*> blocks_to_remove;
+		for (auto &it : m_blocks) {
+			MapBlock *block = it.second;
 
-			bool all_blocks_deleted = true;
+			block->incrementUsageTimer(dtime);
 
-			MapBlockVect blocks;
-			sector->getBlocks(blocks);
-
-			for (MapBlock *block : blocks) {
-				block->incrementUsageTimer(dtime);
-
-				if (block->refGet() == 0
-						&& block->getUsageTimer() > unload_timeout) {
-					v3s16 p = block->getPos();
-
-					// Save if modified
-					if (block->getModified() != MOD_STATE_CLEAN
-							&& save_before_unloading) {
-						modprofiler.add(block->getModifiedReasonString(), 1);
-						if (!saveBlock(block))
-							continue;
-						saved_blocks_count++;
+			if (block->refGet() == 0
+			    && block->getUsageTimer() > unload_timeout) {
+				v3s16 p = block->getPos();
+				// Save if modified
+				if (block->getModified() != MOD_STATE_CLEAN
+				    && save_before_unloading) {
+					modprofiler.add(block->getModifiedReasonString(), 1);
+					if (!saveBlock(block)) {
+						continue;
 					}
-
-					// Delete from memory
-					sector->deleteBlock(block);
-
-					if (unloaded_blocks)
-						unloaded_blocks->push_back(p);
-
-					deleted_blocks_count++;
-				} else {
-					all_blocks_deleted = false;
-					block_count_all++;
+					saved_blocks_count++;
 				}
-			}
+				blocks_to_remove.push_back(block);
 
-			if (all_blocks_deleted) {
-				sector_deletion_queue.push_back(sector_it.first);
+				if (unloaded_blocks)
+					unloaded_blocks->push_back(p);
+
+				deleted_blocks_count++;
+			} else {
+				block_count_all++;
 			}
+		}
+		for (const auto &block : blocks_to_remove) {
+			// Delete from memory
+			m_blocks.erase(block->getPos());
+			delete block;
 		}
 	} else {
 		std::priority_queue<TimeOrderedMapBlock> mapblock_queue;
-		for (auto &sector_it : m_sectors) {
-			MapSector *sector = sector_it.second;
+		for (auto &it : m_blocks) {
+			MapBlock *block = it.second;
 
-			MapBlockVect blocks;
-			sector->getBlocks(blocks);
-
-			for (MapBlock *block : blocks) {
-				block->incrementUsageTimer(dtime);
-				mapblock_queue.push(TimeOrderedMapBlock(sector, block));
-			}
+			block->incrementUsageTimer(dtime);
+			mapblock_queue.push(TimeOrderedMapBlock(block));
 		}
 		block_count_all = mapblock_queue.size();
 		// Delete old blocks, and blocks over the limit from the memory
@@ -415,7 +390,8 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			}
 
 			// Delete from memory
-			b.sect->deleteBlock(block);
+			m_blocks.erase(p);
+			delete block;
 
 			if (unloaded_blocks)
 				unloaded_blocks->push_back(p);
@@ -423,17 +399,8 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			deleted_blocks_count++;
 			block_count_all--;
 		}
-		// Delete empty sectors
-		for (auto &sector_it : m_sectors) {
-			if (sector_it.second->empty()) {
-				sector_deletion_queue.push_back(sector_it.first);
-			}
-		}
 	}
 	endSave();
-
-	// Finally delete the empty sectors
-	deleteSectors(sector_deletion_queue);
 
 	if(deleted_blocks_count != 0)
 	{
@@ -455,19 +422,6 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 void Map::unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks)
 {
 	timerUpdate(0.0, -1.0, 0, unloaded_blocks);
-}
-
-void Map::deleteSectors(std::vector<v2s16> &sectorList)
-{
-	for (v2s16 j : sectorList) {
-		MapSector *sector = m_sectors[j];
-		// If sector is in sector cache, remove it from there
-		if(m_sector_cache == sector)
-			m_sector_cache = NULL;
-		// Remove from map and delete
-		m_sectors.erase(j);
-		delete sector;
-	}
 }
 
 void Map::PrintInfo(std::ostream &out)
@@ -1367,24 +1321,18 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 		Create the whole area of this and the neighboring blocks
 	*/
 	for (s16 x = full_bpmin.X; x <= full_bpmax.X; x++)
-	for (s16 z = full_bpmin.Z; z <= full_bpmax.Z; z++) {
-		v2s16 sectorpos(x, z);
-		// Sector metadata is loaded from disk if not already loaded.
-		MapSector *sector = createSector(sectorpos);
-		FATAL_ERROR_IF(sector == NULL, "createSector() failed");
+	for (s16 z = full_bpmin.Z; z <= full_bpmax.Z; z++)
+	for (s16 y = full_bpmin.Y; y <= full_bpmax.Y; y++) {
+		v3s16 p(x, y, z);
 
-		for (s16 y = full_bpmin.Y; y <= full_bpmax.Y; y++) {
-			v3s16 p(x, y, z);
+		MapBlock *block = emergeBlock(p, false);
+		if (block == NULL) {
+			block = createBlock(p);
 
-			MapBlock *block = emergeBlock(p, false);
-			if (block == NULL) {
-				block = createBlock(p);
-
-				// Block gets sunlight if this is true.
-				// Refer to the map generator heuristics.
-				bool ug = m_emerge->isBlockUnderground(p);
-				block->setIsUnderground(ug);
-			}
+			// Block gets sunlight if this is true.
+			// Refer to the map generator heuristics.
+			bool ug = m_emerge->isBlockUnderground(p);
+			block->setIsUnderground(ug);
 		}
 	}
 
@@ -1478,157 +1426,9 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	}
 
 	/*
-		Save changed parts of map
 		NOTE: Will be saved later.
 	*/
-	//save(MOD_STATE_WRITE_AT_UNLOAD);
 }
-
-MapSector *ServerMap::createSector(v2s16 p2d)
-{
-	/*
-		Check if it exists already in memory
-	*/
-	MapSector *sector = getSectorNoGenerate(p2d);
-	if (sector)
-		return sector;
-
-	/*
-		Do not create over max mapgen limit
-	*/
-	const s16 max_limit_bp = MAX_MAP_GENERATION_LIMIT / MAP_BLOCKSIZE;
-	if (p2d.X < -max_limit_bp ||
-			p2d.X >  max_limit_bp ||
-			p2d.Y < -max_limit_bp ||
-			p2d.Y >  max_limit_bp)
-		throw InvalidPositionException("createSector(): pos. over max mapgen limit");
-
-	/*
-		Generate blank sector
-	*/
-
-	sector = new MapSector(this, p2d, m_gamedef);
-
-	// Sector position on map in nodes
-	//v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
-
-	/*
-		Insert to container
-	*/
-	m_sectors[p2d] = sector;
-
-	return sector;
-}
-
-#if 0
-/*
-	This is a quick-hand function for calling makeBlock().
-*/
-MapBlock * ServerMap::generateBlock(
-		v3s16 p,
-		std::map<v3s16, MapBlock*> &modified_blocks
-)
-{
-	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
-
-	TimeTaker timer("generateBlock");
-
-	//MapBlock *block = original_dummy;
-
-	v2s16 p2d(p.X, p.Z);
-	v2s16 p2d_nodes = p2d * MAP_BLOCKSIZE;
-
-	/*
-		Do not generate over-limit
-	*/
-	if(blockpos_over_limit(p))
-	{
-		infostream<<FUNCTION_NAME<<": Block position over limit"<<std::endl;
-		throw InvalidPositionException("generateBlock(): pos. over limit");
-	}
-
-	/*
-		Create block make data
-	*/
-	BlockMakeData data;
-	initBlockMake(&data, p);
-
-	/*
-		Generate block
-	*/
-	{
-		TimeTaker t("mapgen::make_block()");
-		mapgen->makeChunk(&data);
-		//mapgen::make_block(&data);
-
-		if(enable_mapgen_debug_info == false)
-			t.stop(true); // Hide output
-	}
-
-	/*
-		Blit data back on map, update lighting, add mobs and whatever this does
-	*/
-	finishBlockMake(&data, modified_blocks);
-
-	/*
-		Get central block
-	*/
-	MapBlock *block = getBlockNoCreateNoEx(p);
-
-#if 0
-	/*
-		Check result
-	*/
-	if(block)
-	{
-		bool erroneus_content = false;
-		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
-		{
-			v3s16 p(x0,y0,z0);
-			MapNode n = block->getNode(p);
-			if(n.getContent() == CONTENT_IGNORE)
-			{
-				infostream<<"CONTENT_IGNORE at "
-						<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-						<<std::endl;
-				erroneus_content = true;
-				assert(0);
-			}
-		}
-		if(erroneus_content)
-		{
-			assert(0);
-		}
-	}
-#endif
-
-#if 0
-	/*
-		Generate a completely empty block
-	*/
-	if(block)
-	{
-		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
-		{
-			for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-			{
-				MapNode n;
-				n.setContent(CONTENT_AIR);
-				block->setNode(v3s16(x0,y0,z0), n);
-			}
-		}
-	}
-#endif
-
-	if(enable_mapgen_debug_info == false)
-		timer.stop(true); // Hide output
-
-	return block;
-}
-#endif
 
 MapBlock * ServerMap::createBlock(v3s16 p)
 {
@@ -1638,35 +1438,18 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	if (blockpos_over_max_limit(p))
 		throw InvalidPositionException("createBlock(): pos. over max mapgen limit");
 
-	v2s16 p2d(p.X, p.Z);
-	s16 block_y = p.Y;
 	/*
-		This will create or load a sector if not found in memory.
-		If block exists on disk, it will be loaded.
-
-		NOTE: On old save formats, this will be slow, as it generates
-		      lighting on blocks for them.
-	*/
-	MapSector *sector;
-	try {
-		sector = createSector(p2d);
-	} catch (InvalidPositionException &e) {
-		infostream<<"createBlock: createSector() failed"<<std::endl;
-		throw e;
-	}
-
-	/*
-		Try to get a block from the sector
+		Try to get a block
 	*/
 
-	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
+	MapBlock *block = getBlockNoCreateNoEx(p);
 	if (block) {
 		if(block->isDummy())
 			block->unDummify();
 		return block;
 	}
 	// Create blank
-	block = sector->createBlankBlock(block_y);
+	block = createBlankBlock(p);
 
 	return block;
 }
@@ -1686,8 +1469,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 	}
 
 	if (create_blank) {
-		MapSector *sector = createSector(v2s16(p.X, p.Z));
-		MapBlock *block = sector->createBlankBlock(p.Y);
+		MapBlock *block = createBlankBlock(p);
 
 		return block;
 	}
@@ -1753,27 +1535,22 @@ void ServerMap::save(ModifiedState save_level)
 	// Don't do anything with sqlite unless something is really saved
 	bool save_started = false;
 
-	for (auto &sector_it : m_sectors) {
-		MapSector *sector = sector_it.second;
+	for (auto &it : m_blocks) {
+		MapBlock *block = it.second;
 
-		MapBlockVect blocks;
-		sector->getBlocks(blocks);
+		block_count_all++;
 
-		for (MapBlock *block : blocks) {
-			block_count_all++;
-
-			if(block->getModified() >= (u32)save_level) {
-				// Lazy beginSave()
-				if(!save_started) {
-					beginSave();
-					save_started = true;
-				}
-
-				modprofiler.add(block->getModifiedReasonString(), 1);
-
-				saveBlock(block);
-				block_count++;
+		if(block->getModified() >= (u32)save_level) {
+			// Lazy beginSave()
+			if(!save_started) {
+				beginSave();
+				save_started = true;
 			}
+
+			modprofiler.add(block->getModifiedReasonString(), 1);
+
+			saveBlock(block);
+			block_count++;
 		}
 	}
 
@@ -1807,16 +1584,11 @@ void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
 
 void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 {
-	for (auto &sector_it : m_sectors) {
-		MapSector *sector = sector_it.second;
+	for (auto &it : m_blocks) {
+		MapBlock *block = it.second;
 
-		MapBlockVect blocks;
-		sector->getBlocks(blocks);
-
-		for (MapBlock *block : blocks) {
-			v3s16 p = block->getPos();
-			dst.push_back(p);
-		}
+		v3s16 p = block->getPos();
+		dst.push_back(p);
 	}
 }
 
@@ -1893,7 +1665,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	return ret;
 }
 
-void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
+void ServerMap::loadBlock(std::string *blob, v3s16 p3d, bool save_after_load)
 {
 	try {
 		std::istringstream is(*blob, std::ios_base::binary);
@@ -1907,10 +1679,10 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 		MapBlock *block = NULL;
 		bool created_new = false;
-		block = sector->getBlockNoCreateNoEx(p3d.Y);
+		block = getBlockNoCreateNoEx(p3d);
 		if(block == NULL)
 		{
-			block = sector->createBlankBlockNoInsert(p3d.Y);
+			block = createBlankBlockNoInsert(p3d);
 			created_new = true;
 		}
 
@@ -1919,7 +1691,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 		// If it's a new block, insert it to the map
 		if (created_new) {
-			sector->insertBlock(block);
+			insertBlock(block);
 			ReflowScan scanner(this, m_emerge->ndef);
 			scanner.scan(block, &m_transforming_liquid);
 		}
@@ -1963,11 +1735,11 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	std::string ret;
 	dbase->loadBlock(blockpos, &ret);
 	if (!ret.empty()) {
-		loadBlock(&ret, blockpos, createSector(p2d), false);
+		loadBlock(&ret, blockpos, false);
 	} else if (dbase_ro) {
 		dbase_ro->loadBlock(blockpos, &ret);
 		if (!ret.empty()) {
-			loadBlock(&ret, blockpos, createSector(p2d), false);
+			loadBlock(&ret, blockpos, false);
 		}
 	} else {
 		return NULL;
@@ -1997,13 +1769,13 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 	if (!dbase->deleteBlock(blockpos))
 		return false;
 
-	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if (block) {
-		v2s16 p2d(blockpos.X, blockpos.Z);
-		MapSector *sector = getSectorNoGenerate(p2d);
-		if (!sector)
-			return false;
-		sector->deleteBlock(block);
+	// Remove from container
+	auto it = m_blocks.find(blockpos);
+
+	// Delete
+	if (it != m_blocks.end()) {
+		m_blocks.erase(it);
+		delete it->second;
 	}
 
 	return true;

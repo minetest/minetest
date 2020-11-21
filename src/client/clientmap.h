@@ -74,13 +74,6 @@ public:
 	}
 
 	/*
-		Forcefully get a sector from somewhere
-	*/
-	MapSector * emergeSector(v2s16 p);
-
-	//void deSerializeSector(v2s16 p2d, std::istream &is);
-
-	/*
 		ISceneNode methods
 	*/
 
@@ -127,8 +120,6 @@ private:
 	v3s16 m_camera_offset;
 
 	std::map<v3s16, MapBlock*> m_drawlist;
-
-	std::set<v2s16> m_last_drawn_sectors;
 
 	bool m_cache_trilinear_filter;
 	bool m_cache_bilinear_filter;

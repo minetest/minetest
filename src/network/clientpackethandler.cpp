@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientmedia.h"
 #include "log.h"
 #include "map.h"
-#include "mapsector.h"
+#include "mapblock.h"
 #include "client/minimap.h"
 #include "modchannels.h"
 #include "nodedef.h"
@@ -293,15 +293,10 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 	std::string datastring(pkt->getString(6), pkt->getSize() - 6);
 	std::istringstream istr(datastring, std::ios_base::binary);
 
-	MapSector *sector;
+	Map &map = m_env.getMap();
 	MapBlock *block;
 
-	v2s16 p2d(p.X, p.Z);
-	sector = m_env.getMap().emergeSector(p2d);
-
-	assert(sector->getPos() == p2d);
-
-	block = sector->getBlockNoCreateNoEx(p.Y);
+	block = map.getBlockNoCreateNoEx(p);
 	if (block) {
 		/*
 			Update an existing block
@@ -313,10 +308,10 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 		/*
 			Create a new block
 		*/
-		block = new MapBlock(&m_env.getMap(), p, this);
+		block = map.createBlankBlockNoInsert(p);
 		block->deSerialize(istr, m_server_ser_ver, false);
 		block->deSerializeNetworkSpecific(istr);
-		sector->insertBlock(block);
+		map.insertBlock(block);
 	}
 
 	if (m_localdb) {

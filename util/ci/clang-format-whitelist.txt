@@ -264,8 +264,6 @@ src/mapgen/treegen.h
 src/map.h
 src/mapnode.cpp
 src/mapnode.h
-src/mapsector.cpp
-src/mapsector.h
 src/map_settings_manager.cpp
 src/map_settings_manager.h
 src/mesh.cpp

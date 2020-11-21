@@ -154,7 +154,6 @@ LOCAL_SRC_FILES := \
 	../../../src/map_settings_manager.cpp           \
 	../../../src/mapblock.cpp                       \
 	../../../src/mapnode.cpp                        \
-	../../../src/mapsector.cpp                      \
 	../../../src/metadata.cpp                       \
 	../../../src/modchannels.cpp                    \
 	../../../src/nameidmapping.cpp                  \

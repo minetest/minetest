@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
 #include <matrix4.h>
-#include "mapsector.h"
 #include "mapblock.h"
 #include "profiler.h"
 #include "settings.h"
@@ -58,20 +57,6 @@ ClientMap::ClientMap(
 	m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
 	m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
 
-}
-
-MapSector * ClientMap::emergeSector(v2s16 p2d)
-{
-	// Check that it doesn't exist already
-	MapSector *sector = getSectorNoGenerate(p2d);
-
-	// Create it if it does not exist yet
-	if (!sector) {
-		sector = new MapSector(this, p2d, m_gamedef);
-		m_sectors[p2d] = sector;
-	}
-
-	return sector;
 }
 
 void ClientMap::OnRegisterSceneNode()
@@ -131,8 +116,6 @@ void ClientMap::updateDrawList()
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
 
-	// Number of blocks currently loaded by the client
-	u32 blocks_loaded = 0;
 	// Number of blocks with mesh in rendering range
 	u32 blocks_in_range_with_mesh = 0;
 	// Number of blocks occlusion culled
@@ -153,77 +136,54 @@ void ClientMap::updateDrawList()
 	//if (occlusion_culling_enabled && m_control.show_wireframe)
 	//    occlusion_culling_enabled = porting::getTimeS() & 1;
 
-	for (const auto &sector_it : m_sectors) {
-		MapSector *sector = sector_it.second;
-		v2s16 sp = sector->getPos();
-
-		blocks_loaded += sector->size();
-		if (!m_control.range_all) {
-			if (sp.X < p_blocks_min.X || sp.X > p_blocks_max.X ||
-					sp.Y < p_blocks_min.Z || sp.Y > p_blocks_max.Z)
-				continue;
-		}
-
-		MapBlockVect sectorblocks;
-		sector->getBlocks(sectorblocks);
-
+	for (auto &it : m_blocks) {
+		MapBlock *block = it.second;
 		/*
-			Loop through blocks in sector
+		  Compare block position to camera position, skip
+		  if not seen on display
 		*/
 
-		u32 sector_blocks_drawn = 0;
+		if (block->mesh) {
+			block->mesh->updateCameraOffset(m_camera_offset);
+		} else {
+			// Ignore if mesh doesn't exist
+			continue;
+		}
 
-		for (MapBlock *block : sectorblocks) {
-			/*
-				Compare block position to camera position, skip
-				if not seen on display
-			*/
+		float range = 100000 * BS;
+		if (!m_control.range_all)
+			range = m_control.wanted_range * BS;
 
-			if (block->mesh) {
-				block->mesh->updateCameraOffset(m_camera_offset);
-			} else {
-				// Ignore if mesh doesn't exist
-				continue;
-			}
+		float d = 0.0;
+		if (!isBlockInSight(block->getPos(), camera_position,
+				    camera_direction, camera_fov, range, &d))
+			continue;
 
-			float range = 100000 * BS;
-			if (!m_control.range_all)
-				range = m_control.wanted_range * BS;
+		blocks_in_range_with_mesh++;
 
-			float d = 0.0;
-			if (!isBlockInSight(block->getPos(), camera_position,
-					camera_direction, camera_fov, range, &d))
-				continue;
+		/*
+		  Occlusion culling
+		*/
+		if ((!m_control.range_all && d > m_control.wanted_range * BS) ||
+		    (occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes))) {
+			blocks_occlusion_culled++;
+			continue;
+		}
 
-			blocks_in_range_with_mesh++;
+		// This block is in range. Reset usage timer.
+		block->resetUsageTimer();
 
-			/*
-				Occlusion culling
-			*/
-			if ((!m_control.range_all && d > m_control.wanted_range * BS) ||
-					(occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes))) {
-				blocks_occlusion_culled++;
-				continue;
-			}
+		// Add to set
+		block->refGrab();
+		m_drawlist[block->getPos()] = block;
 
-			// This block is in range. Reset usage timer.
-			block->resetUsageTimer();
-
-			// Add to set
-			block->refGrab();
-			m_drawlist[block->getPos()] = block;
-
-			sector_blocks_drawn++;
-		} // foreach sectorblocks
-
-		if (sector_blocks_drawn != 0)
-			m_last_drawn_sectors.insert(sp);
 	}
+
 
 	g_profiler->avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
-	g_profiler->avg("MapBlocks loaded [#]", blocks_loaded);
+	g_profiler->avg("MapBlocks loaded [#]", m_blocks.size());
 }
 
 struct MeshBufList
@@ -279,12 +239,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		prefix = "renderMap(SOLID): ";
 	else
 		prefix = "renderMap(TRANSPARENT): ";
-
-	/*
-		This is called two times per frame, reset on the non-transparent one
-	*/
-	if (pass == scene::ESNRP_SOLID)
-		m_last_drawn_sectors.clear();
 
 	/*
 		Get animation parameters

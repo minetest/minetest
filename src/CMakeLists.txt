@@ -421,7 +421,6 @@ set(common_SRCS
 	map_settings_manager.cpp
 	mapblock.cpp
 	mapnode.cpp
-	mapsector.cpp
 	metadata.cpp
 	modchannels.cpp
 	nameidmapping.cpp
