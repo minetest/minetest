@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-11-24 11:29+0000\n"
-"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
+"Last-Translator: IFRFSX <1079092922@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -2013,9 +2013,8 @@ msgid "3D mode"
 msgstr "3D 模式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D mode parallax strength"
-msgstr "法线贴图强度"
+msgstr "3D模式视差强度"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
