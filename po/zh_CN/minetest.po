@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-11-21 04:52+0000\n"
-"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
+"PO-Revision-Date: 2020-11-21 04:55+0000\n"
+"Last-Translator: IFRFSX <1079092922@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -402,9 +402,8 @@ msgid "Very large caverns deep in the underground"
 msgstr "地下深处的巨大洞穴"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
-msgstr "警告: 最小化开发测试是为开发者提供的。"
+msgstr "警告：开发测试是为开发者提供的。"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -716,7 +715,7 @@ msgstr "建立服务器"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "从 ContentDB 安装游戏"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -1375,11 +1374,11 @@ msgstr "已静音"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "声音系统已禁用"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "此版本不支持声音系统"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
