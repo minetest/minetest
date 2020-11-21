@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-11-21 04:55+0000\n"
-"Last-Translator: IFRFSX <1079092922@qq.com>\n"
+"PO-Revision-Date: 2020-11-24 11:29+0000\n"
+"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -399,7 +399,7 @@ msgstr "变化河流深度"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr "地下深处的巨大洞穴"
+msgstr "地下深处的大型洞穴"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The Development Test is meant for developers."
@@ -1378,7 +1378,7 @@ msgstr "声音系统已禁用"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr "此版本不支持声音系统"
+msgstr "此编译版本不支持声音系统"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -2102,9 +2102,8 @@ msgid "ABM interval"
 msgstr "ABM间隔"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Absolute limit of queued blocks to emerge"
-msgstr "生产队列绝对限制"
+msgstr "待显示方块队列的绝对限制"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -2452,18 +2451,16 @@ msgstr ""
 "需要用于小屏幕。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat font size"
-msgstr "字体大小"
+msgstr "聊天字体大小"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "聊天键"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat log level"
-msgstr "调试日志级别"
+msgstr "聊天日志级别"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
@@ -2751,9 +2748,8 @@ msgid "Default report format"
 msgstr "默认报告格式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default stack size"
-msgstr "默认游戏"
+msgstr "默认栈大小"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3242,39 +3238,32 @@ msgid "Fixed virtual joystick"
 msgstr "固定虚拟摇杆"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland density"
-msgstr "水级别"
+msgstr "悬空岛密度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland maximum Y"
-msgstr "地窖最大Y坐标"
+msgstr "悬空岛最大Y坐标"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland minimum Y"
-msgstr "地窖最小Y坐标"
+msgstr "悬空岛最小Y坐标"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland noise"
-msgstr "水级别"
+msgstr "悬空岛噪声"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland taper exponent"
-msgstr "水级别"
+msgstr "悬空岛尖锐指数"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland tapering distance"
-msgstr "玩家转移距离"
+msgstr "悬空岛尖锐距离"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland water level"
-msgstr "水级别"
+msgstr "悬空岛水位"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
@@ -5012,9 +5001,8 @@ msgid "Lower Y limit of dungeons."
 msgstr "地窖的Y值下限。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lower Y limit of floatlands."
-msgstr "地窖的Y值下限。"
+msgstr "悬空岛的Y值下限。"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
@@ -6811,10 +6799,12 @@ msgid "Walking, flying and climbing speed in fast mode, in nodes per second."
 msgstr "快速模式下的步行、飞行和攀爬速度，单位为方块每秒。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Water level"
 msgstr "水级别"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Water surface level of the world."
 msgstr "世界水平面级别。"
 
