@@ -849,6 +849,7 @@ void Sky::updateStars() {
 	m_stars->Vertices.reallocate(4 * m_star_params.count);
 	m_stars->Indices.reallocate(6 * m_star_params.count);
 
+	video::SColor fallback_color = m_star_params.starcolor; // used on GLES 2 “without shaders”
 	PcgRandom rgen(m_seed);
 	float d = (0.006 / 2) * m_star_params.scale;
 	for (u16 i = 0; i < m_star_params.count; i++) {
@@ -867,10 +868,10 @@ void Sky::updateStars() {
 		a.rotateVect(p1);
 		a.rotateVect(p2);
 		a.rotateVect(p3);
-		m_stars->Vertices.push_back(video::S3DVertex(p, {}, {}, {}));
-		m_stars->Vertices.push_back(video::S3DVertex(p1, {}, {}, {}));
-		m_stars->Vertices.push_back(video::S3DVertex(p2, {}, {}, {}));
-		m_stars->Vertices.push_back(video::S3DVertex(p3, {}, {}, {}));
+		m_stars->Vertices.push_back(video::S3DVertex(p, {}, fallback_color, {}));
+		m_stars->Vertices.push_back(video::S3DVertex(p1, {}, fallback_color, {}));
+		m_stars->Vertices.push_back(video::S3DVertex(p2, {}, fallback_color, {}));
+		m_stars->Vertices.push_back(video::S3DVertex(p3, {}, fallback_color, {}));
 	}
 	for (u16 i = 0; i < m_star_params.count; i++) {
 		m_stars->Indices.push_back(i * 4 + 0);
