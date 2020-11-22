@@ -38,7 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class InventoryManager;
 class ISimpleTextureSource;
 class Client;
-class TexturePool;
 class GUIScrollContainer;
 
 typedef enum {
@@ -444,6 +443,7 @@ private:
 	void parseAnchor(parserData *data, const std::string &element);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
+	void parseModel(parserData *data, const std::string &element);
 
 	void tryClose();
 

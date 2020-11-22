@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"
+#include "translation.h"
 #include <string>
 #include <list>
 #include <map>
@@ -115,6 +116,14 @@ struct ServerPlayingSound
 	ServerSoundParams params;
 	SimpleSoundSpec spec;
 	std::unordered_set<session_t> clients; // peer ids
+};
+
+struct MinimapMode {
+	MinimapType type = MINIMAP_TYPE_OFF;
+	std::string label;
+	u16 size = 0;
+	std::string texture;
+	u16 scale = 1;
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
@@ -330,6 +339,10 @@ public:
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
 
+	void SendMinimapModes(session_t peer_id,
+			std::vector<MinimapMode> &modes,
+			size_t wanted_mode);
+
 	void sendDetachedInventories(session_t peer_id, bool incremental);
 
 	virtual bool registerModStorage(ModMetadata *storage);
@@ -343,8 +356,8 @@ public:
 	// Send block to specific player only
 	bool SendBlock(session_t peer_id, const v3s16 &blockpos);
 
-	// Load translations for a language
-	void loadTranslationLanguage(const std::string &lang_code);
+	// Get or load translations for a language
+	Translations *getTranslationLanguage(const std::string &lang_code);
 
 	// Bind address
 	Address m_bind_addr;
@@ -556,6 +569,8 @@ private:
 
 	// Mods
 	std::unique_ptr<ServerModManager> m_modmgr;
+
+	std::unordered_map<std::string, Translations> server_translations;
 
 	/*
 		Threads

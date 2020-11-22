@@ -407,6 +407,46 @@ int ModApiEnvMod::l_get_node_light(lua_State *L)
 	return 1;
 }
 
+
+// get_natural_light(pos, timeofday)
+// pos = {x=num, y=num, z=num}
+// timeofday: nil = current time, 0 = night, 0.5 = day
+int ModApiEnvMod::l_get_natural_light(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 pos = read_v3s16(L, 1);
+
+	bool is_position_ok;
+	MapNode n = env->getMap().getNode(pos, &is_position_ok);
+	if (!is_position_ok)
+		return 0;
+
+	// If the daylight is 0, nothing needs to be calculated
+	u8 daylight = n.param1 & 0x0f;
+	if (daylight == 0) {
+		lua_pushinteger(L, 0);
+		return 1;
+	}
+
+	u32 time_of_day;
+	if (lua_isnumber(L, 2)) {
+		time_of_day = 24000.0 * lua_tonumber(L, 2);
+		time_of_day %= 24000;
+	} else {
+		time_of_day = env->getTimeOfDay();
+	}
+	u32 dnr = time_to_daynight_ratio(time_of_day, true);
+
+	// If it's the same as the artificial light, the sunlight needs to be
+	// searched for because the value may not emanate from the sun
+	if (daylight == n.param1 >> 4)
+		daylight = env->findSunlight(pos);
+
+	lua_pushinteger(L, dnr * daylight / 1000);
+	return 1;
+}
+
 // place_node(pos, node)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_place_node(lua_State *L)
@@ -711,8 +751,9 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 
 	// Do it
 	float timeofday_f = readParam<float>(L, 1);
-	sanity_check(timeofday_f >= 0.0 && timeofday_f <= 1.0);
-	int timeofday_mh = (int)(timeofday_f * 24000.0);
+	luaL_argcheck(L, timeofday_f >= 0.0f && timeofday_f <= 1.0f, 1,
+		"value must be between 0 and 1");
+	int timeofday_mh = (int)(timeofday_f * 24000.0f);
 	// This should be set directly in the environment but currently
 	// such changes aren't immediately sent to the clients, so call
 	// the server instead.
@@ -1340,9 +1381,9 @@ int ModApiEnvMod::l_get_translated_string(lua_State * L)
 	GET_ENV_PTR;
 	std::string lang_code = luaL_checkstring(L, 1);
 	std::string string = luaL_checkstring(L, 2);
-	getServer(L)->loadTranslationLanguage(lang_code);
-	string = wide_to_utf8(translate_string(utf8_to_wide(string),
-			&(*g_server_translations)[lang_code]));
+
+	auto *translations = getServer(L)->getTranslationLanguage(lang_code);
+	string = wide_to_utf8(translate_string(utf8_to_wide(string), translations));
 	lua_pushstring(L, string.c_str());
 	return 1;
 }
@@ -1358,6 +1399,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
 	API_FCT(get_node_light);
+	API_FCT(get_natural_light);
 	API_FCT(place_node);
 	API_FCT(dig_node);
 	API_FCT(punch_node);

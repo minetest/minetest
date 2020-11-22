@@ -42,8 +42,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 		u8 version2 = 0;
 		u8 version = readU8(is);
 
-		name = deSerializeString(is);
-		state = deSerializeLongString(is);
+		name = deSerializeString16(is);
+		state = deSerializeString32(is);
 
 		if (version < 1)
 			break;
@@ -225,7 +225,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 
 	// PROTOCOL_VERSION >= 37
 	writeU8(os, 1); // version
-	os << serializeString(""); // name
+	os << serializeString16(""); // name
 	writeU8(os, 0); // is_player
 	writeU16(os, getId()); //id
 	writeV3F32(os, m_base_position);
@@ -233,26 +233,26 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	writeU16(os, m_hp);
 
 	std::ostringstream msg_os(std::ios::binary);
-	msg_os << serializeLongString(getPropertyPacket()); // message 1
-	msg_os << serializeLongString(generateUpdateArmorGroupsCommand()); // 2
-	msg_os << serializeLongString(generateUpdateAnimationCommand()); // 3
+	msg_os << serializeString32(getPropertyPacket()); // message 1
+	msg_os << serializeString32(generateUpdateArmorGroupsCommand()); // 2
+	msg_os << serializeString32(generateUpdateAnimationCommand()); // 3
 	for (const auto &bone_pos : m_bone_position) {
-		msg_os << serializeLongString(generateUpdateBonePositionCommand(
-			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // m_bone_position.size
+		msg_os << serializeString32(generateUpdateBonePositionCommand(
+			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // 3 + N
 	}
-	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
+	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4 + m_bone_position.size
 
 	int message_count = 4 + m_bone_position.size();
 
 	for (const auto &id : getAttachmentChildIds()) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(id)) {
 			message_count++;
-			msg_os << serializeLongString(obj->generateUpdateInfantCommand(
+			msg_os << serializeString32(obj->generateUpdateInfantCommand(
 				id, protocol_version));
 		}
 	}
 
-	msg_os << serializeLongString(generateSetTextureModCommand());
+	msg_os << serializeString32(generateSetTextureModCommand());
 	message_count++;
 
 	writeU8(os, message_count);
@@ -270,14 +270,14 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	// version must be 1 to keep backwards-compatibility. See version2
 	writeU8(os, 1);
 	// name
-	os<<serializeString(m_init_name);
+	os<<serializeString16(m_init_name);
 	// state
 	if(m_registered){
 		std::string state = m_env->getScriptIface()->
 			luaentity_GetStaticdata(m_id);
-		os<<serializeLongString(state);
+		os<<serializeString32(state);
 	} else {
-		os<<serializeLongString(m_init_state);
+		os<<serializeString32(m_init_state);
 	}
 	writeU16(os, m_hp);
 	writeV3F1000(os, m_velocity);
@@ -436,7 +436,7 @@ std::string LuaEntitySAO::generateSetTextureModCommand() const
 	// command
 	writeU8(os, AO_CMD_SET_TEXTURE_MOD);
 	// parameters
-	os << serializeString(m_current_texture_modifier);
+	os << serializeString16(m_current_texture_modifier);
 	return os.str();
 }
 

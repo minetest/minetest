@@ -136,11 +136,6 @@ void GUIChatConsole::closeConsoleAtOnce()
 	recalculateConsolePosition();
 }
 
-f32 GUIChatConsole::getDesiredHeight() const
-{
-	return m_desired_height_fraction;
-}
-
 void GUIChatConsole::replaceAndAddToHistory(const std::wstring &line)
 {
 	ChatPrompt& prompt = m_chat_backend->getPrompt();

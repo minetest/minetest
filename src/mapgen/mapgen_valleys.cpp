@@ -268,7 +268,8 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Dungeon creation
 	if (flags & MG_DUNGEONS)

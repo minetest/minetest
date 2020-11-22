@@ -513,8 +513,13 @@ texture_clean_transparent (Clean transparent textures) bool false
 #    texture autoscaling.
 texture_min_size (Minimum texture size) int 64
 
-#    Experimental option, might cause visible spaces between blocks
-#    when set to higher number than 0.
+#    Use multi-sample antialiasing (MSAA) to smooth out block edges.
+#    This algorithm smooths out the 3D viewport while keeping the image sharp,
+#    but it doesn't affect the insides of textures
+#    (which is especially noticeable with transparent textures).
+#    This option is experimental and might cause visible spaces between blocks
+#    when set above 0.
+#    A restart is required after changing this option.
 fsaa (FSAA) enum 0 0,1,2,4,8,16
 
 #    Undersampling is similar to using a lower screen resolution, but it applies
@@ -540,43 +545,6 @@ shader_path (Shader path) path
 #    appearance of high dynamic range images. Mid-range contrast is slightly
 #    enhanced, highlights and shadows are gradually compressed.
 tone_mapping (Filmic tone mapping) bool false
-
-[***Bumpmapping]
-
-#    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack
-#    or need to be auto-generated.
-#    Requires shaders to be enabled.
-enable_bumpmapping (Bumpmapping) bool false
-
-#    Enables on the fly normalmap generation (Emboss effect).
-#    Requires bumpmapping to be enabled.
-generate_normalmaps (Generate normalmaps) bool false
-
-#    Strength of generated normalmaps.
-normalmaps_strength (Normalmaps strength) float 0.6
-
-#    Defines sampling step of texture.
-#    A higher value results in smoother normal maps.
-normalmaps_smooth (Normalmaps sampling) int 0 0 2
-
-[***Parallax Occlusion]
-
-#    Enables parallax occlusion mapping.
-#    Requires shaders to be enabled.
-enable_parallax_occlusion (Parallax occlusion) bool false
-
-#    0 = parallax occlusion with slope information (faster).
-#    1 = relief mapping (slower, more accurate).
-parallax_occlusion_mode (Parallax occlusion mode) int 1 0 1
-
-#    Number of parallax occlusion iterations.
-parallax_occlusion_iterations (Parallax occlusion iterations) int 4
-
-#    Overall scale of parallax occlusion effect.
-parallax_occlusion_scale (Parallax occlusion scale) float 0.08
-
-#    Overall bias of parallax occlusion effect, usually scale/2.
-parallax_occlusion_bias (Parallax occlusion bias) float 0.04
 
 [***Waving Nodes]
 
@@ -618,15 +586,15 @@ arm_inertia (Arm inertia) bool true
 #    to not waste CPU power for no benefit.
 fps_max (Maximum FPS) int 60 1
 
-#    Maximum FPS when game is paused.
-pause_fps_max (FPS in pause menu) int 20 1
+#    Maximum FPS when the window is not focused, or when the game is paused.
+fps_max_unfocused (FPS when unfocused or paused) int 20 1
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
 #    open.
 pause_on_lost_focus (Pause on lost window focus) bool false
 
 #    View distance in nodes.
-viewing_range (Viewing range) int 100 20 4000
+viewing_range (Viewing range) int 190 20 4000
 
 #   Camera 'near clipping plane' distance in nodes, between 0 and 0.25
 #   Only works on GLES platforms. Most users will not need to change this.
@@ -690,8 +658,8 @@ texture_path (Texture path) path
 #    The rendering back-end for Irrlicht.
 #    A restart is required after changing this.
 #    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
-#    On other platforms, OpenGL is recommended, and it’s the only driver with
-#    shader support currently.
+#    On other platforms, OpenGL is recommended.
+#    Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)
 video_driver (Video driver) enum opengl null,software,burningsvideo,direct3d8,direct3d9,opengl,ogles1,ogles2
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
@@ -779,7 +747,7 @@ mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
 #    Size of the MapBlock cache of the mesh generator. Increasing this will
 #    increase the cache hit %, reducing the data being copied from the main
 #    thread, thus reducing jitter.
-meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size in MB) int 20 0 1000
+meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size in MB) int 40 0 1000
 
 #    Enables minimap.
 enable_minimap (Minimap) bool true
@@ -1010,7 +978,7 @@ client_unload_unused_data_timeout (Mapblock unload timeout) int 600
 
 #    Maximum number of mapblocks for client to be kept in memory.
 #    Set to -1 for unlimited amount.
-client_mapblock_limit (Mapblock limit) int 5000
+client_mapblock_limit (Mapblock limit) int 7500
 
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false
@@ -1069,7 +1037,7 @@ ipv6_server (IPv6 server) bool false
 #    Maximum number of blocks that are simultaneously sent per client.
 #    The maximum total count is calculated dynamically:
 #    max_total = ceil((#clients + max_users) * per_client / 4)
-max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 40
+max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 128
 
 #    To reduce lag, block transfers are slowed down when a player is building something.
 #    This determines how long they are slowed down after placing or removing a node.
@@ -1169,17 +1137,17 @@ ask_reconnect_on_crash (Ask to reconnect after crash) bool false
 #    Setting this larger than active_block_range will also cause the server
 #    to maintain active objects up to this distance in the direction the
 #    player is looking. (This can avoid mobs suddenly disappearing from view)
-active_object_send_range_blocks (Active object send range) int 4
+active_object_send_range_blocks (Active object send range) int 8
 
 #    The radius of the volume of blocks around every player that is subject to the
 #    active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    This is also the minimum range in which active objects (mobs) are maintained.
 #    This should be configured together with active_object_send_range_blocks.
-active_block_range (Active block range) int 3
+active_block_range (Active block range) int 4
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
-max_block_send_distance (Max block send distance) int 10
+max_block_send_distance (Max block send distance) int 12
 
 #    Maximum number of forceloaded mapblocks.
 max_forceloaded_blocks (Maximum forceloaded blocks) int 16
@@ -1252,10 +1220,10 @@ movement_gravity (Gravity) float 9.81
 [**Advanced]
 
 #    Handling for deprecated Lua API calls:
-#    -    legacy: (try to) mimic old behaviour (default for release).
-#    -    log: mimic and log backtrace of deprecated call (default for debug).
+#    -    none: Do not log deprecated calls
+#    -    log: mimic and log backtrace of deprecated call (default).
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
-deprecated_lua_api_handling (Deprecated Lua API handling) enum legacy legacy,log,error
+deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,error
 
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and
@@ -1465,7 +1433,7 @@ mg_name (Mapgen name) enum v7 v7,valleys,carpathian,v5,flat,fractal,singlenode,v
 water_level (Water level) int 1
 
 #    From how far blocks are generated for clients, stated in mapblocks (16 nodes).
-max_block_generate_distance (Max block generate distance) int 8
+max_block_generate_distance (Max block generate distance) int 10
 
 #    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
 #    Only mapchunks completely within the mapgen limit are generated.
@@ -1475,7 +1443,7 @@ mapgen_limit (Map generation limit) int 31000 0 31000
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
-mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes caves,dungeons,light,decorations,biomes,nocaves,nodungeons,nolight,nodecorations,nobiomes
+mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes,ores caves,dungeons,light,decorations,biomes,ores,nocaves,nodungeons,nolight,nodecorations,nobiomes,noores
 
 [*Biome API temperature and humidity noise parameters]
 
@@ -2184,15 +2152,15 @@ chunksize (Chunk size) int 5
 enable_mapgen_debug_info (Mapgen debug) bool false
 
 #    Maximum number of blocks that can be queued for loading.
-emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 512
+emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 1024
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    This limit is enforced per player.
-emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 64
+emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 128
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    This limit is enforced per player.
-emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 64
+emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 128
 
 #    Number of emerge threads to use.
 #    Value 0:

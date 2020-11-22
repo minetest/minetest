@@ -31,7 +31,6 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testStartStopWait();
-	void testThreadKill();
 	void testAtomicSemaphoreThread();
 };
 
@@ -40,7 +39,6 @@ static TestThreading g_test_instance;
 void TestThreading::runTests(IGameDef *gamedef)
 {
 	TEST(testStartStopWait);
-	TEST(testThreadKill);
 	TEST(testAtomicSemaphoreThread);
 }
 
@@ -110,29 +108,6 @@ void TestThreading::testStartStopWait()
 	delete thread;
 }
 
-
-void TestThreading::testThreadKill()
-{
-	SimpleTestThread *thread = new SimpleTestThread(300);
-
-	UASSERT(thread->start() == true);
-
-	// kill()ing is quite violent, so let's make sure our victim is sleeping
-	// before we do this... so we don't corrupt the rest of the program's state
-	sleep_ms(100);
-	UASSERT(thread->kill() == true);
-
-	// The state of the thread object should be reset if all went well
-	UASSERT(thread->isRunning() == false);
-	UASSERT(thread->start() == true);
-	UASSERT(thread->stop() == true);
-	UASSERT(thread->wait() == true);
-
-	// kill() after already waiting should fail.
-	UASSERT(thread->kill() == false);
-
-	delete thread;
-}
 
 
 class AtomicTestThread : public Thread {

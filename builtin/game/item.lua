@@ -551,8 +551,9 @@ function core.node_dig(pos, node, digger)
 	local diggername = user_name(digger)
 	local log = make_log(diggername)
 	local def = core.registered_nodes[node.name]
+	-- Copy pos because the callback could modify it
 	if def and (not def.diggable or
-			(def.can_dig and not def.can_dig(pos, digger))) then
+			(def.can_dig and not def.can_dig(vector.new(pos), digger))) then
 		log("info", diggername .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. core.pos_to_string(pos))

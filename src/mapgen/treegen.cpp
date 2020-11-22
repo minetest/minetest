@@ -527,19 +527,6 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 }
 
 
-void tree_node_placement(MMVManip &vmanip, v3f p0, MapNode node)
-{
-	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (!vmanip.m_area.contains(p1))
-		return;
-	u32 vi = vmanip.m_area.index(p1);
-	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
-			&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
-		return;
-	vmanip.m_data[vmanip.m_area.index(p1)] = node;
-}
-
-
 void tree_trunk_placement(MMVManip &vmanip, v3f p0, TreeDef &tree_definition)
 {
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));

@@ -64,7 +64,6 @@ public:
 
 	std::string readLongString();
 
-	char getChar(u32 offset);
 	NetworkPacket &operator>>(char &dst);
 	NetworkPacket &operator<<(char src);
 

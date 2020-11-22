@@ -49,6 +49,7 @@ struct ItemStack
 	std::string getItemString(bool include_meta = true) const;
 	// Returns the tooltip
 	std::string getDescription(IItemDefManager *itemdef) const;
+	std::string getShortDescription(IItemDefManager *itemdef) const;
 
 	/*
 		Quantity methods

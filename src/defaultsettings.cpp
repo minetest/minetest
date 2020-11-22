@@ -42,7 +42,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mute_sound", "false");
 	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("mesh_generation_interval", "0");
-	settings->setDefault("meshgen_block_cache_size", "20");
+	settings->setDefault("meshgen_block_cache_size", "40");
 	settings->setDefault("enable_vbo", "true");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("pitch_move", "false");
@@ -52,7 +52,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screenshot_format", "png");
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
-	settings->setDefault("client_mapblock_limit", "5000");
+	settings->setDefault("client_mapblock_limit", "7500");
 	settings->setDefault("enable_build_where_you_stand", "false");
 	settings->setDefault("curl_timeout", "5000");
 	settings->setDefault("curl_parallel_limit", "8");
@@ -165,8 +165,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("tooltip_show_delay", "400");
 	settings->setDefault("tooltip_append_itemname", "false");
 	settings->setDefault("fps_max", "60");
-	settings->setDefault("pause_fps_max", "20");
-	settings->setDefault("viewing_range", "100");
+	settings->setDefault("fps_max_unfocused", "20");
+	settings->setDefault("viewing_range", "190");
 #if ENABLE_GLES
 	settings->setDefault("near_plane", "0.1");
 #endif
@@ -251,15 +251,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("tone_mapping", "false");
-	settings->setDefault("enable_bumpmapping", "false");
-	settings->setDefault("enable_parallax_occlusion", "false");
-	settings->setDefault("generate_normalmaps", "false");
-	settings->setDefault("normalmaps_strength", "0.6");
-	settings->setDefault("normalmaps_smooth", "1");
-	settings->setDefault("parallax_occlusion_mode", "1");
-	settings->setDefault("parallax_occlusion_iterations", "4");
-	settings->setDefault("parallax_occlusion_scale", "0.08");
-	settings->setDefault("parallax_occlusion_bias", "0.04");
 	settings->setDefault("enable_waving_water", "false");
 	settings->setDefault("water_wave_height", "1.0");
 	settings->setDefault("water_wave_length", "20.0");
@@ -352,7 +343,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("port", "30000");
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("player_transfer_distance", "0");
-	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
+	settings->setDefault("max_simultaneous_block_sends_per_client", "128");
 	settings->setDefault("time_send_interval", "5");
 
 	settings->setDefault("default_game", "minetest");
@@ -367,11 +358,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("disallow_empty_password", "false");
 	settings->setDefault("disable_anticheat", "false");
 	settings->setDefault("enable_rollback_recording", "false");
-#ifdef NDEBUG
-	settings->setDefault("deprecated_lua_api_handling", "legacy");
-#else
 	settings->setDefault("deprecated_lua_api_handling", "log");
-#endif
 
 	settings->setDefault("kick_msg_shutdown", "Server shutting down.");
 	settings->setDefault("kick_msg_crash", "This server has experienced an internal error. You will now be disconnected.");
@@ -379,11 +366,11 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("chat_message_format", "<@name> @message");
 	settings->setDefault("profiler_print_interval", "0");
-	settings->setDefault("active_object_send_range_blocks", "4");
-	settings->setDefault("active_block_range", "3");
+	settings->setDefault("active_object_send_range_blocks", "8");
+	settings->setDefault("active_block_range", "4");
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
-	settings->setDefault("max_block_send_distance", "10");
+	settings->setDefault("max_block_send_distance", "12");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
 	settings->setDefault("csm_restriction_flags", "62");
@@ -409,9 +396,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("debug_log_size_max", "50");
 	settings->setDefault("chat_log_level", "error");
-	settings->setDefault("emergequeue_limit_total", "512");
-	settings->setDefault("emergequeue_limit_diskonly", "64");
-	settings->setDefault("emergequeue_limit_generate", "64");
+	settings->setDefault("emergequeue_limit_total", "1024");
+	settings->setDefault("emergequeue_limit_diskonly", "128");
+	settings->setDefault("emergequeue_limit_generate", "128");
 	settings->setDefault("num_emerge_threads", "1");
 	settings->setDefault("secure.enable_security", "true");
 	settings->setDefault("secure.trusted_mods", "");
@@ -442,7 +429,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mapgen_limit", "31000");
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("fixed_map_seed", "");
-	settings->setDefault("max_block_generate_distance", "8");
+	settings->setDefault("max_block_generate_distance", "10");
 	settings->setDefault("enable_mapgen_debug_info", "false");
 	Mapgen::setDefaultSettings(settings);
 
@@ -480,7 +467,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("fps_max", "30");
-	settings->setDefault("pause_fps_max", "10");
+	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("max_objects_per_block", "20");
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("server_map_save_interval", "15");

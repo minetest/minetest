@@ -129,6 +129,7 @@ Client::Client(
 	if (g_settings->getBool("enable_minimap")) {
 		m_minimap = new Minimap(this);
 	}
+
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 }
 
@@ -238,18 +239,13 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 		infostream << "Client::scanModSubfolder(): Loading \"" << real_path
 				<< "\" as \"" << vfs_path << "\"." << std::endl;
 
-		std::ifstream is(real_path, std::ios::binary | std::ios::ate);
-		if(!is.good()) {
+		std::string contents;
+		if (!fs::ReadFile(real_path, contents)) {
 			errorstream << "Client::scanModSubfolder(): Can't read file \""
 					<< real_path << "\"." << std::endl;
 			continue;
 		}
-		auto size = is.tellg();
-		std::string contents(size, '\0');
-		is.seekg(0);
-		is.read(&contents[0], size);
 
-		infostream << "  size: " << size << " bytes" << std::endl;
 		m_mod_vfs.emplace(vfs_path, contents);
 	}
 }
@@ -330,6 +326,8 @@ Client::~Client()
 	}
 
 	delete m_minimap;
+	m_minimap = nullptr;
+
 	delete m_media_downloader;
 }
 
@@ -1667,11 +1665,6 @@ ClientEvent *Client::getClientEvent()
 	ClientEvent *event = m_client_event_queue.front();
 	m_client_event_queue.pop();
 	return event;
-}
-
-bool Client::connectedToServer()
-{
-	return m_con->Connected();
 }
 
 const Address Client::getServerAddress()

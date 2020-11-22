@@ -145,6 +145,23 @@ minetest.register_node("testnodes:fencelike", {
 })
 
 minetest.register_node("testnodes:torchlike", {
+	description = S("Torchlike Drawtype Test Node"),
+	drawtype = "torchlike",
+	paramtype = "light",
+	tiles = {
+		"testnodes_torchlike_floor.png",
+		"testnodes_torchlike_ceiling.png",
+		"testnodes_torchlike_wall.png",
+	},
+
+
+	walkable = false,
+	sunlight_propagates = true,
+	groups = { dig_immediate = 3 },
+	inventory_image = fallback_image("testnodes_torchlike_floor.png"),
+})
+
+minetest.register_node("testnodes:torchlike_wallmounted", {
 	description = S("Wallmounted Torchlike Drawtype Test Node"),
 	drawtype = "torchlike",
 	paramtype = "light",
@@ -161,6 +178,8 @@ minetest.register_node("testnodes:torchlike", {
 	groups = { dig_immediate = 3 },
 	inventory_image = fallback_image("testnodes_torchlike_floor.png"),
 })
+
+
 
 minetest.register_node("testnodes:signlike", {
 	description = S("Wallmounted Signlike Drawtype Test Node"),
@@ -514,10 +533,19 @@ local scale = function(subname, desc_double, desc_half)
 	minetest.register_node("testnodes:"..subname.."_half", def)
 end
 
+scale("allfaces",
+	S("Double-sized Allfaces Drawtype Test Node"),
+	S("Half-sized Allfaces Drawtype Test Node"))
+scale("allfaces_optional",
+	S("Double-sized Allfaces Optional Drawtype Test Node"),
+	S("Half-sized Allfaces Optional Drawtype Test Node"))
+scale("allfaces_optional_waving",
+	S("Double-sized Waving Allfaces Optional Drawtype Test Node"),
+	S("Half-sized Waving Allfaces Optional Drawtype Test Node"))
 scale("plantlike",
 	S("Double-sized Plantlike Drawtype Test Node"),
 	S("Half-sized Plantlike Drawtype Test Node"))
-scale("torchlike",
+scale("torchlike_wallmounted",
 	S("Double-sized Wallmounted Torchlike Drawtype Test Node"),
 	S("Half-sized Wallmounted Torchlike Drawtype Test Node"))
 scale("signlike",
