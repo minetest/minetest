@@ -725,10 +725,6 @@ ShaderInfo generate_shader(const std::string &name, MaterialType material_type, 
 	}
 	callbacks.push_back(std::move(cb));
 
-	// Grab the material renderer once more so minetest doesn't crash on exit
-	// IrrLicht can't free material renderers anyway
-	driver->getMaterialRenderer(shadermat)->grab();
-
 	// Apply the newly created material type
 	shaderinfo.material = (video::E_MATERIAL_TYPE) shadermat;
 	return shaderinfo;
