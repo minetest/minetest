@@ -324,7 +324,7 @@ public:
 		The id 0 points to a null shader. Its material is EMT_SOLID.
 	*/
 	u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype);
+		MaterialType material_type, NodeDrawType drawtype) override;
 
 	/*
 		If shader specified by the name pointed by the id doesn't
@@ -336,24 +336,24 @@ public:
 	*/
 
 	u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype);
+		MaterialType material_type, NodeDrawType drawtype) override;
 
-	ShaderInfo getShaderInfo(u32 id);
+	ShaderInfo getShaderInfo(u32 id) override;
 
 	// Processes queued shader requests from other threads.
 	// Shall be called from the main thread.
-	void processQueue();
+	void processQueue() override;
 
 	// Insert a shader program into the cache without touching the
 	// filesystem. Shall be called from the main thread.
 	void insertSourceShader(const std::string &name_of_shader,
-		const std::string &filename, const std::string &program);
+		const std::string &filename, const std::string &program) override;
 
 	// Rebuild shaders from the current set of source shaders
 	// Shall be called from the main thread.
-	void rebuildShaders();
+	void rebuildShaders() override;
 
-	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter)
+	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) override
 	{
 		m_setter_factories.push_back(setter);
 	}
@@ -392,7 +392,7 @@ IWritableShaderSource *createShaderSource()
 	Generate shader given the shader name.
 */
 ShaderInfo generate_shader(const std::string &name,
-		u8 material_type, u8 drawtype, std::vector<ShaderCallback *> &callbacks,
+		MaterialType material_type, NodeDrawType drawtype, std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache);
 
@@ -426,7 +426,7 @@ ShaderSource::~ShaderSource()
 }
 
 u32 ShaderSource::getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype)
+		MaterialType material_type, NodeDrawType drawtype)
 {
 	/*
 		Get shader
@@ -468,7 +468,7 @@ u32 ShaderSource::getShader(const std::string &name,
 	This method generates all the shaders
 */
 u32 ShaderSource::getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype)
+		MaterialType material_type, NodeDrawType drawtype)
 {
 	//infostream<<"getShaderIdDirect(): name=\""<<name<<"\""<<std::endl;
 
@@ -568,7 +568,7 @@ void ShaderSource::rebuildShaders()
 }
 
 
-ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtype,
+ShaderInfo generate_shader(const std::string &name, MaterialType material_type, NodeDrawType drawtype,
 		std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache)
@@ -577,7 +577,6 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaderinfo.name = name;
 	shaderinfo.material_type = material_type;
 	shaderinfo.drawtype = drawtype;
-	shaderinfo.material = video::EMT_SOLID;
 	switch (material_type) {
 	case TILE_MATERIAL_OPAQUE:
 	case TILE_MATERIAL_LIQUID_OPAQUE:
@@ -598,6 +597,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		break;
 	}
+	shaderinfo.material = shaderinfo.base_material;
 
 	bool enable_shaders = g_settings->getBool("enable_shaders");
 	if (!enable_shaders)

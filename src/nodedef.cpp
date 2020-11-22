@@ -774,7 +774,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	bool is_liquid = false;
 
-	u8 material_type = (alpha == 255) ?
+	MaterialType material_type = (alpha == 255) ?
 		TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
 
 	switch (drawtype) {
@@ -892,7 +892,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	u32 tile_shader = shdsrc->getShader("nodes_shader", material_type, drawtype);
 
-	u8 overlay_material = material_type;
+	MaterialType overlay_material = material_type;
 	if (overlay_material == TILE_MATERIAL_OPAQUE)
 		overlay_material = TILE_MATERIAL_BASIC;
 	else if (overlay_material == TILE_MATERIAL_LIQUID_OPAQUE)
@@ -913,7 +913,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 					tdef[j].backface_culling, tsettings);
 	}
 
-	u8 special_material = material_type;
+	MaterialType special_material = material_type;
 	if (drawtype == NDT_PLANTLIKE_ROOTED) {
 		if (waving == 1)
 			special_material = TILE_MATERIAL_WAVING_PLANTS;

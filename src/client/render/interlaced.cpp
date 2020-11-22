@@ -36,7 +36,7 @@ void RenderingCoreInterlaced::initMaterial()
 	mat.UseMipMaps = false;
 	mat.ZBuffer = false;
 	mat.ZWriteEnable = false;
-	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC, 0);
+	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC);
 	mat.MaterialType = s->getShaderInfo(shader).material;
 	for (int k = 0; k < 3; ++k) {
 		mat.TextureLayer[k].AnisotropicFilter = false;
