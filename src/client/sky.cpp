@@ -35,7 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 using namespace irr::core;
 
-static video::SMaterial baseMaterial() {
+static video::SMaterial baseMaterial()
+{
 	video::SMaterial mat;
 	mat.Lighting = false;
 #if ENABLE_GLES
@@ -836,7 +837,8 @@ void Sky::setStarCount(u16 star_count, bool force_update)
 	}
 }
 
-void Sky::updateStars() {
+void Sky::updateStars()
+{
 	m_stars.reset(new scene::SMeshBuffer());
 	// Stupid IrrLicht doesn’t allow non-indexed rendering, and indexed quad
 	// rendering is slow due to lack of hardware support. So as indices are
