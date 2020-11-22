@@ -897,7 +897,7 @@ int ObjectRef::l_set_yaw(lua_State *L)
 
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
 
-  v3f cur_rot = entitysao->getRotation();
+  	v3f cur_rot = entitysao->getRotation();
 	entitysao->setRotation(v3f(cur_rot.X, yaw, cur_rot.Z));
 	return 0;
 }
