@@ -51,7 +51,7 @@ static video::SMaterial baseMaterial() {
 	return mat;
 };
 
-Sky::Sky(s32 id, ITextureSource *tsrc) :
+Sky::Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc) :
 		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
 			RenderingEngine::get_scene_manager(), id)
 {
@@ -59,10 +59,12 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 	m_box.MaxEdge.set(0, 0, 0);
 	m_box.MinEdge.set(0, 0, 0);
 
+	m_enable_shaders = g_settings->getBool("enable_shaders");
+
 	// Create materials
 
 	m_materials[0] = baseMaterial();
-	m_materials[0].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	m_materials[0].MaterialType = ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA, 0)).material;
 	m_materials[0].Lighting = true;
 	m_materials[0].ColorMaterial = video::ECM_NONE;
 
@@ -694,12 +696,11 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 
 	float tod = wicked_time_of_day < 0.5f ? wicked_time_of_day : (1.0f - wicked_time_of_day);
 	float starbrightness = (0.25f - fabsf(tod)) * 20.0f;
-	int alpha = clamp<int>(starbrightness * m_star_params.starcolor.getAlpha(), 0, 255);
-	if (!alpha) // Stars are only drawn when not fully transparent
+	m_star_color = m_star_params.starcolor;
+	m_star_color.a = clamp(starbrightness * m_star_color.a, 0.0f, 1.0f);
+	if (m_star_color.a <= 0.0f) // Stars are only drawn when not fully transparent
 		return;
-
-	m_materials[0].DiffuseColor = video::SColor(alpha, 0, 0, 0);
-	m_materials[0].EmissiveColor = m_star_params.starcolor;
+	m_materials[0].DiffuseColor = m_materials[0].EmissiveColor = m_star_color.toSColor();
 	auto sky_rotation = core::matrix4().setRotationAxisRadians(2.0f * M_PI * (wicked_time_of_day - 0.25f), v3f(0.0f, 0.0f, 1.0f));
 	auto world_matrix = driver->getTransform(video::ETS_WORLD);
 	driver->setTransform(video::ETS_WORLD, world_matrix * sky_rotation);
