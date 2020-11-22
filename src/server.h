@@ -524,6 +524,7 @@ private:
 	u16 m_max_chatmessage_length;
 	// For "dedicated" server list flag
 	bool m_dedicated;
+	Settings *m_game_settings = nullptr;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;

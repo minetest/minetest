@@ -140,7 +140,6 @@ public:
 	void onSuccessfulSave();
 
 private:
-
 	PlayerSAO *m_sao = nullptr;
 	bool m_dirty = false;
 

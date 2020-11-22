@@ -632,7 +632,7 @@ void ServerEnvironment::saveMeta()
 	// Open file and serialize
 	std::ostringstream ss(std::ios_base::binary);
 
-	Settings args;
+	Settings args("EnvArgsEnd");
 	args.setU64("game_time", m_game_time);
 	args.setU64("time_of_day", getTimeOfDay());
 	args.setU64("last_clear_objects_time", m_last_clear_objects_time);
@@ -641,7 +641,6 @@ void ServerEnvironment::saveMeta()
 		m_lbm_mgr.createIntroductionTimesString());
 	args.setU64("day_count", m_day_count);
 	args.writeLines(ss);
-	ss<<"EnvArgsEnd\n";
 
 	if(!fs::safeWriteToFile(path, ss.str()))
 	{
@@ -676,9 +675,9 @@ void ServerEnvironment::loadMeta()
 		throw SerializationError("Couldn't load env meta");
 	}
 
-	Settings args;
+	Settings args("EnvArgsEnd");
 
-	if (!args.parseConfigLines(is, "EnvArgsEnd")) {
+	if (!args.parseConfigLines(is)) {
 		throw SerializationError("ServerEnvironment::loadMeta(): "
 			"EnvArgsEnd not found!");
 	}

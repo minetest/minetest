@@ -122,18 +122,17 @@ void PlayerDatabaseFiles::serialize(RemotePlayer *p, std::ostream &os)
 	args.set("name", p->m_name);
 
 	// This should not happen
-	assert(m_sao);
-	args.setU16("hp", p->m_sao->getHP());
-	args.setV3F("position", p->m_sao->getBasePosition());
-	args.setFloat("pitch", p->m_sao->getLookPitch());
-	args.setFloat("yaw", p->m_sao->getRotation().Y);
-	args.setU16("breath", p->m_sao->getBreath());
+	PlayerSAO *sao = p->getPlayerSAO();
+	assert(sao);
+	args.setU16("hp", sao->getHP());
+	args.setV3F("position", sao->getBasePosition());
+	args.setFloat("pitch", sao->getLookPitch());
+	args.setFloat("yaw", sao->getRotation().Y);
+	args.setU16("breath", sao->getBreath());
 
 	std::string extended_attrs;
 	{
 		// serializeExtraAttributes
-		PlayerSAO *sao = p->getPlayerSAO();
-		assert(sao);
 		Json::Value json_root;
 
 		const StringMap &attrs = sao->getMeta().getStrings();
