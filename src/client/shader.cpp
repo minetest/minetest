@@ -675,8 +675,8 @@ ShaderInfo generate_shader(const std::string &name, MaterialType material_type, 
 
 #undef PROVIDE
 
-	shaders_header << "#define MATERIAL_TYPE " << material_type << "\n";
-	shaders_header << "#define DRAW_TYPE " << drawtype << "\n";
+	shaders_header << "#define MATERIAL_TYPE " << (int)material_type << "\n";
+	shaders_header << "#define DRAW_TYPE " << (int)drawtype << "\n";
 
 	bool enable_waving_water = g_settings->getBool("enable_waving_water");
 	shaders_header << "#define ENABLE_WAVING_WATER " << enable_waving_water << "\n";
