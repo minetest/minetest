@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "irrlichttypes_extrabloated.h"
 #include "irr_ptr.h"
+#include "shader.h"
 #include "skyparams.h"
 
 #pragma once
@@ -35,7 +36,7 @@ class Sky : public scene::ISceneNode
 {
 public:
 	//! constructor
-	Sky(s32 id, ITextureSource *tsrc);
+	Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc);
 
 	virtual void OnRegisterSceneNode();
 
@@ -102,6 +103,8 @@ public:
 	void clearSkyboxTextures() { m_sky_params.textures.clear(); }
 	void addTextureToSkybox(std::string texture, int material_id,
 		ITextureSource *tsrc);
+	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
+
 private:
 	aabb3f m_box;
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];
@@ -155,6 +158,7 @@ private:
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
 	bool m_in_clouds = true; // Prevent duplicating bools to remember old values
+	bool m_enable_shaders = false;
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
@@ -181,6 +185,7 @@ private:
 
 	u64 m_seed = 0;
 	irr_ptr<scene::SMeshBuffer> m_stars;
+	video::SColorf m_star_color;
 
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;
@@ -188,7 +193,6 @@ private:
 	video::ITexture *m_moon_tonemap;
 
 	void updateStars();
-	void updateStarsColor(video::SColor color);
 
 	void draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor &suncolor,
 		const video::SColor &suncolor2, float wicked_time_of_day);
