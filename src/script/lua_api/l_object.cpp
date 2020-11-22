@@ -956,7 +956,8 @@ int ObjectRef::l_set_yaw(lua_State *L)
 		throw LuaError("ObjectRef::set_yaw: NaN value is not allowed.");
 
 	float yaw = readParam<float>(L, 2) * core::RADTODEG;
-	co->setRotation(v3f(0, yaw, 0));
+    v3f cur_rot = co->getRotation();
+	co->setRotation(v3f(cur_rot.X, yaw, cur_rot.Z));
 	return 0;
 }
 
