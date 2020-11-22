@@ -179,6 +179,7 @@ private:
 
 	bool m_default_tint = true;
 
+	u64 m_seed = 0;
 	irr_ptr<scene::SMeshBuffer> m_stars;
 
 	video::ITexture *m_sun_texture;
