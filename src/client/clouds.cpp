@@ -341,14 +341,13 @@ void Clouds::step(float dtime)
 
 void Clouds::update(const v3f &camera_p, const video::SColorf &color_diffuse)
 {
+	video::SColorf ambient(m_params.color_ambient);
+	video::SColorf bright(m_params.color_bright);
 	m_camera_pos = camera_p;
-	m_color.r = MYMIN(MYMAX(color_diffuse.r * m_params.color_bright.getRed(),
-			m_params.color_ambient.getRed()), 255) / 255.0f;
-	m_color.g = MYMIN(MYMAX(color_diffuse.g * m_params.color_bright.getGreen(),
-			m_params.color_ambient.getGreen()), 255) / 255.0f;
-	m_color.b = MYMIN(MYMAX(color_diffuse.b * m_params.color_bright.getBlue(),
-			m_params.color_ambient.getBlue()), 255) / 255.0f;
-	m_color.a = m_params.color_bright.getAlpha() / 255.0f;
+	m_color.r = core::clamp(color_diffuse.r * bright.r, ambient.r, 1.0f);
+	m_color.g = core::clamp(color_diffuse.g * bright.g, ambient.g, 1.0f);
+	m_color.b = core::clamp(color_diffuse.b * bright.b, ambient.b, 1.0f);
+	m_color.a = bright.a;
 
 	// is the camera inside the cloud mesh?
 	m_camera_inside_cloud = false; // default
