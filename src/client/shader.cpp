@@ -363,9 +363,6 @@ private:
 
 	// Global constant setter factories
 	std::vector<std::unique_ptr<IShaderConstantSetterFactory>> m_setter_factories;
-
-	// Shader callbacks
-	std::vector<irr_ptr<ShaderCallback>> m_callbacks;
 };
 
 IWritableShaderSource *createShaderSource()
@@ -377,7 +374,7 @@ IWritableShaderSource *createShaderSource()
 	Generate shader given the shader name.
 */
 ShaderInfo generate_shader(const std::string &name,
-		MaterialType material_type, NodeDrawType drawtype, std::vector<irr_ptr<ShaderCallback>> &callbacks,
+		MaterialType material_type, NodeDrawType drawtype,
 		const std::vector<std::unique_ptr<IShaderConstantSetterFactory>> &setter_factories,
 		SourceShaderCache *sourcecache);
 
@@ -463,7 +460,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 	}
 
 	ShaderInfo info = generate_shader(name, material_type, drawtype,
-			m_callbacks, m_setter_factories, &m_sourcecache);
+			m_setter_factories, &m_sourcecache);
 
 	/*
 		Add shader to caches (add dummy shaders too)
@@ -528,15 +525,13 @@ void ShaderSource::rebuildShaders()
 		ShaderInfo *info = &i;
 		if (!info->name.empty()) {
 			*info = generate_shader(info->name, info->material_type,
-					info->drawtype, m_callbacks,
-					m_setter_factories, &m_sourcecache);
+					info->drawtype, m_setter_factories, &m_sourcecache);
 		}
 	}
 }
 
 
 ShaderInfo generate_shader(const std::string &name, MaterialType material_type, NodeDrawType drawtype,
-		std::vector<irr_ptr<ShaderCallback>> &callbacks,
 		const std::vector<std::unique_ptr<IShaderConstantSetterFactory>> &setter_factories,
 		SourceShaderCache *sourcecache)
 {
@@ -723,7 +718,6 @@ ShaderInfo generate_shader(const std::string &name, MaterialType material_type, 
 		dumpShaderProgram(warningstream, "Geometry", geometry_shader);
 		return shaderinfo;
 	}
-	callbacks.push_back(std::move(cb));
 
 	// Apply the newly created material type
 	shaderinfo.material = (video::E_MATERIAL_TYPE) shadermat;
