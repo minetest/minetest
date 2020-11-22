@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <array>
 #include "camera.h"
 #include "irrlichttypes_extrabloated.h"
+#include "irr_ptr.h"
 #include "skyparams.h"
 
 #pragma once
@@ -77,7 +78,7 @@ public:
 	void setStarsVisible(bool stars_visible) { m_star_params.visible = stars_visible; }
 	void setStarCount(u16 star_count, bool force_update);
 	void setStarColor(video::SColor star_color) { m_star_params.starcolor = star_color; }
-	void setStarScale(f32 star_scale) { m_star_params.scale = star_scale; }
+	void setStarScale(f32 star_scale) { m_star_params.scale = star_scale; updateStars(); }
 
 	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
 	const video::SColorf &getCloudColor() const { return m_cloudcolor_f; }
@@ -178,12 +179,15 @@ private:
 
 	bool m_default_tint = true;
 
-	std::vector<v3f> m_stars;
+	irr_ptr<scene::SMeshBuffer> m_stars;
 
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
+
+	void updateStars();
+	void updateStarsColor(video::SColor color);
 
 	void draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor &suncolor,
 		const video::SColor &suncolor2, float wicked_time_of_day);

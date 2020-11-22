@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2020 numzero, Lobachevskiy Vitaliy <numzer0@yandex.ru>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -34,16 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 using namespace irr::core;
 
-Sky::Sky(s32 id, ITextureSource *tsrc) :
-		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
-			RenderingEngine::get_scene_manager(), id)
-{
-	setAutomaticCulling(scene::EAC_OFF);
-	m_box.MaxEdge.set(0, 0, 0);
-	m_box.MinEdge.set(0, 0, 0);
-
-	// Create material
-
+static video::SMaterial baseMaterial() {
 	video::SMaterial mat;
 	mat.Lighting = false;
 #if ENABLE_GLES
@@ -56,14 +48,29 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	mat.BackfaceCulling = false;
+	return mat;
+};
 
-	m_materials[0] = mat;
+Sky::Sky(s32 id, ITextureSource *tsrc) :
+		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
+			RenderingEngine::get_scene_manager(), id)
+{
+	setAutomaticCulling(scene::EAC_OFF);
+	m_box.MaxEdge.set(0, 0, 0);
+	m_box.MinEdge.set(0, 0, 0);
 
-	m_materials[1] = mat;
+	// Create materials
+
+	m_materials[0] = baseMaterial();
+	m_materials[0].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	m_materials[0].Lighting = true;
+	m_materials[0].ColorMaterial = video::ECM_NONE;
+
+	m_materials[1] = baseMaterial();
 	//m_materials[1].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	m_materials[1].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
-	m_materials[2] = mat;
+	m_materials[2] = baseMaterial();
 	m_materials[2].setTexture(0, tsrc->getTextureForMesh("sunrisebg.png"));
 	m_materials[2].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	//m_materials[2].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
@@ -80,7 +87,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 		tsrc->getTexture(m_moon_params.tonemap) : NULL;
 
 	if (m_sun_texture) {
-		m_materials[3] = mat;
+		m_materials[3] = baseMaterial();
 		m_materials[3].setTexture(0, m_sun_texture);
 		m_materials[3].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		// Disables texture filtering
@@ -92,7 +99,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 			m_materials[3].Lighting = true;
 	}
 	if (m_moon_texture) {
-		m_materials[4] = mat;
+		m_materials[4] = baseMaterial();
 		m_materials[4].setTexture(0, m_moon_texture);
 		m_materials[4].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		// Disables texture filtering
@@ -105,7 +112,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc) :
 	}
 
 	for (int i = 5; i < 11; i++) {
-		m_materials[i] = mat;
+		m_materials[i] = baseMaterial();
 		m_materials[i].Lighting = true;
 		m_materials[i].MaterialType = video::EMT_SOLID;
 	}
@@ -673,13 +680,12 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 			c = video::SColor(255, 255, 255, 255);
 		draw_sky_body(vertices, -d, d, c);
 		place_sky_body(vertices, -90, wicked_time_of_day * 360 - 90);
-		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		driver->drawIndexedTriangleList(&vertices[0], 4, indices, 2);
 	}
 }
 
 void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 {
-	driver->setMaterial(m_materials[1]);
 	// Tune values so that stars first appear just after the sun
 	// disappears over the horizon, and disappear just before the sun
 	// appears over the horizon.
@@ -687,87 +693,19 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	// to time 4000.
 
 	float tod = wicked_time_of_day < 0.5f ? wicked_time_of_day : (1.0f - wicked_time_of_day);
-	float starbrightness = clamp((0.25f - fabsf(tod)) * 20.0f, 0.0f, 1.0f);
-
-	float f = starbrightness;
-	float d = (0.006 / 2) * m_star_params.scale;
-
-	video::SColor starcolor = m_star_params.starcolor;
-	starcolor.setAlpha(f * m_star_params.starcolor.getAlpha());
-
-	// Stars are only drawn when not fully transparent
-	if (m_star_params.starcolor.getAlpha() < 1)
+	float starbrightness = (0.25f - fabsf(tod)) * 20.0f;
+	int alpha = clamp<int>(starbrightness * m_star_params.starcolor.getAlpha(), 0, 255);
+	if (!alpha) // Stars are only drawn when not fully transparent
 		return;
-#if ENABLE_GLES
-	u16 *indices = new u16[m_star_params.count * 3];
-	video::S3DVertex *vertices =
-			new video::S3DVertex[m_star_params.count * 3];
-	for (u32 i = 0; i < m_star_params.count; i++) {
-		indices[i * 3 + 0] = i * 3 + 0;
-		indices[i * 3 + 1] = i * 3 + 1;
-		indices[i * 3 + 2] = i * 3 + 2;
-		v3f r = m_stars[i];
-		core::CMatrix4<f32> a;
-		a.buildRotateFromTo(v3f(0, 1, 0), r);
-		v3f p = v3f(-d, 1, -d);
-		v3f p1 = v3f(d, 1, 0);
-		v3f p2 = v3f(-d, 1, d);
-		a.rotateVect(p);
-		a.rotateVect(p1);
-		a.rotateVect(p2);
-		p.rotateXYBy(wicked_time_of_day * 360 - 90);
-		p1.rotateXYBy(wicked_time_of_day * 360 - 90);
-		p2.rotateXYBy(wicked_time_of_day * 360 - 90);
-		vertices[i * 3 + 0].Pos = p;
-		vertices[i * 3 + 0].Color = starcolor;
-		vertices[i * 3 + 1].Pos = p1;
-		vertices[i * 3 + 1].Color = starcolor;
-		vertices[i * 3 + 2].Pos = p2;
-		vertices[i * 3 + 2].Color = starcolor;
-	}
-	driver->drawIndexedTriangleList(vertices, m_star_params.count * 3,
-			indices, m_star_params.count);
-	delete[] indices;
-	delete[] vertices;
-#else
-	u16 *indices = new u16[m_star_params.count * 4];
-	video::S3DVertex *vertices =
-			new video::S3DVertex[m_star_params.count * 4];
-	for (u32 i = 0; i < m_star_params.count; i++) {
-		indices[i * 4 + 0] = i * 4 + 0;
-		indices[i * 4 + 1] = i * 4 + 1;
-		indices[i * 4 + 2] = i * 4 + 2;
-		indices[i * 4 + 3] = i * 4 + 3;
-		v3f r = m_stars[i];
-		core::CMatrix4<f32> a;
-		a.buildRotateFromTo(v3f(0, 1, 0), r);
-		v3f p = v3f(-d, 1, -d);
-		v3f p1 = v3f(d, 1, -d);
-		v3f p2 = v3f(d, 1, d);
-		v3f p3 = v3f(-d, 1, d);
-		a.rotateVect(p);
-		a.rotateVect(p1);
-		a.rotateVect(p2);
-		a.rotateVect(p3);
-		p.rotateXYBy(wicked_time_of_day * 360 - 90);
-		p1.rotateXYBy(wicked_time_of_day * 360 - 90);
-		p2.rotateXYBy(wicked_time_of_day * 360 - 90);
-		p3.rotateXYBy(wicked_time_of_day * 360 - 90);
-		vertices[i * 4 + 0].Pos = p;
-		vertices[i * 4 + 0].Color = starcolor;
-		vertices[i * 4 + 1].Pos = p1;
-		vertices[i * 4 + 1].Color = starcolor;
-		vertices[i * 4 + 2].Pos = p2;
-		vertices[i * 4 + 2].Color = starcolor;
-		vertices[i * 4 + 3].Pos = p3;
-		vertices[i * 4 + 3].Color = starcolor;
-	}
-	driver->drawVertexPrimitiveList(vertices, m_star_params.count * 4,
-			indices, m_star_params.count, video::EVT_STANDARD,
-			scene::EPT_QUADS, video::EIT_16BIT);
-	delete[] indices;
-	delete[] vertices;
-#endif
+
+	m_materials[0].DiffuseColor = video::SColor(alpha, 0, 0, 0);
+	m_materials[0].EmissiveColor = m_star_params.starcolor;
+	auto sky_rotation = core::matrix4().setRotationAxisRadians(2.0f * M_PI * (wicked_time_of_day - 0.25f), v3f(0.0f, 0.0f, 1.0f));
+	auto world_matrix = driver->getTransform(video::ETS_WORLD);
+	driver->setTransform(video::ETS_WORLD, world_matrix * sky_rotation);
+	driver->setMaterial(m_materials[0]);
+	driver->drawMeshBuffer(m_stars.get());
+	driver->setTransform(video::ETS_WORLD, world_matrix);
 }
 
 void Sky::draw_sky_body(std::array<video::S3DVertex, 4> &vertices, float pos_1, float pos_2, const video::SColor &c)
@@ -822,7 +760,7 @@ void Sky::setSunTexture(std::string sun_texture,
 		m_sun_texture = tsrc->getTextureForMesh(m_sun_params.texture);
 
 		if (m_sun_texture) {
-			m_materials[3] = m_materials[0];
+			m_materials[3] = baseMaterial();
 			m_materials[3].setTexture(0, m_sun_texture);
 			m_materials[3].MaterialType = video::
 				EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -870,7 +808,7 @@ void Sky::setMoonTexture(std::string moon_texture,
 		m_moon_texture = tsrc->getTextureForMesh(m_moon_params.texture);
 
 		if (m_moon_texture) {
-			m_materials[4] = m_materials[0];
+			m_materials[4] = baseMaterial();
 			m_materials[4].setTexture(0, m_moon_texture);
 			m_materials[4].MaterialType = video::
 				EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -892,19 +830,54 @@ void Sky::setStarCount(u16 star_count, bool force_update)
 	// Allow force updating star count at game init.
 	if (m_star_params.count != star_count || force_update) {
 		m_star_params.count = star_count;
-		m_stars.clear();
-		// Rebuild the stars surrounding the camera
-		for (u16 i = 0; i < star_count; i++) {
-			v3f star = v3f(
-				myrand_range(-10000, 10000),
-				myrand_range(-10000, 10000),
-				myrand_range(-10000, 10000)
-			);
-
-			star.normalize();
-			m_stars.emplace_back(star);
-		}
+		updateStars();
 	}
+}
+
+void Sky::updateStars() {
+	m_stars.reset(new scene::SMeshBuffer());
+	// Stupid IrrLicht doesn’t allow non-indexed rendering, and indexed quad
+	// rendering is slow due to lack of hardware support. So as indices are
+	// 16-bit and there are 4 vertices per star... the limit is 2^16/4 = 0x4000.
+	// That should be well enough actually.
+	if (m_star_params.count > 0x4000) {
+		warningstream << "Requested " << m_star_params.count << " stars but " << 0x4000 << " is the max\n";
+		m_star_params.count = 0x4000;
+	}
+	m_stars->Vertices.reallocate(4 * m_star_params.count);
+	m_stars->Indices.reallocate(6 * m_star_params.count);
+
+	float d = (0.006 / 2) * m_star_params.scale;
+	for (u16 i = 0; i < m_star_params.count; i++) {
+		v3f r = v3f(
+			myrand_range(-10000, 10000),
+			myrand_range(-10000, 10000),
+			myrand_range(-10000, 10000)
+		);
+		core::CMatrix4<f32> a;
+		a.buildRotateFromTo(v3f(0, 1, 0), r);
+		v3f p = v3f(-d, 1, -d);
+		v3f p1 = v3f(d, 1, -d);
+		v3f p2 = v3f(d, 1, d);
+		v3f p3 = v3f(-d, 1, d);
+		a.rotateVect(p);
+		a.rotateVect(p1);
+		a.rotateVect(p2);
+		a.rotateVect(p3);
+		m_stars->Vertices.push_back(video::S3DVertex(p, {}, {}, {}));
+		m_stars->Vertices.push_back(video::S3DVertex(p1, {}, {}, {}));
+		m_stars->Vertices.push_back(video::S3DVertex(p2, {}, {}, {}));
+		m_stars->Vertices.push_back(video::S3DVertex(p3, {}, {}, {}));
+	}
+	for (u16 i = 0; i < m_star_params.count; i++) {
+		m_stars->Indices.push_back(i * 4 + 0);
+		m_stars->Indices.push_back(i * 4 + 1);
+		m_stars->Indices.push_back(i * 4 + 2);
+		m_stars->Indices.push_back(i * 4 + 2);
+		m_stars->Indices.push_back(i * 4 + 3);
+		m_stars->Indices.push_back(i * 4 + 0);
+	}
+	m_stars->setHardwareMappingHint(scene::EHM_STATIC);
 }
 
 void Sky::setSkyColors(const SkyColor &sky_color)
@@ -936,7 +909,7 @@ void Sky::addTextureToSkybox(std::string texture, int material_id,
 	// Keep a list of texture names handy.
 	m_sky_params.textures.emplace_back(texture);
 	video::ITexture *result = tsrc->getTextureForMesh(texture);
-	m_materials[material_id+5] = m_materials[0];
+	m_materials[material_id+5] = baseMaterial();
 	m_materials[material_id+5].setTexture(0, result);
 	m_materials[material_id+5].MaterialType = video::EMT_SOLID;
 }
