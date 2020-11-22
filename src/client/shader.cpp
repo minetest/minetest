@@ -205,10 +205,8 @@ public:
 		video::IVideoDriver *driver = services->getVideoDriver();
 		sanity_check(driver != NULL);
 
-		bool is_highlevel = userData;
-
 		for (auto &&setter : m_setters)
-			setter->onSetConstants(services, is_highlevel);
+			setter->onSetConstants(services);
 	}
 
 	virtual void OnSetMaterial(const video::SMaterial& material) override
@@ -248,47 +246,39 @@ public:
 	{}
 	~MainShaderConstantSetter() = default;
 
-	virtual void onSetConstants(video::IMaterialRendererServices *services,
-			bool is_highlevel)
+	virtual void onSetConstants(video::IMaterialRendererServices *services) override
 	{
 		video::IVideoDriver *driver = services->getVideoDriver();
 		sanity_check(driver);
 
 		// Set world matrix
 		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
-		if (is_highlevel)
-			m_world.set(*reinterpret_cast<float(*)[16]>(world.pointer()), services);
-		else
-			services->setVertexShaderConstant(world.pointer(), 4, 4);
+		m_world.set(*reinterpret_cast<float(*)[16]>(world.pointer()), services);
 
 		// Set clip matrix
 		core::matrix4 worldView;
 		worldView = driver->getTransform(video::ETS_VIEW);
 		worldView *= world;
+
 		core::matrix4 worldViewProj;
 		worldViewProj = driver->getTransform(video::ETS_PROJECTION);
 		worldViewProj *= worldView;
-		if (is_highlevel)
-			m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
-		else
-			services->setVertexShaderConstant(worldViewProj.pointer(), 0, 4);
+		m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
 
 #if ENABLE_GLES
-		if (is_highlevel) {
-			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
-			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
-			m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
+		core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
+		m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
+		m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
 
-			core::matrix4 normal;
-			worldView.getTransposed(normal);
-			sanity_check(normal.makeInverse());
-			float m[9] = {
-				normal[0], normal[1], normal[2],
-				normal[4], normal[5], normal[6],
-				normal[8], normal[9], normal[10],
-			};
-			m_normal.set(m, services);
-		}
+		core::matrix4 normal;
+		worldView.getTransposed(normal);
+		sanity_check(normal.makeInverse());
+		float m[9] = {
+			normal[0], normal[1], normal[2],
+			normal[4], normal[5], normal[6],
+			normal[8], normal[9], normal[10],
+		};
+		m_normal.set(m, services);
 #endif
 	}
 };
