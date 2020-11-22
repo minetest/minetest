@@ -27,8 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mapgen.h" // Mapgen::setDefaultSettings
 #include "util/string.h"
 
-void set_default_settings(Settings *settings)
+void set_default_settings()
 {
+	Settings *settings = Settings::createLayer(SL_DEFAULTS);
+
 	// Client and server
 	settings->setDefault("language", "");
 	settings->setDefault("name", "");

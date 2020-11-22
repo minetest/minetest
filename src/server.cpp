@@ -351,6 +351,7 @@ Server::~Server()
 	// Deinitialize scripting
 	infostream << "Server: Deinitializing scripting" << std::endl;
 	delete m_script;
+	delete m_game_settings;
 
 	while (!m_unsent_map_edit_queue.empty()) {
 		delete m_unsent_map_edit_queue.front();
@@ -367,6 +368,8 @@ void Server::init()
 		infostream << std::endl;
 	infostream << "- world:  " << m_path_world << std::endl;
 	infostream << "- game:   " << m_gamespec.path << std::endl;
+
+	m_game_settings = Settings::createLayer(SL_GAME);
 
 	// Create world if it doesn't exist
 	try {

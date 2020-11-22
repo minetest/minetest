@@ -38,8 +38,8 @@ public:
 	void listPlayers(std::vector<std::string> &res);
 
 private:
-	void deSerialize(RemotePlayer *p, std::istream &is,
-		const std::string &playername, PlayerSAO *sao);
+	void deSerialize(RemotePlayer *p, std::istream &is, const std::string &playername,
+			PlayerSAO *sao);
 	/*
 		serialize() writes a bunch of text that can contain
 		any characters except a '\0', and such an ending that

@@ -248,7 +248,7 @@ bool GUIKeyChangeMenu::acceptInput()
 {
 	for (key_setting *k : key_settings) {
 		std::string default_key;
-		g_settings->getDefaultNoEx(k->setting_name, default_key);
+		Settings::getLayer(SL_DEFAULTS)->getNoEx(k->setting_name, default_key);
 
 		if (k->key.sym() != default_key)
 			g_settings->set(k->setting_name, k->key.sym());

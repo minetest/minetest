@@ -487,11 +487,14 @@ static bool create_userdata_path()
 static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 {
 	startup_message();
-	set_default_settings(g_settings);
+	set_default_settings();
 
 	// Initialize sockets
 	sockets_init();
 	atexit(sockets_cleanup);
+
+	// Initialize g_settings
+	Settings::createLayer(SL_GLOBAL);
 
 	if (!read_config_file(cmd_args))
 		return false;
@@ -523,6 +526,7 @@ static bool read_config_file(const Settings &cmd_args)
 {
 	// Path of configuration file in use
 	sanity_check(g_settings_path == "");	// Sanity check
+
 
 	if (cmd_args.exists("config")) {
 		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());

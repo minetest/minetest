@@ -982,7 +982,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 
 	bool set_default = !lua_isboolean(L, 3) || readParam<bool>(L, 3);
 
-	g_settings->setNoiseParams(name, np, set_default);
+	Settings::getLayer(set_default ? SL_DEFAULTS : SL_GLOBAL)->setNoiseParams(name, np);
 
 	return 0;
 }
