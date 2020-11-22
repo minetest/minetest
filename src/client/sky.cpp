@@ -830,6 +830,7 @@ void Sky::setStarCount(u16 star_count, bool force_update)
 	// Allow force updating star count at game init.
 	if (m_star_params.count != star_count || force_update) {
 		m_star_params.count = star_count;
+		m_seed = (u64)myrand() << 32 | myrand();
 		updateStars();
 	}
 }
@@ -847,12 +848,13 @@ void Sky::updateStars() {
 	m_stars->Vertices.reallocate(4 * m_star_params.count);
 	m_stars->Indices.reallocate(6 * m_star_params.count);
 
+	PcgRandom rgen(m_seed);
 	float d = (0.006 / 2) * m_star_params.scale;
 	for (u16 i = 0; i < m_star_params.count; i++) {
 		v3f r = v3f(
-			myrand_range(-10000, 10000),
-			myrand_range(-10000, 10000),
-			myrand_range(-10000, 10000)
+			rgen.range(-10000, 10000),
+			rgen.range(-10000, 10000),
+			rgen.range(-10000, 10000)
 		);
 		core::CMatrix4<f32> a;
 		a.buildRotateFromTo(v3f(0, 1, 0), r);
