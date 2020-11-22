@@ -363,20 +363,16 @@ private:
 
 	// Global constant setter factories
 	std::vector<std::unique_ptr<IShaderConstantSetterFactory>> m_setter_factories;
+
+	// Generate shader given the shader name.
+	ShaderInfo generateShader(const std::string &name,
+			MaterialType material_type, NodeDrawType drawtype);
 };
 
 IWritableShaderSource *createShaderSource()
 {
 	return new ShaderSource();
 }
-
-/*
-	Generate shader given the shader name.
-*/
-ShaderInfo generate_shader(const std::string &name,
-		MaterialType material_type, NodeDrawType drawtype,
-		const std::vector<std::unique_ptr<IShaderConstantSetterFactory>> &setter_factories,
-		SourceShaderCache *sourcecache);
 
 ShaderSource::ShaderSource()
 {
@@ -459,8 +455,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 		return 0;
 	}
 
-	ShaderInfo info = generate_shader(name, material_type, drawtype,
-			m_setter_factories, &m_sourcecache);
+	ShaderInfo info = generateShader(name, material_type, drawtype);
 
 	/*
 		Add shader to caches (add dummy shaders too)
@@ -524,16 +519,14 @@ void ShaderSource::rebuildShaders()
 	for (ShaderInfo &i : m_shaderinfo_cache) {
 		ShaderInfo *info = &i;
 		if (!info->name.empty()) {
-			*info = generate_shader(info->name, info->material_type,
-					info->drawtype, m_setter_factories, &m_sourcecache);
+			*info = generateShader(info->name, info->material_type, info->drawtype);
 		}
 	}
 }
 
 
-ShaderInfo generate_shader(const std::string &name, MaterialType material_type, NodeDrawType drawtype,
-		const std::vector<std::unique_ptr<IShaderConstantSetterFactory>> &setter_factories,
-		SourceShaderCache *sourcecache)
+ShaderInfo ShaderSource::generateShader(const std::string &name,
+		MaterialType material_type, NodeDrawType drawtype)
 {
 	ShaderInfo shaderinfo;
 	shaderinfo.name = name;
@@ -689,9 +682,9 @@ ShaderInfo generate_shader(const std::string &name, MaterialType material_type, 
 
 	auto common_header = shaders_header.str();
 
-	auto vertex_shader = sourcecache->getOrLoad(name, "opengl_vertex.glsl");
-	auto fragment_shader = sourcecache->getOrLoad(name, "opengl_fragment.glsl");
-	auto geometry_shader = sourcecache->getOrLoad(name, "opengl_geometry.glsl");
+	auto vertex_shader = m_sourcecache.getOrLoad(name, "opengl_vertex.glsl");
+	auto fragment_shader = m_sourcecache.getOrLoad(name, "opengl_fragment.glsl");
+	auto geometry_shader = m_sourcecache.getOrLoad(name, "opengl_geometry.glsl");
 
 	vertex_shader = common_header + vertex_header + vertex_shader;
 	fragment_shader = common_header + fragment_header + fragment_shader;
@@ -701,7 +694,7 @@ ShaderInfo generate_shader(const std::string &name, MaterialType material_type, 
 		geometry_shader_ptr = geometry_shader.c_str();
 	}
 
-	irr_ptr<ShaderCallback> cb{new ShaderCallback(setter_factories)};
+	irr_ptr<ShaderCallback> cb{new ShaderCallback(m_setter_factories)};
 	infostream<<"Compiling high level shaders for "<<name<<std::endl;
 	s32 shadermat = gpu->addHighLevelShaderMaterial(
 		vertex_shader.c_str(), nullptr, video::EVST_VS_1_1,
