@@ -136,6 +136,14 @@ public:
 	}
 };
 
+template <class ReferenceCounted>
+irr_ptr<ReferenceCounted> grab(ReferenceCounted *object) noexcept
+{
+	irr_ptr<ReferenceCounted> ptr;
+	ptr.grab(object);
+	return ptr;
+}
+
 template <typename ReferenceCounted>
 bool operator==(const irr_ptr<ReferenceCounted> &a, const irr_ptr<ReferenceCounted> &b)
 {
