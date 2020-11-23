@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Estonian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-11-08 06:26+0000\n"
-"Last-Translator: Janar Leas <janarleas+ubuntuone@googlemail.com>\n"
+"PO-Revision-Date: 2020-12-05 15:29+0000\n"
+"Last-Translator: Janar Leas <janar.leas@gmail.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/minetest/"
 "minetest/et/>\n"
 "Language: et\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3.2\n"
+"X-Generator: Weblate 4.4-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -111,7 +111,7 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Tõrge MOD-i \"$1\" lubamisel, kuna sisaldab keelatud sümboleid. Lubatud on "
+"MOD-i \"$1\" kasutamine nurjus, kuna sisaldab keelatud sümboleid. Lubatud on "
 "ainult [a-z0-9_] märgid."
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -361,7 +361,7 @@ msgstr "Jõed merekõrgusel"
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr "Seed"
+msgstr "Külv"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
@@ -393,7 +393,7 @@ msgstr "Rohtla, Lagendik, Tihnik, Tundra, Laas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Maapinna kulumine"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
@@ -401,11 +401,11 @@ msgstr "Puud ja tihniku rohi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Muutlik jõe sügavus"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Väga suured koopasaalid maapõue sügavuses"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The Development Test is meant for developers."
@@ -447,7 +447,7 @@ msgstr "Nõustu"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Nimetad ümber MOD-i paki:"
+msgstr "Taasnimeta MOD-i pakk:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -463,7 +463,7 @@ msgstr "(Kirjeldus seadistusele puudub)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr "2-mõõtmeline müra"
+msgstr "kahemõõtmeline müra"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -487,11 +487,11 @@ msgstr "Lubatud"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
-msgstr "Lakunaarsus"
+msgstr "Pinna auklikus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr "Oktaavid"
+msgstr "Oktavid"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
@@ -543,7 +543,7 @@ msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
-msgstr "X levitus"
+msgstr "X levi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
@@ -551,7 +551,7 @@ msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
-msgstr "Y levitus"
+msgstr "Y levi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
@@ -559,7 +559,7 @@ msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
-msgstr "Z levitus"
+msgstr "Z levi"
 
 #. ~ "absvalue" is a noise parameter flag.
 #. It is short for "absolute value".
@@ -567,14 +567,14 @@ msgstr "Z levitus"
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "absvalue"
-msgstr "absoluutväärtus"
+msgstr "täisväärtus"
 
 #. ~ "defaults" is a noise parameter flag.
 #. It describes the default processing options
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr "vaikesätted"
+msgstr "algne"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -675,59 +675,59 @@ msgstr "Vali tekstuurikomplekt"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr "Co-arendaja"
+msgstr "Tegevad panustajad"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr "Põhiline arendaja"
+msgstr "Põhi arendajad"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr "Tänuavaldused"
+msgstr "Tegijad"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr "Early arendajad"
+msgstr "Eelnevad panustajad"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr "Eelmised põhilised arendajad"
+msgstr "Eelnevad põhi-arendajad"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr "Kuuluta serverist"
+msgstr "Võõrustamise kuulutamine"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr "Aadress"
+msgstr "Seo aadress"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Configure"
-msgstr "Konfigureeri"
+msgstr "Kohanda"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative Mode"
-msgstr "Kujunduslik mängumood"
+msgstr "Looja"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Enable Damage"
-msgstr "Lülita valu sisse"
+msgstr "Ellujääja"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr "Majuta mäng"
+msgstr "Võõrusta"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr "Majuta server"
+msgstr "Majuta külastajatele"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Lisa mänge sisuvaramust"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
-msgstr "Nimi/Parool"
+msgstr "Nimi/Salasõna"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -735,7 +735,7 @@ msgstr "Uus"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr "Ühtegi maailma pole loodud ega valitud!"
+msgstr "Pole valitud ega loodud ühtegi maailma!"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -751,52 +751,52 @@ msgstr "Vali maailm:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr "Serveri port"
+msgstr "Võõrustaja kanal"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr "Alusta mäng"
+msgstr "Alusta mängu"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
-msgstr "Aadress / Port"
+msgstr "Aadress / kanal"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr "Liitu"
+msgstr "Ühine"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr "Loov režiim"
+msgstr "Looja"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr "Kahjustamine lubatud"
+msgstr "Ellujääja"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr "Eemalda lemmik"
+msgstr "Pole lemmik"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
-msgstr "Lisa lemmikuks"
+msgstr "On lemmik"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr "Liitu mänguga"
+msgstr "Ühine"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
-msgstr "Nimi / Salasõna"
+msgstr "Nimi / salasõna"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Ping"
-msgstr "Ping"
+msgstr "Viivitus"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "PvP lubatud"
+msgstr "Vaenulikus lubatud"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -804,7 +804,7 @@ msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr "3D pilved"
+msgstr "Ruumilised pilved"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
@@ -820,15 +820,15 @@ msgstr "Kõik sätted"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr "Antialiasing:"
+msgstr "Silu servad:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Olete kindel, et lähtestate oma üksikmängija maailma?"
+msgstr "Kindlasti lähtestad oma üksikmängija maailma algseks?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr "Salvesta ekraani suurus"
+msgstr "Mäleta ekraani suurust"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -836,7 +836,7 @@ msgstr "Bi-lineaarne filtreerimine"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bump Mapping"
-msgstr "Muhkkaardistamine"
+msgstr "Konarlik tapeet"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
@@ -876,11 +876,11 @@ msgstr "Mipmapita"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "Blokkide esiletõstmine"
+msgstr "Valitud klotsi ilme"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr "Blokkide kontuur"
+msgstr "Klotsi servad"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
@@ -988,11 +988,11 @@ msgstr "Valmis!"
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr "Blokkide häälestamine"
+msgstr "Klotsidega täitmine"
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr "Blokkide häälestamine..."
+msgstr "Klotsidega täitmine..."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
@@ -1334,15 +1334,15 @@ msgstr "Haakumatus lubatud (pole 'haakumatus' volitust)"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "Klotsi määratlused..."
 
 #: src/client/game.cpp
 msgid "Off"
-msgstr ""
+msgstr "Väljas"
 
 #: src/client/game.cpp
 msgid "On"
-msgstr ""
+msgstr "Sees"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
@@ -1358,15 +1358,15 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Remote server"
-msgstr ""
+msgstr "Kaug võõrustaja"
 
 #: src/client/game.cpp
 msgid "Resolving address..."
-msgstr ""
+msgstr "Aadressi lahendamine..."
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "Sulgemine..."
 
 #: src/client/game.cpp
 msgid "Singleplayer"
@@ -1382,11 +1382,11 @@ msgstr "Heli vaigistatud"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Heli süsteem on keelatud"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "See kooste ei toeta heli süsteemi"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -1395,17 +1395,17 @@ msgstr "Heli taastatud"
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
-msgstr ""
+msgstr "Vaate kaugus on nüüd: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "Vaate kaugus on suurim võimalik: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr ""
+msgstr "Vaate kaugus on vähim võimalik: %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -2079,7 +2079,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
-msgstr ""
+msgstr "Raskuskiirendus, (klotsi sekundis) sekundi kohta."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
@@ -2106,7 +2106,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
-msgstr ""
+msgstr "Lendlevad osakesed klotsi kaevandamisel."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2212,7 +2212,7 @@ msgstr "Automaatse edasiliikumise klahv"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
-msgstr ""
+msgstr "Iseseisvalt hüppab üle ühe klotsi kordse tõkke."
 
 #: src/settings_translation_file.cpp
 msgid "Automatically report to the serverlist."
@@ -2519,7 +2519,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Ühendab klaasi, kui klots võimaldab."
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
@@ -3775,9 +3775,8 @@ msgid "Inventory items animations"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Inventory key"
-msgstr "Seljakott"
+msgstr "Varustuse klahv"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -5165,9 +5164,8 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Pitch move key"
-msgstr "Kujunduslik mängumood"
+msgstr "Kõrvale astumise klahv"
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
@@ -5261,18 +5259,16 @@ msgid "Random input"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Range select key"
-msgstr "Kauguse valik"
+msgstr "Valiku ulatuse klahv"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Regular font path"
-msgstr "Vali"
+msgstr "Tavafondi asukoht"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5293,9 +5289,8 @@ msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Report path"
-msgstr "Vali"
+msgstr "Aruande asukoht"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5328,9 +5323,8 @@ msgid "Ridged mountain size noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Right key"
-msgstr "Parem Menüü"
+msgstr "Parem klahv"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
@@ -5349,9 +5343,8 @@ msgid "River depth"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise"
-msgstr "Parem Windowsi nupp"
+msgstr "Jõe müra"
 
 #: src/settings_translation_file.cpp
 msgid "River size"
@@ -5419,14 +5412,12 @@ msgid "Screenshot folder"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "Mängupilt"
+msgstr "Kuvapildi vorming"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "Mängupilt"
+msgstr "Kuvapildi tase"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5491,9 +5482,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server / Singleplayer"
-msgstr "Üksikmäng"
+msgstr "Võõrusta / Üksi"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
@@ -5556,9 +5546,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shader path"
-msgstr "Varjutajad"
+msgstr "Varjutaja asukoht"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5638,9 +5627,8 @@ msgid "Small-scale temperature variation for blending biomes on borders."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth lighting"
-msgstr "Ilus valgustus"
+msgstr "Hajus valgus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5657,14 +5645,12 @@ msgid "Smooths rotation of camera. 0 to disable."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneak key"
-msgstr "Hiilimine"
+msgstr "Hiilimis klahv"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneaking speed"
-msgstr "Hiilimine"
+msgstr "Hiilimis kiirus"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed, in nodes per second."
@@ -5675,9 +5661,8 @@ msgid "Sound"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Special key"
-msgstr "Hiilimine"
+msgstr "Eri klahv"
 
 #: src/settings_translation_file.cpp
 msgid "Special key for climbing/descending"
@@ -5973,18 +5958,16 @@ msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touch screen threshold"
-msgstr "Põlvkonna kaardid"
+msgstr "Puuteekraani lävi"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trilinear filtering"
-msgstr "Tri-Linear Filtreerimine"
+msgstr "kolmik-lineaar filtreerimine"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6131,7 +6114,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
-msgstr ""
+msgstr "Vaate kaugus klotsides."
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
@@ -6154,9 +6137,8 @@ msgid "Virtual joystick triggers aux button"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volume"
-msgstr "Hääle volüüm"
+msgstr "Valjus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6191,40 +6173,35 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr ""
+msgstr "Merepinna kõrgus maailmas."
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
-msgstr ""
+msgstr "Lainetavad klotsid"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving leaves"
-msgstr "Uhked puud"
+msgstr "Lehvivad lehed"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids"
 msgstr "Lainetavad vedelikud"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave height"
-msgstr "Uhked puud"
+msgstr "Vedeliku laine kõrgus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wave speed"
-msgstr "Uhked puud"
+msgstr "Vedeliku laine kiirus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving liquids wavelength"
-msgstr "Uhked puud"
+msgstr "Vedeliku laine pikkus"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
-msgstr ""
+msgstr "Õõtsuvad taimed"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6273,7 +6250,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
-msgstr ""
+msgstr "Kas mängjail on võimalus teineteist tappa."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6283,7 +6260,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
-msgstr ""
+msgstr "Kas nähtava ala lõpp udutada."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6320,9 +6297,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "World start time"
-msgstr "Maailma nimi"
+msgstr "Aeg alustatavas maailmas"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6394,7 +6370,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
-msgstr ""
+msgstr "cURL aegus"
 
 #, fuzzy
 #~ msgid "Toggle Cinematic"
