@@ -135,7 +135,7 @@ void ActiveObjectMgr::getObjectsInArea(const aabb3f &box,
 	for (auto &activeObject : m_active_objects) {
 		ServerActiveObject *obj = activeObject.second;
 		const v3f &objectpos = obj->getBasePosition();
-		if (! box.isPointInside(objectpos))
+		if (!box.isPointInside(objectpos))
 			continue;
 
 		if (!include_obj_cb || include_obj_cb(obj))
