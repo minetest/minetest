@@ -698,7 +698,7 @@ void Sky::draw_stars(video::IVideoDriver * driver, float wicked_time_of_day)
 	float tod = wicked_time_of_day < 0.5f ? wicked_time_of_day : (1.0f - wicked_time_of_day);
 	float starbrightness = (0.25f - fabsf(tod)) * 20.0f;
 	m_star_color = m_star_params.starcolor;
-	m_star_color.a = clamp(starbrightness * m_star_color.a, 0.0f, 1.0f);
+	m_star_color.a *= clamp(starbrightness, 0.0f, 1.0f);
 	if (m_star_color.a <= 0.0f) // Stars are only drawn when not fully transparent
 		return;
 	m_materials[0].DiffuseColor = m_materials[0].EmissiveColor = m_star_color.toSColor();
