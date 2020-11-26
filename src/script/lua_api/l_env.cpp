@@ -749,8 +749,8 @@ int ModApiEnvMod::l_get_objects_in_area(lua_State *L)
 	GET_ENV_PTR;
 	ScriptApiBase *script = getScriptApiBase(L);
 	
-	v3f minp = read_v3f(L, 1);
-	v3f maxp = read_v3f(L, 2);
+	v3f minp = read_v3f(L, 1) * BS;
+	v3f maxp = read_v3f(L, 2) * BS;
 	aabb3f box(minp, maxp);
 	box.repair();
 	std::vector<ServerActiveObject *> objs;
