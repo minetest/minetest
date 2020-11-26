@@ -268,6 +268,7 @@ public:
 	// Returns true if the inventory of the local player has been
 	// updated from the server. If it is true, it is set to false.
 	bool updateWieldedItem();
+	bool updateLeftWieldedItem();
 
 	/* InventoryManager interface */
 	Inventory* getInventory(const InventoryLocation &loc) override;

@@ -128,6 +128,7 @@ public:
 	u16 getWieldIndex() const;
 	ItemStack getWieldedItem(ItemStack *selected, ItemStack *hand = nullptr) const;
 	bool setWieldedItem(const ItemStack &item);
+	bool setLeftWieldedItem(const ItemStack &item);
 
 	/*
 		PlayerSAO-specific
