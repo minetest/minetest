@@ -124,7 +124,10 @@ void ClientMap::updateDrawList()
 
 	const v3f camera_position = m_camera_position;
 	const v3f camera_direction = m_camera_direction;
-	const f32 camera_fov = m_camera_fov;
+
+	// Use a higher fov to accomodate faster camera movements.
+	// Blocks are cropped better when they are drawn.
+	const f32 camera_fov = m_camera_fov * 1.1f;
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
 	v3s16 p_blocks_min;
