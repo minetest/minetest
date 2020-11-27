@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-09-22 03:39+0000\n"
-"Last-Translator: Jo <joaquinfc@protonmail.com>\n"
+"PO-Revision-Date: 2020-12-24 05:29+0000\n"
+"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.4.1-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -1337,7 +1337,7 @@ msgstr "Modo 'Noclip' activado"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr "Modo \"noclip\" activado (nota: sin privilegio 'noclip')"
+msgstr "Modo 'Noclip' activado (nota: sin privilegio 'noclip')"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1437,7 +1437,7 @@ msgstr "Chat oculto"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr "Chat mostrado"
+msgstr "Chat visible"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
@@ -1993,7 +1993,7 @@ msgstr ""
 "limitado en tamaño por el mundo.\n"
 "Incrementa estos valores para 'ampliar' el detalle del fractal.\n"
 "El valor por defecto es para ajustar verticalmente la forma para\n"
-"una isla, establece los 3 números igual para la forma pura."
+"una isla, establece los 3 números iguales para la forma inicial."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5256,7 +5256,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr ""
+msgstr "Intervalo de guardado de mapa"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -5288,54 +5288,48 @@ msgid "Mapgen Flat"
 msgstr "Generador de mapas plano"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Flat specific flags"
-msgstr "Banderas planas de Mapgen"
+msgstr "Banderas de generador de mapas plano"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal"
 msgstr "Generador de mapas fractal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Fractal specific flags"
-msgstr "Banderas planas de Mapgen"
+msgstr "Banderas de generador de mapas fractal"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
 msgstr "Generador de mapas V5"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V5 specific flags"
-msgstr "Banderas planas de Mapgen"
+msgstr "Banderas de generador de mapas V5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6"
 msgstr "Generador de mapas V6"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V6 specific flags"
-msgstr "Banderas planas de Mapgen"
+msgstr "Banderas de generador de mapas V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7"
 msgstr "Generador de mapas v7"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen V7 specific flags"
-msgstr "Banderas planas de Mapgen"
+msgstr "Banderas de generador de mapas V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
-msgstr "Valles de Mapgen"
+msgstr "Generador de mapas Valleys"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Valleys specific flags"
-msgstr "Banderas planas de Mapgen"
+msgstr "Banderas de generador de mapas Valleys"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
@@ -5479,6 +5473,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
+"Tiempo máximo en ms que puede demorar una descarga (por ejemplo, la descarga "
+"de un mod)."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
@@ -5490,7 +5486,7 @@ msgstr "Menús"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
-msgstr ""
+msgstr "Caché de mallas poligonales"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
@@ -5506,7 +5502,7 @@ msgstr "Método utilizado para resaltar el objeto seleccionado."
 
 #: src/settings_translation_file.cpp
 msgid "Minimal level of logging to be written to chat."
-msgstr ""
+msgstr "Nivel mínimo de logging a ser escrito al chat."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5548,11 +5544,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
-msgstr ""
+msgstr "Ruta de fuente monoespaciada"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
-msgstr ""
+msgstr "Tamaño de fuente monoespaciada"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
@@ -5572,11 +5568,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Sensibilidad del ratón"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "Multiplicador de sensiblidad del ratón."
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -5610,6 +5606,10 @@ msgid ""
 "When running a server, clients connecting with this name are admins.\n"
 "When starting from the main menu, this is overridden."
 msgstr ""
+"Nombre del jugador.\n"
+"Cuando se ejecuta un servidor, los clientes que se conecten con este nombre "
+"son administradores.\n"
+"Al comenzar desde el menú principal, esto se anula."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5632,7 +5632,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
-msgstr ""
+msgstr "Los usuarios nuevos deben ingresar esta contraseña."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
@@ -7057,7 +7057,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
-msgstr ""
+msgstr "Tiempo de espera de descarga por cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
