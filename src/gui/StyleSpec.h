@@ -54,6 +54,7 @@ public:
 		COLORS,
 		BORDERCOLORS,
 		BORDERWIDTHS,
+		SOUND,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -116,6 +117,8 @@ public:
 			return BORDERCOLORS;
 		} else if (name == "borderwidths") {
 			return BORDERWIDTHS;
+		} else if (name == "sound") {
+			return SOUND;
 		} else {
 			return NONE;
 		}

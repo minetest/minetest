@@ -533,7 +533,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 		// Timestamp
 		TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 				<<": Timestamp"<<std::endl);
-		setTimestamp(readU32(is));
+		setTimestampNoChangedFlag(readU32(is));
 		m_disk_timestamp = m_timestamp;
 
 		// Dynamically re-set ids based on node names
@@ -716,10 +716,10 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 
 		// Timestamp
 		if (version >= 17) {
-			setTimestamp(readU32(is));
+			setTimestampNoChangedFlag(readU32(is));
 			m_disk_timestamp = m_timestamp;
 		} else {
-			setTimestamp(BLOCK_TIMESTAMP_UNDEFINED);
+			setTimestampNoChangedFlag(BLOCK_TIMESTAMP_UNDEFINED);
 		}
 
 		// Dynamically re-set ids based on node names

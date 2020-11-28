@@ -48,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "client/client.h"
 #include "client/fontengine.h"
+#include "client/sound.h"
 #include "util/hex.h"
 #include "util/numeric.h"
 #include "util/string.h" // for parseColorString()
@@ -95,11 +96,13 @@ inline u32 clamp_u8(s32 value)
 
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
-		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
+		Client *client, ISimpleTextureSource *tsrc, ISoundManager *sound_manager,
+		IFormSource *fsrc, TextDest *tdst,
 		const std::string &formspecPrepend, bool remap_dbl_click):
 	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr, remap_dbl_click),
 	m_invmgr(client),
 	m_tsrc(tsrc),
+	m_sound_manager(sound_manager),
 	m_client(client),
 	m_formspec_prepend(formspecPrepend),
 	m_form_src(fsrc),
@@ -143,11 +146,12 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 
 void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 	JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
-	const std::string &formspecPrepend)
+	const std::string &formspecPrepend, ISoundManager *sound_manager)
 {
 	if (cur_formspec == nullptr) {
 		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
-			client, client->getTextureSource(), fs_src, txt_dest, formspecPrepend);
+			client, client->getTextureSource(), sound_manager, fs_src,
+			txt_dest, formspecPrepend);
 		cur_formspec->doPause = false;
 
 		/*
@@ -614,6 +618,9 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data, const std::string &element
 				data->current_parent, spec.fid, spec.flabel.c_str());
 
 		auto style = getDefaultStyleForElement("checkbox", name);
+
+		spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
 		if (spec.fname == m_focused_element) {
@@ -1020,6 +1027,9 @@ void GUIFormSpecMenu::parseButton(parserData* data, const std::string &element,
 				data->current_parent, spec.fid, spec.flabel.c_str());
 
 		auto style = getStyleForElement(type, name, (type != "button") ? "button" : "");
+
+		spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
+
 		e->setStyles(style);
 
 		if (spec.fname == m_focused_element) {
@@ -1381,6 +1391,9 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 			e->setSelected(stoi(str_initial_selection)-1);
 
 		auto style = getDefaultStyleForElement("dropdown", name);
+
+		spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 
 		m_fields.push_back(spec);
@@ -1747,6 +1760,10 @@ void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &elemen
 	);
 
 	spec.ftype = f_HyperText;
+
+	auto style = getDefaultStyleForElement("hypertext", spec.fname);
+	spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
 	GUIHyperText *e = new GUIHyperText(spec.flabel.c_str(), Environment,
 			data->current_parent, spec.fid, rect, m_client, m_tsrc);
 	e->drop();
@@ -1999,6 +2016,8 @@ void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &elem
 
 		auto style = getStyleForElement("image_button", spec.fname);
 
+		spec.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
+
 		// Override style properties with values specified directly in the element
 		if (!image_name.empty())
 			style[StyleSpec::STATE_DEFAULT].set(StyleSpec::FGIMG, image_name);
@@ -2107,6 +2126,9 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		e->setTabHeight(geom.Y);
 
 		auto style = getDefaultStyleForElement("tabheader", name);
+
+		spec.sound = style.get(StyleSpec::Property::SOUND, "");
+
 		e->setNotClipped(style.getBool(StyleSpec::NOCLIP, true));
 
 		for (const std::string &button : buttons) {
@@ -2195,6 +2217,9 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 				item_name, m_client);
 
 		auto style = getStyleForElement("item_image_button", spec_btn.fname, "image_button");
+
+		spec_btn.sound = style[StyleSpec::STATE_DEFAULT].get(StyleSpec::Property::SOUND, "");
+
 		e_btn->setStyles(style);
 
 		if (spec_btn.fname == m_focused_element) {
@@ -4486,6 +4511,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			for (GUIFormSpecMenu::FieldSpec &s : m_fields) {
 				if ((s.ftype == f_TabHeader) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
+					if (!s.sound.empty() && m_sound_manager)
+						m_sound_manager->playSound(s.sound, false, 1.0f);
 					s.send = true;
 					acceptInput();
 					s.send = false;
@@ -4529,6 +4556,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					continue;
 
 				if (s.ftype == f_Button || s.ftype == f_CheckBox) {
+					if (!s.sound.empty() && m_sound_manager)
+						m_sound_manager->playSound(s.sound, false, 1.0f);
+
 					s.send = true;
 					if (s.is_exit) {
 						if (m_allowclose) {
@@ -4551,6 +4581,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 							s2.send = false;
 						}
 					}
+					if (!s.sound.empty() && m_sound_manager)
+						m_sound_manager->playSound(s.sound, false, 1.0f);
 					s.send = true;
 					acceptInput(quit_mode_no);
 
@@ -4567,6 +4599,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					acceptInput(quit_mode_no);
 					s.fdefault = L"";
 				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
+					if (!s.sound.empty() && m_sound_manager)
+						m_sound_manager->playSound(s.sound, false, 1.0f);
 					s.send = true;
 					acceptInput();
 					s.send = false;

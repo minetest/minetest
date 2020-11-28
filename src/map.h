@@ -423,6 +423,7 @@ private:
 	// Chunks
 	core::map<v2s16, MapChunk*> m_chunks;
 #endif
+	std::set<v3s16> m_chunks_in_progress;
 
 	/*
 		Metadata is re-written on disk only if this is true.
