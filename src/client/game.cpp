@@ -654,6 +654,8 @@ struct ClientEventHandler
  THE GAME
  ****************************************************************************/
 
+using PausedNodesList = std::vector<std::pair<irr_ptr<scene::IAnimatedMeshSceneNode>, float>>;
+
 /* This is not intended to be a public class. If a public class becomes
  * desirable then it may be better to create another 'wrapper' class that
  * hides most of the stuff in this class (nothing in this class is required
@@ -880,7 +882,7 @@ private:
 	std::string *error_message;
 	bool *reconnect_requested;
 	scene::ISceneNode *skybox;
-	std::vector<std::pair<irr_ptr<scene::IAnimatedMeshSceneNode>, float>> paused_animated_nodes;
+	PausedNodesList paused_animated_nodes;
 
 	bool simple_singleplayer_mode;
 	/* End 'cache' */
@@ -2502,7 +2504,7 @@ inline void Game::step(f32 *dtime)
 	}
 }
 
-static void pauseNodeAnimation(std::vector<std::pair<irr_ptr<scene::IAnimatedMeshSceneNode>, float>> &paused, scene::ISceneNode *node) {
+static void pauseNodeAnimation(PausedNodesList &paused, scene::ISceneNode *node) {
 	if (!node)
 		return;
 	for (auto &&child: node->getChildren())
