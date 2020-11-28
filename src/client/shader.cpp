@@ -680,11 +680,11 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	shaders_header << "#define FOG_START " << core::clamp(g_settings->getFloat("fog_start"), 0.0f, 0.99f) << "\n";
 
-	auto common_header = shaders_header.str();
+	std::string common_header = shaders_header.str();
 
-	auto vertex_shader = m_sourcecache.getOrLoad(name, "opengl_vertex.glsl");
-	auto fragment_shader = m_sourcecache.getOrLoad(name, "opengl_fragment.glsl");
-	auto geometry_shader = m_sourcecache.getOrLoad(name, "opengl_geometry.glsl");
+	std::string vertex_shader = m_sourcecache.getOrLoad(name, "opengl_vertex.glsl");
+	std::string fragment_shader = m_sourcecache.getOrLoad(name, "opengl_fragment.glsl");
+	std::string geometry_shader = m_sourcecache.getOrLoad(name, "opengl_geometry.glsl");
 
 	vertex_shader = common_header + vertex_header + vertex_shader;
 	fragment_shader = common_header + fragment_header + fragment_shader;
