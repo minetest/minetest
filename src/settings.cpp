@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <algorithm>
 
-Settings *g_settings = nullptr;
+Settings *g_settings = nullptr; // Populated in main()
 std::string g_settings_path;
 
 Settings *Settings::s_layers[SL_TOTAL_COUNT] = {0}; // Zeroed by compiler
@@ -85,6 +85,7 @@ Settings & Settings::operator = (const Settings &other)
 	if (&other == this)
 		return *this;
 
+	// TODO: Avoid copying Settings objects. Make this private.
 	FATAL_ERROR_IF(m_settingslayer != SL_TOTAL_COUNT && other.m_settingslayer != SL_TOTAL_COUNT,
 		("Tried to copy unique Setting layer " + std::to_string(m_settingslayer)).c_str());
 
@@ -208,6 +209,7 @@ void Settings::writeLines(std::ostream &os, u32 tab_depth) const
 	for (const auto &setting_it : m_settings)
 		printEntry(os, setting_it.first, setting_it.second, tab_depth);
 
+	// For groups this must be "}" !
 	if (!m_end_tag.empty()) {
 		for (u32 i = 0; i < tab_depth; i++)
 			os << "\t";
@@ -455,20 +457,6 @@ const std::string &Settings::get(const std::string &name) const
 	if (entry.is_group)
 		throw SettingNotFoundException("Setting [" + name + "] is a group.");
 	return entry.value;
-}
-
-
-const std::string &Settings::getDefault(const std::string &name) const
-{
-	const SettingsEntry *entry;
-	if (auto parent = getParent())
-		entry = &parent->getEntry(name);
-	else
-		entry = &getEntry(name); // Bottom of the chain
-
-	if (entry->is_group)
-		throw SettingNotFoundException("Setting [" + name + "] is a group.");
-	return entry->value;
 }
 
 

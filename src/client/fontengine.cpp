@@ -42,8 +42,7 @@ static void font_setting_changed(const std::string &name, void *userdata)
 }
 
 /******************************************************************************/
-FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
-	m_settings(main_settings),
+FontEngine::FontEngine(gui::IGUIEnvironment* env) :
 	m_env(env)
 {
 
@@ -51,34 +50,34 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 		i = (FontMode) FONT_SIZE_UNSPECIFIED;
 	}
 
-	assert(m_settings != NULL); // pre-condition
+	assert(g_settings != NULL); // pre-condition
 	assert(m_env != NULL); // pre-condition
 	assert(m_env->getSkin() != NULL); // pre-condition
 
 	readSettings();
 
 	if (m_currentMode == FM_Standard) {
-		m_settings->registerChangedCallback("font_size", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("font_bold", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("font_italic", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("font_path", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("font_path_bold", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("font_path_italic", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("font_path_bolditalic", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("font_shadow", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("font_shadow_alpha", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_size", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_bold", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_italic", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_path", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_path_bold", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_path_italic", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_path_bolditalic", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_shadow", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("font_shadow_alpha", font_setting_changed, NULL);
 	}
 	else if (m_currentMode == FM_Fallback) {
-		m_settings->registerChangedCallback("fallback_font_size", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("fallback_font_path", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("fallback_font_shadow", font_setting_changed, NULL);
-		m_settings->registerChangedCallback("fallback_font_shadow_alpha", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("fallback_font_size", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("fallback_font_path", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("fallback_font_shadow", font_setting_changed, NULL);
+		g_settings->registerChangedCallback("fallback_font_shadow_alpha", font_setting_changed, NULL);
 	}
 
-	m_settings->registerChangedCallback("mono_font_path", font_setting_changed, NULL);
-	m_settings->registerChangedCallback("mono_font_size", font_setting_changed, NULL);
-	m_settings->registerChangedCallback("screen_dpi", font_setting_changed, NULL);
-	m_settings->registerChangedCallback("gui_scaling", font_setting_changed, NULL);
+	g_settings->registerChangedCallback("mono_font_path", font_setting_changed, NULL);
+	g_settings->registerChangedCallback("mono_font_size", font_setting_changed, NULL);
+	g_settings->registerChangedCallback("screen_dpi", font_setting_changed, NULL);
+	g_settings->registerChangedCallback("gui_scaling", font_setting_changed, NULL);
 }
 
 /******************************************************************************/
@@ -205,9 +204,9 @@ unsigned int FontEngine::getFontSize(FontMode mode)
 void FontEngine::readSettings()
 {
 	if (USE_FREETYPE && g_settings->getBool("freetype")) {
-		m_default_size[FM_Standard] = m_settings->getU16("font_size");
-		m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
-		m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");
+		m_default_size[FM_Standard] = g_settings->getU16("font_size");
+		m_default_size[FM_Fallback] = g_settings->getU16("fallback_font_size");
+		m_default_size[FM_Mono]     = g_settings->getU16("mono_font_size");
 
 		/*~ DO NOT TRANSLATE THIS LITERALLY!
 		This is a special string. Put either "no" or "yes"
@@ -220,15 +219,15 @@ void FontEngine::readSettings()
 		m_currentMode = is_yes(gettext("needs_fallback_font")) ?
 				FM_Fallback : FM_Standard;
 
-		m_default_bold = m_settings->getBool("font_bold");
-		m_default_italic = m_settings->getBool("font_italic");
+		m_default_bold = g_settings->getBool("font_bold");
+		m_default_italic = g_settings->getBool("font_italic");
 
 	} else {
 		m_currentMode = FM_Simple;
 	}
 
-	m_default_size[FM_Simple]       = m_settings->getU16("font_size");
-	m_default_size[FM_SimpleMono]   = m_settings->getU16("mono_font_size");
+	m_default_size[FM_Simple]       = g_settings->getU16("font_size");
+	m_default_size[FM_SimpleMono]   = g_settings->getU16("mono_font_size");
 
 	cleanCache();
 	updateFontCache();
@@ -244,7 +243,7 @@ void FontEngine::updateSkin()
 		m_env->getSkin()->setFont(font);
 	else
 		errorstream << "FontEngine: Default font file: " <<
-				"\n\t\"" << m_settings->get("font_path") << "\"" <<
+				"\n\t\"" << g_settings->get("font_path") << "\"" <<
 				"\n\trequired for current screen configuration was not found" <<
 				" or was invalid file format." <<
 				"\n\tUsing irrlicht default font." << std::endl;
@@ -292,7 +291,7 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 		setting_suffix.append("_italic");
 
 	u32 size = std::floor(RenderingEngine::getDisplayDensity() *
-			m_settings->getFloat("gui_scaling") * spec.size);
+			g_settings->getFloat("gui_scaling") * spec.size);
 
 	if (size == 0) {
 		errorstream << "FontEngine: attempt to use font size 0" << std::endl;
@@ -311,8 +310,8 @@ gui::IGUIFont *FontEngine::initFont(const FontSpec &spec)
 
 	std::string fallback_settings[] = {
 		wanted_font_path,
-		m_settings->get("fallback_font_path"),
-		m_settings->getDefault(setting_prefix + "font_path")
+		g_settings->get("fallback_font_path"),
+		Settings::getLayer(SL_DEFAULTS)->get(setting_prefix + "font_path")
 	};
 
 #if USE_FREETYPE
@@ -346,7 +345,7 @@ gui::IGUIFont *FontEngine::initSimpleFont(const FontSpec &spec)
 	assert(spec.mode == FM_Simple || spec.mode == FM_SimpleMono);
 	assert(spec.size != FONT_SIZE_UNSPECIFIED);
 
-	const std::string &font_path = m_settings->get(
+	const std::string &font_path = g_settings->get(
 			(spec.mode == FM_SimpleMono) ? "mono_font_path" : "font_path");
 
 	size_t pos_dot = font_path.find_last_of('.');
@@ -364,7 +363,7 @@ gui::IGUIFont *FontEngine::initSimpleFont(const FontSpec &spec)
 
 	u32 size = std::floor(
 			RenderingEngine::getDisplayDensity() *
-			m_settings->getFloat("gui_scaling") *
+			g_settings->getFloat("gui_scaling") *
 			spec.size);
 
 	irr::gui::IGUIFont *font = nullptr;

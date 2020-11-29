@@ -132,7 +132,6 @@ public:
 
 	Settings *getGroup(const std::string &name) const;
 	const std::string &get(const std::string &name) const;
-	const std::string &getDefault(const std::string &name) const;
 	bool getBool(const std::string &name) const;
 	u16 getU16(const std::string &name) const;
 	s16 getS16(const std::string &name) const;

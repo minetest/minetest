@@ -61,7 +61,7 @@ class FontEngine
 {
 public:
 
-	FontEngine(Settings* main_settings, gui::IGUIEnvironment* env);
+	FontEngine(gui::IGUIEnvironment* env);
 
 	~FontEngine();
 
@@ -127,9 +127,6 @@ public:
 	/** get font size for a specific mode */
 	unsigned int getFontSize(FontMode mode);
 
-	/** initialize font engine */
-	void initialize(Settings* main_settings, gui::IGUIEnvironment* env);
-
 	/** update internal parameters from settings */
 	void readSettings();
 
@@ -148,9 +145,6 @@ private:
 
 	/** clean cache */
 	void cleanCache();
-
-	/** pointer to settings for registering callbacks or reading config */
-	Settings* m_settings = nullptr;
 
 	/** pointer to irrlicht gui environment */
 	gui::IGUIEnvironment* m_env = nullptr;

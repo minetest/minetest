@@ -229,7 +229,7 @@ void TestSettings::testAllSettings()
 		// Confirm settings
 		Settings s2("[dummy_eof_end_tag]");
 		std::istringstream is(config_text_after, std::ios_base::binary);
-		s2.parseConfigLines(is);
+		UASSERT(s2.parseConfigLines(is) == true);
 
 		compare_settings("(main)", &s, &s2);
 	}
