@@ -527,7 +527,6 @@ static bool read_config_file(const Settings &cmd_args)
 	// Path of configuration file in use
 	sanity_check(g_settings_path == "");	// Sanity check
 
-
 	if (cmd_args.exists("config")) {
 		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
 		if (!r) {
