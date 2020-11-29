@@ -55,6 +55,7 @@ public:
 		BORDERCOLORS,
 		BORDERWIDTHS,
 		SOUND,
+		FRAME_LOOP,
 		NUM_PROPERTIES,
 		NONE
 	};
@@ -119,6 +120,8 @@ public:
 			return BORDERWIDTHS;
 		} else if (name == "sound") {
 			return SOUND;
+		} else if (name == "frame_loop") {
+			return FRAME_LOOP;
 		} else {
 			return NONE;
 		}
@@ -232,6 +235,22 @@ public:
 
 		for (size_t i = 0; i <= 3; i++)
 			def[i] = stoi(strs[i]);
+
+		return def;
+	}
+
+	std::array<s32, 2> getIntRange(Property prop, std::array<s32, 2> def) const
+	{
+		const auto &val = properties[prop];
+		if(val.empty())
+			return def;
+
+		std::vector<std::string> strs;
+		if (!parseArray(val, strs))
+			return def;
+
+		def[0] = stoi(strs[0]);
+		def[1] = stoi(strs[1]);
 
 		return def;
 	}

@@ -2784,6 +2784,7 @@ Some types may inherit styles from parent types.
 * image_button
 * item_image_button
 * label
+* model
 * pwdfield, inherits from field
 * scrollbar
 * tabheader
@@ -2861,6 +2862,9 @@ Some types may inherit styles from parent types.
     * bgcolor - color, sets background color.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher
+    * frame_loop - range of the animation frames
+        * Defaults to the full range of all available frames
+        * Syntax: `frame_loop=<start>,<end>`; example: `style[player_preview;frame_loop=0,79]`
 * image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher
