@@ -340,7 +340,6 @@ function store.get_formspec(dlgdata)
 
 	local W = 15.75
 	local H = 9.5
-    
 	local formspec
 	if #store.packages_full > 0 then
 		formspec = {
