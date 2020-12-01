@@ -113,8 +113,9 @@ wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
 **NOTE**: Client mods currently can't provide textures, sounds, or models by
-themselves. Any media referenced in function calls must already be loaded
-(provided by mods that exist on the server).
+themselves except via dynamic creation with `Texture` and `Surface`. Any media
+referenced in function calls must already be loaded by mods that exist on the
+server or through these methods.
 
 Naming convention for registered textual names
 ----------------------------------------------
@@ -671,6 +672,9 @@ Call these functions only at load time!
     * Called every client environment step, usually interval of 0.1s
 * `minetest.register_on_mods_loaded(function())`
     * Called just after mods have finished loading.
+* `minetest.register_on_media_loaded(function())`
+    * Called after media has been loaded from the server but before any of the media has been used.
+    * Useful for creating custom textures.
 * `minetest.register_on_shutdown(function())`
     * Called before client shutdown
     * **Warning**: If the client terminates abnormally (i.e. crashes), the registered
@@ -734,11 +738,6 @@ Call these functions only at load time!
     * Called when the local player open inventory
     * Newest functions are called first
     * If any function returns true, inventory doesn't open
-* `minetest.register_on_draw(function(dtime))`
-    * Called every frame after the engine is finished drawing for custom drawing to
-      the screen. Code used here must be fast to ensure the framerate doesn't drop.
-    * To actually draw to the screen, see [Drawing].
-    * `dtime`: Time in seconds since the last frame.
 * `minetest.register_on_event(function(event))`
     * Called every time an event (e.g. keyboard or mouse input) is fired after the engine uses it.
     * If this function returns `true`, all events handlers registered after this one will not be called.
@@ -900,94 +899,61 @@ Call these functions only at load time!
 
 ### Drawing
 
-Functions for drawing to the screen and getting information about drawable things.
+Functions for drawing to and getting informtion about the screen and textures.
 
-Definitions for various types:
-* position/size - `{x=<x pos/width>, y=<y pos/height>}`
-* rectangle - `{x=<x pos>, y=<y pos>, w=<width>, h=<height>}`
-* 3D position/angle - `{x=<x pos/angle>, y=<y pos/angle>, z=<z pos/angle>}`
-* color - Always a `ColorSpec`
-Positions, sizes, and rectangles are in pixels, and angles are in degrees.
-
-* `drawer.get_window_size()` -> size: Returns the size of the Minetest window.
-* `drawer.draw_rect(rect, color[, clip_rect])`: Draws a filled rectangle.
-    * `rect`: The rectangle to draw.
-    * `color`: Can be one of two things:
-        * A single color: The whole rectangle will be filled with this color
-        * An array of four colors: The rectangle will be drawn with a gradient. Each corner is
-          assigned one of the colors, which start at the top left corner and go clockwise.
-    * `clip_rect` (optional): If specified, any part of the filled rectangle that extends out
-      of this rectangle will not be drawn.
-    * Has no effect outside of `minetest.register_on_draw`.
-* `drawer.draw_texture(rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor])`:
-  Draws an image.
-    * `rect`: The rectangle to draw the image in. The image will be stretched to fit.
-    * `texture`: The name of the texture to draw. Can have texture modifiers.
-    * `clip_rect` (optional): If specified, any part of the image that extends out of this
-      rectangle will not be drawn.
-    * `middle_rect` (optional): Defines the 9-slice rectangle for the image. If nil, the image
-      will be drawn normally. Negative widths and heights are added to the width and height of
-      the texture, allowing it to be used as the distance from the far end.
-      See https://en.wikipedia.org/wiki/9-slice_scaling for more information.
-    * `from_rect` (optional): Defines a rectangular sub-image of the texture which will be drawn
-      instead of the entire texture. If nil, the whole image is drawn. Negative widths and heights
-      are added to the width and height of the texture, allowing it to be used as the distance
-      from the far end.
-    * `recolor` (optional): The color to recolor the image to when drawing.
-    * Has no effect outside of `minetest.register_on_draw`.
-* `drawer.get_texture_size(texture)` -> size: Returns the size of the specified texture with
-  optional texture modifiers.
-* `drawer.draw_text(pos, text[, clip_rect][, style])`: Draws text.
-    * `pos`: The position of the top left of the text.
-    * `text`: The text to draw. Newlines and '\0' are converted to spaces. Color escape codes
-      are stripped.
-    * `clip_rect` (optional): If specified, any part of the text that extends out of this
-      rectangle will not be drawn.
-    * `style` (optional): A table of text styling options. Possible keys:
-        * color - The color of the text. Default white.
-        * font - What font to use. Can be "normal" or "mono". Default "normal". If the fallback font
-          is used for the current locale, this option will be overridden.
-        * size - What size the font should be in pts. The default is user-set.
-            * **Note**: It is recommended to make the size relative to the user-set font size,
-              which can be gotten with `get_font_size`.
-        * bold - Whether the text should be bold. Default false.
-        * italic - Whether the text should be italicized. Default false.
-        * underline - Whether the text should be underlined. Default false.
-        * strikethrough - Whether the text should be crossed out. Default false.
-    * Has no effect outside of `minetest.register_on_draw`.
-* `drawer.get_text_size(text[, style])` -> size: Gets the size of the text if it were to be drawn.
+* `minetest.register_on_predraw(function(dtime))`
+    * Called every frame right before the engine has started drawing. Code used here must be fast
+      to ensure the framerate doesn't drop.
+    * Mainly useful for updating or binding `Texture`s before the engine has started drawing.
+    * `dtime`: Time in seconds since the last frame.
+* `minetest.register_on_draw(function(dtime))`
+    * Called every frame after the engine is finished drawing for custom drawing to
+      the screen. Code used here must be fast to ensure the framerate doesn't drop.
+    * To actually draw to the screen, see [Drawing].
+    * `dtime`: Time in seconds since the last frame.
+* `minetest.on_next_predraw(function(dtime))`
+    * Called right before the next time `minetest.register_on_predraw` has started running.
+    * Calling this function inside itself will be run in the same predraw.
+    * Useful if something needs to be done inside a drawing callback, e.g. drawing to a `Texture`,
+      but a full callback every frame is unnecessary.
+    * If used at load time, a custom texture can be created and bound before any node or entity
+      textures have been cached thereby allowing a custom texture to be used on anything.
+    * `dtime`: Time in seconds since the frame previous to the frame of this function.
+* `minetest.on_next_draw(function(dtime))`
+    * Called right before the next time `minetest.register_on_draw` has started running.
+    * Calling this function inside itself will be run in the same draw.
+    * Useful if something needs to be done inside a drawing callback, e.g. drawing to a `Texture`,
+      but a full callback every frame is unnecessary.
+    * `dtime`: Time in seconds since the frame previous to the frame of this function.
+  * The function is called the next time a `minetest.
+* `minetest.get_text_size(text[, style])` -> size: Gets the size of the text if it were to be drawn.
     * `text`: The text to get the size of. Newlines and '\0' are converted to spaces. Color escape
       codes are stripped.
-    * `style`: Styling table. This can affect the space the font takes on the screen. This is the
-      same as used in `drawer.draw_text`.
-    * The text height will always be the same for each font style regardless of the string provided.
-* `drawer.get_font_size(font)` -> size: Gets the user-set font size for the specified font in pts.
-    * `font`: One of the fonts in `drawer.draw_text`'s `font` styling parameter.
-* `drawer.draw_item(rect, item[, clip_rect][, angle])`: Draws an item(stack)
-    * `rect`: The rectangle to fit the item inside. Note that items with certain angles that extend
-      past this rectangle will be clipped to it.
-    * `item`: The itemstring of the item to draw with optional metadata.
-    * `clip_rect` (optional): If specified, any part of the item that extends out of this rectangle
-      will not be drawn.
-    * `angle` (optional): Sets the 3D angle of the item along each axis. Tools and craftitems face
-      forward by default while nodes have the angle `{x=-30, y=45, z=0}` from the forward position
-      by default to show off more faces of the node. Only works if `inventory_items_animations` is
-      set to true.
-    * Has no effect outside of `minetest.register_on_draw`.
-* `drawer.start_effect()`: Starts a drawing hook for special drawing effects.
-    * All drawing drawn after this function call will be drawn to a hidden texture instead of the
-      screen. This texture can be drawn with special effect with `drawer.draw_effect()`
-    * Effects can be nested so that inner effects will be drawn to the outer effect texture. The
-      last effect to be started will be the first to be drawn.
-    * Has no effect outside of `minetest.register_on_draw`. Any hook not drawn by the end of all
-      the callbacks will be discarded.
-* `drawer.draw_effect([recolor])`: Draws the contents of a hook started with `drawer.start_effect`
-  with special effects.
-    * `recolor` (optional): The color to recolor the hook to when drawing.
-* `drawer.effects_supported()` -> bool: Returns true if drawing hooks with `drawer.start_effect`
-  and `drawer.draw_effect` are supported by the graphics card.
-    * Low end graphics cards may not support this feature, in which case hooks are ignored and
-      drawing proceeds like normal.
+    * `style`: A `FontSpec`. This can affect the space the font takes on the screen.
+    * The text height will always be the same for each `FontSpec` regardless of the string provided.
+* `minetest.get_font_size(font)` -> size: Gets the user-set font size for the specified font in points.
+    * `font`: One of the fonts in the `font` key of `FontSpec`.
+* `minetest.get_driver_info()` -> info: Returns a table containing information about and the
+  limitations of the current video driver.
+    * On lower end graphics cards, e.g. Android, many features may not be available. OpenGL supports
+      all these features.
+    * `info`: A table containing the information. Contains the following keys:
+        * `name`: Name of the current video driver. This string is the current `video_driver`
+          setting value.
+        * `friendly_name`: A more human readable name of the current driver.
+        * `render_textures`: True if the driver supports true hardware rendering to textures, i.e.
+          all the drawing and modification functions of `Texture`.
+        * `npot_textures`: True if the driver supports textures that are not powers of two, e.g.
+          not just 16, 32, 64, 128, etc.
+        * `non_square_textures`: True if the driver supports non-square textures.
+        * `shaders`: True if the driver supports shaders.
+        * `max_texture_size`: A size denoting the maximum texture size that can be used. If x or y
+          is zero, there is no limit.
+* `minetest.window`: A special `Texture` that points to the Minetest window.
+    * The screen supports all functions in `Texture` regardless of any driver limitations in
+    `minetest.get_driver_info` unless documented as otherwise.
+    * It is not actually a real texture and cannot be used in e.g. `Texture.draw_texture`. It cannot
+      contain alpha pixels.
 
 ### Privileges
 * `minetest.get_privilege_list()`
@@ -1318,6 +1284,221 @@ Can be obtained via `minetest.get_meta(pos)`.
 * `to_table()`: returns `nil` or a table with keys:
     * `fields`: key-value storage
     * `inventory`: `{list1 = {}, ...}}`
+
+`Texture`
+---------
+
+A Lua interface for interacting with hardware GPU textures.
+
+With the exception of `minetest.window`, all functions that draw to or modify the texture require the
+video driver to support render textures. New textures cannot be created if the driver does not support
+render textures. See `minetest.get_driver_info` for more information on the limitations of textures.
+Additionally, `Texture` can only be drawn to inside of `minetest.register_on_draw`,
+`minetest.register_on_predraw`, and `minetest.register_on_media_loaded`.
+
+For universal drawing support with both reading and writing functionality and features like color
+modification, `Surface` may be better suited, although it is slower.
+
+### Constructors
+
+* `Texture.new(size)` -> texture: Creates a blank `Texture`.
+    * `size`: Size to make the `Texture`.
+    * Does not work if the driver doesn't support render textures. See `minetest.get_driver_info`.
+    * Returns nil if the texture could not be created for some reason.
+* `Texture.copy(texture)` -> texture: Returns a copy of another texture.
+    * `texture`: Either an in game texture string or a `Texture` to copy.
+    * **Warning**: Copying `minetest.window` copies the _previous_ frame, so anything drawn during
+      the current frame will not appear. Secondly, copying the screen is slower as it internally
+      uses a `Surface`.
+    * This function does not work outside of a drawing callback.
+    * Does not work if the driver doesn't support render textures. See `minetest.get_driver_info`.
+    * Returns nil if the texture could not be created for some reason.
+* `Texture.ref(texture)` -> texture: Returns a reference to a texture.
+    * `texture`: Either an in game texture string or a `Texture`.
+    * The resulting `Texture` object will point to the texture. Since it does not hold full access
+      to the texture, it is read only.
+    * This is useful for getting attributes about any texture, e.g. the size, without making a full
+      copy, which is time consuming.
+* `Texture.from_surface(surface)` -> texture: Creates a `Texture` from a `Surface`.
+    * `surface`: The `Surface` to create the `Texture` from.
+    * This function does not work outside of a drawing callback.
+    * Does not work if the driver doesn't support render textures. See `minetest.get_driver_info`.
+    * Returns nil if the texture could not be created for some reason.
+
+### Methods
+
+* `is_ref()` -> bool: Returns whether the texture is was created with `Texture.ref` and is read only.
+* `get_original_size()` -> size: Textures can be resized by the video driver, e.g. if the texture
+  is not square or not a power of two when the driver does not support this, so this returns the
+  original intended size.
+* `get_size()` -> size: Returns the actual size of the texture.
+* `fill(color)`: Fills the entire texture with a certain color.
+    * Unlike `draw_rect`, this replaces the pixels completely instead of adding the alpha.
+    * `color`: The color to fill the texture with.
+    * This function does not work outside of a drawing callback or on a texture reference.
+* `draw_pixel(pos, color[, clip_rect])`: Draws one or more pixels.
+    * `pos`: A position or array of positions to draw the pixel(s).
+    * `color`: Color of the pixel(s) to draw.
+    * `clip_rect` (optional): If specified, the pixel(s) will only be drawn if they are inside this
+      rectangle.
+    * This function does not work outside of a drawing callback or on a texture reference.
+* `draw_rect(rect, color[, clip_rect])`: Draws a filled rectangle.
+    * `rect`: The rectangle to draw.
+    * `color`: Can be one of two things:
+        * A single color: The whole rectangle will be filled with this color
+        * An array of four colors: The rectangle will be drawn with a gradient. Each corner is
+          assigned one of the colors, which start at the top left corner and go clockwise.
+    * `clip_rect` (optional): If specified, any part of the filled rectangle that extends out
+      of this rectangle will not be drawn.
+    * This function does not work outside of a drawing callback or on a texture reference.
+* `draw_texture(rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor][, use_alpha])`:
+  Draws a 2D texture.
+    * `rect`: The rectangle to draw the texture in. The texture will be stretched to fit.
+    * `texture`: Either the name of the texture with optional texture modifiers or the `Texture`
+      object to draw.
+    * `clip_rect` (optional): If specified, any part of the texture that extends out of this
+      rectangle will not be drawn.
+    * `middle_rect` (optional): Defines the 9-slice rectangle for the texture. If nil, the texture
+      will be drawn normally. Negative widths and heights are added to the width and height of
+      the texture, allowing it to be used as the distance from the far end.
+      See https://en.wikipedia.org/wiki/9-slice_scaling for more information.
+    * `from_rect` (optional): Defines a rectangular sub-texture of the texture which will be drawn
+      instead of the entire texture. If nil, the whole texture is drawn. Negative widths and heights
+      are added to the width and height of the texture, allowing it to be used as the distance
+      from the far end.
+    * `recolor` (optional): The color to recolor the texture to when drawing. This is hardware
+      coloring, so it uses color multiplication and is fast.
+    * `use_alpha` (optional): Whether alpha should be used when drawing the texture. Default true.
+    * This function does not work outside of a drawing callback or on a texture reference.
+* `draw_text(pos, text[, clip_rect][, style])`: Draws text.
+    * `pos`: The position of the top left of the text.
+    * `text`: The text to draw. Newlines and '\0' are converted to spaces. Color escape codes
+      are stripped.
+    * `clip_rect` (optional): If specified, any part of the text that extends out of this
+      rectangle will not be drawn.
+    * `style` (optional): A `FontSpec`.
+* `draw_item(rect, item[, clip_rect][, angle])`: Draws an item(stack)
+    * `rect`: The rectangle to fit the item inside. Note that items with certain angles that extend
+      past this rectangle will be clipped to it.
+    * `item`: The itemstring of the item to draw with optional metadata.
+    * `clip_rect` (optional): If specified, any part of the item that extends out of this rectangle
+      will not be drawn.
+    * `angle` (optional): Sets the 3D angle of the item along each axis. Tools and craftitems face
+      forward by default while nodes have the angle `{x=-30, y=45, z=0}` from the forward position
+      by default to show off more faces of the node. Only works if `inventory_items_animations` is
+      set to true.
+* `draw_transformed_texture()`: TODO
+* `bind_ingame(name)` -> success: Make this texture usable in game.
+    * `name`: The name of the texture to use in game.
+        * Should follow texture naming conventions and must use the extension `.ct` (for "Custom
+          Texture").
+    * To use in game, use `name` most places a normal texture can be used.
+        * It will not work with texture modifiers.
+        * The texture will not work if used before this function is called because textures will not
+          be retroactively replaced.
+        * To use with e.g. nodes, set any tile to the texture name server side and create the texture
+          client side in `minetest.register_on_media_loaded`.
+    * Any changes made to this texture object will be automatically reflected everywhere in game.
+    * A single texture can be bound to multiple in game textures. `minetest.window` cannot be bound.
+    * Returns true on success or false if the name is invalid or already taken.
+
+`Surface`
+---------
+
+A Lua interface for software-managed images. It has many of the same abilities as texture modifiers
+but with more versatility and reusability.
+
+For real time drawing and features like 3D and text rendering, `Texture` may be better. It is much
+faster than `Surface` but does not have universal support or reading functionality. A `Surface` is
+not a substitute for a texture, e.g. `Texture.draw_texture` will not accept a `Surface`. If such a
+thing is needed, use `Texture.from_surface`. Be careful since copying a `Surface` can be a slow
+operation, so storing the result is recommended.
+
+### Constructors
+
+* `Surface.new(size)` -> surface: Creates a blank `Surface`.
+    * `size`: Size to make the `Surface`.
+* `Surface.copy(surface)` -> surface: Returns a copy of another `Surface`.
+    * `surface`: The surface to copy.
+* `Surface.from_texture(texture)` -> surface: Creates a `Surface` from a texture.
+    * `texture`: Either an in game texture string or a `Texture`.
+    * **Warning**: Copying `minetest.window` copies the _previous_ frame, so anything drawn during
+      the current frame will not appear.
+* `Surface.from_string(string, ext)` -> surface: Creates a surface from an encoded string.
+    * Returns nil if the encoded string could not be read, i.e. it is corrupted or uses the
+      wrong extension.
+    * This string could come either from an image file or `Surface:to_string`
+    * `string`: The string to read from.
+    * `ext`: The file extension of the encoding of the string.
+        * This can be any of Irrlicht's supported formats for image reading (see
+          http://irrlicht.sourceforge.net/?page_id=45#supportedformats).
+
+### Methods
+
+* `get_size()` -> size: Returns the size of the surface.
+* `resize(size[, fill])`: Resizes the surface without scaling the contents.
+    * `size`: New size of the surface.
+    * `fill` (optional): If the surface is scaled up, the new space will be filled with this color.
+      Defaults to `#0000`.
+* `scale(size)`: Scales the surface up or down, scaling both the size and the contents.
+    * `size`: New size of the surface.
+* `get_pixel(pos)` -> color: Gets the color of a pixel on the surface.
+    * `pos`: The position of the pixel to get.
+* `pixel(pos, color[, effect])`: Draws a single pixel with a color.
+    * `pos`: The position on the surface to draw.
+    * `color`: The color to draw.
+    * `effect` (optional): How the color will be drawn. Possible values:
+        * `replace`: The color will replace the existing pixels.
+        * `add` (default): The color will be added to the existing pixels, i.e. the alpha will be
+          blended.
+        * `multiply`: The color will be multiplied to the existing pixels, i.e. white surfaces
+          get a lot of the color while black surfaces get very little.
+        * `screen`: Same as `multiply` but the image is lightened instead of darkened.
+* `rect(rect, color[, effect])`: Draws a filled rectangle with a color.
+    * `rect`: The rectangle to draw the color in. nil means the whole surface.
+    * `color`: The color to draw.
+    * `effect` (optional): How the color will be drawn. See `draw_pixel` for possible values.
+* `blit(pos/rect, surface[, clip_rect][, middle_rect][, from_rect][, effect=has mask?])`
+* `rotate(rect, degrees)`
+* `mirror(rect, axes)`
+* `shift(rect, shift[, fill])`
+* `colorize(rect, rgb(a?)/hsl(a?))`
+* `adjust(rect, hsl(a?))`
+* `contrast(rect, brightness, contrast)`
+* `opacity(rect, opacity)`
+* `replace(rect, color(s), new_color)`
+* `invert(rect, channels[, type=value,color,etc])`
+* `make_ingame_texture(name)` -> success: Make a texture that is usable in game.
+    * `name`: The name of the texture to use in game. The texture may not be used in game before
+       this method is called, and this cannot overwrite existing textures.
+        * Should follow texture naming conventions and use the extension `.cs` (for Custom Surface).
+    * Returns true on success or false on error (e.g. the name is already taken).
+    * To use in game, use `<name>` anywhere a normal texture can be used. The texture will not work
+      if used before this function is called because textures will not be retroactively replaced.
+    * Existing textures cannot be replaced.
+* `to_string(ext)` -> string: Encodes the surface as a string.
+    * If the surface could not be encoded, e.g. the extension is invalid or an internal error
+      occurs, returns nil.
+    * `ext`: The file extension of the encoding to encode the string in.
+        * This can be any of Irrlicht's supported formats for image writing (see
+          http://irrlicht.sourceforge.net/?page_id=45#supportedformats).
+
+`FontSpec`
+----------
+
+A table describing a font.
+
+### Keys
+* `color`: The color of the text. Default white.
+* `font`: What font to use. Can be "normal" or "mono". Default "normal". If the fallback font is
+  used for the current locale, this option will be overridden.
+* `size`: What size the font should be in pts. The default is user-set.
+	* **Note**: It is recommended to make the size relative to the user-set font size which can
+	  be gotten with `minetest.get_font_size`.
+* `bold`: Whether the text should be bold. Default false.
+* `italic`: Whether the text should be italicized. Default false.
+* `underline`: Whether the text should be underlined. Default false.
+* `strikethrough`: Whether the text should be crossed out. Default false.
 
 ### `Raycast`
 

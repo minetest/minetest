@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "l_drawer.h"
 #include "l_internal.h"
+#include "log.h"
 #include "script/common/c_converter.h"
 #include "settings.h"
 #include "util/string.h"
@@ -36,140 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ModApiDrawer s_drawer;
 
-bool ModApiDrawer::can_draw()
-{
-	return s_drawer.in_callback || s_drawer.in_texture;
-}
-
-video::ITexture *ModApiDrawer::get_texture(lua_State *L, const std::string &name)
-{
-	auto it = s_drawer.textures.find(name);
-	if (it != s_drawer.textures.end())
-		return it->second;
-	else
-		return getClient(L)->tsrc()->getTexture(name);
-}
-
-// get_window_size() -> {x = width, y = height}
-int ModApiDrawer::l_get_window_size(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	core::dimension2d<u32> size = RenderingEngine::get_video_driver()->getScreenSize();
-	push_v2f(L, v2f(size.Width, size.Height));
-
-	return 1;
-}
-
-// draw_rect(rect, color[, clip_rect])
-int ModApiDrawer::l_draw_rect(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	if (!can_draw())
-		return 0;
-
-	core::recti rect = read_recti(L, 1);
-
-	core::recti clip_rect;
-	core::recti *clip_ptr = nullptr;
-	if (lua_istable(L, 3)) {
-		clip_rect = read_recti(L, 3);
-		clip_ptr = &clip_rect;
-	}
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-
-	// Draw with a gradient if it is an _array_ of four colors as a table with
-	// keys might be a ColorSpec in table form
-	if (lua_istable(L, 2) && lua_objlen(L, 2) == 4) {
-		video::SColor colors[4] = {0x0, 0x0, 0x0, 0x0};
-		for (size_t i = 0; i < 4; i++) {
-			lua_rawgeti(L, 2, i + 1);
-			read_color(L, -1, &colors[i]);
-			lua_pop(L, 1);
-		}
-		driver->draw2DRectangle(rect, colors[0], colors[1], colors[3], colors[2],
-			clip_ptr);
-	} else {
-		video::SColor color(0x0);
-		read_color(L, 2, &color);
-		driver->draw2DRectangle(color, rect, clip_ptr);
-	}
-
-	return 0;
-}
-
-// draw_texture(rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor])
-int ModApiDrawer::l_draw_texture(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	if (!can_draw())
-		return 0;
-
-	core::recti rect = read_recti(L, 1);
-	video::ITexture *texture = get_texture(L, readParam<std::string>(L, 2));
-
-	core::recti clip_rect;
-	core::recti *clip_ptr = nullptr;
-	if (lua_istable(L, 3)) {
-		clip_rect = read_recti(L, 3);
-		clip_ptr = &clip_rect;
-	}
-
-	core::recti from_rect;
-	core::dimension2d<u32> size = texture->getOriginalSize();
-	if (lua_istable(L, 5)) {
-		from_rect = read_recti(L, 5);
-
-		// `-x` is interpreted as `w - x`.
-		if (from_rect.LowerRightCorner.X < from_rect.UpperLeftCorner.X)
-			from_rect.LowerRightCorner.X += (s32)size.Width;
-		if (from_rect.LowerRightCorner.Y < from_rect.UpperLeftCorner.Y)
-			from_rect.LowerRightCorner.Y += (s32)size.Height;
-	} else {
-		from_rect = core::rect<s32>(core::position2d<s32>(0, 0),
-			core::dimension2di(size.Width, size.Height));
-	}
-
-	video::SColor color(0xFFFFFFFF);
-	if (!lua_isnil(L, 6))
-		read_color(L, 6, &color);
-	const video::SColor colors[] = {color, color, color, color};
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (lua_istable(L, 4)) {
-		core::recti middle_rect = read_recti(L, 4);
-
-		if (middle_rect.LowerRightCorner.X < middle_rect.UpperLeftCorner.X)
-			middle_rect.LowerRightCorner.X += from_rect.getWidth();
-		if (middle_rect.LowerRightCorner.Y < middle_rect.UpperLeftCorner.Y)
-			middle_rect.LowerRightCorner.Y += from_rect.getHeight();
-
-		draw2DImage9Slice(driver, texture, rect, from_rect, middle_rect,
-			clip_ptr, colors);
-	} else {
-		draw2DImageFilterScaled(driver, texture, rect, from_rect,
-			clip_ptr, colors, true);
-	}
-
-	return 0;
-}
-
-// get_texture_size(texture) -> {x = width, y = height}
-int ModApiDrawer::l_get_texture_size(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	core::dimension2d<u32> size =
-		get_texture(L, readParam<std::string>(L, 1))->getOriginalSize();
-	push_v2f(L, v2f(size.Width, size.Height));
-
-	return 1;
-}
-
-// Create an IGUIFont from a font styling table.
 gui::IGUIFont *ModApiDrawer::get_font(lua_State *L, int index)
 {
 	FontSpec spec(FONT_SIZE_UNSPECIFIED, FM_Standard, false, false);
@@ -210,92 +77,20 @@ gui::IGUIFont *ModApiDrawer::get_font(lua_State *L, int index)
 	return g_fontengine->getFont(spec);
 }
 
-// draw_text(pos, text[, clip_rect][, style])
-// style = {color, font, size, bold, italic, underline, strike}
-int ModApiDrawer::l_draw_text(lua_State *L)
+video::ITexture *ModApiDrawer::get_texture(lua_State *L, int index, bool allow_window)
 {
-	NO_MAP_LOCK_REQUIRED;
-
-	if (!can_draw())
-		return 0;
-
-	core::recti rect;
-	rect.UpperLeftCorner = read_v2s32(L, 1);
-
-	std::wstring text = utf8_to_wide(
-		unescape_enriched(readParam<std::string>(L, 2)));
-	for (size_t i = 0; i < text.size(); i++) {
-		if (text[i] == L'\n' || text[i] == L'\0')
-			text[i] = L' ';
+	if (lua_isstring(L, index)) {
+		return getClient(L)->tsrc()->getTexture(readParam<std::string>(L, index));
+	} else {
+		video::ITexture *texture = (*(LuaTexture **)luaL_checkudata(
+			L, index, "Texture"))->texture;
+		if (!allow_window && texture == nullptr)
+			throw LuaError("Invalid use of minetest.window as normal texture");
+		return texture;
 	}
-
-	core::recti clip_rect;
-	core::recti *clip_ptr = nullptr;
-	if (lua_istable(L, 3)) {
-		clip_rect = read_recti(L, 3);
-		clip_ptr = &clip_rect;
-	}
-
-	gui::IGUIFont *font = get_font(L, 4);
-
-	lua_getfield(L, 4, "color");
-	video::SColor color(0xFFFFFFFF);
-	read_color(L, -1, &color);
-	lua_pop(L, 1);
-
-	lua_getfield(L, 4, "underline");
-	bool underline = lua_toboolean(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, 4, "strike");
-	bool strike = lua_toboolean(L, -1);
-	lua_pop(L, 1);
-
-	font->draw(text.c_str(), rect, color, false, false, clip_ptr);
-
-	if (!underline && !strike)
-		return 0;
-
-	core::dimension2d<u32> size = font->getDimension(text.c_str());
-	rect.LowerRightCorner = rect.UpperLeftCorner +
-		core::vector2di(size.Width, size.Height);
-
-	s32 baseline = 0;
-#if USE_FREETYPE
-	if (font->getType() == gui::EGFT_CUSTOM)
-		baseline = size.Height - 1 - ((gui::CGUITTFont *)font)->getAscender() / 64;
-#endif
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-
-	if (underline) {
-		s32 line_pos = rect.LowerRightCorner.Y - (baseline >> 1);
-		core::recti line_rect(
-			rect.UpperLeftCorner.X,
-			line_pos - (baseline >> 3) - 1,
-			rect.LowerRightCorner.X,
-			line_pos + (baseline >> 3)
-		);
-
-		driver->draw2DRectangle(color, line_rect, clip_ptr);
-	}
-
-	if (strike) {
-		s32 line_pos = rect.UpperLeftCorner.Y + size.Height * 6 / 11;
-		core::recti line_rect(
-			rect.UpperLeftCorner.X,
-			line_pos - (baseline >> 3) - 1,
-			rect.LowerRightCorner.X,
-			line_pos + (baseline >> 3)
-		);
-
-		driver->draw2DRectangle(color, line_rect, clip_ptr);
-	}
-
-	return 0;
 }
 
-// get_text_size(text[, style]) -> {x = width, y = height}
+// get_text_size(text[, style]) -> size
 int ModApiDrawer::l_get_text_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -307,11 +102,11 @@ int ModApiDrawer::l_get_text_size(lua_State *L)
 			text[i] = L' ';
 	}
 
-	gui::IGUIFont *font = get_font(L, 2);
+	gui::IGUIFont *font = ModApiDrawer::get_font(L, 2);
 
 	core::dimension2d<u32> size = font->getDimension(text.c_str());
 	size.Height += font->getKerningHeight();
-	push_v2f(L, v2f(size.Width, size.Height));
+	push_v2s32(L, v2s32(size.Width, size.Height));
 
 	return 1;
 }
@@ -334,321 +129,45 @@ int ModApiDrawer::l_get_font_size(lua_State *L)
 	return 1;
 }
 
-// draw_item(rect, item[, clip_rect][, angle])
-int ModApiDrawer::l_draw_item(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	if (!can_draw())
-		return 0;
-
-	core::recti rect = read_recti(L, 1);
-
-	Client *client = getClient(L);
-	IItemDefManager *idef = client->idef();
-	ItemStack item;
-	item.deSerialize(readParam<std::string>(L, 2), idef);
-
-	core::recti clip_rect;
-	core::recti *clip_ptr = nullptr;
-	if (lua_istable(L, 3)) {
-		clip_rect = read_recti(L, 3);
-		clip_ptr = &clip_rect;
-	}
-
-	v3s16 angle;
-	if (lua_istable(L, 4))
-		angle = read_v3s16(L, 4);
-
-	drawItemStack(RenderingEngine::get_video_driver(), g_fontengine->getFont(), item,
-		rect, clip_ptr, client, IT_ROT_NONE, angle, v3s16());
-
-	return 0;
-}
-
-// create_texture(name[, size]) -> success[, error_message]
-int ModApiDrawer::l_create_texture(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	if (!s_drawer.can_render_to_texture) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Driver doesn't support render textures");
-		return 2;
-	}
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-
-	std::string name = readParam<std::string>(L, 1);
-	if (s_drawer.textures.count(name)) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Texture name already taken");
-		return 2;
-	}
-
-	core::dimension2d<u32> size = driver->getScreenSize();
-	if (lua_istable(L, 2)) {
-		core::vector2di temp = read_v2s32(L, 2);
-		size = core::dimension2d<u32>(temp.X, temp.Y);
-	}
-
-	video::ITexture *texture = driver->addRenderTargetTexture(size, "");
-	if (texture == nullptr) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Render texture could not be created");
-		return 1;
-	}
-	s_drawer.textures[name] = texture;
-
-	lua_pushboolean(L, true);
-	return 1;
-}
-
-// delete_texture(name) -> success[, error_message]
-int ModApiDrawer::l_delete_texture(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	if (!s_drawer.can_render_to_texture) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Driver doesn't support render textures");
-		return 2;
-	}
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-
-	std::string name = readParam<std::string>(L, 1);
-
-	auto it = s_drawer.textures.find(name);
-	if (it == s_drawer.textures.end()) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Texture doesn't exist");
-		return 2;
-	}
-	if (name == s_drawer.render_texture) {
-		driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
-		s_drawer.in_texture = false;
-	}
-
-	driver->removeTexture(it->second);
-	s_drawer.textures.erase(it);
-
-	lua_pushboolean(L, true);
-	return 1;
-}
-
-// rename_texture(name, new_name) -> success[, error_message]
-int ModApiDrawer::l_rename_texture(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	if (!s_drawer.can_render_to_texture) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Driver doesn't support render textures");
-		return 2;
-	}
-
-	std::string name = readParam<std::string>(L, 1);
-	std::string new_name = readParam<std::string>(L, 2);
-
-	auto it = s_drawer.textures.find(name);
-	if (it == s_drawer.textures.end()) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Texture doesn't exist");
-		return 2;
-	}
-	if (s_drawer.textures.count(new_name)) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Texture name already taken");
-		return 2;
-	}
-
-	s_drawer.textures[new_name] = it->second;
-	s_drawer.textures.erase(it);
-	if (name == s_drawer.render_texture)
-		s_drawer.render_texture = new_name;
-
-	lua_pushboolean(L, true);
-	return 1;
-}
-
-// texture_exists(name) -> bool[, error_message]
-int ModApiDrawer::l_texture_exists(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	if (!s_drawer.can_render_to_texture) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Driver doesn't support render textures");
-		return 2;
-	}
-
-	lua_pushboolean(L, s_drawer.textures.count(readParam<std::string>(L, 1)));
-	return 1;
-}
-
-// can_render_to_texture() -> bool
-int ModApiDrawer::l_can_render_to_texture(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	lua_pushboolean(L, s_drawer.can_render_to_texture);
-	return 1;
-}
-
-// set_render_texture(name) -> success[, error_message]
-int ModApiDrawer::l_set_render_texture(lua_State *L)
+// get_driver_info() -> features
+int ModApiDrawer::l_get_driver_info(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!s_drawer.can_render_to_texture) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Driver doesn't support render textures");
-		return 2;
-	}
 
-	if (lua_isstring(L, 1)) {
-		std::string name = readParam<std::string>(L, 1);
+	lua_createtable(L, 0, 2);
 
-		auto it = s_drawer.textures.find(name);
-		if (it == s_drawer.textures.end()) {
-			lua_pushboolean(L, false);
-			lua_pushstring(L, "Texture doesn't exist");
-			return 2;
-		}
+	video::E_DRIVER_TYPE driver_type = driver->getDriverType();
+	lua_pushstring(L, RenderingEngine::getVideoDriverName(driver_type));
+	lua_setfield(L, -2, "name");
 
-		if (!driver->setRenderTarget(it->second, true, false)) {
-			lua_pushboolean(L, false);
-			lua_pushstring(L, "Could not set render target texture");
-			return 2;
-		}
+	lua_pushstring(L, RenderingEngine::getVideoDriverFriendlyName(driver_type));
+	lua_setfield(L, -2, "friendly_name");
 
-		s_drawer.render_texture = name;
-		s_drawer.in_texture = true;
-	} else {
-		driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
-		s_drawer.in_texture = false;
-	}
+	lua_pushboolean(L, driver->queryFeature(video::EVDF_RENDER_TO_TARGET));
+	lua_setfield(L, -2, "render_textures");
 
-	lua_pushboolean(L, true);
-	return 1;
-}
+	lua_pushboolean(L, driver->queryFeature(video::EVDF_TEXTURE_NPOT));
+	lua_setfield(L, -2, "npot_textures");
 
-// get_render_texture() -> name[, error_message]
-int ModApiDrawer::l_get_render_texture(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
+	lua_pushboolean(L, driver->queryFeature(video::EVDF_TEXTURE_NSQUARE));
+	lua_setfield(L, -2, "non_square_textures");
 
-	if (!s_drawer.can_render_to_texture) {
-		lua_pushboolean(L, false);
-		lua_pushstring(L, "Driver doesn't support render textures");
-		return 2;
-	}
+	lua_pushboolean(L, driver_type == video::EDT_OPENGL);
+	lua_setfield(L, -2, "shaders");
 
-	if (s_drawer.in_texture)
-		lua_pushstring(L, s_drawer.render_texture.c_str());
-	else
-		lua_pushboolean(L, false);
+	core::dimension2du max_size = driver->getMaxTextureSize();
+	push_v2s32(L, v2s32(max_size.Width, max_size.Height));
+	lua_setfield(L, -2, "max_texture_size");
 
 	return 1;
-}
-
-/* // start_effect()
-int ModApiDrawer::l_start_effect(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!can_draw() || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
-		return 0;
-
-	video::ITexture *render = driver->addRenderTargetTexture(driver->getScreenSize());
-	s_drawer.renderers.push_back(render);
-	driver->setRenderTarget(render, true, false);
-
-	return 0;
-}
-
-// draw_effect([recolor])
-int ModApiDrawer::l_draw_effect(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!can_draw() || !driver->queryFeature(video::EVDF_RENDER_TO_TARGET) ||
-			s_drawer.renderers.size() == 0)
-		return 0;
-
-	video::ITexture *rendered = s_drawer.renderers.back();
-	s_drawer.renderers.pop_back();
-
-	if (s_drawer.renderers.size() == 0)
-		driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
-	else
-		driver->setRenderTarget(s_drawer.renderers.back(), false, false);
-
-	core::recti rect(core::vector2di(), driver->getScreenSize());
-
-	video::SColor color(0xFFFFFFFF);
-	if (!lua_isnil(L, 1))
-		read_color(L, 1, &color);
-	const video::SColor colors[] = {color, color, color, color};
-
-	draw2DImageFilterScaled(driver, rendered, rect, rect, nullptr, colors, true);
-
-	return 0;
-} */
-
-// TEMP_TRANSFORM(rect, texture, transform)
-int ModApiDrawer::l_TEMP_TRANSFORM(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	if (!can_draw())
-		return 0;
-
-	core::recti rect = read_recti(L, 1);
-	video::ITexture *texture = get_texture(L, readParam<std::string>(L, 2));
-
-	f32 m_data[16];
-	for (size_t i = 0; i < 16; i++) {
-		lua_rawgeti(L, 3, i + 1);
-		m_data[i] = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-	}
-	core::matrix4 transform;
-	transform.setM(m_data);
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-
-	core::rect<s32> old_viewport = driver->getViewPort();
-	core::matrix4 old_proj_mat = driver->getTransform(video::ETS_PROJECTION);
-	core::matrix4 old_view_mat = driver->getTransform(video::ETS_VIEW);
-
-	driver->setViewPort(rect);
-	driver->setTransform(video::ETS_PROJECTION, core::IdentityMatrix);
-	driver->setTransform(video::ETS_VIEW, core::IdentityMatrix);
-	driver->setTransform(video::ETS_WORLD, transform);
-
-	video::SMaterial &material = s_drawer.effects_mesh.getMaterial();
-	material.TextureLayer[0].Texture = texture;
-	driver->setMaterial(material);
-	driver->drawMeshBuffer(&s_drawer.effects_mesh);
-
-	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-	driver->setTransform(video::ETS_VIEW, old_view_mat);
-	driver->setTransform(video::ETS_PROJECTION, old_proj_mat);
-
-	driver->setViewPort(old_viewport);
-
-	return 0;
 }
 
 ModApiDrawer::ModApiDrawer()
 {
 	in_callback = false;
-	in_texture = false;
+	render_texture = nullptr;
 
 	// Prepare effects mesh for transformations
 	effects_mesh.Vertices.set_used(4);
@@ -680,34 +199,861 @@ ModApiDrawer::ModApiDrawer()
 
 void ModApiDrawer::Initialize(lua_State *L, int top)
 {
-	API_FCT(get_window_size);
-	API_FCT(draw_rect);
-	API_FCT(draw_texture);
-	API_FCT(get_texture_size);
-	API_FCT(draw_text);
 	API_FCT(get_text_size);
 	API_FCT(get_font_size);
-	API_FCT(draw_item);
-	API_FCT(can_render_to_texture);
-	API_FCT(create_texture);
-	API_FCT(delete_texture);
-	API_FCT(rename_texture);
-	API_FCT(texture_exists);
-	API_FCT(set_render_texture);
-	API_FCT(get_render_texture);
-	API_FCT(TEMP_TRANSFORM);
+	API_FCT(get_driver_info);
+
+	LuaTexture::create_window(L);
+	lua_setfield(L, top, "window");
 };
 
-void ModApiDrawer::start_callback()
+void ModApiDrawer::start_callback(bool begin_scene)
 {
+	if (begin_scene)
+		RenderingEngine::get_video_driver()->beginScene(false, false);
+
 	s_drawer.in_callback = true;
-	s_drawer.can_render_to_texture =
-		RenderingEngine::get_video_driver()->queryFeature(video::EVDF_RENDER_TO_TARGET);
 }
 
-void ModApiDrawer::end_callback()
+void ModApiDrawer::end_callback(bool end_scene)
 {
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (end_scene)
+		driver->endScene();
+	driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
+
 	s_drawer.in_callback = false;
-	RenderingEngine::get_video_driver()->setRenderTarget(
-		video::ERT_FRAME_BUFFER, false, false);
 }
+
+bool LuaTexture::set_as_target(LuaTexture *t, video::IVideoDriver *driver)
+{
+	if (t == nullptr || !s_drawer.in_callback)
+		return true;
+
+	if (t->is_ref)
+		throw LuaError("Attempt to write to texture reference");
+
+	if (t->texture != s_drawer.render_texture) {
+		if (t->texture == nullptr) {
+			driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
+			s_drawer.render_texture = nullptr;
+		} else {
+			if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET) &&
+					driver->setRenderTarget(t->texture, false, false)) {
+				s_drawer.render_texture = t->texture;
+			} else {
+				errorstream << "Unable to set texture as render target" << std::endl;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// is_ref() -> bool
+int LuaTexture::l_is_ref(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaTexture *t = read_object(L, 1);
+	if (t == nullptr)
+		return 0;
+
+	lua_pushboolean(L, t->is_ref);
+	return 1;
+}
+
+// get_original_size() -> size
+int LuaTexture::l_get_original_size(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaTexture *t = read_object(L, 1);
+	if (t == nullptr)
+		return 0;
+
+	core::dimension2d<u32> size;
+	if (t->texture == nullptr)
+		size = RenderingEngine::get_video_driver()->getScreenSize();
+	else
+		size = t->texture->getOriginalSize();
+	push_v2s32(L, v2s32(size.Width, size.Height));
+
+	return 1;
+}
+
+// get_size() -> size
+int LuaTexture::l_get_size(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaTexture *t = read_object(L, 1);
+	if (t == nullptr)
+		return 0;
+
+	core::dimension2d<u32> size;
+	if (t->texture == nullptr)
+		size = RenderingEngine::get_video_driver()->getScreenSize();
+	else
+		size = t->texture->getSize();
+	push_v2s32(L, v2s32(size.Width, size.Height));
+
+	return 1;
+}
+
+// fill(self, color)
+int LuaTexture::l_fill(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	LuaTexture *t = read_object(L, 1);
+	// Do not use set_as_target as it will be done manually
+	if (t == nullptr || !s_drawer.in_callback)
+		return 0;
+
+	if (t->is_ref) {
+		errorstream << "Attempt to write to texture reference" << std::endl;
+		return 0;
+	}
+
+	video::SColor color(0x0);
+	read_color(L, 2, &color);
+
+	// There seems to be no other certain way to fill a texture with a certain color
+	// than by using driver->setRenderTexture with clearBackBuffer = true.
+	if (t->texture == nullptr) {
+		color.setAlpha(0xFF); // Window can't have transparency
+		driver->setRenderTarget(video::ERT_FRAME_BUFFER, true, true, color);
+		s_drawer.render_texture = nullptr;
+	} else {
+		if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET) &&
+				driver->setRenderTarget(t->texture, true, true, color)) {
+			s_drawer.render_texture = t->texture;
+		} else {
+			errorstream << "Unable to set texture as render target" << std::endl;
+			return true;
+		}
+	}
+
+	return 0;
+}
+
+// draw_pixel(self, pos, color[, clip_rect])
+int LuaTexture::l_draw_pixel(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	LuaTexture *t = read_object(L, 1);
+	if (set_as_target(t, driver))
+		return 0;
+
+	core::vector2di pos = read_v2s32(L, 2);
+
+	video::SColor color(0x0);
+	read_color(L, 3, &color);
+
+	if (lua_istable(L, 4) && !read_recti(L, 4).isPointInside(pos))
+		return 0;
+
+	driver->drawPixel(pos.X, pos.Y, color);
+
+	return 0;
+}
+
+// draw_rect(self, rect, color[, clip_rect])
+int LuaTexture::l_draw_rect(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	LuaTexture *t = read_object(L, 1);
+	if (set_as_target(t, driver))
+		return 0;
+
+	core::recti rect = read_recti(L, 2);
+
+	core::recti clip_rect;
+	core::recti *clip_ptr = nullptr;
+	if (lua_istable(L, 4)) {
+		clip_rect = read_recti(L, 4);
+		clip_ptr = &clip_rect;
+	}
+
+	// Draw with a gradient if it is an _array_ of four colors as a table with keys
+	// might be a ColorSpec in table form
+	if (lua_istable(L, 3) && lua_objlen(L, 3) == 4) {
+		video::SColor colors[4] = {0x0, 0x0, 0x0, 0x0};
+		for (size_t i = 0; i < 4; i++) {
+			lua_rawgeti(L, 3, i + 1);
+			read_color(L, -1, &colors[i]);
+			lua_pop(L, 1);
+		}
+		driver->draw2DRectangle(rect, colors[0], colors[1], colors[3], colors[2],
+			clip_ptr);
+	} else {
+		video::SColor color(0x0);
+		read_color(L, 3, &color);
+		driver->draw2DRectangle(color, rect, clip_ptr);
+	}
+
+	return 0;
+}
+
+// draw_texture(self, rect, texture[, clip_rect][, middle_rect][, from_rect][, recolor]
+//     [, use_alpha])
+int LuaTexture::l_draw_texture(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	LuaTexture *t = read_object(L, 1);
+	if (set_as_target(t, driver))
+		return 0;
+
+	core::recti rect = read_recti(L, 2);
+	video::ITexture *texture = ModApiDrawer::get_texture(L, 3);
+
+	core::recti clip_rect;
+	core::recti *clip_ptr = nullptr;
+	if (lua_istable(L, 4)) {
+		clip_rect = read_recti(L, 4);
+		clip_ptr = &clip_rect;
+	}
+
+	core::recti from_rect;
+	core::dimension2d<u32> size = texture->getOriginalSize();
+	if (lua_istable(L, 6)) {
+		from_rect = read_recti(L, 6);
+
+		// `-x` is interpreted as `w - x`.
+		if (from_rect.LowerRightCorner.X < from_rect.UpperLeftCorner.X)
+			from_rect.LowerRightCorner.X += (s32)size.Width;
+		if (from_rect.LowerRightCorner.Y < from_rect.UpperLeftCorner.Y)
+			from_rect.LowerRightCorner.Y += (s32)size.Height;
+	} else {
+		from_rect = core::rect<s32>(core::position2d<s32>(0, 0),
+			core::dimension2di(size.Width, size.Height));
+	}
+
+	video::SColor color(0xFFFFFFFF);
+	if (!lua_isnil(L, 7))
+		read_color(L, 7, &color);
+	const video::SColor colors[] = {color, color, color, color};
+
+	bool use_alpha = true;
+	if (lua_type(L, 8) == LUA_TBOOLEAN)
+		use_alpha = lua_toboolean(L, 8);
+
+	if (lua_istable(L, 5)) {
+		core::recti middle_rect = read_recti(L, 5);
+
+		if (middle_rect.LowerRightCorner.X < middle_rect.UpperLeftCorner.X)
+			middle_rect.LowerRightCorner.X += from_rect.getWidth();
+		if (middle_rect.LowerRightCorner.Y < middle_rect.UpperLeftCorner.Y)
+			middle_rect.LowerRightCorner.Y += from_rect.getHeight();
+
+		draw2DImage9Slice(driver, texture, rect, from_rect, middle_rect,
+			clip_ptr, colors, use_alpha);
+	} else {
+		draw2DImageFilterScaled(driver, texture, rect, from_rect,
+			clip_ptr, colors, use_alpha);
+	}
+
+	return 0;
+}
+
+// draw_text(self, pos, text[, clip_rect][, style])
+// style = {color, font, size, bold, italic, underline, strike}
+int LuaTexture::l_draw_text(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	LuaTexture *t = read_object(L, 1);
+	if (set_as_target(t, driver))
+		return 0;
+
+	core::recti rect;
+	rect.UpperLeftCorner = read_v2s32(L, 2);
+
+	std::wstring text = utf8_to_wide(
+		unescape_enriched(readParam<std::string>(L, 3)));
+	for (size_t i = 0; i < text.size(); i++) {
+		if (text[i] == L'\n' || text[i] == L'\0')
+			text[i] = L' ';
+	}
+
+	core::recti clip_rect;
+	core::recti *clip_ptr = nullptr;
+	if (lua_istable(L, 4)) {
+		clip_rect = read_recti(L, 4);
+		clip_ptr = &clip_rect;
+	}
+
+	gui::IGUIFont *font = ModApiDrawer::get_font(L, 5);
+
+	lua_getfield(L, 5, "color");
+	video::SColor color(0xFFFFFFFF);
+	read_color(L, -1, &color);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 5, "underline");
+	bool underline = lua_toboolean(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 5, "strike");
+	bool strike = lua_toboolean(L, -1);
+	lua_pop(L, 1);
+
+	font->draw(text.c_str(), rect, color, false, false, clip_ptr);
+
+	if (!underline && !strike)
+		return 0;
+
+	core::dimension2d<u32> size = font->getDimension(text.c_str());
+	rect.LowerRightCorner = rect.UpperLeftCorner +
+		core::vector2di(size.Width, size.Height);
+
+	s32 baseline = 0;
+#if USE_FREETYPE
+	if (font->getType() == gui::EGFT_CUSTOM)
+		baseline = size.Height - 1 - ((gui::CGUITTFont *)font)->getAscender() / 64;
+#endif
+
+	if (underline) {
+		s32 line_pos = rect.LowerRightCorner.Y - (baseline >> 1);
+		core::recti line_rect(
+			rect.UpperLeftCorner.X,
+			line_pos - (baseline >> 3) - 1,
+			rect.LowerRightCorner.X,
+			line_pos + (baseline >> 3)
+		);
+
+		driver->draw2DRectangle(color, line_rect, clip_ptr);
+	}
+
+	if (strike) {
+		s32 line_pos = rect.UpperLeftCorner.Y + size.Height * 6 / 11;
+		core::recti line_rect(
+			rect.UpperLeftCorner.X,
+			line_pos - (baseline >> 3) - 1,
+			rect.LowerRightCorner.X,
+			line_pos + (baseline >> 3)
+		);
+
+		driver->draw2DRectangle(color, line_rect, clip_ptr);
+	}
+
+	return 0;
+}
+
+// draw_item(self, rect, item[, clip_rect][, angle])
+int LuaTexture::l_draw_item(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	LuaTexture *t = read_object(L, 1);
+	if (set_as_target(t, driver))
+		return 0;
+
+	core::recti rect = read_recti(L, 2);
+
+	Client *client = getClient(L);
+	IItemDefManager *idef = client->idef();
+	ItemStack item;
+	item.deSerialize(readParam<std::string>(L, 3), idef);
+
+	core::recti clip_rect;
+	core::recti *clip_ptr = nullptr;
+	if (lua_istable(L, 4)) {
+		clip_rect = read_recti(L, 4);
+		clip_ptr = &clip_rect;
+	}
+
+	v3s16 angle;
+	if (lua_istable(L, 5))
+		angle = read_v3s16(L, 5);
+
+	drawItemStack(RenderingEngine::get_video_driver(), g_fontengine->getFont(), item,
+		rect, clip_ptr, client, IT_ROT_NONE, angle, v3s16());
+
+	return 0;
+}
+
+// draw_transformed_texture(self, rect, texture, transform)
+int LuaTexture::l_draw_transformed_texture(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	LuaTexture *t = read_object(L, 1);
+	if (set_as_target(t, driver))
+		return 0;
+
+	core::recti rect = read_recti(L, 2);
+	video::ITexture *texture = ModApiDrawer::get_texture(L, 3);
+
+	f32 m_data[16];
+	for (size_t i = 0; i < 16; i++) {
+		lua_rawgeti(L, 4, i + 1);
+		m_data[i] = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+	}
+	core::matrix4 transform;
+	transform.setM(m_data);
+
+	core::rect<s32> old_viewport = driver->getViewPort();
+	core::matrix4 old_proj_mat = driver->getTransform(video::ETS_PROJECTION);
+	core::matrix4 old_view_mat = driver->getTransform(video::ETS_VIEW);
+
+	driver->setViewPort(rect);
+	driver->setTransform(video::ETS_PROJECTION, core::IdentityMatrix);
+	driver->setTransform(video::ETS_VIEW, core::IdentityMatrix);
+	driver->setTransform(video::ETS_WORLD, transform);
+
+	video::SMaterial &material = s_drawer.effects_mesh.getMaterial();
+	material.TextureLayer[0].Texture = texture;
+	driver->setMaterial(material);
+	driver->drawMeshBuffer(&s_drawer.effects_mesh);
+
+	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+	driver->setTransform(video::ETS_VIEW, old_view_mat);
+	driver->setTransform(video::ETS_PROJECTION, old_proj_mat);
+
+	driver->setViewPort(old_viewport);
+
+	return 0;
+}
+
+// bind_ingame(self, name) -> success
+int LuaTexture::l_bind_ingame(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaTexture *t = read_object(L, 1);
+	if (t->texture == nullptr)
+		throw LuaError("Invalid use of minetest.window as normal texture");
+
+	std::string name = readParam<std::string>(L, 2);
+
+	const char *ends[] = {".ct", nullptr};
+	if (removeStringEnd(name, ends).empty() ||
+			!string_allowed(name, TEXTURENAME_ALLOWED_CHARS)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	if (getClient(L)->getWritableTextureSource()->insertRawTexture(name, t->texture)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	t->is_bound = true;
+	lua_pushboolean(L, true);
+
+	return 1;
+}
+
+// new(size) -> texture
+int LuaTexture::l_new(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
+		errorstream << "Unable to set texture as render target" << std::endl;
+		lua_pushnil(L);
+		return 1;
+	}
+
+	LuaTexture *t = new LuaTexture;
+	t->is_ref = false;
+
+	core::vector2di size = read_v2s32(L, 1);
+
+	/* if (size.Width == 0 || size.Height == 0 ||
+			((!driver->queryFeature(video::EVDF_TEXTURE_NPOT) ||
+			!driver->queryFeature(EVDF_TEXTURE_NSQUARE)) &&
+			(size.Width != size.Height || (size.Width & (size.Width - 1)) == 0)))
+		throw LuaError("Invalid texture size"); */
+
+	t->texture = driver->addRenderTargetTexture(
+		core::dimension2d<u32>(size.X, size.Y), "", video::ECF_A8R8G8B8);
+	if (t->texture == nullptr) {
+		errorstream << "Unable to create custom texture" << std::endl;
+		delete t;
+		lua_pushnil(L);
+		return 1;
+	}
+	driver->setRenderTarget(t->texture, true, true);
+	driver->setRenderTarget(nullptr, false, false);
+
+	*(void **)lua_newuserdata(L, sizeof(void *)) = t;
+	luaL_getmetatable(L, "Texture");
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+// copy(texture) -> texture
+int LuaTexture::l_copy(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
+		errorstream << "Unable to set texture as render target" << std::endl;
+		lua_pushnil(L);
+		return 1;
+	}
+
+	LuaTexture *t = new LuaTexture;
+	t->is_ref = false;
+
+	video::ITexture *to_copy = ModApiDrawer::get_texture(L, 1, true);
+
+	bool needs_removal = false;
+	if (to_copy == nullptr) {
+		// The window needs special treatment. Since it is not a real texture, a
+		// texture must be created from a screenshot. Has caveats, but it's better
+		// than nothing.
+		video::IImage *temp = driver->createScreenShot(video::ECF_A8R8G8B8);
+		to_copy = driver->addTexture("", temp);
+		if (to_copy == nullptr) {
+			errorstream << "Unable to create texture" << std::endl;
+			delete t;
+			lua_pushnil(L);
+			return 1;
+		}
+		temp->drop();
+		needs_removal = true;
+	}
+
+	// The seemingly most reliable way to copy a texture is drawing with a
+	// render texture. Cross normal/render texture copying with lock() could
+	// potentially have incompatibilities.
+	t->texture = driver->addRenderTargetTexture(
+		to_copy->getOriginalSize(), "", video::ECF_A8R8G8B8);
+	if (t->texture == nullptr) {
+		errorstream << "Unable to create render target texture" << std::endl;
+		delete t;
+		lua_pushnil(L);
+		return 1;
+	}
+	if (!driver->setRenderTarget(t->texture, true, true)) {
+		errorstream << "Unable to set texture as render target" << std::endl;
+		delete t;
+		lua_pushnil(L);
+		return 1;
+	}
+	driver->draw2DImage(to_copy, core::vector2di(0, 0));
+	driver->setRenderTarget(nullptr, false, false);
+
+	if (needs_removal)
+		driver->removeTexture(to_copy);
+
+	*(void **)lua_newuserdata(L, sizeof(void *)) = t;
+	luaL_getmetatable(L, "Texture");
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+// ref(texture) -> texture
+int LuaTexture::l_ref(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
+		errorstream << "Unable to set texture as render target" << std::endl;
+		lua_pushnil(L);
+		return 1;
+	}
+
+	LuaTexture *t = new LuaTexture;
+	t->is_ref = true;
+
+	t->texture = ModApiDrawer::get_texture(L, 1, true);
+
+	if (t->texture != nullptr) {
+		// The texture being referenced might become invalid if the actual texture is
+		// garbage collected and the texture removed with driver->removeTexture. Grabbing
+		// it will keep it valid.
+		t->texture->grab();
+	}
+
+	*(void **)lua_newuserdata(L, sizeof(void *)) = t;
+	luaL_getmetatable(L, "Texture");
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+// from_surface(surface) -> texture
+int LuaTexture::l_from_surface(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
+		errorstream << "Unable to set texture as render target" << std::endl;
+		lua_pushnil(L);
+		return 1;
+	}
+
+	LuaTexture *t = new LuaTexture;
+	t->is_ref = false;
+
+	video::ITexture *to_copy = driver->addTexture("",
+		(*(LuaSurface **)luaL_checkudata(L, 1, "Surface"))->surface);
+	if (to_copy == nullptr) {
+		errorstream << "Unable to create texture" << std::endl;
+		delete t;
+		lua_pushnil(L);
+		return 1;
+	}
+
+	// We must copy the texture because it has to be a render texture
+	t->texture = driver->addRenderTargetTexture(
+		to_copy->getOriginalSize(), "", video::ECF_A8R8G8B8);
+	if (t->texture == nullptr) {
+		errorstream << "Unable to create render target texture" << std::endl;
+		delete t;
+		lua_pushnil(L);
+		return 1;
+	}
+	if (!driver->setRenderTarget(t->texture, true, true)) {
+		errorstream << "Unable to set texture as render target" << std::endl;
+		delete t;
+		lua_pushnil(L);
+		return 1;
+	}
+	driver->draw2DImage(to_copy, core::vector2di(0, 0));
+	driver->setRenderTarget(nullptr, false, false);
+
+	driver->removeTexture(to_copy);
+
+	*(void **)lua_newuserdata(L, sizeof(void *)) = t;
+	luaL_getmetatable(L, "Texture");
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+int LuaTexture::create_window(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaTexture *t = new LuaTexture;
+	t->texture = nullptr;
+	t->is_ref = false;
+	t->is_bound = false;
+
+	*(void **)lua_newuserdata(L, sizeof(void *)) = t;
+	luaL_getmetatable(L, "Texture");
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+LuaTexture *LuaTexture::read_object(lua_State *L, int index)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	luaL_checktype(L, index, LUA_TUSERDATA);
+	void *t = luaL_checkudata(L, index, "Texture");
+	return *(LuaTexture **)t;
+}
+
+int LuaTexture::gc_object(lua_State *L)
+{
+	LuaTexture *t = *(LuaTexture **)lua_touserdata(L, 1);
+	if (t->texture != nullptr) {
+		// Only drop reference textures, and only remove non-reference non-bound textures
+		if (t->is_ref)
+			t->texture->drop();
+		else if (!t->is_bound)
+			RenderingEngine::get_video_driver()->removeTexture(t->texture);
+	}
+	delete t;
+	return 0;
+}
+
+void LuaTexture::Register(lua_State *L)
+{
+	lua_newtable(L);
+	int methodtable = lua_gettop(L);
+	luaL_newmetatable(L, "Texture");
+	int metatable = lua_gettop(L);
+
+	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__index");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__gc");
+	lua_pushcfunction(L, gc_object);
+	lua_settable(L, metatable);
+
+	lua_pop(L, 1);
+
+	luaL_openlib(L, 0, methods, 0);
+	lua_pop(L, 1);
+
+	lua_createtable(L, 0, 4);
+	int top = lua_gettop(L);
+	API_FCT(new);
+	API_FCT(copy);
+	API_FCT(ref);
+	API_FCT(from_surface);
+	lua_setglobal(L, "Texture");
+}
+
+const luaL_Reg LuaTexture::methods[] =
+{
+	luamethod(LuaTexture, is_ref),
+	luamethod(LuaTexture, get_original_size),
+	luamethod(LuaTexture, get_size),
+	luamethod(LuaTexture, fill),
+	luamethod(LuaTexture, draw_pixel),
+	luamethod(LuaTexture, draw_rect),
+	luamethod(LuaTexture, draw_texture),
+	luamethod(LuaTexture, draw_text),
+	luamethod(LuaTexture, draw_item),
+	luamethod(LuaTexture, draw_transformed_texture),
+	luamethod(LuaTexture, bind_ingame),
+	{0, 0}
+};
+
+// get_size() -> size
+int LuaSurface::l_get_size(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaSurface *s = read_object(L, 1);
+	if (s == nullptr)
+		return 0;
+
+	core::dimension2d<u32> size = s->surface->getDimension();
+	push_v2s32(L, v2s32(size.Width, size.Height));
+
+	return 1;
+}
+
+// new(size) -> surface
+int LuaSurface::l_new(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaSurface *s = new LuaSurface;
+
+	core::vector2di size = read_v2s32(L, 1);
+
+	s->surface = RenderingEngine::get_video_driver()->createImage(
+		video::ECF_A8R8G8B8, core::dimension2d<u32>(size.X, size.Y));
+
+	*(void **)lua_newuserdata(L, sizeof(void *)) = s;
+	luaL_getmetatable(L, "Surface");
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+// copy(surface) -> surface
+int LuaSurface::l_copy(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaSurface *s = new LuaSurface;
+
+	video::IImage *to_copy =
+		(*(LuaSurface **)luaL_checkudata(L, 1, "Surface"))->surface;
+
+	s->surface = RenderingEngine::get_video_driver()->createImage(
+		video::ECF_A8R8G8B8, to_copy->getDimension());
+	to_copy->copyTo(s->surface);
+
+	*(void **)lua_newuserdata(L, sizeof(void *)) = s;
+	luaL_getmetatable(L, "Surface");
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+// from_texture(texture) -> surface
+int LuaSurface::l_from_texture(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaSurface *s = new LuaSurface;
+
+	video::ITexture *to_copy = ModApiDrawer::get_texture(L, 1, true);
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (to_copy == nullptr)
+		s->surface = driver->createScreenShot(video::ECF_A8R8G8B8);
+	else
+		s->surface = driver->createImage(to_copy, core::vector2di(0, 0),
+			to_copy->getOriginalSize());
+
+	*(void **)lua_newuserdata(L, sizeof(void *)) = s;
+	luaL_getmetatable(L, "Surface");
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+LuaSurface *LuaSurface::read_object(lua_State *L, int index)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	luaL_checktype(L, index, LUA_TUSERDATA);
+	void *s = luaL_checkudata(L, index, "Surface");
+	return *(LuaSurface **)s;
+}
+
+int LuaSurface::gc_object(lua_State *L)
+{
+	LuaSurface *s = *(LuaSurface **)lua_touserdata(L, 1);
+	s->surface->drop();
+	delete s;
+	return 0;
+}
+
+void LuaSurface::Register(lua_State *L)
+{
+	lua_newtable(L);
+	int methodtable = lua_gettop(L);
+	luaL_newmetatable(L, "Surface");
+	int metatable = lua_gettop(L);
+
+	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__index");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__gc");
+	lua_pushcfunction(L, gc_object);
+	lua_settable(L, metatable);
+
+	lua_pop(L, 1);
+
+	luaL_openlib(L, 0, methods, 0);
+	lua_pop(L, 1);
+
+	lua_createtable(L, 0, 4);
+	int top = lua_gettop(L);
+	API_FCT(new);
+	API_FCT(copy);
+	API_FCT(from_texture);
+	// API_FCT(from_string);
+	lua_setglobal(L, "Surface");
+}
+
+const luaL_Reg LuaSurface::methods[] =
+{
+	luamethod(LuaSurface, get_size),
+	{0, 0}
+};

@@ -40,6 +40,7 @@ class ScriptApiClient : virtual public ScriptApiBase
 public:
 	// Calls when mods are loaded
 	void on_mods_loaded();
+	void on_media_loaded();
 
 	// Calls on_shutdown handlers
 	void on_shutdown();
@@ -52,6 +53,7 @@ public:
 	void on_hp_modification(int32_t newhp);
 	void on_death();
 	void environment_step(float dtime);
+	void on_predraw(float dtime);
 	void on_draw(float dtime);
 	void on_event(const SEvent &event);
 	void on_formspec_input(const std::string &formname, const StringMap &fields);

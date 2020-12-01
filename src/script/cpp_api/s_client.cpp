@@ -38,6 +38,23 @@ void ScriptApiClient::on_mods_loaded()
 	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
 }
 
+void ScriptApiClient::on_media_loaded()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_media_loaded");
+
+	ModApiDrawer::start_callback(true);
+	try {
+		runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+	} catch (LuaError &e) {
+		getClient()->setFatalError(std::string("Client on_media_loaded: ") + e.what() +
+			"\n" + script_get_backtrace(L));
+	}
+	ModApiDrawer::end_callback(true);
+}
+
 void ScriptApiClient::on_shutdown()
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -127,6 +144,25 @@ void ScriptApiClient::environment_step(float dtime)
 	}
 }
 
+void ScriptApiClient::on_predraw(float dtime)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_predraw");
+
+	lua_pushnumber(L, dtime);
+
+	ModApiDrawer::start_callback(false);
+	try {
+		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	} catch (LuaError &e) {
+		getClient()->setFatalError(std::string("Client on_predraw: ") + e.what() + "\n" +
+			script_get_backtrace(L));
+	}
+	ModApiDrawer::end_callback(false);
+}
+
 void ScriptApiClient::on_draw(float dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -136,9 +172,14 @@ void ScriptApiClient::on_draw(float dtime)
 
 	lua_pushnumber(L, dtime);
 
-	ModApiDrawer::start_callback();
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
-	ModApiDrawer::end_callback();
+	ModApiDrawer::start_callback(false);
+	try {
+		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	} catch (LuaError &e) {
+		getClient()->setFatalError(std::string("Client on_draw: ") + e.what() + "\n" +
+			script_get_backtrace(L));
+	}
+	ModApiDrawer::end_callback(false);
 }
 
 void ScriptApiClient::on_event(const SEvent &event)
@@ -254,8 +295,13 @@ void ScriptApiClient::on_event(const SEvent &event)
 		}
 	}
 
-	// Call callback; stop event propagation on the first `return true`.
-	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	// Call callback; stop event propagation on the first returned `true`.
+	try {
+		runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	} catch (LuaError &e) {
+		getClient()->setFatalError(std::string("Client on_event: ") + e.what() + "\n" +
+			script_get_backtrace(L));
+	}
 }
 
 void ScriptApiClient::on_formspec_input(const std::string &formname,

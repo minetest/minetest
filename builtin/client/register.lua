@@ -83,4 +83,6 @@ core.registered_on_modchannel_message, core.register_on_modchannel_message = mak
 core.registered_on_modchannel_signal, core.register_on_modchannel_signal = make_registration()
 core.registered_on_inventory_open, core.register_on_inventory_open = make_registration()
 core.registered_on_draw, core.register_on_draw = make_registration()
+core.registered_on_predraw, core.register_on_predraw = make_registration()
+core.registered_on_media_loaded, core.register_on_media_loaded = make_registration()
 core.registered_on_event, core.register_on_event = make_registration()

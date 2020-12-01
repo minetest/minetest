@@ -374,6 +374,11 @@ public:
 	// Shall be called from the main thread.
 	void insertSourceImage(const std::string &name, video::IImage *img);
 
+	// Insert a texture directly into the texture cache, bypassing images but precluding
+	// the usage of texture modifiers. Returns true if the name is already taken.
+	// Shall be called from the main thread.
+	bool insertRawTexture(const std::string &name, video::ITexture *texture);
+
 	// Rebuild images and textures from the current set of source images
 	// Shall be called from the main thread.
 	void rebuildImagesAndTextures();
@@ -761,6 +766,23 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 
 	m_sourcecache.insert(name, img, true);
 	m_source_image_existence.set(name, true);
+}
+
+bool TextureSource::insertRawTexture(const std::string &name, video::ITexture *texture)
+{
+	sanity_check(std::this_thread::get_id() == m_main_thread);
+
+	MutexAutoLock lock(m_textureinfo_cache_mutex);
+
+	if (m_name_to_id.count(name))
+		return true;
+
+	u32 id = m_textureinfo_cache.size();
+	TextureInfo ti(name, texture);
+	m_textureinfo_cache.push_back(ti);
+	m_name_to_id[name] = id;
+
+	return false;
 }
 
 void TextureSource::rebuildImagesAndTextures()

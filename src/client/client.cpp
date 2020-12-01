@@ -1732,6 +1732,11 @@ void Client::afterContentReceived()
 	m_tsrc->rebuildImagesAndTextures();
 	delete[] text;
 
+	// Create custom media after normal textures have been rebuilt since custom
+	// textures have no associated image
+	if (modsLoaded())
+		getScript()->on_media_loaded();
+
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
 	text = wgettext("Rebuilding shaders...");
@@ -1893,6 +1898,10 @@ ICraftDefManager* Client::getCraftDefManager()
 	//return m_craftdef;
 }
 ITextureSource* Client::getTextureSource()
+{
+	return m_tsrc;
+}
+IWritableTextureSource *Client::getWritableTextureSource()
 {
 	return m_tsrc;
 }
