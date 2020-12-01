@@ -1,7 +1,9 @@
-uniform mat4 mWorld;
-
 uniform vec3 eyePosition;
+
+// The cameraOffset is the current center of the visible world.
+uniform vec3 cameraOffset;
 uniform float animationTimer;
+uniform float horizon;
 
 varying vec3 vNormal;
 varying vec3 vPosition;
@@ -28,12 +30,17 @@ float directional_ambient(vec3 normal)
 void main(void)
 {
 	varTexCoord = (mTexture * inTexCoord0).st;
-	gl_Position = mWorldViewProj * inVertexPosition;
+	worldPosition = (mWorld * inVertexPosition).xyz;
+	vec4 pos = mWorld * inVertexPosition;
 
+#if ENABLE_CURVED_SURFACE
+	vec2 xz_pos = eyePosition.xz - cameraOffset.xz - worldPosition.xz;
+	pos.y -= dot(xz_pos, xz_pos) / horizon / horizon;
+#endif
+	gl_Position = mProj * mView * pos;
 	vPosition = gl_Position.xyz;
 	vNormal = inVertexNormal;
-	worldPosition = (mWorld * inVertexPosition).xyz;
-	eyeVec = -(mWorldView * inVertexPosition).xyz;
+	eyeVec = -(mView * pos).xyz;
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_PLAIN) || (MATERIAL_TYPE == TILE_MATERIAL_PLAIN_ALPHA)
 	vIDiff = 1.0;

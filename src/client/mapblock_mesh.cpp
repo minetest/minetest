@@ -860,6 +860,10 @@ static void updateFastFaceRow(
 		g_settings->getBool("enable_shaders") &&
 		g_settings->getBool("enable_waving_water");
 
+	static thread_local const bool curved_surface =
+		g_settings->getBool("enable_shaders") &&
+		g_settings->getBool("enable_curved_surface");
+
 	v3s16 p = startpos;
 
 	u16 continuous_tiles_count = 1;
@@ -899,6 +903,7 @@ static void updateFastFaceRow(
 					next_tile);
 
 			if (next_makes_face == makes_face
+					&& !curved_surface
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
 					&& memcmp(next_lights, lights, sizeof(lights)) == 0

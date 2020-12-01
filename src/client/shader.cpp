@@ -229,11 +229,11 @@ public:
 
 class MainShaderConstantSetter : public IShaderConstantSetter
 {
-	CachedVertexShaderSetting<float, 16> m_world_view_proj;
+	CachedVertexShaderSetting<float, 16> m_proj;
 	CachedVertexShaderSetting<float, 16> m_world;
-#if ENABLE_GLES
 	// Modelview matrix
-	CachedVertexShaderSetting<float, 16> m_world_view;
+	CachedVertexShaderSetting<float, 16> m_view;
+#if ENABLE_GLES
 	// Texture matrix
 	CachedVertexShaderSetting<float, 16> m_texture;
 	// Normal matrix
@@ -242,10 +242,10 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 
 public:
 	MainShaderConstantSetter() :
-		  m_world_view_proj("mWorldViewProj")
+		  m_proj("mProj")
 		, m_world("mWorld")
+		, m_view("mView")
 #if ENABLE_GLES
-		, m_world_view("mWorldView")
 		, m_texture("mTexture")
 		, m_normal("mNormal")
 #endif
@@ -265,26 +265,24 @@ public:
 		else
 			services->setVertexShaderConstant(world.pointer(), 4, 4);
 
-		// Set clip matrix
-		core::matrix4 worldView;
-		worldView = driver->getTransform(video::ETS_VIEW);
-		worldView *= world;
-		core::matrix4 worldViewProj;
-		worldViewProj = driver->getTransform(video::ETS_PROJECTION);
-		worldViewProj *= worldView;
+		core::matrix4 view = driver->getTransform(video::ETS_VIEW);
 		if (is_highlevel)
-			m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
+			m_view.set(*reinterpret_cast<float(*)[16]>(view.pointer()), services);
 		else
-			services->setVertexShaderConstant(worldViewProj.pointer(), 0, 4);
+			services->setVertexShaderConstant(view.pointer(), 0, 4);
 
+		core::matrix4 proj = driver->getTransform(video::ETS_PROJECTION);
+		if (is_highlevel)
+			m_proj.set(*reinterpret_cast<float(*)[16]>(proj.pointer()), services);
+		else
+			services->setVertexShaderConstant(proj.pointer(), 0, 4);
 #if ENABLE_GLES
 		if (is_highlevel) {
 			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
-			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
 			m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
 
 			core::matrix4 normal;
-			worldView.getTransposed(normal);
+			(view * world).getTransposed(normal);
 			sanity_check(normal.makeInverse());
 			float m[9] = {
 				normal[0], normal[1], normal[2],
@@ -663,8 +661,9 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 			"#version 100\n"
 			;
 		vertex_header = R"(
-			uniform highp mat4 mWorldView;
-			uniform highp mat4 mWorldViewProj;
+			uniform highp mat4 mWorld;
+			uniform highp mat4 mView;
+			uniform highp mat4 mProj;
 			uniform mediump mat4 mTexture;
 			uniform mediump mat3 mNormal;
 
@@ -686,8 +685,9 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 			#define highp
 			)";
 		vertex_header = R"(
-			#define mWorldView gl_ModelViewMatrix
-			#define mWorldViewProj gl_ModelViewProjectionMatrix
+			uniform mat4 mWorld;
+			uniform mat4 mView;
+			uniform mat4 mProj;
 			#define mTexture (gl_TextureMatrix[0])
 			#define mNormal gl_NormalMatrix
 
@@ -791,6 +791,12 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 
 	shaders_header += "#define ENABLE_WAVING_PLANTS ";
 	if (g_settings->getBool("enable_waving_plants"))
+		shaders_header += "1\n";
+	else
+		shaders_header += "0\n";
+
+	shaders_header += "#define ENABLE_CURVED_SURFACE ";
+	if (g_settings->getBool("enable_curved_surface"))
 		shaders_header += "1\n";
 	else
 		shaders_header += "0\n";

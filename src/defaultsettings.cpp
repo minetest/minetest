@@ -251,6 +251,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("tone_mapping", "false");
+	settings->setDefault("enable_curved_surface", "false");
+	settings->setDefault("curved_horizon", "100");
 	settings->setDefault("enable_waving_water", "false");
 	settings->setDefault("water_wave_height", "1.0");
 	settings->setDefault("water_wave_length", "20.0");

@@ -197,7 +197,9 @@ local function formspec(tabview, name, tabdata)
 			"checkbox[8.25,1.5;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8.25,2;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
-					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
+					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]" ..
+			"checkbox[8.25,2.5;cb_curved_surface;" .. fgettext("Curved Surface") .. ";"
+					.. dump(core.settings:get_bool("enable_curved_surface")) .. "]"
 	else
 		tab_string = tab_string ..
 			"label[8.38,0.7;" .. core.colorize("#888888",
@@ -207,7 +209,9 @@ local function formspec(tabview, name, tabdata)
 			"label[8.38,1.7;" .. core.colorize("#888888",
 					fgettext("Waving Leaves")) .. "]" ..
 			"label[8.38,2.2;" .. core.colorize("#888888",
-					fgettext("Waving Plants")) .. "]"
+					fgettext("Waving Plants")) .. "]" ..
+			"label[8.38,2.7;" .. core.colorize("#888888",
+					fgettext("Curved Surface")) .. "]"
 	end
 
 	return tab_string
@@ -271,6 +275,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_waving_plants"] then
 		core.settings:set("enable_waving_plants", fields["cb_waving_plants"])
+		return true
+	end
+	if fields["cb_curved_surface"] then
+		core.settings:set("enable_curved_surface", fields["cb_curved_surface"])
 		return true
 	end
 	if fields["btn_change_keys"] then

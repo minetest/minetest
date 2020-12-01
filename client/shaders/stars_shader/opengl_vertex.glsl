@@ -1,4 +1,4 @@
 void main(void)
 {
-	gl_Position = mWorldViewProj * inVertexPosition;
+	gl_Position = mProj * mView * mWorld * inVertexPosition;
 }
