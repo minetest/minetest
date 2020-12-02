@@ -150,16 +150,15 @@ void GUIScene::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &sty
 
 	setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 	setBackgroundColor(style.getColor(StyleSpec::BGCOLOR, m_bgcolor));
-	setFrameLoop(style.getIntRange(StyleSpec::FRAME_LOOP, {0, 0x7FFFFFFF}));
 }
 
 /**
  * Sets the frame loop range for the mesh
  */
-void GUIScene::setFrameLoop(const std::array<s32, 2> range)
+void GUIScene::setFrameLoop(const s32 begin, const s32 end)
 {
-	if (m_mesh->getStartFrame() != range[0] || m_mesh->getEndFrame() != range[1])
-		m_mesh->setFrameLoop(range[0], range[1]);
+	if (m_mesh->getStartFrame() != begin || m_mesh->getEndFrame() != end)
+		m_mesh->setFrameLoop(begin, end);
 }
 
 /* Camera control functions */
