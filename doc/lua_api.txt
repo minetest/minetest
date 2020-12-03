@@ -2284,8 +2284,8 @@ Elements
 * `continuous` (Optional): Whether the rotation is continuous. Default `false`.
 * `mouse control` (Optional): Whether the model can be controlled with the mouse. Default `true`.
 * `frame loop range` (Optional): Range of the animation frames.
-  * Defaults to the full range of all available frames.
-  * Syntax: `<begin>,<end>`; example: `model[0,0;4,6;player_preview;character.b3d;character.png;0,180;false;true;0,79]`
+    * Defaults to the full range of all available frames.
+    * Syntax: `<begin>,<end>`
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 

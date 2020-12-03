@@ -2795,8 +2795,16 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	e->enableContinuousRotation(inf_rotation);
 	e->enableMouseControl(mousectrl);
 
-	const s32 frame_loop_begin = stoi(frame_loop[0]);
-	const s32 frame_loop_end = frame_loop.size() == 1 ? 0x7FFFFFFF : stoi(frame_loop[1]);
+	s32 frame_loop_begin;
+	s32 frame_loop_end;
+
+	if (frame_loop.size() == 2) {
+	    frame_loop_begin = stoi(frame_loop[0]);
+	    frame_loop_end = stoi(frame_loop[1]);
+	} else {
+	    frame_loop_begin = 0;
+	    frame_loop_end = 0x7FFFFFFF;
+	}
 
 	e->setFrameLoop(frame_loop_begin, frame_loop_end);
 

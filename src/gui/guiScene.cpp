@@ -155,7 +155,7 @@ void GUIScene::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &sty
 /**
  * Sets the frame loop range for the mesh
  */
-void GUIScene::setFrameLoop(const s32 begin, const s32 end)
+void GUIScene::setFrameLoop(s32 begin, s32 end)
 {
 	if (m_mesh->getStartFrame() != begin || m_mesh->getEndFrame() != end)
 		m_mesh->setFrameLoop(begin, end);
