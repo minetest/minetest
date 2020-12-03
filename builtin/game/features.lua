@@ -18,6 +18,7 @@ core.features = {
 	pathfinder_works = true,
 	object_step_has_moveresult = true,
 	direct_velocity_on_players = true,
+	set_sky_extended = true,
 }
 
 function core.has_feature(arg)
