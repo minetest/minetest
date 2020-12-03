@@ -1,5 +1,3 @@
-uniform mat4 mWorld;
-
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
 uniform vec3 eyePosition;
@@ -96,14 +94,14 @@ void main(void)
 		smoothTriangleWave(animationTimer * 13.0 + tOffset)) * 0.5;
 #endif
 
-	worldPosition = (mWorld * inVertexPosition).xyz;
+	vec4 pos = mWorld * inVertexPosition;
+	worldPosition = pos.xyz;
 
 // OpenGL < 4.3 does not support continued preprocessor lines
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
 	// Generate waves with Perlin-type noise.
 	// The constants are calibrated such that they roughly
 	// correspond to the old sine waves.
-	vec4 pos = inVertexPosition;
 	vec3 wavePos = worldPosition + cameraOffset;
 	// The waves are slightly compressed along the z-axis to get
 	// wave-fronts along the x-axis.
@@ -111,28 +109,20 @@ void main(void)
 	wavePos.z /= WATER_WAVE_LENGTH * 2.0;
 	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10.0;
 	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0;
-	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
-	vec4 pos = inVertexPosition;
 	pos.x += disp_x;
 	pos.y += disp_z * 0.1;
 	pos.z += disp_z;
-	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
-	vec4 pos = inVertexPosition;
 	if (varTexCoord.y < 0.05) {
 		pos.x += disp_x;
 		pos.z += disp_z;
 	}
-	gl_Position = mWorldViewProj * pos;
-#else
-	gl_Position = mWorldViewProj * inVertexPosition;
 #endif
-
-
+	gl_Position = mProj * mView * pos;
 	vPosition = gl_Position.xyz;
 
-	eyeVec = -(mWorldView * inVertexPosition).xyz;
+	eyeVec = -(mView * pos).xyz;
 
 	// Calculate color.
 	// Red, green and blue components are pre-multiplied with

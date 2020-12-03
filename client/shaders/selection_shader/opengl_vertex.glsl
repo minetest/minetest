@@ -4,7 +4,7 @@ varying mediump vec2 varTexCoord;
 void main(void)
 {
 	varTexCoord = inTexCoord0.st;
-	gl_Position = mWorldViewProj * inVertexPosition;
+	gl_Position = mProj * mView * mWorld * inVertexPosition;
 
 	varColor = inVertexColor;
 }
