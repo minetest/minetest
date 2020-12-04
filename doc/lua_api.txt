@@ -7598,7 +7598,7 @@ Used by `minetest.register_node`.
         -- removing the node.
         
         mod_origin = "modname",
-        -- stores which mod registered a node
+        -- stores which mod actually registered a node
         -- if it can not find a source, returns "??"
         -- useful for getting what mod truly registered something
         -- example: if a node is registered as ":othermodname:nodename", 
