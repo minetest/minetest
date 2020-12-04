@@ -54,7 +54,7 @@ core.register_on_chat_message(function(name, message)
 
 	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
 	if not cmd then
-		core.chat_send_player(name, S("-!- Empty command."))
+		core.chat_send_player(name, "-!- "..S("Empty command."))
 		return true
 	end
 
@@ -67,7 +67,7 @@ core.register_on_chat_message(function(name, message)
 
 	local cmd_def = core.registered_chatcommands[cmd]
 	if not cmd_def then
-		core.chat_send_player(name, S("-!- Invalid command: @1", cmd))
+		core.chat_send_player(name, "-!- "..S("Invalid command: @1", cmd))
 		return true
 	end
 	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
@@ -75,7 +75,7 @@ core.register_on_chat_message(function(name, message)
 		core.set_last_run_mod(cmd_def.mod_origin)
 		local success, result = cmd_def.func(name, param)
 		if success == false and result == nil then
-			core.chat_send_player(name, S("-!- Invalid command usage."))
+			core.chat_send_player(name, "-!- "..S("Invalid command usage."))
 			local help_def = core.registered_chatcommands["help"]
 			if help_def then
 				local _, helpmsg = help_def.func(name, cmd)
@@ -973,7 +973,7 @@ core.register_chatcommand("shutdown", {
 
 		if delay == 0 then
 			core.log("action", name .. " shuts down server")
-			core.chat_send_all(S("*** Server shutting down (operator request)."))
+			core.chat_send_all("*** "..S("Server shutting down (operator request)."))
 		end
 		core.request_shutdown(message:trim(), core.is_yes(reconnect), delay)
 		return true
@@ -1056,7 +1056,7 @@ core.register_chatcommand("clearobjects", {
 		core.chat_send_all(S("Clearing all objects. This may take a long time. You may experience a timeout. (by @1)", name))
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
-		core.chat_send_all(S("*** Cleared all objects."))
+		core.chat_send_all("*** "..S("Cleared all objects."))
 		return true
 	end,
 })

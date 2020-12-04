@@ -22,7 +22,7 @@ core.register_on_sending_chat_message(function(message)
 	param = param or ""
 
 	if not cmd then
-		core.display_chat_message(core.gettext("-!- Empty command"))
+		core.display_chat_message("-!- " .. core.gettext("Empty command."))
 		return true
 	end
 
@@ -39,7 +39,7 @@ core.register_on_sending_chat_message(function(message)
 			core.display_chat_message(result)
 		end
 	else
-		core.display_chat_message(core.gettext("-!- Invalid command: ") .. cmd)
+		core.display_chat_message("-!- " .. core.gettext("Invalid command: ") .. cmd)
 	end
 
 	return true
