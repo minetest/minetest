@@ -31,6 +31,44 @@ enum ToServerConnectionState {
 	TOSERVER_STATE_INGAME,
 	TOSERVER_STATE_ALL,
 };
+
+enum ServerToClientMessageChannel {
+	// Default message channel if none has been specified.
+	MTSCMC_DEFAULT,
+	// HUD add, remove and change operations.
+	MTSCMC_HUD,
+	// Authentication and privileges.
+	MTSCMC_AUTH,
+	// Client state initialization, node and other init-time definitions.
+	MTSCMC_INIT,
+	// Game asset transfer, including dynamic updates.
+	MTSCMC_MEDIA,
+	// Map data.
+	MTSCMC_MAP,
+	// Inventory updates.
+	MTSCMC_INVENTORY,
+	// Entity messages.
+	MTSCMC_ENTITY,
+	// Chat messages.
+	MTSCMC_CHAT,
+	// Camera parameters such as FOV or local position.
+	MTSCMC_CAMERA,
+	// Forms.
+	MTSCMC_FORMSPEC,
+	// Particle FX.
+	MTSCMC_PARTICLE,
+	// Everything physics and motion related.
+	MTSCMC_PHYSICS,
+	// Visual environment settings such as skybox, time of day, sunlight ratio.
+	MTSCMC_ENVIRONMENT,
+	// Audio play, stop and volume control.
+	MTSCMC_AUDIO,
+	// Built in legacy player stats like health and breath.
+	MTSCMC_PLAYERSTAT,
+	// Modchannel messages.
+	MTSCMC_MODCHANNEL,
+};
+
 struct ToServerCommandHandler
 {
     const std::string name;

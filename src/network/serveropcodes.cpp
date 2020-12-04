@@ -125,21 +125,21 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 {
 	null_command_factory, // 0x00
 	null_command_factory, // 0x01
-	{ "TOCLIENT_HELLO",                    0, true }, // 0x02
-	{ "TOCLIENT_AUTH_ACCEPT",              0, true }, // 0x03
-	{ "TOCLIENT_ACCEPT_SUDO_MODE",         0, true }, // 0x04
-	{ "TOCLIENT_DENY_SUDO_MODE",           0, true }, // 0x05
+	{ "TOCLIENT_HELLO",                    MTSCMC_AUTH, true }, // 0x02
+	{ "TOCLIENT_AUTH_ACCEPT",              MTSCMC_AUTH, true }, // 0x03
+	{ "TOCLIENT_ACCEPT_SUDO_MODE",         MTSCMC_AUTH, true }, // 0x04
+	{ "TOCLIENT_DENY_SUDO_MODE",           MTSCMC_AUTH, true }, // 0x05
 	null_command_factory, // 0x06
 	null_command_factory, // 0x07
 	null_command_factory, // 0x08
 	null_command_factory, // 0x09
-	{ "TOCLIENT_ACCESS_DENIED",            0, true }, // 0x0A
+	{ "TOCLIENT_ACCESS_DENIED",            MTSCMC_AUTH, true }, // 0x0A
 	null_command_factory, // 0x0B
 	null_command_factory, // 0x0C
 	null_command_factory, // 0x0D
 	null_command_factory, // 0x0E
 	null_command_factory, // 0x0F
-	{ "TOCLIENT_INIT",                     0, true }, // 0x10
+	{ "TOCLIENT_INIT",                     MTSCMC_INIT, true }, // 0x10
 	null_command_factory, // 0x11
 	null_command_factory, // 0x12
 	null_command_factory, // 0x13
@@ -155,71 +155,71 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory, // 0x1D
 	null_command_factory, // 0x1E
 	null_command_factory, // 0x1F
-	{ "TOCLIENT_BLOCKDATA",                2, true }, // 0x20
-	{ "TOCLIENT_ADDNODE",                  0, true }, // 0x21
-	{ "TOCLIENT_REMOVENODE",               0, true }, // 0x22
+	{ "TOCLIENT_BLOCKDATA",                MTSCMC_MAP, true }, // 0x20
+	{ "TOCLIENT_ADDNODE",                  MTSCMC_MAP, true }, // 0x21
+	{ "TOCLIENT_REMOVENODE",               MTSCMC_MAP, true }, // 0x22
 	null_command_factory, // 0x23
 	null_command_factory, // 0x24
 	null_command_factory, // 0x25
 	null_command_factory, // 0x26
-	{ "TOCLIENT_INVENTORY",                0, true }, // 0x27
+	{ "TOCLIENT_INVENTORY",                MTSCMC_INVENTORY, true }, // 0x27
 	null_command_factory, // 0x28
-	{ "TOCLIENT_TIME_OF_DAY",              0, true }, // 0x29
-	{ "TOCLIENT_CSM_RESTRICTION_FLAGS",    0, true }, // 0x2A
-	{ "TOCLIENT_PLAYER_SPEED",             0, true }, // 0x2B
-	{ "TOCLIENT_MEDIA_PUSH",               0, true }, // 0x2C (sent over channel 1 too)
+	{ "TOCLIENT_TIME_OF_DAY",              MTSCMC_ENVIRONMENT, true }, // 0x29
+	{ "TOCLIENT_CSM_RESTRICTION_FLAGS",    MTSCMC_AUTH, true }, // 0x2A
+	{ "TOCLIENT_PLAYER_SPEED",             MTSCMC_PHYSICS, true }, // 0x2B
+	{ "TOCLIENT_MEDIA_PUSH",               MTSCMC_MEDIA, true }, // 0x2C (sent over channel 1 too)
 	null_command_factory, // 0x2D
 	null_command_factory, // 0x2E
-	{ "TOCLIENT_CHAT_MESSAGE",             0, true }, // 0x2F
+	{ "TOCLIENT_CHAT_MESSAGE",             MTSCMC_CHAT, true }, // 0x2F
 	null_command_factory, // 0x30
-	{ "TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD", 0, true }, // 0x31
-	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 (may be sent as unrel over channel 1 too)
-	{ "TOCLIENT_HP",                       0, true }, // 0x33
-	{ "TOCLIENT_MOVE_PLAYER",              0, true }, // 0x34
-	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     0, true }, // 0x35
-	{ "TOCLIENT_FOV",                      0, true }, // 0x36
-	{ "TOCLIENT_DEATHSCREEN",              0, true }, // 0x37
-	{ "TOCLIENT_MEDIA",                    2, true }, // 0x38
+	{ "TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD", MTSCMC_ENTITY, true }, // 0x31
+	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   MTSCMC_ENTITY, true }, // 0x32 (may be sent as unrel over channel 1 too)
+	{ "TOCLIENT_HP",                       MTSCMC_PLAYERSTAT, true }, // 0x33
+	{ "TOCLIENT_MOVE_PLAYER",              MTSCMC_PHYSICS, true }, // 0x34
+	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     MTSCMC_AUTH, true }, // 0x35
+	{ "TOCLIENT_FOV",                      MTSCMC_CAMERA, true }, // 0x36
+	{ "TOCLIENT_DEATHSCREEN",              MTSCMC_FORMSPEC, true }, // 0x37
+	{ "TOCLIENT_MEDIA",                    MTSCMC_MEDIA, true }, // 0x38
 	null_command_factory, // 0x39
-	{ "TOCLIENT_NODEDEF",                  0, true }, // 0x3A
+	{ "TOCLIENT_NODEDEF",                  MTSCMC_INIT, true }, // 0x3A
 	null_command_factory, // 0x3B
-	{ "TOCLIENT_ANNOUNCE_MEDIA",           0, true }, // 0x3C
-	{ "TOCLIENT_ITEMDEF",                  0, true }, // 0x3D
+	{ "TOCLIENT_ANNOUNCE_MEDIA",           MTSCMC_MEDIA, true }, // 0x3C
+	{ "TOCLIENT_ITEMDEF",                  MTSCMC_INIT, true }, // 0x3D
 	null_command_factory, // 0x3E
-	{ "TOCLIENT_PLAY_SOUND",               0, true }, // 0x3f (may be sent as unrel too)
-	{ "TOCLIENT_STOP_SOUND",               0, true }, // 0x40
-	{ "TOCLIENT_PRIVILEGES",               0, true }, // 0x41
-	{ "TOCLIENT_INVENTORY_FORMSPEC",       0, true }, // 0x42
-	{ "TOCLIENT_DETACHED_INVENTORY",       0, true }, // 0x43
-	{ "TOCLIENT_SHOW_FORMSPEC",            0, true }, // 0x44
-	{ "TOCLIENT_MOVEMENT",                 0, true }, // 0x45
-	{ "TOCLIENT_SPAWN_PARTICLE",           0, true }, // 0x46
-	{ "TOCLIENT_ADD_PARTICLESPAWNER",      0, true }, // 0x47
+	{ "TOCLIENT_PLAY_SOUND",               MTSCMC_AUDIO, true }, // 0x3f (may be sent as unrel too)
+	{ "TOCLIENT_STOP_SOUND",               MTSCMC_AUDIO, true }, // 0x40
+	{ "TOCLIENT_PRIVILEGES",               MTSCMC_AUTH, true }, // 0x41
+	{ "TOCLIENT_INVENTORY_FORMSPEC",       MTSCMC_FORMSPEC, true }, // 0x42
+	{ "TOCLIENT_DETACHED_INVENTORY",       MTSCMC_INVENTORY, true }, // 0x43
+	{ "TOCLIENT_SHOW_FORMSPEC",            MTSCMC_FORMSPEC, true }, // 0x44
+	{ "TOCLIENT_MOVEMENT",                 MTSCMC_PHYSICS, true }, // 0x45
+	{ "TOCLIENT_SPAWN_PARTICLE",           MTSCMC_PARTICLE, true }, // 0x46
+	{ "TOCLIENT_ADD_PARTICLESPAWNER",      MTSCMC_PARTICLE, true }, // 0x47
 	null_command_factory, // 0x48
-	{ "TOCLIENT_HUDADD",                   1, true }, // 0x49
-	{ "TOCLIENT_HUDRM",                    1, true }, // 0x4a
-	{ "TOCLIENT_HUDCHANGE",                1, true }, // 0x4b
-	{ "TOCLIENT_HUD_SET_FLAGS",            1, true }, // 0x4c
-	{ "TOCLIENT_HUD_SET_PARAM",            1, true }, // 0x4d
-	{ "TOCLIENT_BREATH",                   0, true }, // 0x4e
-	{ "TOCLIENT_SET_SKY",                  0, true }, // 0x4f
-	{ "TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO", 0, true }, // 0x50
-	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  0, true }, // 0x51
-	{ "TOCLIENT_EYE_OFFSET",               0, true }, // 0x52
-	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   0, true }, // 0x53
-	{ "TOCLIENT_CLOUD_PARAMS",             0, true }, // 0x54
-	{ "TOCLIENT_FADE_SOUND",               0, true }, // 0x55
-	{ "TOCLIENT_UPDATE_PLAYER_LIST",       0, true }, // 0x56
-	{ "TOCLIENT_MODCHANNEL_MSG",           0, true }, // 0x57
-	{ "TOCLIENT_MODCHANNEL_SIGNAL",        0, true }, // 0x58
-	{ "TOCLIENT_NODEMETA_CHANGED",         0, true }, // 0x59
-	{ "TOCLIENT_SET_SUN",                  0, true }, // 0x5a
-	{ "TOCLIENT_SET_MOON",                 0, true }, // 0x5b
-	{ "TOCLIENT_SET_STARS",                0, true }, // 0x5c
+	{ "TOCLIENT_HUDADD",                   MTSCMC_HUD, true }, // 0x49
+	{ "TOCLIENT_HUDRM",                    MTSCMC_HUD, true }, // 0x4a
+	{ "TOCLIENT_HUDCHANGE",                MTSCMC_HUD, true }, // 0x4b
+	{ "TOCLIENT_HUD_SET_FLAGS",            MTSCMC_HUD, true }, // 0x4c
+	{ "TOCLIENT_HUD_SET_PARAM",            MTSCMC_HUD, true }, // 0x4d
+	{ "TOCLIENT_BREATH",                   MTSCMC_PLAYERSTAT, true }, // 0x4e
+	{ "TOCLIENT_SET_SKY",                  MTSCMC_ENVIRONMENT, true }, // 0x4f
+	{ "TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO", MTSCMC_ENVIRONMENT, true }, // 0x50
+	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  MTSCMC_ENTITY, true }, // 0x51
+	{ "TOCLIENT_EYE_OFFSET",               MTSCMC_CAMERA, true }, // 0x52
+	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   MTSCMC_PARTICLE, true }, // 0x53
+	{ "TOCLIENT_CLOUD_PARAMS",             MTSCMC_ENVIRONMENT, true }, // 0x54
+	{ "TOCLIENT_FADE_SOUND",               MTSCMC_AUDIO, true }, // 0x55
+	{ "TOCLIENT_UPDATE_PLAYER_LIST",       MTSCMC_AUTH, true }, // 0x56
+	{ "TOCLIENT_MODCHANNEL_MSG",           MTSCMC_MODCHANNEL, true }, // 0x57
+	{ "TOCLIENT_MODCHANNEL_SIGNAL",        MTSCMC_MODCHANNEL, true }, // 0x58
+	{ "TOCLIENT_NODEMETA_CHANGED",         MTSCMC_MAP, true }, // 0x59
+	{ "TOCLIENT_SET_SUN",                  MTSCMC_ENVIRONMENT, true }, // 0x5a
+	{ "TOCLIENT_SET_MOON",                 MTSCMC_ENVIRONMENT, true }, // 0x5b
+	{ "TOCLIENT_SET_STARS",                MTSCMC_ENVIRONMENT, true }, // 0x5c
 	null_command_factory, // 0x5d
 	null_command_factory, // 0x5e
 	null_command_factory, // 0x5f
-	{ "TOSERVER_SRP_BYTES_S_B",            0, true }, // 0x60
-	{ "TOCLIENT_FORMSPEC_PREPEND",         0, true }, // 0x61
-	{ "TOCLIENT_MINIMAP_MODES",            0, true }, // 0x62
+	{ "TOSERVER_SRP_BYTES_S_B",            MTSCMC_AUTH, true }, // 0x60
+	{ "TOCLIENT_FORMSPEC_PREPEND",         MTSCMC_FORMSPEC, true }, // 0x61
+	{ "TOCLIENT_MINIMAP_MODES",            MTSCMC_HUD, true }, // 0x62
 };
