@@ -33,12 +33,12 @@ enum ToServerConnectionState {
 };
 
 /*
-	When adding new channels, ensure that CHANNEL_COUNT in connection.h 
+	When adding new channels, ensure that CHANNEL_COUNT in connection.h
 	is big enough to accomodate all the channels in this enum.
-	
+
 	If it turns out that different message types need to wait on one another,
 	assign the same number to them instead of merging them into one.
-	
+
 	Always assign numbers explicitly to allow easy rearrangement.
 */
 enum ServerToClientMessageChannel {
