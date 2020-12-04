@@ -1014,7 +1014,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
 * `paramtype2 = "flowingliquid"`
     * Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
     * The liquid level and a flag of the liquid are stored in `param2`
-    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node
+    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node;
+      see `minetest.get_node_level`, `minetest.set_node_level` and `minetest.add_node_level`
+      to access/manipulate the content of this field
     * Bit 3: If set, liquid is flowing downwards (no graphical effect)
 * `paramtype2 = "wallmounted"`
     * Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
