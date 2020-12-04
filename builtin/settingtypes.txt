@@ -747,7 +747,7 @@ mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
 #    Size of the MapBlock cache of the mesh generator. Increasing this will
 #    increase the cache hit %, reducing the data being copied from the main
 #    thread, thus reducing jitter.
-meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size in MB) int 40 0 1000
+meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size in MB) int 20 0 1000
 
 #    Enables minimap.
 enable_minimap (Minimap) bool true
@@ -1037,7 +1037,7 @@ ipv6_server (IPv6 server) bool false
 #    Maximum number of blocks that are simultaneously sent per client.
 #    The maximum total count is calculated dynamically:
 #    max_total = ceil((#clients + max_users) * per_client / 4)
-max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 128
+max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 40
 
 #    To reduce lag, block transfers are slowed down when a player is building something.
 #    This determines how long they are slowed down after placing or removing a node.
