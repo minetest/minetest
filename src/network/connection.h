@@ -151,10 +151,11 @@ sender_peer_id:
 	value 1 (PEER_ID_SERVER) is reserved for server
 	these constants are defined in constants.h
 channel:
-	Channel numbers have no intrinsic meaning. Currently only 0, 1, 2 exist.
+	Network messages are transferred over a number of parallel channels.
+	See serveropcodes.h for details on how the channels are being used.
 */
 #define BASE_HEADER_SIZE 7
-#define CHANNEL_COUNT 3
+#define CHANNEL_COUNT 17
 /*
 Packet types:
 

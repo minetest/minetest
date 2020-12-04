@@ -32,41 +32,50 @@ enum ToServerConnectionState {
 	TOSERVER_STATE_ALL,
 };
 
+/*
+	When adding new channels, ensure that CHANNEL_COUNT in connection.h 
+	is big enough to accomodate all the channels in this enum.
+	
+	If it turns out that different message types need to wait on one another,
+	assign the same number to them instead of merging them into one.
+	
+	Always assign numbers explicitly to allow easy rearrangement.
+*/
 enum ServerToClientMessageChannel {
 	// Default message channel if none has been specified.
-	MTSCMC_DEFAULT,
+	MTSCMC_DEFAULT = 0,
 	// HUD add, remove and change operations.
-	MTSCMC_HUD,
+	MTSCMC_HUD = 1,
 	// Authentication and privileges.
-	MTSCMC_AUTH,
+	MTSCMC_AUTH = 2,
 	// Client state initialization, node and other init-time definitions.
-	MTSCMC_INIT,
+	MTSCMC_INIT = 3,
 	// Game asset transfer, including dynamic updates.
-	MTSCMC_MEDIA,
+	MTSCMC_MEDIA = 4,
 	// Map data.
-	MTSCMC_MAP,
+	MTSCMC_MAP = 5,
 	// Inventory updates.
-	MTSCMC_INVENTORY,
+	MTSCMC_INVENTORY = 6,
 	// Entity messages.
-	MTSCMC_ENTITY,
+	MTSCMC_ENTITY = 7,
 	// Chat messages.
-	MTSCMC_CHAT,
+	MTSCMC_CHAT = 8,
 	// Camera parameters such as FOV or local position.
-	MTSCMC_CAMERA,
+	MTSCMC_CAMERA = 9,
 	// Forms.
-	MTSCMC_FORMSPEC,
+	MTSCMC_FORMSPEC = 10,
 	// Particle FX.
-	MTSCMC_PARTICLE,
+	MTSCMC_PARTICLE = 11,
 	// Everything physics and motion related.
-	MTSCMC_PHYSICS,
+	MTSCMC_PHYSICS = 12,
 	// Visual environment settings such as skybox, time of day, sunlight ratio.
-	MTSCMC_ENVIRONMENT,
+	MTSCMC_ENVIRONMENT = 16,
 	// Audio play, stop and volume control.
-	MTSCMC_AUDIO,
+	MTSCMC_AUDIO = 14,
 	// Built in legacy player stats like health and breath.
-	MTSCMC_PLAYERSTAT,
+	MTSCMC_PLAYERSTAT = 15,
 	// Modchannel messages.
-	MTSCMC_MODCHANNEL,
+	MTSCMC_MODCHANNEL = 16,
 };
 
 struct ToServerCommandHandler
