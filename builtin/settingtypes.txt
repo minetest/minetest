@@ -517,8 +517,8 @@ texture_min_size (Minimum texture size) int 64
 #    This algorithm smooths out the 3D viewport while keeping the image sharp,
 #    but it doesn't affect the insides of textures
 #    (which is especially noticeable with transparent textures).
-#    This option is experimental and might cause visible spaces between blocks
-#    when set above 0.
+#    Visible spaces appear between nodes when shaders are disabled.
+#    If set to 0, MSAA is disabled.
 #    A restart is required after changing this option.
 fsaa (FSAA) enum 0 0,1,2,4,8,16
 
