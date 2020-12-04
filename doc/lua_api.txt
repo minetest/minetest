@@ -7597,7 +7597,7 @@ Used by `minetest.register_node`.
         -- If defined, called when an explosion touches the node, instead of
         -- removing the node.
         
-        mod_origin,
+        mod_origin = "modname",
         -- stores which mod registered a node
         -- if it can not find a source, returns "??"
         -- useful for getting what mod truly registered something
