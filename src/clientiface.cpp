@@ -694,15 +694,22 @@ void ClientInterface::UpdatePlayerList()
 	}
 }
 
+u8 ClientInterface::patchLegacyChannel(u8 channel, u16 proto_version)
+{
+	// Funnel packets into the original 3 channels for legacy clients.
+	if (proto_version < 40) {
+		channel = legacyChannelMap.at(channel);
+		assert(channel < LEGACY_CHANNEL_COUNT);
+	}	
+	return channel;
+}
+
 void ClientInterface::send(session_t peer_id, u8 channelnum,
 		NetworkPacket *pkt, bool reliable)
 {
-	// Funnel packets into the original 3 channels for legacy clients.
-	if (net_proto_version < 40) {
-		channelnum = legacyChannelMap[channelnum];
-		assert( channelnum < LEGACY_CHANNEL_COUNT );
-	}
-
+	RemoteClient *rcl = getClientNoEx(peer_id);
+	if (rcl)
+		channelnum = patchLegacyChannel(channelnum, rcl->net_proto_version);
 	m_con->Send(peer_id, channelnum, pkt, reliable);
 }
 
@@ -713,8 +720,9 @@ void ClientInterface::sendToAll(NetworkPacket *pkt)
 		RemoteClient *client = client_it.second;
 
 		if (client->net_proto_version != 0) {
+			u8 channel = clientCommandFactoryTable[pkt->getCommand()].channel;
 			m_con->Send(client->peer_id,
-					clientCommandFactoryTable[pkt->getCommand()].channel, pkt,
+					patchLegacyChannel(channel, client->net_proto_version), pkt,
 					clientCommandFactoryTable[pkt->getCommand()].reliable);
 		}
 	}

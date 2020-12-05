@@ -225,18 +225,18 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 //	The mapping is different (and more balanced) than the original,
 //	but clients shouldn't care.
 //	Guideline: 2 for high bandwidth, 0 for high frequency, 1 for the rest
-const std::map<int,int> legacyChannelMap = {
+const std::map<u8,u8> legacyChannelMap = {
 	{ MTSCMC_DEFAULT, 0 },
 	{ MTSCMC_HUD, 1 },
 	{ MTSCMC_AUTH, 0 },
 	{ MTSCMC_INIT, 0 },
 	{ MTSCMC_MEDIA, 2 },
 	{ MTSCMC_MAP, 2 },
-	{ MTSCMC_INVENTORY, 2 }, // makes sense to sync it with forms and map meta
+	{ MTSCMC_INVENTORY, 1 },
 	{ MTSCMC_ENTITY, 0 },
 	{ MTSCMC_CHAT, 1 },
 	{ MTSCMC_CAMERA, 1 },
-	{ MTSCMC_FORMSPEC, 2 }, // forms are big and rarely updated
+	{ MTSCMC_FORMSPEC, 1 },
 	{ MTSCMC_PARTICLE, 1 },
 	{ MTSCMC_PHYSICS, 0 },
 	{ MTSCMC_ENVIRONMENT, 1 },

@@ -39,7 +39,7 @@ enum ToServerConnectionState {
 	
 	If you add a new message type to this enum, please also add it to legacyChannelMap.
 */
-enum ServerToClientMessageChannel {
+enum ServerToClientMessageChannel : u8 {
 	// Default message channel if none has been specified.
 	MTSCMC_DEFAULT,
 	// HUD add, remove and change operations.
@@ -93,4 +93,4 @@ struct ClientCommandFactory
 extern const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES];
 
 extern const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES];
-extern const std::map<int,int> legacyChannelMap;
+extern const std::map<u8,u8> legacyChannelMap;

@@ -339,8 +339,9 @@ public:
 	u8 getMajor() const { return m_version_major; }
 	u8 getMinor() const { return m_version_minor; }
 	u8 getPatch() const { return m_version_patch; }
+
 	const std::string &getFullVer() const { return m_full_version; }
-	
+
 	void setLangCode(const std::string &code) { m_lang_code = code; }
 	const std::string &getLangCode() const { return m_lang_code; }
 
@@ -513,6 +514,9 @@ protected:
 private:
 	/* update internal player list */
 	void UpdatePlayerList();
+	
+	/* Funnel the channel ID into the three legacy channels. */
+	u8 patchLegacyChannel(u8 channel, u16 proto_version);
 
 	// Connection
 	std::shared_ptr<con::Connection> m_con;

@@ -682,7 +682,7 @@ void ConnectionSendThread::sendPackets(float dtime)
 			<< " packet quota: " << peer->m_increment_packets_remaining << std::endl);
 
 		// first send queued reliable packets for all peers (if possible)
-		for (unsigned int i = 0; i < LEGACY_CHANNEL_COUNT; i++) {
+		for (unsigned int i = 0; i < CHANNEL_COUNT; i++) {
 			Channel &channel = udpPeer->channels[i];
 			u16 next_to_ack = 0;
 
@@ -854,7 +854,7 @@ void *ConnectionReceiveThread::run()
 				float avg_rate = 0.0;
 				float avg_loss = 0.0;
 
-				for(u16 j=0; j<LEGACY_CHANNEL_COUNT; j++)
+				for(u16 j=0; j<CHANNEL_COUNT; j++)
 				{
 					peer_current +=peer->channels[j].getCurrentDownloadRateKB();
 					peer_loss += peer->channels[j].getCurrentLossRateKB();
@@ -868,7 +868,7 @@ void *ConnectionReceiveThread::run()
 				output << "\tcurrent (sum): " << peer_current << "kb/s "<< peer_loss << "kb/s" << std::endl;
 				output << "\taverage (sum): " << avg_rate << "kb/s "<< avg_loss << "kb/s" << std::endl;
 				output << std::setfill(' ');
-				for(u16 j=0; j<LEGACY_CHANNEL_COUNT; j++)
+				for(u16 j=0; j<CHANNEL_COUNT; j++)
 				{
 					output << "\tcha " << j << ":"
 						<< " CUR: " << std::setw(6) << peer->channels[j].getCurrentDownloadRateKB() <<"kb/s"
@@ -939,12 +939,6 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 		session_t peer_id = readPeerId(*packetdata);
 		u8 channelnum = readChannel(*packetdata);
-
-		if (channelnum > LEGACY_CHANNEL_COUNT - 1) {
-			LOG(derr_con << m_connection->getDesc()
-				<< "Receive(): Invalid channel " << (u32)channelnum << std::endl);
-			return;
-		}
 
 		/* Try to identify peer by sender address (may happen on join) */
 		if (peer_id == PEER_ID_INEXISTENT) {
