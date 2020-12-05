@@ -93,4 +93,4 @@ struct ClientCommandFactory
 extern const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES];
 
 extern const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES];
-extern const std::map<u8,u8> legacyChannelMap;
+extern const u8 legacyChannelMap[256];

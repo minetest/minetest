@@ -698,7 +698,7 @@ u8 ClientInterface::patchLegacyChannel(u8 channel, u16 proto_version)
 {
 	// Funnel packets into the original 3 channels for legacy clients.
 	if (proto_version < 40) {
-		channel = legacyChannelMap.at(channel);
+		channel = legacyChannelMap[channel];
 		// If this is tripped, you probably messed up the legacy lookup.
 		assert(channel < LEGACY_CHANNEL_COUNT);
 	}
