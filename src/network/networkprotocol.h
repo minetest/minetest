@@ -209,7 +209,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Added 'basic_debug' privilege
 	PROTOCOL VERSION 41:
 		Break up the monolithic packet channels.
-		Make the channels dynamic.
+		Expand the channel count to 256.
 		Emulate the legacy 3-channel protocol.
 */
 
