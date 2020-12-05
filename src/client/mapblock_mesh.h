@@ -160,9 +160,6 @@ private:
 	// of sunlit vertices
 	// Keys are pairs of (mesh index, buffer index in the mesh)
 	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
-
-	// Camera offset info -> do we have to translate the mesh?
-	v3s16 m_camera_offset;
 };
 
 /*!
