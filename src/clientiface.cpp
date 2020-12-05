@@ -699,10 +699,8 @@ u8 ClientInterface::patchLegacyChannel(u8 channel, u16 proto_version)
 	// Funnel packets into the original 3 channels for legacy clients.
 	if (proto_version < 40) {
 		channel = legacyChannelMap.at(channel);
+		// If this is tripped, you probably messed up the legacy lookup.
 		assert(channel < LEGACY_CHANNEL_COUNT);
-		verbosestream << "Patching legacy channel to " << ((int)channel) << "\n";
-	} else {
-		verbosestream << "Protocol version matches, packet won't be patched\n";
 	}
 	return channel;
 }
@@ -710,15 +708,10 @@ u8 ClientInterface::patchLegacyChannel(u8 channel, u16 proto_version)
 void ClientInterface::send(session_t peer_id, u8 channelnum,
 		NetworkPacket *pkt, bool reliable)
 {
-	RemoteClient *rcl = getClientNoEx(peer_id);
+	RemoteClient *rcl = getClientNoEx(peer_id,CS_Invalid);
 
-	
-	if (rcl) {
+	if (rcl)
 		channelnum = patchLegacyChannel(channelnum, rcl->net_proto_version);
-	} else {
-		verbosestream << "RemoteClient for pid " << peer_id << " not found\n";
-	}
-	verbosestream << "Sending out packet on channel " << ((int)channelnum) << "\n";
 	m_con->Send(peer_id, channelnum, pkt, reliable);
 }
 
@@ -730,10 +723,8 @@ void ClientInterface::sendToAll(NetworkPacket *pkt)
 
 		if (client->net_proto_version != 0) {
 			u8 channel = clientCommandFactoryTable[pkt->getCommand()].channel;
-			channel = patchLegacyChannel(channel, client->net_proto_version);
-			verbosestream << "Broadcasting packet on channel " << ((int)channel) << "\n";
 			m_con->Send(client->peer_id,
-					channel, pkt,
+					patchLegacyChannel(channel, client->net_proto_version), pkt,
 					clientCommandFactoryTable[pkt->getCommand()].reliable);
 		}
 	}
