@@ -712,8 +712,8 @@ void ClientInterface::send(session_t peer_id, u8 channelnum,
 
 	if (rcl) {
 		channelnum = patchLegacyChannel(channelnum, rcl->net_proto_version);
-		verbosestream << "Sending out packet on channel " << channelnum << "\n";
 	}
+	verbosestream << "Sending out packet on channel " << channelnum << "\n";
 	m_con->Send(peer_id, channelnum, pkt, reliable);
 }
 
