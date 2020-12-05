@@ -72,7 +72,8 @@ Database_Redis::~Database_Redis()
 	redisFree(ctx);
 }
 
-void Database_Redis::beginSave() {
+void Database_Redis::beginSave() 
+{
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "MULTI"));
 	if (!reply) {
 		throw DatabaseException(std::string(
@@ -81,7 +82,8 @@ void Database_Redis::beginSave() {
 	freeReplyObject(reply);
 }
 
-void Database_Redis::endSave() {
+void Database_Redis::endSave() 
+{
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "EXEC"));
 	if (!reply) {
 		throw DatabaseException(std::string(
