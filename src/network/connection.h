@@ -154,7 +154,7 @@ channel:
 	Network messages are transferred over a number of parallel channels.
 	See serveropcodes.h for details on how the channels are being used.
 	Historically, 3 static channels were being used for communication.
-	Channels are now allocated dynamically based on the server's 
+	Now the whole 256 channel range is available.
 */
 #define BASE_HEADER_SIZE 7
 #define LEGACY_CHANNEL_COUNT 3
