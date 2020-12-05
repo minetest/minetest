@@ -50,13 +50,13 @@ void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
 			continue;
 
 		if (l.m == m) {
-			l.bufs.emplace_back({position, buf});
+			l.bufs.emplace_back(std::make_pair(position, buf));
 			return;
 		}
 	}
 	MeshBufList l;
 	l.m = m;
-	l.bufs.emplace_back({position, buf});
+	l.bufs.emplace_back(std::make_pair(position, buf));
 	list.emplace_back(l);
 }
 
@@ -376,10 +376,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	}
 
 	TimeTaker draw("Drawing mesh buffers");
-	
+
 	core::matrix4 m; // Model matrix
 	v3f offset = intToFloat(m_camera_offset, BS);
-	
+
 	// Render all layers in order
 	for (auto &lists : drawbufs.lists) {
 		for (MeshBufList &list : lists) {
@@ -393,10 +393,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			for (auto &pair : list.bufs) {
 				scene::IMeshBuffer *buf = pair.second;
-				
+
 				v3f block_wpos = intToFloat(pair.first * MAP_BLOCKSIZE, BS);
 				m.setTranslation(block_wpos - offset);
-				
+
 				driver->setTransform(video::ETS_WORLD, m);
 				driver->drawMeshBuffer(buf);
 				vertex_count += buf->getVertexCount();
