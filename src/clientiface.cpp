@@ -701,6 +701,8 @@ u8 ClientInterface::patchLegacyChannel(u8 channel, u16 proto_version)
 		channel = legacyChannelMap.at(channel);
 		assert(channel < LEGACY_CHANNEL_COUNT);
 		verbosestream << "Patching legacy channel to " << ((int)channel) << "\n";
+	} else {
+		verbosestream << "Protocol version matches, packet won't be patched\n";
 	}
 	return channel;
 }
@@ -710,8 +712,11 @@ void ClientInterface::send(session_t peer_id, u8 channelnum,
 {
 	RemoteClient *rcl = getClientNoEx(peer_id);
 
+	
 	if (rcl) {
 		channelnum = patchLegacyChannel(channelnum, rcl->net_proto_version);
+	} else {
+		verbosestream << "RemoteClient for pid " << peer_id << " not found\n";
 	}
 	verbosestream << "Sending out packet on channel " << ((int)channelnum) << "\n";
 	m_con->Send(peer_id, channelnum, pkt, reliable);
