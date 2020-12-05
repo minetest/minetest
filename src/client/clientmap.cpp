@@ -50,7 +50,7 @@ void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
 			continue;
 
 		if (l.m == m) {
-			l.bufs.push_back({position,buf});
+			l.bufs.emplace_back({position, buf});
 			return;
 		}
 	}
@@ -602,5 +602,4 @@ void ClientMap::PrintInfo(std::ostream &out)
 {
 	out<<"ClientMap: ";
 }
-
 
