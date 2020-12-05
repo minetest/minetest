@@ -700,7 +700,8 @@ u8 ClientInterface::patchLegacyChannel(u8 channel, u16 proto_version)
 	if (proto_version < 40) {
 		channel = legacyChannelMap.at(channel);
 		assert(channel < LEGACY_CHANNEL_COUNT);
-	}	
+		verbosestream << "Patching legacy channel to " << channel << "\n";
+	}
 	return channel;
 }
 
@@ -708,8 +709,11 @@ void ClientInterface::send(session_t peer_id, u8 channelnum,
 		NetworkPacket *pkt, bool reliable)
 {
 	RemoteClient *rcl = getClientNoEx(peer_id);
-	if (rcl)
+
+	if (rcl) {
 		channelnum = patchLegacyChannel(channelnum, rcl->net_proto_version);
+		verbosestream << "Sending out packet on channel " << channelnum << "\n";
+	}
 	m_con->Send(peer_id, channelnum, pkt, reliable);
 }
 
@@ -746,8 +750,9 @@ void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacyp
 			continue;
 		}
 
+		u8 channel = clientCommandFactoryTable[pkt_to_send->getCommand()].channel;
 		m_con->Send(client->peer_id,
-			clientCommandFactoryTable[pkt_to_send->getCommand()].channel,
+			patchLegacyChannel(channel, client->net_proto_version),
 			pkt_to_send,
 			clientCommandFactoryTable[pkt_to_send->getCommand()].reliable);
 	}
