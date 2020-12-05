@@ -153,9 +153,13 @@ sender_peer_id:
 channel:
 	Network messages are transferred over a number of parallel channels.
 	See serveropcodes.h for details on how the channels are being used.
+	Historically, 3 static channels were being used for communication.
+	Channels are now allocated dynamically based on the server's 
 */
 #define BASE_HEADER_SIZE 7
-#define CHANNEL_COUNT 17
+#define LEGACY_CHANNEL_COUNT 3
+#define CHANNEL_COUNT 256
+
 /*
 Packet types:
 
@@ -810,8 +814,8 @@ protected:
 	void putEvent(ConnectionEvent &e);
 
 	void TriggerSend();
-	
-	bool ConnectedToServer() 
+
+	bool ConnectedToServer()
 	{
 		return getPeerNoEx(PEER_ID_SERVER) != nullptr;
 	}

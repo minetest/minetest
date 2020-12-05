@@ -207,9 +207,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Minimap modes
 	PROTOCOL VERSION 40:
 		Added 'basic_debug' privilege
+	PROTOCOL VERSION 41:
+		Break up the monolithic packet channels.
+		Make the channels dynamic.
+		Emulate the legacy 3-channel protocol.
 */
 
-#define LATEST_PROTOCOL_VERSION 40
+#define LATEST_PROTOCOL_VERSION 41
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range

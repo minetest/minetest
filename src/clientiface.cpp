@@ -697,6 +697,12 @@ void ClientInterface::UpdatePlayerList()
 void ClientInterface::send(session_t peer_id, u8 channelnum,
 		NetworkPacket *pkt, bool reliable)
 {
+	// Funnel packets into the original 3 channels for legacy clients.
+	if (net_proto_version < 40) {
+		channelnum = legacyChannelMap[channelnum];
+		assert( channelnum < LEGACY_CHANNEL_COUNT );
+	}
+
 	m_con->Send(peer_id, channelnum, pkt, reliable);
 }
 

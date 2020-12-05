@@ -113,9 +113,6 @@ const static ClientCommandFactory null_command_factory = { "TOCLIENT_NULL", 0, f
 
 /*
 	Channels used for Server -> Client communication
-	2: Bulk data (mapblocks, media, ...)
-	1: HUD packets
-	0: everything else
 
 	Packet order is only guaranteed inside a channel, so packets that operate on
 	the same objects are *required* to be in the same channel.
@@ -222,4 +219,28 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOSERVER_SRP_BYTES_S_B",            MTSCMC_AUTH, true }, // 0x60
 	{ "TOCLIENT_FORMSPEC_PREPEND",         MTSCMC_FORMSPEC, true }, // 0x61
 	{ "TOCLIENT_MINIMAP_MODES",            MTSCMC_HUD, true }, // 0x62
+};
+
+//	Legacy channels for 5.3 and earlier.
+//	The mapping is different (and more balanced) than the original,
+//	but clients shouldn't care.
+//	Guideline: 2 for high bandwidth, 0 for high frequency, 1 for the rest
+const std::map<int,int> legacyChannelMap = {
+	{ MTSCMC_DEFAULT, 0 },
+	{ MTSCMC_HUD, 1 },
+	{ MTSCMC_AUTH, 0 },
+	{ MTSCMC_INIT, 0 },
+	{ MTSCMC_MEDIA, 2 },
+	{ MTSCMC_MAP, 2 },
+	{ MTSCMC_INVENTORY, 2 }, // makes sense to sync it with forms and map meta
+	{ MTSCMC_ENTITY, 0 },
+	{ MTSCMC_CHAT, 1 },
+	{ MTSCMC_CAMERA, 1 },
+	{ MTSCMC_FORMSPEC, 2 }, // forms are big and rarely updated
+	{ MTSCMC_PARTICLE, 1 },
+	{ MTSCMC_PHYSICS, 0 },
+	{ MTSCMC_ENVIRONMENT, 1 },
+	{ MTSCMC_AUDIO, 1 },
+	{ MTSCMC_PLAYERSTAT, 0 },
+	{ MTSCMC_MODCHANNEL, 0 },
 };

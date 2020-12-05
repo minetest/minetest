@@ -1143,20 +1143,17 @@ void UDPPeer::RunCommandQueues(
 
 u16 UDPPeer::getNextSplitSequenceNumber(u8 channel)
 {
-	assert(channel < CHANNEL_COUNT); // Pre-condition
 	return channels[channel].readNextSplitSeqNum();
 }
 
 void UDPPeer::setNextSplitSequenceNumber(u8 channel, u16 seqnum)
 {
-	assert(channel < CHANNEL_COUNT); // Pre-condition
 	channels[channel].setNextSplitSeqNum(seqnum);
 }
 
 SharedBuffer<u8> UDPPeer::addSplitPacket(u8 channel, const BufferedPacket &toadd,
 	bool reliable)
 {
-	assert(channel < CHANNEL_COUNT); // Pre-condition
 	return channels[channel].incoming_splits.insert(toadd, reliable);
 }
 
@@ -1403,7 +1400,6 @@ bool Connection::TryReceive(NetworkPacket *pkt)
 void Connection::Send(session_t peer_id, u8 channelnum,
 		NetworkPacket *pkt, bool reliable)
 {
-	assert(channelnum < CHANNEL_COUNT); // Pre-condition
 
 	ConnectionCommand c;
 
@@ -1546,7 +1542,6 @@ void Connection::DisconnectPeer(session_t peer_id)
 
 void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 {
-	assert(channelnum < CHANNEL_COUNT); // Pre-condition
 
 	LOG(dout_con<<getDesc()
 			<<" Queuing ACK command to peer_id: " << peer_id <<

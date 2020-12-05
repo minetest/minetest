@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "server.h"
 #include "networkprotocol.h"
+#include <map>
 
 class NetworkPacket;
 
@@ -33,49 +34,46 @@ enum ToServerConnectionState {
 };
 
 /*
-	When adding new channels, ensure that CHANNEL_COUNT in connection.h
-	is big enough to accomodate all the channels in this enum.
-
 	If it turns out that different message types need to wait on one another,
 	assign the same number to them instead of merging them into one.
-
-	Always assign numbers explicitly to allow easy rearrangement.
+	
+	If you add a new message type to this enum, please also add it to legacyChannelMap.
 */
 enum ServerToClientMessageChannel {
 	// Default message channel if none has been specified.
-	MTSCMC_DEFAULT = 0,
+	MTSCMC_DEFAULT,
 	// HUD add, remove and change operations.
-	MTSCMC_HUD = 1,
+	MTSCMC_HUD,
 	// Authentication and privileges.
-	MTSCMC_AUTH = 2,
+	MTSCMC_AUTH,
 	// Client state initialization, node and other init-time definitions.
-	MTSCMC_INIT = 3,
+	MTSCMC_INIT,
 	// Game asset transfer, including dynamic updates.
-	MTSCMC_MEDIA = 4,
+	MTSCMC_MEDIA,
 	// Map data.
-	MTSCMC_MAP = 5,
+	MTSCMC_MAP,
 	// Inventory updates.
-	MTSCMC_INVENTORY = 6,
+	MTSCMC_INVENTORY,
 	// Entity messages.
-	MTSCMC_ENTITY = 7,
+	MTSCMC_ENTITY,
 	// Chat messages.
-	MTSCMC_CHAT = 8,
+	MTSCMC_CHAT,
 	// Camera parameters such as FOV or local position.
-	MTSCMC_CAMERA = 9,
+	MTSCMC_CAMERA,
 	// Forms.
-	MTSCMC_FORMSPEC = 10,
+	MTSCMC_FORMSPEC,
 	// Particle FX.
-	MTSCMC_PARTICLE = 11,
+	MTSCMC_PARTICLE,
 	// Everything physics and motion related.
-	MTSCMC_PHYSICS = 12,
+	MTSCMC_PHYSICS,
 	// Visual environment settings such as skybox, time of day, sunlight ratio.
-	MTSCMC_ENVIRONMENT = 16,
+	MTSCMC_ENVIRONMENT,
 	// Audio play, stop and volume control.
-	MTSCMC_AUDIO = 14,
+	MTSCMC_AUDIO,
 	// Built in legacy player stats like health and breath.
-	MTSCMC_PLAYERSTAT = 15,
+	MTSCMC_PLAYERSTAT,
 	// Modchannel messages.
-	MTSCMC_MODCHANNEL = 16,
+	MTSCMC_MODCHANNEL,
 };
 
 struct ToServerCommandHandler
@@ -95,3 +93,4 @@ struct ClientCommandFactory
 extern const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES];
 
 extern const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES];
+extern const std::map<int,int> legacyChannelMap;
