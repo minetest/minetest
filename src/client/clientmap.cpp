@@ -50,13 +50,13 @@ void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
 			continue;
 
 		if (l.m == m) {
-			l.bufs.emplace_back(std::make_pair(position, buf));
+			l.bufs.emplace_back(position, buf);
 			return;
 		}
 	}
 	MeshBufList l;
 	l.m = m;
-	l.bufs.emplace_back(std::make_pair(position, buf));
+	l.bufs.emplace_back(position, buf);
 	list.emplace_back(l);
 }
 
