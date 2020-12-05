@@ -182,9 +182,7 @@ void ClientMap::updateDrawList()
 				if not seen on display
 			*/
 
-			if (block->mesh) {
-				block->mesh->updateCameraOffset(m_camera_offset);
-			} else {
+			if (!block->mesh) {
 				// Ignore if mesh doesn't exist
 				continue;
 			}
@@ -208,6 +206,8 @@ void ClientMap::updateDrawList()
 				blocks_occlusion_culled++;
 				continue;
 			}
+
+			block->mesh->updateCameraOffset(m_camera_offset);
 
 			// This block is in range. Reset usage timer.
 			block->resetUsageTimer();
