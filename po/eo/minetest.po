@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-03-31 10:14+0000\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
+"PO-Revision-Date: 2020-07-06 21:41+0000\n"
+"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.0-dev\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -24,7 +24,7 @@ msgstr "Vi mortis"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "Bone"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -115,7 +115,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Trovu pliajn modifaĵojn"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -220,7 +220,7 @@ msgstr "Ĝisdatigi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
-msgstr ""
+msgstr "Vido"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -228,7 +228,7 @@ msgstr "Mondo kun nomo «$1» jam ekzistas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Aldona tereno"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -240,33 +240,28 @@ msgid "Altitude dry"
 msgstr "Alteca malvarmiĝo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biome blending"
-msgstr "Klimata bruo"
+msgstr "Klimata miksado"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "Klimata bruo"
+msgstr "Klimatoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "Bruo de kavernoj"
+msgstr "Kavernegoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Oktavoj"
+msgstr "Kavernoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Krei"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Ripetoj"
+msgstr "Ornamoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
@@ -277,23 +272,20 @@ msgid "Download one from minetest.net"
 msgstr "Elŝutu ludon el minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Bruo de forgeskeloj"
+msgstr "Forgeskeloj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Plata tereno"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floating landmasses in the sky"
-msgstr "Denseco de fluginsulaj montoj"
+msgstr "Flugantaj teramasoj en la ĉielo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "Alteco de fluginsuloj"
+msgstr "Fluginsuloj (eksperimentaj)"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -301,28 +293,28 @@ msgstr "Ludo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Estigi nefraktalan terenon: oceano kaj subtero"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Montetoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Humid rivers"
-msgstr "Videa pelilo"
+msgstr "Malsekaj riveroj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Plialtigas malsekecon ĉirkaŭ riveroj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Lagoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
+"Malalta malsekeco kaj alta varmeco kaŭzas malprofundajn aŭ sekajn riverojn"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -333,14 +325,12 @@ msgid "Mapgen flags"
 msgstr "Parametroj de mondestigilo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Parametroj specialaj por Mondestigilo v5"
+msgstr "Parametroj specialaj por Mondestigilo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mountains"
-msgstr "Bruo de montoj"
+msgstr "Montoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -348,7 +338,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Reto de tuneloj kaj kavernoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -356,20 +346,19 @@ msgstr "Neniu ludo estas elektita"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Malpliigas varmecon kun alteco"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Malpliigas malsekecon kun alteco"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Grandeco de riveroj"
+msgstr "Riveroj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Marnivelaj riveroj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -378,29 +367,31 @@ msgstr "Fontnombro"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Glatigi transiron inter klimatoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Konstruaĵoj aperantaj sur la tereno (neniu efiko sur arboj kaj ĝangala herbo "
+"kreitaj de v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Konstruaĵoj aperantaj sur la tereno, ofte arboj kaj kreskaĵoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Milda, Dezerto"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Milda, Dezerto, Ĝangalo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Milda, Dezerto, Ĝangalo, Tundro, Tajgo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -409,22 +400,19 @@ msgstr "Bruo de terena bazo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Arboj kaj ĝangala herbo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Vary river depth"
-msgstr "Rivera profundo"
+msgstr "Variigi profundecon de riveroj"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Tre grandaj kavernoj profunde subtere"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Warning: The Development Test is meant for developers."
-msgstr ""
-"Averto: La minimuma programista testo estas intencita por programistoj."
+msgstr "Averto: La programista testo estas intencita por programistoj."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -1397,11 +1385,11 @@ msgstr "Silentigite"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Sonsistemo estas malŝaltita"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Sonsistemo ne estas subtenata de ĉi tiu muntaĵo"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -2041,9 +2029,8 @@ msgid "3D mode"
 msgstr "3d-a reĝimo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D mode parallax strength"
-msgstr "Normalmapa potenco"
+msgstr "Forteco de 3D-reĝima paralakso"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -2386,15 +2373,15 @@ msgid "Bumpmapping"
 msgstr "Mapado de elstaraĵoj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
 "Only works on GLES platforms. Most users will not need to change this.\n"
 "Increasing can reduce artifacting on weaker GPUs.\n"
 "0.1 = Default, 0.25 = Good value for weaker tablets."
 msgstr ""
-"Distanco de vidpunkto «proksime tonda ebeno» en monderoj, inter 0 kaj 0.5.\n"
-"Plejparto de uzantoj ne bezonos ĉi tion ŝanĝi.\n"
+"Distanco de vidpunkto «proksime tonda ebeno» en monderoj, inter 0 kaj 0.25.\n"
+"Funkcias nur sur GLES-platformoj. Plejparto de uzantoj ne bezonos ĉi tion "
+"ŝanĝi.\n"
 "Plialtigo povas malpliigi misbildojn por malfortaj grafiktraktiloj.\n"
 "0.1 = Norma, 0.25 = Bona valoro por malfortaj tabulkomputiloj."
 
@@ -2479,9 +2466,8 @@ msgstr ""
 "Povus esti bezona por malgrandaj ekranoj."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat font size"
-msgstr "Tipara grandeco"
+msgstr "Grandeco de babiluja tiparo"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"

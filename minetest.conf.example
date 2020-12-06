@@ -604,25 +604,10 @@
 
 #### Bumpmapping
 
-#    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack
-#    or need to be auto-generated.
+#    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack.
 #    Requires shaders to be enabled.
 #    type: bool
 # enable_bumpmapping = false
-
-#    Enables on the fly normalmap generation (Emboss effect).
-#    Requires bumpmapping to be enabled.
-#    type: bool
-# generate_normalmaps = false
-
-#    Strength of generated normalmaps.
-#    type: float
-# normalmaps_strength = 0.6
-
-#    Defines sampling step of texture.
-#    A higher value results in smoother normal maps.
-#    type: int min: 0 max: 2
-# normalmaps_smooth = 0
 
 #### Parallax Occlusion
 
@@ -955,8 +940,9 @@
 # autoscale_mode = disable
 
 #    Show entity selection boxes
+#    A restart is required after changing this.
 #    type: bool
-# show_entity_selectionbox = true
+# show_entity_selectionbox = false
 
 ## Menus
 
@@ -3374,4 +3360,3 @@
 #    so see a full list at https://content.minetest.net/help/content_flags/
 #    type: string
 # contentdb_flag_blacklist = nonfree, desktop_default
-

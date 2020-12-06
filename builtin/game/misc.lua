@@ -151,6 +151,12 @@ function core.setting_get_pos(name)
 end
 
 
+-- See l_env.cpp for the other functions
+function core.get_artificial_light(param1)
+	return math.floor(param1 / 16)
+end
+
+
 -- To be overriden by protection mods
 
 function core.is_protected(pos, name)

@@ -65,9 +65,9 @@ public:
 	ServerActiveObject *getParent() const;
 	inline bool isAttached() const { return getParent(); }
 	void setAttachment(int parent_id, const std::string &bone, v3f position,
-			v3f rotation);
+			v3f rotation, bool force_visible);
 	void getAttachment(int *parent_id, std::string *bone, v3f *position,
-			v3f *rotation) const;
+			v3f *rotation, bool *force_visible) const;
 	void clearChildAttachments();
 	void clearParentAttachment();
 	void addAttachmentChild(int child_id);
@@ -134,4 +134,5 @@ private:
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attachment_sent = false;
+	bool m_force_visible = false;
 };

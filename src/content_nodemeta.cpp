@@ -43,26 +43,26 @@ static bool content_nodemeta_deserialize_legacy_body(
 	if(id == NODEMETA_GENERIC) // GenericNodeMetadata (0.4-dev)
 	{
 		meta->getInventory()->deSerialize(is);
-		deSerializeLongString(is);  // m_text
-		deSerializeString(is);  // m_owner
+		deSerializeString32(is);  // m_text
+		deSerializeString16(is);  // m_owner
 
-		meta->setString("infotext",deSerializeString(is));
-		meta->setString("formspec",deSerializeString(is));
+		meta->setString("infotext",deSerializeString16(is));
+		meta->setString("formspec",deSerializeString16(is));
 		readU8(is);  // m_allow_text_input
 		readU8(is);  // m_allow_removal
 		readU8(is);  // m_enforce_owner
 
 		int num_vars = readU32(is);
 		for(int i=0; i<num_vars; i++){
-			std::string name = deSerializeString(is);
-			std::string var = deSerializeLongString(is);
+			std::string name = deSerializeString16(is);
+			std::string var = deSerializeString32(is);
 			meta->setString(name, var);
 		}
 		return false;
 	}
 	else if(id == NODEMETA_SIGN) // SignNodeMetadata
 	{
-		meta->setString("text", deSerializeString(is));
+		meta->setString("text", deSerializeString16(is));
 		//meta->setString("infotext","\"${text}\"");
 		meta->setString("infotext",
 				std::string("\"") + meta->getString("text") + "\"");
@@ -87,7 +87,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 	}
 	else if(id == NODEMETA_LOCKABLE_CHEST) // LockingChestNodeMetadata
 	{
-		meta->setString("owner", deSerializeString(is));
+		meta->setString("owner", deSerializeString16(is));
 		meta->getInventory()->deSerialize(is);
 
 		// Rename inventory list "0" to "main"
@@ -138,7 +138,7 @@ static bool content_nodemeta_deserialize_legacy_meta(
 	s16 id = readS16(is);
 
 	// Read data
-	std::string data = deSerializeString(is);
+	std::string data = deSerializeString16(is);
 	std::istringstream tmp_is(data, std::ios::binary);
 	return content_nodemeta_deserialize_legacy_body(tmp_is, id, meta);
 }

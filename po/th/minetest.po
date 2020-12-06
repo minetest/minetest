@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Thai (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-01-11 18:26+0000\n"
-"Last-Translator: rubenwardy <rubenwardy@gmail.com>\n"
+"PO-Revision-Date: 2020-07-08 08:41+0000\n"
+"Last-Translator: TZTarzan <khunsatyptiphan@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/minetest/minetest/"
 "th/>\n"
 "Language: th\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.10.1\n"
+"X-Generator: Weblate 4.2-dev\n"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -20,7 +20,7 @@ msgstr "เกิดใหม่"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "คุณชนม์"
+msgstr "คุณตายแล้ว"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -33,7 +33,7 @@ msgstr "เกิดข้อผิดพลาดในสคริปต์ Lu
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr "เกิดข้อผิดพลาด:"
+msgstr "เกิดข้อผิดพลาดขึ้น:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -41,39 +41,41 @@ msgstr "เมนูหลัก"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "เชื่อมต่อ"
+msgstr "เชื่อมต่อใหม่"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "เซิร์ฟเวอร์  ร้องขอ เชื่อมต่อ:"
+msgstr "เซิร์ฟเวอร์ได้ร้องขอการเชื่อมต่อใหม่:"
 
 #: builtin/mainmenu/common.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "โหลด ..."
+msgstr "กำลังโหลด..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "โพรโทคอลรุ่นไม่ตรงกัน. "
+msgstr "เวอร์ชันโปรโทคอลไม่ตรงกัน "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "เซิร์ฟเวอร์บังคับใช้โพรโทคอลรุ่น $1 "
+msgstr "เซิร์ฟเวอร์บังคับใช้โปรโตคอลเวอร์ชัน $1 "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "เซิร์ฟเวอร์ที่สนับสนุนโพรโทคอลการระหว่าง $1 และ $2. "
+msgstr "เซิร์ฟเวอร์ที่สนับสนุนเวอร์ชันโพรโทคอลระหว่าง $1 และ $2 "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr "ลอง reenabling serverlist สาธารณะ และตรวจสอบการเชื่อมต่ออินเทอร์เน็ต."
+msgstr ""
+"ลองเปิดใช้งานเซิร์ฟเวอร์ลิสต์สาธารณะอีกครั้งและตรวจสอบการเชื่อมต่ออินเทอร์เน็"
+"ต"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "เราสนับสนุนโพรโทคอลรุ่น $1 เท่านั้น."
+msgstr "เราสนับสนุนโพรโทคอลเวอร์ชัน $1 เท่านั้น"
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "เราสนับสนุนโพรโทคอลการระหว่างรุ่น $1 และ $2."
+msgstr "เราสนับสนุนโพรโทคอลระหว่างเวอร์ชัน $1 และ $2"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
@@ -87,7 +89,7 @@ msgstr "ยกเลิก"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr "อ้างอิง:"
+msgstr "ไฟล์อ้างอิง:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -95,7 +97,7 @@ msgstr "ปิดใช้งานทั้งหมด"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr "ปิดการใช้งาน modpack"
+msgstr "ปิดใช้งานม็อดแพ็ค"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -103,15 +105,15 @@ msgstr "เปิดใช้งานทั้งหมด"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "เปิดใช้งาน modpack"
+msgstr "เปิดใช้งานม็อดแพ็ค"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"ไม่สามารถเปิดใช้งาน mod (วัยรุ่น) '$1' ประกอบด้วยอักขระที่ไม่ได้รับอนุญาต "
-"อนุญาตให้มีอักขระเท่านั้น [a-z0-9_]."
+"ไม่สามารถเปิดใช้งานม็อด '$1' ซึ่งประกอบด้วยตัวอักษรที่ไม่ได้รับอนุญาต ตัวอั"
+"กษร [a-z0-9_] เท่านั้นที่ได้รับอนุญาต"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -119,7 +121,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "ปรับเปลี่ยน:"
+msgstr "ม็อด:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -128,7 +130,7 @@ msgstr "เสริม อ้างอิง:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "ไม่มีคำอธิบายเกี่ยวกับเกมให้."
+msgstr "ไม่มีคำอธิบายของเกมที่ให้มา"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -137,7 +139,7 @@ msgstr "ไม่มีการอ้างอิง."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "ไม่ modpack มีคำอธิบาย"
+msgstr "ไม่มีคำอธิบายของม็อดแพ็คที่ให้มา"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -146,7 +148,7 @@ msgstr "เสริม อ้างอิง:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr "เสริม อ้างอิง:"
+msgstr "ไฟล์อ้างอิงที่เลือกใช้ได้:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
@@ -159,7 +161,7 @@ msgstr "โลก:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "เปิดใช้งาน"
+msgstr "เปิดใช้งานแล้ว"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -167,7 +169,7 @@ msgstr "แพคเกจทั้งหมด"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
-msgstr "กลับไปเมนูหลัก"
+msgstr "กลับไปยังเมนูหลัก"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -185,7 +187,7 @@ msgstr "ไม่สามารถดาวน์โหลด $1"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr "เกมส์"
+msgstr "เกม"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
@@ -194,11 +196,11 @@ msgstr "ติดตั้ง"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
-msgstr "วัยรุ่น"
+msgstr "ม็อด"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr "ไม่อาจจะเรียก"
+msgstr "ไม่สามารถเรียกแพคเกจได้"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -211,7 +213,7 @@ msgstr "ค้นหา"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr "แพ็คเนื้อ"
+msgstr "เทกซ์เจอร์แพ็ค"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -219,7 +221,7 @@ msgstr "ถอนการติดตั้ง"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr "ปรับปรุง"
+msgstr "อัปเดต"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View"
@@ -227,7 +229,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "โลกชื่อว่า '$1' อยู่แล้วมีอยู่"
+msgstr "โลกที่ชื่อว่า '$1' มีอยู่แล้ว"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -269,7 +271,7 @@ msgstr "ข้อมูล:"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "ดาวน์โหลดเกม เกม Minetest เช่นจาก minetest.net"
+msgstr "ดาวน์โหลดเกม อย่างเช่น ไมน์เทสต์เกม ได้จาก minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -347,7 +349,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr "ไม่มีเกมที่เลือก"
+msgstr "ไม่มีเกมที่ถูกเลือก"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
@@ -423,11 +425,11 @@ msgstr "ชื่อโลก"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr "ไม่มีเกมส์ที่ติดตั้งคุณได้"
+msgstr "คุณไม่มีเกมที่ติดตั้ง"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "คุณต้องการลบ '$1' แน่ใจหรือไม่ ?"
+msgstr "คุณแน่ใจหรือไม่ที่จะต้องการลบ '$1'"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
@@ -437,37 +439,39 @@ msgstr "ลบ"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "pkgmgr: ไม่สามารถลบ \"$1\""
+msgstr "pkgmgr: ไม่สามารถลบ \"$1\" ได้"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "pkgmgr: พาธไม่ถูกต้อง \"$1\""
+msgstr "pkgmgr: พาธของ \"$1\" ไม่ถูกต้อง"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "ลบโลก \"$1\"?"
+msgstr "ลบโลก \"$1\" หรือไม่"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr "รับ"
+msgstr "ยอมรับ"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "เปลี่ยนชื่อ Modpack:"
+msgstr "เปลี่ยนชื่อม็อดแพ็ค:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
-msgstr "สามารถเปลี่ยนชื่อ modpack ได้ใน  modpack.conf"
+msgstr ""
+"ม็อดแพ็คมีชื่อชื่อที่ถูกตั้งในไฟล์ modpack.conf "
+"ซึ่งจะแทนที่ชื่อที่เปลี่ยนตรงนี้"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr "(ไม่มีคำอธิบายของการตั้งค่าให้)"
+msgstr "(ไม่มีคำอธิบายของการตั้งค่าที่ให้มา)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "2D Noise"
-msgstr "2D เสียง"
+msgstr "2D นอยส์"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -479,7 +483,7 @@ msgstr "เรียกดู"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr "ปิดการใช้งาน"
+msgstr "ปิดการใช้งานแล้ว"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
@@ -487,7 +491,7 @@ msgstr "แก้ไข"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr "เปิดใช้งาน"
+msgstr "เปิดใช้งานแล้ว"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -501,15 +505,15 @@ msgstr "ความละเอียดของการสุ่ม"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr "ตรงข้าม"
+msgstr "ค่าชดเชย"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistance"
-msgstr "มีอยู่"
+msgstr "ความมีอยู่"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr "โปรดใส่ค่าเป็นตัวเลขในรูปแบบที่ถูกต้อง."
+msgstr "โปรดใส่ค่าเป็นตัวเลขในรูปแบบที่ถูกต้อง"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
@@ -537,11 +541,11 @@ msgstr "แสดงชื่อทางเทคนิค"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr "ต้องมีค่าไม่น้อยกว่า $1."
+msgstr "ต้องมีค่าอย่างน้อย $1"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr "ค่าต้องไม่มากกว่า $1."
+msgstr "ค่าต้องไม่มากกว่า $1"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
@@ -6428,7 +6432,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr ""
+msgstr "ม็อดที่เชื่อถือได้"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -6632,11 +6636,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "ระดับน้ำ"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr ""
+msgstr "ระดับผิวน้ำของโลก"
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
@@ -6715,16 +6719,18 @@ msgstr ""
 "การหมุนอัตโนมัติของพื้นผิว"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Whether FreeType fonts are used, requires FreeType support to be compiled "
 "in.\n"
 "If disabled, bitmap and XML vectors fonts are used instead."
-msgstr "ไม่ว่าจะใช้ฟอนต์ FreeType ต้องมีการสนับสนุน FreeType เพื่อรวบรวม."
+msgstr ""
+"ไม่ว่าจะใช้ฟอนต์ FreeType ต้องมีการสนับสนุน FreeType เพื่อรวบรวม\n"
+"หากปิดใช้งาน ฟอนต์บิตแมปและเอ็กซ์เอ็มแอลเวกเตอร์จะใช้แทน"
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr "ระบุว่าควรสร้างการซิงโครไนซ์ภาพเคลื่อนไหวพื้นผิวของโหนดต่อ Mapblock หรือไม่."
+msgstr ""
+"ระบุว่าควรสร้างการซิงโครไนซ์ภาพเคลื่อนไหวพื้นผิวของโหนดต่อแม็ปบล็อกหรือไม่"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6801,12 +6807,12 @@ msgid ""
 "See also texture_min_size.\n"
 "Warning: This option is EXPERIMENTAL!"
 msgstr ""
-"พื้นผิวที่จัดแนวโลกอาจถูกปรับสัดส่วนเพื่อขยายหลายโหนด อย่างไรก็ตาม\n"
+"เทกซ์เจอร์ที่จัดแนวโลกอาจถูกปรับสัดส่วนเพื่อขยายหลายโหนด อย่างไรก็ตาม\n"
 "เซิร์ฟเวอร์อาจไม่ส่งสเกลที่คุณต้องการโดยเฉพาะถ้าคุณใช้\n"
-"แพ็คพื้นผิวที่ออกแบบเป็นพิเศษ ด้วยตัวเลือกนี้ลูกค้าพยายาม\n"
-"เพื่อกำหนดขนาดโดยอัตโนมัติตามขนาดพื้นผิว\n"
-"ดูเพิ่มเติม texture_min_size\n"
-"คำเตือน: ตัวเลือกนี้คือค่าประสบการณ์!"
+"เทกซ์เจอร์แพ็คที่ออกแบบเป็นพิเศษ ด้วยตัวเลือกนี้ไคลเอนต์พยายาม\n"
+"เพื่อกำหนดขนาดโดยอัตโนมัติตามขนาดเทกซ์เจอร์\n"
+"ดูเพิ่มเติมที่ texture_min_size\n"
+"คำเตือน: ตัวเลือกนี้เป็นการทดลอง"
 
 #: src/settings_translation_file.cpp
 msgid "World-aligned textures mode"

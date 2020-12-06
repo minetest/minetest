@@ -35,7 +35,7 @@ void StaticObject::serialize(std::ostream &os)
 	// pos
 	writeV3F1000(os, pos);
 	// data
-	os<<serializeString(data);
+	os<<serializeString16(data);
 }
 void StaticObject::deSerialize(std::istream &is, u8 version)
 {
@@ -44,7 +44,7 @@ void StaticObject::deSerialize(std::istream &is, u8 version)
 	// pos
 	pos = readV3F1000(is);
 	// data
-	data = deSerializeString(is);
+	data = deSerializeString16(is);
 }
 
 void StaticObjectList::serialize(std::ostream &os)

@@ -317,12 +317,6 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
-	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		data->blockpos_requested.Z >= data->blockpos_min.Z);
-	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	//TimeTaker t("makeChunk");
 
@@ -341,10 +335,6 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	// Generate base and mountain terrain
 	s16 stone_surface_max_y = generateTerrain();
-
-	// Generate rivers
-	if (spflags & MGV7_RIDGES)
-		generateRidgeTerrain();
 
 	// Create heightmap
 	updateHeightmap(node_min, node_max);
@@ -377,7 +367,8 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Generate dungeons
 	if (flags & MG_DUNGEONS)
@@ -466,6 +457,23 @@ bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 }
 
 
+bool MapgenV7::getRiverChannelFromMap(int idx_xyz, int idx_xz, s16 y)
+{
+	// Maximum width of river channel. Creates the vertical canyon walls
+	float width = 0.2f;
+	float absuwatern = std::fabs(noise_ridge_uwater->result[idx_xz]) * 2.0f;
+	if (absuwatern > width)
+		return false;
+
+	float altitude = y - water_level;
+	float height_mod = (altitude + 17.0f) / 2.5f;
+	float width_mod = width - absuwatern;
+	float nridge = noise_ridge->result[idx_xyz] * std::fmax(altitude, 0.0f) / 7.0f;
+
+	return nridge + width_mod * height_mod >= 0.6f;
+}
+
+
 bool MapgenV7::getFloatlandTerrainFromMap(int idx_xyz, float float_offset)
 {
 	return noise_floatland->result[idx_xyz] + floatland_density - float_offset >= 0.0f;
@@ -520,6 +528,15 @@ int MapgenV7::generateTerrain()
 		}
 	}
 
+	// 'Generate rivers in this mapchunk' bool for
+	// simplification of condition checks in y-loop.
+	bool gen_rivers = (spflags & MGV7_RIDGES) && node_max.Y >= water_level - 16 &&
+		!gen_floatlands;
+	if (gen_rivers) {
+		noise_ridge->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+		noise_ridge_uwater->perlinMap2D(node_min.X, node_min.Z);
+	}
+
 	//// Place nodes
 	const v3s16 &em = vm->m_area.getExtent();
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
@@ -543,10 +560,13 @@ int MapgenV7::generateTerrain()
 			if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
 				continue;
 
-			if (y <= surface_y) {
+			bool is_river_channel = gen_rivers &&
+				getRiverChannelFromMap(index3d, index2d, y);
+			if (y <= surface_y && !is_river_channel) {
 				vm->m_data[vi] = n_stone; // Base terrain
 			} else if ((spflags & MGV7_MOUNTAINS) &&
-					getMountainTerrainFromMap(index3d, index2d, y)) {
+					getMountainTerrainFromMap(index3d, index2d, y) &&
+					!is_river_channel) {
 				vm->m_data[vi] = n_stone; // Mountain terrain
 				if (y > stone_surface_max_y)
 					stone_surface_max_y = y;
@@ -567,46 +587,4 @@ int MapgenV7::generateTerrain()
 	}
 
 	return stone_surface_max_y;
-}
-
-
-void MapgenV7::generateRidgeTerrain()
-{
-	if (node_max.Y < water_level - 16 ||
-			(node_max.Y >= floatland_ymin && node_min.Y <= floatland_ymax))
-		return;
-
-	noise_ridge->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
-	noise_ridge_uwater->perlinMap2D(node_min.X, node_min.Z);
-
-	MapNode n_water(c_water_source);
-	MapNode n_air(CONTENT_AIR);
-	u32 index3d = 0;
-	float width = 0.2f;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-		u32 vi = vm->m_area.index(node_min.X, y, z);
-		for (s16 x = node_min.X; x <= node_max.X; x++, index3d++, vi++) {
-			u32 index2d = (z - node_min.Z) * csize.X + (x - node_min.X);
-			float uwatern = noise_ridge_uwater->result[index2d] * 2.0f;
-			if (std::fabs(uwatern) > width)
-				continue;
-			// Optimises, but also avoids removing nodes placed by mods in
-			// 'on-generated', when generating outside mapchunk.
-			content_t c = vm->m_data[vi].getContent();
-			if (c != c_stone)
-				continue;
-
-			float altitude = y - water_level;
-			float height_mod = (altitude + 17.0f) / 2.5f;
-			float width_mod = width - std::fabs(uwatern);
-			float nridge = noise_ridge->result[index3d] *
-				std::fmax(altitude, 0.0f) / 7.0f;
-			if (nridge + width_mod * height_mod < 0.6f)
-				continue;
-
-			vm->m_data[vi] = (y > water_level) ? n_air : n_water;
-		}
-	}
 }

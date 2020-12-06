@@ -426,6 +426,10 @@ bool EmergeManager::pushBlockEmergeData(
 				m_qlimit_generate : m_qlimit_diskonly;
 			if (count_peer >= qlimit_peer)
 				return false;
+		} else {
+			// limit block enqueue requests for active blocks to 1/2 of total
+			if (count_peer * 2 >= m_qlimit_total)
+				return false;
 		}
 	}
 

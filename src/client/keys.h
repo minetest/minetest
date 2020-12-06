@@ -35,6 +35,8 @@ public:
 		SPECIAL1,
 		SNEAK,
 		AUTOFORWARD,
+		DIG,
+		PLACE,
 
 		ESC,
 
@@ -107,12 +109,6 @@ public:
 		SLOT_30,
 		SLOT_31,
 		SLOT_32,
-
-		// joystick specific keys
-		MOUSE_L,
-		MOUSE_R,
-		SCROLL_UP,
-		SCROLL_DOWN,
 
 		// Fake keycode for array size and internal checks
 		INTERNAL_ENUM_COUNT

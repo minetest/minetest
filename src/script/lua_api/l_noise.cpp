@@ -122,7 +122,6 @@ void LuaPerlinNoise::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	markAliasDeprecated(methods);
 	luaL_openlib(L, 0, methods, 0);
 	lua_pop(L, 1);
 
@@ -381,7 +380,6 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	markAliasDeprecated(methods);
 	luaL_openlib(L, 0, methods, 0);
 	lua_pop(L, 1);
 

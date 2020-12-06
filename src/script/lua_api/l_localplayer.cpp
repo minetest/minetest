@@ -231,8 +231,8 @@ int LuaLocalPlayer::l_get_control(lua_State *L)
 	set("aux1", c.aux1);
 	set("sneak", c.sneak);
 	set("zoom", c.zoom);
-	set("LMB", c.LMB);
-	set("RMB", c.RMB);
+	set("dig", c.dig);
+	set("place", c.place);
 
 	return 1;
 }

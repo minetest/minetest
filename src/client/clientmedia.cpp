@@ -260,7 +260,8 @@ void ClientMediaDownloader::initialStep(Client *client)
 			fetch_request.request_id = m_httpfetch_next_id; // == i
 			fetch_request.timeout = m_httpfetch_timeout;
 			fetch_request.connect_timeout = m_httpfetch_timeout;
-			fetch_request.post_data = required_hash_set;
+			fetch_request.method = HTTP_POST;
+			fetch_request.raw_data = required_hash_set;
 			fetch_request.extra_headers.emplace_back(
 				"Content-Type: application/octet-stream");
 

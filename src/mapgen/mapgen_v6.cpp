@@ -341,12 +341,6 @@ float MapgenV6::baseTerrainLevelFromMap(int index)
 }
 
 
-s16 MapgenV6::find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
-{
-	return baseTerrainLevelFromNoise(p2d) + MGV6_AVERAGE_MUD_AMOUNT;
-}
-
-
 int MapgenV6::getGroundLevelAtPoint(v2s16 p)
 {
 	return baseTerrainLevelFromNoise(p) + MGV6_AVERAGE_MUD_AMOUNT;
@@ -518,12 +512,6 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
-	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		data->blockpos_requested.Z >= data->blockpos_min.Z);
-	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
 	this->vm   = data->vmanip;
@@ -652,7 +640,8 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	if (flags & MG_ORES)
+		m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)

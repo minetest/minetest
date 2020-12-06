@@ -118,6 +118,10 @@ function core.register_item(name, itemdef)
 	end
 	itemdef.name = name
 
+	-- default short_description to first line of description
+	itemdef.short_description = itemdef.short_description or
+		(itemdef.description or ""):gsub("\n.*","")
+
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		-- Use the nodebox as selection box if it's not set manually
@@ -584,6 +588,7 @@ core.unregister_biome = make_wrap_deregistration(core.register_biome,
 		core.clear_registered_biomes, core.registered_biomes)
 
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
+core.registered_on_chatcommands, core.register_on_chatcommand = make_registration()
 core.registered_globalsteps, core.register_globalstep = make_registration()
 core.registered_playerevents, core.register_playerevent = make_registration()
 core.registered_on_mods_loaded, core.register_on_mods_loaded = make_registration()

@@ -170,6 +170,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 			m_menumanager,
 			NULL /* &client */,
 			m_texture_source,
+			m_sound_manager,
 			m_formspecgui,
 			m_buttonhandler,
 			"",
@@ -297,10 +298,14 @@ void GUIEngine::run()
 
 		driver->endScene();
 
+		IrrlichtDevice *device = RenderingEngine::get_raw_device();
+		u32 frametime_min = 1000 / (device->isWindowFocused()
+			? g_settings->getFloat("fps_max")
+			: g_settings->getFloat("fps_max_unfocused"));
 		if (m_clouds_enabled)
-			cloudPostProcess();
+			cloudPostProcess(frametime_min, device);
 		else
-			sleep_ms(25);
+			sleep_ms(frametime_min);
 
 		m_script->step();
 
@@ -367,9 +372,8 @@ void GUIEngine::cloudPreProcess()
 }
 
 /******************************************************************************/
-void GUIEngine::cloudPostProcess()
+void GUIEngine::cloudPostProcess(u32 frametime_min, IrrlichtDevice *device)
 {
-	float fps_max = g_settings->getFloat("pause_fps_max");
 	// Time of frame without fps limit
 	u32 busytime_u32;
 
@@ -380,12 +384,10 @@ void GUIEngine::cloudPostProcess()
 	else
 		busytime_u32 = 0;
 
-	// FPS limiter
-	u32 frametime_min = 1000./fps_max;
-
+	// FPS limit
 	if (busytime_u32 < frametime_min) {
 		u32 sleeptime = frametime_min - busytime_u32;
-		RenderingEngine::get_raw_device()->sleep(sleeptime);
+		device->sleep(sleeptime);
 	}
 }
 

@@ -223,6 +223,7 @@ public:
 	void handleCommand_CSMRestrictionFlags(NetworkPacket *pkt);
 	void handleCommand_PlayerSpeed(NetworkPacket *pkt);
 	void handleCommand_MediaPush(NetworkPacket *pkt);
+	void handleCommand_MinimapModes(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -337,7 +338,6 @@ public:
 	u16 getProtoVersion()
 	{ return m_proto_ver; }
 
-	bool connectedToServer();
 	void confirmRegistration();
 	bool m_is_registration_confirmation_state = false;
 	bool m_simple_singleplayer_mode;

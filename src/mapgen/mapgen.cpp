@@ -58,6 +58,7 @@ FlagDesc flagdesc_mapgen[] = {
 	{"light",       MG_LIGHT},
 	{"decorations", MG_DECORATIONS},
 	{"biomes",      MG_BIOMES},
+	{"ores",        MG_ORES},
 	{NULL,          0}
 };
 
@@ -217,7 +218,7 @@ void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hid
 void Mapgen::setDefaultSettings(Settings *settings)
 {
 	settings->setDefault("mg_flags", flagdesc_mapgen,
-		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES);
+		 MG_CAVES | MG_DUNGEONS | MG_LIGHT | MG_DECORATIONS | MG_BIOMES | MG_ORES);
 
 	for (int i = 0; i < (int)MAPGEN_INVALID; ++i) {
 		MapgenParams *params = createMapgenParams((MapgenType)i);
@@ -240,26 +241,6 @@ u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 	u32 n = 1619 * p.X + 31337 * p.Y + 52591 * p.Z + 1013 * seed;
 	n = (n >> 13) ^ n;
 	return (n * (n * n * 60493 + 19990303) + 1376312589);
-}
-
-
-// Returns Y one under area minimum if not found
-s16 Mapgen::findGroundLevelFull(v2s16 p2d)
-{
-	const v3s16 &em = vm->m_area.getExtent();
-	s16 y_nodes_max = vm->m_area.MaxEdge.Y;
-	s16 y_nodes_min = vm->m_area.MinEdge.Y;
-	u32 i = vm->m_area.index(p2d.X, y_nodes_max, p2d.Y);
-	s16 y;
-
-	for (y = y_nodes_max; y >= y_nodes_min; y--) {
-		MapNode &n = vm->m_data[i];
-		if (ndef->get(n).walkable)
-			break;
-
-		VoxelArea::add_y(em, i, -1);
-	}
-	return (y >= y_nodes_min) ? y : y_nodes_min - 1;
 }
 
 
@@ -979,19 +960,6 @@ GenerateNotifier::GenerateNotifier(u32 notify_on,
 	const std::set<u32> *notify_on_deco_ids)
 {
 	m_notify_on = notify_on;
-	m_notify_on_deco_ids = notify_on_deco_ids;
-}
-
-
-void GenerateNotifier::setNotifyOn(u32 notify_on)
-{
-	m_notify_on = notify_on;
-}
-
-
-void GenerateNotifier::setNotifyOnDecoIds(
-	const std::set<u32> *notify_on_deco_ids)
-{
 	m_notify_on_deco_ids = notify_on_deco_ids;
 }
 
