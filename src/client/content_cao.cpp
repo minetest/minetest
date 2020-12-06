@@ -1793,6 +1793,9 @@ void GenericCAO::processMessage(const std::string &data)
 		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 
 		// updateBonePosition(); now called every step
+	} else if (cmd == AO_CMD_UNSET_BONE_POSITION) {
+		std::string bone = deSerializeString16(is);
+		m_bone_position.erase(bone);
 	} else if (cmd == AO_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);
 		std::string bone = deSerializeString16(is);
