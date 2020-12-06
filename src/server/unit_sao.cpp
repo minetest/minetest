@@ -280,8 +280,7 @@ std::string UnitSAO::generateUpdateBonePositionCommand(
 	return os.str();
 }
 
-std::string UnitSAO::generateUpdateBonePositionUnsetCommand(
-		const std::string &bone)
+std::string UnitSAO::generateUpdateBonePositionUnsetCommand(const std::string &bone)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
