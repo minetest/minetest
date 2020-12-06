@@ -168,6 +168,8 @@ public:
 	{}
 	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
 	{}
+	virtual void unsetBonePosition(const std::string &bone)
+	{}
 	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
 	{}
 	virtual const std::unordered_set<int> &getAttachmentChildIds() const
