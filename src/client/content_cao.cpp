@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <cmath>
 #include "client/shader.h"
+#include "server/serveractiveobject.h"
 
 class Settings;
 struct ToolCapabilities;
@@ -788,7 +789,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	updateNametag();
 	updateNodePos();
 	updateAnimation();
-	updateBonePosition();
+	updateBonePosition(.0f);
 	updateAttachments();
 	setNodeLight(m_last_light);
 }
@@ -931,7 +932,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
 	if (m_animated_meshnode) {
 		m_animated_meshnode->animateJoints();
-		updateBonePosition();
+		updateBonePosition(dtime);
 	}
 
 	// Handle model animations and update positions instantly to prevent lags
@@ -1401,7 +1402,7 @@ void GenericCAO::updateAnimationSpeed()
 	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 }
 
-void GenericCAO::updateBonePosition()
+void GenericCAO::updateBonePosition(f32 dtime)
 {
 	if (m_bone_position.empty() || !m_animated_meshnode)
 		return;
@@ -1411,8 +1412,50 @@ void GenericCAO::updateBonePosition()
 		std::string bone_name = it.first;
 		irr::scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
 		if (bone) {
-			bone->setPosition(it.second.X);
-			bone->setRotation(it.second.Y);
+			BonePositionOverride* override = it.second;
+			override->dtime_passed += dtime;
+			// TODO interpolation
+			v3f position = override->position->vector;
+			if (override->position->interpolation > override->dtime_passed) {
+				f32 done = override->dtime_passed / override->position->interpolation;
+				position = position.getInterpolated(override->position->previous, done);
+			}
+			bone->setPosition(override->position->absolute
+					? position
+					: position + bone->getPosition());
+			v3f rotation = override->rotation->vector;
+			if (override->rotation->interpolation > override->dtime_passed) {
+				f32 done = override->dtime_passed / override->rotation->interpolation;
+				v3f previous = override->rotation->previous;
+				v3f diff = rotation - previous;
+				if (abs(diff.X) < 180) {
+					rotation.X = rotation.X * done + previous.X * (1 - done);
+				} else {
+					// TODO make sure this works properly with the sign
+					rotation.X = fmodf(previous.X * done + rotation.X * (1 - done), 360.0f);
+				}
+				if (abs(diff.Y) < 180) {
+					rotation.Y = rotation.Y * done + previous.Y * (1 - done);
+				} else {
+					rotation.Y = fmodf(previous.Y * done + rotation.Y * (1 - done), 360.0f);
+				}
+				if (abs(diff.Z) < 180) {
+					rotation.Z = rotation.Z * done + previous.Z * (1 - done);
+				} else {
+					rotation.Z = fmodf(previous.Z * done + rotation.Z * (1 - done), 360.0f);
+				}
+			}
+			bone->setRotation(override->rotation->absolute
+					? override->rotation->vector
+					: override->rotation->vector + bone->getRotation());
+			v3f scale = override->scale->vector;
+			if (override->scale->interpolation > override->dtime_passed) {
+				f32 done = override->dtime_passed / override->scale->interpolation;
+				scale = scale.getInterpolated(override->position->previous, done);
+			}
+			bone->setScale(override->scale->absolute
+					? scale
+					: scale + bone->getScale());
 		}
 	}
 
@@ -1686,10 +1729,30 @@ void GenericCAO::processMessage(const std::string &data)
 		updateAnimationSpeed();
 	} else if (cmd == AO_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
-		v3f position = readV3F32(is);
-		v3f rotation = readV3F32(is);
-		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
-
+		BonePositionOverride* previous = m_bone_position[bone];
+		BonePositionOverride* override = new BonePositionOverride();
+		override->position->vector = readV3F32(is);
+		override->rotation->vector = readV3F32(is);
+		override->scale->vector = readV3F32(is);
+		if (is.eof()) {
+			override->position->absolute = true;
+			override->rotation->absolute = true;
+		} else {
+			override->position->interpolation = readF32(is);
+			override->rotation->interpolation = readF32(is);
+			override->scale->interpolation = readF32(is);
+			u8 absoluteFlag = readU8(is);
+			override->position->absolute = (absoluteFlag & 1) > 0;
+			override->rotation->absolute = (absoluteFlag & 2) > 0;
+			override->scale->absolute = (absoluteFlag & 4) > 0;
+			if (previous) {
+				override->position->previous = previous->position->vector;
+				override->rotation->previous = previous->rotation->vector;
+				override->scale->previous = previous->scale->vector;
+			}
+		}
+		if (previous) delete previous;
+		m_bone_position[bone] = override;
 		// updateBonePosition(); now called every step
 	} else if (cmd == AO_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);

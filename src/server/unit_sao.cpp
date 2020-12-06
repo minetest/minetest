@@ -75,17 +75,21 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 	m_animation_speed_sent = false;
 }
 
-void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
+void UnitSAO::setBoneOverride(const std::string &bone, BonePositionOverride *override)
 {
 	// store these so they can be updated to clients
-	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
+	m_bone_position[bone] = override;
 	m_bone_position_sent = false;
 }
 
-void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
+BonePositionOverride* UnitSAO::getBoneOverride(const std::string &bone)
 {
-	*position = m_bone_position[bone].X;
-	*rotation = m_bone_position[bone].Y;
+	return m_bone_position[bone];
+}
+
+const std::unordered_map<std::string, BonePositionOverride*> &UnitSAO::getBoneOverrides() const
+{
+	return m_bone_position;
 }
 
 // clang-format off
@@ -110,7 +114,7 @@ void UnitSAO::sendOutdatedData()
 		m_bone_position_sent = true;
 		for (const auto &bone_pos : m_bone_position) {
 			m_messages_out.emplace(getId(), true, generateUpdateBonePositionCommand(
-				bone_pos.first, bone_pos.second.X, bone_pos.second.Y));
+				bone_pos.first, bone_pos.second));
 		}
 	}
 
@@ -249,15 +253,22 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 }
 
 std::string UnitSAO::generateUpdateBonePositionCommand(
-		const std::string &bone, const v3f &position, const v3f &rotation)
+		const std::string &bone, const BonePositionOverride *override)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
 	writeU8(os, AO_CMD_SET_BONE_POSITION);
 	// parameters
 	os << serializeString(bone);
-	writeV3F32(os, position);
-	writeV3F32(os, rotation);
+	writeV3F32(os, override->position->vector);
+	writeV3F32(os, override->rotation->vector);
+	writeV3F32(os, override->scale->vector);
+	writeF32(os, override->position->interpolation);
+	writeF32(os, override->rotation->interpolation);
+	writeF32(os, override->scale->interpolation);
+	writeU8(os, override->position->absolute * 1
+			+ override->rotation->absolute * 2
+			+ override->scale->absolute    * 4);
 	return os.str();
 }
 

@@ -238,7 +238,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeLongString(generateUpdateAnimationCommand()); // 3
 	for (const auto &bone_pos : m_bone_position) {
 		msg_os << serializeLongString(generateUpdateBonePositionCommand(
-			bone_pos.first, bone_pos.second.X, bone_pos.second.Y)); // m_bone_position.size
+			bone_pos.first, bone_pos.second)); // m_bone_position.size
 	}
 	msg_os << serializeLongString(generateUpdateAttachmentCommand()); // 4
 

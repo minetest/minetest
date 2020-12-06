@@ -5968,16 +5968,24 @@ object you are working with still exists.
     * `frame_speed`: number, default: `15.0`
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
+    * `position`: `{x=num, y=num, z=num}`
     * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
 * `get_attach()`: returns parent, bone, position, rotation or nil if it isn't
   attached.
 * `set_detach()`
 * `set_bone_position(bone, position, rotation)`
     * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
+    * `position`: `{x=num, y=num, z=num}`
     * `rotation`: `{x=num, y=num, z=num}`
 * `get_bone_position(bone)`: returns position and rotation of the bone
+<!-- TODO compat -->
+* `set_bone_override(bone, override)`
+    * `bone`: string
+    * `override`: `{ position = property, rotation = property, scale = property }`
+      * `property`: `{ x = 0, y = 0, z = 0, interpolation = 0 --[[in seconds]], absolute = false}`
+      * `x`, `y` and `z` are in blocksize for position and scale (times ten), and in degrees for rotation
+* `get_bone_override(bone)`: returns override in the above format
+* `get_bone_overrides()`: returns bone overrides as `[bonename] = override`
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
 * `is_player()`: returns true for players, false otherwise

@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
+#include "server/unit_sao.h"
 
 /*
 	ObjectRef
@@ -632,13 +633,14 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	std::string bone;
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
-	v3f position = v3f(0, 0, 0);
+	BonePositionOverride* override = new BonePositionOverride();
 	if (!lua_isnil(L, 3))
-		position = check_v3f(L, 3);
-	v3f rotation = v3f(0, 0, 0);
+		override->position->vector = check_v3f(L, 3);
 	if (!lua_isnil(L, 4))
-		rotation = check_v3f(L, 4);
-	co->setBonePosition(bone, position, rotation);
+		override->rotation->vector = check_v3f(L, 4);
+	override->position->absolute = true;
+	override->rotation->absolute = true;
+	co->setBoneOverride(bone, override);
 	return 0;
 }
 
@@ -655,13 +657,124 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
 
-	v3f position = v3f(0, 0, 0);
-	v3f rotation = v3f(0, 0, 0);
-	co->getBonePosition(bone, &position, &rotation);
+	BonePositionOverride* override = co->getBoneOverride(bone);
 
-	push_v3f(L, position);
-	push_v3f(L, rotation);
+	push_v3f(L, override->position->vector);
+	push_v3f(L, override->rotation->vector);
 	return 2;
+}
+
+// set_bone_override(self, bone, override)
+int ObjectRef::l_set_bone_override(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+	std::string bone;
+	if (!lua_isnil(L, 2))
+		bone = readParam<std::string>(L, 2);
+	BonePositionOverride *override = new BonePositionOverride();
+	if (lua_isnil(L, 3)) {
+		co->setBoneOverride(bone, override);
+		return 0;
+	}
+	lua_getfield(L, 3, "position");
+	if (!lua_isnil(L, 4)) {
+		override->position->vector = check_v3f(L, 4);
+		lua_getfield(L, 4, "absolute");
+		override->position->absolute = lua_toboolean(L, 5);
+		lua_pop(L, 1);
+		lua_getfield(L, 4, "interpolation");
+		if (lua_isnumber(L, 5))
+			override->position->interpolation = lua_tonumber(L, 5);
+		lua_pop(L, 2);
+	}
+	lua_getfield(L, 3, "rotation");
+	if (!lua_isnil(L, 4)) {
+		override->rotation->vector = check_v3f(L, 4);
+		lua_getfield(L, 4, "absolute");
+		override->rotation->absolute = lua_toboolean(L, 5);
+		lua_pop(L, 1);
+		lua_getfield(L, 4, "interpolation");
+		if (lua_isnumber(L, 5))
+			override->rotation->interpolation = lua_tonumber(L, 5);
+		lua_pop(L, 2);
+	}
+	lua_getfield(L, 3, "scale");
+	if (!lua_isnil(L, 4)) {
+		override->scale->vector = check_v3f(L, 4);
+		lua_getfield(L, 4, "absolute");
+		override->scale->absolute = lua_toboolean(L, 5);
+		lua_pop(L, 1);
+		lua_getfield(L, 4, "interpolation");
+		if (lua_isnumber(L, 5))
+			override->scale->interpolation = lua_tonumber(L, 5);
+		lua_pop(L, 2);
+	}
+	co->setBoneOverride(bone, override);
+	return 0;
+}
+
+void push_bone_override(lua_State *L, BonePositionOverride *override)
+{
+	lua_newtable(L);
+	lua_newtable(L);
+	push_v3f(L, override->position->vector);
+	lua_setfield(L, -2, "vector");
+	lua_pushnumber(L, override->position->interpolation);
+	lua_setfield(L, -2, "interpolation");
+	lua_pushboolean(L, override->position->absolute);
+	lua_setfield(L, -2, "absolute");
+	lua_setfield(L, -2, "position");
+	lua_newtable(L);
+	push_v3f(L, override->rotation->vector);
+	lua_setfield(L, -2, "vector");
+	lua_pushnumber(L, override->rotation->interpolation);
+	lua_setfield(L, -2, "interpolation");
+	lua_pushboolean(L, override->rotation->absolute);
+	lua_setfield(L, -2, "absolute");
+	lua_setfield(L, -2, "rotation");
+	lua_newtable(L);
+	push_v3f(L, override->scale->vector);
+	lua_setfield(L, -2, "vector");
+	lua_pushnumber(L, override->scale->interpolation);
+	lua_setfield(L, -2, "interpolation");
+	lua_pushboolean(L, override->scale->absolute);
+	lua_setfield(L, -2, "absolute");
+	lua_setfield(L, -2, "scale");
+}
+
+// get_bone_override(self, bone)
+int ObjectRef::l_get_bone_override(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+	std::string bone;
+	if (!lua_isnil(L, 2))
+		bone = readParam<std::string>(L, 2);
+	push_bone_override(L, co->getBoneOverride(bone));
+	return 1;
+}
+
+// get_bone_overrides(self)
+int ObjectRef::l_get_bone_overrides(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+	lua_newtable(L);
+	for (const auto &bone_pos : co->getBoneOverrides()) {
+		push_bone_override(L, bone_pos.second);
+		lua_setfield(L, -2, bone_pos.first.c_str());
+	}
+	return 1;
 }
 
 // set_attach(self, parent, bone, position, rotation)
@@ -2276,6 +2389,9 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_animation_frame_speed),
 	luamethod(ObjectRef, set_bone_position),
 	luamethod(ObjectRef, get_bone_position),
+	luamethod(ObjectRef, set_bone_override),
+	luamethod(ObjectRef, get_bone_override),
+	luamethod(ObjectRef, get_bone_overrides),
 	luamethod(ObjectRef, set_attach),
 	luamethod(ObjectRef, get_attach),
 	luamethod(ObjectRef, set_detach),
