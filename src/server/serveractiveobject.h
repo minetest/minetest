@@ -196,8 +196,8 @@ public:
 	{}
 	virtual BonePositionOverride* getBoneOverride(const std::string &bone)
 	{ return 0; }
-	virtual const std::unordered_map<std::string, BonePositionOverride*> &getBoneOverrides() const
-	{ static std::unordered_map<std::string, BonePositionOverride*> rv; return rv; }
+	virtual const std::unordered_map<std::string, BonePositionOverride *> &getBoneOverrides() const
+	{ static std::unordered_map<std::string, BonePositionOverride *> rv; return rv; }
 	virtual const std::unordered_set<int> &getAttachmentChildIds() const
 	{ static std::unordered_set<int> rv; return rv; }
 	virtual ServerActiveObject *getParent() const { return nullptr; }
