@@ -82,6 +82,16 @@ void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotatio
 	m_bone_position_sent = false;
 }
 
+void UnitSAO::unsetBonePosition(const std::string &bone)
+{
+	// store these so they can be updated to clients
+	if(m_bone_position.find(bone) != m_bone_position.end()){
+		m_bone_position.erase(bone);
+		m_bone_position_unset[bone] = std::vector<bool>(true);
+		m_bone_position_sent = false;
+	}
+}
+
 void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
 {
 	*position = m_bone_position[bone].X;
@@ -111,6 +121,10 @@ void UnitSAO::sendOutdatedData()
 		for (const auto &bone_pos : m_bone_position) {
 			m_messages_out.emplace(getId(), true, generateUpdateBonePositionCommand(
 				bone_pos.first, bone_pos.second.X, bone_pos.second.Y));
+		}
+		for (const auto &bone_pos : m_bone_position_unset) {
+			m_messages_out.emplace(getId(), true, generateUpdateBonePositionUnsetCommand(
+				bone_pos.first));
 		}
 	}
 
@@ -261,6 +275,17 @@ std::string UnitSAO::generateUpdateBonePositionCommand(
 	os << serializeString16(bone);
 	writeV3F32(os, position);
 	writeV3F32(os, rotation);
+	return os.str();
+}
+
+std::string UnitSAO::generateUpdateBonePositionUnsetCommand(
+		const std::string &bone)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, AO_CMD_UNSET_BONE_POSITION);
+	// parameters
+	os << serializeString16(bone);
 	return os.str();
 }
 
