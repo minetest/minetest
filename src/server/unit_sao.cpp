@@ -85,7 +85,7 @@ void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotatio
 void UnitSAO::unsetBonePosition(const std::string &bone)
 {
 	// store these so they can be updated to clients
-	if(m_bone_position.find(bone) != m_bone_position.end()){
+	if (m_bone_position.find(bone) != m_bone_position.end()) {
 		m_bone_position.erase(bone);
 		m_bone_position_unset[bone] = false;
 		m_bone_position_sent = false;
@@ -124,8 +124,7 @@ void UnitSAO::sendOutdatedData()
 		}
 		for (const auto &bone_pos : m_bone_position_unset) {
 			if(!m_bone_position_unset[bone_pos.first]) {
-				m_messages_out.emplace(getId(), true, generateUpdateBonePositionUnsetCommand(
-					bone_pos.first));
+				m_messages_out.emplace(getId(), true, generateUpdateBonePositionUnsetCommand(bone_pos.first));
 				m_bone_position_unset[bone_pos.first] = true;
 			}
 		}
