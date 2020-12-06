@@ -82,12 +82,13 @@ void UnitSAO::setBoneOverride(const std::string &bone, BonePositionOverride *ove
 	m_bone_position_sent = false;
 }
 
-BonePositionOverride* UnitSAO::getBoneOverride(const std::string &bone)
+BonePositionOverride *UnitSAO::getBoneOverride(const std::string &bone)
 {
 	return m_bone_position[bone];
 }
 
-const std::unordered_map<std::string, BonePositionOverride*> &UnitSAO::getBoneOverrides() const
+const std::unordered_map<std::string, BonePositionOverride *> &
+UnitSAO::getBoneOverrides() const
 {
 	return m_bone_position;
 }
@@ -262,16 +263,18 @@ std::string UnitSAO::generateUpdateBonePositionCommand(
 	// command
 	writeU8(os, AO_CMD_SET_BONE_POSITION);
 	// parameters
-	os << serializeString(bone);
+	os << serializeString32(bone);
 	writeV3F32(os, override->position->vector);
 	writeV3F32(os, override->rotation->vector);
 	writeV3F32(os, override->scale->vector);
 	writeF32(os, override->position->interpolation);
 	writeF32(os, override->rotation->interpolation);
 	writeF32(os, override->scale->interpolation);
+	// clang-format off
 	writeU8(os, override->position->absolute * 1
-			+ override->rotation->absolute * 2
-			+ override->scale->absolute    * 4);
+	          + override->rotation->absolute * 2
+	          + override->scale->absolute    * 4);
+	// clang-format on
 	return os.str();
 }
 

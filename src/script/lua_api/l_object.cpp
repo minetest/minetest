@@ -562,7 +562,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 
 	std::string bone = readParam<std::string>(L, 2);
 
-	BonePositionOverride* override = co->getBoneOverride(bone);
+	BonePositionOverride* override = sao->getBoneOverride(bone);
 
 	push_v3f(L, override->position->vector);
 	push_v3f(L, override->rotation->vector);
@@ -656,13 +656,13 @@ int ObjectRef::l_get_bone_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	ServerActiveObject *co = getobject(ref);
-	if (co == NULL)
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == NULL)
 		return 0;
 	std::string bone;
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
-	push_bone_override(L, co->getBoneOverride(bone));
+	push_bone_override(L, sao->getBoneOverride(bone));
 	return 1;
 }
 

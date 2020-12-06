@@ -122,7 +122,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeString32(generateUpdateArmorGroupsCommand()); // 2
 	msg_os << serializeString32(generateUpdateAnimationCommand()); // 3
 	for (const auto &bone_pos : m_bone_position) {
-		msg_os << serializeLongString(generateUpdateBonePositionCommand(
+		msg_os << serializeString32(generateUpdateBonePositionCommand(
 			bone_pos.first, bone_pos.second)); // 3 + N
 	}
 	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4 + m_bone_position.size
