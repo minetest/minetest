@@ -153,8 +153,8 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory, // 0x1E
 	null_command_factory, // 0x1F
 	{ "TOCLIENT_BLOCKDATA",                MTSCMC_MAP, true }, // 0x20
-	{ "TOCLIENT_ADDNODE",                  MTSCMC_MAP, true }, // 0x21
-	{ "TOCLIENT_REMOVENODE",               MTSCMC_MAP, true }, // 0x22
+	{ "TOCLIENT_ADDNODE",                  MTSCMC_NODE, true }, // 0x21
+	{ "TOCLIENT_REMOVENODE",               MTSCMC_NODE, true }, // 0x22
 	null_command_factory, // 0x23
 	null_command_factory, // 0x24
 	null_command_factory, // 0x25
@@ -209,7 +209,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_UPDATE_PLAYER_LIST",       MTSCMC_AUTH, true }, // 0x56
 	{ "TOCLIENT_MODCHANNEL_MSG",           MTSCMC_MODCHANNEL, true }, // 0x57
 	{ "TOCLIENT_MODCHANNEL_SIGNAL",        MTSCMC_MODCHANNEL, true }, // 0x58
-	{ "TOCLIENT_NODEMETA_CHANGED",         MTSCMC_MAP, true }, // 0x59
+	{ "TOCLIENT_NODEMETA_CHANGED",         MTSCMC_NODE, true }, // 0x59
 	{ "TOCLIENT_SET_SUN",                  MTSCMC_ENVIRONMENT, true }, // 0x5a
 	{ "TOCLIENT_SET_MOON",                 MTSCMC_ENVIRONMENT, true }, // 0x5b
 	{ "TOCLIENT_SET_STARS",                MTSCMC_ENVIRONMENT, true }, // 0x5c
@@ -243,4 +243,5 @@ const u8 legacyChannelMap[256] = {
 	1, // MTSCMC_AUDIO
 	0, // MTSCMC_PLAYERSTAT
 	0, // MTSCMC_MODCHANNEL
+	0, // MTSCMC_NODE
 };

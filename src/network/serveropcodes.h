@@ -73,6 +73,8 @@ enum ServerToClientMessageChannel : u8 {
 	MTSCMC_PLAYERSTAT,
 	// Modchannel messages.
 	MTSCMC_MODCHANNEL,
+	// Per-node data.
+	MTSCMC_NODE,
 };
 
 struct ToServerCommandHandler
