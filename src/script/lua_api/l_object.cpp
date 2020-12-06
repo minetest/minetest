@@ -545,6 +545,21 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	return 0;
 }
 
+// unset_bone_position(self, bone)
+int ObjectRef::l_unset_bone_position(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	std::string bone = readParam<std::string>(L, 2);
+
+	sao->unsetBonePosition(bone);
+	return 0;
+}
+
 // get_bone_position(self, bone)
 int ObjectRef::l_get_bone_position(lua_State *L)
 {
@@ -2308,6 +2323,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_animation),
 	luamethod(ObjectRef, set_animation_frame_speed),
 	luamethod(ObjectRef, set_bone_position),
+	luamethod(ObjectRef, unset_bone_position),
 	luamethod(ObjectRef, get_bone_position),
 	luamethod(ObjectRef, set_attach),
 	luamethod(ObjectRef, get_attach),
