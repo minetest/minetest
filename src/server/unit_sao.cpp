@@ -263,7 +263,7 @@ std::string UnitSAO::generateUpdateBonePositionCommand(
 	// command
 	writeU8(os, AO_CMD_SET_BONE_POSITION);
 	// parameters
-	os << serializeString32(bone);
+	os << serializeString16(bone);
 	writeV3F32(os, override->position->vector);
 	writeV3F32(os, override->rotation->vector);
 	writeV3F32(os, override->scale->vector);

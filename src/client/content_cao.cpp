@@ -1499,7 +1499,6 @@ void GenericCAO::updateBonePosition(f32 dtime)
 		if (bone) {
 			BonePositionOverride* override = it.second;
 			override->dtime_passed += dtime;
-			// TODO interpolation
 			v3f position = override->position->vector;
 			if (override->position->interpolation > override->dtime_passed) {
 				f32 done = override->dtime_passed / override->position->interpolation;
