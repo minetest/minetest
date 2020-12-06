@@ -58,6 +58,7 @@ public:
 
 	// Bone position
 	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
+	void unsetBonePosition(const std::string &bone);
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
 
 	// Attachments
@@ -89,6 +90,7 @@ public:
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
 	static std::string generateUpdateBonePositionCommand(const std::string &bone,
 			const v3f &position, const v3f &rotation);
+	static std::string generateUpdateBonePositionUnsetCommand(const std::string &bone);
 	void sendPunchCommand();
 
 protected:
@@ -104,6 +106,7 @@ protected:
 
 	// Stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
+	std::unordered_map<std::string, bool> m_bone_position_unset;
 
 	int m_attachment_parent_id = 0;
 
