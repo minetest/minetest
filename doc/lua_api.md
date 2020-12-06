@@ -7191,10 +7191,15 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`
 * `set_bone_position([bone, position, rotation])`
-    * `bone`: string. Default is `""`, the root bone
-    * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
-    * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
 * `get_bone_position(bone)`: returns position and rotation of the bone
+<!-- TODO compat -->
+* `set_bone_override(bone, override)`
+    * `bone`: string
+    * `override`: `{ position = property, rotation = property, scale = property }`
+      * `property`: `{ x = 0, y = 0, z = 0, interpolation = 0 --[[in seconds]], absolute = false}`
+      * `x`, `y` and `z` are in blocksize for position and scale (times ten), and in degrees for rotation
+* `get_bone_override(bone)`: returns override in the above format
+* `get_bone_overrides()`: returns bone overrides as `[bonename] = override`
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
 * `is_player()`: returns true for players, false otherwise

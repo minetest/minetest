@@ -26,6 +26,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "util/container.h"
 
+struct BonePositionOverride {
+	struct Property {
+		v3f previous;
+		v3f vector;
+		bool absolute;
+		f32 interpolation;
+		Property() {
+			previous = v3f(0, 0, 0);
+			vector = v3f(0, 0, 0);
+			absolute = false;
+			interpolation = 0;
+		}
+	} *position, *rotation, *scale;
+	f32 dtime_passed;
+	BonePositionOverride() {
+		position = new Property();
+		rotation = new Property();
+		scale = new Property();
+		dtime_passed = 0;
+	}
+};
+
+
 /*
 
 Some planning
@@ -169,10 +192,12 @@ public:
 	{}
 	virtual void setAnimationSpeed(float frame_speed)
 	{}
-	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
+	virtual void setBoneOverride(const std::string &bone, BonePositionOverride *override)
 	{}
-	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
-	{}
+	virtual BonePositionOverride* getBoneOverride(const std::string &bone)
+	{ return 0; }
+	virtual const std::unordered_map<std::string, BonePositionOverride*> &getBoneOverrides() const
+	{ static std::unordered_map<std::string, BonePositionOverride*> rv; return rv; }
 	virtual const std::unordered_set<int> &getAttachmentChildIds() const
 	{ static std::unordered_set<int> rv; return rv; }
 	virtual ServerActiveObject *getParent() const { return nullptr; }
