@@ -90,7 +90,8 @@ public:
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
 	static std::string generateUpdateBonePositionCommand(const std::string &bone,
 			const v3f &position, const v3f &rotation);
-	static std::string generateUpdateBonePositionUnsetCommand(const std::string &bone);
+	static std::string generateUpdateBonePositionUnsetCommand(
+			const std::string &bone);
 	void sendPunchCommand();
 
 protected:
