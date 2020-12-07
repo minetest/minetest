@@ -1202,7 +1202,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updatePositionRecursive(m_matrixnode);
 		m_animated_meshnode->updateAbsolutePosition();
 		m_animated_meshnode->animateJoints();
-		updateBonePosition(0);
+		updateBonePosition(dtime);
 	}
 }
 
