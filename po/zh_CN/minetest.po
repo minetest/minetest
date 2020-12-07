@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-12-07 09:22+0000\n"
-"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
+"Last-Translator: IFRFSX <1079092922@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -3321,6 +3321,8 @@ msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
 msgstr ""
+"最近聊天文本和聊天提示的字体大小（pt）。\n"
+"值为0将使用默认字体大小。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5356,7 +5358,7 @@ msgstr "用于高亮选定的对象的方法。"
 
 #: src/settings_translation_file.cpp
 msgid "Minimal level of logging to be written to chat."
-msgstr ""
+msgstr "写入聊天的最小日志级别。"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -5636,6 +5638,8 @@ msgid ""
 "Path to save screenshots at. Can be an absolute or relative path.\n"
 "The folder will be created if it doesn't already exist."
 msgstr ""
+"路径保存截图。可以是绝对路径或相对路径。\n"
+"如果该文件夹不存在，将创建它。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5677,7 +5681,7 @@ msgstr "丢失窗口焦点时暂停"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks load from disk"
-msgstr ""
+msgstr "每个玩家从磁盘加载的队列块的限制"
 
 #: src/settings_translation_file.cpp
 msgid "Per-player limit of queued blocks to generate"
@@ -5761,7 +5765,7 @@ msgstr "性能分析"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
-msgstr ""
+msgstr "Prometheus 监听器地址"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5770,6 +5774,10 @@ msgid ""
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetch on http://127.0.0.1:30000/metrics"
 msgstr ""
+"Prometheus 监听器地址。\n"
+"如果minetest是在启用ENABLE_PROMETHEUS选项的情况下编译的，\n"
+"在该地址上为 Prometheus 启用指标侦听器。\n"
+"可以从 http://127.0.0.1:30000/metrics 获取指标"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
