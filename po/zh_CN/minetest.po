@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
-"PO-Revision-Date: 2020-11-24 11:29+0000\n"
-"Last-Translator: IFRFSX <1079092922@qq.com>\n"
+"PO-Revision-Date: 2020-12-07 09:22+0000\n"
+"Last-Translator: ZhiZe-ZG <qi_wang_zz@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -5083,7 +5083,6 @@ msgstr ""
 "忽略'jungles'标签。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "'ridges': Rivers.\n"
@@ -5091,7 +5090,9 @@ msgid ""
 "'caverns': Giant caves deep underground."
 msgstr ""
 "针对v7地图生成器的属性。\n"
-"'ridges'启用河流。"
+"'ridges'：启用河流。\n"
+"'floatlands'：漂浮于大气中的陆块。\n"
+"'caverns'：地下深处的巨大洞穴。"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -5248,22 +5249,20 @@ msgid "Maximum number of blocks that can be queued for loading."
 msgstr "可在加载时加入队列的最大方块数。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "This limit is enforced per player."
 msgstr ""
 "在生成时加入队列的最大方块数。\n"
-"设置为空白则自动选择合适的数值。"
+"此限制对每位玩家强制执行。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "This limit is enforced per player."
 msgstr ""
 "在从文件中加载时加入队列的最大方块数。\n"
-"设置为空白则自动选择合适的数值。"
+"此限制对每位玩家强制执行。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
@@ -5527,7 +5526,6 @@ msgid "Number of emerge threads"
 msgstr "生产线程数"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of emerge threads to use.\n"
 "Value 0:\n"
@@ -5541,9 +5539,6 @@ msgid ""
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
 "使用的生产线程数。\n"
-"警告：当'num_emerge_threads'大于1时，目前有很\n"
-"多bug会导致崩溃。\n"
-"强烈建议在此警告被移除之前将此值设为默认值'1'。\n"
 "值0：\n"
 "-    自动选择。生产线程数会是‘处理器数-2’，\n"
 "-    下限为1。\n"
@@ -5552,7 +5547,7 @@ msgstr ""
 "警告：增大此值会提高引擎地图生成器速度，但会由于\n"
 "干扰其他进程而影响游戏体验，尤其是单人模式或运行\n"
 "‘on_generated’中的Lua代码。对于大部分用户来说，最\n"
-"佳值为1。"
+"佳值为'1'。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5685,9 +5680,8 @@ msgid "Per-player limit of queued blocks load from disk"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Per-player limit of queued blocks to generate"
-msgstr "要生成的生产队列限制"
+msgstr "每个玩家要生成的生产队列限制"
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -6207,7 +6201,7 @@ msgstr "切片 w"
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights."
-msgstr ""
+msgstr "斜率和填充共同工作来修改高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Small cave maximum number"
@@ -6287,6 +6281,8 @@ msgid ""
 "Note that mods or games may explicitly set a stack for certain (or all) "
 "items."
 msgstr ""
+"指定节点、物品和工具的默认堆叠数量。\n"
+"请注意，mod或游戏可能会为某些（或所有）项目明确设置堆栈。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6294,6 +6290,9 @@ msgid ""
 "Controls the width of the range to be boosted.\n"
 "Standard deviation of the light curve boost Gaussian."
 msgstr ""
+"光曲线提升范围的分布。\n"
+"控制要提升的范围的宽度。\n"
+"光曲线的标准偏差可提升高斯。"
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
@@ -6301,21 +6300,19 @@ msgstr "静态重生点"
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
-msgstr ""
+msgstr "陡度噪声"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Step mountain size noise"
-msgstr "地形高度"
+msgstr "单步山峰高度噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Step mountain spread noise"
-msgstr ""
+msgstr "单步山峰广度噪声"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Strength of 3D mode parallax."
-msgstr "视差强度。"
+msgstr "3D 模式视差的强度。"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -6327,6 +6324,9 @@ msgid ""
 "The 3 'boost' parameters define a range of the light\n"
 "curve that is boosted in brightness."
 msgstr ""
+"光照曲线提升的强度。\n"
+"3 个'boost'参数定义了在亮度上提升的\n"
+"光照曲线的范围。"
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
@@ -6334,7 +6334,7 @@ msgstr "严格协议检查"
 
 #: src/settings_translation_file.cpp
 msgid "Strip color codes"
-msgstr ""
+msgstr "条形颜色代码"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6349,6 +6349,16 @@ msgid ""
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
 "world surface below."
 msgstr ""
+"放置在固体浮地层的可选水的表面水平。\n"
+"默认情况下，水处于禁用状态，并且仅在设置此值时才放置\n"
+"在'mgv7_floatland_ymax' - 'mgv7_floatland_taper'上（\n"
+"上部逐渐变细的开始）。\n"
+"***警告，世界存档和服务器性能的潜在危险***：\n"
+"启用水放置时，必须配置和测试悬空岛\n"
+"通过将\"mgv7_floatland_density\"设置为 2.0（或其他\n"
+"所需的值，具体取决于mgv7_np_floatland\"），确保是固体层，\n"
+"以避免服务器密集的极端水流，\n"
+"并避免地表的巨大的洪水。"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6356,32 +6366,27 @@ msgstr "同步 SQLite"
 
 #: src/settings_translation_file.cpp
 msgid "Temperature variation for biomes."
-msgstr ""
+msgstr "生物群系的温度变化。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain alternative noise"
-msgstr "地形高度"
+msgstr "地形替代噪声"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain base noise"
-msgstr "地形高度"
+msgstr "地形基准高度噪声"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain height"
 msgstr "地形高度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain higher noise"
-msgstr "地形高度"
+msgstr "地形增高噪声"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain noise"
-msgstr "地形高度"
+msgstr "地形噪声"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6389,6 +6394,9 @@ msgid ""
 "Controls proportion of world area covered by hills.\n"
 "Adjust towards 0.0 for a larger proportion."
 msgstr ""
+"丘陵的地形噪声阈值。\n"
+"控制山丘覆盖的世界区域的比例。\n"
+"朝0.0调整较大的比例。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6396,10 +6404,13 @@ msgid ""
 "Controls proportion of world area covered by lakes.\n"
 "Adjust towards 0.0 for a larger proportion."
 msgstr ""
+"湖泊的地形噪声阈值。\n"
+"控制被湖泊覆盖的世界区域的比例。\n"
+"朝0.0调整较大的比例。"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain persistence noise"
-msgstr ""
+msgstr "地形持久性噪声"
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
@@ -6416,8 +6427,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "The URL for the content repository"
-msgstr ""
+msgstr "内容存储库的 URL"
 
 #: src/settings_translation_file.cpp
 msgid ""
