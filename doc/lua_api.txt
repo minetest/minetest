@@ -6217,6 +6217,8 @@ object you are working with still exists.
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
     * `rotation`: `{x=num, y=num, z=num}`
+* `unset_bone_position(bone)`
+    * `bone`: string
 * `get_bone_position(bone)`: returns position and rotation of the bone
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
