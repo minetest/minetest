@@ -4348,8 +4348,6 @@ Utilities
           object_step_has_moveresult = true,
           -- Whether get_velocity() and add_velocity() can be used on players (5.4.0)
           direct_velocity_on_players = true,
-          -- New set_sky() syntax, including set_sun and set_moon functions
-          set_sky_extended = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -6426,7 +6424,8 @@ object you are working with still exists.
     * `selected_mode` is the mode index to be selected after modes have been changed
     (0 is the first mode).
 * `set_sky(sky_parameters)`
-    * Available since feature `set_sky_extended`
+    * The presence of the function `set_sun`, `set_moon` or `set_stars` indicates
+      whether `set_sky` accepts this format. Check the legacy format otherwise.
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
         * `type`: Available types:
@@ -6470,6 +6469,13 @@ object you are working with still exists.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
 * `set_sky(base_color, type, {texture names}, clouds)`
     * Deprecated. Use `set_sky(sky_parameters)`
+    * `base_color`: ColorSpec, defaults to white
+    * `type`: Available types:
+        * `"regular"`: Uses 0 textures, `bgcolor` ignored
+        * `"skybox"`: Uses 6 textures, `bgcolor` used
+        * `"plain"`: Uses 0 textures, `bgcolor` used
+    * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
+      `"plain"` custom skyboxes (default: `true`)
 * `get_sky()`: returns base_color, type, table of textures, clouds.
 * `get_sky_color()`: returns a table with the `sky_color` parameters as in
     `set_sky`.
@@ -7394,7 +7400,8 @@ Used by `minetest.register_node`.
         -- definition is used for the collision box.
         -- Both of the boxes above are defined as:
         -- {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from node center.
-        -- Extents greater than 1.45 into one direction may cause collision issues.
+        --  ^ To avoid collision issues, keep each value
+        --    within the range of +/- 1.45.
 
         -- Support maps made in and before January 2012
         legacy_facedir_simple = false,
