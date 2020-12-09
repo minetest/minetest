@@ -243,13 +243,13 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		core.settings:set("remote_port", "30000")
 		return true
 	end
-    
+
 	if fields.btn_mp_clear then
 		tabdata.search_for = ""
 		menudata.search_result = nil
 		return true
 	end
-    
+
 	if fields.btn_mp_search or fields.key_enter_field == "te_search" then
 		tabdata.fav_selected = 1
 		local input = fields.te_search:lower()
