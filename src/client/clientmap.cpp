@@ -221,13 +221,20 @@ void ClientMap::updateDrawList()
 			float range = 100000 * BS;
 			if (!m_control.range_all)
 				range = m_control.wanted_range * BS;
-
+			
+			v3s16 block_pos = block->getPos();
+			// First, perform a simple distance check.
+			if (block_pos.getDistanceFrom(camera_position) > range)
+				continue; // Out of range, skip.
+			
+			// This block is in range. Reset usage timer.
+			block->resetUsageTimer();
+			blocks_in_range_with_mesh++;
+			
 			float d = 0.0;
 			if (!isBlockInSight(block->getPos(), camera_position,
 					camera_direction, camera_fov, range, &d))
 				continue;
-
-			blocks_in_range_with_mesh++;
 
 			/*
 				Occlusion culling
@@ -237,9 +244,6 @@ void ClientMap::updateDrawList()
 				blocks_occlusion_culled++;
 				continue;
 			}
-
-			// This block is in range. Reset usage timer.
-			block->resetUsageTimer();
 
 			// Add to set
 			block->refGrab();
