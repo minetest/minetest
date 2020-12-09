@@ -319,7 +319,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 		v3f block_pos_r = v3f(block_pos.X,block_pos.Y,block_pos.Z) * MAP_BLOCKSIZE;
 		float d = camera_position.getDistanceFrom((block_pos_r + MAP_BLOCKSIZE / 2) * BS);
-
+		d = MYMAX(0,d - BLOCK_MAX_RADIUS);
+		
 		// Mesh animation
 		if (pass == scene::ESNRP_SOLID) {
 			//MutexAutoLock lock(block->mesh_mutex);
