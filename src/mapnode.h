@@ -292,10 +292,10 @@ struct MapNode
 	//   compressed = true to zlib-compress output
 	static void serializeBulk(std::ostream &os, int version,
 			const MapNode *nodes, u32 nodecount,
-			u8 content_width, u8 params_width, bool compressed);
+			u8 content_width, u8 params_width, int compression_level);
 	static void deSerializeBulk(std::istream &is, int version,
 			MapNode *nodes, u32 nodecount,
-			u8 content_width, u8 params_width, bool compressed);
+			u8 content_width, u8 params_width);
 
 private:
 	// Deprecated serialization methods

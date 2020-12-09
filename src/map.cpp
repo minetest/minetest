@@ -1235,6 +1235,8 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 
 	m_save_time_counter = mb->addCounter("minetest_core_map_save_time", "Map save time (in nanoseconds)");
 
+	m_map_compression_level = rangelim(g_settings->getS16("map_compression_level_disk"), -1, 9);
+
 	try {
 		// If directory exists, check contents and load if possible
 		if (fs::PathExists(m_savedir)) {
@@ -1863,10 +1865,10 @@ void ServerMap::endSave()
 
 bool ServerMap::saveBlock(MapBlock *block)
 {
-	return saveBlock(block, dbase);
+	return saveBlock(block, dbase, m_map_compression_level);
 }
 
-bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
+bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_level)
 {
 	v3s16 p3d = block->getPos();
 
@@ -1886,7 +1888,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	*/
 	std::ostringstream o(std::ios_base::binary);
 	o.write((char*) &version, 1);
-	block->serialize(o, version, true);
+	block->serialize(o, version, true, compression_level);
 
 	bool ret = db->saveBlock(p3d, o.str());
 	if (ret) {
