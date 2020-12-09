@@ -143,8 +143,7 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
-static const constexpr s16 CULL_PADDING = MAP_BLOCKSIZE * 2;
-static const constexpr s16 UNLOAD_PADDING = MAP_BLOCKSIZE * 4;
+static const constexpr s16 UNLOAD_PADDING = MAP_BLOCKSIZE * 3;
 void ClientMap::updateDrawList()
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
@@ -238,7 +237,7 @@ void ClientMap::updateDrawList()
 
 			float d = 0.0;
 			if (!isBlockInSight(block_coord, camera_position,
-					camera_direction, camera_fov, (range + CULL_PADDING) * BS, &d))
+					camera_direction, camera_fov, range * BS, &d))
 				continue;
 
 			/*
