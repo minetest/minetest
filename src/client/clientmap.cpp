@@ -227,7 +227,7 @@ void ClientMap::updateDrawList()
 
 			v3s16 block_coord = block->getPos();
 			v3s16 block_position = block_coord * MAP_BLOCKSIZE + MAP_BLOCKSIZE / 2;
-			
+
 			// First, perform a simple distance check.
 			if (!m_control.range_all && block_position.getDistanceFrom(cam_pos_nodes) > range + UNLOAD_PADDING)
 				continue; // Out of range, skip.
@@ -317,10 +317,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		// If the mesh of the block happened to get deleted, ignore it
 		if (!block->mesh)
 			continue;
-		
+
 		v3f block_pos_r = v3f(block_pos.X,block_pos.Y,block_pos.Z) * MAP_BLOCKSIZE;
 		float d = camera_position.getDistanceFrom((block_pos_r + MAP_BLOCKSIZE / 2) * BS);
-		
+
 		// Mesh animation
 		if (pass == scene::ESNRP_SOLID) {
 			//MutexAutoLock lock(block->mesh_mutex);
