@@ -127,6 +127,111 @@ void *ServerThread::run()
 	return nullptr;
 }
 
+class MapThread : public Thread
+{
+public:
+
+	MapThread(Server *server):
+		Thread("ServerMapSave"),
+		m_server(server)
+	{}
+
+	void *run();
+
+private:
+	Server *m_server;
+};
+
+void *MapThread::run()
+{
+	BEGIN_DEBUG_EXCEPTION_HANDLER
+
+	const float save_interval =
+		g_settings->getFloat("server_map_save_interval");
+	const float map_timer_and_unload_dtime = 2.92f;
+
+	float savemap_timer = 0.0f;
+	IntervalLimiter map_timer_and_unload_interval;
+
+	ServerEnvironment &env = m_server->getEnv();
+	ServerMap &map = (ServerMap&) env.getMap();
+
+	u64 last_time = porting::getTimeMs();
+	while (!stopRequested()) {
+		sleep_ms(100); // no busy loop
+
+		u64 curr_time = porting::getTimeMs();
+		float dtime = (curr_time - last_time) / 1000.0f;
+		last_time = curr_time;
+
+		// Save map, players and auth stuff
+		SerializedBlockList serialized_blocks;
+
+		if(map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
+		{
+			MutexAutoLock lock(m_server->m_env_mutex);
+
+			ScopeProfiler sp(g_profiler, "Server: map timer and unload");
+
+			// 0. now run map.timerupdate, collect unloaded blocks
+			map.timerUpdate(map_timer_and_unload_dtime,
+					g_settings->getFloat("server_unload_unused_data_timeout"),
+					U32_MAX);
+		}
+
+		savemap_timer += dtime;
+		if (savemap_timer > save_interval) {
+			savemap_timer = 0.0f;
+			MutexAutoLock lock(m_server->m_env_mutex);
+
+			ScopeProfiler sp(g_profiler, "Server: map saving (collect)");
+
+			// Save ban file
+			if (m_server->getBanManager().isModified()) {
+				m_server->getBanManager().save();
+			}
+
+			// 1. Map: Collect all changed blocks
+			map.save(MOD_STATE_WRITE_NEEDED, true);
+
+			// Save players
+			env.saveLoadedPlayers();
+
+			// Save environment metadata
+			env.saveMeta();
+		}
+
+		{
+			MutexAutoLock lock(m_server->m_env_mutex);
+			map.getSerializedBlocks(serialized_blocks);
+		}
+
+		if (serialized_blocks.empty())
+			continue;
+
+		CompressedBlockList compressed_blocks;
+		{
+			ScopeProfiler sp(g_profiler, "Server: map saving (compression)");
+			// 2. Map: Compress blocks outside of env lock
+			map.compress(serialized_blocks, compressed_blocks);
+		}
+		{
+			// 3. Map: Save blocks under lock
+			// FIXME: Not all databases need this lock
+			MutexAutoLock lock(m_server->m_env_mutex);
+
+			ScopeProfiler sp(g_profiler, "Server: map saving (DB)");
+			map.save(compressed_blocks);
+		}
+	}
+	// save all changed blocks upon shutdown
+	map.save(MOD_STATE_WRITE_AT_UNLOAD);
+
+	END_DEBUG_EXCEPTION_HANDLER
+
+	return nullptr;
+}
+
 v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
 {
 	if(pos_exists) *pos_exists = false;
@@ -231,6 +336,7 @@ Server::Server(
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_thread(new ServerThread(this)),
+	m_map_thread(new MapThread(this)),
 	m_clients(m_con),
 	m_admin_chat(iface),
 	m_on_shutdown_errmsg(on_shutdown_errmsg),
@@ -334,10 +440,13 @@ Server::~Server()
 	}
 
 	// Stop threads
-	if (m_thread) {
-		stop();
+	stop();
+	if (m_thread)
 		delete m_thread;
-	}
+
+	if (m_map_thread)
+		delete m_map_thread;
+
 
 	// Delete things in the reverse order of creation
 	delete m_emerge;
@@ -478,6 +587,7 @@ void Server::start()
 
 	// Stop thread if already running
 	m_thread->stop();
+	m_map_thread->stop();
 
 	// Initialize connection
 	m_con->SetTimeoutMs(30);
@@ -485,6 +595,7 @@ void Server::start()
 
 	// Start thread
 	m_thread->start();
+	m_map_thread->start();
 
 	// ASCII art for the win!
 	std::cerr
@@ -505,11 +616,14 @@ void Server::stop()
 	infostream<<"Server: Stopping and waiting threads"<<std::endl;
 
 	// Stop threads (set run=false first so both start stopping)
-	m_thread->stop();
-	//m_emergethread.setRun(false);
-	m_thread->wait();
-	//m_emergethread.stop();
-
+	if (m_thread) {
+		m_thread->stop();
+		m_thread->wait();
+	}
+	if (m_map_thread) {
+		m_map_thread->stop();
+		m_map_thread->wait();
+	}
 	infostream<<"Server: Threads stopped"<<std::endl;
 }
 
@@ -598,17 +712,6 @@ void Server::AsyncRunStep(bool initial_step)
 		m_env->reportMaxLagEstimate(max_lag);
 		// Step environment
 		m_env->step(dtime);
-	}
-
-	static const float map_timer_and_unload_dtime = 2.92;
-	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
-	{
-		MutexAutoLock lock(m_env_mutex);
-		// Run Map's timers and unload unused data
-		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
-		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
-			g_settings->getFloat("server_unload_unused_data_timeout"),
-			U32_MAX);
 	}
 
 	/*
@@ -942,34 +1045,6 @@ void Server::AsyncRunStep(bool initial_step)
 			counter = 0.0;
 
 			m_emerge->startThreads();
-		}
-	}
-
-	// Save map, players and auth stuff
-	{
-		float &counter = m_savemap_timer;
-		counter += dtime;
-		static thread_local const float save_interval =
-			g_settings->getFloat("server_map_save_interval");
-		if (counter >= save_interval) {
-			counter = 0.0;
-			MutexAutoLock lock(m_env_mutex);
-
-			ScopeProfiler sp(g_profiler, "Server: map saving (sum)");
-
-			// Save ban file
-			if (m_banmanager->isModified()) {
-				m_banmanager->save();
-			}
-
-			// Save changed parts of map
-			m_env->getMap().save(MOD_STATE_WRITE_NEEDED);
-
-			// Save players
-			m_env->saveLoadedPlayers();
-
-			// Save environment metadata
-			m_env->saveMeta();
 		}
 	}
 

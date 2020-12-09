@@ -69,6 +69,7 @@ struct SunParams;
 struct MoonParams;
 struct StarParams;
 class ServerThread;
+class MapThread;
 class ServerModManager;
 class ServerInventoryManager;
 
@@ -288,6 +289,7 @@ public:
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
+	BanManager & getBanManager() { return *m_banmanager; }
 	v3f findSpawnPos();
 
 	u32 hudAdd(RemotePlayer *player, HudElement *element);
@@ -533,8 +535,6 @@ private:
 	float m_liquid_transform_every = 1.0f;
 	float m_masterserver_timer = 0.0f;
 	float m_emergethread_trigger_timer = 0.0f;
-	float m_savemap_timer = 0.0f;
-	IntervalLimiter m_map_timer_and_unload_interval;
 
 	// Environment
 	ServerEnvironment *m_env = nullptr;
@@ -582,6 +582,7 @@ private:
 
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;
+	MapThread *m_map_thread = nullptr;
 
 	/*
 		Time related stuff

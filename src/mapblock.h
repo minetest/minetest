@@ -37,6 +37,7 @@ class NodeMetadataList;
 class IGameDef;
 class MapBlockMesh;
 class VoxelManipulator;
+struct MapBlockDiskSer;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
@@ -483,6 +484,7 @@ public:
 	// Set disk to true for on-disk format, false for over-the-network format
 	// Precondition: version >= SER_FMT_VER_LOWEST_WRITE
 	void serialize(std::ostream &os, u8 version, bool disk, int compression_level);
+	void serializeForDisk(MapBlockDiskSer &dst, u8 version);
 	// If disk == true: In addition to doing other things, will add
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
@@ -621,6 +623,21 @@ private:
 };
 
 typedef std::vector<MapBlock*> MapBlockVect;
+
+struct MapBlockDiskSer
+{
+	MapBlockDiskSer();
+	u8 flags;
+	u16 lighting_complete;
+	u32 timestamp;
+	MapNode nodes[MapBlock::nodecount];
+	std::ostringstream metadata;
+	NameIdMapping nimap;
+	StaticObjectList static_objects;
+	NodeTimerList node_timers;
+
+	void compress(std::ostream &os, u8 version, int compression_level);
+};
 
 inline bool objectpos_over_limit(v3f p)
 {

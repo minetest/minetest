@@ -357,8 +357,9 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 					if (block->getModified() != MOD_STATE_CLEAN
 							&& save_before_unloading) {
 						modprofiler.add(block->getModifiedReasonString(), 1);
-						if (!saveBlock(block))
+						if (!saveBlock(block, true))
 							continue;
+
 						saved_blocks_count++;
 					}
 
@@ -409,7 +410,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			// Save if modified
 			if (block->getModified() != MOD_STATE_CLEAN && save_before_unloading) {
 				modprofiler.add(block->getModifiedReasonString(), 1);
-				if (!saveBlock(block))
+				if (!saveBlock(block, true))
 					continue;
 				saved_blocks_count++;
 			}
@@ -1731,7 +1732,19 @@ void ServerMap::updateVManip(v3s16 pos)
 	vm->m_is_dirty = true;
 }
 
-void ServerMap::save(ModifiedState save_level)
+void ServerMap::save(CompressedBlockList &blocks)
+{
+	if (blocks.empty())
+		return;
+
+	beginSave();
+	for (const auto &i : blocks) {
+		saveBlock(i.first, i.second, dbase);
+	}
+	endSave();
+}
+
+void ServerMap::save(ModifiedState save_level, bool async)
 {
 	if (!m_map_saving_enabled) {
 		warningstream<<"Not saving map, saving disabled."<<std::endl;
@@ -1769,14 +1782,14 @@ void ServerMap::save(ModifiedState save_level)
 
 			if(block->getModified() >= (u32)save_level) {
 				// Lazy beginSave()
-				if(!save_started) {
+				if(!async && !save_started) {
 					beginSave();
 					save_started = true;
 				}
 
 				modprofiler.add(block->getModifiedReasonString(), 1);
 
-				saveBlock(block);
+				saveBlock(block, async);
 				block_count++;
 			}
 		}
@@ -1801,6 +1814,20 @@ void ServerMap::save(ModifiedState save_level)
 
 	auto end_time = porting::getTimeNs();
 	m_save_time_counter->increment(end_time - start_time);
+}
+
+void ServerMap::compress(SerializedBlockList &src,
+			 CompressedBlockList &dst)
+{
+	// Format used for writing
+	u8 version = SER_FMT_VER_HIGHEST_WRITE;
+
+	for (const auto &i : src) {
+		std::ostringstream o(std::ios_base::binary);
+		o.write((char*) &version, 1);
+		i.second->compress(o, version, m_map_compression_level);
+		dst.emplace_back(i.first, o.str());
+	}
 }
 
 void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
@@ -1863,8 +1890,19 @@ void ServerMap::endSave()
 	dbase->endSave();
 }
 
-bool ServerMap::saveBlock(MapBlock *block)
+bool ServerMap::saveBlock(MapBlock *block, bool async)
 {
+	if (async) {
+		// Format used for writing
+		u8 version = SER_FMT_VER_HIGHEST_WRITE;
+
+		MapBlockDiskSer *ser = new MapBlockDiskSer();
+		block->serializeForDisk(*ser, version);
+		m_serialized_blocks.emplace_back(block->getPos(), ser);
+		// We promise to write it to disk so clear modified flag
+		block->resetModified();
+		return true;
+	}
 	return saveBlock(block, dbase, m_map_compression_level);
 }
 
@@ -1896,6 +1934,11 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_leve
 		block->resetModified();
 	}
 	return ret;
+}
+
+bool ServerMap::saveBlock(const v3s16 &p3d, const std::string &data, MapDatabase *db)
+{
+	return db->saveBlock(p3d, data);
 }
 
 void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)

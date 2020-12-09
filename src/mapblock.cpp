@@ -355,8 +355,62 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	}
 }
 
-void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compression_level)
+MapBlockDiskSer::MapBlockDiskSer():
+	metadata(std::ios_base::binary)
+{}
+
+void MapBlockDiskSer::compress(std::ostream &os, u8 version, int compression_level)
 {
+	writeU8(os, flags);
+	if (version >= 27)
+		writeU16(os, lighting_complete);
+
+	u8 content_width = 2;
+	u8 params_width = 2;
+	writeU8(os, content_width);
+	writeU8(os, params_width);
+
+	MapNode::serializeBulk(os, version, nodes, MapBlock::nodecount,
+			       content_width, params_width, compression_level);
+
+	compressZlib(metadata.str(), os, compression_level);
+
+	if(version <= 24)
+		node_timers.serialize(os, version);
+
+	static_objects.serialize(os);
+
+	writeU32(os, timestamp);
+	nimap.serialize(os);
+
+	if(version >= 25)
+		node_timers.serialize(os, version);
+}
+
+void MapBlock::serializeForDisk(MapBlockDiskSer &dst, u8 version)
+{
+	u8 flags = 0;
+	if(is_underground)
+		flags |= 0x01;
+	if(getDayNightDiff())
+		flags |= 0x02;
+	if (!m_generated)
+		flags |= 0x08;
+	dst.flags = flags;
+	dst.lighting_complete = m_lighting_complete;
+
+	for(u32 i=0; i<nodecount; i++)
+		dst.nodes[i] = data[i];
+	getBlockNodeIdMapping(&dst.nimap, dst.nodes, m_gamedef->ndef());
+
+	m_node_metadata.serialize(dst.metadata, version, true);
+
+	dst.static_objects = m_static_objects;
+	dst.timestamp = getTimestamp();
+	dst.node_timers = m_node_timers;
+}
+
+void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compression_level){
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
 
@@ -364,6 +418,13 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compressio
 		throw SerializationError("ERROR: Not writing dummy block.");
 
 	FATAL_ERROR_IF(version < SER_FMT_VER_LOWEST_WRITE, "Serialisation version error");
+
+	if (disk) {
+		MapBlockDiskSer ser;
+		serializeForDisk(ser, version);
+		ser.compress(os, version, compression_level);
+		return;
+	}
 
 	// First byte
 	u8 flags = 0;
@@ -381,31 +442,12 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compressio
 	/*
 		Bulk node data
 	*/
-	NameIdMapping nimap;
-	if(disk)
-	{
-		MapNode *tmp_nodes = new MapNode[nodecount];
-		for(u32 i=0; i<nodecount; i++)
-			tmp_nodes[i] = data[i];
-		getBlockNodeIdMapping(&nimap, tmp_nodes, m_gamedef->ndef());
-
-		u8 content_width = 2;
-		u8 params_width = 2;
-		writeU8(os, content_width);
-		writeU8(os, params_width);
-		MapNode::serializeBulk(os, version, tmp_nodes, nodecount,
-				content_width, params_width, compression_level);
-		delete[] tmp_nodes;
-	}
-	else
-	{
-		u8 content_width = 2;
-		u8 params_width = 2;
-		writeU8(os, content_width);
-		writeU8(os, params_width);
-		MapNode::serializeBulk(os, version, data, nodecount,
-				content_width, params_width, compression_level);
-	}
+	u8 content_width = 2;
+	u8 params_width = 2;
+	writeU8(os, content_width);
+	writeU8(os, params_width);
+	MapNode::serializeBulk(os, version, data, nodecount,
+			       content_width, params_width, compression_level);
 
 	/*
 		Node metadata
@@ -413,31 +455,6 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compressio
 	std::ostringstream oss(std::ios_base::binary);
 	m_node_metadata.serialize(oss, version, disk);
 	compressZlib(oss.str(), os, compression_level);
-
-	/*
-		Data that goes to disk, but not the network
-	*/
-	if(disk)
-	{
-		if(version <= 24){
-			// Node timers
-			m_node_timers.serialize(os, version);
-		}
-
-		// Static objects
-		m_static_objects.serialize(os);
-
-		// Timestamp
-		writeU32(os, getTimestamp());
-
-		// Write block-specific node definition id mapping
-		nimap.serialize(os);
-
-		if(version >= 25){
-			// Node timers
-			m_node_timers.serialize(os, version);
-		}
-	}
 }
 
 void MapBlock::serializeNetworkSpecific(std::ostream &os)

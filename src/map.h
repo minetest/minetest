@@ -49,6 +49,7 @@ class EmergeManager;
 class MetricsBackend;
 class ServerEnvironment;
 struct BlockMakeData;
+struct MapBlockDiskSer;
 
 /*
 	MapEditEvent
@@ -111,6 +112,9 @@ struct MapEditEvent
 		return VoxelArea();
 	}
 };
+
+typedef std::vector<std::pair<v3s16, std::string>> CompressedBlockList;
+typedef std::vector<std::pair<v3s16, std::unique_ptr<MapBlockDiskSer>>> SerializedBlockList;
 
 class MapEventReceiver
 {
@@ -201,11 +205,11 @@ public:
 	virtual void beginSave() {}
 	virtual void endSave() {}
 
-	virtual void save(ModifiedState save_level) { FATAL_ERROR("FIXME"); }
+	virtual void save(ModifiedState save_level, bool async=false) { FATAL_ERROR("FIXME"); }
 
 	// Server implements these.
 	// Client leaves them as no-op.
-	virtual bool saveBlock(MapBlock *block) { return false; }
+	virtual bool saveBlock(MapBlock *block, bool async=false) { return false; }
 	virtual bool deleteBlock(v3s16 blockpos) { return false; }
 
 	/*
@@ -374,14 +378,44 @@ public:
 	void beginSave();
 	void endSave();
 
-	void save(ModifiedState save_level);
+	/*
+	 * For async save these methods must be used as follows:
+	 *
+	 * SerializedBlockList list;
+	 * CompressedBlockList result;
+	 * lock(env mutex);
+	 *   map.save(..., true);
+	 *   map.timerUpdate(...); // optional
+	 *   swapSerializedBlocks(list)
+	 * unlock(env mutex);
+	 *
+	 * map.compress(list, result);
+	 *
+	 * lock(env mutex);
+	 *   map.save(result);
+	 * unlock(env mutex);
+	 *
+	 * save(..., false) performs all these step,
+	 * but has to be under the env lock completely
+	 */
+	void save(ModifiedState save_level, bool async=false);
+	void save(CompressedBlockList &blocks);
+	void getSerializedBlocks(SerializedBlockList &list) {
+		assert(list.empty());
+		std::swap(m_serialized_blocks, list);
+	}
+	// this does not need the env lock
+	void compress(SerializedBlockList &src, CompressedBlockList &dst);
+
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 	void listAllLoadedBlocks(std::vector<v3s16> &dst);
 
 	MapgenParams *getMapgenParams();
 
-	bool saveBlock(MapBlock *block);
+	static void serializeBlock(MapBlock *block, std::ostringstream &o);
+	bool saveBlock(MapBlock *block, bool async=false);
 	static bool saveBlock(MapBlock *block, MapDatabase *db, int compression_level = -1);
+	static bool saveBlock(const v3s16 &p3d, const std::string &data, MapDatabase *db);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
@@ -408,13 +442,13 @@ public:
 		std::map<v3s16, MapBlock *> *modified_blocks);
 
 	MapSettingsManager settings_mgr;
-
 private:
 	// Emerge manager
 	EmergeManager *m_emerge;
-
 	std::string m_savedir;
 	bool m_map_saving_enabled;
+
+	SerializedBlockList m_serialized_blocks;
 
 	int m_map_compression_level;
 #if 0
