@@ -352,7 +352,7 @@ function store.get_formspec(dlgdata)
 			"container[0.375,0.375]",
 			"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
 			"field_close_on_enter[search_string;false]",
-            		"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
+			"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
 			"image_button[8.125,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
 			"dropdown[9.6,0;2.4,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
 			"container_end[]",
@@ -504,12 +504,12 @@ function store.handle_submit(this, fields)
 		return true
 	end
     
-    	if fields.clear then
-        	search_string = ""
-        	cur_page = 1
-        	store.filter_packages("")
-        	return true
-    	end
+	if fields.clear then
+		search_string = ""
+		cur_page = 1
+		store.filter_packages("")
+		return true
+	end
     
 	if fields.back then
 		this:delete()
