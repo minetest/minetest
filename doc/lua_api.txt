@@ -1247,6 +1247,9 @@ A box of a regular node would look like:
 
     {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 
+To avoid collision issues, keep each value within the range of +/- 1.45.
+This also applies to leveled nodeboxes, where the final height shall not
+exceed this soft limit.
 
 
 
@@ -3234,6 +3237,7 @@ Helper functions
     * returns true when the passed number represents NaN.
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
+    * This value might overflow on certain 32-bit systems!
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 * `table.indexof(list, val)`: returns the smallest numerical index containing
@@ -6425,6 +6429,8 @@ object you are working with still exists.
     * `selected_mode` is the mode index to be selected after modes have been changed
     (0 is the first mode).
 * `set_sky(sky_parameters)`
+    * The presence of the function `set_sun`, `set_moon` or `set_stars` indicates
+      whether `set_sky` accepts this format. Check the legacy format otherwise.
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
         * `type`: Available types:
@@ -6466,6 +6472,15 @@ object you are working with still exists.
                 abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
                 `"default"` uses the classic Minetest sun and moon tinting.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
+* `set_sky(base_color, type, {texture names}, clouds)`
+    * Deprecated. Use `set_sky(sky_parameters)`
+    * `base_color`: ColorSpec, defaults to white
+    * `type`: Available types:
+        * `"regular"`: Uses 0 textures, `bgcolor` ignored
+        * `"skybox"`: Uses 6 textures, `bgcolor` used
+        * `"plain"`: Uses 0 textures, `bgcolor` used
+    * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
+      `"plain"` custom skyboxes (default: `true`)
 * `get_sky()`: returns base_color, type, table of textures, clouds.
 * `get_sky_color()`: returns a table with the `sky_color` parameters as in
     `set_sky`.
@@ -7346,6 +7361,7 @@ Used by `minetest.register_node`.
         leveled_max = 127,
         -- Maximum value for `leveled` (0-127), enforced in
         -- `minetest.set_node_level` and `minetest.add_node_level`.
+		-- Values above 124 might causes collision detection issues.
 
         liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
 
@@ -7373,6 +7389,7 @@ Used by `minetest.register_node`.
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+                -- Node box format: see [Node boxes]
             },
         },
         -- Custom selection box definition. Multiple boxes can be defined.
@@ -7383,13 +7400,12 @@ Used by `minetest.register_node`.
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+                -- Node box format: see [Node boxes]
             },
         },
         -- Custom collision box definition. Multiple boxes can be defined.
         -- If "nodebox" drawtype is used and collision_box is nil, then node_box
         -- definition is used for the collision box.
-        -- Both of the boxes above are defined as:
-        -- {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from node center.
 
         -- Support maps made in and before January 2012
         legacy_facedir_simple = false,
