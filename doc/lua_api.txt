@@ -1245,6 +1245,9 @@ A box of a regular node would look like:
 
     {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 
+To avoid collision issues, keep each value within the range of +/- 1.45.
+This also applies to leveled nodeboxes, where the final height shall not
+exceed this soft limit.
 
 
 
@@ -7356,6 +7359,7 @@ Used by `minetest.register_node`.
         leveled_max = 127,
         -- Maximum value for `leveled` (0-127), enforced in
         -- `minetest.set_node_level` and `minetest.add_node_level`.
+		-- Values above 124 might causes collision detection issues.
 
         liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
 
@@ -7383,6 +7387,7 @@ Used by `minetest.register_node`.
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+                -- Node box format: see [Node boxes]
             },
         },
         -- Custom selection box definition. Multiple boxes can be defined.
@@ -7393,15 +7398,12 @@ Used by `minetest.register_node`.
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+                -- Node box format: see [Node boxes]
             },
         },
         -- Custom collision box definition. Multiple boxes can be defined.
         -- If "nodebox" drawtype is used and collision_box is nil, then node_box
         -- definition is used for the collision box.
-        -- Both of the boxes above are defined as:
-        -- {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from node center.
-        --  ^ To avoid collision issues, keep each value
-        --    within the range of +/- 1.45.
 
         -- Support maps made in and before January 2012
         legacy_facedir_simple = false,
