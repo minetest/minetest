@@ -4075,9 +4075,6 @@ enum ButtonEventType : u8
 
 bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 {
-	// WORKAROUND: event.MouseInput.Shift is not implemented for MacOS
-	static thread_local bool is_shift_down = false;
-
 	if (event.EventType==EET_KEY_INPUT_EVENT) {
 		KeyPress kp(event.KeyInput);
 		if (event.KeyInput.PressedDown && (
@@ -4086,8 +4083,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			tryClose();
 			return true;
 		}
-
-		is_shift_down = event.KeyInput.Shift;
 
 		if (m_client != NULL && event.KeyInput.PressedDown &&
 				(kp == getKeySetting("keymap_screenshot"))) {
@@ -4137,9 +4132,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			 (event.MouseInput.Event == EMIE_MOUSE_MOVED &&
 			  event.MouseInput.isRightPressed() &&
 			  getItemAtPos(m_pointer).i != getItemAtPos(m_old_pointer).i))) {
-
-		// WORKAROUND: In case shift was pressed prior showing the formspec
-		is_shift_down |= event.MouseInput.Shift;
 
 		// Get selected item and hovered/clicked item (s)
 
@@ -4271,7 +4263,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					else  // left
 						count = s_count;
 
-					if (!is_shift_down) {
+					if (!event.MouseInput.Shift) {
 						// no shift: select item
 						m_selected_amount = count;
 						m_selected_dragging = button != BET_WHEEL_DOWN;
