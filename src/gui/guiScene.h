@@ -36,6 +36,7 @@ public:
 	scene::IAnimatedMeshSceneNode *setMesh(scene::IAnimatedMesh *mesh = nullptr);
 	void setTexture(u32 idx, video::ITexture *texture);
 	void setBackgroundColor(const video::SColor &color) noexcept { m_bgcolor = color; };
+	void setFrameLoop(s32 begin, s32 end);
 	void enableMouseControl(bool enable) noexcept { m_mouse_ctrl = enable; };
 	void setRotation(v2f rot) noexcept { m_custom_rot = rot; };
 	void enableContinuousRotation(bool enable) noexcept { m_inf_rot = enable; };

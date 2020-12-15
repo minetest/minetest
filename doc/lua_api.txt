@@ -2277,7 +2277,7 @@ Elements
 * `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
 * `frame start` (Optional): The index of the frame to start on. Default `1`.
 
-### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>]`
+### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>]`
 
 * Show a mesh model.
 * `name`: Element name that can be used for styling
@@ -2288,6 +2288,9 @@ Elements
   The axes are euler angles in degrees.
 * `continuous` (Optional): Whether the rotation is continuous. Default `false`.
 * `mouse control` (Optional): Whether the model can be controlled with the mouse. Default `true`.
+* `frame loop range` (Optional): Range of the animation frames.
+    * Defaults to the full range of all available frames.
+    * Syntax: `<begin>,<end>`
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
@@ -2789,6 +2792,7 @@ Some types may inherit styles from parent types.
 * image_button
 * item_image_button
 * label
+* model
 * pwdfield, inherits from field
 * scrollbar
 * tabheader
