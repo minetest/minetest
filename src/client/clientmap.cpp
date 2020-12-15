@@ -224,7 +224,7 @@ void ClientMap::updateDrawList()
 			}
 
 			v3s16 block_coord = block->getPos();
-			v3s16 block_position = block_coord * MAP_BLOCKSIZE + MAP_BLOCKSIZE / 2;
+			v3s16 block_position = block->getPosRelative() + MAP_BLOCKSIZE / 2;
 
 			// First, perform a simple distance check.
 			if (!m_control.range_all &&
