@@ -70,6 +70,12 @@ public:
 	virtual bool environmentDeletes() const
 	{ return true; }
 
+	// Safely mark the object for removal or deactivation
+	void markForRemoval();
+	void markForDeactivation();
+	virtual void onMarkedForRemoval() {}
+	virtual void onMarkedForDeactivation() {}
+
 	// Create a certain type of ServerActiveObject
 	static ServerActiveObject* create(ActiveObjectType type,
 			ServerEnvironment *env, u16 id, v3f pos,
@@ -220,6 +226,7 @@ public:
 		  it could be confused to some other object by some client.
 		- This is usually set to true by the step() method when the object wants
 		  to be deleted but can be set by anything else too.
+		Note: Do not assign this directly, use markForRemoval() instead.
 	*/
 	bool m_pending_removal = false;
 
@@ -229,6 +236,7 @@ public:
 
 		If this is set alongside with m_pending_removal, removal takes
 		priority.
+		Note: Do not assign this directly, use markForDeactivation() instead.
 	*/
 	bool m_pending_deactivation = false;
 

@@ -531,7 +531,7 @@ bool PlayerSAO::setWieldedItem(const ItemStack &item)
 void PlayerSAO::disconnected()
 {
 	m_peer_id = PEER_ID_INEXISTENT;
-	m_pending_removal = true;
+	markForRemoval();
 }
 
 void PlayerSAO::unlinkPlayerSessionAndSave()
