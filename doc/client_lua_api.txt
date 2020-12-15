@@ -949,6 +949,26 @@ Functions for drawing to and getting informtion about the screen and textures.
         * `shaders`: True if the driver supports shaders.
         * `max_texture_size`: A size denoting the maximum texture size that can be used. If x or y
           is zero, there is no limit.
+* `minetest.set_render_target(texture)`: Routs all rendering from the window (including Lua drawing
+  to `minetest.window`) to the specified `Texture`.
+    * `texture`: The texture to render to or `minetest.window` to use the normal window again.
+    * When this is used, nothing will be drawn to the actual window. To draw the render texture to
+      the window after using it, either change the target back to `minetest.window` or use
+      `minetest.draw_render_target()`.
+    * Useful to circumvent the limitations of `minetest.window`.
+    * Requires the driver to support render textures. See `minetest.get_driver_info()`.
+* `minetest.get_render_target()` -> target: Returns a reference to the current global render target
+  texture that was set with `minetest.set_render_target()`.
+* `minetest.draw_render_target()`: Draws the global render target texture set with
+  `minetest.set_render_texture()` to the actual window.
+    * If `current` is the current global render target, functionally equivalent to
+      ```
+      minetest.set_render_target(minetest.window)
+      local size = minetest.window:get_size()
+      minetest.window:draw_texture({x=0, y=0, w=size.x, h=size.y}, current)
+      minetest.set_render_target(current)
+      ```
+    * Does nothing if the window already is the current render target.
 * `minetest.window`: A special `Texture` that points to the Minetest window.
     * The screen supports all functions in `Texture` regardless of any driver limitations in
     `minetest.get_driver_info` unless documented as otherwise.

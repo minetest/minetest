@@ -59,6 +59,9 @@ void ScriptApiClient::on_shutdown()
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	// Shut down drawing
+	ModApiDrawer::reset();
+
 	// Get registered shutdown hooks
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_shutdown");

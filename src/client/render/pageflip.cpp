@@ -52,7 +52,7 @@ void RenderingCorePageflip::useEye(bool _right)
 void RenderingCorePageflip::resetEye()
 {
 	driver->draw2DImage(hud, v2s32(0, 0));
-	driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false, skycolor);
+	driver->setRenderTarget(nullptr, false, false, skycolor);
 	RenderingCoreStereo::resetEye();
 }
 

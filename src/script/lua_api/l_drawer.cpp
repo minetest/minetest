@@ -77,17 +77,28 @@ gui::IGUIFont *ModApiDrawer::get_font(lua_State *L, int index)
 	return g_fontengine->getFont(spec);
 }
 
-video::ITexture *ModApiDrawer::get_texture(lua_State *L, int index, bool allow_window)
+bool ModApiDrawer::set_to_normal_target(bool clear, video::SColor color)
 {
-	if (lua_isstring(L, index)) {
-		return getClient(L)->tsrc()->getTexture(readParam<std::string>(L, index));
-	} else {
-		video::ITexture *texture = (*(LuaTexture **)luaL_checkudata(
-			L, index, "Texture"))->texture;
-		if (!allow_window && texture == nullptr)
-			throw LuaError("Invalid use of minetest.window as normal texture");
-		return texture;
+	s_drawer.current_target = nullptr;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	if (s_drawer.normal_target == nullptr) {
+		driver->setRenderTarget(video::ERT_FRAME_BUFFER, clear, clear, color);
+	} else if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET) ||
+			!driver->setRenderTarget(s_drawer.normal_target->texture, clear, clear, color)) {
+		errorstream << "Unable to set texture as render target" << std::endl;
+		return true;
 	}
+
+	return false;
+}
+
+void ModApiDrawer::reset()
+{
+	RenderingEngine::get_video_driver()->setRenderTarget(
+		video::ERT_FRAME_BUFFER, false, false);
+	s_drawer.current_target = nullptr;
+	s_drawer.normal_target = nullptr;
 }
 
 // get_text_size(text[, style]) -> size
@@ -102,9 +113,9 @@ int ModApiDrawer::l_get_text_size(lua_State *L)
 			text[i] = L' ';
 	}
 
-	gui::IGUIFont *font = ModApiDrawer::get_font(L, 2);
+	gui::IGUIFont *font = get_font(L, 2);
 
-	core::dimension2d<u32> size = font->getDimension(text.c_str());
+	core::dimension2du size = font->getDimension(text.c_str());
 	size.Height += font->getKerningHeight();
 	push_v2s32(L, v2s32(size.Width, size.Height));
 
@@ -164,11 +175,45 @@ int ModApiDrawer::l_get_driver_info(lua_State *L)
 	return 1;
 }
 
+// set_render_target(texture)
+int ModApiDrawer::l_set_render_target(lua_State *L)
+{
+	if (s_drawer.normal_target != nullptr) {
+		// First destroy old texture
+		s_drawer.normal_target->is_target = false;
+		s_drawer.normal_target->try_destroy();
+	}
+
+	LuaTexture *t = LuaTexture::read_writable_object(L, 1, true);
+	if (t->texture == nullptr) {
+		s_drawer.normal_target = nullptr;
+	} else {
+		s_drawer.normal_target = t;
+		s_drawer.normal_target->is_target = true;
+	}
+
+	ModApiDrawer::set_to_normal_target();
+
+	return 0;
+}
+
+// draw_render_target(texture)
+int ModApiDrawer::l_draw_render_target(lua_State *L)
+{
+	if (s_drawer.normal_target == nullptr)
+		return 0;
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+
+	driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
+	driver->draw2DImage(s_drawer.normal_target->texture, core::vector2di(0, 0));
+	ModApiDrawer::set_to_normal_target();
+
+	return 0;
+}
+
 ModApiDrawer::ModApiDrawer()
 {
-	in_callback = false;
-	render_texture = nullptr;
-
 	// Prepare effects mesh for transformations
 	effects_mesh.Vertices.set_used(4);
 	effects_mesh.Indices.set_used(6);
@@ -202,6 +247,8 @@ void ModApiDrawer::Initialize(lua_State *L, int top)
 	API_FCT(get_text_size);
 	API_FCT(get_font_size);
 	API_FCT(get_driver_info);
+	API_FCT(set_render_target);
+	API_FCT(draw_render_target);
 
 	LuaTexture::create_window(L);
 	lua_setfield(L, top, "window");
@@ -220,27 +267,26 @@ void ModApiDrawer::end_callback(bool end_scene)
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	if (end_scene)
 		driver->endScene();
-	driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
+	set_to_normal_target();
 
 	s_drawer.in_callback = false;
 }
 
 bool LuaTexture::set_as_target(LuaTexture *t, video::IVideoDriver *driver)
 {
-	if (t == nullptr || !s_drawer.in_callback)
+	if (!s_drawer.in_callback)
 		return true;
 
 	if (t->is_ref)
 		throw LuaError("Attempt to write to texture reference");
 
-	if (t->texture != s_drawer.render_texture) {
+	if (t->texture != s_drawer.current_target) {
 		if (t->texture == nullptr) {
-			driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false);
-			s_drawer.render_texture = nullptr;
+			ModApiDrawer::set_to_normal_target();
 		} else {
 			if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET) &&
 					driver->setRenderTarget(t->texture, false, false)) {
-				s_drawer.render_texture = t->texture;
+				s_drawer.current_target = t->texture;
 			} else {
 				errorstream << "Unable to set texture as render target" << std::endl;
 				return true;
@@ -255,11 +301,7 @@ int LuaTexture::l_is_ref(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaTexture *t = read_object(L, 1);
-	if (t == nullptr)
-		return 0;
-
-	lua_pushboolean(L, t->is_ref);
+	lua_pushboolean(L, read_object(L, 1, true)->is_ref);
 	return 1;
 }
 
@@ -268,11 +310,9 @@ int LuaTexture::l_get_original_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaTexture *t = read_object(L, 1);
-	if (t == nullptr)
-		return 0;
+	LuaTexture *t = read_object(L, 1, true);
 
-	core::dimension2d<u32> size;
+	core::dimension2du size;
 	if (t->texture == nullptr)
 		size = RenderingEngine::get_video_driver()->getScreenSize();
 	else
@@ -287,11 +327,9 @@ int LuaTexture::l_get_size(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaTexture *t = read_object(L, 1);
-	if (t == nullptr)
-		return 0;
+	LuaTexture *t = read_object(L, 1, true);
 
-	core::dimension2d<u32> size;
+	core::dimension2du size;
 	if (t->texture == nullptr)
 		size = RenderingEngine::get_video_driver()->getScreenSize();
 	else
@@ -307,15 +345,13 @@ int LuaTexture::l_fill(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	LuaTexture *t = read_object(L, 1);
+	LuaTexture *t = read_writable_object(L, 1, true);
 	// Do not use set_as_target as it will be done manually
-	if (t == nullptr || !s_drawer.in_callback)
+	if (!s_drawer.in_callback)
 		return 0;
 
-	if (t->is_ref) {
-		errorstream << "Attempt to write to texture reference" << std::endl;
-		return 0;
-	}
+	if (t->is_ref)
+		throw LuaError("Attempt to write to texture reference");
 
 	video::SColor color(0x0);
 	read_color(L, 2, &color);
@@ -323,13 +359,13 @@ int LuaTexture::l_fill(lua_State *L)
 	// There seems to be no other certain way to fill a texture with a certain color
 	// than by using driver->setRenderTexture with clearBackBuffer = true.
 	if (t->texture == nullptr) {
-		color.setAlpha(0xFF); // Window can't have transparency
-		driver->setRenderTarget(video::ERT_FRAME_BUFFER, true, true, color);
-		s_drawer.render_texture = nullptr;
+		if (s_drawer.normal_target == nullptr)
+			color.setAlpha(0xFF); // Window can't have transparency
+		ModApiDrawer::set_to_normal_target(true, color);
 	} else {
 		if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET) &&
 				driver->setRenderTarget(t->texture, true, true, color)) {
-			s_drawer.render_texture = t->texture;
+			s_drawer.current_target = t->texture;
 		} else {
 			errorstream << "Unable to set texture as render target" << std::endl;
 			return true;
@@ -345,7 +381,7 @@ int LuaTexture::l_draw_pixel(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	LuaTexture *t = read_object(L, 1);
+	LuaTexture *t = read_writable_object(L, 1, true);
 	if (set_as_target(t, driver))
 		return 0;
 
@@ -368,7 +404,7 @@ int LuaTexture::l_draw_rect(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	LuaTexture *t = read_object(L, 1);
+	LuaTexture *t = read_writable_object(L, 1, true);
 	if (set_as_target(t, driver))
 		return 0;
 
@@ -408,12 +444,12 @@ int LuaTexture::l_draw_texture(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	LuaTexture *t = read_object(L, 1);
+	LuaTexture *t = read_writable_object(L, 1, true);
 	if (set_as_target(t, driver))
 		return 0;
 
 	core::recti rect = read_recti(L, 2);
-	video::ITexture *texture = ModApiDrawer::get_texture(L, 3);
+	video::ITexture *texture = LuaTexture::read_texture(L, 3, false);
 
 	core::recti clip_rect;
 	core::recti *clip_ptr = nullptr;
@@ -423,7 +459,7 @@ int LuaTexture::l_draw_texture(lua_State *L)
 	}
 
 	core::recti from_rect;
-	core::dimension2d<u32> size = texture->getOriginalSize();
+	core::dimension2du size = texture->getOriginalSize();
 	if (lua_istable(L, 6)) {
 		from_rect = read_recti(L, 6);
 
@@ -471,7 +507,7 @@ int LuaTexture::l_draw_text(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	LuaTexture *t = read_object(L, 1);
+	LuaTexture *t = read_writable_object(L, 1, true);
 	if (set_as_target(t, driver))
 		return 0;
 
@@ -512,7 +548,7 @@ int LuaTexture::l_draw_text(lua_State *L)
 	if (!underline && !strike)
 		return 0;
 
-	core::dimension2d<u32> size = font->getDimension(text.c_str());
+	core::dimension2du size = font->getDimension(text.c_str());
 	rect.LowerRightCorner = rect.UpperLeftCorner +
 		core::vector2di(size.Width, size.Height);
 
@@ -555,7 +591,7 @@ int LuaTexture::l_draw_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	LuaTexture *t = read_object(L, 1);
+	LuaTexture *t = read_writable_object(L, 1, true);
 	if (set_as_target(t, driver))
 		return 0;
 
@@ -589,12 +625,12 @@ int LuaTexture::l_draw_transformed_texture(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	LuaTexture *t = read_object(L, 1);
+	LuaTexture *t = read_writable_object(L, 1, true);
 	if (set_as_target(t, driver))
 		return 0;
 
 	core::recti rect = read_recti(L, 2);
-	video::ITexture *texture = ModApiDrawer::get_texture(L, 3);
+	video::ITexture *texture = LuaTexture::read_texture(L, 3, false);
 
 	f32 m_data[16];
 	for (size_t i = 0; i < 16; i++) {
@@ -633,9 +669,7 @@ int LuaTexture::l_bind_ingame(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaTexture *t = read_object(L, 1);
-	if (t->texture == nullptr)
-		throw LuaError("Invalid use of minetest.window as normal texture");
+	LuaTexture *t = read_object(L, 1, false);
 
 	std::string name = readParam<std::string>(L, 2);
 
@@ -681,7 +715,7 @@ int LuaTexture::l_new(lua_State *L)
 		throw LuaError("Invalid texture size"); */
 
 	t->texture = driver->addRenderTargetTexture(
-		core::dimension2d<u32>(size.X, size.Y), "", video::ECF_A8R8G8B8);
+		core::dimension2du(size.X, size.Y), "", video::ECF_A8R8G8B8);
 	if (t->texture == nullptr) {
 		errorstream << "Unable to create custom texture" << std::endl;
 		delete t;
@@ -712,7 +746,7 @@ int LuaTexture::l_copy(lua_State *L)
 	LuaTexture *t = new LuaTexture;
 	t->is_ref = false;
 
-	video::ITexture *to_copy = ModApiDrawer::get_texture(L, 1, true);
+	video::ITexture *to_copy = LuaTexture::read_texture(L, 1, true);
 
 	bool needs_removal = false;
 	if (to_copy == nullptr) {
@@ -775,7 +809,7 @@ int LuaTexture::l_ref(lua_State *L)
 	LuaTexture *t = new LuaTexture;
 	t->is_ref = true;
 
-	t->texture = ModApiDrawer::get_texture(L, 1, true);
+	t->texture = LuaTexture::read_texture(L, 1, true);
 
 	if (t->texture != nullptr) {
 		// The texture being referenced might become invalid if the actual texture is
@@ -783,56 +817,6 @@ int LuaTexture::l_ref(lua_State *L)
 		// it will keep it valid.
 		t->texture->grab();
 	}
-
-	*(void **)lua_newuserdata(L, sizeof(void *)) = t;
-	luaL_getmetatable(L, "Texture");
-	lua_setmetatable(L, -2);
-	return 1;
-}
-
-// from_surface(surface) -> texture
-int LuaTexture::l_from_surface(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
-		errorstream << "Unable to set texture as render target" << std::endl;
-		lua_pushnil(L);
-		return 1;
-	}
-
-	LuaTexture *t = new LuaTexture;
-	t->is_ref = false;
-
-	video::ITexture *to_copy = driver->addTexture("",
-		(*(LuaSurface **)luaL_checkudata(L, 1, "Surface"))->surface);
-	if (to_copy == nullptr) {
-		errorstream << "Unable to create texture" << std::endl;
-		delete t;
-		lua_pushnil(L);
-		return 1;
-	}
-
-	// We must copy the texture because it has to be a render texture
-	t->texture = driver->addRenderTargetTexture(
-		to_copy->getOriginalSize(), "", video::ECF_A8R8G8B8);
-	if (t->texture == nullptr) {
-		errorstream << "Unable to create render target texture" << std::endl;
-		delete t;
-		lua_pushnil(L);
-		return 1;
-	}
-	if (!driver->setRenderTarget(t->texture, true, true)) {
-		errorstream << "Unable to set texture as render target" << std::endl;
-		delete t;
-		lua_pushnil(L);
-		return 1;
-	}
-	driver->draw2DImage(to_copy, core::vector2di(0, 0));
-	driver->setRenderTarget(nullptr, false, false);
-
-	driver->removeTexture(to_copy);
 
 	*(void **)lua_newuserdata(L, sizeof(void *)) = t;
 	luaL_getmetatable(L, "Texture");
@@ -855,25 +839,61 @@ int LuaTexture::create_window(lua_State *L)
 	return 1;
 }
 
-LuaTexture *LuaTexture::read_object(lua_State *L, int index)
+LuaTexture *LuaTexture::read_object(lua_State *L, int index, bool allow_window)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	luaL_checktype(L, index, LUA_TUSERDATA);
-	void *t = luaL_checkudata(L, index, "Texture");
-	return *(LuaTexture **)t;
+	LuaTexture *t = *(LuaTexture **)luaL_checkudata(L, index, "Texture");
+	if (!allow_window && t->texture == nullptr)
+		throw LuaError("Invalid use of minetest.window as normal texture");
+
+	return t;
+}
+
+LuaTexture *LuaTexture::read_writable_object(lua_State *L, int index, bool allow_window)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaTexture *t = *(LuaTexture **)luaL_checkudata(L, index, "Texture");
+	if (!allow_window && t->texture == nullptr)
+		throw LuaError("Invalid use of minetest.window as normal texture");
+	if (t->is_ref)
+		throw LuaError("Invalid attempt to write to a texture reference");
+
+	return t;
+}
+
+video::ITexture *LuaTexture::read_texture(lua_State *L, int index, bool allow_window)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	if (lua_isstring(L, index)) {
+		return getClient(L)->tsrc()->getTexture(readParam<std::string>(L, index));
+	} else {
+		video::ITexture *texture = (*(LuaTexture **)luaL_checkudata(
+			L, index, "Texture"))->texture;
+		if (!allow_window && texture == nullptr)
+			throw LuaError("Invalid use of minetest.window as normal texture");
+		return texture;
+	}
+}
+
+void LuaTexture::try_destroy()
+{
+	if (is_dead && texture != nullptr) {
+		// Only drop reference textures, and only remove non-reference non-bound textures
+		if (is_ref)
+			texture->drop();
+		else if (!is_bound && !is_target)
+			RenderingEngine::get_video_driver()->removeTexture(texture);
+	}
 }
 
 int LuaTexture::gc_object(lua_State *L)
 {
 	LuaTexture *t = *(LuaTexture **)lua_touserdata(L, 1);
-	if (t->texture != nullptr) {
-		// Only drop reference textures, and only remove non-reference non-bound textures
-		if (t->is_ref)
-			t->texture->drop();
-		else if (!t->is_bound)
-			RenderingEngine::get_video_driver()->removeTexture(t->texture);
-	}
+	t->is_dead = true;
+	t->try_destroy();
 	delete t;
 	return 0;
 }
@@ -907,7 +927,6 @@ void LuaTexture::Register(lua_State *L)
 	API_FCT(new);
 	API_FCT(copy);
 	API_FCT(ref);
-	API_FCT(from_surface);
 	lua_setglobal(L, "Texture");
 }
 
@@ -924,136 +943,5 @@ const luaL_Reg LuaTexture::methods[] =
 	luamethod(LuaTexture, draw_item),
 	luamethod(LuaTexture, draw_transformed_texture),
 	luamethod(LuaTexture, bind_ingame),
-	{0, 0}
-};
-
-// get_size() -> size
-int LuaSurface::l_get_size(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	LuaSurface *s = read_object(L, 1);
-	if (s == nullptr)
-		return 0;
-
-	core::dimension2d<u32> size = s->surface->getDimension();
-	push_v2s32(L, v2s32(size.Width, size.Height));
-
-	return 1;
-}
-
-// new(size) -> surface
-int LuaSurface::l_new(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	LuaSurface *s = new LuaSurface;
-
-	core::vector2di size = read_v2s32(L, 1);
-
-	s->surface = RenderingEngine::get_video_driver()->createImage(
-		video::ECF_A8R8G8B8, core::dimension2d<u32>(size.X, size.Y));
-
-	*(void **)lua_newuserdata(L, sizeof(void *)) = s;
-	luaL_getmetatable(L, "Surface");
-	lua_setmetatable(L, -2);
-	return 1;
-}
-
-// copy(surface) -> surface
-int LuaSurface::l_copy(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	LuaSurface *s = new LuaSurface;
-
-	video::IImage *to_copy =
-		(*(LuaSurface **)luaL_checkudata(L, 1, "Surface"))->surface;
-
-	s->surface = RenderingEngine::get_video_driver()->createImage(
-		video::ECF_A8R8G8B8, to_copy->getDimension());
-	to_copy->copyTo(s->surface);
-
-	*(void **)lua_newuserdata(L, sizeof(void *)) = s;
-	luaL_getmetatable(L, "Surface");
-	lua_setmetatable(L, -2);
-	return 1;
-}
-
-// from_texture(texture) -> surface
-int LuaSurface::l_from_texture(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	LuaSurface *s = new LuaSurface;
-
-	video::ITexture *to_copy = ModApiDrawer::get_texture(L, 1, true);
-
-	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	if (to_copy == nullptr)
-		s->surface = driver->createScreenShot(video::ECF_A8R8G8B8);
-	else
-		s->surface = driver->createImage(to_copy, core::vector2di(0, 0),
-			to_copy->getOriginalSize());
-
-	*(void **)lua_newuserdata(L, sizeof(void *)) = s;
-	luaL_getmetatable(L, "Surface");
-	lua_setmetatable(L, -2);
-	return 1;
-}
-
-LuaSurface *LuaSurface::read_object(lua_State *L, int index)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	luaL_checktype(L, index, LUA_TUSERDATA);
-	void *s = luaL_checkudata(L, index, "Surface");
-	return *(LuaSurface **)s;
-}
-
-int LuaSurface::gc_object(lua_State *L)
-{
-	LuaSurface *s = *(LuaSurface **)lua_touserdata(L, 1);
-	s->surface->drop();
-	delete s;
-	return 0;
-}
-
-void LuaSurface::Register(lua_State *L)
-{
-	lua_newtable(L);
-	int methodtable = lua_gettop(L);
-	luaL_newmetatable(L, "Surface");
-	int metatable = lua_gettop(L);
-
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__index");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
-	lua_settable(L, metatable);
-
-	lua_pop(L, 1);
-
-	luaL_openlib(L, 0, methods, 0);
-	lua_pop(L, 1);
-
-	lua_createtable(L, 0, 4);
-	int top = lua_gettop(L);
-	API_FCT(new);
-	API_FCT(copy);
-	API_FCT(from_texture);
-	// API_FCT(from_string);
-	lua_setglobal(L, "Surface");
-}
-
-const luaL_Reg LuaSurface::methods[] =
-{
-	luamethod(LuaSurface, get_size),
 	{0, 0}
 };
