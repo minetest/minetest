@@ -143,7 +143,6 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
-static const constexpr s16 UNLOAD_PADDING = MAP_BLOCKSIZE * 3;
 void ClientMap::updateDrawList()
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
@@ -226,23 +225,22 @@ void ClientMap::updateDrawList()
 			v3s16 block_coord = block->getPos();
 			v3s16 block_position = block->getPosRelative() + MAP_BLOCKSIZE / 2;
 
-			// First, perform a simple distance check.
+			// First, perform a simple distance check, with a padding of one extra block.
 			if (!m_control.range_all &&
-					block_position.getDistanceFrom(cam_pos_nodes) > range + UNLOAD_PADDING)
+					block_position.getDistanceFrom(cam_pos_nodes) > range + MAP_BLOCKSIZE)
 				continue; // Out of range, skip.
 
-			// This block is in range. Reset usage timer.
+			// Keep the block alive as long as it is in range.
 			block->resetUsageTimer();
 			blocks_in_range_with_mesh++;
 
+			// Frustum culling
 			float d = 0.0;
 			if (!isBlockInSight(block_coord, camera_position,
 					camera_direction, camera_fov, range * BS, &d))
 				continue;
 
-			/*
-				Occlusion culling
-			*/
+			// Occlusion culling
 			if ((!m_control.range_all && d > m_control.wanted_range * BS) ||
 					(occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes))) {
 				blocks_occlusion_culled++;
