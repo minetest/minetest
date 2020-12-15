@@ -600,15 +600,22 @@ void Server::AsyncRunStep(bool initial_step)
 		m_env->step(dtime);
 	}
 
+	// allow the map to take 1/4 of dtime or 100ms - whatever is bigger
+	int save_time_limit_ms = std::max(100.0f, dtime * 250.0f);
+
 	static const float map_timer_and_unload_dtime = 2.92;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
 	{
 		MutexAutoLock lock(m_env_mutex);
 		// Run Map's timers and unload unused data
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
-		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
+		if(!m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
 			g_settings->getFloat("server_unload_unused_data_timeout"),
-			U32_MAX);
+			U32_MAX, NULL, save_time_limit_ms)) {
+			// timerUpdate did not complete,
+			// make sure it fires again on the next round
+			m_map_timer_and_unload_interval.step(map_timer_and_unload_dtime, 10000);
+		   }
 	}
 
 	/*
@@ -952,7 +959,6 @@ void Server::AsyncRunStep(bool initial_step)
 		static thread_local const float save_interval =
 			g_settings->getFloat("server_map_save_interval");
 		if (counter >= save_interval) {
-			counter = 0.0;
 			MutexAutoLock lock(m_env_mutex);
 
 			ScopeProfiler sp(g_profiler, "Server: map saving (sum)");
@@ -962,8 +968,13 @@ void Server::AsyncRunStep(bool initial_step)
 				m_banmanager->save();
 			}
 
+			// force a full save if it has taken too long
+			int limit = counter < save_interval * 10.0f ? save_time_limit_ms : -1;
 			// Save changed parts of map
-			m_env->getMap().save(MOD_STATE_WRITE_NEEDED);
+			if (m_env->getMap().save(MOD_STATE_WRITE_NEEDED, limit)) {
+				// only reset the counter when map saving completed
+				counter = 0.0;
+			}
 
 			// Save players
 			m_env->saveLoadedPlayers();

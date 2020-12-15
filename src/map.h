@@ -201,7 +201,10 @@ public:
 	virtual void beginSave() {}
 	virtual void endSave() {}
 
-	virtual void save(ModifiedState save_level) { FATAL_ERROR("FIXME"); }
+	virtual bool save(ModifiedState save_level, u32 time_limit_ms = 0)
+	{
+		FATAL_ERROR("FIXME");
+	}
 
 	// Server implements these.
 	// Client leaves them as no-op.
@@ -212,8 +215,8 @@ public:
 		Updates usage timers and unloads unused blocks and sectors.
 		Saves modified blocks before unloading on MAPTYPE_SERVER.
 	*/
-	void timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
-			std::vector<v3s16> *unloaded_blocks=NULL);
+	bool timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
+			std::vector<v3s16> *unloaded_blocks=NULL, u32 time_limit_ms = 0);
 
 	/*
 		Unloads all blocks with a zero refCount().
@@ -374,7 +377,7 @@ public:
 	void beginSave();
 	void endSave();
 
-	void save(ModifiedState save_level);
+	bool save(ModifiedState save_level, u32 time_limit_ms = 0);
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 	void listAllLoadedBlocks(std::vector<v3s16> &dst);
 

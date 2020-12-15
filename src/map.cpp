@@ -321,8 +321,8 @@ struct TimeOrderedMapBlock {
 /*
 	Updates usage timers
 */
-void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
-		std::vector<v3s16> *unloaded_blocks)
+bool Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
+		std::vector<v3s16> *unloaded_blocks, u32 time_limit_ms)
 {
 	bool save_before_unloading = (mapType() == MAPTYPE_SERVER);
 
@@ -336,6 +336,8 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 
 	beginSave();
 
+	u64 start_time = porting::getTimeMs();
+	bool timeout = false;
 	// If there is no practical limit, we spare creation of mapblock_queue
 	if (max_loaded_blocks == U32_MAX) {
 		for (auto &sector_it : m_sectors) {
@@ -347,6 +349,12 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			sector->getBlocks(blocks);
 
 			for (MapBlock *block : blocks) {
+				u64 time = porting::getTimeMs();
+				if (time_limit_ms > 0 && time - start_time > time_limit_ms) {
+					infostream << "Map::timerUpdate rescheduled after " << time_limit_ms << "ms" << std::endl;
+					timeout = true;
+					goto timeout;
+				}
 				block->incrementUsageTimer(dtime);
 
 				if (block->refGet() == 0
@@ -430,6 +438,8 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			}
 		}
 	}
+ timeout:
+
 	endSave();
 
 	// Finally delete the empty sectors
@@ -450,6 +460,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			modprofiler.print(infostream);
 		}
 	}
+	return !timeout;
 }
 
 void Map::unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks)
@@ -1731,11 +1742,11 @@ void ServerMap::updateVManip(v3s16 pos)
 	vm->m_is_dirty = true;
 }
 
-void ServerMap::save(ModifiedState save_level)
+bool ServerMap::save(ModifiedState save_level, u32 time_limit_ms)
 {
 	if (!m_map_saving_enabled) {
 		warningstream<<"Not saving map, saving disabled."<<std::endl;
-		return;
+		return true;
 	}
 
 	u64 start_time = porting::getTimeNs();
@@ -1758,6 +1769,7 @@ void ServerMap::save(ModifiedState save_level)
 	// Don't do anything with sqlite unless something is really saved
 	bool save_started = false;
 
+	bool timeout = false;
 	for (auto &sector_it : m_sectors) {
 		MapSector *sector = sector_it.second;
 
@@ -1779,8 +1791,16 @@ void ServerMap::save(ModifiedState save_level)
 				saveBlock(block);
 				block_count++;
 			}
+			u64 time = porting::getTimeNs();
+			if (time_limit_ms > 0 && time - start_time > time_limit_ms * 1000000) {
+				infostream << "Map::save rescheduled after " << time_limit_ms << "ms" << std::endl;
+				timeout = true;
+				goto timeout;
+			}
 		}
+
 	}
+ timeout:
 
 	if(save_started)
 		endSave();
@@ -1801,6 +1821,8 @@ void ServerMap::save(ModifiedState save_level)
 
 	auto end_time = porting::getTimeNs();
 	m_save_time_counter->increment(end_time - start_time);
+
+	return !timeout;
 }
 
 void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
