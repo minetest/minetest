@@ -290,8 +290,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	const u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 
 	const v3f camera_position = m_camera_position;
-	const v3f camera_direction = m_camera_direction;
-	const f32 camera_fov = m_camera_fov;
 
 	/*
 		Get all blocks and draw all visible ones
