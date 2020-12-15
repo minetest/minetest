@@ -31,6 +31,9 @@ minetest.register_entity("testentities:callback", {
 	on_activate = function(self, staticdata, dtime_s)
 		message("Callback entity: on_activate! pos="..spos(self).."; dtime_s="..dtime_s)
 	end,
+	on_deactivate = function(self)
+		message("Callback entity: on_deactivate! pos="..spos(self))
+	end,
 	on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir, damage)
 		local name = get_object_name(puncher)
 		message(

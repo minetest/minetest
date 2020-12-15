@@ -1164,7 +1164,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 		// If known by some client, don't delete immediately
 		if (obj->m_known_by_count > 0) {
-			obj->m_pending_removal = true;
+			obj->markForRemoval();
 			return false;
 		}
 
@@ -2077,7 +2077,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 						  << "object id=" << id << " is known by clients"
 						  << "; not deleting yet" << std::endl;
 
-			obj->m_pending_deactivation = true;
+			obj->markForDeactivation();
 			return false;
 		}
 
