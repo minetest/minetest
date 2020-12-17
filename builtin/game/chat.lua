@@ -95,7 +95,7 @@ core.register_on_chat_message(function(name, message)
 						minetest.colorize("#f3d2ff", " (%.5g s)"):format(delay)
 				else
 					result = minetest.colorize("#f3d2ff",
-						"Chatcommand executed after %.5f s"):format(delay)
+						"Chat command executed after %.5f s"):format(delay)
 				end
 			end
 			if result then
