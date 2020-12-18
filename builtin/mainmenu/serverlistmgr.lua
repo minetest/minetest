@@ -18,7 +18,7 @@
 serverlistmgr = {}
 
 --------------------------------------------------------------------------------
-local function order_favorite_list(list)
+local function order_server_list(list)
 	local res = {}
 	--orders the favorite list after support
 	for i = 1, #list do
@@ -71,7 +71,7 @@ function serverlistmgr.sync()
 		nil,
 		function(result)
 			public_downloading = nil
-			local favs = order_favorite_list(result)
+			local favs = order_server_list(result)
 			if favs[1] then
 				serverlistmgr.servers = favs
 			end
@@ -134,22 +134,20 @@ function serverlistmgr.read_legacy_favorites(path)
 
 				if not address or #address < 3 then
 					core.log("warning", "Malformed favorites file, missing address at line " .. i)
-				end
-				if not port or port < 1 or port > 65535 then
+				elseif not port or port < 1 or port > 65535 then
 					core.log("warning", "Malformed favorites file, missing port at line " .. i)
-				end
-				if (name and name:upper() == "[SERVER]") or
+				elseif (name and name:upper() == "[SERVER]") or
 						(address and address:upper() == "[SERVER]") or
 						(description and description:upper() == "[SERVER]") then
 					core.log("warning", "Potentially malformed favorites file, overran at line " .. i)
+				else
+					favorites[#favorites + 1] = {
+						name = name,
+						address = address,
+						port = port,
+						description = description
+					}
 				end
-
-				favorites[#favorites + 1] = {
-					name = name,
-					address = address,
-					port = port,
-					description = description
-				}
 			end
 		end
 
@@ -178,10 +176,10 @@ local function read_favorites()
 end
 
 --------------------------------------------------------------------------------
-local function delete_favorite(favorites, current_favorite)
+local function delete_favorite(favorites, del_favorite)
 	for i=1, #favorites do
 		local fav = favorites[i]
-		if fav.address == current_favorite.address and fav.port == current_favorite.port then
+		if fav.address == del_favorite.address and fav.port == del_favorite.port then
 			table.remove(favorites, i)
 			return
 		end
@@ -201,21 +199,21 @@ function serverlistmgr.get_favorites()
 end
 
 --------------------------------------------------------------------------------
-function serverlistmgr.add_favorite(current_favorite)
+function serverlistmgr.add_favorite(new_favorite)
 	local favorites = serverlistmgr.get_favorites()
-	delete_favorite(favorites, current_favorite)
+	delete_favorite(favorites, new_favorite)
 	table.insert(favorites, {
-		name = current_favorite.name,
-		address = current_favorite.address,
-		port = tonumber(current_favorite.port),
-		description = current_favorite.description,
+		name = new_favorite.name,
+		address = new_favorite.address,
+		port = tonumber(new_favorite.port),
+		description = new_favorite.description,
 	})
 	save_favorites(favorites)
 end
 
 --------------------------------------------------------------------------------
-function serverlistmgr.delete_favorite(current_favorite)
+function serverlistmgr.delete_favorite(del_favorite)
 	local favorites = serverlistmgr.get_favorites()
-	delete_favorite(favorites, current_favorite)
+	delete_favorite(favorites, del_favorite)
 	save_favorites(favorites)
 end

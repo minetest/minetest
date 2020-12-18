@@ -85,10 +85,9 @@ local function get_formspec(tabview, name, tabdata)
 		"table[-0.15,0.6;7.75,5.15;favorites;"
 
 	if menudata.search_result then
+		local favs = serverlistmgr.get_favorites()
 		for i = 1, #menudata.search_result do
-			local favs = serverlistmgr.get_favorites()
 			local server = menudata.search_result[i]
-
 			for fav_id = 1, #favs do
 				if server.address == favs[fav_id].address and
 						server.port == favs[fav_id].port then
