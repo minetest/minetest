@@ -2325,6 +2325,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_properties),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
+	luamethod(ObjectRef, is_player),
 
 	// LuaEntitySAO-only
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
@@ -2341,7 +2342,6 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_luaentity),
 
 	// Player-only
-	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, get_player_name),
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
