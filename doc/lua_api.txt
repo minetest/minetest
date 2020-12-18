@@ -2113,6 +2113,22 @@ Examples
     list[current_player;main;0,3.5;8,4;]
     list[current_player;craft;3,0;3,3;]
     list[current_player;craftpreview;7,1;1,1;]
+   
+Version History
+---------------
+
+* FORMSPEC VERSION 1:
+  * (too much)
+* FORMSPEC VERSION 2:
+  * Forced real coordinates
+  * background9[]: 9-slice scaling parameters
+* FORMSPEC VERSION 3:
+  * Formspec elements are drawn in the order of definition
+  * bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
+  * box[] and image[] elements enable clipping by default
+  * new element: scroll_container[]
+* FORMSPEC VERSION 4:
+  * Allow dropdown indexing events
 
 Elements
 --------
@@ -2125,6 +2141,7 @@ Elements
 * Clients older than this version can neither show newer elements nor display
   elements with new arguments correctly.
 * Available since feature `formspec_version_element`.
+* See also: [Version History]
 
 ### `size[<W>,<H>,<fixed_size>]`
 
