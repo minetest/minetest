@@ -94,3 +94,32 @@ minetest.register_entity("testentities:upright_animated", {
 		self.object:set_sprite({x=0, y=0}, 4, 1.0, false)
 	end,
 })
+
+minetest.register_entity("testentities:nametag", {
+	initial_properties = {
+		visual = "sprite",
+		textures = { "testentities_sprite.png" },
+	},
+
+	on_activate = function(self, staticdata)
+		if staticdata ~= "" then
+			self.color = minetest.deserialize(staticdata).color
+		else
+			self.color = {
+				r = math.random(0, 255),
+				g = math.random(0, 255),
+				b = math.random(0, 255),
+			}
+		end
+
+		assert(self.color)
+		self.object:set_properties({
+			nametag = tostring(math.random(1000, 10000)),
+			nametag_color = self.color,
+		})
+	end,
+
+	get_staticdata = function(self)
+		return minetest.serialize({ color = self.color })
+	end,
+})

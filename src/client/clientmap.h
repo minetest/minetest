@@ -35,6 +35,25 @@ struct MapDrawControl
 	bool show_wireframe = false;
 };
 
+struct MeshBufList
+{
+	video::SMaterial m;
+	std::vector<std::pair<v3s16,scene::IMeshBuffer*>> bufs;
+};
+
+struct MeshBufListList
+{
+	/*!
+	 * Stores the mesh buffers of the world.
+	 * The array index is the material's layer.
+	 * The vector part groups vertices by material.
+	 */
+	std::vector<MeshBufList> lists[MAX_TILE_LAYERS];
+
+	void clear();
+	void add(scene::IMeshBuffer *buf, v3s16 position, u8 layer);
+};
+
 class Client;
 class ITextureSource;
 

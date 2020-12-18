@@ -1175,13 +1175,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			buf->drop();
 		}
 
-		/*
-			Do some stuff to the mesh
-		*/
-		m_camera_offset = camera_offset;
-		translateMesh(m_mesh[layer],
-			intToFloat(data->m_blockpos * MAP_BLOCKSIZE - camera_offset, BS));
-
 		if (m_mesh[layer]) {
 #if 0
 			// Usually 1-700 faces and 1-7 materials
@@ -1306,19 +1299,6 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack,
 	}
 
 	return true;
-}
-
-void MapBlockMesh::updateCameraOffset(v3s16 camera_offset)
-{
-	if (camera_offset != m_camera_offset) {
-		for (scene::IMesh *layer : m_mesh) {
-			translateMesh(layer,
-				intToFloat(m_camera_offset - camera_offset, BS));
-			if (m_enable_vbo)
-				layer->setDirty();
-		}
-		m_camera_offset = camera_offset;
-	}
 }
 
 video::SColor encode_light(u16 light, u8 emissive_light)

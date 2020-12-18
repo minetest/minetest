@@ -424,6 +424,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<float> m_animation_timer_vertex;
 	CachedPixelShaderSetting<float> m_animation_timer_pixel;
 	CachedPixelShaderSetting<float, 3> m_day_light;
+	CachedPixelShaderSetting<float, 4> m_star_color;
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel;
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex;
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
@@ -456,6 +457,7 @@ public:
 		m_animation_timer_vertex("animationTimer"),
 		m_animation_timer_pixel("animationTimer"),
 		m_day_light("dayLight"),
+		m_star_color("starColor"),
 		m_eye_position_pixel("eyePosition"),
 		m_eye_position_vertex("eyePosition"),
 		m_minimap_yaw("yawVec"),
@@ -506,6 +508,10 @@ public:
 			sunlight.g,
 			sunlight.b };
 		m_day_light.set(dnc, services);
+
+		video::SColorf star_color = m_sky->getCurrentStarColor();
+		float clr[4] = {star_color.r, star_color.g, star_color.b, star_color.a};
+		m_star_color.set(clr, services);
 
 		u32 animation_timer = porting::getTimeMs() % 1000000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
@@ -1363,7 +1369,7 @@ bool Game::createClient(const GameStartData &start_data)
 
 	/* Skybox
 	 */
-	sky = new Sky(-1, texture_src);
+	sky = new Sky(-1, texture_src, shader_src);
 	scsf->setSky(sky);
 	skybox = NULL;	// This is used/set later on in the main run loop
 
@@ -2014,15 +2020,11 @@ void Game::processItemSelection(u16 *new_playeritem)
 
 	s32 dir = wheel;
 
-	if (input->joystick.wasKeyDown(KeyType::SCROLL_DOWN) ||
-			wasKeyDown(KeyType::HOTBAR_NEXT)) {
+	if (wasKeyDown(KeyType::HOTBAR_NEXT))
 		dir = -1;
-	}
 
-	if (input->joystick.wasKeyDown(KeyType::SCROLL_UP) ||
-			wasKeyDown(KeyType::HOTBAR_PREV)) {
+	if (wasKeyDown(KeyType::HOTBAR_PREV))
 		dir = 1;
-	}
 
 	if (dir < 0)
 		*new_playeritem = *new_playeritem < max_item ? *new_playeritem + 1 : 0;
@@ -2075,7 +2077,7 @@ void Game::openInventory()
 		TextDest *txt_dst = new TextDestPlayerInventory(client);
 		auto *&formspec = m_game_ui->updateFormspec("");
 		GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,
-			txt_dst, client->getFormspecPrepend());
+			txt_dst, client->getFormspecPrepend(), sound);
 
 		formspec->setFormSpec(fs_src->getForm(), inventoryloc);
 	}
@@ -2607,7 +2609,7 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 
 		auto *&formspec = m_game_ui->updateFormspec(*(event->show_formspec.formname));
 		GUIFormSpecMenu::create(formspec, client, &input->joystick,
-			fs_src, txt_dst, client->getFormspecPrepend());
+			fs_src, txt_dst, client->getFormspecPrepend(), sound);
 	}
 
 	delete event->show_formspec.formspec;
@@ -2620,7 +2622,7 @@ void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrienta
 	LocalFormspecHandler *txt_dst =
 		new LocalFormspecHandler(*event->show_formspec.formname, client);
 	GUIFormSpecMenu::create(m_game_ui->getFormspecGUI(), client, &input->joystick,
-			fs_src, txt_dst, client->getFormspecPrepend());
+			fs_src, txt_dst, client->getFormspecPrepend(), sound);
 
 	delete event->show_formspec.formspec;
 	delete event->show_formspec.formname;
@@ -3137,12 +3139,15 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	input->clearWasKeyPressed();
 	input->clearWasKeyReleased();
+	// Ensure DIG & PLACE are marked as handled
+	wasKeyDown(KeyType::DIG);
+	wasKeyDown(KeyType::PLACE);
 
-	input->joystick.clearWasKeyDown(KeyType::MOUSE_L);
-	input->joystick.clearWasKeyDown(KeyType::MOUSE_R);
+	input->joystick.clearWasKeyDown(KeyType::DIG);
+	input->joystick.clearWasKeyDown(KeyType::PLACE);
 
-	input->joystick.clearWasKeyReleased(KeyType::MOUSE_L);
-	input->joystick.clearWasKeyReleased(KeyType::MOUSE_R);
+	input->joystick.clearWasKeyReleased(KeyType::DIG);
+	input->joystick.clearWasKeyReleased(KeyType::PLACE);
 }
 
 
@@ -3340,7 +3345,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 		auto *&formspec = m_game_ui->updateFormspec("");
 		GUIFormSpecMenu::create(formspec, client, &input->joystick, fs_src,
-			txt_dst, client->getFormspecPrepend());
+			txt_dst, client->getFormspecPrepend(), sound);
 
 		formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 		return false;
@@ -4112,7 +4117,7 @@ void Game::showDeathFormspec()
 
 	auto *&formspec = m_game_ui->getFormspecGUI();
 	GUIFormSpecMenu::create(formspec, client, &input->joystick,
-		fs_src, txt_dst, client->getFormspecPrepend());
+		fs_src, txt_dst, client->getFormspecPrepend(), sound);
 	formspec->setFocus("btn_respawn");
 }
 
@@ -4246,7 +4251,7 @@ void Game::showPauseMenu()
 
 	auto *&formspec = m_game_ui->getFormspecGUI();
 	GUIFormSpecMenu::create(formspec, client, &input->joystick,
-			fs_src, txt_dst, client->getFormspecPrepend());
+			fs_src, txt_dst, client->getFormspecPrepend(), sound);
 	formspec->setFocus("btn_continue");
 	formspec->doPause = true;
 }

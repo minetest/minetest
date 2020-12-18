@@ -1235,6 +1235,8 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 
 	m_save_time_counter = mb->addCounter("minetest_core_map_save_time", "Map save time (in nanoseconds)");
 
+	m_map_compression_level = rangelim(g_settings->getS16("map_compression_level_disk"), -1, 9);
+
 	try {
 		// If directory exists, check contents and load if possible
 		if (fs::PathExists(m_savedir)) {
@@ -1345,6 +1347,9 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 	v3s16 bpmin = EmergeManager::getContainingChunk(blockpos, csize);
 	v3s16 bpmax = bpmin + v3s16(1, 1, 1) * (csize - 1);
 
+	if (!m_chunks_in_progress.insert(bpmin).second)
+		return false;
+
 	bool enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 	EMERGE_DBG_OUT("initBlockMake(): " PP(bpmin) " - " PP(bpmax));
 
@@ -1360,7 +1365,6 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 	data->seed = getSeed();
 	data->blockpos_min = bpmin;
 	data->blockpos_max = bpmax;
-	data->blockpos_requested = blockpos;
 	data->nodedef = m_nodedef;
 
 	/*
@@ -1482,6 +1486,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 		NOTE: Will be saved later.
 	*/
 	//save(MOD_STATE_WRITE_AT_UNLOAD);
+	m_chunks_in_progress.erase(bpmin);
 }
 
 MapSector *ServerMap::createSector(v2s16 p2d)
@@ -1860,10 +1865,10 @@ void ServerMap::endSave()
 
 bool ServerMap::saveBlock(MapBlock *block)
 {
-	return saveBlock(block, dbase);
+	return saveBlock(block, dbase, m_map_compression_level);
 }
 
-bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
+bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_level)
 {
 	v3s16 p3d = block->getPos();
 
@@ -1883,7 +1888,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	*/
 	std::ostringstream o(std::ios_base::binary);
 	o.write((char*) &version, 1);
-	block->serialize(o, version, true);
+	block->serialize(o, version, true, compression_level);
 
 	bool ret = db->saveBlock(p3d, o.str());
 	if (ret) {

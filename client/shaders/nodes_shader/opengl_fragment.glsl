@@ -15,11 +15,12 @@ varying vec3 vPosition;
 // cameraOffset + worldPosition (for large coordinates the limits of float
 // precision must be considered).
 varying vec3 worldPosition;
-
+varying lowp vec4 varColor;
+centroid varying mediump vec2 varTexCoord;
 varying vec3 eyeVec;
 
 const float fogStart = FOG_START;
-const float fogShadingParameter = 1 / ( 1 - fogStart);
+const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 
 #ifdef ENABLE_TONE_MAPPING
 
@@ -45,7 +46,7 @@ vec4 applyToneMapping(vec4 color)
 	const float gamma = 1.6;
 	const float exposureBias = 5.5;
 	color.rgb = uncharted2Tonemap(exposureBias * color.rgb);
-	// Precalculated white_scale from 
+	// Precalculated white_scale from
 	//vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W));
 	vec3 whiteScale = vec3(1.036015346);
 	color.rgb *= whiteScale;
@@ -56,13 +57,13 @@ vec4 applyToneMapping(vec4 color)
 void main(void)
 {
 	vec3 color;
-	vec2 uv = gl_TexCoord[0].st;
+	vec2 uv = varTexCoord.st;
 
 	vec4 base = texture2D(baseTexture, uv).rgba;
-
 #ifdef USE_DISCARD
 	// If alpha is zero, we can just discard the pixel. This fixes transparency
-	// on GPUs like GC7000L, where GL_ALPHA_TEST is not implemented in mesa.
+	// on GPUs like GC7000L, where GL_ALPHA_TEST is not implemented in mesa,
+	// and also on GLES 2, where GL_ALPHA_TEST is missing entirely.
 	if (base.a == 0.0) {
 		discard;
 	}
@@ -70,8 +71,8 @@ void main(void)
 
 	color = base.rgb;
 
-	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0); 
-	
+	vec4 col = vec4(color.rgb * varColor.rgb, 1.0);
+
 #ifdef ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
 #endif

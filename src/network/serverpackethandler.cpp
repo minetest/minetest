@@ -1050,12 +1050,13 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		}
 		float d = playersao->getEyePosition().getDistanceFrom(target_pos);
 
-		if (!checkInteractDistance(player, d, pointed.dump())
-				&& pointed.type == POINTEDTHING_NODE) {
-			// Re-send block to revert change on client-side
-			RemoteClient *client = getClient(peer_id);
-			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
-			client->SetBlockNotSent(blockpos);
+		if (!checkInteractDistance(player, d, pointed.dump())) {
+			if (pointed.type == POINTEDTHING_NODE) {
+				// Re-send block to revert change on client-side
+				RemoteClient *client = getClient(peer_id);
+				v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
+				client->SetBlockNotSent(blockpos);
+			}
 			return;
 		}
 	}
@@ -1656,19 +1657,18 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 	bool wantSudo = (cstate == CS_Active);
 
-	verbosestream << "Server: Received TOCLIENT_SRP_BYTES_M." << std::endl;
+	verbosestream << "Server: Received TOSERVER_SRP_BYTES_M." << std::endl;
 
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
-		actionstream << "Server: got SRP _M packet in wrong state "
-			<< cstate << " from " << addr_s
-			<< ". Ignoring." << std::endl;
+		warningstream << "Server: got SRP_M packet in wrong state "
+			<< cstate << " from " << addr_s << ". Ignoring." << std::endl;
 		return;
 	}
 
 	if (client->chosen_mech != AUTH_MECHANISM_SRP &&
 			client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
-		actionstream << "Server: got SRP _M packet, while auth"
-			<< "is going on with mech " << client->chosen_mech << " from "
+		warningstream << "Server: got SRP_M packet, while auth "
+			"is going on with mech " << client->chosen_mech << " from "
 			<< addr_s << " (wantSudo=" << wantSudo << "). Denying." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(peer_id);
@@ -1716,7 +1716,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 		std::string checkpwd; // not used, but needed for passing something
 		if (!m_script->getAuth(playername, &checkpwd, NULL)) {
-			actionstream << "Server: " << playername <<
+			errorstream << "Server: " << playername <<
 				" cannot be authenticated (auth handler does not work?)" <<
 				std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_SERVER_FAIL);

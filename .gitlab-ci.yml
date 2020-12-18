@@ -36,7 +36,7 @@ variables:
     - cp misc/debpkg-control build/deb/minetest/DEBIAN/control
     - cp -Rp artifact/minetest/usr build/deb/minetest/
   script:
-    - git clone $MINETEST_GAME_REPO build/deb/minetest/usr/share/minetest/games/minetest
+    - git clone $MINETEST_GAME_REPO build/deb/minetest/usr/share/minetest/games/minetest_game
     - rm -Rf build/deb/minetest/usr/share/minetest/games/minetest/.git
     - sed -i 's/DATEPLACEHOLDER/'$(date +%y.%m.%d)'/g' build/deb/minetest/DEBIAN/control
     - sed -i 's/LEVELDB_PLACEHOLDER/'$LEVELDB_PKG'/g' build/deb/minetest/DEBIAN/control
@@ -142,36 +142,6 @@ deploy:debian-10:
 ## Ubuntu
 ##
 
-# Trusty
-
-build:ubuntu-14.04:
-  extends: .build_template
-  image: ubuntu:trusty
-  before_script:
-    - echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" > /etc/apt/sources.list.d/uptodate-toolchain.list
-    - apt-key adv --keyserver keyserver.ubuntu.com --recv BA9EF27F
-    - apt-get update -y
-    - apt-get -y install build-essential gcc-6 g++-6 libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
-  variables:
-    CC: gcc-6
-    CXX: g++-6
-
-package:ubuntu-14.04:
-  extends: .debpkg_template
-  image: ubuntu:trusty
-  dependencies:
-    - build:ubuntu-14.04
-  variables:
-    LEVELDB_PKG: libleveldb1
-
-deploy:ubuntu-14.04:
-  extends: .debpkg_install
-  image: ubuntu:trusty
-  dependencies:
-    - package:ubuntu-14.04
-  variables:
-    LEVELDB_PKG: libleveldb1
-
 # Xenial
 
 build:ubuntu-16.04:
@@ -194,6 +164,31 @@ deploy:ubuntu-16.04:
   image: ubuntu:xenial
   dependencies:
     - package:ubuntu-16.04
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+
+# Bionic
+
+build:ubuntu-18.04:
+  extends: .build_template
+  image: ubuntu:bionic
+  before_script:
+    - apt-get update -y
+    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+package:ubuntu-18.04:
+  extends: .debpkg_template
+  image: ubuntu:bionic
+  dependencies:
+    - build:ubuntu-18.04
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+
+deploy:ubuntu-18.04:
+  extends: .debpkg_install
+  image: ubuntu:bionic
+  dependencies:
+    - package:ubuntu-18.04
   variables:
     LEVELDB_PKG: libleveldb1v5
 
@@ -308,3 +303,28 @@ pages:
   only:
     - master
 
+package:appimage-client:
+  stage: package
+  image: appimagecrafters/appimage-builder
+  dependencies:
+    - build:ubuntu-18.04
+  before_script:
+    - apt-get update -y
+    - apt-get install -y git wget
+    # Collect files
+    - mkdir AppDir
+    - cp -a artifact/minetest/usr/ AppDir/usr/
+    - rm AppDir/usr/bin/minetestserver
+    - cp -R clientmods AppDir/usr/share/minetest
+  script:
+    - git clone $MINETEST_GAME_REPO AppDir/usr/share/minetest/games/minetest_game
+    - rm -Rf AppDir/usr/share/minetest/games/minetest/.git
+    - export VERSION=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
+    # Remove PrefersNonDefaultGPU property due to validation errors
+    - sed -i '/PrefersNonDefaultGPU/d' AppDir/usr/share/applications/net.minetest.minetest.desktop
+    - appimage-builder --skip-test
+  artifacts:
+    when: on_success
+    expire_in: 90 day
+    paths:
+      - ./*.AppImage
