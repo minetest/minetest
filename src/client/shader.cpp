@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iterator>
 #include "shader.h"
 #include "irrlichttypes_extrabloated.h"
+#include "irr_ptr.h"
 #include "debug.h"
 #include "filesys.h"
 #include "util/container.h"
@@ -189,19 +190,14 @@ private:
 
 class ShaderCallback : public video::IShaderConstantSetCallBack
 {
-	std::vector<IShaderConstantSetter*> m_setters;
+	std::vector<std::unique_ptr<IShaderConstantSetter>> m_setters;
 
 public:
-	ShaderCallback(const std::vector<IShaderConstantSetterFactory *> &factories)
+	template <typename Factories>
+	ShaderCallback(const Factories &factories)
 	{
-		for (IShaderConstantSetterFactory *factory : factories)
-			m_setters.push_back(factory->create());
-	}
-
-	~ShaderCallback()
-	{
-		for (IShaderConstantSetter *setter : m_setters)
-			delete setter;
+		for (auto &&factory : factories)
+			m_setters.push_back(std::unique_ptr<IShaderConstantSetter>(factory->create()));
 	}
 
 	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData) override
@@ -209,15 +205,13 @@ public:
 		video::IVideoDriver *driver = services->getVideoDriver();
 		sanity_check(driver != NULL);
 
-		bool is_highlevel = userData;
-
-		for (IShaderConstantSetter *setter : m_setters)
-			setter->onSetConstants(services, is_highlevel);
+		for (auto &&setter : m_setters)
+			setter->onSetConstants(services);
 	}
 
 	virtual void OnSetMaterial(const video::SMaterial& material) override
 	{
-		for (IShaderConstantSetter *setter : m_setters)
+		for (auto &&setter : m_setters)
 			setter->onSetMaterial(material);
 	}
 };
@@ -252,47 +246,39 @@ public:
 	{}
 	~MainShaderConstantSetter() = default;
 
-	virtual void onSetConstants(video::IMaterialRendererServices *services,
-			bool is_highlevel)
+	virtual void onSetConstants(video::IMaterialRendererServices *services) override
 	{
 		video::IVideoDriver *driver = services->getVideoDriver();
 		sanity_check(driver);
 
 		// Set world matrix
 		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
-		if (is_highlevel)
-			m_world.set(*reinterpret_cast<float(*)[16]>(world.pointer()), services);
-		else
-			services->setVertexShaderConstant(world.pointer(), 4, 4);
+		m_world.set(*reinterpret_cast<float(*)[16]>(world.pointer()), services);
 
 		// Set clip matrix
 		core::matrix4 worldView;
 		worldView = driver->getTransform(video::ETS_VIEW);
 		worldView *= world;
+
 		core::matrix4 worldViewProj;
 		worldViewProj = driver->getTransform(video::ETS_PROJECTION);
 		worldViewProj *= worldView;
-		if (is_highlevel)
-			m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
-		else
-			services->setVertexShaderConstant(worldViewProj.pointer(), 0, 4);
+		m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
 
 #if ENABLE_GLES
-		if (is_highlevel) {
-			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
-			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
-			m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
+		core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
+		m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
+		m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
 
-			core::matrix4 normal;
-			worldView.getTransposed(normal);
-			sanity_check(normal.makeInverse());
-			float m[9] = {
-				normal[0], normal[1], normal[2],
-				normal[4], normal[5], normal[6],
-				normal[8], normal[9], normal[10],
-			};
-			m_normal.set(m, services);
-		}
+		core::matrix4 normal;
+		worldView.getTransposed(normal);
+		sanity_check(normal.makeInverse());
+		float m[9] = {
+			normal[0], normal[1], normal[2],
+			normal[4], normal[5], normal[6],
+			normal[8], normal[9], normal[10],
+		};
+		m_normal.set(m, services);
 #endif
 	}
 };
@@ -314,7 +300,6 @@ class ShaderSource : public IWritableShaderSource
 {
 public:
 	ShaderSource();
-	~ShaderSource();
 
 	/*
 		- If shader material specified by name is found from cache,
@@ -324,7 +309,7 @@ public:
 		The id 0 points to a null shader. Its material is EMT_SOLID.
 	*/
 	u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype);
+		MaterialType material_type, NodeDrawType drawtype) override;
 
 	/*
 		If shader specified by the name pointed by the id doesn't
@@ -336,26 +321,26 @@ public:
 	*/
 
 	u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype);
+		MaterialType material_type, NodeDrawType drawtype) override;
 
-	ShaderInfo getShaderInfo(u32 id);
+	ShaderInfo getShaderInfo(u32 id) override;
 
 	// Processes queued shader requests from other threads.
 	// Shall be called from the main thread.
-	void processQueue();
+	void processQueue() override;
 
 	// Insert a shader program into the cache without touching the
 	// filesystem. Shall be called from the main thread.
 	void insertSourceShader(const std::string &name_of_shader,
-		const std::string &filename, const std::string &program);
+		const std::string &filename, const std::string &program) override;
 
 	// Rebuild shaders from the current set of source shaders
 	// Shall be called from the main thread.
-	void rebuildShaders();
+	void rebuildShaders() override;
 
-	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter)
+	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) override
 	{
-		m_setter_factories.push_back(setter);
+		m_setter_factories.push_back(std::unique_ptr<IShaderConstantSetterFactory>(setter));
 	}
 
 private:
@@ -377,32 +362,17 @@ private:
 	RequestQueue<std::string, u32, u8, u8> m_get_shader_queue;
 
 	// Global constant setter factories
-	std::vector<IShaderConstantSetterFactory *> m_setter_factories;
+	std::vector<std::unique_ptr<IShaderConstantSetterFactory>> m_setter_factories;
 
-	// Shader callbacks
-	std::vector<ShaderCallback *> m_callbacks;
+	// Generate shader given the shader name.
+	ShaderInfo generateShader(const std::string &name,
+			MaterialType material_type, NodeDrawType drawtype);
 };
 
 IWritableShaderSource *createShaderSource()
 {
 	return new ShaderSource();
 }
-
-/*
-	Generate shader given the shader name.
-*/
-ShaderInfo generate_shader(const std::string &name,
-		u8 material_type, u8 drawtype, std::vector<ShaderCallback *> &callbacks,
-		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
-		SourceShaderCache *sourcecache);
-
-/*
-	Load shader programs
-*/
-void load_shaders(const std::string &name, SourceShaderCache *sourcecache,
-		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
-		std::string &vertex_program, std::string &pixel_program,
-		std::string &geometry_program, bool &is_highlevel);
 
 ShaderSource::ShaderSource()
 {
@@ -415,18 +385,8 @@ ShaderSource::ShaderSource()
 	addShaderConstantSetterFactory(new MainShaderConstantSetterFactory());
 }
 
-ShaderSource::~ShaderSource()
-{
-	for (ShaderCallback *callback : m_callbacks) {
-		delete callback;
-	}
-	for (IShaderConstantSetterFactory *setter_factorie : m_setter_factories) {
-		delete setter_factorie;
-	}
-}
-
 u32 ShaderSource::getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype)
+		MaterialType material_type, NodeDrawType drawtype)
 {
 	/*
 		Get shader
@@ -468,7 +428,7 @@ u32 ShaderSource::getShader(const std::string &name,
 	This method generates all the shaders
 */
 u32 ShaderSource::getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype)
+		MaterialType material_type, NodeDrawType drawtype)
 {
 	//infostream<<"getShaderIdDirect(): name=\""<<name<<"\""<<std::endl;
 
@@ -495,8 +455,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 		return 0;
 	}
 
-	ShaderInfo info = generate_shader(name, material_type, drawtype,
-			m_callbacks, m_setter_factories, &m_sourcecache);
+	ShaderInfo info = generateShader(name, material_type, drawtype);
 
 	/*
 		Add shader to caches (add dummy shaders too)
@@ -560,18 +519,14 @@ void ShaderSource::rebuildShaders()
 	for (ShaderInfo &i : m_shaderinfo_cache) {
 		ShaderInfo *info = &i;
 		if (!info->name.empty()) {
-			*info = generate_shader(info->name, info->material_type,
-					info->drawtype, m_callbacks,
-					m_setter_factories, &m_sourcecache);
+			*info = generateShader(info->name, info->material_type, info->drawtype);
 		}
 	}
 }
 
 
-ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtype,
-		std::vector<ShaderCallback *> &callbacks,
-		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
-		SourceShaderCache *sourcecache)
+ShaderInfo ShaderSource::generateShader(const std::string &name,
+		MaterialType material_type, NodeDrawType drawtype)
 {
 	ShaderInfo shaderinfo;
 	shaderinfo.name = name;
@@ -604,64 +559,27 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		return shaderinfo;
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-
+	if (!driver->queryFeature(video::EVDF_ARB_GLSL)) {
+		errorstream << "Shaders are enabled but GLSL is not supported by the driver\n";
+		return shaderinfo;
+	}
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
-	if(!gpu){
-		errorstream<<"generate_shader(): "
-				"failed to generate \""<<name<<"\", "
-				"GPU programming not supported."
-				<<std::endl;
-		return shaderinfo;
-	}
-
-	// Choose shader language depending on driver type and settings
-	// Then load shaders
-	std::string vertex_program;
-	std::string pixel_program;
-	std::string geometry_program;
-	bool is_highlevel;
-	load_shaders(name, sourcecache, driver->getDriverType(),
-			enable_shaders, vertex_program, pixel_program,
-			geometry_program, is_highlevel);
-	// Check hardware/driver support
-	if (!vertex_program.empty() &&
-			!driver->queryFeature(video::EVDF_VERTEX_SHADER_1_1) &&
-			!driver->queryFeature(video::EVDF_ARB_VERTEX_PROGRAM_1)){
-		infostream<<"generate_shader(): vertex shaders disabled "
-				"because of missing driver/hardware support."
-				<<std::endl;
-		vertex_program = "";
-	}
-	if (!pixel_program.empty() &&
-			!driver->queryFeature(video::EVDF_PIXEL_SHADER_1_1) &&
-			!driver->queryFeature(video::EVDF_ARB_FRAGMENT_PROGRAM_1)){
-		infostream<<"generate_shader(): pixel shaders disabled "
-				"because of missing driver/hardware support."
-				<<std::endl;
-		pixel_program = "";
-	}
-	if (!geometry_program.empty() &&
-			!driver->queryFeature(video::EVDF_GEOMETRY_SHADER)){
-		infostream<<"generate_shader(): geometry shaders disabled "
-				"because of missing driver/hardware support."
-				<<std::endl;
-		geometry_program = "";
-	}
-
-	// If no shaders are used, don't make a separate material type
-	if (vertex_program.empty() && pixel_program.empty() && geometry_program.empty())
-		return shaderinfo;
 
 	// Create shaders header
 	bool use_gles = false;
 #if ENABLE_GLES
 	use_gles = driver->getDriverType() == video::EDT_OGLES2;
 #endif
-	std::string shaders_header, vertex_header, pixel_header; // geometry shaders aren’t supported in GLES<3
+	std::stringstream shaders_header;
+	shaders_header
+		<< std::noboolalpha
+		<< std::showpoint // for GLSL ES
+		;
+	std::string vertex_header, fragment_header, geometry_header;
 	if (use_gles) {
-		shaders_header =
-			"#version 100\n"
-			;
+		shaders_header << R"(
+			#version 100
+			)";
 		vertex_header = R"(
 			uniform highp mat4 mWorldView;
 			uniform highp mat4 mWorldViewProj;
@@ -675,11 +593,11 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 			attribute mediump vec4 inVertexTangent;
 			attribute mediump vec4 inVertexBinormal;
 			)";
-		pixel_header = R"(
+		fragment_header = R"(
 			precision mediump float;
 			)";
 	} else {
-		shaders_header = R"(
+		shaders_header << R"(
 			#version 120
 			#define lowp
 			#define mediump
@@ -708,222 +626,95 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		use_discard = true;
 #endif
 	if (use_discard && shaderinfo.base_material != video::EMT_SOLID)
-		shaders_header += "#define USE_DISCARD\n";
+		shaders_header << "#define USE_DISCARD 1\n";
 
-	static const char* drawTypes[] = {
-		"NDT_NORMAL",
-		"NDT_AIRLIKE",
-		"NDT_LIQUID",
-		"NDT_FLOWINGLIQUID",
-		"NDT_GLASSLIKE",
-		"NDT_ALLFACES",
-		"NDT_ALLFACES_OPTIONAL",
-		"NDT_TORCHLIKE",
-		"NDT_SIGNLIKE",
-		"NDT_PLANTLIKE",
-		"NDT_FENCELIKE",
-		"NDT_RAILLIKE",
-		"NDT_NODEBOX",
-		"NDT_GLASSLIKE_FRAMED",
-		"NDT_FIRELIKE",
-		"NDT_GLASSLIKE_FRAMED_OPTIONAL",
-		"NDT_PLANTLIKE_ROOTED",
-	};
+#define PROVIDE(constant) shaders_header << "#define " #constant " " << (int)constant << "\n"
 
-	for (int i = 0; i < 14; i++){
-		shaders_header += "#define ";
-		shaders_header += drawTypes[i];
-		shaders_header += " ";
-		shaders_header += itos(i);
-		shaders_header += "\n";
+	PROVIDE(NDT_NORMAL);
+	PROVIDE(NDT_AIRLIKE);
+	PROVIDE(NDT_LIQUID);
+	PROVIDE(NDT_FLOWINGLIQUID);
+	PROVIDE(NDT_GLASSLIKE);
+	PROVIDE(NDT_ALLFACES);
+	PROVIDE(NDT_ALLFACES_OPTIONAL);
+	PROVIDE(NDT_TORCHLIKE);
+	PROVIDE(NDT_SIGNLIKE);
+	PROVIDE(NDT_PLANTLIKE);
+	PROVIDE(NDT_FENCELIKE);
+	PROVIDE(NDT_RAILLIKE);
+	PROVIDE(NDT_NODEBOX);
+	PROVIDE(NDT_GLASSLIKE_FRAMED);
+	PROVIDE(NDT_FIRELIKE);
+	PROVIDE(NDT_GLASSLIKE_FRAMED_OPTIONAL);
+	PROVIDE(NDT_PLANTLIKE_ROOTED);
+
+	PROVIDE(TILE_MATERIAL_BASIC);
+	PROVIDE(TILE_MATERIAL_ALPHA);
+	PROVIDE(TILE_MATERIAL_LIQUID_TRANSPARENT);
+	PROVIDE(TILE_MATERIAL_LIQUID_OPAQUE);
+	PROVIDE(TILE_MATERIAL_WAVING_LEAVES);
+	PROVIDE(TILE_MATERIAL_WAVING_PLANTS);
+	PROVIDE(TILE_MATERIAL_OPAQUE);
+	PROVIDE(TILE_MATERIAL_WAVING_LIQUID_BASIC);
+	PROVIDE(TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT);
+	PROVIDE(TILE_MATERIAL_WAVING_LIQUID_OPAQUE);
+	PROVIDE(TILE_MATERIAL_PLAIN);
+	PROVIDE(TILE_MATERIAL_PLAIN_ALPHA);
+
+#undef PROVIDE
+
+	shaders_header << "#define MATERIAL_TYPE " << (int)material_type << "\n";
+	shaders_header << "#define DRAW_TYPE " << (int)drawtype << "\n";
+
+	bool enable_waving_water = g_settings->getBool("enable_waving_water");
+	shaders_header << "#define ENABLE_WAVING_WATER " << enable_waving_water << "\n";
+	if (enable_waving_water) {
+		shaders_header << "#define WATER_WAVE_HEIGHT " << g_settings->getFloat("water_wave_height") << "\n";
+		shaders_header << "#define WATER_WAVE_LENGTH " << g_settings->getFloat("water_wave_length") << "\n";
+		shaders_header << "#define WATER_WAVE_SPEED " << g_settings->getFloat("water_wave_speed") << "\n";
 	}
 
-	static const char* materialTypes[] = {
-		"TILE_MATERIAL_BASIC",
-		"TILE_MATERIAL_ALPHA",
-		"TILE_MATERIAL_LIQUID_TRANSPARENT",
-		"TILE_MATERIAL_LIQUID_OPAQUE",
-		"TILE_MATERIAL_WAVING_LEAVES",
-		"TILE_MATERIAL_WAVING_PLANTS",
-		"TILE_MATERIAL_OPAQUE",
-		"TILE_MATERIAL_WAVING_LIQUID_BASIC",
-		"TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT",
-		"TILE_MATERIAL_WAVING_LIQUID_OPAQUE",
-		"TILE_MATERIAL_PLAIN",
-		"TILE_MATERIAL_PLAIN_ALPHA",
-	};
+	shaders_header << "#define ENABLE_WAVING_LEAVES " << g_settings->getBool("enable_waving_leaves") << "\n";
+	shaders_header << "#define ENABLE_WAVING_PLANTS " << g_settings->getBool("enable_waving_plants") << "\n";
+	shaders_header << "#define ENABLE_TONE_MAPPING " << g_settings->getBool("tone_mapping") << "\n";
 
-	for (int i = 0; i < 12; i++){
-		shaders_header += "#define ";
-		shaders_header += materialTypes[i];
-		shaders_header += " ";
-		shaders_header += itos(i);
-		shaders_header += "\n";
+	shaders_header << "#define FOG_START " << core::clamp(g_settings->getFloat("fog_start"), 0.0f, 0.99f) << "\n";
+
+	std::string common_header = shaders_header.str();
+
+	std::string vertex_shader = m_sourcecache.getOrLoad(name, "opengl_vertex.glsl");
+	std::string fragment_shader = m_sourcecache.getOrLoad(name, "opengl_fragment.glsl");
+	std::string geometry_shader = m_sourcecache.getOrLoad(name, "opengl_geometry.glsl");
+
+	vertex_shader = common_header + vertex_header + vertex_shader;
+	fragment_shader = common_header + fragment_header + fragment_shader;
+	const char *geometry_shader_ptr = nullptr; // optional
+	if (!geometry_shader.empty()) {
+		geometry_shader = common_header + geometry_header + geometry_shader;
+		geometry_shader_ptr = geometry_shader.c_str();
 	}
 
-	shaders_header += "#define MATERIAL_TYPE ";
-	shaders_header += itos(material_type);
-	shaders_header += "\n";
-	shaders_header += "#define DRAW_TYPE ";
-	shaders_header += itos(drawtype);
-	shaders_header += "\n";
-
-	if (g_settings->getBool("enable_waving_water")){
-		shaders_header += "#define ENABLE_WAVING_WATER 1\n";
-		shaders_header += "#define WATER_WAVE_HEIGHT ";
-		shaders_header += std::to_string(g_settings->getFloat("water_wave_height"));
-		shaders_header += "\n";
-		shaders_header += "#define WATER_WAVE_LENGTH ";
-		shaders_header += std::to_string(g_settings->getFloat("water_wave_length"));
-		shaders_header += "\n";
-		shaders_header += "#define WATER_WAVE_SPEED ";
-		shaders_header += std::to_string(g_settings->getFloat("water_wave_speed"));
-		shaders_header += "\n";
-	} else{
-		shaders_header += "#define ENABLE_WAVING_WATER 0\n";
+	irr_ptr<ShaderCallback> cb{new ShaderCallback(m_setter_factories)};
+	infostream<<"Compiling high level shaders for "<<name<<std::endl;
+	s32 shadermat = gpu->addHighLevelShaderMaterial(
+		vertex_shader.c_str(), nullptr, video::EVST_VS_1_1,
+		fragment_shader.c_str(), nullptr, video::EPST_PS_1_1,
+		geometry_shader_ptr, nullptr, video::EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLES, 0,
+		cb.get(), shaderinfo.base_material,  1);
+	if (shadermat == -1) {
+		errorstream<<"generate_shader(): "
+				"failed to generate \""<<name<<"\", "
+				"addHighLevelShaderMaterial failed."
+				<<std::endl;
+		dumpShaderProgram(warningstream, "Vertex", vertex_shader);
+		dumpShaderProgram(warningstream, "Fragment", fragment_shader);
+		dumpShaderProgram(warningstream, "Geometry", geometry_shader);
+		return shaderinfo;
 	}
-
-	shaders_header += "#define ENABLE_WAVING_LEAVES ";
-	if (g_settings->getBool("enable_waving_leaves"))
-		shaders_header += "1\n";
-	else
-		shaders_header += "0\n";
-
-	shaders_header += "#define ENABLE_WAVING_PLANTS ";
-	if (g_settings->getBool("enable_waving_plants"))
-		shaders_header += "1\n";
-	else
-		shaders_header += "0\n";
-
-	if (g_settings->getBool("tone_mapping"))
-		shaders_header += "#define ENABLE_TONE_MAPPING\n";
-
-	shaders_header += "#define FOG_START ";
-	shaders_header += std::to_string(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
-	shaders_header += "\n";
-
-	// Call addHighLevelShaderMaterial() or addShaderMaterial()
-	const c8* vertex_program_ptr = 0;
-	const c8* pixel_program_ptr = 0;
-	const c8* geometry_program_ptr = 0;
-	if (!vertex_program.empty()) {
-		vertex_program = shaders_header + vertex_header + vertex_program;
-		vertex_program_ptr = vertex_program.c_str();
-	}
-	if (!pixel_program.empty()) {
-		pixel_program = shaders_header + pixel_header + pixel_program;
-		pixel_program_ptr = pixel_program.c_str();
-	}
-	if (!geometry_program.empty()) {
-		geometry_program = shaders_header + geometry_program;
-		geometry_program_ptr = geometry_program.c_str();
-	}
-	ShaderCallback *cb = new ShaderCallback(setter_factories);
-	s32 shadermat = -1;
-	if(is_highlevel){
-		infostream<<"Compiling high level shaders for "<<name<<std::endl;
-		shadermat = gpu->addHighLevelShaderMaterial(
-			vertex_program_ptr,   // Vertex shader program
-			"vertexMain",         // Vertex shader entry point
-			video::EVST_VS_1_1,   // Vertex shader version
-			pixel_program_ptr,    // Pixel shader program
-			"pixelMain",          // Pixel shader entry point
-			video::EPST_PS_1_2,   // Pixel shader version
-			geometry_program_ptr, // Geometry shader program
-			"geometryMain",       // Geometry shader entry point
-			video::EGST_GS_4_0,   // Geometry shader version
-			scene::EPT_TRIANGLES,      // Geometry shader input
-			scene::EPT_TRIANGLE_STRIP, // Geometry shader output
-			0,                         // Support maximum number of vertices
-			cb, // Set-constant callback
-			shaderinfo.base_material,  // Base material
-			1                          // Userdata passed to callback
-			);
-		if(shadermat == -1){
-			errorstream<<"generate_shader(): "
-					"failed to generate \""<<name<<"\", "
-					"addHighLevelShaderMaterial failed."
-					<<std::endl;
-			dumpShaderProgram(warningstream, "Vertex", vertex_program);
-			dumpShaderProgram(warningstream, "Pixel", pixel_program);
-			dumpShaderProgram(warningstream, "Geometry", geometry_program);
-			delete cb;
-			return shaderinfo;
-		}
-	}
-	else{
-		infostream<<"Compiling assembly shaders for "<<name<<std::endl;
-		shadermat = gpu->addShaderMaterial(
-			vertex_program_ptr,   // Vertex shader program
-			pixel_program_ptr,    // Pixel shader program
-			cb, // Set-constant callback
-			shaderinfo.base_material,  // Base material
-			0                     // Userdata passed to callback
-			);
-
-		if(shadermat == -1){
-			errorstream<<"generate_shader(): "
-					"failed to generate \""<<name<<"\", "
-					"addShaderMaterial failed."
-					<<std::endl;
-			dumpShaderProgram(warningstream, "Vertex", vertex_program);
-			dumpShaderProgram(warningstream,"Pixel", pixel_program);
-			delete cb;
-			return shaderinfo;
-		}
-	}
-	callbacks.push_back(cb);
-
-	// HACK, TODO: investigate this better
-	// Grab the material renderer once more so minetest doesn't crash on exit
-	driver->getMaterialRenderer(shadermat)->grab();
 
 	// Apply the newly created material type
 	shaderinfo.material = (video::E_MATERIAL_TYPE) shadermat;
 	return shaderinfo;
-}
-
-void load_shaders(const std::string &name, SourceShaderCache *sourcecache,
-		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
-		std::string &vertex_program, std::string &pixel_program,
-		std::string &geometry_program, bool &is_highlevel)
-{
-	vertex_program = "";
-	pixel_program = "";
-	geometry_program = "";
-	is_highlevel = false;
-
-	if (!enable_shaders)
-		return;
-
-	// Look for high level shaders
-	switch (drivertype) {
-	case video::EDT_DIRECT3D9:
-		// Direct3D 9: HLSL
-		// (All shaders in one file)
-		vertex_program = sourcecache->getOrLoad(name, "d3d9.hlsl");
-		pixel_program = vertex_program;
-		geometry_program = vertex_program;
-		break;
-
-	case video::EDT_OPENGL:
-#if ENABLE_GLES
-	case video::EDT_OGLES2:
-#endif
-		// OpenGL: GLSL
-		vertex_program = sourcecache->getOrLoad(name, "opengl_vertex.glsl");
-		pixel_program = sourcecache->getOrLoad(name, "opengl_fragment.glsl");
-		geometry_program = sourcecache->getOrLoad(name, "opengl_geometry.glsl");
-		break;
-
-	default:
-		// e.g. OpenGL ES 1 (with no shader support)
-		break;
-	}
-	if (!vertex_program.empty() || !pixel_program.empty() || !geometry_program.empty()){
-		is_highlevel = true;
-		return;
-	}
 }
 
 void dumpShaderProgram(std::ostream &output_stream,

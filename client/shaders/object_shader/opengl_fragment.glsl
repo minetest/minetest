@@ -19,7 +19,7 @@ const float BS = 10.0;
 const float fogStart = FOG_START;
 const float fogShadingParameter = 1.0 / (1.0 - fogStart);
 
-#ifdef ENABLE_TONE_MAPPING
+#if ENABLE_TONE_MAPPING
 
 /* Hable's UC2 Tone mapping parameters
 	A = 0.22;
@@ -75,7 +75,7 @@ void main(void)
 
 	col.rgb *= emissiveColor.rgb * vIDiff;
 
-#ifdef ENABLE_TONE_MAPPING
+#if ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
 #endif
 

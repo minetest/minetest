@@ -51,12 +51,8 @@ public:
 
 	~CAOShaderConstantSetter() override = default;
 
-	void onSetConstants(video::IMaterialRendererServices *services,
-			bool is_highlevel) override
+	void onSetConstants(video::IMaterialRendererServices *services) override
 	{
-		if (!is_highlevel)
-			return;
-
 		// Ambient color
 		video::SColorf emissive_color(m_emissive_color);
 

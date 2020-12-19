@@ -65,7 +65,7 @@ Sky::Sky(s32 id, ITextureSource *tsrc, IShaderSource *ssrc) :
 	// Create materials
 
 	m_materials[0] = baseMaterial();
-	m_materials[0].MaterialType = ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA, 0)).material;
+	m_materials[0].MaterialType = ssrc->getShaderInfo(ssrc->getShader("stars_shader", TILE_MATERIAL_ALPHA)).material;
 	m_materials[0].Lighting = true;
 	m_materials[0].ColorMaterial = video::ECM_NONE;
 
