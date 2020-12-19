@@ -179,13 +179,12 @@ end
 local function delete_favorite(favorites, del_favorite)
 	for i=1, #favorites do
 		local fav = favorites[i]
+
 		if fav.address == del_favorite.address and fav.port == del_favorite.port then
 			table.remove(favorites, i)
 			return
 		end
 	end
-
-	core.log("warning", "Could not delete favorite, it was not found.")
 end
 
 --------------------------------------------------------------------------------
@@ -194,20 +193,34 @@ function serverlistmgr.get_favorites()
 		return serverlistmgr.favorites
 	end
 
-	serverlistmgr.favorites = read_favorites()
-	return serverlistmgr.favorites or {}
+	serverlistmgr.favorites = {}
+
+	-- Add favourites, removing duplicates
+	local seen = {}
+	for _, fav in ipairs(read_favorites()) do
+		local key = ("%s:%d"):format(fav.address:lower(), fav.port)
+		if not seen[key] then
+			seen[key] = true
+			serverlistmgr.favorites[#serverlistmgr.favorites + 1] = fav
+		end
+	end
+
+	return serverlistmgr.favorites
 end
 
 --------------------------------------------------------------------------------
 function serverlistmgr.add_favorite(new_favorite)
-	local favorites = serverlistmgr.get_favorites()
-	delete_favorite(favorites, new_favorite)
-	table.insert(favorites, {
+	-- Sanitise favorite
+	new_favorite = {
 		name = new_favorite.name,
 		address = new_favorite.address,
 		port = tonumber(new_favorite.port),
 		description = new_favorite.description,
-	})
+	}
+
+	local favorites = serverlistmgr.get_favorites()
+	delete_favorite(favorites, new_favorite)
+	table.insert(favorites, 1, new_favorite)
 	save_favorites(favorites)
 end
 
