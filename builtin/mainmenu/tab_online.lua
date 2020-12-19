@@ -313,14 +313,14 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		gamedata.playername = fields.te_name
 		gamedata.password   = fields.te_pwd
 		gamedata.address    = fields.te_address
-		gamedata.port       = fields.te_port
+		gamedata.port       = tonumber(fields.te_port)
 		gamedata.selected_world = 0
 		local fav_idx = core.get_table_index("favorites")
 		local fav = serverlist[fav_idx]
 
 		if fav_idx and fav_idx <= #serverlist and
-				fav.address == fields.te_address and
-				fav.port    == fields.te_port then
+				fav.address == gamedata.address and
+				fav.port    == gamedata.port then
 
 			serverlistmgr.add_favorite(fav)
 
@@ -336,13 +336,13 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			gamedata.serverdescription = ""
 
 			serverlistmgr.add_favorite({
-				address = fields.te_address,
-				port = fields.te_port,
+				address = gamedata.address,
+				port = gamedata.port,
 			})
 		end
 
-		core.settings:set("address",     fields.te_address)
-		core.settings:set("remote_port", fields.te_port)
+		core.settings:set("address",     gamedata.address)
+		core.settings:set("remote_port", gamedata.port)
 
 		core.start()
 		return true

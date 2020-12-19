@@ -210,11 +210,13 @@ end
 
 --------------------------------------------------------------------------------
 function serverlistmgr.add_favorite(new_favorite)
-	-- Sanitise favorite
+	assert(type(new_favorite.port) == "number")
+
+	-- Whitelist favorite keys
 	new_favorite = {
 		name = new_favorite.name,
 		address = new_favorite.address,
-		port = tonumber(new_favorite.port),
+		port = new_favorite.port,
 		description = new_favorite.description,
 	}
 
