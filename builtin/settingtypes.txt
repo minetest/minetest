@@ -152,6 +152,9 @@ joystick_type (Joystick type) enum auto auto,generic,xbox
 #    when holding down a joystick button combination.
 repeat_joystick_button_time (Joystick button repetition interval) float 0.17 0.001
 
+#    The deadzone of the joystick
+joystick_deadzone (Joystick deadzone) int 2048
+
 #    The sensitivity of the joystick axes for moving the
 #    ingame view frustum around.
 joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170
