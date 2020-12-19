@@ -130,7 +130,7 @@ core.register_entity(":__builtin:falling_node", {
 		-- Set collision box (certain nodeboxes only for now)
 		local nb_types = {fixed=true, leveled=true, connected=true}
 		if def.drawtype == "nodebox" and def.node_box and
-			nb_types[def.node_box.type] then
+			nb_types[def.node_box.type] and def.node_box.fixed then
 			local box = table.copy(def.node_box.fixed)
 			if type(box[1]) == "table" then
 				box = #box == 1 and box[1] or nil -- We can only use a single box

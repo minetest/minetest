@@ -70,7 +70,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
-		errorstream<< "Invalid pos for element " << a << "specified: \""	\
+		errorstream<< "Invalid pos for element " << a << " specified: \""	\
 			<< parts[b] << "\"" << std::endl;								\
 			return;															\
 	}
@@ -78,7 +78,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MY_CHECKGEOM(a,b)													\
 	if (v_geom.size() != 2) {												\
 		errorstream<< "Invalid geometry for element " << a <<				\
-			"specified: \"" << parts[b] << "\"" << std::endl;				\
+			" specified: \"" << parts[b] << "\"" << std::endl;				\
 			return;															\
 	}
 /*
@@ -2725,7 +2725,7 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 {
 	std::vector<std::string> parts = split(element, ';');
 
-	if (parts.size() < 5 || (parts.size() > 8 &&
+	if (parts.size() < 5 || (parts.size() > 9 &&
 			m_formspec_version <= FORMSPEC_API_VERSION)) {
 		errorstream << "Invalid model element (" << parts.size() << "): '" << element
 			<< "'" << std::endl;
@@ -2733,8 +2733,8 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	}
 
 	// Avoid length checks by resizing
-	if (parts.size() < 8)
-		parts.resize(8);
+	if (parts.size() < 9)
+		parts.resize(9);
 
 	std::vector<std::string> v_pos = split(parts[0], ',');
 	std::vector<std::string> v_geom = split(parts[1], ',');
@@ -2744,6 +2744,7 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	std::vector<std::string> vec_rot = split(parts[5], ',');
 	bool inf_rotation = is_yes(parts[6]);
 	bool mousectrl = is_yes(parts[7]) || parts[7].empty(); // default true
+	std::vector<std::string> frame_loop = split(parts[8], ',');
 
 	MY_CHECKPOS("model", 0);
 	MY_CHECKGEOM("model", 1);
@@ -2793,6 +2794,16 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 
 	e->enableContinuousRotation(inf_rotation);
 	e->enableMouseControl(mousectrl);
+
+	s32 frame_loop_begin = 0;
+	s32 frame_loop_end = 0x7FFFFFFF;
+
+	if (frame_loop.size() == 2) {
+	    frame_loop_begin = stoi(frame_loop[0]);
+	    frame_loop_end = stoi(frame_loop[1]);
+	}
+
+	e->setFrameLoop(frame_loop_begin, frame_loop_end);
 
 	auto style = getStyleForElement("model", spec.fname);
 	e->setStyles(style);

@@ -18,7 +18,7 @@ minetest.register_node("testnodes:nodebox_fixed", {
 
 -- 50% higher than a regular node
 minetest.register_node("testnodes:nodebox_overhigh", {
-	description = S("Overhigh Nodebox Test Node"),
+	description = S("+50% high Nodebox Test Node"),
 	tiles = {"testnodes_nodebox.png"},
 	drawtype = "nodebox",
 	paramtype = "light",
@@ -30,15 +30,16 @@ minetest.register_node("testnodes:nodebox_overhigh", {
 	groups = {dig_immediate=3},
 })
 
--- 100% higher than a regular node
+-- 95% higher than a regular node
 minetest.register_node("testnodes:nodebox_overhigh2", {
-	description = S("Double-height Nodebox Test Node"),
+	description = S("+95% high Nodebox Test Node"),
 	tiles = {"testnodes_nodebox.png"},
 	drawtype = "nodebox",
 	paramtype = "light",
 	node_box = {
 		type = "fixed",
-		fixed = {-0.5, -0.5, -0.5, 0.5, 1.5, 0.5},
+		-- Y max: more is possible, but glitchy
+		fixed = {-0.5, -0.5, -0.5, 0.5, 1.45, 0.5},
 	},
 
 	groups = {dig_immediate=3},

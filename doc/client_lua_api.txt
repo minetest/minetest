@@ -1001,6 +1001,7 @@ Please do not try to access the reference until the camera is initialized, other
 
 ### LocalPlayer
 An interface to retrieve information about the player.
+This object will only be available after the client is initialized. Earlier accesses will yield a `nil` value.
 
 Methods:
 

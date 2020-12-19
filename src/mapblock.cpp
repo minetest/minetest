@@ -355,7 +355,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	}
 }
 
-void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
+void MapBlock::serialize(std::ostream &os, u8 version, bool disk, int compression_level)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
@@ -394,7 +394,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		writeU8(os, content_width);
 		writeU8(os, params_width);
 		MapNode::serializeBulk(os, version, tmp_nodes, nodecount,
-				content_width, params_width, true);
+				content_width, params_width, compression_level);
 		delete[] tmp_nodes;
 	}
 	else
@@ -404,7 +404,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		writeU8(os, content_width);
 		writeU8(os, params_width);
 		MapNode::serializeBulk(os, version, data, nodecount,
-				content_width, params_width, true);
+				content_width, params_width, compression_level);
 	}
 
 	/*
@@ -412,7 +412,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	*/
 	std::ostringstream oss(std::ios_base::binary);
 	m_node_metadata.serialize(oss, version, disk);
-	compressZlib(oss.str(), os);
+	compressZlib(oss.str(), os, compression_level);
 
 	/*
 		Data that goes to disk, but not the network
@@ -485,7 +485,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	if(params_width != 2)
 		throw SerializationError("MapBlock::deSerialize(): invalid params_width");
 	MapNode::deSerializeBulk(is, version, data, nodecount,
-			content_width, params_width, true);
+			content_width, params_width);
 
 	/*
 		NodeMetadata

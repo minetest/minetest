@@ -16,7 +16,10 @@ varying vec3 vPosition;
 // precision must be considered).
 varying vec3 worldPosition;
 varying lowp vec4 varColor;
-varying mediump vec2 varTexCoord;
+// The centroid keyword ensures that after interpolation the texture coordinates
+// lie within the same bounds when MSAA is en- and disabled.
+// This fixes the stripes problem with nearest-neighbour textures and MSAA.
+centroid varying mediump vec2 varTexCoord;
 varying vec3 eyeVec;
 
 // Color of the light emitted by the light sources.
@@ -142,7 +145,7 @@ void main(void)
 	vec4 color;
 	// The alpha gives the ratio of sunlight in the incoming light.
 	float nightRatio = 1.0 - inVertexColor.a;
-	color.rgb = inVertexColor.rgb * (inVertexColor.a * dayLight.rgb + 
+	color.rgb = inVertexColor.rgb * (inVertexColor.a * dayLight.rgb +
 		nightRatio * artificialLight.rgb) * 2.0;
 	color.a = 1.0;
 

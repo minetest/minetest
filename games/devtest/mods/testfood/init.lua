@@ -22,3 +22,10 @@ minetest.register_craftitem("testfood:bad5", {
 	on_use = minetest.item_eat(-5),
 })
 
+minetest.register_craftitem("testfood:replace1", {
+	description = S("Replacing Food (+1)").."\n"..
+			S("Replaced with 'Good Food (+1)' when eaten"),
+	inventory_image = "testfood_replace.png",
+	on_use = minetest.item_eat(1, "testfood:good1"),
+})
+

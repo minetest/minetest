@@ -42,7 +42,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mute_sound", "false");
 	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("mesh_generation_interval", "0");
-	settings->setDefault("meshgen_block_cache_size", "40");
+	settings->setDefault("meshgen_block_cache_size", "20");
 	settings->setDefault("enable_vbo", "true");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("pitch_move", "false");
@@ -343,7 +343,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("port", "30000");
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("player_transfer_distance", "0");
-	settings->setDefault("max_simultaneous_block_sends_per_client", "128");
+	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
 	settings->setDefault("time_send_interval", "5");
 
 	settings->setDefault("default_game", "minetest");
@@ -385,6 +385,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chat_message_limit_per_10sec", "8.0");
 	settings->setDefault("chat_message_limit_trigger_kick", "50");
 	settings->setDefault("sqlite_synchronous", "2");
+	settings->setDefault("map_compression_level_disk", "3");
+	settings->setDefault("map_compression_level_net", "-1");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("active_block_mgmt_interval", "2.0");
@@ -470,6 +472,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("max_objects_per_block", "20");
 	settings->setDefault("sqlite_synchronous", "1");
+	settings->setDefault("map_compression_level_disk", "-1");
+	settings->setDefault("map_compression_level_net", "3");
 	settings->setDefault("server_map_save_interval", "15");
 	settings->setDefault("client_mapblock_limit", "1000");
 	settings->setDefault("active_block_range", "2");

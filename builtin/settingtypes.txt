@@ -517,8 +517,8 @@ texture_min_size (Minimum texture size) int 64
 #    This algorithm smooths out the 3D viewport while keeping the image sharp,
 #    but it doesn't affect the insides of textures
 #    (which is especially noticeable with transparent textures).
-#    This option is experimental and might cause visible spaces between blocks
-#    when set above 0.
+#    Visible spaces appear between nodes when shaders are disabled.
+#    If set to 0, MSAA is disabled.
 #    A restart is required after changing this option.
 fsaa (FSAA) enum 0 0,1,2,4,8,16
 
@@ -747,7 +747,7 @@ mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
 #    Size of the MapBlock cache of the mesh generator. Increasing this will
 #    increase the cache hit %, reducing the data being copied from the main
 #    thread, thus reducing jitter.
-meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size in MB) int 40 0 1000
+meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size in MB) int 20 0 1000
 
 #    Enables minimap.
 enable_minimap (Minimap) bool true
@@ -1037,7 +1037,7 @@ ipv6_server (IPv6 server) bool false
 #    Maximum number of blocks that are simultaneously sent per client.
 #    The maximum total count is calculated dynamically:
 #    max_total = ceil((#clients + max_users) * per_client / 4)
-max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 128
+max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 40
 
 #    To reduce lag, block transfers are slowed down when a player is building something.
 #    This determines how long they are slowed down after placing or removing a node.
@@ -1047,6 +1047,13 @@ full_block_send_enable_min_time_from_building (Delay in sending blocks after bui
 #    try reducing it, but don't reduce it to a number below double of targeted
 #    client number.
 max_packets_per_iteration (Max. packets per iteration) int 1024
+
+#    ZLib compression level to use when sending mapblocks to the client.
+#    -1 - Zlib's default compression level
+#     0 - no compresson, fastest
+#     9 - best compression, slowest
+#     (levels 1-3 use Zlib's "fast" method, 4-9 use the normal method)
+map_compression_level_net (Map Compression Level for Network Transfer) int -1 -1 9
 
 [*Game]
 
@@ -1239,6 +1246,13 @@ max_objects_per_block (Maximum objects per block) int 64
 
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
+
+#    ZLib compression level to use when saving mapblocks to disk.
+#    -1 - Zlib's default compression level
+#     0 - no compresson, fastest
+#     9 - best compression, slowest
+#     (levels 1-3 use Zlib's "fast" method, 4-9 use the normal method)
+map_compression_level_disk (Map Compression Level for Disk Storage) int 3 -1 9
 
 #    Length of a server tick and the interval at which objects are generally updated over
 #    network.
