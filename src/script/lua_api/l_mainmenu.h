@@ -112,6 +112,8 @@ private:
 
 	static int l_get_mainmenu_path(lua_State *L);
 
+	static int l_get_user_path(lua_State *L);
+
 	static int l_get_modpath(lua_State *L);
 
 	static int l_get_clientmodpath(lua_State *L);
@@ -147,6 +149,8 @@ private:
 
 	// other
 	static int l_open_url(lua_State *L);
+
+	static int l_open_dir(lua_State *L);
 
 
 	// async
