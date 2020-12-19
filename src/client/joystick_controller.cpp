@@ -37,7 +37,7 @@ bool JoystickAxisCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 {
 	s16 ax_val = ev.Axis[axis_to_compare];
 
-	return (ax_val * direction < 0) && (thresh * direction > ax_val * direction);
+	return (ax_val * direction < -thresh);
 }
 
 // spares many characters
