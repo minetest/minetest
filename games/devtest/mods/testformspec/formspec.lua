@@ -327,6 +327,10 @@ Number]
 			animated_image[3,4.25;1,1;;testformspec_animation.png;4;0;3]
 			animated_image[5.5,0.5;5,2;;testformspec_animation.png;4;100]
 			animated_image[5.5,2.75;5,2;;testformspec_animation.jpg;4;100]
+
+			style[m1;bgcolor=black]
+			model[0.5,6;4,4;m1;testformspec_character.b3d;testformspec_character.png]
+			model[5,6;4,4;m2;testformspec_chest.obj;default_chest_top.png,default_chest_top.png,default_chest_side.png,default_chest_side.png,default_chest_front.png,default_chest_inside.png;30,1;true;true]
 		]],
 
 	-- Scroll containers

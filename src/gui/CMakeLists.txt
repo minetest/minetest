@@ -15,6 +15,7 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiKeyChangeMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiPasswordChange.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiPathSelectMenu.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/guiScene.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiScrollBar.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiScrollContainer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiSkin.cpp

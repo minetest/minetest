@@ -706,7 +706,7 @@ void MapNode::deSerialize(u8 *source, u8 version)
 }
 void MapNode::serializeBulk(std::ostream &os, int version,
 		const MapNode *nodes, u32 nodecount,
-		u8 content_width, u8 params_width, bool compressed)
+		u8 content_width, u8 params_width, int compression_level)
 {
 	if (!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
@@ -737,10 +737,7 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 		Compress data to output stream
 	*/
 
-	if (compressed)
-		compressZlib(databuf, databuf_size, os);
-	else
-		os.write((const char*) &databuf[0], databuf_size);
+	compressZlib(databuf, databuf_size, os, compression_level);
 
 	delete [] databuf;
 }
@@ -748,7 +745,7 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 // Deserialize bulk node data
 void MapNode::deSerializeBulk(std::istream &is, int version,
 		MapNode *nodes, u32 nodecount,
-		u8 content_width, u8 params_width, bool compressed)
+		u8 content_width, u8 params_width)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
@@ -760,24 +757,13 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 
 	// Uncompress or read data
 	u32 len = nodecount * (content_width + params_width);
-	SharedBuffer<u8> databuf(len);
-	if(compressed)
-	{
-		std::ostringstream os(std::ios_base::binary);
-		decompressZlib(is, os);
-		std::string s = os.str();
-		if(s.size() != len)
-			throw SerializationError("deSerializeBulkNodes: "
-					"decompress resulted in invalid size");
-		memcpy(&databuf[0], s.c_str(), len);
-	}
-	else
-	{
-		is.read((char*) &databuf[0], len);
-		if(is.eof() || is.fail())
-			throw SerializationError("deSerializeBulkNodes: "
-					"failed to read bulk node data");
-	}
+	std::ostringstream os(std::ios_base::binary);
+	decompressZlib(is, os);
+	std::string s = os.str();
+	if(s.size() != len)
+		throw SerializationError("deSerializeBulkNodes: "
+				"decompress resulted in invalid size");
+	const u8 *databuf = reinterpret_cast<const u8*>(s.c_str());
 
 	// Deserialize content
 	if(content_width == 1)

@@ -170,8 +170,9 @@ void Clouds::render()
 
 	// Read noise
 
-	bool *grid = new bool[m_cloud_radius_i * 2 * m_cloud_radius_i * 2];
-
+	std::vector<char> grid(m_cloud_radius_i * 2 * m_cloud_radius_i * 2); // vector<bool> is broken
+	std::vector<video::S3DVertex> vertices;
+	vertices.reserve(16 * m_cloud_radius_i * m_cloud_radius_i);
 
 	for(s16 zi = -m_cloud_radius_i; zi < m_cloud_radius_i; zi++) {
 		u32 si = (zi + m_cloud_radius_i) * m_cloud_radius_i * 2 + m_cloud_radius_i;
@@ -195,12 +196,7 @@ void Clouds::render()
 	{
 		s16 zi = zi0;
 		s16 xi = xi0;
-		// Draw from front to back (needed for transparency)
-		/*if(zi <= 0)
-			zi = -m_cloud_radius_i - zi;
-		if(xi <= 0)
-			xi = -m_cloud_radius_i - xi;*/
-		// Draw from back to front
+		// Draw from back to front for proper transparency
 		if(zi >= 0)
 			zi = m_cloud_radius_i - zi - 1;
 		if(xi >= 0)
@@ -220,17 +216,10 @@ void Clouds::render()
 			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 0)
 		};
 
-		/*if(zi <= 0 && xi <= 0){
-			v[0].Color.setBlue(255);
-			v[1].Color.setBlue(255);
-			v[2].Color.setBlue(255);
-			v[3].Color.setBlue(255);
-		}*/
-
-		f32 rx = cloud_size / 2.0f;
+		const f32 rx = cloud_size / 2.0f;
 		// if clouds are flat, the top layer should be at the given height
-		f32 ry = m_enable_3d ? m_params.thickness * BS : 0.0f;
-		f32 rz = cloud_size / 2;
+		const f32 ry = m_enable_3d ? m_params.thickness * BS : 0.0f;
+		const f32 rz = cloud_size / 2;
 
 		for(int i=0; i<num_faces_to_draw; i++)
 		{
@@ -320,15 +309,25 @@ void Clouds::render()
 			v3f pos(p0.X, m_params.height * BS, p0.Y);
 			pos -= intToFloat(m_camera_offset, BS);
 
-			for (video::S3DVertex &vertex : v)
+			for (video::S3DVertex &vertex : v) {
 				vertex.Pos += pos;
-			u16 indices[] = {0,1,2,2,3,0};
-			driver->drawVertexPrimitiveList(v, 4, indices, 2,
-					video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
+				vertices.push_back(vertex);
+			}
 		}
 	}
-
-	delete[] grid;
+	int quad_count = vertices.size() / 4;
+	std::vector<u16> indices;
+	indices.reserve(quad_count * 6);
+	for (int k = 0; k < quad_count; k++) {
+		indices.push_back(4 * k + 0);
+		indices.push_back(4 * k + 1);
+		indices.push_back(4 * k + 2);
+		indices.push_back(4 * k + 2);
+		indices.push_back(4 * k + 3);
+		indices.push_back(4 * k + 0);
+	}
+	driver->drawVertexPrimitiveList(vertices.data(), vertices.size(), indices.data(), 2 * quad_count,
+			video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
 
 	// Restore fog settings
 	driver->setFog(fog_color, fog_type, fog_start, fog_end, fog_density,
@@ -342,14 +341,13 @@ void Clouds::step(float dtime)
 
 void Clouds::update(const v3f &camera_p, const video::SColorf &color_diffuse)
 {
+	video::SColorf ambient(m_params.color_ambient);
+	video::SColorf bright(m_params.color_bright);
 	m_camera_pos = camera_p;
-	m_color.r = MYMIN(MYMAX(color_diffuse.r * m_params.color_bright.getRed(),
-			m_params.color_ambient.getRed()), 255) / 255.0f;
-	m_color.g = MYMIN(MYMAX(color_diffuse.g * m_params.color_bright.getGreen(),
-			m_params.color_ambient.getGreen()), 255) / 255.0f;
-	m_color.b = MYMIN(MYMAX(color_diffuse.b * m_params.color_bright.getBlue(),
-			m_params.color_ambient.getBlue()), 255) / 255.0f;
-	m_color.a = m_params.color_bright.getAlpha() / 255.0f;
+	m_color.r = core::clamp(color_diffuse.r * bright.r, ambient.r, 1.0f);
+	m_color.g = core::clamp(color_diffuse.g * bright.g, ambient.g, 1.0f);
+	m_color.b = core::clamp(color_diffuse.b * bright.b, ambient.b, 1.0f);
+	m_color.a = bright.a;
 
 	// is the camera inside the cloud mesh?
 	m_camera_inside_cloud = false; // default

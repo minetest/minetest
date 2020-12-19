@@ -100,7 +100,7 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	if (g_settings->getBool("enable_shaders")) {
 		IShaderSource *shdrsrc = client->getShaderSource();
 		u16 shader_id = shdrsrc->getShader(
-			m_mode == HIGHLIGHT_HALO ? "selection_shader" : "default_shader", 1, 1);
+			m_mode == HIGHLIGHT_HALO ? "selection_shader" : "default_shader", TILE_MATERIAL_ALPHA);
 		m_selection_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
 	} else {
 		m_selection_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;

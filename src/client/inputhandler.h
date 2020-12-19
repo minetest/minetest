@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "joystick_controller.h"
+#include <list>
 #include "keycode.h"
 #include "renderingengine.h"
-#include <unordered_set>
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "gui/touchscreengui.h"
@@ -61,32 +61,98 @@ struct KeyCache
 	InputHandler *handler;
 };
 
+class KeyList : private std::list<KeyPress>
+{
+	typedef std::list<KeyPress> super;
+	typedef super::iterator iterator;
+	typedef super::const_iterator const_iterator;
+
+	virtual const_iterator find(const KeyPress &key) const
+	{
+		const_iterator f(begin());
+		const_iterator e(end());
+
+		while (f != e) {
+			if (*f == key)
+				return f;
+
+			++f;
+		}
+
+		return e;
+	}
+
+	virtual iterator find(const KeyPress &key)
+	{
+		iterator f(begin());
+		iterator e(end());
+
+		while (f != e) {
+			if (*f == key)
+				return f;
+
+			++f;
+		}
+
+		return e;
+	}
+
+public:
+	void clear() { super::clear(); }
+
+	void set(const KeyPress &key)
+	{
+		if (find(key) == end())
+			push_back(key);
+	}
+
+	void unset(const KeyPress &key)
+	{
+		iterator p(find(key));
+
+		if (p != end())
+			erase(p);
+	}
+
+	void toggle(const KeyPress &key)
+	{
+		iterator p(this->find(key));
+
+		if (p != end())
+			erase(p);
+		else
+			push_back(key);
+	}
+
+	bool operator[](const KeyPress &key) const { return find(key) != end(); }
+};
+
 class MyEventReceiver : public IEventReceiver
 {
 public:
 	// This is the one method that we have to implement
 	virtual bool OnEvent(const SEvent &event);
 
-	bool IsKeyDown(const KeyPress &keyCode) const { return keyIsDown.count(keyCode); }
+	bool IsKeyDown(const KeyPress &keyCode) const { return keyIsDown[keyCode]; }
 
 	// Checks whether a key was down and resets the state
 	bool WasKeyDown(const KeyPress &keyCode)
 	{
-		bool b = keyWasDown.count(keyCode);
+		bool b = keyWasDown[keyCode];
 		if (b)
-			keyWasDown.erase(keyCode);
+			keyWasDown.unset(keyCode);
 		return b;
 	}
 
 	// Checks whether a key was just pressed. State will be cleared
 	// in the subsequent iteration of Game::processPlayerInteraction
-	bool WasKeyPressed(const KeyPress &keycode) const { return keyWasPressed.count(keycode); }
+	bool WasKeyPressed(const KeyPress &keycode) const { return keyWasPressed[keycode]; }
 
 	// Checks whether a key was just released. State will be cleared
 	// in the subsequent iteration of Game::processPlayerInteraction
-	bool WasKeyReleased(const KeyPress &keycode) const { return keyWasReleased.count(keycode); }
+	bool WasKeyReleased(const KeyPress &keycode) const { return keyWasReleased[keycode]; }
 
-	void listenForKey(const KeyPress &keyCode) { keysListenedFor.insert(keyCode); }
+	void listenForKey(const KeyPress &keyCode) { keysListenedFor.set(keyCode); }
 	void dontListenForKeys() { keysListenedFor.clear(); }
 
 	s32 getMouseWheel()
@@ -132,20 +198,24 @@ public:
 #endif
 
 private:
-	//! The current state of keys
-	std::unordered_set<KeyPress> keyIsDown;
+	// The current state of keys
+	KeyList keyIsDown;
 
-	//! Whether a key was down
-	std::unordered_set<KeyPress> keyWasDown;
+	// Whether a key was down
+	KeyList keyWasDown;
 
-	//! Whether a key has just been pressed
-	std::unordered_set<KeyPress> keyWasPressed;
+	// Whether a key has just been pressed
+	KeyList keyWasPressed;
 
-	//! Whether a key has just been released
-	std::unordered_set<KeyPress> keyWasReleased;
+	// Whether a key has just been released
+	KeyList keyWasReleased;
 
-	//! List of keys we listen for
-	std::unordered_set<KeyPress> keysListenedFor;
+	// List of keys we listen for
+	// TODO perhaps the type of this is not really
+	// performant as KeyList is designed for few but
+	// often changing keys, and keysListenedFor is expected
+	// to change seldomly but contain lots of keys.
+	KeyList keysListenedFor;
 };
 
 class InputHandler
@@ -209,7 +279,7 @@ public:
 	}
 	virtual bool wasKeyPressed(GameKeyType k)
 	{
-		return m_receiver->WasKeyPressed(keycache.key[k]) || joystick.wasKeyReleased(k);
+		return m_receiver->WasKeyPressed(keycache.key[k]) || joystick.wasKeyPressed(k);
 	}
 	virtual bool wasKeyReleased(GameKeyType k)
 	{
@@ -277,7 +347,7 @@ public:
 		return true;
 	}
 
-	virtual bool isKeyDown(GameKeyType k) { return keydown.count(keycache.key[k]); }
+	virtual bool isKeyDown(GameKeyType k) { return keydown[keycache.key[k]]; }
 	virtual bool wasKeyDown(GameKeyType k) { return false; }
 	virtual bool wasKeyPressed(GameKeyType k) { return false; }
 	virtual bool wasKeyReleased(GameKeyType k) { return false; }
@@ -292,7 +362,7 @@ public:
 	s32 Rand(s32 min, s32 max);
 
 private:
-	std::unordered_set<KeyPress> keydown;
+	KeyList keydown;
 	v2s32 mousepos;
 	v2s32 mousespeed;
 };

@@ -43,8 +43,12 @@ core.get_max_supp_proto()
 core.open_url(url)
 ^ opens the URL in a web browser, returns false on failure.
 ^ Must begin with http:// or https://
+core.open_dir(path)
+^ opens the path in the system file browser/explorer, returns false on failure.
+^ Must be an existing directory.
 core.get_version() (possible in async calls)
 ^ returns current core version
+
 
 
 Filesystem
@@ -207,6 +211,9 @@ Content and Packages
 Content - an installed mod, modpack, game, or texture pack (txt)
 Package - content which is downloadable from the content db, may or may not be installed.
 
+* core.get_user_path() (possible in async calls)
+    * returns path to global user data,
+      the directory that contains user-provided mods, worlds, games, and texture packs.
 * core.get_modpath() (possible in async calls)
     * returns path to global modpath
 * core.get_clientmodpath() (possible in async calls)

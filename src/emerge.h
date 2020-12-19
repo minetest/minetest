@@ -52,7 +52,6 @@ struct BlockMakeData {
 	u64 seed = 0;
 	v3s16 blockpos_min;
 	v3s16 blockpos_max;
-	v3s16 blockpos_requested;
 	UniqueQueue<v3s16> transforming_liquid;
 	const NodeDefManager *nodedef = nullptr;
 

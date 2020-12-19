@@ -1014,7 +1014,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
 * `paramtype2 = "flowingliquid"`
     * Used by `drawtype = "flowingliquid"` and `liquidtype = "flowing"`
     * The liquid level and a flag of the liquid are stored in `param2`
-    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node
+    * Bits 0-2: Liquid level (0-7). The higher, the more liquid is in this node;
+      see `minetest.get_node_level`, `minetest.set_node_level` and `minetest.add_node_level`
+      to access/manipulate the content of this field
     * Bit 3: If set, liquid is flowing downwards (no graphical effect)
 * `paramtype2 = "wallmounted"`
     * Supported drawtypes: "torchlike", "signlike", "normal", "nodebox", "mesh"
@@ -1245,6 +1247,9 @@ A box of a regular node would look like:
 
     {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 
+To avoid collision issues, keep each value within the range of +/- 1.45.
+This also applies to leveled nodeboxes, where the final height shall not
+exceed this soft limit.
 
 
 
@@ -2023,10 +2028,10 @@ Item metadata only contains a key-value store.
 
 Some of the values in the key-value store are handled specially:
 
-* `description`: Set the item stack's description. Defaults to
-  `idef.description`.
-* `short_description`: Set the item stack's short description. Defaults
-   to `idef.short_description`.
+* `description`: Set the item stack's description.
+  See also: `get_description` in [`ItemStack`]
+* `short_description`: Set the item stack's short description.
+  See also: `get_short_description` in [`ItemStack`]
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
   current color from the palette.
@@ -2108,6 +2113,22 @@ Examples
     list[current_player;main;0,3.5;8,4;]
     list[current_player;craft;3,0;3,3;]
     list[current_player;craftpreview;7,1;1,1;]
+   
+Version History
+---------------
+
+* FORMSPEC VERSION 1:
+  * (too much)
+* FORMSPEC VERSION 2:
+  * Forced real coordinates
+  * background9[]: 9-slice scaling parameters
+* FORMSPEC VERSION 3:
+  * Formspec elements are drawn in the order of definition
+  * bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
+  * box[] and image[] elements enable clipping by default
+  * new element: scroll_container[]
+* FORMSPEC VERSION 4:
+  * Allow dropdown indexing events
 
 Elements
 --------
@@ -2120,6 +2141,7 @@ Elements
 * Clients older than this version can neither show newer elements nor display
   elements with new arguments correctly.
 * Available since feature `formspec_version_element`.
+* See also: [Version History]
 
 ### `size[<W>,<H>,<fixed_size>]`
 
@@ -2271,6 +2293,21 @@ Elements
 * `frame count`: The number of frames animating the image.
 * `frame duration`: Milliseconds between each frame. `0` means the frames don't advance.
 * `frame start` (Optional): The index of the frame to start on. Default `1`.
+
+### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>]`
+
+* Show a mesh model.
+* `name`: Element name that can be used for styling
+* `mesh`: The mesh model to use.
+* `textures`: The mesh textures to use according to the mesh materials.
+   Texture names must be separated by commas.
+* `rotation {X,Y}` (Optional): Initial rotation of the camera.
+  The axes are euler angles in degrees.
+* `continuous` (Optional): Whether the rotation is continuous. Default `false`.
+* `mouse control` (Optional): Whether the model can be controlled with the mouse. Default `true`.
+* `frame loop range` (Optional): Range of the animation frames.
+    * Defaults to the full range of all available frames.
+    * Syntax: `<begin>,<end>`
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
@@ -2772,6 +2809,7 @@ Some types may inherit styles from parent types.
 * image_button
 * item_image_button
 * label
+* model
 * pwdfield, inherits from field
 * scrollbar
 * tabheader
@@ -2831,17 +2869,24 @@ Some types may inherit styles from parent types.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * padding - rect, adds space between the edges of the button and the content. This value is
                 relative to bgimg_middle.
+    * sound - a sound to be played when clicked.
     * textcolor - color, default white.
 * checkbox
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * sound - a sound to be played when clicked.
 * dropdown
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * sound - a sound to be played when clicked.
 * field, pwdfield, textarea
     * border - set to false to hide the textbox background and border. Default true.
     * font - Sets font type. See button `font` property for more information.
     * font_size - Sets font size. See button `font_size` property for more information.
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * textcolor - color. Default white.
+* model
+    * bgcolor - color, sets background color.
+    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+        * Default to false in formspec_version version 3 or higher
 * image
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
         * Default to false in formspec_version version 3 or higher
@@ -2858,10 +2903,12 @@ Some types may inherit styles from parent types.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
         * This is deprecated, use states instead.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
+    * sound - a sound to be played when clicked.
 * scrollbar
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
 * tabheader
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * sound - a sound to be played when clicked.
     * textcolor - color. Default white.
 * table, textlist
     * font - Sets font type. See button `font` property for more information.
@@ -3211,6 +3258,7 @@ Helper functions
     * returns true when the passed number represents NaN.
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
+    * This value might overflow on certain 32-bit systems!
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 * `table.indexof(list, val)`: returns the smallest numerical index containing
@@ -5967,8 +6015,18 @@ an itemstring, a table or `nil`.
   stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
 * `get_description()`: returns the description shown in inventory list tooltips.
+    * The engine uses the same as this function for item descriptions.
+    * Fields for finding the description, in order:
+        * `description` in item metadata (See [Item Metadata].)
+        * `description` in item definition
+        * item name
 * `get_short_description()`: returns the short description.
     * Unlike the description, this does not include new lines.
+    * The engine uses the same as this function for short item descriptions.
+    * Fields for finding the short description, in order:
+        * `short_description` in item metadata (See [Item Metadata].)
+        * `short_description` in item definition
+        * first line of the description (See `get_description()`.)
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
@@ -6173,9 +6231,9 @@ object you are working with still exists.
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
     * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
-    * `forced_visible`: Boolean to control whether the attached entity 
+    * `forced_visible`: Boolean to control whether the attached entity
        should appear in first person.
-* `get_attach()`: returns parent, bone, position, rotation, forced_visible, 
+* `get_attach()`: returns parent, bone, position, rotation, forced_visible,
     or nil if it isn't attached.
 * `get_children()`: returns a list of ObjectRefs that are attached to the
     object.
@@ -6392,6 +6450,8 @@ object you are working with still exists.
     * `selected_mode` is the mode index to be selected after modes have been changed
     (0 is the first mode).
 * `set_sky(sky_parameters)`
+    * The presence of the function `set_sun`, `set_moon` or `set_stars` indicates
+      whether `set_sky` accepts this format. Check the legacy format otherwise.
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
         * `type`: Available types:
@@ -6433,6 +6493,15 @@ object you are working with still exists.
                 abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
                 `"default"` uses the classic Minetest sun and moon tinting.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
+* `set_sky(base_color, type, {texture names}, clouds)`
+    * Deprecated. Use `set_sky(sky_parameters)`
+    * `base_color`: ColorSpec, defaults to white
+    * `type`: Available types:
+        * `"regular"`: Uses 0 textures, `bgcolor` ignored
+        * `"skybox"`: Uses 6 textures, `bgcolor` used
+        * `"plain"`: Uses 0 textures, `bgcolor` used
+    * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
+      `"plain"` custom skyboxes (default: `true`)
 * `get_sky()`: returns base_color, type, table of textures, clouds.
 * `get_sky_color()`: returns a table with the `sky_color` parameters as in
     `set_sky`.
@@ -7069,11 +7138,12 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     {
         description = "Steel Axe",
         -- Can contain new lines. "\n" has to be used as new line character.
-        -- Defaults to the item's name.
+        -- See also: `get_description` in [`ItemStack`]
 
         short_description = "Steel Axe",
         -- Must not contain new lines.
         -- Defaults to the first line of description.
+        -- See also: `get_short_description` in [`ItemStack`]
 
         groups = {},
         -- key = name, value = rating; rating = 1..3.
@@ -7312,6 +7382,7 @@ Used by `minetest.register_node`.
         leveled_max = 127,
         -- Maximum value for `leveled` (0-127), enforced in
         -- `minetest.set_node_level` and `minetest.add_node_level`.
+		-- Values above 124 might causes collision detection issues.
 
         liquid_range = 8,  -- Number of flowing nodes around source (max. 8)
 
@@ -7339,6 +7410,7 @@ Used by `minetest.register_node`.
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+                -- Node box format: see [Node boxes]
             },
         },
         -- Custom selection box definition. Multiple boxes can be defined.
@@ -7349,13 +7421,12 @@ Used by `minetest.register_node`.
             type = "fixed",
             fixed = {
                 {-2 / 16, -0.5, -2 / 16, 2 / 16, 3 / 16, 2 / 16},
+                -- Node box format: see [Node boxes]
             },
         },
         -- Custom collision box definition. Multiple boxes can be defined.
         -- If "nodebox" drawtype is used and collision_box is nil, then node_box
         -- definition is used for the collision box.
-        -- Both of the boxes above are defined as:
-        -- {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from node center.
 
         -- Support maps made in and before January 2012
         legacy_facedir_simple = false,
@@ -7562,6 +7633,13 @@ Used by `minetest.register_node`.
         -- intensity: 1.0 = mid range of regular TNT.
         -- If defined, called when an explosion touches the node, instead of
         -- removing the node.
+        
+        mod_origin = "modname",
+        -- stores which mod actually registered a node
+        -- if it can not find a source, returns "??"
+        -- useful for getting what mod truly registered something
+        -- example: if a node is registered as ":othermodname:nodename", 
+        -- nodename will show "othermodname", but mod_orgin will say "modname"
     }
 
 Crafting recipes

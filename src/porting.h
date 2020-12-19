@@ -332,7 +332,25 @@ void attachOrCreateConsole();
 
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
 
-bool openURL(const std::string &url);
+/**
+ * Opens URL in default web browser
+ *
+ * Must begin with http:// or https://, and not contain any new lines
+ *
+ * @param url The URL
+ * @return true on success, false on failure
+ */
+bool open_url(const std::string &url);
+
+/**
+ * Opens a directory in the default file manager
+ *
+ * The directory must exist.
+ *
+ * @param path Path to directory
+ * @return true on success, false on failure
+ */
+bool open_directory(const std::string &path);
 
 } // namespace porting
 

@@ -84,6 +84,9 @@ core.register_entity(":__builtin:falling_node", {
 			local textures
 			if def.tiles and def.tiles[1] then
 				local tile = def.tiles[1]
+				if def.drawtype == "torchlike" and def.paramtype2 ~= "wallmounted" then
+					tile = def.tiles[2] or def.tiles[1]
+				end
 				if type(tile) == "table" then
 					tile = tile.name
 				end
@@ -127,7 +130,7 @@ core.register_entity(":__builtin:falling_node", {
 		-- Set collision box (certain nodeboxes only for now)
 		local nb_types = {fixed=true, leveled=true, connected=true}
 		if def.drawtype == "nodebox" and def.node_box and
-			nb_types[def.node_box.type] then
+			nb_types[def.node_box.type] and def.node_box.fixed then
 			local box = table.copy(def.node_box.fixed)
 			if type(box[1]) == "table" then
 				box = #box == 1 and box[1] or nil -- We can only use a single box
@@ -144,7 +147,11 @@ core.register_entity(":__builtin:falling_node", {
 
 		-- Rotate entity
 		if def.drawtype == "torchlike" then
-			self.object:set_yaw(math.pi*0.25)
+			if def.paramtype2 == "wallmounted" then
+				self.object:set_yaw(math.pi*0.25)
+			else
+				self.object:set_yaw(-math.pi*0.25)
+			end
 		elseif (node.param2 ~= 0 and (def.wield_image == ""
 				or def.wield_image == nil))
 				or def.drawtype == "signlike"

@@ -169,11 +169,9 @@ int ObjectRef::l_punch(lua_State *L)
 	if (sao == nullptr || puncher == nullptr)
 		return 0;
 
-	float time_from_last_punch = lua_isnil(L, 3) ?
-		1000000.0f : readParam<float>(L,3);
+	float time_from_last_punch = readParam<float>(L, 3, 1000000.0f);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
-	v3f dir = lua_isnil(L, 5) ?
-		sao->getBasePosition() - puncher->getBasePosition() : check_v3f(L, 5);
+	v3f dir = readParam<v3f>(L, 5, sao->getBasePosition() - puncher->getBasePosition());
 
 	dir.normalize();
 	u16 src_original_hp = sao->getHP();
@@ -383,20 +381,12 @@ int ObjectRef::l_set_animation(lua_State *L)
 	if (sao == nullptr)
 		return 0;
 
-	v2f frames = v2f(1, 1);
-	if (!lua_isnil(L, 2))
-		frames = readParam<v2f>(L, 2);
-	float frame_speed = 15;
-	if (!lua_isnil(L, 3))
-		frame_speed = lua_tonumber(L, 3);
-	float frame_blend = 0;
-	if (!lua_isnil(L, 4))
-		frame_blend = lua_tonumber(L, 4);
-	bool frame_loop = true;
-	if (lua_isboolean(L, 5))
-		frame_loop = readParam<bool>(L, 5);
+	v2f frame_range   = readParam<v2f>(L,  2, v2f(1, 1));
+	float frame_speed = readParam<float>(L, 3, 15.0f);
+	float frame_blend = readParam<float>(L, 4, 0.0f);
+	bool frame_loop   = readParam<bool>(L, 5, true);
 
-	sao->setAnimation(frames, frame_speed, frame_blend, frame_loop);
+	sao->setAnimation(frame_range, frame_speed, frame_blend, frame_loop);
 	return 0;
 }
 
@@ -436,7 +426,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 		if (!lua_isnil(L, 2+1))
 			frames[i] = read_v2s32(L, 2+i);
 	}
-	float frame_speed = lua_isnil(L, 6) ? 30 : readParam<float>(L, 6);
+	float frame_speed = readParam<float>(L, 6, 30.0f);
 
 	getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed);
 	lua_pushboolean(L, true);
@@ -965,9 +955,9 @@ int ObjectRef::l_set_sprite(lua_State *L)
 	if (entitysao == nullptr)
 		return 0;
 
-	v2s16 start_frame       = lua_isnil(L, 2) ? v2s16(0,0) : readParam<v2s16>(L, 2);
-	int num_frames          = lua_isnil(L, 3) ? 1 : luaL_checkint(L, 3);
-	float framelength       = lua_isnil(L, 4) ? 0.2 : lua_tonumber(L, 4);
+	v2s16 start_frame = readParam<v2s16>(L, 2, v2s16(0,0));
+	int num_frames    = readParam<int>(L, 3, 1);
+	float framelength = readParam<float>(L, 4, 0.2f);
 	bool select_x_by_camera = readParam<bool>(L, 5, false);
 
 	entitysao->setSprite(start_frame, num_frames, framelength, select_x_by_camera);
@@ -1423,20 +1413,34 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	if (playersao == nullptr)
 		return 0;
 
-	luaL_checktype(L, 2, LUA_TTABLE);
-	playersao->m_physics_override_speed = getfloatfield_default(
-			L, 2, "speed", playersao->m_physics_override_speed);
-	playersao->m_physics_override_jump = getfloatfield_default(
-			L, 2, "jump", playersao->m_physics_override_jump);
-	playersao->m_physics_override_gravity = getfloatfield_default(
-			L, 2, "gravity", playersao->m_physics_override_gravity);
-	playersao->m_physics_override_sneak = getboolfield_default(
-			L, 2, "sneak", playersao->m_physics_override_sneak);
-	playersao->m_physics_override_sneak_glitch = getboolfield_default(
-			L, 2, "sneak_glitch", playersao->m_physics_override_sneak_glitch);
-	playersao->m_physics_override_new_move = getboolfield_default(
-			L, 2, "new_move", playersao->m_physics_override_new_move);
-	playersao->m_physics_override_sent = false;
+	if (lua_istable(L, 2)) {
+		bool modified = false;
+		modified |= getfloatfield(L, 2, "speed", playersao->m_physics_override_speed);
+		modified |= getfloatfield(L, 2, "jump", playersao->m_physics_override_jump);
+		modified |= getfloatfield(L, 2, "gravity", playersao->m_physics_override_gravity);
+		modified |= getboolfield(L, 2, "sneak", playersao->m_physics_override_sneak);
+		modified |= getboolfield(L, 2, "sneak_glitch", playersao->m_physics_override_sneak_glitch);
+		modified |= getboolfield(L, 2, "new_move", playersao->m_physics_override_new_move);
+		if (modified)
+			playersao->m_physics_override_sent = false;
+	} else {
+		// old, non-table format
+		// TODO: Remove this code after version 5.4.0
+		log_deprecated(L, "Deprecated use of set_physics_override(num, num, num)");
+
+		if (!lua_isnil(L, 2)) {
+			playersao->m_physics_override_speed = lua_tonumber(L, 2);
+			playersao->m_physics_override_sent = false;
+		}
+		if (!lua_isnil(L, 3)) {
+			playersao->m_physics_override_jump = lua_tonumber(L, 3);
+			playersao->m_physics_override_sent = false;
+		}
+		if (!lua_isnil(L, 4)) {
+			playersao->m_physics_override_gravity = lua_tonumber(L, 4);
+			playersao->m_physics_override_sent = false;
+		}
+	}
 	return 0;
 }
 
@@ -2278,7 +2282,6 @@ void ObjectRef::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	markAliasDeprecated(methods);
 	luaL_openlib(L, 0, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 }
@@ -2316,10 +2319,9 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_nametag_attributes),
 
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
-	luamethod(ObjectRef, add_velocity),
-	{"add_player_velocity", ObjectRef::l_add_velocity},
+	luamethod_aliased(ObjectRef, add_velocity, add_player_velocity),
 	luamethod_aliased(ObjectRef, get_velocity, getvelocity),
-	{"get_player_velocity", ObjectRef::l_get_velocity},
+	luamethod_dep(ObjectRef, get_velocity, get_player_velocity),
 
 	// LuaEntitySAO-only
 	luamethod_aliased(ObjectRef, set_acceleration, setacceleration),

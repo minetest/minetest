@@ -31,6 +31,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include "client/renderingengine.h"
 
+// struct MeshBufListList
+void MeshBufListList::clear()
+{
+	for (auto &list : lists)
+		list.clear();
+}
+
+void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
+{
+	// Append to the correct layer
+	std::vector<MeshBufList> &list = lists[layer];
+	const video::SMaterial &m = buf->getMaterial();
+	for (MeshBufList &l : list) {
+		// comparing a full material is quite expensive so we don't do it if
+		// not even first texture is equal
+		if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
+			continue;
+
+		if (l.m == m) {
+			l.bufs.emplace_back(position, buf);
+			return;
+		}
+	}
+	MeshBufList l;
+	l.m = m;
+	l.bufs.emplace_back(position, buf);
+	list.emplace_back(l);
+}
+
+// ClientMap
+
 ClientMap::ClientMap(
 		Client *client,
 		MapDrawControl &control,
@@ -124,7 +155,10 @@ void ClientMap::updateDrawList()
 
 	const v3f camera_position = m_camera_position;
 	const v3f camera_direction = m_camera_direction;
-	const f32 camera_fov = m_camera_fov;
+
+	// Use a higher fov to accomodate faster camera movements.
+	// Blocks are cropped better when they are drawn.
+	const f32 camera_fov = m_camera_fov * 1.1f;
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
 	v3s16 p_blocks_min;
@@ -179,9 +213,7 @@ void ClientMap::updateDrawList()
 				if not seen on display
 			*/
 
-			if (block->mesh) {
-				block->mesh->updateCameraOffset(m_camera_offset);
-			} else {
+			if (!block->mesh) {
 				// Ignore if mesh doesn't exist
 				continue;
 			}
@@ -225,50 +257,6 @@ void ClientMap::updateDrawList()
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
 	g_profiler->avg("MapBlocks loaded [#]", blocks_loaded);
 }
-
-struct MeshBufList
-{
-	video::SMaterial m;
-	std::vector<scene::IMeshBuffer*> bufs;
-};
-
-struct MeshBufListList
-{
-	/*!
-	 * Stores the mesh buffers of the world.
-	 * The array index is the material's layer.
-	 * The vector part groups vertices by material.
-	 */
-	std::vector<MeshBufList> lists[MAX_TILE_LAYERS];
-
-	void clear()
-	{
-		for (auto &list : lists)
-			list.clear();
-	}
-
-	void add(scene::IMeshBuffer *buf, u8 layer)
-	{
-		// Append to the correct layer
-		std::vector<MeshBufList> &list = lists[layer];
-		const video::SMaterial &m = buf->getMaterial();
-		for (MeshBufList &l : list) {
-			// comparing a full material is quite expensive so we don't do it if
-			// not even first texture is equal
-			if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
-				continue;
-
-			if (l.m == m) {
-				l.bufs.push_back(buf);
-				return;
-			}
-		}
-		MeshBufList l;
-		l.m = m;
-		l.bufs.push_back(buf);
-		list.push_back(l);
-	}
-};
 
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
@@ -314,6 +302,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	MeshBufListList drawbufs;
 
 	for (auto &i : m_drawlist) {
+		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
 
 		// If the mesh of the block happened to get deleted, ignore it
@@ -379,7 +368,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 						material.setFlag(video::EMF_WIREFRAME,
 							m_control.show_wireframe);
 
-						drawbufs.add(buf, layer);
+						drawbufs.add(buf, block_pos, layer);
 					}
 				}
 			}
@@ -387,6 +376,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	}
 
 	TimeTaker draw("Drawing mesh buffers");
+
+	core::matrix4 m; // Model matrix
+	v3f offset = intToFloat(m_camera_offset, BS);
 
 	// Render all layers in order
 	for (auto &lists : drawbufs.lists) {
@@ -399,7 +391,13 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			}
 			driver->setMaterial(list.m);
 
-			for (scene::IMeshBuffer *buf : list.bufs) {
+			for (auto &pair : list.bufs) {
+				scene::IMeshBuffer *buf = pair.second;
+
+				v3f block_wpos = intToFloat(pair.first * MAP_BLOCKSIZE, BS);
+				m.setTranslation(block_wpos - offset);
+
+				driver->setTransform(video::ETS_WORLD, m);
 				driver->drawMeshBuffer(buf);
 				vertex_count += buf->getVertexCount();
 			}
@@ -604,5 +602,3 @@ void ClientMap::PrintInfo(std::ostream &out)
 {
 	out<<"ClientMap: ";
 }
-
-

@@ -38,10 +38,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class InventoryManager;
 class ISimpleTextureSource;
 class Client;
-class TexturePool;
 class GUIScrollContainer;
+class ISoundManager;
 
-typedef enum {
+enum FormspecFieldType {
 	f_Button,
 	f_Table,
 	f_TabHeader,
@@ -53,13 +53,13 @@ typedef enum {
 	f_HyperText,
 	f_AnimatedImage,
 	f_Unknown
-} FormspecFieldType;
+};
 
-typedef enum {
+enum FormspecQuitMode {
 	quit_mode_no,
 	quit_mode_accept,
 	quit_mode_cancel
-} FormspecQuitMode;
+};
 
 struct TextDest
 {
@@ -128,6 +128,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		int priority;
 		core::rect<s32> rect;
 		gui::ECURSOR_ICON fcursor_icon;
+		std::string sound;
 	};
 
 	struct TooltipSpec
@@ -152,6 +153,7 @@ public:
 			IMenuManager *menumgr,
 			Client *client,
 			ISimpleTextureSource *tsrc,
+			ISoundManager *sound_manager,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
 			const std::string &formspecPrepend,
@@ -161,7 +163,7 @@ public:
 
 	static void create(GUIFormSpecMenu *&cur_formspec, Client *client,
 		JoystickController *joystick, IFormSource *fs_src, TextDest *txt_dest,
-		const std::string &formspecPrepend);
+		const std::string &formspecPrepend, ISoundManager *sound_manager);
 
 	void setFormSpec(const std::string &formspec_string,
 			const InventoryLocation &current_inventory_location)
@@ -294,6 +296,7 @@ protected:
 
 	InventoryManager *m_invmgr;
 	ISimpleTextureSource *m_tsrc;
+	ISoundManager *m_sound_manager;
 	Client *m_client;
 
 	std::string m_formspec_string;
@@ -353,7 +356,7 @@ private:
 	JoystickController *m_joystick;
 	bool m_show_debug = false;
 
-	typedef struct {
+	struct parserData {
 		bool explicit_size;
 		bool real_coordinates;
 		u8 simple_field_count;
@@ -381,16 +384,16 @@ private:
 
 		// used to restore table selection/scroll/treeview state
 		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
-	} parserData;
+	};
 
-	typedef struct {
+	struct fs_key_pending {
 		bool key_up;
 		bool key_down;
 		bool key_enter;
 		bool key_escape;
-	} fs_key_pendig;
+	};
 
-	fs_key_pendig current_keys_pending;
+	fs_key_pending current_keys_pending;
 	std::string current_field_enter_pending = "";
 	std::vector<std::string> m_hovered_item_tooltips;
 
@@ -444,6 +447,7 @@ private:
 	void parseAnchor(parserData *data, const std::string &element);
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
+	void parseModel(parserData *data, const std::string &element);
 
 	void tryClose();
 

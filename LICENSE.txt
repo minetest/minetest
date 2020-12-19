@@ -23,6 +23,8 @@ paramat:
   textures/base/pack/menu_header.png
   textures/base/pack/next_icon.png
   textures/base/pack/prev_icon.png
+  textures/base/pack/clear.png
+  textures/base/pack/search.png
 
 rubenwardy, paramat:
   textures/base/pack/start_icon.png
