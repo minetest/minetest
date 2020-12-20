@@ -110,17 +110,26 @@ private:
 	// get_armor_groups(self)
 	static int l_get_armor_groups(lua_State *L);
 
-	// set_physics_override(self, override_table)
-	static int l_set_physics_override(lua_State *L);
-
-	// get_physics_override(self)
-	static int l_get_physics_override(lua_State *L);
+	// get_effective_physics(self)
+	static int l_get_effective_physics(lua_State *L);
 
 	// set_physics_modifier(self, key, modifier_table)
 	static int l_set_physics_modifier(lua_State *L);
 
 	// delete_physics_modifier(self, key)
 	static int l_delete_physics_modifier(lua_State *L);
+
+	// set_physics_flags(self, override_table)
+	static int l_set_physics_flags(lua_State *L);
+
+	// get_physics_flags(self)
+	static int l_get_physics_flags(lua_State *L);
+
+	// set_physics_override(self, override_table)
+	static int l_set_physics_override(lua_State *L);
+
+	// get_physics_override(self)
+	static int l_get_physics_override(lua_State *L);
 
 	// set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
 	static int l_set_animation(lua_State *L);

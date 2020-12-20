@@ -316,10 +316,12 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand()
 	writeF32(os, physics.speed);
 	writeF32(os, physics.jump);
 	writeF32(os, physics.gravity);
+
 	// these are sent inverted so we get true when the server sends nothing
-	writeU8(os, !physics.sneak);
-	writeU8(os, !physics.sneak_glitch);
+	writeU8(os, !m_physics_override_sneak);
+	writeU8(os, !m_physics_override_sneak_glitch);
 	writeU8(os, !m_physics_override_new_move);
+
 	return os.str();
 }
 
@@ -556,8 +558,14 @@ void PlayerSAO::unlinkPlayerSessionAndSave()
 PlayerSAO::PhysicsModifier PlayerSAO::calculatePhysicsModifier()
 {
 	PhysicsModifier result;
+
 	for (const auto &pair : m_physics_modifiers)
-		result *= pair.second;
+		if (pair.second.is_add)
+			pair.second.apply(result);
+
+	for (const auto &pair : m_physics_modifiers)
+		if (!pair.second.is_add)
+			pair.second.apply(result);
 
 	return result;
 }
@@ -570,12 +578,6 @@ const PlayerSAO::PhysicsModifier &PlayerSAO::getTotalPhysicsModifier()
 	}
 
 	return m_physics_modifier;
-}
-
-void PlayerSAO::dirtyPhysicsModifier()
-{
-	m_physics_modifier_dirty = true;
-	m_physics_override_sent = false;
 }
 
 std::string PlayerSAO::getPropertyPacket()
@@ -711,14 +713,14 @@ float PlayerSAO::getZoomFOV() const
 void PlayerSAO::setPhysicsModifier(
 		const std::string &key, const PhysicsModifier &modifier)
 {
-	dirtyPhysicsModifier();
+	setPhysicsModifiersDirty();
 	m_physics_modifiers[key] = modifier;
 }
 
 void PlayerSAO::deletePhysicsModifier(
 		const std::string &key)
 {
-	dirtyPhysicsModifier();
+	setPhysicsModifiersDirty();
 	m_physics_modifiers.erase(key);
 }
 

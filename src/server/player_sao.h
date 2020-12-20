@@ -69,46 +69,26 @@ class RemotePlayer;
 class PlayerSAO : public UnitSAO
 {
 public:
-
-
 	struct PhysicsModifier
 	{
-		PhysicsModifier():
-				PhysicsModifier(1.0f, 1.0f, 1.0f, true, false)
-		{
-		}
+		float speed = 1.f;
+		float jump = 1.f;
+		float gravity = 1.f;
 
-		PhysicsModifier(
-				float speed, float jump, float gravity, bool sneak, bool sneak_glitch):
-				speed(speed),
-				jump(jump),
-				gravity(gravity),
-				sneak(sneak),
-				sneak_glitch(sneak_glitch)
-		{
-		}
+		bool is_add = false;
 
-		PhysicsModifier operator*(const PhysicsModifier &other) const
+		void apply(PhysicsModifier &target) const
 		{
-			PhysicsModifier ret = *this;
-			ret *= other;
-			return ret;
+			if (is_add) {
+				target.speed += speed;
+				target.jump += jump;
+				target.gravity += gravity;
+			} else {
+				target.speed *= speed;
+				target.jump *= jump;
+				target.gravity *= gravity;
+			}
 		}
-
-		void operator*=(const PhysicsModifier &other)
-		{
-			speed *= other.speed;
-			jump *= other.jump;
-			gravity *= other.gravity;
-			sneak = sneak && other.sneak;
-			sneak_glitch = sneak || other.sneak_glitch;
-		}
-
-		float speed;
-		float jump;
-		float gravity;
-		bool sneak;
-		bool sneak_glitch;
 	};
 
 	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
@@ -240,7 +220,11 @@ private:
 	// Not const since it may cached
 	PhysicsModifier calculatePhysicsModifier();
 	const PhysicsModifier &getTotalPhysicsModifier();
-	void dirtyPhysicsModifier();
+	void setPhysicsModifiersDirty()
+	{
+		m_physics_modifier_dirty = true;
+		m_physics_override_sent = false;
+	}
 
 	RemotePlayer *m_player = nullptr;
 	session_t m_peer_id = 0;
@@ -286,6 +270,8 @@ public:
 	// until the player leaves and logs back in.
 	bool m_physics_override_set = false;
 	bool m_physics_override_sent = false;
+	bool m_physics_override_sneak = true;
+	bool m_physics_override_sneak_glitch = false;
 	bool m_physics_override_new_move = true;
 };
 

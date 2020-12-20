@@ -524,6 +524,15 @@ bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname
 	return false;
 }
 
+bool has_field(lua_State *L, int table, const char *fieldname)
+{
+	lua_getfield(L, table, fieldname);
+
+	bool ret = !lua_isnil(L, -1);
+	lua_pop(L, 1);
+	return ret;
+}
+
 bool getstringfield(lua_State *L, int table,
 		const char *fieldname, std::string &result)
 {
