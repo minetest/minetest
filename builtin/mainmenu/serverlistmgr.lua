@@ -101,60 +101,60 @@ end
 --------------------------------------------------------------------------------
 function serverlistmgr.read_legacy_favorites(path)
 	local file = io.open(path, "r")
-	if file then
-		local lines = {}
-		for line in file:lines() do
-			lines[#lines + 1] = line
-		end
-		file:close()
-
-		local favorites = {}
-
-		local i = 1
-		while i < #lines do
-			local function pop()
-				local line = lines[i]
-				i = i + 1
-				return line and line:trim()
-			end
-
-			if pop():lower() == "[server]" then
-				local name = pop()
-				local address = pop()
-				local port = tonumber(pop())
-				local description = pop()
-
-				if name == "" then
-					name = nil
-				end
-
-				if description == "" then
-					description = nil
-				end
-
-				if not address or #address < 3 then
-					core.log("warning", "Malformed favorites file, missing address at line " .. i)
-				elseif not port or port < 1 or port > 65535 then
-					core.log("warning", "Malformed favorites file, missing port at line " .. i)
-				elseif (name and name:upper() == "[SERVER]") or
-						(address and address:upper() == "[SERVER]") or
-						(description and description:upper() == "[SERVER]") then
-					core.log("warning", "Potentially malformed favorites file, overran at line " .. i)
-				else
-					favorites[#favorites + 1] = {
-						name = name,
-						address = address,
-						port = port,
-						description = description
-					}
-				end
-			end
-		end
-
-		return favorites
+	if not file then
+		return nil
 	end
 
-	return nil
+	local lines = {}
+	for line in file:lines() do
+		lines[#lines + 1] = line
+	end
+	file:close()
+
+	local favorites = {}
+
+	local i = 1
+	while i < #lines do
+		local function pop()
+			local line = lines[i]
+			i = i + 1
+			return line and line:trim()
+		end
+
+		if pop():lower() == "[server]" then
+			local name = pop()
+			local address = pop()
+			local port = tonumber(pop())
+			local description = pop()
+
+			if name == "" then
+				name = nil
+			end
+
+			if description == "" then
+				description = nil
+			end
+
+			if not address or #address < 3 then
+				core.log("warning", "Malformed favorites file, missing address at line " .. i)
+			elseif not port or port < 1 or port > 65535 then
+				core.log("warning", "Malformed favorites file, missing port at line " .. i)
+			elseif (name and name:upper() == "[SERVER]") or
+					(address and address:upper() == "[SERVER]") or
+					(description and description:upper() == "[SERVER]") then
+				core.log("warning", "Potentially malformed favorites file, overran at line " .. i)
+			else
+				favorites[#favorites + 1] = {
+					name = name,
+					address = address,
+					port = port,
+					description = description
+				}
+			end
+		end
+	end
+
+	return favorites
 end
 
 --------------------------------------------------------------------------------
@@ -195,7 +195,7 @@ function serverlistmgr.get_favorites()
 
 	serverlistmgr.favorites = {}
 
-	-- Add favourites, removing duplicates
+	-- Add favorites, removing duplicates
 	local seen = {}
 	for _, fav in ipairs(read_favorites() or {}) do
 		local key = ("%s:%d"):format(fav.address:lower(), fav.port)
