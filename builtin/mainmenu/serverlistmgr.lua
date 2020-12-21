@@ -172,7 +172,12 @@ local function read_favorites()
 		path = path:sub(1, #path - 5) .. ".txt"
 	end
 
-	return serverlistmgr.read_legacy_favorites(path)
+	local favs = serverlistmgr.read_legacy_favorites(path)
+	if favs then
+		save_favorites(favs)
+		os.remove(path)
+	end
+	return favs
 end
 
 --------------------------------------------------------------------------------
