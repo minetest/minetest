@@ -197,7 +197,7 @@ function serverlistmgr.get_favorites()
 
 	-- Add favourites, removing duplicates
 	local seen = {}
-	for _, fav in ipairs(read_favorites()) do
+	for _, fav in ipairs(read_favorites() or {}) do
 		local key = ("%s:%d"):format(fav.address:lower(), fav.port)
 		if not seen[key] then
 			seen[key] = true
