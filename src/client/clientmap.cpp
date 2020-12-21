@@ -290,6 +290,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	*/
 
 	u32 vertex_count = 0;
+	u32 drawcall_count = 0;
 
 	// For limiting number of mesh animations per frame
 	u32 mesh_animate_count = 0;
@@ -391,6 +392,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			}
 			driver->setMaterial(list.m);
 
+			drawcall_count += list.bufs.size();
 			for (auto &pair : list.bufs) {
 				scene::IMeshBuffer *buf = pair.second;
 
@@ -411,6 +413,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	}
 
 	g_profiler->avg(prefix + "vertices drawn [#]", vertex_count);
+	g_profiler->avg(prefix + "drawcalls [#]", drawcall_count);
 }
 
 static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
