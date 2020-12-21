@@ -1328,6 +1328,9 @@ void Client::handleCommand_HudSetStars(NetworkPacket *pkt)
 
 	*pkt >> stars.visible >> stars.count
 		>> stars.starcolor >> stars.scale;
+	try {
+		*pkt >> stars.visible_at_day;
+	} catch (PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
 	event->type        = CE_SET_STARS;

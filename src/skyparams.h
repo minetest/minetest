@@ -66,6 +66,7 @@ struct StarParams
 	u32 count;
 	video::SColor starcolor;
 	f32 scale;
+	bool visible_at_day;
 };
 
 // Utility class for setting default sky, sun, moon, stars values:
@@ -116,6 +117,7 @@ public:
 		stars.count = 1000;
 		stars.starcolor = video::SColor(105, 235, 235, 255);
 		stars.scale = 1;
+		stars.visible_at_day = false;
 		return stars;
 	}
 };

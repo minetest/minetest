@@ -734,6 +734,7 @@ enum ToClientCommand
 		u32 count
 		u8[4] starcolor (ARGB)
 		f32 scale
+		bool visible_at_day
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

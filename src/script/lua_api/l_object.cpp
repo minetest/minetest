@@ -2044,6 +2044,9 @@ int ObjectRef::l_set_stars(lua_State *L)
 	star_params.scale = getfloatfield_default(L, 2,
 		"scale", star_params.scale);
 
+	star_params.visible_at_day = getboolfield_default(L, 2,
+		"visible_at_day", star_params.visible_at_day);
+
 	getServer(L)->setStars(player, star_params);
 	lua_pushboolean(L, true);
 	return 1;
@@ -2069,6 +2072,8 @@ int ObjectRef::l_get_stars(lua_State *L)
 	lua_setfield(L, -2, "star_color");
 	lua_pushnumber(L, star_params.scale);
 	lua_setfield(L, -2, "scale");
+	lua_pushboolean(L, star_params.visible_at_day);
+	lua_setfield(L, -2, "visible_at_day");
 	return 1;
 }
 
