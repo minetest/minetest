@@ -404,7 +404,7 @@ static void getNodeVertexDirs(const v3s16 &dir, v3s16 *vertex_dirs)
 
 static void getNodeTextureCoords(v3f base, const v3f &scale, const v3s16 &dir, float *u, float *v)
 {
-	if (dir.X > 0 || dir.Y > 0 || dir.Z < 0)
+	if (dir.X > 0 || dir.Y != 0 || dir.Z < 0)
 		base -= scale;
 	if (dir == v3s16(0,0,1)) {
 		*u = -base.X - 1;
@@ -422,8 +422,8 @@ static void getNodeTextureCoords(v3f base, const v3f &scale, const v3s16 &dir, f
 		*u = base.X + 1;
 		*v = -base.Z - 2;
 	} else if (dir == v3s16(0,-1,0)) {
-		*u = base.X;
-		*v = base.Z;
+		*u = base.X + 1;
+		*v = base.Z + 1;
 	}
 }
 
