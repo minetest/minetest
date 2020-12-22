@@ -209,6 +209,7 @@ local function has_hard_deps(raw_deps)
 	return false
 end
 
+-- Recursively resolve dependencies, given the installed mods
 local function resolve_dependencies_2(raw_deps, installed_mods, out)
 	local function resolve_dep(dep)
 		-- Check whether it's already installed
@@ -270,19 +271,20 @@ local function resolve_dependencies_2(raw_deps, installed_mods, out)
 	return true
 end
 
+-- Resolve dependencies for a package, calls the recursive version.
 local function resolve_dependencies(raw_deps, game)
+	assert(game)
+
 	local installed_mods = {}
-	if game then
-		local mods = {}
-		pkgmgr.get_game_mods(game, mods)
 
-		for _, mod in pairs(mods) do
-			installed_mods[mod.name] = true
-		end
+	local mods = {}
+	pkgmgr.get_game_mods(game, mods)
+	for _, mod in pairs(mods) do
+		installed_mods[mod.name] = true
+	end
 
-		for _, mod in pairs(pkgmgr.global_mods:get_list()) do
-			installed_mods[mod.name] = true
-		end
+	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
+		installed_mods[mod.name] = true
 	end
 
 	local out = {}
@@ -320,8 +322,6 @@ function install_dialog.get_formspec()
 	end
 
 	local selected_game = pkgmgr.games[selected_game_idx]
-	assert(selected_game)
-
 	local deps_to_install = 0
 	local deps_not_found = 0
 
