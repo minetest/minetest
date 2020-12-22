@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-13 23:17+0200\n"
 "PO-Revision-Date: 2020-12-24 05:29+0000\n"
-"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
+"Last-Translator: cypMon <randalchem@protonmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -720,11 +720,11 @@ msgstr "Permitir daños"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr "Juego anfitrión"
+msgstr "Hospedar juego"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr "Servidor anfitrión"
+msgstr "Hospedar servidor"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -1421,7 +1421,7 @@ msgstr "Volumen cambiado a %d%%"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr "Wireframe mostrado"
+msgstr "Líneas 3D mostradas"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
@@ -1429,7 +1429,7 @@ msgstr "El zoom está actualmente desactivado por el juego o un mod"
 
 #: src/client/game.cpp
 msgid "ok"
-msgstr "aceptar"
+msgstr "Aceptar"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -5088,11 +5088,16 @@ msgid "Light curve low gradient"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
 "Only mapchunks completely within the mapgen limit are generated.\n"
 "Value is stored per-world."
 msgstr ""
+"Límite de la generación de mapa, en nodos, en todas las 6 direcciones desde ("
+"0, 0, 0).\n"
+"Solo las porciones de terreno dentro de los límites son generadas.\n"
+"Los valores se guardan por mundo."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5105,11 +5110,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity"
-msgstr ""
+msgstr "Fluidez líquida"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity smoothing"
-msgstr ""
+msgstr "Suavizado de la fluidez líquida"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
@@ -5150,7 +5155,7 @@ msgstr "Intervalo de modificador de bloques activos"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
-msgstr ""
+msgstr "Límite inferior en Y de mazmorras."
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of floatlands."
@@ -5168,18 +5173,20 @@ msgstr "Estilo del menú principal"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
+"Hace que la niebla y los colores del cielo dependan de la hora del día ("
+"amanecer / atardecer) y la dirección de vista."
 
 #: src/settings_translation_file.cpp
 msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
-msgstr ""
+msgstr "Hace que DirectX funcione con LuaJIT. Desactivar si ocasiona problemas."
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
-msgstr ""
+msgstr "Vuelve opacos a todos los líquidos"
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
-msgstr ""
+msgstr "Directorio de mapas"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen Carpathian."
@@ -5252,7 +5259,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
-msgstr ""
+msgstr "Límite de generación de mapa"
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
