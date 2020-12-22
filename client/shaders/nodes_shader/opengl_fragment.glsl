@@ -16,7 +16,11 @@ varying vec3 vPosition;
 // precision must be considered).
 varying vec3 worldPosition;
 varying lowp vec4 varColor;
-centroid varying mediump vec2 varTexCoord;
+#ifdef GL_ES
+varying mediump vec2 varTexCoord;
+#else
+centroid varying vec2 varTexCoord;
+#endif
 varying vec3 eyeVec;
 
 const float fogStart = FOG_START;
