@@ -1324,7 +1324,7 @@ void Client::handleCommand_HudSetMoon(NetworkPacket *pkt)
 
 void Client::handleCommand_HudSetStars(NetworkPacket *pkt)
 {
-	StarParams stars;
+	StarParams stars = SkyboxDefaults().getStarDefaults();
 
 	*pkt >> stars.visible >> stars.count
 		>> stars.starcolor >> stars.scale;
