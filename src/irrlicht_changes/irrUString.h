@@ -1331,7 +1331,7 @@ public:
 	{
 		u32 i;
 		const uchar16_t* oa = other.c_str();
-		for(i=0; array[i] && oa[i] && i < n; ++i)
+		for(i=0; i < n && array[i] && oa[i]; ++i)
 			if (array[i] != oa[i])
 				return false;
 
@@ -1350,7 +1350,7 @@ public:
 		if (!str)
 			return false;
 		u32 i;
-		for(i=0; array[i] && str[i] && i < n; ++i)
+		for(i=0; i < n && array[i] && str[i]; ++i)
 			if (array[i] != str[i])
 				return false;
 

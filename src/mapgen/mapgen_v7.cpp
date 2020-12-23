@@ -297,7 +297,7 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 	int iters = 256;
 	while (iters > 0 && y <= max_spawn_y) {
 		if (!getMountainTerrainAtPoint(p.X, y + 1, p.Y)) {
-			if (y <= water_level || y > max_spawn_y)
+			if (y <= water_level)
 				return MAX_MAP_GENERATION_LIMIT; // Unsuitable spawn point
 
 			// y + 1 due to biome 'dust'

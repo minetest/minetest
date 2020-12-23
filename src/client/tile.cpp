@@ -1633,6 +1633,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			/* IMPORTANT: When changing this, getTextureForMesh() needs to be
 			 * updated too. */
 
+			if (!baseimg) {
+				errorstream << "generateImagePart(): baseimg == NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
 			// Apply the "clean transparent" filter, if configured.
 			if (g_settings->getBool("texture_clean_transparent"))
 				imageCleanTransparent(baseimg, 127);

@@ -316,7 +316,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	// Send active objects
 	{
 		PlayerSAO *sao = getPlayerSAO(peer_id);
-		if (client && sao)
+		if (sao)
 			SendActiveObjectRemoveAdd(client, sao);
 	}
 

@@ -1,15 +1,9 @@
-cmake_minimum_required(VERSION 2.6)
-
-if(${CMAKE_VERSION} STREQUAL "2.8.2")
-	# Bug http://vtk.org/Bug/view.php?id=11020
-	message(WARNING "CMake/CPack version 2.8.2 will not create working .deb packages!")
-endif()
+cmake_minimum_required(VERSION 3.5)
 
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
 
-# Works only for cmake 3.1 and greater
 set(CMAKE_CXX_STANDARD 11)
 set(GCC_MINIMUM_VERSION "4.8")
 set(CLANG_MINIMUM_VERSION "3.4")

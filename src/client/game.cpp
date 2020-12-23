@@ -186,7 +186,7 @@ struct LocalFormspecHandler : public TextDest
 			return;
 		}
 
-		if (m_client && m_client->modsLoaded())
+		if (m_client->modsLoaded())
 			m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
@@ -583,7 +583,7 @@ public:
 
 	virtual IShaderConstantSetter* create()
 	{
-		GameGlobalShaderConstantSetter *scs = new GameGlobalShaderConstantSetter(
+		auto *scs = new GameGlobalShaderConstantSetter(
 				m_sky, m_force_fog_off, m_fog_range, m_client);
 		if (!m_sky)
 			created_nosky.push_back(scs);
@@ -1338,7 +1338,7 @@ bool Game::createClient(const GameStartData &start_data)
 		return false;
 	}
 
-	GameGlobalShaderConstantSetterFactory *scsf = new GameGlobalShaderConstantSetterFactory(
+	auto *scsf = new GameGlobalShaderConstantSetterFactory(
 			&m_flags.force_fog_off, &runData.fog_range, client);
 	shader_src->addShaderConstantSetterFactory(scsf);
 
@@ -1348,32 +1348,20 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Camera
 	 */
 	camera = new Camera(*draw_control, client);
-	if (!camera || !camera->successfullyCreated(*error_message))
+	if (!camera->successfullyCreated(*error_message))
 		return false;
 	client->setCamera(camera);
 
 	/* Clouds
 	 */
-	if (m_cache_enable_clouds) {
+	if (m_cache_enable_clouds)
 		clouds = new Clouds(smgr, -1, time(0));
-		if (!clouds) {
-			*error_message = "Memory allocation error (clouds)";
-			errorstream << *error_message << std::endl;
-			return false;
-		}
-	}
 
 	/* Skybox
 	 */
 	sky = new Sky(-1, texture_src, shader_src);
 	scsf->setSky(sky);
 	skybox = NULL;	// This is used/set later on in the main run loop
-
-	if (!sky) {
-		*error_message = "Memory allocation error sky";
-		errorstream << *error_message << std::endl;
-		return false;
-	}
 
 	/* Pre-calculated values
 	 */
@@ -1404,12 +1392,6 @@ bool Game::createClient(const GameStartData &start_data)
 
 	hud = new Hud(guienv, client, player, &player->inventory);
 
-	if (!hud) {
-		*error_message = "Memory error: could not create HUD";
-		errorstream << *error_message << std::endl;
-		return false;
-	}
-
 	mapper = client->getMinimap();
 
 	if (mapper && client->modsLoaded())
@@ -1431,11 +1413,6 @@ bool Game::initGui()
 	// Chat backend and console
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
-	if (!gui_chat_console) {
-		*error_message = "Could not allocate memory for chat console";
-		errorstream << *error_message << std::endl;
-		return false;
-	}
 
 #ifdef HAVE_TOUCHSCREENGUI
 
@@ -1491,9 +1468,6 @@ bool Game::connectToServer(const GameStartData &start_data,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
 			connect_address.isIPv6(), m_game_ui.get());
-
-	if (!client)
-		return false;
 
 	client->m_simple_singleplayer_mode = simple_singleplayer_mode;
 

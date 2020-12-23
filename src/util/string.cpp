@@ -633,7 +633,7 @@ static bool parseNamedColorString(const std::string &value, video::SColor &color
 		color_name = value;
 	}
 
-	color_name = lowercase(value);
+	color_name = lowercase(color_name);
 
 	std::map<const std::string, unsigned>::const_iterator it;
 	it = named_colors.colors.find(color_name);
