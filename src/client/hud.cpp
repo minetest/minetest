@@ -1055,9 +1055,9 @@ void drawItemStack(
 
 	if (def.type == ITEM_TOOL && item.wear != 0) {
 		// Draw a progressbar
-		float barheight = rect.getHeight() / 16;
-		float barpad_x = rect.getWidth() / 16;
-		float barpad_y = rect.getHeight() / 16;
+		float barheight = static_cast<float>(rect.getHeight()) / 16;
+		float barpad_x = static_cast<float>(rect.getWidth()) / 16;
+		float barpad_y = static_cast<float>(rect.getHeight()) / 16;
 
 		core::rect<s32> progressrect(
 			rect.UpperLeftCorner.X + barpad_x,

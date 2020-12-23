@@ -398,10 +398,9 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path, const char 
 			lua_pushfstring(L, "%s: %s", path, strerror(errno));
 			return false;
 		}
-		chunk_name = new char[strlen(display_name) + 2];
-		chunk_name[0] = '@';
-		chunk_name[1] = '\0';
-		strcat(chunk_name, display_name);
+		size_t len = strlen(display_name) + 2;
+		chunk_name = new char[len];
+		snprintf(chunk_name, len, "@%s", display_name);
 	}
 
 	size_t start = 0;

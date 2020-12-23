@@ -356,7 +356,7 @@ namespace gui
 				load_flags = FT_LOAD_DEFAULT | FT_LOAD_RENDER;
 				if (!useHinting()) load_flags |= FT_LOAD_NO_HINTING;
 				if (!useAutoHinting()) load_flags |= FT_LOAD_NO_AUTOHINT;
-				if (useMonochrome()) load_flags |= FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO | FT_RENDER_MODE_MONO;
+				if (useMonochrome()) load_flags |= FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
 				else load_flags |= FT_LOAD_TARGET_NORMAL;
 			}
 			u32 getWidthFromCharacter(wchar_t c) const;

@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.4 FATAL_ERROR)
-
 project(lua C)
 
 set(LUA_VERSION_MAJOR 5)
@@ -15,9 +13,8 @@ set(LIBS)
 
 if(APPLE)
 	set(DEFAULT_POSIX TRUE)
-	set(DEFAULT_DLOPEN ON)
-	# use this on Mac OS X 10.3-
-	option(LUA_USE_MACOSX "Mac OS X 10.3-" OFF)
+	set(DEFAULT_DLOPEN OFF)
+	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_USE_MACOSX")
 elseif(UNIX OR CYGWIN)
 	set(DEFAULT_POSIX TRUE)
 elseif(WIN32)
@@ -31,12 +28,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(COMMON_LDFLAGS "${COMMON_LDFLAGS} -Wl,-E -lm")
 	set(DEFAULT_DLOPEN ON)
 endif()
-
-# For "Mac OS X 10.3-"
-if(LUA_USE_MACOSX)
-	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_USE_MACOSX")
-	set(LUA_USE_DLOPEN FALSE)
-endif(LUA_USE_MACOSX)
 
 option(LUA_USE_DLOPEN "Enable dlopen support." ${DEFAULT_DLOPEN})
 mark_as_advanced(LUA_USE_DLOPEN)
