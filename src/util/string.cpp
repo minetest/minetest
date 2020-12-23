@@ -426,7 +426,7 @@ static bool parseHexColorString(const std::string &value, video::SColor &color,
 	return true;
 }
 
-const std::unordered_map<std::string, u32> NAMED_COLORS = {
+const static std::unordered_map<std::string, u32> s_named_colors = {
 	{"aliceblue",            0xf0f8ff},
 	{"antiquewhite",         0xfaebd7},
 	{"aqua",                 0x00ffff},
@@ -596,8 +596,8 @@ static bool parseNamedColorString(const std::string &value, video::SColor &color
 
 	color_name = lowercase(color_name);
 
-	auto it = NAMED_COLORS.find(color_name);
-	if (it == NAMED_COLORS.end())
+	auto it = s_named_colors.find(color_name);
+	if (it == s_named_colors.end())
 		return false;
 
 	u32 color_temp = it->second;
