@@ -1409,7 +1409,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO *playersao = (PlayerSAO *) getobject(ref);
+	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
 
@@ -1449,7 +1449,7 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	PlayerSAO *playersao = (PlayerSAO *)getobject(ref);
+	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
 
