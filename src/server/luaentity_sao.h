@@ -39,8 +39,6 @@ public:
 	ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_LUAENTITY; }
 	ActiveObjectType getSendType() const { return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
-	virtual void onMarkedForDeactivation();
-	virtual void onMarkedForRemoval();
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
 	bool isStaticAllowed() const { return m_prop.static_save; }
@@ -72,6 +70,10 @@ public:
 	bool getCollisionBox(aabb3f *toset) const;
 	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const;
+
+protected:
+	virtual void onMarkedForDeactivation();
+	virtual void onMarkedForRemoval();
 
 private:
 	std::string getPropertyPacket();

@@ -1792,7 +1792,7 @@ void ServerEnvironment::removeRemovedObjects()
 		/*
 			Delete static data from block if removed
 		*/
-		if (obj->m_pending_removal)
+		if (obj->isPendingRemoval())
 			deleteStaticFromBlock(obj, id, MOD_REASON_REMOVE_OBJECTS_REMOVE, false);
 
 		// If still known by clients, don't actually remove. On some future
@@ -1803,7 +1803,7 @@ void ServerEnvironment::removeRemovedObjects()
 		/*
 			Move static data from active to stored if deactivated
 		*/
-		if (!obj->m_pending_removal && obj->m_static_exists) {
+		if (!obj->isPendingRemoval() && obj->m_static_exists) {
 			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
 			if (block) {
 				const auto i = block->m_static_objects.m_active.find(id);
