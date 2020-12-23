@@ -7,13 +7,9 @@ install_linux_deps() {
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
 		gettext libpq-dev postgresql-server-dev-all libleveldb-dev \
 		libcurl4-openssl-dev)
-	# for better coverage, build some jobs with luajit
-	if [ -n "$WITH_LUAJIT" ]; then
-		pkgs+=(libluajit-5.1-dev)
-	fi
 
 	sudo apt-get update
-	sudo apt-get install -y --no-install-recommends ${pkgs[@]}
+	sudo apt-get install -y --no-install-recommends ${pkgs[@]} "$@"
 }
 
 # Mac OSX build only
