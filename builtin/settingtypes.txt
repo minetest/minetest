@@ -2205,4 +2205,5 @@ contentdb_url (ContentDB URL) string https://content.minetest.net
 contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_default
 
 #    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
+#    This should be lower than curl_parallel_limit.
 contentdb_max_concurrent_downloads (ContentDB Max Concurrent Downloads) int 3

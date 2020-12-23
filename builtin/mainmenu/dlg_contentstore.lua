@@ -159,6 +159,290 @@ local function queue_download(package)
 	end
 end
 
+local function get_raw_dependencies(package)
+	if package.raw_deps then
+		return package.raw_deps
+	end
+
+	local url_fmt = "/api/packages/%s/dependencies/?only_hard=1&protocol_version=%s&engine_version=%s"
+	local version = core.get_version()
+	local base_url = core.settings:get("contentdb_url")
+	local url = base_url .. url_fmt:format(package.id, core.get_max_supp_proto(), version.string)
+
+	local response = http.fetch_sync({ url = url })
+	if not response.succeeded then
+		return
+	end
+
+	local data = core.parse_json(response.data) or {}
+
+	local content_lookup = {}
+	for _, pkg in pairs(store.packages_full) do
+		content_lookup[pkg.id] = pkg
+	end
+
+	for id, raw_deps in pairs(data) do
+		local package2 = content_lookup[id:lower()]
+		if package2 and not package2.raw_deps then
+			package2.raw_deps = raw_deps
+
+			for _, dep in pairs(raw_deps) do
+				local packages = {}
+				for i=1, #dep.packages do
+					packages[#packages + 1] = content_lookup[dep.packages[i]:lower()]
+				end
+				dep.packages = packages
+			end
+		end
+	end
+
+	return package.raw_deps
+end
+
+local function has_hard_deps(raw_deps)
+	for i=1, #raw_deps do
+		if not raw_deps[i].is_optional then
+			return true
+		end
+	end
+
+	return false
+end
+
+-- Recursively resolve dependencies, given the installed mods
+local function resolve_dependencies_2(raw_deps, installed_mods, out)
+	local function resolve_dep(dep)
+		-- Check whether it's already installed
+		if installed_mods[dep.name] then
+			return {
+				is_optional = dep.is_optional,
+				name = dep.name,
+				installed = true,
+			}
+		end
+
+		-- Find exact name matches
+		local fallback
+		for _, package in pairs(dep.packages) do
+			if package.type ~= "game" then
+				if package.name == dep.name then
+					return {
+						is_optional = dep.is_optional,
+						name = dep.name,
+						installed = false,
+						package = package,
+					}
+				elseif not fallback then
+					fallback = package
+				end
+			end
+		end
+
+		-- Otherwise, find the first mod that fulfils it
+		if fallback then
+			return {
+				is_optional = dep.is_optional,
+				name = dep.name,
+				installed = false,
+				package = fallback,
+			}
+		end
+
+		return {
+			is_optional = dep.is_optional,
+			name = dep.name,
+			installed = false,
+		}
+	end
+
+	for _, dep in pairs(raw_deps) do
+		if not dep.is_optional and not out[dep.name] then
+			local result  = resolve_dep(dep)
+			out[dep.name] = result
+			if result and result.package and not result.installed then
+				local raw_deps2 = get_raw_dependencies(result.package)
+				if raw_deps2 then
+					resolve_dependencies_2(raw_deps2, installed_mods, out)
+				end
+			end
+		end
+	end
+
+	return true
+end
+
+-- Resolve dependencies for a package, calls the recursive version.
+local function resolve_dependencies(raw_deps, game)
+	assert(game)
+
+	local installed_mods = {}
+
+	local mods = {}
+	pkgmgr.get_game_mods(game, mods)
+	for _, mod in pairs(mods) do
+		installed_mods[mod.name] = true
+	end
+
+	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
+		installed_mods[mod.name] = true
+	end
+
+	local out = {}
+	if not resolve_dependencies_2(raw_deps, installed_mods, out) then
+		return nil
+	end
+
+	local retval = {}
+	for _, dep in pairs(out) do
+		retval[#retval + 1] = dep
+	end
+
+	table.sort(retval, function(a, b)
+		return a.name < b.name
+	end)
+
+	return retval
+end
+
+local install_dialog = {}
+function install_dialog.get_formspec()
+	local package = install_dialog.package
+	local raw_deps = install_dialog.raw_deps
+	local will_install_deps = install_dialog.will_install_deps
+
+	local selected_game_idx = 1
+	local selected_gameid = core.settings:get("menu_last_game")
+	local games = table.copy(pkgmgr.games)
+	for i=1, #games do
+		if selected_gameid and games[i].id == selected_gameid then
+			selected_game_idx = i
+		end
+
+		games[i] = minetest.formspec_escape(games[i].name)
+	end
+
+	local selected_game = pkgmgr.games[selected_game_idx]
+	local deps_to_install = 0
+	local deps_not_found = 0
+
+	install_dialog.dependencies = resolve_dependencies(raw_deps, selected_game)
+	local formatted_deps = {}
+	for _, dep in pairs(install_dialog.dependencies) do
+		formatted_deps[#formatted_deps + 1] = "#fff"
+		formatted_deps[#formatted_deps + 1] = minetest.formspec_escape(dep.name)
+		if dep.installed then
+			formatted_deps[#formatted_deps + 1] = "#ccf"
+			formatted_deps[#formatted_deps + 1] = fgettext("Already installed")
+		elseif dep.package then
+			formatted_deps[#formatted_deps + 1] = "#cfc"
+			formatted_deps[#formatted_deps + 1] = fgettext("$1 by $2", dep.package.title, dep.package.author)
+			deps_to_install = deps_to_install + 1
+		else
+			formatted_deps[#formatted_deps + 1] = "#f00"
+			formatted_deps[#formatted_deps + 1] = fgettext("Not found")
+			deps_not_found = deps_not_found + 1
+		end
+	end
+
+	local message_bg = "#3333"
+	local message
+	if will_install_deps then
+		message = fgettext("$1 and $2 dependencies will be installed.", package.title, deps_to_install)
+	else
+		message = fgettext("$1 will be installed, and $2 dependencies will be skipped.", package.title, deps_to_install)
+	end
+	if deps_not_found > 0 then
+		message = fgettext("$1 required dependencies could not be found.", deps_not_found) ..
+				" " .. fgettext("Please check that the base game is correct.", deps_not_found) ..
+				"\n" .. message
+		message_bg = mt_color_orange
+	end
+
+	local formspec = {
+		"formspec_version[3]",
+		"size[7,7.85]",
+		"style[title;border=false]",
+		"box[0,0;7,0.5;#3333]",
+		"button[0,0;7,0.5;title;", fgettext("Install $1", package.title) , "]",
+
+		"container[0.375,0.70]",
+
+		"label[0,0.25;", fgettext("Base Game:"), "]",
+		"dropdown[2,0;4.25,0.5;gameid;", table.concat(games, ","), ";", selected_game_idx, "]",
+
+		"label[0,0.8;", fgettext("Dependencies:"), "]",
+
+		"tablecolumns[color;text;color;text]",
+		"table[0,1.1;6.25,3;packages;", table.concat(formatted_deps, ","), "]",
+
+		"container_end[]",
+
+		"checkbox[0.375,5.1;will_install_deps;",
+			fgettext("Install missing dependencies"), ";",
+			will_install_deps and "true" or "false", "]",
+
+		"box[0,5.4;7,1.2;", message_bg, "]",
+		"textarea[0.375,5.5;6.25,1;;;", message, "]",
+
+		"container[1.375,6.85]",
+		"button[0,0;2,0.8;install_all;", fgettext("Install"), "]",
+		"button[2.25,0;2,0.8;cancel;", fgettext("Cancel"), "]",
+		"container_end[]",
+	}
+
+	return table.concat(formspec, "")
+end
+
+function install_dialog.handle_submit(this, fields)
+	if fields.cancel then
+		this:delete()
+		return true
+	end
+
+	if fields.will_install_deps ~= nil then
+		install_dialog.will_install_deps = minetest.is_yes(fields.will_install_deps)
+		return true
+	end
+
+	if fields.install_all then
+		queue_download(install_dialog.package)
+
+		if install_dialog.will_install_deps then
+			for _, dep in pairs(install_dialog.dependencies) do
+				if not dep.is_optional and not dep.installed and dep.package then
+					queue_download(dep.package)
+				end
+			end
+		end
+
+		this:delete()
+		return true
+	end
+
+	if fields.gameid then
+		for _, game in pairs(pkgmgr.games) do
+			if game.name == fields.gameid then
+				core.settings:set("menu_last_game", game.id)
+				break
+			end
+		end
+		return true
+	end
+
+	return false
+end
+
+function install_dialog.create(package, raw_deps)
+	install_dialog.dependencies = nil
+	install_dialog.package = package
+	install_dialog.raw_deps = raw_deps
+	install_dialog.will_install_deps = true
+	return dialog_create("package_view",
+			install_dialog.get_formspec,
+			install_dialog.handle_submit,
+			nil)
+end
+
 local function get_file_extension(path)
 	local parts = path:split(".")
 	return parts[#parts]
@@ -570,15 +854,24 @@ function store.handle_submit(this, fields)
 		assert(package)
 
 		if fields["install_" .. i] then
-			queue_download(package)
+			local deps = get_raw_dependencies(package)
+			if deps and has_hard_deps(deps) then
+				local dlg = install_dialog.create(package, deps)
+				dlg:set_parent(this)
+				this:hide()
+				dlg:show()
+			else
+				queue_download(package)
+			end
+
 			return true
 		end
 
 		if fields["uninstall_" .. i] then
-			local dlg_delmod = create_delete_content_dlg(package)
-			dlg_delmod:set_parent(this)
+			local dlg = create_delete_content_dlg(package)
+			dlg:set_parent(this)
 			this:hide()
-			dlg_delmod:show()
+			dlg:show()
 			return true
 		end
 

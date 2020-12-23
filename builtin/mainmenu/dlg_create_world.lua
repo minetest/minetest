@@ -98,7 +98,7 @@ local function create_world_formspec(dialogdata)
 	-- Error out when no games found
 	if #pkgmgr.games == 0 then
 		return "size[12.25,3,true]" ..
-			"box[0,0;12,2;#ff8800]" ..
+			"box[0,0;12,2;" .. mt_color_orange .. "]" ..
 			"textarea[0.3,0;11.7,2;;;"..
 			fgettext("You have no games installed.") .. "\n" ..
 			fgettext("Download one from minetest.net") .. "]" ..
