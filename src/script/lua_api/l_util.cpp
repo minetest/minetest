@@ -239,15 +239,6 @@ int ModApiUtil::l_is_yes(lua_State *L)
 	return 1;
 }
 
-// is_nan(arg)
-int ModApiUtil::l_is_nan(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	lua_pushboolean(L, isNaN(L, 1));
-	return 1;
-}
-
 // get_builtin_path()
 int ModApiUtil::l_get_builtin_path(lua_State *L)
 {
@@ -493,7 +484,6 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(get_password_hash);
 
 	API_FCT(is_yes);
-	API_FCT(is_nan);
 
 	API_FCT(get_builtin_path);
 
@@ -526,7 +516,6 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(write_json);
 
 	API_FCT(is_yes);
-	API_FCT(is_nan);
 
 	API_FCT(compress);
 	API_FCT(decompress);
