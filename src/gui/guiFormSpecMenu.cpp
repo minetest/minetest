@@ -3718,7 +3718,8 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 {
 	EnrichedString ntext(text);
 	ntext.setDefaultColor(color);
-	ntext.setBackground(bgcolor);
+	if (!ntext.hasBackground())
+		ntext.setBackground(bgcolor);
 
 	setStaticText(m_tooltip_element, ntext);
 
