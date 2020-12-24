@@ -1991,6 +1991,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		if (!force_delete && obj->m_static_exists &&
 		   !m_active_blocks.contains(obj->m_static_block) &&
 		   m_active_blocks.contains(blockpos_o)) {
+
 			// Delete from block where object was located
 			deleteStaticFromBlock(obj, id, MOD_REASON_STATIC_DATA_REMOVED, false);
 
@@ -2068,6 +2069,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				force_delete = true;
 		}
 
+		obj->markForDeactivation();
 		/*
 			If known by some client, set pending deactivation.
 			Otherwise delete it immediately.
@@ -2077,7 +2079,6 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 						  << "object id=" << id << " is known by clients"
 						  << "; not deleting yet" << std::endl;
 
-			obj->markForDeactivation();
 			return false;
 		}
 

@@ -238,8 +238,8 @@ public:
 	v3s16 m_static_block = v3s16(1337,1337,1337);
 
 protected:
-	virtual void onMarkedForRemoval() {}
 	virtual void onMarkedForDeactivation() {}
+	virtual void onMarkedForRemoval() {}
 
 	virtual void onAttach(int parent_id) {}
 	virtual void onDetach(int parent_id) {}

@@ -112,13 +112,7 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	}
 }
 
-void LuaEntitySAO::onMarkedForDeactivation()
-{
-	if (m_registered)
-		m_env->getScriptIface()->luaentity_Deactivate(m_id);
-}
-
-void LuaEntitySAO::onMarkedForRemoval()
+void LuaEntitySAO::dispatchScriptDeactivate()
 {
 	if (m_registered)
 		m_env->getScriptIface()->luaentity_Deactivate(m_id);

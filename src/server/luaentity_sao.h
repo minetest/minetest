@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class LuaEntitySAO : public UnitSAO
 {
+private:
+	void dispatchScriptDeactivate();
 public:
 	LuaEntitySAO() = delete;
 	// Used by the environment to load SAO
@@ -72,8 +74,8 @@ public:
 	bool collideWithObjects() const;
 
 protected:
-	virtual void onMarkedForDeactivation();
-	virtual void onMarkedForRemoval();
+	virtual void onMarkedForDeactivation() { dispatchScriptDeactivate(); }
+	virtual void onMarkedForRemoval() { dispatchScriptDeactivate(); }
 
 private:
 	std::string getPropertyPacket();
