@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/subgames.h"
 #include "porting.h"
 #include "util/metricsbackend.h"
+#include <algorithm>
 
 /**
  * Manage server mods
@@ -98,11 +99,12 @@ void ServerModManager::getModNames(std::vector<std::string> &modlist) const
 
 void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 {
-	for (const ModSpec &spec : m_sorted_mods) {
+	std::for_each(m_sorted_mods.rbegin(), m_sorted_mods.rend(),
+			[&paths] (const ModSpec &spec) {
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "textures");
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "sounds");
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "media");
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "models");
 		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "locale");
-	}
+	});
 }
