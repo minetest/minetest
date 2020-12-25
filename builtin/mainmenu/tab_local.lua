@@ -18,13 +18,11 @@
 
 local enable_gamebar = PLATFORM ~= "Android"
 local current_game, singleplayer_refresh_gamebar
+
 if enable_gamebar then
 	function current_game()
 		local last_game_id = core.settings:get("menu_last_game")
 		local game = pkgmgr.find_by_gameid(last_game_id)
-		if game == nil then
-			mm_texture.reset()
-		end
 
 		return game
 	end
