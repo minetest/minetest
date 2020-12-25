@@ -101,15 +101,15 @@ void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 {
 	std::for_each(m_sorted_mods.rbegin(), m_sorted_mods.rend(),
 			[&paths](const ModSpec &spec) {
-				fs::GetRecursiveDirs(paths,
-						spec.path + DIR_DELIM + "textures");
-				fs::GetRecursiveDirs(paths,
-						spec.path + DIR_DELIM + "sounds");
-				fs::GetRecursiveDirs(paths,
-						spec.path + DIR_DELIM + "media");
-				fs::GetRecursiveDirs(paths,
-						spec.path + DIR_DELIM + "models");
-				fs::GetRecursiveDirs(paths,
-						spec.path + DIR_DELIM + "locale");
+				fs::GetRecursiveDirs(
+						paths, spec.path + DIR_DELIM + "textures");
+				fs::GetRecursiveDirs(
+						paths, spec.path + DIR_DELIM + "sounds");
+				fs::GetRecursiveDirs(
+						paths, spec.path + DIR_DELIM + "media");
+				fs::GetRecursiveDirs(
+						paths, spec.path + DIR_DELIM + "models");
+				fs::GetRecursiveDirs(
+						paths, spec.path + DIR_DELIM + "locale");
 			});
 }
