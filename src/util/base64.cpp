@@ -52,7 +52,8 @@ bool base64_is_valid(std::string const& s)
 			break;
 	// number of padding characters needs to match
 	unsigned char padding = 3 - ((s.size() + 3) % 4);
-	if (s.size() - i != padding
+	int actual_padding = s.size() - i;
+	if ((actual_padding != padding && actual_padding != 0)
 			|| (padding == 1 && base64_chars_padding_1.find(s[i - 1]) == -1)
 			|| (padding == 2 && base64_chars_padding_2.find(s[i - 1]) == -1))
 		return false;
