@@ -8,8 +8,8 @@ distribution.
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 http://creativecommons.org/licenses/by-sa/3.0/
 
-textures/base/pack/refresh.png is under the Apache 2 license
-https://www.apache.org/licenses/LICENSE-2.0.html
+Zughy textures are under CC BY-SA 4.0
+https://creativecommons.org/licenses/by-sa/4.0/
 
 Authors of media files
 -----------------------
@@ -23,8 +23,6 @@ paramat:
   textures/base/pack/menu_header.png
   textures/base/pack/next_icon.png
   textures/base/pack/prev_icon.png
-  textures/base/pack/clear.png
-  textures/base/pack/search.png
 
 rubenwardy, paramat:
   textures/base/pack/start_icon.png
@@ -39,13 +37,18 @@ erlehmann:
 JRottm
   textures/base/pack/player_marker.png
 
-srifqi
+srifqi:
   textures/base/pack/chat_hide_btn.png
   textures/base/pack/chat_show_btn.png
   textures/base/pack/joystick_bg.png
   textures/base/pack/joystick_center.png
   textures/base/pack/joystick_off.png
   textures/base/pack/minimap_btn.png
+
+Zughy:
+  textures/base/pack/clear.png
+  textures/base/pack/refresh.png
+  textures/base/pack/search.png
 
 License of Minetest source code
 -------------------------------
