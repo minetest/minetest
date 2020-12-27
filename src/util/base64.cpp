@@ -38,7 +38,10 @@ static const std::string base64_chars_padding_2 = "AQgw";
 
 static inline bool is_base64(unsigned char c)
 {
-	return isalnum(c) || c == '+' || c == '/';
+	return (c >= '0' && c <= '9')
+			|| (c >= 'A' && c <= 'Z')
+			|| (c >= 'a' && c <= 'z')
+			|| c == '+' || c == '/';
 }
 
 bool base64_is_valid(std::string const& s)
