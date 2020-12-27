@@ -217,10 +217,6 @@ msgstr ""
 msgid "Uninstall"
 msgstr ""
 
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View"
-msgstr ""
-
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
 msgstr ""
