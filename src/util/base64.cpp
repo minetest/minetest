@@ -39,6 +39,7 @@ static inline bool is_base64(unsigned char c)
 	return isalnum(c) || c == '+' || c == '/' || c == '=';
 }
 
+static const size_t nullIndex = base64_chars.find((char)0);
 static inline unsigned char base64_value(unsigned char c)
 {
 	if (c == '+')
@@ -51,6 +52,7 @@ static inline unsigned char base64_value(unsigned char c)
 		return c - 'A';
 	if (c > '0')
 		return c - '0' + 50;
+	return nullIndex;
 }
 
 bool base64_is_valid(std::string const& s)
