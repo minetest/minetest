@@ -18,6 +18,7 @@
 
 local enable_gamebar = PLATFORM ~= "Android"
 local current_game, singleplayer_refresh_gamebar
+
 if enable_gamebar then
 	function current_game()
 		local last_game_id = core.settings:get("menu_last_game")
