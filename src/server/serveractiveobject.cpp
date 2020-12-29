@@ -77,8 +77,7 @@ void ServerActiveObject::dumpAOMessagesToQueue(std::queue<ActiveObjectMessage> &
 void ServerActiveObject::markForRemoval()
 {
 	if (!m_pending_removal) {
-		if (!isGone())
-			onMarkedForRemoval();
+		onMarkedForRemoval();
 		m_pending_removal = true;
 	}
 }
@@ -86,8 +85,7 @@ void ServerActiveObject::markForRemoval()
 void ServerActiveObject::markForDeactivation()
 {
 	if (!m_pending_deactivation) {
-		if (!isGone())
-			onMarkedForDeactivation();
+		onMarkedForDeactivation();
 		m_pending_deactivation = true;
 	}
 }

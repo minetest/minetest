@@ -2069,7 +2069,10 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				force_delete = true;
 		}
 
+		// Regardless of what happens to the object at this point, deactivate it first.
+		// This ensures that LuaEntity on_deactivate is always called.
 		obj->markForDeactivation();
+
 		/*
 			If known by some client, set pending deactivation.
 			Otherwise delete it immediately.

@@ -114,7 +114,10 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 
 void LuaEntitySAO::dispatchScriptDeactivate()
 {
-	if (m_registered)
+	// Ensure that this is in fact a registered entity,
+	// and that it isn't already gone.
+	// The latter also prevents this from ever being called twice.
+	if (m_registered && !isGone())
 		m_env->getScriptIface()->luaentity_Deactivate(m_id);
 }
 
