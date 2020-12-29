@@ -127,7 +127,6 @@ void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
 	}
 }
 
-// clang-format on
 void ActiveObjectMgr::getObjectsInArea(const aabb3f &box,
 		std::vector<ServerActiveObject *> &result,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
