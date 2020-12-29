@@ -743,6 +743,31 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	return 1;
 }
 
+// get_objects_in_area(pos, minp, maxp)
+int ModApiEnvMod::l_get_objects_in_area(lua_State *L)
+{
+	GET_ENV_PTR;
+	ScriptApiBase *script = getScriptApiBase(L);
+	
+	v3f minp = read_v3f(L, 1) * BS;
+	v3f maxp = read_v3f(L, 2) * BS;
+	aabb3f box(minp, maxp);
+	box.repair();
+	std::vector<ServerActiveObject *> objs;
+
+	auto include_obj_cb = [](ServerActiveObject *obj){ return !obj->isGone(); };
+	env->getObjectsInArea(objs, box, include_obj_cb);
+
+	int i = 0;
+	lua_createtable(L, objs.size(), 0);
+	for (const auto obj : objs) {
+		// Insert object reference into table
+		script->objectrefGetOrCreate(L, obj);
+		lua_rawseti(L, -2, ++i);
+	}
+	return 1;
+}
+
 // set_timeofday(val)
 // val = 0...1
 int ModApiEnvMod::l_set_timeofday(lua_State *L)
@@ -1413,6 +1438,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(get_node_timer);
 	API_FCT(get_connected_players);
 	API_FCT(get_player_by_name);
+	API_FCT(get_objects_in_area);
 	API_FCT(get_objects_inside_radius);
 	API_FCT(set_timeofday);
 	API_FCT(get_timeofday);

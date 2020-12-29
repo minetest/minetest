@@ -331,6 +331,13 @@ public:
 	{
 		return m_ao_manager.getObjectsInsideRadius(pos, radius, objects, include_obj_cb);
 	}
+	
+	// Find all active objects inside a box
+	void getObjectsInArea(std::vector<ServerActiveObject *> &objects, const aabb3f &box,
+			std::function<bool(ServerActiveObject *obj)> include_obj_cb)
+	{
+		return m_ao_manager.getObjectsInArea(box, objects, include_obj_cb);
+	}
 
 	// Clear objects, loading and going through every MapBlock
 	void clearObjects(ClearObjectsMode mode);
